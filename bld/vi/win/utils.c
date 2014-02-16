@@ -62,7 +62,7 @@ int FileSysNeedsCR( int handle )
 
 void SetGadgetString( char *str )
 {
-    int     i;
+    size_t  i;
 
     if( str != NULL ) {
         i = strlen( str );

@@ -31,8 +31,9 @@
 
 #include "vi.h"
 #include "grep.h"
+#include "wprocmap.h"
 
-static DLGPROC  grepProc;
+static FARPROC  grepProc;
 static HWND     grepHwnd;
 static bool     cancelPressed;
 
@@ -67,9 +68,9 @@ WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 void InitGrepDialog( void )
 {
-    grepProc = (DLGPROC)MakeProcInstance( (FARPROC)GrepDlgProc, InstanceHandle );
+    grepProc = MakeDlgProcInstance( GrepDlgProc, InstanceHandle );
     cancelPressed = FALSE;
-    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, grepProc );
+    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, (DLGPROC)grepProc );
 
 } /* InitGrepDialog */
 
@@ -83,7 +84,7 @@ void FiniGrepDialog( void )
     if( grepHwnd != NULL ) {
         DestroyWindow( grepHwnd );
     }
-    (void)FreeProcInstance( (FARPROC)grepProc );
+    (void)FreeProcInstance( grepProc );
     grepProc = NULL;
     grepHwnd = (HWND)NULLHANDLE;
 

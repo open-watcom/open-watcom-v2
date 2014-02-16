@@ -38,6 +38,7 @@
 #include "fts.h"
 #include "rcstr.gh"
 #include <assert.h>
+#include "wprocmap.h"
 
 #define VI_LANG_FIRST   VI_LANG_LANG0
 #define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
@@ -519,12 +520,12 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
  */
 bool GetSetFSDialog( void )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetFSProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( SetFSProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETFS", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( TRUE );

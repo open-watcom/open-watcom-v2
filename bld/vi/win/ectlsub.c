@@ -31,8 +31,9 @@
 
 
 #include "vi.h"
+#include "wprocmap.h"
 
-static WNDPROC      oldEditProc;
+static FARPROC      oldEditProc;
 static FARPROC      editProc;
 static history_data *hData;
 static int          currHist;
@@ -150,7 +151,7 @@ WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam,
         }
         break;
     }
-    return( CallWindowProc( oldEditProc, hwnd, msg, wparam, lparam ) );
+    return( CallWindowProc( (WNDPROC)oldEditProc, hwnd, msg, wparam, lparam ) );
 
 } /* EditSubClassProc */
 
@@ -164,8 +165,8 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
     hData = h;
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
-    oldEditProc = (WNDPROC)GET_WNDPROC( edit );
-    editProc = MakeProcInstance( (FARPROC)EditSubClassProc, InstanceHandle );
+    oldEditProc = (FARPROC)GET_WNDPROC( edit );
+    editProc = MakeWndProcInstance( EditSubClassProc, InstanceHandle );
     SET_WNDPROC( edit, (LONG_PTR)editProc );
     SendMessage( edit, EM_LIMITTEXT, MAX_INPUT_LINE, 0L );
 

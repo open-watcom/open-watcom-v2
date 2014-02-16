@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "cmd.h"
+#include "wprocmap.h"
 
 static char     *cmdStr;
 static int      cmdLen;
@@ -118,14 +119,14 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 bool GetCmdDialog( char *str, int len )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
     cmdStr = str;
     cmdLen = len;
-    proc = (DLGPROC) MakeProcInstance( (FARPROC)CmdDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "CMDDLG", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( CmdDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "CMDDLG", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
     /* this is technically a bug of some kind - if the above command
      * was a DDE message to another window to take focus, we will

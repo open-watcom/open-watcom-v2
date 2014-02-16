@@ -34,6 +34,7 @@
 #include "font.h"
 #include "utils.h"
 #include "myprtf.h"
+#include "wprocmap.h"
 
 static BOOL Init( window *, void * );
 static BOOL Fini( window *, void * );
@@ -63,7 +64,7 @@ static BOOL Init( window *w, void *parm )
     msgString2[0] = 0;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (WNDPROC)MessageWindowProc;
+    wc.lpfnWndProc = GetWndProc( MessageWindowProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

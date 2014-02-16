@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "usage.h"
+#include "wprocmap.h"
 
 static char     **usageList;
 static int      usageCnt;
@@ -78,14 +79,14 @@ WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void UsageDialog( char **list, char *msg, int cnt )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
 
     usageList = list;
     usageStr = msg;
     usageCnt = cnt;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)UsageProc, InstanceHandle );
-    DialogBox( InstanceHandle, "Usage", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( UsageProc, InstanceHandle );
+    DialogBox( InstanceHandle, "Usage", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
 } /* UsageDialog */

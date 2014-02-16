@@ -33,6 +33,7 @@
 #include "color.h"
 #include "font.h"
 #include "utils.h"
+#include "wprocmap.h"
 
 static BOOL Init( window *, void * );
 static BOOL Fini( window *, void * );
@@ -56,7 +57,7 @@ static BOOL Init( window *w, void *parm )
     w = w;
     parm = parm;
     wc.style = CS_DBLCLKS;
-    wc.lpfnWndProc = (WNDPROC)FileCompleteWindowProc;
+    wc.lpfnWndProc = GetWndProc( FileCompleteWindowProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

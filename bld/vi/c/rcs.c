@@ -32,6 +32,9 @@
 #include "vi.h"
 #include "rcscli.h"
 #include "rcs.h"
+#ifdef __WIN__
+#include "wprocmap.h"
+#endif
 
 #if defined( __WINDOWS_386__ )
 

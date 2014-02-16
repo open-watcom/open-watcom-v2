@@ -31,6 +31,9 @@
 
 #include "vi.h"
 #include <dos.h>
+#ifdef __WIN__
+#include "wprocmap.h"
+#endif
 
 static BOOL     doneExec;
 static HMODULE  moduleHandle;
@@ -38,6 +41,18 @@ static HMODULE  instanceHandle;
 
 #define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
 #define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
+
+#ifdef __WINDOWS_386__
+typedef BOOL (CALLBACK *LPFNNOTIFYCALLBACKx)( WORD, DWORD );
+static FARPROC MakeNotifyCallbackProcInstance( LPFNNOTIFYCALLBACKx fn, HINSTANCE instance )
+{
+    instance = instance;
+    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+}
+#else
+#define LPFNNOTIFYCALLBACKx LPFNNOTIFYCALLBACK
+#define MakeNotifyCallbackProcInstance(f,i) MakeProcInstance((FARPROC)f,i)
+#endif
 
 WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 {
@@ -73,7 +88,7 @@ long MySpawn( const char *cmd )
 
     GetSpawnCommandLine( path, cmd, &cmds );
     cmds.cmd[cmds.len] = 0;
-    proc = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
+    proc = MakeNotifyCallbackProcInstance( NotifyHandler, InstanceHandle );
     if( !NotifyRegister( (HANDLE)NULLHANDLE, (LPFNNOTIFYCALLBACK)proc, NF_NORMAL ) ) {
         FreeProcInstance( proc );
         return( -1L );

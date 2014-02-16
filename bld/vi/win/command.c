@@ -34,6 +34,7 @@
 #include "font.h"
 #include "utils.h"
 #include "win.h"
+#include "wprocmap.h"
 
 #define LIST_BOX        1000
 
@@ -62,7 +63,7 @@ static BOOL Init( window *w, void *parm )
     w = w;
     parm = parm;
     wc.style = 0;
-    wc.lpfnWndProc = (WNDPROC)CommandWindowProc;
+    wc.lpfnWndProc = GetWndProc( CommandWindowProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

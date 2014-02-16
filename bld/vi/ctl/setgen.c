@@ -38,6 +38,7 @@
 #include "dyntpl.h"
 #include "util.h"
 #include "globals.h"
+#include "wprocmap.h"
 
 #define WORDWIDTH               30
 #define TMPDIRWIDTH             129
@@ -209,12 +210,12 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
  */
 bool GetSetGenDialog( void )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetGenProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETGEN", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( SetGenProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETGEN", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( FALSE );

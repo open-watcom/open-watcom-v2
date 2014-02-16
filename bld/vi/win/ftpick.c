@@ -34,6 +34,7 @@
 #include "ftbar.h"
 #include "font.h"
 #include "sstyle.h"
+#include "wprocmap.h"
 
 extern  LOGFONT     CurLogfont;
 
@@ -230,7 +231,7 @@ void InitFtPick( void )
     }
 
     wndclass.style          = CS_HREDRAW | CS_VREDRAW;
-    wndclass.lpfnWndProc    = (WNDPROC)FtPickProc;
+    wndclass.lpfnWndProc    = GetWndProc( FtPickProc );
     wndclass.cbClsExtra     = 0;
     wndclass.cbWndExtra     = 0;
     wndclass.hInstance      = InstanceHandle;

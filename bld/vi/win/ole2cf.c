@@ -140,14 +140,11 @@ static LPCLASSFACTORY createClassFactory( HANDLE inst )
     pcf = MemAlloc( sizeof( class_factory ) );
     pcf->usage_count = 1;
     pcf->cf.lpVtbl = MemAlloc( sizeof( struct IClassFactoryVtbl ) );
-    pcf->cf.lpVtbl->QueryInterface = (LPVOID) MakeProcInstance(
-        (LPVOID) CFQueryInterface, inst );
-    pcf->cf.lpVtbl->AddRef = (LPVOID) MakeProcInstance( (LPVOID) CFAddRef, inst );
-    pcf->cf.lpVtbl->Release = (LPVOID) MakeProcInstance( (LPVOID) CFRelease, inst );
-    pcf->cf.lpVtbl->CreateInstance = (LPVOID) MakeProcInstance(
-        (LPVOID) CFCreateInstance, inst );
-    pcf->cf.lpVtbl->LockServer = (LPVOID) MakeProcInstance(
-        (LPVOID) CFLockServer, inst );
+    pcf->cf.lpVtbl->QueryInterface = (LPVOID)MakeProcInstance( (LPVOID)CFQueryInterface, inst );
+    pcf->cf.lpVtbl->AddRef =         (LPVOID)MakeProcInstance( (LPVOID)CFAddRef, inst );
+    pcf->cf.lpVtbl->Release =        (LPVOID)MakeProcInstance( (LPVOID)CFRelease, inst );
+    pcf->cf.lpVtbl->CreateInstance = (LPVOID)MakeProcInstance( (LPVOID)CFCreateInstance, inst );
+    pcf->cf.lpVtbl->LockServer =     (LPVOID)MakeProcInstance( (LPVOID)CFLockServer, inst );
     return( (LPCLASSFACTORY) pcf );
 
 } /* createClassFactory */

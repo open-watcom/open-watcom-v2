@@ -34,6 +34,7 @@
 #include <dlgs.h>
 #include <cderr.h>
 #include <assert.h>
+#include "wprocmap.h"
 
 static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
                           "C Files (*.c;*.h)\0*.c;*.h\0"
@@ -59,10 +60,14 @@ static char *FileNameList;
 typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
 
 
-WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                         len;
-    static OPENFILENAME __FAR__ *of;
+#ifdef __WINDOWS_386__
+    static OPENFILENAME __far   *of;
+#else
+    static OPENFILENAME         *of;
+#endif
 
     wparam = wparam;
     lparam = lparam;
@@ -71,7 +76,11 @@ WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     switch( msg ) {
     case WM_INITDIALOG:
         /* danger - not sure that lparam is guaranteed to be the of. struct */
-        of = (OPENFILENAME __FAR__ *)MAKEPTR( (LPVOID)lparam );
+#ifdef __WINDOWS_386__
+        of = (OPENFILENAME __far *)MK_FP32( (void *)lparam );
+#else
+        of = (OPENFILENAME *)lparam;
+#endif
         // return( FALSE );
         return( TRUE );
     case WM_COMMAND:
@@ -121,16 +130,16 @@ vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
     of.lpstrTitle = NULL;
     of.lpstrInitialDir = dir;
     if( is_chicago ) {
-        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY |
-                   OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
-        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY |
-                   OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, InstanceHandle );
+        of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
+        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
     }
     rc = GetOpenFileName( &of );
     filemask = of.nFilterIndex;
-    (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+    if( !is_chicago ) {
+        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+    }
     if( rc == FALSE && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
         if( !is_chicago ) {
             MemFree( (char*)(of.lpstrFile) );
@@ -173,16 +182,15 @@ vi_rc SelectFileSave( char *result )
         is_chicago = TRUE;
 #endif
     if( is_chicago ) {
-        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
-                   OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
+        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
     } else {
-        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT |
-                   OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
+        of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
+        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
     }
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, InstanceHandle );
     doit = GetSaveFileName( &of );
-    (void)FreeProcInstance( (FARPROC)of.lpfnHook );
-
+    if( !is_chicago ) {
+        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+    }
     if( doit != 0 ) {
         UpdateCurrentDirectory();
         return( ERR_NO_ERR );

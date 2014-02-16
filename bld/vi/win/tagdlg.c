@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "tagdlg.h"
+#include "wprocmap.h"
 
 static int      tagCnt;
 static char     **tagList;
@@ -86,15 +87,15 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 int PickATag( int clist, char **list, char *tagname )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     int         rc;
 
     tagCnt = clist;
     tagList = list;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)TagListProc, InstanceHandle );
-    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, proc, (LPARAM)tagname );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( TagListProc, InstanceHandle );
+    rc = DialogBoxParam( InstanceHandle, "TAGS", Root, (DLGPROC)proc, (LPARAM)tagname );
+    FreeProcInstance( proc );
     return( rc );
 
 } /* PickATag */

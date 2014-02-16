@@ -37,6 +37,7 @@
 #include "wstatus.h"
 #include "statwnd.h"
 #include <assert.h>
+#include "wprocmap.h"
 
 #define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
@@ -341,13 +342,13 @@ void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
     }
     for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
     }
     for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)StaticSubclassProc );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
     }
 }
 
@@ -397,20 +398,20 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void RefreshSSbar( void )
 {
-    static DLGPROC      proc;
+    static FARPROC      proc = NULL;
 
     if( EditFlags.SSbar ) {
         if( hSSbar != NULL ) {
             return;
         }
-        proc = (DLGPROC)MakeProcInstance( (FARPROC)SSDlgProc, InstanceHandle );
-        hSSbar = CreateDialog( InstanceHandle, "SSBAR", Root, proc );
+        proc = MakeDlgProcInstance( SSDlgProc, InstanceHandle );
+        hSSbar = CreateDialog( InstanceHandle, "SSBAR", Root, (DLGPROC)proc );
     } else {
         if( hSSbar == NULL ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( (FARPROC)proc );
+        FreeProcInstance( proc );
     }
     UpdateStatusWindow();
 

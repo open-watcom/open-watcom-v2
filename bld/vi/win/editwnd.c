@@ -36,6 +36,7 @@
 #include "font.h"
 #include "color.h"
 #include "utils.h"
+#include "wprocmap.h"
 // #include "mdisim.h"
 
 char *EditWindowClassName = "Buffer Window";
@@ -68,7 +69,7 @@ static BOOL Init( window *w, void *parm )
     parm = parm;
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    wc.lpfnWndProc = (WNDPROC)EditWindowProc;
+    wc.lpfnWndProc = GetWndProc( EditWindowProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = EXTRA_WIN_DATA;
     wc.hInstance = InstanceHandle;
@@ -924,7 +925,7 @@ void ResetExtraRects( void )
     FARPROC     proc;
 
     if( EditContainer != HNULL ) {
-        proc = MakeProcInstance( (FARPROC)ResizeExtra, InstanceHandle );
+        proc = MakeWndEnumProcInstance( ResizeExtra, InstanceHandle );
         EnumChildWindows( EditContainer, (WNDENUMPROC)proc, 0L );
         FreeProcInstance( proc );
     }

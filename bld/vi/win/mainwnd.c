@@ -33,6 +33,7 @@
 #include <malloc.h>
 #include "window.h"
 #include "win.h"
+#include "wprocmap.h"
 
 #if defined( __WATCOMC__ ) && defined( __NT__ )
     #pragma library( "shell32" )
@@ -52,7 +53,7 @@ BOOL RegisterMainWindow( HANDLE inst )
     WNDCLASS    wc;
 
     wc.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = (WNDPROC)MainWindowProc;
+    wc.lpfnWndProc = GetWndProc( MainWindowProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;

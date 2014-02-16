@@ -36,6 +36,7 @@
 #ifdef __NT__
     #include <shlobj.h>
 #endif
+#include "wprocmap.h"
 
 static fancy_find       snoopData =
     { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
@@ -169,7 +170,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 bool GetSnoopStringDialog( fancy_find **ff )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
 #ifdef __NT__
@@ -186,17 +187,17 @@ bool GetSnoopStringDialog( fancy_find **ff )
     snoopData.case_ignore = EditFlags.CaseIgnore;
     AddString2( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)SnoopDlgProc, InstanceHandle );
+    proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
-        rc = DialogBox( InstanceHandle, "SNOOPDLG95", Root, proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG95", Root, (DLGPROC)proc );
     } else {
 #endif
-        rc = DialogBox( InstanceHandle, "SNOOPDLG", Root, proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG", Root, (DLGPROC)proc );
 #ifdef __NT__
     }
 #endif
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance( proc );
     SetWindowCursor();
     return( rc );
 

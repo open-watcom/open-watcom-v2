@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "finddlg.h"
+#include "wprocmap.h"
 
 static fancy_find findData =
     { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0 };
@@ -141,14 +142,14 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 bool GetFindStringDialog( fancy_find *ff )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)FindDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FINDDLG", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( FindDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FINDDLG", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
     SetWindowCursor();
     if( rc ) {
         ff->case_ignore = findData.case_ignore;

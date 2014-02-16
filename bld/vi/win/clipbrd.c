@@ -64,6 +64,14 @@
 #endif
 
 #ifdef __WINDOWS_386__
+#define GetPtrGlobalLock(data)  MK_FP32( GlobalLock( data ) )
+#define MEMCPY                  _fmemcpy
+#else
+#define GetPtrGlobalLock(data)  GlobalLock( data )
+#define MEMCPY                  memcpy
+#endif
+
+#ifdef __WINDOWS_386__
 /*
  * getHugePointer - given a 16-bit far pointer and an offset, return the
  *                  far pointer
@@ -119,7 +127,11 @@ static bool openClipboardForWrite( void )
  */
 int AddLineToClipboard( char *data, int scol, int ecol )
 {
-    char __FAR__        *ptr;
+#ifdef __WINDOWS_386__
+    char __far          *ptr;
+#else
+    char                *ptr;
+#endif
     GLOBALHANDLE        hglob;
     int                 len;
 
@@ -137,7 +149,7 @@ int AddLineToClipboard( char *data, int scol, int ecol )
         return( ERR_CLIPBOARD );
     }
 
-    ptr = MAKEPTR( GlobalLock( hglob ) );
+    ptr = GetPtrGlobalLock( hglob );
     if( ptr == NULL ) {
         CloseClipboard();
         return( ERR_CLIPBOARD );
@@ -194,7 +206,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
         return( ERR_CLIPBOARD );
     }
 
-    ptr = MAKEPTR( GlobalLock( hglob ) );
+    ptr = GetPtrGlobalLock( hglob );
     if( ptr == NULL ) {
         CloseClipboard();
         return( ERR_CLIPBOARD );
@@ -282,7 +294,7 @@ int GetClipboardSavebuf( savebuf *clip )
     if( hglob == NULL ) {
         return( ERR_CLIPBOARD );
     }
-    ptr = MAKEPTR( GlobalLock( hglob ) );
+    ptr = GetPtrGlobalLock( hglob );
     cpos = ptr;
     i = 0;
     is_flushed = FALSE;

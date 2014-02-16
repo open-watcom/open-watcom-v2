@@ -32,6 +32,7 @@
 #include "vi.h"
 #include "clrbar.h"
 #include "utils.h"
+#include "wprocmap.h"
 
 HWND        hColorbar;
 
@@ -73,7 +74,7 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 void RefreshColorbar( void )
 {
-    static DLGPROC      proc = NULL;
+    static FARPROC      proc = NULL;
 
     if( EditFlags.Colorbar ) {
         if( hColorbar != NULL ) {
@@ -82,15 +83,15 @@ void RefreshColorbar( void )
         // if( proc ){
         //     proc = NULL;
         // }
-        proc = (DLGPROC) MakeProcInstance( (FARPROC)ClrDlgProc, InstanceHandle );
-        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, proc );
+        proc = MakeDlgProcInstance( ClrDlgProc, InstanceHandle );
+        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", Root, (DLGPROC)proc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
         if( hColorbar == NULL ) {
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( (FARPROC)proc );
+        FreeProcInstance( proc );
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

@@ -31,6 +31,7 @@
 
 #include "vi.h"
 #include "asavedlg.h"
+#include "wprocmap.h"
 
 /*
  * ASaveDlgProc - callback routine for autosave response dialog
@@ -70,12 +71,12 @@ WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 vi_key GetAutosaveResponse( void )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     int         rc;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)ASaveDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( ASaveDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "ASaveDlg", (HWND)NULLHANDLE, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
     return( rc );
 

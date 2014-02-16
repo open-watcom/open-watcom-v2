@@ -36,6 +36,7 @@
 #include "stddef.h"
 #include "ctltype.h"
 #include "util.h"
+#include "wprocmap.h"
 
 #define FILEENDSTRINGWIDTH      200
 
@@ -127,12 +128,12 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARA
  */
 bool GetSetScrDialog( void )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)SetScrProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETSCR", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( SetScrProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETSCR", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( FALSE );

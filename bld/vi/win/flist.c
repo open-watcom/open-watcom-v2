@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "filelist.h"
+#include "wprocmap.h"
 
 static info *findInfo( char *file_name )
 {
@@ -145,11 +146,11 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l )
 
 vi_rc EditFileFromList( void )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     vi_rc       rc;
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)FileListProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( FileListProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FILELIST", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
     return( rc );
 }

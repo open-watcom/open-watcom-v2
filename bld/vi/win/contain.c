@@ -31,6 +31,7 @@
 
 #include "vi.h"
 #include "window.h"
+#include "wprocmap.h"
 
 static char *className = "MDICLIENT";
 WNDPROC oldContainerProc;
@@ -56,7 +57,7 @@ window_id CreateContainerWindow( RECT *size )
                 Root, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
     SET_WNDINFO( container, 0 );
     oldContainerProc = (WNDPROC)GET_WNDPROC( container );
-    SET_WNDPROC( container, (LONG_PTR)MakeProcInstance( (FARPROC)ContainerWindowProc, InstanceHandle ) );
+    SET_WNDPROC( container, (LONG_PTR)MakeWndProcInstance( ContainerWindowProc, InstanceHandle ) );
     SetScrollRange( container, SB_VERT, 1, 1, FALSE );
     SetScrollRange( container, SB_HORZ, 1, 1, FALSE );
     return( container );
@@ -73,6 +74,6 @@ WINEXPORT LRESULT CALLBACK ContainerWindowProc( HWND hwnd, UINT msg, WPARAM wpar
         return( SendMessage( Root, msg, wparam, lparam ) );
         break;
     }
-    return( CallWindowProc( (WNDPROC)oldContainerProc, hwnd, msg, wparam, lparam ) );
+    return( CallWindowProc( oldContainerProc, hwnd, msg, wparam, lparam ) );
 
 } /* ContainerWindowProc */

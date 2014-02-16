@@ -49,6 +49,9 @@ int LastLineCount;
 
 
 #ifdef __WIN__
+
+#include "wprocmap.h"
+
 static HHOOK    hhookMB = 0;
 static int      MB_posx = -1;
 static int      MB_posy = -1;
@@ -80,18 +83,18 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
 
 static int MyMessageBox( window_id hWnd, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
 {
-    HOOKPROC    lpfn;
+    FARPROC     fp;
     int         rc;
 
-    lpfn = (HOOKPROC)MakeProcInstance( (FARPROC)MyMessageBoxWndFunc, InstanceHandle );
+    fp = MakeHookProcInstance( MyMessageBoxWndFunc, InstanceHandle );
 #if defined(__NT__)
-    hhookMB = SetWindowsHookEx( WH_CBT, lpfn, 0, GetCurrentThreadId() );
+    hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, 0, GetCurrentThreadId() );
 #else
-    hhookMB = SetWindowsHookEx( WH_CBT, lpfn, InstanceHandle, GetCurrentTask() );
+    hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, InstanceHandle, GetCurrentTask() );
 #endif
     rc = MessageBox( hWnd, lpText, lpCaption, uType );
     UnhookWindowsHookEx( hhookMB );
-    FreeProcInstance( (FARPROC)lpfn );
+    FreeProcInstance( fp );
     return( rc );
 }
 #endif

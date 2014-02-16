@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "linedlg.h"
+#include "wprocmap.h"
 
 static char     lineStr[20];
 static char     lineLen = sizeof( lineStr ) - 1;
@@ -78,14 +79,14 @@ WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
  */
 bool GetLineDialog( linenum *line )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
     lineStr[0] = '\0';
     lineVal = line;
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)GotoLineDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "LINEDLG", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( GotoLineDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "LINEDLG", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
     SetWindowCursor();
     return( rc );
 

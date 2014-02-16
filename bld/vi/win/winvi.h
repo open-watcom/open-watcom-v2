@@ -37,27 +37,15 @@
 
 #if defined( __WINDOWS_386__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
-    #define MAKEPTR( a )        ((void __far *)MK_FP32( (void *) a ))
-    #define __FAR__             __far
-    #define MEMCPY              _fmemcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __WINDOWS__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
-    #define MAKEPTR( a )        ((LPVOID) a)
-    #define __FAR__
-    #define MEMCPY              memcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __NT__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for Windows"
-    #define MAKEPTR( a )        ((LPVOID) a)
-    #define __FAR__
-    #define MEMCPY              memcpy
     #define NULLHANDLE          ((HANDLE)0)
 #elif defined( __OS2__ )
     #define WATCOM_ABOUT_EDITOR "Open Watcom Text Editor for OS/2 PM"
-    #define MAKEPTR( a )        ((LPVOID) a)
-    #define __FAR__
-    #define MEMCPY              memcpy
 #endif
 
 typedef LPVOID  *LPLPVOID;

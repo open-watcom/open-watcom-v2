@@ -34,6 +34,7 @@
 #include <stddef.h>
 #include "source.h"
 #include "ddedef.h"
+#include "wprocmap.h"
 
 typedef struct hsz_list {
     struct hsz_list     *next;
@@ -48,6 +49,18 @@ DWORD           DDEInstId;
 UINT            ClipboardFormat = CF_TEXT;
 UINT            ServerCount;
 bool            UseDDE;
+
+#ifdef __WINDOWS_386__
+typedef HDDEDATA (CALLBACK *PFNCALLBACKx)( UINT, UINT, HCONV, HSZ, HSZ, HDDEDATA, DWORD, DWORD );
+static FARPROC MakeFnCallbackProcInstance( PFNCALLBACKx fn, HINSTANCE instance )
+{
+    instance = instance;
+    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+}
+#else
+#define PFNCALLBACKx            PFNCALLBACK
+#define MakeFnCallbackProcInstance(f,i) MakeProcInstance((FARPROC)f,i)
+#endif
 
 /*
  * DDECallback - callback routine for DDE
@@ -167,15 +180,15 @@ static void freeAllStringHandles( void )
  */
 bool DDEInit( void )
 {
-    PFNCALLBACK  fp;
+    FARPROC fp;
 
     if( UseDDE ) {
         return( TRUE );
     }
 
-    fp = (PFNCALLBACK)MakeProcInstance( (FARPROC)DDECallback, InstanceHandle );
+    fp = MakeFnCallbackProcInstance( DDECallback, InstanceHandle );
 
-    if( DdeInitialize( &DDEInstId, fp, CBF_FAIL_EXECUTES |
+    if( DdeInitialize( &DDEInstId, (PFNCALLBACK)fp, CBF_FAIL_EXECUTES |
                        CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
                        CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
         return( FALSE );

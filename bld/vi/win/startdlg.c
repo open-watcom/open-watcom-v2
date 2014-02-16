@@ -32,6 +32,7 @@
 #include "vi.h"
 #include "startup.h"
 #include "banner.h"
+#include "wprocmap.h"
 
 /*
  * StartupProc - callback routine for startup modeless dialog
@@ -76,7 +77,7 @@ static FARPROC  startDlgProc;
  */
 void ShowStartupDialog( void )
 {
-    startDlgProc = MakeProcInstance( (FARPROC)StartupProc, InstanceHandle );
+    startDlgProc = MakeDlgProcInstance( StartupProc, InstanceHandle );
     startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, (DLGPROC)startDlgProc );
 
 } /* ShowStartupDialog */
@@ -92,6 +93,6 @@ void CloseStartupDialog( void )
     }
     DestroyWindow( startDlgWindow );
     startDlgWindow = (HWND)NULLHANDLE;
-    (void)FreeProcInstance( (FARPROC)startDlgProc );
+    (void)FreeProcInstance( startDlgProc );
 
 } /* CloseStartupDialog */

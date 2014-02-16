@@ -45,7 +45,7 @@ void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
 
     newProc->hwnd = hwnd;
     newProc->oldProc = (WNDPROC)GET_WNDPROC( hwnd );
-    newProc->newProc = (WNDPROC)MakeProcInstance( (FARPROC)proc, InstanceHandle );
+    newProc->newProc = proc;
     SET_WNDPROC( hwnd, (LONG_PTR)newProc->newProc );
 
     AddLLItemAtEnd( (ss **)&procHead, (ss **)&procTail, (ss *)newProc );

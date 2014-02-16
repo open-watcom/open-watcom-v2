@@ -32,6 +32,7 @@
 
 #include "vi.h"
 #include "repdlg.h"
+#include "wprocmap.h"
 
 static fancy_find findData =
     { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0 };
@@ -147,16 +148,16 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 bool GetReplaceStringDialog( fancy_find *ff )
 {
-    DLGPROC     proc;
+    FARPROC     proc;
     bool        rc;
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
     findData.replace = ff->replace;
     findData.replacelen = ff->replacelen;
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)RepDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "REPDLG", Root, proc );
-    FreeProcInstance( (FARPROC)proc );
+    proc = MakeDlgProcInstance( RepDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "REPDLG", Root, (DLGPROC)proc );
+    FreeProcInstance( proc );
     SetWindowCursor();
 
     if( strlen( findData.find ) == 0 ) {

@@ -37,6 +37,7 @@
 #include "toolbr.h"
 #include "sstyle.h"
 #include "subclass.h"
+#include "wprocmap.h"
 
 #define NUM_ACROSS      8
 #define NUM_DOWN        8
@@ -349,7 +350,7 @@ WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         initRGBValues();
         // our subclass slows things down - force a paint before we subclass
         UpdateWindow( hwnd );
-        // SubclassGenericAdd( hwnd, HotkeyProc );
+        // SubclassGenericAdd( hwnd, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
         return( 0 );
     case WM_PAINT:
         paintBlocks( hwnd );
@@ -379,7 +380,7 @@ void InitClrPick( void )
     }
 
     wndclass.style          = CS_HREDRAW | CS_VREDRAW;
-    wndclass.lpfnWndProc    = (WNDPROC)ClrPickProc;
+    wndclass.lpfnWndProc    = GetWndProc( ClrPickProc );
     wndclass.cbClsExtra     = 0;
     wndclass.cbWndExtra     = 0;
     wndclass.hInstance      = InstanceHandle;
