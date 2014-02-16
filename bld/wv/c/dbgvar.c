@@ -593,7 +593,6 @@ static var_node *NewNode( var_info *i, unsigned len )
     i->mem_lock = TRUE;
     size = sizeof( var_node ) + len;
     new = DbgAlloc( size + type_SIZE );
-    new->bits = 0;
     i->mem_lock = FALSE;
     if( new == NULL ) {
         _SwitchOn( SW_ERROR_RETURNS );
