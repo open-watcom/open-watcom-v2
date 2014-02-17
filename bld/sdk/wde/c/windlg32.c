@@ -38,12 +38,6 @@
     #define MB_ERR_INVALID_CHARS 0x00000000
 #endif
 
-#ifdef __WINDOWS_386__
-#define GetPtrGlobalLock(data)   MK_FP32( GlobalLock( data ) )
-#else
-#define GetPtrGlobalLock(data)   GlobalLock( data )
-#endif
-
 /*
  * stringLength - get length of string
  */

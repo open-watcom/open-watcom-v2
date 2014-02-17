@@ -32,6 +32,12 @@
 
 #if !defined( __OS2__ )
 
+#if defined( __WINDOWS_386__ )
+#define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data) GlobalLock( data )
+#endif
+
 #ifdef __NT__
     #define ADJUST_ITEMLEN( a )     a = (((a) + 7) & ~7)
     #define ADJUST_BLOCKLEN( a )    a = (((a) + 3) & ~3)
@@ -50,62 +56,7 @@
     typedef BYTE                    INFOTYPE;
 #endif
 
-#if defined( __NT__ )
-//#if defined( __ALPHA__ )
-//    #include "pushpck1.h"
-//#else
-    #include "pushpck2.h"
-//#endif
-#else
-    #include "pushpck1.h"
-#endif
-
-typedef struct {
-    long    dtStyle;
-#ifdef __NT__
-    DWORD   dtExtendedStyle;
-    WORD    dtItemCount;
-#else
-    BYTE    dtItemCount;
-#endif
-    short   dtX;
-    short   dtY;
-    short   dtCX;
-    short   dtCY;
-    //char  dtMenuName[];
-    //char  dtClassName[];
-    //char  dtCaptionText[];
-} _DLGTEMPLATE;
-
-typedef struct {
-    short   PointSize;
-    //char  szTypeFace[];
-} FONTINFO;
-
-typedef struct {
-#ifdef __NT__
-    long    dtilStyle;
-    DWORD   dtExtendedStyle;
-#endif
-    short   dtilX;
-    short   dtilY;
-    short   dtilCX;
-    short   dtilCY;
-    short   dtilID;
-#ifndef __NT__
-    long    dtilStyle;
-#endif
-
-    //char  dtilClass[];
-    //char  dtilText[];
-    //BYTE  dtilInfo;
-    //BYTE  dtilData;
-} _DLGITEMTEMPLATE;
-#if defined( __NT__ )
-    #include "pushpck1.h"
-#else
-    #include "poppck.h"
-#endif
+#include "_windlg.h"
 
 extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, int pointsize, char *typeface );
 extern void         DoneAddingControls( GLOBALHANDLE data );

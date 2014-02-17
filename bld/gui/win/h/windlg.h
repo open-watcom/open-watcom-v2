@@ -41,15 +41,12 @@
 
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
-#if defined(__NT__) && !defined( TWIN )
+#if defined(__NT__)
 
 #define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
 #define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
 #define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
 #define _FARmemcpy              memcpy
-#ifndef MK_FP32
-#define MK_FP32( a )            a
-#endif
 #define _ISFAR
 //#define SLEN( a )               (strlen((a))*2+2)
 // fixed to handle DBCS strings properly - rnk 3/1/96
@@ -68,56 +65,7 @@ typedef BYTE INFOTYPE;
 
 #endif
 
-#ifdef __NT__
-    #pragma pack( push, 2 )
-#else
-    #pragma pack( push, 1 )
-#endif
-
-typedef struct {
-    DWORD   dtStyle;
-#if defined(__NT__)
-    DWORD   dtExtendedStyle;
-    WORD    dtItemCount;
-#else
-    BYTE    dtItemCount;
-#endif
-    WORD    dtX;
-    WORD    dtY;
-    WORD    dtCX;
-    WORD    dtCY;
-//  char    dtMenuName[];
-//  char    dtClassName[];
-//  char    dtCaptionText[];
-} _DLGTEMPLATE;
-
-typedef struct {
-    WORD    PointSize;
-//  char    szTypeFace[];
-} FONTINFO;
-
-typedef struct {
-#if defined(__NT__)
-    DWORD   dtilStyle;
-    DWORD   dtExtendedStyle;
-#endif
-    WORD    dtilX;
-    WORD    dtilY;
-    WORD    dtilCX;
-    WORD    dtilCY;
-    WORD    dtilID;
-#ifdef __NT__
-    WORD    crap;
-#else
-    DWORD   dtilStyle;
-#endif
-//  char    dtilClass[];
-//  char    dtilText[];
-//  BYTE    dtilInfo;
-//  BYTE    dtilData;
-} _DLGITEMTEMPLATE;
-
-#pragma pack( pop )
+#include "_windlg.h"
 
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
                                        int dtcx, int dtcy, char *menuname,

@@ -91,8 +91,7 @@ sysobjs = guixscal.obj &
 
 !ifeq host_os os2
 sysobjs +=             &
-          os2mem.obj   &
-          os2dlg.obj
+          os2mem.obj
 !else
 sysobjs +=             &
           windlg.obj

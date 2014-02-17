@@ -27,7 +27,7 @@ WINDOWS=1
 
 !include verrc.mif
 
-extra_cpp_flags   = -DWIN_GUI
+extra_cpp_flags   = -DWIN_GUI -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
 

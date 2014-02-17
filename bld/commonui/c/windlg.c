@@ -170,7 +170,7 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-#if defined(__NT__) && (!defined(__DEC__) || !defined( TWIN ))
+#if defined(__NT__)
 
     classlen = 2;
     if( !stricmp( class, "combobox" ) ) {

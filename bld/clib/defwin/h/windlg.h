@@ -55,56 +55,7 @@ typedef BYTE INFOTYPE;
 
 #endif
 
-#ifdef __NT__
-    #include "pushpck2.h"
-#else
-    #include "pushpck1.h"
-#endif
-
-typedef struct {
-    DWORD   dtStyle;
-#ifdef __NT__
-    DWORD   dtExtendedStyle;
-    WORD    dtItemCount;
-#else
-    BYTE    dtItemCount;
-#endif
-    WORD    dtX;
-    WORD    dtY;
-    WORD    dtCX;
-    WORD    dtCY;
-//  char    dtMenuName[];
-//  char    dtClassName[];
-//  char    dtCaptionText[];
-} _DLGTEMPLATE;
-
-typedef struct {
-    WORD    PointSize;
-//  char    szTypeFace[];
-} FONTINFO;
-
-typedef struct {
-#ifdef __NT__
-    DWORD   dtilStyle;
-    DWORD   dtExtendedStyle;
-#endif
-    WORD    dtilX;
-    WORD    dtilY;
-    WORD    dtilCX;
-    WORD    dtilCY;
-    WORD    dtilID;
-#ifdef __NT__
-    WORD    crap;
-#else
-    DWORD   dtilStyle;
-#endif
-//  char    dtilClass[];
-//  char    dtilText[];
-//  BYTE    dtilInfo;
-//  BYTE    dtilData;
-} _DLGITEMTEMPLATE;
-
-#include "poppck.h"
+#include "_windlg.h"
 
 extern GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
                        int dtcy, char *menuname, char *classname,

@@ -80,7 +80,7 @@ typedef struct {
 } _DLGEXITEMTEMPLATE;
 
 #if defined( __NT__ )
-    #include "pushpck1.h"
+    #include "poppck.h"
 #endif
 
 extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, short pointsize, char *typeface, short FontWeight, short FontItalic );
