@@ -364,7 +364,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     if( hookFileDlg ) {
-        FreeProcInstance( (FARPROC)wofn.lpfnHook );
+        (void)FreeProcInstance( (FARPROC)wofn.lpfnHook );
     }
 
     if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
