@@ -257,6 +257,10 @@ char *GetStrFromEdit( HWND hDlg, int id )
 }
 #endif
 
+#ifdef __NT__
+#define PATH_STATIC_CONTROL 1088
+#endif
+
 UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     UINT        ret;
@@ -280,8 +284,6 @@ UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( ret );
 }
-
-#define PATH_STATIC_CONTROL 1088
 
 int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 {
