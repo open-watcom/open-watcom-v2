@@ -61,10 +61,6 @@
 #include "toolbr.h"
 #include "guihint.h"
 
-#if !defined(MK_FP32)  &&  !defined(__WINDOWS_386__)
-    #define MK_FP32( a )        ( a )
-#endif
-
 #define GUI_IS_GUI      TRUE
 
 /* use 0-9 for os-specific menu constants */

@@ -33,9 +33,6 @@
 #include "guiwind.h"
 #include "guixutil.h"
 #include "guixhook.h"
-#if defined( TWIN )
-#include "ctl3d.h"
-#endif
 
 static  bool    (*ProcessMsg)(gui_window *, HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2, WPI_MRESULT *) = NULL;
 static  bool    (*IsMaximized)( gui_window * )          = NULL;
@@ -218,7 +215,7 @@ void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) 
 
 BOOL GUICtl3dSubclassCtl( HWND hwnd )
 {
-#if !defined( __OS2_PM__ ) && !defined( TWIN ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ ) && !defined(__QNX__)
     if( Ctl3dSubclassCtl != NULL ) {
         return( (*Ctl3dSubclassCtl)( hwnd ) );
     }
@@ -230,7 +227,7 @@ BOOL GUICtl3dSubclassCtl( HWND hwnd )
 
 BOOL GUICtl3dColorChange( void )
 {
-#if !defined( __OS2_PM__ ) && !defined( TWIN ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ ) && !defined(__QNX__)
     if( Ctl3dColorChange != NULL ) {
         return( (*Ctl3dColorChange)() );
     }
@@ -240,7 +237,7 @@ BOOL GUICtl3dColorChange( void )
 
 HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp )
 {
-#if !defined( __OS2_PM__ ) && !defined( TWIN ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ ) && !defined(__QNX__)
     if( Ctl3dCtlColorEx != NULL ) {
         return( (*Ctl3dCtlColorEx)( wm, wp, lp ) );
     }
