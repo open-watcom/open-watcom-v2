@@ -1047,7 +1047,6 @@ static char *FixupIncFileList( char *p, unsigned incfile_count )
 static void RestoreIncFileList( void )
 {
     if( PCHOldIncListValid ) {
-        FreeIncFileList();
         IncFileList = PCHOldIncFileList;
         PCHOldIncFileList = NULL;
     }
