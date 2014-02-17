@@ -345,20 +345,6 @@ void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
     }
 } /* _wpi_suspendthread */
 
-void _wpi_setmaxtracksize( WPI_MINMAXINFO _W386FAR *info, int width, int height )
-/*******************************************************************************/
-{
-    info->ptMaxSize.x = width;
-    info->ptMaxSize.y = height;
-} /* _wpi_setmaxtracksize */
-
-void _wpi_setmintracksize( WPI_MINMAXINFO _W386FAR *info, int width, int height )
-/*******************************************************************************/
-{
-    info->ptMinTrackSize.x = width;
-    info->ptMinTrackSize.y = height;
-} /* _wpi_setmaxtracksize */
-
 void _wpi_getbmphdrvalues( WPI_BITMAPINFOHEADER bmih, ULONG *size,
             int *cx, int *cy, short *planes, short *bc, int *comp,
             int *size_image, int *xpels, int *ypels, int *used, int *important )

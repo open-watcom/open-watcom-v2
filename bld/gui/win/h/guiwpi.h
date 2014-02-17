@@ -39,8 +39,7 @@
                 pparam )
 
     #define     _wpi_setmaxposition( info, pos_x, pos_y ) \
-        (info).ptMaxPosition.x = pos_x; \
-        (info).ptMaxPosition.y = pos_y;
+        (info)->ptMaxPosition.x = pos_x; (info)->ptMaxPosition.y = pos_y
     #define     _wpi_sethbrbackground( hwnd, brush ) SET_HBRBACKGROUND( hwnd, brush )
     #define     _wpi_loadicon( hinst, icon ) LoadIcon( hinst, icon )
     #define     _wpi_getsysicon( hinst, icon ) LoadIcon( hinst, icon )

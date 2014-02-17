@@ -96,8 +96,11 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
 
     #define _wpi_muldiv( a, b, c ) MulDiv( a, b, c )
 
-void _wpi_setmaxtracksize( WPI_MINMAXINFO _W386FAR *info, int width, int height );
-void _wpi_setmintracksize( WPI_MINMAXINFO _W386FAR *info, int width, int height );
+    #define _wpi_setmaxtracksize(info,width,height) \
+        info->ptMaxSize.x = width; info->ptMaxSize.y = height
+
+    #define _wpi_setmintracksize(info,width,height) \
+        info->ptMinTrackSize.x = width; info->ptMinTrackSize.y = height
 
     #define _wpi_setdoubleclicktime( rate ) SetDoubleClickTime( rate )
 

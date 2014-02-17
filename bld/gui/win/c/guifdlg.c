@@ -244,8 +244,7 @@ char *GetStrFromEdit( HWND hDlg, int id )
         return ( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length+1,
-                                      (LPARAM) (LPCSTR) cp);
+    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1, (LPARAM)(LPCSTR)cp );
 
     if( text_copied != text_length ) {
         // this is peculiar
@@ -258,15 +257,38 @@ char *GetStrFromEdit( HWND hDlg, int id )
 }
 #endif
 
+UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+{
+    UINT        ret;
+
+    wparam = wparam;
+    lparam = lparam;
+    hwnd = hwnd;
+    ret = FALSE;
+    switch( msg ) {
+  #if defined(__NT__)
+    case WM_DESTROY:
+        LastPath = GetStrFromEdit( hwnd, PATH_STATIC_CONTROL );
+        break;
+  #endif
+    case WM_INITDIALOG:
+        // We must call this to subclass the directory listbox even
+        // if the app calls Ctl3dAutoSubclass (commdlg bug)
+        GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        ret = TRUE;
+        break;
+    }
+    return( ret );
+}
+
 #define PATH_STATIC_CONTROL 1088
 
-static int _GUIGetFileName( gui_window *wnd, open_file_name *ofn, LPOFNHOOKPROCx fn )
+int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 {
     OPENFILENAME        wofn;
     bool                issave;
     int                 rc;
     unsigned            drive;
-    WPI_PROC            fp = NULL;
 #if defined(HAVE_DRIVES)
     unsigned            old_drive;
     unsigned            drives;
@@ -324,8 +346,7 @@ static int _GUIGetFileName( gui_window *wnd, open_file_name *ofn, LPOFNHOOKPROCx
     wofn.lpstrInitialDir = ofn->initial_dir;
     wofn.lpfnHook = (LPOFNHOOKPROC)NULL;
     if( hookFileDlg ) {
-        fp = _wpi_makeprocinstance( (FARPROCx)fn, GUIMainHInst );
-        wofn.lpfnHook = (LPOFNHOOKPROC)fp;
+        wofn.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, GUIMainHInst );
     }
 
 #if defined( HAVE_DRIVES )
@@ -340,8 +361,8 @@ static int _GUIGetFileName( gui_window *wnd, open_file_name *ofn, LPOFNHOOKPROCx
         rc = GetOpenFileName( &wofn );
     }
 
-    if( fp != NULL ) {
-        _wpi_freeprocinstance( fp );
+    if( hookFileDlg ) {
+        FreeProcInstance( (FARPROC)wofn.lpfnHook );
     }
 
     if( LastPath && ( !rc || !( ofn->flags & OFN_WANT_LAST_PATH ) ) ) {
@@ -362,35 +383,5 @@ static int _GUIGetFileName( gui_window *wnd, open_file_name *ofn, LPOFNHOOKPROCx
     }
     return( OFN_RC_FAILED_TO_INITIALIZE );
 } /* _GUIGetFileName */
-
-UINT CALLBACK OpenHook( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
-{
-    UINT        ret;
-
-    wparam = wparam;
-    lparam = lparam;
-    hwnd = hwnd;
-    ret = FALSE;
-    switch( msg ) {
-  #if defined(__NT__)
-    case WM_DESTROY:
-        LastPath = GetStrFromEdit( hwnd, PATH_STATIC_CONTROL );
-        break;
-  #endif
-    case WM_INITDIALOG:
-        // We must call this to subclass the directory listbox even
-        // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
-        ret = TRUE;
-        break;
-    }
-
-    return( ret );
-}
-
-int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
-{
-    return( _GUIGetFileName( wnd, ofn, OpenHook ) );
-}
 
 #endif

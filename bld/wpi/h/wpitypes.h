@@ -49,12 +49,6 @@
 #include "wi163264.h"
 #endif
 
-#ifdef __WINDOWS_386__
-    #define _W386FAR                    __far
-#else
-    #define _W386FAR
-#endif
-
 #define WPI_SIZEWINBMPFILEHDR           14
 #define WPI_SIZEWINBMPINFOHDR           40
 #define WPI_SIZEOS2BMPFILEHDR           78

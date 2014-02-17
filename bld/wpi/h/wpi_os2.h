@@ -328,8 +328,11 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
 
     #define _wpi_muldiv( a, b, c ) ((int)(((long)(a) * (long)(b)) / (long)(c)))
 
-extern void _wpi_setmaxtracksize( WPI_MINMAXINFO *info, int width, int height );
-extern void _wpi_setmintracksize( WPI_MINMAXINFO *info, int width, int height );
+    #define _wpi_setmaxtracksize(info,width,height) \
+        info->ptlMaxTrackSize.x = width; info->ptlMaxTrackSize.y = height
+
+    #define _wpi_setmintracksize(info,width,height) \
+        info->ptlMinTrackSize.x = width; info->ptlMinTrackSize.y = height
 
     #define _wpi_setdoubleclicktime( rate ) \
                             WinSetSysValue( HWND_DESKTOP, SV_DBLCLKTIME, rate )

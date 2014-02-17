@@ -115,7 +115,6 @@ void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, BOOL down )
 
 BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
-    WPI_MINMAXINFO _W386FAR *minmax;
     gui_window              *wnd;
     toolbarinfo             *toolbar;
     HMENU                   hmenu;
@@ -194,18 +193,16 @@ BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         }
         break;
     case WM_GETMINMAXINFO:
+        {
 #ifdef __WINDOWS_386__
-        minmax = (WPI_MINMAXINFO __far *)MK_FP32( (void *)lparam );
+            WPI_MINMAXINFO __far *minmax= (WPI_MINMAXINFO __far *)MK_FP32( (void *)lparam );
 #else
-        minmax = (WPI_MINMAXINFO *)lparam;
+            WPI_MINMAXINFO *minmax = (WPI_MINMAXINFO *)lparam;
 #endif
-        _wpi_setmintracksize( minmax, ( toolbar->info.border_size.x +
-                                     _wpi_getsystemmetrics( SM_CXFRAME ) ) * 2 +
-                                    toolbar->info.button_size.x,
-                                    ( toolbar->info.border_size.y +
-                                     _wpi_getsystemmetrics( SM_CYFRAME ) ) * 2 +
-                                     toolbar->info.button_size.y +
-                                     _wpi_getsystemmetrics( SM_CYCAPTION ) );
+            _wpi_setmintracksize( minmax, 
+                ( toolbar->info.border_size.x + _wpi_getsystemmetrics( SM_CXFRAME ) ) * 2 + toolbar->info.button_size.x,
+                ( toolbar->info.border_size.y + _wpi_getsystemmetrics( SM_CYFRAME ) ) * 2 + toolbar->info.button_size.y + _wpi_getsystemmetrics( SM_CYCAPTION ) );
+        }
         break;
     case WM_CLOSE :
         GUICloseToolBar( wnd );

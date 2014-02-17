@@ -448,8 +448,7 @@ static void DoSetWindowLongPtr( HWND hwnd, gui_window *wnd )
  * GUIXCreateWindow
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
-                       gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *parent )
 {
     DWORD               style;
     HMENU               hmenu;
@@ -851,15 +850,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     gui_coord           point;
     gui_coord           size;
     WPI_MRESULT         ret;
-    WPI_MINMAXINFO _W386FAR *info;
     WPI_RECT            rect;
     HWND                parent;
 #ifdef __WINDOWS_386__
-    CREATESTRUCT __far  *lpcs;
+    wmcreate_info __far *wmcreateinfo;
 #else
-    CREATESTRUCT FAR    *lpcs;
+    wmcreate_info       *wmcreateinfo;
 #endif
-    wmcreate_info _W386FAR *wmcreateinfo;
     gui_create_info     *createinfo;
     bool                use_defproc;
     unsigned            control_id;
@@ -875,11 +872,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     use_defproc = FALSE;
     if( msg == WM_CREATE ) {
 #ifdef __WINDOWS_386__
-        lpcs = ( CREATESTRUCT __far * )MK_FP32( (void *)lparam );
+        CREATESTRUCT __far *lpcs = (CREATESTRUCT __far *)MK_FP32( (void *)lparam );
+        wmcreateinfo = (wmcreate_info __far *)MK_FP32( _wpi_getcreateparms( lpcs ) );
 #else
-        lpcs = ( CREATESTRUCT FAR * )lparam;
+        CREATESTRUCT FAR *lpcs = (CREATESTRUCT FAR *)lparam;
+        wmcreateinfo = (wmcreate_info *)_wpi_getcreateparms( lpcs );
 #endif
-        wmcreateinfo = (wmcreate_info _W386FAR *)MK_FP32( _wpi_getcreateparms( lpcs ) );
         if ( wmcreateinfo != NULL ) {
             wnd = wmcreateinfo->wnd;
             createinfo = wmcreateinfo->info;
@@ -1031,14 +1029,19 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         return( GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam ) );
 #endif
     case WM_GETMINMAXINFO :
-        info = (WPI_MINMAXINFO _W386FAR *)MK_FP32( (void *)lparam );
-        ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-        if( wnd->root == NULLHANDLE ) {
-            parent = _wpi_getparent( hwnd );
-            _wpi_getclientrect( parent, &rect );
-            _wpi_setmaxposition( *info, 0, 0 );
-            _wpi_setmaxtracksize( info, _wpi_getwidthrect( rect ),
-                             _wpi_getheightrect( rect ) );
+        {
+#ifdef __WINDOWS_386__
+            WPI_MINMAXINFO __far *minmax= (WPI_MINMAXINFO __far *)MK_FP32( (void *)lparam );
+#else
+            WPI_MINMAXINFO *minmax = (WPI_MINMAXINFO *)lparam;
+#endif
+            ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
+            if( wnd->root == NULLHANDLE ) {
+                parent = _wpi_getparent( hwnd );
+                _wpi_getclientrect( parent, &rect );
+                _wpi_setmaxposition( minmax, 0, 0 );
+                _wpi_setmaxtracksize( minmax, _wpi_getwidthrect( rect ), _wpi_getheightrect( rect ) );
+            }
         }
         return( ret );
     case WM_ERASEBKGND:

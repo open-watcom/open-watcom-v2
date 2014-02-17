@@ -69,21 +69,16 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     return( TRUE );
 }
 
-static WPI_PROC _GUISubClassEditCombobox( HWND hwnd, WPI_ENUMPROCx fn )
+WPI_PROC GUISubClassEditCombobox( HWND hwnd )
 {
-    enum_info       e_info;
-    WPI_ENUMPROC    fp;
+    enum_info           e_info;
+    WPI_ENUMPROC        fp;
 
     e_info.success = FALSE;
-    fp = _wpi_makeenumprocinstance( fn, GUIMainHInst );
+    fp = _wpi_makeenumprocinstance( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
     _wpi_enumchildwindows( hwnd, fp, (LPARAM)&e_info );
     if( e_info.success ) {
         return( e_info.old );
     }
     return( NULL );
-}
-
-WPI_PROC GUISubClassEditCombobox( HWND hwnd )
-{
-    return( _GUISubClassEditCombobox( hwnd, GUISubClassEditComboboxEnumFunc ) );
 }

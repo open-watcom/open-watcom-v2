@@ -2460,20 +2460,6 @@ int _wpi_devicecapableinch( WPI_PRES pres, int what )
     return( (int)result );
 } /* _wpi_devicecapableinch */
 
-void _wpi_setmaxtracksize( WPI_MINMAXINFO *info, int width, int height )
-/**********************************************************************/
-{
-    info->ptlMaxTrackSize.x = (LONG)width;
-    info->ptlMaxTrackSize.y = (LONG)height;
-} /* _wpi_setmaxtracksize */
-
-void _wpi_setmintracksize( WPI_MINMAXINFO *info, int width, int height )
-/**********************************************************************/
-{
-    info->ptlMinTrackSize.x = (LONG)width;
-    info->ptlMinTrackSize.y = (LONG)height;
-} /* _wpi_setmintracksize */
-
 void _wpi_setwpiinst( HINSTANCE hinst, HMODULE module, WPI_INST *inst )
 /*********************************************************************/
 {

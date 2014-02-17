@@ -33,6 +33,12 @@
 
 #include "wprocmap.h"
 
+#if defined( __WINDOWS_386__ )
+#define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
+#else
+#define GetPtrGlobalLock(data) GlobalLock( data )
+#endif
+
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
 #if defined(__NT__) && !defined( TWIN )

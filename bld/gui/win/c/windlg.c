@@ -102,7 +102,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
     if( data == NULL ) return( NULL );
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    numbytes = GetPtrGlobalLock( data );
     *numbytes = (UINT)blocklen;
 
     /*
@@ -197,13 +197,13 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
                sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN( blocklen );
 
-    blocklen += *(UINT _ISFAR *)MK_FP32( GlobalLock( data ) );
+    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new == NULL ) return( NULL );
 
-    numbytes = (UINT _ISFAR *)MK_FP32( GlobalLock( new ) );
+    numbytes = GetPtrGlobalLock( new );
 
     /*
      * one more item...
@@ -254,11 +254,8 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
 {
     UINT        _ISFAR *numbytes;
 
-#ifdef __WINDOWS_386__
-    numbytes = (UINT __far *)MK_FP32( GlobalLock( data ) );
-#else
-    numbytes = (UINT _ISFAR *)GlobalLock( data );
-#endif
+    numbytes = GetPtrGlobalLock( data );
+
     // This next line is dangerous, for a couple of reasons.
     // 1. The 2 at the end should be sizeof( UINT ).
     // 2. There should be parentheses around the *numbytes, for code readability.

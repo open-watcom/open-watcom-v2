@@ -78,21 +78,15 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     return( TRUE );
 }
 
-static void _GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param, WPI_ENUMPROCx fn )
+extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
     WPI_ENUMPROC    fp;
     enum_info       info;
 
-    fp = _wpi_makeenumprocinstance( fn, GUIMainHInst );
+    fp = _wpi_makeenumprocinstance( GUIEnumChildWindowsEnumFunc, GUIMainHInst );
     info.parent = wnd;
     info.func = func;
     info.param = param;
     _wpi_enumchildwindows( wnd->hwnd, fp, (LPARAM)&info );
     _wpi_freeprocinstance( (WPI_PROC)fp );
-}
-
-
-extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
-{
-    _GUIEnumChildWindows( wnd, func, param, GUIEnumChildWindowsEnumFunc );
 }
