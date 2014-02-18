@@ -313,7 +313,7 @@ BOOL RegMemWndClass( HANDLE instance )
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (WNDPROC)MemDisplayProc;
+    wc.lpfnWndProc = GetWndProc( MemDisplayProc );
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
