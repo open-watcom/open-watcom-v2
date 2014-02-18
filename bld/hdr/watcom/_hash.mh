@@ -16,10 +16,7 @@
 :include cpponly.sp
 
 namespace std {
-  namespace tr1 {
-    
 
-  } // namespace tr1
 } // namespace std
 
 #endif

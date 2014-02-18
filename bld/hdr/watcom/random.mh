@@ -4,8 +4,7 @@
 :keep CPP_HDR
 :include crwatcnt.sp
 //
-// Description: This header is part of the C++ standard library extentions
-//              TR1 as currently defined in n1836
+// Description: This header is part of the C++ standard library.
 ///////////////////////////////////////////////////////////////////////////
 #ifndef _RANDOM_INCLUDED
 #define _RANDOM_INCLUDED
@@ -192,8 +191,6 @@ namespace _ow {
 
 namespace std {
 
-  namespace tr1 {
-
     template< class UIntType, UIntType a, UIntType c, UIntType m >
     class linear_congruential{
     public:
@@ -232,10 +229,10 @@ namespace std {
 
     // to do - specialise for 2^n - x where x is small and x is 0
 
-    typedef std::tr1::linear_congruential< std::tr1::uint32_t, 16807, 0, (1<<31)-1 > minstd_rand0;
-    typedef std::tr1::linear_congruential< std::tr1::uint32_t, 48271, 0, (1<<31)-1 > minstd_rand;
+    typedef std::linear_congruential< std::uint32_t, 16807, 0, (1<<31)-1 > minstd_rand0;
+    typedef std::linear_congruential< std::uint32_t, 48271, 0, (1<<31)-1 > minstd_rand;
 
-// ===========================================================================
+    // ===========================================================================
 
     template< class UIntType, int w, int n, int m, int r, UIntType a,
               int u, int s, UIntType b, int t, UIntType c, int l >
@@ -282,13 +279,13 @@ namespace std {
             //      uniform pseudorandom number generator"
             // Makoto Matsumoto and Takuji Nishimura 1998
 
-            // I wondered whether calculating blocks at a time is bad on
-            // modern processor because of unnecessary comparisons and jumps
-            // Little difference on p4 northwood and seems rather tetchy to
-            // differences in way coded/optimisation settings that change order
-            // of instruction/regs used
-            // Would be interested to see how it fairs on other processors (amd?)
-            // see bench/owstl
+            // I wondered whether calculating blocks at a time is bad on modern processor
+            // because of unnecessary comparisons and jumps Little difference on p4 northwood
+            // and seems rather tetchy to differences in way coded/optimisation settings that
+            // change order of instruction/regs used
+            //
+            // Would be interested to see how it fairs on other processors (amd?) see
+            // bench/owstl
 
             UIntType y;
             int z, i_1;
@@ -336,28 +333,25 @@ namespace std {
                               31,0x9908b0df,11,7,0x9d2c5680,
                               15,0xefc60000,18>  mt19937;
 
-  } // namespace tr1
-
 } // namespace std
 
 namespace _watcom {
 
     // to do - would like to add WELL generator
 
-    /* also see "tables of lenear congruential generators of different sizes
-       and good lattice structure" Pierre L'Ecuyer.
-       I guess we could create some statistical tests, try out a few and
-       provide some potetially useful ones here ? */
+    /* also see "tables of lenear congruential generators of different sizes and good lattice
+       structure" Pierre L'Ecuyer. I guess we could create some statistical tests, try out a few
+       and provide some potetially useful ones here ? */
 
-    typedef std::tr1::linear_congruential< std::tr1::uint32_t, 1588635695, 0, (1<<32)-5 > lcg325a;
-    typedef std::tr1::linear_congruential< std::tr1::uint64_t, 2862933555777941757, 0, (1<<64) > lcg64a;
-    typedef std::tr1::linear_congruential< std::tr1::uint32_t, 2891336453, 1, (1<<32) > lcg32;
-    typedef std::tr1::linear_congruential< std::tr1::uint32_t, 37769685, 1, (1<<31) > lcg31;
+    typedef std::linear_congruential< std::uint32_t, 1588635695, 0, (1<<32)-5 > lcg325a;
+    typedef std::linear_congruential< std::uint64_t, 2862933555777941757, 0, (1<<64) > lcg64a;
+    typedef std::linear_congruential< std::uint32_t, 2891336453, 1, (1<<32) > lcg32;
+    typedef std::linear_congruential< std::uint32_t, 37769685, 1, (1<<31) > lcg31;
     // to do
 
     // useful MT typedefs see Matsumoto & Nishimura 1998
     // w, n, m, r, a, u, s, b, t, c, l
-    typedef std::tr1::mersenne_twister< std::tr1::uint32_t, 32, 351, 175, 19,
+    typedef std::mersenne_twister< std::uint32_t, 32, 351, 175, 19,
         0xE4BD75F5, 11, 7, 0x655E5280, 15, 0xFFD58000, 17 > mt11213a;
     // to do
 

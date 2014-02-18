@@ -108,14 +108,14 @@ public:
     slist( size_type, T const &, A const & = A() );
     template< class InputIt > slist( InputIt f, InputIt l )//, A const & = A() )
         : mSize( 0 ), first( 0 )
-        { helper_assign( f, l, std::tr1::is_integral< InputIt >::type() ); }
+        { helper_assign( f, l, std::is_integral< InputIt >::type() ); }
     slist( slist<T,A> const & );
     //slist( slist&& );
     ~slist(){ clear(); }
     slist<T,A>& operator=( slist<T,A> const & );
     //slist<T,A>& operator=( slist<T,A> && );
     template < class InputIt > void assign( InputIt f, InputIt l )
-        { helper_assign( f, l, std::tr1::is_integral< InputIt >::type() ); }
+        { helper_assign( f, l, std::is_integral< InputIt >::type() ); }
     void assign( size_type, T const & );
     allocator_type get_allocator() const { allocator_type a(nmem); return( a ); }
 
@@ -152,12 +152,12 @@ public:
     void insert( const_iterator, size_type, T const & );
     template< class InputIt >
         void insert( const_iterator it, InputIt f, InputIt l )
-        { helper_insert( it, f, l, std::tr1::is_integral< InputIt >::type() ); }
+        { helper_insert( it, f, l, std::is_integral< InputIt >::type() ); }
     iterator insert_after( const_iterator, T const & ); //special for SLL
     void insert_after( const_iterator, size_type, T const & );
     template< class InputIt >
         void insert_after( const_iterator it, InputIt f, InputIt l )
-        { helper_insert_after( it, f, l, std::tr1::is_integral< InputIt >::type() ); }
+        { helper_insert_after( it, f, l, std::is_integral< InputIt >::type() ); }
 
     iterator erase( const_iterator );
     iterator erase( const_iterator, const_iterator );
@@ -496,13 +496,13 @@ private:
      * exception safety: strong (although standard says multi inserts don't have to be)
      */
     template< class InputIt >
-    void helper_assign( InputIt f, InputIt l, std::tr1::true_type )
+    void helper_assign( InputIt f, InputIt l, std::true_type )
     {
         //std::cout<<"true_type\n";
         assign( static_cast<size_type>(f), static_cast<T const>(l) );
     }
     template< class InputIt >
-    void helper_assign( InputIt f, InputIt l, std::tr1::false_type )
+    void helper_assign( InputIt f, InputIt l, std::false_type )
     {
         //std::cout<<"false_type\n";
         size_type c;
@@ -514,13 +514,13 @@ private:
         mSize = c;
     }
     template< class InputIt >
-    void helper_insert( const_iterator it, InputIt f, InputIt l, std::tr1::true_type )
+    void helper_insert( const_iterator it, InputIt f, InputIt l, std::true_type )
     {
         //std::cout<<"insert true\n";
         insert( it, static_cast<size_type>(f), static_cast<T const>(l) );
     }
     template< class InputIt >
-    void helper_insert( const_iterator cit, InputIt f, InputIt l, std::tr1::false_type )
+    void helper_insert( const_iterator cit, InputIt f, InputIt l, std::false_type )
     {
         //std::cout<<"insert false\n";
         size_type c;
@@ -538,13 +538,13 @@ private:
         mSize += c;
     }
     template< class InputIt >
-    void helper_insert_after( const_iterator it, InputIt f, InputIt l, std::tr1::true_type )
+    void helper_insert_after( const_iterator it, InputIt f, InputIt l, std::true_type )
     {
         //std::cout<<"insert after true\n";
         insert_after( it, static_cast<size_type>(f), static_cast<T const>(l) );
     }
     template< class InputIt >
-    void helper_insert_after( const_iterator cit, InputIt f, InputIt l, std::tr1::false_type )
+    void helper_insert_after( const_iterator cit, InputIt f, InputIt l, std::false_type )
     {
         //std::cout<<"insert after false\n";
         size_type c;
