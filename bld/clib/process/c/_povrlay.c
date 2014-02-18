@@ -29,5 +29,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
+#include "rtdata.h"
 
-int __p_overlay = 2;
+_WCRTDATA int __p_overlay = 2;

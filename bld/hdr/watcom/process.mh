@@ -86,6 +86,11 @@ _WCRTDATA extern int __p_overlay;
 #define P_NOWAITO   3
 #define _P_NOWAITO  3
 
+#if defined(__NT__)
+#define P_DETACH    4
+#define _P_DETACH   4
+#endif
+
 #define _OLD_P_OVERLAY  _P_OVERLAY
 
 /*

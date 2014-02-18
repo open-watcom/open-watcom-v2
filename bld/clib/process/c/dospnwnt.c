@@ -48,6 +48,14 @@
 #include "seterrno.h"
 #include "_process.h"
 
+#ifndef __NT__
+/* P_DETACH isn't supported on platforms other than NT right now.
+ * We'll define a dummy value here so nothing goes horribly wrong
+ * below.
+ */
+#define P_DETACH    0xFFFF
+#endif
+
 int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                                   CHAR_TYPE *envp, const CHAR_TYPE * const argv[] )
 {
@@ -59,21 +67,30 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
     memset( &sinfo, 0, sizeof( sinfo ) );
-    sinfo.wShowWindow = SW_NORMAL;
-
-    // When passing in Unicode environments, the OS may not know which code
-    // page to use when translating to MBCS in spawned program's startup
-    // code.  Result: Possible corruption of Unicode environment variables.
+    sinfo.cb = sizeof( sinfo );
+    
+    if(mode == P_DETACH) 
+        sinfo.wShowWindow = SW_HIDE;
+    else
+        sinfo.wShowWindow = SW_NORMAL;
+    
+    /* When passing in Unicode environments, the OS may not know which code
+     * page to use when translating to MBCS in spawned program's startup
+     * code.  Result: Possible corruption of Unicode environment variables.
+     */
     #ifdef __WIDECHAR__
-        #if defined(__AXP__) || defined(__PPC__)
-            osrc = CreateProcessW( NULL, cmdline, NULL, NULL, TRUE,
+        #ifdef  __NT__
+            /* If NT, call this directly right here because we need access to
+             * the STARTUPINFO structure
+             */
+            osrc = CreateProcessW( NULL, cmdline, NULL, NULL, TRUE, //(mode != P_DETACH),
                                    CREATE_UNICODE_ENVIRONMENT, envp,
                                    NULL, &sinfo, &pinfo );
         #else
-            osrc = __lib_CreateProcessW( cmdline, TRUE, envp, &pinfo );
+            osrc = __lib_CreateProcessW( cmdline, (mode != P_DETACH), envp, &pinfo );
         #endif
     #else
-        osrc = CreateProcessA( NULL, cmdline, NULL, NULL, TRUE, 0,
+        osrc = CreateProcessA( NULL, cmdline, NULL, NULL, (mode != _P_DETACH), 0,
                                envp, NULL, &sinfo, &pinfo );
     #endif
 
@@ -87,6 +104,7 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
         }
         return( __set_errno_dos( err ) );
     }
+
     if( mode == P_WAIT ) {
         if( WIN32_IS_WIN32S ) {
             // this is WIN32s
@@ -99,7 +117,7 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
                 }
             }
         } else {
-            // this is WIN32 or Windows95
+            /* this is WIN32 or Windows95 */
             if( WaitForSingleObject( pinfo.hProcess, INFINITE ) == 0 ) {
                 GetExitCodeProcess( pinfo.hProcess, &rc );
             } else {
@@ -107,6 +125,9 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
             }
         }
         CloseHandle( pinfo.hProcess );
+    } else if( mode == P_DETACH ) {
+        /* P_DETACH should just return 0 for success */
+        rc = 0;
     } else {
         /* no difference between P_NOWAIT and P_NOWAITO */
         rc = (int)pinfo.hProcess;
