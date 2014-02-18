@@ -65,10 +65,8 @@
 
 #ifdef __WINDOWS_386__
 #define GetPtrGlobalLock(data)  MK_FP32( GlobalLock( data ) )
-#define MEMCPY                  _fmemcpy
 #else
 #define GetPtrGlobalLock(data)  GlobalLock( data )
-#define MEMCPY                  memcpy
 #endif
 
 #ifdef __WINDOWS_386__
@@ -158,8 +156,10 @@ int AddLineToClipboard( char *data, int scol, int ecol )
     /*
      * copy line data and put to clipboard
      */
-    MEMCPY( ptr, &data[scol], len - 1 );
-    ptr[len - 1] = 0;
+    while( --len ) {
+        *ptr++ = data[scol++];
+    }
+    *ptr = '\0';
     GlobalUnlock( hglob );
     SetClipboardData( CF_TEXT, hglob );
     CloseClipboard();

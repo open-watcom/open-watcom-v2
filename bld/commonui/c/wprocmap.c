@@ -37,32 +37,32 @@
 FARPROC MakeDlgProcInstance( DLGPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 FARPROC MakeFontEnumProcInstance( FONTENUMPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 FARPROC MakeHookProcInstance( HOOKPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 FARPROC MakeOpenFileHookProcInstance( LPOFNHOOKPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 FARPROC MakeWndEnumProcInstance( WNDENUMPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 FARPROC MakeWndProcInstance( WNDPROCx fn, HINSTANCE instance )
 {
     instance = instance;
-    return( MakeProcInstance( (FARPROCx)fn, instance ) );
+    return( (FARPROC)fn );
 }
 WNDPROC GetWndProc( WNDPROCx fn )
 {
