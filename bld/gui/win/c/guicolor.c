@@ -206,17 +206,23 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 {
-#ifndef __OS2_PM__
-    CHOOSECOLOR choose;
-    WPI_PROC    func;
-    bool        ret;
-#if !defined(__NT__)
-    HINSTANCE   h;
-#endif
-#ifdef __WINDOWS_386__
-    HINDIR      hIndir;
-    DWORD       guiColoursAlias;
-#endif
+#ifdef __OS2_PM__
+    init_rgb = init_rgb;
+    new_rgb = new_rgb;
+    return( FALSE );
+#else
+    CHOOSECOLOR     choose;
+    bool            ret;
+ #if defined(__WINDOWS__)
+    HINSTANCE       h;
+  #ifdef __WINDOWS_386__
+    HINDIR          hIndir;
+    DWORD           guiColoursAlias;
+    FARPROC         func;
+  #else
+    BOOL (WINAPI *func)( LPCHOOSECOLOR );
+  #endif
+ #endif
 
     if( new_rgb == NULL ) {
         return( FALSE );
@@ -226,21 +232,18 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     choose.hInstance = (HWND)GUIMainHInst;
     choose.Flags |= CC_RGBINIT;
     choose.rgbResult = GETRGB( init_rgb );
-#ifndef __WINDOWS_386__
+ #ifndef __WINDOWS_386__
     choose.lpCustColors = GUIColours;
-#endif
+ #endif
     choose.lStructSize = sizeof( CHOOSECOLOR );
 
-#if defined(__NT__)
-    func = ChooseColor;
-#else
+ #if defined(__WINDOWS__)
     h = LoadLibrary( "COMMDLG.DLL" );
     if( (UINT)h < 32 ) {
         return( FALSE );
     }
+  #ifdef __WINDOWS_386__
     func = GetProcAddress( h, "ChooseColor" );
-#endif
-#ifdef __WINDOWS_386__
     hIndir = GetIndirectFunctionHandle( func, INDIR_PTR, INDIR_ENDLIST );
     if( hIndir == NULL ) {
         FreeLibrary( h );
@@ -252,22 +255,19 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
     if( guiColoursAlias != NULL ) {
         FreeAlias16( guiColoursAlias );
     }
-#else
-    /* was missing WINAPI */
-    ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose );
-#endif
-#if !defined(__NT__)
+  #else
+    func = (BOOL(WINAPI*)(LPCHOOSECOLOR))GetProcAddress( h, "ChooseColor" );
+    ret = ( func( &choose ) != 0 );
+  #endif
     FreeLibrary( h );
-#endif
+ #else
+    ret = ( ChooseColor( &choose ) != 0 );
+ #endif
 
     if( ret ) {
         FillInRGB( choose.rgbResult, new_rgb );
     }
     return( ret );
-#else
-    init_rgb = init_rgb;
-    new_rgb = new_rgb;
-    return( FALSE );
 #endif
 }
 
@@ -299,7 +299,7 @@ void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 
 HBRUSH GUIFreeBKBrush( gui_window * wnd )
 {
-    HBRUSH brush;
+    HBRUSH brush = NULLHANDLE;
 
     if( wnd->bk_brush != NULLHANDLE ) {
         /* make sure bk_brush is not the currently the background brush
@@ -308,8 +308,6 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
         if( wnd->hwnd != NULLHANDLE ) {  /* NULL if create failed */
             brush = SET_HBRBACKGROUND( wnd->hwnd, NULL );
         }
-#else
-        brush = NULLHANDLE;
 #endif
         _wpi_deletebrush( wnd->bk_brush );
         wnd->bk_brush = NULLHANDLE;
