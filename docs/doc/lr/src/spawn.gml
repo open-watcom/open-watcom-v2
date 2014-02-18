@@ -151,6 +151,12 @@ QNX.
 This is equivalent to calling the appropriate
 .kw exec...
 function.
+.term P_DETACH
+Launches the child process in the background without access to the keyboard or
+console.
+.if '&machsys' ne 'QNX' .do begin
+This option is supported under only Windows NT.
+.do end
 .endterm
 .*==========================================
 .im execcom spawn
@@ -372,6 +378,10 @@ is the process id of the child process.
 The exit code cannot be obtained for a process spawned with
 .kw P_NOWAITO
 .ct .li .
+.term P_DETACH
+then the return value from
+.idbold &func.
+is zero (0) if successful.
 .endterm
 .np
 When an error is detected while invoking the indicated program, &func

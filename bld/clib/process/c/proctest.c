@@ -38,7 +38,7 @@
 #include <signal.h>
 
 
-char ProgramName[128];                          /* executable filename */
+char ProgramName[512];                          /* executable filename */
 int NumErrors = 0;                              /* number of errors */
 
 
@@ -213,6 +213,22 @@ int main( int argc, char * const argv[] )
 
         rc = spawnvp( P_WAIT, ProgramName, child_args );
         VERIFY( rc == CHILD_RC );
+
+#ifdef __NT__
+
+        rc = spawnv( P_DETACH, ProgramName, child_args );
+        VERIFY( rc == 0 );
+
+#endif
+
+#if defined(__NT__) || defined(__OS2__)
+
+        rc = spawnv( P_NOWAIT, ProgramName, child_args );
+        rc = cwait( &status, rc, WAIT_CHILD );
+        VERIFY( (status & 0xff) == 0 );
+        VERIFY( (status >> 8) == CHILD_RC );
+
+#endif
 
         /* Check inherited output redirection */
         handle_out = dup( STDOUT_FILENO );

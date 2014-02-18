@@ -65,6 +65,28 @@ c_dbg_flags = -d2
 a_dbg_flags = -d1
 !endif
 
+.before
+!ifdef __UNIX__
+    @set WATCOM=$(%OWRELROOT)
+    @set INCLUDE=
+    @set DOS_INCLUDE=$(%WATCOM)/h
+    @set NT_INCLUDE=$(%WATCOM)/h
+    @set OS2_INCLUDE=$(%WATCOM)/h
+    @set QNX_INCLUDE=$(%WATCOM)/qh
+    @set LINUX_INCLUDE=$(%WATCOM)/lh
+    @set WINDOWS_INCLUDE=$(%WATCOM)/h/win:$(%WATCOM)/h
+    @set PATH=$(%WATCOM)/binl:$(%WATCOM)/binw:$(%PATH)
+!else
+    @set WATCOM=$(%OWRELROOT)
+    @set INCLUDE=
+    @set DOS_INCLUDE=$(%WATCOM)\h
+    @set NT_INCLUDE=$(%WATCOM)\h
+    @set OS2_INCLUDE=$(%WATCOM)\h
+    @set QNX_INCLUDE=$(%WATCOM)\qh
+    @set LINUX_INCLUDE=$(%WATCOM)\lh
+    @set WINDOWS_INCLUDE=$(%WATCOM)\h\win;$(%WATCOM)\h
+    @set PATH=$(%WATCOM)\binnt;$(%WATCOM)\binw;$(%PATH)
+!endif
 
 .erase
 .extensions:
@@ -76,7 +98,7 @@ defwin=-bw
 
 comp_i86  = -fpc
 comp_axp  =
-comp_opts = -wx -we -oaxt -d1 -zq -fo=$^*.obj
+comp_opts = -wx -we -oaxt -d1 -zq -fo=$^*.obj $(inc_path)
 link_i86  = DEBUG dwarf
 link_axp  = DEBUG codeview
 link_opts = NAME $^* OPTION quiet
@@ -103,8 +125,6 @@ dosexes += pls_3s.exe pls_3r.exe
 !ifdef %TEST_X32
 dosexes += x32_3s.exe x32_3r.exe
 !endif
-
-
 
 exes = &
     $(dosexes) $(cwexes) $(d4gexes) $(rdosexes) $(rdosdevexes) $(winexes) $(os2exes) $(os3exes) $(wntexes) $(wntaxpexes) # $(wntwexes)
