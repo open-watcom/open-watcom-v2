@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// FILE: unordere (Definition of std::tr1::unordered_set and unordered_map)
+// FILE: unordere (Definition of std::unordered_set and std::unordered_map)
 //
 :keep CPP_HDR
 :include crwatcnt.sp
@@ -20,10 +20,7 @@
 #endif
 
 namespace std {
-  namespace tr1 {
-    
 
-  } // namespace tr1
 } // namespace std
 
 #endif

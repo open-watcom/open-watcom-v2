@@ -126,7 +126,7 @@ namespace std {
         {
             sentinel = link_allocator.allocate( 1 );
             sentinel->next = sentinel->previous = sentinel;
-            helper_assign( first, last, tr1::is_integral<InputIterator>::type( ) );
+            helper_assign( first, last, is_integral<InputIterator>::type( ) );
         }
     
         list( const list & );
@@ -138,7 +138,7 @@ namespace std {
         void assign( InputIterator first, InputIterator last )
         {
             clear( );
-            helper_assign( first, last, tr1::is_integral<InputIterator>::type( ) );
+            helper_assign( first, last, is_integral<InputIterator>::type( ) );
         }
 
         allocator_type get_allocator( ) const;
@@ -167,7 +167,7 @@ namespace std {
         template< class InputIterator >
         void insert( iterator it, InputIterator first, InputIterator last )
         {
-            helper_insert( it, first, last, tr1::is_integral<InputIterator>::type( ) );
+            helper_insert( it, first, last, is_integral<InputIterator>::type( ) );
         }
     
         iterator erase( iterator it );
@@ -216,7 +216,7 @@ namespace std {
         // helper_assign( InputIterator, InputIterator, true_type )
         // ********************************************************
         template< class InputIterator >
-        void helper_assign( InputIterator first, InputIterator last, tr1::true_type )
+        void helper_assign( InputIterator first, InputIterator last, true_type )
         {
             for( size_type i = 0; i < static_cast< size_type >( first ); i++ ) {
                 push_back( static_cast< value_type >( last ) );
@@ -226,7 +226,7 @@ namespace std {
         // helper_insert( iterator, InputIterator, InputIterator, true_type )
         // ******************************************************************
         template< class InputIterator >
-        void helper_insert( iterator it, InputIterator first, InputIterator last, tr1::true_type )
+        void helper_insert( iterator it, InputIterator first, InputIterator last, true_type )
         { 
             for( size_type n = static_cast< size_type >( first ); n > 0; n-- ) {
                 push( static_cast< node * >( it.current ),
@@ -237,7 +237,7 @@ namespace std {
         // helper_assign( InputIterator, InputIterator, false_type )
         // *********************************************************
         template< class InputIterator >
-        void helper_assign( InputIterator first, InputIterator last, tr1::false_type )
+        void helper_assign( InputIterator first, InputIterator last, false_type )
         {
             for( ; first != last; ++first ) push_back( *first );
         }
@@ -245,7 +245,7 @@ namespace std {
         // helper_insert( iterator, InputIterator, InputIterator, false_type )
         // *******************************************************************
         template< class InputIterator >
-        void helper_insert( iterator it, InputIterator first, InputIterator last, tr1::false_type )
+        void helper_insert( iterator it, InputIterator first, InputIterator last, false_type )
         {
             for( ; first != last; ++first, ++it ) it = insert( it, *first );
         }

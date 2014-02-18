@@ -4,15 +4,15 @@
 :keep CPP_HDR
 :include crwatcnt.sp
 //
-// Description: This header is part of the C++ standard library. It defines
-//              a double ended queue template that provides random access
-//              to its elements yet amortized O(1) time push/pop operations
-//              on *both* ends.
-//              References to objects are *not* invalidated with an insert
-//              operation.
-//              Extention: extra template parameter PageSize allow
-//              number of objects per block of allocations to be adjusted
-//              must be power of 2 because of assumptions in math in operations
+// Description: This header is part of the C++ standard library. It defines a double ended queue
+//              template that provides random access to its elements yet amortized O(1) time
+//              push/pop operations on *both* ends.
+//
+//              References to objects are *not* invalidated with an insert operation.
+//
+//              Extension: extra template parameter PageSize allow number of objects per block
+//              of allocations to be adjusted must be power of 2 because of assumptions in math
+//              in operations
 ///////////////////////////////////////////////////////////////////////////
 #ifndef _DEQUE_INCLUDED
 #define _DEQUE_INCLUDED
@@ -203,7 +203,7 @@ namespace std {
     template< class InputIt >
     void insert( iterator pos, InputIt first, InputIt last )
     {
-        helper_insert( pos, first, last, tr1::is_integral<InputIt>::type() );
+        helper_insert( pos, first, last, is_integral<InputIt>::type() );
     }
     iterator erase( iterator position );
     iterator erase( iterator first, iterator last );
@@ -267,7 +267,7 @@ namespace std {
     // overloaded helpers get called by insert(many) depending on iterator type
     // int type
     template< class InputIt1, class InputIt2 >
-    void insert_helper( iterator pos, InputIt1 first, InputIt2 last, tr1::true_type )
+    void insert_helper( iterator pos, InputIt1 first, InputIt2 last, true_type )
     {
         insert( pos, static_cast<size_type>(first), static_cast<value_type>(last) );
     }
@@ -275,7 +275,7 @@ namespace std {
     // to do: specialise for iterator of type input it (make temp copy of elements
     // in order to count them)
     template< class It1, class It2 >
-    void insert_helper( iterator pos, It1 first, It2 last, tr1::false_type )
+    void insert_helper( iterator pos, It1 first, It2 last, false_type )
     {/*
         // if at begin
         

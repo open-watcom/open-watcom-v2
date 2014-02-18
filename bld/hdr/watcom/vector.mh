@@ -108,19 +108,19 @@ public:
     {
         buffer = alloc( 1, buf_length );
         vec_length = 0;
-        helper_assign( first, last, tr1::is_integral<InputIterator>::type() );
+        helper_assign( first, last, is_integral<InputIterator>::type() );
     }
 
     template< class InputIterator >
     void assign( InputIterator first, InputIterator last )
     {
-        helper_assign( first, last, tr1::is_integral<InputIterator>::type() );
+        helper_assign( first, last, is_integral<InputIterator>::type() );
     }
 
     template< class Integral >
     void helper_assign( Integral count,
                         Integral value,
-                        tr1::true_type )
+                        true_type )
     {
         vector temp;
         for( Integral i = 0; i < count; ++i )
@@ -131,7 +131,7 @@ public:
     template< class InputIterator >
     void helper_assign( InputIterator first,
                         InputIterator last,
-                        tr1::false_type )
+                        false_type )
     {
         vector temp;
         while( first != last ) {
@@ -147,14 +147,14 @@ public:
         helper_insert( position,
                        first,
                        last,
-                       tr1::is_integral<InputIterator>::type( ) );
+                       is_integral<InputIterator>::type( ) );
     }
     
     template< class Integral >
     void helper_insert( iterator position,
                         Integral count,
                         Integral value,
-                        tr1::true_type )
+                        true_type )
     {
         insert( position,
                 static_cast<size_type>( count ),
@@ -165,7 +165,7 @@ public:
     void helper_insert( iterator position,
                         InputIterator first,
                         InputIterator last,
-                        tr1::false_type )
+                        false_type )
     {
         while( first != last ) {
             insert( position, *first );
