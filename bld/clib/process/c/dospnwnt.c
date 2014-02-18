@@ -83,14 +83,14 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
             /* If NT, call this directly right here because we need access to
              * the STARTUPINFO structure
              */
-            osrc = CreateProcessW( NULL, cmdline, NULL, NULL, TRUE, //(mode != P_DETACH),
+            osrc = CreateProcessW( NULL, cmdline, NULL, NULL, (mode != P_DETACH),
                                    CREATE_UNICODE_ENVIRONMENT, envp,
                                    NULL, &sinfo, &pinfo );
         #else
             osrc = __lib_CreateProcessW( cmdline, (mode != P_DETACH), envp, &pinfo );
         #endif
     #else
-        osrc = CreateProcessA( NULL, cmdline, NULL, NULL, (mode != _P_DETACH), 0,
+        osrc = CreateProcessA( NULL, cmdline, NULL, NULL, (mode != P_DETACH), 0,
                                envp, NULL, &sinfo, &pinfo );
     #endif
 
