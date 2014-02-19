@@ -657,7 +657,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
     rec->location = 0;
     rec->big = 0;
     rec->rom = 0;
-    rec->need_base_set = 1;
+    rec->need_base_set = TRUE;
     rec->data_in_code = FALSE;
     rec->start_data_in_code = FALSE;
     rec->data_ptr_in_code = FALSE;
@@ -906,7 +906,7 @@ extern segment_id DbgSegDef( const char *seg_name, const char *seg_class, int se
     rec->nidx = GetNameIdx( seg_name, "", TRUE );
     rec->location = 0;
     rec->big = 0;
-    rec->need_base_set = 1;
+    rec->need_base_set = TRUE;
     rec->data_ptr_in_code = FALSE;
     rec->data_in_code = FALSE;
     rec->start_data_in_code = FALSE;
@@ -1234,7 +1234,7 @@ extern  bool    AskSegROM( segment_id id )
     if( id < 0 )
         return( FALSE );
     rec = AskSegIndex( id );
-    return( rec->rom );
+    return( rec->rom != 0 );
 }
 
 
@@ -1482,8 +1482,8 @@ static  void    OutLEDataStart( bool iterated )
 }
 
 
-static  void    CheckLEDataSize( int max_size, bool need_init )
-/*************************************************************/
+static  void    CheckLEDataSize( unsigned max_size, bool need_init )
+/******************************************************************/
 {
     long_offset     start;
     unsigned        used;
@@ -1528,7 +1528,7 @@ extern  void    SetUpObj( bool is_data )
     /* so that a call will always fit */
     CheckLEDataSize( 4 * sizeof( offset ), FALSE );
     if( CurrSeg->exec ) {
-        old_data = CurrSeg->data_in_code;
+        old_data = ( CurrSeg->data_in_code != 0 );
         CurrSeg->data_in_code = is_data;
         if( is_data != old_data ) {
             if( is_data ) {
@@ -1694,10 +1694,10 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
 static  void    FiniTarg( void )
 /******************************/
 {
-    union{
+    union {
         offset           s;
         long_offset      l;
-    }size;
+    } size;
     byte        attr;
     index_rec   *rec;
     object      *obj;
@@ -3042,8 +3042,8 @@ extern  unsigned        SavePendingLine( unsigned new )
 static  void    OutConcat( char *name1, char *name2, array_control *dest )
 /************************************************************************/
 {
-    int len1;
-    int len2;
+    unsigned    len1;
+    unsigned    len2;
 
     len1 = Length( name1 );
     len2 = Length( name2 );
@@ -3151,8 +3151,8 @@ extern  bool    NeedBaseSet( void )
 {
     bool        need;
 
-    need = CurrSeg->need_base_set;
-    CurrSeg->need_base_set = 0;
+    need = ( CurrSeg->need_base_set != 0 );
+    CurrSeg->need_base_set = FALSE;
     return( need );
 }
 

@@ -433,7 +433,7 @@ extern  void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, signed_32 lo, signed_3
     dim->lo = lo;
     dim->hi = hi;
     dim->idx = idx;
-    AddDim( ar, (dim_any *) dim );
+    AddDim( ar, (dim_any *)dim );
 }
 
 extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
@@ -444,8 +444,7 @@ extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
     dim_var *dim;
 
 #ifndef NDEBUG
-    EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe,
-             num_elts_tipe);
+    EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe, num_elts_tipe);
 #endif
     dim = CGAlloc( sizeof( *dim ) );
     dim->entry.kind = DIM_VAR;
@@ -453,7 +452,7 @@ extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
     dim->off = off;
     dim->lo_bound_tipe = lo_bound_tipe;
     dim->num_elts_tipe = num_elts_tipe;
-    AddDim( ar, (dim_any *) dim );
+    AddDim( ar, (dim_any *)dim );
     ar->is_variable = TRUE;
 }
 

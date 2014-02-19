@@ -229,7 +229,7 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     call->type_class = WD;
     call->operands[CALL_OP_USED] = p1;
     call->operands[CALL_OP_USED2] = p2;
-    call->operands[CALL_OP_ADDR]= AllocMemory( lbl, 0, CG_LBL, WD );
+    call->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, WD );
     call->result = NULL;
     call->num_operands = 2;     /* special case for OP_CALL*/
     HW_TurnOn( reg, ReturnAddrReg() );

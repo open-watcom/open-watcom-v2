@@ -1975,14 +1975,21 @@ static  void    put_lay_letter_unsupported( FILE * layfile )
 /***************************************************************************/
 /*   output layout data to file                                            */
 /***************************************************************************/
-static  void    put_layout( char * name, layout_data * lay )
+static  void    put_layout( char * in_name, layout_data * lay )
 {
     static  FILE    *   layfile;
     symsub          *   sversion;
+#if defined( __UNIX__ )
+    char                fname[_MAX_PATH];
 
-    fopen_s( &layfile, name, "uwt" );
+    strcpy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
+
+    fopen_s( &layfile, in_name, "uwt" );
     if( layfile == NULL ) {
-        out_msg( "open error %s\n", name );
+        out_msg( "open error %s\n", in_name );
         return;
     }
 

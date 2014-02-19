@@ -41,7 +41,7 @@ extern  void            UnLinkInstr(ins_entry*);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  oc_class        PrevClass(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 
 
 extern  void    RetAftrCall( ins_entry *ret_instr ) {

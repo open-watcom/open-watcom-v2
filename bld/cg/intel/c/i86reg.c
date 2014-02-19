@@ -51,15 +51,13 @@ extern  int             SizeDisplayReg( void );
 extern  hw_reg_set      AllCacheRegs( void );
 
 /* forward declaration */
-extern  void            UpdateReturn( call_state *state, type_def *tipe,
-                                      type_class_def class, aux_handle aux );
+extern  void            UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux );
 
 #define _NPX( x ) ( !( (x) & ROUTINE_NO_8087_RETURNS ) )
 
-extern  type_class_def  CallState( aux_handle aux,
-                                  type_def *tipe, call_state *state ) {
-/*********************************************************************/
-
+extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
+/****************************************************************************************/
+{
     call_class          cclass;
     type_class_def      class;
     uint                i;
@@ -207,10 +205,9 @@ extern  type_class_def  CallState( aux_handle aux,
 }
 
 
-extern  void    UpdateReturn( call_state *state, type_def *tipe,
-                              type_class_def class, aux_handle aux ) {
-/********************************************************************/
-
+extern  void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
+/*****************************************************************************************************/
+{
     hw_reg_set  normal;
 
     if( _FPULevel( FPU_87 ) && _NPX( state->attr )

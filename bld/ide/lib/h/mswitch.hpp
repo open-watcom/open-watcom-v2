@@ -56,8 +56,10 @@ WCLASS MSwitch : public WObject
         virtual void displayText( WString& s );
         bool hasText() { return( _text.size() > 0 ); }
         bool isSetable() { return( _text.size() > 0 && _text[0] != ' ' ); }
-        bool isMaskEqual( WString& mask );
-
+        bool isTagEqual( WString& tag, int kludge=0 );
+#if CUR_CFG_VERSION > 4
+        bool isTagEqual( MTool *tool, WString& mask, int kludge=0 );
+#endif
         MSwitch* addSwitch( WVList& list, const char* mask );
         virtual void getText( WString& str, WVList* states, SwMode mode ) = 0;
         virtual void getText( WString& str, MState* state ) = 0;

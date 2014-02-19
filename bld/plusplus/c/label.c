@@ -40,6 +40,9 @@
 #include "initdefs.h"
 #include "pcheader.h"
 
+#define labelBlockPCHRead(x)    labelBlockMapIndex( x, (void *)(pointer_int)PCHReadCVIndex() )
+#define labelBlockPCHWrite(x,y) PCHWriteCVIndex( (cv_index)(pointer_int)labelBlockGetIndex(x,y) );
+
 typedef struct blk_init BLK_INIT;
 struct blk_init {               // BLK_INIT -- describes blocks for init. dcls
     BLK_INIT    *next;          // - next at this level (in a ring)
@@ -924,6 +927,16 @@ static void labelFini(          // COMPLETION OF LABLES (PGM)
 
 INITDEFN( labels, labelInit, labelFini );
 
+static BLK_INIT *labelBlockGetIndex( carve_t carve, BLK_INIT *e )
+{
+    return( CarveGetIndex( carve, e ) );
+}
+
+static BLK_INIT *labelBlockMapIndex( carve_t carve, BLK_INIT *i )
+{
+    return( CarveMapIndex( carve, i ) );
+}
+
 void *LabelBlockOpenFindZap( LAB_MEM *lm, CGFILE_INS *p )
 {
     BLK_INIT *h;
@@ -933,13 +946,13 @@ void *LabelBlockOpenFindZap( LAB_MEM *lm, CGFILE_INS *p )
         if( h->open_zap || h->dead_zap ) {
             if( p->block != h->open_ins.block ) continue;
             if( p->offset != h->open_ins.offset ) continue;
-            return( CarveGetIndex( lm->carve, h ) );
+            return( labelBlockGetIndex( lm->carve, h ) );
         }
         RingIterBeg( h->contains, b ) {
             if( b->open_zap || b->dead_zap ) {
                 if( p->block != b->open_ins.block ) continue;
                 if( p->offset != b->open_ins.offset ) continue;
-                return( CarveGetIndex( lm->carve, b ) );
+                return( labelBlockGetIndex( lm->carve, b ) );
             }
         } RingIterEnd( b );
     } RingIterEnd( h )
@@ -950,7 +963,7 @@ CGFILE_INS *LabelBlockOpenAdjustZap( LAB_MEM *lm, void *h )
 {
     BLK_INIT *b;
 
-    b = CarveMapIndex( lm->carve, h );
+    b = labelBlockMapIndex( lm->carve, h );
     if( b == NULL ) {
         return( NULL );
     }
@@ -986,11 +999,11 @@ static void saveBLK_INIT( void *e, carve_walk_base *d )
     }
     DbgVerify( b->try_id == NULL, "invalid label detected during PCH write" );
     save_next = b->next;
-    b->next = CarveGetIndex( d->extra, save_next );
+    b->next = labelBlockGetIndex( d->extra, save_next );
     save_containing = b->containing;
-    b->containing = CarveGetIndex( d->extra, save_containing );
+    b->containing = labelBlockGetIndex( d->extra, save_containing );
     save_contains = b->contains;
-    b->contains = CarveGetIndex( d->extra, save_contains );
+    b->contains = labelBlockGetIndex( d->extra, save_contains );
     save_scope = b->scope;
     b->scope = ScopeGetIndex( save_scope );
     save_first_init = b->first_init;
@@ -1033,7 +1046,7 @@ void LabelPCHWrite( LAB_MEM *p )
     auto carve_walk_base data;
 
     PCHWriteCVIndex( CarveLastValidIndex( p->carve ) );
-    PCHWriteCVIndex( (cv_index)(pointer_int)CarveGetIndex( p->carve, p->blk_hdr ) );
+    labelBlockPCHWrite( p->carve, p->blk_hdr );
     data.extra = p->carve;
     CarveWalkAllFree( p->carve, markFreeBLK_INIT );
     CarveWalkAll( p->carve, saveBLK_INIT, &data );
@@ -1047,13 +1060,13 @@ void LabelPCHRead( LAB_MEM *p )
 
     p->carve = CarveRestart( p->carve );
     CarveMapOptimize( p->carve, PCHReadCVIndex() );
-    p->blk_hdr = CarveMapIndex( p->carve, (void *)(pointer_int)PCHReadCVIndex() );
+    p->blk_hdr = labelBlockPCHRead( p->carve );
     CarveInitStart( p->carve, &data );
     for( ; (b = PCHReadCVIndexElement( &data )) != NULL; ) {
         PCHReadVar( *b );
-        b->next = CarveMapIndex( p->carve, b->next );
-        b->containing = CarveMapIndex( p->carve, b->containing );
-        b->contains = CarveMapIndex( p->carve, b->contains );
+        b->next = labelBlockMapIndex( p->carve, b->next );
+        b->containing = labelBlockMapIndex( p->carve, b->containing );
+        b->contains = labelBlockMapIndex( p->carve, b->contains );
         b->scope = ScopeMapIndex( b->scope );
         b->first_init = SymbolMapIndex( b->first_init );
         b->sym = SymbolMapIndex( b->sym );

@@ -107,8 +107,7 @@ extern  void    GenObject( void )
                 align = DepthAlign( blk->depth );
             }
             CodeLabel( blk->label, align );
-            if( ( blk->edge[ 0 ].flags & BLOCK_LABEL_DIES ) != 0
-              && BlocksUnTrimmed ) {
+            if( ( blk->edge[ 0 ].flags & BLOCK_LABEL_DIES ) != 0 && BlocksUnTrimmed ) {
                 TellCondemnedLabel( blk->label );
             }
         }
@@ -118,7 +117,7 @@ extern  void    GenObject( void )
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_NOP
               &&( (ins->flags.nop_flags & NOP_SOURCE_QUEUE )
-                ||(ins->flags.nop_flags == NOP_DBGINFO   ))) // an end block
+                ||(ins->flags.nop_flags == NOP_DBGINFO))) // an end block
             {
                 last_line = DumpLineNum(ins->head.line_num, last_line, TRUE);
             } else {
@@ -733,7 +732,9 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
     case SELECT:
         for( i = 0; i < blk->targets; i++ ) {
             best = blk->edge[ i ].destination.u.blk;
-            if( !_Placed( best ) ) return( best );
+            if( !_Placed( best ) ) {
+                return( best );
+            }
         }
         best = NULL;
         break;

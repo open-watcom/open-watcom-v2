@@ -102,7 +102,7 @@ static  name    *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_valu
     last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
-            if( new_c->c.int_value == low && new_c->c.int_value_2 == high ) {
+            if( (unsigned_32)new_c->c.int_value == low && (unsigned_32)new_c->c.int_value_2 == high ) {
                 if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;

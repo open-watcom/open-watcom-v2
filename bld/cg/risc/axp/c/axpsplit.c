@@ -65,11 +65,11 @@ extern  instruction     *rLOAD_1( instruction *ins ) {
     instruction         *first_ins;
     name                *mem;
 
-    // assert( ins->operands[ 0 ]->n.class == N_INDEXED );
+    // assert( ins->operands[0]->n.class == N_INDEXED );
     assert( ins->result->n.class == N_REGISTER );
     assert( ins->type_class == I1 || ins->type_class == U1 );
 
-    mem = OffsetMem( ins->operands[ 0 ], 0, U8 );
+    mem = OffsetMem( ins->operands[0], 0, U8 );
     temp_2 = AllocTemp( U8 );
     temp_1 = AllocTemp( I8 );
     // ldq_u x(rn) -> temp_1
@@ -99,14 +99,14 @@ extern  instruction     *rSTORE_1( instruction *ins ) {
     instruction         *new_ins;
 
     // assert( ins->result->n.class == N_INDEXED );
-    assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+    assert( ins->operands[0]->n.class == N_REGISTER );
     assert( ins->type_class == I1 || ins->type_class == U1 );
 
     temp_1 = AllocTemp( U8 );
     temp_2 = AllocTemp( U8 );
     temp_3 = AllocTemp( U8 );
     index = OffsetMem( ins->result, 0, U8 );
-    byte_loc = ins->operands[ 0 ];
+    byte_loc = ins->operands[0];
     // expansion for mov r1 -> x(r2) is:
     // lda x(r2) -> temp_1
     // ldq_u x(r2) -> temp_2
@@ -143,10 +143,10 @@ extern  instruction     *rLOAD_2( instruction *ins ) {
     name                *result;
 
     assert( ins->result->n.class == N_REGISTER );
-    assert( ins->operands[ 0 ]->n.class == N_INDEXED || ins->operands[ 0 ]->n.class == N_TEMP );
+    assert( ins->operands[0]->n.class == N_INDEXED || ins->operands[0]->n.class == N_TEMP );
     // FIXME: This assumes shorts are two-byte aligned
     // Microsoft appears to be using some evil alternate scheme.
-    mem = OffsetMem( ins->operands[ 0 ], 0, U8 );
+    mem = OffsetMem( ins->operands[0], 0, U8 );
     result = AllocTemp( U8 );
     temp = AllocTemp( U8 );
     // mov U2 k(rn) -> rm expands to:
@@ -176,8 +176,8 @@ extern  instruction     *rLOAD_2U( instruction *ins ) {
     instruction         *first_ins;
     instruction         *new_ins;
 
-    mem = OffsetMem( ins->operands[ 0 ], 0, U8 );
-    new_mem = OffsetMem( ins->operands[ 0 ], 1, U8 );
+    mem = OffsetMem( ins->operands[0], 0, U8 );
+    new_mem = OffsetMem( ins->operands[0], 1, U8 );
     result = AllocTemp( U8 );
     temp = AllocTemp( U8 );
     addr = AllocTemp( U8 );
@@ -210,7 +210,7 @@ extern  instruction     *rSTORE_2( instruction *ins ) {
     instruction         *first_ins;
     instruction         *new_ins;
 
-    assert( ins->operands[ 0 ]->n.class == N_REGISTER );
+    assert( ins->operands[0]->n.class == N_REGISTER );
     // assert( ins->result->n.class == N_INDEXED );
     assert( ins->type_class == U2 || ins->type_class == I2 );
 
@@ -225,7 +225,7 @@ extern  instruction     *rSTORE_2( instruction *ins ) {
     temp_2 = AllocTemp( U8 );
     addr = AllocTemp( U8 );
     index = OffsetMem( ins->result, 0, U8 );
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     first_ins = MakeUnary( OP_LA, index, addr, U8 );
     PrefixIns( ins, first_ins );
     new_ins = MakeUnary( OP_LOAD_UNALIGNED, index, temp_1, U8 );
@@ -267,7 +267,7 @@ extern  instruction     *rSTORE_2U( instruction *ins ) {
     high = AllocTemp( U8 );
     low = AllocTemp( U8 );
     value = AllocTemp( U8 );
-    first_ins = MakeConvert( ins->operands[ 0 ], value, U8, ins->type_class );
+    first_ins = MakeConvert( ins->operands[0], value, U8, ins->type_class );
     PrefixIns( ins, first_ins );
     new_ins = MakeUnary( OP_LA, mem, addr, U8 );
     PrefixIns( ins, new_ins );
@@ -306,8 +306,8 @@ extern  instruction     *rLOAD_4U( instruction *ins ) {
     name                *temp_2;
     name                *temp_3;
 
-    mem_1 = OffsetMem( ins->operands[ 0 ], 0, U8 );
-    mem_2 = OffsetMem( ins->operands[ 0 ], 3, U8 );
+    mem_1 = OffsetMem( ins->operands[0], 0, U8 );
+    mem_2 = OffsetMem( ins->operands[0], 3, U8 );
     temp_1 = AllocTemp( U8 );
     temp_2 = AllocTemp( U8 );
     temp_3 = AllocTemp( U8 );
@@ -351,7 +351,7 @@ extern  instruction     *rSTORE_4U( instruction *ins ) {
     low = AllocTemp( U8 );
     temp_high = AllocTemp( U8 );
     temp_low = AllocTemp( U8 );
-    first_ins = MakeConvert( ins->operands[ 0 ], value, U8, ins->type_class );
+    first_ins = MakeConvert( ins->operands[0], value, U8, ins->type_class );
     PrefixIns( ins, first_ins );
     new_ins = MakeUnary( OP_LA, mem_low, addr, U8 );
     PrefixIns( ins, new_ins );
@@ -413,9 +413,9 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
      * Bust up a MOVXX into a series of 8-byte moves - we are guaranteed
      * that both the source and dest are 8-byte aligned.
      */
-    assert( ins->operands[ 0 ]->n.class == N_TEMP || ins->operands[ 0 ]->n.class == N_INDEXED );
+    assert( ins->operands[0]->n.class == N_TEMP || ins->operands[0]->n.class == N_INDEXED );
     temp = AllocTemp( U8 );
-    size = ins->operands[ 0 ]->n.size;
+    size = ins->operands[0]->n.size;
     first_ins = NULL;
     last_ins = NULL;
     curr = 0;
@@ -434,7 +434,7 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
         }
     }
     while( quads ) {
-        src = OffsetMem( ins->operands[ 0 ], curr, U8 );
+        src = OffsetMem( ins->operands[0], curr, U8 );
         dst = OffsetMem( ins->result, curr, U8 );
         curr += 8;
         quads -= 1;
@@ -453,7 +453,7 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
     }
     if( rem != 0 ) {
         if( rem == 4 ) {
-            src = OffsetMem( ins->operands[ 0 ], curr, U4 );
+            src = OffsetMem( ins->operands[0], curr, U4 );
             dst = OffsetMem( ins->result, curr, U4 );
             temp_2 = AllocTemp( U4 );
             new_ins = MakeMove( src, temp_2, U4 );
@@ -465,7 +465,7 @@ extern  instruction     *rMOVEXX_8( instruction *ins ) {
             ReplIns( ins, new_ins );
             last_ins = new_ins;
         } else {
-            src = OffsetMem( ins->operands[ 0 ], curr, U8 );
+            src = OffsetMem( ins->operands[0], curr, U8 );
             dst = OffsetMem( ins->result, curr, U8 );
             temp_2 = AllocTemp( U8 );
             bit_mask = AllocS32Const( ( 1 << rem ) - 1 );
@@ -499,11 +499,11 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     signed_16           low;
     signed_16           extra;
 
-    assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
-    assert( ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE );
+    assert( ins->operands[0]->n.class == N_CONSTANT );
+    assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     first = NULL;
-    FactorInt32( ins->operands[ 0 ]->c.int_value, &high, &extra, &low );
+    FactorInt32( ins->operands[0]->c.int_value, &high, &extra, &low );
     // work to be done here - need some way of accurately representing
     // the ldah rn,extra(rn) instruction
 }
@@ -524,10 +524,10 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     type_class_def      index_class;
     bool                cruft_in_high_dword;
 
-    assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
-    assert( ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE );
+    assert( ins->operands[0]->n.class == N_CONSTANT );
+    assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
-    cons = ins->operands[ 0 ];
+    cons = ins->operands[0];
     c = cons->c.int_value;
     k = 65536U;
     high = c / k;
@@ -542,7 +542,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
         first_ins = MakeMove( high_part, ins->result, ins->type_class );
         ReplIns( ins, first_ins );
         if( ( c & 0x80000000 ) &&
-            ( first_ins->type_class == Unsigned[ first_ins->type_class ] ) ) {
+            ( first_ins->type_class == Unsigned[first_ins->type_class] ) ) {
             new_ins = MakeBinary( OP_ZAP_NOT, first_ins->result, AllocS32Const( 0x0f ), first_ins->result, first_ins->type_class );
             SuffixIns( first_ins, new_ins );
             UpdateLive( first_ins, new_ins );
@@ -560,7 +560,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
             cruft_in_high_dword = TRUE;
         }
         if( ( c & 0x80000000 ) &&
-            ( ins->type_class == Unsigned[ ins->type_class ] ) ) {
+            ( ins->type_class == Unsigned[ins->type_class] ) ) {
             cruft_in_high_dword = TRUE;
         }
         if( cruft_in_high_dword ) {
@@ -587,9 +587,9 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     call = NewIns( 3 );
     call->head.opcode = OP_CALL;
     call->type_class = WD;
-    call->operands[ CALL_OP_USED ] = p1;
-    call->operands[ CALL_OP_USED2 ] = p2;
-    call->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL, WD );
+    call->operands[CALL_OP_USED] = p1;
+    call->operands[CALL_OP_USED2] = p2;
+    call->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, WD );
     call->result = NULL;
     call->num_operands = 2;         /* special case for OP_CALL*/
     HW_TurnOn( reg, ReturnAddrReg() );
@@ -634,7 +634,7 @@ extern instruction *rALLOCA( instruction *ins ) {
     bool                check;
 
     sreg = AllocRegName( StackReg() );
-    amount = ins->operands[ 0 ];
+    amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
     class = WD;
     stack_align = STACK_ALIGNMENT;

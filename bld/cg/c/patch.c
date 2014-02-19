@@ -53,7 +53,7 @@ patch *BGNewPatch( void )
     p->patched = FALSE;
 #ifndef NDEBUG
     p->useinfo.hdltype = NO_HANDLE;
-    p->useinfo.used = 0;
+    p->useinfo.used = FALSE;
 #endif
     return( p );
 }

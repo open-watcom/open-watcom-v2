@@ -903,10 +903,8 @@ static  bool    DoArithOps( block *root )
     instruction *ins;
     bool        change;
 
-    opcode = FIRST_CSE_OP;
-    for(;;) {
+    for( opcode = FIRST_CSE_OP; opcode <= LAST_CSE_OP; ++opcode ) {
         ExprHeads[opcode] = NULL;
-        if( ++opcode > LAST_CSE_OP ) break;
     }
     blk = root;
     for( ;; ) {
@@ -934,13 +932,14 @@ static  bool    DoArithOps( block *root )
         blk = blk->u.partition;
         if( blk == root ) break;
     }
-    opcode = FIRST_CSE_OP;
     change = FALSE;
-    for( ;; ) {
-        change |= DoOneOpcode( opcode );
-        if( ++opcode > LAST_CSE_OP ) break;
+    for( opcode = FIRST_CSE_OP; opcode <= LAST_CSE_OP; ++opcode ) {
+        if( DoOneOpcode( opcode ) ) {
+            change = TRUE;
+        }
     }
-    change |= DoDivides();
+    if( DoDivides() )
+        change = TRUE;
     CleanTableEntries( root );
     return( change );
 }

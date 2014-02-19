@@ -205,17 +205,14 @@ extern  name    *Points( an addr, type_def *tipe ) {
         }
         break;
     case CL_POINTER:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, class,
-                             size, 0, flags );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.base, addr->u.n.offset, class, size, 0, flags );
         break;
     case CL_GLOBAL_INDEX:
     case CL_TEMP_INDEX:
-        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset,
-                             class, size, 0, flags & ~X_FAKE_BASE );
+        result = ScaleIndex( addr->u.n.index, addr->u.n.name, addr->u.n.offset, class, size, 0, flags & ~X_FAKE_BASE );
         break;
     case CL_TEMP_OFFSET:
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, class,
-                              size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, addr->u.n.offset, class, size, 0, flags );
         break;
     case CL_CONS2:
 #if WORD_SIZE != 2
@@ -224,13 +221,11 @@ extern  name    *Points( an addr, type_def *tipe ) {
         addr->u.n.name = AllocIntConst( addr->u.n.offset );
         addr->class = CL_VALUE;
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0,
-                             class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, class, size, 0, flags );
         break;
     default:
         LoadTempInt( addr );
-        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0,
-                             class, size, 0, flags );
+        result = ScaleIndex( addr->u.n.name, addr->u.n.base, 0, class, size, 0, flags );
         break;
     }
     if( addr->flags & FL_VOLATILE ) {
@@ -324,7 +319,8 @@ static  void    AddIndex( an addr, name *index, name *addend ) {
     type_class_def      class;
 
     class = index->n.name_class;
-    if( class == XX ) class = addend->n.name_class; /* if index is a const ! */
+    if( class == XX )
+        class = addend->n.name_class; /* if index is a const ! */
     ins = MakeBinary( OP_ADD, index, addend, AllocTemp( class ), class );
     index = ins->result;
     AddIns( ins );

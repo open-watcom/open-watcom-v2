@@ -326,8 +326,7 @@ extern  bool    RegThrash( block *blk ) {
         if( ins->head.opcode == OP_MOV
          && UnChangeable( ins ) == FALSE
          && ins->operands[ 0 ]->n.class == N_REGISTER
-         && !HW_Ovlap( ins->head.next->head.live.regs,
-                       ins->operands[ 0 ]->r.reg )
+         && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[ 0 ]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );

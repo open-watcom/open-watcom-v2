@@ -120,7 +120,7 @@ static bool CheckReturn( instruction *ins )
     while( ins->head.opcode != OP_CALL ) {
         if( ins->result == value ) {
             if( ins->head.opcode != OP_MOV ) return( FALSE );
-            value = ins->operands[ 0 ];
+            value = ins->operands[0];
         }
         // following will slide by block boundaries with greatest of ease
         ins = FindPreviousIns( ins );
@@ -143,7 +143,7 @@ static void DoOneParm( instruction *parm_ins, instruction *decl_ins, instruction
     type_class_def      src_class;
     type_class_def      dst_class;
 
-    src = parm_ins->operands[ 0 ];
+    src = parm_ins->operands[0];
     src_class = src->n.name_class;
     dst_class = decl_ins->result->n.name_class;
     tmp = AllocTemp( dst_class );
@@ -180,18 +180,18 @@ static void DoTrans( block *blk, instruction *call_ins )
     }
 
     // make blk jump to the block after the prologue
-    target = HeadBlock->edge[ 0 ].destination.u.blk;
+    target = HeadBlock->edge[0].destination.u.blk;
     blk->class = ( blk->class | JUMP ) & ~( CONDITIONAL | RETURN | SELECT );
 
     // remove blk from the input lists of any blocks which it might have
     // previously gone to
     for( i = 0; i < blk->targets; i++ ) {
-        edge = &blk->edge[ i ];
+        edge = &blk->edge[i];
         RemoveInputEdge( edge );
     }
 
     blk->targets = 0;
-    PointEdge( &blk->edge[ 0 ], target );
+    PointEdge( &blk->edge[0], target );
 }
 
 static bool SafePath( instruction *ins )
@@ -238,7 +238,7 @@ static block *SafeBlock( block *blk )
     if( SafePath( blk->ins.hd.next ) ) {
         safe = blk;
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination.u.blk;
+            dest = blk->edge[i].destination.u.blk;
             if( SafeRecurseCG( (func_sr)SafeBlock, dest ) == NULL ) {
                 safe = NULL;
                 break;
@@ -297,15 +297,15 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     along these.
 */
 {
-    cg_sym_handle label;
-    block       *dest;
-    block_num   i;
-    instruction *parm;
-    instruction *ins;
-    bool        ok;
+    cg_sym_handle   label;
+    block           *dest;
+    block_num       i;
+    instruction     *parm;
+    instruction     *ins;
+    bool            ok;
 
     label = AskForLblSym( CurrProc->label );
-    if( call_ins->operands[ CALL_OP_ADDR ]->v.symbol != label ) {
+    if( call_ins->operands[CALL_OP_ADDR]->v.symbol != label ) {
         return( FALSE );
     }
 
@@ -327,11 +327,10 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     // (except perhaps stuff calling aborts routines) so don't
     // bother - better running out of stack than an infinite loop
     // (besides - certain codegen stuff needs a RET block)
-    if( ( ( blk->class & RETURN ) == EMPTY ) &&
-            SafePath( call_ins->head.next ) ) {
+    if( ( ( blk->class & RETURN ) == EMPTY ) && SafePath( call_ins->head.next ) ) {
         ok = TRUE;
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination.u.blk;
+            dest = blk->edge[i].destination.u.blk;
             if( SafeBlock( dest ) == NULL ) {
                 ok = FALSE;
                 break;

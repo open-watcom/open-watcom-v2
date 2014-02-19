@@ -35,8 +35,8 @@
 #include "targsys.h"
 #include "escape.h"
 
-#define BUFFSIZE        256     /*  size of object code buffer */
-#define TOLERANCE       64
+#define BUFFSIZE        256U    /*  size of object code buffer */
+#define TOLERANCE       64U
 #define TRADEOFF        14      /*  minimum size of iterated for a new record */
 #define SYS_REC_SIZE    512     /*  size of physical output record */
                                 /*  must match NAMEPCO spec */

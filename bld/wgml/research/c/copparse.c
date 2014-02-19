@@ -488,10 +488,17 @@ static cop_device * get_cop_device( char const * in_name )
 {
     cop_device      *   out_device  = NULL;
     cop_file_type       file_type;
+#if defined( __UNIX__ )
+    char                fname[_MAX_PATH];
+
+    strpcy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_device );
     }
 
@@ -559,10 +566,17 @@ static cop_driver * get_cop_driver( char const * in_name )
 {
     cop_driver      *   out_driver  = NULL;
     cop_file_type       file_type;
+#if defined( __UNIX__ )
+    char                fname[_MAX_PATH];
+
+    strpcy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_driver );
     }
 
@@ -630,10 +644,17 @@ static cop_font * get_cop_font( char const * in_name )
 {
     cop_font        *   out_font    = NULL;
     cop_file_type       file_type;
+#if defined( __UNIX__ )
+    char                fname[_MAX_PATH];
+
+    strpcy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( (char *) in_name, "", "", ds_bin_lib ) ) {
+    if( !search_file_in_dirs( in_name, "", "", ds_bin_lib ) ) {
         return( out_font );
     }
 

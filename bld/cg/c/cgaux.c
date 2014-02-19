@@ -52,14 +52,14 @@ extern  pointer FindAuxInfo( name *name, aux_class request )
         return( FindAuxInfoSym( AskForLblSym( ((back_handle)name->v.symbol)->lbl ), request ) );
 #if _TARGET & _TARG_INTEL
     } else if( name->m.memory_type == CG_LBL && AskIfRTLabel( name->v.symbol ) ) {
-        aux_handle  info;
+        aux_handle  aux;
 
-        info = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
-        if( info == NULL ) {
+        aux = BEAuxInfo( name->v.symbol, AUX_LOOKUP );
+        if( aux == NULL ) {
             /* return default aux info */
             return( FindAuxInfoSym( NULL, request ) );
         } else {
-            return( BEAuxInfo( info, request ) );
+            return( BEAuxInfo( aux, request ) );
         }
 #endif
     } else {

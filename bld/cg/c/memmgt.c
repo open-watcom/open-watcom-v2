@@ -143,7 +143,7 @@ extern  pointer CGAlloc( size_t size )
         }
         if( _MemCheck( size ) == FALSE ) break;
     }
-    if( ( MemOut == MO_FATAL ) | ( InOptimizer != 0 ) ) {
+    if( ( MemOut == MO_FATAL ) || ( InOptimizer != 0 ) ) {
         FatalError( "Out of memory" );
     } else if( MemOut == MO_SUICIDE ) {
         Suicide();

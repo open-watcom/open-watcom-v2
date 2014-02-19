@@ -50,8 +50,9 @@ void EncodeRet( oc_ret *oc ) {
     ObjBytes( &encoding, sizeof( encoding ) );
 }
 
-static void doBranch( ppc_ins opcode, pointer lbl, uint reg ) {
-
+static void doBranch( ppc_ins opcode, pointer lbl, uint reg )
+{
+    reg = reg;
     opcode = 0; // _Opcode( opcode ) | _A( reg );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );

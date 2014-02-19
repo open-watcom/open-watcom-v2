@@ -544,8 +544,8 @@ static  dw_loc_id   DoLocCnv( dbg_loc loc, loc_state *state ) {
     return( locid );
 }
 
-static  dbg_loc   SkipMkFP( dbg_loc loc ) {
-/****************************************/
+static  dbg_loc     SkipMkFP( dbg_loc loc ) {
+/*****************************************/
 //skip a MkFP and operand
 
     if( (loc->class & 0xf0) == LOC_OPER ) {

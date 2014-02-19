@@ -400,7 +400,7 @@ aux_info *InfoLookup( SYMPTR sym )
     return( inf );
 }
 
-aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
+aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_ENTRY       sym_typedef;
     aux_entry       *ent;
@@ -455,7 +455,7 @@ aux_info *FindInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
     return( inf );
 }
 
-int FunctionAborts( SYM_ENTRY *sym, SYM_HANDLE sym_handle )  /* 09-apr-93 */
+int FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )  /* 09-apr-93 */
 {
     aux_entry    *ent;
 

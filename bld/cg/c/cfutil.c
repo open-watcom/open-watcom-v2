@@ -35,8 +35,8 @@
 #include "cfloat.h"
 
 
-extern  void    CFCnvTarget( cfloat *f, flt *buffer, int class ) {
-/****************************************************************************/
+extern  void    CFCnvTarget( float_handle f, flt *buffer, int class ) {
+/*******************************************************************/
 
     switch( class ) {
     case FL:

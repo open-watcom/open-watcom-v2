@@ -54,24 +54,17 @@ MTool::MTool( WTokenFile& fil, WString& tok )
 #if CUR_CFG_VERSION > 4
         } else if( _config->version() > 4 && tok == "SwitchText" ) {
             WString id;
-            WString text;
             fil.token( id );
-            fil.token( text );
-            // define switch description text ( map id -> text )
-            if( text.size() > 0 ) {
-                _switchesTexts.setThis( new WString( text ), new WString( id ) );
+            fil.token( tok );
+            if( tok.size() > 0 ) {
+                _switchesTexts.setThis( new WString( tok ), new WString( id ) );
             }
             // define map "text -> id" for older versions of project files
             while( !fil.eol() ) {
                 fil.token( tok );
                 if( tok.size() > 0 ) {
-                    if( tok == "." ) {
-                        // "." means to use current switch text 
-                        _switchesIds.setThis( new WString( id ), new WString( text ) );
-                    } else {
-                        // define new switch text for map
-                        _switchesIds.setThis( new WString( id ), new WString( tok ) );
-                    }
+                    // define new switch text for map
+                    _switchesIds.setThis( new WString( id ), new WString( tok ) );
                 }
             }
             fil.token( tok );
@@ -197,27 +190,24 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
 }
 
 #if CUR_CFG_VERSION > 4
-WString* WEXPORT MTool::findSwitchId( WString& switchtag, MSwitch *sw )
+WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge )
 {
-    WString text;
-    WString *switchid;
     int icount;
 
-    if( sw->isMaskEqual( switchtag ) ) {
-        text = switchtag;
-        text.chop( MASK_SIZE );
-        switchid = (WString *)_switchesIds.findThis( &text, &sw->text() );
-        if( switchid != NULL ) {
-            switchtag.truncate( MASK_SIZE );
-            switchtag.concat( *switchid );
-            return &switchtag;
+    if( kludge == 0 ) {         // check current text
+        if( text.isEqual( (WString *)_switchesTexts.findThis( &id ) ) ) {
+            return &id;
         }
-        icount = _incTools.count();
-        for( int i = 0; i < icount; i++ ) {
-            MTool* tool = (MTool*)_incTools[i];
-            if( tool->findSwitchId( switchtag, sw ) != NULL ) {
-                return &switchtag;
-            }
+    } else if( kludge == 1 ) {  // check old text
+        if( id.isEqual( (WString *)_switchesIds.findThis( &text, &id ) ) ) {
+            return &id;
+        }
+    }
+    icount = _incTools.count();
+    for( int i = 0; i < icount; i++ ) {
+        MTool* tool = (MTool*)_incTools[i];
+        if( tool->findSwitchByText( id, text, kludge ) != NULL ) {
+            return &id;
         }
     }
     return NULL;

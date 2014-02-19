@@ -88,7 +88,7 @@ bool TBreak( void )
     InitOnExit();
     brk = BrkFlag;
     BrkFlag = 0;
-    return( brk );
+    return( brk != 0 );
 }
 
 

@@ -278,9 +278,9 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
 extern  type_class_def  InitCallState( type_def *tipe )
 /*****************************************************/
 {
-    name        *name;
-    cg_sym_handle sym;
-    pointer     aux;
+    name            *name;
+    cg_sym_handle   sym;
+    aux_handle      aux;
 
     sym = AskForLblSym( CurrProc->label );
     name = AllocMemory( sym, 0, CG_FE, TypeClass( tipe ) );
@@ -346,7 +346,7 @@ extern  void    FixEdges( void )
 }
 
 
-static label_handle LinkReturnsParms[ 2 ];
+static label_handle LinkReturnsParms[2];
 
 static void *LinkReturns( void *arg )
 /***********************************/

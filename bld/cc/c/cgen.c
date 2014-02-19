@@ -1685,7 +1685,7 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
 }
 
 
-local void FreeSymBackInfo( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
+local void FreeSymBackInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     if( sym->info.backinfo != NULL ) {
         BEFiniBack( sym->info.backinfo );

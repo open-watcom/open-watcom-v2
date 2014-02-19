@@ -62,7 +62,7 @@ static  void    AddSegOverride( instruction *ins, hw_reg_set reg )
     name                *reg_name;
 
     reg_name = AllocRegName( reg );
-    ins->operands[ ins->num_operands++ ] = reg_name;
+    ins->operands[ins->num_operands++] = reg_name;
 }
 
 static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def tipe )
@@ -97,7 +97,7 @@ static  name    *GetNTTLSDataRef( instruction *ins, name *op, type_class_def tip
     temp_index = AllocIndex( t1, NULL, 0, WD );
     new_ins = MakeMove( temp_index, t3, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( t3, op, op->v.offset, tipe, TypeClassSize[ tipe ], 0, 0 );
+    result_index = ScaleIndex( t3, op, op->v.offset, tipe, TypeClassSize[tipe], 0, 0 );
     return( result_index );
 }
 
@@ -113,9 +113,9 @@ static  void    DropCall( instruction *ins, name *temp )
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = WD;
-    new_ins->operands[ CALL_OP_USED ] = null_name;
-    new_ins->operands[ CALL_OP_USED2 ] = null_name;
-    new_ins->operands[ CALL_OP_ADDR ]= RTMemRef( RT_TLS_REGION );
+    new_ins->operands[CALL_OP_USED] = null_name;
+    new_ins->operands[CALL_OP_USED2] = null_name;
+    new_ins->operands[CALL_OP_ADDR] = RTMemRef( RT_TLS_REGION );
     new_ins->result = eax_name;
     new_ins->zap = &eax_name->r;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
@@ -152,7 +152,7 @@ static  name    *GetGenericTLSDataRef( instruction *ins, name *op, type_class_de
     temp = AllocTemp( WD );
     new_ins = MakeMove( tls, temp, WD );
     PrefixIns( ins, new_ins );
-    result_index = ScaleIndex( temp, op, op->v.offset, tipe, TypeClassSize[ tipe ], 0, 0 );
+    result_index = ScaleIndex( temp, op, op->v.offset, tipe, TypeClassSize[tipe], 0, 0 );
     return( result_index );
 }
 
@@ -176,8 +176,8 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
         mov __tls_index -> t2
         mov t2 * 4 -> t2
         add t1, t2 -> t1
-        mov [ t1 ] -> t3
-        mov foo[ t3 ] -> result
+        mov [t1] -> t3
+        mov foo[t3] -> result
 */
 {
     fe_attr             attr;
@@ -215,7 +215,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
                 if( op->i.scale > 4 ) _Zoiks( ZOIKS_134 );
                 index = AllocTemp( WD );
                 new_ins = MakeBinary( OP_MUL, op->i.index,
-                                AllocS32Const( values[ op->i.scale ] ),
+                                AllocS32Const( values[op->i.scale] ),
                                 index, WD );
                 PrefixIns( ins, new_ins );
             }
@@ -223,7 +223,7 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
             PrefixIns( ins, new_ins );
             *pop = ScaleIndex( temp, NULL, 0,
                             _OpClass(ins),
-                            TypeClassSize[ _OpClass(ins) ],
+                            TypeClassSize[_OpClass(ins)],
                             0, 0 );
         }
         break;

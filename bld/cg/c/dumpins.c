@@ -93,7 +93,7 @@ extern  void    DumpInsOffsets() {
     DO_DUMPOFFSET( "ins_flags", offsetof( instruction, ins_flags ) );
     DO_DUMPOFFSET( "stk_exit", offsetof( instruction, stk_exit ) );
     DO_DUMPOFFSET( "s.stk_extra", offsetof( instruction, s.stk_extra ) );
-    DO_DUMPOFFSET( "operands[ 0 ]", offsetof( instruction, operands[ 0 ] ) );
+    DO_DUMPOFFSET( "operands[0]", offsetof( instruction, operands[0] ) );
 }
 
 
@@ -104,8 +104,7 @@ extern  void    DumpInOut( instruction *ins ) {
     DumpGBit( &ins->head.live.out_of_block );
     DumpChar( ' ' );
     DumpLBit( &ins->head.live.within_block );
-    if( !HW_CEqual( ins->head.live.regs, HW_EMPTY ) &&
-        !HW_COvlap( ins->head.live.regs, HW_UNUSED ) ) {
+    if( !HW_CEqual( ins->head.live.regs, HW_EMPTY ) && !HW_COvlap( ins->head.live.regs, HW_UNUSED ) ) {
         DumpLiteral( "  " );
         DumpRegName( ins->head.live.regs );
     }
@@ -144,7 +143,7 @@ static char * ClassNames[] = {
 extern  void    DumpClass( type_class_def tipe ) {
 /***********************************************/
 
-    DumpString( ClassNames[ tipe ] );
+    DumpString( ClassNames[tipe] );
 }
 
 
@@ -225,8 +224,7 @@ extern  void    DumpOperand( name *operand ) {
     } else if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
             if( operand->c.int_value != 0 ) {
-                if( operand->c.int_value_2 != 0
-                && operand->c.int_value_2 != -1 )
+                if( operand->c.int_value_2 != 0 && operand->c.int_value_2 != -1 )
                     Dump8h( operand->c.int_value_2 );
                 Dump8h( operand->c.int_value );
             } else {
@@ -340,7 +338,7 @@ extern  void DoDumpIInfo( instruction *ins, bool fp ) {
     }
     if( ins->head.opcode == OP_CALL ) {
         DumpChar( ' ' );
-        DumpOperand( ins->operands[ CALL_OP_ADDR ] );
+        DumpOperand( ins->operands[CALL_OP_ADDR] );
     }
     DumpClass( ins->type_class );
     if( ins->head.opcode == OP_CONVERT ) {
@@ -378,7 +376,7 @@ extern void DumpInsOnly( instruction *ins ) {
     DumpOpcodeName( ins->head.opcode );
     DumpIInfo( ins );
     if( ins->num_operands != 0 ) {
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         for( i = 1; i < ins->num_operands; ++i ) {
             DumpLiteral( ", " );
             DumpOperand( ins->operands[i] );
@@ -457,12 +455,12 @@ extern  void    DumpCond( instruction *ins, block *blk ) {
         i = _TrueIndex( ins );
         if( i != NO_JUMP ) {
             DumpLiteral( " then " );
-            DumpBlkId( blk->edge[  i  ].destination.u.blk );
+            DumpBlkId( blk->edge[i].destination.u.blk );
         }
         i = _FalseIndex( ins );
         if( i != NO_JUMP ) {
             DumpLiteral( " else " );
-            DumpBlkId( blk->edge[  i  ].destination.u.blk );
+            DumpBlkId( blk->edge[i].destination.u.blk );
         }
     }
 }
@@ -501,7 +499,7 @@ extern  void    DumpVUsage( name *v ) {
                 DumpNL();
                 j = 0;
             }
-            DumpString( Usage[ i ] );
+            DumpString( Usage[i] );
         }
         u >>= 1;
         ++ i;
@@ -593,7 +591,7 @@ extern  void    DumpTempWId( int id ) {
     name        *sym;
 
     DumpNL();
-    for( sym = Names[ N_TEMP ]; sym != NULL; sym = sym->n.next_name ) {
+    for( sym = Names[N_TEMP]; sym != NULL; sym = sym->n.next_name ) {
         if( sym->t.v.id == id ) {
             DumpSym( sym );
         }
@@ -614,35 +612,35 @@ extern  void    DumpSymList( name *sym ) {
 extern  void    DumpNTemp() {
 /***************************/
 
-    DumpSymList( Names[ N_TEMP ] );
+    DumpSymList( Names[N_TEMP] );
 }
 
 
 extern  void    DumpNMemory() {
 /*****************************/
 
-    DumpSymList( Names[ N_MEMORY ] );
+    DumpSymList( Names[N_MEMORY] );
 }
 
 
 extern  void    DumpNIndexed() {
 /******************************/
 
-    DumpSymList( Names[ N_INDEXED ] );
+    DumpSymList( Names[N_INDEXED] );
 }
 
 
 extern  void    DumpNConst() {
 /****************************/
 
-    DumpSymList( Names[ N_CONSTANT ] );
+    DumpSymList( Names[N_CONSTANT] );
 }
 
 
 extern  void    DumpNRegister() {
 /*******************************/
 
-    DumpSymList( Names[ N_REGISTER ] );
+    DumpSymList( Names[N_REGISTER] );
 }
 
 

@@ -62,29 +62,28 @@ void    *SafeRecurseCG( func_sr rtn, void *arg )
 
     void                *savearea;
     void                *retval;
-    mem_out_action      old_action;
+    mem_out_action      old_memout;
 
     if( stackavail() < 0x2000 ) { /* stack getting low! */
-        old_action = SetMemOut( MO_OK );
+        old_memout = SetMemOut( MO_OK );
         savearea = CGAlloc( SAVE_SIZE );
         if( savearea == NULL ) {
-            FatalError( "No memory to save stack" );
+            SetMemOut( old_memout );
+            CypCopy( bp(), savearea, SAVE_SIZE );
+            CypCopy( sp(), sp() + SAVE_SIZE, bp() - sp() );
+            setbp( bp() + SAVE_SIZE );
+            setsp( sp() + SAVE_SIZE );
+            retval = rtn( arg );
+            setsp( sp() - SAVE_SIZE );
+            CypCopy( sp() + SAVE_SIZE, sp(), bp() - sp() - SAVE_SIZE );
+            setbp( bp() - SAVE_SIZE );
+            CypCopy( savearea, bp(), SAVE_SIZE );
+            CGFree( savearea );
+            return( retval );
         }
-        SetMemOut( old_action );
-        CypCopy( bp(), savearea, SAVE_SIZE );
-        CypCopy( sp(), sp() + SAVE_SIZE, bp() - sp() );
-        setbp( bp() + SAVE_SIZE );
-        setsp( sp() + SAVE_SIZE );
-        retval = rtn( arg );
-        setsp( sp() - SAVE_SIZE );
-        CypCopy( sp() + SAVE_SIZE, sp(), bp() - sp() - SAVE_SIZE );
-        setbp( bp() - SAVE_SIZE );
-        CypCopy( savearea, bp(), SAVE_SIZE );
-        CGFree( savearea );
-        return( retval );
-    } else {
-        return( rtn( arg ) );
+        SetMemOut( old_memout );
     }
+    return( rtn( arg ) );
 }
 
 #else

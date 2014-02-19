@@ -58,6 +58,6 @@ typedef struct tbl_control {
         label_handle            lbl;            /*  for the table */
         label_handle            value_lbl;      /*  for the value table */
         uint                    size;
-        label_handle            cases[ 1 ];
+        label_handle            cases[1];
 } tbl_control;
 #endif // __SELDEF__H__

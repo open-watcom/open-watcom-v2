@@ -90,19 +90,19 @@ extern  instruction     *rMAKECALL( instruction *ins )
     } else { /* look it up again in case we ran out of memory during expansion*/
         LookupConvertRoutine( ins );
     }
-    info = &RTInfo[  RoutineNum  ];
+    info = &RTInfo[RoutineNum];
     regs = _ParmReg( info->left );
     all_regs = regs;
-    left_ins = MakeMove( ins->operands[ 0 ], AllocRegName( regs ),
+    left_ins = MakeMove( ins->operands[0], AllocRegName( regs ),
                           info->operand_class );
-    ins->operands[ 0 ] = left_ins->result;
+    ins->operands[0] = left_ins->result;
     MoveSegOp( ins, left_ins, 0 );
     PrefixIns( ins, left_ins );
     regs = _ParmReg( info->right );
     if( !HW_CEqual( regs, HW_EMPTY ) ) {
-        new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ),
+        new_ins = MakeMove( ins->operands[1], AllocRegName( regs ),
                                 info->operand_class );
-        ins->operands[ 1 ] = new_ins->result;
+        ins->operands[1] = new_ins->result;
         MoveSegOp( ins, new_ins, 0 );
         HW_TurnOn( all_regs, regs );
         PrefixIns( ins, new_ins );
@@ -123,10 +123,9 @@ extern  instruction     *rMAKECALL( instruction *ins )
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;
-    new_ins->operands[ CALL_OP_USED ] = reg_name;
-    new_ins->operands[ CALL_OP_USED2 ] = reg_name;
-    new_ins->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL,
-                                                    ins->type_class );
+    new_ins->operands[CALL_OP_USED] = reg_name;
+    new_ins->operands[CALL_OP_USED2] = reg_name;
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, ins->type_class );
     new_ins->result = NULL;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
 #if _TARGET & _TARG_AXP
@@ -141,8 +140,8 @@ extern  instruction     *rMAKECALL( instruction *ins )
     last_ins = new_ins;
     if( ins->result == NULL || _OpIsCondition( ins->head.opcode ) ) {
         /* comparison, still need conditional jumps*/
-        ins->operands[ 0 ] = AllocIntConst( 0 );
-        ins->operands[ 1 ] = AllocIntConst( 1 );
+        ins->operands[0] = AllocIntConst( 0 );
+        ins->operands[1] = AllocIntConst( 1 );
         DelSeg( ins );
         DoNothing( ins );               /* just conditional jumps for ins*/
         PrefixIns( ins, new_ins );
@@ -156,7 +155,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
         reg_name = AllocRegName( regs );
         new_ins->result = reg_name;
         last_ins = MakeMove( reg_name, ins->result, ins->type_class );
-        ins->result = last_ins->operands[ 0 ];
+        ins->result = last_ins->operands[0];
         MoveSegRes( ins, last_ins );
         SuffixIns( ins, last_ins );
         ReplIns( ins, new_ins );
@@ -176,6 +175,6 @@ extern  hw_reg_set      FirstReg( reg_set_index index )
 {
     hw_reg_set  *list;
 
-    list = RegSets[  index  ];
+    list = RegSets[index];
     return( *list );
 }

@@ -54,7 +54,6 @@ extern  void            AddTarget(label_handle,bool);
 extern  void            Generate(bool);
 extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);
-extern  name            *GenIns(an);
 extern  type_class_def  TypeClass(type_def*);
 extern  bool            BlkTooBig( void );
 extern  name            *AllocRegName( hw_reg_set );
@@ -179,9 +178,9 @@ extern  bool    NeedConvert( type_def *from, type_def *to ) {
 }
 
 
-static  an      Unary( cg_op op, an left, type_def *tipe ) {
-/**********************************************************/
-
+static  an Unary( cg_op op, an left, type_def *tipe )
+/***************************************************/
+{
     instruction *ins;
     an          res;
 
@@ -259,8 +258,7 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
 /*****************************************************/
 
     if( name->format == NF_BOOL ) {
-        if( ( tipe->attr & TYPE_FLOAT ) != 0
-          || ( tipe->length > TypeInteger->length ) ) {
+        if( (tipe->attr & TYPE_FLOAT) != 0 || ( tipe->length > TypeInteger->length ) ) {
             name = FlowOut( name, TypeInteger );
             name = Unary( O_CONVERT, name, tipe );
         } else {
@@ -270,9 +268,8 @@ extern  an      Arithmetic( an name, type_def *tipe ) {
     return( name );
 }
 
-extern  an      BGCompare( cg_op op, an left, an rite,
-                           label_handle entry, type_def *tipe ) {
-/***************************************************************/
+extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_def *tipe ) {
+/*******************************************************************************************/
 
     an                  new;
     instruction         *ins;
@@ -530,7 +527,8 @@ extern  an      BGUnary( cg_op op, an left, type_def *tipe ) {
 static  an      CheckType( an op, type_def *tipe ) {
 /**************************************************/
 
-    if( op->format != NF_ADDR ) return( op );
+    if( op->format != NF_ADDR )
+        return( op );
     return( BGUnary( O_CONVERT, op, tipe ) );
 }
 
@@ -572,8 +570,7 @@ extern  an      BGBinary( cg_op op, an left,
     }
     if( result == NULL ) {
         left = CheckType( left, tipe );
-        ins = MakeBinary( (opcode_defs)op, GenIns( left ), GenIns( rite ),
-                           NULL, TypeClass( tipe ) );
+        ins = MakeBinary( (opcode_defs)op, GenIns( left ), GenIns( rite ), NULL, TypeClass( tipe ) );
         result = InsName( ins, tipe );
         AddIns( ins );
         BGDone( left );
@@ -725,14 +722,12 @@ extern  void    BGTrash( an node ) {
 
 
 extern  void    FlowOff( an name ) {
-/*****************************/
+/**********************************/
 
     *(name->u.b.t) = CurrBlock->label;
     *(name->u.b.f) = CurrBlock->label;
     NamesCrossBlocks();
 }
-
-
 
 
 extern  void    BGStartBlock( void ) {

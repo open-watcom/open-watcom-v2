@@ -49,10 +49,10 @@ extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  void            ChgLblRef( ins_entry *, label_handle );
-extern  label_handle    AddNewLabel( ins_entry *, int );
+extern  label_handle    AddNewLabel( ins_entry *, obj_length );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *PrevIns( ins_entry * );
-extern  int             OptInsSize( oc_class, oc_dest_attr );
+extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
 extern  bool            FindShort( ins_entry *, ins_entry * );
 
 
@@ -227,7 +227,7 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins )
     ins_entry           *first;
     common_info         common;
     common_info         max;
-    int                 align;
+    obj_length          align;
 
   optbegin
     align = (_Class( list ) == OC_LABEL) ? _ObjLen( list ) : 0;
@@ -281,11 +281,12 @@ extern  bool    ComCode( ins_entry *jmp )
 {
     ins_entry   *new;
     ins_entry   *com;
-    int         align;
+    obj_length  align;
     bool        common;
 
   optbegin
     common = FALSE;
+    com = NULL;
     new = _Label( jmp )->ins;
     if( new != NULL ) {
         align = _ObjLen( new );

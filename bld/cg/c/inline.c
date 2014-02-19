@@ -54,7 +54,6 @@ typedef struct inline_stack {
         an                      addr;
 } inline_stack;
 
-extern  name            *GenIns(an);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
 extern  void            EnLink(label_handle,bool);
 extern  void            AddIns(instruction*);

@@ -66,7 +66,7 @@ extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
 extern  void            InputOC(any_oc*);
 extern  void            AddByte(byte);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
 extern  void            DoFESymRef( cg_sym_handle, cg_class, offset, fe_fixup_types);
 extern  void            FlipCond(instruction*);
@@ -220,7 +220,7 @@ extern  byte    ReverseCondition( byte cond ) {
 }
 
 extern  void    DoCall( label_handle lbl, bool imported, bool big, oc_class pop_bit )
-/*********************************************************************************
+/************************************************************************************
     call routine "lbl".
 */
 {

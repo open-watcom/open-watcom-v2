@@ -374,7 +374,8 @@ common_cppflags_386  = -D__386__ -D__NT_386__
 common_cppflags_x64  = -D__NT_X64__
 
 # common release/debug flags
-common_flags_rel = -Ox -Zi
+#common_flags_rel = -Ox -Zi
+common_flags_rel = -Zi
 common_flags_dbg = -Zi
 !ifeq release 1
 common_flags = $(common_flags_rel)

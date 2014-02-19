@@ -132,7 +132,7 @@ static  tn  NewTreeNode( void )
     new->flags = TF_USED;
 #ifndef NDEBUG
     new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = 0;
+    new->useinfo.used = FALSE;
 #endif
     return( new );
 }
@@ -171,15 +171,13 @@ extern  tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
     whose type is "tipe".  Takes and yields an lvalue.
 */
 {
-    tn  new;
+    tn new;
 
     new = NewTreeNode();
-    new->u2.t.base = NULL;
-    new->u2.t.alignment = 0;
     new->u.left = left;
     new->tipe = tipe;
 #if _TARGET & _TARG_370
-    new->u2.b.start = tipe->length*8 - start - len;
+    new->u2.b.start = tipe->length * 8 - start - len;
 #else
     new->u2.b.start = start;
 #endif
@@ -187,10 +185,6 @@ extern  tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
     new->u2.b.is_signed = FALSE;
     new->kids = left->kids + 1;
     new->class = TN_BIT_LVALUE;
-#ifndef NDEBUG
-    new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = 0;
-#endif
     return( new );
 }
 
@@ -216,7 +210,7 @@ extern  tn  TGNode( tn_class class, cg_op op,
         node->kids += rite->kids + 1;
     }
     if( left != NULL ) {
-        node->kids  += left->kids + 1;
+        node->kids += left->kids + 1;
         node->flags |= TF_HAS_LEFT;
     }
     return( node );
@@ -291,7 +285,8 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         return( TypeAddress( TY_UNSIGNED ) );
     }
 #endif
-    if( !demote_const && tipe->refno != TY_DEFAULT ) return( tipe );
+    if( !demote_const && tipe->refno != TY_DEFAULT )
+        return( tipe );
     if( left->class == TN_CONS ) {
         temp = left;
         left = rite;
@@ -317,15 +312,15 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
     if( rite->tipe->attr & TYPE_FLOAT ) return( tipe );
     if( tipe->length > TypeClassSize[ U4 ] ) return( tipe );
     if( left->tipe->attr & TYPE_SIGNED ) {
-       if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
-           return( tipe );
-       }
-       if( rite->u.name->c.int_value < 0 ) return( tipe );
-       if( !( tipe->attr & TYPE_SIGNED ) ) return( tipe );
+        if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
+            return( tipe );
+        }
+        if( rite->u.name->c.int_value < 0 ) return( tipe );
+        if( !( tipe->attr & TYPE_SIGNED ) ) return( tipe );
     } else {
-       if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
-           return( tipe );
-       }
+        if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
+            return( tipe );
+        }
     }
     return( left->tipe );
 #endif
@@ -356,8 +351,8 @@ static bool RHSLongPointer( tn rite )
 #endif
 
 
-extern  tn  TGCompare(  cg_op op,  tn left,  tn rite,  type_def  *tipe )
-/***********************************************************************
+extern  tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
+/******************************************************************
     build a relational operator node
 */
 {
@@ -372,8 +367,7 @@ extern  tn  TGCompare(  cg_op op,  tn left,  tn rite,  type_def  *tipe )
         can_demote = FALSE;
     }
 #endif
-    if( ( left->tipe == rite->tipe )
-        && ( left->tipe != TypeBoolean )
+    if( ( left->tipe == rite->tipe ) && ( left->tipe != TypeBoolean )
         && ( ( left->tipe->attr & ~TYPE_SIGNED ) == ( tipe->attr & ~TYPE_SIGNED ) ) ) {
         tipe = left->tipe;
     } else {
@@ -1497,7 +1491,7 @@ static  name *TNFindBase( tn node )
         if( op == NULL ) return( NULL );
         if( op->n.class == N_TEMP ) {
             if( op->v.symbol == NULL ) return( NULL );
-            op = SAllocUserTemp( FEAuxInfo( (pointer)op->v.symbol, SHADOW_SYMBOL ), op->n.name_class, op->n.size );
+            op = SAllocUserTemp( FEAuxInfo( op->v.symbol, SHADOW_SYMBOL ), op->n.name_class, op->n.size );
         }
         return( op );
     default:
@@ -1813,8 +1807,8 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & after_value->u.n.name->c.int_value );
-        if( retv->u.n.name->c.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( shiftmask.u._32[I64LO32] & (unsigned_32)after_value->u.n.name->c.int_value );
+        if( (unsigned_32)retv->u.n.name->c.int_value != shiftmask.u._32[I64LO32] ) {
             DoAnd( left, mask, node );
         }
         if( retv->u.n.name->c.int_value != 0 ) {
@@ -1924,10 +1918,8 @@ static  an  TNBitAssign( tn node )
         rite = AddrGen( rhs->u.left );
         rite = BGUnary( O_POINTS, rite, node->tipe );
         retv = BGBinary( O_AND, rite, Int( mask ), node->tipe, TRUE );
-        BGDone( BGOpGets( O_AND, AddrCopy(left), Int( ~mask ),
-                  node->tipe, node->tipe ) );
-        BGDone( BGOpGets( O_OR, left, AddrCopy( retv ),
-                  node->tipe, node->tipe ) );
+        BGDone( BGOpGets( O_AND, AddrCopy(left), Int( ~mask ), node->tipe, node->tipe ) );
+        BGDone( BGOpGets( O_OR, left, AddrCopy( retv ), node->tipe, node->tipe ) );
         retv = TNBitShift( retv, lhs, TRUE );
         FreeTreeNode( rhs );
         FreeTreeNode( lhs );
@@ -1978,8 +1970,7 @@ an  TNCompare( tn node )
     label_handle    entry;
 
     entry = BGGetEntry();
-    retv = FoldConsCompare( node->u2.t.op, node->u.left,
-                 node->u2.t.rite, node->u.left->tipe );
+    retv = FoldConsCompare( node->u2.t.op, node->u.left, node->u2.t.rite, node->u.left->tipe );
     if( retv == NULL ) {
         if( node->u.left->kids >= node->u2.t.rite->kids ) {
             left = NotAddrGen( node->u.left );
@@ -2042,12 +2033,11 @@ static an   MakeBased( an left, an rite, type_def *tipe )
     near_type = TypeAddress( TY_NEAR_POINTER );
     short_type = TypeAddress( TY_UINT_2 );
     if( rite->format == NF_ADDR &&
-    ( rite->class == CL_ADDR_GLOBAL || rite->class == CL_ADDR_TEMP ) ) {
+      ( rite->class == CL_ADDR_GLOBAL || rite->class == CL_ADDR_TEMP ) ) {
         BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
         seg = AddrName( SegName( rite->u.n.name ), short_type );
         BGDone( rite );
-        seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length),
-                    TypePtr, TRUE );
+        seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, TRUE );
         BGDone( BGAssign( seg_dest, seg, short_type ) );
     } else {
         switch( rite->tipe->refno ) {
@@ -2059,8 +2049,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
             break;
         default:
             BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
-            seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length),
-                    TypePtr, TRUE );
+            seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, TRUE );
             BGDone( BGAssign( seg_dest, rite, short_type ) );
             break;
         }
@@ -2280,6 +2269,7 @@ static  an  TNCall( tn what, bool ignore_return )
     cg_sym_handle   sym;
     aux_handle      aux;
 
+    call = NULL;
     ignore_return=ignore_return;
     addr = what->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;

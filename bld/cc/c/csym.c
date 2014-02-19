@@ -521,7 +521,7 @@ SYM_HANDLE Sym0Look( int h, char *id )  /* look for symbol on level 0 */
 }
 
 
-local void ChkReference( SYM_ENTRY *sym, SYM_NAMEPTR name )
+local void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class != SC_EXTERN ) {
@@ -544,7 +544,7 @@ local void ChkReference( SYM_ENTRY *sym, SYM_NAMEPTR name )
 }
 
 
-local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
+local void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -569,7 +569,7 @@ local void ChkIncomplete( SYM_ENTRY *sym, SYM_NAMEPTR name )
 }
 
 
-local void ChkDefined( SYM_ENTRY *sym, SYM_NAMEPTR name )
+local void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class == SC_STATIC ) {
@@ -631,7 +631,7 @@ local  void InitExtName( struct xlist **where  )
     *where = NULL;
 }
 
-local void ChkExtName( struct xlist **link, SYM_ENTRY *sym, SYM_NAMEPTR name  )
+local void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
@@ -694,7 +694,7 @@ static  void    Copy8( char const *nstr, char *name )
 
 #define BUCKETS 7
 
-local int SymBucket( SYM_ENTRY *sym )   /* determine bucket # for symbol */
+local int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
 {
     int             bucket;
     unsigned        size;

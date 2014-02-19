@@ -189,7 +189,7 @@ static bool StackOp( instruction *ins )
     pointer.
 */
 {
-    int     i;
+    int         i;
     hw_reg_set  sp;
     name        *op;
 
@@ -564,7 +564,7 @@ static void *AnnointADag( data_dag *dag )
     depends on (height).
 */
 {
-    unsigned        max_cycle_count;
+    instruction_id  max_cycle_count;
     data_dag        *pred;
     dep_list_entry  *dep;
 
@@ -575,7 +575,9 @@ static void *AnnointADag( data_dag *dag )
         pred->anc_count++;
         if( !pred->visited )
             SafeRecurseCG( (func_sr)AnnointADag, pred );
-        if( pred->height > max_cycle_count ) max_cycle_count = pred->height;
+        if( pred->height > max_cycle_count ) {
+            max_cycle_count = pred->height;
+        }
     }
     dag->height = max_cycle_count + FUEntry( dag->ins )->opnd_stall;
     /* return a pointer to satisfy SafeRecurseCG */
@@ -942,7 +944,8 @@ static  void    SchedBlock( void )
     Reorder one block for maximum parallelism.
 */
 {
-    unsigned    num_instrs;
+    mem_out_action  old_memout;
+    unsigned        num_instrs;
 
     num_instrs = CountIns( SBlock );
     if( num_instrs > 2 ) {
@@ -954,7 +957,7 @@ static  void    SchedBlock( void )
            We're well and truly screwed if we run out of memory during
            ScheduleIns or FPPostSched
         */
-        SetMemOut( MO_FATAL );
+        old_memout = SetMemOut( MO_FATAL );
         ScheduleIns();
         /*
            We don't need the DAG anymore, so free it here to make it less
@@ -962,7 +965,7 @@ static  void    SchedBlock( void )
         */
         FreeDataDag();
         FPPostSched( SBlock );
-        SetMemOut( MO_SUICIDE );
+        SetMemOut( old_memout );
     }
 }
 

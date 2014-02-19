@@ -36,7 +36,7 @@
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
-extern  int             OptInsSize( oc_class, oc_dest_attr );
+extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
 
 
 extern  ins_entry       *NewInstr( any_oc *oc )
@@ -80,8 +80,8 @@ extern  bool    InstrFrlFree( void )
 }
 
 
-extern  label_handle AddNewLabel( ins_entry *new, int align )
-/***************************************************************/
+extern  label_handle AddNewLabel( ins_entry *new, obj_length align )
+/******************************************************************/
 {
     label_handle    lbl;
     any_oc          oc;
@@ -102,7 +102,7 @@ extern  label_handle AddNewLabel( ins_entry *new, int align )
 #endif
     AddInstr( NewInstr( &oc ), new );
     _SetStatus( lbl, DYINGLABEL );
-    optreturn( lbl );
+  optreturn( lbl );
 }
 
 

@@ -104,7 +104,7 @@ extern  void    CalcMemLimit( void )
 extern  void    FlushOpt( void )
 /******************************/
 {
-    FlushSomeOpt( -1 );
+    FlushSomeOpt( (pointer_int)-1 );
 }
 
 
@@ -139,7 +139,7 @@ extern  void    BlowAwayFreeLists( void )
 
 
 extern  bool    MemCheck( size_t size )
-/**********************************/
+/*************************************/
 {
     if( FEMoreMem( size ) ) return( TRUE );
     if( FreeObjCache() ) return( TRUE );

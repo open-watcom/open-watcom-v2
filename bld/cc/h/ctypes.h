@@ -46,8 +46,8 @@ typedef dbg_type        dbug_type;
 typedef signed_64       int64;
 typedef unsigned_64     uint64;
 
-typedef void            *SYM_HANDLE;
-typedef SYM_HANDLE      sym_handle;
+typedef void            *sym_handle;
+typedef sym_handle      SYM_HANDLE;
 
 #define L       I64LO32
 #define H       I64HI32
@@ -338,7 +338,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
         unsigned char is_parm    : 1;
         unsigned char rent       : 1;
     } attribs;
-} SYM_ENTRY, *SYMPTR;
+} symbol, SYM_ENTRY, *SYMPTR;
 
 typedef struct parm_entry {
     struct  parm_entry      *next_parm;

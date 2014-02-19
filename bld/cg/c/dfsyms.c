@@ -298,7 +298,7 @@ static void CLIFree( void *p ) {
     CGFree( p );
 }
 
-static back_handle MakeLabel( void ){
+static back_handle  MakeLabel( void ) {
     back_handle bck;
 
     bck = BENewBack( NULL );
@@ -885,8 +885,8 @@ static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
     }
     alt = UnLinkLoc( locals, parm->sym );
     if( alt != NULL ){
-        dbg_loc       alt_loc;
-        dbg_loc       *alt_lnk;
+        dbg_loc     alt_loc;
+        dbg_loc     *alt_lnk;
 
         alt_loc = alt->loc;      // skip down to loc base
         alt_lnk = &alt_loc->next;

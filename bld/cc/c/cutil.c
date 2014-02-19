@@ -124,7 +124,7 @@ void ExpectStructUnionTag( void )
 }
 
 
-SYM_NAMEPTR SymName( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
+SYM_NAMEPTR SymName( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     SYM_HASHPTR hsym;
 
@@ -138,7 +138,7 @@ SYM_NAMEPTR SymName( SYM_ENTRY *sym, SYM_HANDLE sym_handle )
 }
 
 
-void CErrSymName( int err, SYM_ENTRY *sym, SYM_HANDLE sym_handle )
+void CErrSymName( int err, SYMPTR sym, SYM_HANDLE sym_handle )
 {
     CErr2p( err, SymName( sym, sym_handle ) );
 }
