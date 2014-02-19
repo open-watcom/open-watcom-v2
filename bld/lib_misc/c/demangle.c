@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-//#define ZZ_LEN_3
+#define ZZ_LEN_3
 
 #ifdef __DIP__
 #define __NO_STACK_CHECKING__
