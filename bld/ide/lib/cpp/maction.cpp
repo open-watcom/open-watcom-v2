@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "maction.hpp"
 #include "mconfig.hpp"
+#include "maction.hpp"
 #include "wobjfile.hpp"
 #include "wfilenam.hpp"
-#include "mcommand.hpp"
 
 Define( MAction )
 

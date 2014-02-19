@@ -30,13 +30,11 @@
 ****************************************************************************/
 
 
-#include "mcompon.hpp"
-#include "mconfig.hpp"
-#include "mworkfil.hpp"
-#include "mproject.hpp"
-#include "msymbol.hpp"
-#include "mswitch.hpp"
 #include "wobjfile.hpp"
+#include "mproject.hpp"
+#include "mcompon.hpp"
+#include "mworkfil.hpp"
+#include "msymbol.hpp"
 #include "mtarget.hpp"
 #include "wio.h"
 
@@ -109,7 +107,7 @@ void WEXPORT MComponent::readSelf( WObjectFile& p )
                 _config->setKludge( 4 );
             }
         }
-        _config->kludgeString( _mask );
+        _config->kludgeMask( _mask );
         _config->zapMask( _mask );
     }
     p.readObject( &_autodepend );

@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
+#include "mconfig.hpp"
 #include "mvswitch.hpp"
 #include "mcswitch.hpp"
 #include "mrswitch.hpp"
 #include "mc2swtch.hpp"
-#include "mconfig.hpp"
-#include "mtool.hpp"
 #include "mfamily.hpp"
 #include "wobjfile.hpp"
 

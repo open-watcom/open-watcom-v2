@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "mrswitch.hpp"
 #include "wobjfile.hpp"
+#include "mtool.hpp"
+#include "mrswitch.hpp"
 #include "mrstate.hpp"
 
 Define( MRSwitch )

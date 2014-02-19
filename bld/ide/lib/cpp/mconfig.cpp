@@ -31,7 +31,6 @@
 
 
 #include "mconfig.hpp"
-#include "mtool.hpp"
 #include "mrule.hpp"
 #include "mtarget.hpp"
 #include "mtoolitm.hpp"
@@ -524,7 +523,7 @@ void MConfig::zapMask( WString& mask )
     }
 }
 
-void MConfig::kludgeString( WString& str )
+void MConfig::kludgeMask( WString& str )
 {
     if( _kludge ) {
         WString temp;

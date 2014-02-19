@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#include "mcommand.hpp"
 #include "wfilenam.hpp"
-#include "mtool.hpp"
-#include "mswitch.hpp"
 #include "wobjfile.hpp"
 #include "mconfig.hpp"
 
@@ -144,7 +141,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
             }
         } else if( cmd[i] == '\r' ) {
             // skip \r
-			i++;
+                        i++;
         } else {
             com.concat( cmd[i++ ] );
         }

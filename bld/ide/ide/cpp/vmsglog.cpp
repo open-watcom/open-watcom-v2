@@ -47,7 +47,6 @@ extern "C" {
 #include "vpemain.hpp"
 #include "vmsglog.hpp"
 #include "mproject.hpp"
-#include "mcommand.hpp"
 #include "wstrlist.hpp"
 #include "wlistbox.hpp"
 #include "wstring.hpp"
@@ -63,8 +62,6 @@ extern "C" {
 #include "wprocess.hpp"
 #include "wsystem.hpp"
 #include "wpshbttn.hpp"
-
-#include "mconfig.hpp"
 
 #define LOG_HELP_KEY    GUI_KEY_F1
 #define LOG_ESCAPE_KEY  GUI_KEY_ESCAPE

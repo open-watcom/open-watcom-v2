@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
+#include "wobjfile.hpp"
 #include "mconfig.hpp"
 #include "mfamily.hpp"
-#include "wobjfile.hpp"
 #include "mtypo.hpp"
-#include "mtool.hpp"
 
 Define( MTool )
 

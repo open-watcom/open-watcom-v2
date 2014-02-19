@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "mtarget.hpp"
-#include "mconfig.hpp"
 #include "wobjfile.hpp"
+#include "mconfig.hpp"
+#include "mtarget.hpp"
 
 Define( MTarget )
 

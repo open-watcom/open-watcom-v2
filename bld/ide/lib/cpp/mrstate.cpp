@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "mrstate.hpp"
-#include "mconfig.hpp"
 #include "wobjfile.hpp"
+#include "mconfig.hpp"
+#include "mrstate.hpp"
 #include "mrswitch.hpp"
 
 Define( MRState )

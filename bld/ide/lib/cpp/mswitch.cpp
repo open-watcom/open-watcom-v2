@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include "mswitch.hpp"
 #include "wobjfile.hpp"
-#include "mstate.hpp"
 #include "mconfig.hpp"
+#include "mstate.hpp"
 
 Define( MSwitch )
 
