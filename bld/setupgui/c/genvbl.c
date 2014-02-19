@@ -342,8 +342,8 @@ extern void SetDefaultGlobalVarList( void )
     {
         DWORD   version = GetVersion();
         if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
-            SetVariableByName( "IsWin64", "1" );
-            SetVariableByName( "IsWin32", "0" );
+            SetVariableByName( "IsWin64", "0" );
+            SetVariableByName( "IsWin32", "1" );
             SetVariableByName( "IsWin32s", "0" );
             SetVariableByName( "IsWinNT", "1" );
             SetVariableByName( "IsWinNT40", "1" );

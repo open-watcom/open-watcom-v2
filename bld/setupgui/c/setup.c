@@ -223,14 +223,18 @@ static bool CheckWow64( void )
 {
     DWORD   version = GetVersion();
     if( version < 0x80000000 && LOBYTE( LOWORD( version ) ) >= 5 && IsWOW64() ) {
-        char *msg = "!!! Use 64-bit installer on 64-bit host !!!";
+        char *msg = "You are using 32-bit installer on 64-bit host\n"
+                    "It is recommended to use 64-bit installer\n"
+                    "\ton 64-bit host\n"
+                    "Press OK button to continue with installation\n"
+                    "\tor Cancel button to abort it\n";
 
         InitGlobalVarList();
         SetVariableByName( "IDS_USEINST64BIT", "%s");
-        MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK, msg );
-
-        /* return TRUE to terminate installer */
-        return( TRUE );
+        if( MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK_CANCEL, msg ) != GUI_RET_OK ) {
+            /* return TRUE to terminate installer */
+            return( TRUE );
+        }
     }
     return( FALSE );
 }
