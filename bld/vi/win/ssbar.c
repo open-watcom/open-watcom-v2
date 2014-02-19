@@ -323,7 +323,7 @@ static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     return( 0L );
 }
 
-WINEXPORT long CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_NCHITTEST:
