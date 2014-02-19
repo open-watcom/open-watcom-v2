@@ -327,8 +327,8 @@ static void LabelReloc( segment_id seg, back_handle bck, offset disp )
     SetOP( old );
 }
 
-extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, lf_values tipe )
-/*** Put a back sym out**********************************************************/
+extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, dbg_type tipe )
+/*** Put a back sym out***********************************************************/
 {
     cs_ldata    *ptr;
     void        *ptr1;
@@ -349,8 +349,8 @@ extern  void    CVOutBck( cv_out *out, back_handle bck, offset add, lf_values ti
     buffEnd( out );
 }
 
-static  void FrameVar( cv_out *out, const char *nm, lf_values tipe, int disp )
-/***  local rel to  frame  **************************************************/
+static  void FrameVar( cv_out *out, const char *nm, dbg_type tipe, int disp )
+/***  local rel to  frame  *************************************************/
 #if 1     // it seems like BPREL works for AXP so I'll give it a try
 {
 //#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
@@ -377,7 +377,7 @@ static  void FrameVar( cv_out *out, const char *nm, lf_values tipe, int disp )
 extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
 /*** Put a sym in out ********************************/
 {
-    lf_values   tipe;
+    dbg_type    tipe;
     fe_attr     attr;
     char        *nm;
 
@@ -407,7 +407,7 @@ extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
 extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
 /******************************************************************/
 {
-    lf_values   tipe;
+    dbg_type    tipe;
     cv_out      out[1];
     fe_attr     attr;
     cs_gdata     *ptr;
@@ -459,8 +459,8 @@ extern  void    CVTypedef( const char *nm, dbg_type tipe )
     buffEnd( out );
 }
 
-extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, lf_values tipe )
-/*** Put a const sym to out********************************************************/
+extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, dbg_type tipe )
+/*** Put a const sym to out*******************************************************/
 {
     cs_constant *ptr;
     void        *ptr1;
@@ -477,7 +477,7 @@ extern  void    CVOutSymICon( cv_out *out, const char *nm, int val, lf_values ti
     buffEnd( out );
 }
 
-extern  void    CVSymIConst( const char *nm, int val, lf_values tipe )
+extern  void    CVSymIConst( const char *nm, int val, dbg_type tipe )
 /*** emit UDT********************************************************/
 {
     cv_out      out[1];
@@ -493,8 +493,8 @@ extern  void    CVSymIConst( const char *nm, int val, lf_values tipe )
 
 }
 
-extern  void    CVSymIConst64( const char *nm, signed_64 val, lf_values tipe )
-/*** emit UDT****************************************************************/
+extern  void    CVSymIConst64( const char *nm, signed_64 val, dbg_type tipe )
+/*** emit UDT***************************************************************/
 {
     cv_out      out[1];
     cs_constant *ptr;
@@ -564,9 +564,9 @@ static  void DumpParms( dbg_local *parm, dbg_local **locals )
         next = parm->link;
         alt = UnLinkLoc( locals, parm->sym );
         if( alt != NULL ){
-            lf_values   tipe;
+            dbg_type    tipe;
             type_length offset;
-            name        *t;
+            name       *t;
 
             if( alt->kind == DBG_SYM_VAR ){
                 tipe = FEDbgType( alt->sym );
@@ -599,10 +599,10 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
     cg_sym_handle       sym;
-    lf_values           tipe;
+    dbg_type            tipe;
     fe_attr             attr;
-    char                *name;
-    cs_gproc            *ptr;
+    char               *name;
+    cs_gproc           *ptr;
     sg_index            kind;
     cv_out              out[1];
 
@@ -752,7 +752,7 @@ static  void    DumpLocals( dbg_local *local )
     dbg_local   *next;
     type_length offset;
     cv_out      out[1];
-    lf_values   tipe;
+    dbg_type    tipe;
     name        *t;
 
     for( ; local != NULL; local = next ) {
@@ -783,7 +783,7 @@ static  void    DumpLocals( dbg_local *local )
 }
 
 
-extern  void    CVOutLocal( cv_out *out, name *t, int disp, lf_values tipe )
+extern  void    CVOutLocal( cv_out *out, name *t, int disp,  dbg_type tipe )
 /*** Put a local back sym out**********************************************/
 {
     type_length offset;

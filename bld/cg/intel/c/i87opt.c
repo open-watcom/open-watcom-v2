@@ -345,8 +345,7 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
                     ReserveStack( state, new_ins, addr->tipe->length );
                 }
 #endif
-                addr->format = NF_ADDR;     /* so instruction doesn't get freed! */
-                BGDone( addr );
+                BGDone( addr ); /* so ins DOES get freed*/
                 parm->ins = new_ins;
             }
         }

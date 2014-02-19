@@ -337,7 +337,7 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
     char                **argv = NULL;
     int                 ret;
 
-//    break_flag = FALSE;                 // clear any pending IDEStopRunning's
+    break_flag = FALSE;                 // clear any pending IDEStopRunning's
     *fatal_error = FALSE;
     FatalEnv = &env;
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */

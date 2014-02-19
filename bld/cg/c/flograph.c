@@ -389,7 +389,7 @@ static  void    NestingDepth( void )
 /**********************************/
 {
     block               *blk;
-    interval_depth      level;
+    int                 level;
     interval_def        *interval;
     block_edge          *edge;
     block               *target;

@@ -262,9 +262,9 @@ extern  void    SetInOut( block *blk )
     if( blk->class & RETURN ) {
         HW_TurnOn( blk->ins.hd.live.regs, CurrProc->state.return_reg );
     }
-    _LBitInit( blk->ins.hd.live.within_block, 0 );
+    _LBitInit( blk->ins.hd.live.within_block, EMPTY );
     _GBitAssign( blk->ins.hd.live.out_of_block, blk->dataflow->out );
-    _LBitInit( blk->available_bit, ~0U );
+    _LBitInit( blk->available_bit, ~EMPTY );
 }
 
 

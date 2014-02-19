@@ -564,7 +564,7 @@ static void *AnnointADag( data_dag *dag )
     depends on (height).
 */
 {
-    instruction_id  max_cycle_count;
+    unsigned        max_cycle_count;
     data_dag        *pred;
     dep_list_entry  *dep;
 
@@ -944,8 +944,7 @@ static  void    SchedBlock( void )
     Reorder one block for maximum parallelism.
 */
 {
-    mem_out_action  old_memout;
-    unsigned        num_instrs;
+    unsigned    num_instrs;
 
     num_instrs = CountIns( SBlock );
     if( num_instrs > 2 ) {
@@ -957,7 +956,7 @@ static  void    SchedBlock( void )
            We're well and truly screwed if we run out of memory during
            ScheduleIns or FPPostSched
         */
-        old_memout = SetMemOut( MO_FATAL );
+        SetMemOut( MO_FATAL );
         ScheduleIns();
         /*
            We don't need the DAG anymore, so free it here to make it less
@@ -965,7 +964,7 @@ static  void    SchedBlock( void )
         */
         FreeDataDag();
         FPPostSched( SBlock );
-        SetMemOut( old_memout );
+        SetMemOut( MO_SUICIDE );
     }
 }
 

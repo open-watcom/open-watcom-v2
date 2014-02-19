@@ -104,7 +104,7 @@ extern  void    CalcMemLimit( void )
 extern  void    FlushOpt( void )
 /******************************/
 {
-    FlushSomeOpt( (pointer_int)-1 );
+    FlushSomeOpt( -1 );
 }
 
 

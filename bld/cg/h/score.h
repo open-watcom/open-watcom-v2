@@ -62,9 +62,9 @@ typedef struct score_info {
         signed_32               offset;
         union  name             *base;  /*  indexed names only */
         union {
-            temp_handle         t;
-            struct var_name     *v;
-            void                *p;
+          struct temp_name      *t;
+          struct var_name       *v;
+          void                  *p;
         } symbol;
         int                     index_reg;      /*  indexed names only */
         int                     scale;          /*  indexed names only */

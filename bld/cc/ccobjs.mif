@@ -10,14 +10,14 @@ drv_objs = &
 # stand-alone executable
 #
 exe_objs = &
-    idedrv.obj &
-    idemsgfm.obj &
-    maindrv.obj
+    cintmain.obj
 
 #
 # DLL stuff
 #
-dll_objs =
+dll_objs = &
+    $(dll_subdir)/ideentry.obj &
+    $(dll_subdir)/idemsgpr.obj
 
 #
 # common files
@@ -81,9 +81,7 @@ common_objs = &
     $(_subdir_)exprtree.obj &
     $(_subdir_)treewalk.obj &
     $(_subdir_)pathlist.obj &
-    $(_subdir_)mngless.obj &
-    $(_subdir_)ideentry.obj &
-    $(_subdir_)idemsgpr.obj
+    $(_subdir_)mngless.obj
 
 !ifeq release 0
 cc_debug_objs = $(_subdir_)cfedump.obj
