@@ -20,7 +20,7 @@ if not exist %OWOBJDIR% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
 %OWBINDIR%\wmake -f ..\binmake clean %OWBUILDER_OUTPUT%
-%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe rm.exe %OWBUILDER_OUTPUT%
+%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe %OWBUILDER_OUTPUT%
 if errorlevel == 1 goto error_exit
 cd %OWSRCDIR%
 builder boot
