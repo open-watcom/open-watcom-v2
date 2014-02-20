@@ -19,6 +19,8 @@ PASS compiling deque02
 PASS executing deque02
 PASS compiling fun01
 PASS executing fun01
+PASS compiling fwrd01
+PASS executing fwrd01
 PASS compiling iter01
 PASS executing iter01
 PASS compiling lim01
@@ -79,8 +81,6 @@ PASS compiling set01
 PASS executing set01
 PASS compiling set02
 PASS executing set02
-PASS compiling slist01
-PASS executing slist01
 PASS compiling smtptr01
 PASS executing smtptr01
 PASS compiling string01

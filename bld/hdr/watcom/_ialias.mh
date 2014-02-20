@@ -12,6 +12,7 @@
 #pragma include_alias( <cinttypes>,     <cinttype>   )
 #pragma include_alias( <exception>,     <exceptio>   )
 #pragma include_alias( <exception.h>,   <exceptio.h> )
+#pragma include_alias( <forward_list>,  <forward_>   )
 #pragma include_alias( <functional>,    <function>   )
 #pragma include_alias( <stdexcept>,     <stdexcep>   )
 #pragma include_alias( <stdexcept.h>,   <stdexcep.h> )
