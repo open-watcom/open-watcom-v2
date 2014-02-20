@@ -54,6 +54,7 @@ template = &
         deque01$(ext)   &
         deque02$(ext)   &
         fun01$(ext)     &
+        fwrd01$(ext)    &
         iter01$(ext)    &
         lim01$(ext)     &
         list01$(ext)    &
@@ -68,7 +69,6 @@ template = &
         stack01$(ext)   &
         set01$(ext)     &
         set02$(ext)     &
-        slist01$(ext)   &
         smtptr01$(ext)  &
         string01$(ext)  &
         string02$(ext)  &

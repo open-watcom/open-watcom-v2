@@ -63,6 +63,7 @@
 !inject float.h                     hdos hlnx hqnx
 !inject fnmatch.h                   hdos hlnx hqnx
 !inject form.h                                hqnx
+!inject forward_         noext hcpp
 !inject fstream          noext hcpp
 !inject fstream.h              hcpp
 !inject ftw.h                                 hqnx
@@ -132,7 +133,6 @@
 !inject shadow.h                              hqnx
 !inject share.h                     hdos hlnx hqnx
 !inject signal.h                    hdos hlnx hqnx
-!inject slist            noext hcpp
 !inject sstream          noext hcpp
 !inject sstream.h              hcpp
 !inject stack            noext hcpp

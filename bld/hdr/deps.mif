@@ -89,6 +89,7 @@ bitset_deps    = bitset.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 complex_deps   = complex.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
 deque_deps     = deque.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 exception_deps = exceptio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../throws.sp
+forward_deps   = forward_.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 function_deps  = function.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 iterator_deps  = iterator.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 list_deps      = list.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
@@ -99,7 +100,6 @@ numeric_deps   = numeric.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 queue_deps     = queue.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 random_deps    = random.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 set_deps       = set.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-slist_deps     = slist.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 stack_deps     = stack.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 stdexcept_deps = stdexcep.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp
 typeinfo_deps  = typeinfo.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp
@@ -114,6 +114,7 @@ bitset       : $(bitset_deps)
 complex      : $(complex_deps)
 deque        : $(deque_deps)
 exceptio     : $(exception_deps)
+forward_     : $(forward_deps)
 function     : $(function_deps)
 iterator     : $(iterator_deps)
 limits       : $(limits_deps)
@@ -126,7 +127,6 @@ numeric      : $(numeric_deps)
 queue        : $(queue_deps)
 random       : $(random_deps)
 set          : $(set_deps)
-slist        : $(slist_deps)
 stack        : $(stack_deps)
 stdexcep     : $(stdexcept_deps)
 string       : $(string_deps)
