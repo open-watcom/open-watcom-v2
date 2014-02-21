@@ -53,6 +53,8 @@
 #include "pmake.h"
 #include "wio.h"
 
+#define WILD_METAS      "*?"
+
 typedef struct dd {
   struct dd     *next;
   char          attr;
@@ -149,7 +151,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         --end;
     }
     end[1] = '\0';
-    if( strchr( srcdir, '*' ) == NULL && strchr( srcdir, '?' ) == NULL ) {
+    if( strpbrk( srcdir, WILD_METAS ) == NULL ) {
         /* no wild cards */
         head = Alloc( sizeof( *head ) );
         head->next = NULL;
@@ -551,13 +553,48 @@ static int IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
 }
 
+static int remove_item( const char *name, bool dir )
+{
+    int         rc;
+    char        *err_msg;
+    char        *inf_msg;
+
+    if( dir ) {
+        err_msg = "Unable to delete directory %s\n";
+        inf_msg = "Directory %s deleted\n";
+        rc = rmdir( name );
+    } else {
+        err_msg = "Unable to delete file %s\n";
+        inf_msg = "File %s deleted\n";
+        rc = unlink( name );
+    }
+    if( rc != 0 && fflag && errno == EACCES ) {
+        rc = chmod( dir, PMODE_RW );
+        if( rc == 0 ) {
+            if( dir ) {
+                rc = rmdir( name );
+            } else {
+                rc = unlink( name );
+            }
+        }
+    }
+    if( rc != 0 && fflag && errno == ENOENT ) {
+        rc = 0;
+    }
+    if( rc != 0 ) {
+        rc = errno;
+        Log( FALSE, err_msg, name );
+        return( rc );
+    } else if( !sflag ) {
+        Log( FALSE, inf_msg, name );
+    }
+    return( 0 );
+}
+
 /* DoRM - perform RM on a specified file */
 static int DoRM( const char *f )
 {
-    iolist              *fhead = NULL;
-    iolist              *ftail = NULL;
     iolist              *tmp;
-
     iolist              *dhead = NULL;
     iolist              *dtail = NULL;
 
@@ -572,7 +609,7 @@ static int DoRM( const char *f )
     int                 rc;
     int                 retval = 0;
 
-    /* separate file name to path and name parts */
+    /* separate file name to path and file name parts */
     len = strlen( f );
     for( i = len; i > 0; --i ) {
         char ch = f[i - 1];
@@ -580,7 +617,13 @@ static int DoRM( const char *f )
             break;
         }
     }
-    memcpy( fpath, f, i );
+    /* if no path then use current directory */
+    if( i == 0 ) {
+        fpath[i++] = '.';
+        fpath[i++] = '/';
+    } else {
+        memcpy( fpath, f, i );
+    }
     fpathend = fpath + i;
     *fpathend = '\0';
     memcpy( fname, f + i, len - i + 1 );
@@ -590,7 +633,7 @@ static int DoRM( const char *f )
         return( ENOENT );
     }
 
-    while( ( nd = readdir( d ) ) != NULL ) {
+    while( (nd = readdir( d )) != NULL ) {
 #ifdef __UNIX__
         struct stat buf;
 
@@ -611,22 +654,23 @@ static int DoRM( const char *f )
         if( nd->d_attr & _A_SUBDIR ) {
 #endif
             /* process a directory */
-            if( !IsDotOrDotDot( nd->d_name ) ) {
-                if( rflag ) {
-                    /* build directory list */
-                    tmp = Alloc( offsetof( iolist, name ) + len );
-                    tmp->next = NULL;
-                    if( dtail == NULL ) {
-                        dhead = tmp;
-                    } else {
-                        dtail->next = tmp;
-                    }
-                    dtail = tmp;
-                    memcpy( tmp->name, fpath, len );
+            if( IsDotOrDotDot( nd->d_name ) )
+                continue;
+
+            if( rflag ) {
+                /* build directory list */
+                tmp = Alloc( offsetof( iolist, name ) + len );
+                tmp->next = NULL;
+                if( dtail == NULL ) {
+                    dhead = tmp;
                 } else {
-                    Log( FALSE, "%s is a directory, use -r\n", fpath );
-                    retval = EACCES;
+                    dtail->next = tmp;
                 }
+                dtail = tmp;
+                memcpy( tmp->name, fpath, len );
+            } else {
+                Log( FALSE, "%s is a directory, use -r\n", fpath );
+                retval = EACCES;
             }
 #ifdef __UNIX__
         } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !fflag ) {
@@ -636,82 +680,23 @@ static int DoRM( const char *f )
             Log( FALSE, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
-            /* build file list */
-            tmp = Alloc( offsetof( iolist, name ) + len );
-            tmp->next = NULL;
-            if( ftail == NULL ) {
-                fhead = tmp;
-            } else {
-                ftail->next = tmp;
-            }
-            ftail = tmp;
-            memcpy( tmp->name, fpath, len );
-#ifndef __UNIX__
-            tmp->attr = nd->d_attr;
-#endif
-        }
-    }
-    closedir( d );
-    /* process any files found */
-    for( tmp = fhead; tmp != NULL; tmp = fhead ) {
-        fhead = tmp->next;
-#ifndef __UNIX__
-        if( tmp->attr & _A_RDONLY ) {
-            _dos_setfileattr( tmp->name, _A_NORMAL );
-        }
-#endif
-        rc = remove( tmp->name );
-#ifdef __UNIX__
-        if( rc == -1 && fflag && errno == EACCES ) {
-            rc = chmod( tmp->name, PMODE_RW );
-            if( rc != -1 ) {
-                rc = remove( tmp->name );
-            }
-        }
-#endif
-        if( rc == -1 ) {
-            retval = errno;
-            Log( FALSE, "Unable to delete file %s\n", tmp->name );
-        } else if( !sflag ) {
-            Log( FALSE, "File %s deleted\n", tmp->name );
-        }
-        free( tmp );
-    }
-
-    /* process any directories found */
-    if( rflag ) {
-        for( tmp = dhead; tmp != NULL; tmp = dhead ) {
-            dhead = tmp->next;
-            rc = RecursiveRM( tmp->name );
-            free( tmp );
+            rc = remove_item( fpath, FALSE );
             if( rc != 0 ) {
                 retval = rc;
             }
         }
     }
-    return( retval );
-}
-
-/* DoRMdir - perform RM on a specified directory */
-static int DoRMdir( const char *dir )
-{
-    int         rc;
-
-    rc = rmdir( dir );
-    if( rc == -1 && fflag && errno == EACCES ) {
-        rc = chmod( dir, PMODE_RW );
-        if( rc != -1 ) {
-            rc = rmdir( dir );
+    closedir( d );
+    /* process any directories found */
+    for( tmp = dhead; tmp != NULL; tmp = dhead ) {
+        dhead = tmp->next;
+        rc = RecursiveRM( tmp->name );
+        if( rc != 0 ) {
+            retval = rc;
         }
+        free( tmp );
     }
-    if( rc == -1 ) {
-        rc = errno;
-        Log( FALSE, "Unable to delete directory %s\n", dir );
-        return( rc );
-    } else if( !sflag ) {
-        Log( FALSE, "Directory %s deleted\n", dir );
-    }
-    return( 0 );
+    return( retval );
 }
 
 /* RecursiveRM - do an RM recursively on all files */
@@ -726,7 +711,7 @@ static int RecursiveRM( const char *dir )
     strcat( fname, "/*.*" );
     rc = DoRM( fname );
     /* purge the directory */
-    rc2 = DoRMdir( dir );
+    rc2 = remove_item( dir, TRUE );
     if( rc == 0 )
         rc = rc2;
     return( rc );
@@ -789,7 +774,7 @@ static int ProcRm( char *cmd )
                 if( rc != 0 ) {
                     retval = rc;
                 }
-            } else if( strchr( buffer, '*' ) != NULL || strchr( buffer, '?' ) != NULL ) {
+            } else if( strpbrk( srcdir, WILD_METAS ) != NULL ) {
                 // wild cards is not processed for directories
                 continue;
             } else {
