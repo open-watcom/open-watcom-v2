@@ -22,7 +22,7 @@ char *GetPathElement( const char *path_list, const char *end, char **path )
     is_blank = TRUE;
     while( path_list != end && (c = *path_list) != '\0' ) {
         path_list++;
-        if( IS_INCL_SEP( c ) ) {
+        if( IS_INCLUDE_LIST_SEP( c ) ) {
             if( !is_blank ) {
                 break;
             }
