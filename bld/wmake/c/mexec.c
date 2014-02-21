@@ -1658,6 +1658,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
     char                *fpathend;
 
     size_t              i;
+    size_t              j;
     size_t              len;
     DIR                 *d;
     struct dirent       *nd;
@@ -1671,6 +1672,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
             break;
         }
     }
+    j = i;
     /* if no path then use current directory */
     if( i == 0 ) {
         fpath[i++] = '.';
@@ -1680,11 +1682,14 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
     }
     fpathend = fpath + i;
     *fpathend = '\0';
-    memcpy( fname, f + i, len - i + 1 );
-#ifndef __UNIX__
-    if( strcmp( fname, MASK_ALL_ITEMS ) == 0 ) {
+#ifdef __UNIX__
+    memcpy( fname, f + j, len - j + 1 );
+#else
+    if( strcmp( f + j, MASK_ALL_ITEMS ) == 0 ) {
         fname[0] = '*';
         fname[1] = '\0';
+    } else {
+        memcpy( fname, f + j, len - j + 1 );
     }
 #endif
     d = opendir( fpath );
