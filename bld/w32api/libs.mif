@@ -242,5 +242,5 @@ $(dirs):
 
 clean: .SYMBOLIC
     rm -f *.obj *.lbc *.lib *.tmp *.err *.pch
-    !rm -rf $(dirs)
+    rm -rf $(dirs)
 

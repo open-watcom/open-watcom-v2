@@ -136,4 +136,4 @@ $($(system)_dirs):
 clean: .SYMBOLIC
     rm -f *.h *.hpp common.cnv
     rm -f $(noext)
-    !rm -rf $($(system)_dirs)
+    rm -rf $($(system)_dirs)

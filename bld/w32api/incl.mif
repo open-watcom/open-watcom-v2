@@ -453,4 +453,4 @@ $(dirs):
 
 clean: .SYMBOLIC
     rm -f *.h *.rh *.tmp *.lst *.err
-    !rm -rf $(dirs)
+    rm -rf $(dirs)

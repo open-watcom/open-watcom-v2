@@ -19,7 +19,7 @@ cdsay <PROJDIR>
 [ BLOCK <1> bootclean ]
 #======================
     echo rm -rf <OWOBJDIR>
-    rm -v -rf <OWOBJDIR>
+    rm -rf <OWOBJDIR>
 
 [ BLOCK . . ]
 #============
