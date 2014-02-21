@@ -45,6 +45,7 @@
 *.rex
 *.rtp
 *.sav
+*.so
 *.sym
 *.sys
 *.tmp
