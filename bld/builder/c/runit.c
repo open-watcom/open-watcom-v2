@@ -55,6 +55,12 @@
 
 #define WILD_METAS      "*?"
 
+#ifdef __UNIX__
+  #define MASK_ALL_ITEMS  "*"
+#else
+  #define MASK_ALL_ITEMS  "*.*"
+#endif
+
 typedef struct dd {
   struct dd     *next;
   char          attr;
@@ -569,7 +575,7 @@ static int remove_item( const char *name, bool dir )
         rc = unlink( name );
     }
     if( rc != 0 && fflag && errno == EACCES ) {
-        rc = chmod( dir, PMODE_RW );
+        rc = chmod( name, PMODE_RW );
         if( rc == 0 ) {
             if( dir ) {
                 rc = rmdir( name );
@@ -708,7 +714,7 @@ static int RecursiveRM( const char *dir )
 
     /* purge the files */
     strcpy( fname, dir );
-    strcat( fname, "/*.*" );
+    strcat( fname, "/" MASK_ALL_ITEMS );
     rc = DoRM( fname );
     /* purge the directory */
     rc2 = remove_item( dir, TRUE );
@@ -750,31 +756,33 @@ static int ProcRm( char *cmd )
         if( *cmd != '-' )
             break;
         ++cmd;
-        switch( *cmd++ ) {
-        case 'f':
-            fflag = TRUE;
-            break;
-        case 'R':
-        case 'r':
-            rflag = TRUE;
-            break;
-        case 'v':
-            sflag = FALSE;
-            break;
-        default:
-            return( 1 );
+        while( isalpha( *cmd ) ) {
+            switch( *cmd++ ) {
+            case 'f':
+                fflag = TRUE;
+                break;
+            case 'R':
+            case 'r':
+                rflag = TRUE;
+                break;
+            case 'v':
+                sflag = FALSE;
+                break;
+            default:
+                return( 1 );
+            }
         }
     }
 
     if( rflag ) {
         /* process -r option */
         while( (cmd = GetString( cmd, buffer )) != NULL ) {
-            if( strcmp( buffer, "*.*" ) == 0 ) {
+            if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
                 int rc = RecursiveRM( "." );
                 if( rc != 0 ) {
                     retval = rc;
                 }
-            } else if( strpbrk( srcdir, WILD_METAS ) != NULL ) {
+            } else if( strpbrk( buffer, WILD_METAS ) != NULL ) {
                 // wild cards is not processed for directories
                 continue;
             } else {
@@ -845,6 +853,8 @@ int RunIt( char *cmd, bool ignore_errors )
         res = ProcPMake( SkipBlanks( cmd + sizeof( "PMAKE" ) ), ignore_errors );
     } else if( BUILTIN( "RM" ) ) {
         res = ProcRm( SkipBlanks( cmd + sizeof( "RM" ) ) );
+    } else if( cmd[0] == '!' ) {
+        res = SysRunCommand( SkipBlanks( cmd + 1 ) );
     } else {
         res = SysRunCommand( cmd );
     }
