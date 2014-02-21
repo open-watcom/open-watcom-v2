@@ -633,6 +633,12 @@ static int DoRM( const char *f )
     fpathend = fpath + i;
     *fpathend = '\0';
     memcpy( fname, f + i, len - i + 1 );
+#ifndef __UNIX__
+    if( strcmp( fname, MASK_ALL_ITEMS ) == 0 ) {
+        fname[0] = '*';
+        fname[1] = '\0';
+    }
+#endif
     d = opendir( fpath );
     if( d == NULL ) {
         Log( FALSE, "File (%s) not found.\n", f );

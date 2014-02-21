@@ -489,5 +489,5 @@ BOOLEAN CacheExists( const char *fullpath )
         }
     }
 #endif
-    return( access( fullpath, 0 ) == 0 );
+    return( access( fullpath, F_OK ) == 0 );
 }

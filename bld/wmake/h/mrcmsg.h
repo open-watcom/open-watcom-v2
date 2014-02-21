@@ -95,7 +95,7 @@
 #define COULD_NOT_TOUCH                  40
 #define NO_DEF_CMDS_FOR_MAKE             41
 #define LAST_CMD_MAKING_RET_BAD          42
-#define SYSERR_DELETING_FILE             43
+#define SYSERR_DELETING_ITEM             43
 #define S_COMMAND_RET_BAD                44
 #define MAXIMUM_STRING_LENGTH            45
 #define BARF_CHARACTER                   46
@@ -193,7 +193,7 @@
 #define M_OLDEST_DATE                   183
 #define GETDATE_MSG                     184
 #define WILL_BE_BUILT_BECAUSE_OF        185
-#define DELETING_FILE                   186
+#define DELETING_ITEM                   186
 #define TARGET_FORCED_UPTODATE          187
 #define EXECING_CMD                     188
 #define CMD_RETCODE                     189
