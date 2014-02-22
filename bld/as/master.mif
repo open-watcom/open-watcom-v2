@@ -14,7 +14,7 @@ stand_subdir = stand
 
 .extensions: .rc .y .re .gh .msg
 
-additional_cleanup = *.c *.h *.re *.y $(stand_subdir)/*.pch
+additional_cleanup = *.c *.h *.re *.y
 
 additional_cleanup_subdir = $(stand_subdir)
 
