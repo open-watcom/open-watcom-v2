@@ -1,9 +1,8 @@
 clean: .SYMBOLIC .EXPLICIT
     rm -f *.obj *.o $(additional_cleanup)
-    @for %d in ($(dll_subdir) $(additional_cleanup_subdir)) do @if exist %d rm -f %d/*.obj %d/*.o %d/*.lst
-    @for %d in ($(dll_subdir) $(additional_cleanup_subdir)) do @if exist %d rmdir %d
+    rm -rf $(dll_subdir) $(additional_cleanup_subdir)
     @%make killnonobj
 
 killnonobj: .SYMBOLIC .EXPLICIT
-    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.rc *.dlg *.pdb
-    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.gh *.grc *.trk
+    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
+    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk *.pdb

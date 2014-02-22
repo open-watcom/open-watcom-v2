@@ -7,7 +7,7 @@ proj_name = wv
 wv_autodepends = .AUTODEPEND
 !endif
 
-additional_cleanup = *.u
+additional_cleanup = *.u *.gdl
 
 wv_trmem = 1
 
@@ -17,6 +17,12 @@ dig_os_dos_386 = dsx
 dig_os = $(host_os)
 !else
 dig_os = $(dig_os_$(host_os)_$(host_cpu))
+!endif
+
+!ifeq sys_windowed 1
+!ifeq host_os os2
+os2pm = 1
+!endif
 !endif
 
 !include cproj.mif
@@ -176,6 +182,31 @@ resname = wvuidll
 !endif
 resfile = $(resname).res
 
+wv_dialogs = &
+    dlgayn.gdl &
+    dlgbrk.gdl &
+    dlgcmd.gdl &
+    dlglist.gdl &
+    dlgnewp.gdl &
+    dlgoptn.gdl &
+    dlgvarx.gdl &
+    dlgamb.gdl &
+    dlgwind.gdl &
+    dlgstk.gdl &
+    dlghis.gdl &
+    dlgasync.gdl &
+    japayn.gdl &
+    japbrk.gdl &
+    japcmd.gdl &
+    japlist.gdl &
+    japnewp.gdl &
+    japoptn.gdl &
+    japvarx.gdl &
+    japamb.gdl &
+    japwind.gdl &
+    japstk.gdl &
+    japhis.gdl
+
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
@@ -228,7 +259,7 @@ rc_inc_dir_nt  = -I"$(rdir)/win"
 rc_inc_dir_os2 = -I"$(rdir)/os2"
 rc_inc_dir_win = -I"$(rdir)/win"
 
-rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)/dlgs" -I"$(rdir)"
+rc_inc_dirs = -I. $(rc_inc_dir_$(host_os)) -I"$(rdir)"
 rc_inc_dirs += -I"$(hdir)" $(aui_rc_inc_dirs) $(gui_inc_dirs) -I"$(dig_dir)/h"
 
 !ifeq sys_windowed 1
@@ -325,61 +356,61 @@ bitmaps = &
 
 !endif
 
-pmfont=-font=10.Helv
-pmfontj=-font=
+!ifeq os2pm 1
+dlg_command  = parsedlg -font=10.Helv $[@ $@
+dlgj_command = parsedlg -font= $[@ $@
+!else
+dlg_command  = cp $[@ $@
+dlgj_command = cp $[@ $@
+!endif
 
-dlgdir = $(rdir)/dlgs/
-!ifeq sys_windowed 1
-!ifeq host_os os2
-dlgdir =
-dlgayn.dlg : $(rdir)/dlgs/dlgayn.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgbrk.dlg : $(rdir)/dlgs/dlgbrk.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgcmd.dlg : $(rdir)/dlgs/dlgcmd.dlg
-        parsedlg $(pmfont) $[@ $@
-dlglist.dlg : $(rdir)/dlgs/dlglist.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgnewp.dlg : $(rdir)/dlgs/dlgnewp.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgoptn.dlg : $(rdir)/dlgs/dlgoptn.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgvarx.dlg : $(rdir)/dlgs/dlgvarx.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgamb.dlg : $(rdir)/dlgs/dlgamb.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgwind.dlg : $(rdir)/dlgs/dlgwind.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgstk.dlg : $(rdir)/dlgs/dlgstk.dlg
-        parsedlg $(pmfont) $[@ $@
-dlghis.dlg : $(rdir)/dlgs/dlghis.dlg
-        parsedlg $(pmfont) $[@ $@
-dlgasync.dlg : $(rdir)/dlgs/dlgasync.dlg
-        parsedlg $(pmfont) $[@ $@
-japayn.dlg : $(rdir)/dlgs/japayn.dlg
-        parsedlg $(pmfontj) $[@ $@
-japbrk.dlg : $(rdir)/dlgs/japbrk.dlg
-        parsedlg $(pmfontj) $[@ $@
-japcmd.dlg : $(rdir)/dlgs/japcmd.dlg
-        parsedlg $(pmfontj) $[@ $@
-japlist.dlg : $(rdir)/dlgs/japlist.dlg
-        parsedlg $(pmfontj) $[@ $@
-japnewp.dlg : $(rdir)/dlgs/japnewp.dlg
-        parsedlg $(pmfontj) $[@ $@
-japoptn.dlg : $(rdir)/dlgs/japoptn.dlg
-        parsedlg $(pmfontj) $[@ $@
-japvarx.dlg : $(rdir)/dlgs/japvarx.dlg
-        parsedlg $(pmfontj) $[@ $@
-japamb.dlg : $(rdir)/dlgs/japamb.dlg
-        parsedlg $(pmfontj) $[@ $@
-japwind.dlg : $(rdir)/dlgs/japwind.dlg
-        parsedlg $(pmfontj) $[@ $@
-japstk.dlg : $(rdir)/dlgs/japstk.dlg
-        parsedlg $(pmfontj) $[@ $@
-japhis.dlg : $(rdir)/dlgs/japhis.dlg
-        parsedlg $(pmfontj) $[@ $@
-!endif
-!endif
+dlgayn.gdl : $(rdir)/dlgs/dlgayn.dlg
+    $(dlg_command)
+dlgbrk.gdl : $(rdir)/dlgs/dlgbrk.dlg
+    $(dlg_command)
+dlgcmd.gdl : $(rdir)/dlgs/dlgcmd.dlg
+    $(dlg_command)
+dlglist.gdl : $(rdir)/dlgs/dlglist.dlg
+    $(dlg_command)
+dlgnewp.gdl : $(rdir)/dlgs/dlgnewp.dlg
+    $(dlg_command)
+dlgoptn.gdl : $(rdir)/dlgs/dlgoptn.dlg
+    $(dlg_command)
+dlgvarx.gdl : $(rdir)/dlgs/dlgvarx.dlg
+    $(dlg_command)
+dlgamb.gdl : $(rdir)/dlgs/dlgamb.dlg
+    $(dlg_command)
+dlgwind.gdl : $(rdir)/dlgs/dlgwind.dlg
+    $(dlg_command)
+dlgstk.gdl : $(rdir)/dlgs/dlgstk.dlg
+    $(dlg_command)
+dlghis.gdl : $(rdir)/dlgs/dlghis.dlg
+    $(dlg_command)
+dlgasync.gdl : $(rdir)/dlgs/dlgasync.dlg
+    $(dlg_command)
+
+japayn.gdl : $(rdir)/dlgs/japayn.dlg
+    $(dlgj_command)
+japbrk.gdl : $(rdir)/dlgs/japbrk.dlg
+    $(dlgj_command)
+japcmd.gdl : $(rdir)/dlgs/japcmd.dlg
+    $(dlgj_command)
+japlist.gdl : $(rdir)/dlgs/japlist.dlg
+    $(dlgj_command)
+japnewp.gdl : $(rdir)/dlgs/japnewp.dlg
+    $(dlgj_command)
+japoptn.gdl : $(rdir)/dlgs/japoptn.dlg
+    $(dlgj_command)
+japvarx.gdl : $(rdir)/dlgs/japvarx.dlg
+    $(dlgj_command)
+japamb.gdl : $(rdir)/dlgs/japamb.dlg
+    $(dlgj_command)
+japwind.gdl : $(rdir)/dlgs/japwind.dlg
+    $(dlgj_command)
+japstk.gdl : $(rdir)/dlgs/japstk.dlg
+    $(dlgj_command)
+japhis.gdl : $(rdir)/dlgs/japhis.dlg
+    $(dlgj_command)
 
 rcfiles = &
     $(gui_dir)/h/gui.rc &
@@ -401,29 +432,7 @@ rcfiles = &
     $(hdir)/dlgwind.h &
     $(hdir)/dlgstk.h &
     $(hdir)/dlgasync.h &
-    $(dlgdir)dlgayn.dlg &
-    $(dlgdir)dlgbrk.dlg &
-    $(dlgdir)dlgcmd.dlg &
-    $(dlgdir)dlglist.dlg &
-    $(dlgdir)dlgnewp.dlg &
-    $(dlgdir)dlgoptn.dlg &
-    $(dlgdir)dlgvarx.dlg &
-    $(dlgdir)dlgamb.dlg &
-    $(dlgdir)dlgwind.dlg &
-    $(dlgdir)dlgstk.dlg &
-    $(dlgdir)dlghis.dlg &
-    $(dlgdir)dlgasync.dlg &
-    $(dlgdir)japayn.dlg &
-    $(dlgdir)japbrk.dlg &
-    $(dlgdir)japcmd.dlg &
-    $(dlgdir)japlist.dlg &
-    $(dlgdir)japnewp.dlg &
-    $(dlgdir)japoptn.dlg &
-    $(dlgdir)japvarx.dlg &
-    $(dlgdir)japamb.dlg &
-    $(dlgdir)japwind.dlg &
-    $(dlgdir)japstk.dlg &
-    $(dlgdir)japhis.dlg
+    $(wv_dialogs)
 
 wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
         $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@

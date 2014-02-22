@@ -12,6 +12,7 @@
 *.exp
 *.ext
 *.gc
+*.gdl
 *.gh
 *.gpp
 *.grc
