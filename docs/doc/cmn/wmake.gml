@@ -4464,7 +4464,7 @@ internal shell command from the following list:
 .point rd
 (remove directory)
 .point rm
-(erase files, intercepted by &makcmdup)
+(erase files or directories, intercepted by &makcmdup)
 .point set
 (set environment variables, intercepted by &makcmdup)
 .point time
@@ -4626,6 +4626,20 @@ FILE bios.obj
 FILE keyboard.obj
 FILE mouse.obj
 .millust end
+.np
+.ix 'rm' 'using &makname'
+The "rm" command is intercepted by &maksname..
+The reason for this is the need of being available on all supported platforms.
+The "rm" internal command is simplified implementation of the POSIX rm command. 
+It supports following options.
+.begpoint $compact
+.point -f 
+force deletion of read-only files, no diagnostics messages about missing items
+.point -r
+deletion of directories
+.point -v 
+verbose operation
+.endpoint
 .np
 &maksname supports nine internal commands:
 .autopoint
