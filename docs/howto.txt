@@ -17,19 +17,107 @@ be out of sync and will not be all that helpful.
 How to Set it up
 ================
 
-A Win32 or OS/2 system can be used to produce most of the documentation.
-Win32 system is needed for producing Windows help files (unless you can run
-the required help compilers under OS/2).
+Some platform limitation exist for documentation building.
+Therefore setup is specific for each platform used for build.
+
+Bellow is list of tools used by documentation build which have some limitation.
+
+- WGML OW tool is still only available as DOS and OS/2 version.
+  It is running only on DOS, 16 and 32-bit Windows and OS/2.
+  On Linux it can be run in DOSEMU.
+  On 64-bit Windows it can be run in DOSBOX.
+
+- Windows Help Compiler is available from Miscosoft 
+  ( http://support.microsoft.com/kb/171958/en-us or ftp://ftp.microsoft.com/softlib/mslfiles/hcwsetup.exe )
+  It is running only on 32/64-bit Windows.
+  On Linux it can be run in WINE environment.
+
+- Windows Html Help Compiler is available from Miscosoft. 
+  ( http://www.microsoft.com/en-us/download/details.aspx?id=21138 )
+  It is running only on 32/64-bit Windows.
+  On Linux it can be run in WINE environment.
+
+- Post Script to PDF convertor(GhostScript). 
+  It is not available for DOS.
+
+In following table is summarized what is possible to build.
+
+                      host OS
+Doc type       DOS  WIN32 WIN64  OS2  LINUX
+-------------- ---  ----- -----  ---  -----
+DOS help       yes   yes   yes   yes   yes
+Win32 help     no    yes   yes   no    yes
+Win Html help  no    yes   yes   no    yes
+Win16 help     yes   yes   yes   yes   yes
+OS/2 help      yes   yes   yes   yes   yes
+PDF doc        no    yes   yes   yes   yes
+PS doc         yes   yes   yes   yes   yes
+Html help      yes   yes   yes   yes   yes
+
+
+DOS
+----
+  You don't need to install or setup anything.
+  
+OS/2
+----
+  You must install 
+  - GhostScript
+  You must setup following environment variables in your copy of setvars.cmd
+  - OWGHOSTSCRIPTPATH to path where your GhostScript installation is located
+  
+Windows 32-bit
+--------------
+  You must install 
+  - Windows "Help Compiler"
+  - Window "Html Help Compiler".
+  - GhostScript
+  You must setup following environment variables in your copy of setvars.bat
+  - OWHHC must point to "Html Help Compiler" (hhc.exe)
+  - OWWIN95HC must point to "Help Compiler" (hcrtf.exe)
+  - OWGHOSTSCRIPTPATH to path where your GhostScript installation is located
+
+  Note: for some type of 32-bit Windows WGML utility doesn't work with Windows
+  DOS emulator (DOSX). In this case DOSBOX installation is recommended.
+  If you use DOSBOX you must setup OWDOSBOX environment variable to point your 
+  DOSBOX emulator executable (dosbox.exe).
+
+Windows 64-bit
+--------------
+  You must install
+  - DOSBOX emulator
+  - Windows "Help Compiler"
+  - Window "Html Help Compiler".
+  - GhostScript
+  You must setup following environment variables in your copy of setvars.bat
+  - OWHHC must point to "Html Help Compiler" (hhc.exe)
+  - OWWIN95HC must point to "Help Compiler" (hcrtf.exe)
+  - OWGHOSTSCRIPTPATH to path where your GhostScript installation is located
+  - OWDOSBOX must point to DOSBOX executable (dosbox.exe)
+
+Linux x86/x64
+-------------
+  You must install
+  - DOSEMU with FreeDOS
+  - WINE
+  - Windows "Help Compiler" (under WINE)
+  - Window "Html Help Compiler" (under WINE)
+  - GhostScript
+  You must setup following environment variables in your copy of setvars.sh
+  - OWHHC must point to "Html Help Compiler" (hhc.exe)
+  - OWWIN95HC must point to "Help Compiler" (hcrtf.exe)
+  - OWGHOSTSCRIPTPATH to path where your GhostScript installation is located
+
+A Win32/64, OS/2 or Linux x86/x64 system can be used to produce most of 
+the documentation. Win32/64 or Linux x86/x64(with WINE) system is needed for 
+producing Windows help files (unless you can run the required Windows help 
+compilers under your host OS).
 DOS may work too but it is untested at this time.
 
 The environment variable "OWROOT" must point to the root of the OW
 tree. Add %OWROOT%\docs\cmds to your PATH. Your PATH must also contain the 
 Watcom C/C++ binary directories appropriate for your host platform (for wmake).
 This is taken care of automatically by using setvars.cmd/setvars.bat.
-
-Note that to produce Windows online documentation, you will need the
-appropriate SDKs and Toolkits containing the platform specific online
-help compilers.
 
 
 How it is organized
