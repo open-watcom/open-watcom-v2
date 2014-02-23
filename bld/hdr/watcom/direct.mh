@@ -39,6 +39,7 @@ struct dirent {
 typedef struct dirent   DIR;
 
 #else
+
 struct _wdirent {
     char                d_dta[21];          /* disk transfer area */
     char                d_attr;             /* file's attribute */
