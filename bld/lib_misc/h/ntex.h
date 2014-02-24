@@ -61,7 +61,4 @@ extern int __NTRealKey( INPUT_RECORD * );
 extern HANDLE __NTConsoleInput( void );
 extern HANDLE __NTConsoleOutput( void );
 
-#define HANDLE_OF(dirp) ( *( HANDLE * )( &(((char *)(dirp))[0]) ) )
-#define BAD_HANDLE      ((HANDLE)(~0))
-#define ATTR_OF(dirp)  ( *( DWORD * )( &(((char *)(dirp))[4]) ) )
 #endif
