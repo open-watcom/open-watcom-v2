@@ -47,6 +47,9 @@
 #include <dosfunc.h>
 #include <mbstring.h>
 #include "_doslfn.h"
+#ifndef __OSI__
+#include "_dtaxxx.h"
+#endif
 #include "dosdir.h"
 #include "seterrno.h"
 #ifdef __WIDECHAR__
@@ -173,8 +176,8 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
         dta.size      = 0;
         dta.name[0]   = NULLCHAR;
 #ifdef __WATCOM_LFN__
-        SIGN_OF( &dta )   = 0;
-        HANDLE_OF( &dta ) = 0;
+        LFN_SIGN_OF( &dta )   = 0;
+        LFN_HANDLE_OF( &dta ) = 0;
 #endif
     } else {                            /* not a root directory */
 #if defined(__WIDECHAR__)
@@ -245,9 +248,9 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path,
     buf->st_mtime = _d2ttime( dta.wr_date, dta.wr_time );
     buf->st_btime = buf->st_mtime;
 #ifdef __WATCOM_LFN__
-    if( IS_LFN( &dta ) && CRTIME_OF( &dta ) ) {
-        buf->st_atime = _d2ttime( ACDATE_OF( &dta ), ACTIME_OF( &dta ) );
-        buf->st_ctime = _d2ttime( CRDATE_OF( &dta ), CRTIME_OF( &dta ) );
+    if( IS_LFN( &dta ) && LFN_CRTIME_OF( &dta ) ) {
+        buf->st_atime = _d2ttime( LFN_ACDATE_OF( &dta ), LFN_ACTIME_OF( &dta ) );
+        buf->st_ctime = _d2ttime( LFN_CRDATE_OF( &dta ), LFN_CRTIME_OF( &dta ) );
     } else {
 #endif
         buf->st_atime = buf->st_mtime;

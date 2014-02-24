@@ -61,8 +61,12 @@ static int is_directory( const CHAR_TYPE *name )
 #else
         curr_ch = _mbsnextc( name );
 #endif
-        if( curr_ch == NULLCHAR )
+        if( curr_ch == NULLCHAR ) {
+            if( prev_ch == '\\' || prev_ch == '/' || prev_ch == '.' || prev_ch == ':' ) {
+                return( 1 );
+            }
             break;
+        }
         if( prev_ch == '*' )
             break;
         if( prev_ch == '?' )
@@ -72,11 +76,6 @@ static int is_directory( const CHAR_TYPE *name )
 #else
         name = _mbsinc( name );
 #endif
-    }
-    if( curr_ch == NULLCHAR ) {
-        if( prev_ch == '\\' || prev_ch == '/' || prev_ch == '.' ) {
-            return( 1 );
-        }
     }
     return( 0 );
 }
@@ -95,39 +94,53 @@ static void filenameToWide( DIR_TYPE *dir )
 }
 #endif
 
-
-DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname,
+static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
                                             unsigned attr, DIR_TYPE *dirp )
 /**************************************************************************/
 {
+#ifdef __WIDECHAR__
+    char            mbcsName[MB_CUR_MAX * _MAX_PATH];
+#endif
+
+    if( dirp->d_first != _DIR_CLOSED ) {
+        _dos_findclose( (struct _find_t *)dirp->d_dta );
+        dirp->d_first = _DIR_CLOSED;
+    }
+    /*** Convert a wide char string to a multibyte string ***/
+#ifdef __WIDECHAR__
+    if( wcstombs( mbcsName, dirname, sizeof( mbcsName ) ) == (size_t)-1 ) {
+        return( NULL );
+    }
+#endif
+    if( _dos_findfirst( __F_NAME(dirname,mbcsName), attr, (struct _find_t *)dirp->d_dta ) ) {
+        return( NULL );
+    }
+    dirp->d_first = _DIR_ISFIRST;
+    return( dirp );
+}
+
+static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsigned attr )
+/****************************************************************************************/
+{
     DIR_TYPE        tmp;
+    DIR_TYPE        *dirp;
     int             i;
     CHAR_TYPE       pathname[ _MAX_PATH + 6 ];
     const CHAR_TYPE *p;
     UINT_WC_TYPE    curr_ch;
     UINT_WC_TYPE    prev_ch;
-    int             flag_opendir = ( dirp == NULL );
-    int             opened;
-
-    /*** Convert a wide char string to a multibyte string ***/
-#ifdef __WIDECHAR__
-    char            mbcsName[ MB_CUR_MAX * _MAX_PATH ];
-
-    if( wcstombs( mbcsName, dirname, sizeof( mbcsName ) ) == (size_t)-1 ) {
-        return( NULL );
-    }
-#endif
 
     tmp.d_attr = _A_SUBDIR;
-    opened = 0;
+    tmp.d_first = _DIR_CLOSED;
+    dirp = NULL;
     if( !is_directory( dirname ) ) {
-        if( _dos_findfirst( __F_NAME(dirname,mbcsName), attr, (struct _find_t *)tmp.d_dta ) ) {
+        if( (dirp = __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
-        opened = 1;
     }
     if( tmp.d_attr & _A_SUBDIR ) {
         prev_ch = NULLCHAR;
+        dirp = NULL;
         p = dirname;
         for( i = 0; i < _MAX_PATH; i++ ) {
             pathname[i] = *p;
@@ -142,21 +155,14 @@ DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname,
             }
 #endif
             if( curr_ch == NULLCHAR ) {
-                if( i != 0  &&  prev_ch != '\\' && prev_ch != '/' ) {
+                if( i != 0  &&  prev_ch != '\\' && prev_ch != '/' && prev_ch != ':' ) {
                     pathname[i++] = '\\';
                 }
                 __F_NAME(strcpy,wcscpy)( &pathname[i], STRING( "*.*" ) );
-#ifdef __WIDECHAR__
-                if( wcstombs( mbcsName, pathname, sizeof( mbcsName ) ) == (size_t)-1 )
-                    return( NULL );
-#endif
-                if( opened ) {
-                    _dos_findclose( (struct _find_t *)tmp.d_dta );
-                }
-                if( _dos_findfirst( __F_NAME(pathname,mbcsName), attr, (struct _find_t *)tmp.d_dta ) ) {
+                if( (dirp = __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp)) ) {
                     return( NULL );
                 }
-                opened = 1;
+                dirname = pathname;
                 break;
             }
             if( curr_ch == '*' )
@@ -167,21 +173,20 @@ DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname,
             prev_ch = curr_ch;
         }
     }
-    if( flag_opendir ) {
-        dirp = lib_malloc( sizeof( *dirp ) );
-        if( dirp == NULL ) {
-            if( opened ) {
-                _dos_findclose( (struct _find_t *)tmp.d_dta );
-            }
-            __set_errno_dos( E_nomem );
-            return( NULL );
+    if( dirp == NULL ) {
+        if( tmp.d_first != _DIR_CLOSED ) {
+            _dos_findclose( (struct _find_t *)tmp.d_dta );
         }
-        tmp.d_openpath = __F_NAME(__clib_strdup,__clib_wcsdup)( dirname );
-    } else {
-        _dos_findclose( (struct _find_t *)dirp->d_dta );
-        tmp.d_openpath = dirp->d_openpath;
+        __set_errno_dos( E_nopath );
+        return( NULL );
     }
-    tmp.d_first = _DIR_ISFIRST;
+    dirp = lib_malloc( sizeof( *dirp ) );
+    if( dirp == NULL ) {
+        _dos_findclose( (struct _find_t *)tmp.d_dta );
+        __set_errno_dos( E_nomem );
+        return( NULL );
+    }
+    tmp.d_openpath = __F_NAME(__clib_strdup,__clib_wcsdup)( dirname );
     *dirp = tmp;
     return( dirp );
 }
@@ -189,13 +194,13 @@ DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname,
 
 _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 {
-    return( __F_NAME(__opendir,__wopendir)( dirname, SEEK_ATTRIB, NULL ) );
+    return( __F_NAME(__opendir,__wopendir)( dirname, SEEK_ATTRIB ) );
 }
 
 
 _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 {
-    if( dirp == NULL || dirp->d_first >= _DIR_INVALID )
+    if( dirp == NULL || dirp->d_first == _DIR_INVALID || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
@@ -234,7 +239,7 @@ _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( __F_NAME(__opendir,__wopendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
+    if( __F_NAME(___opendir,___wopendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
         dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
     }
 }

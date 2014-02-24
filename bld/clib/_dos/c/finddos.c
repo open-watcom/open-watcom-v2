@@ -35,6 +35,7 @@
 #include <mbstring.h>
 #include "seterrno.h"
 #include "_doslfn.h"
+#include "_dtaxxx.h"
 
 extern unsigned char _Extender;
 
@@ -182,10 +183,10 @@ static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
 /*********************************************************************/
 {
     fdta->attrib  = lfndta->attributes;
-    CRTIME_OF( fdta ) = lfndta->creattime;
-    CRDATE_OF( fdta ) = lfndta->creatdate;
-    ACTIME_OF( fdta ) = lfndta->accesstime;
-    ACDATE_OF( fdta ) = lfndta->accessdate;
+    LFN_CRTIME_OF( fdta ) = lfndta->creattime;
+    LFN_CRDATE_OF( fdta ) = lfndta->creatdate;
+    LFN_ACTIME_OF( fdta ) = lfndta->accesstime;
+    LFN_ACDATE_OF( fdta ) = lfndta->accessdate;
     fdta->wr_time = lfndta->wrtime;
     fdta->wr_date = lfndta->wrdate;
     fdta->size    = lfndta->lfilesize;
@@ -279,12 +280,12 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
     lfnfind_t       lfndta;
     tiny_ret_t      rc = 0;
 
-    SIGN_OF( fdta )   = 0;
-    HANDLE_OF( fdta ) = 0;
+    LFN_SIGN_OF( fdta )   = 0;
+    LFN_HANDLE_OF( fdta ) = 0;
     if( _RWD_uselfn && TINY_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
         convert_to_find_t( fdta, &lfndta );
-        SIGN_OF( fdta )   = _LFN_SIGN;
-        HANDLE_OF( fdta ) = TINY_INFO( rc );
+        LFN_SIGN_OF( fdta )   = _LFN_SIGN;
+        LFN_HANDLE_OF( fdta ) = TINY_INFO( rc );
         return( 0 );
     }
     if( TINY_ERROR( rc ) && TINY_INFO( rc ) != 0x7100 ) {
@@ -303,7 +304,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
     unsigned        rc;
 
     if( IS_LFN( fdta ) ) {
-        rc = _dos_find_next_lfn( HANDLE_OF( fdta ), &lfndta );
+        rc = _dos_find_next_lfn( LFN_HANDLE_OF( fdta ), &lfndta );
         if( rc == 0 ) {
             convert_to_find_t( fdta, &lfndta );
         }
@@ -319,7 +320,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 {
 #if defined( __WATCOM_LFN__ )
     if( IS_LFN( fdta ) ) {
-        return( _dos_find_close_lfn( HANDLE_OF( fdta ) ) );
+        return( _dos_find_close_lfn( LFN_HANDLE_OF( fdta ) ) );
     }
 #endif
 #ifdef __OSI__
