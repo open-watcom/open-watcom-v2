@@ -38,6 +38,7 @@ rem     rd RDOS, DOS executable (not yet supported)
 rem     rk RDOS, .rdv kernel-mode device driver
 rem     rb RDOS, .bin binary file
 rem     rm RDOS, multiboot stub
+rem     ru RDOS, UEFI loader
 rem     wm Windows 3.x MFC 2.X application, static linkage
 rem     wa Windows 3.x MFC 2.X application, DLL linkage
 rem     wp Windows 3.x PowerBuilder DLL
@@ -602,6 +603,7 @@ Tool WCG "Code Generator"
     CSwitch 0, l????, "", -bt=netware, ON
     CSwitch 0, x????, "", -bt=linux, ON
     CSwitch 0, rp???, "", -bt=rdos, ON
+    CSwitch 0, ru?d?, "", -bt=rdos, ON
     CSwitch 0, rk6??, "", -bt=rdos_dev16, ON
     CSwitch 0, rk2??, "", -bt=rdosdev, ON
     CSwitch 0, rb6??, "", -bt=rdos_bin16, ON
@@ -1090,6 +1092,7 @@ rem Other Netware variations?
     VSwitch  1, x?2??, "System:", sys, " ", ONE, REQ, linux
     VSwitch  1, rp2e?, "System:", sys, " ", ONE, REQ, rdos
     VSwitch  1, rp2d?, "System:", sys, " ", ONE, REQ, rdos_dll
+    VSwitch  1, ru?d?, "System:", sys, " ", ONE, REQ, rdos_efi
     VSwitch  1, rk6??, "System:", sys, " ", ONE, REQ, rdos_dev16
     VSwitch  1, rk2??, "System:", sys, " ", ONE, REQ, rdosdev
     VSwitch  1, rb6??, "System:", sys, " ", ONE, REQ, rdos_bin16
@@ -1903,7 +1906,7 @@ Rule NDLL, WLINK, n??d?
   Command " *$<#> @$'.lk1"
   Command " wlib -q -n -b $*.lib +$*.dll"
 
-Rule RDLL, WLINK, r??d?
+Rule RDLL, WLINK, rp?d?
   Target *.dll
   Autodepend
   Symbol FIL, *.obj
@@ -1926,6 +1929,27 @@ Rule RDLL, WLINK, r??d?
   Command " *$<#> @$'.lk1"
   Command "!ifneq BLANK \"$<FIL!>\""
   Command " wlib -q -n -b $*.lib +$*.dll"
+  Command "!endif"
+
+Rule REFI, WLINK, ru?d?
+  Target *.efi
+  Autodepend
+  Symbol FIL, *.obj
+  Symbol LIBR, *.lib
+  Symbol RES, *.res
+  Symbol EFI, *.efi
+  Command " @%write $*.lk1 $<FIL,>"
+  Command " @%append $*.lk1 $<LIBR,>"
+  Command "!ifneq BLANK \"$<DLL!>\""
+  Command " *wlib -q -n -b $*.imp $<EFI!>"
+  Command " @%append $*.lk1 LIBR $'.imp"
+  Command "!endif"
+  Command "!ifneq BLANK \"$<RES!>\""
+  Command " @%append $*.lk1 $<RES,>"
+  Command "!endif"
+  Command " *$<#> @$'.lk1"
+  Command "!ifneq BLANK \"$<FIL!>\""
+  Command " wlib -q -n -b $*.lib +$*.efi"
   Command "!endif"
 
 rem Rule LNXDLL, WLINK, x??d?

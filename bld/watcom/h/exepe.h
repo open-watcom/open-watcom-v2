@@ -218,6 +218,9 @@ enum {
     PE_SS_WINDOWS_CHAR      = 0x0003,
     PE_SS_OS2_CHAR          = 0x0005,
     PE_SS_POSIX_CHAR        = 0x0007,
+    PE_SS_EFI_APPLICATION   = 0x000A,
+    PE_SS_EFI_BOOT          = 0x000B,
+    PE_SS_EFI_RUNTIME       = 0x000C,
     PE_SS_PL_DOSSTYLE       = 0x0042,
     PE_SS_RDOS              = 0xAD05
 };

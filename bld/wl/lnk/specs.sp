@@ -860,6 +860,18 @@ system begin rdos_dll
     format windows pe rdos dll ^
 :endsegment
 end
+system begin rdos_efi
+:segment Pspecs
+    CC  wcc386 -bt=rdos -bd
+    CPP wpp386 -bt=rdos -bd
+    AS  wasm
+:elsesegment Pwlsystem
+    option osname='RDOS'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/rdos
+    format windows pe efi ^
+:endsegment
+end
 system begin rdos_dev32
 :segment Pspecs
     CC  wcc386 -bt=rdosdev -zu

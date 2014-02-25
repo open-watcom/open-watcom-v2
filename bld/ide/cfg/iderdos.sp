@@ -10,3 +10,4 @@ Project
       Target *.bin, rb2e_, "32-bit Binary"
       Target *.bin, rm6e_, "Multiboot Stub"
       Target *.lib, r?6s_, "16-bit Library"
+      Target *.efi, ru2d_, "EFI Loader"

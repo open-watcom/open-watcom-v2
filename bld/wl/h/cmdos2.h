@@ -76,6 +76,7 @@ extern bool     ProcFont( void );
 
 extern bool     ProcTNT( void );
 extern bool     ProcRDOS( void );
+extern bool     ProcEFI( void );
 
 extern bool     ProcDynamicDriver( void );
 extern bool     ProcStaticDriver( void );

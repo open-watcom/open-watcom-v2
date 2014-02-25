@@ -70,3 +70,4 @@ pick1(  E_SYS,      ".sys"  )   /* ZDOS device driver */
 pick1(  E_HWD,      ".hwd"  )   /* ZDOS hardware driver */
 pick1(  E_FSD,      ".fsd"  )   /* ZDOS file system driver */
 pick1(  E_RDV,      ".rdv"  )   /* RDOS device driver */
+pick1(  E_EFI,      ".efi"  )   /* EFI */

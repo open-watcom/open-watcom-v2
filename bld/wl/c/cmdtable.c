@@ -524,6 +524,7 @@ parse_entry WindowsFormatKeywords[] = {
 parse_entry NTFormatKeywords[] = {
     "TNT",          &ProcTNT,           MK_PE, 0,
     "RDOS",         &ProcRDOS,          MK_PE, 0,
+    "EFI",          &ProcEFI,           MK_PE, 0,
     NULL
 };
 

@@ -1110,6 +1110,15 @@ bool ProcRDOS( void )
     return( TRUE );
 }
 
+bool ProcEFI( void )
+/*************************/
+{
+    FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
+    ParseVersion();
+
+    return( TRUE );
+}
+
 static void ParseVersion( void )
 /******************************/
 {
