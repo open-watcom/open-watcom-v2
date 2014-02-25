@@ -304,7 +304,7 @@ extern  type_length     TempLocation( name *temp )
 static  void    doCall( instruction *ins )
 /****************************************/
 {
-    pointer         sym;
+    cg_sym_handle   sym;
     byte_seq        *code;
     ppc_ins         encoding;
     label_handle    lbl;
@@ -930,8 +930,8 @@ static  block   *InsBlock( instruction *ins )
 extern  void    GenCondJump( instruction *cond )
 /**********************************************/
 {
-    label_handle    dest_false;
-    label_handle    dest_true;
+    label_handle        dest_false;
+    label_handle        dest_true;
     block               *blk;
 
     dest_false = LocateLabel( cond, _FalseIndex( cond ) );

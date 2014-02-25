@@ -104,12 +104,35 @@ wgml_target=$(dotarget)
 
 !ifdef dep_$(dotarget)
 .BEFORE
-!ifneq header 1
-!ifdef __UNIX__
+! ifneq header 1
+!  ifdef __UNIX__
     @echo ===== $(dotarget) $+$(%cwd)$--$(hbook)/$(book_src) =====
-!else
+!  else
     @echo ===== $(dotarget) $+$(%cdrive):$(%cwd)$--$(hbook)/$(book_src) =====
-!endif
+!  endif
+! endif
+!else
+!ifeq dotarget nt
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!message !!!      WARNING You are trying to build WIN32 help       !!!
+!message !!!           without configured Help compiler            !!!
+!message !!!     You must setup OWWIN95HC environment variable     !!!
+!message !!!          in Your copy of the setvars script           !!!
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!else ifeq dotarget htmlhelp
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!message !!!       WARNING You are trying to build Html help       !!!
+!message !!!            without configured Help compiler           !!!
+!message !!!       You must setup OWHHC environment variable       !!!
+!message !!!          in Your copy of the setvars script           !!!
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!else ifeq dotarget pdf
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!message !!!   WARNING You are trying to build PDF documentation   !!!
+!message !!!            without configured PDF convertor           !!!
+!message !!! You must setup OWGHOSTSCRIPTPATH environment variable !!!
+!message !!!          in Your copy of the setvars script           !!!
+!message !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !endif
 !endif
 

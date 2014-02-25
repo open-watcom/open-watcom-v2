@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "mworkfil.hpp"
 #include "wobjfile.hpp"
+#include "mconfig.hpp"
+#include "mworkfil.hpp"
 #include "mitem.hpp"
 #include "mrule.hpp"
 #include "mcompon.hpp"
 
 #ifndef PRODUCTION
-    #include "mswitch.hpp"
     #include "mstate.hpp"
 #endif
 

@@ -104,7 +104,7 @@ static  int         Push( hw_reg_set to_push );
 static  void        DoEnter( int level );
 static  void        DoEpilog( void );
 
-extern  pointer     Parm8087[ MAX_8087_REG+1 ];
+extern  pointer     Parm8087[MAX_8087_REG+1];
 
 #define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
@@ -189,10 +189,9 @@ static  bool    ScanInstructions( void )
                 if( ins->head.opcode == OP_CALL_INDIRECT ) {
                     CurrProc->contains_call = TRUE;
                 } else {
-                    addr = ins->operands[ CALL_OP_ADDR ];
-                    if( addr->n.class != N_MEMORY ||
-                     addr->m.memory_type != CG_LBL ||
-                     !AskIfRTLabel( addr->v.symbol ) ) {
+                    addr = ins->operands[CALL_OP_ADDR];
+                    if( addr->n.class != N_MEMORY || addr->m.memory_type != CG_LBL ||
+                      !AskIfRTLabel( addr->v.symbol ) ) {
                         CurrProc->contains_call = TRUE;
                     }
                 }
@@ -361,7 +360,7 @@ static  void    AdjustPushLocals( void ) {
         if( DoesSomething( ins ) )
             break;
         if( ins->head.opcode == OP_MOV && ins->head.state == OPERANDS_NEED_WORK ) {
-            QuickSave( ins->operands[ 0 ]->r.reg, OP_PUSH );
+            QuickSave( ins->operands[0]->r.reg, OP_PUSH );
             AdjustPushLocal( ins->result );
         }
     }
@@ -416,7 +415,7 @@ extern void RTCall( rt_class rtn, oc_class pop_bit ) {
 static  bool    NeedStackCheck( void )
 /******************************/
 {
-    return( FEStackChk( AskForLblSym( CurrProc->label ) ) );
+    return( FEStackChk( AskForLblSym( CurrProc->label ) ) != 0 );
 }
 
 
@@ -792,7 +791,7 @@ extern  void        AdjustStackDepth( instruction *ins ) {
     case OP_CALL:
     case OP_CALL_INDIRECT:
         if( ins->flags.call_flags & CALL_POPS_PARMS ) {
-            op = ins->operands[ CALL_OP_POPS ];
+            op = ins->operands[CALL_OP_POPS];
             if( op->n.class == N_CONSTANT ) {
                 StackDepth -= op->c.int_value;
             }

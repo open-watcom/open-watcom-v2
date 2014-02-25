@@ -100,16 +100,6 @@ typedef struct {
     long        hfileid;
     long        lfileid;
 } lfninfo_t;
-
-typedef struct {
-    unsigned short  cr_time;
-    unsigned short  cr_date;
-    unsigned short  ac_time;
-    unsigned short  ac_date;
-    unsigned long   sign;
-    unsigned short  handle;
-} __lfndta;
-
 #include "poppck.h"
 
 extern unsigned __doserror_( unsigned );
@@ -495,18 +485,11 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
         SAVE_VALUE      \
 "L1:"
 
-#define CRTIME_OF(x)    (((__lfndta *)(x))->cr_time)
-#define CRDATE_OF(x)    (((__lfndta *)(x))->cr_date)
-#define ACTIME_OF(x)    (((__lfndta *)(x))->ac_time)
-#define ACDATE_OF(x)    (((__lfndta *)(x))->ac_date)
-#define HANDLE_OF(x)    (((__lfndta *)(x))->handle)
-#define SIGN_OF(x)      (((__lfndta *)(x))->sign)
-
 #define _LFN_SIGN           0x004e464cUL    // "LFN"
 
 #define IS_LFN_ERROR(x)     ((x)!=0&&(x)!= 0x7100)
 
-#define IS_LFN(x)           (_RWD_uselfn && ((__lfndta *)(x))->sign == _LFN_SIGN && ((__lfndta *)(x))->handle)
+#define IS_LFN(x)           (_RWD_uselfn && LFN_SIGN_OF(x) == _LFN_SIGN && LFN_HANDLE_OF(x))
 
 #if defined( __WATCOM_LFN__ ) && !defined( _M_I86 )
 

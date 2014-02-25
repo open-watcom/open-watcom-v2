@@ -30,11 +30,9 @@
 ****************************************************************************/
 
 
-#include "mproject.hpp"
-#include "mconfig.hpp"
-#include "mcompon.hpp"
 #include "wobjfile.hpp"
-#include "mcommand.hpp"
+#include "mproject.hpp"
+#include "mcompon.hpp"
 
 static char _targetIdent[] = { "targetIdent" };
 

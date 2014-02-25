@@ -42,7 +42,6 @@
 #include "wobjfile.hpp"
 #include "wstrlist.hpp"
 #include "mrule.hpp"
-#include "mconfig.hpp"
 #include "vsetup.hpp"
 #include "vcompdlg.hpp"
 #include "mitem.hpp"

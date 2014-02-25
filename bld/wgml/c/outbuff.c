@@ -989,8 +989,18 @@ void cop_tr_table( char * p )
 void ob_binclude( binclude_element * in_el )
 {
     uint32_t    count;
+    char        *in_name;
+#if defined( __UNIX__ )
+    char        fname[_MAX_PATH];
+#endif
 
-    if( search_file_in_dirs( in_el->file, "", "", ds_doc_spec ) ) {
+    in_name = in_el->file;
+#if defined( __UNIX__ )
+    strcpy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
+    if( search_file_in_dirs( in_name, "", "", ds_doc_spec ) ) {
         fb_binclude_support( in_el );
         if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
@@ -1041,7 +1051,7 @@ void ob_binclude( binclude_element * in_el )
             }
         }
     } else {
-        xx_tag_err( err_file_not_found, in_el->file );
+        xx_tag_err( err_file_not_found, in_name );
     }
 
     return;
@@ -1118,8 +1128,18 @@ void ob_graphic( graphic_element * in_el )
     char        restore[] = "graphobj restore";
     size_t      ps_size;
     uint32_t    count;
+    char        *in_name;
+#if defined( __UNIX__ )
+    char        fname[_MAX_PATH];
+#endif
 
-    if( search_file_in_dirs( in_el->file, "", "", ds_doc_spec ) ) {
+    in_name = in_el->file;
+#if defined( __UNIX__ )
+    strcpy( fname, in_name );
+    strlwr( fname );
+    in_name = fname;
+#endif
+    if( search_file_in_dirs( in_name, "", "", ds_doc_spec ) ) {
         fb_graphic_support( in_el );
         ob_flush();
 
@@ -1139,7 +1159,7 @@ void ob_graphic( graphic_element * in_el )
         ps_size = strlen( begindoc );
         strcpy_s( buffout.text, buffout.length, begindoc );
         buffout.current = ps_size;
-        strcpy_s( buffout.text + ps_size, buffout.length - ps_size, in_el->file );
+        strcpy_s( buffout.text + ps_size, buffout.length - ps_size, in_name );
         buffout.current = strlen( buffout.text );
         ob_flush();
 
@@ -1174,7 +1194,7 @@ void ob_graphic( graphic_element * in_el )
             xx_simple_err_cc( err_in_file, "GRAPHIC", try_file_name );
         }
     } else {
-        xx_tag_err( err_file_not_found, in_el->file );
+        xx_tag_err( err_file_not_found, in_name );
     }
 
     return;

@@ -139,7 +139,7 @@ extern  void    BlowAwayFreeLists( void )
 
 
 extern  bool    MemCheck( size_t size )
-/**********************************/
+/*************************************/
 {
     if( FEMoreMem( size ) ) return( TRUE );
     if( FreeObjCache() ) return( TRUE );

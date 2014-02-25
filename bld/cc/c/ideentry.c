@@ -59,7 +59,7 @@ extern void ConBlip( void ){
 
 extern bool ConTTY( void ){
 // C compiler do a blip to console
-    return( GlobalCompFlags.ide_console_output );
+    return( GlobalCompFlags.ide_console_output != 0 );
 }
 
 extern void ConsErrMsg( cmsg_info  *cinfo ){
@@ -318,7 +318,7 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 #ifdef __OS2__
    _heapmin();
 #endif
-    return( ret );
+    return( ret != 0 );
 }
 
 #ifdef __UNIX__
@@ -352,7 +352,7 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
 #if HEAP_CHK  == 1
     heap_check();
 #endif
-    return( ret );
+    return( ret != 0 );
 }
 #endif
 
@@ -363,9 +363,9 @@ void IDEAPI IDEStopRunning( void )
 
 // HELP Interface
 
-IDEBool IDEAPI IDEProvideHelp       // PROVIDE HELP INFORMATION
+IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
     ( IDEDllHdl hdl             // - handle for this instantiation
-    , char const* msg )         // - message
+    , char const *msg )         // - message
 {
     hdl = hdl;
     msg = msg;
@@ -375,6 +375,7 @@ IDEBool IDEAPI IDEProvideHelp       // PROVIDE HELP INFORMATION
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
+
 //    DbgVerify( hdl == CompInfo.dll_handle, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
         return( TRUE );

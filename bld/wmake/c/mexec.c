@@ -30,9 +30,15 @@
 
 
 #include <sys/types.h>
-#if !defined( __UNIX__ )
+#ifdef __UNIX__
+    #include <dirent.h>
+    #include <fnmatch.h>
+#else
     #include <direct.h>
     #include <dos.h>
+  #if defined( __WATCOMC__ )
+    #include <fnmatch.h>
+  #endif
 #endif
 #include <sys/stat.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
@@ -63,11 +69,11 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 
-STATIC  UINT8   lastErrorLevel;
-STATIC  UINT16  tmpFileNumber;          /* temp file number         */
-STATIC  char    tmpFileChar  ;          /* temp file number chari   */
-STATIC  int     currentFileHandle;      /* %write, %append, %create */
-STATIC  char    *currentFileName;
+#ifdef __UNIX__
+  #define MASK_ALL_ITEMS  "*"
+#else
+  #define MASK_ALL_ITEMS  "*.*"
+#endif
 
 enum {
     FLAG_SHELL      = 0x01,
@@ -76,6 +82,26 @@ enum {
     FLAG_IGNORE     = 0x08,
     FLAG_SHELL_RC   = 0x10
 };
+
+typedef struct dd {
+  struct dd     *next;
+  char          attr;
+  char          name[1];
+} iolist;
+
+typedef struct {
+    BIT bForce   : 1;
+    BIT bDirs    : 1;
+    BIT bVerbose : 1;
+} rm_flags;
+
+STATIC  UINT8   lastErrorLevel;
+STATIC  UINT16  tmpFileNumber;          /* temp file number         */
+STATIC  char    tmpFileChar  ;          /* temp file number chari   */
+STATIC  int     currentFileHandle;      /* %write, %append, %create */
+STATIC  char    *currentFileName;
+
+static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags );
 
 #define COM_MAX_LEN 16              /* must be able to hold any OS cmdname */
 
@@ -208,9 +234,11 @@ STATIC const char * const   dosInternals[] = {   /* COMMAND.COM commands */
     "REM",
     "REN",
     "RENAME",
+    "RM",
+#define COM_RM      29
     "RMDIR",
     "SET",
-#define COM_SET     30
+#define COM_SET     31
     "SETLOCAL",
     "SHIFT",
     "START",
@@ -1393,10 +1421,8 @@ STATIC RET_T handleFor( char *line )
     varlen = strlen( var );
 
     numsubst = 0;
-    p = nextVar( cmd, var, varlen );
-    while( p != NULL ) {
+    for( p = nextVar( cmd, var, varlen ); p != NULL; p = nextVar( p + varlen, var, varlen ) ) {
         ++numsubst;
-        p = nextVar( p + varlen, var, varlen );
     }
 
     cmdlen = strlen( cmd ) - numsubst * varlen + 1;
@@ -1414,8 +1440,7 @@ STATIC RET_T handleFor( char *line )
         hold = *set;
         *set = NULLCHAR;
 
-        subst = DoWildCard( subst );
-        while( subst != NULL ) {
+        for( subst = DoWildCard( subst ); subst != NULL; subst = DoWildCard( NULL ) ) {
             newlen = numsubst * strlen( subst ) + cmdlen;
             if( newlen > lastlen ) {
                 FreeSafe( exec );
@@ -1433,8 +1458,6 @@ STATIC RET_T handleFor( char *line )
                 DoWildCardClose();
                 return( RET_ERROR );
             }
-
-            subst = DoWildCard( NULL );
         }
 
         set = SkipWS( set + 1 );
@@ -1519,18 +1542,12 @@ STATIC RET_T handleChangeDrive( const char *cmd )
 #endif
 
 
-#if !defined( __UNIX__ )
 STATIC RET_T handleRMSyntaxError( void )
 /**************************************/
 {
     PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RM] );
     return( RET_ERROR );
 }
-
-typedef struct {
-    BIT bForce  : 1;
-    BIT bVerbose : 1;
-} rm_flags;
 
 STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
 /************************************************************************
@@ -1541,7 +1558,8 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
 
                             /* first run? */
     if( line ) {
-        flags->bForce = FALSE;
+        flags->bForce   = FALSE;
+        flags->bDirs    = FALSE;
         flags->bVerbose = FALSE;
 
         p = SkipWS( line + 2 ); /* find first non-ws after "RM" */
@@ -1553,6 +1571,9 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
                 switch( tolower( p[0] ) ) {
                     case 'f':
                         flags->bForce = TRUE;
+                        break;
+                    case 'r':
+                        flags->bDirs = TRUE;
                         break;
                     case 'v':
                         flags->bVerbose = TRUE;
@@ -1583,41 +1604,220 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
     return( RET_SUCCESS );
 }
 
-STATIC BOOLEAN doRM( const char *file, const rm_flags *flags )
-/************************************************************/
+STATIC BOOLEAN remove_item( const char *name, const rm_flags *flags, BOOLEAN dir )
+/********************************************************************************/
 {
-    int rv;
+    int     rc;
+    char    *inf_msg;
 
-    rv = unlink( file );
-    if( 0 != rv && flags->bForce && EACCES == errno ) {
-        unsigned    attribute;
-
-        _dos_getfileattr( file, &attribute );
-        if( _A_RDONLY == ( attribute & ( _A_RDONLY | _A_VOLID | _A_SUBDIR ) ) ) {
-            _dos_setfileattr( file, _A_NORMAL );
-            rv = unlink( file );
+    if( dir ) {
+        inf_msg = "directory";
+        rc = rmdir( name );
+    } else {
+        inf_msg = "file";
+        rc = unlink( name );
+    }
+    if( rc != 0 && flags->bForce && errno == EACCES ) {
+        rc = chmod( name, PMODE_RW );
+        if( rc == 0 ) {
+            if( dir ) {
+                rc = rmdir( name );
+            } else {
+                rc = unlink( name );
+            }
         }
     }
-    if( flags->bForce && ENOENT == errno ) {
-        rv = 0;
+    if( rc != 0 && flags->bForce && errno == ENOENT ) {
+        rc = 0;
     }
-    if( 0 != rv ) {
-        PrtMsg( ERR | SYSERR_DELETING_FILE, file );
-    }
-    else if( flags->bVerbose && ENOENT != errno ) {
-        PrtMsg( INF | DELETING_FILE, file );
+    if( rc != 0 ) {
+        PrtMsg( ERR | SYSERR_DELETING_ITEM, name );
+    } else if( flags->bVerbose && errno != ENOENT ) {
+        PrtMsg( INF | DELETING_ITEM, inf_msg, name );
     }
 
     CacheRelease();     /* so that the cache is updated */
 
-    return( 0 == rv );
+    return( rc == 0 );
+}
+
+static int IsDotOrDotDot( const char *fname )
+{
+    /* return 1 if fname is "." or "..", 0 otherwise */
+    return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
+}
+
+static BOOLEAN doRM( const char *f, const rm_flags *flags )
+{
+    iolist              *tmp;
+    iolist              *dhead = NULL;
+    iolist              *dtail = NULL;
+
+    char                fpath[_MAX_PATH];
+    char                fname[_MAX_PATH];
+    char                *fpathend;
+
+    size_t              i;
+    size_t              j;
+    size_t              len;
+    DIR                 *d;
+    struct dirent       *nd;
+    int                 rc = TRUE;
+
+    /* separate file name to path and file name parts */
+    len = strlen( f );
+    for( i = len; i > 0; --i ) {
+        char ch = f[i - 1];
+        if( ch == '/' || ch == '\\' || ch == ':' ) {
+            break;
+        }
+    }
+    j = i;
+    /* if no path then use current directory */
+    if( i == 0 ) {
+        fpath[i++] = '.';
+        fpath[i++] = '/';
+    } else {
+        memcpy( fpath, f, i );
+    }
+    fpathend = fpath + i;
+    *fpathend = '\0';
+#ifdef __UNIX__
+    memcpy( fname, f + j, len - j + 1 );
+#else
+    if( strcmp( f + j, MASK_ALL_ITEMS ) == 0 ) {
+        fname[0] = '*';
+        fname[1] = '\0';
+    } else {
+        memcpy( fname, f + j, len - j + 1 );
+    }
+#endif
+    d = opendir( fpath );
+    if( d == NULL ) {
+//        Log( FALSE, "File (%s) not found.\n", f );
+        return( TRUE );
+    }
+
+    while( ( nd = readdir( d ) ) != NULL ) {
+#ifdef __UNIX__
+        struct stat buf;
+
+        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+#else
+        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE ) == FNM_NOMATCH )
+#endif
+            continue;
+        /* set up file name, then try to delete it */
+        len = strlen( nd->d_name );
+        memcpy( fpathend, nd->d_name, len );
+        fpathend[len] = 0;
+        len += i + 1;
+#ifdef __UNIX__
+        stat( fpath, &buf );
+        if( S_ISDIR( buf.st_mode ) ) {
+#else
+        if( nd->d_attr & _A_SUBDIR ) {
+#endif
+            /* process a directory */
+            if( IsDotOrDotDot( nd->d_name ) )
+                continue;
+
+            if( flags->bDirs ) {
+                /* build directory list */
+                tmp = MallocSafe( offsetof( iolist, name ) + len );
+                tmp->next = NULL;
+                if( dtail == NULL ) {
+                    dhead = tmp;
+                } else {
+                    dtail->next = tmp;
+                }
+                dtail = tmp;
+                memcpy( tmp->name, fpath, len );
+            } else {
+//                Log( FALSE, "%s is a directory, use -r\n", fpath );
+//                retval = EACCES;
+                rc = FALSE;
+            }
+#ifdef __UNIX__
+        } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !flags->bDirs ) {
+#else
+        } else if( (nd->d_attr & _A_RDONLY) && !flags->bDirs ) {
+#endif
+//            Log( FALSE, "%s is read-only, use -f\n", fpath );
+//            retval = EACCES;
+            rc = FALSE;
+        } else {
+            if( !remove_item( fpath, flags, FALSE ) ) {
+                rc = FALSE;
+            }
+        }
+    }
+    closedir( d );
+    /* process any directories found */
+    for( tmp = dhead; tmp != NULL; tmp = dhead ) {
+        dhead = tmp->next;
+        if( !RecursiveRM( tmp->name, flags ) ) {
+            rc = FALSE;
+        }
+        free( tmp );
+    }
+    return( rc );
+}
+
+
+static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags )
+/******************************************************************/
+/* RecursiveRM - do an RM recursively on all files */
+{
+    BOOLEAN     rc;
+    BOOLEAN     rc2;
+    char        fname[_MAX_PATH];
+
+    /* purge the files */
+    strcpy( fname, dir );
+    strcat( fname, "/" MASK_ALL_ITEMS );
+    rc = doRM( fname, flags );
+    /* purge the directory */
+    rc2 = remove_item( dir, flags, TRUE );
+    if( rc )
+        rc = rc2;
+    return( rc );
+}
+
+STATIC BOOLEAN processRM( const char *name, const rm_flags *flags )
+/*****************************************************************/
+{
+    if( flags->bDirs ) {
+        if( strcmp( name, MASK_ALL_ITEMS ) == 0 ) {
+            return( RecursiveRM( ".", flags ) );
+        } else if( strpbrk( name, WILD_METAS ) != NULL ) {
+            /* don't process wild cards on directories */
+        } else {
+            struct stat buf;
+            if( stat( name, &buf ) == 0 ) {
+                if( S_ISDIR( buf.st_mode ) ) {
+                    return( RecursiveRM( name, flags ) );
+                } else {
+                    return( remove_item( name, flags, FALSE ) );
+                }
+            }
+        }
+        return( TRUE );
+    } else {
+        if( strpbrk( name, WILD_METAS ) != NULL ) {
+            return( doRM( name, flags ) );
+        } else {
+            return( remove_item( name, flags, FALSE ) );
+        }
+    }
 }
 
 STATIC RET_T handleRM( char *cmd )
 /*********************************
- * RM [-f -v] <file> ...
+ * RM [-f -r -v] <file>|<dir> ...
  *
  * -f   Force deletion of read-only files.
+ * -r   Recursive deletion of directories.
  * -v   Verbose operation.
  */
 {
@@ -1637,24 +1837,8 @@ STATIC RET_T handleRM( char *cmd )
         rt = getRMArgs( NULL, NULL, &pfname ) ) 
     {
         RemoveDoubleQuotes( (char *)pfname, strlen( pfname ) + 1, pfname );
-
-        if( strpbrk( pfname, WILD_METAS ) == NULL ) {
-            if( !doRM( pfname, &flags ) ) {
-                return( RET_ERROR );
-            }
-        } else {
-            const char    *dfile;
-
-            dfile = DoWildCard( pfname );
-            if( (dfile != NULL) && strcmp( dfile, pfname ) ) {
-                do {
-                    if( !doRM( dfile, &flags ) ) {
-                        /* abandon rest of entries */
-                        DoWildCardClose();
-                        return( RET_ERROR );
-                    }
-                } while( (dfile = DoWildCard( NULL )) != NULL );
-            }
+        if( !processRM( pfname, &flags ) ) {
+            return( RET_ERROR );
         }
     }
 
@@ -1664,7 +1848,6 @@ STATIC RET_T handleRM( char *cmd )
 
     return( rt );
 }
-#endif
 
 STATIC BOOLEAN hasMetas( const char *cmd )
 /*****************************************
@@ -1873,15 +2056,13 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         case COM_SET:   my_ret = handleSet( cmd );          break;
         case COM_FOR:   my_ret = handleFor( cmd );          break;
         case COM_IF:    my_ret = handleIf( cmd );           break;
-#if !defined( __UNIX__ )
         case COM_RM:    my_ret = handleRM( cmd );           break;
-#endif
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ )
         case COM_CD:    /* fall through */
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
+#endif
 #if defined( __OS2__ ) || defined( __NT__ )
         case CNUM:      my_ret = handleChangeDrive( cmd );  break;
-#endif
 #endif
         default:        my_ret = mySystem( cmdname, cmd );  break;
         }

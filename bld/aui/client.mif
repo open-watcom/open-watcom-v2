@@ -1,34 +1,24 @@
 !ifeq sys_windowed 1
 !ifeq host_os os2
-aui_os2_pm = 1
+aui_os2pm = 1
 !endif
 !endif
 !ifeq bootstrap 1
 aui_path = $(aui_dir)/$(objs_subdir)
-!else ifdef aui_os2_pm
+!else ifdef aui_os2pm
 aui_path = $(aui_dir)/$(objs_subdir).pm
 !else
 aui_path = $(aui_dir)/$(objs_subdir)
 !endif
 
-aui_dialogs = &
-    $(aui_dir)/res/dlgs/dlgrx.dlg &
-    $(aui_dir)/res/dlgs/dlgsrch.dlg &
-    $(aui_dir)/res/dlgs/dlgsrcha.dlg &
-    $(aui_dir)/res/dlgs/japrx.dlg &
-    $(aui_dir)/res/dlgs/japsrch.dlg &
-    $(aui_dir)/res/dlgs/japsrcha.dlg
-!ifeq sys_windowed 1
-!ifeq host_os os2
-aui_dialogs = &
-    $(aui_path)/dlgrx.dlg &
-    $(aui_path)/dlgsrch.dlg &
-    $(aui_path)/dlgsrcha.dlg &
-    $(aui_path)/japrx.dlg &
-    $(aui_path)/japsrch.dlg &
-    $(aui_path)/japsrcha.dlg
-!endif
-!endif
+aui_dlgfiles = &
+    $(aui_path)/dlgrx.gdl &
+    $(aui_path)/dlgsrch.gdl &
+    $(aui_path)/dlgsrcha.gdl &
+    $(aui_path)/japrx.gdl &
+    $(aui_path)/japsrch.gdl &
+    $(aui_path)/japsrcha.gdl
+
 aui_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/h"
 aui_lib = $(aui_path)/aui.lib
-aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h"
+aui_rc_inc_dirs = -I"$(aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h"

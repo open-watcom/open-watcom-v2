@@ -133,7 +133,7 @@ static  void  *AlignBuff( cv_out *out )
 }
 
 
-static  void    SegReloc( segment_id seg,  cg_sym_handle sym )
+static  void    SegReloc( segment_id seg, cg_sym_handle sym )
 /*********************************************************/
 {
     segment_id  old;
@@ -381,9 +381,9 @@ static  lf_values   LFSignedSize( signed_32 num )
     if( num >= -128 && num <= 127 ) {
         index.f.size = CV_IB1;
     } else if( num >= -32768 && num <= 32767 ) {
-         index.f.size = CV_IB2;
+        index.f.size = CV_IB2;
     } else {
-         index.f.size =  CV_IB4;
+        index.f.size =  CV_IB4;
     }
     return( index.s );
 }
@@ -554,7 +554,7 @@ extern  void    CVDumpName( dbg_name name, dbg_type tipe )
             mod->index = tipe;
             here = EndTypeString( out );
             name->patch.segment = CVTypes;
-            name->patch.offset = 2+here + offsetof(lf_modifier, f.index ) ;
+            name->patch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
         }
     }
     name->refno = tipe;
@@ -634,10 +634,7 @@ static  lf_values   ArrayDim( unsigned_32  hi )
 extern  dbg_type    CVCharBlock( unsigned_32 len )
 /************************************************/
 {
-    dbg_type        ret;
-
-    ret = CVArraySize( len, len, LF_TRCHAR );
-    return( ret );
+    return( CVArraySize( len, len, LF_TRCHAR ) );
 }
 
 static dbg_type  OutBckSym( back_handle bck, int off, dbg_type tipe )
@@ -691,7 +688,7 @@ extern  dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
 typedef struct {
     union {
       cg_sym_handle s;
-      name      *n;
+      name          *n;
     } v;
     int         o;
     enum {
@@ -801,9 +798,9 @@ extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     dbg_type        itipe;
     dbg_type        symref;
     cv_out          out[1];
-    ct_dimvaru     *dim;
+    ct_dimvaru      *dim;
     lf_values       ret;
-    type_def       *tipe_addr;
+    type_def        *tipe_addr;
     fold_leaf       tmp;
 
     tipe_addr = TypeAddress( len_type );
@@ -885,8 +882,8 @@ extern  dbg_type    CVIntArray( unsigned_32 hi, dbg_type base )
 
 
 
-static  lf_values   ArrayDimL( signed_32  low, signed_32  hi )
-/************ Make 1 dim array bound ************************/
+static  lf_values   ArrayDimL( signed_32 low, signed_32 hi )
+/************ Make 1 dim array bound **********************/
 {
     cv_out          out[1];
     ct_dimconlu     *dim;
@@ -899,8 +896,8 @@ static  lf_values   ArrayDimL( signed_32  low, signed_32  hi )
     index.s = LFSignedRange( low, hi );
     dim->rank = 1;
     dim->index = index.s;
-    PutLFInt( out, index.f.size, low );
-    PutLFInt( out, index.f.size, hi );
+    PutLFInt( out, index.f.size, (offset)low );
+    PutLFInt( out, index.f.size, (offset)hi );
     EndTypeString( out );
     return( ret );
 }
@@ -997,9 +994,8 @@ extern  dbg_type    CVEndArray( dbg_array ar )
     return( CVArray( dims, ar->base ) );
 }
 
-extern  dbg_type    CVSubRange( signed_32 lo, signed_32 hi,
-                    dbg_type base )
-/*********************************************************/
+extern  dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
+/************************************************************************/
 /* not supported by CV */
 {
     base = base;
@@ -1058,10 +1054,7 @@ static  dbg_type    MkPtr( cg_type ptr_type, dbg_type base, cv_ptrmode mode )
 extern  dbg_type    CVDereference( cg_type ptr_type, dbg_type base )
 /******************************************************************/
 {
-    dbg_type    ret;
-
-    ret = MkPtr( ptr_type, base, CV_REF );
-    return( ret );
+    return( MkPtr( ptr_type, base, CV_REF ) );
 }
 
 extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
@@ -1073,26 +1066,26 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
     index.s = base;
     if( index.s < CV_FIRST_USER_TYPE
      && index.s > LF_TSEGMENT && index.f.mode == 0 ) {
-         switch( PtrClass( ptr_type ) ) {
-         case CV_NEAR:
+        switch( PtrClass( ptr_type ) ) {
+        case CV_NEAR:
             index.f.mode =  CV_NEARP;
             break;
-         case CV_FAR:
+        case CV_FAR:
             index.f.mode =  CV_FARP;
             break;
-         case CV_HUGE:
+        case CV_HUGE:
             index.f.mode =  CV_HUGEP;
             break;
-         case CV_NEAR32:
+        case CV_NEAR32:
             index.f.mode =  CV_NEAR32P;
             break;
-         case CV_FAR32:
+        case CV_FAR32:
             index.f.mode =  CV_FAR32P;
             break;
-         default:
+        default:
             Zoiks( ZOIKS_106 ); /* bad pointer */
-         }
-         ret = index.s;
+        }
+        ret = index.s;
     } else {
         ret = MkPtr( ptr_type, base, CV_PTR );
     }
@@ -1102,7 +1095,7 @@ extern  dbg_type    CVPtr( cg_type ptr_type, dbg_type base )
 
 
 static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
-                                cg_sym_handle sym, cv_based_kind kind )
+                                 cg_sym_handle sym, cv_based_kind kind )
 /*******************************************************************/
 {
     cv_out          out[1];
@@ -1117,6 +1110,7 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
     NewTypeString( out );
     ret = ++TypeIdx;
 //    ptype = PtrClass( ptr_type );
+    ptr_type = ptr_type;
     cvptr = StartType( out, LFG_POINTER );
     cvptr->attr.s = 0;
     cvptr->attr.f.mode = CV_PTR;
@@ -1168,10 +1162,10 @@ typedef struct {
 
 #define MAX_OP 2
 typedef struct {
-    based_leaf *stk;
-    based_leaf ops[MAX_OP];
-    cg_sym_handle sym;
-    int count;
+    based_leaf      *stk;
+    based_leaf      ops[MAX_OP];
+    cg_sym_handle   sym;
+    int             count;
     enum {
         IS_NONE,
         IS_SEG,
@@ -1428,11 +1422,11 @@ static   cv_vtshape   CVVTShape( cg_type ptr_type )
 static lf_values MkVTShape( cv_out *out, field_vfunc *vf )
 /********************************************************/
 {
-    lf_values   vshape;
-    ct_vtshape  *vt;
-    char        val;
-    int         count;
-    cv_vtshape  shape;
+    lf_values       vshape;
+    ct_vtshape      *vt;
+    unsigned char   val;
+    int             count;
+    cv_vtshape      shape;
 
     NewTypeString( out );
     vt = StartType( out, LFG_VTSHAPE );
@@ -1651,7 +1645,7 @@ static  int   SortMethods( dbg_struct st )
     overops = 0;
     for( curr = st->list; curr != NULL; curr = curr->entry.next ) {
         if( curr->entry.field_type == FIELD_METHOD ) {
-            add = UnLinkMethod(  &curr->entry.next, curr->method.name );
+            add = UnLinkMethod( &curr->entry.next, curr->method.name );
             if( add != NULL ){
                 overops = 1;
                 next = curr->entry.next;
@@ -1709,7 +1703,7 @@ extern  dbg_type    CVEndStruct( dbg_struct st )
     cv_out          out[1];
 
     if( st->vtbl_type != DBG_NIL_TYPE ){
-        lf_values        vtbl_type;
+        lf_values   vtbl_type;
 
         vtbl_type  = CVArraySize( 0, 0, st->vtbl_type ); /* fake p@[0] vtbl */
         vtbl_type = MkPtr( st->ptr_type, vtbl_type, CV_PTR );
@@ -1771,14 +1765,14 @@ extern  dbg_type    CVEndEnum( dbg_enum en )
 {
     const_entry     *cons;
     const_entry     *next;
-    lf_values        fList;
+    lf_values       fList;
     ct_enumerate    *mem;
     ct_enum         *head;
-    lf_values        headi;
-    int              count;
-    long_offset      fstart;
-    u2               len;
-    cv_out           out[1];
+    lf_values       headi;
+    int             count;
+    long_offset     fstart;
+    u2              len;
+    cv_out          out[1];
 
     NewTypeString( out );
     fList = ++TypeIdx;

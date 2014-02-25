@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include "mitem.hpp"
-#include "mconfig.hpp"
-#include "mcompon.hpp"
-#include "mproject.hpp"
 #include "wobjfile.hpp"
+#include "mproject.hpp"
+#include "mitem.hpp"
+#include "mcompon.hpp"
 #include "mstate.hpp"
 #include "mrswitch.hpp"
 #include "maction.hpp"

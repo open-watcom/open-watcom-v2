@@ -39,7 +39,7 @@
  #define IS_PATH_SEP_END(p)     IS_DIR_SEP( (p)[0] )
  #define HAS_PATH(p)            IS_DIR_SEP( (p)[0] )
  #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
- #define IS_INCL_SEP(c)         (IS_PATH_LIST_SEP( c ) || (c) == ';')
+ #define IS_INCLUDE_LIST_SEP(c) (IS_PATH_LIST_SEP( c ) || (c) == ';')
 #else
  #define DIR_SEP                '\\'
  #define DRIVE_SEP              ':'
@@ -52,5 +52,5 @@
  #define IS_PATH_SEP_END(p)     (IS_DIR_SEP( (p)[0] ) && (p)[-1] != ':')
  #define HAS_PATH(p)            (IS_DIR_SEP( (p)[0] ) || (p)[0] != '\0' && (p)[1] == DRIVE_SEP)
  #define IS_PATH_LIST_SEP(c)    ((c) == PATH_LIST_SEP)
- #define IS_INCL_SEP(c)         IS_PATH_LIST_SEP( c )
+ #define IS_INCLUDE_LIST_SEP(c) IS_PATH_LIST_SEP( c )
 #endif

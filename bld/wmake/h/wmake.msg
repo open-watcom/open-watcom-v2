@@ -85,7 +85,7 @@ pick( NO_DEF_CMDS_FOR_MAKE,        "No %s commands for making %E",
                                 "%s コマンドがありません(%E の作成に対応)" )
 pick( LAST_CMD_MAKING_RET_BAD,        "Last command making (%L) returned a bad status",
                                  "(%L)を作成する最後のコマンドによりエラーが返されました" )
-pick( SYSERR_DELETING_FILE,        "Deleting %E: %Z",
+pick( SYSERR_DELETING_ITEM,        "Deleting %E: %Z",
                                 "%Eを消します: %Z" )
 pick( S_COMMAND_RET_BAD,        "%s command returned a bad status",
                                 "%S コマンドがエラー・ステータスを返しました" )
@@ -264,8 +264,8 @@ pick( GETDATE_MSG,                "\t%s\t%E",
                                 "\t%s\t%E" )
 pick( WILL_BE_BUILT_BECAUSE_OF,                "%s will be built because of %s",
                                 "%s will be built because of %s" )
-pick( DELETING_FILE,            "Deleting file %s",
-                                "Deleting file %s" )
+pick( DELETING_ITEM,            "Deleting %1 %2",
+                                "Deleting %1 %2" )
 pick( TARGET_FORCED_UPTODATE,   "%E is considered uptodate",
                                 "%E is considered uptodate" )
 pick( EXECING_CMD,              "About to execute [%s]",

@@ -763,15 +763,13 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     instruction *new_ins;
     name        *temp;
 
-    next = ins->head.next;
-    for( ;; ) {
+    for( next = ins->head.next; ; next = next->head.next ) {
         if( next->head.opcode == OP_BLOCK ) return;
         if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return;
         if( next->head.opcode == next_op ) {
             if( next->operands[ 0 ] == ins->operands[ 0 ] &&
                 next->type_class == ins->type_class ) break;
         }
-        next = next->head.next;
     }
     temp = AllocTemp( ins->type_class );
     new_ins = MakeUnary( next_op, ins->operands[0], temp, ins->type_class );

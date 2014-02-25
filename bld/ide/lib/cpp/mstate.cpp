@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include "mstate.hpp"
-#include "mconfig.hpp"
 #include "wobjfile.hpp"
-#include "mtool.hpp"
+#include "mconfig.hpp"
+#include "mstate.hpp"
 #include "mrule.hpp"            //temp
 
 Define( MState )
@@ -77,7 +76,7 @@ void WEXPORT MState::readSelf( WObjectFile& p )
         _toolTag = _tool->tag();
     }
     p.readObject( &_switchTag );
-    _config->kludgeString( _switchTag );
+    _config->kludgeMask( _switchTag );
     //
     // fix _switchTag for current version of configuration files
     // it use various hacks in dependency on project files version

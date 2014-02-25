@@ -117,7 +117,7 @@ extern  instruction     *NewIns( int num ) {
     new->table = NULL;
     new->u.gen_table = NULL;
     new->base_type_class = XX;
-    new->zap = (register_name *) AllocRegName( HW_EMPTY );
+    new->zap = (register_name *)AllocRegName( HW_EMPTY );
     return( new );
 }
 

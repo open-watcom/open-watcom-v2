@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "mconfig.hpp"
 #include "maccel.hpp"
 #include "mtoolitm.hpp"
-#include "mconfig.hpp"
 #include "wobjfile.hpp"
 
 Define( MAccelerator )

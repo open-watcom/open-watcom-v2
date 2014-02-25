@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "mtool.hpp"
 #include "mc2swtch.hpp"
 #include "wobjfile.hpp"
 #include "mcstate.hpp"

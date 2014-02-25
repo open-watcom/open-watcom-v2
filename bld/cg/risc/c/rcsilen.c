@@ -32,8 +32,8 @@
 
 #include "optwif.h"
 
-extern  int     OptInsSize( oc_class class, oc_dest_attr attr) {
-/**************************************************************/
+extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr) {
+/******************************************************************/
 
     class = class;
     attr = attr;

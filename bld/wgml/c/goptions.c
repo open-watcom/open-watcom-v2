@@ -1125,7 +1125,7 @@ static void set_OPTFile( option * opt )
                     int     k;
 
                     for( k = level; k > 0; k-- ) {
-                        if( stricmp( try_file_name, file_names[k]) == 0 ) {
+                        if( FNAMECMPSTR( try_file_name, file_names[k]) == 0 ) {
                             g_err( err_recursive_option, try_file_name );
                             err_count++;
                             skip = true;

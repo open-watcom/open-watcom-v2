@@ -46,7 +46,7 @@
 extern  void            GenSetCC( instruction * );
 extern  byte            CondCode( instruction * );
 extern  void            InputOC(any_oc*);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 
 static  label_handle    LocateLabel( instruction *ins, int index ) {
@@ -84,8 +84,9 @@ extern  void    CodeLabel( label_handle label, unsigned align ) {
 /****************************************************************
     Drop label into the queue
 */
-    if( OptForSize > 50 || align == 0 ) align = 1;
-    CodeHandle( OC_LABEL, align-1, label );
+    if( OptForSize > 50 || align == 0 )
+        align = 1;
+    CodeHandle( OC_LABEL, align - 1, label );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
@@ -125,7 +126,7 @@ extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
 }
 
 
-extern  void    CodeHandle( oc_class class, int len, label_handle handle ) {
+extern  void    CodeHandle( oc_class class, obj_length len, label_handle handle ) {
 /***************************************************************************
     Dump a label reference to "handle" of class "class" (LREF or LABEL)
     into the queue.  Len is the code space taken.

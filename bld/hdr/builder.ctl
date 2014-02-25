@@ -43,6 +43,7 @@ set PROJNAME=Standard header files
     <CPCMD> dos/cwctype        <OWRELROOT>/h/
     <CPCMD> dos/deque          <OWRELROOT>/h/
     <CPCMD> dos/exceptio       <OWRELROOT>/h/
+    <CPCMD> dos/forward_       <OWRELROOT>/h/
     <CPCMD> dos/fstream        <OWRELROOT>/h/
     <CPCMD> dos/function       <OWRELROOT>/h/
     <CPCMD> dos/iomanip        <OWRELROOT>/h/
@@ -62,7 +63,6 @@ set PROJNAME=Standard header files
     <CPCMD> dos/queue          <OWRELROOT>/h/
     <CPCMD> dos/random         <OWRELROOT>/h/
     <CPCMD> dos/set            <OWRELROOT>/h/
-    <CPCMD> dos/slist          <OWRELROOT>/h/
     <CPCMD> dos/sstream        <OWRELROOT>/h/
     <CPCMD> dos/stack          <OWRELROOT>/h/
     <CPCMD> dos/stdexcep       <OWRELROOT>/h/
@@ -106,6 +106,7 @@ set PROJNAME=Standard header files
     <CPCMD> linux/cwctype      <OWRELROOT>/lh/
     <CPCMD> linux/deque        <OWRELROOT>/lh/
     <CPCMD> linux/exceptio     <OWRELROOT>/lh/
+    <CPCMD> linux/forward_     <OWRELROOT>/lh/
     <CPCMD> linux/fstream      <OWRELROOT>/lh/
     <CPCMD> linux/function     <OWRELROOT>/lh/
     <CPCMD> linux/iomanip      <OWRELROOT>/lh/
@@ -125,7 +126,6 @@ set PROJNAME=Standard header files
     <CPCMD> linux/queue        <OWRELROOT>/lh/
     <CPCMD> linux/random       <OWRELROOT>/lh/
     <CPCMD> linux/set          <OWRELROOT>/lh/
-    <CPCMD> linux/slist        <OWRELROOT>/lh/
     <CPCMD> linux/sstream      <OWRELROOT>/lh/
     <CPCMD> linux/stack        <OWRELROOT>/lh/
     <CPCMD> linux/stdexcep     <OWRELROOT>/lh/

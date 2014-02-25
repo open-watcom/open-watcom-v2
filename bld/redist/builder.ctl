@@ -15,8 +15,8 @@ cdsay .
 
 [ BLOCK <1> bootclean ]
 #======================
-    echo rm -r -f <OWBINDIR>/dos4gw.exe
-    rm -r -f <OWBINDIR>/dos4gw.exe
+    echo rm -f <OWBINDIR>/dos4gw.exe
+    rm -f <OWBINDIR>/dos4gw.exe
 
 [ BLOCK <1> build rel ]
 #======================

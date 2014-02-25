@@ -36,7 +36,6 @@
 #include "cvinfo.h"
 
 #define UNKNOWN_TYPE_IDX        ((unsigned short)-1)
-#define PT_REALLY_CHAR          0x0070
 
 static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
@@ -1442,7 +1441,7 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
         break;
     case LF_ARRAY:
         ti->kind = TK_ARRAY;
-        if( p->array.f.elemtype == PT_REALLY_CHAR ) {
+        if( p->array.f.elemtype == LF_TRCHAR ) {
             maybe_string = 1;
         }
         GetNumLeaf( &p->array + 1, &val );
@@ -1494,7 +1493,7 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
         break;
     case LF_DIMARRAY:
         ti->kind = TK_ARRAY;
-        if( p->dimarray.f.utype == PT_REALLY_CHAR ) {
+        if( p->dimarray.f.utype == LF_TRCHAR ) {
             maybe_string = 1;
         }
         ds = ImpTypeArrayInfo( ii, it, lc, &ai, NULL );

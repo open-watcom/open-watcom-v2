@@ -75,7 +75,7 @@ static  user_seg    *userSegments;
 static  segment_id  userSegment;
 
 
-void AssignSeg( SYM_ENTRY *sym )
+void AssignSeg( SYMPTR sym )
 {
     SetFarHuge( sym, 1 );
     if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)

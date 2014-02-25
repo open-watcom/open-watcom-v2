@@ -255,7 +255,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
                 if( unlink( targ->node.name ) != 0 ) {
-                    PrtMsg( FTL | SYSERR_DELETING_FILE, targ->node.name );
+                    PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
                 }
             }
         }

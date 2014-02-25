@@ -57,70 +57,82 @@ static  int     is_directory( const char *name )
         }
         ++name;
     }
-    if( name[0] == '\\' || name[0] == '/' || name[0] == '.' ){
+    if( name[0] == '\\' || name[0] == '/' || name[0] == '.' || name[0] == ':' ){
         return( 1 );
     }
     return( 0 );
 }
 
-DIR_TYPE *__opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
-/********************************************************************************/
+static DIR_TYPE *___opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
+/*******************************************************************************/
+{
+    if( dirp->d_first != _DIR_CLOSED ) {
+        _dos_findclose( (struct _find_t *)dirp->d_dta );
+        dirp->d_first = _DIR_CLOSED;
+    }
+    if( _dos_findfirst( dirname, attr, (struct _find_t *)dirp->d_dta ) ) {
+        return( NULL );
+    }
+    dirp->d_first = _DIR_ISFIRST;
+    return( dirp );
+}
+
+static DIR_TYPE *__opendir( const char *dirname, unsigned attr )
+/**************************************************************/
 {
     DIR_TYPE    tmp;
+    DIR_TYPE    *dirp;
     int         i;
     char        pathname[_MAX_PATH+6];
-    const char  *p;
-    int         flag_opendir = ( dirp == NULL );
-    int         opened;
+    char        *p;
+    char        pchar;
+    char        cchar;
 
     tmp.d_attr = _A_SUBDIR;
-    opened = 0;
+    tmp.d_first = _DIR_CLOSED;
+    dirp = NULL;
     if( !is_directory( dirname ) ) {
-        if( _dos_findfirst( dirname, attr, (struct _find_t *)tmp.d_dta ) ) {
+        if( (dirp = ___opendir( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
-        opened = 1;
     }
     if( tmp.d_attr & _A_SUBDIR ) {                  /* 05-apr-91 */
-        p = dirname;
+        dirp = NULL;
+        p = pathname;
+        pchar = NULLCHAR;
         for( i = 0; i < _MAX_PATH; i++ ) {
-            pathname[i] = *p;
-            if( *p == '\0' ) {
-                if( i != 0  &&  pathname[i-1] != '\\' && pathname[i-1] != '/' ){
-                    pathname[i++] = '\\';
+            cchar = dirname[i];
+            if( cchar == '\0' ) {
+                if( i != 0  &&  pchar != '\\' && pchar != '/' && pchar != ':' ){
+                    *p++ = '\\';
                 }
-                strcpy( &pathname[i], "*.*" );
-                if( opened ) {
-                    _dos_findclose( (struct _find_t *)tmp.d_dta );
-                }
-                if( _dos_findfirst( pathname, attr, (struct _find_t *)tmp.d_dta ) ) {
+                strcpy( p, "*.*" );
+                if( (dirp = ___opendir( pathname, attr, &tmp )) == NULL ) {
                     return( NULL );
                 }
-                opened = 1;
+                dirname = pathname;
                 break;
             }
-            if( *p == '*' )
+            if( cchar == '*' )
                 break;
-            if( *p == '?' )
+            if( cchar == '?' ) {
                 break;
-            ++p;
-        }
-    }
-    if( flag_opendir ) {
-        dirp = lib_malloc( sizeof( DIR_TYPE ) );
-        if( dirp == NULL ) {
-            if( opened ) {
-                _dos_findclose( (struct _find_t *)tmp.d_dta );
             }
-            __set_errno_dos( E_nomem );
-            return( NULL );
+            *p++ = cchar;
+            pchar = cchar;
         }
-        tmp.d_openpath = __clib_strdup( dirname );
-    } else {
-        _dos_findclose( (struct _find_t *)dirp->d_dta );
-        tmp.d_openpath = dirp->d_openpath;
     }
-    tmp.d_first = _DIR_ISFIRST;
+    if( dirp == NULL ) {
+        __set_errno_dos( E_nopath );
+        return( NULL );
+    }
+    dirp = lib_malloc( sizeof( DIR_TYPE ) );
+    if( dirp == NULL ) {
+        _dos_findclose( (struct _find_t *)tmp.d_dta );
+        __set_errno_dos( E_nomem );
+        return( NULL );
+    }
+    tmp.d_openpath = __clib_strdup( dirname );
     *dirp = tmp;
     return( dirp );
 }
@@ -128,13 +140,13 @@ DIR_TYPE *__opendir( const char *dirname, unsigned attr, DIR_TYPE *dirp )
 
 _WCRTLINK DIR_TYPE *opendir( const char *dirname )
 {
-    return( __opendir( dirname, SEEK_ATTRIB, NULL ) );
+    return( __opendir( dirname, SEEK_ATTRIB ) );
 }
 
 
 _WCRTLINK DIR_TYPE *readdir( DIR_TYPE *dirp )
 {
-    if( dirp == NULL || dirp->d_first >= _DIR_INVALID )
+    if( dirp == NULL || dirp->d_first == _DIR_INVALID || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
@@ -165,7 +177,7 @@ _WCRTLINK void rewinddir( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( __opendir( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
+    if( ___opendir( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
         dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
     }
 }

@@ -62,14 +62,13 @@ d:\
   case with ow_daily.tar.bz2, you must make sure that line endings are
   properly converted. Loading the batch files in an editor such as EDIT and
   saving them is one way to do this.
+
+  WARNING: Documentation build requires external(non-Open Watcom) tools which
+  is not available to every supported platforms.
+  It requires special setup. For more details read docs/howto.txt file.
   
 ------------------------------
 3) Build process:
-
-WGML OW tool is still only available as DOS version that on platforms
-where can not be run some DOS emulator is necessary.
-Under Linux, DOSEMU and FREEDOS need to be installed.
-Under 64-bit Windows, DOSBOX need to be installed.
 
 Build process consists from two phases.
 First one creates minimal set of OW tools which are sufficient to build full OW.

@@ -41,7 +41,7 @@ extern  oc_class        NextClass( ins_entry * );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  void            ChgLblRef( ins_entry *, label_handle );
-extern  label_handle    AddNewLabel( ins_entry *, int );
+extern  label_handle    AddNewLabel( ins_entry *, obj_length );
 extern  void            InsertQueue( ins_entry *, ins_entry * );
 extern  void            DeleteQueue( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
@@ -55,17 +55,12 @@ extern  bool            CodeHasAbsPatch( oc_entry * );
 extern  bool    FindShort( ins_entry *ins, ins_entry *end )
 /*********************************************************/
 {
-    for( ;; ) {
-        if( ins == NULL )
-            break;
-        if( ins == end )
-            break;
+    for( ; ins != NULL && ins != end; ins = NextIns( ins ) ) {
         if( _Class( ins ) == OC_LABEL ) {
             if( _Attr( ins ) & ATTR_SHORT )
                 return( TRUE );
             _ClrStatus( _Label( ins ), SHORTREACH );
         }
-        ins = NextIns( ins );
     }
     return( FALSE );
 }
@@ -123,10 +118,9 @@ extern  void    CloneCode( label_handle lbl )
     lbl_ins = lbl->ins;
     if( lbl_ins == NULL )
         return;
-    hoist = NextIns( lbl_ins );
-    next = hoist;
     size = 0;
-    for( ;; ) {
+    hoist = NextIns( lbl_ins );
+    for( next = hoist; ; next = NextIns( next ) ) {
         if( next == NULL )
             return;
         if( _Class( next ) == OC_CODE && CodeHasAbsPatch( &next->oc.oc_entry ) )
@@ -139,7 +133,6 @@ extern  void    CloneCode( label_handle lbl )
                 break;
             }
         }
-        next = NextIns( next );
     }
     if( _Class( next ) == OC_JMP && _Label( next ) == lbl )
         return;
@@ -197,7 +190,7 @@ extern  bool    StraightenCode( ins_entry *jump )
     ins_entry   *hoist;
     ins_entry   *end_hoist;
     oc_class    cl;
-    int         align;
+    obj_length  align;
 
   optbegin
     hoist = _Label( jump )->ins;
@@ -210,8 +203,7 @@ extern  bool    StraightenCode( ins_entry *jump )
         optreturn( FALSE );
 
     end_hoist = NULL;
-    next = hoist;
-    for( ;; ) {
+    for( next = hoist; ; next = NextIns( next ) ) {
         if( next == jump ) { // pushing code down to jump
             if( end_hoist == NULL )
                 optreturn( FALSE );
@@ -228,7 +220,6 @@ extern  bool    StraightenCode( ins_entry *jump )
         if( end_hoist == NULL && _TransferClass( cl ) ) {
             end_hoist = next;
         }
-        next = NextIns( next );
     }
 
     align = _ObjLen( hoist );

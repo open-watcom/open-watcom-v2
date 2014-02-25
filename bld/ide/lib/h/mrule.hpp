@@ -38,10 +38,9 @@
 #include "wpicklst.hpp"
 #include "wfilenam.hpp"
 #include "wtokfile.hpp"
-#include "mtool.hpp"
-#include "mcommand.hpp"
 #include "wwindow.hpp"
 #include "wkeydefs.hpp"
+#include "mcommand.hpp"
 
 #define _MAX_RULETAG    40
 

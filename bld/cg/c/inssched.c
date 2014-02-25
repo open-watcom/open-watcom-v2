@@ -189,7 +189,7 @@ static bool StackOp( instruction *ins )
     pointer.
 */
 {
-    int     i;
+    int         i;
     hw_reg_set  sp;
     name        *op;
 
@@ -575,7 +575,9 @@ static void *AnnointADag( data_dag *dag )
         pred->anc_count++;
         if( !pred->visited )
             SafeRecurseCG( (func_sr)AnnointADag, pred );
-        if( pred->height > max_cycle_count ) max_cycle_count = pred->height;
+        if( pred->height > max_cycle_count ) {
+            max_cycle_count = pred->height;
+        }
     }
     dag->height = max_cycle_count + FUEntry( dag->ins )->opnd_stall;
     /* return a pointer to satisfy SafeRecurseCG */

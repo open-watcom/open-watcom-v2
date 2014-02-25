@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "mcstate.hpp"
 #include "mconfig.hpp"
+#include "mcstate.hpp"
 #include "wobjfile.hpp"
 #include "mcswitch.hpp"
 

@@ -58,91 +58,110 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
     }
     switch( kind ) {
     case V_80186:
-         if( _CPULevel( CPU_186 ) ) return( TRUE );
+         if( _CPULevel( CPU_186 ) )
+            return( TRUE );
          break;
     case V_80386:
-         if( _CPULevel( CPU_386 ) ) return( TRUE );
+         if( _CPULevel( CPU_386 ) )
+            return( TRUE );
          break;
     case V_DIFF_TYPES:
-        if( op1->n.name_class != result->n.name_class ) return( TRUE );
+        if( op1->n.name_class != result->n.name_class )
+            return( TRUE );
         break;
     case V_HIGHEQLOW:
-        if( op1->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if(!CFIsI32( op1->c.value ) && !CFIsU32( op1->c.value )) return(FALSE);
-        if( ( op1->c.int_value & 0xffff0000 )
-         == ( op1->c.int_value << 16 ) ) return( TRUE );
+        if( op1->c.const_type != CONS_ABSOLUTE )
+            return( FALSE );
+        if( !CFIsI32( op1->c.value ) && !CFIsU32( op1->c.value ) )
+            return(FALSE);
+        if( (op1->c.int_value & 0x0000ffff) == (( op1->c.int_value >> 16 ) & 0x0000ffff) )
+            return( TRUE );
         break;
     case V_OP2HIGH_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0x0000ff00 ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0x0000ff00) == 0 )
+            return( TRUE );
         break;
     case V_OP2LOW_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( ~op2->c.int_value & 0x000000ff ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.int_value & 0x000000ff) == 0 )
+            return( TRUE );
         break;
     case V_OP2LOW_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0x000000ff ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0x000000ff) == 0 )
+            return( TRUE );
         break;
     case V_OP2LOW_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( ~op2->c.int_value & 0x0000ffff ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.int_value & 0x0000ffff) == 0 )
+            return( TRUE );
         break;
     case V_LSHONE:
-        if( !_CPULevel( CPU_286 ) ) return( FALSE );
-        if( ins->head.opcode != OP_LSHIFT ) return( FALSE );
+        if( !_CPULevel( CPU_286 ) )
+            return( FALSE );
+        if( ins->head.opcode != OP_LSHIFT )
+            return( FALSE );
         return( OtherVerify( V_OP2ONE, ins, op1, op2, result ) );
     case V_OP2TWO_SIZE:
-        if( OptForSize <= 50 ) return( FALSE );
+        if( OptForSize <= 50 )
+            return( FALSE );
         return( OtherVerify( V_OP2TWO, ins, op1, op2, result ) );
     case V_BYTESHIFT:
-        if( ins->head.opcode != OP_LSHIFT
-         && ins->type_class != U4 ) return( FALSE );
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( op2->c.int_value != 8 ) return( FALSE );
-        if( op1->n.class == N_REGISTER
-         && !HW_CEqual( op1->r.reg, HW_ABCD ) ) return( FALSE );
-        if( result->n.class == N_REGISTER
-         && !HW_CEqual( result->r.reg, HW_ABCD ) ) return( FALSE );
+        if( ins->head.opcode != OP_LSHIFT && ins->type_class != U4 )
+            return( FALSE );
+        if( op2->c.const_type != CONS_ABSOLUTE )
+            return( FALSE );
+        if( op2->c.int_value != 8 )
+            return( FALSE );
+        if( op1->n.class == N_REGISTER && !HW_CEqual( op1->r.reg, HW_ABCD ) )
+            return( FALSE );
+        if( result->n.class == N_REGISTER && !HW_CEqual( result->r.reg, HW_ABCD ) )
+            return( FALSE );
         return( TRUE );
     case V_CYP2SHIFT:
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( op2->c.int_value != 8 ) return( FALSE );
-        if( _CPULevel( CPU_186 ) ) return( FALSE );
-        if( !HW_COvlap( ins->head.live.regs, HW_AX ) ) return( TRUE );
+        if( op2->c.const_type != CONS_ABSOLUTE )
+            return( FALSE );
+        if( op2->c.int_value != 8 )
+            return( FALSE );
+        if( _CPULevel( CPU_186 ) )
+            return( FALSE );
+        if( !HW_COvlap( ins->head.live.regs, HW_AX ) )
+            return( TRUE );
         return( FALSE );
     case V_CYP4SHIFT:
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( op2->c.int_value < 16 ) return( FALSE );
+        if( op2->c.const_type != CONS_ABSOLUTE )
+            return( FALSE );
+        if( op2->c.int_value < 16 )
+            return( FALSE );
         return( TRUE );
     case V_OP2HIGH_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0x0000ff00 ) == 0x0000ff00 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0x0000ff00) == 0x0000ff00 )
+            return( TRUE );
         break;
     case V_OP2HIGH_W_FFFF_REG:
         if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) ) break;
     case V_OP2HIGH_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0xffff0000 ) == 0xffff0000 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0xffff0000) == 0xffff0000 )
+            return( TRUE );
         break;
     case V_OP2HIGH_W_ZERO_REG:
         if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) ) break;
     case V_OP2HIGH_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0xffff0000 ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0xffff0000) == 0 )
+            return( TRUE );
         break;
     case V_OP2LOW_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE
-         && ( op2->c.int_value & 0x0000ffff ) == 0 ) return( TRUE );
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.int_value & 0x0000ffff) == 0 )
+            return( TRUE );
         break;
     case V_OP2PTR:
-        if( op2->n.name_class == PT || op2->n.name_class == CP ) return( TRUE );
+        if( op2->n.name_class == PT || op2->n.name_class == CP )
+            return( TRUE );
         break;
     case V_LEA_GOOD:
-        if( OptForSize > 50 ) return( FALSE );
+        if( OptForSize > 50 )
+            return( FALSE );
         /* fall through */
     case V_LEA:
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
+        if( op2->c.const_type != CONS_ABSOLUTE )
+            return( FALSE );
         switch( ins->head.opcode ) {
 #if _TARGET & _TARG_80386
         case OP_MUL:
@@ -156,7 +175,8 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         case OP_LSHIFT:
             if( op1 == result && (_CPULevel( CPU_586 ) && !_CPULevel( CPU_686 )) )
                 return( FALSE );
-            if( OptForSize > 50 ) return( FALSE );
+            if( OptForSize > 50 )
+                return( FALSE );
             switch( op2->c.int_value ) {
             case 1:
             case 2:
@@ -182,7 +202,8 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
 #endif
         case OP_ADD:
         case OP_SUB:
-            if( OptForSize < 50 && !_CPULevel( CPU_286 ) ) return( FALSE );
+            if( OptForSize < 50 && !_CPULevel( CPU_286 ) )
+                return( FALSE );
             return( TRUE );
         default:
             break;
@@ -192,8 +213,8 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         if( OptForSize > 50 ) return( TRUE );
         break;
     case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility)*/
-        if( !_CPULevel( CPU_286 )
-             && ins->type_class != U1 && ins->type_class != U2 ) return( TRUE );
+        if( !_CPULevel( CPU_286 ) && ins->type_class != U1 && ins->type_class != U2 )
+            return( TRUE );
         break;
     case V_OP1SP:
         if( HW_CEqual( op1->r.reg, HW_SP ) ) return( TRUE );
@@ -290,7 +311,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
 
             for( i = ins->num_operands; i-- > 0; ) {
                 op1 = ins->operands[i];
-                if( op1->n.class == N_TEMP && (op1->t.temp_flags & CONST_TEMP ) ) {
+                if( op1->n.class == N_TEMP && (op1->t.temp_flags & CONST_TEMP) ) {
                     return( TRUE );
                 }
             }

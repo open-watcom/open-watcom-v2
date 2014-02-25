@@ -10,7 +10,7 @@ w32api_distrib_lib  = 1
 
 inc_dirs = -I"$(w32api_dir)/nt/ddk" -I"$(w32api_dir)/nt/directx"
 
-dirs = ./ddk ./directx
+dirs = ddk directx
 
 libs =                       &
         aclui.lib            &
@@ -242,5 +242,5 @@ $(dirs):
 
 clean: .SYMBOLIC
     rm -f *.obj *.lbc *.lib *.tmp *.err *.pch
-    !rm -rf $(dirs)
+    rm -rf $(dirs)
 

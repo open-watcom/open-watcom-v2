@@ -70,13 +70,13 @@ static  byte    InsSize[ 6 ][ OC_DEST_FAR+1 ] = {
 };
 
 
-extern  int     OptInsSize( oc_class class, oc_dest_attr attr )
-/**************************************************************
+extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
+/******************************************************************
     return the object code size of a given call/branch with a
     given attribute (short/near/far)
 */
 {
-    int         i;
+    obj_length  i;
 
     i = 0;
     switch( class ) {
@@ -89,6 +89,7 @@ extern  int     OptInsSize( oc_class class, oc_dest_attr attr )
         i = 4;
         break;
     }
-    if( _IsTargetModel( USE_32 ) ) ++i;
-    return( InsSize[ i ][ attr ] );
+    if( _IsTargetModel( USE_32 ) )
+        ++i;
+    return( InsSize[i][attr] );
 }

@@ -129,7 +129,7 @@ static  hw_reg_set      FirstReg( reg_set_index index )
 {
     hw_reg_set  *list;
 
-    list = RegSets[  index  ];
+    list = RegSets[index];
     return( *list );
 }
 
@@ -149,8 +149,8 @@ extern  name    *Addressable( name *cons, type_class_def class )
             return( GenFloat( cons, class ) );
         case U8:
         case I8:
-            buffer.u._32[ I64LO32 ] = cons->c.int_value;
-            buffer.u._32[ I64HI32 ] = cons->c.int_value_2;
+            buffer.u._32[I64LO32] = cons->c.int_value;
+            buffer.u._32[I64HI32] = cons->c.int_value_2;
             return( GenConstData( (byte *)&buffer, class ) );
         default:
             Zoiks( ZOIKS_138 );
@@ -169,8 +169,8 @@ static void CheckForPCS( instruction *ins )
 */
 {
     if( RoutineNum == RT_PTS ) {
-        if( ins->operands[ 1 ]->n.name_class != PT
-         && ins->operands[ 1 ]->n.name_class != CP ) {
+        if( ins->operands[1]->n.name_class != PT
+         && ins->operands[1]->n.name_class != CP ) {
             RoutineNum = RT_PCS;
         }
     }
@@ -222,12 +222,12 @@ static  void    FlipIns( instruction *ins )
     default:
         return;
     }
-    temp = ins->operands[ 0 ];
+    temp = ins->operands[0];
     if( temp->n.class == N_CONSTANT
      || temp->n.class == N_MEMORY
      || temp->n.class == N_INDEXED ) {
-        ins->operands[ 0 ] = ins->operands[ 1 ];
-        ins->operands[ 1 ] = temp;
+        ins->operands[0] = ins->operands[1];
+        ins->operands[1] = temp;
     }
 }
 
@@ -260,20 +260,20 @@ extern  instruction     *rMAKECALL( instruction *ins )
         LookupConvertRoutine( ins );
     }
     FlipIns( ins );
-    info = &RTInfo[  RoutineNum  ];
+    info = &RTInfo[RoutineNum];
     regs = FirstReg( info->left );
     all_regs = regs;
     tmp = ReturnReg( WD, FALSE );
     HW_TurnOn( all_regs, tmp );
-    left_ins = MakeMove( ins->operands[ 0 ], AllocRegName( regs ), info->operand_class );
-    ins->operands[ 0 ] = left_ins->result;
+    left_ins = MakeMove( ins->operands[0], AllocRegName( regs ), info->operand_class );
+    ins->operands[0] = left_ins->result;
     MoveSegOp( ins, left_ins, 0 );
     PrefixIns( ins, left_ins );
     regs = FirstReg( info->right );
     also_used = NULL;
     if( !HW_CEqual( regs, HW_EMPTY ) ) {
         if( info->right == RL_8 ) {
-            temp = ins->operands[ 1 ];
+            temp = ins->operands[1];
             if( temp->n.class==N_TEMP && ( temp->t.temp_flags & CONST_TEMP ) ) {
                 temp = temp->v.symbol;
             }
@@ -281,8 +281,8 @@ extern  instruction     *rMAKECALL( instruction *ins )
                 temp = Addressable( temp, info->operand_class );
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp,
                                       AllocRegName( HW_SI ), U2 );
-                also_used = la_ins->operands[ 0 ];
-                ins->operands[ 1 ] = la_ins->result;
+                also_used = la_ins->operands[0];
+                ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 if( !SegIsSS( temp ) ) {
                     new_ins = MakeMove( GetSegment( temp ),
@@ -295,19 +295,19 @@ extern  instruction     *rMAKECALL( instruction *ins )
                 la_ins = MakeUnary( OP_CAREFUL_LA,temp,
                                     AllocRegName( HW_SI ),U2 );
                 also_used = temp;
-                ins->operands[ 1 ] = la_ins->result;
+                ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
             } else if( ins->num_operands == 3 ) {
-                new_ins = MakeMove( ins->operands[ 2 ],
+                new_ins = MakeMove( ins->operands[2],
                                     AllocRegName(HW_ES), U2 );
-                ins->operands[ 2 ] = new_ins->result;
+                ins->operands[2] = new_ins->result;
                 PrefixIns( ins, new_ins );
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp,
                                     AllocRegName( HW_SI ), U2 );
                 also_used = temp;
-                ins->operands[ 1 ] = la_ins->result;
+                ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
@@ -316,10 +316,10 @@ extern  instruction     *rMAKECALL( instruction *ins )
             } else if( ( temp->n.class == N_MEMORY && !SegIsSS( temp ) ) ||
                        ( temp->n.class == N_INDEXED && temp->i.base != NULL &&
                          !SegIsSS( temp->i.base ) ) ) {
-                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[ 1 ],
+                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1],
                                       AllocRegName( HW_ES_SI ), PT );
-                also_used = ins->operands[ 1 ];
-                ins->operands[ 1 ] = la_ins->result;
+                also_used = ins->operands[1];
+                ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
                 ++RoutineNum;
@@ -327,7 +327,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp,
                                     AllocRegName( HW_SI ), U2 );
                 also_used = temp;
-                ins->operands[ 1 ] = la_ins->result;
+                ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
@@ -337,11 +337,11 @@ extern  instruction     *rMAKECALL( instruction *ins )
             /* If I knew how to turn a register list index into a type class,
                I'd do that, and avoid this if */
             if( info->right == RL_SI ) {
-                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ), U2 );
+                new_ins = MakeMove( ins->operands[1], AllocRegName( regs ), U2 );
             } else {
-                new_ins = MakeMove( ins->operands[ 1 ], AllocRegName( regs ), info->operand_class );
+                new_ins = MakeMove( ins->operands[1], AllocRegName( regs ), info->operand_class );
             }
-            ins->operands[ 1 ] = new_ins->result;
+            ins->operands[1] = new_ins->result;
             MoveSegOp( ins, new_ins, 0 );
             HW_TurnOn( all_regs, regs );
             PrefixIns( ins, new_ins );
@@ -352,7 +352,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
         } else {
             parm2_class = ins->type_class;
         }
-        new_ins = MakeUnary( OP_PUSH, ins->operands[ 1 ], NULL, parm2_class );
+        new_ins = MakeUnary( OP_PUSH, ins->operands[1], NULL, parm2_class );
         MoveSegOp( ins, new_ins, 0 );
         PrefixIns( ins, new_ins );
     }
@@ -361,7 +361,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;
-    new_ins->operands[ CALL_OP_USED ] = reg_name;
+    new_ins->operands[CALL_OP_USED] = reg_name;
     if( also_used != NULL ) {
         switch( also_used->n.class ) {
         case N_REGISTER:
@@ -381,11 +381,11 @@ extern  instruction     *rMAKECALL( instruction *ins )
         default:
             break;
         }
-        new_ins->operands[ CALL_OP_USED2 ] = also_used;
+        new_ins->operands[CALL_OP_USED2] = also_used;
     } else {
-        new_ins->operands[ CALL_OP_USED2 ] = reg_name;
+        new_ins->operands[CALL_OP_USED2] = reg_name;
     }
-    new_ins->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL, ins->type_class );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, ins->type_class );
     new_ins->result = NULL;
     new_ins->num_operands = 2;         /* special case for OP_CALL*/
     new_ins->zap = &AllocRegName( all_regs )->r;/* all parm regs could be zapped*/
@@ -398,13 +398,13 @@ extern  instruction     *rMAKECALL( instruction *ins )
         reg_name = AllocRegName( regs );
         new_ins->result = reg_name;
         last_ins = MakeMove( reg_name, ins->result, ins->type_class );
-        ins->result = last_ins->operands[ 0 ];
+        ins->result = last_ins->operands[0];
         MoveSegRes( ins, last_ins );
         SuffixIns( ins, last_ins );
         ReplIns( ins, new_ins );
     } else {                /* comparison, still need conditional jumps*/
-        ins->operands[ 0 ] = AllocIntConst( 0 );
-        ins->operands[ 1 ] = AllocIntConst( 1 );
+        ins->operands[0] = AllocIntConst( 0 );
+        ins->operands[1] = AllocIntConst( 1 );
         DelSeg( ins );
         DoNothing( ins );               /* just conditional jumps for ins*/
         PrefixIns( ins, new_ins );
@@ -446,7 +446,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
         break;
     }
 
-    reg_name = AllocRegName( FirstReg( RTInfo[  RoutineNum  ].left ) );
+    reg_name = AllocRegName( FirstReg( RTInfo[RoutineNum].left ) );
     new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
@@ -471,13 +471,12 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    tmp = FirstReg( RTInfo[ RoutineNum ].left );
+    tmp = FirstReg( RTInfo[RoutineNum].left );
     HW_CTurnOn( tmp, HW_ES_DI );
     HW_CTurnOn( tmp, HW_CX );
-    new_ins->operands[ CALL_OP_USED ] = AllocRegName( tmp );
-    new_ins->operands[ CALL_OP_USED2 ] = new_ins->operands[ CALL_OP_USED ];
-    new_ins->operands[ CALL_OP_ADDR ] = AllocMemory( RTLabel(RoutineNum),
-                                             0, CG_LBL, U2 );
+    new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
+    new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel(RoutineNum), 0, CG_LBL, U2 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     new_ins->zap = &AllocRegName( HW_CX_DI )->r;
@@ -523,10 +522,10 @@ extern  instruction     *rMAKEFNEG( instruction *ins )
     LookupRoutine( ins );
     CheckForPCS( ins );
     lbl = RTLabel( RoutineNum );
-    info = &RTInfo[  RoutineNum  ];
+    info = &RTInfo[RoutineNum];
     reg_name = AllocRegName( FirstReg( info->left ) );
-    left_ins = MakeMove( ins->operands[ 0 ], reg_name, info->operand_class );
-    ins->operands[ 0 ] = left_ins->result;
+    left_ins = MakeMove( ins->operands[0], reg_name, info->operand_class );
+    ins->operands[0] = left_ins->result;
     MoveSegOp( ins, left_ins, 0 );
     PrefixIns( ins, left_ins );
     if( ins->type_class == FD ) { /* exponent in AX*/
@@ -537,16 +536,16 @@ extern  instruction     *rMAKEFNEG( instruction *ins )
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    new_ins->operands[ CALL_OP_USED ] = exp_reg;
-    new_ins->operands[ CALL_OP_USED2 ] = exp_reg;
-    new_ins->operands[ CALL_OP_ADDR ] = AllocMemory( lbl, 0, CG_LBL, U2 );
+    new_ins->operands[CALL_OP_USED] = exp_reg;
+    new_ins->operands[CALL_OP_USED2] = exp_reg;
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, U2 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     new_ins->zap = &exp_reg->r;
     last_ins = new_ins;
     new_ins->result = exp_reg;
     last_ins = MakeMove( reg_name, ins->result, info->operand_class );
-    ins->result = last_ins->operands[ 0 ];
+    ins->result = last_ins->operands[0];
     MoveSegRes( ins, last_ins );
     SuffixIns( ins, last_ins );
     ReplIns( ins, new_ins );

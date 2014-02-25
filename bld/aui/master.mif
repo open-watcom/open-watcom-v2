@@ -6,19 +6,15 @@ aui_autodepends = .AUTODEPEND
 
 suppress_zc = 1
 
+dlgfiles = dlgrx.gdl dlgsrch.gdl dlgsrcha.gdl japrx.gdl japsrch.gdl japsrcha.gdl
+
+additional_cleanup = *.gdl
+
 !ifeq sys_windowed 1
 !ifeq host_os os2
-dlgfiles = &
-    dlgrx.dlg &
-    dlgsrch.dlg &
-    dlgsrcha.dlg &
-    japrx.dlg &
-    japsrch.dlg &
-    japsrcha.dlg
+os2pm = 1
 !endif
 !endif
-
-additional_cleanup = $(dlgfiles)
 
 !include cproj.mif
 !include defrule.mif
@@ -109,32 +105,27 @@ all : $(dlgfiles) aui.lib .SYMBOLIC
 aui.lib : auistr.gh $(objs) $(__makefiles__)
     $(librarian) $(libflags) $(objs)
 
-!ifeq sys_windowed 1
-!ifeq host_os os2
-
-pmfont=-font=10.Helv
-pmfontfj=
-
-dlgrx.dlg : ../res/dlgs/dlgrx.dlg
-    parsedlg $(pmfont) $[@ $@
-
-dlgsrch.dlg : ../res/dlgs/dlgsrch.dlg
-    parsedlg $(pmfont) $[@ $@
-
-dlgsrcha.dlg : ../res/dlgs/dlgsrcha.dlg
-    parsedlg $(pmfont) $[@ $@
-
-japrx.dlg : ../res/dlgs/japrx.dlg
-    parsedlg $(pmfontj) $[@ $@
-
-japsrch.dlg : ../res/dlgs/japsrch.dlg
-    parsedlg $(pmfontj) $[@ $@
-
-japsrcha.dlg : ../res/dlgs/japsrcha.dlg
-    parsedlg $(pmfontj) $[@ $@
-
+!ifeq os2pm 1
+dlg_command  = parsedlg -font=10.Helv $[@ $@
+dlgj_command = parsedlg $[@ $@
+!else
+dlg_command  = cp $[@ $@
+dlgj_command = cp $[@ $@
 !endif
-!endif
+
+dlgrx.gdl : ../res/dlgs/dlgrx.dlg
+    $(dlg_command)
+dlgsrch.gdl : ../res/dlgs/dlgsrch.dlg
+    $(dlg_command)
+dlgsrcha.gdl : ../res/dlgs/dlgsrcha.dlg
+    $(dlg_command)
+
+japrx.gdl : ../res/dlgs/japrx.dlg
+    $(dlgj_command)
+japsrch.gdl : ../res/dlgs/japsrch.dlg
+    $(dlgj_command)
+japsrcha.gdl : ../res/dlgs/japsrcha.dlg
+    $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
     awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk $[@ > $^@

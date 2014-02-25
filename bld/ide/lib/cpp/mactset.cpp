@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "mconfig.hpp"
 #include "mactset.hpp"
 #include "maction.hpp"
 #include "wobjfile.hpp"

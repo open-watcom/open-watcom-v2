@@ -84,7 +84,7 @@ static  void    DumpStrType(tn node, const char *s1, const char *s2, int indent)
 static  void    DumpOpType( tn node, int indent ) {
 /*************************************************/
 
-    DumpStrType( node, Ops[ node->u2.t.op ], Null, indent );
+    DumpStrType( node, Ops[node->u2.t.op], Null, indent );
 }
 
 
@@ -143,17 +143,17 @@ static  void    DumpSubTree( tn node, int indent ) {
         break;
     case TN_PRE_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->u2.t.op ], Eq, indent );
+        DumpStrType( node, Ops[node->u2.t.op], Eq, indent );
         DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_LV_PRE_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->u2.t.op ], LvEq, indent );
+        DumpStrType( node, Ops[node->u2.t.op], LvEq, indent );
         DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_POST_GETS:
         DumpSubTree( node->u.left, indent+2 );
-        DumpStrType( node, Ops[ node->u2.t.op ], PostEq, indent );
+        DumpStrType( node, Ops[node->u2.t.op], PostEq, indent );
         DumpSubTree( node->u2.t.rite, indent+2 );
         break;
     case TN_FLOW:

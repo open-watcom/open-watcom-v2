@@ -34,7 +34,6 @@
 #define mtarget_class
 
 #include "wtokfile.hpp"
-#include "mcommand.hpp"
 #include "wfilenam.hpp"
 
 WCLASS MTarget : public WObject

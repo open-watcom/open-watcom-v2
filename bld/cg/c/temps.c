@@ -302,7 +302,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( In( ins->operands[i], name ) ) {
+                if( In( ins->operands[ i ], name ) ) {
                     if( onlyins != NULL ) return( NULL );
                     onlyins = ins;
                 }

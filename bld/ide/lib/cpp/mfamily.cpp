@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
+#include "mconfig.hpp"
 #include "mvswitch.hpp"
 #include "mcswitch.hpp"
 #include "mrswitch.hpp"
 #include "mc2swtch.hpp"
-#include "mconfig.hpp"
-#include "mtool.hpp"
 #include "mfamily.hpp"
 #include "wobjfile.hpp"
 
@@ -122,58 +121,42 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
     if( fixed_version == 0 || !isSetable ) {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
-            WString tag;
-            sw->getTag( tag );
-            if( tag == switchtag ) {
+            if( sw->isTagEqual( switchtag ) ) {
                 return sw;
             }
         }
     } else {
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
-            WString tag;
             if( !sw->isSetable() )
                 continue;
 #if CUR_CFG_VERSION > 4
+            // upgrade switchtag to current configuration files version
             if( _config->version() > 4 || fixed_version < 41 ) {
-                if( tool->findSwitchId( switchtag, sw ) == NULL ) {
-                    continue;
+                // check for old text
+                if( sw->isTagEqual( tool, switchtag, 1 ) ) {
+                    sw->getTag( switchtag );
+                    return sw;
                 }
+                // check for current text
+                if( sw->isTagEqual( tool, switchtag ) ) {
+                    sw->getTag( switchtag );
+                    return sw;
+                }
+                continue;
             }
 #endif
-            sw->getTag( tag );
-            if( tag == switchtag ) {
+            if( sw->isTagEqual( switchtag ) ) {
                 return sw;
             }
             //
             // hack for buggy version of configuration/project files
             //
             if( _config->version() == 4 || fixed_version == 40 ) {
-                int jcount = tag.size();
-                if( jcount > MASK_SIZE && jcount == switchtag.size() ) {
-                    for( int j = 0; j < jcount; j++ ) {
-                        int ct = (unsigned char)tag[j];
-                        int cs = (unsigned char)switchtag[j];
-                        if( ct == cs )
-                            continue;
-                        // mask must be same
-                        if( j < MASK_SIZE ) {
-                            sw = NULL;
-                            break;
-                        }
-                        // ignore dash/space mismatch
-                        if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
-                            continue;
-                        // ignore upper/lower case mismatch
-                        if( toupper( cs ) != toupper( ct ) ) {
-                            sw = NULL;
-                            break;
-                        }
-                    }
-                    if( sw != NULL ) {
-                        switchtag = tag;
-                        return sw;
-                    }
+                if( sw->isTagEqual( switchtag, 1 ) ) {
+                    // upgrade switchtag to current configuration files version
+                    sw->getTag( switchtag );
+                    return sw;
                 }
             }
         }

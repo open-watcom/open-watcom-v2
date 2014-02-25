@@ -477,8 +477,7 @@ extern  void    CheckPointer( an addr )
 /*************************************/
 {
     InsToAddr( addr );
-    if( addr->format == NF_NAME
-     && ( addr->tipe->attr & TYPE_POINTER ) ) {
+    if( addr->format == NF_NAME && ( addr->tipe->attr & TYPE_POINTER ) ) {
         addr->u.n.index = Temporary( addr->u.n.name, addr->tipe );
         addr->u.n.name = NULL;
         addr->u.n.offset = 0;
@@ -491,11 +490,8 @@ extern  void    CheckPointer( an addr )
 extern  void    FixCodePtr( an addr )
 /***********************************/
 {
-    instruction *ins;
-
     if( addr->format == NF_INS ) {
-        ins = addr->u.i.ins;
-        ins->ins_flags |= INS_CODE_POINTER;
+        addr->u.i.ins->ins_flags |= INS_CODE_POINTER;
     }
 }
 

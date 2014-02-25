@@ -38,7 +38,6 @@
 #include "wmsgdlg.hpp"
 #include "wmetrics.hpp"
 
-#include "mconfig.hpp"
 #include "mproject.hpp"
 #include "mcompon.hpp"
 #include "mrule.hpp"

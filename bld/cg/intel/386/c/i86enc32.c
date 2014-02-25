@@ -166,7 +166,7 @@ extern  void    DoRepOp( instruction *ins )
                 AddByte( M_MOVSB );
             }
         } else {
-            if( ins->operands[ 1 ]->n.size & 1 ) {
+            if( ins->operands[1]->n.size & 1 ) {
                 AddByte( M_CMPSB );
             } else {
                 AddByte( M_CMPSW );
@@ -294,12 +294,13 @@ static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
         if( HW_CEqual( index, HW_EMPTY ) ) {
             // [d32]
             if( scale != 0 || val != 0 ) _Zoiks( ZOIKS_079 );
-            Inst[ RMR ] |= DoMDisp( mem_loc, TRUE );
+            Inst[RMR] |= DoMDisp( mem_loc, TRUE );
+
         } else {
             if( scale != 0 ) {
                 // [d32+scale_index]
-                Inst[ RMR ] |= DoScaleIndex( HW_BP, index, scale );
-                Inst[ RMR ] |= D0;
+                Inst[RMR] |= DoScaleIndex( HW_BP, index, scale );
+                Inst[RMR] |= D0;
                 if( mem_loc != NULL ) {
                     ILen += 4;
                     DoSymRef( mem_loc, val, FALSE );
@@ -308,17 +309,17 @@ static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
                 }
             } else {
                 // [(d0|d8|d32)+index]
-                Inst[ RMR ] |= DoIndex( index );
-                Inst[ RMR ] |= DoDisp( val, index, mem_loc );
+                Inst[RMR] |= DoIndex( index );
+                Inst[RMR] |= DoDisp( val, index, mem_loc );
             }
         }
     } else {
         // [(d0|d8|d32)+base+scale_index]
         if( HW_CEqual( index, HW_EMPTY ) ) {
             if( scale == 0 && !HW_CEqual( base, HW_SP ) ) {
-                Inst[ RMR ] |= DoIndex( base );
+                Inst[RMR] |= DoIndex( base );
             } else {
-                Inst[ RMR ] |= DoScaleIndex( base, HW_SP, scale );
+                Inst[RMR] |= DoScaleIndex( base, HW_SP, scale );
             }
         } else {
             if( scale == 0 && HW_CEqual( base, HW_BP )
@@ -333,9 +334,9 @@ static  void    EA( hw_reg_set base, hw_reg_set index, int scale,
                 base = index;
                 HW_CAsgn( index, HW_BP );
             }
-            Inst[ RMR ] |= DoScaleIndex( base, index, scale );
+            Inst[RMR] |= DoScaleIndex( base, index, scale );
         }
-        Inst[ RMR ] |= DoDisp( val, base, mem_loc );
+        Inst[RMR] |= DoDisp( val, base, mem_loc );
     }
 }
 
@@ -393,8 +394,8 @@ extern  void    LayLeaRegOp( instruction *ins )
     int         neg;
     signed_32   disp;
 
-    left = ins->operands[ 0 ];
-    right = ins->operands[ 1 ];
+    left = ins->operands[0];
+    right = ins->operands[1];
     neg = 1;
     switch( ins->head.opcode ) { /* add/sub/mul/shift transformed into lea */
     case OP_SUB:
@@ -601,10 +602,10 @@ extern  void    GenUnkLea( pointer value )
     LayOpword( M_LEA );
     OpndSize( HW_SP );
     LayReg( HW_SP );
-    Inst[ RMR ] |= D32;
+    Inst[RMR] |= D32;
     ILen += 4;
     DoAbsPatch( value, 4 );
-    Inst[ RMR ] |= DoIndex( HW_BP );
+    Inst[RMR] |= DoIndex( HW_BP );
 }
 
 extern  void    GenLeaSP( int offset )

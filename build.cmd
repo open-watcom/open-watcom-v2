@@ -12,7 +12,7 @@ if not exist %OWOBJDIR% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
 %OWBINDIR%\wmake -f ..\binmake clean
-%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe rm.exe
+%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
 cd %OWSRCDIR%
 builder boot
 if errorlevel == 1 goto error_exit

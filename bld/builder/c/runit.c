@@ -33,104 +33,45 @@
 #include <ctype.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <sys/stat.h>
 #ifdef __UNIX__
     #include <utime.h>
     #include <unistd.h>
     #include <dirent.h>
+    #include <fnmatch.h>
 #else
     #include <sys/utime.h>
     #include <direct.h>
     #include <dos.h>
+  #ifdef __WATCOMC__
+    #include <fnmatch.h>
+  #endif
 #endif
 #include "watcom.h"
 #include "builder.h"
 #include "pmake.h"
+#include "wio.h"
+
+#define WILD_METAS      "*?"
 
 #ifdef __UNIX__
-
-static int __fnmatch( char *pattern, char *string )
-/*************************************************/
-{
-    char    *p;
-    int     len;
-    int     star_char;
-    int     i;
-
-    /*
-     * check pattern section with wildcard characters
-     */
-    star_char = 0;
-    while( ( *pattern == '*' ) || ( *pattern == '?' ) ) {
-        if( *pattern == '?' ) {
-            if( *string == 0 ) {
-                return( 0 );
-            }
-            string++;
-        } else {
-            star_char = 1;
-        }
-        pattern++;
-    }
-    if( *pattern == 0 ) {
-        if( ( *string == 0 ) || star_char ) {
-            return( 1 );
-        } else {
-            return( 0 );
-        }
-    }
-    /*
-     * check pattern section with exact match
-     * ( all characters except wildcards )
-     */
-    p = pattern;
-    len = 0;
-    do {
-        if( star_char ) {
-            if( string[ len ] == 0 ) {
-                return( 0 );
-            }
-            len++;
-        } else {
-            if( *pattern != *string ) {
-                return( 0 );
-            }
-            string++;
-        }
-        pattern++;
-    } while( *pattern && ( *pattern != '*' ) && ( *pattern != '?' ) );
-    if( star_char == 0 ) {
-        /*
-         * match is OK, try next pattern section
-         */
-        return( __fnmatch( pattern, string ) );
-    } else {
-        /*
-         * star pattern section, try locate exact match
-         */
-        while( *string ) {
-            if( *p == *string ) {
-                for( i = 1; i < len; i++ ) {
-                    if( *( p + i ) != *( string + i ) ) {
-                        break;
-                    }
-                }
-                if( i == len ) {
-                    /*
-                     * if rest doesn't match, find next occurence
-                     */
-                    if( __fnmatch( pattern, string + len ) ) {
-                        return( 1 );
-                    }
-                }
-            }
-            string++;
-        }
-        return( 0 );
-    }
-}
-
+  #define MASK_ALL_ITEMS  "*"
+#else
+  #define MASK_ALL_ITEMS  "*.*"
 #endif
+
+typedef struct dd {
+  struct dd     *next;
+  char          attr;
+  char          name[1];
+} iolist;
+
+static int      rflag = FALSE;
+static int      fflag = FALSE;
+static int      sflag = TRUE;
+
+static int RecursiveRM( const char *dir );
 
 static void LogDir( char *dir )
 {
@@ -216,7 +157,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         --end;
     }
     end[1] = '\0';
-    if( strchr( srcdir, '*' ) == NULL && strchr( srcdir, '?' ) == NULL ) {
+    if( strpbrk( srcdir, WILD_METAS ) == NULL ) {
         /* no wild cards */
         head = Alloc( sizeof( *head ) );
         head->next = NULL;
@@ -284,7 +225,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
                 struct stat buf;
                 size_t len = strlen( srcdir );
 
-                if( __fnmatch( pattern, dent->d_name ) == 0 )
+                if( fnmatch( pattern, dent->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
                     continue;
 
                 strcat( srcdir, dent->d_name );
@@ -612,6 +553,278 @@ static int ProcPMake( char *cmd, bool ignore_errors )
     return( res );
 }
 
+static int IsDotOrDotDot( const char *fname )
+{
+    /* return 1 if fname is "." or "..", 0 otherwise */
+    return( fname[0] == '.' && ( fname[1] == 0 || fname[1] == '.' && fname[2] == 0 ) );
+}
+
+static int remove_item( const char *name, bool dir )
+{
+    int         rc;
+    char        *err_msg;
+    char        *inf_msg;
+
+    if( dir ) {
+        err_msg = "Unable to delete directory %s\n";
+        inf_msg = "Directory %s deleted\n";
+        rc = rmdir( name );
+    } else {
+        err_msg = "Unable to delete file %s\n";
+        inf_msg = "File %s deleted\n";
+        rc = unlink( name );
+    }
+    if( rc != 0 && fflag && errno == EACCES ) {
+        rc = chmod( name, PMODE_RW );
+        if( rc == 0 ) {
+            if( dir ) {
+                rc = rmdir( name );
+            } else {
+                rc = unlink( name );
+            }
+        }
+    }
+    if( rc != 0 && fflag && errno == ENOENT ) {
+        rc = 0;
+    }
+    if( rc != 0 ) {
+        rc = errno;
+        Log( FALSE, err_msg, name );
+        return( rc );
+    } else if( !sflag ) {
+        Log( FALSE, inf_msg, name );
+    }
+    return( 0 );
+}
+
+/* DoRM - perform RM on a specified file */
+static int DoRM( const char *f )
+{
+    iolist              *tmp;
+    iolist              *dhead = NULL;
+    iolist              *dtail = NULL;
+
+    char                fpath[_MAX_PATH];
+    char                fname[_MAX_PATH];
+    char                *fpathend;
+
+    size_t              i;
+    size_t              j;
+    size_t              len;
+    DIR                 *d;
+    struct dirent       *nd;
+    int                 rc;
+    int                 retval = 0;
+
+    /* separate file name to path and file name parts */
+    len = strlen( f );
+    for( i = len; i > 0; --i ) {
+        char ch = f[i - 1];
+        if( ch == '/' || ch == '\\' || ch == ':' ) {
+            break;
+        }
+    }
+    j = i;
+    /* if no path then use current directory */
+    if( i == 0 ) {
+        fpath[i++] = '.';
+        fpath[i++] = '/';
+    } else {
+        memcpy( fpath, f, i );
+    }
+    fpathend = fpath + i;
+    *fpathend = '\0';
+#ifdef __UNIX__
+    memcpy( fname, f + j, len - j + 1 );
+#else
+    if( strcmp( f + j, MASK_ALL_ITEMS ) == 0 ) {
+        fname[0] = '*';
+        fname[1] = '\0';
+    } else {
+        memcpy( fname, f + j, len - j + 1 );
+    }
+#endif
+    d = opendir( fpath );
+    if( d == NULL ) {
+        Log( FALSE, "File (%s) not found.\n", f );
+        return( ENOENT );
+    }
+
+    while( (nd = readdir( d )) != NULL ) {
+#ifdef __UNIX__
+        struct stat buf;
+
+        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+#else
+        if( fnmatch( fname, nd->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE ) == FNM_NOMATCH )
+#endif
+            continue;
+        /* set up file name, then try to delete it */
+        len = strlen( nd->d_name );
+        memcpy( fpathend, nd->d_name, len );
+        fpathend[len] = 0;
+        len += i + 1;
+#ifdef __UNIX__
+        stat( fpath, &buf );
+        if( S_ISDIR( buf.st_mode ) ) {
+#else
+        if( nd->d_attr & _A_SUBDIR ) {
+#endif
+            /* process a directory */
+            if( IsDotOrDotDot( nd->d_name ) )
+                continue;
+
+            if( rflag ) {
+                /* build directory list */
+                tmp = Alloc( offsetof( iolist, name ) + len );
+                tmp->next = NULL;
+                if( dtail == NULL ) {
+                    dhead = tmp;
+                } else {
+                    dtail->next = tmp;
+                }
+                dtail = tmp;
+                memcpy( tmp->name, fpath, len );
+            } else {
+                Log( FALSE, "%s is a directory, use -r\n", fpath );
+                retval = EACCES;
+            }
+#ifdef __UNIX__
+        } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !fflag ) {
+#else
+        } else if( (nd->d_attr & _A_RDONLY) && !fflag ) {
+#endif
+            Log( FALSE, "%s is read-only, use -f\n", fpath );
+            retval = EACCES;
+        } else {
+            rc = remove_item( fpath, FALSE );
+            if( rc != 0 ) {
+                retval = rc;
+            }
+        }
+    }
+    closedir( d );
+    /* process any directories found */
+    for( tmp = dhead; tmp != NULL; tmp = dhead ) {
+        dhead = tmp->next;
+        rc = RecursiveRM( tmp->name );
+        if( rc != 0 ) {
+            retval = rc;
+        }
+        free( tmp );
+    }
+    return( retval );
+}
+
+/* RecursiveRM - do an RM recursively on all files */
+static int RecursiveRM( const char *dir )
+{
+    int         rc;
+    int         rc2;
+    char        fname[_MAX_PATH];
+
+    /* purge the files */
+    strcpy( fname, dir );
+    strcat( fname, "/" MASK_ALL_ITEMS );
+    rc = DoRM( fname );
+    /* purge the directory */
+    rc2 = remove_item( dir, TRUE );
+    if( rc == 0 )
+        rc = rc2;
+    return( rc );
+}
+
+static char *GetString( const char *cmd, char *buffer )
+{
+    char        c;
+    char        quotechar;
+
+    while( isspace( *cmd ) )
+        ++cmd;
+    if( *cmd == '\0' )
+        return( NULL );
+    quotechar = ( *cmd == '"' ) ? *cmd++ : '\0';
+    for( ; (c = *cmd) != '\0'; ++cmd ) {
+        if( c == quotechar ) {
+            ++cmd;
+            break;
+        }
+        *buffer++ = c;
+    }
+    *buffer = '\0';
+    return( (char *)cmd );
+}
+
+static int ProcRm( char *cmd )
+{
+    char    buffer[_MAX_PATH];
+    int     retval = 0;
+
+    /* gather options */
+    for( ;; ) {
+        while( isspace( *cmd ) )
+            ++cmd;
+        if( *cmd != '-' )
+            break;
+        ++cmd;
+        while( isalpha( *cmd ) ) {
+            switch( *cmd++ ) {
+            case 'f':
+                fflag = TRUE;
+                break;
+            case 'R':
+            case 'r':
+                rflag = TRUE;
+                break;
+            case 'v':
+                sflag = FALSE;
+                break;
+            default:
+                return( 1 );
+            }
+        }
+    }
+
+    if( rflag ) {
+        /* process -r option */
+        while( (cmd = GetString( cmd, buffer )) != NULL ) {
+            if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
+                int rc = RecursiveRM( "." );
+                if( rc != 0 ) {
+                    retval = rc;
+                }
+            } else if( strpbrk( buffer, WILD_METAS ) != NULL ) {
+                // wild cards is not processed for directories
+                continue;
+            } else {
+                struct stat buf;
+                if( stat( buffer, &buf ) == 0 ) {
+                    if( S_ISDIR( buf.st_mode ) ) {
+                        int rc = RecursiveRM( buffer );
+                        if( rc != 0 ) {
+                            retval = rc;
+                        }
+                    } else {
+                        int rc = DoRM( buffer );
+                        if( rc != 0 ) {
+                            retval = rc;
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        /* run through all specified files */
+        while( (cmd = GetString( cmd, buffer )) != NULL ) {
+            int rc = DoRM( buffer );
+            if( rc != 0 ) {
+                retval = rc;
+            }
+        }
+    }
+    return( retval );
+}
+
 int RunIt( char *cmd, bool ignore_errors )
 {
     int     res;
@@ -649,6 +862,10 @@ int RunIt( char *cmd, bool ignore_errors )
         res = ProcMkdir( SkipBlanks( cmd + sizeof( "MKDIR" ) ) );
     } else if( BUILTIN( "PMAKE" ) ) {
         res = ProcPMake( SkipBlanks( cmd + sizeof( "PMAKE" ) ), ignore_errors );
+    } else if( BUILTIN( "RM" ) ) {
+        res = ProcRm( SkipBlanks( cmd + sizeof( "RM" ) ) );
+    } else if( cmd[0] == '!' ) {
+        res = SysRunCommand( SkipBlanks( cmd + 1 ) );
     } else {
         res = SysRunCommand( cmd );
     }

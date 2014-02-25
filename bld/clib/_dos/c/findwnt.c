@@ -39,6 +39,7 @@
 #include <windows.h>
 #include "rtdata.h"
 #include "ntex.h"
+#include "_dtaxxx.h"
 #include "seterrno.h"
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
@@ -50,7 +51,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
     h = FindFirstFile( (LPTSTR)path, &ffb );
 
     if( h == (HANDLE)-1 ) {
-        HANDLE_OF( buf ) = BAD_HANDLE;
+        FIND_HANDLE_OF( buf ) = BAD_HANDLE;
         return( __set_errno_nt_reterr() );
     }
 //  if( attr == _A_NORMAL ) {
@@ -58,12 +59,12 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr, struct find_
 //  }
     if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
         error = GetLastError();
-        HANDLE_OF( buf ) = BAD_HANDLE;
+        FIND_HANDLE_OF( buf ) = BAD_HANDLE;
         FindClose( h );
         return( __set_errno_dos_reterr( error ) );
     }
-    HANDLE_OF( buf ) = h;
-    ATTR_OF( buf ) = attr;
+    FIND_HANDLE_OF( buf ) = h;
+    FIND_ATTR_OF( buf ) = attr;
     __GetNTDirInfo( (struct dirent *) buf, &ffb );
 
     return( 0 );
@@ -73,10 +74,10 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( !FindNextFile( HANDLE_OF( buf ), &ffd ) ) {
+    if( !FindNextFile( FIND_HANDLE_OF( buf ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
-    if( !__NTFindNextFileWithAttr( HANDLE_OF( buf ), ATTR_OF( buf ), &ffd ) ) {
+    if( !__NTFindNextFileWithAttr( FIND_HANDLE_OF( buf ), FIND_ATTR_OF( buf ), &ffd ) ) {
         return( __set_errno_nt_reterr() );
     }
     __GetNTDirInfo( (struct dirent *) buf, &ffd );
@@ -86,8 +87,8 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf )
 
 _WCRTLINK unsigned _dos_findclose( struct find_t *buf )
 {
-    if( HANDLE_OF( buf ) != BAD_HANDLE ) {
-        if( !FindClose( HANDLE_OF( buf ) ) ) {
+    if( FIND_HANDLE_OF( buf ) != BAD_HANDLE ) {
+        if( !FindClose( FIND_HANDLE_OF( buf ) ) ) {
             return( __set_errno_nt_reterr() );
         }
     }

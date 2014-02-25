@@ -191,6 +191,15 @@ The PMAKE command has been built into the BUILDER program. You can specify
 all the same things as with PMAKE.EXE, except that the -b option is ignored.
 See the PMAKE.EXE usage message for more information.
 
+        RM options <list of files or directories>
+
+Remove files or directories. Simple implementation with following options.
+        -f remove read-only files, don't write diagnostic messages about
+           missing items
+        -r remove directories
+
+To skip built-in version of command, you must use "!" character before command.
+THen command is not interpreted by builder and is passed to the host system.
 
         Command Line Options
         --------------------

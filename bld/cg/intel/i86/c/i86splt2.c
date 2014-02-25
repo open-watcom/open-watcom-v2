@@ -517,7 +517,7 @@ extern  instruction     *rSPLIT8CMP( instruction *ins )
     true_idx = _TrueIndex( ins );
     false_idx = _FalseIndex( ins );
     high_class = HalfClass[ HalfClass[ ins->type_class ] ];
-    i = -1;
+    i = (unsigned)-1;
     switch( ins->head.opcode ) {
     case OP_CMP_EQUAL:
         new[++i] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,

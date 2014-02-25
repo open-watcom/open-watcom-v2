@@ -148,8 +148,8 @@ static instruction      *PromoteOperand( instruction *ins ) {
     if( _IsFloating( ins->type_class ) ) {
         if( ins->type_class == FS ) {
             temp = AllocTemp( FD );
-            new_ins = MakeConvert( ins->operands[ 0 ], temp, ins->type_class, FD );
-            ins->operands[ 0 ] = temp;
+            new_ins = MakeConvert( ins->operands[0], temp, ins->type_class, FD );
+            ins->operands[0] = temp;
             PrefixIns( ins, new_ins );
             UpdateLive( new_ins, ins );
             return( new_ins );
@@ -157,8 +157,8 @@ static instruction      *PromoteOperand( instruction *ins ) {
     } else {
         if( ins->type_class < U8 ) {
             temp = AllocTemp( U8 );
-            new_ins = MakeConvert( ins->operands[ 0 ], temp, ins->type_class, U8 );
-            ins->operands[ 0 ] = temp;
+            new_ins = MakeConvert( ins->operands[0], temp, ins->type_class, U8 );
+            ins->operands[0] = temp;
             PrefixIns( ins, new_ins );
             UpdateLive( new_ins, ins );
             return( new_ins );
@@ -194,7 +194,7 @@ extern  instruction     *rDOSET( instruction *ins ) {
     default:
         _Zoiks( ZOIKS_120 );
     }
-    switch( TypeClassSize[ ins->type_class ] ) {
+    switch( TypeClassSize[ins->type_class] ) {
     case 4:
         ins->table = OpcodeTable( BIN4 );
         break;
@@ -291,8 +291,8 @@ extern instruction      *rDOTEST( instruction *ins ) {
         opcode = OP_CMP_EQUAL;
         _Zoiks( ZOIKS_120 );
     }
-    first = MakeBinary( OP_AND, ins->operands[ 0 ],
-                                ins->operands[ 1 ], temp, ins->type_class );
+    first = MakeBinary( OP_AND, ins->operands[0],
+                                ins->operands[1], temp, ins->type_class );
     PrefixIns( ins, first );
     last = MakeCondition( opcode, temp, AllocS32Const( 0 ),
                                 _TrueIndex( ins ), _FalseIndex( ins ), ins->type_class );
@@ -316,9 +316,9 @@ extern instruction      *rPUSHTOMOV( instruction *ins ) {
     }
     prom_ins = PromoteOperand( ins );
     stack_reg = AllocRegName( StackReg() );
-    first_ins = MakeBinary( OP_SUB, stack_reg, AllocS32Const( TypeClassSize[ push_class ] ), stack_reg, WD );
+    first_ins = MakeBinary( OP_SUB, stack_reg, AllocS32Const( TypeClassSize[push_class] ), stack_reg, WD );
     PrefixIns( ins, first_ins );
-    new_ins = MakeMove( ins->operands[ 0 ], AllocIndex( stack_reg, NULL, 0, push_class ), push_class );
+    new_ins = MakeMove( ins->operands[0], AllocIndex( stack_reg, NULL, 0, push_class ), push_class );
     ReplIns( ins, new_ins );
     first_ins = ( ( prom_ins == NULL ) ? first_ins : prom_ins );
     UpdateLive( first_ins, new_ins );
@@ -342,7 +342,7 @@ extern instruction      *rPOPTOMOV( instruction *ins ) {
     stack_reg = AllocRegName( StackReg() );
     first_ins = MakeMove( AllocIndex( stack_reg, NULL, 0, push_class ), ins->result, WD );
     PrefixIns( ins, first_ins );
-    new_ins = MakeBinary( OP_ADD, stack_reg, AllocS32Const( TypeClassSize[ push_class ] ), stack_reg, push_class );
+    new_ins = MakeBinary( OP_ADD, stack_reg, AllocS32Const( TypeClassSize[push_class] ), stack_reg, push_class );
     ReplIns( ins, new_ins );
     first_ins = ( ( prom_ins == NULL ) ? first_ins : prom_ins );
     UpdateLive( first_ins, new_ins );
@@ -373,14 +373,14 @@ static  instruction     *LoadFPConst( instruction *ins, name **constant ) {
 extern  instruction     *rOP1CMEM( instruction *ins ) {
 /*****************************************************/
 
-    ins = LoadFPConst( ins, &ins->operands[ 0 ] );
+    ins = LoadFPConst( ins, &ins->operands[0] );
     return( ins );
 }
 
 extern  instruction     *rOP2CMEM( instruction *ins ) {
 /*****************************************************/
 
-    ins = LoadFPConst( ins, &ins->operands[ 1 ] );
+    ins = LoadFPConst( ins, &ins->operands[1] );
     return( ins );
 }
 
@@ -390,7 +390,7 @@ extern  instruction     *rCHANGETYPE( instruction *ins ) {
     type_class_def              new;
 
     assert( ins->type_class == XX );
-    switch( ins->operands[ 0 ]->n.size ) {
+    switch( ins->operands[0]->n.size ) {
     case 1:
         new = U1;
         break;
@@ -451,10 +451,10 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     reg = FirstReg( RL_PARM2_4 );
     reg_name = AllocRegName( reg );
     HW_TurnOn( all_regs, reg );
-    new_ins = MakeUnary( OP_LA, ins->operands[ 0 ], reg_name, CP );
+    new_ins = MakeUnary( OP_LA, ins->operands[0], reg_name, CP );
     PrefixIns( ins, new_ins );
-    UseAddress( ins->operands[ 0 ] );
-    len = AllocS32Const( ins->operands[ 0 ]->n.size );
+    UseAddress( ins->operands[0] );
+    len = AllocS32Const( ins->operands[0]->n.size );
     reg = FirstReg( RL_PARM3_4 );
     reg_name = AllocRegName( reg );
     HW_TurnOn( all_regs, reg );
@@ -466,10 +466,9 @@ extern  instruction     *rMOVEXX( instruction *ins ) {
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;
-    new_ins->operands[ CALL_OP_USED ] = reg_name;
-    new_ins->operands[ CALL_OP_USED2 ] = reg_name;
-    new_ins->operands[ CALL_OP_ADDR ]= AllocMemory( lbl, 0, CG_LBL,
-                                                    ins->type_class );
+    new_ins->operands[CALL_OP_USED] = reg_name;
+    new_ins->operands[CALL_OP_USED2] = reg_name;
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( lbl, 0, CG_LBL, ins->type_class );
     HW_CTurnOn( all_regs, HW_FULL );
     HW_TurnOff( all_regs, SavedRegs() );
     HW_CTurnOff( all_regs, HW_UNUSED );
@@ -529,22 +528,22 @@ static  instruction     *doPromote( instruction *ins, type_class_def tipe ) {
     name        *t1;
 
     t0 = AllocTemp( tipe );
-    if( ins->operands[ 0 ]->n.class == N_CONSTANT ) {
+    if( ins->operands[0]->n.class == N_CONSTANT ) {
         op0_ins = NULL;
-        ins->operands[ 0 ] = TrimConst( ins->operands[ 0 ], ins->type_class );
+        ins->operands[0] = TrimConst( ins->operands[0], ins->type_class );
     } else {
-        op0_ins = MakeConvert( ins->operands[ 0 ], t0, tipe, ins->type_class );
-        ins->operands[ 0 ] = t0;
+        op0_ins = MakeConvert( ins->operands[0], t0, tipe, ins->type_class );
+        ins->operands[0] = t0;
         PrefixIns( ins, op0_ins );
     }
 
-    if( ins->operands[ 1 ]->n.class == N_CONSTANT ) {
+    if( ins->operands[1]->n.class == N_CONSTANT ) {
         op1_ins = NULL;
-        ins->operands[ 1 ] = TrimConst( ins->operands[ 1 ], ins->type_class );
+        ins->operands[1] = TrimConst( ins->operands[1], ins->type_class );
     } else {
         t1 = AllocTemp( tipe );
-        op1_ins = MakeConvert( ins->operands[ 1 ], t1, tipe, ins->type_class );
-        ins->operands[ 1 ] = t1;
+        op1_ins = MakeConvert( ins->operands[1], t1, tipe, ins->type_class );
+        ins->operands[1] = t1;
         PrefixIns( ins, op1_ins );
     }
 
@@ -574,7 +573,7 @@ extern  instruction     *rBIN2INT( instruction *ins ) {
     type_class_def      new;
 
     new = I4;
-    if( Unsigned[ ins->type_class ] == ins->type_class ) {
+    if( Unsigned[ins->type_class] == ins->type_class ) {
         new = U4;
     }
     return( doPromote( ins, new ) );
@@ -586,7 +585,7 @@ extern  instruction     *rBIN2QUAD( instruction *ins ) {
     type_class_def      new;
 
     new = I8;
-    if( Unsigned[ ins->type_class ] == ins->type_class ) {
+    if( Unsigned[ins->type_class] == ins->type_class ) {
         new = U8;
     }
 
@@ -740,8 +739,8 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[ 3 ] << 16;
-                u32 += floatval->value[ 2 ];
+                u32 = (unsigned_32)floatval->value[3] << 16;
+                u32 += floatval->value[2];
                 new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
             }
 #if 0
@@ -794,10 +793,10 @@ extern  name    *OffsetMem( name *mem, type_length offset, type_class_def tipe )
     if( mem->n.class == N_INDEXED ) {
         new_mem = ScaleIndex( mem->i.index, mem->i.base,
                         mem->i.constant + offset, mem->n.name_class,
-                        TypeClassSize[ tipe ], mem->i.scale, mem->i.index_flags );
+                        TypeClassSize[tipe], mem->i.scale, mem->i.index_flags );
     } else {
         assert( mem->n.class == N_TEMP );
-        new_mem = STempOffset( mem, offset, tipe, TypeClassSize[ tipe ] );
+        new_mem = STempOffset( mem, offset, tipe, TypeClassSize[tipe] );
     }
     return( new_mem );
 }
@@ -819,18 +818,18 @@ extern  instruction     *rSHR( instruction *ins ) {
     // thing and then convert back down afterwords.
 
     target_type = U8;
-    if( Unsigned[ ins->type_class ] != ins->type_class ) {
+    if( Unsigned[ins->type_class] != ins->type_class ) {
         target_type = I8;
     }
     temp_1 = AllocTemp( target_type );
     temp_2 = AllocTemp( target_type );
-    first_ins = MakeConvert( ins->operands[ 0 ], temp_1, target_type, ins->type_class );
+    first_ins = MakeConvert( ins->operands[0], temp_1, target_type, ins->type_class );
     PrefixIns( ins, first_ins );
-    if( ins->operands[ 1 ]->n.class != N_CONSTANT ) {
-        new_ins = MakeConvert( ins->operands[ 1 ], temp_2, target_type, ins->type_class );
+    if( ins->operands[1]->n.class != N_CONSTANT ) {
+        new_ins = MakeConvert( ins->operands[1], temp_2, target_type, ins->type_class );
         PrefixIns( ins, new_ins );
     } else {
-        temp_2 = ins->operands[ 1 ];
+        temp_2 = ins->operands[1];
     }
     new_ins = MakeBinary( OP_RSHIFT, temp_1, temp_2, temp_1, target_type );
     PrefixIns( ins, new_ins );
@@ -858,9 +857,9 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
      * Bust up a MOVXX into a series of 4-byte moves - we are guaranteed
      * that both the source and dest are 4-byte aligned.
      */
-    assert( ins->operands[ 0 ]->n.class == N_TEMP || ins->operands[ 0 ]->n.class == N_INDEXED );
+    assert( ins->operands[0]->n.class == N_TEMP || ins->operands[0]->n.class == N_INDEXED );
     temp = AllocTemp( U4 );
-    size = ins->operands[ 0 ]->n.size;
+    size = ins->operands[0]->n.size;
     first_ins = NULL;
     last_ins = NULL;
     curr = 0;
@@ -879,7 +878,7 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
         }
     }
     while( words ) {
-        src = OffsetMem( ins->operands[ 0 ], curr, U4 );
+        src = OffsetMem( ins->operands[0], curr, U4 );
         dst = OffsetMem( ins->result, curr, U4 );
         curr += 4;
         words -= 1;
@@ -900,7 +899,7 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
     case 0:
         break;
     case 1:
-        src = OffsetMem( ins->operands[ 0 ], curr, U1 );
+        src = OffsetMem( ins->operands[0], curr, U1 );
         dst = OffsetMem( ins->result, curr, U1 );
         last_ins = MakeMove( src, temp, U1 );
         if( first_ins == NULL ) {
@@ -909,7 +908,7 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
         ReplIns( ins, last_ins );
         break;
     case 2:
-        src = OffsetMem( ins->operands[ 0 ], curr, U2 );
+        src = OffsetMem( ins->operands[0], curr, U2 );
         dst = OffsetMem( ins->result, curr, U2 );
         last_ins = MakeMove( src, temp, U2 );
         if( first_ins == NULL ) {
@@ -918,14 +917,14 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
         ReplIns( ins, last_ins );
         break;
     case 3:
-        src = OffsetMem( ins->operands[ 0 ], curr, U1 );
+        src = OffsetMem( ins->operands[0], curr, U1 );
         dst = OffsetMem( ins->result, curr, U1 );
         new_ins = MakeMove( src, temp, U1 );
         PrefixIns( ins, new_ins );
         if( first_ins == NULL ) {
             first_ins = new_ins;
         }
-        src = OffsetMem( ins->operands[ 0 ], curr, U2 );
+        src = OffsetMem( ins->operands[0], curr, U2 );
         dst = OffsetMem( ins->result, curr, U2 );
         last_ins = MakeMove( src, temp, U2 );
         ReplIns( ins, last_ins );

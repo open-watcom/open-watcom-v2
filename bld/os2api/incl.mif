@@ -4,6 +4,12 @@ os2api_autodepends = .AUTODEPEND
 
 os2api_distrib_lib = 1
 
+!ifeq host_cpu i86
+hdr_cpu = 286
+!else
+hdr_cpu = $(host_cpu)
+!endif
+
 !include cproj.mif
 !include defrule.mif
 
@@ -131,6 +137,9 @@ headers386 =                 &
         sys/uio.h            &
         sys/un.h
 
+incl286 = incl16
+incl386 = incl32
+
 dirs386 =            &
         arpa         &
         GL           &
@@ -140,18 +149,9 @@ dirs386 =            &
         protocol     &
         sys
 
-!ifeq host_cpu i86
-headers = $(headers286)
-incldir = incl16
-!else
-headers = $(headers386)
-dirs = $(dirs386)
-incldir = incl32
-!endif
+all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
 
-all : $(dirs) $(headers) .SYMBOLIC
-
-.mh: ../../$(incldir)
+.mh: ../../$(incl$(hdr_cpu))
 
 .mh.h:
         $(splice)
@@ -177,14 +177,11 @@ all : $(dirs) $(headers) .SYMBOLIC
 {sys}.mh{sys}.h:
         $(splice)
 
-!ifeq host_cpu 386
-$(dirs386):
+!ifdef dirs$(hdr_cpu)
+$(dirs$(hdr_cpu)):
         @if not exist $@ mkdir $@
 !endif
 
 clean : .SYMBOLIC
         rm -f *.h
-!ifeq host_cpu 386
-        !rm -rf $(dirs386)
-!endif
-
+        rm -rf $(dirs$(hdr_cpu))

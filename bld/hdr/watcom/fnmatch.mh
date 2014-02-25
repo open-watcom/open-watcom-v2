@@ -22,6 +22,7 @@
 #define FNM_IGNORECASE  0x08        /* Case insensitive matching. */
 #define FNM_LEADING_DIR 0x10        /* Ignore final path component. */
 #define FNM_CASEFOLD    FNM_IGNORECASE
+#define FNM_NOCASE      FNM_IGNORECASE
 :include extepi.sp
 
 :include cpluspro.sp

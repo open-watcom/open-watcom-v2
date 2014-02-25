@@ -53,7 +53,6 @@ extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type
 extern  type_class_def  TypeClass(type_def*);
 extern  void            AddIns(instruction*);
 extern  void            DataLabel(label_handle);
-extern  name            *GenIns(an);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
@@ -237,9 +236,9 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
             AddIns( ret_ins );
             if( HW_CEqual( state->return_reg, HW_EMPTY ) ) {
                 AddIns( MakeUnary( OP_PUSH, ret_ptr, NULL, WD ) );
-                state->parm.offset += TypeClassSize[ WD ];
-                call_ins->operands[ CALL_OP_POPS ] =
-                        AllocS32Const( call_ins->operands[ CALL_OP_POPS ]->c.int_value + TypeClassSize[ WD ] );
+                state->parm.offset += TypeClassSize[WD];
+                call_ins->operands[CALL_OP_POPS] =
+                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.int_value + TypeClassSize[WD] );
                 if( state->attr & ROUTINE_REMOVES_PARMS ) {
                     call_ins->flags.call_flags |= CALL_POPS_PARMS;
                 }
@@ -359,8 +358,7 @@ static  void    AddCall( instruction *ins, cn call ) {
     if( call->name->tipe == TypeProcParm ) {
         proc_name = AllocTemp( ClassPointer );
 /* what to do?        proc_name->usage |= USE_REGISTER;*/
-        AddIns( MakeMove( ins->operands[CALL_OP_ADDR],
-                          proc_name, ClassPointer ));
+        AddIns( MakeMove( ins->operands[CALL_OP_ADDR], proc_name, ClassPointer ));
         ins->operands[CALL_OP_ADDR] = proc_name;
         SetDisplay( GenIns( call->name ) );
         AddIns( ins );
@@ -375,8 +373,8 @@ extern  reg_set_index   CallIPossible( instruction *ins ) {
 /*********************************************************/
 
 
-     if( ins->operands[ CALL_OP_ADDR ]->n.name_class == CP ) return( RL_ );
-     if( ins->operands[ CALL_OP_ADDR ]->n.name_class == PT ) return( RL_ );
+     if( ins->operands[CALL_OP_ADDR]->n.name_class == CP ) return( RL_ );
+     if( ins->operands[CALL_OP_ADDR]->n.name_class == PT ) return( RL_ );
 #if _TARGET & _TARG_IAPX86
      return( RL_WORD );
 #else
@@ -445,7 +443,7 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
     SuffixIns( ins, new );
 #if 0
     if( curr->n.class == N_CONSTANT ) {
-        size = TypeClassSize[ class ];
+        size = TypeClassSize[class];
     } else {
         size = curr->n.size;
     }

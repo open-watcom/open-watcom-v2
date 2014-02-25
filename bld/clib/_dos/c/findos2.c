@@ -41,6 +41,7 @@
 #include "tinyio.h"
 #include "rtdata.h"
 #include "seterrno.h"
+#include "_dtaxxx.h"
 
 #if defined(__WARP__)
   #define FF_LEVEL      1
@@ -55,9 +56,6 @@
 struct name {
     char buf[ NAME_MAX + 1 ];
 };
-
-#define HANDLE_OF( __find )     ( *( HDIR * )( &(__find)->reserved[0] ) )
-#define BAD_HANDLE              ((HDIR)(~0))
 
 
 static  void    copydir( struct find_t *buf, FF_BUFFER *dir_buff ) {
@@ -89,10 +87,10 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
                 (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
 
         if( rc != 0 && rc != ERROR_EAS_DIDNT_FIT ) {
-            HANDLE_OF( buf ) = BAD_HANDLE;
+            FIND_HANDLE_OF( buf ) = BAD_HANDLE;
             return( __set_errno_dos_reterr( rc ) );
         }
-        HANDLE_OF( buf ) = handle;
+        FIND_HANDLE_OF( buf ) = handle;
         copydir( buf, &dir_buff );      /* copy in other fields */
 
 #if defined(__OS2_286__)
@@ -121,7 +119,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
         FF_BUFFER       dir_buff;
         OS_UINT         searchcount = 1;
 
-        rc = DosFindNext( HANDLE_OF( buf ), (PVOID)&dir_buff,
+        rc = DosFindNext( FIND_HANDLE_OF( buf ), (PVOID)&dir_buff,
                     sizeof( dir_buff ), &searchcount );
         if( rc != 0 ) {
             return( __set_errno_dos_reterr( rc ) );
@@ -152,8 +150,8 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
 #if defined(__OS2_286__)
     if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
 #endif
-        if( HANDLE_OF( buf ) != BAD_HANDLE ) {
-            rc = DosFindClose( HANDLE_OF( buf ) );
+        if( FIND_HANDLE_OF( buf ) != BAD_HANDLE ) {
+            rc = DosFindClose( FIND_HANDLE_OF( buf ) );
             if( rc != 0 ) {
                 return( __set_errno_dos_reterr( rc ) );
             }

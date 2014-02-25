@@ -38,18 +38,16 @@ clean : .procedure
  @if exist *.txt rm -f *.txt
 
 !ifeq dotarget ps
- @if exist tmp rm -f tmp/*.ps tmp/*.tmp tmp/*.bmp
- @if exist tmp rmdir tmp
+ @if exist tmp rm -rf tmp
+!endif
+
+!ifeq dotarget htmlhelp
+ @for %f in ($(books)) do @if exist %f rm -rf %f
 !endif
  
-# useful to delete all windows .gid
+# useful to delete all windows .gid files created during testing
  @if exist *.gid @attrib -h *.gid
  @if exist *.gid rm -f *.gid
  
 # delete generated DOS Emulator batch files
  @if exist *.bat rm -f *.bat
-
-!ifeq dotarget htmlhelp
- @for %f in ($(books)) do @if exist %f rm -f %f/*.bmp %f/*.htm %f/*.hh? %f/*.ch? %f/*.h
- @for %f in ($(books)) do @if exist %f rmdir %f
-!endif

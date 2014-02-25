@@ -72,6 +72,7 @@ static  TABLE_TYPE  PARA_TABLE[] = {
         { TARGET_ALREADY_M,             "EM" },
         { SKIPPING_AFTER_ELSE,          "12" },
         { NOT_ALLOWED_AFTER_ELSE,       "12" },
+        { DELETING_ITEM,                "12" },
         { NO_DEF_CMDS_FOR_MAKE,         "sE" },
         { PTARG_IS_TYPE_M,              "EM" },
         { IMP_ENV_M,                    "EM" },

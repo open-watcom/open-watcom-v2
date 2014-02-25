@@ -28,17 +28,6 @@ set PROJNAME=win386
     <CCCMD> wbind/ntx64/wbind.exe       <OWRELROOT>/binnt64/
     <CCCMD> wbind/linuxx64/wbind.exe    <OWRELROOT>/binl64/wbind
 
-[ BLOCK <1> clean ]
-#==================
-    @rm -f asm/dllthk.asm
-    @rm -f c/dllthunk.c
-    @rm -f asm/winglue.asm
-    @rm -f h/winglue.inc
-    @rm -f ext/win386.ext
-    @rm -f dll/w386dll.ext
-    @rm -f vxd/wdebug.386
-    @rm -f vxd/wemu387.386
-
 [ BLOCK . . ]
 #============
 cdsay <PROJDIR>

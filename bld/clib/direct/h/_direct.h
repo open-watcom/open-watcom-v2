@@ -43,10 +43,3 @@ typedef unsigned    UINT_WC_TYPE;
 #endif
 
 extern char *__tmpdir( char *__buff );
-#ifdef __WIDECHAR__
-extern DIR_TYPE *__wopendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
-extern DIR_TYPE *___wopendir( const wchar_t *__name, unsigned __attr, DIR_TYPE *__dirp );
-#else
-extern DIR_TYPE *__opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
-extern DIR_TYPE *___opendir( const char *__name, unsigned __attr, DIR_TYPE *__dirp );
-#endif

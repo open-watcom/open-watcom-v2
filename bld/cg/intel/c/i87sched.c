@@ -175,8 +175,7 @@ extern  int     FPStkOver( instruction *ins, int stk_depth )
         depth = SeqMaxDepth[ i ] - SeqCurDepth[ i ];
         if( depth > max_depth ) max_depth = depth;
     }
-    return( SeqMaxDepth[ins->sequence] - SeqCurDepth[ins->sequence] +
-            max_depth + stk_depth - Max87Stk );
+    return( SeqMaxDepth[ins->sequence] - SeqCurDepth[ins->sequence] + max_depth + stk_depth - Max87Stk );
 }
 
 
@@ -828,8 +827,7 @@ static  void    CacheTemps( block *blk ) {
 
     Entry = NULL;
     Exit = NULL;
-    if( (blk->class & LOOP_HEADER)
-        && blk->inputs == 2 && blk->targets == 2 ) {
+    if( (blk->class & LOOP_HEADER) && blk->inputs == 2 && blk->targets == 2 ) {
         if( blk->edge[0].destination.u.blk == blk ) {
             Exit = blk->edge[1].destination.u.blk;
             exit_edge = &blk->edge[1];
@@ -919,7 +917,9 @@ extern  void    FPPreSched( block *blk ) {
 
     MaxSeq = 0;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( ins->sequence > MaxSeq ) MaxSeq = ins->sequence;
+        if( ins->sequence > MaxSeq ) {
+            MaxSeq = ins->sequence;
+        }
     }
     ++MaxSeq;
     InitTempEntries( blk );

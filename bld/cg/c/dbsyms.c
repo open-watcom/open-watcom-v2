@@ -130,7 +130,7 @@ extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
 extern  char *SrcFNoFind( uint fno )
 /**********************************/
 {
-    int          index;
+    uint        index;
     fname_lst   *curr;
 
     index = 0;
@@ -726,8 +726,8 @@ extern  void    DbgParmLoc( name *parm, cg_sym_handle sym )
 /******************************************************/
 // sym is NULL if no front end sym
 {
-    dbg_local           *lcl;
-    dbg_loc             loc;
+    dbg_local       *lcl;
+    dbg_loc         loc;
 
     if( _IsntModel( DBG_DF ) ) {
         if( parm->n.class != N_REGISTER  ) {
@@ -747,7 +747,7 @@ extern  void    DbgParmLoc( name *parm, cg_sym_handle sym )
 extern  void    DbgRetLoc( void )
 /*******************************/
 {
-    dbg_loc     loc;
+    dbg_loc loc;
 
     if( CurrProc->targ.debug->reeturn == NULL ) {
         loc = DBLocInit();

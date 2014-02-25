@@ -38,11 +38,11 @@
 extern  void            TryScrapLabel(label_handle);
 extern  byte            ReverseCondition(byte);
 extern  void            AddNewJump(ins_entry*,label_handle);
-extern  label_handle    AddNewLabel(ins_entry*,int);
+extern  label_handle    AddNewLabel(ins_entry*,obj_length);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  void            ChgLblRef(ins_entry*,label_handle);
 extern  ins_entry       *NextIns(ins_entry*);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 
 static  label_handle    Handle;
 
@@ -77,10 +77,7 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
         if( _TstStatus( lbl, SHORTREACH ) ) return( TRUE );
         obj_len = OptInsSize( OC_JMP, OC_DEST_SHORT );
         lbl_ins = Handle->ins;
-        instr = FirstIns;
-        for(;;) {
-            instr = NextIns( instr );
-            if( instr == NULL ) break;
+        for( instr = NextIns( FirstIns ); instr != NULL; instr = NextIns( instr ) ) {
             obj_len += _ObjLen( instr );
             if( obj_len > MAX_SHORT_FWD ) break;
             if( Jmp_to_lbl( instr ) ) {
@@ -175,7 +172,7 @@ static  void    SetShort( void )
 /******************************/
 {
     ins_entry   *l_ins;
-    int         size;
+    obj_length  size;
     bool        floating;
 
   optbegin

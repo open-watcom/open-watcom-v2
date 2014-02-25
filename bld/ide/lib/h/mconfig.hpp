@@ -33,17 +33,19 @@
 #ifndef mconfig_class
 #define mconfig_class
 
+#define CUR_CFG_VERSION     4
+
 #include "wobject.hpp"
 #include "wpicklst.hpp"
 #include "wfilenam.hpp"
 #include "wtokfile.hpp"
-#include "mcommand.hpp"
 #include "wwindow.hpp"
 #include "wkeydefs.hpp"
+#include "mtool.hpp"
+#include "mswitch.hpp"
+#include "mcommand.hpp"
 
 #define LOG_HELP_WIDTH      3
-
-#define CUR_CFG_VERSION     4
 
 #define MASK_SIZE           5
 
@@ -100,7 +102,7 @@ WCLASS MConfig : public WObject
         WVList& logHtmlHelpFiles() { return _logHtmlHelpFiles; }
         int version() { return _version; }
         void setKludge( int k ) { _kludge = k; }
-        void kludgeString( WString& str );
+        void kludgeMask( WString& str );
         void zapMask( WString& mask );
         HostType hostType() { return _hostType; }
         void enumAccel( WObject *obj, bcbk fn );

@@ -99,7 +99,7 @@ extern  void            AddWData(signed_32,type_class_def );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
 extern  void            CodeLabel(label_handle, unsigned);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
+extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            GenJumpLabel( label_handle );
 extern  void            GenKillLabel( label_handle );
 extern  segment_id      GenP5ProfileData( char *fe_name, label_handle *data, label_handle *stack );
@@ -302,8 +302,8 @@ static  void    TransferIns( void ) {
     Transfer an instruction from Inst[] to Temp
 */
 
-    int i;
-    int j;
+    unsigned i;
+    unsigned j;
 
     j = Temp.hdr.reclen - offsetof( template, data );
     for( i = 0; i < IEsc; ++i ) {
@@ -400,7 +400,7 @@ static  byte    SegTrans( hw_reg_set regs ) {
     Return the encoding of a segment register name
 */
 
-    int i;
+    byte i;
 
     HW_COnlyOn( regs, HW_SEGS );
     for( i = 0; i < SEGS; ++i ) {
@@ -419,7 +419,7 @@ static  byte    RegTrans( hw_reg_set regs ) {
     Return the encoding of a register name
 */
 
-    int i;
+    byte i;
 
     HW_CTurnOff( regs, HW_SEGS );
     for( i = 0; i < REGS; ++i ) {
@@ -1340,8 +1340,7 @@ extern  void    GenObjCode( instruction *ins ) {
             LayOpword( 0xFBD9 );
             break;
         case G_FCHOP:
-            DoCall( RTLabel( RT_CHOP ),
-                TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
+            DoCall( RTLabel( RT_CHOP ), TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
             break;
         case G_FTST:
         case G_FCOMPP:
@@ -2438,6 +2437,5 @@ static  void    CallMathFunc( instruction *ins ) {
     Call a runtime routine for a math function instructions
 */
     LookupRoutine( ins );
-    DoCall( RTLabel( RoutineNum ),
-            TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
+    DoCall( RTLabel( RoutineNum ), TRUE, _IsTargetModel( BIG_CODE ), EMPTY );
 }

@@ -24,15 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  This file contains the functional tests for _watcom::slist.
+* Description:  This file contains the functional tests for std::forward_list.
 *
 ****************************************************************************/
 
 #include <algorithm>
 #include <iostream>
-#include <slist>
+#include <forward_list>
 #include "sanity.cpp"
 #include "allocxtr.hpp"
+
+using namespace std;
 
 /* ------------------------------------------------------------------
  * construct_test()
@@ -47,17 +49,13 @@ bool operator==( test_type const & t, test_type const & o ){ return o.i==t.i; }
 
 bool construct_test( )
 {
-
-        
-    using namespace _watcom;
-    
-    slist<int> sl;
+    forward_list<int> sl;
     if( INSANE(sl) || !sl.empty() ) FAIL
     
-    slist<test_type> sl2(40);
+    forward_list<test_type> sl2(40);
     if( INSANE(sl2) || sl2.size() != 40 ) FAIL
     
-    slist<test_type> sl3(sl2);
+    forward_list<test_type> sl3(sl2);
     if( INSANE(sl2) || sl2.size() != 40 ) FAIL
     if( INSANE(sl3) || sl3.size() != 40 ) FAIL
     for( int i = 0; i < 40; i++ ){
@@ -66,7 +64,7 @@ bool construct_test( )
     }
     
     // copy ctor
-    slist<test_type> sl4(sl3);
+    forward_list<test_type> sl4(sl3);
     if( INSANE(sl3) || !sl3.empty() ) FAIL
     if( INSANE(sl4) || !sl4.empty() ) FAIL
         
@@ -74,7 +72,7 @@ bool construct_test( )
     sl.clear();
     for( int i = 0; i< 20; i++ ) sl.push_front( i );
     if( INSANE(sl) || sl.size() != 20 ) FAIL
-    slist<int> sl5( sl );
+    forward_list<int> sl5( sl );
     if( INSANE(sl) || sl.size() != 20 ) FAIL
     if( INSANE(sl5) || sl5.size() != 20 ) FAIL
     for( int i = 19; i >= 0; i-- ){
@@ -86,7 +84,7 @@ bool construct_test( )
     if( INSANE(sl5) || !sl5.empty() ) FAIL
         
     // assignment
-    slist<int> * psl = &sl;
+    forward_list<int> * psl = &sl;
     sl5 = sl;
     if( INSANE(sl) || sl.size() != 20 ) FAIL
     if( INSANE(sl5) || sl5.size() != 20 ) FAIL
@@ -112,7 +110,7 @@ bool construct_test( )
     
     // construct from iterators (allocator param not yet implemented)
     std::string str("Daniel Cletheroe");
-    slist<char> sl6( str.begin(), str.end() );
+    forward_list<char> sl6( str.begin(), str.end() );
     if( INSANE(sl6) || sl6.size() != str.length() ) FAIL
     for( int i = 0; i < str.length(); i++ ){
         if( str[i] != sl6.front() ) FAIL
@@ -130,8 +128,7 @@ bool construct_test( )
  */
 bool access_test( )
 {
-    using namespace _watcom;
-    slist<int> sl;
+    forward_list<int> sl;
     int i;
     static int const chk[] = {
         101,
@@ -183,7 +180,7 @@ bool access_test( )
         sl.pop_front();
     }
     
-    slist<int> sl2;
+    forward_list<int> sl2;
     for( i = 10; i >= 1; i-- ) sl2.push_front( i );
     sl.clear();
     sl.push_front( 11 );
@@ -218,8 +215,7 @@ bool access_test( )
  */
 bool assign_test( )
 {
-    using namespace _watcom;
-    slist<char> sl;
+    forward_list<char> sl;
     
     sl.assign( (size_t)999, 'a' );
     if( INSANE(sl) || sl.size() != 999 ) FAIL
@@ -252,8 +248,8 @@ bool assign_test( )
  */
 bool capacity_test( )
 {
-    _watcom::slist<int> sl;
-    _watcom::slist<int>::iterator it;
+    forward_list<int> sl;
+    forward_list<int>::iterator it;
     int i;
     
     for( i = 0; i < 100; i++ ) sl.push_front( i );
@@ -300,8 +296,7 @@ bool capacity_test( )
  */
 bool clear_test()
 {
-    using namespace _watcom;
-    slist<int> sl;
+    forward_list<int> sl;
     int i;
     
     // clear empty container
@@ -324,14 +319,13 @@ bool clear_test()
  */
 bool erase_test( )
 {
-    using namespace _watcom;
-    slist<int> sl;
+    forward_list<int> sl;
     int i;
 
     for( i = 9; i >= 0; i-- ){
         sl.push_front( i );
     }
-    slist<int>::iterator it = sl.begin();
+    forward_list<int>::iterator it = sl.begin();
     for( i = 0; i < 5; i++){
         ++it;
         it = sl.erase( it );
@@ -378,8 +372,8 @@ bool erase_test( )
  */
 bool swap_test( )
 {
-    _watcom::slist<int> sl1;
-    _watcom::slist<int> sl2;
+    forward_list<int> sl1;
+    forward_list<int> sl2;
     int i;
     
     for( i = 0; i < 30; i++ ) sl1.push_front( i );
@@ -411,8 +405,8 @@ bool remove_test( )
     int a[] = { 1,1,1,1,2,1,1,3,4,1,5,6,7,8,1,1,9,1,1,1,1,1 };
     int size_a = sizeof(a)/sizeof(int);
     int i;
-    _watcom::slist<int> sl;
-    _watcom::slist<int>::const_iterator cit;
+    forward_list<int> sl;
+    forward_list<int>::const_iterator cit;
         
     for( i = 0; i < size_a; i++ ) sl.push_front( a[i] );
     sl.remove( 1 );
@@ -441,9 +435,8 @@ bool remove_test( )
  */
 bool iterator_test( )
 {
-    using namespace _watcom;
-    slist< int > sl;
-    typedef slist< int >::iterator sit_t;
+    forward_list< int > sl;
+    typedef forward_list< int >::iterator sit_t;
     sit_t sit;
     int i;
     
@@ -465,12 +458,12 @@ bool iterator_test( )
     if( INSANE(sl) || sit != sl.end() ) FAIL
     
     // const_iterator
-    typedef slist< int >::const_iterator scit_t;
+    typedef forward_list< int >::const_iterator scit_t;
     scit_t scit1 = sl.cbegin();
     scit_t scit2 = sit;
     
     // operator++ pre
-    for( i = 19 ; scit1 != const_cast< slist<int> const & >(sl).end(); ++scit1, --i ){
+    for( i = 19 ; scit1 != const_cast< forward_list<int> const & >(sl).end(); ++scit1, --i ){
         if( INSANE(sl) || *scit1 != i ) FAIL
     }
     // operator++ post
@@ -503,7 +496,7 @@ bool unique_test( )
 {
     int const init[] = { 1,2,3,3,3,4,5,6,6,6,6,7,7,8,8,8 };
     int const init_len = sizeof(init)/sizeof(int);
-    _watcom::slist< int > sl;
+    forward_list< int > sl;
     int i;
     sl.assign( init, init+init_len );
     if( INSANE( sl ) || sl.size() != init_len ) FAIL
@@ -540,8 +533,8 @@ bool splice_test( )
 {
     int const src[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 };
     int const src_len = sizeof( src ) / sizeof( int );
-    _watcom::slist< int > sl1( src, src+src_len );
-    _watcom::slist< int > sl2( 1, 1 );
+    forward_list< int > sl1( src, src+src_len );
+    forward_list< int > sl2( 1, 1 );
     
     // simple splice
     sl1.splice( sl1.begin(), sl2 );
@@ -552,7 +545,7 @@ bool splice_test( )
     if( INSANE(sl2) || !sl2.empty() ) FAIL
     if( INSANE(sl1) || sl1.size() != src_len+2 ) FAIL
     
-    _watcom::slist< int >::iterator it;
+    forward_list< int >::iterator it;
     it = sl1.begin();
     if( *it++ != 1 ) FAIL
     for( int i = 0; i < src_len ; ++it, i++ ) if( *it != src[i] ) FAIL
@@ -659,7 +652,7 @@ bool splice_test( )
  */
 bool reverse_test( )
 {
-    _watcom::slist< int > sl;
+    forward_list< int > sl;
     int i;
     
     for( i = 0; i < 20; i++ ) sl.push_front( i );
@@ -708,7 +701,7 @@ bool operator==( MyPair const & t, MyPair const & o ) { return( t.x == o.x ); }
 //
 bool sort_test( )
 {
-    _watcom::slist<int> lst;
+    forward_list<int> lst;
     
     // hit it with a load of random numbers
     int rand_size = 16383;
@@ -730,7 +723,7 @@ bool sort_test( )
     lst.clear();
     
     // test sort is stable
-    _watcom::slist< MyPair > l2;
+    forward_list< MyPair > l2;
     int c;
     // build array of random numbers
     for( c = 10001; c >= 0; ){
@@ -770,7 +763,7 @@ bool sort_test( )
  */
 bool merge_test( )
 {
-    _watcom::slist<int> l1, l2;
+    forward_list<int> l1, l2;
     
     // merge two lists of sorted random numbers
     int rand_size = 16383;
@@ -806,8 +799,8 @@ bool comparison_test( )
     int a[]={1,2,3,4,5,6,7,8,9};
     int b[]={1,2,3,4,5,6,7,8};
     int c[]={2,2,3,4,5,6,7,8,9};
-    _watcom::slist<int> sl1( a, a+9 );
-    _watcom::slist<int> sl2( a, a+9 );
+    forward_list<int> sl1( a, a+9 );
+    forward_list<int> sl2( a, a+9 );
     
     if( !( sl1 == sl2 ) ) FAIL
     if( !( sl1 <= sl2 ) ) FAIL

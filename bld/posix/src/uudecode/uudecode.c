@@ -74,15 +74,6 @@
  *         input file.
  */
 
-#ifdef __WATCOMC__
-#define __MSDOS__
-#endif
-#ifdef __MSDOS__        /* For Turbo C */
-#ifndef MSDOS
-#define MSDOS 1
-#endif
-#endif
-
 /*
  * uudecode [input]
  *
@@ -91,20 +82,13 @@
  */
 #include <stdio.h>
 
-#ifdef VMS
-#  include <types.h>
-#  include <stat.h>
-#else
-#  ifndef MSDOS            /* i.e., UNIX */
-#    include <pwd.h>
-#  endif
-#  ifdef __WATCOMC__
-#  include <stdlib.h>
-#  include <string.h>
-#  endif
-#  include <sys/types.h>   /* MSDOS or UNIX */
-#  include <sys/stat.h>
+#if defined( __UNIX__ )
+#  include <pwd.h>
 #endif
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>   /* MSDOS or UNIX */
+#include <sys/stat.h>
 
 /* single-character decode */
 #define DEC(c)  (((c) - ' ') & 077)
@@ -173,7 +157,7 @@ int main(int argc, char **argv)
             break;
         (void)sscanf(buf+6, "%o %s", &mode, dest);
 
-#if !defined(MSDOS) && !defined(VMS)    /* i.e., UNIX */
+#if defined( __UNIX__ )
         /* handle ~user/file format */
         if (dest[0] == '~') {
             char *sl;
@@ -200,16 +184,16 @@ int main(int argc, char **argv)
 #endif  /* !defined(MSDOS) && !defined(VMS) */
 
         /* create output file */
-#ifdef MSDOS
-        out = fopen(dest, "wb");        /* Binary file */
-#else
+#if defined( __UNIX__ )
         out = fopen(dest, "w");
+#else
+        out = fopen(dest, "wb");        /* Binary file */
 #endif
         if (out == NULL) {
             perror(dest);
             exit(4);
         }
-#if !defined(MSDOS) && !defined(VMS)    /* i.e., UNIX */
+#if defined( __UNIX__ )
         chmod(dest, mode);
 #endif
 
@@ -229,7 +213,8 @@ int main(int argc, char **argv)
 void decode( FILE *in, FILE *out ) {
     char buf[80];
     char *bp;
-    int n, i, expected;
+    int n, expected;
+    size_t i;
     int found_begin;
     int after_blank;
     int end_cut;
@@ -291,7 +276,7 @@ void decode( FILE *in, FILE *out ) {
             }
         }
         if( !found_begin ) {
-            for( i = strlen(buf)-1; i <= expected; i++ ) {
+            for( i = strlen( buf ) - 1; i <= expected; i++ ) {
                 buf[i] = ' ';
             }
             bp = &buf[1];
@@ -329,14 +314,10 @@ void outdec( char *p, FILE *f, int n ) {
  * NULL if not found
  */
 
-#ifndef __WATCOMC__
-#define NULL    0
-#endif
-
 char* index( char *sp, int c ) {
     do {
         if (*sp == c)
             return(sp);
-    } while (*sp++);
-    return(NULL);
+    } while( *sp++ );
+    return( NULL );
 }

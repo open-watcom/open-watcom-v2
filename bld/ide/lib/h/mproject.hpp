@@ -38,7 +38,7 @@
 #include "wvlist.hpp"
 #include "contfile.hpp"
 #include "wmodel.hpp"
-#include "mcommand.hpp"
+#include "mconfig.hpp"
 
 /* support for RCS stuff from vrcscli.hpp */
 typedef int (WObject::*CheckoutFunction)( WFileName *, WString &, WString & );

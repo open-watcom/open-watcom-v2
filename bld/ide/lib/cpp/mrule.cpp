@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include "mrule.hpp"
+#include "wobjfile.hpp"
 #include "mconfig.hpp"
+#include "mrule.hpp"
 #include "maction.hpp"
 #include "msymbol.hpp"
 #include "mfamily.hpp"
 #include "mstate.hpp"
-#include "wobjfile.hpp"
 #include "mworkfil.hpp"
 
 Define( MRule )

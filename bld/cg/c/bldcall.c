@@ -657,7 +657,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     if( retval != NULL ) {
         class = TypeClass( tipe );
         aclass = ReturnClass( tipe, CurrProc->state.attr );
-        UpdateReturn( & CurrProc->state, tipe, aclass, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
+        UpdateReturn( &CurrProc->state, tipe, aclass, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
         }

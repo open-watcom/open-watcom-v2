@@ -36,7 +36,6 @@
 #include "wstring.hpp"
 #include "wvlist.hpp"
 #include "wtokfile.hpp"
-#include "mswitch.hpp"
 
 #define BMACRO "$<"
 #define EMACRO '>'

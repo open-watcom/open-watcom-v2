@@ -103,7 +103,7 @@ static  void    DumpAnAddr( an node ) {
 }
 
 static  void    DumpLbl( label_handle *what ) {
-/*****************************************************/
+/*********************************************/
 
     block       *blk;
     block_num   i;

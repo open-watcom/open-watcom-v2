@@ -35,7 +35,7 @@
 #include <sys/stat.h>
 
 #ifdef _M_I86
-#define __FAR   far
+#define __FAR   __far
 #else
 #define __FAR
 #if !defined(__WATCOMC__) && ( defined(__NT__) )

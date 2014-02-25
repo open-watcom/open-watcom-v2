@@ -64,7 +64,6 @@ extern "C" {
 #include "vcompdlg.hpp"
 
 #include "wabout.hpp"
-#include "mcommand.hpp"
 #include "wmetrics.hpp"
 #include "wsystem.hpp"
 

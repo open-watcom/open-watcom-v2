@@ -124,7 +124,6 @@ static bool try_open( char *prefix, char *filename )
     /* Try to open the file. Return false on failure. */
 
     for( ;; ) {
-        strlwr( buff );                 // for the sake of linux use lower only
         erc = fopen_s( &fp, buff, "rb" );
         if( erc == 0 ) {
             break;
@@ -321,7 +320,7 @@ bool search_file_in_dirs( const char *filename, char *defext, char *altext, dirs
          */
 
         if( *fn_ext == '\0' ) {
-            if( strnlen_s( filename, FILENAME_MAX ) + 4 == FILENAME_MAX ) {
+            if( strnlen_s( filename, FILENAME_MAX ) + 4 >= FILENAME_MAX ) {
                 switch( sequence ) {
                 case ds_opt_file:
                     xx_simple_err_cc( err_file_max, filename, OPT_EXT );
@@ -370,7 +369,7 @@ bool search_file_in_dirs( const char *filename, char *defext, char *altext, dirs
             strcpy_s( alternate_file, FILENAME_MAX, fn_name );
             strcat_s( alternate_file, FILENAME_MAX, altext );
         }
-        if( *fn_ext == '\0' && strcmp( defext, GML_EXT )) {
+        if( *fn_ext == '\0' && FNAMECMPSTR( defext, GML_EXT )) {
             strcpy_s( default_file, FILENAME_MAX, fn_name );
             strcat_s( default_file, FILENAME_MAX, GML_EXT );
         }

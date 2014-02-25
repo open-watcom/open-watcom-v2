@@ -35,8 +35,6 @@
 
 #include "wtokfile.hpp"
 #include "wvlist.hpp"
-#include "mtool.hpp"
-#include "mswitch.hpp"
 #include "maccel.hpp"
 
 WCLASS MAction : public WObject

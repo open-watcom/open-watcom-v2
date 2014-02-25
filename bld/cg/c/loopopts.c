@@ -1951,7 +1951,7 @@ static  void    LabelDown( instruction *frum,
     edge = &blk->edge[ 0 ];
     for( i = blk->targets; i > 0; --i ) {
         blk = edge->destination.u.blk;
-        if( ( go_around || blk != Head ) && ( blk->class & IN_LOOP ) ) {
+        if( ( go_around || blk != Head ) && (blk->class & IN_LOOP) ) {
             ins = blk->ins.hd.next;
             if( ins->head.opcode == OP_BLOCK || ( ins->ins_flags & INS_VISITED ) == 0 ) {
                 blk->class |= BLOCK_VISITED;
@@ -2616,6 +2616,7 @@ static  bool    PointerOk( name *op ) {
 /***************************************/
 
 #ifdef _POINTER_GETS_NEAR_BOUNDS
+    op = op;
     return( FALSE );
 #else
     if( op->n.name_class == PT ) return( TRUE );

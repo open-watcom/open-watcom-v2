@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include "mswitch.hpp"
 #include "wobjfile.hpp"
-#include "mstate.hpp"
 #include "mconfig.hpp"
+#include "mstate.hpp"
 
 Define( MSwitch )
 
@@ -99,15 +98,57 @@ void MSwitch::getTag( WString& tag )
     tag.concat( _text );
 }
 
-bool MSwitch::isMaskEqual( WString& mask )
+bool MSwitch::isTagEqual( WString& switchtag, int kludge )
 {
-    for( int i = 0; i < MASK_SIZE; ++i ) {
-        if( _mask[i] != mask[i] ) {
-            return( FALSE );
+    WString tag;
+
+    getTag( tag );
+    if( tag == switchtag )
+        return( true );
+    if( kludge == 1 ) {
+        int jcount = switchtag.size();
+        if( jcount > MASK_SIZE && jcount == tag.size() ) {
+            for( int j = 0; j < jcount; j++ ) {
+                int ct = (unsigned char)tag[j];
+                int cs = (unsigned char)switchtag[j];
+                if( ct == cs )
+                    continue;
+                // mask must be same
+                if( j < MASK_SIZE ) {
+                    return( false );
+                }
+                // ignore dash/space mismatch
+                if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
+                    continue;
+                // ignore upper/lower case mismatch
+                if( toupper( cs ) != toupper( ct ) ) {
+                    return( false );
+                }
+            }
+            return( true );
         }
     }
-    return( TRUE );
+    return( false );
 }
+
+#if CUR_CFG_VERSION > 4
+bool MSwitch::isTagEqual( MTool *tool, WString& switchtag, int kludge )
+{
+    // first check mask
+    for( int i = 0; i < MASK_SIZE; ++i ) {
+        if( _mask[i] != switchtag[i] ) {
+            return( false );
+        }
+    }
+    // second check text/id
+    WString tag = switchtag;
+    tag.chop( MASK_SIZE );
+    if( tool->findSwitchByText( _text, tag, kludge ) == NULL ) {
+        return( false );
+    }
+    return( true );
+}
+#endif
 
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )
 {
