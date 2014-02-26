@@ -252,7 +252,15 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
     awk -f ../makehhp.awk -v hbook=$(hbook) $(hbook).htm >$(hbook)/$(hbook).hhp
-!ifeq bld_os linux
+!ifeq hc_hh chmcmd
+    cd $(hbook)
+    -$(hc_hh) --no-html-scan $(hbook).hhp
+!ifeq bld_os linux    
+    -chmod +rw $(hbook).chm
+!endif
+    cd ..
+    cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
+!else ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
     @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm

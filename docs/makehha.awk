@@ -5,9 +5,6 @@
     file = $0
     gsub( /<H. ID=\"/, "", file )
     gsub( /\"> (.*) <\/H.>/, "", file )
-    if( file == "Index_of_Topics" ) {
-        next
-    }
     title = $0
     gsub( /<H. ID=\"(.*)\"> /, "", title )
     gsub( / <\/H.>/, "", title )
