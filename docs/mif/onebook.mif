@@ -47,7 +47,8 @@ wine_hc_batch=winehc.bat
 #
 hc_nt = $(%OWWIN95HC:$(to_os_path))
 hc_hh = $(%OWHHC:$(to_os_path))
-hc_pdf = ps2pdf12
+hc_chmcmd = $(%OWCHMCMD)
+hc_pdf = ps2pdf12 
 
 hcdos   = hcdos
 whc     = bwhc
@@ -81,6 +82,9 @@ dep_dos = $(hbook).ihp
 !endif
 dep_html = $(hbook).htm
 !ifneq hc_hh
+dep_htmlhelp = $(hbook).chm
+!endif
+!ifneq hc_chmcmd
 dep_htmlhelp = $(hbook).chm
 !endif
 dep_ps = $(hbook).ps
@@ -252,9 +256,9 @@ $(hbook).chm : $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
     awk -f ../makehhp.awk -v hbook=$(hbook) $(hbook).htm >$(hbook)/$(hbook).hhp
-!ifeq hc_hh chmcmd
+!ifneq hc_chmcmd
     cd $(hbook)
-    -$(hc_hh) --no-html-scan $(hbook).hhp
+    -$(hc_chmcmd) --no-html-scan $(hbook).hhp
 !ifeq bld_os linux    
     -chmod +rw $(hbook).chm
 !endif
