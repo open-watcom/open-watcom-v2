@@ -47,7 +47,8 @@ wine_hc_batch=winehc.bat
 #
 hc_nt = $(%OWWIN95HC:$(to_os_path))
 hc_hh = $(%OWHHC:$(to_os_path))
-hc_pdf = ps2pdf12
+hc_chmcmd = $(%OWCHMCMD)
+hc_pdf = ps2pdf12 
 
 hcdos   = hcdos
 whc     = bwhc
@@ -81,6 +82,9 @@ dep_dos = $(hbook).ihp
 !endif
 dep_html = $(hbook).htm
 !ifneq hc_hh
+dep_htmlhelp = $(hbook).chm
+!endif
+!ifneq hc_chmcmd
 dep_htmlhelp = $(hbook).chm
 !endif
 dep_ps = $(hbook).ps
@@ -239,9 +243,9 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 ####################################################
 !else ifeq dotarget htmlhelp
 
-.EXTENSIONS: .chm .chi
+.EXTENSIONS: .chm 
 
-$(hbook).chm $(hbook).chi : $(hbook).htm
+$(hbook).chm : $(hbook).htm
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
     cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
@@ -252,16 +256,22 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
     awk -f ../makehhk.awk $(hbook).mix >$(hbook)/$(hbook).hhk
     awk -f ../makehhp.awk -v hbook=$(hbook) $(hbook).htm >$(hbook)/$(hbook).hhp
-!ifeq bld_os linux
+!ifneq hc_chmcmd
+    cd $(hbook)
+    -$(hc_chmcmd) --no-html-scan $(hbook).hhp
+!ifeq bld_os linux    
+    -chmod +rw $(hbook).chm
+!endif
+    cd ..
+    cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
+!else ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
     @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
-    @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chi $(hbook).chi
     -wine cmd /c $(wine_hc_batch)
 !else
     -$(hc_hh) $(hbook)/$(hbook).hhp
     cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
-    cp -f $(hbook)/$(hbook).chi $(hbook).chi > $(nulldevice)
 !endif
 
 ####################################################

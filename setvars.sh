@@ -33,9 +33,19 @@ export OWDOCBUILD=0
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 # export OWGHOSTSCRIPTPATH=$PATH
 
-# set appropriate variables to point to Windows help compilers which you have installed
-# export OWWIN95HC=hcrtf
-# export OWHHC=hhc
+# Set appropriate variables to point to Windows help compilers which you 
+# have installed
+#
+# OWWIN95HC specifies the Microsoft compiler used to build 32-bit ".hlp" 
+#    files, common on Win 95/98/ME
+# OWHHC specifies the Microsoft HTML Help Workshop compiler used to build 
+#    Compressed HTML help ".chm" files, common on Win2k and later
+# OWCHMCMD specifies the Free Pascal HTML Help compiler, an alternative 
+#    compiler that can also build Compressed HTML help ".chm" files, 
+#    available natively on non-Windows OSes
+#export OWWIN95HC=hcrtf
+#export OWHHC=hhc
+#export OWCHMCMD=chmcmd
 
 # build process requires WGML utility which is available only as DOS executable
 # it is necessary to have some DOS emulator installed
