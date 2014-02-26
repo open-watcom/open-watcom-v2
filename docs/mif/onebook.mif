@@ -239,9 +239,9 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 ####################################################
 !else ifeq dotarget htmlhelp
 
-.EXTENSIONS: .chm .chi
+.EXTENSIONS: .chm 
 
-$(hbook).chm $(hbook).chi : $(hbook).htm
+$(hbook).chm : $(hbook).htm
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
     cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
@@ -264,12 +264,10 @@ $(hbook).chm $(hbook).chi : $(hbook).htm
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
     @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chm $(hbook).chm
-    @%append $(wine_hc_batch) copy /y $(hbook)\$(hbook).chi $(hbook).chi
     -wine cmd /c $(wine_hc_batch)
 !else
     -$(hc_hh) $(hbook)/$(hbook).hhp
     cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
-    cp -f $(hbook)/$(hbook).chi $(hbook).chi > $(nulldevice)
 !endif
 
 ####################################################
