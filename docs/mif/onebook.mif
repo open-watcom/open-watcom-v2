@@ -245,7 +245,7 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 
 .EXTENSIONS: .chm 
 
-$(hbook).chm : $(hbook).htm
+$(hbook).chm : $(hbook).htm $(hbook).h
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
     cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
