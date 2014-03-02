@@ -53,13 +53,16 @@ static  int     is_directory( const char *name )
         return( 0 );
     while( name[1] != '\0' ){
         if( name[0] == '*' || name[0] == '?' ) {
-            return( 0 );
+            /* with wildcard must be file */
+            return( -1 );
         }
         ++name;
     }
     if( name[0] == '\\' || name[0] == '/' || name[0] == '.' || name[0] == ':' ){
+        /* directory, need add wildcard */
         return( 1 );
     }
+    /* without wildcard maybe file or directory, need next check */
     return( 0 );
 }
 
@@ -91,12 +94,14 @@ static DIR_TYPE *__opendir( const char *dirname, unsigned attr )
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     dirp = NULL;
-    if( !is_directory( dirname ) ) {
+    i = is_directory( dirname );
+    if( i <= 0 ) {
         if( (dirp = ___opendir( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
     }
-    if( tmp.d_attr & _A_SUBDIR ) {                  /* 05-apr-91 */
+    if( i => 0 && (tmp.d_attr & _A_SUBDIR) ) {
+        /* directory, add wildcard */
         dirp = NULL;
         p = pathname;
         pchar = NULLCHAR;

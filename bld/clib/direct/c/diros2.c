@@ -114,9 +114,11 @@ static int is_directory( const CHAR_TYPE *name )
 #endif
         if( curr_ch == NULLCHAR ) {
             if( prev_ch == '\\' || prev_ch == '/' || prev_ch == '.' || prev_ch == ':' ){
+                /* directory, need add wildcard */
                 return( 1 );
             }
-            break;
+            /* without wildcard maybe file or directory, need next check */
+            return( 0 );
         }
         if( prev_ch == '*' )
             break;
@@ -128,7 +130,8 @@ static int is_directory( const CHAR_TYPE *name )
         name = _mbsinc( name );
 #endif
     }
-    return( 0 );
+    /* with wildcard must be file */
+    return( -1 );
 }
 
 
@@ -206,12 +209,14 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     dirp = NULL;
-    if( !is_directory( dirname ) ) {
+    i = is_directory( dirname );
+    if( i <= 0 ) {
         if( (dirp = __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
     }
-    if( tmp.d_attr & _A_SUBDIR ) {
+    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+        /* directory, add wildcard */
         prev_ch = NULLCHAR;
         dirp = NULL;
         p = dirname;
