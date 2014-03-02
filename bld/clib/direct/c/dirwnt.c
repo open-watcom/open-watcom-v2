@@ -156,7 +156,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
             return( NULL );
         }
     }
-    if( i => 0 && (tmp.d_attr & _A_SUBDIR) ) {
+    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
         /* directory, add wildcard */
         prev_ch = NULLCHAR;
         dirp = NULL;
