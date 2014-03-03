@@ -100,7 +100,7 @@ static DIR_TYPE *__opendir( const char *dirname, unsigned attr )
             return( NULL );
         }
     }
-    if( i => 0 && (tmp.d_attr & _A_SUBDIR) ) {
+    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
         /* directory, add wildcard */
         dirp = NULL;
         p = pathname;
