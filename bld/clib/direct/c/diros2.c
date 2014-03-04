@@ -200,10 +200,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;
     int             i;
-    auto CHAR_TYPE  pathname[_MAX_PATH+6];
-    const CHAR_TYPE *p;
-    UINT_WC_TYPE    curr_ch;
-    UINT_WC_TYPE    prev_ch;
+    auto CHAR_TYPE  pathname[_MAX_PATH + 6];
 
     DIR_HANDLE_OF( &tmp ) = 0;                  /* initialize handle    */
     tmp.d_attr = _A_SUBDIR;
@@ -211,52 +208,27 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
     dirp = NULL;
     i = is_directory( dirname );
     if( i <= 0 ) {
+        /* it is file or may be file or no dirname */
         if( (dirp = __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
     }
     if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+        UINT_WC_TYPE    last_ch;
+        size_t          len;
+
         /* directory, add wildcard */
-        prev_ch = NULLCHAR;
-        dirp = NULL;
-        p = dirname;
-        for( i = 0; i < _MAX_PATH; i++ ) {
-            pathname[i] = *p;
-#ifdef __WIDECHAR__
-            curr_ch = *p;
-#else
-            curr_ch = _mbsnextc( p );
-            if( curr_ch > 256 ) {
-                ++i;
-                ++p;
-                pathname[i] = *p;     /* copy second byte */
-            }
-#endif
-            if( curr_ch == NULLCHAR ) {
-                if( i != 0  &&  prev_ch != '\\' && prev_ch != '/' && prev_ch != ':' ){
-                    pathname[i++] = '\\';
-                }
-                __F_NAME(strcpy,wcscpy)( &pathname[i], STRING( "*.*" ) );
-                if( (dirp = __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp )) == NULL ) {
-                    return( NULL );
-                }
-                dirname = pathname;
-                break;
-            }
-            if( curr_ch == '*' )
-                break;
-            if( curr_ch == '?' )
-                break;
-            ++p;
-            prev_ch = curr_ch;
+        __F_NAME(strcpy,wcscpy)( pathname, dirname );
+        len = __F_NAME(strlen,wcslen)( pathname );
+        last_ch = pathname[len - 1];
+        if( last_ch != '\\' && last_ch != '/' && last_ch != ':' ) {
+            pathname[len++] = '\\';
         }
-    }
-    if( dirp == NULL ) {
-        if( tmp.d_first != _DIR_CLOSED ) {
-            __find_close( &tmp );
+        __F_NAME(strcpy,wcscpy)( &pathname[len], STRING( "*.*" ) );
+        if( (dirp = __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp )) == NULL ) {
+            return( NULL );
         }
-        __set_errno_dos( ERROR_PATH_NOT_FOUND );
-        return( NULL );
+        dirname = pathname;
     }
     dirp = lib_malloc( sizeof( DIR_TYPE ) );
     if( dirp == NULL ) {

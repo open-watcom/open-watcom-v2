@@ -86,50 +86,34 @@ static DIR_TYPE *__opendir( const char *dirname, unsigned attr )
     DIR_TYPE    tmp;
     DIR_TYPE    *dirp;
     int         i;
-    char        pathname[_MAX_PATH+6];
-    char        *p;
-    char        pchar;
-    char        cchar;
+    char        pathname[_MAX_PATH + 6];
 
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     dirp = NULL;
     i = is_directory( dirname );
     if( i <= 0 ) {
+        /* it is file or may be file or no dirname */
         if( (dirp = ___opendir( dirname, attr, &tmp )) == NULL ) {
             return( NULL );
         }
     }
     if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+        char    last_ch;
+        size_t  len;
+
         /* directory, add wildcard */
-        dirp = NULL;
-        p = pathname;
-        pchar = NULLCHAR;
-        for( i = 0; i < _MAX_PATH; i++ ) {
-            cchar = dirname[i];
-            if( cchar == '\0' ) {
-                if( i != 0  &&  pchar != '\\' && pchar != '/' && pchar != ':' ){
-                    *p++ = '\\';
-                }
-                strcpy( p, "*.*" );
-                if( (dirp = ___opendir( pathname, attr, &tmp )) == NULL ) {
-                    return( NULL );
-                }
-                dirname = pathname;
-                break;
-            }
-            if( cchar == '*' )
-                break;
-            if( cchar == '?' ) {
-                break;
-            }
-            *p++ = cchar;
-            pchar = cchar;
+        strcpy( pathname, dirname );
+        len = strlen( pathname );
+        last_ch = pathname[len - 1];
+        if( last_ch != '\\' && last_ch != '/' && last_ch != ':' ) {
+            pathname[len++] = '\\';
         }
-    }
-    if( dirp == NULL ) {
-        __set_errno_dos( E_nopath );
-        return( NULL );
+        strcpy( &pathname[len], "*.*" );
+        if( (dirp = ___opendir( pathname, attr, &tmp )) == NULL ) {
+            return( NULL );
+        }
+        dirname = pathname;
     }
     dirp = lib_malloc( sizeof( DIR_TYPE ) );
     if( dirp == NULL ) {
