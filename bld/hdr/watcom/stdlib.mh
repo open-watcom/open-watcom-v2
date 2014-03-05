@@ -353,7 +353,7 @@ _WCRTLINK extern int      _wsystem( const wchar_t *__cmd );
 :endsegment
 
 _WCRTLINK extern int     setenv( const char *__name, const char *__newvalue, int __overwrite );
-_WCRTLINK extern void    unsetenv( const char *name );
+_WCRTLINK extern int     unsetenv( const char *name );
 
 _WCRTLINK extern int     putenv( const char *__string );
 _WCRTLINK extern int     _putenv( const char *__string );
