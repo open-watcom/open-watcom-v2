@@ -591,10 +591,9 @@ typedef struct fd_set {
 } fd_set;
 
 /* Time value */
-struct timeval {
-    long    tv_sec;
-    long    tv_usec;
-};
+:keep DOS
+:include timeval.sp
+:remove DOS
 
 /* Host entity */
 struct hostent {
@@ -1327,13 +1326,6 @@ WINSOCK_API_LINKAGE int WSAAPI      WSAPoll( LPWSAPOLLFD, ULONG, INT );
     }
 #define FD_ZERO( x )        (((fd_set *)(x))->fd_count = 0)
 #define FD_ISSET( p1, p2 )  __WSAFDIsSet( (SOCKET)(p1), (fd_set *)(p2) )
-
-/* Macros to manipulate time values */
-#define timerisset( x )         ((x)->tv_sec || (x)->tv_usec)
-#define timercmp( p1, p2, p3 ) \
-    ((p1)->tv_sec p3 (p2)->tv_sec || ((p1)->tv_sec == (p2)->tv_sec && \
-    (p1)->tv_usec p3 (p2)->tv_usec))
-#define timerclear( x )         ((x)->tv_sec = (x)->tv_usec = 0)
 
 /* Macros to manipulate the parameters to asynchronous completion messages */
 #define WSAMAKEASYNCREPLY( p1, p2 )     MAKELONG( p1, p2 )

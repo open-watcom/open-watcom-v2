@@ -35,4 +35,4 @@ ver.h        : ver.mh $(owhdr) $(cplus)
 win16.h      : win16.mh $(owhdr) $(cplus)
 win386.h     : win386.mh $(owhdr)
 windows.h    : windows.mh $(owhdr)
-winsock.h    : winsock.mh $(owhdr) $(cplus)
+winsock.h    : winsock.mh $(owhdr) $(cplus) $(hdr_dir)/timeval.sp

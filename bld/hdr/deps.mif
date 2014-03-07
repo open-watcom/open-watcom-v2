@@ -249,6 +249,7 @@ wdefwin.h       : wdefwin.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
 wsample.h       : wsample.mh ../crwat.sp ../readonly.sp $(cplus)
 
 sys/locking.h   : sys/locking.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
+sys/time.h      : sys/time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll) ../timeval.sp
 sys/timeb.h     : sys/timeb.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp $(packll)
 sys/types.h     : sys/types.mh ../crqnx.sp ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timet.sp ../sizet.sp ../ssizet.sp ../incdir.sp $(extension) ../exactint.sp
 sys/utime.h     : sys/utime.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../timet.sp ../wchar_t.sp ../utime.sp

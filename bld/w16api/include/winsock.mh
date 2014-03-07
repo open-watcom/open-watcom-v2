@@ -335,10 +335,9 @@ typedef struct fd_set {
 } fd_set;
 
 /* Time value */
-struct timeval {
-    long    tv_sec;
-    long    tv_usec;
-};
+:keep DOS
+:include timeval.sp
+:remove DOS
 
 /* Host entity */
 struct hostent {
@@ -543,13 +542,6 @@ SOCKET PASCAL FAR   socket( int, int, int );
     } while(0)
 #define FD_ZERO( set )      (((fd_set FAR *)(set))->fd_count = 0)
 #define FD_ISSET( fd, set ) __WSAFDIsSet( (SOCKET)(fd), (fd_set FAR *)(set) )
-
-/* Macros to manipulate time values */
-#define timerisset( tvp )   ((tvp)->tv_sec || (tvp)->tv_usec)
-#define timercmp( tvp, uvp, cmp ) \
-    ((tvp)->tv_sec cmp (uvp)->tv_sec || (tvp)->tv_sec == (uvp)->tv_sec && \
-    (tvp)->tv_usec cmp (uvp)->tv_usec)
-#define timerclear( tvp )   ((tvp)->tv_sec = (tvp)->tv_usec = 0)
 
 /* Macros to manipulate the parameters to asynchronous completion messages */
 #define WSAMAKEASYNCREPLY( buflen, error )  MAKELONG( buflen, error )

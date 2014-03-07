@@ -10,10 +10,10 @@
 
 :include owrtlink.sp
 
-#ifndef _TIME_H_INCLUDED
- #include <time.h>
-#endif
+:segment LINUX
+:include timet.sp
 
+:endsegment
 :include cpluspro.sp
 
 :segment LINUX
@@ -59,15 +59,12 @@ typedef struct {
  * Structure returned by gettimeofday() system call,
  * and used in other calls.
  */
-struct timeval {
-    long    tv_sec;         /* seconds */
-    long    tv_usec;        /* and microseconds */
-};
-
 struct timezone {
     int tz_minuteswest;     /* minutes west of Greenwich */
     int tz_dsttime;         /* type of dst correction */
 };
+
+:include timeval.sp
 
 #define DST_NONE        0       /* not on dst */
 #define DST_USA         1       /* USA style dst */
@@ -92,17 +89,6 @@ struct itimerval {
 #define ITIMER_REAL     0       /* Timers run in real time. */
 #define ITIMER_VIRTUAL  1       /* Timers run only when the process is executing. */
 #define ITIMER_PROF     2       /* Process or kernel on its behalf is executing. */
-
-/*
- * Operations on timevals.
- *
- * NB: timercmp does not work for >= or <=.
- */
-#define timerisset(tvp)         ((tvp)->tv_sec || (tvp)->tv_usec)
-#define timercmp(tvp, uvp, cmp) \
-        (((tvp)->tv_sec == (uvp)->tv_sec && (tvp)->tv_usec cmp (uvp)->tv_usec) \
-        || (tvp)->tv_sec cmp (uvp)->tv_sec)
-#define timerclear(tvp)         ((tvp)->tv_sec = (tvp)->tv_usec = 0)
 
 _WCRTLINK extern int gettimeofday( struct timeval *__tv, struct timezone *__tz );
 _WCRTLINK extern int settimeofday( const struct timeval *__tv, const struct timezone *__tz );
