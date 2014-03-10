@@ -38,6 +38,8 @@
 #include <dosfunc.h>
 #include "watcom.h"
 
+#define DOS_GET_DTA     0x2F
+
 #pragma pack( 1 )
 
 /*
@@ -466,6 +468,8 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 #define TinyGetTime             _TinyGetTime
 #define TinyGetCurrDrive        _TinyGetCurrDrive
 #define TinySetCurrDrive        _TinySetCurrDrive
+#define TinyFarGetDTA           _TinyGetDTA
+#define TinyFarChangeDTA        _TinyChangeDTA
 #define TinyFarSetDTA           _fTinySetDTA
 #define TinyFarFindFirst        _fTinyFindFirst
 #define TinyFindNext            _TinyFindNext
@@ -651,6 +655,8 @@ tiny_date_t tiny_call   _TinyGetDate( void );
 tiny_time_t tiny_call   _TinyGetTime( void );
 uint_8      tiny_call   _TinyGetCurrDrive( void );
 void        tiny_call   _TinySetCurrDrive( uint_8 );
+void          __far *   _TinyGetDTA( void );
+void          __far *   _TinyChangeDTA( void __far * );
 void                    _fTinySetDTA( void __far * );
 void        tiny_call   _nTinySetDTA( void __near * );
 tiny_ret_t              _fTinyFindFirst( const char __far *__pattern,
@@ -1614,10 +1620,43 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [dl] \
         modify          [eax];
 
+#pragma aux             _TinyGetDTA = \
+        "push es"       \
+        _MOV_AH DOS_GET_DTA \
+        _INT_21         \
+        "mov  ecx,es"   \
+        "pop  es"       \
+        value           [ecx ebx] \
+        modify          [ah];
+
+#pragma aux             _TinyChangeDTA = \
+        "push es"       \
+        _MOV_AH DOS_GET_DTA \
+        _INT_21         \
+        "push ds"       \
+        "mov  ds,ecx"   \
+        _MOV_AH DOS_SET_DTA \
+        _INT_21         \
+        "pop  ds"       \
+        "mov  ecx,es"   \
+        "pop  es"       \
+        parm caller     [ecx edx] \
+        value           [ecx ebx] \
+        modify          [ah];
+
 #pragma aux             _nTinySetDTA = \
         _MOV_AH DOS_SET_DTA \
         _INT_21         \
         parm caller     [edx];
+
+#pragma aux             _fTinySetDTA = \
+        "push ds"       \
+        "mov  ds,ecx"   \
+        _MOV_AH DOS_SET_DTA \
+        _INT_21         \
+        "pop  ds"       \
+        parm caller     [ecx edx] \
+        modify          [eax];
 
 #pragma aux             _nTinyFindFirst = \
         _MOV_AH DOS_FIND_FIRST \
@@ -2300,6 +2339,30 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         parm caller     [dx] [cl] \
         value           [dx ax] \
         modify exact    [ax cx dx];
+
+#pragma aux             _TinyGetDTA = \
+        "push es"       \
+        _MOV_AH DOS_GET_DTA \
+        _INT_21         \
+        "mov  cx,es"    \
+        "pop  es"       \
+        value           [cx bx] \
+        modify exact    [ah];
+
+#pragma aux             _TinyChangeDTA = \
+        "push es"       \
+        _MOV_AH DOS_GET_DTA \
+        _INT_21         \
+        "push ds"       \
+        "mov  ds,cx"    \
+        _MOV_AH DOS_SET_DTA \
+        _INT_21         \
+        "pop  ds"       \
+        "mov  cx,es"    \
+        "pop  es"       \
+        parm caller     [cx dx] \
+        value           [cx bx] \
+        modify          [ah];
 
 #pragma aux             _fTinySetDTA = \
         _SET_DS_SREG    \
