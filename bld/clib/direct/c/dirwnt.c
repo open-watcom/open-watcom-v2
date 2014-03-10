@@ -79,16 +79,21 @@ static int is_directory( const CHAR_TYPE *name )
         curr_ch = _mbsnextc( name );
 #endif
         if( curr_ch == NULLCHAR ) {
-            if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' || prev_ch == '.' ){
-                /* directory, need add wildcard */
+            if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
+                /* directory, need add "*.*" */
+                return( 2 );
+            }
+            if( prev_ch == '.' ){
+                /* directory, need add "\\*.*" */
                 return( 1 );
             }
-            /* without wildcard maybe file or directory, need next check */
+            /* without wildcards maybe file or directory, need next check */
+            /* need add "\\*.*" if directory */
             return( 0 );
         }
-        if( prev_ch == '*' )
+        if( curr_ch == '*' )
             break;
-        if( prev_ch == '?' )
+        if( curr_ch == '?' )
             break;
 #ifdef __WIDECHAR__
         ++name;
@@ -154,14 +159,12 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
         }
     }
     if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
-        UINT_WC_TYPE    last_ch;
         size_t          len;
 
         /* directory, add wildcard */
-        __F_NAME(strcpy,wcscpy)( pathname, dirname );
-        len = __F_NAME(strlen,wcslen)( pathname );
-        last_ch = pathname[len - 1];
-        if( last_ch != '\\' && last_ch != '/' && last_ch != ':' ) {
+        len = __F_NAME(strlen,wcslen)( dirname );
+        memcpy( pathname, dirname, len * sizeof( CHAR_TYPE ) );
+        if( i < 2 ) {
             pathname[len++] = '\\';
         }
         __F_NAME(strcpy,wcscpy)( &pathname[len], STRING( "*.*" ) );

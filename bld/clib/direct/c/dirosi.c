@@ -53,16 +53,21 @@ static  int     is_directory( const char *name )
         return( 0 );
     while( name[1] != '\0' ){
         if( name[0] == '*' || name[0] == '?' ) {
-            /* with wildcard must be file */
+            /* with wildcards must be file */
             return( -1 );
         }
         ++name;
     }
-    if( name[0] == '\\' || name[0] == '/' || name[0] == '.' || name[0] == ':' ){
-        /* directory, need add wildcard */
+    if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
+        /* directory, need add "*.*" */
+        return( 2 );
+    }
+    if( prev_ch == '.' ){
+        /* directory, need add "\\*.*" */
         return( 1 );
     }
-    /* without wildcard maybe file or directory, need next check */
+    /* without wildcards maybe file or directory, need next check */
+    /* need add "\\*.*" if directory */
     return( 0 );
 }
 
@@ -99,14 +104,12 @@ static DIR_TYPE *__opendir( const char *dirname, unsigned attr )
         }
     }
     if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
-        char    last_ch;
         size_t  len;
 
-        /* directory, add wildcard */
-        strcpy( pathname, dirname );
-        len = strlen( pathname );
-        last_ch = pathname[len - 1];
-        if( last_ch != '\\' && last_ch != '/' && last_ch != ':' ) {
+        /* directory, add wildcards */
+        len = strlen( dirname );
+        memcpy( pathname, dirname, len );
+        if( i < 2 ) {
             pathname[len++] = '\\';
         }
         strcpy( &pathname[len], "*.*" );
