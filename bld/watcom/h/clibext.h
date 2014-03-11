@@ -168,7 +168,7 @@ extern void     _dos_setdrive( unsigned drivenum, unsigned *drives );
 extern unsigned _dos_getfileattr( const char *path, unsigned *attribute );
 extern unsigned _dos_setfileattr( const char *path, unsigned attribute );
 extern int      setenv( const char *name, const char *newvalue, int overwrite );
-extern void     unsetenv( const char *name );
+extern int      unsetenv( const char *name );
 extern DIR      *opendir( const char *dirname );
 extern struct dirent *readdir( DIR *dirp );
 extern int      closedir( DIR *dirp );

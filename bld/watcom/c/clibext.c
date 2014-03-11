@@ -1835,8 +1835,8 @@ int setenv( const char *name, const char *newvalue, int overwrite )
     return( 0 );
 }
 
-void unsetenv( const char *name )
-/*******************************/
+int unsetenv( const char *name )
+/******************************/
 {
     char    *buff;
     size_t  len;
@@ -1846,6 +1846,7 @@ void unsetenv( const char *name )
     sprintf( buff, "%s=", name );
     putenv( buff );
     free( buff );
+    return( 0 );
 }
 
 void _dos_getdrive( unsigned *drive )
@@ -1872,13 +1873,13 @@ void _dos_setdrive( unsigned drivenum, unsigned *drives )
 unsigned _dos_getfileattr( const char *path, unsigned *attribute )
 {
     HANDLE              h;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
 
-    h = FindFirstFile( (LPTSTR)path, &ffb );
+    h = FindFirstFile( (LPTSTR)path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno( ENOENT ) );
     }
-    *attribute = ffb.dwFileAttributes;
+    *attribute = ffd.dwFileAttributes;
     FindClose( h );
     return( 0 );
 }
@@ -1894,17 +1895,22 @@ unsigned _dos_setfileattr( const char *path, unsigned attribute )
     return( 0 );
 }
 
-#define HANDLE_OF(dirp) (*(HANDLE *)((char *)(dirp)+0))
-#define BAD_HANDLE      INVALID_HANDLE_VALUE
-#define ATTR_OF(dirp)   (*(DWORD *)( &(((char *)(dirp))[sizeof( HANDLE )]) ))
+typedef struct __nt_dta {
+    HANDLE      hndl;
+    DWORD       attr;
+} __nt_dta;
+
+#define DIR_HANDLE_OF(__dirp)   (((__nt_dta *)(__dirp)->d_dta)->hndl)
+#define DIR_ATTR_OF(__dirp)     (((__nt_dta *)(__dirp)->d_dta)->attr)
+#define FIND_HANDLE_OF(__find)  (((__nt_dta *)(__find)->reserved)->hndl)
+#define FIND_ATTR_OF(__find)    (((__nt_dta *)(__find)->reserved)->attr)
 
 #define GET_CHAR(p)       _mbsnextc((const unsigned char *)p)
 #define NEXT_CHAR_PTR(p)  _mbsinc((const unsigned char *)p)
 
 #define _DIR_ISFIRST            0
 #define _DIR_NOTFIRST           1
-#define _DIR_INVALID            2
-#define _DIR_CLOSED             3
+#define _DIR_CLOSED             2
 
 #define OPENMODE_ACCESS_MASK    0x0007
 #define OPENMODE_SHARE_MASK     0x0070
@@ -2009,24 +2015,30 @@ static int is_directory( const char *name )
     unsigned    prev_ch;
 
     curr_ch = '\0';
-    for( ;; ) {
+    for(;;) {
         prev_ch = curr_ch;
         curr_ch = GET_CHAR( name );
-        if( curr_ch == '\0' )
-            break;
-        if( prev_ch == '*' )
-            break;
-        if( prev_ch == '?' ) {
-            break;
+        if( curr_ch == '\0' ) {
+            if( prev_ch == '\\' || prev_ch == '/' || prev_ch == ':' ){
+                /* directory, need add "*.*" */
+                return( 2 );
+            }
+            if( prev_ch == '.' ){
+                /* directory, need add "\\*.*" */
+                return( 1 );
+            }
+            /* without wildcards maybe file or directory, need next check */
+            /* need add "\\*.*" if directory */
+            return( 0 );
         }
+        if( curr_ch == '*' )
+            break;
+        if( curr_ch == '?' )
+            break;
         name = (const char *)NEXT_CHAR_PTR( name );
     }
-    if( curr_ch == '\0' ) {
-        if( prev_ch == '\\' || prev_ch == '/' || prev_ch == '.' ){
-            return( 1 );
-        }
-    }
-    return( 0 );
+    /* with wildcard must be file */
+    return( -1 );
 }
 
 static void get_nt_dir_info( DIR *dirp, LPWIN32_FIND_DATA ffd )
@@ -2039,28 +2051,22 @@ static void get_nt_dir_info( DIR *dirp, LPWIN32_FIND_DATA ffd )
     dirp->d_name[NAME_MAX] = 0;
 }
 
-static BOOL __find_close( DIR *dirp )
-/***********************************/
-{
-    if( HANDLE_OF( dirp ) )
-        return( FindClose( HANDLE_OF( dirp ) ) );
-    return( TRUE );
-}
-
-
 static DIR *__opendir( const char *dirname, DIR *dirp )
 /*****************************************************/
 {
     WIN32_FIND_DATA     ffd;
     HANDLE              h;
 
-    __find_close( dirp );
+    if( dirp->d_first != _DIR_CLOSED ) {
+        FindClose( DIR_HANDLE_OF( dirp ) );
+        dirp->d_first = _DIR_CLOSED;
+    }
     h = FindFirstFileA( dirname, &ffd );
-    if( h == (HANDLE)-1LL ) {
+    if( h == INVALID_HANDLE_VALUE ) {
         __set_errno( ENOENT );
         return( NULL );
     }
-    HANDLE_OF( dirp ) = h;
+    DIR_HANDLE_OF( dirp ) = h;
     get_nt_dir_info( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
@@ -2073,48 +2079,33 @@ DIR *opendir( const char *dirname )
     DIR         *dirp;
     int         i;
     char        pathname[MAX_PATH+6];
-    const char  *p;
-    unsigned    curr_ch;
-    unsigned    prev_ch;
 
-    HANDLE_OF( &tmp ) = 0;
     tmp.d_attr = _A_SUBDIR;               /* assume sub-directory */
-    if( !is_directory( dirname ) ) {
-        if( __opendir( dirname, &tmp ) == NULL ) {
+    tmp.d_first = _DIR_CLOSED;
+    i = is_directory( dirname );
+    if( i <= 0 ) {
+        if( __opendir( pathname, &tmp ) == NULL ) {
             return( NULL );
         }
     }
-    if( tmp.d_attr & _A_SUBDIR ) {
-        prev_ch = '\0';
-        p = dirname;
-        for( i = 0; i < MAX_PATH; i++ ) {
-            pathname[i] = *p;
-            curr_ch = GET_CHAR( p );
-            if( curr_ch == '\0' ) {
-                if( i != 0  &&  prev_ch != '\\' && prev_ch != '/' ){
-                    pathname[i++] = '\\';
-                }
-                strcpy( &pathname[i], "*.*" );
-                if( __opendir( pathname, &tmp ) == NULL ) {
-                    return( NULL );
-                }
-                break;
-            }
-            if( curr_ch == '*' )
-                break;
-            if( curr_ch == '?' )
-                break;
-            if( curr_ch > 255 ) {
-                ++i;
-                pathname[i] = *(p + 1);
-            }
-            prev_ch = curr_ch;
-            p = (const char *)NEXT_CHAR_PTR( p );
+    if( i >= 0 && (tmp.d_attr & _A_SUBDIR) ) {
+        size_t          len;
+
+        /* directory, add wildcard */
+        len = strlen( dirname );
+        memcpy( pathname, dirname, len );
+        if( i < 2 ) {
+            pathname[len++] = '\\';
         }
+        strcpy( &pathname[len], "*.*" );
+        if( __opendir( pathname, &tmp ) == NULL ) {
+            return( NULL );
+        }
+        dirname = pathname;
     }
     dirp = malloc( sizeof( DIR ) );
     if( dirp == NULL ) {
-        __find_close( &tmp );
+        FindClose( DIR_HANDLE_OF( &tmp ) );
         __set_errno( ENOMEM );
         return( NULL );
     }
@@ -2129,12 +2120,12 @@ struct dirent *readdir( DIR *dirp )
     WIN32_FIND_DATA     ffd;
     HANDLE              h;
 
-    if( dirp == NULL || dirp->d_first >= _DIR_INVALID )
+    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        h = HANDLE_OF( dirp );
+        h = DIR_HANDLE_OF( dirp );
         if( !FindNextFileA( h, &ffd ) ) {
             __set_errno( ENOENT );
             return( NULL );
@@ -2150,7 +2141,7 @@ int closedir( DIR *dirp )
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno( ERANGE ) );
     }
-    if( __find_close( dirp ) == FALSE ) {
+    if( !FindClose( DIR_HANDLE_OF( dirp ) ) ) {
         return( -1 );
     }
     dirp->d_first = _DIR_CLOSED;
@@ -2251,32 +2242,33 @@ unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *byt
     return( 0 );
 }
 
-static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
+static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffd )
 {
     for(;;) {
-        if( ffb->dwFileAttributes == 0 ) {
+        if( ffd->dwFileAttributes == 0 ) {
             // Win95 seems to return 0 for the attributes sometimes?
             // In that case, treat as a normal file
-            ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+            ffd->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        // JBS 07-jun-99
-        if( ((attr & _A_HIDDEN) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ) goto skip_file;
-        if( ((attr & _A_SYSTEM) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ) goto skip_file;
-        if( ((attr & _A_SUBDIR) == 0 ) && (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) goto skip_file;
-            return ( TRUE );
-skip_file:
-        if( !FindNextFileA( h, ffb ) ) {
+        if( (attr & _A_HIDDEN) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0 ) {
+            if( (attr & _A_SYSTEM) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 ) {
+                if( (attr & _A_SUBDIR) || (ffd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )  {
+                    return ( TRUE );
+                }
+            }
+        }
+        if( !FindNextFileA( h, ffd ) ) {
             return( FALSE );
         }
     }
 }
 
-static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffb )
+static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
 {
-    __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = (char)ffb->dwFileAttributes;
-    dirp->d_size = ffb->nFileSizeLow;
-    strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
+    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
+    dirp->d_attr = (char)ffd->dwFileAttributes;
+    dirp->d_size = ffd->nFileSizeLow;
+    strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
 }
 
@@ -2284,31 +2276,31 @@ unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
 {
     HANDLE              h;
     int                 error;
-    WIN32_FIND_DATA     ffb;
+    WIN32_FIND_DATA     ffd;
 
-    h = FindFirstFile( (LPTSTR)path, &ffb );
+    h = FindFirstFile( (LPTSTR)path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
-        HANDLE_OF( buf ) = BAD_HANDLE;
+        FIND_HANDLE_OF( buf ) = h;
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
-    if( !__NTFindNextFileWithAttr( h, attr, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( h, attr, &ffd ) ) {
         error = GetLastError();
-        HANDLE_OF( buf ) = BAD_HANDLE;
+        FIND_HANDLE_OF( buf ) = INVALID_HANDLE_VALUE;
         FindClose( h );
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
-    HANDLE_OF( buf ) = h;
-    ATTR_OF( buf ) = attr;
-    __GetNTDirInfo( (struct dirent *)buf, &ffb );
+    FIND_HANDLE_OF( buf ) = h;
+    FIND_ATTR_OF( buf ) = attr;
+    __GetNTDirInfo( (struct dirent *)buf, &ffd );
     return( 0 );
 }
 
 unsigned _dos_findclose( struct find_t *buf )
 {
-    if( HANDLE_OF( buf ) != BAD_HANDLE ) {
-        if( !FindClose( HANDLE_OF( buf ) ) ) {
+    if( FIND_HANDLE_OF( buf ) != INVALID_HANDLE_VALUE ) {
+        if( !FindClose( FIND_HANDLE_OF( buf ) ) ) {
             __set_errno( ENOENT );
             return( (unsigned)-1 );
         }
