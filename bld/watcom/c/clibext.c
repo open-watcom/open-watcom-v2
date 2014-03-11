@@ -2078,14 +2078,14 @@ DIR *opendir( const char *dirname )
     DIR         tmp;
     DIR         *dirp;
     int         i;
-    char        pathname[MAX_PATH+6];
+    char        pathname[MAX_PATH + 6];
 
     memset( &tmp, 0, sizeof( DIR ) );
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
     i = is_directory( dirname );
     if( i <= 0 ) {
-        if( __opendir( pathname, &tmp ) == NULL ) {
+        if( __opendir( dirname, &tmp ) == NULL ) {
             return( NULL );
         }
     }
@@ -2106,7 +2106,7 @@ DIR *opendir( const char *dirname )
     }
     dirp = malloc( sizeof( DIR ) );
     if( dirp == NULL ) {
-        FindClose( DIR_HANDLE_OF( (&tmp) ) );
+        FindClose( DIR_HANDLE_OF( &tmp ) );
         __set_errno( ENOMEM );
         return( NULL );
     }
