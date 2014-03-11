@@ -33,8 +33,7 @@
 
 #define _DIR_ISFIRST            0
 #define _DIR_NOTFIRST           1
-#define _DIR_INVALID            2
-#define _DIR_CLOSED             3
+#define _DIR_CLOSED             2
 
 #ifdef __WIDECHAR__
 typedef wchar_t     UINT_WC_TYPE;

@@ -62,11 +62,11 @@ void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA 
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
     dirp->d_size = ffb->nFileSizeLow;
-    #ifndef __WIDECHAR__
-        strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-    #else
-        wcsncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-    #endif
+#ifndef __WIDECHAR__
+    strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
+#else
+    wcsncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
+#endif
     dirp->d_name[NAME_MAX] = 0;
 }
 
@@ -79,19 +79,21 @@ BOOL __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)(
             // In that case, treat as a normal file
             ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
         }
-        // JBS 07-jun-99
-        if( ((attr & _A_HIDDEN) == 0 ) &&
-            (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ) goto skip_file;
-        if( ((attr & _A_SYSTEM) == 0 ) &&
-            (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ) goto skip_file;
-        if( ((attr & _A_SUBDIR) == 0 ) &&
-            (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) goto skip_file;
-            return ( TRUE );
-        skip_file:
-        #ifdef __WIDECHAR__
-            if( !__lib_FindNextFileW( h, ffb ) )  return( FALSE );
-        #else
-            if( !FindNextFileA( h, ffb ) )  return( FALSE );
-        #endif
+        if( (attr & _A_HIDDEN) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0 ) {
+            if( (attr & _A_SYSTEM) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 ) {
+                if( (attr & _A_SUBDIR) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )  {
+                    return ( TRUE );
+                }
+            }
+        }
+#ifdef __WIDECHAR__
+        if( !__lib_FindNextFileW( h, ffb ) ) {
+            return( FALSE );
+        }
+#else
+        if( !FindNextFileA( h, ffb ) ) {
+            return( FALSE );
+        }
+#endif
     }
 }

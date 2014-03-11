@@ -91,14 +91,16 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
             return( __set_errno_dos_reterr( rc ) );
         }
         FIND_HANDLE_OF( buf ) = handle;
-        copydir( buf, &dir_buff );      /* copy in other fields */
+        copydir( buf, &dir_buff );          /* copy in other fields */
 
 #if defined(__OS2_286__)
-    } else {                    /* real mode */
-        tiny_ret_t  rc;
+    } else {                                /* real mode */
+        tiny_ret_t      rc;
+        void __far *    old_dta;
 
-        TinySetDTA( buf );      /* set our DTA */
+        old_dta = TinyFarChangeDTA( buf );  /* set our DTA */
         rc = TinyFindFirst( path, attr );
+        TinyFarSetDTA( old_dta );           /* restore DTA */
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
         }
@@ -130,9 +132,11 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 #if defined(__OS2_286__)
     } else {            /* real mode */
         tiny_ret_t      rc;
+        void __far *    old_dta;
 
-        TinySetDTA( buf );
+        old_dta = TinyFarChangeDTA( buf );  /* set our DTA */
         rc = TinyFindNext();
+        TinyFarSetDTA( old_dta );           /* restore DTA */
         if( TINY_ERROR( rc ) ) {
             return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
         }

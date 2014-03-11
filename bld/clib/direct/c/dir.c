@@ -102,9 +102,8 @@ static void filenameToWide( DIR_TYPE *dir )
 }
 #endif
 
-static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
-                                            unsigned attr, DIR_TYPE *dirp )
-/**************************************************************************/
+static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
+/*******************************************************************************************/
 {
 #ifdef __WIDECHAR__
     char            mbcsName[MB_CUR_MAX * _MAX_PATH];
@@ -120,15 +119,15 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
         return( NULL );
     }
 #endif
-    if( _dos_findfirst( __F_NAME(dirname,mbcsName), attr, (struct _find_t *)dirp->d_dta ) ) {
+    if( _dos_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, (struct _find_t *)dirp->d_dta ) ) {
         return( NULL );
     }
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
 
-static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsigned attr )
-/****************************************************************************************/
+static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
+/*************************************************************************/
 {
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;
@@ -137,11 +136,10 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
 
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
-    dirp = NULL;
     i = is_directory( dirname );
     if( i <= 0 ) {
         /* it is file or may be file or no dirname */
-        if( (dirp = __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp )) == NULL ) {
+        if( __F_NAME(___opendir,___wopendir)( dirname, &tmp ) == NULL ) {
             return( NULL );
         }
     }
@@ -155,7 +153,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
             pathname[len++] = '\\';
         }
         __F_NAME(strcpy,wcscpy)( &pathname[len], STRING( "*.*" ) );
-        if( (dirp = __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp )) == NULL ) {
+        if( __F_NAME(___opendir,___wopendir)( pathname, &tmp ) == NULL ) {
             return( NULL );
         }
         dirname = pathname;
@@ -174,13 +172,13 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
 
 _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 {
-    return( __F_NAME(__opendir,__wopendir)( dirname, SEEK_ATTRIB ) );
+    return( __F_NAME(__opendir,__wopendir)( dirname ) );
 }
 
 
 _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 {
-    if( dirp == NULL || dirp->d_first == _DIR_INVALID || dirp->d_first == _DIR_CLOSED )
+    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
@@ -219,7 +217,5 @@ _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( __F_NAME(___opendir,___wopendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
-        dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
-    }
+    __F_NAME(___opendir,___wopendir)( dirp->d_openpath, dirp );
 }

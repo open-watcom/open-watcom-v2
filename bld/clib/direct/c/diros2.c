@@ -90,11 +90,15 @@ static APIRET __find_close( DIR_TYPE *dirp )
 /******************************************/
 {
 #ifdef _M_I86
-    if( _RWD_osmode == OS2_MODE && DIR_HANDLE_OF( dirp ) )
-#else
-    if( DIR_HANDLE_OF( dirp ) )
+    if( _RWD_osmode == OS2_MODE ) {
+        /* protected mode */
 #endif
-        return( DosFindClose( DIR_HANDLE_OF( dirp ) ) );
+        if( DIR_HANDLE_OF( dirp ) ) {
+            return( DosFindClose( DIR_HANDLE_OF( dirp ) ) );
+        }
+#ifdef _M_I86
+    }
+#endif
     return( 0 );
 }
 
@@ -140,9 +144,8 @@ static int is_directory( const CHAR_TYPE *name )
 }
 
 
-static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
-                                               unsigned attr, DIR_TYPE *dirp )
-/****************************************************************************/
+static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
+/*******************************************************************************************/
 {
 
     /*** Convert a wide char string to a multibyte string ***/
@@ -169,7 +172,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
             __find_close( dirp );
             dirp->d_first = _DIR_CLOSED;
         }
-        rc = DosFindFirst( (PSZ)__F_NAME(dirname,mbcsName), &handle, attr, (PVOID)&dir_buff,
+        rc = DosFindFirst( (PSZ)__F_NAME(dirname,mbcsName), &handle, SEEK_ATTRIB, (PVOID)&dir_buff,
                     sizeof( dir_buff ), &searchcount, FF_LEVEL );
         if( rc != 0 ) {
             __set_errno_dos( rc );
@@ -180,14 +183,17 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
             __set_errno_dos( ERROR_NO_MORE_FILES );
             return( NULL );
         }
-        DIR_HANDLE_OF( dirp ) = handle;     /* store our handle     */
+        DIR_HANDLE_OF( dirp ) = handle; /* store our handle     */
         copydir( dirp, &dir_buff );     /* copy in other fields */
 #ifdef _M_I86
     } else {                            /* real mode */
         tiny_ret_t      rc;
+        void            __far *old_dta;
 
-        TinySetDTA( dirp->d_dta );        /* set our DTA */
-        rc = TinyFindFirst( __F_NAME(dirname,mbcsName), attr );
+        dirp->d_first = _DIR_CLOSED;
+        old_dta = TinyFarChangeDTA( dirp->d_dta );  /* set our DTA */
+        rc = TinyFindFirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB );
+        TinyFarSetDTA( old_dta );                   /* restore DTA */
         if( TINY_ERROR( rc ) ) {
             __set_errno_dos( TINY_INFO( rc ) );
             return( NULL );
@@ -199,22 +205,20 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname,
 }
 
 
-static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsigned attr )
-/****************************************************************************************/
+static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
+/*************************************************************************/
 {
     DIR_TYPE        tmp;
     DIR_TYPE        *dirp;
     int             i;
     auto CHAR_TYPE  pathname[_MAX_PATH + 6];
 
-    DIR_HANDLE_OF( &tmp ) = 0;                  /* initialize handle    */
     tmp.d_attr = _A_SUBDIR;
     tmp.d_first = _DIR_CLOSED;
-    dirp = NULL;
     i = is_directory( dirname );
     if( i <= 0 ) {
         /* it is file or may be file or no dirname */
-        if( (dirp = __F_NAME(___opendir,___wopendir)( dirname, attr, &tmp )) == NULL ) {
+        if( __F_NAME(___opendir,___wopendir)( dirname, &tmp ) == NULL ) {
             return( NULL );
         }
     }
@@ -228,7 +232,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
             pathname[len++] = '\\';
         }
         __F_NAME(strcpy,wcscpy)( &pathname[len], STRING( "*.*" ) );
-        if( (dirp = __F_NAME(___opendir,___wopendir)( pathname, attr, &tmp )) == NULL ) {
+        if( __F_NAME(___opendir,___wopendir)( pathname, &tmp ) == NULL ) {
             return( NULL );
         }
         dirname = pathname;
@@ -248,14 +252,14 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname, unsig
 _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 /*************************************************************************/
 {
-    return( __F_NAME(__opendir,__wopendir)( dirname, SEEK_ATTRIB ) );
+    return( __F_NAME(__opendir,__wopendir)( dirname ) );
 }
 
 
 _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 /***************************************************************/
 {
-    if( dirp == NULL || dirp->d_first == _DIR_INVALID || dirp->d_first == _DIR_CLOSED )
+    if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {       /* if we already have one */
         dirp->d_first = _DIR_NOTFIRST;
@@ -284,9 +288,11 @@ _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 #ifdef _M_I86
         } else {                                /* real mode */
             tiny_ret_t      rc;
+            void            __far *old_dta;
 
-            TinySetDTA( dirp->d_dta );
+            old_dta = TinyFarChangeDTA( dirp->d_dta );  /* set our DTA */
             rc = TinyFindNext();
+            TinyFarSetDTA( old_dta );                   /* restore DTA */
             if( TINY_ERROR( rc ) ) {
                 if( TINY_INFO( rc ) != E_nomore ) {
                     __set_errno_dos( TINY_INFO( rc ) );
@@ -324,8 +330,6 @@ _WCRTLINK void __F_NAME(rewinddir,_wrewinddir)( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_openpath == NULL )
         return;
-    if( __F_NAME(___opendir,___wopendir)( dirp->d_openpath, SEEK_ATTRIB, dirp ) == NULL ) {
-        dirp->d_first = _DIR_INVALID;    /* so reads won't work any more */
-    }
+    __F_NAME(___opendir,___wopendir)( dirp->d_openpath, dirp );
 }
 
