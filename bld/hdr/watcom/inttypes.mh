@@ -298,21 +298,20 @@ using std::wcstoumax;
 #endif  /* __STDC_FORMAT_MACROS */
 
 :endsegment
-:include pshpackl.sp
-
 :segment CNAME
 :: Only need extern "C" in cinttype
 :include cpluspro.sp
 
-:elsesegment
-:include wchar_t.sp
-
 :endsegment
+:include pshpackl.sp
+
 :: In cname version place all these typedefs in std namespace
 :segment CNAME
 namespace std {
-
+:elsesegment
+:include wchar_t.sp
 :endsegment
+
 typedef struct {
     intmax_t    quot;
     intmax_t    rem;
@@ -328,11 +327,13 @@ _WCRTLINK extern uintmax_t  wcstoumax( const wchar_t *__nptr, wchar_t **__endptr
 :segment CNAME
 } // namespace std
 
+:endsegment
+:include poppack.sp
+
+:segment CNAME
 :include cplusepi.sp
 
 :elsesegment
-:include poppack.sp
-
 #endif /* __cplusplus not defined */
 
 :endsegment
