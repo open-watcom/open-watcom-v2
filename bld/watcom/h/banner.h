@@ -108,8 +108,10 @@
     #define BAN_VER_STR "1.8" _BETA_
 #elif _BANVER == 1290
     #define BAN_VER_STR "1.9" _BETA_
-#elif _BANVER == 2000
+#elif _BANVER == 1300
     #define BAN_VER_STR "2.0" _BETA_
+#elif _BANVER == 1310
+    #define BAN_VER_STR "2.1" _BETA_
 #else
     #error **** Specified Banner version not supported ****
     #define BAN_VER_STR "12.0" _BETA_

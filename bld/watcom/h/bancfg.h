@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#define _BANVER     2000
+#define _BANVER     1300
 #define _BETAVER    1
 #define _BANEXTRA   __DATE__ " " __TIME__ STR_BITNESS
 #define _BANEXSHORT __DATE__
