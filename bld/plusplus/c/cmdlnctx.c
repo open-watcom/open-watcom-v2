@@ -154,7 +154,7 @@ void CmdLnCtxPop(               // POP A CONTEXT
     }
     if( CTX_CLTYPE_PGM != entry->base.ctx_type ) {
         CmdScanInit( entry->base.cmd_line );
-        CtxSwitchAddr( entry->base.cmd_scan );
+        CtxSetSwitchAddr( entry->base.cmd_scan );
     }
 }
 

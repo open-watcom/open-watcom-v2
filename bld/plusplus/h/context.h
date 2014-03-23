@@ -55,8 +55,8 @@ struct nested_context {
 
 bool CtxCurrent(                // GET CURRENT CONTEXT
     CTX *a_context,             // - addr[ current context ]
-    void **a_data,              // - addr[ ptr to data for context ]
-    char **a_prefix )           // - addr[ prefix for header line in error ]
+    void const **a_data,        // - addr[ ptr to data for context ]
+    char const **a_prefix )     // - addr[ prefix for header line in error ]
 ;
 void CtxFunction(               // SET FUNCTION BEING PROCESSED
     SYMBOL curr )               // - current function SYMBOL
@@ -67,8 +67,12 @@ char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
 void CtxSetContext(             // SET THE CURRENT CONTEXT
     CTX curr )                  // - new context
 ;
-void CtxSwitchAddr(             // SET ADDRESS OF CURRENT SWITCH
+void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
     char const *sw_addr )       // - address of switch
+;
+
+char const *CtxGetSwitchAddr(   // GET ADDRESS OF CURRENT SWITCH
+    void )
 ;
 
 // PROTOTYPES : debugging only (stubbed otherwise)

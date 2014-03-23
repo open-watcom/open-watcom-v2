@@ -48,7 +48,7 @@ static char *ctx_names[] = {
 
 static CTX context;             // current context
 static CTX last_context;        // last context returned
-static void *last_data;         // last data returned
+static void const *last_data;   // last data returned
 
 
                                 // - CMDLN_ENV, CMDLN_PGM
@@ -87,7 +87,7 @@ void CtxSetContext(             // SET THE CURRENT CONTEXT
     CTX curr )                  // - new context
 {
     context = curr;
-    switch_addr = NULL;
+    CtxSetSwitchAddr( NULL );
     func = NULL;
 #ifndef NDEBUG
     line = 0;
@@ -96,7 +96,7 @@ void CtxSetContext(             // SET THE CURRENT CONTEXT
 }
 
 
-void CtxSwitchAddr(             // SET ADDRESS OF CURRENT SWITCH
+void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
     char const *sw_addr )       // - address of switch
 {
     switch_addr = sw_addr;
@@ -148,11 +148,11 @@ void CtxScanToken(              // SET TOKEN LOCATION FOR SCANNED TOKEN
 
 bool CtxCurrent(                // GET CURRENT CONTEXT
     CTX *a_context,             // - addr[ current context ]
-    void **a_data,              // - addr[ ptr to data for context ]
-    char **a_prefix )           // - addr[ prefix for header line in error ]
+    void const **a_data,              // - addr[ ptr to data for context ]
+    char const **a_prefix )     // - addr[ prefix for header line in error ]
 {
     bool retn;                  // - TRUE ==> context changed from last time
-    void *data;                 // - current data
+    void const *data;           // - current data
 
     *a_context = context;
     *a_prefix = ctx_names[ context ];
@@ -168,7 +168,7 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
         break;
       case CTX_CMDLN_ENV :
       case CTX_CMDLN_PGM :
-        data = (void*)switch_addr;
+        data = CtxGetSwitchAddr();
         break;
       case CTX_CG_FUNC :
       case CTX_FUNC_GEN :
@@ -196,7 +196,7 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
       case CTX_CMDLN_ENV :
       case CTX_CMDLN_PGM :
         buf = stpcpy( buf, ": " );
-        buf = stpcpy( buf, switch_addr );
+        buf = stpcpy( buf, CtxGetSwitchAddr() );
         break;
       case CTX_FORCED_INCS :
       case CTX_SOURCE :

@@ -133,7 +133,7 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
 }
 
 static void fmt_inf_hdr         // FORMAT THE INFORMATION HDR
-    ( char *hdr_str )
+    ( char const *hdr_str )
 {
     CompFlags.log_note_msgs = TRUE;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
@@ -144,8 +144,8 @@ static void fmt_inf_hdr         // FORMAT THE INFORMATION HDR
 
 
 static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
-    ( char *hdr_str             // - header name
-    , char *sw_val )            // - switch
+    ( char const *hdr_str             // - header name
+    , char const *sw_val )            // - switch
 {
     CompFlags.log_note_msgs = TRUE;
     MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
@@ -156,7 +156,7 @@ static void fmt_inf_hdr_switch  // FORMAT THE INFORMATION HDR FOR SWITCH
 }
 
 static void fmt_inf_hdr_sym     // FORMAT THE INFORMATION HDR, WITH SYMBOL
-    ( char *hdr_str             // - header name
+    ( char const *hdr_str             // - header name
     , SYMBOL sym )              // - symbol in question
 {
     CompFlags.log_note_msgs = TRUE;
@@ -330,8 +330,8 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     TOKEN_LOCN prt_locn;        // - print location
     TOKEN_LOCN *msg_locn;       // - message location
     CTX context;                // - current context
-    void *inf;                  // - information about context
-    char *inf_prefix;           // - prefix for information
+    void const *inf;            // - information about context
+    char const *inf_prefix;     // - prefix for information
     bool context_changed;       // - TRUE ==> new context from last time
 
     context_changed = CtxCurrent( &context, &inf, &inf_prefix );
@@ -363,7 +363,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
               case CTX_CG_FUNC :
               case CTX_FUNC_GEN :
                 if( context_changed ) {
-                    fmt_inf_hdr_sym( inf_prefix, inf );
+                    fmt_inf_hdr_sym( inf_prefix, (SYMBOL)inf );
                 }
                 break;
               case CTX_FORCED_INCS :

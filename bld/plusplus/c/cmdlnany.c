@@ -733,8 +733,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     if( indirectionLevel >= MAX_INDIRECTION ) {
         BadCmdLine( ERR_MAX_CMD_INDIRECTION );
     } else if( str != NULL ) {
-        ++ indirectionLevel;
-        CtxSwitchAddr( str );
+        ++indirectionLevel;
+        CtxSetSwitchAddr( str );
         CmdScanInit( str );
         for(;;) {
             c = CmdScanWhiteSpace();
@@ -770,7 +770,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
                 scanInputFile();
             }
         }
-        -- indirectionLevel;
+        --indirectionLevel;
     }
 }
 
