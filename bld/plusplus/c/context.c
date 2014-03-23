@@ -83,7 +83,7 @@ void CtxPostContext             // PERFORM ANY POST-CONTEXT MESSAGING
     } RingIterEnd( ctx )
 }
 
-void CtxSetContext(             // SET THE CURRENT CONTEXT
+void CtxSetCurrContext(         // SET THE CURRENT CONTEXT
     CTX curr )                  // - new context
 {
     context = curr;

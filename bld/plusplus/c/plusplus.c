@@ -227,7 +227,7 @@ static int makeExitStatus( int exit_status )
 
 static void openForceIncludeFile( void )
 {
-    CtxSetContext( CTX_FORCED_INCS );
+    CtxSetCurrContext( CTX_FORCED_INCS );
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
@@ -260,7 +260,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     if( setjmp( env ) ) {   /* if fatal error has occurred */
         exit_status |= WPP_FATAL;
         IAliasFini();
-        CtxSetContext( CTX_FINI );
+        CtxSetCurrContext( CTX_FINI );
     } else {
         ScanInit();
         setForceIncludeFromEnv();
@@ -301,7 +301,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 BrinfInit( TRUE );  /* must be before OpenPgmFile() */
             }
             if( CompFlags.cpp_output ) {
-                CtxSetContext( CTX_SOURCE );
+                CtxSetCurrContext( CTX_SOURCE );
                 ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_preproc_only );
                 CompFlags.ignore_fnf = TRUE;
@@ -323,7 +323,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 PpParse();
             } else {
                 OpenPgmFile();
-                CtxSetContext( CTX_SOURCE );
+                CtxSetCurrContext( CTX_SOURCE );
                 CompFlags.srcfile_compiled = TRUE;
                 ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_object );
@@ -350,7 +350,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CompFlags.watch_for_pcheader = FALSE;
                 CompFlags.external_defn_found = 0;
                 ParseDecls();
-                CtxSetContext( CTX_ENDFILE );
+                CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
                 #ifndef NDEBUG
@@ -384,7 +384,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 else
                     AdClose( TRUE );
-                CtxSetContext( CTX_FINI );
+                CtxSetCurrContext( CTX_FINI );
                 ExitPointRelease( cpp_object );
             }
         }
@@ -444,7 +444,7 @@ static int front_end(           // FRONT-END PROCESSING
         _real87 = 0;
         _8087 = 0;
         CompInfo.exit_jmpbuf = exit_jmpbuf;
-        CtxSetContext( CTX_INIT );
+        CtxSetCurrContext( CTX_INIT );
 //printf( "ErrLimit = %d\n", ErrLimit );
         ExitPointAcquire( cpp );
         if( CompFlags.ide_console_output ) {
@@ -462,7 +462,7 @@ static int front_end(           // FRONT-END PROCESSING
         PpInit();
         IAliasInit();
         exit_status = doCCompile( argv );
-        CtxSetContext( CTX_FINI );
+        CtxSetCurrContext( CTX_FINI );
         ExitPointRelease( cpp );
         CppExitFini();
     } else {

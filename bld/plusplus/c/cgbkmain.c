@@ -3327,7 +3327,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
         GenSwitches |= ECHO_API_CALLS;
     }
 #endif
-    CtxSetContext( CTX_CG_FUNC );
+    CtxSetCurrContext( CTX_CG_FUNC );
     if( BELoad( NULL ) ) {
         cg_info = BEInitCg( GenSwitches, TargetSwitches, OptSize, CpuSwitches );
         if( ! cg_info.success ) {
@@ -3379,7 +3379,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
             }else{
                 SymbolicDebugFini();
             }
-            CtxSetContext( CTX_CG_OPT );
+            CtxSetCurrContext( CTX_CG_OPT );
             if( ErrCount != 0 ) {
                 BEAbort();
             }

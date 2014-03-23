@@ -122,7 +122,7 @@ void RtnGenerate( void )
     while( keep_going ) {
         keep_going = FALSE;
 
-        CtxSetContext( CTX_FUNC_GEN );
+        CtxSetCurrContext( CTX_FUNC_GEN );
         keep_going = ClassDefineRefdDefaults();
 
         ScopeEmitIndexMappings();
@@ -141,7 +141,7 @@ void RtnGenerate( void )
             (*execTYPE[ c->index ])( c->parm );
             CarveFree( carveRTN_GEN, c );
         }
-        CtxSetContext( CTX_SOURCE );
+        CtxSetCurrContext( CTX_SOURCE );
 
         keep_going = TemplateProcessInstantiations() || keep_going;
         SetCurrScope( GetFileScope() );

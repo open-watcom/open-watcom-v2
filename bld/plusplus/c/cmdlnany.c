@@ -1407,13 +1407,13 @@ void GenCOptions(               // PROCESS ALL OPTIONS
     CmdSysInit();
     OPT_INIT( &data );
     if( ! CompFlags.ignore_environment ) {
-        CtxSetContext( CTX_CMDLN_ENV );
+        CtxSetCurrContext( CTX_CMDLN_ENV );
         env_var = CmdSysEnvVar();
         CmdLnCtxPushEnv( env_var );
         procOptions( &data, CppGetEnv( env_var ) );
         CmdLnCtxPop();
     }
-    CtxSetContext( CTX_CMDLN_PGM );
+    CtxSetCurrContext( CTX_CMDLN_PGM );
     CmdLnCtxPush( CTX_CLTYPE_PGM );
     while( *argv != NULL ) {
         procOptions( &data, *argv );
@@ -1421,7 +1421,7 @@ void GenCOptions(               // PROCESS ALL OPTIONS
     }
     CmdLnCtxPop();
     CmdLnCtxFini();
-    CtxSetContext( CTX_CMDLN_VALID );
+    CtxSetCurrContext( CTX_CMDLN_VALID );
     analyseAnyTargetOptions( &data );
     CmdSysAnalyse( &data );
     postOptions();

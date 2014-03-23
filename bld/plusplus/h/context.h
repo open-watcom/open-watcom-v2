@@ -64,7 +64,7 @@ void CtxFunction(               // SET FUNCTION BEING PROCESSED
 char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
     void )
 ;
-void CtxSetContext(             // SET THE CURRENT CONTEXT
+void CtxSetCurrContext(         // SET THE CURRENT CONTEXT
     CTX curr )                  // - new context
 ;
 void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
