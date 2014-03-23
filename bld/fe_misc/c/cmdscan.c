@@ -39,34 +39,41 @@
 #   define FALSE 0
 #endif
 
-static char const *cmd_scanner; // current scan position
-static char const *cmd_switch;  // start of current switch
+typedef struct cmd_scan_ctl {
+    char const  *curr_ptr;      // current scan position
+    char const  *switch_ptr;    // start of current switch
+    int         unix_mode;      // scan mode
+} cmd_scan_ctl;
+
+static cmd_scan_ctl cmd;
 
 void CmdScanInit(               // INITIALIZE FOR COMMAND SCANNING
     char const *cmd_line )      // - command line
 {
-    cmd_scanner = cmd_line;
+    cmd.curr_ptr = cmd_line;
+    cmd.switch_ptr = NULL;
+    cmd.unix_mode = FALSE;
 }
 
 
 char const *CmdScanAddr(        // RETURN COMMAND-LINE SCAN ADDRESS
     void )
 {
-    return( cmd_scanner );
+    return( cmd.curr_ptr );
 }
 
 
 int CmdScanChar(                // SCAN THE NEXT CHARACTER
     void )
 {
-    return( *cmd_scanner++ );
+    return( *cmd.curr_ptr++ );
 }
 
 
 int CmdScanBufferEnd(           // TEST IF END OF BUFFER
     void )
 {
-    return( *cmd_scanner == '\0' );
+    return( *cmd.curr_ptr == '\0' );
 }
 
 
@@ -75,7 +82,7 @@ int CmdScanSwEnd(               // TEST IF END OF SWITCH
 {
     int ch;                     // - current character
 
-    ch = *cmd_scanner;
+    ch = *cmd.curr_ptr;
     if( ch == '\0' ) {
         return( TRUE );
     }
@@ -92,7 +99,7 @@ int CmdScanSwEnd(               // TEST IF END OF SWITCH
 static int cmdFileChar(         // TEST IF A FILENAME CHARACTER
     void )
 {
-    char c = *cmd_scanner;
+    char c = *cmd.curr_ptr;
 
     if( c == _SWITCH_CHAR1 || c == _SWITCH_CHAR2 ) {
         return( TRUE );
@@ -110,7 +117,7 @@ int CmdDelimitChar(             // TEST IF SWITCH-DELIMITING CHARACTER
     if( ! cmdFileChar() ) {
         retn = TRUE;
     } else {
-        ch = *cmd_scanner;
+        ch = *cmd.curr_ptr;
         if( ch == _SWITCH_CHAR1 || ch == _SWITCH_CHAR2 ) {
             retn = TRUE;
         } else {
@@ -205,7 +212,7 @@ int CmdPathDelim(             // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
 void CmdScanSwitchBegin(        // REMEMBER START OF SWITCH
     void )
 {
-    cmd_switch = cmd_scanner - 1;
+    cmd.switch_ptr = cmd.curr_ptr - 1;
 }
 
 
@@ -213,7 +220,7 @@ void CmdScanSwitchBegin(        // REMEMBER START OF SWITCH
 void CmdScanSwitchBackup(       // BACK UP SCANNER TO START OF SWITCH
     void )
 {
-    cmd_scanner = cmd_switch;
+    cmd.curr_ptr = cmd.switch_ptr;
 }
 #endif
 
@@ -223,7 +230,7 @@ size_t CmdScanOption(           // SCAN AN OPTION
 {
     char const *str;            // - scan position
 
-    str = cmd_scanner;
+    str = cmd.curr_ptr;
     *option = str;
     for( ; ; ++str ) {
         int ch;
@@ -233,14 +240,14 @@ size_t CmdScanOption(           // SCAN AN OPTION
         if( ch == _SWITCH_CHAR2 ) break;
         if( isspace( ch ) ) break;
     }
-    return( str - cmd_scanner );
+    return( str - cmd.curr_ptr );
 }
 
 
 char const *CmdScanUngetChar(   // UNGET THE LAST CMD SCAN CHARACTER
     void )
 {
-    return( --cmd_scanner );
+    return( --cmd.curr_ptr );
 }
 
 
@@ -257,7 +264,7 @@ size_t CmdScanNumber(           // SCAN A NUMBER
         value *= 10;
         value += *p - '0';
     }
-    cmd_scanner = p;
+    cmd.curr_ptr = p;
     *pvalue = value;
     return( p - str_beg );
 }
@@ -275,7 +282,7 @@ size_t CmdScanId(               // SCAN AN IDENTIFIER
     while( isalnum( *p ) || *p == '_' ) {
         ++p;
     }
-    cmd_scanner = p;
+    cmd.curr_ptr = p;
     return( p - str_beg );
 }
 
@@ -287,10 +294,14 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
     char const *p;              // - pointer into string
     size_t len;                 // - length to return
 
-    str_beg = cmd_scanner;
+    str_beg = cmd.curr_ptr;
     *option = str_beg;
-    if( *cmd_scanner == '"' ) {
-        for( p = cmd_scanner + 1; *p; ++p ) {
+    if( cmd.unix_mode ) {
+        while( *cmd.curr_ptr == '\0' ) {
+            cmd.curr_ptr++;
+        }
+    } else if( *cmd.curr_ptr == '"' ) {
+        for( p = cmd.curr_ptr + 1; *p; ++p ) {
             if( *p == '"' ) {
                 ++p;
                 break;
@@ -302,11 +313,11 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
                 ++p;
             }
         }
-        cmd_scanner = p;
+        cmd.curr_ptr = p;
     } else {
-        for( ; cmdFileChar(); ++ cmd_scanner );
+        for( ; cmdFileChar(); ++ cmd.curr_ptr );
     }
-    len = cmd_scanner - str_beg;
+    len = cmd.curr_ptr - str_beg;
     return( len );
 }
 
