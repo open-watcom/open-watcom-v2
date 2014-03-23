@@ -139,7 +139,7 @@ void CmdLnCtxSwitch(            // RECORD SWITCH POSITION
     CTX_CL* entry;              // - new entry
 
     entry = VstkTop( &cmdLnContexts );
-    entry->base.sw_ptr = (char *)sw_ptr;
+    entry->base.sw_ptr = sw_ptr;
 }
 
 

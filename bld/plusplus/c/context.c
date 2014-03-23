@@ -33,13 +33,18 @@
 #include "plusplus.h"
 #include "preproc.h"
 #include "ring.h"
-#include "context.h"            // generate prototypes
-#include "context.h"            // generate names
+#include "context.h"
 #include "initdefs.h"
 
 #ifndef NDEBUG
 #include "dbg.h"
 #endif
+
+static char *ctx_names[] = {
+    #define CT( code, text ) text
+    #include "_context.h"
+    #undef CT
+};
 
 static CTX context;             // current context
 static CTX last_context;        // last context returned

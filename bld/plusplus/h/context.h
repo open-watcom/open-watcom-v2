@@ -39,45 +39,17 @@
 
 #include "srcfile.h"
 
-#ifndef __CONTEXT_H_DEFNS
-#define __CONTEXT_H_DEFNS
+typedef enum {
+    #define CT( code, text ) code
+    #include "_context.h"
+    #undef CT
+} CTX;
+
 typedef struct nested_context NESTED_POST_CONTEXT;
 struct nested_context {
     NESTED_POST_CONTEXT *next;
     void                (*call_back)( NESTED_POST_CONTEXT * );
 };
-#endif
-
-#ifdef __CONTEXT_H__
-    #define CT( code, text ) text
-    static char *ctx_names[] =
-#else
-    #define CT( code, text ) code
-    typedef enum
-#endif
-
-
-{   CT( CTX_INIT        , "Compiler Initialization"         )
-,   CT( CTX_FINI        , "Compiler Completion"             )
-,   CT( CTX_CMDLN_ENV   , "Environment command line switch" )
-,   CT( CTX_CMDLN_PGM   , "Program command line switch"     )
-,   CT( CTX_CMDLN_VALID , "Command line validation"         )
-,   CT( CTX_FORCED_INCS , "Compiling forced includes"       )
-,   CT( CTX_SOURCE      , "Compiling source"                )
-,   CT( CTX_FUNC_GEN    , "Compiling generated function"    )
-,   CT( CTX_CG_FUNC     , "Code generation for"             )
-,   CT( CTX_CG_OPT      , "Code optimization"               )
-,   CT( CTX_ENDFILE     , "End of file"                     )
-,   CT( CTX_START       , "Start-up"                        )
-}
-
-#undef CT
-
-#ifdef __CONTEXT_H__
-    ;
-#else
-    CTX;
-    #define __CONTEXT_H__
 
 // PROTOTYPES : always called
 
@@ -127,5 +99,3 @@ void CtxRegisterPostContext(    // REGISTER A Note! MONITOR
 void CtxPostContext(            // PERFORM ANY POST-CONTEXT MESSAGING
     void )
 ;
-
-#endif
