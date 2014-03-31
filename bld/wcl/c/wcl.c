@@ -978,7 +978,9 @@ static  int  CompLink( void )
             strcat( Word, file );
             if( !FileExtension( Word, OBJ_EXT ) &&  /* if not .obj or .o, compile */
                 !FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
-                rc = tool_exec( utl, Word, CC_Opts );
+                char fname[_MAX_PATH];
+
+                rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
@@ -1011,7 +1013,9 @@ static  int  CompLink( void )
         if(( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
             rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
             if( rc == 0 && Flags.do_cvpack ) {
-                rc = tool_exec( TYPE_PACK, Exe_Name, NULL );
+                char fname[_MAX_PATH];
+
+                rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name ), NULL );
             }
             if( rc != 0 ) {
                 rc = 2;     /* return 2 to show Temp_File already closed */
