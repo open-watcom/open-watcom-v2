@@ -194,8 +194,8 @@ void  MemFini( void )
 #endif
 }
 
-void  *MemAlloc( unsigned size )
-/******************************/
+void  *MemAlloc( size_t size )
+/****************************/
 {
     void        *ptr;
 
@@ -228,8 +228,8 @@ char *MemStrDup( const char *str )
     return( ptr );
 }
 
-void  *MemReAlloc( void *p, int size )
-/************************************/
+void  *MemReAlloc( void *p, size_t size )
+/***************************************/
 {
     void        *ptr;
 
@@ -346,7 +346,7 @@ char  *MakePath( char *path )
 /***************************/
 {
     char        *p;
-    int         len;
+    size_t      len;
 
     p = strrchr( path, SYS_DIR_SEP_CHAR );
 #ifndef __UNIX__
