@@ -1206,7 +1206,9 @@ static  int  CompLink( void )
             strcat( Word, file );
             if( !FileExtension( Word, OBJ_EXT ) &&  // if not .obj or .o, compile
                 !FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
-                rc = tool_exec( utl, Word, CC_Opts );
+                char fname[_MAX_PATH];
+
+                rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
                 if( rc != 0 ) {
                     errors_found = 1;
                 }
@@ -1218,34 +1220,32 @@ static  int  CompLink( void )
             }
             AddName( Word, Fp );
             if( Obj_List != NULL && Flags.do_disas ) {
-                char    *sfile;
-                char    *ofile;
+                char    sfname[_MAX_PATH + 3];
+                char    ofname[_MAX_PATH];
 
-                ofile = MemAlloc( strlen( file ) + 6 );
-                strcpy( ofile, file );
+                sfname[0] = '-';
+                sfname[1] = 'l';
+                sfname[2] = '=';
 
                 if( Exe_Name[0] != '\0' ) {     /* have "-S -o output.name" */
-                    sfile = Exe_Name;
+                    DoQuoted( ofname, file );
+                    DoQuoted( sfname + 3, Exe_Name );
                 } else {
                     if( FileExtension( Word, OBJ_EXT ) ||
                         FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
+                        DoQuoted( ofname, file );
                         p = strrchr( file, '.' );
                         if( p != NULL )  {
                             *p = '\0';
                         }
                         strcpy( Word, file );
                     } else {            /* wdis needs extension */
-                        strcat( ofile, Obj_Name );
+                        DoQuoted( ofname, Obj_Name );
                     }
-                    sfile = Word;
                     strcat( Word, ".s" );
+                    DoQuoted( sfname + 3, Word );
                 }
-                memmove( sfile + 3, sfile, strlen( sfile ) + 1 );
-                sfile[0] = '-';
-                sfile[1] = 'l';
-                sfile[2] = '=';
-                rc = tool_exec( TYPE_DIS, ofile, sfile );
-                MemFree( ofile );
+                rc = tool_exec( TYPE_DIS, ofname, sfname );
             }
             if( Exe_Name[0] == '\0' ) {
 #ifdef __UNIX__
@@ -1274,7 +1274,9 @@ static  int  CompLink( void )
         if(( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
             rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
             if( rc == 0 && Flags.do_cvpack ) {
-                rc = tool_exec( TYPE_PACK, Exe_Name, NULL );
+                char fname[_MAX_PATH];
+
+                rc = tool_exec( TYPE_PACK, DoQuoted( fname, Exe_Name ), NULL );
             }
             if( rc != 0 ) {
                 rc = 2;     /* return 2 to show Temp_File already closed */

@@ -468,3 +468,26 @@ char *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars )
     }
     return( str );
 }
+
+static int needQuotes( char const *name )
+{
+    return( strchr( name, ' ' ) != NULL );
+}
+
+char *DoQuoted( char *buffer, char *name )
+{
+    char *p = buffer;
+    int  quotes;
+
+    quotes = needQuotes( name );
+    if( quotes )
+        *p++ = '"';
+    while( (*p = *name) != '\0' ) {
+        ++p;
+        ++name;
+    }
+    if( quotes )
+        *p++ = '"';
+    *p = '\0';
+    return( buffer );
+}

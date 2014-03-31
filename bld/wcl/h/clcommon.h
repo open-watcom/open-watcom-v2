@@ -105,6 +105,7 @@ extern void     MemFree( void * );
 extern char     *MakePath( char * );
 extern char     *GetName( char * );
 extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
+extern char     *DoQuoted( char *buffer, char *name );
 
 enum {
     #define E(msg)  msg
