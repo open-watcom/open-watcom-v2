@@ -49,6 +49,14 @@
 #define TRUE        1
 #define FALSE       0
 
+enum {
+    #define E(msg)  msg
+    #define pick(code,msg)  code
+    #include "wclmsg.h"
+    #undef pick
+    #undef E
+};
+
 typedef struct  list {
     char        *item;
     struct list *next;
@@ -84,7 +92,7 @@ extern list     *Libs_List;         /* list of libraires from Cmd         */
 extern const char *WclMsgs[];
 extern list     *Obj_List;          /* linked list of object filenames    */
 
-extern flags 	Flags;
+extern flags    Flags;
 
 extern char     *DebugOptions[];
 
@@ -98,19 +106,11 @@ extern void     Fputnl( char *, FILE * );
 extern void     FputnlQuoted( char *, FILE * );
 extern void     MemInit( void );
 extern void     MemFini( void );
-extern void     *MemAlloc( unsigned );
+extern void     *MemAlloc( size_t );
 extern char     *MemStrDup( const char * );
-extern void     *MemReAlloc( void *, int );
+extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
 extern char     *MakePath( char * );
 extern char     *GetName( char * );
 extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
 extern char     *DoQuoted( char *buffer, char *name );
-
-enum {
-    #define E(msg)  msg
-    #define pick(code,msg)  code
-    #include "wclmsg.h"
-    #undef pick
-    #undef E
-};

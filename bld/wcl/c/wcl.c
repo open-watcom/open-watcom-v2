@@ -207,7 +207,7 @@ static int handle_environment_variable( const char *env )
     } EnvVarInfo;
     EnvVarInfo          *info;
     static EnvVarInfo   *stack = 0; // Needed to detect recursion.
-    unsigned            argbufsize;
+    size_t              argbufsize;
     size_t              varlen;     // size to hold varname copy.
     int                 result;     // Parse Result.
 
@@ -339,7 +339,7 @@ static void  Usage( void )
     char const  **list;
     char const  *p;
     int         lines_printed;
-    unsigned int i, n;
+    size_t      i, n;
     auto        char buf[82];
 #ifndef __UNIX__
     int const   paging = isatty( fileno( stdout ) );
@@ -415,8 +415,8 @@ static void  Usage( void )
 }
 
 
-static char *ScanFName( char *end, int len )
-/******************************************/
+static char *ScanFName( char *end, size_t len )
+/*********************************************/
 {
     for( ;; ) { /* 15-jan-89: Allow switch char in filenames */
         if( *end == '\0' )
@@ -455,8 +455,8 @@ static int FileExtension( char *p, char *ext )
 }
 
 
-static void AddDirective( int len )
-/*********************************/
+static void AddDirective( size_t len )
+/************************************/
 {
     list    *p;
 
@@ -476,7 +476,7 @@ static int Parse( char *Cmd )
     FILE        *atfp;
     char        buffer[_MAX_PATH];
     char        unquoted[_MAX_PATH];
-    int         len;
+    size_t      len;
     char        *p;
     int         wcc_option;
     list        *new_item;
@@ -976,8 +976,8 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-            if( !FileExtension( Word, OBJ_EXT ) &&  /* if not .obj or .o, compile */
-                !FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
+            if( !FileExtension( file, OBJ_EXT ) &&  /* if not .obj or .o, compile */
+                !FileExtension( file, OBJ_EXT_SECONDARY ) ) {
                 char fname[_MAX_PATH];
 
                 rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );

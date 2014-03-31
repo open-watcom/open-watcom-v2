@@ -391,7 +391,7 @@ static  FILE *OpenSpecsFile( void )
 {
     FILE    *specs;
     char    line[MAX_CMD];
-    int     begin_len;
+    size_t  begin_len;
     char    *p;
 
     specs = OpenSpecsFile();
@@ -1204,8 +1204,8 @@ static  int  CompLink( void )
         while( file != NULL ) {         /* while more filenames: */
             strcpy( Word, path );
             strcat( Word, file );
-            if( !FileExtension( Word, OBJ_EXT ) &&  // if not .obj or .o, compile
-                !FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
+            if( !FileExtension( file, OBJ_EXT ) &&  // if not .obj or .o, compile
+                !FileExtension( file, OBJ_EXT_SECONDARY ) ) {
                 char fname[_MAX_PATH];
 
                 rc = tool_exec( utl, DoQuoted( fname, Word ), CC_Opts );
@@ -1231,8 +1231,8 @@ static  int  CompLink( void )
                     DoQuoted( ofname, file );
                     DoQuoted( sfname + 3, Exe_Name );
                 } else {
-                    if( FileExtension( Word, OBJ_EXT ) ||
-                        FileExtension( Word, OBJ_EXT_SECONDARY ) ) {
+                    if( FileExtension( file, OBJ_EXT ) ||
+                        FileExtension( file, OBJ_EXT_SECONDARY ) ) {
                         DoQuoted( ofname, file );
                         p = strrchr( file, '.' );
                         if( p != NULL )  {
