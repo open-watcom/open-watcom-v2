@@ -1940,17 +1940,7 @@ Rule REFI, WLINK, ru?d?
   Symbol EFI, *.efi
   Command " @%write $*.lk1 $<FIL,>"
   Command " @%append $*.lk1 $<LIBR,>"
-  Command "!ifneq BLANK \"$<DLL!>\""
-  Command " *wlib -q -n -b $*.imp $<EFI!>"
-  Command " @%append $*.lk1 LIBR $'.imp"
-  Command "!endif"
-  Command "!ifneq BLANK \"$<RES!>\""
-  Command " @%append $*.lk1 $<RES,>"
-  Command "!endif"
   Command " *$<#> @$'.lk1"
-  Command "!ifneq BLANK \"$<FIL!>\""
-  Command " wlib -q -n -b $*.lib +$*.efi"
-  Command "!endif"
 
 rem Rule LNXDLL, WLINK, x??d?
 rem   Target *.dll

@@ -1113,6 +1113,7 @@ bool ProcRDOS( void )
 bool ProcEFI( void )
 /*************************/
 {
+    Extension = E_EFI;
     FmtData.u.pe.subsystem = PE_SS_EFI_BOOT;
     ParseVersion();
 
