@@ -268,7 +268,7 @@ unsigned long QFileSize( f_handle file )
 
     CheckBreak();
     size = 0;
-    if( TINY_ERROR( TinyLSeek( file, 0L, TIO_SEEK_CUR, (u32_stk_ptr)&curpos ) ) ) {
+    if( TINY_OK( TinyLSeek( file, 0L, TIO_SEEK_CUR, (u32_stk_ptr)&curpos ) ) ) {
         TinyLSeek( file, 0UL, TIO_SEEK_END, (u32_stk_ptr)&size );
         TinySeek( file, curpos, TIO_SEEK_START );
     }
