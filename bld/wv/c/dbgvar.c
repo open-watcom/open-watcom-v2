@@ -758,7 +758,7 @@ static bool     CheckPointerValid( void )
 
 static type_kind        TypeKind( type_handle *th )
 {
-    type_info           tinfo;
+    dip_type_info   tinfo;
 
     TypeInfo( th, NULL, &tinfo );
     return( tinfo.kind );
@@ -1042,7 +1042,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
 static void ArrayParms( var_node *v, array_info *ainfo )
 {
     DIPHDL( type, th );
-    type_info   tinfo;
+    dip_type_info   tinfo;
 
     if( TypeKind( v->th ) == TK_ARRAY ) {
         TypeArrayInfo( v->th, ExprSP->lc, ainfo, NULL );
@@ -2702,7 +2702,7 @@ extern var_node *VarGetDisplayPiece( var_info *i, int row, int piece, int *pdept
 bool VarParentIsArray( var_node * v )
 {
     var_node            *vparent = v;
-    type_info           tinfo;
+    dip_type_info       tinfo;
     
     while( vparent->parent != NULL ) {
         if( vparent->parent->node_type != NODE_INHERIT ) {

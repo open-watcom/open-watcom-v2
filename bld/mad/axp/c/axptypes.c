@@ -214,7 +214,7 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     return( MCTypeToString( radix, new, temp, max, buff ) );
 }
 
-mad_type_handle DIGENTRY MITypeForDIPType( const type_info *ti )
+mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info *ti )
 {
     switch( ti->kind ) {
     case TK_DATA:

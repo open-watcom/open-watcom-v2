@@ -76,13 +76,13 @@ struct dip_imp_routines {
     unsigned            (DIGENTRY *mod_name)( imp_image_handle *, imp_mod_handle, char *, unsigned  );
     char                *(DIGENTRY *mod_src_lang)( imp_image_handle *, imp_mod_handle );
     dip_status          (DIGENTRY *mod_info)( imp_image_handle *, imp_mod_handle, handle_kind );
-    dip_status          (DIGENTRY *mod_default)( imp_image_handle *, imp_mod_handle, default_kind, type_info * );
+    dip_status          (DIGENTRY *mod_default)( imp_image_handle *, imp_mod_handle, default_kind, dip_type_info * );
     search_result       (DIGENTRY *addr_mod)( imp_image_handle *, address, imp_mod_handle * );
     address             (DIGENTRY *mod_addr)( imp_image_handle *, imp_mod_handle );
 
     walk_result         (DIGENTRY *walk_type_list)( imp_image_handle *, imp_mod_handle, IMP_TYPE_WKR *, imp_type_handle *, void * );
     imp_mod_handle      (DIGENTRY *type_mod)(imp_image_handle *, imp_type_handle * );
-    dip_status          (DIGENTRY *tipe_info)(imp_image_handle *, imp_type_handle *, location_context *, type_info * );
+    dip_status          (DIGENTRY *tipe_info)(imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
     dip_status          (DIGENTRY *old_type_base)(imp_image_handle *, imp_type_handle *, imp_type_handle * );
     dip_status          (DIGENTRY *type_array_info)(imp_image_handle *, imp_type_handle *, location_context *, array_info *, imp_type_handle * );
     dip_status          (DIGENTRY *type_proc_info)(imp_image_handle *, imp_type_handle *, imp_type_handle *, unsigned );
@@ -99,7 +99,7 @@ struct dip_imp_routines {
     dip_status          (DIGENTRY *sym_value)( imp_image_handle *, imp_sym_handle *, location_context *, void * );
     dip_status          (DIGENTRY *sym_info)( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
     dip_status          (DIGENTRY *sym_parm_location)( imp_image_handle *, imp_sym_handle *, location_context *, location_list *, unsigned );
-    dip_status          (DIGENTRY *sym_obj_type)( imp_image_handle *, imp_sym_handle *, imp_type_handle *, type_info * );
+    dip_status          (DIGENTRY *sym_obj_type)( imp_image_handle *, imp_sym_handle *, imp_type_handle *, dip_type_info * );
     dip_status          (DIGENTRY *sym_obj_location)( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
     search_result       (DIGENTRY *addr_sym)( imp_image_handle *, imp_mod_handle, address, imp_sym_handle * );
     search_result       (DIGENTRY *lookup_sym)( imp_image_handle *, symbol_source, void *, lookup_item *, void * );
@@ -150,11 +150,11 @@ char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *, imp_mod_handle )
 dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *, imp_mod_handle, handle_kind );
 search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *, address, imp_mod_handle * );
 address         DIGENTRY DIPImpModAddr( imp_image_handle *, imp_mod_handle );
-dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *, imp_mod_handle, default_kind, type_info * );
+dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *, imp_mod_handle, default_kind, dip_type_info * );
 
 walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *, imp_mod_handle, IMP_TYPE_WKR *, imp_type_handle *, void * );
 imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *, imp_type_handle * );
-dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, type_info * );
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
 dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *, imp_type_handle *, imp_type_handle *, location_context *, location_list * );
 dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *, imp_type_handle *, location_context *, array_info *, imp_type_handle * );
 dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, unsigned );
@@ -175,7 +175,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *, imp_sym_handle *
 dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
 dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list *, unsigned );
-dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *, imp_sym_handle *, imp_type_handle *, type_info * );
+dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *, imp_sym_handle *, imp_type_handle *, dip_type_info * );
 dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *, imp_mod_handle, address, imp_sym_handle * );
 search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *, symbol_source, void *, lookup_item *, void * );

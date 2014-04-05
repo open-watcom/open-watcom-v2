@@ -156,7 +156,7 @@ dip_status DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 dip_status DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, type_info *ti )
+                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     ii = ii; is = is; it = it; ti = ti;
     return( DS_FAIL );

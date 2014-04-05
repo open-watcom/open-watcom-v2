@@ -135,7 +135,7 @@ extern walk_result              TypeSymWalkList( imp_image_handle *ii, imp_type_
 extern dip_status               TypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result            TypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result            TypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status               ImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, type_info * );
+extern dip_status               ImpTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
 extern dip_status               ImpTypeBase( imp_image_handle *, imp_type_handle *, imp_type_handle * );
 extern dip_status               TypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
@@ -146,7 +146,7 @@ extern dip_status               ImpSymValue( imp_image_handle *, imp_sym_handle 
 extern dip_status               ImpSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 
 extern void                     Confused(void);
-extern dip_status               DoIndirection( imp_image_handle *, type_info *, location_context *, location_list * );
+extern dip_status               DoIndirection( imp_image_handle *, dip_type_info *, location_context *, location_list * );
 extern cs_compile               *GetCompInfo( imp_image_handle *, imp_mod_handle );
 
 #define T_CODE_LBL16    0x00f01

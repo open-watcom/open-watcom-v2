@@ -57,8 +57,8 @@ extern void             LRValue( stack_entry * );
 extern void             LValue( stack_entry * );
 extern void             ExprResolve( stack_entry * );
 extern void             ConvertTo( stack_entry *, type_kind, type_modifier, unsigned );
-extern void             ClassifyEntry( stack_entry *, type_info * );
-extern bool             ClassifyType( location_context *, type_handle *, type_info * );
+extern void             ClassifyEntry( stack_entry *, dip_type_info * );
+extern bool             ClassifyType( location_context *, type_handle *, dip_type_info * );
 extern void             LclLValue( stack_entry * );
 extern void             FreezeRegs( void );
 extern bool             PerformCall( address, bool, unsigned int );
@@ -78,7 +78,7 @@ extern unsigned         ToItem( stack_entry *, item_mach * );
 extern void             CombineEntries( stack_entry *, stack_entry *, stack_entry * );
 extern void             PushAddr( address );
 extern void             MoveTH( stack_entry *, stack_entry * );
-extern bool             CreateSym( lookup_item *, type_info * );
+extern bool             CreateSym( lookup_item *, dip_type_info * );
 extern dip_status       LocationAssign( location_list *, location_list *, unsigned long, bool );
 extern void             LocationCreate( location_list *, location_type, void * );
 extern void             LocationAdd( location_list *, unsigned long );
@@ -90,7 +90,7 @@ extern address          GetRegSP( void );
 extern void             SetRegSP( address );
 extern void             ExprSetAddrInfo( stack_entry *, bool );
 extern void             AddrFix( address * );
-extern void             PushLocation( location_list *, type_info * );
+extern void             PushLocation( location_list *, dip_type_info * );
 extern unsigned         DefaultSize( default_kind );
 extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_info * );
 
@@ -556,8 +556,8 @@ void DoPoints( type_kind def )
 
 static void ConvertGiven( stack_entry *object, stack_entry *new )
 {
-    type_info           new_type;
-    type_info           obj_type;
+    dip_type_info       new_type;
+    dip_type_info       obj_type;
     DIPHDL( type, obj_th );
     DIPHDL( type, new_th );
 
@@ -624,8 +624,8 @@ void DoConvert( void )
 
 void DoLConvert( void )
 {
-    stack_entry *left;
-    type_info   new;
+    stack_entry     *left;
+    dip_type_info   new;
 
     left = StkEntry( 1 );
     LValue( ExprSP );
@@ -968,7 +968,7 @@ static unsigned MakeSCB( item_mach *item, address addr, item_type typ )
 
 static type_modifier DerefType( type_handle *th )
 {
-    type_info   ti;
+    dip_type_info   ti;
 
     if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK ) return( TM_NONE );
     if( ti.kind != TK_POINTER ) return( TM_NONE );
@@ -978,7 +978,7 @@ static type_modifier DerefType( type_handle *th )
 
 static item_type DerefToSCB( type_handle *th )
 {
-    type_info   ti;
+    dip_type_info   ti;
 
     if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK ) return( 0 );
     if( ti.kind != TK_POINTER ) return( 0 );
@@ -1082,9 +1082,9 @@ void DoCall( unsigned num_parms, bool build_scbs )
     DIPHDL( type, parm_th );
     DIPHDL( type, th );
     sym_info            rtn_si;
-    type_info           this_ti;
-    type_info           ti;
-    type_info           ret_ti;
+    dip_type_info       this_ti;
+    dip_type_info       ti;
+    dip_type_info       ret_ti;
     item_mach           item;
     unsigned            parm_loc_adjust;
     unsigned            parm;

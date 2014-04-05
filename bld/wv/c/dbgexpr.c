@@ -64,7 +64,7 @@ extern void             DoConvert( void );
 extern void             AddrFloat( address * );
 extern void             AddrFix( address * );
 extern void             LocationCreate( location_list *, location_type, void * );
-extern void             ClassifyEntry( stack_entry *, type_info * );
+extern void             ClassifyEntry( stack_entry *, dip_type_info * );
 extern void             ExprSymbol( stack_entry *, sym_handle * );
 extern address          GetRegIP( void );
 extern address          GetRegSP( void );
@@ -417,7 +417,7 @@ void PushAddr( address addr )
     ExprSetAddrInfo( ExprSP, FALSE );
 }
 
-void PushLocation( location_list *ll, type_info *ti )
+void PushLocation( location_list *ll, dip_type_info *ti )
 {
     CreateEntry();
     if( ti != NULL ) ExprSP->info = *ti;
@@ -764,10 +764,10 @@ void StartSubscript( void )
 
 void AddSubscript( void )
 {
-    stack_entry *array;
-    array_info  ai;
-    type_info   ti;
-    stack_flags save_imp;
+    stack_entry     *array;
+    array_info      ai;
+    dip_type_info   ti;
+    stack_flags     save_imp;
     DIPHDL( type, th );
 
     array = StkEntry( 1 );

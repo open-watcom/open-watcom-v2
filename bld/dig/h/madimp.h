@@ -68,7 +68,7 @@ typedef struct mad_imp_routines {
     walk_result         (DIGENTRY *MITypeWalk)( mad_type_kind, MI_TYPE_WALKER *, void * );
     mad_string          (DIGENTRY *MITypeName)( mad_type_handle );
     unsigned            (DIGENTRY *MITypePreferredRadix)( mad_type_handle );
-    mad_type_handle     (DIGENTRY *MITypeForDIPType)( const type_info * );
+    mad_type_handle     (DIGENTRY *MITypeForDIPType)( const dip_type_info * );
     void                (DIGENTRY *MITypeInfo)( mad_type_handle, mad_type_info * );
     mad_type_handle     (DIGENTRY *MITypeDefault)( mad_type_kind, mad_address_format, const mad_registers *, const address * );
     mad_status          (DIGENTRY *MITypeConvert)( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg );
@@ -160,7 +160,7 @@ walk_result     DIGENTRY MITypeWalk( mad_type_kind, MI_TYPE_WALKER *, void * );
 
 mad_string      DIGENTRY MITypeName( mad_type_handle );
 unsigned        DIGENTRY MITypePreferredRadix( mad_type_handle );
-mad_type_handle DIGENTRY MITypeForDIPType( const type_info * );
+mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info * );
 void            DIGENTRY MITypeInfo( mad_type_handle, mad_type_info * );
 mad_type_handle DIGENTRY MITypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );
 

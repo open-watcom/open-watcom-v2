@@ -41,7 +41,7 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
                         array_info *ai, imp_type_handle *index );
 extern dip_status ImpTypeInfo( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, type_info *ti );
+                imp_type_handle *it, location_context *lc, dip_type_info *ti );
 
 
 static dip_status TypeVMGetName( imp_image_handle *ii, virt_mem base,
@@ -410,7 +410,7 @@ inherit_class:
     }
 }
 
-static void TypePrimitiveInfo( unsigned idx, type_info *ti )
+static void TypePrimitiveInfo( unsigned idx, dip_type_info *ti )
 {
     static const unsigned_8     RealSizes[] = { 4, 8, 10, 16, 6 };
     cv_primitive                prim;
@@ -597,7 +597,7 @@ static dip_status GetVirtBaseDisp( imp_image_handle *ii, virt_mem adj,
     unsigned            idx;
     imp_type_handle     vbp;
     dip_status          ds;
-    type_info           ti;
+    dip_type_info       ti;
     union {
         unsigned_8      u8;
         unsigned_16     u16;
@@ -692,7 +692,7 @@ static dip_status VFuncLocation( imp_image_handle *ii, imp_sym_handle *is,
     virt_mem            base;
     struct vtab_data    data;
     imp_type_handle     it;
-    type_info           ti;
+    dip_type_info       ti;
     unsigned_8          *vfsp;
     unsigned            vfshape;
     addr_off            save;
@@ -1377,7 +1377,7 @@ static int IsFortranModule( imp_image_handle *ii, location_context *lc )
 }
 
 dip_status ImpTypeInfo( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, type_info *ti )
+                imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     imp_type_handle             real;
     dip_status                  ds;
@@ -1531,7 +1531,7 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
 }
 
 dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, type_info *ti )
+                imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     return( ImpTypeInfo( ii, it, lc, ti ) );
 }
@@ -1665,7 +1665,7 @@ static dip_status GetArrayRange( imp_image_handle *ii, location_context *lc,
     bound_data          *di;
     dip_status          ds;
     imp_type_handle     real;
-    type_info           ti;
+    dip_type_info       ti;
     long                hi_bound;
 
     ds = TypeIndexFillIn( ii, idx, &real );
@@ -1755,7 +1755,7 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
     numeric_leaf        val;
     imp_type_handle     real;
     unsigned            idx;
-    type_info           ti;
+    dip_type_info       ti;
     dip_status          ds;
     unsigned            code;
     virt_mem            dim_hdl;
@@ -1882,7 +1882,7 @@ dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
     dip_status          ds;
     imp_sym_handle      is;
     location_list       ll;
-    type_info           ti;
+    dip_type_info       ti;
     unsigned            ptype;
     union {
         addr32_ptr      addr32;

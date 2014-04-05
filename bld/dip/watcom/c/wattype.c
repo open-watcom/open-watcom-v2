@@ -727,7 +727,7 @@ done:
     return( WR_CONTINUE );
 }
 
-static void ScalarInfo( unsigned info, type_info *ti )
+static void ScalarInfo( unsigned info, dip_type_info *ti )
 {
     ti->size = (info & SCLR_LEN_MASK) + 1;
     switch( info & SCLR_CLASS_MASK ) {
@@ -753,7 +753,7 @@ static void ScalarInfo( unsigned info, type_info *ti )
 
 
 static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
-                    location_context *lc, type_info *ti, unsigned *ndims )
+                    location_context *lc, dip_type_info *ti, unsigned *ndims )
 {
     byte                *p;
     byte                subkind;
@@ -933,7 +933,7 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
 }
 
 dip_status DIPENTRY DIPImpTypeInfo(imp_image_handle *ii, imp_type_handle *it,
-                        location_context *lc, type_info *ti )
+                        location_context *lc, dip_type_info *ti )
 {
     return( GetTypeInfo( ii, it, lc, ti, NULL ) );
 }
@@ -992,7 +992,7 @@ dip_status DIPENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
     address             addr;
     byte                is_32;
     long                hi;
-    type_info           info;
+    dip_type_info       info;
     unsigned            count;
     dip_status          ret;
     typeinfo            typeld;

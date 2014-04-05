@@ -99,7 +99,7 @@ extern void             PushNum( long );
 extern void             PushNum64( unsigned_64 );
 extern void             PushRealNum( xreal );
 extern void             PushAddr( address );
-extern void             PushLocation( location_list *, type_info * );
+extern void             PushLocation( location_list *, dip_type_info * );
 extern void             PushString( void );
 extern void             PushType( type_handle * );
 extern void             PushInt( int );
@@ -110,7 +110,7 @@ extern bool             NameResolve( stack_entry *, bool );
 extern void             LValue( stack_entry * );
 extern void             RValue( stack_entry * );
 extern void             LRValue( stack_entry * );
-extern void             ParseRegSet( bool, location_list *, type_info * );
+extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern void             Recog( unsigned int );
 extern bool             ScanQuote( char **, unsigned * );
 extern void             Scan( void );
@@ -205,7 +205,7 @@ typedef enum {
                             */
 } stack_class;
 
-static stack_class TypeInfoToClass( type_info *ti )
+static stack_class TypeInfoToClass( dip_type_info *ti )
 {
     stack_class         c;
 
@@ -237,7 +237,7 @@ static stack_class TypeInfoToClass( type_info *ti )
     return( c );
 }
 
-static void ClassToTypeInfo( stack_class c, type_info *ti )
+static void ClassToTypeInfo( stack_class c, dip_type_info *ti )
 {
     switch( c ) {
     case STK_INT | STK_UNSIGNED:
@@ -293,7 +293,7 @@ static void ClassToTypeInfo( stack_class c, type_info *ti )
 
 //NYI: end temp
 
-static void FillInDefaults( type_info *info )
+static void FillInDefaults( dip_type_info *info )
 {
     mad_type_info       mti;
 
@@ -538,7 +538,7 @@ static bool UserType( type_handle *th )
 static void PushBaseSize( void )
 {
     DIPHDL( type, th );
-    type_info   ti;
+    dip_type_info   ti;
 
     TypeBase( ExprSP->th, th, NULL, NULL );
     TypeInfo( th, ExprSP->lc, &ti );
@@ -623,7 +623,7 @@ static unsigned MechDo( unsigned select, unsigned parm )
     unsigned long       size;
     unsigned            result;
     DIPHDL( type, th );
-    type_info           info;
+    dip_type_info       info;
     mad_type_info       mti;
 
     switch( select ) {
@@ -777,7 +777,7 @@ static void BasicType( unsigned basic_type )
 {
     struct internal_mod         mod_srch;
     struct imp_type_handle      *internal;
-    type_info                   info;
+    dip_type_info               info;
     DIPHDL( type, th );
 
     WalkModList( NO_MOD, FindInternalMod, &mod_srch );
@@ -796,7 +796,7 @@ static void BasicType( unsigned basic_type )
 static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
 {
     location_list       ll;
-    type_info           ti;
+    dip_type_info       ti;
     unsigned            result;
     const static unsigned       TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),

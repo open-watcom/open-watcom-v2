@@ -359,11 +359,11 @@ typedef unsigned_8 type_modifier; enum {
     TM_FLAG_DEREF       = 0x10
 };
 
-typedef struct type_info {
+typedef struct dip_type_info {
     unsigned long       size;
     type_kind           kind;
     type_modifier       modifier;
-} type_info;
+} dip_type_info;
 
 typedef         unsigned dig_fhandle;
 typedef         unsigned_8 dig_seek; enum {

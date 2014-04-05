@@ -57,10 +57,10 @@ extern void             ReportMADFailure( mad_status );
 
 extern void             LocationCreate( location_list *ll, location_type lt, void *d );
 extern dip_status       LocationAssign( location_list *dst, location_list *src, unsigned long len, bool sign_extend );
-extern void             PushLocation( location_list *ll, type_info *ti );
+extern void             PushLocation( location_list *ll, dip_type_info *ti );
 extern void             DoAssign( void );
 extern char             *StrCopy( char *, char * );
-extern void             MadTypeToDipTypeInfo( mad_type_handle mt, type_info *ti );
+extern void             MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti );
 
 extern machine_state    *DbgRegs;
 extern machine_state    *PrevRegs;
@@ -963,7 +963,7 @@ struct parsed_regs {
     mad_reg_info        *ri;
 };
 
-void ParseRegSet( bool multiple, location_list *ll, type_info *ti )
+void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
 {
     lookup_item         li;
     struct parsed_regs  *list, *new;
@@ -1038,7 +1038,7 @@ void RegNewValue( const mad_reg_info *reginfo,
 {
     char                        *p;
     location_list               dst_ll,src_ll;
-    type_info                   dst_ti,src_ti;
+    dip_type_info               dst_ti,src_ti;
     unsigned                    max;
 
     if( !AdvMachState( ACTION_MODIFY_REGISTER ) ) return;

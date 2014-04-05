@@ -51,7 +51,7 @@ imp_mod_handle DIPENTRY DIPImpTypeMod( imp_image_handle *ii, imp_type_handle *it
 }
 
 dip_status DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, type_info *ti )
+                imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     ii = ii; lc = lc;
     ti->modifier = TM_NONE;

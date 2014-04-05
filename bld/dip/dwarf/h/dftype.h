@@ -36,7 +36,7 @@ extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                  lookup_item *li, void *d );
 extern dr_handle GetParmN(  imp_image_handle *ii,dr_handle proc, int count );
 extern int GetParmCount(  imp_image_handle *ii, dr_handle proc );
-extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti );
+extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti );
 extern dip_status  DFBaseAdjust( imp_image_handle *ii,
                                 dr_handle base, dr_handle derived,
                                 location_context *lc, address *addr );

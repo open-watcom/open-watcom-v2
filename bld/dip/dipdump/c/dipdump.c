@@ -336,7 +336,7 @@ dip_status      SymType( sym_handle *, type_handle * );
 dip_status      SymValue( sym_handle *, location_context *, void * );
 dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
 dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
-dip_status      SymObjType( sym_handle *, type_handle *, type_info * );
+dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
 dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );
 search_result   AddrSym( mod_handle, address, sym_handle * );
 search_result   LookupSym( symbol_source, void *, lookup_item *, void * );
@@ -382,7 +382,7 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
     char            buf[2048];
     unsigned        len;
     symbol_type     tag;
-    type_info       tinfo;
+    dip_type_info   tinfo;
     dip_status      rc;
 
     printf( "%5d  ", ++*idx );

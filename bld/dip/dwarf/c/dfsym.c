@@ -668,12 +668,12 @@ static dr_handle GetThis(  imp_image_handle *ii, dr_handle proc )
 
 
 dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
-                    imp_sym_handle *is, imp_type_handle *it, type_info *ti )
-/**************************************************************************/
+                    imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
+/******************************************************************************/
 {
     /* Fill in the imp_type_handle with the type of the 'this' object
      * for a C++ member function.
-     * If 'ti' is not NULL, fill in the type_info with the kind of 'this'
+     * If 'ti' is not NULL, fill in the dip_type_info with the kind of 'this'
      * pointer that the routine is expecting (near/far, 16/32). If the
      * routine is a static member, set ti->kind to TK_NONE.
      */

@@ -365,7 +365,7 @@ imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
     return( IMX2IM( it->imx ) );
 }
 
-extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti )
+extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
 {
     /*
         Map dwarf info to dip imp
@@ -466,7 +466,7 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, type_info *ti )
 }
 
 dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
-                imp_type_handle *it, location_context *lc, type_info *ti )
+                imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     /*
         Fill in the type information for the type handle. The location

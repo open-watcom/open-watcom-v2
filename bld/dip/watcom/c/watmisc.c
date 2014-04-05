@@ -508,7 +508,7 @@ walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss
 }
 
 dip_status DIPENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
-                        default_kind dk, type_info *ti )
+                        default_kind dk, dip_type_info *ti )
 {
     ii = ii; im = im; dk = dk; ti = ti;
     return( DS_FAIL );

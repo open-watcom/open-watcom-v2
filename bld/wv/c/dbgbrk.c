@@ -1326,26 +1326,26 @@ int GetBPResume( brkp *bp )
 
 static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
 {
-    brkp        *bp;
-    char        *start;
-    unsigned    len;
-    address     loc;
-    cmd_list    *cmds;
-    char        *condition;
-    long        countdown;
-    bool        resume;
-    bool        active;
-    int         index;
-    mad_type_info       mti;
-    unsigned    old;
-    bool        unmapped;
-    bool        mapaddress;
-    bool        symaddress;
-    char        *image_name;
-    char        *mod_name;
-    char        *sym_name;
-    long        cue_diff;
-    long        addr_diff;
+    brkp            *bp;
+    char            *start;
+    unsigned        len;
+    address         loc;
+    cmd_list        *cmds;
+    char            *condition;
+    long            countdown;
+    bool            resume;
+    bool            active;
+    int             index;
+    mad_type_info   mti;
+    unsigned        old;
+    bool            unmapped;
+    bool            mapaddress;
+    bool            symaddress;
+    char            *image_name;
+    char            *mod_name;
+    char            *sym_name;
+    long            cue_diff;
+    long            addr_diff;
 
     resume = FALSE;
     index = 0;
@@ -1532,7 +1532,7 @@ bool BreakOnRawMemory( address addr, char *comment, int size )
 extern void BreakOnExprSP( char *comment )
 {
     address             addr;
-    type_info           tinfo;
+    dip_type_info       tinfo;
     tmp_break_struct    s;
 
     LValue( ExprSP );

@@ -195,7 +195,7 @@ void *GetNumLeaf( void *p, numeric_leaf *v )
 }
 
 
-dip_status DoIndirection( imp_image_handle *ii, type_info *ti,
+dip_status DoIndirection( imp_image_handle *ii, dip_type_info *ti,
                         location_context *lc, location_list *ll )
 {
     union {

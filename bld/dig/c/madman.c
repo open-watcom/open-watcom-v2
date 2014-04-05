@@ -614,13 +614,13 @@ unsigned        MADTypePreferredRadix( mad_type_handle th )
     return( Active->rtns->MITypePreferredRadix( th ) );
 }
 
-static mad_type_handle DIGREGISTER DummyTypeForDIPType( const type_info *ti )
+static mad_type_handle DIGREGISTER DummyTypeForDIPType( const dip_type_info *ti )
 {
     ti = ti;
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_type_handle MADTypeForDIPType( const type_info *ti )
+mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
 {
     return( Active->rtns->MITypeForDIPType( ti ) );
 }

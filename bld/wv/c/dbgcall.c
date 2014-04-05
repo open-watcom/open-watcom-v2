@@ -69,8 +69,8 @@ extern void         NormalExpr( void );
 extern void         UnFreezeRegs( void );
 extern void         PopEntry( void );
 extern void         FreePgmStack( bool );
-extern void         PushLocation( location_list *, type_info * );
-extern void         ParseRegSet( bool, location_list *, type_info * );
+extern void         PushLocation( location_list *, dip_type_info * );
+extern void         ParseRegSet( bool, location_list *, dip_type_info * );
 extern void         LocationCreate( location_list *, location_type, void * );
 extern mad_string   ScanCall( void );
 
@@ -103,7 +103,7 @@ void FiniCall( void )
     FreeParms();
 }
 
-static void GetLocation( location_list *ll, type_info *ti )
+static void GetLocation( location_list *ll, dip_type_info *ti )
 {
     bool        reg_set;
 
@@ -131,7 +131,7 @@ static void DoCallSet( void )
     char                *new, *start;
     lookup_token        new_parms[MAX_PARMS];
     location_list       ll;
-    type_info           ti;
+    dip_type_info       ti;
 
     if( CurrToken == T_DIV ) {
         Scan();
@@ -265,7 +265,7 @@ void ProcCall( void )
     address             start;
     char                *old;
     location_list       ll;
-    type_info           ti;
+    dip_type_info       ti;
     char                *p;
     mad_reg_info const **parm_reg;
 

@@ -59,7 +59,7 @@ extern void             GetMADTypeDefaultAt( address, mad_type_kind, mad_type_in
 extern unsigned         ExprAddrDepth;
 extern address          NilAddr;
 
-static bool DefaultTypeInfo( type_info *info )
+static bool DefaultTypeInfo( dip_type_info *info )
 {
     bool        real_type;
 
@@ -105,13 +105,13 @@ static bool DefaultTypeInfo( type_info *info )
     return( real_type );
 }
 
-bool ClassifyType( location_context *lc, type_handle *th, type_info *info )
+bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *info )
 {
     TypeInfo( th, lc, info );
     return( DefaultTypeInfo( info ) );
 }
 
-void ClassifyEntry( stack_entry *stk, type_info *info )
+void ClassifyEntry( stack_entry *stk, dip_type_info *info )
 {
     if( stk->th == NULL ) {
         *info = stk->info;
@@ -353,7 +353,7 @@ void ExprResolve( stack_entry *entry )
 static bool IsCodePointer( stack_entry *entry )
 {
     DIPHDL( type, base_th );
-    type_info   ti;
+    dip_type_info   ti;
 
     if( entry->th == NULL ) return( FALSE );
     if( TypeBase( entry->th, base_th, NULL, NULL ) != DS_OK ) return( FALSE );

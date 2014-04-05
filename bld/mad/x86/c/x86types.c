@@ -260,7 +260,7 @@ mad_status      DIGENTRY MITypeToString( unsigned radix, const mad_type_info *mt
     return( MS_UNSUPPORTED );
 }
 
-mad_type_handle DIGENTRY MITypeForDIPType( const type_info *ti )
+mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info *ti )
 {
     switch( ti->kind ) {
     case TK_DATA:

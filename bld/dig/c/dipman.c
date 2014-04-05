@@ -787,7 +787,7 @@ dip_status ModHasInfo( mod_handle mh, handle_kind hk )
                 MH_SMOD( mh ), hk ) );
 }
 
-dip_status ModDefault( mod_handle mh, default_kind dk, type_info *ti )
+dip_status ModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
 {
     image_handle        *ih;
 
@@ -819,7 +819,7 @@ mod_handle TypeMod( type_handle *th )
                         IMP_HDL( th, type ) ) ) );
 }
 
-dip_status TypeInfo( type_handle *th, location_context *lc, type_info *ti )
+dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
 {
     image_handle        *ih;
 
@@ -1102,7 +1102,7 @@ dip_status SymParmLocation( sym_handle *sh, location_context *lc,
                 IMP_HDL( sh, sym ), lc, ll, parm ) );
 }
 
-dip_status SymObjType( sym_handle *sh, type_handle *th, type_info *ti )
+dip_status SymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
 {
     image_handle        *ih;
 

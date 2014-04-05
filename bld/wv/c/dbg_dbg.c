@@ -310,7 +310,7 @@ void PurgeUserNames( void )
 /*
  * CreateSym -- create a symbol table entry allocated from dynamic storage
  */
-bool CreateSym( lookup_item *li, type_info *ti )
+bool CreateSym( lookup_item *li, dip_type_info *ti )
 {
     wv_type_entry       info;
     wv_sym_list         *new;

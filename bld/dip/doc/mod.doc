@@ -22,7 +22,7 @@
 	  followed by a DIPLoadInfo/DIPMapInfo. 
 	  
 	  
-    dip_status TypeInfo( type_handle *, location_context *, type_info *,
+    dip_status TypeInfo( type_handle *, location_context *, dip_type_info *,
     				type_info_need );
 				
 	    - added type_info_need parameter. Definition follows:
@@ -34,7 +34,7 @@
 		    TIN_ALL	= 0xff
 		} type_info_need;
 		
-	        This bitset indicates what portions of the type_info
+	        This bitset indicates what portions of the dip_type_info
 		structure are required to be filled in. A DIP implementation
 		may choose to not fill in fields whose bits are not on if
 		it's more efficient.

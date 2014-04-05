@@ -358,10 +358,10 @@ address DIPENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 }
 
 /*
- * Construct default type_info for a module.
+ * Construct default dip_type_info for a module.
  */
 dip_status DIPENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
-                                      default_kind dk, type_info *ti )
+                                      default_kind dk, dip_type_info *ti )
 {
     /*
      * Get the module entry and figure if it's a 16-bit or 32-bit module.

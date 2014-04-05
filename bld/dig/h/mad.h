@@ -77,7 +77,7 @@ walk_result     MADTypeWalk( mad_type_kind, MAD_TYPE_WALKER *, void * );
 
 mad_string      MADTypeName( mad_type_handle );
 unsigned        MADTypePreferredRadix( mad_type_handle );
-mad_type_handle MADTypeForDIPType( const type_info * );
+mad_type_handle MADTypeForDIPType( const dip_type_info * );
 void            MADTypeInfo( mad_type_handle, mad_type_info * );
 mad_status      MADTypeInfoForHost( mad_type_kind, int size, mad_type_info * );
 mad_type_handle MADTypeDefault( mad_type_kind, mad_address_format, const mad_registers *, const address * );

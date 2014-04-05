@@ -109,7 +109,7 @@ sym_handle *DIGCLIENT DIPCliSymCreate( void *d )
     return( SL2SH( new ) );
 }
 
-void MadTypeToDipTypeInfo( mad_type_handle mt, type_info *ti )
+void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
 {
     mad_type_info       mti;
 
@@ -368,7 +368,7 @@ static dip_status DIGREGISTER WVModInfo( imp_image_handle *ii, imp_mod_handle im
 }
 
 static dip_status DIGREGISTER WVModDefault( imp_image_handle *ii, imp_mod_handle im,
-                        handle_kind dk, type_info *ti )
+                        handle_kind dk, dip_type_info *ti )
 {
     /* never called */
     ii = ii; im = im; dk = dk, ti = ti;
@@ -402,7 +402,7 @@ static imp_mod_handle DIGREGISTER WVTypeMod( imp_image_handle *ii, imp_type_hand
 }
 
 static dip_status DIGREGISTER WVTypeInfo( imp_image_handle *ii, imp_type_handle *it,
-                        location_context *lc, type_info *ti )
+                        location_context *lc, dip_type_info *ti )
 {
 
     ii = ii; lc = lc;
@@ -592,7 +592,7 @@ static dip_status DIGREGISTER WVSymParmLocation( imp_image_handle *ii, imp_sym_h
 }
 
 static dip_status DIGREGISTER WVSymObjType( imp_image_handle *ii, imp_sym_handle *proc,
-                    imp_type_handle *it, type_info *ti )
+                    imp_type_handle *it, dip_type_info *ti )
 {
     /* will never get called */
     ii = ii; proc = proc; it = it; ti = ti;

@@ -80,7 +80,7 @@ extern image_entry      *ImagePrimary( void );
 
 unsigned DefaultSize( default_kind dk )
 {
-    type_info           info;
+    dip_type_info       info;
     mad_type_info       mti;
 
     if( ModDefault( CodeAddrMod, dk, &info ) != 0 ) {

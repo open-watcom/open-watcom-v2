@@ -222,7 +222,7 @@ extern walk_result          hllTypeSymWalkList( imp_image_handle *ii, imp_type_h
 extern dip_status           hllTypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result        hllTypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result        hllTypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );
-extern dip_status           hllTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, type_info * );
+extern dip_status           hllTypeInfo( imp_image_handle *, imp_type_handle *, location_context *, dip_type_info * );
 extern dip_status           hllTypeBase( imp_image_handle *, imp_type_handle *, imp_type_handle * );
 extern dip_status           hllTypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
@@ -233,7 +233,7 @@ extern dip_status           hllSymValue( imp_image_handle *, imp_sym_handle *, l
 extern dip_status           hllSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 
 extern void                 hllConfused(void);
-extern dip_status           hllDoIndirection( imp_image_handle *, type_info *, location_context *, location_list * );
+extern dip_status           hllDoIndirection( imp_image_handle *, dip_type_info *, location_context *, location_list * );
 extern hll_ssr_cuinfo      *hllGetCompInfo( imp_image_handle *, imp_mod_handle );
 extern hll_style            hllGetModStyle( imp_image_handle *, imp_mod_handle );
 

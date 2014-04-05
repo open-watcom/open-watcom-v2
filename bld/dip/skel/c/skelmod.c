@@ -116,7 +116,7 @@ address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
 }
 
 dip_status      DIPENTRY DIPImpModDefault( imp_image_handle *ii,
-                imp_mod_handle im, default_kind dk, type_info *ti )
+                imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     //TODO:
     /*

@@ -34,7 +34,7 @@
 
 typedef struct {
     location_list       ll;
-    type_info           ti;
+    dip_type_info       ti;
     unsigned            ref_size        : 3;
     unsigned            ref_far         : 1;
     unsigned            rl_passed_in    : 1;

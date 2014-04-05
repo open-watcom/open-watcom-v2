@@ -95,13 +95,13 @@ char            *ModSrcLang( mod_handle );
 dip_status      ModHasInfo( mod_handle, handle_kind );
 search_result   AddrMod( address, mod_handle * );
 address         ModAddr( mod_handle );
-dip_status      ModDefault( mod_handle, default_kind, type_info * );
+dip_status      ModDefault( mod_handle, default_kind, dip_type_info * );
 
 /*
  * Type Information
  */
 mod_handle      TypeMod( type_handle * );
-dip_status      TypeInfo( type_handle *, location_context *lc, type_info * );
+dip_status      TypeInfo( type_handle *, location_context *lc, dip_type_info * );
 dip_status      TypeBase( type_handle *t, type_handle *b, location_context *lc, location_list * );
 dip_status      TypeArrayInfo( type_handle *, location_context *, array_info *, type_handle * );
 dip_status      TypeProcInfo( type_handle *t, type_handle *r, unsigned p );
@@ -125,7 +125,7 @@ dip_status      SymLocation( sym_handle *, location_context *, location_list * )
 dip_status      SymValue( sym_handle *, location_context *, void * );
 dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
 dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
-dip_status      SymObjType( sym_handle *, type_handle *, type_info * );
+dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
 dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );
 search_result   AddrSym( mod_handle, address, sym_handle * );
 search_result   LookupSym( symbol_source, void *, lookup_item *, void * );
