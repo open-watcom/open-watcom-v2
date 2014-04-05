@@ -80,7 +80,7 @@ static void start_expr( void )
     void        *stack[ PARSE_STACK_SIZE ];
 
     ScanExpr( &ParseTokens );
-    SSLWalk( ParseTable, 0, &stack, PARSE_STACK_SIZE );
+    SSLWalk( ParseTable, 0, stack, PARSE_STACK_SIZE );
     ExprResolve( ExprSP );
     ScanExpr( NULL );
 }

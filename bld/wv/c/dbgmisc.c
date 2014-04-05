@@ -174,7 +174,7 @@ void ConfigFlip( void )
     ReqEOC();
     p = StrCopy( GetCmdName( CMD_FLIP ), TxtBuff );
     *p++ = ' ';
-    GetCmdEntry( &OnOffNameTab, _IsOn( SW_FLIP ) ? 1 : 2, p );
+    GetCmdEntry( OnOffNameTab, _IsOn( SW_FLIP ) ? 1 : 2, p );
     DUIDlgTxt( TxtBuff );
 }
 

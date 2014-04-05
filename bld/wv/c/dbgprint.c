@@ -585,7 +585,7 @@ static void GetExpr( void )
 {
     if( !First && CurrToken == T_COMMA ) Scan();
     NormalExpr();
-    if( CurrToken != T_COMMA & CurrToken != T_LEFT_BRACE ) ReqEOC();
+    if( CurrToken != T_COMMA && CurrToken != T_LEFT_BRACE ) ReqEOC();
     First = FALSE;
 }
 
@@ -901,7 +901,7 @@ void PrintValue( void )
         }
         /* fall through */
     case TK_POINTER:
-        if( IS_NIL_ADDR(ExprSP->v.addr) && ExprSP->v.addr.mach.offset == 0 ) {
+        if( IS_NIL_ADDR(ExprSP->v.addr) ) {
             SetTokens( TRUE );
             if( !TokenName( TSTR_NULL, &tstr, &tlen ) ) {
                 tlen = 0;

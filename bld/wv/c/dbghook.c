@@ -55,7 +55,7 @@ extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );
 extern void             ConfigCmdList( char *cmds, int indent );
 extern void             TypeInpStack( input_type set );
-extern void             DoProcPending();
+extern void             DoProcPending(void);
 
 
 extern char             *TxtBuff;
