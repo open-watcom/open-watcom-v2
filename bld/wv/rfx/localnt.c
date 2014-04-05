@@ -34,9 +34,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <unistd.h>
 #include <direct.h>
 #include <dos.h>
+#include "wio.h"
 
 #include "dbgdefn.h"
 #include "dbgreg.h"

@@ -1068,7 +1068,7 @@ int DoCopy( char *src, char *dst, int src_loc, int dst_loc )
             return( rc );
         }
         if( written != len ) {
-            if( (rc == (len - 1)) && (Buff[rc] == 0x1A) ) break;
+            if( (written == (len - 1)) && (Buff[written] == 0x1A) ) break;
             FiniCopy( in, src, src_loc, out, dst, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );
         }
@@ -1331,7 +1331,7 @@ extern  dir_handle      *DirOpenf( char *fspec, int fnloc )
         SysSetErr( IO_FIND_ERROR );
         return( NULL );
     }
-    h->status = OK;
+    h->status = RFX_OK;
     h->location = fnloc;
     fspec = _FileParse( fspec, &parse );
     append = NULL;
@@ -1381,12 +1381,12 @@ extern  dir_handle      *DirOpenf( char *fspec, int fnloc )
 
 extern  void    DirReadf( dir_handle *h, char *buff, bool wide )
 {
-    if( h->status == EOF ) {
+    if( h->status == RFX_EOF ) {
         *buff = '\0';
     } else {
         Format( buff, &Info, wide );
         if( FindNext( h->location ) != 0 ) {
-            h->status = EOF;
+            h->status = RFX_EOF;
         }
     }
 }
@@ -1558,11 +1558,12 @@ void ProcCD( int argc, char **argv, int crlf )
         if( src_loc == 0 ) {
             src_loc = DefaultLocation;
         }
-    } else if( argc == 0 ) {
+    } else {
         src = "";
         src_loc = DefaultLocation;
-    } else {
-        WhatDidYouSay();
+        if( argc != 0 ) {
+            WhatDidYouSay();
+        }
     }
     if( *src == '\0' ) {
         if( src_loc == 1 ) {

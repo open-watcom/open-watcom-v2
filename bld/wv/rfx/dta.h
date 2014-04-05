@@ -52,4 +52,4 @@ typedef struct dir_handle {
     char        status;
 } dir_handle;
 
-enum { EOR, EOF, OK };
+enum { RFX_EOR, RFX_EOF, RFX_OK };

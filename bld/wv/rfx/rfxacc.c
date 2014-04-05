@@ -179,7 +179,7 @@ long RemoteGetFileAttr( char * name )
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
     TrapAccess( 2, &in, 1, &out );
-    if( out_mx.attribute & 0xffff0000 == 0xffff0000 ) {
+    if( (out_mx.attribute & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( out_mx.attribute, OP_REMOTE );
         return( -1L );
     }
@@ -219,7 +219,7 @@ long RemoteGetFreeSpace( int drv )
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
     TrapAccess( 1, &in, 1, &out );
-    if( out_mx.size & 0xffff0000 == 0xffff0000 ) {
+    if( (out_mx.size & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( out_mx.size, OP_REMOTE );
         return( -1L );
     }
