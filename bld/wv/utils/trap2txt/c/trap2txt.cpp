@@ -254,7 +254,7 @@ int main( int argc, char ** argv )
     SYSTEMTIME      st = {0};
     int             time_valid = 0;
     
-    while( 1 ) {
+    for( ;; ) {
     
         if( sizeof( type ) != fread( &type, 1, sizeof( type ), fil ) ) {
             if( !feof( fil ) )
@@ -316,7 +316,7 @@ int main( int argc, char ** argv )
         
         if( ( type == 1 ) || ( type == 2 ) ) {
             unsigned char rq_id = *buffer;
-            unsigned char no_response = rq_id & 0x80;
+//            unsigned char no_response = rq_id & 0x80;
             rq_id &= ~0x80;
             
             if( rq_id < REQ__LAST )
@@ -874,7 +874,7 @@ int handle_REQ_PROG_LOAD( unsigned char * pkt, unsigned short len )
 {
     prog_load_req   *prq = (prog_load_req *)pkt;
     char            *p = (char *)pkt;
-    unsigned        idx;
+    size_t          idx;
     
     printf( "Debugger request: REQ_PROG_LOAD\n" );
     idx = sizeof( prog_load_req );
