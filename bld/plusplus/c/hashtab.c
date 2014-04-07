@@ -41,10 +41,25 @@
 #include "pcheader.h"
 #include "hashtab.h"
 
+#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
+#define SYMBOL_NAME_SHIFT       5
+#else
+#define SYMBOL_NAME_SHIFT       4
+#endif
+
+#ifndef NDEBUG
+#define MIN_HASHTAB_SIZE        (1)
+#else
+#define MIN_HASHTAB_SIZE        (5)
+#endif
+#define MAX_HASHTAB_SIZE        (CV_SHIFT - SYMBOL_NAME_SHIFT)
+
 #define BLOCK_HASHTAB           (32) // number of HASTAB struct pre-allocated
 
 #define MIN_CARVE_SIZE          (1024) // minimum size to carve
 #define CARVE_TABLE_SIZE        ((MAX_HASHTAB_SIZE - MIN_HASHTAB_SIZE) + 1)
+
+#define HASHTAB_INDEX(p)        (p - MIN_HASHTAB_SIZE)
 
 static carve_t carveHASHTAB;
 static carve_t carveTable[CARVE_TABLE_SIZE];
@@ -118,7 +133,7 @@ static void hashInit( INITFINI *defn )
         blocking = 2;
         if( size < MIN_CARVE_SIZE ) {
             blocking = MIN_CARVE_SIZE / size;
-            if( blocking <= 1 ) {
+            if( blocking < 2 ) {
                 blocking = 2;
             }
         }
@@ -182,7 +197,7 @@ HASHTAB HashCreate( unsigned init_table_size )
     hash->half = half;
     hash->expand_next = expand_next;
     DbgAssert( half != 0 );
-    table = CarveAlloc( carveTable[init_table_size - MIN_HASHTAB_SIZE] );
+    table = CarveAlloc( carveTable[HASHTAB_INDEX( init_table_size )] );
     hash->table = table;
     buckets = half + expand_next;
     init_name = listSentinel;
@@ -198,10 +213,16 @@ HASHTAB HashCreate( unsigned init_table_size )
     return( hash );
 }
 
+HASHTAB HashCreateByIndex( unsigned init_table_size_index )
+/*********************************************************/
+{
+    return( HashCreate( MIN_HASHTAB_SIZE + init_table_size_index ) );
+}
+
 void HashDestroy( HASHTAB hash )
 /*******************************/
 {
-    CarveFree( carveTable[base2( hash->half ) + 1 - MIN_HASHTAB_SIZE], hash->table );
+    CarveFree( carveTable[HASHTAB_INDEX( base2( hash->half ) + 1 )], hash->table );
     CarveFree( carveHASHTAB, hash );
 }
 
@@ -369,10 +390,10 @@ void expandHASHTAB( HASHTAB hash )
             DbgAssert( old_size + 1 <= MAX_HASHTAB_SIZE );
             hash->half = half;
             old_table = hash->table;
-            table = CarveAlloc( carveTable[old_size + 1 - MIN_HASHTAB_SIZE] );
+            table = CarveAlloc( carveTable[HASHTAB_INDEX( old_size + 1 )] );
             hash->table = table;
             memcpy( table, old_table, half * sizeof( SYMBOL_NAME ) );
-            CarveFree( carveTable[old_size - MIN_HASHTAB_SIZE], old_table );
+            CarveFree( carveTable[HASHTAB_INDEX( old_size )], old_table );
         }
         buckets = expand_next + half;
         num_keys = hash->avg * buckets + hash->remainder;
@@ -534,7 +555,7 @@ pch_status PCHReadHashTables( void )
         PCHReadVar( *hash );
         half = hash->half;
         size = base2( half ) + 1;
-        links = CarveAlloc( carveTable[size - MIN_HASHTAB_SIZE] );
+        links = CarveAlloc( carveTable[HASHTAB_INDEX( size )] );
         hash->table = links;
         buckets = half + hash->expand_next;
         for( i = 0; i < buckets; ++i ) {

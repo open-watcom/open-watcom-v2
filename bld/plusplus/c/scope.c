@@ -73,7 +73,7 @@
 #define NameSpacePCHRead()      NameSpaceMapIndex( (NAME_SPACE *)(pointer_int)PCHReadCVIndex() )
 #define NameSpacePCHWrite(x)    PCHWriteCVIndex( (cv_index)(pointer_int)NameSpaceGetIndex(x) )
 
-static int hashTableSize[SCOPE_MAX] = {
+static int hashTableSizeIndex[SCOPE_MAX] = {
     #define SCOPE_DEF(a,b) b
     SCOPE_DEFS
     #undef SCOPE_DEF
@@ -581,7 +581,7 @@ static void reinitScope( SCOPE scope )
     scope->u.s.try_catch = FALSE;
     scope->ordered = NULL;
     scope->owner.sym = NULL;
-    scope->names = HashCreate( hashTableSize[scope->id] );
+    scope->names = HashCreateByIndex( hashTableSizeIndex[scope->id] );
 }
 
 static SCOPE makeScope( scope_type_t scope_type )
@@ -604,7 +604,7 @@ static SCOPE makeScope( scope_type_t scope_type )
     new_scope->enclosing = NULL;
     new_scope->ordered = NULL;
     new_scope->owner.sym = NULL;
-    new_scope->names = HashCreate( hashTableSize[scope_type] );
+    new_scope->names = HashCreateByIndex( hashTableSizeIndex[scope_type] );
     new_scope->using_list = NULL;
     DbgStmt( if( recordableScope( new_scope ) ) DbgRememberScope( new_scope ); );
     return( new_scope );

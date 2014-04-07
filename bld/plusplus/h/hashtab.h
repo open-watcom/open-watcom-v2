@@ -33,23 +33,11 @@
 #ifndef _HASHTAB_H
 #define _HASHTAB_H
 
-#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
-#define SYMBOL_NAME_SHIFT	5
-#else
-#define SYMBOL_NAME_SHIFT	4
-#endif
-
-#ifndef NDEBUG
-#define MIN_HASHTAB_SIZE        (1)
-#else
-#define MIN_HASHTAB_SIZE        (5)
-#endif
-#define MAX_HASHTAB_SIZE        (CV_SHIFT - SYMBOL_NAME_SHIFT)
-
 typedef struct hash_tab *HASHTAB;
 
 extern void HashPostInit( SCOPE );      // called after scopes are initialized
-extern HASHTAB HashCreate( unsigned init_table_size);
+extern HASHTAB HashCreate( unsigned init_table_size );
+extern HASHTAB HashCreateByIndex( unsigned init_table_size_index );
 extern void HashDestroy( HASHTAB );
 extern HASHTAB HashMakeMax( HASHTAB );
 extern bool HashEmpty( HASHTAB );

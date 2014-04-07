@@ -692,16 +692,16 @@ PCH_struct type {
     type_dbgflag        dbgflag;
 };
 
-#define SCOPE_DEFS                                                                    \
- SCOPE_DEF(SCOPE_FILE,          MIN_HASHTAB_SIZE+2 ) /* file scope                  */\
-,SCOPE_DEF(SCOPE_CLASS,         MIN_HASHTAB_SIZE+2 ) /* class scope                 */\
-,SCOPE_DEF(SCOPE_FUNCTION,      MIN_HASHTAB_SIZE )   /* function arguments          */\
-,SCOPE_DEF(SCOPE_BLOCK,         MIN_HASHTAB_SIZE )   /* {} block scopes             */\
-,SCOPE_DEF(SCOPE_TEMPLATE_DECL, MIN_HASHTAB_SIZE )   /* template declaration scope  */\
-,SCOPE_DEF(SCOPE_TEMPLATE_INST, MIN_HASHTAB_SIZE )   /* template instantiation scope*/\
-,SCOPE_DEF(SCOPE_TEMPLATE_PARM, MIN_HASHTAB_SIZE )   /* template parameters scope   */\
-,SCOPE_DEF(SCOPE_TEMPLATE_SPEC_PARM, MIN_HASHTAB_SIZE ) /* template parameters (for template specializations) scope   */\
-,SCOPE_DEF(SCOPE_FREE,          MIN_HASHTAB_SIZE )   /* unused scope (pcheader)     */
+#define SCOPE_DEFS                                                       \
+ SCOPE_DEF(SCOPE_FILE,          2 )     /* file scope                  */\
+,SCOPE_DEF(SCOPE_CLASS,         2 )     /* class scope                 */\
+,SCOPE_DEF(SCOPE_FUNCTION,      0 )     /* function arguments          */\
+,SCOPE_DEF(SCOPE_BLOCK,         0 )     /* {} block scopes             */\
+,SCOPE_DEF(SCOPE_TEMPLATE_DECL, 0 )     /* template declaration scope  */\
+,SCOPE_DEF(SCOPE_TEMPLATE_INST, 0 )     /* template instantiation scope*/\
+,SCOPE_DEF(SCOPE_TEMPLATE_PARM, 0 )     /* template parameters scope   */\
+,SCOPE_DEF(SCOPE_TEMPLATE_SPEC_PARM, 0 ) /* template parameters (for template specializations) scope */\
+,SCOPE_DEF(SCOPE_FREE,          0 )     /* unused scope (pcheader)     */
 
 typedef enum {
     #define SCOPE_DEF(a,b) a
