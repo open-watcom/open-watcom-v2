@@ -32,12 +32,12 @@
 #ifndef MACRO_H
 #define MACRO_H
 
-enum special_macros {
+typedef enum {
     #define pick( s, i, f )    i,
     #include "specmac.h"
     #undef pick
     MACRO_MAX
-};
+} special_macros;
 
 typedef enum {                          // kind of macro scanning
     MSCAN_MANY          = 0x01,         // - many tokens to be scanned

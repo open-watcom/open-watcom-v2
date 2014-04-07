@@ -42,22 +42,27 @@
 #include "hashtab.h"
 
 #if defined( LONG_IS_64BIT ) || defined( _WIN64 )
-#define SYMBOL_NAME_SHIFT       5
+#define SYMBOL_NAME_SHIFT       6       // 64 items
 #else
-#define SYMBOL_NAME_SHIFT       4
+#define SYMBOL_NAME_SHIFT       5       // 32 items
 #endif
 
 #ifndef NDEBUG
-#define MIN_HASHTAB_SIZE        (1)
+#define MIN_HASHTAB_SIZE        (1)     // 2 items
 #else
-#define MIN_HASHTAB_SIZE        (5)
+#define MIN_HASHTAB_SIZE        (5)     // 32 items
 #endif
-#define MAX_HASHTAB_SIZE        (CV_SHIFT - SYMBOL_NAME_SHIFT)
+#define MAX_HASHTAB_SIZE        (11)    // 2048 items
 
-#define BLOCK_HASHTAB           (32) // number of HASTAB struct pre-allocated
+#define BLOCK_HASHTAB           (32)    // number of HASTAB struct pre-allocated
 
-#define MIN_CARVE_SIZE          (1024) // minimum size to carve
+#define MIN_CARVE_SIZE          (1024)  // minimum size to carve
 #define CARVE_TABLE_SIZE        ((MAX_HASHTAB_SIZE - MIN_HASHTAB_SIZE) + 1)
+
+#if CV_SHIFT < (MAX_HASHTAB_SIZE + SYMBOL_NAME_SHIFT)
+/* increase CV_SHIFT value in fe_misc/h/carve.h */
+# error Insufficient space in carved block, increase CV_SHIFT value
+#endif
 
 #define HASHTAB_INDEX(p)        (p - MIN_HASHTAB_SIZE)
 
@@ -387,7 +392,7 @@ void expandHASHTAB( HASHTAB hash )
             hash->expand_next = expand_next;
             half <<= 1;
             old_size = base2( half );
-            DbgAssert( old_size + 1 <= MAX_HASHTAB_SIZE );
+            DbgAssert( old_size < MAX_HASHTAB_SIZE );
             hash->half = half;
             old_table = hash->table;
             table = CarveAlloc( carveTable[HASHTAB_INDEX( old_size + 1 )] );

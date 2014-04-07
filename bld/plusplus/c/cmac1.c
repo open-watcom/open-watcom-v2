@@ -76,14 +76,14 @@ static MACRO_TOKEN *scannerTokenList;
 static MACRO_TOKEN *internalTokenList;
 static unsigned macroDepth;
 
-static MACRO_TOKEN  *macroExpansion( MEPTR, int );
+static MACRO_TOKEN  *macroExpansion( MEPTR, bool );
 static MACRO_TOKEN  *nestedMacroExpansion( MEPTR, bool );
 
 typedef struct special_macro_name SPECIAL_MACRO_NAME;
 static struct special_macro_name {
-    char        *name;
-    int         value;
-    macro_flags flags;
+    char            *name;
+    special_macros  value;
+    macro_flags     flags;
 } SpcMacros[] = {
     #define pick( s, i, f )    { s, i, f },
     #include "specmac.h"
@@ -323,7 +323,7 @@ static int file_name_copy(       // COPY STRING, ESCAPING ANY BACKSLASHES
 #define _FUNCTION_expandable    (CompFlags.cpp_output == 0)
 
 static TOKEN genFUNCTION(
-    int spec_macro )
+    special_macros spec_macro )
 {
     SYMBOL sym;
     size_t len;
@@ -758,7 +758,7 @@ static MEPTR isAMacro( MACRO_TOKEN *mtok )
     return( fmentry );
 }
 
-static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, int rescanning )
+static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 {
     MEPTR fmentry;
     MACRO_TOKEN *mtok;
@@ -1263,7 +1263,7 @@ static void markUnexpandableIds( MACRO_TOKEN *head )
     }
 }
 
-static MACRO_TOKEN *macroExpansion( MEPTR fmentry, int rescanning )
+static MACRO_TOKEN *macroExpansion( MEPTR fmentry, bool rescanning )
 {
     MACRO_ARG *macro_parms;
     MACRO_TOKEN *head;

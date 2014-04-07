@@ -692,16 +692,16 @@ PCH_struct type {
     type_dbgflag        dbgflag;
 };
 
-#define SCOPE_DEFS                                                       \
- SCOPE_DEF(SCOPE_FILE,          2 )     /* file scope                  */\
-,SCOPE_DEF(SCOPE_CLASS,         2 )     /* class scope                 */\
-,SCOPE_DEF(SCOPE_FUNCTION,      0 )     /* function arguments          */\
-,SCOPE_DEF(SCOPE_BLOCK,         0 )     /* {} block scopes             */\
-,SCOPE_DEF(SCOPE_TEMPLATE_DECL, 0 )     /* template declaration scope  */\
-,SCOPE_DEF(SCOPE_TEMPLATE_INST, 0 )     /* template instantiation scope*/\
-,SCOPE_DEF(SCOPE_TEMPLATE_PARM, 0 )     /* template parameters scope   */\
+#define SCOPE_DEFS                                                        \
+ SCOPE_DEF(SCOPE_FILE,               2 ) /* file scope                  */\
+,SCOPE_DEF(SCOPE_CLASS,              2 ) /* class scope                 */\
+,SCOPE_DEF(SCOPE_FUNCTION,           0 ) /* function arguments          */\
+,SCOPE_DEF(SCOPE_BLOCK,              0 ) /* {} block scopes             */\
+,SCOPE_DEF(SCOPE_TEMPLATE_DECL,      0 ) /* template declaration scope  */\
+,SCOPE_DEF(SCOPE_TEMPLATE_INST,      0 ) /* template instantiation scope*/\
+,SCOPE_DEF(SCOPE_TEMPLATE_PARM,      0 ) /* template parameters scope   */\
 ,SCOPE_DEF(SCOPE_TEMPLATE_SPEC_PARM, 0 ) /* template parameters (for template specializations) scope */\
-,SCOPE_DEF(SCOPE_FREE,          0 )     /* unused scope (pcheader)     */
+,SCOPE_DEF(SCOPE_FREE,               0 ) /* unused scope (pcheader)     */
 
 typedef enum {
     #define SCOPE_DEF(a,b) a
@@ -710,30 +710,30 @@ typedef enum {
 ,   SCOPE_MAX
 } scope_type_t;
 
-#define SC_DEFS                                                           \
- SC_DEF(SC_NULL                )/* not defined                          */\
-,SC_DEF(SC_EXTERN              )/* external reference                   */\
-,SC_DEF(SC_STATIC              )/* static definition                    */\
-,SC_DEF(SC_AUTO                )/* automatic storage                    */\
-,SC_DEF(SC_REGISTER            )/* register storage                     */\
-,SC_DEF(SC_TYPEDEF             )/* typedef symbol                       */\
-,SC_DEF(SC_ACCESS              )/* member access symbol (11.3)          */\
-,SC_DEF(SC_DEFAULT             )/* represents a default argument value  */\
-,SC_DEF(SC_ENUM                )/* enumerated constant                  */\
-,SC_DEF(SC_MEMBER              )/* class member                         */\
-,SC_DEF(SC_PUBLIC              )/* defined and symbol exported          */\
-,SC_DEF(SC_NAMESPACE           )/* symbol is a namespace id             */\
-,SC_DEF(SC_CLASS_TEMPLATE      )/* symbol is a class template           */\
-,SC_DEF(SC_FUNCTION_TEMPLATE   )/* symbol is a function template        */\
-,SC_DEF(SC_EXTERN_FUNCTION_TEMPLATE   )/* symbol is an extern function template */\
+#define SC_DEFS                                                               \
+ SC_DEF(SC_NULL                    )/* not defined                          */\
+,SC_DEF(SC_EXTERN                  )/* external reference                   */\
+,SC_DEF(SC_STATIC                  )/* static definition                    */\
+,SC_DEF(SC_AUTO                    )/* automatic storage                    */\
+,SC_DEF(SC_REGISTER                )/* register storage                     */\
+,SC_DEF(SC_TYPEDEF                 )/* typedef symbol                       */\
+,SC_DEF(SC_ACCESS                  )/* member access symbol (11.3)          */\
+,SC_DEF(SC_DEFAULT                 )/* represents a default argument value  */\
+,SC_DEF(SC_ENUM                    )/* enumerated constant                  */\
+,SC_DEF(SC_MEMBER                  )/* class member                         */\
+,SC_DEF(SC_PUBLIC                  )/* defined and symbol exported          */\
+,SC_DEF(SC_NAMESPACE               )/* symbol is a namespace id             */\
+,SC_DEF(SC_CLASS_TEMPLATE          )/* symbol is a class template           */\
+,SC_DEF(SC_FUNCTION_TEMPLATE       )/* symbol is a function template        */\
+,SC_DEF(SC_EXTERN_FUNCTION_TEMPLATE)/* symbol is an extern function template */\
 ,SC_DEF(SC_STATIC_FUNCTION_TEMPLATE)/* symbol is a static function template */\
-                                /* **** used only in Code Generation:   */\
-,SC_DEF(SC_VIRTUAL_FUNCTION    )/* indirect symbol for a virt. fn call  */\
-                                /* **** only in template instantiation  */\
-,SC_DEF(SC_ADDRESS_ALIAS       )/* symbol use in template instantiations*/\
-                                /* **** used only when writing pchdrs   */\
-,SC_DEF(SC_FREE                )/* used for precompiled headers         */\
-,SC_DEF(SC_MAX                 )
+                                    /* **** used only in Code Generation:   */\
+,SC_DEF(SC_VIRTUAL_FUNCTION        )/* indirect symbol for a virt. fn call  */\
+                                    /* **** only in template instantiation  */\
+,SC_DEF(SC_ADDRESS_ALIAS           )/* symbol use in template instantiations*/\
+                                    /* **** used only when writing pchdrs   */\
+,SC_DEF(SC_FREE                    )/* used for precompiled headers         */\
+,SC_DEF(SC_MAX                     )
 
 
 typedef enum {

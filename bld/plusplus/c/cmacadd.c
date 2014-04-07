@@ -581,7 +581,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 
 MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     char *name,                 // - macro name
-    unsigned value,             // - value for special macro
+    special_macros value,       // - value for special macro
     macro_flags flags )         // - macro flags
 {
     size_t len;
