@@ -135,18 +135,20 @@ __task_start:
 ; IN: EDX   Task callback
 ; IN: EDI   Task name
 ; IN: EAX   Task data
+; IN: EBX   Task prio
 ; IN: ECX   Stack size
 
 __create_thread:
 	push ds
 	pushad
 ;
+    push ebx
 	mov bx,cs
 	mov ds,bx
 	mov esi,OFFSET __task_start
 	mov fs:__pv_arbitrary,eax
 	mov bx,fs
-	mov ax,2
+	pop eax
 	UserGate create_thread_nr
 ;
 	mov eax,10

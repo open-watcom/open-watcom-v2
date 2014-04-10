@@ -135,7 +135,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
   _WCRTLINK extern unsigned long __threadhandle( void );
  #elif defined(__RDOS__)
   _WCRTLINK extern int  _beginthread(
-                void (*__start_address)(void *),
+                void (*__start_address)(void *), int prio,
                 const char *thread_name,
                 unsigned __stack_size, void *__arglist );
  #elif defined(__RDOSDEV__)

@@ -70,13 +70,13 @@
   extern void __tls_free(int index);
   extern void *__tls_get_value(int index);
   extern void __tls_set_value(int index, void *data);
-  extern void __create_thread(void (*Start)(void *Param), const char *Name, void *Param, int StackSize);
+  extern void __create_thread(void (*Start)(void *Param), int Prio, const char *Name, void *Param, int StackSize);
 
   #pragma aux __tls_alloc "*" modify [ecx] value [eax];
   #pragma aux __tls_free "*" parm [ecx] modify [eax];
   #pragma aux __tls_get_value "*" parm [ecx] modify [edx] value [eax];
   #pragma aux __tls_set_value "*" parm [ecx] [eax] modify [edx];
-  #pragma aux __create_thread "*" parm [edx] [edi] [eax] [ecx];
+  #pragma aux __create_thread "*" parm [edx] [ebx] [edi] [eax] [ecx];
 
 #elif defined( __RDOSDEV__ )
   #include <rdos.h>

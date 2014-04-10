@@ -81,12 +81,12 @@ void RdosGetModuleResourceBase();
 
 void RdosCreateThread( void (*Startup)(void *Param), const char *Name, void *Param, int StackSize )
 {
-    _beginthread( Startup, Name, StackSize, Param );
+    _beginthread( Startup, 2, Name, StackSize, Param );
 }
 
 void RdosCreatePrioThread( void (*Start)(void *Param), int Prio, const char *Name, void *Param, int StackSize )
 {
-    _beginthread( Start, Name, StackSize, Param );
+    _beginthread( Start, Prio, Name, StackSize, Param );
 }
 
 void RdosSpawnBase();

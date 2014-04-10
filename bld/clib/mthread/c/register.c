@@ -54,11 +54,11 @@ _WCRTLINK unsigned long _beginthread( thread_fn *start_addr,
     return( __BeginThread( start_addr, NULL, stack_size, arglist ) );
 }
 #elif defined( __RDOS__ )
-_WCRTLINK int _beginthread( thread_fn *start_addr,
+_WCRTLINK int _beginthread( thread_fn *start_addr, int prio,
                         const char *thread_name,
                         unsigned stack_size, void *arglist )
 {
-    return( __BeginThread( start_addr, thread_name, stack_size, arglist ) );
+    return( __BeginThread( start_addr, prio, thread_name, stack_size, arglist ) );
 }
 #elif defined( __RDOSDEV__ )
 _WCRTLINK int _beginthread( thread_fn *start_addr, int prio,

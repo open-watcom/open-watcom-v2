@@ -108,7 +108,7 @@ static void begin_thread_helper( void *param )
      return;
 }
 
-int __CBeginThread( thread_fn *start_addr, const char *thread_name,
+int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
                          unsigned stack_size, void *arglist )
 /************************************************************/
 {
@@ -137,7 +137,7 @@ int __CBeginThread( thread_fn *start_addr, const char *thread_name,
     RdosResetSignal( td->signal );
     RdosAddWaitForSignal( wait_handle, td->signal, 0 );
 
-    __create_thread(begin_thread_helper, thread_name, td, stack_size);
+    __create_thread(begin_thread_helper, prio, thread_name, td, stack_size);
 
     RdosWaitForever( wait_handle );
     RdosFreeSignal( td->signal );
