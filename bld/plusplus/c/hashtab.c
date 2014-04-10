@@ -41,28 +41,20 @@
 #include "pcheader.h"
 #include "hashtab.h"
 
-#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
-#define SYMBOL_NAME_SHIFT       6       // 64 items
-#else
-#define SYMBOL_NAME_SHIFT       5       // 32 items
-#endif
+#define MAX_HASH                4096
+#define EXPAND_THRESHOLD        5
 
 #ifndef NDEBUG
 #define MIN_HASHTAB_SIZE        (1)     // 2 items
 #else
 #define MIN_HASHTAB_SIZE        (5)     // 32 items
 #endif
-#define MAX_HASHTAB_SIZE        (11)    // 2048 items
+#define MAX_HASHTAB_SIZE        (12)    // 4096 items
 
 #define BLOCK_HASHTAB           (32)    // number of HASTAB struct pre-allocated
 
 #define MIN_CARVE_SIZE          (1024)  // minimum size to carve
 #define CARVE_TABLE_SIZE        ((MAX_HASHTAB_SIZE - MIN_HASHTAB_SIZE) + 1)
-
-#if CV_SHIFT < (MAX_HASHTAB_SIZE + SYMBOL_NAME_SHIFT)
-/* increase CV_SHIFT value in fe_misc/h/carve.h */
-# error Insufficient space in carved block, increase CV_SHIFT value
-#endif
 
 #define HASHTAB_INDEX(p)        (p - MIN_HASHTAB_SIZE)
 
@@ -77,16 +69,12 @@ ExtraRptCtr( hash_searches );
 ExtraRptCtr( hash_lookup_fail );
 ExtraRptCtr( hash_inserts );
 
-#define MAX_HASH                0x0fff
-#define EXPAND_THRESHOLD        5
-
 struct hash_tab {
     unsigned    avg;            // current average    (num_keys/buckets)
     unsigned    remainder;      // current remainder  (num_keys%buckets)
     unsigned    expand_next;    // next bucket to expand 0<=expand_next<half
     unsigned    half;           // number of buckets in full half of table
-    SYMBOL_NAME *table;         // table of size 2*half, with half+expand_next
-                                // buckets used
+    SYMBOL_NAME *table;         // table of size 2*half, with half+expand_next buckets used
 #ifndef NDEBUG
     unsigned    uniques;        // number of unique names inserted
     unsigned    looks;          // number of search requests
@@ -373,7 +361,7 @@ void expandHASHTAB( HASHTAB hash )
     half = hash->half;
     expand_next = hash->expand_next;
     buckets = half + expand_next;
-    if( buckets < MAX_HASH + 1 ) {
+    if( buckets < MAX_HASH ) {
         unsigned num_keys;
         unsigned avg;
         unsigned old_size;
