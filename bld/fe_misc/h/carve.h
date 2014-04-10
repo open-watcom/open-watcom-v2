@@ -84,9 +84,9 @@ extern void CarveFree( carve_t cv, void *elm );
 #ifdef CARVEPCH
 
 #if defined( LONG_IS_64BIT ) || defined( _WIN64 )
-#define CV_SHIFT		17
+#define CV_SHIFT                18
 #else
-#define CV_SHIFT		16
+#define CV_SHIFT                17
 #endif
 
 #define MK_INDEX( b, o )        (((b)<<CV_SHIFT)|((o)&((1<<CV_SHIFT)-1)))
