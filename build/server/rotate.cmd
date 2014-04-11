@@ -17,10 +17,8 @@ goto done
 
 rem Build Archives
 rem ==============
-if exist %WWWPATH%\snaparch\ss.zip %OWROOT%\build\bin\rm -f %WWWPATH%\snaparch\ss.zip
-if exist %WWWPATH%\snaparch\ss.7z %OWROOT%\build\bin\rm -f %WWWPATH%\snaparch\ss.7z
-"%ARCH7Z%" a -tzip -r %WWWPATH%\snaparch\ss.zip %OWRELROOT%\*
-"%ARCH7Z%" a -t7z -r %WWWPATH%\snaparch\ss.7z %OWRELROOT%\*
+if exist %WWWPATH%\snaparch\ss.7z del %WWWPATH%\snaparch\ss.7z
+%ARCH7Z% a -t7z -r %WWWPATH%\snaparch\ss.7z %OWRELROOT%\*
 
 rem Move build to snapshot directory
 rem ================================
@@ -30,9 +28,7 @@ move %OWRELROOT% %WWWPATH%\snapshot
 
 rem Move Archives
 rem =============
-if exist %WWWPATH%\snaparch\ow-snapshot.zip %OWROOT%\build\bin\rm -f %WWWPATH%\snaparch\ow-snapshot.zip
-if exist %WWWPATH%\snaparch\ow-snapshot.7z %OWROOT%\build\bin\rm -f %WWWPATH%\snaparch\ow-snapshot.7z
-move %WWWPATH%\snaparch\ss.zip %WWWPATH%\snaparch\ow-snapshot.zip
+if exist %WWWPATH%\snaparch\ow-snapshot.7z del %WWWPATH%\snaparch\ow-snapshot.7z
 move %WWWPATH%\snaparch\ss.7z %WWWPATH%\snaparch\ow-snapshot.7z
 
 rem Move installers
