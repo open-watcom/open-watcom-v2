@@ -2957,7 +2957,7 @@ template-declaration
 
 /* differs from standard */
 template-declaration-start
-    : template-key template-declaration-init lt-special template-opt-parameter-list Y_GT_SPECIAL
+    : template-key template-declaration-init lt-special template-parameter-list-opt Y_GT_SPECIAL
     ;
 
 /* differs from standard */
@@ -3013,7 +3013,7 @@ template-declaration-init
     ;
 
 /* non standard */
-template-opt-parameter-list
+template-parameter-list-opt
     : /* nothing */
     {
         pushDefaultDeclSpec( state );
