@@ -124,8 +124,8 @@ typedef struct chain CHAIN;
 struct chain {
     CHAIN       *next;
     char        *Usage[LANG_MAX];
-    int         clen;
-    int         len;
+    size_t      clen;
+    size_t      len;
     unsigned    usage_used : 1;
     unsigned    code_used : 1;
     char        name[1];
@@ -165,7 +165,7 @@ struct option {
     unsigned    is_timestamp : 1;
     unsigned    is_negate : 1;
     CHAIN       *chain;
-    int         slen;
+    size_t      slen;
     char        *sname;
     char        name[1];
 };
@@ -381,9 +381,9 @@ static int cmpOptName( char *n1, char *n2 )
     return( 1 );
 }
 
-static int cmpChainName( char *n1, char *n2, int len )
+static int cmpChainName( char *n1, char *n2, size_t len )
 {
-    int     i;
+    size_t  i;
     char    c1;
     char    c2;
 
@@ -1539,7 +1539,7 @@ static CODESEQ *reorderCode( CODESEQ *c )
     return( h );
 }
 
-static int markChainCode( CODESEQ *h, int level )
+static int markChainCode( CODESEQ *h, size_t level )
 {
     CODESEQ *c;
     int     rc;
@@ -1873,7 +1873,7 @@ static void outputFN_FINI( void )
 static int usageCmp( const void *v1, const void *v2 )
 {
     int     res;
-    int     clen;
+    size_t  clen;
     OPTION  *o1 = *(OPTION **)v1;
     OPTION  *o2 = *(OPTION **)v2;
     char    *n1 = o1->sname;
@@ -1885,8 +1885,10 @@ static int usageCmp( const void *v1, const void *v2 )
             clen = o2->chain->clen;
         } else if( o2->chain == NULL ) {
             clen = o1->chain->clen;
+        } else if( o1->chain->clen > o2->chain->clen ) {
+            clen = o1->chain->clen;
         } else {
-            clen = max( o1->chain->clen, o2->chain->clen );
+            clen = o2->chain->clen;
         }
         res = strnicmp( n1, n2, clen );
         if( res == 0 ) {
@@ -1919,7 +1921,7 @@ static int usageCmp( const void *v1, const void *v2 )
 static void catArg( char *arg )
 {
     char *p;
-    unsigned len;
+    size_t len;
 
     len = strlen( tokbuff );
     p = &tokbuff[len];
@@ -2002,7 +2004,7 @@ static size_t genOptionUsageStart( OPTION *o )
     return( len );
 }
 
-static void fillOutSpaces( char *buff, int n )
+static void fillOutSpaces( char *buff, size_t n )
 {
     char *p;
 
@@ -2059,6 +2061,7 @@ static void createChainHeader( OPTION **o, unsigned language, int max )
     char    *usage;
     CHAIN   *cn;
     int     i;
+    size_t  len;
 
     cn = (*o)->chain;
     hdrbuff[0] = '-';
@@ -2076,7 +2079,9 @@ static void createChainHeader( OPTION **o, unsigned language, int max )
         }
     }
     strcat( hdrbuff, "} " );
-    fillOutSpaces( hdrbuff, max - strlen( hdrbuff ) );
+    len = strlen( hdrbuff );
+    if( max > len )
+        fillOutSpaces( hdrbuff, max - len );
     usage = cn->Usage[language];
     if( usage == NULL || *usage == '\0' ) {
         usage = cn->Usage[LANG_English];
@@ -2181,7 +2186,8 @@ static void processUsage( unsigned language, void (*process_line)( int ) )
         }
         tokbuff[0] = '\0';
         len = genOptionUsageStart( o );
-        fillOutSpaces( tokbuff, max - len );
+        if( max > len )
+            fillOutSpaces( tokbuff, max - len );
         if( o->chain != NULL ) {
             strcat( tokbuff, "- " );
         }
