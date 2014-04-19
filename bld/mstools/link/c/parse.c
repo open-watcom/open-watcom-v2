@@ -867,4 +867,4 @@ static int OPT_GET_NUMBER( unsigned *p )
 
 
 /* Include after all static functions were declared */
-#include "optparsc.gh"
+#include "optparse.gc"

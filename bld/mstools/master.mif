@@ -7,6 +7,9 @@ proj_name = mstools
 mstools_autodepends = .AUTODEPEND
 !endif
 
+# Extra files to delete on clean
+additional_cleanup = *.gc
+
 !ifeq target_cpu axp
 targdef = -D__TARGET_AXP__
 !else ifeq target_cpu ppc
@@ -60,14 +63,14 @@ veraxp_res_exe_nt_x64 = veraxp.res
 verppc_res_exe_nt_386 = verppc.res
 verppc_res_exe_nt_x64 = verppc.res
 
-optp386c.gh optp386h.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optp386h.gh optp386c.gh usage386.gh i86
+optp386.gc optp386.gh : ../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ optp386.gh optp386.gc usage386.gh i86
 
-optpaxpc.gh optpaxph.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optpaxph.gh optpaxpc.gh usageaxp.gh axp
+optpaxp.gc optpaxp.gh : ../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ optpaxp.gh optpaxp.gc usageaxp.gh axp
 
-optpppcc.gh optpppch.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optpppch.gh optpppcc.gh usageppc.gh ppc
+optpppc.gc optpppc.gh : ../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ optpppc.gh optpppc.gc usageppc.gh ppc
 
-optparsc.gh optparsh.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optparsh.gh optparsc.gh usagemsg.gh i86
+optparse.gc optparse.gh : ../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ optparse.gh optparse.gc usagemsg.gh i86

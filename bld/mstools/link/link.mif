@@ -19,7 +19,7 @@ link_common_objs    = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(ms
 link386_objs        = deff386.obj link386.obj mesg386.obj xlate386.obj $(link_common_objs)
 linkaxp_objs        = deffaxp.obj linkaxp.obj mesgaxp.obj xlateaxp.obj $(link_common_objs)
 linkppc_objs        = deffppc.obj linkppc.obj mesgppc.obj xlateppc.obj $(link_common_objs)
-link_hdrs           = optparsh.gh
+link_hdrs           = optparse.gh
 link_common_libs    = $(orl_lib)
 
 .c :  ../c;../../c;$(lib_misc_dir)/c

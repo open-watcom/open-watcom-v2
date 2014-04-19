@@ -22,7 +22,7 @@ lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(ms
 lib386_objs         = deff386.obj lib386.obj mesg386.obj xlate386.obj $(lib_common_objs)
 libaxp_objs         = deffaxp.obj libaxp.obj mesgaxp.obj xlateaxp.obj $(lib_common_objs)
 libppc_objs         = deffppc.obj libppc.obj mesgppc.obj xlateppc.obj $(lib_common_objs)
-lib_hdrs            = optparsh.gh
+lib_hdrs            = optparse.gh
 lib_common_libs     = $(orl_lib)
 
 .c :  ../c;../../c;$(lib_misc_dir)/c

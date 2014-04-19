@@ -6,7 +6,7 @@ extra_cpp_flags = $(targdef)
 
 common_objs = parse.obj $(mstools_objs)
 asaxp_objs  = asaxp.obj message.obj translat.obj $(common_objs)
-asaxp_hdrs  = optparsh.gh
+asaxp_hdrs  = optparse.gh
 
 asaxp.exe : $(asaxp_hdrs) $(asaxp_objs)
 !ifndef __WATCOM__

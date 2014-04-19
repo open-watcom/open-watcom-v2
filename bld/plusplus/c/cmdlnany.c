@@ -55,7 +55,7 @@
 #include "initdefs.h"
 #include "brinfo.h"
 
-#include "cmdlnpr1.gh"
+#include "cmdlnprs.gh"
 #include "cmdlnsys.h"
 
 
@@ -666,7 +666,7 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
     }
 }
 
-#include "cmdlnpr2.gh"
+#include "cmdlnprs.gc"
 
 static bool openCmdFile(        // OPEN A COMMAND FILE
     char const *filename,       // - file name

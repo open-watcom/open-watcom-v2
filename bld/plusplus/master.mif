@@ -19,7 +19,7 @@ exename     +=$(target_cpu)
 #suppress_zc = 1
  
 # Extra files to delete on clean
-additional_cleanup = *.u *.int y.out ytab.* *.mbr $(dll_subdir)/*.mbr
+additional_cleanup = *.u *.int *.gc y.out ytab.* *.mbr $(dll_subdir)/*.mbr
  
 !include cproj.mif
 !include defrule.mif
@@ -47,7 +47,7 @@ pre_obj_deps = &
     weights.gh &
     keywords.gh &
     yylex.gh &
-    cmdlnpr1.gh &
+    cmdlnprs.gh &
     $(asminline_deps) &
     code$(target_cpu).gh
  
@@ -270,8 +270,8 @@ optencod_targ_linux = linux
 optencod_targ_dbg = dbg
 !endif
  
-cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh usage01.int : ../../gml/options.gml
-    optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnpr1.gh cmdlnpr2.gh cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int : ../../gml/options.gml
+    optencod -i -n -q $(optencod_opt_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
  
 ./icmask.exe: ../../c/icmask.c
     $(bld_cl) $[@ $(bld_clflags) -I"../../h" $(bld_ldflags)

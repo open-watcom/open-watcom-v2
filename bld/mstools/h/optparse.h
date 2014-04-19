@@ -33,7 +33,7 @@
 #define OPTPARSE_H_INCLUDED
 
 
-#include "optparsh.gh"
+#include "optparse.gh"
 
 void    OPT_INIT( OPT_STORAGE *data );
 void    OPT_FINI( OPT_STORAGE *data );

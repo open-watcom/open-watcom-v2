@@ -673,4 +673,4 @@ static void OPT_UNGET( void )
 
 
 /* Include after all static functions were declared */
-#include "optparsc.gh"
+#include "optparse.gc"

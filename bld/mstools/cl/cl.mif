@@ -7,9 +7,9 @@ cl_common_objs  = macro.obj $(mstools_objs)
 cl386_objs      = cl386.obj mesg386.obj parse386.obj xlate386.obj $(cl_common_objs)
 claxp_objs      = claxp.obj mesgaxp.obj parseaxp.obj xlateaxp.obj $(cl_common_objs)
 clppc_objs      = clppc.obj mesgppc.obj parseppc.obj xlateppc.obj $(cl_common_objs)
-cl386_hdrs      = optp386h.gh
-claxp_hdrs      = optpaxph.gh
-clppc_hdrs      = optpppch.gh
+cl386_hdrs      = optp386.gh
+claxp_hdrs      = optpaxp.gh
+clppc_hdrs      = optpppc.gh
 
 #
 # Define the name(s) of the program(s) to build.
