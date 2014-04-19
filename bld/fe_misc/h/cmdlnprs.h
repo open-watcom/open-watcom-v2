@@ -45,6 +45,15 @@ void CheckErrorLimit            // VALIDATE THE ERROR LIMIT
 void CheckWarnLevel             // VALIDATE WARNING LEVEL
     ( unsigned *p )             // - value
 ;
+void OPT_INIT
+	( OPT_STORAGE *data )
+;
+void OPT_FINI
+	( OPT_STORAGE *data )
+;
+int OPT_PROCESS
+	( OPT_STORAGE *data )
+;
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
 ;
@@ -54,6 +63,9 @@ void OPT_CLEAN_STRING           // CLEAN UP STRINGS
 int OPT_END( void )             // DETECT END OF CHAIN
 ;
 int OPT_GET_ID                  // GET AN ID
+    ( OPT_STRING **p )          // - target
+;
+int OPT_GET_ID_OPT              // GET A OPTIONAL ID
     ( OPT_STRING **p )          // - target
 ;
 int OPT_GET_LOWER               // GET CHAR IN LOWERCASE
@@ -72,6 +84,9 @@ int OPT_GET_NUMBER_MULTIPLE     // PARSE: OPTION #
 int OPT_GET_PATH                // PARSE: PATH
     ( OPT_STRING **p )          // - target
 ;
+int OPT_GET_PATH_OPT            // PARSE: OPTIONAL PATH
+    ( OPT_STRING **p )          // - target
+;
 int OPT_GET_FILE                // PARSE: FILE
     ( OPT_STRING **p )          // - target
 ;
@@ -80,6 +95,15 @@ int OPT_GET_FILE_OPT            // PARSE: OPTIONAL FILE
 ;
 int OPT_GET_DIR                 // PARSE: DIR
     ( OPT_STRING **p )          // - target
+;
+int OPT_GET_DIR_OPT             // PARSE: OPTIONAL DIR
+    ( OPT_STRING **p )          // - target
+;
+int OPT_GET_CHAR                // PARSE: CHAR
+    ( int *c )                  // - target
+;
+int OPT_GET_CHAR_OPT            // PARSE: OPTIONAL CHAR
+    ( int *c )                  // - target
 ;
 int OPT_RECOG                   // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
