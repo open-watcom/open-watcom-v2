@@ -45,14 +45,6 @@ void CheckErrorLimit            // VALIDATE THE ERROR LIMIT
 void CheckWarnLevel             // VALIDATE WARNING LEVEL
     ( unsigned *p )             // - value
 ;
-void HandleOptionEQ(            // PROCESS -eq OPTION
-    OPT_STORAGE *data,          // - data
-    int value )                 // - value to set option to
-;
-void HandleOptionEW(            // PROCESS -ew OPTION
-    OPT_STORAGE *data,          // - data
-    int value )                 // - value to set option to
-;
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
 ;

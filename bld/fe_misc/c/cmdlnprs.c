@@ -127,20 +127,6 @@ void StripQuotes                // STRIP QUOTES FROM A STRING
 }
 
 
-void HandleOptionEQ( OPT_STORAGE *data, int value )
-{
-    data = data;
-    CompFlags.eq_switch_used = value;
-}
-
-
-void HandleOptionEW( OPT_STORAGE *data, int value )
-{
-    data = data;
-    CompFlags.ew_switch_used = value;
-}
-
-
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
 {
