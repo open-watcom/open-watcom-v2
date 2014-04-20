@@ -221,6 +221,9 @@ static void add_string( StringList **p, char *str )
     size_t              len;
     char *              str;
 
+#ifdef __TARGET_AXP__
+    dofuzzylink = dofuzzylink;
+#endif
     CLEAR_GOT_FLAGS;            /* initialize locals */
     /*** Initialize ***/
     strip_quotes( newfilename );

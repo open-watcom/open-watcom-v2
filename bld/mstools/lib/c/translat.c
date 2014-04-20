@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "cmdline.h"
 #include "deffile.h"
 #include "error.h"

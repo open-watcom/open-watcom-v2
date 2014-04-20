@@ -32,6 +32,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "cl.h"
 #include "cmdline.h"
 #include "cmdscan.h"

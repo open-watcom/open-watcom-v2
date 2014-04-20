@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
@@ -94,17 +95,17 @@ static int lib( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /************************************************************/
 {
     char **             args;
-    int                 rc;
+    int                 rc = 0;
     char *              cmdFileName;
-    FILE *              fp;
+    FILE *              fp = NULL;
     int                 count;
     CmdLine *           spawnCmdLine;
 
 
     /*** Make the command file ***/
     args = MergeCmdLine( cmdLine, INVALID_MERGE_CMDLINE );
+    cmdFileName = tmpnam( NULL );
     if( !cmdOpts->noinvoke ) {
-        cmdFileName = tmpnam( NULL );
         fp = fopen( cmdFileName, "wt" );
         if( fp == NULL ) {
             FatalError( "Cannot open temporary file '%s' -- aborting", cmdFileName );

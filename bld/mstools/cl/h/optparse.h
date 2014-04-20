@@ -47,7 +47,7 @@
 
 void    OPT_INIT( OPT_STORAGE *data );
 void    OPT_FINI( OPT_STORAGE *data );
-int     OPT_PROCESS( OPT_STORAGE *data );
+bool    OPT_PROCESS( OPT_STORAGE *data );
 
 
 #endif

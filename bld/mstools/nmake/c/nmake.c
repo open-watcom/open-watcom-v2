@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "bool.h"
 #include "watcom.h"
 #include "cmdline.h"
 #include "context.h"

@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "bool.h"
 #include "nmake.h"
 #include "cmdline.h"
 #include "cmdscan.h"
@@ -189,8 +190,9 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
  * Takes care of the t010101010101 option.
  */
 static int parse_t010101010101( OPT_STRING **p )
-/******************************************/
+/**********************************************/
 {
+    p = p;
     return( 1 );
 }
 
@@ -203,8 +205,7 @@ static void OPT_CLEAN_STRING( OPT_STRING **p )
 {
     OPT_STRING *        s;
 
-    while( *p != NULL ) {
-        s = *p;
+    while( (s = *p) != NULL ) {
         *p = s->next;
         FreeMem( s );
     }

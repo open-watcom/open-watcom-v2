@@ -32,6 +32,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "cmdscan.h"
 #include "context.h"
 #include "error.h"
@@ -125,6 +126,7 @@ static int parse_machine( OPT_STRING **p )
 {
     char *              str;
 
+    p = p;
     if( !CmdScanRecogChar( ':' ) ) {
         FatalError( "/MACHINE requires an argument" );
         return( 0 );
