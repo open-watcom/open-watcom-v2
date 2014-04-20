@@ -1,6 +1,6 @@
 target_cpu = axp
 
-!include ../../master.mif
+!include ../../../master.mif
 
 extra_cpp_flags = $(targdef)
 

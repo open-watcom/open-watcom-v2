@@ -1,0 +1,2 @@
+target_cpu = 386
+!include ../../link.mif

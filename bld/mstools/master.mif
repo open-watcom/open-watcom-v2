@@ -35,12 +35,6 @@ targdef = -D__TARGET_386__
 !include defrule.mif
 !include deftarg.mif
 
-verrc_exe = $(name)
-verrc386_exe = $(name)386
-verrcaxp_exe = $(name)axp
-verrcppc_exe = $(name)ppc
-!include verrc.mif
-
 #
 # MSTOOLS macros.
 #
@@ -48,10 +42,10 @@ verrcppc_exe = $(name)ppc
 mstools_stub_obj    = stub.obj
 mstools_objs        = cmdline.obj cmdscan.obj context.obj error.obj file.obj memory.obj pathconv.obj
 
-.c :  ../c;../../c
-.h :  ../h;../../h
+.c :  ../../c;../../../c
+.h :  ../../h;../../../h
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"../c"
+inc_dirs = -I. -I"../../h" -I"../../../h" -I"../../c"
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -63,14 +57,18 @@ veraxp_res_exe_nt_x64 = veraxp.res
 verppc_res_exe_nt_386 = verppc.res
 verppc_res_exe_nt_x64 = verppc.res
 
-optp386.gc optp386.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optp386.gh optp386.gc usage386.gh i86
+verrc_exe = $(name)
+verrc386_exe = $(name)386
+verrcaxp_exe = $(name)axp
+verrcppc_exe = $(name)ppc
+!include verrc.mif
 
-optpaxp.gc optpaxp.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optpaxp.gh optpaxp.gc usageaxp.gh axp
+optencod_opts_386 = i86
+optencod_opts_axp = axp
+optencod_opts_ppc = ppc
 
-optpppc.gc optpppc.gh : ../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optpppc.gh optpppc.gc usageppc.gh ppc
+optp$(target_cpu).gc optp$(target_cpu).gh : ../../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ optp$(target_cpu).gh optp$(target_cpu).gc usage$(target_cpu).gh $(optencod_opts_$(target_cpu))
 
-optparse.gc optparse.gh : ../gml/ms.gml .EXPLICIT
+optparse.gc optparse.gh : ../../gml/ms.gml .EXPLICIT
         optencod -n -q $]@ optparse.gh optparse.gc usagemsg.gh i86

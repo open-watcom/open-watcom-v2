@@ -1,28 +1,15 @@
 name = lib
 
-!ifneq host_os nt
-!   error Unknown OS.
-!endif
-
-!include ../../master.mif
+!include ../../../master.mif
 
 !include $(orl_dir)/client.mif
-
-#
-# Define the name(s) of the program(s) to build.
-#
-!ifeq      host_os nt
-!   define lib_stub libx.exe
-!else
-!   define lib_stub
-!endif
 
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
 lib386_objs         = deff386.obj lib386.obj mesg386.obj xlate386.obj $(lib_common_objs)
 libaxp_objs         = deffaxp.obj libaxp.obj mesgaxp.obj xlateaxp.obj $(lib_common_objs)
 libppc_objs         = deffppc.obj libppc.obj mesgppc.obj xlateppc.obj $(lib_common_objs)
-lib_hdrs            = optparse.gh
+lib_hdrs            = optparse.gc
 lib_common_libs     = $(orl_lib)
 
 .c :  ../c;../../c;$(lib_misc_dir)/c
@@ -30,12 +17,18 @@ lib_common_libs     = $(orl_lib)
 
 inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 
-all: $(lib_stub) lib386.exe libaxp.exe libppc.exe
-
 #
 # Instructions for building the executable.
 #
-
+!ifdef target_cpu
+lib$(target_cpu).exe :  $(lib_hdrs) $(lib$(target_cpu)_objs) $(lib_common_libs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(lib$(target_cpu)_objs) $(lib_common_libs) $(ldflags)
+!else
+        $(linker) name $^@ $(lflags) file {$(lib$(target_cpu)_objs)} library {$(lib_common_libs)}
+!endif
+        @%make bind_ver$(target_cpu)_res_exe
+!else
 libx.exe :  $(libstub_objs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
         $(cl) $(clflags) $(libstub_objs) $(ldflags)
@@ -43,27 +36,4 @@ libx.exe :  $(libstub_objs) $(version_res_exe_$(host_os)_$(host_cpu))
         $(linker) name $^@ $(lflags) file {$(libstub_objs)}
 !endif
         @%make bind_version_res_exe
-
-lib386.exe :  $(lib_hdrs) $(lib386_objs) $(lib_common_libs) $(ver386_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(lib386_objs) $(lib_common_libs) $(ldflags)
-!else
-        $(linker) name $^@ $(lflags) file {$(lib386_objs)} library {$(lib_common_libs)}
 !endif
-        @%make bind_ver386_res_exe
-
-libaxp.exe :  $(lib_hdrs) $(libaxp_objs) $(lib_common_libs) $(veraxp_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(libaxp_objs) $(lib_common_libs) $(ldflags)
-!else
-        $(linker) name $^@ $(lflags) file {$(libaxp_objs)} library {$(lib_common_libs)}
-!endif
-        @%make bind_veraxp_res_exe
-
-libppc.exe :  $(lib_hdrs) $(libppc_objs) $(lib_common_libs) $(verppc_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(libppc_objs) $(lib_common_libs) $(ldflags)
-!else
-        $(linker) name $^@ $(lflags) file {$(libppc_objs)} library {$(lib_common_libs)}
-!endif
-        @%make bind_verppc_res_exe
