@@ -54,8 +54,6 @@
 #define FN_ID_OPT           "OPT_GET_ID_OPT"            // int ( OPT_STRING ** )
 #define FN_FILE             "OPT_GET_FILE"              // int ( OPT_STRING ** )
 #define FN_FILE_OPT         "OPT_GET_FILE_OPT"          // int ( OPT_STRING ** )
-#define FN_DIR              "OPT_GET_DIR"               // int ( OPT_STRING ** )
-#define FN_DIR_OPT          "OPT_GET_DIR_OPT"           // int ( OPT_STRING ** )
 #define FN_PATH             "OPT_GET_PATH"              // int ( OPT_STRING ** )
 #define FN_PATH_OPT         "OPT_GET_PATH_OPT"          // int ( OPT_STRING ** )
 
@@ -71,7 +69,7 @@
 
 #define BUFF_SIZE               1024
 
-#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_dir || (o)->is_path || (o)->is_special )
+#define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_special )
 #define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
 #define NOCHAIN                 ((CHAIN *)~0UL)
@@ -163,7 +161,6 @@ struct option {
     unsigned    is_id : 1;
     unsigned    is_char : 1;
     unsigned    is_file : 1;
-    unsigned    is_dir : 1;
     unsigned    is_optional : 1;
     unsigned    is_path : 1;
     unsigned    is_special : 1;
@@ -913,18 +910,6 @@ static void doFILE( char *p )
     }
 }
 
-// :dir.
-static void doDIR( char *p )
-{
-    OPTION *o;
-
-    p = p;
-    for( o = optionList; o != NULL; o = o->synonym ) {
-        o->is_dir = 1;
-        o->is_simple = 0;
-    }
-}
-
 // :optional.
 static void doOPTIONAL( char *p )
 {
@@ -1656,14 +1641,6 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         }
         ++depth;
         flag.close_value_if = 1;
-    } else if( o->is_dir ) {
-        if( o->is_optional ) {
-            emitPrintf( depth, "if( " FN_DIR_OPT "( &(data->%s) ) ) {\n", o->value_field_name );
-        } else {
-            emitPrintf( depth, "if( " FN_DIR "( &(data->%s) ) ) {\n", o->value_field_name );
-        }
-        ++depth;
-        flag.close_value_if = 1;
     } else if( o->is_path ) {
         if( o->is_optional ) {
             emitPrintf( depth, "if( " FN_PATH_OPT "( &(data->%s) ) ) {\n", o->value_field_name );
@@ -1985,12 +1962,6 @@ static size_t genOptionUsageStart( OPTION *o )
             catArg( "[=<file>]" );
         } else {
             catArg( "=<file>" );
-        }
-    } else if( o->is_dir ) {
-        if( o->is_optional ) {
-            catArg( "[=<dir>]" );
-        } else {
-            catArg( "=<dir>" );
         }
     } else if( o->is_path ) {
         if( o->is_optional ) {

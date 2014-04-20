@@ -153,7 +153,7 @@ void OPT_CLEAN_STRING           // CLEAN UP STRINGS
 }
 
 
-int OPT_GET_ID                  // GET AN ID
+int OPT_GET_ID                  // PARSE: ID
     ( OPT_STRING **p )          // - target
 {
     size_t len;
@@ -168,6 +168,15 @@ int OPT_GET_ID                  // GET AN ID
     }
     BadCmdLineId();
     return( 0 );
+}
+
+int OPT_GET_ID_OPT              // PARSE: OPTIONAL ID
+    ( OPT_STRING **p )          // - target
+{
+    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+        return( OPT_GET_ID( p ) );
+    }
+    return( 1 );
 }
 
 
@@ -205,7 +214,8 @@ int OPT_GET_NUMBER_MULTIPLE     // PARSE: OPTION #
     return( 0 );
 }
 
-int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned default_value )
+int OPT_GET_NUMBER_DEFAULT
+    ( unsigned *p, unsigned default_value )
 {
     unsigned value;
 
@@ -218,24 +228,8 @@ int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned default_value )
 }
 
 
-int OPT_GET_DIR                 // PARSE: DIR
+int OPT_GET_FILE                // PARSE: FILE NAME
     ( OPT_STRING **p )          // - target
-{
-    size_t len;
-    char const *path;
-
-    CmdPathDelim();
-    len = CmdScanFilename( &path );
-    if( len != 0 ) {
-        addString( p, path, len );
-        StripQuotes( (*p)->data );
-        return( 1 );
-    }
-    BadCmdLinePath();
-    return( 0 );
-}
-
-int OPT_GET_FILE( OPT_STRING **p )
 {
     size_t len;
     char const *fname;
@@ -251,7 +245,8 @@ int OPT_GET_FILE( OPT_STRING **p )
     return( 0 );
 }
 
-int OPT_GET_FILE_OPT( OPT_STRING **p )
+int OPT_GET_FILE_OPT            // PARSE: OPTIONAL FILE NAME
+    ( OPT_STRING **p )          // - target
 {
     size_t len;
     char const *fname;
@@ -287,6 +282,56 @@ int OPT_GET_PATH                // PARSE: PATH
     BadCmdLinePath();
     return( 0 );
 }
+
+int OPT_GET_PATH_OPT            // PARSE: OPTIONAL PATH
+    ( OPT_STRING **p )          // - target
+{
+    size_t len;
+    char const *fname;
+
+    // handle leading option char specially
+    if( CmdPathDelim() || ! CmdDelimitChar() ) {
+        // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
+        len = CmdScanFilename( &fname );
+        if( len != 0 ) {
+            addString( p, fname, len );
+            StripQuotes( (*p)->data );
+        } else {
+            OPT_CLEAN_STRING( p );
+        }
+    }
+    return( 1 );
+}
+
+
+int OPT_GET_CHAR                // PARSE: CHAR
+    ( int *p )                  // - target
+{
+    int c;
+
+    if( !CmdDelimitChar() ) {
+        CmdRecogEquals();
+        if( !CmdDelimitChar() ) {
+            c = CmdScanChar();
+            if( isprint( c ) ) {
+                *p = c;
+                return( 1 );
+            }
+        }
+    }
+    BadCmdLineChar();
+    return( 0 );
+}
+
+int OPT_GET_CHAR_OPT            // PARSE: OPTIONAL CHAR
+    ( int *p )                  // - target
+{
+    if( CmdRecogEquals() || !CmdDelimitChar() ) {
+        return( OPT_GET_CHAR( p ) );
+    }
+    return( 1 );
+}
+
 
 int OPT_RECOG                   // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
