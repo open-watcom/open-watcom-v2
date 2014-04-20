@@ -34,15 +34,10 @@
 
 #include "cmdscan.h"
 
-#ifndef TRUE
-#   define TRUE 1
-#   define FALSE 0
-#endif
-
 typedef struct cmd_scan_ctl {
     char const  *curr_ptr;      // current scan position
     char const  *switch_ptr;    // start of current switch
-    int         unix_mode;      // scan mode
+    bool        unix_mode;      // scan mode
 } cmd_scan_ctl;
 
 static cmd_scan_ctl cmd;
@@ -70,14 +65,14 @@ int CmdScanChar(                // SCAN THE NEXT CHARACTER
 }
 
 
-int CmdScanBufferEnd(           // TEST IF END OF BUFFER
+bool CmdScanBufferEnd(          // TEST IF END OF BUFFER
     void )
 {
     return( *cmd.curr_ptr == '\0' );
 }
 
 
-int CmdScanSwEnd(               // TEST IF END OF SWITCH
+bool CmdScanSwEnd(              // TEST IF END OF SWITCH
     void )
 {
     int ch;                     // - current character
@@ -96,7 +91,7 @@ int CmdScanSwEnd(               // TEST IF END OF SWITCH
 }
 
 
-static int cmdFileChar(         // TEST IF A FILENAME CHARACTER
+static bool cmdFileChar(        // TEST IF A FILENAME CHARACTER
     void )
 {
     char c = *cmd.curr_ptr;
@@ -108,10 +103,10 @@ static int cmdFileChar(         // TEST IF A FILENAME CHARACTER
 }
 
 
-int CmdDelimitChar(             // TEST IF SWITCH-DELIMITING CHARACTER
+bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
     void )
 {
-    int retn;                   // - return: TRUE ==> is a delimiter
+    bool retn;                  // - return: TRUE ==> is a delimiter
     char ch;                    // - next character
 
     if( ! cmdFileChar() ) {
@@ -150,10 +145,10 @@ int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
 }
 
 
-int CmdRecogLowerChar(          // RECOGNIZE A LOWER CASE CHARACTER
+bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 {
-    int retn;                   // - TRUE ==> got it
+    bool retn;                  // - TRUE ==> got it
 
     if( recog == CmdScanLowerChar() ) {
         retn = TRUE;
@@ -165,10 +160,10 @@ int CmdRecogLowerChar(          // RECOGNIZE A LOWER CASE CHARACTER
 }
 
 
-int CmdRecogChar(               // RECOGNIZE A CHARACTER
+bool CmdRecogChar(              // RECOGNIZE A CHARACTER
     int recog )                 // - character to be recognized
 {
-    int retn;                   // - TRUE ==> got it
+    bool retn;                  // - TRUE ==> got it
 
     if( recog == CmdScanChar() ) {
         retn = TRUE;
@@ -180,7 +175,7 @@ int CmdRecogChar(               // RECOGNIZE A CHARACTER
 }
 
 
-int CmdRecogEquals(             // SKIP EQUALCHAR IN COMMAND LINE
+bool CmdRecogEquals(            // SKIP EQUALCHAR IN COMMAND LINE
     void )
 {
     switch( CmdPeekChar() ) {
@@ -193,7 +188,7 @@ int CmdRecogEquals(             // SKIP EQUALCHAR IN COMMAND LINE
     return( FALSE );
 }
 
-int CmdPathDelim(             // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
+bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
     void )
 {
     switch( CmdPeekChar() ) {
@@ -292,7 +287,6 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
 {
     char const *str_beg;        // - start of string
     char const *p;              // - pointer into string
-    size_t len;                 // - length to return
 
     str_beg = cmd.curr_ptr;
     *option = str_beg;
@@ -317,8 +311,7 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
     } else {
         for( ; cmdFileChar(); ++ cmd.curr_ptr );
     }
-    len = cmd.curr_ptr - str_beg;
-    return( len );
+    return( cmd.curr_ptr - str_beg );
 }
 
 

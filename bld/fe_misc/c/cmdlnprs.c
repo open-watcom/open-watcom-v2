@@ -92,7 +92,7 @@ static int scanOffNumber        // SCAN A NUMBER
     value = 0;
     for(;;) {
         c = CmdScanLowerChar();
-        if( ! isdigit( c ) ) {
+        if( !isdigit( c ) ) {
             CmdScanUngetChar();
             break;
         }
@@ -132,8 +132,7 @@ void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
 {
     OPT_NUMBER *s;
 
-    while( *h ) {
-        s = *h;
+    while( (s = *h) != NULL ) {
         *h = s->next;
         _MemoryFree( s );
     }
@@ -145,15 +144,14 @@ void OPT_CLEAN_STRING           // CLEAN UP STRINGS
 {
     OPT_STRING *s;
 
-    while( *h ) {
-        s = *h;
+    while( (s = *h) != NULL ) {
         *h = s->next;
         _MemoryFree( s );
     }
 }
 
 
-int OPT_GET_ID                  // PARSE: ID
+bool OPT_GET_ID                 // PARSE: ID
     ( OPT_STRING **p )          // - target
 {
     size_t len;
@@ -164,19 +162,19 @@ int OPT_GET_ID                  // PARSE: ID
     len = CmdScanId( &id );
     if( len != 0 ) {
         addString( p, id, len );
-        return( 1 );
+        return( TRUE );
     }
     BadCmdLineId();
-    return( 0 );
+    return( FALSE );
 }
 
-int OPT_GET_ID_OPT              // PARSE: OPTIONAL ID
+bool OPT_GET_ID_OPT             // PARSE: OPTIONAL ID
     ( OPT_STRING **p )          // - target
 {
     if( CmdRecogEquals() || !CmdDelimitChar() ) {
         return( OPT_GET_ID( p ) );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
@@ -187,34 +185,34 @@ int OPT_GET_LOWER               // GET CHAR IN LOWERCASE
 }
 
 
-int OPT_GET_NUMBER              // PARSE: #
+bool OPT_GET_NUMBER             // PARSE: #
     ( unsigned *p )             // - target
 {
     unsigned value;
 
     if( scanOffNumber( &value ) ) {
         *p = value;
-        return( 1 );
+        return( TRUE );
     }
     BadCmdLineNumber();
-    return( 0 );
+    return( FALSE );
 }
 
 
-int OPT_GET_NUMBER_MULTIPLE     // PARSE: OPTION #
+bool OPT_GET_NUMBER_MULTIPLE    // PARSE: OPTION #
     ( OPT_NUMBER **h )          // - target
 {
     unsigned value;
 
     if( scanOffNumber( &value ) ) {
         addNumber( h, value );
-        return( 1 );
+        return( TRUE );
     }
     BadCmdLineNumber();
-    return( 0 );
+    return( FALSE );
 }
 
-int OPT_GET_NUMBER_DEFAULT
+bool OPT_GET_NUMBER_DEFAULT
     ( unsigned *p, unsigned default_value )
 {
     unsigned value;
@@ -224,11 +222,11 @@ int OPT_GET_NUMBER_DEFAULT
     } else {
         *p = default_value;
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
-int OPT_GET_FILE                // PARSE: FILE NAME
+bool OPT_GET_FILE               // PARSE: FILE NAME
     ( OPT_STRING **p )          // - target
 {
     size_t len;
@@ -239,20 +237,20 @@ int OPT_GET_FILE                // PARSE: FILE NAME
     if( len != 0 ) {
         addString( p, fname, len );
         StripQuotes( (*p)->data );
-        return( 1 );
+        return( TRUE );
     }
     BadCmdLineFile();
-    return( 0 );
+    return( FALSE );
 }
 
-int OPT_GET_FILE_OPT            // PARSE: OPTIONAL FILE NAME
+bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
     ( OPT_STRING **p )          // - target
 {
     size_t len;
     char const *fname;
 
     // handle leading option char specially
-    if( CmdRecogEquals() || ! CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdDelimitChar() ) {
         // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
@@ -262,11 +260,11 @@ int OPT_GET_FILE_OPT            // PARSE: OPTIONAL FILE NAME
             OPT_CLEAN_STRING( p );
         }
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
-int OPT_GET_PATH                // PARSE: PATH
+bool OPT_GET_PATH               // PARSE: PATH
     ( OPT_STRING **p )          // - target
 {
     size_t len;
@@ -277,21 +275,20 @@ int OPT_GET_PATH                // PARSE: PATH
     if( len != 0 ) {
         addString( p, path, len );
         StripQuotes( (*p)->data );
-        return( 1 );
+        return( TRUE );
     }
     BadCmdLinePath();
-    return( 0 );
+    return( FALSE );
 }
 
-int OPT_GET_PATH_OPT            // PARSE: OPTIONAL PATH
+bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
     ( OPT_STRING **p )          // - target
 {
     size_t len;
     char const *fname;
 
-    // handle leading option char specially
-    if( CmdPathDelim() || ! CmdDelimitChar() ) {
-        // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
+    if( CmdPathDelim() || !CmdDelimitChar() ) {
+        // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {
             addString( p, fname, len );
@@ -300,11 +297,11 @@ int OPT_GET_PATH_OPT            // PARSE: OPTIONAL PATH
             OPT_CLEAN_STRING( p );
         }
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
-int OPT_GET_CHAR                // PARSE: CHAR
+bool OPT_GET_CHAR               // PARSE: CHAR
     ( int *p )                  // - target
 {
     int c;
@@ -315,31 +312,31 @@ int OPT_GET_CHAR                // PARSE: CHAR
             c = CmdScanChar();
             if( isprint( c ) ) {
                 *p = c;
-                return( 1 );
+                return( TRUE );
             }
         }
     }
     BadCmdLineChar();
-    return( 0 );
+    return( FALSE );
 }
 
-int OPT_GET_CHAR_OPT            // PARSE: OPTIONAL CHAR
+bool OPT_GET_CHAR_OPT           // PARSE: OPTIONAL CHAR
     ( int *p )                  // - target
 {
     if( CmdRecogEquals() || !CmdDelimitChar() ) {
-        return( OPT_GET_CHAR( p ) );
+        return OPT_GET_CHAR( p );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
-int OPT_RECOG                   // RECOGNIZE CHAR
+bool OPT_RECOG                  // RECOGNIZE CHAR
     ( int c )                   // - to be recog'ed
 {
     return( CmdRecogChar( c ) );
 }
 
-int OPT_RECOG_LOWER             // RECOGNIZE LOWERCASE CHAR
+bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR
     ( int c )                   // - to be recog'ed
 {
     return( CmdRecogLowerChar( c ) );
@@ -351,7 +348,7 @@ void OPT_UNGET                  // UNGET A CHARACTER
     CmdScanUngetChar();
 }
 
-int OPT_END( void )             // DETECT END OF CHAIN
+bool OPT_END( void )            // DETECT END OF CHAIN
 {
     return( CmdDelimitChar() );
 }

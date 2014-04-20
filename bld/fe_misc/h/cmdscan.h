@@ -34,6 +34,7 @@
 #define __CMDSCAN_H__
 
 #include <stdlib.h>
+#include "bool.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,22 +45,22 @@ extern "C" {
 
 // PROTOTYPES
 
-int CmdDelimitChar(             // TEST IF SWITCH-DELIMITING CHARACTER
+bool CmdDelimitChar(            // TEST IF SWITCH-DELIMITING CHARACTER
     void )
 ;
-int CmdRecogLowerChar(          // RECOGNIZE A LOWER CASE CHARACTER
+bool CmdRecogLowerChar(         // RECOGNIZE A LOWER CASE CHARACTER
     int recog )                 // - character to be recognized
 ;
-int CmdRecogChar(               // RECOGNIZE A CHARACTER
+bool CmdRecogChar(              // RECOGNIZE A CHARACTER
     int recog )                 // - character to be recognized
 ;
 size_t CmdScanNumber(           // SCAN A NUMBER
     unsigned *pvalue )          // - addr( return value )
 ;
-int CmdRecogEquals(             // RECOGNIZE AN '=' or synonym
+bool CmdRecogEquals(            // RECOGNIZE AN '=' or synonym
     void )
 ;
-int CmdPathDelim(             // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
+bool CmdPathDelim(              // SKIP EQUALCHAR # or ' ' IN COMMAND LINE
     void )
 ;
 char const *CmdScanAddr(        // RETURN COMMAND-LINE SCAN ADDRESS
@@ -83,10 +84,10 @@ int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
 size_t CmdScanOption(           // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 ;
-int CmdScanBufferEnd(           // TEST IF END OF BUFFER
+bool CmdScanBufferEnd(          // TEST IF END OF BUFFER
     void )
 ;
-int CmdScanSwEnd(               // TEST IF END OF SWITCH
+bool CmdScanSwEnd(              // TEST IF END OF SWITCH
     void )
 ;
 void CmdScanSwitchBackup(       // BACK UP SCANNER TO START OF SWITCH
