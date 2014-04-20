@@ -76,12 +76,6 @@
 
 #define SKIP_BEG_MARK(s)        if(*s==':')++s
 
-#if defined( __WATCOMC__ ) || defined( _MSC_VER )
-#define FAIL_RETURN(t,v,r)      fail( t, v )
-#else
-#define FAIL_RETURN(t,v,r)      fail( t, v ); return( r )
-#endif
-
 typedef enum tag_id {
 #define TAG( s )        TAG_##s ,
 #include "opttags.h"
@@ -430,7 +424,7 @@ static void addTarget( char *t )
     }
 }
 
-static unsigned findTarget( char *t )
+static unsigned findTarget( char const *t )
 {
     TARGET *p;
 
@@ -439,7 +433,7 @@ static unsigned findTarget( char *t )
             return( p->mask );
         }
     }
-    FAIL_RETURN( "invalid target name '%s'\n", t, 0 );
+    return( 0 );
 }
 
 static NAME *findName( NAME **h, char *n )
@@ -503,9 +497,9 @@ static CHAIN *addChain( char *n, int chain )
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( strcmp( n, cn->name ) == 0 ) {
             if( cn->code_used ) {
-                FAIL_RETURN( "CHAIN: option '%s' already defined\n", n, NULL );
+                fail( "CHAIN: option '%s' already defined\n", n );
             } else {
-                FAIL_RETURN( "USAGEGRP: option '%s' already defined\n", n, NULL );
+                fail( "USAGEGRP: option '%s' already defined\n", n );
             }
         }
     }
@@ -525,6 +519,7 @@ static void procCmdLine( int argc, char **argv )
 {
     char **t;
     unsigned mask;
+    char const *p;
 
     if( argc < 5 ) {
         dumpUsage();
@@ -588,11 +583,20 @@ static void procCmdLine( int argc, char **argv )
     for( t = validTargets; *t != NULL; ++t ) {
         addTarget( *t );
     }
-    targetAnyMask = findTarget( "any" );
-    targetDbgMask = findTarget( "dbg" );
+    p = "any";
+    if( (targetAnyMask = findTarget( p )) == 0 ) {
+        fail( "invalid target name '%s'\n", p );
+    }
+    p = "dbg";
+    if( (targetDbgMask = findTarget( p )) == 0 ) {
+        fail( "invalid target name '%s'\n", p );
+    }
     targetMask |= targetAnyMask;
     for( ; *argv != NULL; ++argv ) {
-        mask = findTarget( *argv );
+        p = *argv;
+        if( (mask = findTarget( p )) == 0 ) {
+            fail( "invalid target name '%s'\n", p );
+        }
         targetMask |= mask;
     }
 }
@@ -621,7 +625,7 @@ static char *copyNonSpaceUntil( char *i, char *o, char t )
     return( i );
 }
 
-static tag_id findTag( char *t )
+static tag_id findTag( char const *t )
 {
     char **c;
 
@@ -630,7 +634,7 @@ static tag_id findTag( char *t )
             return( c - tagNames );
         }
     }
-    FAIL_RETURN( "unknown tag: %s\n", t, TAG_UNKNOWN );
+    return( TAG_UNKNOWN );
 }
 
 static tag_id isTag( char **eot )
@@ -643,11 +647,10 @@ static tag_id isTag( char **eot )
     if( *p == ':' ) {
         ++p;
         p = copyNonSpaceUntil( p, tagbuff, '.' );
-        tag = findTag( tagbuff );
-        if( tag != TAG_UNKNOWN ) {
-            *eot = p;
-            return( tag );
-        }
+        if( (tag = findTag( tagbuff )) == TAG_UNKNOWN )
+            fail( "unknown tag: %s\n", tagbuff );
+        *eot = p;
+        return( tag );
     }
     return( TAG_NULL );
 }
@@ -742,7 +745,9 @@ static void doTARGET( char *p )
         if( *p == '\0' )
             break;
         p = copyNonSpaceUntil( p, tokbuff, '\0' );
-        mask = findTarget( tokbuff );
+        if( (mask = findTarget( tokbuff )) == 0 ) {
+            fail( "invalid target name '%s'\n", tokbuff );
+        }
         if( targetTitle != NULL ) {
             targetTitle->target |= mask;
         } else {
@@ -764,7 +769,9 @@ static void doNTARGET( char *p )
         if( *p == '\0' )
             break;
         p = copyNonSpaceUntil( p, tokbuff, '\0' );
-        mask = findTarget( tokbuff );
+        if( (mask = findTarget( tokbuff )) == 0 ) {
+            fail( "invalid target name '%s'\n", tokbuff );
+        }
         if( targetTitle != NULL ) {
             targetTitle->ntarget |= mask;
         } else {
