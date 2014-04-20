@@ -249,7 +249,8 @@ static void outputNum (FILE *fp, unsigned n);
 
 #define NO_INDEX        (-1)
 
-static void error( char *f, ... ) {
+static void error( char *f, ... )
+{
     va_list args;
 
     ++errors;
@@ -261,7 +262,8 @@ static void error( char *f, ... ) {
     va_end( args );
 }
 
-static void warn( char *f, ... ) {
+static void warn( char *f, ... )
+{
     va_list args;
 
     ++warnings;
@@ -275,7 +277,8 @@ static void warn( char *f, ... ) {
     va_end( args );
 }
 
-static void errorLocn( char *fn, unsigned ln, char *f, ... ) {
+static void errorLocn( char *fn, unsigned ln, char *f, ... )
+{
     va_list args;
 
     ++errors;
@@ -287,12 +290,14 @@ static void errorLocn( char *fn, unsigned ln, char *f, ... ) {
     va_end( args );
 }
 
-static void fatal( char *m ) {
+static void fatal( char *m )
+{
     error( "fatal: %s\n", m );
     exit( EXIT_FAILURE );
 }
 
-static void initFILE( FILE **f, char *n, char *m ) {
+static void initFILE( FILE **f, char *n, char *m )
+{
     *f = fopen( n, m );
     if( *f == NULL ) {
         fatal( "cannot open file" );
@@ -349,14 +354,16 @@ static void processOptions( char **argv )
     }
 }
 
-static char *skipSpace( char *p ) {
+static char *skipSpace( char *p )
+{
     while( *p && isspace( *p ) ) {
         ++p;
     }
     return( p );
 }
 
-static char *skipNonSpace( char *t, char *p ) {
+static char *skipNonSpace( char *t, char *p )
+{
     while( *p && ! isspace( *p ) ) {
         *t = *p;
         ++t;
@@ -366,7 +373,8 @@ static char *skipNonSpace( char *t, char *p ) {
     return( p );
 }
 
-static tag_id getId( char *p, char **update_p ) {
+static tag_id getId( char *p, char **update_p )
+{
     char *s;
     char **tc;
 
@@ -385,7 +393,8 @@ static tag_id getId( char *p, char **update_p ) {
     return( TAG_MAX );
 }
 
-static MSGSYM *mustBeProceededByMSGSYM( void ) {
+static MSGSYM *mustBeProceededByMSGSYM( void )
+{
     if( currMSGSYM == &messageSyms ) {
         error( "tag %s must be proceeded by :MSGSYM.\n", tag );
         fatal( "cannot continue" );
@@ -394,7 +403,8 @@ static MSGSYM *mustBeProceededByMSGSYM( void ) {
     return( (MSGSYM*)currMSGSYM );
 }
 
-static unsigned pickUpNum( char *p ) {
+static unsigned pickUpNum( char *p )
+{
     unsigned num;
 
     p = skipSpace( p );
@@ -408,7 +418,8 @@ static unsigned pickUpNum( char *p ) {
 }
 
 
-static unsigned pickUpLevel( char *p ) {
+static unsigned pickUpLevel( char *p )
+{
     unsigned level;
 
     level = pickUpNum( p );
@@ -418,7 +429,8 @@ static unsigned pickUpLevel( char *p ) {
     return( level );
 }
 
-static MSGSYM *addToSorted( MSGSYM *m ) {
+static MSGSYM *addToSorted( MSGSYM *m )
+{
     int s;
     MSGSYM **h;
     MSGSYM *c;
@@ -447,7 +459,8 @@ static MSGSYM *addToSorted( MSGSYM *m ) {
 #define do_ansicomp     NULL
 #define do_errbreak     NULL
 
-static void noActive( err_type kind ) {
+static void noActive( err_type kind )
+{
     if( examples.active ) {
         error( "example already active (started on line %u)\n", examples.line );
     }
@@ -456,7 +469,8 @@ static void noActive( err_type kind ) {
     examples.line = line;
 }
 
-static void yesActive( err_type check ) {
+static void yesActive( err_type check )
+{
     if( ! examples.active ) {
         error( "no example active\n" );
     } else {
@@ -467,31 +481,37 @@ static void yesActive( err_type check ) {
     examples.active = 0;
 }
 
-static void do_errbad( char *p ) {
+static void do_errbad( char *p )
+{
     p = p;
     noActive( EK_BAD );
 }
 
-static void do_eerrbad( char *p ) {
+static void do_eerrbad( char *p )
+{
     p = p;
     yesActive( EK_BAD );
 }
 
-static void do_errgood( char *p ) {
+static void do_errgood( char *p )
+{
     p = p;
     noActive( EK_GOOD );
 }
 
-static void do_eerrgood( char *p ) {
+static void do_eerrgood( char *p )
+{
     p = p;
     yesActive( EK_GOOD );
 }
 
-static void do_msggrptxt( char *p ) {
+static void do_msggrptxt( char *p )
+{
     p = p;
 }
 
-static void do_msggrpstr( char *p ) {
+static void do_msggrpstr( char *p )
+{
     MSGGROUP *grp;
     size_t len;
 
@@ -502,28 +522,30 @@ static void do_msggrpstr( char *p ) {
         error( ":msggrpstr value '%s' is too long\n", group );
         len = 2;
     }
-    if( grp != NULL ){
+    if( grp != NULL ) {
         strncpy( grp->prefix, group, 2 ); //default
         grp->prefix[2] = '\0';
     }
 }
 
-static void do_msggrpnum( char *p ) {
+static void do_msggrpnum( char *p )
+{
     MSGGROUP *grp;
     grp = currGroup;
     groupIndex = pickUpNum( p );
-    if( grp != NULL ){
+    if( grp != NULL ) {
         grp->num = groupIndex; //set with value
     }
 }
 
-static void do_emsggrp( char *p ) {
+static void do_emsggrp( char *p )
+{
     MSGGROUP *grp;
     grp = currGroup;
     if( !flags.grouped ) {
         error( "missing :msggroup\n" );
     }
-    if( grp != NULL ){
+    if( grp != NULL ) {
         grp->emsgIndex = messageCounter;
     }
     flags.grouped = 0;
@@ -531,7 +553,8 @@ static void do_emsggrp( char *p ) {
     groupIndex += 256;
 }
 
-static void do_msggrp( char *p ) {
+static void do_msggrp( char *p )
+{
     MSGGROUP *grp;
     MSGGROUP *cur;
     MSGGROUP **end;
@@ -590,7 +613,8 @@ static void do_msggrp( char *p ) {
     }
 }
 
-static void do_msgsym( char *p ) {
+static void do_msgsym( char *p )
+{
     MSGSYM *msg;
     int i;
     size_t len;
@@ -624,7 +648,8 @@ static void do_msgsym( char *p ) {
     msg->grp = currGroup;
 }
 
-static size_t commonTxt( char *p ) {
+static size_t commonTxt( char *p )
+{
     size_t len;
 
     len = strlen( p ) + 1;
@@ -634,14 +659,16 @@ static size_t commonTxt( char *p ) {
     return( len );
 }
 
-static void do_msgtxt( char *p ) {
+static void do_msgtxt( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->lang_txt[LANG_English] = strdup( p );
     totalMsgLen += commonTxt( p );
 }
 
-static void do_msgjtxt( char *p ) {
+static void do_msgjtxt( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->lang_txt[LANG_Japanese] = strdup( p );
@@ -651,14 +678,16 @@ static void do_msgjtxt( char *p ) {
     }
 }
 
-static void do_info( char *p ) {
+static void do_info( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     p = p;
     m->mtype = MSG_TYPE_INFO;
 }
 
-static void do_style( char *p ) {
+static void do_style( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     p = p;
@@ -669,35 +698,40 @@ static void do_style( char *p ) {
     }
 }
 
-static void do_warning( char *p ) {
+static void do_warning( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->mtype = MSG_TYPE_WARNING;
     m->level = pickUpLevel( p );
 }
 
-static void do_ansierr( char *p ) {
+static void do_ansierr( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     p = p;
     m->mtype = MSG_TYPE_ANSIERR;
 }
 
-static void do_ansiwarn( char *p ) {
+static void do_ansiwarn( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->mtype = MSG_TYPE_ANSIWARN;
     m->level = pickUpLevel( p );
 }
 
-static void do_ansi( char *p ) {
+static void do_ansi( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->mtype = MSG_TYPE_ANSI;
     m->level = pickUpLevel( p );
 }
 
-static void do_jck( char *p ) {
+static void do_jck( char *p )
+{
     MSGSYM *m = mustBeProceededByMSGSYM();
 
     m->mtype = MSG_TYPE_JCK;
@@ -733,7 +767,8 @@ static void checkForGMLEscape( char *p )
     }
 }
 
-static char *inputIO( void ) {
+static char *inputIO( void )
+{
     char c;
     char *s;
     char *p;
@@ -763,7 +798,8 @@ static char *inputIO( void ) {
     return( s );
 }
 
-static void suckInFile( void ) {
+static void suckInFile( void )
+{
     int fh;
     struct stat info;
 
@@ -780,12 +816,14 @@ static void suckInFile( void ) {
     currGML = entireGML;
 }
 
-static int strPref( MSGSYM *m, char *pref ) {
+static int strPref( MSGSYM *m, char *pref )
+{
     unsigned len = strlen( pref );
     return memcmp( m->name, pref, len );
 }
 
-static int percentPresent( char c, char *p ) {
+static int percentPresent( char c, char *p )
+{
     char f;
 
     if( *p == '\0' ) {
@@ -803,7 +841,8 @@ static int percentPresent( char c, char *p ) {
     return( 0 );
 }
 
-static void checkReplacements( MSGSYM *m, int start_lang, int end_lang ) {
+static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
+{
     int i;
     char c;
     char *eng_text;
@@ -832,7 +871,8 @@ static void checkReplacements( MSGSYM *m, int start_lang, int end_lang ) {
     }
 }
 
-static void checkMessages( void ) {
+static void checkMessages( void )
+{
     MSGSYM *m;
     int start_lang;
     int end_lang;
@@ -865,7 +905,8 @@ static void checkMessages( void ) {
     }
 }
 
-static void readGML( void ) {
+static void readGML( void )
+{
     char *check;
     tag_id tag_id;
     char *p;
@@ -905,7 +946,8 @@ static void readGML( void ) {
     maxMsgLen = ( ( maxMsgLen + 16 ) + 0x0f ) & ~ 0x0f;
 }
 
-static WORD *addWord( MSGSYM *m ) {
+static WORD *addWord( MSGSYM *m )
+{
     int s;
     WORD **h;
     WORD *c;
@@ -944,7 +986,8 @@ static WORD *addWord( MSGSYM *m ) {
     return( c );
 }
 
-static int cmpRef( WORD *l, WORD *r ) {
+static int cmpRef( WORD *l, WORD *r )
+{
     int s;
 
     if( l->references < r->references ) {
@@ -967,7 +1010,8 @@ static int cmpRef( WORD *l, WORD *r ) {
     return( s );
 }
 
-static void addRef( WORD *w ) {
+static void addRef( WORD *w )
+{
     WORD **h;
     WORD *c;
     int s;
@@ -995,7 +1039,8 @@ static void addRef( WORD *w ) {
     *h = w;
 }
 
-static void sortByRefs( void ) {
+static void sortByRefs( void )
+{
     WORD *w;
 
     for( w = allWords; w != NULL; w = w->all ) {
@@ -1003,7 +1048,8 @@ static void sortByRefs( void ) {
     }
 }
 
-static void traverseHiToLoRefs( WORD *w, void (*t)( WORD *, void * ), void *data ) {
+static void traverseHiToLoRefs( WORD *w, void (*t)( WORD *, void * ), void *data )
+{
     WORD *r;
 
     while( w != NULL ) {
@@ -1016,7 +1062,8 @@ static void traverseHiToLoRefs( WORD *w, void (*t)( WORD *, void * ), void *data
     }
 }
 
-static void splitIntoWords( void ) {
+static void splitIntoWords( void )
+{
     MSGSYM *m;
     WORD *w;
     WORDREF *r;
@@ -1045,19 +1092,22 @@ static void splitIntoWords( void ) {
 }
 
 #if 0
-static void doDumpWORD( WORD *w, void *d ) {
+static void doDumpWORD( WORD *w, void *d )
+{
     d = d;
     printf( "%6u %s\n", w->references, w->name );
 }
 #endif
 
-static void compressMsgs() {
+static void compressMsgs()
+{
     splitIntoWords();
     sortByRefs();
     //traverseHiToLoRefs( refWords, doDumpWORD, NULL );
 }
 
-static void writeExtraDefs( FILE *fp ) {
+static void writeExtraDefs( FILE *fp )
+{
     fputc( '\n', fp );
     fputs(
         "#define ENC_BIT 0x80\n"
@@ -1068,7 +1118,8 @@ static void writeExtraDefs( FILE *fp ) {
     fputc( '\n', fp );
 }
 
-static void writeMsgH( void ) {
+static void writeMsgH( void )
+{
     MSGSYM *m;
 
     if( ! flags.gen_pick ) {
@@ -1093,7 +1144,8 @@ static void writeMsgH( void ) {
     writeExtraDefs( o_msgh );
 }
 
-static void writeMsgHGP( void ) {
+static void writeMsgHGP( void )
+{
     MSGSYM *m;
     MSGGROUP *grp;
     int     index;
@@ -1107,7 +1159,7 @@ static void writeMsgHGP( void ) {
         fputs( m->name, o_msgh );
         fputs( " , ", o_msgh );
         grp = m->grp;
-        if( grp != NULL ){
+        if( grp != NULL ) {
             fputs( grp->name, o_msgh );
             fputs( " , ", o_msgh );
         }
@@ -1121,7 +1173,8 @@ static void writeMsgHGP( void ) {
     fputs( "\n\n", o_msgh );
 }
 
-static void writeMsgCGP( void ) {
+static void writeMsgCGP( void )
+{
     MSGSYM *m;
     for( m = messageSyms; m != NULL; m = m->next ) {
         fputs( "\"", o_msgc );
@@ -1129,7 +1182,9 @@ static void writeMsgCGP( void ) {
         fputs( "\",\n", o_msgc );
     }
 }
-static void writeLevHGP( void ) {
+
+static void writeLevHGP( void )
+{
     MSGGROUP *grp;
     int     index;
 
@@ -1159,14 +1214,16 @@ static void writeLevHGP( void ) {
     fputs( "\n\n", o_levh );
 }
 
-static void outputNum( FILE *fp, unsigned n ) {
+static void outputNum( FILE *fp, unsigned n )
+{
     char buff[16];
 
     sprintf( buff, "%u", n );
     fputs( buff, fp );
 }
 
-static void outputNumJ( FILE *fp, unsigned n, int width ) {
+static void outputNumJ( FILE *fp, unsigned n, int width )
+{
     char buff[16];
     char *p;
 
@@ -1181,7 +1238,8 @@ static void outputNumJ( FILE *fp, unsigned n, int width ) {
     fputs( buff, fp );
 }
 
-static void outputChar( FILE *fp, char c ) {
+static void outputChar( FILE *fp, char c )
+{
     fputc( '\'', fp );
     switch( c ) {
     case '\'':
@@ -1208,7 +1266,8 @@ static void outputChar( FILE *fp, char c ) {
     fputc( ',', fp );
 }
 
-static void outputTableName( FILE *fp, char *type, char *name ) {
+static void outputTableName( FILE *fp, char *type, char *name )
+{
     fprintf( fp, "MSG_SCOPE %s MSG_MEM %s[] = {\n", type, name );
 }
 
@@ -1219,7 +1278,8 @@ typedef struct {
     unsigned    current_text;
 } data_word_tables;
 
-static void doEncodeWORD( WORD *w, void *d ) {
+static void doEncodeWORD( WORD *w, void *d )
+{
     data_word_tables *data = d;
     char *p;
 
@@ -1236,7 +1296,8 @@ static void doEncodeWORD( WORD *w, void *d ) {
     fputc( '\n', o_msgc );
 }
 
-static void writeWordTable( void ) {
+static void writeWordTable( void )
+{
     WORD *w;
     unsigned i;
     auto data_word_tables data_w;
@@ -1276,7 +1337,8 @@ static void writeWordTable( void ) {
     free( data_w.keep_base );
 }
 
-static void writeMsgTable( void ) {
+static void writeMsgTable( void )
+{
     MSGSYM *m;
     unsigned *msg_base;
     unsigned current_base;
@@ -1369,7 +1431,8 @@ static void writeMsgTable( void ) {
     free( msg_base );
 }
 
-static void writeMSGIfndefs( void ) {
+static void writeMSGIfndefs( void )
+{
     fputs(
         "#ifndef MSG_SCOPE\n"
         "#define MSG_SCOPE\n"
@@ -1379,14 +1442,16 @@ static void writeMSGIfndefs( void ) {
         "#endif\n", o_msgc );
 }
 
-static void writeMsgC( void ) {
+static void writeMsgC( void )
+{
     writeMSGIfndefs();
     writeExtraDefs( o_msgc );
     writeWordTable();
     writeMsgTable();
 }
 
-static void writeLevH( void ) {
+static void writeLevH( void )
+{
     MSGSYM *m;
 
     fputs( "#ifndef MSG_CONST\n", o_levh );
@@ -1416,7 +1481,8 @@ static void writeLevH( void ) {
     fputs( "};\n", o_levh );
 }
 
-static void dumpStats( void ) {
+static void dumpStats( void )
+{
     if( allGroups != NULL ) {
     printf( "# of groups                          %u\n", groupCounter );
     }
@@ -1430,14 +1496,16 @@ static void dumpStats( void ) {
     printf( "%% compression                        %u\n", ( totalBytes * 100 ) / totalMsgLen );
 }
 
-static void closeFiles( void ) {
+static void closeFiles( void )
+{
     fclose( i_gml );
     fclose( o_msgh );
     fclose( o_msgc );
     fclose( o_levh );
 }
 
-static void dumpInternational( void ) {
+static void dumpInternational( void )
+{
     char *text;
     MSGSYM *m;
     FILE *fp;
@@ -1484,7 +1552,8 @@ static void dumpInternational( void ) {
     }
 }
 
-void forceRebuild( void ) {
+void forceRebuild( void )
+{
     unsigned i;
 
     for( i = 0; i < nextOutputFName; ++i ) {
@@ -1501,7 +1570,8 @@ void forceRebuild( void ) {
     }
 }
 
-int main( int argc, char **argv ) {
+int main( int argc, char **argv )
+{
     int defs_ok = _LANG_DEFS_OK();
 
     if( argc < 5 || argc > 10 ) {
