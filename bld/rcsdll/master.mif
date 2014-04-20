@@ -10,8 +10,6 @@ suppress_zc = 1
 !include defrule.mif
 !include deftarg.mif
 
-!include verrc.mif
-
 objs = rcsdll.obj inifile.obj $(extra_objs)
 !ifeq host_os nt
 objs += mkssi.obj
@@ -41,6 +39,8 @@ extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+!include verrc.mif
 
 !ifdef sys_dll
 

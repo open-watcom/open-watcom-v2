@@ -25,8 +25,6 @@ memory_model_i86 = l
 WINDOWS = 1
 !include wres.mif
 
-!include verrc.mif
-
 objs = $(sys_object)
 objs +=   wmem.obj wctl3d.obj wgetfn.obj wlist.obj &
             winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
@@ -64,6 +62,8 @@ extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+!include verrc.mif
 
 xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 

@@ -25,8 +25,6 @@ memory_model_i86 = l
 WINDOWS=1
 !include wres.mif
 
-!include verrc.mif
-
 extra_cpp_flags   = -DWIN_GUI -DWDE
 
 extra_cpp_flags_nt = -DNOUSE3D
@@ -92,6 +90,8 @@ xlibs = $(fmedit_dir)/$(host_os)$(host_cpu)/fmedit.lib &
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 $(name).exe: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

@@ -39,13 +39,6 @@ os2pm = 1
 
 !include wres.mif
 
-!ifeq sys_windowed 1
-verrc_exe = wdw
-!else
-verrc_exe = wd
-!endif
-!include verrc.mif
-
 !include trmem.mif
 
 !include $(wv_dir)/wvobjs.mif
@@ -210,6 +203,13 @@ wv_dialogs = &
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!ifeq sys_windowed 1
+verrc_exe = wdw
+!else
+verrc_exe = wd
+!endif
+!include verrc.mif
 
 !ifndef __WATCOM__
 !ifeq host_os linux

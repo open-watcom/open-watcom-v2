@@ -23,8 +23,6 @@ memory_model_i86 = l
 WINDOWS = 1
 !include wres.mif
 
-!include verrc.mif
-
 !ifeq wre_trmem 1
 TRMEM           = -DTRMEM
 !ifneq host_cpu axp
@@ -82,6 +80,8 @@ extra_l_flags_win = op stack=32k,rwr library commdlg,ddeml
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 # explicit rules
 #################

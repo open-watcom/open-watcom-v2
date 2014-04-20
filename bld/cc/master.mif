@@ -31,12 +31,6 @@ additional_cleanup = *.int *.u
 !include $(as_dir)/client.mif
 !include $(wasm_dir)/client.mif
 
-verrc_dll = $(dllname)
-verrc_exe = $(exename)
-verrc_dll_skel = ../../version.rc
-verrc_exe_skel = ../../exever.rc
-!include verrc.mif
-
 !include trmem.mif
 
 !include ../../ccobjs.mif
@@ -125,6 +119,10 @@ version_res_dll_nt_x64 = version.res
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+verrc_dll = $(dllname)
+verrc_exe = $(exename)
+!include verrc.mif
 
 inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 

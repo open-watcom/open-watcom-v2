@@ -20,7 +20,6 @@ wasm_trmem = 1
 !include osi.mif
 
 !include wres.mif
-!include verrc.mif
 !include trmem.mif
 
 fpu_flags = -fpc
@@ -106,6 +105,8 @@ depend_objs = $(extra_link_res_$(host_os)) asmops.gh asmopsd.gh usage.gh wmpmsg.
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 #explicit rules
 ######

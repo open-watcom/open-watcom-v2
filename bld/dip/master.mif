@@ -45,9 +45,6 @@ objs = dipimp.obj $(imp_objs)
 !include $(dwarfr_dir)/client.mif
 !endif
 
-verrc_dll = $(name)
-!include verrc.mif
-
 .c: ../c;../../c;$(extra_srcs)
 
 extra_cpp_flags = -D__DIP__ $(extra_cppflags)
@@ -88,6 +85,9 @@ extra_l_flags_dll_win     =
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+verrc_dll = $(name)
+!include verrc.mif
 
 xname = $(name)$(ext_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

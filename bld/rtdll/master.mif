@@ -31,14 +31,14 @@ host_os=$(rtdll_host_os_$(system))
 !include $(rtdll_dir)/dllname.mif
 !include $(rtdll_dir)/dllbase.mif
 
-verrc_dll_skel = ../verinfo.rc
-verrc_dll      = $(dllname)
-!include verrc.mif
-
 !include ../objs.mif
 
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+verrc_dll_skel = ../verinfo.rc
+verrc_dll      = $(dllname)
+!include verrc.mif
 
 !ifdef profile
 rtdll_nosymfile = 1

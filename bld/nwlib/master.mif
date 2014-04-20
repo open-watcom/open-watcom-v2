@@ -34,10 +34,6 @@ wlib_trmem = 1
 
 !include trmem.mif
 
-verrc_exe = $(exename)
-verrc_dll = $(dllname)
-!include verrc.mif
-
 ##########
 # objects
 
@@ -124,6 +120,10 @@ version_res_dll_nt_x64 = version.res
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 !endif
+
+verrc_exe = $(exename)
+verrc_dll = $(dllname)
+!include verrc.mif
 
 inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 .c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)

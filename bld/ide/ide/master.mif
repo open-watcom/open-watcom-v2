@@ -35,8 +35,6 @@ to_os_path=/=\
 WINDOWS = 1
 !include wres.mif
 
-!include verrc.mif
-
 !include ../objects.mif
 
 description = 'Open Watcom IDE'
@@ -87,6 +85,8 @@ libs = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 all: $(ide_h_$(host_os)) $(proj_name).exe
 

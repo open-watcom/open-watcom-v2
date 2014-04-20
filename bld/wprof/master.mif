@@ -19,7 +19,6 @@ exe = exe
 !include $(ui_dir)/client.mif
 
 !include wres.mif
-!include verrc.mif
 !include trmem.mif
 
 !include ../wprofobj.mif
@@ -96,6 +95,8 @@ rc_inc_dirs = -I. $(rc_inc_dirs_$(host_os)) -I"../res" -I"../h" $(aui_rc_inc_dir
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 # explicit rules
 #################

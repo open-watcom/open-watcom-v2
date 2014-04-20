@@ -30,8 +30,6 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 !include $(ui_dir)/client.mif
-
-!include verrc.mif
 !include trmem.mif
 
 .h : $(vi_dir)/h
@@ -40,6 +38,8 @@ additional_cleanup = *.dh *.ch $(bind_compiled)
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 vi.exe: $(bind_files) $(name).exe
         @set edpath=../dat

@@ -9,9 +9,6 @@ sys_dll = 1
 !include defrule.mif
 !include deftarg.mif
 
-verrc_dll = weditviw
-!include verrc.mif
-
 .c: ..
 
 inc_dirs = -I.. -I"../.."
@@ -27,6 +24,9 @@ extra_l_flags_dll_nt = initinstance terminstance op stack=40k
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+verrc_dll = weditviw
+!include verrc.mif
 
 all: weditviw.dll wedit.dll .SYMBOLIC
 

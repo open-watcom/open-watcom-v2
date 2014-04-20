@@ -1,0 +1,9 @@
+#define VERINFO_EXE
+#define VERINFO_FILEVERSION         $j, $n, $h, $l
+#define VERINFO_PRODUCTVERSION      $j, $n, $h, $l
+#define VERINFO_FILEDESCRIPTION_STR "Open Watcom C Compiler for X86"
+#define VERINFO_FILEVERSION_STR     "$j.$n"
+#define VERINFO_INTERNALNAME_STR    "$0"
+#define VERINFO_PRODUCTVERSION_STR  "$j.$n"
+
+#include "cmnvinfo.rc"

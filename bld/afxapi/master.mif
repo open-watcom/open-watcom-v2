@@ -30,9 +30,6 @@ statname = owfs$(bld_ver)
 !include defrule.mif
 !include deftarg.mif
 
-verrc_dll = $(dllname)
-!include verrc.mif
-
 inc_path += -I"../$(host_os)" -I"../h"
 
 splice = wsplice -i"$(hdr_dir)" $[@ $^@
@@ -335,6 +332,9 @@ $(intname).lib: $(objs)
 # systems where version resource must be added to .DLL
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+
+verrc_dll = $(dllname)
+!include verrc.mif
 
 $(dllname).dll: $(intname).lib owf.res $(version_res_dll_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

@@ -21,8 +21,6 @@ dig_os = $(host_os)
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 
-!include verrc.mif
-
 !ifndef drwatcom_95
 drwatcom_95 = 0
 !endif
@@ -89,6 +87,8 @@ rc_inc_dirs = -I"../res/$(host_os)" -I"../res" -I"../$(host_os)" -I"$(dig_dir)/h
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 xlibs = $(commonui_lib)
 

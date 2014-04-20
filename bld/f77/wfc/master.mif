@@ -21,10 +21,6 @@ target_exe  = $(exename_$(target_cpu))
 
 !include wres.mif
 
-verrc_exe = $(target_exe)
-verrc_exe_skel = ../../exever.rc
-!include verrc.mif
-
 !include ../../files.mif
 
 !ifeq release 0
@@ -65,6 +61,9 @@ libs = $(asminline_lib) $(cg_libs) $(wres_lib)
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+verrc_exe = $(target_exe)
+!include verrc.mif
 
 $(target_exe).exe : $(asminline_deps) $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__

@@ -9,7 +9,6 @@ name = wstripx
 !include deftarg.mif
 
 !include wres.mif
-!include verrc.mif
 
 .EXTENSIONS: .gh .rc .msg .sp
 
@@ -33,6 +32,8 @@ extra_l_flags = lib $(wres_lib)
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 !ifeq bootstrap 1
 dependants = msg.gh incltext.gh

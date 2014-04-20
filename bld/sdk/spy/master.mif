@@ -15,8 +15,6 @@ sys_windowed = 1
 !include $(commonui_dir)/client.mif
 !include $(wpi_dir)/client.mif
 
-!include verrc.mif
-
 .EXTENSIONS: .res .rc
 
 !ifeq host_os nt
@@ -72,6 +70,8 @@ rc_inc_dirs = -I"../res" $(commonui_inc_dirs) $(wpi_inc_dirs)
 # systems where version resource must be added to .EXE
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
+
+!include verrc.mif
 
 xlibs = $(dllname).lib $(wpi_lib) $(commonui_lib)
 
