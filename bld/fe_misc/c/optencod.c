@@ -78,6 +78,12 @@
 
 #define SKIP_BEG_MARK(s)        if(*s==':')++s
 
+#if defined( __WATCOMC__ ) || defined( _MSC_VER )
+#define FAIL_RETURN(t,v,r)      fail( t, v )
+#else
+#define FAIL_RETURN(t,v,r)      fail( t, v ); return( r )
+#endif
+
 typedef enum tag_id {
 #define TAG( s )        TAG_##s ,
 #include "opttags.h"
@@ -199,7 +205,7 @@ static char         maxusgbuff[BUFF_SIZE];
 
 static char         alternateEqual;
 static CHAIN        *lastChain;
-static unsigned     maxUsageLen;
+static size_t       maxUsageLen;
 static char         *pageUsage[LANG_MAX];
 static unsigned     targetMask;
 static unsigned     targetAnyMask;
@@ -290,6 +296,9 @@ static TITLE    *targetTitle;
 
 static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
 
+#if defined( __WATCOMC__ )
+#pragma abort   fail
+#endif
 static void fail( char *msg, ... )
 {
     va_list args;
@@ -433,8 +442,7 @@ static unsigned findTarget( char *t )
             return( p->mask );
         }
     }
-    fail( "invalid target name '%s'\n", t );
-    return( 0 );
+    FAIL_RETURN( "invalid target name '%s'\n", t, 0 );
 }
 
 static NAME *findName( NAME **h, char *n )
@@ -498,11 +506,10 @@ static CHAIN *addChain( char *n, int chain )
     for( cn = chainList; cn != NULL; cn = cn->next ) {
         if( strcmp( n, cn->name ) == 0 ) {
             if( cn->code_used ) {
-                fail( "CHAIN: option '%s' already defined\n", n );
+                FAIL_RETURN( "CHAIN: option '%s' already defined\n", n, NULL );
             } else {
-                fail( "USAGEGRP: option '%s' already defined\n", n );
+                FAIL_RETURN( "USAGEGRP: option '%s' already defined\n", n, NULL );
             }
-            return( NULL );
         }
     }
     len = strlen( n );
@@ -626,8 +633,7 @@ static tag_id findTag( char *t )
             return( c - tagNames );
         }
     }
-    fail( "unknown tag: %s\n", t );
-    return( TAG_UNKNOWN );
+    FAIL_RETURN( "unknown tag: %s\n", t, TAG_UNKNOWN );
 }
 
 static tag_id isTag( char **eot )
@@ -2032,7 +2038,7 @@ static int usageValid( OPTION *o, unsigned language )
 
 static void emitUsageH( int page_flag )
 {
-    unsigned len;
+    size_t len;
     char *q;
     char *s;
 
@@ -2056,26 +2062,25 @@ static void emitUsageH( int page_flag )
     
 }
 
-static void createChainHeader( OPTION **o, unsigned language, int max )
+static void createChainHeader( OPTION **o, unsigned language, size_t max )
 {
     char    *usage;
     CHAIN   *cn;
-    int     i;
     size_t  len;
 
     cn = (*o)->chain;
     hdrbuff[0] = '-';
     cvtName( hdrbuff + 1, cn->name, CVT_STRING );
     strcat( hdrbuff, "{" );
-    i = 0;
+    len = 0;
     for( ; *o != NULL && (*o)->chain == cn; ++o ) {
         if( (*o)->chain != NULL ) {
-            if( i > 0 ) {
+            if( len > 0 ) {
                 strcat( hdrbuff, "," );
             }
             genOptionUsageStart( *o );
             strcat( hdrbuff, &tokbuff[2] );
-            ++i;
+            ++len;
         }
     }
     strcat( hdrbuff, "} " );
@@ -2206,7 +2211,7 @@ static void outputUsageH( void )
 
 static void emitUsageB( int page_flag )
 {
-    unsigned len;
+    size_t len;
 
     page_flag = page_flag;
     len = strlen( tokbuff ) + 1;

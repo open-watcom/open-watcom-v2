@@ -402,7 +402,7 @@ void init_tokens( char **input_file )
             if( size > MAX_KEYWORDS ) {
                 fatal( "too many keywords" );
             }
-            key_len = strlen( keyword );
+            key_len = (unsigned)strlen( keyword );
             if( key_len < min_len ) {
                 min_len = key_len;
             }
@@ -444,7 +444,7 @@ void init_tokens( char **input_file )
     }
     col = 1;
     for( i = 1; i <= num_keywords; ++i ) {
-        tok_len = strlen( tokens[i] );
+        tok_len = (unsigned)strlen( tokens[i] );
         col += tok_len + 1;
         if( col > 79 ) {
             output( "\n" );
@@ -465,7 +465,7 @@ void init_arrays( unsigned first_index, unsigned last_index )
         freq[ c ] = 0;
     }
     for( i = 1; i <= num_keywords; ++i ) {
-        len[ i ] = strlen( tokens[ i ] );
+        len[ i ] = (unsigned)strlen( tokens[ i ] );
         if( len[i] > first_index ) {
             first[i] = make_letter( tokens[i][first_index] );
         } else {
@@ -478,8 +478,8 @@ void init_arrays( unsigned first_index, unsigned last_index )
         }
         done[ i ] = 0;
         // these improve the hash function
-        init_hash[ i ] = len[ i ] + tokens[i][ min_len ];
-        //init_hash[ i ] = len[ i ] + tokens[i][ len[i] >> 1 ];
+        init_hash[ i ] = len[ i ] + (unsigned)tokens[i][ min_len ];
+        //init_hash[ i ] = len[ i ] + (unsigned)tokens[i][ len[i] >> 1 ];
         //init_hash[ i ] = len[ i ];
         hash[ i ] = init_hash[ i ];
         ++freq[ first[ i ] ];

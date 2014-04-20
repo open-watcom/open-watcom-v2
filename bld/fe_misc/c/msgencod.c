@@ -233,10 +233,10 @@ static char word[LINE_SIZE];
 // statistics
 static unsigned uniqueWords;
 static unsigned multiRefWords;
-static unsigned maxWordLen;
-static unsigned maxMsgLen;
-static unsigned totalMsgLen;
-static unsigned totalBytes;
+static size_t maxWordLen;
+static size_t maxMsgLen;
+static size_t totalMsgLen;
+static size_t totalBytes;
 
 // some local functions which need predefining
 static void outputNum (FILE *fp, unsigned n);
@@ -247,7 +247,7 @@ static void outputNum (FILE *fp, unsigned n);
 #define LARGE_BIT       0x40
 #define USE_SMALL_ENC   0x3f
 
-#define NO_INDEX        (-1)
+#define NO_INDEX        (unsigned)(-1)
 
 static void error( char *f, ... )
 {
@@ -541,6 +541,8 @@ static void do_msggrpnum( char *p )
 static void do_emsggrp( char *p )
 {
     MSGGROUP *grp;
+
+    p = p;
     grp = currGroup;
     if( !flags.grouped ) {
         error( "missing :msggroup\n" );
@@ -818,8 +820,7 @@ static void suckInFile( void )
 
 static int strPref( MSGSYM *m, char *pref )
 {
-    unsigned len = strlen( pref );
-    return memcmp( m->name, pref, len );
+    return memcmp( m->name, pref, strlen( pref ) );
 }
 
 static int percentPresent( char c, char *p )
@@ -979,7 +980,7 @@ static WORD *addWord( MSGSYM *m )
     *h = c;
     c->references = 1;
     c->index = NO_INDEX;
-    c->len = len;
+    c->len = (unsigned)len;
     c->all = allWords;
     allWords = c;
     strcpy( c->name, word );
@@ -1113,7 +1114,7 @@ static void writeExtraDefs( FILE *fp )
         "#define ENC_BIT 0x80\n"
         "#define LARGE_BIT 0x40\n"
         "#define MAX_MSG ", fp );
-    outputNum( fp, maxMsgLen );
+    outputNum( fp, (unsigned)maxMsgLen );
     fputc( '\n', fp );
     fputc( '\n', fp );
 }
@@ -1489,11 +1490,11 @@ static void dumpStats( void )
     printf( "# of messages                        %u\n", messageCounter );
     printf( "# of unique words                    %u\n", uniqueWords );
     printf( "# of words referenced more than once %u\n", multiRefWords );
-    printf( "max message length                   %u\n", maxMsgLen );
-    printf( "max word length                      %u\n", maxWordLen );
-    printf( "total input bytes                    %u\n", totalMsgLen );
-    printf( "total output bytes                   %u\n", totalBytes );
-    printf( "%% compression                        %u\n", ( totalBytes * 100 ) / totalMsgLen );
+    printf( "max message length                   %u\n", (unsigned)maxMsgLen );
+    printf( "max word length                      %u\n", (unsigned)maxWordLen );
+    printf( "total input bytes                    %u\n", (unsigned)totalMsgLen );
+    printf( "total output bytes                   %u\n", (unsigned)totalBytes );
+    printf( "%% compression                        %u\n", (unsigned)( ( totalBytes * 100 ) / totalMsgLen ) );
 }
 
 static void closeFiles( void )
@@ -1506,7 +1507,7 @@ static void closeFiles( void )
 
 static void dumpInternational( void )
 {
-    char *text;
+    char const *text;
     MSGSYM *m;
     FILE *fp;
     unsigned lang;
@@ -1540,7 +1541,7 @@ static void dumpInternational( void )
                 }
                 text = m->lang_txt[ LANG_English ];
             }
-            len = strlen( text );
+            len = (unsigned)strlen( text );
             if( len > 127 ) {
                 fatal( "length of a international message is too long" );
             }
