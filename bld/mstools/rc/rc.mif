@@ -6,9 +6,6 @@ common_objs = parse.obj translat.obj $(mstools_objs)
 rc_objs     = rc.obj message.obj $(common_objs)
 rc_hdrs     = optparse.gh
 
-extra_c_flags_message = $(targdef)
-extra_c_flags_rc = $(targdef)
-
 #
 # Instructions for building the executable.
 #

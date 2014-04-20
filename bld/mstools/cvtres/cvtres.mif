@@ -6,8 +6,6 @@ common_objs = parse.obj $(mstools_objs)
 cvtres_objs = cvtres.obj message.obj $(common_objs)
 cvtres_hdrs = optparse.gh
 
-extra_c_flags_message = $(targdef)
-
 #
 # Instructions for building the executable.
 #

@@ -11,11 +11,11 @@ mstools_autodepends = .AUTODEPEND
 additional_cleanup = *.gc
 
 !ifeq target_cpu axp
-targdef = -D__TARGET_AXP__
+extra_cpp_flags = -D__TARGET_AXP__
 !else ifeq target_cpu ppc
-targdef = -D__TARGET_PPC__
+extra_cpp_flags = -D__TARGET_PPC__
 !else ifeq target_cpu 386
-targdef = -D__TARGET_386__
+extra_cpp_flags = -D__TARGET_386__
 #!else ifeq host_cpu axp
 #targdef = -D__TARGET_AXP__
 #!else ifeq host_cpu ppc
@@ -63,12 +63,10 @@ verrcaxp_exe = $(name)axp
 verrcppc_exe = $(name)ppc
 !include verrc.mif
 
+optencod_opts_    = i86
 optencod_opts_386 = i86
 optencod_opts_axp = axp
 optencod_opts_ppc = ppc
 
-optp$(target_cpu).gc optp$(target_cpu).gh : ../../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optp$(target_cpu).gh optp$(target_cpu).gc usage$(target_cpu).gh $(optencod_opts_$(target_cpu))
-
 optparse.gc optparse.gh : ../../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optparse.gh optparse.gc usagemsg.gh i86
+        optencod -n -q $]@ optparse.gh optparse.gc usagemsg.gh $(optencod_opts_$(target_cpu))

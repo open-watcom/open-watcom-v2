@@ -1257,12 +1257,4 @@ static int OPT_END( void )
 }
 
 /* Include after all static functions were declared */
-#if defined(__TARGET_386__)
-    #include "optp386.gc"
-#elif defined(__TARGET_AXP__)
-    #include "optpaxp.gc"
-#elif defined(__TARGET_PPC__)
-    #include "optpppc.gc"
-#else
-    #error Unrecognized CPU type
-#endif
+#include "optparse.gc"

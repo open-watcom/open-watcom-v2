@@ -4,22 +4,18 @@ name = cl
 
 clstub_objs     = clstub.obj $(mstools_stub_obj) $(mstools_objs)
 cl_common_objs  = macro.obj $(mstools_objs)
-cl386_objs      = cl386.obj mesg386.obj parse386.obj xlate386.obj $(cl_common_objs)
-claxp_objs      = claxp.obj mesgaxp.obj parseaxp.obj xlateaxp.obj $(cl_common_objs)
-clppc_objs      = clppc.obj mesgppc.obj parseppc.obj xlateppc.obj $(cl_common_objs)
-cl386_hdrs      = optp386.gc
-claxp_hdrs      = optpaxp.gc
-clppc_hdrs      = optpppc.gc
+cl_objs         = cl.obj message.obj parse.obj translat.obj $(cl_common_objs)
+cl_hdrs         = optparse.gc
 
 #
 # Instructions for building the executables.
 #
 !ifdef target_cpu
-cl$(target_cpu).exe :  $(cl$(target_cpu)_hdrs) $(cl$(target_cpu)_objs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
+cl$(target_cpu).exe :  $(cl_hdrs) $(cl_objs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(cl$(target_cpu)_objs) $(ldflags)
+        $(cl) $(clflags) $(cl_objs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(cl$(target_cpu)_objs)}
+        $(linker) name $^@ $(lflags) file {$(cl_objs)}
 !endif
         @%make bind_ver$(target_cpu)_res_exe
 !else

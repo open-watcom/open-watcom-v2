@@ -6,9 +6,7 @@ name = lib
 
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
-lib386_objs         = deff386.obj lib386.obj mesg386.obj xlate386.obj $(lib_common_objs)
-libaxp_objs         = deffaxp.obj libaxp.obj mesgaxp.obj xlateaxp.obj $(lib_common_objs)
-libppc_objs         = deffppc.obj libppc.obj mesgppc.obj xlateppc.obj $(lib_common_objs)
+lib_objs            = deffile.obj lib.obj message.obj translat.obj $(lib_common_objs)
 lib_hdrs            = optparse.gc
 lib_common_libs     = $(orl_lib)
 
@@ -21,11 +19,11 @@ inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 # Instructions for building the executable.
 #
 !ifdef target_cpu
-lib$(target_cpu).exe :  $(lib_hdrs) $(lib$(target_cpu)_objs) $(lib_common_libs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
+lib$(target_cpu).exe :  $(lib_hdrs) $(lib_objs) $(lib_common_libs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(lib$(target_cpu)_objs) $(lib_common_libs) $(ldflags)
+        $(cl) $(clflags) $(lib_objs) $(lib_common_libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(lib$(target_cpu)_objs)} library {$(lib_common_libs)}
+        $(linker) name $^@ $(lflags) file {$(lib_objs)} library {$(lib_common_libs)}
 !endif
         @%make bind_ver$(target_cpu)_res_exe
 !else

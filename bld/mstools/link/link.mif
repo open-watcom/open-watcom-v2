@@ -8,17 +8,9 @@ name = link
 
 !include $(orl_dir)/client.mif
 
-!ifeq      host_os nt
-!   define link_stub linkx.exe
-!else
-!   define link_stub
-!endif
-
 linkstub_objs       = linkstub.obj $(mstools_stub_obj) $(mstools_objs)
 link_common_objs    = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
-link386_objs        = deff386.obj link386.obj mesg386.obj xlate386.obj $(link_common_objs)
-linkaxp_objs        = deffaxp.obj linkaxp.obj mesgaxp.obj xlateaxp.obj $(link_common_objs)
-linkppc_objs        = deffppc.obj linkppc.obj mesgppc.obj xlateppc.obj $(link_common_objs)
+link_objs           = deffile.obj link.obj message.obj translat.obj $(link_common_objs)
 link_hdrs           = optparse.gc
 link_common_libs    = $(orl_lib)
 
@@ -31,11 +23,11 @@ inc_dirs += -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 # Instructions for building the executables.
 #
 !ifdef target_cpu
-link$(target_cpu).exe :  $(link_hdrs) $(link$(target_cpu)_objs) $(lib_common_libs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
+link$(target_cpu).exe :  $(link_hdrs) $(link_objs) $(lib_common_libs) $(ver$(target_cpu)_res_exe_$(host_os)_$(host_cpu))
 !ifndef __WATCOM__
-        $(cl) $(clflags) $(link$(target_cpu)_objs) $(link_common_libs) $(ldflags)
+        $(cl) $(clflags) $(link_objs) $(link_common_libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(link$(target_cpu)_objs)} library {$(link_common_libs)}
+        $(linker) name $^@ $(lflags) file {$(link_objs)} library {$(link_common_libs)}
 !endif
         @%make bind_ver$(target_cpu)_res_exe
 !else

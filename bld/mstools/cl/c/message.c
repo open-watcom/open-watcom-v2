@@ -39,15 +39,7 @@
 
 
 static char usageMsg[] = {
-    #if defined(__TARGET_386__)
-        #include "usage386.gh"
-    #elif defined(__TARGET_AXP__)
-        #include "usageaxp.gh"
-    #elif defined(__TARGET_PPC__)
-        #include "usageppc.gh"
-    #else
-        #error Unrecognized CPU type
-    #endif
+    #include "usagemsg.gh"
     "\0"
 };
 

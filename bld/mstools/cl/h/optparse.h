@@ -33,17 +33,7 @@
 #define OPTPARSE_H_INCLUDED
 
 #include "system.h"
-
-
-#if defined(__TARGET_386__)
-    #include "optp386.gh"
-#elif defined(__TARGET_AXP__)
-    #include "optpaxp.gh"
-#elif defined(__TARGET_PPC__)
-    #include "optpppc.gh"
-#else
-    #error Unrecognized CPU type
-#endif
+#include "optparse.gh"
 
 void    OPT_INIT( OPT_STORAGE *data );
 void    OPT_FINI( OPT_STORAGE *data );
