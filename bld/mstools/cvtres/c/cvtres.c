@@ -80,7 +80,7 @@ static int do_parsing( OPT_STORAGE *cmdOpts )
 }
 
 
-#define BUFSIZE 32768
+#define BUFSIZE     32768
 
 /*
  * Convert the resource file.

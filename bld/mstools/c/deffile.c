@@ -953,7 +953,7 @@ static void strip_quotes( char *str )
  * first non-whitespace character.
  */
 static void ScanWhitespace( bool *newLine )
-/****************************************/
+/*****************************************/
 {
     char    ch;
 
@@ -976,7 +976,6 @@ static bool eat_comments( bool *newLine )
 {
     char    ch;
     bool    alive = TRUE;
-
 
     *newLine = FALSE;
     do {

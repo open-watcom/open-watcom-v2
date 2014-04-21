@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 #include "dlltool.h"
 #include "error.h"
 #include "memory.h"

@@ -71,7 +71,7 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     if( cmdOpts->nopp                )  append_unsupported( opts, "nopp"                );
     if( cmdOpts->o0                  )  append_unsupported( opts, "O0"                  );
     if( cmdOpts->o1                  )  append_unsupported( opts, "O1"                  );
-    if( cmdOpts->resumption_safe      )  append_unsupported( opts, "resumptionsafe"      );
+    if( cmdOpts->resumption_safe     )  append_unsupported( opts, "resumptionsafe"      );
     if( cmdOpts->symbols_aligned_0mod4 )  append_unsupported( opts, "symbolsaligned0mod4" );
     if( cmdOpts->symbols_not_aligned   )  append_unsupported( opts, "symbolsnotaligned"   );
     if( cmdOpts->stack_aligned_0mod8   )  append_unsupported( opts, "stackaligned0mod8"   );

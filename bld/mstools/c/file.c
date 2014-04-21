@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "bool.h"
 #include "error.h"
 #include "file.h"
 #include "memory.h"
@@ -54,16 +55,16 @@ static struct ListElem *fileList = NULL;
 static int              defaultType = TYPE_INVALID_FILE;
 static const char *     defaultName = NULL;
 
-static int              allowC = 0;
-static int              allowCPP = 0;
-static int              allowDEF = 0;
-static int              allowLIB = 0;
-static int              allowOBJ = 0;
-static int              allowRC = 0;
-static int              allowRES = 0;
-static int              allowRBJ = 0;
-static int              allowRS = 0;
-static int              allowEXP = 0;
+static bool             allowC = FALSE;
+static bool             allowCPP = FALSE;
+static bool             allowDEF = FALSE;
+static bool             allowLIB = FALSE;
+static bool             allowOBJ = FALSE;
+static bool             allowRC = FALSE;
+static bool             allowRES = FALSE;
+static bool             allowRBJ = FALSE;
+static bool             allowRS = FALSE;
+static bool             allowEXP = FALSE;
 
 static int              languageToForce = FORCE_NONE;
 
@@ -89,33 +90,33 @@ static int file_type( const char *filename )
     }
 
     _splitpath( tempfilename, NULL, NULL, NULL, ext );
-    if( allowC  &&  !stricmp( ext, ".c" ) ) {
+    if( allowC && !stricmp( ext, ".c" ) ) {
         type = TYPE_C_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cc" ) ) {
+    } else if( allowCPP && !stricmp( ext, ".cc" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cpp" ) ) {
+    } else if( allowCPP && !stricmp( ext, ".cpp" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".cxx" ) ) {
+    } else if( allowCPP && !stricmp( ext, ".cxx" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".odl" ) ) {
+    } else if( allowCPP && !stricmp( ext, ".odl" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowCPP  &&  !stricmp( ext, ".idl" ) ) {
+    } else if( allowCPP && !stricmp( ext, ".idl" ) ) {
         type = TYPE_CPP_FILE;
-    } else if( allowDEF  &&  !stricmp( ext, ".def" ) ) {
+    } else if( allowDEF && !stricmp( ext, ".def" ) ) {
         type = TYPE_DEF_FILE;
-    } else if( allowOBJ  &&  !stricmp( ext, ".obj" ) ) {
+    } else if( allowOBJ && !stricmp( ext, ".obj" ) ) {
         type = TYPE_OBJ_FILE;
-    } else if( allowLIB  &&  !stricmp( ext, ".lib" ) ) {
+    } else if( allowLIB && !stricmp( ext, ".lib" ) ) {
         type = TYPE_LIB_FILE;
-    } else if( allowRC  &&  !stricmp( ext, ".rc" ) ) {
+    } else if( allowRC && !stricmp( ext, ".rc" ) ) {
         type = TYPE_RC_FILE;
-    } else if( allowRES  &&  !stricmp( ext, ".res" ) ) {
+    } else if( allowRES && !stricmp( ext, ".res" ) ) {
         type = TYPE_RES_FILE;
-    } else if( allowRBJ  &&  !stricmp( ext, ".rbj" ) ) {
+    } else if( allowRBJ && !stricmp( ext, ".rbj" ) ) {
         type = TYPE_RBJ_FILE;
-    } else if( allowRS  &&  !stricmp( ext, ".rs" ) ) {
+    } else if( allowRS && !stricmp( ext, ".rs" ) ) {
         type = TYPE_RS_FILE;
-    } else if( allowEXP  &&  !stricmp( ext, ".exp" ) ) {
+    } else if( allowEXP && !stricmp( ext, ".exp" ) ) {
         type = TYPE_EXP_FILE;
     } else {
         if( defaultType == TYPE_INVALID_FILE ) {
@@ -182,7 +183,7 @@ void AddFile( int type, const char *filename )
 char *GetNextFile( int *typeBuf, int type, ... )
 /**********************************************/
 {
-    int                 found = 0;
+    bool                found = FALSE;
     struct ListElem *   curElem = fileList;
     struct ListElem *   prevElem = NULL;
     char *              filename;
@@ -192,7 +193,7 @@ char *GetNextFile( int *typeBuf, int type, ... )
     /*** Search the list for the file ***/
     while( curElem != NULL ) {
         if( curElem->type == type ) {   /* check the first type */
-            found = 1;
+            found = TRUE;
             break;
         } else {                        /* check any other types */
             va_start( args, type );
@@ -200,7 +201,7 @@ char *GetNextFile( int *typeBuf, int type, ... )
                 curType = va_arg( args, int );
                 if( curType == TYPE_INVALID_FILE )  break;
                 if( curElem->type == curType ) {
-                    found = 1;
+                    found = TRUE;
                 }
             }
             va_end( args );
@@ -247,63 +248,63 @@ void AllowTypeFile( int type, ... )
 /*********************************/
 {
     va_list             args;
-    int                 alive = 1;
+    bool                alive = TRUE;
     int                 curType;
-    int                 gotFirst = 0;
+    bool                gotFirst = FALSE;
 
     va_start( args, type );
     while( alive ) {
         if( !gotFirst ) {
             curType = type;
-            gotFirst = 1;
+            gotFirst = TRUE;
         } else {
             curType = va_arg( args, int );
         }
         switch( curType ) {
           case TYPE_DEFAULT_FILE:
-            allowC = 0;
-            allowCPP = 0;
-            allowDEF = 0;
-            allowOBJ = 0;
-            allowLIB = 0;
-            allowRC = 0;
-            allowRES = 0;
-            allowRBJ = 0;
-            allowRS = 0;
-            allowEXP = 0;
+            allowC = FALSE;
+            allowCPP = FALSE;
+            allowDEF = FALSE;
+            allowOBJ = FALSE;
+            allowLIB = FALSE;
+            allowRC = FALSE;
+            allowRES = FALSE;
+            allowRBJ = FALSE;
+            allowRS = FALSE;
+            allowEXP = FALSE;
             break;
           case TYPE_C_FILE:
-            allowC = 1;
+            allowC = TRUE;
             break;
           case TYPE_CPP_FILE:
-            allowCPP = 1;
+            allowCPP = TRUE;
             break;
           case TYPE_DEF_FILE:
-            allowDEF = 1;
+            allowDEF = TRUE;
             break;
           case TYPE_OBJ_FILE:
-            allowOBJ = 1;
+            allowOBJ = TRUE;
             break;
           case TYPE_LIB_FILE:
-            allowLIB = 1;
+            allowLIB = TRUE;
             break;
           case TYPE_RC_FILE:
-            allowRC = 1;
+            allowRC = TRUE;
             break;
           case TYPE_RES_FILE:
-            allowRES = 1;
+            allowRES = TRUE;
             break;
           case TYPE_RBJ_FILE:
-            allowRBJ = 1;
+            allowRBJ = TRUE;
             break;
           case TYPE_RS_FILE:
-            allowRS = 1;
+            allowRS = TRUE;
             break;
           case TYPE_EXP_FILE:
-            allowEXP = 1;
+            allowEXP = TRUE;
             break;
           case TYPE_INVALID_FILE:
-            alive = 0;
+            alive = FALSE;
             break;
           default:
             Zoinks();

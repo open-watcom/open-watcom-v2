@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "cmdline.h"
 #include "error.h"
 #include "memory.h"
@@ -169,7 +170,7 @@ char **MergeCmdLine( CmdLine *cmdLine, int section, ... )
     int                 countArg;
     int                 total = 0;
     va_list             args;
-    int                 done = 0;
+    bool                done = FALSE;
 
     /*** Count the total number of items ***/
     if( section == INVALID_MERGE_CMDLINE ) {
@@ -190,7 +191,7 @@ char **MergeCmdLine( CmdLine *cmdLine, int section, ... )
                     total++;
                 }
             } else {
-                done = 1;
+                done = TRUE;
             }
         }
         va_end( args );
@@ -202,7 +203,7 @@ char **MergeCmdLine( CmdLine *cmdLine, int section, ... )
 
     /*** Add the items to the cmdLine->merged array ***/
     total = 0;
-    done = 0;
+    done = FALSE;
     if( section == INVALID_MERGE_CMDLINE ) {
         for( countSection=0; countSection<cmdLine->numSections; countSection++ ) {
             for( countArg=0; countArg<cmdLine[countSection].curItems; countArg++ ) {
@@ -221,7 +222,7 @@ char **MergeCmdLine( CmdLine *cmdLine, int section, ... )
                     cmdLine->merged[total++] = cmdLine[countSection].args[countArg];
                 }
             } else {
-                done = 1;
+                done = TRUE;
             }
         }
         va_end( args );

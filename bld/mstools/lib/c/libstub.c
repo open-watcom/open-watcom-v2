@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "watcom.h"
 #include "error.h"
 #include "stub.h"

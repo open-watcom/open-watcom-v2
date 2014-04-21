@@ -117,7 +117,6 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
     int                 fileType;
     char *              compiler = NULL;
     int                 rc;
-    int                 alive = 1;
     int                 numCompiled = 0;
     char                drive[_MAX_DRIVE];
     char                dir[_MAX_DIR];
@@ -127,7 +126,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
     int                 count;
 
     /*** Process all the source files, in the order they were given ***/
-    while( alive ) {
+    for( ;; ) {
         filename = GetNextFile( &fileType, TYPE_C_FILE, TYPE_CPP_FILE,
                                 TYPE_INVALID_FILE );
         if( filename == NULL )  break;

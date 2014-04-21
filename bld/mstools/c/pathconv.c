@@ -32,6 +32,7 @@
 
 #include <mbstring.h>
 #include <string.h>
+#include "bool.h"
 #include "memory.h"
 #include "pathconv.h"
 
@@ -45,9 +46,9 @@ char *PathConvert( const char *pathname, char quote )
     const unsigned char *path = (const unsigned char *)pathname;
     char                *out;
     unsigned char       *p;
-    int                 quoteends;      /* quote the whole filename */
-    int                 backslash = 0;  /* true if last char was a '\\' */
-    int                 inquote = 0;    /* true if inside a quoted string */
+    bool                quoteends = FALSE;  /* quote the whole filename */
+    bool                backslash = FALSE;  /* true if last char was a '\\' */
+    bool                inquote = FALSE;    /* true if inside a quoted string */
 
     /*** Allocate a buffer for the new string (should be big enough) ***/
     out = AllocMem( 2 * ( strlen( (char *)path ) + 1 + 2 ) );
@@ -60,10 +61,8 @@ char *PathConvert( const char *pathname, char quote )
         _mbschr( path, '\'' )  !=  NULL     ||
         _mbschr( path, '`' )  !=  NULL      ||
         _mbschr( path, quote )  !=  NULL ) {
-        quoteends = 1;
+        quoteends = TRUE;
         *p++ = quote;
-    } else {
-        quoteends = 0;
     }
 
     /*** Convert the path one character at a time ***/
@@ -72,19 +71,19 @@ char *PathConvert( const char *pathname, char quote )
             if( inquote ) {
                 if( backslash ) {
                     *p++ = '"';         /* handle \" within a string */
-                    backslash = 0;
+                    backslash = FALSE;
                 } else {
-                    inquote = 0;
+                    inquote = FALSE;
                 }
             } else {
-                inquote = 1;
+                inquote = TRUE;
             }
         } else if( *path == '\\' ) {
             *p++ = '\\';
             if( backslash ) {
-                backslash = 0;
+                backslash = FALSE;
             } else {
-                backslash = 1;
+                backslash = TRUE;
             }
         } else if( *path == '/' ) {
             if( inquote ) {
@@ -92,11 +91,11 @@ char *PathConvert( const char *pathname, char quote )
             } else {
                 *p++ = '\\';
             }
-            backslash = 0;
+            backslash = FALSE;
         } else {
             _mbccpy( p, path );         /* copy an ordinary character */
             p = _mbsinc( p );
-            backslash = 0;
+            backslash = FALSE;
         }
         path = _mbsinc( path );
     }
@@ -110,12 +109,12 @@ char *PathConvert( const char *pathname, char quote )
  * Translate  foo/dir1\\dir2" \\"bar"grok  -->  foo\\dir1\\dir2 \\"bargrok.
  */
 char *PathConvertWithoutQuotes( const char *path )
-/***********************************************/
+/************************************************/
 {
     char *              out;
     char *              p;
-    int                 backslash = 0;  /* true if last char was a '\\' */
-    int                 inquote = 0;    /* true if inside a quoted string */
+    bool                backslash = FALSE;  /* true if last char was a '\\' */
+    bool                inquote = FALSE;    /* true if inside a quoted string */
 
     /*** Allocate a buffer for the new string (should be big enough) ***/
     out = AllocMem( 2 * ( strlen(path) + 1 + 2 ) );
@@ -127,19 +126,19 @@ char *PathConvertWithoutQuotes( const char *path )
             if( inquote ) {
                 if( backslash ) {
                     *p++ = '"';         /* handle \" within a string */
-                    backslash = 0;
+                    backslash = FALSE;
                 } else {
-                    inquote = 0;
+                    inquote = FALSE;
                 }
             } else {
-                inquote = 1;
+                inquote = TRUE;
             }
         } else if( *path == '\\' ) {
             *p++ = '\\';
             if( backslash ) {
-                backslash = 0;
+                backslash = FALSE;
             } else {
-                backslash = 1;
+                backslash = TRUE;
             }
         } else if( *path == '/' ) {
             if( inquote ) {
@@ -147,12 +146,12 @@ char *PathConvertWithoutQuotes( const char *path )
             } else {
                 *p++ = '\\';
             }
-            backslash = 0;
+            backslash = FALSE;
         } else {
             /* copy an ordinary character */
             _mbccpy( (unsigned char *)p, (unsigned char *)path );     /* copy an ordinary character */
             p = (char *)_mbsinc( (unsigned char *)p );
-            backslash = 0;
+            backslash = FALSE;
         }
         path = (char *)_mbsinc( (unsigned char *)path );
     }

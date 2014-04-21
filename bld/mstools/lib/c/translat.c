@@ -213,7 +213,7 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     int                 fileType;
     char *              newfilename;
     char *              tempfilename;
-    int                 quotes_found=0;
+    bool                quotes_found = FALSE;
 
     filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
     if( filename != NULL ) {
@@ -238,7 +238,7 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
                 newfilename = ReallocMem( filename, strlen( filename ) + 4 );
                 if( *newfilename == '"' ) {
                     tempfilename = newfilename + 1;                     /* skip leading " */
-                    quotes_found = 1;
+                    quotes_found = TRUE;
                 } else {
                     tempfilename = newfilename;
                 }
@@ -304,7 +304,7 @@ static char *VerifyDot( char *filename )
     char *              newfilename;
     char *              tempfilename;
     char *              filecopy;
-    int                 quotes_found=0;
+    bool                quotes_found = FALSE;
 
     filecopy = DupStrMem(filename);
     if( strchr( filename, '.' ) == NULL ) {
@@ -313,7 +313,7 @@ static char *VerifyDot( char *filename )
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
             tempfilename[strlen( tempfilename ) - 1] = '\0';    /* smite trailing " */
-            quotes_found=1;
+            quotes_found = TRUE;
         } else {
             tempfilename = newfilename;
         }
@@ -751,7 +751,7 @@ static char *stristr( const char *str, const char *substr )
     maxi = strLen - substrLen + 1;
     ch = substr[0];
 
-    for( i=0; i<maxi; i++ ) {
+    for( i = 0; i < maxi; i++ ) {
         if( str[i] == ch ) {
             if( !strnicmp( str + i, substr, substrLen ) ) {
                 return( (char *)( str + i ) );

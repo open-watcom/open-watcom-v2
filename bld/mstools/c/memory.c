@@ -117,5 +117,5 @@ char *DupQuoteStrMem( const char *str, char quote )
 char *DupStrMem( const char *str )
 /********************************/
 {
-    return( DupQuoteStrMem( str, 0 ) );
+    return( DupQuoteStrMem( str, '\0' ) );
 }

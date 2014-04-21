@@ -33,13 +33,14 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "bool.h"
 #include "error.h"
 
 static void     do_nothing( void );
 
 
 static void             (*bannerFunc)( void ) = do_nothing;
-static int              displayWarnings = 1;
+static bool             displayWarnings = TRUE;
 
 
 /*
@@ -122,8 +123,8 @@ void Information( const char *format, ... )
 /*
  * Enables warnings if yesno is zero, and disables them if non-zero.
  */
-void DisableWarnings( int yesno )
-/*******************************/
+void DisableWarnings( bool yesno )
+/********************************/
 {
     displayWarnings = !yesno;
 }

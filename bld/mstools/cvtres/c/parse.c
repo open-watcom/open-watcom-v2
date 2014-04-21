@@ -257,7 +257,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( 1 );
+    DisableWarnings( TRUE );
 }
 
 

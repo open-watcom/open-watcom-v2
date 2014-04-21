@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "error.h"
 #include "hash.h"
 #include "memory.h"

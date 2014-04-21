@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "error.h"
 #include "macro.h"
 #include "memory.h"
@@ -85,12 +86,12 @@ int DefineMacro( const char *defineStr )
     char *              value;
     size_t              len;
     const char *        str;
-    int                 freeStrFlag = 0;
+    bool                freeStrFlag = FALSE;
 
     /*** Validate the string ***/
     str = validate_define_str( defineStr );
     if( str != NULL ) {
-        freeStrFlag = 1;
+        freeStrFlag = TRUE;
     } else {
         str = defineStr;
     }
@@ -125,7 +126,8 @@ int DefineMacro( const char *defineStr )
     purge_from_list( PURGE_ALL, name ); /* so we don't have any duplicates */
     append_list( newElem );
 
-    if( freeStrFlag )  FreeMem( (char*)str );
+    if( freeStrFlag )
+        FreeMem( (char*)str );
     return( 1 );
 }
 
@@ -307,7 +309,7 @@ static char *validate_define_str( const char *str )
 /*************************************************/
 {
     char *              buf;
-    int                 madeChange = 0;
+    bool                madeChange = FALSE;
     int                 count;
 
     /*** Make a new buffer ***/
@@ -320,7 +322,7 @@ static char *validate_define_str( const char *str )
             buf[count] = str[count+1];
         }
         buf[count-1] = '\0';
-        madeChange = 1;
+        madeChange = TRUE;
     }
 
     if( madeChange ) {

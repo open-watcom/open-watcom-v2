@@ -41,6 +41,28 @@
 bool Quoted = FALSE;
 
 /*
+ * Append a character to a dynamically allocated string, increasing the
+ * buffer size if necessary.  Returns a pointer to a buffer containing the
+ * new data.
+ */
+static char *got_char( char *buf, size_t *bufsize, size_t offset, char ch )
+/*************************************************************************/
+{
+    const size_t        blocksize = 64;
+
+    /*** Increase the buffer size if necessary ***/
+    while( offset+1 >= *bufsize ) {
+        *bufsize += blocksize;
+        buf = ReallocMem( buf, (*bufsize)+blocksize);
+    }
+
+    /*** Append the character ***/
+    buf[offset] = ch;
+    buf[offset+1] = '\0';
+    return( buf );
+}
+
+/*
  * Skip all whitespace characters, such that the next read will retrieve the
  * first non-whitespace character.
  */
@@ -86,29 +108,6 @@ bool CmdScanRecogLowerChar( int ch )
         UngetCharContext();
         return( FALSE );
     }
-}
-
-
-/*
- * Append a character to a dynamically allocated string, increasing the
- * buffer size if necessary.  Returns a pointer to a buffer containing the
- * new data.
- */
-static char *got_char( char *buf, size_t *bufsize, size_t offset, char ch )
-/*************************************************************************/
-{
-    const size_t        blocksize = 64;
-
-    /*** Increase the buffer size if necessary ***/
-    while( offset+1 >= *bufsize ) {
-        *bufsize += blocksize;
-        buf = ReallocMem( buf, (*bufsize)+blocksize);
-    }
-
-    /*** Append the character ***/
-    buf[offset] = ch;
-    buf[offset+1] = '\0';
-    return( buf );
 }
 
 

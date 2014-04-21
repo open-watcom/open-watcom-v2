@@ -32,6 +32,7 @@
 
 #include <conio.h>
 #include <stdio.h>
+#include "bool.h"
 #include "banner.h"
 #include "error.h"
 #include "message.h"
@@ -43,7 +44,7 @@ static char usageMsg[] = {
     "\0"
 };
 
-static int              quietMode = 0;
+static bool             quietMode = FALSE;
 
 
 /*
@@ -52,7 +53,7 @@ static int              quietMode = 0;
 void BannerMessage( void )
 /************************/
 {
-    static int          alreadyPrinted;
+    static bool         alreadyPrinted = FALSE;
     static char *       helpMsg = {
         banner1w( "C/C++ RC Clone for " CPU_NAME " ", _RC_CLONE_VERSION_ ) "\n"
         banner2 "\n"
@@ -63,7 +64,7 @@ void BannerMessage( void )
 
     if( !alreadyPrinted && !quietMode ) {
         printf( helpMsg );
-        alreadyPrinted = 1;
+        alreadyPrinted = TRUE;
     }
 }
 
@@ -140,5 +141,5 @@ void UnsupportedOptsMessage( const char *opts )
 void QuietModeMessage( void )
 /***************************/
 {
-    quietMode = 1;
+    quietMode = TRUE;
 }

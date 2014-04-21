@@ -73,7 +73,7 @@ static char *VerifyDot( char *filename )
 {
     char *              newfilename;
     char *              tempfilename;
-    int                 quotes_found=0;
+    bool                quotes_found = FALSE;
 
     if (strchr(filename,'.')==NULL) {
         /*** Strip quotes from filename ***/
@@ -81,7 +81,7 @@ static char *VerifyDot( char *filename )
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
             tempfilename[ strlen(tempfilename)-1 ] = '\0';      /* smite trailing " */
-            quotes_found=1;
+            quotes_found = TRUE;
         } else {
             tempfilename = newfilename;
         }
@@ -197,7 +197,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( 1 );
+    DisableWarnings( TRUE );
 }
 
 

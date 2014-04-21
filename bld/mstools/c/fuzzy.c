@@ -35,6 +35,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "demangle.h"           /* from lib_misc project */
 #include "dlltool.h"
 #include "error.h"
@@ -181,7 +182,7 @@ static void *obj_read( void *hdl, size_t len )
     newelem = AllocMem( sizeof( ListElem ) + len - 1 );
     newelem->next = bufflist;
     bufflist = newelem;
-    if( (unsigned)read( (int)hdl, newelem->buff, (unsigned)len ) != (unsigned)len ) {
+    if( (unsigned)read( (int)(pointer_int)hdl, newelem->buff, (unsigned)len ) != (unsigned)len ) {
         FreeMem( newelem );
         return( NULL );
     }
@@ -195,7 +196,7 @@ static void *obj_read( void *hdl, size_t len )
 static long obj_seek( void *hdl, long pos, int where )
 /****************************************************/
 {
-    return( lseek( (int)hdl, pos, where ) );
+    return( lseek( (int)(pointer_int)hdl, pos, where ) );
 }
 
 
@@ -256,12 +257,12 @@ static int handle_obj_file( const char *filename, orl_handle o_hnd )
     if( fileh == -1 ) {
         return( 0 );
     }
-    o_format = ORLFileIdentify( o_hnd, (void*)fileh );
+    o_format = ORLFileIdentify( o_hnd, (void *)(pointer_int)fileh );
     if( o_format == ORL_UNRECOGNIZED_FORMAT ) {
         close( fileh );
         return( 0 );
     }
-    o_fhnd = ORLFileInit( o_hnd, (void*)fileh, o_format );
+    o_fhnd = ORLFileInit( o_hnd, (void *)(pointer_int)fileh, o_format );
     if( o_fhnd == NULL ) {
         close( fileh );
         return( 0 );
@@ -307,7 +308,7 @@ static char *find_file( const char *filename, const char *libpaths[] )
     char *              tryme;
     size_t              len;
     const char *        p;
-    int                 hasbackslash;
+    bool                hasbackslash;
 
     /*** We might not have to go searching for it ***/
     rc = access( filename, F_OK );
@@ -323,9 +324,9 @@ static char *find_file( const char *filename, const char *libpaths[] )
             if( len == 0 )  Zoinks();
             p = libpaths[count] + len - 1;
             if( *p == '\\' ) {
-                hasbackslash = 1;
+                hasbackslash = TRUE;
             } else {
-                hasbackslash = 0;
+                hasbackslash = FALSE;
             }
 
             /*** See if the file exists here ***/
@@ -386,11 +387,11 @@ static int handle_lib_file( const char *filename, const char *libpaths[] )
 static int wlib_output( const char *text )
 /****************************************/
 {
-    int                 badness = 0;
+    bool                badness = FALSE;
 
     if( ( strncmp( text, "Error!", 6 ) == 0 )  ||
         ( strncmp( text, "Warning!", 8 ) == 0 ) ) {
-        badness = 1;
+        badness = TRUE;
     }
 
     if( !badness ) {
@@ -517,7 +518,7 @@ static int matching_callback( const void *name_, void *info_ )
     const char          *name = name_;
     MatchingInfo        *info = info_;
     char                matchstr[MAX_SYMBOL_LEN+1];
-    int                 addit = 0;
+    bool                addit = FALSE;
     const char *        p;
     ListElem *          newelem;
     ListElem *          nextelem;
@@ -529,19 +530,19 @@ static int matching_callback( const void *name_, void *info_ )
     switch( info->findmode ) {
         case MATCH_MODE_EXACT:
             if( !strcmp( name, info->basename ) ) {
-                addit = 1;
+                addit = TRUE;
             }
             break;
         case MATCH_MODE_UNDERBAR_SYMBOL:
             sprintf( matchstr, "_%s", info->basename );
             if( !strcmp( name, matchstr ) ) {
-                addit = 1;
+                addit = TRUE;
             }
             break;
         case MATCH_MODE_SYMBOL_UNDERBAR:
             sprintf( matchstr, "%s_", info->basename );
             if( !strcmp( name, matchstr ) ) {
-                addit = 1;
+                addit = TRUE;
             }
             break;
         case MATCH_MODE_UNDERBAR_SYMBOL_AT_NUMBER:
@@ -552,7 +553,7 @@ static int matching_callback( const void *name_, void *info_ )
                     p++;
                 }
                 if( *p == '\0' ) {
-                    addit = 1;
+                    addit = TRUE;
                 }
             }
             break;

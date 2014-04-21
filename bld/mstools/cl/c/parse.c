@@ -328,7 +328,7 @@ static int parse_link( OPT_STRING **p )
 /*************************************/
 {
     char *              str;
-    int                 gotOne = 0;
+    bool                gotOne = FALSE;
 
     if( !CmdScanRecogChar( ' ' )  &&  !CmdScanRecogChar( '\t' ) ) {
         FatalError( "Whitespace required after /link" );
@@ -346,7 +346,7 @@ static int parse_link( OPT_STRING **p )
             }
         }
         add_string( p, str );
-        gotOne = 1;
+        gotOne = TRUE;
     }
     return( 1 );
 }
@@ -550,7 +550,7 @@ static void check_warn_level( unsigned *p )
 static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
 /********************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static unsigned     prevValue;
     char                oldCpu, newCpu;
 
@@ -594,7 +594,7 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
             Warning( "Overriding /G%c with /G%c", oldCpu, newCpu );
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->arch_i86;
 }
@@ -607,7 +607,7 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
 static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
 /**********************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static int          prevValue;
 
     x = x;
@@ -626,7 +626,7 @@ static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     Warning( "Using Dwarf debugging information" );
     prevValue = cmdOpts->debug_info;
@@ -639,7 +639,7 @@ static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
 static void handle_F( OPT_STORAGE *cmdOpts, int x )
 /*************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     OPT_STRING *        p;
 
     x = x;
@@ -650,7 +650,7 @@ static void handle_F( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->F_value );
         cmdOpts->F_value = p;
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
 }
 
@@ -661,7 +661,7 @@ static void handle_F( OPT_STORAGE *cmdOpts, int x )
 static void handle_Fe( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     OPT_STRING *        p;
 
     x = x;
@@ -672,7 +672,7 @@ static void handle_Fe( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->Fe_value );
         cmdOpts->Fe_value = p;
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
 }
 
@@ -683,7 +683,7 @@ static void handle_Fe( OPT_STORAGE *cmdOpts, int x )
 static void handle_Fp( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     OPT_STRING *        p;
 
     x = x;
@@ -694,7 +694,7 @@ static void handle_Fp( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->Fp_value );
         cmdOpts->Fp_value = p;
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
 }
 
@@ -705,7 +705,7 @@ static void handle_Fp( OPT_STORAGE *cmdOpts, int x )
 static void handle_FR( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     OPT_STRING *        p;
 
     x = x;
@@ -717,7 +717,7 @@ static void handle_FR( OPT_STORAGE *cmdOpts, int x )
         cmdOpts->FR_value = p;
     } else {
         Warning( "Browsing information will be output to .mbr file(s)" );
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
 }
 
@@ -730,7 +730,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( 1 );
+    DisableWarnings( TRUE );
 }
 
 
@@ -740,7 +740,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
 /**************************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static unsigned     prevValue;
 
     x = x;
@@ -750,7 +750,7 @@ static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
                      cmdOpts->Ob_value );
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->Ob_value;
 }
@@ -764,7 +764,7 @@ static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
 static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
 /*********************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static int          prevValue;
 
     x = x;
@@ -793,7 +793,7 @@ static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->opt_level;
 }
@@ -805,7 +805,7 @@ static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
 static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
 /*************************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static int          prevValue;
 
     x = x;
@@ -820,7 +820,7 @@ static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->opt_size_time;
 }
@@ -832,7 +832,7 @@ static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
 static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
 /************************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static int          prevValue;
 
     x = x;
@@ -853,7 +853,7 @@ static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->stack_probes;
 }
@@ -865,7 +865,7 @@ static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
 static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
 /***************************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static unsigned     prevValue;
     char                oldType, newType;
 
@@ -903,7 +903,7 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
             Warning( "Overriding /M%c with /M%c", oldType, newType );
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
     prevValue = cmdOpts->threads_linking;
 }
@@ -915,7 +915,7 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
 static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
 /**********************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
     static int          prevType;
     static unsigned     prevLevel;
 
@@ -940,7 +940,7 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = 1;
+        hasBeenCalled = TRUE;
     }
 
     prevType = cmdOpts->warn_level;
@@ -986,8 +986,8 @@ static void handle_precomp_headers( OPT_STORAGE *cmdOpts, int x )
  * enable.  Option-specific information is passed as parameters.  Returns
  * non-zero if the option should be enabled or zero if it should be disabled.
  */
-static int handle_on_off_option( int *hasBeenCalled, char *optName, int isOn )
-/****************************************************************************/
+static int handle_on_off_option( bool *hasBeenCalled, char *optName, int isOn )
+/*****************************************************************************/
 {
     int     rc = isOn;
     char    ch;
@@ -1012,7 +1012,7 @@ static int handle_on_off_option( int *hasBeenCalled, char *optName, int isOn )
         }
     } else {
         /*** Handle /option- for the first time ***/
-        *hasBeenCalled = 1;
+        *hasBeenCalled = TRUE;
         if( ch == '-' ) {
             rc = 0;
         } else {
@@ -1030,7 +1030,7 @@ static int handle_on_off_option( int *hasBeenCalled, char *optName, int isOn )
 static void handle_GX( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
 
     x = x;
     if( handle_on_off_option( &hasBeenCalled, "GX", cmdOpts->GX ) ) {
@@ -1047,7 +1047,7 @@ static void handle_GX( OPT_STORAGE *cmdOpts, int x )
 static void handle_Op( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
 
     x = x;
     if( handle_on_off_option( &hasBeenCalled, "Op", cmdOpts->Op ) ) {
@@ -1064,7 +1064,7 @@ static void handle_Op( OPT_STORAGE *cmdOpts, int x )
 static void handle_Oy( OPT_STORAGE *cmdOpts, int x )
 /**************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
 
     x = x;
     if( handle_on_off_option( &hasBeenCalled, "Oy", cmdOpts->Oy ) ) {
@@ -1082,7 +1082,7 @@ static void handle_Oy( OPT_STORAGE *cmdOpts, int x )
 static void handle_QIfdiv( OPT_STORAGE *cmdOpts, int x )
 /******************************************************/
 {
-    static int          hasBeenCalled;
+    static bool         hasBeenCalled;
 
     x = x;
     if( handle_on_off_option( &hasBeenCalled, "QIfdiv", cmdOpts->QIfdiv ) ) {

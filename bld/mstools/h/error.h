@@ -48,7 +48,7 @@ extern void     InternalError( int line, const char *file );
 extern void     Warning( const char *format, ... );
 extern void     Information( const char *format, ... );
 
-extern void     DisableWarnings( int yesno );
+extern void     DisableWarnings( bool yesno );
 extern void     SetBannerFuncError( void (*func)( void ) );
 
 

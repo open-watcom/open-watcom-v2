@@ -12,7 +12,7 @@ lib_common_libs     = $(orl_lib)
 
 .c :  $(lib_misc_dir)/c
 
-inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
+inc_dirs += -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 
 #
 # Instructions for building the executable.
