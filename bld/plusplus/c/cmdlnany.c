@@ -56,6 +56,7 @@
 #include "brinfo.h"
 
 #include "cmdlnprs.gh"
+#include "cmdlnprs.h"
 #include "cmdlnsys.h"
 
 
@@ -272,173 +273,6 @@ static int scanFBI( OPT_STRING **p )
 #endif
 }
 
-int OPT_GET_LOWER( void )
-{
-    return( CmdScanLowerChar() );
-}
-
-int OPT_RECOG_LOWER( int c )
-{
-    return( CmdRecogLowerChar( c ) );
-}
-
-int OPT_RECOG( int c )
-{
-    return( CmdRecogChar( c ) );
-}
-
-void OPT_UNGET( void )
-{
-    CmdScanUngetChar();
-}
-
-int OPT_END( void )
-{
-    return( CmdDelimitChar() );
-}
-
-static int scanOffNumber( unsigned *pvalue )
-{
-    int number_scanned;
-    unsigned value;
-    int c;
-
-    CmdRecogEquals();
-    number_scanned = 0;
-    value = 0;
-    for(;;) {
-        c = CmdScanLowerChar();
-        if( ! isdigit( c ) ) {
-            CmdScanUngetChar();
-            break;
-        }
-        value *= 10;
-        value += c - '0';
-        number_scanned = 1;
-    }
-    if( number_scanned ) {
-        *pvalue = value;
-    }
-    return( number_scanned );
-}
-
-int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned default_value )
-{
-    unsigned value;
-
-    if( scanOffNumber( &value ) ) {
-        *p = value;
-    } else {
-        *p = default_value;
-    }
-    return( 1 );
-}
-
-int OPT_GET_NUMBER( unsigned *p )
-{
-    unsigned value;
-
-    if( scanOffNumber( &value ) ) {
-        *p = value;
-        return( 1 );
-    }
-    BadCmdLine( ERR_INVALID_OPTION_NUMBER );
-    return( 0 );
-}
-
-static void addNumber( OPT_NUMBER **h, unsigned number )
-{
-    OPT_NUMBER *value;
-
-    value = CMemAlloc( sizeof( *value ) );
-    value->number = number;
-    value->next = *h;
-    *h = value;
-}
-
-int OPT_GET_NUMBER_MULTIPLE( OPT_NUMBER **h )
-{
-    unsigned value;
-
-    if( scanOffNumber( &value ) ) {
-        addNumber( h, value );
-        return( 1 );
-    }
-    BadCmdLine( ERR_INVALID_OPTION_NUMBER );
-    return( 0 );
-}
-
-int OPT_GET_CHAR( int *p )
-{
-    int c;
-
-    if( ! OPT_END() ) {
-        CmdRecogEquals();
-        if( ! OPT_END() ) {
-            c = CmdScanChar();
-            if( isprint( c ) ) {
-                *p = c;
-                return( 1 );
-            }
-        }
-    }
-    BadCmdLine( ERR_INVALID_OPTION );
-    return( 0 );
-}
-
-static void addString( OPT_STRING **h, char const *s, unsigned len )
-{
-    OPT_STRING *value;
-
-    value = CMemAlloc( offsetof( OPT_STRING, data ) + len + 1 );
-    stvcpy( value->data, s, len );
-    value->next = *h;
-    *h = value;
-}
-
-static void stripQuotes( char *fname )
-{
-    char *s;
-    char *d;
-
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
-            // collapse double backslashes, only then look for escaped quotes
-            if( s[0] == '\\' && s[1] == '\\' ) {
-                ++s;
-            } else if( s[0] == '\\' && s[1] == '"' ) {
-                ++s;
-            }
-            *d++ = *s;
-        }
-        *d = '\0';
-    }
-}
-
-static void OPT_CLEAN_STRING( OPT_STRING **h )
-{
-    OPT_STRING *s;
-
-    while( *h ) {
-        s = *h;
-        *h = s->next;
-        CMemFree( s );
-    }
-}
-
-static void OPT_CLEAN_NUMBER( OPT_NUMBER **h )
-{
-    OPT_NUMBER *s;
-
-    while( *h ) {
-        s = *h;
-        *h = s->next;
-        CMemFree( s );
-    }
-}
-
 static void reverseList( OPT_STRING **h )
 {
     OPT_STRING *s;
@@ -545,94 +379,6 @@ void SetTargetLiteral( char **n, char *t )
     }
 }
 
-int OPT_GET_ID( OPT_STRING **p )
-{
-    size_t len;
-    char const *id;
-
-    CmdRecogEquals();
-    CmdScanChar();
-    len = CmdScanId( &id );
-    if( len != 0 ) {
-        addString( p, id, len );
-        return( 1 );
-    }
-    BadCmdLine( ERR_INVALID_OPTION_ID );
-    return( 0 );
-}
-
-int OPT_GET_ID_OPT( OPT_STRING **p )
-{
-    if( CmdRecogEquals() || ! CmdDelimitChar() ) {
-        return OPT_GET_ID( p );
-    }
-    addString( p, "", 0 );
-    return( 1 );
-}
-
-int OPT_GET_FILE( OPT_STRING **p )
-{
-    size_t len;
-    char const *fname;
-
-    CmdRecogEquals();
-    len = CmdScanFilename( &fname );
-    if( len != 0 ) {
-        addString( p, fname, len );
-        stripQuotes( (*p)->data );
-        return( 1 );
-    }
-    BadCmdLine( ERR_INVALID_OPTION_FILE );
-    return( 0 );
-}
-
-int OPT_GET_FILE_OPT( OPT_STRING **p )
-{
-    size_t len;
-    char const *fname;
-
-    // handle leading option char specially
-    if( CmdRecogEquals() || ! CmdDelimitChar() ) {
-        // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
-        len = CmdScanFilename( &fname );
-        if( len != 0 ) {
-            addString( p, fname, len );
-            stripQuotes( (*p)->data );
-        } else {
-            OPT_CLEAN_STRING( p );
-        }
-    }
-    return( 1 );
-}
-
-int OPT_GET_PATH( OPT_STRING **p )
-{
-    size_t len;
-    char const *path;
-
-    CmdRecogEquals();
-    len = CmdScanFilename( &path );
-    if( len != 0 ) {
-        addString( p, path, len );
-        stripQuotes( (*p)->data );
-        return( 1 );
-    }
-    BadCmdLine( ERR_INVALID_OPTION_PATH );
-    return( 0 );
-}
-
-static void handleOptionEW( OPT_STORAGE *data, int value )
-{
-    data = data;
-    CompFlags.ew_switch_used = value;
-}
-
-static void handleOptionEQ( OPT_STORAGE *data, int value )
-{
-    data = data;
-    CompFlags.eq_switch_used = value;
-}
-
 static void procOptions(        // PROCESS AN OPTIONS LINE
     OPT_STORAGE *data,          // - options data
     char *str );                // - scan position in command line
@@ -666,6 +412,18 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
     }
 }
 
+static void handleOptionEQ( OPT_STORAGE *data, int value )
+{
+    data = data;
+    CompFlags.eq_switch_used = value;
+}
+
+static void handleOptionEW( OPT_STORAGE *data, int value )
+{
+    data = data;
+    CompFlags.ew_switch_used = value;
+}
+
 #include "cmdlnprs.gc"
 
 static bool openCmdFile(        // OPEN A COMMAND FILE
@@ -675,13 +433,13 @@ static bool openCmdFile(        // OPEN A COMMAND FILE
     char fnm[ _MAX_PATH ];      // - buffer for name
 
     stvcpy( fnm, filename, size );
-    stripQuotes( fnm );
+    StripQuotes( fnm );
     return IoSuppOpenSrc( fnm, FT_CMD );
 }
 
 static char *get_env(           // GET ENVIRONMENT VAR
     const char *var,            // - variable name
-    unsigned len )              // - length of name
+    size_t len )                // - length of name
 {
     char buf[128];              // - used to make a string
     char *env;                  // - environment name
@@ -707,7 +465,7 @@ static void scanInputFile(       // PROCESS NAME OF INPUT FILE
     if( CompInfo.compfile_max == CompInfo.compfile_cur ) {
         if( WholeFName == NULL ) {
             stvcpy( filename, fnm, len );
-            stripQuotes( filename );
+            StripQuotes( filename );
             WholeFName = FNameAdd( filename );
         } else {
             CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
@@ -718,8 +476,27 @@ static void scanInputFile(       // PROCESS NAME OF INPUT FILE
 
 static void processCmdFile(     // PROCESS A COMMAND FILE
     OPT_STORAGE *data )         // - option data
-;
+{
+    VBUF rec;                   // - record for file
+    int c;                      // - next character
 
+    VbufInit( &rec );
+    for(;;) {
+        for(;;) {
+            c = NextChar();
+            if( c == LCHR_EOF ) break;
+            if( c == '\n' ) break;
+            if( c == '\r' ) break;
+            VbufConcChr( &rec, (char)c );
+        }
+        procOptions( data, VbufString( &rec ) );
+        for( ; ( c == '\n' ) || ( c == '\r' ); c = NextChar() );
+        if( c == LCHR_EOF ) break;
+        VbufRewind( &rec );
+        VbufConcChr( &rec, (char)c );
+    }
+    VbufFree( &rec );
+}
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
     OPT_STORAGE *data,          // - options data
@@ -728,7 +505,7 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     int c;                      // - next character
     char const *fnm;            // - scanned @ name
     char *env;                  // - environment name
-    unsigned len;               // - length of file name
+    size_t len;                 // - length of file name
 
     if( indirectionLevel >= MAX_INDIRECTION ) {
         BadCmdLine( ERR_MAX_CMD_INDIRECTION );
@@ -774,30 +551,6 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     }
 }
 
-static void processCmdFile(     // PROCESS A COMMAND FILE
-    OPT_STORAGE *data )         // - option data
-{
-    VBUF rec;                   // - record for file
-    int c;                      // - next character
-
-    VbufInit( &rec );
-    for(;;) {
-        for(;;) {
-            c = NextChar();
-            if( c == LCHR_EOF ) break;
-            if( c == '\n' ) break;
-            if( c == '\r' ) break;
-            VbufConcChr( &rec, c );
-        }
-        procOptions( data, VbufString( &rec ) );
-        for( ; ( c == '\n' ) || ( c == '\r' ); c = NextChar() );
-        if( c == LCHR_EOF ) break;
-        VbufRewind( &rec );
-        VbufConcChr( &rec, c );
-    }
-    VbufFree( &rec );
-}
-
 static int openUnicodeFile( char *filename )
 {
     int fh;
@@ -822,7 +575,7 @@ static int openUnicodeFile( char *filename )
 
 static void loadUnicodeTable( unsigned code_page )
 {
-    size_t amt;
+    unsigned amt;
     int fh;
     char filename[ 20 ];
 
@@ -834,7 +587,7 @@ static void loadUnicodeTable( unsigned code_page )
     fh = openUnicodeFile( filename );
     if( fh != -1 ) {
         amt = 256 * sizeof( unsigned short );
-        if( read( fh, UniCode, amt ) != amt ) {
+        if( (unsigned)read( fh, UniCode, amt ) != amt ) {
             CErr( ERR_IO_ERR, filename, strerror( errno ) );
         }
         close( fh );
@@ -1262,7 +1015,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.quiet_mode = 1;
     }
     if( data->p_sharp ) {
-        PreProcChar = data->p_sharp_value;
+        PreProcChar = (char)data->p_sharp_value;
     }
     if( data->rod ) {
         OPT_STRING *s;
@@ -1389,6 +1142,27 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
 #endif
     CBanner();
+}
+
+void BadCmdLineChar( void )             // BAD CHAR DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_CHAR );
+}
+void BadCmdLineId( void )               // BAD ID DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_ID );
+}
+void BadCmdLineNumber( void )           // BAD NUMBER DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_NUMBER );
+}
+void BadCmdLinePath( void )             // BAD PATH DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_PATH );
+}
+void BadCmdLineFile( void )             // BAD FILE DETECTED
+{
+    BadCmdLine( ERR_INVALID_OPTION_FILE );
 }
 
 static void postOptions( void )

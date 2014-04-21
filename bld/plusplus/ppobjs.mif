@@ -94,6 +94,7 @@ common_objs = &
     $(_subdir_)cmdlnany.obj &
     $(_subdir_)cmdlnbat.obj &
     $(_subdir_)cmdlnctx.obj &
+    $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
     $(_subdir_)conpool.obj &
     $(_subdir_)context.obj &

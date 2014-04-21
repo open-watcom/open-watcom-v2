@@ -64,15 +64,15 @@ static void addNumber           // STORE A NUMBER
 }
 
 
-static int scanOffNumber        // SCAN A NUMBER
+static bool scanOffNumber       // SCAN A NUMBER
     ( unsigned *pvalue )        // - target
 {
-    int number_scanned;
+    bool number_scanned;
     unsigned value;
     int c;
 
     CmdRecogEquals();
-    number_scanned = 0;
+    number_scanned = FALSE;
     value = 0;
     for(;;) {
         c = CmdScanLowerChar();
@@ -82,7 +82,7 @@ static int scanOffNumber        // SCAN A NUMBER
         }
         value *= 10;
         value += c - '0';
-        number_scanned = 1;
+        number_scanned = TRUE;
     }
     if( number_scanned ) {
         *pvalue = value;
@@ -101,7 +101,10 @@ void StripQuotes                // STRIP QUOTES FROM A STRING
         // string will shrink so we can reduce in place
         d = fname;
         for( s = d + 1; *s && *s != '"'; ++s ) {
-            if( s[0] == '\\' && s[1] == '"' ) {
+            // collapse double backslashes, only then look for escaped quotes
+            if( s[0] == '\\' && s[1] == '\\' ) {
+                ++s;
+            } else if( s[0] == '\\' && s[1] == '"' ) {
                 ++s;
             }
             *d++ = *s;
@@ -254,7 +257,8 @@ bool OPT_GET_PATH               // PARSE: PATH
     size_t len;
     char const *path;
 
-    CmdPathDelim();
+//    CmdPathDelim();
+    CmdRecogEquals();
     len = CmdScanFilename( &path );
     if( len != 0 ) {
         addString( p, path, len );
@@ -271,7 +275,8 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
     size_t len;
     char const *fname;
 
-    if( CmdPathDelim() || !CmdDelimitChar() ) {
+//    if( CmdPathDelim() || !CmdDelimitChar() ) {
+    if( CmdRecogEquals() || !CmdDelimitChar() ) {
         // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
         len = CmdScanFilename( &fname );
         if( len != 0 ) {

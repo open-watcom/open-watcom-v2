@@ -12199,3 +12199,9 @@ enables the specified warning message.
 This
 .kw pragma
 disables the specified warning message.
+
+:MSGSYM. ERR_INVALID_OPTION_CHAR
+:MSGTXT. option requires a character
+:MSGJTXT.
+The specified option is not recognized by the compiler
+since there was no character after it (i.e., "-p#@" ).
