@@ -31,7 +31,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
-
+#include "bool.h"
 #include "cmdscan.h"
 
 typedef struct cmd_scan_ctl {

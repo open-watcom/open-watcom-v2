@@ -39,8 +39,9 @@
 #include "file.h"
 #include "memory.h"
 #include "message.h"
-#include "parse.h"
 #include "pathconv.h"
+#include "parse.h"
+#include "cmdlnprs.h"
 
 
 /*

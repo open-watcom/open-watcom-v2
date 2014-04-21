@@ -34,7 +34,6 @@
 #define _PARSE_H
 
 #include "cmdlnprs.gh"
-#include "cmdlnprs.h"
 
 /*
  * Function prototypes.

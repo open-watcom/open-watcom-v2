@@ -31,7 +31,7 @@
 
 
 #include <ctype.h>
-
+#include "bool.h"
 #include "cmdscan.h"
 #include "cmdlnprs.gh"          // required generated file
 #include "cmdlnprs.h"

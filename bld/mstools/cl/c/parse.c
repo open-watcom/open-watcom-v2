@@ -43,6 +43,7 @@
 #include "memory.h"
 #include "message.h"
 #include "parse.h"
+#include "cmdlnprs.h"
 
 #ifdef __WATCOMC__
 #pragma disable_message (202);

@@ -34,7 +34,6 @@
 #define __CMDSCAN_H__
 
 #include <stdlib.h>
-#include "bool.h"
 
 #ifdef __cplusplus
 extern "C" {
