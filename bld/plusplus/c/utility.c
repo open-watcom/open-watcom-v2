@@ -263,16 +263,16 @@ char *sti64cpy(                 // CONCATENATE I64 NUMBER
     return strend( tgt );
 }
 
-int strpref(                    // IS STRING A PREFIX OF A STRING
+bool strpref(                   // IS STRING A PREFIX OF A STRING
     char const *prefix,         // - possible prefix
     char const *str )           // - string
 {
     while( *prefix ) {
         if( *prefix != *str ) {
-            return( 0 );
+            return( FALSE );
         }
         ++prefix;
         ++str;
     }
-    return( 1 );
+    return( TRUE );
 }

@@ -368,7 +368,7 @@ void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
 }
 
 
-int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
+bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 {
     TOKEN alt_token;
@@ -392,10 +392,10 @@ int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
         break;
     }
     if( ( CurToken == token ) || ( CurToken == alt_token ) ) {
-        return( 1 );
+        return( TRUE );
     }
     CErr( ERR_EXPECTING_BUT_FOUND, Tokens[token], TokenString() );
-    return( 0 );
+    return( FALSE );
 }
 
 void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT

@@ -428,13 +428,13 @@ static TOKEN nextMToken( TOKEN prev_token )
                 //  will not advance past T_NULL]
                 old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
-                CurToken = ScanToken( 1 );
+                CurToken = ScanToken( TRUE );
                 PPControl = old_ppctl;
                 if( CurToken == T_NULL ) {
                     CurToken = T_WHITE_SPACE;
                 }
             } else {
-                CurToken = ScanToken( 1 );
+                CurToken = ScanToken( TRUE );
             }
         }
     }
@@ -477,7 +477,7 @@ static MACRO_ARG *collectParms( MEPTR fmentry )
     unsigned    parm_cnt_reqd;
     unsigned    curr_cnt;
     int         total;
-    int         ppscan_mode;
+    bool        ppscan_mode;
     MACRO_ARG   *macro_parms;
     TOKEN_LIST  *token_head;
     BUFFER_HDR  *htokenbuf;
@@ -680,18 +680,18 @@ static MACRO_TOKEN *appendToken( MACRO_TOKEN *head, TOKEN token, const char *dat
     return( head );
 }
 
-static int macroBeingExpanded( MEPTR fmentry )
+static bool macroBeingExpanded( MEPTR fmentry )
 {
     NESTED_MACRO *nested;
 
     for( nested = nestedMacros; nested != NULL; nested = nested->next ) {
         if( nested->fmentry == fmentry )
-            return( 1 );
+            return( TRUE );
         if( ! nested->rescanning ) {
             break;
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static int isExpandable( MEPTR curr_mac, MACRO_TOKEN *mtok, int macro_parm )
@@ -886,7 +886,7 @@ static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     MACRO_TOKEN *head;
     MACRO_TOKEN **ptail;
     unsigned i;
-    int ppscan_mode;
+    bool ppscan_mode;
     int finished;
 
     i = 10;
@@ -1173,16 +1173,16 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
     return( ptail );
 }
 
-static int SharpSharp( MACRO_TOKEN *mtok )
+static bool SharpSharp( MACRO_TOKEN *mtok )
 {
     for( ; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token == T_MACRO_SHARP_SHARP )
-            return( 1 );
+            return( TRUE );
         if( mtok->token != T_WHITE_SPACE ) {
             break;
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )

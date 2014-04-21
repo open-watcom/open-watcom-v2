@@ -302,7 +302,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     prev_non_ws_token = T_NULL;
     if( CurToken != T_NULL ) {
         do {
-            CurToken = ScanToken( 0 );
+            CurToken = ScanToken( FALSE );
         } while( CurToken == T_WHITE_SPACE );
         if( defn & MSCAN_EQUALS ) {
             if( CurToken == T_NULL ) {
@@ -387,7 +387,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
             prev_non_ws_token = CurToken;
         }
         prev_token = CurToken;
-        CurToken = ScanToken( 0 );
+        CurToken = ScanToken( FALSE );
         if( (defn & MSCAN_MANY) == 0 ) break;
     }
     if( prev_token == T_WHITE_SPACE ) {
@@ -407,7 +407,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     BrinfDeclMacro( mptr );
     if( (defn & MSCAN_MANY) == 0 ) {
         while( CurToken == T_WHITE_SPACE ) {
-            CurToken = ScanToken( 0 );
+            CurToken = ScanToken( FALSE );
         }
         if( CurToken != T_NULL ) {
             BadCmdLine( ERR_INVALID_OPTION );
@@ -424,7 +424,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     unsigned name_len;          // - length of macro name
     MEPTR mptr;                 // - final macro defn
     MAC_PARM *parm_names;       // - macro parm names
-    int ppscan_mode;            // - previous ppnumber scan mode
+    bool ppscan_mode;           // - previous ppnumber scan mode
     unsigned mlen;              // - current length of macro def'n
     TOKEN_LOCN locn;            // - location for definition
 
@@ -737,7 +737,7 @@ static void preProcStmt( void )
 // We can determine is the first directive is #if, #ifdef or #ifndef.
 //
 TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
-    int expanding )
+    bool expanding )
 {
     int         lines_skipped;
     ppctl_t     old_ppctl;

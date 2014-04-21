@@ -1273,7 +1273,7 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
     TokenLen = len;
 }
 
-void SrcFileScanWhiteSpace( int expanding )
+void SrcFileScanWhiteSpace( bool expanding )
 {
     unsigned char   *p;
     OPEN_FILE       *act;

@@ -55,7 +55,7 @@ void SrcFileScanName(           // SCAN AN IDENTIFIER
     int c )                     // - first character to check
 ;
 void SrcFileScanWhiteSpace(     // SCAN WHITESPACE
-    int expanding )             // - expanding a macro
+    bool expanding )            // - expanding a macro
 ;
 void SrcFileScanCppComment(      // SCAN C++ COMMENT
     void )

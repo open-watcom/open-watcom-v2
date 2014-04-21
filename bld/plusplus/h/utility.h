@@ -185,7 +185,7 @@ char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
 char *strend(                   // POINT AT END OF STRING
     char *string )              // - string
 ;
-int strpref(                    // IS STRING A PREFIX OF A STRING
+bool strpref(                   // IS STRING A PREFIX OF A STRING
     char const *prefix,         // - possible prefix
     char const *str )           // - string
 ;

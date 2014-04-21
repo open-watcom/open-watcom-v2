@@ -1112,9 +1112,9 @@ void CPragma( void )                  // PROCESS A PRAGMA
         PPCTL_DISABLE_MACROS();
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( PragIdRecog( "on" ) ) {
-            pragFlag( 1 );
+            pragFlag( TRUE );
         } else if( PragIdRecog( "off" ) ) {
-            pragFlag( 0 );
+            pragFlag( FALSE );
         } else if( PragIdRecog( "aux" ) || PragIdRecog( "linkage" ) ) {
             PragAux();
         } else if( PragIdRecog( "library" ) ) {

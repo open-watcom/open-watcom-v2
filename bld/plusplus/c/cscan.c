@@ -160,7 +160,7 @@ int ReScanToken( void )
     CompFlags.rescan_buffer_done = 0;
     NextChar = rescanBuffer;
     NextChar();
-    CurToken = ScanToken( 1 );
+    CurToken = ScanToken( TRUE );
     --ReScanPtr;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
@@ -224,7 +224,7 @@ static int saveNextChar( void )
     return( c );
 }
 
-static int scanHex( int expanding )
+static bool scanHex( bool expanding )
 {
     int c;
     struct {
@@ -247,14 +247,14 @@ static int scanHex( int expanding )
         flag.at_least_one = TRUE;
     }
     if( ! flag.at_least_one ) {
-        return( 0 );            /* indicate no characters matched after "0x" */
+        return( FALSE );            /* indicate no characters matched after "0x" */
     }
     if( flag.too_big ) {
         if( diagnose_lex_error( expanding ) ) {
             CErr1( WARN_CONSTANT_TOO_BIG );
         }
     }
-    return( 1 );                    /* indicate characters were matched */
+    return( TRUE );                 /* indicate characters were matched */
 }
 
 static TOKEN idLookup( unsigned len, MEPTR *pmeptr )
@@ -382,7 +382,7 @@ static void scanCppComment( void )
     CompFlags.scanning_cpp_comment = 0;
 }
 
-static int doESCChar( int c, int expanding, type_id char_type )
+static int doESCChar( int c, bool expanding, type_id char_type )
 {
     unsigned    n;
     unsigned    i;
@@ -428,7 +428,7 @@ static int doESCChar( int c, int expanding, type_id char_type )
     return( n );
 }
 
-static TOKEN charConst( type_id char_type, int expanding )
+static TOKEN charConst( type_id char_type, bool expanding )
 {
     int c;
     int i;
@@ -542,7 +542,7 @@ static int printWhiteSpace( int c )
     return( c );
 }
 
-static TOKEN scanWhiteSpace( int expanding )
+static TOKEN scanWhiteSpace( bool expanding )
 {
     SrcFileScanWhiteSpace( expanding );
     return( T_WHITE_SPACE );
@@ -553,7 +553,7 @@ static int skipWhiteSpace( int c )
     if( CompFlags.cpp_output && (PPControl & PPCTL_EOL) == 0 ) {
         c = printWhiteSpace( c );
     } else {
-        SrcFileScanWhiteSpace( 0 );
+        SrcFileScanWhiteSpace( FALSE );
         c = CurrChar;
     }
     return( c );
@@ -702,7 +702,7 @@ static void willContinueStringLater( type_id string_type )
     ++TokenLen;
 }
 
-static TOKEN doScanString( type_id string_type, int expanding )
+static TOKEN doScanString( type_id string_type, bool expanding )
 {
     int c;
     int ok;
@@ -767,7 +767,7 @@ static TOKEN doScanString( type_id string_type, int expanding )
     return( T_BAD_TOKEN );
 }
 
-static TOKEN doScanName( int c, int expanding )
+static TOKEN doScanName( int c, bool expanding )
 {
     MEPTR fmentry = NULL;
 
@@ -805,7 +805,7 @@ static TOKEN doScanName( int c, int expanding )
     return( CurToken );
 }
 
-static TOKEN scanName( int expanding )
+static TOKEN scanName( bool expanding )
 {
     int c;
 
@@ -831,7 +831,7 @@ static TOKEN doScanAsmToken( void )
     return( CurToken );
 }
 
-static TOKEN scanWide( int expanding )  // scan something that starts with L
+static TOKEN scanWide( bool expanding )  // scan something that starts with L
 {
     int c;
     TOKEN token;
@@ -887,7 +887,7 @@ static void msIntSuffix( uint_32 signed_max, type_id sid, type_id uid, unsigned_
     }
 }
 
-static TOKEN scanNum( int expanding )
+static TOKEN scanNum( bool expanding )
 {
     int c;
     unsigned_64 *max_value;
@@ -1161,7 +1161,7 @@ static TOKEN scanNum( int expanding )
     }
 }
 
-static TOKEN scanDelim1( int expanding )
+static TOKEN scanDelim1( bool expanding )
 {
     TOKEN token;
 
@@ -1175,7 +1175,7 @@ static TOKEN scanDelim1( int expanding )
     return( token );
 }
 
-static TOKEN scanDelim12( int expanding )       // @ or @@ token
+static TOKEN scanDelim12( bool expanding )       // @ or @@ token
 {
     int c;
     int chr2;
@@ -1200,7 +1200,7 @@ static TOKEN scanDelim12( int expanding )       // @ or @@ token
     return( tok );
 }
 
-static TOKEN scanDelim12EQ( int expanding )     // @, @@, or @= token
+static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
 {
     int c;
     int chr2;
@@ -1229,7 +1229,7 @@ static TOKEN scanDelim12EQ( int expanding )     // @, @@, or @= token
     return( tok );
 }
 
-static TOKEN scanDelim12EQ2EQ( int expanding )  // @, @@, @=, or @@= token
+static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
 {
     int c;
     int chr2;
@@ -1263,7 +1263,7 @@ static TOKEN scanDelim12EQ2EQ( int expanding )  // @, @@, @=, or @@= token
     return( tok );
 }
 
-static TOKEN scanDelim1EQ( int expanding )      // @ or @= token
+static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
 {
     int c;
     int chr2;
@@ -1288,7 +1288,7 @@ static TOKEN scanDelim1EQ( int expanding )      // @ or @= token
     return( tok );
 }
 
-static TOKEN scanSlash( int expanding ) // /, /=, // comment, or /*comment*/
+static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
 {
     int nc;
     int tok;
@@ -1322,7 +1322,7 @@ static TOKEN scanSlash( int expanding ) // /, /=, // comment, or /*comment*/
     return( tok );
 }
 
-static TOKEN scanLT( int expanding )    // <, <=, <<, <<=, <%, <:
+static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
 {
     int nc;
     TOKEN tok;
@@ -1362,7 +1362,7 @@ static TOKEN scanLT( int expanding )    // <, <=, <<, <<=, <%, <:
     return( tok );
 }
 
-static TOKEN scanPercent( int expanding )   // %, %=, %>, %:, %:%:
+static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
 {
     int nc;
     TOKEN tok;
@@ -1405,7 +1405,7 @@ static TOKEN scanPercent( int expanding )   // %, %=, %>, %:, %:%:
     return( tok );
 }
 
-static TOKEN scanColon( int expanding ) // :, ::, or :>
+static TOKEN scanColon( bool expanding ) // :, ::, or :>
 {
     int nc;
     TOKEN tok;
@@ -1434,7 +1434,7 @@ static TOKEN scanColon( int expanding ) // :, ::, or :>
     return( tok );
 }
 
-static TOKEN scanMinus( int expanding ) // -, -=, --, ->, or ->*
+static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
 {
     int nc;
     int nnc;
@@ -1473,7 +1473,7 @@ static TOKEN scanMinus( int expanding ) // -, -=, --, ->, or ->*
     return( tok );
 }
 
-static TOKEN scanFloat( int expanding )
+static TOKEN scanFloat( bool expanding )
 {
     expanding = expanding;
     SrcFileCurrentLocation();
@@ -1538,7 +1538,7 @@ static TOKEN scanPPNumber( void )
     return( T_PPNUMBER );
 }
 
-static TOKEN scanPPDigit( int expanding )
+static TOKEN scanPPDigit( bool expanding )
 {
     expanding = expanding;
     SrcFileCurrentLocation();
@@ -1547,7 +1547,7 @@ static TOKEN scanPPDigit( int expanding )
     return scanPPNumber();
 }
 
-static TOKEN scanPPDot( int expanding )
+static TOKEN scanPPDot( bool expanding )
 {
     int         c;
 
@@ -1563,25 +1563,25 @@ static TOKEN scanPPDot( int expanding )
     }
 }
 
-static TOKEN scanString( int expanding )
+static TOKEN scanString( bool expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static TOKEN scanStringContinue( int expanding )
+static TOKEN scanStringContinue( bool expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static TOKEN scanLStringContinue( int expanding )
+static TOKEN scanLStringContinue( bool expanding )
 {
     SrcFileCurrentLocation();
     return( doScanString( TYP_WCHAR, expanding ) );
 }
 
-static TOKEN scanCharConst( int expanding )
+static TOKEN scanCharConst( bool expanding )
 {
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
@@ -1589,7 +1589,7 @@ static TOKEN scanCharConst( int expanding )
     return( charConst( TYP_CHAR, expanding ) );
 }
 
-static TOKEN scanNewline( int expanding )
+static TOKEN scanNewline( bool expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     if( PPControl & PPCTL_EOL ) {
@@ -1598,7 +1598,7 @@ static TOKEN scanNewline( int expanding )
     return( ChkControl( expanding ) );
 }
 
-static TOKEN scanCarriageReturn( int expanding )
+static TOKEN scanCarriageReturn( bool expanding )
 {
     int         c;
 
@@ -1612,7 +1612,7 @@ static TOKEN scanCarriageReturn( int expanding )
     return( scanWhiteSpace( expanding ) );
 }
 
-static TOKEN scanInvalid( int expanding )
+static TOKEN scanInvalid( bool expanding )
 {
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
@@ -1635,14 +1635,14 @@ static TOKEN scanInvalid( int expanding )
     return( T_BAD_CHAR );
 }
 
-static TOKEN scanEof( int expanding )
+static TOKEN scanEof( bool expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     expanding = expanding;
     return( T_EOF );
 }
 
-static TOKEN (*scanFunc[])( int ) = {
+static TOKEN (*scanFunc[])( bool ) = {
     #define pick(e,p) p,
     #include "_scnclas.h"
     #undef pick
@@ -1650,8 +1650,8 @@ static TOKEN (*scanFunc[])( int ) = {
 
 #define dispatchFunc( _ex ) (scanFunc[ClassTable[CurrChar]]( (_ex) ))
 
-TOKEN ScanToken( int expanding )
-/******************************/
+TOKEN ScanToken( bool expanding )
+/*******************************/
 {
     return( dispatchFunc( expanding ) );
 }
@@ -1663,10 +1663,10 @@ static void nextMacroToken( void )
         if( CompFlags.use_macro_tokens ) {
             GetMacroToken( FALSE );
             if( CurToken == T_NULL ) {
-                CurToken = dispatchFunc( 0 );
+                CurToken = dispatchFunc( FALSE );
             }
         } else {
-            CurToken = dispatchFunc( 0 );
+            CurToken = dispatchFunc( FALSE );
         }
     } while( CurToken == T_WHITE_SPACE );
 }
@@ -1703,26 +1703,26 @@ void ScanInit( void )
 // called by CollectParms() to gather tokens for macro parms
 // and CDefine() to gather tokens for macro definition
 // example usage:
-//      int ppscan_mode;
+//      bool ppscan_mode;
 //      ppscan_mode = InitPPScan();
 //      CollectParms();
 //      FiniPPScan( ppscan_mode );
-int InitPPScan( void )
-/********************/
+bool InitPPScan( void )
+/*********************/
 {
     if( scanFunc[ SCAN_NUM ] == scanNum ) {
         scanFunc[ SCAN_NUM ] = scanPPDigit;
         scanFunc[ SCAN_FLOAT ] = scanPPDot;
-        return( 1 );            // indicate changed to PP mode
+        return( TRUE );         // indicate changed to PP mode
     }
-    return( 0 );                // indicate already in PP mode
+    return( FALSE );            // indicate already in PP mode
 }
 
 // called when CollectParms() and CDefine() are finished gathering tokens
-void FiniPPScan( int ppscan_mode )
-/********************************/
+void FiniPPScan( bool ppscan_mode )
+/*********************************/
 {
-    if( ppscan_mode == 1 ) {    // if InitPPScan() changed into PP mode
+    if( ppscan_mode ) {                 // if InitPPScan() changed into PP mode
         scanFunc[ SCAN_NUM ] = scanNum; // reset back to normal mode
         scanFunc[ SCAN_FLOAT ] = scanFloat;
     }
@@ -1765,7 +1765,7 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
         DbgAssert( CurToken != T_NULL );
     } else {
         printWhiteSpace( CurrChar );
-        CurToken = ScanToken( 0 );
+        CurToken = ScanToken( FALSE );
     }
 }
 

@@ -190,11 +190,11 @@ void PpStartFile(               // INDICATE START OF A FILE
 void ScanInit(                  // SCAN INITIALIZATION
     void )
 ;
-int InitPPScan(                 // INIT SCANNER FOR PPNUMBER TOKENS
+bool InitPPScan(                // INIT SCANNER FOR PPNUMBER TOKENS
     void )
 ;
 void FiniPPScan(                // INIT SCANNER FOR PPNUMBER TOKENS
-    int ppscan_mode )           // - mode returned by InitPPScan()
+    bool ppscan_mode )          // - mode returned by InitPPScan()
 ;
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     MEPTR fmentry )             // - macro entry
@@ -213,7 +213,7 @@ AUX_INFO *PragmaMapIndex( AUX_INFO * );
 // PROTOTYPES: internal to scanner
 
 TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
-    int expanding )
+    bool expanding )
 ;
 int CppPrinting(                // TEST IF AT LEVEL FOR PREPROC PRINTING
     void )
@@ -244,7 +244,7 @@ void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
 const char *TokenString(        // RETURN A PRINTABLE STRING FOR CURRENT TOK
     void )
 ;
-int ExpectingToken(             // ISSUE EXPECTING ERROR FOR A TOKEN
+bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 ;
 void GetMacroToken(             // GET NEXT TOKEN
@@ -327,7 +327,7 @@ bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT
     void )
 ;
 TOKEN ScanToken(                // SCAN NEXT TOKEN
-    int doing_macro_expansion ) // - TRUE ==> expanding
+    bool doing_macro_expansion )// - TRUE ==> expanding
 ;
 void SkipAhead(                 // SKIP AHEAD TO SIGNIFICANT LOCATION
     void )
