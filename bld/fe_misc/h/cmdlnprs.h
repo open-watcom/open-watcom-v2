@@ -39,12 +39,6 @@ extern "C" {
 
 // Standard Command-Line Parsing Routines
 
-void CheckErrorLimit            // VALIDATE THE ERROR LIMIT
-    ( unsigned *p )             // - value
-;
-void CheckWarnLevel             // VALIDATE WARNING LEVEL
-    ( unsigned *p )             // - value
-;
 void OPT_INIT
     ( OPT_STORAGE *data )
 ;

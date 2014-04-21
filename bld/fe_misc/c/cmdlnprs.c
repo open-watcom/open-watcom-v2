@@ -64,22 +64,6 @@ static void addNumber           // STORE A NUMBER
 }
 
 
-void CheckErrorLimit            // VALIDATE THE ERROR LIMIT
-    ( unsigned *p )             // - value
-{
-    p = p;
-}
-
-
-void CheckWarnLevel             // VALIDATE WARNING LEVEL
-    ( unsigned *p )             // - value
-{
-    if( *p > 10 ) {
-        *p = 10;
-    }
-}
-
-
 static int scanOffNumber        // SCAN A NUMBER
     ( unsigned *pvalue )        // - target
 {
