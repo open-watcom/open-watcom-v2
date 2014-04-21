@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
 #include "context.h"
 #include "error.h"
@@ -56,7 +57,7 @@ struct Context {
 
 
 static struct Context   curContext;
-static int              curContextInitialized = 0;
+static bool             curContextInitialized = FALSE;
 
 static struct Context   stack[MAX_INDIRECTIONS];
 static int              stackItems = 0;
@@ -77,8 +78,8 @@ static void clear_context( struct Context *context )
 /*
  * Open a new command line context.
  */
-int OpenCmdLineContext( void )
-/****************************/
+bool OpenCmdLineContext( void )
+/*****************************/
 {
     int                 len;
 
@@ -92,47 +93,49 @@ int OpenCmdLineContext( void )
 
     curContext.data = curContext.dataStart;
     curContext.dataLen = strlen( curContext.dataStart );
-    curContextInitialized = 1;
+    curContextInitialized = TRUE;
     curContext.type = COMMAND_LINE_CONTEXT;
-    return( 0 );
+    return( FALSE );
 }
 
 
 /*
  * Open a new environment variable context.
  */
-int OpenEnvironContext( const char *envVar )
-/******************************************/
+bool OpenEnvironContext( const char *envVar )
+/*******************************************/
 {
     if( curContextInitialized )  Zoinks();
     clear_context( &curContext );
 
     curContext.data = getenv( envVar );
     curContext.dataStart = curContext.data;
-    if( curContext.data == NULL )  return( 1 );
+    if( curContext.data == NULL )
+        return( TRUE );
     curContext.dataLen = strlen( curContext.dataStart );
 
-    curContextInitialized = 1;
+    curContextInitialized = TRUE;
     curContext.type = ENVIRON_VAR_CONTEXT;
-    return( 0 );
+    return( FALSE );
 }
 
 
 /*
  * Open a new file context.
  */
-int OpenFileContext( const char *filename )
-/*****************************************/
+bool OpenFileContext( const char *filename )
+/******************************************/
 {
     if( curContextInitialized )  Zoinks();
     clear_context( &curContext );
 
     curContext.fp = fopen( filename, "rt" );
-    if( curContext.fp == NULL )  return( 1 );
+    if( curContext.fp == NULL )
+        return( TRUE );
 
-    curContextInitialized = 1;
+    curContextInitialized = TRUE;
     curContext.type = COMMAND_FILE_CONTEXT;
-    return( 0 );
+    return( FALSE );
 }
 
 
@@ -156,7 +159,7 @@ void CloseContext( void )
         }
     }
 
-    curContextInitialized = 0;
+    curContextInitialized = FALSE;
     clear_context( &curContext );
 }
 
@@ -174,7 +177,7 @@ void PushContext( void )
     memcpy( &stack[stackItems], &curContext, sizeof(struct Context) );
     stackItems++;
     clear_context( &curContext );
-    curContextInitialized = 0;
+    curContextInitialized = FALSE;
 }
 
 
@@ -189,7 +192,7 @@ void PopContext( void )
     if( stackItems == 0 )  Zoinks();
     memcpy( &curContext, &stack[stackItems-1], sizeof(struct Context) );
     stackItems--;
-    curContextInitialized = 1;
+    curContextInitialized = TRUE;
 }
 
 
@@ -197,10 +200,10 @@ void PopContext( void )
  * Get a character from the current context.  Returns a null byte if the
  * end of the context has been reached.
  */
-int GetCharContext( void )
-/************************/
+char GetCharContext( void )
+/*************************/
 {
-    int     ch;
+    char    ch;
 
     ch = '\0';
     if( !curContextInitialized )
@@ -215,9 +218,12 @@ int GetCharContext( void )
         curContext.data++;
         break;
     case COMMAND_FILE_CONTEXT:
-        ch = fgetc( curContext.fp );
-        if( ch == EOF )
-            ch = '\0';
+        {
+            int c;
+            if( (c = fgetc( curContext.fp )) != EOF ) {
+                ch = (char)c;
+            }
+        } 
         break;
     default:
         Zoinks();

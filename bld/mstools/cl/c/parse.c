@@ -43,7 +43,6 @@
 #include "memory.h"
 #include "message.h"
 #include "parse.h"
-#include "system.h"
 
 #ifdef __WATCOMC__
 #pragma disable_message (202);
@@ -89,7 +88,7 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    int                 ch;
+    char                ch;
     char *              filename;
 
     for( ;; ) {
@@ -101,7 +100,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 
         /*** Handle switches, command files, and input files ***/
         if( ch == '-'  ||  ch == '/' ) {        /* switch */
-            if( OPT_PROCESS( cmdOpts ) != 0 ) {
+            if( OPT_PROCESS( cmdOpts ) ) {
                 cmd_line_error();
             }
         } else if( ch == '@' ) {                /* command file */
@@ -116,8 +115,8 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         } else if( ch == '"' ) {                /* quoted option or file name */
             ch = GetCharContext();
             if( ch == '-' ) {
-                Quoted = 1;
-                if( OPT_PROCESS( cmdOpts ) != 0 ) {
+                Quoted = TRUE;
+                if( OPT_PROCESS( cmdOpts ) ) {
                     cmd_line_error();
                 }
             } else {
@@ -235,13 +234,12 @@ static int parse_FI( OPT_STRING **p )
 /*
  * Destroy an OPT_STRING.
  */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
+void OPT_CLEAN_STRING( OPT_STRING **p )
+/*************************************/
 {
     OPT_STRING *        s;
 
-    while( *p != NULL ) {
-        s = *p;
+    while( (s = *p) != NULL ) {
         *p = s->next;
         FreeMem( s );
     }
@@ -363,7 +361,7 @@ static int parse_passwopts( OPT_STRING **p )
     char *src;
     char *dst;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
         return 0;
@@ -403,18 +401,18 @@ static int parse_passwopts( OPT_STRING **p )
 /*
  * Scan a filename.  No leading whitespace is permitted.
  */
-static int OPT_GET_FILE( OPT_STRING **p )
-/***************************************/
+bool OPT_GET_FILE( OPT_STRING **p )
+/*********************************/
 {
     char *              filename;
 
     filename = CmdScanFileName();
     if( filename != NULL ) {
         add_string( p, filename );
-        return( 1 );
+        return( TRUE );
     } else {
         OPT_CLEAN_STRING( p );
-        return( 0 );
+        return( FALSE );
     }
 }
 
@@ -991,19 +989,21 @@ static void handle_precomp_headers( OPT_STORAGE *cmdOpts, int x )
 static int handle_on_off_option( int *hasBeenCalled, char *optName, int isOn )
 /****************************************************************************/
 {
-    int                 rc = isOn;
+    int     rc = isOn;
+    char    ch;
 
+    ch = GetCharContext();
     if( *hasBeenCalled ) {
         /*** Warn when one of /option and /option- overrides the other ***/
         if( isOn ) {
-            if( GetCharContext() == '-' ) {
+            if( ch == '-' ) {
                 Warning( "Overriding /%s with /%s-", optName, optName );
                 rc = 0;
             } else {
                 UngetCharContext();
             }
         } else {
-            if( GetCharContext() != '-' ) {
+            if( ch != '-' ) {
                 Warning( "Overriding /%s- with /%s", optName, optName );
                 rc = 1;
             } else {
@@ -1013,7 +1013,7 @@ static int handle_on_off_option( int *hasBeenCalled, char *optName, int isOn )
     } else {
         /*** Handle /option- for the first time ***/
         *hasBeenCalled = 1;
-        if( GetCharContext() == '-' ) {
+        if( ch == '-' ) {
             rc = 0;
         } else {
             UngetCharContext();
@@ -1121,10 +1121,10 @@ static void handle_TP( OPT_STORAGE *cmdOpts, int x )
 /*
  * Return the next character and advance to the next one.
  */
-static int OPT_GET_LOWER( void )
-/******************************/
+int OPT_GET_LOWER( void )
+/***********************/
 {
-    return( GetCharContext() );
+    return( tolower( (unsigned char)GetCharContext() ) );
 }
 
 
@@ -1132,10 +1132,10 @@ static int OPT_GET_LOWER( void )
  * If the next character is ch, it is consumed and a non-zero value
  * is returned; otherwise, it is not consumed and zero is returned.
  */
-static int OPT_RECOG( int ch )
-/**********************************/
+bool OPT_RECOG( int ch )
+/**********************/
 {
-    return( CmdScanRecogCharExact( ch ) );
+    return( CmdScanRecogChar( ch ) );
 }
 
 /*
@@ -1143,18 +1143,18 @@ static int OPT_RECOG( int ch )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-static int OPT_RECOG_LOWER( int ch )
-/**********************************/
+bool OPT_RECOG_LOWER( int ch )
+/****************************/
 {
-    return( CmdScanRecogChar( ch ) );
+    return( CmdScanRecogLowerChar( ch ) );
 }
 
 
 /*
  * Back up one character.
  */
-static void OPT_UNGET( void )
-/***************************/
+void OPT_UNGET( void )
+/********************/
 {
     UngetCharContext();
 }
@@ -1163,8 +1163,8 @@ static void OPT_UNGET( void )
 /*
  * Scan an optional filename.  No leading whitespace is permitted.
  */
-static int OPT_GET_FILE_OPT( OPT_STRING **p )
-/*******************************************/
+bool OPT_GET_FILE_OPT( OPT_STRING **p )
+/*************************************/
 {
     char *              filename;
 
@@ -1174,15 +1174,15 @@ static int OPT_GET_FILE_OPT( OPT_STRING **p )
     } else {
         OPT_CLEAN_STRING( p );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
 /*
  * Scan a pathname.  No leading whitespace is permitted.
  */
-static int OPT_GET_PATH( OPT_STRING **p )
-/***************************************/
+bool OPT_GET_PATH( OPT_STRING **p )
+/*********************************/
 {
     char *              filename;
 
@@ -1192,23 +1192,23 @@ static int OPT_GET_PATH( OPT_STRING **p )
     } else {
         OPT_CLEAN_STRING( p );
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
 /*
  * Scan a number.  No leading whitespace is permitted.
  */
-static int OPT_GET_NUMBER( unsigned *p )
-/**************************************/
+bool OPT_GET_NUMBER( unsigned *p )
+/********************************/
 {
     unsigned            value;
 
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( 1 );
+        return( TRUE );
     } else {
-        return( 0 );
+        return( FALSE );
     }
 }
 
@@ -1216,10 +1216,10 @@ static int OPT_GET_NUMBER( unsigned *p )
 /*
  * Scan an optional number.  No leading whitespace is permitted.
  */
-static int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
-/**************************************************************/
+bool OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
+/********************************************************/
 {
-    int ch;
+    char ch;
 
     *p = value;
     ch = GetCharContext();
@@ -1227,34 +1227,34 @@ static int OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
     if( isdigit( ch ) ) {
         if( CmdScanNumber( &value ) ) {
             *p = value;
-            return( 1 );
+            return( TRUE );
         } else {
-            return( 0 );
+            return( FALSE );
         }
     }
-    return( 1 );
+    return( TRUE );
 }
 
 
 /*
  * Is this the end of an option chain?
  */
-static int OPT_END( void )
-/************************/
+bool OPT_END( void )
+/******************/
 {
-    int ch;
+    char ch;
 
     ch = GetCharContext();
-    if( ch == '\0' )  return( 1 );
+    if( ch == '\0' )  return( TRUE );
     UngetCharContext();
-    if( isspace( ch ) ) return( 1 );
-    if( ch == '/' ) return( 1 );
-    if( ch == '-' ) return( 1 );
-    if( ch == '@' ) return( 1 );
-    if( ch == '"' ) return( 1 );
-    if( ch == '\'' ) return( 1 );
-    return( 0 );
+    if( isspace( ch ) ) return( TRUE );
+    if( ch == '/' ) return( TRUE );
+    if( ch == '-' ) return( TRUE );
+    if( ch == '@' ) return( TRUE );
+    if( ch == '"' ) return( TRUE );
+    if( ch == '\'' ) return( TRUE );
+    return( FALSE );
 }
 
 /* Include after all static functions were declared */
-#include "optparse.gc"
+#include "cmdlnprs.gc"

@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "bool.h"
 #include "asaxp.h"
 #include "cmdline.h"
 #include "cmdscan.h"
@@ -118,16 +119,16 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 {
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
-    int                 len;
-    int                 add_quote = 0;
+    size_t              len;
+    bool                add_quote = FALSE;
 
     len = strlen(str);
-    if( quote != 0 ) {
+    if( quote != '\0' ) {
         do {
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
-            add_quote = 1;
+            add_quote = TRUE;
         } while( 0 );
     }
     /*** Make a new list item ***/
@@ -159,7 +160,7 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    int                 ch;
+    char                ch;
     char *              filename;
 
 
@@ -172,14 +173,14 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 
         /*** Handle switches, command files, and input files ***/
         if( ch == '-'  ||  ch == '/' ) {        /* switch */
-            if( OPT_PROCESS( cmdOpts ) != 0 ) {
+            if( OPT_PROCESS( cmdOpts ) ) {
                 cmd_line_error();
             }
         } else {                                /* filename */
             UngetCharContext();
             filename = CmdScanFileName();
             filename = VerifyDot(filename);
-            add_string( &(cmdOpts->t010101010101_value), filename, 0 );
+            add_string( &(cmdOpts->t010101010101_value), filename, '\0' );
             cmdOpts->t010101010101 = 1;
         }
         (*itemsParsed)++;
@@ -213,13 +214,12 @@ static int parse_t010101010101( OPT_STRING **p )
 /*
  * Destroy an OPT_STRING.
  */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
+void OPT_CLEAN_STRING( OPT_STRING **p )
+/*************************************/
 {
     OPT_STRING *        s;
 
-    while( *p != NULL ) {
-        s = *p;
+    while( (s = *p) != NULL ) {
         *p = s->next;
         FreeMem( s );
     }
@@ -232,9 +232,9 @@ static void OPT_CLEAN_STRING( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
-/*********************************************************************/
-                            int quote )
+static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+                            char quote )
+/**********************************************************************/
 {
     char *              str;
 
@@ -255,7 +255,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
 static int parse_D( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "D", 0, 0 ) );
+    return( do_string_parse( p, "D", FALSE, '\0' ) );
 }
 
 
@@ -270,7 +270,7 @@ static void handle_Fo( OPT_STORAGE *cmdOpts, int x )
     filename = CmdScanFileName();
     if( filename != NULL ) {
         filename = VerifyDot(filename);
-        add_string( &cmdOpts->fo_value, filename, 0 );
+        add_string( &cmdOpts->fo_value, filename, '\0' );
     } else {
         cmdOpts->fo=0;
         cmdOpts->o=0;
@@ -299,7 +299,7 @@ static int parse_I( OPT_STRING **p )
     CmdScanWhitespace();
     filename = CmdScanFileName();
     if( filename != NULL ) {
-        add_string( p, filename, 0 );
+        add_string( p, filename, '\0' );
     } else {
         OPT_CLEAN_STRING( p );
     }
@@ -314,7 +314,7 @@ static int parse_I( OPT_STRING **p )
 static int parse_U( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "U", 0, 0 ) );
+    return( do_string_parse( p, "U", FALSE, '\0' ) );
 }
 
 
@@ -327,7 +327,7 @@ static int parse_passwopts( OPT_STRING **p )
     char *src;
     char *dst;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
         return 0;
@@ -359,7 +359,7 @@ static int parse_passwopts( OPT_STRING **p )
         *dst = 0x00;
     }
 
-    add_string(p, str, 0);
+    add_string(p, str, '\0');
     return 1;
 } /* parse_passwopts() */
 
@@ -368,10 +368,10 @@ static int parse_passwopts( OPT_STRING **p )
  * Return the next character (forced to lowercase since LINK's options are
  * not case-sensitive) and advance to the next one.
  */
-static int OPT_GET_LOWER( void )
-/******************************/
+int OPT_GET_LOWER( void )
+/***********************/
 {
-    return( tolower( GetCharContext() ) );
+    return( tolower( (unsigned char)GetCharContext() ) );
 }
 
 
@@ -380,18 +380,18 @@ static int OPT_GET_LOWER( void )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-static int OPT_RECOG_LOWER( int ch )
-/**********************************/
+bool OPT_RECOG_LOWER( int ch )
+/****************************/
 {
-    return( CmdScanRecogChar( ch ) );
+    return( CmdScanRecogLowerChar( ch ) );
 }
 
 
 /*
  * Back up one character.
  */
-static void OPT_UNGET( void )
-/***************************/
+void OPT_UNGET( void )
+/********************/
 {
     UngetCharContext();
 }
@@ -400,20 +400,20 @@ static void OPT_UNGET( void )
 /*
  * Scan a number. Leading whitespace is permitted.
  */
-static int OPT_GET_NUMBER( unsigned *p )
-/**************************************/
+bool OPT_GET_NUMBER( unsigned *p )
+/********************************/
 {
     unsigned            value;
 
     CmdScanWhitespace();
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( 1 );
+        return( TRUE );
     } else {
-        return( 0 );
+        return( FALSE );
     }
 }
 
 
 /* Include after all static functions were declared */
-#include "optparse.gc"
+#include "cmdlnprs.gc"

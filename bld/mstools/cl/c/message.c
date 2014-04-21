@@ -134,7 +134,7 @@ void PrintHelpMessage( void )
  * opts string) and a complete list of unsupported options.
  */
 void UnsupportedOptsMessage( const char *opts )
-/***************************************8*****/
+/*********************************************/
 {
     Warning( "Ignoring unsupported option(s): %s", opts );
 }

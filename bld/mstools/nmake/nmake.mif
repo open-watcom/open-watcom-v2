@@ -4,7 +4,7 @@ name = nmake
 
 common_objs = parse.obj $(mstools_objs)
 nmake_objs  = nmake.obj message.obj translat.obj $(common_objs)
-nmake_hdrs  = optparse.gh
+nmake_hdrs  = cmdlnprs.gc
 
 #
 # Instructions for building the executable.

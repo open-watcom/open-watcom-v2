@@ -43,9 +43,8 @@ mstools_stub_obj    = stub.obj
 mstools_objs        = cmdline.obj cmdscan.obj context.obj error.obj file.obj memory.obj pathconv.obj
 
 .c :  ../../c;../../../c
-.h :  ../../h;../../../h
 
-inc_dirs = -I. -I"../../h" -I"../../../h" -I"../../c"
+inc_dirs = -I. -I"../../h" -I"../../../h" -I"$(fe_misc_dir)/h"
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -68,5 +67,5 @@ optencod_opts_386 = i86
 optencod_opts_axp = axp
 optencod_opts_ppc = ppc
 
-optparse.gc optparse.gh : ../../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ optparse.gh optparse.gc usagemsg.gh $(optencod_opts_$(target_cpu))
+cmdlnprs.gc cmdlnprs.gh : ../../gml/ms.gml .EXPLICIT
+        optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_opts_$(target_cpu))

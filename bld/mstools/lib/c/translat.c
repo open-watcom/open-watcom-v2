@@ -44,7 +44,6 @@
 #include "memory.h"
 #include "pathconv.h"
 #include "translat.h"
-#include "system.h"
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -657,8 +656,8 @@ static void lib_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             while( optStr != NULL ) {
                 p = ImportEntry( optStr->data, dllfilename );
                 if( p ) {
-                    AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", p);
-                    FreeMem(p);
+                    AppendFmtCmdLine( cmdLine, LIB_OPTS_SECTION, "%s", p );
+                    FreeMem( p );
                 }
                 optStr = optStr->next;
             }
@@ -741,7 +740,7 @@ static char *stristr( const char *str, const char *substr )
 {
     size_t              strLen;
     size_t              substrLen;
-    int                 i, maxi;
+    size_t              i, maxi;
     char                ch;
 
     substrLen = strlen( substr );

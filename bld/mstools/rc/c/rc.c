@@ -40,11 +40,8 @@
 #include "error.h"
 #include "file.h"
 #include "message.h"
-#include "optparse.h"
-#include "parse.h"
 #include "rc.h"
 #include "translat.h"
-#include "system.h"
 
 
 #define RESCOMPILER             "wrc"
@@ -119,7 +116,7 @@ static int res_compile( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         fprintf( stderr, "\n" );
     }
     if( !cmdOpts->noinvoke ) {
-        rc = spawnvp( P_WAIT, RESCOMPILER, (const char **)args );
+        rc = (int)spawnvp( P_WAIT, RESCOMPILER, (const char **)args );
         if( rc != 0 ) {
             if( rc == -1  ||  rc == 255 ) {
                 FatalError( "Error executing '%s'", RESCOMPILER );

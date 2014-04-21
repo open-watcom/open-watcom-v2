@@ -34,15 +34,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "watcom.h"
 #include "cmdline.h"
 #include "context.h"
 #include "error.h"
 #include "asaxp.h"
 #include "message.h"
-#include "parse.h"
 #include "translat.h"
-#include "system.h"
 
 
 #if defined(__TARGET_386__)
@@ -68,17 +67,17 @@ static int do_parsing( OPT_STORAGE *cmdOpts )
     int                 itemsParsed = 0;
 
     /*** Process the WATCOM_CLONE_OPTIONS environment variable ***/
-    if( OpenEnvironContext( "WATCOM_CLONE_OPTIONS" )  ==  0 ) {
+    if( !OpenEnvironContext( "WATCOM_CLONE_OPTIONS" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
     /*** Process the ASAXP_OPTIONS environment variable ***/
-    if( OpenEnvironContext( "ASAXP_OPTIONS" )  ==  0 ) {
+    if( !OpenEnvironContext( "ASAXP_OPTIONS" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
     /*** Process the ASAXP environment variable ***/
-    if( OpenEnvironContext( "ASAXP" )  ==  0 ) {
+    if( !OpenEnvironContext( "ASAXP" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
@@ -114,7 +113,7 @@ static int asaxp( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         fprintf( stderr, "\n" );
     }
     if( !cmdOpts->noinvoke ) {
-        rc = spawnvp( P_WAIT, ASM, (const char **)args );
+        rc = (int)spawnvp( P_WAIT, ASM, (const char **)args );
         if( rc != 0 ) {
             if( rc == -1  ||  rc == 255 ) {
                 FatalError( "Unable to execute '%s'", ASM );

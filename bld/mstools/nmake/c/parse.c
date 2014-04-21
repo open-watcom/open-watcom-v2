@@ -73,16 +73,16 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 {
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
-    int                 len;
-    int                 add_quote = 0;
+    size_t              len;
+    bool                add_quote = FALSE;
 
     len = strlen(str);
-    if( quote != 0 ) {
+    if( quote != '\0' ) {
         for( ;; ) {
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
-            add_quote = 1;
+            add_quote = TRUE;
         }
     }
     /*** Make a new list item ***/
@@ -128,7 +128,7 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    int                 ch;
+    char                ch;
     char *              filename;
     char *              str;
 
@@ -141,14 +141,14 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 
         /*** Handle switches, command files, and input files ***/
         if( ch == '-'  ||  ch == '/' ) {        /* switch */
-            if( OPT_PROCESS( cmdOpts ) != 0 ) {
+            if( OPT_PROCESS( cmdOpts ) ) {
                 /*
                  * Switch didn't match, if user entered empty switch,
                  * just be silent like MS's nmake does.
                  */
 
                 ch = GetCharContext();
-                if( ch != '\0' && !isspace(ch)) {
+                if( ch != '\0' && !isspace( ch ) ) {
                     cmd_line_error();
                 }
             }
@@ -164,7 +164,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         } else {                                /* targets and macros */
             UngetCharContext();
             str = CmdScanString();
-            add_string( &(cmdOpts->t010101010101_value), str, 0 );
+            add_string( &(cmdOpts->t010101010101_value), str, '\0' );
             cmdOpts->t010101010101 = 1;
         }
         (*itemsParsed)++;
@@ -200,8 +200,8 @@ static int parse_t010101010101( OPT_STRING **p )
 /*
  * Destroy an OPT_STRING.
  */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
+void OPT_CLEAN_STRING( OPT_STRING **p )
+/*************************************/
 {
     OPT_STRING *        s;
 
@@ -218,9 +218,9 @@ static void OPT_CLEAN_STRING( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
-/*********************************************************************/
-                            int quote )
+static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+                            char quote )
+/**********************************************************************/
 {
     char *              str;
 
@@ -242,7 +242,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
 static int parse_F( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "F", 1, 0 ) );
+    return( do_string_parse( p, "F", TRUE, '\0' ) );
 }
 
 /*
@@ -251,7 +251,7 @@ static int parse_F( OPT_STRING **p )
 static int parse_X( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "X", 1, 0 ) );
+    return( do_string_parse( p, "X", TRUE, '\0' ) );
 }
 
 /*
@@ -260,7 +260,7 @@ static int parse_X( OPT_STRING **p )
 static int parse_combining( OPT_STORAGE *cmdOpts, int x )
 /******************************************/
 {
-    int                 ch;
+    char    ch;
 
     x = x;
 
@@ -275,7 +275,7 @@ static int parse_combining( OPT_STORAGE *cmdOpts, int x )
     /* scan for combined options */
     do {
         /* get next character */
-        ch = toupper( GetCharContext() );
+        ch = (char)toupper( (unsigned char)GetCharContext() );
 
         switch( ch ) {
         case 'A':  cmdOpts->a = 1; break;      /* gml-option: A */
@@ -317,7 +317,7 @@ static int parse_passwopts( OPT_STRING **p )
     char *src;
     char *dst;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
         return 0;
@@ -349,7 +349,7 @@ static int parse_passwopts( OPT_STRING **p )
         *dst = 0x00;
     }
 
-    add_string(p, str, 0);
+    add_string(p, str, '\0');
     return 1;
 } /* parse_passwopts() */
 
@@ -358,10 +358,10 @@ static int parse_passwopts( OPT_STRING **p )
  * Return the next character (forced to lowercase since LINK's options are
  * not case-sensitive) and advance to the next one.
  */
-static int OPT_GET_LOWER( void )
-/******************************/
+int OPT_GET_LOWER( void )
+/***********************/
 {
-    return( tolower( GetCharContext() ) );
+    return( tolower( (unsigned char)GetCharContext() ) );
 }
 
 
@@ -370,22 +370,22 @@ static int OPT_GET_LOWER( void )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-static int OPT_RECOG_LOWER( int ch )
-/**********************************/
+bool OPT_RECOG_LOWER( int ch )
+/****************************/
 {
-    return( CmdScanRecogChar( ch ) );
+    return( CmdScanRecogLowerChar( ch ) );
 }
 
 
 /*
  * Back up one character.
  */
-static void OPT_UNGET( void )
-/***************************/
+void OPT_UNGET( void )
+/********************/
 {
     UngetCharContext();
 }
 
 
 /* Include after all static functions were declared */
-#include "optparse.gc"
+#include "cmdlnprs.gc"

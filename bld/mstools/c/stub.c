@@ -121,7 +121,7 @@ void SpawnProgStub( const char *progname )
     argv[2] = NULL;
 
     /*** Try to execute the program ***/
-    rc = spawnvp( P_WAIT, progname, (const char **)argv );
+    rc = (int)spawnvp( P_WAIT, progname, (const char **)argv );
     if( rc != -1 ) {
         exit( rc );
     }
@@ -131,7 +131,7 @@ void SpawnProgStub( const char *progname )
     _splitpath( fullPath, drive, dir, NULL, NULL );
     _splitpath( progname, NULL, NULL, fname, ext );
     _makepath( fullPath, drive, dir, fname, ext );
-    rc = spawnvp( P_WAIT, fullPath, (const char **)argv );
+    rc = (int)spawnvp( P_WAIT, fullPath, (const char **)argv );
     if( rc != -1 ) {
         exit( rc );
     }

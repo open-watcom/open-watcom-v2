@@ -33,8 +33,6 @@
 #ifndef _DEFFILE_H
 #define _DEFFILE_H
 
-#include "system.h"
-
 /*
  * Data type for handling options which can take several values.  Similar
  * to the OPT_STRING type.

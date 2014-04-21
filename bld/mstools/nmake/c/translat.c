@@ -38,7 +38,6 @@
 #include "message.h"
 #include "memory.h"
 #include "translat.h"
-#include "system.h"
 
 #define UNSUPPORTED_STR_SIZE    256
 

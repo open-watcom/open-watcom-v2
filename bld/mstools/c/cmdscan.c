@@ -31,14 +31,14 @@
 
 #include <ctype.h>
 #include <stddef.h>
+#include "bool.h"
 #include "context.h"
 #include "memory.h"
 #include "pathconv.h"
+#include "cmdscan.h"
 
 
-static char *   got_char( char *buf, size_t *bufsize, size_t offset, int ch );
-
-int Quoted = 0;
+bool Quoted = FALSE;
 
 /*
  * Skip all whitespace characters, such that the next read will retrieve the
@@ -47,7 +47,7 @@ int Quoted = 0;
 void CmdScanWhitespace( void )
 /****************************/
 {
-    int                 ch;
+    char    ch;
 
     do {
         ch = GetCharContext();
@@ -61,14 +61,14 @@ void CmdScanWhitespace( void )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-int CmdScanRecogChar( int ch )
-/****************************/
+bool CmdScanRecogChar( int ch )
+/*****************************/
 {
-    if( tolower( GetCharContext() )  ==  tolower( ch ) ) {
-        return( 1 );
+    if( GetCharContext() == (char)ch ) {
+        return( TRUE );
     } else {
         UngetCharContext();
-        return( 0 );
+        return( FALSE );
     }
 }
 
@@ -77,15 +77,38 @@ int CmdScanRecogChar( int ch )
  * If the next character is ch, it is consumed and a non-zero value is
  * returned; otherwise, it is not consumed and zero is returned.
  */
-int CmdScanRecogCharExact( int ch )
-/*********************************/
+bool CmdScanRecogLowerChar( int ch )
+/**********************************/
 {
-    if( GetCharContext() == ch ) {
-        return( 1 );
+    if( tolower( (unsigned char)GetCharContext() ) == tolower( ch ) ) {
+        return( TRUE );
     } else {
         UngetCharContext();
-        return( 0 );
+        return( FALSE );
     }
+}
+
+
+/*
+ * Append a character to a dynamically allocated string, increasing the
+ * buffer size if necessary.  Returns a pointer to a buffer containing the
+ * new data.
+ */
+static char *got_char( char *buf, size_t *bufsize, size_t offset, char ch )
+/*************************************************************************/
+{
+    const size_t        blocksize = 64;
+
+    /*** Increase the buffer size if necessary ***/
+    while( offset+1 >= *bufsize ) {
+        *bufsize += blocksize;
+        buf = ReallocMem( buf, (*bufsize)+blocksize);
+    }
+
+    /*** Append the character ***/
+    buf[offset] = ch;
+    buf[offset+1] = '\0';
+    return( buf );
 }
 
 
@@ -98,11 +121,10 @@ int CmdScanRecogCharExact( int ch )
 char *CmdScanString( void )
 /*************************/
 {
-    const char          quotechar = '"';
-    int                 ch;
-    int                 inQuote = Quoted;   /* true if inside a quoted string */
-    int                 backslash = 0;      /* true if last char was a '\\' */
-    int                 start;              /* context offset of string start */
+    char                ch;
+    bool                inQuote = Quoted;   /* true if inside a quoted string */
+    bool                backslash = FALSE;  /* true if last char was a '\\' */
+    long                start;              /* context offset of string start */
     char *              buf = DupStrMem( "" );
     size_t              bufsize = 0;
     size_t              offset = 0;
@@ -122,19 +144,19 @@ char *CmdScanString( void )
     start = GetPosContext();
     for( ;; ) {
         ch = GetCharContext();
-        if( ch == 0 )  break;
+        if( ch == '\0' )  break;
         if( !inQuote && isspace( ch ) )  break;
-        if( ch == quotechar ) {
+        if( ch == '"' ) {
             if( backslash ) {
-                backslash = 0;          /* handle \" within a string */
+                backslash = FALSE;      /* handle \" within a string */
             } else if( inQuote ) {
                 if( Quoted ) {
-                    Quoted = 0;
+                    Quoted = FALSE;
                     return( buf );
                 }
-                inQuote = 0;            /* end of a quoted portion */
+                inQuote = FALSE;        /* end of a quoted portion */
             } else {
-                inQuote = 1;            /* start of a quoted portion */
+                inQuote = TRUE;         /* start of a quoted portion */
             }
             buf = got_char( buf, &bufsize, offset, ch );
             offset++;
@@ -142,18 +164,18 @@ char *CmdScanString( void )
             if( backslash ) {
                 buf = got_char( buf, &bufsize, offset, ch );
                 offset++;
-                backslash = 0;      /* second '\\' of a pair */
-                if( GetCharContext() == quotechar )
+                backslash = FALSE;      /* second '\\' of a pair */
+                if( GetCharContext() == '"' )
                     buf = got_char( buf, &bufsize, offset++, '\\' );
                 UngetCharContext();
             } else {
-                backslash = 1;      /* first '\\' of a pair */
+                backslash = TRUE;       /* first '\\' of a pair */
             }
         } else {
             if( backslash ) {
                 buf = got_char( buf, &bufsize, offset, '\\' );
                 offset++;
-                backslash = 0;
+                backslash = FALSE;
             }
             buf = got_char( buf, &bufsize, offset, ch );
             offset++;
@@ -164,7 +186,7 @@ char *CmdScanString( void )
         offset++;
     }
 
-    if( ch != 0 )  UngetCharContext();
+    if( ch != '\0' )  UngetCharContext();
     return( buf );
 }
 
@@ -217,11 +239,11 @@ char *CmdScanFileNameWithoutQuotes( void )
  * Scan a number.  No leading whitespace is allowed.  Returns true if a
  * number was successfully parsed, or zero on error.
  */
-int CmdScanNumber( unsigned *num )
-/********************************/
+bool CmdScanNumber( unsigned *num )
+/*********************************/
 {
-    int                 digit;
-    int                 numberScanned = 0;
+    char                digit;
+    bool                numberScanned = FALSE;
     unsigned            value = 0;
     unsigned            base = 10;
 
@@ -253,40 +275,18 @@ int CmdScanNumber( unsigned *num )
         if( isdigit( digit ) ) {
             value *= base;
             value += digit - '0';
-            numberScanned = 1;
+            numberScanned = TRUE;
         } else if( base == 16 && isxdigit( digit ) ) {
             value *= base;
-            value += tolower( digit ) - 'a' + 10;
-            numberScanned = 1;
+            value += tolower( (unsigned char)digit ) - 'a' + 10;
+            numberScanned = TRUE;
         } else {
             UngetCharContext();
             break;
         }
     }
 
-    if( numberScanned )  *num = value;
+    if( numberScanned )
+        *num = value;
     return( numberScanned );
-}
-
-
-/*
- * Append a character to a dynamically allocated string, increasing the
- * buffer size if necessary.  Returns a pointer to a buffer containing the
- * new data.
- */
-static char *got_char( char *buf, size_t *bufsize, size_t offset, int ch )
-/************************************************************************/
-{
-    const size_t        blocksize = 64;
-
-    /*** Increase the buffer size if necessary ***/
-    while( offset+1 >= *bufsize ) {
-        *bufsize += blocksize;
-        buf = ReallocMem( buf, (*bufsize)+blocksize);
-    }
-
-    /*** Append the character ***/
-    buf[offset] = ch;
-    buf[offset+1] = '\0';
-    return( buf );
 }

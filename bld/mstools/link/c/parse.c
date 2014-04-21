@@ -85,7 +85,7 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    int                 ch;
+    char                ch;
     char *              filename;
 
     for( ;; ) {
@@ -97,7 +97,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 
         /*** Handle switches, command files, and input files ***/
         if( ch == '-'  ||  ch == '/' ) {        /* switch */
-            if( OPT_PROCESS( cmdOpts ) != 0 ) {
+            if( OPT_PROCESS( cmdOpts ) ) {
                 cmd_line_error();
             }
         } else if( ch == '@' ) {                /* command file */
@@ -144,8 +144,8 @@ static void check_align( unsigned *p )
 }
 
 
-#define skip_white(s)      while (*s && isspace(*s)) ++s;
-#define skip_nonwhite(s)   while (*s && !isspace(*s)) ++s;
+#define skip_white(s)      while( *s && isspace( *s ) ) ++s;
+#define skip_nonwhite(s)   while( *s && !isspace( *s ) ) ++s;
 
 /*
  * Add another string to an OPT_STRING.
@@ -155,16 +155,16 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 {
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
-    int                 len;
-    int                 add_quote = 0;
+    size_t              len;
+    bool                add_quote = FALSE;
 
     len = strlen(str);
-    if( quote != 0 ) {
+    if( quote != '\0' ) {
         for( ;; ) {
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
-            add_quote = 1;
+            add_quote = TRUE;
         }
     }
     /*** Make a new list item ***/
@@ -193,13 +193,12 @@ static void add_string( OPT_STRING **p, char *str, char quote )
 /*
  * Destroy an OPT_STRING.
  */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
+void OPT_CLEAN_STRING( OPT_STRING **p )
+/*************************************/
 {
     OPT_STRING *        s;
 
-    while( *p != NULL ) {
-        s = *p;
+    while( (s = *p) != NULL ) {
         *p = s->next;
         FreeMem( s );
     }
@@ -211,19 +210,19 @@ static void OPT_CLEAN_STRING( OPT_STRING **p )
  */
 static int parse_base_from_file(OPT_STRING **p, char *str)
 {
-    FILE *stream;
-    char *buffer;
-    char *keyword;
-    char *s;
-    char *b;
-    int   keylen;
+    FILE    *stream;
+    char    *buffer;
+    char    *keyword;
+    char    *s;
+    char    *b;
+    size_t  keylen;
 
     buffer = AllocMem(255);
 
-    for (s = str + 1, b = buffer; *s && (*s != ',') && !isspace(*s); )
+    for( s = str + 1, b = buffer; *s && (*s != ',') && !isspace(*s); )
         *b++ = *s++;
 
-    if (*s++ != ',')
+    if( *s++ != ',' )
     {
         FreeMem(buffer);
         FatalError("/BASE:@{filename} requires valid filename");
@@ -238,27 +237,27 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
     keylen = s - keyword;
 
     stream = fopen(buffer, "r");
-    if (!stream)
+    if( !stream )
     {
         FreeMem(buffer);
         FatalError("/BASE:@{filename} requires a valid filename");
         return 0;
     }
 
-    while (fgets(buffer, 255, stream))
+    while( fgets(buffer, 255, stream) )
     {
         s = buffer;
         skip_white(s);
 
-        if (*s == ';' || *s == '\0' )
+        if( *s == ';' || *s == '\0' )
             continue;
 
-        if (!strnicmp(s, keyword, keylen) && isspace(s[keylen]))
+        if( !strnicmp(s, keyword, keylen) && isspace(s[keylen]))
         {
             s += keylen + 1;
             skip_white(s);
 
-            if (!*s)
+            if( !*s )
             {
                 FreeMem(buffer);
                 fclose(stream);
@@ -270,8 +269,8 @@ static int parse_base_from_file(OPT_STRING **p, char *str)
             skip_nonwhite(b);
             *b = 0x00;
 
-            OPT_CLEAN_STRING(p);
-            add_string(p, s, 0);
+            OPT_CLEAN_STRING( p );
+            add_string(p, s, '\0');
             FreeMem(buffer);
             fclose(stream);
 
@@ -294,27 +293,27 @@ static int parse_base( OPT_STRING **p )
 {
     char *str;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/BASE requires an argument");
         return 0;
     }
 
     str = CmdScanString();
-    if (str == NULL)
+    if( str == NULL )
     {
         FatalError("/BASE requires an argument");
         return 0;
     }
 
-    if (*str == '@')
+    if( *str == '@' )
     {
-        return parse_base_from_file(p, str);
+        return parse_base_from_file( p, str );
     }
     else
     {
-        OPT_CLEAN_STRING(p);
-        add_string(p, str, 0);
+        OPT_CLEAN_STRING( p );
+        add_string(p, str, '\0');
     }
 
     return 1;
@@ -327,9 +326,9 @@ static int parse_base( OPT_STRING **p )
  * be deleted.  If quote is non-zero, make sure the string is quoted.
  * Use quote if there aren't any quotes already.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
-/*********************************************************************/
-                            int quote )
+static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
+                            char quote )
+/**********************************************************************/
 {
     char *              str;
 
@@ -354,7 +353,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne,
 static int parse_comment( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "COMMENT", 0, 0 ) );
+    return( do_string_parse( p, "COMMENT", FALSE, '\0' ) );
 }
 
 
@@ -365,7 +364,7 @@ static int parse_debug( OPT_STRING **p )
 /**************************************/
 {
     char *              str;
-    int                 ch;
+    char                ch;
 
     ch = GetCharContext();
     if( ch != ':' ) {                   /* optional :<type> */
@@ -376,7 +375,7 @@ static int parse_debug( OPT_STRING **p )
             FatalError( "Missing argument for /DEBUG" );
             return( 0 );
         } else {
-            add_string( p, str, 0 );
+            add_string( p, str, '\0' );
             FreeMem( str );
         }
     }
@@ -390,7 +389,7 @@ static int parse_debug( OPT_STRING **p )
 static int parse_debugtype( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "DEBUGTYPE", 0, 0 ) );
+    return( do_string_parse( p, "DEBUGTYPE", FALSE, '\0' ) );
 }
 
 
@@ -400,7 +399,7 @@ static int parse_debugtype( OPT_STRING **p )
 static int parse_def( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "DEF", 1, 0 ) );
+    return( do_string_parse( p, "DEF", TRUE, '\0' ) );
 }
 
 
@@ -410,7 +409,7 @@ static int parse_def( OPT_STRING **p )
 static int parse_defaultlib( OPT_STRING **p )
 /*******************************************/
 {
-    return( do_string_parse( p, "DEFAULTLIB", 0, 0 ) );
+    return( do_string_parse( p, "DEFAULTLIB", FALSE, '\0' ) );
 }
 
 
@@ -420,7 +419,7 @@ static int parse_defaultlib( OPT_STRING **p )
 static int parse_entry( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "ENTRY", 1, '\'' ) );
+    return( do_string_parse( p, "ENTRY", TRUE, '\'' ) );
 }
 
 
@@ -430,7 +429,7 @@ static int parse_entry( OPT_STRING **p )
 static int parse_exetype( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "EXETYPE", 1, 0 ) );
+    return( do_string_parse( p, "EXETYPE", TRUE, '\0' ) );
 }
 
 
@@ -557,7 +556,7 @@ static int parse_export( OPT_STRING **optStr )
         strcat( str, "=" );
         strcat( str, internalName );
     }
-    add_string( optStr, str, 0 );
+    add_string( optStr, str, '\0' );
     FreeMem( entryName );
     if( internalName != NULL )  FreeMem( internalName );
     if( ordinal != NULL )  FreeMem( ordinal );
@@ -572,7 +571,7 @@ static int parse_export( OPT_STRING **optStr )
 static int parse_heap( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "HEAP", 1, 0 ) );
+    return( do_string_parse( p, "HEAP", TRUE, '\0' ) );
 }
 
 
@@ -582,7 +581,7 @@ static int parse_heap( OPT_STRING **p )
 static int parse_implib( OPT_STRING **p )
 /***************************************/
 {
-    return( do_string_parse( p, "IMPLIB", 1, 0 ) );
+    return( do_string_parse( p, "IMPLIB", TRUE, '\0' ) );
 }
 
 
@@ -592,7 +591,7 @@ static int parse_implib( OPT_STRING **p )
 static int parse_include( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "INCLUDE", 0, '\'' ) );
+    return( do_string_parse( p, "INCLUDE", FALSE, '\'' ) );
 }
 
 
@@ -614,7 +613,7 @@ static int parse_incremental( OPT_STRING **p )
         return( 0 );
     }
     if( !stricmp( str, "yes" )  ||  !stricmp( str, "no" ) ) {
-        add_string( p, str, 0 );
+        add_string( p, str, '\0' );
         return( 1 );
     } else {
         FatalError( "Invalid argument '%s' to /INCREMENTAL", str );
@@ -629,7 +628,7 @@ static int parse_incremental( OPT_STRING **p )
 static int parse_internaldllname( OPT_STRING **p )
 /*************************************************/
 {
-    return( do_string_parse( p, "INTERNALDLLNAME", 1, 0 ) );
+    return( do_string_parse( p, "INTERNALDLLNAME", TRUE, '\0' ) );
 }
 
 
@@ -639,7 +638,7 @@ static int parse_internaldllname( OPT_STRING **p )
 static int parse_machine( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "MACHINE", 0, 0 ) );
+    return( do_string_parse( p, "MACHINE", FALSE, '\0' ) );
 }
 
 
@@ -654,7 +653,7 @@ static int parse_map( OPT_STRING **p )
     if( !CmdScanRecogChar( ':' ) )  return( 1 );
     str = CmdScanString();
     if( str != NULL ) {
-        add_string( p, str, 0 );
+        add_string( p, str, '\0' );
     }
     return( 1 );
 }
@@ -666,7 +665,7 @@ static int parse_map( OPT_STRING **p )
 static int parse_order( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "ORDER", 0, 0 ) );
+    return( do_string_parse( p, "ORDER", FALSE, '\0' ) );
 }
 
 
@@ -676,7 +675,7 @@ static int parse_order( OPT_STRING **p )
 static int parse_out( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "OUT", 1, 0 ) );
+    return( do_string_parse( p, "OUT", TRUE, '\0' ) );
 }
 
 
@@ -689,14 +688,14 @@ static int parse_passwopts( OPT_STRING **p )
     char *src;
     char *dst;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
         return 0;
     }
 
     str = CmdScanString();
-    if (str == NULL)
+    if( str == NULL )
     {
         FatalError("/passwopts requires an argument");
         return 0;
@@ -705,14 +704,14 @@ static int parse_passwopts( OPT_STRING **p )
     /*
      * If quoted, stip out the quote characters.
      */
-    if (*str == '\"')
+    if( *str == '\"' )
     {
-        for (dst = str, src = str + 1; *src && (*src != '\"'); )
+        for( dst = str, src = str + 1; *src && (*src != '\"'); )
         {
             *dst++ = *src++;
         }
 
-        if (*src != '\"')
+        if( *src != '\"' )
         {
             FatalError("/passwopts argument is missing closing quote");
             return 0;
@@ -721,7 +720,7 @@ static int parse_passwopts( OPT_STRING **p )
         *dst = 0x00;
     }
 
-    add_string(p, str, 0);
+    add_string(p, str, '\0');
     return 1;
 } /* parse_passwopts() */
 
@@ -732,7 +731,7 @@ static int parse_passwopts( OPT_STRING **p )
 static int parse_pdb( OPT_STRING **p )
 /************************************/
 {
-    return( do_string_parse( p, "PDB", 0, 0 ) );
+    return( do_string_parse( p, "PDB", FALSE, '\0' ) );
 }
 
 
@@ -742,7 +741,7 @@ static int parse_pdb( OPT_STRING **p )
 static int parse_section( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "SECTION", 1, 0 ) );
+    return( do_string_parse( p, "SECTION", TRUE, '\0' ) );
 }
 
 
@@ -752,7 +751,7 @@ static int parse_section( OPT_STRING **p )
 static int parse_stack( OPT_STRING **p )
 /**************************************/
 {
-    return( do_string_parse( p, "STACK", 1, 0 ) );
+    return( do_string_parse( p, "STACK", TRUE, '\0' ) );
 }
 
 
@@ -762,7 +761,7 @@ static int parse_stack( OPT_STRING **p )
 static int parse_stub( OPT_STRING **p )
 /*************************************/
 {
-    return( do_string_parse( p, "STUB", 1, 0 ) );
+    return( do_string_parse( p, "STUB", TRUE, '\0' ) );
 }
 
 
@@ -772,7 +771,7 @@ static int parse_stub( OPT_STRING **p )
 static int parse_subsystem( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "SUBSYSTEM", 1, 0 ) );
+    return( do_string_parse( p, "SUBSYSTEM", TRUE, '\0' ) );
 }
 
 
@@ -782,7 +781,7 @@ static int parse_subsystem( OPT_STRING **p )
 static int parse_version( OPT_STRING **p )
 /****************************************/
 {
-    return( do_string_parse( p, "VERSION", 1, 0 ) );
+    return( do_string_parse( p, "VERSION", TRUE, '\0' ) );
 }
 
 
@@ -820,10 +819,10 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
  * Return the next character (forced to lowercase since LINK's options are
  * not case-sensitive) and advance to the next one.
  */
-static int OPT_GET_LOWER( void )
-/******************************/
+int OPT_GET_LOWER( void )
+/***********************/
 {
-    return( tolower( GetCharContext() ) );
+    return( tolower( (unsigned char)GetCharContext() ) );
 }
 
 
@@ -832,18 +831,18 @@ static int OPT_GET_LOWER( void )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-static int OPT_RECOG_LOWER( int ch )
-/**********************************/
+bool OPT_RECOG_LOWER( int ch )
+/****************************/
 {
-    return( CmdScanRecogChar( ch ) );
+    return( CmdScanRecogLowerChar( ch ) );
 }
 
 
 /*
  * Back up one character.
  */
-static void OPT_UNGET( void )
-/***************************/
+void OPT_UNGET( void )
+/********************/
 {
     UngetCharContext();
 }
@@ -852,20 +851,21 @@ static void OPT_UNGET( void )
 /*
  * Scan a number.  No leading whitespace is permitted.
  */
-static int OPT_GET_NUMBER( unsigned *p )
-/**************************************/
+bool OPT_GET_NUMBER( unsigned *p )
+/********************************/
 {
     unsigned            value;
 
-    if( !CmdScanRecogChar( ':' ) )  return( 0 );
+    if( !CmdScanRecogChar( ':' ) )
+        return( FALSE );
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( 1 );
+        return( TRUE );
     } else {
-        return( 0 );
+        return( FALSE );
     }
 }
 
 
 /* Include after all static functions were declared */
-#include "optparse.gc"
+#include "cmdlnprs.gc"

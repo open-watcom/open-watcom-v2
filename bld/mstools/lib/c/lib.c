@@ -41,9 +41,7 @@
 #include "file.h"
 #include "lib.h"
 #include "message.h"
-#include "parse.h"
 #include "translat.h"
-#include "system.h"
 
 
 #if defined(__TARGET_386__)
@@ -136,7 +134,7 @@ static int lib( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         fprintf( stderr, "\n" );
     }
     if( !cmdOpts->noinvoke ) {
-        rc = spawnvp( P_WAIT, LIBRARIAN, (const char **)args );
+        rc = (int)spawnvp( P_WAIT, LIBRARIAN, (const char **)args );
     }
     if( cmdOpts->showwopts ) {
         fprintf( stderr, "del %s\n", cmdFileName );

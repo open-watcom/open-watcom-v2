@@ -32,7 +32,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "error.h"
+#include "memory.h"
 
 
 /*
@@ -85,7 +87,7 @@ char *DupQuoteStrMem( const char *str, char quote )
 {
     char *              p;
     size_t              len;
-    int                 add_quote = 0;
+    bool                add_quote = FALSE;
 
     len = strlen( str );
     if( quote != '\0' ) {
@@ -93,7 +95,7 @@ char *DupQuoteStrMem( const char *str, char quote )
             if( str[0] == '"'  && str[len-1] == '"'  ) break;
             if( str[0] == '\'' && str[len-1] == '\'' ) break;
             len += 2;
-            add_quote = 1;
+            add_quote = TRUE;
         }
     }
     p = AllocMem( len + 1 );

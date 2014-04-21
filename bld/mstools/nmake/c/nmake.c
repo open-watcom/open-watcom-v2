@@ -41,9 +41,7 @@
 #include "error.h"
 #include "nmake.h"
 #include "message.h"
-#include "parse.h"
 #include "translat.h"
-#include "system.h"
 
 
 #define MAKE                    "wmake"
@@ -125,7 +123,7 @@ static int nmake( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         fprintf( stderr, "\n" );
     }
     if( !cmdOpts->noinvoke ) {
-        rc = spawnvp( P_WAIT, MAKE, (const char **)args );
+        rc = (int)spawnvp( P_WAIT, MAKE, (const char **)args );
         if( rc != 0 ) {
             if( rc == -1  ||  rc == 255 ) {
                 FatalError( "Unable to execute '%s'", MAKE );

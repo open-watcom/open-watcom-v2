@@ -33,16 +33,13 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-#include "cmdscan.h"
+#include "bool.h"
 #include "context.h"
 #include "deffile.h"
 #include "error.h"
 #include "memory.h"
 #include "message.h"
 
-
-#define TRUE                    1
-#define FALSE                   0
 
 #define SET_ERROR               error = TRUE
 #define CLEAR_GOT_FLAGS         exportsGotEntryName = FALSE;    \
@@ -59,10 +56,10 @@
                                 versionGotMinor = FALSE;
 
 
-static int      next_token( int state, int *newCmd, int *newLine, int fileCharsOk, int atCharsOk );
+static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk, bool atCharsOk );
 static char *   get_word( void );
 static void     strip_quotes( char *str );
-static int      eat_comments( int *newLine );
+static bool     eat_comments( bool *newLine );
 static char *   string_convert( const char *str );
 
 
@@ -190,34 +187,34 @@ static void add_string( StringList **p, char *str )
 {
     char *              newfilename = DupStrMem( filename );
     DefInfo *           info;
-    int                 alive = TRUE;
-    int                 error = FALSE;
+    bool                alive = TRUE;
+    bool                error = FALSE;
     int                 state = STATE_CLEAR;
-    int                 mergeNow = FALSE;
-    int                 mergeNow2;
+    bool                mergeNow = FALSE;
+    bool                mergeNow2;
     int                 mergeType = STATE_CLEAR;
-    int                 foundNewLine;
+    bool                foundNewLine;
     char *              exportsEntryName = NULL;
-    int                 exportsGotEntryName;
+    bool                exportsGotEntryName;
     char *              exportsInternalName = NULL;
-    int                 exportsGotInternalName;
+    bool                exportsGotInternalName;
     char *              exportsOrdinal = NULL;
-    int                 exportsGotOrdinal;
-    int                 exportsGotPrivate;
-    int                 exportsGotResident;
+    bool                exportsGotOrdinal;
+    bool                exportsGotPrivate;
+    bool                exportsGotResident;
     char *              stackReserve = NULL;
-    int                 stackGotReserve;
+    bool                stackGotReserve;
     char *              stackCommit = NULL;
-    int                 stackGotCommit;
-    int                 stubGotFile;
+    bool                stackGotCommit;
+    bool                stubGotFile;
     char *              heapReserve = NULL;
-    int                 heapGotReserve;
+    bool                heapGotReserve;
     char *              heapCommit = NULL;
-    int                 heapGotCommit;
+    bool                heapGotCommit;
     char *              versionMajor = NULL;
-    int                 versionGotMajor;
+    bool                versionGotMajor;
     char *              versionMinor = NULL;
-    int                 versionGotMinor;
+    bool                versionGotMinor;
     size_t              len;
     char *              str;
 
@@ -248,10 +245,10 @@ static void add_string( StringList **p, char *str )
             CLEAR_GOT_FLAGS;            /* initialize locals */
             mergeType = STATE_CLEAR;
             mergeNow = FALSE;
-            state = next_token(STATE_CLEAR, NULL, NULL, FALSE, !exportsGotEntryName ); /* get next command */
+            state = next_token( STATE_CLEAR, NULL, NULL, FALSE, !exportsGotEntryName ); /* get next command */
             break;
           case STATE_DESCRIPTION:       /* DESCRIPTION "text" */
-            state = next_token(STATE_DESCRIPTION, NULL, NULL, FALSE, FALSE );
+            state = next_token( STATE_DESCRIPTION, NULL, NULL, FALSE, FALSE );
             switch( state ) {
               case STATE_STRING:
                 str = string_convert( curToken );
@@ -269,14 +266,14 @@ static void add_string( StringList **p, char *str )
             break;
           case STATE_EXPORTS:
           /* EXPORTS entryname[=internalname] [@ordinal[ NONAME ]  [DATA] [ PRIVATE ] [RESIDENTNAME] */
-            state = next_token(STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotEntryName );
+            state = next_token( STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotEntryName );
             if( mergeNow ) {
                 if( !exportsGotEntryName ) {
-                    mergeNow = 0;
+                    mergeNow = FALSE;
                     break;
                 }
                 while( !foundNewLine ) {
-                        if (next_token( STATE_EXPORTS, NULL, &foundNewLine, FALSE, FALSE )==STATE_EOF) break;
+                        if (next_token( STATE_EXPORTS, NULL, &foundNewLine, FALSE, FALSE ) == STATE_EOF) break;
                 }
                 state = STATE_EXPORTS;
                 break;
@@ -287,13 +284,13 @@ static void add_string( StringList **p, char *str )
                     SET_ERROR;
                 } else {
                     exportsEntryName = DupQuoteStrMem( curToken, '\'' );
-                    #ifdef __TARGET_AXP__
+#ifdef __TARGET_AXP__
                     FuzzyMassageAXPStdcall( exportsEntryName );
-                    #endif
-                    exportsGotEntryName = 1;
+#endif
+                    exportsGotEntryName = TRUE;
                     mergeType = STATE_EXPORTS;
                     if( foundNewLine ) {
-                        mergeNow = 1;
+                        mergeNow = TRUE;
                     }
                 }
                 state = STATE_EXPORTS;
@@ -302,15 +299,15 @@ static void add_string( StringList **p, char *str )
                 if( !exportsGotEntryName ) {
                     SET_ERROR;
                 } else {
-                    state = next_token(STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotEntryName );
+                    state = next_token( STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotEntryName );
                     if( mergeNow )  break;
                     switch( state ) {
                       case STATE_STRING:
                         exportsOrdinal = DupStrMem( curToken );
-                        exportsGotOrdinal = 1;
+                        exportsGotOrdinal = TRUE;
                         state = STATE_EXPORTS;
                         if( foundNewLine ) {
-                            mergeNow = 1;
+                            mergeNow = TRUE;
                         }
                         break;
                       case STATE_EOF:
@@ -325,18 +322,18 @@ static void add_string( StringList **p, char *str )
                 if( !exportsGotEntryName || exportsGotOrdinal ) {
                     SET_ERROR;
                 } else {
-                    state = next_token(STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotInternalName );
+                    state = next_token( STATE_EXPORTS, &mergeNow, &foundNewLine, FALSE, !exportsGotInternalName );
                     if( mergeNow )  break;
                     switch( state ) {
                       case STATE_STRING:
                         exportsInternalName = DupQuoteStrMem( curToken, '\'' );
-                        #ifdef __TARGET_AXP__
+#ifdef __TARGET_AXP__
                         FuzzyMassageAXPStdcall( exportsInternalName );
-                        #endif
-                        exportsGotInternalName = 1;
+#endif
+                        exportsGotInternalName = TRUE;
                         state = STATE_EXPORTS;
                         if( foundNewLine ) {
-                            mergeNow = 1;
+                            mergeNow = TRUE;
                         }
                         break;
                       case STATE_EOF:
@@ -351,8 +348,8 @@ static void add_string( StringList **p, char *str )
                 if( !exportsGotEntryName ) {
                     SET_ERROR;
                 } else {
-                    exportsGotPrivate = 1;
-                    mergeNow = 1;
+                    exportsGotPrivate = TRUE;
+                    mergeNow = TRUE;
                 }
                 state = STATE_EXPORTS;
                 break;
@@ -360,8 +357,8 @@ static void add_string( StringList **p, char *str )
                 if( !exportsGotEntryName ) {
                     SET_ERROR;
                 } else {
-                    exportsGotResident = 1;
-                    mergeNow = 1;
+                    exportsGotResident = TRUE;
+                    mergeNow = TRUE;
                 }
                 state = STATE_EXPORTS;
                 break;
@@ -376,7 +373,7 @@ static void add_string( StringList **p, char *str )
             }
             break;
           case STATE_LIBRARY:           /* LIBRARY [library][BASE=address] */
-            state = next_token(STATE_LIBRARY, &mergeNow, NULL, TRUE, FALSE );
+            state = next_token( STATE_LIBRARY, &mergeNow, NULL, TRUE, FALSE );
             if( mergeNow )  break;
             switch( state ) {
               case STATE_STRING:
@@ -386,10 +383,10 @@ static void add_string( StringList **p, char *str )
                 state = STATE_LIBRARY;
                 break;
               case STATE_BASE:
-                state = next_token(STATE_LIBRARY, NULL, NULL, FALSE, FALSE );
+                state = next_token( STATE_LIBRARY, NULL, NULL, FALSE, FALSE );
                 switch( state ) {
                   case STATE_EQUAL:
-                    state = next_token(STATE_LIBRARY, NULL, NULL, FALSE, FALSE );
+                    state = next_token( STATE_LIBRARY, NULL, NULL, FALSE, FALSE );
                     switch( state ) {
                       case STATE_STRING:
                         if( info->baseAddr != NULL )  FreeMem( info->baseAddr );
@@ -408,7 +405,7 @@ static void add_string( StringList **p, char *str )
             }
             break;
           case STATE_NAME:      /* NAME [application][BASE=address] */
-            state = next_token(STATE_NAME, &mergeNow, NULL, TRUE, FALSE );
+            state = next_token( STATE_NAME, &mergeNow, NULL, TRUE, FALSE );
             if( mergeNow )  break;
             switch( state ) {
               case STATE_STRING:
@@ -418,10 +415,10 @@ static void add_string( StringList **p, char *str )
                 state = STATE_NAME;
                 break;
               case STATE_BASE:
-                state = next_token(STATE_NAME, NULL, NULL, FALSE, FALSE );
+                state = next_token( STATE_NAME, NULL, NULL, FALSE, FALSE );
                 switch( state ) {
                   case STATE_EQUAL:
-                    state = next_token(STATE_NAME, NULL, NULL, FALSE, FALSE );
+                    state = next_token( STATE_NAME, NULL, NULL, FALSE, FALSE );
                     switch( state ) {
                       case STATE_STRING:
                         if( info->baseAddr != NULL )  FreeMem( info->baseAddr );
@@ -442,18 +439,18 @@ static void add_string( StringList **p, char *str )
           case STATE_SECTIONS:  /* SECTIONS definitions */
             UnsupportedOptsMessage( "SECTIONS" );
             state=STATE_STRING;
-            mergeNow2 = 0;
-            mergeNow = 0;
+            mergeNow2 = FALSE;
+            mergeNow = FALSE;
             for( ; ; ) {
                 state=next_token( STATE_STRING, &mergeNow, NULL, FALSE, FALSE );
-                if ( (state<STATE_AT) && mergeNow2 ) break;
+                if ( (state < STATE_AT) && mergeNow2 ) break;
                 mergeNow2 = mergeNow;
-                mergeNow = 0;
+                mergeNow = FALSE;
             }
-            mergeNow = 0;
+            mergeNow = FALSE;
             break;
           case STATE_STACKSIZE: /* STACKSIZE reserve[,commit] */
-            state = next_token(STATE_STACKSIZE, &mergeNow, NULL, FALSE, FALSE );
+            state = next_token( STATE_STACKSIZE, &mergeNow, NULL, FALSE, FALSE );
             if( mergeNow && !stackGotReserve )  SET_ERROR;
             switch( state ) {
               case STATE_STRING:
@@ -461,22 +458,22 @@ static void add_string( StringList **p, char *str )
                     SET_ERROR;
                 } else if (stackGotReserve){
                     stackCommit = DupStrMem( curToken );
-                    stackGotCommit = 1;
+                    stackGotCommit = TRUE;
                     state = STATE_CLEAR;
                     break;
                 } else {
                     stackReserve = DupStrMem( curToken );
-                    stackGotReserve = 1;
+                    stackGotReserve = TRUE;
                     mergeType = STATE_STACKSIZE;
                 }
                 state = STATE_STACKSIZE;
                 break;
               case STATE_COMMA:
-                state = next_token(STATE_STACKSIZE, NULL, NULL, FALSE, FALSE );
+                state = next_token( STATE_STACKSIZE, NULL, NULL, FALSE, FALSE );
                 switch( state ) {
                   case STATE_STRING:
                     stackCommit = DupStrMem( curToken );
-                    stackGotCommit = 1;
+                    stackGotCommit = TRUE;
                     state = STATE_CLEAR;
                     break;
                   default:
@@ -496,7 +493,7 @@ static void add_string( StringList **p, char *str )
                 FreeMem(info->stub);
                 info->stub=NULL;
             }
-            state = next_token(STATE_STUB, NULL, NULL, TRUE, FALSE );
+            state = next_token( STATE_STUB, NULL, NULL, TRUE, FALSE );
             switch( state ) {
               case STATE_STRING:
                 stubGotFile = TRUE;
@@ -518,12 +515,12 @@ static void add_string( StringList **p, char *str )
                     SET_ERROR;
                 } else if (heapGotReserve){
                     heapCommit = DupStrMem( curToken );
-                    heapGotCommit = 1;
+                    heapGotCommit = TRUE;
                     state = STATE_CLEAR;
                     break;
                 } else {
                     heapReserve = DupStrMem( curToken );
-                    heapGotReserve = 1;
+                    heapGotReserve = TRUE;
                     mergeType = STATE_HEAPSIZE;
                 }
                 state = STATE_HEAPSIZE;
@@ -533,7 +530,7 @@ static void add_string( StringList **p, char *str )
                 switch( state ) {
                   case STATE_STRING:
                     heapCommit = DupStrMem( curToken );
-                    heapGotCommit = 1;
+                    heapGotCommit = TRUE;
                     state = STATE_CLEAR;
                     break;
                   default:
@@ -549,7 +546,7 @@ static void add_string( StringList **p, char *str )
             }
             break;
           case STATE_VERSION:   /* VERSION major[.minor] */
-            state = next_token(STATE_VERSION, &mergeNow, NULL, FALSE, FALSE );
+            state = next_token( STATE_VERSION, &mergeNow, NULL, FALSE, FALSE );
             if( mergeNow && !versionGotMajor )  SET_ERROR;
             switch( state ) {
               case STATE_STRING:
@@ -557,7 +554,7 @@ static void add_string( StringList **p, char *str )
                     SET_ERROR;
                 } else {
                     versionMajor = DupStrMem( curToken );
-                    versionGotMajor = 1;
+                    versionGotMajor = TRUE;
                     mergeType = STATE_VERSION;
                 }
                 state = STATE_VERSION;
@@ -566,11 +563,11 @@ static void add_string( StringList **p, char *str )
                 if( !versionGotMajor ) {
                     SET_ERROR;
                 } else {
-                    state = next_token(STATE_VERSION, NULL, NULL, FALSE, FALSE );
+                    state = next_token( STATE_VERSION, NULL, NULL, FALSE, FALSE );
                     switch( state ) {
                       case STATE_STRING:
                         versionMinor = DupStrMem( curToken );
-                        versionGotMinor = 1;
+                        versionGotMinor = TRUE;
                         state = STATE_CLEAR;
                         break;
                       default:
@@ -594,9 +591,9 @@ static void add_string( StringList **p, char *str )
           case STATE_CODE:
             /*** ignore this token and the rest of the line ***/
             UnsupportedOptsMessage( "CODE" );
-            next_token(STATE_CODE, NULL, &foundNewLine, FALSE, FALSE );
+            next_token( STATE_CODE, NULL, &foundNewLine, FALSE, FALSE );
             while( !foundNewLine ) {
-                next_token(STATE_CODE, NULL, &foundNewLine, FALSE, FALSE );
+                next_token( STATE_CODE, NULL, &foundNewLine, FALSE, FALSE );
             }
             state = STATE_CLEAR;
             break;
@@ -626,7 +623,7 @@ static void add_string( StringList **p, char *str )
         }
 
         /*** Merge stuff together if necessary ***/
-        if( (mergeNow==TRUE)  ||  (state==STATE_CLEAR || state==STATE_EOF) ) {
+        if( mergeNow || ( state == STATE_CLEAR || state == STATE_EOF ) ) {
             switch( mergeType ) {
               case STATE_EXPORTS:
                 len = strlen( exportsEntryName );
@@ -748,30 +745,30 @@ static void add_string( StringList **p, char *str )
 /*
  * Get the next token, returning the new state.
  */
-static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, int atCharsOk )
-/*******************************************************************************************/
+static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk, bool atCharsOk )
+/**********************************************************************************************/
 {
-    int                 ch = 0;
-    int                 start;
+    char                ch = '\0';
+    long                start;
     int                 len = 0;
-    int                 alive = 1;
-    int                 quoteUsed = 0;
-    int                 usingQuote = 0;
+    bool                alive = TRUE;
+    bool                quoteUsed = FALSE;
+    char                usingQuote = '\0';
     int                 count;
     int                 retcode;
-    int                 gotNewLine = 0;
-    int                 gotEof = 0;
-    int                 goBackOne = 0;
+    bool                gotNewLine = FALSE;
+    bool                gotEof = FALSE;
+    bool                goBackOne = FALSE;
     char *              buf;
 
     /*** Read up until the end of the token ***/
-    eat_comments(&gotNewLine);
-    if (gotNewLine==1) {
+    eat_comments( &gotNewLine );
+    if( gotNewLine ) {
         if( newLine != NULL ) {
             *newLine = gotNewLine;
         }
         if ( newCmd != NULL ) {
-            *newCmd = 1;
+            *newCmd = TRUE;
         }
         return state;
     }
@@ -793,9 +790,9 @@ static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, in
           case '\r':
           case '\t':
             if( !quoteUsed ) {
-                alive = 0;              /* break a token on any of these */
+                alive = FALSE;          /* break a token on any of these */
                 if( len != 0 ) {
-                    goBackOne = 1;      /* save breaking char for later */
+                    goBackOne = TRUE;   /* save breaking char for later */
                 }
                 break;
             }
@@ -803,24 +800,24 @@ static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, in
           case '"':
             if( quoteUsed && usingQuote == '"' ) {
                 usingQuote = '\0';
-                alive = 0;
+                alive = FALSE;
             } else if( !quoteUsed ) {
                 usingQuote = '"';
-                quoteUsed = 1;
+                quoteUsed = TRUE;
             }
             break;
           case '\'':
             if( quoteUsed  &&  usingQuote == '\'' ) {
                 usingQuote = '\0';
-                alive = 0;
+                alive = FALSE;
             } else if( !quoteUsed ) {
                 usingQuote = '\'';
-                quoteUsed = 1;
+                quoteUsed = TRUE;
             }
             break;
           case '\0':
-            gotEof = 1;
-            alive = 0;
+            gotEof = TRUE;
+            alive = FALSE;
             break;
           default:
             break;
@@ -834,7 +831,7 @@ static int next_token( int state, int *newCmd, int *newLine, int fileCharsOk, in
         UngetCharContext();
     }
     if( ch == '\n' || ch == '\r' ) {
-        gotNewLine = 1;
+        gotNewLine = TRUE;
     }
 
 
@@ -955,48 +952,53 @@ static void strip_quotes( char *str )
  * Skip all whitespace characters, such that the next read will retrieve the
  * first non-whitespace character.
  */
-static void ScanWhitespace( int *newLine )
+static void ScanWhitespace( bool *newLine )
 /****************************************/
 {
-    int                 ch;
+    char    ch;
 
     do {
         ch = GetCharContext();
-    } while( isspace( ch )  &&  ch != '\0' && ch!='\n');
-    if( ch != '\0' && ch!='\n' )  UngetCharContext();
-    if( ch=='\n' ) *newLine=1;
+    } while( isspace( ch )  &&  ch != '\0' && ch != '\n' );
+    if( ch != '\0' && ch != '\n' )
+        UngetCharContext();
+    if( ch == '\n' ) {
+        *newLine = FALSE;
+    }
 }
 
 
 /*
  * Skip comment(s) and whitespace.  Returns non-zero if not yet at EOF.
  */
-static int eat_comments( int *newLine )
-/*************************************/
+static bool eat_comments( bool *newLine )
+/***************************************/
 {
-    int                 ch;
-    int                 alive = 1;
+    char    ch;
+    bool    alive = TRUE;
 
 
-    *newLine=0;
+    *newLine = FALSE;
     do {
-        ScanWhitespace(newLine);
+        ScanWhitespace( newLine );
         ch = GetCharContext();
         if( ch == ';' ) {
             do {                /* ignore everything up to end of line */
                 ch = GetCharContext();
-                if (ch == '\n') {
-                    *newLine=1;
+                if( ch == '\n' ) {
+                    *newLine = TRUE;
                 }
             } while( ch != '\0'  &&  ch != '\n' );
         } else {
-            alive = 0;
+            alive = FALSE;
         }
-        if( ch != '\0' )  UngetCharContext();
+        if( ch != '\0' ) {
+            UngetCharContext();
+        }
     } while( alive );
-    ScanWhitespace(newLine);
+    ScanWhitespace( newLine );
 
-    return( ch=='\0' ? 0 : 1 );
+    return( ch == '\0' ? FALSE : TRUE );
 }
 
 
@@ -1009,15 +1011,15 @@ static char *string_convert( const char *str )
     const char *        p = str;
     char *              out;
     char *              outStart;
-    int                 gotQuote = 0;
+    bool                gotQuote = FALSE;
     char                quoteType = '\0';
 
     outStart = AllocMem( 2 * strlen( str ) + 1 );
     out = outStart;
     while( *p != '\0' ) {
         if( *p == '"'  ||  *p == '\'' ) {
-            if( gotQuote == '\0' ) {
-                gotQuote = 1;
+            if( !gotQuote ) {
+                gotQuote = TRUE;
                 quoteType = *p;
                 *out++ = *p++;
             } else if( quoteType != *p  &&  *p == '\'' ) {
@@ -1058,14 +1060,14 @@ static void FreeStringList( StringList **p )
 void FreeDefInfo( DefInfo *p )
 /****************************/
 {
-    FreeMem(p->name);
-    FreeMem(p->internalDllName);
-    FreeMem(p->baseAddr);
-    FreeMem(p->stub);
-    FreeStringList(&(p->description) );
-    FreeStringList(&(p->exports) );
-    FreeMem(p->stacksize);
-    FreeMem(p->heapsize);
-    FreeMem(p->version);
-    FreeMem(p);
+    FreeMem( p->name );
+    FreeMem( p->internalDllName );
+    FreeMem( p->baseAddr );
+    FreeMem( p->stub );
+    FreeStringList( &(p->description) );
+    FreeStringList( &(p->exports) );
+    FreeMem( p->stacksize );
+    FreeMem( p->heapsize );
+    FreeMem( p->version );
+    FreeMem( p );
 }

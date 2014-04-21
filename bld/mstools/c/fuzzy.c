@@ -110,7 +110,7 @@ static unsigned hash_symbol_name( const void *symbol )
     char *              namestart;
     char *              p;
     unsigned *          s;
-    size_t              len;
+    unsigned            len;
     unsigned            mask;
     unsigned            c;
     unsigned            g;
@@ -127,7 +127,7 @@ static unsigned hash_symbol_name( const void *symbol )
     namecopy = DupStrMem( symbol );
     namestart = namecopy;
     while( *namestart == '_' )  namestart++;
-    len = strlen( namestart );
+    len = (unsigned)strlen( namestart );
     if( len > 0 ) {
         p = namestart + len - 1;
         while( p >= namestart  &&  ( isdigit(*p) || *p=='@' || *p=='_' ) ) {
@@ -139,8 +139,8 @@ static unsigned hash_symbol_name( const void *symbol )
     /*
      * Ok, now do the actual hashing.
      */
-    s = (unsigned*) namestart;
-    len = strlen( namestart );
+    s = (unsigned *)namestart;
+    len = (unsigned)strlen( namestart );
     h = len;
     c = len;
     if( len > sizeof( unsigned ) ) {
@@ -181,7 +181,7 @@ static void *obj_read( void *hdl, size_t len )
     newelem = AllocMem( sizeof( ListElem ) + len - 1 );
     newelem->next = bufflist;
     bufflist = newelem;
-    if( read( (int)hdl, newelem->buff, len ) != len ) {
+    if( (unsigned)read( (int)hdl, newelem->buff, (unsigned)len ) != (unsigned)len ) {
         FreeMem( newelem );
         return( NULL );
     }
@@ -410,14 +410,17 @@ static int wlib_output( const char *text )
  */
 static IDEBool __stdcall print_message_crlf( IDECBHdl hdl, const char *text )
 {
+    hdl = hdl;
     return( (IDEBool)wlib_output( text ) );
 }
 static IDEBool __stdcall print_with_info2( IDECBHdl hdl, IDEMsgInfo2 *info )
 {
+    hdl = hdl;
     return( (IDEBool)wlib_output( info->msg ) );
 }
 static IDEBool __stdcall print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
 {
+    hdl = hdl;
     return( (IDEBool)wlib_output( info->msg ) );
 }
 

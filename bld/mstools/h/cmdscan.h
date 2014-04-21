@@ -33,20 +33,19 @@
 #ifndef _CMDSCAN_H
 #define _CMDSCAN_H
 
-
 /*
  * Function prototypes.
  */
 extern void     CmdScanWhitespace( void );
 
-extern int      CmdScanRecogChar( int ch );
-extern int      CmdScanRecogCharExact( int ch );
+extern bool     CmdScanRecogChar( int ch );
+extern bool     CmdScanRecogLowerChar( int ch );
 
 extern char *   CmdScanString( void );
 extern char *   CmdScanFileName( void );
 extern char *   CmdScanFileNameWithoutQuotes( void );
-extern int      CmdScanNumber( unsigned *num );
+extern bool     CmdScanNumber( unsigned *num );
 
-extern int      Quoted;
+extern bool     Quoted;
 
 #endif

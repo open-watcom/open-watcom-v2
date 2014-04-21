@@ -43,7 +43,6 @@
 #include "memory.h"
 #include "pathconv.h"
 #include "translat.h"
-#include "system.h"
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -281,7 +280,7 @@ static char *fuzzy_export( char *export )
     char *              entryname = NULL;
     char *              exportcopy;
     char *              p = NULL;
-    int                 len = 4; /* for the '.', '=', ' ', and required +1 */
+    size_t              len = 4; /* for the '.', '=', ' ', and required +1 */
 
     exportcopy = DupStrMem( export );
     p = strchr( exportcopy+1, '\'' );
@@ -814,6 +813,7 @@ static void linker_opts( struct XlatStatus *status,
 static void default_opts( struct XlatStatus *status,
                           const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 {
+    status = status;
     if (!cmdOpts->nowopts)
     {
         AppendCmdLine(cmdLine, LINK_OPTS_SECTION, "OPTION quiet");

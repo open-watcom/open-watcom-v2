@@ -41,10 +41,8 @@
 #include "error.h"
 #include "link.h"
 #include "message.h"
-#include "parse.h"
 #include "pathconv.h"
 #include "translat.h"
-#include "system.h"
 
 
 #if defined(__TARGET_386__)
@@ -145,7 +143,7 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         fprintf( stderr, "\n" );
     }
     if( !cmdOpts->noinvoke ) {
-        rc = spawnvp( P_WAIT, LINKER, (const char **)args );
+        rc = (int)spawnvp( P_WAIT, LINKER, (const char **)args );
     }
     if( cmdOpts->showwopts ) {
         fprintf( stderr, "del %s\n", cmdFileName );

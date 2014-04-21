@@ -4,7 +4,7 @@ name = cvtres
 
 common_objs = parse.obj $(mstools_objs)
 cvtres_objs = cvtres.obj message.obj $(common_objs)
-cvtres_hdrs = optparse.gh
+cvtres_hdrs = cmdlnprs.gc
 
 #
 # Instructions for building the executable.

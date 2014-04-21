@@ -42,11 +42,8 @@
 #include "file.h"
 #include "macro.h"
 #include "message.h"
-#include "optparse.h"
-#include "parse.h"
 #include "pathconv.h"
 #include "translat.h"
-#include "system.h"
 
 
 #if defined(__TARGET_386__)
@@ -83,17 +80,17 @@ static int do_parsing( OPT_STORAGE *cmdOpts )
     int                 itemsParsed = 0;
 
     /*** Process the WATCOM_CLONE_OPTIONS environment variable ***/
-    if( OpenEnvironContext( "WATCOM_CLONE_OPTIONS" )  ==  0 ) {
+    if( !OpenEnvironContext( "WATCOM_CLONE_OPTIONS" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
     /*** Process the CL_OPTIONS environment variable ***/
-    if( OpenEnvironContext( "CL_OPTIONS" )  ==  0 ) {
+    if( !OpenEnvironContext( "CL_OPTIONS" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
     /*** Process the CL environment variable ***/
-    if( OpenEnvironContext( "CL" )  ==  0 ) {
+    if( !OpenEnvironContext( "CL" ) ) {
         CmdStringParse( cmdOpts, &itemsParsed );
     }
 
@@ -175,7 +172,7 @@ static int compile( const OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
             fprintf( stderr, "\n" );
         }
         if( !cmdOpts->noinvoke ) {
-            rc = spawnvp( P_WAIT, compiler, (const char **)args );
+            rc = (int)spawnvp( P_WAIT, compiler, (const char **)args );
             if( rc != 0 ) {
                 if( rc == -1  ||  rc == 255 ) {
                     FatalError( "Unable to execute '%s'", compiler );
@@ -249,7 +246,7 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *linkCmdLine )
     /*** Spawn the linker ***/
     AppendCmdLine( linkCmdLine, CL_L_PROGNAME_SECTION, LINKER );
     args = MergeCmdLine( linkCmdLine, INVALID_MERGE_CMDLINE );
-    rc = spawnvp( P_WAIT, LINKER, (const char **)args );
+    rc = (int)spawnvp( P_WAIT, LINKER, (const char **)args );
     if( rc != 0 ) {
         if( rc == -1  ||  rc == 255 ) {
             FatalError( "Unable to execute '%s'", LINKER );

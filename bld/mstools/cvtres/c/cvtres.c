@@ -40,7 +40,6 @@
 #include "file.h"
 #include "memory.h"
 #include "message.h"
-#include "optparse.h"
 #include "parse.h"
 #include "pathconv.h"
 
@@ -81,13 +80,14 @@ static int do_parsing( OPT_STORAGE *cmdOpts )
 }
 
 
+#define BUFSIZE 32768
+
 /*
  * Convert the resource file.
  */
 static int res_convert( const OPT_STORAGE *cmdOpts )
 /**************************************************/
 {
-    const size_t        bufsize = 32768;
     void *              buf;
     char *              infilename;
     char                outfilename[_MAX_PATH];
@@ -97,7 +97,7 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
     FILE *              in;
     FILE *              out;
     long                bytes;
-    size_t              amount;
+    unsigned            amount;
     size_t              rc;
     char *              p;
 
@@ -133,7 +133,7 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
 
     if( !cmdOpts->noinvoke ) {
         /*** Prepare to convert (copy) the file ***/
-        buf = AllocMem( bufsize );
+        buf = AllocMem( BUFSIZE );
         in = fopen( infilename, "rb" );
         if( in == NULL )  FatalError( "Cannot open '%s'", infilename );
         out = fopen( outfilename, "wb" );
@@ -142,8 +142,10 @@ static int res_convert( const OPT_STORAGE *cmdOpts )
         if( bytes == -1L )  FatalError( "Cannot get size of '%s'", infilename );
 
         /*** Convert (copy) the file ***/
+        amount = BUFSIZE;
         while( bytes > 0L ) {
-            amount = ( bytes >= bufsize )  ?  bufsize  :  (size_t)bytes;
+            if( bytes < BUFSIZE )
+                amount = bytes;
             rc = fread( buf, amount, 1, in );
             if( rc == 0 )  FatalError( "Cannot read from '%s'", infilename );
             rc = fwrite( buf, amount, 1, out );

@@ -32,13 +32,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "cmdline.h"
 #include "error.h"
 #include "asaxp.h"
 #include "message.h"
 #include "memory.h"
 #include "translat.h"
-#include "system.h"
 
 #define UNSUPPORTED_STR_SIZE    512
 
@@ -69,22 +69,22 @@ static void unsupported_opts( OPT_STORAGE *cmdOpts )
     /*** Build a string listing all unsupported options that were used ***/
     opts[0] = '\0';
     if( cmdOpts->nopp                )  append_unsupported( opts, "nopp"                );
-    if( cmdOpts->O0                  )  append_unsupported( opts, "O0"                  );
-    if( cmdOpts->O1                  )  append_unsupported( opts, "O1"                  );
-    if( cmdOpts->resumptionsafe      )  append_unsupported( opts, "resumptionsafe"      );
-    if( cmdOpts->symbolsaligned0mod4 )  append_unsupported( opts, "symbolsaligned0mod4" );
-    if( cmdOpts->symbolsnotaligned   )  append_unsupported( opts, "symbolsnotaligned"   );
-    if( cmdOpts->stackaligned0mod8   )  append_unsupported( opts, "stackaligned0mod8"   );
-    if( cmdOpts->stacknotaligned     )  append_unsupported( opts, "stacknotaligned"     );
+    if( cmdOpts->o0                  )  append_unsupported( opts, "O0"                  );
+    if( cmdOpts->o1                  )  append_unsupported( opts, "O1"                  );
+    if( cmdOpts->resumption_safe      )  append_unsupported( opts, "resumptionsafe"      );
+    if( cmdOpts->symbols_aligned_0mod4 )  append_unsupported( opts, "symbolsaligned0mod4" );
+    if( cmdOpts->symbols_not_aligned   )  append_unsupported( opts, "symbolsnotaligned"   );
+    if( cmdOpts->stack_aligned_0mod8   )  append_unsupported( opts, "stackaligned0mod8"   );
+    if( cmdOpts->stack_not_aligned     )  append_unsupported( opts, "stacknotaligned"     );
     if( cmdOpts->eflag               )  append_unsupported( opts, "eflag"               );
-    if( cmdOpts->QApdst              )  append_unsupported( opts, "QApdst"              );
-    if( cmdOpts->QApdsg              )  append_unsupported( opts, "QApdsg"              );
-    if( cmdOpts->QApdsa              )  append_unsupported( opts, "QApdsa"              );
-    if( cmdOpts->QApdie              )  append_unsupported( opts, "QApdie"              );
-    if( cmdOpts->QApdca              )  append_unsupported( opts, "QApdca"              );
+    if( cmdOpts->qapdst              )  append_unsupported( opts, "QApdst"              );
+    if( cmdOpts->qapdsg              )  append_unsupported( opts, "QApdsg"              );
+    if( cmdOpts->qapdsa              )  append_unsupported( opts, "QApdsa"              );
+    if( cmdOpts->qapdie              )  append_unsupported( opts, "QApdie"              );
+    if( cmdOpts->qapdca              )  append_unsupported( opts, "QApdca"              );
     if( cmdOpts->u                   )  append_unsupported( opts, "U"                   );
-    if( cmdOpts->Zd                  )  append_unsupported( opts, "Zd"                  );
-    if( cmdOpts->Zi                  )  append_unsupported( opts, "Zi"                  );
+    if( cmdOpts->zd                  )  append_unsupported( opts, "Zd"                  );
+    if( cmdOpts->zi                  )  append_unsupported( opts, "Zi"                  );
     /*** If an unsupported option was used, give a warning ***/
     if( opts[0] != '\0' ) {
         UnsupportedOptsMessage( opts );

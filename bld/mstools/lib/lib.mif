@@ -7,11 +7,10 @@ name = lib
 libstub_objs        = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 lib_common_objs     = demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
 lib_objs            = deffile.obj lib.obj message.obj translat.obj $(lib_common_objs)
-lib_hdrs            = optparse.gc
+lib_hdrs            = cmdlnprs.gc
 lib_common_libs     = $(orl_lib)
 
-.c :  ../c;../../c;$(lib_misc_dir)/c
-.h :  ../h;../../h;$(lib_misc_dir)/h;$(orl_dir)/h
+.c :  $(lib_misc_dir)/c
 
 inc_dirs +=  -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
 

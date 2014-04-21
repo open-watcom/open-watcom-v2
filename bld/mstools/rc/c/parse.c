@@ -85,7 +85,7 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    int                 ch;
+    char                ch;
     char *              filename;
 
     for( ;; ) {
@@ -104,7 +104,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
                 } else {
                     UngetCharContext();
                 }
-                if( OPT_PROCESS( cmdOpts ) != 0 ) {
+                if( OPT_PROCESS( cmdOpts ) ) {
                     cmd_line_error();
                 }
                 if( cmdOpts->gotlongoption ) {
@@ -115,8 +115,8 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         } else if( ch == '"' ) {                /* quoted option or file name */
             ch = GetCharContext();
             if( ch == '-' ) {
-                Quoted = 1;
-                if( OPT_PROCESS( cmdOpts ) != 0 ) {
+                Quoted = TRUE;
+                if( OPT_PROCESS( cmdOpts ) ) {
                     cmd_line_error();
                 }
             } else {
@@ -141,13 +141,12 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /*
  * Destroy an OPT_STRING.
  */
-static void OPT_CLEAN_STRING( OPT_STRING **p )
-/********************************************/
+void OPT_CLEAN_STRING( OPT_STRING **p )
+/*************************************/
 {
     OPT_STRING *        s;
 
-    while( *p != NULL ) {
-        s = *p;
+    while( (s = *p) != NULL ) {
         *p = s->next;
         FreeMem( s );
     }
@@ -184,8 +183,8 @@ static void add_string( OPT_STRING **p, char *str )
  * given OPT_STRING.  If onlyOne is non-zero, any previous string in p will
  * be deleted.
  */
-static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne )
-/**********************************************************************/
+static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne )
+/***********************************************************************/
 {
     char *              str;
 
@@ -207,7 +206,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, int onlyOne )
 static int parse_c( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "c", 1 ) );
+    return( do_string_parse( p, "c", TRUE ) );
 }
 
 
@@ -217,7 +216,7 @@ static int parse_c( OPT_STRING **p )
 static int parse_d( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "d", 0 ) );
+    return( do_string_parse( p, "d", FALSE ) );
 }
 
 
@@ -230,7 +229,7 @@ static int parse_fo( OPT_STRING **p )
     int                 retcode;
     char *              newstr;
 
-    retcode = do_string_parse( p, "fo", 1 );
+    retcode = do_string_parse( p, "fo", TRUE );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
@@ -246,7 +245,7 @@ static int parse_fo( OPT_STRING **p )
 static int parse_i( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "i", 0 ) );
+    return( do_string_parse( p, "i", FALSE ) );
 }
 
 
@@ -256,7 +255,7 @@ static int parse_i( OPT_STRING **p )
 static int parse_l( OPT_STRING **p )
 /**********************************/
 {
-    return( do_string_parse( p, "l", 1 ) );
+    return( do_string_parse( p, "l", TRUE ) );
 }
 
 
@@ -269,7 +268,7 @@ static int parse_passwopts( OPT_STRING **p )
     char *src;
     char *dst;
 
-    if (!CmdScanRecogChar(':'))
+    if( !CmdScanRecogChar( ':' ) )
     {
         FatalError("/passwopts:{argument} requires an argument");
         return 0;
@@ -334,10 +333,10 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
  * Return the next character (forced to lowercase since RC's options are
  * not case-sensitive) and advance to the next one.
  */
-static int OPT_GET_LOWER( void )
-/******************************/
+int OPT_GET_LOWER( void )
+/***********************/
 {
-    return( tolower( GetCharContext() ) );
+    return( tolower( (unsigned char)GetCharContext() ) );
 }
 
 
@@ -346,22 +345,22 @@ static int OPT_GET_LOWER( void )
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
-static int OPT_RECOG_LOWER( int ch )
-/**********************************/
+bool OPT_RECOG_LOWER( int ch )
+/****************************/
 {
-    return( CmdScanRecogChar( ch ) );
+    return( CmdScanRecogLowerChar( ch ) );
 }
 
 
 /*
  * Back up one character.
  */
-static void OPT_UNGET( void )
-/***************************/
+void OPT_UNGET( void )
+/********************/
 {
     UngetCharContext();
 }
 
 
 /* Include after all static functions were declared */
-#include "optparse.gc"
+#include "cmdlnprs.gc"

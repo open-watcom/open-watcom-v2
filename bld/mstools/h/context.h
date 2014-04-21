@@ -52,15 +52,15 @@
 /*
  * Function prototypes.
  */
-extern int      OpenCmdLineContext( void );
-extern int      OpenEnvironContext( const char *envVar );
-extern int      OpenFileContext( const char *filename );
+extern bool     OpenCmdLineContext( void );
+extern bool     OpenEnvironContext( const char *envVar );
+extern bool     OpenFileContext( const char *filename );
 extern void     CloseContext( void );
 
 extern void     PushContext( void );
 extern void     PopContext( void );
 
-extern int      GetCharContext( void );
+extern char     GetCharContext( void );
 extern void     UngetCharContext( void );
 
 extern void     MarkPosContext( void );

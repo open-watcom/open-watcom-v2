@@ -99,7 +99,6 @@ static char const *NextUsage( char const *p )
 void PrintHelpMessage( void )
 /***************************/
 {
-    int                 count;
     int                 num;
     int                 ch;
     char const          *p;

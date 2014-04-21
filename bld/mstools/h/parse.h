@@ -24,20 +24,24 @@
 *
 *  ========================================================================
 *
-* Description:  Include prototypes for generated parsing routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef OPTPARSE_H_INCLUDED
-#define OPTPARSE_H_INCLUDED
+#ifndef _PARSE_H
+#define _PARSE_H
 
+#include "cmdlnprs.gh"
+#include "cmdlnprs.h"
 
-#include "optparse.gh"
-
-void    OPT_INIT( OPT_STORAGE *data );
-void    OPT_FINI( OPT_STORAGE *data );
-bool    OPT_PROCESS( OPT_STORAGE *data );
+/*
+ * Function prototypes.
+ */
+extern void     InitParse( OPT_STORAGE *cmdOpts );
+extern void     FiniParse( OPT_STORAGE *cmdOpts );
+extern void     CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed );
 
 
 #endif

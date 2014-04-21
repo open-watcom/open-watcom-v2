@@ -5,7 +5,7 @@ name = cl
 clstub_objs     = clstub.obj $(mstools_stub_obj) $(mstools_objs)
 cl_common_objs  = macro.obj $(mstools_objs)
 cl_objs         = cl.obj message.obj parse.obj translat.obj $(cl_common_objs)
-cl_hdrs         = optparse.gc
+cl_hdrs         = cmdlnprs.gc
 
 #
 # Instructions for building the executables.
