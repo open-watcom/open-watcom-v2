@@ -250,33 +250,34 @@ char make_char( letter_t i )
         return( '`' );
     }
     if( i >= LETTER_0 && i <= LETTER_9 ) {
-        return( ( i - LETTER_0 ) + '0' );
+        return( (char)( i - LETTER_0 ) + '0' );
     }
     if( i >= LETTER_a && i <= LETTER_i ) {
-        return( ( i - LETTER_a ) + 'a' );
+        return( (char)( i - LETTER_a ) + 'a' );
     }
     if( i >= LETTER_j && i <= LETTER_r ) {
-        return( ( i - LETTER_j ) + 'j' );
+        return( (char)( i - LETTER_j ) + 'j' );
     }
     if( i >= LETTER_s && i <= LETTER_z ) {
-        return( ( i - LETTER_s ) + 's' );
+        return( (char)( i - LETTER_s ) + 's' );
     }
     if( i >= LETTER_A && i <= LETTER_I ) {
-        return( ( i - LETTER_A ) + 'A' );
+        return( (char)( i - LETTER_A ) + 'A' );
     }
     if( i >= LETTER_J && i <= LETTER_R ) {
-        return( ( i - LETTER_J ) + 'J' );
+        return( (char)( i - LETTER_J ) + 'J' );
     }
     if( i >= LETTER_S && i <= LETTER_Z ) {
-        return( ( i - LETTER_S ) + 'S' );
+        return( (char)( i - LETTER_S ) + 'S' );
     }
     return( CHAR_UNKNOWN );
 }
 
 char *make_define( letter_t i )
-/**************************/
+/*****************************/
 {
     static char define_string[2];
+    char c;
 
     if( i == LETTER_NULLCHAR ) {
         return( "00h" );
@@ -287,25 +288,9 @@ char *make_define( letter_t i )
     if( i == LETTER_BACK_QUOTE ) {
         return( "BACK_QUOTE" );
     }
-    if( i == LETTER__ ) {
-        define_string[0] = '_';
-    } else if( i >= LETTER_0 && i <= LETTER_9 ) {
-        define_string[0] = ( ( i - LETTER_0 ) + '0' );
-    } else if( i >= LETTER_a && i <= LETTER_i ) {
-        define_string[0] = ( ( i - LETTER_a ) + 'a' );
-    } else if( i >= LETTER_j && i <= LETTER_r ) {
-        define_string[0] = ( ( i - LETTER_j ) + 'j' );
-    } else if( i >= LETTER_s && i <= LETTER_z ) {
-        define_string[0] = ( ( i - LETTER_s ) + 's' );
-    } else if( i >= LETTER_A && i <= LETTER_I ) {
-        define_string[0] = ( ( i - LETTER_A ) + 'A' );
-    } else if( i >= LETTER_J && i <= LETTER_R ) {
-        define_string[0] = ( ( i - LETTER_J ) + 'J' );
-    } else if( i >= LETTER_S && i <= LETTER_Z ) {
-        define_string[0] = ( ( i - LETTER_S ) + 'S' );
-    } else {
+    if( (c = make_char( i )) == CHAR_UNKNOWN )
         return( "UNKNOWN" );
-    }
+    define_string[0] = c;
     define_string[1] = '\0';
     return( define_string );
 }
@@ -478,7 +463,7 @@ void init_arrays( unsigned first_index, unsigned last_index )
         }
         done[i] = 0;
         // these improve the hash function
-        init_hash[i] = len[i] + (unsigned)tokens[i][min_len];
+        init_hash[i] = len[i] + (unsigned char)tokens[i][min_len];
         //init_hash[i] = len[i] + (unsigned)tokens[i][len[i] >> 1];
         //init_hash[i] = len[i];
         hash[i] = init_hash[i];
@@ -964,7 +949,6 @@ unsigned dump_token_name( keyword_t k )
     char *tok;
     unsigned j;
     unsigned n;
-    int c;
     char buff[32];
 
     if( k == 0 ) {
@@ -975,8 +959,7 @@ unsigned dump_token_name( keyword_t k )
         tok = tokens[k];
     }
     for( j = 0; j < n; ++j ) {
-        c = tok[ j ];
-        fputc( toupper( c ), outfile );
+        fputc( toupper( (unsigned char)tok[j] ), outfile );
     }
     return( j );
 }
@@ -1092,7 +1075,7 @@ void dump_tiny( unsigned first_index, unsigned last_index )
     fprintf( outfile, "static unsigned char TINY_WEIGHTS[%u] = {\n",
                 (( max_char - min_char ) + 4 ) & ~3 );
     for( c = min_char; c <= max_char; ++c ) {
-        letter = make_letter( c );
+        letter = make_letter( (char)c );
         fprintf( outfile, "%6u, /* '%c' */\n", weights[letter], c );
     }
     fputs( "};\n", outfile );

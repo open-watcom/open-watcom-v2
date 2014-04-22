@@ -73,7 +73,7 @@
 #define HAS_OPT_STRING( o )     ( (o)->is_id || (o)->is_file || (o)->is_path || (o)->is_special )
 #define HAS_OPT_NUMBER( o )     ( (o)->is_number && (o)->is_multiple )
 
-#define NOCHAIN                 ((CHAIN *)~0UL)
+#define NOCHAIN                 ((CHAIN *)(pointer_int)-1)
 
 #define SKIP_BEG_MARK(s)        if(*s==':')++s
 
