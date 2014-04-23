@@ -42,3 +42,4 @@ typedef unsigned    UINT_WC_TYPE;
 #endif
 
 extern char *__tmpdir( char *__buff );
+extern unsigned __getdcwd( char *buff, unsigned char drv );

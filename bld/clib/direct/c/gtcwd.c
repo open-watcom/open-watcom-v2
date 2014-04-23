@@ -38,75 +38,8 @@
 #endif
 #include "liballoc.h"
 #include "seterrno.h"
+#include "_direct.h"
 #include "_doslfn.h"
-
-#ifdef _M_I86
-  #ifdef __BIG_DATA__
-    #define AUX_INFO    \
-        parm caller     [si ax] [dl] \
-        modify exact    [ax si];
-  #else
-    #define AUX_INFO    \
-        parm caller     [si] [dl] \
-        modify exact    [ax];
-  #endif
-#else
-    #define AUX_INFO    \
-        parm caller     [esi] [dl] \
-        modify exact    [eax];
-#endif
-
-extern unsigned __getdcwd_sfn( const char *buff, unsigned char drv );
-#pragma aux __getdcwd_sfn = \
-        _SET_DSSI       \
-        _MOV_AH DOS_GETCWD \
-        _INT_21         \
-        _RST_DS         \
-        "call __doserror_" \
-        AUX_INFO
-
-#ifdef __WATCOM_LFN__
-static unsigned _getdcwd_lfn( const char *buff, unsigned char drv )
-/*****************************************************************/
-{
-  #ifdef _M_I86
-    return( __getdcwd_lfn( buff, drv ) );
-  #else
-    call_struct     dpmi_rm;
-
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = drv;
-    dpmi_rm.eax = 0x7147;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( dpmi_rm.flags & 1 ) {
-        return( __set_errno_dos_reterr( (unsigned short)dpmi_rm.eax ) );
-    }
-    strcpy( (char *)buff, RM_TB_PARM1_LINEAR );
-    return( 0 );
-  #endif
-}
-#endif
-
-static unsigned __getdcwd( const char *buff, unsigned char drv )
-/**************************************************************/
-{
-#ifdef __WATCOM_LFN__
-    unsigned        rc = 0;
-
-    if( _RWD_uselfn && (rc = _getdcwd_lfn( buff, drv )) == 0 ) {
-        return( rc );
-    }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( rc );
-    }
-#endif
-    return( __getdcwd_sfn( buff, drv ) );
-}
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )

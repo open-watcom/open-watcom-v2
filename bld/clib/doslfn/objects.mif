@@ -9,6 +9,7 @@
 !inject findnext.obj d16 d32 dpm
 !inject fstat.obj    d16 d32 dpm
 !inject fullpath.obj d16 d32 dpm
+!inject _getdcwd.obj d16 d32 dpm
 !inject gfattdos.obj d16 d32 dpm
 !inject gtcwd.obj    d16 d32 dpm
 !inject chdir.obj    d16 d32 dpm
@@ -55,10 +56,15 @@
 dir_opts      = -I"$(clib_dir)/handleio/h" -I"$(clib_dir)/direct/h"
 findfirs_opts = -I"$(clib_dir)/file/h"
 findnext_opts = -I"$(clib_dir)/file/h"
+fullpath_opts = -I"$(clib_dir)/direct/h"
+_getdcwd_opts = -I"$(clib_dir)/direct/h"
+gtcwd_opts    = -I"$(clib_dir)/direct/h"
 stat_opts     = -I"$(clib_dir)/file/h" -I"$(clib_dir)/handleio/h"
 udir_opts     = -I"$(clib_dir)/handleio/h" -I"$(clib_dir)/direct/h"
 ufindfir_opts = -I"$(clib_dir)/file/h"
 ufindnex_opts = -I"$(clib_dir)/file/h"
+ufulpath_opts = -I"$(clib_dir)/direct/h"
+ugtcd_opts    = -I"$(clib_dir)/direct/h"
 ustat_opts    = -I"$(clib_dir)/file/h" -I"$(clib_dir)/handleio/h"
 
 base_libname   = doslfn

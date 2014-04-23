@@ -234,7 +234,7 @@ extern unsigned __dos_setfileattr_lfn( const char *path, unsigned attr );
         modify exact    [ax bl];
   #endif
 
-extern unsigned __getdcwd_lfn( const char *path, unsigned char drv );
+extern unsigned __getdcwd_lfn( char *path, unsigned char drv );
   #ifdef __BIG_DATA__
     #pragma aux __getdcwd_lfn = \
         "push ds"       \
