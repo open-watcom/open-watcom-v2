@@ -15,6 +15,7 @@
 !inject gtcwdos2.obj                                        o16 o32
 !inject gtcwdwnt.obj                     nt nta ntp
 !inject gtcwdlnx.obj                                                                    l32 lpc lmp
+!inject _getdcwd.obj d16 d32                                                w16 w32 osi
 !inject getdcwd.obj  d16 d32             nt nta ntp         o16 o32         w16 w32 osi
 !inject mkdir.obj    d16 d32                                                w16 w32 osi
 !inject mkdiros2.obj                                        o16 o32
