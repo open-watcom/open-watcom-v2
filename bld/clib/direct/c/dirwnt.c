@@ -49,15 +49,7 @@
 #include "_dtaxxx.h"
 #include "liballoc.h"
 
-#ifdef __WIDECHAR__
-    #define FIND_FIRST              __lib_FindFirstFileW
-    #define FIND_NEXT               __lib_FindNextFileW
-    #define GET_DIR_INFO            __wGetNTDirInfo
-#else
-    #define FIND_FIRST              FindFirstFileA
-    #define FIND_NEXT               FindNextFileA
-    #define GET_DIR_INFO            __GetNTDirInfo
-#endif
+#define GET_DIR_INFO    __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)
 
 
 static int is_directory( const CHAR_TYPE *name )
@@ -111,7 +103,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         FindClose( DIR_HANDLE_OF( dirp ) );
         dirp->d_first = _DIR_CLOSED;
     }
-    h = FIND_FIRST( dirname, &ffb );
+    h = __lib_FindFirstFile( dirname, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
         __set_errno_nt();
         return( NULL );
@@ -182,7 +174,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !FIND_NEXT( DIR_HANDLE_OF( dirp ), &ffd ) ) {
+        if( !__lib_FindNextFile( DIR_HANDLE_OF( dirp ), &ffd ) ) {
             err = GetLastError();
             if( err != ERROR_NO_MORE_FILES ) {
                 __set_errno_dos( err );

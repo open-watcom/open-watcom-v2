@@ -42,11 +42,7 @@ _WCRTLINK int __F_NAME(access,_waccess)( const CHAR_TYPE *path, int pmode )
 {
     DWORD       attr;
 
-#ifdef __WIDECHAR__
-    attr = __lib_GetFileAttributesW( path );
-#else
-    attr = __lib_GetFileAttributesA( path );
-#endif
+    attr = __lib_GetFileAttributes( path );
     if( attr == INVALID_FILE_ATTRIBUTES ) {
         return( __set_errno_nt() );
     }

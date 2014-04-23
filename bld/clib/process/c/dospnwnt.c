@@ -48,13 +48,6 @@
 #include "seterrno.h"
 #include "_process.h"
 
-#ifndef __NT__
-/* P_DETACH isn't supported on platforms other than NT right now.
- * We'll define a dummy value here so nothing goes horribly wrong
- * below.
- */
-#define P_DETACH    0xFFFF
-#endif
 
 int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
                                   CHAR_TYPE *envp, const CHAR_TYPE * const argv[] )
@@ -78,21 +71,7 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
      * page to use when translating to MBCS in spawned program's startup
      * code.  Result: Possible corruption of Unicode environment variables.
      */
-    #ifdef __WIDECHAR__
-        #ifdef  __NT__
-            /* If NT, call this directly right here because we need access to
-             * the STARTUPINFO structure
-             */
-            osrc = CreateProcessW( NULL, cmdline, NULL, NULL, (mode != P_DETACH),
-                                   CREATE_UNICODE_ENVIRONMENT, envp,
-                                   NULL, &sinfo, &pinfo );
-        #else
-            osrc = __lib_CreateProcessW( cmdline, (mode != P_DETACH), envp, &pinfo );
-        #endif
-    #else
-        osrc = CreateProcessA( NULL, cmdline, NULL, NULL, (mode != P_DETACH), 0,
-                               envp, NULL, &sinfo, &pinfo );
-    #endif
+    osrc = __lib_CreateProcess( cmdline, (mode != P_DETACH), envp, &sinfo, &pinfo );
 
     if( osrc == FALSE ) {
         DWORD err;

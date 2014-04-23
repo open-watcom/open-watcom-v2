@@ -59,13 +59,8 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
     FILETIME            local_ft;
     SYSTEMTIME          atime,wtime;
 
-    #ifdef __WIDECHAR__
-        h = __lib_CreateFileW( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+    h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL,
                                OPEN_EXISTING, 0, NULL );
-    #else
-        h = CreateFileA( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                         OPEN_EXISTING, 0, NULL );
-    #endif
     if( h == (HANDLE)-1 ) {
         return( __set_errno_nt() );
     }

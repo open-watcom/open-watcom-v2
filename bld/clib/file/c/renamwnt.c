@@ -39,7 +39,7 @@
 
 _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *new )
 {
-    if( __F_NAME(MoveFileA,__lib_MoveFileW)( old, new )  ==  FALSE ) {
+    if( __lib_MoveFile( old, new )  ==  FALSE ) {
         return( __set_errno_nt() );
     }
 

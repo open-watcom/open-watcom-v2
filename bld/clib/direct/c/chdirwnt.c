@@ -41,7 +41,7 @@ _WCRTLINK int __F_NAME(chdir,_wchdir)( const CHAR_TYPE *path )
 {
     BOOL                rc;
 
-    rc = __F_NAME(SetCurrentDirectoryA,__lib_SetCurrentDirectoryW)( path );
+    rc = __lib_SetCurrentDirectory( path );
 
     if( rc == FALSE ) {
         return( __set_errno_nt() );

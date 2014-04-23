@@ -47,17 +47,14 @@
 BOOL __lib_CreateProcessW( LPWSTR lpCommandLine,
                            BOOL bInheritHandles,
                            LPVOID lpEnvironment,
+                           LPSTARTUPINFOW startupInfo,
                            LPPROCESS_INFORMATION lpProcessInformation )
 /*********************************************************************/
 {
     if( WIN32_IS_NT ) {                                 /* NT */
-        STARTUPINFOW    startupInfo;
-
-        memset( &startupInfo, 0, sizeof( startupInfo ) );
-        startupInfo.wShowWindow = SW_NORMAL;
         return( CreateProcessW( NULL, lpCommandLine, NULL, NULL,
                                 bInheritHandles, CREATE_UNICODE_ENVIRONMENT,
-                                lpEnvironment, NULL, &startupInfo,
+                                lpEnvironment, NULL, startupInfo,
                                 lpProcessInformation ) );
     } else {                                            /* Win95 or Win32s */
         char *          mbCommandLine;

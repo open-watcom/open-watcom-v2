@@ -110,7 +110,7 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     }
   #ifdef __NT__
     /*** Tell the OS about the change ***/
-    osRc = __F_NAME(SetEnvironmentVariableA,__lib_SetEnvironmentVariableW)( name, value );
+    osRc = __lib_SetEnvironmentVariable( name, value );
   #elif defined( __RDOS__ )
     handle = RdosOpenProcessEnv();
     RdosDeleteEnvVar( handle, name );

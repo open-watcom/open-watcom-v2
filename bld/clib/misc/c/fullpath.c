@@ -200,7 +200,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     }
 
     /*** Get the full pathname ***/
-    rc = __F_NAME(GetFullPathNameA,__lib_GetFullPathNameW)( path, size, buff, &filepart );
+    rc = __lib_GetFullPathName( path, size, buff, &filepart );
     // If the buffer is too small, the return value is the size of
     // the buffer, in TCHARs, required to hold the path.
     // If the function fails, the return value is zero. To get extended error

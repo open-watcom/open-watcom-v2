@@ -57,13 +57,7 @@
 #include "seterrno.h"
 
 #if defined( __NT__ )
-  #ifdef __WIDECHAR__
-    #define FIND_FIRST              __lib_FindFirstFileW
-    #define CHECK_FIND_NEXT_ATTR    __wNTFindNextFileWithAttr
-  #else
-    #define FIND_FIRST              FindFirstFileA
-    #define CHECK_FIND_NEXT_ATTR    __NTFindNextFileWithAttr
-  #endif
+  #define CHECK_FIND_NEXT_ATTR    __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)
 #endif
 
 
@@ -87,7 +81,7 @@
     HANDLE          h;
 
     /*** Initialize the find ***/
-    h = FIND_FIRST( filespec, &ffb );
+    h = __lib_FindFirstFile( filespec, &ffb );
     if( h == INVALID_HANDLE_VALUE ) {
         return( __set_errno_nt() );
     }

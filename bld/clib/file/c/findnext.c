@@ -44,13 +44,7 @@
 #include "seterrno.h"
 
 #ifdef __NT__
-  #ifdef __WIDECHAR__
-    #define FIND_NEXT               __lib_FindNextFileW
-    #define CHECK_FIND_NEXT_ATTR    __wNTFindNextFileWithAttr
-  #else
-    #define FIND_NEXT               FindNextFileA
-    #define CHECK_FIND_NEXT_ATTR    __NTFindNextFileWithAttr
-  #endif
+  #define CHECK_FIND_NEXT_ATTR    __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)
 #endif
 
 
@@ -73,7 +67,7 @@
     BOOL            rc;
 
     /*** Try to find another matching file ***/
-    rc = FIND_NEXT( (HANDLE)handle, &ffb );
+    rc = __lib_FindNextFile( (HANDLE)handle, &ffb );
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }

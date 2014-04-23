@@ -41,8 +41,7 @@ _WCRTLINK int __F_NAME(rmdir,_wrmdir)( const CHAR_TYPE *path )
 {
     BOOL                rc;
 
-    rc = __F_NAME(RemoveDirectoryA,__lib_RemoveDirectoryW)( path );
-
+    rc = __lib_RemoveDirectory( path );
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }

@@ -92,11 +92,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
             tmp = orig_path;  /* Need full name with path for CreateFile */
         }
 
-        #ifdef __WIDECHAR__
-            h = __lib_CreateFileW( tmp, 0, 0, NULL, OPEN_EXISTING, 0, NULL );
-        #else
-            h = CreateFileA( tmp, 0, 0, NULL, OPEN_EXISTING, 0, NULL );
-        #endif
+        h = __lib_CreateFile( tmp, 0, 0, NULL, OPEN_EXISTING, 0, NULL );
         if( h != INVALID_HANDLE_VALUE ) {
             type = GetFileType(h);
             if( type == FILE_TYPE_CHAR ) {
@@ -183,7 +179,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         ptr += 2;
     if( ( ptr[0] == STRING( '\\' ) || ptr[0] == STRING( '/' ) ) && ptr[1] == NULLCHAR || isrootdir ) {
         /* check validity of specified root */
-        if( __F_NAME(GetDriveTypeA,__lib_GetDriveTypeW)( fullpath ) == DRIVE_UNKNOWN ) {
+        if( __lib_GetDriveType( fullpath ) == DRIVE_UNKNOWN ) {
             __set_errno( ENOENT );
             return( -1 );
         }
@@ -192,7 +188,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         d = t = md = mt = 0;
         ffb.dwFileAttributes = _A_SUBDIR;
     } else {
-        h = __F_NAME(FindFirstFileA,__lib_FindFirstFileW)( path, &ffb );
+        h = __lib_FindFirstFile( path, &ffb );
         if( h == INVALID_HANDLE_VALUE ) {
             return( __set_errno_nt() );
         }

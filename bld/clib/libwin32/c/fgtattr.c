@@ -59,14 +59,10 @@
 /*****************************************************/
 {
     HANDLE              handle;
-#ifdef __WIDECHAR__
-    WIN32_FIND_DATAW    finddata;
-#else
-    WIN32_FIND_DATAA    finddata;
-#endif
+    WIN32_FIND_DATA     finddata;
 
     if( WIN32_IS_NT && _osmajor >= 4 ) {
-        return( __F_NAME(GetFileAttributesA,GetFileAttributesW)( lpFileName ) );
+        return( GetFileAttributes( lpFileName ) );
     }
     /*** Fail if the filename contains a wildcard ***/
     if( __F_NAME(strchr,wcschr)( lpFileName, STRING( '*' ) ) != NULL ||
@@ -75,7 +71,7 @@
     }
 
     /*** Ok, use FindFirstFile to get the file attribute ***/
-    handle = __F_NAME(FindFirstFileA,__lib_FindFirstFileW)( lpFileName, &finddata );
+    handle = __lib_FindFirstFile( lpFileName, &finddata );
     if( handle == INVALID_HANDLE_VALUE ) {
         return( INVALID_FILE_ATTRIBUTES );
     } else {

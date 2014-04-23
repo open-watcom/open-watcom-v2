@@ -133,7 +133,7 @@ int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved )
         {
             static char    fn[_MAX_PATH];
 
-            GetModuleFileNameA( hdll, fn, sizeof( fn ) );
+            __lib_GetModuleFileNameA( hdll, fn, sizeof( fn ) );
             _LpDllName = fn;
         }
         {

@@ -84,7 +84,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
 #ifdef __NT__
     /*** Update the process environment if using Win32 ***/
     if( overwrite || __F_NAME(getenv,_wgetenv)( name ) == NULL ) {
-        if( __F_NAME(SetEnvironmentVariableA,__lib_SetEnvironmentVariableW)( name, newvalue ) == FALSE ) {
+        if( __lib_SetEnvironmentVariable( name, newvalue ) == FALSE ) {
             return( -1 );
         }
     }

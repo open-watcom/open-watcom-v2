@@ -39,7 +39,7 @@
 
 _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 {
-    if( __F_NAME(DeleteFileA,__lib_DeleteFileW)( filename )  ==  FALSE ) {
+    if( __lib_DeleteFile( filename )  ==  FALSE ) {
         return( __set_errno_nt() );
     }
     return( 0 );

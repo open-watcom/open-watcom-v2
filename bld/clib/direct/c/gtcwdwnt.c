@@ -51,11 +51,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     DWORD               realsize;
 
     /*** Get the current directory ***/
-#ifdef __WIDECHAR__
-    realsize = __lib_GetCurrentDirectoryW( _MAX_PATH, path );
-#else
-    realsize = GetCurrentDirectoryA( _MAX_PATH, path );
-#endif
+    realsize = __lib_GetCurrentDirectory( _MAX_PATH, path );
 
     if( realsize == 0 ) {
         __set_errno_nt();

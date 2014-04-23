@@ -86,14 +86,8 @@ BOOL __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)(
                 }
             }
         }
-#ifdef __WIDECHAR__
-        if( !__lib_FindNextFileW( h, ffb ) ) {
+        if( !__lib_FindNextFile( h, ffb ) ) {
             return( FALSE );
         }
-#else
-        if( !FindNextFileA( h, ffb ) ) {
-            return( FALSE );
-        }
-#endif
     }
 }

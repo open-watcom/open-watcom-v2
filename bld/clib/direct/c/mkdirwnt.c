@@ -41,7 +41,7 @@ _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
 {
     BOOL                rc;
 
-    rc = __F_NAME(CreateDirectoryA,__lib_CreateDirectoryW)( path, NULL );
+    rc = __lib_CreateDirectory( path, NULL );
 
     if( rc == FALSE ) {
         return( __set_errno_nt() );

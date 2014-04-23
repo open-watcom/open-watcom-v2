@@ -115,25 +115,12 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
         }
 
         /*** Open the file ***/
-        #ifdef __WIDECHAR__
-            handle = __lib_CreateFileW( name, desired_access, share_mode,
-                                        &security, exists_disp, fileattr,
-                                        NULL );
-        #else
-            handle = CreateFileA( name, desired_access, share_mode,
-                                  &security, exists_disp, fileattr, NULL );
-        #endif
+        handle = __lib_CreateFile( name, desired_access, share_mode, &security,
+                                        exists_disp, fileattr, NULL );
         if( handle==(HANDLE)-1 ) {
             if( mode&O_CREAT ) {
-                #ifdef __WIDECHAR__
-                    handle = __lib_CreateFileW( name, desired_access,
-                                                share_mode, NULL, create_disp,
-                                                fileattr, NULL );
-                #else
-                    handle = CreateFileA( name, desired_access,
-                                          share_mode, NULL, create_disp,
-                                          fileattr, NULL );
-                #endif
+                handle = __lib_CreateFile( name, desired_access, share_mode, NULL,
+                                            create_disp, fileattr, NULL );
             }
             if( handle == (HANDLE)-1 ) {
                 __freePOSIXHandle( hid );

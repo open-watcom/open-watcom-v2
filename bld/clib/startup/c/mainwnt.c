@@ -141,7 +141,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
 
     {
         static char     fn[_MAX_PATH];
-        GetModuleFileNameA( NULL, fn, sizeof( fn ) );
+        __lib_GetModuleFileNameA( NULL, fn, sizeof( fn ) );
         _LpPgmName = fn;
     }
     {
@@ -197,7 +197,7 @@ int __NTInit( int is_dll, thread_data *tdata, HANDLE hdll )
     if( is_dll ) {
         {
             static char    fn[_MAX_PATH];
-            GetModuleFileNameA( hdll, fn, sizeof( fn ) );
+            __lib_GetModuleFileNameA( hdll, fn, sizeof( fn ) );
             _LpDllName = fn;
         }
         {
