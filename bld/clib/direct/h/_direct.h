@@ -35,11 +35,5 @@
 #define _DIR_NOTFIRST           1
 #define _DIR_CLOSED             2
 
-#ifdef __WIDECHAR__
-typedef wchar_t     UINT_WC_TYPE;
-#else
-typedef unsigned    UINT_WC_TYPE;
-#endif
-
 extern char *__tmpdir( char *__buff );
 extern unsigned __getdcwd( char *buff, unsigned char drv );

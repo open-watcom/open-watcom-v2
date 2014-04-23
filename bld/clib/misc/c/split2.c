@@ -83,11 +83,7 @@ _WCRTLINK void  __F_NAME(_splitpath2,_wsplitpath2)( CHAR_TYPE const *inp, CHAR_T
     CHAR_TYPE const *dotp;
     CHAR_TYPE const *fnamep;
     CHAR_TYPE const *startp;
-#ifdef __WIDECHAR__
-    CHAR_TYPE       ch;
-#else
-    unsigned int    ch;
-#endif
+    UINT_WC_TYPE    ch;
 
     /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
     /* take apart specification like -> \\disk2\fred\filename.ext for UNC names */

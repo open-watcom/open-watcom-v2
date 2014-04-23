@@ -72,19 +72,14 @@ static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
     if( buf != NULL ) {
         if( len > maxlen )
             len = maxlen;
-#ifdef __WIDECHAR__
-        memcpy( buf, p, len * CHARSIZE );  /* 07-jul-91 DJG */
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
+        memcpy( buf, p, len * CHARSIZE );
         /*strncpy( buf, p, len ); */
         buf[ len ] = NULLCHAR;
 #else
-  #ifdef __UNIX__
-        memcpy( buf, p, len * CHARSIZE );
-        buf[ len ] = NULLCHAR;
-  #else
         len = _mbsnccnt( p, len );          /* # chars in len bytes */
         _mbsncpy( buf, p, len );            /* copy the chars */
         buf[ _mbsnbcnt( buf, len ) ] = NULLCHAR;
-  #endif
 #endif
     }
 }
@@ -111,11 +106,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     const CHAR_TYPE *dotp;
     const CHAR_TYPE *fnamep;
     const CHAR_TYPE *startp;
-#ifndef __WIDECHAR__
-    unsigned    ch;
-#else
-    CHAR_TYPE   ch;
-#endif
+    UINT_WC_TYPE    ch;
 #ifdef __NETWARE__
     const CHAR_TYPE *ptr;
 #endif
@@ -136,15 +127,7 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
                 break;
             if( *path == '.' )
                 break;
-  #ifdef __WIDECHAR__
             ++path;
-  #else
-    #ifdef __UNIX__
-            path++;
-    #else
-            path = _mbsinc( path );
-    #endif
-  #endif
         }
     }
     copypart( drive, startp, path - startp, _MAX_NODE );
@@ -154,25 +137,17 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
   #ifdef __WIDECHAR__
         ptr = wcschr( path, ':' );
   #else
-    #ifdef __UNIX__
-        ptr = strchr( path, ':' );
-    #else
         ptr = _mbschr( path, ':' );
-    #endif
   #endif
     if( ptr != NULL ) {
         if( drive != NULL ) {
             copypart( drive, path, ptr - path + 1, _MAX_SERVER +
                       _MAX_VOLUME + 1 );
         }
-  #ifdef __WIDECHAR__
+  #if defined( __WIDECHAR__ )
         path = ptr + 1;
   #else
-    #ifdef __UNIX__
-        path = ptr + 1;
-    #else
         path = _mbsinc( ptr );
-    #endif
   #endif
     } else if( drive != NULL ) {
         *drive = '\0';
@@ -203,28 +178,20 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     for( ;; ) {         /* 07-jul-91 DJG -- save *path in ch for speed */
         if( *path == NULLCHAR )
             break;
-#ifdef __WIDECHAR__
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ch = *path;
 #else
-  #ifdef __UNIX__
-        ch = *path;
-  #else
         ch = _mbsnextc( path );
-  #endif
 #endif
         if( ch == '.' ) {
             dotp = path;
             ++path;
             continue;
         }
-#ifdef __WIDECHAR__
+#if defined( __WIDECHAR__ ) || defined( __UNIX__ )
         ++path;
 #else
-  #ifdef __UNIX__
-        path++;
-  #else
         path = _mbsinc( path );
-  #endif
 #endif
 #if defined(__UNIX__)
         if( ch == PC ) {

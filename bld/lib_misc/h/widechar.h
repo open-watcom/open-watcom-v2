@@ -42,6 +42,7 @@
     #define UCHAR_TYPE          wchar_t
     #define INTCHAR_TYPE        wint_t
     #define INT_WC_TYPE         wchar_t
+    #define UINT_WC_TYPE        wchar_t
     #define VOID_WC_TYPE        wchar_t
     #define NULLCHAR            0
     #define STRING(a)           L##a
@@ -58,6 +59,7 @@
     #define UCHAR_TYPE          unsigned char
     #define INTCHAR_TYPE        int
     #define INT_WC_TYPE         int
+    #define UINT_WC_TYPE        unsigned
     #define VOID_WC_TYPE        void
     #define NULLCHAR            '\0'
     #define STRING(a)           a
