@@ -91,11 +91,10 @@ using std::vsscanf;
 ::
 
 // C99 types that are not specified for stdio.h
-#ifndef _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED_
+#ifndef _WINT_T_DEFINED
+#define _WINT_T_DEFINED
+#define _WINT_T_DEFINED_
 using std::wint_t;
-using std::wctype_t;
 #endif
 
 :segment !NO_WIDECHAR
@@ -426,7 +425,7 @@ _WCRTLINK extern char  *_tempnam( char *__dir, char *__prefix );
 :include wchar_t.sp
 
 :endsegment
-:include wctypet.sp
+:include wint_t.sp
 
 :segment CNAME
 #define WEOF  ((std::wint_t)(-1)) /*  EOF equivalent for wide chars   */

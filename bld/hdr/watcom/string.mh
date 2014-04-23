@@ -41,11 +41,10 @@
 #define _SIZE_T_DEFINED_
 using std::size_t;
 #endif
-#ifndef _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED_
+#ifndef _WINT_T_DEFINED
+#define _WINT_T_DEFINED
+#define _WINT_T_DEFINED_
 using std::wint_t;
-using std::wctype_t;
 #endif
 
 // C99 functions in string.h
@@ -109,7 +108,7 @@ using std::wcsxfrm;
 :include wchar_t.sp
 
 :endsegment
-:include wctypet.sp
+:include wint_t.sp
 
 :include sizet.sp
 

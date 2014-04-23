@@ -26,10 +26,14 @@
 #include <cwctype>
 
 // C99 types in wctype.h
+#ifndef _WINT_T_DEFINED
+#define _WINT_T_DEFINED
+#define _WINT_T_DEFINED_
+using std::wint_t;
+#endif
 #ifndef _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED_
-using std::wint_t;
 using std::wctype_t;
 #endif
 
@@ -66,16 +70,11 @@ using std::iswblank;
 :include cpluspro.sp
 
 :endsegment
-:segment !CNAME
-:include wchar_t.sp
+:include wint_t.sp
 
-:endsegment
-:include wctypet.sp
+:include wctype_t.sp
 
-#ifndef _WCTRANS_T_DEFINED
- #define _WCTRANS_T_DEFINED
- typedef wchar_t wctrans_t;
-#endif
+:include wctranst.sp
 
 :segment CNAME
 #define WEOF ((std::wint_t)(-1))

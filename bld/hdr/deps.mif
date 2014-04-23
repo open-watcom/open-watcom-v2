@@ -29,12 +29,12 @@ stdarg_deps   = stdarg.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.s
 stdbool_deps  = stdbool.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 stddef_deps   = stddef.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(cplus) ../sizet.sp ../wchar_t.sp ../null.sp ../ptrdiff.sp ../intptr.sp $(saferc) $(extension)
 stdint_deps   = stdint.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(saferc) ../exactint.sp ../intptr.sp
-stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wctypet.sp $(saferc)
+stdio_deps    = stdio.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../sizet.sp ../null.sp ../valist.sp ../wchar_t.sp ../wint_t.sp $(saferc)
 stdlib_deps   = stdlib.mh ../crwat.sp ../crqnx.sp ../crwatqnx.sp ../readonly.sp ../cpponly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp ../maxpath.sp ../errno.sp ../alloca.sp
-string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
+string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../sizet.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp
 time_deps     = time.mh ../crwat.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../sizet.sp ../null.sp ../timet.sp ../clockt.sp $(saferc) $(unixext) $(extension)
-wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
-wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wctypet.sp
+wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../sizet.sp $(saferc) ../null.sp ../mbmax.sp
+wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp ../cpponly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp
 
 cassert      : cassert.mh $(assert_deps)
 cctype       : cctype.mh $(ctype_deps)

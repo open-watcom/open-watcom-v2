@@ -33,10 +33,14 @@ using std::mbstate_t;
 using std::size_t;
 #endif
 using std::tm;              // <= Fix me?
+#ifndef _WINT_T_DEFINED
+#define _WINT_T_DEFINED
+#define _WINT_T_DEFINED_
+using std::wint_t;
+#endif
 #ifndef _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED_
-using std::wint_t;
 using std::wctype_t;
 #endif
 
@@ -175,7 +179,9 @@ using std::towupper;
 :include wchar_t.sp
 
 :endsegment
-:include wctypet.sp
+:include wint_t.sp
+
+:include wctype_t.sp
 
 :include sizet.sp
 
