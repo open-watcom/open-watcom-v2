@@ -34,9 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#define INCL_WIN
 #define INCL_GPI
-#include <wos2.h>
 #include "win.h"
 #include "pmmenu.h"
 

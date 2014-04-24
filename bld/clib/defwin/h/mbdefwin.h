@@ -33,7 +33,6 @@
 #ifndef _MBDEFWIN_H_INCLUDED
 #define _MBDEFWIN_H_INCLUDED
 
-#include "variety.h"
 #include <mbctype.h>
 #include <mbstring.h>
 #include "mbyte.h"

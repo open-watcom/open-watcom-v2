@@ -34,8 +34,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#define INCL_WIN
-#include <wos2.h>
 #include "win.h"
 
 /*

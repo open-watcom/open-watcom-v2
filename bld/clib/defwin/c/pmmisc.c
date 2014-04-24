@@ -35,9 +35,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
-#define INCL_WIN
 #define INCL_GPI
-#include <os2.h>
 #include "win.h"
 #include "pmmenu.h"
 

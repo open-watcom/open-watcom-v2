@@ -30,10 +30,7 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #if defined( __OS2__ )
-#define INCL_WIN
-#include <wos2.h>
 
 /*
  * Below are the general memory manager defines, using these

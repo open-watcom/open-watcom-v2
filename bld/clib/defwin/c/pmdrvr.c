@@ -34,8 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define INCL_WIN
-#include <wos2.h>
 #include <signal.h>
 #include "win.h"
 #include "pmmenu.h"

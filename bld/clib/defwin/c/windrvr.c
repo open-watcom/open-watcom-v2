@@ -30,11 +30,11 @@
 
 
 #include "variety.h"
-#include "win.h"
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
 #include <signal.h>
+#include "win.h"
 
 static char  DefaultAboutMsg[] = "   Open Watcom Default Window System\n\n                Version 1.0\n\n Portions Copyright (c) 1991-2002 Sybase, Inc.";
 static char  _WCI86FAR *AboutMsg = DefaultAboutMsg;

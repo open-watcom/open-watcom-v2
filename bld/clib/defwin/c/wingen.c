@@ -31,16 +31,14 @@
 
 
 #include "variety.h"
-#if defined( __OS2__ )
-  #define INCL_GPI
-  #define INCL_WIN
-  #include <wos2.h>
-#endif
 #include <malloc.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#if defined( __OS2__ )
+  #define INCL_GPI
+#endif
 #include "win.h"
 
 /*

@@ -31,14 +31,7 @@
 
 
 #include "variety.h"
-#if defined( __OS2__ )
-  #define INCL_WIN
-  #include <wos2.h>
-#endif
 #include "win.h"
-#ifdef _MBCS
-    #include <mbstring.h>
-#endif
 
 /*
  * _DoStdin - get stuff from stdin

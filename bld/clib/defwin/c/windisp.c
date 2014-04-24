@@ -34,10 +34,7 @@
 #include <string.h>
 #if defined( __OS2__ )
   #define INCL_GPI
-  #define INCL_WIN
-  #include <wos2.h>
 #endif
-#include "mbdefwin.h"
 #include "win.h"
 
 

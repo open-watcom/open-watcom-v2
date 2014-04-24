@@ -28,17 +28,18 @@
 *
 ****************************************************************************/
 
+#include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
 #include <stdio.h>
-#include "strdup.h"
-#include "win.h"
-#include "widechar.h"
-#include "initarg.h"
 #ifdef __NT__
     #include <ctype.h>
 #endif
+#include "win.h"
+#include "strdup.h"
+#include "initarg.h"
 #include "defwin.h"
 
 #ifndef __NT__

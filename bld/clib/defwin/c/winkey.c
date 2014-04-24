@@ -31,15 +31,10 @@
 
 
 #include "variety.h"
-#if defined( __OS2__ )
-  #define INCL_WIN
-  #include <wos2.h>
-#endif
-#include "win.h"
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include "mbdefwin.h"
+#include "win.h"
 
 #define SS_ALT          0x01
 #define SS_SHIFT        0x02
