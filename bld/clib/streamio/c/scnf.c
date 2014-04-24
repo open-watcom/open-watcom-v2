@@ -52,8 +52,8 @@
 #include "scanf.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
-#include "ftos.h"
 #include "farsupp.h"
+#include "ftos.h"
 #include "myvalist.h"
 #if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
     #include <mbstring.h>

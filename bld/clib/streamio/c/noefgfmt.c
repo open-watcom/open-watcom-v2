@@ -31,10 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include "rtdata.h"
 #include "exitwmsg.h"
-#include "ftos.h"
 #include "farsupp.h"
+#include "ftos.h"
 
 
 static void _no_support_loaded( void )
@@ -42,5 +41,5 @@ static void _no_support_loaded( void )
     __fatal_runtime_error( "Floating-point support not loaded", 1 );
 }
 
-_WCRTLINK FAR_STRING (*__EFG_printf)() = (FAR_STRING (*)())_no_support_loaded;
-_WCRTLINK void       (*__EFG_scanf)()  = _no_support_loaded;
+_WCRTLINK _type_EFG_printf __EFG_printf = (_type_EFG_printf)_no_support_loaded;
+_WCRTLINK _type_EFG_scanf  __EFG_scanf  = (_type_EFG_scanf)_no_support_loaded;

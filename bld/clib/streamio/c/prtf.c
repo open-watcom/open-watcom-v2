@@ -48,8 +48,8 @@
 #if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
-#include "ftos.h"
 #include "farsupp.h"
+#include "ftos.h"
 #include "printf.h"
 #include "prtscncf.h"
 #include "fixpoint.h"

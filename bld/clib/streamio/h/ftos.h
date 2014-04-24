@@ -32,14 +32,10 @@
 #ifndef _FTOS_H_INCLUDED
 #define _FTOS_H_INCLUDED
 
-#include "variety.h"
-#include "farsupp.h"
+_WCRTLINK typedef FAR_STRING (*_type_EFG_printf)();
+_WCRTLINK typedef void       (*_type_EFG_scanf)();
 
-_WCRTLINK extern FAR_STRING (*__EFG_printf)();
-_WCRTLINK extern void       (*__EFG_scanf)();
-extern FAR_STRING           _EFG_Format();
-extern void                 __cnvs2d();
-_WMRTLINK extern FAR_STRING (*__get_EFG_Format())();
-_WMRTLINK extern void       (*__get__cnvs2d())();
+_WCRTLINK extern _type_EFG_printf __EFG_printf;
+_WCRTLINK extern _type_EFG_scanf  __EFG_scanf;
 
 #endif
