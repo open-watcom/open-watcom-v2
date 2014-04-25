@@ -32,14 +32,10 @@
 
 #ifndef _CPLX_H_INCLUDED
 #define _CPLX_H_INCLUDED
+
 #include "variety.h"
 #include <math.h>
 #include "watcom.h"
-
-#ifndef TRUE
-#define TRUE            1
-#define FALSE           0
-#endif
 
 
 typedef    signed_8     logstar1;       // 8-bit logical
