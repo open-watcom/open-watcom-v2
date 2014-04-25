@@ -44,15 +44,10 @@ static void _no_support_loaded() {
     __fatal_runtime_error( "C++ floating-point support not loaded", 1 );
 }
 
-_WPRTLINK _type_EFG_cnvs2d __EFG_cnvs2d
-       = (_type_EFG_cnvs2d)_no_support_loaded;
-_WPRTLINK _type_EFG_cnvd2f __EFG_cnvd2f
-       = (_type_EFG_cnvd2f)_no_support_loaded;
-_WPRTLINK _type_EFG_LDcvt  __EFG_LDcvt
-       = (_type_EFG_LDcvt)_no_support_loaded;
-_WPRTLINK _type_EFG_fcvt   __EFG_fcvt
-       = (_type_EFG_fcvt)_no_support_loaded;
+_WPRTLINK _type_EFG_cnvs2d __EFG_cnvs2d = (_type_EFG_cnvs2d)_no_support_loaded;
+_WPRTLINK _type_EFG_cnvd2f __EFG_cnvd2f = (_type_EFG_cnvd2f)_no_support_loaded;
+_WPRTLINK _type_EFG_LDcvt  __EFG_LDcvt  = (_type_EFG_LDcvt)_no_support_loaded;
+_WPRTLINK _type_EFG_fcvt   __EFG_fcvt   = (_type_EFG_fcvt)_no_support_loaded;
 #ifdef _LONG_DOUBLE_
-_WPRTLINK _type_EFG__FDLD  __EFG__FDLD
-       = (_type_EFG__FDLD)_no_support_loaded;
+_WPRTLINK _type_EFG__FDLD  __EFG__FDLD  = (_type_EFG__FDLD)_no_support_loaded;
 #endif
