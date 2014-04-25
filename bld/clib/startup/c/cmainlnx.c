@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdlib.h>
 #include <string.h>
 #include "exitwmsg.h"

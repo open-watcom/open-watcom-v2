@@ -32,8 +32,6 @@
 #ifndef _EXITWMSG_H_INCLUDED
 #define _EXITWMSG_H_INCLUDED
 
-#include "variety.h"
-
 #ifdef __cplusplus
     extern "C" {
 #endif
