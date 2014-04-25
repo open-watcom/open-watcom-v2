@@ -24,52 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of clib internal conversion functions for
+*               DOS<->NT date format
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "widechar.h"
-#include <stdio.h>
-#include <string.h>
-#include <direct.h>
 #include <windows.h>
-#include "libwin32.h"
 #include "ntex.h"
 
-void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
+void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 {
-    __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = ffb->dwFileAttributes;
-    dirp->d_size = ffb->nFileSizeLow;
-#ifndef __WIDECHAR__
-    strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-#else
-    wcsncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-#endif
-    dirp->d_name[NAME_MAX] = 0;
+    FILETIME local_ft;
+
+    FileTimeToLocalFileTime( NT_stamp, &local_ft );
+    FileTimeToDosDateTime( &local_ft, d, t );
 }
 
-BOOL __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)(
-                HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
+void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp )
 {
-    for(;;) {
-        if( ffb->dwFileAttributes == 0 ) {
-            // Win95 seems to return 0 for the attributes sometimes?
-            // In that case, treat as a normal file
-            ffb->dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
-        }
-        if( (attr & _A_HIDDEN) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) == 0 ) {
-            if( (attr & _A_SYSTEM) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0 ) {
-                if( (attr & _A_SUBDIR) || (ffb->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )  {
-                    return ( TRUE );
-                }
-            }
-        }
-        if( !__lib_FindNextFile( h, ffb ) ) {
-            return( FALSE );
-        }
-    }
+    FILETIME local_ft;
+
+    DosDateTimeToFileTime( d, t, &local_ft );
+    LocalFileTimeToFileTime( &local_ft, NT_stamp );
 }

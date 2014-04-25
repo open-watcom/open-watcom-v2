@@ -18,6 +18,7 @@
 !inject findnext.obj d16 d32 dpm         nt nta ntp         o16 o32         w16 w32 osi
 !inject mkstemp.obj  d16 d32             nt nta ntp nvc nvl o16 o32         w16 w32 osi l32 lpc lmp
 !inject mktemp.obj   d16 d32             nt nta ntp         o16 o32         w16 w32 osi
+!inject ntdosdt.obj                      nt nta ntp
 !inject remove.obj   d16 d32             nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 !inject remrd.obj                                                                                   rdu rdk
 !inject renam.obj    d16 d32                                                w16 w32 osi
