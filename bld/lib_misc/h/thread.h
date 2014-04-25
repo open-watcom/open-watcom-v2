@@ -54,6 +54,7 @@
 
 #include <time.h>
 #include "xfloat.h"
+#include "maxchtyp.h"
 
 #if defined(__NETWARE__)
   #include <stdio.h>
