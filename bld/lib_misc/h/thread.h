@@ -52,11 +52,9 @@
 
 /* Per thread global items */
 
-#include "variety.h"
 #include <time.h>
 #include "xfloat.h"
 
-#include "widechar.h"
 #if defined(__NETWARE__)
   #include <stdio.h>
 #endif
@@ -74,6 +72,9 @@
 
 // define thread registration function
 #include "thrdreg.h"
+
+/* must be the larger of char and wchar_t */
+#define MAX_CHAR_TYPE           wchar_t
 
 /* Make sure these are in C linkage */
 #ifdef __cplusplus

@@ -70,7 +70,4 @@
 #endif
 #define CHARSIZE                (sizeof( CHAR_TYPE ))
 
-/* must be the larger of char and wchar_t */
-#define MAX_CHAR_TYPE           wchar_t
-
 #endif
