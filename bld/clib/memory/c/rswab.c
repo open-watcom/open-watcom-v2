@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include <stdlib.h>
+#include <string.h>
 #include "riscstr.h"
 
 

@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include "saferlib.h"
-#include "widechar.h"
-#include <string.h>
-#include  <wchar.h>
+#include <wchar.h>
 #include "xstring.h"
 
 _WCRTLINK errno_t __F_NAME(memcpy_s,wmemcpy_s)( VOID_WC_TYPE * __restrict s1,

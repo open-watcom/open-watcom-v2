@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #ifndef __UNIX__
     #include <io.h>
 #endif

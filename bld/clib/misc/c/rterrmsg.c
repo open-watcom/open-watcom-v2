@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>

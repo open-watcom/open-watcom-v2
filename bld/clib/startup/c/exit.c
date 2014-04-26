@@ -29,18 +29,18 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
+#include <stdio.h>
+#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
+#include <windows.h>
+#endif
 #include "rtdata.h"
 #include "exitwmsg.h"
 #include "initfini.h"
 #include "rtinit.h"
-#include <stdio.h>
-#include <stdlib.h>
-#if defined(__WINDOWS__) || defined(__WINDOWS_386__)
-#include <windows.h>
-#endif
 #include "defwin.h"
-#include "widechar.h"
 #include "initarg.h"
 
 /*

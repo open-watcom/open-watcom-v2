@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stddef.h>
 #include <string.h>
 #if defined(_M_IX86)

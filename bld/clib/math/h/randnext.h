@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #define _INITRANDNEXT(p)
 #if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
     // OS/2, NT and NETWARE versions are identical

@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdlib.h>
 #include "liballoc.h"
 #include "rtdata.h"

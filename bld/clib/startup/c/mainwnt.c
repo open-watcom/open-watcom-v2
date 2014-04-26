@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <windows.h>
 
@@ -51,7 +52,6 @@
 #include "rtdata.h"
 #include "initfini.h"
 #include "rtinit.h"
-#include "widechar.h"
 #include "initarg.h"
 
 DWORD __TlsIndex = NO_INDEX;

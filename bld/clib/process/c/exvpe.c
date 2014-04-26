@@ -31,10 +31,10 @@
 
 
 #undef __INLINE_FUNCTIONS__
-#include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <process.h>

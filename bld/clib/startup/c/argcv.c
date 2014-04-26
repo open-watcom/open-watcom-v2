@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "rtinit.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdlib.h>
+#include "rtinit.h"
 #include "initarg.h"
 
 int         __F_NAME(_argc,_wargc);

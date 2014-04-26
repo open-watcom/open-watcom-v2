@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
-
 #define _DIR_ISFIRST            0
 #define _DIR_NOTFIRST           1
 #define _DIR_CLOSED             2

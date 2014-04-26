@@ -32,7 +32,6 @@
 #ifndef _RTCHECK_H_INCLUDED
 #define _RTCHECK_H_INCLUDED
 
-#include "variety.h"
 #include <errno.h>
 #include "seterrno.h"
 

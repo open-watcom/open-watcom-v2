@@ -33,8 +33,6 @@
 #ifndef _HOSTOS_H_INCLUDED
 #define _HOSTOS_H_INCLUDED
 
-#include "variety.h"
-
 
 /*
  * Values returned by _host_os_id().

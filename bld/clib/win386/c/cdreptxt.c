@@ -31,6 +31,7 @@
 
 
 #define INCLUDE_COMMDLG_H
+#include "variety.h"
 #include "cover.h"
 
 HWND PASCAL _CoverReplaceText( LPFINDREPLACE pfr )

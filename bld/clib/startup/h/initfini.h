@@ -32,7 +32,6 @@
 #ifndef _INITFINI_H_INCLUDED
 #define _INITFINI_H_INCLUDED
 
-#include "variety.h"
 #include "rtinit.h"
 
 #if defined(__386__)

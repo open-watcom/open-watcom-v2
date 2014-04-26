@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 void PASCAL _Cover_LineDDA( short x1, short y1, short x2, short y2, LINEDDAPROC p,

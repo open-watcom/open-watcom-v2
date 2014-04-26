@@ -33,8 +33,6 @@
 #ifndef _INT64_H_INCLUDED
 #define _INT64_H_INCLUDED
 
-#include "variety.h"
-
 #ifdef __WATCOM_INT64__
     #define USE_INT64
 #endif

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 BOOL  PASCAL _Cover_RegisterClass( LPWNDCLASS cl )

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include "liballoc.h"
 #include <stdio.h>
@@ -45,7 +46,6 @@
 #include "initfini.h"
 #include "osthread.h"
 #include "stacklow.h"
-#include "widechar.h"
 #include "initarg.h"
 #include "rtdata.h"
 

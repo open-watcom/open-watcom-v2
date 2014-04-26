@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include "_defwin.h"
 
 LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { 0 };

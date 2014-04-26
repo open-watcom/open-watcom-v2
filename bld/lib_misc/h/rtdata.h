@@ -32,8 +32,6 @@
 #ifndef _RTDATA_H_INCLUDED
 #define _RTDATA_H_INCLUDED
 
-#include "variety.h"
-
 #include <stdio.h>
 #include "errorno.h"
 

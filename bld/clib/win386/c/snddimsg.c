@@ -31,6 +31,7 @@
 
 
 
+#include "variety.h"
 #include "cover.h"
 
 LONG PASCAL _Cover_SendDlgItemMessage(HWND hwnd, short dlgitem, WORD msg,

@@ -36,7 +36,6 @@
 #error Must be bt=NT or bt=OS2 or bt=NETWARE or bt=GENERIC or bt=RDOS
 #endif
 
-#include "variety.h"
 #include <signal.h>
 
 #define __SIGLAST       _SIGMAX

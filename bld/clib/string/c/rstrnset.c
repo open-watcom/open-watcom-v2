@@ -30,6 +30,7 @@
 
 
 #include "widechar.h"
+#include "variety.h"
 #include <string.h>
 #include "riscstr.h"
 

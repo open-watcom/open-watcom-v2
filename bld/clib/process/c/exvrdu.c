@@ -30,12 +30,12 @@
 
 
 #undef __INLINE_FUNCTIONS__
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <string.h>
-#include <stdlib.h>
 #include <process.h>
 #include <errno.h>
 #include <rdos.h>

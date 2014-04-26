@@ -33,7 +33,6 @@
 #ifndef _CPLX_H_INCLUDED
 #define _CPLX_H_INCLUDED
 
-#include "variety.h"
 #include <math.h>
 #include "watcom.h"
 

@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdlib.h>
 
 extern const char __based(__segname("_CONST")) __Alphabet[];

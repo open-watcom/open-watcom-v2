@@ -29,10 +29,11 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
+#include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include "widechar.h"
 #include "initarg.h"
 
 #pragma aux     _CMain  "_*";

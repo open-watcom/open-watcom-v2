@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "variety.h"
+#include <stddef.h>
 #include "clibi64.h"
 
 /*

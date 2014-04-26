@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "variety.h"
+#include "cover.h"
 #include <string.h>
 #include <dos.h>
 #include "alloc.h"

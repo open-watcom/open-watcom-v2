@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 short PASCAL _Cover_EnumProps( HWND wnd, FARPROC p )

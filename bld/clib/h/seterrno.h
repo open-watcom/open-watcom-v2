@@ -31,8 +31,6 @@
 #ifndef _SETERNO_H_INCLUDED
 #define _SETERNO_H_INCLUDED
 
-#include "variety.h"
-
 // defined in _dos\c\dosret.c
 _WCRTLINK extern int __set_errno_dos( unsigned int );
 _WCRTLINK extern int __set_errno_dos_reterr( unsigned int );

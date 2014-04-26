@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include "initarg.h"
 
 _WCRTDATA int           __F_NAME(___Argc,___wArgc); /* argument count */

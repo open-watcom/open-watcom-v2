@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 LONG PASCAL _Cover_SendMessage(HWND hwnd, WORD msg, WORD wp, LONG lp)

@@ -33,7 +33,6 @@
 #ifndef _psp_h
 #define _psp_h
 
-#include "variety.h"
 #include "fcb.h"
 
 typedef unsigned char   _byte;

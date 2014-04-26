@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <ctype.h>
 #ifdef __WIDECHAR__
  #include <wchar.h>

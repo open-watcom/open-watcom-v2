@@ -33,8 +33,6 @@
 #ifndef _LJMPHDL_H_INCLUDED
 #define _LJMPHDL_H_INCLUDED
 
-#include "variety.h"
-
 typedef void (*pfun)( void _WCFAR * );
 
 #if defined(__386__)

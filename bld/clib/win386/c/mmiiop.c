@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_MMSYSTEM_H
+#include "variety.h"
 #include "cover.h"
+
 LPMMIOPROC PASCAL _Cover_mmioInstallIOProc(FOURCC fccIOProc,
                 LPMMIOPROC pIOProc, DWORD dwFlags)
 {

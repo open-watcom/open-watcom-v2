@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <windows.h>
 #include <direct.h>
 #include "libwin32.h"

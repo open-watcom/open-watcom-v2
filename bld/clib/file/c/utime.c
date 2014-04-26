@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
 #include <string.h>

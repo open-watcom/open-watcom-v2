@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 void PASCAL _Cover_GlobalNotify( FARPROC p )

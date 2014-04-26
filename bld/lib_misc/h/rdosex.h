@@ -32,8 +32,6 @@
 #ifndef __RDOSEX_INCLUDED__
 #define __RDOSEX_INCLUDED__
 
-#include "variety.h"
-
 typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
     void                        *RegistrationRecordFilter;

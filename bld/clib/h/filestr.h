@@ -33,7 +33,6 @@
 #ifndef _FILNMTYP_H_INCLUDED
 #define _FILNMTYP_H_INCLUDED
 
-#include "variety.h"
 #include <stddef.h>
 
 

@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <rdos.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>

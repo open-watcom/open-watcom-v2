@@ -32,8 +32,6 @@
 #ifndef _SCANF_H_INCLUDED
 #define _SCANF_H_INCLUDED
 
-#include "variety.h"
-#include "widechar.h"
 #include <stdarg.h>
 
 typedef struct _SCNF_SPECS {

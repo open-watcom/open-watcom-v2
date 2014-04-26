@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include "strdup.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include <stdlib.h>
+#include "strdup.h"
 #include "liballoc.h"
 
 #ifdef __WIDECHAR__

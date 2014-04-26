@@ -30,7 +30,8 @@
 
 
 #ifndef _XSTRING_H_INCLUDED
-#include "variety.h"
+#define _XSTRING_H_INCLUDED
+
 #include <string.h>
 
 #ifdef __cplusplus
@@ -61,7 +62,6 @@ extern "C" {
                 unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
 #endif  /* __INLINE_FUNCTIONS__ */
 
-#define _XSTRING_H_INCLUDED
 #ifdef __cplusplus
 };
 #endif

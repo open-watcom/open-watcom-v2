@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_MMSYSTEM_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_mciSetYieldProc (UINT uDeviceID, YIELDPROC fpYieldProc,
                 DWORD dwYieldData)
 {

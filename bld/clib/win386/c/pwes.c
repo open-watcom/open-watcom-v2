@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 UINT PASCAL _Cover_EnumSymbols(LPSYG lpsyg, WORD maxstr, ENUMPROC lpfn,
                 LPVOID data )
 {

@@ -31,7 +31,6 @@
 
 #ifndef _OSTHREAD_H_INCLUDED
 
-#include "variety.h"
 #if defined(__QNX__)
   #include <semaphor.h>
 #elif defined(__LINUX__)

@@ -28,8 +28,8 @@
 *
 ****************************************************************************/
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <time.h>
 
 _WCRTLINK CHAR_TYPE *__F_NAME( _strdate, _wstrdate ) ( CHAR_TYPE *buf )

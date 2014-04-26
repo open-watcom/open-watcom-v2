@@ -29,17 +29,17 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
-#include "rtinit.h"
-#include "p5prof.h"
-#include "ljmphdl.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "rtinit.h"
+#include "p5prof.h"
+#include "ljmphdl.h"
 #ifdef __NT__
  #include <windows.h>
 #endif
-#include "widechar.h"
 #include "initarg.h"
 
 #define info new_P5_timing_info

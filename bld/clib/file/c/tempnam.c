@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <io.h>
 #include <malloc.h>
 #include <mbstring.h>
 #include <process.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define UNIQUE                  5

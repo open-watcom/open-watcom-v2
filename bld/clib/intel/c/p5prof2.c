@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #ifdef __NT__
     #include <windows.h>
@@ -42,7 +43,6 @@
 #include "rtinit.h"
 #include "p5prof.h"
 #include "ljmphdl.h"
-#include "widechar.h"
 #include "initarg.h"
 
 #ifdef __UNIX__

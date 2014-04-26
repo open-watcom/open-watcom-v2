@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <string.h>
+#include "variety.h"
 #include "xstring.h"
 
 #undef  strcoll

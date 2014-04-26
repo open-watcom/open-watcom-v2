@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 WORD PASCAL _Cover_SetTimer( HWND wnd, short event, WORD el, FARPROC p )

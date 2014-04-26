@@ -32,16 +32,13 @@
 #ifndef _I64_H_INCLUDED
 #define _I64_H_INCLUDED
 
-#include "widechar.h"
-#include "watcom.h"
-
     #define INT64_TYPE __int64
     #define UINT64_TYPE unsigned __int64
 
     #define _clib_I64Negative( a )      (((__int64)a) < 0)
     #define _clib_I64Positive( a )      (((__int64)a) > 0)
-    #define _clib_I32ToI64( a, b )      b = (__int64)a
-    #define _clib_U32ToU64( a, b )      b = (unsigned __int64)(unsigned_32)a
+    #define _clib_I32ToI64( a, b )      b = (__int64)(signed long)a
+    #define _clib_U32ToU64( a, b )      b = (unsigned __int64)(unsigned long)a
     #define _clib_I64ToInt( a, b )      b = (signed)a
     #define _clib_U64ToUInt( a, b )     b = (unsigned)a
     #define _clib_I64ToLong( a, b )     b = (signed long)a

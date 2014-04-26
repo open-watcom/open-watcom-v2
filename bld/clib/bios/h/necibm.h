@@ -32,9 +32,6 @@
 #ifndef _BIOSIBM_H_INCLUDED
 #define _BIOSIBM_H_INCLUDED
 
-#include "variety.h"
-
-
 /*** Data structures ***/
 #ifndef _BIOS_H_INCLUDED
 #if defined(_M_IX86)

@@ -30,8 +30,9 @@
 
 
 #define __WATCOM_LFN__
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
 #include "watcom.h"

@@ -33,8 +33,6 @@
 #ifndef _PRINTF_H_INCLUDED
 #define _PRINTF_H_INCLUDED
 
-#include "widechar.h"
-
 #if defined(__QNX__)
     #if defined(__386__)
         #define __SLIB_CALLBACK _WCFAR

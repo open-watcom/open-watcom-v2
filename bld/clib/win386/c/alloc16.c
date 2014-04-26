@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "variety.h"
+#include "cover.h"
 #include "alloc.h"
 
 DWORD AllocAlias16( void *offset )

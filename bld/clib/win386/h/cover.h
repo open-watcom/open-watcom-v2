@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #define NOCOVERSENDS
 #define NOCOVERRC
 #define NOAUTOPROCS

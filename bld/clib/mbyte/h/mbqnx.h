@@ -33,7 +33,6 @@
 #ifndef _MBQNX_H_INCLUDED
 #define _MBQNX_H_INCLUDED
 
-#include "variety.h"
 #include <stdlib.h>
 #include <string.h>
 

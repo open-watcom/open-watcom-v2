@@ -30,8 +30,8 @@
 
 
 #undef __INLINE_FUNCTIONS__
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <rdos.h>
 #include <process.h>
 #include <errno.h>

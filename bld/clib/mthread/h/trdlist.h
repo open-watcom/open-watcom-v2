@@ -33,8 +33,6 @@
 #ifndef _TRDLIST_H_INCLUDED
 #define _TRDLIST_H_INCLUDED
 
-#include "variety.h"
-
 #if defined( _NETWARE_CLIB )
   #define TID                   int
   #define GetCurrentThreadId()  (*__threadid())

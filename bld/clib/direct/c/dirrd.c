@@ -28,8 +28,8 @@
 *
 ****************************************************************************/
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
@@ -158,64 +158,64 @@ static int IsMatch( struct dirent *dir, const char *fname )
             return( 1 );
     }
 
-	for( ;; ) {
-		while( *sptr && *fptr ) {
-			switch( *sptr ) {
-				case '*':
-					ch = *(sptr + 1);
-					if( ch ) {
-						if( ch == *fptr ) {
-						    lsptr = sptr;
-							sptr += 2;
-							fptr++;
-							lfptr = fptr;
-						}
-						else
-							fptr++;
-					}
-					else
-						fptr++;
-					break;
-	
-				case '?':
-					sptr++;
-					fptr++;
-					break;
+        for( ;; ) {
+                while( *sptr && *fptr ) {
+                        switch( *sptr ) {
+                                case '*':
+                                        ch = *(sptr + 1);
+                                        if( ch ) {
+                                                if( ch == *fptr ) {
+                                                    lsptr = sptr;
+                                                        sptr += 2;
+                                                        fptr++;
+                                                        lfptr = fptr;
+                                                }
+                                                else
+                                                        fptr++;
+                                        }
+                                        else
+                                                fptr++;
+                                        break;
+        
+                                case '?':
+                                        sptr++;
+                                        fptr++;
+                                        break;
 
-				default:
-					if( *sptr == *fptr )	{
-						sptr++;
-						fptr++;
-					} else {
-						if( lfptr ) {
-							fptr = lfptr;
-							sptr = lsptr;
-							lfptr = 0;
-							lsptr = 0;
-						}
-						else
-							return( 0 );
-					}
-					break;
-			}
-		}
+                                default:
+                                        if( *sptr == *fptr )    {
+                                                sptr++;
+                                                fptr++;
+                                        } else {
+                                                if( lfptr ) {
+                                                        fptr = lfptr;
+                                                        sptr = lsptr;
+                                                        lfptr = 0;
+                                                        lsptr = 0;
+                                                }
+                                                else
+                                                        return( 0 );
+                                        }
+                                        break;
+                        }
+                }
 
-		if( *sptr == 0 && *fptr == 0 )
-			return( 1 );
-		else {
-			if( *sptr == '*' && *(sptr+1) == 0 )
-				return( 1 );
+                if( *sptr == 0 && *fptr == 0 )
+                        return( 1 );
+                else {
+                        if( *sptr == '*' && *(sptr+1) == 0 )
+                                return( 1 );
 
-			if( lfptr ) {
-				fptr = lfptr;
-				sptr = lsptr;
-				lfptr = 0;
-				lsptr = 0;
-			}
-			else
-				return( 0 );
-		}
-	}
+                        if( lfptr ) {
+                                fptr = lfptr;
+                                sptr = lsptr;
+                                lfptr = 0;
+                                lsptr = 0;
+                        }
+                        else
+                                return( 0 );
+                }
+        }
 }
 
 static int GetSingleFile( struct dirent *dir )

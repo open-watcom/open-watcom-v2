@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_TrainInk(LPRC lprc, HPENDATA hpd, LPSYV lpsvy )
 {
     __InitPenWinRC( lprc );

@@ -31,7 +31,6 @@
 #ifndef TIMEDATA_H_INCLUDED
 #define TIMEDATA_H_INCLUDED
 
-#include "variety.h"
 #include <time.h>
 
 extern int              __dst_adjust;

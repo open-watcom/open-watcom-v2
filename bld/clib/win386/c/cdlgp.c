@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 HWND PASCAL _Cover_CreateDialogParam( HANDLE inst, LPSTR temp,

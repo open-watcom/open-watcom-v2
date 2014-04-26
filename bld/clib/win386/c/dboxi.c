@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 short PASCAL _Cover_DialogBoxIndirect( HANDLE inst, HANDLE htmp, HWND wnd,

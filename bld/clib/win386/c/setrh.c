@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 FARPROC PASCAL _Cover_SetResourceHandler( HANDLE inst, LPSTR type, FARPROC p )

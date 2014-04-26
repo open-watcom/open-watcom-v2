@@ -44,13 +44,8 @@
 
 #ifdef __RISCSTR__              /* do nothing if not RISC target */
 
-
-#include "variety.h"
-#include "widechar.h"
-#include <string.h>
 #include <wchar.h>
 #include "watcom.h"
-
 
 /*
  * Choose between 32- and 64-bit words.
@@ -339,6 +334,7 @@ struct __F_NAME(__RISC_StrData,__wRISC_StrData) {
  * Prototype functions called by the RISC-oriented string functions.
  */
 
+#ifdef __WIDECHAR__
 _WCRTLINK extern wchar_t *  __simple_wcschr( const wchar_t *str, wint_t ch );
 _WCRTLINK extern int        __simple_wcscmp( const wchar_t *s1, const wchar_t *s2 );
 _WCRTLINK extern wchar_t *  __simple_wcscpy( wchar_t *dest, const wchar_t *src );
@@ -352,6 +348,7 @@ _WCRTLINK extern wchar_t *  __simple__wcsnset( wchar_t *str, int ch, size_t n );
 _WCRTLINK extern wchar_t *  __simple_wcsrchr( const wchar_t *str, wint_t ch );
 _WCRTLINK extern wchar_t *  __simple__wcsset( wchar_t *str, wchar_t ch );
 _WCRTLINK extern wchar_t *  __simple__wcsupr( wchar_t *str );
+#endif
 
 
 #endif          /* #ifdef __RISCSTR__ */

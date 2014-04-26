@@ -31,6 +31,7 @@
 
 
 #define INCLUDE_COMMDLG_H
+#include "variety.h"
 #include "cover.h"
 
 BOOL PASCAL _CoverChooseFont( LPCHOOSEFONT pcf )

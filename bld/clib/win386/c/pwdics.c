@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_DictionarySearch( LPRC lprc, LPSYE lpsye, int i1,
                         LPSYV lpsyv, int i2 )
 {

@@ -31,6 +31,7 @@
 
 
 #define INCLUDE_DDEML_H
+#include "variety.h"
 #include "cover.h"
 
 WORD PASCAL _Cover_DdeInitialize( LPDWORD pidInst, PFNCALLBACK p,

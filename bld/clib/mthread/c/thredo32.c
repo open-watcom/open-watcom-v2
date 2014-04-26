@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
@@ -47,7 +48,6 @@
 #include "rtdata.h"
 #include "trdlist.h"
 #include "mthread.h"
-#include "widechar.h"
 #include "initarg.h"
 #include "cthread.h"
 

@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "variety.h"
+#include "cover.h"
 #include "alloc.h"
 
 int __pascal Win32Realloc( DWORD newsize )

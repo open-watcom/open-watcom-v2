@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include "i64.h"
-#include "widechar.h"
 #include <io.h>
 #include <string.h>
 #ifdef __NT__

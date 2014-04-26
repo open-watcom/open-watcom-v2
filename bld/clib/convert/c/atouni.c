@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <string.h>
 /* we want to use strlen NOT _ustrlen here */
 #undef strlen

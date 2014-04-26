@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 REC PASCAL _Cover_Recognize( LPRC lprc )
 {
     __InitPenWinRC( lprc );

@@ -32,9 +32,6 @@
 #ifndef _WIDECHAR_H_INCLUDED
 #define _WIDECHAR_H_INCLUDED
 
-#include "variety.h"
-#include <stdlib.h>             /* for wchar_t and _atouni */
-
 /*** Define some handy macros ***/
 #ifdef __WIDECHAR__
     #define DIR_TYPE            struct _wdirent

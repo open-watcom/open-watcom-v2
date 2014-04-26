@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <wos2.h>
 #include "seterrno.h"

@@ -33,8 +33,6 @@
 #ifndef _MTYPE_H_INCLUDED
 #define _MTYPE_H_INCLUDED
 
-#include "variety.h"
-
 typedef enum _machine_type {
     _MT_UNKNOWN = 1,
     _MT_AT = 2,

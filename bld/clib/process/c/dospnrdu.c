@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <conio.h>
 #include <dos.h>
 #include <string.h>

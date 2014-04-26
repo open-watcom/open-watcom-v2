@@ -29,16 +29,16 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include "watcom.h"
+#include <stdlib.h>
 #include <stdio.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
     #include <ctype.h>    
 #endif
-#include <stdlib.h>
 
 _WCRTLINK long long int __F_NAME(atoll,_wtoll)( const CHAR_TYPE *p )  /* convert ASCII string to long long int */
 {

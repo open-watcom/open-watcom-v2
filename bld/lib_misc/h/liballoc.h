@@ -32,7 +32,7 @@
 
 #ifndef _LIBALLOC_H_INCLUDED
 #define _LIBALLOC_H_INCLUDED
-#include "variety.h"
+
 #ifdef __WATCOMC__
     #include <malloc.h> // Non-standard interfaces - _nfree() etc.
 #else

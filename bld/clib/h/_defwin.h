@@ -34,7 +34,6 @@
 
 #if defined(__NT__) || defined(__WINDOWS__) || defined(__OS2__)
 
-#include "variety.h"
 #include <unistd.h>
 
 struct window_data;

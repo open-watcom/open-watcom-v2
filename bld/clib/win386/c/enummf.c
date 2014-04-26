@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 BOOL PASCAL _Cover_EnumMetaFile( HDC dc, LOCALHANDLE hmf, FARPROC p,

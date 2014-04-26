@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <io.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #include "filestr.h"

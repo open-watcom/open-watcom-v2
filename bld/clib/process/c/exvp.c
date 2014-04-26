@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdlib.h>
 #include <process.h>
 #include "rtdata.h"

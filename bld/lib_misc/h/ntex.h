@@ -33,8 +33,6 @@
 #ifndef __NTEX_INCLUDED__
 #define __NTEX_INCLUDED__
 
-#include "variety.h"
-
 typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
     void                        *RegistrationRecordFilter;

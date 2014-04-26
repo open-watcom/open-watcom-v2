@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stdlib.h>
 #include <string.h>
 #include "thread.h"
 #include "thrdreg.h"

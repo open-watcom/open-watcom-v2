@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
-#include "widechar.h"
 #include "initarg.h"
 
 int     __Is_DLL;       /* TRUE => DLL, else not a DLL */

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <rdos.h>
 
@@ -46,7 +47,6 @@
 #include "rtdata.h"
 #include "initfini.h"
 #include "rtinit.h"
-#include "widechar.h"
 #include "initarg.h"
 #include "thread.h"
 #include "mthread.h"

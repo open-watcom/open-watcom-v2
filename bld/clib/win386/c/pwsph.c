@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_SetPenHook(HKP hkpop, LPFNRAWHOOK lpfn )
 {
     return( SetPenHook( hkpop, SetProc( (FARPROC)lpfn, GETPROC_PENWIN_LPFNRAWHOOK ) ) );

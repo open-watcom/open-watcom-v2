@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <string.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include <malloc.h>
 #include <process.h>

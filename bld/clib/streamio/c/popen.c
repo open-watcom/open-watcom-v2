@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else
@@ -39,7 +40,6 @@
 #include <fcntl.h>
 #include <io.h>
 #include <process.h>
-#include <stdlib.h>
 #include <string.h>
 #if defined( __NT__ )
     #include <windows.h>
@@ -205,7 +205,7 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
             return( 0 );
         }
 #elif defined( __OS2__ )
-      oldHandle = (HFILE)-1;          	    /* duplicate standard input */
+      oldHandle = (HFILE)-1;                /* duplicate standard input */
         rc = DosDupHandle( STDIN_HANDLE, &oldHandle );
         if( rc != NO_ERROR )  return( 0 );
         osHandle = STDIN_HANDLE;            /* use new standard input */

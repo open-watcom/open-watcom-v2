@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <windows.h>
 #include <process.h>
@@ -36,7 +37,6 @@
 #include "initfini.h"
 #include "libwin32.h"
 #include "osthread.h"
-#include "widechar.h"
 #include "initarg.h"
 #include "sigtab.h"
 

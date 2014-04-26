@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 BOOL PASCAL _Cover_GrayString( HDC dc, HBRUSH brush, FARPROC p, DWORD data,

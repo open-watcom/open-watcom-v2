@@ -33,8 +33,6 @@
 #ifndef EXTFUNC_H_INCLUDED
 #define EXTFUNC_H_INCLUDED
 
-#include "variety.h"
-
 #if defined(_M_IX86)
     #if !defined(__WINDOWS__) && !(defined(__RDOSDEV__) && defined(__SW_ZDP))
         #if defined(__BIG_DATA__)

@@ -30,12 +30,12 @@
 
 
 #undef __INLINE_FUNCTIONS__
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <string.h>
-#include <stdlib.h>
 #include <process.h>
 #include <errno.h>
 #include "liballoc.h"
@@ -198,7 +198,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #if defined( __DOS__ )
     if( mode >= OLD_P_OVERLAY ) {
         __set_errno( EINVAL );
-	rc = -1;
+        rc = -1;
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }

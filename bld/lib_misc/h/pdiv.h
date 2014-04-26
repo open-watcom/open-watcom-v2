@@ -37,8 +37,6 @@
 #ifndef _PDIV_H_INCLUDED
 #define _PDIV_H_INCLUDED
 
-#include "variety.h"
-
 #if defined(_M_IX86)
   extern unsigned _WCNEAR __chipbug;
   extern double __fdiv_chk( double n, double d );

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <io.h>
 #include <process.h>
 #include <errno.h>

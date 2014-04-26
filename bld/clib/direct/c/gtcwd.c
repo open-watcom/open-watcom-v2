@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <string.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>

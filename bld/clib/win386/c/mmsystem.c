@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#define INCLUDE_MMSYSTEM_H
+#include "variety.h"
+#include "cover.h"
 #include "alloc.h"
 #include <stddef.h>
 #include <malloc.h>

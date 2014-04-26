@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include "watcom.h"
 #include "clibi64.h"
-#include <stdlib.h>
 
 extern const char __based(__segname("_CONST")) __Alphabet[];
 

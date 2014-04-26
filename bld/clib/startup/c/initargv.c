@@ -34,10 +34,10 @@
     void __Fini_Argv( void ) { }
 #else
 #include "dll.h"        // needs to be first
-#include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <io.h>
 #include "liballoc.h"

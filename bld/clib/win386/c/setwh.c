@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 FARPROC PASCAL _Cover_SetWindowsHook( short type, FARPROC p )

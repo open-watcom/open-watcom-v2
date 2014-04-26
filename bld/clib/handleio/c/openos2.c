@@ -29,18 +29,18 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <io.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <share.h>
-#include "dos.h"
-#include "dosfunc.h"
+#include <dos.h>
+#include <dosfunc.h>
 #include <direct.h>
 #include "fileacc.h"
 #define INCL_LONGLONG

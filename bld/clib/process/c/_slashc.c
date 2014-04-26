@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 
 #if defined(_M_IX86)
 extern  int     _DOS_Switch_Char( void );

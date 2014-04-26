@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
     // the OS/2 and NT files are identical
     #if defined(__SW_BM)

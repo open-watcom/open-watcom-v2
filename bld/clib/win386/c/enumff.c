@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 short PASCAL _Cover_EnumFontFamilies( HDC dc, LPSTR family, FONTENUMPROC p, LPARAM data )

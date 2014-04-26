@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include <windows.h>
 #include <process.h>
@@ -46,7 +47,6 @@
 #include "mthread.h"
 #include "rtdata.h"
 #include "seterrno.h"
-#include "widechar.h"
 #include "initarg.h"
 #include "cthread.h"
 

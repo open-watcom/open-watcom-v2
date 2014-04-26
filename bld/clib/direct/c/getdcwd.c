@@ -30,8 +30,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <direct.h>
 #include <dos.h>
 #include <errno.h>

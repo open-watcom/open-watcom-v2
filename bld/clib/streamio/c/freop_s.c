@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #include "saferlib.h"
-#include "widechar.h"
 #include <wchar.h>
 #include <stdio.h>
 #include <ctype.h>

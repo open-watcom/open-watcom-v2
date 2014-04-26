@@ -32,7 +32,6 @@
 #ifndef _FARSUPP_H_INCLUDED
 #define _FARSUPP_H_INCLUDED
 
-#include "widechar.h"
 #ifdef __LONG_LONG_SUPPORT__
   #include "clibi64.h"
 #endif
@@ -42,32 +41,27 @@
  */
 #if defined( _M_I86 ) || defined( __DOS__ ) || defined( __WINDOWS__ )
   #define __FAR_SUPPORT__
-  typedef CHAR_TYPE     _WCFAR *FAR_STRING;
-  typedef char          _WCFAR *FAR_ASCII_STRING;
-  typedef wchar_t       _WCFAR *FAR_UNI_STRING;
-  typedef int           _WCFAR *FAR_INT;
-  typedef signed char   _WCFAR *FAR_CHAR;
-  typedef short         _WCFAR *FAR_SHORT;
-  typedef long          _WCFAR *FAR_LONG;
-  typedef float         _WCFAR *FAR_FLOAT;
-  typedef double        _WCFAR *FAR_DOUBLE;
-  #ifdef __LONG_LONG_SUPPORT__
-    typedef UINT64_TYPE _WCFAR *FAR_INT64;
-  #endif
+  #define _FAR_SUPPORT_     _WCFAR
 #else
-  #undef __FAR_SUPPORT__
-  typedef CHAR_TYPE     *FAR_STRING;
-  typedef char          *FAR_ASCII_STRING;
-  typedef wchar_t       *FAR_UNI_STRING;
-  typedef int           *FAR_INT;
-  typedef signed char   *FAR_CHAR;
-  typedef short         *FAR_SHORT;
-  typedef long          *FAR_LONG;
-  typedef float         *FAR_FLOAT;
-  typedef double        *FAR_DOUBLE;
-  #ifdef __LONG_LONG_SUPPORT__
-    typedef UINT64_TYPE *FAR_INT64;
-  #endif
+  #undef  __FAR_SUPPORT__
+  #define _FAR_SUPPORT_
+#endif
+
+#ifdef __WIDECHAR__
+  typedef wchar_t       _FAR_SUPPORT_   *FAR_STRING;
+#else
+  typedef char          _FAR_SUPPORT_   *FAR_STRING;
+#endif
+  typedef char          _FAR_SUPPORT_   *FAR_ASCII_STRING;
+  typedef wchar_t       _FAR_SUPPORT_   *FAR_UNI_STRING;
+  typedef int           _FAR_SUPPORT_   *FAR_INT;
+  typedef signed char   _FAR_SUPPORT_   *FAR_CHAR;
+  typedef short         _FAR_SUPPORT_   *FAR_SHORT;
+  typedef long          _FAR_SUPPORT_   *FAR_LONG;
+  typedef float         _FAR_SUPPORT_   *FAR_FLOAT;
+  typedef double        _FAR_SUPPORT_   *FAR_DOUBLE;
+#ifdef __LONG_LONG_SUPPORT__
+  typedef UINT64_TYPE   _FAR_SUPPORT_   *FAR_INT64;
 #endif
 
 #endif

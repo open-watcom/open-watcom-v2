@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #define _INITNEXTTOK
 #if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
     // the OS/2, NT and NETWARE files are identical

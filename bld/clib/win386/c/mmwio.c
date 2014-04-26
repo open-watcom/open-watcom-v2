@@ -31,6 +31,7 @@
 
 
 #define INCLUDE_MMSYSTEM_H
+#include "variety.h"
 #include "cover.h"
 
 #define GetWaveInCallBack       WINFUNCTION255ADDR

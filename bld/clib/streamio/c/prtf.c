@@ -35,11 +35,11 @@
     #define USE_MBCS_TRANSLATION
 #endif
 
+#include "widechar.h"
 #include "variety.h"
 #ifdef SAFE_PRINTF
     #include "saferlib.h"
 #endif
-#include "widechar.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

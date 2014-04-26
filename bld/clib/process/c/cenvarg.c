@@ -31,8 +31,8 @@
 
 #undef __INLINE_FUNCTIONS__
 #include "dll.h"        // needs to be first
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -190,17 +190,17 @@ void __F_NAME(__ccmdline,__wccmdline)( CHAR_TYPE *path, const CHAR_TYPE * const 
            IMPORTANT: it is vital that there are 2 trailing '\0's
            for DosExecPgm()
          */
-	p = stpcpy( p, argv[0] ) + 1;
+        p = stpcpy( p, argv[0] ) + 1;
 #elif defined( __NT__ )
-	/* NT wants: "path" ' ' arguments '\0'
-	   IMPORTANT: use of quotation marks fixes misparsing of spacey
-	   file names like "c:\program files\common\tool.exe". Also overcomes
-	   bug in WinXP SP2 (beta).
-	*/
-	if( path[0] != '"' ) *p++ = '"';
-	p = stpcpy( p, path );
-	if( path[0] != '"' ) *p++ = '"';
-	*p++ = ' ';
+        /* NT wants: "path" ' ' arguments '\0'
+           IMPORTANT: use of quotation marks fixes misparsing of spacey
+           file names like "c:\program files\common\tool.exe". Also overcomes
+           bug in WinXP SP2 (beta).
+        */
+        if( path[0] != '"' ) *p++ = '"';
+        p = stpcpy( p, path );
+        if( path[0] != '"' ) *p++ = '"';
+        *p++ = ' ';
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
         /* RDOS wants: arguments '\0' */
         path = path;

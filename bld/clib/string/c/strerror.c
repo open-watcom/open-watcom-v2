@@ -29,8 +29,9 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include "rtdata.h"

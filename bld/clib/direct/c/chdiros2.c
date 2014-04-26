@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #include <wos2.h>
 #include <stdlib.h>
 #include <direct.h>

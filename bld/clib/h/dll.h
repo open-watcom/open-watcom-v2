@@ -31,7 +31,6 @@
 
 
 // only needed for 16bit OS/2 DLL library
-#include "variety.h"
 #if defined(__OS2_286__) && defined(__SW_BD)
 
 /*

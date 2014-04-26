@@ -29,8 +29,10 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 #include <string.h>
+
 #define MAX_CNAME       10
 
 BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )

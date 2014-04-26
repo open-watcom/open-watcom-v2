@@ -32,7 +32,6 @@
 
 #ifndef _MYVALIST_H_INCLUDED
 
-#include "variety.h"
 #include <stdarg.h>
 
 typedef struct my_va_list {

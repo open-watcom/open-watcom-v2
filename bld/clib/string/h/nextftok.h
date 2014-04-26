@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #if defined(__OS2__) || defined(__NT__) || defined(__NETWARE__)
     #if defined(__SW_BM)
 

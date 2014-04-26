@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #if defined(__OS2__) || defined(__NT__) || defined(__RDOS__)
     // the OS/2 and NT files are identical
     #if defined(__SW_BM)
@@ -52,7 +51,6 @@
         #define _RESULT __THREADDATAPTR->__asctimeP
         #define _INITRESULT
     #else
-        #include "widechar.h"
         static CHAR_TYPE result[26];
         #define _RESULT result
         #define _INITRESULT

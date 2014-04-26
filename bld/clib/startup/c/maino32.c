@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "widechar.h"
 #include "variety.h"
 #define INCL_DOSMISC
 #define INCL_DOSSEMAPHORES
@@ -50,7 +51,6 @@
 #include "initfini.h"
 #include "rtinit.h"
 #include "liballoc.h"
-#include "widechar.h"
 #include "initarg.h"
 
 extern unsigned         __hmodule;

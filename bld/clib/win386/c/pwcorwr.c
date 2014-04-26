@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_PENWIN_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_CorrectWriting( HWND hwnd, LPSTR lpstr, UINT cb,
                         LPRC lprc, DWORD dw1, DWORD dw2 )
 {

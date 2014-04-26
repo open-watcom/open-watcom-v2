@@ -33,8 +33,6 @@
 #ifndef _COUNTRY_H_INCLUDED
 #define _COUNTRY_H_INCLUDED
 
-#include "variety.h"
-
 struct country {
         int     co_date_format;         /* date format */
         char    co_currency_symbol[5];  /* currency symbol */

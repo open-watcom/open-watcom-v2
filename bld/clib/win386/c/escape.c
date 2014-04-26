@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 short PASCAL _Cover_Escape( HDC dc, short a, short b, LPSTR c, LPSTR d )

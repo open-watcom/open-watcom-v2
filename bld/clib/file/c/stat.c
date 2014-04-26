@@ -32,9 +32,10 @@
 #ifdef __OSI__
 #define __OS2__
 #endif
-#include "variety.h"
-#include "widechar.h"
 #undef __INLINE_FUNCTIONS__
+#include "widechar.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -53,7 +54,6 @@
 #include "dosdir.h"
 #include "seterrno.h"
 #ifdef __WIDECHAR__
-    #include <stdlib.h>
     #include <wctype.h>
 #else
     #include <ctype.h>

@@ -33,7 +33,6 @@
 #ifndef _CONIO_H_INCLUDED
 #define _CONIO_H_INCLUDED
 
-#include "variety.h"
 #include <conio.h>
 
 #ifdef __cplusplus

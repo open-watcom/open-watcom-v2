@@ -29,10 +29,10 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <stdio.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stdio.h>
 #ifdef __WIDECHAR__
     #include <wctype.h>
 #else

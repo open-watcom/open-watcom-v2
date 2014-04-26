@@ -29,6 +29,4 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
-
 void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *msg );

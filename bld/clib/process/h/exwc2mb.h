@@ -33,7 +33,6 @@
 #ifndef _MBWCCONV_H_INCLUDED
 #define _MBWCCONV_H_INCLUDED
 
-#include "variety.h"
 #include <stddef.h>
 
 typedef wchar_t *       WCPTR;

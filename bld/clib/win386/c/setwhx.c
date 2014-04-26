@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "cover.h"
 
 HHOOK PASCAL _Cover_SetWindowsHookEx(short idHook, HOOKPROC lpfn,

@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
+#include "variety.h"
 #define __OS2__
 #include <stdlib.h>
 #include <string.h>

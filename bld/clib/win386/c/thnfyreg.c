@@ -31,7 +31,9 @@
 
 
 #define INCLUDE_TOOLHELP_H
+#include "variety.h"
 #include "cover.h"
+
 BOOL PASCAL _Cover_NotifyRegister(HTASK hTask, LPFNNOTIFYCALLBACK lpfn,
                                 WORD wFlags)
 {

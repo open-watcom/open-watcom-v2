@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "int64.h"
 #include "widechar.h"
+#include "variety.h"
 #include <windows.h>
 #undef __INLINE_FUNCTIONS__
 /* most includes should go after this line */
@@ -48,6 +47,7 @@
 #endif
 #include <dos.h>
 #include <mbstring.h>
+#include "int64.h"
 #include "libwin32.h"
 #include "rtdata.h"
 #include "ntex.h"

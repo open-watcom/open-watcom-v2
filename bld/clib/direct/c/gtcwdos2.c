@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include <stddef.h>
+#include "variety.h"
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include "dos.h"
+#include <dos.h>
 #include <wos2.h>
 #include "rtdata.h"
 #include "seterrno.h"
