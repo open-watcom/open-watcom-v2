@@ -39,7 +39,7 @@
  * DLL's data space, not his
  */
 
-#define brk             __hidden_brk
+#define __brk           __hidden___brk
 #define sbrk            __hidden_sbrk
 #define _ncalloc        __hidden_ncalloc
 #define _nexpand        __hidden_nexpand
