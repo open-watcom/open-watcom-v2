@@ -31,7 +31,7 @@
 
 
 // only needed for 16bit OS/2 DLL library
-#if defined(__OS2_286__) && defined(__SW_BD)
+#if defined(__OS2__) && defined(_M_I86) && defined(__SW_BD)
 
 /*
  * Disallow the use of the near heap by the user, since he won't be
