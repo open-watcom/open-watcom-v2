@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 implementation of _commit().
+* Description:  OS2 implementation of _commit().
 *
 ****************************************************************************/
 
@@ -33,7 +33,7 @@
 #include <io.h>
 #include <errno.h>
 #include <wos2.h>
-#include "dos.h"
+#include <dos.h>
 #include "iomode.h"
 #include "seterrno.h"
 

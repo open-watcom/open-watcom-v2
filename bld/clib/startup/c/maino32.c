@@ -37,10 +37,10 @@
 #define INCL_DOSEXCEPTIONS
 #include <wos2.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <i86.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "osthread.h"

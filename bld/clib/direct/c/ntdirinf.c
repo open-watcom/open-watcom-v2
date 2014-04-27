@@ -44,11 +44,7 @@ void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA 
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
     dirp->d_size = ffb->nFileSizeLow;
-#ifndef __WIDECHAR__
-    strncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-#else
-    wcsncpy( dirp->d_name, ffb->cFileName, NAME_MAX );
-#endif
+    __F_NAME(strncpy,wcsncpy)( dirp->d_name, ffb->cFileName, NAME_MAX );
     dirp->d_name[NAME_MAX] = 0;
 }
 

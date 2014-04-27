@@ -31,7 +31,7 @@
 
 #include "variety.h"
 #include <time.h>
-#include <rtinit.h>
+#include "rtinit.h"
 
 #ifdef __386__
 

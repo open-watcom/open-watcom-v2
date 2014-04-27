@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include <time.h>
-#include <rtinit.h>
 #include <windows.h>
+#include "rtinit.h"
 
 /* Windows gives us time in milliseconds, so we're OK as long as
  * clock() is also expected to return milliseconds.

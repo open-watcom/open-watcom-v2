@@ -42,7 +42,11 @@ typedef struct _SCNF_SPECS {
     int         (*cget_rtn)( struct _SCNF_SPECS *specs );           /* character get rtn */
     void        (*uncget_rtn)( int c, struct _SCNF_SPECS *specs);   /* unget a character rtn */
 #endif
-    CHAR_TYPE   *ptr;               /* file or string pointer */
+#if defined(__WIDECHAR__)
+    wchar_t     *ptr;               /* file or string pointer */
+#else
+    char        *ptr;               /* file or string pointer */
+#endif
     int         width;              /* conversion field width */
     unsigned    assign         : 1; /* assignment flag for current argument */
     unsigned    eoinp          : 1; /* end of input reached */
@@ -64,17 +68,16 @@ typedef struct _SCNF_SPECS {
 
 #if defined( __STDC_WANT_LIB_EXT1__ ) && __STDC_WANT_LIB_EXT1__ == 1
   #if defined(__WIDECHAR__)
-    extern int __wscnf_s( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
+    extern int __wscnf_s( PTR_SCNF_SPECS, const wchar_t *, const char **msg, va_list );
   #else
-    extern int __scnf_s( PTR_SCNF_SPECS, const CHAR_TYPE *, const char **msg, va_list );
+    extern int __scnf_s( PTR_SCNF_SPECS, const char *, const char **msg, va_list );
   #endif
 #else
   #if defined(__WIDECHAR__)
-    extern int __wscnf( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
+    extern int __wscnf( PTR_SCNF_SPECS, const wchar_t *, va_list );
   #else
-    extern int __scnf( PTR_SCNF_SPECS, const CHAR_TYPE *, va_list );
+    extern int __scnf( PTR_SCNF_SPECS, const char *, va_list );
   #endif
 #endif
 
-//#pragma off(unreferenced);
 #endif

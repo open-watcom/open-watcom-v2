@@ -31,12 +31,11 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <windows.h>
-
 #include <stdio.h>
 #include <io.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
 #ifdef _M_IX86
  #include <i86.h>

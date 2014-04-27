@@ -31,6 +31,7 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSPROCESS
 #define INCL_DOSEXCEPTIONS

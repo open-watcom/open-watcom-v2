@@ -49,7 +49,7 @@
     #endif
 #elif defined(__WINDOWS_286__)
     #include <dos.h>
-    #include "windows.h"
+    #include <windows.h>
     #define MODIFIES es
 #else
     #include <dos.h>

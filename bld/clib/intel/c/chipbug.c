@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include <rtinit.h>
+#include "rtinit.h"
 #include "rtdata.h"
 
 extern unsigned _WCNEAR __chipbug;

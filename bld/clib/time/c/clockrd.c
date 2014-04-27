@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include <time.h>
-#include <rtinit.h>
 #include <rdos.h>
+#include "rtinit.h"
 
 
 static int    init_milliseconds;

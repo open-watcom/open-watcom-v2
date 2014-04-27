@@ -37,7 +37,7 @@
 #include <sys/times.h>
 #include <errno.h>
 #endif
-#include <rtinit.h>
+#include "rtinit.h"
 #include "timedata.h"
 
 #ifdef __LINUX__

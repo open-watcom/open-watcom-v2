@@ -30,8 +30,8 @@
 
 #include "variety.h"
 #include <time.h>
-#include <rtinit.h>
 #include <wos2.h>
+#include "rtinit.h"
 
 /* OS/2 gives us time in milliseconds, so we're OK as long as
  * clock() is also expected to return milliseconds.

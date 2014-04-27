@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "variety.h"
 #include "rtinit.h"
 
 extern unsigned __threadstksize;

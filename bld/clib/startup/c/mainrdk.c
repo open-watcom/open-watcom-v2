@@ -31,12 +31,12 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <rdos.h>
 
 #include <stdio.h>
 #include <io.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "iomode.h"

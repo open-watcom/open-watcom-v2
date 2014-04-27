@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
-#include "seterrno.h"
 #include <process.h>
 #include <errno.h>
+#include "seterrno.h"
 
 _WCRTLINK int wait( int *status )
 {

@@ -45,7 +45,7 @@
         extern int _brk(void *);
     #endif
 #elif defined(__WINDOWS__)
-    #include "windows.h"
+    #include <windows.h>
 #endif
 #include "heapacc.h"
 #include "heap.h"

@@ -34,7 +34,7 @@
 #include <dos.h>
 #include <string.h>
 #if defined(__WINDOWS__)
-  #include "windows.h"
+  #include <windows.h>
 #endif
 #include "heap.h"
 

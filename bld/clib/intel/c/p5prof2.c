@@ -31,12 +31,12 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #ifdef __NT__
     #include <windows.h>
 #endif
 #include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>

@@ -71,7 +71,7 @@ _WCRTLINK errno_t __F_NAME(strerror_s,wcserror_s)( CHAR_TYPE *s,
         msglen = strlen( msg );
 
 #ifdef __WIDECHAR__
-        _AToUni( Wide_Error_String, msg );
+        _atouni( Wide_Error_String, msg );
         p2 = Wide_Error_String;
 #else
         p2 = msg;

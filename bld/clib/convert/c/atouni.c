@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of _atouni() - convert integer to wide string.
+* Description:  Implementation of _atouni()
+*               convert ASCII string to wide string.
 *
 ****************************************************************************/
 
@@ -37,14 +38,14 @@
 
 /*
  * atouni - convert an ASCII string to a UNICODE string.
- *          buf and src MAY be the same
+ *          buf and src MAY not be the same
  */
 
 _WCRTLINK wchar_t *_atouni( wchar_t *buf, const char *src ) 
 {
     size_t      len;
 
-    len = strlen( src ) + 1;            /* use single-byte strlen() */
+    len = strlen( src ) + 1;    /* use single-byte strlen() */
     while( len > 0 ) {
         len --;
         buf[len] = src[len];

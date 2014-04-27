@@ -32,6 +32,7 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
 #include <stdarg.h>

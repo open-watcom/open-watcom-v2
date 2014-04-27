@@ -31,9 +31,9 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <windows.h>
 #include <process.h>
-#include <stdlib.h>
 #include "initfini.h"
 #include "libwin32.h"
 #include "osthread.h"

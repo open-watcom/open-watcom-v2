@@ -44,7 +44,7 @@
     #include "tinyos2.h"
 #elif defined(__WINDOWS__)
     #include <dos.h>
-    #include "windows.h"
+    #include <windows.h>
 #else
     #include <dos.h>
     #include "tinyio.h"

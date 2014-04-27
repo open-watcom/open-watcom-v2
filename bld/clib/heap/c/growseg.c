@@ -47,7 +47,7 @@
     #include <i86.h>
 #elif defined(__WINDOWS__) && defined( _M_I86 )
     #include <dos.h>
-    #include "windows.h"
+    #include <windows.h>
 #else
     #include <dos.h>
     #include "tinyio.h"

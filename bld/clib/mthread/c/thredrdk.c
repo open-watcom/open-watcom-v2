@@ -31,10 +31,10 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdlib.h>
 #include <rdos.h>
 #include <rdosdev.h>
 #include <process.h>
-#include <stdlib.h>
 #include <string.h>
 #include <dos.h>
 #include <malloc.h>

@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
-#include "dosfunc.h"
+#include <dosfunc.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <sys/utime.h>

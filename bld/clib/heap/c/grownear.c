@@ -45,7 +45,7 @@
  #include "tinyio.h"
 #endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
- #include "windows.h"
+ #include <windows.h>
 #endif
 #if defined(__OS2__)
  #include <wos2.h>

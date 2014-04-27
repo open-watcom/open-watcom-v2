@@ -40,8 +40,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <share.h>
-#include "dos.h"
-#include "dosfunc.h"
+#include <dos.h>
+#include <dosfunc.h>
 #include "tinyio.h"
 #include "rtdata.h"
 #include "iomode.h"

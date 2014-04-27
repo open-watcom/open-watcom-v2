@@ -37,9 +37,9 @@
     #include <windows.h>
 #endif
 #include <unistd.h>
-#include "fcntl.h"
-#include "dos.h"
-#include "dosfunc.h"
+#include <fcntl.h>
+#include <dos.h>
+#include <dosfunc.h>
 #include "fileacc.h"
 #include "rtcheck.h"
 #include "rtdata.h"

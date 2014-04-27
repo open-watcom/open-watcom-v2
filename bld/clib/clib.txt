@@ -358,8 +358,8 @@ Notes:
 ======
 - make QNX source files conditionally include "shlib.h" when
   "defined(__QNX__) && defined(__SHARE__)"
-- make files that are affected by \clib\dos\2h\dll.h conditionally include it
-  when "defined(__OS2__) && defined(__DLL__)"
+- make files that are affected by \clib\h\dll.h conditionally include it
+  when "defined(__OS2__) && defined(_M_I86) && defined(__SW_BD)"
 - define wasm.inc as interim to convert cmd switches to macros
   a. change -3r,-3s to STACK=0, STACK=1
   b. change -ms,-mm,-mc,-ml,-mh to _MODEL=...

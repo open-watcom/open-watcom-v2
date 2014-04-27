@@ -31,11 +31,10 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include "liballoc.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
 #include <i86.h>
-#include <stdlib.h>
 #include <string.h>
 #define INCL_DOSMISC
 #define INCL_DOSSEMAPHORES
@@ -43,6 +42,7 @@
 #define INCL_DOSEXCEPTIONS
 #define INCL_DOSMODULEMGR
 #include <wos2.h>
+#include "liballoc.h"
 #include "initfini.h"
 #include "osthread.h"
 #include "stacklow.h"

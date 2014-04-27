@@ -30,10 +30,10 @@
 
 
 #include "variety.h"
-#include "initfini.h"
-#include "rtdata.h"
 #include <malloc.h>
 #include <i86.h>
+#include "initfini.h"
+#include "rtdata.h"
 
 extern  int     DllMain( int termination, void *reserved );
 extern  void    __CommonInit( void );

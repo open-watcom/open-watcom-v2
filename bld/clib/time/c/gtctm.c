@@ -34,7 +34,7 @@
 #include <time.h>
 #ifndef __NETWARE__
  #include <dos.h>
- #include "dosfunc.h"
+ #include <dosfunc.h>
  #include "tinyio.h"
 #endif
 #include "timedata.h"

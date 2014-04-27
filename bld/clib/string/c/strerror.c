@@ -40,6 +40,12 @@
 #endif
 #include "errstr.h"
 
+#ifdef __WIDECHAR__
+#define ERROR_MSG   Wide_Error_String
+#else
+#define ERROR_MSG   Error_String
+#endif
+
 #if !defined( __NETWARE__ ) && !defined( __WIDECHAR__ )
 
 _WCRTDATA char * _WCDATA _sys_errlist[] = {
@@ -222,7 +228,7 @@ _WCRTDATA int _WCDATA _sys_nerr = ( sizeof( _sys_errlist ) / sizeof( *_sys_errli
 _WCRTLINK CHAR_TYPE *__F_NAME(strerror,wcserror)( int errnum )
 {
 #ifdef __WIDECHAR__
-    static wchar_t  Wide_Error_String[40];
+    static wchar_t  wide_msg[40];
 #endif
     char            *msg;
 
@@ -231,7 +237,11 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strerror,wcserror)( int errnum )
     } else {
         msg = _sys_errlist[ errnum ];
     }
-    return( _AToUni( Wide_Error_String, msg ) );
+#ifdef __WIDECHAR__
+    return( _atouni( wide_msg, msg ) );
+#else
+    return( msg );
+#endif
 }
 
 // Note: Windows FORMAT_MESSAGE_MAX_WIDTH_MASK is 255
@@ -240,11 +250,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strerror,wcserror)( int errnum )
     #define FORMAT_MESSAGE_MAX_WIDTH_MASK 255
 #endif
 
-#ifdef __WIDECHAR__
-static  wchar_t Wide_Error_String[FORMAT_MESSAGE_MAX_WIDTH_MASK+1];
-#else
-static  char    Error_String[FORMAT_MESSAGE_MAX_WIDTH_MASK+1];
-#endif
+static  CHAR_TYPE ERROR_MSG[FORMAT_MESSAGE_MAX_WIDTH_MASK+1];
 
 
 /*
@@ -283,58 +289,32 @@ _WCRTLINK CHAR_TYPE *__F_NAME(_strerror,_wcserror)( const CHAR_TYPE *strErrMsg )
     int errnum;
 
     errnum = _RWD_errno;
-#ifdef __WIDECHAR__
-    Wide_Error_String[0] = L'\0';
+    ERROR_MSG[0] = NULLCHAR;
     if( strErrMsg != NULL ) {
-        wcsncpy( Wide_Error_String, strErrMsg, 94 );
-        Wide_Error_String[94] = L'\0';    // just in case more than 94
-        wcscat( Wide_Error_String, L": " );
+        __F_NAME(strncpy,wcsncpy)( ERROR_MSG, strErrMsg, 94 );
+        ERROR_MSG[94] = NULLCHAR;    // just in case more than 94
+        __F_NAME(strcat,wcscat)( ERROR_MSG, STRING(": ") );
     }
-    wcscat( Wide_Error_String, wcserror( errnum ) );
-    wcscat( Wide_Error_String, L"\n" );
-    return( Wide_Error_String );
-#else
-    Error_String[0] = '\0';
-    if( strErrMsg != NULL ) {
-        strncpy( Error_String, strErrMsg, 94 );
-        Error_String[94] = '\0';    // just in case more than 94
-        strcat( Error_String, ": " );
-    }
-    strcat( Error_String, strerror( errnum ) );
-    strcat( Error_String, "\n" );
-    return( Error_String );
-#endif
+    __F_NAME(strcat,wcscat)( ERROR_MSG, __F_NAME(strerror,wcserror)( errnum ) );
+    __F_NAME(strcat,wcscat)( ERROR_MSG, STRING("\n") );
+    return( ERROR_MSG );
 }
 
 #if defined(__NT__)
 
 _WCRTLINK CHAR_TYPE *__F_NAME(_doserror,_wdoserror)( int errnum )
 {
-#ifdef __WIDECHAR__
-    Wide_Error_String[0] = L'\0';
-    FormatMessageW( FORMAT_MESSAGE_IGNORE_INSERTS |
+    ERROR_MSG[0] = NULLCHAR;
+    FormatMessage( FORMAT_MESSAGE_IGNORE_INSERTS |
                     FORMAT_MESSAGE_FROM_SYSTEM |
                     FORMAT_MESSAGE_MAX_WIDTH_MASK,
                     NULL,
                     errnum,
                     0,
-                    Wide_Error_String,
+                    ERROR_MSG,
                     FORMAT_MESSAGE_MAX_WIDTH_MASK,
                     NULL );
-    return( Wide_Error_String );
-#else
-    Error_String[0] = '\0';
-    FormatMessageA( FORMAT_MESSAGE_IGNORE_INSERTS |
-                    FORMAT_MESSAGE_FROM_SYSTEM |
-                    FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                    NULL,
-                    errnum,
-                    0,
-                    Error_String,
-                    FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                    NULL );
-    return( Error_String );
-#endif
+    return( ERROR_MSG );
 }
 
 #endif

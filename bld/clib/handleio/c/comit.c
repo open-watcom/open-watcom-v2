@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <io.h>
 #include <errno.h>
-#include "dos.h"
+#include <dos.h>
 #include "iomode.h"
 #include "seterrno.h"
 

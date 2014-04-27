@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include "dos.h"
+#include <dos.h>
 #include "seterrno.h"
 #define INCL_DOSMEMMGR
 #include <wos2.h>
