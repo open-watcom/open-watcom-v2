@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include "fileacc.h"
 #include "rtcheck.h"
+#include "seterrno.h"
 #include "lseek.h"
 
 

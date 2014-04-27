@@ -31,10 +31,10 @@
 
 
 #include "variety.h"
-#include "libsupp.h"
 #include <stddef.h>
 #include <math.h>
 #include <limits.h>
+#include "clibsupp.h"
 #include "ifprag.h"
 #include "mathcode.h"
 #include "mathlib.h"

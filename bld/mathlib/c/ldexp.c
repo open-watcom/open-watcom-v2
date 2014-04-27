@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
-#include "libsupp.h"
 #include <math.h>
+#include "clibsupp.h"
 
 
 _WMRTLINK double ldexp( double value, int n )

@@ -34,6 +34,7 @@
 #include <wos2.h>
 #include "defwin.h"
 #include "rtcheck.h"
+#include "seterrno.h"
 
 
 _WCRTLINK int isatty( int handle )

@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtcheck.h"
+#include "seterrno.h"
 
 // TODO: Need Linux POSIX library!
 #if 0

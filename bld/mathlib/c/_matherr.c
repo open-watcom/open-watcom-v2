@@ -30,10 +30,10 @@
 
 
 #include "variety.h"
-#include "libsupp.h"
 #include <stdio.h>
 #include <math.h>
 #include <unistd.h>
+#include "clibsupp.h"
 #include "mathlib.h"
 #include "mathcode.h"
 #include "_matherr.h"

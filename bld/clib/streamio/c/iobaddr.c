@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include <stdio.h>
+#include "clibsupp.h"
 #include "rtdata.h"
 
 

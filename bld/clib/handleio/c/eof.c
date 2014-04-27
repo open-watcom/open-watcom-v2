@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "rtcheck.h"
+#include "seterrno.h"
 
 
 _WCRTLINK int eof( int handle )         /* determine if at EOF */

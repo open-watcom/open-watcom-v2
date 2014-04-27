@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include "rtcheck.h"
+#include "seterrno.h"
 #include "qread.h"
 
 #define MAX_OS_TRANSFER (((unsigned)INT_MAX+1) - 512)

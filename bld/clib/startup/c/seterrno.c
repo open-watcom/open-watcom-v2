@@ -34,6 +34,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <errno.h>
+#include "clibsupp.h"
 #include "rtdata.h"
 #include "seterrno.h"
 

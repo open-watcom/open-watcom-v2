@@ -33,7 +33,6 @@
 #define _RTCHECK_H_INCLUDED
 
 #include <errno.h>
-#include "seterrno.h"
 
 
 #if ( defined(__NT__) || defined(__RUNTIME_HANDLE_CHECKS__) )   \

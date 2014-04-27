@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#ifndef _LIBSUPP_H_INCLUDED
-#define _LIBSUPP_H_INCLUDED
+#ifndef _CLIBSUPP_H_INCLUDED
+#define _CLIBSUPP_H_INCLUDED
 
-#include "variety.h"
 #include <stdio.h>
 
 _WCRTLINK extern void __set_EDOM( void );

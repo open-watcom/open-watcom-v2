@@ -29,12 +29,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #include "widechar.h"
-#include "libsupp.h"
+#include "variety.h"
+#include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <inttypes.h>
@@ -42,6 +41,7 @@
     #include <wchar.h>
 #endif
 #include "watcom.h"
+#include "clibsupp.h"
 #include "xfloat.h"
 
 

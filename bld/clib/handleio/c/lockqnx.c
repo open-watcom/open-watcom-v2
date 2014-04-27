@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "rtcheck.h"
+#include "seterrno.h"
 
 _WCRTLINK int (lock)( handle, offset, nbytes )
 int      handle;
