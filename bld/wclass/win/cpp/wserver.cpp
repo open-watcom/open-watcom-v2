@@ -124,7 +124,7 @@ HDDEDATA WEXPORT WServer::xtRequest( UINT fmt, HSZ /*htopic*/, HSZ hitem ) {
         DdeQueryString( _procid, hitem, request, len+1, CP_WINANSI );
         WString *reply = (_owner->*_notify)( request );
         if( reply != NULL ) {
-            hdata = DdeCreateDataHandle( _procid, (unsigned char *)(const char *)*reply, reply->size()+1, 0, hitem, fmt, FALSE );
+            hdata = DdeCreateDataHandle( _procid, (unsigned char *)(const char *)*reply, (DWORD)( reply->size() + 1 ), 0, hitem, fmt, FALSE );
             delete reply;
         }
         delete request;

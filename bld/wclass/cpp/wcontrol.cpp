@@ -99,14 +99,14 @@ void WEXPORT WControl::autosize() {
 }
 
 
-void WEXPORT WControl::getText( char* buff, unsigned len ) {
-/**********************************************************/
+void WEXPORT WControl::getText( char* buff, size_t len ) {
+/********************************************************/
 
     char *text = GUIGetText( parent()->handle(), controlId() );
     if( text == NULL ) {
         *buff = NULLCHAR;
     } else {
-        unsigned text_len = strlen( text );
+        size_t text_len = strlen( text );
         if( text_len > len - 1 ) text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = NULLCHAR;
@@ -125,12 +125,12 @@ void WEXPORT WControl::getText( WString& str ) {
 }
 
 
-int WEXPORT WControl::getTextLength() {
-/*************************************/
+size_t WEXPORT WControl::getTextLength() {
+/****************************************/
 
     char *text = GUIGetText( parent()->handle(), controlId() );
     if( text == NULL ) return( 0 );
-    int len = strlen( text );
+    size_t len = strlen( text );
     GUIMemFree( text );
     return( len );
 }

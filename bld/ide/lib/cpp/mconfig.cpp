@@ -112,7 +112,6 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
         _hostType = HOST_NT_AXP;
     #else
         DWORD ver;
-        bool is_chicago = FALSE;
 
         _hostType = HOST_NT;
         ver = GetVersion();
@@ -178,15 +177,16 @@ void MConfig::zapTargetMasks()
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) type,
         #include "hosttype.h"
     };
-    int     i;
+    size_t  i;
+    int     j;
 
     for( i=0; i<_hostMask.size(); i++ ) {
         if( _hostMask[i] == '@' ) {
             _hostMask.setChar( i, hostChars[ _hostType ] );
         }
     }
-    for( i=0; i<_targets.count(); i++ ) {
-        MTarget* tar = (MTarget*)_targets[i];
+    for( j=0; j<_targets.count(); j++ ) {
+        MTarget* tar = (MTarget*)_targets[j];
         zapMask( tar->mask() );
     }
 }
@@ -421,7 +421,7 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             }
         } else if( tok == "Filter" ) {
             fil.token( tok );
-            int size = _fileFilterSize;
+            size_t size = _fileFilterSize;
             for( int i=0; i<2; i++ ) {
                 _fileFilters = REALLOC( _fileFilters, size + (tok.size() + 1) + 1 );
                 if( _fileFilters ) {
@@ -516,7 +516,7 @@ MRule* MConfig::findMatchingRule( WFileName& fn, WString& mask )
 
 void MConfig::zapMask( WString& mask )
 {
-    for( int i=0; i<_hostMask.size(); i++ ) {
+    for( size_t i=0; i<_hostMask.size(); i++ ) {
         if( _hostMask[i] != '?' ) {
             mask.setChar( i, _hostMask[i] );
         }
@@ -527,7 +527,7 @@ void MConfig::kludgeMask( WString& str )
 {
     if( _kludge ) {
         WString temp;
-        for( int i=0; i<str.size(); i++ ) {
+        for( size_t i=0; i<str.size(); i++ ) {
             temp.concat( str[ i ] );
             if( _kludge == 3 && i == 0 ) temp.concat( '?' );
             if( _version > 1 && _kludge == 3 && i == 2 ) temp.concat( '?' );

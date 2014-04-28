@@ -60,10 +60,10 @@ WCLASS WString : public WObject
                 virtual bool operator==( WObject const & obj ) const
                         { return( isEqual( &obj ) ); }
                 virtual int WEXPORT compare( const WObject * ) const;
-                const char& operator[]( int index ) const { return _value[ index ]; }
-                void setChar( int index, char ch ) { _value[index] = ch; }
-                void WEXPORT deleteChar( int index, int count=1 );
-                int WEXPORT size() const { return (_value==NULL) ? 0 : (int)strlen( _value ); }
+                const char& operator[]( size_t index ) const { return _value[ index ]; }
+                void setChar( size_t index, char ch ) { _value[index] = ch; }
+                void WEXPORT deleteChar( size_t index, size_t count=1 );
+                size_t WEXPORT size() const { return (_value==NULL) ? 0 : strlen( _value ); }
                 const char* WEXPORT gets() const;
                 WEXPORT operator const char*() const { return gets(); }
                 WEXPORT operator int() const;
@@ -74,9 +74,9 @@ WCLASS WString : public WObject
                 virtual void WEXPORT concat( const char* str );
                 virtual void WEXPORT concat( char chr );
                 void WEXPORT concatf( const char* parms... );
-                void WEXPORT truncate( int count );
-                void WEXPORT chop( int count );
-                int WEXPORT trim( bool beg=TRUE, bool end=TRUE );
+                void WEXPORT truncate( size_t count );
+                void WEXPORT chop( size_t count );
+                size_t WEXPORT trim( bool beg=TRUE, bool end=TRUE );
                 virtual bool WEXPORT match( const char* mask ) const;
                 virtual bool WEXPORT isMask() const;
                 void WEXPORT toLower();

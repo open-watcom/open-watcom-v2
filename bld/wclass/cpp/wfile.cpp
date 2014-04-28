@@ -273,10 +273,10 @@ char WFile::getByte()
     return _buffer[ _bOffset++ ];
 }
 
-bool WFile::putBytes( const char* str, int len )
+bool WFile::putBytes( const char* str, size_t len )
 {
     if( str != NULL ) {
-        for( int i=0; i<len; i++ ) {
+        for( size_t i=0; i<len; i++ ) {
             if( !putByte( str[i] ) ) {
                 return FALSE;
             }

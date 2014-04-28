@@ -85,7 +85,7 @@ void WEXPORT WListBox::onDblClick( WObject* client, cbw click ) {
 int WListBox::findString( int index, const char *str ) {
 /******************************************************/
 
-    int len = strlen( str );
+    size_t len = strlen( str );
     int icount = count();
     int k;
 

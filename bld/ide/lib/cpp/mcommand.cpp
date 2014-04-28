@@ -82,7 +82,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     bool browse = FALSE;
     const char* cmd = gets();
     int location = EXECUTE_NORMAL;
-    int i=0;
+    size_t i=0;
     if( strnicmp( &cmd[i], "!Batch ", 7 ) == 0 ) {
         i += 7;
         location = EXECUTE_BATCH;
@@ -103,10 +103,10 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
         location = EXECUTE_TOUCH_ALL;
     }
     WString com;
-    int len = strlen( cmd );
+    size_t len = strlen( cmd );
     for( ; i<len; ) {
         if( strncmp( &cmd[i], BMACRO, 2 ) == 0 ) {
-            int l = 2;
+            size_t l = 2;
             WString m;
             for(; i+l<len; l++ ) {
                 if( i+l >= len ) {
@@ -150,8 +150,8 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
         *browseSwitch = "";
     }
     if( target ) {
-        int icount = com.size();
-        for( int i=0; i<icount; ) {
+        size_t icount = com.size();
+        for( size_t i=0; i<icount; ) {
             WFileName f;
             if( strncmp( &com[i], "$@", 2 ) == 0 ) {
                 i += 2;
@@ -224,7 +224,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 i += 2;
                 command.concat( '$' );
             } else if( strncmp( &com[i], "$(", 2 ) == 0 ) {
-                int l = i+2;
+                size_t l = i+2;
                 WString m;
                 for(; l<icount; l++ ) {
                     if( l >= icount ) {

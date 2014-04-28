@@ -60,6 +60,7 @@ WCLASS WObjectFile : public WFile {
         void WEXPORT readObject( unsigned int* obj );
         void WEXPORT readObject( long* obj );
         void WEXPORT readObject( unsigned long* obj );
+        void WEXPORT readObject( unsigned long long* obj );
 
         void WEXPORT writeObject( WObject* obj, bool force=FALSE );
         void WEXPORT writeObject( bool obj );
@@ -72,6 +73,7 @@ WCLASS WObjectFile : public WFile {
         void WEXPORT writeObject( unsigned int obj );
         void WEXPORT writeObject( long obj );
         void WEXPORT writeObject( unsigned long obj );
+        void WEXPORT writeObject( unsigned long long obj );
 
         void WEXPORT readEOItem();
         void WEXPORT writeEOItem();

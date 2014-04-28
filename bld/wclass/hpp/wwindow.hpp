@@ -236,10 +236,10 @@ public:
     void WEXPORT startWait( void );
     void WEXPORT stopWait( void );
     virtual void WEXPORT autosize();
-    virtual int WEXPORT getTextLength() {
+    virtual size_t WEXPORT getTextLength() {
         return GUIGetWindowTextLength( _handle );
     }
-    virtual void WEXPORT getText( char *textbuf, unsigned length );
+    virtual void WEXPORT getText( char *textbuf, size_t length );
     virtual void WEXPORT getText( WString& str );
     virtual void WEXPORT setText( const char *text );
     virtual WMenu * WEXPORT setMenu( WMenu* menu );
@@ -287,11 +287,11 @@ public:
     WRect getAutosize( void ) { return _autosize; }
     virtual WWindow * switchChild( WWindow *currChild, bool forward );
     virtual bool WEXPORT processMsg( gui_event msg, void *parm );
-    virtual int WEXPORT getTextExtentX( const char *text, int len ) {
+    virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
         return( GUIGetExtentX( _handle, (char *)text, len ) );
     }
     virtual int WEXPORT getTextExtentX( const char *text ) {
-        return( GUIGetExtentX( _handle, (char *)text, (int)strlen( text ) ) );
+        return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
     }
     virtual int WEXPORT getTextExtentY( const char *text ) {
         return( GUIGetExtentY( _handle, (char *)text ) );
@@ -337,24 +337,24 @@ public:
     void WEXPORT drawText( int, int, const char * );
     void WEXPORT drawText( int, int, const char *, Color, Color );
     void WEXPORT drawText( int, int, const char *, WPaintAttr );
-    void WEXPORT drawText( const WPoint &, const char *, int );
-    void WEXPORT drawText( const WPoint &, const char *, int, Color, Color );
-    void WEXPORT drawText( const WPoint &, const char *, int, WPaintAttr );
-    void WEXPORT drawText( int, int, const char *, int );
-    void WEXPORT drawText( int, int, const char *, int, Color, Color );
-    void WEXPORT drawText( int, int, const char *, int, WPaintAttr );
+    void WEXPORT drawText( const WPoint &, const char *, size_t );
+    void WEXPORT drawText( const WPoint &, const char *, size_t, Color, Color );
+    void WEXPORT drawText( const WPoint &, const char *, size_t, WPaintAttr );
+    void WEXPORT drawText( int, int, const char *, size_t );
+    void WEXPORT drawText( int, int, const char *, size_t, Color, Color );
+    void WEXPORT drawText( int, int, const char *, size_t, WPaintAttr );
     void WEXPORT drawTextExtent( const WPoint &, const char *, Color, Color, int );
     void WEXPORT drawTextExtent( const WPoint &, const char *, WPaintAttr, int );
     void WEXPORT drawTextExtent( const WPoint &, const char *, int );
     void WEXPORT drawTextExtent( int, int, const char *, Color, Color, int );
     void WEXPORT drawTextExtent( int, int, const char *, WPaintAttr, int );
     void WEXPORT drawTextExtent( int, int, const char *, int );
-    void WEXPORT drawTextExtent( const WPoint &, const char *, int, Color, Color, int );
-    void WEXPORT drawTextExtent( const WPoint &, const char *, int, WPaintAttr, int );
-    void WEXPORT drawTextExtent( const WPoint &, const char *, int, int );
-    void WEXPORT drawTextExtent( int, int, const char *, int, Color, Color, int );
-    void WEXPORT drawTextExtent( int, int, const char *, int, WPaintAttr, int );
-    void WEXPORT drawTextExtent( int, int, const char *, int, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, size_t, Color, Color, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, size_t, WPaintAttr, int );
+    void WEXPORT drawTextExtent( const WPoint &, const char *, size_t, int );
+    void WEXPORT drawTextExtent( int, int, const char *, size_t, Color, Color, int );
+    void WEXPORT drawTextExtent( int, int, const char *, size_t, WPaintAttr, int );
+    void WEXPORT drawTextExtent( int, int, const char *, size_t, int );
     void WEXPORT drawHotSpot( int, int, int );
     WOrdinal WEXPORT firstDirtyRow( void ) { return( _firstDirtyRow ); }
     int WEXPORT numDirtyRows( void ) { return( _numDirtyRows ); }

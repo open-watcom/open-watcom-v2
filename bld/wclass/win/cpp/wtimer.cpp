@@ -35,17 +35,18 @@
 WObjectMap WEXPORT WTimer::_timerMap;
 static int _timerId = 1;
 
+extern "C" {
 
-extern "C" WORD _WEXPORT CALLBACK timerProc( HWND, UINT, int id, DWORD sysTime ) {
+VOID _WEXPORT CALLBACK timerProc( HWND, UINT, UINT_PTR id, DWORD sysTime ) {
 /********************************************************************************/
 
     WTimer *timer = (WTimer *)WTimer::_timerMap.findThis( (WHANDLE)id );
     if( timer != NULL ) {
         timer->tick( sysTime );
     }
-    return( 0 );
 }
 
+}
 
 WEXPORT WTimer::WTimer( WObject *owner, cbt notify, unsigned stack )
         : _id( 0 )

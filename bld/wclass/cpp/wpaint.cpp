@@ -140,8 +140,8 @@ void WEXPORT WWindow::drawLine( const WPoint &start, const WPoint &end, WPaintAt
 }
 
 
-void WEXPORT WWindow::drawText( const WPoint& p, const char *str, int len, Color fg, Color bg ) {
-/***********************************************************************************************/
+void WEXPORT WWindow::drawText( const WPoint& p, const char *str, size_t len, Color fg, Color bg ) {
+/**************************************************************************************************/
 
     gui_coord   pos;
 
@@ -155,12 +155,12 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str, int len, Color
 void WEXPORT WWindow::drawText( const WPoint& p, const char *str, Color fg, Color bg ) {
 /**************************************************************************************/
 
-    drawText( p, str, (int)strlen( str ), fg, bg );
+    drawText( p, str, strlen( str ), fg, bg );
 }
 
 
-void WEXPORT WWindow::drawText( const WPoint& p, const char *str, int len, WPaintAttr attr ) {
-/********************************************************************************************/
+void WEXPORT WWindow::drawText( const WPoint& p, const char *str, size_t len, WPaintAttr attr ) {
+/***********************************************************************************************/
 
     gui_coord   pos;
 
@@ -174,12 +174,12 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str, int len, WPain
 void WEXPORT WWindow::drawText( const WPoint& p, const char *str, WPaintAttr attr ) {
 /***********************************************************************************/
 
-    drawText( p, str, (int)strlen( str ), attr );
+    drawText( p, str, strlen( str ), attr );
 }
 
 
-void WEXPORT WWindow::drawText( int row, int indent, const char *str, int len, Color fg, Color bg ) {
-/***************************************************************************************************/
+void WEXPORT WWindow::drawText( int row, int indent, const char *str, size_t len, Color fg, Color bg ) {
+/******************************************************************************************************/
 
     if( !isPainting() ) return;
     GUIDrawTextRGB( handle(), (char *)str, len, row, indent, fg, bg );
@@ -189,11 +189,11 @@ void WEXPORT WWindow::drawText( int row, int indent, const char *str, int len, C
 void WEXPORT WWindow::drawText( int row, int indent, const char *str, Color fg, Color bg ) {
 /******************************************************************************************/
 
-    drawText( row, indent, str, (int)strlen( str ), fg, bg );
+    drawText( row, indent, str, strlen( str ), fg, bg );
 }
 
 
-void WEXPORT WWindow::drawText( int row, int indent, const char *str, int len,
+void WEXPORT WWindow::drawText( int row, int indent, const char *str, size_t len,
                                 WPaintAttr attr ) {
 /*************************************************/
 
@@ -206,12 +206,12 @@ void WEXPORT WWindow::drawText( int row, int indent, const char *str,
                                 WPaintAttr attr ) {
 /*************************************************/
 
-    drawText( row, indent, str, (int)strlen( str ), attr );
+    drawText( row, indent, str, strlen( str ), attr );
 }
 
 
-void WEXPORT WWindow::drawText( const WPoint& p, const char *str, int len ) {
-/***************************************************************************/
+void WEXPORT WWindow::drawText( const WPoint& p, const char *str, size_t len ) {
+/******************************************************************************/
 
     drawText( p, str, len, ColorBlack, ColorWhite );
 }
@@ -224,8 +224,8 @@ void WEXPORT WWindow::drawText( const WPoint& p, const char *str ) {
 }
 
 
-void WEXPORT WWindow::drawText( int row, int offset, const char *str, int len ) {
-/*****************************************************************************/
+void WEXPORT WWindow::drawText( int row, int offset, const char *str, size_t len ) {
+/**********************************************************************************/
 
     drawText( row, offset, str, len, GUI_MENU_PLAIN );
 }
@@ -239,7 +239,7 @@ void WEXPORT WWindow::drawText( int row, int offset, const char *str ) {
 
 
 void WEXPORT WWindow::drawTextExtent( int row, int offset,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       Color fg, Color bg, int extent ) {
 /**********************************************************************/
 
@@ -253,12 +253,12 @@ void WEXPORT WWindow::drawTextExtent( int row, int offset, const char *str,
                                       Color fg, Color bg, int extent ) {
 /**********************************************************************/
 
-    drawTextExtent( row, offset, str, (int)strlen( str ), fg, bg, extent );
+    drawTextExtent( row, offset, str, strlen( str ), fg, bg, extent );
 }
 
 
 void WEXPORT WWindow::drawTextExtent( const WPoint &p,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       Color fg, Color bg, int extent ) {
 /**********************************************************************/
 
@@ -276,12 +276,12 @@ void WEXPORT WWindow::drawTextExtent( const WPoint &p, const char *str,
                                       int extent ) {
 /**************************************************/
 
-    drawTextExtent( p, str, (int)strlen( str ), fg, bg, extent );
+    drawTextExtent( p, str, strlen( str ), fg, bg, extent );
 }
 
 
 void WEXPORT WWindow::drawTextExtent( int row, int offset,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       WPaintAttr attr, int extent ) {
 /*******************************************************************/
 
@@ -294,12 +294,12 @@ void WEXPORT WWindow::drawTextExtent( int row, int offset, const char *str,
                                       WPaintAttr attr, int extent ) {
 /*******************************************************************/
 
-    drawTextExtent( row, offset, str, (int)strlen( str ), attr, extent );
+    drawTextExtent( row, offset, str, strlen( str ), attr, extent );
 }
 
 
 void WEXPORT WWindow::drawTextExtent( const WPoint &p,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       WPaintAttr attr, int extent ) {
 /*******************************************************************/
 
@@ -316,12 +316,12 @@ void WEXPORT WWindow::drawTextExtent( const WPoint &p, const char *str,
                                       WPaintAttr attr, int extent ) {
 /*******************************************************************/
 
-    drawTextExtent( p, str, (int)strlen( str ), attr, extent );
+    drawTextExtent( p, str, strlen( str ), attr, extent );
 }
 
 
 void WEXPORT WWindow::drawTextExtent( const WPoint& p,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       int extent ) {
 /**************************************************/
 
@@ -338,7 +338,7 @@ void WEXPORT WWindow::drawTextExtent( const WPoint& p, const char *str,
 
 
 void WEXPORT WWindow::drawTextExtent( int row, int offset,
-                                      const char *str, int len,
+                                      const char *str, size_t len,
                                       int extent ) {
 /**************************************************/
 

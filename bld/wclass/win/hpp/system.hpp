@@ -43,6 +43,7 @@
     #include <ddeml.h>
     #pragma library (ddeml)
 #endif
+    #include "wi163264.h"
 
 extern "C" {
     extern HINSTANCE        GUIMainHInst;

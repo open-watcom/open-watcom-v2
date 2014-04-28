@@ -1027,9 +1027,9 @@ void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
     attr_entry          *currattr;
     gui_ord             extent;
     int                 indent;
-    int                 string_indent;
+    size_t              string_indent;
     gui_text_metrics    metrics;
-    int                 length;
+    size_t              length;
     gui_rect            client;
     char                *data;
     gui_coord           pos;

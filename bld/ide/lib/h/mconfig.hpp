@@ -132,7 +132,7 @@ WCLASS MConfig : public WObject
         MCommand        _before;
         MCommand        _after;
         char*           _fileFilters;
-        int             _fileFilterSize;
+        size_t          _fileFilterSize;
         MTool*          _nilTool;
         MRule*          _nilRule;
         void configMsgLog( WTokenFile& fil, WString& tok );

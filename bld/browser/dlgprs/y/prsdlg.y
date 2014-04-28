@@ -196,7 +196,7 @@ block_end
 rectangle
 	: T_Number ',' T_Number ',' T_Number ',' T_Number
 	  { 
-	    $$ = CurrDialog->addRect( Rect( $1, $3, $5, $7 ) );
+	    $$ = (YYSTYPE)CurrDialog->addRect( Rect( $1, $3, $5, $7 ) );
 	  }
 	;
 

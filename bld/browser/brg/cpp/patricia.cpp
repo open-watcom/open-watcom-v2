@@ -57,7 +57,7 @@ private:
                                         PatriciaNode * left,
                                         PatriciaNode * right );
 
-    static ubit         getBit( const char * str, uint len, uint_16 bitpos );
+    static ubit         getBit( const char * str, size_t len, uint_16 bitpos );
 
     int_16              _bitPos;    // bit to compare for this node
     char *              _key;       // the key value
@@ -100,9 +100,9 @@ static void PatriciaNode::ragnarok()
     _stringPool.ragnarok();
 }
 
-static inline ubit PatriciaNode::getBit( const char * str, uint len,
+static inline ubit PatriciaNode::getBit( const char * str, size_t len,
                                          uint_16 bitPos )
-//------------------------------------------------------------------
+//--------------------------------------------------------------------
 {
     #if (INSTRUMENTS == INSTRUMENTS_FULL_LOGGING)
         Log.printf( "\"%s\", bitPos=%d, %#x, %d, %#x = %#x\n", str, bitPos, *(str + (bitPos / 8)),
@@ -132,9 +132,9 @@ const char * PatriciaNode::insert( const char * str )
     PatriciaNode *  curr;
     PatriciaNode *  other;      // node with key to be distinguished from this
     int_16          sameBits;   // number of same bits between str and other
-    int             len;        // length of string
+    size_t          len;        // length of string
     char *          strCopy;    // copy of the string
-    int             lenCurrStr; // length of string in current node
+    size_t          lenCurrStr; // length of string in current node
 
     prev = this;
     curr = _left;

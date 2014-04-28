@@ -83,7 +83,7 @@ class WFile : public WObject {
         virtual bool putByte( char ch );
     private:
         void freeBuffer();
-        bool putBytes( const char* s, int len );
+        bool putBytes( const char* s, size_t len );
     private:
         WFileName       _filename;
         Handle          _handle;

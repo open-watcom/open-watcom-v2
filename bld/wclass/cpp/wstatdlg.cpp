@@ -50,7 +50,7 @@ void WStatDialog::addControl( WControl * control ) {
 WControl * WEXPORT WStatDialog::getControl( unsigned control_id ) {
 /*****************************************************************/
 
-    unsigned    i;
+    int         i;
     WControl *  test;
 
     for( i = 0; i < _controls.count(); i += 1 ) {
@@ -112,27 +112,27 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
 /*****************************************************************/
 
     char * text;
-    int    text_len;
+    size_t text_len;
 
     text = GUIGetText( handle(), control_id );
-
     if( text == NULL ) {
         *buff = NULLCHAR;
     } else {
         text_len = strlen( text );
-        if( text_len > len - 1 ) text_len = len - 1;
+        if( text_len > len - 1 )
+            text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = NULLCHAR;
         GUIMemFree( text );
     }
 }
 
-int  WEXPORT WStatDialog::getCtrlTextLength( unsigned control_id ) {
-/******************************************************************/
+size_t WEXPORT WStatDialog::getCtrlTextLength( unsigned control_id ) {
+/********************************************************************/
 
     char *text = GUIGetText( handle(), control_id );
     if( text == NULL ) return( 0 );
-    int len = strlen( text );
+    size_t len = strlen( text );
     GUIMemFree( text );
     return( len );
 }

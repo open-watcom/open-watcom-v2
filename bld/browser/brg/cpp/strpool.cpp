@@ -33,7 +33,7 @@
 #include "assure.h"
 #include "strpool.h"
 
-StringPool::StringPool( unsigned size, const char * owner )
+StringPool::StringPool( size_t size, const char * owner )
                 : _currBlock( NULL )
                 , _currPos( NULL )
                 , _endOfCurrBlock( NULL )
@@ -62,8 +62,8 @@ StringPool::~StringPool()
     ragnarok();
 }
 
-char * StringPool::alloc( unsigned len )
-//--------------------------------------
+char * StringPool::alloc( size_t len )
+//------------------------------------
 {
     char * ret;
 

@@ -227,8 +227,8 @@ void WEXPORT WFileName::relativeTo( const char* f )
 void WEXPORT WFileName::absoluteTo( const char* f )
 {
 //
-    int icount = size();
-    int i, j;
+    size_t icount = size();
+    size_t i, j;
     size_t k;
 
     for( i = 0; i < icount; i++ ) {
@@ -514,7 +514,7 @@ static bool isLongDirName( char* dirNames, const char *pathsep )
 bool WEXPORT WFileName::needQuotes( char ch ) const
 {
     if( !isMask() ) {
-        int len = size();
+        size_t len = size();
         if( len > 0 && ( (*this)[0] != ch || (*this)[ len-1 ] != ch ) ) {
             _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
             if( isLongDirName( _x.dir, PATHSEP_STR ) || isLongName( _x.fname ) ) {
@@ -527,7 +527,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
 
 void WEXPORT WFileName::removeQuotes( char ch )
 {
-    int len = size()-1;
+    size_t len = size()-1;
     if( (*this)[0] == ch && (*this)[len] == ch ) {
         deleteChar( len );
         deleteChar( 0 );
@@ -536,10 +536,10 @@ void WEXPORT WFileName::removeQuotes( char ch )
 
 void WEXPORT WFileName::addQuotes( char ch )
 {
-    int len = size();
+    size_t len = size();
     char* quotedName = new char[ len + 3 ];
     quotedName[0] = ch;
-    for( int i=0; i<len; i++ ) {
+    for( size_t i=0; i<len; i++ ) {
         quotedName[ i+1 ] = (*this)[i];
     }
     quotedName[ len+1 ] = ch;

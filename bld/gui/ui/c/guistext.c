@@ -55,7 +55,7 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
  * GUIGetWindowTextLength - get the length of the title of a window
  */
 
-int GUIGetWindowTextLength( gui_window *wnd )
+size_t GUIGetWindowTextLength( gui_window *wnd )
 {
     if( wnd->screen.name == NULL ) {
         return( 0 );
@@ -69,9 +69,9 @@ int GUIGetWindowTextLength( gui_window *wnd )
  *                    max_length characters
  */
 
-int GUIGetWindowText( gui_window *wnd, char *data, int max_length )
+size_t GUIGetWindowText( gui_window *wnd, char *data, size_t max_length )
 {
-    int length;
+    size_t length;
 
     if( wnd->screen.name == NULL || max_length == 0 ) {
         length = 0;
@@ -83,5 +83,5 @@ int GUIGetWindowText( gui_window *wnd, char *data, int max_length )
         strncpy( data, wnd->screen.name, length );
     }
     data[length] = '\0';
-            return( length );
-        }
+    return( length );
+}

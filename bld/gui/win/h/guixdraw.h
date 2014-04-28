@@ -33,7 +33,7 @@
 #ifndef _GUIXDRAW_H_
 #define _GUIXDRAW_H_
 
-extern void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, int length,
+extern void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
                                    int height, gui_coord *pos, gui_attr attr,
                                    gui_ord extentx,
                                    bool draw_extent, int bitmap );

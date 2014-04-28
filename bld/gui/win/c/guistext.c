@@ -49,12 +49,12 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
  * GUIGetWindowText - get the window text
  */
 
-int GUIGetWindowText( gui_window *wnd, char *data, int max_length )
+size_t GUIGetWindowText( gui_window *wnd, char *data, size_t max_length )
 {
     return( _wpi_getwindowtext( GUIGetParentFrameHWND( wnd ), data, max_length ) );
 }
 
-int GUIGetWindowTextLength( gui_window *wnd )
+size_t GUIGetWindowTextLength( gui_window *wnd )
 {
     return( _wpi_getwindowtextlength( GUIGetParentFrameHWND( wnd ) ) );
 }

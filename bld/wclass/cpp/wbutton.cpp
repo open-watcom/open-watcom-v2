@@ -44,8 +44,8 @@ WEXPORT WButton::WButton( WWindow *parent, gui_control_class control_class,
 /*************************/
 
     if( text != NULL ) {
-        int icount = strlen( text );
-        for( int i = 0; i < icount; ++i ) {
+        size_t icount = strlen( text );
+        for( size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
                 int key = text[i+1];
                 if( key != '\0' ) {
@@ -67,8 +67,8 @@ WEXPORT WButton::WButton( WStatDialog *parent, unsigned id, WStyle wstyle )
 
 #if 0 // NYI -- DAGLO
     if( text != NULL ) {
-        int icount = strlen( text );
-        for( int i = 0; i < icount; ++i ) {
+        size_t icount = strlen( text );
+        for( size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
                 int key = text[i+1];
                 if( key != '\0' ) {

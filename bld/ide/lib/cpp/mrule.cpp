@@ -198,7 +198,7 @@ bool MRule::match( WString& tag, WFileName& tgt )
 MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
 {
     bool found = FALSE;
-    int len = 0;
+    size_t len = 0;
     MSymbol* o = NULL;
     WString oName;
     int icount = _symbols.count();
@@ -269,7 +269,7 @@ void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList*
 {
     MCommand c;
     if( s.size() > 0 ) {
-        for( int i=0; s[i] != '\0'; ) {
+        for( size_t i=0; s[i] != '\0'; ) {
             WString v;
             int len = 0;
             if( strnicmp( &s[i], BMACRO, 2 ) == 0 ) {

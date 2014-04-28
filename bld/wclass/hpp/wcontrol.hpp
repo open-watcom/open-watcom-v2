@@ -57,9 +57,9 @@ WCLASS WControl : public WWindow {
             return( WWindow::processMsg( msg, parm ) );
         };
         virtual void WEXPORT autosize();
-        virtual void WEXPORT getText( char* buff, unsigned len );
+        virtual void WEXPORT getText( char* buff, size_t len );
         virtual void WEXPORT getText( WString& str );
-        virtual int WEXPORT getTextLength( void );
+        virtual size_t WEXPORT getTextLength( void );
         virtual void WEXPORT setText( const char *text );
         virtual void WEXPORT setUpdates( bool start_update=TRUE );
         virtual void WEXPORT show( WWindowState state=WWinStateShow );
@@ -69,7 +69,7 @@ WCLASS WControl : public WWindow {
         virtual void WEXPORT getRectangle( WRect& r, bool absolute=FALSE );
         virtual bool WEXPORT isHidden( void );
         virtual bool WEXPORT setFocus( void );
-        virtual int WEXPORT getTextExtentX( const char *text, int len ) {
+        virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
             return( GUIGetControlExtentX( parent()->handle(), controlId(),
                                           (char *)text, len ) );
         }

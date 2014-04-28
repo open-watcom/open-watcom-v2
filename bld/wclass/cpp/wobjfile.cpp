@@ -232,6 +232,12 @@ void WEXPORT WObjectFile::readObject( unsigned long* obj )
         readEOItem();
 }
 
+void WEXPORT WObjectFile::readObject( unsigned long long* obj )
+{
+        *obj = (unsigned long)getl();
+        readEOItem();
+}
+
 bool WEXPORT WObjectFile::writeIndex( WObject* obj, bool force )
 {
         bool firstTime = FALSE;
@@ -324,5 +330,11 @@ void WEXPORT WObjectFile::writeObject( long obj )
 void WEXPORT WObjectFile::writeObject( unsigned long obj )
 {
         putl( obj );
+        writeEOItem();
+}
+
+void WEXPORT WObjectFile::writeObject( unsigned long long obj )
+{
+        putl( (unsigned long)obj );
         writeEOItem();
 }

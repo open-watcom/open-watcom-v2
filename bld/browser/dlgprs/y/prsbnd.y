@@ -74,7 +74,7 @@ binding
 absrel_rect
 	: '(' absrel ',' absrel ',' absrel ',' absrel ')'
 	  {
-	    $$ = CurrBinding->addAbsRelRect( Rect( $2, $4, $6, $8 ) );
+	    $$ = (YYSTYPE)CurrBinding->addAbsRelRect( Rect( $2, $4, $6, $8 ) );
 	  }
 	;
 	

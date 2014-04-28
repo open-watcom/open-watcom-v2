@@ -70,7 +70,7 @@ void MSwitch::displayText( WString& s )
         s.concat( ' ' );
         s.concat( '[' );
         const char* c = on();
-        int i;
+        size_t i;
         for( i=strlen( c ); i>0; i-- ) {
             if( c[i-1] == '\\' ) break;
         }
@@ -106,7 +106,7 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
     if( tag == switchtag )
         return( true );
     if( kludge == 1 ) {
-        int jcount = switchtag.size();
+        size_t jcount = switchtag.size();
         if( jcount > MASK_SIZE && jcount == tag.size() ) {
             for( int j = 0; j < jcount; j++ ) {
                 int ct = (unsigned char)tag[j];

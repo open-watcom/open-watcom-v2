@@ -168,8 +168,8 @@ void WEXPORT MAction::writeSelf( WObjectFile& p )
 
 void MAction::text( WString& t )
 {
-    int icount = _name.size();
-    for( int i=0; i<icount; i++ ) {
+    size_t icount = _name.size();
+    for( size_t i=0; i<icount; i++ ) {
         if( _name[i] != '&' ) {
             t.concat( _name[i] );
         }

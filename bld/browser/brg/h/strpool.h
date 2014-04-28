@@ -37,9 +37,9 @@
 
 class StringPool {
 public:
-                            StringPool( unsigned size, const char * owner );
+                            StringPool( size_t size, const char * owner );
                             ~StringPool();
-    char *                  alloc( unsigned len );
+    char *                  alloc( size_t len );
     void                    ragnarok();
 private:
     void                    grow();
@@ -53,7 +53,7 @@ private:
     char *                  _currPos;           // position within block
     char *                  _endOfCurrBlock;
     StringBlock *           _firstBlock;
-    unsigned                _blockSize;
+    size_t                  _blockSize;
 
     #if DEBUG
 

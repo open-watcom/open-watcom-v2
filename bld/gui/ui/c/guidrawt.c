@@ -40,12 +40,12 @@
  * GUIXDrawText -- draw text
  */
 
-void GUIXDrawText( gui_window *wnd, const char *text, int length, gui_coord *in_pos,
+void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *in_pos,
                   gui_attr attr, gui_ord extentx, bool draw_extent )
 {
     int         vscroll;        /* vertical scroll adjust amount */
     int         hscroll;        /* horizontal scroll adjust amount */
-    int         my_length;      /* actual length of text (may be > length) */
+    size_t      my_length;      /* actual length of text (may be > length) */
     gui_coord   my_pos;         /* pos in screen coords */
     int         pos;            /* position to draw on VSCREEN */
     int         col;            /* index into string */
@@ -180,7 +180,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, int length, gui_coord *in_
     }
 }
 
-void GUIXDrawTextRGB( gui_window *wnd, char *text, int length, gui_coord *pos,
+void GUIXDrawTextRGB( gui_window *wnd, char *text, size_t length, gui_coord *pos,
                       gui_rgb fore, gui_rgb back, gui_ord extentx,
                       bool draw_extent )
 {

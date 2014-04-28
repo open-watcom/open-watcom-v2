@@ -57,20 +57,20 @@ class MemoryPool {
 public:
                     MemoryPool( const char * owner );
                     MemoryPool( size_t elemSize, const char * owner,
-                                size_t elemPerBlock = 10 );
+                                int elemsPerBlock = 10 );
                     ~MemoryPool();
 
             void *  alloc();
             void    free( void * );
             void    ragnarok();         // free entire pool
-            void    setSize( size_t elemSize, int elemPerBlock = 10 );
+            void    setSize( size_t elemSize, int elemsPerBlock = 10 );
 
 protected:
             void        grow();
 
-            long        _blockSize;
+            size_t      _blockSize;
             size_t      _elemSize;
-            size_t      _elemsPerBlock;
+            int         _elemsPerBlock;
             char *      _lastElement;
             char *      _currElement;
             char *      _currBlock;

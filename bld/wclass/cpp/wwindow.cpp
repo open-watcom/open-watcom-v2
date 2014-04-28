@@ -657,8 +657,8 @@ void WEXPORT WWindow::close() {
 }
 
 
-void WEXPORT WWindow::getText( char* textBuf, unsigned textLen ) {
-/****************************************************************/
+void WEXPORT WWindow::getText( char* textBuf, size_t textLen ) {
+/**************************************************************/
 
     GUIGetWindowText( _handle, textBuf, textLen );
 }
@@ -667,7 +667,7 @@ void WEXPORT WWindow::getText( char* textBuf, unsigned textLen ) {
 void WEXPORT WWindow::getText( WString& str ) {
 /*********************************************/
 
-    unsigned len = getTextLength();
+    size_t len = getTextLength();
     char* t = new char[ len+1 ];
     getText( t, len+1 );
     str = t;

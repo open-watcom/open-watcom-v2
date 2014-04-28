@@ -60,7 +60,7 @@ public:
                                         Binding( const char * name );
                                         ~Binding();
 
-            int                         addAbsRelRect( const Rect & r );
+            size_t                      addAbsRelRect( const Rect & r );
             void                        addControl( const char * text, const char * id, int absrelrect );
 
             void                        bind( Dialog * dlg, const char * header, const char * cpp );

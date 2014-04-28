@@ -40,14 +40,14 @@
 WEXPORT WResStr::WResStr( unsigned id ) {
 /***************************************/
 
-	id = id;
+    id = id;
     assert( GUILoadString( id, _buffer, BUFFERSIZE ) );
 }
 
 const char * GetParm( char idxChar, va_list args ) {
 /**************************************************/
 
-    const char * ret;
+    const char * ret = NULL;
     unsigned     i;
     unsigned     index;
 
@@ -68,11 +68,11 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
     WResStr         format( id );
     const char *    fmts = format;
     const char *    parm;
-    unsigned        src = 0;
-    unsigned        dest = 0;
+    size_t          src = 0;
+    size_t          dest = 0;
     bool            done = FALSE;
 
-	len = len;
+    len = len;
     while( !done ) {
         assert( dest < len );
 

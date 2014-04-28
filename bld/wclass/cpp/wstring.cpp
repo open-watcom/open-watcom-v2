@@ -110,7 +110,7 @@ void WEXPORT WString::readSelf( WObjectFile& p )
     WObject::readSelf( p );
     FREE( _value );
     _value = NULL;
-    int len;
+    size_t len;
     p.readObject( &len );
     if( len > 0 ) {
         _value = MALLOC( len + 1 );
@@ -171,10 +171,10 @@ int WEXPORT WString::compare( const WObject* str ) const
 }
 
 
-void WEXPORT WString::deleteChar( int index, int count )
+void WEXPORT WString::deleteChar( size_t index, size_t count )
 {
     if( _value != NULL ) {
-        int len = strlen( _value );
+        size_t len = strlen( _value );
         if( index < len ) {
             if( (index + count) > len ) {
                 count = len - index;
@@ -247,7 +247,7 @@ void WEXPORT WString::concat( const char* str )
 {
     if( (str != NULL) && strlen( str ) > 0 ) {
         if( _value != NULL) {
-            int len = size();
+            size_t len = size();
             char* value = REALLOC( _value, len + strlen( str ) + 1 );
             if( value != NULL ) {
                 _value = value;
@@ -284,10 +284,10 @@ void WEXPORT WString::concatf( const char* parms... )
     }
 }
 
-void WEXPORT WString::truncate( int count )
+void WEXPORT WString::truncate( size_t count )
 {
     if( _value != NULL ) {
-        int len = strlen( _value );
+        size_t len = strlen( _value );
         if( count < len ) {
             _value[ count ] = '\0';
         }
@@ -295,18 +295,13 @@ void WEXPORT WString::truncate( int count )
     }
 }
 
-void WEXPORT WString::chop( int count )
+void WEXPORT WString::chop( size_t count )
 {
     if( _value != NULL ) {
-        int len = strlen( _value );
+        size_t len = strlen( _value );
         if( count > 0 ) {
             if( count <= len ) {
                 memmove( _value, &_value[ count ], len-count+1 );
-            }
-        } else if( count < 0 ) {
-            count = len + count;
-            if( count >= 0 ) {
-                _value[ count ] = '\0';
             }
         }
         fixup();
@@ -363,9 +358,9 @@ bool WEXPORT WString::isMask() const
 void WEXPORT WString::toLower()
 {
     if( _value != NULL ) {
-        int icount = strlen( _value );
-        for( int i=0; i<icount; i++ ) {
-            _value[i] = (char)tolower( _value[i] );
+        size_t icount = strlen( _value );
+        for( size_t i=0; i<icount; i++ ) {
+            _value[i] = (char)tolower( (unsigned char)_value[i] );
         }
     }
 }
@@ -379,12 +374,12 @@ void WString::fixup()
 }
 
 
-int WEXPORT WString::trim( bool beg, bool end )
+size_t WEXPORT WString::trim( bool beg, bool end )
 {
     if( beg ) {
         if( _value != NULL ) {
-            int len = strlen( _value );
-            int i;
+            size_t len = strlen( _value );
+            size_t i;
             for( i=0; i<len; i++ ) {
                 if( _value[ i ] != ' ' ) break;
             }
@@ -393,8 +388,8 @@ int WEXPORT WString::trim( bool beg, bool end )
     }
     if( end ) {
         if( _value != NULL ) {
-            int len = strlen( _value );
-            int i;
+            size_t len = strlen( _value );
+            size_t i;
             for( i=len; i>0; i-- ) {
                 if( _value[ i-1 ] != ' ' ) break;
             }

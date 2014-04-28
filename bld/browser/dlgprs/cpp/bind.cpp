@@ -58,8 +58,8 @@ Binding::~Binding()
     delete _controls;
 }
 
-int Binding::addAbsRelRect( const Rect & r )
-//------------------------------------------
+size_t Binding::addAbsRelRect( const Rect & r )
+//---------------------------------------------
 {
     _rectangles->push_back( r );
     return( _rectangles->size() - 1 );
@@ -81,7 +81,7 @@ static int cprintf( CheckedBufferedFile & file, const char * fmt, ... )
 
     va_start( arglist, fmt );
     len = vsprintf( buffer, fmt, arglist );
-    file.write( buffer, strlen( buffer ) );
+    file.write( buffer, (int)strlen( buffer ) );
 
     va_end( arglist );
 

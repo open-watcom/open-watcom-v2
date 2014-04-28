@@ -56,8 +56,8 @@ Dialog::~Dialog()
     delete _controls;
 }
 
-int Dialog::addRect( const Rect & r )
-//-----------------------------------
+size_t Dialog::addRect( const Rect & r )
+//--------------------------------------
 {
     _rectangles->push_back( r );
     return( _rectangles->size() - 1 );

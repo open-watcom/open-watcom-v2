@@ -50,7 +50,7 @@ WCLASS WTimer : public WObject {
     private:
         WObject         *_owner;
         cbt             _notify;
-        int             _id;
+        UINT_PTR        _id;
         int             _count;
         unsigned        _stackSize;
         FARPROC         _procInst;

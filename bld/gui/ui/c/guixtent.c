@@ -36,7 +36,7 @@
 #include "guiscale.h"
 #include "clibext.h"
 
-gui_ord GUIGetExtentX( gui_window * wnd, const char * text, int length )
+gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
 {
     gui_coord coord;
 
@@ -64,7 +64,7 @@ gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
     return( coord.y );
 }
 
-gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, int length )
+gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, size_t length )
 {
     id=id;
     return( GUIGetExtentX( wnd, text, length ) );
