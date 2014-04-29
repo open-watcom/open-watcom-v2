@@ -50,22 +50,23 @@ global unsigned WngCount;       // - total # of warnings encountered
 
 #ifdef XTRA_RPT
 
-#define ExtraRptCtr( ctr ) static int ctr;
-#define ExtraRptSpace( ctr ) static int ctr;
+#define ExtraRptCtr( ctr ) static int ctr
+#define ExtraRptSpace( ctr ) static int ctr
 #define ExtraRptAddtoCtr( tgt, val ) ((tgt) += (val))
 #define ExtraRptDecrementCtr( ctr ) (--(ctr))
 #define ExtraRptIncrementCtr( ctr ) (++(ctr))
-#define ExtraRptHighWater( ctr, hiwater ) if( hiwater < ctr ) hiwater = ctr;
+#define ExtraRptHighWater( ctr, hiwater ) if( hiwater < ctr ) hiwater = ctr
 #define ExtraRptZeroCtr( ctr ) ((ctr) = 0)
 #define ExtraRptZeroSpace( ctr ) ((ctr) = 0)
 #define ExtraRptRegisterSpace( a, b ) ExtraRptRegisterCtr( a, b )
 #define ExtraRptSpaceAdd( ctr, size ) ((ctr) += (size))
 #define ExtraRptSpaceSubtract( ctr, size ) ((ctr) -= (size))
 #define ExtraRptMaximum( ctr, mx ) (((mx) = ((ctr)>(mx)) ? (ctr):(mx)),(ctr) = 0)
-#define ExtraRptTabIncr( table, r, c ) ++ table[r][c];
-#define ExtraRptTabAdd( table, r, c, a ) table[r][c] += (a);
-#define ExtraRptTabSub( table, r, c, a ) table[r][c] -= (a);
-#define ExtraRptTable( table, r, c ) static int table[r][c];
+#define ExtraRptTabIncr( table, r, c ) ++ table[r][c]
+#define ExtraRptTabAdd( table, r, c, a ) table[r][c] += (a)
+#define ExtraRptTabSub( table, r, c, a ) table[r][c] -= (a)
+#define ExtraRptTable( table, r, c ) static int table[r][c]
+#define ExtraRptStmt( a ) a
 
 void ExtraRptRegisterAvg(       // REGISTER AVERAGING
     int *a_total,               // - addr[ total ]
@@ -96,28 +97,29 @@ void ExtraRptSymUsage(          // REPORT SYMBOL USAGE FROM PRIMARY SOURCE
 
 #else
 
-#define ExtraRptRegisterAvg( a, b, c ) ;
-#define ExtraRptRegisterCtr( a, b ) ;
-#define ExtraRptRegisterMax( a, b ) ;
-#define ExtraRptRegisterSpace( a, b ) ;
-#define ExtraRptRegisterTab( a, b, c, d, e );
-#define ExtraRptHighWater( a, b ) ;
-#define ExtraRptAddtoCtr( a, b ) ;
-#define ExtraRptDecrementCtr( a ) ;
-#define ExtraRptIncrementCtr( a ) ;
-#define ExtraRptCtr( a ) ;
-#define ExtraRptSpace( a ) ;
-#define ExtraRptZeroCtr( a ) ;
-#define ExtraRptZeroSpace( a ) ;
-#define ExtraRptSpaceAdd( a, b ) ;
-#define ExtraRptSpaceSubtract( a, b ) ;
-#define ExtraRptMaximum( a, b ) ;
+#define ExtraRptRegisterAvg( a, b, c )
+#define ExtraRptRegisterCtr( a, b )
+#define ExtraRptRegisterMax( a, b )
+#define ExtraRptRegisterSpace( a, b )
+#define ExtraRptRegisterTab( a, b, c, d, e )
+#define ExtraRptHighWater( a, b )
+#define ExtraRptAddtoCtr( a, b )
+#define ExtraRptDecrementCtr( a )
+#define ExtraRptIncrementCtr( a )
+#define ExtraRptCtr( a )
+#define ExtraRptSpace( a )
+#define ExtraRptZeroCtr( a )
+#define ExtraRptZeroSpace( a )
+#define ExtraRptSpaceAdd( a, b )
+#define ExtraRptSpaceSubtract( a, b )
+#define ExtraRptMaximum( a, b )
 #define ExtraRptTabIncr( table, r, c )
 #define ExtraRptTable( table, r, c )
 #define ExtraRptSymDefn( s )
 #define ExtraRptSymUsage( s )
-#define ExtraRptTabAdd( table, r, c, a );
-#define ExtraRptTabSub( table, r, c, a ) ;
+#define ExtraRptTabAdd( table, r, c, a )
+#define ExtraRptTabSub( table, r, c, a )
+#define ExtraRptStmt( a )
 
 #endif
 
