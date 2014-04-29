@@ -124,7 +124,7 @@ static int setup_os_env( const char *watcom )
 {
     char        *buf;
     size_t      len;
-#ifdef __OS220__
+#ifndef _M_I86
     char        old_blpath[1024] = "";
     int         old_blpath_len;
     HMODULE     hmod;
@@ -151,7 +151,9 @@ static int setup_os_env( const char *watcom )
     }
     free( buf );
 
-#ifdef __OS220__
+#ifdef _M_I86
+    return( 0 );
+#else
     /* Older versions of OS/2 did not support BEGIN/ENDLIBPATH. Dynamically
      * query the API entrypoints to prevent load failures.
      */
@@ -202,8 +204,6 @@ static int setup_os_env( const char *watcom )
         free( buf );
         return( -8 );
     }
-#else
-    return( 0 );
 #endif
 }
 

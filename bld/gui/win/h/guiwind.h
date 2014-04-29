@@ -39,12 +39,12 @@
     #define INCL_WIN
     #define INCL_DOSNLS
     #define INCL_DOSMISC
-    #include "os2.h"
+    #include <wos2.h>
 #else
     #define INCLUDE_COMMDLG_H
     #define NOCOMM
     #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
+    #include <wwindows.h>
     #if defined( __UNIX__ )
         #include <wtypes.h>
         #include <windef.h>

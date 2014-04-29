@@ -35,19 +35,7 @@
 #define INCL_BASE
 #include <os2.h>
 
-#if defined(__386__) || defined(__PPC__)
-
-#define OS_UINT         ULONG
-#define OS_PUINT        PULONG
-#define __FAR
-#if defined(__OS2__)
-    #if defined(__OS220__)
-        #undef  __OS220__
-    #endif
-    #define __OS220__
-#endif
-
-#else
+#ifdef _M_I86
 
 #define APIRET          USHORT
 #define OS_UINT         USHORT
@@ -60,6 +48,16 @@
 #define HANDTYPE_DEVICE   0x0001
 #define HANDTYPE_PIPE     0x0002
 #define HANDTYPE_NETWORK  0x8000
+
+// The following are not defined in the os2 2.0 header files so
+// lets do it here
+#define NULLHANDLE      (LHANDLE)0
+
+#else
+
+#define OS_UINT         ULONG
+#define OS_PUINT        PULONG
+#define __FAR
 
 #endif
 

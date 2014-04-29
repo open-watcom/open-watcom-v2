@@ -24,27 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Precompiled header for commonui.
+* Description:  Macros to mask differences between various flavours of Windows.
 *
 ****************************************************************************/
 
 
-#ifdef __OS2_PM__
-    #define INCL_PM
-    #define INCL_WINFRAMEMGR
-    #define INCL_NLS
-    #define INCL_GPILCIDS
-    #define INCL_GPIPRIMITIVES
-    #include <wos2.h>
-#else
-    #ifdef __WINDOWS__
-        #define INCLUDE_TOOLHELP_H
-        #define INCLUDE_COMMDLG_H
-    #endif
-    #define OEMRESOURCE
-    #include <wwindows.h>
-    #ifdef __NT__
-        #include <commctrl.h>
-        #include <commdlg.h>
-    #endif
+#ifndef WWINDOWS_H_INCLUDED
+#define WWINDOWS_H_INCLUDED
+
+#include <windows.h>
+#include "wi163264.h"
+
 #endif

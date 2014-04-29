@@ -45,8 +45,6 @@
  */
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
 #include "pm1632.h"
-#else
-#include "wi163264.h"
 #endif
 
 #define WPI_SIZEWINBMPFILEHDR           14
@@ -211,9 +209,6 @@
 /*******************************/
 
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
-    #ifndef NULLHANDLE
-    #define NULLHANDLE                  (LHANDLE)0
-    #endif
     #define HINSTANCE                   HAB
     #define HPALETTE                    HPAL
     #define GMEM_SHARE                  0
@@ -782,14 +777,5 @@ typedef struct {
 #endif
 
 #pragma pack()
-
-// The following are not defined in the os2 2.0 header files so
-// lets do it here
-#ifndef CF_MMPMLAST
-#define CF_MMPMLAST               19
-#endif
-#ifndef CF_MMPMFIRST
-#define CF_MMPMFIRST              10
-#endif
 
 #endif

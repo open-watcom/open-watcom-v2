@@ -65,6 +65,10 @@
     #define TPM_RIGHTBUTTON             0
     #define PM1632_APIRET               USHORT
     #define PM1632_FILESIZETYPE         USHORT
+// The following are not defined in the os2 2.0 header files so
+// lets do it here
+    #define CF_MMPMFIRST                10
+    #define CF_MMPMLAST                 19
 #endif
 
 #define CALLBACK EXPENTRY

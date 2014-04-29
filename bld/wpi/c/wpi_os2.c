@@ -42,7 +42,7 @@
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSMISC
 #define INCL_DOSDEVICES
-#include <os2.h>
+#include <wos2.h>
 #include "wpi.h"
 
 #define PATBRUSHID 200   /* This is the constant id for pattern brushes */
