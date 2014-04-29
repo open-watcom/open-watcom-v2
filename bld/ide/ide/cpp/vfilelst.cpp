@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+#include <wwindows.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
@@ -44,7 +44,6 @@
 #endif
 #include "getfile.h"
 #include "malloc.h"
-#include "wi163264.h"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"

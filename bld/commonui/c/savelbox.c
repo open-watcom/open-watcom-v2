@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "savelbox.h"
-#include "wi163264.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "trpimp.h"
 
 void TRAPENTRY InfoFunction( HWND hwnd )

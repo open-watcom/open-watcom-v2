@@ -31,7 +31,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
-#include <windows.h>
+#include <wwindows.h>
 #include "global.h"
 #include "fmedit.def"
 #include "state.def"

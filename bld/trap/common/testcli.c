@@ -41,7 +41,7 @@
 full_block      Data;
 
 #ifdef __WINDOWS__
-#include "windows.h"
+#include <windows.h>
 HANDLE  Instance;
 #endif
 

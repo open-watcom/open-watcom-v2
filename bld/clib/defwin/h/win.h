@@ -31,17 +31,14 @@
 #include <stdarg.h>
 #ifdef __OS2__
 #define INCL_WIN
-#define INCL_BASE
-#include <os2.h>
-#include "wos2.h"
+#include <wos2.h>
 typedef int     HANDLE;
 #pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
 extern  unsigned        __WinSetWindowPos(unsigned);
 #define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
         __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #else
-#include <windows.h>
-#include "wi163264.h"
+#include <wwindows.h>
 #endif
 #include "_defwin.h"
 
@@ -66,7 +63,17 @@ extern void _ReleaseWinLines( void );
 #define _ReleaseWinLines()
 #endif
 
-#if defined(__386__) || defined(__AXP__) || defined(__PPC__)
+#ifdef _M_I86
+  #define _EXPORT __export
+  #define FARmemcpy _fmemcpy
+  #define FARmemset _fmemset
+  #define FARstrlen _fstrlen
+  #define FARstrcpy _fstrcpy
+  #define FARstrcat _fstrcat
+  #define FARmalloc _fmalloc
+  #define FARrealloc _frealloc
+  #define FARfree _ffree
+#else
   #define _EXPORT
   #define FARmemcpy memcpy
   #define FARmemset memset
@@ -80,16 +87,6 @@ extern void _ReleaseWinLines( void );
     #define AllocAlias16( a ) a
     #define FreeAlias16( a )
   #endif
-#else
-  #define _EXPORT __export
-  #define FARmemcpy _fmemcpy
-  #define FARmemset _fmemset
-  #define FARstrlen _fstrlen
-  #define FARstrcpy _fstrcpy
-  #define FARstrcat _fstrcat
-  #define FARmalloc _fmalloc
-  #define FARrealloc _frealloc
-  #define FARfree _ffree
 #endif
 
 #if defined( __OS2__ )

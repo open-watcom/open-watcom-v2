@@ -44,8 +44,7 @@
 #include "uigchar.h"
 #include "uiswap.h"
 
-#include <windows.h>
-#include "wi163264.h"
+#include <wwindows.h>
 
 extern void ToCharacter();
 extern void ToGraphical();

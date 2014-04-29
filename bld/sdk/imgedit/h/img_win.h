@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "wi163264.h"
-
 #define SELECTIMAGE             "SELECTIMAGE"
 #define ICONTYPE                "ICONTYPE"
 #define BITMAPTYPE              "BITMAPTYPE"

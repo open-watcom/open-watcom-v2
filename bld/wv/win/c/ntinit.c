@@ -39,12 +39,11 @@
 #include <direct.h>
 #include <stdarg.h>
 
-#include "windows.h"
+#include <wwindows.h>
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgtoggl.h"
 #include "dbgmem.h"
-#include "wi163264.h"
 #include "autoenv.h"
 
 extern int _8087;

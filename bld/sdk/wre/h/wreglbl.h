@@ -34,7 +34,6 @@
 #define WREGLBL_INCLUDED
 
 #include "bool.h"
-#include "wi163264.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

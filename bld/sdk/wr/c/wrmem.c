@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <stdlib.h>
 #include <string.h>
 #include "wio.h"

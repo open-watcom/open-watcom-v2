@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>

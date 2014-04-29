@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "dip.h"
 #include "exepe.h"
 

@@ -39,7 +39,7 @@
 #include "libwin32.h"
 #include "ntex.h"
 
-void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
+void __GetNTDirInfo(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
@@ -48,8 +48,7 @@ void __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)(DIR_TYPE *dirp, LPWIN32_FIND_DATA 
     dirp->d_name[NAME_MAX] = 0;
 }
 
-BOOL __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)(
-                HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
+BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb )
 {
     for(;;) {
         if( ffb->dwFileAttributes == 0 ) {

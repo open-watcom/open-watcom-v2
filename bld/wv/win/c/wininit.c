@@ -45,8 +45,7 @@
 #include "tinyio.h"
 #endif
 
-#include "windows.h"
-#include "wi163264.h"
+#include <wwindows.h>
 #include "dbgmem.h"
 #include "autoenv.h"
 

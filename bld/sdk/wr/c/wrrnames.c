@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"

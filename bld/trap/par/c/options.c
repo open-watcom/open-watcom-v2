@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <stdlib.h>
-#include "wi163264.h"
 #include "wserver.h"
 #include "options.h"
 

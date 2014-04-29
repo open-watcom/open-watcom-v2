@@ -41,7 +41,7 @@
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
-#include "windows.h"
+#include <windows.h>
 #include "exepe.h"
 #include "exedos.h"
 

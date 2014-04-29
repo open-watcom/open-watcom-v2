@@ -39,7 +39,6 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "wi163264.h"
 #include "ldstr.h"
 #include "uistr.gh"
 #include "wprocmap.h"

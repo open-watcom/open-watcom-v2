@@ -39,7 +39,6 @@
 #include <fcntl.h>
 #include <time.h>
 #include "watcom.h"
-#include "wi163264.h"
 #include "log.h"
 #include "mem.h"
 #ifndef NOUSE3D

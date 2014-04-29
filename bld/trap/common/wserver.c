@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <process.h>
-#include "wi163264.h"
+#include <wwindows.h>
 #include "wserver.h"
 #include "trpimp.h"
 #include "trperr.h"

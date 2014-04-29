@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef WPITYPE_H
-#define WPITYPE_H
+#ifndef _WPITYPE_H
+#define _WPITYPE_H
 /*
  Description:
  ============
@@ -39,10 +39,7 @@
 */
 
 #include <setjmp.h>
-/*
- * For developers concerned about NT issues, wi163264.h is included here
- * to macro from windows to nt.
- */
+
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
 #include "pm1632.h"
 #endif
@@ -737,7 +734,7 @@ typedef struct {
     LONG                pt_size;        // only set if retrieved = TRUE
 } wpi_f_font;
 
-#else
+#else   /* ! (defined( __OS2_PM__ ) || defined( __OS2__ )) */
     #define LIT_END                     0
     #define LIT_SORTASCENDING           0
     #define LIT_SORTDESCENDING          0
@@ -774,7 +771,7 @@ typedef struct {
     #define MPFROMSHORT( s1 )           s1
     #define WPI_LOGPIXELSX_FONT         LOGPIXELSX
     #define WPI_LOGPIXELSY_FONT         LOGPIXELSY
-#endif
+#endif  /* ! (defined( __OS2_PM__ ) || defined( __OS2__ )) */
 
 #pragma pack()
 

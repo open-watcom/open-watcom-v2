@@ -37,7 +37,7 @@
 #include "testlink.h"
 #include "packet.h"
 #ifdef __WINDOWS__
-#include "windows.h"
+#include <windows.h>
 
 extern HANDLE   *_MainWindowData; // KLUDGE!!! (who cares - it's just a test program)
 #endif

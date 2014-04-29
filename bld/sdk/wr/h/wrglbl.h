@@ -34,7 +34,6 @@
 #define WRGLBL_INCLUDED
 
 #include "wrdll.h"
-#include "wi163264.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

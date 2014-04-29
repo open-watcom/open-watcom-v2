@@ -31,7 +31,6 @@
 
 
 #include "precomp.h"
-
 #include "wmsg.h"
 #include "ldstr.h"
 #include "rcstr.gh"

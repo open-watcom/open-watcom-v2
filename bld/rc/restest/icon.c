@@ -30,8 +30,7 @@
 
 
 #include <stdio.h>
-#include <windows.h>
-#include "wi163264.h"
+#include <wwindows.h>
 #include "restest.h"
 #include "resname.h"
 

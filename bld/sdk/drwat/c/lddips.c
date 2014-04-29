@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include "windows.h"
+#include <windows.h>
 #include "drwatcom.h"
 #include "dip.h"
 #include "dipload.h"

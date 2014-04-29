@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "mad.h"
 #include "drwatcom.h"
 #include "madcli.h"

@@ -34,7 +34,6 @@
 #include <commdlg.h>
 #include <dlgs.h>
 #include <direct.h>
-
 #include <string.h>
 #include <stdlib.h>
 #include "wglbl.h"

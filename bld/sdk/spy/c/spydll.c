@@ -32,8 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <windows.h>
-#include "wi163264.h"
+#include <wwindows.h>
 #include "spydll.h"
 
 typedef struct

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <ctype.h>
 #include <string.h>
 #include <mbstring.h>

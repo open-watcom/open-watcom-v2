@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <limits.h>
 #include <io.h>
 #include <stdio.h>

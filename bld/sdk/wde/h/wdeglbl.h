@@ -38,7 +38,6 @@
 #include "precomp.h"
 #include "watcom.h"
 #include "bool.h"
-#include "wi163264.h"
 #include "fmedit.def"
 
 /****************************************************************************/

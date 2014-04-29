@@ -31,7 +31,6 @@
 
 
 #include "precomp.h"
-
 #include "watcom.h"
 #include "wglbl.h"
 #include "wmain.h"

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <limits.h>
 #include <string.h>
 #include <malloc.h>

@@ -32,9 +32,6 @@
 #include "precomp.h"
 #include <string.h>
 #include <assert.h>
-#if !defined( __OS2__ )
-#include "wi163264.h"
-#endif
 #include "mem.h"
 #include "toolbr.h"
 #include "loadcc.h"

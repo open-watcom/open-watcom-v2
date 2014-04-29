@@ -31,7 +31,6 @@
 
 #include "precomp.h"
 #include <string.h>
-#include "wi163264.h"
 #include "mark.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

@@ -36,7 +36,6 @@
 #include "mark.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
-#include "wi163264.h"
 
 static BOOL     spyAll;
 static WORD     statusHite = 25;

@@ -31,7 +31,7 @@
 
 
 #include <stdio.h>
-#include "windows.h"
+#include <windows.h>
 
 #define PB_DLLDBG_CLASS         "PB_DLLDBG_CLASS"
 #define APPNAME                 "DLL Debugger"

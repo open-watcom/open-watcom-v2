@@ -40,7 +40,7 @@
 
 #include "mad.h"
 #include "drwatcom.h"
-#include "windows.h"
+#include <windows.h>
 #include "mem.h"
 
 unsigned DIGCLIENT MADCliReadMem( address a, unsigned size, void *buff )

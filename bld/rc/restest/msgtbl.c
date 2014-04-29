@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "windows.h"
+#include <windows.h>
 #include "restest.h"
 #include "getnum.h"
 #include "resname.h"

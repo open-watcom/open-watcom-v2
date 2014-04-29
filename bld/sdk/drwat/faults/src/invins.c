@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 
 #pragma aux InvalidIns = 0x0f 0xff;
 extern void InvalidIns( void );

@@ -38,12 +38,11 @@
     #define INCLUDE_COMMDLG_H
     #define INCLUDE_CDERR_H
 #endif
-    #include <windows.h>
+    #include <wwindows.h>
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
     #include <ddeml.h>
     #pragma library (ddeml)
 #endif
-    #include "wi163264.h"
 
 extern "C" {
     extern HINSTANCE        GUIMainHInst;

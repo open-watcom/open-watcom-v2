@@ -38,7 +38,7 @@
 #include <stddef.h>
 #include "../../dos/h/dbgscrn.h"
 #include "dbgtoggl.h"
-#include "windows.h"
+#include <windows.h>
 #include "winscrn.h"
 #include "swap.h"
 

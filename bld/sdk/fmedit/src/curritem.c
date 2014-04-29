@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include "global.h"
 #include "fmedit.def"
 #include "curritem.h"

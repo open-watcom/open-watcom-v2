@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "font.h"
-#include "wi163264.h"
 #include "wprocmap.h"
 
 #define MAX_STR 256

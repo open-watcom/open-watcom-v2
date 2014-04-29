@@ -48,7 +48,7 @@
 #elif defined( __NT__ )
 #include <direct.h>
 #include <sys/utime.h>
-#include "windows.h"
+#include <windows.h>
 #elif defined( __UNIX__ )
 #include <dirent.h>
 #include <utime.h>

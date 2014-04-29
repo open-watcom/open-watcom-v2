@@ -31,7 +31,6 @@
 
 
 #include "precomp.h"
-
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wremsg.h"

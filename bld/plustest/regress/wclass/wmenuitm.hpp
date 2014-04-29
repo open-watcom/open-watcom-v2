@@ -1,7 +1,7 @@
 #ifndef wmenuitem_class
 #define wmenuitem_class
 
-#include "windows.h"
+#include <windows.h>
 #include "wobject.hpp"
 #include "wstring.hpp"
 

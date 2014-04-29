@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 #include "srchmsg.h"
 #include "madrtn.h"
 #include "madx86.h"

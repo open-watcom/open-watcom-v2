@@ -44,7 +44,7 @@
 #endif
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-    #include "windows.h"
+    #include <windows.h>
 #endif
 #include "wio.h"
 #include "watcom.h"

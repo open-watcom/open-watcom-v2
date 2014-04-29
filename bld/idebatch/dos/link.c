@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include "wdebug.h"
 #ifdef __WINDOWS__
-#include "windows.h"
+#include <windows.h>
 #endif
 #include "link.h"
 

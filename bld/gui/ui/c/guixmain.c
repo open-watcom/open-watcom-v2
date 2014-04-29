@@ -63,8 +63,7 @@ bool GUIMainTouched = FALSE;
 #ifdef __WINDOWS__
 
 #include "swap.h"
-#include <windows.h>
-#include "wi163264.h"
+#include <wwindows.h>
 #include <dos.h>
 
 int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,

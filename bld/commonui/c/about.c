@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include "about.h"
 #include "aboutdlg.h"
-#include "wi163264.h"
 #ifndef NOUSE3D
   #include "ctl3dcvr.h"
 #endif

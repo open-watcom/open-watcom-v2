@@ -38,7 +38,7 @@
 
 #include "mad.h"
 #include "madregs.h"
-#include "windows.h"
+#include <windows.h>
 
 extern void GetSysConfig(void);
 void LoadMADRegisters(mad_registers *MadRegisters, HANDLE threadhdl );

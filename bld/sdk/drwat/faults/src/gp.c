@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "windows.h"
+#include <windows.h>
 
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 {

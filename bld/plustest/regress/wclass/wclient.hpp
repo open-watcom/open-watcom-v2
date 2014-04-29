@@ -1,8 +1,8 @@
 #ifndef wclient_class
 #define wclient_class
 
-#include "windows.h"
-#include "ddeml.h"
+#include <windows.h>
+#include <ddeml.h>
 
 #include "wobject.hpp"
 #include "wstring.hpp"

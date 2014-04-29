@@ -36,7 +36,7 @@
 #include "uidos.h"
 #include "uidef.h"
 #include "uishift.h"
-#include "windows.h"
+#include <windows.h>
 
 
 typedef struct {

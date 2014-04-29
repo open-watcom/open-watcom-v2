@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <stdlib.h>
 #include "watcom.h"
 #include "wrglbl.h"

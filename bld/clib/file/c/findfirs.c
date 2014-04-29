@@ -56,10 +56,6 @@
 #include "find.h"
 #include "seterrno.h"
 
-#if defined( __NT__ )
-  #define CHECK_FIND_NEXT_ATTR    __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)
-#endif
-
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
@@ -87,7 +83,7 @@
     }
 
     /*** Look for the first file ***/
-    if( !CHECK_FIND_NEXT_ATTR( h, FIND_ATTR, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( h, FIND_ATTR, &ffb ) ) {
         FindClose( h );
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }

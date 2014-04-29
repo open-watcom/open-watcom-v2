@@ -32,7 +32,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
-#include <windows.h>
+#include <wwindows.h>
 #include "global.h"
 
 /* imports */

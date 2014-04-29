@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <string.h>
 #include <stdlib.h>
 #include "wrglbl.h"

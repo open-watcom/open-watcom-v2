@@ -34,7 +34,6 @@
 #include "uistr.gh"
 #include "mem.h"
 #include "ldstr.h"
-#include "wi163264.h"
 #include "font.h"
 
 typedef struct {

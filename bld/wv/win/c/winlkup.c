@@ -33,7 +33,7 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include <string.h>
-#include "windows.h"
+#include <windows.h>
 
 
 #ifndef __NT__

@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "wi163264.h"
 #include "desknt.h"
 #include "wprocmap.h"
 

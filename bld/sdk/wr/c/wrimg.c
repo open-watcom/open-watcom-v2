@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>

@@ -34,7 +34,7 @@
 #include "uidef.h"
 #include "uimouse.h"
 #include "biosui.h"
-#include "windows.h"
+#include <windows.h>
 
 static int MouseX,MouseY,MouseStatusBits;
 static int ScreenXFudge,ScreenYFudge;

@@ -49,8 +49,6 @@
 #include "_dtaxxx.h"
 #include "liballoc.h"
 
-#define GET_DIR_INFO    __F_NAME(__GetNTDirInfo,__wGetNTDirInfo)
-
 
 static int is_directory( const CHAR_TYPE *name )
 /**********************************************/
@@ -109,7 +107,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         return( NULL );
     }
     DIR_HANDLE_OF( dirp ) = h;
-    GET_DIR_INFO( dirp, &ffb );
+    __GetNTDirInfo( dirp, &ffb );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
@@ -181,7 +179,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
             }
             return( NULL );
         }
-        GET_DIR_INFO( dirp, &ffd );
+        __GetNTDirInfo( dirp, &ffd );
     }
     return( dirp );
 

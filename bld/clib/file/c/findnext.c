@@ -43,10 +43,6 @@
 #include "find.h"
 #include "seterrno.h"
 
-#ifdef __NT__
-  #define CHECK_FIND_NEXT_ATTR    __F_NAME(__NTFindNextFileWithAttr,__wNTFindNextFileWithAttr)
-#endif
-
 
 #ifdef __WIDECHAR__
  #ifdef __INT64__
@@ -71,7 +67,7 @@
     if( rc == FALSE ) {
         return( __set_errno_nt() );
     }
-    if( !CHECK_FIND_NEXT_ATTR( (HANDLE)handle, FIND_ATTR, &ffb ) ) {
+    if( !__NTFindNextFileWithAttr( (HANDLE)handle, FIND_ATTR, &ffb ) ) {
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
     /*** Got one! ***/

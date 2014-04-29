@@ -44,19 +44,26 @@ _WCRTLINK extern void __DefaultExceptionHandler( void );
 _WCRTLINK extern void __NewExceptionFilter( REGISTRATION_RECORD * );
 _WCRTLINK extern void __DoneExceptionFilter( void );
 
-struct dirent;
-
 extern void __GetNTCreateAttr( int mode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTAccessAttr( int rwmode, LPDWORD desired_access, LPDWORD attr );
 extern void __GetNTShareAttr( int share, LPDWORD share_mode );
 extern void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
 extern void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );
-extern void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffb );
-extern void __wGetNTDirInfo( struct _wdirent *dirp, LPWIN32_FIND_DATA ffb );
-extern BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
-extern BOOL __wNTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ffb );
 extern int __NTRealKey( INPUT_RECORD * );
 extern HANDLE __NTConsoleInput( void );
 extern HANDLE __NTConsoleOutput( void );
+
+extern void __GetNTDirInfoA( struct dirent *dirp, LPWIN32_FIND_DATAA ffb );
+extern void __GetNTDirInfoW( struct _wdirent *dirp, LPWIN32_FIND_DATAW ffb );
+extern BOOL __NTFindNextFileWithAttrA( HANDLE h, DWORD attr, LPWIN32_FIND_DATAA ffb );
+extern BOOL __NTFindNextFileWithAttrW( HANDLE h, DWORD attr, LPWIN32_FIND_DATAW ffb );
+
+#ifdef __WIDECHAR__
+#define __GetNTDirInfo              __GetNTDirInfoW
+#define __NTFindNextFileWithAttr    __NTFindNextFileWithAttrW
+#else
+#define __GetNTDirInfo              __GetNTDirInfoA
+#define __NTFindNextFileWithAttr    __NTFindNextFileWithAttrA
+#endif
 
 #endif
