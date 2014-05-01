@@ -67,7 +67,7 @@ static int verifyOBJFile( int fh )
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
         return( 0 );
     }
-    if( read( fh, &theadr, sizeof(theadr) ) != sizeof(theadr) ) {
+    if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
         return( 0 );
     }
     if( theadr.header.command != CMD_THEADR ) {
@@ -106,7 +106,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     rtn_status rstatus;
     time_t DOS_stamp_time;
     int fh;
-    size_t len;
+    unsigned len;
     auto obj_record header;
     auto struct {
         uint_8          bits;
@@ -125,7 +125,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     if( verifyOBJFile( fh ) ) {
         wstatus = ADW_OK;
         for(;;) {
-            if( read( fh, &header, sizeof(header) ) != sizeof(header) ) {
+            if( read( fh, &header, sizeof( header ) ) != sizeof( header ) ) {
                 wstatus = ADW_FILE_ERROR;
                 break;
             }
@@ -138,12 +138,12 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
                 lseek( fh, header.length, SEEK_CUR );
                 continue;
             }
-            if( read( fh, &comment, sizeof(comment) ) != sizeof(comment) ) {
+            if( read( fh, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
                 wstatus = ADW_FILE_ERROR;
                 break;
             }
             if( comment.type != CMT_DEPENDENCY ) {
-                lseek( fh, (fpos_t)header.length - sizeof(comment), SEEK_CUR );
+                lseek( fh, (fpos_t)header.length - sizeof( comment ), SEEK_CUR );
                 continue;
             }
             if( header.length < sizeof( comment ) ) {
@@ -153,11 +153,11 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
             len = comment.name_len;
             /* read in the checksum byte to stay in synch */
             ++len;
-            if( read( fh, buff, len ) != len ) {
+            if( (unsigned)read( fh, buff, len ) != len ) {
                 wstatus = ADW_FILE_ERROR;
                 break;
             }
-            buff[len-1] = '\0';
+            buff[len - 1] = '\0';
             if( rtn != NULL ) {
                 DOS_stamp_time = dosStampToTime( comment.dos_date,
                                                  comment.dos_time );
