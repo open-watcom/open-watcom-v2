@@ -80,9 +80,9 @@ typedef enum {
 
 /* Location operation encodings: section 7.7, figure 23 */
 
-#define DW_OP_lit( __x )        ( (__x) + 0x30 )        // valid for 0..31 only
-#define DW_OP_reg( __x )        ( (__x) + 0x50 )        // valid for 0..31 only
-#define DW_OP_breg( __x )       ( (__x) + 0x70 )        // valid for 0..31 only
+#define DW_OP_lit( __x )        ((dw_op)((__x) + 0x30))     // valid for 0..31 only
+#define DW_OP_reg( __x )        ((dw_op)((__x) + 0x50))     // valid for 0..31 only
+#define DW_OP_breg( __x )       ((dw_op)((__x) + 0x70))     // valid for 0..31 only
 #include "dwloccl.h"
 typedef enum {
     DW_OP_regx          = 0x90,
