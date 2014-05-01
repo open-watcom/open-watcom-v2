@@ -95,6 +95,7 @@ end
 
 system begin pharlap
     libpath %OWSRCDIR%/clib/library/msdos.386/ms_r
+    libpath %OWSRCDIR%/clib/doslfn/library/msdos.386/ms_r
     libpath %OWSRCDIR%/mathlib/library/msdos.386/ms_r
     format phar ^
 end
