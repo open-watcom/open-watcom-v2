@@ -513,6 +513,9 @@ static CHAIN *addChain( char *n, bool chain )
     cvtName( n, n, CVT_STRING );
     cn->clen = strlen( n );
     cn->code_used = chain;
+    for( i = 0; i < LANG_MAX; ++i ) {
+        cn->Usage[i] = NULL;
+    }
     cn->next = chainList;
     chainList = cn;
     return( cn );
