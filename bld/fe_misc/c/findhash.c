@@ -848,7 +848,7 @@ void dump_common_defs( unsigned first_index, unsigned last_index )
     fprintf( outfile, "#define LAST_SCALE    %d\n", last_scale );
     fprintf( outfile, "#define LEN_MAX       %d\n", max_len );
     fprintf( outfile, "#define LEN_MIN       %d\n", min_len );
-    fprintf( outfile, "#define LEN_MASK      0x%lx\n", len_mask );
+    fprintf( outfile, "#define LEN_MASK      0x%x\n", len_mask );
 }
 
 char *get_gh_filename( const char *name )

@@ -495,6 +495,7 @@ static CHAIN *addChain( char *n, bool chain )
 {
     size_t len;
     CHAIN *cn;
+    int i;
 
     cvtName( n, n, CVT_NORMALIZE );
     for( cn = chainList; cn != NULL; cn = cn->next ) {
