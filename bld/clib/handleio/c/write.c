@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include "int64.h"
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
@@ -44,8 +43,8 @@
     #include <windows.h>
     #include "tinyio.h"
 #elif defined(__OS2__)
-    #include "tinyos2.h"
     #include <wos2.h>
+    #include "tinyos2.h"
 #else
     #include "tinyio.h"
 #endif

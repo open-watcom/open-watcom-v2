@@ -38,9 +38,9 @@
 #include <errno.h>
 #if defined(__OS2__)
     #include <dos.h>
-    #include "tinyos2.h"
     #define INCL_DOSMEMMGR
     #include <wos2.h>
+    #include "tinyos2.h"
 #elif defined(__QNX__)
     #include <sys/types.h>
     #include <sys/seginfo.h>

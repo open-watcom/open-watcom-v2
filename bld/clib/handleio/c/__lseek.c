@@ -37,7 +37,7 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #define INCL_LONGLONG
-    #include "wos2.h"
+    #include <wos2.h>
     #include "os2fil64.h"
 #elif defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"

@@ -38,9 +38,9 @@
     #include <sys/seginfo.h>
 #elif defined(__LINUX__)
 #elif defined(__OS2__)
-    #include "tinyos2.h"
     #define INCL_DOSMEMMGR
     #include <wos2.h>
+    #include "tinyos2.h"
 #elif defined(_M_IX86)
     #include "tinyio.h"
 #endif

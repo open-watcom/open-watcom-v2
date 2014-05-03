@@ -58,7 +58,6 @@
 #include "pragdefn.h"
 #endif
 
-#ifdef XTRA_RPT
 ExtraRptCtr( ctr_namespace_decl );
 ExtraRptCtr( ctr_symbol_decl );
 ExtraRptCtr( ctr_template_class_decl );
@@ -83,7 +82,6 @@ ExtraRptCtr( ctr_dep_macro_value );
 ExtraRptCtr( ctr_nontrivial_scopes );
 ExtraRptCtr( ctr_open_scope );
 ExtraRptCtr( ctr_open_source );
-#endif
 
 typedef enum                    // BRINFO STATES:
 {   BRS_INACTIVE                // - inactive

@@ -201,13 +201,9 @@ static int map_char_ib( int ch )
 /* This function will do proper escaping or character substitution for
  * characters special to InfoBench and add them to the section text.
  */
-static int trans_add_char_ib(
-/***************************/
-
-    int                 ch,
-    section_def         *section,
-    int                 *alloc_size
-) {
+static int trans_add_char_ib( int ch, section_def *section, int *alloc_size )
+/***************************************************************************/
+{
     int                 len=0;
     int                 esc;
 

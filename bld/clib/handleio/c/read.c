@@ -41,9 +41,9 @@
     #include <windows.h>
     #include "tinyio.h"
 #elif defined(__OS2__)
-    #include "tinyos2.h"
     #define INCL_DOSMEMMGR
     #include <wos2.h>
+    #include "tinyos2.h"
 #else
     #include "tinyio.h"
 #endif

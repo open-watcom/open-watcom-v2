@@ -42,9 +42,7 @@
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "_doslfn.h"
-#ifdef __INT64__
 #include "int64.h"
-#endif
 
 extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
