@@ -42,7 +42,6 @@
 #include "ring.h"
 #include "pstk.h"
 #include "initdefs.h"
-#include "cgdbg.h"
 
 static PSTK_CTL stack_cond_blks;    // stack: conditional DTOR blocks
 static carve_t carveInfo;           // conditional dtor block

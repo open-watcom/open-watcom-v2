@@ -36,6 +36,7 @@
 struct pragma_toggles {
     #define toggle_pick( x )    unsigned x : 1;
     #include "tognam.h"
+    #undef toggle_pick
 };
 
 global struct pragma_toggles    PragToggle;

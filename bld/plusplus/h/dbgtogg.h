@@ -76,4 +76,3 @@ toggle_pick( member_inst )      // - print template member instantiations
 toggle_pick( templ_inst )       // - template instantiations
 toggle_pick( templ_spec )       // - template specialisations
 toggle_pick( templ_function )   // - template functions
-#undef toggle_pick

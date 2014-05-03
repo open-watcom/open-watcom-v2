@@ -443,6 +443,7 @@ void PragmaSetToggle(           // SET TOGGLE
             return;                             \
         }
     #include "dbgtogg.h"
+    #undef toggle_pick
 
     #define toggle_pick( x ) \
         if( strcmp( Buffer, #x ) == 0 ) {       \
@@ -450,6 +451,7 @@ void PragmaSetToggle(           // SET TOGGLE
             return;                             \
         }
     #include "tognam.h"
+    #undef toggle_pick
 }
 
 static bool PragIdRecog(        // RECOGNIZE PRAGMA ID

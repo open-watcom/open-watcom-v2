@@ -61,8 +61,9 @@ global AUX_INFO         *CurrInfo;
 global AUX_INFO         *DftCallConv;
 
 struct pragma_dbg_toggles  {
-#define toggle_pick( id )       unsigned id : 1;
-#include "dbgtogg.h"
+    #define toggle_pick( id )       unsigned id : 1;
+    #include "dbgtogg.h"
+    #undef toggle_pick
 };
 global struct pragma_dbg_toggles  PragDbgToggle;
 

@@ -33,4 +33,3 @@
                                 // #pragma on/off( <toggle-name> )
 toggle_pick( check_stack )      // - enable stack checking for functions
 toggle_pick( unreferenced )     // - don't warn if symbol isn't ref'd
-#undef toggle_pick

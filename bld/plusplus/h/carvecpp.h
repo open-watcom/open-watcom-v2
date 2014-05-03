@@ -41,7 +41,7 @@
 #include "pragdefn.h"
 
 #define ERR_RET ( ErrCount != 0 )
-#define ERR_SET ++ErrCount;
+#define ERR_SET ++ErrCount
 #ifndef NDEBUG
 #   define DUMP_MEMORY
 #endif

@@ -95,10 +95,10 @@ typedef const struct idname *NAME;      // name pointer
 
 #ifndef NDEBUG
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
-    #define DbgVerify( cond, msg ) if( ! ( cond ) ) CFatal( msg __location );
+    #define DbgVerify( cond, msg ) if( !( cond ) ) CFatal( msg __location )
     #define DbgDefault( msg )   default: CFatal( msg __location )
-    #define DbgAssert( cond )   if( !(cond) ) CFatal( #cond __location );
-    #define DbgStmt( stmt )     stmt;
+    #define DbgAssert( cond )   if( !(cond) ) CFatal( #cond __location )
+    #define DbgStmt( stmt )     stmt
     #define XTRA_RPT
     #define IfDbgToggle( n )    if( PragDbgToggle.n )
 

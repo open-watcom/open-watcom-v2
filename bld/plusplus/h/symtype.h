@@ -861,7 +861,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
 
 // adding a symbol to the SYMBOL_NAME has to be consistently
 // a push or append for namespace multi-sym returns
-#define _AddSymToRing( h, r )           RingAppend( (h), (r) );
+#define _AddSymToRing( h, r )           RingAppend( (h), (r) )
 
 PCH_struct symbol_name {
     SYMBOL_NAME         next;
