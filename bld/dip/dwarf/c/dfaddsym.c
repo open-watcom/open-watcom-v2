@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "dfdip.h"
 #include "dfaddsym.h"
 #include "dfsegs.h"

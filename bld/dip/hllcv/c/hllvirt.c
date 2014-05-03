@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "hllinfo.h"
 #include <limits.h>
 #include "bool.h"
-#include "hllinfo.h"
 
 
 #define PAGE_BITS       12

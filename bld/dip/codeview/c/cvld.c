@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stddef.h>
-#include "cvinfo.h"     //
+#include "cvinfo.h"
 #include "exepe.h"
 #include "exedos.h"
 
 /* WD looks for this symbol to determine module bitness */
 #if !defined( __WINDOWS__ )
 int __nullarea;
+#if defined( __WATCOMC__ )
 #pragma aux __nullarea "*";
+#endif
 #endif
 
 /*

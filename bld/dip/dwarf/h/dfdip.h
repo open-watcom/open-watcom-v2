@@ -31,6 +31,8 @@
 
 #ifndef DIP_DFDIP
 
+#include <string.h>
+#include <stdlib.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "dr.h"

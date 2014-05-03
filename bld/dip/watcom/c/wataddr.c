@@ -31,7 +31,6 @@
 
 
 #include "dipwat.h"
-#include <stddef.h>
 
 extern void             AddressMap( imp_image_handle *, addr_ptr * );
 extern unsigned         ModOff2Idx(section_info *, unsigned );

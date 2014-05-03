@@ -29,12 +29,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include "dfdip.h"
 #include "dfaddr.h"
 #include "dfsegs.h"
-#include <enterdb.h>
+#include "enterdb.h"
 
 
 typedef struct off_blk {

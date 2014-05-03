@@ -31,7 +31,6 @@
 
 
 #include "exp.h"
-#include <string.h>
 
 /*
         Stuff dealing with module handles

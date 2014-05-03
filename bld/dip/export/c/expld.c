@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include "walloca.h"
 #include "exp.h"
+#include "walloca.h"
 #include "exedos.h"
 #include "exeos2.h"
 #include "exeflat.h"

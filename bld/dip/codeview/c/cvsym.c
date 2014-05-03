@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+#include "cvinfo.h"
 #include "walloca.h"
 #include "watcom.h"
 #include "demangle.h"
-#include "cvinfo.h"
 
 
 #define SCOPE_CLASS_FLAG        0x80000000UL

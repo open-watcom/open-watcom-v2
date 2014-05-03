@@ -37,6 +37,8 @@
 #ifndef DIP_SKEL
 #define DIP_SKEL
 
+#include <stddef.h>
+#include <string.h>
 #include "dip.h"
 #include "dipimp.h"
 

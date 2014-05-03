@@ -30,12 +30,11 @@
 
 
 #include "dipwat.h"
-#include "demangle.h"
-#include <string.h>
-#include "walloca.h"
 #if defined( _M_I86 )
 #include <i86.h>
 #endif
+#include "demangle.h"
+#include "walloca.h"
 
 
 extern void             InfoUnlock( void );

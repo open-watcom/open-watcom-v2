@@ -29,11 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include "bool.h"
 #include "hllinfo.h"
+#include "bool.h"
 #include "exepe.h"
 #include "exeflat.h"
 #include "exedos.h"

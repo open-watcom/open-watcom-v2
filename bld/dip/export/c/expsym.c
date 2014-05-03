@@ -30,12 +30,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
+#include "exp.h"
 #if defined( _M_I86 )
 #include <i86.h>
 #endif
-#include "exp.h"
 
 
 /*

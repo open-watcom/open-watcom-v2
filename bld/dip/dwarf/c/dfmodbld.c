@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <string.h>
 #include "dfdip.h"
 #include "dfmod.h"
 #include "dfmodinf.h"

@@ -32,6 +32,9 @@
 #ifndef DIP_HLL
 #define DIP_HLL
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "bool.h"

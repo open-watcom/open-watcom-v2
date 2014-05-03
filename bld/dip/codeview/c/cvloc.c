@@ -31,7 +31,6 @@
 
 
 #include "cvinfo.h"
-#include <string.h>
 
 extern address          NilAddr;
 

@@ -29,12 +29,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-#include "walloca.h"
 #include "hllinfo.h"
+#include <stdint.h>
+#include "walloca.h"
 
 
 /*

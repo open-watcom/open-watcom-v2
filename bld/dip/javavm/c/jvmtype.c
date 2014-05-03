@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stddef.h>
-#include <ctype.h>
 #include "jvmdip.h"
+#include <ctype.h>
 #include "java_lang_String.h"
 
 

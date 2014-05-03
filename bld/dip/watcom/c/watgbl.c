@@ -31,8 +31,6 @@
 
 
 #include "dipwat.h"
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include "demangle.h"
 

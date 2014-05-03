@@ -30,7 +30,6 @@
 
 
 #include "msym.h"
-#include <string.h>
 
 walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii,
                         IMP_MOD_WKR *wk, void *d )

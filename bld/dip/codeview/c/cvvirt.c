@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <limits.h>
 #include "cvinfo.h"
+#include <limits.h>
 
 #define PAGE_BITS       12
 #define DIR_BITS        4

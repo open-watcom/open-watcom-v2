@@ -29,12 +29,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
+#include "msym.h"
 #if defined( _M_I86 )
 #include <i86.h>
 #endif
-#include "msym.h"
 
 
 walk_result     DoWalkSymList( imp_image_handle *ii,

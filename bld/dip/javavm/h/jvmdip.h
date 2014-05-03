@@ -33,6 +33,7 @@
 #ifndef DIP_JVMDIP
 #define DIP_JVMDIP
 
+#include <string.h>
 #include <stddef.h>     /* for offsetof */
 #include "dip.h"
 #include "dipimp.h"

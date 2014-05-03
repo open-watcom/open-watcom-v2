@@ -31,8 +31,6 @@
 
 
 #include "dipwat.h"
-#include <string.h>
-#include <stddef.h>
 
 
 typedef struct {

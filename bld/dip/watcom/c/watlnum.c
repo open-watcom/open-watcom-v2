@@ -32,8 +32,6 @@
 
 #include "dipwat.h"
 #include "dbcue.h"
-#include <stddef.h>
-#include <string.h>
 
 extern void             *InfoLoad(imp_image_handle *, imp_mod_handle,unsigned,unsigned,void (*)());
 extern void             InfoUnlock(void);

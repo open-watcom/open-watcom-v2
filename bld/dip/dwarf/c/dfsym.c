@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "dfdip.h"
 #include "dfld.h"
 #include "dfmod.h"

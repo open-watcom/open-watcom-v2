@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <ctype.h>
 #include "dfdip.h"
+#include <ctype.h>
 #include "dfhash.h"
 
 

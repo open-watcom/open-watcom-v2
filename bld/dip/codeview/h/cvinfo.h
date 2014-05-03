@@ -32,6 +32,9 @@
 
 #ifndef DIP_CV
 
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "cv4w.h"

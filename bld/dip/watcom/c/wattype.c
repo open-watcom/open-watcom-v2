@@ -31,7 +31,6 @@
 
 #include "dipwat.h"
 #include "wattype.h"
-#include <string.h>
 #include "walloca.h"
 
 

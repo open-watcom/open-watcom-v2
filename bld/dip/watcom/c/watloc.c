@@ -32,7 +32,6 @@
 
 #include "dipwat.h"
 #include "watloc.h"
-#include <string.h>
 
 extern byte             *GetAddress( imp_image_handle *, byte *, address *, int );
 

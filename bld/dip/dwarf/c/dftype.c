@@ -29,10 +29,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
-#include <limits.h>
 #include "dfdip.h"
+#include <limits.h>
 #include "dfld.h"
 #include "dfmod.h"
 #include "dfmodinf.h"

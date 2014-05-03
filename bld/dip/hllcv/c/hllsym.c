@@ -29,12 +29,9 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+#include "hllinfo.h"
 #include "walloca.h"
 #include "demangle.h"
-#include "hllinfo.h"
 
 
 #define SCOPE_CLASS_FLAG        0x80000000UL

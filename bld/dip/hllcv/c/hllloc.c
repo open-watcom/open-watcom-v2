@@ -29,9 +29,11 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include "hllinfo.h"
+
 /* FIXME: kick out these! They are all WRONG! */
 #include "cv4w.h"
+
 enum {
 #define _CVREG( name, num )     CV_X86_##name = num,
 #include "cv4intl.h"
@@ -40,7 +42,6 @@ enum {
 #include "cv4axp.h"
 CV_LAST_REG
 };
-#include "hllinfo.h"
 
 
 extern address          NilAddr;

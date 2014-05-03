@@ -30,9 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <ctype.h>
 #include "jvmdip.h"
+#include <ctype.h>
 #include "java_lang_String.h"
 
 #define OBJECT_SCOPE    (~0L)

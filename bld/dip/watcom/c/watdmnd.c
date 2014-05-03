@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <limits.h>
 #include "dipwat.h"
+#include <limits.h>
 
 extern dip_status InfoRead(section_info *, unsigned long ,unsigned int ,void *);
 extern mod_info *ModPointer( imp_image_handle *, imp_mod_handle );

@@ -29,11 +29,9 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <string.h>
+#include "cvinfo.h"
 #include "walloca.h"
 #include "watcom.h"
-#include "cvinfo.h"
 
 
 typedef struct {

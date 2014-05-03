@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include "msym.h"
 #include "exedos.h"
 #include "exeos2.h"

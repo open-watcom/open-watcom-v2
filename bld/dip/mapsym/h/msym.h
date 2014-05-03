@@ -31,6 +31,9 @@
 
 #ifndef DIP_MSYM
 
+#include <string.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "mapsym.h"
