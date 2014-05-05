@@ -1491,11 +1491,11 @@ dis_handler_return X86NoOp_8( dis_handle *h, void *d, dis_dec_ins *ins )
  *  OOOO OOOW
  */
 {
-    code_8 code;
+//    code_8 code;
 
     h = h; d = d;
 
-    code.full = ins->opcode;
+//    code.full = ins->opcode;
     ins->size    += 1;
     ins->num_ops = 0;
 
@@ -1933,11 +1933,11 @@ dis_handler_return X86JmpCC_8( dis_handle *h, void *d, dis_dec_ins *ins )
  *  Jump Handler
  */
 {
-    code_8 code;
+//    code_8 code;
 
     h = h;
 
-    code.full = ins->opcode;
+//    code.full = ins->opcode;
     ins->size += 1;
     ins->num_ops = 0;
 
@@ -2378,11 +2378,11 @@ dis_handler_return X86JmpCC_16( dis_handle *h, void *d, dis_dec_ins *ins )
  *  Jump Handler
  */
 {
-    code_16 code;
+//    code_16 code;
 
     h = h;
 
-    code.full = ins->opcode;
+//    code.full = ins->opcode;
     ins->size += 2;
     ins->num_ops = 0;
     X86GetRelVal( d, ins );

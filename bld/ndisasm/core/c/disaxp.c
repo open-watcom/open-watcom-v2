@@ -497,7 +497,7 @@ static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     case DI_AXP_SUBS:
         if( ins->op[0].base == DR_AXP_f31 ) {
-            if( (ins->flags.u.axp == DIF_NONE) ||
+            if( (ins->flags.u.axp == DIF_AXP_NONE) ||
                 (ins->flags.u.axp == (DIF_AXP_S | DIF_AXP_U) ) ||
                 (ins->flags.u.axp == (DIF_AXP_S | DIF_AXP_U | DIF_AXP_I ) ) ) {
                 new = "negs";
@@ -509,7 +509,7 @@ static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         break;
     case DI_AXP_SUBT:
         if( ins->op[0].base == DR_AXP_f31 ) {
-            if( (ins->flags.u.axp == DIF_NONE) ||
+            if( (ins->flags.u.axp == DIF_AXP_NONE) ||
                 (ins->flags.u.axp == (DIF_AXP_S | DIF_AXP_U) ) ||
                 (ins->flags.u.axp == (DIF_AXP_S | DIF_AXP_U | DIF_AXP_I ) ) ) {
                 new = "negt";
@@ -536,7 +536,7 @@ static size_t AXPFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
     h = h; d = d; flags = flags;
     p = name;
-    if( ins->flags.u.axp != DIF_NONE ) {
+    if( ins->flags.u.axp != DIF_AXP_NONE ) {
         *p++ = '/';
         if( ins->flags.u.axp & DIF_AXP_C ) *p++ = 'c';
         if( ins->flags.u.axp & DIF_AXP_D ) *p++ = 'd';
