@@ -31,6 +31,8 @@
 
 
 #ifndef PILLIMP_H_INCLUDED
+#define PILLIMP_H_INCLUDED
+
 #include "digpck.h"
 #include "piltypes.h"
 #include "digpck.h"
@@ -74,8 +76,8 @@ typedef struct pill_client_routines {
     unsigned_16         version;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *LCAlloc)( unsigned );
-    void                *(DIGCLIENT *LCRealloc)( void *, unsigned );
+    void                *(DIGCLIENT *LCAlloc)( size_t );
+    void                *(DIGCLIENT *LCRealloc)( void *, size_t );
     void                (DIGCLIENT *LCFree)( void * );
     dig_fhandle         (DIGCLIENT *LCOpen)( const char *, dig_open );
     unsigned long       (DIGCLIENT *LCSeek)( dig_fhandle, unsigned long, dig_seek );
@@ -90,8 +92,13 @@ typedef struct pill_client_routines {
     void                (DIGCLIENT *LCState)( void *cookie, link_status ls, const link_message *msg );
 } pill_client_routines;
 
-void            *LCAlloc( unsigned amount );
-void            *LCRealloc( void *p, unsigned amount );
+typedef pill_imp_routines * DIGENTRY pill_init_func( pill_status *status, pill_client_routines *client );
+#ifdef __WINDOWS__
+typedef void DIGENTRY pill_fini_func( void );
+#endif
+
+void            *LCAlloc( size_t amount );
+void            *LCRealloc( void *p, size_t amount );
 void            LCFree( void *p );
 
 dig_fhandle     LCOpen( const char *path, dig_open flags );
@@ -106,7 +113,6 @@ void            *LCBufferRel( link_instance *li, link_buffer *buffer );
 void            LCReceived( link_instance *li, link_buffer *data );
 void            LCState( link_instance *li, link_status ls, link_message *msg );
 
-#define PILLIMP_H_INCLUDED
-
 #include "digunpck.h"
+
 #endif

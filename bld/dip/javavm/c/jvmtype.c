@@ -35,7 +35,7 @@
 #include "java_lang_String.h"
 
 
-walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
                     void *d )
 {
@@ -44,7 +44,7 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     return( wk( ii, it, d ) );
 }
 
-imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     return( IMH_JAVA );
@@ -197,14 +197,14 @@ static dip_status ImpTypeInfo( imp_image_handle *ii, imp_type_handle *it,
 }
 
 
-dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     return( ImpTypeInfo( ii, it, lc, ti ) );
 
 }
 
-dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
@@ -242,7 +242,7 @@ dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *it, location_context *lc,
                         array_info *ai, imp_type_handle *index )
 {
@@ -263,27 +263,27 @@ dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     *parm = *proc;
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *a )
 {
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
                         imp_type_handle *base, imp_type_handle *derived,
                         location_context *lc, address *addr )
 {
     return( DS_OK );
 }
 
-int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                                 imp_type_handle *it2 )
 {
     if( it1->sig < it2->sig ) return( -1 );
@@ -291,7 +291,7 @@ int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
     return( 0 );
 }
 
-unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     char        *p;

@@ -205,8 +205,8 @@ typedef struct dip_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *alloc)( unsigned );
-    void                *(DIGCLIENT *realloc)( void *, unsigned );
+    void                *(DIGCLIENT *alloc)( size_t );
+    void                *(DIGCLIENT *realloc)( void *, size_t );
     void                (DIGCLIENT *free)( void * );
 
     void                (DIGCLIENT *map_addr)( addr_ptr *, void * );
@@ -239,9 +239,9 @@ DIG_DLLEXPORT dip_init_func DIPLOAD;
 DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #endif
 
-void            *DCAlloc( unsigned amount );
-void            *DCAllocZ( unsigned amount );
-void            *DCRealloc( void *p, unsigned amount );
+void            *DCAlloc( size_t amount );
+void            *DCAllocZ( size_t amount );
+void            *DCRealloc( void *p, size_t amount );
 void            DCFree( void *p );
 
 void            DCMapAddr( addr_ptr *a, void *d );

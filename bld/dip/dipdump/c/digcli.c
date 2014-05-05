@@ -43,19 +43,19 @@
 #endif
 
 
-void *DIGCLIENT DIGCliAlloc( unsigned amount )
+void *DIGCLIENT DIGCliAlloc( size_t amount )
 {
     void    *ptr = malloc( amount );
 
-    dprintf(( "DIGCliAlloc: amount=%#x -> %p\n", amount, ptr ));
+    dprintf(( "DIGCliAlloc: amount=%#x -> %p\n", (unsigned)amount, ptr ));
     return( ptr );
 }
 
-void *DIGCLIENT DIGCliRealloc( void *p, unsigned amount )
+void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
 {
     void    *ptr = realloc( p, amount);
 
-    dprintf(( "DIGCliRealloc: p=%p amount=%3x -> %p\n", p, amount, ptr ));
+    dprintf(( "DIGCliRealloc: p=%p amount=%3x -> %p\n", p, (unsigned)amount, ptr ));
     return( ptr );
 }
 

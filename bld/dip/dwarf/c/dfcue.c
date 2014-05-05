@@ -84,7 +84,7 @@ extern bool FiniImpCueInfo( imp_image_handle *ii )
 }
 
 
-imp_mod_handle  DIPENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 /**********************************************************/
 {
@@ -173,7 +173,7 @@ static int IsRelPathname( const char *name )
 }
 
 
-unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, unsigned max )
 /********************************************************************/
 {
@@ -321,7 +321,7 @@ static int ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
                     void *d )
 /*************************************************************************/
@@ -349,7 +349,7 @@ walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
 }
 
 
-cue_file_id     DIPENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /*************************************************************/
 {
@@ -408,7 +408,7 @@ static void LoadCueMap( dr_handle stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 /*****************************************************************/
 {
@@ -444,6 +444,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     cue.fno = src->fno;
     cue.line = src->line;
     cue.col = src->col;
+    find = LINE_NOT;
     while( 0 != adj ) {
         find =  FindCue( cue_map, &cue, start_state );
         if( find == LINE_NOT ) break;
@@ -454,6 +455,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     dst->line =  cue.line;
     dst->col  =  cue.col;
     dst->a.mach = cue.mach;
+    ret = DS_FAIL;
     switch( find ) {
     case LINE_NOT:
         DCStatus( DS_FAIL );
@@ -470,7 +472,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
 }
 
 
-unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /***********************************************************/
 {
@@ -479,7 +481,7 @@ unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
 }
 
 
-unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 /**********************************************************************************/
 {
     /* Return the column number of source cue. Return zero if there
@@ -492,7 +494,7 @@ unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *
 }
 
 
-address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 /********************************************************************************/
 {
     address     ret;
@@ -506,7 +508,7 @@ address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic
 }
 
 
-search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 /*******************************************************************/
 {
@@ -576,7 +578,7 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
 }
 
 
-search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
                 imp_mod_handle im, cue_file_id file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 /**********************************************************************/
@@ -626,6 +628,7 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
     ic->line = cue.line;
     ic->col  = cue.col;
     ic->a.mach = cue.mach;
+    ret = SR_NONE;
     switch( find ) {
     case LINE_CLOSEST:
         ret = SR_CLOSEST;
@@ -641,7 +644,7 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
 }
 
 
-int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 /*******************************************************************/
 {

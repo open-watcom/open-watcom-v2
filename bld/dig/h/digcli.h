@@ -32,8 +32,8 @@
 #ifndef DIGCLI_H_INCLUDED
 #define DIGCLI_H_INCLUDED
 
-void            *DIGCLIENT DIGCliAlloc( unsigned );
-void            *DIGCLIENT DIGCliRealloc( void *, unsigned );
+void            *DIGCLIENT DIGCliAlloc( size_t );
+void            *DIGCLIENT DIGCliRealloc( void *, size_t );
 void            DIGCLIENT DIGCliFree( void * );
 
 dig_fhandle     DIGCLIENT DIGCliOpen( const char *, dig_open );

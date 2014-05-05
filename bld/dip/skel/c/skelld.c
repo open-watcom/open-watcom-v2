@@ -36,7 +36,7 @@
         Loading/unloading symbolic information.
 */
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     //TODO:
     /*
@@ -52,7 +52,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
      return( DS_FAIL );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     //TODO:
     /*
@@ -67,7 +67,7 @@ void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     */
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     //TODO:
     /*

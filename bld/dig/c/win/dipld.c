@@ -39,7 +39,7 @@
 #include "dipcli.h"
 #include "dipsys.h"
 
-typedef void (DIPENTRY INTER_FUNC)( void );
+typedef void DIGENTRY dip_fini_func( void );
 
 HMODULE DIPLastHandle;  /* for Dr. WATCOM */
 
@@ -85,7 +85,7 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = (dip_sys_handle)0;
+    *sys_hdl = NULL_SYSHDL;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );

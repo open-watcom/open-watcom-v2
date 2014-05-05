@@ -43,7 +43,7 @@
 #include "dfsym.h"
 
 
-imp_mod_handle  DIPENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
+imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
 /*******************************************************************************/
 {
     /* Return the module that the implementation symbol handle comes from. */
@@ -55,7 +55,7 @@ imp_mod_handle  DIPENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is 
 }
 
 
-unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
                         symbol_name sn, char *buff, unsigned max )
 /****************************************************************/
@@ -81,7 +81,8 @@ unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
                 Not possible. Will never happen.
     */
     char        *name;
-    unsigned    len, demangled_len;
+    unsigned    demangled_len;
+    unsigned    len = 0;
 
     lc = lc;
 //TODO: what's lc for?
@@ -145,13 +146,13 @@ unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
 }
 
 
-dip_status      DIPENTRY DIPImpSymType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it )
 /***********************************************************/
 {
     /* Get the implementation type handle for the type of the given symbol. */
     dip_status  ret;
-    ret = DS_FAIL;
+
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( is->state == DF_NOT ) {
         is->stype = DRGetTagType( is->sym );
@@ -200,11 +201,11 @@ static int AMod( dr_handle sym, void *_d, dr_search_context *cont )
     struct mod_wlk  *d = _d;
     uint_32         offset;
     uint_32         seg;
-    int             ret;
+//    int             ret;
     addrsym_info    info;
 
     cont = cont;
-    ret = TRUE;
+//    ret = TRUE;
     if( DRGetLowPc( sym, &offset) ) {
         if( d->ii->mod_map[d->imx].is_segment == FALSE ) {
             seg = SEG_FLAT; // if flat hoke segment
@@ -217,7 +218,8 @@ static int AMod( dr_handle sym, void *_d, dr_search_context *cont )
         } else {
             EvalSeg( d->ii, sym, &seg );
         }
-        ret = EvalSymOffset( d->ii, sym, &offset );
+//        ret = EvalSymOffset( d->ii, sym, &offset );
+        EvalSymOffset( d->ii, sym, &offset );
     }
     info.map_offset = offset;
     info.sym = sym;
@@ -262,7 +264,7 @@ static int AMemFuncSym( void *_df, addrsym_info *info )
     mem_func_wlk    *df = _df;
     int             cont;
     char            buff[256];
-    int             len;
+//    int             len;
     dr_handle       contain;
 
     cont = TRUE;
@@ -270,7 +272,8 @@ static int AMemFuncSym( void *_df, addrsym_info *info )
     if( contain ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
         if( contain == df->inh ) {
-            len =  DRGetNameBuff( info->sym, buff, sizeof( buff ) );
+//            len =  DRGetNameBuff( info->sym, buff, sizeof( buff ) );
+            DRGetNameBuff( info->sym, buff, sizeof( buff ) );
             if( strcmp( buff, df->name ) == 0 ) {
                 cont = FALSE;
                 df->match = info->sym;
@@ -313,7 +316,7 @@ static  addr_seg GetCodeSeg( imp_image_handle *ii )
 }
 
 
-dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 /***************************************************************************/
 {
@@ -323,6 +326,7 @@ dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
     uint_32          seg;
     dr_handle        sym;
 
+    ret = DS_FAIL;
     base = NilAddr;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( DRGetLowPc( is->sym, &base.mach.offset) ) {
@@ -411,7 +415,7 @@ dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
 }
 
 
-dip_status      DIPENTRY DIPImpSymValue( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *ic, void *buff )
 /********************************************************************/
 {
@@ -445,7 +449,7 @@ dip_status      DIPENTRY DIPImpSymValue( imp_image_handle *ii,
 }
 
 
-dip_status      DIPENTRY DIPImpSymInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 /**********************************************************************/
 {
@@ -586,7 +590,7 @@ extern dr_handle GetRet(  imp_image_handle *ii, dr_handle proc )
 /**************************************************************/
 {
     /* Find handle of Watcom return symbol. */
-    dr_handle ret;
+    dr_handle ret = 0;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_var, ARet, &ret ) ) {
@@ -596,7 +600,7 @@ extern dr_handle GetRet(  imp_image_handle *ii, dr_handle proc )
 }
 
 
-dip_status      DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 /*******************************************************************/
@@ -656,7 +660,7 @@ static dr_handle GetThis(  imp_image_handle *ii, dr_handle proc )
 /***************************************************************/
 {
     /* Return handle of the this parmeter. */
-    dr_handle   ret;
+    dr_handle   ret = 0;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc,  DR_SRCH_parm, AThis, &ret ) ) {
@@ -666,7 +670,7 @@ static dr_handle GetThis(  imp_image_handle *ii, dr_handle proc )
 }
 
 
-dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 /******************************************************************************/
 {
@@ -704,7 +708,7 @@ dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
 }
 
 
-dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                 location_list *ll )
 /***********************************************************************/
@@ -789,7 +793,7 @@ dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
 }
 
 
-search_result   DIPENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
                         imp_mod_handle im, address a, imp_sym_handle *is )
 /************************************************************************/
 {
@@ -915,7 +919,7 @@ static search_result  DFAddrScope( imp_image_handle *ii,
 }
 
 
-search_result   DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
                 imp_mod_handle im, address addr, scope_block *scope )
 /*******************************************************************/
 {
@@ -1018,7 +1022,7 @@ static dr_handle GetContainingClass( dr_handle curr )
 }
 
 
-search_result   DIPENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 /********************************************************************/
 {
@@ -1102,6 +1106,7 @@ static dr_srch Dip2DwarfSrch( symbol_type dip )
 {
     dr_srch     ret;
 
+    ret = DR_SRCH_func_var;
     switch( dip ) {
     case ST_NONE:
     case ST_OPERATOR:
@@ -1426,9 +1431,9 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
 /******************************************************/
 {
     imp_mod_handle      im;
-    walk_result         wr;
+    walk_result         wr = 0;
     blk_wlk             df;
-    int                 cont;
+    int                 cont = 0;
 
     df.com.ii = ii;
     df.com.d = d;
@@ -1474,7 +1479,7 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
 }
 
 
-walk_result DIPENTRY DIPImpWalkSymList( imp_image_handle *ii,
+walk_result DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
                                         symbol_source     ss,
                                         void             *source,
                                         IMP_SYM_WKR      *wk,
@@ -1486,7 +1491,7 @@ walk_result DIPENTRY DIPImpWalkSymList( imp_image_handle *ii,
 }
 
 
-walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii,
+walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii,
                                           symbol_source     ss,
                                           void             *source,
                                           IMP_SYM_WKR      *wk,
@@ -1655,8 +1660,8 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     imp_mod_handle      im;
     imp_sym_handle      *is;
     search_result       sr;
-    char                *src;
-    unsigned            len;
+//    char                *src;
+//    unsigned            len;
     blk_wlk             df;
     char                buff[256];
     int                 cont;
@@ -1667,8 +1672,8 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     }
     if( li->type == ST_OPERATOR ) {
 //TODO this operator
-        src = li->name.start;
-        len = li->name.len;
+//        src = li->name.start;
+//        len = li->name.len;
         return( SR_NONE );
     }
     if( ss ==  SS_TYPE ) {
@@ -1694,6 +1699,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         df.lookup.buff = DCAlloc( df.lookup.len );
     }
     df.lookup.sr = SR_NONE;
+    sr =  SR_NONE;
     switch( ss ) {
     case SS_SCOPED:
         if( li->scope.len == 0 ) {
@@ -1734,7 +1740,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIPENTRY DIPImpLookupSym( imp_image_handle *ii,
+extern search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 /************************************************************************/
 {
@@ -1742,7 +1748,7 @@ extern search_result   DIPENTRY DIPImpLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIPENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+extern search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 /**********************************************************************/
@@ -1751,7 +1757,7 @@ extern search_result   DIPENTRY DIPImpLookupSymEx( imp_image_handle *ii,
 }
 
 
-int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 /*******************************************************************/
 {
@@ -1773,7 +1779,7 @@ int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
 }
 
 
-dip_status DIPENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
 /*****************************************************************************/
 {
     ii = ii;
@@ -1782,7 +1788,7 @@ dip_status DIPENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
 }
 
 
-dip_status DIPENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
 /******************************************************************************/
 {
     ii = ii;
@@ -1791,7 +1797,7 @@ dip_status DIPENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
 }
 
 
-dip_status DIPENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
 /**********************************************************/
 {
     ii = ii;

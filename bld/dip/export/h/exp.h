@@ -83,7 +83,7 @@ struct exp_block {
 
 struct exp_hunk {
     exp_hunk    *next;
-    unsigned    left;
+    size_t      left;
     unsigned_8  data[HUNK_SIZE];
 };
 

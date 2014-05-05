@@ -195,9 +195,9 @@ static void DWRRead( void *_f, dr_section sect, void *buff, size_t size )
 /***********************************************************************/
 {
     imp_image       f = _f;
-    unsigned long   base;
+//    unsigned long   base;
 
-    base = f->dwarf->sect_offsets[sect];
+//    base = f->dwarf->sect_offsets[sect];
     DCRead( f->sym_file, buff, size );
 }
 
@@ -335,12 +335,13 @@ static int AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
 // Add any global symbol to the hash
 {
     imp_image_handle    *ii = _ii;
-    int                 len;
+//    int                 len;
     char                buff[256];
 
     cont = cont;
     if( !DRIsStatic( sym ) ) {
-        len = DRGetNameBuff( sym, buff, sizeof( buff ) );
+//        len = DRGetNameBuff( sym, buff, sizeof( buff ) );
+        DRGetNameBuff( sym, buff, sizeof( buff ) );
         AddHashName( ii->name_map, buff, sym );
     }
     return( TRUE );
@@ -376,7 +377,7 @@ static void LoadGlbHash( imp_image_handle *ii )
 }
 
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
 /*******************************************************************************/
 {
     dip_status          ret;
@@ -448,7 +449,7 @@ static int ARangeItem( void *_info, dr_arange_data *curr )
 }
 
 
-void    DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void    DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 /*************************************************************/
 // Read in address ranges and build map
 {
@@ -470,7 +471,7 @@ void    DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 }
 
 
-void    DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void    DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 /*******************************************************/
 {
     FiniDwarf( ii );

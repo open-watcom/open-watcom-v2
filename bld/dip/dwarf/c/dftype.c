@@ -333,7 +333,7 @@ static int AType( dr_handle type, void *_typ_wlk, dr_search_context *cont ) {
     return( ret );
 }
 
-walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
                     void *d )
 {
@@ -353,7 +353,7 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     return( typ_wlk.wr );
 }
 
-imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     /*
@@ -368,7 +368,7 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
     /*
         Map dwarf info to dip imp
     */
-    type_kind   kind;
+    type_kind   kind = TK_NONE;
 
     ti->modifier = TM_NONE;
     switch( typeinfo->kind ){
@@ -463,7 +463,7 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
     }
 }
 
-dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     /*
@@ -490,7 +490,7 @@ dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
@@ -552,8 +552,8 @@ static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
     int_32         count;
 
     index = index;
-    de.low  = LONG_MIN;
-    de.high = LONG_MAX;
+    de.low  = _I32_MIN;
+    de.high = _I32_MAX;
     if( !DRWalkEnum( tenu, AEnum, &de )){
         return( FALSE );
     }
@@ -567,7 +567,7 @@ static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
 
 static int  GetSymVal( imp_image_handle *ii,
                        dr_handle dr_sym, location_context *lc,
-                        long *ret ){
+                       int_32 *ret ){
 //  Find value of scalar
     dr_handle       dr_type;
     dr_typeinfo     typeinfo[1];
@@ -613,7 +613,7 @@ static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
     case DR_VAL_REF:
         if( DRConstValAT( val->val.ref, (uint_32*)ret ) ){
             return( TRUE );
-        }else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ){
+        } else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ) {
             return( TRUE );
         }
     }
@@ -654,7 +654,7 @@ static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
     return( df->cont );
 }
 
-dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
                         array_info *ai, imp_type_handle *index )
 {
@@ -755,11 +755,11 @@ extern int GetParmCount(  imp_image_handle *ii, dr_handle proc ){
     return( df.count );
 }
 
-dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     dr_handle       btype;
-    dr_handle       parm_type;
+    dr_handle       parm_type = 0;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
@@ -781,7 +781,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *a )
 {
     /*
@@ -798,7 +798,7 @@ dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
 }
 
 
-int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                                 imp_type_handle *it2 )
 {
     long diff;
@@ -1292,7 +1292,7 @@ extern dip_status  DFBaseAdjust( imp_image_handle *ii,
     return( df.wr );
 }
 
-dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
                         imp_type_handle *base, imp_type_handle *derived,
                         location_context *lc, address *addr )
 {
@@ -1308,7 +1308,7 @@ dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DFBaseAdjust( ii, base->type, derived->type, lc, addr ) );
 }
 
-unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     /*
@@ -1331,7 +1331,7 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
 
         If the type does not have a name, return zero.
     */
-    char        *name;
+    char        *name = NULL;
     dr_handle   dr_type;
     dr_typeinfo typeinfo;
     unsigned    len;
@@ -1373,21 +1373,21 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     return( len );
 }
 
-dip_status DIPENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

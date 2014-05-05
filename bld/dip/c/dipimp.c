@@ -48,23 +48,19 @@
 #define _CODE_BASED
 #endif
 
-#if defined( __WINDOWS__ )
-#elif defined( __WATCOMC__ )
-  #if defined( _M_I86 )
+#if defined( __WATCOMC__ )
+  #if defined( __WINDOWS__ )
+  #elif defined( _M_I86 )
     #pragma aux DIPLOAD "*" __loadds
   #else
     #pragma aux DIPLOAD "*"
   #endif
 #endif
 
-#if defined( __WINDOWS__ )
-typedef void (DIPENTRY INTER_FUNC)();
-#endif
-
 address                 NilAddr;
 dip_client_routines     *Client;
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
+dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
 
 dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
@@ -147,7 +143,7 @@ static HINSTANCE    ThisInst;
 static HANDLE       TaskId;
 #endif
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
+#if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
 const char _CODE_BASED Signature[4] = "DIP";
 #endif
 
@@ -159,7 +155,7 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
         FARPROC start;
 
         start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
-        *status = ((dip_status(DIPENTRY*)(void)) start)();
+        *status = ((dip_status(DIGENTRY*)(void)) start)();
         FreeProcInstance( start );
     }
 #else
@@ -170,12 +166,12 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
     return( &ImpInterface );
 }
 
-void *DCAlloc( unsigned amount )
+void *DCAlloc( size_t amount )
 {
     return( Client->alloc( amount ) );
 }
 
-void *DCAllocZ( unsigned amount )
+void *DCAllocZ( size_t amount )
 {
     void *p = Client->alloc( amount );
     if( p ) {
@@ -184,7 +180,7 @@ void *DCAllocZ( unsigned amount )
     return( p );
 }
 
-void *DCRealloc( void *p, unsigned amount )
+void *DCRealloc( void *p, size_t amount )
 {
     return( Client->realloc( p, amount ) );
 }
@@ -286,12 +282,14 @@ unsigned        DCMachineData( address a, unsigned info_type,
     return( Client->DIGCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
     return( ImpInterface.type_base( ii, it, base, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )
+
+typedef void (DIGENTRY INTER_FUNC)();
 
 #ifdef DEBUGGING
 void Say( char *buff )
@@ -300,7 +298,7 @@ void Say( char *buff )
 }
 #endif
 
-DIG_DLLEXPORT void DIPENTRY DIPUNLOAD( void )
+DIG_DLLEXPORT void DIGENTRY DIPUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }

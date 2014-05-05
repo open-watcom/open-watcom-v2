@@ -38,7 +38,7 @@
 
 const char      DIPImpName[] = "Put the name of your DIP here";
 
-unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
     //TODO:
 /*
@@ -55,7 +55,7 @@ unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[ hk ] );
 }
 
-dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
+dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
 {
     //TODO:
 /*
@@ -65,7 +65,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpStartup( void )
+dip_status      DIGENTRY DIPImpStartup( void )
 {
     //TODO:
 /*
@@ -75,7 +75,7 @@ dip_status      DIPENTRY DIPImpStartup( void )
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpShutdown( void )
+void            DIGENTRY DIPImpShutdown( void )
 {
     //TODO:
 /*
@@ -83,7 +83,7 @@ void            DIPENTRY DIPImpShutdown( void )
 */
 }
 
-void            DIPENTRY DIPImpCancel( void )
+void            DIGENTRY DIPImpCancel( void )
 {
     //TODO:
 /*

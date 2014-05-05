@@ -42,7 +42,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
     HMODULE                     dll;
-    const pill_imp_routines     *(*init_func)( const pill_client_routines *, link_message * );
+    pill_init_func              *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;

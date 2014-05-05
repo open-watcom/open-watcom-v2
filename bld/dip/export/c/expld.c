@@ -64,7 +64,7 @@ static struct {
 unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
 {
     unsigned long       bpos;
-    unsigned long       npos;
+    unsigned long       npos = 0;
 
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
@@ -125,10 +125,10 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
 
 #define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
 
-static void *HunkAlloc( imp_image_handle *ii, unsigned size )
+static void *HunkAlloc( imp_image_handle *ii, size_t size )
 {
     exp_hunk    *hunk;
-    unsigned    alloc;
+    size_t      alloc;
 
     size = ROUND_UP( size, sizeof( void * ) );
     hunk = ii->hunks;
@@ -1020,7 +1020,7 @@ static dip_status (*Try[])( dig_fhandle, imp_image_handle * ) = {
     NULL
 };
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     dip_status  ds;
     int         i;
@@ -1058,7 +1058,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     exp_block   *b;
     exp_sym     *s;
@@ -1071,7 +1071,7 @@ void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     }
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     ImpUnloadInfo( ii );
 }

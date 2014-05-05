@@ -161,8 +161,8 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     int                 (*compare)(void const*,void const*,size_t);
     char                *gblname;
     size_t              gbllen;
-    char                *nam;
-    size_t              namlen;
+    char                *nam = NULL;
+    size_t              namlen = 0;
     char                *snam;
     size_t              snamlen;
     char                *mangled;
@@ -170,7 +170,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     unsigned            entry;
     info_block          *blk;
     int                 lkup_dtor;
-    int                 lkup_full;
+    int                 lkup_full = 0;
     imp_sym_handle      *is;
     address             addr;
     search_result       sr;
@@ -340,7 +340,7 @@ search_result LookupGblAddr( imp_image_handle *ii, address addr,
 {
     section_info        *inf;
     info_block          *curr;
-    search_result       sr;
+    search_result       sr = SR_NONE;
 
     is->u.gbl = NULL;
     SET_GBLNAMEOFF( ii );

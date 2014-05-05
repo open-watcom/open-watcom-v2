@@ -39,9 +39,9 @@
 int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    HANDLE                      dll;
-    char                        newpath[256];
-    const pill_imp_routines     *(*init_func)( const pill_client_routines *, link_message * );
+    HANDLE                  dll;
+    char                    newpath[256];
+    pill_init_func          *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
@@ -52,7 +52,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
         msg->data.code = GetLastError();
         return( 0 );
     }
-    init_func = (LPVOID) GetProcAddress( dll, "PILLLOAD" );
+    init_func = (pill_init_func *)GetProcAddress( dll, "PILLLOAD" );
     if( init_func == NULL ) {
         msg->data.code = GetLastError();
         FreeLibrary( dll );

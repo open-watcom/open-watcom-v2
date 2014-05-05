@@ -34,23 +34,23 @@
 
 #if defined( __WINDOWS__ )
 #define NULL_SYSHDL NULL
-typedef void (DIGENTRY *mad_sys_handle)( void );
+typedef void (DIGENTRY *dip_sys_handle)( void );
 #elif defined( __NT__ )
 #define NULL_SYSHDL 0
-typedef size_t      mad_sys_handle;
+typedef size_t      dip_sys_handle;
 #elif defined( __OS2__ )
 #define NULL_SYSHDL 0
 #if defined( _M_I86 )
-typedef unsigned short mad_sys_handle;
+typedef unsigned short dip_sys_handle;
 #else
-typedef unsigned long mad_sys_handle;
+typedef unsigned long dip_sys_handle;
 #endif
 #elif defined( __RDOS__ )
 #define NULL_SYSHDL 0
-typedef int         mad_sys_handle;
+typedef int         dip_sys_handle;
 #else
 #define NULL_SYSHDL NULL
-typedef void        *mad_sys_handle;
+typedef void        *dip_sys_handle;
 #endif
 
 extern dip_status   DIPSysLoad( char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );

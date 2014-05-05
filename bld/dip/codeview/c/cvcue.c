@@ -39,7 +39,7 @@ typedef struct {
     unsigned_32 end;
 } off_range;
 
-walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
                     void *d )
 {
@@ -80,14 +80,14 @@ walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle  DIPENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 {
     ii = ii;
     return( ic->im );
 }
 
-unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, unsigned max )
 {
     void                                *p;
@@ -110,14 +110,14 @@ unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
     return( NameCopy( buff, p, max, name_len ) );
 }
 
-cue_file_id     DIPENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     ii = ii;
     return( ic->file );
 }
 
-unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     cv_sst_src_module_line_number       *lp;
@@ -135,13 +135,13 @@ unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
     return( *num );
 }
 
-unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 {
     ii = ii; ic = ic;
     return( 0 );
 }
 
-address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii,
+address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     cv_sst_src_module_line_number       *lp;
@@ -230,7 +230,7 @@ static dip_status AdjBackward( imp_image_handle *ii, unsigned long bias,
     }
 }
 
-dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *ic, int adj, imp_cue_handle *aic )
 {
     cv_directory_entry  *cde;
@@ -259,7 +259,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     return( ok );
 }
 
-search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
                 imp_mod_handle im, cue_file_id file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
@@ -331,7 +331,7 @@ unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
     int         lo_idx;
     int         hi_idx;
     int         idx;
-    addr_off    lo_off;
+//    addr_off    lo_off;
     addr_off    hi_off;
     addr_off    off;
     addr_off    *offp;
@@ -342,7 +342,7 @@ unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
     hi_idx = num_off - 1;
     offp = VMBlock( ii, VMADDR( lo_idx ), sizeof( *offp ) );
     if( offp == NULL ) return( NO_IDX );
-    lo_off = *offp + adj_off;
+//    lo_off = *offp + adj_off;
     offp = VMBlock( ii, VMADDR( hi_idx ), sizeof( *offp ) );
     if( offp == NULL ) return( NO_IDX );
     hi_off = *offp + adj_off;
@@ -360,7 +360,7 @@ unsigned SearchOffsets( imp_image_handle *ii, virt_mem base,
             lo_idx = idx + 1;
             offp = VMBlock( ii, VMADDR( lo_idx ), sizeof( *offp ) );
             if( offp == NULL ) return( NO_IDX );
-            lo_off = *offp + adj_off;
+//            lo_off = *offp + adj_off;
         } else {
             hi_idx = idx;
             hi_off = off;
@@ -434,7 +434,7 @@ search_result SearchFile( imp_image_handle              *ii,
     return( SR_FAIL );
 }
 
-search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
     cv_directory_entry                  *cde;
@@ -467,7 +467,7 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
     return( SR_CLOSEST );
 }
 
-int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     ii = ii;

@@ -242,13 +242,13 @@ extern int FindHashWalk( name_ctl *ctl, name_wlk *wlk )
     int         bnum;
     uint_16     count;
     name_blk    *blk;
-    int         ret;
+//    int         ret;
 
     key = elf_hash( wlk->name );
     bnum = BNUM( key );
     count = NAME_BLKSIZE-ctl->bucket[bnum].rem;
     blk = ctl->bucket[bnum].head;
-    ret = TRUE;
+//    ret = TRUE;
     while( blk != NULL ) {
         name_entry  *curr;
 

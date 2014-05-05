@@ -45,7 +45,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
 {
     int                         h;
     supp_header                 *pill;
-    const pill_imp_routines     *(*init_func)( const pill_client_routines *, link_message * );
+    pill_init_func              *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
@@ -63,7 +63,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
         PILLSysUnload( lh->sys );
         return( 0 );
     }
-    init_func = (void *)pill->init_rtn;
+    init_func = (pill_init_func *)pill->init_rtn;
     lh->rtns = init_func( cli, msg );
     if( lh->rtns == NULL ) {
         /* don't free DLL yet, we need the message processor */

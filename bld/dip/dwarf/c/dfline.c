@@ -195,6 +195,8 @@ extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ){
     if( ctl != NULL ){
         rem = CUES_PER_BLK;
         blk = ctl->head;
+        cmp.last = 0;
+        cmp.hi = 0;
         while( blk != NULL ){
             if( blk->next == NULL ){ /* last blk */
                 rem = ctl->count % CUES_PER_BLK;
@@ -273,6 +275,7 @@ extern   dfline_find FindCue( cue_list    *list,
     line_state      state;
     dfline_find     ret;
 
+    state = ST_START_LOW;
     switch( what ){ /* init state */
     case LOOK_LOW:
         state = ST_START_LOW;
@@ -287,6 +290,8 @@ extern   dfline_find FindCue( cue_list    *list,
         state = ST_START_FILE;
         break;
     }
+    seg_last = 0;
+    info_last = NULL;
     ctl = list->head;
     while( ctl != NULL ){
         blk = ctl->head;
@@ -386,6 +391,7 @@ extern   dfline_find FindCue( cue_list    *list,
         }
         ctl = ctl->next;
     }
+    ret = LINE_NOT;
     switch( state  ){
     case ST_START_LOW:
     case ST_START_HIGH:

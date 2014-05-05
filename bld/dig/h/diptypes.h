@@ -224,9 +224,5 @@ typedef struct {
     unsigned            type            : 4; /* symbol_type values */
 } lookup_item;
 
-//temp: for ease of transition
-#define DIPENTRY        DIGENTRY
-//#define DIPCLIENT     DIGCLIENT
-
 #include "digunpck.h"
 #endif

@@ -52,7 +52,7 @@ static walk_result GlueModWalk( imp_image_handle *ii, hll_dir_entry *hdd,
 /*
  * Walk modules.
  */
-walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
+walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
                                         void *d )
 {
     struct glue_mod_walk    md;
@@ -103,7 +103,7 @@ static unsigned StripAndCopyName( unsigned_8 *name, char *buf, unsigned max )
 /*
  * Gets the module name.
  */
-unsigned DIPENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
                                  char *buf, unsigned max )
 {
     hll_dir_entry *hdd;
@@ -157,7 +157,7 @@ hll_ssr_cuinfo *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Gets the source language for a module.
  */
-char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     hll_ssr_cuinfo *cuinfo = GetCompInfo( ii, im );
     if( cuinfo != NULL ) {
@@ -180,7 +180,7 @@ char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Checks if the specified information is available for this module.
  */
-dip_status DIPENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
                                    handle_kind hk )
 {
     hll_dir_entry   *hdd;
@@ -299,7 +299,7 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 /*
  * Finds the module which contains the address 'a'.
  */
-search_result DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
                                       imp_mod_handle *im )
 {
     return( hllAddrMod( ii, a, im ) );
@@ -308,7 +308,7 @@ search_result DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
 /*
  * Gets the module address.
  */
-address DIPENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
+address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 {
     hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
     if( hdd != NULL) {
@@ -359,7 +359,7 @@ address DIPENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Construct default dip_type_info for a module.
  */
-dip_status DIPENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
                                       default_kind dk, dip_type_info *ti )
 {
     /*

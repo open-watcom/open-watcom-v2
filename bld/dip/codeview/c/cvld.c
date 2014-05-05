@@ -296,7 +296,7 @@ static dip_status SetMADType( imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     dip_status                  ds;
     unsigned long               off;
@@ -345,7 +345,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     unsigned    i;
     addr_ptr    addr;
@@ -378,7 +378,7 @@ void MapLogical( imp_image_handle *ii, address *a )
     a->indirect = 1;
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     Cleanup( ii );
     DCClose( ii->sym_file );

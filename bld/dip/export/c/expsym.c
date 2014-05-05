@@ -57,14 +57,14 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
     return( wr );
 }
 
-walk_result     DIPENTRY DIPImpWalkSymList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
-walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss,
+walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss,
                 void *source, IMP_SYM_WKR *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
@@ -73,14 +73,14 @@ walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss
 }
 
 
-imp_mod_handle  DIPENTRY DIPImpSymMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
                         imp_sym_handle *is )
 {
     ii = ii; is = is;
     return( MY_MOD_ID );
 }
 
-unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
                         symbol_name sn, char *buff, unsigned max )
 {
@@ -95,7 +95,7 @@ unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
     return( is->p->len );
 }
 
-dip_status      DIPENTRY DIPImpSymType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it )
 {
     exp_block   *b;
@@ -109,7 +109,7 @@ dip_status      DIPENTRY DIPImpSymType( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     ii = ii; lc = lc;
@@ -124,14 +124,14 @@ dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpSymValue( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, void *buff )
 {
     ii = ii; is = is; lc = lc; buff = buff;
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpSymInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 {
     exp_block   *b;
@@ -149,7 +149,7 @@ dip_status      DIPENTRY DIPImpSymInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
@@ -157,14 +157,14 @@ dip_status      DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     ii = ii; is = is; it = it; ti = ti;
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
@@ -172,7 +172,7 @@ dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
      return( DS_FAIL );
 }
 
-search_result   DIPENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
     exp_sym     *s;
@@ -227,34 +227,34 @@ search_result   DoLookupSym( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-search_result   DIPENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 {
     return( DoLookupSym( ii, ss, source, li, NULL, d ) );
 }
 
-search_result   DIPENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
     return( DoLookupSym( ii, ss, source, li, lc, d ) );
 }
 
-search_result   DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
                 imp_mod_handle im, address addr, scope_block *scope )
 {
     ii = ii; im = im; addr = addr; scope = scope;
     return( SR_NONE );
 }
 
-search_result   DIPENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 {
     ii = ii; im = im; in = in; out = out;
     return( SR_NONE );
 }
 
-int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 {
     void        *g1;
@@ -278,21 +278,21 @@ int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
 #endif
 }
 
-dip_status DIPENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

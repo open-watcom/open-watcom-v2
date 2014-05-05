@@ -111,7 +111,7 @@ typedef struct section_info {
     info_block                  *mod_info;
     info_block                  *addr_info;
     info_block                  *gbl;
-    dword                       **dmnd_link;
+    pointer_int                 **dmnd_link;
     unsigned                    mod_base_idx;
     unsigned                    sect_id;
 } section_info;
@@ -140,8 +140,9 @@ walk_result     MyWalkModList( imp_image_handle *, INT_MOD_WKR *, void * );
 
 #define INFO_MAX_BLOCK   0xff80
 
-#define MAX_LINK_ENTRIES (4*1024U) /* per table block */
+#define MAX_LINK_ENTRIES (4 * 1024U) /* per table block */
 
 extern dip_imp_routines ImpInterface;
+
 #define DIP_WATCOM
 #endif

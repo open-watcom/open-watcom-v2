@@ -252,6 +252,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.base = &blk->info[0];
         cmp.key = new->offset;
         cmp.hi = blk_count;
+		cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 ) goto exit;
         if( diff > 0 ) {

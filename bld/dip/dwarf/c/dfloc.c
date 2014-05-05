@@ -605,9 +605,11 @@ static int Frame( void *_d, uint_32 *where )
 {
     loc_handle  *d = _d;
     location_list ll;
-    mad_handle  kind;
+//    mad_handle  kind;
+
 // Get frame location
-    kind =  DCCurrMAD();
+//    kind =  DCCurrMAD();
+    DCCurrMAD();
     d->ret = SafeDCItemLocation( d->lc, CI_FRAME, &ll );
     if( d->ret != DS_OK ){
         DCStatus( d->ret );
@@ -736,9 +738,11 @@ static int Live( void *_d, uint_32 *where )
 // find the appropriate live range
     loc_handle  *d = _d;
     location_list ll;
-    dip_status    ret;
+//    dip_status    ret;
+
 // Get execution location
-    ret = SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
+//    ret = SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
+    SafeDCItemLocation( d->lc, CI_EXECUTION, &ll );
     d->ret = DS_OK;
     if( d->ret != DS_OK ){
         DCStatus( d->ret );

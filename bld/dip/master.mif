@@ -54,7 +54,7 @@ extra_c_flags   = -s
 extra_c_flags_i86 = -zc -zu
 
 !ifdef __WATCOM__
-extra_c_flags_dipimp = -zlf
+extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
 !endif
 
 inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"

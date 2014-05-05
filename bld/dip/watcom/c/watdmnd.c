@@ -39,14 +39,16 @@ extern section_info *FindInfo(imp_image_handle *, imp_mod_handle );
 /* WD looks for this symbol to determine module bitness */
 #if !defined( __WINDOWS__ )
 int __nullarea;
+#if defined( __WATCOMC__ )
 #pragma aux __nullarea "*";
+#endif
 #endif
 
 typedef struct demand_ctrl {
         struct demand_ctrl      *link;
-        dword                   *owner;
+        pointer_int             *owner;
         void                    (*clear)(void *, void *);
-        dword                   save;
+        pointer_int             save;
         unsigned                size;
         unsigned                locks;
         unsigned                time_stamp;
@@ -72,7 +74,7 @@ static unsigned         TimeStamp;
 #define MK_DMND_OFFSET( p )     (DMND_LINK( p ) >> 1)
 #define DMND_SIZE( sect, idx )  ((DMND_LINK(GET_LINK(sect,(idx)+1))     \
                                  - DMND_LINK(GET_LINK(sect,idx))) >> 1)
-#define STASH_DMND_PTR( p )     ((dword)(p) | RESIDENT)
+#define STASH_DMND_PTR( p )     ((pointer_int)(p) | RESIDENT)
 
 
 /*
@@ -186,7 +188,7 @@ walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
     section_info        *sect;
     int                 entry;
     unsigned            real_entry;
-    dword               *lnk;
+    pointer_int         *lnk;
 
     d = d;
     mp = ModPointer( ii, im );
@@ -234,7 +236,7 @@ void *InfoLoad( imp_image_handle *ii, imp_mod_handle im, unsigned item,
     demand_info         *info;
     section_info        *sect;
     unsigned long       tmpoff;
-    dword               *lnk;
+    pointer_int         *lnk;
     unsigned            size;
 
     ++TimeStamp;

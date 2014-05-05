@@ -79,7 +79,7 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
 #ifdef WATCOM_DEBUG_SYMBOLS
     /* Look for symbols in separate .sym files, not the .dip itself */
     strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
-    NotifyWDLoad( dip_name, (dip_sys_handle)dip );
+    NotifyWDLoad( dip_name, (unsigned long)dip );
 #endif
     status = DS_ERR|DS_INVALID_DIP;
     init_func = (dip_init_func *)dip->init_rtn;

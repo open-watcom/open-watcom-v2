@@ -46,9 +46,11 @@ static void GetModName( char *path, char *buff ){
 /************************************************/
 /* find the module name from the path           */
 /************************************************/
-    char *end, *start;
+    char *start;
+    char *end;
     int ext_found;
-    start = path;
+
+    start = end = path;
     ext_found = FALSE;
     while( *path != '\0' ){
         if( IS_PATH_CHAR( *path ) ){
@@ -293,7 +295,7 @@ extern walk_result DFWalkModListSrc( imp_image_handle *ii,
     return( ret );
 }
 
-walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
 {
     int im;
     walk_result ret;
@@ -310,7 +312,7 @@ walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
 
 }
 
-unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, unsigned max )
 {
     char        *name;
@@ -332,9 +334,9 @@ unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
     return( len );
 }
 
-char            *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
-    char       *ret;
+    char       *ret = NULL;
     im_idx      imx;
 
     if( im == 0 ){
@@ -393,7 +395,7 @@ extern search_result DFAddrMod( imp_image_handle *ii, address a,
     return( SR_NONE );
 }
 
-search_result   DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
                 imp_mod_handle *im )
 {
     im_idx imx;
@@ -449,7 +451,7 @@ static int ALineCue( void *_info, dr_line_data *curr ){
     return( ret );
 }
 
-address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
+address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
                                 imp_mod_handle im )
 {
     l_walk_info walk;
@@ -478,7 +480,7 @@ address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
     return( a );
 }
 
-dip_status      DIPENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     /*
@@ -531,7 +533,7 @@ dip_status      DIPENTRY DIPImpModInfo( imp_image_handle *ii,
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     /*

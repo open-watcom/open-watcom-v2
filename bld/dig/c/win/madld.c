@@ -86,7 +86,7 @@ mad_status MADSysLoad( char *path, mad_client_routines *cli,
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = 0;
+    *sys_hdl = NULL_SYSHDL;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );
