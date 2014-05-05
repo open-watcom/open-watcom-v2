@@ -348,7 +348,7 @@ static int HeuristicTraceBack(
     long            bp_adjust;
     long            saved_bp_loc = 0;
     long            bp_to_ra_offset = 0;
-    int             found_inc_bp;
+//    int             found_inc_bp;
     int             found_mov_bp_sp;
     int             found_push_bp;
     char            *jmplabel;
@@ -381,7 +381,7 @@ static int HeuristicTraceBack(
         word_size = Is32BitSegment ? 4 : 2;
         sp_adjust = 0;
         bp_adjust = 0;
-        found_inc_bp = 0;
+//        found_inc_bp = 0;
         found_mov_bp_sp = 0;
         found_push_bp = 0;
         DbgAddr = *start;
@@ -410,7 +410,7 @@ static int HeuristicTraceBack(
                 break;
             case DI_X86_inc2:
                 if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
-                    found_inc_bp = 1;
+//                    found_inc_bp = 1;
                     continue;
                 }
                 break;

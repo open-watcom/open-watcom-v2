@@ -181,8 +181,8 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
     addr_off            prev_fp_off;
     addr_off            frame_size;
     addr_off            frame_start;
-    addr_off            proc_end;
-    dis_register        ra_save_gpr;
+//    addr_off            proc_end;
+//    dis_register        ra_save_gpr;
 
     return_disp = return_disp;
 
@@ -199,9 +199,9 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
     curr = *execution;
     curr.mach.offset = start->mach.offset;
     /* Assume prolog no larger than 16 instructions; this might not be enough */
-    proc_end = start->mach.offset + 64;
+//    proc_end = start->mach.offset + 64;
     if( curr.mach.offset == 0 ) return( MS_FAIL );
-    ra_save_gpr = -1;
+//    ra_save_gpr = -1;
 #if 0
     for( ;; ) {
         if( curr.mach.offset >= execution->mach.offset ) break;

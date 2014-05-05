@@ -1185,7 +1185,7 @@ static mad_status XMMGetPiece(
     unsigned            row;
     unsigned            column;
     unsigned            group = 0;
-    unsigned            list_num;
+//    unsigned            list_num = 0;
     unsigned            type = 0;
     const x86_reg_info  **list = NULL;
 
@@ -1204,32 +1204,32 @@ static mad_status XMMGetPiece(
 
     if( MADState->reg_state[XMM_REG_SET] & XT_BYTE ) {
         list = list_byte;
-        list_num = NUM_ELTS( list_byte );
+//        list_num = NUM_ELTS( list_byte );
         group = 16;
         type = 0;
     } else if( MADState->reg_state[XMM_REG_SET] & XT_WORD ) {
         list = list_word;
-        list_num = NUM_ELTS( list_word );
+//        list_num = NUM_ELTS( list_word );
         group = 8;
         type = 1;
     } else if( MADState->reg_state[XMM_REG_SET] & XT_DWORD ) {
         list = list_dword;
-        list_num = NUM_ELTS( list_dword );
+//        list_num = NUM_ELTS( list_dword );
         group = 4;
         type = 2;
     } else if( MADState->reg_state[XMM_REG_SET] & XT_QWORD ) {
         list = list_qword;
-        list_num = NUM_ELTS( list_qword );
+//        list_num = NUM_ELTS( list_qword );
         group = 2;
         type = 3;
     } else if( MADState->reg_state[XMM_REG_SET] & XT_FLOAT ) {
         list = list_dword;
-        list_num = NUM_ELTS( list_dword );
+//        list_num = NUM_ELTS( list_dword );
         group = 4;
         type = 4;
     } else if( MADState->reg_state[XMM_REG_SET] & XT_DOUBLE ) {
         list = list_qword;
-        list_num = NUM_ELTS( list_qword );
+//        list_num = NUM_ELTS( list_qword );
         group = 2;
         type = 5;
     }

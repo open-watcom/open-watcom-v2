@@ -44,7 +44,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *m
     mr = mr;
 
     td->prev_ins_type = -1;
-    td->prev_ins_flags.u.x86 = DIF_NONE;
+    td->prev_ins_flags.u.x86 = DIF_X86_NONE;
 }
 
 

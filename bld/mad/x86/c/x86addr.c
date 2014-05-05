@@ -90,7 +90,9 @@ long            DIGENTRY MIAddrDiff( const address *a, const address *b, mad_add
     af = af;
     diff = a->mach.offset - b->mach.offset;
     if( !BIG_SEG( *a ) ) {
-        if( diff < 0 ) seg = b->mach.segment + (1 << MCSystemConfig()->huge_shift);
+        seg = 0;
+        if( diff < 0 ) 
+            seg = b->mach.segment + (1 << MCSystemConfig()->huge_shift);
         diff &= 0xffff;
         seg = a->mach.segment - seg;
         diff += (unsigned long)(seg >> MCSystemConfig()->huge_shift) << 16;

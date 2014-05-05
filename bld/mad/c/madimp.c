@@ -43,17 +43,13 @@
 #define _CODE_BASED
 #endif
 
-#if defined( __WINDOWS__ )
-#elif defined( __WATCOMC__ )
-  #if defined( _M_I86 )
+#if defined( __WATCOMC__ )
+  #if defined( __WINDOWS__ )
+  #elif defined( _M_I86 )
     #pragma aux MADLOAD "*" __loadds
   #else
     #pragma aux MADLOAD "*"
   #endif
-#endif
-
-#if defined( __WINDOWS__ )
-typedef void (DIGENTRY INTER_FUNC)();
 #endif
 
 mad_client_routines     *MadClient;
@@ -151,7 +147,7 @@ static HANDLE       TaskId;
 static HINSTANCE    ThisInst;
 #endif
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
+#if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
 const char _CODE_BASED Signature[4] = "MAD";
 #endif
 
@@ -162,12 +158,12 @@ DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_clien
     return( &MadImpInterface );
 }
 
-void            *MCAlloc( unsigned amount )
+void            *MCAlloc( size_t amount )
 {
     return( MadClient->MADCliAlloc( amount ) );
 }
 
-void            *MCRealloc( void *p, unsigned amount )
+void            *MCRealloc( void *p, size_t amount )
 {
     return( MadClient->MADCliRealloc( p, amount ) );
 }
@@ -278,6 +274,8 @@ void            MCStatus( mad_status ms )
 }
 
 #if defined( __WINDOWS__)
+
+typedef void (DIGENTRY INTER_FUNC)();
 
 #ifdef DEBUGGING
 void Say( char *buff )
