@@ -39,7 +39,7 @@
 #include "jdlg.h"
 #include "madrtn.h"
 #include "malloc.h"
-#include "madsys.h"
+#include "madsys1.h"
 
 
 msglist ExceptionMsgs[] = {

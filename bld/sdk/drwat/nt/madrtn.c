@@ -38,7 +38,7 @@
 #include <string.h>
 #include "dip.h"
 #include <malloc.h>
-#include "madsys.h"
+#include "madsys1.h"
 #include "drwatcom.h"
 
 msglist MADMsgs[] = {
