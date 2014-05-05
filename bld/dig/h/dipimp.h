@@ -229,6 +229,16 @@ typedef struct dip_client_routines {
     unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
 } dip_client_routines;
 
+typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
+#ifdef __WINDOWS__
+typedef void DIGENTRY dip_fini_func( void );
+#endif
+
+DIG_DLLEXPORT dip_init_func DIPLOAD;
+#ifdef __WINDOWS__
+DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
+#endif
+
 void            *DCAlloc( unsigned amount );
 void            *DCAllocZ( unsigned amount );
 void            *DCRealloc( void *p, unsigned amount );
@@ -254,5 +264,6 @@ void            DCStatus( dip_status );
 mad_handle      DCCurrMAD(void);
 
 unsigned        DCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
+
 #include "digunpck.h"
 #endif

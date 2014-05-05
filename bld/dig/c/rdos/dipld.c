@@ -37,34 +37,30 @@
 #include "dipcli.h"
 #include "dipsys.h"
 
+void DIPSysUnload( dip_sys_handle *sys_hdl )
+{
+    RdosFreeDll( *sys_hdl );
+}
+
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     int                 dll;
-    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
+    dip_init_func       *init_func;
     char                newpath[256];
     dip_status          status;
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
     dll = RdosLoadDll( newpath );
-    if( dll == NULL ) {
+    if( dll == NULL_SYSHDL ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    init_func = RdosGetModuleProc( dll, "DIPLOAD" );
-    if( init_func == NULL ) {
-        RdosFreeDll( dll );
-        return( DS_ERR|DS_INVALID_DIP );
+    status = DS_ERR|DS_INVALID_DIP;
+    init_func = (dip_init_func *)RdosGetModuleProc( dll, "DIPLOAD" );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = dll;
+        return( DS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        RdosFreeDll( dll );
-        return( status );
-    }
-    *sys_hdl = (dip_sys_handle)dll;
-    return( DS_OK );
-}
-
-void DIPSysUnload( dip_sys_handle sys_hdl )
-{
-    RdosFreeDll( (int)sys_hdl );
+    RdosFreeDll( dll );
+    return( status );
 }

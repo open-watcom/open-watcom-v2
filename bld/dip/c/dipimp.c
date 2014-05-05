@@ -49,22 +49,12 @@
 #endif
 
 #if defined( __WINDOWS__ )
-    #define DIP_DLLEXPORT __declspec(dllexport) __declspec(__pascal)
 #elif defined( __WATCOMC__ )
-  #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
-    #define DIP_DLLEXPORT __declspec(dllexport)
-    #pragma aux DIPLOAD "*"
-  #elif defined( _M_I86 )
-    #define DIP_DLLEXPORT
+  #if defined( _M_I86 )
     #pragma aux DIPLOAD "*" __loadds
   #else
-    #define DIP_DLLEXPORT
     #pragma aux DIPLOAD "*"
   #endif
-#elif !defined( __UNIX__ )
-    #define DIP_DLLEXPORT __declspec(dllexport)
-#else
-    #define DIP_DLLEXPORT
 #endif
 
 #if defined( __WINDOWS__ )
@@ -152,16 +142,16 @@ dip_imp_routines        ImpInterface = {
     DIPImpLookupSymEx,
 };
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
-const char _CODE_BASED Signature[4] = "DIP";
-#endif
-
 #if defined( __WINDOWS__ )
 static HINSTANCE    ThisInst;
 static HANDLE       TaskId;
 #endif
 
-DIP_DLLEXPORT dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
+#if defined( __DOS__ ) || defined( __UNIX__ )
+const char _CODE_BASED Signature[4] = "DIP";
+#endif
+
+DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )
 {
     Client = client;
 #if defined( __WINDOWS__ )
@@ -310,7 +300,7 @@ void Say( char *buff )
 }
 #endif
 
-void DIPENTRY DIPUNLOAD( void )
+DIG_DLLEXPORT void DIPENTRY DIPUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
@@ -325,8 +315,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     INTER_FUNC          **func;
     unsigned            count;
     struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
+        dip_init_func   *load;
+        dip_fini_func   *unload;
     }                   *link;
     unsigned            seg;
     unsigned            off;
@@ -347,8 +337,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
         ++func;
         --count;
     }
-    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
-    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
+    link->load = (dip_init_func *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
+    link->unload = (dip_fini_func *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );

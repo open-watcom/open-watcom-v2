@@ -186,7 +186,9 @@ static void SetHdlSizes( dip_imp_routines *rtns )
 
     for( hk = 0; hk < (sizeof(MaxHdlSize) / sizeof(MaxHdlSize[0])); ++hk ) {
         size = rtns->handle_size( hk );
-        if( size > MaxHdlSize[hk] ) MaxHdlSize[hk] = size;
+        if( size > MaxHdlSize[hk] ) {
+            MaxHdlSize[hk] = size;
+        }
     }
 }
 
@@ -201,11 +203,15 @@ dip_status DIPLoad( char *path )
         }
     }
     status = DIPSysLoad( path, &DIPClientInterface, &LoadedDIPs[i].rtns, &LoadedDIPs[i].sys_hdl );
-    if( status != DS_OK ) return( status );
+    if( status != DS_OK )
+        return( status );
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
-     || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
-        DIPSysUnload( LoadedDIPs[i].sys_hdl );
+      || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
+        if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
+            DIPSysUnload( &LoadedDIPs[i].sys_hdl );
+        }
         LoadedDIPs[i].rtns = NULL;
+        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
         return( DS_ERR|DS_INVALID_DIP_VERSION );
     }
     SetHdlSizes( LoadedDIPs[i].rtns );
@@ -216,35 +222,31 @@ dip_status DIPRegister( dip_imp_routines *dir )
 {
     unsigned    i;
 
-
     for( i = MAX_LOAD_DIPS; LoadedDIPs[i].rtns != NULL; ++i ) {
         if( i >= MAX_DIPS ) {
             return( DS_ERR|DS_TOO_MANY_DIPS );
         }
     }
     LoadedDIPs[i].rtns = dir;
-    LoadedDIPs[i].sys_hdl = 0;
+    LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
     SetHdlSizes( LoadedDIPs[i].rtns );
     return( DS_OK );
 }
 
 void DIPFiniLatest( void )
 {
-    unsigned    i;
+    int     i;
 
-    i = MAX_DIPS;
-    for( ;; ) {
-        --i;
+    for( i = MAX_DIPS - 1; i >= 0; --i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->shutdown();
-            if( LoadedDIPs[i].sys_hdl != 0 ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
+            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
+                DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             }
             LoadedDIPs[i].rtns = NULL;
-            LoadedDIPs[i].sys_hdl = 0;
+            LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
             return;
         }
-        if( i == 0 ) return;
     }
 }
 
@@ -255,12 +257,12 @@ void DIPFini( void )
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->shutdown();
-            if( LoadedDIPs[i].sys_hdl != 0 ) {
-                DIPSysUnload( LoadedDIPs[i].sys_hdl );
+            if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
+                DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             }
         }
         LoadedDIPs[i].rtns = NULL;
-        LoadedDIPs[i].sys_hdl = 0;
+        LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
     }
 }
 
@@ -275,7 +277,9 @@ dip_status DIPMoreMem( unsigned amount )
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
-            if( LoadedDIPs[i].rtns->more_mem( amount ) == DS_OK ) return( DS_OK );
+            if( LoadedDIPs[i].rtns->more_mem( amount ) == DS_OK ) {
+                return( DS_OK );
+            }
         }
     }
     return( DS_FAIL );
@@ -389,7 +393,7 @@ process_info *DIPCreateProcess( void )
     for( i = 0; i < IMAGE_MAP_INIT; ++i ) p->ih_map[i] = NULL;
     p->ih_list = NULL;
     p->ih_add = &p->ih_list;
-    for( j = MAX_DIPS-1; j >= MAX_LOAD_DIPS; --j ) {
+    for( j = MAX_DIPS - 1; j >= MAX_LOAD_DIPS; --j ) {
         if( LoadedDIPs[j].rtns != NULL ) {
             i = FindImageMapSlot( p );
             if( i == NO_IMAGE_IDX ) {

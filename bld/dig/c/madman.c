@@ -40,6 +40,7 @@
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
+#include "madsys.h"
 #include "xfloat.h"
 
 #if defined( _M_IX86 ) || defined( _M_X64 ) || defined( __ALPHA__ ) || defined( __PPC__ ) || defined( __MIPS__ )
@@ -73,18 +74,11 @@ struct mad_entry {
     mad_imp_routines    *rtns;
     mad_state_data      *sl;
     mad_handle          mh;
-    unsigned long       sh;
+    mad_sys_handle      sys_hdl;
 };
 
 static mad_entry        *MADList;
 static mad_entry        *Active;
-
-/*
- * System specific support routines
- */
-mad_status      MADSysLoad( char *, mad_client_routines *,
-                                mad_imp_routines **, unsigned long * );
-void            MADSysUnload( unsigned long );
 
 /*
  * Client interface
@@ -198,7 +192,9 @@ mad_status      MADInit( void )
     Active = &Dummy;
     for( i = 0; i < sizeof( list ) / sizeof( list[0] ); ++i ) {
         ms = MADRegister( list[i].mh, list[i].file, list[i].desc );
-        if( ms != MS_OK ) return( ms );
+        if( ms != MS_OK ) {
+            return( ms );
+        }
     }
     return( ms );
 }
@@ -211,10 +207,7 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
     unsigned    file_len;
     unsigned    desc_len;
 
-    owner = &MADList;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) break;
+    for( owner = &MADList; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr->mh == mh ) {
             *owner = curr->next;
             old = Active;
@@ -223,24 +216,28 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
                 MADStateDestroy( curr->sl );
             }
             Active = old;
-            if( curr == Active ) Active = &Dummy;
+            if( curr == Active )
+                Active = &Dummy;
             /* MADUnload( curr->mh );  Did not work from here. */
             /* Removed call, and moved fixed functionality here */
-                if( curr->rtns != NULL ) {
-                    curr->rtns->MIFini();
-                    curr->rtns = NULL;
-                }
-                if( curr->sh != 0 ) MADSysUnload( curr->sh );
+            if( curr->rtns != NULL ) {
+                curr->rtns->MIFini();
+                curr->rtns = NULL;
+            }
+            if( curr->sys_hdl != NULL_SYSHDL ) {
+                MADSysUnload( &curr->sys_hdl );
+            }
             DIGCliFree( curr );
             break;
         }
-        owner = &curr->next;
     }
-    if( file == NULL ) return( MS_OK );
+    if( file == NULL )
+        return( MS_OK );
     file_len = strlen( file );
     desc_len = strlen( desc );
     curr = DIGCliAlloc( (sizeof( *curr ) + 2) + file_len + desc_len );
-    if( curr == NULL ) return( MADStatus( MS_ERR | MS_NO_MEM ) );
+    if( curr == NULL )
+        return( MADStatus( MS_ERR | MS_NO_MEM ) );
     curr->next = *owner;
     *owner = curr;
     curr->file = (char *)curr + sizeof( *curr );
@@ -248,7 +245,7 @@ mad_status      MADRegister( mad_handle mh, const char *file, const char *desc )
     curr->rtns = NULL;
     curr->sl   = NULL;
     curr->mh   = mh;
-    curr->sh   = 0;
+    curr->sys_hdl = NULL_SYSHDL;
     strcpy( curr->file, file );
     strcpy( curr->desc, desc );
     return( MS_OK );
@@ -268,7 +265,7 @@ mad_status      MADLoad( mad_handle mh )
     me = MADFind( mh );
     if( me == NULL ) return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
     if( me->rtns != NULL ) return( MS_OK );
-    ms = MADSysLoad( me->file, &MADClientInterface, &me->rtns, &me->sh );
+    ms = MADSysLoad( me->file, &MADClientInterface, &me->rtns, &me->sys_hdl );
     if( ms != MS_OK ) {
         me->rtns = NULL;
         return( MADStatus( ms ) );
@@ -308,13 +305,14 @@ void            MADUnload( mad_handle mh )
     mad_entry   *me;
 
     me = MADFind( mh );
-    if( me == NULL ) return;
+    if( me == NULL )
+        return;
     if( me->rtns != NULL ) {
         me->rtns->MIFini();
         me->rtns = NULL;
     }
-    if( me->sh != 0 ) {
-        MADSysUnload( me->sh );
+    if( me->sys_hdl != NULL_SYSHDL ) {
+        MADSysUnload( &me->sys_hdl );
     }
 }
 
@@ -323,7 +321,8 @@ mad_status      MADLoaded( mad_handle mh )
     mad_entry   *me;
 
     me = MADFind( mh );
-    if( me == NULL ) return( MADStatus( MS_ERR|MS_UNREGISTERED_MAD ) );
+    if( me == NULL )
+        return( MADStatus( MS_ERR|MS_UNREGISTERED_MAD ) );
     return( me->rtns != NULL ? MS_OK : MS_FAIL );
 }
 
@@ -334,7 +333,8 @@ mad_handle      MADActiveSet( mad_handle mh )
 
     old = Active->mh;
     me = MADFind( mh );
-    if( me != NULL ) Active = me;
+    if( me != NULL )
+        Active = me;
     return( old );
 }
 

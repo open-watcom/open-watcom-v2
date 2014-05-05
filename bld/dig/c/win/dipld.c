@@ -52,12 +52,10 @@ void Say( char *buff )
 
 
 
-void DIPSysUnload( dip_sys_handle sys_hdl )
+void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
-    void        (DIPENTRY *fini_func)( void ) = (void *)sys_hdl;
-
-    if( fini_func != NULL ) {
-        fini_func();
+    if( *sys_hdl != NULL_SYSHDL ) {
+        (*sys_hdl)();
     }
 }
 
@@ -65,7 +63,6 @@ void DIPSysUnload( dip_sys_handle sys_hdl )
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HANDLE              dll;
-    dip_imp_routines    *(DIPENTRY *init_func)( dip_status *, dip_client_routines * );
     char                newpath[256];
     dip_status          status;
     char                parm[10];
@@ -80,8 +77,8 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
         WORD            reserved;
     }                   parm_block;
     struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
+        dip_init_func   *load;
+        dip_fini_func   *unload;
     }                   transfer_block;
     char                *p;
     UINT                prev;
@@ -110,16 +107,11 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
     if( (UINT)dll < 32 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    *sys_hdl = (dip_sys_handle)transfer_block.unload;
-    init_func = ( dip_imp_routines *(DIPENTRY *)( dip_status *, dip_client_routines * ))transfer_block.load;
-    if( init_func == NULL ) {
-        DIPSysUnload( *sys_hdl );
-        return( DS_ERR|DS_INVALID_DIP );
+    status = DS_ERR|DS_INVALID_DIP;
+    if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
+        *sys_hdl = transfer_block.unload;
+        return( DS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        DIPSysUnload( *sys_hdl );
-        return( status );
-    }
-    return( DS_OK );
+    DIPSysUnload( &transfer_block.unload );
+    return( status );
 }

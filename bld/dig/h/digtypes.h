@@ -32,8 +32,7 @@
 #ifndef DIGTYPES_H_INCLUDED
 #define DIGTYPES_H_INCLUDED
 
-#include <machtype.h>
-#include "digpck.h"
+#include "machtype.h"
 
 #if defined( __WATCOMC__ ) && defined( _M_I86 )
     #define DIGFAR	__far
@@ -41,15 +40,23 @@
     #define DIGFAR
 #endif
 
-#if defined( __WATCOMC__ ) && defined( __WINDOWS__ )
+#if defined( __WINDOWS__ )
     #define DIGREGISTER     DIGFAR __pascal
-    #define DIGENTRY        DIGFAR __export __pascal
+    #define DIGENTRY        DIGFAR __pascal
     #define DIGCLIENT       __loadds
 #else
     #define DIGREGISTER     DIGFAR
     #define DIGENTRY        DIGFAR
     #define DIGCLIENT
 #endif
+
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
+    #define DIG_DLLEXPORT   __declspec(dllexport)
+#else
+    #define DIG_DLLEXPORT
+#endif
+
+#define DIG_NIL_HANDLE      ( (dig_fhandle) -1 )
 
 typedef unsigned_8 search_result; enum {
                 SR_NONE,
@@ -359,6 +366,8 @@ typedef unsigned_8 type_modifier; enum {
     TM_FLAG_DEREF       = 0x10
 };
 
+#include "digpck.h"
+
 typedef struct dip_type_info {
     unsigned long       size;
     type_kind           kind;
@@ -381,21 +390,19 @@ typedef         unsigned_8 dig_open; enum {
                         DIG_LOCAL       = 0x40,
                         DIG_SEARCH      = 0x80 };
 
-#define DIG_NIL_HANDLE      ( (dig_fhandle) -1 )
-
 enum archtypes {
     MAD_NIL,
-#define pick_mad(enum,file,desc) enum,
-#include "madarch.h"
-#undef pick_mad
+    #define pick_mad(enum,file,desc) enum,
+    #include "madarch.h"
+    #undef pick_mad
     MAD_MAX
 };
 typedef unsigned_16             mad_handle;
 
 enum ostypes {                  //NYI: redo these for PIL
-#define pick_mad(enum,desc) enum,
-#include "mados.h"
-#undef pick_mad
+    #define pick_mad(enum,desc) enum,
+    #include "mados.h"
+    #undef pick_mad
     MAD_OS_MAX
 };
 

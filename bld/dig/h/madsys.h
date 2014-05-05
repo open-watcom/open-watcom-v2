@@ -24,53 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Load a MAD which is a UNIX shared library.
+* Description:  System specific support routines
 *
 ****************************************************************************/
 
 
-#include <string.h>
-#include <stdio.h>
-#include <dlfcn.h>
-#include "mad.h"
-#include "madimp.h"
-#include "madcli.h"
-#include "madsys.h"
-#ifndef __WATCOMC__
-    #include "clibext.h"
+// on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
+// even if HANDLE is defined as 64-bit value
+
+#if defined( __WINDOWS__ )
+#define NULL_SYSHDL NULL
+typedef void (DIGENTRY *mad_sys_handle)( void );
+#elif defined( __NT__ )
+#define NULL_SYSHDL 0
+typedef size_t      mad_sys_handle;
+#elif defined( __OS2__ )
+#define NULL_SYSHDL 0
+#if defined( _M_I86 )
+typedef unsigned short mad_sys_handle;
+#else
+typedef unsigned long mad_sys_handle;
+#endif
+#elif defined( __RDOS__ )
+#define NULL_SYSHDL 0
+typedef int         mad_sys_handle;
+#else
+#define NULL_SYSHDL NULL
+typedef void        *mad_sys_handle;
 #endif
 
-
-void MADSysUnload( mad_sys_handle *sys_hdl )
-{
-    dlclose( *sys_hdl );
-}
-
-mad_status MADSysLoad( char *path, mad_client_routines *cli,
-                       mad_imp_routines **imp, mad_sys_handle *sys_hdl )
-{
-    void                *shlib;
-    mad_init_func       *init_func;
-    char                newpath[PATH_MAX];
-    char                full_path[PATH_MAX];
-    mad_status          status;
-
-    strcpy( newpath, path );
-    strcat( newpath, ".so" );
-    shlib = dlopen( newpath, RTLD_NOW );
-    if( shlib == NULL ) {
-        _searchenv( newpath, "PATH", full_path );
-        shlib = dlopen( full_path, RTLD_NOW );
-        if( shlib == NULL ) {
-            return( MS_ERR|MS_FOPEN_FAILED );
-        }
-    }
-    status = MS_ERR|MS_INVALID_MAD;
-    init_func = (mad_init_func *)dlsym( shlib, "MADLOAD" );
-    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = shlib;
-        return( MS_OK );
-    }
-    dlclose( shlib );
-    return( status );
-}
+extern mad_status   MADSysLoad( char *, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
+extern void         MADSysUnload( mad_sys_handle * );

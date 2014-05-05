@@ -289,6 +289,15 @@ typedef struct mad_client_routines {
     mad_status          (DIGCLIENT *MADCliTypeToString)( unsigned radix, const mad_type_info *, const void *data, unsigned *max, char *buff );
 } mad_client_routines;
 
+typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
+#ifdef __WINDOWS__
+typedef void DIGENTRY mad_fini_func( void );
+#endif
+
+DIG_DLLEXPORT mad_init_func MADLOAD;
+#ifdef __WINDOWS__
+DIG_DLLEXPORT mad_fini_func MADUNLOAD;
+#endif
 
 void            *MCAlloc( unsigned amount );
 void            *MCRealloc( void *p, unsigned amount );
