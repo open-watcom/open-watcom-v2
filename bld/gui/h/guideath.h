@@ -33,6 +33,6 @@
 #ifndef _GUIDEATH_H_
 #define _GUIDEATH_H_
 
-extern int GUIDeath ( void );
+extern bool GUIDeath ( void );
 
 #endif
