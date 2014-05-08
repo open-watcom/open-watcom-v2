@@ -88,7 +88,7 @@ static const char *usage[] = {
 static const char *usage_hosts[] = {
     #undef pick
     #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) descr,
-    #include "hosttype.h"
+    #include "hosttype.hpp"
     NULL
 };
 

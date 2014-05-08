@@ -80,7 +80,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
     } host_info[] = {
         #undef pick
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) { batchserv, editor, DLL, parms, pathsep },
-        #include "hosttype.h"
+        #include "hosttype.hpp"
     };
 
     _configPtr = this;
@@ -175,7 +175,7 @@ void MConfig::zapTargetMasks()
     static char hostChars[] = {
         #undef pick
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) type,
-        #include "hosttype.h"
+        #include "hosttype.hpp"
     };
     size_t  i;
     int     j;

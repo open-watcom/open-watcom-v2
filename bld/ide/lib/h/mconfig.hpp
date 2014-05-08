@@ -53,7 +53,7 @@
 typedef enum HostType {
     #undef pick
     #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) enum,
-    #include "hosttype.h"
+    #include "hosttype.hpp"
     HOST_UNDEFINED
 } HostType;
 
