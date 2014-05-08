@@ -135,7 +135,7 @@ void InfoPatch(
     dw_client                   cli,
     debug_ref                   offs,
     const void *                value,
-    size_t                      len )
+    dw_size_t                   len )
 {
     CLISeek( DW_DEBUG_INFO, offs + cli->section_base[ DW_DEBUG_INFO ],
         DW_SEEK_SET );
