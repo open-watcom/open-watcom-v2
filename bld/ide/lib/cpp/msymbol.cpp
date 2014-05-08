@@ -36,7 +36,7 @@
 Define( MSymbol )
 
 MSymbol::MSymbol( WTokenFile& fil, WString& tok )
-    : _define( FALSE )
+    : _define( false )
 {
         fil.token( _name );
         fil.token( _mask );
@@ -49,7 +49,7 @@ MSymbol::MSymbol( WTokenFile& fil, WString& tok )
 #ifndef NOPERSIST
 MSymbol* WEXPORT MSymbol::createSelf( WObjectFile& )
 {
-        return new MSymbol();
+        return( new MSymbol() );
 }
 
 void WEXPORT MSymbol::readSelf( WObjectFile& p )

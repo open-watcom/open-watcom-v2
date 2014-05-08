@@ -44,31 +44,31 @@ class WClassList : public WVList1
 
 class WClassMapItem: public WObject
 {
-        public:
-                WEXPORT WClassMapItem( const char* name, ctor ctor, int csize ) : _name(name), _ctor(ctor), _csize(csize) {}
-                WEXPORT ~WClassMapItem() {}
-                virtual bool WEXPORT isEqual( const WObject* obj ) const;
-                const char*     _name;
-                ctor            _ctor;
-                int             _csize;
+    public:
+        WEXPORT WClassMapItem( const char* name, ctor ctor, int csize ) : _name(name), _ctor(ctor), _csize(csize) {}
+        WEXPORT ~WClassMapItem() {}
+        virtual bool WEXPORT isEqual( const WObject* obj ) const;
+        const char*     _name;
+        ctor            _ctor;
+        int             _csize;
 };
 
 bool WEXPORT WClassMapItem::isEqual( const WObject* obj ) const
 {
-        return streq( _name, ((WClassMapItem*)obj)->_name );
+    return( streq( _name, ((WClassMapItem*)obj)->_name ) );
 }
 
 WClassList _classMap;
 
 bool WEXPORT WClass::addClass( const char* name, ctor ctor, int csize )
 {
-        _classMap.add( new WClassMapItem( name, ctor, csize ) );
-        return TRUE;
+    _classMap.add( new WClassMapItem( name, ctor, csize ) );
+    return( true );
 }
 
 WObject* WClass::createObject( const char* name, WObjectFile& p )
 {
-        WClassMapItem t( name, NULL, 0 );
-        WClassMapItem* m = (WClassMapItem*)_classMap.find( &t );
-        return (*m->_ctor)( p );
+    WClassMapItem t( name, NULL, 0 );
+    WClassMapItem* m = (WClassMapItem*)_classMap.find( &t );
+    return( (*m->_ctor)( p ) );
 }

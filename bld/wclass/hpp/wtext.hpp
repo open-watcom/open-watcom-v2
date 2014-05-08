@@ -49,7 +49,7 @@ WCLASS WText : public WControl {
         WEXPORT ~WText();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_STATIC; }
+        virtual gui_control_class controlClass() { return( GUI_STATIC ); }
 };
 
 #endif

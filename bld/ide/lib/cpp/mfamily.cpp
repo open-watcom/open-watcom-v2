@@ -74,7 +74,7 @@ MFamily::~MFamily()
 #ifndef NOPERSIST
 MFamily* WEXPORT MFamily::createSelf( WObjectFile& )
 {
-    return new MFamily();
+    return( new MFamily() );
 }
 
 void WEXPORT MFamily::readSelf( WObjectFile& p )
@@ -98,10 +98,10 @@ bool WEXPORT MFamily::hasSwitches( bool setable )
     for( int i=0; i<icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
         if( !setable || sw->isSetable() ) {
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixed_version )
@@ -122,7 +122,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
         for( int i = 0; i < icount; i++ ) {
             MSwitch* sw = (MSwitch*)_switches[i];
             if( sw->isTagEqual( switchtag ) ) {
-                return sw;
+                return( sw );
             }
         }
     } else {
@@ -136,18 +136,18 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
                 // check for old text
                 if( sw->isTagEqual( tool, switchtag, 1 ) ) {
                     sw->getTag( switchtag );
-                    return sw;
+                    return( sw );
                 }
                 // check for current text
                 if( sw->isTagEqual( tool, switchtag ) ) {
                     sw->getTag( switchtag );
-                    return sw;
+                    return( sw );
                 }
                 continue;
             }
 #endif
             if( sw->isTagEqual( switchtag ) ) {
-                return sw;
+                return( sw );
             }
             //
             // hack for buggy version of configuration/project files
@@ -156,12 +156,12 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
                 if( sw->isTagEqual( switchtag, 1 ) ) {
                     // upgrade switchtag to current configuration files version
                     sw->getTag( switchtag );
-                    return sw;
+                    return( sw );
                 }
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void MFamily::addSwitches( WVList& list, const char* mask, bool setable )

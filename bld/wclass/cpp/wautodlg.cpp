@@ -75,7 +75,7 @@ void WAutoDialog::initialize() {
     WPoint      max;
     int         i;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     int x = WSystemMetrics::dialogFrameWidth();
     int y = WSystemMetrics::dialogFrameHeight();
     textMetrics( avg, max );
@@ -100,13 +100,13 @@ void WAutoDialog::initialize() {
 
     for( i = 0; i < icount; i++ ) {
         WString s( _prompts->cStringAt( i ) );
-        bool bro = FALSE;
+        bool bro = false;
         char* p = strchr( (char *)s.gets(), '=' );
         if( p != NULL ) { // this code depends on internals of WString!
             *p = '\0';
             p++;
             if( *p == '=' ) {
-               bro = TRUE;
+               bro = true;
                p++;
             }
         }
@@ -158,14 +158,14 @@ void WEXPORT WAutoDialog::okButton( WWindow* ) {
             _replys->add( s );
         }
     }
-    quit( TRUE );
+    quit( true );
 }
 
 
 void WEXPORT WAutoDialog::cancelButton( WWindow* ) {
 /**************************************************/
 
-    quit( FALSE );
+    quit( false );
 }
 
 
@@ -187,7 +187,7 @@ bool WEXPORT WAutoDialog::getInput( WStringList &replys ) {
 /*********************************************************/
 
     _replys = &replys;
-    return( process() == TRUE );
+    return( process() == true );
 }
 
 #ifdef __WATCOMC__

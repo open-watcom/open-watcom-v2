@@ -195,8 +195,10 @@ bool WEXPORT WControl::setFocus() {
     gui_control_class   control;
 
     GUIGetControlClass( parent()->handle(), controlId(), &control );
-    if( control == GUI_STATIC ) return( FALSE );
-    if( control == GUI_GROUPBOX ) return( FALSE );
+    if( control == GUI_STATIC )
+        return( false );
+    if( control == GUI_GROUPBOX )
+        return( false );
     return( GUISetFocus( parent()->handle(), controlId() ) );
 }
 
@@ -206,7 +208,7 @@ void WEXPORT WControl::setUpdates( bool start_update ) {
 
     GUIControlSetRedraw( parent()->handle(), controlId(), start_update );
     if( start_update ) {
-        update( TRUE );
+        update( true );
     }
 }
 

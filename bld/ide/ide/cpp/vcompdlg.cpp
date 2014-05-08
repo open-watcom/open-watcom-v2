@@ -71,7 +71,7 @@ void VCompDialog::initialize()
     const int   button_width = 50;
     const int   button_hite = 14;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     this->textMetrics( average, max );
     sx = average.x() / 4;
     sy = average.y() / 8;
@@ -118,14 +118,14 @@ void VCompDialog::initialize()
     if( icount == 1 ) {
         // use a static field instead of a radio button when there is
         // only one target installed
-        singletarg = TRUE;
+        singletarg = true;
         i = 0;
         _cur_os = *(WString *)list[0];
         WText* t3 = new WText( this, WRect( 11*sx, 41*sy, 135*sx, rb_hite * sy ),
                             _cur_os.gets() );
         t3->show();
     } else {
-        singletarg = FALSE;
+        singletarg = false;
         for( i=0; i < icount; i ++ ) {
             if( i == 0 ) {
                 if( icount == 1 ) {
@@ -193,7 +193,7 @@ void VCompDialog::initialize()
     if( singletarg ) {
         updateCurOs();
     } else {
-        checkedbutton->setCheck( TRUE );
+        checkedbutton->setCheck( true );
     }
     if( curtarg != NULL ) {
         icount = _tgList.count();
@@ -231,17 +231,17 @@ bool VCompDialog::legalExt()
         WString ext2( _fn->ext() );
         if( ext2.size() == 0 ) {
             _fn->setExt( ext1 );
-            return TRUE;
+            return( true );
         }
         if( ext1 == ext2 ) {
-            return TRUE;
+            return( true );
         }
         WString n; curtarg->name( n );
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "'%s' is not a legal file extension for '%s'", (const char*)ext2, (const char*)n );
     } else {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Select an image type." );
     }
-    return FALSE;
+    return( false );
 }
 
 bool VCompDialog::findRule()
@@ -251,9 +251,9 @@ bool VCompDialog::findRule()
         MTarget* tg = (MTarget*)_tgList[i];
         *_mask = tg->mask();
         *_rulep = _config->findMatchingRule( *_fn, *_mask );
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 bool VCompDialog::checkName()
@@ -270,12 +270,12 @@ bool VCompDialog::checkName()
                 if( fn.match( cn, matchFName ) ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                         "Targets '%s' and '%s' have the same name and must be in different directories.", (const char*)*_fn, (const char*)*m->target() );
-                    return FALSE;
+                    return( false );
                 }
             }
         }
     }
-    return TRUE;
+    return( true );
 }
 
 void VCompDialog::updateCurOs( void )
@@ -323,19 +323,19 @@ void VCompDialog::okButton( WWindow* )
     } else if( !checkName() ) {
         //error issued by checkName()
     } else if( streq( _fn->ext(), ".tgt" ) ) {
-        quit( TRUE );
+        quit( true );
     } else if( !legalExt() ) {
         //error issued by legalExt()
     } else if( !findRule() ) {
         //this will work since extension has been verified
     } else {
-        quit( TRUE );
+        quit( true );
     }
 }
 
 void VCompDialog::cancelButton( WWindow* )
 {
-    quit( FALSE );
+    quit( false );
 }
 
 void VCompDialog::browseButton( WWindow* )
@@ -349,7 +349,7 @@ void VCompDialog::browseButton( WWindow* )
     fn = _browseDialog->getOpenFileName( NULL, "Enter target filename",
                                          WFOpenNew );
         if( fn.size() > 0 ) {
-            WFileName cwd; cwd.getCWD( TRUE );
+            WFileName cwd; cwd.getCWD( true );
             int len = cwd.size();
             if( len > 0 ) {
                 if( strnicmp( cwd, fn, len ) == 0 ) {
@@ -371,7 +371,7 @@ bool VCompDialog::process( WFileName& fn, MRule** rulep, WString& mask, MCompone
     WVList &list = _config->targetOSs();
     if( list.count() == 0 ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "No targets are currently installed" );
-        return( FALSE );
+        return( false );
     }
-    return WDialog::process() == TRUE;
+    return( WDialog::process() == true );
 }

@@ -38,51 +38,51 @@
 #include "wobject.hpp"
 
 extern "C" {
-        #include <ctype.h>
-        #include <string.h>
+    #include <ctype.h>
+    #include <string.h>
 };
 
 WCLASS WString : public WObject
 {
-        Declare( WString )
-        public:
-                WEXPORT WString();
-                WEXPORT WString( const WString& s );
-                WEXPORT WString( const char* s );
-                WString& WEXPORT operator=( const WString& s );
-//              WEXPORT WString( unsigned int );
-                WEXPORT ~WString();
+    Declare( WString )
+    public:
+        WEXPORT WString();
+        WEXPORT WString( const WString& s );
+        WEXPORT WString( const char* s );
+        WString& WEXPORT operator=( const WString& s );
+//        WEXPORT WString( unsigned int );
+        WEXPORT ~WString();
 #ifdef __WATCOM_CPLUSPLUS__
-                virtual WString& self() { return *this; }
+        virtual WString& self() { return( *this ); }
 #endif
-                virtual bool WEXPORT isEqual( const WObject* ) const;
-                virtual bool WEXPORT operator==( const char* cstring ) const;
-                virtual bool operator==( WObject const & obj ) const
-                        { return( isEqual( &obj ) ); }
-                virtual int WEXPORT compare( const WObject * ) const;
-                const char& operator[]( size_t index ) const { return _value[ index ]; }
-                void setChar( size_t index, char ch ) { _value[index] = ch; }
-                void WEXPORT deleteChar( size_t index, size_t count=1 );
-                size_t WEXPORT size() const { return (_value==NULL) ? 0 : strlen( _value ); }
-                const char* WEXPORT gets() const;
-                WEXPORT operator const char*() const { return gets(); }
-                WEXPORT operator int() const;
-                WEXPORT operator long() const;
-                void WEXPORT puts( const char * );
-                void WEXPORT printf( const char* parms... );
-                virtual void WEXPORT concat( const WString& s ) { concat( (const char *)s ); }
-                virtual void WEXPORT concat( const char* str );
-                virtual void WEXPORT concat( char chr );
-                void WEXPORT concatf( const char* parms... );
-                void WEXPORT truncate( size_t count );
-                void WEXPORT chop( size_t count );
-                size_t WEXPORT trim( bool beg=TRUE, bool end=TRUE );
-                virtual bool WEXPORT match( const char* mask ) const;
-                virtual bool WEXPORT isMask() const;
-                void WEXPORT toLower();
-        private:
-                char*  _value;
-                void fixup();
+        virtual bool WEXPORT isEqual( const WObject* ) const;
+        virtual bool WEXPORT operator==( const char* cstring ) const;
+        virtual bool operator==( WObject const & obj ) const
+            { return( isEqual( &obj ) ); }
+        virtual int WEXPORT compare( const WObject * ) const;
+        const char& operator[]( size_t index ) const { return( _value[index] ); }
+        void setChar( size_t index, char ch ) { _value[index] = ch; }
+        void WEXPORT deleteChar( size_t index, size_t count=1 );
+        size_t WEXPORT size() const { return( (_value==NULL) ? 0 : strlen( _value ) ); }
+        const char* WEXPORT gets() const;
+        WEXPORT operator const char*() const { return( gets() ); }
+        WEXPORT operator int() const;
+        WEXPORT operator long() const;
+        void WEXPORT puts( const char * );
+        void WEXPORT printf( const char* parms... );
+        virtual void WEXPORT concat( const WString& s ) { concat( (const char *)s ); }
+        virtual void WEXPORT concat( const char* str );
+        virtual void WEXPORT concat( char chr );
+        void WEXPORT concatf( const char* parms... );
+        void WEXPORT truncate( size_t count );
+        void WEXPORT chop( size_t count );
+        size_t WEXPORT trim( bool beg=true, bool end=true );
+        virtual bool WEXPORT match( const char* mask ) const;
+        virtual bool WEXPORT isMask() const;
+        void WEXPORT toLower();
+    private:
+        char*  _value;
+        void fixup();
 };
 
 typedef WString* (WObject::*sbc)( const char* c );

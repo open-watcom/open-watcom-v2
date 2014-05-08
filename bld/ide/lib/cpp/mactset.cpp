@@ -54,7 +54,7 @@ ActionStates::~ActionStates()
 #ifndef NOPERSIST
 ActionStates* WEXPORT ActionStates::createSelf( WObjectFile& )
 {
-    return new ActionStates( NULL );
+    return( new ActionStates( NULL ) );
 }
 
 void WEXPORT ActionStates::readSelf( WObjectFile& p )
@@ -80,8 +80,8 @@ bool ActionStates::linkup( WVList& actions )
         action->name( n );
         if( n == _actionTag ) {
             _action = action;
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }

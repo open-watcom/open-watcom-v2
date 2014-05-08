@@ -38,15 +38,15 @@
 
 class WTokenFile : public WFile
 {
-        public:
-                WEXPORT WTokenFile() {}
-                WEXPORT ~WTokenFile() {}
-                bool eol() { return _eol; }
+    public:
+        WEXPORT WTokenFile() {}
+        WEXPORT ~WTokenFile() {}
+        bool eol() { return( _eol ); }
 
-                WString& token( WString& tok, bool* eol=NULL );
-                void flushLine( WString& tok );
-        private:
-                bool    _eol;
+        WString& token( WString& tok, bool* eol=NULL );
+        void flushLine( WString& tok );
+    private:
+        bool    _eol;
 };
 
 #endif

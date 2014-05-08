@@ -80,7 +80,7 @@ template<class T> T &WStringObjectList<T>::stringAt( int index ) {
 
     static T str( "" );
     if( index < count() ) {
-        T *s = (T *)(*this)[ index ];
+        T *s = (T *)(*this)[index];
         return( *s );
     }
     return( str );
@@ -91,7 +91,7 @@ template<class T> const char *WStringObjectList<T>::cStringAt( int index ) {
 /**************************************************************************/
 
     if( index < count() ) {
-        T* s = (T *)(*this)[ index ];
+        T* s = (T *)(*this)[index];
         return( *s );
     }
     return( "" );

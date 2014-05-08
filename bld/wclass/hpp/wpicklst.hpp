@@ -38,15 +38,15 @@
 
 WCLASS WPickList : public WVList, public WModel
 {
-        Declare( WPickList )
-        public:
-                WEXPORT WPickList() {}
-                WEXPORT ~WPickList() {}
+    Declare( WPickList )
+    public:
+        WEXPORT WPickList() {}
+        WEXPORT ~WPickList() {}
 
-                WObject* WEXPORT add( WObject* obj );
-                WObject* WEXPORT removeAt( int index );
-                WObject* replaceAt( int index, WObject* obj );
-                WObject* insertAt( int index, WObject* obj );
+        WObject* WEXPORT add( WObject* obj );
+        WObject* WEXPORT removeAt( int index );
+        WObject* replaceAt( int index, WObject* obj );
+        WObject* insertAt( int index, WObject* obj );
 };
 
 #endif

@@ -76,7 +76,7 @@ WString& WEXPORT WString::operator =( const WString& x )
             }
         }
     }
-    return *this;
+    return( *this );
 }
 
 WEXPORT WString::WString( const char* str )
@@ -102,7 +102,7 @@ WEXPORT WString::~WString()
 #ifndef NOPERSIST
 WString* WEXPORT WString::createSelf( WObjectFile& )
 {
-    return new WString();
+    return( new WString() );
 }
 
 void WEXPORT WString::readSelf( WObjectFile& p )
@@ -115,7 +115,7 @@ void WEXPORT WString::readSelf( WObjectFile& p )
     if( len > 0 ) {
         _value = MALLOC( len + 1 );
         if( _value != NULL ) {
-            p.readObject( _value, len, TRUE );
+            p.readObject( _value, len, true );
         } else {
             // out of memory error
         }
@@ -134,40 +134,35 @@ void WEXPORT WString::writeSelf( WObjectFile& p )
 
 bool WEXPORT WString::isEqual( const WObject* str ) const
 {
-    if( str == NULL ) return FALSE;
+    if( str == NULL )
+        return( false );
     if( _value == NULL ) {
-        if( ((WString*)str)->_value == NULL ) return TRUE;
-        if( strlen( ((WString*)str)->_value ) == 0 ) return TRUE;
-        return FALSE;
+        return( ((WString*)str)->_value == NULL || strlen( ((WString*)str)->_value ) == 0 );
     }
     if( ((WString*)str)->_value == NULL ) {
-        if( strlen( _value ) == 0 ) return TRUE;
-        return FALSE;
+        return( strlen( _value ) == 0 );
     }
-    return strcmp( _value, ((WString*)str)->_value ) == 0;
+    return( strcmp( _value, ((WString*)str)->_value ) == 0 );
 }
 
 bool WEXPORT WString::operator==( const char* cstring ) const
 {
     if( _value == NULL ) {
-        if( cstring == NULL ) return TRUE;
-        if( strlen( cstring ) == 0 ) return TRUE;
-        return FALSE;
+        return( cstring == NULL || strlen( cstring ) == 0 );
     }
     if( cstring == NULL ) {
-        if( strlen( _value ) == 0 ) return TRUE;
-        return FALSE;
+        return( strlen( _value ) == 0 );
     }
-    return strcmp( _value, cstring ) == 0;
+    return( strcmp( _value, cstring ) == 0 );
 }
 
 int WEXPORT WString::compare( const WObject* str ) const
 {
     // assumes str points to a String
     if( (_value != NULL) && (str != NULL) && (((WString*)str)->_value != NULL) ) {
-        return strcmp( _value, ((WString*)str)->_value );
+        return( strcmp( _value, ((WString*)str)->_value ) );
     }
-    return 0;
+    return( 0 );
 }
 
 
@@ -187,25 +182,25 @@ void WEXPORT WString::deleteChar( size_t index, size_t count )
 const char* WEXPORT WString::gets() const
 {
     if( _value != NULL ) {
-        return _value;
+        return( _value );
     }
-    return "";
+    return( "" );
 }
 
 WEXPORT WString::operator int() const
 {
     if( _value != NULL ) {
-        return atoi( _value );
+        return( atoi( _value ) );
     }
-    return 0;
+    return( 0 );
 }
 
 WEXPORT WString::operator long() const
 {
     if( _value != NULL ) {
-        return atol( _value );
+        return( atol( _value ) );
     }
-    return 0;
+    return( 0 );
 }
 
 void WEXPORT WString::puts( const char* str )
@@ -289,7 +284,7 @@ void WEXPORT WString::truncate( size_t count )
     if( _value != NULL ) {
         size_t len = strlen( _value );
         if( count < len ) {
-            _value[ count ] = '\0';
+            _value[count] = '\0';
         }
         fixup();
     }
@@ -301,7 +296,7 @@ void WEXPORT WString::chop( size_t count )
         size_t len = strlen( _value );
         if( count > 0 ) {
             if( count <= len ) {
-                memmove( _value, &_value[ count ], len-count+1 );
+                memmove( _value, &_value[count], len-count+1 );
             }
         }
         fixup();
@@ -310,7 +305,7 @@ void WEXPORT WString::chop( size_t count )
 
 bool WEXPORT WString::match( const char* mask ) const
 {
-    bool ok = FALSE;
+    bool ok = false;
     const char* value = (const char *)_value;
     if( mask == NULL ) mask = "";
     if( value == NULL ) value = "";
@@ -318,7 +313,7 @@ bool WEXPORT WString::match( const char* mask ) const
     int     j = 0;
     for( ;; ) {
         if( mask[i] == '\0' && value[j] == '\0' ) {
-            ok = TRUE;
+            ok = true;
             break;
         } else if( mask[i] == '*' ) {
             i++;
@@ -340,7 +335,7 @@ bool WEXPORT WString::match( const char* mask ) const
             break;
         }
     }
-    return ok;
+    return( ok );
 }
 
 bool WEXPORT WString::isMask() const
@@ -348,11 +343,11 @@ bool WEXPORT WString::isMask() const
     if( _value != NULL ) {
         for( int i=0; _value[i] != '\0'; i++ ) {
             if( _value[i] == '?' || _value[i] == '*' ) {
-                return TRUE;
+                return( true );
             }
         }
     }
-    return FALSE;
+    return( false );
 }
 
 void WEXPORT WString::toLower()
@@ -381,7 +376,7 @@ size_t WEXPORT WString::trim( bool beg, bool end )
             size_t len = strlen( _value );
             size_t i;
             for( i=0; i<len; i++ ) {
-                if( _value[ i ] != ' ' ) break;
+                if( _value[i] != ' ' ) break;
             }
             if( i ) chop( i );
         }
@@ -391,10 +386,10 @@ size_t WEXPORT WString::trim( bool beg, bool end )
             size_t len = strlen( _value );
             size_t i;
             for( i=len; i>0; i-- ) {
-                if( _value[ i-1 ] != ' ' ) break;
+                if( _value[i-1] != ' ' ) break;
             }
             if( i-len ) chop( i-len );
         }
     }
-    return size();
+    return( size() );
 }

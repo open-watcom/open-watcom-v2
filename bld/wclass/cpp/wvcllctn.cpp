@@ -34,11 +34,11 @@
 
 WObject* WEXPORT WVCollection::remove( WObject* obj )
 {
-        WObject* o = find( obj );
-        if( o != NULL ) {
-                return removeSame( o );
-        }
-        return NULL;
+    WObject* o = find( obj );
+    if( o != NULL ) {
+        return( removeSame( o ) );
+    }
+    return( NULL );
 }
 
 #ifdef __WATCOMC__

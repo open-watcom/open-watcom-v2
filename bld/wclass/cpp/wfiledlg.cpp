@@ -41,7 +41,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, const char *filter )
         : _parent( parent ) {
 /***************************/
 
-    _fileName = new char[ WFileBufSize ];
+    _fileName = new char[WFileBufSize];
     makeDialog( filter );
 }
 
@@ -51,7 +51,7 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, unsigned res_idx )
         : _parent( parent ) {
 /***************************/
 
-    static char     buffer[ 512 ];
+    static char     buffer[512];
     WResStr         flt( res_idx );
     const char *    filter;
     unsigned        i = 0;
@@ -60,13 +60,13 @@ WEXPORT WFileDialog::WFileDialog( WWindow* parent, unsigned res_idx )
 
     do {
         if( filter[i] == REPCHAR ) {
-            buffer[ i ] = '\0';
+            buffer[i] = '\0';
         } else {
-            buffer[ i ] = filter[ i ];
+            buffer[i] = filter[i];
         }
-    } while( filter[ i++ ] );
+    } while( filter[i++] );
 
-    _fileName = new char[ WFileBufSize ];
+    _fileName = new char[WFileBufSize];
     makeDialog( buffer );
 }
 
@@ -159,9 +159,9 @@ bool WEXPORT WFileDialog::getOpenFileName( WFileNameList &flist,
             flist.removeAt( 0 );
         }
 #endif
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

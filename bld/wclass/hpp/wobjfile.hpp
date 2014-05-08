@@ -36,7 +36,7 @@
 #include "wfile.hpp"
 #include "wvlist.hpp"
 
-#define FORCE TRUE
+#define FORCE true
 
 WCLASS WObjectFile : public WFile {
     public:
@@ -45,8 +45,8 @@ WCLASS WObjectFile : public WFile {
         bool WEXPORT open( const char *name, OpenStyle style=OStyleRead );
         bool WEXPORT open( const char *name, const char* env, OpenStyle style=OStyleRead );
         bool WEXPORT close();
-        long WEXPORT version() { return _version; }
-        bool WEXPORT objOk() { return _objOk; }
+        long WEXPORT version() { return( _version ); }
+        bool WEXPORT objOk() { return( _objOk ); }
         void WEXPORT setObjOk( bool objOk ) { _objOk = objOk; }
         void WEXPORT readObject( WObject* obj );
         WObject* WEXPORT readObject();
@@ -62,7 +62,7 @@ WCLASS WObjectFile : public WFile {
         void WEXPORT readObject( unsigned long* obj );
         void WEXPORT readObject( unsigned long long* obj );
 
-        void WEXPORT writeObject( WObject* obj, bool force=FALSE );
+        void WEXPORT writeObject( WObject* obj, bool force=false );
         void WEXPORT writeObject( bool obj );
         void WEXPORT writeObject( char obj );           // write a char
         void WEXPORT writeObject( unsigned char obj );  // write a byte

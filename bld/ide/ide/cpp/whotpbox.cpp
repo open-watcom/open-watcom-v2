@@ -43,7 +43,7 @@ WEXPORT WHotPickBox::WHotPickBox( WPickList &plist, cbs gname, icb gindex, bcb g
     , _gname( gname )
     , _gindex( gindex )
     , _gincluded( gincluded )
-    , _sorted( TRUE )
+    , _sorted( true )
     , _tags( NULL )
     , _tagsCount( 0 )
     , _tagsWidth( 0 )
@@ -61,7 +61,7 @@ void WEXPORT WHotPickBox::name( int index, WString &str )
 /******************************************************/
 {
     if( _gname != NULL ) {
-        (((WObject*)_tags[ index ])->*_gname)( str );
+        (((WObject*)_tags[index])->*_gname)( str );
     } else {
         str = "";
     }
@@ -72,7 +72,7 @@ bool WHotPickBox::gettingFocus( WWindow * )
 /*****************************************/
 {
     parent()->setFocus();
-    return( TRUE );
+    return( true );
 }
 
 void WEXPORT WHotPickBox::fillBox()
@@ -89,17 +89,17 @@ void WEXPORT WHotPickBox::fillBox()
     int icount = _model->count();
     int jcount = 0;
     for( i=0; i<icount; i++ ) {
-        if( (((*_model)[ i ])->*_gincluded)() ) {
+        if( (((*_model)[i])->*_gincluded)() ) {
             jcount += 1;
         }
     }
-    _tags= new void*[ jcount ];
+    _tags= new void*[jcount];
     _tagsCount = jcount;
     int maxWid = 0;
     int j = 0;
     for( i=0; i<icount; i++ ) {
-        if( (((*_model)[ i ])->*_gincluded)() ) {
-            _tags[ j ] = (*_model)[ i ];
+        if( (((*_model)[i])->*_gincluded)() ) {
+            _tags[j] = (*_model)[i];
             WString s; name( j, s );
             int wid = getTextExtentX( s );
             if( wid > maxWid ) maxWid = wid;
@@ -114,16 +114,16 @@ void* WEXPORT WHotPickBox::tagPtr( int index )
 /********************************************/
 {
     if( _tags && index < _tagsCount ) {
-        return _tags[ index ];
+        return( _tags[index] );
     }
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT WHotPickBox::setTagPtr( int index, void* ptr )
 /********************************************/
 {
     if( _tags && index < _tagsCount ) {
-        _tags[ index ] = ptr;
+        _tags[index] = ptr;
     }
 }
 
@@ -132,15 +132,15 @@ void * WEXPORT WHotPickBox::selectedTagPtr()
 {
     int index = selected();
     if( index >= 0 ) {
-        return tagPtr( index );
+        return( tagPtr( index ) );
     }
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT WHotPickBox::selectSameTag( void* tag )
 {
     for( int i=0; i<_tagsCount; i++ ) {
-        if( _tags[ i ] == tag ) {
+        if( _tags[i] == tag ) {
             select( i );
             reset();
             break;
@@ -180,15 +180,15 @@ int WEXPORT WHotPickBox::count()
 /********************************************/
 {
     if( _model ) {
-        return _tagsCount;
+        return( _tagsCount );
     }
-    return 0;
+    return( 0 );
 }
 
 void WEXPORT WHotPickBox::setTopIndex( int top )
 /********************************************/
 {
-    performScroll( top, TRUE );
+    performScroll( top, true );
 }
 
 const char * WEXPORT WHotPickBox::getString( int index )
@@ -196,19 +196,19 @@ const char * WEXPORT WHotPickBox::getString( int index )
 {
     static WString n;
     name( index, n );
-    return n;
+    return( n );
 }
 
 int WEXPORT WHotPickBox::getHotOffset( int /*index*/ )
 {
-    return 0;
+    return( 0 );
 }
 
 int WEXPORT WHotPickBox::getHotSpot( int index, bool /*pressed*/ )
 /********************************************/
 {
     if( _gindex ) {
-        return (((WObject*)_tags[ index ])->*_gindex)();
+        return( (((WObject*)_tags[index])->*_gindex)() );
     }
-    return 0;
+    return( 0 );
 }

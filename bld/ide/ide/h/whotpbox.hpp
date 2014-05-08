@@ -50,12 +50,12 @@ WCLASS WHotPickBox : public WHotSpotList, public WView {
 
         virtual bool            gettingFocus( WWindow* );
         virtual int             count();
-        virtual int             width() { return _tagsWidth; }
+        virtual int             width() { return( _tagsWidth ); }
         virtual const char *    getString( int index );
         virtual int             getHotSpot( int index, bool pressed );
         virtual int             getHotOffset( int );
 
-        virtual int topIndex() { return _topIndex; }
+        virtual int topIndex() { return( _topIndex ); }
         virtual void setTopIndex( int top );
 
         virtual void* tagPtr( int index );

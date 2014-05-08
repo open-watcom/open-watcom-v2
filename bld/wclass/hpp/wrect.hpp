@@ -43,10 +43,10 @@ WCLASS WRect : public WRegion {
         WEXPORT WRect( WOrdinal x=0, WOrdinal y=0, WOrdinal w=0, WOrdinal h=0 )
                 : _x( x ), _y( y ), _w( w ), _h( h ) {}
         WEXPORT ~WRect() {}
-        WOrdinal WEXPORT x() const { return _x; }
-        WOrdinal WEXPORT y() const { return _y; }
-        WOrdinal WEXPORT w() const { return _w; }
-        WOrdinal WEXPORT h() const { return _h; }
+        WOrdinal WEXPORT x() const { return( _x ); }
+        WOrdinal WEXPORT y() const { return( _y ); }
+        WOrdinal WEXPORT w() const { return( _w ); }
+        WOrdinal WEXPORT h() const { return( _h ); }
         void WEXPORT x( WOrdinal x ) { _x = x; }
         void WEXPORT y( WOrdinal y ) { _y = y; }
         void WEXPORT w( WOrdinal w ) { _w = w; }

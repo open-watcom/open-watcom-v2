@@ -49,7 +49,7 @@ MVState::MVState( MTool* tool, SwMode mode, MVSwitch* sw, bool state, WString* v
 #ifndef NOPERSIST
 MVState* WEXPORT MVState::createSelf( WObjectFile& )
 {
-    return new MVState( _config->nilTool() );
+    return( new MVState( _config->nilTool() ) );
 }
 
 void WEXPORT MVState::readSelf( WObjectFile& p )

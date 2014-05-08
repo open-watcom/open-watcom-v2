@@ -46,8 +46,8 @@ WCLASS MAccelerator : public WObject
         MAccelerator() {}
         MAccelerator( WTokenFile& fil, WString& tok );
         ~MAccelerator() {}
-        WString description() { return _desc; }
-        WKeyCode keyStroke() { return _keystroke; }
+        WString description() { return( _desc ); }
+        WKeyCode keyStroke() { return( _keystroke ); }
     private:
         WKeyCode        _keystroke;
         WString         _desc;

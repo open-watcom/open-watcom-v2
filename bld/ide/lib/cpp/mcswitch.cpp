@@ -41,19 +41,19 @@ MCSwitch::MCSwitch( WTokenFile& fil, WString& tok )
     : MSwitch( fil, tok )
 {
     fil.token( _on );
-    bool state = FALSE;
+    bool state = false;
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
             state = ( fil.token( tok ) == "ON" );
         }
-        _state[ i ] = state;
+        _state[i] = state;
     }
 }
 
 #ifndef NOPERSIST
 MCSwitch* WEXPORT MCSwitch::createSelf( WObjectFile& )
 {
-    return new MCSwitch();
+    return( new MCSwitch() );
 }
 
 void WEXPORT MCSwitch::readSelf( WObjectFile& p )
@@ -62,11 +62,11 @@ void WEXPORT MCSwitch::readSelf( WObjectFile& p )
     p.readObject( &_on );
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {
-            p.readObject( &_state[ i ] );
+            p.readObject( &_state[i] );
         }
     } else {
-        p.readObject( &_state[ SWMODE_RELEASE ] );
-        _state[ SWMODE_DEBUG ] = _state[ SWMODE_RELEASE ];
+        p.readObject( &_state[SWMODE_RELEASE] );
+        _state[SWMODE_DEBUG] = _state[SWMODE_RELEASE];
     }
 }
 
@@ -75,7 +75,7 @@ void WEXPORT MCSwitch::writeSelf( WObjectFile& p )
     MSwitch::writeSelf( p );
     p.writeObject( &_on );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
-        p.writeObject( _state[ i ] );
+        p.writeObject( _state[i] );
     }
 }
 #endif
@@ -95,7 +95,7 @@ void MCSwitch::getText( WString& str, MState* state )
 
 void MCSwitch::getText( WString& str, WVList* states, SwMode mode )
 {
-    bool state = _state[ mode ];
+    bool state = _state[mode];
     WVList found;
     findStates( states, found );
     int icount = found.count();

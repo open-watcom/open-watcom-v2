@@ -44,12 +44,12 @@ WCLASS MRSwitch : public MSwitch
         ~MRSwitch() {}
         virtual void getText( WString& str, WVList* states, SwMode mode );
         virtual void getText( WString& str, MState* state );
-        bool state( SwMode m ) { return _state[ m ]; }
-        WString& on() { return _on; }
-        WString& group() { return _group; }
+        bool state( SwMode m ) { return( _state[m] ); }
+        WString& on() { return( _on ); }
+        WString& group() { return( _group ); }
     private:
         WString         _on;
-        bool            _state[ SWMODE_COUNT ];
+        bool            _state[SWMODE_COUNT];
         WString         _group;
         void    addone( WString& str, bool state );
 };

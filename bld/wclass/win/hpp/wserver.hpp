@@ -42,7 +42,7 @@ WCLASS WServer : public WObject {
     public:
         WEXPORT WServer( const char *service, const char *topic, WObject* owner, sbc notify );
         WEXPORT ~WServer();
-        bool WEXPORT xtConnect( HSZ hsz1, HSZ hsz2 );
+        BOOL WEXPORT xtConnect( HSZ hsz1, HSZ hsz2 );
         HDDEDATA WEXPORT xtRequest( UINT fmt, HSZ hsz1, HSZ hsz2 );
     private:
         HSZ             _service;

@@ -50,9 +50,9 @@ WCLASS WControl : public WWindow {
         WEXPORT ~WControl();
 
         unsigned controlId() { return( _control_id ); }
-        WStyle   style() { return _style; }
+        WStyle   style() { return( _style ); }
 
-        virtual bool processMsg( gui_event ) { return( FALSE ); }
+        virtual bool processMsg( gui_event ) { return( false ); }
         virtual bool WEXPORT processMsg( gui_event msg, void *parm ) {
             return( WWindow::processMsg( msg, parm ) );
         };
@@ -61,12 +61,12 @@ WCLASS WControl : public WWindow {
         virtual void WEXPORT getText( WString& str );
         virtual size_t WEXPORT getTextLength( void );
         virtual void WEXPORT setText( const char *text );
-        virtual void WEXPORT setUpdates( bool start_update=TRUE );
+        virtual void WEXPORT setUpdates( bool start_update=true );
         virtual void WEXPORT show( WWindowState state=WWinStateShow );
-        virtual bool WEXPORT isVisible() { return GUIIsControlVisible( parent()->handle(), controlId() ); }
+        virtual bool WEXPORT isVisible() { return( GUIIsControlVisible( parent()->handle(), controlId() ) ); }
         virtual bool WEXPORT isEnabled();
         virtual void WEXPORT enable( bool state );
-        virtual void WEXPORT getRectangle( WRect& r, bool absolute=FALSE );
+        virtual void WEXPORT getRectangle( WRect& r, bool absolute=false );
         virtual bool WEXPORT isHidden( void );
         virtual bool WEXPORT setFocus( void );
         virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {

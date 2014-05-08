@@ -47,11 +47,11 @@ WCLASS MTool : public WObject
         MTool( const char* name, const char* tag );
         MTool( WTokenFile& fil, WString& tok );
         ~MTool();
-        int compare( const WObject* o ) const { return _tag.compare( &((MTool*)o)->_tag ); }
+        int compare( const WObject* o ) const { return( _tag.compare( &((MTool*)o)->_tag ) ); }
 
-        WString& tag() { return _tag; };
+        WString& tag() { return( _tag ); };
         void name( WString& s ) { s = _name; }
-        const WString& help() { return _help; }
+        const WString& help() { return( _help ); }
         MSwitch* findSwitch( WString& switchtag, long fixed_version=0 );
         WString *displayText( MSwitch *sw, WString& text, bool first=true );
 #if CUR_CFG_VERSION > 4

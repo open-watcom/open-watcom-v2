@@ -48,7 +48,7 @@ WCLASS WClient : public WObject {
     public:
         WEXPORT WClient( WObject* owner, cbc notify );
         WEXPORT ~WClient();
-        bool WEXPORT connected() { return _connected; }
+        bool WEXPORT connected() { return( _connected ); }
         bool WEXPORT connect( const char *service, const char *topic );
         void WEXPORT disconnect();
         WString* WEXPORT sendMsg( const char *msg,

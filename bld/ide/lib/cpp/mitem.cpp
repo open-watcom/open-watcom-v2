@@ -54,10 +54,10 @@ WEXPORT MItem::MItem( const char* name, MComponent* comp, MRule* rule, bool isTa
     , _rule( rule )
     , _parent( NULL )
     , _attribs( 0 )
-    , _exists( TRUE )
+    , _exists( true )
     , _isTarget( isTarget )
     , _owner( MITEM_OWNER_IDE )
-    , _expanded( TRUE )
+    , _expanded( true )
 {
     updateAttribs();
 }
@@ -71,7 +71,7 @@ WEXPORT MItem::~MItem()
 #ifndef NOPERSIST
 MItem* WEXPORT MItem::createSelf( WObjectFile& )
 {
-    return new MItem( "", NULL, _config->nilRule() );
+    return( new MItem( "", NULL, _config->nilRule() ) );
 }
 
 void WEXPORT MItem::readSelf( WObjectFile& p )
@@ -161,12 +161,12 @@ int MItem::compare( const WObject* obj ) const
             comp = stricmp( *this, *robj );
         }
     }
-    return comp;
+    return( comp );
 }
 
 bool MItem::ismakeable()
 {
-    return rule()->ismakeable();
+    return( rule()->ismakeable() );
 }
 
 void MItem::absName( WFileName& fn )
@@ -184,18 +184,18 @@ bool MItem::result( WFileName& fn )
         } else {
             fn.setExt( rule()->resultExt() );
         }
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 bool MItem::absResult( WFileName& fn )
 {
     if( result( fn ) ) {
         fn.absoluteTo( _component->filename() );
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 bool MItem::touchResult()
@@ -203,9 +203,9 @@ bool MItem::touchResult()
     WFileName t;
     if( absResult( t ) ) {
         t.touch();
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 void MItem::updateAttribs()
@@ -265,7 +265,7 @@ bool MItem::rename( WFileName& name, MRule* rule )
     puts( name );
     updateAttribs();
     setRule( rule );
-    return TRUE;
+    return( true );
 }
 
 void MItem::addStates( WVList& list, SwMode mode )
@@ -308,7 +308,7 @@ int MItem::addActions( WVList& list )
     if( result( fn ) ) {
         addActions( fn, list );
     }
-    return ocount;
+    return( ocount );
 }
 
 WVList& MItem::getActionStates( MAction* action )
@@ -317,12 +317,12 @@ WVList& MItem::getActionStates( MAction* action )
     for( int i=0; i<icount; i++ ) {
         ActionStates* as = (ActionStates*)_actionStates[i];
         if( as->action() == action ) {
-            return as->states();
+            return( as->states() );
         }
     }
     ActionStates* as = new ActionStates( action );
     _actionStates.add( as );
-    return as->states();
+    return( as->states() );
 }
 
 WVList* MItem::findActionStates( MAction* action )
@@ -331,10 +331,10 @@ WVList* MItem::findActionStates( MAction* action )
     for( int i=0; i<icount; i++ ) {
         ActionStates* as = (ActionStates*)_actionStates[i];
         if( as->action() == action ) {
-            return &as->states();
+            return( &as->states() );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 int MItem::expandAction( const WString& actionName, WString& command )
@@ -344,10 +344,10 @@ int MItem::expandAction( const WString& actionName, WString& command )
     for( int i=0; i<actions.count(); i++ ) {
         MAction* action = (MAction*)actions[i];
         if( action->name().match( actionName ) ) {
-            return expandAction( action, command );
+            return( expandAction( action, command ) );
         }
     }
-    return -1;
+    return( -1 );
 }
 
 int MItem::expandAction( MAction* action, WString& command )
@@ -385,9 +385,9 @@ int MItem::expandAction( MAction* action, WString& command )
     }
     if( action ) {
         WVList* states = findActionStates( action );
-        return action->expand( command, &fn, _component->mask(), states, _component->mode() );
+        return( action->expand( command, &fn, _component->mask(), states, _component->mode() ) );
     }
-    return -1;
+    return( -1 );
 }
 
 void MItem::resetRuleRefs()
@@ -417,18 +417,18 @@ void MItem::pruneStates( WVList& states )
 int MItem::type()
 {
     if( _parent ) {
-        return 3;
+        return( 3 );
     }
     if( !_expanded ) {
-        return 2;
+        return( 2 );
     }
-    return 1;
+    return( 1 );
 }
 
 bool MItem::included()
 {
     if( _parent ) {
-        return _parent->_expanded;
+        return( _parent->_expanded );
     }
-    return TRUE;
+    return( true );
 }

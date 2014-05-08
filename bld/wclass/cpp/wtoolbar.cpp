@@ -81,7 +81,7 @@ WEXPORT WToolBar::~WToolBar() {
 
     detach();
     while( _children.count() ) {
-        delete _children[ _children.count()-1 ];
+        delete _children[_children.count()-1];
     }
     if( _toolBarItems ) {
         delete []_toolBarItems;
@@ -108,7 +108,7 @@ void WToolBar::attach( WWindow *win ) {
 /*************************************/
 
     int num_tools = _children.count();
-    _toolBarItems = new gui_toolbar_struct[ num_tools ];
+    _toolBarItems = new gui_toolbar_struct[num_tools];
     if( _toolBarItems != NULL ) {
         for( int i = 0; i < num_tools; ++i ) {
             _toolBarItems[i] = *(*(WToolBarItem *)_children[i]).toolBarInfo();
@@ -121,7 +121,7 @@ void WToolBar::attach( WWindow *win ) {
             trect.width = _rect.w();
             trect.height = _rect.h();
             if( GUICreateFloatToolBar( win->handle(), fixed, 0, num_tools,
-                              _toolBarItems, FALSE, NULL, NULL, &trect ) ) {
+                              _toolBarItems, false, NULL, NULL, &trect ) ) {
                 _parent = win;
             } else {
                 delete _toolBarItems;
@@ -129,7 +129,7 @@ void WToolBar::attach( WWindow *win ) {
             }
         } else if( _flags & WToolFlagsUseTips ) {
             if( GUICreateToolBarWithTips( win->handle(), fixed, 0, num_tools,
-                                          _toolBarItems, FALSE, NULL, NULL ) ) {
+                                          _toolBarItems, false, NULL, NULL ) ) {
                 _parent = win;
             } else {
                 delete _toolBarItems;
@@ -137,7 +137,7 @@ void WToolBar::attach( WWindow *win ) {
             }
         } else {
             if( GUICreateToolBar( win->handle(), fixed, 0, num_tools,
-                                  _toolBarItems, FALSE, NULL, NULL ) ) {
+                                  _toolBarItems, false, NULL, NULL ) ) {
                 _parent = win;
             } else {
                 delete _toolBarItems;
@@ -177,5 +177,5 @@ bool WEXPORT WToolBar::changed( WToolBarState state ) {
     if( _changedClient && _changed ) {
         return( (_changedClient->*_changed)( this, state ) );
     }
-    return( FALSE );
+    return( false );
 }

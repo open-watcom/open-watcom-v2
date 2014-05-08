@@ -70,19 +70,19 @@ WCLASS VComponent : public WMdiChild, public WView
         void WEXPORT mAutodepend();
         void WEXPORT mAutotrack();
         void WEXPORT mDebugMode();
-        bool WEXPORT debugMode() { return mode() == SWMODE_DEBUG; }
+        bool WEXPORT debugMode() { return( mode() == SWMODE_DEBUG ); }
         void WEXPORT renameComponent( WFileName& fn, MRule* rule, WString& mask );
         void WEXPORT setupComponent();
         void WEXPORT setCompBefore();
         void WEXPORT setCompAfter();
         void WEXPORT showCompCommand();
-        void WEXPORT touchComponent( bool quiet = FALSE );
+        void WEXPORT touchComponent( bool quiet=false );
         bool WEXPORT keyDown( WKeyCode, WKeyState );
     bool WEXPORT scrollNotify( WScrollNotification, int );
         MItem* WEXPORT selectedItem();
-        MComponent* component() { return _component; }
-        MItem* WEXPORT target() { return _component->target(); }
-        bool newItem( WFileName&, bool warn = TRUE, bool mark = FALSE, unsigned owner=0 );
+        MComponent* component() { return( _component ); }
+        MItem* WEXPORT target() { return( _component->target() ); }
+        bool newItem( WFileName&, bool warn=true, bool mark=false, unsigned owner=0 );
         void beginFileList( unsigned owner );
         void markFile( WFileName &file, unsigned owner );
         void endFileList( unsigned owner );
@@ -96,7 +96,7 @@ WCLASS VComponent : public WMdiChild, public WView
         void initCtor();
         void dblClicked( WWindow* );
         void expandItem( WWindow* );
-        SwMode mode() { return _component->mode(); }
+        SwMode mode() { return( _component->mode() ); }
         bool okToInclude( MItem* item, bool nowarn, MItem* dupitem=NULL );
         void actionError( MItem* item, const WString& actionName );
 };

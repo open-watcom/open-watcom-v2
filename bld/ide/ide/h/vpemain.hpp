@@ -77,13 +77,13 @@ WCLASS VpeMain : public WMdiWindow, public WView
             return( WWindow::keyDown( code, state ) );
         };
         bool reallyClose();
-        bool queryEndSession( void ) { return reallyClose(); }
+        bool queryEndSession( void ) { return( reallyClose() ); }
 
         bool executeCommand( const char* cmd, int location, const char* title=NULL );
-        WPopupMenu* targetPopup() { return _targetPopup; }
-        WPopupMenu* itemsPopup() { return _itemsPopup; }
-        WPopupMenu* logPopup() { return _logPopup; }
-        MProject* project() { return _project; }
+        WPopupMenu* targetPopup() { return( _targetPopup ); }
+        WPopupMenu* itemsPopup() { return( _itemsPopup ); }
+        WPopupMenu* logPopup() { return( _logPopup ); }
+        MProject* project() { return( _project ); }
         SayReturn say( SayStyle style, SayCode code, const char* text );
         void quickRefresh();
         void setStatus( const char* msg );

@@ -62,17 +62,17 @@ WCLASS WObject {
         virtual WEXPORT ~WObject() {}
 
         // Returns the name of the class.
-        virtual const char *WEXPORT className() const { return "WObject"; };
-        virtual bool WEXPORT operator==( const WObject& obj ) const { return isEqual( &obj ); }
-        virtual bool WEXPORT operator!=( const WObject& obj ) const { return !isEqual( &obj ); }
+        virtual const char *WEXPORT className() const { return( "WObject" ); };
+        virtual bool WEXPORT operator==( const WObject& obj ) const { return( isEqual( &obj ) ); }
+        virtual bool WEXPORT operator!=( const WObject& obj ) const { return( !isEqual( &obj ) ); }
 
         // Checks to see if two objects are equivilant.
-        virtual bool WEXPORT isEqual( const WObject* ) const { return FALSE; }
+        virtual bool WEXPORT isEqual( const WObject* ) const { return( false ); }
 
         // Compairs two objects.  Results like strcmp()
-        virtual int WEXPORT compare( const WObject* ) const { return 0; }
+        virtual int WEXPORT compare( const WObject* ) const { return( 0 ); }
 #ifdef __WATCOM_CPLUSPLUS__
-        virtual WObject& self() { return *this; }
+        virtual WObject& self() { return( *this ); }
 #endif
         virtual void readSelf( WObjectFile& ) {}
         virtual void writeSelf( WObjectFile& ) {}

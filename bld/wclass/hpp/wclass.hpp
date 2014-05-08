@@ -33,28 +33,31 @@
 
 typedef WObject* (*ctor)( WObjectFile& );
 #ifndef NOPERSIST
-#define Declare(c)      public: virtual const char* WEXPORT className() const { return #c; }\
-                        static bool initState;\
-                        static bool initClass();\
-                        static c* WEXPORT createSelf( WObjectFile& p );\
-                        virtual void WEXPORT readSelf( WObjectFile& p );\
-                        virtual void WEXPORT writeSelf( WObjectFile& p );
+#define Declare(c) \
+    public: \
+        virtual const char* WEXPORT className() const { return( #c ); }\
+        static bool initState;\
+        static bool initClass();\
+        static c* WEXPORT createSelf( WObjectFile& p );\
+        virtual void WEXPORT readSelf( WObjectFile& p );\
+        virtual void WEXPORT writeSelf( WObjectFile& p );
 #else
 #define Declare(c)
 #endif
 
 #ifndef NOPERSIST
-#define Define(c)       bool c::initState = c::initClass();\
-                        bool c::initClass() { return WClass::addClass( #c, (ctor)&c::createSelf, sizeof(#c) ); }
+#define Define(c) \
+        bool c::initState = c::initClass();\
+        bool c::initClass() { return( WClass::addClass( #c, (ctor)&c::createSelf, sizeof( #c ) ) ); }
 #else
 #define Define(c)
 #endif
 
 WCLASS WClass
 {
-        public:
-                static bool WEXPORT addClass( const char* name, ctor ctor, int csize );
-                static WObject* createObject( const char* name, WObjectFile& );
+    public:
+        static bool WEXPORT addClass( const char* name, ctor ctor, int csize );
+        static WObject* createObject( const char* name, WObjectFile& );
 };
 
 #endif

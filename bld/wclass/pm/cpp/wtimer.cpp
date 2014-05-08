@@ -88,9 +88,9 @@ bool WEXPORT WTimer::start( int interval, int count ) {
     _interval = interval;
     _count = count;
     if( DosCreateThread( &tid, (PFNTHREAD)timerThread, (ULONG)this, 0, _stackSize ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -99,9 +99,9 @@ bool WEXPORT WTimer::stop() {
 
     if( WinStopTimer( _anchorBlock, NULLHANDLE, _id ) ) {
         WinPostQueueMsg( _msgQueue, WM_QUIT, MPFROMLONG( _id ), 0 );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

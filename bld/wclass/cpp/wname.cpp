@@ -58,9 +58,9 @@ bool WName::hotKey( WKeyCode ) {
 
     if( _client != NULL ) {
         _client->setFocus();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

@@ -50,11 +50,11 @@ WCLASS WMenuItem : public WMenuObject {
         WEXPORT ~WMenuItem();
 
         void WEXPORT setParent( WPopupMenu* parent ) { _parent = parent; }
-        WPopupMenu * WEXPORT parent() { return _parent; }
+        WPopupMenu * WEXPORT parent() { return( _parent ); }
         virtual void WEXPORT picked();
         virtual void WEXPORT hilighted( bool );
         void setTagPtr( void *tagPtr ) { _tagPtr = tagPtr; }
-        void *tagPtr() { return _tagPtr; }
+        void *tagPtr() { return( _tagPtr ); }
         virtual void attachMenu( WWindow *, int );
         virtual void detachMenu();
 

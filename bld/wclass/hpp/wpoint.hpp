@@ -40,8 +40,8 @@ WCLASS WPoint {
     public:
         WEXPORT WPoint( WOrdinal x=0, WOrdinal y=0 ) : _x( x ), _y( y ) {}
         WEXPORT ~WPoint() {}
-        WOrdinal WEXPORT x() const { return _x; }
-        WOrdinal WEXPORT y() const { return _y; }
+        WOrdinal WEXPORT x() const { return( _x ); }
+        WOrdinal WEXPORT y() const { return( _y ); }
         void WEXPORT x( WOrdinal x ) { _x = x; }
         void WEXPORT y( WOrdinal y ) { _y = y; }
 

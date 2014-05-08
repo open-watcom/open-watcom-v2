@@ -40,9 +40,9 @@ WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, W
     : WWindow( prt, r, text, wstyle, wexstyle )
     , _topIndex( 0 )
     , _selected( -1 )
-    , _leftDown( FALSE )
+    , _leftDown( false )
     , _hotPressIdx( -1 )
-    , _inHotZone( FALSE )
+    , _inHotZone( false )
     , _changedClient( NULL )
     , _changed( NULL )
     , _dblClickClient( NULL )
@@ -58,7 +58,7 @@ WHotSpotList::WHotSpotList( WWindow * prt, const WRect & r, const char * text, W
 bool WHotSpotList::gettingFocus( WWindow* )
 //-----------------------
 {
-    return FALSE;
+    return( false );
 }
 
 void WHotSpotList::adjustScrollBars()
@@ -82,7 +82,7 @@ void WHotSpotList::resized( WOrdinal w, WOrdinal h )
     newtop = count() - getRows();
     if( newtop < 0 ) newtop = 0;
     if( newtop < _topIndex ) {
-        performScroll( newtop, TRUE );
+        performScroll( newtop, true );
     }
     adjustScrollBars();
 }
@@ -103,9 +103,9 @@ bool WHotSpotList::paint()
 
         int hotSpot;
         if( i == _hotPressIdx && _inHotZone ) {
-            hotSpot = getHotSpot( i, TRUE );
+            hotSpot = getHotSpot( i, true );
         } else {
-            hotSpot = getHotSpot( i, FALSE );
+            hotSpot = getHotSpot( i, false );
         }
 
         if( _hs != NULL ) {
@@ -127,7 +127,7 @@ bool WHotSpotList::paint()
         }
     }
 
-    return TRUE;
+    return( true );
 }
 
 bool WHotSpotList::mouseMove( int x, int y, WMouseKeyFlags )
@@ -147,7 +147,7 @@ bool WHotSpotList::mouseMove( int x, int y, WMouseKeyFlags )
         if( _hs != NULL && _hotPressIdx >= 0 ) {
 
             WPoint hotSize;
-            _hs->hotSpotSize( getHotSpot( _hotPressIdx, FALSE ), hotSize );
+            _hs->hotSpotSize( getHotSpot( _hotPressIdx, false ), hotSize );
             int hotOffset = getHotOffset( _hotPressIdx );
 
             if( row == _hotPressIdx
@@ -155,12 +155,12 @@ bool WHotSpotList::mouseMove( int x, int y, WMouseKeyFlags )
                 && x <= hotOffset + hotSize.x() ) {
 
                 if( !_inHotZone ) {
-                    _inHotZone = TRUE;
+                    _inHotZone = true;
                     invalidateRow( _hotPressIdx - _topIndex );
                 }
             } else {
                 if( _inHotZone ) {
-                    _inHotZone = FALSE;
+                    _inHotZone = false;
                     invalidateRow( _hotPressIdx - _topIndex );
                 }
             }
@@ -177,9 +177,9 @@ bool WHotSpotList::mouseMove( int x, int y, WMouseKeyFlags )
                 scrollToSelected();
             }
         }
-        return TRUE;
+        return( true );
     } else {
-        return FALSE;
+        return( false );
     }
 }
 
@@ -191,12 +191,12 @@ bool WHotSpotList::leftBttnDn( int x, int y, WMouseKeyFlags f )
     if( row < 0 ) row = 0;
     if( row >= count() ) row = count() - 1;
     if( row < 0 ) {     // count == 0
-        return FALSE;
+        return( false );
     }
 
     if( _hs != NULL ) {
         WPoint  hotSize;
-        _hs->hotSpotSize( getHotSpot( row, FALSE ), hotSize );
+        _hs->hotSpotSize( getHotSpot( row, false ), hotSize );
         int hotOffset = getHotOffset( row );
 
         if( x > hotOffset && x < hotOffset + hotSize.x() ) {
@@ -204,22 +204,22 @@ bool WHotSpotList::leftBttnDn( int x, int y, WMouseKeyFlags f )
         }
     }
 
-    _leftDown = TRUE;
+    _leftDown = true;
 
     mouseMove( x, y, f );
 
-    return TRUE;
+    return( true );
 }
 
 bool WHotSpotList::leftBttnUp( int x, int y, WMouseKeyFlags f )
 //------------------------------------------------------------
 {
     mouseMove( x, y, f );
-    _leftDown = FALSE;
+    _leftDown = false;
 
     if( _inHotZone && getRow( WPoint( x, y ) ) + _topIndex == _hotPressIdx ) {
         // have to set false before calling invalidateRow().
-        _inHotZone = FALSE;
+        _inHotZone = false;
 
         if( _selected != _hotPressIdx ) {
             int oldSel = _selected;
@@ -233,12 +233,12 @@ bool WHotSpotList::leftBttnUp( int x, int y, WMouseKeyFlags f )
         invalidateRow( _selected - _topIndex );
     }
 
-    _inHotZone = FALSE;
+    _inHotZone = false;
     _hotPressIdx = -1;
 
     changed();
 
-    return TRUE;
+    return( true );
 }
 
 bool WHotSpotList::leftBttnDbl( int x, int y, WMouseKeyFlags )
@@ -253,7 +253,7 @@ bool WHotSpotList::leftBttnDbl( int x, int y, WMouseKeyFlags )
     }
     invalidateRow( _selected - _topIndex );
 
-    return TRUE;
+    return( true );
 }
 
 bool WHotSpotList::rightBttnDn( int x, int y, WMouseKeyFlags f )
@@ -264,7 +264,7 @@ bool WHotSpotList::rightBttnDn( int x, int y, WMouseKeyFlags f )
         select( row );
         reset();
     }
-    return WWindow::rightBttnDn( x, y, f );
+    return( WWindow::rightBttnDn( x, y, f ) );
 }
 
 void WHotSpotList::onChanged( WObject* obj, cbw changed )
@@ -291,7 +291,7 @@ void WHotSpotList::onHotPress( WObject* obj, cbw hotPress )
 int WHotSpotList::selected()
 //-------------------------
 {
-    return _selected;
+    return( _selected );
 }
 
 void WHotSpotList::setSelected( int index )
@@ -328,10 +328,10 @@ void WHotSpotList::scrollToSelected()
     int nRows = getRows();
 
     if( _selected < _topIndex ) {
-        performScroll( _selected, TRUE );
+        performScroll( _selected, true );
     }
     if( _selected > _topIndex + nRows - 1 ) {
-        performScroll( _selected - nRows + 1, TRUE );
+        performScroll( _selected - nRows + 1, true );
     }
 }
 
@@ -369,26 +369,26 @@ bool WHotSpotList::scrollNotify( WScrollNotification sn, int diff )
     switch( sn ) {
         case WScrollUp:
             performScroll( -1 );
-            return TRUE;
+            return( true );
 
         case WScrollPageUp:
             performScroll( -1 * getRows() + 1 );
-            return TRUE;
+            return( true );
 
         case WScrollDown:
             performScroll( 1 );
-            return TRUE;
+            return( true );
 
         case WScrollPageDown:
             performScroll( getRows() - 1 );
-            return TRUE;
+            return( true );
 
         case WScrollVertical:
             performScroll( diff );
-            return TRUE;
+            return( true );
     }
 
-    return FALSE;
+    return( false );
 }
 
 bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
@@ -409,7 +409,7 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             }
             scrollToSelected();
             changed();
-            return TRUE;
+            return( true );
 
         case WKeyPagedown:
             _selected += nRows - 1;
@@ -423,7 +423,7 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             }
             scrollToSelected();
             changed();
-            return TRUE;
+            return( true );
 
         case WKeyUp:
             _selected -= 1;
@@ -435,7 +435,7 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             }
             scrollToSelected();
             changed();
-            return TRUE;
+            return( true );
 
         case WKeyDown:
             _selected += 1;
@@ -449,19 +449,19 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             }
             scrollToSelected();
             changed();
-            return TRUE;
+            return( true );
 
         case WKeyEnter:
             if( count() != 0 && _dblClickClient && _dblClick ) {
                 (_dblClickClient->*_dblClick)( this );
                 invalidateRow( _selected - _topIndex );
             }
-            return TRUE;
+            return( true );
 
         case WKeySpace:
             if( _hotPressClient && _hotPress ) {
                 (_hotPressClient->*_hotPress)( this );
-                return TRUE;
+                return( true );
             }
             break;
         case WKeyLeft:
@@ -483,7 +483,7 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
 
         }
     }
-    return FALSE;
+    return( false );
 }
 
 

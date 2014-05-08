@@ -57,9 +57,9 @@ class WFile : public WObject {
         virtual bool WEXPORT open( const char* name, OpenStyle style=OStyleRead );
         virtual bool WEXPORT open( const char* name, const char* env, OpenStyle style=OStyleRead );
         virtual bool WEXPORT close();
-        bool WEXPORT ok() { return _ok; }
-        int lineCount() { return _lineCount; }
-        WFileName& filename() { return _filename; }
+        bool WEXPORT ok() { return( _ok ); }
+        int lineCount() { return( _lineCount ); }
+        WFileName& filename() { return( _filename ); }
 
         long WEXPORT getl();
         WString& WEXPORT getLine( WString& str );
@@ -68,7 +68,7 @@ class WFile : public WObject {
         void WEXPORT gets_exact( char* str, int len ); // read EXACTLY len bytes
         char WEXPORT getch();
         void WEXPORT ungetch( char chr );
-        bool WEXPORT eof() { return _eof; }
+        bool WEXPORT eof() { return( _eof ); }
 
         bool WEXPORT putl( long n );
         bool WEXPORT puts( const char* str );

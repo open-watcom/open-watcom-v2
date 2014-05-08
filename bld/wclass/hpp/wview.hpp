@@ -58,18 +58,18 @@ typedef enum sayReturn {
 WCLASS WModel;
 WCLASS WView
 {
-        public:
-                WEXPORT WView( WModel* model=NULL );
-                virtual WEXPORT ~WView();
-                void WEXPORT attachModel( WModel* model );
-                void WEXPORT detachModel();
-                void WEXPORT vModelGone();
-                WModel* WEXPORT model() { return _model; }
-                virtual SayReturn WEXPORT say( SayStyle, SayCode, const char* ) { return RetOk; }
-                virtual void WEXPORT updateView() =0;
-                virtual void WEXPORT modelGone() =0;
-        private:
-                WModel*         _model;
+    public:
+        WEXPORT WView( WModel* model=NULL );
+        virtual WEXPORT ~WView();
+        void WEXPORT attachModel( WModel* model );
+        void WEXPORT detachModel();
+        void WEXPORT vModelGone();
+        WModel* WEXPORT model() { return( _model ); }
+        virtual SayReturn WEXPORT say( SayStyle, SayCode, const char* ) { return( RetOk ); }
+        virtual void WEXPORT updateView() =0;
+        virtual void WEXPORT modelGone() =0;
+    private:
+        WModel*     _model;
 };
 
 #endif

@@ -41,7 +41,7 @@ extern "C" {
 #define MAX_MESSAGE 500
 
 WEXPORT WModel::WModel()
-        : _updates( TRUE )
+        : _updates( true )
 {
 }
 
@@ -73,12 +73,12 @@ SayReturn WEXPORT WModel::sayf( SayStyle style, SayCode code, const char* text..
 {
     SayReturn ret = RetOk;
     if( _views.count() > 0 ) {
-        char* txt = new char[ MAX_MESSAGE+1 ];
+        char* txt = new char[MAX_MESSAGE+1];
         va_list args;
         va_start( args, text );
         vsprintf( txt, text, args );
         ret = ((WView*)_views[0])->say( style, code, txt );  //illegal cast
         delete [] txt;
     }
-    return ret;
+    return( ret );
 }

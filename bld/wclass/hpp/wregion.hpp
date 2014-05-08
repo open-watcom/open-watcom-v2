@@ -37,9 +37,9 @@
 
 WCLASS WRegion : public WObject
 {
-        public:
-                WEXPORT WRegion() {}
-                WEXPORT ~WRegion() {}
+    public:
+        WEXPORT WRegion() {}
+        WEXPORT ~WRegion() {}
 };
 
 #endif

@@ -51,9 +51,9 @@ const Handle FILE_ERROR = -1;
 
 WEXPORT WFile::WFile()
     : _handle( FILE_ERROR )
-    , _eof( TRUE )
-    , _ok( FALSE )
-    , _chsaved( FALSE )
+    , _eof( true )
+    , _ok( false )
+    , _chsaved( false )
     , _buffer( NULL )
     , _bOffset( 0 )
     , _bLength( 0 )
@@ -72,48 +72,48 @@ bool WEXPORT WFile::open( const char* name, OpenStyle style )
     _style = style;
     _ok = ( _handle != FILE_ERROR );
     _eof = !_ok;
-    _chsaved = FALSE;
+    _chsaved = false;
     _lineCount = 0;
     if( _ok ) {
         _filename = name;
         _filename.absoluteTo();
     }
-    return _ok;
+    return( _ok );
 }
 
 bool WEXPORT WFile::open( const char* name, const char* env, OpenStyle style )
 {
     char buff[_MAX_PATH];
     _searchenv( name, env, buff );
-    return open( buff, style );
+    return( open( buff, style ) );
 }
 
 bool WEXPORT WFile::close()
 {
     _filename = "";
     freeBuffer();
-    _eof = TRUE;
+    _eof = true;
     Handle code = ::close( _handle );
     if( code == FILE_ERROR ) {
-        _ok = FALSE;
-        return FALSE;
+        _ok = false;
+        return( false );
     }
-    return TRUE;
+    return( true );
 }
 
 int WEXPORT WFile::read( char* buffer, int length )
 {
-    return ::read( _handle, buffer, length );
+    return( ::read( _handle, buffer, length ) );
 }
 
 int WEXPORT WFile:: write( const char* buffer, int length )
 {
-    return ::write( _handle, (void*)buffer, length );
+    return( ::write( _handle, (void*)buffer, length ) );
 }
 
 long WEXPORT WFile::lseek( long offset, int org )
 {
-    return ::lseek( _handle, offset, org );
+    return( ::lseek( _handle, offset, org ) );
 }
 
 long WEXPORT WFile::getl()
@@ -129,7 +129,7 @@ long WEXPORT WFile::getl()
         }
     }
     temp[len] = '\0';
-    return atol( temp );
+    return( atol( temp ) );
 }
 
 WString& WEXPORT WFile::getLine( WString& str )
@@ -141,7 +141,7 @@ WString& WEXPORT WFile::getLine( WString& str )
         }
         str.concat( ch );
     }
-    return str;
+    return( str );
 }
 
 WString& WEXPORT WFile::gets( WString& str )
@@ -154,7 +154,7 @@ WString& WEXPORT WFile::gets( WString& str )
         }
         str.concat( ch );
     }
-    return str;
+    return( str );
 }
 
 void WEXPORT WFile::gets( char* str, int len )
@@ -168,7 +168,7 @@ void WEXPORT WFile::gets( char* str, int len )
             break;
         }
     }
-    str[ i ] = '\0';
+    str[i] = '\0';
 }
 
 void WEXPORT WFile::gets_exact( char* str, int len )
@@ -183,7 +183,7 @@ void WEXPORT WFile::gets_exact( char* str, int len )
             break;
         }
     }
-    str[ i ] = '\0';
+    str[i] = '\0';
 }
 
 char WEXPORT WFile::getch()
@@ -191,19 +191,19 @@ char WEXPORT WFile::getch()
     char chr;
     if( _chsaved ) {
         chr = _chsave;
-        _chsaved = FALSE;
+        _chsaved = false;
     } else {
         chr = getByte();
     }
     if( chr == LF ) {
         _lineCount++;
     }
-    return chr;
+    return( chr );
 }
 
 void WEXPORT WFile::ungetch( char chr )
 {
-    _chsaved = TRUE;
+    _chsaved = true;
     _chsave = chr;
     if( chr == LF ) {
         _lineCount--;
@@ -214,31 +214,31 @@ bool WEXPORT WFile::putl( long n )
 {
     char temp[11];
     ltoa( n, temp, 10 );
-    return puts( temp );
+    return( puts( temp ) );
 }
 
 bool WEXPORT WFile::puts( const char* str )
 {
     if( str != NULL ) {
-        return putBytes( str, strlen( str ) );
+        return( putBytes( str, strlen( str ) ) );
     }
-    return TRUE;
+    return( true );
 }
 
 bool WEXPORT WFile::printf( const char* parms... )
 {
-    char* buffer = new char[ MAX_FORMATTED+1 ];
+    char* buffer = new char[MAX_FORMATTED+1];
     va_list args;
     va_start( args, parms );
     vsprintf( buffer, parms, args );
     bool ok = putBytes( buffer, strlen( buffer ) );
     delete [] buffer;
-    return ok;
+    return( ok );
 }
 
 bool WEXPORT WFile::putch( char ch )
 {
-    return putByte( ch );
+    return( putByte( ch ) );
 }
 
 void WFile::freeBuffer()
@@ -256,21 +256,21 @@ void WFile::freeBuffer()
 char WFile::getByte()
 {
     if( !_ok ) {
-        return '\0';
+        return( '\0' );
     }
     if( _buffer == NULL ) {
-        _buffer = new char[ MAX_BUFFER ];
+        _buffer = new char[MAX_BUFFER];
         _bOffset = _bLength = 0;
     }
     if( _bOffset >= _bLength ) {
         _bLength = read( _buffer, MAX_BUFFER );
         _bOffset = 0;
         if( _bLength <= 0 ) {
-            _eof = TRUE;
-            return '\0';
+            _eof = true;
+            return( '\0' );
         }
     }
-    return _buffer[ _bOffset++ ];
+    return( _buffer[_bOffset++] );
 }
 
 bool WFile::putBytes( const char* str, size_t len )
@@ -278,28 +278,28 @@ bool WFile::putBytes( const char* str, size_t len )
     if( str != NULL ) {
         for( size_t i=0; i<len; i++ ) {
             if( !putByte( str[i] ) ) {
-                return FALSE;
+                return( false );
             }
         }
     }
-    return TRUE;
+    return( true );
 }
 
 bool WFile::putByte( char ch )
 {
     if( _ok ) {
         if( _buffer == NULL ) {
-            _buffer = new char[ MAX_BUFFER ];
+            _buffer = new char[MAX_BUFFER];
             _bOffset = 0;
         }
-        _buffer[ _bOffset++ ] = ch;
+        _buffer[_bOffset++] = ch;
         if( _bOffset >= MAX_BUFFER ) {
             unsigned len = write( _buffer, _bOffset );
             if( len != _bOffset ) {
-                _ok = FALSE;
+                _ok = false;
             }
             _bOffset = 0;
         }
     }
-    return _ok;
+    return( _ok );
 }

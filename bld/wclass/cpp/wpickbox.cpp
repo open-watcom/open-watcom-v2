@@ -79,7 +79,7 @@ void WEXPORT WPickBox::name( int index, WString &str ) {
 /******************************************************/
 
     if( _nameCallback != NULL ) {
-        (((*_model)[ index ])->*_nameCallback)( str );
+        (((*_model)[index])->*_nameCallback)( str );
     } else {
         str = "";
     }
@@ -92,7 +92,7 @@ int WEXPORT WPickBox::fillBox() {
     int         max_extent = 0;
     int         curr_extent;
 
-    setUpdates( FALSE );
+    setUpdates( false );
     if( _sorted ) {
         _model->sort();
     }
@@ -101,14 +101,14 @@ int WEXPORT WPickBox::fillBox() {
         WString n;
         name( i, n );
         int index = insertString( n );
-        setTagPtr( index, (*_model)[ i ] );
+        setTagPtr( index, (*_model)[i] );
         curr_extent = getTextExtentX( n );
         if( curr_extent > max_extent ) {
             max_extent = curr_extent;
         }
     }
     setExtent( max_extent );
-    setUpdates( TRUE );
+    setUpdates( true );
     return( max_extent );
 }
 
@@ -118,9 +118,9 @@ void * WEXPORT WPickBox::selectedTagPtr() {
 
     int index = selected();
     if( index >= 0 ) {
-        return tagPtr( index );
+        return( tagPtr( index ) );
     }
-    return NULL;
+    return( NULL );
 }
 
 

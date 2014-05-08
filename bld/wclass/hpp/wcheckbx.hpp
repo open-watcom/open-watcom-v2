@@ -49,7 +49,7 @@ WCLASS WCheckBox : public WBoolSwitch {
         WEXPORT ~WCheckBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_CHECK_BOX; }
+        virtual gui_control_class controlClass() { return( GUI_CHECK_BOX ); }
 };
 
 enum WCheckState3 {
@@ -70,7 +70,7 @@ WCLASS WThreeState : public WButton {
     void         setCheckState( WCheckState3 state );
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_CHECK_BOX; }
+        virtual gui_control_class controlClass() { return( GUI_CHECK_BOX ); }
 };
 
 #endif

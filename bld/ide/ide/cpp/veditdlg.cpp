@@ -81,7 +81,7 @@ void VEditDlg::initialize()
     const int   button_width = 50;
     const int   button_hite = 14;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     this->textMetrics( average, max );
     sx = average.x() / 4;
     sy = average.y() / 8;
@@ -163,12 +163,12 @@ void VEditDlg::initialize()
     _editorName->setText( _fn );
     _editorParms->setText( _parms );
     if( _isDll ) {
-        _dllButton->setCheck( TRUE );
+        _dllButton->setCheck( true );
         _editorParms->setText( "" );
-        _editorParms->enable( FALSE );
-        _parmBoxText->enable( FALSE );
+        _editorParms->enable( false );
+        _parmBoxText->enable( false );
     } else {
-        _exeButton->setCheck( TRUE );
+        _exeButton->setCheck( true );
     }
 
     size( (WOrdinal)225*sx, (WOrdinal)155*sy );
@@ -192,15 +192,15 @@ void VEditDlg::okButton( WWindow* ) {
     }
 //    _fn.toLower();
     if( _exeButton->checked() ) {
-        _isDll = FALSE;
+        _isDll = false;
     } else {
-        _isDll = TRUE;
+        _isDll = true;
     }
-    quit( TRUE );
+    quit( true );
 }
 
 void VEditDlg::cancelButton( WWindow* ) {
-    quit( FALSE );
+    quit( false );
 }
 
 void VEditDlg::browseButton( WWindow* ) {
@@ -220,23 +220,23 @@ void VEditDlg::browseButton( WWindow* ) {
 void VEditDlg::setDefault( void ) {
     _editorName->setText( _config->editor() );
     if( _config->editorIsDLL() ) {
-        _dllButton->setCheck( TRUE );
+        _dllButton->setCheck( true );
     } else {
-        _exeButton->setCheck( TRUE );
+        _exeButton->setCheck( true );
     }
     _editorParms->setText( _config->editorParms() );
 }
 
 void VEditDlg::dllButton( WWindow* ) {
     _editorParms->setText( "" );
-    _editorParms->enable( FALSE );
-    _parmBoxText->enable( FALSE );
+    _editorParms->enable( false );
+    _parmBoxText->enable( false );
 }
 
 void VEditDlg::exeButton( WWindow* ) {
     _editorParms->setText( _parms );
-    _editorParms->enable( TRUE );
-    _parmBoxText->enable( TRUE );
+    _editorParms->enable( true );
+    _parmBoxText->enable( true );
 }
 
 void VEditDlg::defaultButton( WWindow* ) {

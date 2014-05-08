@@ -79,7 +79,7 @@ void VAbout::initialize()
 
 void VAbout::okButton( WWindow* )
 {
-    quit( TRUE );
+    quit( true );
 }
 
 #ifdef __WATCOMC__

@@ -90,7 +90,7 @@ static void checkRemoveButton( HWND hwnd ) {
 static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
     unsigned    len;
     char        buf[_MAX_PATH];
-    char        drive[ _MAX_DRIVE ];
+    char        drive[_MAX_DRIVE];
 
     drive[0] = '\0';
     _splitpath( fname, drive, NULL, NULL, NULL );
@@ -99,7 +99,7 @@ static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
         getcwd( buf, _MAX_PATH );
         *fullname = buf;
         len = strlen( buf );
-        if( buf[ len-1 ] != '\\' ) fullname->concat( "\\" );
+        if( buf[len-1] != '\\' ) fullname->concat( "\\" );
     }
     fullname->concat( fname );
 }
@@ -144,8 +144,8 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
     GetFilesInfo        *info;
     WFileName            tgt;
     WFileName            filename;
-    char                 drive[ _MAX_DRIVE ];
-    char                 dir[ _MAX_DIR ];
+    char                 drive[_MAX_DRIVE];
+    char                 dir[_MAX_DIR];
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
@@ -185,13 +185,13 @@ static void addFileToList( HWND hwnd, char *fname ) {
     DWORD       item;
     DWORD       match;
     WFileName   fullname;
-    bool        isLong = FALSE;
+    bool        isLong = false;
 
     int len = strlen( fname )-1;
     if( fname[0] == '"' && fname[len] == '"' ) {
         fname++;
         fname[len-1] = '\0';
-        isLong = TRUE;
+        isLong = true;
     } else {
         WFileName filename( fname );
         isLong = filename.needQuotes();
@@ -229,7 +229,7 @@ static void addCurrentFile( HWND hwnd  ) {
     if( len == 0 ) return;
     fname = (char *)alloca( len + 1 );
     GetWindowText( ctl, fname, len + 1 );
-    if( fname[ strlen( fname ) - 1 ] == '\\' ) return;
+    if( fname[strlen( fname ) - 1] == '\\' ) return;
     stat( fname, &buf );
     if( S_ISDIR( buf.st_mode ) ) return;
     if( strpbrk( fname, "?*" ) != NULL ) return;
@@ -362,7 +362,7 @@ void doClose( HWND hwnd )
     SetWindowText( ctl, "x_it_dlg.now" );
 }
 
-UINT CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     LRESULT     item;
@@ -438,7 +438,7 @@ UINT CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 }
 
 #ifdef __NT__
-UINT CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD            cmd;
     LRESULT         item;
@@ -534,9 +534,9 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     OPENFILENAME        of;
     int                 rc;
     char                fname[256];
-    char                 drive[ _MAX_DRIVE ];
-    char                 dir[ _MAX_DIR ];
-    char                 newpath[ _MAX_PATH ];
+    char                 drive[_MAX_DRIVE];
+    char                 dir[_MAX_DIR];
+    char                 newpath[_MAX_PATH];
 
     _splitpath( info->tgt_file, drive, dir, NULL, NULL );
     _makepath( newpath, drive, dir, NULL, NULL );
@@ -544,7 +544,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     typedef UINT    (CALLBACK *CallbackFnType)(HWND, UINT, WPARAM, LPARAM);
 
 
-    fname[ 0 ] = 0;
+    fname[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = parent;

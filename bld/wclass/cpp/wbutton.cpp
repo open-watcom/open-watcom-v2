@@ -103,9 +103,9 @@ bool WEXPORT WButton::hotKey( WKeyCode ) {
 
     if( _clickClient && _click ) {
         (_clickClient->*_click)( this );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -116,17 +116,17 @@ bool WButton::processMsg( gui_event msg ) {
     case GUI_CONTROL_CLICKED:
         if( _clickClient && _click ) {
             (_clickClient->*_click)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     case GUI_CONTROL_DCLICKED:
         if( _dblClickClient && _dblClick ) {
             (_dblClickClient->*_dblClick)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 

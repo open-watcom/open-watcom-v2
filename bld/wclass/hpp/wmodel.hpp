@@ -39,19 +39,19 @@
 
 WCLASS WModel
 {
-        public:
-                WEXPORT WModel();
-                virtual WEXPORT ~WModel();
-                WView* WEXPORT registerView( WView* view )
-                        { return (WView*)_views.add( (WObject*)view ); } //illegal cast
-                WView* WEXPORT deRegisterView( WView* view )
-                        { return (WView*)_views.removeSame( (WObject*)view ); } //illegal cast
-                void WEXPORT updateAllViews();
-                void WEXPORT setUpdates( bool b=TRUE );
-                SayReturn WEXPORT sayf( SayStyle style, SayCode code, const char* text... );
-        private:
-                WVList          _views;
-                bool            _updates;
+    public:
+        WEXPORT WModel();
+        virtual WEXPORT ~WModel();
+        WView* WEXPORT registerView( WView* view )
+            { return( (WView*)_views.add( (WObject*)view ) ); } //illegal cast
+        WView* WEXPORT deRegisterView( WView* view )
+            { return( (WView*)_views.removeSame( (WObject*)view ) ); } //illegal cast
+        void WEXPORT updateAllViews();
+        void WEXPORT setUpdates( bool b=true );
+        SayReturn WEXPORT sayf( SayStyle style, SayCode code, const char* text... );
+    private:
+        WVList      _views;
+        bool        _updates;
 };
 
 #endif

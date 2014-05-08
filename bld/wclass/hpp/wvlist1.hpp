@@ -37,29 +37,29 @@
 
 WCLASS WVList1 : public WVCollection
 {
-        Declare( WVList1 )
-        public:
-                WEXPORT WVList1(){}
-                WEXPORT WVList1( WVList1 & x );
-                WEXPORT ~WVList1();
-                int WEXPORT count() const { return _free; }
-                WObject* operator[]( long int index ) { return _set[ index ]; }
-                WObject* WEXPORT find( WObject *obj );
-                virtual WObject* WEXPORT add( WObject* obj );
-                int WEXPORT indexOfSame( WObject *obj );
-                virtual WObject* WEXPORT removeAt( int index );
-                virtual WObject* replaceAt( int index, WObject* obj );
-                virtual WObject* insertAt( int index, WObject* obj );
-                WObject* WEXPORT removeSame( WObject* obj );
-                void WEXPORT deleteContents();
-                void WEXPORT reset();
-                void WEXPORT sort();
-        protected:
-         static WObject** _set;
-         static int     _count;
-         static int     _free;
-        private:
-                void growBlock();
+    Declare( WVList1 )
+    public:
+        WEXPORT WVList1(){}
+        WEXPORT WVList1( WVList1 & x );
+        WEXPORT ~WVList1();
+        int WEXPORT count() const { return( _free ); }
+        WObject* operator[]( long int index ) { return( _set[index] ); }
+        WObject* WEXPORT find( WObject *obj );
+        virtual WObject* WEXPORT add( WObject* obj );
+        int WEXPORT indexOfSame( WObject *obj );
+        virtual WObject* WEXPORT removeAt( int index );
+        virtual WObject* replaceAt( int index, WObject* obj );
+        virtual WObject* insertAt( int index, WObject* obj );
+        WObject* WEXPORT removeSame( WObject* obj );
+        void WEXPORT deleteContents();
+        void WEXPORT reset();
+        void WEXPORT sort();
+    protected:
+        static WObject** _set;
+        static int     _count;
+        static int     _free;
+    private:
+        void growBlock();
 };
 
 #endif //wvlist_class

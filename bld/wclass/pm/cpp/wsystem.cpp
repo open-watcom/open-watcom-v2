@@ -107,7 +107,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     // or OS/2 won't like us
     if( arg_pgm[0] == '\"' ) {
         strncpy( pgm_buf, arg_pgm + 1, _MAX_PATH - 1 );
-        pgm_buf[ strlen( pgm_buf ) - 1 ] = '\0';
+        pgm_buf[strlen( pgm_buf ) - 1] = '\0';
         pgm = pgm_buf;
     } else {
         pgm = arg_pgm;
@@ -200,7 +200,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             cmdline = NULL;
         } else {
             cmdline = (char *)args.cString();
-            cmdline[ strlen( args.stringAt( 0 ) ) ] = '\0';
+            cmdline[strlen( args.stringAt( 0 ) )] = '\0';
         }
         exec_env = build_exec_env( environ );
         rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)exec_env,
@@ -269,14 +269,14 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
                                      WWindowState state, WWindowType typ ) {
 /**************************************************************************/
 
-    return( sysExec( cmd, state, typ, FALSE ) );
+    return( sysExec( cmd, state, typ, false ) );
 }
 
 
 int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
 /****************************************************************/
 
-    return( sysExec( cmd, WWinStateShowNormal, WWinTypeDefault, TRUE ) );
+    return( sysExec( cmd, WWinStateShowNormal, WWinTypeDefault, true ) );
 }
 
 

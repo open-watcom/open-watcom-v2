@@ -37,14 +37,14 @@
 
 WCLASS WVCollection : public WObject
 {
-        public:
-                WEXPORT WVCollection();
-                WEXPORT ~WVCollection();
-                WObject* WEXPORT remove( WObject* obj );
-                virtual WObject* WEXPORT find( WObject* obj ) =0;
-                virtual WObject* WEXPORT add( WObject* obj ) =0;
-                virtual WObject* WEXPORT removeSame( WObject* obj ) =0;
-                virtual int WEXPORT count() const =0;
+    public:
+        WEXPORT WVCollection();
+        WEXPORT ~WVCollection();
+        WObject* WEXPORT remove( WObject* obj );
+        virtual WObject* WEXPORT find( WObject* obj ) =0;
+        virtual WObject* WEXPORT add( WObject* obj ) =0;
+        virtual WObject* WEXPORT removeSame( WObject* obj ) =0;
+        virtual int WEXPORT count() const =0;
 };
 
 #endif

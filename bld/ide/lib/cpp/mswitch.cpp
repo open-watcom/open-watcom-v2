@@ -46,7 +46,7 @@ MSwitch::MSwitch( WTokenFile& fil, WString& tok )
 #ifndef NOPERSIST
 MSwitch* WEXPORT MSwitch::createSelf( WObjectFile& )
 {
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT MSwitch::readSelf( WObjectFile& p )
@@ -108,7 +108,7 @@ bool MSwitch::isTagEqual( WString& switchtag, int kludge )
     if( kludge == 1 ) {
         size_t jcount = switchtag.size();
         if( jcount > MASK_SIZE && jcount == tag.size() ) {
-            for( int j = 0; j < jcount; j++ ) {
+            for( size_t j = 0; j < jcount; j++ ) {
                 int ct = (unsigned char)tag[j];
                 int cs = (unsigned char)switchtag[j];
                 if( ct == cs )
@@ -153,7 +153,7 @@ bool MSwitch::isTagEqual( MTool *tool, WString& switchtag, int kludge )
 MSwitch* MSwitch::addSwitch( WVList& list, const char* mask )
 {
     if( _mask.match( mask ) ) {
-        return (MSwitch*)list.add( this );
+        return( (MSwitch*)list.add( this ) );
     }
-    return NULL;
+    return( NULL );
 }

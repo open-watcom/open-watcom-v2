@@ -47,32 +47,32 @@ WCLASS MComponent : public WObject, public WModel
         public:
                 MComponent( MProject* project, MRule* rule, const WString& mask, const char* target );
                 ~MComponent();
-                MProject* project() { return _project; }
-                WString& mask() { return _mask; }
-                MRule* rule() { return _target->rule(); }
-                MItem* target() { return _target; }
-                WFileName& filename() { return _filename; }
-                WFileName& relFilename() { return _relFilename; }
+                MProject* project() { return( _project ); }
+                WString& mask() { return( _mask ); }
+                MRule* rule() { return( _target->rule() ); }
+                MItem* target() { return( _target ); }
+                WFileName& filename() { return( _filename ); }
+                WFileName& relFilename() { return( _relFilename ); }
                 void setRelFilename( WFileName& fn ) { _relFilename = fn; }
                 bool renameComponent( WFileName& fn, MRule* rule, WString& mask );
-                WPickList& items() { return _items; };
+                WPickList& items() { return( _items ); };
                 void getMaskItems( WVList& list );
                 MItem* findSameResult( MItem* item );
                 void newItem( MItem* item );
                 void removeItem( MItem* item );
                 void removeItem( WFileName &fn );
                 bool renameItem( MItem* item, WFileName& fn, MRule* rule );
-                bool autodepend() { return _autodepend; }
+                bool autodepend() { return( _autodepend ); }
                 void setAutodepend( bool state );
-                bool autotrack() { return _autotrack; }
+                bool autotrack() { return( _autotrack ); }
                 void setAutotrack( bool state );
-                SwMode mode() { return _mode; }
+                SwMode mode() { return( _mode ); }
                 void setMode( SwMode mode );
-                void updateItemList( bool update=TRUE );
+                void updateItemList( bool update=true );
 
-                const MCommand& before() const { return _before; }
+                const MCommand& before() const { return( _before ); }
                 void setBefore( const MCommand& before );
-                const MCommand& after() const { return _after; }
+                const MCommand& after() const { return( _after ); }
                 void setAfter( const MCommand& after );
 
                 void getTargetCommand( WString& cmd );
@@ -84,11 +84,11 @@ WCLASS MComponent : public WObject, public WModel
                 void resetRuleRefs();
                 void typeDesc( WString& n );
                 void refresh();
-                void setBatchMode( bool batchMode=TRUE );
-                void setDirty( bool dirty=TRUE );
-                bool isDirty() { return _dirty; }
-                void setNeedsMake( bool needs=TRUE );
-                bool needsMake() { return _needsMake; }
+                void setBatchMode( bool batchMode=true );
+                void setDirty( bool dirty=true );
+                bool isDirty() { return( _dirty ); }
+                void setNeedsMake( bool needs=true );
+                bool needsMake() { return( _needsMake ); }
                 bool tryBrowse();
         private:
                 bool            _dirty;
@@ -114,7 +114,7 @@ WCLASS MComponent : public WObject, public WModel
                 void addWorkFiles( WVList& workfiles, SwMode mode, MComponent* comp );
                 void initWorkFiles( WVList& workfiles );
                 void finiWorkFiles();
-                bool writeCBR( bool mustExist = FALSE );
+                bool writeCBR( bool mustExist=false );
                 void makeNames( const char* spec, WFileName& filename, WFileName& relname, WFileName& targ );
                 void addItem( MItem* item );
                 bool addFromFilename( WFileName& filename, WString& err );

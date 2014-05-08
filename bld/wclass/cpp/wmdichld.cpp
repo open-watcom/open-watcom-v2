@@ -59,7 +59,7 @@ bool WMdiChild::reallyClose() {
 // minimize it.
 
     GUIMinimizeWindow( handle() );
-    return( FALSE );
+    return( false );
 }
 
 

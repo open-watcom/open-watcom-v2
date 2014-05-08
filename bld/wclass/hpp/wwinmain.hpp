@@ -63,10 +63,10 @@ extern  void            InitGUI( coordinate_system, gui_ord, gui_ord, gui_rect *
         AppInstance = new a;            \
     }                                   \
                                         \
-    extern "C" int GUIDeath() {         \
-    /*************************/         \
+    extern "C" bool GUIDeath() {        \
+    /**************************/        \
                                         \
         delete AppInstance;             \
-        return( TRUE );                 \
+        return( true );                 \
     }
 #endif

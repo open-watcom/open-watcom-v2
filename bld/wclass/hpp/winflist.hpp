@@ -75,8 +75,8 @@ class WInfiniteList : public WWindow
                 Context( WVList * l, WObject * c );
                 ~Context();
 
-                WObject *   getContext() { return _context; }
-                WObject *   getObject( int idx ) { return (*_items)[ idx ]; }
+                WObject *   getContext() { return( _context ); }
+                WObject *   getObject( int idx ) { return( (*_items)[idx] ); }
                 bool        isLoaded() { return( _items != NULL ); }
                 void        unLoad();
                 void        reLoad( WVList * l ) { _items = l; }
@@ -93,7 +93,7 @@ class WInfiniteList : public WWindow
         int             getLastIndex();
         void            changed();
         void            scrollToSelected();
-        void            performScroll( int diff, bool absolute = FALSE );
+        void            performScroll( int diff, bool absolute = false );
 
         WVList          _context;
         uint            _loadSize;

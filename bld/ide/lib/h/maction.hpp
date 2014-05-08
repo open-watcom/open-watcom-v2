@@ -44,19 +44,19 @@ WCLASS MAction : public WObject
         MAction( const char* name=NULL );
         MAction( WTokenFile& fil, WString& tok );
         ~MAction();
-        int compare( const WObject* o ) const { return _name.compare( &((MAction*)o)->_name ); }
+        int compare( const WObject* o ) const { return( _name.compare( &((MAction*)o)->_name ) ); }
         void name( WString& n ) { n = _name; }
-        const WString& name() { return _name; }
+        const WString& name() { return( _name ); }
         void menuName( WString *mname );
-        const WString& help() { return _help; }
+        const WString& help() { return( _help ); }
         void text( WString& t );
-        bool hasSwitches( bool setable ) { return _tool->hasSwitches( setable ); }
-        MTool* tool() { return _tool; }
-        WString& hint() { return _hint; }
+        bool hasSwitches( bool setable ) { return( _tool->hasSwitches( setable ) ); }
+        MTool* tool() { return( _tool ); }
+        WString& hint() { return( _hint ); }
         int expand( WString& command, WFileName* target, const WString& mask, WVList* states, SwMode mode );
-        bool defAction() { return _defAction; }
-        bool button() { return _button; }
-        bool okForMask() { return _okForMask; }
+        bool defAction() { return( _defAction ); }
+        bool button() { return( _button ); }
+        bool okForMask() { return( _okForMask ); }
         int accelKey();
         WKeyCode menuAccel();
     private:

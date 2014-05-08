@@ -53,20 +53,20 @@ WCLASS MRule : public WObject
         MRule( const char* tag, MTool* );
         MRule( WTokenFile& fil, WString& tok );
         ~MRule();
-        WString& tag() { return _tag; }
-        MTool* tool() { return _tool; }
-        const WString& help() { return _help; }
+        WString& tag() { return( _tag ); }
+        MTool* tool() { return( _tool ); }
+        const WString& help() { return( _help ); }
         const char* resultExt();
         bool match( WString& tag, WFileName& src, WFileName& tgt );
         bool match( WString& tag, WFileName& tgt );
-        bool autodepend() { return _autodepend; }
-        WString& browseSwitch() { return _browseSwitch; }
-        bool autotrack() { return _autotracks.count() > 0; }
-        WVList& autotracks() { return _autotracks; }
-        WPickList& actions() { return _actions; }
-        WPickList& symbols() { return _symbols; }
+        bool autodepend() { return( _autodepend ); }
+        WString& browseSwitch() { return( _browseSwitch ); }
+        bool autotrack() { return( _autotracks.count() > 0 ); }
+        WVList& autotracks() { return( _autotracks ); }
+        WPickList& actions() { return( _actions ); }
+        WPickList& symbols() { return( _symbols ); }
         void makeCommand( WString& s, WFileName* target, WVList* workFiles, WString& mask, WVList* stateList, SwMode mode, bool* browse=NULL );
-        bool ismakeable() { return _commands.count() > 0; }
+        bool ismakeable() { return( _commands.count() > 0 ); }
         bool enumAccel( WObject *obj, bcbk fn );
     private:
         MTool*          _tool;

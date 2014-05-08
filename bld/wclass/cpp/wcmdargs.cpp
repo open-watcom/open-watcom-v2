@@ -40,7 +40,7 @@ WEXPORT WCommandArgs::WCommandArgs() {
     // know the length of the command line arguments.  We need
     // a new C-library function:
     //     cmdlen = getcmd2( char *buffer, unsigned buff_size );
-    _args = new char[ 1024 ];
+    _args = new char[1024];
     getcmd( _args );
 }
 

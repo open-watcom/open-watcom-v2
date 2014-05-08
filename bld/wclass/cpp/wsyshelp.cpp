@@ -62,13 +62,13 @@ bool WEXPORT WSystemHelp::sysHelpContent( void )
 /**********************************************/
 {
     if( !_helpInstance ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
                              GUI_HELP_CONTENTS, (char *)_chmfile, NULL ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 #endif
@@ -81,14 +81,14 @@ bool WEXPORT WSystemHelp::sysHelpOnHelp( void )
 /*********************************************/
 {
     if( !_helpInstance ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
 #if 0
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
                          GUI_HELP_ON_HELP, (char *)_chmfile, NULL ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 #endif
@@ -102,13 +102,13 @@ bool WEXPORT WSystemHelp::sysHelpSearch( const char *topic )
 /**********************************************************/
 {
     if( !_helpInstance ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
                              GUI_HELP_SEARCH, (char *)_chmfile, (char *)topic ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 #endif
@@ -121,13 +121,13 @@ bool WEXPORT WSystemHelp::sysHelpTopic( const char *topic )
 /*********************************************************/
 {
     if( !_helpInstance ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {
         if( GUIShowHtmlHelp( _helpInstance, _helpWindow->handle(),
                              GUI_HELP_KEY, (char *)_chmfile, (char *)topic ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 #endif
@@ -140,7 +140,7 @@ bool WEXPORT WSystemHelp::sysHelpId( int help_id )
 /************************************************/
 {
     if( !_helpInstance ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
     if( _chmfile != NULL && *_chmfile != '\0' ) {

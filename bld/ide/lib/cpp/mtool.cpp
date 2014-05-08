@@ -99,7 +99,7 @@ MTool::~MTool()
 #ifndef NOPERSIST
 MTool* WEXPORT MTool::createSelf( WObjectFile& )
 {
-    return new MTool( NULL, NULL );
+    return( new MTool( NULL, NULL ) );
 }
 
 void WEXPORT MTool::readSelf( WObjectFile& p )
@@ -141,7 +141,7 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
         MFamily* family = (MFamily*)_families[i];
         MSwitch* sw = family->findSwitch( this, switchtag, fixed_version );
         if( sw != NULL ) {
-            return sw;
+            return( sw );
         }
     }
     icount = _incTools.count();
@@ -149,10 +149,10 @@ MSwitch* WEXPORT MTool::findSwitch( WString& switchtag, long fixed_version )
         MTool* tool = (MTool*)_incTools[i];
         MSwitch* sw = tool->findSwitch( switchtag, fixed_version );
         if( sw != NULL ) {
-            return sw;
+            return( sw );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
@@ -167,17 +167,17 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
         if( switchtext != NULL ) {
             text = *switchtext;
             sw->displayText( text );
-            return &text;
+            return( &text );
         }
         icount = _incTools.count();
         for( int i = 0; i < icount; i++ ) {
             MTool* tool = (MTool*)_incTools[i];
             if( tool->displayText( sw, text, false ) != NULL ) {
-                return &text;
+                return( &text );
             }
         }
         if( !first ) {
-            return NULL;
+            return( NULL );
         }
     }
     text = *switchid;
@@ -186,7 +186,7 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
     text = sw->text();
 #endif
     sw->displayText( text );
-    return &text;
+    return( &text );
 }
 
 #if CUR_CFG_VERSION > 4
@@ -196,21 +196,21 @@ WString* WEXPORT MTool::findSwitchByText( WString& id, WString& text, int kludge
 
     if( kludge == 0 ) {         // check current text
         if( text.isEqual( (WString *)_switchesTexts.findThis( &id ) ) ) {
-            return &id;
+            return( &id );
         }
     } else if( kludge == 1 ) {  // check old text
         if( id.isEqual( (WString *)_switchesIds.findThis( &text, &id ) ) ) {
-            return &id;
+            return( &id );
         }
     }
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
         if( tool->findSwitchByText( id, text, kludge ) != NULL ) {
-            return &id;
+            return( &id );
         }
     }
-    return NULL;
+    return( NULL );
 }
 #endif
 
@@ -220,17 +220,17 @@ bool MTool::hasSwitches( bool setable )
     for( int i = 0; i < icount; i++ ) {
         MFamily* family = (MFamily*)_families[i];
         if( family->hasSwitches( setable ) ) {
-            return TRUE;
+            return( true );
         }
     }
     icount = _incTools.count();
     for( int i = 0; i < icount; i++ ) {
         MTool* tool = (MTool*)_incTools[i];
         if( tool->hasSwitches( setable ) ) {
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 void MTool::addSwitches( WVList& list, const char* mask, bool setable )

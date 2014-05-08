@@ -44,7 +44,7 @@
 WEXPORT MWorkFile::MWorkFile( const char* name, SwMode mode, MItem* item, MComponent* comp )
     : WFileName( name )
     , _item( item )
-    , _browseable( FALSE )
+    , _browseable( false )
     , _component( comp )
 {
     _item->addStates( _states, mode );
@@ -88,7 +88,7 @@ void MWorkFile::dump( WFile& fil )
     WString n;
     int icount = _states.count();
     if( icount > 0 ) {
-        bool first = TRUE;
+        bool first = true;
         for( int i=0; i<icount; i++ ) {
             MState* st = (MState*)_states[i];
             WString temp;
@@ -97,7 +97,7 @@ void MWorkFile::dump( WFile& fil )
                 if( first ) n.concat( " (" );
                 if( !first ) n.concat( ' ' );
                 n.concat( temp );
-                first = FALSE;
+                first = false;
             }
         }
         if( !first ) n.concat( ')' );

@@ -160,7 +160,7 @@ WEXPORT WKeyCode MAccelerator::lookUpAccel( WTokenFile &fil, WString &tok ) {
             ch = *( tok.gets() );
             if( ch >= 'a' && ch <= 'z' ) {
                 ch -= 'a';
-                ret = alph_keys[ ch ];
+                ret = alph_keys[ch];
             }
         }
     }

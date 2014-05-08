@@ -104,7 +104,7 @@ int main( int argc, char** argv )
     } else {
         VpeMain app( argc, argv );
     }
-    return 0;
+    return( 0 );
 }
 
 Define( VpeMain )
@@ -116,7 +116,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
     WFileName cfg;
     WStringList parms;
     char sMode = 0;
-    bool debug = FALSE;
+    bool debug = false;
     HostType host = HOST_UNDEFINED;
     int  i;
     char *incdir = NULL;
@@ -142,7 +142,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
         } else if( streq( argv[i], "-r" ) ) {
             sMode = 'r';
         } else if( streq( argv[i], "-x" ) ) {
-            debug = TRUE;
+            debug = true;
         } else if( streq( argv[i], "-h" ) ) {
             if( i+1 < argc ) {
                 i++;
@@ -204,7 +204,7 @@ WEXPORT VpeMain::~VpeMain()
 #ifndef NOPERSIST
 VpeMain* WEXPORT VpeMain::createSelf( WObjectFile& )
 {
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT VpeMain::readSelf( WObjectFile& p )
@@ -226,23 +226,23 @@ bool VpeMain::loadProject( const WFileName& fn )
         if( of.version() <= 22 ) {
             of.close();
             printf( "Project '%s' format is obsolete; you must create the project again or use an older version of the IDE.", (const char*)fn );
-            return FALSE;
+            return( false );
         }
         if( of.version() >= 34 ) {
-            char ident[ sizeof( ProjectIdent ) + 1 ];
+            char ident[sizeof( ProjectIdent ) + 1];
             of.readObject( ident, sizeof( ident ) - 1 );
             if( !streq( ident, ProjectIdent ) ) {
                 //bad file format
                 of.close();
                 printf( "Error: Project '%s' - Bad File Format.", (const char*)fn );
-                return FALSE;
+                return( false );
             }
         }
         of.readObject( this );
         of.close();
-        return TRUE;
+        return( true );
     }
     printf( "Unable to open project '%s'", (const char*)fn );
-    return FALSE;
+    return( false );
 }
 

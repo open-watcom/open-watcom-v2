@@ -43,11 +43,11 @@
 WMdiInitializer::WMdiInitializer() {
 /**********************************/
 
-    static bool MDIInitialized = FALSE;
+    static bool MDIInitialized = false;
 
     if( !MDIInitialized ) {
         GUIMDIInitMenuOnly();
-        MDIInitialized = TRUE;
+        MDIInitialized = true;
     }
 }
 

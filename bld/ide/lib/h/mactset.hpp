@@ -44,8 +44,8 @@ WCLASS ActionStates : public WObject
     public:
         ActionStates( MAction* action );
         ~ActionStates();
-        MAction* action() { return _action; }
-        WVList& states() { return _states; }
+        MAction* action() { return( _action ); }
+        WVList& states() { return( _states ); }
         bool linkup( WVList& actions );
     private:
         MAction*        _action;

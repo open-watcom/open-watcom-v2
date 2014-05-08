@@ -59,7 +59,7 @@ const char * GetParm( char idxChar, va_list args ) {
         ret = va_arg( args, char * );
     }
 
-    return ret;
+    return( ret );
 }
 
 char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
@@ -70,22 +70,22 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
     const char *    parm;
     size_t          src = 0;
     size_t          dest = 0;
-    bool            done = FALSE;
+    bool            done = false;
 
     len = len;
     while( !done ) {
         assert( dest < len );
 
-        switch( fmts[ src ] ) {
+        switch( fmts[src] ) {
         case '%':
             src++;
-            if( fmts[ src ] == '%' ) {  // escaped % (%%)
-                buf[ dest ] = fmts[ src ];
+            if( fmts[src] == '%' ) {  // escaped % (%%)
+                buf[dest] = fmts[src];
             } else {
                 va_list     args;
 
                 va_start( args, id );
-                parm = GetParm( fmts[ src ], args );
+                parm = GetParm( fmts[src], args );
 
                 assert( strlen( parm ) + dest < len );
 
@@ -97,15 +97,15 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, unsigned id, ... ) {
             }
             break;
         case '\0':
-            done = TRUE;
+            done = true;
             // fall through
         default:
-            buf[ dest ] = fmts[ src ];
+            buf[dest] = fmts[src];
         }
 
         src++;
         dest++;
     }
 
-    return buf;
+    return( buf );
 }

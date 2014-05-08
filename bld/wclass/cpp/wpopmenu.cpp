@@ -36,10 +36,10 @@
 
 
 WEXPORT WPopupMenu::WPopupMenu( const char *text )
-    : WMenu( FALSE )
+    : WMenu( false )
     , _client( NULL )
     , _popup( NULL )
-    , _isMdiPopup( FALSE ) {
+    , _isMdiPopup( false ) {
 /**************************/
 
     setOwner( NULL );
@@ -129,7 +129,7 @@ WMenuItem * WEXPORT WPopupMenu::removeItemAt( int index ) {
 void WEXPORT WPopupMenu::setMdiPopup() {
 /**************************************/
 
-    _isMdiPopup = TRUE;
+    _isMdiPopup = true;
 }
 
 
@@ -139,10 +139,10 @@ void WEXPORT WPopupMenu::track( WWindow *owner ) {
     gui_point   p;
 
     GUIGetMousePosn( owner->handle(), &p );
-    setFloatingPopup( TRUE );
+    setFloatingPopup( true );
     attachChildren( owner );
     GUITrackFloatingPopup( owner->handle(), &p, GUI_TRACK_BOTH, NULL );
-    setFloatingPopup( FALSE );
+    setFloatingPopup( false );
 }
 
 
@@ -207,9 +207,9 @@ void WEXPORT WPopupMenu::detachMenu() {
     if( owner() ) {
         if( owner()->handle() ) {
             if( parent()->isFloatingPopup() ) {
-                GUIDeleteMenuItem( owner()->handle(), menuId(), TRUE );
+                GUIDeleteMenuItem( owner()->handle(), menuId(), true );
             }
-            GUIDeleteMenuItem( owner()->handle(), menuId(), FALSE );
+            GUIDeleteMenuItem( owner()->handle(), menuId(), false );
         }
     }
     setOwner( NULL );

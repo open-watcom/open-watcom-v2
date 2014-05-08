@@ -69,7 +69,7 @@ WCLASS WListBox : public WControl {
         void WEXPORT setTagPtr( int index, void* tagPtr );
         void* WEXPORT tagPtr( int index );
     protected:
-        virtual gui_control_class controlClass() { return GUI_LISTBOX; }
+        virtual gui_control_class controlClass() { return( GUI_LISTBOX ); }
     private:
         WObject*        _changedClient;
         cbw             _changed;

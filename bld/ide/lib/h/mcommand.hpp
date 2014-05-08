@@ -60,7 +60,7 @@ WCLASS MCommand : public WString
         WEXPORT MCommand( const char* str=NULL );
         WEXPORT ~MCommand() {}
         void name( WString& n ) const { n = *this; }
-        WEXPORT const WString& mask() const { return _mask; }
+        WEXPORT const WString& mask() const { return( _mask ); }
         MCommand& WEXPORT operator=( const MCommand& );
         int WEXPORT expand( WString& command, WFileName* target, MTool* tool, const WString& mask, WVList* stateList, SwMode mode, WString* browseSwitch=NULL ) const;
     private:

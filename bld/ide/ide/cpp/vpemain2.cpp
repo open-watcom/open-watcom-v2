@@ -120,7 +120,7 @@ void VpeMain::cForPBProject( WFileName &pj, bool nt ) {
 
         cnt = _project->components().count();
         for( ; cnt > 0; cnt -- ) {
-            mcomp = (MComponent *)(_project->components()[ cnt - 1 ] );
+            mcomp = (MComponent *)(_project->components()[cnt - 1] );
             mcomp->updateItemList();
         }
     }
@@ -134,7 +134,7 @@ void VpeMain::readIdeInit()
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_TOOLBAR, "1", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
         delete clearToolBar();
-        _toolBarActive = FALSE;
+        _toolBarActive = false;
     }
 
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_STATWND, "1", buff, sizeof( buff ) );
@@ -144,9 +144,9 @@ void VpeMain::readIdeInit()
 
     _ini.read( IDE_INI_IDENTIFIER,IDE_INI_AUTOREFRESH, "1", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
-        _autoRefresh = FALSE;
+        _autoRefresh = false;
     } else {
-        _autoRefresh = TRUE;
+        _autoRefresh = true;
     }
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR, (const char*)_config->editor(),
                buff, sizeof( buff ) );
@@ -155,9 +155,9 @@ void VpeMain::readIdeInit()
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_ISDLL,
                _config->editorIsDLL() ? "1" : "0", buff, sizeof( buff ) );
     if( buff[0] == '0' ) {
-        _editorIsDll = FALSE;
+        _editorIsDll = false;
     } else {
-        _editorIsDll = TRUE;
+        _editorIsDll = true;
     }
 
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_EDITOR_PARMS, "%f", buff, sizeof( buff ) );
@@ -240,9 +240,9 @@ bool VpeMain::reallyClose()
         }
         delete _help;
         _help = NULL;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::executeCommand( const char* c, int location, const char* title )
@@ -274,7 +274,7 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
             WAutoDialog prompts( this, dTitle, opts );
             if( !prompts.getInput( reps ) ) {
                 setStatus( NULL );
-                return( FALSE );
+                return( false );
             }
         }
         WString cmd;
@@ -328,8 +328,8 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
                 if( rc == MsgRetYes ) {
                     i = _compViews.count();
                     while( i > 0 ) {
-                        comp = (VComponent *)_compViews[ i-1 ];
-                        comp->touchComponent( TRUE );
+                        comp = (VComponent *)_compViews[i-1];
+                        comp->touchComponent( true );
                         i--;
                     }
                 }
@@ -350,13 +350,13 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
             exit( NULL );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::execute( const WString& cmd )
 {
     if( _config->debug() && !confirm( "Starting '%s'", cmd ) ) {
-        return( FALSE );
+        return( false );
     }
     startWait();
 
@@ -377,15 +377,15 @@ bool VpeMain::execute( const WString& cmd )
                     msg.concat( cbuff[i] );
                 }
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, msg );
-                return( FALSE );
+                return( false );
             } else {
                 if( !executeOne( cbuff ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::executeOne( const WString& cmd )
@@ -421,7 +421,7 @@ bool VpeMain::executeOne( const WString& cmd )
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                 "Unable to run %s: %s.",
                                 (const char*)cmdmsg, strerror( errno ) );
-        return( FALSE );
+        return( false );
     }
 #endif
 
@@ -450,10 +450,10 @@ bool VpeMain::executeOne( const WString& cmd )
         default:
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "%s: return code=%d.", (const char*)cmdmsg, ret );
         }
-        return( FALSE );
+        return( false );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 void VpeMain::executeEditor( const WString& cmd )
@@ -579,15 +579,15 @@ bool VpeMain::makeMake()
             executeEditor( editcmd );
             setStatus( "Creating MAKE file(s)..." );
             if( _project->makeMakeFile() ) {
-                return( TRUE );
+                return( true );
             }
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                       "Unable to create makefile(s)" );
-            return( FALSE );
+            return( false );
         }
-        return( FALSE );
+        return( false );
     }
     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Makefile in use" );
-    return( FALSE );
+    return( false );
 }
 
