@@ -35,7 +35,7 @@
 
 #include <stdlib.h>
 #include <conio.h>
-#ifdef __X86__
+#ifdef _M_IX86
 #include <i86.h>
 #endif
 #include <stdio.h>

@@ -63,7 +63,7 @@ _WMRTDATA const double_t    __d_infinity  = { 0x7ff0000000000000 };
 _WMRTDATA const double_t    __d_posqnan   = { 0x7ff8000000000000 };
 
 #ifdef _LONG_DOUBLE_
-  #ifdef __X86__
+  #ifdef _M_IX86
     _WMRTDATA const long_double __ld_infinity = { 0x00000000, 0x80000000, 0x7fff };
     _WMRTDATA const long_double __ld_posqnan  = { 0x00000000, 0xc0000000, 0x7fff };
   #else
