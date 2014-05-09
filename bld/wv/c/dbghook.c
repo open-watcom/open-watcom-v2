@@ -109,8 +109,8 @@ void ProcHook()
         Error( ERR_NONE, LIT( ERR_BAD_HOOK ) );
     }
     idx -= 1;
+    list = NULL;
     if( ScanEOC() ) {
-        list = NULL;
     } else if( ScanItem( FALSE, &start, &len ) ) {
         ReqEOC();
         list = AllocCmdList( start, len );

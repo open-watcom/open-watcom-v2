@@ -952,7 +952,7 @@ static int DoLoadProg( char *task, char *sym, unsigned *error )
 
 void LoadProg( void )
 {
-    unsigned            error;
+    unsigned            error = 0;
     int                 ret;
     unsigned long       system_handle;
     static char         NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };

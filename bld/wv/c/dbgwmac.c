@@ -336,11 +336,12 @@ static void MacModCmd( a_window *wnd, wnd_row row )
 {
     cmd_list    *cmds;
     wnd_macro           *mac = MacGetMacro( row );
-    char        *p;
+//    char        *p;
 
     wnd=wnd;mac=mac;
     cmds = mac->cmd;
-    p = StrCopy( cmds->buff, TxtBuff );
+//    p = StrCopy( cmds->buff, TxtBuff );
+    StrCopy( cmds->buff, TxtBuff );
     if( DlgNew( LIT( Enter_New_Command ), TxtBuff, TXT_LEN ) ) {
         cmds = AllocCmdList( TxtBuff, strlen( TxtBuff ) );
         FreeCmdList( mac->cmd );

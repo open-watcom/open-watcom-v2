@@ -202,7 +202,11 @@ static bool TryXWindows( void )
     XTermPid = fork();
     if (XTermPid == 0) { /* child */
         setpgid( 0, 0 );
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+        execvp( argv[0], (char * const *)argv );
+#else
         execvp( argv[0], (const char **)argv );
+#endif
         exit( 1 );
     }
     if( XTermPid == (pid_t)-1 ) {

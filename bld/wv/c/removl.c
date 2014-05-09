@@ -119,7 +119,7 @@ void RemoteSectTblWrite( void *ovl )
     in[0].len = sizeof( acc );
     in[1].ptr = ovl;
     in[1].len = OvlSize;
-    TrapAccess( 2, &in, 0, NULL );
+    TrapAccess( 2, in, 0, NULL );
     CheckRemapping();
     InvalidateTblCache();
 }

@@ -72,7 +72,7 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     gui_ord             gadget_len;
     char                *p;
     char                buff[TXT_LEN];
-    int                 len;
+//    int                 len;
     int                 i;
 
     font = WndGetFontInfo( wnd );
@@ -80,7 +80,8 @@ static void DoWndDump( a_window *wnd, WRITERTN *rtn, handle file )
     MaxGadgetLength = ( strlen( WndGadgetArray[ 0 ].chars ) + 1 ) * WndAvgCharX( wnd );
     WndSetSysFont( wnd, TRUE );
     indent_per_char = WndAvgCharX( wnd );
-    len = WndGetTitle( wnd, buff, TXT_LEN );
+//    len = WndGetTitle( wnd, buff, TXT_LEN );
+    WndGetTitle( wnd, buff, TXT_LEN );
     p = TxtBuff;
     for( i = 0; i < 7; ++i ) {
         *p++ = '=';

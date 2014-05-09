@@ -83,7 +83,7 @@ bool RemoteGetRunThreadInfo( int row, unsigned char *infotype, int *width, char 
     out[0].len = sizeof( ret );
     out[1].ptr = header;
     out[1].len = maxsize;
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
 
     if( ret.info ) {
         *infotype = ret.info;
@@ -152,7 +152,7 @@ void RemoteUpdateRunThread( thread_state *thd )
     out[0].len = sizeof( ret );
     out[1].ptr = thd->extra;
     out[1].len = MAX_THD_EXTRA_SIZE;
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
 
     thd->state = ret.state;
     thd->cs = ret.cs;

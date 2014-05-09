@@ -59,11 +59,11 @@ extern address          GetCodeDot( void );
 void AsmExam()
 {
     address     addr;
-    bool        prompt;
+//    bool        prompt;
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-    prompt = TRUE;
+//    prompt = TRUE;
     ReqEOC();
     WndAsmInspect( addr );
 }
@@ -80,11 +80,11 @@ void AsmExam()
 void SrcExam()
 {
     address     addr;
-    bool        prompt;
+//    bool        prompt;
 
     addr = GetCodeDot();
     OptMemAddr( EXPR_CODE, &addr );
-    prompt = TRUE;
+//    prompt = TRUE;
     ReqEOC();
     WndSrcInspect( addr );
 }

@@ -1255,7 +1255,7 @@ void SetBPCountDown( brkp *bp, long countdown )
 {
     bp->countdown = countdown;
     bp->initial_countdown = countdown;
-    bp->status.b.use_countdown = ( countdown != NULL );
+    bp->status.b.use_countdown = ( countdown != 0 );
 }
 
 bool GetBPAutoDestruct( brkp *bp )

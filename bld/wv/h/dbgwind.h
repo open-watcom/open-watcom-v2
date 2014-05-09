@@ -39,13 +39,20 @@
 #define WND_MENU_ALLOCATED      GUI_UTIL_2
 
 enum {
-    WND_PLAIN = WND_FIRST_UNUSED,
-    WND_TABSTOP,
-    WND_SELECTED,
-    WND_STANDOUT,
-    WND_HOTSPOT,
-    WND_STANDOUT_TABSTOP,
+    WND_ATTR_PLAIN = WND_FIRST_UNUSED,
+    WND_ATTR_TABSTOP,
+    WND_ATTR_SELECTED,
+    WND_ATTR_STANDOUT,
+    WND_ATTR_HOTSPOT,
+    WND_ATTR_STANDOUT_TABSTOP,
 };
+
+#define WND_PLAIN               ((wnd_attr)WND_ATTR_PLAIN)
+#define WND_TABSTOP             ((wnd_attr)WND_ATTR_TABSTOP)
+#define WND_SELECTED            ((wnd_attr)WND_ATTR_SELECTED)
+#define WND_STANDOUT            ((wnd_attr)WND_ATTR_STANDOUT)
+#define WND_HOTSPOT             ((wnd_attr)WND_ATTR_HOTSPOT)
+#define WND_STANDOUT_TABSTOP    ((wnd_attr)WND_ATTR_STANDOUT_TABSTOP)
 
 typedef enum wnd_controls {
     COMBOBOX_CONTROL

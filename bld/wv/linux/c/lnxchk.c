@@ -32,10 +32,9 @@
 
 #include "dbgdefn.h"
 
-#pragma off(unreferenced);
 bool CheckPointMem( unsigned psp, unsigned max, char *f_buff )
-#pragma on(unreferenced);
 {
+    psp = psp; f_buff = f_buff;
     return( FALSE );
 }
 

@@ -803,7 +803,7 @@ static void SwapSave( void )
     switch( HWDisplay.active ) {
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
-        _VidStateSave( VID_STATE_SWAP, SwapSeg.s.rm, StateOff );
+        _VidStateSave( VID_STATE_SWAP, SwapSeg.segm.rm, StateOff );
         /* fall through */
     case DISP_EGA_MONO:
     case DISP_EGA_COLOUR:
@@ -814,7 +814,7 @@ static void SwapSave( void )
             _graph_write( GRA_READ_MAP, RMS_MAP_1 );
             _fmemcpy( &RegenSave[PageSize], EGA_VIDEO_BUFF, PageSize );
             _graph_write( GRA_READ_MAP, RMS_MAP_2 );
-            _fmemcpy( MK_PM( SwapSeg.s.rm, 0 ), EGA_VIDEO_BUFF, 8*1024 );
+            _fmemcpy( MK_PM( SwapSeg.segm.rm, 0 ), EGA_VIDEO_BUFF, 8*1024 );
             if( VirtScreen != NULL ) {
                 _fmemcpy( &RegenSave[PageSize * 2], VirtScreen,  PageSize );
             }
@@ -864,15 +864,15 @@ static uint_8 RestoreEGA_VGA( void )
             if( VirtScreen != NULL ) {
                 _fmemcpy( VirtScreen, &RegenSave[PageSize * 2], PageSize );
                 _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-                _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.s.rm, 0 ), 8*1024 );
+                _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.segm.rm, 0 ), 8*1024 );
                 DoSetMode( SaveScrn.mode | 0x80 );
             } else {
                 DoSetMode( SaveScrn.mode | 0x80 );
-                BIOSCharSet( 0, 32, 256, 0, SwapSeg.s.rm, 0 );
+                BIOSCharSet( 0, 32, 256, 0, SwapSeg.segm.rm, 0 );
             }
         } else {
             _seq_write( SEQ_MAP_MASK, MSK_MAP_2 );
-            _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.s.rm, 0 ), 8*1024 );
+            _fmemcpy( EGA_VIDEO_BUFF, MK_PM( SwapSeg.segm.rm, 0 ), 8*1024 );
             DoSetMode( SaveScrn.mode | 0x80 );
         }
     } else {
@@ -911,7 +911,7 @@ static void SwapRestore( void )
     case DISP_VGA_MONO:
     case DISP_VGA_COLOUR:
         RestoreEGA_VGA();
-        _VidStateRestore( VID_STATE_SWAP, SwapSeg.s.rm, StateOff );
+        _VidStateRestore( VID_STATE_SWAP, SwapSeg.segm.rm, StateOff );
         break;
     case DISP_MONOCHROME:
         SetMode( SaveScrn.mode );
@@ -927,14 +927,14 @@ static void SwapRestore( void )
 static void SaveMouse( addr32_off to )
 {
     if( to != 0 ) {
-        MouseSaveState( SwapSeg.s.rm, to );
+        MouseSaveState( SwapSeg.segm.rm, to );
     }
 }
 
 static void RestoreMouse( addr32_off from )
 {
     if( from != 0 ) {
-        MouseRestoreState( SwapSeg.s.rm, from );
+        MouseRestoreState( SwapSeg.segm.rm, from );
     }
 }
 
@@ -971,9 +971,9 @@ static void AllocSave( void )
     }
     state_size = _vidstatesize( VID_STATE_SWAP ) * 64;
     mouse_size = _IsOn( SW_USE_MOUSE ) ? MouseSaveSize() : 0;
-    SwapSeg.a = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size +
+    SwapSeg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( regen_size + state_size +
                                           mouse_size * 2 ) );
-    if( SwapSeg.s.pm == 0 ) {
+    if( SwapSeg.segm.pm == 0 ) {
         StartupErr( LIT( Unable_to_alloc_DOS_mem ) );
     }
     StateOff = regen_size;
@@ -1247,7 +1247,7 @@ extern void FiniScreen( void )
     } else {
         UserScreen();
     }
-    DPMIFreeDOSMemoryBlock( SwapSeg.s.pm );
+    DPMIFreeDOSMemoryBlock( SwapSeg.segm.pm );
     _Free( RegenSave );
 }
 

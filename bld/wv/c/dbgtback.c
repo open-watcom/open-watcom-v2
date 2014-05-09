@@ -104,11 +104,11 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
         if( have_sym ) {
             if( SymInfo( rtn, NULL, &sinfo ) != DS_OK ) break;
             if( sinfo.kind != SK_PROCEDURE ) {
-                sinfo.ret_addr_offset = -1UL;
+                sinfo.ret_addr_offset = -1U;
                 sinfo.rtn_far = 0;
             }
         } else {
-            sinfo.ret_addr_offset = -1UL;
+            sinfo.ret_addr_offset = -1U;
             sinfo.rtn_far = 0;
         }
 

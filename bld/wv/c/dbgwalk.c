@@ -83,8 +83,8 @@ int SSLWalk( unsigned char *table, unsigned start, void **stk_bot, unsigned stk_
     unsigned char   *addr;
     void            **stk_ptr;
     void            **stk_end;
-    unsigned        result;
-    unsigned        parm;
+    unsigned        result = 0;
+    unsigned        parm = 0;
     unsigned        wanted;
     unsigned        token;
 

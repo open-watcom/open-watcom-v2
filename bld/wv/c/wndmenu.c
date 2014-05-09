@@ -223,18 +223,18 @@ static bool StrAmpEqual( char *str, char *menu, int len )
     return( TRUE );
 }
 
-static gui_menu_struct *FindMainMenu( gui_menu_struct *main, int size )
+static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
 {
     char                *start;
     unsigned            len;
 
     if( !ScanItem( TRUE, &start, &len ) ) return( NULL );
     while( --size >= 0 ) {
-        if( StrAmpEqual( start, main->label, len ) ) break;
-        ++main;
+        if( StrAmpEqual( start, menu->label, len ) ) break;
+        ++menu;
     }
     if( size < 0 ) return( NULL );
-    return( main );
+    return( menu );
 }
 
 
@@ -271,7 +271,7 @@ static gui_menu_struct *FindSubMenu( char *start, unsigned len, gui_menu_struct 
         if( StrAmpEqual( start, child->label, len ) ) {
             return( child );
         }
-        if( child->num_child_menus != NULL ) {
+        if( child->num_child_menus != 0 ) {
             sub = FindSubMenu( start, len, child->child, child->num_child_menus );
             if( sub != NULL ) return( sub );
         }
@@ -312,7 +312,7 @@ void AccelMenuItem( gui_menu_struct *menu, bool is_main )
 static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
                   gui_menu_struct **parent, int *num_siblings, wnd_class class )
 {
-    gui_menu_struct     *main;
+    gui_menu_struct     *main_menu;
     gui_menu_struct     *child;
     wnd_info            *info;
     a_window            *wnd;
@@ -322,21 +322,21 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     *menu = *parent = NULL;
     child = NULL;
     if( ScanCmd( MainTab ) ) {
-        main = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
-        if( main == NULL ) {
+        main_menu = FindMainMenu( WndMainMenu, ArraySize( WndMainMenu ) );
+        if( main_menu == NULL ) {
             if( add_to_menu ) return( TRUE );
             Error( ERR_NONE, LIT( ERR_WANT_MENU_ITEM ) );
         }
         if( ScanItem( TRUE, &start, &len ) ) {
-            child = FindSubMenu( start, len, main->child, main->num_child_menus );
+            child = FindSubMenu( start, len, main_menu->child, main_menu->num_child_menus );
         }
         if( child == NULL ) {
             if( add_to_menu ) return( TRUE );
             Error( ERR_NONE, LIT( ERR_WANT_MENU_ITEM ) );
         }
         *menu = child;
-        *parent = main->child;
-        *num_siblings = main->num_child_menus;
+        *parent = main_menu->child;
+        *num_siblings = main_menu->num_child_menus;
         if( add_to_menu ) return( TRUE );
         ReqEOC();
         AccelMenuItem( child, TRUE );
@@ -392,8 +392,8 @@ static void LoadLabels( gui_menu_struct *menu, int num_menus )
             LoadLabels( menu->child, menu->num_child_menus );
         }
         if( !( menu->style & (GUI_SEPARATOR|WND_MENU_ALLOCATED) ) ) {
-            menu->label = WndLoadString( (int)menu->label );
-            menu->hinttext = WndLoadString( (int)menu->hinttext );
+            menu->label = WndLoadString( (int)(pointer_int)menu->label );
+            menu->hinttext = WndLoadString( (int)(pointer_int)menu->hinttext );
             menu->style |= WND_MENU_ALLOCATED;
         }
         ++menu;

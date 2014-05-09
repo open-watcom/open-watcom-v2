@@ -115,45 +115,45 @@ static enum {
     IS_NONE,
     IS_DPMI,
     IS_RATIONAL
-}                       IntrState = IS_NONE;
+}               IntrState = IS_NONE;
 
 
 extern void DoRawSwitchToRM( unsigned, unsigned, unsigned );
-#pragma aux DoRawSwitchToRM =   \
-        "push   ebp"            \
-        "mov    edx,eax"        \
-        "mov    ecx,eax"        \
-        "mov    esi,eax"        \
-        "lea    ebp,-8[esp]"    \
-        "call   pword ptr [RawPMtoRMSwitchAddr]"        \
-        "pop    ebp"            \
-        parm caller [eax] [ebx] [edi]   \
-        modify exact [eax ebx ecx edx esi edi gs];
+#pragma aux DoRawSwitchToRM = \
+    "push   ebp" \
+    "mov    edx,eax" \
+    "mov    ecx,eax" \
+    "mov    esi,eax" \
+    "lea    ebp,-8[esp]" \
+    "call   pword ptr [RawPMtoRMSwitchAddr]" \
+    "pop    ebp" \
+    parm caller [eax] [ebx] [edi] \
+    modify exact [eax ebx ecx edx esi edi gs];
 
-extern void                     BackFromRealMode( void );
+extern void     BackFromRealMode( void );
 
 /*
-        We zero out the registers here so that there isn't any garbage
-        in the high word of them in 16-bit code. It turns out that the
-        Pentium sometimes uses the full 32-bit registers even
-        when the instruction specifies the 16-bit version (e.g string
-        instructions.
+    We zero out the registers here so that there isn't any garbage
+    in the high word of them in 16-bit code. It turns out that the
+    Pentium sometimes uses the full 32-bit registers even
+    when the instruction specifies the 16-bit version (e.g string
+    instructions.
 */
 extern void DoIntSwitchToRM( void );
-#pragma aux DoIntSwitchToRM =   \
-        "pushad",               \
-        "xor    ebp,ebp"        \
-        "xor    ebx,ebx"        \
-        "xor    esi,esi"        \
-        "xor    edi,edi"        \
-        "xor    ecx,ecx"        \
-        "xor    edx,edx"        \
-        "xor    eax,eax"        \
-        "mov    ah,6"           \
-        "mov    cx,0xffff"      \
-        "int    1ah",           \
-        "popad"                 \
-        modify exact [];
+#pragma aux DoIntSwitchToRM = \
+    "pushad" \
+    "xor    ebp,ebp" \
+    "xor    ebx,ebx" \
+    "xor    esi,esi" \
+    "xor    edi,edi" \
+    "xor    ecx,ecx" \
+    "xor    edx,edx" \
+    "xor    eax,eax" \
+    "mov    ah,6" \
+    "mov    cx,0xffff" \
+    "int    1ah" \
+    "popad" \
+    modify exact [];
 
 typedef unsigned long P1616;
 typedef P1616 extension_routine( unsigned, void *, void * );
@@ -166,7 +166,7 @@ static char pkg_entry[] = "D32NullPtrCheck";
 static extension_routine __far *RSI_extensions;
 
 /* These are static because I'm not conversant with your inline asm
-        facility, and this accomplished the desired result...
+   facility, and this accomplished the desired result...
 */
 //static void *parmp;
 static P1616 _D32NullPtrCheck;
@@ -174,53 +174,53 @@ static P1616 _D32NullPtrCheck;
 #if 0
 void lookup_prep (void);
 #pragma aux lookup_prep = \
-        "sub eax, eax" \
-        "mov ebx, OFFSET pkg_name" \
-        "mov edx, OFFSET pkg_entry"
+    "sub eax, eax" \
+    "mov ebx, OFFSET pkg_name" \
+    "mov edx, OFFSET pkg_entry"
 
 void call_prep (void);
 #pragma aux call_prep = \
-        "mov eax, 2" \
-        "mov ebx, parmp" \
-        "mov edx, _D32NullPtrCheck"
+    "mov eax, 2" \
+    "mov ebx, parmp" \
+    "mov edx, _D32NullPtrCheck"
 #endif
 
 P1616 __cdecl find_entry( void )
-        {
-        P1616 retval = 0;
+{
+    P1616 retval = 0;
 
-        RSI_extensions = DPMIGetVendorSpecificAPI( sig_str );
-        if (RSI_extensions != NULL )
-                {
-                retval = RSI_extensions( 0, pkg_entry, pkg_name );
-                }
-        return (retval);
-        }
+    RSI_extensions = DPMIGetVendorSpecificAPI( sig_str );
+    if (RSI_extensions != NULL ) {
+        retval = RSI_extensions( 0, pkg_entry, pkg_name );
+    }
+    return (retval);
+}
 
-/*      Returns 16:16 pointer to MONITOR array, describing state of hardware
-        breakpoints.  You shouldn't care about the return value during your init.
+/* Returns 16:16 pointer to MONITOR array, describing state of hardware
+   breakpoints.  You shouldn't care about the return value during your init.
 */
 int __cdecl D32NullPtrCheck( unsigned short on )
-        {
-        static int      old_state;
-        int             old;
-        char            buff[128];
+{
+    static int      old_state;
+    int         old;
+    char        buff[128];
 
-        if( _D32NullPtrCheck == NULL ) {
-            _D32NullPtrCheck = find_entry();
-            if( _D32NullPtrCheck == NULL ) return( 0 );
-            EnvLkup( "DOS4G", buff, sizeof( buff ) );
-            if( strstr( strupr( buff ), "NULLP" ) ) {
-                old_state = 1;
-            }
+    if( _D32NullPtrCheck == NULL ) {
+        _D32NullPtrCheck = find_entry();
+        if( _D32NullPtrCheck == NULL )
+            return( 0 );
+        EnvLkup( "DOS4G", buff, sizeof( buff ) );
+        if( strstr( strupr( buff ), "NULLP" ) ) {
+            old_state = 1;
         }
-        old = old_state;
-        if( old_state != on ) {
-            RSI_extensions( 2, (void *)_D32NullPtrCheck, &on );
-            old_state = on;
-        }
-        return (old);
-        }
+    }
+    old = old_state;
+    if( old_state != on ) {
+        RSI_extensions( 2, (void *)_D32NullPtrCheck, &on );
+        old_state = on;
+    }
+    return (old);
+}
 
 void SaveOrigVectors( void )
 {
@@ -283,7 +283,7 @@ static void GoToRealMode( void *rm_func )
         for( i = 0; i < NUM_PM_SAVE_EXCEPTS; ++i ) {
             DPMISetPMExceptionVector( PMExceptSaveList[i], SavePMExcepts[i] );
         }
-        DoRawSwitchToRM( RMData.s.rm, offsetof( rm_data, stack ) + STACK_SIZE, RM_OFF( RawSwitchHandler ) );
+        DoRawSwitchToRM( RMData.segm.rm, offsetof( rm_data, stack ) + STACK_SIZE, RM_OFF( RawSwitchHandler ) );
         for( i = 0; i < NUM_PM_SAVE_EXCEPTS; ++i ) {
             SavePMExcepts[i] = DPMIGetPMExceptionVector(PMExceptSaveList[i]);
             DPMISetPMExceptionVector( PMExceptSaveList[i], OrigPMExcepts[i] );
@@ -322,11 +322,11 @@ static char *CopyEnv( void )
     envarea = MK_FP( *(addr_seg __far *)MK_FP( _psp, PSP_ENVSEG_OFF ), 0 );
 #endif
     envsize = EnvAreaSize( envarea );
-    PMData->envseg.a = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
-    if( PMData->envseg.s.pm == 0 ) {
+    PMData->envseg.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( envsize ) );
+    if( PMData->envseg.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    _fmemcpy( MK_PM( PMData->envseg.s.rm, 0 ), envarea, envsize );
+    _fmemcpy( MK_PM( PMData->envseg.segm.rm, 0 ), envarea, envsize );
     return( NULL );
 }
 
@@ -337,9 +337,9 @@ static char *SetTrapHandler( void )
     descriptor          desc;
     version_info        ver;
 
-    PMData->vecttable1[DOS4G_COMM_VECTOR].s.segment = RMData.s.rm;
+    PMData->vecttable1[DOS4G_COMM_VECTOR].s.segment = RMData.segm.rm;
     PMData->vecttable1[DOS4G_COMM_VECTOR].s.offset = RM_OFF( Interrupt15 );
-    PMData->vecttable2[DOS4G_COMM_VECTOR].s.segment = RMData.s.rm;
+    PMData->vecttable2[DOS4G_COMM_VECTOR].s.segment = RMData.segm.rm;
     PMData->vecttable2[DOS4G_COMM_VECTOR].s.offset = RM_OFF( Interrupt15 );
     if( IntrState == IS_NONE ) {
         DPMIGetVersion( &ver );
@@ -355,11 +355,11 @@ static char *SetTrapHandler( void )
             PMData->saveaddr.a = DPMISavePMStateAddr();
             PMData->savesize   = DPMISaveStateSize();
             if( PMData->savesize == 0 ) {
-                PMData->saveseg.a = 0;
+                PMData->saveseg.dpmi_adr = 0;
             } else {
-                PMData->saveseg.a  = DPMIAllocateDOSMemoryBlock(
+                PMData->saveseg.dpmi_adr = DPMIAllocateDOSMemoryBlock(
                                             _NBPARAS(PMData->savesize*2) );
-                if( PMData->saveseg.s.pm == 0 ) {
+                if( PMData->saveseg.segm.pm == 0 ) {
                     return( TC_ERR_OUT_OF_DOS_MEMORY );
                 }
             }
@@ -381,7 +381,7 @@ static char *SetTrapHandler( void )
         }
     }
     if( IntrState == IS_RATIONAL ) {
-        MySetRMVector( TRAP_VECTOR, RMData.s.rm, RM_OFF( RMTrapHandler ) );
+        MySetRMVector( TRAP_VECTOR, RMData.segm.rm, RM_OFF( RMTrapHandler ) );
     }
     return( NULL );
 }
@@ -425,8 +425,8 @@ static char *ReadInTrap( tiny_handle_t fh )
 
     hdrsize = hdr.hdr_size * 16;
     imagesize = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdrsize;
-    TrapMem.a = DPMIAllocateDOSMemoryBlock( _NBPARAS( imagesize ) + hdr.min_16 );
-    if( TrapMem.s.pm == 0 ) {
+    TrapMem.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( imagesize ) + hdr.min_16 );
+    if( TrapMem.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
     TinySeek( fh, hdrsize, TIO_SEEK_SET );
@@ -434,11 +434,11 @@ static char *ReadInTrap( tiny_handle_t fh )
     memset( &read, 0, sizeof( read ) );
     offset = 0;
     for( ;; ) {
-        read.ss = RMData.s.rm;
+        read.ss = RMData.segm.rm;
         read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
         read.edx = offset;
         read.ebx = fh;
-        read.ds = TrapMem.s.rm;
+        read.ds = TrapMem.segm.rm;
         read.ecx = imagesize - offset;
         read.eax = 0x3f00;
 #if 1
@@ -447,12 +447,11 @@ static char *ReadInTrap( tiny_handle_t fh )
             return( TC_ERR_CANT_LOAD_TRAP );
         }
 #else
-        read.eax = TinyRead( fh, (void *)((TrapMem.s.rm << 4) + offset), imagesize - offset );
+        read.eax = TinyRead( fh, (void *)((TrapMem.segm.rm << 4) + offset), imagesize - offset );
         if( (signed_32)read.eax < 0 ) {
             return( TC_ERR_CANT_LOAD_TRAP );
         }
 #endif
-
         offset += (unsigned_16)read.eax;
         if( offset == imagesize ) break;
     }
@@ -466,8 +465,8 @@ static char *ReadInTrap( tiny_handle_t fh )
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.s.rm + relocbuff[relocnb].s.segment,
-                      relocbuff[relocnb].s.offset ) += TrapMem.s.rm;
+        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment,
+                      relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
     }
     return( NULL );
 }
@@ -486,7 +485,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
 
     callstruct = (void __far *)PMData->parmarea;
     msgptr = (void __far *)&callstruct[1];
-    callstruct->in.ptr.s.segment = RMData.s.rm;
+    callstruct->in.ptr.s.segment = RMData.segm.rm;
     callstruct->in.ptr.s.offset = (unsigned)msgptr - (unsigned)PMData;
     callstruct->in.len = 0;
     for( j = 0; j < num_in_mx; ++j ) {
@@ -497,7 +496,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, mx_entry_p mx_in, trap_ele
 
     callstruct->out.len = 0;
     if( mx_out != NULL ) {
-        callstruct->out.ptr.s.segment = RMData.s.rm;
+        callstruct->out.ptr.s.segment = RMData.segm.rm;
         callstruct->out.ptr.s.offset = (unsigned)msgptr - (unsigned)PMData;
         for( j = 0; j < num_out_mx; ++j ) {
             callstruct->out.len += mx_out[j].len;
@@ -538,7 +537,6 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *end;
     handle              dh;
     trap_file_header    __far *head;
-    char                init_error[256];
 
 
     if( trapbuff == NULL ) {
@@ -558,46 +556,33 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     err = ReadInTrap( GetSystemHandle( dh ) );
     FileClose( dh );
-    if( err != NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
-        KillTrap();
-        return( buff );
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+    if( err == NULL ) {
+        if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {
+            strcpy( buff, err );
+        } else {
+            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+            head = MK_PM( TrapMem.segm.rm, 0 );
+            if( head->sig == TRAP_SIGNATURE ) {
+                PMData->initfunc.s.offset = head->init;
+                PMData->reqfunc.s.offset  = head->req;
+                PMData->finifunc.s.offset = head->fini;
+                PMData->initfunc.s.segment = TrapMem.segm.rm;
+                PMData->reqfunc.s.segment  = TrapMem.segm.rm;
+                PMData->finifunc.s.segment = TrapMem.segm.rm;
+                if( CallTrapInit( parm, buff, trap_ver ) ) {
+                    if( TrapVersionOK( *trap_ver ) ) {
+                        TrapVer = *trap_ver;
+                        ReqFunc = DoTrapAccess;
+                        return( NULL );
+                    }
+                    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+                }
+            }
+        }
     }
-    err = SetTrapHandler();
-    if( err != NULL ) {
-        KillTrap();
-        return( err );
-    }
-    err = CopyEnv();
-    if( err != NULL ) {
-        KillTrap();
-        return( err );
-    }
-    head = MK_PM( TrapMem.s.rm, 0 );
-    if( head->sig != TRAP_SIGNATURE ) {
-        KillTrap();
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-        return( buff );
-    }
-    PMData->initfunc.s.offset = head->init;
-    PMData->reqfunc.s.offset  = head->req;
-    PMData->finifunc.s.offset = head->fini;
-    PMData->initfunc.s.segment = TrapMem.s.rm;
-    PMData->reqfunc.s.segment  = TrapMem.s.rm;
-    PMData->finifunc.s.segment = TrapMem.s.rm;
-    if( !CallTrapInit( parm, init_error, trap_ver ) ) {
-        KillTrap();
-        strcpy( buff, init_error );
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    ReqFunc = DoTrapAccess;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }
 
 void KillTrap( void )
@@ -606,13 +591,13 @@ void KillTrap( void )
         GoToRealMode( RMTrapFini );
         IntrState = IS_NONE;
     }
-    if( TrapMem.s.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( TrapMem.s.pm );
+    if( TrapMem.segm.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( TrapMem.segm.pm );
     }
-    if( PMData->envseg.s.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( PMData->envseg.s.pm );
+    if( PMData->envseg.segm.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( PMData->envseg.segm.pm );
     }
-    if( PMData->saveseg.s.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( PMData->saveseg.s.pm );
+    if( PMData->saveseg.segm.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( PMData->saveseg.segm.pm );
     }
 }

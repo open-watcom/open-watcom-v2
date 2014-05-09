@@ -70,7 +70,7 @@ bool RemoteSetEnvironmentVariable( char *name, char *value )
     in[2].len = strlen( value ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 3, &in, 1, &out );
+    TrapAccess( 3, in, 1, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( FALSE );
@@ -97,7 +97,7 @@ bool RemoteGetEnvironmentVariable( char *name, char *res, int res_len )
     out[0].len = sizeof( ret );
     out[1].ptr = res;
     out[1].len = res_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
         return( FALSE );

@@ -201,7 +201,7 @@ unsigned RemoteStringToFullName( bool executable, char *name, char *res,
     out[0].len = sizeof( ret );
     out[1].ptr = res;
     out[1].len = res_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         *res = NULLCHAR;
@@ -238,7 +238,7 @@ sys_handle RemoteOpen( char *name, open_access mode )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     CONV_LE_32( ret.handle );
     if( ret.err != 0 ) {
@@ -289,7 +289,7 @@ static unsigned DoAWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len 
     in[1].len = len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     CONV_LE_16( ret.len );
     if( ret.err != 0 ) {
@@ -359,7 +359,7 @@ static unsigned DoRead( sys_handle hdl, void *ptr, unsigned len )
     out[1].len = len;
     CONV_LE_32( acc.handle );
     CONV_LE_16( acc.len );
-    got = TrapAccess( 1, &in, 2, &out );
+    got = TrapAccess( 1, in, 2, out );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
@@ -477,7 +477,7 @@ unsigned RemoteErase( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
@@ -498,7 +498,7 @@ long RemoteFork( char *cmd, unsigned len )
     in[1].len = len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }

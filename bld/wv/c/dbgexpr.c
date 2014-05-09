@@ -580,10 +580,10 @@ unsigned TstEQ( unsigned true_value )
         break;
     case TK_STRING:
         temp = FStrCmp( left->v.string.loc.e[0].u.p, left->info.size,
-                        rite->v.string.loc.e[0].u.p, rite->info.size )
-               == 0;
+                        rite->v.string.loc.e[0].u.p, rite->info.size ) == 0;
         break;
     default:
+        temp = 0;
         Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
         break;
     }
@@ -625,10 +625,10 @@ unsigned TstLT( unsigned true_value )
         break;
     case TK_STRING:
         temp = FStrCmp( left->v.string.loc.e[0].u.p, left->info.size,
-                        rite->v.string.loc.e[0].u.p, rite->info.size )
-               < 0;
+                        rite->v.string.loc.e[0].u.p, rite->info.size ) < 0;
         break;
     default:
+        temp = 0;
         Error( ERR_NONE, LIT( ERR_ILL_TYPE ) );
         break;
     }

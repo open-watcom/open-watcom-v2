@@ -427,7 +427,7 @@ static  void    MemModify( a_window *wnd, int row, int piece )
     old = NewCurrRadix( MemData.info[ mem->piece_type ].piece_radix );
     item_size = mem->item_size;
     if( is_char ) {
-        if( DlgString( TxtBuff, &item.str ) ) {
+        if( DlgString( TxtBuff, item.str ) ) {
             ChangeMemUndoable( addr, &item, strlen( item.str ) );
         }
     } else {
