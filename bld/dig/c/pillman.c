@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include "pillink.h"
 #include "pillimp.h"
 #include "pillcli.h"

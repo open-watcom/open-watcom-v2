@@ -56,7 +56,7 @@ typedef struct link_imp_handle          link_imp_handle;
 typedef struct pill_imp_routines        pill_imp_routines;
 typedef void (DIGENTRY pill_private_func)();
 
-#if defined(__X86__)
+#if defined(_M_IX86)
     typedef     unsigned_8      link_atomic_t;
 #elif defined(__AXP__)
     typedef     unsigned        link_atomic_t;

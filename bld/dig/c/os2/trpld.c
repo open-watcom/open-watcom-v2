@@ -35,7 +35,6 @@
 #define INCL_DOSMISC
 #include <os2.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include <stdio.h>
 #include "trptypes.h"
 #include "tcerr.h"

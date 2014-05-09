@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "trpimp.h"
 #include "tcerr.h"
 #include "trpld.h"

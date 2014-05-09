@@ -35,7 +35,6 @@
 #include <float.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stddef.h>
 #include <i64.h>
 #include "mad.h"
 #include "madimp.h"

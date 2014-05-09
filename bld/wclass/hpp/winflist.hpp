@@ -93,7 +93,7 @@ class WInfiniteList : public WWindow
         int             getLastIndex();
         void            changed();
         void            scrollToSelected();
-        void            performScroll( int diff, bool absolute = false );
+        void            performScroll( int diff, bool absolute=false );
 
         WVList          _context;
         uint            _loadSize;

@@ -34,7 +34,6 @@
 #include <dos.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include "trptypes.h"
 #include "tcerr.h"
 #include "trpld.h"

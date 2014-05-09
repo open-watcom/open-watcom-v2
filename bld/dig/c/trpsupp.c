@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "madregs.h"
 #include "trpimp.h"
 #include "trpld.h"

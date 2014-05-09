@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #if defined( __WINDOWS__ )
 #include <stdlib.h>

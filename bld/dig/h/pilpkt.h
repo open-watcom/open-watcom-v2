@@ -45,7 +45,7 @@ typedef struct {
         LO      -> Link Order (low byte first)
 */
 
-#if defined(__X86__) || defined(__AXP__)
+#if defined(_M_IX86) || defined(__AXP__)
     #define PPU8LO( data )      (data)
     #define PPU16LO( data )     (data)
     #define PPU32LO( data )     (data)

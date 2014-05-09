@@ -32,7 +32,6 @@
 #include <string.h>
 #include <stdio.h>      // only for sprintf()
 #include <stdlib.h>
-#include <stddef.h>
 #include <unistd.h>
 #include <signal.h>
 #include "trpimp.h"
