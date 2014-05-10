@@ -22,6 +22,10 @@
  #include <iterator>
 #endif
 
+#ifndef _LIMITS_INCLUDED
+ #include <limits>
+#endif
+
 #ifndef _MEMORY_INCLUDED
  #include <memory>
 #endif
@@ -153,6 +157,8 @@ namespace std {
         const_reverse_iterator rend ( ) const;
     
         size_type  size( )  const;
+        size_type  max_size( )  const;
+        void       resize( size_type n, const value_type & c = value_type( ) );
         bool       empty( ) const;
         reference  front( );
         reference  back( );
@@ -724,6 +730,32 @@ namespace std {
     inline typename list< Type, Allocator >::size_type
         list< Type, Allocator >::size( ) const
         { return( item_count ); }
+
+    // max_size( ) const
+    // *****************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator>::size_type
+        list< Type, Allocator >::max_size( ) const
+    {
+        return( numeric_limits< size_type >::max( ) / sizeof( value_type ) );
+    }
+
+    // resize( size_type, Type )
+    // *************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::resize( size_type n, const value_type & c )
+    {
+        if( n > item_count )
+            insert( end( ), n - item_count, c );
+        else if ( n < item_count )
+        {
+            iterator  it  = begin( );
+            size_type len = 0;
+            for ( ; it != end() && len < n; ++it, ++len);
+            erase( it, end( ) );
+        }
+    }
 
     // empty( ) const
     // **************
