@@ -108,6 +108,7 @@
 #
 /bld/f77test/*.sav
 /bld/f77test/regress/nist/FOR*
+/bld/f77test/regress/nist/__wfc__.vm*
 #
 /bld/graphlib/*/*/*.ref
 #
