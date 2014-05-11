@@ -184,6 +184,22 @@ namespace std {
         void clear( );
         void remove( const value_type & );
 
+        template< class Predicate >
+        void remove_if( Predicate pred )
+        {
+            iterator first( begin( ) );
+            iterator last ( end( ) );
+
+            while ( !(first == last) )
+            {
+                iterator next ( first );
+                ++next;
+                if ( pred( *first ) )
+                    erase( first );
+                first = next;
+            }
+        }
+
         void splice( iterator it, list &other );
         void splice( iterator it, list &other, iterator other_it );
         void splice( iterator it, list &other, iterator first, iterator last );
