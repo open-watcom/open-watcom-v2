@@ -30,39 +30,20 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include "wrglbl.h"
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
-#define DEBUG_RCMEM
+#include "wio.h"
+#include "trmemcvr.h"
 
-void *RcMemMalloc( unsigned size )
-{
-#ifdef DEBUG_RCMEM
-    return ( WRMemAlloc( size ) );
-#else
-    return ( malloc( size ) );
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       write
+#define RCREAD        read
+#define RCSEEK        lseek
+#define RCTELL        tell
+#define RCALLOC       TRMemAlloc
+#define RCFREE        TRMemFree
+#define RCREALLOC     TRMemRealloc
+
 #endif
-}
-
-void RcMemFree( void *ptr )
-{
-#ifdef DEBUG_RCMEM
-    WRMemFree( ptr );
-#else
-    free( ptr );
-#endif
-}
-
-void *RcMemRealloc( void *old_ptr, unsigned newsize )
-{
-#ifdef DEBUG_RCMEM
-    return( WRMemRealloc( old_ptr, newsize ) );
-#else
-    return( realloc( old_ptr, newsize ) );
-#endif
-}

@@ -30,19 +30,20 @@
 ****************************************************************************/
 
 
-#include "rcmem.h"
 #include "errors.h"
+#include "layer0.h"
+#include "rcrtns.h"
 
 void *PP_Malloc( unsigned size )
 /******************************/
 {
-    return( RcMemMalloc( size ) );
+    return( RCALLOC( size ) );
 }
 
 void PP_Free( void *p )
 /*********************/
 {
-    RcMemFree( p );
+    RCFREE( p );
 }
 
 void PP_OutOfMemory( void )

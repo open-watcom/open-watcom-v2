@@ -31,11 +31,11 @@
 
 #include "global.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "os2ytab.h"
 #include "semantic.h"
 #include "semaccel.h"
 #include "reserr.h"
+#include "rcrtns.h"
 
 
 int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )
@@ -43,7 +43,7 @@ int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, currentry, sizeof(AccelTableEntryOS2) );
+    numwrote = RCWRITE( handle, currentry, sizeof(AccelTableEntryOS2) );
     if( numwrote != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
@@ -128,8 +128,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     FullAccelTableOS2   *newtable;
     FullAccelEntryOS2   *newentry;
 
-    newtable = RcMemMalloc( sizeof( FullAccelTableOS2 ) );
-    newentry = RcMemMalloc( sizeof( FullAccelEntryOS2 ) );
+    newtable = RCALLOC( sizeof( FullAccelTableOS2 ) );
+    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -152,7 +152,7 @@ extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry,
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RcMemMalloc( sizeof(FullAccelEntryOS2) );
+    newentry = RCALLOC( sizeof(FullAccelEntryOS2) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -177,9 +177,9 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 * acctable )
     while( currentry != NULL ) {
         oldentry = currentry;
         currentry = currentry->next;
-        RcMemFree( oldentry );
+        RCFREE( oldentry );
     }
-    RcMemFree( acctable );
+    RCFREE( acctable );
 }
 
 static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
@@ -237,7 +237,7 @@ extern void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
     SemOS2FreeAccelTable( acctable );

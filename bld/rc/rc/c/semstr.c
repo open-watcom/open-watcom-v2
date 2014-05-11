@@ -34,9 +34,9 @@
 #include "wresall.h"
 #include "errors.h"
 #include "global.h"
-#include "rcmem.h"
 #include "semantic.h"
 #include "semstr.h"
+#include "rcrtns.h"
 
 
 extern FullStringTable * SemNewStringTable( void )
@@ -44,7 +44,7 @@ extern FullStringTable * SemNewStringTable( void )
 {
     FullStringTable *   newtable;
 
-    newtable = RcMemMalloc( sizeof(FullStringTable) );
+    newtable = RCALLOC( sizeof(FullStringTable) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -69,10 +69,10 @@ extern void SemFreeStringTable( FullStringTable * oldtable )
         oldblock = currblock;
         currblock = currblock->Next;
 
-        RcMemFree( oldblock );
+        RCFREE( oldblock );
     }
 
-    RcMemFree( oldtable );
+    RCFREE( oldtable );
 } /* SemFreeStringTable */
 
 static FullStringTableBlock * findStringTableBlock( FullStringTable * table,
@@ -94,7 +94,7 @@ static FullStringTableBlock * newStringTableBlock( void )
 {
     FullStringTableBlock *      newblock;
 
-    newblock = RcMemMalloc( sizeof(FullStringTableBlock) );
+    newblock = RCALLOC( sizeof(FullStringTableBlock) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;
@@ -295,13 +295,13 @@ extern void SemWriteStringTable( FullStringTable * currtable, WResID * type )
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemSetResourceLanguage( &currtable->lang, FALSE );
             SemAddResource( name, type, currblock->Flags, loc );
-            RcMemFree( name );
+            RCFREE( name );
         }
 
         tofree = currtable;
         currtable = currtable->next;
         SemFreeStringTable( tofree );
     }
-    RcMemFree( type );
+    RCFREE( type );
     return;
 }

@@ -75,7 +75,7 @@ char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -83,7 +83,7 @@ char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
     text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -129,7 +129,7 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
 
     text_copied = 0;
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -137,7 +137,7 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
     text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -174,7 +174,7 @@ BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     if( value != NULL ) {

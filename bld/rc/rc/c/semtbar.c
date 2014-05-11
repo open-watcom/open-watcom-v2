@@ -32,12 +32,12 @@
 
 #include <string.h>
 #include "wresall.h"
-#include "rcmem.h"
 #include "semantic.h"
 #include "semtbar.h"
 #include "global.h"
 #include "restbar.h"
 #include "wresdefn.h"
+#include "rcrtns.h"
 
 static void initToolBarItems( ToolBarItems *ret ) {
     ret->next = NULL;
@@ -48,7 +48,7 @@ static void initToolBarItems( ToolBarItems *ret ) {
 ToolBar *SemCreateToolBar( void ) {
     ToolBar     *ret;
 
-    ret = RcMemMalloc( sizeof( ToolBar ) );
+    ret = RCALLOC( sizeof( ToolBar ) );
     ret->last = &ret->first;
     ret->nodecnt = 1;
     initToolBarItems( &ret->first );
@@ -60,7 +60,7 @@ void SemAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
-        toolbar->last->next = RcMemMalloc( sizeof( ToolBarItems ) );
+        toolbar->last->next = RCALLOC( sizeof( ToolBarItems ) );
         toolbar->last = toolbar->last->next;
         initToolBarItems( toolbar->last );
         toolbar->nodecnt++;
@@ -79,9 +79,9 @@ void static semFreeToolBar( ToolBar *toolbar ) {
     while( cur != NULL ) {
         tmp = cur;
         cur = cur->next;
-        RcMemFree( tmp );
+        RCFREE( tmp );
     }
-    RcMemFree( toolbar );
+    RCFREE( toolbar );
 }
 
 void SemWriteToolBar( WResID *name, ToolBar *toolbar,

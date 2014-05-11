@@ -30,18 +30,17 @@
 ****************************************************************************/
 
 
-#include <io.h>
-#include "trmemcvr.h"
 #include "layer0.h"
+#include "rcrtns.h"
 
 
 struct WResRoutines WResRtns = {
-    open,       /* from io.h */
-    close,
-    write,
-    read,
-    lseek,
-    tell,
-    TRMemAlloc, /* from trmemcvr.h */
-    TRMemFree
+    RCOPEN,
+    RCCLOSE,
+    RCREAD,
+    RCWRITE,
+    RCSEEK,
+    RCTELL,
+    RCALLOC,
+    RCFREE
 };

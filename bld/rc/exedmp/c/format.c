@@ -130,9 +130,9 @@ const unsigned_32 obj_masks_table[] = {
 int indentLevel = 0;
 
 /* forward declarations */
-void printHexDump( long int addr, size_t length, ExeFile *exeFile,
+void printHexDump( unsigned long addr, unsigned long length, ExeFile *exeFile,
                    Parameters *param );
-void printHexBytes( long int addr, size_t length, ExeFile *exeFile );
+void printHexBytes( unsigned long addr, unsigned long length, ExeFile *exeFile );
 
 
 void indentMore( int level )
@@ -264,16 +264,18 @@ void printFlags( unsigned_32 value,
 /****************************************************************/
 {
     int i;
-    int indentLen;
-    int labelLen;
-    int cursor;
+    int count;
+    size_t indentLen;
+    size_t labelLen;
+    size_t cursor;
     bool first;
 
     first = true;
     indentLen = strlen( indentString );
     cursor = indentLen;
     printf( indentString );
-    for( i = 1; i <= masks[0]; i++ ) {
+    count = masks[0];
+    for( i = 1; i <= count; i++ ) {
         if( value & masks[i] ) {
             if( first ) {
                 first = false;
@@ -296,19 +298,21 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
 /********************************************************/
 {
     int i;
+    int count;
 
     if( param->dumpExeHeaderInfo ) {
         printf( MSG_PE_HEADER );
         printRuler( false, false, param );
         printf( MSG_PE_SIGNATURE ,              exeFile->pexHdr.signature );
         printf( MSG_PE_CPUTYPE ,                exeFile->pexHdr.cpu_type );
-        for( i = 1; i <= cpu_masks_table[0]; i++ ) {
+        count = cpu_masks_table[0];
+        for( i = 1; i <= count; i++ ) {
             if( exeFile->pexHdr.cpu_type == cpu_masks_table[i] ) {
                 printf( MSG_PE_CPUTYPETEXT, cpu_flags_labels[i] );
                 break;
             }
         }
-        if( i > cpu_masks_table[0] ) {
+        if( i > count ) {
             printf( MSG_PE_CPUTYPENOTRECOGNIZED );
         }
         printf( MSG_PE_NUMOBJECTS ,             exeFile->pexHdr.num_objects );
@@ -346,13 +350,14 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         printf( MSG_PE_HEADERSIZE ,             exeFile->pexHdr.header_size );
         printf( MSG_PE_FILECHECKSUM ,           exeFile->pexHdr.file_checksum );
         printf( MSG_PE_SUBSYSTEM ,              exeFile->pexHdr.subsystem );
-        for( i = 1; i <= ss_masks_table[0]; i++ ) {
+        count = ss_masks_table[0];
+        for( i = 1; i <= count; i++ ) {
             if( exeFile->pexHdr.subsystem == ss_masks_table[i] ) {
                 printf( MSG_PE_SUBSYSTEMTEXT, ss_flags_labels[i] );
                 break;
             }
         }
-        if( i > ss_masks_table[0] ) {
+        if( i > count ) {
             printf( MSG_PE_SUBSYSTEMNOTRECOGNIZED );
         }
         printf( MSG_PE_DLLFLAGS ,               exeFile->pexHdr.dll_flags );
@@ -533,16 +538,16 @@ void printDataContents( ResDataEntry *data, ExeFile *exeFile,
     }
 }
 
-void printHexBytes( long int addr, size_t length, ExeFile *exeFile )
+void printHexBytes( unsigned long addr, unsigned long length, ExeFile *exeFile )
 /********************************************************************/
 {
-    long int     prevPos;
-    unsigned_8  *buffer;
-    size_t       count;
-    int          i;
+    long int        prevPos;
+    unsigned_8      *buffer;
+    unsigned long   count;
+    unsigned long   i;
 
-    count = (size_t) (length / sizeof( unsigned_8 ) );
-    buffer = (unsigned_8 *) malloc( count );
+    count = (length / sizeof( unsigned_8 ) );
+    buffer = (unsigned_8 *)malloc( count );
 
     if( buffer != NULL ) {
         prevPos = ftell( exeFile->file );
@@ -556,9 +561,9 @@ void printHexBytes( long int addr, size_t length, ExeFile *exeFile )
                 return;
             }
         }
+        free( (void *)buffer );
+        fseek( exeFile->file, prevPos, SEEK_SET );
     }
-    free( (void *) buffer );
-    fseek( exeFile->file, prevPos, SEEK_SET );
     printf( ERR_FORMAT_CANNOT_DUMP_HEX );
 }
 
@@ -579,15 +584,15 @@ bool isPrintable( unsigned_8 buffer )
     }
 }
 
-void printHexLine( long int lower, long int upper, ExeFile *exeFile,
+void printHexLine( unsigned long lower, unsigned long upper, ExeFile *exeFile,
                    const char *mask, const char *emptyMask,
                    const char *unprintableMask, bool testPrintable,
                    bool splitAtEight )
 /********************************************************************/
 {
-    long int    prevPos;
-    unsigned_8  buffer;
-    long int    i;
+    long int        prevPos;
+    unsigned_8      buffer;
+    unsigned long   i;
 
     prevPos = ftell( exeFile->file );
     if( fseek( exeFile->file, ( lower / 16L ) * 16L, SEEK_SET ) ) {
@@ -623,11 +628,11 @@ void printHexLine( long int lower, long int upper, ExeFile *exeFile,
     fseek( exeFile->file, prevPos, SEEK_SET );
 }
 
-void printHexDump( long int addr, size_t length, ExeFile *exeFile,
+void printHexDump( unsigned long addr, unsigned long length, ExeFile *exeFile,
                    Parameters *param )
 /*****************************************************************/
 {
-    long int    i;
+    unsigned long   i;
 
     for( i = addr; i < addr + length; i = ( i / 16L + 1L ) * 16 ) {
         if( param->hexIndentSpaces == -1 ) {

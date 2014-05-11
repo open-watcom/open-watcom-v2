@@ -31,50 +31,56 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "wio.h"
 #include "wresall.h"
 #include "types.h"
 #include "dmpstr.h"
+#include "rcrtns.h"
 
 extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
 /************************************************************************/
 {
-    int                 prevpos;
-    int                 len;
-    int                 numread;
-    int                 cursor;
-    int                 stringlen;
+    long                prevpos;
+    unsigned            len;
+    unsigned            numread;
+    unsigned            cursor;
+    unsigned            stringlen;
     char *              stringbuff;
 
-    prevpos = WResRtns.seek( handle, offset, SEEK_SET );
-    if ( prevpos == -1 ) return( true );
+    prevpos = RCSEEK( handle, offset, SEEK_SET );
+    if( prevpos == -1 )
+        return( TRUE );
     len = DMP_STR_BUF_LEN;
-    stringbuff = (char *) WRESALLOC( len );
-    if ( stringbuff == NULL ) return( true );
+    stringbuff = (char *)RCALLOC( len );
+    if( stringbuff == NULL )
+        return( TRUE );
 
     printf( "\t\t   Strings:\n" );
     printf( "\t\t   --------" );
 
     numread = 0;
     stringlen = 0;
+    cursor = 0;
     do {
-        if ( numread == 0 ) {
-            if ( length > len ) {
+        if( numread == 0 ) {
+            if( length > len ) {
                 length -= len;
             } else {
                 len = length;
                 length = 0;
             }
-            numread = WResRtns.read( handle, stringbuff, len );
+            numread = RCREAD( handle, stringbuff, len );
             cursor = 0;
         }
-        if ( stringlen == 0 ) {
-            stringlen = stringbuff[ cursor++ ];
-            if ( stringlen != 0 ) printf( "\n\t\t   " );
+        if( stringlen == 0 ) {
+            stringlen = (unsigned char)stringbuff[ cursor++ ];
+            if( stringlen != 0 ) {
+                printf( "\n\t\t   " );
+            }
+            ++stringlen;    // trailing '\0'
         }
-        if ( cursor < numread ) {
-            for( ; stringlen >= 0; --stringlen ) {
-                if ( cursor >= numread ) break;
+        if( cursor < numread ) {
+            for( ; stringlen > 0; --stringlen ) {
+                if( cursor >= numread ) break;
                 if( stringbuff[ cursor ] != '\0' && stringbuff[ cursor ] != '\n' ) {
                     putchar( stringbuff[ cursor ] );
                 }
@@ -87,9 +93,9 @@ extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
     } while( length != 0 || numread > 0 );
     putchar( '\n' );
 
-    WRESFREE( stringbuff );
+    RCFREE( stringbuff );
 
-    WResRtns.seek( handle, prevpos, SEEK_SET );
+    RCSEEK( handle, prevpos, SEEK_SET );
 
-    return( false );
+    return( FALSE );
 }

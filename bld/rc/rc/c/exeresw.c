@@ -32,10 +32,9 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "rcstr.h"
 #include "exeutil.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 
 extern void InitResTable( void )
@@ -120,7 +119,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    exe_type = RcMemMalloc( sizeof( FullTypeRecord ) );
+    exe_type = RCALLOC( sizeof( FullTypeRecord ) );
 
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = type->NumResources;
@@ -175,7 +174,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    exe_res = RcMemMalloc( sizeof( FullResourceRecord ) );
+    exe_res = RCALLOC( sizeof( FullResourceRecord ) );
 
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
@@ -201,14 +200,14 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     /* align the output file to a boundary for shift_count */
     error = RS_OK;
     align_amount = 0;   // shut up gcc
-    out_offset = RcTell( outhandle );
+    out_offset = RCTELL( outhandle );
     if( out_offset == -1 ) {
         error = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( error == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RcSeek( outhandle, align_amount, SEEK_CUR ) == -1 ) {
+        if( RCSEEK( outhandle, align_amount, SEEK_CUR ) == -1 ) {
             error = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -216,7 +215,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( error == RS_OK ) {
-        if( RcSeek( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RCSEEK( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
             error = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -226,7 +225,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
         *err_code = errno;
     }
     if( error == RS_OK ) {
-        align_amount = AlignAmount( RcTell( outhandle ), shift_count );
+        align_amount = AlignAmount( RCTELL( outhandle ), shift_count );
         error = PadExeData( outhandle, align_amount );
         *err_code = errno;
     }
@@ -322,7 +321,7 @@ static RcStatus writeTypeRecord( int handle, resource_type_record *res )
 {
     int     num_wrote;
 
-    num_wrote = RcWrite( handle, res, sizeof( resource_type_record ) );
+    num_wrote = RCWRITE( handle, res, sizeof( resource_type_record ) );
     if( num_wrote != sizeof( resource_type_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
@@ -340,7 +339,7 @@ static RcStatus writeResRecord( int handle, resource_record *type )
 {
     int     num_wrote;
 
-    num_wrote = RcWrite( handle, type, sizeof( resource_record ) );
+    num_wrote = RCWRITE( handle, type, sizeof( resource_record ) );
     if( num_wrote != sizeof( resource_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
@@ -364,13 +363,13 @@ static void freeResTable( ResTable *restab )
             old_res = exe_res;
             exe_res = exe_res->Next;
 
-            RcMemFree( old_res );
+            RCFREE( old_res );
         }
 
         old_type = exe_type;
         exe_type = exe_type->Next;
 
-        RcMemFree( old_type );
+        RCFREE( old_type );
     }
 
     restab->Dir.Head = NULL;
@@ -388,7 +387,7 @@ static int writeStringBlock( int handle, StringBlock *str )
     int     numwrote;
 
     if( str->StringBlockSize > 0 ) {
-        numwrote = RcWrite( handle, str->StringBlock, str->StringBlockSize );
+        numwrote = RCWRITE( handle, str->StringBlock, str->StringBlockSize );
         if( numwrote != str->StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
@@ -410,7 +409,7 @@ extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code )
     uint_16                     zero;
 
     error = RS_OK;
-    num_wrote = RcWrite( handle, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) );
+    num_wrote = RCWRITE( handle, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) );
     if( num_wrote != sizeof( uint_16 ) ) {
         error = RS_WRITE_ERROR;
     }
@@ -427,7 +426,7 @@ extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code )
 
     if( error == RS_OK ) {
         zero = 0;
-        num_wrote = RcWrite( handle, &zero, sizeof( uint_16 ) );
+        num_wrote = RCWRITE( handle, &zero, sizeof( uint_16 ) );
         if( num_wrote != sizeof( uint_16 ) ) {
             error = RS_WRITE_ERROR;
         }

@@ -40,10 +40,10 @@
 /****************************************************************************/
 extern void     WRDisplayMsg( const char *msg );
 extern void     WRInitDisplayError( HINSTANCE inst );
-extern void     WRDisplayErrorMsg( DWORD msg );
-extern char     *WRAllocRCString( DWORD id );
+extern void     WRDisplayErrorMsg( UINT msg );
+extern char     *WRAllocRCString( UINT id );
 extern void     WRFreeRCString( char *str );
-extern DWORD    WRCopyRCString( DWORD id, char *buf, DWORD bufsize );
-extern void     WRPrintErrorMsg( DWORD msg, ... );
+extern int      WRCopyRCString( UINT id, char *buf, int bufsize );
+extern void     WRPrintErrorMsg( UINT msg, ... );
 
 #endif

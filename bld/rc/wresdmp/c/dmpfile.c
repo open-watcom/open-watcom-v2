@@ -170,12 +170,12 @@ static int DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
 
     if (CmdLineParms.Type != NULL) {
         if (!WResIDCmp( CmdLineParms.Type, &(type->TypeName) )) {
-            return( false );
+            return( FALSE );
         }
     }
     if (CmdLineParms.Name != NULL) {
         if (!WResIDCmp( CmdLineParms.Name, &(res->ResName) )) {
-            return( false );
+            return( FALSE );
         }
     }
 
@@ -189,11 +189,11 @@ static int DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
     if (CmdLineParms.DumpContents) {
         error = DumpContents( type, res, lang, handle, os );
         if (error) {
-            return( true );
+            return( TRUE );
         }
     }
 
-    return( false );
+    return( FALSE );
 }
 
 

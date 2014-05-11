@@ -38,13 +38,11 @@
 /****************************************************************************/
 extern void WRMemOpen( void );
 extern void WRMemClose( void );
-extern void *WRWResMemAlloc( size_t );
-extern void WRWResMemFree( void * );
 
 /* functions to replace those in mem.c in commonui */
-extern void MemFree( void *ptr );
-extern void *MemAlloc( unsigned size );
-extern void *MemReAlloc( void *ptr, unsigned size );
 extern void MemStart( void );
+extern void MemFree( void *ptr );
+extern void *MemAlloc( size_t size );
+extern void *MemRealloc( void *ptr, size_t size );
 
 #endif

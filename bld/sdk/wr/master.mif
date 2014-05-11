@@ -34,7 +34,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
             wrsvexe.obj wrsvres.obj &
             wridfile.obj wrinfo.obj wrstrdup.obj &
-            wrrcmem.obj wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
+            wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
             wrdata.obj wrnamoor.obj wrwresid.obj &
             wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
             wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
@@ -45,7 +45,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
             exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
             global.obj semstr.obj semsingl.obj semantic.obj semraw.obj &
-            errors.obj tmpctl.obj autodep.obj layer0.obj &
+            errors.obj tmpctl.obj autodep.obj &
             dbtable.obj sharedio.obj rcspawn.obj
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg

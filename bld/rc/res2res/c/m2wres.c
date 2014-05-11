@@ -31,11 +31,12 @@
 
 
 #include <stdio.h>
-#include <io.h>
 #include "wresall.h"
 #include "bincpy.h"
 #include "param.h"
 #include "m2wres.h"
+#include "wresdefn.h"
+#include "rcrtns.h"
 
 static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
 /*************************************************************/
@@ -67,7 +68,7 @@ static int ConvertMResources( WResFileID infile, WResFileID outfile,
     while (!lastheader && !error) {
         name = ConvertNameOrOrdToID( mheader->Name );
         type = ConvertNameOrOrdToID( mheader->Type );
-        offset = tell( outfile );
+        offset = RCTELL( outfile );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
@@ -83,7 +84,7 @@ static int ConvertMResources( WResFileID infile, WResFileID outfile,
                 error = BinaryCopy( infile, outfile, mheader->Size );
             }
         } else {
-            lseek( infile, mheader->Size, SEEK_CUR );
+            RCSEEK( infile, mheader->Size, SEEK_CUR );
         }
 
         WResIDFree( name );

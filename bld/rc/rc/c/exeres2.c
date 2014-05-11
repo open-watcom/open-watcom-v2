@@ -31,10 +31,9 @@
 
 #include "global.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "exeutil.h"
-#include "iortns.h"
 #include "os2res.h"
+#include "rcrtns.h"
 
 
 /* Note: IBM's OS/2 RC accepts string resource IDs/types but quietly
@@ -143,7 +142,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
         /* One resource type/id record per resource segment, 16-bits each */
         res->table_size   = res->num_res_segs * 2 * sizeof( uint_16 );
 
-        res->resources = RcMemMalloc( res->num_res_segs * sizeof( res->resources[0] ) );
+        res->resources = RCALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
         if( res->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
@@ -207,14 +206,14 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID reshandle,
 
     /* align the output file to a boundary for shift_count */
     error = RS_OK;
-    out_offset = RcTell( outhandle );
+    out_offset = RCTELL( outhandle );
     if( out_offset == -1 ) {
         error = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( error == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RcSeek( outhandle, align_amount, SEEK_CUR ) == -1 ) {
+        if( RCSEEK( outhandle, align_amount, SEEK_CUR ) == -1 ) {
             error = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -222,7 +221,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID reshandle,
     }
 
     if( error == RS_OK ) {
-        if( RcSeek( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RCSEEK( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
             error = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -232,7 +231,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID reshandle,
         *err_code = errno;
     }
     if( error == RS_OK ) {
-        align_amount = AlignAmount( RcTell( outhandle ), shift_count );
+        align_amount = AlignAmount( RCTELL( outhandle ), shift_count );
         error = PadExeData( outhandle, align_amount );
         *err_code = errno;
     }
@@ -273,7 +272,7 @@ extern int CopyOS2Resources( void )
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RcTell( tmphandle ), shift_count );
+    align_amount = AlignAmount( RCTELL( tmphandle ), shift_count );
     if( align_amount ) {
         error = PadExeData( tmphandle, align_amount );
         err_code = errno;
@@ -285,7 +284,7 @@ extern int CopyOS2Resources( void )
         lang = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RcTell( tmphandle );
+            seg_offset = RCTELL( tmphandle );
         } else {
             seg_offset += 0x10000;
         }
@@ -355,11 +354,11 @@ extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code
         res_type = restab->resources[i].res_type;
         res_id   = restab->resources[i].res_id;
 
-        num_wrote = RcWrite( handle, &res_type, sizeof( uint_16 ) );
+        num_wrote = RCWRITE( handle, &res_type, sizeof( uint_16 ) );
         if( num_wrote != sizeof( uint_16 ) ) {
             error = RS_WRITE_ERROR;
         } else {
-            num_wrote = RcWrite( handle, &res_id, sizeof( uint_16 ) );
+            num_wrote = RCWRITE( handle, &res_id, sizeof( uint_16 ) );
             if( num_wrote != sizeof( uint_16 ) ) {
                 error = RS_WRITE_ERROR;
             }
@@ -368,7 +367,7 @@ extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code
 
     *err_code = errno;
     if( restab->resources != NULL ) {
-        RcMemFree( restab->resources );
+        RCFREE( restab->resources );
     }
 
     return( error );

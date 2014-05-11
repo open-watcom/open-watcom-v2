@@ -54,11 +54,11 @@ struct MenuItem {
 #include "wresall.h"
 #include "errors.h"
 #include "global.h"
-#include "rcmem.h"
 #include "os2ytab.h"
 #include "semantic.h"
 #include "semmenu.h"
-
+#include "layer0.h"
+#include "rcrtns.h"
 
 #include "reserr.h"
 
@@ -67,7 +67,7 @@ int ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, currhead, sizeof(MenuHeaderOS2) );
+    numwrote = RCWRITE( handle, currhead, sizeof(MenuHeaderOS2) );
     if( numwrote != sizeof(MenuHeaderOS2) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
@@ -126,8 +126,8 @@ FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
     FullMenuOS2       *newmenu;
     FullMenuItemOS2   *newitem;
 
-    newmenu = RcMemMalloc( sizeof(FullMenuOS2) );
-    newitem = RcMemMalloc( sizeof(FullMenuItemOS2) );
+    newmenu = RCALLOC( sizeof(FullMenuOS2) );
+    newitem = RCALLOC( sizeof(FullMenuItemOS2) );
 
     if( newmenu == NULL || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -149,7 +149,7 @@ FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem 
 {
     FullMenuItemOS2     *newitem;
 
-    newitem = RcMemMalloc( sizeof(FullMenuItemOS2) );
+    newitem = RCALLOC( sizeof(FullMenuItemOS2) );
 
     if (newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -249,11 +249,11 @@ static void SemOS2FreeMenuItem( FullMenuItemOS2 *curritem )
     if( curritem->submenu != NULL ) {
         SemOS2FreeSubMenu( curritem->submenu );
         if (curritem->item.ItemText != NULL) {
-            RcMemFree( curritem->item.ItemText );
+            RCFREE( curritem->item.ItemText );
         }
     } else {
         if( curritem->item.ItemText != NULL ) {
-            RcMemFree( curritem->item.ItemText );
+            RCFREE( curritem->item.ItemText );
         }
     }
 }
@@ -270,10 +270,10 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
             SemOS2FreeMenuItem( curritem );
             olditem = curritem;
             curritem = curritem->next;
-            RcMemFree( olditem );
+            RCFREE( olditem );
         }
 
-        RcMemFree( submenu );
+        RCFREE( submenu );
     }
 }
 
@@ -295,7 +295,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_MENU ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
     SemOS2FreeSubMenu( menu );

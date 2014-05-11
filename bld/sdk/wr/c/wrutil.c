@@ -87,7 +87,7 @@ char *WRAPI WRConvertStringFrom( char *_str, char *_from, char *to )
         return( NULL );
     }
     len = strlen( _str ) + WRCountCharsString( str, from ) + 1;
-    new = WRMemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -123,7 +123,7 @@ char *WRAPI WRConvertFrom( char *_str, char from, char to )
     }
 
     len = strlen( _str ) + WRCountChars( str, from ) + 1;
-    new = WRMemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -158,7 +158,7 @@ char *WRAPI WRConvertTo( char *_str, char to, char from )
     }
 
     len = strlen( _str ) + 1;
-    new = WRMemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -196,7 +196,7 @@ char * WRAPI WRConvertStringTo( char *_str, char *to, char *_from )
     }
 
     len = strlen( _str ) + 1;
-    new = WRMemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -346,7 +346,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         return( TRUE );
     }
 
-    new = WRMemAlloc( *len );
+    new = MemAlloc( *len );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -355,7 +355,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
                                     src, -1, (LPWSTR)new, len1 );
         if( len2 != len1 ) {
-            WRMemFree( new );
+            MemFree( new );
             return( FALSE );
         }
     } else {
@@ -392,7 +392,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
         return( TRUE );
     }
 
-    new = WRMemAlloc( len1 );
+    new = MemAlloc( len1 );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -401,7 +401,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
         len2 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1,
                                     new, len1, NULL, NULL );
         if( len2 != len1 ) {
-            WRMemFree( new );
+            MemFree( new );
             return( FALSE );
         }
     } else {
@@ -501,7 +501,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         return( TRUE );
     }
 
-    new = WRMemAlloc( *len );
+    new = MemAlloc( *len );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -542,7 +542,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
         return( TRUE );
     }
 
-    new = WRMemAlloc( len1 );
+    new = MemAlloc( len1 );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -571,7 +571,7 @@ char * WRAPI WRWResIDNameToStr( WResIDName *name )
 
     if( name != NULL ) {
         /* alloc space for the string and a \0 char at the end */
-        string = WRMemAlloc( name->NumChars + 1 );
+        string = MemAlloc( name->NumChars + 1 );
         if( string != NULL ) {
             /* copy the string */
             memcpy( string, name->Name, name->NumChars );

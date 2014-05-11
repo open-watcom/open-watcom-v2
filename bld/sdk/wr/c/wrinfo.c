@@ -77,7 +77,7 @@ WRInfo * WRAPI WRAllocWRInfo( void )
 {
     WRInfo  *info;
 
-    if( (info = (WRInfo *)WRMemAlloc( sizeof( WRInfo ) )) != NULL ) {
+    if( (info = (WRInfo *)MemAlloc( sizeof( WRInfo ) )) != NULL ) {
         memset( info, 0, sizeof( WRInfo ) );
     }
 
@@ -88,25 +88,25 @@ void WRAPI WRFreeWRInfo( WRInfo *info )
 {
     if( info != NULL ) {
         if( info->file_name != NULL ) {
-            WRMemFree( info->file_name );
+            MemFree( info->file_name );
         }
         if( info->save_name != NULL ) {
-            WRMemFree( info->save_name );
+            MemFree( info->save_name );
         }
         if( info->internal_filename != NULL ) {
-            WRMemFree( info->internal_filename );
+            MemFree( info->internal_filename );
         }
         if( info->tmp_file != NULL ) {
             if( WRFileExists( info->tmp_file ) ) {
                 WRDeleteFile( info->tmp_file );
             }
-            WRMemFree( info->tmp_file );
+            MemFree( info->tmp_file );
         }
         if( info->dir != NULL ) {
             WRFreeWResDirData( info->dir );
             WResFreeDir( info->dir );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }
 
@@ -127,7 +127,7 @@ void WRAPI WRFreeWResDirData( WResDir dir )
             lnode = rnode->Head;
             while( lnode != NULL ) {
                 if( lnode->data != NULL ) {
-                    WRMemFree( lnode->data );
+                    MemFree( lnode->data );
                     lnode->data = NULL;
                 }
                 lnode = lnode->Next;

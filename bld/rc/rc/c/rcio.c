@@ -38,7 +38,6 @@
 #endif
 #include "wio.h"
 #include "global.h"
-#include "rcmem.h"
 #include "errors.h"
 #include "exeutil.h"
 #include "preproc.h"
@@ -48,11 +47,11 @@
 #include "errprt.h"
 #include "util.h"
 #include "rcldstr.h"
-#include "iortns.h"
 #include "semantic.h"
 #include "wresdefn.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "rcrtns.h"
 
 
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
@@ -408,7 +407,7 @@ static int OpenResFileInfo( ExeType type )
     }
     Pass2Info.AllResFilesOpen = TRUE;
     if( CmdLineParms.NoResFile ) {
-        Pass2Info.ResFiles = RcMemMalloc( sizeof( ResFileInfo ) );
+        Pass2Info.ResFiles = RCALLOC( sizeof( ResFileInfo ) );
         Pass2Info.ResFiles->name = NULL;
         Pass2Info.ResFiles->IsOpen = FALSE;
         Pass2Info.ResFiles->Handle = NIL_HANDLE;
@@ -416,7 +415,7 @@ static int OpenResFileInfo( ExeType type )
         return( TRUE );
     }
 
-    curfile = RcMemMalloc( sizeof( ExtraRes ) );
+    curfile = RCALLOC( sizeof( ExtraRes ) );
     curfile->next = CmdLineParms.ExtraResFiles;
     CmdLineParms.ExtraResFiles = curfile;
 
@@ -441,7 +440,7 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->Handle = RcOpen( filename, O_RDONLY|O_BINARY );
+    info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY );
     if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( FALSE );
@@ -494,14 +493,14 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
         break;
     }
 
-    RcSeek( info->Handle, 0, SEEK_SET );
+    RCSEEK( info->Handle, 0, SEEK_SET );
     return( TRUE );
 } /* openExeFileInfoRO */
 
 static int openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = RcOpen( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
+    info->Handle = RCOPEN( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
     if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( FALSE );
@@ -518,15 +517,15 @@ static void FreeNEFileInfoPtrs( NEExeInfo * info )
 /*************************************************/
 {
     if( info->Seg.Segments != NULL ) {
-        RcMemFree( info->Seg.Segments );
+        RCFREE( info->Seg.Segments );
         info->Seg.Segments = NULL;
     }
     if( info->Res.Str.StringBlock != NULL ) {
-        RcMemFree( info->Res.Str.StringBlock );
+        RCFREE( info->Res.Str.StringBlock );
         info->Res.Str.StringBlock = NULL;
     }
     if( info->Res.Str.StringList != NULL ) {
-        RcMemFree( info->Res.Str.StringList );
+        RCFREE( info->Res.Str.StringList );
         info->Res.Str.StringList = NULL;
     }
 } /* FreeNEFileInfoPtrs */
@@ -535,7 +534,7 @@ static void FreePEFileInfoPtrs( PEExeInfo * info )
 /************************************************/
 {
     if( info->Objects != NULL ) {
-        RcMemFree( info->Objects );
+        RCFREE( info->Objects );
     }
 }
 
@@ -543,13 +542,13 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
 /***********************************************/
 {
     if( info->Objects != NULL ) {
-        RcMemFree( info->Objects );
+        RCFREE( info->Objects );
     }
     if( info->Pages != NULL ) {
-        RcMemFree( info->Pages );
+        RCFREE( info->Pages );
     }
     if( info->Res.resources != NULL ) {
-        RcMemFree( info->Res.resources );
+        RCFREE( info->Res.resources );
     }
 }
 
@@ -565,7 +564,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 //    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
-        RcClose( old->Handle );
+        RCCLOSE( old->Handle );
         old->IsOpen = FALSE;
     }
     switch( old->Type ) {
@@ -584,7 +583,7 @@ extern void ClosePass2FilesAndFreeMem( void )
     }
 
     if( tmp->IsOpen ) {
-        RcClose( tmp->Handle );
+        RCCLOSE( tmp->Handle );
         tmp->IsOpen = FALSE;
     }
     switch( tmp->Type ) {
@@ -611,7 +610,7 @@ extern int RcPass2IoInit( void )
     int     tmpexe_exists;
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
-    Pass2Info.IoBuffer = RcMemMalloc( IO_BUFFER_SIZE );
+    Pass2Info.IoBuffer = RCALLOC( IO_BUFFER_SIZE );
     MakeTmpInSameDir( CmdLineParms.OutExeFileName, Pass2Info.TmpFileName,
                             "tmp" );
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName,
@@ -639,7 +638,7 @@ extern int RcPass2IoInit( void )
     }
 
     if( !noerror ) {
-        RcMemFree( Pass2Info.IoBuffer );
+        RCFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
         ClosePass2FilesAndFreeMem();
         if( tmpexe_exists ) {
@@ -656,7 +655,7 @@ extern void RcPass2IoShutdown( int noerror )
 {
     ClosePass2FilesAndFreeMem();
     if( Pass2Info.IoBuffer != NULL ) {
-        RcMemFree( Pass2Info.IoBuffer );
+        RCFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
@@ -712,7 +711,7 @@ FileStack InStack;
 extern void RcIoTextInputInit( void )
 /***********************************/
 {
-    InStack.Buffer = RcMemMalloc( IO_BUFFER_SIZE );
+    InStack.Buffer = RCALLOC( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
 } /* RcIoTextInputInit */
@@ -721,7 +720,7 @@ extern int RcIoTextInputShutdown( void )
 /**************************************/
 {
     if( InStack.Buffer != NULL ) {
-        RcMemFree( InStack.Buffer );
+        RCFREE( InStack.Buffer );
         InStack.Buffer = NULL;
         InStack.BufferSize = 0;
         if( IsEmptyFileStack( InStack ) ) {
@@ -746,7 +745,7 @@ static int OpenPhysicalFile( PhysFileInfo * phys )
             return( TRUE );
         }
         phys->IsOpen = TRUE;
-        if( RcSeek( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
+        if( RCSEEK( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( TRUE );
         }
@@ -774,7 +773,7 @@ static void SetPhysFileOffset( FileStack * stack )
     phys = &(stack->Current->Physical);
 
     charsinbuff = stack->BufferSize - (stack->NextChar - stack->Buffer);
-    phys->Offset = RcTell( phys->Handle ) - charsinbuff;
+    phys->Offset = RCTELL( phys->Handle ) - charsinbuff;
 } /* SetPhysFileOffset */
 
 static int ReadBuffer( FileStack * stack )
@@ -791,7 +790,7 @@ static int ReadBuffer( FileStack * stack )
         if( error ) return( TRUE );
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = RcRead( phys->Handle, stack->Buffer, stack->BufferSize );
+        numread = RCREAD( phys->Handle, stack->Buffer, stack->BufferSize );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -839,7 +838,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        RcClose( phys->Handle );
+        RCCLOSE( phys->Handle );
         phys->IsOpen = FALSE;
     }
 } /* ClosePhysicalFile */
@@ -1003,7 +1002,7 @@ WResFileID RcIoOpenInput( char * filename, int flags, ... )
         perms = 0;
     }
 
-    handle = RcOpen( filename, flags, perms );
+    handle = RCOPEN( filename, flags, perms );
 
     if( handle == NIL_HANDLE && errno == EMFILE ) {
         /* set currfile to be the first (not before first) entry */
@@ -1013,7 +1012,7 @@ WResFileID RcIoOpenInput( char * filename, int flags, ... )
         while( currfile < InStack.Current && handle == NIL_HANDLE && errno == EMFILE ) {
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
-                handle = RcOpen( filename, flags, perms );
+                handle = RCOPEN( filename, flags, perms );
             }
             currfile++;
        }

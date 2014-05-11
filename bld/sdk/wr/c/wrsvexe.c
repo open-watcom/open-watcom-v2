@@ -64,8 +64,6 @@
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-// this is a global eternal variable from the resource compiler
-extern HANDLE_INFO           Instance;
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -215,7 +213,7 @@ int WRSaveResourceToEXE( WRInfo *info, int backup, WRFileType ttype )
 
     if( tmp_res != NULL ) {
         WRDeleteFile( tmp_res );
-        WRMemFree( tmp_res );
+        MemFree( tmp_res );
     }
 
     if( sname != NULL ) {
@@ -228,5 +226,5 @@ int WRSaveResourceToEXE( WRInfo *info, int backup, WRFileType ttype )
 
 void WRInitRcGlobal( HINSTANCE inst )
 {
-    Instance.inst = inst;
+    inst = inst;
 }

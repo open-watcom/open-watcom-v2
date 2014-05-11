@@ -63,7 +63,7 @@ extern void PrintUint16Flags( uint_16 flag, char * flagonlist[],
                 fputc( '|', stdout );
                 curcol ++;
             }
-            curcol += strlen( printstr );
+            curcol += (unsigned)strlen( printstr );
             if( curcol > COL_MAX ) {
                 fputc( '\n', stdout );
                 fprintf( stdout, "%*s", column - 1, "" );

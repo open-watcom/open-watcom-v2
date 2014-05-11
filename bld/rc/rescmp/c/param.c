@@ -108,7 +108,7 @@ static void DefaultParms( void )
     CmdLineParms.FileName2[0] = '\0';
 }
 
-bool ScanParams( int argc, const char * argv[] )
+bool ScanParams( int argc, char * argv[] )
 /**********************************************/
 {
     int     switchchar;

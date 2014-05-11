@@ -31,9 +31,9 @@
 
 
 #include <stdio.h>
-#include <io.h>
 #include "wresall.h"
 #include "dmpicogr.h"
+#include "rcrtns.h"
 
 /* from dmpcurgr.c */
 extern void PrintIconCurDirHeader( IconCurDirHeader * head );
@@ -58,7 +58,8 @@ extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
     int                 error;
     int                 currentry;
 
-    prevpos = lseek( handle, offset, SEEK_SET );
+    length = length;
+    prevpos = RCSEEK( handle, offset, SEEK_SET );
 
     error = ResReadIconCurDirHeader( &(head), handle );
     PrintIconCurDirHeader( &head );
@@ -70,7 +71,7 @@ extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
         }
     }
 
-    lseek( handle, prevpos, SEEK_SET );
+    RCSEEK( handle, prevpos, SEEK_SET );
 
     return( error );
 }

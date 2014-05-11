@@ -33,9 +33,8 @@
 #include "wio.h"
 #include "global.h"
 #include "dbtable.h"
-#include "rcmem.h"
 #include "write.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 typedef struct {
     DBTableHeader       header;
@@ -50,7 +49,7 @@ static RcStatus readDBHeader( WResFileID fp )
 {
     int                 ret;
 
-    ret = RcRead( fp, &charInfo.header, sizeof( DBTableHeader ) );
+    ret = RCREAD( fp, &charInfo.header, sizeof( DBTableHeader ) );
     if( ret != sizeof( DBTableHeader ) ) {
         if( ret == -1 ) {
             return( RS_READ_ERROR );
@@ -72,7 +71,7 @@ static RcStatus readDBRanges( WResFileID fp )
 {
     int                 ret;
 
-    ret = RcRead( fp, &charInfo.begchars, 256 );
+    ret = RCREAD( fp, &charInfo.begchars, 256 );
     if( ret != 256 ) {
         if( ret == -1 ) {
             return( RS_READ_ERROR );
@@ -89,8 +88,8 @@ static RcStatus readDBIndex( WResFileID fp )
     int                 size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
-    charInfo.index = RcMemMalloc( size );
-    ret = RcRead( fp, charInfo.index, size );
+    charInfo.index = RCALLOC( size );
+    ret = RCREAD( fp, charInfo.index, size );
     if( ret != size ) {
         if( ret == -1 ) {
             return( RS_READ_ERROR );
@@ -107,8 +106,8 @@ static RcStatus readDBTable( WResFileID fp )
     int                 size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
-    charInfo.entries = RcMemMalloc( size );
-    ret = RcRead( fp, charInfo.entries, size );
+    charInfo.entries = RCALLOC( size );
+    ret = RCREAD( fp, charInfo.entries, size );
     if( ret != size ) {
         if( ret == -1 ) {
             return( RS_READ_ERROR );
@@ -128,15 +127,20 @@ RcStatus OpenTable( char *fname, char *path )
     _searchenv( fname, "PATH", path );
     if( path[0] == '\0' )
         return( RS_FILE_NOT_FOUND );
-    fp = RcOpen( path, O_RDONLY | O_BINARY );
+    fp = RCOPEN( path, O_RDONLY | O_BINARY );
     if( fp == NIL_HANDLE ) {
         status = RS_OPEN_ERROR;
     }
-    if( status == RS_OK ) status = readDBHeader( fp );
-    if( status == RS_OK ) status = readDBRanges( fp );
-    if( status == RS_OK ) status = readDBIndex( fp );
-    if( status == RS_OK ) status = readDBTable( fp );
-    if( status != RS_OPEN_ERROR ) RcClose( fp );
+    if( status == RS_OK )
+    	status = readDBHeader( fp );
+    if( status == RS_OK )
+    	status = readDBRanges( fp );
+    if( status == RS_OK )
+    	status = readDBIndex( fp );
+    if( status == RS_OK )
+    	status = readDBTable( fp );
+    if( status != RS_OPEN_ERROR )
+    	RCCLOSE( fp );
     if( status == RS_OK ) {
         ConvToUnicode = DBStringToUnicode;
     }
@@ -192,11 +196,11 @@ int DBStringToUnicode( int len, const char *str, char *buf ) {
 void FiniTable( void ) {
 /***********************/
     if( charInfo.index != NULL ) {
-        RcMemFree( charInfo.index );
+        RCFREE( charInfo.index );
         charInfo.index = NULL;
     }
     if( charInfo.entries != NULL ) {
-        RcMemFree( charInfo.entries );
+        RCFREE( charInfo.entries );
         charInfo.entries = NULL;
     }
 }

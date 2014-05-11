@@ -30,17 +30,20 @@
 ****************************************************************************/
 
 
-#include "layer0.h"
-#include "rcrtns.h"
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
+#include "wio.h"
+#include "wrmemi.h"
 
-struct WResRoutines WResRtns = {
-    RCOPEN,
-    RCCLOSE,
-    RCREAD,
-    RCWRITE,
-    RCSEEK,
-    RCTELL,
-    RCALLOC,
-    RCFREE
-};
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       write
+#define RCREAD        read
+#define RCSEEK        lseek
+#define RCTELL        tell
+#define RCALLOC       MemAlloc
+#define RCFREE        MemFree
+#define RCREALLOC     MemRealloc
+
+#endif

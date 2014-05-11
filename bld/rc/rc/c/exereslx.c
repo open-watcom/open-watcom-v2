@@ -34,13 +34,12 @@
 #include "wio.h"
 #include "global.h"
 #include "wrmergdi.h"
-#include "rcmem.h"
 #include "rcstr.h"
 #include "exeutil.h"
 #include "exeobj.h"
 #include "errors.h"
-#include "iortns.h"
 #include "os2res.h"
+#include "rcrtns.h"
 
 extern int RcPadFile( int, long );
 
@@ -80,7 +79,7 @@ static int addRes( LXResTable *res, WResDirWindow wind )
         LXResEntry      *curr_table;
 
         curr_table = res->resources;
-        res->resources = RcMemRealloc( res->resources,
+        res->resources = RCREALLOC( res->resources,
                             (res->res_count + 32) * sizeof( LXResEntry ) );
         if( res->resources == NULL ) {
             res->resources = curr_table;
@@ -238,12 +237,12 @@ extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        seek_rc = RcSeek( exe->Handle, file_offset, SEEK_SET );
+        seek_rc = RCSEEK( exe->Handle, file_offset, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        seek_rc = RcSeek( info->Handle, res_info->Offset, SEEK_SET );
+        seek_rc = RCSEEK( info->Handle, res_info->Offset, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );
 

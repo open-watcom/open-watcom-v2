@@ -64,7 +64,7 @@ WResID *WRCopyWResID( WResID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResID *)WRMemAlloc( len );
+    dest = (WResID *)MemAlloc( len );
 
     if( dest != NULL ) {
         memcpy( dest, src, len );

@@ -103,11 +103,11 @@ int WRLoadBitmapFile( WRInfo *info )
     }
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     if( type != NULL ) {
-        WRMemFree( type );
+        MemFree( type );
     }
 
     return( ok );
@@ -195,15 +195,15 @@ int WRLoadIconFile( WRInfo *info )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     if( tname != NULL ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     if( rname != NULL ) {
-        WRMemFree( rname );
+        MemFree( rname );
     }
 
     if( file != -1 ) {
@@ -295,11 +295,11 @@ int WRLoadCursorFile( WRInfo *info )
     }
 
     if( tname != NULL ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     if( rname != NULL ) {
-        WRMemFree( rname );
+        MemFree( rname );
     }
 
     if( file != -1 ) {
@@ -501,7 +501,7 @@ int WRSaveCursorResource( WRInfo *info, int backup )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( ok );
@@ -559,7 +559,7 @@ int WRSaveIconResource( WRInfo *info, int backup )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( ok );

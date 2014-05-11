@@ -45,6 +45,6 @@ struct ResCmpParams {
     char    FileName2[ _MAX_PATH ];
 };
 
-extern bool ScanParams( int argc, const char * argv[] );
+extern bool ScanParams( int argc, char * argv[] );
 
 #endif

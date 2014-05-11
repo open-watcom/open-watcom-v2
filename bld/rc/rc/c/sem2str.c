@@ -34,9 +34,9 @@
 #include "wresall.h"
 #include "errors.h"
 #include "global.h"
-#include "rcmem.h"
 #include "semantic.h"
 #include "semstr.h"
+#include "rcrtns.h"
 
 
 extern int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
@@ -84,7 +84,7 @@ extern FullStringTable *SemOS2NewStringTable( void )
 {
     FullStringTable     *newtable;
 
-    newtable = RcMemMalloc( sizeof( FullStringTable ) );
+    newtable = RCALLOC( sizeof( FullStringTable ) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -109,10 +109,10 @@ extern void SemOS2FreeStringTable( FullStringTable *oldtable )
         oldblock = currblock;
         currblock = currblock->Next;
 
-        RcMemFree( oldblock );
+        RCFREE( oldblock );
     }
 
-    RcMemFree( oldtable );
+    RCFREE( oldtable );
 } /* SemOS2FreeStringTable */
 
 static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
@@ -135,7 +135,7 @@ static FullStringTableBlock *newStringTableBlock( void )
 {
     FullStringTableBlock        *newblock;
 
-    newblock = RcMemMalloc( sizeof( FullStringTableBlock ) );
+    newblock = RCALLOC( sizeof( FullStringTableBlock ) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;
@@ -320,13 +320,13 @@ extern void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             /* +1 because WResID's can't be 0 */
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemAddResource( name, type, currblock->Flags, loc );
-            RcMemFree( name );
+            RCFREE( name );
         }
 
         tofree = currtable;
         currtable = currtable->next;
         SemOS2FreeStringTable( tofree );
     }
-    RcMemFree( type );
+    RCFREE( type );
     return;
 }

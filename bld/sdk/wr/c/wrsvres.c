@@ -42,6 +42,7 @@
 #include "wrdatai.h"
 #include "wrinfoi.h"
 #include "wresall.h"
+#include "wrmemi.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -65,10 +66,10 @@ static void displayDupMsg( WResID *typeName, WResID *resName )
     }
 
     if( type != NULL ) {
-        WRMemFree( type );
+        MemFree( type );
     }
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 }
 
@@ -142,7 +143,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
              len = UINT16STRLEN;
          }
          len += 2 * UINT16STRLEN + 2 + 1;
-         str = (char *)WRMemAlloc( len );
+         str = (char *)MemAlloc( len );
          if( str == NULL ) {
              return( NULL );
          }
@@ -156,7 +157,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
                       lnode->Info.lang.lang, lnode->Info.lang.sublang );
          }
          name = ResStrToNameOrOrd( str );
-         WRMemFree( str );
+         MemFree( str );
     }
 
     return( name );
@@ -190,10 +191,10 @@ static int WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
             }
         }
         if( mheader.Type != NULL ) {
-            WRMemFree( mheader.Type );
+            MemFree( mheader.Type );
         }
         if( mheader.Name != NULL ) {
-            WRMemFree( mheader.Name );
+            MemFree( mheader.Name );
         }
         if( lnode == rnode->Tail ) {
             break;
@@ -438,7 +439,7 @@ int WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WRe
 
     ok = (src != -1 && dest != -1);
 
-    ok = (ok && (buf = (uint_8 *)WRMemAlloc( CHUNK_SIZE )) != NULL);
+    ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
 
     ok = (ok && lseek( src, offset, SEEK_SET ) != -1);
 
@@ -451,7 +452,7 @@ int WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WRe
     ok = ok && WRWriteResData( dest, (BYTE *)buf, length - size );
 
     if( buf != NULL ) {
-        WRMemFree( buf );
+        MemFree( buf );
     }
 
     return( ok );

@@ -67,7 +67,7 @@ static int getUniStringLength( WResIDName *id, int is32bit )
         if( str != NULL ) {
             len = 0;
             WRmbcs2unicode( str, NULL, &len );
-            WRMemFree( str );
+            MemFree( str );
         } else {
             len = 2;
         }
@@ -125,7 +125,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
         str = WRWResIDNameToStr( name );
         if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
-            WRMemFree( str );
+            MemFree( str );
         }
 
         if( new_str == NULL ) {
@@ -139,7 +139,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
         // write the string
         data = WRCopyString( data, new_str, len - 2 );
 
-        WRMemFree( new_str );
+        MemFree( new_str );
     } else {
         // write the length of the string
         *(uint_8 *)data = name->NumChars;
@@ -190,12 +190,12 @@ int WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
     if( data != NULL && size != NULL ) {
         *size = WRCalcStringBlockSize( block, is32bit );
         if( *size != 0 ) {
-            *data = WRMemAlloc( *size );
+            *data = MemAlloc( *size );
             if( *data != NULL ) {
                 if( WRInitDataFromBlock( block, *data, *size, is32bit ) ) {
                     return( TRUE );
                 } else {
-                    WRMemFree( *data );
+                    MemFree( *data );
                     *data = NULL;
                     *size = 0;
                 }
@@ -244,17 +244,17 @@ int WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data,
             if( is32bit ) {
                 str = NULL;
                 str_len = 0;
-                uni_str = (char *)WRMemAlloc( tlen + 2 );
+                uni_str = (char *)MemAlloc( tlen + 2 );
                 if( uni_str != NULL ) {
                     memcpy( uni_str, text, tlen );
                     uni_str[tlen] = '\0';
                     uni_str[tlen + 1] = '\0';
                     WRunicode2mbcs( uni_str, &str, &str_len );
-                    WRMemFree( uni_str );
+                    MemFree( uni_str );
                 }
             } else {
                 str_len = tlen + 1;
-                str = WRMemAlloc( str_len );
+                str = MemAlloc( str_len );
                 memcpy( str, text, tlen );
                 str[tlen] = '\0';
             }
@@ -297,11 +297,11 @@ int WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int re
             if( !replace ) {
                 continue;
             }
-            WRMemFree( b1->String[i] );
+            MemFree( b1->String[i] );
             b1->String[i] = NULL;
         }
         size = b2->String[i]->NumChars;
-        b1->String[i] = WRMemAlloc( size + sizeof( uint_8 ) );
+        b1->String[i] = MemAlloc( size + sizeof( uint_8 ) );
         if( b1->String[i] == NULL ) {
             return( FALSE );
         }
@@ -344,7 +344,7 @@ int WRAPI WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
     }
 
     if( ok )  {
-        WRMemFree( *s1 );
+        MemFree( *s1 );
         *s1 = new_data;
         *sz1 = new_size;
     }

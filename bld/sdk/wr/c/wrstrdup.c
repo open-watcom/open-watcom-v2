@@ -55,7 +55,7 @@ char *WRStrDup( const char *src )
     char *dest;
 
     if( src != NULL ) {
-        if( (dest = WRMemAlloc( strlen( src ) + 1 )) != NULL ) {
+        if( (dest = MemAlloc( strlen( src ) + 1 )) != NULL ) {
             strcpy( dest, src );
         }
     } else {

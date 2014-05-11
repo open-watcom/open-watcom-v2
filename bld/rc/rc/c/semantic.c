@@ -32,10 +32,10 @@
 #include <stdio.h>      /* remove call for MS format stuff */
 #include "global.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "winytab.h"
 #include "semantic.h"
 #include "tmpctl.h"
+#include "rcrtns.h"
 
 static WResLangType curLang;
 static int          resourceHasLang;
@@ -151,8 +151,8 @@ void SemAddResourceFree( WResID * name, WResID * type, ResMemFlags flags,
 /***********************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
-    RcMemFree( name );
-    RcMemFree( type );
+    RCFREE( name );
+    RCFREE( type );
 }
 
 static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
@@ -186,12 +186,12 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     if (error) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                  LastWresErrStr() );
-        RcMemFree( ms_head.Type );
-        RcMemFree( ms_head.Name );
+        RCFREE( ms_head.Type );
+        RCFREE( ms_head.Name );
         ErrorHasOccured = TRUE;
     } else {
-        RcMemFree( ms_head.Type );
-        RcMemFree( ms_head.Name );
+        RCFREE( ms_head.Type );
+        RCFREE( ms_head.Name );
         tmp_handle = ResOpenFileRO( MSFormatTmpFile );
         if( tmp_handle == NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
@@ -262,12 +262,12 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
         if( !type->IsName && type->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( name );
             RcWarning( ERR_TYPE_GT_7FFF, namestr );
-            RcMemFree( namestr );
+            RCFREE( namestr );
         }
         if( !name->IsName && name->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( name );
             RcWarning( ERR_NAME_GT_7FFF, namestr );
-            RcMemFree( namestr );
+            RCFREE( namestr );
         }
     }
     error = WResAddResource( type, name, flags, loc.start, loc.len,

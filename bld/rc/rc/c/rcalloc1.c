@@ -32,10 +32,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
 #include "errors.h"
-#include "layer0.h" /* Get consistent definitions for TRUE/FALSE */
 #ifdef RCMEM_DEBUG
 #include "errprt.h"
 #endif

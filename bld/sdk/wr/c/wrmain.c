@@ -54,6 +54,7 @@
 #include "wrmaini.h"
 #include "wrdmsgi.h"
 #include "jdlg.h"
+#include "rcrtns.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -86,7 +87,7 @@ static int              ref_count = 0;
 
 
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WRWResMemAlloc, WRWResMemFree );
+WResSetRtns(RCOPEN,RCCLOSE,RCREAD,RCWRITE,RCSEEK,RCTELL,RCALLOC,RCFREE);
 
 #ifdef __NT__
 
@@ -351,7 +352,7 @@ int WRAPI WRSaveResource( WRInfo *info, int backup )
 
     if( tmp != NULL ) {
         ret = ( ret && WRRenameFile( tmp, info->save_name ) );
-        WRMemFree( info->save_name );
+        MemFree( info->save_name );
         info->save_name = tmp;
     }
 
@@ -453,7 +454,7 @@ int WRAPI WRUpdateTmp( WRInfo *info )
         }
     }
 
-    WRMemFree( info->save_name );
+    MemFree( info->save_name );
     info->save_name = tsave;
     info->save_type = ttype;
 
@@ -572,7 +573,7 @@ int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
     }
 
     if( tmp_file != NULL ) {
-        WRMemFree( tmp_file );
+        MemFree( tmp_file );
     }
 
     return( ok );
@@ -695,7 +696,7 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( ok );
@@ -787,7 +788,7 @@ int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_ic
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     if( replace_nixed ) {
@@ -841,11 +842,11 @@ int WQueryMergeStrings( WResID *rname )
     text = WRAllocRCString( WR_REPLACESTR );
 
     if( text != NULL ) {
-        str = (char *)WRMemAlloc( strlen( text ) + 1 + 10 ); // space for 10 digits
+        str = (char *)MemAlloc( strlen( text ) + 1 + 10 ); // space for 10 digits
         if( str != NULL ) {
             sprintf( str, text, rname->ID.Num );
             ret = MessageBox( HWND_DESKTOP, str, title, style );
-            WRMemFree( str );
+            MemFree( str );
         }
         WRFreeRCString( text );
     }
@@ -905,12 +906,12 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         if( !WRMergeStringData( &data, &size, idata->data, idata->size,
                                 WRIs32Bit( info->save_type ), TRUE ) ) {
             if( data != NULL ) {
-                WRMemFree( data );
+                MemFree( data );
             }
             return( FALSE );
         }
         if( idata->data != NULL ) {
-            WRMemFree( idata->data );
+            MemFree( idata->data );
         }
         idata->data = data;
         idata->size = size;

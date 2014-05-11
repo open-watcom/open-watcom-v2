@@ -43,30 +43,31 @@
 
 extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
                     WResLangInfo *lang, WResFileID handle, uint_16 os )
-/**************************************************************/
+/*********************************************************************/
 {
-    bool     error;
+    int     error;
 
+    res = res;
     fprintf( stdout, "\tOffset: 0x%08lx  Length: 0x%08lx\n",
             lang->Offset, lang->Length );
 
     if (type->TypeName.IsName) {
         /* it is not one of the predefined types */
-        error = false;
+        error = FALSE;
     } else {
         switch (type->TypeName.ID.Num) {
         case RT_MENU:
             if( os == WRES_OS_WIN16 ) {
                 error = DumpMenu( lang->Offset, lang->Length, handle );
             } else {
-                error = false;
+                error = FALSE;
             }
             break;
         case RT_DIALOG:
             if( os == WRES_OS_WIN16 ) {
                 error = DumpDialog( lang->Offset, lang->Length, handle );
             } else {
-                error = false;
+                error = FALSE;
             }
             break;
         case RT_GROUP_ICON:
@@ -79,11 +80,11 @@ extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
             if( os == WRES_OS_WIN16 ) {
                 error = DumpString( lang->Offset, lang->Length, handle );
             } else {
-                error = false;
+                error = FALSE;
             }
             break;
         default:
-            error = false;
+            error = FALSE;
             break;
         }
     }

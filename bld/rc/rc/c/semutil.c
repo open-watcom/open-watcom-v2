@@ -32,7 +32,7 @@
 #include <string.h>
 #include "errors.h"
 #include "global.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 
 void ReportCopyError( RcStatus status, int read_msg, char *filename,
@@ -65,14 +65,14 @@ RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
     int     numread;
     long    seekrc;
 
-    seekrc = RcSeek( handle, offset, SEEK_SET );
+    seekrc = RCSEEK( handle, offset, SEEK_SET );
     if (seekrc == -1) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
     while( length > buffsize ) {
-        numread = RcRead( handle, buff, buffsize );
+        numread = RCREAD( handle, buff, buffsize );
         if (numread != buffsize) {
             if( numread == -1 ) {
                 *err_code = errno;
@@ -89,7 +89,7 @@ RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
         }
     }
 
-    numread = RcRead( handle, buff, length );
+    numread = RCREAD( handle, buff, length );
     if( numread != length ) {
         if( numread == -1 ) {
             *err_code = errno;

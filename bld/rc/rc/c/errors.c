@@ -195,14 +195,18 @@ extern void RcFatalError( unsigned int errornum, ... )
         remove( CurrResFile.filename );
         UnregisterTmpFile( CurrResFile.filename );
     }
+#if !defined( WRDLL )
     CloseAllFiles();
+#endif
     PP_Fini();
     RCSuicide( -1 );
 }
 
+#if !defined( WRDLL )
 extern void ErrorInitStatics( void )
 /**********************************/
 {
     memset( rcStrBuf, 0, sizeof( rcStrBuf ) );
     memset( errBuffer, 0, sizeof( errBuffer ) );
 }
+#endif
