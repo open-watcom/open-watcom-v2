@@ -205,7 +205,29 @@ namespace std {
         void splice( iterator it, list &other, iterator first, iterator last );
 
         void reverse( );
+        void unique( );
         void merge( list &other );
+        
+        template< class BinaryPredicate >
+        void unique( BinaryPredicate pred )
+        {
+            iterator first( begin( ) );
+            iterator last ( end( ) );
+
+            if ( first == last )
+                return;
+
+            iterator next( first );
+
+            while ( !(++next == last) )
+            {
+                if ( pred( *first, *next ) )
+                    erase( next );
+                else
+                    first = next;
+                next = first;
+            }
+        }
 
         // sort( )
         // *******
@@ -1020,6 +1042,29 @@ namespace std {
         temp               = sentinel->next;
         sentinel->next     = sentinel->previous;
         sentinel->previous = temp;
+    }
+
+    // unique( )
+    // **********
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::unique( )
+    {
+        iterator first( begin( ) );
+        iterator last ( end( ) );
+
+        if ( first == last )
+            return;
+
+        iterator next( first );
+
+        while ( !(++next == last) )
+        {
+            if ( *first == *next )
+                erase( next );
+            else
+                first = next;
+            next = first;
+        }
     }
 
     // merge( list & )
