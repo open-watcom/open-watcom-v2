@@ -38,6 +38,7 @@
 #include "wresset2.h"
 #include "wresdefn.h"
 #include "loadstr.h"
+#include "wresrtns.h"
 
 #define GET_STR_BUF_LEN 128
 

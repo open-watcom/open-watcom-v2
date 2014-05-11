@@ -32,6 +32,7 @@
 
 #include "layer0.h"
 #include "wres.h"
+#include "wresrtns.h"
 
 void __FreeLangList( WResResNode *curres ) {
 

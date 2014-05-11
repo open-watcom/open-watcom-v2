@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "wres.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 WResDir WResInitDir( void )
 /*************************/

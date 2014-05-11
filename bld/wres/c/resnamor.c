@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "resnamor.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
 /**********************************************************/

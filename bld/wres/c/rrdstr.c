@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "varstr.h"
 #include "read.h"
+#include "wresrtns.h"
 
 char *ResReadString( WResFileID handle, int *strlen )
 /***************************************************/

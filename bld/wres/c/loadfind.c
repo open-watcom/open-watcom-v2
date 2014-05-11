@@ -32,6 +32,7 @@
 #include <string.h>
 #include "wresall.h"
 #include "wresset2.h"
+#include "wresrtns.h"
 
 /* Include patch signature header shared with BPATCH */
 #include "patchsig.h"

@@ -34,6 +34,7 @@
 #include "filefmt.h"
 #include "resaccel.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 int ResWriteAccelEntry( AccelTableEntry *currentry, WResFileID handle )
 /*********************************************************************/

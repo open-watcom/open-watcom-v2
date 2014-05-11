@@ -33,6 +33,7 @@
 #include <string.h>
 #include "wresall.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 
 static WResTypeNode *newTypeNode( const WResID *type )

@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 int WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
 /*********************************************************************/

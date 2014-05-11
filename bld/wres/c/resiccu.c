@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "resiccu.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern int ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID handle )
 /************************************************************************************/

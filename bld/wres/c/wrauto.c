@@ -33,6 +33,7 @@
 #include "wresall.h"
 #include "autodep.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 DepInfo *WResGetAutoDep( const char *fname ) {
 

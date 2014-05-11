@@ -35,6 +35,7 @@
 #include "write.h"
 #include "opcl.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 int WResFileInit( WResFileID handle )
 /***********************************/

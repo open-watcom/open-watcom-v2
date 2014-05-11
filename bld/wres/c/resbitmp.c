@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "resbitmp.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID handle )
 /******************************************************************************/

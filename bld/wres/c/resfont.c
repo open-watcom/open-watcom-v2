@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "resfont.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern int ResWriteFontInfo( FontInfo *info, WResFileID handle )
 /**************************************************************/

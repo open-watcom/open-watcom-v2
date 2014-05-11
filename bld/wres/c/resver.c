@@ -38,6 +38,7 @@
 #include "resver.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode,
                                         uint_8 os, WResFileID handle )

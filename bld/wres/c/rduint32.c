@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern int ResReadUint32( uint_32 * newint, WResFileID handle )
 /*************************************************************/

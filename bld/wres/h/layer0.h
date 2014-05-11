@@ -40,8 +40,6 @@
 #include "bool.h"
 #include "watcom.h"
 
-#include "wresrtns.h"
-
 extern struct WResRoutines WResRtns;
 
 #endif
