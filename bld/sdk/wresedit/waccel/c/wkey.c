@@ -46,6 +46,7 @@
 #include "wkey.h"
 #include "sys_rc.h"
 #include "wresall.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -120,7 +121,7 @@ Bool WHandleGetKeyValue( WAccelEditInfo *einfo, Bool ignore_first )
     }
 
     if( ok ) {
-        text = WAllocRCString( W_SELECTKEY );
+        text = AllocRCString( W_SELECTKEY );
         ok = (text != NULL);
     }
 
@@ -145,7 +146,7 @@ Bool WHandleGetKeyValue( WAccelEditInfo *einfo, Bool ignore_first )
     }
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( ok );

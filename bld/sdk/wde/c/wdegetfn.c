@@ -38,10 +38,10 @@
 #include "wdemain.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wdemem.h"
 #include "wdesdup.h"
 #include "wdectl3d.h"
 #include "wdegetfn.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -128,7 +128,7 @@ char *WdeGetFileFilter( void )
 void WdeFreeFileFilter( void )
 {
     if( WdeFileFilter != NULL ) {
-        WdeMemFree( WdeFileFilter );
+        WRMemFree( WdeFileFilter );
     }
 }
 
@@ -260,7 +260,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     wdeofn.lpstrTitle = wdefntitle;
     wdeofn.Flags = flags;
 #if !defined( __NT__ )
-    wdeofn.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)WdeOpenHookProc, app_inst );
+    wdeofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WdeOpenHookProc, app_inst );
 #endif
 
 #if 0

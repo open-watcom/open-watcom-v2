@@ -40,7 +40,6 @@
 
 #include "wreglbl.h"
 #include "wremain.h"
-#include "wremem.h"
 #include "wrenames.h"
 #include "wregcres.h"
 #include "wreseted.h"
@@ -55,6 +54,7 @@
 #include "wrestr.h"
 #include "wredlg.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wreimage.h"
 #include "wreimg.h"
@@ -181,7 +181,7 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -196,10 +196,10 @@ Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool removing )
     ok = TRUE;
 
     if( !removing ) {
-        text = WREAllocRCString( WRE_ALLSTRINGS );
+        text = AllocRCString( WRE_ALLSTRINGS );
         ok = WREQueryDeleteName( text );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
     }
 
@@ -270,7 +270,7 @@ Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );

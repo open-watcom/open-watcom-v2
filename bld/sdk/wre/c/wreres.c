@@ -47,8 +47,8 @@
 #include "wremain.h"
 #include "wrewait.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wreselft.h"
 #include "wrenames.h"
 #include "wrectl3d.h"
@@ -136,55 +136,55 @@ static void WREMassageFilter( char *filter )
 static void WREFiniStaticVars( void )
 {
     if( WREResUntitled != NULL ) {
-        WREFreeRCString( WREResUntitled );
+        FreeRCString( WREResUntitled );
         WREResUntitled = NULL;
     }
     if( WREResOpenTitle != NULL ) {
-        WREFreeRCString( WREResOpenTitle );
+        FreeRCString( WREResOpenTitle );
         WREResOpenTitle = NULL;
     }
     if( WREResSaveTitle != NULL ) {
-        WREFreeRCString( WREResSaveTitle );
+        FreeRCString( WREResSaveTitle );
         WREResSaveTitle = NULL;
     }
     if( WREResSaveIntoTitle != NULL ) {
-        WREFreeRCString( WREResSaveIntoTitle );
+        FreeRCString( WREResSaveIntoTitle );
         WREResSaveIntoTitle = NULL;
     }
     if( WREResSaveAsTitle != NULL ) {
-        WREFreeRCString( WREResSaveAsTitle );
+        FreeRCString( WREResSaveAsTitle );
         WREResSaveAsTitle = NULL;
     }
     if( WREResFilter != NULL ) {
-        WREFreeRCString( WREResFilter );
+        FreeRCString( WREResFilter );
         WREResFilter = NULL;
     }
     if( WREResSaveMltFilter != NULL ) {
-        WREFreeRCString( WREResSaveMltFilter );
+        FreeRCString( WREResSaveMltFilter );
         WREResSaveMltFilter = NULL;
     }
     if( WRESymSaveFilter != NULL ) {
-        WREFreeRCString( WRESymSaveFilter );
+        FreeRCString( WRESymSaveFilter );
         WRESymSaveFilter = NULL;
     }
     if( WRESymSaveTitle != NULL ) {
-        WREFreeRCString( WRESymSaveTitle );
+        FreeRCString( WRESymSaveTitle );
         WRESymSaveTitle = NULL;
     }
     if( WRESymLoadTitle != NULL ) {
-        WREFreeRCString( WRESymLoadTitle );
+        FreeRCString( WRESymLoadTitle );
         WRESymLoadTitle = NULL;
     }
     if( WREAccelFilter != NULL ) {
-        WREFreeRCString( WREAccelFilter );
+        FreeRCString( WREAccelFilter );
         WREAccelFilter = NULL;
     }
     if( WREMenuFilter != NULL ) {
-        WREFreeRCString( WREMenuFilter );
+        FreeRCString( WREMenuFilter );
         WREMenuFilter = NULL;
     }
     if( WREStringFilter != NULL ) {
-        WREFreeRCString( WREStringFilter );
+        FreeRCString( WREStringFilter );
         WREStringFilter = NULL;
     }
 }
@@ -193,31 +193,31 @@ static Bool WREInitStaticVars( void )
 {
     Bool        ok;
 
-    WREResUntitled = WREAllocRCString( WRE_UNTITLED );
+    WREResUntitled = AllocRCString( WRE_UNTITLED );
     ok = (WREResUntitled != NULL);
 
     if( ok ) {
-        WREResOpenTitle = WREAllocRCString( WRE_OPENPROJECTTITLE );
+        WREResOpenTitle = AllocRCString( WRE_OPENPROJECTTITLE );
         ok = (WREResOpenTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveTitle = WREAllocRCString( WRE_SAVEPROJECTTITLE );
+        WREResSaveTitle = AllocRCString( WRE_SAVEPROJECTTITLE );
         ok = (WREResSaveTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveIntoTitle = WREAllocRCString( WRE_COPYINTOPROJECTTITLE );
+        WREResSaveIntoTitle = AllocRCString( WRE_COPYINTOPROJECTTITLE );
         ok = (WREResSaveIntoTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveAsTitle = WREAllocRCString( WRE_SAVEASPROJECTTITLE );
+        WREResSaveAsTitle = AllocRCString( WRE_SAVEASPROJECTTITLE );
         ok = (WREResSaveAsTitle != NULL);
     }
 
     if( ok ) {
-        WREResFilter = WREAllocRCString( WRE_PROJECTFILTER );
+        WREResFilter = AllocRCString( WRE_PROJECTFILTER );
         ok = (WREResFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREResFilter );
@@ -225,7 +225,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREResSaveMltFilter = WREAllocRCString( WRE_SAVEMLTFILTER );
+        WREResSaveMltFilter = AllocRCString( WRE_SAVEMLTFILTER );
         ok = (WREResSaveMltFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREResSaveMltFilter );
@@ -233,7 +233,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WRESymSaveFilter = WREAllocRCString( WRE_SYMFILTER );
+        WRESymSaveFilter = AllocRCString( WRE_SYMFILTER );
         ok = (WRESymSaveFilter != NULL);
         if( ok ) {
             WREMassageFilter( WRESymSaveFilter );
@@ -241,17 +241,17 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WRESymLoadTitle = WREAllocRCString( WRE_LOADSYMTITLE );
+        WRESymLoadTitle = AllocRCString( WRE_LOADSYMTITLE );
         ok = (WRESymLoadTitle != NULL);
     }
 
     if( ok ) {
-        WRESymSaveTitle = WREAllocRCString( WRE_SAVESYMTITLE );
+        WRESymSaveTitle = AllocRCString( WRE_SAVESYMTITLE );
         ok = (WRESymSaveTitle != NULL);
     }
 
     if( ok ) {
-        WREAccelFilter = WREAllocRCString( WRE_ACCELFILTER );
+        WREAccelFilter = AllocRCString( WRE_ACCELFILTER );
         ok = (WREAccelFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREAccelFilter );
@@ -259,7 +259,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREMenuFilter = WREAllocRCString( WRE_MENUFILTER );
+        WREMenuFilter = AllocRCString( WRE_MENUFILTER );
         ok = (WREMenuFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREMenuFilter );
@@ -267,7 +267,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREStringFilter = WREAllocRCString( WRE_STRINGFILTER );
+        WREStringFilter = AllocRCString( WRE_STRINGFILTER );
         ok = (WREStringFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREStringFilter );
@@ -421,15 +421,15 @@ Bool pleaseOpenFile( UINT msg )
 
     if( msg == ACCEL_PLEASE_OPENME ) {
         filter = WREAccelFilter;
-        title = WREAllocRCString( WRE_OPENACCEL );
+        title = AllocRCString( WRE_OPENACCEL );
         type = (uint_16)RT_ACCELERATOR;
     } else if( msg == MENU_PLEASE_OPENME ) {
         filter = WREMenuFilter;
-        title = WREAllocRCString( WRE_OPENMENU );
+        title = AllocRCString( WRE_OPENMENU );
         type = (uint_16)RT_MENU;
     } else if( msg == STRING_PLEASE_OPENME ) {
         filter = WREStringFilter;
-        title = WREAllocRCString( WRE_OPENSTRING );
+        title = AllocRCString( WRE_OPENSTRING );
         type = (uint_16)RT_STRING;
     }
 
@@ -480,11 +480,11 @@ Bool pleaseOpenFile( UINT msg )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 
     return( ok );
@@ -655,7 +655,7 @@ Bool WREOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -823,10 +823,10 @@ Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
         SendMessage( frame, WM_MDIRESTORE, (WPARAM)res_info->res_win, 0 );
         SendMessage( frame, WM_MDIACTIVATE, (WPARAM)res_info->res_win, 0 );
         file = WREGetQueryName( res_info );
-        text = WREAllocRCString( WRE_SAVEMODIFIEDSYM );
+        text = AllocRCString( WRE_SAVEMODIFIEDSYM );
         ret = MessageBox( res_info->res_win, text, file, style );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
         if( ret == IDYES ) {
             if( res_info->symbol_file == NULL ) {
@@ -864,10 +864,10 @@ Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
         frame = WREGetMDIWindowHandle();
         SendMessage( frame, WM_MDIRESTORE, (WPARAM)res_info->res_win, 0 );
         SendMessage( frame, WM_MDIACTIVATE, (WPARAM)res_info->res_win, 0 );
-        text = WREAllocRCString( WRE_QUERYMODIFIED );
+        text = AllocRCString( WRE_QUERYMODIFIED );
         ret = MessageBox( res_info->res_win, text, WREGetQueryName( res_info ), style );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
         if( ret == IDYES ) {
             return( WRESaveResource( res_info, FALSE ) );
@@ -923,7 +923,7 @@ Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WREMemFree( res_info->info->save_name );
+            WRMemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {
@@ -1078,7 +1078,7 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
         } else {
             WREResCounter++;
             win_title_len = strlen( WREResUntitled ) + 7;
-            win_title = (char *)WREMemAlloc( win_title_len );
+            win_title = (char *)WRMemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WREResUntitled, 0xffff & WREResCounter );
             mdics.szTitle = win_title;
         }
@@ -1119,7 +1119,7 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
     }
 
     if( win_title != NULL ) {
-        WREMemFree( win_title );
+        WRMemFree( win_title );
     }
 
     return( ok );

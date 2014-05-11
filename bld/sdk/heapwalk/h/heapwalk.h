@@ -359,7 +359,7 @@ HWND DisplayLocalHeapInfo( HWND parent );
 /* hwutil.c */
 void SetStaticText( HWND hwnd, int id, char *str );
 void CenterDlg( HWND hwnd );
-int ErrorBox( HWND hwnd, DWORD msgid, UINT type );
+int ErrorBox( HWND hwnd, UINT msgid, UINT type );
 HWND *MakePushWin( HWND hwnd, char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
@@ -373,6 +373,6 @@ void InitializeStringTables( void );
 
 /* hwldstr */
 BOOL InitStringTable( void );
-char *HWAllocRCString( DWORD id );
+char *HWAllocRCString( UINT id );
 void HWFreeRCString( char *str );
-char *HWGetRCString( DWORD msgid );
+char *HWGetRCString( UINT msgid );

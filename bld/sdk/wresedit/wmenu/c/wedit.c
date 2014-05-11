@@ -37,7 +37,6 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wribbon.h"
-#include "wmem.h"
 #include "wmain.h"
 #include "wnewitem.h"
 #include "wdel.h"
@@ -46,6 +45,7 @@
 #include "wsetedit.h"
 #include "wprev.h"
 #include "wclip.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wmsg.h"
 #include "sys_rc.h"
@@ -246,15 +246,15 @@ static Bool WQueryNukePopup( WMenuEditInfo *einfo )
 
     style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_QUERYNUKEPOPUP );
+    text = AllocRCString( W_QUERYNUKEPOPUP );
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -352,7 +352,7 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 }
             }
             if( entry->item->Item.Popup.ItemText ) {
-                WMemFree( entry->item->Item.Popup.ItemText );
+                WRMemFree( entry->item->Item.Popup.ItemText );
             }
         } else {
             // if the item is being changed from a normal item into a popup
@@ -364,11 +364,11 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 entry->preview_popup = (HMENU)NULL;
             }
             if( entry->item->Item.Normal.ItemText ) {
-                WMemFree( entry->item->Item.Normal.ItemText );
+                WRMemFree( entry->item->Item.Normal.ItemText );
             }
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->item->IsPopup = ((flags & MENU_POPUP) != 0);
         if( entry->item->IsPopup ) {
@@ -388,10 +388,10 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         entry->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WMemFree( symbol );
+            WRMemFree( symbol );
         }
         if( text != NULL ) {
-            WMemFree( text );
+            WRMemFree( text );
         }
     }
 
@@ -421,7 +421,7 @@ Bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
         n = WConvertStringFrom( t, "\t\x8", "ta" );
         if( n != NULL ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), n );
-            WMemFree( n );
+            WRMemFree( n );
         } else {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), t );
         }
@@ -440,12 +440,12 @@ Bool WGetEditWindowText( HWND dlg, char **text )
     if( ok ) {
         n = WGetStrFromEdit( GetDlgItem( dlg, IDM_MENUEDTEXT ), NULL );
         if( n != NULL && *n == '\0' ) {
-            WMemFree( n );
+            WRMemFree( n );
             n = NULL;
         }
         *text = WConvertStringTo( n, "\t\x8", "ta" );
         if( n != NULL ) {
-            WMemFree( n );
+            WRMemFree( n );
         }
         ok = (*text != NULL);
     }
@@ -535,7 +535,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WMemFree( *symbol );
+                WRMemFree( *symbol );
                 *symbol = NULL;
                 return( FALSE );
             }
@@ -543,7 +543,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WMemFree( *symbol );
+        WRMemFree( *symbol );
         *symbol = NULL;
     }
 
@@ -729,7 +729,7 @@ Bool WPasteMenuItem( WMenuEditInfo *einfo )
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
@@ -777,7 +777,7 @@ Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut )
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
@@ -792,15 +792,15 @@ static Bool WQueryChangeEntry( WMenuEditInfo *einfo )
 
     style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_CHANGEMODIFIEDMENUITEM );
+    text = AllocRCString( W_CHANGEMODIFIEDMENUITEM );
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {

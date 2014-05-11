@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdedebug.h"
 #include "wdemain.h"
@@ -128,12 +127,12 @@ void WdeFreeFontList( void )
         font_names = (WdeFontNames *)ListElement( flist );
         for( nlist = font_names->family_list; nlist != NULL; nlist = ListNext( nlist ) ) {
             font_data = (WdeFontData *)ListElement( nlist );
-            WdeMemFree( font_data );
+            WRMemFree( font_data );
         }
         if( font_names->family_list != NULL ) {
             ListFree( font_names->family_list );
         }
-        WdeMemFree( font_names );
+        WRMemFree( font_names );
     }
     ListFree( WdeFontList );
 
@@ -141,12 +140,12 @@ void WdeFreeFontList( void )
         font_names = (WdeFontNames *)ListElement( flist );
         for( nlist = font_names->family_list; nlist != NULL; nlist = ListNext( nlist ) ) {
             font_data = (WdeFontData *)ListElement( nlist );
-            WdeMemFree( font_data );
+            WRMemFree( font_data );
         }
         if( font_names->family_list != NULL ) {
             ListFree( font_names->family_list );
         }
-        WdeMemFree( font_names );
+        WRMemFree( font_names );
     }
     ListFree( WdeFontFamiliesList );
 }
@@ -194,7 +193,7 @@ BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
     WdeFontData *font_sibling;
     LIST        *olist;
 
-    font_data = (WdeFontData *)WdeMemAlloc( sizeof( WdeFontData ) );
+    font_data = (WdeFontData *)WRMemAlloc( sizeof( WdeFontData ) );
     if( font_data == NULL ) {
         WdeWriteTrail( "Could not allocate font data" );
         return( FALSE );
@@ -219,7 +218,7 @@ BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
     for( olist = font_element->family_list; olist != NULL; olist = ListNext( olist ) ) {
         font_sibling = ListElement( olist );
         if( font_sibling->pointsize == font_data->pointsize ) {
-            WdeMemFree( font_data );
+            WRMemFree( font_data );
             return( TRUE );
         }
     }
@@ -250,7 +249,7 @@ WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, 
         }
     }
 
-    font_names = (WdeFontNames *)WdeMemAlloc( sizeof( WdeFontNames ) );
+    font_names = (WdeFontNames *)WRMemAlloc( sizeof( WdeFontNames ) );
     if( font_names == NULL ) {
         WdeWriteTrail( "Could not allocate font names structure." );
         return( FALSE );

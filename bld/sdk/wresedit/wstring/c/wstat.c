@@ -36,10 +36,10 @@
 #include <stdio.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "wmain.h"
 #include "wstat.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -86,7 +86,7 @@ Bool WInitStatusLines( HINSTANCE inst )
     lf.lfWeight = FW_BOLD;
     use_default = TRUE;
 
-    status_font = WAllocRCString( W_STATUSFONT );
+    status_font = AllocRCString( W_STATUSFONT );
     if( status_font != NULL ) {
         cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
         if( cp != NULL ) {
@@ -96,7 +96,7 @@ Bool WInitStatusLines( HINSTANCE inst )
             point_size = atoi( cp );
             use_default = FALSE;
         }
-        WFreeRCString( status_font );
+        FreeRCString( status_font );
     }
 
     if( use_default ) {
@@ -144,7 +144,7 @@ void WDestroyStatusLine( WStatBar *wsb )
 {
     if( wsb != NULL ) {
         StatusWndDestroy( wsb->stat );
-        WMemFree( wsb );
+        WRMemFree( wsb );
     }
 }
 
@@ -154,7 +154,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     RECT                rect;
     status_block_desc   sbd;
 
-    wsb = (WStatBar *)WMemAlloc( sizeof( WStatBar ) );
+    wsb = (WStatBar *)WRMemAlloc( sizeof( WStatBar ) );
     if( wsb != NULL ) {
         wsb->stat = StatusWndStart();
         if( wsb->stat == NULL ) {
@@ -206,21 +206,21 @@ Bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
     str2 = NULL;
 
     if( id1 != -1 ) {
-        str1 = WAllocRCString( id1 );
+        str1 = AllocRCString( id1 );
     }
 
     if( id2 != -1 ) {
-        str2 = WAllocRCString( id2 );
+        str2 = AllocRCString( id2 );
     }
 
     ret = WSetStatusText( wsb, str1, str2 );
 
     if( str1 != NULL ) {
-        WFreeRCString( str1 );
+        FreeRCString( str1 );
     }
 
     if( str2 != NULL ) {
-        WFreeRCString( str2 );
+        FreeRCString( str2 );
     }
 
     return( ret );

@@ -39,7 +39,6 @@
 #include "watcom.h"
 #include "wreglbl.h"
 #include "wreres.h"
-#include "wremem.h"
 #include "wrenames.h"
 #include "wreftype.h"
 #include "wrefres.h"

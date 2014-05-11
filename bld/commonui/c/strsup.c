@@ -48,7 +48,7 @@ static HANDLE   curInst;
  *             - the pointer is only valid until the next call to
  *               GetString
  */
-char *GetRCString( DWORD msgid )
+char *GetRCString( MSGID msgid )
 {
     LoadString( curInst, msgid, getStringBuffer, LDSTR_MAX_STR_LEN );
     return( getStringBuffer );
@@ -59,7 +59,7 @@ char *GetRCString( DWORD msgid )
  * AllocRCString - return a pointer to a string from the resource file
  *               - the caller must free the memory
  */
-char *AllocRCString( DWORD id )
+char *AllocRCString( MSGID id )
 {
     char        *ret;
     int         len;
@@ -76,9 +76,9 @@ char *AllocRCString( DWORD id )
 /*
  * CopyRCString - copy a string from the resource file into a buffer
  */
-DWORD CopyRCString( DWORD id, char *buf, DWORD bufsize )
+int CopyRCString( MSGID id, char *buf, int bufsize )
 {
-    DWORD       len;
+    int         len;
 
     len = LoadString( curInst, id, buf, bufsize );
     return( len );

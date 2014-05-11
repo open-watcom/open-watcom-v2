@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wstat.h"
 #include "sys_rc.h"
 #include "wlist.h"

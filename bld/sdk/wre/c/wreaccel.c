@@ -39,7 +39,6 @@
 #include "waccel.h"
 
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wregcres.h"
 #include "wrenames.h"
 #include "wrerenam.h"
@@ -47,6 +46,7 @@
 #include "wrelist.h"
 #include "wrenew.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wredel.h"
 #include "wrestat.h"
@@ -119,7 +119,7 @@ void WRERemoveAccelEditSession( WREAccelSession *session )
         if( session->info != NULL ) {
             WAccFreeAccelInfo( session->info );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 
@@ -132,16 +132,16 @@ WResID *WRECreateAccTitle( void )
     WRENumAccTitles++;
 
     name = NULL;
-    text = WREAllocRCString( WRE_DEFACCELNAME );
+    text = AllocRCString( WRE_DEFACCELNAME );
     if( text != NULL ) {
-        title = (char *)WREMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumAccTitles );
             name = WResIDFromStr( title );
-            WREMemFree( title );
+            WRMemFree( title );
         }
-        WREFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( name );
@@ -192,7 +192,7 @@ Bool WREAddAccelToDir( WRECurrentResInfo *curr )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -205,7 +205,7 @@ Bool WREAddAccelToDir( WRECurrentResInfo *curr )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
@@ -263,7 +263,7 @@ Bool WREEditAccelResource( WRECurrentResInfo *curr )
     }
 
     if( rdata_alloc ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
         curr->lang->data = NULL;
     }
 
@@ -343,7 +343,7 @@ WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )
         WREInsertObject( &WREAccSessions, session );
     } else {
         WAccFreeAccelInfo( session->info );
-        WREMemFree( session );
+        WRMemFree( session );
         session = NULL;
     }
 
@@ -374,7 +374,7 @@ Bool WREGetAccelSessionData( WREAccelSession *session, Bool close )
 
     if( ok && session->info->modified ) {
         if( session->lnode->data != NULL ) {
-            WREMemFree( session->lnode->data );
+            WRMemFree( session->lnode->data );
         }
         session->lnode->data = session->info->data;
         session->lnode->Info.lang = session->info->lang;
@@ -487,7 +487,7 @@ WREAccelSession *WREAllocAccelSession( void )
 {
     WREAccelSession *session;
 
-    session = (WREAccelSession *)WREMemAlloc( sizeof( WREAccelSession ) );
+    session = (WREAccelSession *)WRMemAlloc( sizeof( WREAccelSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREAccelSession ) );

@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wretoolb.h"
 #include "wreftype.h"
 #include "wrenames.h"

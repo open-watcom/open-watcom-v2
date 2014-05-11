@@ -40,8 +40,8 @@
 #include "wreglbl.h"
 #include "wresall.h"
 #include "wre_wres.h"
-#include "wremem.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wreres.h"
 #include "wrestrdp.h"
@@ -135,16 +135,16 @@ WResID *WRECreateDialogTitle( void )
     WRENumDialogTitles++;
 
     name = NULL;
-    text = WREAllocRCString( WRE_DEFDIALOGNAME );
+    text = AllocRCString( WRE_DEFDIALOGNAME );
     if( text != NULL ) {
-        title = (char *)WREMemAlloc( strlen( text ) + 10 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 10 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumDialogTitles );
             name = WResIDFromStr( title );
-            WREMemFree( title );
+            WRMemFree( title );
         }
-        WREFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( name );
@@ -194,7 +194,7 @@ Bool WREAddDialogToDir( WRECurrentResInfo *curr )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -207,7 +207,7 @@ Bool WREAddDialogToDir( WRECurrentResInfo *curr )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
@@ -342,7 +342,7 @@ Bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
     }
 
     *size = sizeof( Bool );
-    *data = WREMemAlloc( *size );
+    *data = WRMemAlloc( *size );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -371,7 +371,7 @@ Bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
     }
 
     *size = session->info.data_size;
-    *data = WREMemAlloc( *size );
+    *data = WRMemAlloc( *size );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -414,11 +414,11 @@ Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -444,7 +444,7 @@ Bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
 
     if( ok ) {
         if( session->lnode->data != NULL ) {
-            WREMemFree( session->lnode->data );
+            WRMemFree( session->lnode->data );
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
@@ -581,7 +581,7 @@ WREDialogSession *WREAllocDialogSession( void )
 {
     WREDialogSession *session;
 
-    session = (WREDialogSession *)WREMemAlloc( sizeof( WREDialogSession ) );
+    session = (WREDialogSession *)WRMemAlloc( sizeof( WREDialogSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREDialogSession ) );
@@ -647,12 +647,12 @@ void WREFreeEditSession( WREDialogSession *session )
 {
     if( session != NULL ) {
         if( session->info.file_name != NULL ) {
-            WREMemFree( session->info.file_name );
+            WRMemFree( session->info.file_name );
         }
         if( session->info.res_name != NULL ) {
-            WREMemFree( session->info.res_name );
+            WRMemFree( session->info.res_name );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 

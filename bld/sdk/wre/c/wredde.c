@@ -39,7 +39,6 @@
 #include "wreres.h"
 #include "wregcres.h"
 #include "wresrvr.h"
-#include "wremem.h"
 #include "wredlg.h"
 #include "wredde.h"
 #include "wreimg.h"
@@ -128,13 +127,13 @@ Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    *data = WREMemAlloc( dde_size );
+    *data = WRMemAlloc( dde_size );
     if( *data == NULL ) {
         return( FALSE );
     }
 
     if( dde_size != DdeGetData( hData, *data, dde_size, 0 ) ) {
-        WREMemFree( *data );
+        WRMemFree( *data );
         return( FALSE );
     }
 
@@ -417,7 +416,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
             if( ok ) {
                 ret = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hsz2, wFmt, 0 );
             }
-            WREMemFree( data );
+            WRMemFree( data );
         }
         break;
 

@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wstring.h"
 #include "winfo.h"
 
@@ -62,7 +61,7 @@ WStringInfo *WRESEAPI WStrAllocStringInfo( void )
 {
     WStringInfo *info;
 
-    info = (WStringInfo *)WMemAlloc( sizeof( WStringInfo ) );
+    info = (WStringInfo *)WRMemAlloc( sizeof( WStringInfo ) );
 
     memset( info, 0, sizeof( WStringInfo ) );
 
@@ -77,16 +76,16 @@ void WRESEAPI WStrFreeStringInfo( WStringInfo *info )
         node = info->tables;
         while( node != NULL ) {
             if( node->block_name != NULL ) {
-                WMemFree( node->block_name );
+                WRMemFree( node->block_name );
             }
             if( node->data != NULL ) {
-                WMemFree( node->data );
+                WRMemFree( node->data );
             }
             node = node->next;
         }
         if( info->file_name != NULL ) {
-            WMemFree( info->file_name );
+            WRMemFree( info->file_name );
         }
-        WMemFree( info );
+        WRMemFree( info );
     }
 }

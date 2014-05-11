@@ -51,8 +51,8 @@ typedef struct logconfig {
     char                curname[LOG_MAX_FNAME];
     BOOL                logging;
     BOOL                paused;
-    char                type;
-    char                def_action;
+    UINT                type;
+    UINT                def_action;
     BOOL                query_for_name;
 } LogConfig;
 

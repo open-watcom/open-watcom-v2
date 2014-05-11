@@ -36,6 +36,7 @@
 #include "sys_rc.h"
 #include "wedit.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "w_menu.h"
 
@@ -146,7 +147,7 @@ Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     width = 206;
     height = 63;
 
-    title = WAllocRCString( W_PREVIEWMENU );
+    title = AllocRCString( W_PREVIEWMENU );
 
     einfo->preview_window = CreateWindow( WPrevClass, title,
                                           WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
@@ -154,7 +155,7 @@ Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
                                           (HMENU)NULL, inst, einfo );
 
     if( title != NULL ) {
-        WFreeRCString( title );
+        FreeRCString( title );
     }
 
     if( einfo->preview_window == (HWND)NULL ) {

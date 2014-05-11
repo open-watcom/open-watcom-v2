@@ -36,11 +36,11 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "winst.h"
 #include "wclip.h"
 #include "rcstr.gh"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -103,7 +103,7 @@ Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *data = WMemAlloc( *dsize );
+        *data = WRMemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -113,7 +113,7 @@ Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
 
     if( !ok ) {
         if( *data != NULL ) {
-            WMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
             *dsize = 0;
         }

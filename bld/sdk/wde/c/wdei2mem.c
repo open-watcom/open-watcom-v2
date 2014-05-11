@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdecsize.h"
 #include "wde_wres.h"
@@ -340,7 +339,7 @@ Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
     }
 
     if( ok ) {
-        *mem = WdeMemAlloc( memsize );
+        *mem = WRMemAlloc( memsize );
         ok = (*mem != NULL);
     }
 
@@ -387,7 +386,7 @@ Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
         }
     } else {
         if( mem != NULL && *mem != NULL ) {
-            WdeMemFree( *mem );
+            WRMemFree( *mem );
             *mem = NULL;
         }
     }
@@ -412,7 +411,7 @@ WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, Bool is32bit )
 
     if( ok ) {
         d = data;
-        dbi = (WdeDialogBoxInfo *)WdeMemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dbi = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = (dbi != NULL);
     }
 
@@ -744,7 +743,7 @@ ControlClass *WdeMem2ControlClass( uint_8 **_data, Bool is32bit )
         }
     }
 
-    new = (ControlClass *)WdeMemAlloc( len );
+    new = (ControlClass *)WRMemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -787,7 +786,7 @@ char *WdeMem2String( uint_8 **_data, Bool is32bit )
         len = strlen( data ) + 1;
     }
 
-    new = WdeMemAlloc( len );
+    new = WRMemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }

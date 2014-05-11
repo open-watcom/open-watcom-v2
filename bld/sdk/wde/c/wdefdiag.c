@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include <mbstring.h>
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdeopts.h"
 #include "wdeactn.h"
@@ -349,7 +348,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
     Bool                is32bitEx;
     WdeDialogBoxHeader  *dh;
 
-    info = (WdeDialogBoxInfo *)WdeMemAlloc( sizeof( WdeDialogBoxInfo ) );
+    info = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
 
     if( info == NULL ) {
         WdeWriteTrail( "WdeDBIFromObject: WdeResInfo alloc failed!" );
@@ -362,7 +361,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
 
     if( info->dialog_header == NULL ) {
         WdeWriteTrail( "WdeDBIFromObject: CopyDBH failed!" );
-        WdeMemFree( info );
+        WRMemFree( info );
         return( NULL );
     }
 
@@ -439,12 +438,12 @@ WResID *WdeCreateDialogTitle( void )
     name = NULL;
     text = WdeAllocRCString( WDE_DEFDIALOGNAME );
     if( text != NULL ) {
-        title = (char *)WdeMemAlloc( strlen( text ) + 10 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 10 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, NumDialogTitles );
             name = WResIDFromStr( title );
-            WdeMemFree( title );
+            WRMemFree( title );
         }
         WdeFreeRCString( text );
     }
@@ -723,7 +722,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
         return( NULL );
     }
 
-    new = (WdeDialogObject *)WdeMemAlloc( sizeof( WdeDialogObject ) );
+    new = (WdeDialogObject *)WRMemAlloc( sizeof( WdeDialogObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeDialogCreater: Dialog object malloc failed" );
         return( new );
@@ -778,7 +777,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     if( !Forward( new->parent, GET_WINDOW_HANDLE, &new->parent_handle, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreater: Couldn't get parent window handle!" );
         WdeFreeDialogBoxHeader( &new->dialog_info );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -793,14 +792,14 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     if( new->o_item == NULL ) {
         WdeWriteTrail( "WdeDialogCreater: OITEM not created!" );
         WdeFreeDialogBoxHeader( &new->dialog_info );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->parent, GET_FONT, &new->font, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreater: Couldn't get parent font!" );
         WdeFreeDialogBoxHeader( &new->dialog_info );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -927,7 +926,7 @@ BOOL WdeDialogResolveSymbol( WdeDialogObject *obj, Bool *b, Bool *from_id )
                                   (WdeHashValue)obj->name->ID.Num );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
-                    WdeMemFree( obj->symbol );
+                    WRMemFree( obj->symbol );
                 }
                 obj->symbol = vp;
                 WdeDialogModified( obj );
@@ -939,7 +938,7 @@ BOOL WdeDialogResolveSymbol( WdeDialogObject *obj, Bool *b, Bool *from_id )
                     obj->name->ID.Num = (uint_16)val;
                     WdeDialogModified( obj );
                 } else {
-                    WdeMemFree( obj->symbol );
+                    WRMemFree( obj->symbol );
                     obj->symbol = NULL;
                 }
             }
@@ -974,7 +973,7 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, Bool *b, Bool *from_id )
                               (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
         if( vp != NULL ) {
             if( obj->helpsymbol != NULL ) {
-                WdeMemFree( obj->helpsymbol );
+                WRMemFree( obj->helpsymbol );
             }
             obj->helpsymbol = vp;
             obj->dialog_info->helpsymbol = WdeStrDup( obj->helpsymbol );
@@ -988,7 +987,7 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, Bool *b, Bool *from_id )
                 SETHDR_HELPID( obj->dialog_info, val );
                 WdeDialogModified( obj );
             } else {
-                WdeMemFree( obj->helpsymbol );
+                WRMemFree( obj->helpsymbol );
                 obj->helpsymbol = NULL;
             }
         }
@@ -1012,7 +1011,7 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
 
     if( in->d.caption ) {
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
-            WdeMemFree( GETHDR_CAPTION( obj->dialog_info ) );
+            WRMemFree( GETHDR_CAPTION( obj->dialog_info ) );
         }
         SETHDR_CAPTION( obj->dialog_info, in->d.caption );
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
@@ -1043,7 +1042,7 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
     }
 
     if( old_symbol != NULL ) {
-        WdeMemFree( old_symbol );
+        WRMemFree( old_symbol );
     }
 
     if( old_name ) {
@@ -1075,13 +1074,13 @@ Bool WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
 
     MenuName = WdeResNameOrOrdinalToStr( GETHDR_MENUNAME( obj->dialog_info ), 10 );
     if( MenuName != NULL && *MenuName == '\0' ) {
-        WdeMemFree( MenuName );
+        WRMemFree( MenuName );
         MenuName = NULL;
     }
 
     ClassName = WdeResNameOrOrdinalToStr( GETHDR_CLASSNAME( obj->dialog_info ), 10 );
     if( ClassName != NULL && *ClassName == '\0' ) {
-        WdeMemFree( ClassName );
+        WRMemFree( ClassName );
         ClassName = NULL;
     }
 
@@ -1116,11 +1115,11 @@ Bool WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
     }
 
     if( MenuName != NULL ) {
-        WdeMemFree( MenuName );
+        WRMemFree( MenuName );
     }
 
     if( ClassName != NULL ) {
-        WdeMemFree( ClassName );
+        WRMemFree( ClassName );
     }
 
     if( dialog_template == NULL ) {
@@ -1513,11 +1512,11 @@ void WdeFreeDialogObject( WdeDialogObject *obj  )
     }
 
     if( obj->symbol != NULL ) {
-        WdeMemFree( obj->symbol );
+        WRMemFree( obj->symbol );
     }
 
     if( obj->file_name != NULL ) {
-        WdeMemFree( obj->file_name );
+        WRMemFree( obj->file_name );
     }
 
 //  if( obj->helpname ) {
@@ -1525,10 +1524,10 @@ void WdeFreeDialogObject( WdeDialogObject *obj  )
 //  }
 
     if( obj->helpsymbol != NULL ) {
-        WdeMemFree( obj->helpsymbol );
+        WRMemFree( obj->helpsymbol );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 }
 
 Bool WdeDialogCreateWindow( WdeDialogObject *obj, Bool *show, void *p2 )
@@ -2017,7 +2016,7 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     WdeWriteInfo( &is );
 
     if( is.symbol != NULL ) {
-        WdeMemFree( is.symbol );
+        WRMemFree( is.symbol );
     }
 }
 
@@ -2438,7 +2437,7 @@ Bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
         return( FALSE );
     }
 
-    *new = (WdeDialogObject *)WdeMemAlloc( sizeof( WdeDialogObject ) );
+    *new = (WdeDialogObject *)WRMemAlloc( sizeof( WdeDialogObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeDialogCopyObject: Object malloc failed" );
@@ -2569,7 +2568,7 @@ Bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
     }
 
     if( obj->mode == WdeSelect ) {
-        sol = (WdeSetOrderLists *)WdeMemAlloc( sizeof( WdeSetOrderLists ) );
+        sol = (WdeSetOrderLists *)WRMemAlloc( sizeof( WdeSetOrderLists ) );
         if( sol == NULL ) {
             return( FALSE );
         }
@@ -2606,7 +2605,7 @@ Bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
         WdeFreeOrderedList( obj->ochildren );
         obj->ochildren = sol->newlist;
         obj->mode = WdeSelect;
-        WdeMemFree( sol );
+        WRMemFree( sol );
         GetOffset( &origin );
         Location( (OBJPTR)obj, &rect );
         OffsetRect( &rect, -origin.x, -origin.y );
@@ -2644,19 +2643,19 @@ Bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
         style |= WS_CLIPSIBLINGS | WS_CHILD;
         //MenuName = WdeResNameOrOrdinalToStr( GETHDR_MENUNAME( dialog_header ), 10 );
         //if( MenuName != NULL && *MenuName == '\0' ) {
-        //    WdeMemFree( MenuName );
+        //    WRMemFree( MenuName );
         //    MenuName = NULL;
         //}
         ClassName = WdeResNameOrOrdinalToStr( GETHDR_CLASSNAME( dialog_header ), 10 );
         if( ClassName != NULL && *ClassName == '\0' ) {
-            WdeMemFree( ClassName );
+            WRMemFree( ClassName );
             ClassName = NULL;
         }
         ok = (ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )));
         if( !ok ) {
             //WdeDisplayErrorMsg( WDE_UNDEFINEDCLASS );
             WdeSetStatusByID( -1, WDE_UNDEFINEDCLASS );
-            WdeMemFree( ClassName );
+            WRMemFree( ClassName );
             ClassName = NULL;
             ok = TRUE;
         }
@@ -2692,11 +2691,11 @@ Bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     }
 
     if( MenuName != NULL ) {
-        WdeMemFree( MenuName );
+        WRMemFree( MenuName );
     }
 
     if( ClassName != NULL ) {
-        WdeMemFree( ClassName );
+        WRMemFree( ClassName );
     }
 
     return( ok );
@@ -2941,16 +2940,16 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( vp != NULL ) {
         if( mod ) {
             if( GETHDR_CAPTION( obj->dialog_info ) ) {
-                WdeMemFree( GETHDR_CAPTION( obj->dialog_info ) );
+                WRMemFree( GETHDR_CAPTION( obj->dialog_info ) );
             }
             if( WdeIsStrSpace( vp ) ) {
                 SETHDR_CAPTION( obj->dialog_info, NULL );
-                WdeMemFree( vp );
+                WRMemFree( vp );
             } else {
                 SETHDR_CAPTION( obj->dialog_info, vp );
             }
         } else {
-            WdeMemFree( vp );
+            WRMemFree( vp );
         }
     }
 
@@ -2958,14 +2957,14 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeGetDefineObjectHelpSymbolInfo( o_info, hDlg );
 
     if( GETHDR_FONTNAME( obj->dialog_info ) ) {
-        WdeMemFree( GETHDR_FONTNAME( obj->dialog_info ) );
+        WRMemFree( GETHDR_FONTNAME( obj->dialog_info ) );
         SETHDR_FONTNAME( obj->dialog_info, NULL );
     }
 
     vp = WdeGetStrFromCombo( hDlg, IDB_FONTNAME );
     if( vp != NULL ) {
         if( WdeIsStrSpace( vp ) ) {
-            WdeMemFree( vp );
+            WRMemFree( vp );
         } else {
             SETHDR_FONTNAME( obj->dialog_info, vp );
         }
@@ -2984,11 +2983,11 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     rname = WdeGetResNameOrFromEdit( hDlg, IDB_MENU, &mod );
     if( mod && rname != NULL ) {
         if( GETHDR_MENUNAME( obj->dialog_info ) ) {
-            WdeMemFree( GETHDR_MENUNAME( obj->dialog_info ) );
+            WRMemFree( GETHDR_MENUNAME( obj->dialog_info ) );
         }
         SETHDR_MENUNAME( obj->dialog_info, rname );
         if( rname->ord.fFlag != 0xff && WdeIsStrSpace( rname->name ) ) {
-            WdeMemFree( rname );
+            WRMemFree( rname );
             SETHDR_MENUNAME( obj->dialog_info, NULL );
         }
     }
@@ -2997,11 +2996,11 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     rname = WdeGetResNameOrFromEdit( hDlg, IDB_CLASS, &mod );
     if( mod && rname != NULL ) {
         if( GETHDR_CLASSNAME( obj->dialog_info ) ) {
-            WdeMemFree( GETHDR_CLASSNAME( obj->dialog_info ) );
+            WRMemFree( GETHDR_CLASSNAME( obj->dialog_info ) );
         }
         SETHDR_CLASSNAME( obj->dialog_info, rname );
         if( rname->ord.fFlag != 0xff && WdeIsStrSpace( rname->name ) ) {
-            WdeMemFree( rname );
+            WRMemFree( rname );
             SETHDR_CLASSNAME( obj->dialog_info, NULL );
         }
     }

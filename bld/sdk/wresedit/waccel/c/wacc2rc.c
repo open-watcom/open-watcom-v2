@@ -36,7 +36,6 @@
 
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wvk2str.h"
 #include "wacc2rc.h"
 #include "wresall.h"
@@ -77,7 +76,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
         return( TRUE );
     }
 
-    *text = (char *)WMemAlloc( tlen + 1 );
+    *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( FALSE );
     }
@@ -151,7 +150,7 @@ static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp
     }
 
     if( flagtext != NULL ) {
-        WMemFree( flagtext );
+        WRMemFree( flagtext );
     }
 
     return( ok );
@@ -200,7 +199,7 @@ Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
     }
 
     if( rname ) {
-        WMemFree( rname );
+        WRMemFree( rname );
     }
 
     if( fp ) {

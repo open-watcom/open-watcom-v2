@@ -34,8 +34,8 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wsetedit.h"
 #include "wedit.h"
@@ -74,16 +74,16 @@ static Bool WQueryReplaceString( HWND parent )
     char        *text;
     int         ret;
 
-    text = WAllocRCString( W_QUERYREPLACESTRING );
-    title = WAllocRCString( W_INSERTNEWSTRING );
+    text = AllocRCString( W_QUERYREPLACESTRING );
+    title = AllocRCString( W_INSERTNEWSTRING );
 
     ret = MessageBox( parent, text, title, MB_APPLMODAL | MB_ICONEXCLAMATION | MB_YESNO );
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
 
     if( title != NULL ) {
-        WFreeRCString( title );
+        FreeRCString( title );
     }
 
     return( ret == IDYES );
@@ -110,7 +110,7 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
             einfo->info->modified = TRUE;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
-                WMemFree( block->block.String[id & 0xf] );
+                WRMemFree( block->block.String[id & 0xf] );
                 block->block.String[id & 0xf] = WResIDNameFromStr( text );
                 block->symbol[id & 0xf] = WStrDup( symbol );
                 einfo->info->modified = TRUE;
@@ -206,11 +206,11 @@ Bool WInsertStringEntry( WStringEditInfo *einfo )
     }
 
     if( symbol != NULL ) {
-        WMemFree( symbol );
+        WRMemFree( symbol );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
@@ -276,7 +276,7 @@ Bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
         ++idlen;
         idtext[idlen] = '\0';
         tlen = strlen( text );
-        lbtext = (char *)WMemAlloc( tlen + idlen + 4 );
+        lbtext = (char *)WRMemAlloc( tlen + idlen + 4 );
         ok = (lbtext != NULL);
     }
 
@@ -292,15 +292,15 @@ Bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
     }
 
     if( n != NULL ) {
-        WMemFree( n );
+        WRMemFree( n );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     if( lbtext != NULL ) {
-        WMemFree( lbtext );
+        WRMemFree( lbtext );
     }
 
     return( ok );

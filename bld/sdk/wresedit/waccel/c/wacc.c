@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "waccel.h"
 #include "winfo.h"
 #include "wribbon.h"
@@ -71,7 +70,7 @@ WAccelEditInfo *WAllocAccelEInfo( void )
 {
     WAccelEditInfo *einfo;
 
-    einfo = (WAccelEditInfo *)WMemAlloc( sizeof( WAccelEditInfo ) );
+    einfo = (WAccelEditInfo *)WRMemAlloc( sizeof( WAccelEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WAccelEditInfo ) );
@@ -105,9 +104,9 @@ void WFreeAccelEInfo( WAccelEditInfo *einfo )
             einfo->win = (HWND)NULL;
         }
         if( einfo->file_name != NULL ) {
-            WMemFree( einfo->file_name );
+            WRMemFree( einfo->file_name );
         }
-        WMemFree( einfo );
+        WRMemFree( einfo );
     }
 }
 
@@ -116,7 +115,7 @@ void WMakeDataFromAccelTable( WAccelTable *tbl, void **data, int *size )
     if( data != NULL && size != NULL ) {
         *size = WCalcAccelTableSize( tbl );
         if( *size != 0 ) {
-            *data = WMemAlloc( *size );
+            *data = WRMemAlloc( *size );
             if( *data != NULL ) {
                 WInitDataFromAccelTable( tbl, *data );
             } else {
@@ -318,9 +317,9 @@ Bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
             tbl->first_entry = entry->next;
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
-        WMemFree( entry );
+        WRMemFree( entry );
         tbl->num--;
     }
 
@@ -333,7 +332,7 @@ WAccelTable *WAllocAccelTable( int num )
     WAccelEntry *entry;
     int         i;
 
-    tbl = (WAccelTable *)WMemAlloc( sizeof( WAccelTable ) );
+    tbl = (WAccelTable *)WRMemAlloc( sizeof( WAccelTable ) );
 
     if( tbl == NULL ) {
         return( NULL );
@@ -345,14 +344,14 @@ WAccelTable *WAllocAccelTable( int num )
         entry = NULL;
         for( i = 0; i < num; i++ ) {
             if( entry != NULL ) {
-                entry->next = (WAccelEntry *)WMemAlloc( sizeof( WAccelEntry ) );
+                entry->next = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
                 if( entry != NULL ) {
                     entry->next->symbol = NULL;
                     entry->next->prev = entry;
                     entry = entry->next;
                 }
             } else {
-                tbl->first_entry = (WAccelEntry *)WMemAlloc( sizeof( WAccelEntry ) );
+                tbl->first_entry = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
                 tbl->first_entry->symbol = NULL;
                 entry = tbl->first_entry;
                 entry->prev = NULL;
@@ -377,7 +376,7 @@ void WFreeAccelTable( WAccelTable *tbl )
 {
     if( tbl != NULL ) {
         WFreeAccelTableEntries( tbl->first_entry );
-        WMemFree( tbl );
+        WRMemFree( tbl );
     }
 }
 
@@ -389,9 +388,9 @@ void WFreeAccelTableEntries( WAccelEntry *entry )
         e = entry;
         entry = entry->next;
         if( e->symbol != NULL ) {
-            WMemFree( e->symbol );
+            WRMemFree( e->symbol );
         }
-        WMemFree( e );
+        WRMemFree( e );
     }
 }
 
@@ -408,7 +407,7 @@ Bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
             *dsize = sizeof( AccelTableEntry );
         }
         *dsize += sizeof( BYTE );
-        *data = WMemAlloc( *dsize );
+        *data = WRMemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -482,7 +481,7 @@ Bool WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->symbol = WStrDup( vlist->entry->name );
         ok = (entry->symbol != NULL);

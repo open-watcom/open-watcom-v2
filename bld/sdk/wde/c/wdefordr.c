@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdelist.h"
 #include "wdedebug.h"
@@ -124,12 +123,12 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, Bool reorder )
 {
     if( o->new_oe ) {
         ListRemoveElt( &o->lists->newlist, o->new_oe );
-        WdeMemFree( o->new_oe );
+        WRMemFree( o->new_oe );
         o->new_oe = NULL;
         o->old_oe->present = TRUE;
         o->old_oe->pos_set = FALSE;
     } else {
-        o->new_oe = (WdeOrderedEntry *)WdeMemAlloc( sizeof( WdeOrderedEntry ) );
+        o->new_oe = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
         if( o->new_oe != NULL ) {
             o->old_oe->pos_set = TRUE;
             memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
@@ -208,7 +207,7 @@ void WdeFreeOrderedList( LIST *l )
     for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
         oe = (WdeOrderedEntry *)ListElement( olist );
         if( oe != NULL ) {
-            WdeMemFree( oe );
+            WRMemFree( oe );
         }
     }
 
@@ -259,7 +258,7 @@ Bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
         return( TRUE );
     }
 
-    oentry = (WdeOrderedEntry *)WdeMemAlloc( sizeof( WdeOrderedEntry ) );
+    oentry = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
     if( oentry != NULL ) {
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
@@ -300,7 +299,7 @@ Bool WdeCleanOrderedList( LIST **l )
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( oentry->present == NULL ) {
             ListRemoveElt( l, oentry );
-            WdeMemFree( oentry );
+            WRMemFree( oentry );
         }
     }
 

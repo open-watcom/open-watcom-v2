@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include "wreglbl.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "statwnd.h"
 #include "wreribbn.h"
@@ -114,7 +115,7 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     lf.lfWeight = FW_BOLD;
     use_default = TRUE;
 
-    status_font = WREAllocRCString( WRE_STATUSFONT );
+    status_font = AllocRCString( WRE_STATUSFONT );
     if( status_font != NULL ) {
         cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
         if( cp != NULL ) {
@@ -124,7 +125,7 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
             point_size = atoi( cp );
             use_default = FALSE;
         }
-        WREFreeRCString( status_font );
+        FreeRCString( status_font );
     }
 
     if( use_default ) {
@@ -198,21 +199,21 @@ Bool WRESetStatusByID( DWORD id1, DWORD id2 )
     str2 = NULL;
 
     if( id1 != -1 ) {
-        str1 = WREAllocRCString( id1 );
+        str1 = AllocRCString( id1 );
     }
 
     if( id2 != -1 ) {
-        str2 = WREAllocRCString( id2 );
+        str2 = AllocRCString( id2 );
     }
 
     ret = WRESetStatusText( str1, str2, TRUE );
 
     if( str1 != NULL ) {
-        WREFreeRCString( str1 );
+        FreeRCString( str1 );
     }
 
     if( str2 != NULL ) {
-        WREFreeRCString( str2 );
+        FreeRCString( str2 );
     }
 
     return( ret );

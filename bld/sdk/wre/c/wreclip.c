@@ -40,8 +40,8 @@
 #include "wregcres.h"
 #include "wre_wres.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wredel.h"
 #include "wrenames.h"
 #include "wredde.h"
@@ -157,7 +157,7 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *data = WREMemAlloc( *dsize );
+        *data = WRMemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -167,7 +167,7 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 
     if( !ok ) {
         if( *data ) {
-            WREMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
             *dsize = 0;
         }
@@ -262,7 +262,7 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
                 ren_info.new_name = NULL;
                 ok = (WREGetNewName( &ren_info ) && ren_info.new_name != NULL);
                 if( ok ) {
-                    WREMemFree( *name );
+                    WRMemFree( *name );
                     *name = ren_info.new_name;
                 }
             }
@@ -322,7 +322,7 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        data = WREMemAlloc( cdata->data_size );
+        data = WRMemAlloc( cdata->data_size );
         ok = (data != NULL);
     }
 
@@ -362,20 +362,20 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
@@ -421,7 +421,7 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        data = WREMemAlloc( cdata->data_size );
+        data = WRMemAlloc( cdata->data_size );
         ok = (data != NULL);
     }
 
@@ -470,24 +470,24 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
@@ -556,11 +556,11 @@ static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     return( ok );
@@ -586,7 +586,7 @@ static Bool WREGetAndPasteDIB( WREClipFormat *fmt )
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
@@ -623,7 +623,7 @@ static Bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
@@ -738,7 +738,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 
     if( ok ) {
         cdata_size = sizeof( WREClipData ) + name_size + rdata_size - 1;
-        cdata = (WREClipData *)WREMemAlloc( cdata_size );
+        cdata = (WREClipData *)WRMemAlloc( cdata_size );
         ok = (cdata != NULL);
     }
 
@@ -753,17 +753,17 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         memcpy( &cdata->name[name_size], rdata, rdata_size );
     } else {
         if( cdata != NULL ) {
-            WREMemFree( cdata );
+            WRMemFree( cdata );
             cdata = NULL;
         }
     }
 
     if( rdata != NULL ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( cdata );
@@ -812,7 +812,7 @@ Bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
@@ -869,7 +869,7 @@ Bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     return( ok );
@@ -999,10 +999,10 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
 
     tn = WREGetTypeNameFromRT( pdata->type );
     if( tn != NULL ) {
-        text = WREAllocRCString( tn->name );
+        text = AllocRCString( tn->name );
         WRESetEditWithStr( GetDlgItem( hDlg, IDM_PASTE_TYPE ), text );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
     }
     WRESetEditWithWResID( GetDlgItem( hDlg, IDM_PASTE_NAME ), pdata->name );

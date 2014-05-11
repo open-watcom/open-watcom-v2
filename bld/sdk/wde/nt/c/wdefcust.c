@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "rcstr.gh"
 #include "wderesin.h"
 #include "wdeopts.h"
@@ -268,7 +267,7 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
         class_name = WdeControlClassToStr( GETCTL_CLASSID( control ) );
         if( class_name != NULL ) {
             WdeFindClassInAllCustLibs( class_name, &info_list );
-            WdeMemFree( class_name );
+            WRMemFree( class_name );
         }
         if( info_list == NULL ) {
             WdeSetStatusByID( -1, WDE_NOCUSTOMFORCLASS );
@@ -288,8 +287,8 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
                             control, cust_lib, cust_index );
 
     if( handle == NULL ) {
-        WdeMemFree( GETCTL_TEXT( WdeDefaultCustom ) );
-        WdeMemFree( GETCTL_CLASSID( WdeDefaultCustom ) );
+        WRMemFree( GETCTL_TEXT( WdeDefaultCustom ) );
+        WRMemFree( GETCTL_CLASSID( WdeDefaultCustom ) );
     }
 
     SETCTL_STYLE( WdeDefaultCustom, 0 );
@@ -314,12 +313,12 @@ void WdeFreeClassNode( WdeCustClassNode *node )
 {
     if( node != NULL ) {
         if( node->class != NULL ) {
-            WdeMemFree( node->class );
+            WRMemFree( node->class );
         }
         if( node->new_name != NULL ) {
-            WdeMemFree( node->new_name );
+            WRMemFree( node->new_name );
         }
-        WdeMemFree( node );
+        WRMemFree( node );
     }
 }
 
@@ -328,7 +327,7 @@ Bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
     WdeCustClassNode *node;
     char             *str;
 
-    node = (WdeCustClassNode *)WdeMemAlloc( sizeof( WdeCustClassNode ) );
+    node = (WdeCustClassNode *)WRMemAlloc( sizeof( WdeCustClassNode ) );
     if( node == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: node alloc failed!" );
         return( FALSE );
@@ -337,7 +336,7 @@ Bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
     str = WdeStrDup( class );
     if( str == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: class strdup failed!" );
-        WdeMemFree( node );
+        WRMemFree( node );
         return( FALSE );
     }
     node->class = str;
@@ -345,8 +344,8 @@ Bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
     str = WdeStrDup( new_name );
     if( str == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: new_name alloc failed!" );
-        WdeMemFree( node->class );
-        WdeMemFree( node );
+        WRMemFree( node->class );
+        WRMemFree( node );
         return( FALSE );
     }
     node->new_name = str;
@@ -398,7 +397,7 @@ Bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         return( FALSE );
     }
 
-    *new_name = (char *)WdeMemAlloc( strlen( class ) + 5 );
+    *new_name = (char *)WRMemAlloc( strlen( class ) + 5 );
     if( *new_name == NULL ) {
         WdeWriteTrail( "WdeCustomRegisterClass: new_name alloc failed!" );
         return( FALSE );
@@ -426,13 +425,13 @@ Bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         WdeWriteTrail( "WdeCustomRegisterClass: RegisterClass failed!" );
         // subclass controls instead of superclassing them makes this
         // much less fatal
-        //WdeMemFree( *new_name );
+        //WRMemFree( *new_name );
         //return( FALSE );
     }
 
     if( !WdeAddNewClassToList( class, *new_name, *win_extra, *win_proc ) ) {
         WdeWriteTrail( "WdeCustomRegisterClass: AddNewClass failed!" );
-        WdeMemFree( *new_name );
+        WRMemFree( *new_name );
         return( FALSE );
     }
 
@@ -448,14 +447,14 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     WdeDebugCreate( "Custom", parent, obj_rect, handle );
 
-    WdeMemValidate( parent );
+    WRMemValidate( parent );
 
     if( parent == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: Custom has no parent!" );
         return( NULL );
     }
 
-    new = (WdeCustomObject *)WdeMemAlloc( sizeof( WdeCustomObject ) );
+    new = (WdeCustomObject *)WRMemAlloc( sizeof( WdeCustomObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: Object malloc failed" );
         return( NULL );
@@ -466,7 +465,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     if( !WdeCustomRegisterClass( class, cust_lib->inst, &new->win_class,
                                  &new->win_extra, &new->win_proc ) ) {
         WdeWriteTrail( "WdeCustomCreate: WdeCustomRegisterClass failed!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -485,21 +484,21 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeCustomCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeCustomCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -512,7 +511,7 @@ WINEXPORT BOOL CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, v
 
     WdeDebugDispatch( "Custom", act, obj, p1, p2 );
 
-    WdeMemChkRange( obj, sizeof( WdeCustomObject ) );
+    WRMemChkRange( obj, sizeof( WdeCustomObject ) );
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == act ) {
@@ -569,10 +568,10 @@ BOOL WdeCustomDestroy( WdeCustomObject *obj, BOOL *flag, void *p2 )
     }
 
     if( obj->win_class != NULL ) {
-        WdeMemFree( obj->win_class );
+        WRMemFree( obj->win_class );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -598,7 +597,7 @@ BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
         return( FALSE );
     }
 
-    *new = (WdeCustomObject *)WdeMemAlloc( sizeof( WdeCustomObject ) );
+    *new = (WdeCustomObject *)WRMemAlloc( sizeof( WdeCustomObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Object malloc failed" );
@@ -615,7 +614,7 @@ BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
     (*new)->win_class = WdeStrDup( obj->win_class );
     if( (*new)->win_class == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Class alloc failed!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 
@@ -627,7 +626,7 @@ BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeCustomCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 
@@ -726,7 +725,7 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
             memcpy( ccs.szText, text, CCHCCTEXT );
             ccs.szText[CCHCCTEXT - 1] = '\0';
         }
-        WdeMemFree( text );
+        WRMemFree( text );
     } else {
          ccs.szText[0] = '\0';
     }

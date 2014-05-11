@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdemain.h"
 #include "wdetfile.h"
@@ -75,9 +74,9 @@ Bool WdeFreeResInfo( WdeResInfo *res_info )
             WdeFreeHashTable( res_info->hash_table );
         }
         if( res_info->sym_name != NULL ) {
-            WdeMemFree( res_info->sym_name );
+            WRMemFree( res_info->sym_name );
         }
-        WdeMemFree( res_info );
+        WRMemFree( res_info );
     } else {
         return( FALSE );
     }
@@ -90,7 +89,7 @@ Bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
     if( dlg_info != NULL ) {
         WdeFreeControlList( &dlg_info->control_list );
         WdeFreeDialogBoxHeader( &dlg_info->dialog_header );
-        WdeMemFree( dlg_info );
+        WRMemFree( dlg_info );
     } else {
         return( FALSE );
     }
@@ -111,7 +110,7 @@ void WdeFreeResDlgItem( WdeResDlgItem **ditem, Bool destroy_object )
             Destroy( (*ditem)->object, FALSE );
         }
         (*ditem)->object = NULL;
-        WdeMemFree( *ditem );
+        WRMemFree( *ditem );
         *ditem = NULL;
     }
 }
@@ -154,7 +153,7 @@ WdeResDlgItem *WdeAllocResDlgItem( void )
 {
     WdeResDlgItem  *item;
 
-    item = (WdeResDlgItem *)WdeMemAlloc( sizeof( WdeResDlgItem ) );
+    item = (WdeResDlgItem *)WRMemAlloc( sizeof( WdeResDlgItem ) );
 
     if( item != NULL ) {
         memset( item, 0, sizeof( WdeResDlgItem ) );
@@ -167,7 +166,7 @@ WdeResInfo *WdeAllocResInfo( void )
 {
     WdeResInfo  *res_info;
 
-    res_info = (WdeResInfo *)WdeMemAlloc( sizeof( WdeResInfo ) );
+    res_info = (WdeResInfo *)WRMemAlloc( sizeof( WdeResInfo ) );
 
     if( res_info != NULL ) {
         memset( res_info, 0, sizeof( WdeResInfo ) );

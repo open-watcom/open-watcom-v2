@@ -38,7 +38,6 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wrdll.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "winst.h"
 #include "wsetedit.h"
@@ -93,7 +92,7 @@ Bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
         info.old_name = *name;
         if( WGetNewName( parent, &info ) && info.new_name != NULL ) {
             if( *name != NULL ) {
-                WMemFree( *name );
+                WRMemFree( *name );
             }
             *name = info.new_name;
             ok = TRUE;

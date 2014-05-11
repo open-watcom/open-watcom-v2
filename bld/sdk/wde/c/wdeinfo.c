@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include <mbstring.h>
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wderesin.h"
@@ -369,7 +368,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_CAPTION );
     } else {
         WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_CAPTION );
-        WdeMemFree( str );
+        WRMemFree( str );
     }
 
     name = is->d.name;
@@ -381,17 +380,17 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
         str1 = WResIDToStr( name );
         if( str1 != NULL ) {
             len = strlen( str1 ) + 3;
-            str2 = WdeMemAlloc( len );
+            str2 = WRMemAlloc( len );
             if( str2 != NULL ) {
                 str2[0] = '"';
                 strcpy( &str2[1], str1 );
                 str2[len - 2] = '"';
                 str2[len - 1] = '\0';
                 WdeSetComboWithStr( str2, WdeInfoWindow, IDB_INFO_IDSTR );
-                WdeMemFree( str2 );
+                WRMemFree( str2 );
                 ok = TRUE;
             }
-            WdeMemFree( str1 );
+            WRMemFree( str1 );
         }
         if( !ok ) {
             WdeSetComboWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
@@ -416,12 +415,12 @@ void WdeDisplayControlInfo( WdeInfoStruct *is )
     cp = WdeResNameOrOrdinalToStr( is->c.text, 10 );
     if( cp != NULL ) {
         str = WRConvertStringFrom( cp, "\t\n", "tn" );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     if( str != NULL ) {
         WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_CAPTION );
-        WdeMemFree( str );
+        WRMemFree( str );
     } else {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_CAPTION );
     }
@@ -461,13 +460,13 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     cp = WdeGetStrFromEdit( WdeInfoWindow, IDB_INFO_CAPTION, NULL );
     if( cp != NULL ) {
         str = WRConvertStringTo( cp, "\t\n", "tn" );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
     c_is.d.caption = str;
 
     str = WdeGetStrFromCombo( WdeInfoWindow, IDB_INFO_IDSTR );
     if( str == NULL ) {
-        WdeMemFree( c_is.d.caption );
+        WRMemFree( c_is.d.caption );
         c_is.d.caption = NULL;
         return;
     }
@@ -493,8 +492,8 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     }
 
     if( str[0] == '\0' ) {
-        WdeMemFree( str );
-        WdeMemFree( c_is.d.caption );
+        WRMemFree( str );
+        WRMemFree( c_is.d.caption );
         c_is.d.caption = NULL;
         return;
     }
@@ -506,14 +505,14 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
 
     if( quoted_str ) {
         c_is.d.name = WResIDFromStr( str );
-        WdeMemFree( str );
+        WRMemFree( str );
     } else if( str_is_ordinal ) {
         c_is.d.name = WResIDFromNum( ord );
-        WdeMemFree( str );
+        WRMemFree( str );
     } else {
         if( !WdeIsValidSymbol( str ) ) {
-            WdeMemFree( str );
-            WdeMemFree( c_is.d.caption );
+            WRMemFree( str );
+            WRMemFree( c_is.d.caption );
             c_is.d.caption = NULL;
             return;
         }
@@ -555,19 +554,19 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     cp = WdeGetStrFromEdit( WdeInfoWindow, IDB_INFO_CAPTION, NULL );
     if( cp != NULL ) {
         str = WRConvertStringTo( cp, "\t\n", "tn" );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     if( str != NULL ) {
         c_is.c.text = ResStrToNameOrOrd( str );
-        WdeMemFree( str );
+        WRMemFree( str );
     } else {
         c_is.c.text = NULL;
     }
 
     str = WdeGetStrFromCombo( WdeInfoWindow, IDB_INFO_IDSTR );
     if( str == NULL ) {
-        WdeMemFree( c_is.c.text );
+        WRMemFree( c_is.c.text );
         c_is.c.text = NULL;
         return;
     }
@@ -575,8 +574,8 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     WRStripSymbol( str );
 
     if( str[0] == '\0' ) {
-        WdeMemFree( str );
-        WdeMemFree( c_is.c.text );
+        WRMemFree( str );
+        WRMemFree( c_is.c.text );
         c_is.c.text = NULL;
         return;
     }
@@ -588,11 +587,11 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
 
     if( str_is_ordinal ) {
         c_is.c.id = ord;
-        WdeMemFree( str );
+        WRMemFree( str );
     } else {
         if( !WdeIsValidSymbol( str ) ) {
-            WdeMemFree( str );
-            WdeMemFree( c_is.c.text );
+            WRMemFree( str );
+            WRMemFree( c_is.c.text );
             c_is.c.text = NULL;
             return;
         }
@@ -664,7 +663,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     // if the string numeric or empty then return
     strtoul( str, &cp, 0 );
     if( *cp == '\0' ) {
-        WdeMemFree( str );
+        WRMemFree( str );
         return;
     }
 
@@ -675,7 +674,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
         }
     }
 
-    WdeMemFree( str );
+    WRMemFree( str );
 }
 
 WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )

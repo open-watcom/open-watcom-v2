@@ -31,8 +31,8 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdestken.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -63,7 +63,7 @@ Bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    s = (WdeStackEnvType *)WdeMemAlloc( sizeof( WdeStackEnvType ) );
+    s = (WdeStackEnvType *)WRMemAlloc( sizeof( WdeStackEnvType ) );
     if( s == NULL ) {
         return( FALSE );
     }
@@ -83,7 +83,7 @@ Bool WdePopEnv( jmp_buf *e )
         s = WdeTop;
         WdeTop = s->next;
         memcpy( e, &s->e, sizeof( jmp_buf ) );
-        WdeMemFree( s );
+        WRMemFree( s );
     } else {
         return( FALSE );
     }

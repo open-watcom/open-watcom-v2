@@ -33,7 +33,6 @@
 #include "imgedit.h"
 #include <ddeml.h>
 #include "iemem.h"
-#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */

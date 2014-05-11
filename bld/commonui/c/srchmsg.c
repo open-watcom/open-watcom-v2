@@ -34,26 +34,23 @@
 #include "mem.h"
 #include "srchmsg.h"
 #include "ldstr.h"
+#include "watcom.h"
 
 /*
- * SrchMsg - searchs tbl for a message corresponding to msgno
+ * SrchMsg - searchs tbl for a message corresponding to value
  *         - if one exists a pointer to it is returned
  *           otherwise a pointer to dflt is returned
  */
-char *SrchMsg( unsigned msgno, msglist *tbl, char *dflt )
+char *SrchMsg( DWORD value, msglist *tbl, char *dflt )
 {
-    msglist             *curmsg;
+    msglist     *curmsg;
 
-    curmsg = tbl;
-    for( ;; ) {
-        if( curmsg->msg == NULL ) {
-            return( dflt );
-        }
-        if( curmsg->msgno == msgno ) {
+    for( curmsg = tbl; curmsg->msg != NULL; curmsg++ ) {
+        if( curmsg->value == value ) {
             return( curmsg->msg );
         }
-        curmsg++;
     }
+    return( dflt );
 
 } /* SrchMsg */
 
@@ -66,19 +63,14 @@ char *SrchMsg( unsigned msgno, msglist *tbl, char *dflt )
  */
 BOOL InitSrchTable( HANDLE inst, msglist *tbl )
 {
-    msglist             *curmsg;
+    msglist     *curmsg;
 
-    curmsg = tbl;
     inst = inst;
-    for( ;; ) {
-        if( curmsg->msg == (char *)-1L ) {
-            break;
-        }
-        curmsg->msg = AllocRCString( (unsigned)curmsg->msg );
+    for( curmsg = tbl; curmsg->msg != (char *)(pointer_int)-1L; curmsg++ ) {
+        curmsg->msg = AllocRCString( (MSGID)(pointer_int)curmsg->msg );
         if( curmsg->msg == NULL ) {
             return( FALSE );
         }
-        curmsg++;
     }
     curmsg->msg = NULL;
     return( TRUE );

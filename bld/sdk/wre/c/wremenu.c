@@ -39,7 +39,6 @@
 #include "wmenu.h"
 
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wregcres.h"
 #include "wrenames.h"
 #include "wrerenam.h"
@@ -49,6 +48,7 @@
 #include "wredel.h"
 #include "wrestat.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wreres.h"
 #include "wremain.h"
@@ -119,7 +119,7 @@ void WRERemoveMenuEditSession( WREMenuSession *session )
         if( session->info != NULL ) {
             WMenuFreeMenuInfo( session->info );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 
@@ -132,16 +132,16 @@ WResID *WRECreateMenuTitle( void )
     WRENumMenuTitles++;
 
     name = NULL;
-    text = WREAllocRCString( WRE_DEFMENUNAME );
+    text = AllocRCString( WRE_DEFMENUNAME );
     if( text != NULL ) {
-        title = (char *)WREMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumMenuTitles );
             name = WResIDFromStr( title );
-            WREMemFree( title );
+            WRMemFree( title );
         }
-        WREFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( name );
@@ -191,7 +191,7 @@ Bool WREAddMenuToDir( WRECurrentResInfo *curr )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -204,7 +204,7 @@ Bool WREAddMenuToDir( WRECurrentResInfo *curr )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
@@ -262,7 +262,7 @@ Bool WREEditMenuResource( WRECurrentResInfo *curr )
     }
 
     if( rdata_alloc ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
         curr->lang->data = NULL;
     }
 
@@ -342,7 +342,7 @@ WREMenuSession *WREStartMenuSession( WRECurrentResInfo *curr )
         WREInsertObject( &WREMenuSessions, session );
     } else {
         WMenuFreeMenuInfo( session->info );
-        WREMemFree( session );
+        WRMemFree( session );
         session = NULL;
     }
 
@@ -373,7 +373,7 @@ Bool WREGetMenuSessionData( WREMenuSession *session, Bool close )
 
     if( ok && session->info->modified ) {
         if( session->lnode->data != NULL ) {
-            WREMemFree( session->lnode->data );
+            WRMemFree( session->lnode->data );
         }
         session->lnode->data = session->info->data;
         session->lnode->Info.lang = session->info->lang;
@@ -486,7 +486,7 @@ WREMenuSession *WREAllocMenuSession( void )
 {
     WREMenuSession *session;
 
-    session = (WREMenuSession *)WREMemAlloc( sizeof( WREMenuSession ) );
+    session = (WREMenuSession *)WRMemAlloc( sizeof( WREMenuSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREMenuSession ) );

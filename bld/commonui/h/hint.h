@@ -33,13 +33,14 @@
 #define _HINT_H_INCLUDED
 
 #include "statwnd.h"
+#include "ldstr.h"
 
 typedef struct {
     WORD        menuid;
-    WORD        msgid;
+    MSGID       msgid;
 } MenuItemHint;
 
-void            HintToolBar( statwnd *wnd, UINT menuid, BOOL select );
+void            HintToolBar( statwnd *wnd, WORD menuid, BOOL select );
 WORD            SizeHintBar( statwnd *wnd );
 void            HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
 MenuItemHint    *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt );

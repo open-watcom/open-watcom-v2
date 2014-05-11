@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wderesin.h"
@@ -244,7 +243,7 @@ Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetStrFromEdit ( hDlg, IDB_TEXT, &mod );
         if( mod && vp != NULL ) {
             if( GETHDR_CAPTION( info->info.d.header ) ) {
-                WdeMemFree( GETHDR_CAPTION( info->info.d.header ) );
+                WRMemFree( GETHDR_CAPTION( info->info.d.header ) );
             }
             SETHDR_CAPTION( info->info.d.header, (char *)vp );
         }
@@ -253,7 +252,7 @@ Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetResNameOrFromEdit ( hDlg, IDB_TEXT, &mod );
         if ( mod && vp != NULL ) {
             if( GETCTL_TEXT( info->info.c.info ) ) {
-                WdeMemFree( GETCTL_TEXT( info->info.c.info ) );
+                WRMemFree( GETCTL_TEXT( info->info.c.info ) );
             }
             SETCTL_TEXT( info->info.c.info, (ResNameOrOrdinal *)vp );
         }

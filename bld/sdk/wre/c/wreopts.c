@@ -37,10 +37,10 @@
 #include "wreglbl.h"
 #include "wregetfn.h"
 #include "wrestrdp.h"
-#include "wremem.h"
 #include "wreopts.h"
 #include "watini.h"
 #include "inipath.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -111,10 +111,10 @@ static Bool WREGetStrOpt( char *entry, char **opt )
 void WREOptsShutdown( void )
 {
     if( WRECurrentState.last_filter != NULL ) {
-        WREMemFree( WRECurrentState.last_filter );
+        WRMemFree( WRECurrentState.last_filter );
     }
     if( WRECurrentState.last_dir != NULL ) {
-        WREMemFree( WRECurrentState.last_dir );
+        WRMemFree( WRECurrentState.last_dir );
     }
 
     WRECurrentState.last_dir = WREStrDup( WREGetInitialDir() );
@@ -123,7 +123,7 @@ void WREOptsShutdown( void )
     WREWriteOpts( &WRECurrentState );
 
     if( WRECurrentState.last_dir != NULL ) {
-        WREMemFree( WRECurrentState.last_dir );
+        WRMemFree( WRECurrentState.last_dir );
     }
 }
 
@@ -183,7 +183,7 @@ Bool WREWriteRectOpt( char *entry, RECT *r )
     str = WRERectToStr( r );
     if( str != NULL ) {
         ret = WritePrivateProfileString( WRESectionName, entry, str, WREProfileName );
-        WREMemFree( str );
+        WRMemFree( str );
     }
 
     return( ret );

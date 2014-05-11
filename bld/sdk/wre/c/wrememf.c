@@ -35,7 +35,6 @@
 #include "watcom.h"
 #include "wreglbl.h"
 #include "wremain.h"
-#include "wremem.h"
 #include "wreseted.h"
 #include "wregcres.h"
 #include "wrenames.h"
@@ -108,7 +107,7 @@ Bool WREChangeMemFlags( void )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );

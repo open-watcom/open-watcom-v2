@@ -39,7 +39,6 @@
 #include "wstring.h"
 
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wregcres.h"
 #include "wrerenam.h"
 #include "wrenames.h"
@@ -106,7 +105,7 @@ void WRERemoveStringEditSession( WREStringSession *session )
         if( session->info != NULL ) {
             WStrFreeStringInfo( session->info );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 
@@ -162,7 +161,7 @@ Bool WREAddStringToDir( WRECurrentResInfo *curr )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -175,7 +174,7 @@ Bool WREAddStringToDir( WRECurrentResInfo *curr )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
@@ -304,7 +303,7 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
         }
     } else {
         WStrFreeStringInfo( session->info );
-        WREMemFree( session );
+        WRMemFree( session );
         session = NULL;
     }
 
@@ -425,7 +424,7 @@ WREStringSession *WREAllocStringSession( void )
 {
     WREStringSession *session;
 
-    session = (WREStringSession *)WREMemAlloc( sizeof( WREStringSession ) );
+    session = (WREStringSession *)WRMemAlloc( sizeof( WREStringSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREStringSession ) );
@@ -442,7 +441,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
         return( NULL );
     }
 
-    node = (WStringNode *)WREMemAlloc( sizeof( WStringNode ) );
+    node = (WStringNode *)WRMemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }
@@ -517,12 +516,12 @@ void WREFreeStringNode( WStringNode *node )
         n = node;
         node = node->next;
         if( n->block_name ) {
-            WREMemFree( n->block_name );
+            WRMemFree( n->block_name );
         }
         if( n->data ) {
-            WREMemFree( n->data );
+            WRMemFree( n->data );
         }
-        WREMemFree( n );
+        WRMemFree( n );
     }
 }
 
@@ -548,7 +547,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
     }
 
     if( tname != NULL ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     if( ok ) {

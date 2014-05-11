@@ -443,7 +443,7 @@ BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     char                *text;
     OBJPTR              obj;
     WdeOrderMode        mode;
-    UINT                cid;
+    CMDID               cid;
     Bool                ignore_msg;
     Bool                ret;
 

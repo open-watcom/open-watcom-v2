@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wedit.h"
 #include "wdel.h"
 #include "sys_rc.h"

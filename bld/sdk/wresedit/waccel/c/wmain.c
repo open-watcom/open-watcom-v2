@@ -40,7 +40,6 @@
 #include "wglbl.h"
 #include "waccel.h"
 #include "winst.h"
-#include "wmem.h"
 #include "wmemf.h"
 #include "wrename.h"
 #include "wnewitem.h"
@@ -121,8 +120,18 @@ UINT            WItemClipbdFormat = 0;
 extern int appWidth;
 extern int appHeight;
 
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 #ifdef __NT__
 
@@ -184,7 +193,7 @@ void WRESEAPI WAccelInit( void )
     }
     if( ref_count == 0 ) {
         WRInit();
-        WInitDisplayError( inst );
+        SetInstance( inst );
         WInit( inst );
     }
     ref_count++;
@@ -332,7 +341,7 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
     if( ok ) {
         if( einfo->info->modified ) {
             if( info->data != NULL ) {
-                WMemFree( info->data );
+                WRMemFree( info->data );
             }
             info->data = NULL;
             info->data_size = 0;
@@ -442,7 +451,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
         fname = einfo->file_name;
     }
 
-    text = WAllocRCString( W_ACCELAPPTITLE );
+    text = AllocRCString( W_ACCELAPPTITLE );
 
     if( fname == NULL || text == NULL ) {
         return( NULL );
@@ -451,7 +460,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)WMemAlloc( len );
+    title = (char *)WRMemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
@@ -460,7 +469,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     }
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( title );
@@ -475,16 +484,16 @@ void WSetEditTitle( WAccelEditInfo *einfo )
     is_rc = FALSE;
 
     if( title == NULL ) {
-        title = WAllocRCString( W_ACCELAPPTITLE );
+        title = AllocRCString( W_ACCELAPPTITLE );
         is_rc = TRUE;
     }
 
     if( title != NULL ) {
         SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
         if( is_rc ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         } else {
-            WMemFree( title );
+            WRMemFree( title );
         }
     }
 }
@@ -520,7 +529,7 @@ Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
     is_rc = FALSE;
     title = WCreateEditTitle( einfo );
     if( title == NULL ) {
-        title = WAllocRCString( W_ACCELAPPTITLE );
+        title = AllocRCString( W_ACCELAPPTITLE );
         is_rc = TRUE;
     }
 
@@ -535,9 +544,9 @@ Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
 
     if( title != NULL ) {
         if( is_rc ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         } else {
-            WMemFree( title );
+            WRMemFree( title );
         }
     }
 
@@ -617,7 +626,7 @@ static void handleSymbols( WAccelEditInfo *einfo )
                             IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), text );
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     WHandleSelChange( einfo );
@@ -634,7 +643,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
     }
 
     if( einfo->info->symbol_file != NULL ) {
-        WMemFree( einfo->info->symbol_file );
+        WRMemFree( einfo->info->symbol_file );
     }
     einfo->info->symbol_file = file;
 
@@ -969,13 +978,13 @@ Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
                 style = MB_YESNOCANCEL | MB_APPLMODAL | MB_ICONEXCLAMATION;
             }
             title = WCreateEditTitle( einfo );
-            text = WAllocRCString( W_UPDATEMODIFIEDACCEL );
+            text = AllocRCString( W_UPDATEMODIFIEDACCEL );
             ret = MessageBox( einfo->edit_dlg, text, title, style );
             if( text != NULL ) {
-                WFreeRCString( text );
+                FreeRCString( text );
             }
             if( title != NULL ) {
-                WMemFree( title );
+                WRMemFree( title );
             }
         }
         if( ret == IDYES ) {
@@ -1015,13 +1024,13 @@ Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
     }
 
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_UPDATEMODIFIEDSYM );
+    text = AllocRCString( W_UPDATEMODIFIEDSYM );
     ret = MessageBox( einfo->edit_dlg, text, title, style );
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -1084,14 +1093,14 @@ Bool WQueryClearRes( WAccelEditInfo *einfo )
 
     if( einfo != NULL ) {
         style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
-        text = WAllocRCString( W_ACCELCLEARWARNING );
-        title = WAllocRCString( W_ACCELCLEARTITLE );
+        text = AllocRCString( W_ACCELCLEARWARNING );
+        title = AllocRCString( W_ACCELCLEARTITLE );
         ret = MessageBox( einfo->edit_dlg, text, title, style );
         if( text != NULL ) {
-            WFreeRCString( text );
+            FreeRCString( text );
         }
         if( title != NULL ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         }
         if( ret == IDYES ) {
             return( TRUE );
@@ -1115,7 +1124,7 @@ void WHandleClear( WAccelEditInfo *einfo )
             einfo->getting_key = FALSE;
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
-                    WMemFree( einfo->file_name );
+                    WRMemFree( einfo->file_name );
                     einfo->file_name = NULL;
                     WSetEditTitle( einfo );
                 }

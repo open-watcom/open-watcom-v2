@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wsetedit.h"
 #include "wrdll.h"
 
@@ -107,7 +106,7 @@ Bool WSetEditWithWResID( HWND edit, WResID *id )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( ok );
@@ -179,7 +178,7 @@ Bool WSetLBoxWithWResID( HWND lbox, WResID *id, void *data )
     ok = ok && WSetLBoxWithStr( lbox, name, data );
 
     if( name != NULL ) {
-        WMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -204,7 +203,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -212,7 +211,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
     text_copied = SendMessage ( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -246,7 +245,7 @@ WResID *WGetWResIDFromEdit( HWND edit, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );
@@ -277,7 +276,7 @@ int_32 WGetSINT32FromEdit( HWND edit, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( val );
@@ -306,7 +305,7 @@ char *WGetStrFromComboLBox( HWND combo, int index )
 
     text_length = SendMessage( combo, CB_GETLBTEXTLEN, index, 0 );
 
-    cp = (char *)WMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -314,7 +313,7 @@ char *WGetStrFromComboLBox( HWND combo, int index )
     text_copied = SendMessage( combo, CB_GETLBTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 

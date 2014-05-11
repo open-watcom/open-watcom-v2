@@ -53,7 +53,7 @@ static unsigned ColorCount( WORD bitcount, WORD clrused ) {
     return( color_count );
 } /* ColorCount */
 
-static HWND MkDisplayWin( DWORD captionid, HWND parent )
+static HWND MkDisplayWin( UINT captionid, HWND parent )
 {
 
     HWND        hdl;

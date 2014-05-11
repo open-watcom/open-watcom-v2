@@ -37,8 +37,8 @@
 #include "wglbl.h"
 #include "wgetfn.h"
 #include "wstrdup.h"
-#include "wmem.h"
 #include "wopts.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -95,13 +95,13 @@ static WOptState WDefaultState = {
 void WOptsShutdown( void )
 {
     if( WCurrentState.last_dir != NULL ) {
-        WMemFree( WCurrentState.last_dir );
+        WRMemFree( WCurrentState.last_dir );
     }
     WCurrentState.last_dir = WStrDup( WGetInitialDir() );
     WCurrentState.last_filter = WGetFileFilter();
     WWriteOpts( &WCurrentState );
     if( WCurrentState.last_dir != NULL ) {
-        WMemFree( WCurrentState.last_dir );
+        WRMemFree( WCurrentState.last_dir );
     }
 }
 
@@ -168,7 +168,7 @@ Bool WWriteRectOpt( char *entry, RECT *r )
     str = WRectToStr( r );
     if( str != NULL ) {
         ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName );
-        WMemFree( str );
+        WRMemFree( str );
     }
 
     return( ret );

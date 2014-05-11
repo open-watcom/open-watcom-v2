@@ -42,7 +42,6 @@
 #include "wrestat.h"
 #include "wreopts.h"
 #include "wremsg.h"
-#include "wremem.h"
 #include "wregetfn.h"
 #include "wreresin.h"
 #include "wrestrdp.h"
@@ -91,7 +90,7 @@ void *PP_Malloc( size_t size )
 {
     void        *p;
 
-    p = WREMemAlloc( size );
+    p = WRMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -100,7 +99,7 @@ void *PP_Malloc( size_t size )
 
 void PP_Free( void *p )
 {
-    WREMemFree( p );
+    WRMemFree( p );
 }
 
 static char *WREFindDLGInclude( WRInfo *info )
@@ -266,7 +265,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
 
     if( !ok ) {
         if( name != NULL ) {
-            WREMemFree( name );
+            WRMemFree( name );
             name = NULL;
         }
     }
@@ -305,7 +304,7 @@ Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt )
         ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
-                WREMemFree( *file_name );
+                WRMemFree( *file_name );
             }
             *file_name = name;
         }
@@ -368,7 +367,7 @@ Bool WRELoadResourceSymbols( WREResInfo *info )
     }
 
     if( info->symbol_file != NULL ) {
-        WREMemFree( info->symbol_file );
+        WRMemFree( info->symbol_file );
     }
     info->symbol_file = symbol_file;
 
@@ -443,7 +442,7 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         prompt = TRUE;
     } else {
         strcpy( fn_path, symbol_file );
-        WREMemFree( symbol_file );
+        WRMemFree( symbol_file );
         symbol_file = NULL;
         prompt = FALSE;
     }
@@ -455,7 +454,7 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         ret = (symbol_file != NULL);
         if( ret ) {
             if( rinfo->symbol_file != NULL ) {
-                WREMemFree( rinfo->symbol_file );
+                WRMemFree( rinfo->symbol_file );
             }
             rinfo->symbol_file = symbol_file;
         }

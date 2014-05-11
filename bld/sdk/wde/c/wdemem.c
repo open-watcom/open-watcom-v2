@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
-#include "wdemem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -54,56 +53,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void *WdeMemAlloc( size_t size )
-{
-    return( WRMemAlloc( size ) );
-}
-
-void WdeMemFree( void *ptr )
-{
-    WRMemFree( ptr );
-}
-
-void *WdeMemRealloc( void *old_ptr, size_t newsize )
-{
-    return( WRMemRealloc( old_ptr, newsize ) );
-}
-
-int WdeMemValidate( void *ptr )
-{
-    return( WRMemValidate( ptr ) );
-}
-
-int WdeMemChkRange( void *start, size_t len )
-{
-    return( WRMemChkRange( start, len ) );
-}
-
-void WdeMemPrtUsage( void )
-{
-    WRMemPrtUsage();
-}
-
-int WdeMemPrtList( void )
-{
-    return( WRMemPrtList() );
-}
-
 /* functions to replace those in mem.c in SDK/MISC */
-
-void MemStart( void )
-{
-#ifdef _M_I86
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-#endif
-}
 
 void *MemAlloc( size_t size )
 {
     void *p;
 
-    p = WdeMemAlloc( size );
+    p = WRMemAlloc( size );
 
     if( p != NULL ) {
         memset( p, 0, size );
@@ -112,16 +68,7 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, size_t size )
-{
-    void *p;
-
-    p = WdeMemRealloc( ptr, size );
-
-    return( p );
-}
-
 void MemFree( void *ptr )
 {
-    WdeMemFree( ptr );
+    WRMemFree( ptr );
 }

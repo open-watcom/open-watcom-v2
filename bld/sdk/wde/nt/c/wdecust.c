@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include "fmedit.def"
 #include "wdecust.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wdemain.h"
@@ -46,6 +45,7 @@
 #include "wdedebug.h"
 #include "wde_rc.h"
 #include "jdlg.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -179,14 +179,14 @@ Bool WdeLoadCustomLib( Bool nt_lib, Bool load_only )
 
     if( inst == (HANDLE)NULL ) {
         WdeWriteTrail( "WdeLoadCustomLib: LoadLibrary call failed!" );
-        WdeMemFree( name );
+        WRMemFree( name );
         return( FALSE );
     }
 
     lib = WdeAllocCustLib();
     if( lib == NULL ) {
         WdeWriteTrail( "WdeLoadCustomLib: WdeAllocCustLib failed!" );
-        WdeMemFree( name );
+        WRMemFree( name );
         FreeLibrary( inst );
         return( FALSE );
     }
@@ -245,7 +245,7 @@ BOOL WdeLoadMSCustomControls( WdeCustLib *lib )
         return( FALSE );
     }
 
-    lib->lpcci = (LPCCINFO)WdeMemAlloc( sizeof( CCINFO ) * num_classes );
+    lib->lpcci = (LPCCINFO)WRMemAlloc( sizeof( CCINFO ) * num_classes );
     if( lib->lpcci == NULL ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: LPCCINFO alloc failed!" );
         return( FALSE );
@@ -265,7 +265,7 @@ WdeCustLib *WdeAllocCustLib( void )
 {
     WdeCustLib  *lib;
 
-    lib = (WdeCustLib *)WdeMemAlloc( sizeof( WdeCustLib ) );
+    lib = (WdeCustLib *)WRMemAlloc( sizeof( WdeCustLib ) );
 
     if( lib == NULL ) {
         WdeWriteTrail( "WdeAllocCustLib: WdeCustLib alloc failed!" );
@@ -274,7 +274,7 @@ WdeCustLib *WdeAllocCustLib( void )
 
     memset( lib, 0, sizeof( WdeCustLib ) );
 
-    WdeMemValidate( lib );
+    WRMemValidate( lib );
 
     return( lib );
 }
@@ -309,15 +309,15 @@ BOOL WdeFreeCustLib( WdeCustLib *lib )
 {
     if( lib != NULL ) {
         if( lib->file_name != NULL ) {
-            WdeMemFree( lib->file_name );
+            WRMemFree( lib->file_name );
         }
         if( lib->inst != NULL ) {
             FreeLibrary( lib->inst );
         }
         if( lib->lpcci != NULL ) {
-            WdeMemFree( lib->lpcci );
+            WRMemFree( lib->lpcci );
         }
-        WdeMemFree( lib );
+        WRMemFree( lib );
     } else {
         WdeWriteTrail( "WdeFreeCustLib: NULL lib!" );
         return( FALSE );
@@ -396,7 +396,7 @@ void WdeFreeSelectWinCBox( HWND win )
             current = (WdeCurrCustControl *)
                 SendMessage( cbox, CB_GETITEMDATA, (WPARAM)count, 0 );
             if( current != NULL ) {
-                WdeMemFree( current );
+                WRMemFree( current );
                 SendMessage( cbox, CB_SETITEMDATA, count, (LPARAM)NULL );
             }
             count--;
@@ -411,7 +411,7 @@ Bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
     LRESULT             index;
 
     for( i = 0; i < lib->num_classes; i++ ) {
-        current = (WdeCurrCustControl *)WdeMemAlloc( sizeof( WdeCurrCustControl ) );
+        current = (WdeCurrCustControl *)WRMemAlloc( sizeof( WdeCurrCustControl ) );
         if( current == NULL ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( FALSE );
@@ -422,7 +422,7 @@ Bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
 
         if( index == CB_ERR || index == CB_ERRSPACE ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_ADDSTRING failed!" );
-            WdeMemFree( current );
+            WRMemFree( current );
             return( FALSE );
         }
 
@@ -430,7 +430,7 @@ Bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
 
         if( index == CB_ERR ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_SETITEMDATA failed!" );
-            WdeMemFree( current );
+            WRMemFree( current );
             return( FALSE );
         }
     }

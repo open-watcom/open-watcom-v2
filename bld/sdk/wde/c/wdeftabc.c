@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -126,7 +125,7 @@ OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeTCCreate( parent, obj_rect, handle, id, WdeDefaultTabC );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultTabC ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultTabC ) );
     SETCTL_TEXT( WdeDefaultTabC, NULL );
 
     return( new );
@@ -144,7 +143,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeTabCObject *)WdeMemAlloc( sizeof( WdeTabCObject ) );
+    new = (WdeTabCObject *)WRMemAlloc( sizeof( WdeTabCObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTabCCreate: Object malloc failed" );
         return( NULL );
@@ -162,21 +161,21 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeTabCCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeTabCCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeTabCCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -263,7 +262,7 @@ BOOL WdeTabCDestroy( WdeTabCObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -291,7 +290,7 @@ BOOL WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *
         return( FALSE );
     }
 
-    *new = (WdeTabCObject *)WdeMemAlloc( sizeof( WdeTabCObject ) );
+    *new = (WdeTabCObject *)WRMemAlloc( sizeof( WdeTabCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTabCCopyObject: Object malloc failed" );
@@ -309,7 +308,7 @@ BOOL WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTabCCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

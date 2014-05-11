@@ -37,7 +37,6 @@
 #include <cderr.h>
 #include "colors.h"
 #include "iebmpdat.h"
-#include "wrdll.h"
 #include "wrbitmap.h"
 #include "wricon.h"
 #include "wrselimg.h"
@@ -636,13 +635,13 @@ static BOOL getOpenFName( char *fname )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in Win32, you will not get the nice dialog! */
-    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)OpenHook, Instance );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     rc = GetOpenFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (LPVOID)of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
 
     if( rc ) {
@@ -852,11 +851,11 @@ static BOOL getOpenPalName( char *fname )
                 OFN_HIDEREADONLY;
 #if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)OpenHook, Instance );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, Instance );
 #endif
     rc = GetOpenFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (LPVOID)of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
     return( rc );
 

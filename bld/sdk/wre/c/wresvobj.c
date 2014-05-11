@@ -38,7 +38,6 @@
 #include "wreglbl.h"
 #include "wremsg.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wrewait.h"
 #include "wrdll.h"
 #include "wrselft.h"
@@ -103,7 +102,7 @@ Bool SaveObject( Bool save_into )
     }
 
     if( rdata != NULL ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
     }
 
     WRESetWaitCursor( FALSE );
@@ -152,7 +151,7 @@ Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( fname != NULL ) {
-        WREMemFree( fname );
+        WRMemFree( fname );
     }
 
     return( ok );
@@ -199,7 +198,7 @@ Bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( fname != NULL ) {
-        WREMemFree( fname );
+        WRMemFree( fname );
     }
 
     return( ok );

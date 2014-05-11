@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdeinfo.h"
 #include "wdereq.h"
@@ -531,7 +530,7 @@ Bool WdeOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WdeMemFree( name );
+        WRMemFree( name );
     }
 
     WdeSetWaitCursor( FALSE );
@@ -784,7 +783,7 @@ Bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
         } else {
             WdeResCounter++;
             win_title_len = strlen( WdeResUntitled ) + 7;
-            win_title = (char *)WdeMemAlloc( win_title_len );
+            win_title = (char *)WRMemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WdeResUntitled, 0xffff & WdeResCounter );
             mdics.szTitle = win_title;
         }
@@ -808,7 +807,7 @@ Bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
     ret = SendMessage( win, WM_MDICREATE, 0, (LPARAM)&mdics );
 
     if( win_title != NULL ) {
-        WdeMemFree( win_title );
+        WRMemFree( win_title );
     }
 
 #ifdef __NT__
@@ -914,7 +913,7 @@ Bool WdeSaveResource( WdeResInfo *res_info, Bool get_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WdeMemFree( res_info->info->save_name );
+            WRMemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {

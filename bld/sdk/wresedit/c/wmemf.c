@@ -35,7 +35,6 @@
 #include "wresall.h"
 #include "wglbl.h"
 #include "wrdll.h"
-#include "wmem.h"
 #include "wmemf.h"
 #include "wrmemf.h"
 
@@ -94,7 +93,7 @@ Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     }
 
     if( name != NULL ) {
-        WMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );

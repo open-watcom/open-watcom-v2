@@ -54,7 +54,7 @@ BOOL AllocNewBuf( void ) {
     return( TRUE );
 }
 
-BOOL AddString( DWORD msgid ) {
+BOOL AddString( MSGID msgid ) {
 
     int         len;
 
@@ -95,11 +95,11 @@ BOOL InitStringTable( void ) {
  * GetRCString
  */
 
-char *HWGetRCString( DWORD msgid ) {
+char *HWGetRCString( UINT msgid ) {
     return( StringTbl[ msgid ] );
 }
 
-char *HWAllocRCString( DWORD id ) {
+char *HWAllocRCString( UINT id ) {
     return( StringTbl[ id ] );
 }
 
@@ -109,7 +109,7 @@ void HWFreeRCString( char *str ) {
     str = str;
 }
 
-DWORD HWCopyRCString( DWORD id, char *buf, DWORD bufsize ) {
+int HWCopyRCString( UINT id, char *buf, int bufsize ) {
 
     strncpy( buf, StringTbl[ id ], bufsize );
     return( strlen( StringTbl[ id ] ) );

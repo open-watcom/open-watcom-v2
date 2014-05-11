@@ -377,7 +377,7 @@ int NewImage( int img_type, char *filename )
         bitCount = bcount;
 #else
         fp = MakeProcInstance( (FARPROC)SelCursorProc, Instance );
-        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, (LPVOID)fp );
+        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, (DLGPROC)fp );
         FreeProcInstance( fp );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;

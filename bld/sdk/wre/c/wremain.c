@@ -43,7 +43,6 @@
 
 #include "wreglbl.h"
 #include "wrehints.h"
-#include "wremem.h"
 #include "wrememf.h"
 #include "wremsg.h"
 #include "rcstr.gh"
@@ -139,8 +138,18 @@ Bool WRERemoveResource( WREResInfo * );
 Bool pleaseOpenFile( UINT msg );
 Bool WREIsEditWindowDialogMessage( MSG *msg );
 
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WREMemAlloc, WREMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 static void peekArgs( char **argv, int argc )
 {
@@ -249,7 +258,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     WAccelInit();
     WMenuInit();
     WStringInit();
-    WREInitDisplayError( hinstCurrent );
+    SetInstance( hinstCurrent );
 
     /* store the handle to this instance of WRE in a static variable */
     WREInst = hinstCurrent;
@@ -376,7 +385,7 @@ Bool WREInitInst( HINSTANCE app_inst )
     GetWindowRect( GetDesktopWindow(), &screen );
     IntersectRect( &t, &screen, &r );
 
-    title = WREAllocRCString( WRE_APPNAME );
+    title = AllocRCString( WRE_APPNAME );
 
     /* attempt to create the main application window */
     style = WS_OVERLAPPEDWINDOW;
@@ -392,7 +401,7 @@ Bool WREInitInst( HINSTANCE app_inst )
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 
     /* if the window could not be created return FALSE */

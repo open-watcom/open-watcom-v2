@@ -62,39 +62,39 @@ typedef struct {
 } RetCodeInfo;
 
 msglist ThreadWaitMsgs[] = {
-    0,                  (char *)STR_WAIT_4_EXECUTIVE,
-    1,                  (char *)STR_WAIT_4_FREE_PAGE,
-    2,                  (char *)STR_WAIT_4_PAGE_IN,
-    3,                  (char *)STR_WAIT_4_POOL_ALLOC,
-    4,                  (char *)STR_WAIT_4_EXEC_DELAY,
-    5,                  (char *)STR_WAIT_4_SUSP_COND,
-    6,                  (char *)STR_WAIT_4_USER_REQUEST,
-    7,                  (char *)STR_WAIT_4_EXECUTIVE,
-    8,                  (char *)STR_WAIT_4_FREE_PAGE,
-    9,                  (char *)STR_WAIT_4_PAGE_IN,
-    10,                 (char *)STR_WAIT_4_POOL_ALLOC,
-    11,                 (char *)STR_WAIT_4_EXEC_DELAY,
-    12,                 (char *)STR_WAIT_4_SUSP_COND,
-    13,                 (char *)STR_WAIT_4_USER_REQUEST,
-    14,                 (char *)STR_WAIT_4_EVENT_PR_HIGH,
-    15,                 (char *)STR_WAIT_4_EVENT_PR_LOW,
-    16,                 (char *)STR_WAIT_4_LPC_RECIEVE,
-    17,                 (char *)STR_WAIT_4_LPC_REPLY,
-    18,                 (char *)STR_WAIT_4_VIRTUAL_MEMORY,
-    19,                 (char *)STR_WAIT_4_PAGE_OUT,
-    0,                  (char *)-1
+    0,      (char *)(pointer_int)STR_WAIT_4_EXECUTIVE,
+    1,      (char *)(pointer_int)STR_WAIT_4_FREE_PAGE,
+    2,      (char *)(pointer_int)STR_WAIT_4_PAGE_IN,
+    3,      (char *)(pointer_int)STR_WAIT_4_POOL_ALLOC,
+    4,      (char *)(pointer_int)STR_WAIT_4_EXEC_DELAY,
+    5,      (char *)(pointer_int)STR_WAIT_4_SUSP_COND,
+    6,      (char *)(pointer_int)STR_WAIT_4_USER_REQUEST,
+    7,      (char *)(pointer_int)STR_WAIT_4_EXECUTIVE,
+    8,      (char *)(pointer_int)STR_WAIT_4_FREE_PAGE,
+    9,      (char *)(pointer_int)STR_WAIT_4_PAGE_IN,
+    10,     (char *)(pointer_int)STR_WAIT_4_POOL_ALLOC,
+    11,     (char *)(pointer_int)STR_WAIT_4_EXEC_DELAY,
+    12,     (char *)(pointer_int)STR_WAIT_4_SUSP_COND,
+    13,     (char *)(pointer_int)STR_WAIT_4_USER_REQUEST,
+    14,     (char *)(pointer_int)STR_WAIT_4_EVENT_PR_HIGH,
+    15,     (char *)(pointer_int)STR_WAIT_4_EVENT_PR_LOW,
+    16,     (char *)(pointer_int)STR_WAIT_4_LPC_RECIEVE,
+    17,     (char *)(pointer_int)STR_WAIT_4_LPC_REPLY,
+    18,     (char *)(pointer_int)STR_WAIT_4_VIRTUAL_MEMORY,
+    19,     (char *)(pointer_int)STR_WAIT_4_PAGE_OUT,
+    0,      (char *)(pointer_int)-1
 };
 
 msglist ThreadStateMsgs[] = {
-    0,                  (char *)STR_INITIALIZED,
-    1,                  (char *)STR_READY,
-    2,                  (char *)STR_RUNNING,
-    3,                  (char *)STR_STANDING_BY,
-    4,                  (char *)STR_TERMINATED,
-    5,                  (char *)STR_WAITING,
-    6,                  (char *)STR_TRANSITION,
-    7,                  (char *)STR_UNKNOWN,
-    0,                  (char *)-1
+    0,      (char *)(pointer_int)STR_INITIALIZED,
+    1,      (char *)(pointer_int)STR_READY,
+    2,      (char *)(pointer_int)STR_RUNNING,
+    3,      (char *)(pointer_int)STR_STANDING_BY,
+    4,      (char *)(pointer_int)STR_TERMINATED,
+    5,      (char *)(pointer_int)STR_WAITING,
+    6,      (char *)(pointer_int)STR_TRANSITION,
+    7,      (char *)(pointer_int)STR_UNKNOWN,
+    0,      (char *)(pointer_int)-1
 };
 
 #define BUF_SIZE        100
@@ -134,7 +134,7 @@ BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     WORD                cmd;
     char                buf[BUF_SIZE];
     char                *title;
-    DWORD               info_str_id;
+    MSGID               info_str_id;
 
     info = (RetCodeInfo *)GetWindowLong( hwnd, DWL_USER );
     switch( msg ) {

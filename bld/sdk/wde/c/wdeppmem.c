@@ -31,7 +31,6 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
-#include "wdemem.h"
 #include "wdestken.h"
 #include "wdedebug.h"
 
@@ -51,7 +50,7 @@ void *PP_Malloc( unsigned size )
 {
     void        *p;
 
-    p = WdeMemAlloc( size );
+    p = WRMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -60,5 +59,5 @@ void *PP_Malloc( unsigned size )
 
 void PP_Free( void *p )
 {
-    WdeMemFree( p );
+    WRMemFree( p );
 }

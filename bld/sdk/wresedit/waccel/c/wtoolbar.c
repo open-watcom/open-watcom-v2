@@ -37,11 +37,11 @@
 #include "wglbl.h"
 #include "wstat.h"
 #include "wmain.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "whints.h"
 #include "wlist.h"
 #include "wtoolbar.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -107,20 +107,20 @@ WToolBar *WCreateToolBar( WToolBarInfo *info, HWND parent )
         for( ; i > 0; i-- ) {
             DeleteMenu( sys_menu, i, MF_BYPOSITION );
         }
-        text = WAllocRCString( W_SYSMENUMOVE );
+        text = AllocRCString( W_SYSMENUMOVE );
         AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
         if( text != NULL ) {
-            WFreeRCString( text );
+            FreeRCString( text );
         }
-        text = WAllocRCString( W_SYSMENUSIZE );
+        text = AllocRCString( W_SYSMENUSIZE );
         AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
         if( text != NULL ) {
-            WFreeRCString( text );
+            FreeRCString( text );
         }
-        text = WAllocRCString( W_SYSMENUHIDE );
+        text = AllocRCString( W_SYSMENUHIDE );
         AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
         if( text != NULL ) {
-            WFreeRCString( text );
+            FreeRCString( text );
         }
     }
 
@@ -222,12 +222,12 @@ void WFreeToolBarInfo( WToolBarInfo *info )
 {
     if( info != NULL ) {
         if( info->items != NULL ) {
-            WMemFree( info->items );
+            WRMemFree( info->items );
         }
         if( info->dinfo.background != NULL ) {
             DeleteObject( info->dinfo.background );
         }
-        WMemFree( info );
+        WRMemFree( info );
     }
 }
 
@@ -235,16 +235,16 @@ WToolBarInfo *WAllocToolBarInfo( int num )
 {
     WToolBarInfo *info;
 
-    info = (WToolBarInfo *)WMemAlloc( sizeof( WToolBarInfo ) );
+    info = (WToolBarInfo *)WRMemAlloc( sizeof( WToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)WMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = (TOOLITEMINFO *)WRMemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WMemFree( info );
+            WRMemFree( info );
             info = NULL;
         }
     }
@@ -256,7 +256,7 @@ WToolBar *WAllocToolBar( void )
 {
     WToolBar *tbar;
 
-    tbar = (WToolBar *)WMemAlloc( sizeof( WToolBar ) );
+    tbar = (WToolBar *)WRMemAlloc( sizeof( WToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WToolBar ) );
     }
@@ -267,7 +267,7 @@ WToolBar *WAllocToolBar( void )
 void WFreeToolBar( WToolBar *tbar )
 {
     if( tbar != NULL ) {
-        WMemFree( tbar );
+        WRMemFree( tbar );
     }
 }
 

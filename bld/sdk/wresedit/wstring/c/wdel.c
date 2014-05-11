@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wedit.h"
 #include "wdel.h"
 #include "sys_rc.h"
@@ -95,7 +94,7 @@ Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
     if( ok ) {
         *bdel = FALSE;
         if( block->block.String[id & 0xf] != NULL ) {
-            WMemFree( block->block.String[id & 0xf] );
+            WRMemFree( block->block.String[id & 0xf] );
             block->block.String[id & 0xf] = NULL;
             if( WIsBlockEmpty( block ) ) {
                 ok = WRemoveStringBlock( einfo->tbl, block );

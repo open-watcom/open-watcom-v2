@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdeactn.h"
 #include "wdeobjid.h"
 #include "wderes.h"
@@ -223,7 +222,7 @@ Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
         return( TRUE );
     }
 
-    sel = (int *)WdeMemAlloc( count * sizeof( int ) );
+    sel = (int *)WRMemAlloc( count * sizeof( int ) );
     if( sel == NULL ) {
         WdeWriteTrail( "WdeGetSelectInfo: alloc failed!" );
         return( FALSE );
@@ -255,7 +254,7 @@ Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     }
 
     if( sel ) {
-        WdeMemFree( sel );
+        WRMemFree( sel );
     }
 
     return( ok );
@@ -305,7 +304,7 @@ Bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
-        WdeMemFree( name );
+        WRMemFree( name );
 
         count++;
 
@@ -469,7 +468,7 @@ Bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
             SETCTL_STYLE( control, SS_LEFT | WS_BORDER | WS_VISIBLE |
                                    WS_TABSTOP | WS_GROUP );
             if( GETCTL_CLASSID( control ) != NULL ) {
-                WdeMemFree( GETCTL_CLASSID( control ) );
+                WRMemFree( GETCTL_CLASSID( control ) );
             }
             SETCTL_CLASSID( control, ResNumToControlClass( CLASS_STATIC ) );
             new = Create(object_id, dialog, &control_rect, (OBJPTR)control );

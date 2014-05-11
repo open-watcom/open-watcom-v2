@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wstring.h"
 #include "winfo.h"
 #include "wribbon.h"
@@ -80,7 +79,7 @@ WStringEditInfo *WAllocStringEInfo( void )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *)WMemAlloc( sizeof( WStringEditInfo ) );
+    einfo = (WStringEditInfo *)WRMemAlloc( sizeof( WStringEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WStringEditInfo ) );
@@ -114,9 +113,9 @@ void WFreeStringEInfo( WStringEditInfo *einfo )
             einfo->win = (HWND)NULL;
         }
         if( einfo->file_name != NULL ) {
-            WMemFree( einfo->file_name );
+            WRMemFree( einfo->file_name );
         }
-        WMemFree( einfo );
+        WRMemFree( einfo );
     }
 }
 
@@ -276,7 +275,7 @@ WStringBlock *WAllocStringBlock( void )
 {
     WStringBlock *block;
 
-    block = (WStringBlock *)WMemAlloc( sizeof( WStringBlock ) );
+    block = (WStringBlock *)WRMemAlloc( sizeof( WStringBlock ) );
     if( block != NULL ) {
         memset( block, 0, sizeof( WStringBlock ) );
     }
@@ -288,7 +287,7 @@ void WFreeStringTable( WStringTable *tbl )
 {
     if( tbl != NULL ) {
         WFreeStringTableBlocks( tbl->first_block );
-        WMemFree( tbl );
+        WRMemFree( tbl );
     }
 }
 
@@ -310,11 +309,11 @@ void WFreeStringTableBlock( WStringBlock *block )
     if( block != NULL ) {
         for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->symbol[i] != NULL ) {
-                WMemFree( block->symbol[i] );
+                WRMemFree( block->symbol[i] );
             }
         }
         ResFreeStringTableBlock( &block->block );
-        WMemFree( block );
+        WRMemFree( block );
     }
 }
 
@@ -326,12 +325,12 @@ void WFreeStringNode( WStringNode *node )
         n = node;
         node = node->next;
         if( n->block_name != NULL ) {
-            WMemFree( n->block_name );
+            WRMemFree( n->block_name );
         }
         if( n->data != NULL ) {
-            WMemFree( n->data );
+            WRMemFree( n->data );
         }
-        WMemFree( n );
+        WRMemFree( n );
     }
 }
 
@@ -343,7 +342,7 @@ WStringNode *WMakeStringNodeFromStringBlock( WStringBlock *block )
         return( NULL );
     }
 
-    node = (WStringNode *)WMemAlloc( sizeof( WStringNode ) );
+    node = (WStringNode *)WRMemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }
@@ -395,7 +394,7 @@ WStringTable *WAllocStringTable( int is32bit )
 {
     WStringTable        *tbl;
 
-    tbl = (WStringTable *)WMemAlloc( sizeof( WStringTable ) );
+    tbl = (WStringTable *)WRMemAlloc( sizeof( WStringTable ) );
 
     if( tbl == NULL ) {
         return( NULL );
@@ -557,7 +556,7 @@ Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
         }
         if( vlist->next == NULL ) {
             if( block->symbol[i] != NULL ) {
-                WMemFree( block->symbol[i] );
+                WRMemFree( block->symbol[i] );
             }
             block->symbol[i] = WStrDup( vlist->entry->name );
         }
@@ -596,7 +595,7 @@ static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
                                text, block->symbol[i], &replace );
         }
 
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( TRUE );

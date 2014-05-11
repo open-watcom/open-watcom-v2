@@ -39,8 +39,8 @@
 #include "wglbl.h"
 #include "wwait.h"
 #include "wgetfn.h"
-#include "wmem.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "weditsym.h"
 #include "wstrdup.h"
@@ -60,7 +60,7 @@ void *PP_Malloc( size_t size )
 {
     void        *p;
 
-    p = WMemAlloc( size );
+    p = WRMemAlloc( size );
     if( p == NULL ) {
         PP_OutOfMemory();
     }
@@ -69,7 +69,7 @@ void *PP_Malloc( size_t size )
 
 void PP_Free( void *p )
 {
-    WMemFree( p );
+    WRMemFree( p );
 }
 
 static void addSymbols( WRHashTable *table )
@@ -123,15 +123,15 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prom
     if( ok ) {
         if( file_name == NULL || prompt ) {
             gf.file_name = file_name;
-            gf.title = WAllocRCString( W_LOADSYMTITLE );
-            gf.filter = WAllocRCString( W_SYMFILTER );
+            gf.title = AllocRCString( W_LOADSYMTITLE );
+            gf.filter = AllocRCString( W_SYMFILTER );
             WMassageFilter( gf.filter );
             name = WGetOpenFileName( parent, &gf );
             if( gf.title != NULL ) {
-                WFreeRCString( gf.title );
+                FreeRCString( gf.title );
             }
             if( gf.filter != NULL ) {
-                WFreeRCString( gf.filter );
+                FreeRCString( gf.filter );
             }
         } else {
             name = WStrDup( file_name );
@@ -173,7 +173,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prom
 
     if( !ok ) {
         if( name != NULL ) {
-            WMemFree( name );
+            WRMemFree( name );
             name = NULL;
         }
     }

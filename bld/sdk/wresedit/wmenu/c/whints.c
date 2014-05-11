@@ -36,7 +36,6 @@
 #include "wglbl.h"
 #include "w_menu.h"
 #include "wmain.h"
-#include "wmem.h"
 #include "wstat.h"
 #include "sys_rc.h"
 #include "wlist.h"

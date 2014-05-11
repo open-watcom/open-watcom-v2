@@ -41,7 +41,6 @@
 #include "wdestat.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wdemem.h"
 #include "wdeopts.h"
 #include "wdectl3d.h"
 #include "wde_rc.h"
@@ -191,7 +190,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
         if( text != NULL ) {
-            str = (char *)WdeMemAlloc( strlen( text ) + 10 + 1 );
+            str = (char *)WRMemAlloc( strlen( text ) + 10 + 1 );
             if( str == NULL ) {
                 WdeFreeRCString( text );
                 return( TRUE );
@@ -210,7 +209,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
         }
         SendMessage( win, WM_SETREDRAW, TRUE, 0 );
         InvalidateRect( win, NULL, TRUE );
-        WdeMemFree( str );
+        WRMemFree( str );
         WdeFreeRCString( text );
     }
 

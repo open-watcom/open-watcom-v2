@@ -118,19 +118,19 @@ static int WRCtl3DDLLInit( void )
         return( FALSE );
     }
 
-    wrCtl3dSubclassDlg = (void *)GetProcAddress( wrDLLLib, (LPCSTR)2 );
-    wrCtl3dSubclassDlgEx = (void *)GetProcAddress( wrDLLLib, (LPCSTR)21 );
-    wrCtl3dGetVer = (void *)GetProcAddress( wrDLLLib, (LPCSTR)1 );
-    wrCtl3dEnabled = (void *)GetProcAddress( wrDLLLib, (LPCSTR)5 );
-    wrCtl3dCtlColor = (void *)GetProcAddress( wrDLLLib, (LPCSTR)4 );
-    wrCtl3dCtlColorEx = (void *)GetProcAddress( wrDLLLib, (LPCSTR)18 );
-    wrCtl3dColorChange = (void *)GetProcAddress( wrDLLLib, (LPCSTR)6 );
-    wrCtl3dSubclassCtl = (void *)GetProcAddress( wrDLLLib, (LPCSTR)3 );
-    wrCtl3dDlgFramePaint = (void *)GetProcAddress( wrDLLLib, (LPCSTR)20 );
-    wrCtl3dAutoSubclass = (void *)GetProcAddress( wrDLLLib, (LPCSTR)16 );
-    wrCtl3dRegister = (void *)GetProcAddress( wrDLLLib, (LPCSTR)12 );
-    wrCtl3dUnregister = (void *)GetProcAddress( wrDLLLib, (LPCSTR)13 );
-    wrCtl3dWinIniChange = (void *)GetProcAddress( wrDLLLib, (LPCSTR)22 );
+    wrCtl3dSubclassDlg = (LPFN_Ctl3dSubclassDlg)GetProcAddress( wrDLLLib, (LPCSTR)2 );
+    wrCtl3dSubclassDlgEx = (LPFN_Ctl3dSubclassDlgEx)GetProcAddress( wrDLLLib, (LPCSTR)21 );
+    wrCtl3dGetVer = (LPFN_Ctl3dGetVer)GetProcAddress( wrDLLLib, (LPCSTR)1 );
+    wrCtl3dEnabled = (LPFN_Ctl3dEnabled)GetProcAddress( wrDLLLib, (LPCSTR)5 );
+    wrCtl3dCtlColor = (LPFN_Ctl3dCtlColor)GetProcAddress( wrDLLLib, (LPCSTR)4 );
+    wrCtl3dCtlColorEx = (LPFN_Ctl3dCtlColorEx)GetProcAddress( wrDLLLib, (LPCSTR)18 );
+    wrCtl3dColorChange = (LPFN_Ctl3dColorChange)GetProcAddress( wrDLLLib, (LPCSTR)6 );
+    wrCtl3dSubclassCtl = (LPFN_Ctl3dSubclassCtl)GetProcAddress( wrDLLLib, (LPCSTR)3 );
+    wrCtl3dDlgFramePaint = (LPFN_Ctl3dDlgFramePaint)GetProcAddress( wrDLLLib, (LPCSTR)20 );
+    wrCtl3dAutoSubclass = (LPFN_Ctl3dAutoSubclass)GetProcAddress( wrDLLLib, (LPCSTR)16 );
+    wrCtl3dRegister = (LPFN_Ctl3dRegister)GetProcAddress( wrDLLLib, (LPCSTR)12 );
+    wrCtl3dUnregister = (LPFN_Ctl3dUnregister)GetProcAddress( wrDLLLib, (LPCSTR)13 );
+    wrCtl3dWinIniChange = (LPFN_Ctl3dWinIniChange)GetProcAddress( wrDLLLib, (LPCSTR)22 );
 
     if( wrCtl3dSubclassDlg == NULL || wrCtl3dSubclassDlgEx == NULL ||
         wrCtl3dGetVer == NULL || wrCtl3dEnabled == NULL || wrCtl3dCtlColor == NULL ||

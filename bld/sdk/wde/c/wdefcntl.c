@@ -33,7 +33,6 @@
 #include "wdeglbl.h"
 #include "wdeactn.h"
 #include "wde_wres.h"
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdeinfo.h"
 #include "wdelist.h"
@@ -236,7 +235,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 
     if( ok ) {
-        new = (WdeControlObject *)WdeMemAlloc( sizeof( WdeControlObject ) );
+        new = (WdeControlObject *)WRMemAlloc( sizeof( WdeControlObject ) );
         ok = ( new != NULL );
         if( ok ) {
             memset( new, 0, sizeof( WdeControlObject ) );
@@ -312,7 +311,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
             if( new->control_info ) {
                 WdeFreeDialogBoxControl( &new->control_info );
             }
-            WdeMemFree( new );
+            WRMemFree( new );
             new = NULL;
         }
     }
@@ -374,7 +373,7 @@ BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
     if( Class == NULL ) {
         Class = WdeStrDup( "" );
         if( Class == NULL ) {
-            WdeMemFree( Text );
+            WRMemFree( Text );
             return( FALSE );
         }
     }
@@ -397,8 +396,8 @@ BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
                             GETCTL_SIZEH( obj->control_info ),
                             ID, style, Class, Text, 0, NULL );
 
-    WdeMemFree( Text );
-    WdeMemFree( Class );
+    WRMemFree( Text );
+    WRMemFree( Class );
 
     return( *template != NULL );
 }
@@ -425,7 +424,7 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
     if( Class == NULL ) {
         Class = WdeStrDup( "" );
         if( Class == NULL ) {
-            WdeMemFree( Text );
+            WRMemFree( Text );
             return( FALSE );
         }
     }
@@ -451,8 +450,8 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
                               GETCTL_HELPID( obj->control_info ),
                               Class, Text, 0, NULL );
 
-    WdeMemFree( Text );
-    WdeMemFree( Class );
+    WRMemFree( Text );
+    WRMemFree( Class );
 
     return( *template != NULL );
 }
@@ -536,18 +535,18 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
 void WdeFreeControlObject( WdeControlObject *obj )
 {
     if( obj->symbol != NULL ) {
-        WdeMemFree( obj->symbol );
+        WRMemFree( obj->symbol );
     }
 
     if( obj->helpsymbol != NULL ) {
-        WdeMemFree( obj->helpsymbol );
+        WRMemFree( obj->helpsymbol );
     }
 
     if( obj->control_info != NULL ) {
         WdeFreeDialogBoxControl( &obj->control_info );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 }
 
 BOOL WdeChangeControlSize( WdeControlObject *obj, BOOL widths_only, BOOL snap_to_grid )
@@ -1042,7 +1041,7 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
         return( FALSE );
     }
 
-    *new = (WdeControlObject *)WdeMemAlloc( sizeof( WdeControlObject ) );
+    *new = (WdeControlObject *)WRMemAlloc( sizeof( WdeControlObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeControlCopyObject: Object malloc failed" );
@@ -1179,10 +1178,10 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     WdeWriteInfo( &is );
 
     if( is.symbol != NULL ) {
-        WdeMemFree( is.symbol );
+        WRMemFree( is.symbol );
     }
 //  if( is.helpsymbol != NULL ) {
-//      WdeMemFree( is.helpsymbol );
+//      WRMemFree( is.helpsymbol );
 //  }
 }
 
@@ -1607,7 +1606,7 @@ BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
     WdeControlModified( obj );
 
     if( obj->symbol != NULL ) {
-        WdeMemFree( obj->symbol );
+        WRMemFree( obj->symbol );
     }
     obj->symbol = WdeStrDup( s );
 
@@ -1618,7 +1617,7 @@ BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
 
     /* JPK - Added for help ID */
     if( obj->helpsymbol != NULL ) {
-        WdeMemFree( obj->helpsymbol );
+        WRMemFree( obj->helpsymbol );
     }
     obj->helpsymbol = WdeStrDup( info->helpsymbol );
 
@@ -1662,7 +1661,7 @@ BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj,
     _wde_touch( info );
 
     if( obj->helpsymbol != NULL ) {
-        WdeMemFree( obj->helpsymbol );
+        WRMemFree( obj->helpsymbol );
     }
     obj->helpsymbol = WdeStrDup( hs );
 
@@ -1697,7 +1696,7 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, Bool *b, Bool *from_id )
                                   (WdeHashValue)GETCTL_ID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
-                    WdeMemFree( obj->symbol );
+                    WRMemFree( obj->symbol );
                 }
                 obj->symbol = vp;
                 WdeControlModified( obj );
@@ -1710,7 +1709,7 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, Bool *b, Bool *from_id )
                     SETCTL_ID( obj->control_info, (uint_16)val );
                     WdeControlModified( obj );
                 } else {
-                    WdeMemFree( obj->symbol );
+                    WRMemFree( obj->symbol );
                     obj->symbol = NULL;
                 }
             }
@@ -1737,11 +1736,11 @@ BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, Bool *b, Bool *from_id 
                                   (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->helpsymbol != NULL ) {
-                    WdeMemFree( obj->helpsymbol );
+                    WRMemFree( obj->helpsymbol );
                 }
                 obj->helpsymbol = vp;
                 if( obj->control_info->helpsymbol != NULL ) {
-                    WdeMemFree( obj->control_info->helpsymbol );
+                    WRMemFree( obj->control_info->helpsymbol );
                 }
                 obj->control_info->helpsymbol = WdeStrDup( obj->helpsymbol );
                 WdeControlModified( obj );
@@ -1753,7 +1752,7 @@ BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, Bool *b, Bool *from_id 
                     SETCTL_HELPID( obj->control_info, (uint_32)val );
                     WdeControlModified( obj );
                 } else {
-                    WdeMemFree( obj->helpsymbol );
+                    WRMemFree( obj->helpsymbol );
                     obj->helpsymbol = NULL;
                 }
             }
@@ -1779,20 +1778,20 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 
     if( in->c.text ) {
         if( GETCTL_TEXT( obj->control_info ) ) {
-            WdeMemFree( GETCTL_TEXT( obj->control_info ) );
+            WRMemFree( GETCTL_TEXT( obj->control_info ) );
         }
         SETCTL_TEXT( obj->control_info, in->c.text );
         text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
         if( text != NULL ) {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)text );
-            WdeMemFree( text );
+            WRMemFree( text );
         } else {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)"" );
         }
     }
 
     if( obj->symbol != NULL ) {
-        WdeMemFree( obj->symbol );
+        WRMemFree( obj->symbol );
     }
 
     obj->symbol = in->symbol;
@@ -1833,7 +1832,7 @@ Bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
     style = GETCTL_STYLE( obj->control_info );
 
     if( obj->mode == WdeSelect ) {
-        o = (WdeSetOrderStruct *)WdeMemAlloc( sizeof( WdeSetOrderStruct ) );
+        o = (WdeSetOrderStruct *)WRMemAlloc( sizeof( WdeSetOrderStruct ) );
         if( o == NULL ) {
             return( FALSE );
         }
@@ -1867,7 +1866,7 @@ Bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
             style &= 0xffffffff ^ WS_GROUP;
         }
         *l = o->lists;
-        WdeMemFree( o );
+        WRMemFree( o );
     } else {
         o = WdeGetTagInfo( obj->tag );
         if( o == NULL ) {

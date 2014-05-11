@@ -162,7 +162,7 @@ void DoSpyMsgDialog( HWND hwnd, int which )
 
     savewatch = CloneBitState( savedBits );
     fp = MakeProcInstance( (FARPROC)SpyMsgDialog, Instance );
-    which = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (LPVOID)fp, which );
+    which = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (DLGPROC)fp, which );
     FreeProcInstance( fp );
     if( which == -1 ) {
         CopyBitState( savedBits, savewatch );
@@ -270,7 +270,7 @@ void DoMessageDialog( HWND hwnd, WORD cmdid )
     }
     savedBits = SaveBitState( currBit );
     fp = MakeProcInstance( (FARPROC)MessageDialog, Instance );
-    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, (LPVOID)fp );
+    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, (DLGPROC)fp );
     if( rc ) {
         for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
             i = id - SPYMSG_CLIPBOARD;
@@ -479,7 +479,7 @@ void DoMessageSelDialog( HWND hwnd )
         return;
     }
     fp = MakeProcInstance( (FARPROC)MessageSelectDialog, Instance );
-    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (LPVOID)fp, (LPARAM)(LPSTR)str );
+    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (DLGPROC)fp, (LPARAM)(LPSTR)str );
     FreeProcInstance( fp );
 
 } /* DoMessageSelDialog */

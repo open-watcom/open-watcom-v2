@@ -37,10 +37,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void     WREDisplayMsg( const char * );
-extern void     WREInitDisplayError( HINSTANCE inst );
-extern void     WREDisplayErrorMsg( DWORD msg );
-extern char     *WREAllocRCString( DWORD id );
-extern void     WREFreeRCString( char *str );
-extern DWORD    WRECopyRCString( DWORD id, char *buf, DWORD bufsize );
+extern void     WREDisplayErrorMsg( UINT msg );
 
 #endif

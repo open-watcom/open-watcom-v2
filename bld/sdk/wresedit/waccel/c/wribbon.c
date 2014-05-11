@@ -40,6 +40,7 @@
 #include "wmsg.h"
 #include "sys_rc.h"
 #include "wribbon.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -301,11 +302,11 @@ void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
     mtext = NULL;
 
     if( einfo->show_ribbon ) {
-        mtext = WAllocRCString( W_SHOWTOOLBAR );
+        mtext = AllocRCString( W_SHOWTOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_HIDE );
         WSetStatusByID( einfo->wsb, -1, W_TOOLBARHIDDEN );
     } else {
-        mtext = WAllocRCString( W_HIDETOOLBAR );
+        mtext = AllocRCString( W_HIDETOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_SHOW );
         WSetStatusByID( einfo->wsb, -1, W_TOOLBARSHOWN );
     }
@@ -316,7 +317,7 @@ void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
                 IDM_ACC_SHOWRIBBON, mtext );
 
     if( mtext != NULL ) {
-        WFreeRCString( mtext );
+        FreeRCString( mtext );
     }
 }
 

@@ -37,7 +37,6 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
-#include "wmem.h"
 #include "wmen2rc.h"
 
 #define DEPTH_MULT      4
@@ -78,7 +77,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
         }
     }
 
-    *text = (char *)WMemAlloc( tlen + 1 );
+    *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( FALSE );
     }
@@ -150,11 +149,11 @@ static Bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( flagtext != NULL ) {
-        WMemFree( flagtext );
+        WRMemFree( flagtext );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
@@ -255,7 +254,7 @@ Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
     }
 
     if( rname != NULL ) {
-        WMemFree( rname );
+        WRMemFree( rname );
     }
 
     if( fp != NULL ) {

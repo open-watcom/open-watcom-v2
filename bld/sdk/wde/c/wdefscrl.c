@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -147,7 +146,7 @@ OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeScrollCreate( parent, obj_rect, handle, id, WdeDefaultScroll );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultScroll ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultScroll ) );
     SETCTL_TEXT( WdeDefaultScroll, NULL );
 
     return( new );
@@ -165,7 +164,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeScrollObject *)WdeMemAlloc( sizeof( WdeScrollObject ) );
+    new = (WdeScrollObject *)WRMemAlloc( sizeof( WdeScrollObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeScrollCreate: Object malloc failed" );
         return( NULL );
@@ -183,21 +182,21 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeScrollCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeScrollCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -284,7 +283,7 @@ BOOL WdeScrollDestroy( WdeScrollObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -366,7 +365,7 @@ BOOL WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
         return( FALSE );
     }
 
-    *new = (WdeScrollObject *)WdeMemAlloc( sizeof( WdeScrollObject ) );
+    *new = (WdeScrollObject *)WRMemAlloc( sizeof( WdeScrollObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeScrollCopyObject: Object malloc failed" );
@@ -384,7 +383,7 @@ BOOL WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeScrollCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

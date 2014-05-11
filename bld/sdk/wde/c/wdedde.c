@@ -35,7 +35,6 @@
 #include "wrdll.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdefdiag.h"
 #include "wdei2mem.h"
@@ -305,13 +304,13 @@ void *WdeHData2Mem( HDDEDATA hData )
         return( NULL );
     }
 
-    mem = WdeMemAlloc( size );
+    mem = WRMemAlloc( size );
     if( mem == NULL ) {
         return( NULL );
     }
 
     if( (DWORD)size != DdeGetData( hData, mem, (DWORD)size, 0 ) ) {
-        WdeMemFree( mem );
+        WRMemFree( mem );
         return( NULL );
     }
 
@@ -329,7 +328,7 @@ HDDEDATA WdeCreateResNameData( WResID *name, Bool is32bit )
     if( WRWResID2Mem( name, &data, &size, is32bit ) ) {
         hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
                                      hNameItem, WdeDataClipbdFormat, 0 );
-        WdeMemFree( data );
+        WRMemFree( data );
     }
 
     return( hdata );
@@ -346,7 +345,7 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
     if( WdeGetItemData( ditem, &data, &size ) ) {
         hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
                                      hDataItem, WdeDataClipbdFormat, 0 );
-        WdeMemFree( data );
+        WRMemFree( data );
     }
 
     return( hdata );
@@ -470,7 +469,7 @@ Bool WdeStartDDEEditSession( void )
     if( ok ) {
         ditem->dialog_name = WRMem2WResID( data, ditem->is32bit );
         ok = (ditem->dialog_name != NULL);
-        WdeMemFree( data );
+        WRMemFree( data );
     }
 
     if( ok ) {
@@ -485,7 +484,7 @@ Bool WdeStartDDEEditSession( void )
                 ditem->dialog_info = WdeMem2DBI( (uint_8 *)data, size,
                                                  ditem->is32bit );
                 ok = (ditem->dialog_info != NULL);
-                WdeMemFree( data );
+                WRMemFree( data );
             } else {
                 ok = FALSE;
             }
@@ -528,7 +527,7 @@ Bool WdeStartDDEEditSession( void )
     }
 
     if( filename != NULL ) {
-        WdeMemFree( filename );
+        WRMemFree( filename );
     }
 
     return( ok );
@@ -579,7 +578,7 @@ void WdeHandlePokedData( HDDEDATA hdata )
 #endif
     }
 
-    WdeMemFree( cmd );
+    WRMemFree( cmd );
 }
 
 WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,

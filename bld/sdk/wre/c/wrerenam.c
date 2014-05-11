@@ -36,7 +36,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wremsg.h"
 #include "rcstr.gh"
 #include "wremain.h"
@@ -106,7 +105,7 @@ Bool WRERenameResource( void )
     }
 
     if( info.new_name != NULL ) {
-        WREMemFree( info.new_name );
+        WRMemFree( info.new_name );
     }
 
     return( ok );
@@ -132,7 +131,7 @@ Bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
     r = WREFindResNodeFromWResID( type_node, &rn->Info.ResName );
     if( r != NULL && r != *res_node ) {
         WREDisplayErrorMsg( WRE_DUPRESNAME );
-        WREMemFree( rn );
+        WRMemFree( rn );
         return( FALSE );
     }
 
@@ -157,7 +156,7 @@ Bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
         (*res_node)->Next->Prev = rn;
     }
 
-    WREMemFree( *res_node );
+    WRMemFree( *res_node );
 
     *res_node = rn;
 
@@ -181,7 +180,7 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
         len += id->ID.Name.NumChars - 1;
     }
 
-    rnode = (WResResNode *)WREMemAlloc( len );
+    rnode = (WResResNode *)WRMemAlloc( len );
 
     if( rnode != NULL ) {
         memset( rnode, 0, len - id_len );

@@ -45,7 +45,7 @@ static BOOL firstInstInit( void )
 
     /* main window */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID)DDEMainWndProc;
+    wc.lpfnWndProc = DDEMainWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = Instance;
@@ -60,7 +60,7 @@ static BOOL firstInstInit( void )
 
     /* tracking windows */
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID)DDETrackingWndProc;
+    wc.lpfnWndProc = DDETrackingWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = Instance;

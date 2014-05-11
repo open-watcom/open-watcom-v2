@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wstat.h"
 #include "wsetedit.h"
 #include "wedit.h"
@@ -123,7 +122,7 @@ Bool WInsertAccelEntry( WAccelEditInfo *einfo )
 
     if( !ok ) {
         if( new != NULL ) {
-            WMemFree( new );
+            WRMemFree( new );
         }
     }
 
@@ -184,7 +183,7 @@ Bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
         ++ilen;
         idtext[ilen] = '\0';
         klen = strlen( keytext );
-        lbtext = (char *)WMemAlloc( klen + ilen + 2 );
+        lbtext = (char *)WRMemAlloc( klen + ilen + 2 );
         ok = (lbtext != NULL);
     }
 
@@ -196,7 +195,7 @@ Bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
     }
 
     if( lbtext != NULL ) {
-        WMemFree( lbtext );
+        WRMemFree( lbtext );
     }
 
     return( ok );
@@ -206,7 +205,7 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
 {
     WAccelEntry *new;
 
-    new = (WAccelEntry *)WMemAlloc( sizeof( WAccelEntry ) );
+    new = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WAccelEntry ) );

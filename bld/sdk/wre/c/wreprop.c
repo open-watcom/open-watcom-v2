@@ -94,7 +94,7 @@ static Bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( TRUE );

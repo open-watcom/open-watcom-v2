@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wde_wres.h"
 #include "wdetxtsz.h"
 #include "wdesdup.h"
@@ -72,7 +71,7 @@ static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 
     if( ok ) {
         len = strlen( text );
-        str = (char *)WdeMemAlloc( len + 1 );
+        str = (char *)WRMemAlloc( len + 1 );
         ok = (str != NULL);
     }
 
@@ -96,7 +95,7 @@ static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     }
 
     if( str != NULL ) {
-        WdeMemFree( str );
+        WRMemFree( str );
     }
 
     if( dc != (HDC)NULL ) {
@@ -136,7 +135,7 @@ Bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
     }
 
     if( text != NULL ) {
-        WdeMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );

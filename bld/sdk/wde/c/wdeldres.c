@@ -35,7 +35,6 @@
 #include <io.h>
 #include "wderesin.h"
 #include "wde_wres.h"
-#include "wdemem.h"
 #include "wdedebug.h"
 #include "wdesdup.h"
 #include "wdetfile.h"
@@ -119,7 +118,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
     if( ok ) {
         file_name = res_info->info->tmp_file;
-        dlg_info = (WdeDialogBoxInfo *)WdeMemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dlg_info = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = (dlg_info != NULL);
     }
 
@@ -263,7 +262,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         dlg_info->dialog_header->FontItalicDefined = FALSE;
 
         /* now deal with the list of controls */
-        nc = (WdeDialogBoxControl *)WdeMemAlloc( sizeof( WdeDialogBoxControl ) );
+        nc = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
         for( clist = dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
             memcpy( nc, control, sizeof( WdeDialogBoxControl ) );
@@ -279,7 +278,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
             memcpy( control, nc, sizeof( WdeDialogBoxControl ) );
         }
-        WdeMemFree( nc );
+        WRMemFree( nc );
     }
 #endif
 

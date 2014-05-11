@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesiz.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
@@ -166,7 +165,7 @@ OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeButtonCreate( parent, obj_rect, handle, id, WdeDefaultButton );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultButton ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultButton ) );
     SETCTL_TEXT( WdeDefaultButton, NULL );
 
     return( new );
@@ -185,7 +184,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeButtonObject *)WdeMemAlloc( sizeof( WdeButtonObject ) );
+    new = (WdeButtonObject *)WRMemAlloc( sizeof( WdeButtonObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeButtonCreate: Object malloc failed" );
         return( NULL );
@@ -205,7 +204,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeButtonCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -214,7 +213,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         if( !Forward( new->object_handle, SET_CLEAR_INT, &b, NULL ) ) {
             WdeWriteTrail( "WdeButtonCreate: SET_CLEAR_INT failed!" );
             Destroy( new->control, FALSE );
-            WdeMemFree( new );
+            WRMemFree( new );
             return( NULL );
         }
     }
@@ -222,14 +221,14 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -316,7 +315,7 @@ BOOL WdeButtonDestroy( WdeButtonObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -393,7 +392,7 @@ BOOL WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new,
         return( FALSE );
     }
 
-    *new = (WdeButtonObject *)WdeMemAlloc( sizeof( WdeButtonObject ) );
+    *new = (WdeButtonObject *)WRMemAlloc( sizeof( WdeButtonObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeButtonCopyObject: Object malloc failed" );
@@ -411,7 +410,7 @@ BOOL WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new,
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle) ) {
         WdeWriteTrail( "WdeButtonCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

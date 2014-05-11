@@ -120,7 +120,7 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
 
     indentLevel += 3;
     fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance );
-    EnumChildWindows( hwnd, (LPVOID)fp, (LPARAM)hwnd );
+    EnumChildWindows( hwnd, (WNDENUMPROC)fp, (LPARAM)hwnd );
     FreeProcInstance( fp );
     indentLevel -= 3;
     return( 1 );
@@ -174,7 +174,7 @@ static void setUpWindows( void )
     indentLevel = 0;
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_RESETCONTENT, 0, 0L );
     fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance);
-    EnumWindows( (LPVOID)fp, (LPARAM)NULL );
+    EnumWindows( (WNDENUMPROC)fp, (LPARAM)NULL );
     FreeProcInstance( fp );
     addFormattedWindow( GetDesktopWindow() );
 
@@ -219,7 +219,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
     DLGPROC     fp;
 
     fp = (DLGPROC)MakeProcInstance( (FARPROC)ShowInfoProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (LPVOID)fp, (LPARAM)framed );
+    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (DLGPROC)fp, (LPARAM)framed );
     FreeProcInstance( (FARPROC)fp );
 
 } /* ShowFramedInfo */
@@ -375,7 +375,7 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
         memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
     }
     fp = MakeProcInstance( (FARPROC)ShowSelectedDialog, Instance );
-    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, (LPVOID)fp );
+    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, (DLGPROC)fp );
     if( rc ) {
         *spyall = tmpSpyAll;
         WindowCount = tmpWndCnt;

@@ -56,11 +56,11 @@
  */
 
 typedef struct {
-     unsigned   msgno;
+     DWORD      value;
      char       *msg;
 } msglist;
 
-char    *SrchMsg( unsigned msgno, msglist *tbl, char *dflt );
+char    *SrchMsg( DWORD value, msglist *tbl, char *dflt );
 BOOL    InitSrchTable( HANDLE inst, msglist *tbl );
 
 #endif /* _SRCHMSG_H_INCLUDED */

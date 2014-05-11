@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdetfile.h"
 #include "wdegetfn.h"
@@ -182,7 +181,7 @@ Bool WdeResourceLoadHash( WdeResInfo *info )
     }
 
     if( info->sym_name != NULL ) {
-        WdeMemFree( info->sym_name );
+        WRMemFree( info->sym_name );
     }
     info->sym_name = include;
 
@@ -258,16 +257,16 @@ Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     }
 
     if( type != NULL ) {
-        WdeMemFree( type );
+        WRMemFree( type );
     }
 
     if( res != NULL ) {
-        WdeMemFree( res );
+        WRMemFree( res );
     }
 
     if( !ok ) {
         if( str != NULL ) {
-            WdeMemFree( str );
+            WRMemFree( str );
         }
     }
 
@@ -379,7 +378,7 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
     include = WdeFindDLGInclude( rinfo );
     if( include != NULL && !WdeFileExists( include ) ) {
-        WdeMemFree( include );
+        WRMemFree( include );
         include = NULL;
     }
 
@@ -389,7 +388,7 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
         prompt = TRUE;
     } else {
         strcpy( fn_path, include );
-        WdeMemFree( include );
+        WRMemFree( include );
         include = NULL;
         prompt = FALSE;
     }
@@ -401,7 +400,7 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
         ret = (include != NULL);
         if( ret ) {
             if( rinfo->sym_name != NULL ) {
-                WdeMemFree( rinfo->sym_name );
+                WRMemFree( rinfo->sym_name );
             }
             rinfo->sym_name = include;
             WdeSetResModified( rinfo, TRUE );
@@ -504,7 +503,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
 
     if( !ok ) {
         if( name != NULL ) {
-            WdeMemFree( name );
+            WRMemFree( name );
             name = NULL;
         }
     }
@@ -541,7 +540,7 @@ Bool WdeWriteSymbols( WdeHashTable *table, char **file_name, Bool prompt )
             return( FALSE );
         }
         if( *file_name != NULL ) {
-            WdeMemFree( *file_name );
+            WRMemFree( *file_name );
         }
         *file_name = name;
     } else {

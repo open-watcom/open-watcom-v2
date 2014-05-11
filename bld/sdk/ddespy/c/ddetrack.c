@@ -96,19 +96,19 @@ void SetTrackWndDefault( void )
  */
 void InitTrackWnd( HWND hwnd )
 {
-    WORD        i;
+    UINT        itemid;
     HMENU       mh;
 
     mh = GetMenu( hwnd );
-    for( i = 0; i < NO_TRK_WND; i++ ) {
-        if( Tracking[i].visible ) {
-            ShowWindow( Tracking[i].hwnd, SW_SHOWNORMAL );
-            CheckMenuItem( mh, i + DDE_TRK_FIRST, MF_BYCOMMAND | MF_CHECKED );
+    for( itemid = 0; itemid < NO_TRK_WND; itemid++ ) {
+        if( Tracking[itemid].visible ) {
+            ShowWindow( Tracking[itemid].hwnd, SW_SHOWNORMAL );
+            CheckMenuItem( mh, itemid + DDE_TRK_FIRST, MF_BYCOMMAND | MF_CHECKED );
         } else {
-            ShowWindow( Tracking[i].hwnd, SW_HIDE );
-            CheckMenuItem( mh, i + DDE_TRK_FIRST, MF_BYCOMMAND | MF_UNCHECKED );
+            ShowWindow( Tracking[itemid].hwnd, SW_HIDE );
+            CheckMenuItem( mh, itemid + DDE_TRK_FIRST, MF_BYCOMMAND | MF_UNCHECKED );
         }
-        DDESetStickyState( i + DDE_TRK_FIRST, Tracking[i].visible );
+        DDESetStickyState( itemid + DDE_TRK_FIRST, Tracking[itemid].visible );
     }
 
 } /* InitTrackWnd */
@@ -951,24 +951,24 @@ static BOOL doConvSort( WORD type, DDETrackInfo *info )
 /*
  * DisplayTracking - toggle a tracking window between displayed and hidden
  */
-void DisplayTracking( WPARAM wparam )
+void DisplayTracking( UINT itemid )
 {
     int         action;
     WORD        index;
     HMENU       mh;
 
     mh = GetMenu( DDEMainWnd );
-    index = wparam - DDE_TRK_FIRST;
+    index = itemid - DDE_TRK_FIRST;
     Tracking[index].visible = !Tracking[index].visible;
     if( Tracking[index].visible ) {
-        CheckMenuItem( mh, wparam, MF_BYCOMMAND | MF_CHECKED );
+        CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_CHECKED );
         action = SW_SHOWNORMAL;
     } else {
-        CheckMenuItem( mh, wparam, MF_BYCOMMAND | MF_UNCHECKED );
+        CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_UNCHECKED );
         action = SW_HIDE;
     }
-    DDESetStickyState( wparam, Tracking[index].visible  );
-    ShowWindow( Tracking[wparam - DDE_TRK_FIRST].hwnd, action );
+    DDESetStickyState( itemid, Tracking[index].visible  );
+    ShowWindow( Tracking[itemid - DDE_TRK_FIRST].hwnd, action );
 
 } /* DisplayTracking */
 

@@ -37,7 +37,6 @@
 #include "wdefordr.h"
 #include "wdefmenu.h"
 #include "wdefont.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wdeedit.h"
@@ -164,7 +163,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
 
     WdeDebugCreate( "Base", parent, obj_rect, handle );
 
-    new = (WdeBaseObject *)WdeMemAlloc( sizeof( WdeBaseObject ) );
+    new = (WdeBaseObject *)WRMemAlloc( sizeof( WdeBaseObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeBaseCreate: Malloc failed" );
         return( new );
@@ -322,7 +321,7 @@ BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, void *p2 )
 
     Destroy( obj->o_item, *flag );
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }

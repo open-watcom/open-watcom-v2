@@ -45,7 +45,6 @@
 #include "wreresin.h"
 #include "wregcres.h"
 #include "wreftype.h"
-#include "wremem.h"
 #include "wrenew.h"
 #include "wreimage.h"
 #include "wrdll.h"
@@ -196,7 +195,7 @@ Bool WREAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
         return( FALSE );
     }
 
-    *d1 = WREMemRealloc( *d1, *d1size + d2size );
+    *d1 = WRMemRealloc( *d1, *d1size + d2size );
     if( *d1 == NULL ) {
         return( FALSE );
     }
@@ -282,7 +281,7 @@ Bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_3
         rch = (RESCURSORHEADER *)group->lang->data;
         *size = sizeof( CURSORHEADER );
         *size += sizeof( CURSORDIRENTRY ) * (rch->cwCount - 1);
-        *data = (BYTE *)WREMemAlloc( *size );
+        *data = (BYTE *)WRMemAlloc( *size );
         ch = (CURSORHEADER *)*data;
         ok = (*data != NULL);
     }
@@ -316,7 +315,7 @@ Bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_3
 
     if( !ok ) {
         if( *data != NULL ) {
-            WREMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
         }
         *size = 0;
@@ -351,7 +350,7 @@ Bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 
         rih = (RESICONHEADER *)group->lang->data;
         *size = sizeof( ICONHEADER );
         *size += sizeof( ICONDIRENTRY ) * (rih->cwCount - 1);
-        *data = (BYTE *)WREMemAlloc( *size );
+        *data = (BYTE *)WRMemAlloc( *size );
         ih = (ICONHEADER *)*data;
         ok = (*data != NULL);
     }
@@ -387,7 +386,7 @@ Bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 
 
     if( !ok ) {
         if( *data != NULL ) {
-            WREMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
         }
         *size = 0;
@@ -416,7 +415,7 @@ Bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
     ok = (data != NULL && dir != NULL && cd != NULL && cd->dwBytesInRes != 0);
 
     if ( ok ) {
-        cursor = (BYTE *)WREMemAlloc( cd->dwBytesInRes );
+        cursor = (BYTE *)WRMemAlloc( cd->dwBytesInRes );
         ok = (cursor != NULL);
     }
 
@@ -449,16 +448,16 @@ Bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
 
     if( !ok ) {
         if( cursor != NULL ) {
-            WREMemFree( cursor );
+            WRMemFree( cursor );
         }
     }
 
     if( tname != NULL ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     if( rname != NULL ) {
-        WREMemFree( rname );
+        WRMemFree( rname );
     }
 
     return( ok );
@@ -482,7 +481,7 @@ Bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
     ok = (data != NULL && dir != NULL && id != NULL && id->dwBytesInRes != 0);
 
     if( ok ) {
-        icon = (BYTE *)WREMemAlloc( id->dwBytesInRes );
+        icon = (BYTE *)WRMemAlloc( id->dwBytesInRes );
         ok = (icon != NULL);
     }
 
@@ -508,16 +507,16 @@ Bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
 
     if( !ok ) {
         if( icon != NULL ) {
-            WREMemFree( icon );
+            WRMemFree( icon );
         }
     }
 
     if( tname != NULL ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     if( rname != NULL ) {
-        WREMemFree( rname );
+        WRMemFree( rname );
     }
 
     return( ok );
@@ -550,7 +549,7 @@ Bool WRECreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize,
     if( ok ) {
         *rchsize = sizeof( RESCURSORHEADER );
         *rchsize += sizeof( RESCURSORDIRENTRY ) * (ih->idCount - 1);
-        *rch = (RESCURSORHEADER *)WREMemAlloc( *rchsize );
+        *rch = (RESCURSORHEADER *)WRMemAlloc( *rchsize );
         ok = (*rch != NULL);
     }
 
@@ -567,7 +566,7 @@ Bool WRECreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize,
     }
 
     if( ih != NULL ) {
-        WREMemFree( ih );
+        WRMemFree( ih );
     }
 
     return( ok );
@@ -598,7 +597,7 @@ Bool WRECreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
     if( ok ) {
         *rihsize = sizeof( RESICONHEADER );
         *rihsize += sizeof( RESICONDIRENTRY ) * (ih->idCount - 1);
-        *rih = (RESICONHEADER *)WREMemAlloc( *rihsize );
+        *rih = (RESICONHEADER *)WRMemAlloc( *rihsize );
         ok = (*rih != NULL);
     }
 
@@ -617,7 +616,7 @@ Bool WRECreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize,
     }
 
     if( ih != NULL ) {
-        WREMemFree( ih );
+        WRMemFree( ih );
     }
 
     return( ok );
@@ -655,7 +654,7 @@ Bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type )
         return( FALSE );
     }
 
-    *data = WREMemRealloc( *data, *size + ihsize );
+    *data = WRMemRealloc( *data, *size + ihsize );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -663,7 +662,7 @@ Bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type )
     memcpy( *data, ih, ihsize );
     *size += ihsize;
 
-    WREMemFree( ih );
+    WRMemFree( ih );
 
     return( TRUE );
 }
@@ -697,7 +696,7 @@ Bool WREAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
         return( FALSE );
     }
 
-    *cursor = WREMemRealloc( *cursor, *size + hs_size );
+    *cursor = WRMemRealloc( *cursor, *size + hs_size );
     if( *cursor == NULL ) {
         return( FALSE );
     }
@@ -763,7 +762,7 @@ Bool WRECreateCursorEntries( WRECurrentResInfo *curr, void *data, uint_32 size )
 
     if( ok ) {
         if( curr->lang->data != NULL ) {
-            WREMemFree( curr->lang->data );
+            WRMemFree( curr->lang->data );
             curr->lang->data = NULL;
         }
         curr->lang->Info.Length = 0;
@@ -802,7 +801,7 @@ Bool WRECreateIconEntries( WRECurrentResInfo *curr, void *data, uint_32 size )
 
     if( ok ) {
         if( curr->lang->data != NULL ) {
-            WREMemFree( curr->lang->data );
+            WRMemFree( curr->lang->data );
             curr->lang->data = NULL;
         }
         curr->lang->Info.Length = 0;

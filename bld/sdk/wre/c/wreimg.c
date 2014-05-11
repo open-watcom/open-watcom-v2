@@ -40,8 +40,8 @@
 #include "wreglbl.h"
 #include "wresall.h"
 #include "wre_wres.h"
-#include "wremem.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wreres.h"
 #include "wrestrdp.h"
@@ -140,28 +140,28 @@ WResID *WRECreateImageTitle( uint_16 type )
     if( type == (uint_16)RT_BITMAP ) {
         WRENumBitmapTitles++;
         num = WRENumBitmapTitles;
-        text = WREAllocRCString( WRE_DEFBITMAPNAME );
+        text = AllocRCString( WRE_DEFBITMAPNAME );
     } else if( type == (uint_16)RT_GROUP_CURSOR ) {
         WRENumCursorTitles++;
         num = WRENumCursorTitles;
-        text = WREAllocRCString( WRE_DEFCURSORNAME );
+        text = AllocRCString( WRE_DEFCURSORNAME );
     } else if( type == (uint_16)RT_GROUP_ICON ) {
         WRENumIconTitles++;
         num = WRENumIconTitles;
-        text = WREAllocRCString( WRE_DEFICONNAME );
+        text = AllocRCString( WRE_DEFICONNAME );
     } else {
         return( NULL );
     }
 
     if( text != NULL ) {
-        title = (char *)WREMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, num );
             name = WResIDFromStr( title );
-            WREMemFree( title );
+            WRMemFree( title );
         }
-        WREFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( name );
@@ -212,7 +212,7 @@ Bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -225,7 +225,7 @@ Bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
@@ -362,7 +362,7 @@ Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     }
 
     *size = session->info.data_size;
-    *data = WREMemAlloc( *size );
+    *data = WRMemAlloc( *size );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -371,7 +371,7 @@ Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     if( session->type == (uint_16)RT_BITMAP ) {
         if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
             if( *data != NULL ) {
-                WREMemFree( *data );
+                WRMemFree( *data );
             }
             return( FALSE );
         }
@@ -413,11 +413,11 @@ Bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -432,7 +432,7 @@ Bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 s
     if( ok ) {
         WREStripBitmapFileHeader( (BYTE **)&data, &size );
         if( session->lnode->data != NULL ) {
-            WREMemFree( session->lnode->data );
+            WRMemFree( session->lnode->data );
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
@@ -693,7 +693,7 @@ WREImageSession *WREAllocImageSession( void )
 {
     WREImageSession *session;
 
-    session = (WREImageSession *)WREMemAlloc( sizeof( WREImageSession ) );
+    session = (WREImageSession *)WRMemAlloc( sizeof( WREImageSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREImageSession ) );
@@ -759,12 +759,12 @@ void WREFreeEditSession( WREImageSession *session )
 {
     if( session != NULL ) {
         if( session->info.file_name != NULL ) {
-            WREMemFree( session->info.file_name );
+            WRMemFree( session->info.file_name );
         }
         if( session->info.res_name != NULL ) {
-            WREMemFree( session->info.res_name );
+            WRMemFree( session->info.res_name );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 

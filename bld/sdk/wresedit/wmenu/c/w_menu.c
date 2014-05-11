@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmenu.h"
 #include "winfo.h"
 #include "wribbon.h"
@@ -42,6 +41,7 @@
 #include "wcopystr.h"
 #include "wresall.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wrdll.h"
 #include "w_menu.h"
@@ -75,10 +75,10 @@ static WMenuEntry   *WDummyMenuEntry = NULL;
 
 void WInitDummyMenuEntry( void )
 {
-    WDummyMenuEntry = (WMenuEntry *)WMemAlloc( sizeof( WMenuEntry ) );
+    WDummyMenuEntry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
     memset( WDummyMenuEntry, 0, sizeof( WMenuEntry ) );
     WDummyMenuEntry->item = ResNewMenuItem();
-    WDummyMenuEntry->item->Item.Normal.ItemText = WAllocRCString( W_MENUITEM );
+    WDummyMenuEntry->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
     WDummyMenuEntry->item->Item.Normal.ItemID = 101;
 }
 
@@ -92,7 +92,7 @@ WMenuEditInfo *WAllocMenuEInfo( void )
 {
     WMenuEditInfo *einfo;
 
-    einfo = (WMenuEditInfo *)WMemAlloc( sizeof( WMenuEditInfo ) );
+    einfo = (WMenuEditInfo *)WRMemAlloc( sizeof( WMenuEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WMenuEditInfo ) );
@@ -130,9 +130,9 @@ void WFreeMenuEInfo( WMenuEditInfo *einfo )
             einfo->win = (HWND)NULL;
         }
         if( einfo->file_name != NULL ) {
-            WMemFree( einfo->file_name );
+            WRMemFree( einfo->file_name );
         }
-        WMemFree( einfo );
+        WRMemFree( einfo );
     }
 }
 
@@ -143,7 +143,7 @@ void WMakeDataFromMenu( WMenu *menu, void **data, int *size )
     if( data != NULL && size != NULL ) {
         *size = WCalcMenuSize( menu->first_entry ) + 2 * sizeof(WORD);
         if( *size != 0 ) {
-            *data = WMemAlloc( *size );
+            *data = WRMemAlloc( *size );
             if( *data != NULL ) {
                 tdata = *data;
                 memset( tdata, 0, 2 * sizeof( WORD ) );
@@ -199,7 +199,7 @@ int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, Bool is32bit 
         itext = NULL;
         WRunicode2mbcs( text, &itext, &itlen );
     } else {
-        itext = (char *)WMemAlloc( tlen );
+        itext = (char *)WRMemAlloc( tlen );
         if( itext != NULL ) {
             memcpy( itext, text, tlen );
         }
@@ -236,7 +236,7 @@ int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, Bool is
     ok = (data != NULL && *data != NULL && size != NULL && *size != 0 && entry != NULL);
 
     if( ok ) {
-        *entry = (WMenuEntry *)WMemAlloc( sizeof( WMenuEntry ) );
+        *entry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
         ok = (*entry != NULL);
     }
 
@@ -316,7 +316,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        menu = (WMenu *)WMemAlloc( sizeof( WMenu ) );
+        menu = (WMenu *)WRMemAlloc( sizeof( WMenu ) );
         ok = (menu != NULL);
     }
 
@@ -488,7 +488,7 @@ void WFreeMenu( WMenu *menu )
 {
     if( menu != NULL ) {
         WFreeMenuEntries( menu->first_entry );
-        WMemFree( menu );
+        WRMemFree( menu );
     }
 }
 
@@ -513,9 +513,9 @@ void WFreeMenuEntry( WMenuEntry *entry )
             ResFreeMenuItem( entry->item );
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
-        WMemFree( entry );
+        WRMemFree( entry );
     }
 }
 
@@ -1014,7 +1014,7 @@ Bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->symbol = WStrDup( vlist->entry->name );
         ok = (entry->symbol != NULL);

@@ -35,7 +35,6 @@
 #include <stdarg.h>
 #include "title.h"
 #include "iedde.h"
-#include "wrdll.h"
 #ifdef __WATCOMC__
 #include "clibint.h"
 #endif

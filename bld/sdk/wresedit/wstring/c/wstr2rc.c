@@ -35,7 +35,6 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
-#include "wmem.h"
 #include "widn2str.h"
 #include "wstr2rc.h"
 #include "wresall.h"
@@ -66,11 +65,11 @@ static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp 
     }
 
     if( strtext != NULL ) {
-        WMemFree( strtext );
+        WRMemFree( strtext );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );

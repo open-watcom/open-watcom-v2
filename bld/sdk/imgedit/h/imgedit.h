@@ -45,8 +45,8 @@
     #include "img_win.h"
     #include "palette.h"
     #include <ctl3d.h>
-    #include "wrdll.h"
 #endif
+#include "wrdll.h"
 
 typedef enum {
     UNDEF_IMG   = 0,
@@ -507,7 +507,7 @@ void    IECtl3dColorChange( void );
 void    IECtl3dSubclassDlg( HWND, WORD );
 
 /* errors.c */
-void    WImgEditError( DWORD error, char *fname );
+void    WImgEditError( UINT error, char *fname );
 
 #ifndef __OS2_PM__
 

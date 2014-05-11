@@ -33,7 +33,6 @@
 #include "wdeglbl.h"
 #include <io.h>
 #include <stdio.h>
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdetest.h"
 #include "wdestat.h"
@@ -81,8 +80,18 @@
 #include "clibint.h"
 #endif
 
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WdeMemAlloc, WdeMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 /****************************************************************************/
 /* macro definitions                                                        */

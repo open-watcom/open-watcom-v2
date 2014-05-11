@@ -35,24 +35,25 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+typedef int     MSGID;
 
 /************************************************************************
  * SetInstance - must be called before any other routine in this file
  ***********************************************************************/
 void    SetInstance( HANDLE inst );
-char    *AllocRCString( DWORD id );
+char    *AllocRCString( MSGID id );
 void    FreeRCString( char *str );
-char    *GetRCString( DWORD msgid );
-DWORD   CopyRCString( DWORD id, char *buf, DWORD bufsize );
+char    *GetRCString( MSGID msgid );
+int     CopyRCString( MSGID id, char *buf, int bufsize );
 
 /*
  * All functions below this point obtain strings using AllocRCString and
  * FreeRCString
  */
 
-int     RCMessageBox( HWND hwnd , DWORD msgid, char *title, UINT type );
-void    RCfprintf( FILE *fp, DWORD strid, ...  );
-int     RCsprintf( char *buf, DWORD fmtid, ... );
-void    RCvfprintf( FILE *fp, DWORD strid, va_list al );
+int     RCMessageBox( HWND hwnd , MSGID msgid, char *title, UINT type );
+void    RCfprintf( FILE *fp, MSGID strid, ...  );
+int     RCsprintf( char *buf, MSGID fmtid, ... );
+void    RCvfprintf( FILE *fp, MSGID strid, va_list al );
 
 #endif /* _LDSTR_H_INCLUDED */

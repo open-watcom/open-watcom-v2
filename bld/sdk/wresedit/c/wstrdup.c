@@ -32,8 +32,8 @@
 
 #include "precomp.h"
 #include <string.h>
-#include "wmem.h"
 #include "wstrdup.h"
+#include "wrdll.h"
 
 char *WStrDup( const char *src )
 {
@@ -43,7 +43,7 @@ char *WStrDup( const char *src )
         return( NULL );
     }
 
-    dest = WMemAlloc( strlen( src ) + 1 );
+    dest = WRMemAlloc( strlen( src ) + 1 );
 
     if( dest != NULL ) {
         strcpy( dest, src );

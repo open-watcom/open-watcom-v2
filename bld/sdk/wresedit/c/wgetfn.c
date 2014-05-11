@@ -39,6 +39,7 @@
 #include "wglbl.h"
 #include "winst.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wctl3d.h"
 #include "wstrdup.h"
@@ -210,7 +211,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     wofn.lpstrTitle = WFnTitle;
     wofn.Flags = flags;
 #if !defined( __NT__ )
-    wofn.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)WOpenHookProc, app_inst );
+    wofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WOpenHookProc, app_inst );
 #endif
 
 #if 0
@@ -280,10 +281,10 @@ WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
         //WCtl3dSubclassDlg( hwnd, CTL3D_ALL );
 
-        title = WAllocRCString( W_GETFNCOMBOTITLE );
+        title = AllocRCString( W_GETFNCOMBOTITLE );
         if( title != NULL ) {
             SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
-            WFreeRCString( title );
+            FreeRCString( title );
         }
 
         return( TRUE );

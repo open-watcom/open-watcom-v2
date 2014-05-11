@@ -40,7 +40,6 @@
 #include "wmain.h"
 #include "wmsg.h"
 #include "wstat.h"
-#include "wmem.h"
 #include "wnewitem.h"
 #include "wdel.h"
 #include "wvk2str.h"
@@ -49,6 +48,7 @@
 #include "wsetedit.h"
 #include "wclip.h"
 #include "sys_rc.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "jdlg.h"
 
@@ -316,12 +316,12 @@ Bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
             entry->entry.Id = id;
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WMemFree( symbol );
+            WRMemFree( symbol );
         }
     }
 
@@ -368,7 +368,7 @@ Bool WGetEditWindowKey( HWND dlg, uint_16 *key, uint_16 *flags, Bool *force_asci
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
@@ -448,7 +448,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WMemFree( *symbol );
+                WRMemFree( *symbol );
                 *symbol = NULL;
                 return( FALSE );
             }
@@ -456,7 +456,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WMemFree( *symbol );
+        WRMemFree( *symbol );
         *symbol = NULL;
     }
 
@@ -645,11 +645,11 @@ Bool WPasteAccelItem( WAccelEditInfo *einfo )
     }
 
     if( entry.symbol != NULL ) {
-        WMemFree( entry.symbol );
+        WRMemFree( entry.symbol );
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
@@ -697,7 +697,7 @@ Bool WClipAccelItem( WAccelEditInfo *einfo, Bool cut )
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
@@ -712,15 +712,15 @@ static Bool WQueryChangeEntry( WAccelEditInfo *einfo )
 
     style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_CHANGEMODIFIEDMENUITEM );
+    text = AllocRCString( W_CHANGEMODIFIEDMENUITEM );
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {

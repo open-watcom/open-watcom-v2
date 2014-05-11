@@ -34,8 +34,8 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wsetedit.h"
 #include "wedit.h"
@@ -248,7 +248,7 @@ Bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
             }
             tlen = strlen( text ) + 1;
         }
-        lbtext = (char *)WMemAlloc( depth * DEPTH_MULT + tlen + 14 );
+        lbtext = (char *)WRMemAlloc( depth * DEPTH_MULT + tlen + 14 );
         ok = (lbtext != NULL);
     }
 
@@ -271,11 +271,11 @@ Bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
     }
 
     if( lbtext1 != NULL ) {
-        WMemFree( lbtext1 );
+        WRMemFree( lbtext1 );
     }
 
     if( lbtext != NULL ) {
-        WMemFree( lbtext );
+        WRMemFree( lbtext );
     }
 
     return( ok );
@@ -301,7 +301,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
     WGetEditWindowFlags( einfo->edit_dlg, &flags );
     flags &= ~(MENU_POPUP | MENU_SEPARATOR);
 
-    new = (WMenuEntry *)WMemAlloc( sizeof( WMenuEntry ) );
+    new = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WMenuEntry ) );
@@ -313,7 +313,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
             if( text != NULL ) {
                 new->item->Item.Popup.ItemText = WStrDup( text );
             } else {
-                new->item->Item.Popup.ItemText = WAllocRCString( W_MENUPOPUP );
+                new->item->Item.Popup.ItemText = AllocRCString( W_MENUPOPUP );
             }
         } else {
             if( sep ) {
@@ -324,7 +324,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
                 if( text != NULL ) {
                     new->item->Item.Normal.ItemText = WStrDup( text );
                 } else {
-                    new->item->Item.Normal.ItemText = WAllocRCString( W_MENUITEM );
+                    new->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
                 }
             }
         }
@@ -334,12 +334,12 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
         new->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WMemFree( symbol );
+            WRMemFree( symbol );
         }
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( new );

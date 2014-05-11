@@ -33,7 +33,6 @@
 #include "wdeglbl.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wdemem.h"
 #include "wdei2mem.h"
 #include "wdewait.h"
 #include "wrdll.h"
@@ -101,7 +100,7 @@ Bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     }
 
     if( rdata != NULL ) {
-        WdeMemFree( rdata );
+        WRMemFree( rdata );
     }
 
     WdeSetWaitCursor( FALSE );
@@ -189,13 +188,13 @@ Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     if( ok ) {
         if( fname != NULL ) {
             if( *file_name != NULL ) {
-                WdeMemFree( *file_name );
+                WRMemFree( *file_name );
             }
             *file_name = fname;
         }
     } else {
         if( fname != NULL ) {
-            WdeMemFree( fname );
+            WRMemFree( fname );
         }
     }
 
@@ -257,7 +256,7 @@ Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     }
 
     if( fname != NULL ) {
-        WdeMemFree( fname );
+        WRMemFree( fname );
     }
 
     if( idata.type != NULL ) {

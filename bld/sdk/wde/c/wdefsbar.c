@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -161,7 +160,7 @@ OBJPTR WdeMakeSBar( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeSBCreate( parent, obj_rect, handle, id, WdeDefaultSBar );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultSBar ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultSBar ) );
     SETCTL_TEXT( WdeDefaultSBar, NULL );
 
     return( new );
@@ -179,7 +178,7 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeSBarObject *)WdeMemAlloc( sizeof( WdeSBarObject ) );
+    new = (WdeSBarObject *)WRMemAlloc( sizeof( WdeSBarObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeSBarCreate: Object malloc failed" );
         return( NULL );
@@ -199,21 +198,21 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeSBarCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeSBarCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeSBarCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -302,7 +301,7 @@ BOOL WdeSBarDestroy( WdeSBarObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -340,7 +339,7 @@ BOOL WdeSBarCopyObject( WdeSBarObject *obj, WdeSBarObject **new, WdeSBarObject *
         return( FALSE );
     }
 
-    *new = (WdeSBarObject *)WdeMemAlloc( sizeof( WdeSBarObject ) );
+    *new = (WdeSBarObject *)WRMemAlloc( sizeof( WdeSBarObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeSBarCopyObject: Object malloc failed" );
@@ -358,7 +357,7 @@ BOOL WdeSBarCopyObject( WdeSBarObject *obj, WdeSBarObject **new, WdeSBarObject *
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeSBarCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

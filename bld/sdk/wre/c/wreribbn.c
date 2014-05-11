@@ -37,6 +37,7 @@
 #include "wrestat.h"
 #include "wrehints.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wre_rc.h"
 #include "wreribbn.h"
@@ -209,21 +210,21 @@ void WREShowRibbon( HMENU menu )
         ShowWindow( WRERibbon->win, SW_HIDE );
         WRERibbonHeight = 0;
         WREResizeWindows();
-        mtext = WREAllocRCString( WRE_SHOWTOOLBAR );
+        mtext = AllocRCString( WRE_SHOWTOOLBAR );
     } else {
         ShowWindow( WRERibbon->win, SW_SHOW );
         WRERibbonHeight = 2 * WRERibbonInfo->dinfo.border_size.y +
                           WRERibbonInfo->dinfo.button_size.y +
                           2 * GetSystemMetrics( SM_CYBORDER );
         WREResizeWindows();
-        mtext = WREAllocRCString( WRE_HIDETOOLBAR );
+        mtext = AllocRCString( WRE_HIDETOOLBAR );
     }
 
     ModifyMenu( menu, IDM_SHOW_RIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_SHOW_RIBBON, mtext );
 
     if( mtext != NULL ) {
-        WREFreeRCString( mtext );
+        FreeRCString( mtext );
     }
 }
 
