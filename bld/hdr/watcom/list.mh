@@ -161,7 +161,9 @@ namespace std {
         void       resize( size_type n, const value_type & c = value_type( ) );
         bool       empty( ) const;
         reference  front( );
+        const_reference  front( ) const;
         reference  back( );
+        const_reference  back( ) const;
         void       push_front( const value_type & );
         void       pop_front( );
         void       push_back( const value_type & );
@@ -770,12 +772,27 @@ namespace std {
         list< Type, Allocator >::front( )
         { return( static_cast< node * >( sentinel->next )->value ); }
 
+    // front( ) const
+    // ********
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reference
+        list< Type, Allocator >::front( ) const
+        { return( static_cast< node * >( sentinel->next )->value ); }
+
     // back( )
     // *******
     template< class Type, class Allocator >
     inline typename list< Type, Allocator >::reference
         list< Type, Allocator >::back( )
         { return( static_cast< node * >( sentinel->previous )->value ); }
+
+    // back( ) const
+    // *******
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reference
+        list< Type, Allocator >::back( ) const
+        { return( static_cast< node * >( sentinel->previous )->value ); }
+
 
     // push_front( )
     // *************
