@@ -358,10 +358,6 @@ pick( STR_USER_NOTES_ULINE,
 pick( STR_USER_NOTES,
     "--- User notes ---",
     "--- User notes ---" )
-#include "savelbox.msg"
-#include "memwnd.msg"
-#include "about.msg"
-
 pick( STR_TERMINATE_TASK,
     "Terminate task",
     "Terminate task" )
