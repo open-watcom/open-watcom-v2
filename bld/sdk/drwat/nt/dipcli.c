@@ -202,7 +202,7 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
 /*
  * DIGCliSeek
  */
-long DIGCLIENT DIGCliSeek( dig_fhandle hdl, long offset, dig_seek dipmode )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
