@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeProgCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeProgInit( Bool );
+extern bool              WdeProgInit( bool );
 extern void              WdeProgFini( void );
 
 #endif

@@ -58,11 +58,11 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
+bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
                       HINSTANCE inst, HELP_CALLBACK *hcb )
 {
     char        *name;
-    Bool        ok;
+    bool        ok;
     FARPROC     cb;
 
     _wtouch( inst );

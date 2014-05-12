@@ -63,8 +63,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool             WSaveObjectAs( Bool, WStringEditInfo *, WRSaveIntoData * );
-static Bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData * );
+static bool             WSaveObjectAs( bool, WStringEditInfo *, WRSaveIntoData * );
+static bool             WSaveObjectInto( WStringEditInfo *, WRSaveIntoData * );
 static WRSaveIntoData   *WMakeSaveData( WStringTable *tbl );
 static void             WFreeSaveIntoData( WRSaveIntoData *idata );
 static WRSaveIntoData   *WAllocSaveIntoData( void );
@@ -74,8 +74,8 @@ static WRSaveIntoData   *WInitSaveData( WStringBlock *, WResID *, WResLangType *
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WSaveObjectToRC( WStringEditInfo *einfo, char *filename,
-                             Bool shadow, Bool append )
+static bool WSaveObjectToRC( WStringEditInfo *einfo, char *filename,
+                             bool shadow, bool append )
 {
     char        fn_path[_MAX_PATH];
     char        fn_drive[_MAX_DRIVE];
@@ -106,10 +106,10 @@ static Bool WSaveObjectToRC( WStringEditInfo *einfo, char *filename,
     return( TRUE );
 }
 
-Bool WSaveObject( WStringEditInfo *einfo, Bool get_name, Bool save_into )
+bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
 {
     WRSaveIntoData      *idata;
-    Bool                ok;
+    bool                ok;
 
     idata = NULL;
 
@@ -163,7 +163,7 @@ Bool WSaveObject( WStringEditInfo *einfo, Bool get_name, Bool save_into )
     return( ok );
 }
 
-Bool WSaveObjectAs( Bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
+bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -172,8 +172,8 @@ Bool WSaveObjectAs( Bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
     WGetFileStruct      gf;
     WRSaveIntoData      idata2;
     WResLangType        lang;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
 
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
@@ -279,13 +279,13 @@ Bool WSaveObjectAs( Bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
     return( ok );
 }
 
-Bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
+bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
 {
     char                *fname;
     WGetFileStruct      gf;
     int                 dup;
     WRFileType          ftype;
-    Bool                ok;
+    bool                ok;
 
     fname = NULL;
     dup = FALSE;
@@ -435,12 +435,12 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
     }
 }
 
-Bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
-                   Bool prompt )
+bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
+                   bool prompt )
 {
     char                *name;
     WGetFileStruct      gf;
-    Bool                ok;
+    bool                ok;
 
     if( einfo == NULL || table == NULL || file_name == NULL ) {
         return( FALSE );

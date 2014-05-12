@@ -62,7 +62,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WREChangeMemFlags( void )
+bool WREChangeMemFlags( void )
 {
     WRECurrentResInfo   curr;
     HWND                parent;
@@ -70,7 +70,7 @@ Bool WREChangeMemFlags( void )
     int                 type;
     uint_16             mflags;
     FARPROC             cb;
-    Bool                ok;
+    bool                ok;
 
     cb = NULL;
     name = NULL;

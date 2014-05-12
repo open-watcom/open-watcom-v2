@@ -54,12 +54,12 @@ typedef enum {
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static Bool              WdeLastDlgRestorable = 0;
-static Bool              WdeLastDlgIsParent   = 0;
+static bool              WdeLastDlgRestorable = 0;
+static bool              WdeLastDlgIsParent   = 0;
 static WdeLastObjectType WdeLastObject        = 0;
 static WdeOrderMode      WdeLastOrderMode     = WdeSelect;
 
-static void WdeEnableAllMenuItems( HMENU menu, Bool enable )
+static void WdeEnableAllMenuItems( HMENU menu, bool enable )
 {
     int count;
 
@@ -74,7 +74,7 @@ static void WdeEnableAllMenuItems( HMENU menu, Bool enable )
 }
 
 #if 0
-static void WdeEnableTest( HMENU menu, Bool enable )
+static void WdeEnableTest( HMENU menu, bool enable )
 {
     if( enable ) {
         EnableMenuItem( menu, IDM_TEST_MODE, MF_ENABLED | MF_BYCOMMAND );
@@ -200,7 +200,7 @@ static void WdeEnableAlignTools( HMENU menu, int offset )
 }
 
 static void WdeSetDialogObjectDialogMenu( HMENU menu, int offset,
-                                          Bool restorable, Bool res_has_hash,
+                                          bool restorable, bool res_has_hash,
                                           WdeOrderMode mode )
 {
     WdeEnableAllMenuItems( GetSubMenu( menu, DIALOG_MENU + offset ), TRUE );
@@ -227,7 +227,7 @@ static void WdeSetDialogObjectDialogMenu( HMENU menu, int offset,
 #if 0
 static void WdeEnableGotoMenu( HMENU menu )
 {
-    Bool        visible;
+    bool        visible;
     UINT        cmd;
 
     cmd = MF_GRAYED;
@@ -239,7 +239,7 @@ static void WdeEnableGotoMenu( HMENU menu )
 }
 #endif
 
-void WdeSetTestModeMenu( Bool testing )
+void WdeSetTestModeMenu( bool testing )
 {
     HMENU   menu;
     int     i;
@@ -263,8 +263,8 @@ void WdeSetTestModeMenu( Bool testing )
     DrawMenuBar( WdeGetMainWindowHandle() );
 }
 
-void WdeSetControlObjectMenu ( Bool dlg_is_parent, Bool dlg_restorable,
-                               Bool res_has_hash, WdeOrderMode mode )
+void WdeSetControlObjectMenu ( bool dlg_is_parent, bool dlg_restorable,
+                               bool res_has_hash, WdeOrderMode mode )
 {
     HMENU   menu;
     int     i;
@@ -303,7 +303,7 @@ void WdeSetControlObjectMenu ( Bool dlg_is_parent, Bool dlg_restorable,
 #endif
 }
 
-void WdeSetDialogObjectMenu ( Bool restorable, Bool res_has_hash, WdeOrderMode mode )
+void WdeSetDialogObjectMenu ( bool restorable, bool res_has_hash, WdeOrderMode mode )
 {
     HMENU   menu;
     int     i;
@@ -331,7 +331,7 @@ void WdeSetDialogObjectMenu ( Bool restorable, Bool res_has_hash, WdeOrderMode m
 #endif
 }
 
-void WdeSetBaseObjectMenu( Bool has_hash )
+void WdeSetBaseObjectMenu( bool has_hash )
 {
     HMENU   menu;
     int     i;
@@ -384,7 +384,7 @@ void WdeEnablePasteItem( HMENU menu )
     EnableMenuItem( menu, IDM_PASTEOBJECT, cmd | MF_BYCOMMAND );
 }
 
-Bool WdeIsCurrentMDIWindowZoomed( void )
+bool WdeIsCurrentMDIWindowZoomed( void )
 {
     WdeResInfo *info;
 

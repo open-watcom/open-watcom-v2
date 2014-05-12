@@ -44,10 +44,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeResInfoHasDialogs( WdeResInfo * );
-extern Bool WdeSelectDialog( WdeResInfo * );
-extern Bool WdeRemoveDialog( WdeResInfo * );
-extern Bool WdeOpenDialogFromResInfo( WdeResInfo *, WdeResDlgItem * );
-extern Bool WdeOpenSelectedDialog( WdeResInfo *, WdeResDlgItem *, Bool );
+extern bool WdeResInfoHasDialogs( WdeResInfo * );
+extern bool WdeSelectDialog( WdeResInfo * );
+extern bool WdeRemoveDialog( WdeResInfo * );
+extern bool WdeOpenDialogFromResInfo( WdeResInfo *, WdeResDlgItem * );
+extern bool WdeOpenSelectedDialog( WdeResInfo *, WdeResDlgItem *, bool );
 
 #endif

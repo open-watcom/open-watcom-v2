@@ -47,6 +47,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern POINT    *WdeGetDefaultSizeFromOBJID( OBJ_ID );
-extern Bool     WdeChangeSizeToDefIfSmallRect( OBJPTR, OBJ_ID, RECT * );
+extern bool     WdeChangeSizeToDefIfSmallRect( OBJPTR, OBJ_ID, RECT * );
 
 #endif

@@ -59,7 +59,7 @@ typedef struct WdeStackEnvType {
 /****************************************************************************/
 static WdeStackEnvType *WdeTop = NULL;
 
-Bool WdePushEnv( jmp_buf *e )
+bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
@@ -75,7 +75,7 @@ Bool WdePushEnv( jmp_buf *e )
     return( TRUE );
 }
 
-Bool WdePopEnv( jmp_buf *e )
+bool WdePopEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
@@ -91,7 +91,7 @@ Bool WdePopEnv( jmp_buf *e )
     return( TRUE );
 }
 
-Bool WdeTopEnv( jmp_buf *e )
+bool WdeTopEnv( jmp_buf *e )
 {
     if( WdeTop != NULL ) {
         memcpy( e, &WdeTop->e, sizeof( jmp_buf ) );

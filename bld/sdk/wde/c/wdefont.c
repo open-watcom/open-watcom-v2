@@ -273,7 +273,7 @@ WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, 
     return( TRUE );
 }
 
-Bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *d, RECT *s )
+bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *d, RECT *s )
 {
     WdeResizeRatio  resizer;
 
@@ -304,7 +304,7 @@ Bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *d, RECT *s
     return( TRUE );
 }
 
-Bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, DialogSizeInfo *d )
+bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, DialogSizeInfo *d )
 {
     WdeResizeRatio  resizer;
     RECT            screen;
@@ -358,7 +358,7 @@ HFONT WdeGetFont( char *face, int pointsize, int weight )
     return( (HFONT)NULL );
 }
 
-BOOL WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
+bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
 {
     GLOBALHANDLE    dialog_template;
     uint_8          *ldlg;
@@ -366,7 +366,7 @@ BOOL WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     HINSTANCE       inst;
     DLGPROC         proc;
     RECT            rect;
-    BOOL            ok;
+    bool            ok;
 
     if( r == NULL ) {
         return( FALSE );

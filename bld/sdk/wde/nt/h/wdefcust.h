@@ -42,7 +42,7 @@
 /****************************************************************************/
 WINEXPORT extern OBJPTR CALLBACK WdeCustomCreate1( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR CALLBACK WdeCustomCreate2( OBJPTR, RECT *, OBJPTR );
-extern Bool             WdeCustomInit( Bool );
+extern bool             WdeCustomInit( bool );
 extern void             WdeCustomFini( void );
 
 #endif

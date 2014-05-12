@@ -119,11 +119,11 @@ typedef struct WdeResInfoStruct {
     HWND            res_win;
     HWND            edit_win;
     HWND            forms_win;
-    Bool            modified;
-    Bool            symbols_dirty;
-    Bool            active;
-    Bool            editting;
-    Bool            is32bit;
+    bool            modified;
+    bool            symbols_dirty;
+    bool            active;
+    bool            editting;
+    bool            is32bit;
 } WdeResInfo;
 
 typedef struct WdeDialogBoxHeader {
@@ -143,10 +143,10 @@ typedef struct WdeDialogBoxHeader {
     char                *symbol;
     char                *helpsymbol;
 
-    Bool                FontWeightDefined;
-    Bool                FontItalicDefined;
-    Bool                is32bit;
-    Bool                is32bitEx;
+    bool                FontWeightDefined;
+    bool                FontItalicDefined;
+    bool                is32bit;
+    bool                is32bitEx;
 } WdeDialogBoxHeader;
 
 
@@ -178,21 +178,21 @@ typedef struct WdeResDlgItem {
     WdeDialogBoxInfo    *dialog_info;
     OBJPTR              object;
     WResID              *dialog_name;
-    Bool                modified;
+    bool                modified;
     WResResNode         *rnode;
     WResLangNode        *lnode;
-    Bool                is32bit;
+    bool                is32bit;
 } WdeResDlgItem;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool             WdeFreeResInfo( WdeResInfo * );
-extern Bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo * );
-extern void             WdeFreeResDlgItem( WdeResDlgItem **, Bool );
+extern bool             WdeFreeResInfo( WdeResInfo * );
+extern bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo * );
+extern void             WdeFreeResDlgItem( WdeResDlgItem **, bool );
 extern WdeResDlgItem    *WdeAllocResDlgItem( void );
 extern WdeResInfo       *WdeAllocResInfo( void );
-extern Bool             WdeIsResModified( WdeResInfo * );
-extern void             WdeSetResModified( WdeResInfo *, Bool );
+extern bool             WdeIsResModified( WdeResInfo * );
+extern void             WdeSetResModified( WdeResInfo *, bool );
 
 #endif

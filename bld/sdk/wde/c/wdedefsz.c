@@ -103,7 +103,7 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
     return( NULL );
 }
 
-Bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
+bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
 {
     WdeResizeRatio  r;
     DialogSizeInfo  d;

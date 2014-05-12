@@ -68,11 +68,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeResourceViewHash( WdeResInfo * );
-static Bool WdeResourceLoadHash( WdeResInfo * );
-static Bool WdeResourceWriteHash( WdeResInfo * );
+static bool WdeResourceViewHash( WdeResInfo * );
+static bool WdeResourceLoadHash( WdeResInfo * );
+static bool WdeResourceWriteHash( WdeResInfo * );
 static void WdeAddSymbols( WdeHashTable * );
-static char *WdeLoadSymbols( WdeHashTable **, char *, Bool );
+static char *WdeLoadSymbols( WdeHashTable **, char *, bool );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -86,11 +86,11 @@ extern char     *WdeWriteHeaderTitle;
 /****************************************************************************/
 static char  WdeBusyChars[]         = "-\\|/";
 
-static Bool WdeViewSymbols( WdeHashTable **table, HWND parent )
+static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
     FARPROC             cb;
-    Bool                ok;
+    bool                ok;
 
     cb = NULL;
     ok = (table != NULL);
@@ -112,9 +112,9 @@ static Bool WdeViewSymbols( WdeHashTable **table, HWND parent )
     return( ok );
 }
 
-Bool WdeResourceHashTableAction( WdeResInfo *info, int action )
+bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 {
-    Bool ret;
+    bool ret;
 
     ret = FALSE;
 
@@ -133,7 +133,7 @@ Bool WdeResourceHashTableAction( WdeResInfo *info, int action )
     return( ret );
 }
 
-Bool WdeResourceViewHash( WdeResInfo *info )
+bool WdeResourceViewHash( WdeResInfo *info )
 {
     BOOL    no_hash;
     BOOL    ret;
@@ -168,11 +168,11 @@ Bool WdeResourceViewHash( WdeResInfo *info )
     return( ret );
 }
 
-Bool WdeResourceLoadHash( WdeResInfo *info )
+bool WdeResourceLoadHash( WdeResInfo *info )
 {
     OBJPTR      obj;
-    Bool        b;
-    Bool        from_id;
+    bool        b;
+    bool        from_id;
     char        *include;
 
     include = WdeLoadSymbols( &info->hash_table, NULL, TRUE );
@@ -202,19 +202,19 @@ Bool WdeResourceLoadHash( WdeResInfo *info )
     return( TRUE );
 }
 
-Bool WdeResourceWriteHash( WdeResInfo *info )
+bool WdeResourceWriteHash( WdeResInfo *info )
 {
     return( WdeWriteSymbols( info->hash_table, &info->sym_name, TRUE ) );
 }
 
-Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
+bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
 {
     WResID              *type;
     WResID              *res;
     WResLangType        lang;
     char                *str;
     int                 len;
-    Bool                ok;
+    bool                ok;
 
     type = NULL;
     res = NULL;
@@ -273,13 +273,13 @@ Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     return( ok );
 }
 
-Bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
+bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;
     WResLangNode        *lnode;
     WResLangType        lang;
-    Bool                ok;
+    bool                ok;
 
     ok = (rinfo != NULL);
 
@@ -314,7 +314,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     WResLangNode        *lnode;
     WResLangType        lang;
     char                *include;
-    Bool                ok;
+    bool                ok;
 
     include = NULL;
     ok = (rinfo != NULL);
@@ -360,15 +360,15 @@ char *WdeCreateSymName( char *fname )
     return( WdeStrDup( fn_path ) );
 }
 
-Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
+bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 {
     char        fn_path[_MAX_PATH];
     char        fn_drive[_MAX_DRIVE];
     char        fn_dir[_MAX_DIR];
     char        fn_name[_MAX_FNAME];
     char        *include;
-    Bool        prompt;
-    Bool        ret;
+    bool        prompt;
+    bool        ret;
 
     include = NULL;
 
@@ -412,16 +412,16 @@ Bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
 static jmp_buf SymEnv;
 
-char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
+char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
     unsigned            flags;
     char                *inc_path;
     WdeGetFileStruct    gf;
-    Bool                ret;
-    Bool                ok;
-    Bool                pop_env;
+    bool                ret;
+    bool                ok;
+    bool                pop_env;
     unsigned            pp_count;
     unsigned            busy_count;
     char                busy_str[2];
@@ -515,7 +515,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, Bool prompt )
     return( name );
 }
 
-Bool WdeWriteSymbols( WdeHashTable *table, char **file_name, Bool prompt )
+bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
 {
     char                *name;
     WdeGetFileStruct    gf;
@@ -564,7 +564,7 @@ void WdeAddSymbols( WdeHashTable *table )
     PREPROC_VALUE       val;
     WdeHashValue        value;
     void                *vp;
-    Bool                dup;
+    bool                dup;
     unsigned            add_count;
     unsigned            busy_count;
     char                busy_str[2];

@@ -64,15 +64,15 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WSaveObjectAs( Bool, WAccelEditInfo * );
-static Bool WSaveObjectInto( WAccelEditInfo * );
+static bool WSaveObjectAs( bool, WAccelEditInfo * );
+static bool WSaveObjectInto( WAccelEditInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
-                             Bool shadow, Bool append )
+static bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
+                             bool shadow, bool append )
 {
     char        fn_path[ _MAX_PATH ];
     char        fn_drive[_MAX_DRIVE];
@@ -103,9 +103,9 @@ static Bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
     return( TRUE );
 }
 
-Bool WSaveObject( WAccelEditInfo *einfo, Bool get_name, Bool save_into )
+bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
 {
-    Bool    ok, data_saved;
+    bool    ok, data_saved;
     void    *old_data;
     int     old_size;
 
@@ -177,7 +177,7 @@ Bool WSaveObject( WAccelEditInfo *einfo, Bool get_name, Bool save_into )
     return( ok );
 }
 
-Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
+bool WSaveObjectAs( bool get_name, WAccelEditInfo *einfo )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -186,8 +186,8 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
     WGetFileStruct      gf;
     WRSaveIntoData      idata;
     WRSaveIntoData      idata2;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
 
     fname = NULL;
     got_name = FALSE;
@@ -303,14 +303,14 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WSaveObjectInto( WAccelEditInfo *einfo )
+bool WSaveObjectInto( WAccelEditInfo *einfo )
 {
     char                *fname;
     WGetFileStruct      gf;
     int                 dup;
     WRSaveIntoData      idata;
     WRFileType          ftype;
-    Bool                ok;
+    bool                ok;
 
     fname = NULL;
     dup = FALSE;
@@ -368,12 +368,12 @@ Bool WSaveObjectInto( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
-                   Bool prompt )
+bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
+                   bool prompt )
 {
     char                *name;
     WGetFileStruct      gf;
-    Bool                ok;
+    bool                ok;
 
     if( einfo == NULL || table == NULL || file_name == NULL ) {
         return( FALSE );

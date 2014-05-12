@@ -47,7 +47,7 @@
 /****************************************************************************/
 extern void WdeDisplayHint( int id );
 extern void WdeHandleMenuSelect( WPARAM, LPARAM );
-extern Bool WdeInitHints( void );
+extern bool WdeInitHints( void );
 extern void WdeFiniHints( void );
 
 #endif

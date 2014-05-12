@@ -40,7 +40,7 @@ typedef struct {
     char    *file_name;
     char    *title;
     char    *filter;
-    Bool    save_ext;
+    bool    save_ext;
 } WREGetFileStruct;
 
 /****************************************************************************/

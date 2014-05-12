@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WDeleteAccelEntry( WAccelEditInfo * );
-extern Bool WDeleteEditWinLBoxEntry( WAccelEditInfo *, int, Bool );
+extern bool WDeleteAccelEntry( WAccelEditInfo * );
+extern bool WDeleteEditWinLBoxEntry( WAccelEditInfo *, int, bool );
 
 #endif

@@ -51,7 +51,7 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WREResNodeContainsLangNode( WResResNode *, WResLangNode * );
+static bool WREResNodeContainsLangNode( WResResNode *, WResLangNode * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -80,7 +80,7 @@ WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnod
     return( NULL );
 }
 
-Bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
+bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
 {
     WResLangNode *ln;
 

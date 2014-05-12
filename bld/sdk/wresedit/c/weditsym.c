@@ -106,15 +106,15 @@ static void addSymbols( WRHashTable *table )
     }
 }
 
-char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prompt )
+char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt )
 {
     char                *name;
     int                 c;
     unsigned            flags;
     char                *inc_path;
     WGetFileStruct      gf;
-    Bool                ret;
-    Bool                ok;
+    bool                ret;
+    bool                ok;
 
     name = NULL;
 
@@ -183,12 +183,12 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, Bool prom
     return( name );
 }
 
-Bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
+bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
                    HINSTANCE inst, HELP_CALLBACK hcb )
 {
     WRHashEntryFlags    flags;
     FARPROC             cb;
-    Bool                ret;
+    bool                ret;
 
     _wtouch( inst );
 

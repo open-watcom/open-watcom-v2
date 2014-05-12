@@ -54,7 +54,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 {
     WdeResInfo  *res_info;
     WRFileType  file_type;
-    Bool        ok;
+    bool        ok;
 
     WdeSetWaitCursor( TRUE );
 
@@ -89,7 +89,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 
 
 WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
-                                        WResLangNode *lnode, Bool is32bit )
+                                        WResLangNode *lnode, bool is32bit )
 {
     DialogExHeader32        h32ex;
     DialogBoxHeader32       h32;
@@ -109,7 +109,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 #endif
     int                     index;
     char                    *file_name;
-    Bool                    ok;
+    bool                    ok;
 
     dlg_info = NULL;
     file = -1;

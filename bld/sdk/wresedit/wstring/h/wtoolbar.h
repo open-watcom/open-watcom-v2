@@ -67,7 +67,7 @@ extern void         WShutdownToolBars( void );
 extern void         WFreeToolBarInfo( WToolBarInfo * );
 extern WToolBarInfo *WAllocToolBarInfo( int );
 extern void         WSetToolBarItemState( WToolBar *, UINT, UINT );
-extern Bool         WCloseToolBar( WToolBar * );
+extern bool         WCloseToolBar( WToolBar * );
 extern void         WFreeToolBar( WToolBar * );
 
 #endif

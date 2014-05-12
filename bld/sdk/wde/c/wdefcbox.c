@@ -198,7 +198,7 @@ WINEXPORT BOOL CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeCBoxInit( Bool first )
+bool WdeCBoxInit( bool first )
 {
     WNDCLASS    wc;
 

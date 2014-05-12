@@ -60,9 +60,9 @@ static HFONT    WdeEditFont     = NULL;
 static HBRUSH   WdeFormsBrush   = NULL;
 static HBRUSH   WdeEditBrush    = NULL;
 
-Bool WdeSetEditMode( WdeResInfo *info, Bool new_mode )
+bool WdeSetEditMode( WdeResInfo *info, bool new_mode )
 {
-    Bool old_mode;
+    bool old_mode;
 
     if( info != NULL ) {
         old_mode = info->editting;
@@ -108,7 +108,7 @@ void WdeInitEditClass( void )
     char        *text;
     char        *cp;
     int         point_size;
-    Bool        use_default;
+    bool        use_default;
 
     WdeEditBrush = GetStockObject( WHITE_BRUSH );
 
@@ -152,7 +152,7 @@ void WdeFiniEditClass( void )
     }
 }
 
-Bool WdeRegisterEditClass( HINSTANCE app_inst )
+bool WdeRegisterEditClass( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -214,7 +214,7 @@ void WdeDestroyEditWindows( WdeResInfo *info )
     }
 }
 
-Bool WdeCreateEditWindows( WdeResInfo *info )
+bool WdeCreateEditWindows( WdeResInfo *info )
 {
     RECT      rect;
     HINSTANCE app_inst;
@@ -255,7 +255,7 @@ Bool WdeCreateEditWindows( WdeResInfo *info )
     return( TRUE );
 }
 
-Bool WdeResizeEditWindows( WdeResInfo *info )
+bool WdeResizeEditWindows( WdeResInfo *info )
 {
     RECT rect;
 

@@ -58,17 +58,17 @@
 /* static variables                                                         */
 /****************************************************************************/
 #if defined( WDE_USE_3D )
-static Bool     CorrectVersion = FALSE;
+static bool     CorrectVersion = FALSE;
 #endif
 
-Bool WdeCtl3DInit( HINSTANCE inst )
+bool WdeCtl3DInit( HINSTANCE inst )
 {
 #if !defined( WDE_USE_3D )
     _wde_touch( inst );
     return ( TRUE );
 #else
     WORD        ver;
-    Bool        ok;
+    bool        ok;
 
     ver = WRCtl3dGetVer();
     if( ver >= CTL3D_VER ) {

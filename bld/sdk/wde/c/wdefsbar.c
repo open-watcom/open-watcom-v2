@@ -102,7 +102,7 @@ static DISPATCH_ITEM WdeSBarActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeSBarActions ) / sizeof( DISPATCH_ITEM ))
 
-Bool WdeSBNoodleSize( OBJPTR obj, Bool recreate )
+bool WdeSBNoodleSize( OBJPTR obj, bool recreate )
 {
     HWND                hWnd;
     WdeSBarObject       *sb_obj;
@@ -236,7 +236,7 @@ BOOL CALLBACK WdeSBarDispatcher( ACTION act, WdeSBarObject *obj, void *p1, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeSBarInit( Bool first )
+bool WdeSBarInit( bool first )
 {
     WNDCLASS    wc;
 

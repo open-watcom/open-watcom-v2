@@ -77,9 +77,9 @@ static WREHintItem      *WREGetHintItem         ( int id );
 static void             WREHandlePopupHint      ( HMENU, HMENU );
 static DWORD            WREGetPopupHint         ( WREPopupListItem *, HMENU );
 static WREPopupListItem *WREFindPopupListItem   ( HMENU menu );
-static Bool             WRECreateWREPopupListItem ( int, HMENU,
+static bool             WRECreateWREPopupListItem ( int, HMENU,
                                                     WREPopupHintItem * );
-static Bool              WREInitHintItems       ( int, HMENU,
+static bool              WREInitHintItems       ( int, HMENU,
                                                   WREPopupHintItem * );
 
 /****************************************************************************/
@@ -255,9 +255,9 @@ void WREHandlePopupHint( HMENU menu, HMENU popup )
     return;
 }
 
-Bool WREInitHints( void )
+bool WREInitHints( void )
 {
-    Bool ret;
+    bool ret;
 
     ret = WRECreateWREPopupListItem( 7, WREGetMenuHandle(), WREPopupHints );
 
@@ -275,7 +275,7 @@ void WREFiniHints ( void )
     }
 }
 
-Bool WRECreateWREPopupListItem ( int num, HMENU menu,
+bool WRECreateWREPopupListItem ( int num, HMENU menu,
                                  WREPopupHintItem *hint_items )
 {
     WREPopupListItem *p;
@@ -299,7 +299,7 @@ Bool WRECreateWREPopupListItem ( int num, HMENU menu,
     return ( TRUE );
 }
 
-Bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
+bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
 {
     int   i;
     int   j;

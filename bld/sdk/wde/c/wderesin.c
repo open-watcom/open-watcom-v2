@@ -49,7 +49,7 @@ static void WdeDestroyMDIWindow( HWND );
 void        WdeFreeResItemList( LIST **item_list );
 
 
-Bool WdeFreeResInfo( WdeResInfo *res_info )
+bool WdeFreeResInfo( WdeResInfo *res_info )
 {
     if( res_info != NULL ) {
         InitState( res_info->forms_win );
@@ -84,7 +84,7 @@ Bool WdeFreeResInfo( WdeResInfo *res_info )
     return( TRUE );
 }
 
-Bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
+bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
 {
     if( dlg_info != NULL ) {
         WdeFreeControlList( &dlg_info->control_list );
@@ -97,7 +97,7 @@ Bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
     return( TRUE );
 }
 
-void WdeFreeResDlgItem( WdeResDlgItem **ditem, Bool destroy_object )
+void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
 {
     if( ditem != NULL && *ditem != NULL ) {
         if( (*ditem)->dialog_name != NULL ) {
@@ -175,7 +175,7 @@ WdeResInfo *WdeAllocResInfo( void )
     return( res_info );
 }
 
-Bool WdeIsResModified( WdeResInfo *res_info )
+bool WdeIsResModified( WdeResInfo *res_info )
 {
     LIST          *ilist;
     WdeResDlgItem *item;
@@ -195,7 +195,7 @@ Bool WdeIsResModified( WdeResInfo *res_info )
     return( FALSE );
 }
 
-void WdeSetResModified( WdeResInfo *res_info, Bool mod )
+void WdeSetResModified( WdeResInfo *res_info, bool mod )
 {
     LIST          *ilist;
     WdeResDlgItem *item;

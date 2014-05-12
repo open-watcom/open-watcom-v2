@@ -79,10 +79,10 @@ void *WREGetCurrentResData( WRECurrentResInfo *curr )
     return( rdata );
 }
 
-Bool WREGetCurrentResource( WRECurrentResInfo *current )
+bool WREGetCurrentResource( WRECurrentResInfo *current )
 {
     WRETypeName *tn;
-    Bool        ok;
+    bool        ok;
     HWND        resLbox;
     LRESULT     index;
 

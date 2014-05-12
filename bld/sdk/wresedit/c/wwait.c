@@ -54,7 +54,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WSetWaitCursor( HWND hwnd, Bool on )
+void WSetWaitCursor( HWND hwnd, bool on )
 {
     static int      ref_count   = 0;
     static HCURSOR  wait_cursor = NULL;

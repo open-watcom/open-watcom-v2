@@ -35,6 +35,6 @@
 
 #include "wacc.h"
 
-extern Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append );
+extern bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, bool append );
 
 #endif

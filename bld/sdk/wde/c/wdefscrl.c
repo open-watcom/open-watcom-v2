@@ -218,7 +218,7 @@ WINEXPORT BOOL CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, v
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeScrollInit( Bool first )
+bool WdeScrollInit( bool first )
 {
     WNDCLASS    wc;
 

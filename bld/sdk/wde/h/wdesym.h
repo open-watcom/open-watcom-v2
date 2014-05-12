@@ -51,11 +51,11 @@ enum {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeResourceHashTableAction( WdeResInfo *, int );
-extern Bool WdeFindAndLoadSymbols( WdeResInfo * );
-extern Bool WdeWriteSymbols( WdeHashTable *, char **, Bool );
-extern Bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
-extern Bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
+extern bool WdeResourceHashTableAction( WdeResInfo *, int );
+extern bool WdeFindAndLoadSymbols( WdeResInfo * );
+extern bool WdeWriteSymbols( WdeHashTable *, char **, bool );
+extern bool WdeDeleteDLGInclude( WdeResInfo *rinfo );
+extern bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include );
 extern char *WdeCreateSymName( char *fname );
 
 #endif

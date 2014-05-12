@@ -275,9 +275,9 @@ int WCalcNumAccelEntries( WAccelInfo *info )
     return( num );
 }
 
-Bool WInsertAccelTableEntry( WAccelTable *tbl, WAccelEntry *after, WAccelEntry *entry )
+bool WInsertAccelTableEntry( WAccelTable *tbl, WAccelEntry *after, WAccelEntry *entry )
 {
-    Bool ok;
+    bool ok;
 
     ok = (tbl != NULL && entry != NULL);
 
@@ -300,9 +300,9 @@ Bool WInsertAccelTableEntry( WAccelTable *tbl, WAccelEntry *after, WAccelEntry *
     return( ok );
 }
 
-Bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
+bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
 {
-    Bool ok;
+    bool ok;
 
     ok = (tbl != NULL && entry != NULL);
 
@@ -394,9 +394,9 @@ void WFreeAccelTableEntries( WAccelEntry *entry )
     }
 }
 
-Bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
+bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
 {
-    Bool        ok;
+    bool        ok;
 
     ok = (entry != NULL && data != NULL && dsize != NULL);
 
@@ -419,10 +419,10 @@ Bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
     return( ok );
 }
 
-Bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
+bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
 {
     int         len;
-    Bool        ok;
+    bool        ok;
 
     ok = (entry != NULL && data != NULL && dsize != 0);
 
@@ -442,7 +442,7 @@ Bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
     return( ok );
 }
 
-Bool WResolveAllEntrySymbols( WAccelEditInfo *einfo )
+bool WResolveAllEntrySymbols( WAccelEditInfo *einfo )
 {
     WAccelEntry *entry;
 
@@ -459,11 +459,11 @@ Bool WResolveAllEntrySymbols( WAccelEditInfo *einfo )
     return( TRUE );
 }
 
-Bool WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table )
+bool WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table )
 {
     uint_16             id;
     WRHashValueList     *vlist;
-    Bool                ok;
+    bool                ok;
 
     vlist = NULL;
 
@@ -494,10 +494,10 @@ Bool WResolveEntrySymbol( WAccelEntry *entry, WRHashTable *symbol_table )
     return( ok );
 }
 
-Bool WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table )
+bool WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table )
 {
     WRHashValue         hv;
-    Bool                ok;
+    bool                ok;
 
     ok = (entry != NULL && symbol_table != NULL);
 
@@ -516,7 +516,7 @@ Bool WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table )
     return( ok );
 }
 
-Bool WResolveAllEntrySymIDs( WAccelEditInfo *einfo )
+bool WResolveAllEntrySymIDs( WAccelEditInfo *einfo )
 {
     WAccelEntry *entry;
 

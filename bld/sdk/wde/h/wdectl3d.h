@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WdeCtl3DInit( HINSTANCE );
+extern bool     WdeCtl3DInit( HINSTANCE );
 extern void     WdeCtl3DFini( HINSTANCE );
 extern void     WdeCtl3dColorChange( void );
 extern void     WdeCtl3dSubclassDlg( HWND, WORD );

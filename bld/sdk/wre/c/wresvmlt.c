@@ -51,8 +51,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool             SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata );
-static Bool             SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata );
+static bool             SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata );
+static bool             SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata );
 static WRSaveIntoData   *WRECreateSaveData( WRECurrentResInfo *curr );
 static WRSaveIntoData   *WREMakeSaveIntoNode( WRECurrentResInfo *curr );
 static void             WREFreeSaveIntoData( WRSaveIntoData *idata );
@@ -65,11 +65,11 @@ extern char *WREResSaveIntoTitle;
 extern char *WREResSaveAsTitle;
 extern char *WREResSaveMltFilter;
 
-Bool SaveMultObjects( Bool save_into )
+bool SaveMultObjects( bool save_into )
 {
     WRECurrentResInfo   curr;
     WRSaveIntoData      *idata;
-    Bool                ok;
+    bool                ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -106,9 +106,9 @@ Bool SaveMultObjects( Bool save_into )
     return( ok );
 }
 
-Bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
+bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
 {
-    Bool                ok;
+    bool                ok;
     char                *fname;
     WRFileType          ftype;
     WREGetFileStruct    gf;
@@ -142,9 +142,9 @@ Bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
     return( ok );
 }
 
-Bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
+bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
 {
-    Bool                ok;
+    bool                ok;
     char                *fname;
     WREGetFileStruct    gf;
     int                 dup;

@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeTabCInit( Bool first )
+bool WdeTabCInit( bool first )
 {
     WNDCLASS    wc;
 

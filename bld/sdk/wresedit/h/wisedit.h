@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WIsEdit( HWND hwnd );
-extern Bool WDoesEditHaveFocus( void );
+extern bool WIsEdit( HWND hwnd );
+extern bool WDoesEditHaveFocus( void );
 
 #endif

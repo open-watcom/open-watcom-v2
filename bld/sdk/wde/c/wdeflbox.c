@@ -196,7 +196,7 @@ WINEXPORT BOOL CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeLBoxInit( Bool first )
+bool WdeLBoxInit( bool first )
 {
     WNDCLASS    wc;
 

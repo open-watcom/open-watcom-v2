@@ -67,10 +67,10 @@ static WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WInsertAccelEntry( WAccelEditInfo *einfo )
+bool WInsertAccelEntry( WAccelEditInfo *einfo )
 {
     HWND            lbox;
-    Bool            ok;
+    bool            ok;
     WAccelEntry     *entry;
     WAccelEntry     *new;
     LRESULT         ret;
@@ -129,9 +129,9 @@ Bool WInsertAccelEntry( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
+bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
 {
-    Bool    ok;
+    bool    ok;
     char    *lbtext;
     char    *keytext;
     char    idtext[35];

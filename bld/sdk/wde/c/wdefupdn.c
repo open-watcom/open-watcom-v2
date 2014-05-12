@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeUpDnInit( Bool first )
+bool WdeUpDnInit( bool first )
 {
     WNDCLASS    wc;
 

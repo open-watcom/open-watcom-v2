@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeEditCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeEditInit( Bool );
+extern bool              WdeEditInit( bool );
 extern void              WdeEditFini( void );
 
 #endif

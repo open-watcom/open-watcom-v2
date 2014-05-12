@@ -84,17 +84,17 @@ WINEXPORT LRESULT CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static int          WREIncNumRes( void );
 static int          WREDecNumRes( void );
-static Bool         WREIsCurrentMDIWindowZoomed( void );
+static bool         WREIsCurrentMDIWindowZoomed( void );
 static WREResInfo   *WRELoadResource( const char * );
 static void         WREActivateResourceWindow( WREResInfo *, WPARAM, LPARAM );
-static Bool         WREQuerySaveResOnDeleteRes( WREResInfo *, Bool );
-static Bool         WREQuerySaveSymOnDeleteRes( WREResInfo *, Bool );
-static Bool         WRESaveResourceToFile( WREResInfo * );
-static Bool         WRECreateResourceWindow( WREResInfo * );
-static Bool         WREDestroyResourceWindow( WREResInfo * );
-static Bool         WRECreateResInfoWindow( WREResInfo * );
+static bool         WREQuerySaveResOnDeleteRes( WREResInfo *, bool );
+static bool         WREQuerySaveSymOnDeleteRes( WREResInfo *, bool );
+static bool         WRESaveResourceToFile( WREResInfo * );
+static bool         WRECreateResourceWindow( WREResInfo * );
+static bool         WREDestroyResourceWindow( WREResInfo * );
+static bool         WRECreateResInfoWindow( WREResInfo * );
 
-Bool    WRERemoveResource( WREResInfo * );
+bool    WRERemoveResource( WREResInfo * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -126,7 +126,7 @@ static DLGPROC          WREResInfoWinProc       = NULL;
 static HINSTANCE        WREAppInst              = NULL;
 static HBRUSH           WREResInfoBrush         = NULL;
 
-extern Bool WRENoInterface;
+extern bool WRENoInterface;
 
 static void WREMassageFilter( char *filter )
 {
@@ -189,9 +189,9 @@ static void WREFiniStaticVars( void )
     }
 }
 
-static Bool WREInitStaticVars( void )
+static bool WREInitStaticVars( void )
 {
-    Bool        ok;
+    bool        ok;
 
     WREResUntitled = AllocRCString( WRE_UNTITLED );
     ok = (WREResUntitled != NULL);
@@ -291,7 +291,7 @@ typedef struct infopadstruct {
 } infopadstruct;
 
 static infopadstruct    InfoPad;
-static Bool             InfoPadInit = FALSE;
+static bool             InfoPadInit = FALSE;
 
 static void InitInfoPad( HWND info_dlg )
 {
@@ -330,7 +330,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     RECT        rect;
     int         dwidth, dheight;
     int         x, y, width, height;
-    Bool        ok;
+    bool        ok;
 
     if( info == NULL || info->info_win == (HWND)NULL ) {
         return;
@@ -402,7 +402,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     }
 }
 
-Bool pleaseOpenFile( UINT msg )
+bool pleaseOpenFile( UINT msg )
 {
     char                *filter;
     char                *title;
@@ -411,7 +411,7 @@ Bool pleaseOpenFile( UINT msg )
     WREResInfo          *old_info;
     WREGetFileStruct    gf;
     uint_16             type;
-    Bool                ok;
+    bool                ok;
 
     old_info = WREGetCurrentRes();
     res_info = NULL;
@@ -500,7 +500,7 @@ WREResInfo *WREGetCurrentRes( void )
     return( WRECurrentRes );
 }
 
-Bool WREIsCurrentMDIWindowZoomed( void )
+bool WREIsCurrentMDIWindowZoomed( void )
 {
     WREResInfo *info;
 
@@ -513,7 +513,7 @@ Bool WREIsCurrentMDIWindowZoomed( void )
     }
 }
 
-Bool WRERegisterResClass( HINSTANCE app_inst )
+bool WRERegisterResClass( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -561,7 +561,7 @@ int WREGetNumRes( void )
 WREResInfo *WRECreateNewResource( char *filename )
 {
     WREResInfo  *res_info;
-    Bool        ok;
+    bool        ok;
 
     ok = ((res_info = WREAllocResInfo()) != NULL);
 
@@ -607,12 +607,12 @@ WREResInfo *WRECreateNewResource( char *filename )
     return( res_info );
 }
 
-Bool WREOpenResource( char *fn )
+bool WREOpenResource( char *fn )
 {
     char                *name;
     WREResInfo          *res_info;
     WREGetFileStruct    gf;
-    Bool                ok, got_name;
+    bool                ok, got_name;
 
     res_info = NULL;
     name = NULL;
@@ -665,7 +665,7 @@ WREResInfo *WRELoadResource( const char *file_name )
 {
     WRFileType  file_type;
     WREResInfo  *res_info;
-    Bool        ok;
+    bool        ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -724,7 +724,7 @@ WREResInfo *WREResInfoFromWin( HWND win )
     return( NULL );
 }
 
-Bool WREIsResInfoWinMsg( LPMSG pmsg )
+bool WREIsResInfoWinMsg( LPMSG pmsg )
 {
     WREResInfo *info;
     LIST       *rlist;
@@ -745,7 +745,7 @@ Bool WREIsResInfoWinMsg( LPMSG pmsg )
 void WREActivateResourceWindow( WREResInfo *res_info, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
-    Bool        fActivate;
+    bool        fActivate;
     HWND        hwndDeact;
 
     _wre_touch( wParam );
@@ -796,7 +796,7 @@ static void WRECheckIfActiveWindow( void )
     }
 }
 
-Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
+bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -843,7 +843,7 @@ Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
+bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -879,13 +879,13 @@ Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
+bool WRESaveResource( WREResInfo *res_info, bool get_name )
 {
     char                *fn;
     WREGetFileStruct    gf;
     int                 fn_offset;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
 
     fn_offset = 0;
     got_name = FALSE;
@@ -962,9 +962,9 @@ Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
     return( ok );
 }
 
-Bool WRESaveResourceToFile( WREResInfo *res_info )
+bool WRESaveResourceToFile( WREResInfo *res_info )
 {
-    Bool          ok;
+    bool          ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -983,11 +983,11 @@ Bool WRESaveResourceToFile( WREResInfo *res_info )
     return( ok );
 }
 
-Bool WREQueryKillApp( Bool fatal_exit )
+bool WREQueryKillApp( bool fatal_exit )
 {
     LIST        *rlist;
     WREResInfo  *info;
-    Bool        kill_app;
+    bool        kill_app;
 
     if( !WRENoInterface && WREResList != NULL ) {
         kill_app = TRUE;
@@ -1024,7 +1024,7 @@ void WREFreeResList( void )
     }
 }
 
-Bool WRERemoveResource( WREResInfo *res_info )
+bool WRERemoveResource( WREResInfo *res_info )
 {
     LIST *node;
 
@@ -1049,12 +1049,12 @@ Bool WRERemoveResource( WREResInfo *res_info )
     return( TRUE );
 }
 
-Bool WRECreateResourceWindow( WREResInfo *res_info )
+bool WRECreateResourceWindow( WREResInfo *res_info )
 {
     MDICREATESTRUCT     mdics;
     LRESULT             ret;
     HWND                win;
-    Bool                ok;
+    bool                ok;
     DWORD               style;
     int                 fn_offset;
     char                *win_title;
@@ -1125,7 +1125,7 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
     return( ok );
 }
 
-Bool WREDestroyResourceWindow( WREResInfo *res_info )
+bool WREDestroyResourceWindow( WREResInfo *res_info )
 {
     if( res_info != NULL && WREQuerySaveResOnDeleteRes( res_info, FALSE ) &&
         WREQuerySaveSymOnDeleteRes( res_info, FALSE ) ) {
@@ -1194,7 +1194,7 @@ LRESULT CALLBACK WREResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return( ret );
 }
 
-Bool WREInitResources( HINSTANCE inst )
+bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
@@ -1211,7 +1211,7 @@ void WREFiniResources( void )
     WREFiniStaticVars();
 }
 
-Bool WRECreateResInfoWindow( WREResInfo *info )
+bool WRECreateResInfoWindow( WREResInfo *info )
 {
     info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win, WREResInfoWinProc, (LPARAM)(LPVOID)info );
 

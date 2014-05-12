@@ -175,7 +175,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
                         OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeButtonObject *new;
-    Bool            b;
+    bool            b;
 
     WdeDebugCreate( "Button", parent, obj_rect, handle );
 
@@ -250,7 +250,7 @@ WINEXPORT BOOL CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, v
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeButtonInit( Bool first )
+bool WdeButtonInit( bool first )
 {
     WNDCLASS    wc;
 

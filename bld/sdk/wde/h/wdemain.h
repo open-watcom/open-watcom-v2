@@ -44,19 +44,19 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool         WdeInCleanup( void );
+extern bool         WdeInCleanup( void );
 extern HINSTANCE    WdeGetAppInstance( void );
 extern HWND         WdeGetMainWindowHandle( void );
 extern HWND         WdeGetMDIWindowHandle( void );
 extern HMENU        WdeGetMenuHandle( void );
 extern HMENU        WdeGetResMenuHandle( void );
 extern HMENU        WdeGetInitialMenuHandle( void );
-extern void         WdeSetAppMenuToRes( Bool );
+extern void         WdeSetAppMenuToRes( bool );
 extern void         WdeResizeWindows( void );
-extern Bool         WdeIsMenuIDValid( HMENU, WORD );
-extern Bool         WdeIsDDE( void );
-extern Bool         WdeIsFirstInst( void );
-extern void         WdeEnableMenuInput( Bool enable );
+extern bool         WdeIsMenuIDValid( HMENU, WORD );
+extern bool         WdeIsDDE( void );
+extern bool         WdeIsFirstInst( void );
+extern void         WdeEnableMenuInput( bool enable );
 extern void CALLBACK    WdeHelpRoutine( void );
 extern void CALLBACK    WdeHelpSearchRoutine( void );
 extern void CALLBACK    WdeHelpOnHelpRoutine( void );

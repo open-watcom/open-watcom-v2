@@ -46,14 +46,14 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type );
-extern Bool WREAddBitmapFileHeader( BYTE **data, uint_32 *size );
-extern Bool WREStripBitmapFileHeader( BYTE **data, uint_32 *size );
-extern Bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type );
-extern Bool WREStripIconDirectory( BYTE **data, uint_32 *size );
-extern Bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 *size );
-extern Bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 *size );
-extern Bool WRECreateCursorEntries( WRECurrentResInfo *curr, void *data, uint_32 size );
-extern Bool WRECreateIconEntries( WRECurrentResInfo *curr, void *data, uint_32 size );
+extern bool WREDeleteGroupImages( WRECurrentResInfo *group, uint_16 type );
+extern bool WREAddBitmapFileHeader( BYTE **data, uint_32 *size );
+extern bool WREStripBitmapFileHeader( BYTE **data, uint_32 *size );
+extern bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type );
+extern bool WREStripIconDirectory( BYTE **data, uint_32 *size );
+extern bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 *size );
+extern bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 *size );
+extern bool WRECreateCursorEntries( WRECurrentResInfo *curr, void *data, uint_32 size );
+extern bool WRECreateIconEntries( WRECurrentResInfo *curr, void *data, uint_32 size );
 
 #endif

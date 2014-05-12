@@ -198,7 +198,7 @@ WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeTrakInit( Bool first )
+bool WdeTrakInit( bool first )
 {
     WNDCLASS    wc;
 

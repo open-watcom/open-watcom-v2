@@ -39,7 +39,7 @@
 #include "wdeactn.h"
 #include "wdefdiag.h"
 
-static Bool WdeQueryClearRes( void )
+static bool WdeQueryClearRes( void )
 {
     int         ret;
     UINT        style;
@@ -65,7 +65,7 @@ static Bool WdeQueryClearRes( void )
     return( FALSE );
 }
 
-Bool WdeDeleteAllObjects( void )
+bool WdeDeleteAllObjects( void )
 {
     OBJPTR      base;
     OBJPTR      child;
@@ -92,10 +92,10 @@ Bool WdeDeleteAllObjects( void )
     return( TRUE );
 }
 
-Bool WdeClearCurrentResource( void )
+bool WdeClearCurrentResource( void )
 {
-    Bool        ok;
-    Bool        is32bit;
+    bool        ok;
+    bool        is32bit;
 
     ok = WdeQueryClearRes();
 

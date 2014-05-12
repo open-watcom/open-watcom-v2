@@ -35,6 +35,6 @@
 
 #include "w_menu.h"
 
-extern Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append );
+extern bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, bool append );
 
 #endif

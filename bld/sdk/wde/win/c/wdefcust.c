@@ -91,9 +91,9 @@ static BOOL     WdeCustomIdentify( WdeCustomObject *, OBJ_ID *, void * );
 static BOOL     WdeCustomGetWndProc( WdeCustomObject *, WNDPROC *, void * );
 static BOOL     WdeCustomGetWindowClass( WdeCustomObject *, char **, void * );
 static BOOL     WdeCustomDefine( WdeCustomObject *, POINT *, void * );
-static Bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
+static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
 static LIST     *WdeFindClassInList( char * );
-static Bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
+static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
 static void     WdeFreeClassList( void );
 static void     WdeFreeClassNode( WdeCustClassNode * );
 
@@ -210,7 +210,7 @@ WINEXPORT OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPT
     return( WdeMakeCustom( parent, obj_rect, handle, 1 ) );
 }
 
-Bool WdeCheckForSmallRect( OBJPTR parent, WdeCustControl *cust_info,
+bool WdeCheckForSmallRect( OBJPTR parent, WdeCustControl *cust_info,
                            UINT cust_type, RECT *obj_rect )
 {
     uint_32             width;
@@ -361,7 +361,7 @@ void WdeFreeClassNode( WdeCustClassNode *node )
     }
 }
 
-Bool WdeAddNewClassToList( char *class, char *new_name,
+bool WdeAddNewClassToList( char *class, char *new_name,
                            int win_extra, WNDPROC win_proc )
 {
     WdeCustClassNode *node;
@@ -413,7 +413,7 @@ LIST *WdeFindClassInList( char *class )
     return( clist );
 }
 
-Bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
+bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
                              int *win_extra, WNDPROC *win_proc )
 {
     WdeCustClassNode    *node;
@@ -566,7 +566,7 @@ WINEXPORT BOOL CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, v
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeCustomInit( Bool first )
+bool WdeCustomInit( bool first )
 {
     _wde_touch( first );
     WdeApplicationInstance = WdeGetAppInstance();

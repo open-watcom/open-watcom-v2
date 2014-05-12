@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool SaveMultObjects( Bool save_into );
+extern bool SaveMultObjects( bool save_into );
 
 #endif

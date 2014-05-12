@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WSaveObject( WMenuEditInfo *, Bool, Bool );
-extern Bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, Bool prompt );
+extern bool WSaveObject( WMenuEditInfo *, bool, bool );
+extern bool WSaveSymbols( WMenuEditInfo *einfo, WRHashTable *table, char **file_name, bool prompt );
 
 #endif

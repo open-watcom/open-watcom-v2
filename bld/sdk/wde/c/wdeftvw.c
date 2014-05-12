@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, voi
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeTViewInit( Bool first )
+bool WdeTViewInit( bool first )
 {
     WNDCLASS    wc;
 

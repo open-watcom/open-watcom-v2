@@ -128,7 +128,7 @@ int WGetRibbonHeight( void )
     return( WRibbonHeight );
 }
 
-Bool WInitRibbons( HINSTANCE inst )
+bool WInitRibbons( HINSTANCE inst )
 {
     int i;
 
@@ -257,7 +257,7 @@ void WShutdownRibbons( void )
     }
 }
 
-Bool WCreateRibbon( WMenuEditInfo *einfo )
+bool WCreateRibbon( WMenuEditInfo *einfo )
 {
     RECT                r;
     WToolBarInfo        *rinfo;
@@ -289,7 +289,7 @@ Bool WCreateRibbon( WMenuEditInfo *einfo )
     }
 }
 
-Bool WResizeRibbon( WMenuEditInfo *einfo, RECT *prect )
+bool WResizeRibbon( WMenuEditInfo *einfo, RECT *prect )
 {
     if( einfo == NULL || einfo->ribbon == NULL || !einfo->show_ribbon || prect == NULL ||
         einfo->ribbon->win == (HWND)NULL ) {
@@ -354,7 +354,7 @@ void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 
 BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    Bool            ret;
+    BOOL            ret;
     WMenuEditInfo   *einfo;
 
     _wtouch( hwnd );

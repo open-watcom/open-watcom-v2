@@ -40,13 +40,13 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WdeSetEditMode( WdeResInfo *, Bool );
+extern bool     WdeSetEditMode( WdeResInfo *, bool );
 extern LRESULT  WdePassToEdit( UINT, WPARAM, LPARAM );
-extern Bool     WdeRegisterEditClass( HINSTANCE );
+extern bool     WdeRegisterEditClass( HINSTANCE );
 extern void     WdeInitEditClass( void );
 extern void     WdeFiniEditClass( void );
-extern Bool     WdeCreateEditWindows( WdeResInfo * );
-extern Bool     WdeResizeEditWindows( WdeResInfo * );
+extern bool     WdeCreateEditWindows( WdeResInfo * );
+extern bool     WdeResizeEditWindows( WdeResInfo * );
 extern HWND     WdeGetEditWindowHandle( WdeResInfo * );
 extern HFONT    WdeGetEditFont( void );
 extern HWND     WdeGetFormsWindowHandle( WdeResInfo * );

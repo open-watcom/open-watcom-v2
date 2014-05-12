@@ -199,7 +199,7 @@ WINEXPORT BOOL CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeHdrInit( Bool first )
+bool WdeHdrInit( bool first )
 {
     WNDCLASS    wc;
 

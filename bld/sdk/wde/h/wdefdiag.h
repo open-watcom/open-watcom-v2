@@ -46,13 +46,13 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern WdeDialogBoxInfo *WdeDBIFromObject( void * );
-extern OBJPTR           WdeCreateNewDialog( WResID *, Bool is32bit );
+extern OBJPTR           WdeCreateNewDialog( WResID *, bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
 WINEXPORT extern OBJPTR CALLBACK WdeDialogCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool             WdeDialogInit( Bool );
+extern bool             WdeDialogInit( bool );
 extern void             WdeDialogFini( void );
-extern Bool             WdeIsDialogRestorable( void * );
-extern Bool             WdePreserveDialogWithDBI( void * );
+extern bool             WdeIsDialogRestorable( void * );
+extern bool             WdePreserveDialogWithDBI( void * );
 extern void             WdeDialogModified( void * );
 extern RECT             *WdeGetDefaultDialogNCSize( void );
 

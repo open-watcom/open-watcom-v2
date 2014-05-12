@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeHtKyCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeHtKyInit( Bool );
+extern bool              WdeHtKyInit( bool );
 extern void              WdeHtKyFini( void );
 
 #endif

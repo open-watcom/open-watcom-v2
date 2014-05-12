@@ -54,19 +54,19 @@ extern WAccelEntry DefaultEntry;
 extern void WInitEditWindows( HINSTANCE );
 extern void WFiniEditWindows( void );
 extern void WInitEditDlg( HINSTANCE inst, HWND parent );
-extern Bool WCreateAccelEditWindow( WAccelEditInfo *, HINSTANCE );
-extern Bool WResizeAccelEditWindow( WAccelEditInfo *, RECT * );
-extern Bool WSetEditWinResName( WAccelEditInfo * );
-extern Bool WInitEditWindowListBox( WAccelEditInfo * );
+extern bool WCreateAccelEditWindow( WAccelEditInfo *, HINSTANCE );
+extern bool WResizeAccelEditWindow( WAccelEditInfo *, RECT * );
+extern bool WSetEditWinResName( WAccelEditInfo * );
+extern bool WInitEditWindowListBox( WAccelEditInfo * );
 extern void WHandleSelChange( WAccelEditInfo * );
 extern void WHandleChange( WAccelEditInfo * );
-extern void WDoHandleSelChange( WAccelEditInfo *, Bool, Bool );
+extern void WDoHandleSelChange( WAccelEditInfo *, bool, bool );
 
 extern void WResetEditWindow( WAccelEditInfo *einfo );
-extern Bool WSetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry * );
-extern Bool WGetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry *, Bool );
-extern void WSetVirtKey( HWND, Bool );
-extern Bool WClipAccelItem( WAccelEditInfo *einfo, Bool cut );
-extern Bool WPasteAccelItem( WAccelEditInfo *einfo );
+extern bool WSetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry * );
+extern bool WGetEditWindowKeyEntry( WAccelEditInfo *, WAccelEntry *, bool );
+extern void WSetVirtKey( HWND, bool );
+extern bool WClipAccelItem( WAccelEditInfo *einfo, bool cut );
+extern bool WPasteAccelItem( WAccelEditInfo *einfo );
 
 #endif

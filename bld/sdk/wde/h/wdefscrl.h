@@ -39,7 +39,7 @@
 WINEXPORT extern OBJPTR  CALLBACK WdeHScrollCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeVScrollCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeSizeBoxCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeScrollInit( Bool );
+extern bool              WdeScrollInit( bool );
 extern void              WdeScrollFini( void );
 
 #endif

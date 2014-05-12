@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeProgDispatcher( ACTION act, WdeProgObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeProgInit( Bool first )
+bool WdeProgInit( bool first )
 {
     WNDCLASS    wc;
 

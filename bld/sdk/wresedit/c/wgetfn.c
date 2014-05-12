@@ -140,7 +140,7 @@ char *WGetSaveFileName( HWND parent, WGetFileStruct *gf )
 char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction action )
 {
     OPENFILENAME    wofn;
-    Bool            ret;
+    bool            ret;
     DWORD           error;
     int             len;
     char            fn_drive[_MAX_DRIVE];
@@ -294,7 +294,7 @@ WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 }
 #endif
 
-Bool WGetInternalRESName( char *filename, char *newname )
+bool WGetInternalRESName( char *filename, char *newname )
 {
     char                fn_drive[_MAX_DRIVE];
     char                fn_dir[_MAX_DIR];

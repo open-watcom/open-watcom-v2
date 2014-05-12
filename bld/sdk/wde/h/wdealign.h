@@ -51,9 +51,9 @@ typedef uint_8 WdeAlignValue;
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeAlignControls( WdeAlignValue );
-extern Bool WdeSameSize( RESIZE_ID );
-extern Bool WdeGetBoundingRectFromSelect( RECT * );
-extern Bool WdeGetBoundingRectFromList( LIST *, RECT * );
+extern bool WdeAlignControls( WdeAlignValue );
+extern bool WdeSameSize( RESIZE_ID );
+extern bool WdeGetBoundingRectFromSelect( RECT * );
+extern bool WdeGetBoundingRectFromList( LIST *, RECT * );
 
 #endif

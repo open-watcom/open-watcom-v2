@@ -49,10 +49,10 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool          WdeInfoToData( WdeResInfo * );
+static bool          WdeInfoToData( WdeResInfo * );
 static void          WdeFreeInfoData( WdeResInfo * );
 static WResResNode  *WdeRenameWResResNode( WResTypeNode *, WResResNode *, WResID * );
-static Bool          WdeAddResToType( WResTypeNode *, WResResNode * );
+static bool          WdeAddResToType( WResTypeNode *, WResResNode * );
 static WResTypeNode *WdeAddTypeToDir( WResDir, uint_16 );
 static WResResNode  *WdeCreateWResResNode( uint_16, WResID *, WResLangType *, uint_16, uint_32, uint_32, void * );
 static WResTypeNode *WdeAllocWResTypeNode( uint_16 );
@@ -63,7 +63,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *, uint_16, uint_32, uin
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WdeCreateDLGName( char *filename, char *newname )
+bool WdeCreateDLGName( char *filename, char *newname )
 {
     char        fn_drive[_MAX_DRIVE];
     char        fn_dir[_MAX_DIR];
@@ -80,9 +80,9 @@ Bool WdeCreateDLGName( char *filename, char *newname )
     return( FALSE );
 }
 
-Bool WdeSaveResourceToFile( WdeResInfo *res_info )
+bool WdeSaveResourceToFile( WdeResInfo *res_info )
 {
-    Bool        ok;
+    bool        ok;
     char        fn[_MAX_PATH];
 
     WdeSetWaitCursor( TRUE );
@@ -140,7 +140,7 @@ Bool WdeSaveResourceToFile( WdeResInfo *res_info )
     return( ok );
 }
 
-Bool WdeInfoToData( WdeResInfo *info )
+bool WdeInfoToData( WdeResInfo *info )
 {
     WResTypeNode        *dnode;
     WResResNode         *rnode;
@@ -264,7 +264,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
     return( dbi );
 }
 
-Bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
+bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
 {
     WdeDialogBoxInfo   *dbi;
 
@@ -318,7 +318,7 @@ WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WRes
     return( new_rnode );
 }
 
-Bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
+bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
 {
     if( tnode == NULL || rnode == NULL ) {
         return( FALSE );

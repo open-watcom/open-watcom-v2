@@ -81,14 +81,14 @@ static void             WdeFindClassInCustLib( char *, LIST **, WdeCustLib * );
 static BOOL             WdeQueryUnsafeMSLoad( void );
 static BOOL             WdeQueryAssumeMS( void );
 static void             WdeFreeSelectWinCBox( HWND );
-static Bool             WdeSetSelectWinCBox( HWND, WdeCustControl * );
-static Bool             WdeSetSelectWin( HWND );
-static Bool             WdeSetCurrentControl( HWND, int );
-static Bool             WdePreviewSelected( HWND );
+static bool             WdeSetSelectWinCBox( HWND, WdeCustControl * );
+static bool             WdeSetSelectWin( HWND );
+static bool             WdeSetCurrentControl( HWND, int );
+static bool             WdePreviewSelected( HWND );
 static void             WdeSetLoadCustInfo( HWND, WdeCustLib * );
 static void             WdeSetLoadCustInfoOrd( HWND hDlg );
-static Bool             WdeGetLoadCustInfo( HWND, WdeCustLib * );
-static void             WdeEnableNonStandardCustInfo( HWND, Bool, Bool );
+static bool             WdeGetLoadCustInfo( HWND, WdeCustLib * );
+static void             WdeEnableNonStandardCustInfo( HWND, bool, bool );
 
 /****************************************************************************/
 /* extern variables                                                         */
@@ -123,7 +123,7 @@ static uint_16 WdeSupportedBorBtnIDs[] =
 #define NUM_BOR_BTNS    (sizeof( WdeSupportedBorBtnIDs ) / sizeof( uint_16 ))
 
 
-Bool WdeIsBorBtnIDSupported( uint_16 id )
+bool WdeIsBorBtnIDSupported( uint_16 id )
 {
     int i;
 
@@ -146,7 +146,7 @@ void WdeGetCurrentCustControl( int which, WdeCustControl **control, UINT *type )
     *type = WdeCurrControl[which].type;
 }
 
-Bool WdeIsCurrentCustControlSet( int which )
+bool WdeIsCurrentCustControlSet( int which )
 {
     if( WDE_CHECK_WHICH( which ) ) {
         if( WdeCurrControl[which].control != NULL ) {
@@ -156,12 +156,12 @@ Bool WdeIsCurrentCustControlSet( int which )
     return( FALSE );
 }
 
-Bool WdeCustControlsLoaded( void )
+bool WdeCustControlsLoaded( void )
 {
     return( WdeCustomLibList != NULL );
 }
 
-Bool WdeSetCurrentCustControl( int which )
+bool WdeSetCurrentCustControl( int which )
 {
     int       ret;
     HINSTANCE inst;
@@ -201,7 +201,7 @@ Bool WdeSetCurrentCustControl( int which )
     return( TRUE );
 }
 
-Bool WdeLoadCustomLib( Bool ms_lib, Bool load_only )
+bool WdeLoadCustomLib( bool ms_lib, bool load_only )
 {
     char                *name;
     HINSTANCE           inst;
@@ -555,7 +555,7 @@ void WdeFreeCustRESProcs( void )
     }
 }
 
-Bool WdeFreeAllCustLibs( void )
+bool WdeFreeAllCustLibs( void )
 {
     LIST        *llist;
     WdeCustLib  *lib;
@@ -865,7 +865,7 @@ void WdeFreeSelectWinCBox( HWND win )
     }
 }
 
-Bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
+bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
 {
     WdeCurrCustControl  *current;
     uint_16             type;
@@ -905,7 +905,7 @@ Bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
     return( TRUE );
 }
 
-Bool WdeSetSelectWin( HWND win )
+bool WdeSetSelectWin( HWND win )
 {
     LIST            *llist;
     LIST            *clist;
@@ -932,7 +932,7 @@ Bool WdeSetSelectWin( HWND win )
     return( TRUE );
 }
 
-Bool WdeSetCurrentControl( HWND win, int which )
+bool WdeSetCurrentControl( HWND win, int which )
 {
     LRESULT             index;
     WdeCurrCustControl  *current;
@@ -994,7 +994,7 @@ void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r )
     }
 }
 
-Bool WdePreviewSelected( HWND win )
+bool WdePreviewSelected( HWND win )
 {
     WdeCurrCustControl  *current;
     LRESULT             index;
@@ -1186,7 +1186,7 @@ void WdeSetLoadCustInfoOrd( HWND hDlg )
     WdeSetEditWithStr( str, hDlg, IDB_CUST_FLAGS );
 }
 
-void WdeEnableNonStandardCustInfo( HWND hDlg, Bool flag, Bool init )
+void WdeEnableNonStandardCustInfo( HWND hDlg, bool flag, bool init )
 {
     int i;
 
@@ -1199,12 +1199,12 @@ void WdeEnableNonStandardCustInfo( HWND hDlg, Bool flag, Bool init )
     }
 }
 
-Bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
+bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
 {
     char    *info;
     char    *style;
     char    *flags;
-    Bool    ok;
+    bool    ok;
 
     ok = TRUE;
 

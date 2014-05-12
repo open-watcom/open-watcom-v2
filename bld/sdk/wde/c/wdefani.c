@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeAniCInit( Bool first )
+bool WdeAniCInit( bool first )
 {
     WNDCLASS    wc;
 

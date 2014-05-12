@@ -41,7 +41,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern CREATE_TABLE *WdeGetCreateTable( void );
-extern Bool         WdeInitCreateTable( void );
+extern bool         WdeInitCreateTable( void );
 extern void         WdeFiniCreateTable( void );
 
 #endif

@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WdeSetWaitCursor( Bool );
+extern void WdeSetWaitCursor( bool );
 
 #endif

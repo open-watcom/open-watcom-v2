@@ -51,6 +51,6 @@ extern uint_16  WGetVKeyFromStr( char * );
 extern char     *WGetKeyText( uint_16 key, uint_16 flags );
 extern char     *WGetASCIIKeyText( uint_16 key );
 extern char     *WGetASCIIVKText( uint_16 key );
-extern Bool     WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, Bool *force_ascii );
+extern bool     WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_ascii );
 
 #endif

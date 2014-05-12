@@ -62,7 +62,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WRFileType WRESelectFileType( char *name, Bool is32bit )
+WRFileType WRESelectFileType( char *name, bool is32bit )
 {
     WRFileType  file_type;
     HWND        parent;

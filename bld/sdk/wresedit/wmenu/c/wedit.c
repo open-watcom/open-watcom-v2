@@ -72,7 +72,7 @@ extern UINT WItemClipbdFormat;
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WInitEditWindow( WMenuEditInfo * );
+static bool WInitEditWindow( WMenuEditInfo * );
 static void WExpandEditWindowItem( HWND, HWND, RECT * );
 
 /****************************************************************************/
@@ -103,7 +103,7 @@ void WFiniEditWindows( void )
 }
 
 
-Bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
+bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
 {
     einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win,
                                           WMenuEditWinProc, (LPARAM)einfo );
@@ -122,7 +122,7 @@ Bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
     return( WInitEditWindow( einfo ) );
 }
 
-Bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
+bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
 {
     int     width, height, ribbon_depth;
     HWND    win;
@@ -187,7 +187,7 @@ static void WExpandEditWindowItem( HWND hDlg, HWND win, RECT *prect )
 
 void WSetEditWindowControls( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
-    Bool        enable;
+    bool        enable;
 
     // can this entry be reset or changed
     enable = (entry != NULL);
@@ -203,10 +203,10 @@ void WSetEditWindowControls( WMenuEditInfo *einfo, WMenuEntry *entry )
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDSHIFTRIGHT ), enable );
 }
 
-Bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
+bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
-    Bool        ok;
-    Bool        pop_sep;
+    bool        ok;
+    bool        pop_sep;
     MenuFlags   flags;
     uint_16     id;
     char        *text;
@@ -237,7 +237,7 @@ Bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
     return( ok );
 }
 
-static Bool WQueryNukePopup( WMenuEditInfo *einfo )
+static bool WQueryNukePopup( WMenuEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -264,15 +264,15 @@ static Bool WQueryNukePopup( WMenuEditInfo *einfo )
     return( FALSE );
 }
 
-Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
-                              Bool test_mod, Bool *reset )
+bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
+                              bool test_mod, bool *reset )
 {
     MenuFlags   flags;
     MenuFlags   iflags;
     uint_16     id;
     char        *text;
     char        *symbol;
-    Bool        ok;
+    bool        ok;
 
     flags = 0;
     id = 0;
@@ -398,9 +398,9 @@ Bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     return( ok );
 }
 
-Bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
+bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
 {
-    Bool    ok;
+    bool    ok;
     char    *t;
     char    *n;
 
@@ -430,9 +430,9 @@ Bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
     return( ok );
 }
 
-Bool WGetEditWindowText( HWND dlg, char **text )
+bool WGetEditWindowText( HWND dlg, char **text )
 {
-    Bool        ok;
+    bool        ok;
     char        *n;
 
     ok = (dlg != (HWND)NULL && text != NULL);
@@ -453,9 +453,9 @@ Bool WGetEditWindowText( HWND dlg, char **text )
     return( ok );
 }
 
-Bool WSetEditWindowID( HWND dlg, uint_16 id, Bool is_pop_sep, char *symbol )
+bool WSetEditWindowID( HWND dlg, uint_16 id, bool is_pop_sep, char *symbol )
 {
-    Bool    ok;
+    bool    ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -482,8 +482,8 @@ Bool WSetEditWindowID( HWND dlg, uint_16 id, Bool is_pop_sep, char *symbol )
     return( ok );
 }
 
-Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
-                       WRHashTable *symbol_table, Bool combo_change )
+bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
+                       WRHashTable *symbol_table, bool combo_change )
 {
     int_32      val;
     char        *ep;
@@ -550,9 +550,9 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     return( TRUE );
 }
 
-Bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, Bool reset )
+bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, bool reset )
 {
-    Bool ok;
+    bool ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -579,9 +579,9 @@ Bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, Bool reset )
     return( ok );
 }
 
-Bool WResetEditWindowFlags( HWND dlg )
+bool WResetEditWindowFlags( HWND dlg )
 {
-    Bool ok;
+    bool ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -592,9 +592,9 @@ Bool WResetEditWindowFlags( HWND dlg )
     return( ok );
 }
 
-Bool WGetEditWindowFlags( HWND dlg, MenuFlags *flags )
+bool WGetEditWindowFlags( HWND dlg, MenuFlags *flags )
 {
-    Bool ok;
+    bool ok;
 
     ok = (dlg != (HWND)NULL && flags != NULL);
 
@@ -629,7 +629,7 @@ Bool WGetEditWindowFlags( HWND dlg, MenuFlags *flags )
     return( ok );
 }
 
-Bool WSetEditWinResName( WMenuEditInfo *einfo )
+bool WSetEditWinResName( WMenuEditInfo *einfo )
 {
     if( einfo != NULL && einfo->edit_dlg != NULL && einfo->info->res_name != NULL ) {
         return( WSetEditWithWResID( GetDlgItem( einfo->edit_dlg, IDM_MENUEDRNAME ),
@@ -639,9 +639,9 @@ Bool WSetEditWinResName( WMenuEditInfo *einfo )
     return( TRUE );
 }
 
-Bool WInitEditWindowListBox( WMenuEditInfo *einfo )
+bool WInitEditWindowListBox( WMenuEditInfo *einfo )
 {
-    Bool        ok;
+    bool        ok;
     HWND        lbox;
     int         pos;
 
@@ -668,10 +668,10 @@ Bool WInitEditWindowListBox( WMenuEditInfo *einfo )
     return( ok );
 }
 
-static Bool WInitEditWindow( WMenuEditInfo *einfo )
+static bool WInitEditWindow( WMenuEditInfo *einfo )
 {
     HWND    lbox;
-    Bool    ok;
+    bool    ok;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -701,12 +701,12 @@ static Bool WInitEditWindow( WMenuEditInfo *einfo )
     return( ok );
 }
 
-Bool WPasteMenuItem( WMenuEditInfo *einfo )
+bool WPasteMenuItem( WMenuEditInfo *einfo )
 {
     WMenuEntry  *entry;
     void        *data;
     uint_32     dsize;
-    Bool        ok;
+    bool        ok;
 
     data = NULL;
     ok = (einfo != NULL);
@@ -735,14 +735,14 @@ Bool WPasteMenuItem( WMenuEditInfo *einfo )
     return( ok );
 }
 
-Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut )
+bool WClipMenuItem( WMenuEditInfo *einfo, bool cut )
 {
     HWND        lbox;
     LRESULT     index;
     void        *data;
     uint_32     dsize;
     WMenuEntry  *entry;
-    Bool        ok;
+    bool        ok;
 
     data = NULL;
     ok = (einfo != NULL);
@@ -783,7 +783,7 @@ Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut )
     return( ok );
 }
 
-static Bool WQueryChangeEntry( WMenuEditInfo *einfo )
+static bool WQueryChangeEntry( WMenuEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -810,13 +810,13 @@ static Bool WQueryChangeEntry( WMenuEditInfo *einfo )
     return( FALSE );
 }
 
-void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
+void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
 {
     HWND        lbox;
     LRESULT     index;
     WMenuEntry  *entry;
-    Bool        reinit;
-    Bool        mod;
+    bool        reinit;
+    bool        mod;
 
     if( einfo == NULL ) {
         return;
@@ -859,7 +859,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, Bool change, Bool reset )
             WSetEditWindowMenuEntry( einfo, entry );
         } else {
             uint_16     id;
-            Bool        pop_sep;
+            bool        pop_sep;
             MenuFlags   flags;
             if( entry->item->IsPopup ) {
                 flags = entry->item->Item.Popup.ItemFlags;
@@ -884,15 +884,15 @@ void WHandleSelChange( WMenuEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-static Bool WShiftEntry( WMenuEditInfo *einfo, Bool left )
+static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
 {
     WMenuEntry  *prev;
     WMenuEntry  *parent;
     WMenuEntry  *entry;
     LRESULT     ret;
     HWND        lbox;
-    Bool        entry_removed;
-    Bool        ok;
+    bool        entry_removed;
+    bool        ok;
 
     entry_removed = FALSE;
 

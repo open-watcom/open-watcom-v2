@@ -57,9 +57,9 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WdeSetWaitCursor( Bool use_wait )
+void WdeSetWaitCursor( bool use_wait )
 {
-    static Bool     waiting = FALSE;
+    static bool     waiting = FALSE;
     static HCURSOR  old_cursor = (HCURSOR)NULL;
 
     if( use_wait && !waiting ) {

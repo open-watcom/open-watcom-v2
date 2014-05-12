@@ -74,11 +74,11 @@ static WResResNode *WREAllocResNodeFromWResID( WResID * );
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WRERenameResource( void )
+bool WRERenameResource( void )
 {
     WRECurrentResInfo  curr;
     WREResRenameInfo   info;
-    Bool               ok;
+    bool               ok;
 
     info.old_name = NULL;
     info.new_name = NULL;
@@ -111,7 +111,7 @@ Bool WRERenameResource( void )
     return( ok );
 }
 
-Bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WResID *name )
+bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WResID *name )
 {
     WResResNode *rn, *r;
 
@@ -190,12 +190,12 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
     return( rnode );
 }
 
-Bool WREGetNewName( WREResRenameInfo *info )
+bool WREGetNewName( WREResRenameInfo *info )
 {
     HWND        dialog_owner;
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
-    Bool        modified;
+    INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();

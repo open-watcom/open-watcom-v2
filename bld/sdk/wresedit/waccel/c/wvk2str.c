@@ -284,7 +284,7 @@ char *WGetASCIIVKText( uint_16 key )
 char *WGetASCIIKeyText( uint_16 key )
 {
     int         i;
-    Bool        is_cntl;
+    bool        is_cntl;
 
     i = 0;
     t[i++] = '\"';
@@ -303,9 +303,9 @@ char *WGetASCIIKeyText( uint_16 key )
     return( t );
 }
 
-Bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, Bool *force_ascii )
+bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_ascii )
 {
-    Bool     ok, is_cntl;
+    bool     ok, is_cntl;
     uint_16  tkey;
     int      i;
 

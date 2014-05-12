@@ -139,7 +139,7 @@ BOOL WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     MINMAXINFO  *minmax;
     WREToolBar  *tbar;
     int         bstate;
-    Bool        ret;
+    bool        ret;
 
     if( (tbar = WREFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         return( FALSE );
@@ -208,7 +208,7 @@ WREToolBar *WREFindToolBar( HWND win )
     return( NULL );
 }
 
-Bool WRECloseToolBar( WREToolBar *tbar )
+bool WRECloseToolBar( WREToolBar *tbar )
 {
     if( tbar != NULL ) {
         tbar->win = (HWND)NULL;

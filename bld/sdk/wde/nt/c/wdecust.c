@@ -66,10 +66,10 @@ static BOOL         WdeLoadMSCustomControls( WdeCustLib * );
 static WdeCustLib   *WdeAllocCustLib( void );
 static BOOL         WdeFreeCustLib( WdeCustLib * );
 static void         WdeFreeSelectWinCBox( HWND );
-static Bool         WdeSetSelectWinCBox( HWND, WdeCustLib * );
-static Bool         WdeSetSelectWin( HWND );
-static Bool         WdeSetCurrentControl( HWND, int );
-static Bool         WdePreviewSelected( HWND );
+static bool         WdeSetSelectWinCBox( HWND, WdeCustLib * );
+static bool         WdeSetSelectWin( HWND );
+static bool         WdeSetCurrentControl( HWND, int );
+static bool         WdePreviewSelected( HWND );
 
 /****************************************************************************/
 /* extern variables                                                         */
@@ -89,7 +89,7 @@ WdeCurrCustControl WdeCurrControl[WDE_NUM_CUSTOMS]  = {
     { NULL, 0 }
 };
 
-Bool WdeIsBorBtnIDSupported( uint_16 id )
+bool WdeIsBorBtnIDSupported( uint_16 id )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( id );
@@ -107,7 +107,7 @@ void WdeGetCurrentCustControl( int which, WdeCustLib **lib, UINT *index )
     *index = WdeCurrControl[which].index;
 }
 
-Bool WdeIsCurrentCustControlSet( int which )
+bool WdeIsCurrentCustControlSet( int which )
 {
     if( WDE_CHECK_WHICH( which ) ) {
         if( WdeCurrControl[which].lib != NULL ) {
@@ -117,12 +117,12 @@ Bool WdeIsCurrentCustControlSet( int which )
     return( FALSE );
 }
 
-Bool WdeCustControlsLoaded( void )
+bool WdeCustControlsLoaded( void )
 {
     return( WdeCustomLibList != NULL );
 }
 
-Bool WdeSetCurrentCustControl( int which )
+bool WdeSetCurrentCustControl( int which )
 {
     int       ret;
     HINSTANCE inst;
@@ -157,7 +157,7 @@ Bool WdeSetCurrentCustControl( int which )
     return( TRUE );
 }
 
-Bool WdeLoadCustomLib( Bool nt_lib, Bool load_only )
+bool WdeLoadCustomLib( bool nt_lib, bool load_only )
 {
     char                *name;
     HINSTANCE           inst;
@@ -279,7 +279,7 @@ WdeCustLib *WdeAllocCustLib( void )
     return( lib );
 }
 
-Bool WdeFreeAllCustLibs( void )
+bool WdeFreeAllCustLibs( void )
 {
     LIST        *llist;
     WdeCustLib  *lib;
@@ -351,7 +351,7 @@ void WdeFindClassInAllCustLibs( char *class, LIST **list )
     }
 }
 
-Bool WdeFindLibIndexFromInfo( LPCCINFO lpcci, WdeCustLib **lib, UINT *index )
+bool WdeFindLibIndexFromInfo( LPCCINFO lpcci, WdeCustLib **lib, UINT *index )
 {
     LIST        *llist;
     WdeCustLib  *l;
@@ -404,7 +404,7 @@ void WdeFreeSelectWinCBox( HWND win )
     }
 }
 
-Bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
+bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
 {
     WdeCurrCustControl  *current;
     UINT                i;
@@ -438,7 +438,7 @@ Bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
     return( TRUE );
 }
 
-Bool WdeSetSelectWin( HWND win )
+bool WdeSetSelectWin( HWND win )
 {
     HWND        cbox;
     LIST        *llist;
@@ -458,7 +458,7 @@ Bool WdeSetSelectWin( HWND win )
     return( TRUE );
 }
 
-Bool WdeSetCurrentControl( HWND win, int which )
+bool WdeSetCurrentControl( HWND win, int which )
 {
     LRESULT             index;
     WdeCurrCustControl  *current;
@@ -497,7 +497,7 @@ void WdeMapCustomSize( UINT *w, UINT *h, WdeResizeRatio *r )
     *h = trect.bottom;
 }
 
-Bool WdePreviewSelected( HWND win )
+bool WdePreviewSelected( HWND win )
 {
     WdeCurrCustControl  *current;
     LRESULT             index;

@@ -164,7 +164,7 @@ void WdeSnapPointToGrid( POINT *pt )
     WdeSnapPoint( pt, vinc, hinc );
 }
 
-OBJPTR WdeGetNextObject( Bool up, OBJPTR obj, OBJPTR p )
+OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
 {
     OBJPTR old_current;
 
@@ -194,7 +194,7 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     OBJPTR              parent;
     RECT                rect;
     WORD                state;
-    Bool                ok;
+    bool                ok;
 
     new = NULL;
 
@@ -302,7 +302,7 @@ uint_16 WdeGetNextControlID( void )
     return( id );
 }
 
-Bool WdeIsStrSpace( char *_s )
+bool WdeIsStrSpace( char *_s )
 {
     unsigned char   *s = (unsigned char *)_s;
 
@@ -330,7 +330,7 @@ uint_32 WdeHammingDistance( uint_32 x1, uint_32 x2 )
     return( d );
 }
 
-Bool WdeIsClassDefined( char *class )
+bool WdeIsClassDefined( char *class )
 {
     WNDCLASS  wc;
     BOOL      ret;
@@ -346,7 +346,7 @@ Bool WdeIsClassDefined( char *class )
     return( ret );
 }
 
-void WdeShowObjectWindow( HWND win, Bool flag )
+void WdeShowObjectWindow( HWND win, bool flag )
 {
     uint_32 s;
 
@@ -375,7 +375,7 @@ void WdeBringWindowToTop( HWND win )
 #endif
 }
 
-Bool WdePutObjFirst( OBJPTR obj, LIST **list )
+bool WdePutObjFirst( OBJPTR obj, LIST **list )
 {
     if( list == NULL || *list == NULL ) {
         WdeWriteTrail( "WdePutObjFirst: Unexpected NULL list" );
@@ -397,16 +397,16 @@ Bool WdePutObjFirst( OBJPTR obj, LIST **list )
     return( TRUE );
 }
 
-Bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
+bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
 {
     SUBOBJ_REQUEST  req;
     OBJPTR          child;
     OBJPTR          sel;
     OBJPTR          first_clear;
     OBJPTR          first_nomove;
-    Bool            b;
-    Bool            is_clear;
-    Bool            can_move;
+    bool            b;
+    bool            is_clear;
+    bool            can_move;
     LIST            *ol;
 
     *obj_list = NULL;
@@ -455,7 +455,7 @@ Bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
     return( *obj_list != NULL );
 }
 
-Bool WdeFindSubObjects( SUBOBJ_REQUEST *req, LIST **obj_list, LIST *olist)
+bool WdeFindSubObjects( SUBOBJ_REQUEST *req, LIST **obj_list, LIST *olist)
 {
     OBJPTR   child;
     RECT     child_rect;
@@ -555,7 +555,7 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     char        *cp;
     char        *cp2;
     void        *vp;
-    Bool        mod;
+    bool        mod;
 
     /* set the control text */
     cp = WdeGetStrFromEdit( hDlg, IDB_TEXT, &mod );
@@ -677,9 +677,9 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     char                *str;
     char                *cp;
-    Bool                dup;
-    Bool                quoted_str;
-    Bool                str_is_ordinal;
+    bool                dup;
+    bool                quoted_str;
+    bool                str_is_ordinal;
     uint_16             ord;
     WdeHashEntry        *entry;
 
@@ -768,9 +768,9 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     char                *str;
     char                *cp;
-    Bool                dup;
-    Bool                quoted_str;
-    Bool                str_is_ordinal;
+    bool                dup;
+    bool                quoted_str;
+    bool                str_is_ordinal;
     uint_32             ord;
     WdeHashEntry        *entry;
 
@@ -862,7 +862,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
 void WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *symbol, WdeHashValue val )
 {
-    Bool          force;
+    bool          force;
 
     if( res_info != NULL && symbol != NULL ) {
         if( res_info->hash_table == NULL ) {
@@ -887,12 +887,12 @@ UINT WdeTranslateNCMouseMsg( UINT ncm )
     return( 0 );
 }
 
-Bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT    new_message;
     WPARAM  new_wparam;
     POINT   mouse_location;
-    Bool    ret;
+    bool    ret;
 
     ret = FALSE;
 
@@ -1122,12 +1122,12 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
 }
 
 
-Bool WdeWinStylesHook( HWND hDlg, UINT message,
+BOOL WdeWinStylesHook( HWND hDlg, UINT message,
                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     DialogStyle  tstyle;
-    Bool         ret;
-    Bool         overlapped;
+    BOOL         ret;
+    bool         overlapped;
 
     _wde_touch( lParam );
 
@@ -1264,11 +1264,11 @@ Bool WdeWinStylesHook( HWND hDlg, UINT message,
     return( ret );
 }
 
-Bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                            WdeHashTable *table, uint_16 id,  Bool use_id )
+bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
+                            WdeHashTable *table, uint_16 id,  bool use_id )
 {
     WORD    hw;
-    Bool    processed;
+    bool    processed;
 
     _wde_touch( lParam );
     _wde_touch( id );
@@ -1292,7 +1292,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     char                *str;
     char                *cp;
     WdeHashValue        value;
-    Bool                found;
+    bool                found;
     LRESULT             index;
     int                 count;
 
@@ -1342,11 +1342,11 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
  *     - these next two routines are essentially the same as those for
  *       the symbol combo box
 */
-Bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                                WdeHashTable *table, uint_32 id, Bool use_id )
+bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
+                                WdeHashTable *table, uint_32 id, bool use_id )
 {
     WORD    hw;
-    Bool    processed;
+    bool    processed;
 
     _wde_touch( lParam );
     _wde_touch( id );
@@ -1370,7 +1370,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     char                *str;
     char                *cp;
     WdeHashValue        value;
-    Bool                found;
+    bool                found;
     LRESULT             index;
     int                 count;
 

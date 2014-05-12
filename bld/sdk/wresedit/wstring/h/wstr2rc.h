@@ -35,6 +35,6 @@
 
 #include "wstr.h"
 
-extern Bool WWriteStringToRC( WStringEditInfo *einfo, char *file, Bool append );
+extern bool WWriteStringToRC( WStringEditInfo *einfo, char *file, bool append );
 
 #endif

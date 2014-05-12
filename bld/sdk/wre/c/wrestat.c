@@ -63,7 +63,7 @@ BOOL WREStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WREDisplayStatusText( char * );
+static bool WREDisplayStatusText( char * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -97,7 +97,7 @@ void WREDestroyStatusLine( void )
     }
 }
 
-Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
+bool WRECreateStatusLine( HWND main, HINSTANCE inst )
 {
     RECT                rect;
     LOGFONT             lf;
@@ -108,7 +108,7 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     char                *status_font;
     char                *cp;
     int                 point_size;
-    Bool                use_default;
+    bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
@@ -182,17 +182,17 @@ void WREResizeStatusWindows( RECT *rect )
     }
 }
 
-Bool WRESetStatusReadyText( void )
+bool WRESetStatusReadyText( void )
 {
     WRESetStatusText( NULL, "", FALSE );
     return( WRESetStatusByID( WRE_READYMSG, -1 ) );
 }
 
-Bool WRESetStatusByID( DWORD id1, DWORD id2 )
+bool WRESetStatusByID( DWORD id1, DWORD id2 )
 {
     char        *str1;
     char        *str2;
-    Bool        ret;
+    bool        ret;
 
     ret = FALSE;
     str1 = NULL;
@@ -219,7 +219,7 @@ Bool WRESetStatusByID( DWORD id1, DWORD id2 )
     return( ret );
 }
 
-Bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
+bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
 {
     int len;
     int pos;
@@ -266,7 +266,7 @@ Bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
     return( TRUE );
 }
 
-Bool WREDisplayStatusText( char *str )
+bool WREDisplayStatusText( char *str )
 {
     HDC hdc;
 

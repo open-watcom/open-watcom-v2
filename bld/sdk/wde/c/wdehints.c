@@ -72,8 +72,8 @@ static WdeHintItem      *WdeGetHintItem( int id );
 static void             WdeHandlePopupHint( HMENU, HMENU );
 static DWORD            WdeGetPopupHint( WdePopupListItem *, HMENU );
 static WdePopupListItem *WdeFindPopupListItem( HMENU menu );
-static Bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
-static Bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
+static bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
+static bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -314,9 +314,9 @@ void WdeHandlePopupHint( HMENU menu, HMENU popup )
     }
 }
 
-Bool WdeInitHints( void )
+bool WdeInitHints( void )
 {
-    Bool ret;
+    bool ret;
 
     ret = TRUE;
 
@@ -349,7 +349,7 @@ void WdeFiniHints( void )
     }
 }
 
-Bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_items )
+bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_items )
 {
     WdePopupListItem *p;
 
@@ -372,7 +372,7 @@ Bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_item
     return( TRUE );
 }
 
-Bool WdeInitHintItems( int num, HMENU menu, WdePopupHintItem *hint_items )
+bool WdeInitHintItems( int num, HMENU menu, WdePopupHintItem *hint_items )
 {
     int     i;
     int     j;

@@ -95,7 +95,7 @@ static OBJ_ID  WdeGetOBJIDFromMenu( WORD );
 /****************************************************************************/
 static WdeToolBarInfo *WdeControlsInfo      = NULL;
 static WdeToolBar     *WdeControls          = NULL;
-static Bool            WdeStickyMode        = FALSE;
+static bool            WdeStickyMode        = FALSE;
 
 #define WCBFCC  WCB_FLAG_COMMON_CONTROL
 
@@ -159,9 +159,9 @@ WORD WdeGetCToolID( void )
     return( 0xffff );
 }
 
-Bool WdeInitControls( HINSTANCE inst )
+bool WdeInitControls( HINSTANCE inst )
 {
-    Bool        usingCommonControls;
+    bool        usingCommonControls;
     int         i;
 
     WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
@@ -237,20 +237,20 @@ void WdeToggleStickyTools( void )
     }
 }
 
-Bool WdeGetStickyMode( void )
+bool WdeGetStickyMode( void )
 {
     return( WdeStickyMode );
 }
 
-Bool WdeControlsToolBarExists( void )
+bool WdeControlsToolBarExists( void )
 {
     return( WdeControls != NULL );
 }
 
-Bool WdeSetStickyMode( Bool mode )
+bool WdeSetStickyMode( bool mode )
 {
     HMENU   menu;
-    Bool    old_mode;
+    bool    old_mode;
 
     if( !WdeGetNumRes() ) {
         return( FALSE );
@@ -333,7 +333,7 @@ OBJ_ID WdeGetOBJIDFromMenu( WORD id )
     return( -1 );
 }
 
-Bool WdeCreateControlsToolBar( void )
+bool WdeCreateControlsToolBar( void )
 {
     RECT        t, r, screen;
     HWND        parent;
@@ -444,8 +444,8 @@ BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     OBJPTR              obj;
     WdeOrderMode        mode;
     CMDID               cid;
-    Bool                ignore_msg;
-    Bool                ret;
+    bool                ignore_msg;
+    bool                ret;
 
     ignore_msg = FALSE;
 

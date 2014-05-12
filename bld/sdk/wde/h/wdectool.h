@@ -44,15 +44,15 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeInitControls( HINSTANCE );
+extern bool WdeInitControls( HINSTANCE );
 extern void WdeShutdownControls( void );
-extern Bool WdeControlsToolBarExists( void );
-extern Bool WdeSetStickyMode( Bool );
+extern bool WdeControlsToolBarExists( void );
+extern bool WdeSetStickyMode( bool );
 extern void WdeToggleStickyTools( void );
-extern Bool WdeGetStickyMode( void );
+extern bool WdeGetStickyMode( void );
 extern void WdeHandleShowToolsMenu( void );
 extern void WdeSetBaseObject( WORD );
-extern Bool WdeCreateControlsToolBar( void );
+extern bool WdeCreateControlsToolBar( void );
 extern WORD WdeGetCToolID( void );
 
 #endif

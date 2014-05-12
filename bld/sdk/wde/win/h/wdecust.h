@@ -122,8 +122,8 @@ typedef struct {
 
 typedef struct WdeCustLibStruct {
     HINSTANCE   inst;
-    Bool        ms_lib;
-    Bool        load_only;
+    bool        ms_lib;
+    bool        load_only;
     char        *file_name;
     char        *info_name;
     char        *style_name;
@@ -133,7 +133,7 @@ typedef struct WdeCustLibStruct {
 } WdeCustLib;
 
 typedef struct WdeCustControlStruct {
-    Bool                ms_lib;
+    bool                ms_lib;
     WdeCustLib          *lib;
     WdeCustInfoProc     info_proc;
     WdeCustStyleProc    style_proc;
@@ -152,15 +152,15 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeIsCurrentCustControlSet( int which );
-extern Bool WdeCustControlsLoaded( void );
+extern bool WdeIsCurrentCustControlSet( int which );
+extern bool WdeCustControlsLoaded( void );
 extern void WdeGetCurrentCustControl( int, WdeCustControl **, UINT * );
-extern Bool WdeSetCurrentCustControl( int );
-extern Bool WdeLoadCustomLib( Bool, Bool );
-extern Bool WdeFreeAllCustLibs( void );
+extern bool WdeSetCurrentCustControl( int );
+extern bool WdeLoadCustomLib( bool, bool );
+extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( char *, LIST ** );
 extern void WdeFreeCustRESProcs( void );
-extern Bool WdeIsBorBtnIDSupported( uint_16 );
+extern bool WdeIsBorBtnIDSupported( uint_16 );
 extern void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r );
 
 #endif

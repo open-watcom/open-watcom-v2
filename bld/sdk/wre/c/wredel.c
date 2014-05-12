@@ -77,16 +77,16 @@ WINEXPORT BOOL CALLBACK WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static void WRESetWinInfo( HWND, char * );
-static Bool WREQueryDeleteName( char * );
+static bool WREQueryDeleteName( char * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WREDeleteCurrResource( Bool force )
+bool WREDeleteCurrResource( bool force )
 {
     WRECurrentResInfo   curr;
-    Bool                ok;
+    bool                ok;
 
     WREGetCurrentResource( &curr );
 
@@ -95,11 +95,11 @@ Bool WREDeleteCurrResource( Bool force )
     return( ok );
 }
 
-Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
+bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 {
     char                *name;
     int                 type;
-    Bool                ok;
+    bool                ok;
     int                 index;
     HWND                res_lbox;
     WResLangNode        *lnode;
@@ -187,11 +187,11 @@ Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force )
     return( ok );
 }
 
-Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool removing )
+bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
 {
     WResTypeNode        *tnode;
     char                *text;
-    Bool                ok;
+    bool                ok;
 
     ok = TRUE;
 
@@ -227,11 +227,11 @@ Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool removing )
     return( ok );
 }
 
-Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
+bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
 {
     char                *name;
     int                 type;
-    Bool                ok;
+    bool                ok;
     int                 index;
     HWND                res_lbox;
 
@@ -276,12 +276,12 @@ Bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WREQueryDeleteName( char *name )
+bool WREQueryDeleteName( char *name )
 {
     HWND        dialog_owner;
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
-    Bool        modified;
+    INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();

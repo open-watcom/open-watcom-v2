@@ -109,7 +109,7 @@ static char *WREFindDLGInclude( WRInfo *info )
     WResLangNode        *lnode;
     WResLangType        lang;
     char                *include;
-    Bool                ok;
+    bool                ok;
 
     include = NULL;
     ok = (info != NULL);
@@ -185,7 +185,7 @@ static void WREAddSymbols( WRHashTable *table )
     }
 }
 
-static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
+static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 {
     char                *name;
     int                 c;
@@ -195,8 +195,8 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
     unsigned            pp_count;
     unsigned            busy_count;
     char                busy_str[2];
-    Bool                ret;
-    Bool                ok;
+    bool                ret;
+    bool                ok;
 
     name = NULL;
 
@@ -277,11 +277,11 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, Bool prompt )
     return( name );
 }
 
-Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt )
+bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 {
     char                *name;
     WREGetFileStruct    gf;
-    Bool                ok;
+    bool                ok;
 
     if( table == NULL || file_name == NULL ) {
         return( FALSE );
@@ -325,11 +325,11 @@ Bool WRESaveSymbols( WRHashTable *table, char **file_name, Bool prompt )
     return( ok );
 }
 
-Bool WREEditResourceSymbols( WREResInfo *info )
+bool WREEditResourceSymbols( WREResInfo *info )
 {
     WRHashEntryFlags    flags;
     FARPROC             cb;
-    Bool                ok;
+    bool                ok;
 
     cb = NULL;
     ok = (info != NULL && info->symbol_table != NULL);
@@ -353,7 +353,7 @@ Bool WREEditResourceSymbols( WREResInfo *info )
     return( ok );
 }
 
-Bool WRELoadResourceSymbols( WREResInfo *info )
+bool WRELoadResourceSymbols( WREResInfo *info )
 {
     char        *symbol_file;
 
@@ -378,7 +378,7 @@ Bool WRELoadResourceSymbols( WREResInfo *info )
     return( TRUE );
 }
 
-Bool WREResourceSaveSymbols( WREResInfo *info )
+bool WREResourceSaveSymbols( WREResInfo *info )
 {
     if( info != NULL ) {
         return( WRESaveSymbols( info->symbol_table, &info->symbol_file, TRUE ) );
@@ -386,12 +386,12 @@ Bool WREResourceSaveSymbols( WREResInfo *info )
     return( FALSE );
 }
 
-Bool WREDeleteDLGInclude( WResDir dir )
+bool WREDeleteDLGInclude( WResDir dir )
 {
     return( WRDeleteDLGInclude( dir ) );
 }
 
-Bool WRECreateDLGInclude( WResDir *dir, char *include )
+bool WRECreateDLGInclude( WResDir *dir, char *include )
 {
     return( WRCreateDLGInclude( dir, include ) );
 }
@@ -413,7 +413,7 @@ char *WRECreateSymName( char *fname )
     return( WREStrDup( fn_path ) );
 }
 
-Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
+bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 {
     char        inc_path[_MAX_PATH];
     char        fn_path[_MAX_PATH];
@@ -421,8 +421,8 @@ Bool WREFindAndLoadSymbols( WREResInfo *rinfo )
     char        fn_dir[_MAX_DIR];
     char        fn_name[_MAX_FNAME];
     char        *symbol_file;
-    Bool        prompt;
-    Bool        ret;
+    bool        prompt;
+    bool        ret;
 
     if( rinfo == NULL || rinfo->info == NULL ||
         (rinfo->info->file_name == NULL && rinfo->info->save_name == NULL) ) {

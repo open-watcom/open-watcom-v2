@@ -46,7 +46,7 @@
 /****************************************************************************/
 extern void WREDisplayHint( int id );
 extern void WREHandleMenuSelect( WPARAM, LPARAM );
-extern Bool WREInitHints( void );
+extern bool WREInitHints( void );
 extern void WREFiniHints( void );
 
 #endif

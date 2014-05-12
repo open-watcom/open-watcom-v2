@@ -46,10 +46,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRegisterPrevClass( HINSTANCE inst );
+extern bool WRegisterPrevClass( HINSTANCE inst );
 extern void WUnRegisterPrevClass( HINSTANCE inst );
-extern Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo * );
-extern Bool WResetPrevWindowMenu( WMenuEditInfo *einfo );
+extern bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo * );
+extern bool WResetPrevWindowMenu( WMenuEditInfo *einfo );
 extern void WMovePrevWindow( WMenuEditInfo *einfo );
 
 #endif

@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeTrakCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeTrakInit( Bool );
+extern bool              WdeTrakInit( bool );
 extern void              WdeTrakFini( void );
 
 #endif

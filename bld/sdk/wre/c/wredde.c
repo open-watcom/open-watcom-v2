@@ -114,7 +114,7 @@ void WRESetPendingService( WRESPT s )
     PendingService = s;
 }
 
-Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
+bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
 {
     DWORD   dde_size;
 
@@ -140,7 +140,7 @@ Bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
     return( TRUE );
 }
 
-Bool WREDDEStart( HINSTANCE inst )
+bool WREDDEStart( HINSTANCE inst )
 {
     UINT        ret;
     DWORD       flags;
@@ -271,12 +271,12 @@ void WREDDEEnd( void )
     }
 }
 
-Bool WREPokeData( HCONV conv, void *data, int size, Bool retry )
+bool WREPokeData( HCONV conv, void *data, int size, bool retry )
 {
     DWORD       result;
     UINT        err;
-    Bool        timeout;
-    Bool        ret;
+    bool        timeout;
+    bool        ret;
     UINT        tries;
 
     if( conv == (HCONV)NULL || data == NULL || size == 0 ) {
@@ -315,7 +315,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     HCONV       htconv;
     void        *data;
     uint_32     size;
-    Bool        ok;
+    bool        ok;
 
     _wre_touch( hdata );
     _wre_touch( lData1 );

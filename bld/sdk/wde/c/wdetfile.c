@@ -42,17 +42,17 @@
 /* static functions                                                         */
 /****************************************************************************/
 
-Bool WdeDeleteFile( const char *name )
+bool WdeDeleteFile( const char *name )
 {
     return( WRDeleteFile( name ) );
 }
 
-Bool WdeFileExists( const char *name )
+bool WdeFileExists( const char *name )
 {
     return( WRFileExists( name ) );
 }
 
-Bool WdeBackupFile( const char *name, Bool use_rename )
+bool WdeBackupFile( const char *name, bool use_rename )
 {
     return( WRBackupFile( name, use_rename ) );
 }
@@ -62,7 +62,7 @@ char *WdeGetTempFileName( const char *ext )
     return( WRGetTempFileName( ext ) );
 }
 
-Bool WdeCopyFile( const char *dest, const char *src )
+bool WdeCopyFile( const char *dest, const char *src )
 {
     return( WRCopyFile( dest, src ) );
 }

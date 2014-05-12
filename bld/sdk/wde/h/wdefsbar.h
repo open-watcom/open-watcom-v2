@@ -37,9 +37,9 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeSBarCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeSBarInit( Bool );
+extern bool              WdeSBarInit( bool );
 extern void              WdeSBarFini( void );
 
-extern Bool WdeSBNoodleSize( OBJPTR obj, Bool recreate );
+extern bool WdeSBNoodleSize( OBJPTR obj, bool recreate );
 
 #endif

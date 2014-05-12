@@ -72,10 +72,10 @@ typedef struct WStringEditInfo {
     HWND                edit_dlg;
     WStatBar            *wsb;
     WToolBar            *ribbon;
-    Bool                show_ribbon;
+    bool                show_ribbon;
     char                *file_name;
     WRFileType          file_type;
-    Bool                combo_change;
+    bool                combo_change;
 } WStringEditInfo;
 
 /****************************************************************************/
@@ -86,18 +86,18 @@ extern void             WFreeStringEInfo( WStringEditInfo *einfo );
 extern WStringTable     *WMakeStringTableFromInfo( WStringInfo *info );
 extern void             WFreeStringNodes( WStringInfo *info );
 extern WStringNode      *WMakeStringNodes( WStringTable *tbl );
-extern Bool             WGetFirstStringInBlock( WStringBlock *block, uint_16 * );
+extern bool             WGetFirstStringInBlock( WStringBlock *block, uint_16 * );
 extern WStringBlock     *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 blocknum );
 extern WStringBlock     *WFindStringBlock( WStringTable *tbl, uint_16 blocknum );
-extern Bool             WIsBlockEmpty( WStringBlock *block );
-extern Bool             WRemoveStringBlock( WStringTable *tbl, WStringBlock *block );
+extern bool             WIsBlockEmpty( WStringBlock *block );
+extern bool             WRemoveStringBlock( WStringTable *tbl, WStringBlock *block );
 extern int              WFindStringPos( WStringTable *tbl, uint_16 string_id );
 extern void             WFreeStringTableBlocks( WStringBlock *block );
 extern uint_16          WFindLargestStringID( WStringTable *tbl );
 
-extern Bool WResolveStringTable( WStringEditInfo *einfo );
-extern Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table );
+extern bool WResolveStringTable( WStringEditInfo *einfo );
+extern bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table );
 
-extern Bool WResolveStringTableSymIDs( WStringEditInfo *einfo );
+extern bool WResolveStringTableSymIDs( WStringEditInfo *einfo );
 
 #endif

@@ -75,8 +75,8 @@ typedef struct {
     OBJPTR              object_handle;
     OBJPTR              parent;
     OBJPTR              o_item;
-    Bool                sizeable;
-    Bool                clear_interior;
+    bool                sizeable;
+    bool                clear_interior;
     HFONT               font;
     char                *window_class;
     char                *symbol;
@@ -100,12 +100,12 @@ WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *
 static BOOL WdeControlTest( WdeControlObject *, GLOBALHANDLE *, void * );
 static BOOL WdeControlTestEX( WdeControlObject *, GLOBALHANDLE *, void * );
 static BOOL WdeControlDraw( WdeControlObject *, RECT *, HDC * );
-static BOOL WdeControlResolveSymbol( WdeControlObject *, Bool *, Bool * );
-static BOOL WdeControlResolveHelpSymbol( WdeControlObject *, Bool *, Bool * );
+static BOOL WdeControlResolveSymbol( WdeControlObject *, bool *, bool * );
+static BOOL WdeControlResolveHelpSymbol( WdeControlObject *, bool *, bool * );
 static BOOL WdeControlOnTop( WdeControlObject *, void *, void * );
 static BOOL WdeControlCreateWindow( WdeControlObject *, void *, void * );
-static BOOL WdeControlDestroyWindow( WdeControlObject *, Bool *, Bool * );
-static BOOL WdeControlShowWindow( WdeControlObject *, Bool *, void * );
+static BOOL WdeControlDestroyWindow( WdeControlObject *, bool *, bool * );
+static BOOL WdeControlShowWindow( WdeControlObject *, bool *, void * );
 static BOOL WdeControlIsMarkValid( WdeControlObject *, BOOL *, void * );
 static BOOL WdeControlDestroy( WdeControlObject *, BOOL *, void * );
 static BOOL WdeControlSetFont( WdeControlObject *, HFONT *, WdeResizeRatio * );
@@ -132,8 +132,8 @@ static void WdeSetClearObjectPos( WdeControlObject * );
 static void WdeFreeControlObject( WdeControlObject * );
 static void WdeWriteControlToInfo( WdeControlObject * );
 static BOOL WdeControlModifyInfo( WdeControlObject *, WdeInfoStruct *, void * );
-static Bool WdeControlSetOrderMode( WdeControlObject *, WdeOrderMode *, WdeSetOrderLists ** );
-static Bool WdeControlGetOrderMode( WdeControlObject *, WdeOrderMode *, void * );
+static BOOL WdeControlSetOrderMode( WdeControlObject *, WdeOrderMode *, WdeSetOrderLists ** );
+static BOOL WdeControlGetOrderMode( WdeControlObject *, WdeOrderMode *, void * );
 static BOOL WdeControlSizeToText( WdeControlObject *, void *, void * );
 
 /****************************************************************************/
@@ -210,7 +210,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     OBJPTR              ancestor;
     OBJ_ID              id;
     WdeControlObject    *new;
-    Bool                ok;
+    bool                ok;
     WdeOrderMode        mode;
 
     WdeDebugCreate( "Control", parent, obj_rect, handle );
@@ -338,7 +338,7 @@ WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj,
     return( Forward( (OBJPTR)obj->o_item, act, p1, p2 ) );
 }
 
-Bool WdeControlInit( Bool first )
+bool WdeControlInit( bool first )
 {
     _wde_touch( first );
     WdeAppInst = WdeGetAppInstance();
@@ -477,7 +477,7 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
 {
     RECT        rect;
     OBJPTR      next;
-    Bool        check_scroll;
+    bool        check_scroll;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -863,7 +863,7 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeControlDestroyWindow( WdeControlObject *obj, Bool *quick, Bool *destroy_children )
+BOOL WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_children )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( destroy_children );
@@ -878,7 +878,7 @@ BOOL WdeControlDestroyWindow( WdeControlObject *obj, Bool *quick, Bool *destroy_
     return( TRUE );
 }
 
-Bool WdeControlShowWindow( WdeControlObject *obj, Bool *flag, void *p2 )
+BOOL WdeControlShowWindow( WdeControlObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -978,7 +978,7 @@ BOOL WdeControlGetWindowHandle( WdeControlObject *obj, HWND *hwin, void *p2 )
 
 BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
 {
-    Bool ok;
+    bool ok;
 
     obj->base_obj = GetMainObject();
     obj->res_info = WdeGetCurrentRes();
@@ -1102,7 +1102,7 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
 BOOL WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p2 )
 {
     NOTE_ID     note_id;
-    Bool        check_scroll;
+    bool        check_scroll;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1462,7 +1462,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
     POINT          origin;
     POINT          pnt;
     POINT          offset;
-    Bool           ok;
+    bool           ok;
     OBJPTR         clone;
     OBJPTR         old_parent;
     WdeResizeRatio resizer;
@@ -1684,11 +1684,11 @@ BOOL WdeControlGetObjectHelpInfo( WdeControlObject *obj,
     return( TRUE );
 }
 
-BOOL WdeControlResolveSymbol( WdeControlObject *obj, Bool *b, Bool *from_id )
+BOOL WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     void                *vp;
-    Bool                found;
+    bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
@@ -1724,11 +1724,11 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, Bool *b, Bool *from_id )
     return( TRUE );
 }
 
-BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, Bool *b, Bool *from_id )
+BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     void                *vp;
-    Bool                found;
+    bool                found;
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
@@ -1771,7 +1771,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 {
     WdeHashEntry        *entry;
     char                *text;
-    Bool                dup;
+    bool                dup;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1813,7 +1813,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
     return( TRUE );
 }
 
-Bool WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2 )
+BOOL WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1823,7 +1823,7 @@ Bool WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2
     return( TRUE );
 }
 
-Bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
+BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
                              WdeSetOrderLists **l )
 {
     WdeSetOrderStruct   *o;

@@ -56,7 +56,7 @@ uint_32 WdeGetUINT32FromCombo( HWND hDlg, int id )
     return( WdeGetUINT32FromEdit( hDlg, id, NULL ) );
 }
 
-char *WdeGetStrFromEdit( HWND hDlg, int id, Bool *mod )
+char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
 {
     char    *cp;
     int     text_length;
@@ -215,7 +215,7 @@ void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
     }
 }
 
-ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, Bool *mod )
+ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
 {
     ControlClass    *cc;
     int             class;
@@ -304,7 +304,7 @@ void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
     }
 }
 
-ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, Bool *mod )
+ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
 {
     ResNameOrOrdinal *rp;
     char             *cp;
@@ -332,7 +332,7 @@ ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, Bool *mod )
     return( rp );
 }
 
-WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, Bool *mod )
+WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;
@@ -363,7 +363,7 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, Bool *mod )
     return( rp );
 }
 
-WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, Bool *mod )
+WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResHelpID  *rp;
     uint_32     ordID;
@@ -394,12 +394,12 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, Bool *mod )
     return( rp );
 }
 
-int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, Bool *mod )
+int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *mod )
 {
     return( (int_16)WdeGetSINT32FromEdit( hDlg, id, mod ) );
 }
 
-int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, Bool *mod )
+int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
 {
     int_32  val;
     char    *cp;
@@ -430,12 +430,12 @@ int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, Bool *mod )
     return( val );
 }
 
-uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, Bool *mod )
+uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, bool *mod )
 {
     return( (uint_16)WdeGetUINT32FromEdit( hDlg, id, mod ) );
 }
 
-uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, Bool *mod )
+uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *mod )
 {
     uint_32 val;
     char    *cp;

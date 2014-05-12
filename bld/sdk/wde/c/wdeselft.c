@@ -61,11 +61,11 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-WRFileType WdeSelectFileType( char *name, Bool is32bit )
+WRFileType WdeSelectFileType( char *name, bool is32bit )
 {
     WRFileType  file_type;
     HWND        parent;
-    Bool        use_wres;
+    bool        use_wres;
     FARPROC     cb;
 
     cb = MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
@@ -77,7 +77,7 @@ WRFileType WdeSelectFileType( char *name, Bool is32bit )
     return( file_type );
 }
 
-Bool WdeIsFileAnRCFile( char *name )
+bool WdeIsFileAnRCFile( char *name )
 {
     WRFileType  file_type;
 

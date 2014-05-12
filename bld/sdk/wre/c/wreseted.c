@@ -42,10 +42,10 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-Bool WRESetEditWithWResID( HWND edit, WResID *id )
+bool WRESetEditWithWResID( HWND edit, WResID *id )
 {
     char    *cp;
-    Bool    ok;
+    bool    ok;
 
     cp = NULL;
 
@@ -66,9 +66,9 @@ Bool WRESetEditWithWResID( HWND edit, WResID *id )
     return( ok );
 }
 
-Bool WRESetEditWithStr( HWND edit, char *str )
+bool WRESetEditWithStr( HWND edit, char *str )
 {
-    Bool    ok;
+    bool    ok;
 
     ok = ( edit != (HWND)NULL && str != NULL );
     if( ok ) {
@@ -78,9 +78,9 @@ Bool WRESetEditWithStr( HWND edit, char *str )
     return( ok );
 }
 
-Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
+bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
 {
-    Bool    ok;
+    bool    ok;
     LRESULT index;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
@@ -98,9 +98,9 @@ Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
     return( ok );
 }
 
-Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
+bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
 {
-    Bool    ok;
+    bool    ok;
     char    *name;
 
     name = NULL;
@@ -118,7 +118,7 @@ Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
     return( ok );
 }
 
-char *WREGetStrFromEdit( HWND edit, Bool *mod )
+char *WREGetStrFromEdit( HWND edit, bool *mod )
 {
     char    *cp;
     LRESULT text_length;
@@ -154,7 +154,7 @@ char *WREGetStrFromEdit( HWND edit, Bool *mod )
     return( cp );
 }
 
-WResID *WREGetWResIDFromEdit( HWND edit, Bool *mod )
+WResID *WREGetWResIDFromEdit( HWND edit, bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;

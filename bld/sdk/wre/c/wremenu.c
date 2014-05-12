@@ -84,8 +84,8 @@ static WResID           *WRECreateMenuTitle( void );
 static WREMenuSession   *WREFindMenuSession( WMenuHandle );
 static WREMenuSession   *WREAllocMenuSession( void );
 static WREMenuSession   *WREStartMenuSession( WRECurrentResInfo * );
-static Bool             WREAddMenuToDir( WRECurrentResInfo * );
-static Bool             WREGetMenuSessionData( WREMenuSession *, Bool );
+static bool             WREAddMenuToDir( WRECurrentResInfo * );
+static bool             WREGetMenuSessionData( WREMenuSession *, bool );
 static void             WRERemoveMenuEditSession( WREMenuSession * );
 static WREMenuSession   *WREFindResMenuSession( WREResInfo *rinfo );
 static WREMenuSession   *WREFindLangMenuSession( WResLangNode *lnode );
@@ -96,7 +96,7 @@ static WREMenuSession   *WREFindLangMenuSession( WResLangNode *lnode );
 static LIST     *WREMenuSessions = NULL;
 static uint_32  WRENumMenuTitles = 0;
 
-extern Bool WRENoInterface;
+extern bool WRENoInterface;
 
 static void DumpEmptyResource( WREMenuSession *session )
 {
@@ -147,12 +147,12 @@ WResID *WRECreateMenuTitle( void )
     return( name );
 }
 
-Bool WREAddMenuToDir( WRECurrentResInfo *curr )
+bool WREAddMenuToDir( WRECurrentResInfo *curr )
 {
     WResLangType    lang;
     int             dup, num_retries;
     WResID          *rname, *tname;
-    Bool            ok, tname_alloc;
+    bool            ok, tname_alloc;
 
     ok = TRUE;
     tname_alloc = FALSE;
@@ -210,10 +210,10 @@ Bool WREAddMenuToDir( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WRENewMenuResource( void )
+bool WRENewMenuResource( void )
 {
     WRECurrentResInfo  curr;
-    Bool               ok;
+    bool               ok;
 
     ok = WREAddMenuToDir( &curr );
 
@@ -224,10 +224,10 @@ Bool WRENewMenuResource( void )
     return( ok );
 }
 
-Bool WREEditMenuResource( WRECurrentResInfo *curr )
+bool WREEditMenuResource( WRECurrentResInfo *curr )
 {
     void                *rdata;
-    Bool                ok, rdata_alloc;
+    bool                ok, rdata_alloc;
     WREMenuSession      *session;
 
     rdata = NULL;
@@ -269,10 +269,10 @@ Bool WREEditMenuResource( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WREEndEditMenuResource( WMenuHandle hndl )
+bool WREEndEditMenuResource( WMenuHandle hndl )
 {
     WREMenuSession      *session;
-    Bool                ret;
+    bool                ret;
 
     ret = FALSE;
 
@@ -287,7 +287,7 @@ Bool WREEndEditMenuResource( WMenuHandle hndl )
     return( ret );
 }
 
-Bool WRESaveEditMenuResource( WMenuHandle hndl )
+bool WRESaveEditMenuResource( WMenuHandle hndl )
 {
     WREMenuSession *session;
 
@@ -349,9 +349,9 @@ WREMenuSession *WREStartMenuSession( WRECurrentResInfo *curr )
     return( session );
 }
 
-Bool WREGetMenuSessionData( WREMenuSession *session, Bool close )
+bool WREGetMenuSessionData( WREMenuSession *session, bool close )
 {
-    Bool ok;
+    bool ok;
 
     ok = (session != NULL && session->hndl != NULL && session->lnode != NULL);
 
@@ -389,11 +389,11 @@ Bool WREGetMenuSessionData( WREMenuSession *session, Bool close )
     return( ok );
 }
 
-Bool WREEndAllMenuSessions( Bool fatal_exit )
+bool WREEndAllMenuSessions( bool fatal_exit )
 {
     WREMenuSession      *session;
     LIST                *slist;
-    Bool                ok;
+    bool                ok;
 
     ok = TRUE;
 

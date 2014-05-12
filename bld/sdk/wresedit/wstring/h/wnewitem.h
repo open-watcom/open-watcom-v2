@@ -46,9 +46,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WStringBlock     *WInsertStringData( WStringEditInfo *einfo, uint_16 id, char *text, char *symbol, Bool *replace );
-extern Bool             WInsertStringEntry( WStringEditInfo * );
-extern Bool             WAddEditWinLBoxBlock( WStringEditInfo *, WStringBlock *, int );
-extern Bool             WAddEditWinLBoxEntry( WStringEditInfo *, WStringBlock *, uint_16, int );
+extern WStringBlock     *WInsertStringData( WStringEditInfo *einfo, uint_16 id, char *text, char *symbol, bool *replace );
+extern bool             WInsertStringEntry( WStringEditInfo * );
+extern bool             WAddEditWinLBoxBlock( WStringEditInfo *, WStringBlock *, int );
+extern bool             WAddEditWinLBoxEntry( WStringEditInfo *, WStringBlock *, uint_16, int );
 
 #endif

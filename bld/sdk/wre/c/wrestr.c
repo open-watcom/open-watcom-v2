@@ -82,11 +82,11 @@ typedef struct WREStringSession {
 static WREStringSession *WREFindStringSession( WStringHandle );
 static WREStringSession *WREAllocStringSession( void );
 static WREStringSession *WREStartStringSession( WRECurrentResInfo *, WStringNode *node );
-static Bool             WREAddStringToDir( WRECurrentResInfo * );
+static bool             WREAddStringToDir( WRECurrentResInfo * );
 static WStringNode      *WREMakeNode( WRECurrentResInfo * );
 static WStringNode      *WRECreateStringNodes( WRECurrentResInfo * );
 static void             WREFreeStringNode( WStringNode *node );
-static Bool             WREGetStringSessionData( WREStringSession *, Bool );
+static bool             WREGetStringSessionData( WREStringSession *, bool );
 static void             WRERemoveStringEditSession( WREStringSession * );
 static WREStringSession *WREFindResStringSession( WREResInfo *rinfo );
 static WResTypeNode     *WREUseStringNodes( WResDir dir, WStringNode *node );
@@ -96,7 +96,7 @@ static WResTypeNode     *WREUseStringNodes( WResDir dir, WStringNode *node );
 /****************************************************************************/
 static LIST *WREStringSessions = NULL;
 
-extern Bool WRENoInterface;
+extern bool WRENoInterface;
 
 void WRERemoveStringEditSession( WREStringSession *session )
 {
@@ -109,12 +109,12 @@ void WRERemoveStringEditSession( WREStringSession *session )
     }
 }
 
-Bool WREAddStringToDir( WRECurrentResInfo *curr )
+bool WREAddStringToDir( WRECurrentResInfo *curr )
 {
     WResLangType    lang;
     int             dup, num_retries;
     WResID          *rname, *tname;
-    Bool            ok, tname_alloc;
+    bool            ok, tname_alloc;
 
     ok = TRUE;
     tname_alloc = FALSE;
@@ -180,10 +180,10 @@ Bool WREAddStringToDir( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WRENewStringResource( void )
+bool WRENewStringResource( void )
 {
     WRECurrentResInfo  curr;
-    Bool               ok;
+    bool               ok;
 
     ok = WREAddStringToDir( &curr );
 
@@ -194,10 +194,10 @@ Bool WRENewStringResource( void )
     return( ok );
 }
 
-Bool WREEditStringResource( WRECurrentResInfo *curr )
+bool WREEditStringResource( WRECurrentResInfo *curr )
 {
     WStringNode         *nodes;
-    Bool                ok;
+    bool                ok;
     WREStringSession    *session;
 
     nodes = NULL;
@@ -224,11 +224,11 @@ Bool WREEditStringResource( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WREEndEditStringResource( WStringHandle hndl )
+bool WREEndEditStringResource( WStringHandle hndl )
 {
     WREStringSession    *session;
     WRECurrentResInfo   curr;
-    Bool                ret;
+    bool                ret;
 
     ret = FALSE;
 
@@ -250,7 +250,7 @@ Bool WREEndEditStringResource( WStringHandle hndl )
     return( ret );
 }
 
-Bool WRESaveEditStringResource( WStringHandle hndl )
+bool WRESaveEditStringResource( WStringHandle hndl )
 {
     WREStringSession *session;
 
@@ -310,11 +310,11 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
     return( session );
 }
 
-Bool WREGetStringSessionData( WREStringSession *session, Bool close )
+bool WREGetStringSessionData( WREStringSession *session, bool close )
 {
     WResTypeNode        *tnode;
     uint_16             type;
-    Bool                ok;
+    bool                ok;
 
     ok = (session != NULL && session->info != NULL && session->hndl != NULL);
 
@@ -354,11 +354,11 @@ Bool WREGetStringSessionData( WREStringSession *session, Bool close )
     return( ok );
 }
 
-Bool WREEndAllStringSessions( Bool fatal_exit )
+bool WREEndAllStringSessions( bool fatal_exit )
 {
     WREStringSession    *session;
     LIST                *slist;
-    Bool                ok;
+    bool                ok;
 
     ok = TRUE;
 
@@ -529,7 +529,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 {
     WResID              *tname;
     WResTypeNode        *tnode;
-    Bool                ok;
+    bool                ok;
 
     tnode = NULL;
     tname = WResIDFromNum( (long)RT_STRING );

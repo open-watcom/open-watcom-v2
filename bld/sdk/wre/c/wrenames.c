@@ -84,7 +84,7 @@ WRETypeName WRETypeNames[] = {
     { 0,                        0,                      FALSE }
 };
 
-static Bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
 {
     return( WRSetResNamesFromTypeNode( lbox, tnode ) );
 }
@@ -101,7 +101,7 @@ static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNod
     WResTypeNode        *tnode;
     LRESULT             count;
     int                 i;
-    Bool                ok;
+    bool                ok;
 
     ok = (lbox != (HWND)NULL);
 
@@ -132,11 +132,11 @@ char *WREGetResName( WResResNode *rnode, uint_16 type )
     return( WRGetResName( rnode, type ) );
 }
 
-Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
+bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 {
     char                *text;
     WRETypeName         *tn;
-    Bool                ok;
+    bool                ok;
 
     text = NULL;
 
@@ -169,12 +169,12 @@ Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     return( ok );
 }
 
-static Bool WREInitTypeListBox( HWND hDlg, WResDir dir )
+static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 {
     WResTypeNode        *tnode;
     HWND                lbox;
     int                 count;
-    Bool                ok;
+    bool                ok;
 
     if( hDlg == (HWND)NULL ) {
         return( FALSE );
@@ -207,9 +207,9 @@ static Bool WREInitTypeListBox( HWND hDlg, WResDir dir )
     return( ok );
 }
 
-Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
+bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
 {
-    Bool           ok;
+    bool           ok;
 
     ok = (info != NULL && info->info != NULL);
 
@@ -224,7 +224,7 @@ Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
     return( ok );
 }
 
-Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
+bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
                              WResID *name, int index )
 {
     HWND                resLbox;
@@ -233,7 +233,7 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     WResTypeNode        *tnode;
     LRESULT             max_index;
     char                *str;
-    Bool                ok;
+    bool                ok;
 
     tnode = NULL;
 
@@ -305,14 +305,14 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     return( ok );
 }
 
-Bool WREAddResNames( WREResInfo *info )
+bool WREAddResNames( WREResInfo *info )
 {
     HWND                resLbox;
     HWND                typeLbox;
     WResTypeNode        *tnode;
-    Bool                redrawOff;
+    bool                redrawOff;
     LRESULT             index;
-    Bool                ok;
+    bool                ok;
 
     redrawOff = FALSE;
 
@@ -371,7 +371,7 @@ void WREFiniTotalText( void )
     }
 }
 
-Bool WREInitTotalText( void )
+bool WREInitTotalText( void )
 {
     WRETotalText = AllocRCString( WRE_TOTALTEXT );
     WRETotalTextOne = AllocRCString( WRE_TOTALTEXT_ONE );

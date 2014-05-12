@@ -53,14 +53,14 @@ typedef struct WStatBar {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WInitStatusLines( HINSTANCE );
+extern bool     WInitStatusLines( HINSTANCE );
 extern void     WFiniStatusLines( void );
 extern int      WGetStatusDepth( void );
 extern void     WResizeStatusWindows( WStatBar *, RECT * );
 extern void     WDestroyStatusLine( WStatBar * );
 extern WStatBar *WCreateStatusLine( HWND, HINSTANCE );
-extern Bool     WSetStatusText( WStatBar *, const char *, const char * );
-extern Bool     WSetStatusReadyText( WStatBar *wsb );
-extern Bool     WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 );
+extern bool     WSetStatusText( WStatBar *, const char *, const char * );
+extern bool     WSetStatusReadyText( WStatBar *wsb );
+extern bool     WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 );
 
 #endif

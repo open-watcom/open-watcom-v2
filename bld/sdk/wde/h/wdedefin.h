@@ -42,7 +42,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeDefineCurrentObject( WORD );
-extern Bool WdeGenericDefine( WdeDefineObjectInfo *info );
+extern bool WdeDefineCurrentObject( WORD );
+extern bool WdeGenericDefine( WdeDefineObjectInfo *info );
 
 #endif

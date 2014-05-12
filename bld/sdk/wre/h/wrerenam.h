@@ -48,8 +48,8 @@ typedef struct WREResRenameInfo {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRERenameResource( void );
-extern Bool WREGetNewName( WREResRenameInfo * );
-extern Bool WRERenameWResResNode( WResTypeNode *, WResResNode **, WResID * );
+extern bool WRERenameResource( void );
+extern bool WREGetNewName( WREResRenameInfo * );
+extern bool WRERenameWResResNode( WResTypeNode *, WResResNode **, WResID * );
 
 #endif

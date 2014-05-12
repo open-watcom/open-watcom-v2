@@ -49,7 +49,7 @@ typedef struct list {
 /****************************************************************************/
 extern void WREInsertObject( LIST **, void *);
 extern void WREListLastElt( LIST *, LIST **);
-extern Bool WREListConcat( LIST **, LIST *, uint_32 );
+extern bool WREListConcat( LIST **, LIST *, uint_32 );
 extern LIST *WREListCopy( LIST * );
 
 extern void *ListElement( LIST * );

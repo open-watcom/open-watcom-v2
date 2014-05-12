@@ -62,7 +62,7 @@ BOOL WStatusWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WDisplayStatusText( WStatBar * );
+static bool WDisplayStatusText( WStatBar * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -70,7 +70,7 @@ static Bool WDisplayStatusText( WStatBar * );
 static int      WStatusDepth  = 0;
 static HFONT    WStatusFont   = NULL;
 
-Bool WInitStatusLines( HINSTANCE inst )
+bool WInitStatusLines( HINSTANCE inst )
 {
     LOGFONT             lf;
     TEXTMETRIC          tm;
@@ -79,7 +79,7 @@ Bool WInitStatusLines( HINSTANCE inst )
     char                *status_font;
     char                *cp;
     int                 point_size;
-    Bool                use_default;
+    bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( (HWND)NULL );
@@ -189,17 +189,17 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     return( wsb );
 }
 
-Bool WSetStatusReadyText( WStatBar *wsb )
+bool WSetStatusReadyText( WStatBar *wsb )
 {
     WSetStatusText( wsb, NULL, "" );
     return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
 }
 
-Bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
+bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
 {
     char        *str1;
     char        *str2;
-    Bool        ret;
+    bool        ret;
 
     ret = FALSE;
     str1 = NULL;
@@ -226,7 +226,7 @@ Bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
     return( ret );
 }
 
-Bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
+bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
 {
     int             len;
     int             pos;
@@ -294,7 +294,7 @@ BOOL WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     return( FALSE );
 }
 
-Bool WDisplayStatusText( WStatBar *wsb )
+bool WDisplayStatusText( WStatBar *wsb )
 {
     HDC hdc;
 

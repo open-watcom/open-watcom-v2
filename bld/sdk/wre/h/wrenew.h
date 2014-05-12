@@ -47,6 +47,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRENewResource( WRECurrentResInfo *, WResID *, WResID *, uint_16, uint_32, uint_32, WResLangType *, int *, uint_16, Bool );
+extern bool WRENewResource( WRECurrentResInfo *, WResID *, WResID *, uint_16, uint_32, uint_32, WResLangType *, int *, uint_16, bool );
 
 #endif

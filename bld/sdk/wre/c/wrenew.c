@@ -59,12 +59,12 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
+bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
                      uint_16 memflags, uint_32 offset, uint_32 length,
                      WResLangType *lang, int *dup, uint_16 type,
-                     Bool new_type )
+                     bool new_type )
 {
-    Bool   ok;
+    bool   ok;
 
     ok = (curr != NULL && curr->info != NULL && tname != NULL && rname != NULL &&
           lang != NULL);

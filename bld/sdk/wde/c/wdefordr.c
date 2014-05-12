@@ -78,7 +78,7 @@ static HFONT      WdeTagFont            = NULL;
 static void WdeSetTagState( WdeOrderedEntry *oe )
 {
     LRESULT     result;
-    Bool        pressed;
+    bool        pressed;
 
     if( oe != NULL && oe->tag != (HWND)NULL ) {
         if( oe->mode == WdeSetOrder ) {
@@ -119,7 +119,7 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
     }
 }
 
-static void WdeSetTagOrder( WdeSetOrderStruct *o, Bool reorder )
+static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
 {
     if( o->new_oe ) {
         ListRemoveElt( &o->lists->newlist, o->new_oe );
@@ -243,7 +243,7 @@ LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
     return( NULL );
 }
 
-Bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
+bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
@@ -269,7 +269,7 @@ Bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
     return( oentry != NULL );
 }
 
-Bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
+bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
@@ -283,7 +283,7 @@ Bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
     return( FALSE );
 }
 
-Bool WdeCleanOrderedList( LIST **l )
+bool WdeCleanOrderedList( LIST **l )
 {
     WdeOrderedEntry *oentry;
     LIST            *tlist;
@@ -310,7 +310,7 @@ Bool WdeCleanOrderedList( LIST **l )
     return( TRUE );
 }
 
-Bool WdeGetNextChild( LIST **l, OBJPTR *obj, Bool up )
+bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
 {
     WdeOrderedEntry *oentry;
     LIST            *o;
@@ -345,7 +345,7 @@ void WdeFiniOrderStuff( void )
     }
 }
 
-Bool WdeRegisterTagClass( HINSTANCE inst )
+bool WdeRegisterTagClass( HINSTANCE inst )
 {
     WNDCLASS  wc;
 
@@ -403,7 +403,7 @@ HWND WdeCreateTag( HWND parent, WdeSetOrderStruct *o )
     return( tag );
 }
 
-void WdeReorderTags( WdeSetOrderLists *ol, Bool force_redraw )
+void WdeReorderTags( WdeSetOrderLists *ol, bool force_redraw )
 {
     int             pos;
     LIST            *olist;
@@ -440,7 +440,7 @@ void WdeTagPressed( WdeSetOrderStruct *o )
 {
     OBJPTR      parent;
     WORD        state;
-    Bool        shift;
+    bool        shift;
 
     if( o != NULL ) {
         switch( o->old_oe->mode ) {
@@ -497,7 +497,7 @@ WdeSetOrderStruct *WdeGetTagInfo( HWND tag )
 WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeSetOrderStruct   *o;
-    Bool                pass_to_def;
+    bool                pass_to_def;
     LRESULT             ret;
 
     pass_to_def = TRUE;

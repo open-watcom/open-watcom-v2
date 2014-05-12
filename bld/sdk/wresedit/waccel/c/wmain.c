@@ -87,17 +87,17 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool         WInit( HINSTANCE );
+static bool         WInit( HINSTANCE );
 static void         WFini( void );
-static WAccelInfo   *WAccelGetEInfo( WAccelHandle, Bool );
-static Bool         WRegisterMainClass( HINSTANCE );
-static Bool         WCreateEditWindow( HINSTANCE, WAccelEditInfo * );
+static WAccelInfo   *WAccelGetEInfo( WAccelHandle, bool );
+static bool         WRegisterMainClass( HINSTANCE );
+static bool         WCreateEditWindow( HINSTANCE, WAccelEditInfo * );
 static void         WUpdateScreenPosOpt( HWND );
-static Bool         WCleanup( WAccelEditInfo * );
-static Bool         WQuerySave( WAccelEditInfo *, Bool );
-static Bool         WQuerySaveRes( WAccelEditInfo *, Bool );
-static Bool         WQuerySaveSym( WAccelEditInfo *, Bool );
-static Bool         WHandleWM_CLOSE( WAccelEditInfo *, Bool );
+static bool         WCleanup( WAccelEditInfo * );
+static bool         WQuerySave( WAccelEditInfo *, bool );
+static bool         WQuerySaveRes( WAccelEditInfo *, bool );
+static bool         WQuerySaveSym( WAccelEditInfo *, bool );
+static bool         WHandleWM_CLOSE( WAccelEditInfo *, bool );
 static void         WHandleClear( WAccelEditInfo * );
 
 /****************************************************************************/
@@ -321,7 +321,7 @@ int WRESEAPI WAccelCloseSession( WAccelHandle hndl, int force_exit )
     return( TRUE );
 }
 
-WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
+WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, bool keep )
 {
     WAccelEditInfo  *einfo;
     WAccelInfo      *info;
@@ -356,9 +356,9 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
     return( info );
 }
 
-Bool WInit( HINSTANCE inst )
+bool WInit( HINSTANCE inst )
 {
-    Bool ok;
+    bool ok;
 
     ok = (inst != (HINSTANCE)NULL);
 
@@ -412,7 +412,7 @@ void WFini( void )
     JDialogFini();
 }
 
-Bool WRegisterMainClass( HINSTANCE inst )
+bool WRegisterMainClass( HINSTANCE inst )
 {
     WNDCLASS wc;
 
@@ -478,7 +478,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
 void WSetEditTitle( WAccelEditInfo *einfo )
 {
     char        *title;
-    Bool        is_rc;
+    bool        is_rc;
 
     title = WCreateEditTitle( einfo );
     is_rc = FALSE;
@@ -498,13 +498,13 @@ void WSetEditTitle( WAccelEditInfo *einfo )
     }
 }
 
-Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
+bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
     HMENU       hmenu;
     HMENU       menu;
-    Bool        is_rc;
+    bool        is_rc;
     RECT        rect;
 
     if( einfo == NULL ) {
@@ -690,7 +690,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     HWND            win;
 #endif
     LRESULT         ret;
-    Bool            pass_to_def;
+    bool            pass_to_def;
     WAccelEditInfo  *einfo;
     WORD            wp;
     MINMAXINFO      *minmax;
@@ -945,7 +945,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_CLOSE:
         ret = TRUE;
-        pass_to_def = WHandleWM_CLOSE( einfo, (Bool)wParam );
+        pass_to_def = WHandleWM_CLOSE( einfo, wParam != 0 );
         wParam = 0;
         break;
     }
@@ -957,12 +957,12 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     return( ret );
 }
 
-Bool WQuerySave( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySave( WAccelEditInfo *einfo, bool force_exit )
 {
     return( WQuerySaveRes( einfo, force_exit ) && WQuerySaveSym( einfo, force_exit ) );
 }
 
-Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySaveRes( WAccelEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -1002,7 +1002,7 @@ Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySaveSym( WAccelEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -1052,9 +1052,9 @@ Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WHandleWM_CLOSE( WAccelEditInfo *einfo, Bool force_exit )
+bool WHandleWM_CLOSE( WAccelEditInfo *einfo, bool force_exit )
 {
-    Bool        ret;
+    bool        ret;
 
     ret = TRUE;
 
@@ -1084,7 +1084,7 @@ void WHandleRename( WAccelEditInfo *einfo )
     }
 }
 
-Bool WQueryClearRes( WAccelEditInfo *einfo )
+bool WQueryClearRes( WAccelEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -1165,10 +1165,10 @@ void WResizeWindows( WAccelEditInfo *einfo )
     }
 }
 
-Bool WCleanup( WAccelEditInfo *einfo )
+bool WCleanup( WAccelEditInfo *einfo )
 {
     HWND        owner;
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL);
 

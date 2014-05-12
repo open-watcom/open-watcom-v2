@@ -53,8 +53,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WdeReorderObjectWindows( LIST * );
-static Bool     WdeFindObjectsInRect( RECT *, LIST **, LIST * );
+static bool     WdeReorderObjectWindows( LIST * );
+static bool     WdeFindObjectsInRect( RECT *, LIST **, LIST * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -67,7 +67,7 @@ void WdeSOP( OBJPTR obj, OBJPTR parent )
     RECT        orect;
     OBJPTR      sib;
     OBJ_ID      id;
-    Bool        clear;
+    bool        clear;
     POINT       origin;
 
     info = WdeGetCurrentRes();
@@ -111,7 +111,7 @@ void WdeSOP( OBJPTR obj, OBJPTR parent )
     }
 }
 
-Bool WdeReorderObjectWindows( LIST *l )
+bool WdeReorderObjectWindows( LIST *l )
 {
     LIST    *o;
     OBJPTR  child;
@@ -149,7 +149,7 @@ Bool WdeReorderObjectWindows( LIST *l )
     return( EndDeferWindowPos( h ) );
 }
 
-Bool WdeFindObjectsInRect( RECT *r, LIST **obj_list, LIST *olist )
+bool WdeFindObjectsInRect( RECT *r, LIST **obj_list, LIST *olist )
 {
     OBJPTR   child;
     RECT     child_rect;

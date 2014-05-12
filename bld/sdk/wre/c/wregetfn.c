@@ -178,7 +178,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
 {
     OPENFILENAME  wreofn;
     HWND          owner_window;
-    Bool          ret;
+    bool          ret;
     DWORD         error;
     int           len;
     char          fn_drive[_MAX_DRIVE];

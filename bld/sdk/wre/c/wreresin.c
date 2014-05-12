@@ -77,12 +77,12 @@ WREResInfo *WREAllocResInfo( void )
     return( info );
 }
 
-Bool WREIsResModified( WREResInfo *info )
+bool WREIsResModified( WREResInfo *info )
 {
     return( info == NULL || info->modified );
 }
 
-void WRESetResModified( WREResInfo *info, Bool mod )
+void WRESetResModified( WREResInfo *info, bool mod )
 {
     if( info != NULL ) {
         info->modified = mod;

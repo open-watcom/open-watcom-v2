@@ -68,7 +68,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WQueryReplaceString( HWND parent )
+static bool WQueryReplaceString( HWND parent )
 {
     char        *title;
     char        *text;
@@ -90,9 +90,9 @@ static Bool WQueryReplaceString( HWND parent )
 }
 
 WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
-                                 char *text, char *symbol, Bool *replace )
+                                 char *text, char *symbol, bool *replace )
 {
-    Bool                ok;
+    bool                ok;
     WStringBlock        *block;
 
     ok = (einfo != NULL && einfo->tbl != NULL && einfo->win != NULL && replace != NULL);
@@ -131,11 +131,11 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
     return( block );
 }
 
-Bool WInsertStringEntry( WStringEditInfo *einfo )
+bool WInsertStringEntry( WStringEditInfo *einfo )
 {
     HWND                lbox;
-    Bool                ok;
-    Bool                replace;
+    bool                ok;
+    bool                replace;
     WStringBlock        *block;
     uint_16             id;
     char                *text;
@@ -216,7 +216,7 @@ Bool WInsertStringEntry( WStringEditInfo *einfo )
     return( ok );
 }
 
-Bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos )
+bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos )
 {
     int         i;
 
@@ -237,10 +237,10 @@ Bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos 
     return( TRUE );
 }
 
-Bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
+bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
                            uint_16 string_id, int pos )
 {
-    Bool    ok;
+    bool    ok;
     char    *n;
     char    *lbtext;
     char    *text;

@@ -49,7 +49,7 @@
 /****************************************************************************/
 typedef struct {
     RECT    screen_pos;
-    Bool    screen_maxed;
+    bool    screen_maxed;
     char    *last_dir;
     int     last_filter;
 } WOptState;
@@ -62,11 +62,12 @@ typedef struct {
 /* static function prototypes                                               */
 /*****************************************************************************/
 static void WWriteOpts( WOptState * );
-static Bool WReadOpts( WOptState * );
-static Bool WWriteIntOpt( char *, int );
-static Bool WGetIntOpt( char *, int *);
-static Bool WWriteRectOpt( char *, RECT * );
-static Bool WGetRectOpt( char *, RECT * );
+static bool WReadOpts( WOptState * );
+static bool WWriteIntOpt( char *, int );
+static bool WGetBoolOpt( char *, bool *);
+static bool WGetIntOpt( char *, int *);
+static bool WWriteRectOpt( char *, RECT * );
+static bool WGetRectOpt( char *, RECT * );
 static char *WRectToStr( RECT * );
 static void WStrToRect( char *, RECT * );
 
@@ -113,13 +114,13 @@ void WWriteOpts( WOptState *o )
     WritePrivateProfileString( WSectionName, "LastDir", o->last_dir, WProfileName );
 }
 
-Bool WReadOpts( WOptState *s )
+bool WReadOpts( WOptState *s )
 {
     char    str[_MAX_PATH];
-    Bool    ret;
+    bool    ret;
 
     ret = WGetRectOpt( "ScreenPos", &s->screen_pos );
-    ret &= WGetIntOpt( "ScreenMaxed", &s->screen_maxed );
+    ret &= WGetBoolOpt( "ScreenMaxed", &s->screen_maxed );
     ret &= WGetIntOpt( "FileFilter", &s->last_filter );
 
     if( ret ) {
@@ -134,10 +135,10 @@ Bool WReadOpts( WOptState *s )
     return( ret );
 }
 
-Bool WWriteIntOpt( char *entry, int i )
+bool WWriteIntOpt( char *entry, int i )
 {
     char    str[12];
-    Bool    ret;
+    bool    ret;
 
     ltoa( i, str, 10 );
 
@@ -146,7 +147,20 @@ Bool WWriteIntOpt( char *entry, int i )
     return( ret );
 }
 
-Bool WGetIntOpt( char *entry, int *i )
+bool WGetBoolOpt( char *entry, bool *i )
+{
+    int opt;
+
+    opt = (int)GetPrivateProfileInt( WSectionName, entry, 0x7fff, WProfileName );
+
+    if( opt != 0x7fff ) {
+        *i = ( opt != 0 );
+    }
+
+    return( opt != 0x7fff );
+}
+
+bool WGetIntOpt( char *entry, int *i )
 {
     int opt;
 
@@ -159,10 +173,10 @@ Bool WGetIntOpt( char *entry, int *i )
     return( opt != 0x7fff );
 }
 
-Bool WWriteRectOpt( char *entry, RECT *r )
+bool WWriteRectOpt( char *entry, RECT *r )
 {
     char    *str;
-    Bool    ret;
+    bool    ret;
 
     ret = FALSE;
     str = WRectToStr( r );
@@ -174,10 +188,10 @@ Bool WWriteRectOpt( char *entry, RECT *r )
     return( ret );
 }
 
-Bool WGetRectOpt( char *entry, RECT *r )
+bool WGetRectOpt( char *entry, RECT *r )
 {
     char    str[41];
-    Bool    ret;
+    bool    ret;
 
     ret = GetPrivateProfileString( WSectionName, entry, "0, 0, 0, 0",
                                    str, 40, WProfileName );
@@ -254,7 +268,7 @@ int WSetOption( WOptReq req, int val )
     switch( req ) {
     case WOptScreenMax:
         old = WCurrentState.screen_maxed;
-        WCurrentState.screen_maxed = (Bool)val;
+        WCurrentState.screen_maxed = val != 0;
         break;
 
     default:

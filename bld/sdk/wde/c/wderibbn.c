@@ -73,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeDoInitRibbon( HINSTANCE, WdeRibbonName *, int );
+static bool WdeDoInitRibbon( HINSTANCE, WdeRibbonName *, int );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -127,9 +127,9 @@ int WdeGetRibbonHeight( void )
     return ( WdeRibbonHeight );
 }
 
-Bool WdeInitRibbon( HINSTANCE inst )
+bool WdeInitRibbon( HINSTANCE inst )
 {
-    Bool        ret;
+    bool        ret;
 
     if( WdeIsDDE() ) {
         ret = WdeDoInitRibbon( inst, WdeDDERibbonNames, NUM_DDE_TOOLS );
@@ -140,7 +140,7 @@ Bool WdeInitRibbon( HINSTANCE inst )
     return( ret );
 }
 
-Bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
+bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
 {
     int i;
 
@@ -214,7 +214,7 @@ void WdeShutdownRibbon( void )
     WdeFreeToolBarInfo( WdeRibbonInfo );
 }
 
-Bool WdeCreateRibbon( HWND parent )
+bool WdeCreateRibbon( HWND parent )
 {
     if( WdeRibbon != NULL || WdeRibbonInfo == NULL || parent == (HWND)NULL ) {
         return( FALSE );
@@ -234,7 +234,7 @@ Bool WdeCreateRibbon( HWND parent )
     return( WdeRibbon != NULL );
 }
 
-Bool WdeResizeRibbon( RECT *prect )
+bool WdeResizeRibbon( RECT *prect )
 {
     if( WdeRibbon == NULL || WdeRibbonHeight == 0 ||
         WdeRibbon->win == (HWND)NULL || prect == NULL ) {
@@ -248,7 +248,7 @@ Bool WdeResizeRibbon( RECT *prect )
 
 void WdeShowRibbon( void )
 {
-    Bool        created;
+    bool        created;
     char        *mtext;
 
     if( WdeRibbonHeight != 0 ) {
@@ -312,7 +312,7 @@ void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 
 BOOL WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    Bool         ret;
+    bool         ret;
 
     _wde_touch( hwnd );
     _wde_touch( wParam );

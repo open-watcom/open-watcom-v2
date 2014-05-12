@@ -119,7 +119,7 @@ void WFreeStringEInfo( WStringEditInfo *einfo )
     }
 }
 
-Bool WIsBlockEmpty( WStringBlock *block )
+bool WIsBlockEmpty( WStringBlock *block )
 {
     return( WRIsBlockEmpty( &block->block ) );
 }
@@ -249,9 +249,9 @@ WStringBlock *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 blocknum )
     return( block );
 }
 
-Bool WRemoveStringBlock( WStringTable *tbl, WStringBlock *block )
+bool WRemoveStringBlock( WStringTable *tbl, WStringBlock *block )
 {
-    Bool ok;
+    bool ok;
 
     ok = (tbl != NULL && block != NULL);
 
@@ -467,7 +467,7 @@ WStringTable *WMakeStringTableFromInfo( WStringInfo *info )
     return( tbl );
 }
 
-Bool WGetFirstStringInBlock( WStringBlock *block, uint_16 *first )
+bool WGetFirstStringInBlock( WStringBlock *block, uint_16 *first )
 {
     int         i;
 
@@ -520,7 +520,7 @@ uint_16 WFindLargestStringID( WStringTable *tbl )
     return( 0 );
 }
 
-Bool WResolveStringTable( WStringEditInfo *einfo )
+bool WResolveStringTable( WStringEditInfo *einfo )
 {
     WStringBlock *block;
 
@@ -537,7 +537,7 @@ Bool WResolveStringTable( WStringEditInfo *einfo )
     return( TRUE );
 }
 
-Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
+bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
 {
     WRHashValueList     *vlist;
     int                 i;
@@ -566,12 +566,12 @@ Bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
     return( TRUE );
 }
 
-static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock *block,
+static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock *block,
                                             WRHashTable *symbol_table )
 {
     WRHashValue hv;
     int         i;
-    Bool        replace;
+    bool        replace;
     char        *text;
 
     if( symbol_table == NULL ) {
@@ -601,7 +601,7 @@ static Bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
     return( TRUE );
 }
 
-Bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
+bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
 {
     WStringTable        *new_tbl;
     WStringTable        *old_tbl;

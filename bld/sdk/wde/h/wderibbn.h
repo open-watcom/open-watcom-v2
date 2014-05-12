@@ -44,10 +44,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeInitRibbon( HINSTANCE );
+extern bool WdeInitRibbon( HINSTANCE );
 extern void WdeShutdownRibbon( void );
-extern Bool WdeCreateRibbon( HWND );
-extern Bool WdeResizeRibbon( RECT * );
+extern bool WdeCreateRibbon( HWND );
+extern bool WdeResizeRibbon( RECT * );
 extern void WdeShowRibbon( void );
 extern void WdeDestroyRibbon( void );
 extern int  WdeGetRibbonHeight( void );

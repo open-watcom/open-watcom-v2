@@ -56,13 +56,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
+static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 {
     char        *str;
     int         i, len, pos;
     HFONT       old_font;
     HDC         dc;
-    Bool        ok;
+    bool        ok;
 
     dc = (HDC)NULL;
     str = NULL;
@@ -106,12 +106,12 @@ static Bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     return( ok );
 }
 
-Bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
+bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
 {
     char        *text;
     HWND        win;
     HFONT       font;
-    Bool        ok;
+    bool        ok;
 
     text = NULL;
 

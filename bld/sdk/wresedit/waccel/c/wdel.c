@@ -59,10 +59,10 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WDeleteAccelEntry( WAccelEditInfo *einfo )
+bool WDeleteAccelEntry( WAccelEditInfo *einfo )
 {
     HWND         lbox;
-    Bool         ok;
+    bool         ok;
     LRESULT      ret;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
@@ -84,10 +84,10 @@ Bool WDeleteAccelEntry( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, Bool free_it )
+bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
 {
     HWND        lbox;
-    Bool        ok;
+    bool        ok;
     WAccelEntry *entry;
     LRESULT     ret, max;
 

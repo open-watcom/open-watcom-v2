@@ -70,7 +70,7 @@ void WdeListLastElt( LIST *list, LIST **last )
     *last = end;
 }
 
-Bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
+bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
 {
     LIST    *end;
     LIST    *olist;

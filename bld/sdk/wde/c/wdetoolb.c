@@ -142,7 +142,7 @@ BOOL WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WdeToolBar  *tbar;
-    Bool        ret;
+    bool        ret;
 
     if( (tbar = WdeFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         if( msg == WM_GETMINMAXINFO ) {
@@ -227,7 +227,7 @@ WdeToolBar *WdeFindToolBar( HWND win )
     return( NULL );
 }
 
-Bool WdeCloseToolBar( WdeToolBar *tbar )
+bool WdeCloseToolBar( WdeToolBar *tbar )
 {
     if( tbar != NULL ) {
         tbar->win = (HWND)NULL;

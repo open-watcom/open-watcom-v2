@@ -49,8 +49,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, int, WResLangType *, Bool );
-static Bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, int, WResLangType * );
+static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, int, WResLangType *, bool );
+static bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, int, WResLangType * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -60,19 +60,19 @@ extern char     *WdeDlgSaveAsTitle;
 extern char     *WdeDlgSaveTitle;
 extern char     *WdeResSaveFilter;
 
-extern Bool WdeCreateDLGName( char *filename, char *newname );
+extern bool WdeCreateDLGName( char *filename, char *newname );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
+bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                     char **fname, WResID *rname, WResLangType *langtype,
-                    Bool save_into, Bool get_name )
+                    bool save_into, bool get_name )
 {
     void                *rdata;
     uint_32             size;
-    Bool                ok;
+    bool                ok;
     WResLangType        lang;
 
 
@@ -108,17 +108,17 @@ Bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     return( ok );
 }
 
-Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
+bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                       char **file_name, WResID *name, void *rdata, int size,
-                      WResLangType *lang, Bool get_name )
+                      WResLangType *lang, bool get_name )
 {
     char                *fname;
     WRFileType          ftype;
     WdeGetFileStruct    gf;
     WRSaveIntoData      idata;
     WdeResDlgItem       ditem;
-    Bool                is_rc;
-    Bool                ok;
+    bool                is_rc;
+    bool                ok;
 
     fname = NULL;
     idata.type = NULL;
@@ -201,7 +201,7 @@ Bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     return( ok );
 }
 
-Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
+bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
                         WResID *name, void *data, int size,
                         WResLangType *lang )
 {
@@ -210,8 +210,8 @@ Bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     int                 dup;
     WRSaveIntoData      idata;
     WdeResDlgItem       ditem;
-    Bool                is_rc;
-    Bool                ok;
+    bool                is_rc;
+    bool                ok;
 
     idata.type = NULL;
     fname = NULL;

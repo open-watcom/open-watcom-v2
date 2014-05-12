@@ -60,7 +60,7 @@ WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void WdeEnableInfoWindowInput( Bool );
+static void WdeEnableInfoWindowInput( bool );
 static void WdeResetInfo( void );
 static void WdeChangeInfo( void );
 static void WdeDisplayDialogInfo( WdeInfoStruct * );
@@ -68,7 +68,7 @@ static void WdeDisplayControlInfo( WdeInfoStruct * );
 static void WdeChangeDialogInfo( WdeInfoStruct * );
 static void WdeChangeControlInfo( WdeInfoStruct * );
 static void WdeInfoLookupComboEntry( HWND, WORD );
-static void WdeWriteSymInfo( WdeInfoStruct *, Bool, char * );
+static void WdeWriteSymInfo( WdeInfoStruct *, bool, char * );
 static void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str );
 
 /****************************************************************************/
@@ -101,7 +101,7 @@ static void WdeFiniInfoText( void )
     }
 }
 
-static Bool WdeInitInfoText( void )
+static bool WdeInitInfoText( void )
 {
     WdeCaptionText = WdeAllocRCString( WDE_INFOCAPTIONTEXT );
     WdeDlgNameText = WdeAllocRCString( WDE_INFODLGNAMETEXT );
@@ -161,7 +161,7 @@ int WdeGetInfoWindowDepth( void )
     return( WdeInfoWindowDepth );
 }
 
-Bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
+bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
 {
     if( !WdeInitInfoText() ) {
         return( FALSE );
@@ -208,7 +208,7 @@ void WdeDestroyInfoWindow( void )
     WdeResizeWindows();
 }
 
-void WdeShowInfoWindow( Bool show )
+void WdeShowInfoWindow( bool show )
 {
     if( WdeInfoWindowDepth != 0 ) {
         if( show ) {
@@ -227,10 +227,10 @@ void WdeShowInfoWindow( Bool show )
     WdeResizeWindows();
 }
 
-void WdeEnableInfoWindowInput( Bool enable )
+void WdeEnableInfoWindowInput( bool enable )
 {
     HWND        win;
-    static Bool last = TRUE;
+    static bool last = TRUE;
 
     if( WdeInfoWindowDepth != 0 && last != enable ) {
         win = GetDlgItem( WdeInfoWindow, IDB_INFO_CAPTION );
@@ -257,9 +257,9 @@ void WdeResizeInfoWindow( RECT *rect )
     }
 }
 
-void WdeWriteSymInfo( WdeInfoStruct *is, Bool same_as_last, char *s )
+void WdeWriteSymInfo( WdeInfoStruct *is, bool same_as_last, char *s )
 {
-    Bool    dirty;
+    bool    dirty;
     OBJPTR  obj;
 
     if( is->res_info->hash_table != NULL ) {
@@ -290,7 +290,7 @@ void WdeWriteInfo( WdeInfoStruct *is )
     static WdeResInfo   *last_res = NULL;
     static OBJ_ID       last_obj = 0;
     char                *cap_text, *id;
-    Bool                same_hash;
+    bool                same_hash;
 
     if( WdeInfoWindowDepth == 0 || WdeInfoWindow == NULL ) {
         return;
@@ -375,7 +375,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
     if( name->IsName ) {
         char    *str1, *str2;
         int     len;
-        Bool    ok;
+        bool    ok;
         ok = FALSE;
         str1 = WResIDToStr( name );
         if( str1 != NULL ) {
@@ -448,10 +448,10 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     WdeInfoStruct       c_is;
     char                *str;
     char                *cp;
-    Bool                quoted_str;
-    Bool                str_is_ordinal;
+    bool                quoted_str;
+    bool                str_is_ordinal;
     uint_16             ord;
-    Bool                found;
+    bool                found;
     WdeHashValue        value;
 
     c_is = *is;
@@ -543,9 +543,9 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     char                *str;
     char                *cp;
     WdeInfoStruct       c_is;
-    Bool                str_is_ordinal;
+    bool                str_is_ordinal;
     uint_16             ord;
-    Bool                found;
+    bool                found;
     WdeHashValue        value;
 
     c_is = *is;
@@ -631,7 +631,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     char                *cp;
     char                *str;
     WdeHashValue        value;
-    Bool                found;
+    bool                found;
     LRESULT             index;
     int                 count;
 

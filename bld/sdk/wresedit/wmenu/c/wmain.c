@@ -87,18 +87,18 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool         WInit( HINSTANCE );
+static bool         WInit( HINSTANCE );
 static void         WFini( void );
-static WMenuInfo    *WMenuGetEInfo( WMenuHandle, Bool );
-static Bool         WRegisterMainClass( HINSTANCE );
-static Bool         WCreateEditWindow( HINSTANCE, WMenuEditInfo * );
+static WMenuInfo    *WMenuGetEInfo( WMenuHandle, bool );
+static bool         WRegisterMainClass( HINSTANCE );
+static bool         WCreateEditWindow( HINSTANCE, WMenuEditInfo * );
 static void         WUpdateScreenPosOpt( HWND );
 static void         WDisplayAboutBox( HINSTANCE, HWND, UINT );
-static Bool         WCleanup( WMenuEditInfo * );
-static Bool         WQuerySave( WMenuEditInfo *, Bool );
-static Bool         WQuerySaveRes( WMenuEditInfo *, Bool );
-static Bool         WQuerySaveSym( WMenuEditInfo *, Bool );
-static Bool         WHandleWM_CLOSE( WMenuEditInfo *, Bool );
+static bool         WCleanup( WMenuEditInfo * );
+static bool         WQuerySave( WMenuEditInfo *, bool );
+static bool         WQuerySaveRes( WMenuEditInfo *, bool );
+static bool         WQuerySaveSym( WMenuEditInfo *, bool );
+static bool         WHandleWM_CLOSE( WMenuEditInfo *, bool );
 static void         WHandleClear( WMenuEditInfo * );
 static void         WToggleInsertBitmap( WMenuEditInfo *einfo );
 static void         WToggleInsertSubitems( WMenuEditInfo *einfo );
@@ -351,7 +351,7 @@ int WRESEAPI WMenuCloseSession( WMenuHandle hndl, int force_exit )
     return( TRUE );
 }
 
-WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, Bool keep )
+WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, bool keep )
 {
     WMenuEditInfo   *einfo;
     WMenuInfo       *info;
@@ -386,9 +386,9 @@ WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, Bool keep )
     return( info );
 }
 
-Bool WInit( HINSTANCE inst )
+bool WInit( HINSTANCE inst )
 {
-    Bool ok;
+    bool ok;
 
     ok = (inst != (HINSTANCE)NULL);
 
@@ -464,7 +464,7 @@ void WFini( void )
     JDialogFini();
 }
 
-Bool WRegisterMainClass( HINSTANCE inst )
+bool WRegisterMainClass( HINSTANCE inst )
 {
     WNDCLASS wc;
 
@@ -530,7 +530,7 @@ char *WCreateEditTitle( WMenuEditInfo *einfo )
 void WSetEditTitle( WMenuEditInfo *einfo )
 {
     char        *title;
-    Bool        is_rc;
+    bool        is_rc;
 
     title = WCreateEditTitle( einfo );
     is_rc = FALSE;
@@ -550,13 +550,13 @@ void WSetEditTitle( WMenuEditInfo *einfo )
     }
 }
 
-Bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
+bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
     HMENU       hmenu;
     HMENU       menu;
-    Bool        is_rc;
+    bool        is_rc;
     RECT        rect;
 
     if( einfo == NULL ) {
@@ -727,7 +727,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     HWND                win;
 #endif
     LRESULT             ret;
-    Bool                pass_to_def;
+    bool                pass_to_def;
     WMenuEditInfo       *einfo;
     WORD                wp;
     MINMAXINFO          *minmax;
@@ -1024,7 +1024,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_CLOSE:
         ret = TRUE;
-        pass_to_def = WHandleWM_CLOSE( einfo, (Bool)wParam );
+        pass_to_def = WHandleWM_CLOSE( einfo, wParam != 0 );
         wParam = 0;
         break;
     }
@@ -1086,12 +1086,12 @@ void WToggleInsertBitmap( WMenuEditInfo *einfo )
     }
 }
 
-Bool WQuerySave( WMenuEditInfo *einfo, Bool force_exit )
+bool WQuerySave( WMenuEditInfo *einfo, bool force_exit )
 {
     return( WQuerySaveRes( einfo, force_exit ) && WQuerySaveSym( einfo, force_exit ) );
 }
 
-Bool WQuerySaveRes( WMenuEditInfo *einfo, Bool force_exit )
+bool WQuerySaveRes( WMenuEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -1131,7 +1131,7 @@ Bool WQuerySaveRes( WMenuEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WQuerySaveSym( WMenuEditInfo *einfo, Bool force_exit )
+bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -1181,9 +1181,9 @@ Bool WQuerySaveSym( WMenuEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WHandleWM_CLOSE( WMenuEditInfo *einfo, Bool force_exit )
+bool WHandleWM_CLOSE( WMenuEditInfo *einfo, bool force_exit )
 {
-    Bool        ret;
+    bool        ret;
 
     ret = TRUE;
 
@@ -1211,7 +1211,7 @@ void WHandleRename( WMenuEditInfo *einfo )
     }
 }
 
-Bool WQueryClearRes( WMenuEditInfo *einfo )
+bool WQueryClearRes( WMenuEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -1294,10 +1294,10 @@ void WResizeWindows( WMenuEditInfo *einfo )
     }
 }
 
-Bool WCleanup( WMenuEditInfo *einfo )
+bool WCleanup( WMenuEditInfo *einfo )
 {
     HWND        owner;
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL);
 

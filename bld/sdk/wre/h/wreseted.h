@@ -42,12 +42,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool     WRESetEditWithWResID( HWND, WResID * );
-extern Bool     WRESetEditWithStr( HWND, char * );
-extern Bool     WRESetLBoxWithStr( HWND, char *, void * );
-extern Bool     WRESetLBoxWithWResID( HWND, WResID *, void * );
+extern bool     WRESetEditWithWResID( HWND, WResID * );
+extern bool     WRESetEditWithStr( HWND, char * );
+extern bool     WRESetLBoxWithStr( HWND, char *, void * );
+extern bool     WRESetLBoxWithWResID( HWND, WResID *, void * );
 
-extern char     *WREGetStrFromEdit( HWND, Bool * );
-extern WResID   *WREGetWResIDFromEdit( HWND, Bool * );
+extern char     *WREGetStrFromEdit( HWND, bool * );
+extern WResID   *WREGetWResIDFromEdit( HWND, bool * );
 
 #endif

@@ -104,10 +104,10 @@ static char WMapScanCodeToKey( BYTE scan_code )
 }
 
 
-Bool WHandleGetKeyValue( WAccelEditInfo *einfo, Bool ignore_first )
+bool WHandleGetKeyValue( WAccelEditInfo *einfo, bool ignore_first )
 {
     RECT        r;
-    Bool        ok;
+    bool        ok;
     char        *text;
 
     text = NULL;
@@ -154,14 +154,14 @@ Bool WHandleGetKeyValue( WAccelEditInfo *einfo, Bool ignore_first )
 
 void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
 {
-    Bool        cntl;
-    Bool        shift;
-    Bool        alt;
+    bool        cntl;
+    bool        shift;
+    bool        alt;
     char        *str;
     char        scan_key;
     uint_16     key;
     uint_16     skey;
-    Bool        is_virt;
+    bool        is_virt;
     BYTE        kbstate[256];
     int         ta_ret;
 #ifdef __NT__
@@ -241,7 +241,7 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
     }
 }
 
-Bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARAM lParam )
+bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     BOOL    ret;

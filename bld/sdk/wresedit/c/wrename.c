@@ -70,16 +70,16 @@ WINEXPORT BOOL CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static void WSetWinInfo( HWND, WResRenameInfo * );
 static void WGetWinInfo( HWND, WResRenameInfo * );
-static Bool WGetNewName( HWND, WResRenameInfo * );
+static bool WGetNewName( HWND, WResRenameInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
+bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
 {
     WResRenameInfo  info;
-    Bool            ok;
+    bool            ok;
 
     info.old_name = NULL;
     info.new_name = NULL;
@@ -102,11 +102,11 @@ Bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
     return( ok );
 }
 
-Bool WGetNewName( HWND parent, WResRenameInfo *info )
+bool WGetNewName( HWND parent, WResRenameInfo *info )
 {
     DLGPROC     proc_inst;
     HINSTANCE   app_inst;
-    Bool        modified;
+    INT_PTR     modified;
 
     app_inst = WGetEditInstance();
 
@@ -130,7 +130,7 @@ void WSetWinInfo( HWND hDlg, WResRenameInfo *info )
 
 void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
 {
-    Bool mod;
+    bool mod;
 
     if( info != NULL ) {
         info->new_name = WGetWResIDFromEdit( GetDlgItem( hDlg, IDM_RENNEW ), &mod );

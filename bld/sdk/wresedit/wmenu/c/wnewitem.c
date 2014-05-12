@@ -60,15 +60,15 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *, Bool, Bool );
+static WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *, bool, bool );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WInsertNew( WMenuEditInfo *einfo )
+bool WInsertNew( WMenuEditInfo *einfo )
 {
-    Bool        ret;
+    bool        ret;
 
     ret = FALSE;
 
@@ -85,10 +85,10 @@ Bool WInsertNew( WMenuEditInfo *einfo )
     return( ret );
 }
 
-Bool WInsertNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
+bool WInsertNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
 {
     WMenuEntry  *new;
-    Bool        ok;
+    bool        ok;
 
     new = NULL;
 
@@ -112,17 +112,17 @@ Bool WInsertNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
     return( ok );
 }
 
-Bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, Bool reset_lbox )
+bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
 {
     HWND        lbox;
     WMenuEntry  *parent;
     WMenuEntry  *entry;
     LRESULT     ret;
     int         new_kids;
-    Bool        ok;
-    Bool        is_popup;
-    Bool        insert_before;
-    Bool        insert_subitems;
+    bool        ok;
+    bool        is_popup;
+    bool        insert_before;
+    bool        insert_subitems;
 
     entry = NULL;
     parent = NULL;
@@ -201,9 +201,9 @@ Bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, Bool reset_lbox )
     return( ok );
 }
 
-Bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, int *pos )
+bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, int *pos )
 {
-    Bool        ok;
+    bool        ok;
 
     ok = ((lbox != (HWND)NULL) && pos != NULL);
 
@@ -219,9 +219,9 @@ Bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, int *pos )
     return( ok );
 }
 
-Bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
+bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
 {
-    Bool        ok;
+    bool        ok;
     char        *text;
     char        *lbtext;
     char        *lbtext1;
@@ -281,7 +281,7 @@ Bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
     return( ok );
 }
 
-WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, Bool popup, Bool sep )
+WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
 {
     WMenuEntry  *new;
     char        *text;

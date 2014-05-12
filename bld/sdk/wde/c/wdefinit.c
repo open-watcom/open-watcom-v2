@@ -61,7 +61,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    Bool    (*init)( Bool );
+    bool    (*init)( bool );
     void    (*fini)( void );
     OBJPTR  (CALLBACK *create)( OBJPTR , RECT *, OBJPTR );
 } WdeObjectRoutinesType;
@@ -108,10 +108,10 @@ CREATE_TABLE *WdeGetCreateTable( void )
     return( WdeCreateTable );
 }
 
-Bool WdeInitCreateTable( void )
+bool WdeInitCreateTable( void )
 {
     int         i;
-    Bool        first_inst;
+    bool        first_inst;
     HINSTANCE   inst;
 
     first_inst = WdeIsFirstInst();

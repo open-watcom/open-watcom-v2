@@ -44,11 +44,11 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool WdeDDEStart( HINSTANCE inst );
+extern bool WdeDDEStart( HINSTANCE inst );
 extern void WdeDDEEnd( void );
-extern Bool WdeDDEDumpConversation( HINSTANCE inst );
-extern Bool WdeDDEStartConversation( void );
+extern bool WdeDDEDumpConversation( HINSTANCE inst );
+extern bool WdeDDEStartConversation( void );
 extern void WdeDDEEndConversation( void );
-extern Bool WdeUpdateDDEEditSession( void );
+extern bool WdeUpdateDDEEditSession( void );
 
 #endif

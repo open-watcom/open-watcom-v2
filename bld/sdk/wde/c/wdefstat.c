@@ -215,7 +215,7 @@ WINEXPORT BOOL CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, v
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeStaticInit( Bool first )
+bool WdeStaticInit( bool first )
 {
     WNDCLASS    wc;
 

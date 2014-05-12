@@ -51,7 +51,7 @@
 /****************************************************************************/
 typedef struct {
     RECT        screen_pos;
-    Bool        screen_maxed;
+    bool        screen_maxed;
     char        *last_dir;
     char        *last_filter;
 } WREOptState;
@@ -64,11 +64,14 @@ typedef struct {
 /* static function prototypes                                               */
 /*****************************************************************************/
 static void WREWriteOpts( WREOptState * );
-static Bool WREReadOpts( WREOptState * );
-static Bool WREWriteIntOpt( char *, int );
-static Bool WREGetIntOpt( char *, int * );
-static Bool WREWriteRectOpt( char *, RECT * );
-static Bool WREGetRectOpt( char *, RECT * );
+static bool WREReadOpts( WREOptState * );
+static bool WREWriteIntOpt( char *, int );
+static bool WREGetBoolOpt( char *, bool * );
+#if 0
+static bool WREGetIntOpt( char *, int * );
+#endif
+static bool WREWriteRectOpt( char *, RECT * );
+static bool WREGetRectOpt( char *, RECT * );
 static char *WRERectToStr( RECT * );
 static void WREStrToRect( char *, RECT * );
 
@@ -93,10 +96,10 @@ static WREOptState WREDefaultState = {
     NULL,               /* last file filter                 */
 };
 
-static Bool WREGetStrOpt( char *entry, char **opt )
+static bool WREGetStrOpt( char *entry, char **opt )
 {
     char        str[_MAX_PATH];
-    Bool        ret;
+    bool        ret;
 
     ret = GetPrivateProfileString( WRESectionName, entry, "",
                                    str, _MAX_PATH - 1, WREProfileName );
@@ -137,22 +140,22 @@ void WREWriteOpts( WREOptState *o )
                                o->last_filter, WREProfileName );
 }
 
-Bool WREReadOpts( WREOptState *s )
+bool WREReadOpts( WREOptState *s )
 {
-    Bool ret;
+    bool ret;
 
     ret = WREGetRectOpt( "ScreenPos", &s->screen_pos );
-    ret &= WREGetIntOpt( "ScreenMaxed", &s->screen_maxed );
+    ret &= WREGetBoolOpt( "ScreenMaxed", &s->screen_maxed );
     ret &= WREGetStrOpt( "FileFilter", &s->last_filter );
     ret &= WREGetStrOpt( "LastDir", &s->last_dir );
 
     return( ret );
 }
 
-Bool WREWriteIntOpt( char *entry, int i )
+bool WREWriteIntOpt( char *entry, int i )
 {
     char  str[12];
-    Bool  ret;
+    bool  ret;
 
     ltoa( i, str, 10 );
 
@@ -161,7 +164,21 @@ Bool WREWriteIntOpt( char *entry, int i )
     return( ret );
 }
 
-Bool WREGetIntOpt( char *entry, int *i )
+bool WREGetBoolOpt( char *entry, bool *i )
+{
+    int opt;
+
+    opt = (int)GetPrivateProfileInt( WRESectionName, entry, 0x7fff, WREProfileName );
+
+    if( opt != 0x7fff ) {
+        *i = ( opt != 0 );
+    }
+
+    return( opt != 0x7fff );
+}
+
+#if 0
+bool WREGetIntOpt( char *entry, int *i )
 {
     int opt;
 
@@ -173,11 +190,12 @@ Bool WREGetIntOpt( char *entry, int *i )
 
     return( opt != 0x7fff );
 }
+#endif
 
-Bool WREWriteRectOpt( char *entry, RECT *r )
+bool WREWriteRectOpt( char *entry, RECT *r )
 {
     char    *str;
-    Bool    ret;
+    bool    ret;
 
     ret = FALSE;
     str = WRERectToStr( r );
@@ -189,10 +207,10 @@ Bool WREWriteRectOpt( char *entry, RECT *r )
     return( ret );
 }
 
-Bool WREGetRectOpt( char *entry, RECT *r )
+bool WREGetRectOpt( char *entry, RECT *r )
 {
     char    str[41];
-    Bool    ret;
+    bool    ret;
 
     ret = GetPrivateProfileString( WRESectionName, entry, "0, 0, 0, 0",
                                    str, 40, WREProfileName );
@@ -264,7 +282,7 @@ int WRESetOption( WREOptReq req, int val )
     switch( req ) {
     case WREOptScreenMax:
         old = WRECurrentState.screen_maxed;
-        WRECurrentState.screen_maxed = (Bool)val;
+        WRECurrentState.screen_maxed = val != 0;
         break;
 
     default:
