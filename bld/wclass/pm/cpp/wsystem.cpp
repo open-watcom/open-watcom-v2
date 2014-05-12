@@ -47,7 +47,7 @@
 char    *build_exec_env( char **env )
 {
     char    **s;
-    int     len;
+    size_t  len;
     char    *env_copy;
     char    *d;
 
@@ -56,6 +56,7 @@ char    *build_exec_env( char **env )
     }
     s = env;
     // figure out how much memory we need
+    len = 0;
     while( *s != NULL ) {
         len += strlen( *s ) + 1;
         ++s;
@@ -99,7 +100,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     char        pgm_starter;
     int         exec_state;
     int         show;
-    WORD        sess_type;
+    USHORT      sess_type;
 
     args.parseIn( cmd );
     arg_pgm = args.stringAt( 0 );

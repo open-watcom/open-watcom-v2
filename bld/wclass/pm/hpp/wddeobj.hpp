@@ -33,6 +33,7 @@
 #ifndef wddeobject_class
 #define wddeobject_class
 
+#include <stdlib.h>
 #include "wobject.hpp"
 
 #include "system.hpp"
@@ -40,7 +41,7 @@
 WCLASS WDDEObject {
     public:
         static PDDESTRUCT WEXPORT makeDDEObject( HWND, const char *, USHORT,
-                                                 USHORT, const void *, int );
+                                                 USHORT, const void *, size_t );
 };
 
 #endif

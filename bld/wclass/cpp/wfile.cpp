@@ -157,9 +157,9 @@ WString& WEXPORT WFile::gets( WString& str )
     return( str );
 }
 
-void WEXPORT WFile::gets( char* str, int len )
+void WEXPORT WFile::gets( char* str, size_t len )
 {
-    int     i;
+    size_t  i;
 
     for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
@@ -171,9 +171,9 @@ void WEXPORT WFile::gets( char* str, int len )
     str[i] = '\0';
 }
 
-void WEXPORT WFile::gets_exact( char* str, int len )
+void WEXPORT WFile::gets_exact( char* str, size_t len )
 {
-    int     i;
+    size_t  i;
 
     // read exactly len bytes -- don't stop for separator characters ( CR/LF )
     for( i=0; !_eof && i<len; i++ ) {

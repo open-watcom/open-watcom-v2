@@ -441,7 +441,7 @@ void WWindow::destroyWindow() {
     delete clearMenu();
     delete clearToolBar();
     while( _children.count() > 0 ) {
-        delete _children[_children.count()-1];
+        delete _children[_children.count() - 1];
     }
     if( _parent != NULL ) {
         _parent->removeChild( this );
@@ -534,8 +534,8 @@ WWindow* WWindow::nextChild( WWindow* w ) {
     for( int i=0; i<icount; i++ ) {
         WWindow* nw = (WWindow*)_children[i];
         if( w == nw ) {
-            if( i+1 < icount ) {
-                return( (WWindow*)_children[i+1] );
+            if( i + 1 < icount ) {
+                return( (WWindow*)_children[i + 1] );
             }
             return( (WWindow*)_children[0] );
         }
@@ -668,8 +668,8 @@ void WEXPORT WWindow::getText( WString& str ) {
 /*********************************************/
 
     size_t len = getTextLength();
-    char* t = new char[len+1];
-    getText( t, len+1 );
+    char* t = new char[len + 1];
+    getText( t, len + 1 );
     str = t;
     delete [] t;
 }

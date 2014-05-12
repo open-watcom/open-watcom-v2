@@ -54,7 +54,7 @@ MRESULT EXPENTRY serverWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2
             server->addClient( (HWND)mp1 );
         }
         DosFreeMem( ddei );
-        return( (MRESULT)TRUE );
+        return( (MRESULT)true );
     } case WM_DDE_REQUEST: { // request from client
         DDESTRUCT *ddes = (PDDESTRUCT)mp2;
         server->request( (HWND)mp1, ddes );

@@ -53,7 +53,7 @@ WCLASS WObjectFile : public WFile {
         void WEXPORT readObject( bool* obj );
         void WEXPORT readObject( char* obj );           // read a char
         void WEXPORT readObject( unsigned char* obj );  // read a byte
-        void WEXPORT readObject( char* obj, int len, bool exact=0 );    // read a string
+        void WEXPORT readObject( char* obj, size_t len, bool exact=0 ); // read a string
         void WEXPORT readObject( short* obj );
         void WEXPORT readObject( unsigned short* obj );
         void WEXPORT readObject( int* obj );

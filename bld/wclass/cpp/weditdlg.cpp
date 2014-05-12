@@ -118,7 +118,7 @@ bool WEXPORT WEditDialog::edit( WString& reply ) {
 /************************************************/
 
     _reply = &reply;
-    return( process() == true );
+    return( process() == (int)true );
 }
 
 

@@ -54,7 +54,7 @@ WEXPORT WMenu::~WMenu() {
         owner()->clearMenu();
     }
     while( _children.count() > 0 ) {
-        delete _children[_children.count()-1];
+        delete _children[_children.count() - 1];
     }
 }
 

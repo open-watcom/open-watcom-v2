@@ -100,13 +100,13 @@ bool WEXPORT WObjectFile::open( const char* name, OpenStyle style )
 
 bool WEXPORT WObjectFile::open( const char* name, const char* env, OpenStyle style )
 {
-    return( _objOk = _objOk & WFile::open( name, env, style ) );
+    return( _objOk = (_objOk & WFile::open( name, env, style )) );
 }
 
 bool WEXPORT WObjectFile::close()
 {
     _objects.reset();
-    return( _objOk = _objOk & WFile::close() );
+    return( _objOk = (_objOk & WFile::close()) );
 }
 
 void WEXPORT WObjectFile::readObject( WObject* obj )
@@ -187,7 +187,7 @@ void WEXPORT WObjectFile::readObject( unsigned char* obj )
     readEOItem();
 }
 
-void WEXPORT WObjectFile::readObject( char* obj, int len, bool exact )
+void WEXPORT WObjectFile::readObject( char* obj, size_t len, bool exact )
 {
     if( exact ) {
         gets_exact( obj, len );

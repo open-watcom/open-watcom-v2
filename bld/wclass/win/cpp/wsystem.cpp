@@ -58,6 +58,9 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     case WWinStateMaximized:
         show = SW_SHOWMAXIMIZED;
         break;
+    default:
+        show = SW_SHOWNORMAL;
+        break;
     }
     UINT old_err_mode = SetErrorMode( SEM_NOOPENFILEERRORBOX );
 #ifdef __NT__

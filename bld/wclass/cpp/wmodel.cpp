@@ -73,7 +73,7 @@ SayReturn WEXPORT WModel::sayf( SayStyle style, SayCode code, const char* text..
 {
     SayReturn ret = RetOk;
     if( _views.count() > 0 ) {
-        char* txt = new char[MAX_MESSAGE+1];
+        char* txt = new char[MAX_MESSAGE + 1];
         va_list args;
         va_start( args, text );
         vsprintf( txt, text, args );

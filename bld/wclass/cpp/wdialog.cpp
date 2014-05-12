@@ -131,7 +131,7 @@ bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
     case GUI_DESTROY:
         _accelKeys.deleteContents();
         while( children().count() > 0 ) {
-            delete children()[children().count()-1];
+            delete children()[children().count() - 1];
         }
         setHandle( NULL );
         return( true );

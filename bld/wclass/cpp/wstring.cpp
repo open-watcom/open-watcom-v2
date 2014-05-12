@@ -174,7 +174,7 @@ void WEXPORT WString::deleteChar( size_t index, size_t count )
             if( (index + count) > len ) {
                 count = len - index;
             }
-            memmove( &_value[index], &_value[index+count], len-(index+count)+1 );
+            memmove( &_value[index], &_value[index + count], len - ( index + count ) + 1 );
         }
     }
 }
@@ -386,7 +386,7 @@ size_t WEXPORT WString::trim( bool beg, bool end )
             size_t len = strlen( _value );
             size_t i;
             for( i=len; i>0; i-- ) {
-                if( _value[i-1] != ' ' ) break;
+                if( _value[i - 1] != ' ' ) break;
             }
             if( i-len ) chop( i-len );
         }

@@ -181,5 +181,5 @@ bool WEXPORT WInputDialog::getInput( WString& reply, const char *prompt ) {
 
     _reply = &reply;
     _promptText = prompt;
-    return( process() == true );
+    return( process() == (int)true );
 }

@@ -92,8 +92,8 @@ void WEXPORT WVList::deleteContents()
 {
     if( _set != NULL ) {
         for( int i=_free; i>0; i-- ) {
-            if( _set[i-1] != NULL ) {
-                delete _set[i-1];
+            if( _set[i - 1] != NULL ) {
+                delete _set[i - 1];
             }
         }
         _free = 0;
@@ -206,8 +206,8 @@ WObject* WEXPORT WVList::removeAt( int i )
         WObject* obj = _set[i];
         _free -= 1;
         if( _free > 0 ) {
-            for( ; i< _count-1; i++ ) {
-                _set[i] = _set[i+1];
+            for( ; i < _count - 1; i++ ) {
+                _set[i] = _set[i + 1];
             }
         } else {
             delete [] _set;

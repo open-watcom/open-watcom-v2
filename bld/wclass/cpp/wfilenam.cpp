@@ -91,8 +91,8 @@ static void splitpath( const char* path, char* drive, char* dir, char* fname, ch
     _splitpath( path, drive, dir, fname, ext );
     if( dir != NULL ) {
         size_t dirlen = strlen( dir );
-        if( dirlen > 1 && dir[dirlen-1] == pathsep[0] ) {
-            dir[dirlen-1] = '\0';
+        if( dirlen > 1 && dir[dirlen - 1] == pathsep[0] ) {
+            dir[dirlen - 1] = '\0';
         }
     }
 }
@@ -105,11 +105,9 @@ static void splitref( FullName& s, const char* f, const char *pathsep )
         char cwd[_MAX_PATH + 1];
         getcwd( cwd, sizeof( cwd ) );
         size_t icount = strlen( cwd );
-//        for( int i=0; i<icount; i++ ) {
-//            cwd[i] = (char)tolower( cwd[i] );
-//        }
-        if( cwd[icount-1] != pathsep[0] ) {
-            strcat( cwd, pathsep );
+        if( cwd[icount - 1] != pathsep[0] ) {
+            cwd[icount] = pathsep[0];
+            cwd[icount + 1] = '\0';
         }
         _splitpath( cwd, s.drive, s.dir, s.fname, s.ext );
     }
@@ -200,7 +198,7 @@ void WEXPORT WFileName::relativeTo( const char* f )
             _x.drive[0] = '\0';
             int b = 0;
             for( i=1; _x.dir[i] != '\0' && s.dir[i] != '\0'; i++ ) {
-                if( tolower( _x.dir[i] ) != tolower( s.dir[i] ) ) break;
+                if( tolower( (unsigned char)_x.dir[i] ) != tolower( (unsigned char)s.dir[i] ) ) break;
                 if( s.dir[i] == PATHSEP_CHAR ) b = i;
             }
             if( b == 0 ) {
@@ -213,10 +211,10 @@ void WEXPORT WFileName::relativeTo( const char* f )
                 s.dir[0] = '\0';
                 if( n > 0 ) {
                     for( int j=0; j<n; j++ ) {
-                        strcpy( &s.dir[3*j], PARENTSEP_STR );
+                        strcpy( &s.dir[3 * j], PARENTSEP_STR );
                     }
                 }
-                strcpy( &s.dir[3*n], &_x.dir[b+1] );
+                strcpy( &s.dir[3 * n], &_x.dir[b + 1] );
             }
             makepath( _x.path, _x.drive, s.dir, _x.fname, _x.ext );
             *this = _x.path;
@@ -249,8 +247,8 @@ void WEXPORT WFileName::absoluteTo( const char* f )
     } else if( _x.dir[0] == '.' ) {
         for( i = 0; strnicmp( &_x.dir[i], PARENTSEP_STR, 3 ) == 0; i += 3 );
         size_t slen = strlen( s.dir );
-        if( slen > 0 && s.dir[slen-1] == PATHSEP_CHAR ) {
-            s.dir[slen-1] = '\0';
+        if( slen > 0 && s.dir[slen - 1] == PATHSEP_CHAR ) {
+            s.dir[slen - 1] = '\0';
         }
         for( j = 0; j < i; j += 3 ) {
             for( k = strlen( s.dir ); k > 0; k-- ) {
@@ -300,10 +298,6 @@ bool WEXPORT WFileName::setCWD() const
 void WEXPORT WFileName::getCWD( bool slash )
 {
     getcwd( _x.path, sizeof( _x.path ) );
-//    int icount = strlen( _x.path );
-//    for( int i=0; i<icount; i++ ) {
-//        _x.path[i] = (char)tolower( _x.path[i] );
-//    }
     if( slash ) {
         strcat( _x.path, PATHSEP_STR );
     }
@@ -517,7 +511,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
 {
     if( !isMask() ) {
         size_t len = size();
-        if( len > 0 && ( (*this)[0] != ch || (*this)[len-1] != ch ) ) {
+        if( len > 0 && ( (*this)[0] != ch || (*this)[len - 1] != ch ) ) {
             _splitpath( *this, _x.drive, _x.dir, _x.fname, _x.ext );
             if( isLongDirName( _x.dir, PATHSEP_STR ) || isLongName( _x.fname ) ) {
                 return( true );
@@ -529,7 +523,7 @@ bool WEXPORT WFileName::needQuotes( char ch ) const
 
 void WEXPORT WFileName::removeQuotes( char ch )
 {
-    size_t len = size()-1;
+    size_t len = size() - 1;
     if( (*this)[0] == ch && (*this)[len] == ch ) {
         deleteChar( len );
         deleteChar( 0 );
@@ -542,10 +536,10 @@ void WEXPORT WFileName::addQuotes( char ch )
     char* quotedName = new char[len + 3];
     quotedName[0] = ch;
     for( size_t i=0; i<len; i++ ) {
-        quotedName[i+1] = (*this)[i];
+        quotedName[i + 1] = (*this)[i];
     }
-    quotedName[len+1] = ch;
-    quotedName[len+2] = '\0';
+    quotedName[len + 1] = ch;
+    quotedName[len + 2] = '\0';
     (*this) = quotedName;
     delete [] quotedName;
 }
@@ -629,8 +623,8 @@ void WEXPORT WFileName::path( WFileName& f, bool slash ) const
     makepath( _x.path, _x.drive, _x.dir, NULL, NULL );
     if( !slash ) {
         size_t len = strlen( _x.path );
-        if( len > 0 && _x.path[len-1] == PATHSEP_CHAR ) {
-            _x.path[len-1] = '\0';
+        if( len > 0 && _x.path[len - 1] == PATHSEP_CHAR ) {
+            _x.path[len - 1] = '\0';
         }
     }
     f = _x.path;

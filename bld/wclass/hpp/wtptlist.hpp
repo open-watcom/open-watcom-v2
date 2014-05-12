@@ -211,7 +211,7 @@ template<class T> T WEXPORT TemplateList<T>::removeAt( int i )
         _free -= 1;
         if( _free > 0 ) {
             for( ; i< _count-1; i++ ) {
-                _set[i] = _set[i+1];
+                _set[i] = _set[i + 1];
             }
         } else {
             delete _set;
@@ -227,8 +227,7 @@ template<class T> T WEXPORT TemplateList<T>::removeSame( T obj )
     return( removeAt( indexOfSame( obj ) ) );
 }
 
-template<class T> T* WEXPORT TemplateList<T>::search( void * key,
-                              TComp compFn )
+template<class T> T* WEXPORT TemplateList<T>::search( void * key, TComp compFn )
 {
     return( (T*) bsearch( key, _set, _free, sizeof(T), compFn ) );
 }

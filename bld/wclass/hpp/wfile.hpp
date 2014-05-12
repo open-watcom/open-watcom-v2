@@ -64,8 +64,8 @@ class WFile : public WObject {
         long WEXPORT getl();
         WString& WEXPORT getLine( WString& str );
         WString& WEXPORT gets( WString& str );
-        void WEXPORT gets( char* str, int len );
-        void WEXPORT gets_exact( char* str, int len ); // read EXACTLY len bytes
+        void WEXPORT gets( char* str, size_t len );
+        void WEXPORT gets_exact( char* str, size_t len ); // read EXACTLY len bytes
         char WEXPORT getch();
         void WEXPORT ungetch( char chr );
         bool WEXPORT eof() { return( _eof ); }

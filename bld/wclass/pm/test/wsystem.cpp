@@ -65,7 +65,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     char        pgm_starter;
     int         exec_state;
     int         show;
-    WORD        sess_type;
+    USHORT      sess_type;
 
     args.parseIn( cmd );
     pgm = args.stringAt( 0 );

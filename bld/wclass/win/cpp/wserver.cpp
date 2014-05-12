@@ -120,8 +120,8 @@ HDDEDATA WEXPORT WServer::xtRequest( UINT fmt, HSZ /*htopic*/, HSZ hitem ) {
     HDDEDATA hdata = NULL;
     if( (_owner != NULL) && (_notify != NULL) ) {
         int len = (int)DdeQueryString( _procid, hitem, (LPSTR)NULL, 0L, CP_WINANSI );
-        char *request = new char[len+1];
-        DdeQueryString( _procid, hitem, request, len+1, CP_WINANSI );
+        char *request = new char[len + 1];
+        DdeQueryString( _procid, hitem, request, len + 1, CP_WINANSI );
         WString *reply = (_owner->*_notify)( request );
         if( reply != NULL ) {
             hdata = DdeCreateDataHandle( _procid, (unsigned char *)(const char *)*reply, (DWORD)( reply->size() + 1 ), 0, hitem, fmt, false );

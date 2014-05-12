@@ -108,8 +108,8 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
 }
 
 void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
-                                       char* buff, unsigned len ) {
-/*****************************************************************/
+                                       char* buff, size_t len ) {
+/***************************************************************/
 
     char * text;
     size_t text_len;

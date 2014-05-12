@@ -85,10 +85,9 @@ void WEXPORT WMdiWindow::cascadeChildren( WMenuItem * ) {
 WRect WEXPORT WMdiWindow::defaultRectangle() {
 /********************************************/
 
-    WSystemMetrics system_metrics;
     WRect r( _defRect );
-    _defRect.x( _defRect.x() + system_metrics.captionSize() );
-    _defRect.y( _defRect.y() + system_metrics.captionSize() );
+    _defRect.x( _defRect.x() + WSystemMetrics::captionSize() );
+    _defRect.y( _defRect.y() + WSystemMetrics::captionSize() );
     if( (_defRect.x() > _initDefRect.w()/3) ||
         (_defRect.y() > _initDefRect.h()/3) ) {
         _defRect = _initDefRect;

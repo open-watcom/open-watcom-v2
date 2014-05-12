@@ -187,7 +187,7 @@ bool WEXPORT WAutoDialog::getInput( WStringList &replys ) {
 /*********************************************************/
 
     _replys = &replys;
-    return( process() == true );
+    return( process() == (int)true );
 }
 
 #ifdef __WATCOMC__
