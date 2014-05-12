@@ -1371,6 +1371,7 @@ search_result LookupSymEx( symbol_source ss, void *source,
     if( ActProc == NULL ) return( SR_NONE );
     save_mod = li->mod;
     if( save_mod == ILL_MOD ) return( SR_NONE );
+    curr_mod = NO_MOD;
     switch( ss ) {
     case SS_MODULE:
         curr_mod = *(mod_handle *)source;

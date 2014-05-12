@@ -144,7 +144,7 @@ mad_client_routines MADClientInterface = {
 static mad_imp_routines DummyRtns;      /* forward reference */
 
 static mad_entry        Dummy =
-        { NULL, "", "Unknown Architecture", &DummyRtns, MAD_NIL, 0 };
+        { NULL, "", "Unknown Architecture", &DummyRtns, NULL, 0 };
 
 static const mad_string EmptyStrList[] = { MAD_MSTR_NIL };
 static const mad_toggle_strings EmptyToggleList[] = { { MAD_MSTR_NIL }, { MAD_MSTR_NIL }, { MAD_MSTR_NIL } };
@@ -184,7 +184,7 @@ mad_status      MADInit( void )
         #undef pick_mad
     };
 
-    mad_status  ms;
+    mad_status  ms = MS_OK;
     unsigned    i;
 
     MADList = NULL;
@@ -454,7 +454,8 @@ unsigned        MADNameFile( mad_handle mh, unsigned max, char *name )
     len = strlen( me->file );
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( name, me->file, max );
         name[max] = '\0';
     }
@@ -868,7 +869,8 @@ static void ShiftBits( unsigned bits, int amount, void *d )
     unsigned    byte_shift;
     unsigned_8  tmp1;
     unsigned_8  tmp2;
-    int         i;
+    unsigned    i;
+    int         j;
 
     bytes = (bits + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
     if( amount > 0 ) {
@@ -910,9 +912,9 @@ static void ShiftBits( unsigned bits, int amount, void *d )
         }
         if( amount != 0 ) {
             tmp1 = 0;
-            for( i = bytes-byte_shift-1; i >= 0; --i ) {
-                tmp2 = b[i];
-                b[i] = (b[i] >> amount) | (tmp1 << (BITS_PER_BYTE - amount));
+            for( j = bytes - byte_shift - 1; j >= 0; --j ) {
+                tmp2 = b[j];
+                b[j] = (b[j] >> amount) | (tmp1 << (BITS_PER_BYTE - amount));
                 tmp1 = tmp2;
             }
         }
@@ -925,12 +927,15 @@ static void ExtractBits( unsigned pos, unsigned len, const void *src, void *dst,
     unsigned            bytes;
     unsigned_8          *d = dst;
 
+#if !defined( __BIG_ENDIAN__ )
+    dst_size = dst_size;
+#endif
     src = (unsigned_8 *)src + (pos / BITS_PER_BYTE);
     pos %= BITS_PER_BYTE;
     bytes = (pos + len + (BITS_PER_BYTE-1)) / BITS_PER_BYTE;
     memset( &tmp, 0, sizeof( tmp ) );
     memcpy( &tmp, src, bytes );
-    ShiftBits( pos + len, -pos, &tmp );
+    ShiftBits( pos + len, -(int)pos, &tmp );
     bytes = len / BITS_PER_BYTE;
     tmp.u._8[bytes] &= BitMask[ len % BITS_PER_BYTE ];
 #if defined( __BIG_ENDIAN__ )
@@ -1239,7 +1244,8 @@ static mad_status IntTypeToString( unsigned radix, mad_type_info const *mti,
     *maxp = &buff[ sizeof( buff ) ] - p;
     if( max > 0 ) {
         --max;
-        if( max > *maxp ) max = *maxp;
+        if( max > *maxp )
+            max = *maxp;
         memcpy( res, p, max );
         res[max] = '\0';
     }
@@ -1266,7 +1272,8 @@ static mad_status AddrTypeToString( unsigned radix, mad_type_info const *mti,
     *maxp = &buff[ sizeof( buff ) ] - p;
     if( max > 0 ) {
         --max;
-        if( max > *maxp ) max = *maxp;
+        if( max > *maxp )
+            max = *maxp;
         memcpy( res, p, max );
         res[max] = '\0';
     }
@@ -1699,14 +1706,16 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
         while( p != NULL ) {
             if( !first ) {
                 amount = name->max;
-                if( amount > op_len  ) amount = op_len;
+                if( amount > op_len )
+                    amount = op_len;
                 memcpy( name->buff, name->op, amount );
                 name->buff += amount;
                 name->max  -= amount;
             }
             first = 0;
             amount = strlen( p->ri->name );
-            if( amount > name->max ) amount = name->max;
+            if( amount > name->max )
+                amount = name->max;
             memcpy( name->buff, p->ri->name, amount );
             name->buff += amount;
             name->max  -= amount;

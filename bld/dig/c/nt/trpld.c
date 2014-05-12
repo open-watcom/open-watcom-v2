@@ -38,6 +38,8 @@
 #include "tcerr.h"
 #include "trpld.h"
 
+typedef void (TRAPENTRY INFO_FUNC)( HWND );
+
 static HANDLE           TrapFile = 0;
 static trap_fini_func   *FiniFunc = NULL;
 
@@ -107,10 +109,10 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
-    init_func = (LPVOID)GetProcAddress( TrapFile, (LPSTR)1 );
-    FiniFunc = (LPVOID)GetProcAddress( TrapFile, (LPSTR)2 );
-    ReqFunc = (LPVOID)GetProcAddress( TrapFile, (LPSTR)3 );
-    InfoFunction = (LPVOID)GetProcAddress( TrapFile, (LPSTR)4 );
+    init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
+    FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
+    ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
+    InfoFunction = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)4 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     if( init_func == NULL || FiniFunc == NULL || ReqFunc == NULL
         /* || LibListFunc == NULL */ ) {

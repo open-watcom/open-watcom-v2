@@ -39,7 +39,7 @@
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    FreeLibrary( (HINSTANCE)*sys_hdl );
+    FreeLibrary( (HANDLE)*sys_hdl );
 }
 
 mad_status MADSysLoad( char *path, mad_client_routines *cli,

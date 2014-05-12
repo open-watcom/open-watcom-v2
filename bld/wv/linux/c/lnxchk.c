@@ -34,7 +34,7 @@
 
 bool CheckPointMem( unsigned psp, unsigned max, char *f_buff )
 {
-    psp = psp; f_buff = f_buff;
+    psp = psp; max = max; f_buff = f_buff;
     return( FALSE );
 }
 

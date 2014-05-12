@@ -151,7 +151,8 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
     len = strlen( *strings[mstr] );
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( buff, *strings[mstr], max );
         buff[max] = '\0';
     }
@@ -161,6 +162,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
 mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
 {
     //MAD: NYI
+    mstr = mstr; str = str;
     return( MS_FAIL );
 }
 

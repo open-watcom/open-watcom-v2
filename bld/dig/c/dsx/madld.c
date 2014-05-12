@@ -37,9 +37,9 @@
 #include "madsys.h"
 #include "ldimp.h"
 
-extern  int      PathOpen(char *,unsigned, char *);
-
 #define MADSIG  0x0044414DUL
+
+extern  int      PathOpen(char *,unsigned, char *);
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
