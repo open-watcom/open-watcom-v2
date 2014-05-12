@@ -40,6 +40,7 @@
 #include "strtab.h"
 #include "carve.h"
 #include "permdata.h"
+#include "symmem.h"
 
 
 #define SYM_BLOCK_SIZE      (16*1024)

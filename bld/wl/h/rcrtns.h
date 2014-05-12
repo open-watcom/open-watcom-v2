@@ -24,43 +24,28 @@
 *
 *  ========================================================================
 *
-* Description:  Memory management routines for linker.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void *   ChkLAlloc( size_t );
-extern void *   LAlloc( size_t );
-extern void *   TryAlloc( size_t );
-extern void *   LnkReAlloc( void *, size_t );
-extern void     LFree( void * );
-extern void *   PermAlloc( size_t );
-extern void *   Pass1Alloc( size_t );
-extern void *   LnkExpand( void *, size_t );
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
-extern void     LnkMemInit( void );
-extern void     LnkMemFini( void );
-extern bool     FreeUpMemory( void );
-extern void     MakePass1Blocks( void );
-extern bool     PermShrink( void );
-extern void     ReleasePass1( void );
+#include "wio.h"
+#include "alloc.h"
+#include "wressetr.h"
+#include "iortns.h"
 
-#define _ChkAlloc( dest, size ) dest = ChkLAlloc( size )
-#define _LnkAlloc( dest, size ) dest = LAlloc( size )
-#define _TryAlloc( dest, size ) dest = TryAlloc( size )
-#define _PermAlloc( dest, size ) dest = PermAlloc( size );
-#define _LnkReAlloc( dest, src, size ) dest = LnkReAlloc( src, size );
-#define _LnkFree( ptr )         LFree( ptr )
-#define _PermFree( ptr )        /* nothing to do */
-#define _Pass1Alloc( dest, size ) dest = Pass1Alloc( size );
-#define _LnkExpand( dest, src, size ) dest = LnkExpand( src, size );
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       RcWrite
+#define RCREAD        read
+#define RCSEEK        RcSeek
+#define RCTELL        RcTell
+#define RCALLOC       ChkLAlloc
+#define RCFREE        LFree
+#define RCREALLOC     LnkReAlloc
 
-extern int      ValidateMem( void );    // just for debugging
-
-#ifndef NDEBUG
-    void DbgZapAlloc( void* tgt, size_t size );
-    void DbgZapFreed( void* tgt, size_t size );
-#else
-    #define DbgZapAlloc( tgt, size )
-    #define DbgZapFreed( tgt, size )
 #endif

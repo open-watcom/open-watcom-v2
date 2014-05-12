@@ -67,6 +67,7 @@ extra_c_flags_ideentry   = -DCHAIN_CALLBACK
 extra_c_flags_maindrv    = -DDLL_NAME=$(dllname)
 extra_c_flags_rcstr      = -DINSIDE_WLINK
 extra_c_flags_exerespe   = -DINSIDE_WLINK
+extra_c_flags_sharedio   = -DINSIDE_WLINK
 extra_c_flags_stidedrv   = -DSTATIC_LINKAGE
 extra_c_flags_trmem      = $(trmem_cflags)
 extra_c_flags_mem        = $(trmem_cover_cflags)

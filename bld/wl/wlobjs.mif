@@ -101,11 +101,13 @@ common_objs = &
     $(_subdir_)wlink.obj &
     $(_subdir_)wlnkmsg.obj &
     $(_subdir_)demangle.obj &
-    $(_subdir_)exerespe.obj &
-    $(_subdir_)sharedio.obj &
-    $(_subdir_)rcstr.obj &
     $(_subdir_)pathlist.obj &
     $(trmem_objs)
+
+common_rc_objs = &
+    $(_subdir_)exerespe.obj &
+    $(_subdir_)sharedio.obj &
+    $(_subdir_)rcstr.obj
 
 !ifeq use_virtmem 1
 wlink_virtmem_objs = $(_subdir_)virtmem.obj
@@ -134,7 +136,7 @@ wlink_objs_zdos  = $(_subdir_)zdosio.obj
 wlink_orl_objs = $(_subdir_)orlstubs.obj
 !endif
 
-wlink_template = $(common_objs) $(wlink_virtmem_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
+wlink_template = $(common_objs) $(common_rc_objs) $(wlink_virtmem_objs) $(wlink_ide_objs) $(wlink_objs_$(host_os)) $(wlink_orl_objs)
 
 comp_objs_drv = $(drv_objs)
 _subdir_ = $(dll_subdir)/
