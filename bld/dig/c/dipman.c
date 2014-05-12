@@ -46,8 +46,8 @@
 typedef unsigned_16     image_idx;
 
 struct process_info {
-    unsigned            last_addr_mod_found;
-    unsigned            map_entries;
+    image_idx           last_addr_mod_found;
+    image_idx           map_entries;
     image_handle        **ih_map;
     image_handle        *ih_list;
     image_handle        **ih_add;
@@ -57,7 +57,7 @@ struct image_handle {
     dip_imp_routines    *dip;
     image_handle        *next;
     void                *extra;
-    unsigned            index;
+    image_idx           ii;
 };
 
 enum artificial_pointers {
@@ -95,9 +95,9 @@ struct sym_handle {
 #define II2IH( ii )             ((ActProc==NULL)||(ActProc->map_entries<=ii)?NULL:ActProc->ih_map[ii])
 #define MH2IH( mh )             (((mh&0xffff0000)==0)?NULL:II2IH(MH_IMAGE(mh)))
 
-#define NO_IMAGE_IDX    ((unsigned)-1)
+#define NO_IMAGE_IDX    ((image_idx)-1)
 
-static unsigned         LoadingImageIdx = NO_IMAGE_IDX;
+static image_idx        LoadingImageIdx = NO_IMAGE_IDX;
 
 static process_info     *ActProc;
 static struct {
@@ -132,18 +132,18 @@ static const address    NilAddr = { 0 };
 /*
  * DCSymCreate is here so that DIPRegister'd functions can call it.
  */
-imp_sym_handle *DCSymCreate( imp_image_handle *ii, void *d )
+imp_sym_handle *DCSymCreate( imp_image_handle *iih, void *d )
 {
     sym_handle  *sh;
 
     sh = DIPCliSymCreate( d );
-    sh->ii = CLI_HDL( ii, image )->index;
+    sh->ii = CLI_HDL( iih, image )->ii;
     return( IMP_HDL( sh, sym ) );
 }
 
-imp_sym_handle * DIGCLIENT XDIPCliSymCreate( imp_image_handle *ii, void *d )
+imp_sym_handle * DIGCLIENT XDIPCliSymCreate( imp_image_handle *iih, void *d )
 {
-    return( DCSymCreate( ii, d ) );
+    return( DCSymCreate( iih, d ) );
 }
 
 dip_client_routines DIPClientInterface = {
@@ -194,7 +194,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
 
 dip_status DIPLoad( char *path )
 {
-    unsigned    i;
+    int         i;
     dip_status  status;
 
     for( i = 0; LoadedDIPs[i].rtns != NULL; ++i ) {
@@ -220,7 +220,7 @@ dip_status DIPLoad( char *path )
 
 dip_status DIPRegister( dip_imp_routines *dir )
 {
-    unsigned    i;
+    int     i;
 
     for( i = MAX_LOAD_DIPS; LoadedDIPs[i].rtns != NULL; ++i ) {
         if( i >= MAX_DIPS ) {
@@ -252,7 +252,7 @@ void DIPFiniLatest( void )
 
 void DIPFini( void )
 {
-    unsigned    i;
+    int     i;
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
@@ -273,7 +273,7 @@ unsigned DIPHandleSize( handle_kind h )
 
 dip_status DIPMoreMem( unsigned amount )
 {
-    unsigned    i;
+    int     i;
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
@@ -287,7 +287,7 @@ dip_status DIPMoreMem( unsigned amount )
 
 void DIPCancel( void )
 {
-    unsigned            i;
+    int                 i;
     image_handle        *ih;
 
     for( i = 0; i < MAX_DIPS; ++i ) {
@@ -304,15 +304,17 @@ void DIPCancel( void )
     }
 }
 
-unsigned FindImageMapSlot( process_info *p )
+static image_idx FindImageMapSlot( process_info *p )
 {
     image_handle        **new;
-    unsigned            new_num;
-    unsigned            i;
-    unsigned            j;
+    image_idx           new_num;
+    image_idx           ii;
+    image_idx           j;
 
-    for( i = 0; i < p->map_entries; ++i ) {
-        if( p->ih_map[i] == NULL ) return( i );
+    for( ii = 0; ii < p->map_entries; ++ii ) {
+        if( p->ih_map[ii] == NULL ) {
+            return( ii );
+        }
     }
     new_num = p->map_entries + IMAGE_MAP_GROW;
     new = DIGCliRealloc( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
@@ -320,11 +322,12 @@ unsigned FindImageMapSlot( process_info *p )
         DIPCliStatus( DS_ERR | DS_NO_MEM );
         return( NO_IMAGE_IDX );
     }
-    i = p->map_entries;
+    ii = p->map_entries;
     p->map_entries = new_num;
     p->ih_map = new;
-    for( j = i; j < new_num; ++j ) new[j] = NULL;
-    return( i );
+    for( j = ii; j < new_num; ++j )
+        new[j] = NULL;
+    return( ii );
 }
 
 static void DIPCleanupInfo( process_info *p, image_handle *ih )
@@ -332,9 +335,9 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     image_handle        **owner;
     image_handle        *curr;
 
-    DIPCliImageUnload( MK_MH( ih->index, 0 ) );
+    DIPCliImageUnload( MK_MH( ih->ii, 0 ) );
     ih->dip->unload_info( IMP_HDL( ih, image ) );
-    p->ih_map[ih->index] = NULL;
+    p->ih_map[ih->ii] = NULL;
     owner = &p->ih_list;
     for( ;; ) {
         curr = *owner;
@@ -345,7 +348,7 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     if( p->ih_add == &ih->next ) {
         p->ih_add = owner;
     }
-    if( ih->index == p->last_addr_mod_found ) {
+    if( ih->ii == p->last_addr_mod_found ) {
         p->last_addr_mod_found = NO_IMAGE_IDX;
     }
     DIGCliFree( ih );
@@ -374,8 +377,8 @@ process_info *DIPCreateProcess( void )
 {
     process_info        *p;
     image_handle        *ih;
-    unsigned            i;
-    unsigned            j;
+    image_idx           ii;
+    int                 j;
 
     p = DIGCliAlloc( sizeof( process_info ) );
     if( p == NULL ) {
@@ -390,13 +393,14 @@ process_info *DIPCreateProcess( void )
         return( NULL );
     }
     p->map_entries = IMAGE_MAP_INIT;
-    for( i = 0; i < IMAGE_MAP_INIT; ++i ) p->ih_map[i] = NULL;
+    for( ii = 0; ii < IMAGE_MAP_INIT; ++ii )
+        p->ih_map[ii] = NULL;
     p->ih_list = NULL;
     p->ih_add = &p->ih_list;
     for( j = MAX_DIPS - 1; j >= MAX_LOAD_DIPS; --j ) {
         if( LoadedDIPs[j].rtns != NULL ) {
-            i = FindImageMapSlot( p );
-            if( i == NO_IMAGE_IDX ) {
+            ii = FindImageMapSlot( p );
+            if( ii == NO_IMAGE_IDX ) {
                 CleanupProcess( p, 0 );
                 DIPCliStatus( DS_ERR|DS_NO_MEM );
                 return( NULL );
@@ -407,13 +411,13 @@ process_info *DIPCreateProcess( void )
                 DIPCliStatus( DS_ERR|DS_NO_MEM );
                 return( NULL );
             }
-            p->ih_map[i] = ih;
+            p->ih_map[ii] = ih;
             ih->next = *p->ih_add;
             *p->ih_add = ih;
             p->ih_add = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
             ih->extra = NULL;
-            ih->index = i;
+            ih->ii = ii;
         }
     }
     p->ih_add = &p->ih_list;
@@ -440,7 +444,7 @@ unsigned DIPPriority( unsigned old )
 {
     unsigned    prio;
     unsigned    curr;
-    unsigned    j;
+    int         j;
 
     prio = UINT_MAX;
     for( j = 0; j < MAX_DIPS; ++j ) {
@@ -455,8 +459,8 @@ unsigned DIPPriority( unsigned old )
 
 mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
 {
-    unsigned            i;
-    unsigned            j;
+    image_idx           ii;
+    int                 j;
     image_handle        *ih;
     dip_status          ret;
 
@@ -464,8 +468,9 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
         DIPCliStatus( DS_ERR|DS_NO_PROCESS );
         return( NO_MOD );
     }
-    i = FindImageMapSlot( ActProc );
-    if( i == NO_IMAGE_IDX ) return( NO_MOD );
+    ii = FindImageMapSlot( ActProc );
+    if( ii == NO_IMAGE_IDX )
+        return( NO_MOD );
     ih = DIGCliAlloc( DIPHandleSize( HK_IMAGE ) + extra );
     if( ih == NULL ) {
         DIPCliStatus( DS_ERR|DS_NO_MEM );
@@ -476,15 +481,15 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
         if( LoadedDIPs[j].rtns->dip_priority != prio ) continue;
         ret = LoadedDIPs[j].rtns->load_info(file,IMP_HDL(ih,image));
         if( ret == DS_OK ) {
-            ActProc->ih_map[i] = ih;
+            ActProc->ih_map[ii] = ih;
             ih->next = *ActProc->ih_add;
             *ActProc->ih_add = ih;
             ActProc->ih_add = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
             ih->extra = (unsigned_8 *)ih + DIPHandleSize( HK_IMAGE );
-            ih->index = i;
-            LoadingImageIdx = i;
-            return( MK_MH( i, 0 ) );
+            ih->ii = ii;
+            LoadingImageIdx = ii;
+            return( MK_MH( ii, 0 ) );
         }
         if( ret & DS_ERR ) break;
     }
@@ -535,7 +540,7 @@ walk_result WalkImageList( IMAGE_WALKER *iw, void *d )
     wr = WR_CONTINUE;
     if( ActProc != NULL ) {
         for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
-            wr = iw( MK_MH( ih->index, 0 ), d );
+            wr = iw( MK_MH( ih->ii, 0 ), d );
             if( wr != WR_CONTINUE ) break;
         }
     }
@@ -553,14 +558,14 @@ typedef struct {
     location_context    *lc;
 } walk_glue;
 
-static walk_result DIGCLIENT ModGlue( imp_image_handle *ii, imp_mod_handle im,
+static walk_result DIGCLIENT ModGlue( imp_image_handle *iih, imp_mod_handle im,
                                         void *d )
 {
     walk_glue           *wd = d;
     image_handle        *ih;
 
-    ih = CLI_HDL( ii, image );
-    return( wd->walk.m( MK_MH( ih->index, im ), wd->d ) );
+    ih = CLI_HDL( iih, image );
+    return( wd->walk.m( MK_MH( ih->ii, im ), wd->d ) );
 }
 
 static walk_result WalkOneModList( mod_handle mh, void *d )
@@ -590,12 +595,12 @@ walk_result WalkModList( mod_handle mh, MOD_WALKER *mw, void *d )
     }
 }
 
-static walk_result DIGCLIENT TypeGlue( imp_image_handle *ii,
+static walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
                                 imp_type_handle *it, void *d )
 {
     walk_glue   *wd = d;
 
-    ii = ii;
+    iih = iih;
     return( wd->walk.t( CLI_HDL( it, type ), wd->d ) );
 }
 
@@ -620,13 +625,13 @@ walk_result WalkTypeList( mod_handle mh, TYPE_WALKER *tw, void *d )
     return( wr );
 }
 
-static walk_result DIGCLIENT SymGlue( imp_image_handle *ii,
+static walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
                             sym_walk_info swi, imp_sym_handle *is, void *d )
 {
     walk_glue   *wd = d;
     sym_handle  *sh;
 
-    ii = ii;
+    iih = iih;
     sh = (is == NULL) ? NULL: CLI_HDL( is, sym );
     return( wd->walk.s( swi, sh, wd->d ) );
 }
@@ -714,12 +719,12 @@ walk_result WalkSymList( symbol_source ss, void *start, SYM_WALKER *sw, void *d 
     return( WalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
-static walk_result DIGCLIENT CueGlue( imp_image_handle *ii,
+static walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
                                 imp_cue_handle *ic, void *d )
 {
     walk_glue   *wd = d;
 
-    ii = ii;
+    iih = iih;
     return( wd->walk.c( CLI_HDL( ic, cue ), wd->d ) );
 }
 
@@ -819,7 +824,7 @@ mod_handle TypeMod( type_handle *th )
     image_handle        *ih;
 
     ih = II2IH( th->ii );
-    return( MK_MH( ih->index, ih->dip->type_mod( IMP_HDL( ih, image ),
+    return( MK_MH( ih->ii, ih->dip->type_mod( IMP_HDL( ih, image ),
                         IMP_HDL( th, type ) ) ) );
 }
 
@@ -1037,7 +1042,7 @@ mod_handle SymMod( sym_handle *sh )
     image_handle        *ih;
 
     ih = II2IH( sh->ii );
-    return( MK_MH( ih->index, ih->dip->sym_mod( IMP_HDL( ih, image ),
+    return( MK_MH( ih->ii, ih->dip->sym_mod( IMP_HDL( ih, image ),
                         IMP_HDL( sh, sym ) ) ) );
 }
 
@@ -1192,7 +1197,7 @@ mod_handle CueMod( cue_handle *ch )
     image_handle        *ih;
 
     ih = II2IH( ch->ii );
-    return( MK_MH( ih->index, ih->dip->cue_mod( IMP_HDL( ih, image ),
+    return( MK_MH( ih->ii, ih->dip->cue_mod( IMP_HDL( ih, image ),
                         IMP_HDL( ch, cue ) ) ) );
 }
 
@@ -1267,7 +1272,7 @@ search_result LineCue( mod_handle mh, cue_file_id id, unsigned long line,
         DIPCliStatus( DS_ERR|DS_BAD_PARM );
         return( SR_FAIL );
     }
-    ch->ii = ih->index;
+    ch->ii = ih->ii;
     return( ih->dip->line_cue( IMP_HDL( ih, image ),
                 MH_SMOD( mh ), id, line, column,
                 IMP_HDL( ch, cue ) ) );
@@ -1282,7 +1287,7 @@ search_result AddrCue( mod_handle mh, address addr, cue_handle *ch )
     }
     ih = MH2IH( mh );
     if( ih == NULL ) return( SR_NONE );
-    ch->ii = ih->index;
+    ch->ii = ih->ii;
     return( ih->dip->addr_cue( IMP_HDL( ih, image ),
                 MH_SMOD( mh ), addr, IMP_HDL( ch, cue ) ) );
 }
@@ -1305,7 +1310,7 @@ search_result AddrMod( address a, mod_handle *mh )
 {
     image_handle        *ih;
     search_result       sr;
-    unsigned            last_found;
+    image_idx           last_found;
     imp_mod_handle      im;
 
     if( ActProc != NULL ) {
@@ -1322,11 +1327,11 @@ search_result AddrMod( address a, mod_handle *mh )
             }
         }
         for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
-            if( ih->index != last_found ) {
+            if( ih->ii != last_found ) {
                 sr = ih->dip->addr_mod( IMP_HDL( ih, image ), a, &im );
                 if( sr != SR_NONE ) {
-                    ActProc->last_addr_mod_found = ih->index;
-                    *mh = MK_MH( ih->index, im );
+                    ActProc->last_addr_mod_found = ih->ii;
+                    *mh = MK_MH( ih->ii, im );
                     return( sr );
                 }
             }
@@ -1345,7 +1350,7 @@ search_result AddrSym( mod_handle mh, address a, sym_handle *sh )
     }
     ih = MH2IH( mh );
     if( ih == NULL ) return( SR_NONE );
-    sh->ii = ih->index;
+    sh->ii = ih->ii;
     return( ih->dip->addr_sym( IMP_HDL( ih, image ),
             MH_SMOD( mh ), a, IMP_HDL( sh, sym ) ) );
 }

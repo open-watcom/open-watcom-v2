@@ -245,7 +245,7 @@ void            *DCRealloc( void *p, size_t amount );
 void            DCFree( void *p );
 
 void            DCMapAddr( addr_ptr *a, void *d );
-imp_sym_handle  *DCSymCreate( imp_image_handle *ii, void *d );
+imp_sym_handle  *DCSymCreate( imp_image_handle *iih, void *d );
 dip_status      DCItemLocation( location_context *, context_item, location_list * );
 dip_status      DCAssignLocation( location_list *, location_list *, unsigned long );
 dip_status      DCSameAddrSpace( address, address );
