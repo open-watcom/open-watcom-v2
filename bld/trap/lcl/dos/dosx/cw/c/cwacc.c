@@ -31,7 +31,6 @@
 
 //#define DEBUG_TRAP
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

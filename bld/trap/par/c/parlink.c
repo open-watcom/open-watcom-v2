@@ -186,7 +186,6 @@
  * +-----------------------------------+
  */
 
-#include <stddef.h>
 #if defined(__NETWARE__)
 #include <dos.h>
 #else

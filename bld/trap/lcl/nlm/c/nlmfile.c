@@ -31,7 +31,6 @@
 
 
 #include "debugme.h"
-#include <stddef.h>
 #include <string.h>     /* may only call functions defined in nlmstrt.c */
 #include <fcntl.h>
 #include <stdio.h>

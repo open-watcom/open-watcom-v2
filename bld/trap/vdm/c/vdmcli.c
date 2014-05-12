@@ -35,7 +35,6 @@
 //
 
 #include <string.h>
-#include <stddef.h>
 
 #define INCL_DOSNMPIPES
 #define INCL_DOSPROCESS

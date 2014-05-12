@@ -32,7 +32,6 @@
 
 #ifndef DIP_CV
 
-#include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 #include "dip.h"

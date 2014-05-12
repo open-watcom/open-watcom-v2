@@ -31,7 +31,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <stddef.h>
 #include "trpimp.h"
 #include "trperr.h"
 #include "serial.h"

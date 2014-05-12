@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #define INCL_PM
 #define INCL_DOSMODULEMGR

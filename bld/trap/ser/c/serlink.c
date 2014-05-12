@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "trpimp.h"
 #include "trperr.h"
-#include "stddef.h"
-#include "string.h"
 #include "serial.h"
 #include "packet.h"
 

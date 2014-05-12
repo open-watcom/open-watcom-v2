@@ -39,7 +39,6 @@
 //  94/04/20    B.J. Stecher    NT version
 
 #include <string.h>
-#include <stddef.h>
 
 #include <windows.h>
 #include "watcom.h"
