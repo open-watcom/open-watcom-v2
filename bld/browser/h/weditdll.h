@@ -35,10 +35,7 @@
 
 #include "wsystem.hpp"
 #include "wstring.hpp"
-
-extern "C" {
 #include "wedit.h"
-};
 
 typedef int EDITAPI (*ConnectFn)( void );
 typedef int EDITAPI (*FileFn)( editstring, editstring );
