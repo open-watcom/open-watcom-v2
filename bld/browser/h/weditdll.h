@@ -34,6 +34,7 @@
 #define weditdll_class
 
 #include "wsystem.hpp"
+#include "wstring.hpp"
 
 extern "C" {
 #include "wedit.h"

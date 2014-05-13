@@ -36,13 +36,13 @@
 #include "wmdichld.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
+#include "wsyshelp.hpp"
 #include "vlistbox.hpp"
 
 WCLASS VpeMain;
 WCLASS WListBox;
 WCLASS WMenuItem;
 WCLASS WTimer;
-WCLASS WSystemHelp;
 
 WCLASS VMsgLog : public WMdiChild
 {
