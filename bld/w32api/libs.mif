@@ -197,9 +197,9 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
 
-ws2_32.lbc: ws2_const.obj
+ws2_32.lbc: ws2_cons.obj
     @%create $@
-    @%append $@ +ws2_const.obj
+    @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
     awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
