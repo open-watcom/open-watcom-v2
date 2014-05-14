@@ -33,7 +33,14 @@
 *
 **************************************************************************/
 
+/* Necessary to define so we can access IPv6 constants */
+#ifdef NTDDI_VERSION
+#undef NTDDI_VERSION
+#endif
+
+#define NTDDI_VERSION 0x05000100
 #include <winsock2.h>
+#include <ws2tcpip.h>
 
 EXTERN_C const IN_ADDR in4addr_any = {{ INADDR_ANY }};
 EXTERN_C const IN_ADDR in4addr_loopback = {{ { 0x7F, 0, 0, 0x01 } }};
@@ -44,15 +51,6 @@ EXTERN_C const IN_ADDR in4addr_alligmpv3routersonlink = {{ { 0xE0, 0, 0, 0x16 } 
 EXTERN_C const IN_ADDR in4addr_allteredohostsonlink = {{ { 0xE0, 0, 0, 0xFD } }};
 EXTERN_C const IN_ADDR in4addr_linklocalprefix = {{ { 0xA9, 0xFE } }};
 EXTERN_C const IN_ADDR in4addr_multicastprefix = {{ { 0xE0 } }};
-
-/* Necessary to define so we can access IPv6 constants */
-#ifdef NTDDI_VERSION
-#undef NTDDI_VERSION
-#endif
-
-#define NTDDI_VERSION 0x05000100
-#include <ws2tcpip.h>
-
 
 EXTERN_C const IN6_ADDR in6addr_any = {{ IN6ADDR_ANY_INIT }};
 EXTERN_C const IN6_ADDR in6addr_loopback = {{ IN6ADDR_LOOPBACK_INIT }};
