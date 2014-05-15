@@ -42,27 +42,27 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-EXTERN_C const IN_ADDR in4addr_any = {{ INADDR_ANY }};
-EXTERN_C const IN_ADDR in4addr_loopback = {{ { 0x7F, 0, 0, 0x01 } }};
-EXTERN_C const IN_ADDR in4addr_broadcast = {{ INADDR_BROADCAST }};
-EXTERN_C const IN_ADDR in4addr_allnodesonlink = {{ { 0xE0, 0, 0, 0x01 } }};
-EXTERN_C const IN_ADDR in4addr_allroutersonlink = {{ { 0xE0, 0, 0, 0x02 } }};
-EXTERN_C const IN_ADDR in4addr_alligmpv3routersonlink = {{ { 0xE0, 0, 0, 0x16 } }};
-EXTERN_C const IN_ADDR in4addr_allteredohostsonlink = {{ { 0xE0, 0, 0, 0xFD } }};
-EXTERN_C const IN_ADDR in4addr_linklocalprefix = {{ { 0xA9, 0xFE } }};
-EXTERN_C const IN_ADDR in4addr_multicastprefix = {{ { 0xE0 } }};
+const IN_ADDR __cdecl in4addr_any = {{ INADDR_ANY }};
+const IN_ADDR __cdecl in4addr_loopback = {{ { 0x7F, 0, 0, 0x01 } }};
+const IN_ADDR __cdecl in4addr_broadcast = {{ INADDR_BROADCAST }};
+const IN_ADDR __cdecl in4addr_allnodesonlink = {{ { 0xE0, 0, 0, 0x01 } }};
+const IN_ADDR __cdecl in4addr_allroutersonlink = {{ { 0xE0, 0, 0, 0x02 } }};
+const IN_ADDR __cdecl in4addr_alligmpv3routersonlink = {{ { 0xE0, 0, 0, 0x16 } }};
+const IN_ADDR __cdecl in4addr_allteredohostsonlink = {{ { 0xE0, 0, 0, 0xFD } }};
+const IN_ADDR __cdecl in4addr_linklocalprefix = {{ { 0xA9, 0xFE } }};
+const IN_ADDR __cdecl in4addr_multicastprefix = {{ { 0xE0 } }};
 
-EXTERN_C const IN6_ADDR in6addr_any = {{ IN6ADDR_ANY_INIT }};
-EXTERN_C const IN6_ADDR in6addr_loopback = {{ IN6ADDR_LOOPBACK_INIT }};
-EXTERN_C const IN6_ADDR in6addr_allnodesonnode = {{ IN6ADDR_ALLNODESONNODE_INIT }};
-EXTERN_C const IN6_ADDR in6addr_allnodesonlink = {{ IN6ADDR_ALLNODESONLINK_INIT }};
-EXTERN_C const IN6_ADDR in6addr_allroutersonlink = {{ IN6ADDR_ALLROUTERSONLINK_INIT }};
-EXTERN_C const IN6_ADDR in6addr_allmldv2routersonlink = {{ IN6ADDR_ALLMLDV2ROUTERSONLINK_INIT }};
-EXTERN_C const IN6_ADDR in6addr_teredoinitiallinklocaladdress = {{ IN6ADDR_TEREDOINITIALLINKLOCALADDRESS_INIT }};
-EXTERN_C const IN6_ADDR in6addr_linklocalprefix = {{ IN6ADDR_LINKLOCALPREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_multicastprefix = {{ IN6ADDR_MULTICASTPREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_solicitednodemulticastprefix = {{ IN6ADDR_SOLICITEDNODEMULTICASTPREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_v4mappedprefix = {{ IN6ADDR_V4MAPPEDPREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_6to4prefix = {{ IN6ADDR_6TO4PREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_teredoprefix = {{ IN6ADDR_TEREDOPREFIX_INIT }};
-EXTERN_C const IN6_ADDR in6addr_teredoprefix_old = {{ IN6ADDR_TEREDOPREFIX_INIT_OLD }};
+const IN6_ADDR __cdecl in6addr_any = {{ IN6ADDR_ANY_INIT }};
+const IN6_ADDR __cdecl in6addr_loopback = {{ IN6ADDR_LOOPBACK_INIT }};
+const IN6_ADDR __cdecl in6addr_allnodesonnode = {{ IN6ADDR_ALLNODESONNODE_INIT }};
+const IN6_ADDR __cdecl in6addr_allnodesonlink = {{ IN6ADDR_ALLNODESONLINK_INIT }};
+const IN6_ADDR __cdecl in6addr_allroutersonlink = {{ IN6ADDR_ALLROUTERSONLINK_INIT }};
+const IN6_ADDR __cdecl in6addr_allmldv2routersonlink = {{ IN6ADDR_ALLMLDV2ROUTERSONLINK_INIT }};
+const IN6_ADDR __cdecl in6addr_teredoinitiallinklocaladdress = {{ IN6ADDR_TEREDOINITIALLINKLOCALADDRESS_INIT }};
+const IN6_ADDR __cdecl in6addr_linklocalprefix = {{ IN6ADDR_LINKLOCALPREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_multicastprefix = {{ IN6ADDR_MULTICASTPREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_solicitednodemulticastprefix = {{ IN6ADDR_SOLICITEDNODEMULTICASTPREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_v4mappedprefix = {{ IN6ADDR_V4MAPPEDPREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_6to4prefix = {{ IN6ADDR_6TO4PREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_teredoprefix = {{ IN6ADDR_TEREDOPREFIX_INIT }};
+const IN6_ADDR __cdecl in6addr_teredoprefix_old = {{ IN6ADDR_TEREDOPREFIX_INIT_OLD }};

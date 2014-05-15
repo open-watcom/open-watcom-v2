@@ -33,32 +33,6 @@ typedef struct tagCATEGORYINFO {
 } CATEGORYINFO;
 typedef CATEGORYINFO    *LPCATEGORYINFO;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IEnumGUID;
-EXTERN_C const IID      IID_IEnumCATEGORYINFO;
-EXTERN_C const IID      IID_ICatRegister;
-EXTERN_C const IID      IID_ICatInformation;
-EXTERN_C const CLSID    CLSID_StdComponentCategoriesMgr;
-EXTERN_C const CATID    CATID_Insertable;
-EXTERN_C const CATID    CATID_Control;
-EXTERN_C const CATID    CATID_Programmable;
-EXTERN_C const CATID    CATID_IsShortcut;
-EXTERN_C const CATID    CATID_NeverShowExt;
-EXTERN_C const CATID    CATID_DocObject;
-EXTERN_C const CATID    CATID_Printable;
-EXTERN_C const CATID    CATID_RequiresDataPathHost;
-EXTERN_C const CATID    CATID_PersistsToMoniker;
-EXTERN_C const CATID    CATID_PersistsToStorage;
-EXTERN_C const CATID    CATID_PersistsToStreamInit;
-EXTERN_C const CATID    CATID_PersistsToStream;
-EXTERN_C const CATID    CATID_PersistsToMemory;
-EXTERN_C const CATID    CATID_PersistsToFile;
-EXTERN_C const CATID    CATID_PersistsToPropertyBag;
-EXTERN_C const CATID    CATID_InternetAware;
-EXTERN_C const CATID    CATID_DesignTimeUIActivatableControl;
-#define IID_IEnumCLSID  IID_IEnumGUID
-#define IID_IEnumCATID  IID_IEnumGUID
-
 /* IEnumGUID interface */
 #undef INTERFACE
 #define INTERFACE   IEnumGUID
@@ -206,5 +180,31 @@ typedef ICatInformation *LPCATINFORMATION;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IEnumGUID;
+EXTERN_C const IID      __cdecl IID_IEnumCATEGORYINFO;
+EXTERN_C const IID      __cdecl IID_ICatRegister;
+EXTERN_C const IID      __cdecl IID_ICatInformation;
+EXTERN_C const CLSID    __cdecl CLSID_StdComponentCategoriesMgr;
+EXTERN_C const CATID    __cdecl CATID_Insertable;
+EXTERN_C const CATID    __cdecl CATID_Control;
+EXTERN_C const CATID    __cdecl CATID_Programmable;
+EXTERN_C const CATID    __cdecl CATID_IsShortcut;
+EXTERN_C const CATID    __cdecl CATID_NeverShowExt;
+EXTERN_C const CATID    __cdecl CATID_DocObject;
+EXTERN_C const CATID    __cdecl CATID_Printable;
+EXTERN_C const CATID    __cdecl CATID_RequiresDataPathHost;
+EXTERN_C const CATID    __cdecl CATID_PersistsToMoniker;
+EXTERN_C const CATID    __cdecl CATID_PersistsToStorage;
+EXTERN_C const CATID    __cdecl CATID_PersistsToStreamInit;
+EXTERN_C const CATID    __cdecl CATID_PersistsToStream;
+EXTERN_C const CATID    __cdecl CATID_PersistsToMemory;
+EXTERN_C const CATID    __cdecl CATID_PersistsToFile;
+EXTERN_C const CATID    __cdecl CATID_PersistsToPropertyBag;
+EXTERN_C const CATID    __cdecl CATID_InternetAware;
+EXTERN_C const CATID    __cdecl CATID_DesignTimeUIActivatableControl;
+#define IID_IEnumCLSID  IID_IEnumGUID
+#define IID_IEnumCATID  IID_IEnumGUID
 
 #endif /* __comcat_h__ */

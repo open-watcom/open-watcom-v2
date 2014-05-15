@@ -702,12 +702,6 @@ typedef struct _CLASSIC_EVENT_ID {
 typedef CLASSIC_EVENT_ID    *PCLASSIC_EVENT_ID;
 #endif
 
-/* GUIDs */
-EXTERN_C const GUID EventTraceGuid;
-EXTERN_C const GUID SystemTraceControlGuid;
-EXTERN_C const GUID EventTraceConfigGuid;
-EXTERN_C const GUID DefaultTraceSecurityGuid;
-
 /* Functions in ADVAPI32.DLL */
 #ifndef _WDMDDK_
 EXTERN_C ULONG WMIAPI   CloseTrace( TRACEHANDLE );
@@ -790,5 +784,11 @@ EXTERN_C ULONG WMIAPI   TraceSetInformation( TRACEHANDLE, TRACE_INFO_CLASS, PVOI
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const GUID __cdecl EventTraceGuid;
+EXTERN_C const GUID __cdecl SystemTraceControlGuid;
+EXTERN_C const GUID __cdecl EventTraceConfigGuid;
+EXTERN_C const GUID __cdecl DefaultTraceSecurityGuid;
 
 #endif /* _EVNTRACE_ */

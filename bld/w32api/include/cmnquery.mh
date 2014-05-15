@@ -90,12 +90,6 @@ typedef struct {
 } OPENQUERYWINDOW;
 typedef OPENQUERYWINDOW *LPOPENQUERYWINDOW;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IQueryForm;
-EXTERN_C const IID      IID_IPersistQuery;
-EXTERN_C const IID      IID_ICommonQuery;
-EXTERN_C const CLSID    CLSID_CommonQuery;
-
 /* IQueryForm interface */
 #undef INTERFACE
 #define INTERFACE   IQueryForm
@@ -147,5 +141,11 @@ DECLARE_INTERFACE_( ICommonQuery, IUnknown ) {
 };
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IQueryForm;
+EXTERN_C const IID      __cdecl IID_IPersistQuery;
+EXTERN_C const IID      __cdecl IID_ICommonQuery;
+EXTERN_C const CLSID    __cdecl CLSID_CommonQuery;
 
 #endif /* __cmnquery_h */

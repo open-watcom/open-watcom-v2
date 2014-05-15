@@ -298,12 +298,6 @@ typedef struct tagSERIALIZEDPROPERTYVALUE {
     BYTE    rgb[1];
 } SERIALIZEDPROPERTYVALUE;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IPropertyStorage;
-EXTERN_C const IID  IID_IPropertySetStorage;
-EXTERN_C const IID  IID_IEnumSTATPROPSTG;
-EXTERN_C const IID  IID_IEnumSTATPROPSETSTG;
-
 /* IPropertyStorage interface */
 #undef INTERFACE
 #define INTERFACE   IPropertyStorage
@@ -476,5 +470,11 @@ EXTERN_C BOOLEAN __stdcall                      StgConvertPropertyToVariant( con
 #define PropVariantInit( x )    memset( x, 0, sizeof( PROPVARIANT ) )
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IPropertyStorage;
+EXTERN_C const IID  __cdecl IID_IPropertySetStorage;
+EXTERN_C const IID  __cdecl IID_IEnumSTATPROPSTG;
+EXTERN_C const IID  __cdecl IID_IEnumSTATPROPSETSTG;
 
 #endif /* __propidl_h__ */

@@ -330,37 +330,6 @@ typedef enum DXTFILTER_DISPID {
     DISPID_DXTFilter_MAX        = DISPID_DXTFilter_Stop + 1
 } DXTFILTER_DISPID;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IDXBaseObject;
-EXTERN_C const IID      IID_IDXTransformFactory;
-EXTERN_C const IID      IID_IDXTransform;
-EXTERN_C const IID      IID_IDXSurfacePick;
-EXTERN_C const IID      IID_IDXTBindHost;
-EXTERN_C const IID      IID_IDXTaskManager;
-EXTERN_C const IID      IID_IDXSurfaceFactory;
-EXTERN_C const IID      IID_IDXSurfaceModifier;
-EXTERN_C const IID      IID_IDXSurface;
-EXTERN_C const IID      IID_IDXSurfaceInit;
-EXTERN_C const IID      IID_IDXARGBSurfaceInit;
-EXTERN_C const IID      IID_IDXARGBReadPtr;
-EXTERN_C const IID      IID_IDXARGBReadWritePtr;
-EXTERN_C const IID      IID_IDXDCLock;
-EXTERN_C const IID      IID_IDXTScaleOutput;
-EXTERN_C const IID      IID_IDXGradient;
-EXTERN_C const IID      IID_IDXTScale;
-EXTERN_C const IID      IID_IDXEffect;
-EXTERN_C const IID      IID_IDXLookupTable;
-EXTERN_C const IID      IID_IDXRawSurface;
-EXTERN_C const IID      IID_IHTMLDXTransform;
-EXTERN_C const IID      IID_ICSSFilterDispatch;
-EXTERN_C const CLSID    CLSID_DXTransformFactory;
-EXTERN_C const CLSID    CLSID_DXTaskManager;
-EXTERN_C const CLSID    CLSID_DXTScale;
-EXTERN_C const CLSID    CLSID_DXSurface;
-EXTERN_C const CLSID    CLSID_DXSurfaceModifier;
-EXTERN_C const CLSID    CLSID_DXGradient;
-EXTERN_C const CLSID    CLSID_DXTFilter;
-
 /* IDXBaseObject interface */
 #undef INTERFACE
 #define INTERFACE   IDXBaseObject
@@ -1185,5 +1154,36 @@ DECLARE_INTERFACE_( ICSSFilterDispatch, IDispatch ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IDXBaseObject;
+EXTERN_C const IID      __cdecl IID_IDXTransformFactory;
+EXTERN_C const IID      __cdecl IID_IDXTransform;
+EXTERN_C const IID      __cdecl IID_IDXSurfacePick;
+EXTERN_C const IID      __cdecl IID_IDXTBindHost;
+EXTERN_C const IID      __cdecl IID_IDXTaskManager;
+EXTERN_C const IID      __cdecl IID_IDXSurfaceFactory;
+EXTERN_C const IID      __cdecl IID_IDXSurfaceModifier;
+EXTERN_C const IID      __cdecl IID_IDXSurface;
+EXTERN_C const IID      __cdecl IID_IDXSurfaceInit;
+EXTERN_C const IID      __cdecl IID_IDXARGBSurfaceInit;
+EXTERN_C const IID      __cdecl IID_IDXARGBReadPtr;
+EXTERN_C const IID      __cdecl IID_IDXARGBReadWritePtr;
+EXTERN_C const IID      __cdecl IID_IDXDCLock;
+EXTERN_C const IID      __cdecl IID_IDXTScaleOutput;
+EXTERN_C const IID      __cdecl IID_IDXGradient;
+EXTERN_C const IID      __cdecl IID_IDXTScale;
+EXTERN_C const IID      __cdecl IID_IDXEffect;
+EXTERN_C const IID      __cdecl IID_IDXLookupTable;
+EXTERN_C const IID      __cdecl IID_IDXRawSurface;
+EXTERN_C const IID      __cdecl IID_IHTMLDXTransform;
+EXTERN_C const IID      __cdecl IID_ICSSFilterDispatch;
+EXTERN_C const CLSID    __cdecl CLSID_DXTransformFactory;
+EXTERN_C const CLSID    __cdecl CLSID_DXTaskManager;
+EXTERN_C const CLSID    __cdecl CLSID_DXTScale;
+EXTERN_C const CLSID    __cdecl CLSID_DXSurface;
+EXTERN_C const CLSID    __cdecl CLSID_DXSurfaceModifier;
+EXTERN_C const CLSID    __cdecl CLSID_DXGradient;
+EXTERN_C const CLSID    __cdecl CLSID_DXTFilter;
 
 #endif /* __dxtrans_h__ */

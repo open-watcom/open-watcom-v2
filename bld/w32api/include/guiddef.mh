@@ -19,18 +19,16 @@
 #endif
 #ifdef INITGUID
     #define DEFINE_GUID( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11 ) \
-        EXTERN_C const GUID x = { p1, p2, p3, { p4, p5, p6, p7, p8, p9, p10, p11 } }
+        EXTERN_C const GUID __cdecl x = { p1, p2, p3, { p4, p5, p6, p7, p8, p9, p10, p11 } }
 #else
     #define DEFINE_GUID( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11 ) \
-        EXTERN_C const GUID x
+        EXTERN_C const GUID __cdecl x
 #endif
 
 #ifndef _GUIDDEF_H_
 #define _GUIDDEF_H_
 
 #include <string.h>
-
-:include cpluspro.sp
 
 /* Null values */
 #define IID_NULL    GUID_NULL
@@ -93,8 +91,6 @@ typedef FMTID   *LPFMTID;
 #define IsEqualIID( p1, p2 )        IsEqualGUID( p1, p2 )
 #define IsEqualCLSID( p1, p2 )      IsEqualGUID( p1, p2 )
 #define IsEqualFMTID( p1, p2 )      IsEqualGUID( p1, p2 )
-
-:include cplusepi.sp
 
 #ifdef __cplusplus
 

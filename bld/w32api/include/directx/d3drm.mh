@@ -54,12 +54,6 @@ WIN_TYPES( IDirect3DRM3, DIRECT3DRM3 );
 #define D3DRMERR_TEXTUREFORMATNOTFOUND  MAKE_DDHRESULT( 811 )
 #define D3DRMERR_NOTAGGREGATED          MAKE_DDHRESULT( 812 )
 
-/* GUIDs */
-EXTERN_C const IID      IID_IDirect3DRM;
-EXTERN_C const IID      IID_IDirect3DRM2;
-EXTERN_C const IID      IID_IDirect3DRM3;
-EXTERN_C const CLSID    CLSID_CDirect3DRM;
-
 /* IDirect3DRM interface */
 #undef INTERFACE
 #define INTERFACE   IDirect3DRM
@@ -194,5 +188,11 @@ DECLARE_INTERFACE_( IDirect3DRM3, IUnknown ) {
 STDAPI  Direct3DRMCreate( LPDIRECT3DRM * );
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IDirect3DRM;
+EXTERN_C const IID      __cdecl IID_IDirect3DRM2;
+EXTERN_C const IID      __cdecl IID_IDirect3DRM3;
+EXTERN_C const CLSID    __cdecl CLSID_CDirect3DRM;
 
 #endif /* __D3DRM_H__ */

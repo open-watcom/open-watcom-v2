@@ -212,28 +212,6 @@ typedef struct tagUNICODERANGE {
     WCHAR   wcTo;
 } UNICODERANGE;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_MultiLanguage;
-EXTERN_C const IID      IID_IMLangStringBufW;
-EXTERN_C const IID      IID_IMLangStringBufA;
-EXTERN_C const IID      IID_IMLangString;
-EXTERN_C const IID      IID_IMLangStringWStr;
-EXTERN_C const IID      IID_IMLangStringAStr;
-EXTERN_C const CLSID    CLSID_CMLangString;
-EXTERN_C const IID      IID_IMLangLineBreakConsole;
-EXTERN_C const IID      IID_IEnumCodePage;
-EXTERN_C const IID      IID_IEnumRfc1766;
-EXTERN_C const IID      IID_IEnumScript;
-EXTERN_C const IID      IID_IMLangConvertCharset;
-EXTERN_C const CLSID    CLSID_CMLangConvertCharset;
-EXTERN_C const IID      IID_IMultiLanguage;
-EXTERN_C const IID      IID_IMultiLanguage2;
-EXTERN_C const IID      IID_IMLangCodePages;
-EXTERN_C const IID      IID_IMLangFontLink;
-EXTERN_C const IID      IID_IMLangFontLink2;
-EXTERN_C const IID      IID_IMultiLanguage3;
-EXTERN_C const CLSID    CLSID_CMultiLanguage;
-
 /* IMLangStringBufW interface */
 #undef INTERFACE
 #define INTERFACE   IMLangStringBufW
@@ -1009,5 +987,27 @@ typedef IMultiLanguage3 *LPMULTILANGUAGE3;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_MultiLanguage;
+EXTERN_C const IID      __cdecl IID_IMLangStringBufW;
+EXTERN_C const IID      __cdecl IID_IMLangStringBufA;
+EXTERN_C const IID      __cdecl IID_IMLangString;
+EXTERN_C const IID      __cdecl IID_IMLangStringWStr;
+EXTERN_C const IID      __cdecl IID_IMLangStringAStr;
+EXTERN_C const CLSID    __cdecl CLSID_CMLangString;
+EXTERN_C const IID      __cdecl IID_IMLangLineBreakConsole;
+EXTERN_C const IID      __cdecl IID_IEnumCodePage;
+EXTERN_C const IID      __cdecl IID_IEnumRfc1766;
+EXTERN_C const IID      __cdecl IID_IEnumScript;
+EXTERN_C const IID      __cdecl IID_IMLangConvertCharset;
+EXTERN_C const CLSID    __cdecl CLSID_CMLangConvertCharset;
+EXTERN_C const IID      __cdecl IID_IMultiLanguage;
+EXTERN_C const IID      __cdecl IID_IMultiLanguage2;
+EXTERN_C const IID      __cdecl IID_IMLangCodePages;
+EXTERN_C const IID      __cdecl IID_IMLangFontLink;
+EXTERN_C const IID      __cdecl IID_IMLangFontLink2;
+EXTERN_C const IID      __cdecl IID_IMultiLanguage3;
+EXTERN_C const CLSID    __cdecl CLSID_CMultiLanguage;
 
 #endif /* __mlang_h__ */

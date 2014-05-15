@@ -2034,7 +2034,7 @@ DECLARE_INTERFACE_( IKsDeviceFunctions, IUnknown ) {
 
 /* Variables in KS.SYS */
 #ifdef _NTDDK_
-KSDDKAPI DRIVER_CANCEL  KsCancelRoutine;
+KSDDKAPI DRIVER_CANCEL  __cdecl KsCancelRoutine;
 #endif
 
 /* Functions in KS.SYS */

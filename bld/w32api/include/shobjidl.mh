@@ -2115,360 +2115,6 @@ enum _ASSOC_FILTER {
 };
 typedef int ASSOC_FILTER;
 #endif
-    
-/* GUIDs */
-EXTERN_C const IID      IID_IContextMenu;
-EXTERN_C const IID      IID_IContextMenu2;
-EXTERN_C const IID      IID_IContextMenu3;
-EXTERN_C const IID      IID_IExecuteCommand;
-EXTERN_C const IID      IID_IPersistFolder;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IRunnableTask;
-EXTERN_C const IID      IID_IShellTaskScheduler;
-EXTERN_C const IID      IID_IQueryCodePage;
-EXTERN_C const IID      IID_IPersistFolder2;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const IID      IID_IPersistFolder3;
-#endif
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0600)
-EXTERN_C const IID      IID_IPersistIDList;
-#endif
-EXTERN_C const IID      IID_IEnumIDList;
-EXTERN_C const IID      IID_IEnumFullIDList;
-#if (NTDDI_VERSION >= 0x06010000)
-EXTERN_C const IID      IID_IObjectWithFolderEnumMode;
-EXTERN_C const IID      IID_IParseAndCreateItem;
-#endif
-EXTERN_C const IID      IID_IShellFolder;
-EXTERN_C const IID      IID_IEnumExtraSearch;
-EXTERN_C const IID      IID_IShellFolder2;
-EXTERN_C const IID      IID_IFolderViewOptions;
-EXTERN_C const IID      IID_IShellView;
-EXTERN_C const IID      IID_IShellView2;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IShellView3;
-#endif
-EXTERN_C const IID      IID_IFolderView;
-#if (NTDDI_VERSION >= 0x06010000)
-EXTERN_C const IID      IID_ISearchBoxInfo;
-#endif
-#if (NTDDI_VERSION >= 0x06000000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IFolderView2;
-#endif
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IFolderViewSettings;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IPreviewHandlerVisuals;
-EXTERN_C const IID      IID_IVisualProperties;
-#endif
-EXTERN_C const IID      IID_ICommDlgBrowser;
-#if (NTDDI_VERSION >= 0x05000000)
-EXTERN_C const IID      IID_ICommDlgBrowser2;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_ICommDlgBrowser3;
-EXTERN_C const IID      IID_IColumnManager;
-#endif
-EXTERN_C const IID      IID_IFolderFilterSite;
-EXTERN_C const IID      IID_IFolderFilter;
-EXTERN_C const IID      IID_IInputObjectSite;
-EXTERN_C const IID      IID_IInputObject;
-EXTERN_C const IID      IID_IInputObject2;
-EXTERN_C const IID      IID_IShellIcon;
-EXTERN_C const IID      IID_IShellBrowser;
-EXTERN_C const IID      IID_IProfferService;
-EXTERN_C const IID      IID_IShellItem;
-EXTERN_C const IID      IID_IShellItem2;
-EXTERN_C const IID      IID_IShellItemImageFactory;
-EXTERN_C const IID      IID_IUserAccountChangeCallback;
-#if (NTDDI_VERSION >= 0x05010000)
-EXTERN_C const IID      IID_IEnumShellItems;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_ITransferAdviseSink;
-#endif
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_ITransferSource;
-#endif
-EXTERN_C const IID      IID_IEnumResources;
-EXTERN_C const IID      IID_IShellItemResources;
-EXTERN_C const IID      IID_ITransferDestination;
-EXTERN_C const IID      IID_IStreamAsync;
-EXTERN_C const IID      IID_IStreamUnbufferedInfo;
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IFileOperationProgressSink;
-#endif
-EXTERN_C const IID      IID_IShellItemArray;
-EXTERN_C const IID      IID_IInitializeWithItem;
-EXTERN_C const IID      IID_IObjectWithSelection;
-EXTERN_C const IID      IID_IObjectWithBackReferences;
-EXTERN_C const IID      IID_IPropertyUI;
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const IID      IID_ICategoryProvider;
-EXTERN_C const IID      IID_ICategorizer;
-#endif
-#if (NTDDI_VERSION >= 0x05000000)
-EXTERN_C const IID      IID_IDropTargetHelper;
-EXTERN_C const IID      IID_IDragSourceHelper;
-#endif
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IDragSourceHelper2;
-#endif
-EXTERN_C const IID      IID_IShellLinkA;
-EXTERN_C const IID      IID_IShellLinkW;
-EXTERN_C const IID      IID_IShellLinkDataList;
-#if (NTDDI_VERSION >= 0x05000000)
-EXTERN_C const IID      IID_IResolveShellLink;
-#endif
-EXTERN_C const IID      IID_IActionProgressDialog;
-EXTERN_C const IID      IID_IHWEventHandler;
-EXTERN_C const IID      IID_IHWEventHandler2;
-EXTERN_C const IID      IID_IQueryCancelAutoPlay;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IDynamicHWHandler;
-#endif
-EXTERN_C const IID      IID_IActionProgress;
-EXTERN_C const IID      IID_IShellExtInit;
-EXTERN_C const IID      IID_IShellPropSheetExt;
-EXTERN_C const IID      IID_IRemoteComputer;
-EXTERN_C const IID      IID_IQueryContinue;
-EXTERN_C const IID      IID_IObjectWithCancelEvent;
-EXTERN_C const IID      IID_IUserNotification;
-EXTERN_C const IID      IID_IUserNotificationCallback;
-EXTERN_C const IID      IID_IUserNotification2;
-EXTERN_C const IID      IID_IItemNameLimits;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_ISearchFolderItemFactory;
-#endif
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IExtractImage;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const IID      IID_IExtractImage2;
-EXTERN_C const IID      IID_IThumbnailHandlerFactory;
-EXTERN_C const IID      IID_IParentAndItem;
-#endif
-EXTERN_C const IID      IID_IDockingWindow;
-EXTERN_C const IID      IID_IDeskBand;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IDeskBandInfo;
-EXTERN_C const IID      IID_IDeskBand2;
-#endif
-EXTERN_C const IID      IID_ITaskbarList;
-EXTERN_C const IID      IID_ITaskbarList2;
-EXTERN_C const IID      IID_ITaskbarList3;
-EXTERN_C const IID      IID_ITaskbarList4;
-EXTERN_C const IID      IID_IStartMenuPinnedList;
-EXTERN_C const IID      IID_ICDBurn;
-EXTERN_C const IID      IID_IWizardSite;
-EXTERN_C const IID      IID_IWizardExtension;
-EXTERN_C const IID      IID_IWebWizardExtension;
-EXTERN_C const IID      IID_IPublishingWizard;
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IFolderViewHost;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IExplorerBrowserEvents;
-EXTERN_C const IID      IID_IExplorerBrowser;
-EXTERN_C const IID      IID_IAccessibleObject;
-#endif
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IResultsFolder;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IEnumObjects;
-EXTERN_C const IID      IID_IOperationsProgressDialog;
-EXTERN_C const IID      IID_IIOCancelInformation;
-EXTERN_C const IID      IID_IFileOperation;
-EXTERN_C const IID      IID_IObjectProvider;
-#endif
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_INamespaceWalkCB;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_INamespaceWalkCB2;
-#endif
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_INamespaceWalk;
-#endif
-EXTERN_C const IID      IID_IAutoCompleteDropDown;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IBandSite;
-#endif
-#if (NTDDI_VERSION >= 0x05010000)
-EXTERN_C const IID      IID_IModalWindow;
-#endif
-EXTERN_C const IID      IID_IContextMenuSite;
-EXTERN_C const IID      IID_IEnumReadyCallback;
-EXTERN_C const IID      IID_IEnumerableView;
-#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IInsertItem;
-#endif
-#if (NTDDI_VERSION >= 0x05010000)
-EXTERN_C const IID      IID_IMenuBand;
-EXTERN_C const IID      IID_IFolderBandPriv;
-EXTERN_C const IID      IID_IRegTreeItem;
-EXTERN_C const IID      IID_IImageRecompress;
-#endif
-#if (_WIN32_IE >= 0x0600)
-EXTERN_C const IID      IID_IDeskBar;
-EXTERN_C const IID      IID_IMenuPopup;
-#endif
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IFileIsInUse;
-EXTERN_C const IID      IID_IFileDialogEvents;
-EXTERN_C const IID      IID_IFileDialog;
-EXTERN_C const IID      IID_IFileSaveDialog;
-EXTERN_C const IID      IID_IFileOpenDialog;
-EXTERN_C const IID      IID_IFileDialogCustomize;
-EXTERN_C const IID      IID_IFileDialogControlEvents;
-EXTERN_C const IID      IID_IFileDialog2;
-EXTERN_C const IID      IID_IApplicationAssociationRegistration;
-EXTERN_C const IID      IID_IApplicationAssociationRegistrationUI;
-#endif
-EXTERN_C const IID      IID_IDelegateFolder;
-#if (_WIN32_IE >= 0x0600)
-EXTERN_C const IID      IID_IBrowserFrameOptions;
-#endif
-#if (_WIN32_IE >= 0x0602)
-EXTERN_C const IID      IID_INewWindowManager;
-EXTERN_C const IID      IID_IAttachmentExecute;
-#endif
-#if (_WIN32_IE >= 0x0600)
-EXTERN_C const IID      IID_IShellMenuCallback;
-#endif
-EXTERN_C const IID      IID_IShellRunDll;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IKnownFolder;
-EXTERN_C const IID      IID_IKnownFolderManager;
-EXTERN_C const IID      IID_ISharingConfigurationManager;
-#endif
-EXTERN_C const IID      IID_IPreviousVersionsInfo;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IRelatedItem;
-EXTERN_C const IID      IID_IIdentityName;
-EXTERN_C const IID      IID_IDelegateItem;
-EXTERN_C const IID      IID_ICurrentItem;
-EXTERN_C const IID      IID_ITransferMediumItem;
-EXTERN_C const IID      IID_IUseToBrowseItem;
-EXTERN_C const IID      IID_IDisplayItem;
-EXTERN_C const IID      IID_IViewStateIdentityItem;
-EXTERN_C const IID      IID_IPreviewItem;
-#endif
-EXTERN_C const IID      IID_IDestinationStreamFactory;
-EXTERN_C const IID      IID_INewMenuClient;
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID      IID_IInitializeWithBindCtx;
-EXTERN_C const IID      IID_IShellItemFilter;
-#endif
-EXTERN_C const IID      IID_INameSpaceTreeControl;
-EXTERN_C const IID      IID_INameSpaceTreeControlEvents;
-EXTERN_C const IID      IID_INameSpaceTreeAccessible;
-EXTERN_C const IID      IID_INameSpaceTreeControlCustomDraw;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_INameSpaceTreeControlFolderCapabilities;
-#endif
-EXTERN_C const IID      IID_IPreviewHandler;
-EXTERN_C const IID      IID_IPreviewHandlerFrame;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_ITrayDeskBand;
-EXTERN_C const IID      IID_IBandHost;
-EXTERN_C const IID      IID_IExplorerPaneVisibility;
-EXTERN_C const IID      IID_IContextMenuCB;
-#endif
-EXTERN_C const IID      IID_IDefaultExtractIconInit;
-EXTERN_C const IID      IID_IExplorerCommand;
-EXTERN_C const IID      IID_IExplorerCommandState;
-EXTERN_C const IID      IID_IInitializeCommand;
-EXTERN_C const IID      IID_IEnumExplorerCommand;
-EXTERN_C const IID      IID_IExplorerCommandProvider;
-EXTERN_C const IID      IID_IMarkupCallback;
-EXTERN_C const IID      IID_IControlMarkup;
-EXTERN_C const IID      IID_IInitializeNetworkFolder;
-EXTERN_C const IID      IID_IOpenControlPanel;
-EXTERN_C const IID      IID_ISystemCPLUpdate;
-EXTERN_C const IID      IID_IComputerInfoAdvise;
-EXTERN_C const IID      IID_IComputerInfoChangeNotify;
-EXTERN_C const IID      IID_IFileSystemBindData;
-EXTERN_C const IID      IID_IFileSystemBindData2;
-#if (NTDDI_VERSION >= 0x06010000)
-EXTERN_C const IID      IID_ICustomDestinationList;
-EXTERN_C const IID      IID_IApplicationDestinations;
-EXTERN_C const IID      IID_IApplicationDocumentLists;
-EXTERN_C const IID      IID_IObjectWithAppUserModelID;
-EXTERN_C const IID      IID_IObjectWithProgID;
-EXTERN_C const IID      IID_IUpdateIDList;
-#endif
-EXTERN_C const IID      IID_IDesktopGadget;
-EXTERN_C const IID      IID_IHomeGroup;
-EXTERN_C const IID      IID_IInitializeWithPropertyStore;
-EXTERN_C const IID      IID_IOpenSearchSource;
-EXTERN_C const IID      IID_IShellLibrary;
-EXTERN_C const IID      LIBID_ShellObjects;
-EXTERN_C const CLSID    CLSID_ShellDesktop;
-EXTERN_C const CLSID    CLSID_ShellFSFolder;
-EXTERN_C const CLSID    CLSID_NetworkPlaces;
-EXTERN_C const CLSID    CLSID_ShellLink;
-EXTERN_C const CLSID    CLSID_QueryCancelAutoPlay;
-EXTERN_C const CLSID    CLSID_DriveSizeCategorizer;
-EXTERN_C const CLSID    CLSID_DriveTypeCategorizer;
-EXTERN_C const CLSID    CLSID_FreeSpaceCategorizer;
-EXTERN_C const CLSID    CLSID_TimeCategorizer;
-EXTERN_C const CLSID    CLSID_SizeCategorizer;
-EXTERN_C const CLSID    CLSID_AlphabeticalCategorizer;
-EXTERN_C const CLSID    CLSID_MergedCategorizer;
-EXTERN_C const CLSID    CLSID_ImageProperties;
-EXTERN_C const CLSID    CLSID_PropertiesUI;
-EXTERN_C const CLSID    CLSID_UserNotification;
-EXTERN_C const CLSID    CLSID_CDBurn;
-EXTERN_C const CLSID    CLSID_TaskbarList;
-EXTERN_C const CLSID    CLSID_StartMenuPin;
-EXTERN_C const CLSID    CLSID_WebWizardHost;
-EXTERN_C const CLSID    CLSID_PublishDropTarget;
-EXTERN_C const CLSID    CLSID_PublishingWizard;
-EXTERN_C const CLSID    CLSID_InternetPrintOrdering;
-EXTERN_C const CLSID    CLSID_FolderViewHost;
-EXTERN_C const CLSID    CLSID_ExplorerBrowser;
-EXTERN_C const CLSID    CLSID_ImageRecompress;
-EXTERN_C const CLSID    CLSID_TrayBandSiteService;
-EXTERN_C const CLSID    CLSID_TrayDeskBand;
-EXTERN_C const CLSID    CLSID_AttachmentServices;
-EXTERN_C const CLSID    CLSID_DocPropShellExtension;
-EXTERN_C const CLSID    CLSID_ShellItem;
-EXTERN_C const CLSID    CLSID_NamespaceWalker;
-EXTERN_C const CLSID    CLSID_FileOperation;
-EXTERN_C const CLSID    CLSID_FileOpenDialog;
-EXTERN_C const CLSID    CLSID_FileSaveDialog;
-EXTERN_C const CLSID    CLSID_KnownFolderManager;
-EXTERN_C const CLSID    CLSID_FSCopyHandler;
-EXTERN_C const CLSID    CLSID_SharingConfigurationManager;
-EXTERN_C const CLSID    CLSID_PreviousVersions;
-EXTERN_C const CLSID    CLSID_NetworkConnections;
-EXTERN_C const CLSID    CLSID_NamespaceTreeControl;
-EXTERN_C const CLSID    CLSID_IENamespaceTreeControl;
-EXTERN_C const CLSID    CLSID_ScheduledTasks;
-EXTERN_C const CLSID    CLSID_ApplicationAssociationRegistration;
-EXTERN_C const CLSID    CLSID_ApplicationAssociationRegistrationUI;
-EXTERN_C const CLSID    CLSID_SearchFolderItemFactory;
-EXTERN_C const CLSID    CLSID_OpenControlPanel;
-EXTERN_C const CLSID    CLSID_ComputerInfoAdvise;
-EXTERN_C const CLSID    CLSID_MailRecipient;
-EXTERN_C const CLSID    CLSID_NetworkExplorerFolder;
-EXTERN_C const CLSID    CLSID_DestinationList;
-EXTERN_C const CLSID    CLSID_ApplicationDestinations;
-EXTERN_C const CLSID    CLSID_ApplicationDocumentLists;
-EXTERN_C const CLSID    CLSID_HomeGroup;
-EXTERN_C const CLSID    CLSID_ShellLibrary;
-EXTERN_C const CLSID    CLSID_AppStartupLink;
-EXTERN_C const CLSID    CLSID_EnumerableObjectCollection;
-EXTERN_C const CLSID    CLSID_DesktopGadget;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID      IID_IAssocHandlerInvoker;
-EXTERN_C const IID      IID_IAssocHandler;
-EXTERN_C const IID      IID_IEnumAssocHandler;
-#endif
 
 /* IContextMenu interface */
 #undef INTERFACE
@@ -10075,5 +9721,359 @@ __inline void FreeKnownFolderDefinitionFields( KNOWNFOLDER_DEFINITION *x )
 #endif /* (NTDDI_VERSION >= 0x06000000) */
 
 :include cplusepi.sp
+    
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IContextMenu;
+EXTERN_C const IID      __cdecl IID_IContextMenu2;
+EXTERN_C const IID      __cdecl IID_IContextMenu3;
+EXTERN_C const IID      __cdecl IID_IExecuteCommand;
+EXTERN_C const IID      __cdecl IID_IPersistFolder;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IRunnableTask;
+EXTERN_C const IID      __cdecl IID_IShellTaskScheduler;
+EXTERN_C const IID      __cdecl IID_IQueryCodePage;
+EXTERN_C const IID      __cdecl IID_IPersistFolder2;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const IID      __cdecl IID_IPersistFolder3;
+#endif
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0600)
+EXTERN_C const IID      __cdecl IID_IPersistIDList;
+#endif
+EXTERN_C const IID      __cdecl IID_IEnumIDList;
+EXTERN_C const IID      __cdecl IID_IEnumFullIDList;
+#if (NTDDI_VERSION >= 0x06010000)
+EXTERN_C const IID      __cdecl IID_IObjectWithFolderEnumMode;
+EXTERN_C const IID      __cdecl IID_IParseAndCreateItem;
+#endif
+EXTERN_C const IID      __cdecl IID_IShellFolder;
+EXTERN_C const IID      __cdecl IID_IEnumExtraSearch;
+EXTERN_C const IID      __cdecl IID_IShellFolder2;
+EXTERN_C const IID      __cdecl IID_IFolderViewOptions;
+EXTERN_C const IID      __cdecl IID_IShellView;
+EXTERN_C const IID      __cdecl IID_IShellView2;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IShellView3;
+#endif
+EXTERN_C const IID      __cdecl IID_IFolderView;
+#if (NTDDI_VERSION >= 0x06010000)
+EXTERN_C const IID      __cdecl IID_ISearchBoxInfo;
+#endif
+#if (NTDDI_VERSION >= 0x06000000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IFolderView2;
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IFolderViewSettings;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IPreviewHandlerVisuals;
+EXTERN_C const IID      __cdecl IID_IVisualProperties;
+#endif
+EXTERN_C const IID      __cdecl IID_ICommDlgBrowser;
+#if (NTDDI_VERSION >= 0x05000000)
+EXTERN_C const IID      __cdecl IID_ICommDlgBrowser2;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_ICommDlgBrowser3;
+EXTERN_C const IID      __cdecl IID_IColumnManager;
+#endif
+EXTERN_C const IID      __cdecl IID_IFolderFilterSite;
+EXTERN_C const IID      __cdecl IID_IFolderFilter;
+EXTERN_C const IID      __cdecl IID_IInputObjectSite;
+EXTERN_C const IID      __cdecl IID_IInputObject;
+EXTERN_C const IID      __cdecl IID_IInputObject2;
+EXTERN_C const IID      __cdecl IID_IShellIcon;
+EXTERN_C const IID      __cdecl IID_IShellBrowser;
+EXTERN_C const IID      __cdecl IID_IProfferService;
+EXTERN_C const IID      __cdecl IID_IShellItem;
+EXTERN_C const IID      __cdecl IID_IShellItem2;
+EXTERN_C const IID      __cdecl IID_IShellItemImageFactory;
+EXTERN_C const IID      __cdecl IID_IUserAccountChangeCallback;
+#if (NTDDI_VERSION >= 0x05010000)
+EXTERN_C const IID      __cdecl IID_IEnumShellItems;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_ITransferAdviseSink;
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_ITransferSource;
+#endif
+EXTERN_C const IID      __cdecl IID_IEnumResources;
+EXTERN_C const IID      __cdecl IID_IShellItemResources;
+EXTERN_C const IID      __cdecl IID_ITransferDestination;
+EXTERN_C const IID      __cdecl IID_IStreamAsync;
+EXTERN_C const IID      __cdecl IID_IStreamUnbufferedInfo;
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IFileOperationProgressSink;
+#endif
+EXTERN_C const IID      __cdecl IID_IShellItemArray;
+EXTERN_C const IID      __cdecl IID_IInitializeWithItem;
+EXTERN_C const IID      __cdecl IID_IObjectWithSelection;
+EXTERN_C const IID      __cdecl IID_IObjectWithBackReferences;
+EXTERN_C const IID      __cdecl IID_IPropertyUI;
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const IID      __cdecl IID_ICategoryProvider;
+EXTERN_C const IID      __cdecl IID_ICategorizer;
+#endif
+#if (NTDDI_VERSION >= 0x05000000)
+EXTERN_C const IID      __cdecl IID_IDropTargetHelper;
+EXTERN_C const IID      __cdecl IID_IDragSourceHelper;
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IDragSourceHelper2;
+#endif
+EXTERN_C const IID      __cdecl IID_IShellLinkA;
+EXTERN_C const IID      __cdecl IID_IShellLinkW;
+EXTERN_C const IID      __cdecl IID_IShellLinkDataList;
+#if (NTDDI_VERSION >= 0x05000000)
+EXTERN_C const IID      __cdecl IID_IResolveShellLink;
+#endif
+EXTERN_C const IID      __cdecl IID_IActionProgressDialog;
+EXTERN_C const IID      __cdecl IID_IHWEventHandler;
+EXTERN_C const IID      __cdecl IID_IHWEventHandler2;
+EXTERN_C const IID      __cdecl IID_IQueryCancelAutoPlay;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IDynamicHWHandler;
+#endif
+EXTERN_C const IID      __cdecl IID_IActionProgress;
+EXTERN_C const IID      __cdecl IID_IShellExtInit;
+EXTERN_C const IID      __cdecl IID_IShellPropSheetExt;
+EXTERN_C const IID      __cdecl IID_IRemoteComputer;
+EXTERN_C const IID      __cdecl IID_IQueryContinue;
+EXTERN_C const IID      __cdecl IID_IObjectWithCancelEvent;
+EXTERN_C const IID      __cdecl IID_IUserNotification;
+EXTERN_C const IID      __cdecl IID_IUserNotificationCallback;
+EXTERN_C const IID      __cdecl IID_IUserNotification2;
+EXTERN_C const IID      __cdecl IID_IItemNameLimits;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_ISearchFolderItemFactory;
+#endif
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IExtractImage;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const IID      __cdecl IID_IExtractImage2;
+EXTERN_C const IID      __cdecl IID_IThumbnailHandlerFactory;
+EXTERN_C const IID      __cdecl IID_IParentAndItem;
+#endif
+EXTERN_C const IID      __cdecl IID_IDockingWindow;
+EXTERN_C const IID      __cdecl IID_IDeskBand;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IDeskBandInfo;
+EXTERN_C const IID      __cdecl IID_IDeskBand2;
+#endif
+EXTERN_C const IID      __cdecl IID_ITaskbarList;
+EXTERN_C const IID      __cdecl IID_ITaskbarList2;
+EXTERN_C const IID      __cdecl IID_ITaskbarList3;
+EXTERN_C const IID      __cdecl IID_ITaskbarList4;
+EXTERN_C const IID      __cdecl IID_IStartMenuPinnedList;
+EXTERN_C const IID      __cdecl IID_ICDBurn;
+EXTERN_C const IID      __cdecl IID_IWizardSite;
+EXTERN_C const IID      __cdecl IID_IWizardExtension;
+EXTERN_C const IID      __cdecl IID_IWebWizardExtension;
+EXTERN_C const IID      __cdecl IID_IPublishingWizard;
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IFolderViewHost;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IExplorerBrowserEvents;
+EXTERN_C const IID      __cdecl IID_IExplorerBrowser;
+EXTERN_C const IID      __cdecl IID_IAccessibleObject;
+#endif
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IResultsFolder;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IEnumObjects;
+EXTERN_C const IID      __cdecl IID_IOperationsProgressDialog;
+EXTERN_C const IID      __cdecl IID_IIOCancelInformation;
+EXTERN_C const IID      __cdecl IID_IFileOperation;
+EXTERN_C const IID      __cdecl IID_IObjectProvider;
+#endif
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_INamespaceWalkCB;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_INamespaceWalkCB2;
+#endif
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_INamespaceWalk;
+#endif
+EXTERN_C const IID      __cdecl IID_IAutoCompleteDropDown;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IBandSite;
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+EXTERN_C const IID      __cdecl IID_IModalWindow;
+#endif
+EXTERN_C const IID      __cdecl IID_IContextMenuSite;
+EXTERN_C const IID      __cdecl IID_IEnumReadyCallback;
+EXTERN_C const IID      __cdecl IID_IEnumerableView;
+#if (NTDDI_VERSION >= 0x05010000) || (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IInsertItem;
+#endif
+#if (NTDDI_VERSION >= 0x05010000)
+EXTERN_C const IID      __cdecl IID_IMenuBand;
+EXTERN_C const IID      __cdecl IID_IFolderBandPriv;
+EXTERN_C const IID      __cdecl IID_IRegTreeItem;
+EXTERN_C const IID      __cdecl IID_IImageRecompress;
+#endif
+#if (_WIN32_IE >= 0x0600)
+EXTERN_C const IID      __cdecl IID_IDeskBar;
+EXTERN_C const IID      __cdecl IID_IMenuPopup;
+#endif
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IFileIsInUse;
+EXTERN_C const IID      __cdecl IID_IFileDialogEvents;
+EXTERN_C const IID      __cdecl IID_IFileDialog;
+EXTERN_C const IID      __cdecl IID_IFileSaveDialog;
+EXTERN_C const IID      __cdecl IID_IFileOpenDialog;
+EXTERN_C const IID      __cdecl IID_IFileDialogCustomize;
+EXTERN_C const IID      __cdecl IID_IFileDialogControlEvents;
+EXTERN_C const IID      __cdecl IID_IFileDialog2;
+EXTERN_C const IID      __cdecl IID_IApplicationAssociationRegistration;
+EXTERN_C const IID      __cdecl IID_IApplicationAssociationRegistrationUI;
+#endif
+EXTERN_C const IID      __cdecl IID_IDelegateFolder;
+#if (_WIN32_IE >= 0x0600)
+EXTERN_C const IID      __cdecl IID_IBrowserFrameOptions;
+#endif
+#if (_WIN32_IE >= 0x0602)
+EXTERN_C const IID      __cdecl IID_INewWindowManager;
+EXTERN_C const IID      __cdecl IID_IAttachmentExecute;
+#endif
+#if (_WIN32_IE >= 0x0600)
+EXTERN_C const IID      __cdecl IID_IShellMenuCallback;
+#endif
+EXTERN_C const IID      __cdecl IID_IShellRunDll;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IKnownFolder;
+EXTERN_C const IID      __cdecl IID_IKnownFolderManager;
+EXTERN_C const IID      __cdecl IID_ISharingConfigurationManager;
+#endif
+EXTERN_C const IID      __cdecl IID_IPreviousVersionsInfo;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IRelatedItem;
+EXTERN_C const IID      __cdecl IID_IIdentityName;
+EXTERN_C const IID      __cdecl IID_IDelegateItem;
+EXTERN_C const IID      __cdecl IID_ICurrentItem;
+EXTERN_C const IID      __cdecl IID_ITransferMediumItem;
+EXTERN_C const IID      __cdecl IID_IUseToBrowseItem;
+EXTERN_C const IID      __cdecl IID_IDisplayItem;
+EXTERN_C const IID      __cdecl IID_IViewStateIdentityItem;
+EXTERN_C const IID      __cdecl IID_IPreviewItem;
+#endif
+EXTERN_C const IID      __cdecl IID_IDestinationStreamFactory;
+EXTERN_C const IID      __cdecl IID_INewMenuClient;
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID      __cdecl IID_IInitializeWithBindCtx;
+EXTERN_C const IID      __cdecl IID_IShellItemFilter;
+#endif
+EXTERN_C const IID      __cdecl IID_INameSpaceTreeControl;
+EXTERN_C const IID      __cdecl IID_INameSpaceTreeControlEvents;
+EXTERN_C const IID      __cdecl IID_INameSpaceTreeAccessible;
+EXTERN_C const IID      __cdecl IID_INameSpaceTreeControlCustomDraw;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_INameSpaceTreeControlFolderCapabilities;
+#endif
+EXTERN_C const IID      __cdecl IID_IPreviewHandler;
+EXTERN_C const IID      __cdecl IID_IPreviewHandlerFrame;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_ITrayDeskBand;
+EXTERN_C const IID      __cdecl IID_IBandHost;
+EXTERN_C const IID      __cdecl IID_IExplorerPaneVisibility;
+EXTERN_C const IID      __cdecl IID_IContextMenuCB;
+#endif
+EXTERN_C const IID      __cdecl IID_IDefaultExtractIconInit;
+EXTERN_C const IID      __cdecl IID_IExplorerCommand;
+EXTERN_C const IID      __cdecl IID_IExplorerCommandState;
+EXTERN_C const IID      __cdecl IID_IInitializeCommand;
+EXTERN_C const IID      __cdecl IID_IEnumExplorerCommand;
+EXTERN_C const IID      __cdecl IID_IExplorerCommandProvider;
+EXTERN_C const IID      __cdecl IID_IMarkupCallback;
+EXTERN_C const IID      __cdecl IID_IControlMarkup;
+EXTERN_C const IID      __cdecl IID_IInitializeNetworkFolder;
+EXTERN_C const IID      __cdecl IID_IOpenControlPanel;
+EXTERN_C const IID      __cdecl IID_ISystemCPLUpdate;
+EXTERN_C const IID      __cdecl IID_IComputerInfoAdvise;
+EXTERN_C const IID      __cdecl IID_IComputerInfoChangeNotify;
+EXTERN_C const IID      __cdecl IID_IFileSystemBindData;
+EXTERN_C const IID      __cdecl IID_IFileSystemBindData2;
+#if (NTDDI_VERSION >= 0x06010000)
+EXTERN_C const IID      __cdecl IID_ICustomDestinationList;
+EXTERN_C const IID      __cdecl IID_IApplicationDestinations;
+EXTERN_C const IID      __cdecl IID_IApplicationDocumentLists;
+EXTERN_C const IID      __cdecl IID_IObjectWithAppUserModelID;
+EXTERN_C const IID      __cdecl IID_IObjectWithProgID;
+EXTERN_C const IID      __cdecl IID_IUpdateIDList;
+#endif
+EXTERN_C const IID      __cdecl IID_IDesktopGadget;
+EXTERN_C const IID      __cdecl IID_IHomeGroup;
+EXTERN_C const IID      __cdecl IID_IInitializeWithPropertyStore;
+EXTERN_C const IID      __cdecl IID_IOpenSearchSource;
+EXTERN_C const IID      __cdecl IID_IShellLibrary;
+EXTERN_C const IID      __cdecl LIBID_ShellObjects;
+EXTERN_C const CLSID    __cdecl CLSID_ShellDesktop;
+EXTERN_C const CLSID    __cdecl CLSID_ShellFSFolder;
+EXTERN_C const CLSID    __cdecl CLSID_NetworkPlaces;
+EXTERN_C const CLSID    __cdecl CLSID_ShellLink;
+EXTERN_C const CLSID    __cdecl CLSID_QueryCancelAutoPlay;
+EXTERN_C const CLSID    __cdecl CLSID_DriveSizeCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_DriveTypeCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_FreeSpaceCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_TimeCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_SizeCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_AlphabeticalCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_MergedCategorizer;
+EXTERN_C const CLSID    __cdecl CLSID_ImageProperties;
+EXTERN_C const CLSID    __cdecl CLSID_PropertiesUI;
+EXTERN_C const CLSID    __cdecl CLSID_UserNotification;
+EXTERN_C const CLSID    __cdecl CLSID_CDBurn;
+EXTERN_C const CLSID    __cdecl CLSID_TaskbarList;
+EXTERN_C const CLSID    __cdecl CLSID_StartMenuPin;
+EXTERN_C const CLSID    __cdecl CLSID_WebWizardHost;
+EXTERN_C const CLSID    __cdecl CLSID_PublishDropTarget;
+EXTERN_C const CLSID    __cdecl CLSID_PublishingWizard;
+EXTERN_C const CLSID    __cdecl CLSID_InternetPrintOrdering;
+EXTERN_C const CLSID    __cdecl CLSID_FolderViewHost;
+EXTERN_C const CLSID    __cdecl CLSID_ExplorerBrowser;
+EXTERN_C const CLSID    __cdecl CLSID_ImageRecompress;
+EXTERN_C const CLSID    __cdecl CLSID_TrayBandSiteService;
+EXTERN_C const CLSID    __cdecl CLSID_TrayDeskBand;
+EXTERN_C const CLSID    __cdecl CLSID_AttachmentServices;
+EXTERN_C const CLSID    __cdecl CLSID_DocPropShellExtension;
+EXTERN_C const CLSID    __cdecl CLSID_ShellItem;
+EXTERN_C const CLSID    __cdecl CLSID_NamespaceWalker;
+EXTERN_C const CLSID    __cdecl CLSID_FileOperation;
+EXTERN_C const CLSID    __cdecl CLSID_FileOpenDialog;
+EXTERN_C const CLSID    __cdecl CLSID_FileSaveDialog;
+EXTERN_C const CLSID    __cdecl CLSID_KnownFolderManager;
+EXTERN_C const CLSID    __cdecl CLSID_FSCopyHandler;
+EXTERN_C const CLSID    __cdecl CLSID_SharingConfigurationManager;
+EXTERN_C const CLSID    __cdecl CLSID_PreviousVersions;
+EXTERN_C const CLSID    __cdecl CLSID_NetworkConnections;
+EXTERN_C const CLSID    __cdecl CLSID_NamespaceTreeControl;
+EXTERN_C const CLSID    __cdecl CLSID_IENamespaceTreeControl;
+EXTERN_C const CLSID    __cdecl CLSID_ScheduledTasks;
+EXTERN_C const CLSID    __cdecl CLSID_ApplicationAssociationRegistration;
+EXTERN_C const CLSID    __cdecl CLSID_ApplicationAssociationRegistrationUI;
+EXTERN_C const CLSID    __cdecl CLSID_SearchFolderItemFactory;
+EXTERN_C const CLSID    __cdecl CLSID_OpenControlPanel;
+EXTERN_C const CLSID    __cdecl CLSID_ComputerInfoAdvise;
+EXTERN_C const CLSID    __cdecl CLSID_MailRecipient;
+EXTERN_C const CLSID    __cdecl CLSID_NetworkExplorerFolder;
+EXTERN_C const CLSID    __cdecl CLSID_DestinationList;
+EXTERN_C const CLSID    __cdecl CLSID_ApplicationDestinations;
+EXTERN_C const CLSID    __cdecl CLSID_ApplicationDocumentLists;
+EXTERN_C const CLSID    __cdecl CLSID_HomeGroup;
+EXTERN_C const CLSID    __cdecl CLSID_ShellLibrary;
+EXTERN_C const CLSID    __cdecl CLSID_AppStartupLink;
+EXTERN_C const CLSID    __cdecl CLSID_EnumerableObjectCollection;
+EXTERN_C const CLSID    __cdecl CLSID_DesktopGadget;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID      __cdecl IID_IAssocHandlerInvoker;
+EXTERN_C const IID      __cdecl IID_IAssocHandler;
+EXTERN_C const IID      __cdecl IID_IEnumAssocHandler;
+#endif
 
 #endif /* __shobjidl_h__ */

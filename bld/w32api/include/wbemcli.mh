@@ -467,38 +467,6 @@ typedef enum tag_WBEM_INFORMATION_FLAG_TYPE {
     WBEM_FLAG_LONG_NAME     = 0x00000002
 } WBEM_INFORMATION_FLAG_TYPE;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_WbemClient_v1;
-EXTERN_C const CLSID    CLSID_WbemLocator;
-EXTERN_C const CLSID    CLSID_WbemContext;
-EXTERN_C const CLSID    CLSID_UnsecuredApartment;
-EXTERN_C const CLSID    CLSID_WbemClassObject;
-EXTERN_C const CLSID    CLSID_MofCompiler;
-EXTERN_C const CLSID    CLSID_WbemStatusCodeText;
-EXTERN_C const CLSID    CLSID_WbemBackupRestore;
-EXTERN_C const CLSID    CLSID_WbemRefresher;
-EXTERN_C const CLSID    CLSID_WbemObjectTextSrc;
-EXTERN_C const IID      IID_IWbemClassObject;
-EXTERN_C const IID      IID_IWbemQualifierSet;
-EXTERN_C const IID      IID_IWbemLocator;
-EXTERN_C const IID      IID_IWbemObjectSink;
-EXTERN_C const IID      IID_IEnumWbemClassObject;
-EXTERN_C const IID      IID_IWbemContext;
-EXTERN_C const IID      IID_IWbemCallResult;
-EXTERN_C const IID      IID_IWbemServices;
-EXTERN_C const IID      IID_IWbemShutdown;
-EXTERN_C const IID      IID_IWbemObjectTextSrc;
-EXTERN_C const IID      IID_IWbemObjectAccess;
-EXTERN_C const IID      IID_IMofCompiler;
-EXTERN_C const IID      IID_IUnsecuredApartment;
-EXTERN_C const IID      IID_IWbemUnsecuredApartment;
-EXTERN_C const IID      IID_IWbemStatusCodeText;
-EXTERN_C const IID      IID_IWbemBackupRestore;
-EXTERN_C const IID      IID_IWbemBackupRestoreEx;
-EXTERN_C const IID      IID_IWbemRefresher;
-EXTERN_C const IID      IID_IWbemHiPerfEnum;
-EXTERN_C const IID      IID_IWbemConfigureRefresher;
-
 /* IWbemClassObject interface */
 #undef INTERFACE
 #define INTERFACE   IWbemClassObject
@@ -1278,5 +1246,37 @@ DECLARE_INTERFACE_( IWbemConfigureRefresher, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_WbemClient_v1;
+EXTERN_C const CLSID    __cdecl CLSID_WbemLocator;
+EXTERN_C const CLSID    __cdecl CLSID_WbemContext;
+EXTERN_C const CLSID    __cdecl CLSID_UnsecuredApartment;
+EXTERN_C const CLSID    __cdecl CLSID_WbemClassObject;
+EXTERN_C const CLSID    __cdecl CLSID_MofCompiler;
+EXTERN_C const CLSID    __cdecl CLSID_WbemStatusCodeText;
+EXTERN_C const CLSID    __cdecl CLSID_WbemBackupRestore;
+EXTERN_C const CLSID    __cdecl CLSID_WbemRefresher;
+EXTERN_C const CLSID    __cdecl CLSID_WbemObjectTextSrc;
+EXTERN_C const IID      __cdecl IID_IWbemClassObject;
+EXTERN_C const IID      __cdecl IID_IWbemQualifierSet;
+EXTERN_C const IID      __cdecl IID_IWbemLocator;
+EXTERN_C const IID      __cdecl IID_IWbemObjectSink;
+EXTERN_C const IID      __cdecl IID_IEnumWbemClassObject;
+EXTERN_C const IID      __cdecl IID_IWbemContext;
+EXTERN_C const IID      __cdecl IID_IWbemCallResult;
+EXTERN_C const IID      __cdecl IID_IWbemServices;
+EXTERN_C const IID      __cdecl IID_IWbemShutdown;
+EXTERN_C const IID      __cdecl IID_IWbemObjectTextSrc;
+EXTERN_C const IID      __cdecl IID_IWbemObjectAccess;
+EXTERN_C const IID      __cdecl IID_IMofCompiler;
+EXTERN_C const IID      __cdecl IID_IUnsecuredApartment;
+EXTERN_C const IID      __cdecl IID_IWbemUnsecuredApartment;
+EXTERN_C const IID      __cdecl IID_IWbemStatusCodeText;
+EXTERN_C const IID      __cdecl IID_IWbemBackupRestore;
+EXTERN_C const IID      __cdecl IID_IWbemBackupRestoreEx;
+EXTERN_C const IID      __cdecl IID_IWbemRefresher;
+EXTERN_C const IID      __cdecl IID_IWbemHiPerfEnum;
+EXTERN_C const IID      __cdecl IID_IWbemConfigureRefresher;
 
 #endif /* __wbemcli_h__ */

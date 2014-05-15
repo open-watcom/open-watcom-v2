@@ -75,19 +75,19 @@ typedef struct {
 } DSQUERYCLASSLIST;
 typedef DSQUERYCLASSLIST    *LPDSQUERYCLASSINIT;
 
-/* GUIDs */
-EXTERN_C const CLSID    CLSID_DsQuery;
-EXTERN_C const CLSID    CLSID_DsFindObjects;
-EXTERN_C const CLSID    CLSID_DsFindPeople;
-EXTERN_C const CLSID    CLSID_DsFindPrinter;
-EXTERN_C const CLSID    CLSID_DsFindComputer;
-EXTERN_C const CLSID    CLSID_DsFindVolume;
-EXTERN_C const CLSID    CLSID_DsFindContainer;
-EXTERN_C const CLSID    CLSID_DsFindAdvanced;
-EXTERN_C const CLSID    CLSID_DsFindDomainController;
-EXTERN_C const CLSID    CLSID_DsFindWriteableDomainController;
-EXTERN_C const CLSID    CLSID_DsFindFrsMembers;
-
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const CLSID    __cdecl CLSID_DsQuery;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindObjects;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindPeople;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindPrinter;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindComputer;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindVolume;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindContainer;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindAdvanced;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindDomainController;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindWriteableDomainController;
+EXTERN_C const CLSID    __cdecl CLSID_DsFindFrsMembers;
 
 #endif /* __dsquery_h */

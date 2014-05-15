@@ -88,32 +88,6 @@ typedef enum ShellWindowFindWindowOptions {
     SWFO_COOKIEPASSED   = 0x00000004,
 } ShellWindowFindWindowOptions;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_SHDocVw;
-EXTERN_C const IID      IID_IWebBrowser;
-EXTERN_C const IID      DIID_DWebBrowserEvents;
-EXTERN_C const IID      IID_IWebBrowserApp;
-EXTERN_C const IID      IID_IWebBrowser2;
-EXTERN_C const IID      DIID_DWebBrowserEvents2;
-EXTERN_C const CLSID    CLSID_WebBrowser_V1;
-EXTERN_C const CLSID    CLSID_WebBrowser;
-EXTERN_C const CLSID    CLSID_InternetExplorer;
-EXTERN_C const CLSID    CLSID_InternetExplorerMedium;
-EXTERN_C const CLSID    CLSID_ShellBrowserWindow;
-EXTERN_C const IID      DIID_DShellWindowEvents;
-EXTERN_C const IID      IID_IShellWindows;
-EXTERN_C const CLSID    CLSID_ShellWindows;
-EXTERN_C const IID      IID_IShellUIHelper;
-EXTERN_C const IID      IID_IShellUIHelper2;
-EXTERN_C const IID      IID_IShellUIHelper3;
-EXTERN_C const CLSID    CLSID_ShellUIHelper;
-EXTERN_C const IID      DIID__ShellFavoritesNameSpaceEvents;
-EXTERN_C const IID      IID_IShellFavoritesNameSpace;
-EXTERN_C const IID      IID_IShellNameSpace;
-EXTERN_C const CLSID    CLSID_ShellNameSpace;
-EXTERN_C const IID      IID_IScriptErrorList;
-EXTERN_C const CLSID    CLSID_CScriptErrorList;
-
 /* IWebBrowser interface */
 #undef INTERFACE
 #define INTERFACE   IWebBrowser
@@ -1567,5 +1541,31 @@ DECLARE_INTERFACE_( IScriptErrorList, IDispatch ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_SHDocVw;
+EXTERN_C const IID      __cdecl IID_IWebBrowser;
+EXTERN_C const IID      __cdecl DIID_DWebBrowserEvents;
+EXTERN_C const IID      __cdecl IID_IWebBrowserApp;
+EXTERN_C const IID      __cdecl IID_IWebBrowser2;
+EXTERN_C const IID      __cdecl DIID_DWebBrowserEvents2;
+EXTERN_C const CLSID    __cdecl CLSID_WebBrowser_V1;
+EXTERN_C const CLSID    __cdecl CLSID_WebBrowser;
+EXTERN_C const CLSID    __cdecl CLSID_InternetExplorer;
+EXTERN_C const CLSID    __cdecl CLSID_InternetExplorerMedium;
+EXTERN_C const CLSID    __cdecl CLSID_ShellBrowserWindow;
+EXTERN_C const IID      __cdecl DIID_DShellWindowEvents;
+EXTERN_C const IID      __cdecl IID_IShellWindows;
+EXTERN_C const CLSID    __cdecl CLSID_ShellWindows;
+EXTERN_C const IID      __cdecl IID_IShellUIHelper;
+EXTERN_C const IID      __cdecl IID_IShellUIHelper2;
+EXTERN_C const IID      __cdecl IID_IShellUIHelper3;
+EXTERN_C const CLSID    __cdecl CLSID_ShellUIHelper;
+EXTERN_C const IID      __cdecl DIID__ShellFavoritesNameSpaceEvents;
+EXTERN_C const IID      __cdecl IID_IShellFavoritesNameSpace;
+EXTERN_C const IID      __cdecl IID_IShellNameSpace;
+EXTERN_C const CLSID    __cdecl CLSID_ShellNameSpace;
+EXTERN_C const IID      __cdecl IID_IScriptErrorList;
+EXTERN_C const CLSID    __cdecl CLSID_CScriptErrorList;
 
 #endif /* __exdisp_h__ */

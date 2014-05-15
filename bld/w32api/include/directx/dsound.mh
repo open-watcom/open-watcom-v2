@@ -961,77 +961,6 @@ typedef LPDIRECTSOUNDCAPTURE8                   *LPLPDIRECTSOUNDCAPTURE8;
 typedef LPDIRECTSOUNDCAPTUREBUFFER8             *LPLPDIRECTSOUNDCAPTUREBUFFER8;
 #endif
 
-/* GUIDs */
-EXTERN_C const CLSID    CLSID_DirectSound;
-EXTERN_C const CLSID    CLSID_DirectSound8;
-EXTERN_C const CLSID    CLSID_DirectSoundCapture;
-EXTERN_C const CLSID    CLSID_DirectSoundCapture8;
-EXTERN_C const CLSID    CLSID_DirectSoundFullDuplex;
-EXTERN_C const GUID     DSDEVID_DefaultPlayback;
-EXTERN_C const GUID     DSDEVID_DefaultCapture;
-EXTERN_C const GUID     DSDEVID_DefaultVoicePlayback;
-EXTERN_C const GUID     DSDEVID_DefaultVoiceCapture;
-EXTERN_C const IID      IID_IDirectSound;
-EXTERN_C const IID      IID_IDirectSoundBuffer;
-EXTERN_C const IID      IID_IDirectSound3DListener;
-EXTERN_C const IID      IID_IDirectSound3DBuffer;
-EXTERN_C const IID      IID_IDirectSoundCapture;
-EXTERN_C const IID      IID_IDirectSoundCaptureBuffer;
-EXTERN_C const IID      IID_IDirectSoundNotify;
-EXTERN_C const GUID     DS3DALG_NO_VIRTUALIZATION;
-EXTERN_C const GUID     DS3DALG_HRTF_FULL;
-EXTERN_C const GUID     DS3DALG_HRTF_LIGHT;
-#if (DIRECTSOUND_VERSION >= 0x0800)
-EXTERN_C const IID      IID_IDirectSound8;
-EXTERN_C const IID      IID_IDirectSoundBuffer8;
-EXTERN_C const GUID     GUID_All_Objects;
-EXTERN_C const IID      IID_IDirectSoundCaptureBuffer8;
-EXTERN_C const IID      IID_IDirectSoundFXGargle;
-EXTERN_C const IID      IID_IDirectSoundFXChorus;
-EXTERN_C const IID      IID_IDirectSoundFXFlanger;
-EXTERN_C const IID      IID_IDirectSoundFXEcho;
-EXTERN_C const IID      IID_IDirectSoundFXDistortion;
-EXTERN_C const IID      IID_IDirectSoundFXCompressor;
-EXTERN_C const IID      IID_IDirectSoundFXParamEq;
-EXTERN_C const IID      IID_IDirectSoundFXI3DL2Reverb;
-EXTERN_C const IID      IID_IDirectSoundFXWavesReverb;
-EXTERN_C const IID      IID_IDirectSoundCaptureFXAec;
-EXTERN_C const IID      IID_IDirectSoundCaptureFXNoiseSuppress;
-EXTERN_C const IID      IID_IDirectSoundFullDuplex;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_GARGLE;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_CHORUS;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_FLANGER;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_ECHO;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_DISTORTION;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_COMPRESSOR;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_PARAMEQ;
-EXTERN_C const GUID     GUID_DSFX_STANDARD_I3DL2REVERB;
-EXTERN_C const GUID     GUID_DSFX_WAVES_REVERB;
-EXTERN_C const GUID     GUID_DSCFX_CLASS_AEC;
-EXTERN_C const GUID     GUID_DSCFX_MS_AEC;
-EXTERN_C const GUID     GUID_DSCFX_SYSTEM_AEC;
-EXTERN_C const GUID     GUID_DSCFX_CLASS_NS;
-EXTERN_C const GUID     GUID_DSCFX_MS_NS;
-EXTERN_C const GUID     GUID_DSCFX_SYSTEM_NS;
-#define IID_IDirectSoundCapture8        IID_IDirectSoundCapture
-#define IID_IDirectSound3DListener8     IID_IDirectSound3DListener
-#define IID_IDirectSound3DBuffer8       IID_IDirectSound3DBuffer
-#define IID_IDirectSoundNotify8         IID_IDirectSoundNotify
-#define IID_IDirectSoundFXGargle8       IID_IDirectSoundFXGargle
-#define IID_IDirectSoundFXChorus8       IID_IDirectSoundFXChorus
-#define IID_IDirectSoundFXFlanger8      IID_IDirectSoundFXFlanger
-#define IID_IDirectSoundFXEcho8         IID_IDirectSoundFXEcho
-#define IID_IDirectSoundFXDistortion8   IID_IDirectSoundFXDistortion
-#define IID_IDirectSoundFXCompressor8   IID_IDirectSoundFXCompressor
-#define IID_IDirectSoundFXParamEq8      IID_IDirectSoundFXParamEq
-#define IID_IDirectSoundFXWavesReverb8  IID_IDirectSoundFXWavesReverb
-#define IID_IDirectSoundFXI3DL2Reverb8  IID_IDirectSoundFXI3DL2Reverb
-#define IID_IDirectSoundCaptureFXAec8   IID_IDirectSoundCaptureFXAec
-#define IID_IDirectSoundCaptureFXNoiseSuppress8 IID_IDirectSoundCaptureFXNoiseSuppress
-#define IID_IDirectSoundFullDuplex8     IID_IDirectSoundFullDuplex
-#endif
-#define DS3DALG_DEFAULT                 GUID_NULL
-
 /* IDirectSound interface */
 #undef INTERFACE
 #define INTERFACE   IDirectSound
@@ -2347,5 +2276,76 @@ HRESULT WINAPI  GetDeviceID( LPCGUID, LPCGUID );
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const CLSID    __cdecl CLSID_DirectSound;
+EXTERN_C const CLSID    __cdecl CLSID_DirectSound8;
+EXTERN_C const CLSID    __cdecl CLSID_DirectSoundCapture;
+EXTERN_C const CLSID    __cdecl CLSID_DirectSoundCapture8;
+EXTERN_C const CLSID    __cdecl CLSID_DirectSoundFullDuplex;
+EXTERN_C const GUID     __cdecl DSDEVID_DefaultPlayback;
+EXTERN_C const GUID     __cdecl DSDEVID_DefaultCapture;
+EXTERN_C const GUID     __cdecl DSDEVID_DefaultVoicePlayback;
+EXTERN_C const GUID     __cdecl DSDEVID_DefaultVoiceCapture;
+EXTERN_C const IID      __cdecl IID_IDirectSound;
+EXTERN_C const IID      __cdecl IID_IDirectSoundBuffer;
+EXTERN_C const IID      __cdecl IID_IDirectSound3DListener;
+EXTERN_C const IID      __cdecl IID_IDirectSound3DBuffer;
+EXTERN_C const IID      __cdecl IID_IDirectSoundCapture;
+EXTERN_C const IID      __cdecl IID_IDirectSoundCaptureBuffer;
+EXTERN_C const IID      __cdecl IID_IDirectSoundNotify;
+EXTERN_C const GUID     __cdecl DS3DALG_NO_VIRTUALIZATION;
+EXTERN_C const GUID     __cdecl DS3DALG_HRTF_FULL;
+EXTERN_C const GUID     __cdecl DS3DALG_HRTF_LIGHT;
+#if (DIRECTSOUND_VERSION >= 0x0800)
+EXTERN_C const IID      __cdecl IID_IDirectSound8;
+EXTERN_C const IID      __cdecl IID_IDirectSoundBuffer8;
+EXTERN_C const GUID     __cdecl GUID_All_Objects;
+EXTERN_C const IID      __cdecl IID_IDirectSoundCaptureBuffer8;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXGargle;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXChorus;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXFlanger;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXEcho;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXDistortion;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXCompressor;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXParamEq;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXI3DL2Reverb;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFXWavesReverb;
+EXTERN_C const IID      __cdecl IID_IDirectSoundCaptureFXAec;
+EXTERN_C const IID      __cdecl IID_IDirectSoundCaptureFXNoiseSuppress;
+EXTERN_C const IID      __cdecl IID_IDirectSoundFullDuplex;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_GARGLE;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_CHORUS;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_FLANGER;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_ECHO;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_DISTORTION;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_COMPRESSOR;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_PARAMEQ;
+EXTERN_C const GUID     __cdecl GUID_DSFX_STANDARD_I3DL2REVERB;
+EXTERN_C const GUID     __cdecl GUID_DSFX_WAVES_REVERB;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_CLASS_AEC;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_MS_AEC;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_SYSTEM_AEC;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_CLASS_NS;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_MS_NS;
+EXTERN_C const GUID     __cdecl GUID_DSCFX_SYSTEM_NS;
+#define IID_IDirectSoundCapture8        IID_IDirectSoundCapture
+#define IID_IDirectSound3DListener8     IID_IDirectSound3DListener
+#define IID_IDirectSound3DBuffer8       IID_IDirectSound3DBuffer
+#define IID_IDirectSoundNotify8         IID_IDirectSoundNotify
+#define IID_IDirectSoundFXGargle8       IID_IDirectSoundFXGargle
+#define IID_IDirectSoundFXChorus8       IID_IDirectSoundFXChorus
+#define IID_IDirectSoundFXFlanger8      IID_IDirectSoundFXFlanger
+#define IID_IDirectSoundFXEcho8         IID_IDirectSoundFXEcho
+#define IID_IDirectSoundFXDistortion8   IID_IDirectSoundFXDistortion
+#define IID_IDirectSoundFXCompressor8   IID_IDirectSoundFXCompressor
+#define IID_IDirectSoundFXParamEq8      IID_IDirectSoundFXParamEq
+#define IID_IDirectSoundFXWavesReverb8  IID_IDirectSoundFXWavesReverb
+#define IID_IDirectSoundFXI3DL2Reverb8  IID_IDirectSoundFXI3DL2Reverb
+#define IID_IDirectSoundCaptureFXAec8   IID_IDirectSoundCaptureFXAec
+#define IID_IDirectSoundCaptureFXNoiseSuppress8 IID_IDirectSoundCaptureFXNoiseSuppress
+#define IID_IDirectSoundFullDuplex8     IID_IDirectSoundFullDuplex
+#endif
+#define DS3DALG_DEFAULT                 GUID_NULL
 
 #endif /* __DSOUND_INCLUDED__ */

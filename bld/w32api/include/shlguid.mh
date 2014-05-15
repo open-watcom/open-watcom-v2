@@ -16,260 +16,6 @@
 
 :include cpluspro.sp
 
-/* GUIDs */
-/* Some of these are also in shobjidl.h. */
-EXTERN_C const CLSID    CLSID_NetworkDomain;
-EXTERN_C const CLSID    CLSID_NetworkServer;
-EXTERN_C const CLSID    CLSID_NetworkShare;
-EXTERN_C const CLSID    CLSID_MyComputer;
-EXTERN_C const CLSID    CLSID_Internet;
-EXTERN_C const CLSID    CLSID_RecycleBin;
-EXTERN_C const CLSID    CLSID_ControlPanel;
-EXTERN_C const CLSID    CLSID_Printers;
-EXTERN_C const CLSID    CLSID_MyDocuments;
-EXTERN_C const CLSID    CLSID_PictureVideoLibrary;
-EXTERN_C const CLSID    CLSID_MusicLibrary;
-EXTERN_C const CLSID    CLSID_DocumentLibrary;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const GUID     CATID_BrowsableShellExt;
-EXTERN_C const GUID     CATID_BrowseInPlace;
-EXTERN_C const GUID     CATID_DeskBand;
-EXTERN_C const GUID     CATID_InfoBand;
-EXTERN_C const GUID     CATID_CommBand;
-#endif
-EXTERN_C const FMTID    FMTID_Intshcut;
-EXTERN_C const FMTID    FMTID_InternetSite;
-EXTERN_C const GUID     CGID_Explorer;
-EXTERN_C const GUID     CGID_ShellDocView;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const GUID     CGID_ShellServiceObject;
-EXTERN_C const GUID     CGID_ExplorerBarDoc;
-#endif
-EXTERN_C const IID      IID_INewShortcutHookA;
-EXTERN_C const IID      IID_IShellBrowser;
-EXTERN_C const IID      IID_IShellView;
-EXTERN_C const IID      IID_IContextMenu;
-EXTERN_C const IID      IID_IShellIcon;
-EXTERN_C const IID      IID_IShellFolder;
-EXTERN_C const IID      IID_IShellExtInit;
-EXTERN_C const IID      IID_IShellPropSheetExt;
-EXTERN_C const IID      IID_IPersistFolder;
-EXTERN_C const IID      IID_IExtractIconA;
-EXTERN_C const IID      IID_IShellDetails;
-EXTERN_C const IID      IID_IShellLinkA;
-EXTERN_C const IID      IID_ICopyHookA;
-EXTERN_C const IID      IID_IFileViewerA;
-EXTERN_C const IID      IID_ICommDlgBrowser;
-EXTERN_C const IID      IID_IEnumIDList;
-EXTERN_C const IID      IID_IFileViewerSite;
-EXTERN_C const IID      IID_IContextMenu2;
-EXTERN_C const IID      IID_IShellExecuteHook;
-EXTERN_C const IID      IID_IPropSheetPage;
-EXTERN_C const IID      IID_INewShortcutHookW;
-EXTERN_C const IID      IID_IFileViewerW;
-EXTERN_C const IID      IID_IShellLinkW;
-EXTERN_C const IID      IID_IExtractIconW;
-EXTERN_C const IID      IID_IShellExecuteHookW;
-EXTERN_C const IID      IID_ICopyHookW;
-EXTERN_C const IID      IID_IRemoteComputer;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IQueryInfo;
-#endif
-EXTERN_C const IID      IID_IBriefcaseStg;
-EXTERN_C const IID      IID_IShellView2;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IURLSearchHook;
-EXTERN_C const IID      IID_ISearchContext;
-EXTERN_C const IID      IID_IURLSearchHook2;
-EXTERN_C const IID      IID_IDefViewID;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const CLSID    CLSID_FolderShortcut;
-#endif
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IDockingWindowSite;
-EXTERN_C const IID      IID_IDockingWindowFrame;
-EXTERN_C const IID      IID_IShellIconOverlay;
-EXTERN_C const IID      IID_IShellIconOverlayIdentifier;
-EXTERN_C const IID      IID_ICommDlgBrowser2;
-EXTERN_C const IID      IID_IShellFolderViewCB;
-EXTERN_C const CLSID    CLSID_CFSIconOverlayManager;
-EXTERN_C const IID      IID_IShellIconOverlayManager;
-EXTERN_C const IID      IID_IThumbnailCapture;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const IID      IID_IShellImageStore;
-#if (NTDDI_VERSION < 0x06000000)
-EXTERN_C const CLSID    CLSID_ShellThumbnailDiskCache;
-#endif
-#endif
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IContextMenu3;
-#endif
-EXTERN_C const GUID     SID_DefView;
-EXTERN_C const GUID     CGID_DefView;
-EXTERN_C const CLSID    CLSID_MenuBand;
-EXTERN_C const IID      IID_IShellFolderBand;
-EXTERN_C const IID      IID_IDefViewFrame;
-EXTERN_C const GUID     VID_LargeIcons;
-EXTERN_C const GUID     VID_SmallIcons;
-EXTERN_C const GUID     VID_List;
-EXTERN_C const GUID     VID_Details;
-EXTERN_C const GUID     VID_Tile;
-EXTERN_C const GUID     VID_Thumbnails;
-EXTERN_C const GUID     VID_ThumbStrip;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const IID      IID_IDiscardableBrowserProperty;
-EXTERN_C const IID      IID_IShellChangeNotify;
-EXTERN_C const CLSID    CLSID_CUrlHistory;
-EXTERN_C const CLSID    CLSID_CURLSearchHook;
-EXTERN_C const IID      IID_IObjMgr;
-EXTERN_C const IID      IID_IACList;
-EXTERN_C const IID      IID_IACList2;
-EXTERN_C const IID      IID_ICurrentWorkingDirectory;
-EXTERN_C const CLSID    CLSID_AutoComplete;
-EXTERN_C const CLSID    CLSID_ACLHistory;
-EXTERN_C const CLSID    CLSID_ACListISF;
-EXTERN_C const CLSID    CLSID_ACLMRU;
-EXTERN_C const CLSID    CLSID_ACLMulti;
-#endif
-#if (_WIN32_IE >= 0x0600)
-EXTERN_C const CLSID    CLSID_ACLCustomMRU;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const CLSID    CLSID_ProgressDialog;
-EXTERN_C const IID      IID_IProgressDialog;
-#endif
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const GUID     SID_STopLevelBrowser;
-#endif
-EXTERN_C const CLSID    CLSID_FileTypes;
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const CLSID    CLSID_ActiveDesktop;
-EXTERN_C const IID      IID_IActiveDesktop;
-EXTERN_C const IID      IID_IActiveDesktopP;
-EXTERN_C const IID      IID_IADesktopP2;
-EXTERN_C const IID      IID_ISynchronizedCallBack;
-EXTERN_C const IID      IID_IQueryAssociations;
-EXTERN_C const CLSID    CLSID_QueryAssociations;
-EXTERN_C const IID      IID_IColumnProvider;
-EXTERN_C const CLSID    CLSID_LinkColumnProvider;
-EXTERN_C const GUID     CGID_ShortCut;
-EXTERN_C const IID      IID_INamedPropertyBag;
-EXTERN_C const CLSID    CLSID_InternetButtons;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const CLSID    CLSID_MSOButtons;
-EXTERN_C const CLSID    CLSID_ToolbarExtButtons;
-#endif
-#if (_WIN32_IE >= 0x0400)
-EXTERN_C const CLSID    CLSID_DarwinAppPublisher;
-EXTERN_C const CLSID    CLSID_DocHostUIHandler;
-#endif
-#if (_WIN32_IE >= 0x0500)
-EXTERN_C const IID      IID_IShellFolder2;
-EXTERN_C const FMTID    FMTID_ShellDetails;
-EXTERN_C const FMTID    FMTID_Storage;
-EXTERN_C const FMTID    FMTID_ImageProperties;
-EXTERN_C const FMTID    FMTID_CustomImageProperties;
-EXTERN_C const FMTID    FMTID_Displaced;
-EXTERN_C const FMTID    FMTID_Briefcase;
-EXTERN_C const FMTID    FMTID_Misc;
-EXTERN_C const FMTID    FMTID_WebView;
-EXTERN_C const FMTID    FMTID_MUSIC;
-EXTERN_C const FMTID    FMTID_DRM;
-EXTERN_C const FMTID    FMTID_Volume;
-EXTERN_C const FMTID    FMTID_Query;
-EXTERN_C const IID      IID_IEnumExtraSearch;
-EXTERN_C const CLSID    CLSID_HWShellExecute;
-EXTERN_C const CLSID    CLSID_DragDropHelper;
-EXTERN_C const CLSID    CLSID_CAnchorBrowsePropertyPage;
-EXTERN_C const CLSID    CLSID_CImageBrowsePropertyPage;
-EXTERN_C const CLSID    CLSID_CDocBrowsePropertyPage;
-EXTERN_C const IID      IID_IFileSystemBindData;
-EXTERN_C const GUID     SID_STopWindow;
-EXTERN_C const GUID     SID_SGetViewFromViewDual;
-EXTERN_C const CLSID    CLSID_FolderItem;
-EXTERN_C const CLSID    CLSID_FolderItemsMultiLevel;
-EXTERN_C const CLSID    CLSID_NewMenu;
-EXTERN_C const GUID     BHID_SFObject;
-EXTERN_C const GUID     BHID_SFUIObject;
-EXTERN_C const GUID     BHID_SFViewObject;
-EXTERN_C const GUID     BHID_Storage;
-EXTERN_C const GUID     BHID_Stream;
-EXTERN_C const GUID     BHID_LinkTargetItem;
-EXTERN_C const GUID     BHID_StorageEnum;
-EXTERN_C const GUID     BHID_Transfer;
-EXTERN_C const GUID     BHID_PropertyStore;
-EXTERN_C const GUID     BHID_ThumbnailHandler;
-EXTERN_C const GUID     BHID_EnumItems;
-EXTERN_C const GUID     BHID_DataObject;
-EXTERN_C const GUID     BHID_AssociationArray;
-EXTERN_C const GUID     BHID_Filter;
-#endif
-#if (_WIN32_IE >= 0x0600)
-EXTERN_C const GUID     SID_CtxQueryAssociations;
-#endif
-EXTERN_C const IID      IID_IDocViewSite;
-EXTERN_C const CLSID    CLSID_QuickLinks;
-EXTERN_C const CLSID    CLSID_ISFBand;
-EXTERN_C const IID      IID_CDefView;
-EXTERN_C const CLSID    CLSID_ShellFldSetExt;
-EXTERN_C const GUID     SID_SMenuBandChild;
-EXTERN_C const GUID     SID_SMenuBandParent;
-EXTERN_C const GUID     SID_SMenuPopup;
-EXTERN_C const GUID     SID_SMenuBandBottomSelected;
-EXTERN_C const GUID     SID_SMenuBandBottom;
-EXTERN_C const GUID     SID_MenuShellFolder;
-EXTERN_C const GUID     SID_SMenuBandContextMenuModifier;
-EXTERN_C const GUID     SID_SMenuBandBKContextMenu;
-EXTERN_C const GUID     CGID_MENUDESKBAR;
-EXTERN_C const GUID     SID_SMenuBandTop;
-EXTERN_C const CLSID    CLSID_MenuToolbarBase;
-EXTERN_C const IID      IID_IBanneredBar;
-EXTERN_C const CLSID    CLSID_MenuBandSite;
-EXTERN_C const GUID     SID_SCommDlgBrowser;
-EXTERN_C const GUID     CPFG_LOGON_USERNAME;
-EXTERN_C const GUID     CPFG_LOGON_PASSWORD;
-EXTERN_C const GUID     CPFG_SMARTCARD_USERNAME;
-EXTERN_C const GUID     CPFG_SMARTCARD_PIN;
-EXTERN_C const GUID     FOLDERTYPEID_NotSpecified;
-EXTERN_C const GUID     FOLDERTYPEID_Invalid;
-EXTERN_C const GUID     FOLDERTYPEID_Documents;
-EXTERN_C const GUID     FOLDERTYPEID_Pictures;
-EXTERN_C const GUID     FOLDERTYPEID_MusicDetails;
-EXTERN_C const GUID     FOLDERTYPEID_MusicIcons;
-EXTERN_C const GUID     FOLDERTYPEID_Games;
-EXTERN_C const GUID     FOLDERTYPEID_ControlPanelCategory;
-EXTERN_C const GUID     FOLDERTYPEID_ControlPanelClassic;
-EXTERN_C const GUID     FOLDERTYPEID_Printers;
-EXTERN_C const GUID     FOLDERTYPEID_RecycleBin;
-EXTERN_C const GUID     FOLDERTYPEID_SoftwareExplorer;
-EXTERN_C const GUID     FOLDERTYPEID_CompressedFolder;
-EXTERN_C const GUID     FOLDERTYPEID_Contacts;
-EXTERN_C const GUID     FOLDERTYPEID_Library;
-EXTERN_C const GUID     FOLDERTYPEID_NetworkExplorer;
-EXTERN_C const GUID     FOLDERTYPEID_UserFiles;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_Icon;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_EventStore;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_ConflictStore;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_BrowseContent;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_ShowSchedule;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeActivate;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDeactivate;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeEnable;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDisable;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDelete;
-EXTERN_C const GUID     SYNCMGR_OBJECTID_EventLinkClick;
-EXTERN_C const GUID     EP_NavPane;
-EXTERN_C const GUID     EP_Commands;
-EXTERN_C const GUID     EP_Commands_Organize;
-EXTERN_C const GUID     EP_Commands_View;
-EXTERN_C const GUID     EP_DetailsPane;
-EXTERN_C const GUID     EP_PreviewPane;
-EXTERN_C const GUID     EP_QueryPane;
-EXTERN_C const GUID     EP_AdvQueryPane;
-
 /* Aliases */
 #define IID_IShellCopyHookA IID_ICopyHookA
 #define IID_IShellCopyHookW IID_ICopyHookW
@@ -403,3 +149,257 @@ EXTERN_C const GUID     EP_AdvQueryPane;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+/* Some of these are also in shobjidl.h. */
+EXTERN_C const CLSID    __cdecl CLSID_NetworkDomain;
+EXTERN_C const CLSID    __cdecl CLSID_NetworkServer;
+EXTERN_C const CLSID    __cdecl CLSID_NetworkShare;
+EXTERN_C const CLSID    __cdecl CLSID_MyComputer;
+EXTERN_C const CLSID    __cdecl CLSID_Internet;
+EXTERN_C const CLSID    __cdecl CLSID_RecycleBin;
+EXTERN_C const CLSID    __cdecl CLSID_ControlPanel;
+EXTERN_C const CLSID    __cdecl CLSID_Printers;
+EXTERN_C const CLSID    __cdecl CLSID_MyDocuments;
+EXTERN_C const CLSID    __cdecl CLSID_PictureVideoLibrary;
+EXTERN_C const CLSID    __cdecl CLSID_MusicLibrary;
+EXTERN_C const CLSID    __cdecl CLSID_DocumentLibrary;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const GUID     __cdecl CATID_BrowsableShellExt;
+EXTERN_C const GUID     __cdecl CATID_BrowseInPlace;
+EXTERN_C const GUID     __cdecl CATID_DeskBand;
+EXTERN_C const GUID     __cdecl CATID_InfoBand;
+EXTERN_C const GUID     __cdecl CATID_CommBand;
+#endif
+EXTERN_C const FMTID    __cdecl FMTID_Intshcut;
+EXTERN_C const FMTID    __cdecl FMTID_InternetSite;
+EXTERN_C const GUID     __cdecl CGID_Explorer;
+EXTERN_C const GUID     __cdecl CGID_ShellDocView;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const GUID     __cdecl CGID_ShellServiceObject;
+EXTERN_C const GUID     __cdecl CGID_ExplorerBarDoc;
+#endif
+EXTERN_C const IID      __cdecl IID_INewShortcutHookA;
+EXTERN_C const IID      __cdecl IID_IShellBrowser;
+EXTERN_C const IID      __cdecl IID_IShellView;
+EXTERN_C const IID      __cdecl IID_IContextMenu;
+EXTERN_C const IID      __cdecl IID_IShellIcon;
+EXTERN_C const IID      __cdecl IID_IShellFolder;
+EXTERN_C const IID      __cdecl IID_IShellExtInit;
+EXTERN_C const IID      __cdecl IID_IShellPropSheetExt;
+EXTERN_C const IID      __cdecl IID_IPersistFolder;
+EXTERN_C const IID      __cdecl IID_IExtractIconA;
+EXTERN_C const IID      __cdecl IID_IShellDetails;
+EXTERN_C const IID      __cdecl IID_IShellLinkA;
+EXTERN_C const IID      __cdecl IID_ICopyHookA;
+EXTERN_C const IID      __cdecl IID_IFileViewerA;
+EXTERN_C const IID      __cdecl IID_ICommDlgBrowser;
+EXTERN_C const IID      __cdecl IID_IEnumIDList;
+EXTERN_C const IID      __cdecl IID_IFileViewerSite;
+EXTERN_C const IID      __cdecl IID_IContextMenu2;
+EXTERN_C const IID      __cdecl IID_IShellExecuteHook;
+EXTERN_C const IID      __cdecl IID_IPropSheetPage;
+EXTERN_C const IID      __cdecl IID_INewShortcutHookW;
+EXTERN_C const IID      __cdecl IID_IFileViewerW;
+EXTERN_C const IID      __cdecl IID_IShellLinkW;
+EXTERN_C const IID      __cdecl IID_IExtractIconW;
+EXTERN_C const IID      __cdecl IID_IShellExecuteHookW;
+EXTERN_C const IID      __cdecl IID_ICopyHookW;
+EXTERN_C const IID      __cdecl IID_IRemoteComputer;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IQueryInfo;
+#endif
+EXTERN_C const IID      __cdecl IID_IBriefcaseStg;
+EXTERN_C const IID      __cdecl IID_IShellView2;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IURLSearchHook;
+EXTERN_C const IID      __cdecl IID_ISearchContext;
+EXTERN_C const IID      __cdecl IID_IURLSearchHook2;
+EXTERN_C const IID      __cdecl IID_IDefViewID;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const CLSID    __cdecl CLSID_FolderShortcut;
+#endif
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IDockingWindowSite;
+EXTERN_C const IID      __cdecl IID_IDockingWindowFrame;
+EXTERN_C const IID      __cdecl IID_IShellIconOverlay;
+EXTERN_C const IID      __cdecl IID_IShellIconOverlayIdentifier;
+EXTERN_C const IID      __cdecl IID_ICommDlgBrowser2;
+EXTERN_C const IID      __cdecl IID_IShellFolderViewCB;
+EXTERN_C const CLSID    __cdecl CLSID_CFSIconOverlayManager;
+EXTERN_C const IID      __cdecl IID_IShellIconOverlayManager;
+EXTERN_C const IID      __cdecl IID_IThumbnailCapture;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const IID      __cdecl IID_IShellImageStore;
+#if (NTDDI_VERSION < 0x06000000)
+EXTERN_C const CLSID    __cdecl CLSID_ShellThumbnailDiskCache;
+#endif
+#endif
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IContextMenu3;
+#endif
+EXTERN_C const GUID     __cdecl SID_DefView;
+EXTERN_C const GUID     __cdecl CGID_DefView;
+EXTERN_C const CLSID    __cdecl CLSID_MenuBand;
+EXTERN_C const IID      __cdecl IID_IShellFolderBand;
+EXTERN_C const IID      __cdecl IID_IDefViewFrame;
+EXTERN_C const GUID     __cdecl VID_LargeIcons;
+EXTERN_C const GUID     __cdecl VID_SmallIcons;
+EXTERN_C const GUID     __cdecl VID_List;
+EXTERN_C const GUID     __cdecl VID_Details;
+EXTERN_C const GUID     __cdecl VID_Tile;
+EXTERN_C const GUID     __cdecl VID_Thumbnails;
+EXTERN_C const GUID     __cdecl VID_ThumbStrip;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IDiscardableBrowserProperty;
+EXTERN_C const IID      __cdecl IID_IShellChangeNotify;
+EXTERN_C const CLSID    __cdecl CLSID_CUrlHistory;
+EXTERN_C const CLSID    __cdecl CLSID_CURLSearchHook;
+EXTERN_C const IID      __cdecl IID_IObjMgr;
+EXTERN_C const IID      __cdecl IID_IACList;
+EXTERN_C const IID      __cdecl IID_IACList2;
+EXTERN_C const IID      __cdecl IID_ICurrentWorkingDirectory;
+EXTERN_C const CLSID    __cdecl CLSID_AutoComplete;
+EXTERN_C const CLSID    __cdecl CLSID_ACLHistory;
+EXTERN_C const CLSID    __cdecl CLSID_ACListISF;
+EXTERN_C const CLSID    __cdecl CLSID_ACLMRU;
+EXTERN_C const CLSID    __cdecl CLSID_ACLMulti;
+#endif
+#if (_WIN32_IE >= 0x0600)
+EXTERN_C const CLSID    __cdecl CLSID_ACLCustomMRU;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const CLSID    __cdecl CLSID_ProgressDialog;
+EXTERN_C const IID      __cdecl IID_IProgressDialog;
+#endif
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const GUID     __cdecl SID_STopLevelBrowser;
+#endif
+EXTERN_C const CLSID    __cdecl CLSID_FileTypes;
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const CLSID    __cdecl CLSID_ActiveDesktop;
+EXTERN_C const IID      __cdecl IID_IActiveDesktop;
+EXTERN_C const IID      __cdecl IID_IActiveDesktopP;
+EXTERN_C const IID      __cdecl IID_IADesktopP2;
+EXTERN_C const IID      __cdecl IID_ISynchronizedCallBack;
+EXTERN_C const IID      __cdecl IID_IQueryAssociations;
+EXTERN_C const CLSID    __cdecl CLSID_QueryAssociations;
+EXTERN_C const IID      __cdecl IID_IColumnProvider;
+EXTERN_C const CLSID    __cdecl CLSID_LinkColumnProvider;
+EXTERN_C const GUID     __cdecl CGID_ShortCut;
+EXTERN_C const IID      __cdecl IID_INamedPropertyBag;
+EXTERN_C const CLSID    __cdecl CLSID_InternetButtons;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const CLSID    __cdecl CLSID_MSOButtons;
+EXTERN_C const CLSID    __cdecl CLSID_ToolbarExtButtons;
+#endif
+#if (_WIN32_IE >= 0x0400)
+EXTERN_C const CLSID    __cdecl CLSID_DarwinAppPublisher;
+EXTERN_C const CLSID    __cdecl CLSID_DocHostUIHandler;
+#endif
+#if (_WIN32_IE >= 0x0500)
+EXTERN_C const IID      __cdecl IID_IShellFolder2;
+EXTERN_C const FMTID    __cdecl FMTID_ShellDetails;
+EXTERN_C const FMTID    __cdecl FMTID_Storage;
+EXTERN_C const FMTID    __cdecl FMTID_ImageProperties;
+EXTERN_C const FMTID    __cdecl FMTID_CustomImageProperties;
+EXTERN_C const FMTID    __cdecl FMTID_Displaced;
+EXTERN_C const FMTID    __cdecl FMTID_Briefcase;
+EXTERN_C const FMTID    __cdecl FMTID_Misc;
+EXTERN_C const FMTID    __cdecl FMTID_WebView;
+EXTERN_C const FMTID    __cdecl FMTID_MUSIC;
+EXTERN_C const FMTID    __cdecl FMTID_DRM;
+EXTERN_C const FMTID    __cdecl FMTID_Volume;
+EXTERN_C const FMTID    __cdecl FMTID_Query;
+EXTERN_C const IID      __cdecl IID_IEnumExtraSearch;
+EXTERN_C const CLSID    __cdecl CLSID_HWShellExecute;
+EXTERN_C const CLSID    __cdecl CLSID_DragDropHelper;
+EXTERN_C const CLSID    __cdecl CLSID_CAnchorBrowsePropertyPage;
+EXTERN_C const CLSID    __cdecl CLSID_CImageBrowsePropertyPage;
+EXTERN_C const CLSID    __cdecl CLSID_CDocBrowsePropertyPage;
+EXTERN_C const IID      __cdecl IID_IFileSystemBindData;
+EXTERN_C const GUID     __cdecl SID_STopWindow;
+EXTERN_C const GUID     __cdecl SID_SGetViewFromViewDual;
+EXTERN_C const CLSID    __cdecl CLSID_FolderItem;
+EXTERN_C const CLSID    __cdecl CLSID_FolderItemsMultiLevel;
+EXTERN_C const CLSID    __cdecl CLSID_NewMenu;
+EXTERN_C const GUID     __cdecl BHID_SFObject;
+EXTERN_C const GUID     __cdecl BHID_SFUIObject;
+EXTERN_C const GUID     __cdecl BHID_SFViewObject;
+EXTERN_C const GUID     __cdecl BHID_Storage;
+EXTERN_C const GUID     __cdecl BHID_Stream;
+EXTERN_C const GUID     __cdecl BHID_LinkTargetItem;
+EXTERN_C const GUID     __cdecl BHID_StorageEnum;
+EXTERN_C const GUID     __cdecl BHID_Transfer;
+EXTERN_C const GUID     __cdecl BHID_PropertyStore;
+EXTERN_C const GUID     __cdecl BHID_ThumbnailHandler;
+EXTERN_C const GUID     __cdecl BHID_EnumItems;
+EXTERN_C const GUID     __cdecl BHID_DataObject;
+EXTERN_C const GUID     __cdecl BHID_AssociationArray;
+EXTERN_C const GUID     __cdecl BHID_Filter;
+#endif
+#if (_WIN32_IE >= 0x0600)
+EXTERN_C const GUID     __cdecl SID_CtxQueryAssociations;
+#endif
+EXTERN_C const IID      __cdecl IID_IDocViewSite;
+EXTERN_C const CLSID    __cdecl CLSID_QuickLinks;
+EXTERN_C const CLSID    __cdecl CLSID_ISFBand;
+EXTERN_C const IID      __cdecl IID_CDefView;
+EXTERN_C const CLSID    __cdecl CLSID_ShellFldSetExt;
+EXTERN_C const GUID     __cdecl SID_SMenuBandChild;
+EXTERN_C const GUID     __cdecl SID_SMenuBandParent;
+EXTERN_C const GUID     __cdecl SID_SMenuPopup;
+EXTERN_C const GUID     __cdecl SID_SMenuBandBottomSelected;
+EXTERN_C const GUID     __cdecl SID_SMenuBandBottom;
+EXTERN_C const GUID     __cdecl SID_MenuShellFolder;
+EXTERN_C const GUID     __cdecl SID_SMenuBandContextMenuModifier;
+EXTERN_C const GUID     __cdecl SID_SMenuBandBKContextMenu;
+EXTERN_C const GUID     __cdecl CGID_MENUDESKBAR;
+EXTERN_C const GUID     __cdecl SID_SMenuBandTop;
+EXTERN_C const CLSID    __cdecl CLSID_MenuToolbarBase;
+EXTERN_C const IID      __cdecl IID_IBanneredBar;
+EXTERN_C const CLSID    __cdecl CLSID_MenuBandSite;
+EXTERN_C const GUID     __cdecl SID_SCommDlgBrowser;
+EXTERN_C const GUID     __cdecl CPFG_LOGON_USERNAME;
+EXTERN_C const GUID     __cdecl CPFG_LOGON_PASSWORD;
+EXTERN_C const GUID     __cdecl CPFG_SMARTCARD_USERNAME;
+EXTERN_C const GUID     __cdecl CPFG_SMARTCARD_PIN;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_NotSpecified;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Invalid;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Documents;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Pictures;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_MusicDetails;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_MusicIcons;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Games;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_ControlPanelCategory;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_ControlPanelClassic;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Printers;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_RecycleBin;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_SoftwareExplorer;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_CompressedFolder;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Contacts;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_Library;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_NetworkExplorer;
+EXTERN_C const GUID     __cdecl FOLDERTYPEID_UserFiles;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_Icon;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_EventStore;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_ConflictStore;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_BrowseContent;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_ShowSchedule;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeActivate;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDeactivate;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeEnable;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDisable;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDelete;
+EXTERN_C const GUID     __cdecl SYNCMGR_OBJECTID_EventLinkClick;
+EXTERN_C const GUID     __cdecl EP_NavPane;
+EXTERN_C const GUID     __cdecl EP_Commands;
+EXTERN_C const GUID     __cdecl EP_Commands_Organize;
+EXTERN_C const GUID     __cdecl EP_Commands_View;
+EXTERN_C const GUID     __cdecl EP_DetailsPane;
+EXTERN_C const GUID     __cdecl EP_PreviewPane;
+EXTERN_C const GUID     __cdecl EP_QueryPane;
+EXTERN_C const GUID     __cdecl EP_AdvQueryPane;

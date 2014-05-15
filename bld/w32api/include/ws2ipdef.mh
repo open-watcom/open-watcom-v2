@@ -448,30 +448,32 @@ typedef struct in6_pktinfo {
 } IN6_PKTINFO;
 typedef IN6_PKTINFO *PIN6_PKTINFO;
 
-EXTERN_C const IN_ADDR in4addr_any;
-EXTERN_C const IN_ADDR in4addr_loopback;
-EXTERN_C const IN_ADDR in4addr_broadcast;
-EXTERN_C const IN_ADDR in4addr_allnodesonlink;
-EXTERN_C const IN_ADDR in4addr_allroutersonlink;
-EXTERN_C const IN_ADDR in4addr_alligmpv3routersonlink;
-EXTERN_C const IN_ADDR in4addr_allteredohostsonlink;
-EXTERN_C const IN_ADDR in4addr_linklocalprefix;
-EXTERN_C const IN_ADDR in4addr_multicastprefix;
+/* These addresses are in network byte order. */
 
-EXTERN_C const IN6_ADDR in6addr_any;
-EXTERN_C const IN6_ADDR in6addr_loopback;
-EXTERN_C const IN6_ADDR in6addr_allnodesonnode;
-EXTERN_C const IN6_ADDR in6addr_allnodesonlink;
-EXTERN_C const IN6_ADDR in6addr_allroutersonlink;
-EXTERN_C const IN6_ADDR in6addr_allmldv2routersonlink;
-EXTERN_C const IN6_ADDR in6addr_teredoinitiallinklocaladdress;
-EXTERN_C const IN6_ADDR in6addr_linklocalprefix;
-EXTERN_C const IN6_ADDR in6addr_multicastprefix;
-EXTERN_C const IN6_ADDR in6addr_solicitednodemulticastprefix;
-EXTERN_C const IN6_ADDR in6addr_v4mappedprefix;
-EXTERN_C const IN6_ADDR in6addr_6to4prefix;
-EXTERN_C const IN6_ADDR in6addr_teredoprefix;
-EXTERN_C const IN6_ADDR in6addr_teredoprefix_old;
+extern const IN_ADDR __cdecl in4addr_any;
+extern const IN_ADDR __cdecl in4addr_loopback;
+extern const IN_ADDR __cdecl in4addr_broadcast;
+extern const IN_ADDR __cdecl in4addr_allnodesonlink;
+extern const IN_ADDR __cdecl in4addr_allroutersonlink;
+extern const IN_ADDR __cdecl in4addr_alligmpv3routersonlink;
+extern const IN_ADDR __cdecl in4addr_allteredohostsonlink;
+extern const IN_ADDR __cdecl in4addr_linklocalprefix;
+extern const IN_ADDR __cdecl in4addr_multicastprefix;
+
+extern const IN6_ADDR __cdecl in6addr_any;
+extern const IN6_ADDR __cdecl in6addr_loopback;
+extern const IN6_ADDR __cdecl in6addr_allnodesonnode;
+extern const IN6_ADDR __cdecl in6addr_allnodesonlink;
+extern const IN6_ADDR __cdecl in6addr_allroutersonlink;
+extern const IN6_ADDR __cdecl in6addr_allmldv2routersonlink;
+extern const IN6_ADDR __cdecl in6addr_teredoinitiallinklocaladdress;
+extern const IN6_ADDR __cdecl in6addr_linklocalprefix;
+extern const IN6_ADDR __cdecl in6addr_multicastprefix;
+extern const IN6_ADDR __cdecl in6addr_solicitednodemulticastprefix;
+extern const IN6_ADDR __cdecl in6addr_v4mappedprefix;
+extern const IN6_ADDR __cdecl in6addr_6to4prefix;
+extern const IN6_ADDR __cdecl in6addr_teredoprefix;
+extern const IN6_ADDR __cdecl in6addr_teredoprefix_old;
 
 :include cplusepi.sp
 

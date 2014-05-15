@@ -24,9 +24,6 @@
 #define INTERFACE_USES_DISPEX               0x00000004L
 #define INTERFACE_USES_SECURITY_MANAGER     0x00000008L
 
-/* GUIDs */
-EXTERN_C const IID  IID_IObjectSafety;
-
 /* IObjectSafety interface */
 #undef INTERFACE
 #define INTERFACE   IObjectSafety
@@ -57,5 +54,8 @@ typedef IObjectSafety   *LPOBJECTSAFETY;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IObjectSafety;
 
 #endif /* __objsafe_h__ */

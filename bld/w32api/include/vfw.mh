@@ -1231,16 +1231,6 @@ typedef LRESULT (CALLBACK *CAPCONTROLCALLBACK)( HWND, int );
     #define CAPERRORCALLBACK    CAPERRORCALLBACKA
 #endif
 
-/* GUIDs */
-EXTERN_C const IID      IID_IAVIFile;
-EXTERN_C const IID      IID_IAVIStream;
-EXTERN_C const IID      IID_IAVIStreaming;
-EXTERN_C const IID      IID_IGetFrame;
-EXTERN_C const IID      IID_IAVIEditStream;
-EXTERN_C const IID      IID_IAVIPersistFile;
-EXTERN_C const CLSID    CLSID_AVISimpleUnMarshal;
-EXTERN_C const CLSID    CLSID_AVIFile;
-
 /* IAVIStream interface */
 #undef INTERFACE
 #define INTERFACE   IAVIStream
@@ -1953,5 +1943,15 @@ __inline DWORD ICGetDefaultKeyFrameRate( HIC x )
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IAVIFile;
+EXTERN_C const IID      __cdecl IID_IAVIStream;
+EXTERN_C const IID      __cdecl IID_IAVIStreaming;
+EXTERN_C const IID      __cdecl IID_IGetFrame;
+EXTERN_C const IID      __cdecl IID_IAVIEditStream;
+EXTERN_C const IID      __cdecl IID_IAVIPersistFile;
+EXTERN_C const CLSID    __cdecl CLSID_AVISimpleUnMarshal;
+EXTERN_C const CLSID    __cdecl CLSID_AVIFile;
 
 #endif /* _INC_VFW */

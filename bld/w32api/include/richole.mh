@@ -62,10 +62,6 @@ typedef struct _reobject {
     DWORD           dwUser;
 } REOBJECT;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IRichEditOle;
-EXTERN_C const IID  IID_IRichEditOleCallback;
-
 /* IRichEditOle interface */
 #undef INTERFACE
 #define INTERFACE   IRichEditOle
@@ -119,5 +115,9 @@ DECLARE_INTERFACE_( IRichEditOleCallback, IUnknown ) {
 typedef IRichEditOleCallback    *LPRICHEDITOLECALLBACK;
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IRichEditOle;
+EXTERN_C const IID  __cdecl IID_IRichEditOleCallback;
 
 #endif /* _RICHOLE_ */

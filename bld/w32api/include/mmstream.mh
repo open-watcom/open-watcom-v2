@@ -88,11 +88,6 @@ enum {
 typedef void (__stdcall *PAPCFUNC)( DWORD_PTR );
 #endif
 
-/* GUIDs */
-EXTERN_C const IID  IID_IMultiMediaStream;
-EXTERN_C const IID  IID_IMediaStream;
-EXTERN_C const IID  IID_IStreamSample;
-
 /* IMultiMediaStream interface */
 #undef INTERFACE
 #define INTERFACE   IMultiMediaStream
@@ -212,5 +207,10 @@ DECLARE_INTERFACE_( IStreamSample, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IMultiMediaStream;
+EXTERN_C const IID  __cdecl IID_IMediaStream;
+EXTERN_C const IID  __cdecl IID_IStreamSample;
 
 #endif /* __mmstream_h__ */

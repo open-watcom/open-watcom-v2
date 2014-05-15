@@ -205,31 +205,6 @@ typedef enum tagOLEVERBATTRIB {
     OLEVERBATTRIB_ONCONTAINERMENU   = 2
 } OLEVERBATTRIB;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IOleAdviseHolder;
-EXTERN_C const IID  IID_IOleCache;
-EXTERN_C const IID  IID_IOleCache2;
-EXTERN_C const IID  IID_IOleCacheControl;
-EXTERN_C const IID  IID_IParseDisplayName;
-EXTERN_C const IID  IID_IOleContainer;
-EXTERN_C const IID  IID_IOleClientSite;
-EXTERN_C const IID  IID_IOleObject;
-EXTERN_C const IID  IID_IOleWindow;
-EXTERN_C const IID  IID_IOleLink;
-EXTERN_C const IID  IID_IOleItemContainer;
-EXTERN_C const IID  IID_IOleInPlaceUIWindow;
-EXTERN_C const IID  IID_IOleInPlaceActiveObject;
-EXTERN_C const IID  IID_IOleInPlaceFrame;
-EXTERN_C const IID  IID_IOleInPlaceObject;
-EXTERN_C const IID  IID_IOleInPlaceSite;
-EXTERN_C const IID  IID_IContinue;
-EXTERN_C const IID  IID_IViewObject;
-EXTERN_C const IID  IID_IViewObject2;
-EXTERN_C const IID  IID_IDropSource;
-EXTERN_C const IID  IID_IDropTarget;
-EXTERN_C const IID  IID_IDropSourceNotify;
-EXTERN_C const IID  IID_IEnumOLEVERB;
-
 /* IOleAdviseHolder interface */
 #undef INTERFACE
 #define INTERFACE   IOleAdviseHolder
@@ -1109,5 +1084,30 @@ typedef IEnumOLEVERB    *LPENUMOLEVERB;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IOleAdviseHolder;
+EXTERN_C const IID  __cdecl IID_IOleCache;
+EXTERN_C const IID  __cdecl IID_IOleCache2;
+EXTERN_C const IID  __cdecl IID_IOleCacheControl;
+EXTERN_C const IID  __cdecl IID_IParseDisplayName;
+EXTERN_C const IID  __cdecl IID_IOleContainer;
+EXTERN_C const IID  __cdecl IID_IOleClientSite;
+EXTERN_C const IID  __cdecl IID_IOleObject;
+EXTERN_C const IID  __cdecl IID_IOleWindow;
+EXTERN_C const IID  __cdecl IID_IOleLink;
+EXTERN_C const IID  __cdecl IID_IOleItemContainer;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceUIWindow;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceActiveObject;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceFrame;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceObject;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceSite;
+EXTERN_C const IID  __cdecl IID_IContinue;
+EXTERN_C const IID  __cdecl IID_IViewObject;
+EXTERN_C const IID  __cdecl IID_IViewObject2;
+EXTERN_C const IID  __cdecl IID_IDropSource;
+EXTERN_C const IID  __cdecl IID_IDropTarget;
+EXTERN_C const IID  __cdecl IID_IDropSourceNotify;
+EXTERN_C const IID  __cdecl IID_IEnumOLEVERB;
 
 #endif /* __oleidl_h__ */

@@ -48,11 +48,6 @@ typedef enum tagCONDITION_OPERATION {
     COP_APPLICATION_SPECIFIC    = 14
 } CONDITION_OPERATION;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IRichChunk;
-EXTERN_C const IID  IID_ICondition;
-EXTERN_C const IID  IID_ICondition2;
-
 /* IRichChunk interface */
 #undef INTERFACE
 #define INTERFACE   IRichChunk
@@ -201,5 +196,10 @@ DECLARE_INTERFACE_( ICondition2, ICondition ) {
     #define ICondition2_GetLeafConditionInfo( x, p1, p2, p3 ) \
         (x)->lpVtbl->GetLeafConditionInfo( x, p1, p2, p3 )
 #endif
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IRichChunk;
+EXTERN_C const IID  __cdecl IID_ICondition;
+EXTERN_C const IID  __cdecl IID_ICondition2;
 
 #endif /* __structuredquerycondition_h__ */

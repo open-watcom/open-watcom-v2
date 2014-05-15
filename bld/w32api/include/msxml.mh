@@ -78,43 +78,6 @@ typedef enum tagXMLELEM_TYPE {
     XMLELEMTYPE_OTHER       = 6
 } XMLELEM_TYPE;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_MSXML;
-EXTERN_C const IID      IID_IXMLDOMNode;
-EXTERN_C const IID      IID_IXMLDOMDocument;
-EXTERN_C const IID      IID_IXMLDOMNodeList;
-EXTERN_C const IID      IID_IXMLDOMNamedNodeMap;
-EXTERN_C const IID      IID_IXMLDOMDocumentFragment;
-EXTERN_C const IID      IID_IXMLDOMCharacterData;
-EXTERN_C const IID      IID_IXMLDOMAttribute;
-EXTERN_C const IID      IID_IXMLDOMElement;
-EXTERN_C const IID      IID_IXMLDOMText;
-EXTERN_C const IID      IID_IXMLDOMComment;
-EXTERN_C const IID      IID_IXMLDOMProcessingInstruction;
-EXTERN_C const IID      IID_IXMLDOMCDATASection;
-EXTERN_C const IID      IID_IXMLDOMDocumentType;
-EXTERN_C const IID      IID_IXMLDOMNotation;
-EXTERN_C const IID      IID_IXMLDOMEntity;
-EXTERN_C const IID      IID_IXMLDOMEntityReference;
-EXTERN_C const IID      IID_IXMLDOMImplementation;
-EXTERN_C const IID      IID_IXTLRuntime;
-EXTERN_C const IID      IID_IXMLDOMParseError;
-EXTERN_C const IID      DIID_XMLDOMDocumentEvents;
-EXTERN_C const CLSID    CLSID_DOMDocument;
-EXTERN_C const CLSID    CLSID_DOMFreeThreadedDocument;
-EXTERN_C const IID      IID_IXMLHttpRequest;
-EXTERN_C const CLSID    CLSID_XMLHTTPRequest;
-EXTERN_C const IID      IID_IXMLDSOControl;
-EXTERN_C const CLSID    CLSID_XMLDSOControl;
-EXTERN_C const IID      IID_IXMLElementCollection;
-EXTERN_C const IID      IID_IXMLDocument;
-EXTERN_C const IID      IID_IXMLDocument2;
-EXTERN_C const IID      IID_IXMLElement;
-EXTERN_C const IID      IID_IXMLElement2;
-EXTERN_C const IID      IID_IXMLAttribute;
-EXTERN_C const IID      IID_IXMLError;
-EXTERN_C const CLSID    CLSID_XMLDocument;
-
 /* IXMLDOMNode interface */
 #undef INTERFACE
 #define INTERFACE   IXMLDOMNode
@@ -3283,5 +3246,42 @@ DECLARE_INTERFACE_( IXMLError, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_MSXML;
+EXTERN_C const IID      __cdecl IID_IXMLDOMNode;
+EXTERN_C const IID      __cdecl IID_IXMLDOMDocument;
+EXTERN_C const IID      __cdecl IID_IXMLDOMNodeList;
+EXTERN_C const IID      __cdecl IID_IXMLDOMNamedNodeMap;
+EXTERN_C const IID      __cdecl IID_IXMLDOMDocumentFragment;
+EXTERN_C const IID      __cdecl IID_IXMLDOMCharacterData;
+EXTERN_C const IID      __cdecl IID_IXMLDOMAttribute;
+EXTERN_C const IID      __cdecl IID_IXMLDOMElement;
+EXTERN_C const IID      __cdecl IID_IXMLDOMText;
+EXTERN_C const IID      __cdecl IID_IXMLDOMComment;
+EXTERN_C const IID      __cdecl IID_IXMLDOMProcessingInstruction;
+EXTERN_C const IID      __cdecl IID_IXMLDOMCDATASection;
+EXTERN_C const IID      __cdecl IID_IXMLDOMDocumentType;
+EXTERN_C const IID      __cdecl IID_IXMLDOMNotation;
+EXTERN_C const IID      __cdecl IID_IXMLDOMEntity;
+EXTERN_C const IID      __cdecl IID_IXMLDOMEntityReference;
+EXTERN_C const IID      __cdecl IID_IXMLDOMImplementation;
+EXTERN_C const IID      __cdecl IID_IXTLRuntime;
+EXTERN_C const IID      __cdecl IID_IXMLDOMParseError;
+EXTERN_C const IID      __cdecl DIID_XMLDOMDocumentEvents;
+EXTERN_C const CLSID    __cdecl CLSID_DOMDocument;
+EXTERN_C const CLSID    __cdecl CLSID_DOMFreeThreadedDocument;
+EXTERN_C const IID      __cdecl IID_IXMLHttpRequest;
+EXTERN_C const CLSID    __cdecl CLSID_XMLHTTPRequest;
+EXTERN_C const IID      __cdecl IID_IXMLDSOControl;
+EXTERN_C const CLSID    __cdecl CLSID_XMLDSOControl;
+EXTERN_C const IID      __cdecl IID_IXMLElementCollection;
+EXTERN_C const IID      __cdecl IID_IXMLDocument;
+EXTERN_C const IID      __cdecl IID_IXMLDocument2;
+EXTERN_C const IID      __cdecl IID_IXMLElement;
+EXTERN_C const IID      __cdecl IID_IXMLElement2;
+EXTERN_C const IID      __cdecl IID_IXMLAttribute;
+EXTERN_C const IID      __cdecl IID_IXMLError;
+EXTERN_C const CLSID    __cdecl CLSID_XMLDocument;
 
 #endif /* __msxml_h__ */

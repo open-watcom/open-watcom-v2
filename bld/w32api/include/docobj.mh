@@ -357,23 +357,6 @@ typedef enum {
     OLECMDIDF_WINDOWSTATE_ENABLED_VALID     = 0x00020000
 } OLECMDID_WINDOWSTATEFLAG;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IOleDocument;
-EXTERN_C const IID  IID_IOleDocumentSite;
-EXTERN_C const IID  IID_IOleDocumentView;
-EXTERN_C const IID  IID_IEnumOleDocumentViews;
-EXTERN_C const IID  IID_IContinueCallback;
-EXTERN_C const IID  IID_IPrint;
-EXTERN_C const IID  IID_IOleCommandTarget;
-EXTERN_C const IID  IID_IZoomEvents;
-EXTERN_C const IID  IID_IProtectFocus;
-EXTERN_C const IID  IID_IProtectedModeMenuServices;
-#define IID_IMsoDocument        IID_IOleDocument
-#define IID_IMsoDocumentSite    IID_IOleDocumentSite
-#define IID_IMsoView            IID_IOleDocumentView
-#define IID_IEnumMsoView        IID_IEnumOleDocumentViews
-#define IID_IMsoCommandTarget   IID_IOleCommandTarget
-
 /* IOleDocument interface */
 #undef INTERFACE
 #define INTERFACE   IOleDocument
@@ -677,5 +660,22 @@ DECLARE_INTERFACE_( IProtectedModeMenuServices, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IOleDocument;
+EXTERN_C const IID  __cdecl IID_IOleDocumentSite;
+EXTERN_C const IID  __cdecl IID_IOleDocumentView;
+EXTERN_C const IID  __cdecl IID_IEnumOleDocumentViews;
+EXTERN_C const IID  __cdecl IID_IContinueCallback;
+EXTERN_C const IID  __cdecl IID_IPrint;
+EXTERN_C const IID  __cdecl IID_IOleCommandTarget;
+EXTERN_C const IID  __cdecl IID_IZoomEvents;
+EXTERN_C const IID  __cdecl IID_IProtectFocus;
+EXTERN_C const IID  __cdecl IID_IProtectedModeMenuServices;
+#define IID_IMsoDocument        IID_IOleDocument
+#define IID_IMsoDocumentSite    IID_IOleDocumentSite
+#define IID_IMsoView            IID_IOleDocumentView
+#define IID_IEnumMsoView        IID_IEnumOleDocumentViews
+#define IID_IMsoCommandTarget   IID_IOleCommandTarget
 
 #endif /* __docobj_h__ */

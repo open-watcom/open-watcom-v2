@@ -2737,78 +2737,6 @@ typedef BOOL (PASCAL *LPDIENUMDEVICESBYSEMANTICSCBW)( LPCDIDEVICEINSTANCEW, IDir
     #define LPDIENUMDEVICESBYSEMANTICSCB    LPDIENUMDEVICESBYSEMANTICSCBA
 #endif
 
-/* GUIDs */
-EXTERN_C const CLSID    CLSID_DirectInput;
-EXTERN_C const CLSID    CLSID_DirectInputDevice;
-EXTERN_C const CLSID    CLSID_DirectInput8;
-EXTERN_C const CLSID    CLSID_DirectInputDevice8;
-EXTERN_C const IID      IID_IDirectInputA;
-EXTERN_C const IID      IID_IDirectInputW;
-EXTERN_C const IID      IID_IDirectInput2A;
-EXTERN_C const IID      IID_IDirectInput2W;
-EXTERN_C const IID      IID_IDirectInput7A;
-EXTERN_C const IID      IID_IDirectInput7W;
-EXTERN_C const IID      IID_IDirectInput8A;
-EXTERN_C const IID      IID_IDirectInput8W;
-EXTERN_C const IID      IID_IDirectInputDeviceA;
-EXTERN_C const IID      IID_IDirectInputDeviceW;
-EXTERN_C const IID      IID_IDirectInputDevice2A;
-EXTERN_C const IID      IID_IDirectInputDevice2W;
-EXTERN_C const IID      IID_IDirectInputDevice7A;
-EXTERN_C const IID      IID_IDirectInputDevice7W;
-EXTERN_C const IID      IID_IDirectInputDevice8A;
-EXTERN_C const IID      IID_IDirectInputDevice8W;
-EXTERN_C const IID      IID_IDirectInputEffect;
-EXTERN_C const GUID     GUID_XAxis;
-EXTERN_C const GUID     GUID_YAxis;
-EXTERN_C const GUID     GUID_ZAxis;
-EXTERN_C const GUID     GUID_RxAxis;
-EXTERN_C const GUID     GUID_RyAxis;
-EXTERN_C const GUID     GUID_RzAxis;
-EXTERN_C const GUID     GUID_Slider;
-EXTERN_C const GUID     GUID_Button;
-EXTERN_C const GUID     GUID_Key;
-EXTERN_C const GUID     GUID_POV;
-EXTERN_C const GUID     GUID_Unknown;
-EXTERN_C const GUID     GUID_SysMouse;
-EXTERN_C const GUID     GUID_SysKeyboard;
-EXTERN_C const GUID     GUID_Joystick;
-EXTERN_C const GUID     GUID_SysMouseEm;
-EXTERN_C const GUID     GUID_SysMouseEm2;
-EXTERN_C const GUID     GUID_SysKeyboardEm;
-EXTERN_C const GUID     GUID_SysKeyboardEm2;
-EXTERN_C const GUID     GUID_ConstantForce;
-EXTERN_C const GUID     GUID_RampForce;
-EXTERN_C const GUID     GUID_Square;
-EXTERN_C const GUID     GUID_Sine;
-EXTERN_C const GUID     GUID_Triangle;
-EXTERN_C const GUID     GUID_SawtoothUp;
-EXTERN_C const GUID     GUID_SawtoothDown;
-EXTERN_C const GUID     GUID_Spring;
-EXTERN_C const GUID     GUID_Damper;
-EXTERN_C const GUID     GUID_Inertia;
-EXTERN_C const GUID     GUID_Friction;
-EXTERN_C const GUID     GUID_CustomForce;
-#ifdef UNICODE
-    #define IID_IDirectInputDevice  IID_IDirectInputDeviceW
-    #define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
-    #define IID_IDirectInputDevice7 IID_IDirectInputDevice7W
-    #define IID_IDirectInputDevice8 IID_IDirectInputDevice8W
-    #define IID_IDirectInput        IID_IDirectInputW
-    #define IID_IDirectInput2       IID_IDirectInput2W
-    #define IID_IDirectInput7       IID_IDirectInput7W
-    #define IID_IDirectInput8       IID_IDirectInput8W
-#else
-    #define IID_IDirectInputDevice  IID_IDirectInputDeviceA
-    #define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
-    #define IID_IDirectInputDevice7 IID_IDirectInputDevice7A
-    #define IID_IDirectInputDevice8 IID_IDirectInputDevice8A
-    #define IID_IDirectInput        IID_IDirectInputA
-    #define IID_IDirectInput2       IID_IDirectInput2A
-    #define IID_IDirectInput7       IID_IDirectInput7A
-    #define IID_IDirectInput8       IID_IDirectInput8A
-#endif
-
 /* IDirectInputEffect interface */
 #if (DIRECTINPUT_VERSION >= 0x0500)
 #undef INTERFACE
@@ -4015,14 +3943,14 @@ typedef IDirectInput8           *LPDIRECTINPUT8;
 #endif
 
 /* Global variables in DINPUT.LIB and DINPUT8.LIB */
-extern const DIDATAFORMAT   c_dfDIMouse;
-extern const DIDATAFORMAT   c_dfDIKeyboard;
+extern const DIDATAFORMAT   __cdecl c_dfDIMouse;
+extern const DIDATAFORMAT   __cdecl c_dfDIKeyboard;
 #if (DIRECTINPUT_VERSION >= 0x0500)
-extern const DIDATAFORMAT   c_dfDIJoystick;
-extern const DIDATAFORMAT   c_dfDIJoystick2;
+extern const DIDATAFORMAT   __cdecl c_dfDIJoystick;
+extern const DIDATAFORMAT   __cdecl c_dfDIJoystick2;
 #endif
 #if (DIRECTINPUT_VERSION >= 0x0700)
-extern const DIDATAFORMAT   c_dfDIMouse2;
+extern const DIDATAFORMAT   __cdecl c_dfDIMouse2;
 #endif
 
 /* Functions in DINPUT.DLL */
@@ -4043,5 +3971,77 @@ extern HRESULT WINAPI   DirectInput8Create( HINSTANCE, DWORD, REFIID, LPVOID *, 
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const CLSID    __cdecl CLSID_DirectInput;
+EXTERN_C const CLSID    __cdecl CLSID_DirectInputDevice;
+EXTERN_C const CLSID    __cdecl CLSID_DirectInput8;
+EXTERN_C const CLSID    __cdecl CLSID_DirectInputDevice8;
+EXTERN_C const IID      __cdecl IID_IDirectInputA;
+EXTERN_C const IID      __cdecl IID_IDirectInputW;
+EXTERN_C const IID      __cdecl IID_IDirectInput2A;
+EXTERN_C const IID      __cdecl IID_IDirectInput2W;
+EXTERN_C const IID      __cdecl IID_IDirectInput7A;
+EXTERN_C const IID      __cdecl IID_IDirectInput7W;
+EXTERN_C const IID      __cdecl IID_IDirectInput8A;
+EXTERN_C const IID      __cdecl IID_IDirectInput8W;
+EXTERN_C const IID      __cdecl IID_IDirectInputDeviceA;
+EXTERN_C const IID      __cdecl IID_IDirectInputDeviceW;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice2A;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice2W;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice7A;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice7W;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice8A;
+EXTERN_C const IID      __cdecl IID_IDirectInputDevice8W;
+EXTERN_C const IID      __cdecl IID_IDirectInputEffect;
+EXTERN_C const GUID     __cdecl GUID_XAxis;
+EXTERN_C const GUID     __cdecl GUID_YAxis;
+EXTERN_C const GUID     __cdecl GUID_ZAxis;
+EXTERN_C const GUID     __cdecl GUID_RxAxis;
+EXTERN_C const GUID     __cdecl GUID_RyAxis;
+EXTERN_C const GUID     __cdecl GUID_RzAxis;
+EXTERN_C const GUID     __cdecl GUID_Slider;
+EXTERN_C const GUID     __cdecl GUID_Button;
+EXTERN_C const GUID     __cdecl GUID_Key;
+EXTERN_C const GUID     __cdecl GUID_POV;
+EXTERN_C const GUID     __cdecl GUID_Unknown;
+EXTERN_C const GUID     __cdecl GUID_SysMouse;
+EXTERN_C const GUID     __cdecl GUID_SysKeyboard;
+EXTERN_C const GUID     __cdecl GUID_Joystick;
+EXTERN_C const GUID     __cdecl GUID_SysMouseEm;
+EXTERN_C const GUID     __cdecl GUID_SysMouseEm2;
+EXTERN_C const GUID     __cdecl GUID_SysKeyboardEm;
+EXTERN_C const GUID     __cdecl GUID_SysKeyboardEm2;
+EXTERN_C const GUID     __cdecl GUID_ConstantForce;
+EXTERN_C const GUID     __cdecl GUID_RampForce;
+EXTERN_C const GUID     __cdecl GUID_Square;
+EXTERN_C const GUID     __cdecl GUID_Sine;
+EXTERN_C const GUID     __cdecl GUID_Triangle;
+EXTERN_C const GUID     __cdecl GUID_SawtoothUp;
+EXTERN_C const GUID     __cdecl GUID_SawtoothDown;
+EXTERN_C const GUID     __cdecl GUID_Spring;
+EXTERN_C const GUID     __cdecl GUID_Damper;
+EXTERN_C const GUID     __cdecl GUID_Inertia;
+EXTERN_C const GUID     __cdecl GUID_Friction;
+EXTERN_C const GUID     __cdecl GUID_CustomForce;
+#ifdef UNICODE
+    #define IID_IDirectInputDevice  IID_IDirectInputDeviceW
+    #define IID_IDirectInputDevice2 IID_IDirectInputDevice2W
+    #define IID_IDirectInputDevice7 IID_IDirectInputDevice7W
+    #define IID_IDirectInputDevice8 IID_IDirectInputDevice8W
+    #define IID_IDirectInput        IID_IDirectInputW
+    #define IID_IDirectInput2       IID_IDirectInput2W
+    #define IID_IDirectInput7       IID_IDirectInput7W
+    #define IID_IDirectInput8       IID_IDirectInput8W
+#else
+    #define IID_IDirectInputDevice  IID_IDirectInputDeviceA
+    #define IID_IDirectInputDevice2 IID_IDirectInputDevice2A
+    #define IID_IDirectInputDevice7 IID_IDirectInputDevice7A
+    #define IID_IDirectInputDevice8 IID_IDirectInputDevice8A
+    #define IID_IDirectInput        IID_IDirectInputA
+    #define IID_IDirectInput2       IID_IDirectInput2A
+    #define IID_IDirectInput7       IID_IDirectInput7A
+    #define IID_IDirectInput8       IID_IDirectInput8A
+#endif
 
 #endif /* __DINPUT_INCLUDED__ */

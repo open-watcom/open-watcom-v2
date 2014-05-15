@@ -51,20 +51,6 @@ typedef enum {
     RenderData  = 2
 } OUTPUT_STATE;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IAMMultiMediaStream;
-EXTERN_C const IID      IID_IAMMediaStream;
-EXTERN_C const IID      IID_IMediaStreamFilter;
-EXTERN_C const IID      IID_IDirectDrawMediaSampleAllocator;
-EXTERN_C const IID      IID_IDirectDrawMediaSample;
-EXTERN_C const IID      IID_IAMMediaTypeStream;
-EXTERN_C const IID      IID_IAMMediaTypeSample;
-EXTERN_C const CLSID    CLSID_AMMultiMediaStream;
-EXTERN_C const CLSID    CLSID_AMDirectDrawStream;
-EXTERN_C const CLSID    CLSID_AMAudioStream;
-EXTERN_C const CLSID    CLSID_AMAudioData;
-EXTERN_C const CLSID    CLSID_AMMediaTypeStream;
-
 /* IAMMultiMediaStream interface */
 #undef INTERFACE
 #define INTERFACE   IAMMultiMediaStream
@@ -462,5 +448,19 @@ DECLARE_INTERFACE_( IAMMediaTypeSample, IStreamSample ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IAMMultiMediaStream;
+EXTERN_C const IID      __cdecl IID_IAMMediaStream;
+EXTERN_C const IID      __cdecl IID_IMediaStreamFilter;
+EXTERN_C const IID      __cdecl IID_IDirectDrawMediaSampleAllocator;
+EXTERN_C const IID      __cdecl IID_IDirectDrawMediaSample;
+EXTERN_C const IID      __cdecl IID_IAMMediaTypeStream;
+EXTERN_C const IID      __cdecl IID_IAMMediaTypeSample;
+EXTERN_C const CLSID    __cdecl CLSID_AMMultiMediaStream;
+EXTERN_C const CLSID    __cdecl CLSID_AMDirectDrawStream;
+EXTERN_C const CLSID    __cdecl CLSID_AMAudioStream;
+EXTERN_C const CLSID    __cdecl CLSID_AMAudioData;
+EXTERN_C const CLSID    __cdecl CLSID_AMMediaTypeStream;
 
 #endif /* __amstream_h__ */
