@@ -198,7 +198,6 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    @%create $@
     awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
     @%append $@ +ws2_cons.obj
 
