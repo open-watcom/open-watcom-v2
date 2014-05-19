@@ -2,9 +2,7 @@
 host_cpu = 386
 host_os  = nov
 
-!ifndef nlm_ver
 nlm_ver = 3
-!endif
 os    = nlm
 srv   = nov
 cpu   = x86
