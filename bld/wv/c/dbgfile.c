@@ -95,7 +95,7 @@ static sys_error        SysErrors[MAX_ERRORS];
 static unsigned         ErrRover;
 static unsigned         LastErr;
 
-handle PathOpen( const char *name, unsigned len, const char *ext );
+handle PathOpen( const char *name, unsigned name_len, const char *ext );
 
 char  *RealFName( char const *name, open_access *loc )
 {
@@ -220,7 +220,7 @@ unsigned long SeekStream( handle h, long p, seek_method m )
     }
 }
 
-handle FileOpen( char const *name, open_access o )
+handle FileOpen( const char *name, open_access o )
 {
     sys_handle  sys;
     handle      h;
@@ -320,7 +320,7 @@ sys_error GetSystemErrCode( unsigned code )
 }
 
 /* for RFX */
-sys_handle GetSystemHandle( unsigned h )
+sys_handle GetSystemHandle( handle h )
 {
     return( SysHandles[ h & ~REMOTE_IND ] );
 }
@@ -535,25 +535,25 @@ handle LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, 
     return( FullPathOpenInternal( name, name_len, ext, result, max_result, TRUE ) );
 }
 
-static handle PathOpenInternal( const char *name, unsigned len, const char *ext, bool force_local )
+static handle PathOpenInternal( const char *name, unsigned name_len, const char *ext, bool force_local )
 {
     char        result[TXT_LEN];
 
     if( force_local ) {
-        return( LocalFullPathOpen( name, len, ext, result, TXT_LEN ) );
+        return( LocalFullPathOpen( name, name_len, ext, result, TXT_LEN ) );
     } else {
-        return( FullPathOpen( name, len, ext, result, TXT_LEN ) );
+        return( FullPathOpen( name, name_len, ext, result, TXT_LEN ) );
     }
 }
 
-handle PathOpen( const char *name, unsigned len, const char *ext )
+handle PathOpen( const char *name, unsigned name_len, const char *ext )
 {
-    return( PathOpenInternal( name, len, ext, FALSE ) );
+    return( PathOpenInternal( name, name_len, ext, FALSE ) );
 }
 
-handle LocalPathOpen( const char *name, unsigned len, const char *ext )
+handle LocalPathOpen( const char *name, unsigned name_len, const char *ext )
 {
-    return( PathOpenInternal( name, len, ext, TRUE ) );
+    return( PathOpenInternal( name, name_len, ext, TRUE ) );
 }
 
 #if !defined( BUILD_RFX )
@@ -585,7 +585,7 @@ bool FindWritable( char const *src, char *dst )
     char        buffer[TXT_LEN];
     unsigned    plen;
     unsigned    nlen;
-    const char *name;
+    const char  *name;
     open_access loc;
 
     loc = 0;
