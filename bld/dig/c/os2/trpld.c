@@ -129,7 +129,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
             HardFunc = NULL;
         }
         *trap_ver = init_func( parm, buff, trap_ver->remote );
-        if( *buff == '\0' ) {
+        if( buff[0] == '\0' ) {
             if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
                 return( NULL );

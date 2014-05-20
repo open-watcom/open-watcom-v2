@@ -76,10 +76,11 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                chr;
     trap_init_func      *init_func;
 
-    if( trapbuff == NULL ) trapbuff = "std";
+    if( trapbuff == NULL )
+        trapbuff = "std";
     have_ext = FALSE;
     ptr = trapbuff;
-    dst = (char *)trpfile;
+    dst = trpfile;
     for( ;; ) {
         chr = *ptr;
         if( chr == '\0' || chr == ';' ) break;
@@ -109,17 +110,17 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trpfile );
         return( buff );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     init_func = (trap_init_func *)GetProcAddress( TrapFile, (LPSTR)1 );
-    if( init_func != NULL ) {
+    FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 );
+    ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 );
+    InfoFunction = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)4 );
+//    LibListFunc = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)5 );
+    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
+      && InfoFunction != NULL /* && LibListFunc != NULL */ ) {
         *trap_ver = init_func( parm, buff, trap_ver->remote );
         if( buff[0] == '\0' ) {
-            if( TrapVersionOK( *trap_ver ) 
-              && (FiniFunc = (trap_fini_func *)GetProcAddress( TrapFile, (LPSTR)2 )) != NULL
-              && (ReqFunc = (trap_req_func *)GetProcAddress( TrapFile, (LPSTR)3 )) != NULL
-              && (InfoFunction = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)4 )) != NULL
-              /* && (LibListFunc = (INFO_FUNC *)GetProcAddress( TrapFile, (LPSTR)5 )) != NULL */
-            ) {
+            if( TrapVersionOK( *trap_ver ) ) {
                 TrapVer = *trap_ver;
                 return( NULL );
             }

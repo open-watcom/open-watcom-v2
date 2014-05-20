@@ -62,27 +62,28 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
     }
     dip = ReadInImp( h );
     DIGPathClose( h );
-#ifdef __WATCOMC__
-    if( dip == NULL || dip->sig != DIPSIG ) {
-#else
-    if( dip == NULL ) {
-#endif
-        return( DS_ERR|DS_INVALID_DIP );
-    }
-#ifdef WATCOM_DEBUG_SYMBOLS
-    /* Look for symbols in separate .sym files, not the .dip itself */
-    strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
-    NotifyWDLoad( dip_name, (unsigned long)dip );
-#endif
     status = DS_ERR|DS_INVALID_DIP;
-    init_func = (dip_init_func *)dip->init_rtn;
-    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = (dip_sys_handle)dip;
-        return( DS_OK );
-    }
-#ifdef WATCOM_DEBUG_SYMBOLS
-    NotifyWDUnload( dip_name );
+    if( dip != NULL ) {
+#ifdef __WATCOMC__
+        if( dip->sig == DIPSIG ) {
 #endif
-    DIGCliFree( (void *)dip );
+#ifdef WATCOM_DEBUG_SYMBOLS
+            /* Look for symbols in separate .sym files, not the .dip itself */
+            strcpy( dip_name + strlen( dip_name ) - 4, ".sym" );
+            NotifyWDLoad( dip_name, (unsigned long)dip );
+#endif
+            init_func = (dip_init_func *)dip->init_rtn;
+            if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+                *sys_hdl = (dip_sys_handle)dip;
+                return( DS_OK );
+            }
+#ifdef WATCOM_DEBUG_SYMBOLS
+            NotifyWDUnload( dip_name );
+#endif
+#ifdef __WATCOMC__
+        }
+#endif
+        DIGCliFree( (void *)dip );
+    }
     return( status );
 }

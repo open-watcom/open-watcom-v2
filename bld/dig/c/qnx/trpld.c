@@ -96,31 +96,30 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     TrapCode = ReadInImp( filehndl );
     DIGPathClose( filehndl );
-    strcpy( buff, TC_ERR_BAD_TRAP_FILE );
-    if( TrapCode == NULL ) {
-        return( buff );
-    }
+    sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
+    if( TrapCode != NULL ) {
 #ifdef __WATCOMC__
-    if( TrapCode->sig == TRAPSIG ) {
+        if( TrapCode->sig == TRAPSIG ) {
 #endif
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
-        ld_func = (void *)TrapCode->init_rtn;
-        trap_funcs = ld_func( &TrapCallbacks );
-        if( trap_funcs != NULL ) {
-            *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
-            if( buff[0] == '\0' ) {
-                if( TrapVersionOK( *trap_ver ) ) {
-                    TrapVer = *trap_ver;
-                    ReqFunc = trap_funcs->req_func;
-                    FiniFunc = trap_funcs->fini_func;
-                    return( NULL );
+            strcpy( buff, TC_ERR_BAD_TRAP_FILE );
+            ld_func = (void *)TrapCode->init_rtn;
+            trap_funcs = ld_func( &TrapCallbacks );
+            if( trap_funcs != NULL ) {
+                *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
+                FiniFunc = trap_funcs->fini_func;
+                if( buff[0] == '\0' ) {
+                    if( TrapVersionOK( *trap_ver ) ) {
+                        TrapVer = *trap_ver;
+                        ReqFunc = trap_funcs->req_func;
+                        return( NULL );
+                    }
+                    strcpy( buff, TC_ERR_BAD_TRAP_FILE );
                 }
-                strcpy( buff, TC_ERR_BAD_TRAP_FILE );
             }
-        }
 #ifdef __WATCOMC__
-    }
+        }
 #endif
-    KillTrap();
+        KillTrap();
+    }
     return( buff );
 }

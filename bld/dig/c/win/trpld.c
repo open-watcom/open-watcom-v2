@@ -91,7 +91,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         trapbuff = "std";
     have_ext = FALSE;
     ptr = trapbuff;
-    dst = (char *)trpfile;
+    dst = trpfile;
     for( ;; ) {
         chr = *ptr;
         if( chr == '\0' || chr == ';' ) break;

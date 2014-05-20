@@ -109,30 +109,30 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     ld_func = dlsym( TrapFile, "TrapLoad" );
-    if( ld_func == NULL ) {
-        KillTrap();
-        return( buff );
-    }
+    if( ld_func != NULL ) {
 #else
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     ld_func = TrapLoad;
 #endif
 
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
+        parm = (*ptr != '\0') ? ptr + 1 : ptr;
 
-    trap_funcs = ld_func( &TrapCallbacks );
-    if( trap_funcs != NULL ) {
-        *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
-        FiniFunc = trap_funcs->fini_func;
-        if( buff[0] == '\0' ) {
-            if( TrapVersionOK( *trap_ver ) ) {
-                TrapVer = *trap_ver;
-                ReqFunc = trap_funcs->req_func;
-                return( NULL );
+        trap_funcs = ld_func( &TrapCallbacks );
+        if( trap_funcs != NULL ) {
+            *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
+            FiniFunc = trap_funcs->fini_func;
+            if( buff[0] == '\0' ) {
+                if( TrapVersionOK( *trap_ver ) ) {
+                    TrapVer = *trap_ver;
+                    ReqFunc = trap_funcs->req_func;
+                    return( NULL );
+                }
+                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
             }
-            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
         }
+#if !defined( BUILTIN_TRAP_FILE )
     }
+#endif
     KillTrap();
     return( buff );
 }
