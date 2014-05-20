@@ -764,7 +764,7 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-int  RcWrite( int hdl, const void *buf, size_t len )
+WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
 {
     hdl = hdl;
     WriteLoad( (void *) buf, len );
