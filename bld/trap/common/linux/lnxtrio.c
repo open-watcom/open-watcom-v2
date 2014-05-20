@@ -41,6 +41,7 @@
     #include <process.h>
 #endif
 #include "trpimp.h"
+#include "digio.h"
 
 extern char RWBuff[];
 
@@ -103,8 +104,13 @@ int KeyGet()
     return( key );
 }
 
+int WantUsage( char *ptr )
+{
+    if( *ptr == '-' ) ++ptr;
+    return( *ptr == '?' );
+}
 
-static char *StrCopy( char *src, char *dst )
+static char *StrCopy( const char *src, char *dst )
 {
     while( (*dst = *src) ) {
         ++src;
@@ -113,7 +119,7 @@ static char *StrCopy( char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
+static unsigned TryOnePath( char *path, struct stat *tmp, const char *name,
                          char *result )
 {
     char        *end;
@@ -137,7 +143,7 @@ static unsigned TryOnePath( char *path, struct stat *tmp, char *name,
     }
 }
 
-static unsigned FindFilePath( char *name, char *result )
+static unsigned FindFilePath( const char *name, char *result )
 {
     struct stat tmp;
     unsigned    len;
@@ -156,7 +162,7 @@ static unsigned FindFilePath( char *name, char *result )
         end = strrchr( cmd, '/' );
         if( end != NULL ) {
             *end = '\0';
-	    /* look in the executable's directory */
+            /* look in the executable's directory */
             len = TryOnePath( cmd, &tmp, name, result );
             if( len != 0 ) return( len );
             end = strrchr( cmd, '/' );
@@ -172,21 +178,25 @@ static unsigned FindFilePath( char *name, char *result )
     return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
 }
 
-unsigned FullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
     bool                has_ext;
     bool                has_path;
-    const char          *ptr;
-    const char          *endptr;
+    const char          *src;
+    char                *dst;
     char                trpfile[256];
-    unsigned            filehndl;
-    int                 name_len = strlen(name);
+    dig_fhandle         filehndl;
+    char                c;
 
+    max_result = max_result;
     has_ext = FALSE;
     has_path = FALSE;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
+    src = name;
+    dst = trpfile;
+    while( name_len-- > 0 ) {
+        c = *src++;
+        *dst++ = c;
+        switch( c ) {
         case '.':
             has_ext = TRUE;
             break;
@@ -197,18 +207,18 @@ unsigned FullPathOpen( char const *name, char *ext, char *result, unsigned max_r
             break;
         }
     }
-    memcpy( trpfile, name, name_len );
-    if( has_ext ) {
-        trpfile[name_len] = '\0';
-    } else {
-        trpfile[ name_len++ ] = '.';
-        memcpy( trpfile + name_len, ext, strlen( ext ) + 1 );
+    if( !has_ext ) {
+        *dst++ = '.';
+        name_len = strlen( ext );
+        memcpy( dst, ext, name_len );
+        dst += name_len;
     }
+    *dst = '\0';
     if( has_path ) {
         filehndl = open( trpfile, O_RDONLY );
     } else {
         if( FindFilePath( trpfile, result ) == 0 ) {
-            filehndl = -1;
+            filehndl = DIG_NIL_HANDLE;
         } else {
             filehndl = open( result, O_RDONLY );
         }
@@ -216,57 +226,14 @@ unsigned FullPathOpen( char const *name, char *ext, char *result, unsigned max_r
     return( filehndl );
 }
 
-unsigned PathOpen( char *name, unsigned name_len, char *exts )
+unsigned DIGPathClose( dig_fhandle h )
 {
-    bool                has_ext;
-    bool                has_path;
-    char                *ptr;
-    char                *endptr;
-    char                trpfile[256];
-    unsigned            filehndl;
-
-    has_ext = FALSE;
-    has_path = FALSE;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
-        case '.':
-            has_ext = TRUE;
-            break;
-        case '/':
-            has_ext = FALSE;
-            has_path = TRUE;
-            /* fall through */
-            break;
-        }
-    }
-    memcpy( trpfile, name, name_len );
-    if( has_ext ) {
-        trpfile[name_len] = '\0';
-    } else {
-        trpfile[ name_len++ ] = '.';
-        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
-    }
-    if( has_path ) {
-        filehndl = open( trpfile, O_RDONLY );
-    } else {
-        if( FindFilePath( trpfile, RWBuff ) == 0 ) {
-            filehndl = -1;
-        } else {
-            filehndl = open( RWBuff, O_RDONLY );
-        }
-    }
-    return( filehndl );
+    close( h );
+    return( 0 );
 }
 
-unsigned long GetSystemHandle( unsigned h )
+
+long DIGGetSystemHandle( dig_fhandle h )
 {
     return( h );
 }
-
-int WantUsage( char *ptr )
-{
-    if( *ptr == '-' ) ++ptr;
-    return( *ptr == '?' );
-}
-

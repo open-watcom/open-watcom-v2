@@ -37,7 +37,7 @@
 #include "dbgmem.h"
 #include "dui.h"
 
-extern handle   LocalFullPathOpen( char *name, char *ext, char *result, unsigned max_result );
+extern handle   LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern char     *StrCopy( char *src, char *dst );
 extern unsigned DUIEnvLkup( char *, char *, unsigned );
 
@@ -69,7 +69,7 @@ static void LocateHelpFile( void )
     char                buff[1024];
 #endif
 
-    h = LocalFullPathOpen( HELPNAME, "ihp", TxtBuff, TXT_LEN );
+    h = LocalFullPathOpen( HELPNAME, strlen( HELPNAME ), "ihp", TxtBuff, TXT_LEN );
     if( h != NIL_HANDLE ) {
         FileClose( h );
         return;

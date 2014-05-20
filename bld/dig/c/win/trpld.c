@@ -142,24 +142,20 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     UnLockInput = (void(TRAPENTRY*)(void)) GetProcAddress( TrapFile, (LPSTR)13 );
     GetHwndFunc = (int(TRAPENTRY*)(void)) GetProcAddress( TrapFile, (LPSTR)8 );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( init_func == NULL || FiniFunc == NULL || ReqFunc == NULL ||
-        HookFunc == NULL || GetHwndFunc == NULL ||
-        SetHardMode == NULL || UnLockInput == NULL ) {
-        KillTrap();
-        return( buff );
+    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL
+      && HookFunc != NULL && InfoFunction != NULL && HardModeCheck != NULL
+      && GetHwndFunc != NULL && SetHardMode != NULL && UnLockInput != NULL ) {
+        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( NULL );
+            }
+            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        }
     }
-    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
-    if( trpfile[0] != '\0' ) {
-        strcpy( buff, (char *)trpfile );
-        KillTrap();
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }
 
 void DoHardModeCheck( void )

@@ -37,8 +37,6 @@
 #include "dipcli.h"
 #include "dipsys.h"
 
-extern  int      PathOpen(char *,unsigned, char *);
-
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
     FreeLibrary( (HANDLE)*sys_hdl );

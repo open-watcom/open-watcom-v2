@@ -24,58 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Debugger interface DIP/MAD/TRAP loader auxiliary functions.
 *
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-
-#if 0
-#pragma library( "nt" )
-#pragma library("kernel32")
-#pragma library("user32")
-int __stdcall LibMain( int hdll, int reason, void *reserved )
-{
-    return( 1 );
-}
-#endif
-
-void GrabHandlers()
-{
-}
-
-void RestoreHandlers()
-{
-}
-
-bool TBreak()
-{
-    return( FALSE );
-}
-
-long _fork( char *cmd, unsigned len )
-{
-    cmd=cmd;len=len;
-    return( 0 );
-}
-
-const char *CheckForPowerBuilder( const char *name )
-{
-    return( name );
-}
-
-void SetNumLines( int num )
-{
-    num = num;
-}
-
-void SetNumColumns( int num )
-{
-    num = num;
-}
-
-void SysSetMemLimit()
-{
-}
+extern dig_fhandle  DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
+extern unsigned     DIGPathClose( dig_fhandle handle );
+extern long         DIGGetSystemHandle( dig_fhandle handle );

@@ -37,12 +37,6 @@
 #include "madimp.h"
 
 #if defined( __WATCOMC__ )
-#define _CODE_BASED __based( __segname( "_CODE" ) )
-#else
-#define _CODE_BASED
-#endif
-
-#if defined( __WATCOMC__ )
   #if defined( __WINDOWS__ )
   #elif defined( _M_I86 )
     #pragma aux MADLOAD "*" __loadds
@@ -147,7 +141,7 @@ static HINSTANCE    ThisInst;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char _CODE_BASED Signature[4] = "MAD";
+const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
 #endif
 
 DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_client_routines *client )

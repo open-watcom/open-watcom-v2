@@ -41,6 +41,7 @@
 #include "trpcore.h"
 #include "tinyio.h"
 #include "tcerr.h"
+#include "digio.h"
 
 #ifdef __OSI__
 #include "extender.h"
@@ -79,8 +80,6 @@ static dos_memory               TrapMem;
 static void __far               *RawPMtoRMSwitchAddr;
 
 extern unsigned                 EnvLkup( char *, char *, unsigned max );
-extern handle                   PathOpen( char *, uint, char * );
-extern sys_handle               GetSystemHandle( handle );
 
 
 unsigned_8      DPMICheck = 0;
@@ -535,7 +534,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     char                *err;
     char                *parm;
     char                *end;
-    handle              dh;
+    dig_fhandle         dh;
     trap_file_header    __far *head;
 
 
@@ -549,13 +548,13 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     } else {
         parm = end + 1;
     }
-    dh = PathOpen( trapbuff, end - trapbuff, DEFAULT_TRP_EXT );
-    if( dh == NIL_HANDLE ) {
+    dh = DIGPathOpen( trapbuff, end - trapbuff, DEFAULT_TRP_EXT, NULL, 0 );
+    if( dh == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
-    err = ReadInTrap( GetSystemHandle( dh ) );
-    FileClose( dh );
+    err = ReadInTrap( DIGGetSystemHandle( dh ) );
+    DIGPathClose( dh );
     sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
     if( err == NULL ) {
         if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {

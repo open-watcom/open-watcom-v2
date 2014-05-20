@@ -45,9 +45,6 @@ typedef struct {
 
 static unsigned short   *SuppSegs;
 
-extern  int         PathOpen(char *,unsigned,char *);
-
-
 union any_rec {
     struct _lmf_definition  defn;
     struct _lmf_data        data;

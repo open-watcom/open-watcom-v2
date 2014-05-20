@@ -36,10 +36,9 @@
 #include "madcli.h"
 #include "madsys.h"
 #include "ldimp.h"
+#include "digio.h"
 
-#define MADSIG  0x0044414DUL
-
-extern  int      PathOpen(char *,unsigned, char *);
+#define MADSIG  0x0044414DUL    // "MAD"
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
@@ -49,25 +48,30 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 mad_status MADSysLoad( char *path, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    int                 h;
+    dig_fhandle         h;
     imp_header          *mad;
     mad_init_func       *init_func;
     mad_status          status;
 
-    h = PathOpen( path, strlen( path ), "mad" );
-    if( h < 0 ) {
+    h = DIGPathOpen( path, strlen( path ), "mad", NULL, 0 );
+    if( h == DIG_NIL_HANDLE ) {
         return( MS_ERR|MS_FOPEN_FAILED );
     }
     mad = ReadInImp( h );
-    DIGCliClose( h );
+    DIGPathClose( h );
     status = MS_ERR|MS_INVALID_MAD;
     if( mad != NULL ) {
-        init_func = (mad_init_func *)mad->init_rtn;
-        if( mad->sig == MADSIG && init_func != NULL
-          && (*imp = init_func( &status, cli )) != NULL ) {
-            *sys_hdl = (mad_sys_handle)mad;
-            return( MS_OK );
+#ifdef __WATCOMC__
+        if( mad->sig == MADSIG ) {
+#endif
+            init_func = (mad_init_func *)mad->init_rtn;
+            if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+                *sys_hdl = (mad_sys_handle)mad;
+                return( MS_OK );
+            }
+#ifdef __WATCOMC__
         }
+#endif
         DIGCliFree( (void *)mad );
     }
     return( status );

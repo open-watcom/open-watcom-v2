@@ -60,6 +60,8 @@
 #include "memutil.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "digcli.h"
+#include "digio.h"
 
 #if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"
@@ -69,7 +71,6 @@
 #define HELP_NAME  "WWINHELP"
 
 extern void             fatal(char *msg, ...);
-extern dig_fhandle      DIGCliOpen(char *name, dig_open mode);
 
 char   *HelpPathList = NULL;
 char   *FilePathList = NULL;
@@ -132,17 +133,18 @@ char *FindFile( char *fullname, char *name, char *path_list )
 }
 
 #if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
-extern dig_fhandle FullPathOpen( char const *name, char *ext,
-                                 char *result, unsigned max_res )
-/***************************************************************/
+dig_fhandle DIGPathOpen( const char *name, unsigned name_len,
+                const char *ext, char *result, unsigned max_result )
+/******************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char *      filename;
 
-    if( ext == NULL || *ext == NULLCHAR ) {
-        strcpy( realname, name );
-    } else {
-        _splitpath2( name, result, NULL, NULL, &filename, NULL );
+    max_result = max_result;
+    memcpy( realname, name, name_len );
+    realname[name_len] = '\0';
+    if( ext != NULL && *ext != NULLCHAR ) {
+        _splitpath2( realname, result, NULL, NULL, &filename, NULL );
         _makepath( realname, NULL, NULL, filename, ext );
     }
     filename = FindFile( result, realname, FilePathList );
@@ -155,12 +157,10 @@ extern dig_fhandle FullPathOpen( char const *name, char *ext,
     return( DIGCliOpen( filename, DIG_READ ) );
 }
 
-extern dig_fhandle PathOpen( char * name, unsigned len, char * ext )
-/******************************************************************/
+unsigned DIGPathClose( dig_fhandle h )
 {
-    char        path[ _MAX_PATH2 ];
-
-    return( FullPathOpen( name, ext, path, sizeof( path ) ) );
+    DIGCliClose( h );
+    return( 0 );
 }
 #endif
 

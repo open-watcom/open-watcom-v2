@@ -39,6 +39,7 @@
 #include "trpimp.h"
 #include "tcerr.h"
 #include "trpld.h"
+#include "digio.h"
 
 #define TRAP_SIGNATURE          0xDEAF
 
@@ -50,10 +51,6 @@ typedef struct {
     unsigned_16         req_off;
     unsigned_16         fini_off;
 } trap_header;
-
-extern unsigned_32      GetSystemHandle( int );
-extern int              PathOpen(char *,unsigned,char *);
-extern unsigned         FileClose( int );
 
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
@@ -120,45 +117,41 @@ void KillTrap( void )
 
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
-    char            init_error[256];
-    tiny_handle_t   filehndl;
+    dig_fhandle     filehndl;
     char            *ptr;
     char            *parm;
     trap_init_func  *init_func;
 
     if( trapbuff == NULL )
         trapbuff = "std";
-    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
+    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr )
+        ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    filehndl = PathOpen( trapbuff, ptr - trapbuff, "trp" );
-    if( filehndl <= 0 ) {
+    filehndl = DIGPathOpen( trapbuff, ptr - trapbuff, "trp", NULL, 0 );
+    if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
-    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    ptr = ReadInTrap( GetSystemHandle( filehndl ) );
-    FileClose( filehndl );
+    ptr = ReadInTrap( DIGGetSystemHandle( filehndl ) );
+    DIGPathClose( filehndl );
     if( ptr != NULL ) {
-        KillTrap();
-        return( ptr );
+        strcpy( buff, ptr );
+    } else {
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        if( TrapCode->signature == TRAP_SIGNATURE ) {
+            init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
+            *trap_ver = init_func( parm, buff, trap_ver->remote );
+            if( buff[0] == '\0' ) {
+                if( TrapVersionOK( *trap_ver ) ) {
+                    TrapVer = *trap_ver;
+                    FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
+                    ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
+                    return( NULL );
+                }
+                strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+            }
+        }
     }
-    if( TrapCode->signature != TRAP_SIGNATURE ) {
-        KillTrap();
-        return( buff );
-    }
-    init_func = MK_FP( FP_SEG( TrapCode ), TrapCode->init_off );
-    *trap_ver = init_func( parm, init_error, trap_ver->remote );
-    if( init_error[0] != '\0' ) {
-        strcpy( buff, init_error );
-        KillTrap();
-        return( buff );
-    }
-    FiniFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->fini_off );
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    ReqFunc = MK_FP( FP_SEG( TrapCode ), TrapCode->req_off );
-    return( NULL );
+    KillTrap();
+    return( buff );
 }

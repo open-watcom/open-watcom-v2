@@ -38,20 +38,9 @@
 #include "dipsys.h"
 #include "ldimp.h"
 #include "dbgmod.h"
+#include "digio.h"
 
-#define DIPSIG  0x00504944UL
-
-extern  int      FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
-
-static int PathOpenDIP( char const *name, unsigned len, char *ext, char *dip_name, int dip_name_len )
-{
-    char    path[_MAX_PATH];
-
-    len = min(len,sizeof(path));
-    memcpy( path, name, len );
-    path[ len ] = '\0';
-    return( FullPathOpen( path, ext, dip_name, dip_name_len ) );
-}
+#define DIPSIG  0x00504944UL    // "DIP"
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
@@ -61,19 +50,23 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    int                 h;
+    dig_fhandle         h;
     imp_header          *dip;
     dip_init_func       *init_func;
     dip_status          status;
     char                dip_name[_MAX_PATH];
 
-    h = PathOpenDIP( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
-    if( h < 0 ) {
+    h = DIGPathOpen( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
+    if( h == DIG_NIL_HANDLE ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
     dip = ReadInImp( h );
-    DIGCliClose( h );
+    DIGPathClose( h );
+#ifdef __WATCOMC__
     if( dip == NULL || dip->sig != DIPSIG ) {
+#else
+    if( dip == NULL ) {
+#endif
         return( DS_ERR|DS_INVALID_DIP );
     }
 #ifdef WATCOM_DEBUG_SYMBOLS

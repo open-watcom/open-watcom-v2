@@ -71,13 +71,13 @@ extern unsigned         DoLoad( char *, unsigned long * );
 extern void             ClearMachState( void );
 extern void             SetupMachState( void );
 extern unsigned long    RemoteGetLibName( unsigned long, void *, unsigned );
-extern unsigned         RemoteStringToFullName( bool, char *, char *, unsigned );
+extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern char             *GetCmdArg( int );
 extern void             SetCmdArgStart( int, char * );
 extern void             RemoteSplitCmd( char *, char **, char ** );
 extern void             SymInfoMvHdl( handle, handle );
-extern handle           PathOpen( char *, unsigned, char * );
-extern handle           FullPathOpen( char *name, char *ext, char *result, unsigned max_result );
+extern handle           PathOpen( const char *, unsigned, const char * );
+extern handle           FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             ChkExpr( void );
 extern bool             ScanEOC( void );
 extern char             *ReScan( char * );
@@ -111,7 +111,7 @@ extern char             *GetCmdName( int index );
 extern char             *GetCmdEntry( char *tab, int index, char *buff );
 extern void             RecordEvent( char * );
 extern bool             HookPendingPush( void );
-extern char             *CheckForPowerBuilder( char * );
+extern const char       *CheckForPowerBuilder( const char * );
 extern char             *DupStr( char * );
 extern mod_handle       LookupImageName( char *start, unsigned len );
 extern mod_handle       LookupModName( mod_handle search, char *start, unsigned len );
@@ -232,23 +232,21 @@ bool InitCmd( void )
     return( TRUE );
 }
 
-void FindLocalDebugInfo( char *name )
+void FindLocalDebugInfo( const char *name )
 {
-    char    *buff, *symname, *fname;
+    char    *buff, *symname;
     char    *ext;
     int     len = strlen( name );
     handle  local;
 
     _AllocA( buff, len + 1 + 4 + 2 );
-    _AllocA( fname, len + 1 );
     _AllocA( symname, len + 1 + 4 );
     strcpy( buff, "@l" );
     // If a .sym file is present, use it in preference to the .exe
-    StrCopy( name, fname );
-    ext = ExtPointer( fname, OP_LOCAL );
+    ext = ExtPointer( name, OP_LOCAL );
     if( *ext != NULLCHAR )
         *ext = NULLCHAR;
-    local = FullPathOpen( fname, "sym", symname, len + 4 );
+    local = FullPathOpen( name, len, "sym", symname, len + 4 );
     if( local != NIL_HANDLE ) {
         strcat( buff, symname );
         FileClose( local );
@@ -264,7 +262,7 @@ static void DoDownLoadCode( void )
     handle local;
 
     if( !DownLoadTask ) return;
-    local = FullPathOpen( TaskCmd, "exe", TxtBuff, TXT_LEN );
+    local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
     if( local == NIL_HANDLE ) {
         Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TaskCmd );
     }
@@ -468,7 +466,7 @@ void FreeImage( image_entry *image )
 }
 
 
-static image_entry *DoCreateImage( char *exe, char *sym )
+static image_entry *DoCreateImage( const char *exe, const char *sym )
 {
     image_entry         *image;
     image_entry         **owner;
@@ -504,7 +502,7 @@ char *GetLastImageName( void )
     return( image->image_name );
 }
 
-static image_entry *CreateImage( char *exe, char *sym )
+static image_entry *CreateImage( const char *exe, const char *sym )
 {
     image_entry         *image;
     bool                local;
@@ -902,7 +900,7 @@ static void WndNewProg( void )
     HookNotify( FALSE, HOOK_NEW_MODULE );
 }
 
-static int DoLoadProg( char *task, char *sym, unsigned *error )
+static int DoLoadProg( const char *task, const char *sym, unsigned *error )
 {
     open_access         loc;
     char                *name;
@@ -913,14 +911,14 @@ static int DoLoadProg( char *task, char *sym, unsigned *error )
     unsigned long       system_handle;
 
     *error = 0;
-    #ifdef __NT__
-        task = CheckForPowerBuilder( task );
-    #endif
+#ifdef __NT__
+    task = CheckForPowerBuilder( task );
+#endif
     if( task[0] == NULLCHAR ) return( TASK_NONE );
     name = FileLoc( task, &loc );
     if( DownLoadTask ) {
         strcpy( fullname, name );
-        local = FullPathOpen( TaskCmd, "exe", TxtBuff, TXT_LEN );
+        local = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
         if( local != NIL_HANDLE ) {
             strcpy( fullname, TxtBuff );
             FileClose( local );
@@ -1530,7 +1528,7 @@ OVL_EXTERN void MapAddrUsrMod( image_entry *image, addr_ptr *addr,
  *                  NB: assumes flat model
  */
 
-bool SymUserModLoad( char *fname, address *loadaddr )
+bool SymUserModLoad( const char *fname, address *loadaddr )
 {
     unsigned    fname_len;
     image_entry *image;

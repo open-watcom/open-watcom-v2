@@ -35,30 +35,35 @@
 #include "pillink.h"
 #include "pillimp.h"
 #include "pillctrl.h"
+#include "digio.h"
 
-#define PILLSIG  0x4c4c4950UL
+#define PILLSIG  0x4C4C4950UL    // "PILL"
 
 #include "qnxload.h"
 
 int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    int                         h;
+    dig_fhandle                 h;
     supp_header                 *pill;
     pill_init_func              *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    h = PathOpen( path, strlen( path ), "pil" );
-    if( h < 0 ) {
+    h = DIGPathOpen( path, strlen( path ), "pil", NULL, 0 );
+    if( h == DIG_NIL_HANDLE ) {
         msg->data.code = errno;
         return( 0 );
     }
     SuppSegs = NULL;
     pill = ReadSupp( h );
-    DIGCliClose( h );
+    DIGPathClose( h );
     lh->sys = SuppSegs;
+#ifdef __WATCOMC__
     if( pill == NULL || pill->sig != PILLSIG ) {
+#else
+    if( pill == NULL ) {
+#endif
         msg->data.code = EINVAL;
         PILLSysUnload( lh->sys );
         return( 0 );

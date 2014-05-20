@@ -42,12 +42,6 @@
 #endif
 
 #if defined( __WATCOMC__ )
-#define _CODE_BASED __based( __segname( "_CODE" ) )
-#else
-#define _CODE_BASED
-#endif
-
-#if defined( __WATCOMC__ )
   #if defined( __WINDOWS__ )
   #elif defined( _M_I86 )
     #pragma aux DIPLOAD "*" __loadds
@@ -143,7 +137,7 @@ static HANDLE       TaskId;
 #endif
 
 #if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
-const char _CODE_BASED Signature[4] = "DIP";
+const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
 #endif
 
 DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )

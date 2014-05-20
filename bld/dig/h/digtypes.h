@@ -57,7 +57,7 @@
     #define DIG_DLLEXPORT
 #endif
 
-#define DIG_NIL_HANDLE      ( (dig_fhandle) -1 )
+#define DIG_NIL_HANDLE      ((dig_fhandle)-1)
 
 typedef unsigned_8 search_result; enum {
     SR_NONE,
@@ -377,14 +377,15 @@ typedef struct dip_type_info {
     type_modifier       modifier;
 } dip_type_info;
 
-typedef         unsigned dig_fhandle;
-typedef         unsigned_8 dig_seek; enum {
+typedef int         dig_fhandle;
+
+typedef unsigned_8  dig_seek; enum {
     DIG_ORG,
     DIG_CUR,
     DIG_END
 };
 
-typedef         unsigned_8 dig_open; enum {
+typedef unsigned_8  dig_open; enum {
     DIG_READ        = 0x01,
     DIG_WRITE       = 0x02,
     DIG_CREATE      = 0x04,

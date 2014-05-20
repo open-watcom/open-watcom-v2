@@ -37,21 +37,20 @@
 #include "tcerr.h"
 #include "trpqimp.h"
 #include "trpld.h"
+#include "digio.h"
 
 #if defined( BUILTIN_TRAP_FILE )
 extern const trap_requests *TrapLoad( const trap_callbacks *client );
 #endif
 
-extern char          **environ;
-
-extern  int          FullPathOpen( char const *name, char *ext, char *result, unsigned max_result );
-extern  int          GetSystemHandle(int);
-
-static trap_fini_func   *FiniFunc = NULL;
+#ifndef __WATCOMC__
+extern char             **environ;
+#endif
 
 #if !defined( BUILTIN_TRAP_FILE )
-static void         *TrapFile = NULL;
+static void             *TrapFile = NULL;
 #endif
+static trap_fini_func   *FiniFunc = NULL;
 
 const static trap_callbacks TrapCallbacks = {
     sizeof( trap_callbacks ),
@@ -81,20 +80,9 @@ void KillTrap( void )
 #endif
 }
 
-int PathOpenTrap( char const *name, unsigned len, char *ext, char *trap_name, int trap_name_len )
-{
-    char    path[_MAX_PATH];
-
-    len = min( len, sizeof( path ) );
-    memcpy( path, name, len );
-    path[ len ] = '\0';
-    return( FullPathOpen( path, ext, trap_name, trap_name_len ) );
-}
-
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
-    char                init_error[256];
-    int                 filehndl;
+    dig_fhandle         filehndl;
     char                *ptr;
     char                *parm;
     const trap_requests *(*ld_func)( const trap_callbacks * );
@@ -106,44 +94,45 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr )
         ;
     parm = (*ptr != '\0') ? ptr + 1 : ptr;
-    filehndl = PathOpenTrap( trapbuff, ptr - trapbuff, "so", trap_name, sizeof( trap_name ) );
-
-    parm = (*ptr != '\0') ? ptr + 1 : ptr;
-
 #if !defined( BUILTIN_TRAP_FILE )
-    TrapFile = dlopen( trap_name, RTLD_NOW );
-    if( TrapFile == NULL ) {
-        puts( dlerror() );
+    filehndl = DIGPathOpen( trapbuff, ptr - trapbuff, "so", trap_name, sizeof( trap_name ) );
+    if( filehndl == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
         return( buff );
     }
-    ld_func = dlsym( TrapFile, "TrapLoad" );
-#else
-    ld_func = TrapLoad;
-#endif
+    TrapFile = dlopen( trap_name, RTLD_NOW );
+    DIGPathClose( filehndl );
+    if( TrapFile == NULL ) {
+        puts( dlerror() );
+        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_name );
+        return( buff );
+    }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    ld_func = dlsym( TrapFile, "TrapLoad" );
     if( ld_func == NULL ) {
         KillTrap();
         return( buff );
     }
+#else
+    strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+    ld_func = TrapLoad;
+#endif
+
+    parm = (*ptr != '\0') ? ptr + 1 : ptr;
+
     trap_funcs = ld_func( &TrapCallbacks );
-    if( trap_funcs == NULL ) {
-        sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trapbuff );
-        KillTrap();
-        return( buff );
+    if( trap_funcs != NULL ) {
+        *trap_ver = trap_funcs->init_func( parm, buff, trap_ver->remote );
+        FiniFunc = trap_funcs->fini_func;
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                ReqFunc = trap_funcs->req_func;
+                return( NULL );
+            }
+            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        }
     }
-    *trap_ver = trap_funcs->init_func( parm, init_error, trap_ver->remote );
-    FiniFunc = trap_funcs->fini_func;
-    if( init_error[0] != '\0' ) {
-        strcpy( buff, init_error );
-        KillTrap();
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    ReqFunc = trap_funcs->req_func;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }
