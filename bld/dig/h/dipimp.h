@@ -33,6 +33,7 @@
 #define DIPIMP_H_INCLUDED
 
 #include "diptypes.h"
+
 #include "digpck.h"
 
 struct imp_image_handle;
@@ -229,6 +230,8 @@ typedef struct dip_client_routines {
     unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
 } dip_client_routines;
 
+#include "digunpck.h"
+
 typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY dip_fini_func( void );
@@ -265,5 +268,4 @@ mad_handle      DCCurrMAD(void);
 
 unsigned        DCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
 
-#include "digunpck.h"
 #endif

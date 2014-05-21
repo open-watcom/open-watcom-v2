@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DIC client callback function prototypes.
+* Description:  DIG client callback function prototypes.
 *
 ****************************************************************************/
 
