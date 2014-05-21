@@ -36,14 +36,6 @@
 #include "filefmt.h"
 #include "wressetr.h"
 
-/***** Exported types *****/
-typedef struct WResDirHead      *WResDir;
-typedef struct WResDirWindow {
-    struct WResResNode          *CurrRes;
-    struct WResTypeNode         *CurrType;
-    struct WResLangNode         *CurrLang;
-} WResDirWindow;
-
 /***** Private Types *****/
 
 typedef struct WResLangNode {
@@ -77,6 +69,15 @@ typedef struct WResDirHead {        /* head of the directory */
     WResTypeNode *          Tail;
     WResTargetOS            TargetOS;
 } WResDirHead;
+
+/***** Exported types *****/
+typedef struct WResDirWindow {
+    struct WResResNode          *CurrRes;
+    struct WResTypeNode         *CurrType;
+    struct WResLangNode         *CurrLang;
+} WResDirWindow;
+
+typedef struct WResDirHead      *WResDir;
 
 /* macros to test condition for a WRes directory */
 #define WResDirInitError( s )           ((s) == NULL)
