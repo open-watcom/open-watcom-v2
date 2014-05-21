@@ -416,7 +416,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     dfline_search   start_state;
     dfline_find     find;
     dip_status      ret;
-    imp_mod_handle  imx;
+    im_idx          imx;
     cue_item        cue;
     cue_list        *cue_map;
     address         map_addr;
