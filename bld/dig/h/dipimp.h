@@ -53,6 +53,17 @@ typedef unsigned_16     image_index;
 #define DIP_MINOR       3
 #define DIP_MINOR_OLD   0
 
+#define MH2IMH( mh )    ((mh)&0x0000FFFF)
+#define IMH2MH( imh )   (imh)
+
+/*
+    An imp_mod_handle is defined as an unsigned_16. The value zero is
+    reserved to indicate "no module".
+*/
+#define IMH_NOMOD       ((imp_mod_handle)0)
+#define IMH_BASE        ((imp_mod_handle)1)
+#define IMH_GBL         ((imp_mod_handle)-1)
+
 typedef walk_result (DIGCLIENT IMP_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
 typedef walk_result (DIGCLIENT IMP_TYPE_WKR)( imp_image_handle *, imp_type_handle *, void * );
 typedef walk_result (DIGCLIENT IMP_SYM_WKR)( imp_image_handle *, sym_walk_info, imp_sym_handle *, void * );
