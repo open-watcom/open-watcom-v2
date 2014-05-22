@@ -807,7 +807,7 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
     search_result   ret;
     seg_list        *addr_sym;
 
-    if( im == 0 ) {
+    if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
@@ -1411,13 +1411,13 @@ static int WalkSymSymList( blk_wlk *df, BLKLF fn, imp_sym_handle *is )
 }
 
 
-static walk_result  WalkMyLDSyms( imp_image_handle *ii, im_idx imx, void *_df )
-/*****************************************************************************/
+static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle imh, void *_df )
+/*************************************************************************************/
 {
     blk_wlk     *df = _df;
 
-    df->wlk.com.imx = imx;
-    WalkModSymList( df, &ASym, imx );
+    df->wlk.com.imx = IM2IMX( imh );
+    WalkModSymList( df, &ASym, IM2IMX( imh ) );
     return( df->wlk.wr );
 }
 
@@ -1467,11 +1467,11 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
         break;
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             wr = DFWalkModList( ii, WalkMyLDSyms, &df );
         } else {
-           WalkModSymList( &df, &AModSym, IM2IMX( im ) );
-           wr = df.wlk.wr;
+            WalkModSymList( &df, &AModSym, IM2IMX( im ) );
+            wr = df.wlk.wr;
         }
         break;
     }
@@ -1677,7 +1677,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         return( SR_NONE );
     }
     if( ss ==  SS_TYPE ) {
-        if( li->mod != NO_MOD ) {
+        if( li->mod != IMH_NOMOD ) {
             sr =  SR_NONE;
         } else {
             sr = SearchMbr( ii, (imp_type_handle *)source, li, d  );
@@ -1716,7 +1716,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         break;
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             if( DR_SRCH_func_var == df.com.what ) {
                 sr = HashSearchGbl( ii, li, d );
             }

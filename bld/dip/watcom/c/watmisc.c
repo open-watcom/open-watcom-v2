@@ -125,7 +125,7 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
 {
     search_result       sr;
 
-    if( im == NO_MOD ) {
+    if( im == IMH_NOMOD ) {
         if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) return( SR_NONE );
     } else {
         is->im = im;
@@ -241,7 +241,8 @@ static search_result SearchFileScope( imp_image_handle *ii,
 {
     search_result       sr;
 
-    if( im == (imp_mod_handle)NO_MOD ) return( SR_NONE );
+    if( im == IMH_NOMOD )
+        return( SR_NONE );
     switch( li->type ) {
     case ST_NONE:
         sr = SearchLclMod( ii, im, li, d );
@@ -313,25 +314,26 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     case SS_SCOPED:
         if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
             im = item.mod;
-        } else if( item.mod == NO_MOD || item.mod == im ) {
+        } else if( item.mod == IMH_NOMOD || item.mod == im ) {
             if( !item.file_scope && item.type == ST_NONE ) {
                 sr = SearchLclScope( ii, im, (address *)source, &item, d );
             }
         } else {
             im = item.mod;
         }
-        if( im != NO_MOD && sr == SR_NONE ) {
+        if( im != IMH_NOMOD && sr == SR_NONE ) {
             sr = SearchFileScope( ii, im, &item, d );
         }
         break;
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( item.mod == NO_MOD || item.mod == im ) {
+        if( item.mod == IMH_NOMOD || item.mod == im ) {
             sr = SearchFileScope( ii, im, &item, d );
         }
         break;
     case SS_TYPE:
-        if( item.mod != NO_MOD ) return( SR_NONE );
+        if( item.mod != IMH_NOMOD )
+            return( SR_NONE );
         switch( item.type ) {
         case ST_TYPE:
         case ST_STRUCT_TAG:
@@ -474,7 +476,7 @@ walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
         return( WalkBlockSymList( ii, (scope_block *)t, wk, is, d ) );
     case SS_MODULE:
         im = *(imp_mod_handle *)t;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             glue.walk = wk;
             glue.is   = is;
             glue.d    = d;

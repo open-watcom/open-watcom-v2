@@ -960,7 +960,7 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
         addr_off                off;
     }                           curr, best;
 
-    cde = hllFindDirEntry( ii, MH_GBL, tbl_type );
+    cde = hllFindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -1075,7 +1075,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     s_all                       *sp;
     search_result               sr;
 
-    cde = hllFindDirEntry( ii, MH_GBL, tbl_type );
+    cde = hllFindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -1367,7 +1367,7 @@ walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
          */
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             wr = hllWalkDirList( ii, hll_sstModule, &hllWalkModuleGlobals, &glue );
         } else  {
             hll_dir_entry *hde = hllFindDirEntry( ii, im, hll_sstModule );
@@ -2195,7 +2195,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 static search_result SearchFileScope( imp_image_handle *ii, imp_mod_handle im,
                 struct search_data *d )
 {
-    if( d->li.mod != im && d->li.mod != (imp_mod_handle)NO_MOD ) {
+    if( d->li.mod != im && d->li.mod != IMH_NOMOD ) {
         return( SR_NONE );
     }
     switch( d->li.type ) {
@@ -2265,7 +2265,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
             /* just check the global symbols */
             break;
         }
-        if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+        if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
             return( SR_NONE );
         }
         switch( data.li.type ) {
@@ -2290,7 +2290,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     default:
         return( SR_NONE );
     }
-    if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+    if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
         return( SR_NONE );
     }
     hash = CalcHash( data.li.name.start, data.li.name.len );

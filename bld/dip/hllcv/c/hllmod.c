@@ -62,7 +62,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
     md.d  = d;
     wr = hllWalkDirList( ii, hll_sstModule, &GlueModWalk, &md );
     if( wr == WR_CONTINUE ) {
-        wr = wk( ii, MH_GBL, d );
+        wr = wk( ii, IMH_GBL, d );
     }
     return( wr );
 }
@@ -109,7 +109,7 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
     hll_dir_entry *hdd;
 
     /* the fictive global module. */
-    if( im == MH_GBL ) {
+    if( im == IMH_GBL ) {
         return( hllNameCopy( buf, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
     }
 
@@ -282,7 +282,7 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
              * If not found in any, we return the global handle since
              * we know that the address is within the bounds of this image.
              */
-            *im = MH_GBL;
+            *im = IMH_GBL;
             if( ii->segments[seg].is_executable ) {
                 struct find_mod args;
                 args.a = &a;
@@ -369,7 +369,7 @@ dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
      *        whatever else which could give of heuristics to decide here.
      */
     hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
-    if( hdd == NULL && im != MH_GBL ) {
+    if( hdd == NULL && im != IMH_GBL ) {
         return( DS_FAIL );
     }
     /* ASSUMES everything is 32-bit for now */

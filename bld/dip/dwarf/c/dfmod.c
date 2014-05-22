@@ -257,7 +257,7 @@ extern  im_idx  CuTag2ModIdx( imp_image_handle *ii, dr_handle cu_handle ){
 }
 
 extern walk_result DFWalkModList( imp_image_handle *ii,
-                        MY_MOD_WKR wk, void *d )
+                        IMP_MOD_WKR wk, void *d )
 {
     im_idx imx;
     walk_result ret;
@@ -275,7 +275,7 @@ extern walk_result DFWalkModList( imp_image_handle *ii,
 
 extern walk_result DFWalkModListSrc( imp_image_handle *ii,
                                  int src,
-                                 MY_MOD_WKR wk, void *d )
+                                 IMP_MOD_WKR wk, void *d )
 {
     im_idx          imx;
     int             hassrc;
@@ -297,12 +297,12 @@ extern walk_result DFWalkModListSrc( imp_image_handle *ii,
 
 walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
 {
-    int im;
+    imp_mod_handle im;
     walk_result ret;
     dr_dbg_handle  saved;
 
     ret = WR_CONTINUE;
-    for( im = 1; im <= ii->mod_count; ++im ){
+    for( im = IMH_BASE; im <= ii->mod_count; ++im ){
         saved = DRGetDebug();
         ret = wk( ii, im, d );
         DRSetDebug( saved );

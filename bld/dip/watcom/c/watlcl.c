@@ -116,7 +116,8 @@ static void LclCreate( imp_sym_handle *is, byte *ptr, char *name, lclinfo *local
 static dip_status LoadLocalSyms( imp_image_handle *ii, imp_mod_handle im,
                                         lclinfo *new )
 {
-    if( im == (imp_mod_handle)NO_MOD ) return( DS_FAIL );
+    if( im == IMH_NOMOD )
+        return( DS_FAIL );
     new->start = InfoLoad( ii, im, DMND_LOCALS, 0, NULL );
     if( new->start == NULL ) {
         return( DS_FAIL );

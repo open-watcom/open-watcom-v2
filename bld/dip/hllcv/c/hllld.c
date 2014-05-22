@@ -635,7 +635,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     if( rc == DS_OK ) {
         /* FIXME
         hll_debug_dir *cde;
-        cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+        cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
         if( cde != NULL ) {
             hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
             if( hdr == NULL ) {

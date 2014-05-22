@@ -142,7 +142,7 @@ static virt_mem TypeIndexVM( imp_image_handle *ii, unsigned idx )
     unsigned_32         *p;
 
     if( idx < CV_FIRST_USER_TYPE ) return( 0 );
-    cde = hllFindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = hllFindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( 0 );
     p = VMBlock( ii,
         cde->lfo
@@ -1138,7 +1138,7 @@ search_result hllTypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
-    if( li->mod != NO_MOD && li->mod != MH_GBL ) {
+    if( li->mod != IMH_NOMOD && li->mod != IMH_GBL ) {
         return( SR_NONE );
     }
     switch( li->type ) {
@@ -1157,7 +1157,7 @@ search_result hllTypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     default:
         return( SR_NONE );
     }
-    cde = hllFindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = hllFindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
@@ -1337,8 +1337,9 @@ walk_result DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     unsigned_32         *array_p;
     walk_result         wr;
 
-    if( im != MH_GBL ) return( WR_CONTINUE );
-    cde = hllFindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    if( im != IMH_GBL )
+        return( WR_CONTINUE );
+    cde = hllFindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
@@ -1364,7 +1365,7 @@ imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
 {
     ii = ii;
     it = it;
-    return( MH_GBL );
+    return( IMH_GBL );
 }
 
 static int IsFortranModule( imp_image_handle *ii, location_context *lc )

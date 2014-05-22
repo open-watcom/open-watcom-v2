@@ -349,7 +349,7 @@ static int AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
 
 
 static walk_result ModGlbSymHash( imp_image_handle  *ii,
-                                  im_idx            imx,
+                                  imp_mod_handle    imh,
                                   void              *d )
 /******************************************************/
 // Add module's global syms to the name hash
@@ -357,7 +357,7 @@ static walk_result ModGlbSymHash( imp_image_handle  *ii,
     dr_handle       cu_tag;
 
     d = d;
-    cu_tag = ii->mod_map[imx].cu_tag;
+    cu_tag = ii->mod_map[IM2IMX( imh )].cu_tag;
     DRWalkModFunc( cu_tag, FALSE, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }

@@ -737,7 +737,7 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
         addr_off                off;
     }                           curr, best;
 
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -856,7 +856,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     s_all                       *sp;
     search_result               sr;
 
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -964,8 +964,8 @@ static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
     imp_sym_handle              dummy;
     addr_off                    dummy_off;
 
-    is->im = MH_GBL;
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    is->im = IMH_GBL;
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( WR_CONTINUE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( WR_FAIL );
@@ -1049,12 +1049,12 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
     switch( ss ) {
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             wr = WalkDirList( ii, &WalkAModule, &glue );
             if( wr != WR_CONTINUE ) return( wr );
-            im = MH_GBL;
+            im = IMH_GBL;
         }
-        if( im == MH_GBL ) {
+        if( im == IMH_GBL ) {
             wr = TableWalkSym( ii, is, wk, d, sstGlobalSym );
             if( wr != WR_CONTINUE ) return( wr );
             return( TableWalkSym( ii, is, wk, d, sstGlobalPub ) );
@@ -1602,7 +1602,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 static search_result SearchFileScope( imp_image_handle *ii, imp_mod_handle im,
                 struct search_data *d )
 {
-    if( d->li.mod != im && d->li.mod != (imp_mod_handle)NO_MOD ) {
+    if( d->li.mod != im && d->li.mod != IMH_NOMOD ) {
         return( SR_NONE );
     }
     switch( d->li.type ) {
@@ -1672,7 +1672,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
             /* just check the global symbols */
             break;
         }
-        if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+        if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
             return( SR_NONE );
         }
         switch( data.li.type ) {
@@ -1697,7 +1697,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     default:
         return( SR_NONE );
     }
-    if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+    if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
         return( SR_NONE );
     }
     hash = CalcHash( data.li.name.start, data.li.name.len );

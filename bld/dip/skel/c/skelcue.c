@@ -61,7 +61,7 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
     /*
         Return the module the source cue comes from.
      */
-     return( NO_MOD );
+     return( IMH_NOMOD );
 }
 
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,

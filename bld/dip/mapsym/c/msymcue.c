@@ -50,7 +50,7 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     ii = ii; ic = ic;
-    return( NO_MOD );
+    return( IMH_NOMOD );
 }
 
 unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii,

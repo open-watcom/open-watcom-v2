@@ -62,7 +62,7 @@ imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
     /*
         Return the module that the type handle comes from.
     */
-    return( NO_MOD );
+    return( IMH_NOMOD );
 }
 
 dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,

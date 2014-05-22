@@ -56,7 +56,7 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
     find.wk = wk;
     find.d  = d;
     wr = WalkDirList( ii, &FindMods, &find );
-    if( wr == WR_CONTINUE ) wr = wk( ii, MH_GBL, d );
+    if( wr == WR_CONTINUE ) wr = wk( ii, IMH_GBL, d );
     return( wr );
 }
 
@@ -76,7 +76,7 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
     char                *end;
     unsigned            len;
 
-    if( im == MH_GBL ) {
+    if( im == IMH_GBL ) {
         return( NameCopy( buff, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
     }
     cde = FindDirEntry( ii, im, sstModule );
@@ -212,9 +212,9 @@ search_result ImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
         We know the address is in the image. If it's an executable
         segment, we can find the module by checking all the sstModule
         sections and look at the code section information. If it's a
-        data segment, or we can't find it, return MH_GBL.
+        data segment, or we can't find it, return IMH_GBL.
     */
-    *im = MH_GBL;
+    *im = IMH_GBL;
     if( map->u.b.fExecute ) {
         d.d = &a;
         if( WalkDirList( ii, FindAddr, &d ) == WR_STOP ) {

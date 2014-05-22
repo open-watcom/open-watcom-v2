@@ -51,9 +51,6 @@ typedef unsigned long   virt_mem;
 
 #define BLOCK_FACTOR( i, n )    (((i)+((n)-1))/(n))
 
-#define MH_BASE         1
-#define MH_GBL          ((imp_mod_handle)-1)
-
 struct imp_sym_handle {
     virt_mem            handle;
     unsigned short      len;

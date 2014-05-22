@@ -774,11 +774,7 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
     unsigned            len;
     char                *p;
 
-    switch( li->mod ) {
-    case NO_MOD:
-    case IMH_JAVA:
-        break;
-    default:
+    if( li->mod != IMH_NOMOD && li->mod != IMH_JAVA ) {
         return( SR_NONE );
     }
     data.li = li;

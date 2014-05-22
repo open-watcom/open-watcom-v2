@@ -209,7 +209,7 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
             } else {
                 if( lnk->src_len != namlen ) goto next_global;
             }
-            if( im == NO_MOD ) {
+            if( im == IMH_NOMOD ) {
                 if( GBL_KIND( gbl ) & GBL_KIND_STATIC &&
                     cim != GBL_MOD( gbl ) ) goto next_global;
             } else {
@@ -623,7 +623,7 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
             end = ptr + blk->size;
             while( ptr < end ) {
                 is->im = GBL_MOD( ptr );
-                if( im == (imp_mod_handle)NO_MOD ) {
+                if( im == IMH_NOMOD ) {
                     if( ImpInterface.mod_info( ii, is->im, HK_SYM ) != DS_OK ) {
                         GblCreate( is, (gbl_info *)ptr );
                         wr = wk( ii, SWI_SYMBOL, is, d );

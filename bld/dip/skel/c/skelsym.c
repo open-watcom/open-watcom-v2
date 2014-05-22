@@ -136,7 +136,7 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
     /*
         Return the module that the implementation symbol handle comes from.
     */
-    return( NO_MOD );
+    return( IMH_NOMOD );
 }
 
 unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,

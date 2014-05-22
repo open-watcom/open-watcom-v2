@@ -52,7 +52,8 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     unsigned                            i;
     walk_result                         wr;
 
-    if( im == MH_GBL ) return( WR_CONTINUE );
+    if( im == IMH_GBL )
+        return( WR_CONTINUE );
 
     cde = FindDirEntry( ii, im, sstSrcModule );
     if( cde == NULL ) return(  WR_CONTINUE );

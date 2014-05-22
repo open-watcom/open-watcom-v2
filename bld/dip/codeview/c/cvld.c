@@ -252,7 +252,7 @@ static dip_status LoadMapping( imp_image_handle *ii )
     cv_sst_seg_map      *map;
     unsigned            size;
 
-    cde = FindDirEntry( ii, MH_GBL, sstSegMap );
+    cde = FindDirEntry( ii, IMH_GBL, sstSegMap );
     if( cde == NULL ) return( DS_ERR|DS_INFO_INVALID );
     map = VMBlock( ii, cde->lfo, cde->cb );
     if( map == NULL ) return( DS_ERR|DS_FAIL );
@@ -325,7 +325,7 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
         Cleanup( ii );
         return( ds );
     }
-    cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde != NULL ) {
         hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
         if( hdr == NULL ) {
