@@ -103,7 +103,7 @@ static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned lon
     uint                sect;
 
     // Find TIS header seek to elf header
-    start = DCSeek( f, -(int)sizeof( dbg_head ), DIG_END );
+    start = DCSeek( f, -(long)sizeof( dbg_head ), DIG_END );
     for( ;; ) {
         if( DCRead( f, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
             return( DS_FAIL );

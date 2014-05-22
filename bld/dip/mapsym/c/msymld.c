@@ -88,7 +88,7 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
     unsigned    want;
 
     if( s > sizeof( Buff.data ) ) {
-        Buff.fpos = DCSeek( h, (int)Buff.fpos + (int)Buff.off - (int)Buff.len, DIG_ORG );
+        Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
         if( Buff.fpos == -1UL )
