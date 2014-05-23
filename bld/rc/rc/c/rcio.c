@@ -59,18 +59,15 @@ static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
 {
     char    drive[ _MAX_DRIVE ];
     char    dir[ _MAX_DIR ];
-#ifdef __UNIX__
-    char    fname[ 32 ];
-#else
+#ifdef __DOS__
     char    *fname = "__TMP__";
-#endif
-
-    _splitpath( dirfile, drive, dir, NULL, NULL );
-#ifdef __UNIX__
+#else
+    char    fname[ 32 ];
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
 #endif
+    _splitpath( dirfile, drive, dir, NULL, NULL );
     _makepath( outfile, drive, dir, fname, ext );
 } /* MakeTmpInSameDir */
 
@@ -84,8 +81,7 @@ static int Pass1InitRes( void )
     /* put the temporary file in the same location as the output file */
     CurrResFile.filename = CurrResFile.namebuf;
 #ifdef USE_TEMPFILE
-    MakeTmpInSameDir( CmdLineParms.OutResFileName, CurrResFile.filename,
-                    "res" );
+    MakeTmpInSameDir( CmdLineParms.OutResFileName, CurrResFile.filename, "res" );
 #else
     strcpy( CurrResFile.filename, CmdLineParms.OutResFileName );
 #endif
@@ -611,13 +607,10 @@ extern int RcPass2IoInit( void )
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RCALLOC( IO_BUFFER_SIZE );
-    MakeTmpInSameDir( CmdLineParms.OutExeFileName, Pass2Info.TmpFileName,
-                            "tmp" );
-    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName,
-                    &(Pass2Info.OldFile) );
+    MakeTmpInSameDir( CmdLineParms.OutExeFileName, Pass2Info.TmpFileName, "tmp" );
+    noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
-        noerror = openNewExeFileInfo( Pass2Info.TmpFileName,
-                                      &(Pass2Info.TmpFile) );
+        noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );
     }
     tmpexe_exists = noerror;
 
