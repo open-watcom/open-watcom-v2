@@ -329,11 +329,11 @@ extern bool             WndStopRefresh( bool );
 extern void             WndNoMemory( void );
 extern void             WndMemInit( void );
 extern void             WndMemFini( void );
-extern void             *WndAlloc( unsigned int );
-extern void             *WndRealloc( void *, unsigned int );
+extern void             *WndAlloc( size_t );
+extern void             *WndRealloc( void *, size_t );
 extern void             WndFree( void * );
-extern void             *WndMustAlloc( unsigned int );
-extern void             *WndMustRealloc( void *, unsigned int );
+extern void             *WndMustAlloc( size_t );
+extern void             *WndMustRealloc( void *, size_t );
 extern void             WndCreateFloatingPopup( a_window *, gui_point *, char,
                                                gui_menu_struct *, int * );
 

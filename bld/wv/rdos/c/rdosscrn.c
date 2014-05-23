@@ -39,7 +39,7 @@
 #include <rdos.h>
 #include <stdui.h>
 
-extern void         *ExtraAlloc( unsigned );
+extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
 extern int          GUIInitMouse( int );
 extern void         GUIFiniMouse( void );

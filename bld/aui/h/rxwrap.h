@@ -51,4 +51,4 @@ extern char SrchIgnoreCase;
 extern char SrchMagicChars[];
 extern char SrchRX;
 
-extern void *WndAlloc( unsigned int );
+extern void *WndAlloc( size_t int );

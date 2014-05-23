@@ -192,13 +192,13 @@ int __saveregs __fmemneed( size_t size )
 }
 #endif
 
-void *DbgAlloc( unsigned size )
+void *DbgAlloc( size_t size )
 {
     return( TRMemAlloc( size ) );
 }
 
 
-void *DbgMustAlloc( unsigned size )
+void *DbgMustAlloc( size_t size )
 {
     void        *ptr;
 
@@ -209,7 +209,7 @@ void *DbgMustAlloc( unsigned size )
     return( ptr );
 }
 
-void *DbgRealloc( void *chunk, unsigned size )
+void *DbgRealloc( void *chunk, size_t size )
 {
     return( TRMemRealloc( chunk, size ) );
 }
@@ -220,7 +220,7 @@ void DbgFree( void *ptr )
     if( ptr != NULL ) TRMemFree( ptr );
 }
 
-void *ChkAlloc( unsigned size, char *error )
+void *ChkAlloc( size_t size, char *error )
 {
     void *ret;
 
@@ -291,14 +291,15 @@ void MemExpand( void )
     unsigned long   size;
     void            **link;
     void            **p;
-    unsigned        alloced;
+    size_t          alloced;
 
     if( MemSize == ~0 ) return;
     link = NULL;
     size = MemSize;
-    for( ;; ) {
-        if( size == 0 ) break;
-        alloced = min( MAX_BLOCK, size );
+    alloced = MAX_BLOCK;
+    for( ; size > 0; ) {
+        if( size < MAX_BLOCK )
+            alloced = size;
         p = TRMemAlloc( alloced );
         if( p != NULL ) {
             *p = link;
@@ -321,13 +322,13 @@ void MemInit( void )
     MemExpand();
 }
 
-void *ExtraAlloc( unsigned size )
+void *ExtraAlloc( size_t size )
 {
     return( TRMemAlloc( size ) );
 }
 
 
-void *ExtraRealloc( void *p, unsigned size )
+void *ExtraRealloc( void *p, size_t size )
 {
     return( TRMemRealloc( p, size ) );
 }

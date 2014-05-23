@@ -44,9 +44,10 @@ int compare( x **a, x **b )
     return( (*a)->i - (*b)->i );
 }
 
-void *myalloc( unsigned size )
+void *myalloc( size_t size )
 {
-    if( size > 50 ) return( NULL );
+    if( size > 50 )
+        return( NULL );
     return( malloc( size ) );
 }
 

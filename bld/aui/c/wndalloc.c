@@ -43,13 +43,13 @@ void    WndNoMemory( void )
 }
 
 
-extern void *   WndAlloc( unsigned size )
+extern void *WndAlloc( size_t size )
 {
     return( malloc( size ) );
 }
 
 
-extern void *   WndRealloc( void *chunk, unsigned size )
+extern void *WndRealloc( void *chunk, size_t size )
 {
     return( realloc( chunk, size ) );
 }

@@ -33,18 +33,20 @@
 #include "auipvt.h"
 #include <string.h>
 
-void    *WndMustAlloc( unsigned size )
+void    *WndMustAlloc( size_t size )
 {
     void        *chunk;
 
     chunk = WndAlloc( size );
-    if( chunk == NULL ) WndNoMemory();
+    if( chunk == NULL )
+        WndNoMemory();
     return( chunk );
 }
 
-void    *WndMustRealloc( void *chunk, unsigned size )
+void    *WndMustRealloc( void *chunk, size_t size )
 {
     chunk = WndRealloc( chunk, size );
-    if( chunk == NULL ) WndNoMemory();
+    if( chunk == NULL )
+        WndNoMemory();
     return( chunk );
 }

@@ -40,7 +40,7 @@
 #define INCL_SUB
 #include "os2.h"
 
-extern void     __FAR *ExtraAlloc( unsigned );
+extern void     __FAR *ExtraAlloc( size_t );
 extern void     ExtraFree( void __FAR * );
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
@@ -144,7 +144,7 @@ void FiniScreen()
  *                                                                           *
 \*****************************************************************************/
 
-void __FAR *uifaralloc( int size )
+void __FAR *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
 }
