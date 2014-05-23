@@ -663,7 +663,7 @@ unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
 /*
  * Get the 'file id'.
  */
-cue_file_id DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                                       imp_cue_handle *ic )
 {
     ii = ii;
@@ -880,7 +880,7 @@ dip_status DIGENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
 
 /* line search state data */
 typedef struct {
-    cue_file_id     file;               /* The file we're looking for. */
+    cue_fileid      file;               /* The file we're looking for. */
     unsigned_16     line;               /* The line we're looking for. */
     imp_cue_handle  best;               /* The best cue so far. */
     search_result   rc;                 /* The search result. */
@@ -1009,7 +1009,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *ii, imp_cue_handle *i
  * the proper characteristics, return SR_NONE
  */
 search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
-                                      cue_file_id file, unsigned long line,
+                                      cue_fileid file, unsigned long line,
                                       unsigned column, imp_cue_handle *ic )
 {
     /*

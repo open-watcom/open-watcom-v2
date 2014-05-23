@@ -83,7 +83,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     return( NameCopy( buff, NameBuff, max, len + class_len ) );
 }
 
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     return( 1 );
@@ -203,7 +203,7 @@ address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
 #define LN_CACHE_SIZE   100
 
 search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
 #if 0

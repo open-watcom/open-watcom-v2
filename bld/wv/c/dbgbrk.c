@@ -47,7 +47,7 @@
 #include "enterdb.h"
 
 
-extern cue_file_id      CueFileId( cue_handle * );
+extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern unsigned long    ReqLongExpr( void );
@@ -363,7 +363,7 @@ void GetBPText( brkp *bp, char *buff )
 }
 
 
-extern brkp *FindBreakByLine( mod_handle mod, cue_file_id id, unsigned line )
+extern brkp *FindBreakByLine( mod_handle mod, cue_fileid id, unsigned line )
 {
     brkp        *bp;
     mod_handle  brk_mod;
@@ -1878,7 +1878,7 @@ void ClearAllModBreaks( mod_handle handle )
     }
 }
 
-address GetRowAddrDirectly( mod_handle mod, cue_file_id file_id, int row, bool exact )
+address GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact )
 {
     DIPHDL( cue, ch );
 

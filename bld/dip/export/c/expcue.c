@@ -58,7 +58,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     return( 0 );
 }
 
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     ii = ii; ic = ic;
@@ -93,7 +93,7 @@ address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
 }
 
 search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
     ii = ii; im = im; file = file; line = line; column = column; ic = ic;

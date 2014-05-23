@@ -51,9 +51,9 @@
 #include <limits.h>
 
 
-search_result           LineCue( mod_handle, cue_file_id,
+search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
-extern cue_file_id      CueFileId( cue_handle * );
+extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             StdInNew( void );

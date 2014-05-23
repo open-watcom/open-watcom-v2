@@ -259,7 +259,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
 {
     file_info       *sym_file;
     cue_handle      *ch;
-    cue_file_id     fid;
+    cue_fileid      fid;
     int             file_count;
     int             count;
     location_list   ll;

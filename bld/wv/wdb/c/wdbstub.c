@@ -114,7 +114,7 @@ extern  void            FiniSource( void );
 extern brkp             *GetBPAt(int row);
 extern int              GetBPsCount( void );
 extern address          GetCodeDot();
-extern address          GetRowAddrDirectly( mod_handle mod, cue_file_id file_id, int row, bool exact );
+extern address          GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool exact );
 extern unsigned         Go( bool );
 extern void             GoToReturn( void );
 extern bool             InsMemRef( mad_disasm_data *dd );

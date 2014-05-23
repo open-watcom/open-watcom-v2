@@ -122,12 +122,12 @@ struct dip_imp_routines {
     walk_result         (DIGENTRY *walk_file_list)( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
     imp_mod_handle      (DIGENTRY *cue_mod)(imp_image_handle *, imp_cue_handle * );
     unsigned            (DIGENTRY *cue_file)( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-    cue_file_id         (DIGENTRY *cue_fyle_id)( imp_image_handle *, imp_cue_handle * );
+    cue_fileid          (DIGENTRY *cue_file_id)( imp_image_handle *, imp_cue_handle * );
     dip_status          (DIGENTRY *cue_adjust)( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
     unsigned long       (DIGENTRY *cue_line)( imp_image_handle *, imp_cue_handle * );
     unsigned            (DIGENTRY *cue_column)( imp_image_handle *, imp_cue_handle * );
     address             (DIGENTRY *cue_addr)( imp_image_handle *, imp_cue_handle * );
-    search_result       (DIGENTRY *line_cue)( imp_image_handle *, imp_mod_handle, cue_file_id, unsigned long, unsigned, imp_cue_handle * );
+    search_result       (DIGENTRY *line_cue)( imp_image_handle *, imp_mod_handle, cue_fileid, unsigned long, unsigned, imp_cue_handle * );
     search_result       (DIGENTRY *addr_cue)( imp_image_handle *, imp_mod_handle, address, imp_cue_handle * );
     int                 (DIGENTRY *cue_cmp)( imp_image_handle *, imp_cue_handle *, imp_cue_handle * );
 
@@ -202,12 +202,12 @@ dip_status      DIGENTRY DIPImpSymFreeAll( imp_image_handle * );
 walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
 imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *, imp_cue_handle * );
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *, imp_cue_handle * );
+cue_fileid      DIGENTRY DIPImpCueFileId( imp_image_handle *, imp_cue_handle * );
 dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
 unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *, imp_cue_handle * );
 unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *, imp_cue_handle * );
 address         DIGENTRY DIPImpCueAddr( imp_image_handle *, imp_cue_handle * );
-search_result   DIGENTRY DIPImpLineCue( imp_image_handle *, imp_mod_handle, cue_file_id, unsigned long, unsigned, imp_cue_handle * );
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *, imp_mod_handle, cue_fileid, unsigned long, unsigned, imp_cue_handle * );
 search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *, imp_mod_handle, address, imp_cue_handle * );
 int             DIGENTRY DIPImpCueCmp( imp_image_handle *, imp_cue_handle *, imp_cue_handle * );
 

@@ -349,7 +349,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
 }
 
 
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /*************************************************************/
 {
@@ -579,7 +579,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
 
 
 search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 /**********************************************************************/
 {

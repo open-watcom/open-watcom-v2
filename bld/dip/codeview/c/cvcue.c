@@ -111,7 +111,7 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     return( NameCopy( buff, p, max, name_len ) );
 }
 
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     ii = ii;
@@ -261,7 +261,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
 }
 
 search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
     cv_directory_entry                  *cde;

@@ -987,7 +987,7 @@ static unsigned MechBits( unsigned select, unsigned parm )
 typedef struct cue_find {
     cue_handle          *best_ch;
     unsigned long       best_line;
-    cue_file_id         id;
+    cue_fileid          id;
     char                *name;
     unsigned            len;
     unsigned            ambig           : 1;

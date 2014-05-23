@@ -370,7 +370,7 @@ static void ScanSection( struct search_info *close, unsigned file_id,
 }
 
 search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
-                        cue_file_id file, unsigned long line, unsigned col,
+                        cue_fileid file, unsigned long line, unsigned col,
                         imp_cue_handle *ic )
 {
     struct search_info  close;
@@ -483,7 +483,7 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
     return( ic->im );
 }
 
-cue_file_id DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
     unsigned    num;
@@ -503,9 +503,9 @@ cue_file_id DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
                         char *buff, unsigned max )
 {
-    cue_file_id         id;
+    cue_fileid      id;
 
-    id = ImpInterface.cue_fyle_id( ii, ic );
+    id = ImpInterface.cue_file_id( ii, ic );
     switch( id ) {
     case 0:
         return( 0 );

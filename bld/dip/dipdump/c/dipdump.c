@@ -495,7 +495,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_handle      *prev_cue = NULL;
     cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE ) );
     mod_handle      mod       = CueMod( cue );
-    cue_file_id     file_id   = CueFileId( cue );
+    cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
     char            buf[1024];
     int             len;

@@ -40,7 +40,7 @@
 
 #define sm_file_handle                  int
 #define sm_mod_handle                   int
-#define sm_cue_file_id                  int
+#define sm_cue_fileid                   int
 
 #define SM_NO_MOD                       ((sm_mod_handle)-1)
 #define SM_BUF_SIZE                     512UL

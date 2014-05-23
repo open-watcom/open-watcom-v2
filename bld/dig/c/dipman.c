@@ -1245,12 +1245,12 @@ unsigned CueFile( cue_handle *ch, char *file, unsigned max )
     return( ih->dip->cue_file( IMP_HDL( ih, image ), IMP_HDL( ch, cue ), file, max ) );
 }
 
-cue_file_id CueFileId( cue_handle *ch )
+cue_fileid CueFileId( cue_handle *ch )
 {
     image_handle        *ih;
 
     ih = II2IH( ch->ii );
-    return( ih->dip->cue_fyle_id( IMP_HDL( ih, image ), IMP_HDL( ch, cue ) ) );
+    return( ih->dip->cue_file_id( IMP_HDL( ih, image ), IMP_HDL( ch, cue ) ) );
 }
 
 dip_status CueAdjust( cue_handle *ch, int adj, cue_handle *ach )
@@ -1295,7 +1295,7 @@ address CueAddr( cue_handle *ch )
     return( ih->dip->cue_addr( IMP_HDL( ih, image ), IMP_HDL( ch, cue ) ) );
 }
 
-search_result LineCue( mod_handle mh, cue_file_id id, unsigned long line,
+search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
                         unsigned column, cue_handle *ch )
 {
     image_handle        *ih;

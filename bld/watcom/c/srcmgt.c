@@ -53,14 +53,14 @@ typedef struct browser {
         char                    *open_name;
         sm_file_handle          file_ptr;
         sm_mod_handle           mod;
-        sm_cue_file_id          id;
+        sm_cue_fileid           id;
         int                     use;
         char                    line_buf[ SM_BUF_SIZE ];
 } browser;
 
 static browser *FileList = NULL;
 
-static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_file_id id )
+static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid id )
 {
     browser     *hndl;
 
@@ -93,7 +93,7 @@ void FClearOpenSourceCache( void )
     }
 }
 
-browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_file_id id )
+browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_fileid id )
 {
     sm_file_handle      fp;
     browser             *hndl;
