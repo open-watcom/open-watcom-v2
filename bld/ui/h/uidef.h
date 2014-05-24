@@ -114,7 +114,7 @@ void            intern          dirtyarea( UI_WINDOW *, SAREA );
 void            intern          dirtynext( SAREA, UI_WINDOW * );
 void            intern          dividearea( SAREA, SAREA, SAREA * );
 void            intern          drawbox( BUFFER *, SAREA, char *, ATTR, int );
-LPPIXEL         intern          faralloc( unsigned int );
+LPPIXEL         intern          faralloc( size_t );
 void            intern          farfree( LPPIXEL );
 VSCREEN*        intern          findvscreen( ORD, ORD );
 void            intern          finibios( void );

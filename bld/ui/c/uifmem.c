@@ -34,8 +34,8 @@
   #include <i86.h>
 #endif
 
-void __FAR * global uifaralloc( int size )
-/****************************************/
+void __FAR * global uifaralloc( size_t size )
+/*******************************************/
 {
     void        *ptr;
 
