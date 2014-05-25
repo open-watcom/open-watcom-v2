@@ -61,7 +61,7 @@ extern char *      DWRReadString( dr_handle, dr_handle );
 extern int         DWRReadFlag( dr_handle, dr_handle );
 extern char *      DWRCopyString( dr_handle * );
 extern char *      DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
-extern dw_atnum    DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
+extern bool        DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
 extern bool        DWRSearchArray( unsigned_16 const *, unsigned_16 );
 extern unsigned    DWRGetAddrSize( dr_handle );
 extern dr_handle   DWRGetAbbrev( dr_handle * );

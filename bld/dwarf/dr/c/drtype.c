@@ -250,7 +250,7 @@ extern bool DRGetTypeInfo( dr_handle entry,  dr_typeinfo *info )
         }
         curr_ab = abbrev;
         curr_ent = entry;
-        if( DWRScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) != 0 ) {
+        if( DWRScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) ) {
             entry = DWRReadReference( curr_ab, curr_ent );
         } else {
             goto error;
@@ -391,7 +391,7 @@ extern dr_handle DRGetTypeAT( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     type = 0;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         type = DWRReadReference( abbrev, entry );
     }
     return( type );
@@ -459,7 +459,7 @@ extern dr_handle DRSkipTypeChain( dr_handle tref )
         default:
             goto end_loop;
         }
-        if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != 0 ) {
+        if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
             entry = DWRReadReference( abbrev, entry );
             tref = entry;
         } else {
@@ -524,7 +524,7 @@ extern int DRConstValAT( dr_handle var, uint_32 *ret )
     dwr_formcl  formcl;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_const_value ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_const_value ) ) {
         form = DWRVMReadULEB128( &abbrev );
         for( ;; ) {
             formcl = DWRFormClass( form );

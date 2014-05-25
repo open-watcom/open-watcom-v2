@@ -274,7 +274,7 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &ccu );
-    if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
         ccu  = DWRReadConstant( abbrev, ccu );
         ccu += DWRCurrNode->sections[DR_DEBUG_LINE].base;
     } else {

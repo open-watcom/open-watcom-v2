@@ -53,7 +53,7 @@ static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
     unsigned    lang;
 
     result = DR_LANG_UNKNOWN;
-    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_language ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_language ) ) {
         lang = DWRReadConstant( abbrev, mod );
         switch( lang ) {
         case DW_LANG_C89:
@@ -102,7 +102,7 @@ extern dr_model DRGetMemModelAT( dr_handle entry )
     dr_model    retval;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_WATCOM_memory_model ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_WATCOM_memory_model ) ) {
         retval = DWRReadConstant( abbrev, entry );
     } else {
         retval = DR_MODEL_NONE;
@@ -117,7 +117,7 @@ extern char *DRGetProducer( dr_handle entry )
     char       *name;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_producer ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_producer ) ) {
         name = DWRReadString( abbrev, entry );
     }else{
         name = NULL;
@@ -143,7 +143,7 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
     unsigned    form;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, attrib ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, attrib ) ) {
         form = DWRVMReadULEB128( &abbrev );
         switch( form ) {
         case DW_FORM_string:
@@ -269,7 +269,7 @@ extern long DRGetColumn( dr_handle entry )
 
     retval = -1;        // signifies no column available
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_column ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_column ) ) {
         retval = DWRReadConstant( abbrev, entry );
     }
     return( retval );
@@ -284,7 +284,7 @@ extern long DRGetLine( dr_handle entry )
 
     retval = -1;        // signifies no column available
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_line ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_line ) ) {
         retval = DWRReadConstant( abbrev, entry );
     }
     return( retval );
@@ -299,7 +299,7 @@ extern char *DRGetFileName( dr_handle entry )
 
     name = NULL;
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_file ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_file ) ) {
         fileno = DWRReadConstant( abbrev, entry );
         name = DWRFindFileName( fileno, entry );
     }
@@ -345,7 +345,7 @@ extern dr_access DRGetAccess( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_accessibility ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_accessibility ) ) {
         return( DWRReadConstant( abbrev, entry ) );
     }
     return( DR_ACCESS_PUBLIC );
@@ -357,7 +357,7 @@ extern int DRIsStatic( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) ) {
         return( !DWRReadFlag( abbrev, entry ) );
     }
     return( FALSE );
@@ -369,7 +369,7 @@ extern int DRIsArtificial( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) ) {
         return( DWRReadFlag( abbrev, entry ) );
     }
     return( FALSE );
@@ -381,7 +381,7 @@ extern int DRIsSymDefined( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    return( DWRScanForAttrib( &abbrev, &entry, DW_AT_declaration ) == 0 );
+    return( !DWRScanForAttrib( &abbrev, &entry, DW_AT_declaration ) );
 }
 
 extern int DRIsMemberStatic( dr_handle entry )
@@ -426,7 +426,7 @@ extern dr_virtuality DRGetVirtuality( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_virtuality ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_virtuality ) ) {
         return( DWRReadConstant( abbrev, entry ) );
     }
     return( DR_VIRTUALITY_NONE );
@@ -438,7 +438,7 @@ extern unsigned DRGetByteSize( dr_handle entry )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_byte_size ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_byte_size ) ) {
         return( DWRReadConstant( abbrev, entry ) );
     }
     return( 0 );
@@ -452,7 +452,7 @@ extern int DRGetLowPc( dr_handle entry, uint_32 *num )
     int         ret;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_low_pc ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_low_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
         ret = TRUE;
@@ -470,7 +470,7 @@ extern int DRGetHighPc( dr_handle entry, uint_32 *num )
     int         ret;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_high_pc ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_high_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
         ret = TRUE;
@@ -487,7 +487,7 @@ extern dr_handle DRGetContaining( dr_handle entry )
     dr_handle   ret;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
         ret = 0;
@@ -669,7 +669,7 @@ extern int DRStartScopeAT( dr_handle entry, uint_32 *num )
     int         ret;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_start_scope ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_start_scope ) ) {
         offset =  DWRReadConstant( abbrev, entry );
         *num = offset;
         ret = TRUE;
@@ -693,7 +693,7 @@ extern dr_handle DRDebugPCHDef( dr_handle entry )
     dr_handle   ret;
 
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
         ret = 0;

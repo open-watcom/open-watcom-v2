@@ -211,16 +211,15 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
 void DWRSkipChildren( dr_handle *abbrev, dr_handle *mod )
 /**************************************************************/
 {
-    unsigned_16 value;
     dr_handle   handle;
 
-    value = DWRScanForAttrib( abbrev, mod, DW_AT_sibling );
-    if( value == DW_AT_sibling ) {
+    if( DWRScanForAttrib( abbrev, mod, DW_AT_sibling ) ) {
         *mod = DWRReadReference( *abbrev, *mod );
     } else {    // we have to manually skip everything
         for( ;; ) {
             handle = DWRVMReadULEB128( mod );   // get attribute
-            if( handle == 0 ) break;            // found end of chain!
+            if( handle == 0 )                   // found end of chain!
+                break;
             handle = DWRLookupAbbrev( *mod, handle );
             DWRVMSkipLEB128( &handle );         // skip tag
             handle++;                           // skip child;
@@ -611,22 +610,27 @@ char * DWRCopyDbgSecString( dr_handle *info, unsigned_32 offset )
     return( str );
 }
 
-dw_atnum DWRScanForAttrib( dr_handle *abbrev, dr_handle *info,
-                                                        dw_atnum at )
-/*******************************************************************/
+bool DWRScanForAttrib( dr_handle *abbrev, dr_handle *info, dw_atnum at )
+/**********************************************************************/
 /* look for a specific attribute in the list of attributes */
 {
     dw_atnum    attrib;
     dw_formnum  form;
+    bool        found;
 
+    found = TRUE;
     for( ;; ) {
         attrib = DWRVMReadULEB128( abbrev );
-        if( attrib == at ) break;
+        if( attrib == at )
+            break;
         form = DWRVMReadULEB128( abbrev );
-        if( attrib == 0 ) break;
+        if( attrib == 0 ) {
+            found = FALSE;
+            break;
+        }
         DWRSkipForm( info, form );
     }
-    return( attrib );
+    return( found );
 }
 
 static unsigned_16 CompUnitTag[] = { DW_TAG_compile_unit, 0 };
@@ -674,7 +678,7 @@ char * DWRGetName( dr_handle abbrev, dr_handle entry )
     int     base_len;
 
     name = NULL;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name ) ) {
         name = DWRReadString( abbrev, entry );
 
         len = strlen( name );

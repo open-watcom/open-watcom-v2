@@ -52,7 +52,7 @@ static bool GrabLineAddr( dr_handle abbrev, dr_handle mod, mod_scan_info *x,
     long    *data = _data;
 
     x = x;      // to avoid a warning
-    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
         *data = DWRReadConstant( abbrev, mod );
     }
     return( FALSE );    // do not continue with the search.

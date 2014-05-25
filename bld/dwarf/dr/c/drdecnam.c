@@ -600,8 +600,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     DWRFREE( varname.s );
 
     /* check if external */
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external )
-        == DW_AT_external ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
         if( DWRReadConstant( tmp_abbrev, tmp_entry ) ) {
             ListConcat( &( decname->dec_plg ), ExternKwd );
         }
@@ -613,8 +612,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;    /* reset to start of die / abbrev */
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type )
-                           == DW_AT_containing_type  ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
         dr_handle containing_die;
 
         containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
@@ -640,7 +638,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         dr_handle type_die;
 
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
@@ -802,8 +800,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
     }
 
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external )
-        == DW_AT_external ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
         if( DWRReadConstant( tmp_abbrev, tmp_entry ) ) {
             ListConcat( &( decname->dec_plg ), ExternKwd );
         }
@@ -812,8 +809,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
     /* check to see if its a member of a containing entry */
     tmp_abbrev = loc->abbrev_cr;    /* reset */
     tmp_entry = loc->entry_cr;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type )
-                           ==  DW_AT_containing_type ){
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ){
         dr_handle containing_entry;
 
         containing_entry = DWRReadReference( tmp_abbrev, tmp_entry );
@@ -824,7 +820,7 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
 
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
         type_entry =  SkipPCH( type_entry );
@@ -1074,7 +1070,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc,
     if( !done ) {
         tmp_abbrev = loc->abbrev_cr;
         tmp_entry = loc->entry_cr;
-        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
             next_die =  SkipPCH( next_die );
             if( next_die != DW_TAG_padding ) {
@@ -1128,8 +1124,7 @@ static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
 
     tmp_entry = loc->entry_cr;
     tmp_abbrev = loc->abbrev_cr;
-    if( DWRScanForAttrib( &tmp_abbrev,  &tmp_entry, DW_AT_address_class )
-        ==  DW_AT_address_class ) {
+    if( DWRScanForAttrib( &tmp_abbrev,  &tmp_entry, DW_AT_address_class ) ) {
 
         if( decname->type_ptr.head != NULL ) {
             spaceit = TRUE;
@@ -1293,9 +1288,7 @@ BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_plg ), PtrKwd );
     ListConcat( &( decname->var_plg ), MemberKwd );
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type )
-        == DW_AT_containing_type ) {
-
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
         containing_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
         containing_name.s = DRGetName( containing_entry );
@@ -1324,8 +1317,7 @@ static bool AddArrayIndex( dr_handle abbrev, dr_handle entry, void *data )
     unsigned_32 upper_bd;
     unsigned_32 *dataptr;
 
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_upper_bound )
-        != DW_AT_upper_bound )
+    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_upper_bound ) )
         return( FALSE );
 
     dataptr  = data;
@@ -1350,7 +1342,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
     abbrev = loc->abbrev_cr;
     entry = loc->entry_cr;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != DW_AT_type ) {
+    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     type_entry = DWRReadReference( abbrev, entry );
@@ -1360,7 +1352,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
     abbrev = loc->abbrev_cr;
     entry = loc->entry_cr;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_count ) == DW_AT_count ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_count ) ) {
         upper_bd = DWRReadConstant( abbrev, entry );
     } else {
         DWRSkipRest( abbrev, &entry );
@@ -1421,8 +1413,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;    /* reset to start of die / abbrev */
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type )
-                           == DW_AT_containing_type  ){
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ){
         dr_handle containing_die;
 
         containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
@@ -1451,9 +1442,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type )
-        == DW_AT_type ) {
-
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         type_die = DWRReadReference( tmp_abbrev, tmp_entry );
         type_die =  SkipPCH( type_die );
         if( type_die != DW_TAG_padding ) {
@@ -1487,8 +1476,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value )
-        == DW_AT_const_value ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value ) ) {
         ListConcat( &( decname->type_plg ), FORParamKwd );
 
         form = DWRVMReadULEB128( &tmp_abbrev );
@@ -1537,7 +1525,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 
             tmp_abbrev = type_loc->abbrev_cr;
             tmp_entry = type_loc->entry_cr;
-            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) == DW_AT_encoding ) {
+            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) ) {
                 encoding = DWRReadConstant( tmp_abbrev, tmp_entry );
             } else {
                 DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1764,7 +1752,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
 
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         dr_handle type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
 
         type_entry =  SkipPCH( type_entry );
@@ -1853,7 +1841,7 @@ static int FORAddNameListItem( dr_handle entry, int index, void *data )
 
     index = index;
     abbrev = DWRGetAbbrev( &mod );
-    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) != DW_AT_namelist_item ) {
+    if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     item = DWRReadReference( abbrev, mod );
@@ -1954,8 +1942,7 @@ static bool FORAddArrayIndex( dr_handle abbrev, dr_handle entry, void *data )
 
     tmp_abbrev = abbrev;
     tmp_entry = entry;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_lower_bound )
-                != DW_AT_lower_bound ) {
+    if( !DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_lower_bound ) ) {
         lower_bd = 1;   // default for FORTRAN
     } else {
         lower_bd = (signed_32)DWRReadConstant( tmp_abbrev, tmp_entry );
@@ -1963,8 +1950,7 @@ static bool FORAddArrayIndex( dr_handle abbrev, dr_handle entry, void *data )
 
     tmp_abbrev = abbrev;
     tmp_entry = entry;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_upper_bound )
-                != DW_AT_upper_bound ) {
+    if( !DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_upper_bound ) ) {
         return( TRUE ); // not a subrange type
     } else {
         upper_bd = (signed_32)DWRReadConstant( tmp_abbrev, tmp_entry );
@@ -2027,7 +2013,7 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
 
     abbrev = loc->abbrev_cr;
     entry = loc->entry_cr;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != DW_AT_type ) {
+    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     type_entry = DWRReadReference( abbrev, entry );
@@ -2100,7 +2086,7 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
     if( !done ) {
         tmp_abbrev = loc->abbrev_cr;
         tmp_entry = loc->entry_cr;
-        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
 
             next_die =  SkipPCH( next_die );
@@ -2124,8 +2110,7 @@ static void FORDecString( BrokenName_T *decname, Loc_T *loc )
 
     tmp_abbrev = loc->abbrev_cr;
     tmp_entry = loc->entry_cr;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size )
-        == DW_AT_byte_size ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size ) ) {
         len = DWRReadConstant( tmp_abbrev, tmp_entry );
     }
 

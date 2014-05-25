@@ -140,7 +140,7 @@ static int baseHook( dr_sym_type notused1, dr_handle handle,
     tag = DWRVMReadULEB128( &abbrev );
     abbrev += sizeof( unsigned_8 );
 
-    if( DWRScanForAttrib( &abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+    if( DWRScanForAttrib( &abbrev, &tmp_entry, DW_AT_type ) ) {
         basehandle = DWRReadReference( abbrev, tmp_entry );
         tmp_entry = basehandle;
         abbrev = DWRVMReadULEB128( &tmp_entry );
@@ -186,7 +186,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle,
     dr_handle   tmp_entry = handle;
     unsigned_32 tag;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) == DW_AT_type ) {
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         ref = DWRReadReference( tmp_abbrev, tmp_entry );
         if( ref == sinfo->parent ) {
             tmp_entry = minfo->context->classhdl;
@@ -263,7 +263,7 @@ static int friendHook( dr_sym_type st, dr_handle handle, dr_handle prt,
 
     entry = handle;
     abbrev = DWRGetAbbrev( &entry );
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_friend ) == DW_AT_friend ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_friend ) ) {
         friend_han = DWRReadReference( abbrev, entry );
         name = DRGetName( friend_han );
         st = DRGetSymType( friend_han );

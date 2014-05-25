@@ -49,8 +49,7 @@ static bool ReadEnumerator( dr_handle abbrev, dr_handle mod, void *inf )
     if( name == NULL ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_const_value )
-                != DW_AT_const_value ) {
+    if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_const_value ) ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     val = DWRReadConstant( abbrev, mod );

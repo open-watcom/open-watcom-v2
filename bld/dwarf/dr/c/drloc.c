@@ -581,7 +581,7 @@ extern int DRLocBasedAT( dr_handle      var,
     default:
         return( FALSE );
     }
-    if( DWRScanForAttrib( &abbrev, &var, at ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, at ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         if( tag == DW_TAG_member ) {
@@ -630,7 +630,7 @@ extern int DRLocationAT( dr_handle      var,
     default:
         return( FALSE );
     }
-    if( DWRScanForAttrib( &abbrev, &var, at ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, at ) ) {
          ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
@@ -651,7 +651,7 @@ extern int DRParmEntryAT( dr_handle         var,
     abbrev = DWRLookupAbbrev( var, abbrev );
     DWRVMReadULEB128( &abbrev );    /* skip tag */
     ++abbrev;                       /* skip child flag */
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) ) {
          ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
@@ -664,7 +664,7 @@ extern dr_handle DRStringLengthAT( dr_handle str )
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &str );
-    if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) ) {
          return( str );
     } else {
          return( 0 );
@@ -681,7 +681,7 @@ extern int DRRetAddrLocation( dr_handle      var,
     int         ret;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) ) {
          ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
@@ -699,7 +699,7 @@ extern int DRSegLocation( dr_handle      var,
     int         ret;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) ) {
          ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
