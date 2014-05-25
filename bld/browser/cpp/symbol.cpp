@@ -117,8 +117,7 @@ const char * Symbol::scopedName( bool fullScoping )
         WString scoped;
 
         _description = &desc;
-        DRDecoratedNameList( this, _handle, fullScoping ? _parent : 0L,
-                             descCallBack );
+        DRDecoratedNameList( this, _handle, fullScoping ? _parent : 0L, descCallBack );
         _description = NULL;
 
         for( i = 0; i < desc.count(); i += 1 ) {

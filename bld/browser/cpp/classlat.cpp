@@ -326,7 +326,7 @@ void ClassLattice::adjustLevelsUp( int levelDiff )
     _level += levelDiff;
 }
 
-static int ClassLattice::baseHook( dr_sym_type, dr_handle handle, char * name,
+static bool ClassLattice::baseHook( dr_sym_type, dr_handle handle, char * name,
                                    dr_handle inheritHandle, void * obj )
 //----------------------------------------------------------------------------
 {
@@ -408,7 +408,7 @@ void ClassLattice::loadDeriveds( void )
     }
 }
 
-static int ClassLattice::deriveHook( dr_sym_type, dr_handle handle,
+static bool ClassLattice::deriveHook( dr_sym_type, dr_handle handle,
                                      char * name, dr_handle inheritHandle,
                                      void * obj )
 //-------------------------------------------------------------------------

@@ -238,7 +238,7 @@ void FileFilter::loadFiles()
 
     BusyNotice busy( "Loading..." );
     _entries->clearAndDestroy();
-    DRGetFileNameList( &fileHook, this );
+    DRGetFileNameList( fileHook, this );
 
     for( i = 0; i < _patterns->entries(); i += 1 ) {
         applyPattern( (*_patterns)[ i ] );

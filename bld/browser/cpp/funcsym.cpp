@@ -58,8 +58,8 @@ void FunctionSym::operator delete( void * mem )
     _pool.free( mem );
 }
 
-static int FunctionSym::memberHook( dr_sym_type symtype, dr_handle handle,
-                                    dr_handle prt, char * name, void * info )
+static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle handle,
+                                    char * name, dr_handle prt, void * info )
 //---------------------------------------------------------------------------
 {
     FuncSearchData * data = ( FuncSearchData * ) info;
@@ -94,7 +94,7 @@ void FunctionSym::callees( WVList & list )
     data.me = this;
     data.list = &list;
 
-    DRRefersTo( getHandle(), &data, &callHook );
+    DRRefersTo( getHandle(), &data, callHook );
 }
 
 void FunctionSym::callers( WVList & list )

@@ -67,7 +67,7 @@ static bool CheckAccess( dr_handle handle, dr_access inherit )
 {
     int          access;
     MemberFilter filt = WBRWinBase::optManager()->getMemberFilter();
-    int          ret;
+    bool         ret;
 
     if( filt._accessLevel == MemberFilter::AccAll ) {
         ret = TRUE;     // acess is ok
@@ -76,24 +76,24 @@ static bool CheckAccess( dr_handle handle, dr_access inherit )
 
         switch( access ) {
         case DR_ACCESS_PRIVATE:
-            ret = ( filt._accessLevel & MemberFilter::AccPrivate );
+            ret = ( filt._accessLevel & MemberFilter::AccPrivate ) != 0;
             break;
         case DR_ACCESS_PROTECTED:
-            ret = ( filt._accessLevel & MemberFilter::AccProtected );
+            ret = ( filt._accessLevel & MemberFilter::AccProtected ) != 0;
             break;
         case DR_ACCESS_PUBLIC:
-            ret = ( filt._accessLevel & MemberFilter::AccPublic );
+            ret = ( filt._accessLevel & MemberFilter::AccPublic ) != 0;
             break;
         default:
-            ret = ( filt._inheritLevel & MemberFilter::ILAllInherited );
+            ret = ( filt._inheritLevel & MemberFilter::ILAllInherited ) != 0;
         }
     }
 
-    return( ret != 0 );
+    return( ret );
 }
 
-static int ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
-                                  dr_handle prt, char * name, void * info )
+static bool ClassType::memberHook( dr_sym_type symtype, dr_handle handle,
+                                  char * name, dr_handle prt, void * info )
 //-------------------------------------------------------------------------
 {
     MemberSearchData *  data = (MemberSearchData *) info;
@@ -169,8 +169,7 @@ void ClassType::getMembers( WVList & list, dr_search srch )
     if( srch == DR_SEARCH_FRIENDS ) {
         DRFriendsSearch( latt->getHandle(), &data, memberHook );
     } else {
-        DRKidsSearch( latt->getHandle(), srch, &data,
-                      memberHook );
+        DRKidsSearch( latt->getHandle(), srch, &data, memberHook );
     }
 
     if( filt._inheritLevel > MemberFilter::ILNoInherited ) {
