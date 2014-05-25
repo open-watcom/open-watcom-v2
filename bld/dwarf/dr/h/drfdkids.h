@@ -33,17 +33,12 @@
 #ifndef __DRFDKIDS_H__
 #define __DRFDKIDS_H__
 
-extern void DRKidsSearch( dr_handle, dr_search, void *,
-         int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) );
+typedef bool (*DRCLSSRCH)( dr_sym_type, dr_handle, char *, dr_handle, void * );
 
-extern void DRBaseSearch( dr_handle, void *,
-         int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) );
+extern void         DRKidsSearch( dr_handle, dr_search, void *, DRCLSSRCH );
+extern void         DRBaseSearch( dr_handle, void *, DRCLSSRCH );
+extern void         DRFriendsSearch( dr_handle, void *, DRCLSSRCH );
+extern void         DRDerivedSearch( dr_handle, void *, DRCLSSRCH );
+extern dr_sym_type  DRGetSymType( dr_handle );
 
-extern void DRFriendsSearch( dr_handle, void *,
-         int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) );
-
-extern void DRDerivedSearch( dr_handle, void *,
-         int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) );
-
-extern dr_sym_type      DRGetSymType( dr_handle );
 #endif // __DRFDKIDS_H__

@@ -29,12 +29,13 @@
 ****************************************************************************/
 
 
-// MJC
 #ifndef DR_H_INCLUDED
 #define DR_H_INCLUDED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include <stddef.h>
 #include "watcom.h"
 #include "bool.h"
@@ -76,8 +77,7 @@ typedef enum {
     DR_MODEL_COMPACT = 4,
     DR_MODEL_LARGE   = 5,
     DR_MODEL_HUGE    = 6,
-}dr_model;
-
+} dr_model;
 
 // NOTE: these have to correspond to equivalent #defines in dwarf.h!
 
@@ -92,37 +92,36 @@ typedef enum {
     DR_VIRTUALITY_VIRTUAL = 1
 } dr_virtuality;
 
-typedef enum {
-    DR_HANDLE_VOID = -1     /* special handle denoting void type */
-} dr_void_handle;
+#define DR_HANDLE_VOID  ((dr_handle)-1)     /* special handle denoting void type */
 
-struct WDRRoutines {                                    /* defaults */
-    /* I/O routines */
-    void   (* read)( void *, dr_section, void *, size_t ); // read
-    void   (* seek)( void *, dr_section, long );        // lseek
-    /* memory routines */
-    void * (* alloc)( size_t );                         // malloc
-    void * (* realloc)( void *, size_t );               // realloc
-    void   (* free)( void * );                          // free
-    void   (* except)( dr_except );                     // fatal error handler
+struct WDRRoutines {                                        /* defaults */
+/* I/O routines */
+    void   (*read)( void *, dr_section, void *, size_t );   // read
+    void   (*seek)( void *, dr_section, long );             // lseek
+/* memory routines */
+    void * (*alloc)( size_t );                              // malloc
+    void * (*realloc)( void *, size_t );                    // realloc
+    void   (*free)( void * );                               // free
+    void   (*except)( dr_except );                          // fatal error handler
 };
 
-typedef struct COMPUNIT_INFO * dr_cu_handle;
-typedef struct dr_dbg_info * dr_dbg_handle;
+typedef struct COMPUNIT_INFO    *dr_cu_handle;
+typedef struct dr_dbg_info      *dr_dbg_handle;
 
-typedef unsigned long dr_handle;
+typedef unsigned long           dr_handle;
 
 #define DWRSetRtns( read, seek, alloc, realloc, free, except ) \
-                struct WDRRoutines DWRRtns = {    \
-                    read,                           \
-                    seek,                           \
-                    alloc,                          \
-                    realloc,                        \
-                    free,                           \
-                    except                          \
-                };
+    struct WDRRoutines DWRRtns = { \
+        read,       \
+        seek,       \
+        alloc,      \
+        realloc,    \
+        free,       \
+        except      \
+    };
 
-typedef int   (*DRWLKBLK)( dr_handle, int index, void * );
+typedef bool    (*DRWLKBLK)( dr_handle, int index, void * );
+
 #include "drinit.h"
 #include "drmod.h"
 #include "drsrchdf.h"
@@ -136,9 +135,10 @@ typedef int   (*DRWLKBLK)( dr_handle, int index, void * );
 #include "drtype.h"
 #include "drloc.h"
 
-extern int DRSwap( void );
+extern bool     DRSwap( void );
 
 #ifdef __cplusplus
 };
 #endif
+
 #endif

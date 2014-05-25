@@ -54,14 +54,11 @@ typedef struct {
     unsigned_8      column;
 } dr_ref_info;
 
-extern void DRRefersTo( dr_handle, void *,
-    bool (*callback)(dr_handle,dr_ref_info *,char*,void *));
+typedef bool (*DRSYMREF)( dr_handle, dr_ref_info *, char *, void * );
 
-extern void DRReferredToBy( dr_handle, void *,
-    bool (*callback)(dr_handle,dr_ref_info *,char*,void *));
-
-extern void DRReferencedSymbols( dr_sym_type, void *,
-    bool (*callback)(dr_handle,dr_ref_info *,char*,void *));
+extern void DRRefersTo( dr_handle, void *, DRSYMREF callback );
+extern void DRReferredToBy( dr_handle, void *, DRSYMREF callback );
+extern void DRReferencedSymbols( dr_sym_type, void *, DRSYMREF callback );
 
 #ifdef __cplusplus
 }

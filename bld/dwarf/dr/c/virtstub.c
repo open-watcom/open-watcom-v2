@@ -77,12 +77,12 @@ extern dr_handle DWRVMAlloc( unsigned long len, int sect )
     return( (dr_handle) nChunk->data );
 }
 
-extern int DWRVMSectDone( dr_handle base, unsigned_32 size )
-/**********************************************************/
+bool DWRVMSectDone( dr_handle base, unsigned_32 size )
+/****************************************************/
 {
     alloc_struct    *walk;
     alloc_struct    **lnk;
-    int             ret;
+    bool            ret;
 
     lnk = &AllocHead;
     ret = FALSE;
@@ -113,8 +113,8 @@ extern void DWRVMDestroy( void )
     AllocHead = NULL;
 }
 
-extern int DRSwap( void )
-/***********************/
+bool DRSwap( void )
+/*****************/
 {
     // swap requests are ignored.
 

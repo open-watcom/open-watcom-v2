@@ -474,39 +474,33 @@ static unsigned_16 const MemTag[DR_WLKBLK_STRUCT] = {
     DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
 };
 
-extern int DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/****************************************************************/
+bool DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d )
+/**********************************************************/
 // wlks[0] == member func, wlks[1] inherit func, wlks[2] default
 {
-    int ret;
-
-    ret = DWRWalkChildren( mod, MemTag, wlks, d );
-    return( ret );
+    return( DWRWalkChildren( mod, MemTag, wlks, d ) );
 }
 
 static unsigned_16 const ArrayTag[DR_WLKBLK_ARRSIB] = {
     DW_TAG_subrange_type, DW_TAG_enumerator, 0
 };
 
-extern int DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/************************************************&******************/
+bool DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
+/******************************************&******************/
 // wlks[0] == subrange [1] = enumerator , 0 = Null
 {
-    int ret;
-
-    ret = DWRWalkSiblings( mod, ArrayTag, wlks, d );
-    return( ret );
+    return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );
 }
 
 static unsigned_16 const EnumTag[DR_WLKBLK_ENUMS] = {
     DW_TAG_enumerator, 0
 };
 
-extern int DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
-/************************************************************/
+bool DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
+/******************************************************/
 // wlks[0] == Enum  func, [1] Null
 {
-    int         ret;
+    bool        ret;
     DRWLKBLK    wlks[2];
 
     wlks[0] = wlk;
@@ -515,8 +509,8 @@ extern int DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
     return( ret );
 }
 
-extern int DRConstValAT( dr_handle var, uint_32 *ret )
-/****************************************************/
+bool DRConstValAT( dr_handle var, uint_32 *ret )
+/**********************************************/
 {
     dr_handle   abbrev;
     unsigned    form;

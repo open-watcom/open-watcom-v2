@@ -32,7 +32,7 @@
 extern void      DWRVMInit( void );
 extern void      DWRVMDestroy( void );
 extern void      DWRVMReset( void );
-extern int       DWRVMSectDone( dr_handle base, unsigned_32 size );
+extern bool      DWRVMSectDone( dr_handle base, unsigned_32 size );
 
 // DWRCurrNode must be set for alloc, free
 extern dr_handle DWRVMAlloc( unsigned long, int );
@@ -103,7 +103,7 @@ extern unsigned_32 DWRVMReadDWord( dr_handle );
 extern signed_32   DWRVMReadSLEB128( dr_handle * );
 extern unsigned_32 DWRVMReadULEB128( dr_handle * );
 extern void        DWRVMSkipLEB128( dr_handle * );
-extern void        DWRVMSwap( dr_handle, unsigned_32, int *ret );
+extern void        DWRVMSwap( dr_handle, unsigned_32, bool *ret );
 
 
 #endif // INLINE_VMEM

@@ -105,7 +105,7 @@ typedef struct line_info {
 } line_info;
 
 
-static int WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
+static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
                                           DRLFILEWLK file, void *file_data )
 /**************************************************************************/
 //Run the statement program
@@ -120,7 +120,7 @@ static int WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
     unsigned_8     line_range;
     unsigned_8     opcode_base;
     dr_line_file   df;
-    int            ret;
+    bool           ret;
 
     curr = info->rdr.curr;
     finish = info->rdr.finish;
@@ -283,13 +283,13 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
     return( ccu );
 }
 
-extern int DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
-/**************************************************************************/
+bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
+/********************************************************************/
 // Run the statement program
 {
     line_info   info;
     int         index;
-    int         ret;
+    bool        ret;
 
     stmt = InitProgInfo( &info.rdr, stmt, seg );
     info.rdr.op_lens = __alloca( info.rdr.opcode_base - 1 );
@@ -302,7 +302,7 @@ extern int DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     return( ret );
 }
 
-extern int DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
+bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
                                          DRLDIRWLK  dir,  void *dir_data )
 /************************************************************************/
 // Run the statement program
@@ -312,7 +312,7 @@ extern int DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     unsigned_8      value;
     dr_line_dir     dd;
     dr_line_file    df;
-    int             ret;
+    bool            ret;
 
     stmt = InitProgInfo( &info.rdr, stmt, 0 );
     info.rdr.op_lens = __alloca( info.rdr.opcode_base - 1 );

@@ -101,12 +101,10 @@ static void ScopeCtlFini( scope_ctl *ctl )
     }
 }
 
-static int AContainer( dr_handle    enclose,
-                      int           index,
-                      void          *_df )
-//***********************************************
+static bool AContainer( dr_handle enclose, int index, void *_df )
+//***************************************************************
 // Add entry to list stop when found search entry
-//***********************************************
+//***************************************************************
 {
     scope_entry     *new;
     bool            cont;
@@ -137,10 +135,7 @@ extern void DRGetScopeList( scope_trail *container, dr_handle of )
     container->target = of;
     container->head = NULL;
     if( compunit != NULL ) {
-        DWRWalkContaining(  compunit->start + COMPILE_UNIT_HDR_SIZE,
-                            of,
-                            AContainer,
-                            container );
+        DWRWalkContaining(  compunit->start + COMPILE_UNIT_HDR_SIZE, of, AContainer, container );
     }
 }
 

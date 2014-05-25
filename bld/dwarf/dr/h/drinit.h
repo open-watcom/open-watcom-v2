@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-dr_dbg_handle DRDbgInit( void *, unsigned long *, int );
-dr_dbg_handle DRDbgInitNFT( void *, unsigned long *, int ); /* no file table */
-void DRDbgFini( dr_dbg_handle );
-extern dr_dbg_handle  DRSetDebug( dr_dbg_handle );
-extern dr_dbg_handle  DRGetDebug( void );
-extern int  DRDbgClear( dr_dbg_handle dbg );
-extern void DRDbgDone( dr_dbg_handle dbg );
-void DRInit( void );
-void DRFini( void );
-extern void DRDbgOldVersion( dr_dbg_handle dbg, int version );
+extern dr_dbg_handle    DRDbgInit( void *, unsigned long *, int );
+extern dr_dbg_handle    DRDbgInitNFT( void *, unsigned long *, int ); /* no file table */
+extern void             DRDbgFini( dr_dbg_handle );
+extern dr_dbg_handle    DRSetDebug( dr_dbg_handle );
+extern dr_dbg_handle    DRGetDebug( void );
+extern bool             DRDbgClear( dr_dbg_handle dbg );
+extern void             DRDbgDone( dr_dbg_handle dbg );
+extern void             DRInit( void );
+extern void             DRFini( void );
+extern void             DRDbgOldVersion( dr_dbg_handle dbg, int version );

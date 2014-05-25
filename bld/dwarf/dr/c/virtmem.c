@@ -206,8 +206,8 @@ extern void DWRVMFree( dr_handle hdl )
     hdl = hdl;
 }
 
-extern int DRSwap( void )
-/***********************/
+bool DRSwap( void )
+/*****************/
 // this uses the second-chance cyclic algorithm for page replacement.
 // NOTE: this tends to degenerate into FIFO under very tight memory
 // requirements, which is rather bad for the current usage.  Any better ideas?
@@ -298,14 +298,14 @@ static void ReadPage( page_entry * node, virt_struct vm )
     DWRREAD( DWRCurrNode->file, sect, node->mem, size );
 }
 
-extern void DWRVMSwap( dr_handle base, unsigned_32 size, int *ret )
-/*****************************************************************/
+extern void DWRVMSwap( dr_handle base, unsigned_32 size, bool *ret )
+/******************************************************************/
 // Swap out base for length size
 // If memory was freed set *ret
 {
-    volatile virt_struct         vm; // cg bug workaround
-    page_entry          *entry;
-    int                 ret_val;
+    volatile virt_struct    vm;         // cg bug workaround
+    page_entry              *entry;
+    bool                    ret_val;
 
     vm.l = base;
     ret_val = FALSE;
@@ -319,7 +319,8 @@ extern void DWRVMSwap( dr_handle base, unsigned_32 size, int *ret )
                 entry->inmem = 0;
                 ret_val = TRUE;
             }
-            if( size <= MAX_NODE_SIZE ) break;
+            if( size <= MAX_NODE_SIZE )
+                break;
             size -= MAX_NODE_SIZE;
             vm.l += MAX_NODE_SIZE;
         }
@@ -329,10 +330,10 @@ extern void DWRVMSwap( dr_handle base, unsigned_32 size, int *ret )
     }
 }
 
-extern int DWRVMSectDone( dr_handle base, unsigned_32 size )
-/**********************************************************/
+bool DWRVMSectDone( dr_handle base, unsigned_32 size )
+/****************************************************/
 {
-    int ret;
+    bool ret;
 
     DWRVMSwap( base, size, &ret );
     return( ret );

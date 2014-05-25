@@ -29,5 +29,7 @@
 ****************************************************************************/
 
 
-void DRIterateCompileUnits( void *, bool (*)(void *,dr_handle) );
-extern dr_handle DRGetCompileUnitTag( dr_handle comp_unit );
+typedef bool (*DRITERCUCB)( void *, dr_handle );
+
+extern void         DRIterateCompileUnits( void *, DRITERCUCB );
+extern dr_handle    DRGetCompileUnitTag( dr_handle comp_unit );

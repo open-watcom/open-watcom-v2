@@ -39,66 +39,12 @@ typedef enum {
 
 typedef struct {
     dr_handle           handle;         // original handle
-    dr_search_context * context;        // context to resume search
+    dr_search_context   *context;       // context to resume search
     unsigned            tag;            // the actual tag.
 } mod_scan_info;
 
-/* function prototypes */
-typedef bool (*DWRCUWLK) (dr_handle, dr_handle,mod_scan_info *, void *);
-extern long DWRInfoLength( dr_handle  );
-extern bool DWRScanCompileUnit( dr_search_context *,
-                           DWRCUWLK,
-                           unsigned_16 const *, dr_depth, void * );
-extern void       DWRAllChildren( dr_handle,
-                                   bool (*)(dr_handle, dr_handle, void *),
-                                   void * );
-extern void        DWRSkipForm( dr_handle *, unsigned_16 );
-extern unsigned_32 DWRReadConstant( dr_handle, dr_handle );
-extern unsigned_32 ReadConst( unsigned form, dr_handle  );
-extern dr_handle   DWRReadReference( dr_handle, dr_handle );
-extern dr_handle   DWRReadAddr( dr_handle, dr_handle );
-extern char *      DWRReadString( dr_handle, dr_handle );
-extern int         DWRReadFlag( dr_handle, dr_handle );
-extern char *      DWRCopyString( dr_handle * );
-extern char *      DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
-extern bool        DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
-extern bool        DWRSearchArray( unsigned_16 const *, unsigned_16 );
-extern unsigned    DWRGetAddrSize( dr_handle );
-extern dr_handle   DWRGetAbbrev( dr_handle * );
-extern dr_handle   DWRReadAbbrev( dr_handle );
-extern dr_handle   DWRLookupAbbrev( dr_handle entry, dr_handle abbr );
-extern void        DWRGetCompileUnitHdr( dr_handle,
-                           DWRCUWLK,
-                           void * );
-extern char *      DWRGetName( dr_handle, dr_handle );
-extern void        DWRSkipChildren( dr_handle *, dr_handle * );
-extern void        DWRSkipAttribs( dr_handle, dr_handle * );
-extern void        DWRSkipRest( dr_handle, dr_handle * );
-extern dr_handle   DWRFindCompileUnit( dr_handle );
-extern compunit_info * DWRFindCompileInfo( dr_handle );
-extern bool DWRScanAllCompileUnits( dr_search_context *,
-                           DWRCUWLK,
-                           unsigned_16 const *, dr_depth, void * );
-extern bool DWRWalkCompileUnit( dr_handle,
-                        DWRCUWLK,
-                        unsigned_16 const *, dr_depth , void * );
-
-extern int DWRWalkChildren( dr_handle mod,
-                           unsigned_16 const *tags,
-                           DRWLKBLK *wlks, void *d );
-extern int DWRWalkContaining( dr_handle mod,
-                             dr_handle target,
-                             DRWLKBLK wlk, void *d );
-extern bool DWRWalkSiblings( dr_handle          curr,
-                             unsigned_16  const *tags,
-                             DRWLKBLK *wlks,  void *d );
-extern int DWRWalkScope( dr_handle mod,
-                         unsigned_16 const *tags,
-                         DRWLKBLK wlks,   void *d );
-extern void     DWRContextPush( dr_context_stack *, uint_32 );
-extern uint_32  DWRContextPop( dr_context_stack * );
-extern dr_handle DWRContext( dr_context_stack * stack, int up );
-extern void     DWRFreeContextStack( dr_context_stack * );
+typedef bool (*DWRCUWLK)( dr_handle, dr_handle, mod_scan_info *, void * );
+typedef bool (*DWRCHILDCB)( dr_handle, dr_handle, void * );
 
 typedef enum {
     DWR_FORMCL_address,
@@ -109,18 +55,56 @@ typedef enum {
     DWR_FORMCL_ref_addr,
     DWR_FORMCL_string,
     DWR_FORMCL_indirect,
-}dwr_formcl;
+} dwr_formcl;
 
-extern dwr_formcl DWRFormClass( unsigned_16 form );
+/* function prototypes */
+extern long         DWRInfoLength( dr_handle  );
+extern bool         DWRScanCompileUnit( dr_search_context *, DWRCUWLK, const unsigned_16 *, dr_depth, void * );
+extern void         DWRAllChildren( dr_handle, DWRCHILDCB, void * );
+extern void         DWRSkipForm( dr_handle *, unsigned_16 );
+extern unsigned_32  DWRReadConstant( dr_handle, dr_handle );
+extern unsigned_32  ReadConst( unsigned form, dr_handle  );
+extern dr_handle    DWRReadReference( dr_handle, dr_handle );
+extern dr_handle    DWRReadAddr( dr_handle, dr_handle );
+extern char         *DWRReadString( dr_handle, dr_handle );
+extern int          DWRReadFlag( dr_handle, dr_handle );
+extern char         *DWRCopyString( dr_handle * );
+extern char         *DWRCopyDbgSecString( dr_handle *, unsigned_32 offset );
+extern bool         DWRScanForAttrib( dr_handle *, dr_handle *, dw_atnum );
+extern bool         DWRSearchArray( const unsigned_16 *, unsigned_16 );
+extern unsigned     DWRGetAddrSize( dr_handle );
+extern dr_handle    DWRGetAbbrev( dr_handle * );
+extern dr_handle    DWRReadAbbrev( dr_handle );
+extern dr_handle    DWRLookupAbbrev( dr_handle entry, dr_handle abbr );
+extern void         DWRGetCompileUnitHdr( dr_handle, DWRCUWLK, void * );
+extern char         *DWRGetName( dr_handle, dr_handle );
+extern void         DWRSkipChildren( dr_handle *, dr_handle * );
+extern void         DWRSkipAttribs( dr_handle, dr_handle * );
+extern void         DWRSkipRest( dr_handle, dr_handle * );
+extern dr_handle    DWRFindCompileUnit( dr_handle );
+extern compunit_info *DWRFindCompileInfo( dr_handle );
+extern bool         DWRScanAllCompileUnits( dr_search_context *, DWRCUWLK, const unsigned_16 *, dr_depth, void * );
+extern bool         DWRWalkCompileUnit( dr_handle, DWRCUWLK, const unsigned_16 *, dr_depth , void * );
+
+extern bool         DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, void *d );
+extern bool         DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d );
+extern bool         DWRWalkSiblings( dr_handle curr, unsigned_16  const *tags, DRWLKBLK *wlks, void *d );
+extern bool         DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlks, void *d );
+extern void         DWRContextPush( dr_context_stack *, uint_32 );
+extern uint_32      DWRContextPop( dr_context_stack * );
+extern dr_handle    DWRContext( dr_context_stack *stack, int up );
+extern void         DWRFreeContextStack( dr_context_stack * );
+
+extern dwr_formcl   DWRFormClass( unsigned_16 form );
+
 /* data declarations */
-
-extern unsigned_16 const * const SearchTypes[];
-extern unsigned_16 const * const SearchTags[];
-extern unsigned_16 const         ScanKidsTags[];
-extern unsigned_16 const         DeclarationTags[];
-extern unsigned_16 const         FunctionTags[];
-extern unsigned_16 const         VariableTags[];
-extern unsigned_16 const         ClassTags[];
-extern unsigned_16 const         TypedefTags[];
-extern unsigned_16 const         EnumTags[];
-extern unsigned_16 const         LabelTags[];
+extern const unsigned_16 * const SearchTypes[];
+extern const unsigned_16 * const SearchTags[];
+extern const unsigned_16         ScanKidsTags[];
+extern const unsigned_16         DeclarationTags[];
+extern const unsigned_16         FunctionTags[];
+extern const unsigned_16         VariableTags[];
+extern const unsigned_16         ClassTags[];
+extern const unsigned_16         TypedefTags[];
+extern const unsigned_16         EnumTags[];
+extern const unsigned_16         LabelTags[];

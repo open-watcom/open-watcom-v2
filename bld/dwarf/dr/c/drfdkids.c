@@ -34,20 +34,18 @@
 
 typedef struct {
     void        *data;  /* caller wants this back */
-    int         (* callback)(dr_sym_type, dr_handle, char *, dr_handle, void * );
+    DRCLSSRCH   callback;
     dr_handle   parent;
     dr_handle   inheritance;
 } BaseInfo;
 
 typedef struct {
-    int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * );
-    void *          data;
+    DRCLSSRCH   callback;
+    void        *data;
 } FriendInfo;
 
-extern void DRKidsSearch( dr_handle clhandle, dr_search search,
-                          void *data,
-         int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) )
-/****************************************************************************/
+void DRKidsSearch( dr_handle clhandle, dr_search search, void *data, DRCLSSRCH callback )
+/***************************************************************************************/
 // search the children of a given entry for particular tags ..
 // callback is called with a found entry's type, handle,
 // name, parent, and data.  If it returns FALSE, searching stops.
@@ -63,7 +61,6 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
     char        *name;
 
     abbrev = DWRVMReadULEB128( &tmp_entry );
-
     if( abbrev == 0 ) {
         return;
     }
@@ -81,7 +78,6 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
     for( ;; ) {
         newentry = tmp_entry;                   /* alway point to start of die */
         abbrev = DWRVMReadULEB128( &tmp_entry );
-
         if( abbrev == 0 ) {
             break;
         }
@@ -98,9 +94,10 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
                     break;
                 }
             }
-
             name = DWRGetName( abbrev, tmp_entry );
-            if( !callback( symtype, newentry, prt, name, data ) ) break;
+            if( !callback( symtype, newentry, name, prt, data ) ) {
+                break;
+            }
         }
 
         /* NYI - DW_TAG_lexical_block only one? */
@@ -114,8 +111,8 @@ extern void DRKidsSearch( dr_handle clhandle, dr_search search,
 }
 
 
-static int baseHook( dr_sym_type notused1, dr_handle handle,
-                     dr_handle notused2, char *name, void *info )
+static bool baseHook( dr_sym_type notused1, dr_handle handle,
+                     char *name, dr_handle notused2, void *info )
 /***************************************************************/
 {
     BaseInfo    *binfo = (BaseInfo *)info;
@@ -157,26 +154,22 @@ static int baseHook( dr_sym_type notused1, dr_handle handle,
             }
         }
         basename = DWRGetName( abbrev, tmp_entry );
-        return( binfo->callback( symtype, basehandle, basename,
-                                handle, binfo->data ) );
+        return( binfo->callback( symtype, basehandle, basename, handle, binfo->data ) );
     }
     return( TRUE );
 }
 
-extern void DRBaseSearch( dr_handle clhandle, void * data,
-          int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) )
-/*******************************************************************************/
+void DRBaseSearch( dr_handle clhandle, void * data, DRCLSSRCH callback )
+/**********************************************************************/
 {
     BaseInfo binfo;
     binfo.data = data;
     binfo.callback = callback;
-
     DRKidsSearch( clhandle, DR_SEARCH_BASE, &binfo, baseHook );
 }
 
-static bool CheckEntry( dr_handle abbrev, dr_handle handle,
-                        mod_scan_info *minfo, void *data )
-/*********************************************************/
+static bool CheckEntry( dr_handle abbrev, dr_handle handle, mod_scan_info *minfo, void *data )
+/********************************************************************************************/
 {
     dr_handle   ref;
     BaseInfo    *sinfo = (BaseInfo *)data;
@@ -210,13 +203,11 @@ static bool CheckEntry( dr_handle abbrev, dr_handle handle,
                              minfo->handle, sinfo->data );
         }
     }
-
     return( TRUE );
 }
 
-extern void DRDerivedSearch( dr_handle handle, void *data,
-          int (* callback )( dr_sym_type, dr_handle, char *, dr_handle, void * ) )
-/********************************************************************************/
+void DRDerivedSearch( dr_handle handle, void *data, DRCLSSRCH callback )
+/**********************************************************************/
 // Warning!! KLUDGE! this searches the compile unit for entries that have a
 // DW_TAG_inheritance child that references handle -- not that fast.
 // also, only checks the compile unit the base class is in.
@@ -241,13 +232,12 @@ extern void DRDerivedSearch( dr_handle handle, void *data,
     ctxt.stack.free  = 0;
     ctxt.stack.stack = NULL;
 
-    DWRScanCompileUnit( &ctxt, CheckEntry, inh_lst,
-                        DR_DEPTH_CLASSES, &info );
+    DWRScanCompileUnit( &ctxt, CheckEntry, inh_lst, DR_DEPTH_CLASSES, &info );
     DWRFreeContextStack( &ctxt.stack );
 }
 
-static int friendHook( dr_sym_type st, dr_handle handle, dr_handle prt,
-                        char * name, void * data )
+static bool friendHook( dr_sym_type st, dr_handle handle, char *name,
+                                            dr_handle prt, void *data )
 /*************************************************************************/
 // the 'st' field will be DR_SYM_NOT_SYM as it is the symbol type of
 // the 'DW_TAG_friend'.  The correct symbol type must be found for
@@ -268,25 +258,23 @@ static int friendHook( dr_sym_type st, dr_handle handle, dr_handle prt,
         name = DRGetName( friend_han );
         st = DRGetSymType( friend_han );
 
-        info->callback( st, friend_han, prt, name, info->data );
+        info->callback( st, friend_han, name, prt, info->data );
     }
     return( TRUE );
 }
 
-extern void DRFriendsSearch( dr_handle handle, void *data,
-         int (*callback)(dr_sym_type, dr_handle, dr_handle, char *, void * ) )
-/****************************************************************************/
+void DRFriendsSearch( dr_handle handle, void *data, DRCLSSRCH callback )
+/**********************************************************************/
 {
     FriendInfo info;
 
     info.callback = callback;
     info.data = data;
-
     DRKidsSearch( handle, DR_SEARCH_FRIENDS, &info, friendHook );
 }
 
-extern dr_sym_type DRGetSymType( dr_handle entry )
-/************************************************/
+dr_sym_type DRGetSymType( dr_handle entry )
+/*****************************************/
 {
     dr_sym_type symtype = DR_SYM_NOT_SYM;
     int         index;
@@ -296,13 +284,11 @@ extern dr_sym_type DRGetSymType( dr_handle entry )
     abbrev = DWRVMReadULEB128( &entry );
     abbrev = DWRLookupAbbrev( entry, abbrev );
     tag = DWRVMReadULEB128( &abbrev );
-
     for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
         if( DWRSearchArray( SearchTags[index], tag ) ) {
             symtype = index;
             break;
         }
     }
-
     return( symtype );
 }

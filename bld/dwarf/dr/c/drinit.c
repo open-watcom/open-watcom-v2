@@ -130,10 +130,10 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, int bytes
     return( dbg );
 }
 
-extern int  DRDbgClear( dr_dbg_handle dbg )
-/*****************************************/
+bool  DRDbgClear( dr_dbg_handle dbg )
+/***********************************/
 {
-    int                 ret;
+    bool                ret;
     int                 i;
 
     ret = FALSE;
