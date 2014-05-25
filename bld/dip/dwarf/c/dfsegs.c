@@ -209,13 +209,14 @@ extern  seg_entry *FindRealSeg( seg_list *ctl, word seg ){
 }
 
 
-extern  int  SegWalk( seg_list *ctl, SEGWLK wlk, void * d ){
-/**************************************************************/
+bool SegWalk( seg_list *ctl, SEGWLK wlk, void * d )
+/*************************************************/
 // Walk all the segments with wlk( d, info )
-    seg_blk_head   *blk;
-    seg_entry      *info;
+{
+    seg_blk_head    *blk;
+    seg_entry       *info;
     unsigned_16     blk_count;
-    unsigned_16 item_size;
+    unsigned_16     item_size;
 
 
     item_size = ctl->item_size;

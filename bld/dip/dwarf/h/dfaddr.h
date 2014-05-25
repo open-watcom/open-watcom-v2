@@ -39,9 +39,9 @@ typedef struct {
     im_idx          imx;
 }off_info;
 
-extern void  InitAddrInfo( seg_list *list );
-extern void AddMapAddr( seg_list *list, void *dcmap, off_info *new );
-extern  off_info *FindMapAddr( seg_list *ctl, address *a );
-extern  void    SortMapAddr( seg_list *ctl );
-extern int      Real2Map( seg_list *ctl, address *what );
-extern void  FiniAddrInfo( seg_list *ctl );
+extern void     InitAddrInfo( seg_list *list );
+extern void     AddMapAddr( seg_list *list, void *dcmap, off_info *new );
+extern off_info *FindMapAddr( seg_list *ctl, address *a );
+extern void     SortMapAddr( seg_list *ctl );
+extern bool     Real2Map( seg_list *ctl, address *what );
+extern void     FiniAddrInfo( seg_list *ctl );

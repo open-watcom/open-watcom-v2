@@ -330,8 +330,8 @@ static int APubName( void *_ii, dr_pubname_data *curr )
 }
 
 
-static int AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
-/**********************************************************************/
+static bool AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
+/***********************************************************************/
 // Add any global symbol to the hash
 {
     imp_image_handle    *ii = _ii;

@@ -408,16 +408,17 @@ search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
 
 
 typedef struct{
-    imp_image_handle  *ii;
-    im_idx            imx;
-    address           *ret;
-}l_walk_info;
+    imp_image_handle    *ii;
+    im_idx              imx;
+    address             *ret;
+} l_walk_info;
 
-static int AModAddr( void *_info, dr_line_data *curr ){
-/*************************************************************/
-    l_walk_info *info = _info;
-    int ret;
-    imp_image_handle  *ii;
+static bool AModAddr( void *_info, dr_line_data *curr )
+/*****************************************************/
+{
+    l_walk_info         *info = _info;
+    bool                ret;
+    imp_image_handle    *ii;
 
     ret = TRUE;
     if( curr->is_stmt ){
@@ -436,10 +437,11 @@ static int AModAddr( void *_info, dr_line_data *curr ){
     return( ret );
 }
 
-static int ALineCue( void *_info, dr_line_data *curr ){
-/*************************************************************/
+static bool ALineCue( void *_info, dr_line_data *curr )
+/*****************************************************/
+{
     l_walk_info *info = _info;
-    int ret;
+    bool        ret;
 
     ret = TRUE;
     if( curr->is_stmt ){

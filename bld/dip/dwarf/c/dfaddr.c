@@ -252,7 +252,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.base = &blk->info[0];
         cmp.key = new->offset;
         cmp.hi = blk_count;
-		cmp.last = 0;
+                cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 ) goto exit;
         if( diff > 0 ) {
@@ -348,10 +348,10 @@ error:
 }
 
 
-static int ChkOffsets( void *d, seg_info *ctl )
-/*********************************************/
-{
+static bool ChkOffsets( void *d, seg_info *ctl )
+/**********************************************/
 // Sort a seg's offsets
+{
     d = d;
     if( !CheckInfo( ctl ) ) {
         EnterDebugger();
@@ -420,12 +420,12 @@ typedef struct {
     address     seg_base;
 } wlk_seg_offsets;
 
-static int WlkSegInfos( void *_d, void *_curr )
-/*********************************************/
+static bool WlkSegInfos( void *_d, void *_curr )
+/**********************************************/
 {
     seg_info            *curr = (seg_info *)_curr;
     wlk_seg_offsets     *d = _d;
-    int                 cont;
+    bool                cont;
 
     d->seg_base.mach.segment = curr->entry.real;
     cont = TRUE;
@@ -473,11 +473,11 @@ extern  void    SortMapAddr( seg_list *ctl )
 }
 
 
-extern int Real2Map( seg_list *ctl, address *what )
-/*************************************************/
+bool Real2Map( seg_list *ctl, address *what )
+/*******************************************/
 // convert a map address found in dbg to real address in image
 {
-    int         ret;
+    bool        ret;
     off_info    *off;
 
     ret = FALSE;
@@ -501,8 +501,8 @@ extern void InitAddrInfo( seg_list *list )
 }
 
 
-static int FreeSegOffsets( void *d, void *_curr )
-/***********************************************/
+static bool FreeSegOffsets( void *d, void *_curr )
+/************************************************/
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;

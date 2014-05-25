@@ -42,7 +42,7 @@ typedef struct {
     int       skip;
 } array_wlk_skip; /* and jump */
 
-static int ArrayIndexSkip( dr_handle index, int pos, void *_df )
+static bool ArrayIndexSkip( dr_handle index, int pos, void *_df )
 {
     array_wlk_skip *df = _df;
     pos = pos;
@@ -73,7 +73,7 @@ static dr_handle GetArrayDim( dr_handle index, int skip  ){
     return( index );
 }
 
-static int  GetStrLen( imp_image_handle *ii,
+static bool GetStrLen( imp_image_handle *ii,
                         dr_handle dr_sym,
                         location_context *lc,
                         dr_typeinfo  *ret ){
@@ -134,11 +134,12 @@ typedef struct{
     location_context *lc;
     uint_32          num_elts;
     int              dim;
-    int              cont;
+    bool             cont;
 }array_wlk_wlk;
 
-static int ArraySubRange( dr_handle tsub, int index, void *df );
-static int ArrayEnumType( dr_handle tenu, int index, void *df );
+static bool ArraySubRange( dr_handle tsub, int index, void *df );
+static bool ArrayEnumType( dr_handle tenu, int index, void *df );
+
 static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
     ArraySubRange,
     ArrayEnumType,
@@ -311,12 +312,13 @@ struct mod_type{
     walk_result     wr;
 };
 
-static int AType( dr_handle type, void *_typ_wlk, dr_search_context *cont ) {
-/***************************************************************************/
+static bool AType( dr_handle type, void *_typ_wlk, dr_search_context *cont )
+/**************************************************************************/
+{
     struct mod_type *typ_wlk = _typ_wlk;
-    int             ret;
+    bool            ret;
     imp_type_handle *it;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     cont = cont;
     ret = TRUE;
@@ -525,9 +527,10 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
 typedef struct {
     int_32 low;
     int_32 high;
-}enum_range;
+} enum_range;
 
-static int AEnum( dr_handle var, int index, void *_de ) {
+static bool AEnum( dr_handle var, int index, void *_de )
+{
     enum_range *de = _de;
     int_32  value;
 
@@ -543,9 +546,10 @@ static int AEnum( dr_handle var, int index, void *_de ) {
     return( TRUE );
 }
 
-static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
+static bool ArrayEnumType( dr_handle tenu, int index, void *_df )
 /****************************************************************/
 // Find low, high bounds of enum
+{
 //TODO:unsigned range
     array_wlk_wlk  *df = _df;
     enum_range     de;
@@ -565,7 +569,7 @@ static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
     return( df->cont );
 }
 
-static int  GetSymVal( imp_image_handle *ii,
+static bool GetSymVal( imp_image_handle *ii,
                        dr_handle dr_sym, location_context *lc,
                        int_32 *ret ){
 //  Find value of scalar
@@ -603,9 +607,10 @@ static int  GetSymVal( imp_image_handle *ii,
     return( TRUE );
 }
 
-static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
-/*******************************************/
+static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
+/*******************************************************************/
 // extract the value from val
+{
     switch( val->val_class ){
     case DR_VAL_INT:
         *ret = val->val.s;
@@ -620,8 +625,9 @@ static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
     return( FALSE );
 }
 
-static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
+static bool ArraySubRange( dr_handle tsub, int index, void *_df )
 /****************************************************************/
+{
     array_wlk_wlk *df = _df;
     dr_subinfo info;
     int_32     low;
@@ -707,13 +713,14 @@ dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     'parm'.
 */
 typedef struct {
-    int            count;
-    int            last;
+    int             count;
+    int             last;
     dr_handle       var;
-}parm_wlk;
+} parm_wlk;
 
-static int AParm( dr_handle var, int index, void *_df ) {
-/*******************************************************/
+static bool AParm( dr_handle var, int index, void *_df )
+/******************************************************/
+{
     parm_wlk *df = _df;
 
     index = index;
@@ -848,9 +855,10 @@ typedef union {
 }type_wlk;
 
 
-static int AddBase( dr_handle base, inh_vbase **lnk ){
-/*****************************************************/
+static bool AddBase( dr_handle base, inh_vbase **lnk )
+/****************************************************/
 //if base not in list add return FALSE
+{
     inh_vbase   *cur;
 
     while( (cur = *lnk) != NULL ){
@@ -869,9 +877,10 @@ static int AddBase( dr_handle base, inh_vbase **lnk ){
     return( TRUE );
 }
 
-static int FreeBases( void *_lnk ){
-/***************************************/
+static bool FreeBases( void *_lnk )
+/*********************************/
 //Free bases
+{
     inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
     inh_vbase   *old;
@@ -886,8 +895,9 @@ static int FreeBases( void *_lnk ){
     return 0;
 }
 
-static int AMem( dr_handle var, int index, void *d );
-static int AInherit( dr_handle inh, int index, void *d );
+static bool AMem( dr_handle var, int index, void *d );
+static bool AInherit( dr_handle inh, int index, void *d );
+
 static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
     AMem,
     AInherit,
@@ -909,12 +919,13 @@ static void SetSymHandle( type_wlk *d, imp_sym_handle  *is ){
     }
 }
 
-static int AMem( dr_handle var, int index, void *_d ) {
-/*****************************************************/
-    type_wlk_wlk   *d = _d;
-    int            cont;
+static bool AMem( dr_handle var, int index, void *_d )
+/****************************************************/
+{
+    type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     cont = TRUE;
     is = d->is;
@@ -946,16 +957,17 @@ static int AMem( dr_handle var, int index, void *_d ) {
     return( cont );
 }
 
-static int AInherit( dr_handle inh, int index, void *_d ) {
-/*************************************************/
+static bool AInherit( dr_handle inh, int index, void *_d )
+/********************************************************/
+{
 //TODO: Need to track virtual base as not to visit same place twice
-    type_wlk_wlk *d = _d;
-    int         cont;
-    dr_handle   btype;
-    dr_handle   old_inh;
+    type_wlk_wlk    *d = _d;
+    bool            cont;
+    dr_handle       btype;
+    dr_handle       old_inh;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
-    walk_result wr;
+    dr_dbg_handle   saved;
+    walk_result     wr;
 
     index = index;
     cont = TRUE;
@@ -990,8 +1002,9 @@ static int AInherit( dr_handle inh, int index, void *_d ) {
 }
 
 
-static int AMemLookup( dr_handle var, int index, void *d );
-static int AInheritLookup( dr_handle inh, int index, void *d );
+static bool AMemLookup( dr_handle var, int index, void *d );
+static bool AInheritLookup( dr_handle inh, int index, void *d );
+
 static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     AMemLookup,
     AInheritLookup,
@@ -1000,8 +1013,9 @@ static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     NULL
 };
 
-static int AMemLookup( dr_handle var, int index, void *_d ){
-/*************************************************/
+static bool AMemLookup( dr_handle var, int index, void *_d )
+/**********************************************************/
+{
     type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
@@ -1040,9 +1054,10 @@ static int AMemLookup( dr_handle var, int index, void *_d ){
     return( TRUE );
 }
 
-static int AInheritLookup( dr_handle inh, int index, void *_d ){
-/*************************************************/
+static bool AInheritLookup( dr_handle inh, int index, void *_d )
+/**************************************************************/
 //Push inherit handle and search
+{
     type_wlk_lookup *d = _d;
     dr_handle btype;
     dr_handle old_inh;
@@ -1062,12 +1077,13 @@ static int AInheritLookup( dr_handle inh, int index, void *_d ){
     return( TRUE );
 }
 
-static int AEnumMem( dr_handle var, int index, void *_d ) {
-/*********************************************************/
-    type_wlk_wlk   *d = _d;
-    int            cont;
+static bool AEnumMem( dr_handle var, int index, void *_d )
+/********************************************************/
+{
+    type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     index = index;
     cont = TRUE;
@@ -1083,8 +1099,9 @@ static int AEnumMem( dr_handle var, int index, void *_d ) {
     return( cont );
 }
 
-static int AEnumMemLookup( dr_handle var, int index, void *_d ) {
-/***************************************************************/
+static bool AEnumMemLookup( dr_handle var, int index, void *_d )
+/**************************************************************/
+{
     type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
@@ -1158,13 +1175,12 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     return( df.wr );
 }
 
-extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
-                 lookup_item *li, void *d ){
+search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it, lookup_item *li, void *d )
 //Search for matching lookup item
+{
     dr_handle       btype;
     type_wlk_lookup df;
     df_cleaner      cleanup;
-
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( it->state == DF_NOT ){
@@ -1233,7 +1249,8 @@ typedef struct type_wlk_inherit {
     bool             cont;
 }type_wlk_inherit;
 
-static int AInhFind( dr_handle inh, int index, void *df );
+static bool AInhFind( dr_handle inh, int index, void *df );
+
 static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
     NULL,
     AInhFind,
@@ -1243,9 +1260,10 @@ static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
 };
 
 
-static int AInhFind( dr_handle inh, int index, void *_df ){
+static bool AInhFind( dr_handle inh, int index, void *_df )
 /*************************************************/
 //Push inherit handle and search
+{
     type_wlk_inherit *df = _df;
     dr_handle       dr_derived;
     inh_path        head, *curr, **old_lnk;

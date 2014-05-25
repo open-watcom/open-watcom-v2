@@ -70,7 +70,7 @@ static void ResetCueInfo(  cue_list *list )
 extern bool FiniImpCueInfo( imp_image_handle *ii )
 /************************************************/
 {
-    int         ret;
+    bool        ret;
     cue_list    *list;
 
     list = ii->cue_map;
@@ -101,11 +101,11 @@ typedef struct {
     dr_line_dir     *dirs;
 } file_walk_name;
 
-static int ACueFile( void *_info, dr_line_file *curr )
-/****************************************************/
+static bool ACueFile( void *_info, dr_line_file *curr )
+/*****************************************************/
 {
     file_walk_name  *info = _info;
-    int             cont;
+    bool            cont;
     int             i;
 
     if( info->index  == curr->index ) {
@@ -142,8 +142,8 @@ static int ACueFile( void *_info, dr_line_file *curr )
 }
 
 
-static int ACueDir( void *_info, dr_line_dir *curr )
-/**************************************************/
+static bool ACueDir( void *_info, dr_line_dir *curr )
+/***************************************************/
 {
     file_walk_name  *info = _info;
 
@@ -158,8 +158,8 @@ static int ACueDir( void *_info, dr_line_dir *curr )
 }
 
 
-static int IsRelPathname( const char *name )
-/******************************************/
+static bool IsRelPathname( const char *name )
+/*******************************************/
 {
     /* Detect UNIX or DOS style relative pathnames */
     if( (name[0] == '/') || (name[0] == '\\') ) {
@@ -248,8 +248,8 @@ typedef struct {
     dr_line_data first;
 } first_cue_wlk;
 
-static int TheFirstCue( void *_wlk, dr_line_data *curr )
-/******************************************************/
+static bool TheFirstCue( void *_wlk, dr_line_data *curr )
+/*******************************************************/
 {
     first_cue_wlk   *wlk = _wlk;
 
@@ -261,10 +261,10 @@ static int TheFirstCue( void *_wlk, dr_line_data *curr )
 }
 
 
-static int FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
-/*********************************************************************/
+static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
+/**********************************************************************/
 {
-    int             cont;
+    bool            cont;
     first_cue_wlk   wlk;
 
     wlk.fno = fno;
@@ -292,11 +292,11 @@ typedef struct {
     walk_result         wr;
 } file_walk_cue;
 
-static int ACueFileNum( void *_fc, dr_line_file *curr )
-/*****************************************************/
+static bool ACueFileNum( void *_fc, dr_line_file *curr )
+/******************************************************/
 {
     file_walk_cue   *fc = _fc;
-    int             cont;
+    bool            cont;
     imp_cue_handle  *ic;
     dr_dbg_handle   saved;
 
@@ -367,8 +367,8 @@ typedef struct {
     seg_cue         *curr_seg;
 } la_walk_info;
 
-static int ACueAddr( void *_info, dr_line_data *curr )
-/****************************************************/
+static bool ACueAddr( void *_info, dr_line_data *curr )
+/*****************************************************/
 {
     la_walk_info    *info = _info;
 

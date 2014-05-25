@@ -39,32 +39,31 @@ enum {
     OFF_PER_BLK = 256,
 };
 
-typedef struct{
+typedef struct {
     addr_seg    real;
     unsigned_16 count;    /*#entries collected by head */
-}seg_entry;
+} seg_entry;
 
-struct seg_blk_head{
+struct seg_blk_head {
     struct seg_blk_head *next;  /*next block of seg_info */
     seg_entry           *info;  /*ptr to array of seg_info of .item_size size */
 };
 
-typedef
-    seg_blk_head    *(*seg_alloc)( void );
-typedef
-    void            (*seg_init)( void *new );
+typedef seg_blk_head *(*seg_alloc)( void );
+typedef void (*seg_init)( void *new );
+
 typedef struct {
     seg_alloc   alloc;
     seg_init    init;
-}seg_ctl;
+} seg_ctl;
 
-typedef
-    int         (*SEGWLK)( void *, void * );
-extern int  SegWalk( seg_list *ctl, SEGWLK wlk, void * d );
-extern seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg );
-extern seg_entry *FindMapSeg( seg_list *list, word seg );
-extern seg_entry *FindRealSeg( seg_list *ctl, word seg );
-extern void AddSegReal( seg_list  *ctl, void *d );
-extern void SortSegReal( seg_list *ctl );
-extern void InitSegList( seg_list *ctl, unsigned_16 item_size );
-extern void FiniSegList( seg_list *ctl );
+typedef bool (*SEGWLK)( void *, void * );
+
+extern bool         SegWalk( seg_list *ctl, SEGWLK wlk, void * d );
+extern seg_entry    *AddMapSeg( seg_list *list, seg_ctl *ctl, word seg );
+extern seg_entry    *FindMapSeg( seg_list *list, word seg );
+extern seg_entry    *FindRealSeg( seg_list *ctl, word seg );
+extern void         AddSegReal( seg_list  *ctl, void *d );
+extern void         SortSegReal( seg_list *ctl );
+extern void         InitSegList( seg_list *ctl, unsigned_16 item_size );
+extern void         FiniSegList( seg_list *ctl );
