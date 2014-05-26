@@ -206,7 +206,7 @@ schemdef.h : ../include/schemdef.mh $(owhdr) $(cplus)
 schnlsp.h : ../include/schnlsp.mh $(owhdr) 
 scode.h : ../include/scode.mh $(owhdr)
 sddl.h : ../include/sddl.mh $(owhdr) $(cplus)
-sdkddver.h : ../include/sdkddver.mh $(owhdr) $(cplus)
+sdkddver.h : ../include/sdkddver.mh $(owhdr) $(cplus) ../include/winver.sp
 secext.h : ../include/secext.mh $(owhdr) $(cplus)
 security.h : ../include/security.mh $(owhdr) $(cplus)
 servprov.h : ../include/servprov.mh $(owhdr) $(cplus)
@@ -280,7 +280,7 @@ winnt.h : ../include/winnt.mh $(owhdr) $(cplus) ../include/stdapi.sp
 winperf.h : ../include/winperf.mh $(owhdr) $(cplus)
 winreg.h : ../include/winreg.mh $(owhdr) $(cplus)
 winres.h : ../include/winres.mh $(owhdr) ../include/static.sp
-winresrc.h : ../include/winresrc.mh $(owhdr)
+winresrc.h : ../include/winresrc.mh $(owhdr) ../include/winver.sp
 winscard.h : ../include/winscard.mh $(owhdr) $(cplus)
 winsmcrd.h : ../include/winsmcrd.mh $(owhdr) $(cplus)
 winsnmp.h : ../include/winsnmp.mh $(owhdr) $(cplus)

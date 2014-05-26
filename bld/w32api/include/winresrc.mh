@@ -9,6 +9,8 @@
 
 :include readonly.sp
 
+:include winver.sp
+
 #include <winuser.rh>
 #include <commctrl.rh>
 #include <dde.rh>

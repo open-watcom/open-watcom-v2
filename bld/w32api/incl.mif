@@ -449,6 +449,9 @@ all : $(dirs) $(headers) .SYMBOLIC
 winsock2.h: winsock.mh
     $(ws2splice)
 
+winresrc.h: winresrc.mh
+    $(rsplice)
+
 $(dirs):
     @if not exist $@ mkdir $@
 
