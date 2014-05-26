@@ -778,24 +778,24 @@ static bool IsEntry( imp_image_handle *ii, location_context *lc ){
     addrsym_info    info;
     dip_status      ret;
     seg_list        *addr_sym;
-    im_idx          imx;
+    imp_mod_handle  im;
 
 // Get execution location
     ret = SafeDCItemLocation( lc, CI_EXECUTION, &ll );
     if( ret != DS_OK ){
         return( FALSE );
     }
-    if( DFAddrMod( ii, ll.e[0].u.addr, &imx ) == SR_NONE ){
+    if( DFAddrMod( ii, ll.e[0].u.addr, &im ) == SR_NONE ){
         return( FALSE );
     }
     if( !Real2Map( ii->addr_map, &ll.e[0].u.addr ) ){
         return( FALSE );
     }
-    addr_sym = DFLoadAddrSym( ii, imx );
+    addr_sym = DFLoadAddrSym( ii, im );
     if( FindAddrSym( addr_sym, &ll.e[0].u.addr.mach, &info ) >= 0 ){
-           if( info.map_offset == ll.e[0].u.addr.mach.offset ){
-               return( TRUE );
-           }
+        if( info.map_offset == ll.e[0].u.addr.mach.offset ){
+            return( TRUE );
+        }
     }
     return( FALSE );
 }

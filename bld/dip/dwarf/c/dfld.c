@@ -348,16 +348,14 @@ static bool AModHash( dr_handle sym, void *_ii, dr_search_context *cont )
 }
 
 
-static walk_result ModGlbSymHash( imp_image_handle  *ii,
-                                  imp_mod_handle    imh,
-                                  void              *d )
-/******************************************************/
+static walk_result ModGlbSymHash( imp_image_handle *ii, imp_mod_handle im, void *d )
+/**********************************************************************************/
 // Add module's global syms to the name hash
 {
     dr_handle       cu_tag;
 
     d = d;
-    cu_tag = ii->mod_map[IM2IMX( imh )].cu_tag;
+    cu_tag = IM2MODI( ii, im )->cu_tag;
     DRWalkModFunc( cu_tag, FALSE, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }
@@ -407,7 +405,7 @@ typedef struct {
     imp_image_handle    *ii;
     addr_off            low_pc;
     addr_off            high_pc;
-    im_idx              imx;
+    imp_mod_handle      im;
 } a_walk_info;
 
 static int ARangeItem( void *_info, dr_arange_data *curr )
@@ -417,30 +415,34 @@ static int ARangeItem( void *_info, dr_arange_data *curr )
     off_info            addr_info;
     uint_16             seg;
     imp_image_handle    *ii;
+    mod_info            *modinfo;
 
     ii = info->ii;
     if( curr->is_start ) {
-        info->imx  = Dwarf2ModIdx( ii, curr->dbg );
-        if( info->imx == INVALID_IMX ) {
+        info->im  = Dwarf2Mod( ii, curr->dbg );
+        if( info->im == IMH_NOMOD ) {
             return( TRUE );
         }
-        if( ii->mod_map[info->imx].is_segment ) {
+    }
+    modinfo = IM2MODI( ii, info->im );
+    if( curr->is_start ) {
+        if( modinfo->is_segment ) {
             info->low_pc = 0;
             info->high_pc = 0;
         } else {
-            DRGetLowPc( ii->mod_map[info->imx].cu_tag , &info->low_pc );
-            DRGetHighPc( ii->mod_map[info->imx].cu_tag , &info->high_pc );
+            DRGetLowPc( modinfo->cu_tag , &info->low_pc );
+            DRGetHighPc( modinfo->cu_tag , &info->high_pc );
         }
     }
     if( curr->seg_size != 0 ) { /* reset because we know better */
-        ii->mod_map[info->imx].is_segment = TRUE;
+        modinfo->is_segment = TRUE;
     }
-    if( ii->mod_map[info->imx].is_segment ) {
+    if( modinfo->is_segment ) {
         seg = curr->seg;
     } else {
         seg = SEG_FLAT;
     }
-    addr_info.imx  = info->imx;
+    addr_info.im = info->im;
     addr_info.map_seg =  seg;
     addr_info.map_offset =  curr->addr;
     addr_info.len = curr->len;
@@ -465,7 +467,7 @@ void    DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     SortMapAddr( ii->addr_map );
     DRDbgClear( ii->dwarf->handle );    /* clear some memory */
     ii->last.len = 0;
-    ii->last.imx = 0;
+    ii->last.im = IMH_NOMOD;
     ii->last.mach.segment = 0;
     ii->last.mach.offset = 0;
 }

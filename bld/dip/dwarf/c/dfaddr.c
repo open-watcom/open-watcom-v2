@@ -96,7 +96,7 @@ typedef struct {
 
     Let's say the table looks like this.
 
-    offset:32   len:32  map_offset:32   map_seg:16  imx:16
+    offset:32   len:32  map_offset:32   map_seg:16  im:16
     [1000]      [10]    [x]             [x]         [x]
     [1010]      [22]    [x]             [x]         [x]
     [1032]      [10]    [x]             [x]         [x]
@@ -367,12 +367,12 @@ extern void DmpBlk( off_blk *blk, int count )
     myprintf( "blk %lx, %d \r\n", blk, count );
     info = blk->info;
     while( count > 0 ) {
-        myprintf( "off %lx(%ld) map %x:%lx imx %d\r\n",
+        myprintf( "off %lx(%ld) map %x:%lx im %d\r\n",
             info->offset,
             info->len,
             info->map_seg,
             info->map_offset,
-            info->imx );
+            info->im );
         ++info;
         --count;
     }

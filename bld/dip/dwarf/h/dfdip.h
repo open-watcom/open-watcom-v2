@@ -30,6 +30,7 @@
 
 
 #ifndef DIP_DFDIP
+#define DIP_DFDIP
 
 #include <string.h>
 #include <stdlib.h>
@@ -41,46 +42,43 @@
 #define SEG_CODE  MAP_FLAT_CODE_SELECTOR
 #define SEG_FLAT  MAP_FLAT_CODE_SELECTOR
 #define SEG_DATA  MAP_FLAT_DATA_SELECTOR
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-typedef enum{
+
+#define IMX2IM(imx)         (imx + IMH_BASE)
+#define IM2IMX(im)          (im - IMH_BASE)
+
+#define IMX2MODI(ii,imx)    ((ii)->mod_map+(imx))
+#define IM2MODI(ii,im)      IMX2MODI(ii,IM2IMX(im))
+
+typedef imp_mod_handle  im_idx;
+
+typedef enum {
     DF_NOT = 0,  /* handle info not set */
     DF_SET = 1,
-}imp_state;
+} imp_state;
 
-typedef enum{
+typedef enum {
     SYM_VAR,
     SYM_ENUM,
     SYM_MEM,
     SYM_MEMVAR,
     SYM_VIRTF,
     SYM_MEMF
-}sym_sclass;
+} sym_sclass;
 
-typedef enum {
-    FIRST_IMX    =  0,
-    BIG_IMX      = 0x7fff,
-    INVALID_IMX  = 0xffff
-} im_idx;
-#define IMX2IM( imx )  (imx+1)
-#define IM2IMX( im )  (im-1)
-
-typedef struct{
+typedef struct {
     int sign :1;
     int size :7;
-}enum_einfo;
+} enum_einfo;
 
-typedef struct{
+typedef struct {
     dr_handle       root;    /* root class for member */
     dr_handle       inh;     /* inheritance handle for member */
-}mem_minfo;
+} mem_minfo;
 
 struct imp_sym_handle {
     /* any stuff for getting information on symbols */
     sym_sclass      sclass;
-    im_idx          imx;
+    imp_mod_handle  im;
     unsigned        size;
     dr_handle       sym;
     dr_tag_type     stype;
@@ -89,13 +87,13 @@ struct imp_sym_handle {
     int             isdef        :1;
     int             isstatic     :1;
     int             isartificial :1;
-    union{
+    union {
         enum_einfo   einfo;
         mem_minfo    minfo;
-    }f;
+    } f;
 };
 
-typedef struct{
+typedef struct {
     uint_16    dims;
     dr_handle  index;
     int_32     low;
@@ -104,12 +102,12 @@ typedef struct{
     uint_8     column_major :1;
     uint_8     is_set       :1;
     uint_8     is_based     :1;
-}imp_array;
+} imp_array;
 
 
 struct imp_type_handle {
     /* any stuff for getting information on types */
-    im_idx              imx;
+    imp_mod_handle      im;
     dr_handle           type;
     dr_typeinfo         typeinfo;
     imp_array           array;
@@ -119,7 +117,7 @@ struct imp_type_handle {
 
 struct imp_cue_handle {
     /* any stuff for getting information on source line cues */
-    im_idx              imx;
+    imp_mod_handle      im;
     address             a;
     uint_16             fno;
     uint_16             line;
@@ -135,36 +133,37 @@ struct imp_cue_handle {
 typedef struct dwarf_info  dwarf_info; // private type
 typedef struct mod_info    mod_info;   // private type
 typedef struct seg_cue     seg_cue;   // private type
+
 #include "dfseglst.h"
 #include "dfcuelst.h"
 #include "dfscplst.h"
 
 typedef struct { // value of an AddrMod
-    addr_ptr  mach;
-    dword     len;
-    im_idx    imx;
-}addrmod;
+    addr_ptr        mach;
+    dword           len;
+    imp_mod_handle  im;
+} addrmod;
 
 struct imp_image_handle {
-    imp_image_handle *next;
-    dig_fhandle       sym_file;
-    dwarf_info       *dwarf;
-    int               mod_count;
-    mod_info         *mod_map;
-    void             *dcmap;
-    void             *name_map;
-    seg_list          addr_map[1];
-    cue_list          cue_map[1];
-    seg_list          addr_sym[1];
-    scope_ctl         scope;
-    addrmod           last;
-    unsigned          has_pubnames;
-    unsigned          is_byteswapped;
+    imp_image_handle    *next;
+    dig_fhandle         sym_file;
+    dwarf_info          *dwarf;
+    im_idx              mod_count;
+    mod_info            *mod_map;
+    void                *dcmap;
+    void                *name_map;
+    seg_list            addr_map[1];
+    cue_list            cue_map[1];
+    seg_list            addr_sym[1];
+    scope_ctl           scope;
+    addrmod             last;
+    unsigned            has_pubnames;
+    unsigned            is_byteswapped;
 };
 
 extern address  NilAddr;
 #ifdef DEBUG
 extern void myprintf( char *ctl, ... );
 #endif
-#define DIP_DFDIP
+
 #endif

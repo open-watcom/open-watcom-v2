@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-extern dip_status    InitModMap( imp_image_handle *ii );
-extern void          FiniModMap( imp_image_handle *ii );
-extern im_idx        Dwarf2ModIdx( imp_image_handle *ii, dr_handle mod_handle );
-extern im_idx        DwarfModIdx( imp_image_handle *ii, dr_handle mod_handle );
-extern im_idx        CuTag2ModIdx( imp_image_handle *ii, dr_handle cu_handle );
-extern unsigned      NameCopy( char *to, char *from, unsigned max );
-extern walk_result   DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d );
-extern walk_result   DFWalkModListSrc( imp_image_handle *ii, int src, IMP_MOD_WKR wk, void *d );
-extern search_result DFAddrMod( imp_image_handle *ii, address a, im_idx *imx );
-extern bool          ClearMods( imp_image_handle *ii );
-extern void          SetModPubNames( imp_image_handle *ii, dr_handle mod_handle );
+extern dip_status       InitModMap( imp_image_handle *ii );
+extern void             FiniModMap( imp_image_handle *ii );
+extern imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle );
+extern imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle );
+extern imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle );
+extern unsigned         NameCopy( char *to, char *from, unsigned max );
+extern walk_result      DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d );
+extern walk_result      DFWalkModListSrc( imp_image_handle *ii, int src, IMP_MOD_WKR wk, void *d );
+extern search_result    DFAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im );
+extern bool             ClearMods( imp_image_handle *ii );
+extern void             SetModPubNames( imp_image_handle *ii, dr_handle mod_handle );
