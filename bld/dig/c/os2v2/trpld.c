@@ -85,7 +85,7 @@ void KillTrap( void )
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                trpfile[CCHMAXPATH];
-    int                 len;
+    unsigned            len;
     char                *ptr;
     char                *parm;
     APIRET              rc;

@@ -82,7 +82,7 @@ void KillTrap( void )
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
-    int                 len;
+    unsigned            len;
     char                *ptr;
     char                *parm;
     unsigned            rc;
