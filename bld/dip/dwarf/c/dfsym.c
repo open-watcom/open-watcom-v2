@@ -228,10 +228,9 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
 }
 
 
-extern seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
-/***********************************************************************/
+seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
+/****************************************************************/
 {
-    dr_handle       cu_tag;
     struct mod_wlk  d;
     seg_list        *addr_sym;
     mod_info        *modinfo;
@@ -241,12 +240,11 @@ extern seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
     if( addr_sym->head == NULL ) {  /* no cache */
         FiniAddrSym( addr_sym );    /* kill cache */
         DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
-        cu_tag = modinfo->cu_tag;
         d.addr_sym = addr_sym;
         d.ii = ii;
         d.im = im;
         d.ret = SR_NONE;
-        DRWalkModFunc( cu_tag, FALSE, AMod, &d );   /* load cache */
+        DRWalkModFunc( modinfo->cu_tag, FALSE, AMod, &d );   /* load cache */
         SortAddrSym( addr_sym );
     }
     return( addr_sym );
@@ -301,7 +299,7 @@ static dr_handle MemFuncLookUp( imp_image_handle *ii,
     df.name = buff;
     df.inh  = inh;
     df.match = 0;
-    WlkAddrSyms( addr_sym, &AMemFuncSym, &df );
+    WlkAddrSyms( addr_sym, AMemFuncSym, &df );
     return( df.match );
 }
 
@@ -1047,18 +1045,17 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         curr = GetContainingClass( curr );
         if( curr ) {
             *out = *in;
-             out->unique = curr-cu_tag;
-             ret = SR_EXACT;
-         } else {
+            out->unique = curr - cu_tag;
+            ret = SR_EXACT;
+        } else {
             DCStatus( DS_FAIL );
             ret = SR_NONE;
-         }
-         break;
+        }
+        break;
     default:
         ret = DFScopeOuter( ii, im, in, out );
     }
     return( ret );
-
 }
 
 /**********************************************/
@@ -1267,21 +1264,15 @@ static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, dr_handle blk )
 static bool WalkModSymList( blk_wlk *df, DRWLKBLK fn, imp_mod_handle im )
 /***********************************************************************/
 {
-    imp_image_handle    *ii;
-    dr_handle           cu_tag;
-    dr_language         lang;
-    bool                cont;
-    mod_info            *modinfo;
+    bool            cont;
+    mod_info        *modinfo;
 
     df->com.im = im;
-    ii = df->com.ii;
-    modinfo = IM2MODI( ii, im );
-    cu_tag = modinfo->cu_tag;
-    lang = modinfo->lang;
-    if( df->com.what == DR_SRCH_ctypes && lang == DR_LANG_CPLUSPLUS ) {
+    modinfo = IM2MODI( df->com.ii, im );
+    if( df->com.what == DR_SRCH_ctypes && modinfo->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
-    cont = WalkOneBlock( df, fn, cu_tag );
+    cont = WalkOneBlock( df, fn, modinfo->cu_tag );
     return( cont );
 }
 
@@ -1312,7 +1303,8 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
             for( ;; ) {
                 curr = scope.unique + cu_tag;
                 cont = WalkOneBlock( df, fn, curr );
-                if( !cont ) break;
+                if( !cont )
+                    break;
                 if( DFScopeOuter( ii, im, &scope, &scope ) == SR_NONE ) {
                     cont = TRUE;
                     break;
@@ -1349,7 +1341,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
             cont = WalkModSymList( df, fn, im );
         }
         dbg_pch = modinfo->dbg_pch;
-        if( cont && dbg_pch ) {
+        if( cont && dbg_pch != 0 ) {
             im = CuTag2Mod( ii, dbg_pch );
             cont = WalkModSymList( df, fn, im );
         }
@@ -1399,15 +1391,10 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
 static bool WalkSymSymList( blk_wlk *df, DRWLKBLK fn, imp_sym_handle *is )
 /************************************************************************/
 {
-    imp_image_handle    *ii;
-    imp_mod_handle      im;
     bool                cont;
 
-    im = is->im;
-    ii  = df->com.ii;
-    df->com.im = im;
-    if( df->com.what == DR_SRCH_ctypes
-      && IM2MODI( ii, im )->lang == DR_LANG_CPLUSPLUS ) {
+    df->com.im = is->im;
+    if( df->com.what == DR_SRCH_ctypes && IM2MODI( df->com.ii, is->im )->lang == DR_LANG_CPLUSPLUS ) {
         df->com.what = DR_SRCH_cpptypes;
     }
     cont = WalkOneBlock( df, fn, is->sym );
@@ -1668,7 +1655,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
 //    unsigned            len;
     blk_wlk             df;
     char                buff[256];
-    int                 cont;
+    bool                cont;
 
     if( *(unsigned_8 *)li->name.start == SH_ESCAPE ) {
         CollectSymHdl( (unsigned_8 *)li->name.start, DCSymCreate( ii, d ) );
@@ -1681,7 +1668,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         return( SR_NONE );
     }
     if( ss ==  SS_TYPE ) {
-        if( li->mod != IMH_NOMOD ) {
+        if( MH2IMH( li->mod ) != IMH_NOMOD ) {
             sr =  SR_NONE;
         } else {
             sr = SearchMbr( ii, (imp_type_handle *)source, li, d  );
@@ -1707,7 +1694,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     switch( ss ) {
     case SS_SCOPED:
         if( li->scope.len == 0 ) {
-            cont = WalkScopedSymList( &df, &ASymLookup, (address *)source );
+            cont = WalkScopedSymList( &df, ASymLookup, (address *)source );
         } else {
             cont = TRUE;
         }
@@ -1725,7 +1712,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
                 sr = HashSearchGbl( ii, li, d );
             }
         } else {
-           WalkModSymList( &df, &ASymLookup, im );
+           WalkModSymList( &df, ASymLookup, im );
            sr = df.lookup.sr;
         }
         break;
@@ -1733,7 +1720,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         is = (imp_sym_handle *)source;
         WalkSymSymList( &df, &ASymLookup, is );
         df.com.containing = is->sym;    //check for out of line defn
-        WalkModSymList( &df, &ASymContLookup, is->im );
+        WalkModSymList( &df, ASymContLookup, is->im );
         sr = df.lookup.sr;
         break;
     }

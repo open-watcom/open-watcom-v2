@@ -1138,7 +1138,7 @@ search_result hllTypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
-    if( li->mod != IMH_NOMOD && li->mod != IMH_GBL ) {
+    if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_GBL ) {
         return( SR_NONE );
     }
     switch( li->type ) {

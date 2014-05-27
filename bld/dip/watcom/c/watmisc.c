@@ -261,7 +261,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
 {
     imp_mod_handle      im;
     search_result       sr;
-    lookup_item         item;
+    lookup_item         sym_li;
     char                *buff;
     char                *src;
     char                *dst;
@@ -274,67 +274,67 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         return( SR_EXACT );
     }
     if( li->type == ST_NAMESPACE ) return( SR_NONE );
-    item = *li;
+    sym_li = *li;
     if( ss == SS_SCOPESYM ) {
         scope_is = source;
         len = ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        item.scope.start = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, item.scope.start, len + 1 );
-        item.scope.len = len;
+        sym_li.scope.start = __alloca( len + 1 );
+        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, sym_li.scope.start, len + 1 );
+        sym_li.scope.len = len;
         ss = SS_MODULE;
-        item.mod = scope_is->im;
-        source = &item.mod;
+        sym_li.mod = IMH2MH( scope_is->im );
+        source = &sym_li.mod;
     }
-    if( item.type == ST_OPERATOR ) {
-        src = item.name.start;
-        len = item.name.len;
+    if( sym_li.type == ST_OPERATOR ) {
+        src = sym_li.name.start;
+        len = sym_li.name.len;
         buff = __alloca( len + 20 );
         dst = buff;
         for( ;; ) {
             if( len == 0 ) break;
-            if( src == item.source.start ) {
-                op_len = __mangle_operator( src, item.source.len, buff );
+            if( src == sym_li.source.start ) {
+                op_len = __mangle_operator( src, sym_li.source.len, buff );
                 if( op_len == 0 ) {
                     DCStatus( DS_ERR|DS_INVALID_OPERATOR );
                     return( SR_NONE );
                 }
                 dst += op_len;
-                src += item.source.len;
-                len -= item.source.len;
+                src += sym_li.source.len;
+                len -= sym_li.source.len;
             } else {
                 *dst++ = *src++;
                 --len;
             }
         }
-        item.name.len = dst - buff;
-        item.name.start = buff;
+        sym_li.name.len = dst - buff;
+        sym_li.name.start = buff;
     }
     sr = SR_NONE;
     switch( ss ) {
     case SS_SCOPED:
         if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
-            im = item.mod;
-        } else if( item.mod == IMH_NOMOD || item.mod == im ) {
-            if( !item.file_scope && item.type == ST_NONE ) {
-                sr = SearchLclScope( ii, im, (address *)source, &item, d );
+            im = MH2IMH( sym_li.mod );
+        } else if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
+            if( !sym_li.file_scope && sym_li.type == ST_NONE ) {
+                sr = SearchLclScope( ii, im, (address *)source, &sym_li, d );
             }
         } else {
-            im = item.mod;
+            im = MH2IMH( sym_li.mod );
         }
         if( im != IMH_NOMOD && sr == SR_NONE ) {
-            sr = SearchFileScope( ii, im, &item, d );
+            sr = SearchFileScope( ii, im, &sym_li, d );
         }
         break;
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( item.mod == IMH_NOMOD || item.mod == im ) {
-            sr = SearchFileScope( ii, im, &item, d );
+        if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
+            sr = SearchFileScope( ii, im, &sym_li, d );
         }
         break;
     case SS_TYPE:
-        if( item.mod != IMH_NOMOD )
+        if( MH2IMH( sym_li.mod ) != IMH_NOMOD )
             return( SR_NONE );
-        switch( item.type ) {
+        switch( sym_li.type ) {
         case ST_TYPE:
         case ST_STRUCT_TAG:
         case ST_CLASS_TAG:
@@ -342,14 +342,14 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         case ST_ENUM_TAG:
             return( SR_NONE );
         }
-        return( SearchMbr( ii, (imp_type_handle *)source, &item, d ) );
+        return( SearchMbr( ii, (imp_type_handle *)source, &sym_li, d ) );
     }
     if( sr == SR_NONE ) {
-        switch( item.type ) {
+        switch( sym_li.type ) {
         case ST_NONE:
         case ST_DESTRUCTOR:
         case ST_OPERATOR:
-            sr = SearchGbl( ii, im, (imp_mod_handle)item.mod, &item, d );
+            sr = SearchGbl( ii, im, MH2IMH( sym_li.mod ), &sym_li, d );
             break;
         }
     }

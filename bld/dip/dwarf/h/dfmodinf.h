@@ -31,16 +31,16 @@
 
 
 /* mod info definition */
-struct mod_info{
+struct mod_info {
     seg_list    addr_sym[1];
     dr_handle   mod_handle;
     dr_handle   cu_tag;
     dr_handle   stmts;
-    dr_handle   dbg_pch; // predefinded symbols
-    char       *name;
+    dr_handle   dbg_pch;        /* predefinded symbols */
+    char        *name;
     dr_model    model;
     dr_language lang;
-    char        addr_size;
-    bool        is_segment;   /* based off model */
-    bool        has_pubnames; /* has pubname section */
+    unsigned    addr_size;
+    bool        is_segment;     /* based off model */
+    bool        has_pubnames;   /* has pubname section */
 };

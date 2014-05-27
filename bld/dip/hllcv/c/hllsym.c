@@ -2195,7 +2195,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 static search_result SearchFileScope( imp_image_handle *ii, imp_mod_handle im,
                 struct search_data *d )
 {
-    if( d->li.mod != im && d->li.mod != IMH_NOMOD ) {
+    if( MH2IMH( d->li.mod ) != im && MH2IMH( d->li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     switch( d->li.type ) {
@@ -2244,7 +2244,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
         hllSymName( ii, scope_is, NULL, SN_SOURCE, data.li.scope.start, len + 1 );
         data.li.scope.len = len;
         ss = SS_MODULE;
-        data.li.mod = scope_is->im;
+        data.li.mod = IMH2MH( scope_is->im );
         source = &data.li.mod;
     }
     switch( li->type ) {
@@ -2265,7 +2265,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
             /* just check the global symbols */
             break;
         }
-        if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
+        if( MH2IMH( data.li.mod ) != is.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
             return( SR_NONE );
         }
         switch( data.li.type ) {
@@ -2290,7 +2290,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     default:
         return( SR_NONE );
     }
-    if( data.li.mod != is.im && data.li.mod != IMH_NOMOD ) {
+    if( MH2IMH( data.li.mod ) != is.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     hash = CalcHash( data.li.name.start, data.li.name.len );

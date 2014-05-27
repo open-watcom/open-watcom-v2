@@ -47,6 +47,8 @@ enum {
 CV_LAST_REG
 };
 
+#define IMH_FORTRAN	    IMH_BASE
+
 typedef unsigned long   virt_mem;
 
 #define BLOCK_FACTOR( i, n )    (((i)+((n)-1))/(n))

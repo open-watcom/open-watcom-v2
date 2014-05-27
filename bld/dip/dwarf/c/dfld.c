@@ -71,8 +71,8 @@ uint Lookup_section_name( const char *name )
 }
 
 
-static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
-/***********************************************************/
+static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
+/************************************************************/
 {
     if( byteswap ) {
         SWAP_32( elf_sec->sh_name );
@@ -89,8 +89,8 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
 }
 
 
-static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned long *bases, unsigned *byteswap )
-/************************************************************************************************************/
+static dip_status GetSectInfo( dig_fhandle f, unsigned long *sizes, unsigned long *bases, bool *byteswap )
+/********************************************************************************************************/
 // Fill in the starting offset & length of the dwarf sections
 {
     TISTrailer          dbg_head;
@@ -284,11 +284,7 @@ static dip_status InitDwarf( imp_image_handle *ii )
         DCStatus( ret );
         goto error_exit;
     }
-    if( sect_sizes[DR_DEBUG_PUBNAMES] > 0 ) {
-        ii->has_pubnames = TRUE;
-    } else {
-        ii->has_pubnames = FALSE;
-    }
+    ii->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
     return( ret );
 error_exit:
     if( dwarf != NULL ) {
@@ -316,8 +312,8 @@ static void FiniDwarf( imp_image_handle *ii )
 
 /* Loading/unloading symbolic information. */
 
-static int APubName( void *_ii, dr_pubname_data *curr )
-/*****************************************************/
+static bool APubName( void *_ii, dr_pubname_data *curr )
+/******************************************************/
 // Add name from pubdefs to global name hash
 {
     imp_image_handle    *ii = _ii;
@@ -352,11 +348,8 @@ static walk_result ModGlbSymHash( imp_image_handle *ii, imp_mod_handle im, void 
 /**********************************************************************************/
 // Add module's global syms to the name hash
 {
-    dr_handle       cu_tag;
-
     d = d;
-    cu_tag = IM2MODI( ii, im )->cu_tag;
-    DRWalkModFunc( cu_tag, FALSE, AModHash, ii );   /* load hash */
+    DRWalkModFunc( IM2MODI( ii, im )->cu_tag, FALSE, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }
 
@@ -369,7 +362,7 @@ static void LoadGlbHash( imp_image_handle *ii )
     if( ii->has_pubnames ) {
         DRWalkPubName( APubName, ii );
         DFWalkModListSrc( ii, FALSE, ModGlbSymHash, NULL );
-    } else {    /* big load up */
+    } else {                            /* big load up */
         DFWalkModList( ii, ModGlbSymHash, NULL );
     }
 }
@@ -408,8 +401,8 @@ typedef struct {
     imp_mod_handle      im;
 } a_walk_info;
 
-static int ARangeItem( void *_info, dr_arange_data *curr )
-/********************************************************/
+static bool ARangeItem( void *_info, dr_arange_data *arange )
+/***********************************************************/
 {
     a_walk_info         *info = _info;
     off_info            addr_info;
@@ -418,34 +411,34 @@ static int ARangeItem( void *_info, dr_arange_data *curr )
     mod_info            *modinfo;
 
     ii = info->ii;
-    if( curr->is_start ) {
-        info->im  = Dwarf2Mod( ii, curr->dbg );
+    if( arange->is_start ) {
+        info->im = Dwarf2Mod( ii, arange->dbg );
         if( info->im == IMH_NOMOD ) {
-            return( TRUE );
+            return( FALSE );
         }
     }
     modinfo = IM2MODI( ii, info->im );
-    if( curr->is_start ) {
+    if( arange->is_start ) {
         if( modinfo->is_segment ) {
             info->low_pc = 0;
             info->high_pc = 0;
         } else {
-            DRGetLowPc( modinfo->cu_tag , &info->low_pc );
-            DRGetHighPc( modinfo->cu_tag , &info->high_pc );
+            DRGetLowPc( modinfo->cu_tag, &info->low_pc );
+            DRGetHighPc( modinfo->cu_tag, &info->high_pc );
         }
     }
-    if( curr->seg_size != 0 ) { /* reset because we know better */
+    if( arange->seg_size != 0 ) { /* reset because we know better */
         modinfo->is_segment = TRUE;
     }
     if( modinfo->is_segment ) {
-        seg = curr->seg;
+        seg = arange->seg;
     } else {
         seg = SEG_FLAT;
     }
     addr_info.im = info->im;
-    addr_info.map_seg =  seg;
-    addr_info.map_offset =  curr->addr;
-    addr_info.len = curr->len;
+    addr_info.map_seg = seg;
+    addr_info.map_offset = arange->addr;
+    addr_info.len = arange->len;
     AddMapAddr( ii->addr_map, ii->dcmap, &addr_info );
     return( TRUE );
 }

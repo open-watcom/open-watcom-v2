@@ -400,7 +400,7 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     char                *name;
     unsigned            len;
     search_result       sr;
-    lookup_item         li_type;
+    lookup_item         type_li;
     imp_type_handle     it;
     imp_sym_handle      *is;
 
@@ -412,12 +412,12 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     name = li->name.start;
     len  = li->name.len;
     if( li->scope.start != NULL ) {
-        li_type.name = li->scope;
-        li_type.file_scope = li->file_scope;
-        li_type.case_sensitive = li->case_sensitive;
-        li_type.scope.start = NULL;
-        li_type.type = ST_TYPE;
-        sr = LookupTypeName( ii, im, &li_type, &it );
+        type_li.name = li->scope;
+        type_li.file_scope = li->file_scope;
+        type_li.case_sensitive = li->case_sensitive;
+        type_li.scope.start = NULL;
+        type_li.type = ST_TYPE;
+        sr = LookupTypeName( ii, im, &type_li, &it );
         if( sr == SR_NONE ) return( SR_NONE );
         return( SearchMbr( ii, &it, li, d ) );
     }

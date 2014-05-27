@@ -152,7 +152,7 @@ static int source_name( char *gstart, size_t glen,
  * SearchGbl -- look up a global symbol name
  */
 static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
-                        imp_mod_handle im, lookup_item *lc, void *d )
+                        imp_mod_handle im, lookup_item *li, void *d )
 {
     gbl_link            *lnk;
     gbl_link            *lnk_array;
@@ -176,11 +176,11 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     search_result       sr;
 
     sr = SR_NONE;
-    compare = lc->case_sensitive ? memcmp : memicmp;
+    compare = li->case_sensitive ? memcmp : memicmp;
 
-    lkup_dtor = (lc->type == ST_DESTRUCTOR);
+    lkup_dtor = (li->type == ST_DESTRUCTOR);
     /* only want to hash the source code portion of the name */
-    switch( source_name( lc->name.start, lc->name.len, &snam, &snamlen ) ) {
+    switch( source_name( li->name.start, li->name.len, &snam, &snamlen ) ) {
     case __NOT_MANGLED:
         lkup_full = 0;
         nam = snam;
@@ -193,8 +193,8 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
     case __MANGLED:
     case __MANGLED_INTERNAL:
         lkup_full = 1;
-        nam = lc->name.start;
-        namlen = lc->name.len;
+        nam = li->name.start;
+        namlen = li->name.len;
         break;
     }
     for( blk = inf->gbl; blk != NULL; blk = blk->next ) {
@@ -219,14 +219,14 @@ static search_result LkupGblName( section_info *inf, imp_mod_handle cim,
             gblname = mangled;
             if( !lkup_full ) gblname += lnk->src_off;
             if( compare( gblname, nam, namlen ) != 0 ) goto next_global;
-            if( lc->scope.start != NULL ) {
+            if( li->scope.start != NULL ) {
                 mangle_len = GBL_NAMELEN( gbl );
                 entry = 0;
                 for( ;; ) {
                     if( !__scope_name( mangled, mangle_len, entry,
                              (const char **)&gblname, &gbllen ) ) goto next_global;
-                    if( lc->scope.len == gbllen &&
-                        compare( lc->scope.start, gblname, gbllen ) == 0 ) {
+                    if( li->scope.len == gbllen &&
+                        compare( li->scope.start, gblname, gbllen ) == 0 ) {
                         break;
                     }
                     ++entry;

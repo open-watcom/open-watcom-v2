@@ -77,7 +77,7 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
                         imp_sym_handle *is )
 {
     ii = ii; is = is;
-    return( MY_MOD_ID );
+    return( IMH_EXPORT );
 }
 
 unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,

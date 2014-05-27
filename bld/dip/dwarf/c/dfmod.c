@@ -42,23 +42,24 @@
 #define EXT_CHAR        '.'
 #define MAX_PATH        256
 
-static void GetModName( char *path, char *buff ){
-/************************************************/
-/* find the module name from the path           */
-/************************************************/
-    char *start;
-    char *end;
-    int ext_found;
+static void GetModName( char *path, char *buff )
+/**********************************************/
+/* find the module name from the path         */
+/**********************************************/
+{
+    char    *start;
+    char    *end;
+    int     ext_found;
 
     start = end = path;
     ext_found = FALSE;
-    while( *path != '\0' ){
-        if( IS_PATH_CHAR( *path ) ){
+    while( *path != '\0' ) {
+        if( IS_PATH_CHAR( *path ) ) {
             start = path+1;
-        }else if( *path == EXT_CHAR ){
+        } else if( *path == EXT_CHAR ) {
             ext_found = TRUE;
             end = path;
-        }else if( *path == '(' ){
+        } else if( *path == '(' ) {
             start = path+1;
             while( *path != ')' )++path;
             end = path;
@@ -67,11 +68,11 @@ static void GetModName( char *path, char *buff ){
         }
         ++path;
     }
-    if( !ext_found ){
+    if( !ext_found ) {
         end = path;
     }
 do_copy:
-    while( start < end ){
+    while( start < end ) {
         *buff = *start;
         ++start;
         ++buff;
@@ -79,10 +80,11 @@ do_copy:
     *buff = '\0';
 }
 
-static bool ModFill( void *_mod, dr_handle mod_handle ){
-/**************************************************************/
+static bool ModFill( void *_mod, dr_handle mod_handle )
+/*****************************************************/
 // fill in mod_handle for dip to dwarf mod map
 // pick up general info about mod while here for later calls
+{
     mod_list    *mod = _mod;
     char        fname[MAX_PATH];
     char        *name;
@@ -99,16 +101,16 @@ static bool ModFill( void *_mod, dr_handle mod_handle ){
     modinfo->cu_tag = cu_tag;
     modinfo->stmts = DRGetStmtList( cu_tag );
     path = DRGetName( cu_tag );
-    if( path != NULL ){
+    if( path != NULL ) {
         GetModName( path, fname );
         DCFree( path );
         name = DCAlloc( strlen( fname )+1 );
         strcpy( name, fname );
-    }else{
+    } else {
         name = NULL;
     }
     path = DRGetProducer( cu_tag );
-    if( path != NULL ){
+    if( path != NULL ) {
 
         df_ver version;
 
@@ -116,14 +118,14 @@ static bool ModFill( void *_mod, dr_handle mod_handle ){
             version = VER_V3;
         } else if( strcmp( path, "V1.0 WATCOM" ) == 0 ) {
             version = VER_V2;
-        }else if( strcmp( path, "WATCOM" ) == 0 ){
+        } else if( strcmp( path, "WATCOM" ) == 0 ) {
             version = VER_V1;
-        }else{
+        } else {
             version = VER_NONE;
         }
-        if( mod->version == VER_NONE ){
+        if( mod->version == VER_NONE ) {
             mod->version = version;
-        }else if( mod->version != version ){
+        } else if( mod->version != version ) {
             mod->version = VER_ERROR;
         }
         DCFree( path );
@@ -131,7 +133,7 @@ static bool ModFill( void *_mod, dr_handle mod_handle ){
     modinfo->name = name;
     model = DRGetMemModelAT( cu_tag );
     if( DCCurrMAD() == MAD_X86 ) {
-        switch( model ){
+        switch( model ) {
         case DR_MODEL_NONE:
         case DR_MODEL_FLAT:
             modinfo->is_segment = FALSE;
@@ -144,17 +146,18 @@ static bool ModFill( void *_mod, dr_handle mod_handle ){
         modinfo->is_segment = FALSE;
     }
     modinfo->model = model;
-    modinfo->lang  = DRGetLanguageAT( cu_tag );
+    modinfo->lang = DRGetLanguageAT( cu_tag );
     modinfo->dbg_pch = DRDebugPCHDef( cu_tag );
     modinfo->has_pubnames = FALSE;
     return( TRUE );
 }
 
-extern  dip_status     InitModMap( imp_image_handle *ii ){
-/**************************************************/
+dip_status     InitModMap( imp_image_handle *ii )
+/***********************************************/
 // Make the imp_mod_handle  to  dr_handle map
-    mod_list list;
-    dip_status ret;
+{
+    mod_list    list;
+    dip_status  ret;
 
     ret = DS_OK;
     ii->mod_count = 0;
@@ -176,99 +179,112 @@ extern  dip_status     InitModMap( imp_image_handle *ii ){
     return( ret );
 }
 
-extern  bool    ClearMods( imp_image_handle *ii ){
-/********************************/
+bool    ClearMods( imp_image_handle *ii )
+/***************************************/
 // free any cached mem for modules
-    int i;
-    int ret;
+{
+    im_idx      i;
+    bool        ret;
+    mod_info    *modinfo;
 
     ret = FALSE;
-    if( ii->mod_map != NULL ){
-        for( i = 0; i < ii->mod_count; ++i ){
-            if( ii->mod_map[i].addr_sym->head != NULL ){
-                FiniAddrSym( ii->mod_map[i].addr_sym );
-                ret = TRUE;
-            }
+    modinfo = ii->mod_map;
+    for( i = 0; i < ii->mod_count; ++i ) {
+        if( modinfo->addr_sym->head != NULL ) {
+            FiniAddrSym( modinfo->addr_sym );
+            ret = TRUE;
         }
+        ++modinfo;
     }
-   return( ret );
+    return( ret );
 }
 
-extern  void    FiniModMap( imp_image_handle *ii ){
-/**************************************************/
-// Make the imp_mod_handle  to  dr_handle map
-    int i;
+void    FiniModMap( imp_image_handle *ii )
+/****************************************/
+// Make the imp_mod_handle to dr_handle map
+{
+    im_idx      i;
+    mod_info    *modinfo;
 
     ClearMods( ii );
     FiniAddrSym( ii->addr_sym );
-    if( ii->mod_map != NULL ){
-        for( i = 0; i < ii->mod_count; ++i ){
-            if( ii->mod_map[i].name != NULL ){
-                DCFree( ii->mod_map[i].name );
-            }
+    modinfo = ii->mod_map;
+    for( i = 0; i < ii->mod_count; ++i ) {
+        if( modinfo->name != NULL ) {
+            DCFree( modinfo->name );
         }
-        DCFree( ii->mod_map  );
-        ii->mod_map = NULL;
+        ++modinfo;
     }
+    DCFree( ii->mod_map );
+    ii->mod_map = NULL;
+    ii->mod_count = 0;
 }
 
-imp_mod_handle Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
-/********************************************************************/
+imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
+/**********************************************************************/
 // Look up mod_handle in mod_map
 {
-    im_idx i;
+    im_idx      i;
+    mod_info    *modinfo;
 
-    for( i = 0; i < ii->mod_count; ++i ){
-        if( mod_handle == IMX2MODI( ii, i )->mod_handle ){
+    modinfo = ii->mod_map;
+    for( i = 0; i < ii->mod_count; ++i ) {
+        if( mod_handle == modinfo->mod_handle ) {
             return( IMX2IM( i ) );
         }
+        ++modinfo;
     }
     return( IMH_NOMOD );
 }
 
-imp_mod_handle DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
-/*******************************************************************/
-// find the im_idx where a dwarf dbginfo comes from
+imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle mod_handle )
+/*********************************************************************/
+// find the imp_mod_handle where a dwarf dbginfo comes from
 {
-    im_idx i;
-    im_idx last;
+    im_idx      i;
+    im_idx      last;
+    mod_info    *modinfo;
 
-    if( ii->mod_count == 0 ){
+    if( ii->mod_count == 0 )
         return( IMH_NOMOD );
-    }
+    modinfo = ii->mod_map + 1;
     last = ii->mod_count - 1;
-    for( i = 0; i < last; ++i ){
-        if( mod_handle < IMX2MODI( ii, i + 1 )->mod_handle ){
+    for( i = 0; i < last; ++i ) {
+        if( mod_handle < modinfo->mod_handle ) {
             break;
         }
+        ++modinfo;
     }
     return( IMX2IM( i ) );
 }
 
-imp_mod_handle CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle )
-/*******************************************************************/
-// Look up mod_handle in mod_map
+imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_handle )
+/******************************************************************************/
+// Look up cu_handle in mod_map
 {
-    im_idx i;
+    im_idx      i;
+    mod_info    *modinfo;
 
-    for( i = 0; i < ii->mod_count; ++i ){
-        if( cu_handle == IMX2MODI( ii, i )->cu_tag ){
+    modinfo = ii->mod_map;
+    for( i = 0; i < ii->mod_count; ++i ) {
+        if( cu_handle == modinfo->cu_tag ) {
             return( IMX2IM( i ) );
         }
+        ++modinfo;
     }
     return( IMH_NOMOD );
 }
 
 walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
 {
-    im_idx          imx;
+    im_idx          i;
     walk_result     ret;
     dr_dbg_handle   saved;
 
     ret = WR_CONTINUE;
-    for( imx = 0; imx < ii->mod_count; ++imx ) {
+    for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( imx ), d );
+        ret = wk( ii, IMX2IM( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -277,38 +293,39 @@ walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
     return( ret );
 }
 
-walk_result DFWalkModListSrc( imp_image_handle *ii, int src, IMP_MOD_WKR wk, void *d )
+walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, void *d )
 {
-    im_idx          imx;
-    int             hassrc;
+    im_idx          i;
     walk_result     ret;
     dr_dbg_handle   saved;
+    mod_info        *modinfo;
 
     ret = WR_CONTINUE;
-    for( imx = 0; imx < ii->mod_count; ++imx ) {
-        hassrc = IMX2MODI( ii, imx )->has_pubnames;
-        if( src == hassrc ){
+    modinfo = ii->mod_map;
+    for( i = 0; i < ii->mod_count; ++i ) {
+        if( src == modinfo->has_pubnames ) {
             saved = DRGetDebug();
-            ret = wk( ii, IMX2IM( imx ), d );
+            ret = wk( ii, IMX2IM( i ), d );
             DRSetDebug( saved );
             if( ret != WR_CONTINUE ) {
                 break;
             }
         }
+        ++modinfo;
     }
     return( ret );
 }
 
 walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
 {
-    im_idx          imx;
+    im_idx          i;
     walk_result     ret;
     dr_dbg_handle   saved;
 
     ret = WR_CONTINUE;
-    for( imx = 0; imx < ii->mod_count; ++imx ) {
+    for( i = 0; i < ii->mod_count; ++i ) {
         saved = DRGetDebug();
-        ret = wk( ii, IMX2IM( imx ), d );
+        ret = wk( ii, IMX2IM( i ), d );
         DRSetDebug( saved );
         if( ret != WR_CONTINUE ) {
             break;
@@ -317,18 +334,13 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     return( ret );
 }
 
-unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
+unsigned    DIGENTRY DIPImpModName( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, unsigned max )
 {
     char        *name;
     unsigned    len;
 
-    if( im == IMH_NOMOD ) {
-        DCStatus( DS_FAIL );
-        return( 0 );
-    }
-    name = IM2MODI( ii, im )->name;
-    if( name == NULL ) {
+    if( im == IMH_NOMOD || (name = IM2MODI( ii, im )->name) == NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -336,13 +348,13 @@ unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
     return( len );
 }
 
-char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char    *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     char       *ret = NULL;
 
     if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
-        return( 0 );
+        return( NULL );
     }
     switch( IM2MODI( ii, im )->lang ) {
     case DR_LANG_UNKNOWN:
@@ -363,31 +375,31 @@ char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle
 }
 
 
-extern search_result DFAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
+search_result DFAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 {
-    off_info   *off;
+    off_info    *off;
 
     if(  a.mach.segment == ii->last.mach.segment
       && a.mach.offset  >= ii->last.mach.offset
-      && a.mach.offset  <  ii->last.mach.offset+ii->last.len ){
+      && a.mach.offset  <  ii->last.mach.offset+ii->last.len ) {
         *im = ii->last.im;
-        if( a.mach.offset == ii->last.mach.offset ){
+        if( a.mach.offset == ii->last.mach.offset ) {
             return( SR_EXACT );
-        }else{
+        } else {
             return( SR_CLOSEST );
         }
 
     }
     off = FindMapAddr( ii->addr_map, &a );
-    if( off != NULL ){
+    if( off != NULL ) {
         ii->last.mach.segment = a.mach.segment;
-        ii->last.mach.offset  = off->offset;
+        ii->last.mach.offset = off->offset;
         ii->last.len = off->len;
         ii->last.im = off->im;
-        *im =  off->im;
-        if( a.mach.offset == off->offset ){
+        *im = off->im;
+        if( a.mach.offset == off->offset ) {
             return( SR_EXACT );
-        }else{
+        } else {
             return( SR_CLOSEST );
         }
     }
@@ -451,33 +463,27 @@ static bool ALineCue( void *_info, dr_line_data *curr )
     return( ret );
 }
 
-address         DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
+address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 {
     l_walk_info walk;
     address     a;
     dr_handle   stmts;
 
-    if( im == IMH_NOMOD ) {
-        DCStatus( DS_FAIL );
-        return( NilAddr );
+    if( im != IMH_NOMOD && (stmts = IM2MODI( ii, im )->stmts) != 0 ) {
+        DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
+        walk.ii = ii;
+        walk.im = im;
+        walk.ret = &a;
+        if( !DRWalkLines( stmts, SEG_CODE, AModAddr, &walk ) ) {
+            // found
+            return( a );
+        }
     }
-    stmts = IM2MODI( ii, im )->stmts;
-    if( stmts == 0 ) {
-        DCStatus( DS_FAIL );
-        return( NilAddr );
-    }
-    DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    walk.ii = ii;
-    walk.im = im;
-    walk.ret = &a;
-    if( DRWalkLines( stmts, SEG_CODE, AModAddr, &walk ) ) {     // nothing found
-        a = NilAddr;
-        DCStatus( DS_FAIL );
-    }
-    return( a );
+    DCStatus( DS_FAIL );
+    return( NilAddr );
 }
 
-dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     /*
@@ -486,23 +492,24 @@ dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
     */
     dip_status  ret;
     dr_handle   stmts;
+    mod_info    *modinfo;
 
-    if( im == IMH_NOMOD ) {
-        DCStatus( DS_FAIL );
-        return( 0 );
-    }
-    stmts =  IM2MODI( ii, im )->stmts;
     ret = DS_FAIL;
-    switch( hk ){
+    if( im == IMH_NOMOD ) {
+        DCStatus( ret );
+        return( ret );
+    }
+    modinfo = IM2MODI( ii, im );
+    switch( hk ) {
     case HK_IMAGE:
-        ret = DS_FAIL;
         break;
     case HK_TYPE:
-        if( stmts != 0 ) {
+        if( modinfo->stmts != 0 ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
+        stmts = modinfo->stmts;
         if( stmts != 0 ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
@@ -511,24 +518,23 @@ dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
             walk.im = im;
             walk.ret = &a;
             DRSetDebug( ii->dwarf->handle ); /* set dwarf to image */
-            if( !DRWalkLines( stmts, SEG_CODE, ALineCue, &walk ) ){
+            if( !DRWalkLines( stmts, SEG_CODE, ALineCue, &walk ) ) {
                 ret = DS_OK;
             }
         }
         break;
     case HK_SYM: /* if no lang assumed linker generated */
-        if( IM2MODI( ii, im )->lang != DR_LANG_UNKNOWN ){
+        if( modinfo->lang != DR_LANG_UNKNOWN ) {
             ret = DS_OK;
         }
         break;
     default:
-        ret = DS_FAIL;
         break;
     }
     return( ret );
 }
 
-dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     /*
@@ -538,63 +544,60 @@ dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
         the 16 or 32-bit compiler was used, and what memory model the
         source file was compiled with.
      */
-//TODO: finish
-    mod_info   *modinfo;
-    int         size;
+    mod_info    *modinfo;
 
+//TODO: finish
     modinfo = IM2MODI( ii, im );
-    size = modinfo->addr_size;
-    switch( dk ){
+    ti->size = modinfo->addr_size;
+    switch( dk ) {
     case DK_INT:
         ti->kind = TK_INTEGER;
         ti->modifier = TM_SIGNED;
-        ti->size = size;
         break;
     case DK_DATA_PTR:
     case DK_CODE_PTR:
         ti->kind = TK_POINTER;
-        switch( modinfo->model ){
+        switch( modinfo->model ) {
         case DR_MODEL_NONE:
         case DR_MODEL_FLAT:
         case DR_MODEL_SMALL:
             ti->modifier = TM_NEAR;
             break;
         case DR_MODEL_MEDIUM:
-            if( dk == DK_CODE_PTR ){
+            if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
-                size += 2;
-            }else{
+                ti->size += 2;
+            } else {
                 ti->modifier = TM_NEAR;
             }
             break;
         case DR_MODEL_COMPACT:
-            if( dk == DK_CODE_PTR ){
+            if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_NEAR;
-            }else{
+            } else {
                 ti->modifier = TM_FAR;
-                size += 2;
+                ti->size += 2;
             }
             break;
         case DR_MODEL_LARGE:
             ti->modifier = TM_FAR;
-            size += 2;
+            ti->size += 2;
             break;
         case DR_MODEL_HUGE:
-            if( dk == DK_CODE_PTR ){
+            if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
-            }else{
+            } else {
                 ti->modifier = TM_HUGE;
             }
-            size += 2;
+            ti->size += 2;
             break;
         }
     }
-    ti->size = size;
     return( DS_OK );
 }
 
-extern unsigned NameCopy( char *to, char *from, unsigned max )
-/************************************************************/
+unsigned    NameCopy( char *to, char *from, unsigned max )
+/********************************************************/
 {
     unsigned    len;
 
@@ -617,13 +620,13 @@ extern unsigned NameCopy( char *to, char *from, unsigned max )
     return( len );
 }
 
-extern  void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
-/************************************************************************/
+void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
+/****************************************************************/
 {
     imp_mod_handle im;
 
     im = Dwarf2Mod( ii, mod_handle );
-    if( im != IMH_NOMOD ){
+    if( im != IMH_NOMOD ) {
         IM2MODI( ii, im )->has_pubnames = TRUE;
     }
 }

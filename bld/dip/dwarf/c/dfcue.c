@@ -108,12 +108,13 @@ static bool ACueFile( void *_info, dr_line_file *curr )
     bool            cont;
     int             i;
 
-    if( info->index  == curr->index ) {
+    if( info->index == curr->index ) {
         if( curr->name ) {
             if( curr->dir != 0) {
                 for( i = 0; i < info->num_dirs; i++ ) {
-                    if( info->dirs[i].index == curr->dir )
+                    if( info->dirs[i].index == curr->dir ) {
                         break;
+                    }
                 }
                 if( i < info->num_dirs ) {
                     info->ret = DCAlloc( strlen( curr->name ) + strlen( info->dirs[i].name ) + 2);
@@ -185,15 +186,13 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     dr_handle       stmts;
     dr_handle       cu_handle;
     int             i;
+    mod_info        *modinfo;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
-    stmts = IM2MODI( ii, ic->im )->stmts;
-    if( stmts == 0 ) {
-        DCStatus( DS_FAIL );
-        return( 0 );
-    }
-    cu_handle = IM2MODI( ii, ic->im )->cu_tag;
-    if( cu_handle == 0 ) {
+    modinfo = IM2MODI( ii, ic->im );
+    stmts = modinfo->stmts;
+    cu_handle = modinfo->cu_tag;
+    if( stmts == 0 || cu_handle == 0 ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -205,9 +204,10 @@ unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     name = wlk.ret;
 
     // Free directory and file table information
-    for( i = 0; i < wlk.num_dirs; i++)
-        DCFree(wlk.dirs[i].name);
-    DCFree(wlk.dirs);
+    for( i = 0; i < wlk.num_dirs; i++ ) {
+        DCFree( wlk.dirs[i].name );
+    }
+    DCFree( wlk.dirs );
 
     if( name == NULL ) {
         DCStatus( DS_FAIL );
@@ -268,13 +268,13 @@ static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
     wlk.fno = fno;
     cont = DRWalkLines( stmts, SEG_CODE, TheFirstCue, &wlk );
     if( cont == FALSE ) {
-        ic->fno  = wlk.first.file;
+        ic->fno = wlk.first.file;
         ic->line = wlk.first.line;
-//      ic->col  = wlk.first.col;
-        ic->col  = 0;
+//      ic->col = wlk.first.col;
+        ic->col = 0;
         ic->a = NilAddr;
         ic->a.mach.segment = wlk.first.seg;
-        ic->a.mach.offset  = wlk.first.offset;
+        ic->a.mach.offset = wlk.first.offset;
     }
     return( cont );
 }
@@ -305,7 +305,7 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
     if( FirstCue( fc->stmts, curr->index, ic ) ) {
         ic->fno = curr->index;
         ic->line = 1;
-        ic->col  = 0;
+        ic->col = 0;
     }
     saved = DRGetDebug();
     fc->wr = fc->wk( fc->ii, ic, fc->d );
@@ -328,7 +328,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     dr_handle       stmts;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts  =  IM2MODI( ii, im )->stmts;
+    stmts = IM2MODI( ii, im )->stmts;
     if( stmts == 0 ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
@@ -338,8 +338,8 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     wlk.im = im;
     wlk.wk = wk;
     wlk.ic = ic;
-    wlk.d  = d;
-    wlk.wr =  WR_CONTINUE;
+    wlk.d = d;
+    wlk.wr = WR_CONTINUE;
     DRWalkLFiles( stmts, ACueFileNum, &wlk, ACueDir, NULL );
     return( wlk.wr );
 }
@@ -422,7 +422,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
     }
-    cue_map= ii->cue_map;
+    cue_map = ii->cue_map;
     if( cue_map->im != src->im ) {
         ResetCueInfo( cue_map );
         cue_map->im = src->im;
@@ -440,14 +440,14 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     cue.col = src->col;
     find = LINE_NOT;
     while( 0 != adj ) {
-        find =  FindCue( cue_map, &cue, start_state );
+        find = FindCue( cue_map, &cue, start_state );
         if( find == LINE_NOT ) break;
         --adj;
     }
     dst->im = src->im;
-    dst->fno  =  cue.fno;
-    dst->line =  cue.line;
-    dst->col  =  cue.col;
+    dst->fno = cue.fno;
+    dst->line = cue.line;
+    dst->col = cue.col;
     dst->a.mach = cue.mach;
     ret = DS_FAIL;
     switch( find ) {
@@ -534,18 +534,18 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
         cue_map->im = im;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
-    ic->im  = im;
-    ic->fno  = 0;
+    ic->im = im;
+    ic->fno = 0;
     ic->line = 0;
-    ic->col  = 0;
-    ic->a    = NilAddr;
+    ic->col = 0;
+    ic->a = NilAddr;
     ret = SR_NONE;
     if( map_addr.mach.segment == cue_map->last.mach.segment
-     && map_addr.mach.offset  >= cue_map->last.mach.offset
-     && map_addr.mach.offset  <  cue_map->last.next_offset ) {
-        ic->fno  = cue_map->last.fno;
+      && map_addr.mach.offset  >= cue_map->last.mach.offset
+      && map_addr.mach.offset  <  cue_map->last.next_offset ) {
+        ic->fno = cue_map->last.fno;
         ic->line = cue_map->last.line;
-        ic->col  = cue_map->last.col;
+        ic->col = cue_map->last.col;
         ic->a.mach = cue_map->last.mach;
         if( cue_map->last.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
@@ -555,9 +555,9 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
         return( ret );
      }
     if( FindCueOffset( cue_map, &map_addr.mach, &cue ) ) {
-        ic->fno  = cue.fno;
+        ic->fno = cue.fno;
         ic->line = cue.line;
-        ic->col  = cue.col;
+        ic->col = cue.col;
         ic->a.mach = cue.mach;
         if( cue.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
@@ -610,7 +610,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     if( line == 0 ) {
         what = LOOK_FILE;
     } else {
-        what =  LOOK_CLOSEST;
+        what = LOOK_CLOSEST;
     }
     find = FindCue( cue_map, &cue, what );
     ic->im = im;

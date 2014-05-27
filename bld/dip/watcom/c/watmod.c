@@ -44,7 +44,8 @@ section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
     unsigned            num_sects;
     section_info        *inf;
 
-    if( im == 0 ) return( NULL );
+    if( im == IMH_NOMOD )
+        return( NULL );
     inf = ii->sect;
     num_sects = ii->num_sects;
     for( ;; ) {

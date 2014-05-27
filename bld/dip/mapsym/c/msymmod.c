@@ -34,7 +34,7 @@
 walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
                         IMP_MOD_WKR *wk, void *d )
 {
-    return( wk( ii, MY_MOD_ID, d ) );
+    return( wk( ii, IMH_MAP, d ) );
 }
 
 unsigned DIGENTRY DIPImpModName( imp_image_handle *ii,
@@ -69,7 +69,7 @@ search_result DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
 {
     ii = ii; a = a; im = im;
     if( FindAddrBlock( ii, a.mach ) != NULL ) {
-        *im = MY_MOD_ID;
+        *im = IMH_MAP;
         return( SR_CLOSEST );
     }
     return( SR_NONE );

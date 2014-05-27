@@ -50,7 +50,7 @@ imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     ii = ii; it = it;
-    return( MY_MOD_ID );
+    return( IMH_EXPORT );
 }
 
 dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,

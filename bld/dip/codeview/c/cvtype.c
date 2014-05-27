@@ -1125,7 +1125,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
-    if( li->mod != IMH_NOMOD && li->mod != IMH_GBL ) {
+    if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_GBL ) {
         return( SR_NONE );
     }
     switch( li->type ) {
@@ -1361,12 +1361,12 @@ static int IsFortranModule( imp_image_handle *ii, location_context *lc )
     location_list       ll;
     cs_compile          *comp_info;
 
-    im = IMH_BASE;
+    im = IMH_FORTRAN;
     if( DCItemLocation( lc, CI_EXECUTION, &ll ) == DS_OK ) {
         switch( ImpAddrMod( ii, ll.e[0].u.addr, &im ) ) {
         case SR_NONE:
         case SR_FAIL:
-            im = IMH_BASE;
+            im = IMH_FORTRAN;
             break;
         }
     }

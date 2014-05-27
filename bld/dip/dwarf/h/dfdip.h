@@ -139,9 +139,9 @@ typedef struct seg_cue     seg_cue;   // private type
 #include "dfscplst.h"
 
 typedef struct { // value of an AddrMod
-    addr_ptr        mach;
-    dword           len;
-    imp_mod_handle  im;
+    addr_ptr            mach;
+    dword               len;
+    imp_mod_handle      im;
 } addrmod;
 
 struct imp_image_handle {
@@ -157,8 +157,8 @@ struct imp_image_handle {
     seg_list            addr_sym[1];
     scope_ctl           scope;
     addrmod             last;
-    unsigned            has_pubnames;
-    unsigned            is_byteswapped;
+    bool                has_pubnames;
+    bool                is_byteswapped;
 };
 
 extern address  NilAddr;

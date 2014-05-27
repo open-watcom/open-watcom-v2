@@ -30,6 +30,7 @@
 
 
 #ifndef DIP_MSYM
+#define DIP_MSYM
 
 #include <string.h>
 #include <stdlib.h>
@@ -37,11 +38,8 @@
 #include "dipimp.h"
 #include "mapsym.h"
 
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-#define MY_MOD_ID       ((imp_mod_handle)1)
+
+#define IMH_MAP         IMH_BASE
 
 typedef struct msym_sym         msym_sym;
 typedef struct msym_block       msym_block;
@@ -99,5 +97,4 @@ extern msym_block       *FindAddrBlock( imp_image_handle *, addr_ptr );
 
 #define SameAddrSpace( a, b )   ((a).segment == (b).segment)
 
-#define DIP_MSYM
 #endif

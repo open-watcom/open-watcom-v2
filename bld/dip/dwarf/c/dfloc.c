@@ -842,7 +842,6 @@ extern dip_status EvalLocation( imp_image_handle *ii,
     }
     LocationLast( ll );
     return( d.ret );
-
 }
 
 static bool NoFrame( void *_d, uint_32 *where )

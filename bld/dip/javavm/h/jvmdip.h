@@ -46,13 +46,9 @@ typedef void *HANDLE;
 
 #define MAX_NAME        1024
 
-typedef unsigned_32     ji_ptr; /* java interpreter pointer */
+#define IMH_JAVA        IMH_BASE
 
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-#define IMH_JAVA        1
+typedef unsigned_32     ji_ptr; /* java interpreter pointer */
 
 struct imp_sym_handle {
     union {

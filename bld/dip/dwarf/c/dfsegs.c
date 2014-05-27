@@ -209,8 +209,8 @@ extern  seg_entry *FindRealSeg( seg_list *ctl, word seg ){
 }
 
 
-bool SegWalk( seg_list *ctl, SEGWLK wlk, void * d )
-/*************************************************/
+bool SegWalk( seg_list *ctl, SEGWLK wlk, void *d )
+/************************************************/
 // Walk all the segments with wlk( d, info )
 {
     seg_blk_head    *blk;

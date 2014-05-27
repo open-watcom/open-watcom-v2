@@ -31,18 +31,16 @@
 
 
 #ifndef DIP_EXP
+#define DIP_EXP
 
 #include <string.h>
 #include <stdlib.h>
 #include "dip.h"
 #include "dipimp.h"
+#include "bool.h"
 
 
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-#define MY_MOD_ID       ((imp_mod_handle)1)
+#define IMH_EXPORT      IMH_BASE
 
 typedef struct exp_sym          exp_sym;
 typedef struct exp_block        exp_block;
@@ -100,5 +98,4 @@ extern exp_block        *FindAddrBlock( imp_image_handle *, addr_ptr );
 
 #define SameAddrSpace( a, b )   ((a).segment == (b).segment)
 
-#define DIP_EXP
 #endif

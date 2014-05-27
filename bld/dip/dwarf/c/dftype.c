@@ -66,9 +66,9 @@ static dr_handle GetArrayDim( dr_handle index, int skip  ){
 
     df.skip = skip;
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ){
-      index = df.curr;
+        index = df.curr;
     }else{
-      index = 0;
+        index = 0;
     }
     return( index );
 }
@@ -87,7 +87,7 @@ static bool GetStrLen( imp_image_handle *ii,
         short s;
         char  c;
     }val;
-    int             idx_size;
+    unsigned        idx_size;
     mod_info        *modinfo;
 
     im = DwarfMod( ii, dr_sym );
@@ -758,7 +758,7 @@ extern int GetParmCount(  imp_image_handle *ii, dr_handle proc ){
     df.count = 0;
     df.last = 0;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    DRWalkBlock( proc,  DR_SRCH_parm, AParm, &df );
+    DRWalkBlock( proc, DR_SRCH_parm, AParm, &df );
     return( df.count );
 }
 

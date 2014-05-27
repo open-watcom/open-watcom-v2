@@ -845,7 +845,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
                 "index   seg:offset    info  lang  name\n"
                 "---------------------------------------\n");
         i = 0;
-        walkres = WalkTypeList( /*mh*/ MH_GB, TypeCallback, &i );
+        walkres = WalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
         printf( "\n"
                 "\n" );
     }
