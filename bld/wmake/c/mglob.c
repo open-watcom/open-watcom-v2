@@ -71,10 +71,10 @@ const char FAR *BuiltIns = {
     "__LOADDLL__=\n"
 #endif
 #if defined( BOOTSTRAP )
-#if defined( __WATCOMC__ )
-    "__WATCOM__=\n"
-#elif defined( __INTEL_COMPILER )
+#if defined( __INTEL_COMPILER )
     "__INTEL__=\n"
+#elif defined( __WATCOMC__ )
+    "__WATCOM__=\n"
 #endif
 #endif
 
