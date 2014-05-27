@@ -22,6 +22,10 @@
  #include <iterator>
 #endif
 
+#ifndef _LIMITS_INCLUDED
+ #include <limits>
+#endif
+
 #ifndef _MEMORY_INCLUDED
  #include <memory>
 #endif
@@ -153,9 +157,13 @@ namespace std {
         const_reverse_iterator rend ( ) const;
     
         size_type  size( )  const;
+        size_type  max_size( )  const;
+        void       resize( size_type n, const value_type & c = value_type( ) );
         bool       empty( ) const;
         reference  front( );
+        const_reference  front( ) const;
         reference  back( );
+        const_reference  back( ) const;
         void       push_front( const value_type & );
         void       pop_front( );
         void       push_back( const value_type & );
@@ -176,12 +184,50 @@ namespace std {
         void clear( );
         void remove( const value_type & );
 
+        template< class Predicate >
+        void remove_if( Predicate pred )
+        {
+            iterator first( begin( ) );
+            iterator last ( end( ) );
+
+            while ( !(first == last) )
+            {
+                iterator next ( first );
+                ++next;
+                if ( pred( *first ) )
+                    erase( first );
+                first = next;
+            }
+        }
+
         void splice( iterator it, list &other );
         void splice( iterator it, list &other, iterator other_it );
         void splice( iterator it, list &other, iterator first, iterator last );
 
         void reverse( );
+        void unique( );
         void merge( list &other );
+        
+        template< class BinaryPredicate >
+        void unique( BinaryPredicate pred )
+        {
+            iterator first( begin( ) );
+            iterator last ( end( ) );
+
+            if ( first == last )
+                return;
+
+            iterator next( first );
+
+            while ( !(++next == last) )
+            {
+                if ( pred( *first, *next ) )
+                    erase( next );
+                else
+                    first = next;
+                next = first;
+            }
+        }
 
         // sort( )
         // *******
@@ -725,6 +771,32 @@ namespace std {
         list< Type, Allocator >::size( ) const
         { return( item_count ); }
 
+    // max_size( ) const
+    // *****************
+    template< class Type, class Allocator >
+    inline
+    typename list< Type, Allocator>::size_type
+        list< Type, Allocator >::max_size( ) const
+    {
+        return( numeric_limits< size_type >::max( ) / sizeof( value_type ) );
+    }
+
+    // resize( size_type, Type )
+    // *************************
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::resize( size_type n, const value_type & c )
+    {
+        if( n > item_count )
+            insert( end( ), n - item_count, c );
+        else if ( n < item_count )
+        {
+            iterator  it  = begin( );
+            size_type len = 0;
+            for ( ; it != end() && len < n; ++it, ++len);
+            erase( it, end( ) );
+        }
+    }
+
     // empty( ) const
     // **************
     template< class Type, class Allocator >
@@ -738,12 +810,27 @@ namespace std {
         list< Type, Allocator >::front( )
         { return( static_cast< node * >( sentinel->next )->value ); }
 
+    // front( ) const
+    // ********
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reference
+        list< Type, Allocator >::front( ) const
+        { return( static_cast< node * >( sentinel->next )->value ); }
+
     // back( )
     // *******
     template< class Type, class Allocator >
     inline typename list< Type, Allocator >::reference
         list< Type, Allocator >::back( )
         { return( static_cast< node * >( sentinel->previous )->value ); }
+
+    // back( ) const
+    // *******
+    template< class Type, class Allocator >
+    inline typename list< Type, Allocator >::const_reference
+        list< Type, Allocator >::back( ) const
+        { return( static_cast< node * >( sentinel->previous )->value ); }
+
 
     // push_front( )
     // *************
@@ -955,6 +1042,29 @@ namespace std {
         temp               = sentinel->next;
         sentinel->next     = sentinel->previous;
         sentinel->previous = temp;
+    }
+
+    // unique( )
+    // **********
+    template< class Type, class Allocator >
+    void list< Type, Allocator >::unique( )
+    {
+        iterator first( begin( ) );
+        iterator last ( end( ) );
+
+        if ( first == last )
+            return;
+
+        iterator next( first );
+
+        while ( !(++next == last) )
+        {
+            if ( *first == *next )
+                erase( next );
+            else
+                first = next;
+            next = first;
+        }
     }
 
     // merge( list & )

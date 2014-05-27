@@ -148,6 +148,7 @@ namespace std {
     streambuf *rdbuf() const;
     iostate    rdstate() const;
     iostate    clear( iostate __state = 0 );
+    void       setstate( iostate __orbits );
     int        good() const;
     int        bad()  const;
     int        fail() const;
@@ -180,7 +181,6 @@ namespace std {
     ios();
 
     void init( streambuf *__sb );
-    void setstate( ios::iostate __orbits );
 
   private:
     streambuf *__strmbuf;
