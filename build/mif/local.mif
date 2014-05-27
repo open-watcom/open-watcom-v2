@@ -374,8 +374,13 @@ common_cppflags_386  = -D__386__ -D__NT_386__
 common_cppflags_x64  = -D__NT_X64__
 
 # common release/debug flags
+!ifdef __INTEL__
+common_flags_rel = -Ox -Zi -Qtbb
+common_flags_dbg = -Zi -Qtbb
+!else
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
+!endif
 !ifeq release 1
 common_flags = $(common_flags_rel)
 !else
@@ -424,11 +429,19 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
+!ifdef __INTEL__
+bcc  = icl -nologo -c
+bcxx = icl -nologo -c
+bcl  = icl -nologo
+
+blib = xilib -nologo
+!else
 bcc  = cl -nologo -c
 bcxx = cl -nologo -c
 bcl  = cl -nologo
 
 blib = lib -nologo
+!endif
 
 bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
 bld_cl_sys =
@@ -456,11 +469,19 @@ bld_libflags = -out:$^@
 
 # standard settings
 ############################
+!ifdef __INTEL__
+cc  = icl -nologo -c
+cxx = icl -nologo -c
+cl  = icl -nologo
+
+librarian = xilib -nologo
+!else
 cc   = cl -nologo -c
 cxx  = cl -nologo -c
 cl   = cl -nologo
 
 librarian = lib -nologo
+!endif
 
 cppflags_nt  = $(common_cppflags_nt)
 cppflags_osi = $(common_cppflags_nt)
