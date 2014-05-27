@@ -54,7 +54,7 @@ static bool ReadEnumerator( dr_handle abbrev, dr_handle mod, void *inf )
     }
     val = DWRReadConstant( abbrev, mod );
     info = (enum_cb_info *)inf;
-    return( info->callback( name, val, info->data ) != 0 );
+    return( info->callback( name, val, info->data ) );
 }
 
 extern void DRLoadEnum( dr_handle entry, void * data, enumCallback callback )

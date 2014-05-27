@@ -73,7 +73,7 @@ static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo, v
         }
     }
 
-    return( sinfo->callback( &symctxt, sinfo->data ) != 0 );
+    return( sinfo->callback( &symctxt, sinfo->data ) );
 }
 
 extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,

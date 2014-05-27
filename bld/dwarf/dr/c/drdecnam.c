@@ -1295,7 +1295,6 @@ BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
 
         DWRFREE( containing_name.s );
     }
-
     return( decname );
 }
 
@@ -1402,7 +1401,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_cr;    /* reset to start of die / abbrev */
     tmp_entry = loc->entry_cr;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ){
+    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
         dr_handle containing_die;
 
         containing_die = DWRReadReference( tmp_abbrev, tmp_entry );

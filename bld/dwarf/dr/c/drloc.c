@@ -498,8 +498,8 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
             info += sizeof(unsigned_8);
             goto end_loop;
         case DW_FORM_block2:
-             size = DWRVMReadWord( info );
-             info += sizeof(unsigned_16);
+            size = DWRVMReadWord( info );
+            info += sizeof(unsigned_16);
             goto end_loop;
         case DW_FORM_block4:
             size = DWRVMReadDWord( info );
@@ -526,8 +526,8 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
             form = DW_FORM_block2;
             break;
         case DW_FORM_data2: //TODO kludge
-            ret = DWRVMReadWord( info );
-            ret = callbck->ref( d, ret, addr_size, DR_LOC_ADDR );
+            size = DWRVMReadWord( info );
+            ret = callbck->ref( d, size, addr_size, DR_LOC_ADDR );
             goto exit;
         default:
             ret = FALSE;
@@ -535,7 +535,7 @@ static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
         }
     } end_loop:;
     if( size > sizeof( loc_buff ) ) {
-         expr = DWRALLOC( size );
+        expr = DWRALLOC( size );
     } else if( size > 0 ) {
         expr = loc_buff;
     } else {
@@ -650,6 +650,7 @@ bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
     }
     return( ret );
 }
+
 extern dr_handle DRStringLengthAT( dr_handle str )
 /************************************************/
 {

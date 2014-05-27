@@ -58,7 +58,7 @@ typedef struct {
     dr_search_context * context;        /* context to resume search */
 } dr_sym_context;
 
-typedef int (*DRSYMSRCH)( dr_sym_context *, void * );
+typedef bool (*DRSYMSRCH)( dr_sym_context *, void * );
 
 /* function prototypes */
 

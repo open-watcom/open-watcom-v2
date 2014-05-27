@@ -242,7 +242,8 @@ void DWRSkipAttribs( dr_handle abbrev, dr_handle *mod )
     for( ;; ) {
         attrib = DWRVMReadULEB128( &abbrev );   // read attribute
         form = DWRVMReadULEB128( &abbrev );     // skip form
-        if( attrib == 0 ) break;
+        if( attrib == 0 )
+            break;
         DWRSkipForm( mod, form );
     }
 }
@@ -811,20 +812,23 @@ bool DWRWalkChildren( dr_handle mod, const unsigned_16 *tags, DRWLKBLK *wlks, vo
         for( ;; ) {
             mod = curr;
             abbrev = DWRVMReadULEB128( &curr );
-            if( abbrev == 0 ) break;
+            if( abbrev == 0 )
+                break;
             abbrev = cu->abbrevs[ abbrev ];
             tag = DWRVMReadULEB128( &abbrev );
             haschild = DWRVMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
             index = 0;
             while( tags[index] != 0 ) {
-                if( tags[index] == tag ) break;
+                if( tags[index] == tag )
+                    break;
                 ++index;
             }
             wlk = wlks[index];
             if( wlk != NULL ) {
-                if( !wlk( mod, index, d ) )
+                if( !wlk( mod, index, d ) ) {
                     return( FALSE );    // FALSE == quit
+                }
             }
             if( haschild ) {
                 DWRSkipChildren( &abbrev, &curr );
@@ -862,10 +866,12 @@ bool DWRWalkContaining( dr_handle mod, dr_handle target, DRWLKBLK wlk, void *d )
             dr_handle   old_abbrev;
             dr_handle   old_curr;
 
-            if( curr > target ) break;
+            if( curr > target )
+                break;
             mod = curr;
             abbrev = DWRVMReadULEB128( &curr );
-            if( abbrev == 0 ) break;
+            if( abbrev == 0 )
+                break;
             abbrev = DWRLookupAbbrev( mod, abbrev );
             DWRVMReadULEB128( &abbrev );    /* skip tag */
             haschild = DWRVMReadByte( abbrev );
@@ -923,9 +929,10 @@ bool DWRWalkSiblings( dr_handle curr, const unsigned_16 *tags, DRWLKBLK *wlks, v
         wlk = wlks[index];
         if( wlk != NULL ) {
             cont = wlk( start, index, d );
+            if( !cont ) {
+                break;
+            }
         }
-        if( !cont )
-            break;
         if( haschild ) {
             DWRSkipChildren( &abbrev, &curr );
         } else {
@@ -970,7 +977,8 @@ bool DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlk, void *d
             mod = curr;
             abbrev = DWRVMReadULEB128( &curr );
             if( abbrev == 0 ) {
-                if( --depth == 0 ) break;
+                if( --depth == 0 )
+                    break;
                 continue;
             }
             abbrev = DWRLookupAbbrev( curr, abbrev );
@@ -1001,13 +1009,16 @@ bool DWRWalkScope( dr_handle mod, const unsigned_16 *tags, DRWLKBLK wlk, void *d
     return( TRUE );
 }
 
-static compunit_info * FindCompileInfo( compunit_info *compunit, dr_handle addr )
-/*******************************************************************************/
+static compunit_info *FindCompileInfo( compunit_info *compunit, dr_handle addr )
+/******************************************************************************/
 {
     for( ;; ) {
-        if( (addr >= compunit->start) && (addr <= compunit->end) ) break;
+        if( (addr >= compunit->start) && (addr <= compunit->end) )
+            break;
         compunit = compunit->next;
-        if( compunit == NULL ) break;
+        if( compunit == NULL ) {
+            break;
+        }
     }
     if( compunit == NULL ) {
         DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );

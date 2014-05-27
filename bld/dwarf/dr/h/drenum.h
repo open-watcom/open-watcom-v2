@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-typedef int (*enumCallback)( char *, unsigned_32, void * );
+typedef bool (*enumCallback)( char *, unsigned_32, void * );
 
 extern void DRLoadEnum( dr_handle, void *, enumCallback );
 

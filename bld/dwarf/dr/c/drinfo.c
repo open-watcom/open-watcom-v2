@@ -360,7 +360,7 @@ bool DRIsStatic( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) ) {
-        return( !DWRReadFlag( abbrev, entry ) );
+        return( DWRReadFlag( abbrev, entry ) == 0 );
     }
     return( FALSE );
 }
@@ -372,7 +372,7 @@ bool DRIsArtificial( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) ) {
-        return( DWRReadFlag( abbrev, entry ) );
+        return( DWRReadFlag( abbrev, entry ) != 0 );
     }
     return( FALSE );
 }
@@ -530,14 +530,12 @@ struct wlk_wlk {
 static bool CheckAFunc( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *_d )
 /***********************************************************************************/
 {
-    bool                ret;
     struct  wlk_wlk     *d = _d;
 
     abbrev = abbrev;
 
     mod = x->handle;
-    ret = d->wlk( mod, d->d, x->context );
-    return( ret );
+    return( d->wlk( mod, d->d, x->context ) );
 }
 
 static unsigned_16 const BlockTags[] = {
@@ -590,13 +588,11 @@ static unsigned_16 const TypeTags[] = { // any type
 bool DRWalkModTypes( dr_handle mod, DRWLKMODF wlk, void *d )
 /**********************************************************/
 {
-    bool            ret;
     struct wlk_wlk  dat;
 
     dat.wlk = wlk;
     dat.d = d;
-    ret = DWRWalkCompileUnit( mod, CheckAFunc, TypeTags, DR_DEPTH_FUNCTIONS | DR_DEPTH_CLASSES, &dat );
-    return( ret );
+    return( DWRWalkCompileUnit( mod, CheckAFunc, TypeTags, DR_DEPTH_FUNCTIONS | DR_DEPTH_CLASSES, &dat ) );
 }
 
 bool DRWalkScope( dr_handle mod, DRWLKBLK wlk, void *d )
@@ -641,7 +637,6 @@ static unsigned_16 const * const SrchTags[DR_SRCH_LAST] = {
 bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
 /********************************************************************/
 {
-    bool                ret;
     unsigned_16 const   *tags;
     DRWLKBLK            wlks[MAX_TAG_WLK];
     int                 index;
@@ -649,12 +644,11 @@ bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
     tags = SrchTags[what];
     index = 0;
     while( tags[index] != 0 ) {
-            wlks[index] = wlk;
-            ++index;
+        wlks[index] = wlk;
+        ++index;
     }
     wlks[index] = NULL;
-    ret = DWRWalkChildren( mod, tags, wlks, d );
-    return( ret );
+    return( DWRWalkChildren( mod, tags, wlks, d ) );
 }
 
 bool DRStartScopeAT( dr_handle entry, uint_32 *num )

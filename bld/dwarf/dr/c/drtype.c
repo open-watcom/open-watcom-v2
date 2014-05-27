@@ -486,7 +486,7 @@ static unsigned_16 const ArrayTag[DR_WLKBLK_ARRSIB] = {
 };
 
 bool DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/******************************************&******************/
+/*************************************************************/
 // wlks[0] == subrange [1] = enumerator , 0 = Null
 {
     return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );
@@ -500,13 +500,11 @@ bool DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
 /******************************************************/
 // wlks[0] == Enum  func, [1] Null
 {
-    bool        ret;
     DRWLKBLK    wlks[2];
 
     wlks[0] = wlk;
     wlks[1] = NULL;
-    ret = DWRWalkChildren( mod, EnumTag, wlks, d );
-    return( ret );
+    return( DWRWalkChildren( mod, EnumTag, wlks, d ) );
 }
 
 bool DRConstValAT( dr_handle var, uint_32 *ret )

@@ -38,6 +38,6 @@ typedef struct {
     bool        is_start;
 } dr_pubname_data;
 
-typedef int (*DRPUBWLK)( void *, dr_pubname_data * );
+typedef bool (*DRPUBWLK)( void *, dr_pubname_data * );
 
 extern void DRWalkPubName( DRPUBWLK, void * );

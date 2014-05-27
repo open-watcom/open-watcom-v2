@@ -78,9 +78,9 @@ static dr_handle  DefineFile( dr_handle start, dr_line_file *df )
 {
 
     df->name = DWRCopyString( &start );
-    df->dir  = DWRVMReadULEB128( &start );  // directory index
+    df->dir = DWRVMReadULEB128( &start );  	// directory index
     df->time = DWRVMReadULEB128( &start );  // time
-    df->len  = DWRVMReadULEB128( &start );  // length
+    df->len = DWRVMReadULEB128( &start ); 	// length
     return( start );
 }
 
@@ -105,7 +105,7 @@ typedef struct line_info {
 } line_info;
 
 
-static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
+static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                                           DRLFILEWLK file, void *file_data )
 /**************************************************************************/
 //Run the statement program
@@ -120,7 +120,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
     unsigned_8     line_range;
     unsigned_8     opcode_base;
     dr_line_file   df;
-    bool           ret;
+    bool           cont;
 
     curr = info->rdr.curr;
     finish = info->rdr.finish;
@@ -129,7 +129,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
     line_range = info->rdr.line_range;
     opcode_base = info->rdr.opcode_base;
     info->state.addr_set = TRUE;  // address starts at 0
-    ret = TRUE;
+    cont = TRUE;
     while( curr < finish ) {    // now go through the statement program
         value = DWRVMReadByte( curr );
         curr++;
@@ -142,8 +142,10 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
                 info->state.end_seq = TRUE;
                 /* append a row */
                 if( cue != NULL ) {
-                    ret = cue( cue_data, &info->state );
-                    if( ret == FALSE ) goto end_loop;
+                    cont = cue( cue_data, &info->state );
+                    if( !cont ) {
+                        goto end_loop;
+                    }
                 }
                 InitState( &info->state, info->rdr.seg,info->rdr.def_is_stmt );
                 break;
@@ -166,8 +168,10 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
                 if( file != NULL ) {
                     DefineFile( curr+1, &df );
                     df.index = info->rdr.file_idx;
-                    ret = file( file_data, &df );
-                    if( ret == FALSE ) goto end_loop;
+                    cont = file( file_data, &df );
+                    if( !cont ) {
+                        goto end_loop;
+                    }
                 }
                 curr += length;
                 break;
@@ -178,9 +182,11 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
             switch( value ) {
             case DW_LNS_copy:
                 /* append a row */
-                if( cue != NULL ){
-                    ret = cue( cue_data, &info->state );
-                    if( ret == FALSE ) goto end_loop;
+                if( cue != NULL ) {
+                    cont = cue( cue_data, &info->state );
+                    if( !cont ) {
+                        goto end_loop;
+                    }
                 }
                 info->state.addr_set = FALSE;
                 info->state.basic_blk = FALSE;
@@ -220,20 +226,24 @@ static bool WlkStateProg( line_info *info, DRCUEWLK   cue,  void *cue_data,
             }
         } else { /* special opcodes */
             value -= opcode_base;
-            info->state.offset += value/line_range*min_ins_len;
-            info->state.line   +=  value%line_range+line_base;
+            info->state.offset += value / line_range * min_ins_len;
+            info->state.line += value % line_range + line_base;
             /* append a row */
-            if( cue != NULL ){
-                ret = cue( cue_data, &info->state );
-                if( ret == FALSE ) goto end_loop;
+            if( cue != NULL ) {
+                cont = cue( cue_data, &info->state );
+                if( !cont ) {
+                    goto end_loop;
+                }
             }
             info->state.addr_set = FALSE;
-            if( ret == FALSE ) goto end_loop;
+            if( !cont ) {
+                goto end_loop;
+            }
             info->state.basic_blk = FALSE;
         }
     } end_loop:;
     info->rdr.curr = curr;
-    return( ret );
+    return( cont );
 }
 
 
@@ -275,7 +285,7 @@ extern dr_handle  DRGetStmtList( dr_handle ccu )
 
     abbrev = DWRGetAbbrev( &ccu );
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
-        ccu  = DWRReadConstant( abbrev, ccu );
+        ccu = DWRReadConstant( abbrev, ccu );
         ccu += DWRCurrNode->sections[DR_DEBUG_LINE].base;
     } else {
         ccu = 0;
@@ -303,8 +313,8 @@ bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
 }
 
 bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
-                                         DRLDIRWLK  dir,  void *dir_data )
-/************************************************************************/
+                                        DRLDIRWLK dir, void *dir_data )
+/*********************************************************************/
 // Run the statement program
 {
     line_info       info;
@@ -312,7 +322,7 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     unsigned_8      value;
     dr_line_dir     dd;
     dr_line_file    df;
-    bool            ret;
+    bool            cont;
 
     stmt = InitProgInfo( &info.rdr, stmt, 0 );
     info.rdr.op_lens = __alloca( info.rdr.opcode_base - 1 );
@@ -320,17 +330,18 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
         info.rdr.op_lens[index] = DWRVMReadByte( stmt );
         stmt++;
     }
-    ret = TRUE;
+    cont = TRUE;
     index = 0;
     while( stmt < info.rdr.start ) {            // get directory table
         value = DWRVMReadByte( stmt );
-        if( value == 0 ) break;
+        if( value == 0 )
+            break;
         ++index;
         dd.name = DWRCopyString( &stmt );
         dd.index = index;
-        ret = dir( dir_data, &dd );
-        if( ret == FALSE ) {
-            return( ret );
+        cont = dir( dir_data, &dd );
+        if( !cont ) {
+            return( cont );
         }
     }
     info.rdr.dir_idx = index;
@@ -338,17 +349,18 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     index = 0;
     while( stmt < info.rdr.start ) {            // get filename table
         value = DWRVMReadByte( stmt );
-        if( value == 0 ) break;
+        if( value == 0 )
+            break;
         ++index;
         stmt = DefineFile( stmt, &df );
         df.index = index;
-        ret  = file( file_data, &df );
-        if( ret == FALSE ) {
-            return( ret );
+        cont = file( file_data, &df );
+        if( !cont ) {
+            return( cont );
         }
     }
     info.rdr.file_idx = index;
     InitState( &info.state, 0, info.rdr.def_is_stmt );
     WlkStateProg( &info, NULL, NULL, file, file_data );
-    return( ret );
+    return( cont );
 }

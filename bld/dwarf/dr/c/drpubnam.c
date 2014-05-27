@@ -94,7 +94,9 @@ extern void DRWalkPubName( DRPUBWLK callback, void *data )
             }
             pos += curr_len;
             pubname.name = str;
-            if( !callback( data,  &pubname ) ) break;
+            if( !callback( data,  &pubname ) ) {
+                break;
+            }
             pubname.is_start = FALSE;
         }
         pos = unit_end;

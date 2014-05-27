@@ -132,7 +132,8 @@ static bool baseHook( dr_sym_type notused1, dr_handle handle,
 
     tmp_entry = handle;
     abbrev = DWRVMReadULEB128( &tmp_entry );
-    if( abbrev == 0 ) return( TRUE );
+    if( abbrev == 0 )
+        return( TRUE );
     abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
     tag = DWRVMReadULEB128( &abbrev );
     abbrev += sizeof( unsigned_8 );
@@ -141,7 +142,8 @@ static bool baseHook( dr_sym_type notused1, dr_handle handle,
         basehandle = DWRReadReference( abbrev, tmp_entry );
         tmp_entry = basehandle;
         abbrev = DWRVMReadULEB128( &tmp_entry );
-        if( abbrev == 0 ) return( TRUE );
+        if( abbrev == 0 )
+            return( TRUE );
         abbrev = DWRLookupAbbrev( tmp_entry, abbrev );
         tag = DWRVMReadULEB128( &abbrev );
         abbrev += sizeof( unsigned_8 );
