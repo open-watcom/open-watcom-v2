@@ -87,7 +87,7 @@ struct dr_dbg_info {
     compunit_info       *last_ccu;
     unsigned_8          addr_size;
     unsigned_8          wat_version;// compatibility flag for non-standard data
-    unsigned_8          byte_swap;
+    bool                byte_swap;
 };
 
 extern struct dr_dbg_info * DWRCurrNode;

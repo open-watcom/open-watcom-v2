@@ -99,8 +99,8 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     *compunit->abbrev_refs = 1;
 }
 
-static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, int byteswap )
-/***********************************************************************************/
+static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byteswap )
+/************************************************************************************/
 {
     dr_dbg_handle       dbg;
     int                 i;
@@ -209,8 +209,8 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     DWRCurrNode->addr_size = addr_size;
 }
 
-dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, int byteswap )
-/****************************************************************************/
+dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
+/*****************************************************************************/
 {
     dr_dbg_handle       dbg;
 
@@ -221,8 +221,8 @@ dr_dbg_handle DRDbgInitNFT( void * file, unsigned long * sizes, int byteswap )
     return( dbg );
 }
 
-dr_dbg_handle DRDbgInit( void * file, unsigned long * sizes, int byteswap )
-/*************************************************************************/
+dr_dbg_handle DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
+/**************************************************************************/
 {
     dr_dbg_handle       dbg;
 
