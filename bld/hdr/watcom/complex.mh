@@ -454,6 +454,14 @@ inline double norm( Complex const &__cv ) {
  #include <cmath>
 #endif
 
+#ifndef _ISTREAM_INCLUDED
+ #include <istream>
+#endif
+
+#ifndef _OSTREAM_INCLUDED
+ #include <ostream>
+#endif
+
 namespace std {
 
   template< class FloatT >
