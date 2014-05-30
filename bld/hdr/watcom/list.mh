@@ -15,7 +15,7 @@
 :include cpponly.sp
 
 #ifndef _ALGORITHM_INCLUDED
- #include <algorithm>
+ #include <algorith>
 #endif
 
 #ifndef _ITERATOR_INCLUDED

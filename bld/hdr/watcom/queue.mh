@@ -14,7 +14,7 @@
 :include cpponly.sp
 
 #ifndef _ALGORITHM_INCLUDED
-  #include <algorithm>
+  #include <algorith>
 #endif
 
 #ifndef _DEQUE_INCLUDED
@@ -22,7 +22,7 @@
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
-  #include <functional>
+  #include <function>
 #endif
 
 #ifndef _VECTOR_INCLUDED
