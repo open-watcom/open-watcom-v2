@@ -74,5 +74,5 @@ toggle_pick( browse_read )      // - do browse-read dump
 toggle_pick( parser_states )    // - dump parser state numbers
 toggle_pick( member_inst )      // - print template member instantiations
 toggle_pick( templ_inst )       // - template instantiations
-toggle_pick( templ_spec )       // - template specialisations
+toggle_pick( templ_spec )       // - template specializations
 toggle_pick( templ_function )   // - template functions

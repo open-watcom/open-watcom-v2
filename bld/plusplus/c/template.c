@@ -2409,7 +2409,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
-        printf( "try to find template class specialisation for %s<%s>\n",
+        printf( "try to find template class specialization for %s<%s>\n",
                             NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
@@ -2435,7 +2435,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );
-                    printf( "found specialisation candidate %s<%s>\n",
+                    printf( "found specialization candidate %s<%s>\n",
                             NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
                     VbufFree( &vbuf );
                 }
@@ -2510,7 +2510,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
             VBUF vbuf;
 
             FormatPTreeList( tspec->spec_args, &vbuf );
-            printf( "chose specialisation %s<%s> ",
+            printf( "chose specialization %s<%s> ",
                               NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
             DbgDumpTokenLocn( &tspec->locn );
             printf( "\n" );
