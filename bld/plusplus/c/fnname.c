@@ -40,6 +40,7 @@
 
 #include "ppintnam.h"
 #include "memmgr.h"
+#include "template.h"
 #include "class.h"
 #include "ppops.h"
 #include "vbuf.h"

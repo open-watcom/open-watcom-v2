@@ -32,6 +32,7 @@
 
 #include "plusplus.h"
 #include "cgfront.h"
+#include "template.h"
 #include "class.h"
 #include "objmodel.h"
 

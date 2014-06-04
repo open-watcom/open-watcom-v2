@@ -34,6 +34,7 @@
 #include "cgfront.h"
 #include "cast.h"
 #include "defarg.h"
+#include "template.h"
 #include "class.h"
 
 static CNV_DIAG diagDefarg =        // diagnosis for def. argument conversion

@@ -33,6 +33,7 @@
 #include "plusplus.h"
 #include "cgfront.h"
 #include "convctl.h"
+#include "template.h"
 #include "class.h"
 
 

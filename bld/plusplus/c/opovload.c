@@ -39,8 +39,8 @@
 #include "initdefs.h"
 #include "pcheader.h"
 #include "stats.h"
-#include "class.h"
 #include "template.h"
+#include "class.h"
 
 
 typedef enum                    // Used to control scalar operand types

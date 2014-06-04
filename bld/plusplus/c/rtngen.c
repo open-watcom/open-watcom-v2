@@ -34,12 +34,12 @@
 #include "cgfront.h"
 #include "carve.h"
 #include "ring.h"
+#include "template.h"
 #include "class.h"
 #include "initdefs.h"
 #include "pcheader.h"
 #include "rtngen.h"
 #include "context.h"
-#include "template.h"
 
 typedef struct routine_gen RTN_GEN;
 struct routine_gen {

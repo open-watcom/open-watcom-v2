@@ -131,7 +131,7 @@ extern void ClassFini( void );
 extern void ClassInitState( type_flag, CLASS_INIT, TYPE );
 extern void ClassPermission( symbol_flag );
 extern CLNAME_STATE ClassName( PTREE, CLASS_DECL );
-extern void ClassSpecificInstantiation( PTREE, CLASS_DECL, int );
+extern void ClassSpecificInstantiation( PTREE, CLASS_DECL, tc_directive );
 extern void ClassMember( SCOPE, SYMBOL );
 extern void ClassBitfield( DECL_SPEC *, PTREE, PTREE );
 extern void ClassStart( void );

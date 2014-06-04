@@ -888,7 +888,7 @@ void InfClassDecl(              // GENERATE CLASS-DECLARATION NOTE
     locn = LocnForClass( cltype );
     if( NULL != locn ) {
         CErr( INF_CLASS_DECLARATION
-            , cltype->u.c.info->name
+            , NameStr( cltype->u.c.info->name )
             , locn );
     }
 }
