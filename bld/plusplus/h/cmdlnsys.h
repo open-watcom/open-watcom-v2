@@ -44,6 +44,6 @@ extern void CmdX86CheckThreshold( unsigned * );
 // defined in CMDLNANY
 extern char *SetStringOption( char **, OPT_STRING ** );
 extern void SetTargetLiteral( char **, char * );
-extern int MergeIncludeFromEnv( char * );
+extern bool MergeIncludeFromEnv( char * );
 extern void DefSwitchMacro( char * );
 extern void ConcatBase10( char *, unsigned );

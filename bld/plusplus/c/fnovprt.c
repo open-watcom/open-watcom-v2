@@ -94,8 +94,8 @@ static void printControl( FNOV_CONTROL control )
     printf( "\n" );
 }
 
-static void printScalar( FNOV_SCALAR *scalar, int is_udc )
-/********************************************************/
+static void printScalar( FNOV_SCALAR *scalar, bool is_udc )
+/*********************************************************/
 // pretty display of scalar ranking information
 {
     if( is_udc && scalar->not_exact ) {

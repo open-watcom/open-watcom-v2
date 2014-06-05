@@ -178,8 +178,8 @@ static bool hasOneArg( arg_list *arg )
 }
 
 static void udcRankCtor( FNOV_LIST *list, TYPE src, TYPE tgt,
-/**********************************************************/
 FNOV_UDC_CONTROL control, FNOV_INTRNL_CONTROL ictl, PTREE *src_ptree )
+/**********************************************************/
 // rank ctors in list, going from src to tgt.
 {
     FNOV_LIST   *curr;          // current element in list
@@ -311,8 +311,8 @@ typedef enum                // LENT -- flags for addListEntry
 } LENT;
 
 static void addListEntry( FNOV_CONTROL control, FNOV_INFO *info, SYMBOL sym,
-/**************************************************************************/
     arg_list *alist, LENT flags )
+/**************************************************************************/
 // add an entry to list of overloaded functions
 {
     FNOV_LIST    *new;
@@ -741,8 +741,8 @@ FNOV_INFO *info, SYMBOL sym )
 }
 
 static void buildOverloadListFromRegion( FNOV_CONTROL control,
-/*********************************************************/
 FNOV_INFO *info, SYM_REGION *region )
+/*********************************************************/
 {
     SYMBOL      sym;
     SYM_REGION  *ptr;
@@ -968,8 +968,8 @@ static FNOV_COARSE_RANK equateUDCAmbigUDC( FNOV_COARSE_RANK result )
 
 #ifdef NEW_TRIVIAL_RULE
 static OV_RESULT compareArgument( FNOV_RANK *first, TYPE * first_type,
-/*********************************************************************/
 FNOV_RANK *second, TYPE *second_type )
+/*********************************************************************/
 {
     OV_RESULT         retn;
     FNOV_COARSE_RANK  firstrank;
@@ -1643,7 +1643,7 @@ static OV_RESULT updateMatchList( FNOV_INFO *info )
 {
     FNOV_LIST   *entry;
     OV_RESULT   comparison;
-    int         ambiguous;
+    bool        ambiguous;
 
     ambiguous = FALSE;
     RingIterBegSafe( *info->pmatch, entry ) {
@@ -1754,9 +1754,9 @@ FNOV_DIAG * FnovInitDiag( FNOV_DIAG *fnov_diag )
 }
 
 FNOV_RESULT FuncOverloadedLimitDiag( SYMBOL *resolved,
-/****************************************************************/
 SEARCH_RESULT *result_in, SYMBOL sym, arg_list *alist, PTREE *ptlist,
 FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
+/****************************************************************/
 // find overloaded function from sym for alist specified
 {
     FNOV_LIST   *candidates = NULL;
@@ -1806,9 +1806,9 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
 }
 
 FNOV_RESULT FuncOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *result,
-/***********************************************************************/
 SYMBOL sym, arg_list *alist, PTREE *ptlist, PTREE templ_args,
 FNOV_DIAG *fnov_diag )
+/***********************************************************************/
 // find overloaded function from sym for alist specified
 {
     fnov_diag = FnovInitDiag( fnov_diag );
@@ -1817,16 +1817,16 @@ FNOV_DIAG *fnov_diag )
 }
 
 FNOV_RESULT FuncOverloaded( SYMBOL *resolved, SEARCH_RESULT *result,
-/***********************************************************************/
 SYMBOL sym, arg_list *alist, PTREE *ptlist )
+/***********************************************************************/
 // find overloaded function from sym for alist specified
 {
     return( FuncOverloadedDiag( resolved, result, sym, alist, ptlist, NULL, NULL ) );
 }
 
 FNOV_RESULT UdcOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *result,
-/*****************************************************************/
 SYMBOL sym, TYPE type, type_flag this_qualifier, FNOV_DIAG *fnov_diag )
+/*****************************************************************/
 // find overloaded user-defined conversion from sym for return type specified
 // use this_qualifiers from arg_list
 {
@@ -1848,8 +1848,8 @@ SYMBOL sym, TYPE type, type_flag this_qualifier, FNOV_DIAG *fnov_diag )
 }
 
 FNOV_RESULT UdcOverloaded( SYMBOL *resolved, SEARCH_RESULT *result,
-/*****************************************************************/
 SYMBOL sym, TYPE type, type_flag this_qualifier )
+/*****************************************************************/
 // find overloaded user-defined conversion from sym for return type specified
 // use this_qualifiers from arg_list
 {
@@ -1936,9 +1936,9 @@ static FNOV_RESULT opOverloadedLimitExDiag( SYMBOL *resolved, SEARCH_RESULT *mem
 }
 
 FNOV_RESULT OpOverloadedLimitDiag( SYMBOL *resolved, SEARCH_RESULT *member,
-/****************************************************************/
     SEARCH_RESULT *nonmember,  SEARCH_RESULT *namesp, SYMBOL stdops, arg_list *alist, PTREE *ptlist,
     FNOV_CONTROL control, FNOV_DIAG *fnov_diag )
+/****************************************************************/
 // find overloaded operator from member, nonmember and stdops for alist specified
 // return FNOV_RESULT same as FuncOverloaded
 // result points at the symbol chosen, if non-ambiguous
@@ -1948,9 +1948,9 @@ FNOV_RESULT OpOverloadedLimitDiag( SYMBOL *resolved, SEARCH_RESULT *member,
 }
 
 FNOV_RESULT OpOverloadedDiag( SYMBOL *resolved, SEARCH_RESULT *member,
-/****************************************************************/
     SEARCH_RESULT *nonmember, SEARCH_RESULT *namesp, SYMBOL stdops, arg_list *alist, PTREE *ptlist,
     FNOV_DIAG *fnov_diag )
+/****************************************************************/
 // find overloaded operator from member, nonmember and stdops for alist specified
 // return FNOV_RESULT same as FuncOverloaded
 // result points at the symbol chosen, if non-ambiguous

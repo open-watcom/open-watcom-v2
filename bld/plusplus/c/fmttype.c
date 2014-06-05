@@ -340,8 +340,8 @@ static void fmtTypeFlag( type_flag flag, VBUF *pvbuf,
 }
 
 static void fmtTypeFunction( arg_list *alist, VBUF *pvbuf, int num_def,
-/*********************************************************************/
     FMT_CONTROL control )
+/*********************************************************************/
 {
     FMT_CONTROL arg_control;
     unsigned    i;
@@ -497,8 +497,8 @@ char *FormatErrorType( TYPE err_type )
 }
 
 void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
-/****************************************************************************/
     FMT_CONTROL control )
+/****************************************************************************/
 {
     TYPE        top_type;
     TYPE        class_type;

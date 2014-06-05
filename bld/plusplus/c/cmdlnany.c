@@ -107,7 +107,7 @@ static void checkErrorLimit( unsigned *p )
     p = p;
 }
 
-static int scanDefine( OPT_STRING **p )
+static bool scanDefine( OPT_STRING **p )
 {
     MEPTR cmdln_mac;
 
@@ -116,10 +116,10 @@ static int scanDefine( OPT_STRING **p )
     if( cmdln_mac != NULL ) {
         cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
     }
-    return( 1 );
+    return( TRUE );
 }
 
-static int scanDefinePlus( OPT_STRING **p )
+static bool scanDefinePlus( OPT_STRING **p )
 {
     MEPTR cmdln_mac;
 
@@ -132,14 +132,14 @@ static int scanDefinePlus( OPT_STRING **p )
             cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
         }
     }
-    return( 1 );
+    return( TRUE );
 }
 
-static int scanUndefine( OPT_STRING **p )
+static bool scanUndefine( OPT_STRING **p )
 {
     p = p;
     AddUndefName();
-    return( 1 );
+    return( TRUE );
 }
 
 #ifdef OPT_BR
@@ -156,11 +156,11 @@ typedef enum                    // BROWSE KINDS
         = FBI_VAR | FBI_TYPE | FBI_MEMB_DATA | FBI_FUN | FBI_MACRO
 } FBI_KIND;
 
-static int scanFBIopts          // SCAN FBI/FBX OPTIONS
+static bool scanFBIopts         // SCAN FBI/FBX OPTIONS
     ( FBI_KIND* a_kind          // - addr[ option kinds ]
     , FBI_KIND def_kind )       // - default kind
 {
-    int retn;                   // - return: 1 ==> ok, 0 ==> error
+    bool retn;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND kind;              // - options scanned
 
     kind = 0;
@@ -171,7 +171,7 @@ static int scanFBIopts          // SCAN FBI/FBX OPTIONS
             if( 0 == kind ) {
                 kind = def_kind;
             }
-            retn = 1;
+            retn = TRUE;
             break;
         }
         switch( CmdScanChar() ) {
@@ -192,21 +192,21 @@ static int scanFBIopts          // SCAN FBI/FBX OPTIONS
             continue;
           default :
             BadCmdLine( ERR_INVALID_OPTION );
-            retn = 0;
+            retn = FALSE;
             break;
         }
         break;
     }
     *a_kind = kind;
-    return retn;
+    return( retn );
 }
 
 #endif
 
-static int scanFBX( OPT_STRING **p )
+static bool scanFBX( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    int retn;                   // - return: 1 ==> ok, 0 ==> error
+    bool retn;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
     p = p;
@@ -226,22 +226,22 @@ static int scanFBX( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = FALSE;
         }
-        retn = 1;
+        retn = TRUE;
     } else {
-        retn = 0;
+        retn = FALSE;
     }
-    return retn;
+    return( retn );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );
-    return 0;
+    return( FALSE );
 #endif
 }
 
-static int scanFBI( OPT_STRING **p )
+static bool scanFBI( OPT_STRING **p )
 {
 #ifdef OPT_BR
-    int retn;                   // - return: 1 ==> ok, 0 ==> error
+    bool retn;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
     p = p;
@@ -261,15 +261,15 @@ static int scanFBI( OPT_STRING **p )
         if( options & FBI_FUN ) {
             CompFlags.optbr_f = TRUE;
         }
-        retn = 1;
+        retn = TRUE;
     } else {
-        retn = 0;
+        retn = FALSE;
     }
-    return retn;
+    return( retn );
 #else
     p = p;
     BadCmdLine( ERR_INVALID_OPTION );
-    return 0;
+    return( FALSE );
 #endif
 }
 
@@ -323,20 +323,20 @@ char *SetStringOption( char **o, OPT_STRING **h )
     return( p );
 }
 
-int MergeIncludeFromEnv( char *env )
-/**********************************/
+bool MergeIncludeFromEnv( char *env )
+/***********************************/
 {
     char *env_value;
 
     if( CompFlags.cpp_ignore_env )
-        return( 0 );
+        return( FALSE );
 
     env_value = CppGetEnv( env );
     if( NULL != env_value ) {
         HFileAppend( env_value );
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 void DefSwitchMacro( char *n )
@@ -596,14 +596,14 @@ static void loadUnicodeTable( unsigned code_page )
     }
 }
 
-static int debugOptionAfterOptOption( OPT_STORAGE *data )
+static bool debugOptionAfterOptOption( OPT_STORAGE *data )
 {
     if( data->debug_info_timestamp > data->opt_level_timestamp ) {
         if( data->debug_info_timestamp > data->opt_size_time_timestamp ) {
-            return( 1 );
+            return( TRUE );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static void analyseAnyTargetOptions( OPT_STORAGE *data )

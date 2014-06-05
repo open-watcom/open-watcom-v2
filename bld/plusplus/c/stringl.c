@@ -73,7 +73,7 @@ void StringWalk(                // WALK DEFINED STRING LITERALS
     walk_strings( uniqueStrings, walker );
 }
 
-static void stringUnique( int yes )
+static void stringUnique( bool yes )
 {
     stringData.unique = yes;
 }
@@ -86,7 +86,7 @@ static void stringInit(         // INITIALIZATION
     uniqueStrings = NULL;
     trashedStrings = NULL;
     stringCount = 0;
-    stringUnique( 0 );
+    stringUnique( FALSE );
 }
 
 INITDEFN( strings, stringInit, InitFiniStub )
