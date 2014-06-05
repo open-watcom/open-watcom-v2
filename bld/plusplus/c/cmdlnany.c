@@ -70,8 +70,8 @@ static void checkPacking( unsigned *p )
 
 static void checkWarnLevel( unsigned *p )
 {
-    if( *p > 10 ) {
-        *p = 10;
+    if( *p > WLEVEL_MAX ) {
+        *p = WLEVEL_MAX;
     }
 }
 
@@ -662,7 +662,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         WngLevel = data->w_value;
         break;
     case OPT_warn_level_wx:
-        WngLevel = WLEVEL_MAX;
+        WngLevel = WLEVEL_WX;
         break;
     default:
         WngLevel = WLEVEL_DEFAULT;

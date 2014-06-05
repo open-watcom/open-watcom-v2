@@ -476,10 +476,10 @@ static void prtMsg(             // PRINT A MESSAGE
     IDEMsgSeverity severity;    // - message severity
 
     if( CompFlags.cpp_output )  return;
-    if( warn_level == -1 ) {
+    if( warn_level == WLEVEL_NOTE ) {
         err_locn = notes_locn;
         severity = IDEMSGSEV_NOTE;
-    } else if( warn_level == 0 ) {
+    } else if( warn_level == WLEVEL_ERROR ) {
         ++ErrCount;
         severity = IDEMSGSEV_ERROR;
     } else {
@@ -487,7 +487,7 @@ static void prtMsg(             // PRINT A MESSAGE
         severity = IDEMSGSEV_WARNING;
     }
     MsgDisplay( severity, msgnum, args );
-    if( warn_level != -1 && msgnum != ERR_EXCEEDED_LIMIT ) {
+    if( warn_level != WLEVEL_NOTE && msgnum != ERR_EXCEEDED_LIMIT ) {
         CtxPostContext();
     }
 }
@@ -595,7 +595,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
     level = msg_level[ msgnum ] & 0x0F;
     switch( msg_level[ msgnum ] >> 4 ) {
       case MSG_TYPE_INFO :
-        level = -1;
+        level = WLEVEL_NOTE;
         break;
       case MSG_TYPE_ANSIERR :
       case MSG_TYPE_ANSIWARN :
@@ -603,7 +603,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
       case MSG_TYPE_ANSI :
         if( ! CompFlags.extensions_enabled ) {
-            level = 0;
+            level = WLEVEL_ERROR;
         }
         break;
       case MSG_TYPE_WARNING :
@@ -648,7 +648,7 @@ static msg_status_t doError(    // ISSUE ERROR
         flag.print_err = okToPrintMsg( msgnum, &level );
         if( suppressCount > 0 ) {
             /* suppressed message */
-            if( flag.print_err && ( level == 0 ) ) {
+            if( flag.print_err && ( level == WLEVEL_ERROR ) ) {
                 internalErrCount++;
             }
             return MS_NULL;
@@ -663,7 +663,7 @@ static msg_status_t doError(    // ISSUE ERROR
             flag.too_many = FALSE;
         } else if( ErrCount == ErrLimit ) {
             /* have hit the limit */
-            if( !flag.print_err || level != 0 ) {
+            if( !flag.print_err || level != WLEVEL_ERROR ) {
                 /* this message isn't an error; it's a warning or info */
                 flag.too_many = FALSE;
             }
@@ -673,7 +673,7 @@ static msg_status_t doError(    // ISSUE ERROR
                 prtMsg( level, msgnum, args, warn_inc );
                 retn |= MS_PRINTED;
             }
-            if( level != 0 ) {
+            if( level != WLEVEL_ERROR ) {
                 /* useful if ANSI requires error but is usually a warning */
                 retn |= MS_WARNING;
             }
@@ -813,8 +813,7 @@ static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
 {
     bool retn;                  // - return: TRUE ==> good level
 
-    if( ( level < 0 )
-      ||( level > 9 ) ) {
+    if( ( level < WLEVEL_MIN ) || ( level > WLEVEL_MAX ) ) {
         CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
         retn = FALSE;
     } else {
