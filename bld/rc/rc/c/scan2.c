@@ -35,7 +35,6 @@
 #include "yydrivr2.h"
 #include "rctypes.h"
 #include "errors.h"
-#include "keyword2.h"
 #include "depend.h"
 #include "errprt.h"
 #include "rcrtns.h"

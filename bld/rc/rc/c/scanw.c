@@ -32,7 +32,6 @@
 #include "global.h"
 #include "yydrivrw.h"
 #include "errors.h"
-#include "keywordw.h"
 #include "depend.h"
 #include "errprt.h"
 #include "rcrtns.h"
