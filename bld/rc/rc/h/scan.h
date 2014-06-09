@@ -58,4 +58,12 @@ typedef union {
     char        UnknownChar;
 } ScanValue;
 
+extern void  ScanInitOS2( void );
+extern int   ScanOS2( ScanValue * value );
+extern void  ScanInitStaticsOS2( void );
+
+extern void  ScanInitWIN( void );
+extern int   ScanWIN( ScanValue * value );
+extern void  ScanInitStaticsWIN( void );
+
 #endif

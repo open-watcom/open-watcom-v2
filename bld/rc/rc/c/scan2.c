@@ -31,13 +31,10 @@
 
 #include <ctype.h>
 #include <string.h>
-#include "varstr.h"
-#include "rctypes.h"
 #include "global.h"
+#include "yydrivr2.h"
+#include "rctypes.h"
 #include "errors.h"
-#include "os2ytab.h"
-#include "scan.h"
-#include "scan2.h"
 #include "keyword2.h"
 #include "depend.h"
 #include "errprt.h"

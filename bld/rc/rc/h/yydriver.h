@@ -24,17 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner interface, WIN specifics.
+* Description:  Public interface to yydriver module.
 *
 ****************************************************************************/
 
 
-#ifndef SCANW_H_INCLUDED
-#define SCANW_H_INCLUDED
+#ifndef _YYDRIVER_H
+#define _YYDRIVER_H
 
-#include "varstr.h"
+extern void ParseInitOS2( void );
+extern void ParseFiniOS2( void );
+extern bool ParseOS2( void );
+extern void ParseInitStaticsOS2( void );
 
-extern void  ScanInitWIN( void );
-extern int   ScanWIN( ScanValue * value );
-extern void  ScanInitStaticsWIN( void );
+extern void ParseInitWIN( void );
+extern void ParseFiniWIN( void );
+extern bool ParseWIN( void );
+extern void ParseInitStaticsWIN( void );
+
 #endif

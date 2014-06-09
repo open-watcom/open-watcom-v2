@@ -31,6 +31,7 @@
 
 #include "wresall.h"
 #include "global.h"
+#include "yydriver.h"
 
 bool ParseOS2( void )
 {

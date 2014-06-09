@@ -30,11 +30,8 @@
 
 
 #include "global.h"
-#include "varstr.h"
+#include "yydrivrw.h"
 #include "errors.h"
-#include "winytab.h"
-#include "scan.h"
-#include "scanw.h"
 #include "keywordw.h"
 #include "depend.h"
 #include "errprt.h"
