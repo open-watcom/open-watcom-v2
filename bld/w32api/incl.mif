@@ -147,6 +147,7 @@ headers = &
         mq.h                 &
         msacm.h              &
         mshtml.h             &
+        msi.h                &
         mstcpip.h            &
         mswsock.h            &
         msxml.h              &

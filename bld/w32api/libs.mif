@@ -51,6 +51,7 @@ libs =                       &
         mqrt.lib             &
         msacm32.lib          &
         mscms.lib            &
+        msi.lib              &
         msimg32.lib          &
         mswsock.lib          &
         ncrypt.lib           &
