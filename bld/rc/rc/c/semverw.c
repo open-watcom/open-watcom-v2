@@ -36,7 +36,6 @@
 #include "errors.h"
 #include "winytab.h"
 #include "semantic.h"
-#include "semver.h"
 #include "wresdefn.h"
 #include "layer0.h"
 #include "rcrtns.h"
