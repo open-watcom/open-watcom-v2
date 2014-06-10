@@ -56,7 +56,7 @@ static void CallCleaners( void ){
     Cleaners = NULL;
 }
 
-unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
 /*
         Return the sizes of the individual handle types. This version
@@ -93,7 +93,7 @@ extern void DFFreeImage( imp_image_handle *ii ){
     }
 }
 
-dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
+dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
 {
 /*
         Return DS_OK if you could release some memory, DS_FAIL if you
@@ -121,7 +121,7 @@ dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpStartup(void)
+dip_status      DIGENTRY DIPImpStartup(void)
 {
 /*
         Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?
@@ -133,7 +133,7 @@ dip_status      DIPENTRY DIPImpStartup(void)
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpShutdown( void )
+void            DIGENTRY DIPImpShutdown( void )
 {
 /*
         Shutting down and unloading. Last chance to free up stuff.
@@ -142,7 +142,7 @@ void            DIPENTRY DIPImpShutdown( void )
         DRFini();
 }
 
-void            DIPENTRY DIPImpCancel( void )
+void            DIGENTRY DIPImpCancel( void )
 {
 /*
         The client is about to longjmp, and may bypass

@@ -32,12 +32,11 @@
 
 #include <fcntl.h>
 #include "global.h"
-#include "iortns.h"
 #include "semantic.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "reserr.h"
 #include "depend.h"
+#include "rcrtns.h"
 
 #define BUFFER_SIZE     1024
 
@@ -100,22 +99,24 @@ int copyResourcesFromRes( char *full_filename )
         RcError( ERR_RES_OS_MISMATCH, full_filename );
         goto HANDLE_ERROR;
     }
-    buffer = RcMemMalloc( BUFFER_SIZE );
+    buffer = RCALLOC( BUFFER_SIZE );
     wind = WResFirstResource( dir );
     while( !WResIsEmptyWindow( wind ) ) {
         copyAResource( handle, &wind, buffer, full_filename );
         wind = WResNextResource( wind, dir );
     }
-    RcMemFree( buffer );
+    RCFREE( buffer );
     WResFreeDir( dir );
-    RcClose( handle );
+    RCCLOSE( handle );
     return( FALSE );
 
 HANDLE_ERROR:
     ErrorHasOccured = TRUE;
     WResFreeDir( dir );
-    if( handle != -1 ) RcClose( handle );
-    if( buffer != NULL ) RcMemFree( buffer );
+    if( handle != -1 )
+        RCCLOSE( handle );
+    if( buffer != NULL )
+        RCFREE( buffer );
     return( TRUE );
 }
 
@@ -130,10 +131,10 @@ void SemAddResFile( char *filename )
     }
     if( AddDependency( full_filename ) ) goto HANDLE_ERROR;
     if( copyResourcesFromRes( full_filename ) ) goto HANDLE_ERROR;
-    RcMemFree( filename );
+    RCFREE( filename );
     return;
 
 HANDLE_ERROR:
     ErrorHasOccured = TRUE;
-    RcMemFree( filename );
+    RCFREE( filename );
 }

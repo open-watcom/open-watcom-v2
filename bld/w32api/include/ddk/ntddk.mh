@@ -4575,12 +4575,12 @@ typedef struct _WHEA_PSHED_PLUGIN_REGISTRATION_PACKET {
 typedef WHEA_PSHED_PLUGIN_REGISTRATION_PACKET   *PWHEA_PSHED_PLUGIN_REGISTRATION_PACKET;
 
 /* Global variables in NTOSKRNL.EXE */
-extern NTKERNELAPI PHAL_DISPATCH    HalDispatchTable;
-extern NTKERNELAPI PEPROCESS        PsInitialSystemProcess;
+extern NTKERNELAPI PHAL_DISPATCH    __cdecl HalDispatchTable;
+extern NTKERNELAPI PEPROCESS        __cdecl PsInitialSystemProcess;
 #ifdef _X86_
-extern NTKERNELAPI PVOID            MmHighestUserAddress;
-extern NTKERNELAPI PVOID            MmSystemRangeStart;
-extern NTKERNELAPI ULONG            MmUserProbeAddress;
+extern NTKERNELAPI PVOID            __cdecl MmHighestUserAddress;
+extern NTKERNELAPI PVOID            __cdecl MmSystemRangeStart;
+extern NTKERNELAPI ULONG            __cdecl MmUserProbeAddress;
 #endif
 
 /* Functions in NTDLL.DLL and NTOSKRNL.EXE */

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include <dos.h>
 #if defined( __OS2__ )

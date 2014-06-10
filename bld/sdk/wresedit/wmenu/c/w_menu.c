@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmenu.h"
 #include "winfo.h"
 #include "wribbon.h"
@@ -42,6 +41,7 @@
 #include "wcopystr.h"
 #include "wresall.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wrdll.h"
 #include "w_menu.h"
@@ -63,10 +63,10 @@
 /****************************************************************************/
 static void *WInitDataFromMenu( WMenuEntry *, void * );
 static int  WCalcMenuSize( WMenuEntry * );
-static int  WMakeMenuEntryFromData( void **, int *, WMenuEntry *, WMenuEntry **, Bool );
-static int  WAllocMenuEntryFromData( void **, int *, WMenuEntry **, Bool );
-static int  WMakeMenuItemFromData( void **data, int *size, MenuItem **new, Bool );
-static Bool WInsertEntryIntoPreview( WMenuEditInfo *, WMenuEntry * );
+static int  WMakeMenuEntryFromData( void **, int *, WMenuEntry *, WMenuEntry **, bool );
+static int  WAllocMenuEntryFromData( void **, int *, WMenuEntry **, bool );
+static int  WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool );
+static bool WInsertEntryIntoPreview( WMenuEditInfo *, WMenuEntry * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -75,10 +75,10 @@ static WMenuEntry   *WDummyMenuEntry = NULL;
 
 void WInitDummyMenuEntry( void )
 {
-    WDummyMenuEntry = (WMenuEntry *)WMemAlloc( sizeof( WMenuEntry ) );
+    WDummyMenuEntry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
     memset( WDummyMenuEntry, 0, sizeof( WMenuEntry ) );
     WDummyMenuEntry->item = ResNewMenuItem();
-    WDummyMenuEntry->item->Item.Normal.ItemText = WAllocRCString( W_MENUITEM );
+    WDummyMenuEntry->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
     WDummyMenuEntry->item->Item.Normal.ItemID = 101;
 }
 
@@ -92,7 +92,7 @@ WMenuEditInfo *WAllocMenuEInfo( void )
 {
     WMenuEditInfo *einfo;
 
-    einfo = (WMenuEditInfo *)WMemAlloc( sizeof( WMenuEditInfo ) );
+    einfo = (WMenuEditInfo *)WRMemAlloc( sizeof( WMenuEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WMenuEditInfo ) );
@@ -130,9 +130,9 @@ void WFreeMenuEInfo( WMenuEditInfo *einfo )
             einfo->win = (HWND)NULL;
         }
         if( einfo->file_name != NULL ) {
-            WMemFree( einfo->file_name );
+            WRMemFree( einfo->file_name );
         }
-        WMemFree( einfo );
+        WRMemFree( einfo );
     }
 }
 
@@ -143,7 +143,7 @@ void WMakeDataFromMenu( WMenu *menu, void **data, int *size )
     if( data != NULL && size != NULL ) {
         *size = WCalcMenuSize( menu->first_entry ) + 2 * sizeof(WORD);
         if( *size != 0 ) {
-            *data = WMemAlloc( *size );
+            *data = WRMemAlloc( *size );
             if( *data != NULL ) {
                 tdata = *data;
                 memset( tdata, 0, 2 * sizeof( WORD ) );
@@ -156,7 +156,7 @@ void WMakeDataFromMenu( WMenu *menu, void **data, int *size )
     }
 }
 
-int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, Bool is32bit )
+int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool is32bit )
 {
     MenuItemNormal      *normal;
     char                *text;
@@ -199,7 +199,7 @@ int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, Bool is32bit 
         itext = NULL;
         WRunicode2mbcs( text, &itext, &itlen );
     } else {
-        itext = (char *)WMemAlloc( tlen );
+        itext = (char *)WRMemAlloc( tlen );
         if( itext != NULL ) {
             memcpy( itext, text, tlen );
         }
@@ -229,14 +229,14 @@ int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, Bool is32bit 
     return( TRUE );
 }
 
-int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, Bool is32bit )
+int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, bool is32bit )
 {
     int         ok;
 
     ok = (data != NULL && *data != NULL && size != NULL && *size != 0 && entry != NULL);
 
     if( ok ) {
-        *entry = (WMenuEntry *)WMemAlloc( sizeof( WMenuEntry ) );
+        *entry = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
         ok = (*entry != NULL);
     }
 
@@ -257,7 +257,7 @@ int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, Bool is
 }
 
 int WMakeMenuEntryFromData( void **data, int *size, WMenuEntry *parent,
-                            WMenuEntry **entry, Bool is32bit )
+                            WMenuEntry **entry, bool is32bit )
 {
     int         ok;
     WMenuEntry  **current;
@@ -316,7 +316,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        menu = (WMenu *)WMemAlloc( sizeof( WMenu ) );
+        menu = (WMenu *)WRMemAlloc( sizeof( WMenu ) );
         ok = (menu != NULL);
     }
 
@@ -488,7 +488,7 @@ void WFreeMenu( WMenu *menu )
 {
     if( menu != NULL ) {
         WFreeMenuEntries( menu->first_entry );
-        WMemFree( menu );
+        WRMemFree( menu );
     }
 }
 
@@ -513,13 +513,13 @@ void WFreeMenuEntry( WMenuEntry *entry )
             ResFreeMenuItem( entry->item );
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
-        WMemFree( entry );
+        WRMemFree( entry );
     }
 }
 
-Bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
+bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
 {
     if( menu == NULL || entry == NULL ) {
         return( FALSE );
@@ -542,11 +542,11 @@ Bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
     return( TRUE );
 }
 
-Bool WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after,
+bool WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after,
                            WMenuEntry *parent, WMenuEntry *entry,
-                           Bool popup )
+                           bool popup )
 {
-    Bool ok;
+    bool ok;
 
     ok = (einfo != NULL && einfo->menu != NULL && entry != NULL);
 
@@ -616,9 +616,9 @@ int WCountMenuChildren( WMenuEntry *entry )
     return( count );
 }
 
-Bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
+bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
-    Bool    ok;
+    bool    ok;
 
     ok = TRUE;
 
@@ -637,7 +637,7 @@ Bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
     return( ok );
 }
 
-Bool WResetPreviewIDs( WMenuEditInfo *einfo )
+bool WResetPreviewIDs( WMenuEditInfo *einfo )
 {
     if( einfo == NULL ) {
         return( FALSE );
@@ -648,10 +648,10 @@ Bool WResetPreviewIDs( WMenuEditInfo *einfo )
     return( WResetPreviewID( einfo, einfo->menu->first_entry ) );
 }
 
-Bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
-    Bool        ok;
+    bool        ok;
 
     ok = (parent != (HMENU)NULL && entry != NULL);
 
@@ -679,10 +679,10 @@ Bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-Bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
+bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
 {
     MenuFlags   flags;
-    Bool        ok;
+    bool        ok;
 
     ok = (parent != (HMENU)NULL && entry != NULL);
 
@@ -705,9 +705,9 @@ Bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
     return( ok );
 }
 
-Bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
+bool WAddToPreviewMenu( HMENU parent, WMenuEntry *entry )
 {
-    Bool        ok;
+    bool        ok;
     int         pos;
 
     ok = (parent != (HMENU)NULL && entry != NULL);
@@ -785,7 +785,7 @@ WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU popup )
     return( NULL );
 }
 
-Bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, int *count )
+bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, int *count )
 {
     while( start != NULL ) {
         *count = *count + 1;
@@ -803,7 +803,7 @@ Bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, int *count )
     return( FALSE );
 }
 
-Bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
+bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     int         pos;
     HMENU       menu;
@@ -855,7 +855,7 @@ Bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     return( TRUE );
 }
 
-Bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
+bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     int         pos;
     HMENU       menu;
@@ -901,12 +901,12 @@ Bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     return( TRUE );
 }
 
-Bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize )
+bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize )
 {
     WMenu       menu;
     WMenuEntry  save;
     int         size;
-    Bool        ok;
+    bool        ok;
 
     ok = (entry != NULL && data != NULL && dsize != NULL);
 
@@ -933,8 +933,8 @@ WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
 {
     WMenuEntry  *entry;
     int         size;
-    Bool        is32bit;
-    Bool        ok;
+    bool        is32bit;
+    bool        ok;
 
     entry = NULL;
 
@@ -958,7 +958,7 @@ WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
     return( entry );
 }
 
-Bool WResolveMenuEntries( WMenuEditInfo *einfo )
+bool WResolveMenuEntries( WMenuEditInfo *einfo )
 {
     if( einfo->menu == NULL ) {
         return( FALSE );
@@ -971,7 +971,7 @@ Bool WResolveMenuEntries( WMenuEditInfo *einfo )
     return( WResolveEntries( einfo->menu->first_entry, einfo->info->symbol_table ) );
 }
 
-Bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
+bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     if( entry == NULL || symbol_table == NULL ) {
         return( FALSE );
@@ -988,12 +988,12 @@ Bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
     return( TRUE );
 }
 
-Bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
+bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     uint_16             id;
     MenuFlags           flags;
     WRHashValueList     *vlist;
-    Bool                ok;
+    bool                ok;
 
     vlist = NULL;
 
@@ -1014,7 +1014,7 @@ Bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->symbol = WStrDup( vlist->entry->name );
         ok = (entry->symbol != NULL);
@@ -1027,7 +1027,7 @@ Bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
     return( ok );
 }
 
-Bool WResolveMenuSymIDs( WMenuEditInfo *einfo )
+bool WResolveMenuSymIDs( WMenuEditInfo *einfo )
 {
     if( einfo->menu == NULL ) {
         return( FALSE );
@@ -1040,7 +1040,7 @@ Bool WResolveMenuSymIDs( WMenuEditInfo *einfo )
     return( WResolveSymIDs( einfo->menu->first_entry, einfo->info->symbol_table ) );
 }
 
-Bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
+bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     if( entry == NULL || symbol_table == NULL ) {
         return( FALSE );
@@ -1057,11 +1057,11 @@ Bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
     return( TRUE );
 }
 
-Bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
+bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     MenuFlags           flags;
     WRHashValue         hv;
-    Bool                ok;
+    bool                ok;
 
     ok = (entry != NULL && symbol_table != NULL);
 

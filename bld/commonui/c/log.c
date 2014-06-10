@@ -143,7 +143,7 @@ static void flushLog( BOOL free )
         return;
     }
     for( i = 0; i < LinesUsed; i++ ) {
-        write( f, BufLines[i], strlen( BufLines[i] ) );
+        write( f, BufLines[i], (unsigned)strlen( BufLines[i] ) );
         writeCRLF( f );
     }
     close( f );

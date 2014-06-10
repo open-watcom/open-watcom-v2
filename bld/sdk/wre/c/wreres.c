@@ -47,8 +47,8 @@
 #include "wremain.h"
 #include "wrewait.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wreselft.h"
 #include "wrenames.h"
 #include "wrectl3d.h"
@@ -84,17 +84,17 @@ WINEXPORT LRESULT CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static int          WREIncNumRes( void );
 static int          WREDecNumRes( void );
-static Bool         WREIsCurrentMDIWindowZoomed( void );
+static bool         WREIsCurrentMDIWindowZoomed( void );
 static WREResInfo   *WRELoadResource( const char * );
 static void         WREActivateResourceWindow( WREResInfo *, WPARAM, LPARAM );
-static Bool         WREQuerySaveResOnDeleteRes( WREResInfo *, Bool );
-static Bool         WREQuerySaveSymOnDeleteRes( WREResInfo *, Bool );
-static Bool         WRESaveResourceToFile( WREResInfo * );
-static Bool         WRECreateResourceWindow( WREResInfo * );
-static Bool         WREDestroyResourceWindow( WREResInfo * );
-static Bool         WRECreateResInfoWindow( WREResInfo * );
+static bool         WREQuerySaveResOnDeleteRes( WREResInfo *, bool );
+static bool         WREQuerySaveSymOnDeleteRes( WREResInfo *, bool );
+static bool         WRESaveResourceToFile( WREResInfo * );
+static bool         WRECreateResourceWindow( WREResInfo * );
+static bool         WREDestroyResourceWindow( WREResInfo * );
+static bool         WRECreateResInfoWindow( WREResInfo * );
 
-Bool    WRERemoveResource( WREResInfo * );
+bool    WRERemoveResource( WREResInfo * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -126,7 +126,7 @@ static DLGPROC          WREResInfoWinProc       = NULL;
 static HINSTANCE        WREAppInst              = NULL;
 static HBRUSH           WREResInfoBrush         = NULL;
 
-extern Bool WRENoInterface;
+extern bool WRENoInterface;
 
 static void WREMassageFilter( char *filter )
 {
@@ -136,88 +136,88 @@ static void WREMassageFilter( char *filter )
 static void WREFiniStaticVars( void )
 {
     if( WREResUntitled != NULL ) {
-        WREFreeRCString( WREResUntitled );
+        FreeRCString( WREResUntitled );
         WREResUntitled = NULL;
     }
     if( WREResOpenTitle != NULL ) {
-        WREFreeRCString( WREResOpenTitle );
+        FreeRCString( WREResOpenTitle );
         WREResOpenTitle = NULL;
     }
     if( WREResSaveTitle != NULL ) {
-        WREFreeRCString( WREResSaveTitle );
+        FreeRCString( WREResSaveTitle );
         WREResSaveTitle = NULL;
     }
     if( WREResSaveIntoTitle != NULL ) {
-        WREFreeRCString( WREResSaveIntoTitle );
+        FreeRCString( WREResSaveIntoTitle );
         WREResSaveIntoTitle = NULL;
     }
     if( WREResSaveAsTitle != NULL ) {
-        WREFreeRCString( WREResSaveAsTitle );
+        FreeRCString( WREResSaveAsTitle );
         WREResSaveAsTitle = NULL;
     }
     if( WREResFilter != NULL ) {
-        WREFreeRCString( WREResFilter );
+        FreeRCString( WREResFilter );
         WREResFilter = NULL;
     }
     if( WREResSaveMltFilter != NULL ) {
-        WREFreeRCString( WREResSaveMltFilter );
+        FreeRCString( WREResSaveMltFilter );
         WREResSaveMltFilter = NULL;
     }
     if( WRESymSaveFilter != NULL ) {
-        WREFreeRCString( WRESymSaveFilter );
+        FreeRCString( WRESymSaveFilter );
         WRESymSaveFilter = NULL;
     }
     if( WRESymSaveTitle != NULL ) {
-        WREFreeRCString( WRESymSaveTitle );
+        FreeRCString( WRESymSaveTitle );
         WRESymSaveTitle = NULL;
     }
     if( WRESymLoadTitle != NULL ) {
-        WREFreeRCString( WRESymLoadTitle );
+        FreeRCString( WRESymLoadTitle );
         WRESymLoadTitle = NULL;
     }
     if( WREAccelFilter != NULL ) {
-        WREFreeRCString( WREAccelFilter );
+        FreeRCString( WREAccelFilter );
         WREAccelFilter = NULL;
     }
     if( WREMenuFilter != NULL ) {
-        WREFreeRCString( WREMenuFilter );
+        FreeRCString( WREMenuFilter );
         WREMenuFilter = NULL;
     }
     if( WREStringFilter != NULL ) {
-        WREFreeRCString( WREStringFilter );
+        FreeRCString( WREStringFilter );
         WREStringFilter = NULL;
     }
 }
 
-static Bool WREInitStaticVars( void )
+static bool WREInitStaticVars( void )
 {
-    Bool        ok;
+    bool        ok;
 
-    WREResUntitled = WREAllocRCString( WRE_UNTITLED );
+    WREResUntitled = AllocRCString( WRE_UNTITLED );
     ok = (WREResUntitled != NULL);
 
     if( ok ) {
-        WREResOpenTitle = WREAllocRCString( WRE_OPENPROJECTTITLE );
+        WREResOpenTitle = AllocRCString( WRE_OPENPROJECTTITLE );
         ok = (WREResOpenTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveTitle = WREAllocRCString( WRE_SAVEPROJECTTITLE );
+        WREResSaveTitle = AllocRCString( WRE_SAVEPROJECTTITLE );
         ok = (WREResSaveTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveIntoTitle = WREAllocRCString( WRE_COPYINTOPROJECTTITLE );
+        WREResSaveIntoTitle = AllocRCString( WRE_COPYINTOPROJECTTITLE );
         ok = (WREResSaveIntoTitle != NULL);
     }
 
     if( ok ) {
-        WREResSaveAsTitle = WREAllocRCString( WRE_SAVEASPROJECTTITLE );
+        WREResSaveAsTitle = AllocRCString( WRE_SAVEASPROJECTTITLE );
         ok = (WREResSaveAsTitle != NULL);
     }
 
     if( ok ) {
-        WREResFilter = WREAllocRCString( WRE_PROJECTFILTER );
+        WREResFilter = AllocRCString( WRE_PROJECTFILTER );
         ok = (WREResFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREResFilter );
@@ -225,7 +225,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREResSaveMltFilter = WREAllocRCString( WRE_SAVEMLTFILTER );
+        WREResSaveMltFilter = AllocRCString( WRE_SAVEMLTFILTER );
         ok = (WREResSaveMltFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREResSaveMltFilter );
@@ -233,7 +233,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WRESymSaveFilter = WREAllocRCString( WRE_SYMFILTER );
+        WRESymSaveFilter = AllocRCString( WRE_SYMFILTER );
         ok = (WRESymSaveFilter != NULL);
         if( ok ) {
             WREMassageFilter( WRESymSaveFilter );
@@ -241,17 +241,17 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WRESymLoadTitle = WREAllocRCString( WRE_LOADSYMTITLE );
+        WRESymLoadTitle = AllocRCString( WRE_LOADSYMTITLE );
         ok = (WRESymLoadTitle != NULL);
     }
 
     if( ok ) {
-        WRESymSaveTitle = WREAllocRCString( WRE_SAVESYMTITLE );
+        WRESymSaveTitle = AllocRCString( WRE_SAVESYMTITLE );
         ok = (WRESymSaveTitle != NULL);
     }
 
     if( ok ) {
-        WREAccelFilter = WREAllocRCString( WRE_ACCELFILTER );
+        WREAccelFilter = AllocRCString( WRE_ACCELFILTER );
         ok = (WREAccelFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREAccelFilter );
@@ -259,7 +259,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREMenuFilter = WREAllocRCString( WRE_MENUFILTER );
+        WREMenuFilter = AllocRCString( WRE_MENUFILTER );
         ok = (WREMenuFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREMenuFilter );
@@ -267,7 +267,7 @@ static Bool WREInitStaticVars( void )
     }
 
     if( ok ) {
-        WREStringFilter = WREAllocRCString( WRE_STRINGFILTER );
+        WREStringFilter = AllocRCString( WRE_STRINGFILTER );
         ok = (WREStringFilter != NULL);
         if( ok ) {
             WREMassageFilter( WREStringFilter );
@@ -291,7 +291,7 @@ typedef struct infopadstruct {
 } infopadstruct;
 
 static infopadstruct    InfoPad;
-static Bool             InfoPadInit = FALSE;
+static bool             InfoPadInit = FALSE;
 
 static void InitInfoPad( HWND info_dlg )
 {
@@ -330,7 +330,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     RECT        rect;
     int         dwidth, dheight;
     int         x, y, width, height;
-    Bool        ok;
+    bool        ok;
 
     if( info == NULL || info->info_win == (HWND)NULL ) {
         return;
@@ -402,7 +402,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     }
 }
 
-Bool pleaseOpenFile( UINT msg )
+bool pleaseOpenFile( UINT msg )
 {
     char                *filter;
     char                *title;
@@ -411,7 +411,7 @@ Bool pleaseOpenFile( UINT msg )
     WREResInfo          *old_info;
     WREGetFileStruct    gf;
     uint_16             type;
-    Bool                ok;
+    bool                ok;
 
     old_info = WREGetCurrentRes();
     res_info = NULL;
@@ -421,15 +421,15 @@ Bool pleaseOpenFile( UINT msg )
 
     if( msg == ACCEL_PLEASE_OPENME ) {
         filter = WREAccelFilter;
-        title = WREAllocRCString( WRE_OPENACCEL );
+        title = AllocRCString( WRE_OPENACCEL );
         type = (uint_16)RT_ACCELERATOR;
     } else if( msg == MENU_PLEASE_OPENME ) {
         filter = WREMenuFilter;
-        title = WREAllocRCString( WRE_OPENMENU );
+        title = AllocRCString( WRE_OPENMENU );
         type = (uint_16)RT_MENU;
     } else if( msg == STRING_PLEASE_OPENME ) {
         filter = WREStringFilter;
-        title = WREAllocRCString( WRE_OPENSTRING );
+        title = AllocRCString( WRE_OPENSTRING );
         type = (uint_16)RT_STRING;
     }
 
@@ -480,11 +480,11 @@ Bool pleaseOpenFile( UINT msg )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 
     return( ok );
@@ -500,7 +500,7 @@ WREResInfo *WREGetCurrentRes( void )
     return( WRECurrentRes );
 }
 
-Bool WREIsCurrentMDIWindowZoomed( void )
+bool WREIsCurrentMDIWindowZoomed( void )
 {
     WREResInfo *info;
 
@@ -513,7 +513,7 @@ Bool WREIsCurrentMDIWindowZoomed( void )
     }
 }
 
-Bool WRERegisterResClass( HINSTANCE app_inst )
+bool WRERegisterResClass( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -561,7 +561,7 @@ int WREGetNumRes( void )
 WREResInfo *WRECreateNewResource( char *filename )
 {
     WREResInfo  *res_info;
-    Bool        ok;
+    bool        ok;
 
     ok = ((res_info = WREAllocResInfo()) != NULL);
 
@@ -607,12 +607,12 @@ WREResInfo *WRECreateNewResource( char *filename )
     return( res_info );
 }
 
-Bool WREOpenResource( char *fn )
+bool WREOpenResource( char *fn )
 {
     char                *name;
     WREResInfo          *res_info;
     WREGetFileStruct    gf;
-    Bool                ok, got_name;
+    bool                ok, got_name;
 
     res_info = NULL;
     name = NULL;
@@ -655,7 +655,7 @@ Bool WREOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
@@ -665,7 +665,7 @@ WREResInfo *WRELoadResource( const char *file_name )
 {
     WRFileType  file_type;
     WREResInfo  *res_info;
-    Bool        ok;
+    bool        ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -724,7 +724,7 @@ WREResInfo *WREResInfoFromWin( HWND win )
     return( NULL );
 }
 
-Bool WREIsResInfoWinMsg( LPMSG pmsg )
+bool WREIsResInfoWinMsg( LPMSG pmsg )
 {
     WREResInfo *info;
     LIST       *rlist;
@@ -745,7 +745,7 @@ Bool WREIsResInfoWinMsg( LPMSG pmsg )
 void WREActivateResourceWindow( WREResInfo *res_info, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
-    Bool        fActivate;
+    bool        fActivate;
     HWND        hwndDeact;
 
     _wre_touch( wParam );
@@ -796,7 +796,7 @@ static void WRECheckIfActiveWindow( void )
     }
 }
 
-Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
+bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -823,10 +823,10 @@ Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
         SendMessage( frame, WM_MDIRESTORE, (WPARAM)res_info->res_win, 0 );
         SendMessage( frame, WM_MDIACTIVATE, (WPARAM)res_info->res_win, 0 );
         file = WREGetQueryName( res_info );
-        text = WREAllocRCString( WRE_SAVEMODIFIEDSYM );
+        text = AllocRCString( WRE_SAVEMODIFIEDSYM );
         ret = MessageBox( res_info->res_win, text, file, style );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
         if( ret == IDYES ) {
             if( res_info->symbol_file == NULL ) {
@@ -843,7 +843,7 @@ Bool WREQuerySaveSymOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
+bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -864,10 +864,10 @@ Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
         frame = WREGetMDIWindowHandle();
         SendMessage( frame, WM_MDIRESTORE, (WPARAM)res_info->res_win, 0 );
         SendMessage( frame, WM_MDIACTIVATE, (WPARAM)res_info->res_win, 0 );
-        text = WREAllocRCString( WRE_QUERYMODIFIED );
+        text = AllocRCString( WRE_QUERYMODIFIED );
         ret = MessageBox( res_info->res_win, text, WREGetQueryName( res_info ), style );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
         if( ret == IDYES ) {
             return( WRESaveResource( res_info, FALSE ) );
@@ -879,13 +879,13 @@ Bool WREQuerySaveResOnDeleteRes( WREResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
+bool WRESaveResource( WREResInfo *res_info, bool get_name )
 {
     char                *fn;
     WREGetFileStruct    gf;
     int                 fn_offset;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
 
     fn_offset = 0;
     got_name = FALSE;
@@ -923,7 +923,7 @@ Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WREMemFree( res_info->info->save_name );
+            WRMemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {
@@ -962,9 +962,9 @@ Bool WRESaveResource( WREResInfo *res_info, Bool get_name )
     return( ok );
 }
 
-Bool WRESaveResourceToFile( WREResInfo *res_info )
+bool WRESaveResourceToFile( WREResInfo *res_info )
 {
-    Bool          ok;
+    bool          ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -983,11 +983,11 @@ Bool WRESaveResourceToFile( WREResInfo *res_info )
     return( ok );
 }
 
-Bool WREQueryKillApp( Bool fatal_exit )
+bool WREQueryKillApp( bool fatal_exit )
 {
     LIST        *rlist;
     WREResInfo  *info;
-    Bool        kill_app;
+    bool        kill_app;
 
     if( !WRENoInterface && WREResList != NULL ) {
         kill_app = TRUE;
@@ -1024,7 +1024,7 @@ void WREFreeResList( void )
     }
 }
 
-Bool WRERemoveResource( WREResInfo *res_info )
+bool WRERemoveResource( WREResInfo *res_info )
 {
     LIST *node;
 
@@ -1049,12 +1049,12 @@ Bool WRERemoveResource( WREResInfo *res_info )
     return( TRUE );
 }
 
-Bool WRECreateResourceWindow( WREResInfo *res_info )
+bool WRECreateResourceWindow( WREResInfo *res_info )
 {
     MDICREATESTRUCT     mdics;
     LRESULT             ret;
     HWND                win;
-    Bool                ok;
+    bool                ok;
     DWORD               style;
     int                 fn_offset;
     char                *win_title;
@@ -1078,7 +1078,7 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
         } else {
             WREResCounter++;
             win_title_len = strlen( WREResUntitled ) + 7;
-            win_title = (char *)WREMemAlloc( win_title_len );
+            win_title = (char *)WRMemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WREResUntitled, 0xffff & WREResCounter );
             mdics.szTitle = win_title;
         }
@@ -1119,13 +1119,13 @@ Bool WRECreateResourceWindow( WREResInfo *res_info )
     }
 
     if( win_title != NULL ) {
-        WREMemFree( win_title );
+        WRMemFree( win_title );
     }
 
     return( ok );
 }
 
-Bool WREDestroyResourceWindow( WREResInfo *res_info )
+bool WREDestroyResourceWindow( WREResInfo *res_info )
 {
     if( res_info != NULL && WREQuerySaveResOnDeleteRes( res_info, FALSE ) &&
         WREQuerySaveSymOnDeleteRes( res_info, FALSE ) ) {
@@ -1194,7 +1194,7 @@ LRESULT CALLBACK WREResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return( ret );
 }
 
-Bool WREInitResources( HINSTANCE inst )
+bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
@@ -1211,7 +1211,7 @@ void WREFiniResources( void )
     WREFiniStaticVars();
 }
 
-Bool WRECreateResInfoWindow( WREResInfo *info )
+bool WRECreateResInfoWindow( WREResInfo *info )
 {
     info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win, WREResInfoWinProc, (LPARAM)(LPVOID)info );
 

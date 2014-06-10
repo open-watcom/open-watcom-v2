@@ -35,6 +35,7 @@
 *.mbr
 *.mk
 *.mk1
+*.mod
 *.nlm
 *.o
 *.obj
@@ -47,6 +48,7 @@
 *.rtp
 *.sav
 *.so
+*.stb
 *.sym
 *.sys
 *.tmp
@@ -106,6 +108,9 @@
 #
 /bld/f77test/*.sav
 /bld/f77test/regress/nist/FOR*
+/bld/f77test/regress/nist/__wfc__.vm*
+#
+/bld/graphlib/*/*/*.ref
 #
 /bld/hdr/dos/*
 /bld/hdr/linux/*

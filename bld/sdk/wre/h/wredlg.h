@@ -44,20 +44,20 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRENewDialogResource( void );
-extern Bool WREEditDialogResource( WRECurrentResInfo *curr );
-extern Bool WRECommitDialogSession( HCONV server, HCONV client );
-extern Bool WREEndEditDialogResource( HCONV conv );
-extern Bool WREDumpPendingDialogSession( void );
-extern Bool WREEndAllDialogSessions( Bool fatal_exit );
+extern bool WRENewDialogResource( void );
+extern bool WREEditDialogResource( WRECurrentResInfo *curr );
+extern bool WRECommitDialogSession( HCONV server, HCONV client );
+extern bool WREEndEditDialogResource( HCONV conv );
+extern bool WREDumpPendingDialogSession( void );
+extern bool WREEndAllDialogSessions( bool fatal_exit );
 extern void WREEndLangDialogSession( WResLangNode *lnode );
 extern void WREEndResDialogSessions( WREResInfo *rinfo );
-extern Bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size );
-extern Bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size );
-extern Bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata );
-extern Bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata );
-extern void WREShowAllDialogSessions( Bool show );
+extern bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size );
+extern bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size );
+extern bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size );
+extern bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size );
+extern bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata );
+extern bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata );
+extern void WREShowAllDialogSessions( bool show );
 
 #endif

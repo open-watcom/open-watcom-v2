@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-typedef
-    int         (*DFCLEANER)( void * );
+typedef bool (*DFCLEANER)( void * );
 typedef struct df_cleaner{
-    struct df_cleaner *prev;
-    DFCLEANER rtn;
-    void     *d;
-}df_cleaner;
+    struct df_cleaner   *prev;
+    DFCLEANER           rtn;
+    void                *d;
+} df_cleaner;
+
 extern df_cleaner *Cleaners;

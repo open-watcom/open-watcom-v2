@@ -39,7 +39,6 @@
 #include "exepe.h"
 #include "reloc.h"
 #include "specials.h"
-#include "alloc.h"
 #include "pcobj.h"
 #include "msg.h"
 #include "wlnkmsg.h"
@@ -66,6 +65,7 @@
 #include "impexp.h"
 #include "toc.h"
 #include "objstrip.h"
+#include "rcrtns.h"
 
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
 #define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */
@@ -764,26 +764,7 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-void *RcMemMalloc( size_t size )
-{
-    void        *retval;
-
-    _ChkAlloc( retval, size );
-    return( retval );
-}
-
-void *RcMemRealloc( void *old_ptr, size_t newsize )
-{
-    _LnkReAlloc( old_ptr, old_ptr, newsize );
-    return( old_ptr );
-}
-
-void RcMemFree( void *ptr )
-{
-    _LnkFree( ptr );
-}
-
-int  RcWrite( int hdl, const void *buf, size_t len )
+WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
 {
     hdl = hdl;
     WriteLoad( (void *) buf, len );

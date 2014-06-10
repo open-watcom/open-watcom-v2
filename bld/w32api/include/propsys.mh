@@ -239,36 +239,6 @@ typedef struct tagSERIALIZEDPROPSTORAGE SERIALIZEDPROPSTORAGE;
 typedef SERIALIZEDPROPSTORAGE           *PUSERIALIZEDPROPSTORAGE;
 typedef const SERIALIZEDPROPSTORAGE     *PCUSERIALIZEDPROPSTORAGE;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IInitializeWithFile;
-EXTERN_C const IID      IID_IInitializeWithStream;
-EXTERN_C const IID      IID_IPropertyStore;
-EXTERN_C const IID      IID_INamedPropertyStore;
-EXTERN_C const IID      IID_IObjectWithPropertyKey;
-EXTERN_C const IID      IID_IPropertyChange;
-EXTERN_C const IID      IID_IPropertyChangeArray;
-EXTERN_C const IID      IID_IPropertyStoreCapabilities;
-EXTERN_C const IID      IID_IPropertyStoreCache;
-EXTERN_C const IID      IID_IPropertyEnumType;
-EXTERN_C const IID      IID_IPropertyEnumType2;
-EXTERN_C const IID      IID_IPropertyEnumTypeList;
-EXTERN_C const IID      IID_IPropertyDescription;
-EXTERN_C const IID      IID_IPropertyDescription2;
-EXTERN_C const IID      IID_IPropertyDescriptionAliasInfo;
-EXTERN_C const IID      IID_IPropertyDescriptionSearchInfo;
-EXTERN_C const IID      IID_IPropertyDescriptionRelatedPropertyInfo;
-EXTERN_C const IID      IID_IPropertySystem;
-EXTERN_C const IID      IID_IPropertyDescriptionList;
-EXTERN_C const IID      IID_IPropertyStoreFactory;
-EXTERN_C const IID      IID_IDelayedPropertyStoreFactory;
-EXTERN_C const IID      IID_IPersistSerializedPropStorage;
-EXTERN_C const IID      IID_IPersistSerializedPropStorage2;
-EXTERN_C const IID      IID_IPropertySystemChangeNotify;
-EXTERN_C const IID      IID_ICreateObject;
-EXTERN_C const IID      LIBID_PropSysObjects;
-EXTERN_C const CLSID    CLSID_InMemoryPropertyStore;
-EXTERN_C const CLSID    CLSID_PropertySystem;
-
 /* IInitializeWithFile interface */
 #undef INTERFACE
 #define INTERFACE   IInitializeWithFile
@@ -1371,5 +1341,35 @@ PSSTDAPI    PSStringFromPropertyKey( REFPROPERTYKEY, LPWSTR, UINT );
 PSSTDAPI    PSUnregisterPropertySchema( PCWSTR );
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IInitializeWithFile;
+EXTERN_C const IID      __cdecl IID_IInitializeWithStream;
+EXTERN_C const IID      __cdecl IID_IPropertyStore;
+EXTERN_C const IID      __cdecl IID_INamedPropertyStore;
+EXTERN_C const IID      __cdecl IID_IObjectWithPropertyKey;
+EXTERN_C const IID      __cdecl IID_IPropertyChange;
+EXTERN_C const IID      __cdecl IID_IPropertyChangeArray;
+EXTERN_C const IID      __cdecl IID_IPropertyStoreCapabilities;
+EXTERN_C const IID      __cdecl IID_IPropertyStoreCache;
+EXTERN_C const IID      __cdecl IID_IPropertyEnumType;
+EXTERN_C const IID      __cdecl IID_IPropertyEnumType2;
+EXTERN_C const IID      __cdecl IID_IPropertyEnumTypeList;
+EXTERN_C const IID      __cdecl IID_IPropertyDescription;
+EXTERN_C const IID      __cdecl IID_IPropertyDescription2;
+EXTERN_C const IID      __cdecl IID_IPropertyDescriptionAliasInfo;
+EXTERN_C const IID      __cdecl IID_IPropertyDescriptionSearchInfo;
+EXTERN_C const IID      __cdecl IID_IPropertyDescriptionRelatedPropertyInfo;
+EXTERN_C const IID      __cdecl IID_IPropertySystem;
+EXTERN_C const IID      __cdecl IID_IPropertyDescriptionList;
+EXTERN_C const IID      __cdecl IID_IPropertyStoreFactory;
+EXTERN_C const IID      __cdecl IID_IDelayedPropertyStoreFactory;
+EXTERN_C const IID      __cdecl IID_IPersistSerializedPropStorage;
+EXTERN_C const IID      __cdecl IID_IPersistSerializedPropStorage2;
+EXTERN_C const IID      __cdecl IID_IPropertySystemChangeNotify;
+EXTERN_C const IID      __cdecl IID_ICreateObject;
+EXTERN_C const IID      __cdecl LIBID_PropSysObjects;
+EXTERN_C const CLSID    __cdecl CLSID_InMemoryPropertyStore;
+EXTERN_C const CLSID    __cdecl CLSID_PropertySystem;
 
 #endif /* __propsys_h__ */

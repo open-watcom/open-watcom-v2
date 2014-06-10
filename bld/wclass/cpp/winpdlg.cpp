@@ -145,14 +145,14 @@ void WEXPORT WInputDialog::okButton( WWindow * ) {
 /************************************************/
 
     _input->getText( *_reply );
-    quit( _reply->size() > 0 );
+    quit( ( _reply->size() > 0 ) );
 }
 
 
 void WEXPORT WInputDialog::cancelButton( WWindow* ) {
 /***************************************************/
 
-    quit( FALSE );
+    quit( false );
 }
 
 
@@ -181,5 +181,5 @@ bool WEXPORT WInputDialog::getInput( WString& reply, const char *prompt ) {
 
     _reply = &reply;
     _promptText = prompt;
-    return( process() == TRUE );
+    return( process() == (int)true );
 }

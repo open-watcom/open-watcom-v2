@@ -43,7 +43,7 @@ WCLASS WMenuItem;
 WCLASS WPopupMenu;
 WCLASS WMenu : public WMenuObject {
     public:
-        WEXPORT WMenu( bool create=TRUE );
+        WEXPORT WMenu( bool create=true );
         WEXPORT ~WMenu();
 
         WPopupMenu * WEXPORT insertPopup( WPopupMenu *popup, int index=-1 );
@@ -56,7 +56,7 @@ WCLASS WMenu : public WMenuObject {
         bool WEXPORT itemEnabled( int index );
         void WEXPORT checkItem( bool check, int index );
         void WEXPORT setItemText( const char *text, int index );
-        int WEXPORT childCount( void ) { return _children.count(); }
+        int WEXPORT childCount( void ) { return( _children.count() ); }
         void setParent( WMenu *parent ) { _parent = parent; }
         WMenu * WEXPORT parent( void ) { return( _parent ); }
         virtual void attachMenu( WWindow *, int );

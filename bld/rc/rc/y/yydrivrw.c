@@ -31,13 +31,12 @@
 
 
 #include "global.h"
+#include "yydriver.h"
+#include "yydrivrw.h"
 #include "rctypes.h"
 #include "semantic.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "winytab.h"
-#include "yydrivrw.h"
-#include "scanw.h"
 #include "errprt.h"
 #include "wresdefn.h"
 

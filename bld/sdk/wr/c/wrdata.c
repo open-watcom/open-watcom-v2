@@ -109,7 +109,7 @@ void *WRCopyExistingData( WResLangNode *lnode )
         return( NULL );
     }
 
-    rdata = WRMemAlloc( lnode->Info.Length );
+    rdata = MemAlloc( lnode->Info.Length );
     if( rdata != NULL ) {
         memcpy( rdata, lnode->data, lnode->Info.Length );
     }
@@ -144,7 +144,7 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 
     if( !ok ) {
         if( rdata != NULL ) {
-            WRMemFree( rdata );
+            MemFree( rdata );
             rdata = NULL;
         }
     }
@@ -164,7 +164,7 @@ void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
     ok = (file != NULL && length != 0);
 
     if( ok ) {
-        ok = ((data = WRMemAlloc( length )) != NULL);
+        ok = ((data = MemAlloc( length )) != NULL);
     }
 
     if( ok ) {
@@ -185,7 +185,7 @@ void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
 
     if( !ok ) {
         if( data != NULL ) {
-            WRMemFree( data );
+            MemFree( data );
             data = NULL;
         }
     }

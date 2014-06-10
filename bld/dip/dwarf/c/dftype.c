@@ -42,7 +42,7 @@ typedef struct {
     int       skip;
 } array_wlk_skip; /* and jump */
 
-static int ArrayIndexSkip( dr_handle index, int pos, void *_df )
+static bool ArrayIndexSkip( dr_handle index, int pos, void *_df )
 {
     array_wlk_skip *df = _df;
     pos = pos;
@@ -66,14 +66,14 @@ static dr_handle GetArrayDim( dr_handle index, int skip  ){
 
     df.skip = skip;
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ){
-      index = df.curr;
+        index = df.curr;
     }else{
-      index = 0;
+        index = 0;
     }
     return( index );
 }
 
-static int  GetStrLen( imp_image_handle *ii,
+static bool GetStrLen( imp_image_handle *ii,
                         dr_handle dr_sym,
                         location_context *lc,
                         dr_typeinfo  *ret ){
@@ -81,19 +81,21 @@ static int  GetStrLen( imp_image_handle *ii,
     uint_32         seg;
     location_list   src;
     location_list   dst;
-    im_idx          imx;
+    imp_mod_handle  im;
     union{
         long  l;
         short s;
         char  c;
     }val;
-    int             idx_size;
+    unsigned        idx_size;
+    mod_info        *modinfo;
 
-    imx = DwarfModIdx( ii, dr_sym );
-    if( imx == INVALID_IMX ){
+    im = DwarfMod( ii, dr_sym );
+    if( im == IMH_NOMOD ){
         return( FALSE );
     }
-    if( ii->mod_map[imx].is_segment == FALSE ){
+    modinfo = IM2MODI( ii, im );
+    if( modinfo->is_segment == FALSE ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( ii, dr_sym, &seg );
@@ -103,7 +105,7 @@ static int  GetStrLen( imp_image_handle *ii,
     }
     idx_size = ret->size;
     if( idx_size == 0 ){
-        idx_size = ii->mod_map[imx].addr_size;
+        idx_size = modinfo->addr_size;
     }
     LocationCreate( &dst, LT_INTERNAL, &val );
     if( DCAssignLocation( &dst, &src, idx_size ) != DS_OK ){
@@ -134,11 +136,12 @@ typedef struct{
     location_context *lc;
     uint_32          num_elts;
     int              dim;
-    int              cont;
+    bool             cont;
 }array_wlk_wlk;
 
-static int ArraySubRange( dr_handle tsub, int index, void *df );
-static int ArrayEnumType( dr_handle tenu, int index, void *df );
+static bool ArraySubRange( dr_handle tsub, int index, void *df );
+static bool ArrayEnumType( dr_handle tenu, int index, void *df );
+
 static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
     ArraySubRange,
     ArrayEnumType,
@@ -243,7 +246,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                 }else{
                     btype = DRGetTypeAT( btype );    /* get base type */
                     sub.type = btype;
-                    sub.imx = it->imx;
+                    sub.im = it->im;
                     sub.state = DF_NOT;
                     InitTypeHandle( ii, &sub, lc );
                     base_stride = sub.typeinfo.size;
@@ -254,7 +257,7 @@ static void InitTypeHandle( imp_image_handle *ii,
                     if( info.ordering == DW_ORD_col_major ){
                         it->array.column_major = 1;
                     }
-                }else if( ii->mod_map[it->imx].lang == DR_LANG_FORTRAN ){
+                }else if( IM2MODI( ii, it->im )->lang == DR_LANG_FORTRAN ){
                     it->array.column_major = 1;
                 }
                 if( info.child == 0 ) { // set info now
@@ -303,25 +306,26 @@ static void InitTypeHandle( imp_image_handle *ii,
 }
 
 struct mod_type{
-    imp_image_handle *ii;
-    im_idx          imx;
-    IMP_TYPE_WKR    *wk;
-    imp_type_handle *it;
-    void            *d;
-    walk_result     wr;
+    imp_image_handle    *ii;
+    imp_mod_handle      im;
+    IMP_TYPE_WKR        *wk;
+    imp_type_handle     *it;
+    void                *d;
+    walk_result         wr;
 };
 
-static int AType( dr_handle type, void *_typ_wlk, dr_search_context *cont ) {
-/***************************************************************************/
+static bool AType( dr_handle type, void *_typ_wlk, dr_search_context *cont )
+/**************************************************************************/
+{
     struct mod_type *typ_wlk = _typ_wlk;
-    int             ret;
+    bool            ret;
     imp_type_handle *it;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     cont = cont;
     ret = TRUE;
     it = typ_wlk->it;
-    it->imx = typ_wlk->imx;
+    it->im = typ_wlk->im;
     it->state = DF_NOT;
     it->type = type;
     saved = DRGetDebug();
@@ -333,19 +337,17 @@ static int AType( dr_handle type, void *_typ_wlk, dr_search_context *cont ) {
     return( ret );
 }
 
-walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
                     void *d )
 {
-    im_idx          imx;
     dr_handle       cu_tag;
     struct mod_type typ_wlk;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
-    imx = IM2IMX( im );
-    cu_tag = ii->mod_map[imx].cu_tag;
+    cu_tag = IM2MODI( ii, im )->cu_tag;
     typ_wlk.ii = ii;
-    typ_wlk.imx = imx;
+    typ_wlk.im = im;
     typ_wlk.wk = wk;
     typ_wlk.it  = it;
     typ_wlk.d   = d;
@@ -353,14 +355,14 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     return( typ_wlk.wr );
 }
 
-imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     /*
         Return the module that the type handle comes from.
     */
     ii = ii;
-    return( IMX2IM( it->imx ) );
+    return( it->im );
 }
 
 extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
@@ -368,7 +370,7 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
     /*
         Map dwarf info to dip imp
     */
-    type_kind   kind;
+    type_kind   kind = TK_NONE;
 
     ti->modifier = TM_NONE;
     switch( typeinfo->kind ){
@@ -463,7 +465,7 @@ extern void MapImpTypeInfo( dr_typeinfo *typeinfo, dip_type_info *ti )
     }
 }
 
-dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     /*
@@ -490,7 +492,7 @@ dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
@@ -525,9 +527,10 @@ dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
 typedef struct {
     int_32 low;
     int_32 high;
-}enum_range;
+} enum_range;
 
-static int AEnum( dr_handle var, int index, void *_de ) {
+static bool AEnum( dr_handle var, int index, void *_de )
+{
     enum_range *de = _de;
     int_32  value;
 
@@ -543,17 +546,18 @@ static int AEnum( dr_handle var, int index, void *_de ) {
     return( TRUE );
 }
 
-static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
+static bool ArrayEnumType( dr_handle tenu, int index, void *_df )
 /****************************************************************/
 // Find low, high bounds of enum
+{
 //TODO:unsigned range
     array_wlk_wlk  *df = _df;
     enum_range     de;
     int_32         count;
 
     index = index;
-    de.low  = LONG_MIN;
-    de.high = LONG_MAX;
+    de.low  = _I32_MIN;
+    de.high = _I32_MAX;
     if( !DRWalkEnum( tenu, AEnum, &de )){
         return( FALSE );
     }
@@ -565,16 +569,16 @@ static int ArrayEnumType( dr_handle tenu, int index, void *_df ) {
     return( df->cont );
 }
 
-static int  GetSymVal( imp_image_handle *ii,
+static bool GetSymVal( imp_image_handle *ii,
                        dr_handle dr_sym, location_context *lc,
-                        long *ret ){
+                       int_32 *ret ){
 //  Find value of scalar
     dr_handle       dr_type;
     dr_typeinfo     typeinfo[1];
+    imp_mod_handle  im;
     uint_32         seg;
     location_list   src;
     location_list   dst;
-    im_idx          imx;
 
     dr_type =  DRGetTypeAT( dr_sym );
     if( dr_type == 0 ) {
@@ -584,11 +588,11 @@ static int  GetSymVal( imp_image_handle *ii,
     if( typeinfo->size > sizeof( *ret ) ){
         return( FALSE );
     }
-    imx = DwarfModIdx( ii, dr_sym );
-    if( imx == INVALID_IMX ){
+    im = DwarfMod( ii, dr_sym );
+    if( im == IMH_NOMOD ){
         return( FALSE );
     }
-    if( ii->mod_map[imx].is_segment == FALSE ){
+    if( IM2MODI( ii, im )->is_segment == FALSE ){
         seg = SEG_DATA; // if flat hoke segment
     }else{
         EvalSeg( ii, dr_sym, &seg );
@@ -603,9 +607,10 @@ static int  GetSymVal( imp_image_handle *ii,
     return( TRUE );
 }
 
-static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
-/*******************************************/
+static bool GetDrVal( array_wlk_wlk *df, dr_val32 *val, int_32 *ret )
+/*******************************************************************/
 // extract the value from val
+{
     switch( val->val_class ){
     case DR_VAL_INT:
         *ret = val->val.s;
@@ -613,15 +618,16 @@ static int GetDrVal( array_wlk_wlk *df, dr_val32 *val,  int_32 *ret ){
     case DR_VAL_REF:
         if( DRConstValAT( val->val.ref, (uint_32*)ret ) ){
             return( TRUE );
-        }else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ){
+        } else if( GetSymVal( df->ii, val->val.ref, df->lc, ret ) ) {
             return( TRUE );
         }
     }
     return( FALSE );
 }
 
-static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
+static bool ArraySubRange( dr_handle tsub, int index, void *_df )
 /****************************************************************/
+{
     array_wlk_wlk *df = _df;
     dr_subinfo info;
     int_32     low;
@@ -632,7 +638,7 @@ static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
     DRGetSubrangeInfo( tsub, &info );
     /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
     if( info.low.val_class == DR_VAL_NOT ) {
-        if( df->ii->mod_map[df->it->imx].lang == DR_LANG_FORTRAN )
+        if( IM2MODI( df->ii, df->it->im )->lang == DR_LANG_FORTRAN )
             low = 1;
         else
             low = 0;
@@ -654,7 +660,7 @@ static int ArraySubRange( dr_handle tsub, int index, void *_df ) {
     return( df->cont );
 }
 
-dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
                         array_info *ai, imp_type_handle *index )
 {
@@ -684,7 +690,7 @@ dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     ai->column_major = array->array.column_major;
     ai->stride = array->array.base_stride;
     if( index != NULL ){
-        index->imx = array->imx;
+        index->im = array->im;
         if( array->array.index == 0 ) { //Fake a type up
             index->state = DF_SET;
             index->type  = 0;
@@ -707,13 +713,14 @@ dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     'parm'.
 */
 typedef struct {
-    int            count;
-    int            last;
+    int             count;
+    int             last;
     dr_handle       var;
-}parm_wlk;
+} parm_wlk;
 
-static int AParm( dr_handle var, int index, void *_df ) {
-/*******************************************************/
+static bool AParm( dr_handle var, int index, void *_df )
+/******************************************************/
+{
     parm_wlk *df = _df;
 
     index = index;
@@ -751,15 +758,15 @@ extern int GetParmCount(  imp_image_handle *ii, dr_handle proc ){
     df.count = 0;
     df.last = 0;
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    DRWalkBlock( proc,  DR_SRCH_parm, AParm, &df );
+    DRWalkBlock( proc, DR_SRCH_parm, AParm, &df );
     return( df.count );
 }
 
-dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     dr_handle       btype;
-    dr_handle       parm_type;
+    dr_handle       parm_type = 0;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
@@ -773,7 +780,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     if( parm_type ) {
         parm->state = DF_NOT;
         parm->type = parm_type;
-        parm->imx = proc->imx;
+        parm->im = proc->im;
         ret = DS_OK;
     }else{
        ret = DS_FAIL;
@@ -781,7 +788,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     return( ret );
 }
 
-dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *a )
 {
     /*
@@ -798,7 +805,7 @@ dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
 }
 
 
-int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                                 imp_type_handle *it2 )
 {
     long diff;
@@ -813,18 +820,18 @@ int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 typedef struct inh_vbase {
     struct inh_vbase *next;
     dr_handle        base;
-}inh_vbase;
+} inh_vbase;
 
-typedef struct{
-    im_idx           imx;
-    imp_image_handle *ii;
-    sym_sclass        sclass;
-    void             *d;
-    dr_handle        root;
-    dr_handle        inh;
-    inh_vbase        *vbase;
-    enum_einfo       einfo;
-}type_wlk_com;
+typedef struct {
+    imp_mod_handle      im;
+    imp_image_handle    *ii;
+    sym_sclass          sclass;
+    void                *d;
+    dr_handle           root;
+    dr_handle           inh;
+    inh_vbase           *vbase;
+    enum_einfo          einfo;
+} type_wlk_com;
 
 
 typedef struct {
@@ -848,9 +855,10 @@ typedef union {
 }type_wlk;
 
 
-static int AddBase( dr_handle base, inh_vbase **lnk ){
-/*****************************************************/
+static bool AddBase( dr_handle base, inh_vbase **lnk )
+/****************************************************/
 //if base not in list add return FALSE
+{
     inh_vbase   *cur;
 
     while( (cur = *lnk) != NULL ){
@@ -869,9 +877,10 @@ static int AddBase( dr_handle base, inh_vbase **lnk ){
     return( TRUE );
 }
 
-static int FreeBases( void *_lnk ){
-/***************************************/
+static bool FreeBases( void *_lnk )
+/*********************************/
 //Free bases
+{
     inh_vbase   **lnk = _lnk;
     inh_vbase   *cur;
     inh_vbase   *old;
@@ -886,8 +895,9 @@ static int FreeBases( void *_lnk ){
     return 0;
 }
 
-static int AMem( dr_handle var, int index, void *d );
-static int AInherit( dr_handle inh, int index, void *d );
+static bool AMem( dr_handle var, int index, void *d );
+static bool AInherit( dr_handle inh, int index, void *d );
+
 static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
     AMem,
     AInherit,
@@ -899,7 +909,7 @@ static DRWLKBLK StrucWlk[DR_WLKBLK_STRUCT] = {
 static void SetSymHandle( type_wlk *d, imp_sym_handle  *is ){
 // Set is with info from com
     is->sclass = d->com.sclass;
-    is->imx = d->com.imx;
+    is->im = d->com.im;
     is->state = DF_NOT;
     if( d->com.sclass == SYM_ENUM ){
         is->f.einfo = d->com.einfo;
@@ -909,12 +919,13 @@ static void SetSymHandle( type_wlk *d, imp_sym_handle  *is ){
     }
 }
 
-static int AMem( dr_handle var, int index, void *_d ) {
-/*****************************************************/
-    type_wlk_wlk   *d = _d;
-    int            cont;
+static bool AMem( dr_handle var, int index, void *_d )
+/****************************************************/
+{
+    type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     cont = TRUE;
     is = d->is;
@@ -946,16 +957,17 @@ static int AMem( dr_handle var, int index, void *_d ) {
     return( cont );
 }
 
-static int AInherit( dr_handle inh, int index, void *_d ) {
-/*************************************************/
+static bool AInherit( dr_handle inh, int index, void *_d )
+/********************************************************/
+{
 //TODO: Need to track virtual base as not to visit same place twice
-    type_wlk_wlk *d = _d;
-    int         cont;
-    dr_handle   btype;
-    dr_handle   old_inh;
+    type_wlk_wlk    *d = _d;
+    bool            cont;
+    dr_handle       btype;
+    dr_handle       old_inh;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
-    walk_result wr;
+    dr_dbg_handle   saved;
+    walk_result     wr;
 
     index = index;
     cont = TRUE;
@@ -990,8 +1002,9 @@ static int AInherit( dr_handle inh, int index, void *_d ) {
 }
 
 
-static int AMemLookup( dr_handle var, int index, void *d );
-static int AInheritLookup( dr_handle inh, int index, void *d );
+static bool AMemLookup( dr_handle var, int index, void *d );
+static bool AInheritLookup( dr_handle inh, int index, void *d );
+
 static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     AMemLookup,
     AInheritLookup,
@@ -1000,8 +1013,9 @@ static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
     NULL
 };
 
-static int AMemLookup( dr_handle var, int index, void *_d ){
-/*************************************************/
+static bool AMemLookup( dr_handle var, int index, void *_d )
+/**********************************************************/
+{
     type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
@@ -1040,9 +1054,10 @@ static int AMemLookup( dr_handle var, int index, void *_d ){
     return( TRUE );
 }
 
-static int AInheritLookup( dr_handle inh, int index, void *_d ){
-/*************************************************/
+static bool AInheritLookup( dr_handle inh, int index, void *_d )
+/**************************************************************/
 //Push inherit handle and search
+{
     type_wlk_lookup *d = _d;
     dr_handle btype;
     dr_handle old_inh;
@@ -1062,12 +1077,13 @@ static int AInheritLookup( dr_handle inh, int index, void *_d ){
     return( TRUE );
 }
 
-static int AEnumMem( dr_handle var, int index, void *_d ) {
-/*********************************************************/
-    type_wlk_wlk   *d = _d;
-    int            cont;
+static bool AEnumMem( dr_handle var, int index, void *_d )
+/********************************************************/
+{
+    type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *is;
-    dr_dbg_handle  saved;
+    dr_dbg_handle   saved;
 
     index = index;
     cont = TRUE;
@@ -1083,8 +1099,9 @@ static int AEnumMem( dr_handle var, int index, void *_d ) {
     return( cont );
 }
 
-static int AEnumMemLookup( dr_handle var, int index, void *_d ) {
-/***************************************************************/
+static bool AEnumMemLookup( dr_handle var, int index, void *_d )
+/**************************************************************/
+{
     type_wlk_lookup  *d = _d;
     imp_sym_handle   *is;
     char   *name;
@@ -1122,7 +1139,7 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     if( it->state == DF_NOT ){
         return( WR_STOP );
     }
-    df.com.imx = it->imx;
+    df.com.im = it->im;
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
@@ -1158,13 +1175,12 @@ extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
     return( df.wr );
 }
 
-extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
-                 lookup_item *li, void *d ){
+search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it, lookup_item *li, void *d )
 //Search for matching lookup item
+{
     dr_handle       btype;
     type_wlk_lookup df;
     df_cleaner      cleanup;
-
 
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     if( it->state == DF_NOT ){
@@ -1175,7 +1191,7 @@ extern search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
     if( it->state == DF_NOT ){
         return( SR_NONE );
     }
-    df.com.imx = it->imx;
+    df.com.im = it->im;
     df.com.ii = ii;
     df.com.d = d;
     df.com.root = it->type;
@@ -1233,7 +1249,8 @@ typedef struct type_wlk_inherit {
     bool             cont;
 }type_wlk_inherit;
 
-static int AInhFind( dr_handle inh, int index, void *df );
+static bool AInhFind( dr_handle inh, int index, void *df );
+
 static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
     NULL,
     AInhFind,
@@ -1243,9 +1260,10 @@ static DRWLKBLK InheritWlk[DR_WLKBLK_STRUCT] = {
 };
 
 
-static int AInhFind( dr_handle inh, int index, void *_df ){
+static bool AInhFind( dr_handle inh, int index, void *_df )
 /*************************************************/
 //Push inherit handle and search
+{
     type_wlk_inherit *df = _df;
     dr_handle       dr_derived;
     inh_path        head, *curr, **old_lnk;
@@ -1292,7 +1310,7 @@ extern dip_status  DFBaseAdjust( imp_image_handle *ii,
     return( df.wr );
 }
 
-dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
                         imp_type_handle *base, imp_type_handle *derived,
                         location_context *lc, address *addr )
 {
@@ -1308,7 +1326,7 @@ dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DFBaseAdjust( ii, base->type, derived->type, lc, addr ) );
 }
 
-unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     /*
@@ -1331,7 +1349,7 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
 
         If the type does not have a name, return zero.
     */
-    char        *name;
+    char        *name = NULL;
     dr_handle   dr_type;
     dr_typeinfo typeinfo;
     unsigned    len;
@@ -1373,21 +1391,21 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     return( len );
 }
 
-dip_status DIPENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

@@ -24,17 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner interface, OS/2 specifics.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef SCAN2_H_INCLUDED
-#define SCAN2_H_INCLUDED
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
-#include "varstr.h"
+#include "wio.h"
+#include "trmemcvr.h"
 
-extern void  ScanInitOS2( void );
-extern int   ScanOS2( ScanValue * value );
-extern void  ScanInitStaticsOS2( void );
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       write
+#define RCREAD        read
+#define RCSEEK        lseek
+#define RCTELL        tell
+#define RCALLOC       TRMemAlloc
+#define RCFREE        TRMemFree
+#define RCREALLOC     TRMemRealloc
+
 #endif

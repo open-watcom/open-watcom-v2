@@ -32,6 +32,7 @@
 
 #include "layer0.h"
 #include "util.h"
+#include "wresrtns.h"
 
 void WResIDFree( WResID * oldid )
 /*******************************/

@@ -361,6 +361,7 @@ unsigned ExecProg( bool tracing, bool do_flip, bool want_wps )
     if( !HaveRemoteAsync() ) {
         DUIPlayDead( TRUE );
     }
+    how = MTRH_STOP;
     for( ;; ) {
         switch( es ) {
         case ES_FORCE_BREAK:

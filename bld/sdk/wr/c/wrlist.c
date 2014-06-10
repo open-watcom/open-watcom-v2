@@ -77,7 +77,7 @@ int WRListConcat( LIST **dest, LIST *src, uint_32 size )
         if( size == 0 ) {
             elt = ListElement( olist );
         } else {
-            elt = WRMemAlloc( size );
+            elt = MemAlloc( size );
             if( elt == NULL ) {
                 return( FALSE );
             }
@@ -121,7 +121,7 @@ void ListAddElt( LIST **head, void *obj )
 {
     LIST *new;
 
-    new = WRMemAlloc( sizeof( LIST ) );
+    new = MemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = *head;
     new->prev = NULL;
@@ -137,7 +137,7 @@ void ListFree( LIST *lst )
 
     while( lst != NULL ) {
         next = lst->next;
-        WRMemFree( lst );
+        MemFree( lst );
         lst = next;
     }
 }
@@ -171,7 +171,7 @@ void ListRemoveElt( LIST **lst, void *obj )
             } else {
                 *lst = node->next;
             }
-            WRMemFree( node );
+            MemFree( node );
             break;
         }
     }
@@ -182,7 +182,7 @@ LIST *ListConsume( LIST *curr )
     LIST *next;
 
     next = curr->next;
-    WRMemFree( curr );
+    MemFree( curr );
     return( next );
 }
 
@@ -223,7 +223,7 @@ void ListInsertElt( LIST *prev, void *obj )
 {
     LIST *new;
 
-    new = WRMemAlloc( sizeof( LIST ) );
+    new = MemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = prev->next;
     new->prev = prev;

@@ -56,7 +56,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WdeIsCurrentObjectVisible( WdeResInfo *info )
+bool WdeIsCurrentObjectVisible( WdeResInfo *info )
 {
     OBJPTR      curr_obj;
     RECT        crect;
@@ -88,7 +88,7 @@ Bool WdeIsCurrentObjectVisible( WdeResInfo *info )
     return( FALSE );
 }
 
-Bool WdeHandleGotoCurrentObject( void )
+bool WdeHandleGotoCurrentObject( void )
 {
     WdeResInfo  *info;
     OBJPTR      obj;

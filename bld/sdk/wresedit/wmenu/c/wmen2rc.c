@@ -37,7 +37,6 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
-#include "wmem.h"
 #include "wmen2rc.h"
 
 #define DEPTH_MULT      4
@@ -60,7 +59,7 @@ static FlagItem FlagItems[] =
     { 0,                    NULL            }
 };
 
-static Bool WSetFlagsText( uint_16 flags, char **text )
+static bool WSetFlagsText( uint_16 flags, char **text )
 {
     int         i;
     int         tlen;
@@ -78,7 +77,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
         }
     }
 
-    *text = (char *)WMemAlloc( tlen + 1 );
+    *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( FALSE );
     }
@@ -99,9 +98,9 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
     return( TRUE );
 }
 
-static Bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
+static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
 {
-    Bool        ok;
+    bool        ok;
     char        *itemname;
     char        *text;
     char        *flagtext;
@@ -150,17 +149,17 @@ static Bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( flagtext != NULL ) {
-        WMemFree( flagtext );
+        WRMemFree( flagtext );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-static Bool WWriteDummyItem( FILE *fp, int depth )
+static bool WWriteDummyItem( FILE *fp, int depth )
 {
     if( fp == NULL ) {
         return( FALSE );
@@ -180,9 +179,9 @@ static Bool WWriteDummyItem( FILE *fp, int depth )
     return( TRUE );
 }
 
-static Bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
+static bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
 {
-    Bool        ok;
+    bool        ok;
     int         depth;
 
     ok = (entry != NULL && fp != NULL);
@@ -223,11 +222,11 @@ static Bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
     return( ok );
 }
 
-Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
+bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, bool append )
 {
     FILE        *fp;
     char        *rname;
-    Bool        ok;
+    bool        ok;
 
     rname = NULL;
 
@@ -255,7 +254,7 @@ Bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, Bool append )
     }
 
     if( rname != NULL ) {
-        WMemFree( rname );
+        WRMemFree( rname );
     }
 
     if( fp != NULL ) {

@@ -145,7 +145,7 @@ static dis_inst_flags_mips MIPSFloatFmt( unsigned_32 fmt )
         flags = DIF_MIPS_FF_PS;
         break;
     default:
-        flags = DIF_NONE;
+        flags = DIF_MIPS_NONE;
     }
     return( flags );
 }

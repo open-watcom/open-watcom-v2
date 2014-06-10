@@ -105,7 +105,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
     GLOBALENTRY         *item;
     BOOL                is_newest;
     char                buf[160];
-    DWORD               strid;
+    MSGID               strid;
 
     index = SendMessage( list, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {

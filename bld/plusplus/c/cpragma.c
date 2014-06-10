@@ -380,7 +380,7 @@ static void pragEnableMessage(  // ENABLE WARNING MESSAGE
 
         // Enable message by setting its level to the lowest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( 0x01, msgnum );
+            WarnChangeLevel( WLEVEL_ENABLE, msgnum );
         }
 
         if( CurToken != T_COMMA ) {
@@ -411,7 +411,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 
         // Disable message by setting its level to the highest possible value.
         if( !error_occurred ) {
-            WarnChangeLevel( 0x0F, msgnum );
+            WarnChangeLevel( WLEVEL_DISABLE, msgnum );
         }
 
         if( CurToken != T_COMMA ) {

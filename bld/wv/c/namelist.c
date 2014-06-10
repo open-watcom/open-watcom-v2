@@ -117,12 +117,12 @@ static SYM_WALKER StickEmIn;
 static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
 {
     name_list   *name = _name;
-    char        *p;
+//    char        *p;
     a_symbol    *curr;
 
     if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
     if( !CheckType( sym, name ) ) return( WR_CONTINUE );
-    p = TxtBuff;
+//    p = TxtBuff;
     curr = DbgAlloc( sizeof( a_symbol ) + sym_SIZE - 1 );
     if( curr == NULL ) return( WR_STOP );
     HDLAssign( sym, ASymHdl( curr ), sym );

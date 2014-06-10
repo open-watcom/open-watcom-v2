@@ -39,6 +39,7 @@
 #include "dbglit.h"
 #endif
 #include "trptypes.h"
+#include "digio.h"
 
 #define CHK_DIR_SEP(c,i)    ((c) != '\0' && ((c) == (i)->path_separator[0] || (c) == (i)->path_separator[1]))
 #define CHK_DRV_SEP(c,i)    ((c) != '\0' && (c) == (i)->drv_separator)
@@ -49,7 +50,7 @@
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *StrCopy( char const *, char * );
 extern void             FreeRing( char_ring * );
-extern unsigned         RemoteStringToFullName( bool, char *, char *, unsigned );
+extern unsigned         RemoteStringToFullName( bool, const char *, char *, unsigned );
 extern void             StartupErr( char * );
 extern bool             HaveRemoteFiles( void );
 
@@ -94,7 +95,7 @@ static sys_error        SysErrors[MAX_ERRORS];
 static unsigned         ErrRover;
 static unsigned         LastErr;
 
-handle PathOpen( char const *name, unsigned len, char *ext );
+handle PathOpen( const char *name, unsigned name_len, const char *ext );
 
 char  *RealFName( char const *name, open_access *loc )
 {
@@ -219,7 +220,7 @@ unsigned long SeekStream( handle h, long p, seek_method m )
     }
 }
 
-handle FileOpen( char const *name, open_access o )
+handle FileOpen( const char *name, open_access o )
 {
     sys_handle  sys;
     handle      h;
@@ -319,7 +320,7 @@ sys_error GetSystemErrCode( unsigned code )
 }
 
 /* for RFX */
-sys_handle GetSystemHandle( unsigned h )
+sys_handle GetSystemHandle( handle h )
 {
     return( SysHandles[ h & ~REMOTE_IND ] );
 }
@@ -391,7 +392,7 @@ char  *ExtPointer( char const *path, open_access loc )
 }
 
 
-unsigned MakeFileName( char *result, char *name, char *ext, open_access loc )
+unsigned MakeFileName( char *result, const char *name, const char *ext, open_access loc )
 {
     file_components     *info;
     char                *p;
@@ -406,8 +407,8 @@ unsigned MakeFileName( char *result, char *name, char *ext, open_access loc )
 }
 
 static unsigned MakeNameWithPath( open_access loc,
-                                char *path, unsigned plen,
-                                char const *name, unsigned nlen, char *res )
+                                const char *path, unsigned plen,
+                                const char *name, unsigned nlen, char *res )
 {
     file_components     *info;
     char                *p;
@@ -441,7 +442,7 @@ static unsigned MakeNameWithPath( open_access loc,
 }
 
 
-handle LclStringToFullName( char *name, unsigned len, char *full )
+handle LclStringToFullName( const char *name, unsigned len, char *full )
 {
     char_ring   *curr;
     handle      hndl;
@@ -463,8 +464,8 @@ handle LclStringToFullName( char *name, unsigned len, char *full )
 /*
  *
  */
-static handle FullPathOpenInternal( char const *name, char *ext, char *result,
-                                    unsigned max_result, bool force_local )
+static handle FullPathOpenInternal( const char *name, unsigned name_len, const char *ext,
+                                    char *result, unsigned max_result, bool force_local )
 {
     char        buffer[TXT_LEN];
     char        *p;
@@ -477,6 +478,7 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
 
     loc = 0;
     p = FileLoc( name, &loc );
+    name_len -= p - name;
     name = p;
     have_ext = FALSE;
     have_path = FALSE;
@@ -490,17 +492,16 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
         file = &RemFile;
     }
     p = buffer;
-    while( (c = *name) != '\0' ) {
+    while( name_len-- > 0 ) {
+        c = *name++;
+        *p++ = c;
         if( CHECK_PATH_SEP( c, file ) ) {
             have_ext = FALSE;
             have_path = TRUE;
         } else if( c == file->ext_separator ) {
             have_ext = TRUE;
         }
-        *p++ = c;
-        ++name;
     }
-    *p = c;
     if( !have_ext ) {
         *p++ = file->ext_separator;
         p = StrCopy( ext, p );
@@ -524,14 +525,35 @@ static handle FullPathOpenInternal( char const *name, char *ext, char *result,
     return( f );
 }
 
-handle FullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+handle FullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
-    return( FullPathOpenInternal( name, ext, result, max_result, FALSE ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, max_result, FALSE ) );
 }
 
-handle LocalFullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
+handle LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
-    return( FullPathOpenInternal( name, ext, result, max_result, TRUE ) );
+    return( FullPathOpenInternal( name, name_len, ext, result, max_result, TRUE ) );
+}
+
+static handle PathOpenInternal( const char *name, unsigned name_len, const char *ext, bool force_local )
+{
+    char        result[TXT_LEN];
+
+    if( force_local ) {
+        return( LocalFullPathOpen( name, name_len, ext, result, TXT_LEN ) );
+    } else {
+        return( FullPathOpen( name, name_len, ext, result, TXT_LEN ) );
+    }
+}
+
+handle PathOpen( const char *name, unsigned name_len, const char *ext )
+{
+    return( PathOpenInternal( name, name_len, ext, FALSE ) );
+}
+
+handle LocalPathOpen( const char *name, unsigned name_len, const char *ext )
+{
+    return( PathOpenInternal( name, name_len, ext, TRUE ) );
 }
 
 #if !defined( BUILD_RFX )
@@ -563,7 +585,7 @@ bool FindWritable( char const *src, char *dst )
     char        buffer[TXT_LEN];
     unsigned    plen;
     unsigned    nlen;
-    char const *name;
+    const char  *name;
     open_access loc;
 
     loc = 0;
@@ -585,30 +607,6 @@ bool FindWritable( char const *src, char *dst )
     return( IsWritable( dst, loc ) );
 }
 #endif
-
-static handle PathOpenInternal( char const *name, unsigned len, char *ext, bool force_local )
-{
-    char        result[TXT_LEN];
-    char        *p;
-
-    _AllocA( p, len + 1 );
-    memcpy( p, name, len );
-    p[ len ] = '\0';
-    if( force_local )
-        return( LocalFullPathOpen( p, ext, result, TXT_LEN ) );
-    else
-        return( FullPathOpen( p, ext, result, TXT_LEN ) );
-}
-
-handle PathOpen( char const *name, unsigned len, char *ext )
-{
-    return( PathOpenInternal( name, len, ext, FALSE ) );
-}
-
-handle LocalPathOpen( char const *name, unsigned len, char *ext )
-{
-    return( PathOpenInternal( name, len, ext, TRUE ) );
-}
 
 void SysFileInit( void )
 {
@@ -684,3 +682,28 @@ void PathInit( void )
     _Free( buff );
 #endif
 }
+
+#if defined( __DOS__ ) || defined( __LINUX__ )
+dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+{
+    char        dummy[TXT_LEN];
+    handle      f;
+
+    if( result == NULL ) {
+        result = dummy;
+        max_result = sizeof( dummy );
+    }
+    f = FullPathOpenInternal( name, name_len, ext, result, max_result, FALSE );
+    return( ( f == NIL_HANDLE ) ? DIG_NIL_HANDLE : f );
+}
+
+unsigned DIGPathClose( dig_fhandle h )
+{
+    return( FileClose( h ) );
+}
+
+long DIGGetSystemHandle( dig_fhandle h )
+{
+    return( SysHandles[h & ~REMOTE_IND] );
+}
+#endif

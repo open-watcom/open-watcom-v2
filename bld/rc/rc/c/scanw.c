@@ -30,15 +30,11 @@
 
 
 #include "global.h"
-#include "varstr.h"
-#include "rcmem.h"
+#include "yydrivrw.h"
 #include "errors.h"
-#include "winytab.h"
-#include "scan.h"
-#include "scanw.h"
-#include "keywordw.h"
 #include "depend.h"
 #include "errprt.h"
+#include "rcrtns.h"
 
 #ifdef SCANDEBUG
 
@@ -125,14 +121,14 @@ static int ScanCPPDirective( ScanValue *value )
     }
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
-        RcMemFree( value->string.string );
+        RCFREE( value->string.string );
 
         /* get the line number */
         token = ScanDFA( value );
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
         }
-        RcMemFree( value->intinfo.str );
+        RCFREE( value->intinfo.str );
         value->intinfo.str = NULL;
         linenum = value->intinfo.val;
 
@@ -143,13 +139,13 @@ static int ScanCPPDirective( ScanValue *value )
             if( AddDependency( value->string.string ) ) {
                 ErrorHasOccured = TRUE;
             }
-            RcMemFree( value->string.string );
+            RCFREE( value->string.string );
             token = ScanDFA( value );
         } else {
             RcIoSetLogicalFileInfo( linenum, NULL );
         }
     } else if( stricmp( value->string.string, "pragma" ) == 0 ) {
-        RcMemFree( value->string.string );
+        RCFREE( value->string.string );
         token = Y_POUND_PRAGMA;
     } else if( stricmp( value->string.string, "error" ) == 0 ) {
         char            buf[80];
@@ -258,7 +254,7 @@ static int ScanDFA( ScanValue * value )
     state(S_L_STRING):
         if( LookAhead =='"' ) {
             longString = TRUE;
-            RcMemFree( VarStringEnd( newstring, NULL ) );
+            RCFREE( VarStringEnd( newstring, NULL ) );
             change_state( S_START );
         } else {
             change_state( S_NAME );
@@ -730,7 +726,7 @@ static int ScanDFA( ScanValue * value )
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
                 /* release the string if it is a keyword */
-                RcMemFree( value->string.string );
+                RCFREE( value->string.string );
             }
             if( token == Y_RCINCLUDE ) {
                 /* when inline preprocessing is in place take steps here */

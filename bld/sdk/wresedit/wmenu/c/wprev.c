@@ -36,6 +36,7 @@
 #include "sys_rc.h"
 #include "wedit.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "w_menu.h"
 
@@ -58,7 +59,7 @@ static void WHandleMenuSelect( WMenuEditInfo *, WPARAM, LPARAM );
 /****************************************************************************/
 static char WPrevClass[] = "WMenuPrevClass";
 
-Bool WRegisterPrevClass( HINSTANCE inst )
+bool WRegisterPrevClass( HINSTANCE inst )
 {
     WNDCLASS wc;
 
@@ -82,11 +83,11 @@ void WUnRegisterPrevClass( HINSTANCE inst )
     UnregisterClass( WPrevClass, inst );
 }
 
-Bool WResetPrevWindowMenu( WMenuEditInfo *einfo )
+bool WResetPrevWindowMenu( WMenuEditInfo *einfo )
 {
     HMENU       menu;
     HMENU       omenu;
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL && einfo->preview_window != (HWND)NULL);
 
@@ -126,7 +127,7 @@ void WMovePrevWindow( WMenuEditInfo *einfo )
                   SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE );
 }
 
-Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
+bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 {
     int         x, y, width, height, i;
     HWND        win;
@@ -146,7 +147,7 @@ Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     width = 206;
     height = 63;
 
-    title = WAllocRCString( W_PREVIEWMENU );
+    title = AllocRCString( W_PREVIEWMENU );
 
     einfo->preview_window = CreateWindow( WPrevClass, title,
                                           WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU,
@@ -154,7 +155,7 @@ Bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
                                           (HMENU)NULL, inst, einfo );
 
     if( title != NULL ) {
-        WFreeRCString( title );
+        FreeRCString( title );
     }
 
     if( einfo->preview_window == (HWND)NULL ) {
@@ -232,7 +233,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LRESULT             ret;
-    Bool                pass_to_def;
+    bool                pass_to_def;
     WMenuEditInfo       *einfo;
 
     pass_to_def = TRUE;

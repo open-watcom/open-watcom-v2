@@ -42,11 +42,11 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeCheckResizeOperation( OBJPTR, LIST **, RESIZE_ID );
-static Bool WdeCheckAlignControl( LIST **, OBJPTR * );
-static Bool WdeAlignControl( WdeAlignValue, OBJPTR, RECT * );
+static bool WdeCheckResizeOperation( OBJPTR, LIST **, RESIZE_ID );
+static bool WdeCheckAlignControl( LIST **, OBJPTR * );
+static bool WdeAlignControl( WdeAlignValue, OBJPTR, RECT * );
 
-Bool WdeAlignControls( WdeAlignValue aval )
+bool WdeAlignControls( WdeAlignValue aval )
 {
     LIST    *objlist;
     LIST    *olist;
@@ -54,7 +54,7 @@ Bool WdeAlignControls( WdeAlignValue aval )
     OBJPTR  parent;
     RECT    prect;
     RECT    nc_size;
-    Bool    ret;
+    bool    ret;
 
     if( aval == 0 || !WdeCheckAlignControl ( &objlist, &parent ) ) {
         return( FALSE );
@@ -97,7 +97,7 @@ Bool WdeAlignControls( WdeAlignValue aval )
     return( ret );
 }
 
-Bool WdeAlignControl( WdeAlignValue aval, OBJPTR obj, RECT *prect )
+bool WdeAlignControl( WdeAlignValue aval, OBJPTR obj, RECT *prect )
 {
     RECT rect;
 
@@ -110,7 +110,7 @@ Bool WdeAlignControl( WdeAlignValue aval, OBJPTR obj, RECT *prect )
     return( TRUE );
 }
 
-Bool WdeSameSize( RESIZE_ID resize_id )
+bool WdeSameSize( RESIZE_ID resize_id )
 {
     LIST    *objlist;
     LIST    *olist;
@@ -163,10 +163,10 @@ Bool WdeSameSize( RESIZE_ID resize_id )
     return( TRUE );
 }
 
-Bool WdeGetBoundingRectFromSelect( RECT *r )
+bool WdeGetBoundingRectFromSelect( RECT *r )
 {
     LIST    *objlist;
-    Bool    ret;
+    bool    ret;
 
     if( r == NULL ) {
         return( FALSE );
@@ -185,7 +185,7 @@ Bool WdeGetBoundingRectFromSelect( RECT *r )
     return( ret );
 }
 
-Bool WdeGetBoundingRectFromList( LIST *objlist, RECT *r )
+bool WdeGetBoundingRectFromList( LIST *objlist, RECT *r )
 {
     LIST    *clist;
     OBJPTR  obj;
@@ -210,14 +210,14 @@ Bool WdeGetBoundingRectFromList( LIST *objlist, RECT *r )
     return( TRUE );
 }
 
-Bool WdeCheckResizeOperation( OBJPTR primary, LIST **objlist, RESIZE_ID id )
+bool WdeCheckResizeOperation( OBJPTR primary, LIST **objlist, RESIZE_ID id )
 {
     LIST        *clist;
     OBJPTR      obj;
     RECT        rect;
     POINT       pt;
     RESIZE_ID   obj_resize_id;
-    Bool        ret;
+    bool        ret;
 
     if( objlist == NULL || primary == NULL ) {
         return( FALSE );
@@ -254,14 +254,14 @@ Bool WdeCheckResizeOperation( OBJPTR primary, LIST **objlist, RESIZE_ID id )
     return( ret );
 }
 
-Bool WdeCheckAlignControl( LIST **objlist, OBJPTR *p )
+bool WdeCheckAlignControl( LIST **objlist, OBJPTR *p )
 {
     LIST        *clist;
     OBJPTR      obj;
     OBJPTR      obj_parent;
     RECT        rect;
     POINT       pt;
-    Bool        ret;
+    bool        ret;
 
     if( objlist == NULL || p == NULL ) {
         return( FALSE );

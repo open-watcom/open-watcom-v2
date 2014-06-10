@@ -35,7 +35,7 @@
 WString& WTokenFile::token( WString& tok, bool* eol )
 {
     tok = "";
-    _eol = FALSE;
+    _eol = false;
     char ch = 0;
     for(;;) {
         ch = getch();
@@ -74,9 +74,9 @@ WString& WTokenFile::token( WString& tok, bool* eol )
     for(;;) {
         ch = getch();
         if( ch == 0 || ch == 10 ) {
-            _eol = TRUE;
+            _eol = true;
             if( eol != NULL ) *eol = _eol;
-            return tok;
+            return( tok );
         }
         if( !isspace( ch ) ) break;
     }
@@ -84,11 +84,13 @@ WString& WTokenFile::token( WString& tok, bool* eol )
         ungetch( ch );
     }
     if( eol != NULL ) *eol = _eol;
-    return tok;
+    return( tok );
 }
 
 void WTokenFile::flushLine( WString& tok )
 {
-    _eol = FALSE;
-    while( !_eol ) token( tok );
+    _eol = false;
+    while( !_eol ) {
+        token( tok );
+    }
 }

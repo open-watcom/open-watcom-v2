@@ -45,7 +45,7 @@
 #include "mad.h"
 #include "srcmgt.h"
 
-extern cue_file_id      CueFileId( cue_handle * );
+extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern bool             WndEvalInspectExpr( char *item, bool pop );
@@ -150,7 +150,7 @@ typedef struct {
         mod_handle      mod;
         struct {
             mod_handle  mod;
-            cue_file_id file_id;
+            cue_fileid  file_id;
         }               src_list;
         void            *viewhndl;
         unsigned        num_toggles;

@@ -24,32 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Public interface to yydriver module.
 *
 ****************************************************************************/
 
 
-#ifndef WDEMEM_INCLUDED
-#define WDEMEM_INCLUDED
+#ifndef _YYDRIVER_H
+#define _YYDRIVER_H
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
+extern void ParseInitOS2( void );
+extern void ParseFiniOS2( void );
+extern bool ParseOS2( void );
+extern void ParseInitStaticsOS2( void );
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern void *WdeMemAlloc( size_t );
-extern void WdeMemFree( void * );
-extern void *WdeMemRealloc( void *, size_t );
-extern int  WdeMemValidate( void * );
-extern int  WdeMemChkRange( void *, size_t );
-extern void WdeMemPrtUsage( void );
-extern int  WdeMemPrtList( void );
+extern void ParseInitWIN( void );
+extern void ParseFiniWIN( void );
+extern bool ParseWIN( void );
+extern void ParseInitStaticsWIN( void );
 
 #endif

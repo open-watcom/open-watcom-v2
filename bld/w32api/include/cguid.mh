@@ -9,11 +9,7 @@
 
 :include readonly.sp
 
-:include cpluspro.sp
-
 /* GUIDs */
-EXTERN_C const IID  GUID_NULL;
-
-:include cplusepi.sp
+EXTERN_C const IID  __cdecl GUID_NULL;
 
 #endif /* __CGUID_H__ */

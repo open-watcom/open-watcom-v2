@@ -31,11 +31,11 @@
 
 
 #include "global.h"
-#include "rcmem.h"
 #include "errors.h"
 #include "autodep.h"
 #include "reserr.h"
 #include "wresdefn.h"
+#include "rcrtns.h"
 
 #define MAX_OPEN_RESFILES       6
 
@@ -47,8 +47,8 @@ typedef struct {
 
 static ErrFrame         errFromWres;
 
-void closeAResFile( ResFileInfo *res )
-/*************************************/
+static void closeAResFile( ResFileInfo *res )
+/*******************************************/
 {
     if( res->IsOpen ) {
         ResCloseFile( res->Handle );
@@ -58,7 +58,7 @@ void closeAResFile( ResFileInfo *res )
         WResFreeDir( res->Dir );
         res->Dir = NULL;
     }
-    RcMemFree( res );
+    RCFREE( res );
 }
 
 int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
@@ -78,7 +78,7 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
     *resinfo = NULL;
 
     while( resnames != NULL ) {
-        resfile = RcMemMalloc( sizeof( ResFileInfo ) );
+        resfile = RCALLOC( sizeof( ResFileInfo ) );
         resfile->next = *resinfo;
         *resinfo = resfile;
         resfile->Dir = WResInitDir();
@@ -181,8 +181,8 @@ void WresRecordError( WResStatus status ) {
     errFromWres.errnum = errno;
 }
 
-char *LastWresErrStr( void ) {
-
+char *LastWresErrStr( void )
+{
     if( errFromWres.used == TRUE ) {
         switch( errFromWres.status ) {
         case WRS_READ_INCOMPLETE:
@@ -195,14 +195,16 @@ char *LastWresErrStr( void ) {
     }
 }
 
-int LastWresErr( void ) {
+int LastWresErr( void )
+{
     if( errFromWres.used == TRUE ) {
         return( errFromWres.errnum );
     }
     return( 0 );
 }
 
-int LastWresStatus( void ) {
+int LastWresStatus( void )
+{
     if( errFromWres.used == TRUE ) {
         return( errFromWres.status );
     }
@@ -311,9 +313,9 @@ void ReportDupResource( WResID *nameid, WResID *typeid, char *file1,
         }
     }
     if( nameid->IsName ) {
-        RcMemFree( name );
+        RCFREE( name );
     }
     if( typeid->IsName ) {
-        RcMemFree( type );
+        RCFREE( type );
     }
 }

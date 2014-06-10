@@ -34,52 +34,52 @@
 
 class WStringMapItem : public WObject
 {
-        public:
-                WEXPORT WStringMapItem( WObject* obj, WString *hand ) : _obj(obj), _hand(hand) {}
-                WEXPORT ~WStringMapItem() {}
-                virtual bool WEXPORT isEqual( const WObject* obj ) const;
-                WObject* WEXPORT obj() { return _obj; }
+    public:
+        WEXPORT WStringMapItem( WObject* obj, WString *hand ) : _obj(obj), _hand(hand) {}
+        WEXPORT ~WStringMapItem() {}
+        virtual bool WEXPORT isEqual( const WObject* obj ) const;
+        WObject* WEXPORT obj() { return( _obj ); }
 
-        private:
-                WObject*                _obj;
-                WString*                _hand;
+    private:
+        WObject*        _obj;
+        WString*        _hand;
 };
 
 
 bool WEXPORT WStringMapItem::isEqual( const WObject* obj ) const
 {
-        if( ((WStringMapItem*)obj)->_obj != NULL ) {
-                if( ((WStringMapItem*)obj)->_hand != NULL ) {
-                        return ((WStringMapItem*)obj)->_obj->isEqual( _obj ) && ((WStringMapItem*)obj)->_hand->isEqual( _hand );
-                }
-                return ((WStringMapItem*)obj)->_obj->isEqual( _obj );
-        } else if( ((WStringMapItem*)obj)->_hand != NULL ) {
-                return ((WStringMapItem*)obj)->_hand->isEqual( _hand );
+    if( ((WStringMapItem*)obj)->_obj != NULL ) {
+        if( ((WStringMapItem*)obj)->_hand != NULL ) {
+            return( ((WStringMapItem*)obj)->_obj->isEqual( _obj ) && ((WStringMapItem*)obj)->_hand->isEqual( _hand ) );
         }
-        return FALSE;
+        return( ((WStringMapItem*)obj)->_obj->isEqual( _obj ) );
+    } else if( ((WStringMapItem*)obj)->_hand != NULL ) {
+        return( ((WStringMapItem*)obj)->_hand->isEqual( _hand ) );
+    }
+    return( false );
 }
 
 void WEXPORT WStringMap::setThis( WObject* obj, WString *hand )
 {
-        add( new WStringMapItem( obj, hand ) );
-        _currThis = NULL;
+    add( new WStringMapItem( obj, hand ) );
+    _currThis = NULL;
 }
 
 void WEXPORT WStringMap::clearThis( WObject* obj )
 {
-        WStringMapItem  x( obj, NULL );
-        delete remove( &x );
+    WStringMapItem  x( obj, NULL );
+    delete remove( &x );
 }
 
 WObject* WEXPORT WStringMap::findThis( WString *hand, WObject *obj )
 {
-        if( hand != NULL ) {
-                WStringMapItem  x( obj, hand );
-                WStringMapItem* m = (WStringMapItem*)find( &x );
-                if( m == NULL ) {
-                        return _currThis;
-                }
-                return m->obj();
+    if( hand != NULL ) {
+        WStringMapItem  x( obj, hand );
+        WStringMapItem* m = (WStringMapItem*)find( &x );
+        if( m == NULL ) {
+            return( _currThis );
         }
-        return NULL;
+        return( m->obj() );
+    }
+    return( NULL );
 }

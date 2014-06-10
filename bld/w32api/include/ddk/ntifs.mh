@@ -4396,15 +4396,15 @@ typedef struct _QUERY_PATH_RESPONSE {
 typedef QUERY_PATH_RESPONSE *PQUERY_PATH_RESPONSE;
 
 /* Global variables in NTOSKRNL.EXE */
-extern NTKERNELAPI ULONG                CcFastMdlReadWait;
-extern NTKERNELAPI UCHAR const * const  *FsRtlLegalAnsiCharacterArray;
-extern NTKERNELAPI ULONG                IoReadOperationCount;
-extern NTKERNELAPI LARGE_INTEGER        IoReadTransferCount;
-extern NTKERNELAPI KSPIN_LOCK           IoStatisticsLock;
-extern NTKERNELAPI ULONG                IoWriteOperationCount;
-extern NTKERNELAPI LARGE_INTEGER        IoWriteTransferCount;
-extern NTKERNELAPI PUSHORT              *NlsOemLeadByteInfo;
-extern NTKERNELAPI PSE_EXPORTS          SeExports;
+extern NTKERNELAPI ULONG                __cdecl CcFastMdlReadWait;
+extern NTKERNELAPI UCHAR const * const  * __cdecl FsRtlLegalAnsiCharacterArray;
+extern NTKERNELAPI ULONG                __cdecl IoReadOperationCount;
+extern NTKERNELAPI LARGE_INTEGER        __cdecl IoReadTransferCount;
+extern NTKERNELAPI KSPIN_LOCK           __cdecl IoStatisticsLock;
+extern NTKERNELAPI ULONG                __cdecl IoWriteOperationCount;
+extern NTKERNELAPI LARGE_INTEGER        __cdecl IoWriteTransferCount;
+extern NTKERNELAPI PUSHORT              * __cdecl NlsOemLeadByteInfo;
+extern NTKERNELAPI PSE_EXPORTS          __cdecl SeExports;
 
 /* Functions in NTOSKRNL.EXE and NTDLL.DLL */
 NTSYSAPI NTSTATUS NTAPI         ZwDuplicateToken( HANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES, BOOLEAN, TOKEN_TYPE, PHANDLE );

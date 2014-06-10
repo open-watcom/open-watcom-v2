@@ -38,14 +38,14 @@
 #include <string.h>
 #include "dip.h"
 #include <malloc.h>
-#include "madsys.h"
+#include "madsys1.h"
 #include "drwatcom.h"
 
 msglist MADMsgs[] = {
-    #define pick( r, e, j ) MAD_##r,(char *)r,
+    #define pick( r, e, j ) MAD_##r,(char *)(pointer_int)r,
     #include "mad.str"
     #undef pick
-    0 , (char *)-1
+    0 , (char *)(pointer_int)-1
 };
 
 unsigned DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buff )

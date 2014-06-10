@@ -49,7 +49,7 @@ extern void InitImpCueInfo( imp_image_handle *ii )
 
     list = ii->cue_map;
     InitCueList( list );
-    list->imx = INVALID_IMX;
+    list->im = IMH_NOMOD;
     list->last.mach.segment = 0;
     list->last.mach.offset = 0;
     list->last.next_offset = 0;
@@ -59,7 +59,7 @@ extern void InitImpCueInfo( imp_image_handle *ii )
 static void ResetCueInfo(  cue_list *list )
 /*****************************************/
 {
-    list->imx = INVALID_IMX;
+    list->im = IMH_NOMOD;
     list->last.mach.segment = 0;
     list->last.mach.offset = 0;
     list->last.next_offset = 0;
@@ -70,11 +70,11 @@ static void ResetCueInfo(  cue_list *list )
 extern bool FiniImpCueInfo( imp_image_handle *ii )
 /************************************************/
 {
-    int         ret;
+    bool        ret;
     cue_list    *list;
 
     list = ii->cue_map;
-    if( list->imx != INVALID_IMX ) {
+    if( list->im != IMH_NOMOD ) {
         ResetCueInfo( list );
         ret = TRUE;
     } else {
@@ -84,13 +84,13 @@ extern bool FiniImpCueInfo( imp_image_handle *ii )
 }
 
 
-imp_mod_handle  DIPENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 /**********************************************************/
 {
     /* Return the module the source cue comes from. */
      ii = ii;
-     return( IMX2IM (ic->imx ) );
+     return( ic->im );
 }
 
 
@@ -101,19 +101,20 @@ typedef struct {
     dr_line_dir     *dirs;
 } file_walk_name;
 
-static int ACueFile( void *_info, dr_line_file *curr )
-/****************************************************/
+static bool ACueFile( void *_info, dr_line_file *curr )
+/*****************************************************/
 {
     file_walk_name  *info = _info;
-    int             cont;
+    bool            cont;
     int             i;
 
-    if( info->index  == curr->index ) {
+    if( info->index == curr->index ) {
         if( curr->name ) {
             if( curr->dir != 0) {
                 for( i = 0; i < info->num_dirs; i++ ) {
-                    if( info->dirs[i].index == curr->dir )
+                    if( info->dirs[i].index == curr->dir ) {
                         break;
+                    }
                 }
                 if( i < info->num_dirs ) {
                     info->ret = DCAlloc( strlen( curr->name ) + strlen( info->dirs[i].name ) + 2);
@@ -142,8 +143,8 @@ static int ACueFile( void *_info, dr_line_file *curr )
 }
 
 
-static int ACueDir( void *_info, dr_line_dir *curr )
-/**************************************************/
+static bool ACueDir( void *_info, dr_line_dir *curr )
+/***************************************************/
 {
     file_walk_name  *info = _info;
 
@@ -158,8 +159,8 @@ static int ACueDir( void *_info, dr_line_dir *curr )
 }
 
 
-static int IsRelPathname( const char *name )
-/******************************************/
+static bool IsRelPathname( const char *name )
+/*******************************************/
 {
     /* Detect UNIX or DOS style relative pathnames */
     if( (name[0] == '/') || (name[0] == '\\') ) {
@@ -173,7 +174,7 @@ static int IsRelPathname( const char *name )
 }
 
 
-unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, unsigned max )
 /********************************************************************/
 {
@@ -182,20 +183,16 @@ unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
     file_walk_name  wlk;
     unsigned        len;
     unsigned        dir_len;
-    im_idx          imx;
     dr_handle       stmts;
     dr_handle       cu_handle;
     int             i;
+    mod_info        *modinfo;
 
-    imx = ic->imx;
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into dwarf */
-    stmts = ii->mod_map[imx].stmts;
-    if( stmts == 0 ) {
-        DCStatus( DS_FAIL );
-        return( 0 );
-    }
-    cu_handle = ii->mod_map[imx].cu_tag;
-    if( cu_handle == 0 ) {
+    modinfo = IM2MODI( ii, ic->im );
+    stmts = modinfo->stmts;
+    cu_handle = modinfo->cu_tag;
+    if( stmts == 0 || cu_handle == 0 ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -207,9 +204,10 @@ unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
     name = wlk.ret;
 
     // Free directory and file table information
-    for( i = 0; i < wlk.num_dirs; i++)
-        DCFree(wlk.dirs[i].name);
-    DCFree(wlk.dirs);
+    for( i = 0; i < wlk.num_dirs; i++ ) {
+        DCFree( wlk.dirs[i].name );
+    }
+    DCFree( wlk.dirs );
 
     if( name == NULL ) {
         DCStatus( DS_FAIL );
@@ -248,8 +246,8 @@ typedef struct {
     dr_line_data first;
 } first_cue_wlk;
 
-static int TheFirstCue( void *_wlk, dr_line_data *curr )
-/******************************************************/
+static bool TheFirstCue( void *_wlk, dr_line_data *curr )
+/*******************************************************/
 {
     first_cue_wlk   *wlk = _wlk;
 
@@ -261,22 +259,22 @@ static int TheFirstCue( void *_wlk, dr_line_data *curr )
 }
 
 
-static int FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
-/*********************************************************************/
+static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
+/**********************************************************************/
 {
-    int             cont;
+    bool            cont;
     first_cue_wlk   wlk;
 
     wlk.fno = fno;
     cont = DRWalkLines( stmts, SEG_CODE, TheFirstCue, &wlk );
     if( cont == FALSE ) {
-        ic->fno  = wlk.first.file;
+        ic->fno = wlk.first.file;
         ic->line = wlk.first.line;
-//      ic->col  = wlk.first.col;
-        ic->col  = 0;
+//      ic->col = wlk.first.col;
+        ic->col = 0;
         ic->a = NilAddr;
         ic->a.mach.segment = wlk.first.seg;
-        ic->a.mach.offset  = wlk.first.offset;
+        ic->a.mach.offset = wlk.first.offset;
     }
     return( cont );
 }
@@ -285,29 +283,29 @@ static int FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
 typedef struct {
     dr_handle           stmts;
     imp_image_handle    *ii;
-    im_idx              imx;
+    imp_mod_handle      im;
     IMP_CUE_WKR         *wk;
     imp_cue_handle      *ic;
     void                *d;
     walk_result         wr;
 } file_walk_cue;
 
-static int ACueFileNum( void *_fc, dr_line_file *curr )
-/*****************************************************/
+static bool ACueFileNum( void *_fc, dr_line_file *curr )
+/******************************************************/
 {
     file_walk_cue   *fc = _fc;
-    int             cont;
+    bool            cont;
     imp_cue_handle  *ic;
     dr_dbg_handle   saved;
 
     ic = fc->ic;
     DCFree( curr->name );
     ic->a = NilAddr;
-    ic->imx = fc->imx;
+    ic->im = fc->im;
     if( FirstCue( fc->stmts, curr->index, ic ) ) {
         ic->fno = curr->index;
         ic->line = 1;
-        ic->col  = 0;
+        ic->col = 0;
     }
     saved = DRGetDebug();
     fc->wr = fc->wk( fc->ii, ic, fc->d );
@@ -321,35 +319,33 @@ static int ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
                     void *d )
 /*************************************************************************/
 {
     file_walk_cue   wlk;
-    im_idx          imx;
     dr_handle       stmts;
 
-    imx = IM2IMX( im );
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts  =  ii->mod_map[imx].stmts;
+    stmts = IM2MODI( ii, im )->stmts;
     if( stmts == 0 ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
     }
     wlk.stmts = stmts;
     wlk.ii = ii;
-    wlk.imx = imx;
+    wlk.im = im;
     wlk.wk = wk;
     wlk.ic = ic;
-    wlk.d  = d;
-    wlk.wr =  WR_CONTINUE;
+    wlk.d = d;
+    wlk.wr = WR_CONTINUE;
     DRWalkLFiles( stmts, ACueFileNum, &wlk, ACueDir, NULL );
     return( wlk.wr );
 }
 
 
-cue_file_id     DIPENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /*************************************************************/
 {
@@ -367,8 +363,8 @@ typedef struct {
     seg_cue         *curr_seg;
 } la_walk_info;
 
-static int ACueAddr( void *_info, dr_line_data *curr )
-/****************************************************/
+static bool ACueAddr( void *_info, dr_line_data *curr )
+/*****************************************************/
 {
     la_walk_info    *info = _info;
 
@@ -408,7 +404,7 @@ static void LoadCueMap( dr_handle stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 /*****************************************************************/
 {
@@ -416,22 +412,20 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     dfline_search   start_state;
     dfline_find     find;
     dip_status      ret;
-    imp_mod_handle  imx;
     cue_item        cue;
     cue_list        *cue_map;
     address         map_addr;
 
-    imx = src->imx;
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    stmts  =  ii->mod_map[imx].stmts;
+    stmts = IM2MODI( ii, src->im )->stmts;
     if( stmts == 0 ) {
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
     }
-    cue_map= ii->cue_map;
-    if( cue_map->imx != imx ) {
+    cue_map = ii->cue_map;
+    if( cue_map->im != src->im ) {
         ResetCueInfo( cue_map );
-        cue_map->imx = imx;
+        cue_map->im = src->im;
         map_addr = NilAddr;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
@@ -444,16 +438,18 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     cue.fno = src->fno;
     cue.line = src->line;
     cue.col = src->col;
+    find = LINE_NOT;
     while( 0 != adj ) {
-        find =  FindCue( cue_map, &cue, start_state );
+        find = FindCue( cue_map, &cue, start_state );
         if( find == LINE_NOT ) break;
         --adj;
     }
-    dst->imx = imx;
-    dst->fno  =  cue.fno;
-    dst->line =  cue.line;
-    dst->col  =  cue.col;
+    dst->im = src->im;
+    dst->fno = cue.fno;
+    dst->line = cue.line;
+    dst->col = cue.col;
     dst->a.mach = cue.mach;
+    ret = DS_FAIL;
     switch( find ) {
     case LINE_NOT:
         DCStatus( DS_FAIL );
@@ -470,7 +466,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
 }
 
 
-unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /***********************************************************/
 {
@@ -479,7 +475,7 @@ unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
 }
 
 
-unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 /**********************************************************************************/
 {
     /* Return the column number of source cue. Return zero if there
@@ -492,7 +488,7 @@ unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *
 }
 
 
-address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 /********************************************************************************/
 {
     address     ret;
@@ -506,7 +502,7 @@ address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic
 }
 
 
-search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 /*******************************************************************/
 {
@@ -517,41 +513,39 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
      */
     address         map_addr;
     search_result   ret;
-    im_idx          imx;
     cue_list        *cue_map;
     cue_item        cue;
     dr_handle       stmts;
 
-    if( im == 0 ) {
+    if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
-    imx = IM2IMX( im );
-    stmts = ii->mod_map[imx].stmts;
+    stmts = IM2MODI( ii, im )->stmts;
     if( stmts == 0 ) {
         return( SR_NONE );
     }
     map_addr = addr;
     cue_map = ii->cue_map;
     Real2Map( ii->addr_map, &map_addr );
-    if( cue_map->imx != imx ) {
+    if( cue_map->im != im ) {
         ResetCueInfo( cue_map );
-        cue_map->imx = imx;
+        cue_map->im = im;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
-    ic->imx  = imx;
-    ic->fno  = 0;
+    ic->im = im;
+    ic->fno = 0;
     ic->line = 0;
-    ic->col  = 0;
-    ic->a    = NilAddr;
+    ic->col = 0;
+    ic->a = NilAddr;
     ret = SR_NONE;
     if( map_addr.mach.segment == cue_map->last.mach.segment
-     && map_addr.mach.offset  >= cue_map->last.mach.offset
-     && map_addr.mach.offset  <  cue_map->last.next_offset ) {
-        ic->fno  = cue_map->last.fno;
+      && map_addr.mach.offset  >= cue_map->last.mach.offset
+      && map_addr.mach.offset  <  cue_map->last.next_offset ) {
+        ic->fno = cue_map->last.fno;
         ic->line = cue_map->last.line;
-        ic->col  = cue_map->last.col;
+        ic->col = cue_map->last.col;
         ic->a.mach = cue_map->last.mach;
         if( cue_map->last.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
@@ -561,9 +555,9 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
         return( ret );
      }
     if( FindCueOffset( cue_map, &map_addr.mach, &cue ) ) {
-        ic->fno  = cue.fno;
+        ic->fno = cue.fno;
         ic->line = cue.line;
-        ic->col  = cue.col;
+        ic->col = cue.col;
         ic->a.mach = cue.mach;
         if( cue.mach.offset == map_addr.mach.offset ) {
             ret = SR_EXACT;
@@ -576,8 +570,8 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
 }
 
 
-search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 /**********************************************************************/
 {
@@ -585,25 +579,23 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
     dfline_find     find;
     dfline_search   what;
     dr_handle       stmts;
-    im_idx          imx;
     cue_list        *cue_map;
     address         map_addr;
     cue_item        cue;
 
-    if( im == 0 ) {
+    if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
         return( SR_NONE );
     }
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
-    imx = IM2IMX( im );
-    stmts  = ii->mod_map[imx].stmts;
+    stmts = IM2MODI( ii, im )->stmts;
     if( stmts == 0 ) {
         return( SR_NONE );
     }
     cue_map= ii->cue_map;
-    if( cue_map->imx != imx ) {
+    if( cue_map->im != im ) {
         ResetCueInfo( cue_map );
-        cue_map->imx = imx;
+        cue_map->im = im;
         map_addr = NilAddr;
         LoadCueMap( stmts, &map_addr, cue_map );
     }
@@ -618,14 +610,15 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
     if( line == 0 ) {
         what = LOOK_FILE;
     } else {
-        what =  LOOK_CLOSEST;
+        what = LOOK_CLOSEST;
     }
     find = FindCue( cue_map, &cue, what );
-    ic->imx  = imx;
-    ic->fno  = cue.fno;
+    ic->im = im;
+    ic->fno = cue.fno;
     ic->line = cue.line;
-    ic->col  = cue.col;
+    ic->col = cue.col;
     ic->a.mach = cue.mach;
+    ret = SR_NONE;
     switch( find ) {
     case LINE_CLOSEST:
         ret = SR_CLOSEST;
@@ -641,7 +634,7 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
 }
 
 
-int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 /*******************************************************************/
 {
@@ -658,12 +651,15 @@ int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
     long    ret;
 
     ii = ii;
-    ret = ic1->imx - ic2->imx;
-    if( ret != 0 ) return( ret );
+    ret = ic1->im - ic2->im;
+    if( ret != 0 )
+        return( ret );
     ret = ic1->fno - ic2->fno;
-    if( ret != 0 ) return( ret );
+    if( ret != 0 )
+        return( ret );
     ret = ic1->line - ic2->line;
-    if( ret != 0 ) return( ret );
+    if( ret != 0 )
+        return( ret );
     ret = ic1->col - ic2->col;
     return( ret );
 }

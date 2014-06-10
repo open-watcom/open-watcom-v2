@@ -53,7 +53,7 @@ enum {
     TS_REACTIVATED
 };
 
-#pragma pack( push, 8 ) /* make sure everything's aligned for speed */
+#include "pushpck8.h"   /* make sure everything's aligned for speed */
 typedef struct {
      address            brkpt;          /* address of DbgTmpBrk */
      address            watch_stack;    /* stack pointer at call */
@@ -83,7 +83,7 @@ typedef struct {
      mad_disasm_data    *dd;            /* disasm info for curr instr */
      mad_trace_data     *td;            /* trace info for curr instr */
 } trace_state;
-#pragma pack( pop )
+#include "poppck.h"
 
 #define         KEEPGOING       0
 #define         STOP            1
@@ -106,7 +106,7 @@ extern address          NilAddr;
 
 
 extern void             *OpenSrcFile( cue_handle *ch );
-extern cue_file_id      CueFileId( cue_handle * );
+extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             OptMemAddr( memory_expr, address * );

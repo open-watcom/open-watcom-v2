@@ -37,12 +37,15 @@
 #include "dipcli.h"
 #include "dipsys.h"
 
-extern  int      PathOpen(char *,unsigned, char *);
+void DIPSysUnload( dip_sys_handle *sys_hdl )
+{
+    FreeLibrary( (HANDLE)*sys_hdl );
+}
 
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HANDLE              dll;
-    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
+    dip_init_func       *init_func;
     char                newpath[256];
     dip_status          status;
 
@@ -52,21 +55,12 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
     if( dll == NULL ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    init_func = (LPVOID) GetProcAddress( dll, "DIPLOAD" );
-    if( init_func == NULL ) {
-        FreeLibrary( dll );
-        return( DS_ERR|DS_INVALID_DIP );
+    status = DS_ERR|DS_INVALID_DIP;
+    init_func = (dip_init_func *)GetProcAddress( dll, "DIPLOAD" );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = (dip_sys_handle)dll;
+        return( DS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        FreeLibrary( dll );
-        return( status );
-    }
-    *sys_hdl = (dip_sys_handle)dll;
-    return( DS_OK );
-}
-
-void DIPSysUnload( dip_sys_handle sys_hdl )
-{
-    FreeLibrary( (HANDLE)sys_hdl );
+    FreeLibrary( dll );
+    return( status );
 }

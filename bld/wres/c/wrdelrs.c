@@ -32,6 +32,7 @@
 
 #include "layer0.h"
 #include "wres.h"
+#include "wresrtns.h"
 
 /*
  * delAResource - delete a single resource node and update pointers/counters

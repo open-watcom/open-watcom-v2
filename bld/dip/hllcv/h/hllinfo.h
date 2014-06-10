@@ -33,7 +33,6 @@
 #define DIP_HLL
 
 #include <stdlib.h>
-#include <stddef.h>
 #include <string.h>
 #include "dip.h"
 #include "dipimp.h"
@@ -43,9 +42,6 @@
 typedef unsigned long   virt_mem;
 
 #define BLOCK_FACTOR( i, n )    (((i)+((n)-1))/(n))
-
-#define MH_BASE         1
-#define MH_GBL          ((imp_mod_handle)0)
 
 typedef enum {
     HLL_SYM_TYPE_HLL_SSR,               /* HLL Symbol scope record. */

@@ -49,7 +49,7 @@ WCLASS WFileName : public WString {
         void WEXPORT merge( const char* name );
         void WEXPORT relativeTo( const char* f = NULL );
         void WEXPORT absoluteTo( const char* f = NULL );
-        void WEXPORT getCWD( bool slash=TRUE );
+        void WEXPORT getCWD( bool slash=true );
         bool WEXPORT setCWD() const;
         bool WEXPORT makeDir() const;
         bool WEXPORT dirExists() const;
@@ -59,7 +59,7 @@ WCLASS WFileName : public WString {
         void WEXPORT setDrive( const char* drive );
         const char* WEXPORT drive() const;
         void WEXPORT setDir( const char* dir );
-        const char* WEXPORT dir( bool slash=TRUE ) const;
+        const char* WEXPORT dir( bool slash=true ) const;
         void WEXPORT setFName( const char* fName );
         const char* WEXPORT fName() const;
         void WEXPORT setExt( const char* ext );
@@ -81,7 +81,7 @@ WCLASS WFileName : public WString {
         void WEXPORT noExt( WFileName& f ) const;
         void WEXPORT noPath( WFileName& f ) const;
         void WEXPORT noPathNoExt( WFileName& f ) const { f = fName(); }
-        void WEXPORT path( WFileName& f, bool slash=TRUE ) const;
+        void WEXPORT path( WFileName& f, bool slash=true ) const;
         bool WEXPORT removeFile() const;
         bool WEXPORT renameFile( const char* newname ) const;
         char WEXPORT setPathSep( char );

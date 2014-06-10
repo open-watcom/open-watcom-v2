@@ -65,7 +65,7 @@ WINEXPORT BOOL WREPropertyProc( HWND, UINT, WPARAM, LPARAM );
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
+static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
 {
     char        *name;
     HWND        combo;
@@ -94,7 +94,7 @@ static Bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( TRUE );

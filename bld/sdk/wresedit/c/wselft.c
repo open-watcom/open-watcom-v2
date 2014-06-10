@@ -61,7 +61,7 @@
 /****************************************************************************/
 
 WRFileType WSelectFileType( HWND parent, char *name,
-                            Bool is32bit, Bool use_wres,
+                            bool is32bit, bool use_wres,
                             HINSTANCE inst, HELP_CALLBACK hcb )
 {
     WRFileType          file_type;

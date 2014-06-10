@@ -46,7 +46,7 @@ HDDEDATA _WEXPORT CALLBACK clientCallback( UINT type, UINT /*fmt*/,
     if( client != NULL ) {
         switch( type ) {
         case XTYP_DISCONNECT:
-            return (HDDEDATA)client->xtDisconnect();
+            return( (HDDEDATA)client->xtDisconnect() );
         }
     }
     return( (HDDEDATA)NULL );
@@ -62,14 +62,14 @@ WEXPORT WClient::WClient( WObject *owner, cbc notify )
     , _notify( notify )
     , _procid( 0 )
     , _hconv( 0 )
-    , _ok( FALSE )
+    , _ok( false )
     , _timeout( 5000 )
-    , _connected( FALSE ) {
+    , _connected( false ) {
 /*************************/
 
     _procInst = MakeProcInstance( (FARPROC)clientCallback, GUIMainHInst );
     if( !DdeInitialize( &_procid, (PFNCALLBACK)_procInst, INITFLAGS, 0L ) ) {
-        _ok = TRUE;
+        _ok = true;
     }
 }
 
@@ -88,11 +88,11 @@ WEXPORT WClient::~WClient() {
 bool WEXPORT WClient::xtDisconnect() {
 /************************************/
 
-    _connected = FALSE;
+    _connected = false;
     if( (_owner != NULL) && (_notify != NULL) ) {
         (_owner->*_notify)( "disconnect" );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -104,11 +104,11 @@ bool WEXPORT WClient::connect( const char *service, const char *topic ) {
     _hconv = DdeConnect( _procid, _service, _topic, NULL );
     if( _hconv != NULL ) {
         _convMap.setThis( this, (WHANDLE)_hconv );
-        _connected = TRUE;
-        return TRUE;
+        _connected = true;
+        return( true );
     }
     DdeGetLastError( _procid );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -129,7 +129,7 @@ void WEXPORT WClient::disconnect() {
         DdeFreeStringHandle( _procid, _topic );
         _topic = NULL;
     }
-    _connected = FALSE;
+    _connected = false;
 }
 
 
@@ -143,7 +143,7 @@ WString * WEXPORT WClient::sendMsg( const char *msg, WClientFlags flags ) {
     DdeFreeStringHandle( _procid, hsz );
     if( hdata != NULL && _timeout != TIMEOUT_ASYNC ) {
         int len = (int)DdeGetData( hdata, NULL, 0, 0 );
-        char *r = new char[ len+1 ];
+        char *r = new char[len + 1];
         DdeGetData( hdata, (unsigned char *)r, len, 0 );
         DdeFreeDataHandle( hdata );
         if( flags & CS_WANTREPLY ) {

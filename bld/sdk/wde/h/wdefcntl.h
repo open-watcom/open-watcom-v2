@@ -47,7 +47,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR CALLBACK WdeControlCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeControlInit( Bool );
+extern bool              WdeControlInit( bool );
 extern void              WdeControlFini( void );
 
 extern BOOL WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );

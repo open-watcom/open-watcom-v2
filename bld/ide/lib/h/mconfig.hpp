@@ -53,7 +53,7 @@
 typedef enum HostType {
     #undef pick
     #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) enum,
-    #include "hosttype.h"
+    #include "hosttype.hpp"
     HOST_UNDEFINED
 } HostType;
 
@@ -63,53 +63,53 @@ WCLASS MConfig : public WObject
 {
     Declare( MConfig )
     public:
-        MConfig( WFileName& filename, bool debug=FALSE, HostType host=HOST_UNDEFINED, const char *include_path=NULL );
+        MConfig( WFileName& filename, bool debug=false, HostType host=HOST_UNDEFINED, const char *include_path=NULL );
         ~MConfig();
-        bool ok() { return _ok; }
-        const WString& errMsg() { return _errMsg; }
-        bool isDirty() { return _dirty; }
-        void setDirty( bool dirty=TRUE ) { _dirty = dirty; }
+        bool ok() { return( _ok ); }
+        const WString& errMsg() { return( _errMsg ); }
+        bool isDirty() { return( _dirty ); }
+        void setDirty( bool dirty=true ) { _dirty = dirty; }
         bool readConfig();
         void writeConfig();
 
-        MTool* nilTool() { return _nilTool; }
+        MTool* nilTool() { return( _nilTool ); }
         MTool* findTool( WString& tooltag );
-        MRule* nilRule() { return _nilRule; }
+        MRule* nilRule() { return( _nilRule ); }
         MRule* findRule( WString& ruletag );
         MRule* findMatchingRule( WFileName& fn, WString& mask );
         int findMatchingRules( WFileName& fn, WString& mask, WVList& list );
         MRule* findMatchingRule( WFileName& fn, MRule* tgtRule, WString& mask );
-        WPickList& tools() { return _tools; };
-        WPickList& rules() { return _rules; };
-        WPickList& targets() { return _targets; };
-        WPickList& toolItems() { return _toolItems; };
-        WPickList& actions() { return _actions; };
-        WVList& helpactions() { return _helpactions; };
-        WFileName& editor() { return _editor; }
-        WFileName& browse() { return _browse; }
-        WFileName& browseMerge() { return _browseMerge; }
-        WFileName& batserv() { return _batserv; }
-        WFileName& helpFile() { return _helpFile; }
-        WFileName& htmlHelpFile() { return _htmlHelpFile; }
-        const char* fileFilters() { return _fileFilters; }
-        const MCommand& before() const { return _before; }
-        const MCommand& after() const { return _after; }
+        WPickList& tools() { return( _tools ); };
+        WPickList& rules() { return( _rules ); };
+        WPickList& targets() { return( _targets ); };
+        WPickList& toolItems() { return( _toolItems ); };
+        WPickList& actions() { return( _actions ); };
+        WVList& helpactions() { return( _helpactions ); };
+        WFileName& editor() { return( _editor ); }
+        WFileName& browse() { return( _browse ); }
+        WFileName& browseMerge() { return( _browseMerge ); }
+        WFileName& batserv() { return( _batserv ); }
+        WFileName& helpFile() { return( _helpFile ); }
+        WFileName& htmlHelpFile() { return( _htmlHelpFile ); }
+        const char* fileFilters() { return( _fileFilters ); }
+        const MCommand& before() const { return( _before ); }
+        const MCommand& after() const { return( _after ); }
         static MConfig* _configPtr;
-        WFileName& filename() { return _filename; }
-        bool debug() { return _debug; }
-        WVList& logScanPatterns() { return _logScanPatterns; }
-        WVList& logHelpFiles() { return _logHelpFiles; }
-        WVList& logHtmlHelpFiles() { return _logHtmlHelpFiles; }
-        int version() { return _version; }
+        WFileName& filename() { return( _filename ); }
+        bool debug() { return( _debug ); }
+        WVList& logScanPatterns() { return( _logScanPatterns ); }
+        WVList& logHelpFiles() { return( _logHelpFiles ); }
+        WVList& logHtmlHelpFiles() { return( _logHtmlHelpFiles ); }
+        int version() { return( _version ); }
         void setKludge( int k ) { _kludge = k; }
         void kludgeMask( WString& str );
         void zapMask( WString& mask );
-        HostType hostType() { return _hostType; }
+        HostType hostType() { return( _hostType ); }
         void enumAccel( WObject *obj, bcbk fn );
-        WVList& targetOSs() { return _targetOSs; }
-        bool editorIsDLL() { return _editorIsDLL; }
-        WFileName& editorParms() { return _editorParms; }
-        char getPathSep() { return _pathsep; }
+        WVList& targetOSs() { return( _targetOSs ); }
+        bool editorIsDLL() { return( _editorIsDLL ); }
+        WFileName& editorParms() { return( _editorParms ); }
+        char getPathSep() { return( _pathsep ); }
     private:
         bool            _ok;
         WString         _errMsg;
@@ -141,7 +141,7 @@ WCLASS MConfig : public WObject
         WVList          _logHtmlHelpFiles;
         void configProject( WTokenFile& fil, WString& tok );
         void addRules( WFileName& srcMask, WFileName& tgtMask, WVList& list, WString& tagMask );
-        bool readFile( const WFileName& filename, bool reqd=TRUE );
+        bool readFile( const WFileName& filename, bool reqd=true );
         int             _version;
         int             _kludge;
         HostType        _hostType;

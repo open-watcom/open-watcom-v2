@@ -51,6 +51,8 @@ typedef struct {
     dr_sym_type search;
 } RefData;
 
+typedef bool (*hook_func)( dr_ref_info *, void * );
+
 #define SCOPE_GUESS 0x50
 
 static void ScopePush( dr_scope_stack * stack, dr_handle entry )
@@ -113,17 +115,15 @@ static bool ToHook( dr_ref_info *reg, void *data )
             && reg->scope.stack[ reg->scope.free - 1 ] == info->entry );
 }
 
-static bool ByHook( dr_ref_info * registers, void * data )
-/********************************************************/
+static bool ByHook( dr_ref_info *registers, void * data )
+/*******************************************************/
 {
     return( registers->dependent == ((ByData*)data)->entry );
 }
 
 
 static void References( ReferWhich which, dr_handle entry, void *data1,
-        bool (*DoCallback)(dr_ref_info *reg, void *),
-        void *data2,
-        bool (*callback)(dr_handle,dr_ref_info *, char *, void *))
+                hook_func do_callback, void *data2, DRSYMREF callback )
 /*********************************************************************/
 {
     dr_handle   loc;
@@ -199,7 +199,7 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
             }
 
             quit = FALSE; /* don't terminate */
-            if( DoCallback( &registers, data1 ) || inScope ) {
+            if( do_callback( &registers, data1 ) || inScope ) {
                 char    *name = NULL;
 
                 owning_node = ScopeLastNameable( &registers.scope, &name );
@@ -216,18 +216,16 @@ static void References( ReferWhich which, dr_handle entry, void *data1,
     DWRFREE( registers.scope.stack );
 }
 
-extern void DRRefersTo( dr_handle entry, void *data,
-            bool (*callback)( dr_handle, dr_ref_info *, char *, void * ) )
-/************************************************************************/
+void DRRefersTo( dr_handle entry, void *data, DRSYMREF callback )
+/***************************************************************/
 {
     ToData info;
     info.entry = entry;
     References( REFERSTO, entry, &info, ToHook, data, callback );
 }
 
-extern void DRReferredToBy( dr_handle entry, void * data,
-        bool (*callback)(dr_handle, dr_ref_info *, char *, void *) )
-/******************************************************************/
+void DRReferredToBy( dr_handle entry, void * data, DRSYMREF callback )
+/********************************************************************/
 {
     ByData info;
     info.entry = entry;
@@ -242,9 +240,8 @@ static bool RefHook( dr_ref_info * reg, void * data )
     return( DRGetSymType( reg->dependent ) == info->search );
 }
 
-extern void DRReferencedSymbols( dr_sym_type search, void * data,
-    bool (*callback)(dr_handle,dr_ref_info *,char*,void *))
-/*************************************************************/
+void DRReferencedSymbols( dr_sym_type search, void * data, DRSYMREF callback )
+/****************************************************************************/
 {
     RefData info;
     info.search = search;

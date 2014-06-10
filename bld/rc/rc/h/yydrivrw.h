@@ -32,9 +32,9 @@
 #ifndef _YYDRIVRW_H
 #define _YYDRIVRW_H
 
-extern void ParseInitWIN( void );
-extern void ParseFiniWIN( void );
-extern bool ParseWIN( void );
-extern void ParseInitStaticsWIN( void );
+#include "winytab.h"
+#include "scan.h"
+
+extern int LookupKeywordWIN( ScanString newstring );
 
 #endif

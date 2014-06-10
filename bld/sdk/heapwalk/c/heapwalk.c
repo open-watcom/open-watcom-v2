@@ -74,7 +74,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* main window */
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) HeapWalkProc;
+        wc.lpfnWndProc = (WNDPROC)HeapWalkProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;
@@ -87,7 +87,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for bitmaps, icons, etc. */
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) ItemDisplayProc;
+        wc.lpfnWndProc = (WNDPROC)ItemDisplayProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 6;
         wc.hInstance = Instance;
@@ -100,7 +100,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for local heap */
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) LocalHeapProc;
+        wc.lpfnWndProc = (WNDPROC)LocalHeapProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;
@@ -113,7 +113,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 
         /* window for local heap monitoring */
         wc.style = 0L;
-        wc.lpfnWndProc = (LPVOID) LocalMonitorProc;
+        wc.lpfnWndProc = (WNDPROC)LocalMonitorProc;
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 4;
         wc.hInstance = Instance;

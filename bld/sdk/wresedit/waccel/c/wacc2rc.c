@@ -36,7 +36,6 @@
 
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wvk2str.h"
 #include "wacc2rc.h"
 #include "wresall.h"
@@ -46,7 +45,7 @@ static char AltText[]           = "ALT";
 static char ShiftText[]         = "SHIFT";
 static char ControlText[]       = "CONTROL";
 
-static Bool WSetFlagsText( uint_16 flags, char **text )
+static bool WSetFlagsText( uint_16 flags, char **text )
 {
     int         tlen;
 
@@ -77,7 +76,7 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
         return( TRUE );
     }
 
-    *text = (char *)WMemAlloc( tlen + 1 );
+    *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( FALSE );
     }
@@ -107,12 +106,12 @@ static Bool WSetFlagsText( uint_16 flags, char **text )
     return( TRUE );
 }
 
-static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp )
+static bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp )
 {
     char        *keytext;
     char        *flagtext;
     uint_16     key, flags, id;
-    Bool        ok;
+    bool        ok;
 
     flagtext = NULL;
 
@@ -151,18 +150,18 @@ static Bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp
     }
 
     if( flagtext != NULL ) {
-        WMemFree( flagtext );
+        WRMemFree( flagtext );
     }
 
     return( ok );
 }
 
-Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
+bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, bool append )
 {
     WAccelEntry *entry;
     FILE        *fp;
     char        *rname;
-    Bool        ok;
+    bool        ok;
 
     rname = NULL;
 
@@ -200,7 +199,7 @@ Bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, Bool append )
     }
 
     if( rname ) {
-        WMemFree( rname );
+        WRMemFree( rname );
     }
 
     if( fp ) {

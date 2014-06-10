@@ -50,7 +50,7 @@ WCLASS WButton : public WControl
             return( WWindow::processMsg( msg, parm ) );
         };
         void setTagPtr( void* tagPtr ) { _tagPtr = tagPtr; }
-        void* tagPtr() { return _tagPtr; }
+        void* tagPtr() { return( _tagPtr ); }
     private:
         WObject*        _clickClient;
         cbw             _click;

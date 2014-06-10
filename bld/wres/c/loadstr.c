@@ -38,12 +38,12 @@
 #include "wresset2.h"
 #include "wresdefn.h"
 #include "loadstr.h"
+#include "wresrtns.h"
+#include "layer2.h"
 
 #define GET_STR_BUF_LEN 128
 
 WResDir    MainDir;
-
-extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance );
 
 static int GetString(   WResLangInfo    *res,
                         PHANDLE_INFO    hInstance,

@@ -24,12 +24,6 @@
 typedef interface IAudioData            IAudioData;
 typedef interface IAudioStreamSample    IAudioStreamSample;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IAudioMediaStream;
-EXTERN_C const IID  IID_IAudioStreamSample;
-EXTERN_C const IID  IID_IMemoryData;
-EXTERN_C const IID  IID_IAudioData;
-
 /* IAudioMediaStream interface */
 #undef INTERFACE
 #define INTERFACE   IAudioMediaStream
@@ -182,5 +176,11 @@ DECLARE_INTERFACE_( IAudioData, IMemoryData ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IAudioMediaStream;
+EXTERN_C const IID  __cdecl IID_IAudioStreamSample;
+EXTERN_C const IID  __cdecl IID_IMemoryData;
+EXTERN_C const IID  __cdecl IID_IAudioData;
 
 #endif /* __austream_h__ */

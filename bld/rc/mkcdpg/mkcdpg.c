@@ -58,7 +58,7 @@ static void freeInfo( DBInformation *info ) {
 static BOOL writeInfo( char *fname, DBInformation *info ) {
     int         fp;
     int         rc;
-    unsigned    len;
+    int         len;
 
     fp = open( fname, O_WRONLY | O_BINARY | O_CREAT, PMODE_RWX );
     if( fp == -1 ) {
@@ -95,11 +95,11 @@ static DBInformation *buildInfo( char *page ) {
     DWORD               cp;
     DBInformation       *ret;
     char                ch[3];
-    unsigned            i;
+    int                 i;
     unsigned            j;
-    unsigned            k;
+    unsigned char       k;
     unsigned            offset;
-    unsigned            base;
+    unsigned_16         base;
     int                 rc;
     CPINFO              theCPInfo;
 
@@ -181,7 +181,7 @@ static DBInformation *buildInfo( char *page ) {
     /* handle the special case of no lead char */
     ch[1] = '\0';
     for( i=0; i < 256; i++ ) {
-        ch[0] = i;
+        ch[0] = (char)i;
         rc = MultiByteToWideChar( cp, MB_PRECOMPOSED, ch, 1,
                                   ret->table + i, 1 );
         if( rc == 0 ) {
@@ -205,7 +205,7 @@ static DBInformation *buildInfo( char *page ) {
                         ( k - ( ret->index[j].min >> 8 ) ) * 256;
             /* iterate through the 256 characters for each of the lead char */
             for( i = 0; i < 256; i++ ) {
-                ch[1] = i;
+                ch[1] = (char)i;
                 /* translate the DBCS to Unicode */
                 rc = MultiByteToWideChar( cp,
                                   MB_PRECOMPOSED | MB_ERR_INVALID_CHARS,

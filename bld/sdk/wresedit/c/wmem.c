@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wrdll.h"
-#include "wmem.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -57,58 +56,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-#if 0
-void WMemOpen( void )
-{
-    WRMemOpen();
-}
-
-void WMemClose( void )
-{
-    WRMemClose();
-}
-#endif
-
-void *WMemAlloc( size_t size )
-{
-    return( WRMemAlloc( size ) );
-}
-
-void WMemFree( void *ptr )
-{
-    WRMemFree( ptr );
-}
-
-void *WMemRealloc( void *old_ptr, size_t newsize )
-{
-    return( WRMemRealloc( old_ptr, newsize ) );
-}
-
-int WMemValidate( void *ptr )
-{
-    return( WRMemValidate( ptr ) );
-}
-
-int WMemChkRange( void *start, size_t len )
-{
-    return( WRMemChkRange( start, len ) );
-}
-
 /* functions to replace those in mem.c in SDK/MISC */
-
-void MemStart( void )
-{
-#ifdef _M_I86
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-#endif
-}
 
 void *MemAlloc( size_t size )
 {
     void *p;
 
-    p = WMemAlloc( size );
+    p = WRMemAlloc( size );
 
     if( p != NULL ) {
         memset( p, 0, size );
@@ -117,16 +71,7 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, size_t size )
-{
-    void *p;
-
-    p = WMemRealloc( ptr, size );
-
-    return( p );
-}
-
 void MemFree( void *ptr )
 {
-    WMemFree( ptr );
+    WRMemFree( ptr );
 }

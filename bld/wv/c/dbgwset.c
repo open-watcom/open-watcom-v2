@@ -74,7 +74,7 @@ extern void             WndMenuOn( void );
 extern void             WndMenuOff( void );
 extern void             LangInit( void );
 extern void             LangFini( void );
-extern bool             LangLoad( char *, int );
+extern bool             LangLoad( const char *, unsigned );
 extern char             *StrCopy( char *, char * );
 extern void             WndRedraw( wnd_class );
 extern a_window         *WndFindActive( void );

@@ -36,7 +36,6 @@
 
 #include <dos.h>
 #include <conio.h>
-#include <stddef.h>
 #include "trpimp.h"
 #include "trperr.h"
 #include "dosequip.h"

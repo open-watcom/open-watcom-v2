@@ -244,6 +244,7 @@ typedef enum {
 
 #if DISCPU & DISCPU_axp
 typedef enum {
+    DIF_AXP_NONE        = 0,
     DIF_AXP_C           = 0x01<<0,
     DIF_AXP_D           = 0x01<<1,
     DIF_AXP_I           = 0x01<<2,
@@ -256,6 +257,7 @@ typedef enum {
 
 #if DISCPU & DISCPU_ppc
 typedef enum {
+    DIF_PPC_NONE        = 0,
     DIF_PPC_OE          = 0x01<<0,
     DIF_PPC_RC          = 0x01<<1,
     DIF_PPC_AA          = 0x01<<2,
@@ -265,6 +267,7 @@ typedef enum {
 
 #if DISCPU & DISCPU_x86
 typedef enum {
+    DIF_X86_NONE        = 0,
     DIF_X86_CS          = 0x0001,
     DIF_X86_DS          = 0x0002,
     DIF_X86_ES          = 0x0004,
@@ -291,6 +294,7 @@ typedef enum {
 
 #if DISCPU & DISCPU_x64
 typedef enum {
+    DIF_X64_NONE        = 0,
     DIF_X64_CS          = 0x0001,
     DIF_X64_DS          = 0x0002,
     DIF_X64_ES          = 0x0004,
@@ -312,6 +316,7 @@ typedef enum {
 
 #if DISCPU & DISCPU_jvm
 typedef enum {
+    DIF_JVM_NONE        = 0,
     DIF_JVM_WIDE        = 0x01<<0,
     DIF_JVM_QUICK       = 0x01<<1,
 } dis_inst_flags_jvm;
@@ -319,12 +324,14 @@ typedef enum {
 
 #if DISCPU & DISCPU_sparc
 typedef enum {
+    DIF_SPARC_NONE      = 0,
     DIF_SPARC_ANUL      = 0x01<<0,      /* for branch instructions - next ins anul'd */
 } dis_inst_flags_sparc;
 #endif
 
 #if DISCPU & DISCPU_mips
 typedef enum {
+    DIF_MIPS_NONE       = 0,
     DIF_MIPS_NULLIFD    = 0x0001,       /* for branch instructions - next ins nullified */
     DIF_MIPS_LINK       = 0x0002,       /* linked jump/branch (ie. a call) */
     DIF_MIPS_LIKELY     = 0x0004,       /* branch instruction likely */

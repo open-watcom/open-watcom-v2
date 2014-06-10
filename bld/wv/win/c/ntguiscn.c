@@ -38,7 +38,7 @@
 #include "dbgwind.h"
 #include "dbgtoggl.h"
 
-extern void     *ExtraAlloc( unsigned );
+extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
 extern void     SaveMainScreen(char*);
 extern void     RestoreMainScreen(char*);

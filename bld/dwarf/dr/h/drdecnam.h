@@ -36,11 +36,13 @@
 extern "C" {
 #endif
 
+typedef void    (*DRDECORCB)( void *, char *, int, dr_handle, dr_sym_type );
+
 /*
  * given a handle to a dwarf debug-info-entry, decorate the name of
  * the entry and return it as a char *.
  */
-extern char * DRDecoratedName( dr_handle entry, dr_handle parent );
+extern char     *DRDecoratedName( dr_handle entry, dr_handle parent );
 
 /*
  * given a handle to a dwarf die, decorate its name.  the string
@@ -49,10 +51,7 @@ extern char * DRDecoratedName( dr_handle entry, dr_handle parent );
  * for the name if it was user defined. the last call to the callback
  * has a NULL string. obj gets passed to the callback.
  */
-extern void   DRDecoratedNameList( void * obj, dr_handle die, dr_handle parent,
-                                   void (*)( void *, char *,
-                                             int, dr_handle,
-                                             dr_sym_type ) );
+extern void     DRDecoratedNameList( void * obj, dr_handle die, dr_handle parent, DRDECORCB );
 
 #define DRDECLABELLEN  (64)
 
@@ -61,7 +60,7 @@ extern void   DRDecoratedNameList( void * obj, dr_handle die, dr_handle parent,
  * structures in C give "Structure".  The buffer must be at least
  * DRDECLABELLEN bytes.
  */
-extern void   DRDecorateLabel( dr_handle die, char * buf );
+extern void     DRDecorateLabel( dr_handle die, char * buf );
 
 #ifdef __cplusplus
 };

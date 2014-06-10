@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "wddespy.h"
+#include "watcom.h"
 
 #define HWND_LEN        10
 #define CONV_LEN        10
@@ -68,89 +69,89 @@ static ReplaceInfo      convReplace;
 static ReplaceInfo      hwndReplace;
 
 msglist DDEMsgs[] = {
-    WM_DDE_ACK,             (char *)STR_ACK,
-    WM_DDE_ADVISE,          (char *)STR_ADVISE,
-    WM_DDE_DATA,            (char *)STR_DATA,
-    WM_DDE_EXECUTE,         (char *)STR_EXECUTE,
-    WM_DDE_INITIATE,        (char *)STR_INITIATE,
-    WM_DDE_POKE,            (char *)STR_POKE,
-    WM_DDE_REQUEST,         (char *)STR_REQUEST,
-    WM_DDE_TERMINATE,       (char *)STR_TERMINATE,
-    WM_DDE_UNADVISE,        (char *)STR_UNADVISE,
-    0,                      (char *) -1
+    WM_DDE_ACK,                 (char *)(pointer_int)STR_ACK,
+    WM_DDE_ADVISE,              (char *)(pointer_int)STR_ADVISE,
+    WM_DDE_DATA,                (char *)(pointer_int)STR_DATA,
+    WM_DDE_EXECUTE,             (char *)(pointer_int)STR_EXECUTE,
+    WM_DDE_INITIATE,            (char *)(pointer_int)STR_INITIATE,
+    WM_DDE_POKE,                (char *)(pointer_int)STR_POKE,
+    WM_DDE_REQUEST,             (char *)(pointer_int)STR_REQUEST,
+    WM_DDE_TERMINATE,           (char *)(pointer_int)STR_TERMINATE,
+    WM_DDE_UNADVISE,            (char *)(pointer_int)STR_UNADVISE,
+    0,                          (char *)(pointer_int)-1
 };
 
 static msglist FormatMsgs[] = {
-    CF_BITMAP,              "CF_BITMAP",
-    CF_DIB,                 "CF_DIB",
-    CF_DIF,                 "CF_DIF",
-    CF_DSPBITMAP,           "CF_DSPBITMAP",
-    CF_DSPMETAFILEPICT,     "CF_DSPMETAFILEPICT",
-    CF_DSPTEXT,             "CF_DSPTEXT",
-    CF_METAFILEPICT,        "CF_METAFILEPICT",
-    CF_OEMTEXT,             "CF_OEMTEXT",
-    CF_OWNERDISPLAY,        "CF_OWNERDISPLAY",
-    CF_PALETTE,             "CF_PALETTE",
-    CF_PENDATA,             "CF_PENDATA",
-    CF_RIFF,                "CF_RIFF",
-    CF_SYLK,                "CF_SYLK",
-    CF_TEXT,                "CF_TEXT",
-    CF_TIFF,                "CF_TIFF",
-    CF_WAVE,                "CF_WAVE",
-    0,                      NULL
+    CF_BITMAP,                  "CF_BITMAP",
+    CF_DIB,                     "CF_DIB",
+    CF_DIF,                     "CF_DIF",
+    CF_DSPBITMAP,               "CF_DSPBITMAP",
+    CF_DSPMETAFILEPICT,         "CF_DSPMETAFILEPICT",
+    CF_DSPTEXT,                 "CF_DSPTEXT",
+    CF_METAFILEPICT,            "CF_METAFILEPICT",
+    CF_OEMTEXT,                 "CF_OEMTEXT",
+    CF_OWNERDISPLAY,            "CF_OWNERDISPLAY",
+    CF_PALETTE,                 "CF_PALETTE",
+    CF_PENDATA,                 "CF_PENDATA",
+    CF_RIFF,                    "CF_RIFF",
+    CF_SYLK,                    "CF_SYLK",
+    CF_TEXT,                    "CF_TEXT",
+    CF_TIFF,                    "CF_TIFF",
+    CF_WAVE,                    "CF_WAVE",
+    0,                          NULL
 };
 
 static msglist XTypMsgs[] = {
-    XTYP_ADVSTART,           "XTYP_ADVSTART",
-    XTYP_CONNECT,            "XTYP_CONNECT",
-    XTYP_ADVREQ,             "XTYP_ADVREQ",
-    XTYP_REQUEST,            "XTYP_REQUEST",
-    XTYP_WILDCONNECT,        "XTYP_WILDCONNECT",
-    XTYP_ADVDATA,            "XTYP_ADVDATA",
-    XTYP_EXECUTE,            "XTYP_EXECUTE",
-    XTYP_POKE,               "XTYP_POKE",
-    XTYP_ADVSTOP,            "XTYP_ADVSTOP",
-    XTYP_CONNECT_CONFIRM,    "XTYP_CONNECT_CONFIRM",
-    XTYP_DISCONNECT,         "XTYP_DISCONNECT",
-    XTYP_ERROR,              "XTYP_ERROR",
-    XTYP_XACT_COMPLETE,      "XTYP_XACT_COMPLETE",
-    XTYP_UNREGISTER,         "XTYP_UNREGISTER",
-    XTYP_REGISTER,           "XTYP_REGISTER",
-    0,                       NULL
+    XTYP_ADVSTART,              "XTYP_ADVSTART",
+    XTYP_CONNECT,               "XTYP_CONNECT",
+    XTYP_ADVREQ,                "XTYP_ADVREQ",
+    XTYP_REQUEST,               "XTYP_REQUEST",
+    XTYP_WILDCONNECT,           "XTYP_WILDCONNECT",
+    XTYP_ADVDATA,               "XTYP_ADVDATA",
+    XTYP_EXECUTE,               "XTYP_EXECUTE",
+    XTYP_POKE,                  "XTYP_POKE",
+    XTYP_ADVSTOP,               "XTYP_ADVSTOP",
+    XTYP_CONNECT_CONFIRM,       "XTYP_CONNECT_CONFIRM",
+    XTYP_DISCONNECT,            "XTYP_DISCONNECT",
+    XTYP_ERROR,                 "XTYP_ERROR",
+    XTYP_XACT_COMPLETE,         "XTYP_XACT_COMPLETE",
+    XTYP_UNREGISTER,            "XTYP_UNREGISTER",
+    XTYP_REGISTER,              "XTYP_REGISTER",
+    0,                          NULL
 };
 
 static msglist DDEErrorMsgs[] = {
-    DMLERR_ADVACKTIMEOUT,           "DMLERR_ADVACKTIMEOUT",
-    DMLERR_BUSY,                    "DMLERR_BUSY",
-    DMLERR_DATAACKTIMEOUT,          "DMLERR_DATAACKTIMEOUT",
-    DMLERR_DLL_NOT_INITIALIZED,     "DMLERR_DLL_NOT_INITIALIZED",
-    DMLERR_DLL_USAGE,               "DMLERR_DLL_USAGE",
-    DMLERR_EXECACKTIMEOUT,          "DMLERR_EXECACKTIMEOUT",
-    DMLERR_INVALIDPARAMETER,        "DMLERR_INVALIDPARAMETER",
-    DMLERR_LOW_MEMORY,              "DMLERR_LOW_MEMORY",
-    DMLERR_MEMORY_ERROR,            "DMLERR_MEMORY_ERROR",
-    DMLERR_NO_CONV_ESTABLISHED,     "DMLERR_NO_CONV_ESTABLISHED",
-    DMLERR_NOTPROCESSED,            "DMLERR_NOTPROCESSED",
-    DMLERR_POKEACKTIMEOUT,          "DMLERR_POKEACKTIMEOUT",
-    DMLERR_POSTMSG_FAILED,          "DMLERR_POSTMSG_FAILED",
-    DMLERR_REENTRANCY,              "DMLERR_REENTRANCY",
-    DMLERR_SERVER_DIED,             "DMLERR_SERVER_DIED",
-    DMLERR_SYS_ERROR,               "DMLERR_SYS_ERROR",
-    DMLERR_UNADVACKTIMEOUT,         "DMLERR_UNADVACKTIMEOUT",
-    DMLERR_UNFOUND_QUEUE_ID,        "DMLERR_UNFOUND_QUEUE_ID",
-    0,                              NULL
+    DMLERR_ADVACKTIMEOUT,       "DMLERR_ADVACKTIMEOUT",
+    DMLERR_BUSY,                "DMLERR_BUSY",
+    DMLERR_DATAACKTIMEOUT,      "DMLERR_DATAACKTIMEOUT",
+    DMLERR_DLL_NOT_INITIALIZED, "DMLERR_DLL_NOT_INITIALIZED",
+    DMLERR_DLL_USAGE,           "DMLERR_DLL_USAGE",
+    DMLERR_EXECACKTIMEOUT,      "DMLERR_EXECACKTIMEOUT",
+    DMLERR_INVALIDPARAMETER,    "DMLERR_INVALIDPARAMETER",
+    DMLERR_LOW_MEMORY,          "DMLERR_LOW_MEMORY",
+    DMLERR_MEMORY_ERROR,        "DMLERR_MEMORY_ERROR",
+    DMLERR_NO_CONV_ESTABLISHED, "DMLERR_NO_CONV_ESTABLISHED",
+    DMLERR_NOTPROCESSED,        "DMLERR_NOTPROCESSED",
+    DMLERR_POKEACKTIMEOUT,      "DMLERR_POKEACKTIMEOUT",
+    DMLERR_POSTMSG_FAILED,      "DMLERR_POSTMSG_FAILED",
+    DMLERR_REENTRANCY,          "DMLERR_REENTRANCY",
+    DMLERR_SERVER_DIED,         "DMLERR_SERVER_DIED",
+    DMLERR_SYS_ERROR,           "DMLERR_SYS_ERROR",
+    DMLERR_UNADVACKTIMEOUT,     "DMLERR_UNADVACKTIMEOUT",
+    DMLERR_UNFOUND_QUEUE_ID,    "DMLERR_UNFOUND_QUEUE_ID",
+    0,                          NULL
 };
 
 
 /*
  * fmtAlias
  */
-static char *fmtAlias( DWORD id, char *alias, unsigned type, WORD *prefixlen )
+static char *fmtAlias( DWORD id, char *alias, unsigned type, size_t *prefixlen )
 {
     char        *prefix;
     char        *ret;
-    unsigned    len;
-    unsigned    fmt_len;
+    size_t      len;
+    size_t      fmt_len;
     char        buf[10];
 
     switch( type ) {
@@ -197,7 +198,7 @@ static char *deAlias( long id, unsigned type )
     char        *alias;
     char        *ret;
     AliasHdl    *alias_list;
-    WORD        prefixlen;
+    size_t      prefixlen;
 
     alias_list = aliasHdlTable[type];
     if( !ConfigInfo.alias ) {
@@ -221,7 +222,7 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor, char **replace
 {
     WORD        i;
     WORD        j;
-    WORD        pos;
+    size_t      pos;
     LRESULT     ret;
     char        buf1[256];
     char        buf2[256];
@@ -314,7 +315,7 @@ static void updateAlias( DWORD id, char *newalias, char *oldalias, void *_info )
 void refreshAnAlias( DWORD id, char *text, void *info )
 {
     char        *ptr;
-    WORD        prefix;
+    size_t      prefix;
 
     if( id == -1 ) {
         return;
@@ -364,7 +365,7 @@ void RefreshAliases( void )
 /*
  * GetFmtStr - convert a format code to an appropriate string
  */
-char *GetFmtStr( WORD fmt, char *buf )
+char *GetFmtStr( UINT fmt, char *buf )
 {
     char        *ret;
     char        *fmtstr;
@@ -609,7 +610,7 @@ static void processConvStruct( char *buf, MONCONVSTRUCT *info )
     char                *task;
     char                *serverconv;
     char                *clientconv;
-    DWORD               fmtstr;
+    MSGID               fmtstr;
 
     server = HSZToString( info->hszSvc );
     topic = HSZToString( info->hszTopic );
@@ -652,7 +653,7 @@ static void processErrStruct( char *buf, MONERRSTRUCT *info )
 static BOOL processHSZStruct( char *buf, MONHSZSTRUCT *info )
 {
     char                *task;
-    DWORD               fmtid;
+    MSGID               fmtid;
     char                *str;
     BOOL                str_alloced;
 #ifdef __NT__
@@ -708,7 +709,7 @@ static void processLinkStruct( char *buf, MONLINKSTRUCT *info )
     char                *task;
     char                *clientconv;
     char                *serverconv;
-    DWORD               fmtid;
+    MSGID               fmtid;
 
     if( info->fNoData ) {
         if( info->fEstablished ) {
@@ -748,7 +749,7 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, BOOL posted )
     char                *task;
     char                *tohwnd;
     char                msg_not_found;
-    DWORD               fmtid;
+    MSGID               fmtid;
 
     task = deAlias( (long)info->hTask, DEALIAS_TASK );
     tohwnd = deAlias( (long)info->hwndTo, DEALIAS_HWND );

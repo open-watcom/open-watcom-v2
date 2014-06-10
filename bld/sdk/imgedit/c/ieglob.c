@@ -31,7 +31,6 @@
 
 
 #include "imgedit.h"
-#include "wrdll.h"
 
 char            const PaletteClass[]    = "PalletClass";
 char            const DrawAreaClassB[]  = "DrawAreaWindowB";

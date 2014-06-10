@@ -24,9 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Interface to lexer, WIN variety.
+* Description:  System specific support routines
 *
 ****************************************************************************/
 
 
-extern int LookupKeywordWIN( ScanString newstring );
+// on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
+// even if HANDLE is defined as 64-bit value
+
+#if defined( __WINDOWS__ )
+#define NULL_SYSHDL NULL
+typedef void (DIGENTRY *mad_sys_handle)( void );
+#elif defined( __NT__ )
+#define NULL_SYSHDL 0
+typedef size_t      mad_sys_handle;
+#elif defined( __OS2__ )
+#define NULL_SYSHDL 0
+#if defined( _M_I86 )
+typedef unsigned short mad_sys_handle;
+#else
+typedef unsigned long mad_sys_handle;
+#endif
+#elif defined( __RDOS__ )
+#define NULL_SYSHDL 0
+typedef int         mad_sys_handle;
+#else
+#define NULL_SYSHDL NULL
+typedef void        *mad_sys_handle;
+#endif
+
+extern mad_status   MADSysLoad( char *, mad_client_routines *, mad_imp_routines **, mad_sys_handle * );
+extern void         MADSysUnload( mad_sys_handle * );

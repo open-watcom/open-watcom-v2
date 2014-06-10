@@ -1793,9 +1793,9 @@ void GUImain( void )
     //GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, FALSE );
 }
 
-int GUIDeath ( void )
+bool GUIDeath ( void )
 {
-    return ( TRUE );
+    return( true );
 }
 
 char *GUIGetWindowClassName( void )

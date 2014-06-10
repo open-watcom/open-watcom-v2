@@ -33,7 +33,6 @@
 #include "wdeglbl.h"
 #include <io.h>
 #include <stdio.h>
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdetest.h"
 #include "wdestat.h"
@@ -81,8 +80,18 @@
 #include "clibint.h"
 #endif
 
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WdeMemAlloc, WdeMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -107,23 +116,23 @@ WINEXPORT BOOL    CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool        WdeInit( HINSTANCE );
-static Bool        WdeInitInst( HINSTANCE );
+static bool        WdeInit( HINSTANCE );
+static bool        WdeInitInst( HINSTANCE );
 static void        WdeUpdateScreenPosOpt( void );
-static Bool        WdeCleanup( WdeResInfo *, Bool );
+static bool        WdeCleanup( WdeResInfo *, bool );
 static HWND        WdeCreateMDIClientWindow( HWND, HINSTANCE );
-static Bool        WdeWasAcceleratorHandled( MSG * );
-static Bool        WdeSaveCurrentDialog( WORD );
-static Bool        WdeRestoreCurrentDialog( void );
-static Bool        WdeHideCurrentDialog( void );
-static void        WdeHandleTabEvent( Bool );
+static bool        WdeWasAcceleratorHandled( MSG * );
+static bool        WdeSaveCurrentDialog( WORD );
+static bool        WdeRestoreCurrentDialog( void );
+static bool        WdeHideCurrentDialog( void );
+static void        WdeHandleTabEvent( bool );
 static void        WdeHandleSizeToText( void );
 static void        WdeSetMakeMeCurrent( WdeResInfo *, void * );
 static LRESULT     WdeHandleMDIArrangeEvents( WORD );
-static Bool        WdeSetDialogMode( WORD );
-static Bool        WdeProcessArgs( char **, int  );
+static bool        WdeSetDialogMode( WORD );
+static bool        WdeProcessArgs( char **, int  );
 static void        WdeDisplaySplashScreen( HINSTANCE, HWND, UINT );
-static Bool        WdeIsDDEArgs( char **argv, int argc );
+static bool        WdeIsDDEArgs( char **argv, int argc );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -144,15 +153,15 @@ static HMENU     WdeResMenu         = NULL;
 static HMENU     WdeCurrentMenu     = NULL;
 static HWND      hWinWdeMain        = NULL;
 static HWND      hWinWdeMDIClient   = NULL;
-static Bool      WdeCleanupStarted  = FALSE;
-static Bool      WdeFatalExit       = FALSE;
-static Bool      IsDDE              = FALSE;
-static Bool      EnableMenuInput    = FALSE;
+static bool      WdeCleanupStarted  = FALSE;
+static bool      WdeFatalExit       = FALSE;
+static bool      IsDDE              = FALSE;
+static bool      EnableMenuInput    = FALSE;
 static char      WdeMainClass[]     = "WdeMainClass";
-static Bool      WdeFirstInst       = FALSE;
+static bool      WdeFirstInst       = FALSE;
 static jmp_buf   WdeEnv;
 
-Bool WdeCreateNewFiles  = FALSE;
+bool WdeCreateNewFiles  = FALSE;
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine,  int nCmdShow )
@@ -289,7 +298,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 }
 
 /* Function to initialize the first instance of Wde */
-Bool WdeInit( HINSTANCE app_inst )
+bool WdeInit( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -335,7 +344,7 @@ Bool WdeInit( HINSTANCE app_inst )
 }
 
 /* Function to initialize all instances of Wde */
-Bool WdeInitInst( HINSTANCE app_inst )
+bool WdeInitInst( HINSTANCE app_inst )
 {
     RECT        rect, screen, t;
     char        *title;
@@ -470,7 +479,7 @@ Bool WdeInitInst( HINSTANCE app_inst )
 
 }
 
-Bool WdeWasAcceleratorHandled( MSG *msg )
+bool WdeWasAcceleratorHandled( MSG *msg )
 {
     if( !TranslateMDISysAccel( hWinWdeMDIClient, msg ) &&
         !TranslateAccelerator( hWinWdeMain, WdeAccel, msg ) ) {
@@ -479,7 +488,7 @@ Bool WdeWasAcceleratorHandled( MSG *msg )
     return( TRUE );
 }
 
-void WdeSetAppMenuToRes( Bool set_to_res_menu )
+void WdeSetAppMenuToRes( bool set_to_res_menu )
 {
     HMENU   menu;
     HMENU   new_menu;
@@ -551,17 +560,17 @@ HWND WdeCreateMDIClientWindow( HWND win, HINSTANCE app_inst )
     return( client );
 }
 
-Bool WdeIsFirstInst( void )
+bool WdeIsFirstInst( void )
 {
     return( WdeFirstInst );
 }
 
-void WdeEnableMenuInput( Bool enable )
+void WdeEnableMenuInput( bool enable )
 {
     EnableMenuInput = enable;
 }
 
-Bool WdeIsDDE( void )
+bool WdeIsDDE( void )
 {
     return( IsDDE );
 }
@@ -604,7 +613,7 @@ HINSTANCE WdeGetAppInstance( void )
     return( hInstWde );
 }
 
-Bool WdeInCleanup( void )
+bool WdeInCleanup( void )
 {
     return( WdeCleanupStarted );
 }
@@ -623,7 +632,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
 {
     HMENU       menu;
     LRESULT     ret;
-    Bool        pass_to_def;
+    bool        pass_to_def;
     WdeResInfo  *res_info;
     WORD        wp;
     about_info  ai;
@@ -1030,7 +1039,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( ret );
 }
 
-Bool WdeIsMenuIDValid( HMENU menu, WORD id )
+bool WdeIsMenuIDValid( HMENU menu, WORD id )
 {
     UINT st;
 
@@ -1067,7 +1076,7 @@ Bool WdeIsMenuIDValid( HMENU menu, WORD id )
     return( TRUE );
 }
 
-Bool WdeSetDialogMode( WORD id )
+bool WdeSetDialogMode( WORD id )
 {
     OBJPTR        obj;
     WdeOrderMode  mode;
@@ -1093,7 +1102,7 @@ Bool WdeSetDialogMode( WORD id )
     return( FALSE );
 }
 
-Bool WdeSaveCurrentDialog( WORD menu_id )
+bool WdeSaveCurrentDialog( WORD menu_id )
 {
     OBJPTR  obj;
 
@@ -1104,7 +1113,7 @@ Bool WdeSaveCurrentDialog( WORD menu_id )
     return( FALSE );
 }
 
-Bool WdeRestoreCurrentDialog( void )
+bool WdeRestoreCurrentDialog( void )
 {
     OBJPTR     obj;
 
@@ -1115,10 +1124,10 @@ Bool WdeRestoreCurrentDialog( void )
     return( FALSE );
 }
 
-Bool WdeHideCurrentDialog( void )
+bool WdeHideCurrentDialog( void )
 {
     OBJPTR      obj;
-    Bool        user_action, hide;
+    bool        user_action, hide;
 
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
         user_action = FALSE;
@@ -1141,7 +1150,7 @@ void WdeHandleSizeToText( void )
     }
 }
 
-void WdeHandleTabEvent( Bool up )
+void WdeHandleTabEvent( bool up )
 {
     OBJPTR obj;
 
@@ -1223,7 +1232,7 @@ void WdeResizeWindows( void )
     }
 }
 
-Bool WdeCleanup( WdeResInfo *res_info, Bool fatal_exit )
+bool WdeCleanup( WdeResInfo *res_info, bool fatal_exit )
 {
     /* clean up before we exit */
     if( WdeGetTestMode() ) {
@@ -1281,7 +1290,7 @@ Bool WdeCleanup( WdeResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WdeIsDDEArgs( char **argv, int argc )
+bool WdeIsDDEArgs( char **argv, int argc )
 {
     int i;
 
@@ -1294,10 +1303,10 @@ Bool WdeIsDDEArgs( char **argv, int argc )
     return( FALSE );
 }
 
-Bool WdeProcessArgs( char **argv, int argc )
+bool WdeProcessArgs( char **argv, int argc )
 {
     int     i;
-    Bool    ok;
+    bool    ok;
 
     ok = TRUE;
 

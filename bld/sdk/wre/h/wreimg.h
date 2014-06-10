@@ -45,20 +45,20 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern WResID   *WRECreateImageTitle( uint_16 type );
-extern Bool     WRENewImageResource( WRESPT service, uint_16 type );
-extern Bool     WREEditImageResource( WRECurrentResInfo *curr );
-extern Bool     WRECommitImageSession( HCONV server, HCONV client );
-extern Bool     WREEndEditImageResource( HCONV conv );
-extern Bool     WREDumpPendingImageSession( void );
-extern Bool     WREEndAllImageSessions( Bool fatal_exit );
+extern bool     WRENewImageResource( WRESPT service, uint_16 type );
+extern bool     WREEditImageResource( WRECurrentResInfo *curr );
+extern bool     WRECommitImageSession( HCONV server, HCONV client );
+extern bool     WREEndEditImageResource( HCONV conv );
+extern bool     WREDumpPendingImageSession( void );
+extern bool     WREEndAllImageSessions( bool fatal_exit );
 extern void     WREEndLangImageSession( WResLangNode *lnode );
 extern void     WREEndResImageSessions( WREResInfo *rinfo );
-extern Bool     WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size );
-extern Bool     WREGetImageSessionResName( HCONV server, void **data, uint_32 *size );
-extern Bool     WREGetImageSessionData( HCONV server, void **data, uint_32 *size );
-extern Bool     WRESetImageSessionResName( HCONV server, HDDEDATA hdata );
-extern Bool     WRESetImageSessionResData( HCONV server, HDDEDATA hdata );
+extern bool     WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size );
+extern bool     WREGetImageSessionResName( HCONV server, void **data, uint_32 *size );
+extern bool     WREGetImageSessionData( HCONV server, void **data, uint_32 *size );
+extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hdata );
+extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hdata );
 
-extern void     WREShowAllImageSessions( Bool show );
+extern void     WREShowAllImageSessions( bool show );
 
 #endif

@@ -73,7 +73,7 @@ WFlashPage::WFlashPage( WWindow* parent, WHotSpots* hs, int idx, const char* tit
             int w = getTextExtentX( text[i] );
             if( _width < w ) _width = w;
             _height += getTextExtentY( text[i] );
-            _text.add( new WString( text[ i ] ) );
+            _text.add( new WString( text[i] ) );
         }
     }
     init( interval, title );
@@ -149,5 +149,5 @@ bool WFlashPage::paint()
     WPoint hotSize;
     _hotSpot->hotSpotSize( _idx, hotSize );
     drawHotSpot( _idx, _text.count(), (_width - hotSize.x())/2 );
-    return TRUE;
+    return( true );
 }

@@ -37,29 +37,29 @@
 
 WCLASS WVList : public WVCollection
 {
-        Declare( WVList )
-        public:
-                WEXPORT WVList();
-                WEXPORT WVList( WVList& );
-                WEXPORT ~WVList();
-                int WEXPORT count() const { return _free; }
-                WObject* operator[]( long int index ) { return _set[ index ]; }
-                WObject* WEXPORT find( WObject *obj );
-                virtual WObject* WEXPORT add( WObject* obj );
-                int WEXPORT indexOfSame( WObject *obj );
-                virtual WObject* WEXPORT removeAt( int index );
-                virtual WObject* replaceAt( int index, WObject* obj );
-                virtual WObject* insertAt( int index, WObject* obj );
-                WObject* WEXPORT removeSame( WObject* obj );
-                void WEXPORT deleteContents();
-                void WEXPORT reset();
-                void WEXPORT sort();
-        protected:
-                WObject** _set;
-                int     _count;
-                int     _free;
-        private:
-                void growBlock();
+    Declare( WVList )
+    public:
+        WEXPORT WVList();
+        WEXPORT WVList( WVList& );
+        WEXPORT ~WVList();
+        int WEXPORT count() const { return( _free ); }
+        WObject* operator[]( long int index ) { return( _set[index] ); }
+        WObject* WEXPORT find( WObject *obj );
+        virtual WObject* WEXPORT add( WObject* obj );
+        int WEXPORT indexOfSame( WObject *obj );
+        virtual WObject* WEXPORT removeAt( int index );
+        virtual WObject* replaceAt( int index, WObject* obj );
+        virtual WObject* insertAt( int index, WObject* obj );
+        WObject* WEXPORT removeSame( WObject* obj );
+        void WEXPORT deleteContents();
+        void WEXPORT reset();
+        void WEXPORT sort();
+    protected:
+        WObject** _set;
+        int     _count;
+        int     _free;
+    private:
+        void growBlock();
 };
 
 #endif //wvlist_class

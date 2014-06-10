@@ -61,11 +61,11 @@ WCLASS SwitchMap : public WObject
 #endif
         SwitchMap( MSwitch* sw, WBoolSwitch* ctl, MState* st, WEditBox* ctl2=NULL );
         ~SwitchMap() {}
-        MSwitch* sw() { return _switch; }
-        WBoolSwitch* ctl() { return _control; }
-        WEditBox* ctl2() { return _control2; }
+        MSwitch* sw() { return( _switch ); }
+        WBoolSwitch* ctl() { return( _control ); }
+        WEditBox* ctl2() { return( _control2 ); }
 #ifdef TEST
-        WControl* ctrl() { return _ctrl; }
+        WControl* ctrl() { return( _ctrl ); }
 #endif
     private:
         MSwitch*        _switch;
@@ -176,7 +176,7 @@ void VSetup::initialize()
     WVList              famList;
     int                 k;
     int                 icount;
-    setSystemFont( FALSE );
+    setSystemFont( false );
 #ifndef TEST
     show();
 #endif
@@ -232,7 +232,7 @@ void VSetup::initialize()
         int             jcount;
 
         fam = (MFamily*)famList[i];
-        fam->addSwitches( myList, _tagMask, TRUE );
+        fam->addSwitches( myList, _tagMask, true );
         jcount = myList.count();
         if( jcount > 0 ) {
             WVList      *swList;
@@ -396,7 +396,7 @@ void VSetup::initialize()
                     j++;
                 }
             }
-            initControls( swList, _mode, TRUE );
+            initControls( swList, _mode, true );
             _combo->insertString( title, k );
             k += 1;
         }
@@ -511,10 +511,10 @@ MState* VSetup::findState( MSwitch* sw, SwMode mode )
     for( int k=0; k<kcount; k++ ) {
         MState* t = (MState*)(*_states)[k];
         if( mode == t->mode() && sw == t->sw() ) {
-            return t;
+            return( t );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
@@ -529,7 +529,7 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
         }
         if( !sw ) {
         } else if( streq( sw->className(), "MRSwitch" ) ) {
-            bool b = FALSE;
+            bool b = false;
             if( st ) {
                 b = ((MRState*)st)->state();
             } else {
@@ -537,7 +537,7 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
             }
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MCSwitch" ) ) {
-            bool b = FALSE;
+            bool b = false;
             if( st ) {
                 b = ((MCState*)st)->state();
             } else {
@@ -545,7 +545,7 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
             }
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MC2Switch" ) ) {
-            bool b = FALSE;
+            bool b = false;
             if( st ) {
                 b = ((MCState*)st)->state();
             } else {
@@ -554,7 +554,7 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
             m->ctl()->setCheck( b );
         } else if( streq( sw->className(), "MVSwitch" ) ) {
             if( ((MVSwitch*)sw)->optional() ) {
-                bool b = FALSE;
+                bool b = false;
                 if( st ) {
                     b = ((MVState*)st)->state();
                 } else {
@@ -576,8 +576,8 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
 void VSetup::enableButtons()
 {
     int index = _combo->selected();
-    if( _prev ) _prev->enable( (index>0) ? TRUE : FALSE );
-    if( _next ) _next->enable( (index+1<_screens.count()) ? TRUE : FALSE );
+    if( _prev ) _prev->enable( ( index > 0 ) );
+    if( _next ) _next->enable( ( index + 1 < _screens.count() ) );
 }
 
 void VSetup::okButton( WWindow* )
@@ -616,7 +616,7 @@ void VSetup::okButton( WWindow* )
                     _states->add( st );
                 }
             } else if( streq( sw->className(), "MVSwitch" ) ) {
-                bool b = FALSE;
+                bool b = false;
                 if( ((MVSwitch*)sw)->optional() ) {
                     b = m->ctl()->checked();
                 }
@@ -630,33 +630,33 @@ void VSetup::okButton( WWindow* )
             }
         }
     }
-    quit( TRUE );
+    quit( true );
 }
 
 void VSetup::cancelButton( WWindow* )
 {
-    quit( FALSE );
+    quit( false );
 }
 
 void VSetup::resetCfgButton( WWindow* )
 {
     int i = _combo->selected();
     WVList* swList = (WVList*)_families[i];
-    initControls( swList, _mode, FALSE );
+    initControls( swList, _mode, false );
 }
 
 void VSetup::resetDevButton( WWindow* )
 {
     int i = _combo->selected();
     WVList* swList = (WVList*)_families[i];
-    initControls( swList, SWMODE_DEBUG, TRUE );
+    initControls( swList, SWMODE_DEBUG, true );
 }
 
 void VSetup::resetRelButton( WWindow* )
 {
     int i = _combo->selected();
     WVList* swList = (WVList*)_families[i];
-    initControls( swList, SWMODE_RELEASE, TRUE );
+    initControls( swList, SWMODE_RELEASE, true );
 }
 
 void VSetup::prevButton( WWindow* )
@@ -688,7 +688,7 @@ void VSetup::shift( WWindow* w, int xoff, int yoff )
 void VSetup::shiftFamily( int index, int xoff, int yoff )
 {
 #ifdef TEST
-    WVList* swList = (WVList*)_families[ index ];
+    WVList* swList = (WVList*)_families[index];
     for( int i=0; i<swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
         if( sm->ctl() ) shift( sm->ctl(), xoff, yoff );
@@ -696,7 +696,7 @@ void VSetup::shiftFamily( int index, int xoff, int yoff )
         if( sm->ctrl() ) shift( sm->ctrl(), xoff, yoff );
     }
 #else
-    WWindow* w = (WWindow*)_screens[ index ];
+    WWindow* w = (WWindow*)_screens[index];
     w->shift( xoff, yoff );
 #endif
 }
@@ -704,7 +704,7 @@ void VSetup::shiftFamily( int index, int xoff, int yoff )
 void VSetup::hideFamily( int index )
 {
 #ifdef TEST
-    WVList* swList = (WVList*)_families[ index ];
+    WVList* swList = (WVList*)_families[index];
     for( int i=0; i<swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
         if( sm->ctl() ) sm->ctl()->show( WWinStateHide );
@@ -712,7 +712,7 @@ void VSetup::hideFamily( int index )
         if( sm->ctrl() ) sm->ctrl()->show( WWinStateHide );
     }
 #else
-    WWindow* g = (WWindow*)_screens[ index ];
+    WWindow* g = (WWindow*)_screens[index];
     g->show( WWinStateHide );
 #endif
 }
@@ -720,7 +720,7 @@ void VSetup::hideFamily( int index )
 void VSetup::showFamily( int index )
 {
 #ifdef TEST
-    WVList* swList = (WVList*)_families[ index ];
+    WVList* swList = (WVList*)_families[index];
     for( int i=0; i<swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
         if( sm->ctl() ) sm->ctl()->show();
@@ -728,7 +728,7 @@ void VSetup::showFamily( int index )
         if( sm->ctrl() ) sm->ctrl()->show();
     }
 #else
-    WWindow* g = (WWindow*)_screens[ index ];
+    WWindow* g = (WWindow*)_screens[index];
     g->show();
 #endif
 }
@@ -750,5 +750,5 @@ void VSetup::pickFamily( WWindow* combo )
 
 bool VSetup::process()
 {
-    return WDialog::process() == TRUE;
+    return( WDialog::process() == true );
 }

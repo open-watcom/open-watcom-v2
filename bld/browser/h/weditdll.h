@@ -34,10 +34,8 @@
 #define weditdll_class
 
 #include "wsystem.hpp"
-
-extern "C" {
+#include "wstring.hpp"
 #include "wedit.h"
-};
 
 typedef int EDITAPI (*ConnectFn)( void );
 typedef int EDITAPI (*FileFn)( editstring, editstring );

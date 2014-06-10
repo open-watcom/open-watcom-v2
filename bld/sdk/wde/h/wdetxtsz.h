@@ -46,6 +46,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeGetNameOrOrdSize( OBJPTR, ResNameOrOrdinal *, SIZE * );
+extern bool WdeGetNameOrOrdSize( OBJPTR, ResNameOrOrdinal *, SIZE * );
 
 #endif

@@ -256,8 +256,8 @@ typedef struct mad_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *MADCliAlloc)( unsigned );
-    void                *(DIGCLIENT *MADCliRealloc)( void *, unsigned );
+    void                *(DIGCLIENT *MADCliAlloc)( size_t );
+    void                *(DIGCLIENT *MADCliRealloc)( void *, size_t );
     void                (DIGCLIENT *MADCliFree)( void * );
 
     dig_fhandle         (DIGCLIENT *MADCliOpen)( char const*, dig_open );
@@ -289,9 +289,18 @@ typedef struct mad_client_routines {
     mad_status          (DIGCLIENT *MADCliTypeToString)( unsigned radix, const mad_type_info *, const void *data, unsigned *max, char *buff );
 } mad_client_routines;
 
+typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
+#ifdef __WINDOWS__
+typedef void DIGENTRY mad_fini_func( void );
+#endif
 
-void            *MCAlloc( unsigned amount );
-void            *MCRealloc( void *p, unsigned amount );
+DIG_DLLEXPORT mad_init_func MADLOAD;
+#ifdef __WINDOWS__
+DIG_DLLEXPORT mad_fini_func MADUNLOAD;
+#endif
+
+void            *MCAlloc( size_t amount );
+void            *MCRealloc( void *p, size_t amount );
 void            MCFree( void *p );
 
 dig_fhandle     MCOpen( char *, dig_open );

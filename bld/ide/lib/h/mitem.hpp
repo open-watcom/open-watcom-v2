@@ -47,7 +47,7 @@ WCLASS MItem : public WFileName
 {
         Declare( MItem )
         public:
-                WEXPORT MItem( const char* name, MComponent* comp, MRule* rule, bool isTarget=FALSE );
+                WEXPORT MItem( const char* name, MComponent* comp, MRule* rule, bool isTarget=false );
                 WEXPORT ~MItem();
                 int compare( const WObject* ) const;
 
@@ -57,27 +57,27 @@ WCLASS MItem : public WFileName
                 bool absResult( WFileName& f );
                 bool touchResult();
 
-                MRule* rule() { return _rule; }
+                MRule* rule() { return( _rule ); }
                 void setRule( MRule* rule );
                 bool rename( WFileName& name, MRule* rule );
-                MItem* parent() { return _parent; }
+                MItem* parent() { return( _parent ); }
                 void setParent( MItem* parent ) { _parent = parent; }
-                MComponent* component() { return _component; }
+                MComponent* component() { return( _component ); }
                 void setComponent( MComponent* component ) { _component = component; }
-                WVList& states() { return _states; }
+                WVList& states() { return( _states ); }
                 int addActions( WVList& list );
                 WVList& getActionStates( MAction* action );
                 WVList* findActionStates( MAction* action );
                 int expandAction( const WString& actionName, WString& command );
                 int expandAction( MAction* action, WString& command );
                 void updateAttribs();
-                bool exists() { return _exists; }
+                bool exists() { return( _exists ); }
                 void resetRuleRefs();
                 bool ismakeable();
                 void addStates( WVList& list, SwMode mode );
                 int type();
-                void setExpanded( bool expanded=TRUE ) { _expanded = expanded; }
-                bool expanded() { return _expanded; }
+                void setExpanded( bool expanded=true ) { _expanded = expanded; }
+                bool expanded() { return( _expanded ); }
                 bool included();
                 unsigned owner() { return( _owner ); }
                 void setOwner( unsigned owner ) { _owner = owner; }

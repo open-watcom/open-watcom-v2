@@ -30,26 +30,16 @@
 ****************************************************************************/
 
 
-#ifndef WMEM_INCLUDED
-#define WMEM_INCLUDED
-
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
-
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern void WMemOpen( void );
-extern void WMemClose( void );
-extern void *WMemAlloc( size_t );
-extern void WMemFree( void * );
-extern void *WMemRealloc( void *, size_t );
-extern int  WMemValidate( void * );
-extern int  WMemChkRange( void *, size_t );
-
-#endif
+extern int InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
+extern int WResLoadString2( struct WResDirHead *,
+                            PHANDLE_INFO hInstance,
+                            UINT idResource,
+                            LPSTR lpszBuffer,
+                            int nBufferMax );
+extern int WResLoadResource2( struct WResDirHead *,
+                              PHANDLE_INFO      hInstance,
+                              UINT              idType,
+                              UINT              idResource,
+                              LPSTR             *lpszBuffer,
+                              int               *bufferSize );
+extern int CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );

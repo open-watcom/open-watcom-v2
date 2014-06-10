@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeTViewCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeTViewInit( Bool );
+extern bool              WdeTViewInit( bool );
 extern void              WdeTViewFini( void );
 
 #endif

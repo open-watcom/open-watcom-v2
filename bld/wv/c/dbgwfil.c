@@ -57,7 +57,7 @@ extern char             *ScanPos( void );
 extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
 extern char             *ReScan( char * );
-extern brkp             *FindBreakByLine( mod_handle, cue_file_id, unsigned );
+extern brkp             *FindBreakByLine( mod_handle, cue_fileid, unsigned );
 extern void             WndFuncInspect( mod_handle mod );
 extern void             *AddBreak( address );
 extern bool             DlgBreak( address );
@@ -123,7 +123,7 @@ typedef struct {
     unsigned long       size;
     unsigned            active;
     mod_handle          mod;
-    cue_file_id         file_id;
+    cue_fileid          file_id;
     wnd_row             rows;
     unsigned long       rows_offset;
     unsigned long       range;
@@ -574,7 +574,7 @@ static void FileTrack( a_window *wnd, cue_handle *ch )
     int         slack;
     file_window *file = WndFile( wnd );
     mod_handle  mod;
-    cue_file_id id;
+    cue_fileid  id;
     wnd_row     curr_row;
     int         curr_piece;
 

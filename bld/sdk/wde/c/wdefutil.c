@@ -36,7 +36,6 @@
 #include <ctype.h>
 #include "wrdll.h"
 #include "wdelist.h"
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdemain.h"
 #include "wdestyle.h"
@@ -165,7 +164,7 @@ void WdeSnapPointToGrid( POINT *pt )
     WdeSnapPoint( pt, vinc, hinc );
 }
 
-OBJPTR WdeGetNextObject( Bool up, OBJPTR obj, OBJPTR p )
+OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
 {
     OBJPTR old_current;
 
@@ -195,7 +194,7 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     OBJPTR              parent;
     RECT                rect;
     WORD                state;
-    Bool                ok;
+    bool                ok;
 
     new = NULL;
 
@@ -247,7 +246,7 @@ void WdeFreeControlIDs( void )
     if( WdeNextIDList ) {
         WdeListLastElt( WdeNextIDList, &olist );
         for( ; olist != NULL; olist = ListPrev( olist ) ) {
-            WdeMemFree( ListElement( olist ) );
+            WRMemFree( ListElement( olist ) );
         }
         ListFree( WdeNextIDList );
     }
@@ -284,7 +283,7 @@ uint_16 WdeGetNextControlID( void )
                 ids->id++;
             }
         } else {
-            ids = (WdeNextIDStruct *)WdeMemAlloc( sizeof( WdeNextIDStruct ) );
+            ids = (WdeNextIDStruct *)WRMemAlloc( sizeof( WdeNextIDStruct ) );
             if( ids != NULL ) {
                 ids->base = base;
                 ids->id = WDE_START_CONTROL_ID;
@@ -303,7 +302,7 @@ uint_16 WdeGetNextControlID( void )
     return( id );
 }
 
-Bool WdeIsStrSpace( char *_s )
+bool WdeIsStrSpace( char *_s )
 {
     unsigned char   *s = (unsigned char *)_s;
 
@@ -331,7 +330,7 @@ uint_32 WdeHammingDistance( uint_32 x1, uint_32 x2 )
     return( d );
 }
 
-Bool WdeIsClassDefined( char *class )
+bool WdeIsClassDefined( char *class )
 {
     WNDCLASS  wc;
     BOOL      ret;
@@ -347,7 +346,7 @@ Bool WdeIsClassDefined( char *class )
     return( ret );
 }
 
-void WdeShowObjectWindow( HWND win, Bool flag )
+void WdeShowObjectWindow( HWND win, bool flag )
 {
     uint_32 s;
 
@@ -376,7 +375,7 @@ void WdeBringWindowToTop( HWND win )
 #endif
 }
 
-Bool WdePutObjFirst( OBJPTR obj, LIST **list )
+bool WdePutObjFirst( OBJPTR obj, LIST **list )
 {
     if( list == NULL || *list == NULL ) {
         WdeWriteTrail( "WdePutObjFirst: Unexpected NULL list" );
@@ -398,16 +397,16 @@ Bool WdePutObjFirst( OBJPTR obj, LIST **list )
     return( TRUE );
 }
 
-Bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
+bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
 {
     SUBOBJ_REQUEST  req;
     OBJPTR          child;
     OBJPTR          sel;
     OBJPTR          first_clear;
     OBJPTR          first_nomove;
-    Bool            b;
-    Bool            is_clear;
-    Bool            can_move;
+    bool            b;
+    bool            is_clear;
+    bool            can_move;
     LIST            *ol;
 
     *obj_list = NULL;
@@ -456,7 +455,7 @@ Bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
     return( *obj_list != NULL );
 }
 
-Bool WdeFindSubObjects( SUBOBJ_REQUEST *req, LIST **obj_list, LIST *olist)
+bool WdeFindSubObjects( SUBOBJ_REQUEST *req, LIST **obj_list, LIST *olist)
 {
     OBJPTR   child;
     RECT     child_rect;
@@ -535,9 +534,9 @@ void WdeSetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         cp2 = WRConvertStringFrom( cp, "\t\n", "tn" );
         if( cp2 != NULL ) {
             WdeSetEditWithStr( cp2, hDlg, IDB_TEXT );
-            WdeMemFree( cp2 );
+            WRMemFree( cp2 );
         }
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     WdeSetWinStyles( hDlg, GETCTL_STYLE( o_info->info.c.info ), o_info->mask );
@@ -556,7 +555,7 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     char        *cp;
     char        *cp2;
     void        *vp;
-    Bool        mod;
+    bool        mod;
 
     /* set the control text */
     cp = WdeGetStrFromEdit( hDlg, IDB_TEXT, &mod );
@@ -565,12 +564,12 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         if( cp2 != NULL ) {
             vp = WdeStrToResNameOrOrdinal( cp2 );
             if( GETCTL_TEXT( o_info->info.c.info ) ) {
-                WdeMemFree( GETCTL_TEXT( o_info->info.c.info ) );
+                WRMemFree( GETCTL_TEXT( o_info->info.c.info ) );
             }
             SETCTL_TEXT( o_info->info.c.info, (ResNameOrOrdinal *)vp );
-            WdeMemFree( cp2 );
+            WRMemFree( cp2 );
         }
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     WdeGetDefineObjectSymbolInfo( o_info, hDlg );
@@ -608,16 +607,16 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             str1 = WResIDToStr( o_info->info.d.name );
             if( str1 != NULL ) {
                 len = strlen( str1 ) + 3;
-                str2 = WdeMemAlloc( len );
+                str2 = WRMemAlloc( len );
                 if( str2 != NULL ) {
                     str2[0] = '"';
                     strcpy( &str2[1], str1 );
                     str2[len - 2] = '"';
                     str2[len - 1] = '\0';
                     WdeSetEditWithStr( str2, hDlg, IDB_SYMBOL );
-                    WdeMemFree( str2 );
+                    WRMemFree( str2 );
                 }
-                WdeMemFree( str1 );
+                WRMemFree( str1 );
             }
             o_info->info.d.id = 0;
             o_info->info.d.use_id = FALSE;
@@ -678,9 +677,9 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     char                *str;
     char                *cp;
-    Bool                dup;
-    Bool                quoted_str;
-    Bool                str_is_ordinal;
+    bool                dup;
+    bool                quoted_str;
+    bool                str_is_ordinal;
     uint_16             ord;
     WdeHashEntry        *entry;
 
@@ -689,7 +688,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( o_info->symbol != NULL ) {
-        WdeMemFree( o_info->symbol );
+        WRMemFree( o_info->symbol );
     }
     o_info->symbol = NULL;
 
@@ -719,7 +718,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( str[0] == '\0' ) {
-        WdeMemFree( str );
+        WRMemFree( str );
         return;
     }
 
@@ -729,7 +728,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( o_info->obj_id == DIALOG_OBJ ) {
 
         if( o_info->info.d.name != NULL ) {
-            WdeMemFree( o_info->info.d.name );
+            WRMemFree( o_info->info.d.name );
         }
         o_info->info.d.name = NULL;
 
@@ -761,7 +760,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     }
 
-    WdeMemFree( str );
+    WRMemFree( str );
 }
 
 /* JPK - added function for help id */
@@ -769,9 +768,9 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     char                *str;
     char                *cp;
-    Bool                dup;
-    Bool                quoted_str;
-    Bool                str_is_ordinal;
+    bool                dup;
+    bool                quoted_str;
+    bool                str_is_ordinal;
     uint_32             ord;
     WdeHashEntry        *entry;
 
@@ -780,7 +779,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( o_info->helpsymbol != NULL ) {
-        WdeMemFree( o_info->helpsymbol );
+        WRMemFree( o_info->helpsymbol );
     }
     o_info->helpsymbol = NULL;
 
@@ -810,7 +809,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( str[0] == '\0' ) {
-        WdeMemFree( str );
+        WRMemFree( str );
         return;
     }
 
@@ -858,12 +857,12 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
     }
 
-    WdeMemFree( str );
+    WRMemFree( str );
 }
 
 void WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *symbol, WdeHashValue val )
 {
-    Bool          force;
+    bool          force;
 
     if( res_info != NULL && symbol != NULL ) {
         if( res_info->hash_table == NULL ) {
@@ -888,12 +887,12 @@ UINT WdeTranslateNCMouseMsg( UINT ncm )
     return( 0 );
 }
 
-Bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT    new_message;
     WPARAM  new_wparam;
     POINT   mouse_location;
-    Bool    ret;
+    bool    ret;
 
     ret = FALSE;
 
@@ -1032,12 +1031,12 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     }
 
     if( o_info->symbol != NULL ) {
-        WdeMemFree( o_info->symbol );
+        WRMemFree( o_info->symbol );
         o_info->symbol = NULL;
     }
 
     if( o_info->helpsymbol != NULL ) {
-        WdeMemFree( o_info->helpsymbol );
+        WRMemFree( o_info->helpsymbol );
         o_info->helpsymbol = NULL;
     }
 
@@ -1123,12 +1122,12 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
 }
 
 
-Bool WdeWinStylesHook( HWND hDlg, UINT message,
+BOOL WdeWinStylesHook( HWND hDlg, UINT message,
                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     DialogStyle  tstyle;
-    Bool         ret;
-    Bool         overlapped;
+    BOOL         ret;
+    bool         overlapped;
 
     _wde_touch( lParam );
 
@@ -1265,11 +1264,11 @@ Bool WdeWinStylesHook( HWND hDlg, UINT message,
     return( ret );
 }
 
-Bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                            WdeHashTable *table, uint_16 id,  Bool use_id )
+bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
+                            WdeHashTable *table, uint_16 id,  bool use_id )
 {
     WORD    hw;
-    Bool    processed;
+    bool    processed;
 
     _wde_touch( lParam );
     _wde_touch( id );
@@ -1293,7 +1292,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     char                *str;
     char                *cp;
     WdeHashValue        value;
-    Bool                found;
+    bool                found;
     LRESULT             index;
     int                 count;
 
@@ -1325,7 +1324,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     // if the string numeric or empty then return
     strtoul( str, &cp, 0 );
     if( *cp == '\0' ) {
-        WdeMemFree( str );
+        WRMemFree( str );
         return;
     }
 
@@ -1336,18 +1335,18 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
         }
     }
 
-    WdeMemFree( str );
+    WRMemFree( str );
 }
 
 /* JPK - added for help id support
  *     - these next two routines are essentially the same as those for
  *       the symbol combo box
 */
-Bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
-                                WdeHashTable *table, uint_32 id, Bool use_id )
+bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
+                                WdeHashTable *table, uint_32 id, bool use_id )
 {
     WORD    hw;
-    Bool    processed;
+    bool    processed;
 
     _wde_touch( lParam );
     _wde_touch( id );
@@ -1371,7 +1370,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     char                *str;
     char                *cp;
     WdeHashValue        value;
-    Bool                found;
+    bool                found;
     LRESULT             index;
     int                 count;
 
@@ -1403,7 +1402,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     // if the string numeric or empty then return
     strtoul( str, &cp, 0 );
     if( *cp == '\0' ) {
-        WdeMemFree( str );
+        WRMemFree( str );
         return;
     }
 
@@ -1414,7 +1413,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
         }
     }
 
-    WdeMemFree( str );
+    WRMemFree( str );
 }
 
 void WdeMapWindowRect( HWND src, HWND dest, RECT *rect )

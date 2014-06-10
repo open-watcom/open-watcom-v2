@@ -152,7 +152,7 @@ void InitTrap( char *trap_file )
     buff[0] = '\0';
     out[1].ptr = buff;
     out[1].len = MAX_ERR_MSG_SIZE;
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
     MaxPacketLen = out_mx.max_msg_size;
     if( buff[0] != '\0' ) {
         KillTrap();
@@ -185,7 +185,7 @@ trap_shandle GetSuppId( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     if( ret.err != 0 ) return( 0 );
     return( ret.id );
 }

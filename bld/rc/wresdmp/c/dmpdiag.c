@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include <io.h>
 #include <stdio.h>
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "dmpdiag.h"
 #include "wresdefn.h"
+#include "rcrtns.h"
 
 static void PrintDialogBoxHeader( DialogBoxHeader * head )
 /********************************************************/
@@ -117,7 +116,9 @@ extern int DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
     DialogBoxHeader     head;
     DialogBoxControl    control;
 
-    prevpos = lseek( handle, offset, SEEK_SET );
+    length = length;
+    head.NumOfItems = 0;
+    prevpos = RCSEEK( handle, offset, SEEK_SET );
     error = (prevpos == -1);
 
     if (!error) {
@@ -135,17 +136,17 @@ extern int DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
             printf( "   %3d. ", itemnum + 1 );
             PrintDialogBoxControl( &control );
             if (control.ClassID != NULL) {
-                TRMemFree( control.ClassID );
+                RCFREE( control.ClassID );
             }
             if (control.Text != NULL) {
-                TRMemFree( control.Text );
+                RCFREE( control.Text );
             }
         }
     }
 
     ResFreeDialogBoxHeaderPtrs( &head );
 
-    lseek( handle, prevpos, SEEK_SET );
+    RCSEEK( handle, prevpos, SEEK_SET );
 
     return( error );
 }

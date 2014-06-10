@@ -36,7 +36,6 @@
 
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wwait.h"
 #include "wrdll.h"
 #include "wselft.h"
@@ -46,6 +45,7 @@
 #include "wmain.h"
 #include "weditsym.h"
 #include "wsvobj.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wacc2rc.h"
 
@@ -64,15 +64,15 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WSaveObjectAs( Bool, WAccelEditInfo * );
-static Bool WSaveObjectInto( WAccelEditInfo * );
+static bool WSaveObjectAs( bool, WAccelEditInfo * );
+static bool WSaveObjectInto( WAccelEditInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 
-static Bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
-                             Bool shadow, Bool append )
+static bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
+                             bool shadow, bool append )
 {
     char        fn_path[ _MAX_PATH ];
     char        fn_drive[_MAX_DRIVE];
@@ -103,9 +103,9 @@ static Bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
     return( TRUE );
 }
 
-Bool WSaveObject( WAccelEditInfo *einfo, Bool get_name, Bool save_into )
+bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
 {
-    Bool    ok, data_saved;
+    bool    ok, data_saved;
     void    *old_data;
     int     old_size;
 
@@ -157,7 +157,7 @@ Bool WSaveObject( WAccelEditInfo *einfo, Bool get_name, Bool save_into )
             ok = WSaveObjectAs( get_name, einfo );
         }
         if( einfo->info->data != NULL ) {
-            WMemFree( einfo->info->data );
+            WRMemFree( einfo->info->data );
             einfo->info->data = NULL;
             einfo->info->data_size = 0;
         }
@@ -177,7 +177,7 @@ Bool WSaveObject( WAccelEditInfo *einfo, Bool get_name, Bool save_into )
     return( ok );
 }
 
-Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
+bool WSaveObjectAs( bool get_name, WAccelEditInfo *einfo )
 {
     char                resfile[_MAX_PATH];
     char                *fname;
@@ -186,8 +186,8 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
     WGetFileStruct      gf;
     WRSaveIntoData      idata;
     WRSaveIntoData      idata2;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
 
     fname = NULL;
     got_name = FALSE;
@@ -219,15 +219,15 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
     if( ok ) {
         if( einfo->file_name == NULL || get_name ) {
             gf.file_name = NULL;
-            gf.title = WAllocRCString( W_SAVERESAS );
-            gf.filter = WAllocRCString( W_SAVERESFILTER );
+            gf.title = AllocRCString( W_SAVERESAS );
+            gf.filter = AllocRCString( W_SAVERESFILTER );
             WMassageFilter( gf.filter );
             fname = WGetSaveFileName( einfo->win, &gf );
             if( gf.title != NULL ) {
-                WFreeRCString( gf.title );
+                FreeRCString( gf.title );
             }
             if( gf.filter != NULL ) {
-                WFreeRCString( gf.filter );
+                FreeRCString( gf.filter );
             }
             if( fname != NULL ) {
                 got_name = TRUE;
@@ -277,7 +277,7 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
     if( ok ) {
         if( got_name ) {
             if( einfo->file_name != NULL ) {
-                WMemFree( einfo->file_name );
+                WRMemFree( einfo->file_name );
             }
             einfo->file_name = fname;
             einfo->file_type = ftype;
@@ -285,32 +285,32 @@ Bool WSaveObjectAs( Bool get_name, WAccelEditInfo *einfo )
         }
     } else {
         if( fname != NULL && got_name ) {
-            WMemFree( fname );
+            WRMemFree( fname );
         }
     }
 
     if( idata.type != NULL ) {
-        WMemFree( idata.type );
+        WRMemFree( idata.type );
     }
 
     if( idata2.type != NULL ) {
-        WMemFree( idata2.type );
+        WRMemFree( idata2.type );
     }
     if( idata2.name != NULL ) {
-        WMemFree( idata2.name );
+        WRMemFree( idata2.name );
     }
 
     return( ok );
 }
 
-Bool WSaveObjectInto( WAccelEditInfo *einfo )
+bool WSaveObjectInto( WAccelEditInfo *einfo )
 {
     char                *fname;
     WGetFileStruct      gf;
     int                 dup;
     WRSaveIntoData      idata;
     WRFileType          ftype;
-    Bool                ok;
+    bool                ok;
 
     fname = NULL;
     dup = FALSE;
@@ -325,15 +325,15 @@ Bool WSaveObjectInto( WAccelEditInfo *einfo )
 
     if( ok ) {
         gf.file_name = NULL;
-        gf.title = WAllocRCString( W_SAVERESINTO );
-        gf.filter = WAllocRCString( W_SAVERESFILTER );
+        gf.title = AllocRCString( W_SAVERESINTO );
+        gf.filter = AllocRCString( W_SAVERESFILTER );
         WMassageFilter( gf.filter );
         fname = WGetOpenFileName ( einfo->win, &gf );
         if( gf.title != NULL ) {
-            WFreeRCString( gf.title );
+            FreeRCString( gf.title );
         }
         if( gf.filter != NULL ) {
-            WFreeRCString( gf.filter );
+            FreeRCString( gf.filter );
         }
         ok = (fname != NULL);
     }
@@ -358,22 +358,22 @@ Bool WSaveObjectInto( WAccelEditInfo *einfo )
     }
 
     if( fname != NULL ) {
-        WMemFree( fname );
+        WRMemFree( fname );
     }
 
     if( idata.type != NULL ) {
-        WMemFree( idata.type );
+        WRMemFree( idata.type );
     }
 
     return( ok );
 }
 
-Bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
-                   Bool prompt )
+bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
+                   bool prompt )
 {
     char                *name;
     WGetFileStruct      gf;
-    Bool                ok;
+    bool                ok;
 
     if( einfo == NULL || table == NULL || file_name == NULL ) {
         return( FALSE );
@@ -389,20 +389,20 @@ Bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
 
     if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
-        gf.title = WAllocRCString( W_SAVESYMTITLE );
-        gf.filter = WAllocRCString( W_SYMFILTER );
+        gf.title = AllocRCString( W_SAVESYMTITLE );
+        gf.filter = AllocRCString( W_SYMFILTER );
         WMassageFilter( gf.filter );
         name = WGetSaveFileName( einfo->win, &gf );
         if( gf.title != NULL ) {
-            WFreeRCString( gf.title );
+            FreeRCString( gf.title );
         }
         if( gf.filter != NULL ) {
-            WFreeRCString( gf.filter );
+            FreeRCString( gf.filter );
         }
         ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
-                WMemFree( *file_name );
+                WRMemFree( *file_name );
             }
             *file_name = name;
         }

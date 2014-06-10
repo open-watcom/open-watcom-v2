@@ -44,7 +44,8 @@ section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
     unsigned            num_sects;
     section_info        *inf;
 
-    if( im == 0 ) return( NULL );
+    if( im == IMH_NOMOD )
+        return( NULL );
     inf = ii->sect;
     num_sects = ii->num_sects;
     for( ;; ) {
@@ -90,8 +91,8 @@ mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle mod )
 static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
                                 unsigned long first_link )
 {
-    dword               **lnk_tbl;
-    dword               *lnk;
+    pointer_int         **lnk_tbl;
+    pointer_int         *lnk;
     mod_table           *tbl;
     unsigned            num;
     unsigned long       count;
@@ -99,11 +100,11 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
     unsigned            d;
     mod_info            *mod;
     unsigned            tbl_entries;
-    dword               end;
+    pointer_int         end = 0;
     info_block          *blk;
 
-    tbl_entries = ((num_links+(MAX_LINK_ENTRIES-1)) / MAX_LINK_ENTRIES) + 1;
-    lnk_tbl = DCAlloc( tbl_entries * sizeof( dword * ) );
+    tbl_entries = ( ( num_links + ( MAX_LINK_ENTRIES - 1 ) ) / MAX_LINK_ENTRIES ) + 1;
+    lnk_tbl = DCAlloc( tbl_entries * sizeof( pointer_int * ) );
     if( lnk_tbl == NULL ) {
         DCStatus( DS_ERR|DS_NO_MEM );
         return( DS_ERR|DS_NO_MEM );
@@ -114,14 +115,14 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
     count = num_links;
     while( count != 0 ) {
         num = (count>MAX_LINK_ENTRIES) ? MAX_LINK_ENTRIES : count;
-        lnk = DCAlloc( num*sizeof(dword));
+        lnk = DCAlloc( num * sizeof( pointer_int ));
         if( lnk == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( DS_ERR|DS_NO_MEM );
         }
         lnk_tbl[i++] = lnk;
         if( !inf->ctl->v2 ) {
-            if( DCRead(inf->ctl->sym_file,lnk,num*sizeof(dword))!=num*sizeof(dword)) {
+            if( DCRead( inf->ctl->sym_file, lnk, num * sizeof( pointer_int ) ) != num * sizeof( pointer_int ) ) {
                 DCStatus( DS_ERR|DS_FREAD_FAILED );
                 return( DS_ERR|DS_FREAD_FAILED );
             }
@@ -152,7 +153,7 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
                 } else {
                     if( mod->di[d].u.entries != 0 ) {
                         mod->di[d].info_off =
-                        (mod->di[d].info_off-first_link)/sizeof(dword);
+                        ( mod->di[d].info_off - first_link ) / sizeof( pointer_int );
                     }
                 }
             }
@@ -186,8 +187,8 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     unsigned long       last_link;
     unsigned            d;
     unsigned            num;
-    dword               *lnk;
-    dword               **lnk_tbl;
+    pointer_int         *lnk;
+    pointer_int         **lnk_tbl;
     unsigned long       off;
     dip_status          ok;
 
@@ -222,8 +223,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
                         if( num_links < first_link ) {
                             first_link = num_links;
                         }
-                        num_links += mod->di[d].u.entries
-                                        * sizeof(dword);
+                        num_links += mod->di[d].u.entries * sizeof( pointer_int );
                         if( num_links > last_link ) {
                             last_link = num_links;
                         }
@@ -238,7 +238,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( DS_ERR|DS_FSEEK_FAILED );
         }
-        num_links = (last_link - first_link) / sizeof( dword ) + 2;
+        num_links = (last_link - first_link) / sizeof( pointer_int ) + 2;
     }
     ok = AllocLinkTable( inf, num_links, first_link );
     if( ok != DS_OK ) return( ok );
@@ -291,8 +291,8 @@ void SetModBase( imp_image_handle *ii )
 void ModInfoFini( section_info *inf )
 {
     info_block  *blk;
-    dword       **lnk_tbl;
-    dword       *lnk;
+    pointer_int **lnk_tbl;
+    pointer_int *lnk;
 
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         DCFree( blk->link );
@@ -357,7 +357,7 @@ unsigned ModOff2Idx( section_info *inf, unsigned off )
  * DIPImpWalkModList - walk the module list
  */
 
-walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
+walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
                                         void *d )
 {
     info_block          *blk;
@@ -416,7 +416,7 @@ walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk,
  * ModSrcLang -- return pointer to name of source language of the module
  */
 
-char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     return( ii->lang + ModPointer( ii, im )->language );
 }
@@ -425,7 +425,7 @@ char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
  * DIPImpModInfo - does a module have a particular brand of info
  */
 
-dip_status DIPENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
                                 handle_kind hk )
 {
     mod_info    *mod;
@@ -444,7 +444,7 @@ dip_status DIPENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
  * DIPImpModName -- return the module name
  */
 
-unsigned DIPENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
                                 char *buff, unsigned max )
 {
     char        *name;

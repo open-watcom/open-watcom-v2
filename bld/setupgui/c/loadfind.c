@@ -33,6 +33,7 @@
 #include "watcom.h"
 #include "wresall.h"
 #include "wresset2.h"
+#include "wresrtns.h"
 
 #include "pushpck1.h"
 typedef struct dbgheader {

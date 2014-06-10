@@ -31,7 +31,6 @@
 
 
 #include "imgedit.h"
-#include "wrdll.h"
 
 /*
  * IECtl3dInit

@@ -36,8 +36,8 @@
 
 #include "watcom.h"
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wre_wres.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -66,7 +66,7 @@ WResID *WRECopyWResID( WResID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResID *)WREMemAlloc( len );
+    dest = (WResID *)WRMemAlloc( len );
 
     if( dest != NULL ) {
         memcpy( dest, src, len );

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <dos.h>
 #define INCL_DOSSEMAPHORES
 #define INCL_DOSDEVICES

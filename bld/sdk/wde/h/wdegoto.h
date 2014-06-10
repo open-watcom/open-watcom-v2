@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeIsCurrentObjectVisible( WdeResInfo *info );
-extern Bool WdeHandleGotoCurrentObject( void );
+extern bool WdeIsCurrentObjectVisible( WdeResInfo *info );
+extern bool WdeHandleGotoCurrentObject( void );
 
 #endif

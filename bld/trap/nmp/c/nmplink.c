@@ -31,7 +31,6 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include <ctype.h>
 #if defined( __OS2__ )
 #include <wos2.h>

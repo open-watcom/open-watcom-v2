@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "trpimp.h"
+#include "digio.h"
 
 extern char RWBuff[];
 
@@ -83,21 +84,31 @@ int KeyGet( void )
     return( KeyGet_pragma() );
 }
 
-tiny_handle_t PathOpen( char *name, unsigned name_len, char *exts )
+int WantUsage( char *ptr )
 {
+    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
+    return( *ptr == '?' );
+}
 
+dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
+{
     bool        has_ext;
     bool        has_path;
-    char        *ptr;
-    char        *endptr;
+    const char  *src;
+    char        *dst;
     char        trpfile[256];
     tiny_ret_t  rc;
+    char        c;
 
+    result = result; max_result = max_result;
     has_ext = FALSE;
     has_path = FALSE;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
+    src = name;
+    dst = trpfile;
+    while( name_len-- > 0 ) {
+        c = *src++;
+        *dst++ = c;
+        switch( c ) {
         case '.':
             has_ext = TRUE;
             break;
@@ -110,37 +121,29 @@ tiny_handle_t PathOpen( char *name, unsigned name_len, char *exts )
             break;
         }
     }
-    memcpy( trpfile, name, name_len );
-    if( has_ext ) {
-        trpfile[name_len] = '\0';
-    } else {
-        trpfile[ name_len++ ] = '.';
-        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
+    if( !has_ext ) {
+        *dst++ = '.';
+        name_len = strlen( exts );
+        memcpy( dst, exts, name_len );
+        dst += name_len;
     }
+    *dst = '\0';
     if( has_path ) {
         rc = TinyOpen( trpfile, TIO_READ );
     } else {
         _searchenv( trpfile, "PATH", RWBuff );
         rc = TinyOpen( RWBuff, TIO_READ );
     }
-    return( TINY_ERROR( rc ) ? (-1) : TINY_INFO( rc ) );
+    return( TINY_ERROR( rc ) ? DIG_NIL_HANDLE : TINY_INFO( rc ) );
 }
 
-unsigned long GetSystemHandle( unsigned h )
-{
-    return( h );
-}
-
-unsigned FileClose( unsigned h )
+unsigned DIGPathClose( dig_fhandle h )
 {
     TinyClose( h );
     return( 0 );
 }
 
-
-int WantUsage( char *ptr )
+long DIGGetSystemHandle( dig_fhandle h )
 {
-    if( (*ptr == '-') || (*ptr == '/') ) ++ptr;
-    return( *ptr == '?' );
+    return( h );
 }
-

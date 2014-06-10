@@ -41,7 +41,7 @@ ContFile::ContFile( char contChar, int maxLine )
 
 char ContFile::getByte()
 {
-    return WFile::getByte();
+    return( WFile::getByte() );
 }
 
 bool ContFile::putByte( char ch )
@@ -51,13 +51,13 @@ bool ContFile::putByte( char ch )
     } else if( _count++ > _maxLine ) {
         _count = 1;
         if( !WFile::putByte( _contChar ) ) {
-            return FALSE;
+            return( false );
         }
         if( !WFile::putByte( '\n' ) ) {
-            return FALSE;
+            return( false );
         }
     }
-    return WFile::putByte( ch );
+    return( WFile::putByte( ch ) );
 }
 
 #ifdef __WATCOMC__

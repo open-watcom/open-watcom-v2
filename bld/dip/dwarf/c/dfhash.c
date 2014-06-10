@@ -234,21 +234,21 @@ extern void AddHashName( name_ctl *ctl, char *name, dr_handle sym )
 }
 
 
-extern int FindHashWalk( name_ctl *ctl, name_wlk *wlk )
-/*****************************************************/
+bool FindHashWalk( name_ctl *ctl, name_wlk *wlk )
+/***********************************************/
 // Walk all entries that hash to same key
 {
     uint_32     key;
     int         bnum;
     uint_16     count;
     name_blk    *blk;
-    int         ret;
+//    bool        ret;
 
     key = elf_hash( wlk->name );
     bnum = BNUM( key );
     count = NAME_BLKSIZE-ctl->bucket[bnum].rem;
     blk = ctl->bucket[bnum].head;
-    ret = TRUE;
+//    ret = TRUE;
     while( blk != NULL ) {
         name_entry  *curr;
 

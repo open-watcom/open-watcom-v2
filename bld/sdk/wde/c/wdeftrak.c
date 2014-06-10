@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -126,7 +125,7 @@ OBJPTR WdeMakeTrak( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeTrackCreate( parent, obj_rect, handle, id, WdeDefaultTrak );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultTrak ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultTrak ) );
     SETCTL_TEXT( WdeDefaultTrak, NULL );
 
     return( new );
@@ -144,7 +143,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeTrakObject *)WdeMemAlloc( sizeof( WdeTrakObject ) );
+    new = (WdeTrakObject *)WRMemAlloc( sizeof( WdeTrakObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTrakCreate: Object malloc failed" );
         return( NULL );
@@ -163,21 +162,21 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeTrakCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeTrakCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeTrakCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -199,7 +198,7 @@ WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeTrakInit( Bool first )
+bool WdeTrakInit( bool first )
 {
     WNDCLASS    wc;
 
@@ -264,7 +263,7 @@ BOOL WdeTrakDestroy( WdeTrakObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -292,7 +291,7 @@ BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *
         return( FALSE );
     }
 
-    *new = (WdeTrakObject *)WdeMemAlloc( sizeof( WdeTrakObject ) );
+    *new = (WdeTrakObject *)WRMemAlloc( sizeof( WdeTrakObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Object malloc failed" );
@@ -310,7 +309,7 @@ BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTrakCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

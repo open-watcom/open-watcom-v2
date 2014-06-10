@@ -44,12 +44,12 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool             WREHandleResEdit( void );
+extern bool             WREHandleResEdit( void );
 extern HINSTANCE        WREGetAppInstance( void );
 extern HWND             WREGetMainWindowHandle( void );
 extern HWND             WREGetMDIWindowHandle( void );
 extern HMENU            WREGetMenuHandle( void );
-extern void             WREEnableMenus( Bool enable );
+extern void             WREEnableMenus( bool enable );
 extern void             WREResizeWindows( void );
 extern void             WREHelpSearchRoutine( void );
 extern void             WREHelpOnHelpRoutine( void );

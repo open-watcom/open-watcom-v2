@@ -46,8 +46,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WDeleteStringData( WStringEditInfo *, WStringBlock *, uint_16 , Bool *bdel );
-extern Bool WDeleteStringEntry( WStringEditInfo * );
-extern Bool WDeleteEditWinLBoxEntry( WStringEditInfo *, int, Bool );
+extern bool WDeleteStringData( WStringEditInfo *, WStringBlock *, uint_16 , bool *bdel );
+extern bool WDeleteStringEntry( WStringEditInfo * );
+extern bool WDeleteEditWinLBoxEntry( WStringEditInfo *, int, bool );
 
 #endif

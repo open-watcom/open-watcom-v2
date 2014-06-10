@@ -68,7 +68,7 @@ static BOOL WRGetWinInfo( HWND, WRSelectImageInfo * );
 void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
 {
     if( info != NULL ) {
-        WRMemFree( info );
+        MemFree( info );
     }
 }
 
@@ -83,7 +83,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
         return( NULL );
     }
 
-    info = (WRSelectImageInfo *)WRMemAlloc( sizeof( WRSelectImageInfo ) );
+    info = (WRSelectImageInfo *)MemAlloc( sizeof( WRSelectImageInfo ) );
     if( info == NULL ) {
         return( NULL );
     }
@@ -101,7 +101,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
     FreeProcInstance( (FARPROC)proc );
 
     if( modified == -1 || modified == IDCANCEL ) {
-        WRMemFree( info );
+        MemFree( info );
         info = NULL;
     }
 

@@ -46,11 +46,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WInitRibbons( HINSTANCE );
+extern bool WInitRibbons( HINSTANCE );
 extern void WShutdownRibbons( void );
 extern int  WGetRibbonHeight( void );
-extern Bool WCreateRibbon( WMenuEditInfo * );
-extern Bool WResizeRibbon( WMenuEditInfo *, RECT * );
+extern bool WCreateRibbon( WMenuEditInfo * );
+extern bool WResizeRibbon( WMenuEditInfo *, RECT * );
 extern void WShowRibbon( WMenuEditInfo *, HMENU );
 extern void WDestroyRibbon( WMenuEditInfo * );
 

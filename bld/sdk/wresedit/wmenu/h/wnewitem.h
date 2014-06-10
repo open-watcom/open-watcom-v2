@@ -47,10 +47,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WInsertNew( WMenuEditInfo *einfo );
-extern Bool WInsertNewMenuEntry( WMenuEditInfo *, Bool, Bool );
-extern Bool WInsertMenuEntry( WMenuEditInfo *, WMenuEntry *, Bool );
-extern Bool WAddEditWinLBoxEntry( HWND, WMenuEntry *, int );
-extern Bool WAddMenuEntriesToLBox( HWND, WMenuEntry *, int * );
+extern bool WInsertNew( WMenuEditInfo *einfo );
+extern bool WInsertNewMenuEntry( WMenuEditInfo *, bool, bool );
+extern bool WInsertMenuEntry( WMenuEditInfo *, WMenuEntry *, bool );
+extern bool WAddEditWinLBoxEntry( HWND, WMenuEntry *, int );
+extern bool WAddMenuEntriesToLBox( HWND, WMenuEntry *, int * );
 
 #endif

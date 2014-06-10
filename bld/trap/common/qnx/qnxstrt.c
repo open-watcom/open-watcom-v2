@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include "trpimp.h"
@@ -40,7 +39,9 @@ char                            **dbg_environ;  /* pointer to environment string
 const trap_callbacks            *Client;
 extern const trap_requests      ImpInterface;
 
+#ifdef __WATCOMC__
 const char __based( __segname( "_CODE" ) ) Signature[4] = "TRAP";
+#endif
 
 const trap_requests *TRAPLOAD( trap_callbacks *client )
 {

@@ -51,12 +51,12 @@ void VListBox::insertString( const char *str ) {
     if( len > _maxWidth ) _maxWidth = len;
     adjustScrollBars();
 //    update();
-    performScroll( count(), TRUE );
+    performScroll( count(), true );
 }
 
 bool VListBox::gettingFocus( WWindow* ) {
     parent()->setFocus();
-    return( TRUE );
+    return( true );
 }
 
 const char *VListBox::getString( int index ) {

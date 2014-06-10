@@ -47,7 +47,7 @@ WEXPORT WButton::WButton( WWindow *parent, gui_control_class control_class,
         size_t icount = strlen( text );
         for( size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
-                int key = text[i+1];
+                int key = text[i + 1];
                 if( key != '\0' ) {
                     parent->addAccelKey( key, this, (bcbk)&WButton::hotKey );
                 }
@@ -70,7 +70,7 @@ WEXPORT WButton::WButton( WStatDialog *parent, unsigned id, WStyle wstyle )
         size_t icount = strlen( text );
         for( size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
-                int key = text[i+1];
+                int key = text[i + 1];
                 if( key != '\0' ) {
                     parent->addAccelKey( key, this, (bcbk)&WButton::hotKey );
                 }
@@ -103,9 +103,9 @@ bool WEXPORT WButton::hotKey( WKeyCode ) {
 
     if( _clickClient && _click ) {
         (_clickClient->*_click)( this );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -116,17 +116,17 @@ bool WButton::processMsg( gui_event msg ) {
     case GUI_CONTROL_CLICKED:
         if( _clickClient && _click ) {
             (_clickClient->*_click)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     case GUI_CONTROL_DCLICKED:
         if( _dblClickClient && _dblClick ) {
             (_dblClickClient->*_dblClick)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 

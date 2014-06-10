@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -126,7 +125,7 @@ OBJPTR WdeMakeTView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeTVCreate( parent, obj_rect, handle, id, WdeDefaultTView );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultTView ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultTView ) );
     SETCTL_TEXT( WdeDefaultTView, NULL );
 
     return( new );
@@ -144,7 +143,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeTViewObject *)WdeMemAlloc( sizeof( WdeTViewObject ) );
+    new = (WdeTViewObject *)WRMemAlloc( sizeof( WdeTViewObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTViewCreate: Object malloc failed" );
         return( NULL );
@@ -162,21 +161,21 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeTViewCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeTViewCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeTViewCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -198,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, voi
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeTViewInit( Bool first )
+bool WdeTViewInit( bool first )
 {
     WNDCLASS    wc;
 
@@ -264,7 +263,7 @@ BOOL WdeTViewDestroy( WdeTViewObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -292,7 +291,7 @@ BOOL WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObje
         return( FALSE );
     }
 
-    *new = (WdeTViewObject *)WdeMemAlloc( sizeof( WdeTViewObject ) );
+    *new = (WdeTViewObject *)WRMemAlloc( sizeof( WdeTViewObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTViewCopyObject: Object malloc failed" );
@@ -309,7 +308,7 @@ BOOL WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObje
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTViewCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

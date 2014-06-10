@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wsetedit.h"
 #include "wrdll.h"
 
@@ -71,7 +70,7 @@ char *WConvertStringTo( char *str, char *to, char *from )
     return( WRConvertStringTo( str, to, from ) );
 }
 
-Bool WSetEditWithSINT32( HWND edit, int_32 val, int base )
+bool WSetEditWithSINT32( HWND edit, int_32 val, int base )
 {
     char temp[35];
 
@@ -89,10 +88,10 @@ Bool WSetEditWithSINT32( HWND edit, int_32 val, int base )
     return( WSetEditWithStr( edit, temp ) );
 }
 
-Bool WSetEditWithWResID( HWND edit, WResID *id )
+bool WSetEditWithWResID( HWND edit, WResID *id )
 {
     char    *cp;
-    Bool    ok;
+    bool    ok;
 
     cp = NULL;
 
@@ -107,15 +106,15 @@ Bool WSetEditWithWResID( HWND edit, WResID *id )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( ok );
 }
 
-Bool WSetEditWithStr( HWND edit, char *str )
+bool WSetEditWithStr( HWND edit, char *str )
 {
-    Bool      ok;
+    bool      ok;
 
     ok = ( edit != (HWND)NULL && str != NULL );
     if( ok ) {
@@ -125,9 +124,9 @@ Bool WSetEditWithStr( HWND edit, char *str )
     return( ok );
 }
 
-Bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
+bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
 {
-    Bool      ok;
+    bool      ok;
     LRESULT   index;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
@@ -145,9 +144,9 @@ Bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
     return( ok );
 }
 
-Bool WInsertLBoxWithStr( HWND lbox, int pos, char *str, void *data )
+bool WInsertLBoxWithStr( HWND lbox, int pos, char *str, void *data )
 {
-    Bool      ok;
+    bool      ok;
     LRESULT   index;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
@@ -165,9 +164,9 @@ Bool WInsertLBoxWithStr( HWND lbox, int pos, char *str, void *data )
     return( ok );
 }
 
-Bool WSetLBoxWithWResID( HWND lbox, WResID *id, void *data )
+bool WSetLBoxWithWResID( HWND lbox, WResID *id, void *data )
 {
-    Bool    ok;
+    bool    ok;
     char    *name;
 
     name = NULL;
@@ -179,13 +178,13 @@ Bool WSetLBoxWithWResID( HWND lbox, WResID *id, void *data )
     ok = ok && WSetLBoxWithStr( lbox, name, data );
 
     if( name != NULL ) {
-        WMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
 }
 
-char *WGetStrFromEdit( HWND edit, Bool *mod )
+char *WGetStrFromEdit( HWND edit, bool *mod )
 {
     char    *cp;
     LRESULT text_length;
@@ -204,7 +203,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -212,7 +211,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
     text_copied = SendMessage ( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -221,7 +220,7 @@ char *WGetStrFromEdit( HWND edit, Bool *mod )
     return( cp );
 }
 
-WResID *WGetWResIDFromEdit( HWND edit, Bool *mod )
+WResID *WGetWResIDFromEdit( HWND edit, bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;
@@ -246,13 +245,13 @@ WResID *WGetWResIDFromEdit( HWND edit, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );
 }
 
-int_32 WGetSINT32FromEdit( HWND edit, Bool *mod )
+int_32 WGetSINT32FromEdit( HWND edit, bool *mod )
 {
     int_32  val;
     char    *cp;
@@ -277,7 +276,7 @@ int_32 WGetSINT32FromEdit( HWND edit, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( val );
@@ -306,7 +305,7 @@ char *WGetStrFromComboLBox( HWND combo, int index )
 
     text_length = SendMessage( combo, CB_GETLBTEXTLEN, index, 0 );
 
-    cp = (char *)WMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -314,7 +313,7 @@ char *WGetStrFromComboLBox( HWND combo, int index )
     text_copied = SendMessage( combo, CB_GETLBTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 

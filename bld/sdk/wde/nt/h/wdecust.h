@@ -53,8 +53,8 @@
 
 typedef struct WdeCustLibStruct {
     HANDLE      inst;
-    Bool        nt_lib;
-    Bool        load_only;
+    bool        nt_lib;
+    bool        load_only;
     char        *file_name;
     LPCCINFO    lpcci;
     UINT        num_classes;
@@ -68,15 +68,15 @@ typedef struct {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeIsCurrentCustControlSet( int which );
-extern Bool WdeCustControlsLoaded( void );
-extern Bool WdeIsBorBtnIDSupported( uint_16 );
+extern bool WdeIsCurrentCustControlSet( int which );
+extern bool WdeCustControlsLoaded( void );
+extern bool WdeIsBorBtnIDSupported( uint_16 );
 extern void WdeGetCurrentCustControl( int, WdeCustLib **, UINT * );
-extern Bool WdeSetCurrentCustControl( int );
-extern Bool WdeLoadCustomLib( Bool, Bool );
-extern Bool WdeFreeAllCustLibs( void );
+extern bool WdeSetCurrentCustControl( int );
+extern bool WdeLoadCustomLib( bool, bool );
+extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( char *, LIST ** );
-extern Bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **, UINT * );
+extern bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **, UINT * );
 extern void WdeMapCustomSize( UINT *w, UINT *h, WdeResizeRatio *r );
 
 #endif

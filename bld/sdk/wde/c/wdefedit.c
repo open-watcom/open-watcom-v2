@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -124,7 +123,7 @@ OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     new = WdeEdCreate( parent, obj_rect, handle, id, WdeDefaultEdit );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultEdit ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultEdit ) );
     SETCTL_TEXT( WdeDefaultEdit, NULL );
 
     return( new );
@@ -142,7 +141,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeEditObject *)WdeMemAlloc( sizeof( WdeEditObject ) );
+    new = (WdeEditObject *)WRMemAlloc( sizeof( WdeEditObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeEditCreate: Object malloc failed" );
         return( NULL );
@@ -162,21 +161,21 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeEditCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeEditCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeEditCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -198,7 +197,7 @@ WINEXPORT BOOL CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeEditInit( Bool first )
+bool WdeEditInit( bool first )
 {
     WNDCLASS    wc;
 
@@ -264,7 +263,7 @@ BOOL WdeEditDestroy( WdeEditObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -293,7 +292,7 @@ BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
         return( FALSE );
     }
 
-    *new = (WdeEditObject *)WdeMemAlloc( sizeof( WdeEditObject ) );
+    *new = (WdeEditObject *)WRMemAlloc( sizeof( WdeEditObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Object malloc failed" );
@@ -311,7 +310,7 @@ BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeEditCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

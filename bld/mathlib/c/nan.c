@@ -44,7 +44,7 @@ _WMRTLINK double nan(const char *ignored)
     return __d_posqnan;
 }
 
-#if defined(_LONG_DOUBLE_) && defined(__X86__)
+#if defined(_LONG_DOUBLE_) && defined(_M_IX86)
 _WMRTDATA extern const float    __ld_posqnan;
 #endif
 
@@ -55,7 +55,7 @@ _WMRTLINK double nanl(const char *ignored)
 #endif
 {
 #ifdef _LONG_DOUBLE_ 
-#ifdef __X86__
+#ifdef _M_IX86
     return __ld_posqnan;
 #else
     return (long double)__d_posqnan;

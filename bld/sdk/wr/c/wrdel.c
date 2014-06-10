@@ -84,7 +84,7 @@ int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
                     (*tnode)->Next->Prev = (*tnode)->Prev;
                 }
             }
-            WRMemFree( *tnode );
+            MemFree( *tnode );
             *tnode = NULL;
         } else {
             if( (*tnode)->Head == *rnode ) {
@@ -100,7 +100,7 @@ int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
                 (*rnode)->Next->Prev = (*rnode)->Prev;
             }
         }
-        WRMemFree( *rnode );
+        MemFree( *rnode );
         *rnode = NULL;
     } else {
         if( (*rnode)->Head == *lnode ) {
@@ -117,7 +117,7 @@ int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
         }
     }
 
-    WRMemFree( *lnode );
+    MemFree( *lnode );
     *lnode = NULL;
 
     if( *rnode != NULL ) {
@@ -156,7 +156,7 @@ int WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 
     dir->NumResources -= WRFreeResNodes( tnode );
 
-    WRMemFree( tnode );
+    MemFree( tnode );
 
     dir->NumTypes--;
 
@@ -175,7 +175,7 @@ int WRFreeResNodes( WResTypeNode *tnode )
         oldnode = currnode;
         currnode = currnode->Next;
         WRFreeLangNodes( oldnode );
-        WRMemFree( oldnode );
+        MemFree( oldnode );
         count++;
     }
 
@@ -196,7 +196,7 @@ int WRFreeLangNodes( WResResNode *rnode )
     while( currnode != NULL ) {
         oldnode = currnode;
         currnode = currnode->Next;
-        WRMemFree( oldnode );
+        MemFree( oldnode );
         count++;
     }
 

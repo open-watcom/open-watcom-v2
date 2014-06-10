@@ -32,9 +32,9 @@
 #ifndef _YYDRIVR2_H
 #define _YYDRIVR2_H
 
-extern void ParseInitOS2( void );
-extern void ParseFiniOS2( void );
-extern bool ParseOS2( void );
-extern void ParseInitStaticsOS2( void );
+#include "os2ytab.h"
+#include "scan.h"
+
+extern int LookupKeywordOS2( ScanString newstring );
 
 #endif

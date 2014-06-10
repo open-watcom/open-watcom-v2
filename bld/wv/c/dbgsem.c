@@ -337,7 +337,7 @@ static void FillInDefaults( dip_type_info *info )
 static unsigned MechMisc( unsigned select, unsigned parm )
 {
     long                value;
-    unsigned            result;
+    unsigned            result = 0;
     mad_type_info       mti;
 
     switch( select ) {
@@ -621,7 +621,7 @@ static void DoMinusScaled( void )
 static unsigned MechDo( unsigned select, unsigned parm )
 {
     unsigned long       size;
-    unsigned            result;
+    unsigned            result = 0;
     DIPHDL( type, th );
     dip_type_info       info;
     mad_type_info       mti;
@@ -877,7 +877,7 @@ static unsigned MechPush_n_Pop( unsigned select, unsigned parm )
 
 static unsigned MechStack( unsigned select, unsigned parm )
 {
-    unsigned    result;
+    unsigned    result = 0;
     stack_entry *entry;
     sym_info    info;
 
@@ -963,7 +963,7 @@ static unsigned MechNum( unsigned select, unsigned parm )
 
 static unsigned MechBits( unsigned select, unsigned parm )
 {
-    unsigned result;
+    unsigned result = 0;
 
     switch( select ) {
     case 0:
@@ -987,7 +987,7 @@ static unsigned MechBits( unsigned select, unsigned parm )
 typedef struct cue_find {
     cue_handle          *best_ch;
     unsigned long       best_line;
-    cue_file_id         id;
+    cue_fileid          id;
     char                *name;
     unsigned            len;
     unsigned            ambig           : 1;
@@ -1161,6 +1161,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
             Scan();
         } else {
             mod_name = NULL;
+            mod_len = 0;
         }
         if( CurrToken == mod_spec_token ) {
             if( select == 2 ) {
@@ -1290,7 +1291,7 @@ static unsigned MechGet( unsigned select, unsigned parm )
 
 unsigned SSLSemantic( int action, unsigned parm )
 {
-    unsigned    result;
+    unsigned    result = 0;
     unsigned    select;
 
     select = action & SEM_SELECTOR;
@@ -1366,10 +1367,9 @@ int SSLError( unsigned class, unsigned error )
 }
 
 
-#pragma off( unreferenced );
 void SSLOutToken( unsigned token )
-#pragma off( unreferenced );
 {
+    token = token;
 }
 
 unsigned SSLNextToken( void )

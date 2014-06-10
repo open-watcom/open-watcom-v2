@@ -50,7 +50,7 @@ typedef struct cue_handle       cue_handle;
 typedef struct sym_handle       sym_handle;
 typedef struct dip_imp_routines dip_imp_routines;
 typedef unsigned_32             mod_handle;
-typedef unsigned_32             cue_file_id;
+typedef unsigned_32             cue_fileid;
 typedef struct location_context location_context;
 
 
@@ -223,10 +223,6 @@ typedef struct {
     unsigned            case_sensitive  : 1;
     unsigned            type            : 4; /* symbol_type values */
 } lookup_item;
-
-//temp: for ease of transition
-#define DIPENTRY        DIGENTRY
-//#define DIPCLIENT     DIGCLIENT
 
 #include "digunpck.h"
 #endif

@@ -50,7 +50,7 @@ WCLASS WEdit : public WControl {
         int WEXPORT getSelectBounds( int *first, int *last );
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_EDIT; }
+        virtual gui_control_class controlClass() { return( GUI_EDIT ); }
 };
 
 WCLASS WEditBox : public WEdit {
@@ -63,7 +63,7 @@ WCLASS WEditBox : public WEdit {
         WEXPORT ~WEditBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_EDIT; }
+        virtual gui_control_class controlClass() { return( GUI_EDIT ); }
 };
 
 WCLASS WMultiLineEditBox : public WEdit {
@@ -76,7 +76,7 @@ WCLASS WMultiLineEditBox : public WEdit {
         WEXPORT ~WMultiLineEditBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_EDIT_MLE; }
+        virtual gui_control_class controlClass() { return( GUI_EDIT_MLE ); }
 };
 
 #endif

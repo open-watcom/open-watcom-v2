@@ -33,34 +33,34 @@
 #include "dipwat.h"
 #include "dbcue.h"
 
-extern void             *InfoLoad(imp_image_handle *, imp_mod_handle,unsigned,unsigned,void (*)());
-extern void             InfoUnlock(void);
-extern void             InfoSpecUnlock(void *);
-extern unsigned         InfoSize(imp_image_handle *, imp_mod_handle,unsigned int, unsigned );
-extern mem_block        FindSegBlock(imp_image_handle *, imp_mod_handle,unsigned long );
-extern mod_info         *ModPointer( imp_image_handle *, imp_mod_handle );
-extern unsigned         PrimaryCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-extern void             *FindSpecCueTable( imp_image_handle *, imp_mod_handle, void ** );
-
-extern address          NilAddr;
-
-static void     *LinStart;
-static void     *LinEnd;
-static byte     V2Lines;
-
-
 #define NO_LINE         ((unsigned_16)-1)
-
-typedef union {
-    v2_line_segment     v2;
-    v3_line_segment     v3;
-} line_segment;
 
 #define NEXT_SEG( ptr ) (V2Lines ? ((line_segment *)&((ptr)->v2.line[(ptr)->v2.num])) \
                                  : ((line_segment *)&((ptr)->v3.line[(ptr)->v3.num])))
 #define LINE_SEG( ptr ) (V2Lines ? (ptr)->v2.segment : (ptr)->v3.segment)
 #define LINE_NUM( ptr ) (V2Lines ? (ptr)->v2.num : (ptr)->v3.num)
 #define LINE_LINE( ptr) (V2Lines ? (ptr)->v2.line : (ptr)->v3.line)
+
+typedef union {
+    v2_line_segment     v2;
+    v3_line_segment     v3;
+} line_segment;
+
+extern void             *InfoLoad(imp_image_handle *, imp_mod_handle,unsigned,unsigned,void (*)());
+extern void             InfoUnlock(void);
+extern void             InfoSpecUnlock(void *);
+extern unsigned         InfoSize( imp_image_handle *, imp_mod_handle,unsigned int, unsigned );
+extern mem_block        FindSegBlock( imp_image_handle *, imp_mod_handle,unsigned long );
+extern mod_info         *ModPointer( imp_image_handle *, imp_mod_handle );
+extern unsigned         PrimaryCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
+extern void             *FindSpecCueTable( imp_image_handle *, imp_mod_handle, void ** );
+
+extern address          NilAddr;
+
+static line_segment     *LinStart;
+static line_segment     *LinEnd;
+static byte             V2Lines;
+
 
 static int  CueFind( cue_state *base, cue_idx cue, cue_state *ret )
 {
@@ -188,9 +188,9 @@ static dip_status GetLineInfo( imp_image_handle *ii, imp_mod_handle im,
                                  unsigned entry )
 {
     if( entry != 0 ) UnlockLine();
-    LinStart = InfoLoad( ii, im, DMND_LINES, entry, NULL );
+    LinStart = (line_segment *)InfoLoad( ii, im, DMND_LINES, entry, NULL );
     if( LinStart == NULL ) return( DS_FAIL );
-    LinEnd = (byte *)LinStart + InfoSize( ii, im, DMND_LINES, entry );
+    LinEnd = (line_segment *)( (byte *)LinStart + InfoSize( ii, im, DMND_LINES, entry ) );
     V2Lines = ii->v2;
     return( DS_OK );
 }
@@ -305,16 +305,17 @@ static void SearchSection( imp_image_handle *ii,
     }
 }
 
-search_result DIPENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
+search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
                 address addr, imp_cue_handle *ic )
 {
     struct search_info  close;
-    unsigned            save_entry;
+    unsigned            save_entry = 0;
 
     close.ic.im = im;
     close.have = SR_NONE;
     close.ic.entry = 0;
     close.have_spec_table = ST_UNKNOWN;
+    close.off = 0;
     for( ;; ) {
         if( GetLineInfo( ii, close.ic.im, close.ic.entry ) != DS_OK ) break;
         SearchSection( ii, &close, addr );
@@ -333,7 +334,7 @@ static void ScanSection( struct search_info *close, unsigned file_id,
 {
     line_info           *curr;
     line_segment        *ptr;
-    void                *next;
+    line_segment        *next;
     unsigned            num;
     cue_state           spec;
 
@@ -343,7 +344,7 @@ static void ScanSection( struct search_info *close, unsigned file_id,
         if( line == 0 ) {
             line = LINE_LINE( ptr )[0].line_number;
         }
-        for( curr = LINE_LINE( ptr ); curr < next; ++curr ) {
+        for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
             spec.fno = 1;
             num = curr->line_number;
             if( num >= PRIMARY_RANGE ) {
@@ -368,12 +369,12 @@ static void ScanSection( struct search_info *close, unsigned file_id,
     }
 }
 
-search_result DIPENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
-                        cue_file_id file, unsigned long line, unsigned col,
+search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
+                        cue_fileid file, unsigned long line, unsigned col,
                         imp_cue_handle *ic )
 {
     struct search_info  close;
-    unsigned            save_entry;
+    unsigned            save_entry = 0;
     void                *base;
 
     col = col;
@@ -397,7 +398,7 @@ search_result DIPENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
     return( close.have );
 }
 
-unsigned long DIPENTRY DIPImpCueLine( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned long DIGENTRY DIPImpCueLine( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
     unsigned    num;
@@ -415,13 +416,13 @@ unsigned long DIPENTRY DIPImpCueLine( imp_image_handle *ii, imp_cue_handle *ic )
     return( num );
 }
 
-unsigned DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 {
     ii = ii; ic = ic;
     return( 0 );
 }
 
-address DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+address DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 {
     address             addr;
     line_info           *info;
@@ -440,12 +441,12 @@ address DIPENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 }
 
 
-walk_result DIPENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im,
+walk_result DIGENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im,
             IMP_CUE_WKR *wk, imp_cue_handle *ic, void *d )
 {
     line_info           *curr;
     line_segment        *ptr;
-    void                *next;
+    line_segment        *next;
     walk_result         wr;
 
     //NYI: handle special cues
@@ -456,7 +457,7 @@ walk_result DIPENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
         for( ptr = LinStart; ptr < LinEnd; ptr = next ) {
             next = NEXT_SEG( ptr );
             ic->seg_bias = BIAS( ptr );
-            for( curr = LINE_LINE( ptr ); curr < next; ++curr ) {
+            for( curr = LINE_LINE( ptr ); curr < (line_info *)next; ++curr ) {
                 ic->info_bias = BIAS( curr );
                 if( curr->line_number < PRIMARY_RANGE ) {
                     wr = wk( ii, ic, d );
@@ -476,13 +477,13 @@ walk_result DIPENTRY DIPImpWalkFileList( imp_image_handle *ii, imp_mod_handle im
     return( WR_CONTINUE );
 }
 
-imp_mod_handle DIPENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
+imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
 {
     ii = ii;
     return( ic->im );
 }
 
-cue_file_id DIPENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 {
     line_info   *info;
     unsigned    num;
@@ -499,12 +500,12 @@ cue_file_id DIPENTRY DIPImpCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
     return( 1 );
 }
 
-unsigned DIPENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+unsigned DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
                         char *buff, unsigned max )
 {
-    cue_file_id         id;
+    cue_fileid      id;
 
-    id = ImpInterface.cue_fyle_id( ii, ic );
+    id = ImpInterface.cue_file_id( ii, ic );
     switch( id ) {
     case 0:
         return( 0 );
@@ -532,7 +533,7 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
         info = UNBIAS( ic->info_bias );
         ++info;
         for( ;; ) {
-            if( (void *)info < NEXT_SEG( seg ) ) {
+            if( info < (line_info *)NEXT_SEG( seg ) ) {
                 ic->seg_bias = BIAS( seg );
                 ic->info_bias = BIAS( info );
                 UnlockLine();
@@ -546,7 +547,7 @@ static dip_status AdjForward( imp_image_handle *ii, imp_cue_handle *ic )
         if( ic->entry >= num_entries ) {
             ic->entry = 0;
             ic->seg_bias = BIAS( LinStart );
-            info = LINE_LINE( (line_segment *)LinStart );
+            info = LINE_LINE( LinStart );
             ic->info_bias = BIAS( info );
             UnlockLine();
             return( DS_WRAPPED );
@@ -616,7 +617,7 @@ static dip_status AdjBackward( imp_image_handle *ii, imp_cue_handle *ic )
     }
 }
 
-dip_status DIPENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
+dip_status DIGENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
                         int adj, imp_cue_handle *aic )
 {
     dip_status  status;
@@ -641,7 +642,7 @@ dip_status DIPENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
     return( ok );
 }
 
-int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     ii = ii;

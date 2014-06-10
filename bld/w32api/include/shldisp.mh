@@ -106,46 +106,6 @@ typedef enum _tagACENUMOPTION {
     ACEO_FIRSTUNUSED        = 0x00010000
 } ACENUMOPTION;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_Shell32;
-EXTERN_C const IID      IID_IFolderViewOC;
-EXTERN_C const IID      DIID_DShellFolderViewEvents;
-EXTERN_C const CLSID    CLSID_ShellFolderViewOC;
-EXTERN_C const IID      IID_DFConstraint;
-EXTERN_C const IID      IID_Folder;
-EXTERN_C const IID      IID_Folder2;
-EXTERN_C const IID      IID_Folder3;
-EXTERN_C const IID      IID_FolderItem;
-EXTERN_C const IID      IID_FolderItem2;
-EXTERN_C const CLSID    CLSID_ShellFolderItem;
-EXTERN_C const IID      IID_FolderItems;
-EXTERN_C const IID      IID_FolderItems2;
-EXTERN_C const IID      IID_FolderItems3;
-EXTERN_C const IID      IID_FolderItemVerb;
-EXTERN_C const IID      IID_FolderItemVerbs;
-EXTERN_C const IID      IID_IShellLinkDual;
-EXTERN_C const IID      IID_IShellLinkDual2;
-EXTERN_C const CLSID    CLSID_ShellLinkObject;
-EXTERN_C const IID      IID_IShellFolderViewDual;
-EXTERN_C const IID      IID_IShellFolderViewDual2;
-EXTERN_C const IID      IID_IShellFolderViewDual3;
-EXTERN_C const CLSID    CLSID_ShellFolderView;
-EXTERN_C const IID      IID_IShellDispatch;
-EXTERN_C const IID      IID_IShellDispatch2;
-EXTERN_C const IID      IID_IShellDispatch3;
-EXTERN_C const IID      IID_IShellDispatch4;
-EXTERN_C const IID      IID_IShellDispatch5;
-EXTERN_C const CLSID    CLSID_Shell;
-EXTERN_C const CLSID    CLSID_ShellDispatchInproc;
-EXTERN_C const IID      IID_IFileSearchBand;
-EXTERN_C const CLSID    CLSID_FileSearchBand;
-EXTERN_C const IID      IID_IWebWizardHost;
-EXTERN_C const IID      IID_INewWDEvents;
-EXTERN_C const IID      IID_IAutoComplete;
-EXTERN_C const IID      IID_IAutoComplete2;
-EXTERN_C const IID      IID_IEnumACString;
-EXTERN_C const IID      IID_IAsyncOperation;
-
 /* IFolderViewOC interface */
 #undef INTERFACE
 #define INTERFACE   IFolderViewOC
@@ -2262,5 +2222,45 @@ typedef IAsyncOperation *LPASYNCOPERATION;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_Shell32;
+EXTERN_C const IID      __cdecl IID_IFolderViewOC;
+EXTERN_C const IID      __cdecl DIID_DShellFolderViewEvents;
+EXTERN_C const CLSID    __cdecl CLSID_ShellFolderViewOC;
+EXTERN_C const IID      __cdecl IID_DFConstraint;
+EXTERN_C const IID      __cdecl IID_Folder;
+EXTERN_C const IID      __cdecl IID_Folder2;
+EXTERN_C const IID      __cdecl IID_Folder3;
+EXTERN_C const IID      __cdecl IID_FolderItem;
+EXTERN_C const IID      __cdecl IID_FolderItem2;
+EXTERN_C const CLSID    __cdecl CLSID_ShellFolderItem;
+EXTERN_C const IID      __cdecl IID_FolderItems;
+EXTERN_C const IID      __cdecl IID_FolderItems2;
+EXTERN_C const IID      __cdecl IID_FolderItems3;
+EXTERN_C const IID      __cdecl IID_FolderItemVerb;
+EXTERN_C const IID      __cdecl IID_FolderItemVerbs;
+EXTERN_C const IID      __cdecl IID_IShellLinkDual;
+EXTERN_C const IID      __cdecl IID_IShellLinkDual2;
+EXTERN_C const CLSID    __cdecl CLSID_ShellLinkObject;
+EXTERN_C const IID      __cdecl IID_IShellFolderViewDual;
+EXTERN_C const IID      __cdecl IID_IShellFolderViewDual2;
+EXTERN_C const IID      __cdecl IID_IShellFolderViewDual3;
+EXTERN_C const CLSID    __cdecl CLSID_ShellFolderView;
+EXTERN_C const IID      __cdecl IID_IShellDispatch;
+EXTERN_C const IID      __cdecl IID_IShellDispatch2;
+EXTERN_C const IID      __cdecl IID_IShellDispatch3;
+EXTERN_C const IID      __cdecl IID_IShellDispatch4;
+EXTERN_C const IID      __cdecl IID_IShellDispatch5;
+EXTERN_C const CLSID    __cdecl CLSID_Shell;
+EXTERN_C const CLSID    __cdecl CLSID_ShellDispatchInproc;
+EXTERN_C const IID      __cdecl IID_IFileSearchBand;
+EXTERN_C const CLSID    __cdecl CLSID_FileSearchBand;
+EXTERN_C const IID      __cdecl IID_IWebWizardHost;
+EXTERN_C const IID      __cdecl IID_INewWDEvents;
+EXTERN_C const IID      __cdecl IID_IAutoComplete;
+EXTERN_C const IID      __cdecl IID_IAutoComplete2;
+EXTERN_C const IID      __cdecl IID_IEnumACString;
+EXTERN_C const IID      __cdecl IID_IAsyncOperation;
 
 #endif /* __shldisp_h__ */

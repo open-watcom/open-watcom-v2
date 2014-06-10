@@ -35,7 +35,6 @@
 #include "watcom.h"
 #include "wreglbl.h"
 #include "wremain.h"
-#include "wremem.h"
 #include "wreseted.h"
 #include "wregcres.h"
 #include "wrenames.h"
@@ -63,7 +62,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WREChangeMemFlags( void )
+bool WREChangeMemFlags( void )
 {
     WRECurrentResInfo   curr;
     HWND                parent;
@@ -71,7 +70,7 @@ Bool WREChangeMemFlags( void )
     int                 type;
     uint_16             mflags;
     FARPROC             cb;
-    Bool                ok;
+    bool                ok;
 
     cb = NULL;
     name = NULL;
@@ -108,7 +107,7 @@ Bool WREChangeMemFlags( void )
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );

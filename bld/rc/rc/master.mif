@@ -72,22 +72,22 @@ common_objs = &
     $(_subdir_)pprcenv.obj &
     $(_subdir_)scanw.obj &
     $(_subdir_)scan2.obj &
-    $(_subdir_)semaccel.obj &
-    $(_subdir_)semantic.obj &
-    $(_subdir_)semdiag.obj &
-    $(_subdir_)semmenu.obj &
-    $(_subdir_)semver.obj &
+    $(_subdir_)semacclw.obj &
+    $(_subdir_)semantcw.obj &
+    $(_subdir_)semdiagw.obj &
+    $(_subdir_)semmenuw.obj &
+    $(_subdir_)semverw.obj &
     $(_subdir_)semtbar.obj &
     $(_subdir_)semantc2.obj &
-    $(_subdir_)sem2diag.obj &
-    $(_subdir_)sem2menu.obj &
-    $(_subdir_)sem2sngl.obj &
-    $(_subdir_)sem2str.obj &
-    $(_subdir_)sem2accl.obj &
-    $(_subdir_)sem2help.obj &
+    $(_subdir_)semdiag2.obj &
+    $(_subdir_)semmenu2.obj &
+    $(_subdir_)semsngl2.obj &
+    $(_subdir_)semstr2.obj &
+    $(_subdir_)semaccl2.obj &
+    $(_subdir_)semhelp2.obj &
     $(_subdir_)semraw.obj &
-    $(_subdir_)semsingl.obj &
-    $(_subdir_)semstr.obj &
+    $(_subdir_)semsnglw.obj &
+    $(_subdir_)semstrw.obj &
     $(_subdir_)dbtable.obj &
     $(_subdir_)preproc.obj &
     $(_subdir_)ppexpr.obj &

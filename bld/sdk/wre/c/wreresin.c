@@ -36,7 +36,6 @@
 #include "wreglbl.h"
 #include "wreresin.h"
 #include "wremain.h"
-#include "wremem.h"
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -59,9 +58,9 @@ void WREFreeResInfo( WREResInfo *info )
             WRFreeHashTable( info->symbol_table );
         }
         if( info->symbol_file != NULL ) {
-            WREMemFree( info->symbol_file );
+            WRMemFree( info->symbol_file );
         }
-        WREMemFree( info );
+        WRMemFree( info );
     }
 }
 
@@ -69,7 +68,7 @@ WREResInfo *WREAllocResInfo( void )
 {
     WREResInfo  *info;
 
-    info = (WREResInfo *)WREMemAlloc( sizeof( WREResInfo ) );
+    info = (WREResInfo *)WRMemAlloc( sizeof( WREResInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREResInfo ) );
@@ -78,12 +77,12 @@ WREResInfo *WREAllocResInfo( void )
     return( info );
 }
 
-Bool WREIsResModified( WREResInfo *info )
+bool WREIsResModified( WREResInfo *info )
 {
     return( info == NULL || info->modified );
 }
 
-void WRESetResModified( WREResInfo *info, Bool mod )
+void WRESetResModified( WREResInfo *info, bool mod )
 {
     if( info != NULL ) {
         info->modified = mod;

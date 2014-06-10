@@ -1038,8 +1038,8 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
     return( CLNAME_NULL );
 }
 
-void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, int tcd_control )
-/**********************************************************************************/
+void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, tc_directive tcd_control )
+/*******************************************************************************************/
 {
     TYPE type;
     CLASS_DATA *data;
@@ -1093,7 +1093,7 @@ void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, int tcd_contr
     case CLASS_REFERENCE:
         data = classDataStack;
         setClassType( data, type, declaration );
-        if( tcd_control ) {
+        if( tcd_control != TCD_NULL ) {
             TemplateClassDirective( type, &(id->locn), tcd_control );
         }
         NodeFreeDupedExpr( id );

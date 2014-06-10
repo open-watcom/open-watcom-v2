@@ -12,10 +12,10 @@
 #endif
 #ifdef INITGUID
     #define DEFINE_PROPERTYKEY( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12 ) \
-        EXTERN_C const GUID x = { { p1, p2, p3, { p4, p5, p6, p7, p8, p9, p10, p11 } }, p12 }
+        EXTERN_C const GUID __cdecl x = { { p1, p2, p3, { p4, p5, p6, p7, p8, p9, p10, p11 } }, p12 }
 #else
     #define DEFINE_PROPERTYKEY( x, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12 ) \
-        EXTERN_C const GUID x
+        EXTERN_C const GUID __cdecl x
 #endif
 
 /* Reference data types */

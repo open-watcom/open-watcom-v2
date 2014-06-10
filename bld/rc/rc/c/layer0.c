@@ -34,7 +34,6 @@
 #include "wio.h"
 #include "global.h"
 #include "rcmem.h"
-#include "layer0.h"
 #include "iortns.h"
 #include "wresset2.h"
 
@@ -86,7 +85,6 @@ HANDLE_INFO     Instance;
 
 static WResFileID       openFileList[ MAX_OPEN_FILES ];
 static RcFileEntry      RcFileList[ RC_MAX_FILES ];
-static int              RcFindIndex( WResFileID fileno );
 
 static RcBuffer * NewRcBuffer( void )
 /***********************************/
@@ -103,8 +101,8 @@ static RcBuffer * NewRcBuffer( void )
     return( new_buff );
 } /* NewRcBuffer */
 
-void RegisterOpenFile( WResFileID fhdl )
-/**************************************/
+static void RegisterOpenFile( WResFileID fhdl )
+/*********************************************/
 {
     unsigned    i;
 
@@ -116,8 +114,8 @@ void RegisterOpenFile( WResFileID fhdl )
     }
 }
 
-void UnRegisterOpenFile( WResFileID fhdl )
-/****************************************/
+static void UnRegisterOpenFile( WResFileID fhdl )
+/***********************************************/
 {
     unsigned    i;
 
@@ -128,6 +126,22 @@ void UnRegisterOpenFile( WResFileID fhdl )
         }
     }
 }
+
+/* Find index in RcFileList table of given filehandle.
+*  Return: RC_MAX_FILES if not found, else index
+*/
+static int RcFindIndex( WResFileID fileno )
+/*****************************************/
+{
+    int     i;
+
+    for( i = 0; i < RC_MAX_FILES; i++ ) {
+        if( RcFileList[i].FileHandle == fileno && RcFileList[i].HasRcBuffer ) {
+            break;
+        }
+    }
+    return( i );
+} /* RcFindIndex */
 
 void CloseAllFiles( void ) {
 /***************************/
@@ -460,19 +474,30 @@ void Layer0InitStatics( void )
     }
 }
 
-/* Find index in RcFileList table of given filehandle.
-*  Return: RC_MAX_FILES if not found, else index
-*/
-static int RcFindIndex( WResFileID fileno )
-/*****************************************/
+int RCOpenResFile( HANDLE_INFO *instance, char *imagename )
+/*********************************************************/
 {
-    int     i;
+    int         error;
 
-    for( i = 0; i < RC_MAX_FILES; i++ ) {
-        if( RcFileList[i].FileHandle == fileno && RcFileList[i].HasRcBuffer ) {
-            break;
+    instance->handle = open( imagename, O_RDONLY | O_BINARY );
+    error = ( instance->handle == NIL_HANDLE );
+    if( !error ) {
+        RegisterOpenFile( instance->handle );
+        error = FindResources( instance );
+        if( !error ) {
+            error = InitResources( instance );
+        }
+        if( error ) {
+            CloseResFile( instance );
+            UnRegisterOpenFile( instance->handle );
         }
     }
-    return( i );
-} /* RcFindIndex */
+    return( error );
+}
 
+void RCCloseResFile( HANDLE_INFO *instance )
+/******************************************/
+{
+    CloseResFile( instance );
+    UnRegisterOpenFile( instance->handle );
+}

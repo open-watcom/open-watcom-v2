@@ -55,8 +55,7 @@ public:
             void        callers( WVList & );
 
 private:
-    static  int         memberHook( dr_sym_type, dr_handle, dr_handle,
-                                    char *, void * );
+    static  bool        memberHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
     static  bool        callHook( dr_handle, dr_ref_info *, char *, void * );
 
     static MemoryPool   _pool;

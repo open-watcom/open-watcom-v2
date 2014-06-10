@@ -140,7 +140,7 @@ typedef bool (WObject::*bcbk)( gui_key k );
 
 WCLASS WWindow : public WObject {
 private:
-    virtual bool reallyClose( void ) { return( TRUE ); }
+    virtual bool reallyClose( void ) { return( true ); }
     bool updateAutosize( void );
     void destroyWindow( void );
     AccelKey *findAccelKey( WKeyCode key );
@@ -164,8 +164,8 @@ protected:
     void autoPosition( WRect& r );
     void setParent( WWindow *parent ) { _parent = parent; }
     void setAutosize( const WRect& r ) { _autosize = r; }
-    WPopupMenu *popup() { return _popup; }
-    WVList & children() { return _children; }
+    WPopupMenu *popup() { return( _popup ); }
+    WVList & children() { return( _children ); }
     WWindow *nextChild( WWindow *w );
     WRect getDefSize();
     void enumChildren( void );
@@ -189,25 +189,25 @@ public:
     void WEXPORT addAccelKey( WKeyCode key, WObject *client, bcbk cb );
     void addAccelKey( int key, WObject *client, bcbk cb );
     void WEXPORT removeAccelKey( WKeyCode key );
-    virtual bool gettingFocus( WWindow * ) { return( FALSE ); }
-    virtual bool losingFocus( WWindow * ) { return( FALSE ); }
+    virtual bool gettingFocus( WWindow * ) { return( false ); }
+    virtual bool losingFocus( WWindow * ) { return( false ); }
     virtual bool WEXPORT keyDown( WKeyCode, WKeyState );
     virtual WControl * WEXPORT getControl( unsigned control_id );
-    virtual bool appActivate( bool ) { return( FALSE ); }
-    virtual bool contextHelp( bool ) { return( FALSE ); }
+    virtual bool appActivate( bool ) { return( false ); }
+    virtual bool contextHelp( bool ) { return( false ); }
     void hookF1Key( bool );
 
     // mouse handling
     virtual bool WEXPORT mouseMove( int, int, WMouseKeyFlags );
-    virtual bool WEXPORT leftBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT leftBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT leftBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT middleBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT middleBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT middleBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
-    virtual bool WEXPORT rightBttnDn( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT leftBttnDn( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT leftBttnUp( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT leftBttnDbl( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT middleBttnDn( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT middleBttnUp( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT middleBttnDbl( int, int, WMouseKeyFlags ) { return( false ); };
+    virtual bool WEXPORT rightBttnDn( int, int, WMouseKeyFlags ) { return( false ); };
     virtual bool WEXPORT rightBttnUp( int, int, WMouseKeyFlags );
-    virtual bool WEXPORT rightBttnDbl( int, int, WMouseKeyFlags ) { return( FALSE ); };
+    virtual bool WEXPORT rightBttnDbl( int, int, WMouseKeyFlags ) { return( false ); };
 
     // scrolling gear
     void WEXPORT setScrollRange( WScrollBar sb, int maxr );
@@ -221,11 +221,11 @@ public:
     void WEXPORT scrollWindow( WScrollBar, int );
     virtual bool WEXPORT scrollPosChanged( WScrollBar sb );
     virtual bool WEXPORT scrollNotify( WScrollNotification, int );
-    virtual bool WEXPORT statusWindowCleared( void ) { return( FALSE ); }
+    virtual bool WEXPORT statusWindowCleared( void ) { return( false ); }
 
     void WEXPORT close( void );
-    virtual bool WEXPORT paint() { return FALSE; }
-    bool WEXPORT isPainting() { return _painting; }
+    virtual bool WEXPORT paint() { return( false ); }
+    bool WEXPORT isPainting() { return( _painting ); }
     virtual void WEXPORT moved( WOrdinal width, WOrdinal height );
     virtual void WEXPORT resized( WOrdinal width, WOrdinal height );
     bool WEXPORT isMaximized() { return( GUIIsMaximized( _handle ) ); }
@@ -237,34 +237,34 @@ public:
     void WEXPORT stopWait( void );
     virtual void WEXPORT autosize();
     virtual size_t WEXPORT getTextLength() {
-        return GUIGetWindowTextLength( _handle );
+        return( GUIGetWindowTextLength( _handle ) );
     }
     virtual void WEXPORT getText( char *textbuf, size_t length );
     virtual void WEXPORT getText( WString& str );
     virtual void WEXPORT setText( const char *text );
     virtual WMenu * WEXPORT setMenu( WMenu* menu );
     virtual WMenu * WEXPORT clearMenu();
-    WMenu * WEXPORT menu() { return _menu; }
+    WMenu * WEXPORT menu() { return( _menu ); }
     virtual WToolBar * WEXPORT setToolBar( WToolBar *toolbar );
     virtual WToolBar * WEXPORT clearToolBar();
-    WToolBar * WEXPORT toolBar() { return _toolBar; }
+    WToolBar * WEXPORT toolBar() { return( _toolBar ); }
     virtual void WEXPORT setPopup( WPopupMenu *menu );
     virtual void WEXPORT clearPopup();
     virtual void WEXPORT insertPopup( WPopupMenu *pop, int index );
     virtual void WEXPORT removePopup( WPopupMenu *pop );
     void WEXPORT move( const WRect& r );
     void WEXPORT move( WOrdinal x, WOrdinal y );
-    virtual void WEXPORT getRectangle( WRect& r, bool absolute=FALSE );
+    virtual void WEXPORT getRectangle( WRect& r, bool absolute=false );
     virtual void WEXPORT getNormalRectangle( WRect& r );
     virtual void WEXPORT show( WWindowState state=WWinStateShow );
-    virtual bool WEXPORT isVisible() { return GUIIsWindowVisible( _handle ); }
-    void WEXPORT getClientRect( WRect & r, bool absolute=FALSE );
+    virtual bool WEXPORT isVisible() { return( GUIIsWindowVisible( _handle ) ); }
+    void WEXPORT getClientRect( WRect & r, bool absolute=false );
     void WEXPORT size( WOrdinal w, WOrdinal h );
     void WEXPORT minimumSize( WOrdinal w, WOrdinal h );
     void WEXPORT shrink( WOrdinal wBorder, WOrdinal hBorder );
     void WEXPORT shrink( void );
-    void WEXPORT update( bool force=FALSE );
-    virtual void WEXPORT setUpdates( bool b=TRUE );
+    void WEXPORT update( bool force=false );
+    virtual void WEXPORT setUpdates( bool b=true );
     void WEXPORT erase() {}  // NYI
     int WEXPORT getRows( void ) {
         return( GUIGetNumRows( _handle ) );
@@ -281,10 +281,10 @@ public:
 
     void WEXPORT setIcon( WResource, char *ch_mode=NULL );
     virtual bool WEXPORT setFocus( void );
-    gui_window * WEXPORT handle() { return _handle; }
+    gui_window * WEXPORT handle() { return( _handle ); }
     void setHandle( gui_window *handle ) { _handle = handle; }
-    WWindow * WEXPORT parent() { return _parent; }
-    WRect getAutosize( void ) { return _autosize; }
+    WWindow * WEXPORT parent() { return( _parent ); }
+    WRect getAutosize( void ) { return( _autosize ); }
     virtual WWindow * switchChild( WWindow *currChild, bool forward );
     virtual bool WEXPORT processMsg( gui_event msg, void *parm );
     virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
@@ -305,7 +305,7 @@ public:
     }
     void centre( unsigned int xpct=50, unsigned int ypct=40 );
 
-    virtual bool queryEndSession( void ) { return( TRUE ); }
+    virtual bool queryEndSession( void ) { return( true ); }
     virtual void endSession( bool ) {}
 
     // painting functions

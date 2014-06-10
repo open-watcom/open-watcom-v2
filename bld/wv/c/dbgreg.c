@@ -371,7 +371,7 @@ void ResizeRegData( void )
 
 static save_state *AllocState( void )
 {
-    int         size;
+    unsigned    size;
     save_state  *state;
 
     size = sizeof( *state ) + CurrRegSize;

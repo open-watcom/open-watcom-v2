@@ -33,12 +33,11 @@
 #include "hint.h"
 #include "uistr.gh"
 #include "mem.h"
-#include "ldstr.h"
 #include "font.h"
 
 typedef struct {
     HWND                parent;
-    WORD                curmsg;
+    MSGID               curmsg;
     WORD                hintlen;
     MenuItemHint        *hints;
 } HintWndInfo;
@@ -48,37 +47,37 @@ typedef struct {
 /*
  * getItemMsg - find the hint message for the specified menu item
  */
-static WORD getItemMsg( statwnd *wnd, WORD menuid )
+static MSGID getItemMsg( statwnd *wnd, WORD menuid )
 {
     WORD                i;
     HWND                hint;
     HLOCAL              hinfo;
     HintWndInfo         *info;
     MenuItemHint        *hinttable;
-    WORD                ret;
+    MSGID               msgid;
 
     hint = GetHintHwnd( wnd );
     hinfo = GetProp( hint, HINT_PROP_ID );
     info = LocalLock( hinfo );
     hinttable = info->hints;
-    ret = HINT_EMPTY;
+    msgid = HINT_EMPTY;
     if( hinttable != NULL ) {
         for( i = 0; i < info->hintlen; i++ ) {
             if( hinttable[i].menuid == menuid ) {
-                ret = hinttable[i].msgid;
+                msgid = hinttable[i].msgid;
                 break;
             }
         }
     }
     LocalUnlock( hinfo );
-    return( ret );
+    return( msgid );
 
 } /* getItemMsg */
 
 /*
  * updateHintText - updated the text shown when a menu item is selected
  */
-static void updateHintText( statwnd *wnd, WORD msgid )
+static void updateHintText( statwnd *wnd, MSGID msgid )
 {
     HDC         dc;
     HFONT       font;
@@ -104,9 +103,9 @@ static void updateHintText( statwnd *wnd, WORD msgid )
 /*
  * HintToolbar - handle the selection or deselection of a menu item
  */
-void HintToolBar( statwnd *wnd, UINT menuid, BOOL select )
+void HintToolBar( statwnd *wnd, WORD menuid, BOOL select )
 {
-    WORD        msgid;
+    MSGID   msgid;
 
     if( select ) {
         msgid = getItemMsg( wnd, menuid );
@@ -147,7 +146,7 @@ WORD SizeHintBar( statwnd *wnd )
     updateHintText( wnd, info->curmsg );
     GetWindowRect( hint, &area );
     LocalUnlock( hinfo );
-    return( area.bottom - area.top );
+    return( (WORD)( area.bottom - area.top ) );
 
 } /* SizeHintBar */
 
@@ -158,7 +157,7 @@ void HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
     HMENU       menu;
     WORD        flags;
-    WORD        msgid;
+    MSGID       msgid;
 
     menu = GetMenu( hwnd );
     flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );

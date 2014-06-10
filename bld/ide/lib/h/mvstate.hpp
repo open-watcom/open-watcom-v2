@@ -41,10 +41,10 @@ WCLASS MVState : public MState
 {
         Declare( MVState )
         public:
-                MVState( MTool* tool, SwMode mode=SWMODE_DEBUG, MVSwitch* sw=NULL, bool state=FALSE, WString* value=NULL );
+                MVState( MTool* tool, SwMode mode=SWMODE_DEBUG, MVSwitch* sw=NULL, bool state=false, WString* value=NULL );
                 ~MVState() {}
-                bool state() { return _state; }
-                WString& value() { return _value; }
+                bool state() { return( _state ); }
+                WString& value() { return( _value ); }
         private:
                 WString         _value;
                 bool            _state;

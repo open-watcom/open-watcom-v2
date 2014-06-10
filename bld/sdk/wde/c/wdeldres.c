@@ -35,7 +35,6 @@
 #include <io.h>
 #include "wderesin.h"
 #include "wde_wres.h"
-#include "wdemem.h"
 #include "wdedebug.h"
 #include "wdesdup.h"
 #include "wdetfile.h"
@@ -55,7 +54,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 {
     WdeResInfo  *res_info;
     WRFileType  file_type;
-    Bool        ok;
+    bool        ok;
 
     WdeSetWaitCursor( TRUE );
 
@@ -90,7 +89,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 
 
 WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
-                                        WResLangNode *lnode, Bool is32bit )
+                                        WResLangNode *lnode, bool is32bit )
 {
     DialogExHeader32        h32ex;
     DialogBoxHeader32       h32;
@@ -110,7 +109,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 #endif
     int                     index;
     char                    *file_name;
-    Bool                    ok;
+    bool                    ok;
 
     dlg_info = NULL;
     file = -1;
@@ -119,7 +118,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
     if( ok ) {
         file_name = res_info->info->tmp_file;
-        dlg_info = (WdeDialogBoxInfo *)WdeMemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dlg_info = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = (dlg_info != NULL);
     }
 
@@ -263,7 +262,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         dlg_info->dialog_header->FontItalicDefined = FALSE;
 
         /* now deal with the list of controls */
-        nc = (WdeDialogBoxControl *)WdeMemAlloc( sizeof( WdeDialogBoxControl ) );
+        nc = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
         for( clist = dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
             memcpy( nc, control, sizeof( WdeDialogBoxControl ) );
@@ -279,7 +278,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
             memcpy( control, nc, sizeof( WdeDialogBoxControl ) );
         }
-        WdeMemFree( nc );
+        WRMemFree( nc );
     }
 #endif
 

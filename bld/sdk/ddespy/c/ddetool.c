@@ -338,12 +338,12 @@ BOOL ToggleTB( HWND parent )
 /*
  * DDESetStickyState - set the state of a sticky toolbar button
  */
-void DDESetStickyState( WORD id, BOOL isdown )
+void DDESetStickyState( UINT itemid, BOOL isdown )
 {
     if( isdown ) {
-        ToolBarSetState( ToolBar.hdl, id, BUTTON_DOWN );
+        ToolBarSetState( ToolBar.hdl, itemid, BUTTON_DOWN );
     } else {
-        ToolBarSetState( ToolBar.hdl, id, BUTTON_UP );
+        ToolBarSetState( ToolBar.hdl, itemid, BUTTON_UP );
     }
 
 } /* DDESetStickyState */

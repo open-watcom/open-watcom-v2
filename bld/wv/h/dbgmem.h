@@ -38,10 +38,10 @@
 #define __alloca(s)     _alloca( __ALLOCA_ALIGN( s ) )
 #endif
 
-extern void     *DbgRealloc( void *, unsigned );
-extern void     *ChkAlloc( unsigned, char * );
-extern void     *DbgAlloc( unsigned );
-extern void     *DbgMustAlloc( unsigned );
+extern void     *DbgRealloc( void *, size_t );
+extern void     *ChkAlloc( size_t, char * );
+extern void     *DbgAlloc( size_t );
+extern void     *DbgMustAlloc( size_t );
 extern void     DbgFree( void * );
 extern void     MemInit( void );
 extern void     MemFini( void );

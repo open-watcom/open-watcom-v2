@@ -1,6 +1,6 @@
 /****************************************************************************
 *
-*                            Open Watcom Project
+*                         Open Watcom Project
 *
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
@@ -40,30 +40,20 @@ typedef enum {
 
 typedef struct {
     dr_loc_kind (*init)( void *, uint_32 * );                            //Init Stk
-    int (*ref)( void *d, uint_32 ref, uint_32 size, dr_loc_kind kind );  //grab ref, size of kind
-    int (*dref)( void *d, uint_32 *, uint_32, uint_32 );                 //dref addr
-    int (*drefx)( void *d, uint_32 *, uint_32, uint_32, uint_16 );       //dref addr seg
-    int (*frame)( void *d, uint_32 * );                                  //get frame val
-    int (*reg)( void *d, uint_32 *, uint_16 );                           //get reg val
-    int (*acon)( void *d, uint_32 *, bool );                             //address constant
-    int (*live)( void *d, uint_32 * );                                   //get pc line range
-}dr_loc_callbck_def;
+    bool (*ref)( void *d, uint_32 ref, uint_32 size, dr_loc_kind kind ); //grab ref, size of kind
+    bool (*dref)( void *d, uint_32 *, uint_32, uint_32 );                //dref addr
+    bool (*drefx)( void *d, uint_32 *, uint_32, uint_32, uint_16 );      //dref addr seg
+    bool (*frame)( void *d, uint_32 * );                                 //get frame val
+    bool (*reg)( void *d, uint_32 *, uint_16 );                          //get reg val
+    bool (*acon)( void *d, uint_32 *, bool );                            //address constant
+    bool (*live)( void *d, uint_32 * );                                  //get pc line range
+} dr_loc_callbck_def;
 
 typedef dr_loc_callbck_def const dr_loc_callbck;
 
-extern int DRLocationAT( dr_handle              var,
-                         dr_loc_callbck  *callbck,
-                         void                  *d  );
-extern int DRParmEntryAT( dr_handle              var,
-                          dr_loc_callbck *callbck,
-                          void                  *d  );
-extern int DRLocBasedAT( dr_handle              var,
-                         dr_loc_callbck  *callbck,
-                         void                  *d  );
-extern int DRRetAddrLocation( dr_handle             var,
-                              dr_loc_callbck *callbck,
-                              void                 *d  );
-extern int DRSegLocation( dr_handle                 var,
-                          dr_loc_callbck  *callbck,
-                          void                     *d  );
-extern dr_handle DRStringLengthAT( dr_handle str );
+extern bool         DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d );
+extern bool         DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d );
+extern bool         DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d );
+extern bool         DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d );
+extern bool         DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d );
+extern dr_handle    DRStringLengthAT( dr_handle str );

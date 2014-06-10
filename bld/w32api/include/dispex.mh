@@ -67,13 +67,6 @@
 #define DISPID_THIS         (-613)
 #define DISPID_STARTENUM    DISPID_UNKNOWN
 
-/* GUIDs */
-EXTERN_C const IID  IID_IDispatchEx;
-EXTERN_C const IID  IID_IDispError;
-EXTERN_C const IID  IID_IVariantChangeType;
-EXTERN_C const IID  IID_IObjectIdentity;
-EXTERN_C const IID  IID_IProvideRuntimeContext;
-
 /* IDispatchEx interface */
 #undef INTERFACE
 #define INTERFACE   IDispatchEx
@@ -234,5 +227,12 @@ DECLARE_INTERFACE_( IProvideRuntimeContext, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IDispatchEx;
+EXTERN_C const IID  __cdecl IID_IDispError;
+EXTERN_C const IID  __cdecl IID_IVariantChangeType;
+EXTERN_C const IID  __cdecl IID_IObjectIdentity;
+EXTERN_C const IID  __cdecl IID_IProvideRuntimeContext;
 
 #endif /* __dispex_h__ */

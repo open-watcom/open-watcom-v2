@@ -199,7 +199,7 @@ OVL_EXTERN bool DoneRadix( void *parm, inp_rtn_action action )
     case INP_RTN_FINI:
         return( TRUE );
     case INP_RTN_EOL:
-        NewCurrRadix( (unsigned)parm );
+        NewCurrRadix( (unsigned)(pointer_int)parm );
         return( FALSE );
     default:
         return( FALSE );
@@ -209,7 +209,7 @@ OVL_EXTERN bool DoneRadix( void *parm, inp_rtn_action action )
 
 static void PushRadChange( unsigned rad )
 {
-    PushInpStack( (void *)rad, DoneRadix, FALSE );
+    PushInpStack( (void *)(pointer_int)rad, DoneRadix, FALSE );
     TypeInpStack( INP_NO_CMD );
 }
 

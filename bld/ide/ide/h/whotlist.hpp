@@ -71,7 +71,7 @@ class WHotSpotList : public WWindow
         virtual int             width() = 0;
         virtual const char *    getString( int index ) = 0;
         virtual int             getHotSpot( int index, bool pressed ) = 0;
-        virtual int             getHotOffset( int ) { return 0; }
+        virtual int             getHotOffset( int ) { return( 0 ); }
         virtual void            resized( WOrdinal width, WOrdinal height );
 
     protected:
@@ -79,7 +79,7 @@ class WHotSpotList : public WWindow
 
         int             _topIndex;  // index of top of list
         int             _selected;  // index of selected item
-        void            performScroll( int diff, bool absolute = FALSE );
+        void            performScroll( int diff, bool absolute=false );
         void            adjustScrollBars();
 
     private:

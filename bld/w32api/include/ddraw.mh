@@ -1331,24 +1331,6 @@ typedef struct _DDCOLORCONTROL {
     DWORD   dwReserved1;
 } DDCOLORCONTROL;
 
-/* GUIDs */
-EXTERN_C const CLSID    CLSID_DirectDraw;
-EXTERN_C const CLSID    CLSID_DirectDraw7;
-EXTERN_C const CLSID    CLSID_DirectDrawClipper;
-EXTERN_C const IID      IID_IDirectDraw;
-EXTERN_C const IID      IID_IDirectDraw2;
-EXTERN_C const IID      IID_IDirectDraw4;
-EXTERN_C const IID      IID_IDirectDraw7;
-EXTERN_C const IID      IID_IDirectDrawSurface;
-EXTERN_C const IID      IID_IDirectDrawSurface2;
-EXTERN_C const IID      IID_IDirectDrawSurface3;
-EXTERN_C const IID      IID_IDirectDrawSurface4;
-EXTERN_C const IID      IID_IDirectDrawSurface7;
-EXTERN_C const IID      IID_IDirectDrawPalette;
-EXTERN_C const IID      IID_IDirectDrawClipper;
-EXTERN_C const IID      IID_IDirectDrawColorControl;
-EXTERN_C const IID      IID_IDirectDrawGammaControl;
-
 /* IDirectDraw interface */
 #undef INTERFACE
 #define INTERFACE   IDirectDraw
@@ -3222,5 +3204,23 @@ extern HRESULT WINAPI   DirectDrawEnumerateW( LPDDENUMCALLBACKW, LPVOID );
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const CLSID    __cdecl CLSID_DirectDraw;
+EXTERN_C const CLSID    __cdecl CLSID_DirectDraw7;
+EXTERN_C const CLSID    __cdecl CLSID_DirectDrawClipper;
+EXTERN_C const IID      __cdecl IID_IDirectDraw;
+EXTERN_C const IID      __cdecl IID_IDirectDraw2;
+EXTERN_C const IID      __cdecl IID_IDirectDraw4;
+EXTERN_C const IID      __cdecl IID_IDirectDraw7;
+EXTERN_C const IID      __cdecl IID_IDirectDrawSurface;
+EXTERN_C const IID      __cdecl IID_IDirectDrawSurface2;
+EXTERN_C const IID      __cdecl IID_IDirectDrawSurface3;
+EXTERN_C const IID      __cdecl IID_IDirectDrawSurface4;
+EXTERN_C const IID      __cdecl IID_IDirectDrawSurface7;
+EXTERN_C const IID      __cdecl IID_IDirectDrawPalette;
+EXTERN_C const IID      __cdecl IID_IDirectDrawClipper;
+EXTERN_C const IID      __cdecl IID_IDirectDrawColorControl;
+EXTERN_C const IID      __cdecl IID_IDirectDrawGammaControl;
 
 #endif /* __DDRAW_INCLUDED__ */

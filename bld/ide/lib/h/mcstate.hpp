@@ -40,9 +40,9 @@ WCLASS MCState : public MState
 {
         Declare( MCState )
         public:
-                MCState( MTool* tool, SwMode mode=SWMODE_DEBUG, MCSwitch* sw=NULL, bool state=FALSE );
+                MCState( MTool* tool, SwMode mode=SWMODE_DEBUG, MCSwitch* sw=NULL, bool state=false );
                 ~MCState() {}
-                bool state() { return _state; }
+                bool state() { return( _state ); }
         private:
                 bool            _state;
 };

@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "varstr.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 VarString * VarStringStart( void )
 /********************************/

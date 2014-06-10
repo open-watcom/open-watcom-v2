@@ -66,8 +66,8 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
         rwmode = OPENMODE_ACCESS_RDWR;
     }
     share = mode & OPENMODE_SHARE_MASK;
-    if( share == SH_COMPAT ) {
-        share = SH_DENYNO;
+    if( share == OPENMODE_DENY_COMPAT ) {
+        share = OPENMODE_DENY_NONE;
     }
     openmode = share+rwmode;
     rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,

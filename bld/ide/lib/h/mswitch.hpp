@@ -49,9 +49,9 @@ WCLASS MSwitch : public WObject
         MSwitch ( const char* name=NULL ) : _text( name ) {}
         MSwitch( WTokenFile& fil, WString& tok );
         ~MSwitch() {}
-        int panel() { return _panel; }
+        int panel() { return( _panel ); }
         void name( WString& name ) { name = _text; }
-        WString& text() { return _text; }
+        WString& text() { return( _text ); }
         void getTag( WString& tag );
         virtual void displayText( WString& s );
         bool hasText() { return( _text.size() > 0 ); }

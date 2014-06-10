@@ -143,12 +143,12 @@ dip_status      SymFreeAll( void );
  */
 mod_handle      CueMod( cue_handle * );
 unsigned        CueFile( cue_handle *, char *file, unsigned max );
-cue_file_id     CueFileId( cue_handle * );
+cue_fileid      CueFileId( cue_handle * );
 dip_status      CueAdjust( cue_handle *, int adj, cue_handle * );
 unsigned long   CueLine( cue_handle * );
 unsigned        CueColumn( cue_handle * );
 address         CueAddr( cue_handle * );
-search_result   LineCue( mod_handle, cue_file_id, unsigned long line,
+search_result   LineCue( mod_handle, cue_fileid, unsigned long line,
                         unsigned column, cue_handle * );
 search_result   AddrCue( mod_handle, address, cue_handle * );
 int             CueCmp( cue_handle *, cue_handle * );

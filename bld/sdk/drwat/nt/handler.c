@@ -59,7 +59,7 @@ static char     headerBuf[80];
  * makeHeader
  */
 #define EVENT_BUFSIZE   30
-static void makeHeader( DWORD eventid, DEBUG_EVENT *dbinfo ) {
+static void makeHeader( UINT eventid, DEBUG_EVENT *dbinfo ) {
     char                event[ EVENT_BUFSIZE ];
     char                name[ MAX_PROC_NAME ];
 

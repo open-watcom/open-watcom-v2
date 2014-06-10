@@ -115,6 +115,7 @@ sym_list *Disambiguate( sym_list *sym, location_context *lc )
         new = DUIDisambiguate( &ambig, count );
     }
     if( new == -1 ) Error( ERR_SILENT, LIT( Empty ) ); // goodbye cruel world!
+    chosen = NULL;
     while( sym != NULL ) {
         next = sym->next;
         if( new == 0 ) {

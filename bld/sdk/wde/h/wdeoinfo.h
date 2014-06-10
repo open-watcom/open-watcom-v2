@@ -64,7 +64,7 @@ typedef struct WdeDefineObjectInfoStruct {
             WdeDialogBoxHeader  *header;
             WResID              *name;
             uint_16             id;
-            Bool                use_id;
+            bool                use_id;
         } d;
     } info;
     WdeSetProc          set_func;

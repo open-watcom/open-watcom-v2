@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeUpDnCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeUpDnInit( Bool );
+extern bool              WdeUpDnInit( bool );
 extern void              WdeUpDnFini( void );
 
 #endif

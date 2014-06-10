@@ -34,6 +34,8 @@
 
 #include "wpi.h"
 
+typedef int     CMDID;
+
 typedef BOOL (*toolhook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 typedef void (*helphook)( HWND, WPI_PARAM1, BOOL );
 
@@ -68,7 +70,7 @@ typedef struct TOOLITEMINFO {
         HBITMAP bmp;            /* handle to bitmap to display */
         WORD    blank_space;    /* space if item is blank */
     } u;
-    WORD        id;             /* should be unique for each item */
+    CMDID       id;             /* should be unique for each item */
     WORD        flags;          /* see list of flags above */
     HBITMAP     depressed;      /* bitmap to show when button is depressed */
     char        tip[MAX_TIP];   /* tool tip string */
@@ -77,17 +79,17 @@ typedef struct TOOLITEMINFO {
 struct toolbar  *ToolBarInit( HWND );
 void    ToolBarDisplay( struct toolbar *, TOOLDISPLAYINFO * );
 void    ToolBarAddItem( struct toolbar *, TOOLITEMINFO * );
-BOOL    ToolBarDeleteItem( struct toolbar *, WORD id );
+BOOL    ToolBarDeleteItem( struct toolbar *, CMDID id );
 HWND    ToolBarWindow( struct toolbar * );
-void    ToolBarSetState( struct toolbar *, WORD id, WORD state );
-WORD    ToolBarGetState( struct toolbar *bar, WORD id );
+void    ToolBarSetState( struct toolbar *, CMDID id, WORD state );
+WORD    ToolBarGetState( struct toolbar *bar, CMDID id );
 void    ToolBarDestroy ( struct toolbar *bar );
 void    ToolBarFini( struct toolbar * );
 void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, HBITMAP bitmap );
 void    UpdateToolBar( struct toolbar *bar );
-void    ChangeToolButtonBitmap( struct toolbar *bar, WORD id, HBITMAP newbmp );
+void    ChangeToolButtonBitmap( struct toolbar *bar, CMDID id, HBITMAP newbmp );
 BOOL    HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-BOOL    FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, UINT *id );
+BOOL    FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
 #ifndef __OS2_PM__
 void    ToolBarChangeSysColors( COLORREF, COLORREF, COLORREF );
 #endif

@@ -65,7 +65,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     char        pgm_starter;
     int         exec_state;
     int         show;
-    WORD        sess_type;
+    USHORT      sess_type;
 
     args.parseIn( cmd );
     pgm = args.stringAt( 0 );
@@ -142,7 +142,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             cmdline = NULL;
         } else {
             cmdline = (char *)args.cString();
-            cmdline[ strlen( pgm ) ] = '\0';
+            cmdline[strlen( pgm )] = '\0';
         }
         rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)NULL,
                          &returncodes, (char *)(const char *)fn );
@@ -207,14 +207,14 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
                                      WWindowState state, WWindowType typ ) {
 /**************************************************************************/
 
-    return( sysExec( cmd, state, typ, FALSE ) );
+    return( sysExec( cmd, state, typ, false ) );
 }
 
 
 int WEXPORT WSystemService::sysExecBackground( const char *cmd ) {
 /****************************************************************/
 
-    return( sysExec( cmd, WWinStateShowNormal, WWinTypeDefault, TRUE ) );
+    return( sysExec( cmd, WWinStateShowNormal, WWinTypeDefault, true ) );
 }
 
 

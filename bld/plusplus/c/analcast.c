@@ -34,6 +34,7 @@
 #include "cgfront.h"
 #include "fold.h"
 #include "convctl.h"
+#include "template.h"
 #include "class.h"
 #include "ptrcnv.h"
 #include "defarg.h"

@@ -32,14 +32,16 @@
 
 #ifndef __OS2_PM__
 
+#include "ldstr.h"
+
 typedef struct {
     char        *name;
-    int         id;
+    CMDID       id;
     BOOL        sticky;
     char        *downname;
     HBITMAP     hbmp;
     HBITMAP     downbmp;
-    int         tip_id;
+    MSGID       tip_id;
 } button;
 
 #define NONE                    NULL
@@ -55,12 +57,12 @@ typedef struct {
 
 typedef struct {
     int         name;
-    int         id;
+    CMDID       id;
     BOOL        sticky;
     int         downname;
     HBITMAP     hbmp;
     HBITMAP     downbmp;
-    int         tip_id;
+    MSGID       tip_id;
 } button;
 
 #define NONE                    0

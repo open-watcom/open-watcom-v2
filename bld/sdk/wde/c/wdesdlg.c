@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdeactn.h"
 #include "wdeobjid.h"
 #include "wderes.h"
@@ -60,7 +59,7 @@
 typedef struct {
     WdeResInfo *res_info;
     LIST       *selection;
-    Bool        remove;
+    bool        remove;
 } WdeDialogSelectInfo;
 
 /****************************************************************************/
@@ -71,13 +70,13 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static LIST  *WdeSelectDialogs( WdeResInfo *, Bool );
-static Bool   WdeSetSelectInfo( HWND, WdeDialogSelectInfo * );
-static Bool   WdeGetSelectInfo( HWND, WdeDialogSelectInfo * );
-static Bool   WdeInitSelectListBox( WdeResInfo *, HWND );
+static LIST  *WdeSelectDialogs( WdeResInfo *, bool );
+static bool   WdeSetSelectInfo( HWND, WdeDialogSelectInfo * );
+static bool   WdeGetSelectInfo( HWND, WdeDialogSelectInfo * );
+static bool   WdeInitSelectListBox( WdeResInfo *, HWND );
 static char  *WdeResolveDialogName( WdeResInfo *, WResID * );
-static Bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *, POINT *, HWND );
-static Bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo * );
+static bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *, POINT *, HWND );
+static bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo * );
 static OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl * );
 static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 
@@ -85,18 +84,18 @@ static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WdeResInfoHasDialogs( WdeResInfo *res_info )
+bool WdeResInfoHasDialogs( WdeResInfo *res_info )
 {
     return( res_info->dlg_item_list != NULL );
 }
 
-Bool WdeSelectDialog( WdeResInfo *res_info )
+bool WdeSelectDialog( WdeResInfo *res_info )
 {
     LIST            *selection;
     WdeResDlgItem   *ditem;
     LIST            *slist;
-    Bool            ok;
-    Bool            last;
+    bool            ok;
+    bool            last;
 
     if( ListCount( res_info->dlg_item_list ) == 1 ) {
         ok = WdeOpenSelectedDialog( res_info, ListElement( res_info->dlg_item_list ), TRUE );
@@ -121,12 +120,12 @@ Bool WdeSelectDialog( WdeResInfo *res_info )
     return( ok );
 }
 
-Bool WdeRemoveDialog( WdeResInfo *res_info )
+bool WdeRemoveDialog( WdeResInfo *res_info )
 {
     LIST            *selection;
     WdeResDlgItem   *ditem;
     LIST            *slist;
-    Bool            ok;
+    bool            ok;
 
     selection = WdeSelectDialogs( res_info, TRUE );
     ok = TRUE;
@@ -141,7 +140,7 @@ Bool WdeRemoveDialog( WdeResInfo *res_info )
     return( ok );
 }
 
-LIST *WdeSelectDialogs( WdeResInfo *res_info, Bool remove )
+LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
     int                 ret;
     HINSTANCE           inst;
@@ -182,7 +181,7 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, Bool remove )
     return( si.selection );
 }
 
-Bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
+bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 {
     HWND        win;
     char        *text;
@@ -204,11 +203,11 @@ Bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     return( WdeInitSelectListBox( si->res_info, win ) );
 }
 
-Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
+bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 {
     LRESULT         count;
     int             *sel;
-    Bool            ok;
+    bool            ok;
     LRESULT         ret;
     HWND            win;
     WdeResDlgItem   *ditem;
@@ -223,7 +222,7 @@ Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
         return( TRUE );
     }
 
-    sel = (int *)WdeMemAlloc( count * sizeof( int ) );
+    sel = (int *)WRMemAlloc( count * sizeof( int ) );
     if( sel == NULL ) {
         WdeWriteTrail( "WdeGetSelectInfo: alloc failed!" );
         return( FALSE );
@@ -255,13 +254,13 @@ Bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     }
 
     if( sel ) {
-        WdeMemFree( sel );
+        WRMemFree( sel );
     }
 
     return( ok );
 }
 
-Bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
+bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
 {
     char            *name;
     LIST            *dlist;
@@ -305,7 +304,7 @@ Bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         index = SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
-        WdeMemFree( name );
+        WRMemFree( name );
 
         count++;
 
@@ -335,9 +334,9 @@ char *WdeResolveDialogName( WdeResInfo *res_info, WResID *id )
     return( name );
 }
 
-Bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, Bool make_current )
+bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool make_current )
 {
-    Bool        from_id;
+    bool        from_id;
 
     if( res_info == NULL || ditem == NULL ) {
         return( FALSE );
@@ -387,10 +386,10 @@ Bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, Bool mak
     return( TRUE );
 }
 
-Bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
+bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
 {
-    Bool    old;
-    Bool    show;
+    bool    old;
+    bool    show;
 
     old = ditem->modified;
 
@@ -413,7 +412,7 @@ Bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
     return( FALSE );
 }
 
-Bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxInfo *info )
+bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxInfo *info )
 {
     WdeDialogBoxControl *control;
     LIST                *clist;
@@ -437,13 +436,13 @@ Bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxIn
     return( TRUE );
 }
 
-Bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
+bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
                             WdeDialogBoxControl *control, POINT *origin, HWND dialog_win )
 {
     OBJPTR  new;
     OBJ_ID  object_id;
     RECT    control_rect;
-    Bool    clear_int;
+    bool    clear_int;
 
     control_rect.left = GETCTL_SIZEX( control );
     control_rect.top = GETCTL_SIZEY( control );
@@ -469,7 +468,7 @@ Bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
             SETCTL_STYLE( control, SS_LEFT | WS_BORDER | WS_VISIBLE |
                                    WS_TABSTOP | WS_GROUP );
             if( GETCTL_CLASSID( control ) != NULL ) {
-                WdeMemFree( GETCTL_CLASSID( control ) );
+                WRMemFree( GETCTL_CLASSID( control ) );
             }
             SETCTL_CLASSID( control, ResNumToControlClass( CLASS_STATIC ) );
             new = Create(object_id, dialog, &control_rect, (OBJPTR)control );

@@ -84,7 +84,7 @@ WCLASS WComboBox : public WCombo {
         WEXPORT ~WComboBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_COMBOBOX; }
+        virtual gui_control_class controlClass() { return( GUI_COMBOBOX ); }
 };
 
 WCLASS WEditComboBox : public WCombo {
@@ -97,7 +97,7 @@ WCLASS WEditComboBox : public WCombo {
         WEXPORT ~WEditComboBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_EDIT_COMBOBOX; }
+        virtual gui_control_class controlClass() { return( GUI_EDIT_COMBOBOX ); }
 };
 
 #endif

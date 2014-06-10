@@ -73,19 +73,15 @@ public:
             bool        isAnonymous() const { return _anonymous; }
             bool        isArtificial() const;
 
-    static  Symbol *    defineSymbol(dr_sym_type, dr_handle, dr_handle,
-                                     Module *, char * );
+    static  Symbol *    defineSymbol( dr_sym_type, dr_handle, dr_handle, Module *, char * );
     static  Symbol *    defineSymbol( const Symbol * );
     static  int         getHotSpot( dr_sym_type type, bool opened, bool p );
 
 protected:
             void        getAnonName();
-            void        addDesc( char * name, int u_def,
-                                 dr_handle handle, dr_sym_type st );
+            void        addDesc( char *name, int u_def, dr_handle handle, dr_sym_type st );
 
-    static  void        descCallBack ( void * obj, char * name,
-                                       int u_def, dr_handle hdl,
-                                       dr_sym_type st );
+    static  void        descCallBack( void *obj, char *name, int u_def, dr_handle hdl, dr_sym_type st );
 private:
     WVList *            _description;
 

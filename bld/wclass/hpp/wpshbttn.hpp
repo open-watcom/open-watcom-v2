@@ -46,7 +46,7 @@ WCLASS WPushButton : public WButton {
         WEXPORT ~WPushButton();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_PUSH_BUTTON; }
+        virtual gui_control_class controlClass() { return( GUI_PUSH_BUTTON ); }
 
 };
 
@@ -59,7 +59,7 @@ WCLASS WDefPushButton : public WButton {
         WEXPORT ~WDefPushButton();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_DEFPUSH_BUTTON; }
+        virtual gui_control_class controlClass() { return( GUI_DEFPUSH_BUTTON ); }
 };
 
 #endif

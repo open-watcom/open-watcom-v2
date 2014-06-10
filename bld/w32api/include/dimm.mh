@@ -90,19 +90,6 @@ typedef struct {
 } IMEINFO;
 #endif
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_ActiveIMM;
-EXTERN_C const IID      IID_IEnumRegisterWordA;
-EXTERN_C const IID      IID_IEnumRegisterWordW;
-EXTERN_C const IID      IID_IEnumInputContext;
-EXTERN_C const IID      IID_IActiveIMMRegistrar;
-EXTERN_C const IID      IID_IActiveIMMMessagePumpOwner;
-EXTERN_C const IID      IID_IActiveIMMApp;
-EXTERN_C const IID      IID_IActiveIMMIME;
-EXTERN_C const IID      IID_IActiveIME;
-EXTERN_C const IID      IID_IActiveIME2;
-EXTERN_C const CLSID    CLSID_CActiveIMM;
-
 /* IEnumRegisterWordA interface */
 #undef INTERFACE
 #define INTERFACE   IEnumRegisterWordA
@@ -905,5 +892,18 @@ DECLARE_INTERFACE_( IActiveIME2, IActiveIME ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_ActiveIMM;
+EXTERN_C const IID      __cdecl IID_IEnumRegisterWordA;
+EXTERN_C const IID      __cdecl IID_IEnumRegisterWordW;
+EXTERN_C const IID      __cdecl IID_IEnumInputContext;
+EXTERN_C const IID      __cdecl IID_IActiveIMMRegistrar;
+EXTERN_C const IID      __cdecl IID_IActiveIMMMessagePumpOwner;
+EXTERN_C const IID      __cdecl IID_IActiveIMMApp;
+EXTERN_C const IID      __cdecl IID_IActiveIMMIME;
+EXTERN_C const IID      __cdecl IID_IActiveIME;
+EXTERN_C const IID      __cdecl IID_IActiveIME2;
+EXTERN_C const CLSID    __cdecl CLSID_CActiveIMM;
 
 #endif /* __dimm_h__ */

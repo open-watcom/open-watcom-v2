@@ -38,13 +38,13 @@
 #include "wglbl.h"
 #include "wribbon.h"
 #include "wmain.h"
-#include "wmem.h"
 #include "wnewitem.h"
 #include "wdel.h"
 #include "wedit.h"
 #include "wctl3d.h"
 #include "wsetedit.h"
 #include "wmsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wstrdup.h"
 #include "widn2str.h"
@@ -73,9 +73,9 @@ extern UINT WItemClipbdFormat;
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WInitEditWindow( WStringEditInfo * );
+static bool WInitEditWindow( WStringEditInfo * );
 static void WExpandEditWindowItem( HWND, int, RECT *, int );
-static Bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *symbol );
+static bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *symbol );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -105,7 +105,7 @@ void WFiniEditWindows( void )
 }
 
 
-Bool WCreateStringEditWindow( WStringEditInfo *einfo, HINSTANCE inst )
+bool WCreateStringEditWindow( WStringEditInfo *einfo, HINSTANCE inst )
 {
     int tabstop;
 
@@ -126,7 +126,7 @@ Bool WCreateStringEditWindow( WStringEditInfo *einfo, HINSTANCE inst )
     return( WInitEditWindow( einfo ) );
 }
 
-Bool WResizeStringEditWindow( WStringEditInfo *einfo, RECT *prect )
+bool WResizeStringEditWindow( WStringEditInfo *einfo, RECT *prect )
 {
     int width, height, ribbon_depth;
 
@@ -177,10 +177,10 @@ static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
     InvalidateRect( win, NULL, TRUE );
 }
 
-Bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
+bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
                                uint_16 string_id )
 {
-    Bool        ok;
+    bool        ok;
     char        *text;
 
     text = NULL;
@@ -202,16 +202,16 @@ Bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-Bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
+bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
                                char **symbol, uint_16 *string_id )
 {
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && text != NULL &&
           symbol != NULL && string_id != NULL);
@@ -229,11 +229,11 @@ Bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
 
     if( !ok ) {
         if( text != NULL && *text != NULL ) {
-            WMemFree( *text );
+            WRMemFree( *text );
             *text = NULL;
         }
         if( symbol != NULL && *symbol != NULL ) {
-            WMemFree( *symbol );
+            WRMemFree( *symbol );
             *symbol = NULL;
         }
     }
@@ -241,10 +241,10 @@ Bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
     return( ok );
 }
 
-Bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
+bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
                                 uint_16 string_id )
 {
-    Bool                ok;
+    bool                ok;
     uint_16             id;
     char                *symbol;
     char                *text;
@@ -285,7 +285,7 @@ Bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     if( ok ) {
         if( id == string_id ) {
             // text was modified
-            WMemFree( block->block.String[string_id & 0xf] );
+            WRMemFree( block->block.String[string_id & 0xf] );
             block->block.String[string_id & 0xf] = WResIDNameFromStr( text );
         } else {
             // identifier was modified
@@ -296,21 +296,21 @@ Bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     if( oldtext != NULL ) {
-        WMemFree( oldtext );
+        WRMemFree( oldtext );
     }
 
     return( ok );
 }
 
-Bool WSetEditWindowText( HWND dlg, char *text )
+bool WSetEditWindowText( HWND dlg, char *text )
 {
     char        *t;
     char        *n;
-    Bool        ok;
+    bool        ok;
 
     ok = (dlg != (HWND)NULL && text != NULL);
 
@@ -325,7 +325,7 @@ Bool WSetEditWindowText( HWND dlg, char *text )
         n = WConvertStringFrom( t, "\t\n", "tn" );
         if( n != NULL ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_STREDTEXT ), n );
-            WMemFree( n );
+            WRMemFree( n );
         } else {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_STREDTEXT ), t );
         }
@@ -334,9 +334,9 @@ Bool WSetEditWindowText( HWND dlg, char *text )
     return( ok );
 }
 
-Bool WGetEditWindowText( HWND dlg, char **text )
+bool WGetEditWindowText( HWND dlg, char **text )
 {
-    Bool        ok;
+    bool        ok;
     char        *n;
 
     ok = (dlg != (HWND)NULL && text != NULL);
@@ -345,7 +345,7 @@ Bool WGetEditWindowText( HWND dlg, char **text )
         n = WGetStrFromEdit( GetDlgItem( dlg, IDM_STREDTEXT ), NULL );
         *text = WConvertStringTo( n, "\t\n", "tn" );
         if( n != NULL ) {
-            WMemFree( n );
+            WRMemFree( n );
         }
         ok = (*text != NULL);
     }
@@ -353,9 +353,9 @@ Bool WGetEditWindowText( HWND dlg, char **text )
     return( ok );
 }
 
-Bool WSetEditWindowID( HWND dlg, uint_16 id, char *symbol )
+bool WSetEditWindowID( HWND dlg, uint_16 id, char *symbol )
 {
-    Bool    ok;
+    bool    ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -374,8 +374,8 @@ Bool WSetEditWindowID( HWND dlg, uint_16 id, char *symbol )
     return( ok );
 }
 
-Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
-                       WRHashTable *symbol_table, Bool combo_change )
+bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
+                       WRHashTable *symbol_table, bool combo_change )
 {
     int_32      val;
     char        *ep;
@@ -427,7 +427,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WMemFree( *symbol );
+                WRMemFree( *symbol );
                 *symbol = NULL;
                 return( FALSE );
             }
@@ -435,16 +435,16 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WMemFree( *symbol );
+        WRMemFree( *symbol );
         *symbol = NULL;
     }
 
     return( TRUE );
 }
 
-Bool WInitEditWindowListBox( WStringEditInfo *einfo )
+bool WInitEditWindowListBox( WStringEditInfo *einfo )
 {
-    Bool         ok;
+    bool         ok;
     HWND         lbox;
     WStringBlock *block;
 
@@ -465,10 +465,10 @@ Bool WInitEditWindowListBox( WStringEditInfo *einfo )
     return( ok );
 }
 
-static Bool WInitEditWindow( WStringEditInfo *einfo )
+static bool WInitEditWindow( WStringEditInfo *einfo )
 {
     HWND        lbox;
-    Bool        ok;
+    bool        ok;
     uint_16     first_id;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
@@ -499,11 +499,11 @@ static Bool WInitEditWindow( WStringEditInfo *einfo )
     return( ok );
 }
 
-Bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *symbol )
+bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *symbol )
 {
     char        *current_text;
     char        *s;
-    Bool        mod;
+    bool        mod;
 
     mod = (einfo != NULL && einfo->current_block != NULL && text != NULL);
 
@@ -525,7 +525,7 @@ Bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *s
     }
 
     if( current_text != NULL ) {
-        WMemFree( current_text );
+        WRMemFree( current_text );
     }
 
     return( mod );
@@ -540,14 +540,14 @@ void WResetEditWindow( WStringEditInfo *einfo )
     }
 }
 
-Bool WPasteStringItem( WStringEditInfo *einfo )
+bool WPasteStringItem( WStringEditInfo *einfo )
 {
     char                *text;
     char                *symbol;
     WRHashValueList     *vlist;
     uint_32             len;
     uint_16             id;
-    Bool                ok;
+    bool                ok;
 
     text = NULL;
     symbol = NULL;
@@ -584,13 +584,13 @@ Bool WPasteStringItem( WStringEditInfo *einfo )
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-Bool WClipStringItem( WStringEditInfo *einfo, Bool cut )
+bool WClipStringItem( WStringEditInfo *einfo, bool cut )
 {
     HWND                lbox;
     LRESULT             pos;
@@ -598,7 +598,7 @@ Bool WClipStringItem( WStringEditInfo *einfo, Bool cut )
     uint_16             id;
     char                *text;
     uint_32             len;
-    Bool                ok;
+    bool                ok;
 
     block = NULL;
     text = NULL;
@@ -639,13 +639,13 @@ Bool WClipStringItem( WStringEditInfo *einfo, Bool cut )
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-static Bool WQueryChangeEntry( WStringEditInfo *einfo )
+static bool WQueryChangeEntry( WStringEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -654,15 +654,15 @@ static Bool WQueryChangeEntry( WStringEditInfo *einfo )
 
     style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_CHANGEMODIFIEDMENUITEM );
+    text = AllocRCString( W_CHANGEMODIFIEDMENUITEM );
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -672,7 +672,7 @@ static Bool WQueryChangeEntry( WStringEditInfo *einfo )
     return( FALSE );
 }
 
-void WDoHandleSelChange( WStringEditInfo *einfo, Bool change, Bool reset )
+void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
 {
     HWND                lbox;
     int                 pos;
@@ -680,10 +680,10 @@ void WDoHandleSelChange( WStringEditInfo *einfo, Bool change, Bool reset )
     char                *symbol;
     uint_16             id;
     WStringBlock        *block;
-    Bool                mod;
-    Bool                ok;
-    Bool                bdel;
-    Bool                replace;
+    bool                mod;
+    bool                ok;
+    bool                bdel;
+    bool                replace;
 
     mod = FALSE;
     block = NULL;
@@ -757,11 +757,11 @@ void WDoHandleSelChange( WStringEditInfo *einfo, Bool change, Bool reset )
     }
 
     if( symbol != NULL ) {
-        WMemFree( symbol );
+        WRMemFree( symbol );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 }
 

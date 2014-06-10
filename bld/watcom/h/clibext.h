@@ -58,6 +58,12 @@
 #define _fmemcpy memcpy
 #define __int64 long long
 #define __alloca alloca
+#ifndef _I32_MIN
+#define _I32_MIN (-2147483647L-1L)
+#endif
+#ifndef _I32_MAX
+#define _I32_MAX 2147483647L
+#endif
 
 #elif defined( _MSC_VER )
 

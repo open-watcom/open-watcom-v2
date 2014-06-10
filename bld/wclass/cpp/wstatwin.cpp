@@ -74,5 +74,5 @@ bool WStatWindow::statusWindowCleared( void ) {
 
     const char *txt = _defText;
     GUIDrawStatusText( parent()->handle(), (char *)txt );
-    return( TRUE );
+    return( true );
 }

@@ -38,7 +38,7 @@
 #include <windows.h>
 #include <stdui.h>
 
-extern void     *ExtraAlloc( unsigned );
+extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
 extern int      GUIInitMouse( int );
 extern void     GUIFiniMouse( void );
@@ -126,7 +126,7 @@ void FiniScreen( void )
     uistop();
 }
 
-void *uifaralloc( int size )
+void *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
 }

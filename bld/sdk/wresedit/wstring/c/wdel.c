@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wedit.h"
 #include "wdel.h"
 #include "sys_rc.h"
@@ -60,10 +59,10 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WDeleteStringEntry( WStringEditInfo *einfo )
+bool WDeleteStringEntry( WStringEditInfo *einfo )
 {
     HWND         lbox;
-    Bool         ok;
+    bool         ok;
     LRESULT      ret;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
@@ -85,17 +84,17 @@ Bool WDeleteStringEntry( WStringEditInfo *einfo )
     return( ok );
 }
 
-Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
-                        uint_16 id, Bool *bdel )
+bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
+                        uint_16 id, bool *bdel )
 {
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL && einfo->tbl != NULL && block != NULL && bdel != NULL);
 
     if( ok ) {
         *bdel = FALSE;
         if( block->block.String[id & 0xf] != NULL ) {
-            WMemFree( block->block.String[id & 0xf] );
+            WRMemFree( block->block.String[id & 0xf] );
             block->block.String[id & 0xf] = NULL;
             if( WIsBlockEmpty( block ) ) {
                 ok = WRemoveStringBlock( einfo->tbl, block );
@@ -107,11 +106,11 @@ Bool WDeleteStringData( WStringEditInfo *einfo, WStringBlock *block,
     return( ok );
 }
 
-Bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, Bool free_it )
+bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, bool free_it )
 {
     HWND                lbox;
-    Bool                ok;
-    Bool                bdel;
+    bool                ok;
+    bool                bdel;
     WStringBlock        *block;
     uint_16             string_id;
     LRESULT             ret, max;

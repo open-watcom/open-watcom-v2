@@ -32,4 +32,4 @@
 
 extern void AdOpen( void );
 extern void AdDump( void );
-extern void AdClose( int and_delete );
+extern void AdClose( bool and_delete );

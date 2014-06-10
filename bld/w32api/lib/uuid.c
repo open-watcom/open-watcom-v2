@@ -32,4014 +32,4014 @@
 #define CATID   GUID
 
 /* unknwn.h */
-EXTERN_C const IID  IID_IUnknown = 
+const IID      __cdecl IID_IUnknown = 
     { 0x00000000, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IClassFactory =
+const IID      __cdecl IID_IClassFactory =
     { 0x00000001, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
 
 /* objidl.h */
-EXTERN_C const IID      IID_IMarshal =
+const IID      __cdecl IID_IMarshal =
     { 0x00000003, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMarshal2 =
+const IID      __cdecl IID_IMarshal2 =
     { 0x000001CF, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMalloc =
+const IID      __cdecl IID_IMalloc =
     { 0x00000002, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMallocSpy =
+const IID      __cdecl IID_IMallocSpy =
     { 0x0000001D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IStdMarshalInfo =
+const IID      __cdecl IID_IStdMarshalInfo =
     { 0x00000018, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IExternalConnection =
+const IID      __cdecl IID_IExternalConnection =
     { 0x00000019, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMultiQI =
+const IID      __cdecl IID_IMultiQI =
     { 0x00000020, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IInternalUnknown =
+const IID      __cdecl IID_IInternalUnknown =
     { 0x00000021, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumUnknown =
+const IID      __cdecl IID_IEnumUnknown =
     { 0x00000100, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IBindCtx =
+const IID      __cdecl IID_IBindCtx =
     { 0x0000000E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumMoniker =
+const IID      __cdecl IID_IEnumMoniker =
     { 0x00000102, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRunnableObject =
+const IID      __cdecl IID_IRunnableObject =
     { 0x00000126, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRunningObjectTable =
+const IID      __cdecl IID_IRunningObjectTable =
     { 0x00000010, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPersist =
+const IID      __cdecl IID_IPersist =
     { 0x0000010C, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPersistStream =
+const IID      __cdecl IID_IPersistStream =
     { 0x00000109, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMoniker =
+const IID      __cdecl IID_IMoniker =
     { 0x0000000F, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IROTData =
+const IID      __cdecl IID_IROTData =
     { 0xF29F6BC0, 0x5021, 0x11CE, { 0xAA, 0x15, 0x00, 0x00, 0x69, 0x01, 0x29, 0x3F } };
-EXTERN_C const IID      IID_IEnumString =
+const IID      __cdecl IID_IEnumString =
     { 0x00000101, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISequentialStream =
+const IID      __cdecl IID_ISequentialStream =
     { 0x0C733A30, 0x2A1C, 0x11CE, { 0xAD, 0xE5, 0x00, 0xAA, 0x00, 0x44, 0x77, 0x3D } };
-EXTERN_C const IID      IID_IStream =
+const IID      __cdecl IID_IStream =
     { 0x0000000C, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumSTATSTG =
+const IID      __cdecl IID_IEnumSTATSTG =
     { 0x0000000D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IStorage =
+const IID      __cdecl IID_IStorage =
     { 0x0000000B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPersistFile =
+const IID      __cdecl IID_IPersistFile =
     { 0x0000010B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPersistStorage =
+const IID      __cdecl IID_IPersistStorage =
     { 0x0000010A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ILockBytes =
+const IID      __cdecl IID_ILockBytes =
     { 0x0000000A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumFORMATETC =
+const IID      __cdecl IID_IEnumFORMATETC =
     { 0x00000103, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumSTATDATA =
+const IID      __cdecl IID_IEnumSTATDATA =
     { 0x00000105, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRootStorage =
+const IID      __cdecl IID_IRootStorage =
     { 0x00000012, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IAdviseSink =
+const IID      __cdecl IID_IAdviseSink =
     { 0x0000010F, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IAdviseSink2 =
+const IID      __cdecl IID_IAdviseSink2 =
     { 0x00000125, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IDataObject =
+const IID      __cdecl IID_IDataObject =
     { 0x0000010E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IDataAdviseHolder =
+const IID      __cdecl IID_IDataAdviseHolder =
     { 0x00000110, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IMessageFilter =
+const IID      __cdecl IID_IMessageFilter =
     { 0x00000016, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRpcChannelBuffer =
+const IID      __cdecl IID_IRpcChannelBuffer =
     { 0xD5F56B60, 0x593B, 0x101A, { 0xB5, 0x69, 0x08, 0x00, 0x2B, 0x2D, 0xBF, 0x7A } };
-EXTERN_C const IID      IID_IRpcChannelBuffer2 =
+const IID      __cdecl IID_IRpcChannelBuffer2 =
     { 0x594F31D0, 0x7F19, 0x11D0, { 0xB1, 0x94, 0x00, 0xA0, 0xC9, 0x0D, 0xC8, 0xBF } };
-EXTERN_C const IID      IID_IAsyncRpcChannelBuffer =
+const IID      __cdecl IID_IAsyncRpcChannelBuffer =
     { 0xA5029FB6, 0x3C34, 0x11D1, { 0x9C, 0x99, 0x00, 0xC0, 0x4F, 0xB9, 0x98, 0xAA } };
-EXTERN_C const IID      IID_IRpcChannelBuffer3 =
+const IID      __cdecl IID_IRpcChannelBuffer3 =
     { 0x25B15600, 0x0115, 0x11D0, { 0xBF, 0x0D, 0x00, 0xAA, 0x00, 0xB8, 0xDF, 0xD2 } };
-EXTERN_C const IID      IID_IRpcSyntaxNegotiate =
+const IID      __cdecl IID_IRpcSyntaxNegotiate =
     { 0x58A08519, 0x24C8, 0x4935, { 0xB4, 0x82, 0x3F, 0xD8, 0x23, 0x33, 0x3A, 0x4F } };
-EXTERN_C const IID      IID_IRpcProxyBuffer =
+const IID      __cdecl IID_IRpcProxyBuffer =
     { 0xD5F56A34, 0x593B, 0x101A, { 0xB5, 0x69, 0x08, 0x00, 0x2B, 0x2D, 0xBF, 0x7A } };
-EXTERN_C const IID      IID_IRpcStubBuffer =
+const IID      __cdecl IID_IRpcStubBuffer =
     { 0xD5F56AFC, 0x593B, 0x101A, { 0xB5, 0x69, 0x08, 0x00, 0x2B, 0x2D, 0xBF, 0x7A } };
-EXTERN_C const IID      IID_IPSFactoryBuffer =
+const IID      __cdecl IID_IPSFactoryBuffer =
     { 0xD5F569D0, 0x593B, 0x101A, { 0xB5, 0x69, 0x08, 0x00, 0x2B, 0x2D, 0xBF, 0x7A } };
-EXTERN_C const IID      IID_IChannelHook =
+const IID      __cdecl IID_IChannelHook =
     { 0x1008C4A0, 0x7613, 0x11CF, { 0x9A, 0xF1, 0x00, 0x20, 0xAF, 0x6E, 0x72, 0xF4 } };
-EXTERN_C const IID      IID_IClientSecurity =
+const IID      __cdecl IID_IClientSecurity =
     { 0x0000013D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IServerSecurity =
+const IID      __cdecl IID_IServerSecurity =
     { 0x0000013E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IClassActivator =
+const IID      __cdecl IID_IClassActivator =
     { 0x00000140, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRpcOptions =
+const IID      __cdecl IID_IRpcOptions =
     { 0x00000144, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IGlobalOptions =
+const IID      __cdecl IID_IGlobalOptions =
     { 0x0000015B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IFillLockBytes =
+const IID      __cdecl IID_IFillLockBytes =
     { 0x99CAF010, 0x415E, 0x11CF, { 0x88, 0x14, 0x00, 0xAA, 0x00, 0xB5, 0x69, 0xF5 } };
-EXTERN_C const IID      IID_IProgressNotify =
+const IID      __cdecl IID_IProgressNotify =
     { 0xA9D758A0, 0x4617, 0x11CF, { 0x95, 0xFC, 0x00, 0xAA, 0x00, 0x68, 0x0D, 0xB4 } };
-EXTERN_C const IID      IID_ILayoutStorage =
+const IID      __cdecl IID_ILayoutStorage =
     { 0x0E6D4D90, 0x6738, 0x11CF, { 0x96, 0x08, 0x00, 0xAA, 0x00, 0x68, 0x0D, 0xB4 } };
-EXTERN_C const IID      IID_IBlockingLock =
+const IID      __cdecl IID_IBlockingLock =
     { 0x30F3D47A, 0x6447, 0x11D1, { 0x8E, 0x3C, 0x00, 0xC0, 0x4F, 0xB9, 0x38, 0x6D } };
-EXTERN_C const IID      IID_ITimeAndNoticeControl =
+const IID      __cdecl IID_ITimeAndNoticeControl =
     { 0xBC0BF6AE, 0x8878, 0x11D1, { 0x83, 0xE9, 0x00, 0xC0, 0x4F, 0xC2, 0xC6, 0xD4 } };
-EXTERN_C const IID      IID_IOplockStorage =
+const IID      __cdecl IID_IOplockStorage =
     { 0x8D19C834, 0x8879, 0x11D1, { 0x83, 0xE9, 0x00, 0xC0, 0x4F, 0xC2, 0xC6, 0xD4 } };
-EXTERN_C const IID      IID_ISurrogate =
+const IID      __cdecl IID_ISurrogate =
     { 0x00000022, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IGlobalInterfaceTable =
+const IID      __cdecl IID_IGlobalInterfaceTable =
     { 0x00000146, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IDirectWriterLock =
+const IID      __cdecl IID_IDirectWriterLock =
     { 0x0E6D4D92, 0x6738, 0x11CF, { 0x96, 0x08, 0x00, 0xAA, 0x00, 0x68, 0x0D, 0xB4 } };
-EXTERN_C const IID      IID_ISynchronize =
+const IID      __cdecl IID_ISynchronize =
     { 0x00000030, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISynchronizeHandle =
+const IID      __cdecl IID_ISynchronizeHandle =
     { 0x00000031, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISynchronizeEvent =
+const IID      __cdecl IID_ISynchronizeEvent =
     { 0x00000032, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISynchronizeContainer =
+const IID      __cdecl IID_ISynchronizeContainer =
     { 0x00000033, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISynchronizeMutex =
+const IID      __cdecl IID_ISynchronizeMutex =
     { 0x00000025, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICancelMethodCalls =
+const IID      __cdecl IID_ICancelMethodCalls =
     { 0x00000029, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IAsyncManager =
+const IID      __cdecl IID_IAsyncManager =
     { 0x0000002A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICallFactory =
+const IID      __cdecl IID_ICallFactory =
     { 0x1C733A30, 0x2A1C, 0x11CE, { 0xAD, 0xE5, 0x00, 0xAA, 0x00, 0x44, 0x77, 0x3D } };
-EXTERN_C const IID      IID_IRpcHelper =
+const IID      __cdecl IID_IRpcHelper =
     { 0x00000149, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IReleaseMarshalBuffers =
+const IID      __cdecl IID_IReleaseMarshalBuffers =
     { 0xEB0CB9E8, 0x7996, 0x11D2, { 0x87, 0x2E, 0x00, 0x00, 0xF8, 0x08, 0x08, 0x59 } };
-EXTERN_C const IID      IID_IWaitMultiple =
+const IID      __cdecl IID_IWaitMultiple =
     { 0x0000002B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IUrlMon =
+const IID      __cdecl IID_IUrlMon =
     { 0x00000026, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IForegroundTransfer =
+const IID      __cdecl IID_IForegroundTransfer =
     { 0x00000145, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IAddrTrackingControl =
+const IID      __cdecl IID_IAddrTrackingControl =
     { 0x00000147, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IAddrExclusionControl =
+const IID      __cdecl IID_IAddrExclusionControl =
     { 0x00000148, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPipeByte =
+const IID      __cdecl IID_IPipeByte =
     { 0xDB2F3ACA, 0x2F86, 0x11D1, { 0x8E, 0x04, 0x00, 0xC0, 0x4F, 0xB9, 0x98, 0x9A } };
-EXTERN_C const IID      IID_IPipeLong =
+const IID      __cdecl IID_IPipeLong =
     { 0xDB2F3ACC, 0x2F86, 0x11D1, { 0x8E, 0x04, 0x00, 0xC0, 0x4F, 0xB9, 0x98, 0x9A } };
-EXTERN_C const IID      IID_IPipeDouble =
+const IID      __cdecl IID_IPipeDouble =
     { 0xDB2F3ACE, 0x2F86, 0x11D1, { 0x8E, 0x04, 0x00, 0xC0, 0x4F, 0xB9, 0x98, 0x9A } };
-EXTERN_C const IID      IID_IThumbnailExtractor =
+const IID      __cdecl IID_IThumbnailExtractor =
     { 0x969DC708, 0x5C76, 0x11D1, { 0x8D, 0x86, 0x00, 0x00, 0xF8, 0x04, 0xB0, 0x57 } };
-EXTERN_C const IID      IID_IDummyHICONIncluder =
+const IID      __cdecl IID_IDummyHICONIncluder =
     { 0x947990DE, 0xCC28, 0x11D2, { 0xA0, 0xF7, 0x00, 0x80, 0x5F, 0x85, 0x8F, 0xB1 } };
-EXTERN_C const IID      IID_IProcessLock =
+const IID      __cdecl IID_IProcessLock =
     { 0x000001D5, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ISurrogateService =
+const IID      __cdecl IID_ISurrogateService =
     { 0x000001D4, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IComThreadingInfo =
+const IID      __cdecl IID_IComThreadingInfo =
     { 0x000001CE, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IProcessInitControl =
+const IID      __cdecl IID_IProcessInitControl =
     { 0x72380D55, 0x8D2B, 0x43A3, { 0x85, 0x13, 0x2B, 0x6E, 0xF3, 0x14, 0x34, 0xE9 } };
-EXTERN_C const IID      IID_IInitializeSpy =
+const IID      __cdecl IID_IInitializeSpy =
     { 0x00000034, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const FMTID    FMTID_SummaryInformation =
+const FMTID    __cdecl FMTID_SummaryInformation =
     { 0xF29F85E0, 0x4FF9, 0x1068, { 0xAB, 0x91, 0x08, 0x00, 0x2B, 0x27, 0xB3, 0xD9 } };
-EXTERN_C const FMTID    FMTID_DocSummaryInformation =
+const FMTID    __cdecl FMTID_DocSummaryInformation =
     { 0xD5CDD502, 0x2E9C, 0x101B, { 0x93, 0x97, 0x08, 0x00, 0x2B, 0x2C, 0xF9, 0xAE } };
-EXTERN_C const FMTID    FMTID_UserDefinedProperties =
+const FMTID    __cdecl FMTID_UserDefinedProperties =
     { 0xD5CDD505, 0x2E9C, 0x101B, { 0x93, 0x97, 0x08, 0x00, 0x2B, 0x2C, 0xF9, 0xAE } };
-EXTERN_C const FMTID    FMTID_DiscardableInformation =
+const FMTID    __cdecl FMTID_DiscardableInformation =
     { 0xD725EBB0, 0xC9B8, 0x111D, { 0x89, 0xBC, 0x00, 0x00, 0xF8, 0x04, 0xB0, 0x57 } };
-EXTERN_C const FMTID    FMTID_ImageSummaryInformation =
+const FMTID    __cdecl FMTID_ImageSummaryInformation =
     { 0x6444048F, 0x4C8B, 0x111D, { 0x8B, 0x70, 0x08, 0x00, 0x36, 0xB1, 0x1A, 0x03 } };
-EXTERN_C const FMTID    FMTID_AudioSummaryInformation =
+const FMTID    __cdecl FMTID_AudioSummaryInformation =
     { 0x64440490, 0x4C8B, 0x111D, { 0x8B, 0x70, 0x08, 0x00, 0x36, 0xB1, 0x1A, 0x03 } };
-EXTERN_C const FMTID    FMTID_VideoSummaryInformation =
+const FMTID    __cdecl FMTID_VideoSummaryInformation =
     { 0x64440491, 0x4C8B, 0x111D, { 0x8B, 0x70, 0x08, 0x00, 0x36, 0xB1, 0x1A, 0x03 } };
-EXTERN_C const FMTID    FMTID_MediaFileSummaryInformation =
+const FMTID    __cdecl FMTID_MediaFileSummaryInformation =
     { 0x64440492, 0x4C8B, 0x111D, { 0x8B, 0x70, 0x08, 0x00, 0x36, 0xB1, 0x1A, 0x03 } };
 
 /* oleidl.h */
-EXTERN_C const IID  IID_IOleAdviseHolder =
+const IID      __cdecl IID_IOleAdviseHolder =
     { 0x00000111, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleCache =
+const IID      __cdecl IID_IOleCache =
     { 0x0000011E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleCache2 =
+const IID      __cdecl IID_IOleCache2 =
     { 0x00000128, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleCacheControl =
+const IID      __cdecl IID_IOleCacheControl =
     { 0x00000129, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IParseDisplayName =
+const IID      __cdecl IID_IParseDisplayName =
     { 0x0000011A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleContainer =
+const IID      __cdecl IID_IOleContainer =
     { 0x0000011B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleClientSite =
+const IID      __cdecl IID_IOleClientSite =
     { 0x00000118, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleObject =
+const IID      __cdecl IID_IOleObject =
     { 0x00000112, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleWindow =
+const IID      __cdecl IID_IOleWindow =
     { 0x00000114, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleLink =
+const IID      __cdecl IID_IOleLink =
     { 0x0000011D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleItemContainer =
+const IID      __cdecl IID_IOleItemContainer =
     { 0x0000011C, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleInPlaceUIWindow =
+const IID      __cdecl IID_IOleInPlaceUIWindow =
     { 0x00000115, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleInPlaceActiveObject =
+const IID      __cdecl IID_IOleInPlaceActiveObject =
     { 0x00000117, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleInPlaceFrame =
+const IID      __cdecl IID_IOleInPlaceFrame =
     { 0x00000116, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleInPlaceObject =
+const IID      __cdecl IID_IOleInPlaceObject =
     { 0x00000113, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IOleInPlaceSite =
+const IID      __cdecl IID_IOleInPlaceSite =
     { 0x00000119, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IContinue =
+const IID      __cdecl IID_IContinue =
     { 0x0000012A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IViewObject =
+const IID      __cdecl IID_IViewObject =
     { 0x0000010D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IViewObject2 =
+const IID      __cdecl IID_IViewObject2 =
     { 0x00000127, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IDropSource =
+const IID      __cdecl IID_IDropSource =
     { 0x00000121, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IDropTarget =
+const IID      __cdecl IID_IDropTarget =
     { 0x00000122, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IDropSourceNotify =
+const IID      __cdecl IID_IDropSourceNotify =
     { 0x0000012B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IEnumOLEVERB =
+const IID      __cdecl IID_IEnumOLEVERB =
     { 0x00000104, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
 
 /* servprov.h */
-EXTERN_C const IID  IID_IServiceProvider =
+const IID      __cdecl IID_IServiceProvider =
     { 0x6D5140C1, 0x7436, 0x11CE, { 0x80, 0x34, 0x00, 0xAA, 0x00, 0x60, 0x09, 0xFA } };
 
 /* oaidl.h */
-EXTERN_C const IID  IID_ICreateTypeInfo =
+const IID      __cdecl IID_ICreateTypeInfo =
     { 0x00020405, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ICreateTypeInfo2 =
+const IID      __cdecl IID_ICreateTypeInfo2 =
     { 0x0002040E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ICreateTypeLib =
+const IID      __cdecl IID_ICreateTypeLib =
     { 0x00020406, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ICreateTypeLib2 =
+const IID      __cdecl IID_ICreateTypeLib2 =
     { 0x0002040F, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IDispatch =
+const IID      __cdecl IID_IDispatch =
     { 0x00020400, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IEnumVARIANT =
+const IID      __cdecl IID_IEnumVARIANT =
     { 0x00020404, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeComp =
+const IID      __cdecl IID_ITypeComp =
     { 0x00020403, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeInfo =
+const IID      __cdecl IID_ITypeInfo =
     { 0x00020401, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeInfo2 =
+const IID      __cdecl IID_ITypeInfo2 =
     { 0x00020412, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeLib =
+const IID      __cdecl IID_ITypeLib =
     { 0x00020402, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeLib2 =
+const IID      __cdecl IID_ITypeLib2 =
     { 0x00020411, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeChangeEvents =
+const IID      __cdecl IID_ITypeChangeEvents =
     { 0x00020410, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IErrorInfo =
+const IID      __cdecl IID_IErrorInfo =
     { 0x1CF2B120, 0x547D, 0x101B, { 0x8E, 0x65, 0x08, 0x00, 0x2B, 0x2B, 0xD1, 0x19 } };
-EXTERN_C const IID  IID_ICreateErrorInfo =
+const IID      __cdecl IID_ICreateErrorInfo =
     { 0x22F03340, 0x547D, 0x101B, { 0x8E, 0x65, 0x08, 0x00, 0x2B, 0x2B, 0xD1, 0x19 } };
-EXTERN_C const IID  IID_ISupportErrorInfo =
+const IID      __cdecl IID_ISupportErrorInfo =
     { 0xDF0B3D60, 0x548F, 0x101B, { 0x8E, 0x65, 0x08, 0x00, 0x2B, 0x2B, 0xD1, 0x19 } };
-EXTERN_C const IID  IID_ITypeFactory =
+const IID      __cdecl IID_ITypeFactory =
     { 0x0000002E, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_ITypeMarshal =
+const IID      __cdecl IID_ITypeMarshal =
     { 0x0000002D, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IRecordInfo =
+const IID      __cdecl IID_IRecordInfo =
     { 0x0000002F, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IErrorLog =
+const IID      __cdecl IID_IErrorLog =
     { 0x3127CA40, 0x446E, 0x11CE, { 0x81, 0x35, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const IID  IID_IPropertyBag =
+const IID      __cdecl IID_IPropertyBag =
     { 0x55272A00, 0x42CB, 0x11CE, { 0x81, 0x35, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
 
 /* msxml.h */
-EXTERN_C const IID      LIBID_MSXML =
+const IID      __cdecl LIBID_MSXML =
     { 0xD63E0CE2, 0xA0A2, 0x11D0, { 0x9C, 0x02, 0x00, 0xC0, 0x4F, 0xC9, 0x9C, 0x8E } };
-EXTERN_C const IID      IID_IXMLDOMNode =
+const IID      __cdecl IID_IXMLDOMNode =
     { 0x2933BF80, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMDocument =
+const IID      __cdecl IID_IXMLDOMDocument =
     { 0x2933BF81, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMNodeList =
+const IID      __cdecl IID_IXMLDOMNodeList =
     { 0x2933BF82, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMNamedNodeMap =
+const IID      __cdecl IID_IXMLDOMNamedNodeMap =
     { 0x2933BF83, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMDocumentFragment =
+const IID      __cdecl IID_IXMLDOMDocumentFragment =
     { 0x3EFAA413, 0x272F, 0x11D2, { 0x83, 0x6F, 0x00, 0x00, 0xF8, 0x7A, 0x77, 0x82 } };
-EXTERN_C const IID      IID_IXMLDOMCharacterData =
+const IID      __cdecl IID_IXMLDOMCharacterData =
     { 0x2933BF84, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMAttribute =
+const IID      __cdecl IID_IXMLDOMAttribute =
     { 0x2933BF85, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMElement =
+const IID      __cdecl IID_IXMLDOMElement =
     { 0x2933BF86, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMText =
+const IID      __cdecl IID_IXMLDOMText =
     { 0x2933BF87, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMComment =
+const IID      __cdecl IID_IXMLDOMComment =
     { 0x2933BF88, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMProcessingInstruction =
+const IID      __cdecl IID_IXMLDOMProcessingInstruction =
     { 0x2933BF89, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMCDATASection =
+const IID      __cdecl IID_IXMLDOMCDATASection =
     { 0x2933BF8A, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMDocumentType =
+const IID      __cdecl IID_IXMLDOMDocumentType =
     { 0x2933BF8B, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMNotation =
+const IID      __cdecl IID_IXMLDOMNotation =
     { 0x2933BF8C, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMEntity =
+const IID      __cdecl IID_IXMLDOMEntity =
     { 0x2933BF8D, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMEntityReference =
+const IID      __cdecl IID_IXMLDOMEntityReference =
     { 0x2933BF8E, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLDOMImplementation =
+const IID      __cdecl IID_IXMLDOMImplementation =
     { 0x2933BF8F, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXTLRuntime =
+const IID      __cdecl IID_IXTLRuntime =
     { 0x3EFAA425, 0x272F, 0x11D2, { 0x83, 0x6F, 0x00, 0x00, 0xF8, 0x7A, 0x77, 0x82 } };
-EXTERN_C const IID      IID_IXMLDOMParseError =
+const IID      __cdecl IID_IXMLDOMParseError =
     { 0x3EFAA426, 0x272F, 0x11D2, { 0x83, 0x6F, 0x00, 0x00, 0xF8, 0x7A, 0x77, 0x82 } };
-EXTERN_C const IID      DIID_XMLDOMDocumentEvents =
+const IID      __cdecl DIID_XMLDOMDocumentEvents =
     { 0x3EFAA427, 0x272F, 0x11D2, { 0x83, 0x6F, 0x00, 0x00, 0xF8, 0x7A, 0x77, 0x82 } };
-EXTERN_C const CLSID    CLSID_DOMDocument =
+const CLSID    __cdecl CLSID_DOMDocument =
     { 0x2933BF90, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const CLSID    CLSID_DOMFreeThreadedDocument =
+const CLSID    __cdecl CLSID_DOMFreeThreadedDocument =
     { 0x2933BF91, 0x7B36, 0x11D2, { 0xB2, 0x0E, 0x00, 0xC0, 0x4F, 0x98, 0x3E, 0x60 } };
-EXTERN_C const IID      IID_IXMLHttpRequest =
+const IID      __cdecl IID_IXMLHttpRequest =
     { 0xED8C108D, 0x4349, 0x11D2, { 0x91, 0xA4, 0x00, 0xC0, 0x4F, 0x79, 0x69, 0xE8 } };
-EXTERN_C const CLSID    CLSID_XMLHTTPRequest =
+const CLSID    __cdecl CLSID_XMLHTTPRequest =
     { 0xED8C108E, 0x4349, 0x11D2, { 0x91, 0xA4, 0x00, 0xC0, 0x4F, 0x79, 0x69, 0xE8 } };
-EXTERN_C const IID      IID_IXMLDSOControl =
+const IID      __cdecl IID_IXMLDSOControl =
     { 0x310AFA62, 0x0575, 0x11D2, { 0x9C, 0xA9, 0x00, 0x60, 0xB0, 0xEC, 0x3D, 0x39 } };
-EXTERN_C const CLSID    CLSID_XMLDSOControl =
+const CLSID    __cdecl CLSID_XMLDSOControl =
     { 0x550DDA30, 0x0541, 0x11D2, { 0x9C, 0xA9, 0x00, 0x60, 0xB0, 0xEC, 0x3D, 0x39 } };
-EXTERN_C const IID      IID_IXMLElementCollection =
+const IID      __cdecl IID_IXMLElementCollection =
     { 0x65725580, 0x9B5D, 0x11D0, { 0x9B, 0xFE, 0x00, 0xC0, 0x4F, 0xC9, 0x9C, 0x8E } };
-EXTERN_C const IID      IID_IXMLDocument =
+const IID      __cdecl IID_IXMLDocument =
     { 0xF52E2B61, 0x18A1, 0x11D1, { 0xB1, 0x05, 0x00, 0x80, 0x5F, 0x49, 0x91, 0x6B } };
-EXTERN_C const IID      IID_IXMLDocument2 =
+const IID      __cdecl IID_IXMLDocument2 =
     { 0x2B8DE2FE, 0x8D2D, 0x11D1, { 0xB2, 0xFC, 0x00, 0xC0, 0x4F, 0xD9, 0x15, 0xA9 } };
-EXTERN_C const IID      IID_IXMLElement =
+const IID      __cdecl IID_IXMLElement =
     { 0x3F7F31AC, 0xE15F, 0x11D0, { 0x9C, 0x25, 0x00, 0xC0, 0x4F, 0xC9, 0x9C, 0x8E } };
-EXTERN_C const IID      IID_IXMLElement2 =
+const IID      __cdecl IID_IXMLElement2 =
     { 0x2B8DE2FF, 0x8D2D, 0x11D1, { 0xB2, 0xFC, 0x00, 0xC0, 0x4F, 0xD9, 0x15, 0xA9 } };
-EXTERN_C const IID      IID_IXMLAttribute =
+const IID      __cdecl IID_IXMLAttribute =
     { 0xD4D4A0FC, 0x3B73, 0x11D1, { 0xB2, 0xB4, 0x00, 0xC0, 0x4F, 0xB9, 0x25, 0x96 } };
-EXTERN_C const IID      IID_IXMLError =
+const IID      __cdecl IID_IXMLError =
     { 0x948C5AD3, 0xC58D, 0x11D0, { 0x9C, 0x0B, 0x00, 0xC0, 0x4F, 0xC9, 0x9C, 0x8E } };
-EXTERN_C const CLSID    CLSID_XMLDocument =
+const CLSID    __cdecl CLSID_XMLDocument =
     { 0xCFC399AF, 0xD876, 0x11D0, { 0x9C, 0x10, 0x00, 0xC0, 0x4F, 0xC9, 0x9C, 0x8E } };
 
 /* urlmon.h */
-EXTERN_C const IID  IID_IPersistMoniker =
+const IID      __cdecl IID_IPersistMoniker =
     { 0x79EAC9C9, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IMonikerProp =
+const IID      __cdecl IID_IMonikerProp =
     { 0xA5CA5F7F, 0x1847, 0x4D87, { 0x9C, 0x5B, 0x91, 0x85, 0x09, 0xF7, 0x51, 0x1D } };
-EXTERN_C const IID  IID_IBindProtocol =
+const IID      __cdecl IID_IBindProtocol =
     { 0x79EAC9CD, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IBinding =
+const IID      __cdecl IID_IBinding =
     { 0x79EAC9C0, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IBindStatusCallback =
+const IID      __cdecl IID_IBindStatusCallback =
     { 0x79EAC9C1, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IBindStatusCallbackEx =
+const IID      __cdecl IID_IBindStatusCallbackEx =
     { 0xAAA74EF9, 0x8EE7, 0x4659, { 0x88, 0xD9, 0xF8, 0xC5, 0x04, 0xDA, 0x73, 0xCC } };
-EXTERN_C const IID  IID_IAuthenticate =
+const IID      __cdecl IID_IAuthenticate =
     { 0x79EAC9D0, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IAuthenticateEx =
+const IID      __cdecl IID_IAuthenticateEx =
     { 0x2AD1EDAF, 0xD83D, 0x48B5, { 0x9A, 0xDF, 0x03, 0xDB, 0xE1, 0x9F, 0x53, 0xBD } };
-EXTERN_C const IID  IID_IHttpNegotiate =
+const IID      __cdecl IID_IHttpNegotiate =
     { 0x79EAC9D2, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IHttpNegotiate2 =
+const IID      __cdecl IID_IHttpNegotiate2 =
     { 0x4F9F9FCB, 0xE0F4, 0x48EB, { 0xB7, 0xAB, 0xFA, 0x2E, 0xA9, 0x36, 0x5C, 0xB4 } };
-EXTERN_C const IID  IID_IHttpNegotiate3 =
+const IID      __cdecl IID_IHttpNegotiate3 =
     { 0x57B6C80A, 0x34C2, 0x4602, { 0xBC, 0x26, 0x66, 0xA0, 0x2F, 0xC5, 0x71, 0x53 } };
-EXTERN_C const IID  IID_IWinInetFileStream =
+const IID      __cdecl IID_IWinInetFileStream =
     { 0xF134C4B7, 0xB1F8, 0x4E75, { 0xB8, 0x86, 0x64, 0xB9, 0x09, 0x43, 0xBE, 0xCB } };
-EXTERN_C const IID  IID_IWindowForBindingUI =
+const IID      __cdecl IID_IWindowForBindingUI =
     { 0x79EAC9D5, 0xBAFA, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_ICodeInstall =
+const IID      __cdecl IID_ICodeInstall =
     { 0x79EAC9D1, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IUri =
+const IID      __cdecl IID_IUri =
     { 0xA39EE748, 0x6A27, 0x4817, { 0xA6, 0xF2, 0x13, 0x91, 0x4B, 0xEF, 0x58, 0x90 } };
-EXTERN_C const IID  IID_IUriContainer =
+const IID      __cdecl IID_IUriContainer =
     { 0xA158A630, 0xED6F, 0x45FB, { 0xB9, 0x87, 0xF6, 0x86, 0x76, 0xF5, 0x77, 0x52 } };
-EXTERN_C const IID  IID_IUriBuilder =
+const IID      __cdecl IID_IUriBuilder =
     { 0x4221B2E1, 0x8955, 0x46C0, { 0xBD, 0x5B, 0xDE, 0x98, 0x97, 0x56, 0x5D, 0xE7 } };
-EXTERN_C const IID  IID_IUriBuilderFactory =
+const IID      __cdecl IID_IUriBuilderFactory =
     { 0xE982CE48, 0x0B96, 0x440C, { 0xBC, 0x37, 0x0C, 0x86, 0x9B, 0x27, 0xA2, 0x9E } };
-EXTERN_C const IID  IID_IWinInetInfo =
+const IID      __cdecl IID_IWinInetInfo =
     { 0x79EAC9D6, 0xBAFA, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IHttpSecurity =
+const IID      __cdecl IID_IHttpSecurity =
     { 0x79EAC9D7, 0xBAFA, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IWinInetHttpInfo =
+const IID      __cdecl IID_IWinInetHttpInfo =
     { 0x79EAC9D8, 0xBAFA, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IWinInetCacheHints =
+const IID      __cdecl IID_IWinInetCacheHints =
     { 0xDD1EC3B3, 0x8391, 0x4FDB, { 0xA9, 0xE6, 0x34, 0x7C, 0x3C, 0xAA, 0xA7, 0xDD } };
-EXTERN_C const IID  IID_IWinInetCacheHints2 =
+const IID      __cdecl IID_IWinInetCacheHints2 =
     { 0x7857AEAC, 0xD31F, 0x49BF, { 0x88, 0x4E, 0xDD, 0x46, 0xDF, 0x36, 0x78, 0x0A } };
-EXTERN_C const IID  IID_IBindHost =
+const IID      __cdecl IID_IBindHost =
     { 0xFC4801A1, 0x2BA9, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const IID  IID_IInternet =
+const IID      __cdecl IID_IInternet =
     { 0x79EAC9E0, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetBindInfo =
+const IID      __cdecl IID_IInternetBindInfo =
     { 0x79EAC9E1, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetBindInfoEx =
+const IID      __cdecl IID_IInternetBindInfoEx =
     { 0xA3E015B7, 0xA82C, 0x4DCD, { 0xA1, 0x50, 0x56, 0x9A, 0xEE, 0xED, 0x36, 0xAB } };
-EXTERN_C const IID  IID_IInternetProtocolRoot =
+const IID      __cdecl IID_IInternetProtocolRoot =
     { 0x79EAC9E3, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetProtocol =
+const IID      __cdecl IID_IInternetProtocol =
     { 0x79EAC9E4, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetProtocolEx =
+const IID      __cdecl IID_IInternetProtocolEx =
     { 0xC7A98E66, 0x1010, 0x492C, { 0xA1, 0xC8, 0xC8, 0x09, 0xE1, 0xF7, 0x59, 0x05 } };
-EXTERN_C const IID  IID_IInternetProtocolSink =
+const IID      __cdecl IID_IInternetProtocolSink =
     { 0x79EAC9E5, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetProtocolSinkStackable =
+const IID      __cdecl IID_IInternetProtocolSinkStackable =
     { 0x79EAC9F0, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetSession =
+const IID      __cdecl IID_IInternetSession =
     { 0x79EAC9E7, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetThreadSwitch =
+const IID      __cdecl IID_IInternetThreadSwitch =
     { 0x79EAC9E8, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetPriority =
+const IID      __cdecl IID_IInternetPriority =
     { 0x79EAC9EB, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetProtocolInfo =
+const IID      __cdecl IID_IInternetProtocolInfo =
     { 0x79EAC9EC, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetSecurityMgrSite =
+const IID      __cdecl IID_IInternetSecurityMgrSite =
     { 0x79EAC9ED, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetSecurityManager =
+const IID      __cdecl IID_IInternetSecurityManager =
     { 0x79EAC9EE, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetSecurityManagerEx =
+const IID      __cdecl IID_IInternetSecurityManagerEx =
     { 0xF163EDF1, 0xCC7C, 0x4F0D, { 0x9A, 0x94, 0x34, 0x22, 0x26, 0x25, 0xC3, 0x93 } };
-EXTERN_C const IID  IID_IInternetSecurityManagerEx2 =
+const IID      __cdecl IID_IInternetSecurityManagerEx2 =
     { 0xF1E50292, 0xA795, 0x4117, { 0x8E, 0x09, 0x2B, 0x56, 0x0A, 0x72, 0xAC, 0x60 } };
-EXTERN_C const IID  IID_IZoneIdentifier =
+const IID      __cdecl IID_IZoneIdentifier =
     { 0xCD45F185, 0x1B21, 0x48E2, { 0x96, 0x7B, 0xEA, 0xD7, 0x43, 0xA8, 0x91, 0x4E } };
-EXTERN_C const IID  IID_IInternetHostSecurityManager =
+const IID      __cdecl IID_IInternetHostSecurityManager =
     { 0x3AF280B6, 0xCB3F, 0x11D0, { 0x89, 0x1E, 0x00, 0xC0, 0x4F, 0xB6, 0xBF, 0xC4 } };
-EXTERN_C const IID  IID_IInternetZoneManager =
+const IID      __cdecl IID_IInternetZoneManager =
     { 0x79EAC9EF, 0xBAF9, 0x11CE, { 0x8C, 0x82, 0x00, 0xAA, 0x00, 0x4B, 0xA9, 0x0B } };
-EXTERN_C const IID  IID_IInternetZoneManagerEx =
+const IID      __cdecl IID_IInternetZoneManagerEx =
     { 0xA4C23339, 0x8E06, 0x431E, { 0x9B, 0xF4, 0x7E, 0x71, 0x1C, 0x08, 0x56, 0x48 } };
-EXTERN_C const IID  IID_IInternetZoneManagerEx2 =
+const IID      __cdecl IID_IInternetZoneManagerEx2 =
     { 0xEDC17559, 0xDD5D, 0x4846, { 0x8E, 0xEF, 0x8B, 0xEC, 0xBA, 0x5A, 0x4A, 0xBF } };
-EXTERN_C const IID  IID_ISoftDistExt =
+const IID      __cdecl IID_ISoftDistExt =
     { 0xB15B8DC1, 0xC7E1, 0x11D0, { 0x86, 0x80, 0x00, 0xAA, 0x00, 0xBD, 0xCB, 0x71 } };
-EXTERN_C const IID  IID_ICatalogFileInfo =
+const IID      __cdecl IID_ICatalogFileInfo =
     { 0x711C7600, 0x6B48, 0x11D1, { 0xB4, 0x03, 0x00, 0xAA, 0x00, 0xB9, 0x2A, 0xF1 } };
-EXTERN_C const IID  IID_IDataFilter =
+const IID      __cdecl IID_IDataFilter =
     { 0x69D14C80, 0xC18E, 0x11D0, { 0xA9, 0xCE, 0x00, 0x60, 0x97, 0x94, 0x23, 0x11 } };
-EXTERN_C const IID  IID_IEncodingFilterFactory =
+const IID      __cdecl IID_IEncodingFilterFactory =
     { 0x70BDDE00, 0xC18E, 0x11D0, { 0xA9, 0xCE, 0x00, 0x60, 0x97, 0x94, 0x23, 0x11 } };
-EXTERN_C const IID  IID_IWrappedProtocol =
+const IID      __cdecl IID_IWrappedProtocol =
     { 0x53C84785, 0x8425, 0x4DC5, { 0x97, 0x1B, 0xE5, 0x8D, 0x9C, 0x19, 0xF9, 0xB6 } };
 
 /* propidl.h */
-EXTERN_C const IID  IID_IPropertyStorage =
+const IID      __cdecl IID_IPropertyStorage =
     { 0x00000138, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IPropertySetStorage =
+const IID      __cdecl IID_IPropertySetStorage =
     { 0x0000013A, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IEnumSTATPROPSTG =
+const IID      __cdecl IID_IEnumSTATPROPSTG =
     { 0x00000139, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IEnumSTATPROPSETSTG =
+const IID      __cdecl IID_IEnumSTATPROPSETSTG =
     { 0x0000013B, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
 
 /* commdlg.h */
-EXTERN_C const IID  IID_IPrintDialogCallback =
+const IID      __cdecl IID_IPrintDialogCallback =
     { 0x5852A2C3, 0x6530, 0x11D1, { 0xB6, 0xA3, 0x00, 0x00, 0xF8, 0x75, 0x7B, 0xF9 } };
-EXTERN_C const IID  IID_IPrintDialogServices =
+const IID      __cdecl IID_IPrintDialogServices =
     { 0x509AAEDA, 0x5639, 0x11D1, { 0xB6, 0xA1, 0x00, 0x00, 0xF8, 0x75, 0x7B, 0xF9 } };
 
 /* aclui.h */
-EXTERN_C const IID  IID_ISecurityInformation =
+const IID      __cdecl IID_ISecurityInformation =
     { 0x965FC360, 0x16FF, 0x11D0, { 0x91, 0xCB, 0x00, 0xAA, 0x00, 0xBB, 0xB7, 0x23 } };
-EXTERN_C const IID  IID_ISecurityInformation2 =
+const IID      __cdecl IID_ISecurityInformation2 =
     { 0xC3CCFDB4, 0x6F88, 0x11D2, { 0xA3, 0xCE, 0x00, 0xC0, 0x4F, 0xB1, 0x78, 0x2A } };
-EXTERN_C const IID  IID_IEffectivePermission =
+const IID      __cdecl IID_IEffectivePermission =
     { 0x3853DC76, 0x9F35, 0x407C, { 0x88, 0xA1, 0xD1, 0x93, 0x44, 0x36, 0x5F, 0xBC } };
-EXTERN_C const IID  IID_ISecurityObjectTypeInfo =
+const IID      __cdecl IID_ISecurityObjectTypeInfo =
     { 0xFC3066EB, 0x79EF, 0x444B, { 0x91, 0x11, 0xD1, 0x8A, 0x75, 0xEB, 0xF2, 0xFA } };
-EXTERN_C const IID  IID_ISecurityInformation3 =
+const IID      __cdecl IID_ISecurityInformation3 =
     { 0xE2CDC9CC, 0x31BD, 0x4F8F, { 0x8C, 0x8B, 0xB6, 0x41, 0xAF, 0x51, 0x6A, 0x1A } };
 
 /* comcat.h */
-EXTERN_C const IID      IID_IEnumGUID =
+const IID      __cdecl IID_IEnumGUID =
     { 0x0002E000, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumCATEGORYINFO =
+const IID      __cdecl IID_IEnumCATEGORYINFO =
     { 0x0002E011, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICatRegister =
+const IID      __cdecl IID_ICatRegister =
     { 0x0002E012, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICatInformation =
+const IID      __cdecl IID_ICatInformation =
     { 0x0002E013, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const CLSID    CLSID_StdComponentCategoriesMgr =
+const CLSID    __cdecl CLSID_StdComponentCategoriesMgr =
     { 0x0002E005, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const CATID    CATID_Insertable =
+const CATID    __cdecl CATID_Insertable =
     { 0x40FC6ED3, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_Control =
+const CATID    __cdecl CATID_Control =
     { 0x40FC6ED4, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_Programmable =
+const CATID    __cdecl CATID_Programmable =
     { 0x40FC6ED5, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_IsShortcut =
+const CATID    __cdecl CATID_IsShortcut =
     { 0x40FC6ED6, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_NeverShowExt =
+const CATID    __cdecl CATID_NeverShowExt =
     { 0x40FC6ED7, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_DocObject =
+const CATID    __cdecl CATID_DocObject =
     { 0x40FC6ED8, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_Printable =
+const CATID    __cdecl CATID_Printable =
     { 0x40FC6ED9, 0x2438, 0x11CF, { 0xA3, 0xDB, 0x08, 0x00, 0x36, 0xF1, 0x25, 0x02 } };
-EXTERN_C const CATID    CATID_RequiresDataPathHost =
+const CATID    __cdecl CATID_RequiresDataPathHost =
     { 0x0DE86A50, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToMoniker =
+const CATID    __cdecl CATID_PersistsToMoniker =
     { 0x0DE86A51, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToStorage =
+const CATID    __cdecl CATID_PersistsToStorage =
     { 0x0DE86A52, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToStreamInit =
+const CATID    __cdecl CATID_PersistsToStreamInit =
     { 0x0DE86A53, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToStream =
+const CATID    __cdecl CATID_PersistsToStream =
     { 0x0DE86A54, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToMemory =
+const CATID    __cdecl CATID_PersistsToMemory =
     { 0x0DE86A55, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToFile =
+const CATID    __cdecl CATID_PersistsToFile =
     { 0x0DE86A56, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_PersistsToPropertyBag =
+const CATID    __cdecl CATID_PersistsToPropertyBag =
     { 0x0DE86A57, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_InternetAware =
+const CATID    __cdecl CATID_InternetAware =
     { 0x0DE86A58, 0x2BAA, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const CATID    CATID_DesignTimeUIActivatableControl =
+const CATID    __cdecl CATID_DesignTimeUIActivatableControl =
     { 0xF2BB56D1, 0xDB07, 0x11D1, { 0xAA, 0x6B, 0x00, 0x60, 0x97, 0xDB, 0x95, 0x39 } };
 
 /* ocidl.h */
-EXTERN_C const IID  IID_IEnumConnections =
+const IID      __cdecl IID_IEnumConnections =
     { 0xB196B287, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IConnectionPoint =
+const IID      __cdecl IID_IConnectionPoint =
     { 0xB196B286, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IEnumConnectionPoints =
+const IID      __cdecl IID_IEnumConnectionPoints =
     { 0xB196B285, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IConnectionPointContainer =
+const IID      __cdecl IID_IConnectionPointContainer =
     { 0xB196B284, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IClassFactory2 =
+const IID      __cdecl IID_IClassFactory2 =
     { 0xB196B28F, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IProvideClassInfo =
+const IID      __cdecl IID_IProvideClassInfo =
     { 0xB196B283, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IProvideClassInfo2 =
+const IID      __cdecl IID_IProvideClassInfo2 =
     { 0xA6BC3AC0, 0xDBAA, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const IID  IID_IProvideMultipleClassInfo =
+const IID      __cdecl IID_IProvideMultipleClassInfo =
     { 0xA7ABA9C1, 0x8983, 0x11CF, { 0x8F, 0x20, 0x00, 0x80, 0x5F, 0x2C, 0xD0, 0x64 } };
-EXTERN_C const IID  IID_IOleControl =
+const IID      __cdecl IID_IOleControl =
     { 0xB196B288, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IOleControlSite =
+const IID      __cdecl IID_IOleControlSite =
     { 0xB196B289, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IPropertyPage =
+const IID      __cdecl IID_IPropertyPage =
     { 0xB196B28D, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IPropertyPage2 =
+const IID      __cdecl IID_IPropertyPage2 =
     { 0x01E44665, 0x24AC, 0x101B, { 0x84, 0xED, 0x08, 0x00, 0x2B, 0x2E, 0xC7, 0x13 } };
-EXTERN_C const IID  IID_IPropertyPageSite =
+const IID      __cdecl IID_IPropertyPageSite =
     { 0xB196B28C, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IPropertyNotifySink =
+const IID      __cdecl IID_IPropertyNotifySink =
     { 0x9BFBBC02, 0xEFF1, 0x101A, { 0x84, 0xED, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_ISpecifyPropertyPages =
+const IID      __cdecl IID_ISpecifyPropertyPages =
     { 0xB196B28B, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const IID  IID_IPersistMemory =
+const IID      __cdecl IID_IPersistMemory =
     { 0xBD1AE5E0, 0xA6AE, 0x11CE, { 0xBD, 0x37, 0x50, 0x42, 0x00, 0xC1, 0x00, 0x00 } };
-EXTERN_C const IID  IID_IPersistStreamInit =
+const IID      __cdecl IID_IPersistStreamInit =
     { 0x7FD52380, 0x4E07, 0x101B, { 0xAE, 0x2D, 0x08, 0x00, 0x2B, 0x2E, 0xC7, 0x13 } };
-EXTERN_C const IID  IID_IPersistPropertyBag =
+const IID      __cdecl IID_IPersistPropertyBag =
     { 0x37D84F60, 0x42CB, 0x11CE, { 0x81, 0x35, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const IID  IID_ISimpleFrameSite =
+const IID      __cdecl IID_ISimpleFrameSite =
     { 0x742B0E01, 0x14E6, 0x101B, { 0x91, 0x4E, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const IID  IID_IFont =
+const IID      __cdecl IID_IFont =
     { 0xBEF6E002, 0xA874, 0x101A, { 0x8B, 0xBA, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const IID  IID_IPicture =
+const IID      __cdecl IID_IPicture =
     { 0x7BF80980, 0xBF32, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const IID  IID_IPicture2 =
+const IID      __cdecl IID_IPicture2 =
     { 0xF5185DD8, 0x2012, 0x4B0B, { 0xAA, 0xD9, 0xF0, 0x52, 0xC6, 0xBD, 0x48, 0x2B } };
-EXTERN_C const IID  IID_IFontEventsDisp =
+const IID      __cdecl IID_IFontEventsDisp =
     { 0x4EF6100A, 0xAF88, 0x11D0, { 0x98, 0x46, 0x00, 0xC0, 0x4F, 0xC2, 0x99, 0x93 } };
-EXTERN_C const IID  IID_IFontDisp =
+const IID      __cdecl IID_IFontDisp =
     { 0xBEF6E003, 0xA874, 0x101A, { 0x8B, 0xBA, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const IID  IID_IPictureDisp =
+const IID      __cdecl IID_IPictureDisp =
     { 0x7BF80981, 0xBF32, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const IID  IID_IOleInPlaceObjectWindowless =
+const IID      __cdecl IID_IOleInPlaceObjectWindowless =
     { 0x1C2056CC, 0x5EF4, 0x101B, { 0x8B, 0xC8, 0x00, 0xAA, 0x00, 0x3E, 0x3B, 0x29 } };
-EXTERN_C const IID  IID_IOleInPlaceSiteEx =
+const IID      __cdecl IID_IOleInPlaceSiteEx =
     { 0x9C2CAD80, 0x3424, 0x11CF, { 0xB6, 0x70, 0x00, 0xAA, 0x00, 0x4C, 0xD6, 0xD8 } };
-EXTERN_C const IID  IID_IOleInPlaceSiteWindowless =
+const IID      __cdecl IID_IOleInPlaceSiteWindowless =
     { 0x922EADA0, 0x3424, 0x11CF, { 0xB6, 0x70, 0x00, 0xAA, 0x00, 0x4C, 0xD6, 0xD8 } };
-EXTERN_C const IID  IID_IViewObjectEx =
+const IID      __cdecl IID_IViewObjectEx =
     { 0x3AF24292, 0x0C96, 0x11CE, { 0xA0, 0xCF, 0x00, 0xAA, 0x00, 0x60, 0x0A, 0xB8 } };
-EXTERN_C const IID  IID_IOleUndoUnit =
+const IID      __cdecl IID_IOleUndoUnit =
     { 0x894AD3B0, 0xEF97, 0x11CE, { 0x9B, 0xC9, 0x00, 0xAA, 0x00, 0x60, 0x8E, 0x01 } };
-EXTERN_C const IID  IID_IOleParentUndoUnit =
+const IID      __cdecl IID_IOleParentUndoUnit =
     { 0xA1FAF330, 0xEF97, 0x11CE, { 0x9B, 0xC9, 0x00, 0xAA, 0x00, 0x60, 0x8E, 0x01 } };
-EXTERN_C const IID  IID_IEnumOleUndoUnits =
+const IID      __cdecl IID_IEnumOleUndoUnits =
     { 0xB3E7C340, 0xEF97, 0x11CE, { 0x9B, 0xC9, 0x00, 0xAA, 0x00, 0x60, 0x8E, 0x01 } };
-EXTERN_C const IID  IID_IOleUndoManager =
+const IID      __cdecl IID_IOleUndoManager =
     { 0xD001F200, 0xEF97, 0x11CE, { 0x9B, 0xC9, 0x00, 0xAA, 0x00, 0x60, 0x8E, 0x01 } };
-EXTERN_C const IID  IID_IPointerInactive =
+const IID      __cdecl IID_IPointerInactive =
     { 0x44980BA0, 0x35AA, 0x11CF, { 0xB6, 0x71, 0x00, 0xAA, 0x00, 0x4C, 0xD6, 0xD8 } };
-EXTERN_C const IID  IID_IObjectWithSite =
+const IID      __cdecl IID_IObjectWithSite =
     { 0xFC4801A3, 0x2BA9, 0x11CF, { 0xA2, 0x29, 0x00, 0xAA, 0x00, 0x3D, 0x73, 0x52 } };
-EXTERN_C const IID  IID_IPerPropertyBrowsing =
+const IID      __cdecl IID_IPerPropertyBrowsing =
     { 0x376BD3AA, 0x3845, 0x101B, { 0x84, 0xED, 0x08, 0x00, 0x2B, 0x2E, 0xC7, 0x13 } };
-EXTERN_C const IID  IID_IPropertyBag2 =
+const IID      __cdecl IID_IPropertyBag2 =
     { 0x22F55882, 0x280B, 0x11D0, { 0xA8, 0xA9, 0x00, 0xA0, 0xC9, 0x0C, 0x20, 0x04 } };
-EXTERN_C const IID  IID_IPersistPropertyBag2 =
+const IID      __cdecl IID_IPersistPropertyBag2 =
     { 0x22F55881, 0x280B, 0x11D0, { 0xA8, 0xA9, 0x00, 0xA0, 0xC9, 0x0C, 0x20, 0x04 } };
-EXTERN_C const IID  IID_IAdviseSinkEx =
+const IID      __cdecl IID_IAdviseSinkEx =
     { 0x3AF24290, 0x0C96, 0x11CE, { 0xA0, 0xCF, 0x00, 0xAA, 0x00, 0x60, 0x0A, 0xB8 } };
-EXTERN_C const IID  IID_IQuickActivate =
+const IID      __cdecl IID_IQuickActivate =
     { 0xCF51ED10, 0x62FE, 0x11CF, { 0xBF, 0x86, 0x00, 0xA0, 0xC9, 0x03, 0x48, 0x36 } };
 
 /* docobj.h */
-EXTERN_C const IID  IID_IOleDocument =
+const IID      __cdecl IID_IOleDocument =
     { 0xB722BCC5, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IOleDocumentSite =
+const IID      __cdecl IID_IOleDocumentSite =
     { 0xB722BCC7, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IOleDocumentView =
+const IID      __cdecl IID_IOleDocumentView =
     { 0xB722BCC6, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IEnumOleDocumentViews =
+const IID      __cdecl IID_IEnumOleDocumentViews =
     { 0xB722BCC8, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IContinueCallback =
+const IID      __cdecl IID_IContinueCallback =
     { 0xB722BCCA, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IPrint =
+const IID      __cdecl IID_IPrint =
     { 0xB722BCC9, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IOleCommandTarget =
+const IID      __cdecl IID_IOleCommandTarget =
     { 0xB722BCCB, 0x4E68, 0x101B, { 0xA2, 0xBC, 0x00, 0xAA, 0x00, 0x40, 0x47, 0x70 } };
-EXTERN_C const IID  IID_IZoomEvents =
+const IID      __cdecl IID_IZoomEvents =
     { 0x41B68150, 0x904C, 0x4E17, { 0xA0, 0xBA, 0xA4, 0x38, 0x18, 0x2E, 0x35, 0x9D } };
-EXTERN_C const IID  IID_IProtectFocus =
+const IID      __cdecl IID_IProtectFocus =
     { 0xD81F90A3, 0x8156, 0x44F7, { 0xAD, 0x28, 0x5A, 0xBB, 0x87, 0x00, 0x32, 0x74 } };
-EXTERN_C const IID  IID_IProtectedModeMenuServices =
+const IID      __cdecl IID_IProtectedModeMenuServices =
     { 0x73C105EE, 0x9DFF, 0x4A07, { 0xB8, 0x3C, 0x7E, 0xFF, 0x29, 0x0C, 0x26, 0x6E } };
 
 /* olectl.h */
-EXTERN_C const IID      IID_IPropertyFrame =
+const IID      __cdecl IID_IPropertyFrame =
     { 0xB196B28A, 0xBAB4, 0x101A, { 0xB6, 0x9C, 0x00, 0xAA, 0x00, 0x34, 0x1D, 0x07 } };
-EXTERN_C const CLSID    CLSID_CFontPropPage =
+const CLSID    __cdecl CLSID_CFontPropPage =
     { 0x0BE35200, 0x8F91, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const CLSID    CLSID_CColorPropPage =
+const CLSID    __cdecl CLSID_CColorPropPage =
     { 0x0BE35201, 0x8F91, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const CLSID    CLSID_CPicturePropPage =
+const CLSID    __cdecl CLSID_CPicturePropPage =
     { 0x0BE35202, 0x8F91, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const CLSID    CLSID_PersistPropset =
+const CLSID    __cdecl CLSID_PersistPropset =
     { 0xFB8F0821, 0x0164, 0x101B, { 0x84, 0xED, 0x08, 0x00, 0x2B, 0x2E, 0xC7, 0x13 } };
-EXTERN_C const CLSID    CLSID_ConvertVBX =
+const CLSID    __cdecl CLSID_ConvertVBX =
     { 0xFB8F0822, 0x0164, 0x101B, { 0x84, 0xED, 0x08, 0x00, 0x2B, 0x2E, 0xC7, 0x13 } };
-EXTERN_C const CLSID    CLSID_StdFont =
+const CLSID    __cdecl CLSID_StdFont =
     { 0x0BE35203, 0x8F91, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const CLSID    CLSID_StdPicture =
+const CLSID    __cdecl CLSID_StdPicture =
     { 0x0BE35204, 0x8F91, 0x11CE, { 0x9D, 0xE3, 0x00, 0xAA, 0x00, 0x4B, 0xB8, 0x51 } };
-EXTERN_C const GUID     GUID_HIMETRIC =
+const GUID     __cdecl GUID_HIMETRIC =
     { 0x66504300, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_COLOR =
+const GUID     __cdecl GUID_COLOR =
     { 0x66504301, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_XPOSPIXEL =
+const GUID     __cdecl GUID_XPOSPIXEL =
     { 0x66504302, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_YPOSPIXEL =
+const GUID     __cdecl GUID_YPOSPIXEL =
     { 0x66504303, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_XSIZEPIXEL =
+const GUID     __cdecl GUID_XSIZEPIXEL =
     { 0x66504304, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_YSIZEPIXEL =
+const GUID     __cdecl GUID_YSIZEPIXEL =
     { 0x66504305, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_XPOS =
+const GUID     __cdecl GUID_XPOS =
     { 0x66504306, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_YPOS =
+const GUID     __cdecl GUID_YPOS =
     { 0x66504307, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_XSIZE =
+const GUID     __cdecl GUID_XSIZE =
     { 0x66504308, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_YSIZE =
+const GUID     __cdecl GUID_YSIZE =
     { 0x66504309, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_TRISTATE =
+const GUID     __cdecl GUID_TRISTATE =
     { 0x6650430A, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_OPTIONVALUEEXCLUSIVE =
+const GUID     __cdecl GUID_OPTIONVALUEEXCLUSIVE =
     { 0x6650430B, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_CHECKVALUEEXCLUSIVE =
+const GUID     __cdecl GUID_CHECKVALUEEXCLUSIVE =
     { 0x6650430C, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTNAME =
+const GUID     __cdecl GUID_FONTNAME =
     { 0x6650430D, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTSIZE =
+const GUID     __cdecl GUID_FONTSIZE =
     { 0x6650430E, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTBOLD =
+const GUID     __cdecl GUID_FONTBOLD =
     { 0x6650430F, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTITALIC =
+const GUID     __cdecl GUID_FONTITALIC =
     { 0x66504310, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTUNDERSCORE =
+const GUID     __cdecl GUID_FONTUNDERSCORE =
     { 0x66504311, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_FONTSTRIKETHROUGH =
+const GUID     __cdecl GUID_FONTSTRIKETHROUGH =
     { 0x66504312, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
-EXTERN_C const GUID     GUID_HANDLE =
+const GUID     __cdecl GUID_HANDLE =
     { 0x66504313, 0xBE0F, 0x101A, { 0x8B, 0xBB, 0x00, 0xAA, 0x00, 0x30, 0x0C, 0xAB } };
 
 /* exdisp.h */
-EXTERN_C const IID      LIBID_SHDocVw =
+const IID      __cdecl LIBID_SHDocVw =
     { 0xEAB22AC0, 0x30C1, 0x11CF, { 0xA7, 0xEB, 0x00, 0x00, 0xC0, 0x5B, 0xAE, 0x0B } };
-EXTERN_C const IID      IID_IWebBrowser =
+const IID      __cdecl IID_IWebBrowser =
     { 0xEAB22AC1, 0x30C1, 0x11CF, { 0xA7, 0xEB, 0x00, 0x00, 0xC0, 0x5B, 0xAE, 0x0B } };
-EXTERN_C const IID      DIID_DWebBrowserEvents =
+const IID      __cdecl DIID_DWebBrowserEvents =
     { 0xEAB22AC2, 0x30C1, 0x11CF, { 0xA7, 0xEB, 0x00, 0x00, 0xC0, 0x5B, 0xAE, 0x0B } };
-EXTERN_C const IID      IID_IWebBrowserApp =
+const IID      __cdecl IID_IWebBrowserApp =
     { 0x0002DF05, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IWebBrowser2 =
+const IID      __cdecl IID_IWebBrowser2 =
     { 0xD30C1661, 0xCDAF, 0x11D0, { 0x8A, 0x3E, 0x00, 0xC0, 0x4F, 0xC9, 0xE2, 0x6E } };
-EXTERN_C const IID      DIID_DWebBrowserEvents2 =
+const IID      __cdecl DIID_DWebBrowserEvents2 =
     { 0x34A715A0, 0x6587, 0x11D0, { 0x92, 0x4A, 0x00, 0x20, 0xAF, 0xC7, 0xAC, 0x4D } };
-EXTERN_C const CLSID    CLSID_WebBrowser_V1 =
+const CLSID    __cdecl CLSID_WebBrowser_V1 =
     { 0xEAB22AC3, 0x30C1, 0x11CF, { 0xA7, 0xEB, 0x00, 0x00, 0xC0, 0x5B, 0xAE, 0x0B } };
-EXTERN_C const CLSID    CLSID_WebBrowser =
+const CLSID    __cdecl CLSID_WebBrowser =
     { 0x8856F961, 0x340A, 0x11D0, { 0xA9, 0x6B, 0x00, 0xC0, 0x4F, 0xD7, 0x05, 0xA2 } };
-EXTERN_C const CLSID    CLSID_InternetExplorer =
+const CLSID    __cdecl CLSID_InternetExplorer =
     { 0x0002DF01, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const CLSID    CLSID_ShellBrowserWindow =
+const CLSID    __cdecl CLSID_ShellBrowserWindow =
     { 0xC08AFD90, 0xF2A1, 0x11D1, { 0x84, 0x55, 0x00, 0xA0, 0xC9, 0x1F, 0x38, 0x80 } };
-EXTERN_C const IID      DIID_DShellWindowEvents =
+const IID      __cdecl DIID_DShellWindowEvents =
     { 0xFE4106E0, 0x399A, 0x11D0, { 0xA4, 0x8C, 0x00, 0xA0, 0xC9, 0x0A, 0x8F, 0x39 } };
-EXTERN_C const IID      IID_IShellWindows =
+const IID      __cdecl IID_IShellWindows =
     { 0x85CB6900, 0x4D95, 0x11CF, { 0x96, 0x0C, 0x00, 0x80, 0xC7, 0xF4, 0xEE, 0x85 } };
-EXTERN_C const CLSID    CLSID_ShellWindows =
+const CLSID    __cdecl CLSID_ShellWindows =
     { 0x9BA05972, 0xF6A8, 0x11CF, { 0xA4, 0x42, 0x00, 0xA0, 0xC9, 0x0A, 0x8F, 0x39 } };
-EXTERN_C const IID      IID_IShellUIHelper =
+const IID      __cdecl IID_IShellUIHelper =
     { 0x729FE2F8, 0x1EA8, 0x11D1, { 0x8F, 0x85, 0x00, 0xC0, 0x4F, 0xC2, 0xFB, 0xE1 } };
-EXTERN_C const IID      IID_IShellUIHelper2 =
+const IID      __cdecl IID_IShellUIHelper2 =
     { 0xA7FE6EDA, 0x1932, 0x4281, { 0xB8, 0x81, 0x87, 0xB3, 0x1B, 0x8B, 0xC5, 0x2C } };
-EXTERN_C const IID      IID_IShellUIHelper3 =
+const IID      __cdecl IID_IShellUIHelper3 =
     { 0x528DF2EC, 0xD419, 0x40BC, { 0x9B, 0x6D, 0xDC, 0xDB, 0xF9, 0xC1, 0xB2, 0x5D } };
-EXTERN_C const CLSID    CLSID_ShellUIHelper =
+const CLSID    __cdecl CLSID_ShellUIHelper =
     { 0x64AB4BB7, 0x111E, 0x11D1, { 0x8F, 0x79, 0x00, 0xC0, 0x4F, 0xC2, 0xFB, 0xE1 } };
-EXTERN_C const IID      DIID__ShellFavoritesNameSpaceEvents =
+const IID      __cdecl DIID__ShellFavoritesNameSpaceEvents =
     { 0x55136806, 0xB2DE, 0x11D1, { 0xB9, 0xF2, 0x00, 0xA0, 0xC9, 0x8B, 0xC5, 0x47 } };
-EXTERN_C const IID      IID_IShellFavoritesNameSpace =
+const IID      __cdecl IID_IShellFavoritesNameSpace =
     { 0x55136804, 0xB2DE, 0x11D1, { 0xB9, 0xF2, 0x00, 0xA0, 0xC9, 0x8B, 0xC5, 0x47 } };
-EXTERN_C const IID      IID_IShellNameSpace =
+const IID      __cdecl IID_IShellNameSpace =
     { 0xE572D3C9, 0x37BE, 0x4AE2, { 0x82, 0x5D, 0xD5, 0x21, 0x76, 0x3E, 0x31, 0x08 } };
-EXTERN_C const CLSID    CLSID_ShellNameSpace =
+const CLSID    __cdecl CLSID_ShellNameSpace =
     { 0x55136805, 0xB2DE, 0x11D1, { 0xB9, 0xF2, 0x00, 0xA0, 0xC9, 0x8B, 0xC5, 0x47 } };
-EXTERN_C const IID      IID_IScriptErrorList =
+const IID      __cdecl IID_IScriptErrorList =
     { 0xF3470F24, 0x15FD, 0x11D2, { 0xBB, 0x2E, 0x00, 0x80, 0x5F, 0xF7, 0xEF, 0xCA } };
-EXTERN_C const CLSID    CLSID_CScriptErrorList =
+const CLSID    __cdecl CLSID_CScriptErrorList =
     { 0xEFD01300, 0x160F, 0x11D2, { 0xBB, 0x2E, 0x00, 0x80, 0x5F, 0xF7, 0xEF, 0xCA } };
 
 /* isguids.h */
-EXTERN_C const CLSID    CLSID_InternetShortcut =
+const CLSID    __cdecl CLSID_InternetShortcut =
     { 0xFBF23B40, 0xE3F0, 0x101B, { 0x84, 0x88, 0x00, 0xAA, 0x00, 0x3E, 0x56, 0xF8 } };
-EXTERN_C const IID      IID_IUniformResourceLocatorA =
+const IID      __cdecl IID_IUniformResourceLocatorA =
     { 0xFBF23B80, 0xE3F0, 0x101B, { 0x84, 0x88, 0x00, 0xAA, 0x00, 0x3E, 0x56, 0xF8 } };
-EXTERN_C const IID      IID_IUniformResourceLocatorW =
+const IID      __cdecl IID_IUniformResourceLocatorW =
     { 0xCABB0DA0, 0xDA57, 0x11CF, { 0x99, 0x74, 0x00, 0x20, 0xAF, 0xD7, 0x97, 0x62 } };
 
 /* mlang.h */
-EXTERN_C const IID      LIBID_MultiLanguage =
+const IID      __cdecl LIBID_MultiLanguage =
     { 0x275C23E0, 0x3747, 0x11D0, { 0x9F, 0xEA, 0x00, 0xAA, 0x00, 0x3F, 0x86, 0x46 } };
-EXTERN_C const IID      IID_IMLangStringBufW =
+const IID      __cdecl IID_IMLangStringBufW =
     { 0xD24ACD21, 0xBA72, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangStringBufA =
+const IID      __cdecl IID_IMLangStringBufA =
     { 0xD24ACD23, 0xBA72, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangString =
+const IID      __cdecl IID_IMLangString =
     { 0xC04D65CE, 0xB70D, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangStringWStr =
+const IID      __cdecl IID_IMLangStringWStr =
     { 0xC04D65D0, 0xB70D, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangStringAStr =
+const IID      __cdecl IID_IMLangStringAStr =
     { 0xC04D65D2, 0xB70D, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const CLSID    CLSID_CMLangString =
+const CLSID    __cdecl CLSID_CMLangString =
     { 0xC04D65CF, 0xB70D, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangLineBreakConsole =
+const IID      __cdecl IID_IMLangLineBreakConsole =
     { 0xF5BE2EE1, 0xBFD7, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IEnumCodePage =
+const IID      __cdecl IID_IEnumCodePage =
     { 0x275C23E3, 0x3747, 0x11D0, { 0x9F, 0xEA, 0x00, 0xAA, 0x00, 0x3F, 0x86, 0x46 } };
-EXTERN_C const IID      IID_IEnumRfc1766 =
+const IID      __cdecl IID_IEnumRfc1766 =
     { 0x3DC39D1D, 0xC030, 0x11D0, { 0xB8, 0x1B, 0x00, 0xC0, 0x4F, 0xC9, 0xB3, 0x1F } };
-EXTERN_C const IID      IID_IEnumScript =
+const IID      __cdecl IID_IEnumScript =
     { 0xAE5F1430, 0x388B, 0x11D2, { 0x83, 0x80, 0x00, 0xC0, 0x4F, 0x8F, 0x5D, 0xA1 } };
-EXTERN_C const IID      IID_IMLangConvertCharset =
+const IID      __cdecl IID_IMLangConvertCharset =
     { 0xD66D6F98, 0xCDAA, 0x11D0, { 0xB8, 0x22, 0x00, 0xC0, 0x4F, 0xC9, 0xB3, 0x1F } };
-EXTERN_C const CLSID    CLSID_CMLangConvertCharset =
+const CLSID    __cdecl CLSID_CMLangConvertCharset =
     { 0xD66D6F99, 0xCDAA, 0x11D0, { 0xB8, 0x22, 0x00, 0xC0, 0x4F, 0xC9, 0xB3, 0x1F } };
-EXTERN_C const IID      IID_IMultiLanguage =
+const IID      __cdecl IID_IMultiLanguage =
     { 0x275C23E1, 0x3747, 0x11D0, { 0x9F, 0xEA, 0x00, 0xAA, 0x00, 0x3F, 0x86, 0x46 } };
-EXTERN_C const IID      IID_IMultiLanguage2 =
+const IID      __cdecl IID_IMultiLanguage2 =
     { 0xDCCFC164, 0x2B38, 0x11D2, { 0xB7, 0xEC, 0x00, 0xC0, 0x4F, 0x8F, 0x5D, 0x9A } };
-EXTERN_C const IID      IID_IMLangCodePages =
+const IID      __cdecl IID_IMLangCodePages =
     { 0x359F3443, 0xBD4A, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangFontLink =
+const IID      __cdecl IID_IMLangFontLink =
     { 0x359F3441, 0xBD4A, 0x11D0, { 0xB1, 0x88, 0x00, 0xAA, 0x00, 0x38, 0xC9, 0x69 } };
-EXTERN_C const IID      IID_IMLangFontLink2 =
+const IID      __cdecl IID_IMLangFontLink2 =
     { 0xDCCFC162, 0x2B38, 0x11D2, { 0xB7, 0xEC, 0x00, 0xC0, 0x4F, 0x8F, 0x5D, 0x9A } };
-EXTERN_C const IID      IID_IMultiLanguage3 =
+const IID      __cdecl IID_IMultiLanguage3 =
     { 0x4E5868AB, 0xB157, 0x4623, { 0x9A, 0xCC, 0x6A, 0x1D, 0x9C, 0xAE, 0xBE, 0x04 } };
-EXTERN_C const CLSID    CLSID_CMultiLanguage =
+const CLSID    __cdecl CLSID_CMultiLanguage =
     { 0x275C23E2, 0x3747, 0x11D0, { 0x9F, 0xEA, 0x00, 0xAA, 0x00, 0x3F, 0x86, 0x46 } };
 
 /* dimm.h */
-EXTERN_C const IID      LIBID_ActiveIMM =
+const IID      __cdecl LIBID_ActiveIMM =
     { 0x4955DD30, 0xB159, 0x11D0, { 0x8F, 0xCF, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
-EXTERN_C const IID      IID_IEnumRegisterWordA =
+const IID      __cdecl IID_IEnumRegisterWordA =
     { 0x08C03412, 0xF96B, 0x11D0, { 0xA4, 0x75, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
-EXTERN_C const IID      IID_IEnumRegisterWordW =
+const IID      __cdecl IID_IEnumRegisterWordW =
     { 0x4955DD31, 0xB159, 0x11D0, { 0x8F, 0xCF, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
-EXTERN_C const IID      IID_IEnumInputContext =
+const IID      __cdecl IID_IEnumInputContext =
     { 0x09B5EAB0, 0xF997, 0x11D1, { 0x93, 0xD4, 0x00, 0x60, 0xB0, 0x67, 0xB8, 0x6E } };
-EXTERN_C const IID      IID_IActiveIMMRegistrar =
+const IID      __cdecl IID_IActiveIMMRegistrar =
     { 0xB3458082, 0xBD00, 0x11D1, { 0x93, 0x9B, 0x00, 0x60, 0xB0, 0x67, 0xB8, 0x6E } };
-EXTERN_C const IID      IID_IActiveIMMMessagePumpOwner =
+const IID      __cdecl IID_IActiveIMMMessagePumpOwner =
     { 0xB5CF2CFA, 0x8AEB, 0x11D1, { 0x93, 0x64, 0x00, 0x60, 0xB0, 0x67, 0xB8, 0x6E } };
-EXTERN_C const IID      IID_IActiveIMMApp =
+const IID      __cdecl IID_IActiveIMMApp =
     { 0x08C0E040, 0x62D1, 0x11D1, { 0x93, 0x26, 0x00, 0x60, 0xB0, 0x67, 0xB8, 0x6E } };
-EXTERN_C const IID      IID_IActiveIMMIME =
+const IID      __cdecl IID_IActiveIMMIME =
     { 0x08C03411, 0xF96B, 0x11D0, { 0xA4, 0x75, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
-EXTERN_C const IID      IID_IActiveIME =
+const IID      __cdecl IID_IActiveIME =
     { 0x6FE20962, 0xD077, 0x11D0, { 0x8F, 0xE7, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
-EXTERN_C const IID      IID_IActiveIME2 =
+const IID      __cdecl IID_IActiveIME2 =
     { 0xE1C4BF0E, 0x2D53, 0x11D2, { 0x93, 0xE1, 0x00, 0x60, 0xB0, 0x67, 0xB8, 0x6E } };
-EXTERN_C const CLSID    CLSID_CActiveIMM =
+const CLSID    __cdecl CLSID_CActiveIMM =
     { 0x4955DD33, 0xB159, 0x11D0, { 0x8F, 0xCF, 0x00, 0xAA, 0x00, 0x6B, 0xCC, 0x59 } };
 
 /* mshtml.h */
 #define MSHTML_SUFFIX   0x98B5, 0x11CF, { 0xBB, 0x82, 0x00, 0xAA, 0x00, 0xBD, 0xCE, 0x0B }
-EXTERN_C const IID      IID_IHTMLFiltersCollection =
+const IID      __cdecl IID_IHTMLFiltersCollection =
     { 0x3050F3EE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IIE70DispatchEx =
+const IID      __cdecl IID_IIE70DispatchEx =
     { 0x3051046B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IIE80DispatchEx =
+const IID      __cdecl IID_IIE80DispatchEx =
     { 0x3051046C, MSHTML_SUFFIX };
-EXTERN_C const IID      LIBID_MSHTML =
+const IID      __cdecl LIBID_MSHTML =
     { 0x3050F1C5, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMConstructor =
+const IID      __cdecl IID_IHTMLDOMConstructor =
     { 0x3051049B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle =
+const IID      __cdecl IID_IHTMLStyle =
     { 0x3050F25E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle2 =
+const IID      __cdecl IID_IHTMLStyle2 =
     { 0x3050F4A2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle3 =
+const IID      __cdecl IID_IHTMLStyle3 =
     { 0x3050F656, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle4 =
+const IID      __cdecl IID_IHTMLStyle4 =
     { 0x3050F816, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle5 =
+const IID      __cdecl IID_IHTMLStyle5 =
     { 0x3050F33A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyle6 =
+const IID      __cdecl IID_IHTMLStyle6 =
     { 0x30510480, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle =
+const IID      __cdecl IID_IHTMLRuleStyle =
     { 0x3050F3CF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle2 =
+const IID      __cdecl IID_IHTMLRuleStyle2 =
     { 0x3050F4AC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle3 =
+const IID      __cdecl IID_IHTMLRuleStyle3 =
     { 0x3050F657, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle4 =
+const IID      __cdecl IID_IHTMLRuleStyle4 =
     { 0x3050F817, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle5 =
+const IID      __cdecl IID_IHTMLRuleStyle5 =
     { 0x3050F335, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRuleStyle6 =
+const IID      __cdecl IID_IHTMLRuleStyle6 =
     { 0x30510471, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyle =
+const IID      __cdecl DIID_DispHTMLStyle =
     { 0x3050F55A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyle =
+const CLSID    __cdecl CLSID_HTMLStyle =
     { 0x3050F285, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLRuleStyle =
+const IID      __cdecl DIID_DispHTMLRuleStyle =
     { 0x3050F55C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLRuleStyle =
+const CLSID    __cdecl CLSID_HTMLRuleStyle =
     { 0x3050F3D0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRenderStyle =
+const IID      __cdecl IID_IHTMLRenderStyle =
     { 0x3050F6AE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLRenderStyle =
+const IID      __cdecl DIID_DispHTMLRenderStyle =
     { 0x3050F58B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLRenderStyle =
+const CLSID    __cdecl CLSID_HTMLRenderStyle =
     { 0x3050F6AA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCurrentStyle =
+const IID      __cdecl IID_IHTMLCurrentStyle =
     { 0x3050F3DB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCurrentStyle2 =
+const IID      __cdecl IID_IHTMLCurrentStyle2 =
     { 0x3050F658, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCurrentStyle3 =
+const IID      __cdecl IID_IHTMLCurrentStyle3 =
     { 0x3050F818, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCurrentStyle4 =
+const IID      __cdecl IID_IHTMLCurrentStyle4 =
     { 0x3050F33B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCurrentStyle5 =
+const IID      __cdecl IID_IHTMLCurrentStyle5 =
     { 0x30510481, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLCurrentStyle =
+const IID      __cdecl DIID_DispHTMLCurrentStyle =
     { 0x3050F557, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLCurrentStyle =
+const CLSID    __cdecl CLSID_HTMLCurrentStyle =
     { 0x3050F3DC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRect =
+const IID      __cdecl IID_IHTMLRect =
     { 0x3050F4A3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLRectCollection =
+const IID      __cdecl IID_IHTMLRectCollection =
     { 0x3050F4A4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMNode =
+const IID      __cdecl IID_IHTMLDOMNode =
     { 0x3050F5DA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMNode2 =
+const IID      __cdecl IID_IHTMLDOMNode2 =
     { 0x3050F80B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMAttribute =
+const IID      __cdecl IID_IHTMLDOMAttribute =
     { 0x3050F4B0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMAttribute2 =
+const IID      __cdecl IID_IHTMLDOMAttribute2 =
     { 0x3050F810, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMAttribute3 =
+const IID      __cdecl IID_IHTMLDOMAttribute3 =
     { 0x30510468, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMTextNode =
+const IID      __cdecl IID_IHTMLDOMTextNode =
     { 0x3050F4B1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMTextNode2 =
+const IID      __cdecl IID_IHTMLDOMTextNode2 =
     { 0x3050F809, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMImplementation =
+const IID      __cdecl IID_IHTMLDOMImplementation =
     { 0x3050F80D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDOMAttribute =
+const IID      __cdecl DIID_DispHTMLDOMAttribute =
     { 0x3050F564, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDOMAttribute =
+const CLSID    __cdecl CLSID_HTMLDOMAttribute =
     { 0x3050F4B2, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDOMTextNode =
+const IID      __cdecl DIID_DispHTMLDOMTextNode =
     { 0x3050F565, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDOMTextNode =
+const CLSID    __cdecl CLSID_HTMLDOMTextNode =
     { 0x3050F4BA, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDOMImplementation =
+const IID      __cdecl DIID_DispHTMLDOMImplementation =
     { 0x3050F58F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDOMImplementation =
+const CLSID    __cdecl CLSID_HTMLDOMImplementation =
     { 0x3050F80E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAttributeCollection =
+const IID      __cdecl IID_IHTMLAttributeCollection =
     { 0x3050F4C3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAttributeCollection2 =
+const IID      __cdecl IID_IHTMLAttributeCollection2 =
     { 0x3050F80A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAttributeCollection3 =
+const IID      __cdecl IID_IHTMLAttributeCollection3 =
     { 0x30510469, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMChildrenCollection =
+const IID      __cdecl IID_IHTMLDOMChildrenCollection =
     { 0x3050F5AB, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDOMChildrenCollection =
+const IID      __cdecl DIID_DispHTMLDOMChildrenCollection =
     { 0x3050F56C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLAttributeCollection =
+const CLSID    __cdecl CLSID_HTMLAttributeCollection =
     { 0x3050F4CC, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispStaticNodeList =
+const IID      __cdecl DIID_DispStaticNodeList =
     { 0x3050F59B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_StaticNodeList =
+const CLSID    __cdecl CLSID_StaticNodeList =
     { 0x30510467, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispDOMChildrenCollection =
+const IID      __cdecl DIID_DispDOMChildrenCollection =
     { 0x3050F577, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_DOMChildrenCollection =
+const CLSID    __cdecl CLSID_DOMChildrenCollection =
     { 0x3050F5AA, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLElementEvents3 =
+const IID      __cdecl DIID_HTMLElementEvents3 =
     { 0x3050F59F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLElementEvents2 =
+const IID      __cdecl DIID_HTMLElementEvents2 =
     { 0x3050F60F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLElementEvents =
+const IID      __cdecl DIID_HTMLElementEvents =
     { 0x3050F33C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElement =
+const IID      __cdecl IID_IHTMLElement =
     { 0x3050F1FF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElement2 =
+const IID      __cdecl IID_IHTMLElement2 =
     { 0x3050F434, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElement3 =
+const IID      __cdecl IID_IHTMLElement3 =
     { 0x3050F673, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElement4 =
+const IID      __cdecl IID_IHTMLElement4 =
     { 0x3050F80F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementSelector =
+const IID      __cdecl IID_IElementSelector =
     { 0x30510463, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementRender =
+const IID      __cdecl IID_IHTMLElementRender =
     { 0x3050F669, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLUniqueName =
+const IID      __cdecl IID_IHTMLUniqueName =
     { 0x3050F4D0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElement5 =
+const IID      __cdecl IID_IHTMLElement5 =
     { 0x3051045D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDatabinding =
+const IID      __cdecl IID_IHTMLDatabinding =
     { 0x3050F3F2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementDefaults =
+const IID      __cdecl IID_IHTMLElementDefaults =
     { 0x3050F6C9, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDefaults =
+const IID      __cdecl DIID_DispHTMLDefaults =
     { 0x3050F58C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDefaults =
+const CLSID    __cdecl CLSID_HTMLDefaults =
     { 0x3050F6C8, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCDefaultDispatch =
+const IID      __cdecl IID_IHTCDefaultDispatch =
     { 0x3050F4FD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCPropertyBehavior =
+const IID      __cdecl IID_IHTCPropertyBehavior =
     { 0x3050F5DF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCMethodBehavior =
+const IID      __cdecl IID_IHTCMethodBehavior =
     { 0x3050F631, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCEventBehavior =
+const IID      __cdecl IID_IHTCEventBehavior =
     { 0x3050F4FF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCAttachBehavior =
+const IID      __cdecl IID_IHTCAttachBehavior =
     { 0x3050F5F4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCAttachBehavior2 =
+const IID      __cdecl IID_IHTCAttachBehavior2 =
     { 0x3050F7EB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTCDescBehavior =
+const IID      __cdecl IID_IHTCDescBehavior =
     { 0x3050F5DC, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCDefaultDispatch =
+const IID      __cdecl DIID_DispHTCDefaultDispatch =
     { 0x3050F573, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCDefaultDispatch =
+const CLSID    __cdecl CLSID_HTCDefaultDispatch =
     { 0x3050F4FC, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCPropertyBehavior =
+const IID      __cdecl DIID_DispHTCPropertyBehavior =
     { 0x3050F57F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCPropertyBehavior =
+const CLSID    __cdecl CLSID_HTCPropertyBehavior =
     { 0x3050F5DE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCMethodBehavior =
+const IID      __cdecl DIID_DispHTCMethodBehavior =
     { 0x3050F587, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCMethodBehavior =
+const CLSID    __cdecl CLSID_HTCMethodBehavior =
     { 0x3050F630, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCEventBehavior =
+const IID      __cdecl DIID_DispHTCEventBehavior =
     { 0x3050F574, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCEventBehavior =
+const CLSID    __cdecl CLSID_HTCEventBehavior =
     { 0x3050F4FE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCAttachBehavior =
+const IID      __cdecl DIID_DispHTCAttachBehavior =
     { 0x3050F583, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCAttachBehavior =
+const CLSID    __cdecl CLSID_HTCAttachBehavior =
     { 0x3050F5F5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTCDescBehavior =
+const IID      __cdecl DIID_DispHTCDescBehavior =
     { 0x3050F57E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTCDescBehavior =
+const CLSID    __cdecl CLSID_HTCDescBehavior =
     { 0x3050F5DD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLUrnCollection =
+const IID      __cdecl IID_IHTMLUrnCollection =
     { 0x3050F5E2, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLUrnCollection =
+const IID      __cdecl DIID_DispHTMLUrnCollection =
     { 0x3050F551, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLUrnCollection =
+const CLSID    __cdecl CLSID_HTMLUrnCollection =
     { 0x3050F580, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLGenericElement =
+const IID      __cdecl IID_IHTMLGenericElement =
     { 0x3050F4B7, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLGenericElement =
+const IID      __cdecl DIID_DispHTMLGenericElement =
     { 0x3050F563, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLGenericElement =
+const CLSID    __cdecl CLSID_HTMLGenericElement =
     { 0x3050F4B8, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheetRule =
+const IID      __cdecl IID_IHTMLStyleSheetRule =
     { 0x3050F357, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheetRulesCollection =
+const IID      __cdecl IID_IHTMLStyleSheetRulesCollection =
     { 0x3050F2E5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheetRule =
+const IID      __cdecl DIID_DispHTMLStyleSheetRule =
     { 0x3050F50E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheetRule =
+const CLSID    __cdecl CLSID_HTMLStyleSheetRule =
     { 0x3050F3CE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheetRulesCollection =
+const IID      __cdecl DIID_DispHTMLStyleSheetRulesCollection =
     { 0x3050F52F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheetRulesCollection =
+const CLSID    __cdecl CLSID_HTMLStyleSheetRulesCollection =
     { 0x3050F3CD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheetPage =
+const IID      __cdecl IID_IHTMLStyleSheetPage =
     { 0x3050F7EE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheetPagesCollection =
+const IID      __cdecl IID_IHTMLStyleSheetPagesCollection =
     { 0x3050F7F0, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheetPage =
+const IID      __cdecl DIID_DispHTMLStyleSheetPage =
     { 0x3050F540, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheetPage =
+const CLSID    __cdecl CLSID_HTMLStyleSheetPage =
     { 0x3050F7EF, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheetPagesCollection =
+const IID      __cdecl DIID_DispHTMLStyleSheetPagesCollection =
     { 0x3050F543, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheetPagesCollection =
+const CLSID    __cdecl CLSID_HTMLStyleSheetPagesCollection =
     { 0x3050F7F1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheet =
+const IID      __cdecl IID_IHTMLStyleSheet =
     { 0x3050F2E3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheet2 =
+const IID      __cdecl IID_IHTMLStyleSheet2 =
     { 0x3050F3D1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheet3 =
+const IID      __cdecl IID_IHTMLStyleSheet3 =
     { 0x30510496, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheet =
+const IID      __cdecl DIID_DispHTMLStyleSheet =
     { 0x3050F58D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheet =
+const CLSID    __cdecl CLSID_HTMLStyleSheet =
     { 0x3050F2E4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleSheetsCollection =
+const IID      __cdecl IID_IHTMLStyleSheetsCollection =
     { 0x3050F37E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleSheetsCollection =
+const IID      __cdecl DIID_DispHTMLStyleSheetsCollection =
     { 0x3050F547, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleSheetsCollection =
+const CLSID    __cdecl CLSID_HTMLStyleSheetsCollection =
     { 0x3050F37F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLLinkElementEvents2 =
+const IID      __cdecl DIID_HTMLLinkElementEvents2 =
     { 0x3050F61D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLLinkElementEvents =
+const IID      __cdecl DIID_HTMLLinkElementEvents =
     { 0x3050F3CC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLinkElement =
+const IID      __cdecl IID_IHTMLLinkElement =
     { 0x3050F205, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLinkElement2 =
+const IID      __cdecl IID_IHTMLLinkElement2 =
     { 0x3050F4E5, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLinkElement3 =
+const IID      __cdecl IID_IHTMLLinkElement3 =
     { 0x3050F81E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLinkElement4 =
+const IID      __cdecl IID_IHTMLLinkElement4 =
     { 0x3051043A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLLinkElement =
+const IID      __cdecl DIID_DispHTMLLinkElement =
     { 0x3050E524, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLLinkElement =
+const CLSID    __cdecl CLSID_HTMLLinkElement =
     { 0x3050E277, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTxtRange =
+const IID      __cdecl IID_IHTMLTxtRange =
     { 0x3050F220, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTextRangeMetrics =
+const IID      __cdecl IID_IHTMLTextRangeMetrics =
     { 0x3050F40B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTextRangeMetrics2 =
+const IID      __cdecl IID_IHTMLTextRangeMetrics2 =
     { 0x3050F4A6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTxtRangeCollection =
+const IID      __cdecl IID_IHTMLTxtRangeCollection =
     { 0x3050F7ED, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLFormElementEvents2 =
+const IID      __cdecl DIID_HTMLFormElementEvents2 =
     { 0x3050F614, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLFormElementEvents =
+const IID      __cdecl DIID_HTMLFormElementEvents =
     { 0x3050F364, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFormElement =
+const IID      __cdecl IID_IHTMLFormElement =
     { 0x3050F1F7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFormElement2 =
+const IID      __cdecl IID_IHTMLFormElement2 =
     { 0x3050F4F6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFormElement3 =
+const IID      __cdecl IID_IHTMLFormElement3 =
     { 0x3050F836, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSubmitData =
+const IID      __cdecl IID_IHTMLSubmitData =
     { 0x3050F645, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFormElement4 =
+const IID      __cdecl IID_IHTMLFormElement4 =
     { 0x3051042C, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFormElement =
+const IID      __cdecl DIID_DispHTMLFormElement =
     { 0x3050F510, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFormElement =
+const CLSID    __cdecl CLSID_HTMLFormElement =
     { 0x3050F251, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLControlElementEvents2 =
+const IID      __cdecl DIID_HTMLControlElementEvents2 =
     { 0x3050F612, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLControlElementEvents =
+const IID      __cdecl DIID_HTMLControlElementEvents =
     { 0x3050F4EA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLControlElement =
+const IID      __cdecl IID_IHTMLControlElement =
     { 0x3050F4E9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTextElement =
+const IID      __cdecl IID_IHTMLTextElement =
     { 0x3050F218, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTextElement =
+const IID      __cdecl DIID_DispHTMLTextElement =
     { 0x3050F537, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTextElement =
+const CLSID    __cdecl CLSID_HTMLTextElement =
     { 0x3050F26A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLTextContainerEvents2 =
+const IID      __cdecl DIID_HTMLTextContainerEvents2 =
     { 0x3050F624, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLTextContainerEvents =
+const IID      __cdecl DIID_HTMLTextContainerEvents =
     { 0x1FF6AA72, 0x5842, 0x11CF, { 0xA7, 0x07, 0x00, 0xAA, 0x00, 0xC0, 0x09, 0x8D } };
-EXTERN_C const IID      IID_IHTMLTextContainer =
+const IID      __cdecl IID_IHTMLTextContainer =
     { 0x3050F230, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLControlRange =
+const IID      __cdecl IID_IHTMLControlRange =
     { 0x3050F29C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLControlRange2 =
+const IID      __cdecl IID_IHTMLControlRange2 =
     { 0x3050F65E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLImgEvents2 =
+const IID      __cdecl DIID_HTMLImgEvents2 =
     { 0x3050F616, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLImgEvents =
+const IID      __cdecl DIID_HTMLImgEvents =
     { 0x3050F25B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLImgElement =
+const IID      __cdecl IID_IHTMLImgElement =
     { 0x3050F240, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLImgElement2 =
+const IID      __cdecl IID_IHTMLImgElement2 =
     { 0x3050F826, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLImgElement3 =
+const IID      __cdecl IID_IHTMLImgElement3 =
     { 0x30510434, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLImageElementFactory =
+const IID      __cdecl IID_IHTMLImageElementFactory =
     { 0x3050F38E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLImg =
+const IID      __cdecl DIID_DispHTMLImg =
     { 0x3050F51C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLImg =
+const CLSID    __cdecl CLSID_HTMLImg =
     { 0x3050F241, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLImageElementFactory =
+const CLSID    __cdecl CLSID_HTMLImageElementFactory =
     { 0x3050F38F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLXMLHttpRequestEvents =
+const IID      __cdecl DIID_HTMLXMLHttpRequestEvents =
     { 0x30510498, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLXMLHttpRequest =
+const IID      __cdecl IID_IHTMLXMLHttpRequest =
     { 0x3051040A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLXMLHttpRequest2 =
+const IID      __cdecl IID_IHTMLXMLHttpRequest2 =
     { 0x30510482, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLXMLHttpRequestFactory =
+const IID      __cdecl IID_IHTMLXMLHttpRequestFactory =
     { 0x3051040C, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLXMLHttpRequest =
+const IID      __cdecl DIID_DispHTMLXMLHttpRequest =
     { 0x3050F496, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLXMLHttpRequest =
+const CLSID    __cdecl CLSID_HTMLXMLHttpRequest =
     { 0x3051040B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLXMLHttpRequestFactory =
+const CLSID    __cdecl CLSID_HTMLXMLHttpRequestFactory =
     { 0x3051040D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBodyElement =
+const IID      __cdecl IID_IHTMLBodyElement =
     { 0x3050F1D8, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBodyElement2 =
+const IID      __cdecl IID_IHTMLBodyElement2 =
     { 0x3050F5C5, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBodyElement3 =
+const IID      __cdecl IID_IHTMLBodyElement3 =
     { 0x30510422, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBody =
+const IID      __cdecl DIID_DispHTMLBody =
     { 0x3050F507, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBody =
+const CLSID    __cdecl CLSID_HTMLBody =
     { 0x3050F24A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFontElement =
+const IID      __cdecl IID_IHTMLFontElement =
     { 0x3050F1D9, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFontElement =
+const IID      __cdecl DIID_DispHTMLFontElement =
     { 0x3050F512, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFontElement =
+const CLSID    __cdecl CLSID_HTMLFontElement =
     { 0x3050F27B, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLAnchorEvents2 =
+const IID      __cdecl DIID_HTMLAnchorEvents2 =
     { 0x3050F610, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLAnchorEvents =
+const IID      __cdecl DIID_HTMLAnchorEvents =
     { 0x3050F29D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAnchorElement =
+const IID      __cdecl IID_IHTMLAnchorElement =
     { 0x3050F1DA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAnchorElement2 =
+const IID      __cdecl IID_IHTMLAnchorElement2 =
     { 0x3050F825, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAnchorElement3 =
+const IID      __cdecl IID_IHTMLAnchorElement3 =
     { 0x3051041D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLAnchorElement =
+const IID      __cdecl DIID_DispHTMLAnchorElement =
     { 0x3050F502, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLAnchorElement =
+const CLSID    __cdecl CLSID_HTMLAnchorElement =
     { 0x3050F248, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLLabelEvents2 =
+const IID      __cdecl DIID_HTMLLabelEvents2 =
     { 0x3050F61C, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLLabelEvents =
+const IID      __cdecl DIID_HTMLLabelEvents =
     { 0x3050F329, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLabelElement =
+const IID      __cdecl IID_IHTMLLabelElement =
     { 0x3050F32A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLabelElement2 =
+const IID      __cdecl IID_IHTMLLabelElement2 =
     { 0x3050F832, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLLabelElement =
+const IID      __cdecl DIID_DispHTMLLabelElement =
     { 0x3050F522, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLLabelElement =
+const CLSID    __cdecl CLSID_HTMLLabelElement =
     { 0x3050F32B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLListElement =
+const IID      __cdecl IID_IHTMLListElement =
     { 0x3050F20E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLListElement2 =
+const IID      __cdecl IID_IHTMLListElement2 =
     { 0x3050F822, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLListElement =
+const IID      __cdecl DIID_DispHTMLListElement =
     { 0x3050F525, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLListElement =
+const CLSID    __cdecl CLSID_HTMLListElement =
     { 0x3050F272, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLUListElement =
+const IID      __cdecl IID_IHTMLUListElement =
     { 0x3050F1DD, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLUListElement =
+const IID      __cdecl DIID_DispHTMLUListElement =
     { 0x3050F538, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLUListElement =
+const CLSID    __cdecl CLSID_HTMLUListElement =
     { 0x3050F269, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOListElement =
+const IID      __cdecl IID_IHTMLOListElement =
     { 0x3050F1DE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLOListElement =
+const IID      __cdecl DIID_DispHTMLOListElement =
     { 0x3050F52A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLOListElement =
+const CLSID    __cdecl CLSID_HTMLOListElement =
     { 0x3050F270, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLIElement =
+const IID      __cdecl IID_IHTMLLIElement =
     { 0x3050F1E0, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLLIElement =
+const IID      __cdecl DIID_DispHTMLLIElement =
     { 0x3050F523, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLLIElement =
+const CLSID    __cdecl CLSID_HTMLLIElement =
     { 0x3050F273, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBlockElement =
+const IID      __cdecl IID_IHTMLBlockElement =
     { 0x3050F208, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBlockElement2 =
+const IID      __cdecl IID_IHTMLBlockElement2 =
     { 0x3050F823, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBlockElement3 =
+const IID      __cdecl IID_IHTMLBlockElement3 =
     { 0x30510494, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBlockElement =
+const IID      __cdecl DIID_DispHTMLBlockElement =
     { 0x3050F506, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBlockElement =
+const CLSID    __cdecl CLSID_HTMLBlockElement =
     { 0x3050F281, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDivElement =
+const IID      __cdecl IID_IHTMLDivElement =
     { 0x3050F200, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDivElement =
+const IID      __cdecl DIID_DispHTMLDivElement =
     { 0x3050F50C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDivElement =
+const CLSID    __cdecl CLSID_HTMLDivElement =
     { 0x3050F27E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDDElement =
+const IID      __cdecl IID_IHTMLDDElement =
     { 0x3050F1F2, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDDElement =
+const IID      __cdecl DIID_DispHTMLDDElement =
     { 0x3050F50B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDDElement =
+const CLSID    __cdecl CLSID_HTMLDDElement =
     { 0x3050F27F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDTElement =
+const IID      __cdecl IID_IHTMLDTElement =
     { 0x3050F1F3, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDTElement =
+const IID      __cdecl DIID_DispHTMLDTElement =
     { 0x3050F50D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDTElement =
+const CLSID    __cdecl CLSID_HTMLDTElement =
     { 0x3050F27C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBRElement =
+const IID      __cdecl IID_IHTMLBRElement =
     { 0x3050F1F0, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBRElement =
+const IID      __cdecl DIID_DispHTMLBRElement =
     { 0x3050F53A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBRElement =
+const CLSID    __cdecl CLSID_HTMLBRElement =
     { 0x3050F280, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDListElement =
+const IID      __cdecl IID_IHTMLDListElement =
     { 0x3050F1F1, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDListElement =
+const IID      __cdecl DIID_DispHTMLDListElement =
     { 0x3050F53B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDListElement =
+const CLSID    __cdecl CLSID_HTMLDListElement =
     { 0x3050F27D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLHRElement =
+const IID      __cdecl IID_IHTMLHRElement =
     { 0x3050F1F4, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLHRElement =
+const IID      __cdecl DIID_DispHTMLHRElement =
     { 0x3050F53D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLHRElement =
+const CLSID    __cdecl CLSID_HTMLHRElement =
     { 0x3050F252, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLParaElement =
+const IID      __cdecl IID_IHTMLParaElement =
     { 0x3050F1F5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLParaElement =
+const IID      __cdecl DIID_DispHTMLParaElement =
     { 0x3050F52C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLParaElement =
+const CLSID    __cdecl CLSID_HTMLParaElement =
     { 0x3050F26F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementCollection =
+const IID      __cdecl IID_IHTMLElementCollection =
     { 0x3050F21F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementCollection2 =
+const IID      __cdecl IID_IHTMLElementCollection2 =
     { 0x3050F5EE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementCollection3 =
+const IID      __cdecl IID_IHTMLElementCollection3 =
     { 0x3050F835, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLElementCollection4 =
+const IID      __cdecl IID_IHTMLElementCollection4 =
     { 0x30510425, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLElementCollection =
+const IID      __cdecl DIID_DispHTMLElementCollection =
     { 0x3050F56B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLElementCollection =
+const CLSID    __cdecl CLSID_HTMLElementCollection =
     { 0x3050F4CB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLHeaderElement =
+const IID      __cdecl IID_IHTMLHeaderElement =
     { 0x3050F1F6, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLHeaderElement =
+const IID      __cdecl DIID_DispHTMLHeaderElement =
     { 0x3050F515, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLHeaderElement =
+const CLSID    __cdecl CLSID_HTMLHeaderElement =
     { 0x3050F27A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLSelectElementEvents2 =
+const IID      __cdecl DIID_HTMLSelectElementEvents2 =
     { 0x3050F622, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLSelectElementEvents =
+const IID      __cdecl DIID_HTMLSelectElementEvents =
     { 0x3050F302, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectElementEx =
+const IID      __cdecl IID_IHTMLSelectElementEx =
     { 0x3050F2D1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectElement =
+const IID      __cdecl IID_IHTMLSelectElement =
     { 0x3050F244, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectElement2 =
+const IID      __cdecl IID_IHTMLSelectElement2 =
     { 0x3050F5ED, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectElement4 =
+const IID      __cdecl IID_IHTMLSelectElement4 =
     { 0x3050F838, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectElement5 =
+const IID      __cdecl IID_IHTMLSelectElement5 =
     { 0x3051049D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLSelectElement =
+const IID      __cdecl DIID_DispHTMLSelectElement =
     { 0x3050F531, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLSelectElement =
+const CLSID    __cdecl CLSID_HTMLSelectElement =
     { 0x3050F245, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLWndSelectElement =
+const IID      __cdecl DIID_DispHTMLWndSelectElement =
     { 0x3050F597, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLWndSelectElement =
+const CLSID    __cdecl CLSID_HTMLWndSelectElement =
     { 0x3050F2CF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectionObject =
+const IID      __cdecl IID_IHTMLSelectionObject =
     { 0x3050F25A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSelectionObject2 =
+const IID      __cdecl IID_IHTMLSelectionObject2 =
     { 0x3050F7EC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOptionElement =
+const IID      __cdecl IID_IHTMLOptionElement =
     { 0x3050F211, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOptionElement3 =
+const IID      __cdecl IID_IHTMLOptionElement3 =
     { 0x3050F820, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOptionElementFactory =
+const IID      __cdecl IID_IHTMLOptionElementFactory =
     { 0x3050F38C, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLOptionElement =
+const IID      __cdecl DIID_DispHTMLOptionElement =
     { 0x3050F52B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLOptionElement =
+const CLSID    __cdecl CLSID_HTMLOptionElement =
     { 0x3050F24D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLOptionElementFactory =
+const CLSID    __cdecl CLSID_HTMLOptionElementFactory =
     { 0x3050F38D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLWndOptionElement =
+const IID      __cdecl DIID_DispHTMLWndOptionElement =
     { 0x3050F598, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLWndOptionElement =
+const CLSID    __cdecl CLSID_HTMLWndOptionElement =
     { 0x3050F2D0, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLButtonElementEvents2 =
+const IID      __cdecl DIID_HTMLButtonElementEvents2 =
     { 0x3050F617, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLButtonElementEvents =
+const IID      __cdecl DIID_HTMLButtonElementEvents =
     { 0x3050F2B3, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputTextElementEvents2 =
+const IID      __cdecl DIID_HTMLInputTextElementEvents2 =
     { 0x3050F618, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLOptionButtonElementEvents2 =
+const IID      __cdecl DIID_HTMLOptionButtonElementEvents2 =
     { 0x3050F619, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputFileElementEvents2 =
+const IID      __cdecl DIID_HTMLInputFileElementEvents2 =
     { 0x3050F61A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputImageEvents2 =
+const IID      __cdecl DIID_HTMLInputImageEvents2 =
     { 0x3050F61B, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputTextElementEvents =
+const IID      __cdecl DIID_HTMLInputTextElementEvents =
     { 0x3050F2A7, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLOptionButtonElementEvents =
+const IID      __cdecl DIID_HTMLOptionButtonElementEvents =
     { 0x3050F2BD, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputFileElementEvents =
+const IID      __cdecl DIID_HTMLInputFileElementEvents =
     { 0x3050F2AF, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLInputImageEvents =
+const IID      __cdecl DIID_HTMLInputImageEvents =
     { 0x3050F2C3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputElement =
+const IID      __cdecl IID_IHTMLInputElement =
     { 0x3050F5D2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputElement2 =
+const IID      __cdecl IID_IHTMLInputElement2 =
     { 0x3050F821, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputElement3 =
+const IID      __cdecl IID_IHTMLInputElement3 =
     { 0x30510435, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputButtonElement =
+const IID      __cdecl IID_IHTMLInputButtonElement =
     { 0x3050F2B2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputHiddenElement =
+const IID      __cdecl IID_IHTMLInputHiddenElement =
     { 0x3050F2A4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputTextElement =
+const IID      __cdecl IID_IHTMLInputTextElement =
     { 0x3050F2A6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputFileElement =
+const IID      __cdecl IID_IHTMLInputFileElement =
     { 0x3050F2AD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOptionButtonElement =
+const IID      __cdecl IID_IHTMLOptionButtonElement =
     { 0x3050F2BC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLInputImage =
+const IID      __cdecl IID_IHTMLInputImage =
     { 0x3050F2C2, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLInputElement =
+const IID      __cdecl DIID_DispHTMLInputElement =
     { 0x3050F57D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLInputElement =
+const CLSID    __cdecl CLSID_HTMLInputElement =
     { 0x3050F5D8, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTextAreaElement =
+const IID      __cdecl IID_IHTMLTextAreaElement =
     { 0x3050F2AA, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTextAreaElement =
+const IID      __cdecl DIID_DispHTMLTextAreaElement =
     { 0x3050F521, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTextAreaElement =
+const CLSID    __cdecl CLSID_HTMLTextAreaElement =
     { 0x3050F2AC, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLRichtextElement =
+const IID      __cdecl DIID_DispHTMLRichtextElement =
     { 0x3050F54D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLRichtextElement =
+const CLSID    __cdecl CLSID_HTMLRichtextElement =
     { 0x3050F2DF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLButtonElement =
+const IID      __cdecl IID_IHTMLButtonElement =
     { 0x3050F2BB, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLButtonElement =
+const IID      __cdecl DIID_DispHTMLButtonElement =
     { 0x3050F51F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLButtonElement =
+const CLSID    __cdecl CLSID_HTMLButtonElement =
     { 0x3050F2C6, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLMarqueeElementEvents2 =
+const IID      __cdecl DIID_HTMLMarqueeElementEvents2 =
     { 0x3050F61F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLMarqueeElementEvents =
+const IID      __cdecl DIID_HTMLMarqueeElementEvents =
     { 0x3050F2B8, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLMarqueeElement =
+const IID      __cdecl IID_IHTMLMarqueeElement =
     { 0x3050F2B5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLMarqueeElement =
+const IID      __cdecl DIID_DispHTMLMarqueeElement =
     { 0x3050F527, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLMarqueeElement =
+const CLSID    __cdecl CLSID_HTMLMarqueeElement =
     { 0x3050F2B9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLHtmlElement =
+const IID      __cdecl IID_IHTMLHtmlElement =
     { 0x3050F81C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLHeadElement =
+const IID      __cdecl IID_IHTMLHeadElement =
     { 0x3050F81D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLHeadElement2 =
+const IID      __cdecl IID_IHTMLHeadElement2 =
     { 0x3051042F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTitleElement =
+const IID      __cdecl IID_IHTMLTitleElement =
     { 0x3050F322, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLMetaElement =
+const IID      __cdecl IID_IHTMLMetaElement =
     { 0x3050F203, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLMetaElement2 =
+const IID      __cdecl IID_IHTMLMetaElement2 =
     { 0x3050F81F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLMetaElement3 =
+const IID      __cdecl IID_IHTMLMetaElement3 =
     { 0x30510495, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBaseElement =
+const IID      __cdecl IID_IHTMLBaseElement =
     { 0x3050F204, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBaseElement2 =
+const IID      __cdecl IID_IHTMLBaseElement2 =
     { 0x30510420, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIsIndexElement =
+const IID      __cdecl IID_IHTMLIsIndexElement =
     { 0x3050F206, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIsIndexElement2 =
+const IID      __cdecl IID_IHTMLIsIndexElement2 =
     { 0x3050F82F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLNextIdElement =
+const IID      __cdecl IID_IHTMLNextIdElement =
     { 0x3050F207, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLHtmlElement =
+const IID      __cdecl DIID_DispHTMLHtmlElement =
     { 0x3050F560, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLHtmlElement =
+const CLSID    __cdecl CLSID_HTMLHtmlElement =
     { 0x3050F491, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLHeadElement =
+const IID      __cdecl DIID_DispHTMLHeadElement =
     { 0x3050F561, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLHeadElement =
+const CLSID    __cdecl CLSID_HTMLHeadElement =
     { 0x3050F493, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTitleElement =
+const IID      __cdecl DIID_DispHTMLTitleElement =
     { 0x3050F516, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTitleElement =
+const CLSID    __cdecl CLSID_HTMLTitleElement =
     { 0x3050F284, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLMetaElement =
+const IID      __cdecl DIID_DispHTMLMetaElement =
     { 0x3050F517, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLMetaElement =
+const CLSID    __cdecl CLSID_HTMLMetaElement =
     { 0x3050F275, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBaseElement =
+const IID      __cdecl DIID_DispHTMLBaseElement =
     { 0x3050F518, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBaseElement =
+const CLSID    __cdecl CLSID_HTMLBaseElement =
     { 0x3050F276, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLIsIndexElement =
+const IID      __cdecl DIID_DispHTMLIsIndexElement =
     { 0x3050F519, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLIsIndexElement =
+const CLSID    __cdecl CLSID_HTMLIsIndexElement =
     { 0x3050F278, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLNextIdElement =
+const IID      __cdecl DIID_DispHTMLNextIdElement =
     { 0x3050F51A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLNextIdElement =
+const CLSID    __cdecl CLSID_HTMLNextIdElement =
     { 0x3050F279, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBaseFontElement =
+const IID      __cdecl IID_IHTMLBaseFontElement =
     { 0x3050F202, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBaseFontElement =
+const IID      __cdecl DIID_DispHTMLBaseFontElement =
     { 0x3050F504, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBaseFontElement =
+const CLSID    __cdecl CLSID_HTMLBaseFontElement =
     { 0x3050F282, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLUnknownElement =
+const IID      __cdecl IID_IHTMLUnknownElement =
     { 0x3050F209, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLUnknownElement =
+const IID      __cdecl DIID_DispHTMLUnknownElement =
     { 0x3050F539, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLUnknownElement =
+const CLSID    __cdecl CLSID_HTMLUnknownElement =
     { 0x3050F268, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IOmHistory =
+const IID      __cdecl IID_IOmHistory =
     { 0xFECEAAA2, 0x8405, 0x11CF, { 0x8B, 0xA1, 0x00, 0xAA, 0x00, 0x47, 0x6D, 0xA6 } };
-EXTERN_C const IID      IID_IHTMLMimeTypesCollection =
+const IID      __cdecl IID_IHTMLMimeTypesCollection =
     { 0x3050F3FC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPluginsCollection =
+const IID      __cdecl IID_IHTMLPluginsCollection =
     { 0x3050F3FD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOpsProfile =
+const IID      __cdecl IID_IHTMLOpsProfile =
     { 0x3050F401, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IOmNavigator =
+const IID      __cdecl IID_IOmNavigator =
     { 0xFECEAAA5, 0x8405, 0x11CF, { 0x8B, 0xA1, 0x00, 0xAA, 0x00, 0x47, 0x6D, 0xA6 } };
-EXTERN_C const IID      IID_IHTMLLocation =
+const IID      __cdecl IID_IHTMLLocation =
     { 0x163BB1E0, 0x6E00, 0x11CF, { 0x83, 0x7A, 0x48, 0xDC, 0x04, 0xC1, 0x00, 0x00 } };
-EXTERN_C const IID      DIID_DispHTMLHistory =
+const IID      __cdecl DIID_DispHTMLHistory =
     { 0x3050F549, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLHistory =
+const CLSID    __cdecl CLSID_HTMLHistory =
     { 0xFECEAAA3, 0x8405, 0x11CF, { 0x8B, 0xA1, 0x00, 0xAA, 0x00, 0x47, 0x6D, 0xA6 } };
-EXTERN_C const CLSID    CLSID_CMimeTypes =
+const CLSID    __cdecl CLSID_CMimeTypes =
     { 0x3050F3FE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispCPlugins =
+const IID      __cdecl DIID_DispCPlugins =
     { 0x3050F54A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_CPlugins =
+const CLSID    __cdecl CLSID_CPlugins =
     { 0x3050F3FF, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_COpsProfile =
+const CLSID    __cdecl CLSID_COpsProfile =
     { 0x3050F402, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLNavigator =
+const IID      __cdecl DIID_DispHTMLNavigator =
     { 0x3050F54C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLNavigator =
+const CLSID    __cdecl CLSID_HTMLNavigator =
     { 0xFECEAAA6, 0x8405, 0x11CF, { 0x8B, 0xA1, 0x00, 0xAA, 0x00, 0x47, 0x6D, 0xA6 } };
-EXTERN_C const IID      DIID_DispHTMLLocation =
+const IID      __cdecl DIID_DispHTMLLocation =
     { 0x3050F54E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLLocation =
+const CLSID    __cdecl CLSID_HTMLLocation =
     { 0x163BB1E1, 0x6E00, 0x11CF, { 0x83, 0x7A, 0x48, 0xDC, 0x04, 0xC1, 0x00, 0x00 } };
-EXTERN_C const IID      IID_IHTMLBookmarkCollection =
+const IID      __cdecl IID_IHTMLBookmarkCollection =
     { 0x3050F4CE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDataTransfer =
+const IID      __cdecl IID_IHTMLDataTransfer =
     { 0x3050F4B3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEventObj =
+const IID      __cdecl IID_IHTMLEventObj =
     { 0x3050F32D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEventObj2 =
+const IID      __cdecl IID_IHTMLEventObj2 =
     { 0x3050F48B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEventObj3 =
+const IID      __cdecl IID_IHTMLEventObj3 =
     { 0x3050F680, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEventObj4 =
+const IID      __cdecl IID_IHTMLEventObj4 =
     { 0x3050F814, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEventObj5 =
+const IID      __cdecl IID_IHTMLEventObj5 =
     { 0x30510478, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispCEventObj =
+const IID      __cdecl DIID_DispCEventObj =
     { 0x3050F558, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_CEventObj =
+const CLSID    __cdecl CLSID_CEventObj =
     { 0x3050F48A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLWindowEvents3 =
+const IID      __cdecl DIID_HTMLWindowEvents3 =
     { 0x3050F5A1, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLWindowEvents2 =
+const IID      __cdecl DIID_HTMLWindowEvents2 =
     { 0x3050F625, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLWindowEvents =
+const IID      __cdecl DIID_HTMLWindowEvents =
     { 0x96A0A4E0, 0xD062, 0x11CF, { 0x94, 0xB6, 0x00, 0xAA, 0x00, 0x60, 0x27, 0x5C } };
-EXTERN_C const IID      IID_IHTMLFramesCollection2 =
+const IID      __cdecl IID_IHTMLFramesCollection2 =
     { 0x332C4426, 0x26CB, 0x11D0, { 0xB4, 0x83, 0x00, 0xC0, 0x4F, 0xD9, 0x01, 0x19 } };
-EXTERN_C const IID      IID_IHTMLScreen =
+const IID      __cdecl IID_IHTMLScreen =
     { 0x3050F35C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLScreen2 =
+const IID      __cdecl IID_IHTMLScreen2 =
     { 0x3050F84A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLScreen3 =
+const IID      __cdecl IID_IHTMLScreen3 =
     { 0x305104A1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLWindow2 =
+const IID      __cdecl IID_IHTMLWindow2 =
     { 0x332C4427, 0x26CB, 0x11D0, { 0xB4, 0x83, 0x00, 0xC0, 0x4F, 0xD9, 0x01, 0x19 } };
-EXTERN_C const IID      IID_IHTMLWindow3 =
+const IID      __cdecl IID_IHTMLWindow3 =
     { 0x3050F4AE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLWindow4 =
+const IID      __cdecl IID_IHTMLWindow4 =
     { 0x3050F6CF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLWindow5 =
+const IID      __cdecl IID_IHTMLWindow5 =
     { 0x3051040E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLWindow6 =
+const IID      __cdecl IID_IHTMLWindow6 =
     { 0x30510453, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_FramesCollection =
+const CLSID    __cdecl CLSID_FramesCollection =
     { 0x3050F7F6, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLScreen =
+const IID      __cdecl DIID_DispHTMLScreen =
     { 0x3050F591, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLScreen =
+const CLSID    __cdecl CLSID_HTMLScreen =
     { 0x3050F35D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLWindow2 =
+const IID      __cdecl DIID_DispHTMLWindow2 =
     { 0x3050F55D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLWindow2 =
+const CLSID    __cdecl CLSID_HTMLWindow2 =
     { 0xD48A6EC6, 0x6A4A, 0x11CF, { 0x94, 0xA7, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      DIID_DispHTMLWindowProxy =
+const IID      __cdecl DIID_DispHTMLWindowProxy =
     { 0x3050F55E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLWindowProxy =
+const CLSID    __cdecl CLSID_HTMLWindowProxy =
     { 0x3050F391, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocumentCompatibleInfo =
+const IID      __cdecl IID_IHTMLDocumentCompatibleInfo =
     { 0x3051041A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocumentCompatibleInfoCollection =
+const IID      __cdecl IID_IHTMLDocumentCompatibleInfoCollection =
     { 0x30510418, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDocumentCompatibleInfo =
+const IID      __cdecl DIID_DispHTMLDocumentCompatibleInfo =
     { 0x3050F53E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDocumentCompatibleInfo =
+const CLSID    __cdecl CLSID_HTMLDocumentCompatibleInfo =
     { 0x3051041B, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDocumentCompatibleInfoCollection =
+const IID      __cdecl DIID_DispHTMLDocumentCompatibleInfoCollection =
     { 0x3050F53F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDocumentCompatibleInfoCollection =
+const CLSID    __cdecl CLSID_HTMLDocumentCompatibleInfoCollection =
     { 0x30510419, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLDocumentEvents3 =
+const IID      __cdecl DIID_HTMLDocumentEvents3 =
     { 0x3050F5A0, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLDocumentEvents2 =
+const IID      __cdecl DIID_HTMLDocumentEvents2 =
     { 0x3050F613, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLDocumentEvents =
+const IID      __cdecl DIID_HTMLDocumentEvents =
     { 0x3050F260, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocument =
+const IID      __cdecl IID_IHTMLDocument =
     { 0x626FC520, 0xA41E, 0x11CF, { 0xA7, 0x31, 0x00, 0xA0, 0xC9, 0x08, 0x26, 0x37 } };
-EXTERN_C const IID      IID_IHTMLDocument2 =
+const IID      __cdecl IID_IHTMLDocument2 =
     { 0x332C4425, 0x26CB, 0x11D0, { 0xB4, 0x83, 0x00, 0xC0, 0x4F, 0xD9, 0x01, 0x19 } };
-EXTERN_C const IID      IID_IHTMLDocument3 =
+const IID      __cdecl IID_IHTMLDocument3 =
     { 0x3050F485, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocument4 =
+const IID      __cdecl IID_IHTMLDocument4 =
     { 0x3050F69A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocument5 =
+const IID      __cdecl IID_IHTMLDocument5 =
     { 0x3050F80C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDocument6 =
+const IID      __cdecl IID_IHTMLDocument6 =
     { 0x30510417, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IDocumentSelector =
+const IID      __cdecl IID_IDocumentSelector =
     { 0x30510462, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDocument =
+const IID      __cdecl DIID_DispHTMLDocument =
     { 0x3050F55F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDocument =
+const CLSID    __cdecl CLSID_HTMLDocument =
     { 0x25336920, 0x03F9, 0x11CF, { 0x8F, 0xD0, 0x00, 0xAA, 0x00, 0x68, 0x6F, 0x13 } };
-EXTERN_C const IID      DIID_DWebBridgeEvents =
+const IID      __cdecl DIID_DWebBridgeEvents =
     { 0xA6D897FF, 0x0A95, 0x11D1, { 0xB0, 0xBA, 0x00, 0x60, 0x08, 0x16, 0x6E, 0x11 } };
-EXTERN_C const IID      IID_IWebBridge =
+const IID      __cdecl IID_IWebBridge =
     { 0xAE24FDAD, 0x03C6, 0x11D1, { 0x8B, 0x76, 0x00, 0x80, 0xC7, 0x44, 0xF3, 0x89 } };
-EXTERN_C const IID      IID_IWBScriptControl =
+const IID      __cdecl IID_IWBScriptControl =
     { 0xA5170870, 0x0CF8, 0x11D1, { 0x8B, 0x91, 0x00, 0x80, 0xC7, 0x44, 0xF3, 0x89 } };
-EXTERN_C const CLSID    CLSID_Scriptlet =
+const CLSID    __cdecl CLSID_Scriptlet =
     { 0xAE24FDAE, 0x03C6, 0x11D1, { 0x8B, 0x76, 0x00, 0x80, 0xC7, 0x44, 0xF3, 0x89 } };
-EXTERN_C const IID      IID_IHTMLEmbedElement =
+const IID      __cdecl IID_IHTMLEmbedElement =
     { 0x3050F25F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEmbedElement2 =
+const IID      __cdecl IID_IHTMLEmbedElement2 =
     { 0x30510493, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLEmbed =
+const IID      __cdecl DIID_DispHTMLEmbed =
     { 0x3050F52E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLEmbed =
+const CLSID    __cdecl CLSID_HTMLEmbed =
     { 0x3050F25D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLMapEvents2 =
+const IID      __cdecl DIID_HTMLMapEvents2 =
     { 0x3050F61E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLMapEvents =
+const IID      __cdecl DIID_HTMLMapEvents =
     { 0x3050F3BA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreasCollection =
+const IID      __cdecl IID_IHTMLAreasCollection =
     { 0x3050F383, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreasCollection2 =
+const IID      __cdecl IID_IHTMLAreasCollection2 =
     { 0x3050F5EC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreasCollection3 =
+const IID      __cdecl IID_IHTMLAreasCollection3 =
     { 0x3050F837, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreasCollection4 =
+const IID      __cdecl IID_IHTMLAreasCollection4 =
     { 0x30510492, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLMapElement =
+const IID      __cdecl IID_IHTMLMapElement =
     { 0x3050F266, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLAreasCollection =
+const IID      __cdecl DIID_DispHTMLAreasCollection =
     { 0x3050F56A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLAreasCollection =
+const CLSID    __cdecl CLSID_HTMLAreasCollection =
     { 0x3050F4CA, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLMapElement =
+const IID      __cdecl DIID_DispHTMLMapElement =
     { 0x3050F526, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLMapElement =
+const CLSID    __cdecl CLSID_HTMLMapElement =
     { 0x3050F271, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLAreaEvents2 =
+const IID      __cdecl DIID_HTMLAreaEvents2 =
     { 0x3050F611, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLAreaEvents =
+const IID      __cdecl DIID_HTMLAreaEvents =
     { 0x3050F366, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreaElement =
+const IID      __cdecl IID_IHTMLAreaElement =
     { 0x3050F265, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAreaElement2 =
+const IID      __cdecl IID_IHTMLAreaElement2 =
     { 0x3051041F, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLAreaElement =
+const IID      __cdecl DIID_DispHTMLAreaElement =
     { 0x3050F503, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLAreaElement =
+const CLSID    __cdecl CLSID_HTMLAreaElement =
     { 0x3050F283, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableCaption =
+const IID      __cdecl IID_IHTMLTableCaption =
     { 0x3050F2EB, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTableCaption =
+const IID      __cdecl DIID_DispHTMLTableCaption =
     { 0x3050F508, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTableCaption =
+const CLSID    __cdecl CLSID_HTMLTableCaption =
     { 0x3050F2EC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCommentElement =
+const IID      __cdecl IID_IHTMLCommentElement =
     { 0x3050F20C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCommentElement2 =
+const IID      __cdecl IID_IHTMLCommentElement2 =
     { 0x3050F813, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLCommentElement =
+const IID      __cdecl DIID_DispHTMLCommentElement =
     { 0x3050F50A, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLCommentElement =
+const CLSID    __cdecl CLSID_HTMLCommentElement =
     { 0x3050F317, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPhraseElement =
+const IID      __cdecl IID_IHTMLPhraseElement =
     { 0x3050F20A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPhraseElement2 =
+const IID      __cdecl IID_IHTMLPhraseElement2 =
     { 0x3050F824, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPhraseElement3 =
+const IID      __cdecl IID_IHTMLPhraseElement3 =
     { 0x3051043D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSpanElement =
+const IID      __cdecl IID_IHTMLSpanElement =
     { 0x3050F3F3, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLPhraseElement =
+const IID      __cdecl DIID_DispHTMLPhraseElement =
     { 0x3050F52D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLPhraseElement =
+const CLSID    __cdecl CLSID_HTMLPhraseElement =
     { 0x3050F26E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLSpanElement =
+const IID      __cdecl DIID_DispHTMLSpanElement =
     { 0x3050F528, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLSpanElement =
+const CLSID    __cdecl CLSID_HTMLSpanElement =
     { 0x3050F3F5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLTableEvents2 =
+const IID      __cdecl DIID_HTMLTableEvents2 =
     { 0x3050F623, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLTableEvents =
+const IID      __cdecl DIID_HTMLTableEvents =
     { 0x3050F407, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTable =
+const IID      __cdecl IID_IHTMLTable =
     { 0x3050F21E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTable2 =
+const IID      __cdecl IID_IHTMLTable2 =
     { 0x3050F4AD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTable3 =
+const IID      __cdecl IID_IHTMLTable3 =
     { 0x3050F829, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableCol =
+const IID      __cdecl IID_IHTMLTableCol =
     { 0x3050F23A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableCol2 =
+const IID      __cdecl IID_IHTMLTableCol2 =
     { 0x3050F82A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableSection =
+const IID      __cdecl IID_IHTMLTableSection =
     { 0x3050F23B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableSection2 =
+const IID      __cdecl IID_IHTMLTableSection2 =
     { 0x3050F5C7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableSection3 =
+const IID      __cdecl IID_IHTMLTableSection3 =
     { 0x3050F82B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableRow =
+const IID      __cdecl IID_IHTMLTableRow =
     { 0x3050F23C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableRow2 =
+const IID      __cdecl IID_IHTMLTableRow2 =
     { 0x3050F4A1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableRow3 =
+const IID      __cdecl IID_IHTMLTableRow3 =
     { 0x3050F82C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableRowMetrics =
+const IID      __cdecl IID_IHTMLTableRowMetrics =
     { 0x3050F413, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableCell =
+const IID      __cdecl IID_IHTMLTableCell =
     { 0x3050F23D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLTableCell2 =
+const IID      __cdecl IID_IHTMLTableCell2 =
     { 0x3050F82D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTable =
+const IID      __cdecl DIID_DispHTMLTable =
     { 0x3050F532, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTable =
+const CLSID    __cdecl CLSID_HTMLTable =
     { 0x3050F26B, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTableCol =
+const IID      __cdecl DIID_DispHTMLTableCol =
     { 0x3050F533, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTableCol =
+const CLSID    __cdecl CLSID_HTMLTableCol =
     { 0x3050F26C, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTableSection =
+const IID      __cdecl DIID_DispHTMLTableSection =
     { 0x3050F534, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTableSection =
+const CLSID    __cdecl CLSID_HTMLTableSection =
     { 0x3050F2E9, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTableRow =
+const IID      __cdecl DIID_DispHTMLTableRow =
     { 0x3050F535, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTableRow =
+const CLSID    __cdecl CLSID_HTMLTableRow =
     { 0x3050F26D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLTableCell =
+const IID      __cdecl DIID_DispHTMLTableCell =
     { 0x3050F536, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLTableCell =
+const CLSID    __cdecl CLSID_HTMLTableCell =
     { 0x3050F246, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLScriptEvents2 =
+const IID      __cdecl DIID_HTMLScriptEvents2 =
     { 0x3050F621, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLScriptEvents =
+const IID      __cdecl DIID_HTMLScriptEvents =
     { 0x3050F3E2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLScriptElement =
+const IID      __cdecl IID_IHTMLScriptElement =
     { 0x3050F28B, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLScriptElement2 =
+const IID      __cdecl IID_IHTMLScriptElement2 =
     { 0x3050F828, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLScriptElement3 =
+const IID      __cdecl IID_IHTMLScriptElement3 =
     { 0x30510447, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLScriptElement =
+const IID      __cdecl DIID_DispHTMLScriptElement =
     { 0x3050F530, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLScriptElement =
+const CLSID    __cdecl CLSID_HTMLScriptElement =
     { 0x3050F28C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLNoShowElement =
+const IID      __cdecl IID_IHTMLNoShowElement =
     { 0x3050F38A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLNoShowElement =
+const IID      __cdecl DIID_DispHTMLNoShowElement =
     { 0x3050F528, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLNoShowElement =
+const CLSID    __cdecl CLSID_HTMLNoShowElement =
     { 0x3050F38B, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLObjectElementEvents2 =
+const IID      __cdecl DIID_HTMLObjectElementEvents2 =
     { 0x3050F620, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLObjectElementEvents =
+const IID      __cdecl DIID_HTMLObjectElementEvents =
     { 0x3050F3C4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLObjectElement =
+const IID      __cdecl IID_IHTMLObjectElement =
     { 0x3050F24F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLObjectElement2 =
+const IID      __cdecl IID_IHTMLObjectElement2 =
     { 0x3050F4CD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLObjectElement3 =
+const IID      __cdecl IID_IHTMLObjectElement3 =
     { 0x3050F827, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLObjectElement4 =
+const IID      __cdecl IID_IHTMLObjectElement4 =
     { 0x3051043E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLParamElement =
+const IID      __cdecl IID_IHTMLParamElement =
     { 0x3050F83D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLParamElement2 =
+const IID      __cdecl IID_IHTMLParamElement2 =
     { 0x30510444, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLObjectElement =
+const IID      __cdecl DIID_DispHTMLObjectElement =
     { 0x3050F529, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLObjectElement =
+const CLSID    __cdecl CLSID_HTMLObjectElement =
     { 0x3050F24E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLParamElement =
+const IID      __cdecl DIID_DispHTMLParamElement =
     { 0x3050F590, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLParamElement =
+const CLSID    __cdecl CLSID_HTMLParamElement =
     { 0x3050F83E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLFrameSiteEvents2 =
+const IID      __cdecl DIID_HTMLFrameSiteEvents2 =
     { 0x3050F7FF, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLFrameSiteEvents =
+const IID      __cdecl DIID_HTMLFrameSiteEvents =
     { 0x3050F800, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameBase =
+const IID      __cdecl IID_IHTMLFrameBase =
     { 0x3050F311, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameBase2 =
+const IID      __cdecl IID_IHTMLFrameBase2 =
     { 0x3050F6DB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameBase3 =
+const IID      __cdecl IID_IHTMLFrameBase3 =
     { 0x3050F82E, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFrameBase =
+const IID      __cdecl DIID_DispHTMLFrameBase =
     { 0x3050F541, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFrameBase =
+const CLSID    __cdecl CLSID_HTMLFrameBase =
     { 0x3050F312, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameElement =
+const IID      __cdecl IID_IHTMLFrameElement =
     { 0x3050F313, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameElement2 =
+const IID      __cdecl IID_IHTMLFrameElement2 =
     { 0x3050F7F5, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameElement3 =
+const IID      __cdecl IID_IHTMLFrameElement3 =
     { 0x3051042D, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFrameElement =
+const IID      __cdecl DIID_DispHTMLFrameElement =
     { 0x3050F513, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFrameElement =
+const CLSID    __cdecl CLSID_HTMLFrameElement =
     { 0x3050F314, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIFrameElement =
+const IID      __cdecl IID_IHTMLIFrameElement =
     { 0x3050F315, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIFrameElement2 =
+const IID      __cdecl IID_IHTMLIFrameElement2 =
     { 0x3050F4E6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIFrameElement3 =
+const IID      __cdecl IID_IHTMLIFrameElement3 =
     { 0x30510433, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLIFrame =
+const IID      __cdecl DIID_DispHTMLIFrame =
     { 0x3050F51B, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLIFrame =
+const CLSID    __cdecl CLSID_HTMLIFrame =
     { 0x3050F316, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDivPosition =
+const IID      __cdecl IID_IHTMLDivPosition =
     { 0x3050F212, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFieldSetElement =
+const IID      __cdecl IID_IHTMLFieldSetElement =
     { 0x3050F3E7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFieldSetElement2 =
+const IID      __cdecl IID_IHTMLFieldSetElement2 =
     { 0x3050F833, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLegendElement =
+const IID      __cdecl IID_IHTMLLegendElement =
     { 0x3050F3EA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLLegendElement2 =
+const IID      __cdecl IID_IHTMLLegendElement2 =
     { 0x3050F834, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLDivPosition =
+const IID      __cdecl DIID_DispHTMLDivPosition =
     { 0x3050F50F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDivPosition =
+const CLSID    __cdecl CLSID_HTMLDivPosition =
     { 0x3050F249, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFieldSetElement =
+const IID      __cdecl DIID_DispHTMLFieldSetElement =
     { 0x3050F545, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFieldSetElement =
+const CLSID    __cdecl CLSID_HTMLFieldSetElement =
     { 0x3050F3E8, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLLegendElement =
+const IID      __cdecl DIID_DispHTMLLegendElement =
     { 0x3050F546, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLLegendElement =
+const CLSID    __cdecl CLSID_HTMLLegendElement =
     { 0x3050F3E9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLSpanFlow =
+const IID      __cdecl IID_IHTMLSpanFlow =
     { 0x3050F3E5, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLSpanFlow =
+const IID      __cdecl DIID_DispHTMLSpanFlow =
     { 0x3050F544, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLSpanFlow =
+const CLSID    __cdecl CLSID_HTMLSpanFlow =
     { 0x3050F3E6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameSetElement =
+const IID      __cdecl IID_IHTMLFrameSetElement =
     { 0x3050F319, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFrameSetElement2 =
+const IID      __cdecl IID_IHTMLFrameSetElement2 =
     { 0x3050F5C6, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLFrameSetSite =
+const IID      __cdecl DIID_DispHTMLFrameSetSite =
     { 0x3050F514, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLFrameSetSite =
+const CLSID    __cdecl CLSID_HTMLFrameSetSite =
     { 0x3050F31A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLBGsound =
+const IID      __cdecl IID_IHTMLBGsound =
     { 0x3050F369, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLBGsound =
+const IID      __cdecl DIID_DispHTMLBGsound =
     { 0x3050F53C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLBGsound =
+const CLSID    __cdecl CLSID_HTMLBGsound =
     { 0x3050F370, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFontNamesCollection =
+const IID      __cdecl IID_IHTMLFontNamesCollection =
     { 0x3050F376, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLFontSizesCollection =
+const IID      __cdecl IID_IHTMLFontSizesCollection =
     { 0x3050F377, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLOptionsHolder =
+const IID      __cdecl IID_IHTMLOptionsHolder =
     { 0x3050F378, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLStyleElementEvents2 =
+const IID      __cdecl DIID_HTMLStyleElementEvents2 =
     { 0x3050F615, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLStyleElementEvents =
+const IID      __cdecl DIID_HTMLStyleElementEvents =
     { 0x3050F3CB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleElement =
+const IID      __cdecl IID_IHTMLStyleElement =
     { 0x3050F375, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStyleElement =
+const IID      __cdecl DIID_DispHTMLStyleElement =
     { 0x3050F511, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleElement =
+const CLSID    __cdecl CLSID_HTMLStyleElement =
     { 0x3050F37D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStyleFontFace =
+const IID      __cdecl IID_IHTMLStyleFontFace =
     { 0x3050F3D5, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStyleFontFace =
+const CLSID    __cdecl CLSID_HTMLStyleFontFace =
     { 0x3050F3D4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLXDomainRequest =
+const IID      __cdecl IID_IHTMLXDomainRequest =
     { 0x30510454, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLXDomainRequestFactory =
+const IID      __cdecl IID_IHTMLXDomainRequestFactory =
     { 0x30510456, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispXDomainRequest =
+const IID      __cdecl DIID_DispXDomainRequest =
     { 0x3050F599, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_XDomainRequest =
+const CLSID    __cdecl CLSID_XDomainRequest =
     { 0x30510455, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_XDomainRequestFactory =
+const CLSID    __cdecl CLSID_XDomainRequestFactory =
     { 0x30510457, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLStorage =
+const IID      __cdecl IID_IHTMLStorage =
     { 0x30510474, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLStorage =
+const IID      __cdecl DIID_DispHTMLStorage =
     { 0x3050F59D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLStorage =
+const CLSID    __cdecl CLSID_HTMLStorage =
     { 0x30510475, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ICSSFilterSite =
+const IID      __cdecl IID_ICSSFilterSite =
     { 0x3050F3ED, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ICSSFilter =
+const IID      __cdecl IID_ICSSFilter =
     { 0x3050F3EC, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISecureUrlHost =
+const IID      __cdecl IID_ISecureUrlHost =
     { 0xC81984C4, 0x74C8, 0x11D2, { 0xBA, 0xA9, 0x00, 0xC0, 0x4F, 0xC2, 0x04, 0x0E } };
-EXTERN_C const IID      IID_IMarkupServices =
+const IID      __cdecl IID_IMarkupServices =
     { 0x3050F4A0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupServices2 =
+const IID      __cdecl IID_IMarkupServices2 =
     { 0x3050F682, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupContainer =
+const IID      __cdecl IID_IMarkupContainer =
     { 0x3050F5F9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupContainer2 =
+const IID      __cdecl IID_IMarkupContainer2 =
     { 0x3050F648, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLChangePlayback =
+const IID      __cdecl IID_IHTMLChangePlayback =
     { 0x3050F6E0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupPointer =
+const IID      __cdecl IID_IMarkupPointer =
     { 0x3050F49F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupPointer2 =
+const IID      __cdecl IID_IMarkupPointer2 =
     { 0x3050F675, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IMarkupTextFrags =
+const IID      __cdecl IID_IMarkupTextFrags =
     { 0x3050F5FA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLChangeLog =
+const IID      __cdecl IID_IHTMLChangeLog =
     { 0x3050F649, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLChangeSink =
+const IID      __cdecl IID_IHTMLChangeSink =
     { 0x3050F64A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IXMLGenericParse =
+const IID      __cdecl IID_IXMLGenericParse =
     { 0xE4E23071, 0x4D07, 0x11D2, { 0xAE, 0x76, 0x00, 0x80, 0xC7, 0x3B, 0xC1, 0x99 } };
-EXTERN_C const IID      IID_IHTMLEditHost =
+const IID      __cdecl IID_IHTMLEditHost =
     { 0x3050F6A0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEditHost2 =
+const IID      __cdecl IID_IHTMLEditHost2 =
     { 0x3050F848, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISegment =
+const IID      __cdecl IID_ISegment =
     { 0x3050F683, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISegmentListIterator =
+const IID      __cdecl IID_ISegmentListIterator =
     { 0x3050F692, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISegmentList =
+const IID      __cdecl IID_ISegmentList =
     { 0x3050F605, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISequenceNumber =
+const IID      __cdecl IID_ISequenceNumber =
     { 0x3050F6C1, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IIMEServices =
+const IID      __cdecl IID_IIMEServices =
     { 0x3050F6CA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLCaret =
+const IID      __cdecl IID_IHTMLCaret =
     { 0x3050F604, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHighlightRenderingServices =
+const IID      __cdecl IID_IHighlightRenderingServices =
     { 0x3050F606, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISelectionServicesListener =
+const IID      __cdecl IID_ISelectionServicesListener =
     { 0x3050F699, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ISelectionServices =
+const IID      __cdecl IID_ISelectionServices =
     { 0x3050F684, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementSegment =
+const IID      __cdecl IID_IElementSegment =
     { 0x3050F68F, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHighlightSegment =
+const IID      __cdecl IID_IHighlightSegment =
     { 0x3050F690, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEditDesigner =
+const IID      __cdecl IID_IHTMLEditDesigner =
     { 0x3050F662, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEditServices =
+const IID      __cdecl IID_IHTMLEditServices =
     { 0x3050F663, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLEditServices2 =
+const IID      __cdecl IID_IHTMLEditServices2 =
     { 0x3050F812, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_ILineInfo =
+const IID      __cdecl IID_ILineInfo =
     { 0x3050F7E2, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLComputedStyle =
+const IID      __cdecl IID_IHTMLComputedStyle =
     { 0x3050F6C3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IDisplayPointer =
+const IID      __cdecl IID_IDisplayPointer =
     { 0x3050F69E, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IDisplayServices =
+const IID      __cdecl IID_IDisplayServices =
     { 0x3050F69D, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHtmlDlgSafeHelper =
+const IID      __cdecl IID_IHtmlDlgSafeHelper =
     { 0x3050F81A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IBlockFormats =
+const IID      __cdecl IID_IBlockFormats =
     { 0x3050F830, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IFontNames =
+const IID      __cdecl IID_IFontNames =
     { 0x3050F839, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HtmlDlgSafeHelper =
+const CLSID    __cdecl CLSID_HtmlDlgSafeHelper =
     { 0x3050F819, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_BlockFormats =
+const CLSID    __cdecl CLSID_BlockFormats =
     { 0x3050F831, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_FontNames =
+const CLSID    __cdecl CLSID_FontNames =
     { 0x3050F83A, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_HTMLNamespaceEvents =
+const IID      __cdecl DIID_HTMLNamespaceEvents =
     { 0x3050F6BD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLNamespace =
+const IID      __cdecl IID_IHTMLNamespace =
     { 0x3050F6BB, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLNamespaceCollection =
+const IID      __cdecl IID_IHTMLNamespaceCollection =
     { 0x3050F6B8, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLNamespace =
+const IID      __cdecl DIID_DispHTMLNamespace =
     { 0x3050F54F, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLNamespace =
+const CLSID    __cdecl CLSID_HTMLNamespace =
     { 0x3050F6BC, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLNamespaceCollection =
+const IID      __cdecl DIID_DispHTMLNamespaceCollection =
     { 0x3050F550, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLNamespaceCollection =
+const CLSID    __cdecl CLSID_HTMLNamespaceCollection =
     { 0x3050F6B9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPainter =
+const IID      __cdecl IID_IHTMLPainter =
     { 0x3050F6A6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPainterEventInfo =
+const IID      __cdecl IID_IHTMLPainterEventInfo =
     { 0x3050F6DF, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPainterOverlay =
+const IID      __cdecl IID_IHTMLPainterOverlay =
     { 0x3050F7E3, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPaintSite =
+const IID      __cdecl IID_IHTMLPaintSite =
     { 0x3050F6A7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLIPrintCollection =
+const IID      __cdecl IID_IHTMLIPrintCollection =
     { 0x3050F6B5, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IEnumPrivacyRecords =
+const IID      __cdecl IID_IEnumPrivacyRecords =
     { 0x3050F844, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IWPCBlockedUrls =
+const IID      __cdecl IID_IWPCBlockedUrls =
     { 0x30510413, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDOMConstructorCollection =
+const IID      __cdecl IID_IHTMLDOMConstructorCollection =
     { 0x3051049C, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDialog =
+const IID      __cdecl IID_IHTMLDialog =
     { 0x3050F216, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDialog2 =
+const IID      __cdecl IID_IHTMLDialog2 =
     { 0x3050F5E0, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLDialog3 =
+const IID      __cdecl IID_IHTMLDialog3 =
     { 0x3050F388, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLModelessInit =
+const IID      __cdecl IID_IHTMLModelessInit =
     { 0x3050F5E4, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_ThreadDialogProcParam =
+const CLSID    __cdecl CLSID_ThreadDialogProcParam =
     { 0x3050F5EB, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLDialog =
+const CLSID    __cdecl CLSID_HTMLDialog =
     { 0x3050F28A, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLPopup =
+const IID      __cdecl IID_IHTMLPopup =
     { 0x3050F666, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLPopup =
+const IID      __cdecl DIID_DispHTMLPopup =
     { 0x3050F589, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLPopup =
+const CLSID    __cdecl CLSID_HTMLPopup =
     { 0x3050F667, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAppBehavior =
+const IID      __cdecl IID_IHTMLAppBehavior =
     { 0x3050F5CA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAppBehavior2 =
+const IID      __cdecl IID_IHTMLAppBehavior2 =
     { 0x3050F5C9, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHTMLAppBehavior3 =
+const IID      __cdecl IID_IHTMLAppBehavior3 =
     { 0x3050F5CD, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispHTMLAppBehavior =
+const IID      __cdecl DIID_DispHTMLAppBehavior =
     { 0x3050F57C, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLAppBehavior =
+const CLSID    __cdecl CLSID_HTMLAppBehavior =
     { 0x3050F5CB, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_OldHTMLDocument =
+const CLSID    __cdecl CLSID_OldHTMLDocument =
     { 0xD48A6EC9, 0x6A4A, 0x11CF, { 0x94, 0xA7, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const CLSID    CLSID_OldHTMLFormElement =
+const CLSID    __cdecl CLSID_OldHTMLFormElement =
     { 0x0D04D285, 0x6BEC, 0x11CF, { 0x8B, 0x97, 0x00, 0xAA, 0x00, 0x47, 0x6D, 0xA6 } };
-EXTERN_C const IID      DIID_DispIHTMLInputButtonElement =
+const IID      __cdecl DIID_DispIHTMLInputButtonElement =
     { 0x3050F51E, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLInputButtonElement =
+const CLSID    __cdecl CLSID_HTMLInputButtonElement =
     { 0x3050F2B4, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispIHTMLInputTextElement =
+const IID      __cdecl DIID_DispIHTMLInputTextElement =
     { 0x3050F520, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLInputTextElement =
+const CLSID    __cdecl CLSID_HTMLInputTextElement =
     { 0x3050F2AB, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispIHTMLInputFileElement =
+const IID      __cdecl DIID_DispIHTMLInputFileElement =
     { 0x3050F542, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLInputFileElement =
+const CLSID    __cdecl CLSID_HTMLInputFileElement =
     { 0x3050F2AE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispIHTMLOptionButtonElement =
+const IID      __cdecl DIID_DispIHTMLOptionButtonElement =
     { 0x3050F509, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLOptionButtonElement =
+const CLSID    __cdecl CLSID_HTMLOptionButtonElement =
     { 0x3050F2BE, MSHTML_SUFFIX };
-EXTERN_C const IID      DIID_DispIHTMLInputImage =
+const IID      __cdecl DIID_DispIHTMLInputImage =
     { 0x3050F51D, MSHTML_SUFFIX };
-EXTERN_C const CLSID    CLSID_HTMLInputImage =
+const CLSID    __cdecl CLSID_HTMLInputImage =
     { 0x3050F2C4, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorFactory =
+const IID      __cdecl IID_IElementBehaviorFactory =
     { 0x3050F429, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementNamespace =
+const IID      __cdecl IID_IElementNamespace =
     { 0x3050F671, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementNamespaceTable =
+const IID      __cdecl IID_IElementNamespaceTable =
     { 0x3050F670, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementNamespaceFactory =
+const IID      __cdecl IID_IElementNamespaceFactory =
     { 0x3050F672, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementNamespaceFactory2 =
+const IID      __cdecl IID_IElementNamespaceFactory2 =
     { 0x3050F805, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementNamespaceFactoryCallback =
+const IID      __cdecl IID_IElementNamespaceFactoryCallback =
     { 0x3050F7FD, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehavior =
+const IID      __cdecl IID_IElementBehavior =
     { 0x3050F425, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSite =
+const IID      __cdecl IID_IElementBehaviorSite =
     { 0x3050F427, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteOM =
+const IID      __cdecl IID_IElementBehaviorSiteOM =
     { 0x3050F489, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteOM2 =
+const IID      __cdecl IID_IElementBehaviorSiteOM2 =
     { 0x3050F659, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorRender =
+const IID      __cdecl IID_IElementBehaviorRender =
     { 0x3050F4AA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteRender =
+const IID      __cdecl IID_IElementBehaviorSiteRender =
     { 0x3050F4A7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorCategory =
+const IID      __cdecl IID_IElementBehaviorCategory =
     { 0x3050F4ED, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteCategory =
+const IID      __cdecl IID_IElementBehaviorSiteCategory =
     { 0x3050F4EE, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSubmit =
+const IID      __cdecl IID_IElementBehaviorSubmit =
     { 0x3050F646, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorFocus =
+const IID      __cdecl IID_IElementBehaviorFocus =
     { 0x3050F6B6, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorLayout =
+const IID      __cdecl IID_IElementBehaviorLayout =
     { 0x3050F6BA, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorLayout2 =
+const IID      __cdecl IID_IElementBehaviorLayout2 =
     { 0x3050F846, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteLayout =
+const IID      __cdecl IID_IElementBehaviorSiteLayout =
     { 0x3050F6B7, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IElementBehaviorSiteLayout2 =
+const IID      __cdecl IID_IElementBehaviorSiteLayout2 =
     { 0x3050F847, MSHTML_SUFFIX };
-EXTERN_C const IID      IID_IHostBehaviorInit =
+const IID      __cdecl IID_IHostBehaviorInit =
     { 0x3050F842, MSHTML_SUFFIX };
 
 /* objsafe.h */
-EXTERN_C const IID  IID_IObjectSafety =
+const IID      __cdecl IID_IObjectSafety =
     { 0xCB5BDC81, 0x93C1, 0x11CF, { 0x8F, 0x20, 0x00, 0x80, 0x5F, 0x2C, 0xD0, 0x64 } };
 
 /* oleacc.h */
-EXTERN_C const IID      IID_IAccessible =
+const IID      __cdecl IID_IAccessible =
     { 0x618736E0, 0x3C3D, 0x11CF, { 0x81, 0x0C, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
-EXTERN_C const IID      IID_IAccessibleHandler =
+const IID      __cdecl IID_IAccessibleHandler =
     { 0x03022430, 0xABC4, 0x11D0, { 0xBD, 0xE2, 0x00, 0xAA, 0x00, 0x1A, 0x19, 0x53 } };
-EXTERN_C const IID      IID_IAccIdentity =
+const IID      __cdecl IID_IAccIdentity =
     { 0x7852B78D, 0x1CFD, 0x41C1, { 0xA6, 0x15, 0x9C, 0x0C, 0x85, 0x96, 0x0B, 0x5F } };
-EXTERN_C const IID      IID_IAccPropServer =
+const IID      __cdecl IID_IAccPropServer =
     { 0x76C0DBBB, 0x15E0, 0x4E7B, { 0xB6, 0x1B, 0x20, 0xEE, 0xEA, 0x20, 0x01, 0xE0 } };
-EXTERN_C const IID      IID_IAccPropServices =
+const IID      __cdecl IID_IAccPropServices =
     { 0x6E26E776, 0x04F0, 0x495D, { 0x80, 0xE4, 0x33, 0x30, 0x35, 0x2E, 0x31, 0x69 } };
-EXTERN_C const IID      LIBID_Accessibility =
+const IID      __cdecl LIBID_Accessibility =
     { 0x1EA4DBF0, 0x3C3B, 0x11CF, { 0x81, 0x0C, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 } };
-EXTERN_C const CLSID    CLSID_CAccPropServices =
+const CLSID    __cdecl CLSID_CAccPropServices =
     { 0xB5F8350B, 0x0548, 0x48B1, { 0xA6, 0xEE, 0x88, 0xBD, 0x00, 0xB4, 0xA5, 0xE7 } };
 
 /* dxtrans.h */
-EXTERN_C const IID      IID_IDXBaseObject =
+const IID      __cdecl IID_IDXBaseObject =
     { 0x17B59B2B, 0x9CC8, 0x11D1, { 0x90, 0x53, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXTransformFactory =
+const IID      __cdecl IID_IDXTransformFactory =
     { 0x6A950B2B, 0xA971, 0x11D1, { 0x81, 0xC8, 0x00, 0x00, 0xF8, 0x75, 0x57, 0xDB } };
-EXTERN_C const IID      IID_IDXTransform =
+const IID      __cdecl IID_IDXTransform =
     { 0x30A5FB78, 0xE11F, 0x11D1, { 0x90, 0x64, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXSurfacePick =
+const IID      __cdecl IID_IDXSurfacePick =
     { 0x30A5FB79, 0xE11F, 0x11D1, { 0x90, 0x64, 0x00, 0xC0, 0x4F, 0xD9, 0x89, 0x9D } };
-EXTERN_C const IID      IID_IDXTBindHost =
+const IID      __cdecl IID_IDXTBindHost =
     { 0xD26BCE55, 0xE9DC, 0x11D1, { 0x90, 0x66, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXTaskManager =
+const IID      __cdecl IID_IDXTaskManager =
     { 0x254DBBC1, 0xF922, 0x11D0, { 0x88, 0x3A, 0x3C, 0x8B, 0x00, 0xC1, 0x00, 0x00 } };
-EXTERN_C const IID      IID_IDXSurfaceFactory =
+const IID      __cdecl IID_IDXSurfaceFactory =
     { 0x144946F5, 0xC4D4, 0x11D1, { 0x81, 0xD1, 0x00, 0x00, 0xF8, 0x75, 0x57, 0xDB } };
-EXTERN_C const IID      IID_IDXSurfaceModifier =
+const IID      __cdecl IID_IDXSurfaceModifier =
     { 0x9EA3B637, 0xC37D, 0x11D1, { 0x90, 0x5E, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXSurface =
+const IID      __cdecl IID_IDXSurface =
     { 0xB39FD73F, 0xE139, 0x11D1, { 0x90, 0x65, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXSurfaceInit =
+const IID      __cdecl IID_IDXSurfaceInit =
     { 0x9EA3B639, 0xC37D, 0x11D1, { 0x90, 0x5E, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXARGBSurfaceInit =
+const IID      __cdecl IID_IDXARGBSurfaceInit =
     { 0x9EA3B63A, 0xC37D, 0x11D1, { 0x90, 0x5E, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXARGBReadPtr =
+const IID      __cdecl IID_IDXARGBReadPtr =
     { 0xEAAAC2D6, 0xC290, 0x11D1, { 0x90, 0x5D, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXARGBReadWritePtr =
+const IID      __cdecl IID_IDXARGBReadWritePtr =
     { 0xEAAAC2D7, 0xC290, 0x11D1, { 0x90, 0x5D, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXDCLock =
+const IID      __cdecl IID_IDXDCLock =
     { 0x0F619456, 0xCF39, 0x11D1, { 0x90, 0x5E, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXTScaleOutput =
+const IID      __cdecl IID_IDXTScaleOutput =
     { 0xB2024B50, 0xEE77, 0x11D1, { 0x90, 0x66, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXGradient =
+const IID      __cdecl IID_IDXGradient =
     { 0xB2024B51, 0xEE77, 0x11D1, { 0x90, 0x66, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXTScale =
+const IID      __cdecl IID_IDXTScale =
     { 0xB39FD742, 0xE139, 0x11D1, { 0x90, 0x65, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXEffect =
+const IID      __cdecl IID_IDXEffect =
     { 0xE31FB81B, 0x1335, 0x11D1, { 0x81, 0x89, 0x00, 0x00, 0xF8, 0x75, 0x57, 0xDB } };
-EXTERN_C const IID      IID_IDXLookupTable =
+const IID      __cdecl IID_IDXLookupTable =
     { 0x01BAFC7F, 0x9E63, 0x11D1, { 0x90, 0x53, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IDXRawSurface =
+const IID      __cdecl IID_IDXRawSurface =
     { 0x09756C8A, 0xD96A, 0x11D1, { 0x90, 0x62, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const IID      IID_IHTMLDXTransform =
+const IID      __cdecl IID_IHTMLDXTransform =
     { 0x30E2AB7D, 0x4FDD, 0x4159, { 0xB7, 0xEA, 0xDC, 0x72, 0x2B, 0xF4, 0xAD, 0xE5 } };
-EXTERN_C const IID      IID_ICSSFilterDispatch =
+const IID      __cdecl IID_ICSSFilterDispatch =
     { 0x9519152B, 0x9484, 0x4A6C, { 0xB6, 0xA7, 0x4F, 0x25, 0xE9, 0x2D, 0x6C, 0x6B } };
-EXTERN_C const CLSID    CLSID_DXTransformFactory =
+const CLSID    __cdecl CLSID_DXTransformFactory =
     { 0xD1FE6762, 0xFC48, 0x11D0, { 0x88, 0x3A, 0x3C, 0x8B, 0x00, 0xC1, 0x00, 0x00 } };
-EXTERN_C const CLSID    CLSID_DXTaskManager =
+const CLSID    __cdecl CLSID_DXTaskManager =
     { 0x4CB26C03, 0xFF93, 0x11D0, { 0x81, 0x7E, 0x00, 0x00, 0xF8, 0x75, 0x57, 0xDB } };
-EXTERN_C const CLSID    CLSID_DXTScale =
+const CLSID    __cdecl CLSID_DXTScale =
     { 0x555278E2, 0x05DB, 0x11D1, { 0x88, 0x3A, 0x3C, 0x8B, 0x00, 0xC1, 0x00, 0x00 } };
-EXTERN_C const CLSID    CLSID_DXSurface =
+const CLSID    __cdecl CLSID_DXSurface =
     { 0x0E890F83, 0x5F89, 0x11D1, { 0x90, 0x43, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const CLSID    CLSID_DXSurfaceModifier =
+const CLSID    __cdecl CLSID_DXSurfaceModifier =
     { 0x3E669F1D, 0x9C23, 0x11D1, { 0x90, 0x53, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const CLSID    CLSID_DXGradient =
+const CLSID    __cdecl CLSID_DXGradient =
     { 0xC6365470, 0xF667, 0x11D1, { 0x90, 0x67, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0x9D } };
-EXTERN_C const CLSID    CLSID_DXTFilter =
+const CLSID    __cdecl CLSID_DXTFilter =
     { 0x385A91BC, 0x1E8A, 0x4E4A, { 0xA7, 0xA6, 0xF4, 0xFC, 0x1E, 0x6C, 0xA1, 0xBD } };
 
 /* richole.h */
-EXTERN_C const IID  IID_IRichEditOle =
+const IID      __cdecl IID_IRichEditOle =
     { 0x00020D00, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID  IID_IRichEditOleCallback =
+const IID      __cdecl IID_IRichEditOleCallback =
     { 0x00020D03, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
 
 /* propsys.h */
-EXTERN_C const IID      IID_IInitializeWithFile =
+const IID      __cdecl IID_IInitializeWithFile =
     { 0xB7D14566, 0x0509, 0x4CCE, { 0xA7, 0x1F, 0x0A, 0x55, 0x42, 0x33, 0xBD, 0x9B } };
-EXTERN_C const IID      IID_IInitializeWithStream =
+const IID      __cdecl IID_IInitializeWithStream =
     { 0xB824B49D, 0x22AC, 0x4161, { 0xAC, 0x8A, 0x99, 0x16, 0xE8, 0xFA, 0x3F, 0x7F } };
-EXTERN_C const IID      IID_IPropertyStore =
+const IID      __cdecl IID_IPropertyStore =
     { 0x886D8EEB, 0x8CF2, 0x4446, { 0x8D, 0x02, 0xCD, 0xBA, 0x1D, 0xBD, 0xCF, 0x99 } };
-EXTERN_C const IID      IID_INamedPropertyStore =
+const IID      __cdecl IID_INamedPropertyStore =
     { 0x71604B0F, 0x97B0, 0x4764, { 0x85, 0x77, 0x2F, 0x13, 0xE9, 0x8A, 0x14, 0x22 } };
-EXTERN_C const IID      IID_IObjectWithPropertyKey =
+const IID      __cdecl IID_IObjectWithPropertyKey =
     { 0xFC0CA0A7, 0xC316, 0x4FD2, { 0x90, 0x31, 0x3E, 0x62, 0x8E, 0x6D, 0x4F, 0x23 } };
-EXTERN_C const IID      IID_IPropertyChange =
+const IID      __cdecl IID_IPropertyChange =
     { 0xF917BC8A, 0x1BBA, 0x4478, { 0xA2, 0x45, 0x1B, 0xDE, 0x03, 0xEB, 0x94, 0x31 } };
-EXTERN_C const IID      IID_IPropertyChangeArray =
+const IID      __cdecl IID_IPropertyChangeArray =
     { 0x380F5CAD, 0x1B5E, 0x42F2, { 0x80, 0x5D, 0x63, 0x7F, 0xD3, 0x92, 0xD3, 0x1E } };
-EXTERN_C const IID      IID_IPropertyStoreCapabilities =
+const IID      __cdecl IID_IPropertyStoreCapabilities =
     { 0xC8E2D566, 0x186E, 0x4D49, { 0xBF, 0x41, 0x69, 0x09, 0xEA, 0xD5, 0x6A, 0xCC } };
-EXTERN_C const IID      IID_IPropertyStoreCache =
+const IID      __cdecl IID_IPropertyStoreCache =
     { 0x3017056D, 0x9A91, 0x4E90, { 0x93, 0x7D, 0x74, 0x6C, 0x72, 0xAB, 0xBF, 0x4F } };
-EXTERN_C const IID      IID_IPropertyEnumType =
+const IID      __cdecl IID_IPropertyEnumType =
     { 0x11E1FBF9, 0x2D56, 0x4A6B, { 0x8D, 0xB3, 0x7C, 0xD1, 0x93, 0xA4, 0x71, 0xF2 } };
-EXTERN_C const IID      IID_IPropertyEnumType2 =
+const IID      __cdecl IID_IPropertyEnumType2 =
     { 0x9B6E051C, 0x5DDD, 0x4321, { 0x90, 0x70, 0xFE, 0x2A, 0xCB, 0x55, 0xE7, 0x94 } };
-EXTERN_C const IID      IID_IPropertyEnumTypeList =
+const IID      __cdecl IID_IPropertyEnumTypeList =
     { 0xA99400F4, 0x3D84, 0x4557, { 0x94, 0xBA, 0x12, 0x42, 0xFB, 0x2C, 0xC9, 0xA6 } };
-EXTERN_C const IID      IID_IPropertyDescription =
+const IID      __cdecl IID_IPropertyDescription =
     { 0x6F79D558, 0x3E96, 0x4549, { 0xA1, 0xD1, 0x7D, 0x75, 0xD2, 0x28, 0x88, 0x14 } };
-EXTERN_C const IID      IID_IPropertyDescription2 =
+const IID      __cdecl IID_IPropertyDescription2 =
     { 0x57D2EDED, 0x5062, 0x400E, { 0xB1, 0x07, 0x5D, 0xAE, 0x79, 0xFE, 0x57, 0xA6 } };
-EXTERN_C const IID      IID_IPropertyDescriptionAliasInfo =
+const IID      __cdecl IID_IPropertyDescriptionAliasInfo =
     { 0xF67104FC, 0x2AF9, 0x46FD, { 0xB3, 0x2D, 0x24, 0x3C, 0x14, 0x04, 0xF3, 0xD1 } };
-EXTERN_C const IID      IID_IPropertyDescriptionSearchInfo =
+const IID      __cdecl IID_IPropertyDescriptionSearchInfo =
     { 0x078F91BD, 0x29A2, 0x440F, { 0x92, 0x4E, 0x46, 0xA2, 0x91, 0x52, 0x45, 0x20 } };
-EXTERN_C const IID      IID_IPropertyDescriptionRelatedPropertyInfo =
+const IID      __cdecl IID_IPropertyDescriptionRelatedPropertyInfo =
     { 0x507393F4, 0x2A3D, 0x4A60, { 0xB5, 0x9E, 0xD9, 0xC7, 0x57, 0x16, 0xC2, 0xDD } };
-EXTERN_C const IID      IID_IPropertySystem =
+const IID      __cdecl IID_IPropertySystem =
     { 0xCA724E8A, 0xC3E6, 0x442B, { 0x88, 0xA4, 0x6F, 0xB0, 0xDB, 0x80, 0x35, 0xA3 } };
-EXTERN_C const IID      IID_IPropertyDescriptionList =
+const IID      __cdecl IID_IPropertyDescriptionList =
     { 0x1F9FC1D0, 0xC39B, 0x4B26, { 0x81, 0x7F, 0x01, 0x19, 0x67, 0xD3, 0x44, 0x0E } };
-EXTERN_C const IID      IID_IPropertyStoreFactory =
+const IID      __cdecl IID_IPropertyStoreFactory =
     { 0xBC110B6D, 0x57E8, 0x4148, { 0xA9, 0xC6, 0x91, 0x01, 0x5A, 0xB2, 0xF3, 0xA5 } };
-EXTERN_C const IID      IID_IDelayedPropertyStoreFactory =
+const IID      __cdecl IID_IDelayedPropertyStoreFactory =
     { 0x40D4577F, 0xE237, 0x4BDB, { 0xBD, 0x69, 0x58, 0xF0, 0x89, 0x43, 0x1B, 0x6A } };
-EXTERN_C const IID      IID_IPersistSerializedPropStorage =
+const IID      __cdecl IID_IPersistSerializedPropStorage =
     { 0xE318AD57, 0x0AA0, 0x450F, { 0xAC, 0xA5, 0x6F, 0xAB, 0x71, 0x03, 0xD9, 0x17 } };
-EXTERN_C const IID      IID_IPersistSerializedPropStorage2 =
+const IID      __cdecl IID_IPersistSerializedPropStorage2 =
     { 0x77EFFA68, 0x4F98, 0x4366, { 0xBA, 0x72, 0x57, 0x3B, 0x3D, 0x88, 0x05, 0x71 } };
-EXTERN_C const IID      IID_IPropertySystemChangeNotify =
+const IID      __cdecl IID_IPropertySystemChangeNotify =
     { 0xFA955FD9, 0x38BE, 0x4879, { 0xA6, 0xCE, 0x82, 0x4C, 0xF5, 0x2D, 0x60, 0x9F } };
-EXTERN_C const IID      IID_ICreateObject =
+const IID      __cdecl IID_ICreateObject =
     { 0x75121952, 0xE0D0, 0x43E5, { 0x93, 0x80, 0x1D, 0x80, 0x48, 0x3A, 0xCF, 0x72 } };
-EXTERN_C const IID      LIBID_PropSysObjects =
+const IID      __cdecl LIBID_PropSysObjects =
     { 0x2CDA3294, 0x6C4F, 0x4020, { 0xB1, 0x61, 0x27, 0xC5, 0x30, 0xC8, 0x1F, 0xA6 } };
-EXTERN_C const CLSID    CLSID_InMemoryPropertyStore =
+const CLSID    __cdecl CLSID_InMemoryPropertyStore =
     { 0x9A02E012, 0x6303, 0x4E1E, { 0xB9, 0xA1, 0x63, 0x0F, 0x80, 0x25, 0x92, 0xC5 } };
-EXTERN_C const CLSID    CLSID_PropertySystem =
+const CLSID    __cdecl CLSID_PropertySystem =
     { 0xB8967F85, 0x58AE, 0x4F46, { 0x4F, 0xB2, 0x5D, 0x79, 0x04, 0x79, 0x8F, 0x4B } };
 
 /* shobjidl.h */
-EXTERN_C const IID      IID_IContextMenu =
+const IID      __cdecl IID_IContextMenu =
     { 0x000214E4, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IContextMenu2 =
+const IID      __cdecl IID_IContextMenu2 =
     { 0x000214F4, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IContextMenu3 =
+const IID      __cdecl IID_IContextMenu3 =
     { 0xBCFCE0A0, 0xEC17, 0x11D0, { 0x8D, 0x10, 0x00, 0xA0, 0xC9, 0x0F, 0x27, 0x19 } };
-EXTERN_C const IID      IID_IExecuteCommand =
+const IID      __cdecl IID_IExecuteCommand =
     { 0x7F9185B0, 0xCB92, 0x43C5, { 0x80, 0xA9, 0x92, 0x27, 0x71, 0x4F, 0x7B, 0x54 } };
-EXTERN_C const IID      IID_IPersistFolder =
+const IID      __cdecl IID_IPersistFolder =
     { 0x000214EA, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRunnableTask =
+const IID      __cdecl IID_IRunnableTask =
     { 0x85788D00, 0x6807, 0x11D0, { 0xB8, 0x10, 0x00, 0xC0, 0x4F, 0xD7, 0x06, 0xEC } };
-EXTERN_C const IID      IID_IShellTaskScheduler =
+const IID      __cdecl IID_IShellTaskScheduler =
     { 0x6CCB7BE0, 0x6807, 0x11D0, { 0xB8, 0x10, 0x00, 0xC0, 0x4F, 0xD7, 0x06, 0xEC } };
-EXTERN_C const IID      IID_IQueryCodePage =
+const IID      __cdecl IID_IQueryCodePage =
     { 0xC7B236CE, 0xEE80, 0x11D0, { 0x98, 0x5F, 0x00, 0x60, 0x08, 0x05, 0x93, 0x82 } };
-EXTERN_C const IID      IID_IPersistFolder2 =
+const IID      __cdecl IID_IPersistFolder2 =
     { 0x1AC3D9F0, 0x175C, 0x11D1, { 0x95, 0xBE, 0x00, 0x60, 0x97, 0x97, 0xEA, 0x4F } };
-EXTERN_C const IID      IID_IPersistFolder3 =
+const IID      __cdecl IID_IPersistFolder3 =
     { 0xCEF04FDF, 0xFE72, 0x11D2, { 0x87, 0xA5, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xCF } };
-EXTERN_C const IID      IID_IPersistIDList =
+const IID      __cdecl IID_IPersistIDList =
     { 0x1079ACFC, 0x29BD, 0x11D3, { 0x8E, 0x0D, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const IID      IID_IEnumIDList =
+const IID      __cdecl IID_IEnumIDList =
     { 0x000214F2, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumFullIDList =
+const IID      __cdecl IID_IEnumFullIDList =
     { 0xD0191542, 0x7954, 0x4908, { 0xBC, 0x06, 0xB2, 0x36, 0x0B, 0xBE, 0x45, 0xBA } };
-EXTERN_C const IID      IID_IObjectWithFolderEnumMode =
+const IID      __cdecl IID_IObjectWithFolderEnumMode =
     { 0x6A9D9026, 0x0E6E, 0x464C, { 0xB0, 0x00, 0x42, 0xEC, 0xC0, 0x7D, 0xE6, 0x73 } };
-EXTERN_C const IID      IID_IParseAndCreateItem =
+const IID      __cdecl IID_IParseAndCreateItem =
     { 0x67EFED0E, 0xE827, 0x4408, { 0xB4, 0x93, 0x78, 0xF3, 0x98, 0x2B, 0x68, 0x5C } };
-EXTERN_C const IID      IID_IShellFolder =
+const IID      __cdecl IID_IShellFolder =
     { 0x000214E6, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IEnumExtraSearch =
+const IID      __cdecl IID_IEnumExtraSearch =
     { 0x0E700BE1, 0x9DB6, 0x11D1, { 0xA1, 0xCE, 0x00, 0xC0, 0x4F, 0xD7, 0x5D, 0x13 } };
-EXTERN_C const IID      IID_IShellFolder2 =
+const IID      __cdecl IID_IShellFolder2 =
     { 0x93F2F68C, 0x1D1B, 0x11D3, { 0xA3, 0x0E, 0x00, 0xC0, 0x4F, 0x79, 0xAB, 0xD1 } };
-EXTERN_C const IID      IID_IFolderViewOptions =
+const IID      __cdecl IID_IFolderViewOptions =
     { 0x3CC974D2, 0xB302, 0x4D36, { 0xAD, 0x3E, 0x06, 0xD9, 0x3F, 0x69, 0x5D, 0x3F } };
-EXTERN_C const IID      IID_IShellView =
+const IID      __cdecl IID_IShellView =
     { 0x000214E3, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellView2 =
+const IID      __cdecl IID_IShellView2 =
     { 0x88E39E80, 0x3578, 0x11CF, { 0xAE, 0x69, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const IID      IID_IShellView3 =
+const IID      __cdecl IID_IShellView3 =
     { 0xEC39FA88, 0xF8AF, 0x41C5, { 0x84, 0x21, 0x38, 0xBE, 0xD2, 0x8F, 0x46, 0x73 } };
-EXTERN_C const IID      IID_IFolderView =
+const IID      __cdecl IID_IFolderView =
     { 0xCDE725B0, 0xCCC9, 0x4519, { 0x91, 0x7E, 0x32, 0x5D, 0x72, 0xFA, 0xB4, 0xCE } };
-EXTERN_C const IID      IID_ISearchBoxInfo =
+const IID      __cdecl IID_ISearchBoxInfo =
     { 0x6AF6E03F, 0xD664, 0x4EF4, { 0x96, 0x26, 0xF7, 0xE0, 0xED, 0x36, 0x75, 0x5E } };
-EXTERN_C const IID      IID_IFolderView2 =
+const IID      __cdecl IID_IFolderView2 =
     { 0x1AF3A467, 0x214F, 0x4298, { 0x90, 0x8E, 0x06, 0xB0, 0x3E, 0x0B, 0x39, 0xF9 } };
-EXTERN_C const IID      IID_IFolderViewSettings =
+const IID      __cdecl IID_IFolderViewSettings =
     { 0xAE8C987D, 0x8797, 0x4ED3, { 0xBE, 0x72, 0x2A, 0x47, 0xDD, 0x93, 0x8D, 0xB0 } };
-EXTERN_C const IID      IID_IPreviewHandlerVisuals =
+const IID      __cdecl IID_IPreviewHandlerVisuals =
     { 0x196BF9A5, 0xB346, 0x4EF0, { 0xAA, 0x1E, 0x5D, 0xCB, 0xD7, 0x67, 0x68, 0xB1 } };
-EXTERN_C const IID      IID_IVisualProperties =
+const IID      __cdecl IID_IVisualProperties =
     { 0xE693CF68, 0xD967, 0x4112, { 0x87, 0x63, 0x99, 0x17, 0x2A, 0xEE, 0x5E, 0x5A } };
-EXTERN_C const IID      IID_ICommDlgBrowser =
+const IID      __cdecl IID_ICommDlgBrowser =
     { 0x000214F1, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICommDlgBrowser2 =
+const IID      __cdecl IID_ICommDlgBrowser2 =
     { 0x10339516, 0x2894, 0x11D2, { 0x90, 0x39, 0x00, 0xC0, 0x4F, 0x8E, 0xEB, 0x3E } };
-EXTERN_C const IID      IID_ICommDlgBrowser3 =
+const IID      __cdecl IID_ICommDlgBrowser3 =
     { 0xC8AD25A1, 0x3294, 0x41EE, { 0x81, 0x65, 0x71, 0x17, 0x4B, 0xD0, 0x1C, 0x57 } };
-EXTERN_C const IID      IID_IColumnManager =
+const IID      __cdecl IID_IColumnManager =
     { 0xD8EC27BB, 0x3F3B, 0x4042, { 0xB1, 0x0A, 0x4A, 0xCF, 0xD9, 0x24, 0xD4, 0x53 } };
-EXTERN_C const IID      IID_IFolderFilterSite =
+const IID      __cdecl IID_IFolderFilterSite =
     { 0xC0A651F5, 0xB48B, 0x11D2, { 0xB5, 0xED, 0x00, 0x60, 0x97, 0xC6, 0x86, 0xF6 } };
-EXTERN_C const IID      IID_IFolderFilter =
+const IID      __cdecl IID_IFolderFilter =
     { 0x9CC22886, 0xDC8E, 0x11D2, { 0xB1, 0xD0, 0x00, 0xC0, 0x4F, 0x8E, 0xEB, 0x3E } };
-EXTERN_C const IID      IID_IInputObjectSite =
+const IID      __cdecl IID_IInputObjectSite =
     { 0xF1DB8392, 0x7331, 0x11D0, { 0x8C, 0x99, 0x00, 0xA0, 0xC9, 0x2D, 0xBF, 0xE8 } };
-EXTERN_C const IID      IID_IInputObject =
+const IID      __cdecl IID_IInputObject =
     { 0x68284FAA, 0x6A48, 0x11D0, { 0x8C, 0x78, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xB4 } };
-EXTERN_C const IID      IID_IInputObject2 =
+const IID      __cdecl IID_IInputObject2 =
     { 0x6915C085, 0x510B, 0x44CD, { 0x94, 0xAF, 0x28, 0xDF, 0xA5, 0x6C, 0xF9, 0x2B } };
-EXTERN_C const IID      IID_IShellIcon =
+const IID      __cdecl IID_IShellIcon =
     { 0x000214E5, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellBrowser =
+const IID      __cdecl IID_IShellBrowser =
     { 0x000214E2, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IProfferService =
+const IID      __cdecl IID_IProfferService =
     { 0xCB728B20, 0xF786, 0x11CE, { 0x92, 0xAD, 0x00, 0xAA, 0x00, 0xA7, 0x4C, 0xD0 } };
-EXTERN_C const IID      IID_IShellItem =
+const IID      __cdecl IID_IShellItem =
     { 0x43826D1E, 0xE718, 0x42EE, { 0xBC, 0x55, 0xA1, 0xE2, 0x61, 0xC3, 0x7B, 0xFE } };
-EXTERN_C const IID      IID_IShellItem2 =
+const IID      __cdecl IID_IShellItem2 =
     { 0x7E9FB0D3, 0x919F, 0x4307, { 0xAB, 0x2E, 0x9B, 0x18, 0x60, 0x31, 0x0C, 0x93 } };
-EXTERN_C const IID      IID_IShellItemImageFactory =
+const IID      __cdecl IID_IShellItemImageFactory =
     { 0xBCC18B79, 0xBA16, 0x442F, { 0x80, 0xC4, 0x8A, 0x59, 0xC3, 0x0C, 0x46, 0x3B } };
-EXTERN_C const IID      IID_IUserAccountChangeCallback =
+const IID      __cdecl IID_IUserAccountChangeCallback =
     { 0xA561E69A, 0xB4B8, 0x4113, { 0x91, 0xA5, 0x64, 0xC6, 0xBC, 0xCA, 0x34, 0x30 } };
-EXTERN_C const IID      IID_IEnumShellItems =
+const IID      __cdecl IID_IEnumShellItems =
     { 0x70629033, 0xE363, 0x4A28, { 0xA5, 0x67, 0x0D, 0xB7, 0x80, 0x06, 0xE6, 0xD7 } };
-EXTERN_C const IID      IID_ITransferAdviseSink =
+const IID      __cdecl IID_ITransferAdviseSink =
     { 0xD594D0D8, 0x8DA7, 0x457B, { 0xB3, 0xB4, 0xCE, 0x5D, 0xBA, 0xAC, 0x0B, 0x88 } };
-EXTERN_C const IID      IID_ITransferSource =
+const IID      __cdecl IID_ITransferSource =
     { 0x00ADB003, 0xBDE9, 0x45C6, { 0x8E, 0x29, 0xD0, 0x9F, 0x93, 0x53, 0xE1, 0x08 } };
-EXTERN_C const IID      IID_IEnumResources =
+const IID      __cdecl IID_IEnumResources =
     { 0x2DD81FE3, 0xA83C, 0x4DA9, { 0xA3, 0x30, 0x47, 0x24, 0x9D, 0x34, 0x5B, 0xA1 } };
-EXTERN_C const IID      IID_IShellItemResources =
+const IID      __cdecl IID_IShellItemResources =
     { 0xFF5693BE, 0x2CE0, 0x4D48, { 0xB5, 0xC5, 0x40, 0x81, 0x7D, 0x1A, 0xCD, 0xB9 } };
-EXTERN_C const IID      IID_ITransferDestination =
+const IID      __cdecl IID_ITransferDestination =
     { 0x48ADDD32, 0x3CA5, 0x4124, { 0xAB, 0xE3, 0xB5, 0xA7, 0x25, 0x31, 0xB2, 0x07 } };
-EXTERN_C const IID      IID_IStreamAsync =
+const IID      __cdecl IID_IStreamAsync =
     { 0xFE0B6665, 0xE0CA, 0x49B9, { 0xA1, 0x78, 0x2B, 0x5C, 0xB4, 0x8D, 0x92, 0xA5 } };
-EXTERN_C const IID      IID_IStreamUnbufferedInfo =
+const IID      __cdecl IID_IStreamUnbufferedInfo =
     { 0x8A68FDDA, 0x1FDC, 0x4C20, { 0x8C, 0xEB, 0x41, 0x66, 0x43, 0xB5, 0xA6, 0x25 } };
-EXTERN_C const IID      IID_IFileOperationProgressSink =
+const IID      __cdecl IID_IFileOperationProgressSink =
     { 0x04B0F1A7, 0x9490, 0x44BC, { 0x96, 0xE1, 0x42, 0x96, 0xA3, 0x12, 0x52, 0xE2 } };
-EXTERN_C const IID      IID_IShellItemArray =
+const IID      __cdecl IID_IShellItemArray =
     { 0xB63EA76D, 0x1F85, 0x456F, { 0xA1, 0x9C, 0x48, 0x15, 0x9E, 0xFA, 0x85, 0x8B } };
-EXTERN_C const IID      IID_IInitializeWithItem =
+const IID      __cdecl IID_IInitializeWithItem =
     { 0x7F73BE3F, 0xFB79, 0x493C, { 0xA6, 0xC7, 0x7E, 0xE1, 0x4E, 0x24, 0x58, 0x41 } };
-EXTERN_C const IID      IID_IObjectWithSelection =
+const IID      __cdecl IID_IObjectWithSelection =
     { 0x1C9CD5BB, 0x98E9, 0x4491, { 0xA6, 0x0F, 0x31, 0xAA, 0xCC, 0x72, 0xB8, 0x3C } };
-EXTERN_C const IID      IID_IObjectWithBackReferences =
+const IID      __cdecl IID_IObjectWithBackReferences =
     { 0x321A6A6A, 0xD61F, 0x4BF3, { 0x97, 0xAE, 0x14, 0xBE, 0x29, 0x86, 0xBB, 0x36 } };
-EXTERN_C const IID      IID_IPropertyUI =
+const IID      __cdecl IID_IPropertyUI =
     { 0x757A7D9F, 0x919A, 0x4118, { 0x99, 0xD7, 0xDB, 0xB2, 0x08, 0xC8, 0xCC, 0x66 } };
-EXTERN_C const IID      IID_ICategoryProvider =
+const IID      __cdecl IID_ICategoryProvider =
     { 0x9AF64809, 0x5864, 0x4C26, { 0xA7, 0x20, 0xC1, 0xF7, 0x8C, 0x08, 0x6E, 0xE3 } };
-EXTERN_C const IID      IID_ICategorizer =
+const IID      __cdecl IID_ICategorizer =
     { 0xA3B14589, 0x9174, 0x49A8, { 0x89, 0xA3, 0x06, 0xA1, 0xAE, 0x2B, 0x9B, 0xA7 } };
-EXTERN_C const IID      IID_IDropTargetHelper =
+const IID      __cdecl IID_IDropTargetHelper =
     { 0x4657278B, 0x411B, 0x11D2, { 0x83, 0x9A, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const IID      IID_IDragSourceHelper =
+const IID      __cdecl IID_IDragSourceHelper =
     { 0xDE5BF786, 0x477A, 0x11D2, { 0x83, 0x9D, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const IID      IID_IDragSourceHelper2 =
+const IID      __cdecl IID_IDragSourceHelper2 =
     { 0x83E07D0D, 0x0C5F, 0x4163, { 0xBF, 0x1A, 0x60, 0xB2, 0x74, 0x05, 0x1E, 0x40 } };
-EXTERN_C const IID      IID_IShellLinkA =
+const IID      __cdecl IID_IShellLinkA =
     { 0x000214EE, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellLinkW =
+const IID      __cdecl IID_IShellLinkW =
     { 0x000214F9, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellLinkDataList =
+const IID      __cdecl IID_IShellLinkDataList =
     { 0x45E2B4AE, 0xB1C3, 0x11D0, { 0xB9, 0x2F, 0x00, 0xA0, 0xC9, 0x03, 0x12, 0xE1 } };
-EXTERN_C const IID      IID_IResolveShellLink =
+const IID      __cdecl IID_IResolveShellLink =
     { 0x5CD52983, 0x9449, 0x11D2, { 0x96, 0x3A, 0x00, 0xC0, 0x4F, 0x79, 0xAD, 0xF0 } };
-EXTERN_C const IID      IID_IActionProgressDialog =
+const IID      __cdecl IID_IActionProgressDialog =
     { 0x49FF1172, 0xEADC, 0x446D, { 0x92, 0x85, 0x15, 0x64, 0x53, 0xA6, 0x43, 0x1C } };
-EXTERN_C const IID      IID_IHWEventHandler =
+const IID      __cdecl IID_IHWEventHandler =
     { 0xC1FB73D0, 0xEC3A, 0x4BA2, { 0xB5, 0x12, 0x8C, 0xDB, 0x91, 0x87, 0xB6, 0xD1 } };
-EXTERN_C const IID      IID_IHWEventHandler2 =
+const IID      __cdecl IID_IHWEventHandler2 =
     { 0xCFCC809F, 0x295D, 0x42E8, { 0x9F, 0xFC, 0x42, 0x4B, 0x33, 0xC4, 0x87, 0xE6 } };
-EXTERN_C const IID      IID_IQueryCancelAutoPlay =
+const IID      __cdecl IID_IQueryCancelAutoPlay =
     { 0xDDEFE873, 0x6997, 0x4E68, { 0xBE, 0x26, 0x39, 0xB6, 0x33, 0xAD, 0xBE, 0x12 } };
-EXTERN_C const IID      IID_IDynamicHWHandler =
+const IID      __cdecl IID_IDynamicHWHandler =
     { 0xDC2601D7, 0x059E, 0x42FC, { 0xA0, 0x9D, 0x2A, 0xFD, 0x21, 0xB6, 0xD5, 0xF7 } };
-EXTERN_C const IID      IID_IActionProgress =
+const IID      __cdecl IID_IActionProgress =
     { 0x49FF1173, 0xEADC, 0x446D, { 0x92, 0x85, 0x15, 0x64, 0x53, 0xA6, 0x43, 0x1C } };
-EXTERN_C const IID      IID_IShellExtInit =
+const IID      __cdecl IID_IShellExtInit =
     { 0x000214E8, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellPropSheetExt =
+const IID      __cdecl IID_IShellPropSheetExt =
     { 0x000214E9, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IRemoteComputer =
+const IID      __cdecl IID_IRemoteComputer =
     { 0x000214FE, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IQueryContinue =
+const IID      __cdecl IID_IQueryContinue =
     { 0x7307055C, 0xB24A, 0x486B, { 0x9F, 0x25, 0x16, 0x3E, 0x59, 0x7A, 0x28, 0xA9 } };
-EXTERN_C const IID      IID_IObjectWithCancelEvent =
+const IID      __cdecl IID_IObjectWithCancelEvent =
     { 0xF269B885, 0x0AE9, 0x4B85, { 0xAC, 0x06, 0xDD, 0xEC, 0xF9, 0x40, 0x89, 0x41 } };
-EXTERN_C const IID      IID_IUserNotification =
+const IID      __cdecl IID_IUserNotification =
     { 0xBA9711BA, 0x5893, 0x4787, { 0xA7, 0xE1, 0x41, 0x27, 0x71, 0x51, 0x55, 0x0B } };
-EXTERN_C const IID      IID_IUserNotificationCallback =
+const IID      __cdecl IID_IUserNotificationCallback =
     { 0x19108294, 0x0441, 0x4AFF, { 0x80, 0x13, 0xFA, 0x0A, 0x73, 0x0B, 0x0B, 0xEA } };
-EXTERN_C const IID      IID_IUserNotification2 =
+const IID      __cdecl IID_IUserNotification2 =
     { 0x215913CC, 0x57EB, 0x4FAB, { 0xAB, 0x5A, 0xE5, 0xFA, 0x7B, 0xEA, 0x2A, 0x6C } };
-EXTERN_C const IID      IID_IItemNameLimits =
+const IID      __cdecl IID_IItemNameLimits =
     { 0x1DF0D7F1, 0xB267, 0x4D28, { 0x8B, 0x10, 0x12, 0xE2, 0x32, 0x02, 0xA5, 0xC4 } };
-EXTERN_C const IID      IID_ISearchFolderItemFactory =
+const IID      __cdecl IID_ISearchFolderItemFactory =
     { 0xA0FFBC28, 0x5482, 0x4366, { 0xBE, 0x27, 0x3E, 0x81, 0xE7, 0x8E, 0x06, 0xC2 } };
-EXTERN_C const IID      IID_IExtractImage =
+const IID      __cdecl IID_IExtractImage =
     { 0xBB2E617C, 0x0920, 0x11D1, { 0x9A, 0x0B, 0x00, 0xC0, 0x4F, 0xC2, 0xD6, 0xC1 } };
-EXTERN_C const IID      IID_IExtractImage2 =
+const IID      __cdecl IID_IExtractImage2 =
     { 0x953BB1EE, 0x93B4, 0x11D1, { 0x98, 0xA3, 0x00, 0xC0, 0x4F, 0xB6, 0x87, 0xDA } };
-EXTERN_C const IID      IID_IThumbnailHandlerFactory =
+const IID      __cdecl IID_IThumbnailHandlerFactory =
     { 0xE35B4B2E, 0x00DA, 0x4BC1, { 0x9F, 0x13, 0x38, 0xBC, 0x11, 0xF5, 0xD4, 0x17 } };
-EXTERN_C const IID      IID_IParentAndItem =
+const IID      __cdecl IID_IParentAndItem =
     { 0xB3A4B685, 0xB685, 0x4805, { 0x99, 0xD9, 0x5D, 0xEA, 0xD2, 0x87, 0x32, 0x36 } };
-EXTERN_C const IID      IID_IDockingWindow =
+const IID      __cdecl IID_IDockingWindow =
     { 0x012DD920, 0x7B26, 0x11D0, { 0x8C, 0xA9, 0x00, 0xA0, 0xC9, 0x2D, 0xBF, 0xE8 } };
-EXTERN_C const IID      IID_IDeskBand =
+const IID      __cdecl IID_IDeskBand =
     { 0xEB0FE172, 0x1A3A, 0x11D0, { 0x89, 0xB3, 0x00, 0xA0, 0xC9, 0x0A, 0x90, 0xAC } };
-EXTERN_C const IID      IID_IDeskBandInfo =
+const IID      __cdecl IID_IDeskBandInfo =
     { 0x77E425FC, 0xCBF9, 0x4307, { 0xBA, 0x6A, 0xBB, 0x57, 0x27, 0x74, 0x56, 0x61 } };
-EXTERN_C const IID      IID_IDeskBand2 =
+const IID      __cdecl IID_IDeskBand2 =
     { 0x79D16DE4, 0xABEE, 0x4021, { 0x8D, 0x9D, 0x91, 0x69, 0xB2, 0x61, 0xD6, 0x57 } };
-EXTERN_C const IID      IID_ITaskbarList =
+const IID      __cdecl IID_ITaskbarList =
     { 0x46FDF342, 0xFD6D, 0x11D0, { 0x95, 0x8A, 0x00, 0x60, 0x97, 0xC9, 0xA0, 0x90 } };
-EXTERN_C const IID      IID_ITaskbarList2 =
+const IID      __cdecl IID_ITaskbarList2 =
     { 0x602D4995, 0xB13A, 0x429B, { 0xA6, 0x6E, 0x19, 0x35, 0xE4, 0x4F, 0x43, 0x17 } };
-EXTERN_C const IID      IID_ITaskbarList3 =
+const IID      __cdecl IID_ITaskbarList3 =
     { 0xEA1AFB91, 0x9E28, 0x4B86, { 0x90, 0xE9, 0x9E, 0x9F, 0x8A, 0x5E, 0xEF, 0xAF } };
-EXTERN_C const IID      IID_ITaskbarList4 =
+const IID      __cdecl IID_ITaskbarList4 =
     { 0xC43DC798, 0x95D1, 0x4BEA, { 0x90, 0x30, 0xBB, 0x99, 0xE2, 0x98, 0x3A, 0x1A } };
-EXTERN_C const IID      IID_IStartMenuPinnedList =
+const IID      __cdecl IID_IStartMenuPinnedList =
     { 0x4CD19ADA, 0x25A5, 0x4A32, { 0xB3, 0xB7, 0x34, 0x7B, 0xEE, 0x5B, 0xE3, 0x6B } };
-EXTERN_C const IID      IID_ICDBurn =
+const IID      __cdecl IID_ICDBurn =
     { 0x3D73A659, 0xE5D0, 0x4D42, { 0xAF, 0xC0, 0x51, 0x21, 0xBA, 0x42, 0x5C, 0x8D } };
-EXTERN_C const IID      IID_IWizardSite =
+const IID      __cdecl IID_IWizardSite =
     { 0x88960F5B, 0x422F, 0x4E7B, { 0x80, 0x13, 0x73, 0x41, 0x53, 0x81, 0xC3, 0xC3 } };
-EXTERN_C const IID      IID_IWizardExtension =
+const IID      __cdecl IID_IWizardExtension =
     { 0xC02EA696, 0x86CC, 0x491E, { 0x9B, 0x23, 0x74, 0x39, 0x4A, 0x04, 0x44, 0xA8 } };
-EXTERN_C const IID      IID_IWebWizardExtension =
+const IID      __cdecl IID_IWebWizardExtension =
     { 0x0E6B3F66, 0x98D1, 0x48C0, { 0xA2, 0x22, 0xFB, 0xDE, 0x74, 0xE2, 0xFB, 0xC5 } };
-EXTERN_C const IID      IID_IPublishingWizard =
+const IID      __cdecl IID_IPublishingWizard =
     { 0xAA9198BB, 0xCCEC, 0x472D, { 0xBE, 0xED, 0x19, 0xA4, 0xF6, 0x73, 0x3F, 0x7A } };
-EXTERN_C const IID      IID_IFolderViewHost =
+const IID      __cdecl IID_IFolderViewHost =
     { 0x1EA58F02, 0xD55A, 0x411D, { 0xB0, 0x9E, 0x9E, 0x65, 0xAC, 0x21, 0x60, 0x5B } };
-EXTERN_C const IID      IID_IExplorerBrowserEvents =
+const IID      __cdecl IID_IExplorerBrowserEvents =
     { 0x361BBDC7, 0xE6EE, 0x4E13, { 0xBE, 0x58, 0x58, 0xE2, 0x24, 0x0C, 0x81, 0x0F } };
-EXTERN_C const IID      IID_IExplorerBrowser =
+const IID      __cdecl IID_IExplorerBrowser =
     { 0xDFD3B6B5, 0xC10C, 0x4BE9, { 0x85, 0xF6, 0xA6, 0x69, 0x69, 0xF4, 0x02, 0xF6 } };
-EXTERN_C const IID      IID_IAccessibleObject =
+const IID      __cdecl IID_IAccessibleObject =
     { 0x95A391C5, 0x9ED4, 0x4C28, { 0x84, 0x01, 0xAB, 0x9E, 0x06, 0x71, 0x9E, 0x11 } };
-EXTERN_C const IID      IID_IResultsFolder =
+const IID      __cdecl IID_IResultsFolder =
     { 0x96E5AE6D, 0x6AE1, 0x4B1C, { 0x90, 0x0C, 0xC6, 0x48, 0x0E, 0xAA, 0x88, 0x28 } };
-EXTERN_C const IID      IID_IEnumObjects =
+const IID      __cdecl IID_IEnumObjects =
     { 0x2C1C7E2E, 0x2D0E, 0x4059, { 0x83, 0x1E, 0x1E, 0x6F, 0x82, 0x33, 0x5C, 0x2E } };
-EXTERN_C const IID      IID_IOperationsProgressDialog =
+const IID      __cdecl IID_IOperationsProgressDialog =
     { 0x0C9FB851, 0xE5C9, 0x43EB, { 0xA3, 0x70, 0xF0, 0x67, 0x7B, 0x13, 0x87, 0x4C } };
-EXTERN_C const IID      IID_IIOCancelInformation =
+const IID      __cdecl IID_IIOCancelInformation =
     { 0xF5B0BF81, 0x8CB5, 0x4B1B, { 0x94, 0x49, 0x1A, 0x15, 0x9E, 0x0C, 0x73, 0x3C } };
-EXTERN_C const IID      IID_IFileOperation =
+const IID      __cdecl IID_IFileOperation =
     { 0x947AAB5F, 0x0A5C, 0x4C13, { 0xB4, 0xD6, 0x4B, 0xF7, 0x83, 0x6F, 0xC9, 0xF8 } };
-EXTERN_C const IID      IID_IObjectProvider =
+const IID      __cdecl IID_IObjectProvider =
     { 0xA6087428, 0x3BE3, 0x4D73, { 0xB3, 0x08, 0x7C, 0x04, 0xA5, 0x40, 0xBF, 0x1A } };
-EXTERN_C const IID      IID_INamespaceWalkCB =
+const IID      __cdecl IID_INamespaceWalkCB =
     { 0xD92995F8, 0xCF5E, 0x4A76, { 0xBF, 0x59, 0xEA, 0xD3, 0x9E, 0xA2, 0xB9, 0x7E } };
-EXTERN_C const IID      IID_INamespaceWalkCB2 =
+const IID      __cdecl IID_INamespaceWalkCB2 =
     { 0x7AC7492B, 0xC38E, 0x438A, { 0x87, 0xDB, 0x68, 0x73, 0x78, 0x44, 0xFF, 0x70 } };
-EXTERN_C const IID      IID_INamespaceWalk =
+const IID      __cdecl IID_INamespaceWalk =
     { 0x57CED8A7, 0x3F4A, 0x432C, { 0x93, 0x50, 0x30, 0xF2, 0x44, 0x83, 0xF7, 0x4F } };
-EXTERN_C const IID      IID_IAutoCompleteDropDown =
+const IID      __cdecl IID_IAutoCompleteDropDown =
     { 0x3CD141F4, 0x3C6A, 0x11D2, { 0xBC, 0xAA, 0x00, 0xC0, 0x4F, 0xD9, 0x29, 0xDB } };
-EXTERN_C const IID      IID_IBandSite =
+const IID      __cdecl IID_IBandSite =
     { 0x4CF504B0, 0xDE96, 0x11D0, { 0x8B, 0x3F, 0x00, 0xA0, 0xC9, 0x11, 0xE8, 0xE5 } };
-EXTERN_C const IID      IID_IModalWindow =
+const IID      __cdecl IID_IModalWindow =
     { 0xB4DB1657, 0x70D7, 0x485E, { 0x8E, 0x3E, 0x6F, 0xCB, 0x5A, 0x5C, 0x18, 0x02 } };
-EXTERN_C const IID      IID_ICDBurnExt =
+const IID      __cdecl IID_ICDBurnExt =
     { 0x2271DCCA, 0x74FC, 0x4414, { 0x8F, 0xB7, 0xC5, 0x6B, 0x05, 0xAC, 0xE2, 0xD7 } };
-EXTERN_C const IID      IID_IContextMenuSite =
+const IID      __cdecl IID_IContextMenuSite =
     { 0x0811AEBE, 0x0B87, 0x4C54, { 0x9E, 0x72, 0x54, 0x8C, 0xF6, 0x49, 0x01, 0x6B } };
-EXTERN_C const IID      IID_IEnumReadyCallback =
+const IID      __cdecl IID_IEnumReadyCallback =
     { 0x61E00D45, 0x8FFF, 0x4E60, { 0x92, 0x4E, 0x65, 0x37, 0xB6, 0x16, 0x12, 0xDD } };
-EXTERN_C const IID      IID_IEnumerableView =
+const IID      __cdecl IID_IEnumerableView =
     { 0x8C8BF236, 0x1AEC, 0x495F, { 0x98, 0x94, 0x91, 0xD5, 0x7C, 0x3C, 0x68, 0x6F } };
-EXTERN_C const IID      IID_IInsertItem =
+const IID      __cdecl IID_IInsertItem =
     { 0xD2B57227, 0x3D23, 0x4B95, { 0x93, 0xC0, 0x49, 0x2B, 0xD4, 0x54, 0xC3, 0x56 } };
-EXTERN_C const IID      IID_IMenuBand =
+const IID      __cdecl IID_IMenuBand =
     { 0x568804CD, 0xCBD7, 0x11D0, { 0x98, 0x16, 0x00, 0xC0, 0x4F, 0xD9, 0x19, 0x72 } };
-EXTERN_C const IID      IID_IFolderBandPriv =
+const IID      __cdecl IID_IFolderBandPriv =
     { 0x47C01F95, 0xE185, 0x412C, { 0xB5, 0xC5, 0x4F, 0x27, 0xDF, 0x96, 0x5A, 0xEA } };
-EXTERN_C const IID      IID_IRegTreeItem =
+const IID      __cdecl IID_IRegTreeItem =
     { 0xA9521922, 0x0812, 0x4D44, { 0x9E, 0xC3, 0x7F, 0xD3, 0x8C, 0x72, 0x6F, 0x3D } };
-EXTERN_C const IID      IID_IImageRecompress =
+const IID      __cdecl IID_IImageRecompress =
     { 0x505F1513, 0x6B3E, 0x4892, { 0xA2, 0x72, 0x59, 0xF8, 0x88, 0x9A, 0x4D, 0x3E } };
-EXTERN_C const IID      IID_IDeskBar =
+const IID      __cdecl IID_IDeskBar =
     { 0xEB0FE173, 0x1A3A, 0x11D0, { 0x89, 0xB3, 0x00, 0xA0, 0xC9, 0x0A, 0x90, 0xAC } };
-EXTERN_C const IID      IID_IMenuPopup =
+const IID      __cdecl IID_IMenuPopup =
     { 0xD1E7AFEB, 0x6A2E, 0x11D0, { 0x8C, 0x78, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xB4 } };
-EXTERN_C const IID      IID_IFileIsInUse =
+const IID      __cdecl IID_IFileIsInUse =
     { 0x64A1CBF0, 0x3A1A, 0x4461, { 0x91, 0x58, 0x37, 0x69, 0x69, 0x69, 0x39, 0x50 } };
-EXTERN_C const IID      IID_IFileDialogEvents =
+const IID      __cdecl IID_IFileDialogEvents =
     { 0x973510DB, 0x7D7F, 0x452B, { 0x89, 0x75, 0x74, 0xA8, 0x58, 0x28, 0xD3, 0x54 } };
-EXTERN_C const IID      IID_IFileDialog =
+const IID      __cdecl IID_IFileDialog =
     { 0x42F85136, 0xDB7E, 0x439C, { 0x85, 0xF1, 0xE4, 0x07, 0x5D, 0x13, 0x5F, 0xC8 } };
-EXTERN_C const IID      IID_IFileSaveDialog =
+const IID      __cdecl IID_IFileSaveDialog =
     { 0x84BCCD23, 0x5FDE, 0x4CDB, { 0xAE, 0xA4, 0xAF, 0x64, 0xB8, 0x3D, 0x78, 0xAB } };
-EXTERN_C const IID      IID_IFileOpenDialog =
+const IID      __cdecl IID_IFileOpenDialog =
     { 0xD57C7288, 0xD4AD, 0x4768, { 0xBE, 0x02, 0x9D, 0x96, 0x95, 0x32, 0xD9, 0x60 } };
-EXTERN_C const IID      IID_IFileDialogCustomize =
+const IID      __cdecl IID_IFileDialogCustomize =
     { 0xE6FDD21A, 0x163F, 0x4975, { 0x9C, 0x8C, 0xA6, 0x9F, 0x1B, 0xA3, 0x70, 0x34 } };
-EXTERN_C const IID      IID_IFileDialogControlEvents =
+const IID      __cdecl IID_IFileDialogControlEvents =
     { 0x36116642, 0xD713, 0x4B97, { 0x9B, 0x83, 0x74, 0x84, 0xA9, 0xD0, 0x04, 0x33 } };
-EXTERN_C const IID      IID_IFileDialog2 =
+const IID      __cdecl IID_IFileDialog2 =
     { 0x61744FC7, 0x85B5, 0x4791, { 0xA9, 0xB0, 0x27, 0x22, 0x76, 0x30, 0x9B, 0x13 } };
-EXTERN_C const IID      IID_IApplicationAssociationRegistration =
+const IID      __cdecl IID_IApplicationAssociationRegistration =
     { 0x4E530B0A, 0xE611, 0x4C77, { 0xA3, 0xAC, 0x90, 0x31, 0xD0, 0x22, 0x28, 0x1B } };
-EXTERN_C const IID      IID_IApplicationAssociationRegistrationUI =
+const IID      __cdecl IID_IApplicationAssociationRegistrationUI =
     { 0x1F76A169, 0xF994, 0x40AC, { 0x8F, 0xC8, 0x09, 0x59, 0xE8, 0x87, 0x47, 0x10 } };
-EXTERN_C const IID      IID_IDelegateFolder =
+const IID      __cdecl IID_IDelegateFolder =
     { 0xADD8BA80, 0x002B, 0x11D0, { 0x8F, 0x0F, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const IID      IID_IBrowserFrameOptions =
+const IID      __cdecl IID_IBrowserFrameOptions =
     { 0x10DF43C8, 0x1DBE, 0x11D3, { 0x8B, 0x34, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
-EXTERN_C const IID      IID_INewWindowManager =
+const IID      __cdecl IID_INewWindowManager =
     { 0xD2BC4C84, 0x3F72, 0x4A52, { 0xA6, 0x04, 0x7B, 0xCB, 0xF3, 0x98, 0x3C, 0xBB } };
-EXTERN_C const IID      IID_IAttachmentExecute =
+const IID      __cdecl IID_IAttachmentExecute =
     { 0x73DB1241, 0x1E85, 0x4581, { 0x8E, 0x4F, 0xA8, 0x1E, 0x1D, 0x0F, 0x8C, 0x57 } };
-EXTERN_C const IID      IID_IShellMenuCallback =
+const IID      __cdecl IID_IShellMenuCallback =
     { 0x4CA300A1, 0x9B8D, 0x11D1, { 0x8B, 0x22, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const IID      IID_IShellMenu =
+const IID      __cdecl IID_IShellMenu =
     { 0xEE1F7637, 0xE138, 0x11D1, { 0x83, 0x79, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const IID      IID_IShellRunDll =
+const IID      __cdecl IID_IShellRunDll =
     { 0xFCE4BDE0, 0x4B68, 0x4B68, { 0x8E, 0x9C, 0x74, 0x26, 0x31, 0x5A, 0x73, 0x88 } };
-EXTERN_C const IID      IID_IKnownFolder =
+const IID      __cdecl IID_IKnownFolder =
     { 0x3AA7AF7E, 0x9B36, 0x420C, { 0xA8, 0xE3, 0xF7, 0x7D, 0x46, 0x74, 0xA4, 0x88 } };
-EXTERN_C const IID      IID_IKnownFolderManager =
+const IID      __cdecl IID_IKnownFolderManager =
     { 0x8BE2D872, 0x86AA, 0x4D47, { 0xB7, 0x76, 0x32, 0xCC, 0xA4, 0x0C, 0x70, 0x18 } };
-EXTERN_C const IID      IID_ISharingConfigurationManager =
+const IID      __cdecl IID_ISharingConfigurationManager =
     { 0xB4CD448A, 0x9C86, 0x4466, { 0x92, 0x01, 0x2E, 0x62, 0x10, 0x5B, 0x87, 0xAE } };
-EXTERN_C const IID      IID_IPreviousVersionsInfo =
+const IID      __cdecl IID_IPreviousVersionsInfo =
     { 0x76E54780, 0xAD74, 0x48E3, { 0xA6, 0x95, 0x3B, 0xA9, 0xA0, 0xAF, 0xF1, 0x0D } };
-EXTERN_C const IID      IID_IRelatedItem =
+const IID      __cdecl IID_IRelatedItem =
     { 0xA73CE67A, 0x8AB1, 0x44F1, { 0x8D, 0x43, 0xD2, 0xFC, 0xBF, 0x6B, 0x1C, 0xD0 } };
-EXTERN_C const IID      IID_IIdentityName =
+const IID      __cdecl IID_IIdentityName =
     { 0x7D903FCA, 0xD6F9, 0x4810, { 0x83, 0x32, 0x94, 0x6C, 0x01, 0x77, 0xE2, 0x47 } };
-EXTERN_C const IID      IID_IDelegateItem =
+const IID      __cdecl IID_IDelegateItem =
     { 0x3C5A1C94, 0xC951, 0x4CB7, { 0xBB, 0x6D, 0x3B, 0x93, 0xF3, 0x0C, 0xCE, 0x93 } };
-EXTERN_C const IID      IID_ICurrentItem =
+const IID      __cdecl IID_ICurrentItem =
     { 0x240A7174, 0xD653, 0x4A1D, { 0xA6, 0xD3, 0xD4, 0x94, 0x3C, 0xFB, 0xFE, 0x3D } };
-EXTERN_C const IID      IID_ITransferMediumItem =
+const IID      __cdecl IID_ITransferMediumItem =
     { 0x77F295D5, 0x2D6F, 0x4E19, { 0xB8, 0xAE, 0x32, 0x2F, 0x3E, 0x72, 0x1A, 0xB5 } };
-EXTERN_C const IID      IID_IUseToBrowseItem =
+const IID      __cdecl IID_IUseToBrowseItem =
     { 0x05EDDA5C, 0x98A3, 0x4717, { 0x8A, 0xDB, 0xC5, 0xE7, 0xDA, 0x99, 0x1E, 0xB1 } };
-EXTERN_C const IID      IID_IDisplayItem =
+const IID      __cdecl IID_IDisplayItem =
     { 0xC6FD5997, 0x9F6B, 0x4888, { 0x87, 0x03, 0x94, 0xE8, 0x0E, 0x8C, 0xDE, 0x3F } };
-EXTERN_C const IID      IID_IViewStateIdentityItem =
+const IID      __cdecl IID_IViewStateIdentityItem =
     { 0x9D264146, 0xA94F, 0x4195, { 0x9F, 0x9F, 0x3B, 0xB1, 0x2C, 0xE0, 0xC9, 0x55 } };
-EXTERN_C const IID      IID_IPreviewItem =
+const IID      __cdecl IID_IPreviewItem =
     { 0x36149969, 0x0A8F, 0x49C8, { 0x8B, 0x00, 0x4A, 0xEC, 0xB2, 0x02, 0x22, 0xFB } };
-EXTERN_C const IID      IID_IDestinationStreamFactory =
+const IID      __cdecl IID_IDestinationStreamFactory =
     { 0x8A87781B, 0x39A7, 0x4A1F, { 0xAA, 0xB3, 0xA3, 0x9B, 0x9C, 0x34, 0xA7, 0xD9 } };
-EXTERN_C const IID      IID_INewMenuClient =
+const IID      __cdecl IID_INewMenuClient =
     { 0xDCB07FDC, 0x3BB5, 0x451C, { 0x90, 0xBE, 0x96, 0x66, 0x44, 0xFE, 0xD7, 0xB0 } };
-EXTERN_C const IID      IID_IInitializeWithBindCtx =
+const IID      __cdecl IID_IInitializeWithBindCtx =
     { 0x71C0D2BC, 0x726D, 0x45CC, { 0xA6, 0xC0, 0x2E, 0x31, 0xC1, 0xDB, 0x21, 0x59 } };
-EXTERN_C const IID      IID_IShellItemFilter =
+const IID      __cdecl IID_IShellItemFilter =
     { 0x2659B475, 0xEEB8, 0x48B7, { 0x8F, 0x07, 0xB3, 0x78, 0x81, 0x0F, 0x48, 0xCF } };
-EXTERN_C const IID      IID_INameSpaceTreeControl =
+const IID      __cdecl IID_INameSpaceTreeControl =
     { 0x028212A3, 0xB627, 0x47E9, { 0x88, 0x56, 0xC1, 0x42, 0x65, 0x55, 0x4E, 0x4F } };
-EXTERN_C const IID      IID_INameSpaceTreeControl2 =
+const IID      __cdecl IID_INameSpaceTreeControl2 =
     { 0x7CC7AED8, 0x290E, 0x49BC, { 0x89, 0x45, 0xC1, 0x40, 0x1C, 0xC9, 0x30, 0x6C } };
-EXTERN_C const IID      IID_INameSpaceTreeControlEvents =
+const IID      __cdecl IID_INameSpaceTreeControlEvents =
     { 0x93D77985, 0xB3D8, 0x4484, { 0x83, 0x18, 0x67, 0x2C, 0xDD, 0xA0, 0x02, 0xCE } };
-EXTERN_C const IID      IID_INameSpaceTreeControlDropHandler =
+const IID      __cdecl IID_INameSpaceTreeControlDropHandler =
     { 0xF9C665D6, 0xC2F2, 0x4C19, { 0xBF, 0x33, 0x83, 0x22, 0xD7, 0x35, 0x2F, 0x51 } };
-EXTERN_C const IID      IID_INameSpaceTreeAccessible =
+const IID      __cdecl IID_INameSpaceTreeAccessible =
     { 0x71F312DE, 0x43ED, 0x4190, { 0x84, 0x77, 0xE9, 0x53, 0x6B, 0x82, 0x35, 0x0B } };
-EXTERN_C const IID      IID_INameSpaceTreeControlCustomDraw =
+const IID      __cdecl IID_INameSpaceTreeControlCustomDraw =
     { 0x2D3BA758, 0x33EE, 0x42D5, { 0xBB, 0x7B, 0x5F, 0x34, 0x31, 0xD8, 0x6C, 0x78 } };
-EXTERN_C const IID      IID_INameSpaceTreeControlFolderCapabilities =
+const IID      __cdecl IID_INameSpaceTreeControlFolderCapabilities =
     { 0xE9701183, 0xE6B3, 0x4FF2, { 0x85, 0x68, 0x81, 0x36, 0x15, 0xFE, 0xC7, 0xBE } };
-EXTERN_C const IID      IID_IPreviewHandler =
+const IID      __cdecl IID_IPreviewHandler =
     { 0x8895B1C6, 0xB41F, 0x4C1C, { 0xA5, 0x62, 0x0D, 0x56, 0x42, 0x50, 0x83, 0x6F } };
-EXTERN_C const IID      IID_IPreviewHandlerFrame =
+const IID      __cdecl IID_IPreviewHandlerFrame =
     { 0xFEC87AAF, 0x35F9, 0x447A, { 0xAD, 0xB7, 0x20, 0x23, 0x44, 0x91, 0x40, 0x1A } };
-EXTERN_C const IID      IID_ITrayDeskBand =
+const IID      __cdecl IID_ITrayDeskBand =
     { 0x6D67E846, 0x5B9C, 0x4DB8, { 0x9C, 0xBC, 0xDD, 0xE1, 0x2F, 0x42, 0x54, 0xF1 } };
-EXTERN_C const IID      IID_IBandHost =
+const IID      __cdecl IID_IBandHost =
     { 0xB9075C7C, 0xD48E, 0x403F, { 0xAB, 0x99, 0xD6, 0xC7, 0x7A, 0x10, 0x84, 0xAC } };
-EXTERN_C const IID      IID_IExplorerPaneVisibility =
+const IID      __cdecl IID_IExplorerPaneVisibility =
     { 0xE07010EC, 0xBC17, 0x44C0, { 0x97, 0xB0, 0x46, 0xC7, 0xC9, 0x5B, 0x9E, 0xDC } };
-EXTERN_C const IID      IID_IContextMenuCB =
+const IID      __cdecl IID_IContextMenuCB =
     { 0x3409E930, 0x5A39, 0x11D1, { 0x83, 0xFA, 0x00, 0xA0, 0xC9, 0x0D, 0xC8, 0x49 } };
-EXTERN_C const IID      IID_IDefaultExtractIconInit =
+const IID      __cdecl IID_IDefaultExtractIconInit =
     { 0x41DED17D, 0xD6B3, 0x4261, { 0x99, 0x7D, 0x88, 0xC6, 0x0E, 0x4B, 0x1D, 0x58 } };
-EXTERN_C const IID      IID_IExplorerCommand =
+const IID      __cdecl IID_IExplorerCommand =
     { 0xA08CE4D0, 0xFA25, 0x44AB, { 0xB5, 0x7C, 0xC7, 0xB1, 0xC3, 0x23, 0xE0, 0xB9 } };
-EXTERN_C const IID      IID_IExplorerCommandState =
+const IID      __cdecl IID_IExplorerCommandState =
     { 0xBDDACB60, 0x7657, 0x47AE, { 0x84, 0x45, 0xD2, 0x3E, 0x1A, 0xCF, 0x82, 0xAE } };
-EXTERN_C const IID      IID_IInitializeCommand =
+const IID      __cdecl IID_IInitializeCommand =
     { 0x85075ACF, 0x231F, 0x40EA, { 0x96, 0x10, 0xD2, 0x6B, 0x7B, 0x58, 0xF6, 0x38 } };
-EXTERN_C const IID      IID_IEnumExplorerCommand =
+const IID      __cdecl IID_IEnumExplorerCommand =
     { 0xA88826F8, 0x186F, 0x4987, { 0xAA, 0xDE, 0xEA, 0x0C, 0xEF, 0x8F, 0xBF, 0xE8 } };
-EXTERN_C const IID      IID_IExplorerCommandProvider =
+const IID      __cdecl IID_IExplorerCommandProvider =
     { 0x64961751, 0x0835, 0x43C0, { 0x8F, 0xFE, 0xD5, 0x76, 0x86, 0x53, 0x0E, 0x64 } };
-EXTERN_C const IID      IID_IMarkupCallback =
+const IID      __cdecl IID_IMarkupCallback =
     { 0x4440306E, 0xD79A, 0x48D0, { 0x88, 0xE6, 0xA4, 0x26, 0x92, 0x27, 0x9B, 0xFB } };
-EXTERN_C const IID      IID_IControlMarkup =
+const IID      __cdecl IID_IControlMarkup =
     { 0xD6D2FBAE, 0xF116, 0x458C, { 0x8C, 0x34, 0x03, 0x56, 0x98, 0x77, 0xA2, 0xD2 } };
-EXTERN_C const IID      IID_IInitializeNetworkFolder =
+const IID      __cdecl IID_IInitializeNetworkFolder =
     { 0x6E0F9881, 0x42A8, 0x4F2A, { 0x97, 0xF8, 0x8A, 0xF4, 0xE0, 0x26, 0xD9, 0x2D } };
-EXTERN_C const IID      IID_IOpenControlPanel =
+const IID      __cdecl IID_IOpenControlPanel =
     { 0xD11AD862, 0x66DE, 0x4DF4, { 0xBF, 0x6C, 0x1F, 0x56, 0x21, 0x99, 0x6A, 0xF1 } };
-EXTERN_C const IID      IID_ISystemCPLUpdate =
+const IID      __cdecl IID_ISystemCPLUpdate =
     { 0xA8A71374, 0x80C2, 0x49E0, { 0x88, 0x05, 0x85, 0x24, 0xEB, 0xC4, 0x5B, 0x07 } };
-EXTERN_C const IID      IID_IComputerInfoAdvise =
+const IID      __cdecl IID_IComputerInfoAdvise =
     { 0x4623BD61, 0x5603, 0x444F, { 0x82, 0x4A, 0xAA, 0xEB, 0xCE, 0xED, 0x93, 0xFA } };
-EXTERN_C const IID      IID_IComputerInfoChangeNotify =
+const IID      __cdecl IID_IComputerInfoChangeNotify =
     { 0x0DF60D92, 0x6818, 0x46D6, { 0xB3, 0x58, 0xD6, 0x61, 0x70, 0xDD, 0xE4, 0x66 } };
-EXTERN_C const IID      IID_IFileSystemBindData =
+const IID      __cdecl IID_IFileSystemBindData =
     { 0x01E18D10, 0x4D8B, 0x11D2, { 0x85, 0x5D, 0x00, 0x60, 0x08, 0x04, 0x93, 0x67 } };
-EXTERN_C const IID      IID_IFileSystemBindData2 =
+const IID      __cdecl IID_IFileSystemBindData2 =
     { 0x3ACF075F, 0x71DB, 0x4AFA, { 0x81, 0xF0, 0x3F, 0xC4, 0xFD, 0xF2, 0xA5, 0xB8 } };
-EXTERN_C const IID      IID_ICustomDestinationList =
+const IID      __cdecl IID_ICustomDestinationList =
     { 0x6332DEBF, 0x87B5, 0x4670, { 0x90, 0xC0, 0x5E, 0x57, 0xB4, 0x08, 0xA4, 0x9E } };
-EXTERN_C const IID      IID_IApplicationDestinations =
+const IID      __cdecl IID_IApplicationDestinations =
     { 0x12337D35, 0x94C6, 0x48A0, { 0xBC, 0xE7, 0x6A, 0x9C, 0x69, 0xD4, 0xD6, 0x00 } };
-EXTERN_C const IID      IID_IApplicationDocumentLists =
+const IID      __cdecl IID_IApplicationDocumentLists =
     { 0x3C594F9F, 0x9F30, 0x47A1, { 0x97, 0x9A, 0xC9, 0xE8, 0x3D, 0x3D, 0x0A, 0x06 } };
-EXTERN_C const IID      IID_IObjectWithAppUserModelID =
+const IID      __cdecl IID_IObjectWithAppUserModelID =
     { 0x36DB0196, 0x9665, 0x46D1, { 0x9B, 0xA7, 0xD3, 0x70, 0x9E, 0xEC, 0xF9, 0xED } };
-EXTERN_C const IID      IID_IObjectWithProgID =
+const IID      __cdecl IID_IObjectWithProgID =
     { 0x71E806FB, 0x8DEE, 0x46FC, { 0xBF, 0x8C, 0x77, 0x48, 0xA8, 0xA1, 0xAE, 0x13 } };
-EXTERN_C const IID      IID_IUpdateIDList =
+const IID      __cdecl IID_IUpdateIDList =
     { 0x6589B6D2, 0x5F8D, 0x4B9E, { 0xB7, 0xE0, 0x23, 0xCD, 0xD9, 0x71, 0x7D, 0x8C } };
-EXTERN_C const IID      IID_IDesktopGadget =
+const IID      __cdecl IID_IDesktopGadget =
     { 0xC1646BC4, 0xF298, 0x4F91, { 0xA2, 0x04, 0xEB, 0x2D, 0xD1, 0x70, 0x9D, 0x1A } };
-EXTERN_C const IID      IID_IHomeGroup =
+const IID      __cdecl IID_IHomeGroup =
     { 0x7A3BD1D9, 0x35A9, 0x4FB3, { 0xA4, 0x67, 0xF4, 0x8C, 0xAC, 0x35, 0xE2, 0xD0 } };
-EXTERN_C const IID      IID_IInitializeWithPropertyStore =
+const IID      __cdecl IID_IInitializeWithPropertyStore =
     { 0xC3E12EB5, 0x7D8D, 0x44F8, { 0xB6, 0xDD, 0x0E, 0x77, 0xB3, 0x4D, 0x6D, 0xE4 } };
-EXTERN_C const IID      IID_IOpenSearchSource =
+const IID      __cdecl IID_IOpenSearchSource =
     { 0xF0EE7333, 0xE6FC, 0x479B, { 0x9F, 0x25, 0xA8, 0x60, 0xC2, 0x34, 0xA3, 0x8E } };
-EXTERN_C const IID      IID_IShellLibrary =
+const IID      __cdecl IID_IShellLibrary =
     { 0x11A66EFA, 0x382E, 0x451A, { 0x92, 0x34, 0x1E, 0x0E, 0x12, 0xEF, 0x30, 0x85 } };
-EXTERN_C const IID      LIBID_ShellObjects =
+const IID      __cdecl LIBID_ShellObjects =
     { 0x50A7E9B1, 0x70EF, 0x11D1, { 0xB7, 0x5A, 0x00, 0xA0, 0xC9, 0x05, 0x64, 0xFE } };
-EXTERN_C const CLSID    CLSID_ShellDesktop =
+const CLSID    __cdecl CLSID_ShellDesktop =
     { 0x00021400, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const CLSID    CLSID_ShellFSFolder =
+const CLSID    __cdecl CLSID_ShellFSFolder =
     { 0xF3364BA0, 0x65B9, 0x11CE, { 0xA9, 0xBA, 0x00, 0xAA, 0x00, 0x4A, 0xE8, 0x37 } };
-EXTERN_C const CLSID    CLSID_NetworkPlaces =
+const CLSID    __cdecl CLSID_NetworkPlaces =
     { 0x208D2C60, 0x3AEA, 0x1069, { 0xA2, 0xD7, 0x08, 0x00, 0x2B, 0x30, 0x30, 0x9D } };
-EXTERN_C const CLSID    CLSID_ShellLink =
+const CLSID    __cdecl CLSID_ShellLink =
     { 0x00021401, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const CLSID    CLSID_QueryCancelAutoPlay =
+const CLSID    __cdecl CLSID_QueryCancelAutoPlay =
     { 0x331F1768, 0x05A9, 0x4DDD, { 0xB8, 0x6E, 0xDA, 0xE3, 0x4D, 0xDC, 0x99, 0x8A } };
-EXTERN_C const CLSID    CLSID_DriveSizeCategorizer =
+const CLSID    __cdecl CLSID_DriveSizeCategorizer =
     { 0x94357B53, 0xCA29, 0x4B78, { 0x83, 0xAE, 0xE8, 0xFE, 0x74, 0x09, 0x13, 0x4F } };
-EXTERN_C const CLSID    CLSID_DriveTypeCategorizer =
+const CLSID    __cdecl CLSID_DriveTypeCategorizer =
     { 0xB0A8F3CF, 0x4333, 0x4BAB, { 0x88, 0x73, 0x1C, 0xCB, 0x1C, 0xAD, 0xA4, 0x8B } };
-EXTERN_C const CLSID    CLSID_FreeSpaceCategorizer =
+const CLSID    __cdecl CLSID_FreeSpaceCategorizer =
     { 0xB5607793, 0x24AC, 0x44C7, { 0x82, 0xE2, 0x83, 0x17, 0x26, 0xAA, 0x6C, 0xB7 } };
-EXTERN_C const CLSID    CLSID_TimeCategorizer =
+const CLSID    __cdecl CLSID_TimeCategorizer =
     { 0x3BB4118F, 0xDDFD, 0x4D30, { 0xA3, 0x48, 0x9F, 0xB5, 0xD6, 0xBF, 0x1A, 0xFE } };
-EXTERN_C const CLSID    CLSID_SizeCategorizer =
+const CLSID    __cdecl CLSID_SizeCategorizer =
     { 0x55D7B852, 0xF6D1, 0x42F2, { 0xAA, 0x75, 0x87, 0x28, 0xA1, 0xB2, 0xD2, 0x64 } };
-EXTERN_C const CLSID    CLSID_AlphabeticalCategorizer =
+const CLSID    __cdecl CLSID_AlphabeticalCategorizer =
     { 0x3C2654C6, 0x7372, 0x4F6B, { 0xB3, 0x10, 0x55, 0xD6, 0x12, 0x8F, 0x49, 0xD2 } };
-EXTERN_C const CLSID    CLSID_MergedCategorizer =
+const CLSID    __cdecl CLSID_MergedCategorizer =
     { 0x8E827C11, 0x33E7, 0x4BC1, { 0xB2, 0x42, 0x8C, 0xD9, 0xA1, 0xC2, 0xB3, 0x04 } };
-EXTERN_C const CLSID    CLSID_ImageProperties =
+const CLSID    __cdecl CLSID_ImageProperties =
     { 0x7AB770C7, 0x0E23, 0x4D7A, { 0x8A, 0xA2, 0x19, 0xBF, 0xAD, 0x47, 0x98, 0x29 } };
-EXTERN_C const CLSID    CLSID_PropertiesUI =
+const CLSID    __cdecl CLSID_PropertiesUI =
     { 0xD912F8CF, 0x0396, 0x4915, { 0x88, 0x4E, 0xFB, 0x42, 0x5D, 0x32, 0x94, 0x3B } };
-EXTERN_C const CLSID    CLSID_UserNotification =
+const CLSID    __cdecl CLSID_UserNotification =
     { 0x0010890E, 0x8789, 0x413C, { 0xAD, 0xBC, 0x48, 0xF5, 0xB5, 0x11, 0xB3, 0xAF } };
-EXTERN_C const CLSID    CLSID_CDBurn =
+const CLSID    __cdecl CLSID_CDBurn =
     { 0xFBEB8A05, 0xBEEE, 0x4442, { 0x80, 0x4E, 0x40, 0x9D, 0x6C, 0x45, 0x15, 0xE9 } };
-EXTERN_C const CLSID    CLSID_TaskbarList =
+const CLSID    __cdecl CLSID_TaskbarList =
     { 0x56FDF344, 0xFD6D, 0x11D0, { 0x95, 0x8A, 0x00, 0x60, 0x97, 0xC9, 0xA0, 0x90 } };
-EXTERN_C const CLSID    CLSID_StartMenuPin =
+const CLSID    __cdecl CLSID_StartMenuPin =
     { 0xA2A9545D, 0xA0C2, 0x42B4, { 0x97, 0x08, 0xA0, 0xB2, 0xBA, 0xDD, 0x77, 0xC8 } };
-EXTERN_C const CLSID    CLSID_WebWizardHost =
+const CLSID    __cdecl CLSID_WebWizardHost =
     { 0xC827F149, 0x55C1, 0x4D28, { 0x93, 0x5E, 0x57, 0xE4, 0x7C, 0xAE, 0xD9, 0x73 } };
-EXTERN_C const CLSID    CLSID_PublishDropTarget =
+const CLSID    __cdecl CLSID_PublishDropTarget =
     { 0xCC6EEFFB, 0x43F6, 0x46C5, { 0x96, 0x19, 0x51, 0xD5, 0x71, 0x96, 0x7F, 0x7D } };
-EXTERN_C const CLSID    CLSID_PublishingWizard =
+const CLSID    __cdecl CLSID_PublishingWizard =
     { 0x6B33163C, 0x76A5, 0x4B6C, { 0xBF, 0x21, 0x45, 0xDE, 0x9C, 0xD5, 0x03, 0xA1 } };
-EXTERN_C const CLSID    CLSID_InternetPrintOrdering =
+const CLSID    __cdecl CLSID_InternetPrintOrdering =
     { 0xADD36AA8, 0x751A, 0x4579, { 0xA2, 0x66, 0xD6, 0x6F, 0x52, 0x02, 0xCC, 0xBB } };
-EXTERN_C const CLSID    CLSID_FolderViewHost =
+const CLSID    __cdecl CLSID_FolderViewHost =
     { 0x20B1CB23, 0x6968, 0x4EB9, { 0xB7, 0xD4, 0xA6, 0x6D, 0x00, 0xD0, 0x7C, 0xEE } };
-EXTERN_C const CLSID    CLSID_ExplorerBrowser =
+const CLSID    __cdecl CLSID_ExplorerBrowser =
     { 0x71F96385, 0xDDD6, 0x48D3, { 0xA0, 0xC1, 0xAE, 0x06, 0xE8, 0xB0, 0x55, 0xFB } };
-EXTERN_C const CLSID    CLSID_ImageRecompress =
+const CLSID    __cdecl CLSID_ImageRecompress =
     { 0x6E33091C, 0xD2F8, 0x4740, { 0xB5, 0x5E, 0x2E, 0x11, 0xD1, 0x47, 0x7A, 0x2C } };
-EXTERN_C const CLSID    CLSID_TrayBandSiteService =
+const CLSID    __cdecl CLSID_TrayBandSiteService =
     { 0xF60AD0A0, 0xE5E1, 0x45CB, { 0xB5, 0x1A, 0xE1, 0x5B, 0x9F, 0x8B, 0x29, 0x34 } };
-EXTERN_C const CLSID    CLSID_TrayDeskBand =
+const CLSID    __cdecl CLSID_TrayDeskBand =
     { 0xE6442437, 0x6C68, 0x4F52, { 0x94, 0xDD, 0x2C, 0xFE, 0xD2, 0x67, 0xEF, 0xB9 } };
-EXTERN_C const CLSID    CLSID_AttachmentServices =
+const CLSID    __cdecl CLSID_AttachmentServices =
     { 0x4125DD96, 0xE03A, 0x4103, { 0x8F, 0x70, 0xE0, 0x59, 0x7D, 0x80, 0x3B, 0x9C } };
-EXTERN_C const CLSID    CLSID_DocPropShellExtension =
+const CLSID    __cdecl CLSID_DocPropShellExtension =
     { 0x883373C3, 0xBF89, 0x11D1, { 0xBE, 0x35, 0x08, 0x00, 0x36, 0xB1, 0x1A, 0x03 } };
-EXTERN_C const CLSID    CLSID_ShellItem =
+const CLSID    __cdecl CLSID_ShellItem =
     { 0x9AC9FBE1, 0xE0A2, 0x4AD6, { 0xB4, 0xEE, 0xE2, 0x12, 0x01, 0x3E, 0xA9, 0x17 } };
-EXTERN_C const CLSID    CLSID_NamespaceWalker =
+const CLSID    __cdecl CLSID_NamespaceWalker =
     { 0x72EB61E0, 0x8672, 0x4303, { 0x91, 0x75, 0xF2, 0xE4, 0xC6, 0x8B, 0x2E, 0x7C } };
-EXTERN_C const CLSID    CLSID_FileOperation =
+const CLSID    __cdecl CLSID_FileOperation =
     { 0x3AD05575, 0x8857, 0x4850, { 0x92, 0x77, 0x11, 0xB8, 0x5B, 0xDB, 0x8E, 0x09 } };
-EXTERN_C const CLSID    CLSID_FileOpenDialog =
+const CLSID    __cdecl CLSID_FileOpenDialog =
     { 0xDC1C5A9C, 0xE88A, 0x4DDE, { 0xA5, 0xA1, 0x60, 0xF8, 0x2A, 0x20, 0xAE, 0xF7 } };
-EXTERN_C const CLSID    CLSID_FileSaveDialog =
+const CLSID    __cdecl CLSID_FileSaveDialog =
     { 0xC0B4E2F3, 0xBA21, 0x4773, { 0x8D, 0xBA, 0x33, 0x5E, 0xC9, 0x46, 0xEB, 0x8B } };
-EXTERN_C const CLSID    CLSID_KnownFolderManager =
+const CLSID    __cdecl CLSID_KnownFolderManager =
     { 0x4DF0C730, 0xDF9D, 0x4AE3, { 0x91, 0x53, 0xAA, 0x6B, 0x82, 0xE9, 0x79, 0x5A } };
-EXTERN_C const CLSID    CLSID_FSCopyHandler =
+const CLSID    __cdecl CLSID_FSCopyHandler =
     { 0xD197380A, 0x0A79, 0x4DC8, { 0xA0, 0x33, 0xED, 0x88, 0x2C, 0x2F, 0xA1, 0x4B } };
-EXTERN_C const CLSID    CLSID_SharingConfigurationManager =
+const CLSID    __cdecl CLSID_SharingConfigurationManager =
     { 0x49F371E1, 0x8C5C, 0x4D9C, { 0x9A, 0x3B, 0x54, 0xA6, 0x82, 0x7F, 0x51, 0x3C } };
-EXTERN_C const CLSID    CLSID_PreviousVersions =
+const CLSID    __cdecl CLSID_PreviousVersions =
     { 0x596AB062, 0xB4D2, 0x4215, { 0x9F, 0x74, 0xE9, 0x10, 0x9B, 0x0A, 0x81, 0x53 } };
-EXTERN_C const CLSID    CLSID_NetworkConnections =
+const CLSID    __cdecl CLSID_NetworkConnections =
     { 0x7007ACC7, 0x3202, 0x11D1, { 0xAA, 0xD2, 0x00, 0x80, 0x4F, 0xC1, 0x27, 0x0E } };
-EXTERN_C const CLSID    CLSID_NamespaceTreeControl =
+const CLSID    __cdecl CLSID_NamespaceTreeControl =
     { 0xAE054212, 0x3535, 0x4430, { 0x83, 0xED, 0xD5, 0x01, 0xAA, 0x66, 0x80, 0xE6 } };
-EXTERN_C const CLSID    CLSID_IENamespaceTreeControl =
+const CLSID    __cdecl CLSID_IENamespaceTreeControl =
     { 0xACE52D03, 0xE5CD, 0x4B20, { 0x82, 0xFF, 0xE7, 0x1B, 0x11, 0xBE, 0xAE, 0x1D } };
-EXTERN_C const CLSID    CLSID_ScheduledTasks =
+const CLSID    __cdecl CLSID_ScheduledTasks =
     { 0xD6277990, 0x4C6A, 0x11CF, { 0x8D, 0x87, 0x00, 0xAA, 0x00, 0x60, 0xF5, 0xBF } };
-EXTERN_C const CLSID    CLSID_ApplicationAssociationRegistration =
+const CLSID    __cdecl CLSID_ApplicationAssociationRegistration =
     { 0x591209C7, 0x767B, 0x42B2, { 0x9F, 0xBA, 0x44, 0xEE, 0x46, 0x15, 0xF2, 0xC7 } };
-EXTERN_C const CLSID    CLSID_ApplicationAssociationRegistrationUI =
+const CLSID    __cdecl CLSID_ApplicationAssociationRegistrationUI =
     { 0x1968106D, 0xF3B5, 0x44CF, { 0x89, 0x0E, 0x11, 0x6F, 0xCB, 0x9E, 0xCE, 0xF1 } };
-EXTERN_C const CLSID    CLSID_SearchFolderItemFactory =
+const CLSID    __cdecl CLSID_SearchFolderItemFactory =
     { 0x14010E02, 0xBBBD, 0x41F0, { 0x88, 0xE3, 0xED, 0xA3, 0x71, 0x21, 0x65, 0x84 } };
-EXTERN_C const CLSID    CLSID_OpenControlPanel =
+const CLSID    __cdecl CLSID_OpenControlPanel =
     { 0x06622D85, 0x6856, 0x4460, { 0x8D, 0xE1, 0xA8, 0x19, 0x21, 0xB4, 0x1C, 0x4B } };
-EXTERN_C const CLSID    CLSID_ComputerInfoAdvise =
+const CLSID    __cdecl CLSID_ComputerInfoAdvise =
     { 0x00A77FF7, 0xA514, 0x493E, { 0xB7, 0x21, 0xCD, 0xF8, 0xCB, 0x0F, 0x5B, 0x59 } };
-EXTERN_C const CLSID    CLSID_MailRecipient =
+const CLSID    __cdecl CLSID_MailRecipient =
     { 0x9E56BE60, 0xC50F, 0x11CF, { 0x9A, 0x2C, 0x00, 0xA0, 0xC9, 0x0A, 0x90, 0xCE } };
-EXTERN_C const CLSID    CLSID_NetworkExplorerFolder =
+const CLSID    __cdecl CLSID_NetworkExplorerFolder =
     { 0xF02C1A0D, 0xBE21, 0x4350, { 0x88, 0xB0, 0x73, 0x67, 0xFC, 0x96, 0xEF, 0x3C } };
-EXTERN_C const CLSID    CLSID_DestinationList =
+const CLSID    __cdecl CLSID_DestinationList =
     { 0x77F10CF0, 0x3DB5, 0x4966, { 0xB5, 0x20, 0xB7, 0xC5, 0x4F, 0xD3, 0x5E, 0xD6 } };
-EXTERN_C const CLSID    CLSID_ApplicationDestinations =
+const CLSID    __cdecl CLSID_ApplicationDestinations =
     { 0x86C14003, 0x4D6B, 0x4EF3, { 0xA7, 0xB4, 0x05, 0x06, 0x66, 0x3B, 0x2E, 0x68 } };
-EXTERN_C const CLSID    CLSID_ApplicationDocumentLists =
+const CLSID    __cdecl CLSID_ApplicationDocumentLists =
     { 0x86BEC222, 0x30F2, 0x47E0, { 0x9F, 0x25, 0x60, 0xD1, 0x1C, 0xD7, 0x5C, 0x28 } };
-EXTERN_C const CLSID    CLSID_HomeGroup =
+const CLSID    __cdecl CLSID_HomeGroup =
     { 0xDE77BA04, 0x3C92, 0x4D11, { 0xA1, 0xA5, 0x42, 0x35, 0x2A, 0x53, 0xE0, 0xE3 } };
-EXTERN_C const CLSID    CLSID_ShellLibrary =
+const CLSID    __cdecl CLSID_ShellLibrary =
     { 0xD9B3211D, 0xE57F, 0x4426, { 0xAA, 0xEF, 0x30, 0xA8, 0x06, 0xAD, 0xD3, 0x97 } };
-EXTERN_C const CLSID    CLSID_AppStartupLink =
+const CLSID    __cdecl CLSID_AppStartupLink =
     { 0x273EB5E7, 0x88B0, 0x4843, { 0xBF, 0xEF, 0xE2, 0xC8, 0x1D, 0x43, 0xAA, 0xE5 } };
-EXTERN_C const CLSID    CLSID_EnumerateObjectCollection =
+const CLSID    __cdecl CLSID_EnumerateObjectCollection =
     { 0x2D3468C1, 0x36A7, 0x43B6, { 0xAC, 0x24, 0xD3, 0xF0, 0x2F, 0xD9, 0x60, 0x7A } };
-EXTERN_C const CLSID    CLSID_DesktopGadget =
+const CLSID    __cdecl CLSID_DesktopGadget =
     { 0x924CCC1B, 0x6562, 0x4C85, { 0x86, 0x57, 0xD1, 0x77, 0x92, 0x52, 0x22, 0xB6 } };
-EXTERN_C const IID      IID_IAssocHandlerInvoker =
+const IID      __cdecl IID_IAssocHandlerInvoker =
     { 0x92218CAB, 0xECAA, 0x4335, { 0x81, 0x33, 0x80, 0x7F, 0xD2, 0x34, 0xC2, 0xEE } };
-EXTERN_C const IID      IID_IAssocHandler =
+const IID      __cdecl IID_IAssocHandler =
     { 0xF04061AC, 0x1659, 0x4A3F, { 0xA9, 0x54, 0x77, 0x5A, 0xA5, 0x7F, 0xC0, 0x83 } };
-EXTERN_C const IID      IID_IEnumAssocHandlers =
+const IID      __cdecl IID_IEnumAssocHandlers =
     { 0x973810AE, 0x9599, 0x4B88, { 0x9E, 0x4D, 0x6E, 0xE9, 0x8C, 0x95, 0x52, 0xDA } };
 
 /* knownfld.h / knownfolders.h */
-EXTERN_C const GUID FOLDERID_NetworkFolder =
+const GUID     __cdecl FOLDERID_NetworkFolder =
     { 0xD20BEEC4, 0x5CA8, 0x4905, { 0xAE, 0x3B, 0xBF, 0x25, 0x1E, 0xA0, 0x9B, 0x53 } };
-EXTERN_C const GUID FOLDERID_ComputerFolder =
+const GUID     __cdecl FOLDERID_ComputerFolder =
     { 0x0AC0837C, 0xBBF8, 0x452A, { 0x85, 0x0D, 0x79, 0xD0, 0x8E, 0x66, 0x7C, 0xA7 } };
-EXTERN_C const GUID FOLDERID_InternetFolder =
+const GUID     __cdecl FOLDERID_InternetFolder =
     { 0x4D9F7874, 0x4E0C, 0x4904, { 0x96, 0x7B, 0x40, 0xB0, 0xD2, 0x0C, 0x3E, 0x4B } };
-EXTERN_C const GUID FOLDERID_ControlPanelFolder =
+const GUID     __cdecl FOLDERID_ControlPanelFolder =
     { 0x82A74AEB, 0xAEB4, 0x465C, { 0xA0, 0x14, 0xD0, 0x97, 0xEE, 0x34, 0x6D, 0x63 } };
-EXTERN_C const GUID FOLDERID_PrintersFolder =
+const GUID     __cdecl FOLDERID_PrintersFolder =
     { 0x76FC4E2D, 0xD6AD, 0x4519, { 0xA6, 0x63, 0x37, 0xBD, 0x56, 0x06, 0x81, 0x85 } };
-EXTERN_C const GUID FOLDERID_SyncManagerFolder =
+const GUID     __cdecl FOLDERID_SyncManagerFolder =
     { 0x43668BF8, 0xC14E, 0x49B2, { 0x97, 0xC9, 0x74, 0x77, 0x84, 0xD7, 0x84, 0xB7 } };
-EXTERN_C const GUID FOLDERID_SyncSetupFolder =
+const GUID     __cdecl FOLDERID_SyncSetupFolder =
     { 0x0F214138, 0xB1D3, 0x4A90, { 0xBB, 0xA9, 0x27, 0xCB, 0xC0, 0xC5, 0x38, 0x9A } };
-EXTERN_C const GUID FOLDERID_ConflictFolder =
+const GUID     __cdecl FOLDERID_ConflictFolder =
     { 0x4BFEFB45, 0x347D, 0x4006, { 0xA5, 0xBE, 0xAC, 0x0C, 0xB0, 0x56, 0x71, 0x92 } };
-EXTERN_C const GUID FOLDERID_SyncResultsFolder =
+const GUID     __cdecl FOLDERID_SyncResultsFolder =
     { 0x289A9A43, 0xBE44, 0x4057, { 0xA4, 0x1B, 0x58, 0x7A, 0x76, 0xD7, 0xE7, 0xF9 } };
-EXTERN_C const GUID FOLDERID_RecycleBinFolder =
+const GUID     __cdecl FOLDERID_RecycleBinFolder =
     { 0xB7534046, 0x3ECB, 0x4C18, { 0xBE, 0x4E, 0x64, 0xCD, 0x4C, 0xB7, 0xD6, 0xAC } };
-EXTERN_C const GUID FOLDERID_ConnectionsFolder =
+const GUID     __cdecl FOLDERID_ConnectionsFolder =
     { 0x6F0CD92B, 0x2E97, 0x45D1, { 0x88, 0xFF, 0xB0, 0xD1, 0x86, 0xB8, 0xDE, 0xDD } };
-EXTERN_C const GUID FOLDERID_Fonts =
+const GUID     __cdecl FOLDERID_Fonts =
     { 0xFD228CB7, 0xAE11, 0x4AE3, { 0x86, 0x4C, 0x16, 0xF3, 0x91, 0x0A, 0xB8, 0xFE } };
-EXTERN_C const GUID FOLDERID_Desktop =
+const GUID     __cdecl FOLDERID_Desktop =
     { 0xB4BFCC3A, 0xDB2C, 0x424C, { 0xB0, 0x29, 0x7F, 0xE9, 0x9A, 0x87, 0xC6, 0x41 } };
-EXTERN_C const GUID FOLDERID_Startup =
+const GUID     __cdecl FOLDERID_Startup =
     { 0xB97D20BB, 0xF46A, 0x4C97, { 0xBA, 0x10, 0x5E, 0x36, 0x08, 0x43, 0x08, 0x54 } };
-EXTERN_C const GUID FOLDERID_Programs =
+const GUID     __cdecl FOLDERID_Programs =
     { 0xA77F5D77, 0x2E2B, 0x44C3, { 0xA6, 0xA2, 0xAB, 0xA6, 0x01, 0x05, 0x4A, 0x51 } };
-EXTERN_C const GUID FOLDERID_StartMenu =
+const GUID     __cdecl FOLDERID_StartMenu =
     { 0x625B53C3, 0xAB48, 0x4EC1, { 0xBA, 0x1F, 0xA1, 0xEF, 0x41, 0x46, 0xFC, 0x19 } };
-EXTERN_C const GUID FOLDERID_Recent =
+const GUID     __cdecl FOLDERID_Recent =
     { 0xAE50C081, 0xEBD2, 0x438A, { 0x86, 0x55, 0x8A, 0x09, 0x2E, 0x34, 0x98, 0x7A } };
-EXTERN_C const GUID FOLDERID_SendTo =
+const GUID     __cdecl FOLDERID_SendTo =
     { 0x8983036C, 0x27C0, 0x404B, { 0x8F, 0x08, 0x10, 0x2D, 0x10, 0xDC, 0xFD, 0x74 } };
-EXTERN_C const GUID FOLDERID_Documents =
+const GUID     __cdecl FOLDERID_Documents =
     { 0xFDD39AD0, 0x238F, 0x46AF, { 0xAD, 0xB4, 0x6C, 0x85, 0x48, 0x03, 0x69, 0xC7 } };
-EXTERN_C const GUID FOLDERID_Favorites =
+const GUID     __cdecl FOLDERID_Favorites =
     { 0x1777F761, 0x68AD, 0x4D8A, { 0x87, 0xBD, 0x30, 0xB7, 0x59, 0xFA, 0x33, 0xDD } };
-EXTERN_C const GUID FOLDERID_NetHood =
+const GUID     __cdecl FOLDERID_NetHood =
     { 0xC5ABBF53, 0xE17F, 0x4121, { 0x89, 0x00, 0x86, 0x62, 0x6F, 0xC2, 0xC9, 0x73 } };
-EXTERN_C const GUID FOLDERID_PrintHood =
+const GUID     __cdecl FOLDERID_PrintHood =
     { 0x9274BD8D, 0xCFD1, 0x41C3, { 0xB3, 0x5E, 0xB1, 0x3F, 0x55, 0xA7, 0x58, 0xF4 } };
-EXTERN_C const GUID FOLDERID_Templates =
+const GUID     __cdecl FOLDERID_Templates =
     { 0xA63293E8, 0x664E, 0x48DB, { 0xA0, 0x79, 0xDF, 0x75, 0x9E, 0x05, 0x09, 0xF7 } };
-EXTERN_C const GUID FOLDERID_CommonStartup =
+const GUID     __cdecl FOLDERID_CommonStartup =
     { 0x82A5EA35, 0xD9CD, 0x47C5, { 0x96, 0x29, 0xE1, 0x5D, 0x2F, 0x71, 0x4E, 0x6E } };
-EXTERN_C const GUID FOLDERID_CommonPrograms =
+const GUID     __cdecl FOLDERID_CommonPrograms =
     { 0x0139D44E, 0x6AFE, 0x49F2, { 0x86, 0x90, 0x3D, 0xAF, 0xCA, 0xE6, 0xFF, 0xB8 } };
-EXTERN_C const GUID FOLDERID_CommonStartMenu =
+const GUID     __cdecl FOLDERID_CommonStartMenu =
     { 0xA4115719, 0xD62E, 0x491D, { 0xAA, 0x7C, 0xE7, 0x4B, 0x8B, 0xE3, 0xB0, 0x67 } };
-EXTERN_C const GUID FOLDERID_PublicDesktop =
+const GUID     __cdecl FOLDERID_PublicDesktop =
     { 0xC4AA340D, 0xF20F, 0x4863, { 0xAF, 0xEF, 0xF8, 0x7E, 0xF2, 0xE6, 0xBA, 0x25 } };
-EXTERN_C const GUID FOLDERID_ProgramData =
+const GUID     __cdecl FOLDERID_ProgramData =
     { 0x62AB5D82, 0xFDC1, 0x4DC3, { 0xA9, 0xDD, 0x07, 0x0D, 0x1D, 0x49, 0x5D, 0x97 } };
-EXTERN_C const GUID FOLDERID_CommonTemplates =
+const GUID     __cdecl FOLDERID_CommonTemplates =
     { 0xB94237E7, 0x57AC, 0x4347, { 0x91, 0x51, 0xB0, 0x8C, 0x6C, 0x32, 0xD1, 0xF7 } };
-EXTERN_C const GUID FOLDERID_PublicDocuments =
+const GUID     __cdecl FOLDERID_PublicDocuments =
     { 0xED4824AF, 0xDCE4, 0x45A8, { 0x81, 0xE2, 0xFC, 0x79, 0x65, 0x08, 0x36, 0x34 } };
-EXTERN_C const GUID FOLDERID_RoamingAppData =
+const GUID     __cdecl FOLDERID_RoamingAppData =
     { 0x3EB685DB, 0x65F9, 0x4CF6, { 0xA0, 0x3A, 0xE3, 0xEF, 0x65, 0x72, 0x9F, 0x3D } };
-EXTERN_C const GUID FOLDERID_LocalAppData =
+const GUID     __cdecl FOLDERID_LocalAppData =
     { 0xF1B32785, 0x6FBA, 0x4FCF, { 0x9D, 0x55, 0x7B, 0x8E, 0x7F, 0x15, 0x70, 0x91 } };
-EXTERN_C const GUID FOLDERID_LocalAppDataLow =
+const GUID     __cdecl FOLDERID_LocalAppDataLow =
     { 0xA520A1A4, 0x1780, 0x4FF6, { 0xBD, 0x18, 0x16, 0x73, 0x43, 0xC5, 0xAF, 0x16 } };
-EXTERN_C const GUID FOLDERID_InternetCache =
+const GUID     __cdecl FOLDERID_InternetCache =
     { 0x352481E8, 0x33BE, 0x4251, { 0xBA, 0x85, 0x60, 0x07, 0xCA, 0xED, 0xCF, 0x9D } };
-EXTERN_C const GUID FOLDERID_Cookies =
+const GUID     __cdecl FOLDERID_Cookies =
     { 0x2B0F765D, 0xC0E9, 0x4171, { 0x90, 0x8E, 0x08, 0xA6, 0x11, 0xB8, 0x4F, 0xF6 } };
-EXTERN_C const GUID FOLDERID_History =
+const GUID     __cdecl FOLDERID_History =
     { 0xD9DC8A3B, 0xB784, 0x432E, { 0xA7, 0x81, 0x5A, 0x11, 0x30, 0xA7, 0x59, 0x63 } };
-EXTERN_C const GUID FOLDERID_System =
+const GUID     __cdecl FOLDERID_System =
     { 0x1AC14E77, 0x02E7, 0x4E5D, { 0xB7, 0x44, 0x2E, 0xB1, 0xAE, 0x51, 0x98, 0xB7 } };
-EXTERN_C const GUID FOLDERID_SystemX86 =
+const GUID     __cdecl FOLDERID_SystemX86 =
     { 0xD65231B0, 0xB2F1, 0x4857, { 0xA4, 0xCE, 0xA8, 0xE7, 0xC6, 0xEA, 0x7D, 0x27 } };
-EXTERN_C const GUID FOLDERID_Windows =
+const GUID     __cdecl FOLDERID_Windows =
     { 0xF38BF404, 0x1D43, 0x42F2, { 0x93, 0x05, 0x67, 0xDE, 0x0B, 0x28, 0xFC, 0x23 } };
-EXTERN_C const GUID FOLDERID_Profile =
+const GUID     __cdecl FOLDERID_Profile =
     { 0x5E6C858F, 0x0E22, 0x4760, { 0x9A, 0xFE, 0xEA, 0x33, 0x17, 0xB6, 0x71, 0x73 } };
-EXTERN_C const GUID FOLDERID_Pictures =
+const GUID     __cdecl FOLDERID_Pictures =
     { 0x33E28130, 0x4E1E, 0x4676, { 0x83, 0x5A, 0x98, 0x39, 0x5C, 0x3B, 0xC3, 0xBB } };
-EXTERN_C const GUID FOLDERID_ProgramFilesX86 =
+const GUID     __cdecl FOLDERID_ProgramFilesX86 =
     { 0x7C5A40EF, 0xA0FB, 0x4BFC, { 0x87, 0x4A, 0xC0, 0xF2, 0xE0, 0xB9, 0xFA, 0x8E } };
-EXTERN_C const GUID FOLDERID_ProgramFilesCommonX86 =
+const GUID     __cdecl FOLDERID_ProgramFilesCommonX86 =
     { 0xDE974D24, 0xD9C6, 0x4D3E, { 0xBF, 0x91, 0xF4, 0x45, 0x51, 0x20, 0xB9, 0x17 } };
-EXTERN_C const GUID FOLDERID_ProgramFilesX64 =
+const GUID     __cdecl FOLDERID_ProgramFilesX64 =
     { 0x6D809377, 0x6AF0, 0x444B, { 0x89, 0x57, 0xA3, 0x77, 0x3F, 0x02, 0x20, 0x0E } };
-EXTERN_C const GUID FOLDERID_ProgramFilesCommonX64 =
+const GUID     __cdecl FOLDERID_ProgramFilesCommonX64 =
     { 0x6365D5A7, 0x0F0D, 0x45E5, { 0x87, 0xF6, 0x0D, 0xA5, 0x6B, 0x6A, 0x4F, 0x7D } };
-EXTERN_C const GUID FOLDERID_ProgramFiles =
+const GUID     __cdecl FOLDERID_ProgramFiles =
     { 0x905E63B6, 0xC1BF, 0x494E, { 0xB2, 0x9C, 0x65, 0xB7, 0x32, 0xD3, 0xD2, 0x1A } };
-EXTERN_C const GUID FOLDERID_ProgramFilesCommon =
+const GUID     __cdecl FOLDERID_ProgramFilesCommon =
     { 0xF7F1ED05, 0x9F6D, 0x47A2, { 0xAA, 0xAE, 0x29, 0xD3, 0x17, 0xC6, 0xF0, 0x66 } };
-EXTERN_C const GUID FOLDERID_UserProgramFiles =
+const GUID     __cdecl FOLDERID_UserProgramFiles =
     { 0x5CD7AEE2, 0x2219, 0x4A67, { 0xB8, 0x5D, 0x6C, 0x9C, 0xE1, 0x56, 0x60, 0xCB } };
-EXTERN_C const GUID FOLDERID_UserProgramFilesCommon =
+const GUID     __cdecl FOLDERID_UserProgramFilesCommon =
     { 0xBCBD3057, 0xCA5C, 0x4622, { 0xB4, 0x2D, 0xBC, 0x56, 0xDB, 0x0A, 0xE5, 0x16 } };
-EXTERN_C const GUID FOLDERID_AdminTools =
+const GUID     __cdecl FOLDERID_AdminTools =
     { 0x724EF170, 0xA42D, 0x4FEF, { 0x9F, 0x26, 0xB6, 0x0E, 0x84, 0x6F, 0xBA, 0x4F } };
-EXTERN_C const GUID FOLDERID_CommonAdminTools =
+const GUID     __cdecl FOLDERID_CommonAdminTools =
     { 0xD0384E7D, 0xBAC3, 0x4797, { 0x8F, 0x14, 0xCB, 0xA2, 0x29, 0xB3, 0x92, 0xB5 } };
-EXTERN_C const GUID FOLDERID_Music =
+const GUID     __cdecl FOLDERID_Music =
     { 0x4BD8D571, 0x6D19, 0x48D3, { 0xBE, 0x97, 0x42, 0x22, 0x20, 0x08, 0x0E, 0x43 } };
-EXTERN_C const GUID FOLDERID_Videos =
+const GUID     __cdecl FOLDERID_Videos =
     { 0x18989B1D, 0x99B5, 0x455B, { 0x84, 0x1C, 0xAB, 0x7C, 0x74, 0xE4, 0xDD, 0xFC } };
-EXTERN_C const GUID FOLDERID_Ringtones =
+const GUID     __cdecl FOLDERID_Ringtones =
     { 0xC870044B, 0xF49E, 0x4126, { 0xA9, 0xC3, 0xB5, 0x2A, 0x1F, 0xF4, 0x11, 0xE8 } };
-EXTERN_C const GUID FOLDERID_PublicPictures =
+const GUID     __cdecl FOLDERID_PublicPictures =
     { 0xB6EBFB86, 0x6907, 0x413C, { 0x9A, 0xF7, 0x4F, 0xC2, 0xAB, 0xF0, 0x7C, 0xC5 } };
-EXTERN_C const GUID FOLDERID_PublicMusic =
+const GUID     __cdecl FOLDERID_PublicMusic =
     { 0x3214FAB5, 0x9757, 0x4298, { 0xBB, 0x61, 0x92, 0xA9, 0xDE, 0xAA, 0x44, 0xFF } };
-EXTERN_C const GUID FOLDERID_PublicVideos =
+const GUID     __cdecl FOLDERID_PublicVideos =
     { 0x2400183A, 0x6185, 0x49FB, { 0xA2, 0xD8, 0x4A, 0x39, 0x2A, 0x60, 0x2B, 0xA3 } };
-EXTERN_C const GUID FOLDERID_PublicRingtones =
+const GUID     __cdecl FOLDERID_PublicRingtones =
     { 0xE555AB60, 0x153B, 0x4D17, { 0x9F, 0x04, 0xA5, 0xFE, 0x99, 0xFC, 0x15, 0xEC } };
-EXTERN_C const GUID FOLDERID_ResourceDir =
+const GUID     __cdecl FOLDERID_ResourceDir =
     { 0x8AD10C31, 0x2ADB, 0x4296, { 0xA8, 0xF7, 0xE4, 0x70, 0x12, 0x32, 0xC9, 0x72 } };
-EXTERN_C const GUID FOLDERID_LocalizedResourcesDir =
+const GUID     __cdecl FOLDERID_LocalizedResourcesDir =
     { 0x2A00375E, 0x224C, 0x49DE, { 0xB8, 0xD1, 0x44, 0x0D, 0xF7, 0xEF, 0x3D, 0xDC } };
-EXTERN_C const GUID FOLDERID_CommonOEMLinks =
+const GUID     __cdecl FOLDERID_CommonOEMLinks =
     { 0xC1BAE2D0, 0x10DF, 0x4334, { 0xBE, 0xDD, 0x7A, 0xA2, 0x0B, 0x22, 0x7A, 0x9D } };
-EXTERN_C const GUID FOLDERID_CDBurning =
+const GUID     __cdecl FOLDERID_CDBurning =
     { 0x9E52AB10, 0xF80D, 0x49DF, { 0xAC, 0xB8, 0x43, 0x30, 0xF5, 0x68, 0x78, 0x55 } };
-EXTERN_C const GUID FOLDERID_UserProfiles =
+const GUID     __cdecl FOLDERID_UserProfiles =
     { 0x0762D272, 0xC50A, 0x4BB0, { 0xA3, 0x82, 0x69, 0x7D, 0xCD, 0x72, 0x9B, 0x80 } };
-EXTERN_C const GUID FOLDERID_Playlists =
+const GUID     __cdecl FOLDERID_Playlists =
     { 0xDE92C1C7, 0x837F, 0x4F69, { 0xA3, 0xBB, 0x86, 0xE6, 0x31, 0x20, 0x4A, 0x23 } };
-EXTERN_C const GUID FOLDERID_SamplePlaylists =
+const GUID     __cdecl FOLDERID_SamplePlaylists =
     { 0x15CA69B3, 0x30EE, 0x49C1, { 0xAC, 0xE1, 0x6B, 0x5E, 0xC3, 0x72, 0xAF, 0xB5 } };
-EXTERN_C const GUID FOLDERID_SampleMusic =
+const GUID     __cdecl FOLDERID_SampleMusic =
     { 0xB250C668, 0xF57D, 0x4EE1, { 0xA6, 0x3C, 0x29, 0x0E, 0xE7, 0xD1, 0xAA, 0x1F } };
-EXTERN_C const GUID FOLDERID_SamplePictures =
+const GUID     __cdecl FOLDERID_SamplePictures =
     { 0xC4900540, 0x2379, 0x4C75, { 0x84, 0x4B, 0x64, 0xE6, 0xFA, 0xF8, 0x71, 0x6B } };
-EXTERN_C const GUID FOLDERID_SampleVideos =
+const GUID     __cdecl FOLDERID_SampleVideos =
     { 0x859EAD94, 0x2E85, 0x48AD, { 0xA7, 0x1A, 0x09, 0x69, 0xCB, 0x56, 0xA6, 0xCD } };
-EXTERN_C const GUID FOLDERID_PhotoAlbums =
+const GUID     __cdecl FOLDERID_PhotoAlbums =
     { 0x69D2CF90, 0xFC33, 0x4FB7, { 0x9A, 0x0C, 0xEB, 0xB0, 0xF0, 0xFC, 0xB4, 0x3C } };
-EXTERN_C const GUID FOLDERID_Public =
+const GUID     __cdecl FOLDERID_Public =
     { 0xDFDF76A2, 0xC82A, 0x4D63, { 0x90, 0x6A, 0x56, 0x44, 0xAC, 0x45, 0x73, 0x85 } };
-EXTERN_C const GUID FOLDERID_ChangeRemovePrograms =
+const GUID     __cdecl FOLDERID_ChangeRemovePrograms =
     { 0xDF7266AC, 0x9274, 0x4867, { 0x8D, 0x55, 0x3B, 0xD6, 0x61, 0xDE, 0x87, 0x2D } };
-EXTERN_C const GUID FOLDERID_AppUpdates =
+const GUID     __cdecl FOLDERID_AppUpdates =
     { 0xA305CE99, 0xF527, 0x492B, { 0x8B, 0x1A, 0x7E, 0x76, 0xFA, 0x98, 0xD6, 0xE4 } };
-EXTERN_C const GUID FOLDERID_AddNewPrograms =
+const GUID     __cdecl FOLDERID_AddNewPrograms =
     { 0xDE61D971, 0x5EBC, 0x4F02, { 0xA3, 0xA9, 0x6C, 0x82, 0x89, 0x5E, 0x5C, 0x04 } };
-EXTERN_C const GUID FOLDERID_Downloads =
+const GUID     __cdecl FOLDERID_Downloads =
     { 0x374DE920, 0x123F, 0x4565, { 0x91, 0x64, 0x39, 0xC4, 0x92, 0x5E, 0x46, 0x7B } };
-EXTERN_C const GUID FOLDERID_PublicDownloads =
+const GUID     __cdecl FOLDERID_PublicDownloads =
     { 0x3D644C9B, 0x1FB8, 0x4F30, { 0x9B, 0x45, 0xF6, 0x70, 0x23, 0x5F, 0x79, 0xC0 } };
-EXTERN_C const GUID FOLDERID_SavedSearches =
+const GUID     __cdecl FOLDERID_SavedSearches =
     { 0x7D1D3A04, 0xDEBB, 0x4115, { 0x95, 0xCF, 0x2F, 0x29, 0xDA, 0x29, 0x20, 0xDA } };
-EXTERN_C const GUID FOLDERID_QuickLaunch =
+const GUID     __cdecl FOLDERID_QuickLaunch =
     { 0x52A4F021, 0x7B75, 0x48A9, { 0x9F, 0x6B, 0x4B, 0x87, 0xA2, 0x10, 0xBC, 0x8F } };
-EXTERN_C const GUID FOLDERID_Contacts =
+const GUID     __cdecl FOLDERID_Contacts =
     { 0x56784854, 0xC6CB, 0x462B, { 0x81, 0x69, 0x88, 0xE3, 0x50, 0xAC, 0xB8, 0x82 } };
-EXTERN_C const GUID FOLDERID_SidebarParts =
+const GUID     __cdecl FOLDERID_SidebarParts =
     { 0xA75D362E, 0x50FC, 0x4FB7, { 0xAC, 0x2C, 0xA8, 0xBE, 0xAA, 0x31, 0x44, 0x93 } };
-EXTERN_C const GUID FOLDERID_SidebarDefaultParts =
+const GUID     __cdecl FOLDERID_SidebarDefaultParts =
     { 0x7B396E54, 0x9EC5, 0x4300, { 0xBE, 0x0A, 0x24, 0x82, 0xEB, 0xAE, 0x1A, 0x26 } };
-EXTERN_C const GUID FOLDERID_PublicGameTasks =
+const GUID     __cdecl FOLDERID_PublicGameTasks =
     { 0xDEBF2536, 0xE1A8, 0x4C59, { 0xB6, 0xA2, 0x41, 0x45, 0x86, 0x47, 0x6A, 0xEA } };
-EXTERN_C const GUID FOLDERID_GameTasks =
+const GUID     __cdecl FOLDERID_GameTasks =
     { 0x054FAE61, 0x4DD8, 0x4787, { 0x80, 0xB6, 0x09, 0x02, 0x20, 0xC4, 0xB7, 0x00 } };
-EXTERN_C const GUID FOLDERID_SavedGames =
+const GUID     __cdecl FOLDERID_SavedGames =
     { 0x4C5C32FF, 0xBB9D, 0x43B0, { 0xB5, 0xB4, 0x2D, 0x72, 0xE5, 0x4E, 0xAA, 0xA4 } };
-EXTERN_C const GUID FOLDERID_Games =
+const GUID     __cdecl FOLDERID_Games =
     { 0xCAC52C1A, 0xB53D, 0x4EDC, { 0x92, 0xD7, 0x6B, 0x2E, 0x8A, 0xC1, 0x94, 0x34 } };
-EXTERN_C const GUID FOLDERID_SEARCH_MAPI =
+const GUID     __cdecl FOLDERID_SEARCH_MAPI =
     { 0x98EC0E18, 0x2098, 0x4D44, { 0x86, 0x44, 0x66, 0x97, 0x93, 0x15, 0xA2, 0x81 } };
-EXTERN_C const GUID FOLDERID_SEARCH_CSC =
+const GUID     __cdecl FOLDERID_SEARCH_CSC =
     { 0xEE32E446, 0x31CA, 0x4ABA, { 0x81, 0x4F, 0xA5, 0xEB, 0xD2, 0xFD, 0x6D, 0x5E } };
-EXTERN_C const GUID FOLDERID_Links =
+const GUID     __cdecl FOLDERID_Links =
     { 0xBFB9D5E0, 0xC6A9, 0x404C, { 0xB2, 0xB2, 0xAE, 0x6D, 0xB6, 0xAF, 0x49, 0x68 } };
-EXTERN_C const GUID FOLDERID_UsersFiles =
+const GUID     __cdecl FOLDERID_UsersFiles =
     { 0xF3CE0F7C, 0x4901, 0x4ACC, { 0x86, 0x48, 0xD5, 0xD4, 0x4B, 0x04, 0xEF, 0x8F } };
-EXTERN_C const GUID FOLDERID_UsersLibraries =
+const GUID     __cdecl FOLDERID_UsersLibraries =
     { 0xA302545D, 0xDEFF, 0x464B, { 0xAB, 0xE8, 0x61, 0xC8, 0x64, 0x8D, 0x93, 0x9B } };
-EXTERN_C const GUID FOLDERID_SearchHome =
+const GUID     __cdecl FOLDERID_SearchHome =
     { 0x190337D1, 0xB8CA, 0x4121, { 0xA6, 0x39, 0x6D, 0x47, 0x2D, 0x16, 0x97, 0x2A } };
-EXTERN_C const GUID FOLDERID_OriginalImages =
+const GUID     __cdecl FOLDERID_OriginalImages =
     { 0x2C36C0AA, 0x5812, 0x4B87, { 0xBF, 0xD0, 0x4C, 0xD0, 0xDF, 0xB1, 0x9B, 0x39 } };
-EXTERN_C const GUID FOLDERID_DocumentsLibrary =
+const GUID     __cdecl FOLDERID_DocumentsLibrary =
     { 0x7B0DB17D, 0x9CD2, 0x4A93, { 0x97, 0x33, 0x46, 0xCC, 0x89, 0x02, 0x2E, 0x7C } };
-EXTERN_C const GUID FOLDERID_MusicLibrary =
+const GUID     __cdecl FOLDERID_MusicLibrary =
     { 0x2112AB0A, 0xC86A, 0x4FFE, { 0xA3, 0x68, 0x0D, 0xE9, 0x6E, 0x47, 0x01, 0x2E } };
-EXTERN_C const GUID FOLDERID_PicturesLibrary =
+const GUID     __cdecl FOLDERID_PicturesLibrary =
     { 0xA990AE9F, 0xA03B, 0x4E80, { 0x94, 0xBC, 0x99, 0x12, 0xD7, 0x50, 0x41, 0x04 } };
-EXTERN_C const GUID FOLDERID_VideosLibrary =
+const GUID     __cdecl FOLDERID_VideosLibrary =
     { 0x491E922F, 0x5643, 0x4AF4, { 0xA7, 0xEB, 0x4E, 0x7A, 0x13, 0x8D, 0x81, 0x74 } };
-EXTERN_C const GUID FOLDERID_RecordedTVLibrary =
+const GUID     __cdecl FOLDERID_RecordedTVLibrary =
     { 0x1A6FDBA2, 0xF42D, 0x4358, { 0xA7, 0x98, 0xB7, 0x4D, 0x74, 0x59, 0x26, 0xC5 } };
-EXTERN_C const GUID FOLDERID_HomeGroup =
+const GUID     __cdecl FOLDERID_HomeGroup =
     { 0x52528A6B, 0xB9E3, 0x4ADD, { 0xB6, 0x0D, 0x58, 0x8C, 0x2D, 0xBA, 0x84, 0x2D } };
-EXTERN_C const GUID FOLDERID_DeviceMetadataStore =
+const GUID     __cdecl FOLDERID_DeviceMetadataStore =
     { 0x5CE4A5E9, 0xE4EB, 0x479D, { 0xB8, 0x9F, 0x13, 0x0C, 0x02, 0x88, 0x61, 0x55 } };
-EXTERN_C const GUID FOLDERID_Libraries =
+const GUID     __cdecl FOLDERID_Libraries =
     { 0x1B3EA5DC, 0xB587, 0x4786, { 0xB4, 0xEF, 0xBD, 0x1D, 0xC3, 0x32, 0xAE, 0xAE } };
-EXTERN_C const GUID FOLDERID_PublicLibraries =
+const GUID     __cdecl FOLDERID_PublicLibraries =
     { 0x48DAF80B, 0xE6CF, 0x4F4E, { 0xB8, 0x00, 0x0E, 0x69, 0xD8, 0x4E, 0xE3, 0x84 } };
-EXTERN_C const GUID FOLDERID_UserPinned =
+const GUID     __cdecl FOLDERID_UserPinned =
     { 0x9E3995AB, 0x1F9C, 0x4F13, { 0xB8, 0x27, 0x48, 0xB2, 0x4B, 0x6C, 0x71, 0x74 } };
-EXTERN_C const GUID FOLDERID_ImplicitAppShortcuts =
+const GUID     __cdecl FOLDERID_ImplicitAppShortcuts =
     { 0xBCB5256F, 0x79F6, 0x4CEE, { 0xB7, 0x25, 0xDC, 0x34, 0xE4, 0x02, 0xFD, 0x46 } };
 
 /* shldisp.h */
-EXTERN_C const IID      LIBID_Shell32 =
+const IID      __cdecl LIBID_Shell32 =
     { 0x50A7E9B0, 0x70EF, 0x11D1, { 0xB7, 0x5A, 0x00, 0xA0, 0xC9, 0x05, 0x64, 0xFE } };
-EXTERN_C const IID      IID_IFolderViewOC =
+const IID      __cdecl IID_IFolderViewOC =
     { 0x9BA04970, 0xF6A8, 0x11CF, { 0xA4, 0x42, 0x00, 0xA0, 0xC9, 0x0A, 0x8F, 0x39 } };
-EXTERN_C const IID      DIID_DShellFolderViewEvents =
+const IID      __cdecl DIID_DShellFolderViewEvents =
     { 0x62112AA2, 0xEBE4, 0x11CF, { 0xA5, 0xFB, 0x00, 0x20, 0xAF, 0xE7, 0x29, 0x2D } };
-EXTERN_C const CLSID    CLSID_ShellFolderViewOC =
+const CLSID    __cdecl CLSID_ShellFolderViewOC =
     { 0x9BA05971, 0xF6A8, 0x11CF, { 0xA4, 0x42, 0x00, 0xA0, 0xC9, 0x0A, 0x8F, 0x39 } };
-EXTERN_C const IID      IID_DFConstraint =
+const IID      __cdecl IID_DFConstraint =
     { 0x4A3DF050, 0x23BD, 0x11D2, { 0x93, 0x9F, 0x00, 0xA0, 0xC9, 0x1E, 0xED, 0xBA } };
-EXTERN_C const IID      IID_Folder =
+const IID      __cdecl IID_Folder =
     { 0xBBCBDE60, 0xC3FF, 0x11CE, { 0x83, 0x50, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_Folder2 =
+const IID      __cdecl IID_Folder2 =
     { 0xF0D2D8EF, 0x3890, 0x11D2, { 0xBF, 0x8B, 0x00, 0xC0, 0x4F, 0xB9, 0x36, 0x61 } };
-EXTERN_C const IID      IID_Folder3 =
+const IID      __cdecl IID_Folder3 =
     { 0xA7AE5F64, 0xC4D7, 0x4D7F, { 0x93, 0x07, 0x4D, 0x24, 0xEE, 0x54, 0xB8, 0x41 } };
-EXTERN_C const IID      IID_FolderItem =
+const IID      __cdecl IID_FolderItem =
     { 0xFAC32C80, 0xCBE4, 0x11CE, { 0x83, 0x50, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_FolderItem2 =
+const IID      __cdecl IID_FolderItem2 =
     { 0xEDC817AA, 0x92B8, 0x11D1, { 0xB0, 0x75, 0x00, 0xC0, 0x4F, 0xC3, 0x3A, 0xA5 } };
-EXTERN_C const CLSID    CLSID_ShellFolderItem =
+const CLSID    __cdecl CLSID_ShellFolderItem =
     { 0x2FE352EA, 0xFD1F, 0x11D2, { 0xB1, 0xF4, 0x00, 0xC0, 0x4F, 0x8E, 0xEB, 0x3E } };
-EXTERN_C const IID      IID_FolderItems =
+const IID      __cdecl IID_FolderItems =
     { 0x744129E0, 0xCBE5, 0x11CE, { 0x83, 0x50, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_FolderItems2 =
+const IID      __cdecl IID_FolderItems2 =
     { 0xC94F0AD0, 0xF363, 0x11D2, { 0xA3, 0x27, 0x00, 0xC0, 0x4F, 0x8E, 0xEC, 0x7F } };
-EXTERN_C const IID      IID_FolderItems3 =
+const IID      __cdecl IID_FolderItems3 =
     { 0xEAA7C309, 0xBBEC, 0x49D5, { 0x82, 0x1D, 0x64, 0xD9, 0x66, 0xCB, 0x66, 0x7F } };
-EXTERN_C const IID      IID_FolderItemVerb =
+const IID      __cdecl IID_FolderItemVerb =
     { 0x08EC3E00, 0x50B0, 0x11CF, { 0x96, 0x0C, 0x00, 0x80, 0xC7, 0xF4, 0xEE, 0x85 } };
-EXTERN_C const IID      IID_FolderItemVerbs =
+const IID      __cdecl IID_FolderItemVerbs =
     { 0x1F8352C0, 0x50B0, 0x11CF, { 0x96, 0x0C, 0x00, 0x80, 0xC7, 0xF4, 0xEE, 0x85 } };
-EXTERN_C const IID      IID_IShellLinkDual =
+const IID      __cdecl IID_IShellLinkDual =
     { 0x88A05C00, 0xF000, 0x11CE, { 0x83, 0x50, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_IShellLinkDual2 =
+const IID      __cdecl IID_IShellLinkDual2 =
     { 0x317EE249, 0xF12E, 0x11D2, { 0xB1, 0xE4, 0x00, 0xC0, 0x4F, 0x8E, 0xEB, 0x3E } };
-EXTERN_C const CLSID    CLSID_ShellLinkObject =
+const CLSID    __cdecl CLSID_ShellLinkObject =
     { 0x11219420, 0x1768, 0x11D1, { 0x95, 0xBE, 0x00, 0x60, 0x97, 0x97, 0xEA, 0x4F } };
-EXTERN_C const IID      IID_IShellFolderViewDual =
+const IID      __cdecl IID_IShellFolderViewDual =
     { 0xE7A1AF80, 0x4D96, 0x11CF, { 0x96, 0x0C, 0x00, 0x80, 0xC7, 0xF4, 0xEE, 0x85 } };
-EXTERN_C const IID      IID_IShellFolderViewDual2 =
+const IID      __cdecl IID_IShellFolderViewDual2 =
     { 0x31C147B6, 0x0ADE, 0x4A3C, { 0xB5, 0x14, 0xDD, 0xF9, 0x32, 0xEF, 0x6D, 0x17 } };
-EXTERN_C const IID      IID_IShellFolderViewDual3 =
+const IID      __cdecl IID_IShellFolderViewDual3 =
     { 0x29EC8E6C, 0x46D3, 0x411F, { 0xBA, 0xAA, 0x61, 0x1A, 0x6C, 0x9C, 0xAC, 0x66 } };
-EXTERN_C const CLSID    CLSID_ShellFolderView =
+const CLSID    __cdecl CLSID_ShellFolderView =
     { 0x62112AA1, 0xEBE4, 0x11CF, { 0xA5, 0xFB, 0x00, 0x20, 0xAF, 0xE7, 0x29, 0x2D } };
-EXTERN_C const IID      IID_IShellDispatch =
+const IID      __cdecl IID_IShellDispatch =
     { 0xD8F015C0, 0xC278, 0x11CE, { 0xA4, 0x9E, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_IShellDispatch2 =
+const IID      __cdecl IID_IShellDispatch2 =
     { 0xA4C6892C, 0x3BA9, 0x11D2, { 0x9D, 0xEA, 0x00, 0xC0, 0x4F, 0xB1, 0x61, 0x62 } };
-EXTERN_C const IID      IID_IShellDispatch3 =
+const IID      __cdecl IID_IShellDispatch3 =
     { 0x177160CA, 0xBB5A, 0x411C, { 0x84, 0x1D, 0xBD, 0x38, 0xFA, 0xCD, 0xEA, 0xA0 } };
-EXTERN_C const IID      IID_IShellDispatch4 =
+const IID      __cdecl IID_IShellDispatch4 =
     { 0xEFD84B2D, 0x4BCF, 0x4298, { 0xBE, 0x25, 0xEB, 0x54, 0x2A, 0x59, 0xFB, 0xDA } };
-EXTERN_C const IID      IID_IShellDispatch5 =
+const IID      __cdecl IID_IShellDispatch5 =
     { 0x866738B9, 0x6CF2, 0x4DE8, { 0x87, 0x67, 0xF7, 0x94, 0xEB, 0xE7, 0x4F, 0x4E } };
-EXTERN_C const CLSID    CLSID_Shell =
+const CLSID    __cdecl CLSID_Shell =
     { 0x13709620, 0xC279, 0x11CE, { 0xA4, 0x9E, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const CLSID    CLSID_ShellDispatchInproc =
+const CLSID    __cdecl CLSID_ShellDispatchInproc =
     { 0x0A89A860, 0xD7B1, 0x11CE, { 0x83, 0x50, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const IID      IID_IFileSearchBand =
+const IID      __cdecl IID_IFileSearchBand =
     { 0x2D91EEA1, 0x9932, 0x11D2, { 0xBE, 0x86, 0x00, 0xA0, 0xC9, 0xA8, 0x3D, 0xA1 } };
-EXTERN_C const CLSID    CLSID_FileSearchBand =
+const CLSID    __cdecl CLSID_FileSearchBand =
     { 0xC4EE31F3, 0x4768, 0x11D2, { 0xBE, 0x5C, 0x00, 0xA0, 0xC9, 0xA8, 0x3D, 0xA1 } };
-EXTERN_C const IID      IID_IWebWizardHost =
+const IID      __cdecl IID_IWebWizardHost =
     { 0x18BCC359, 0x4990, 0x4BFB, { 0xB9, 0x51, 0x3C, 0x83, 0x70, 0x2B, 0xE5, 0xF9 } };
-EXTERN_C const IID      IID_INewWDEvents =
+const IID      __cdecl IID_INewWDEvents =
     { 0x0751C551, 0x7568, 0x41C9, { 0x8E, 0x5B, 0xE2, 0x2E, 0x38, 0x91, 0x92, 0x36 } };
-EXTERN_C const IID      IID_IAutoComplete =
+const IID      __cdecl IID_IAutoComplete =
     { 0x00BB2762, 0x6A77, 0x11D0, { 0xA5, 0x35, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const IID      IID_IAutoComplete2 =
+const IID      __cdecl IID_IAutoComplete2 =
     { 0xEAC04BC0, 0x3791, 0x11D2, { 0xBB, 0x95, 0x00, 0x60, 0x97, 0x7B, 0x46, 0x4C } };
-EXTERN_C const IID      IID_IEnumACString =
+const IID      __cdecl IID_IEnumACString =
     { 0x8E74C210, 0xCF9D, 0x4EAF, { 0xA4, 0x03, 0x73, 0x56, 0x42, 0x8F, 0x0A, 0x5A } };
-EXTERN_C const IID      IID_IAsyncOperation =
+const IID      __cdecl IID_IAsyncOperation =
     { 0x3D8B0590, 0xF691, 0x11D2, { 0x8E, 0xA9, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
 
 /* shlguid.h */
-EXTERN_C const CLSID    CLSID_NetworkDomain =
+const CLSID    __cdecl CLSID_NetworkDomain =
     { 0x46E06680, 0x4BF0, 0x11D1, { 0x83, 0xEE, 0x00, 0xA0, 0xC9, 0x0D, 0xC8, 0x49 } };
-EXTERN_C const CLSID    CLSID_NetworkServer =
+const CLSID    __cdecl CLSID_NetworkServer =
     { 0xC0542A90, 0x4BF0, 0x11D1, { 0x83, 0xEE, 0x00, 0xA0, 0xC9, 0x0D, 0xC8, 0x49 } };
-EXTERN_C const CLSID    CLSID_NetworkShare =
+const CLSID    __cdecl CLSID_NetworkShare =
     { 0x54A752C0, 0x4BF0, 0x11D1, { 0x83, 0xEE, 0x00, 0xA0, 0xC9, 0x0D, 0xC8, 0x49 } };
-EXTERN_C const CLSID    CLSID_MyComputer =
+const CLSID    __cdecl CLSID_MyComputer =
     { 0x20D04FE0, 0x3AEA, 0x1069, { 0xA2, 0xD8, 0x08, 0x00, 0x2B, 0x30, 0x30, 0x9D } };
-EXTERN_C const CLSID    CLSID_Internet =
+const CLSID    __cdecl CLSID_Internet =
     { 0x871C5380, 0x42A0, 0x1069, { 0xA2, 0xEA, 0x08, 0x00, 0x2B, 0x30, 0x30, 0x9D } };
-EXTERN_C const CLSID    CLSID_RecycleBin =
+const CLSID    __cdecl CLSID_RecycleBin =
     { 0x645FF040, 0x5081, 0x101B, { 0x9F, 0x08, 0x00, 0xAA, 0x00, 0x2F, 0x95, 0x4E } };
-EXTERN_C const CLSID    CLSID_ControlPanel =
+const CLSID    __cdecl CLSID_ControlPanel =
     { 0x21EC2020, 0x3AEA, 0x1069, { 0xA2, 0xDD, 0x08, 0x00, 0x2B, 0x30, 0x30, 0x9D } };
-EXTERN_C const CLSID    CLSID_Printers =
+const CLSID    __cdecl CLSID_Printers =
     { 0x2227A280, 0x3AEA, 0x1069, { 0xA2, 0xDD, 0x08, 0x00, 0x2B, 0x30, 0x30, 0x9D } };
-EXTERN_C const CLSID    CLSID_MyDocuments =
+const CLSID    __cdecl CLSID_MyDocuments =
     { 0x450D8FBA, 0xAD25, 0x11D0, { 0x98, 0xA8, 0x08, 0x00, 0x36, 0x1B, 0x11, 0x03 } };
-EXTERN_C const CLSID    CLSID_PictureVideoLibrary =
+const CLSID    __cdecl CLSID_PictureVideoLibrary =
     { 0x00044B4E, 0x11E6, 0x4BEF, { 0xAE, 0xC2, 0xBA, 0x15, 0x7D, 0x80, 0xF6, 0x60 } };
-EXTERN_C const CLSID    CLSID_MusicLibrary =
+const CLSID    __cdecl CLSID_MusicLibrary =
     { 0x00875566, 0xADDC, 0x4883, { 0xA2, 0xBF, 0x62, 0xBB, 0xD2, 0x30, 0xDF, 0x07 } };
-EXTERN_C const CLSID    CLSID_DocumentLibrary =
+const CLSID    __cdecl CLSID_DocumentLibrary =
     { 0x00F4A6AC, 0xE2E7, 0x4652, { 0xB7, 0xA7, 0xEC, 0xBD, 0x23, 0x2F, 0x78, 0x18 } };
-EXTERN_C const GUID     CATID_BrowsableShellExt =
+const GUID     __cdecl CATID_BrowsableShellExt =
     { 0x00021490, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CATID_BrowseInPlace =
+const GUID     __cdecl CATID_BrowseInPlace =
     { 0x00021491, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CATID_DeskBand =
+const GUID     __cdecl CATID_DeskBand =
     { 0x00021492, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CATID_InfoBand =
+const GUID     __cdecl CATID_InfoBand =
     { 0x00021493, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CATID_CommBand =
+const GUID     __cdecl CATID_CommBand =
     { 0x00021494, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const FMTID    FMTID_Intshcut =
+const FMTID    __cdecl FMTID_Intshcut =
     { 0x000214A0, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const FMTID    FMTID_InternetSite =
+const FMTID    __cdecl FMTID_InternetSite =
     { 0x000214A1, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CGID_Explorer =
+const GUID     __cdecl CGID_Explorer =
     { 0x000214D0, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CGID_ShellDocView =
+const GUID     __cdecl CGID_ShellDocView =
     { 0x000214D1, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CGID_ShellServiceObject =
+const GUID     __cdecl CGID_ShellServiceObject =
     { 0x000214D2, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const GUID     CGID_ExplorerBarDoc =
+const GUID     __cdecl CGID_ExplorerBarDoc =
     { 0x000214D3, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_INewShortcutHookA =
+const IID      __cdecl IID_INewShortcutHookA =
     { 0x000214E1, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IExtractIconA =
+const IID      __cdecl IID_IExtractIconA =
     { 0x000214EB, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellDetails =
+const IID      __cdecl IID_IShellDetails =
     { 0x000214EC, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICopyHookA =
+const IID      __cdecl IID_ICopyHookA =
     { 0x000214EF, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IFileViewerA =
+const IID      __cdecl IID_IFileViewerA =
     { 0x000214F0, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IFileViewerSite =
+const IID      __cdecl IID_IFileViewerSite =
     { 0x000214F3, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellExecuteHookA =
+const IID      __cdecl IID_IShellExecuteHookA =
     { 0x000214F5, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IPropSheetPage =
+const IID      __cdecl IID_IPropSheetPage =
     { 0x000214F6, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_INewShortcutHookW =
+const IID      __cdecl IID_INewShortcutHookW =
     { 0x000214F7, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IFileViewerW =
+const IID      __cdecl IID_IFileViewerW =
     { 0x000214F8, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IExtractIconW =
+const IID      __cdecl IID_IExtractIconW =
     { 0x000214FA, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IShellExecuteHookW =
+const IID      __cdecl IID_IShellExecuteHookW =
     { 0x000214FB, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_ICopyHookW =
+const IID      __cdecl IID_ICopyHookW =
     { 0x000214FC, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IQueryInfo =
+const IID      __cdecl IID_IQueryInfo =
     { 0x00021500, 0x0000, 0x0000, { 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46 } };
-EXTERN_C const IID      IID_IBriefcaseStg =
+const IID      __cdecl IID_IBriefcaseStg =
     { 0x8BCE1FA1, 0x0921, 0x101B, { 0xB1, 0xFF, 0x00, 0xDD, 0x01, 0x0C, 0xCC, 0x48 } };
-EXTERN_C const IID      IID_IURLSearchHook =
+const IID      __cdecl IID_IURLSearchHook =
     { 0xAC60F6A0, 0x0FD9, 0x11D0, { 0x99, 0xCB, 0x00, 0xC0, 0x4F, 0xD6, 0x44, 0x97 } };
-EXTERN_C const IID      IID_ISearchContext =
+const IID      __cdecl IID_ISearchContext =
     { 0x09F656A2, 0x41AF, 0x480C, { 0x88, 0xF7, 0x16, 0xCC, 0x0D, 0x16, 0x46, 0x15 } };
-EXTERN_C const IID      IID_IURLSearchHook2 =
+const IID      __cdecl IID_IURLSearchHook2 =
     { 0x5EE44DA4, 0x6D32, 0x46E3, { 0x86, 0xBC, 0x07, 0x54, 0x0D, 0xED, 0xD0, 0xE0 } };
-EXTERN_C const IID      IID_IDefViewID =
+const IID      __cdecl IID_IDefViewID =
     { 0x985F64F0, 0xD410, 0x4E02, { 0xBE, 0x22, 0xDA, 0x07, 0xF2, 0xB5, 0xC5, 0xE1 } };
-EXTERN_C const CLSID    CLSID_FolderShortcut =
+const CLSID    __cdecl CLSID_FolderShortcut =
     { 0x0AFACED1, 0xE828, 0x11D1, { 0x91, 0x87, 0xB5, 0x32, 0xF1, 0xE9, 0x57, 0x5D } };
-EXTERN_C const IID      IID_IDockingWindowSite =
+const IID      __cdecl IID_IDockingWindowSite =
     { 0x2A342FC2, 0x7B26, 0x11D0, { 0x8C, 0xA9, 0x00, 0xA0, 0xC9, 0x2D, 0xBF, 0xE8 } };
-EXTERN_C const IID      IID_IDockingWindowFrame =
+const IID      __cdecl IID_IDockingWindowFrame =
     { 0x47D2657A, 0x7B27, 0x11D0, { 0x8C, 0xA9, 0x00, 0xA0, 0xC9, 0x2D, 0xBF, 0xE8 } };
-EXTERN_C const IID      IID_IShellIconOverlay =
+const IID      __cdecl IID_IShellIconOverlay =
     { 0x7D688A70, 0xC613, 0x11D0, { 0x99, 0x9B, 0x00, 0xC0, 0x4F, 0xD6, 0x55, 0xE1 } };
-EXTERN_C const IID      IID_IShellIconOverlayIdentifier =
+const IID      __cdecl IID_IShellIconOverlayIdentifier =
     { 0x0C6C4200, 0xC589, 0x11D0, { 0x99, 0x9A, 0x00, 0xC0, 0x4F, 0xD6, 0x55, 0xE1 } };
-EXTERN_C const IID      IID_IShellFolderViewCB =
+const IID      __cdecl IID_IShellFolderViewCB =
     { 0x2047E320, 0xF2A9, 0x11CE, { 0xAE, 0x65, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const CLSID    CLSID_CSFIconOverlayManager =
+const CLSID    __cdecl CLSID_CSFIconOverlayManager =
     { 0x63B51F81, 0xC868, 0x11D0, { 0x99, 0x9C, 0x00, 0xC0, 0x4F, 0xD6, 0x55, 0xE1 } };
-EXTERN_C const IID      IID_IShellIconOverlayManager =
+const IID      __cdecl IID_IShellIconOverlayManager =
     { 0xF10B5E34, 0xDD3B, 0x42A7, { 0xAA, 0x7D, 0x2F, 0x4E, 0xC5, 0x4B, 0xB0, 0x9B } };
-EXTERN_C const IID      IID_IThumbnailCapture =
+const IID      __cdecl IID_IThumbnailCapture =
     { 0x4EA39266, 0x7211, 0x409F, { 0xB6, 0x22, 0xF6, 0x3D, 0xBD, 0x16, 0xC5, 0x33 } };
-EXTERN_C const IID      IID_IShellImageStore =
+const IID      __cdecl IID_IShellImageStore =
     { 0x48C8118C, 0xB924, 0x11D1, { 0x98, 0xD5, 0x00, 0xC0, 0x4F, 0xB6, 0x87, 0xDA } };
-EXTERN_C const CLSID    CLSID_ShellThumbnailDiskCache =
+const CLSID    __cdecl CLSID_ShellThumbnailDiskCache =
     { 0x1EBDCF80, 0xA200, 0x11D0, { 0xA3, 0xA4, 0x00, 0xC0, 0x4F, 0xD7, 0x06, 0xEC } };
-EXTERN_C const GUID     SID_DefView =
+const GUID     __cdecl SID_DefView =
     { 0x6D12FE80, 0x7911, 0x11CF, { 0x95, 0x34, 0x00, 0x00, 0xC0, 0x5B, 0xAE, 0x0B } };
-EXTERN_C const GUID     CGID_DefView =
+const GUID     __cdecl CGID_DefView =
     { 0x4AF07F10, 0xD231, 0x11D0, { 0xB9, 0x42, 0x00, 0xA0, 0xC9, 0x03, 0x12, 0xE1 } };
-EXTERN_C const CLSID    CLSID_MenuBand =
+const CLSID    __cdecl CLSID_MenuBand =
     { 0x5B4DAE26, 0xB807, 0x11D0, { 0x98, 0x15, 0x00, 0xC0, 0x4F, 0xD9, 0x19, 0x72 } };
-EXTERN_C const IID      IID_IShellFolderBand =
+const IID      __cdecl IID_IShellFolderBand =
     { 0x7FE80CC8, 0xC247, 0x11D0, { 0xB9, 0x3A, 0x00, 0xA0, 0xC9, 0x03, 0x12, 0xE1 } };
-EXTERN_C const IID      IID_IDefViewFrame =
+const IID      __cdecl IID_IDefViewFrame =
     { 0x710BE7A0, 0x45ED, 0x11D0, { 0x92, 0x4A, 0x00, 0x20, 0xAF, 0xC7, 0xAC, 0x4D } };
-EXTERN_C const GUID     VID_LargeIcons =
+const GUID     __cdecl VID_LargeIcons =
     { 0x0057D0E0, 0x3573, 0x11CF, { 0xAE, 0x69, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const GUID     VID_SmallIcons =
+const GUID     __cdecl VID_SmallIcons =
     { 0x089000C0, 0x3573, 0x11CF, { 0xAE, 0x69, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const GUID     VID_List =
+const GUID     __cdecl VID_List =
     { 0x0E1FA5E0, 0x3573, 0x11CF, { 0xAE, 0x69, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const GUID     VID_Details =
+const GUID     __cdecl VID_Details =
     { 0x137E7700, 0x3573, 0x11CF, { 0xAE, 0x69, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const GUID     VID_Tile =
+const GUID     __cdecl VID_Tile =
     { 0x65F125E5, 0x7BE1, 0x4810, { 0xBA, 0x9D, 0xD2, 0x71, 0xC8, 0x43, 0x2C, 0xE3 } };
-EXTERN_C const GUID     VID_Thumbnails =
+const GUID     __cdecl VID_Thumbnails =
     { 0x8BEBB290, 0x52D0, 0x11D0, { 0xB7, 0xF4, 0x00, 0xC0, 0x4F, 0xD7, 0x06, 0xEC } };
-EXTERN_C const GUID     VID_ThumbStrip =
+const GUID     __cdecl VID_ThumbStrip =
     { 0x8EEFA624, 0xD1E9, 0x445B, { 0x94, 0xB7, 0x74, 0xFB, 0xCE, 0x2E, 0xA1, 0x1A } };
-EXTERN_C const IID      IID_IDiscardableBrowserProperty =
+const IID      __cdecl IID_IDiscardableBrowserProperty =
     { 0x49C3DE7C, 0xD329, 0x11D0, { 0xAB, 0x73, 0x00, 0xC0, 0x4F, 0xC3, 0x3E, 0x80 } };
-EXTERN_C const IID      IID_IShellChangeNotify =
+const IID      __cdecl IID_IShellChangeNotify =
     { 0xD82BE2B1, 0x5764, 0x11D0, { 0xA9, 0x6E, 0x00, 0xC0, 0x4F, 0xD7, 0x05, 0xA2 } };
-EXTERN_C const CLSID    CLSID_CUrlHistory =
+const CLSID    __cdecl CLSID_CUrlHistory =
     { 0x3C374A40, 0xBAE4, 0x11CF, { 0xBF, 0x7D, 0x00, 0xAA, 0x00, 0x69, 0x46, 0xEE } };
-EXTERN_C const CLSID    CLSID_CURLSearchHook =
+const CLSID    __cdecl CLSID_CURLSearchHook =
     { 0xCFBFAE00, 0x17A6, 0x11D0, { 0x99, 0xCB, 0x00, 0xC0, 0x4F, 0xD6, 0x44, 0x97 } };
-EXTERN_C const IID      IID_IObjMgr =
+const IID      __cdecl IID_IObjMgr =
     { 0x00BB2761, 0x6A77, 0x11D0, { 0xA5, 0x35, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const IID      IID_IACList =
+const IID      __cdecl IID_IACList =
     { 0x77A130B0, 0x94FD, 0x11D0, { 0xA5, 0x44, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const IID      IID_IACList2 =
+const IID      __cdecl IID_IACList2 =
     { 0x470141A0, 0x5186, 0x11D2, { 0xBB, 0xB6, 0x00, 0x60, 0x97, 0x7B, 0x46, 0x4C } };
-EXTERN_C const IID      IID_ICurrentWorkingDirectory =
+const IID      __cdecl IID_ICurrentWorkingDirectory =
     { 0x91956D21, 0x9276, 0x11D1, { 0x92, 0x1A, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
-EXTERN_C const CLSID    CLSID_AutoComplete =
+const CLSID    __cdecl CLSID_AutoComplete =
     { 0x00BB2763, 0x6A77, 0x11D0, { 0xA5, 0x35, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const CLSID    CLSID_ACLHistory =
+const CLSID    __cdecl CLSID_ACLHistory =
     { 0x00BB2764, 0x6A77, 0x11D0, { 0xA5, 0x35, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const CLSID    CLSID_ACListISF =
+const CLSID    __cdecl CLSID_ACListISF =
     { 0x03C036F1, 0xA186, 0x11D0, { 0x82, 0x4A, 0x00, 0xAA, 0x00, 0x5B, 0x43, 0x83 } };
-EXTERN_C const CLSID    CLSID_ACLMRU =
+const CLSID    __cdecl CLSID_ACLMRU =
     { 0x6756A641, 0xDE71, 0x11D0, { 0x83, 0x1B, 0x00, 0xAA, 0x00, 0x5B, 0x43, 0x83 } };
-EXTERN_C const CLSID    CLSID_ACLMulti =
+const CLSID    __cdecl CLSID_ACLMulti =
     { 0x00BB2765, 0x6A77, 0x11D0, { 0xA5, 0x35, 0x00, 0xC0, 0x4F, 0xD7, 0xD0, 0x62 } };
-EXTERN_C const CLSID    CLSID_ACLCustomMRU =
+const CLSID    __cdecl CLSID_ACLCustomMRU =
     { 0x6935DB93, 0x21E8, 0x4CCC, { 0xBE, 0xB9, 0x9F, 0xE3, 0xC7, 0x7A, 0x29, 0x7A } };
-EXTERN_C const CLSID    CLSID_ProgressDialog =
+const CLSID    __cdecl CLSID_ProgressDialog =
     { 0xF8383852, 0xFCD3, 0x11D1, { 0xA6, 0xB9, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
-EXTERN_C const IID      IID_IProgressDialog =
+const IID      __cdecl IID_IProgressDialog =
     { 0xEBBC7C04, 0x315E, 0x11D2, { 0xB6, 0x2F, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
-EXTERN_C const GUID     SID_STopLevelBrowser =
+const GUID     __cdecl SID_STopLevelBrowser =
     { 0x4C96BE40, 0x915C, 0x11CF, { 0x99, 0xD3, 0x00, 0xAA, 0x00, 0x4A, 0xE8, 0x37 } };
-EXTERN_C const CLSID    CLSID_FileTypes =
+const CLSID    __cdecl CLSID_FileTypes =
     { 0xB091E540, 0x83E3, 0x11CF, { 0xA7, 0x13, 0x00, 0x20, 0xAF, 0xD7, 0x97, 0x62 } };
-EXTERN_C const CLSID    CLSID_ActiveDesktop =
+const CLSID    __cdecl CLSID_ActiveDesktop =
     { 0x75048700, 0xEF1F, 0x11D0, { 0x98, 0x88, 0x00, 0x60, 0x97, 0xDE, 0xAC, 0xF9 } };
-EXTERN_C const IID      IID_IActiveDesktop =
+const IID      __cdecl IID_IActiveDesktop =
     { 0xF490EB00, 0x1240, 0x11D1, { 0x98, 0x88, 0x00, 0x60, 0x97, 0xDE, 0xAC, 0xF9 } };
-EXTERN_C const IID      IID_IActiveDesktopP =
+const IID      __cdecl IID_IActiveDesktopP =
     { 0x52502EE0, 0xEC80, 0x11D0, { 0x89, 0xAB, 0x00, 0xC0, 0x4F, 0xC2, 0x97, 0x2D } };
-EXTERN_C const IID      IID_IADesktopP2 =
+const IID      __cdecl IID_IADesktopP2 =
     { 0xB22754E2, 0x4574, 0x11D1, { 0x98, 0x88, 0x00, 0x60, 0x97, 0xDE, 0xAC, 0xF9 } };
-EXTERN_C const IID      IID_ISynchronizedCallBack =
+const IID      __cdecl IID_ISynchronizedCallBack =
     { 0x74C26041, 0x70D1, 0x11D1, { 0xB7, 0x5A, 0x00, 0xA0, 0xC9, 0x05, 0x64, 0xFE } };
-EXTERN_C const IID      IID_IQueryAssocations =
+const IID      __cdecl IID_IQueryAssocations =
     { 0xC46CA590, 0x3C3F, 0x11D2, { 0xBE, 0xE6, 0x00, 0x00, 0xF8, 0x05, 0xCA, 0x57 } };
-EXTERN_C const CLSID    CLSID_QueryAssociations =
+const CLSID    __cdecl CLSID_QueryAssociations =
     { 0xA07034FD, 0x6CAA, 0x4954, { 0xAC, 0x3F, 0x97, 0xA2, 0x72, 0x16, 0xF9, 0x8A } };
-EXTERN_C const IID      IID_IColumnProvider =
+const IID      __cdecl IID_IColumnProvider =
     { 0xE8025004, 0x1C42, 0x11D2, { 0xBE, 0x2C, 0x00, 0xA0, 0xC9, 0xA8, 0x3D, 0xA1 } };
-EXTERN_C const CLSID    CLSID_LinkColumnProvider =
+const CLSID    __cdecl CLSID_LinkColumnProvider =
     { 0x24F14F02, 0x7B1C, 0x11D1, { 0x83, 0x8F, 0x00, 0x00, 0xF8, 0x04, 0x61, 0xCF } };
-EXTERN_C const GUID     CGID_Shortcut =
+const GUID     __cdecl CGID_Shortcut =
     { 0x93A68750, 0x951A, 0x11D1, { 0x94, 0x6F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
-EXTERN_C const IID      IID_INamedPropertyBag =
+const IID      __cdecl IID_INamedPropertyBag =
     { 0xFB700430, 0x952C, 0x11D1, { 0x94, 0x6F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
-EXTERN_C const CLSID    CLSID_InternetButtons =
+const CLSID    __cdecl CLSID_InternetButtons =
     { 0x1E796980, 0x9CC5, 0x11D1, { 0xA8, 0x3F, 0x00, 0xC0, 0x4F, 0xC9, 0x9D, 0x61 } };
-EXTERN_C const CLSID    CLSID_MSOButtons =
+const CLSID    __cdecl CLSID_MSOButtons =
     { 0x178F34B8, 0xA282, 0x11D2, { 0x86, 0xC5, 0x00, 0xC0, 0x4F, 0x8E, 0xEA, 0x99 } };
-EXTERN_C const CLSID    CLSID_ToolbarExtButtons =
+const CLSID    __cdecl CLSID_ToolbarExtButtons =
     { 0x2CE4B5D8, 0xA28F, 0x11D2, { 0x86, 0xC5, 0x00, 0xC0, 0x4F, 0x8E, 0xEA, 0x99 } };
-EXTERN_C const CLSID    CLSID_DarwinAppPublisher =
+const CLSID    __cdecl CLSID_DarwinAppPublisher =
     { 0xCFCCC7A0, 0xA282, 0x11D1, { 0x90, 0x82, 0x00, 0x60, 0x08, 0x05, 0x93, 0x82 } };
-EXTERN_C const CLSID    CLSID_DocHostUIHandler =
+const CLSID    __cdecl CLSID_DocHostUIHandler =
     { 0x7057E952, 0xBD1B, 0x11D1, { 0x89, 0x19, 0x00, 0xC0, 0x4F, 0xC2, 0xC8, 0x36 } };
-EXTERN_C const FMTID    FMTID_ShellDetails =
+const FMTID    __cdecl FMTID_ShellDetails =
     { 0x28636AA6, 0x953D, 0x11D2, { 0xB5, 0xD6, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const FMTID    FMTID_Storage =
+const FMTID    __cdecl FMTID_Storage =
     { 0xB725F130, 0x47EF, 0x101A, { 0xA5, 0xF1, 0x02, 0x60, 0x8C, 0x9E, 0xEB, 0xAC } };
-EXTERN_C const FMTID    FMTID_ImageProperties =
+const FMTID    __cdecl FMTID_ImageProperties =
     { 0x14B81DA1, 0x0135, 0x4D31, { 0x96, 0xD9, 0x6C, 0xBF, 0xC9, 0x67, 0x1A, 0x99 } };
-EXTERN_C const FMTID    FMTID_CustomImageProperties =
+const FMTID    __cdecl FMTID_CustomImageProperties =
     { 0x7ECD8B0E, 0xC136, 0x4A9B, { 0x94, 0x11, 0x4E, 0xBD, 0x66, 0x73, 0xCC, 0xC3 } };
-EXTERN_C const FMTID    FMTID_Displaced =
+const FMTID    __cdecl FMTID_Displaced =
     { 0x9B174B33, 0x40FF, 0x11D2, { 0xA2, 0x7E, 0x00, 0xC0, 0x4F, 0xC3, 0x08, 0x71 } };
-EXTERN_C const FMTID    FMTID_Briefcase =
+const FMTID    __cdecl FMTID_Briefcase =
     { 0x328D8B21, 0x7729, 0x4BFC, { 0x95, 0x4C, 0x90, 0x2B, 0x32, 0x9D, 0x56, 0xB0 } };
-EXTERN_C const FMTID    FMTID_Misc =
+const FMTID    __cdecl FMTID_Misc =
     { 0x9B174B34, 0x40FF, 0x11D2, { 0xA2, 0x7E, 0x00, 0xC0, 0x4F, 0xC3, 0x08, 0x71 } };
-EXTERN_C const FMTID    FMTID_WebView =
+const FMTID    __cdecl FMTID_WebView =
     { 0xF2275480, 0xF782, 0x4291, { 0xBD, 0x94, 0xF1, 0x36, 0x93, 0x51, 0x3A, 0xEC } };
-EXTERN_C const FMTID    FMTID_MUSIC =
+const FMTID    __cdecl FMTID_MUSIC =
     { 0x56A3372E, 0xCE9C, 0x11D2, { 0x9F, 0x0E, 0x00, 0x60, 0x97, 0xC6, 0x86, 0xF6 } };
-EXTERN_C const FMTID    FMTID_DRM =
+const FMTID    __cdecl FMTID_DRM =
     { 0xAEAC19E4, 0x89AE, 0x4508, { 0xB9, 0xB7, 0xBB, 0x86, 0x7A, 0xBE, 0xE2, 0xED } };
-EXTERN_C const FMTID    FMTID_Volume =
+const FMTID    __cdecl FMTID_Volume =
     { 0x9B174B35, 0x40FF, 0x11D2, { 0xA2, 0x7E, 0x00, 0xC0, 0x4F, 0xC3, 0x08, 0x71 } };
-EXTERN_C const FMTID    FMTID_Query =
+const FMTID    __cdecl FMTID_Query =
     { 0x49691C90, 0x7E17, 0x101A, { 0xA9, 0x1C, 0x08, 0x00, 0x2B, 0x2E, 0xCD, 0xA9 } };
-EXTERN_C const CLSID    CLSID_HWShellExecute =
+const CLSID    __cdecl CLSID_HWShellExecute =
     { 0xFFB8655F, 0x81B9, 0x4FCE, { 0xB8, 0x9C, 0x9A, 0x6B, 0xA7, 0x6D, 0x13, 0xE7 } };
-EXTERN_C const CLSID    CLSID_DragDropHelper =
+const CLSID    __cdecl CLSID_DragDropHelper =
     { 0x4657278A, 0x411B, 0x11D2, { 0x83, 0x9A, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const CLSID    CLSID_CAnchorBrowsePropertyPage =
+const CLSID    __cdecl CLSID_CAnchorBrowsePropertyPage =
     { 0x3050F3BB, 0x98B5, 0x11CF, { 0xBB, 0x82, 0x00, 0xAA, 0x00, 0xBD, 0xCE, 0x0B } };
-EXTERN_C const CLSID    CLSID_CImageBrowsePropertyPage =
+const CLSID    __cdecl CLSID_CImageBrowsePropertyPage =
     { 0x3050F3B3, 0x98B5, 0x11CF, { 0xBB, 0x82, 0x00, 0xAA, 0x00, 0xBD, 0xCE, 0x0B } };
-EXTERN_C const CLSID    CLSID_CDocBrowsePropertyPage =
+const CLSID    __cdecl CLSID_CDocBrowsePropertyPage =
     { 0x3050F3B4, 0x98B5, 0x11CF, { 0xBB, 0x82, 0x00, 0xAA, 0x00, 0xBD, 0xCE, 0x0B } };
-EXTERN_C const GUID     SID_STopWindow =
+const GUID     __cdecl SID_STopWindow =
     { 0x49E1B500, 0x4636, 0x11D3, { 0x97, 0xF7, 0x00, 0xC0, 0x4F, 0x45, 0xD0, 0xB3 } };
-EXTERN_C const GUID     SID_SGetViewFromViewDual =
+const GUID     __cdecl SID_SGetViewFromViewDual =
     { 0x889A935D, 0x971E, 0x4B12, { 0xB9, 0x0C, 0x24, 0xDF, 0xC9, 0xE1, 0xE5, 0xE8 } };
-EXTERN_C const CLSID    CLSID_FolderItem =
+const CLSID    __cdecl CLSID_FolderItem =
     { 0xFEF10FA2, 0x355E, 0x4E06, { 0x93, 0x81, 0x9B, 0x24, 0xD7, 0xF7, 0xCC, 0x88 } };
-EXTERN_C const CLSID    CLSID_FolderItemsMultiLevel =
+const CLSID    __cdecl CLSID_FolderItemsMultiLevel =
     { 0x53C74826, 0xAB99, 0x4D33, { 0xAC, 0xA4, 0x31, 0x17, 0xF5, 0x1D, 0x37, 0x88 } };
-EXTERN_C const CLSID    CLSID_NewMenu =
+const CLSID    __cdecl CLSID_NewMenu =
     { 0xD969A300, 0xE7FF, 0x11D0, { 0xA9, 0x3B, 0x00, 0xA0, 0xC9, 0x0F, 0x27, 0x19 } };
-EXTERN_C const GUID     BHID_SFObject =
+const GUID     __cdecl BHID_SFObject =
     { 0x3981E224, 0xF559, 0x11D3, { 0x8E, 0x3A, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const GUID     BHID_SFUIObject =
+const GUID     __cdecl BHID_SFUIObject =
     { 0x3981E225, 0xF559, 0x11D3, { 0x8E, 0x3A, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const GUID     BHID_SFViewObject =
+const GUID     __cdecl BHID_SFViewObject =
     { 0x3981E226, 0xF559, 0x11D3, { 0x8E, 0x3A, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const GUID     BHID_Storage =
+const GUID     __cdecl BHID_Storage =
     { 0x3981E227, 0xF559, 0x11D3, { 0x8E, 0x3A, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const GUID     BHID_Stream =
+const GUID     __cdecl BHID_Stream =
     { 0x1CEBB3AB, 0x7C10, 0x499A, { 0xA4, 0x17, 0x92, 0xCA, 0x16, 0xC4, 0xCB, 0x83 } };
-EXTERN_C const GUID     BHID_LinkTargetItem =
+const GUID     __cdecl BHID_LinkTargetItem =
     { 0x3981E228, 0xF559, 0x11D3, { 0x8E, 0x3A, 0x00, 0xC0, 0x4F, 0x68, 0x37, 0xD5 } };
-EXTERN_C const GUID     BHID_StorageEnum =
+const GUID     __cdecl BHID_StorageEnum =
     { 0x4621A4E3, 0xF0D6, 0x4773, { 0x8A, 0x9C, 0x46, 0xE7, 0x7B, 0x17, 0x48, 0x40 } };
-EXTERN_C const GUID     BHID_Transfer =
+const GUID     __cdecl BHID_Transfer =
     { 0xD5E346A1, 0xF753, 0x4932, { 0xB4, 0x03, 0x45, 0x74, 0x80, 0x0E, 0x24, 0x98 } };
-EXTERN_C const GUID     BHID_PropertyStore =
+const GUID     __cdecl BHID_PropertyStore =
     { 0x0384E1A4, 0x1523, 0x439C, { 0xA4, 0xC8, 0xAB, 0x91, 0x10, 0x52, 0xF5, 0x86 } };
-EXTERN_C const GUID     BHID_ThumbnailHandler =
+const GUID     __cdecl BHID_ThumbnailHandler =
     { 0x7B2E650A, 0x8E20, 0x4F4A, { 0xB0, 0x9E, 0x65, 0x97, 0xAF, 0xC7, 0x2F, 0xB0 } };
-EXTERN_C const GUID     BHID_EnumItems =
+const GUID     __cdecl BHID_EnumItems =
     { 0x94F60519, 0x2850, 0x4924, { 0xAA, 0x5A, 0xD1, 0x5E, 0x84, 0x86, 0x80, 0x39 } };
-EXTERN_C const GUID     BHID_DataObject =
+const GUID     __cdecl BHID_DataObject =
     { 0xB8C0BD9F, 0xED24, 0x455C, { 0x83, 0xE6, 0xD5, 0x39, 0x0C, 0x4F, 0xE8, 0xC4 } };
-EXTERN_C const GUID     BHID_AssociationArray =
+const GUID     __cdecl BHID_AssociationArray =
     { 0xBEA9EF17, 0x82F1, 0x4F60, { 0x92, 0x84, 0x4F, 0x8D, 0xB7, 0x5C, 0x3B, 0xE9 } };
-EXTERN_C const GUID     BHID_Filter =
+const GUID     __cdecl BHID_Filter =
     { 0x38D08778, 0xF557, 0x4690, { 0x9E, 0xBF, 0xBA, 0x54, 0x70, 0x6A, 0xD8, 0xF7 } };
-EXTERN_C const GUID     SID_CtxQueryAssociations =
+const GUID     __cdecl SID_CtxQueryAssociations =
     { 0xFAADFC40, 0xB777, 0x4B69, { 0xAA, 0x81, 0x77, 0x03, 0x5E, 0xF0, 0xE6, 0xE8 } };
-EXTERN_C const IID      IID_IDocViewSite =
+const IID      __cdecl IID_IDocViewSite =
     { 0x87D605E0, 0xC511, 0x11CF, { 0x89, 0xA9, 0x00, 0xA0, 0xC9, 0x05, 0x41, 0x29 } };
-EXTERN_C const CLSID    CLSID_QuickLinks =
+const CLSID    __cdecl CLSID_QuickLinks =
     { 0x0E5CBF21, 0xD15F, 0x11D0, { 0x83, 0x01, 0x00, 0xAA, 0x00, 0x5B, 0x43, 0x83 } };
-EXTERN_C const CLSID    CLSID_ISFBand =
+const CLSID    __cdecl CLSID_ISFBand =
     { 0xD82BE2B0, 0x5764, 0x11D0, { 0xA9, 0x6E, 0x00, 0xC0, 0x4F, 0xD7, 0x05, 0xA2 } };
-EXTERN_C const IID      IID_CDefView =
+const IID      __cdecl IID_CDefView =
     { 0x4434FF80, 0xEF4C, 0x11CE, { 0xAE, 0x65, 0x08, 0x00, 0x2B, 0x2E, 0x12, 0x62 } };
-EXTERN_C const CLSID    CLSID_ShellFldSetExt =
+const CLSID    __cdecl CLSID_ShellFldSetExt =
     { 0x6D5313C0, 0x8C62, 0x11D1, { 0xB2, 0xCD, 0x00, 0x60, 0x97, 0xDF, 0x8C, 0x11 } };
-EXTERN_C const GUID     SID_SMenuBandChild =
+const GUID     __cdecl SID_SMenuBandChild =
     { 0xED9CC020, 0x08B9, 0x11D1, { 0x98, 0x23, 0x00, 0xC0, 0x4F, 0xD9, 0x19, 0x72 } };
-EXTERN_C const GUID     SID_SMenuBandParent =
+const GUID     __cdecl SID_SMenuBandParent =
     { 0x8C278EEC, 0x3EAB, 0x11D1, { 0x8C, 0xB0, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const GUID     SID_SMenuPopup =
+const GUID     __cdecl SID_SMenuPopup =
     { 0xD1E7AFEB, 0x6A2E, 0x11D0, { 0x8C, 0x78, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xB4 } };
-EXTERN_C const GUID     SID_SMenuBandBottomSelected =
+const GUID     __cdecl SID_SMenuBandBottomSelected =
     { 0x165EBAF4, 0x6D51, 0x11D2, { 0x83, 0xAD, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const GUID     SID_SMenuBandBottom =
+const GUID     __cdecl SID_SMenuBandBottom =
     { 0x743CA664, 0x0DEB, 0x11D1, { 0x98, 0x25, 0x00, 0xC0, 0x4F, 0xD9, 0x19, 0x72 } };
-EXTERN_C const GUID     SID_MenuShellFolder =
+const GUID     __cdecl SID_MenuShellFolder =
     { 0xA6C17EB4, 0x2D65, 0x11D2, { 0x83, 0x8F, 0x00, 0xC0, 0x4F, 0xD9, 0x18, 0xD0 } };
-EXTERN_C const GUID     SID_SMenuBandContextMenuModifier =
+const GUID     __cdecl SID_SMenuBandContextMenuModifier =
     { 0x39545874, 0x7162, 0x465E, { 0xB7, 0x83, 0x2A, 0xA1, 0x87, 0x4F, 0xEF, 0x81 } };
-EXTERN_C const GUID     SID_SMenuBandBKContextMenu =
+const GUID     __cdecl SID_SMenuBandBKContextMenu =
     { 0x164BBD86, 0x1D0D, 0x4DE0, { 0x9A, 0x3B, 0xD9, 0x72, 0x96, 0x47, 0xC2, 0xB8 } };
-EXTERN_C const GUID     CGID_MENUDESKBAR =
+const GUID     __cdecl CGID_MENUDESKBAR =
     { 0x5C9F0A12, 0x959E, 0x11D0, { 0xA3, 0xA4, 0x00, 0xA0, 0xC9, 0x08, 0x26, 0x36 } };
-EXTERN_C const GUID     SID_SMenuBandTop =
+const GUID     __cdecl SID_SMenuBandTop =
     { 0x9493A810, 0xEC38, 0x11D0, { 0xBC, 0x46, 0x00, 0xAA, 0x00, 0x6C, 0xE2, 0xF5 } };
-EXTERN_C const CLSID    CLSID_MenuToolbarBase =
+const CLSID    __cdecl CLSID_MenuToolbarBase =
     { 0x40B96610, 0xB522, 0x11D1, { 0xB3, 0xB4, 0x00, 0xAA, 0x00, 0x6E, 0xFD, 0xE7 } };
-EXTERN_C const IID      IID_IBanneredBar =
+const IID      __cdecl IID_IBanneredBar =
     { 0x596A9A94, 0x013E, 0x11D1, { 0x8D, 0x34, 0x00, 0xA0, 0xC9, 0x0F, 0x27, 0x19 } };
-EXTERN_C const CLSID    CLSID_MenuBandSite =
+const CLSID    __cdecl CLSID_MenuBandSite =
     { 0xE13EF4E4, 0xD2F2, 0x11D0, { 0x98, 0x16, 0x00, 0xC0, 0x4F, 0xD9, 0x19, 0x72 } };
-EXTERN_C const GUID     SID_SCommDlgBrowser =
+const GUID     __cdecl SID_SCommDlgBrowser =
     { 0x80F30233, 0xB7DF, 0x11D2, { 0xA3, 0x3B, 0x00, 0x60, 0x97, 0xDF, 0x5B, 0xD4 } };
-EXTERN_C const GUID     CPFG_LOGON_USERNAME =
+const GUID     __cdecl CPFG_LOGON_USERNAME =
     { 0xDA15BBE8, 0x954D, 0x4FD3, { 0xB0, 0xF4, 0x1F, 0xB5, 0xB9, 0x0B, 0x17, 0x4B } };
-EXTERN_C const GUID     CPFG_LOGON_PASSWORD =
+const GUID     __cdecl CPFG_LOGON_PASSWORD =
     { 0x60624CFA, 0xA477, 0x47B1, { 0x8A, 0x8E, 0x3A, 0x4A, 0x19, 0x98, 0x18, 0x27 } };
-EXTERN_C const GUID     CPFG_SMARTCARD_USERNAME =
+const GUID     __cdecl CPFG_SMARTCARD_USERNAME =
     { 0x3E1ECF69, 0x568C, 0x4D96, { 0x9D, 0x59, 0x46, 0x44, 0x41, 0x74, 0xE2, 0xD6 } };
-EXTERN_C const GUID     CPFG_SMARTCARD_PIN =
+const GUID     __cdecl CPFG_SMARTCARD_PIN =
     { 0x4FE5263B, 0x9181, 0x46C1, { 0xB0, 0xA4, 0x9D, 0xED, 0xD4, 0xDB, 0x7D, 0xEA } };
-EXTERN_C const GUID     FOLDERTYPEID_NotSpecified =
+const GUID     __cdecl FOLDERTYPEID_NotSpecified =
     { 0x5C4F28B5, 0xF869, 0x4E84, { 0x8E, 0x60, 0xF1, 0x1D, 0xB9, 0x7C, 0x5C, 0xC7 } };
-EXTERN_C const GUID     FOLDERTYPEID_Invalid =
+const GUID     __cdecl FOLDERTYPEID_Invalid =
     { 0x57807898, 0x8C4F, 0x4462, { 0xBB, 0x63, 0x71, 0x04, 0x23, 0x80, 0xB1, 0x09 } };
-EXTERN_C const GUID     FOLDERTYPEID_Documents =
+const GUID     __cdecl FOLDERTYPEID_Documents =
     { 0x7D49D726, 0x3C21, 0x4F05, { 0x99, 0xAA, 0xFD, 0xC2, 0xC9, 0x47, 0x46, 0x56 } };
-EXTERN_C const GUID     FOLDERTYPEID_Pictures =
+const GUID     __cdecl FOLDERTYPEID_Pictures =
     { 0xB3690E58, 0xE961, 0x423B, { 0xB6, 0x87, 0x38, 0x6E, 0xBF, 0xD8, 0x32, 0x39 } };
-EXTERN_C const GUID     FOLDERTYPEID_MusicDetails =
+const GUID     __cdecl FOLDERTYPEID_MusicDetails =
     { 0xAF9C03D6, 0x7DB9, 0x4A15, { 0x94, 0x64, 0x13, 0xBF, 0x9F, 0xB6, 0x9A, 0x2A } };
-EXTERN_C const GUID     FOLDERTYPEID_MusicIcons =
+const GUID     __cdecl FOLDERTYPEID_MusicIcons =
     { 0x0B7467FB, 0x84BA, 0x4AAE, { 0xA0, 0x9B, 0x15, 0xB7, 0x10, 0x97, 0xAF, 0x9E } };
-EXTERN_C const GUID     FOLDERTYPEID_Games =
+const GUID     __cdecl FOLDERTYPEID_Games =
     { 0xB689B0D0, 0x76D3, 0x4CBB, { 0x87, 0xF7, 0x58, 0x5D, 0x0E, 0x0C, 0xE0, 0x70 } };
-EXTERN_C const GUID     FOLDERTYPEID_ControlPanelCategory =
+const GUID     __cdecl FOLDERTYPEID_ControlPanelCategory =
     { 0xDE4F0660, 0xFA10, 0x4B8F, { 0xA4, 0x94, 0x06, 0x8B, 0x20, 0xB2, 0x23, 0x07 } };
-EXTERN_C const GUID     FOLDERTYPEID_ControlPanelClassic =
+const GUID     __cdecl FOLDERTYPEID_ControlPanelClassic =
     { 0x0C3794F3, 0xB545, 0x43AA, { 0xA3, 0x29, 0xC3, 0x74, 0x30, 0xC5, 0x8D, 0x2A } };
-EXTERN_C const GUID     FOLDERTYPEID_Printers =
+const GUID     __cdecl FOLDERTYPEID_Printers =
     { 0x2C7BBEC6, 0xC844, 0x4A0A, { 0x91, 0xFA, 0xCE, 0xF6, 0xF5, 0x9C, 0xFD, 0xA1 } };
-EXTERN_C const GUID     FOLDERTYPEID_RecycleBin =
+const GUID     __cdecl FOLDERTYPEID_RecycleBin =
     { 0xD6D9E004, 0xCD87, 0x442B, { 0x9D, 0x57, 0x5E, 0x0A, 0xEB, 0x4F, 0x6F, 0x72 } };
-EXTERN_C const GUID     FOLDERTYPEID_SoftwareExplorer =
+const GUID     __cdecl FOLDERTYPEID_SoftwareExplorer =
     { 0xD674391B, 0x52D9, 0x4E07, { 0x83, 0x4E, 0x67, 0xC9, 0x86, 0x10, 0xF3, 0x9D } };
-EXTERN_C const GUID     FOLDERTYPEID_CompressedFolder =
+const GUID     __cdecl FOLDERTYPEID_CompressedFolder =
     { 0x80213E82, 0xBCFD, 0x4C4F, { 0x88, 0x17, 0xBB, 0x27, 0x60, 0x12, 0x67, 0xA9 } };
-EXTERN_C const GUID     FOLDERTYPEID_Contacts =
+const GUID     __cdecl FOLDERTYPEID_Contacts =
     { 0xDE2B70EC, 0x9BF7, 0x4A93, { 0xBD, 0x3D, 0x24, 0x3F, 0x78, 0x81, 0xD4, 0x92 } };
-EXTERN_C const GUID     FOLDERTYPEID_Library =
+const GUID     __cdecl FOLDERTYPEID_Library =
     { 0x4BADFC68, 0xC4AC, 0x4716, { 0xA0, 0xA0, 0x4D, 0x5D, 0xAA, 0x6B, 0x0F, 0x3E } };
-EXTERN_C const GUID     FOLDERTYPEID_NetworkExplorer =
+const GUID     __cdecl FOLDERTYPEID_NetworkExplorer =
     { 0x25CC242B, 0x9A7C, 0x4F51, { 0x80, 0xE0, 0x7A, 0x29, 0x28, 0xFE, 0xBE, 0x42 } };
-EXTERN_C const GUID     FOLDERTYPEID_UserFiles =
+const GUID     __cdecl FOLDERTYPEID_UserFiles =
     { 0xCD0FC69B, 0x71E2, 0x46E5, { 0x96, 0x90, 0x5B, 0xCD, 0x9F, 0x57, 0xAA, 0xB3 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_Icon =
+const GUID     __cdecl SYNCMGR_OBJECTID_Icon =
     { 0x6DBC85C3, 0x5D07, 0x4C72, { 0xA7, 0x77, 0x7F, 0xEC, 0x78, 0x07, 0x2C, 0x06 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_EventStore =
+const GUID     __cdecl SYNCMGR_OBJECTID_EventStore =
     { 0x4BEF34B9, 0xA786, 0x4075, { 0xBA, 0x88, 0x0C, 0x2B, 0x9D, 0x89, 0xA9, 0x8F } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_ConflictStore =
+const GUID     __cdecl SYNCMGR_OBJECTID_ConflictStore =
     { 0xD78181F4, 0x2389, 0x47E4, { 0xA9, 0x60, 0x60, 0xBC, 0xC2, 0xED, 0x93, 0x0B } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_BrowseContent =
+const GUID     __cdecl SYNCMGR_OBJECTID_BrowseContent =
     { 0x47CBB584, 0xE9B4, 0x47AE, { 0xA1, 0x20, 0xC4, 0xDF, 0x33, 0x35, 0xDE, 0xE2 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_ShowSchedule =
+const GUID     __cdecl SYNCMGR_OBJECTID_ShowSchedule =
     { 0xEDC6F3E3, 0x8441, 0x4109, { 0xAD, 0xF3, 0x6C, 0x1C, 0xA0, 0xB7, 0xDE, 0x47 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeActivate =
+const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeActivate =
     { 0xD882D80B, 0xE7AA, 0x49ED, { 0x86, 0xB7, 0xE6, 0xE1, 0xF7, 0x14, 0xCD, 0xFE } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDeactivate =
+const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDeactivate =
     { 0xA0EFC282, 0x60E0, 0x460E, { 0x93, 0x74, 0xEA, 0x88, 0x51, 0x3C, 0xFC, 0x80 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeEnable =
+const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeEnable =
     { 0x04CBF7F0, 0x5BEB, 0x4DE1, { 0xBC, 0x90, 0x90, 0x83, 0x45, 0xC4, 0x80, 0xF6 } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDisable =
+const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDisable =
     { 0xBB4F64AA, 0xF004, 0x4EB5, { 0x8E, 0x4D, 0x26, 0x75, 0x19, 0x66, 0x34, 0x4C } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_QueryBeforeDelete =
+const GUID     __cdecl SYNCMGR_OBJECTID_QueryBeforeDelete =
     { 0xF76C3397, 0xAFB3, 0x45D7, { 0xA5, 0x9F, 0x5A, 0x49, 0xE9, 0x05, 0x43, 0x7E } };
-EXTERN_C const GUID     SYNCMGR_OBJECTID_EventLinkClick =
+const GUID     __cdecl SYNCMGR_OBJECTID_EventLinkClick =
     { 0x2203BDC1, 0x1AF1, 0x4082, { 0x8C, 0x30, 0x28, 0x39, 0x9F, 0x41, 0x38, 0x4C } };
-EXTERN_C const GUID     EP_NavPane =
+const GUID     __cdecl EP_NavPane =
     { 0xCB316B22, 0x25F7, 0x42B8, { 0x8A, 0x09, 0x54, 0x0D, 0x23, 0xA4, 0x3C, 0x2F } };
-EXTERN_C const GUID     EP_Commands =
+const GUID     __cdecl EP_Commands =
     { 0xD9745868, 0xCA5F, 0x4A76, { 0x91, 0xCD, 0xF5, 0xA1, 0x29, 0xFB, 0xB0, 0x76 } };
-EXTERN_C const GUID     EP_Commands_Organize =
+const GUID     __cdecl EP_Commands_Organize =
     { 0x72E81700, 0xE3EC, 0x4660, { 0xBF, 0x24, 0x3C, 0x3B, 0x7B, 0x64, 0x88, 0x06 } };
-EXTERN_C const GUID     EP_Commands_View =
+const GUID     __cdecl EP_Commands_View =
     { 0x21F7C32D, 0xEEAA, 0x439B, { 0xBB, 0x51, 0x37, 0xB9, 0x6F, 0xD6, 0xA9, 0x43 } };
-EXTERN_C const GUID     EP_DetailsPane =
+const GUID     __cdecl EP_DetailsPane =
     { 0x43ABF98B, 0x89B8, 0x472D, { 0xB9, 0xCE, 0xE6, 0x9B, 0x82, 0x29, 0xF0, 0x19 } };
-EXTERN_C const GUID     EP_PreviewPane =
+const GUID     __cdecl EP_PreviewPane =
     { 0x893C63D1, 0x45C8, 0x4D17, { 0xBE, 0x19, 0x22, 0x3B, 0xE7, 0x1B, 0xE3, 0x65 } };
-EXTERN_C const GUID     EP_QueryPane =
+const GUID     __cdecl EP_QueryPane =
     { 0x65BCDE4F, 0x4F07, 0x4F27, { 0x83, 0xA7, 0x1A, 0xFC, 0xA4, 0xDF, 0x7D, 0xDD } };
-EXTERN_C const GUID     EP_AdvQueryPane =
+const GUID     __cdecl EP_AdvQueryPane =
     { 0xB4E9DB8B, 0x34BA, 0x4C39, { 0xB5, 0xCC, 0x16, 0xA1, 0xBD, 0x2C, 0x41, 0x1C } };
 
 /* cmnquery.h */
-EXTERN_C const IID      IID_IQueryForm =
+const IID      __cdecl IID_IQueryForm =
     { 0x8CFCEE30, 0x39BD, 0x11D0, { 0xB8, 0xD1, 0x00, 0xA0, 0x24, 0xAB, 0x2D, 0xBB } };
-EXTERN_C const IID      IID_IPersistQuery =
+const IID      __cdecl IID_IPersistQuery =
     { 0x1A3114B8, 0xA62E, 0x11D0, { 0xA6, 0xC5, 0x00, 0xA0, 0xC9, 0x06, 0xAF, 0x45 } };
-EXTERN_C const IID      IID_ICommonQuery =
+const IID      __cdecl IID_ICommonQuery =
     { 0xAB50DEC0, 0x6F1D, 0x11D0, { 0xA1, 0xC4, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_CommonQuery =
+const CLSID    __cdecl CLSID_CommonQuery =
     { 0x83BC6EC0, 0x6F2A, 0x11D0, { 0xA1, 0xC4, 0x00, 0xAA, 0x00, 0xCA, 0x6E, 0x65 } };
 
 /* devguid.h */
-EXTERN_C const GUID GUID_DEVCLASS_1394 =
+const GUID     __cdecl GUID_DEVCLASS_1394 =
     { 0x6BDD1FC1, 0x810F, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_1394DEBUG =
+const GUID     __cdecl GUID_DEVCLASS_1394DEBUG =
     { 0x66F250D6, 0x7801, 0x4A64, { 0xB1, 0x39, 0xEE, 0xA8, 0x0A, 0x45, 0x0B, 0x24 } };
-EXTERN_C const GUID GUID_DEVCLASS_61883 =
+const GUID     __cdecl GUID_DEVCLASS_61883 =
     { 0x7EBEFBC0, 0x3200, 0x11D2, { 0xB4, 0xC2, 0x00, 0xA0, 0xC9, 0x69, 0x7D, 0x07 } };
-EXTERN_C const GUID GUID_DEVCLASS_ADAPTER =
+const GUID     __cdecl GUID_DEVCLASS_ADAPTER =
     { 0x4D36E964, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_APMSUPPORT =
+const GUID     __cdecl GUID_DEVCLASS_APMSUPPORT =
     { 0xD45B1C18, 0xC8FA, 0x11D1, { 0x9F, 0x77, 0x00, 0x00, 0xF8, 0x05, 0xF5, 0x30 } };
-EXTERN_C const GUID GUID_DEVCLASS_AVC =
+const GUID     __cdecl GUID_DEVCLASS_AVC =
     { 0xC06FF265, 0xAE09, 0x48F0, { 0x81, 0x2C, 0x16, 0x75, 0x3D, 0x7C, 0xBA, 0x83 } };
-EXTERN_C const GUID GUID_DEVCLASS_BATTERY =
+const GUID     __cdecl GUID_DEVCLASS_BATTERY =
     { 0x72631E54, 0x78A4, 0x11D0, { 0xBC, 0xF7, 0x00, 0xAA, 0x00, 0xB7, 0xB3, 0x2A } };
-EXTERN_C const GUID GUID_DEVCLASS_BIOMETRIC =
+const GUID     __cdecl GUID_DEVCLASS_BIOMETRIC =
     { 0x53D29EF7, 0x377C, 0x4D14, { 0x86, 0x4B, 0xEB, 0x3A, 0x85, 0x76, 0x93, 0x59 } };
-EXTERN_C const GUID GUID_DEVCLASS_BLUETOOTH =
+const GUID     __cdecl GUID_DEVCLASS_BLUETOOTH =
     { 0xE0CBF06C, 0xCD8B, 0x4647, { 0xBB, 0x8A, 0x26, 0x3B, 0x43, 0xF0, 0xF9, 0x74 } };
-EXTERN_C const GUID GUID_DEVCLASS_CDROM =
+const GUID     __cdecl GUID_DEVCLASS_CDROM =
     { 0x4D36E965, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_COMPUTER =
+const GUID     __cdecl GUID_DEVCLASS_COMPUTER =
     { 0x4D36E966, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_DECODER =
+const GUID     __cdecl GUID_DEVCLASS_DECODER =
     { 0x6BDD1FC2, 0x810F, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_DISKDRIVE =
+const GUID     __cdecl GUID_DEVCLASS_DISKDRIVE =
     { 0x4D36E967, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_DISPLAY =
+const GUID     __cdecl GUID_DEVCLASS_DISPLAY =
     { 0x4D36E968, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_DOT4 =
+const GUID     __cdecl GUID_DEVCLASS_DOT4 =
     { 0x48721B56, 0x6795, 0x11D2, { 0xB1, 0xA8, 0x00, 0x80, 0xC7, 0x2E, 0x74, 0xA2 } };
-EXTERN_C const GUID GUID_DEVCLASS_DOT4PRINT =
+const GUID     __cdecl GUID_DEVCLASS_DOT4PRINT =
     { 0x49CE6AC8, 0x6F86, 0x11D2, { 0xB1, 0xE5, 0x00, 0x80, 0xC7, 0x2E, 0x74, 0xA2 } };
-EXTERN_C const GUID GUID_DEVCLASS_ENUM1394 =
+const GUID     __cdecl GUID_DEVCLASS_ENUM1394 =
     { 0xC459DF55, 0xDB08, 0x11D1, { 0xB0, 0x09, 0x00, 0xA0, 0xC9, 0x08, 0x1F, 0xF6 } };
-EXTERN_C const GUID GUID_DEVCLASS_FDC =
+const GUID     __cdecl GUID_DEVCLASS_FDC =
     { 0x4D36E969, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_FLOPPYDISK =
+const GUID     __cdecl GUID_DEVCLASS_FLOPPYDISK =
     { 0x4D36E980, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_GPS =
+const GUID     __cdecl GUID_DEVCLASS_GPS =
     { 0x6BDD1FC3, 0x810F, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_HDC =
+const GUID     __cdecl GUID_DEVCLASS_HDC =
     { 0x4D36E96A, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_HIDCLASS =
+const GUID     __cdecl GUID_DEVCLASS_HIDCLASS =
     { 0x745A17A0, 0x74D3, 0x11D0, { 0xB6, 0xFE, 0x00, 0xA0, 0xC9, 0x0F, 0x57, 0xDA } };
-EXTERN_C const GUID GUID_DEVCLASS_IMAGE =
+const GUID     __cdecl GUID_DEVCLASS_IMAGE =
     { 0x6BDD1FC6, 0x810F, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_INFINIBAND =
+const GUID     __cdecl GUID_DEVCLASS_INFINIBAND =
     { 0x30EF7132, 0xD858, 0x4A0C, { 0xAC, 0x24, 0xB9, 0x02, 0x8A, 0x5C, 0xCA, 0x3F } };
-EXTERN_C const GUID GUID_DEVCLASS_INFRARED =
+const GUID     __cdecl GUID_DEVCLASS_INFRARED =
     { 0x6BDD1FC5, 0x810F, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_KEYBOARD =
+const GUID     __cdecl GUID_DEVCLASS_KEYBOARD =
     { 0x4D36E96B, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_LEGACYDRIVER =
+const GUID     __cdecl GUID_DEVCLASS_LEGACYDRIVER =
     { 0x8ECC055D, 0x047F, 0x11D1, { 0xA5, 0x37, 0x00, 0x00, 0xF8, 0x75, 0x3E, 0xD1 } };
-EXTERN_C const GUID GUID_DEVCLASS_MEDIA =
+const GUID     __cdecl GUID_DEVCLASS_MEDIA =
     { 0x4D36E96C, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MEDIUM_CHANGER =
+const GUID     __cdecl GUID_DEVCLASS_MEDIUM_CHANGER =
     { 0xCE5939AE, 0xEBDE, 0x11D0, { 0xB1, 0x81, 0x00, 0x00, 0xF8, 0x75, 0x3E, 0xC4 } };
-EXTERN_C const GUID GUID_DEVCLASS_MODEM =
+const GUID     __cdecl GUID_DEVCLASS_MODEM =
     { 0x4D36E96D, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MONITOR =
+const GUID     __cdecl GUID_DEVCLASS_MONITOR =
     { 0x4D36E96E, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MOUSE =
+const GUID     __cdecl GUID_DEVCLASS_MOUSE =
     { 0x4D36E96F, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MTD =
+const GUID     __cdecl GUID_DEVCLASS_MTD =
     { 0x4D36E970, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MULTIFUNCTION =
+const GUID     __cdecl GUID_DEVCLASS_MULTIFUNCTION =
     { 0x4D36E971, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_MULTIPORTSERIAL =
+const GUID     __cdecl GUID_DEVCLASS_MULTIPORTSERIAL =
     { 0x40906CB8, 0xBA12, 0x11D1, { 0xBF, 0x5D, 0x00, 0x00, 0xF8, 0x05, 0xF5, 0x30 } };
-EXTERN_C const GUID GUID_DEVCLASS_NET =
+const GUID     __cdecl GUID_DEVCLASS_NET =
     { 0x4D36E972, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_NETCLIENT =
+const GUID     __cdecl GUID_DEVCLASS_NETCLIENT =
     { 0x4D36E973, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_NETSERVICE =
+const GUID     __cdecl GUID_DEVCLASS_NETSERVICE =
     { 0x4D36E974, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_NETTRANS =
+const GUID     __cdecl GUID_DEVCLASS_NETTRANS =
     { 0x4D36E975, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_NODRIVER =
+const GUID     __cdecl GUID_DEVCLASS_NODRIVER =
     { 0x4D36E976, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_PCMCIA =
+const GUID     __cdecl GUID_DEVCLASS_PCMCIA =
     { 0x4D36E977, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_PNPPRINTERS =
+const GUID     __cdecl GUID_DEVCLASS_PNPPRINTERS =
     { 0x4658EE7E, 0xF050, 0x11D1, { 0xB6, 0xBD, 0x00, 0xC0, 0x4F, 0xA3, 0x72, 0xA7 } };
-EXTERN_C const GUID GUID_DEVCLASS_PORTS =
+const GUID     __cdecl GUID_DEVCLASS_PORTS =
     { 0x4D36E978, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_PRINTER =
+const GUID     __cdecl GUID_DEVCLASS_PRINTER =
     { 0x4D36E979, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_PRINTERUPGRADE =
+const GUID     __cdecl GUID_DEVCLASS_PRINTERUPGRADE =
     { 0x4D36E97A, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_PROCESSOR =
+const GUID     __cdecl GUID_DEVCLASS_PROCESSOR =
     { 0x50127DC3, 0x0F36, 0x415E, { 0xA6, 0xCC, 0x4C, 0xB3, 0xBE, 0x91, 0x0B, 0x65 } };
-EXTERN_C const GUID GUID_DEVCLASS_SBP2 =
+const GUID     __cdecl GUID_DEVCLASS_SBP2 =
     { 0xD48179BE, 0xEC20, 0x11D1, { 0xB6, 0xB8, 0x00, 0xC0, 0x4F, 0xA3, 0x72, 0xA7 } };
-EXTERN_C const GUID GUID_DEVCLASS_SCSIADAPTER =
+const GUID     __cdecl GUID_DEVCLASS_SCSIADAPTER =
     { 0x4D36E97B, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_SECURITYACCELERATOR =
+const GUID     __cdecl GUID_DEVCLASS_SECURITYACCELERATOR =
     { 0x268C95A1, 0xEDFE, 0x11D3, { 0x95, 0xC3, 0x00, 0x10, 0xDC, 0x40, 0x50, 0xA5 } };
-EXTERN_C const GUID GUID_DEVCLASS_SENSOR =
+const GUID     __cdecl GUID_DEVCLASS_SENSOR =
     { 0x5175D334, 0xC371, 0x4806, { 0xB3, 0xBA, 0x71, 0xFD, 0x53, 0xC9, 0x25, 0x8D } };
-EXTERN_C const GUID GUID_DEVCLASS_SIDESHOW =
+const GUID     __cdecl GUID_DEVCLASS_SIDESHOW =
     { 0x997B5D8D, 0xC442, 0x4F2E, { 0xBA, 0xF3, 0x9C, 0x8E, 0x67, 0x1E, 0x9E, 0x21 } };
-EXTERN_C const GUID GUID_DEVCLASS_SMARTCARDREADER =
+const GUID     __cdecl GUID_DEVCLASS_SMARTCARDREADER =
     { 0x50DD5230, 0xBA8A, 0x11D1, { 0xBF, 0x5D, 0x00, 0x00, 0xF8, 0x05, 0xF5, 0x30 } };
-EXTERN_C const GUID GUID_DEVCLASS_SOUND =
+const GUID     __cdecl GUID_DEVCLASS_SOUND =
     { 0x4D36E97C, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_SYSTEM =
+const GUID     __cdecl GUID_DEVCLASS_SYSTEM =
     { 0x4D36E97D, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_TAPEDRIVE =
+const GUID     __cdecl GUID_DEVCLASS_TAPEDRIVE =
     { 0x6D807884, 0x7D21, 0x11CF, { 0x80, 0x1C, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_UNKNOWN =
+const GUID     __cdecl GUID_DEVCLASS_UNKNOWN =
     { 0x4D36E97E, 0xE325, 0x11CE, { 0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18 } };
-EXTERN_C const GUID GUID_DEVCLASS_USB =
+const GUID     __cdecl GUID_DEVCLASS_USB =
     { 0x36FC9E60, 0xC465, 0x11CF, { 0x80, 0x56, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 } };
-EXTERN_C const GUID GUID_DEVCLASS_VOLUME =
+const GUID     __cdecl GUID_DEVCLASS_VOLUME =
     { 0x71A27CDD, 0x812A, 0x11D0, { 0xBE, 0xC7, 0x08, 0x00, 0x2B, 0xE2, 0x09, 0x2F } };
-EXTERN_C const GUID GUID_DEVCLASS_VOLUMESNAPSHOT =
+const GUID     __cdecl GUID_DEVCLASS_VOLUMESNAPSHOT =
     { 0x533C5B84, 0xEC70, 0x11D2, { 0x95, 0x05, 0x00, 0xC0, 0x4F, 0x79, 0xDE, 0xAF } };
-EXTERN_C const GUID GUID_DEVCLASS_WCEUSBS =
+const GUID     __cdecl GUID_DEVCLASS_WCEUSBS =
     { 0x25DBCE51, 0x6C85, 0x4A72, { 0x8A, 0x6D, 0xB5, 0x4C, 0x2B, 0x4F, 0xC8, 0x35 } };
-EXTERN_C const GUID GUID_DEVCLASS_WPD =
+const GUID     __cdecl GUID_DEVCLASS_WPD =
     { 0xEEC5AD98, 0x8080, 0x425F, { 0x92, 0x2A, 0xDA, 0xBF, 0x3D, 0xE3, 0xF6, 0x9A } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_ACTIVITYMONITOR =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_ACTIVITYMONITOR =
     { 0xB86DFF51, 0xA31E, 0x4BAC, { 0xB3, 0xCF, 0xE8, 0xCF, 0xE7, 0x5C, 0x9F, 0xC2 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_UNDELETE =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_UNDELETE =
     { 0xFE8F1572, 0xC67A, 0x48C0, { 0xBB, 0xAC, 0x0B, 0x5C, 0x6D, 0x66, 0xCA, 0xFB } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_ANTIVIRUS =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_ANTIVIRUS =
     { 0xB1D1A169, 0xC54F, 0x4379, { 0x81, 0xDB, 0xBE, 0xE7, 0xD8, 0x8D, 0x74, 0x54 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_REPLICATION =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_REPLICATION =
     { 0x48D3EBC4, 0x4CF8, 0x48FF, { 0xB8, 0x69, 0x9C, 0x68, 0xAD, 0x42, 0xEB, 0x9F } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_CONTINUOUSBACKUP =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_CONTINUOUSBACKUP =
     { 0x71AA14F8, 0x6FAD, 0x4622, { 0xAD, 0x77, 0x92, 0xBB, 0x9D, 0x7E, 0x69, 0x47 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_CONTENTSCREENER =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_CONTENTSCREENER =
     { 0x3E3F0674, 0xC83C, 0x4558, { 0xBB, 0x26, 0x98, 0x20, 0xE1, 0xEB, 0xA5, 0xC5 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_QUOTAMANAGEMENT =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_QUOTAMANAGEMENT =
     { 0x8503C911, 0xA6C7, 0x4919, { 0x8F, 0x79, 0x50, 0x28, 0xF5, 0x86, 0x6B, 0x0C } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_SYSTEMRECOVERY =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_SYSTEMRECOVERY =
     { 0x2DB15374, 0x706E, 0x4131, { 0xA0, 0xC7, 0xD7, 0xC7, 0x8E, 0xB0, 0x28, 0x9A } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_CFSMETADATASERVER =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_CFSMETADATASERVER =
     { 0xCDCF0939, 0xB75B, 0x4630, { 0xBF, 0x76, 0x80, 0xF7, 0xBA, 0x65, 0x58, 0x84 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_HSM =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_HSM =
     { 0xD546500A, 0x2AEB, 0x45F6, { 0x94, 0x82, 0xF4, 0xB1, 0x79, 0x9C, 0x31, 0x77 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_COMPRESSION =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_COMPRESSION =
     { 0xF3586BAF, 0xB5AA, 0x49B5, { 0x8D, 0x6C, 0x05, 0x69, 0x28, 0x4C, 0x63, 0x9F } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_ENCRYPTION =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_ENCRYPTION =
     { 0xA0A701C0, 0xA511, 0x42FF, { 0xAA, 0x6C, 0x06, 0xDC, 0x03, 0x95, 0x57, 0x6F } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_PHYSICALQUOTAMANAGEMENT =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_PHYSICALQUOTAMANAGEMENT =
     { 0x6A0A8E78, 0xBBA6, 0x4FC4, { 0xA7, 0x09, 0x1E, 0x33, 0xCD, 0x09, 0xD6, 0x7E } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_OPENFILEBACKUP =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_OPENFILEBACKUP =
     { 0xF8ECAFA6, 0x66D1, 0x41A5, { 0x89, 0x9B, 0x66, 0x58, 0x5D, 0x72, 0x16, 0xB7 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_SECURITYENHANCER =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_SECURITYENHANCER =
     { 0xD02BC3DA, 0x0C8E, 0x4945, { 0x9B, 0xD5, 0xF1, 0x88, 0x3C, 0x22, 0x6C, 0x8C } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_COPYPROTECTION =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_COPYPROTECTION =
     { 0x89786FF1, 0x9C12, 0x402F, { 0x9C, 0x9E, 0x17, 0x75, 0x3C, 0x7F, 0x43, 0x75 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_SYSTEM =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_SYSTEM =
     { 0x5D1B9AAA, 0x01E2, 0x46AF, { 0x84, 0x9F, 0x27, 0x2B, 0x3F, 0x32, 0x4C, 0x46 } };
-EXTERN_C const GUID GUID_DEVCLASS_FSFILTER_INFRASTRUCTURE =
+const GUID     __cdecl GUID_DEVCLASS_FSFILTER_INFRASTRUCTURE =
     { 0xE55FA6F9, 0x128C, 0x4D04, { 0xAB, 0xAB, 0x63, 0x0C, 0x74, 0xB1, 0x45, 0x3A } };
 
 /* cguid.h */
-EXTERN_C const IID  GUID_NULL =
+const IID      __cdecl GUID_NULL =
     { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
 
 /* ndisguid.h */
-EXTERN_C const GUID GUID_NDIS_LAN_CLASS =
+const GUID     __cdecl GUID_NDIS_LAN_CLASS =
     { 0xAD498944, 0x762F, 0x11D0, { 0x8D, 0xCB, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_DEVINTERFACE_NET =
+const GUID     __cdecl GUID_DEVINTERFACE_NET =
     { 0xCAC88484, 0x7515, 0x4C03, { 0x82, 0xE6, 0x71, 0xA8, 0x7A, 0xBA, 0xC3, 0x61 } };
-EXTERN_C const GUID UNSPECIFIED_NETWORK_GUID =
+const GUID UNSPECIFIED_NETWORK_GUID =
     { 0x12BA5BDE, 0x143E, 0x4C0D, { 0xB6, 0x6D, 0x23, 0x79, 0xBB, 0x14, 0x19, 0x13 } };
-EXTERN_C const GUID GUID_NDIS_ENUMERATE_ADAPTER =
+const GUID     __cdecl GUID_NDIS_ENUMERATE_ADAPTER =
     { 0x981F2D7F, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_ADAPTER_REMOVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_ADAPTER_REMOVAL =
     { 0x981F2D80, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_ADAPTER_ARRIVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_ADAPTER_ARRIVAL =
     { 0x981F2D81, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_ENUMERATE_VC =
+const GUID     __cdecl GUID_NDIS_ENUMERATE_VC =
     { 0x981F2D82, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_VC_REMOVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_VC_REMOVAL =
     { 0x981F2D79, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_VC_ARRIVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_VC_ARRIVAL =
     { 0x182F9E0C, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_BIND =
+const GUID     __cdecl GUID_NDIS_NOTIFY_BIND =
     { 0x5413531C, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x34, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_UNBIND =
+const GUID     __cdecl GUID_NDIS_NOTIFY_UNBIND =
     { 0x6E3CE1EC, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x34, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_WAKE_ON_MAGIC_PACKET_ONLY =
+const GUID     __cdecl GUID_NDIS_WAKE_ON_MAGIC_PACKET_ONLY =
     { 0xA14F1C97, 0x8839, 0x4F8A, { 0x99, 0x96, 0xA2, 0x89, 0x96, 0xEB, 0xBF, 0x1D } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_DEVICE_POWER_ON =
+const GUID     __cdecl GUID_NDIS_NOTIFY_DEVICE_POWER_ON =
     { 0x5F81CFD0, 0xF046, 0x4342, { 0xAF, 0x61, 0x89, 0x5A, 0xCE, 0xDA, 0xEF, 0xD9 } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_DEVICE_POWER_OFF =
+const GUID     __cdecl GUID_NDIS_NOTIFY_DEVICE_POWER_OFF =
     { 0x81BC8189, 0xB026, 0x46AB, { 0xB9, 0x64, 0xF1, 0x82, 0xE3, 0x42, 0x93, 0x4E } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_FILTER_REMOVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_FILTER_REMOVAL =
     { 0x1F177CD9, 0x5955, 0x4721, { 0x9F, 0x6A, 0x78, 0xEB, 0xDF, 0xAE, 0xF8, 0x89 } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_FILTER_ARRIVAL =
+const GUID     __cdecl GUID_NDIS_NOTIFY_FILTER_ARRIVAL =
     { 0x0B6D3C89, 0x5917, 0x43CA, { 0xB5, 0x78, 0xD0, 0x1A, 0x79, 0x67, 0xC4, 0x1C } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_DEVICE_POWER_ON_EX =
+const GUID     __cdecl GUID_NDIS_NOTIFY_DEVICE_POWER_ON_EX =
     { 0x2B440188, 0x92AC, 0x4F60, { 0x9B, 0x2D, 0x20, 0xA3, 0x0C, 0xBB, 0x6B, 0xBE } };
-EXTERN_C const GUID GUID_NDIS_NOTIFY_DEVICE_POWER_OFF_EX =
+const GUID     __cdecl GUID_NDIS_NOTIFY_DEVICE_POWER_OFF_EX =
     { 0x4159353C, 0x5CD7, 0x42CE, { 0x8F, 0xE4, 0xA4, 0x5A, 0x23, 0x80, 0xCC, 0x4F } };
-EXTERN_C const GUID GUID_NDIS_PM_ADMIN_CONFIG =
+const GUID     __cdecl GUID_NDIS_PM_ADMIN_CONFIG =
     { 0x1528D111, 0x708A, 0x4CA4, { 0x92, 0x15, 0xC0, 0x57, 0x71, 0x16, 0x1C, 0xDA } };
-EXTERN_C const GUID GUID_NDIS_PM_ACTIVE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_PM_ACTIVE_CAPABILITIES =
     { 0xB2CF76E3, 0xB3AE, 0x4394, { 0xA0, 0x1F, 0x33, 0x8C, 0x98, 0x70, 0xE9, 0x39 } };
-EXTERN_C const GUID GUID_NDIS_RSS_ENABLED =
+const GUID     __cdecl GUID_NDIS_RSS_ENABLED =
     { 0x9565CD55, 0x3402, 0x4E32, { 0xA5, 0xB6, 0x2F, 0x14, 0x3F, 0x2F, 0x2C, 0x30 } };
-EXTERN_C const GUID GUID_NDIS_GEN_HARDWARE_STATUS =
+const GUID     __cdecl GUID_NDIS_GEN_HARDWARE_STATUS =
     { 0x5EC10354, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MEDIA_SUPPORTED =
+const GUID     __cdecl GUID_NDIS_GEN_MEDIA_SUPPORTED =
     { 0x5EC10355, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MEDIA_IN_USE =
+const GUID     __cdecl GUID_NDIS_GEN_MEDIA_IN_USE =
     { 0x5EC10356, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MAXIMUM_LOOKAHEAD =
+const GUID     __cdecl GUID_NDIS_GEN_MAXIMUM_LOOKAHEAD =
     { 0x5EC10357, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MAXIMUM_FRAME_SIZE =
+const GUID     __cdecl GUID_NDIS_GEN_MAXIMUM_FRAME_SIZE =
     { 0x5EC10358, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_LINK_SPEED =
+const GUID     __cdecl GUID_NDIS_GEN_LINK_SPEED =
     { 0x5EC10359, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_TRANSMIT_BUFFER_SPACE =
+const GUID     __cdecl GUID_NDIS_GEN_TRANSMIT_BUFFER_SPACE =
     { 0x5EC1035A, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_RECEIVE_BUFFER_SPACE =
+const GUID     __cdecl GUID_NDIS_GEN_RECEIVE_BUFFER_SPACE =
     { 0x5EC1035B, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_TRANSMIT_BLOCK_SIZE =
+const GUID     __cdecl GUID_NDIS_GEN_TRANSMIT_BLOCK_SIZE =
     { 0x5EC1035C, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_RECEIVE_BLOCK_SIZE =
+const GUID     __cdecl GUID_NDIS_GEN_RECEIVE_BLOCK_SIZE =
     { 0x5EC1035D, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_VENDOR_ID =
+const GUID     __cdecl GUID_NDIS_GEN_VENDOR_ID =
     { 0x5EC1035E, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_VENDOR_DESCRIPTION =
+const GUID     __cdecl GUID_NDIS_GEN_VENDOR_DESCRIPTION =
     { 0x5EC1035F, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CURRENT_PACKET_FILTER =
+const GUID     __cdecl GUID_NDIS_GEN_CURRENT_PACKET_FILTER =
     { 0x5EC10360, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CURRENT_LOOKAHEAD =
+const GUID     __cdecl GUID_NDIS_GEN_CURRENT_LOOKAHEAD =
     { 0x5EC10361, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_DRIVER_VERSION =
+const GUID     __cdecl GUID_NDIS_GEN_DRIVER_VERSION =
     { 0x5EC10362, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MAXIMUM_TOTAL_SIZE =
+const GUID     __cdecl GUID_NDIS_GEN_MAXIMUM_TOTAL_SIZE =
     { 0x5EC10363, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MAC_OPTIONS =
+const GUID     __cdecl GUID_NDIS_GEN_MAC_OPTIONS =
     { 0x5EC10365, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MEDIA_CONNECT_STATUS =
+const GUID     __cdecl GUID_NDIS_GEN_MEDIA_CONNECT_STATUS =
     { 0x5EC10366, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_MAXIMUM_SEND_PACKETS =
+const GUID     __cdecl GUID_NDIS_GEN_MAXIMUM_SEND_PACKETS =
     { 0x5EC10367, 0xA61A, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_VENDOR_DRIVER_VERSION =
+const GUID     __cdecl GUID_NDIS_GEN_VENDOR_DRIVER_VERSION =
     { 0x447956F9, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_VLAN_ID =
+const GUID     __cdecl GUID_NDIS_GEN_VLAN_ID =
     { 0x765DC702, 0xC5E8, 0x4B67, { 0x84, 0x3B, 0x3F, 0x5A, 0x4F, 0xF2, 0x64, 0x8B } };
-EXTERN_C const GUID GUID_NDIS_GEN_PHYSICAL_MEDIUM =
+const GUID     __cdecl GUID_NDIS_GEN_PHYSICAL_MEDIUM =
     { 0x418CA16D, 0x3937, 0x4208, { 0x94, 0x0A, 0xEC, 0x61, 0x96, 0x27, 0x80, 0x85 } };
-EXTERN_C const GUID GUID_NDIS_TCP_OFFLOAD_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_TCP_OFFLOAD_CURRENT_CONFIG =
     { 0x68542FED, 0x5C74, 0x461E, { 0x89, 0x34, 0x91, 0xC6, 0xF9, 0xC6, 0x09, 0x60 } };
-EXTERN_C const GUID GUID_NDIS_TCP_OFFLOAD_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_TCP_OFFLOAD_HARDWARE_CAPABILITIES =
     { 0xCD5F1102, 0x590F, 0x4ADA, { 0xAB, 0x65, 0x5B, 0x31, 0xB1, 0xDC, 0x01, 0x72 } };
-EXTERN_C const GUID GUID_NDIS_TCP_OFFLOAD_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_TCP_OFFLOAD_PARAMETERS =
     { 0x8EAD9A22, 0x7F69, 0x4BC6, { 0x94, 0x9A, 0xC8, 0x18, 0x7B, 0x07, 0x4E, 0x61 } };
-EXTERN_C const GUID GUID_NDIS_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG =
     { 0x2EE6AEF1, 0x0851, 0x458B, { 0xBF, 0x0D, 0x79, 0x23, 0x43, 0xD1, 0xCD, 0xE1 } };
-EXTERN_C const GUID GUID_NDIS_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES =
     { 0x8CE71F2C, 0xD63A, 0x4390, { 0xA4, 0x87, 0x18, 0xFA, 0x47, 0x26, 0x2C, 0xEB } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_SCALE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_RECEIVE_SCALE_CAPABILITIES =
     { 0x26C28774, 0x4252, 0x48FE, { 0xA6, 0x10, 0xA5, 0x8A, 0x39, 0x8C, 0x0E, 0xB1 } };
-EXTERN_C const GUID GUID_NDIS_GEN_LINK_STATE =
+const GUID     __cdecl GUID_NDIS_GEN_LINK_STATE =
     { 0xBA1F4C14, 0xA945, 0x4762, { 0xB9, 0x16, 0x0B, 0x55, 0x15, 0xB6, 0xF4, 0x3A } };
-EXTERN_C const GUID GUID_NDIS_GEN_LINK_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_GEN_LINK_PARAMETERS =
     { 0x8C7D3579, 0x252B, 0x4614, { 0x82, 0xC5, 0xA6, 0x50, 0xDA, 0xA1, 0x50, 0x49 } };
-EXTERN_C const GUID GUID_NDIS_GEN_STATISTICS =
+const GUID     __cdecl GUID_NDIS_GEN_STATISTICS =
     { 0x368C45B5, 0xC129, 0x43C1, { 0x93, 0x9E, 0x7E, 0xDC, 0x2D, 0x7F, 0xE6, 0x21 } };
-EXTERN_C const GUID GUID_NDIS_GEN_PORT_STATE =
+const GUID     __cdecl GUID_NDIS_GEN_PORT_STATE =
     { 0x6FBF2A5F, 0x8B8F, 0x4920, { 0x81, 0x43, 0xE6, 0xC4, 0x60, 0xF5, 0x25, 0x24 } };
-EXTERN_C const GUID GUID_NDIS_GEN_ENUMERATE_PORTS =
+const GUID     __cdecl GUID_NDIS_GEN_ENUMERATE_PORTS =
     { 0xF1D6ABE8, 0x15E4, 0x4407, { 0x81, 0xB7, 0x6B, 0x83, 0x0C, 0x77, 0x7C, 0xD9 } };
-EXTERN_C const GUID GUID_NDIS_ENUMERATE_ADAPTERS_EX =
+const GUID     __cdecl GUID_NDIS_ENUMERATE_ADAPTERS_EX =
     { 0x16716917, 0x4306, 0x4BE4, { 0x9B, 0x5A, 0x38, 0x09, 0xAE, 0x44, 0xB1, 0x25 } };
-EXTERN_C const GUID GUID_NDIS_GEN_PORT_AUTHENTICATION_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_GEN_PORT_AUTHENTICATION_PARAMETERS =
     { 0xAAB6AC31, 0x86FB, 0x48FB, { 0x8B, 0x48, 0x63, 0xDB, 0x23, 0x5A, 0xCE, 0x16 } };
-EXTERN_C const GUID GUID_NDIS_GEN_INTERRUPT_MODERATION =
+const GUID     __cdecl GUID_NDIS_GEN_INTERRUPT_MODERATION =
     { 0xD9C8EEA5, 0xF16E, 0x467C, { 0x84, 0xD5, 0x63, 0x45, 0xA2, 0x2C, 0xE2, 0x13 } };
-EXTERN_C const GUID GUID_NDIS_GEN_INTERRUPT_MODERATION_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_GEN_INTERRUPT_MODERATION_PARAMETERS =
     { 0xD789ADFA, 0x9C56, 0x433B, { 0xAD, 0x01, 0x75, 0x74, 0xF3, 0xCE, 0xDB, 0xE9 } };
-EXTERN_C const GUID GUID_NDIS_GEN_PCI_DEVICE_CUSTOM_PROPERTIES =
+const GUID     __cdecl GUID_NDIS_GEN_PCI_DEVICE_CUSTOM_PROPERTIES =
     { 0xAA39F5AB, 0xE260, 0x4D01, { 0x82, 0xB0, 0xB7, 0x37, 0xC8, 0x80, 0xEA, 0x05 } };
-EXTERN_C const GUID GUID_NDIS_GEN_PHYSICAL_MEDIUM_EX =
+const GUID     __cdecl GUID_NDIS_GEN_PHYSICAL_MEDIUM_EX =
     { 0x899E7782, 0x035B, 0x43F9, { 0x8B, 0xB6, 0x2B, 0x58, 0x97, 0x16, 0x12, 0xE5 } };
-EXTERN_C const GUID GUID_NDIS_HD_SPLIT_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_HD_SPLIT_CURRENT_CONFIG =
     { 0x81D1303C, 0xAB00, 0x4E49, { 0x80, 0xB1, 0x5E, 0x6E, 0x0B, 0xF9, 0xBE, 0x53 } };
-EXTERN_C const GUID GUID_NDIS_HD_SPLIT_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_HD_SPLIT_PARAMETERS =
     { 0x8C048BEA, 0x2913, 0x4458, { 0xB6, 0x8E, 0x17, 0xF6, 0xC1, 0xE5, 0xC6, 0x0E } };
-EXTERN_C const GUID GUID_PM_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_PM_HARDWARE_CAPABILITIES =
     { 0xECE5360D, 0x3291, 0x4A6E, { 0x80, 0x44, 0x00, 0x51, 0x1F, 0xED, 0x27, 0xEE } };
-EXTERN_C const GUID GUID_PM_CURRENT_CAPABILITIES =
+const GUID     __cdecl GUID_PM_CURRENT_CAPABILITIES =
     { 0x3ABDBD14, 0xD44A, 0x4A3F, { 0x9A, 0x63, 0xA0, 0xA4, 0x2A, 0x51, 0xB1, 0x31 } };
-EXTERN_C const GUID GUID_PM_PARAMETERS =
+const GUID     __cdecl GUID_PM_PARAMETERS =
     { 0x560245D2, 0xE251, 0x409C, { 0xA2, 0x80, 0x31, 0x19, 0x35, 0xBE, 0x3B, 0x28 } };
-EXTERN_C const GUID GUID_PM_ADD_WOL_PATTERN =
+const GUID     __cdecl GUID_PM_ADD_WOL_PATTERN =
     { 0x6FC83BA7, 0x52BC, 0x4FAA, { 0xAC, 0x51, 0x7D, 0x2F, 0xFE, 0x63, 0xBA, 0x90 } };
-EXTERN_C const GUID GUID_PM_REMOVE_WOL_PATTERN =
+const GUID     __cdecl GUID_PM_REMOVE_WOL_PATTERN =
     { 0xA037A915, 0xC6CA, 0x4322, { 0xB3, 0xE3, 0xEF, 0x75, 0x4E, 0xC4, 0x98, 0xDC } };
-EXTERN_C const GUID GUID_PM_WOL_PATTERN_LIST =
+const GUID     __cdecl GUID_PM_WOL_PATTERN_LIST =
     { 0x4022BE37, 0x7EE2, 0x47BE, { 0xA5, 0xA5, 0x05, 0x0F, 0xC7, 0x9A, 0xFC, 0x75 } };
-EXTERN_C const GUID GUID_PM_ADD_PROTOCOL_OFFLOAD =
+const GUID     __cdecl GUID_PM_ADD_PROTOCOL_OFFLOAD =
     { 0x0C06C112, 0x0D93, 0x439B, { 0x9E, 0x6D, 0x26, 0xBE, 0x13, 0x0C, 0x97, 0x84 } };
-EXTERN_C const GUID GUID_PM_GET_PROTOCOL_OFFLOAD =
+const GUID     __cdecl GUID_PM_GET_PROTOCOL_OFFLOAD =
     { 0xA6435CD9, 0x149F, 0x498E, { 0x95, 0x1B, 0x2D, 0x94, 0xBE, 0xA3, 0xE3, 0xA3 } };
-EXTERN_C const GUID GUID_PM_REMOVE_PROTOCOL_OFFLOAD =
+const GUID     __cdecl GUID_PM_REMOVE_PROTOCOL_OFFLOAD =
     { 0xDECD7BE2, 0xA6B0, 0x43CA, { 0xAE, 0x45, 0xD0, 0x00, 0xD2, 0x0E, 0x52, 0x65 } };
-EXTERN_C const GUID GUID_PM_PROTOCOL_OFFLOAD_LIST =
+const GUID     __cdecl GUID_PM_PROTOCOL_OFFLOAD_LIST =
     { 0x736EC5AB, 0xCA8F, 0x4043, { 0xBB, 0x58, 0xDA, 0x40, 0x2A, 0x48, 0xD9, 0xCC } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_HARDWARD_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_HARDWARD_CAPABILITIES =
     { 0x3F2C1419, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_GLOBAL_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_GLOBAL_PARAMETERS =
     { 0x3F2C141A, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_ENUM_QUEUES =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_ENUM_QUEUES =
     { 0x3F2C141B, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_QUEUE_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_QUEUE_PARAMETERS =
     { 0x3F2C141C, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_ENUM_FILTERS =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_ENUM_FILTERS =
     { 0x3F2C141D, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_NDIS_RECEIVE_FILTER_PARAMETERS =
+const GUID     __cdecl GUID_NDIS_RECEIVE_FILTER_PARAMETERS =
     { 0x3F2C141E, 0x83BC, 0x11DD, { 0x94, 0xB8, 0x00, 0x1D, 0x09, 0x16, 0x2B, 0xC3 } };
-EXTERN_C const GUID GUID_RECEIVE_FILTER_CURRENT_CAPABILITIES =
+const GUID     __cdecl GUID_RECEIVE_FILTER_CURRENT_CAPABILITIES =
     { 0x4054E80F, 0x2BC1, 0x4CCC, { 0xB0, 0x33, 0x4A, 0xBC, 0x0C, 0x4A, 0x1E, 0x8C } };
-EXTERN_C const GUID GUID_NIC_SWITCH_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_NIC_SWITCH_HARDWARE_CAPABILITIES =
     { 0x37CAB40C, 0xD1E8, 0x4301, { 0x8C, 0x1D, 0x58, 0x46, 0x5E, 0x0C, 0x4C, 0x0F } };
-EXTERN_C const GUID GUID_NIC_SWITCH_CURRENT_CAPABILITIES =
+const GUID     __cdecl GUID_NIC_SWITCH_CURRENT_CAPABILITIES =
     { 0xE76FDAF3, 0x0BE7, 0x4D95, { 0x87, 0xE9, 0x5A, 0xEA, 0xD4, 0xB5, 0x90, 0xE9 } };
-EXTERN_C const GUID GUID_NDIS_GEN_XMIT_OK =
+const GUID     __cdecl GUID_NDIS_GEN_XMIT_OK =
     { 0x447956FA, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_RCV_OK =
+const GUID     __cdecl GUID_NDIS_GEN_RCV_OK =
     { 0x447956FB, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_XMIT_ERROR =
+const GUID     __cdecl GUID_NDIS_GEN_XMIT_ERROR =
     { 0x447956FC, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_RCV_ERROR =
+const GUID     __cdecl GUID_NDIS_GEN_RCV_ERROR =
     { 0x447956FD, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_RCV_NO_BUFFER =
+const GUID     __cdecl GUID_NDIS_GEN_RCV_NO_BUFFER =
     { 0x447956FE, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_HARDWARE_STATUS =
+const GUID     __cdecl GUID_NDIS_GEN_CO_HARDWARE_STATUS =
     { 0x791AD192, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_MEDIA_SUPPORTED =
+const GUID     __cdecl GUID_NDIS_GEN_CO_MEDIA_SUPPORTED =
     { 0x791AD193, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_MEDIA_IN_USE =
+const GUID     __cdecl GUID_NDIS_GEN_CO_MEDIA_IN_USE =
     { 0x791AD194, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_LINK_SPEED =
+const GUID     __cdecl GUID_NDIS_GEN_CO_LINK_SPEED =
     { 0x791AD195, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_VENDOR_ID =
+const GUID     __cdecl GUID_NDIS_GEN_CO_VENDOR_ID =
     { 0x791AD196, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_VENDOR_DESCRIPTION =
+const GUID     __cdecl GUID_NDIS_GEN_CO_VENDOR_DESCRIPTION =
     { 0x791AD197, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_DRIVER_VERSION =
+const GUID     __cdecl GUID_NDIS_GEN_CO_DRIVER_VERSION =
     { 0x791AD198, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_MAC_OPTIONS =
+const GUID     __cdecl GUID_NDIS_GEN_CO_MAC_OPTIONS =
     { 0x791AD19A, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_MEDIA_CONNECT_STATUS =
+const GUID     __cdecl GUID_NDIS_GEN_CO_MEDIA_CONNECT_STATUS =
     { 0x791AD19B, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_VENDOR_DRIVER_VERSION =
+const GUID     __cdecl GUID_NDIS_GEN_CO_VENDOR_DRIVER_VERSION =
     { 0x791AD19C, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_MINIMUM_LINK_SPEED =
+const GUID     __cdecl GUID_NDIS_GEN_CO_MINIMUM_LINK_SPEED =
     { 0x791AD19D, 0xE35C, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_XMIT_PDUS_OK =
+const GUID     __cdecl GUID_NDIS_GEN_CO_XMIT_PDUS_OK =
     { 0x0A214805, 0xE35F, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_RCV_PDUS_OK =
+const GUID     __cdecl GUID_NDIS_GEN_CO_RCV_PDUS_OK =
     { 0x0A214806, 0xE35F, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_XMIT_PDUS_ERROR =
+const GUID     __cdecl GUID_NDIS_GEN_CO_XMIT_PDUS_ERROR =
     { 0x0A214807, 0xE35F, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_RCV_PDUS_ERROR =
+const GUID     __cdecl GUID_NDIS_GEN_CO_RCV_PDUS_ERROR =
     { 0x0A214808, 0xE35F, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_GEN_CO_RCV_PDUS_NO_BUFFER =
+const GUID     __cdecl GUID_NDIS_GEN_CO_RCV_PDUS_NO_BUFFER =
     { 0x0A214809, 0xE35F, 0x11D0, { 0x96, 0x92, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_PERMANENT_ADDRESS =
+const GUID     __cdecl GUID_NDIS_802_3_PERMANENT_ADDRESS =
     { 0x447956FF, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_CURRENT_ADDRESS =
+const GUID     __cdecl GUID_NDIS_802_3_CURRENT_ADDRESS =
     { 0x44795700, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_MULTICAST_LIST =
+const GUID     __cdecl GUID_NDIS_802_3_MULTICAST_LIST =
     { 0x44795701, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_MAXIMUM_LIST_SIZE =
+const GUID     __cdecl GUID_NDIS_802_3_MAXIMUM_LIST_SIZE =
     { 0x44795702, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_MAC_OPTIONS =
+const GUID     __cdecl GUID_NDIS_802_3_MAC_OPTIONS =
     { 0x44795703, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_RCV_ERROR_ALIGNMENT =
+const GUID     __cdecl GUID_NDIS_802_3_RCV_ERROR_ALIGNMENT =
     { 0x44795704, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_XMIT_ONE_COLLISION =
+const GUID     __cdecl GUID_NDIS_802_3_XMIT_ONE_COLLISION =
     { 0x44795705, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_3_XMIT_MORE_COLLISIONS =
+const GUID     __cdecl GUID_NDIS_802_3_XMIT_MORE_COLLISIONS =
     { 0x44795706, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_PERMANENT_ADDRESS =
+const GUID     __cdecl GUID_NDIS_802_5_PERMANENT_ADDRESS =
     { 0x44795707, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_CURRENT_ADDRESS =
+const GUID     __cdecl GUID_NDIS_802_5_CURRENT_ADDRESS =
     { 0x44795708, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_CURRENT_FUNCTIONAL =
+const GUID     __cdecl GUID_NDIS_802_5_CURRENT_FUNCTIONAL =
     { 0x44795709, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_CURRENT_GROUP =
+const GUID     __cdecl GUID_NDIS_802_5_CURRENT_GROUP =
     { 0x4479570A, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_LAST_OPEN_STATUS =
+const GUID     __cdecl GUID_NDIS_802_5_LAST_OPEN_STATUS =
     { 0x4479570B, 0xA61B, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_CURRENT_RING_STATUS =
+const GUID     __cdecl GUID_NDIS_802_5_CURRENT_RING_STATUS =
     { 0x890A36EC, 0xA61C, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_CURRENT_RING_STATE =
+const GUID     __cdecl GUID_NDIS_802_5_CURRENT_RING_STATE =
     { 0xACF14032, 0xA61C, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_LINE_ERRORS =
+const GUID     __cdecl GUID_NDIS_802_5_LINE_ERRORS =
     { 0xACF14033, 0xA61C, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_5_LINE_FRAMES =
+const GUID     __cdecl GUID_NDIS_802_5_LINE_FRAMES =
     { 0xACF14034, 0xA61C, 0x11D0, { 0x8D, 0xD4, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_11_BSSID =
+const GUID     __cdecl GUID_NDIS_802_11_BSSID =
     { 0x2504B6C2, 0x1FA5, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_SSID =
+const GUID     __cdecl GUID_NDIS_802_11_SSID =
     { 0x7D2A90EA, 0x2041, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_NETWORK_TYPES_SUPPORTED =
+const GUID     __cdecl GUID_NDIS_802_11_NETWORK_TYPES_SUPPORTED =
     { 0x8531D6E6, 0x2041, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_NETWORK_TYPE_IN_USE =
+const GUID     __cdecl GUID_NDIS_802_11_NETWORK_TYPE_IN_USE =
     { 0x857E2326, 0x2041, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_POWER_MODE =
+const GUID     __cdecl GUID_NDIS_802_11_POWER_MODE =
     { 0x85BE837C, 0x2041, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_TX_POWER_LEVEL =
+const GUID     __cdecl GUID_NDIS_802_11_TX_POWER_LEVEL =
     { 0x11E6BA76, 0x2053, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_RSSI =
+const GUID     __cdecl GUID_NDIS_802_11_RSSI =
     { 0x1507DB16, 0x2053, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_RSSI_TRIGGER =
+const GUID     __cdecl GUID_NDIS_802_11_RSSI_TRIGGER =
     { 0x155689B8, 0x2053, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_BSSID_LIST =
+const GUID     __cdecl GUID_NDIS_802_11_BSSID_LIST =
     { 0x69526F9A, 0x2062, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_INFRASTRUCTURE_MODE =
+const GUID     __cdecl GUID_NDIS_802_11_INFRASTRUCTURE_MODE =
     { 0x697D5A7E, 0x2062, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_FRAGMENTATION_THRESHOLD =
+const GUID     __cdecl GUID_NDIS_802_11_FRAGMENTATION_THRESHOLD =
     { 0x69AAA7C4, 0x2062, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_RTS_THRESHOLD =
+const GUID     __cdecl GUID_NDIS_802_11_RTS_THRESHOLD =
     { 0x0134D07E, 0x2064, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_NUMBER_OF_ANTENNAS =
+const GUID     __cdecl GUID_NDIS_802_11_NUMBER_OF_ANTENNAS =
     { 0x01779336, 0x2064, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_RX_ANTENNA_SELECTED =
+const GUID     __cdecl GUID_NDIS_802_11_RX_ANTENNA_SELECTED =
     { 0x01AC07A2, 0x2064, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_TX_ANTENNA_SELECTED =
+const GUID     __cdecl GUID_NDIS_802_11_TX_ANTENNA_SELECTED =
     { 0x01DBB74A, 0x2064, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_SUPPORTED_RATES =
+const GUID     __cdecl GUID_NDIS_802_11_SUPPORTED_RATES =
     { 0x49DB8722, 0x2068, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_DESIRED_RATES =
+const GUID     __cdecl GUID_NDIS_802_11_DESIRED_RATES =
     { 0x452EE08E, 0x2536, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_CONFIGURATION =
+const GUID     __cdecl GUID_NDIS_802_11_CONFIGURATION =
     { 0x4A4DF982, 0x2068, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_STATISTICS =
+const GUID     __cdecl GUID_NDIS_802_11_STATISTICS =
     { 0x42BB73B0, 0x2129, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_ADD_WEP =
+const GUID     __cdecl GUID_NDIS_802_11_ADD_WEP =
     { 0x4307BFF0, 0x2129, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_REMOVE_WEP =
+const GUID     __cdecl GUID_NDIS_802_11_REMOVE_WEP =
     { 0x433C345C, 0x2129, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_DISASSOCIATE =
+const GUID     __cdecl GUID_NDIS_802_11_DISASSOCIATE =
     { 0x43671F40, 0x2129, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_AUTHENTICATION_MODE =
+const GUID     __cdecl GUID_NDIS_802_11_AUTHENTICATION_MODE =
     { 0x43920A24, 0x2129, 0x11D4, { 0x97, 0xEB, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_PRIVACY_FILTER =
+const GUID     __cdecl GUID_NDIS_802_11_PRIVACY_FILTER =
     { 0x6733C4E9, 0x4792, 0x11D4, { 0x97, 0xF1, 0x00, 0xC0, 0x4F, 0x79, 0xC4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_802_11_BSSID_LIST_SCAN =
+const GUID     __cdecl GUID_NDIS_802_11_BSSID_LIST_SCAN =
     { 0x0D9E01E1, 0xBA70, 0x11D4, { 0xB6, 0x75, 0x00, 0x20, 0x48, 0x57, 0x03, 0x37 } };
-EXTERN_C const GUID GUID_NDIS_802_11_WEP_STATUS =
+const GUID     __cdecl GUID_NDIS_802_11_WEP_STATUS =
     { 0xB027A21F, 0x3CFA, 0x4125, { 0x80, 0x0B, 0x3F, 0x7A, 0x18, 0xFD, 0xDC, 0xDC } };
-EXTERN_C const GUID GUID_NDIS_802_11_RELOAD_DEFAULTS =
+const GUID     __cdecl GUID_NDIS_802_11_RELOAD_DEFAULTS =
     { 0x748B14E8, 0x32EE, 0x4425, { 0xB9, 0x1B, 0xC9, 0x84, 0x8C, 0x58, 0xB5, 0x5A } };
-EXTERN_C const GUID GUID_NDIS_802_11_ADD_KEY =
+const GUID     __cdecl GUID_NDIS_802_11_ADD_KEY =
     { 0xAB8B5A62, 0x1D51, 0x49D8, { 0xBA, 0x5C, 0xFA, 0x98, 0x0B, 0xE0, 0x3A, 0x1D } };
-EXTERN_C const GUID GUID_NDIS_802_11_REMOVE_KEY =
+const GUID     __cdecl GUID_NDIS_802_11_REMOVE_KEY =
     { 0x73CB28E9, 0x3188, 0x42D5, { 0xB5, 0x53, 0xB2, 0x12, 0x37, 0xE6, 0x08, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_802_11_ASSOCIATION_INFORMATION =
+const GUID     __cdecl GUID_NDIS_802_11_ASSOCIATION_INFORMATION =
     { 0xA08D4DD0, 0x960E, 0x40BD, { 0x8C, 0xF6, 0xC5, 0x38, 0xAF, 0x98, 0xF2, 0xE3 } };
-EXTERN_C const GUID GUID_NDIS_802_11_TEST =
+const GUID     __cdecl GUID_NDIS_802_11_TEST =
     { 0x4B9CA16A, 0x6A60, 0x4E9D, { 0x92, 0x0C, 0x63, 0x35, 0x95, 0x3F, 0xA0, 0xB5 } };
-EXTERN_C const GUID GUID_NDIS_802_11_MEDIA_STREAM_MODE =
+const GUID     __cdecl GUID_NDIS_802_11_MEDIA_STREAM_MODE =
     { 0x0A56AF66, 0xD84B, 0x49EB, { 0xA2, 0x8D, 0x52, 0x82, 0xCB, 0xB6, 0xD0, 0xCD } };
-EXTERN_C const GUID GUID_NDIS_STATUS_RESET_START =
+const GUID     __cdecl GUID_NDIS_STATUS_RESET_START =
     { 0x981F2D76, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_RESET_END =
+const GUID     __cdecl GUID_NDIS_STATUS_RESET_END =
     { 0x981F2D77, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_MEDIA_CONNECT =
+const GUID     __cdecl GUID_NDIS_STATUS_MEDIA_CONNECT =
     { 0x981F2D7D, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_MEDIA_DISCONNECT =
+const GUID     __cdecl GUID_NDIS_STATUS_MEDIA_DISCONNECT =
     { 0x981F2D7E, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_MEDIA_SPECIFIC_INDICATION =
+const GUID     __cdecl GUID_NDIS_STATUS_MEDIA_SPECIFIC_INDICATION =
     { 0x981F2D84, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_LINK_SPEED_CHANGE =
+const GUID     __cdecl GUID_NDIS_STATUS_LINK_SPEED_CHANGE =
     { 0x981F2D85, 0xB1F3, 0x11D0, { 0x8D, 0xD7, 0x00, 0xC0, 0x4F, 0xC3, 0x35, 0x8C } };
-EXTERN_C const GUID GUID_NDIS_STATUS_PACKET_FILTER =
+const GUID     __cdecl GUID_NDIS_STATUS_PACKET_FILTER =
     { 0xD47C5407, 0x2E75, 0x46DD, { 0x81, 0x46, 0x1D, 0x7E, 0xD2, 0xD6, 0xAB, 0x1D } };
-EXTERN_C const GUID GUID_NDIS_STATUS_NETWORK_CHANGE =
+const GUID     __cdecl GUID_NDIS_STATUS_NETWORK_CHANGE =
     { 0xCA8A56F9, 0xCE81, 0x40E6, { 0xA7, 0x0F, 0xA0, 0x67, 0xA4, 0x76, 0xE9, 0xE9 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_TASK_OFFLOAD_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_STATUS_TASK_OFFLOAD_CURRENT_CONFIG =
     { 0x45049FC6, 0x54D8, 0x40C8, { 0x9C, 0x3D, 0xB0, 0x11, 0xC4, 0xE7, 0x15, 0xBC } };
-EXTERN_C const GUID GUID_NDIS_STATUS_TASK_OFFLOAD_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_STATUS_TASK_OFFLOAD_HARDWARE_CAPABILITIES =
     { 0xB6B8158B, 0x217C, 0x4B2A, { 0xBE, 0x86, 0x6A, 0x04, 0xBE, 0xEA, 0x65, 0xB8 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_STATUS_TCP_CONNECTION_OFFLOAD_CURRENT_CONFIG =
     { 0xF8EDAEFF, 0x24E4, 0x4AE6, { 0xA4, 0x13, 0x0B, 0x27, 0xF7, 0x6B, 0x24, 0x3D } };
-EXTERN_C const GUID GUID_NDIS_STATUS_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES =
+const GUID     __cdecl GUID_NDIS_STATUS_TCP_CONNECTION_OFFLOAD_HARDWARE_CAPABILITIES =
     { 0x391969B6, 0x402C, 0x43BF, { 0x89, 0x22, 0x39, 0xEA, 0xE0, 0xDA, 0x1B, 0xB5 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_OPER_STATUS =
+const GUID     __cdecl GUID_NDIS_STATUS_OPER_STATUS =
     { 0xF917B663, 0x845E, 0x4D3D, { 0xB6, 0xD4, 0x15, 0xEB, 0x27, 0xAF, 0x81, 0xC5 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_LINK_STATE =
+const GUID     __cdecl GUID_NDIS_STATUS_LINK_STATE =
     { 0x64C6F797, 0x878C, 0x4311, { 0x92, 0x46, 0x65, 0xDB, 0xA8, 0x9C, 0x3A, 0x61 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_PORT_STATE =
+const GUID     __cdecl GUID_NDIS_STATUS_PORT_STATE =
     { 0x1DAC0DFE, 0x43E5, 0x44B7, { 0xB7, 0x59, 0x7B, 0xF4, 0x6D, 0xE3, 0x2E, 0x81 } };
-EXTERN_C const GUID GUID_STATUS_MEDIA_SPECIFIC_INDICATION_EX =
+const GUID     __cdecl GUID_STATUS_MEDIA_SPECIFIC_INDICATION_EX =
     { 0xAAACFCA7, 0x954A, 0x4632, { 0xA1, 0x6E, 0xA8, 0xA6, 0x37, 0x93, 0xA9, 0xE5 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_HD_SPLIT_CURRENT_CONFIG =
+const GUID     __cdecl GUID_NDIS_STATUS_HD_SPLIT_CURRENT_CONFIG =
     { 0x6C744B0E, 0xEE9C, 0x4205, { 0x90, 0xA2, 0x01, 0x5F, 0x6D, 0x65, 0xF4, 0x03 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_SCAN_CONFIRM =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_SCAN_CONFIRM =
     { 0x8500591E, 0xA0C7, 0x4EFB, { 0x93, 0x42, 0xB6, 0x74, 0xB0, 0x02, 0xCB, 0xE6 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_MPDU_MAX_LENGTH_CHANGED =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_MPDU_MAX_LENGTH_CHANGED =
     { 0x1D6560EC, 0x8E48, 0x4A3E, { 0x9F, 0xD5, 0xA0, 0x1B, 0x69, 0x8D, 0xB6, 0xC5 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_ASSOCIATION_START =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_ASSOCIATION_START =
     { 0x3927843B, 0x6980, 0x4B48, { 0xB1, 0x5B, 0x4D, 0xE5, 0x09, 0x77, 0xAC, 0x40 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_ASSOCIATION_COMPLETION =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_ASSOCIATION_COMPLETION =
     { 0x458BBEA7, 0x45A4, 0x4AE2, { 0xB1, 0x76, 0xE5, 0x1F, 0x96, 0xFC, 0x05, 0x68 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_CONNECTION_START =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_CONNECTION_START =
     { 0x7B74299D, 0x998F, 0x4454, { 0xAD, 0x08, 0xC5, 0xAF, 0x28, 0x57, 0x6D, 0x1B } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_CONNECTION_COMPLETION =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_CONNECTION_COMPLETION =
     { 0x96EFD9C9, 0x7F1B, 0x4A89, { 0xBC, 0x04, 0x3E, 0x9E, 0x27, 0x17, 0x65, 0xF1 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_ROAMING_START =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_ROAMING_START =
     { 0xB2412D0D, 0x26C8, 0x4F4E, { 0x93, 0xDF, 0xF7, 0xB7, 0x05, 0xA0, 0xB4, 0x33 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_ROAMING_COMPLETION =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_ROAMING_COMPLETION =
     { 0xDD9D47D1, 0x282B, 0x41E4, { 0xB9, 0x24, 0x66, 0x36, 0x88, 0x17, 0xFC, 0xD3 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_DISASSOCIATION =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_DISASSOCIATION =
     { 0x3FBEB6FC, 0x0FE2, 0x43FD, { 0xB2, 0xAD, 0xBD, 0x99, 0xB5, 0xF9, 0x3E, 0x13 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_TKIPMIC_FAILURE =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_TKIPMIC_FAILURE =
     { 0x442C2AE4, 0x9BC5, 0x4B90, { 0xA8, 0x89, 0x45, 0x5E, 0xF2, 0x20, 0xF4, 0xEE } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_PMKID_CANDIDATE_LIST =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_PMKID_CANDIDATE_LIST =
     { 0x26D8B8F6, 0xDB82, 0x49EB, { 0x8B, 0xF3, 0x4C, 0x13, 0x0E, 0xF0, 0x69, 0x50 } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_PHY_STATE_CHANGED =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_PHY_STATE_CHANGED =
     { 0xDEB45316, 0x71B5, 0x4736, { 0xBD, 0xEF, 0x0A, 0x9E, 0x9F, 0x4E, 0x62, 0xDC } };
-EXTERN_C const GUID GUID_NDIS_STATUS_DOT11_LINK_QUALITY =
+const GUID     __cdecl GUID_NDIS_STATUS_DOT11_LINK_QUALITY =
     { 0xA3285184, 0xEA99, 0x48ED, { 0x82, 0x5E, 0xA4, 0x26, 0xB1, 0x1C, 0x27, 0x54 } };
 
 /* dsclient.h */
-EXTERN_C const CLSID    CLSID_MicrosoftDS =
+const CLSID    __cdecl CLSID_MicrosoftDS =
     { 0xFE1290F0, 0xCFBD, 0x11CF, { 0xA3, 0x30, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsPropertyPages =
+const CLSID    __cdecl CLSID_DsPropertyPages =
     { 0x0D45D530, 0x764B, 0x11D0, { 0xA1, 0xCA, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsDomainTreeBrowser =
+const CLSID    __cdecl CLSID_DsDomainTreeBrowser =
     { 0x1698790A, 0xE2B4, 0x11D0, { 0xB0, 0xB1, 0x00, 0xC0, 0x4F, 0xD8, 0xDC, 0xA6 } };
-EXTERN_C const IID      IID_IDsBrowseDomainTree =
+const IID      __cdecl IID_IDsBrowseDomainTree =
     { 0x7CABCF1E, 0x78F5, 0x11D2, { 0x96, 0x0C, 0x00, 0xC0, 0x4F, 0xA3, 0x1A, 0x86 } };
-EXTERN_C const CLSID    CLSID_DsDisplaySpecifier =
+const CLSID    __cdecl CLSID_DsDisplaySpecifier =
     { 0x1AB4A8C0, 0x6A0B, 0x11D2, { 0xAD, 0x49, 0x00, 0xC0, 0x4F, 0xA3, 0x1A, 0x86 } };
-EXTERN_C const CLSID    CLSID_DsFolderProperties =
+const CLSID    __cdecl CLSID_DsFolderProperties =
     { 0x9E51E0D0, 0x6E0F, 0x11D2, { 0x96, 0x01, 0x00, 0xC0, 0x4F, 0xA3, 0x1A, 0x86 } };
 
 /* dsquery.h */
-EXTERN_C const CLSID    CLSID_DsQuery =
+const CLSID    __cdecl CLSID_DsQuery =
     { 0x8A23E65E, 0x31C2, 0x11D0, { 0x89, 0x1C, 0x00, 0xA0, 0x24, 0xAB, 0x2D, 0xBB } };
-EXTERN_C const CLSID    CLSID_DsFindObjects =
+const CLSID    __cdecl CLSID_DsFindObjects =
     { 0x83EE3FE1, 0x57D9, 0x11D0, { 0xB9, 0x32, 0x00, 0xA0, 0x24, 0xAB, 0x2D, 0xBB } };
-EXTERN_C const CLSID    CLSID_DsFindPeople =
+const CLSID    __cdecl CLSID_DsFindPeople =
     { 0x83EE3FE2, 0x57D9, 0x11D0, { 0xB9, 0x32, 0x00, 0xA0, 0x24, 0xAB, 0x2D, 0xBB } };
-EXTERN_C const CLSID    CLSID_DsFindPrinter =
+const CLSID    __cdecl CLSID_DsFindPrinter =
     { 0xB577F070, 0x7EE2, 0x11D0, { 0x91, 0x3F, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsFindComputer =
+const CLSID    __cdecl CLSID_DsFindComputer =
     { 0x16006700, 0x87AD, 0x11D0, { 0x91, 0x40, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsFindVolume =
+const CLSID    __cdecl CLSID_DsFindVolume =
     { 0xC1B3CBF1, 0x886A, 0x11D0, { 0x91, 0x40, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsFindContainer =
+const CLSID    __cdecl CLSID_DsFindContainer =
     { 0xC1B3CBF2, 0x886A, 0x11D0, { 0x91, 0x40, 0x00, 0xAA, 0x00, 0xC1, 0x6E, 0x65 } };
-EXTERN_C const CLSID    CLSID_DsFindAdvanced =
+const CLSID    __cdecl CLSID_DsFindAdvanced =
     { 0x83EE3FE3, 0x57D9, 0x11D0, { 0xB9, 0x32, 0x00, 0xA0, 0x24, 0xAB, 0x2D, 0xBB } };
-EXTERN_C const CLSID    CLSID_DsFindDomainController =
+const CLSID    __cdecl CLSID_DsFindDomainController =
     { 0x538C7B7E, 0xD25E, 0x11D0, { 0x97, 0x42, 0x00, 0xA0, 0xC9, 0x06, 0xAF, 0x45 } };
-EXTERN_C const CLSID    CLSID_DsFindWriteableDomainController =
+const CLSID    __cdecl CLSID_DsFindWriteableDomainController =
     { 0x7CBEF079, 0xAA84, 0x444B, { 0xBC, 0x70, 0x68, 0xE4, 0x12, 0x83, 0xEA, 0xBC } };
-EXTERN_C const CLSID    CLSID_DsFindFrsMembers =
+const CLSID    __cdecl CLSID_DsFindFrsMembers =
     { 0x94CE4B18, 0xB3D3, 0x11D1, { 0xB9, 0xB4, 0x00, 0xC0, 0x4F, 0xD8, 0xD5, 0xB0 } };
 
 /* objarray.h / objectarray.h */
-EXTERN_C const IID  IID_IObjectArray =
+const IID      __cdecl IID_IObjectArray =
     { 0x92CA9DCD, 0x5622, 0x4BBA, { 0xA8, 0x05, 0x5E, 0x9F, 0x54, 0x1B, 0xD8, 0xC9 } };
-EXTERN_C const IID  IID_IObjectCollection =
+const IID      __cdecl IID_IObjectCollection =
     { 0x5632B1A4, 0xE38A, 0x400A, { 0x92, 0x8A, 0xD4, 0xCD, 0x63, 0x23, 0x02, 0x95 } };
 
 /* dispex.h */
-EXTERN_C const IID  IID_IDispatchEx =
+const IID      __cdecl IID_IDispatchEx =
     { 0xA6EF9860, 0xC720, 0x11D0, { 0x93, 0x37, 0x00, 0xA0, 0xC9, 0x0D, 0xCA, 0xA9 } };
-EXTERN_C const IID  IID_IDispError =
+const IID      __cdecl IID_IDispError =
     { 0xA6EF9861, 0xC720, 0x11D0, { 0x93, 0x37, 0x00, 0xA0, 0xC9, 0x0D, 0xCA, 0xA9 } };
-EXTERN_C const IID  IID_IVariantChangeType =
+const IID      __cdecl IID_IVariantChangeType =
     { 0xA6EF9862, 0xC720, 0x11D0, { 0x93, 0x37, 0x00, 0xA0, 0xC9, 0x0D, 0xCA, 0xA9 } };
-EXTERN_C const IID  IID_IObjectIdentity =
+const IID      __cdecl IID_IObjectIdentity =
     { 0xCA04B7E6, 0x0D21, 0x11D1, { 0x8C, 0xC5, 0x00, 0xC0, 0x4F, 0xC2, 0xB0, 0x85 } };
-EXTERN_C const IID  IID_IProvideRuntimeContext =
+const IID      __cdecl IID_IProvideRuntimeContext =
     { 0x10E2414A, 0xEC59, 0x49D2, { 0xBC, 0x51, 0x5A, 0xDD, 0x2C, 0x36, 0xFE, 0xBC } };

@@ -37,7 +37,6 @@
 #include "wdefordr.h"
 #include "wdefmenu.h"
 #include "wdefont.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wdeedit.h"
@@ -76,9 +75,9 @@ typedef struct {
     LIST                *ochildren;
     WdeResizeRatio      resizer;
     WdeResInfo          *res_info;
-    Bool                has_hscroll;
-    Bool                has_vscroll;
-    Bool                in_destroy;
+    bool                has_hscroll;
+    bool                has_vscroll;
+    bool                in_destroy;
 } WdeBaseObject;
 
 /****************************************************************************/
@@ -110,10 +109,10 @@ static BOOL WdeBaseGetFont( WdeBaseObject *, HFONT *, void * );
 static BOOL WdeBaseGetResizer( WdeBaseObject *, WdeResizeRatio *, OBJPTR * );
 static BOOL WdeBaseGetNCSize( WdeBaseObject *, RECT *, void * );
 static BOOL WdeBaseGetScrollRect( WdeBaseObject *, RECT *, void * );
-static Bool WdeBaseGetResizeInc( WdeBaseObject *, POINT *, void * );
-static Bool WdeBaseGetNextChild( WdeBaseObject *, OBJPTR *, Bool * );
-static BOOL WdeBaseResolveSymbol( WdeBaseObject *, Bool *, Bool * );
-static BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *, Bool *, Bool * );
+static BOOL WdeBaseGetResizeInc( WdeBaseObject *, POINT *, void * );
+static BOOL WdeBaseGetNextChild( WdeBaseObject *, OBJPTR *, bool * );
+static BOOL WdeBaseResolveSymbol( WdeBaseObject *, bool *, bool * );
+static BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *, bool *, bool * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -157,14 +156,14 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     char                *text;
     char                *cp;
     int                 point_size;
-    Bool                use_default;
+    bool                use_default;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( obj_rect );
 
     WdeDebugCreate( "Base", parent, obj_rect, handle );
 
-    new = (WdeBaseObject *)WdeMemAlloc( sizeof( WdeBaseObject ) );
+    new = (WdeBaseObject *)WRMemAlloc( sizeof( WdeBaseObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeBaseCreate: Malloc failed" );
         return( new );
@@ -237,7 +236,7 @@ WINEXPORT BOOL CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void 
     return( Forward( (OBJPTR)obj->o_item, act, p1, p2 ) );
 }
 
-Bool WdeBaseInit( Bool first )
+bool WdeBaseInit( bool first )
 {
     _wde_touch( first );
     WdeBaseDispatch = MakeProcInstance( (FARPROC)WdeBaseDispatcher, WdeGetAppInstance() );
@@ -260,12 +259,12 @@ BOOL WdeBaseIsMarkValid( WdeBaseObject *obj, BOOL *flag, void *p2 )
     return( TRUE );
 }
 
-Bool WdeBaseGetNextChild( WdeBaseObject *obj, OBJPTR *o, Bool *up )
+BOOL WdeBaseGetNextChild( WdeBaseObject *obj, OBJPTR *o, bool *up )
 {
     return( WdeGetNextChild( &obj->ochildren, o, *up ) );
 }
 
-BOOL WdeBaseResolveSymbol( WdeBaseObject *obj, Bool *b, Bool *from_id )
+BOOL WdeBaseResolveSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -280,7 +279,7 @@ BOOL WdeBaseResolveSymbol( WdeBaseObject *obj, Bool *b, Bool *from_id )
     return( TRUE );
 }
 
-BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *obj, Bool *b, Bool *from_id )
+BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -322,7 +321,7 @@ BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, void *p2 )
 
     Destroy( obj->o_item, *flag );
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -332,7 +331,7 @@ BOOL WdeBaseGetScrollRect( WdeBaseObject *obj, RECT *r, void *p2 )
     return( WdeBaseLocation( obj, r, p2 ) );
 }
 
-Bool WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
+BOOL WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
 {
     DialogSizeInfo      d;
     RECT                r;
@@ -421,7 +420,7 @@ BOOL WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
     OBJPTR  child;
     OBJPTR  tops;
     RECT    child_rect;
-    Bool    show_child;
+    bool    show_child;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( dc );
@@ -538,7 +537,7 @@ BOOL WdeBaseAddSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
     return( TRUE );
 }
 
-Bool WdeBaseFindSubObjects( WdeBaseObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
+BOOL WdeBaseFindSubObjects( WdeBaseObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
 {
     return( WdeFindSubObjects( req, obj_list, obj->children ) );
 }

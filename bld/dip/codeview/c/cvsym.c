@@ -73,7 +73,7 @@ static dip_status SymGetName( imp_image_handle *ii, imp_sym_handle *is,
                             char **namep, unsigned *lenp, s_all **pp )
 {
     s_all               *p;
-    unsigned            skip;
+    unsigned            skip = 0;
     char                *name;
     numeric_leaf        val;
 
@@ -737,7 +737,7 @@ static search_result TableSearchForAddr( imp_image_handle *ii,
         addr_off                off;
     }                           curr, best;
 
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -825,7 +825,11 @@ static unsigned long CalcHash( char *name, unsigned len )
     sum = 0;
     for( i = 0; i < len; ++i ) {
         sum ^= D_toupper( *(unsigned_32 *)name );
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )        
         sum = _lrotl( sum, 4 );
+#else
+        sum = (sum << 4) | (sum >> 28);
+#endif        
         name += 4;
     }
     return( sum ^ end );
@@ -852,7 +856,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     s_all                       *sp;
     search_result               sr;
 
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( SR_FAIL );
@@ -960,8 +964,8 @@ static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
     imp_sym_handle              dummy;
     addr_off                    dummy_off;
 
-    is->im = MH_GBL;
-    cde = FindDirEntry( ii, MH_GBL, tbl_type );
+    is->im = IMH_GBL;
+    cde = FindDirEntry( ii, IMH_GBL, tbl_type );
     if( cde == NULL ) return( WR_CONTINUE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( WR_FAIL );
@@ -1045,12 +1049,12 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
     switch( ss ) {
     case SS_MODULE:
         im = *(imp_mod_handle *)source;
-        if( im == (imp_mod_handle)NO_MOD ) {
+        if( im == IMH_NOMOD ) {
             wr = WalkDirList( ii, &WalkAModule, &glue );
             if( wr != WR_CONTINUE ) return( wr );
-            im = MH_GBL;
+            im = IMH_GBL;
         }
-        if( im == MH_GBL ) {
+        if( im == IMH_GBL ) {
             wr = TableWalkSym( ii, is, wk, d, sstGlobalSym );
             if( wr != WR_CONTINUE ) return( wr );
             return( TableWalkSym( ii, is, wk, d, sstGlobalPub ) );
@@ -1090,14 +1094,14 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
     return( WR_FAIL );
 }
 
-walk_result     DIPENTRY DIPImpWalkSymList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
-walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss,
+walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss,
                 void *source, IMP_SYM_WKR *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
@@ -1106,7 +1110,7 @@ walk_result DIPENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss
 }
 
 
-imp_mod_handle  DIPENTRY DIPImpSymMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
                         imp_sym_handle *is )
 {
     ii = ii;
@@ -1151,7 +1155,7 @@ static unsigned ImpSymName( imp_image_handle *ii,
     return( NameCopy( buff, name, max, len ) );
 }
 
-unsigned        DIPENTRY DIPImpSymName( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                         imp_sym_handle *is, location_context *lc,
                         symbol_name sn, char *buff, unsigned max )
 {
@@ -1170,13 +1174,13 @@ dip_status ImpSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle
     return( TypeIndexFillIn( ii, SymTypeIdx( ii, p ), it ) );
 }
 
-dip_status      DIPENTRY DIPImpSymType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it )
 {
     return( ImpSymType( ii, is, it ) );
 }
 
-dip_status      DIPENTRY DIPImpSymLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     return( ImpSymLocation( ii, is, lc, ll ) );
@@ -1210,13 +1214,13 @@ dip_status      ImpSymValue( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpSymValue( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, void *buff )
 {
     return( ImpSymValue( ii, is, lc, buff ) );
 }
 
-dip_status      DIPENTRY DIPImpSymInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 {
     s_all       *p;
@@ -1317,7 +1321,7 @@ static const unsigned_8 DXAXList[]      = { CV_X86_DX, CV_X86_AX };
 static const unsigned_8 DXEAXList[]     = { CV_X86_DX, CV_X86_EAX };
 static const unsigned_8 ST1ST0List[]    = { CV_X86_ST1, CV_X86_ST0 };
 
-dip_status      DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
@@ -1453,7 +1457,7 @@ dip_status      DIPENTRY DIPImpSymParmLocation( imp_image_handle *ii,
     return( DS_ERR|DS_NO_PARM );
 }
 
-dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     dip_status          ds;
@@ -1471,7 +1475,7 @@ dip_status      DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
@@ -1522,7 +1526,7 @@ dip_status      DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     return( DS_OK );
 }
 
-search_result   DIPENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
     search_result       sr;
@@ -1598,7 +1602,7 @@ static walk_result SymFind( imp_image_handle *ii, sym_walk_info swi,
 static search_result SearchFileScope( imp_image_handle *ii, imp_mod_handle im,
                 struct search_data *d )
 {
-    if( d->li.mod != im && d->li.mod != (imp_mod_handle)NO_MOD ) {
+    if( MH2IMH( d->li.mod ) != im && MH2IMH( d->li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     switch( d->li.type ) {
@@ -1647,7 +1651,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
         ImpSymName( ii, scope_is, NULL, SN_SOURCE, data.li.scope.start, len + 1 );
         data.li.scope.len = len;
         ss = SS_MODULE;
-        data.li.mod = scope_is->im;
+        data.li.mod = IMH2MH( scope_is->im );
         source = &data.li.mod;
     }
     switch( li->type ) {
@@ -1668,7 +1672,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
             /* just check the global symbols */
             break;
         }
-        if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+        if( MH2IMH( data.li.mod ) != is.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
             return( SR_NONE );
         }
         switch( data.li.type ) {
@@ -1693,7 +1697,7 @@ static search_result    DoLookupSym( imp_image_handle *ii,
     default:
         return( SR_NONE );
     }
-    if( data.li.mod != is.im && data.li.mod != (imp_mod_handle)NO_MOD ) {
+    if( MH2IMH( data.li.mod ) != is.im && MH2IMH( data.li.mod ) != IMH_NOMOD ) {
         return( SR_NONE );
     }
     hash = CalcHash( data.li.name.start, data.li.name.len );
@@ -1765,20 +1769,20 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     return( sr );
 }
 
-search_result   DIPENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 {
     return( DoImpLookupSym( ii, ss, source, li, NULL, d ) );
 }
 
-search_result   DIPENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
     return( DoImpLookupSym( ii, ss, source, li, lc, d ) );
 }
 
-search_result   DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
                 imp_mod_handle im, address addr, scope_block *scope )
 {
     scope_info  sc_info;
@@ -1794,7 +1798,7 @@ search_result   DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
     return( sc_info.start.mach.offset == addr.mach.offset ? SR_EXACT : SR_CLOSEST );
 }
 
-search_result   DIPENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 {
     scope_info  sc_info;
@@ -1826,7 +1830,7 @@ search_result   DIPENTRY DIPImpScopeOuter( imp_image_handle *ii,
     return( SR_CLOSEST );
 }
 
-int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 {
     ii = ii;
@@ -1835,21 +1839,21 @@ int DIPENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
     return( 0 );
 }
 
-dip_status DIPENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

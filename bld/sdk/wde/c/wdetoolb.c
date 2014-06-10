@@ -34,12 +34,12 @@
 #include <limits.h>
 #include "wdestat.h"
 #include "wdemain.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wdehints.h"
 #include "wdelist.h"
 #include "wdetoolb.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -142,7 +142,7 @@ BOOL WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WdeToolBar  *tbar;
-    Bool        ret;
+    bool        ret;
 
     if( (tbar = WdeFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         if( msg == WM_GETMINMAXINFO ) {
@@ -227,7 +227,7 @@ WdeToolBar *WdeFindToolBar( HWND win )
     return( NULL );
 }
 
-Bool WdeCloseToolBar( WdeToolBar *tbar )
+bool WdeCloseToolBar( WdeToolBar *tbar )
 {
     if( tbar != NULL ) {
         tbar->win = (HWND)NULL;
@@ -242,12 +242,12 @@ void WdeFreeToolBarInfo( WdeToolBarInfo *info )
 {
     if( info != NULL ) {
         if( info->items != NULL ) {
-            WdeMemFree( info->items );
+            WRMemFree( info->items );
         }
         if( info->dinfo.background != NULL ) {
             DeleteObject( info->dinfo.background );
         }
-        WdeMemFree( info );
+        WRMemFree( info );
     }
 }
 
@@ -255,16 +255,16 @@ WdeToolBarInfo *WdeAllocToolBarInfo( int num )
 {
     WdeToolBarInfo *info;
 
-    info = (WdeToolBarInfo *)WdeMemAlloc( sizeof( WdeToolBarInfo ) );
+    info = (WdeToolBarInfo *)WRMemAlloc( sizeof( WdeToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WdeToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)WdeMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = (TOOLITEMINFO *)WRMemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WdeMemFree( info );
+            WRMemFree( info );
             info = NULL;
         }
     }
@@ -276,7 +276,7 @@ WdeToolBar *WdeAllocToolBar( void )
 {
     WdeToolBar *tbar;
 
-    tbar = (WdeToolBar *)WdeMemAlloc( sizeof( WdeToolBar ) );
+    tbar = (WdeToolBar *)WRMemAlloc( sizeof( WdeToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WdeToolBar ) );
     }
@@ -287,7 +287,7 @@ WdeToolBar *WdeAllocToolBar( void )
 void WdeFreeToolBar( WdeToolBar *tbar )
 {
     if( tbar != NULL ) {
-        WdeMemFree( tbar );
+        WRMemFree( tbar );
     }
 }
 

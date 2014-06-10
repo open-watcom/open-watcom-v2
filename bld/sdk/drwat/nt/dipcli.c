@@ -83,14 +83,14 @@ void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
 /*
  * DIGCliAlloc
  */
-void *DIGCLIENT DIGCliAlloc( unsigned size ) {
+void *DIGCLIENT DIGCliAlloc( size_t size ) {
     return( MemAlloc( size ) );
 }
 
 /*
  * DIGCliRealloc
  */
-void *DIGCLIENT DIGCliRealloc( void *ptr, unsigned size ) {
+void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size ) {
     return( MemReAlloc( ptr, size ) );
 }
 
@@ -202,8 +202,7 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset,
-                                   dig_seek dipmode )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 

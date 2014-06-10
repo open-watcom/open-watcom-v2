@@ -269,7 +269,7 @@ void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
 /*
  * DIPCliAlloc
  */
-void *DIGCLIENT DIGCliAlloc( unsigned size ) {
+void *DIGCLIENT DIGCliAlloc( size_t size ) {
     void        *ret;
 
     DEBUGOUT( "alloc BEGIN" );
@@ -281,7 +281,7 @@ void *DIGCLIENT DIGCliAlloc( unsigned size ) {
 /*
  * DIPCliRealloc
  */
-void *DIGCLIENT DIGCliRealloc( void *ptr, unsigned size ) {
+void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size ) {
 
     void        *ret;
 
@@ -457,8 +457,7 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
 /*
  * DIPCliSeek
  */
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset,
-                                   dig_seek dipmode )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
 {
     int                 mode;
     unsigned long       ret;

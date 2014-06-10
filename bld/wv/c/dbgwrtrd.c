@@ -278,7 +278,7 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
             line->tabstop = FALSE;
             line->use_prev_attr = TRUE;
             if( thd->cs ) {
-                sprintf(TxtBuff, "%04hX:%08lX", thd->cs, thd->eip );
+                sprintf(TxtBuff, "%04hX:%08lX", thd->cs, (unsigned long)thd->eip );
                 line->text = TxtBuff;
             } else {
                 line->text = "";

@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeCBoxCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeCBoxInit( Bool );
+extern bool              WdeCBoxInit( bool );
 extern void              WdeCBoxFini( void );
 
 #endif

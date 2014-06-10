@@ -43,7 +43,7 @@ Define( MRule )
 
 MRule::MRule( WTokenFile& fil, WString& tok )
     : _tagMask( "*" )
-    , _autodepend( FALSE )
+    , _autodepend( false )
 {
     fil.token( _tag );
     _tool = _config->nilTool();
@@ -59,7 +59,7 @@ MRule::MRule( WTokenFile& fil, WString& tok )
         if( tok == "Command" ) {
             _commands.add( new MCommand( fil, tok ) );
         } else if( tok == "Autodepend" ) {
-            _autodepend = TRUE;
+            _autodepend = true;
             fil.token( tok );
         } else if( tok == "BrowseSwitch" ) {
             fil.token( _browseSwitch );
@@ -98,7 +98,7 @@ MRule::MRule( WTokenFile& fil, WString& tok )
 MRule::MRule( const char* tag, MTool* tool )
     : _tool( tool )
     , _tag( tag )
-    , _autodepend( FALSE )
+    , _autodepend( false )
 {
 }
 
@@ -114,7 +114,7 @@ MRule::~MRule()
 #ifndef NOPERSIST
 MRule* WEXPORT MRule::createSelf( WObjectFile& )
 {
-    return new MRule( NULL, NULL );
+    return( new MRule( NULL, NULL ) );
 }
 
 void WEXPORT MRule::readSelf( WObjectFile& p )
@@ -152,9 +152,9 @@ const char* MRule::resultExt()
 {
     if( _targets.count() > 0 ) {
         WFileName* t = (WFileName*)_targets[0];
-        return t->ext();
+        return( t->ext() );
     }
-    return ".xxx";
+    return( ".xxx" );
 }
 
 bool MRule::matchTarget( WFileName& tgt )
@@ -162,10 +162,10 @@ bool MRule::matchTarget( WFileName& tgt )
     for( int i=0; i<_targets.count(); i++ ) {
         WFileName* t = (WFileName*)_targets[i];
         if( tgt.match( *t ) ) {
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 bool MRule::matchSource( WFileName& src )
@@ -173,31 +173,31 @@ bool MRule::matchSource( WFileName& src )
     for( int i=0; i<_sources.count(); i++ ) {
         WFileName* s = (WFileName*)_sources[i];
         if( src.match( *s ) ) {
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 bool MRule::match( WString& tag, WFileName& src, WFileName& tgt )
 {
     if( tag.match( _tagMask ) && matchSource( src ) && matchTarget( tgt ) ) {
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 bool MRule::match( WString& tag, WFileName& tgt )
 {
     if( !_sources.count() && tag.match( _tagMask ) && matchTarget( tgt ) ) {
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
 {
-    bool found = FALSE;
+    bool found = false;
     size_t len = 0;
     MSymbol* o = NULL;
     WString oName;
@@ -207,20 +207,20 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
         o->name( oName );
         len = oName.size();
         if( strnicmp( s, oName, len ) == 0 ) {
-            found = TRUE;
+            found = true;
             break;
         }
     }
     if( !found ) o = NULL;
     if( found && workFiles ) {
-        bool incName = TRUE;
+        bool incName = true;
         char afterName = ' ';
         char sep[2]; strcpy( sep, " " );
-        for( bool done=FALSE; !done; ) {
+        for( bool done=false; !done; ) {
             char ch = s[len];
             switch( ch ) {
             case '!':
-                incName = FALSE;
+                incName = false;
                 len += 1;
                 break;
             case '=':
@@ -234,7 +234,7 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
                 len += 1;
                 break;
             default:
-                done = TRUE;
+                done = true;
             }
         }
         WString vv;
@@ -262,7 +262,7 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
             v.concat( vv.gets() );
         }
     }
-    return o;
+    return( o );
 }
 
 void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList* workFiles, WString& mask, WVList* stateList, SwMode mode, bool* browse )
@@ -302,8 +302,8 @@ void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList*
     }
     WString browseSwitch( _browseSwitch );
     c.expand( cmd, target, _tool, mask, stateList, mode, &browseSwitch );
-    if( browse ) {
-        *browse = (bool)(browseSwitch.size() > 0 );
+    if( browse != NULL ) {
+        *browse = ( browseSwitch.size() > 0 );
     }
 }
 
@@ -328,7 +328,7 @@ bool MRule::enumAccel( WObject *obj, bcbk fn ) {
     bool        rc;
 
     icount = _actions.count();
-    rc = FALSE;
+    rc = false;
     for( int i=0; i < icount; i++ ) {
         MAction *action;
         action = (MAction *)_actions[i];

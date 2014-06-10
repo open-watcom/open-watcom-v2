@@ -299,48 +299,6 @@ typedef struct tagQACONTROL {
     DWORD   dwPointerActivationPolicy;
 } QACONTROL;
 
-/* GUIDs */
-EXTERN_C const IID  IID_IEnumConnections;
-EXTERN_C const IID  IID_IConnectionPoint;
-EXTERN_C const IID  IID_IEnumConnectionPoints;
-EXTERN_C const IID  IID_IConnectionPointContainer;
-EXTERN_C const IID  IID_IClassFactory2;
-EXTERN_C const IID  IID_IProvideClassInfo;
-EXTERN_C const IID  IID_IProvideClassInfo2;
-EXTERN_C const IID  IID_IProvideMultipleClassInfo;
-EXTERN_C const IID  IID_IOleControl;
-EXTERN_C const IID  IID_IOleControlSite;
-EXTERN_C const IID  IID_IPropertyPage;
-EXTERN_C const IID  IID_IPropertyPage2;
-EXTERN_C const IID  IID_IPropertyPageSite;
-EXTERN_C const IID  IID_IPropertyNotifySink;
-EXTERN_C const IID  IID_ISpecifyPropertyPages;
-EXTERN_C const IID  IID_IPersistMemory;
-EXTERN_C const IID  IID_IPersistStreamInit;
-EXTERN_C const IID  IID_IPersistPropertyBag;
-EXTERN_C const IID  IID_ISimpleFrameSite;
-EXTERN_C const IID  IID_IFont;
-EXTERN_C const IID  IID_IPicture;
-EXTERN_C const IID  IID_IPicture2;
-EXTERN_C const IID  IID_IFontEventsDisp;
-EXTERN_C const IID  IID_IFontDisp;
-EXTERN_C const IID  IID_IPictureDisp;
-EXTERN_C const IID  IID_IOleInPlaceObjectWindowless;
-EXTERN_C const IID  IID_IOleInPlaceSiteEx;
-EXTERN_C const IID  IID_IOleInPlaceSiteWindowless;
-EXTERN_C const IID  IID_IViewObjectEx;
-EXTERN_C const IID  IID_IOleUndoUnit;
-EXTERN_C const IID  IID_IOleParentUndoUnit;
-EXTERN_C const IID  IID_IEnumOleUndoUnits;
-EXTERN_C const IID  IID_IOleUndoManager;
-EXTERN_C const IID  IID_IPointerInactive;
-EXTERN_C const IID  IID_IObjectWithSite;
-EXTERN_C const IID  IID_IPerPropertyBrowsing;
-EXTERN_C const IID  IID_IPropertyBag2;
-EXTERN_C const IID  IID_IPersistPropertyBag2;
-EXTERN_C const IID  IID_IAdviseSinkEx;
-EXTERN_C const IID  IID_IQuickActivate;
-
 /* IEnumConnections interface */
 #undef INTERFACE
 #define INTERFACE   IEnumConnections
@@ -1957,5 +1915,47 @@ typedef IQuickActivate  *LPQUICKACTIVATE;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IEnumConnections;
+EXTERN_C const IID  __cdecl IID_IConnectionPoint;
+EXTERN_C const IID  __cdecl IID_IEnumConnectionPoints;
+EXTERN_C const IID  __cdecl IID_IConnectionPointContainer;
+EXTERN_C const IID  __cdecl IID_IClassFactory2;
+EXTERN_C const IID  __cdecl IID_IProvideClassInfo;
+EXTERN_C const IID  __cdecl IID_IProvideClassInfo2;
+EXTERN_C const IID  __cdecl IID_IProvideMultipleClassInfo;
+EXTERN_C const IID  __cdecl IID_IOleControl;
+EXTERN_C const IID  __cdecl IID_IOleControlSite;
+EXTERN_C const IID  __cdecl IID_IPropertyPage;
+EXTERN_C const IID  __cdecl IID_IPropertyPage2;
+EXTERN_C const IID  __cdecl IID_IPropertyPageSite;
+EXTERN_C const IID  __cdecl IID_IPropertyNotifySink;
+EXTERN_C const IID  __cdecl IID_ISpecifyPropertyPages;
+EXTERN_C const IID  __cdecl IID_IPersistMemory;
+EXTERN_C const IID  __cdecl IID_IPersistStreamInit;
+EXTERN_C const IID  __cdecl IID_IPersistPropertyBag;
+EXTERN_C const IID  __cdecl IID_ISimpleFrameSite;
+EXTERN_C const IID  __cdecl IID_IFont;
+EXTERN_C const IID  __cdecl IID_IPicture;
+EXTERN_C const IID  __cdecl IID_IPicture2;
+EXTERN_C const IID  __cdecl IID_IFontEventsDisp;
+EXTERN_C const IID  __cdecl IID_IFontDisp;
+EXTERN_C const IID  __cdecl IID_IPictureDisp;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceObjectWindowless;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceSiteEx;
+EXTERN_C const IID  __cdecl IID_IOleInPlaceSiteWindowless;
+EXTERN_C const IID  __cdecl IID_IViewObjectEx;
+EXTERN_C const IID  __cdecl IID_IOleUndoUnit;
+EXTERN_C const IID  __cdecl IID_IOleParentUndoUnit;
+EXTERN_C const IID  __cdecl IID_IEnumOleUndoUnits;
+EXTERN_C const IID  __cdecl IID_IOleUndoManager;
+EXTERN_C const IID  __cdecl IID_IPointerInactive;
+EXTERN_C const IID  __cdecl IID_IObjectWithSite;
+EXTERN_C const IID  __cdecl IID_IPerPropertyBrowsing;
+EXTERN_C const IID  __cdecl IID_IPropertyBag2;
+EXTERN_C const IID  __cdecl IID_IPersistPropertyBag2;
+EXTERN_C const IID  __cdecl IID_IAdviseSinkEx;
+EXTERN_C const IID  __cdecl IID_IQuickActivate;
 
 #endif /* __ocidl_h__ */

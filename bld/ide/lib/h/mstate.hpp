@@ -45,8 +45,8 @@ WCLASS MState : public WObject
                 MState( MTool* tool, SwMode mode, MSwitch* sw=NULL );
                 ~MState() {}
 
-                MSwitch* sw() { return _switch; }
-                SwMode mode() { return _mode; }
+                MSwitch* sw() { return( _switch ); }
+                SwMode mode() { return( _mode ); }
                 void resetRuleRefs();
                 bool legal();
         private:

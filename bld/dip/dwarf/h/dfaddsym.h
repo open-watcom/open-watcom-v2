@@ -36,12 +36,11 @@ typedef struct {
     dr_handle       sym;  /* dwarf handle */
 }addrsym_info;
 
-typedef int (*WLKADDRSYM)( void *d, addrsym_info *info );
+typedef bool (*WLKADDRSYM)( void *d, addrsym_info *info );
+
 extern void AddAddrSym( seg_list *list, addrsym_info *new );
-extern  int  FindAddrSym( seg_list     *addr_map,
-                          addr_ptr     *mach,
-                          addrsym_info *ret   );
-extern void  SortAddrSym( seg_list *ctl );
-extern void  InitAddrSym( seg_list *list );
-extern int   WlkAddrSyms( seg_list *ctl, WLKADDRSYM fn, void *d );
-extern void  FiniAddrSym( seg_list *ctl );
+extern int  FindAddrSym( seg_list *addr_map, addr_ptr *mach, addrsym_info *ret );
+extern void SortAddrSym( seg_list *ctl );
+extern void InitAddrSym( seg_list *list );
+extern bool WlkAddrSyms( seg_list *ctl, WLKADDRSYM fn, void *d );
+extern void FiniAddrSym( seg_list *ctl );

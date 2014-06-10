@@ -49,23 +49,23 @@
 extern void WInitEditWindows( HINSTANCE );
 extern void WFiniEditWindows( void );
 extern void WInitEditDlg( HINSTANCE inst, HWND parent );
-extern Bool WCreateStringEditWindow( WStringEditInfo *, HINSTANCE );
-extern Bool WResizeStringEditWindow( WStringEditInfo *, RECT * );
-extern Bool WInitEditWindowListBox( WStringEditInfo * );
+extern bool WCreateStringEditWindow( WStringEditInfo *, HINSTANCE );
+extern bool WResizeStringEditWindow( WStringEditInfo *, RECT * );
+extern bool WInitEditWindowListBox( WStringEditInfo * );
 extern void WHandleSelChange( WStringEditInfo * );
-extern void WDoHandleSelChange( WStringEditInfo *, Bool, Bool );
+extern void WDoHandleSelChange( WStringEditInfo *, bool, bool );
 
-extern Bool WSetEditWindowStringData( WStringEditInfo *, WStringBlock *, uint_16 );
-extern Bool WGetEditWindowStringData( WStringEditInfo *, char **, char **, uint_16 * );
+extern bool WSetEditWindowStringData( WStringEditInfo *, WStringBlock *, uint_16 );
+extern bool WGetEditWindowStringData( WStringEditInfo *, char **, char **, uint_16 * );
 
-extern Bool WGetEditWindowText( HWND, char ** );
-extern Bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, Bool );
+extern bool WGetEditWindowText( HWND, char ** );
+extern bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, bool );
 
-extern Bool WSetEditWindowText( HWND, char * );
-extern Bool WSetEditWindowID( HWND, uint_16, char * );
+extern bool WSetEditWindowText( HWND, char * );
+extern bool WSetEditWindowID( HWND, uint_16, char * );
 
 extern void WResetEditWindow( WStringEditInfo *einfo );
-extern Bool WClipStringItem( WStringEditInfo *einfo, Bool cut );
-extern Bool WPasteStringItem( WStringEditInfo *einfo );
+extern bool WClipStringItem( WStringEditInfo *einfo, bool cut );
+extern bool WPasteStringItem( WStringEditInfo *einfo );
 
 #endif

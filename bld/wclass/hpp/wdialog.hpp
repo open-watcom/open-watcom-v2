@@ -47,8 +47,8 @@ WCLASS WDialog : public WWindow {
                          const char *text=NULL );
         WEXPORT ~WDialog();
         virtual void WEXPORT initialize() {}
-        virtual void cancelButton( WWindow * ) { quit( 0 ); }
-        virtual void okButton( WWindow * ) { quit( 1 ); }
+        virtual void cancelButton( WWindow * ) { quit( false ); }
+        virtual void okButton( WWindow * ) { quit( true ); }
         virtual bool WEXPORT keyDown( WKeyCode, WKeyState );
         int WEXPORT process();
         int WEXPORT process( WWindow *parent );
@@ -63,7 +63,7 @@ WCLASS WDialog : public WWindow {
             return( WSystemMetrics::dialogFrameHeight() );
         }
         /* right mouse button should not display a popup for dialogs */
-        virtual bool WEXPORT rightBttnUp( int, int, WMouseKeyFlags ) { return( FALSE ); }
+        virtual bool WEXPORT rightBttnUp( int, int, WMouseKeyFlags ) { return( false ); }
     protected:
         virtual void doDialog( WWindow *parent );
     protected:

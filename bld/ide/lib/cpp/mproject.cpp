@@ -39,9 +39,9 @@ static char _targetIdent[] = { "targetIdent" };
 Define( MProject )
 
 MProject::MProject( const char* filename )
-    : _dirty( TRUE )
-    , _needsMake( TRUE )
-    , _recursing( FALSE )
+    : _dirty( true )
+    , _needsMake( true )
+    , _recursing( false )
     , _checkout( NULL )
 {
     if( filename ) {
@@ -59,7 +59,7 @@ MProject::~MProject()
 #ifndef NOPERSIST
 MProject* WEXPORT MProject::createSelf( WObjectFile& )
 {
-    return new MProject( NULL );
+    return( new MProject( NULL ) );
 }
 
 void WEXPORT MProject::readSelf( WObjectFile& p )
@@ -88,8 +88,8 @@ void WEXPORT MProject::readSelf( WObjectFile& p )
                 //sayf( SayWarning, SayOk, "IDE Error: Unable to read target file '%s'", (const char*)tgtFilename );
             }
         }
-        _dirty = FALSE;
-        _needsMake = TRUE;
+        _dirty = false;
+        _needsMake = true;
     }
 }
 
@@ -103,20 +103,20 @@ bool MProject::tryOpenTargetFile( long version, bool try_checkout, MComponent* c
                 (const char*)comp->filename() ) == RetOk ) {
                 if( (_RCSCli->*_checkout)( &(comp->filename()), _filename,
                     comp->filename() ) ) {
-                    return( tryOpenTargetFile( version, FALSE, comp ) );
+                    return( tryOpenTargetFile( version, false, comp ) );
                 }
             }
         }
         sayf( SayWarning, SayOk, "IDE Error: Unable to write target file '%s'", (const char*)comp->filename() );
-        return( FALSE );
+        return( false );
     } else {
-        _recursing = TRUE;
+        _recursing = true;
         ot.writeObject( _targetIdent );
         ot.writeObject( this );
         ot.writeObject( comp );
-        _recursing = FALSE;
+        _recursing = false;
         ot.close();
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -132,12 +132,12 @@ void WEXPORT MProject::writeSelf( WObjectFile& p )
             WFileName tgtFile( comp->relFilename() );
             p.writeObject( &tgtFile, FORCE );
             if( comp->isDirty() ) {
-                if( !tryOpenTargetFile( p.version(), TRUE, comp ) ) {
-                    p.setObjOk( FALSE );
+                if( !tryOpenTargetFile( p.version(), true, comp ) ) {
+                    p.setObjOk( false );
                 }
             }
         }
-        _dirty = FALSE;
+        _dirty = false;
     }
 }
 #endif
@@ -167,13 +167,13 @@ void MProject::setMakefile()
 MComponent* MProject::addComponent( MComponent* comp )
 {
     setDirty();
-    return (MComponent*)_components.add( comp );
+    return( (MComponent*)_components.add( comp ) );
 }
 
 MComponent* MProject::removeComponent( MComponent* comp )
 {
     setDirty();
-    return (MComponent*)_components.removeSame( comp );
+    return( (MComponent*)_components.removeSame( comp ) );
 }
 
 MComponent* MProject::attachComponent( WFileName& filename )
@@ -181,7 +181,7 @@ MComponent* MProject::attachComponent( WFileName& filename )
     MComponent* comp = NULL;
     WObjectFile ot;
     if( ot.open( filename, OStyleReadB ) ) {
-        _recursing = TRUE;
+        _recursing = true;
         if( ot.version() < 34 ) {
             ot.readObject( this );
             comp = (MComponent*)ot.readObject();
@@ -189,7 +189,7 @@ MComponent* MProject::attachComponent( WFileName& filename )
             _components.add( comp );
             setDirty();
         } else {
-            char ident[ sizeof( _targetIdent ) + 1 ];
+            char ident[sizeof( _targetIdent ) + 1];
             ot.readObject( ident, sizeof( ident ) - 1 );
             if( !streq( ident, _targetIdent ) ) {
                 //bad file format
@@ -201,10 +201,10 @@ MComponent* MProject::attachComponent( WFileName& filename )
                 setDirty();
             }
         }
-        _recursing = FALSE;
+        _recursing = false;
         ot.close();
     }
-    return comp;
+    return( comp );
 }
 
 MComponent* MProject::findOldComponent( WFileName& fn )
@@ -213,10 +213,10 @@ MComponent* MProject::findOldComponent( WFileName& fn )
     for( int i=0; i<icount; i++ ) {
         MComponent* comp = (MComponent*)_components[i];
         if( comp->filename() == fn ) {
-            return comp;
+            return( comp );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 MComponent* MProject::findComponent( WFileName& fn )
@@ -225,10 +225,10 @@ MComponent* MProject::findComponent( WFileName& fn )
     for( int i=0; i<icount; i++ ) {
         MComponent* comp = (MComponent*)_components[i];
         if( comp->relFilename() == fn ) {
-            return comp;
+            return( comp );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 MItem* MProject::findSameResult( MItem* item, MComponent** compp )
@@ -239,10 +239,10 @@ MItem* MProject::findSameResult( MItem* item, MComponent** compp )
         MItem* m = comp->findSameResult( item );
         if( m ) {
             *compp = comp;
-            return m;
+            return( m );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void MProject::refresh( bool autotrack_only )
@@ -281,17 +281,17 @@ void MProject::setAfter( const MCommand& after )
 void MProject::insertBlanks( WString& s )
 {
     WString ss;
-    bool lineStart = TRUE;
-    for( int i=0; i<s.size(); i++ ) {
+    bool lineStart = true;
+    for( size_t i=0; i<s.size(); i++ ) {
         if( lineStart && s[i] != ' ' && s[i] != '!' ) {
             ss.concat( ' ' );
         }
         ss.concat( s[i] );
 
         if( s[i] == '\n' ) {
-            lineStart = TRUE;
+            lineStart = true;
         } else {
-            lineStart = FALSE;
+            lineStart = false;
         }
     }
     s = ss;
@@ -311,12 +311,12 @@ void MProject::expand( ContFile& pmak, const MCommand& cmd, const char* head )
 
 bool MProject::makeMakeFile()
 {
-    bool ok = TRUE;
+    bool ok = true;
     if( needsMake() || !_makefile.attribs() ) {
         _filename.setCWD();
         ContFile        pmak;
         if( !pmak.open( _makefile, OStyleWrite ) ) {
-            ok = FALSE;
+            ok = false;
         } else {
             expand( pmak, _before, ".before" );
             expand( pmak, _after, ".after" );
@@ -358,15 +358,15 @@ bool MProject::makeMakeFile()
             }
         }
     }
-    if( ok ) setNeedsMake( FALSE );
-    return ok;
+    if( ok ) setNeedsMake( false );
+    return( ok );
 }
 
 void MProject::setDirty( bool dirty )
 {
     _dirty = dirty;
     if( _dirty ) {
-        _needsMake = TRUE;
+        _needsMake = true;
     }
 }
 

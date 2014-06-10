@@ -46,7 +46,7 @@ MCState::MCState( MTool* tool, SwMode mode, MCSwitch* sw, bool state )
 #ifndef NOPERSIST
 MCState* WEXPORT MCState::createSelf( WObjectFile& )
 {
-    return new MCState( _config->nilTool() );
+    return( new MCState( _config->nilTool() ) );
 }
 
 void WEXPORT MCState::readSelf( WObjectFile& p )

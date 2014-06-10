@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #if defined( __WINDOWS__ )
 #include <stdlib.h>
@@ -43,38 +42,18 @@
 #endif
 
 #if defined( __WATCOMC__ )
-#define _CODE_BASED __based( __segname( "_CODE" ) )
-#else
-#define _CODE_BASED
-#endif
-
-#if defined( __WINDOWS__ )
-    #define DIP_DLLEXPORT __declspec(dllexport) __declspec(__pascal)
-#elif defined( __WATCOMC__ )
-  #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
-    #define DIP_DLLEXPORT __declspec(dllexport)
-    #pragma aux DIPLOAD "*"
+  #if defined( __WINDOWS__ )
   #elif defined( _M_I86 )
-    #define DIP_DLLEXPORT
     #pragma aux DIPLOAD "*" __loadds
   #else
-    #define DIP_DLLEXPORT
     #pragma aux DIPLOAD "*"
   #endif
-#elif !defined( __UNIX__ )
-    #define DIP_DLLEXPORT __declspec(dllexport)
-#else
-    #define DIP_DLLEXPORT
-#endif
-
-#if defined( __WINDOWS__ )
-typedef void (DIPENTRY INTER_FUNC)();
 #endif
 
 address                 NilAddr;
 dip_client_routines     *Client;
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
+dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
 
 dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
@@ -152,16 +131,16 @@ dip_imp_routines        ImpInterface = {
     DIPImpLookupSymEx,
 };
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
-const char _CODE_BASED Signature[4] = "DIP";
-#endif
-
 #if defined( __WINDOWS__ )
 static HINSTANCE    ThisInst;
 static HANDLE       TaskId;
 #endif
 
-DIP_DLLEXPORT dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines *client )
+#if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
+const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
+#endif
+
+DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )
 {
     Client = client;
 #if defined( __WINDOWS__ )
@@ -169,7 +148,7 @@ DIP_DLLEXPORT dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines
         FARPROC start;
 
         start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
-        *status = ((dip_status(DIPENTRY*)(void)) start)();
+        *status = ((dip_status(DIGENTRY*)(void)) start)();
         FreeProcInstance( start );
     }
 #else
@@ -180,12 +159,12 @@ DIP_DLLEXPORT dip_imp_routines *DIPLOAD( dip_status *status, dip_client_routines
     return( &ImpInterface );
 }
 
-void *DCAlloc( unsigned amount )
+void *DCAlloc( size_t amount )
 {
     return( Client->alloc( amount ) );
 }
 
-void *DCAllocZ( unsigned amount )
+void *DCAllocZ( size_t amount )
 {
     void *p = Client->alloc( amount );
     if( p ) {
@@ -194,7 +173,7 @@ void *DCAllocZ( unsigned amount )
     return( p );
 }
 
-void *DCRealloc( void *p, unsigned amount )
+void *DCRealloc( void *p, size_t amount )
 {
     return( Client->realloc( p, amount ) );
 }
@@ -296,12 +275,14 @@ unsigned        DCMachineData( address a, unsigned info_type,
     return( Client->DIGCliMachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIPENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
     return( ImpInterface.type_base( ii, it, base, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )
+
+typedef void (DIGENTRY INTER_FUNC)();
 
 #ifdef DEBUGGING
 void Say( char *buff )
@@ -310,7 +291,7 @@ void Say( char *buff )
 }
 #endif
 
-void DIPENTRY DIPUNLOAD( void )
+DIG_DLLEXPORT void DIGENTRY DIPUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
@@ -325,8 +306,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     INTER_FUNC          **func;
     unsigned            count;
     struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
+        dip_init_func   *load;
+        dip_fini_func   *unload;
     }                   *link;
     unsigned            seg;
     unsigned            off;
@@ -347,8 +328,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
         ++func;
         --count;
     }
-    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
-    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
+    link->load = (dip_init_func *)MakeProcInstance( (FARPROC)DIPLOAD, this_inst );
+    link->unload = (dip_fini_func *)MakeProcInstance( (FARPROC)DIPUNLOAD, this_inst );
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );

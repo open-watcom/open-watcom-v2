@@ -314,8 +314,7 @@ nextarg:        continue;                          /* process nextarg */
                 if (!nomagic) {             /* Check the magic number */
                     if ((getchar() != (magic_header[0] & 0xFF))
                       || (getchar() != (magic_header[1] & 0xFF))) {
-                        fprintf(stderr, "%s: not in compressed format\n",
-                            *ifname);
+                        fprintf(stderr, "%s: not in compressed format\n", ifname);
                         continue;
                     }
                     maxbits = getchar();    /* set -b from file */

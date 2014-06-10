@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeSaveObject( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, WResLangType *, Bool, Bool );
+extern bool WdeSaveObject( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, WResLangType *, bool, bool );
 
 #endif

@@ -151,22 +151,20 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
     BYTE                *buffer;
     WORD                chunk_size;
 
-    chunk_size = CHUNK_SIZE;
-    while( chunk_size && (buffer = MemAlloc( chunk_size )) == NULL ) {
-        chunk_size >>= 1;
+    for( chunk_size = CHUNK_SIZE; chunk_size != 0; chunk_size >>= 1 ) {
+        if( (buffer = MemAlloc( chunk_size )) != NULL ) {
+            while( size > chunk_size ) {
+                fread( buffer, chunk_size, 1, fp );
+                HugeMemCopy( dst, buffer, chunk_size );
+                dst += chunk_size;
+                size -= chunk_size;
+            }
+            fread( buffer, size, 1, fp );
+            HugeMemCopy( dst, buffer, size );
+            MemFree( buffer );
+            break;
+        }
     }
-    if( buffer == NULL ) {
-        return;
-    }
-    while( size > chunk_size ) {
-        fread( buffer, chunk_size, 1, fp );
-        HugeMemCopy( dst, buffer, chunk_size );
-        dst += chunk_size;
-        size -= chunk_size;
-    }
-    fread( buffer, size, 1, fp );
-    HugeMemCopy( dst, buffer, size );
-    MemFree( buffer );
 
 } /* readInPieces */
 
@@ -191,6 +189,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, BOOL core,
         if( bm_core == NULL ) {
             return( bitmap_handle );
         }
+        bm_info = NULL;
         size = BITS_TO_BYTES( bm_core->bmciHeader.bcWidth * bm_core->bmciHeader.bcBitCount,
                               bm_core->bmciHeader.bcHeight );
     } else {
@@ -198,6 +197,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, BOOL core,
         if( bm_info == NULL ) {
             return( bitmap_handle );
         }
+        bm_core = NULL;
         size = BITS_TO_BYTES( bm_info->bmiHeader.biWidth * bm_info->bmiHeader.biBitCount,
                               bm_info->bmiHeader.biHeight );
     }

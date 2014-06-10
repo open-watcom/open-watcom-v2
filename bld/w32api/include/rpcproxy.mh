@@ -238,10 +238,10 @@ ULONG STDMETHODCALLTYPE     NdrCStdStubBuffer_Release( IRpcStubBuffer *, IPSFact
         return NdrDllUnregisterProxy( hProxyDll, p1, p2 ); \
     }
 #ifdef PROXY_CLSID
-    #define CLSID_PSFACTORYBUFFER       extern CLSID PROXY_CLSID;
+    #define CLSID_PSFACTORYBUFFER       extern CLSID __cdecl PROXY_CLSID;
 #else
     #ifdef PROXY_CLSID_IS
-        #define CLSID_PSFACTORYBUFFER   const CLSID CLSID_PSFactoryBuffer = PROXY_CLSID_IS;
+        #define CLSID_PSFACTORYBUFFER   const CLSID __cdecl CLSID_PSFactoryBuffer = PROXY_CLSID_IS;
         #define PROXY_CLSID             CLSID_PSFactoryBuffer
     #else
         #define CLSID_PSFACTORYBUFFER
@@ -254,8 +254,8 @@ ULONG STDMETHODCALLTYPE     NdrCStdStubBuffer_Release( IRpcStubBuffer *, IPSFact
 #else
     #define GET_DLL_CLSID               &PROXY_CLSID
 #endif
-#define EXTERN_PROXY_FILE( x )          EXTERN_C const ProxyFileInfo x##_ProxyFileInfo;
-#define PROXYFILE_LIST_START            const ProxyFileInfo *aProxyFileList[] = {
+#define EXTERN_PROXY_FILE( x )          EXTERN_C const ProxyFileInfo __cdecl x##_ProxyFileInfo;
+#define PROXYFILE_LIST_START            const ProxyFileInfo * __cdecl aProxyFileList[] = {
 #define REFERENCE_PROXY_FILE( x )       &x##_ProxyFileInfo
 #define PROXYFILE_LIST_END              0 };
 #define DLLDATA_GETPROXYDLLINFO( p1, p2 ) \

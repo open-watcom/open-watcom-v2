@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdeobjid.h"
 #include "wdefutil.h"
@@ -125,7 +124,7 @@ OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
 
     new = WdeHKCreate( parent, obj_rect, handle, id, WdeDefaultHtKy );
 
-    WdeMemFree( GETCTL_TEXT( WdeDefaultHtKy ) );
+    WRMemFree( GETCTL_TEXT( WdeDefaultHtKy ) );
     SETCTL_TEXT( WdeDefaultHtKy, NULL );
 
     return( new );
@@ -143,7 +142,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeHtKyObject *)WdeMemAlloc( sizeof( WdeHtKyObject ) );
+    new = (WdeHtKyObject *)WRMemAlloc( sizeof( WdeHtKyObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeHtKyCreate: Object malloc failed" );
         return( NULL );
@@ -163,21 +162,21 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeHtKyCreate: CONTROL_OBJ not created!" );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeHtKyCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeHtKyCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, FALSE );
-        WdeMemFree( new );
+        WRMemFree( new );
         return( NULL );
     }
 
@@ -199,7 +198,7 @@ WINEXPORT BOOL CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void 
     return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
 }
 
-Bool WdeHtKyInit( Bool first )
+bool WdeHtKyInit( bool first )
 {
     WNDCLASS    wc;
 
@@ -264,7 +263,7 @@ BOOL WdeHtKyDestroy( WdeHtKyObject *obj, BOOL *flag, void *p2 )
         return( FALSE );
     }
 
-    WdeMemFree( obj );
+    WRMemFree( obj );
 
     return( TRUE );
 }
@@ -292,7 +291,7 @@ BOOL WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, WdeHtKyObject *
         return( FALSE );
     }
 
-    *new = (WdeHtKyObject *)WdeMemAlloc( sizeof( WdeHtKyObject ) );
+    *new = (WdeHtKyObject *)WRMemAlloc( sizeof( WdeHtKyObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Object malloc failed" );
@@ -310,7 +309,7 @@ BOOL WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, WdeHtKyObject *
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Control not created!" );
-        WdeMemFree( *new );
+        WRMemFree( *new );
         return( FALSE );
     }
 

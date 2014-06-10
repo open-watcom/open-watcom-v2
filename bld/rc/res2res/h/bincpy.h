@@ -33,6 +33,6 @@
 #ifndef BINCPY_INCLUDED
 #define BINCPY_INCLUDED
 
-int BinaryCopy( int inhandle, int outhandle, unsigned long length );
+int BinaryCopy( WResFileID inhandle, WResFileID outhandle, unsigned long length );
 
 #endif

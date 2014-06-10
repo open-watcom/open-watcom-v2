@@ -41,14 +41,9 @@ extern void *   LnkExpand( void *, size_t );
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
 extern bool     FreeUpMemory( void );
-extern void     InitSymMem( void );
-extern void     GetSymBlock( void );
 extern void     MakePass1Blocks( void );
 extern bool     PermShrink( void );
-extern void     BasicInitSym( symbol *sym );
-extern symbol * AddSym( void );
 extern void     ReleasePass1( void );
-extern void     RelSymBlock( void );
 
 #define _ChkAlloc( dest, size ) dest = ChkLAlloc( size )
 #define _LnkAlloc( dest, size ) dest = LAlloc( size )

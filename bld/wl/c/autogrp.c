@@ -44,6 +44,7 @@
 #include "objcalc.h"
 #include "objnode.h"
 #include "objpass1.h"
+#include "symmem.h"
 
 
 static group_entry      *GetAutoGroup( bool );

@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wderesin.h"
@@ -61,20 +60,20 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    Bool    is_wres_fmt;
-    Bool    use_def_dlg;
+    bool    is_wres_fmt;
+    bool    use_def_dlg;
     int     grid_x;
     int     grid_y;
-    Bool    ignore_inc;
+    bool    ignore_inc;
     char    *inc_path;
     RECT    screen_pos;
     RECT    control_toolbar_pos;
-    Bool    is_screen_maximized;
-    Bool    is_ctoolbar_visible;
-    Bool    is_ribbon_visible;
+    bool    is_screen_maximized;
+    bool    is_ctoolbar_visible;
+    bool    is_ribbon_visible;
     char    *last_directory;
     char    *last_file_filter;
-    Bool    use_3d_effects;
+    bool    use_3d_effects;
 } WdeOptState;
 
 /****************************************************************************/
@@ -122,10 +121,10 @@ static WdeOptState WdeDefaultState = {
     TRUE                        /* use 3d effects                   */
 };
 
-static Bool WdeWriteIntOpt( char *entry, int i )
+static bool WdeWriteIntOpt( char *entry, int i )
 {
     char  str[12];
-    Bool  ret;
+    bool  ret;
 
     ltoa( i, str, 10 );
 
@@ -134,7 +133,21 @@ static Bool WdeWriteIntOpt( char *entry, int i )
     return( ret );
 }
 
-static Bool WdeGetIntOpt( char *entry, int *i )
+static bool WdeGetBoolOpt( char *entry, bool *i )
+{
+    int val;
+
+    val = (int)GetPrivateProfileInt( WdeSectionName, entry, 0x7fff, WdeProfileName );
+
+    if( val != 0x7fff ) {
+        *i = ( val != 0 );
+        return( TRUE );
+    } else {
+        return( FALSE );
+    }
+}
+
+static bool WdeGetIntOpt( char *entry, int *i )
 {
     int val;
 
@@ -148,25 +161,25 @@ static Bool WdeGetIntOpt( char *entry, int *i )
     }
 }
 
-static Bool WdeWriteRectOpt( char *entry, RECT *r )
+static bool WdeWriteRectOpt( char *entry, RECT *r )
 {
     char    *str;
-    Bool    ret;
+    bool    ret;
 
     ret = FALSE;
     str = WdeRectToStr( r );
     if( str != NULL ) {
         ret = WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName );
-        WdeMemFree( str );
+        WRMemFree( str );
     }
 
     return( ret );
 }
 
-static Bool WdeGetRectOpt( char *entry, RECT *r )
+static bool WdeGetRectOpt( char *entry, RECT *r )
 {
     char  str[41];
-    Bool  ret;
+    bool  ret;
 
     ret = GetPrivateProfileString( WdeSectionName, entry, "0, 0, 0, 0",
                                    str, 40, WdeProfileName );
@@ -178,10 +191,10 @@ static Bool WdeGetRectOpt( char *entry, RECT *r )
     return( FALSE );
 }
 
-static Bool WdeGetStrOpt( char *entry, char **opt )
+static bool WdeGetStrOpt( char *entry, char **opt )
 {
     char        str[_MAX_PATH];
-    Bool        ret;
+    bool        ret;
 
     ret = GetPrivateProfileString( WdeSectionName, entry, "",
                                    str, _MAX_PATH - 1, WdeProfileName );
@@ -195,21 +208,21 @@ static Bool WdeGetStrOpt( char *entry, char **opt )
     return( ret );
 }
 
-static Bool WdeReadOpts( WdeOptState *s )
+static bool WdeReadOpts( WdeOptState *s )
 {
-    Bool ret;
+    bool ret;
 
-    ret  = WdeGetIntOpt( "WResFmt", &s->is_wres_fmt );
-    ret &= WdeGetIntOpt( "UseDefDlg", &s->use_def_dlg );
+    ret  = WdeGetBoolOpt( "WResFmt", &s->is_wres_fmt );
+    ret &= WdeGetBoolOpt( "UseDefDlg", &s->use_def_dlg );
     ret &= WdeGetIntOpt( "GridX", &s->grid_x );
     ret &= WdeGetIntOpt( "GridY", &s->grid_y );
-    ret &= WdeGetIntOpt( "IgnoreIncPath", &s->ignore_inc );
+    ret &= WdeGetBoolOpt( "IgnoreIncPath", &s->ignore_inc );
     ret &= WdeGetRectOpt( "ScreenPos", &s->screen_pos );
     ret &= WdeGetRectOpt( "CTBarPos", &s->control_toolbar_pos );
-    ret &= WdeGetIntOpt( "ScreenMaxed", &s->is_screen_maximized );
-    ret &= WdeGetIntOpt( "CTBarVis", &s->is_ctoolbar_visible );
-    ret &= WdeGetIntOpt( "RibbonVis", &s->is_ribbon_visible );
-    ret &= WdeGetIntOpt( "Use3DEffects", &s->use_3d_effects );
+    ret &= WdeGetBoolOpt( "ScreenMaxed", &s->is_screen_maximized );
+    ret &= WdeGetBoolOpt( "CTBarVis", &s->is_ctoolbar_visible );
+    ret &= WdeGetBoolOpt( "RibbonVis", &s->is_ribbon_visible );
+    ret &= WdeGetBoolOpt( "Use3DEffects", &s->use_3d_effects );
     ret &= WdeGetStrOpt( "FileFilter", &s->last_file_filter );
     ret &= WdeGetStrOpt( "IncPath", &s->inc_path );
     ret &= WdeGetStrOpt( "LastDir", &s->last_directory );
@@ -241,10 +254,10 @@ static void WdeWriteOpts( WdeOptState *o )
 void WdeOptsShutdown( void )
 {
     if( WdeCurrentState.last_directory != NULL ) {
-        WdeMemFree( WdeCurrentState.last_directory );
+        WRMemFree( WdeCurrentState.last_directory );
     }
     if( WdeCurrentState.last_file_filter != NULL ) {
-        WdeMemFree( WdeCurrentState.last_file_filter );
+        WRMemFree( WdeCurrentState.last_file_filter );
     }
 
     WdeCurrentState.last_directory = WdeStrDup( WdeGetInitialDir() );
@@ -253,10 +266,10 @@ void WdeOptsShutdown( void )
     WdeWriteOpts( &WdeCurrentState );
 
     if( WdeCurrentState.last_directory != NULL ) {
-        WdeMemFree( WdeCurrentState.last_directory );
+        WRMemFree( WdeCurrentState.last_directory );
     }
     if( WdeCurrentState.inc_path != NULL ) {
-        WdeMemFree( WdeCurrentState.inc_path );
+        WRMemFree( WdeCurrentState.inc_path );
     }
 }
 
@@ -275,7 +288,7 @@ void WdeInitOpts( void )
 void WdeResetOpts( void )
 {
     if( WdeCurrentState.inc_path != NULL ) {
-        WdeMemFree( WdeCurrentState.inc_path );
+        WRMemFree( WdeCurrentState.inc_path );
     }
     WdeCurrentState.is_wres_fmt = WdeDefaultState.is_wres_fmt;
     WdeCurrentState.use_def_dlg = WdeDefaultState.use_def_dlg;
@@ -342,7 +355,7 @@ char *WdeGetIncPathOption( void )
 void WdeSetIncPathOption( char *path )
 {
     if( WdeCurrentState.inc_path != NULL ) {
-        WdeMemFree( WdeCurrentState.inc_path );
+        WRMemFree( WdeCurrentState.inc_path );
     }
     WdeCurrentState.inc_path = path;
 }
@@ -374,12 +387,12 @@ int WdeSetOption( WdeOptReq req, int val )
     switch( req ) {
     case WdeOptIsWResFmt:
         old = WdeCurrentState.is_wres_fmt;
-        WdeCurrentState.is_wres_fmt = (Bool)val;
+        WdeCurrentState.is_wres_fmt = val != 0;
         break;
 
     case WdeOptUseDefDlg:
         old = WdeCurrentState.use_def_dlg;
-        WdeCurrentState.use_def_dlg = (Bool) val;
+        WdeCurrentState.use_def_dlg = val != 0;
         break;
 
     case WdeOptReqGridX:
@@ -394,39 +407,39 @@ int WdeSetOption( WdeOptReq req, int val )
 
     case WdeOptIgnoreInc:
         old = WdeCurrentState.ignore_inc;
-        WdeCurrentState.ignore_inc = (Bool)val;
+        WdeCurrentState.ignore_inc = val != 0;
         break;
 
     case WdeOptIsScreenMax:
         old = WdeCurrentState.is_screen_maximized;
-        WdeCurrentState.is_screen_maximized = (Bool)val;
+        WdeCurrentState.is_screen_maximized = val != 0;
         break;
 
     case WdeOptIsCntlsTBarVisible:
         old = WdeCurrentState.is_ctoolbar_visible;
-        WdeCurrentState.is_ctoolbar_visible = (Bool)val;
+        WdeCurrentState.is_ctoolbar_visible = val != 0;
         break;
 
     case WdeOptIsRibbonVisible:
         old = WdeCurrentState.is_ribbon_visible;
-        WdeCurrentState.is_ribbon_visible = (Bool)val;
+        WdeCurrentState.is_ribbon_visible = val != 0;
         break;
 
     case WdeOptUse3DEffects:
         old = WdeCurrentState.use_3d_effects;
-        WdeCurrentState.use_3d_effects = (Bool)val;
+        WdeCurrentState.use_3d_effects = val != 0;
         break;
     }
 
     return( old );
 }
 
-Bool WdeDisplayOptions( void )
+bool WdeDisplayOptions( void )
 {
     HWND      dialog_owner;
     DLGPROC   proc_inst;
     HINSTANCE app_inst;
-    Bool      modified;
+    INT_PTR   modified;
 
     WdeSetStatusText( NULL, " ", FALSE );
     WdeSetStatusByID( WDE_DISPLAYOPTIONS, -1 );
@@ -505,14 +518,14 @@ static void WdeGetOptInfo( HWND hDlg )
     WdeCurrentState.ignore_inc = IsDlgButtonChecked( hDlg, IDB_OPT_IGNOREINC );
 
     if( WdeCurrentState.inc_path != NULL ) {
-        WdeMemFree( WdeCurrentState.inc_path );
+        WRMemFree( WdeCurrentState.inc_path );
     }
 
     WdeCurrentState.inc_path = WdeGetStrFromEdit( hDlg, IDB_OPT_INCPATH, NULL );
 
     if( WdeCurrentState.inc_path != NULL ) {
         if( WdeIsStrSpace( WdeCurrentState.inc_path ) ) {
-            WdeMemFree( WdeCurrentState.inc_path );
+            WRMemFree( WdeCurrentState.inc_path );
             WdeCurrentState.inc_path = NULL;
         }
     }

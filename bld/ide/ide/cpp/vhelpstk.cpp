@@ -60,7 +60,7 @@ void VHelpStack::push( unsigned long item ) {
         delete [] _stack;
         _stack = tmp;
     }
-    _stack[ _used - 1 ] = item;
+    _stack[_used - 1] = item;
 }
 
 unsigned long VHelpStack::pop( void ) {
@@ -68,7 +68,7 @@ unsigned long VHelpStack::pop( void ) {
         return( 0 );
     } else {
         _used--;
-        return( _stack[ _used ] );
+        return( _stack[_used] );
     }
 }
 
@@ -76,6 +76,6 @@ unsigned long VHelpStack::getTop( void ) {
     if( isempty() ) {
         return( 0 );
     } else {
-        return( _stack[ _used - 1 ] );
+        return( _stack[_used - 1] );
     }
 }

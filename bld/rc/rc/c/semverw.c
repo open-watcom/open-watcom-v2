@@ -32,13 +32,13 @@
 
 #include <string.h>
 #include "wresall.h"
-#include "rcmem.h"
 #include "global.h"
 #include "errors.h"
 #include "winytab.h"
 #include "semantic.h"
-#include "semver.h"
 #include "wresdefn.h"
+#include "layer0.h"
+#include "rcrtns.h"
 
 
 /*** Forward References ***/
@@ -56,9 +56,9 @@ extern FullVerValueList * SemNewVerValueList( VerValueItem item )
         item.strlen = VER_CALC_SIZE; // terminate at the first NULLCHAR
     }                                // instead of using the full string.
                                      // This is what Microsoft does.
-    list = RcMemMalloc( sizeof(FullVerValueList) );
+    list = RCALLOC( sizeof(FullVerValueList) );
     list->NumItems = 1;
-    list->Item = RcMemMalloc( sizeof(VerValueItem) );
+    list->Item = RCALLOC( sizeof(VerValueItem) );
     list->Item[ 0 ] = item;
 
     return( list );
@@ -73,7 +73,7 @@ extern FullVerValueList * SemAddVerValueList( FullVerValueList * list,
     }                                // instead of using the full string.
                                      // This is what MS does.
     list->NumItems++;
-    list->Item = RcMemRealloc( list->Item,
+    list->Item = RCREALLOC( list->Item,
                             list->NumItems * sizeof(VerValueItem) );
     list->Item[ list->NumItems - 1 ] = item;
 
@@ -98,7 +98,7 @@ static void FreeValItem( VerValueItem * item )
 /********************************************/
 {
     if( !item->IsNum ) {
-        RcMemFree( item->Value.String );
+        RCFREE( item->Value.String );
     }
 }
 
@@ -110,8 +110,8 @@ static void FreeValList( FullVerValueList * list )
     for( curr_val = 0; curr_val < list->NumItems; curr_val++ ) {
         FreeValItem( list->Item + curr_val );
     }
-    RcMemFree( list->Item );
-    RcMemFree( list );
+    RCFREE( list->Item );
+    RCFREE( list );
 }
 
 static int semWriteVerValueList( FullVerValueList * list, uint_8 use_unicode,
@@ -136,7 +136,7 @@ extern FullVerBlock * SemNewBlockVal( char * name, FullVerValueList * list )
 {
     FullVerBlock *  block;
 
-    block = RcMemMalloc( sizeof(FullVerBlock) );
+    block = RCALLOC( sizeof(FullVerBlock) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -156,7 +156,7 @@ extern FullVerBlock * SemNameVerBlock( char * name, FullVerBlockNest * nest )
 {
     FullVerBlock *  block;
 
-    block = RcMemMalloc( sizeof(FullVerBlock) );
+    block = RCALLOC( sizeof(FullVerBlock) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -244,7 +244,7 @@ static int SemWriteVerBlock( FullVerBlock * block, WResFileID handle,
 static void FreeVerBlock( FullVerBlock * block )
 /**********************************************/
 {
-    RcMemFree( block->Head.Key );
+    RCFREE( block->Head.Key );
     if( block->Value != NULL ) {
         FreeValList( block->Value );
     }
@@ -252,7 +252,7 @@ static void FreeVerBlock( FullVerBlock * block )
         FreeVerBlockNest( block->Nest );
     }
 
-    RcMemFree( block );
+    RCFREE( block );
 }
 
 extern FullVerBlockNest * SemNewBlockNest( FullVerBlock * child )
@@ -260,7 +260,7 @@ extern FullVerBlockNest * SemNewBlockNest( FullVerBlock * child )
 {
     FullVerBlockNest *  parent;
 
-    parent = RcMemMalloc( sizeof(FullVerBlockNest) );
+    parent = RCALLOC( sizeof(FullVerBlockNest) );
     parent->Head = NULL;
     parent->Tail = NULL;
 
@@ -285,7 +285,7 @@ extern FullVerBlockNest * SemMergeBlockNest( FullVerBlockNest * nest1,
         ResAddLLItemAtEnd( (void **) &nest1->Head, (void **) &nest1->Tail, block );
     }
 
-    RcMemFree( nest2 );
+    RCFREE( nest2 );
 
     return( nest1 );
 }
@@ -318,7 +318,7 @@ static void FreeVerBlockNest( FullVerBlockNest * nest )
         FreeVerBlock( old_block );
     }
 
-    RcMemFree( nest );
+    RCFREE( nest );
 }
 
 static int SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle,
@@ -342,7 +342,7 @@ extern VerFixedInfo * SemNewVerFixedInfo( VerFixedOption option )
 {
     VerFixedInfo *  info;
 
-    info = RcMemMalloc( sizeof(VerFixedInfo) );
+    info = RCALLOC( sizeof(VerFixedInfo) );
     memset( info, 0, sizeof(VerFixedInfo) );
 
     return( SemAddVerFixedInfo( info, option ) );
@@ -454,10 +454,10 @@ extern void SemWriteVerInfo( WResID * name, ResMemFlags flags,
         SemSetResourceLanguage( &lang, FALSE );
         SemAddResourceFree( name, WResIDFromNum( RT_VERSIONINFO ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
-    RcMemFree( info );
+    RCFREE( info );
     FreeVerBlockNest( nest );
 
     return;
@@ -466,7 +466,7 @@ OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                 strerror( err_code )  );
     ErrorHasOccured = TRUE;
-    RcMemFree( info );
+    RCFREE( info );
     FreeVerBlockNest( nest );
     return;
 }

@@ -30,12 +30,11 @@
 
 
 #include <string.h>
-#include <unistd.h>
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "types.h"
 #include "bincpy.h"
 #include "w2mres.h"
+#include "rcrtns.h"
 
 static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
 /*************************************************************/
@@ -82,7 +81,7 @@ static int ConvertOneWResource( WResFileID infile, WResFileID outfile,
     //FIXME! The last argument should be TRUE for Win32 resources
     error = MResWriteResourceHeader( &outhead, outfile, FALSE );
     if (!error) {
-        lseek( infile, langinfo->Offset, SEEK_SET );
+        RCSEEK( infile, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( infile, outfile, outhead.Size );
     }
 

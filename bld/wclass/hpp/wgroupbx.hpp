@@ -46,7 +46,7 @@ WCLASS WGroupBox : public WButton {
         WEXPORT ~WGroupBox();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_GROUPBOX; }
+        virtual gui_control_class controlClass() { return( GUI_GROUPBOX ); }
 };
 
 #endif

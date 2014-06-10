@@ -44,7 +44,7 @@ WCLASS WStringMap : public WVList {
         void WEXPORT setThis( WObject* obj, WString *hand );
         void WEXPORT clearThis( WObject* obj );
         WObject* WEXPORT findThis( WString *hand, WObject *obj=NULL );
-        WObject* WEXPORT currThis() { return _currThis; }
+        WObject* WEXPORT currThis() { return( _currThis ); }
         void WEXPORT currThis( WObject* obj ) { _currThis = obj; }
     private:
         WObject*        _currThis;

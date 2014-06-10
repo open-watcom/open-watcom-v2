@@ -93,7 +93,7 @@ static int WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
     ok = ok && WRSetLBoxWithStr( lbox, cp, lnode );
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( ok );
@@ -185,11 +185,11 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type )
                 text = WRAllocRCString( WR_STRINGIDS );
                 if( text != NULL ) {
                     // alloc string large enough for 'text' and 20 digits
-                    str = (char *)WRMemAlloc( strlen( text ) + 21 );
+                    str = (char *)MemAlloc( strlen( text ) + 21 );
                     if( str != NULL ) {
                         sprintf( str, text, (num - 1) * 16, num * 16 - 1 );
                         cp = WRStrDup( str );
-                        WRMemFree( str );
+                        MemFree( str );
                     }
                     WRFreeRCString( text );
                 }

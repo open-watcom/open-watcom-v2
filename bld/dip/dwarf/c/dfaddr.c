@@ -96,7 +96,7 @@ typedef struct {
 
     Let's say the table looks like this.
 
-    offset:32   len:32  map_offset:32   map_seg:16  imx:16
+    offset:32   len:32  map_offset:32   map_seg:16  im:16
     [1000]      [10]    [x]             [x]         [x]
     [1010]      [22]    [x]             [x]         [x]
     [1032]      [10]    [x]             [x]         [x]
@@ -252,6 +252,7 @@ static  void AddSortOffset( seg_info *ctl, off_info *new )
         cmp.base = &blk->info[0];
         cmp.key = new->offset;
         cmp.hi = blk_count;
+		cmp.last = 0;
         diff = BlkOffSearch( &cmp );
         if( diff == 0 ) goto exit;
         if( diff > 0 ) {
@@ -347,10 +348,10 @@ error:
 }
 
 
-static int ChkOffsets( void *d, seg_info *ctl )
-/*********************************************/
-{
+static bool ChkOffsets( void *d, seg_info *ctl )
+/**********************************************/
 // Sort a seg's offsets
+{
     d = d;
     if( !CheckInfo( ctl ) ) {
         EnterDebugger();
@@ -366,12 +367,12 @@ extern void DmpBlk( off_blk *blk, int count )
     myprintf( "blk %lx, %d \r\n", blk, count );
     info = blk->info;
     while( count > 0 ) {
-        myprintf( "off %lx(%ld) map %x:%lx imx %d\r\n",
+        myprintf( "off %lx(%ld) map %x:%lx im %d\r\n",
             info->offset,
             info->len,
             info->map_seg,
             info->map_offset,
-            info->imx );
+            info->im );
         ++info;
         --count;
     }
@@ -419,12 +420,12 @@ typedef struct {
     address     seg_base;
 } wlk_seg_offsets;
 
-static int WlkSegInfos( void *_d, void *_curr )
-/*********************************************/
+static bool WlkSegInfos( void *_d, void *_curr )
+/**********************************************/
 {
     seg_info            *curr = (seg_info *)_curr;
     wlk_seg_offsets     *d = _d;
-    int                 cont;
+    bool                cont;
 
     d->seg_base.mach.segment = curr->entry.real;
     cont = TRUE;
@@ -472,11 +473,11 @@ extern  void    SortMapAddr( seg_list *ctl )
 }
 
 
-extern int Real2Map( seg_list *ctl, address *what )
-/*************************************************/
+bool Real2Map( seg_list *ctl, address *what )
+/*******************************************/
 // convert a map address found in dbg to real address in image
 {
-    int         ret;
+    bool        ret;
     off_info    *off;
 
     ret = FALSE;
@@ -500,8 +501,8 @@ extern void InitAddrInfo( seg_list *list )
 }
 
 
-static int FreeSegOffsets( void *d, void *_curr )
-/***********************************************/
+static bool FreeSegOffsets( void *d, void *_curr )
+/************************************************/
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;

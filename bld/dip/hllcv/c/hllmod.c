@@ -52,7 +52,7 @@ static walk_result GlueModWalk( imp_image_handle *ii, hll_dir_entry *hdd,
 /*
  * Walk modules.
  */
-walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
+walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
                                         void *d )
 {
     struct glue_mod_walk    md;
@@ -62,7 +62,7 @@ walk_result DIPENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
     md.d  = d;
     wr = hllWalkDirList( ii, hll_sstModule, &GlueModWalk, &md );
     if( wr == WR_CONTINUE ) {
-        wr = wk( ii, MH_GBL, d );
+        wr = wk( ii, IMH_GBL, d );
     }
     return( wr );
 }
@@ -103,13 +103,13 @@ static unsigned StripAndCopyName( unsigned_8 *name, char *buf, unsigned max )
 /*
  * Gets the module name.
  */
-unsigned DIPENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
                                  char *buf, unsigned max )
 {
     hll_dir_entry *hdd;
 
     /* the fictive global module. */
-    if( im == MH_GBL ) {
+    if( im == IMH_GBL ) {
         return( hllNameCopy( buf, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
     }
 
@@ -157,7 +157,7 @@ hll_ssr_cuinfo *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Gets the source language for a module.
  */
-char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     hll_ssr_cuinfo *cuinfo = GetCompInfo( ii, im );
     if( cuinfo != NULL ) {
@@ -180,7 +180,7 @@ char *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Checks if the specified information is available for this module.
  */
-dip_status DIPENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
                                    handle_kind hk )
 {
     hll_dir_entry   *hdd;
@@ -282,7 +282,7 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
              * If not found in any, we return the global handle since
              * we know that the address is within the bounds of this image.
              */
-            *im = MH_GBL;
+            *im = IMH_GBL;
             if( ii->segments[seg].is_executable ) {
                 struct find_mod args;
                 args.a = &a;
@@ -299,7 +299,7 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 /*
  * Finds the module which contains the address 'a'.
  */
-search_result DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
                                       imp_mod_handle *im )
 {
     return( hllAddrMod( ii, a, im ) );
@@ -308,7 +308,7 @@ search_result DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
 /*
  * Gets the module address.
  */
-address DIPENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
+address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 {
     hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
     if( hdd != NULL) {
@@ -359,7 +359,7 @@ address DIPENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 /*
  * Construct default dip_type_info for a module.
  */
-dip_status DIPENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
                                       default_kind dk, dip_type_info *ti )
 {
     /*
@@ -369,7 +369,7 @@ dip_status DIPENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
      *        whatever else which could give of heuristics to decide here.
      */
     hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstModule );
-    if( hdd == NULL && im != MH_GBL ) {
+    if( hdd == NULL && im != IMH_GBL ) {
         return( DS_FAIL );
     }
     /* ASSUMES everything is 32-bit for now */

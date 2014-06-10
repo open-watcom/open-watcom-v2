@@ -38,7 +38,7 @@
 #include "../../dos/h/dbgscrn.h"
 #include <windows.h>
 
-extern void     *ExtraAlloc( unsigned );
+extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
 extern HWND     GUIGetSysHandle( gui_window * );
 extern void     GUISetModalDlgs( bool modal );
@@ -171,7 +171,7 @@ void SaveMainWindowPos( void )
     SaveMainScreen( "WDWIN" );
 }
 
-void *uifaralloc( unsigned size )
+void *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
 }

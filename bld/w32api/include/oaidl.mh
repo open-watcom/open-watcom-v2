@@ -505,28 +505,6 @@ typedef enum tagCHANGEKIND {
     CHANGEKIND_MAX              = 7
 } CHANGEKIND;
 
-/* GUIDs */
-EXTERN_C const IID  IID_ICreateTypeInfo;
-EXTERN_C const IID  IID_ICreateTypeInfo2;
-EXTERN_C const IID  IID_ICreateTypeLib;
-EXTERN_C const IID  IID_ICreateTypeLib2;
-EXTERN_C const IID  IID_IDispatch;
-EXTERN_C const IID  IID_IEnumVARIANT;
-EXTERN_C const IID  IID_ITypeComp;
-EXTERN_C const IID  IID_ITypeInfo;
-EXTERN_C const IID  IID_ITypeInfo2;
-EXTERN_C const IID  IID_ITypeLib;
-EXTERN_C const IID  IID_ITypeLib2;
-EXTERN_C const IID  IID_ITypeChangeEvents;
-EXTERN_C const IID  IID_IErrorInfo;
-EXTERN_C const IID  IID_ICreateErrorInfo;
-EXTERN_C const IID  IID_ISupportErrorInfo;
-EXTERN_C const IID  IID_ITypeFactory;
-EXTERN_C const IID  IID_ITypeMarshal;
-EXTERN_C const IID  IID_IRecordInfo;
-EXTERN_C const IID  IID_IErrorLog;
-EXTERN_C const IID  IID_IPropertyBag;
-
 /* ICreateTypeInfo interface */
 #undef INTERFACE
 #define INTERFACE   ICreateTypeInfo
@@ -1545,5 +1523,27 @@ typedef IPropertyBag    *LPPROPERTYBAG;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_ICreateTypeInfo;
+EXTERN_C const IID  __cdecl IID_ICreateTypeInfo2;
+EXTERN_C const IID  __cdecl IID_ICreateTypeLib;
+EXTERN_C const IID  __cdecl IID_ICreateTypeLib2;
+EXTERN_C const IID  __cdecl IID_IDispatch;
+EXTERN_C const IID  __cdecl IID_IEnumVARIANT;
+EXTERN_C const IID  __cdecl IID_ITypeComp;
+EXTERN_C const IID  __cdecl IID_ITypeInfo;
+EXTERN_C const IID  __cdecl IID_ITypeInfo2;
+EXTERN_C const IID  __cdecl IID_ITypeLib;
+EXTERN_C const IID  __cdecl IID_ITypeLib2;
+EXTERN_C const IID  __cdecl IID_ITypeChangeEvents;
+EXTERN_C const IID  __cdecl IID_IErrorInfo;
+EXTERN_C const IID  __cdecl IID_ICreateErrorInfo;
+EXTERN_C const IID  __cdecl IID_ISupportErrorInfo;
+EXTERN_C const IID  __cdecl IID_ITypeFactory;
+EXTERN_C const IID  __cdecl IID_ITypeMarshal;
+EXTERN_C const IID  __cdecl IID_IRecordInfo;
+EXTERN_C const IID  __cdecl IID_IErrorLog;
+EXTERN_C const IID  __cdecl IID_IPropertyBag;
 
 #endif /* __oaidl_h__ */

@@ -55,7 +55,7 @@ void WMenuSeparator::attachMenu( WWindow *win, int idx ) {
     menu_item.child = NULL;
     if( parent()->isFloatingMain() ) {
         // appending separator to top level floating popup menu
-        GUIInsertMenu( win->handle(), idx, &menu_item, TRUE );
+        GUIInsertMenu( win->handle(), idx, &menu_item, true );
     } else {
         // appending separator to popup menu
         GUIInsertMenuToPopup( win->handle(), parent()->menuId(), idx,
@@ -71,9 +71,9 @@ void WMenuSeparator::detachMenu() {
     if( owner() ) {
         if( owner()->handle() ) {
             if( parent()->isFloatingPopup() ) {
-                GUIDeleteMenuItem( owner()->handle(), menuId(), TRUE );
+                GUIDeleteMenuItem( owner()->handle(), menuId(), true );
             }
-            GUIDeleteMenuItem( owner()->handle(), menuId(), FALSE );
+            GUIDeleteMenuItem( owner()->handle(), menuId(), false );
         }
     }
     setOwner( NULL );

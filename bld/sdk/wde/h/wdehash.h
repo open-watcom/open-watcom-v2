@@ -51,28 +51,28 @@ typedef WRHashTable WdeHashTable;
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WdeIsHashSaveRejectedSet( WdeHashTable *table );
+extern bool WdeIsHashSaveRejectedSet( WdeHashTable *table );
 extern void WdeHashClearSaveRejected( WdeHashTable *table );
 extern void WdeHashSaveRejected( WdeHashTable *table );
-extern Bool WdeIsHashTableTouched( WdeHashTable *table );
+extern bool WdeIsHashTableTouched( WdeHashTable *table );
 extern void WdeUntouchHashTable( WdeHashTable *table );
 extern void WdeTouchHashTable( WdeHashTable *table );
-extern Bool WdeIsValidSymbol( char *symbol );
+extern bool WdeIsValidSymbol( char *symbol );
 
 extern uint_32      WdeNumInHashTable( WdeHashTable * );
 extern void         WdeMakeHashTableClean( WdeHashTable * );
-extern Bool         WdeIsHashTableDirty( WdeHashTable * );
+extern bool         WdeIsHashTableDirty( WdeHashTable * );
 extern WdeHashTable *WdeInitHashTable( void );
 extern void         WdeFreeHashTable( WdeHashTable * );
-extern Bool         WdeRemoveName( WdeHashTable *, char * );
-extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup );
-extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, char *, WdeHashValue, Bool * );
-extern WdeHashValue WdeLookupName( WdeHashTable *, char *, Bool * );
+extern bool         WdeRemoveName( WdeHashTable *, char * );
+extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup );
+extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, char *, WdeHashValue, bool * );
+extern WdeHashValue WdeLookupName( WdeHashTable *, char *, bool * );
 extern char         *WdeResolveValue( WdeHashTable *, WdeHashValue );
 extern void         WdeAddSymbolsToListBox( WdeHashTable *, HWND, int );
 extern void         WdeAddSymbolsToComboBox( WdeHashTable *, HWND, int );
-extern Bool         WdeWriteSymbolsToFile( WdeHashTable *, char * );
-extern Bool         WdeMergeHashTable( WdeHashTable **, WdeHashTable * );
-extern Bool         WdeCopyHashTable( WdeHashTable **, WdeHashTable * );
+extern bool         WdeWriteSymbolsToFile( WdeHashTable *, char * );
+extern bool         WdeMergeHashTable( WdeHashTable **, WdeHashTable * );
+extern bool         WdeCopyHashTable( WdeHashTable **, WdeHashTable * );
 
 #endif

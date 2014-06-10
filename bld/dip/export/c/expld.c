@@ -64,7 +64,7 @@ static struct {
 unsigned long BSeek( dig_fhandle h, unsigned long p, dig_seek w )
 {
     unsigned long       bpos;
-    unsigned long       npos;
+    unsigned long       npos = 0;
 
     bpos = Buff.fpos - Buff.len;
     switch( w ) {
@@ -93,7 +93,7 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
     unsigned    want;
 
     if( s > sizeof( Buff.data ) ) {
-        Buff.fpos = DCSeek( h, (int)Buff.fpos + (int)Buff.off - (int)Buff.len, DIG_ORG );
+        Buff.fpos = DCSeek( h, Buff.fpos + Buff.off - Buff.len, DIG_ORG );
         Buff.len = 0;
         Buff.off = 0;
         if( Buff.fpos == -1UL ) return( 0 );
@@ -125,10 +125,10 @@ unsigned BRead( dig_fhandle h, void *b, unsigned s )
 
 #define ROUND_UP( d, r ) (((d)+(r)-1) & ~((r)-1))
 
-static void *HunkAlloc( imp_image_handle *ii, unsigned size )
+static void *HunkAlloc( imp_image_handle *ii, size_t size )
 {
     exp_hunk    *hunk;
-    unsigned    alloc;
+    size_t      alloc;
 
     size = ROUND_UP( size, sizeof( void * ) );
     hunk = ii->hunks;
@@ -771,7 +771,7 @@ static dip_status TryNLM( dig_fhandle h, imp_image_handle *ii )
 }
 
 
-static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
+static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
 {
     if( byteswap ) {
         SWAP_32( elf_sec->sh_name );
@@ -787,7 +787,7 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, int byteswap )
     }
 }
 
-static void ByteSwapPhdr( Elf32_Phdr *elf_ph, int byteswap )
+static void ByteSwapPhdr( Elf32_Phdr *elf_ph, bool byteswap )
 {
     if( byteswap ) {
         SWAP_32( elf_ph->p_type );
@@ -801,7 +801,8 @@ static void ByteSwapPhdr( Elf32_Phdr *elf_ph, int byteswap )
     }
 }
 
-static void ByteSwapSym( Elf32_Sym *elf_sym, int byteswap ){
+static void ByteSwapSym( Elf32_Sym *elf_sym, bool byteswap )
+{
     if( byteswap ) {
         SWAP_32( elf_sym->st_name );
         SWAP_32( elf_sym->st_value );
@@ -828,7 +829,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     Elf32_Shdr          *strtab;
     Elf32_Sym           sym;
     unsigned            tab_type;
-    int                 byte_swap;
+    bool                byte_swap;
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
     case (unsigned)-1:
@@ -846,13 +847,13 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
         return( DS_FAIL );
     }
 
-    byte_swap = 0;
+    byte_swap = FALSE;
 #ifdef __BIG_ENDIAN__
     if( head.e_ident[EI_DATA] == ELFDATA2LSB ) {
 #else
     if( head.e_ident[EI_DATA] == ELFDATA2MSB ) {
 #endif
-        byte_swap = 1;
+        byte_swap = TRUE;
         SWAP_16( head.e_type );
         SWAP_16( head.e_machine );
         SWAP_32( head.e_version );
@@ -1020,7 +1021,7 @@ static dip_status (*Try[])( dig_fhandle, imp_image_handle * ) = {
     NULL
 };
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     dip_status  ds;
     int         i;
@@ -1058,7 +1059,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     exp_block   *b;
     exp_sym     *s;
@@ -1071,7 +1072,7 @@ void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     }
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     ImpUnloadInfo( ii );
 }

@@ -32,12 +32,11 @@
 #include <limits.h>
 #include "wio.h"
 #include "global.h"
-#include "rcmem.h"
 #include "errors.h"
 #include "semantic.h"
 #include "semraw.h"
 #include "depend.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 
 extern void SemWriteRawDataItem( RawDataItem item )
@@ -60,7 +59,7 @@ extern void SemWriteRawDataItem( RawDataItem item )
             ErrorHasOccured = TRUE;
         }
         if( item.TmpStr ) {
-            RcMemFree( item.Item.String );
+            RCFREE( item.Item.String );
         }
     } else {
         if( !item.LongItem ) {
@@ -100,13 +99,13 @@ extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
     int     numread;
     long    seekrc;
 
-    seekrc = RcSeek( handle, offset, SEEK_SET );
+    seekrc = RCSEEK( handle, offset, SEEK_SET );
     if (seekrc == -1) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    numread = RcRead( handle, buff, buffsize );
+    numread = RCREAD( handle, buff, buffsize );
     while( numread != 0 ) {
         if (numread == -1) {
             *err_code = errno;
@@ -117,7 +116,7 @@ extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
             *err_code = LastWresErr();
             return( RS_WRITE_ERROR );
         }
-        numread = RcRead( handle, buff, buffsize );
+        numread = RCREAD( handle, buff, buffsize );
     }
 
     return( FALSE );
@@ -136,7 +135,7 @@ ResLocation SemCopyRawFile( const char *filename )
     int         err_code;
     long        pos;
 
-    buffer = RcMemMalloc( BUFFER_SIZE );
+    buffer = RCALLOC( BUFFER_SIZE );
 
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
@@ -153,10 +152,10 @@ ResLocation SemCopyRawFile( const char *filename )
 
     loc.start = SemStartResource();
 
-    pos = RcTell( handle );
+    pos = RCTELL( handle );
     if( pos == -1 ) {
         RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
-        RcClose( handle );
+        RCCLOSE( handle );
         goto HANDLE_ERROR;
     } else {
         error = SemCopyDataUntilEOF( pos, handle, buffer, BUFFER_SIZE,
@@ -164,16 +163,16 @@ ResLocation SemCopyRawFile( const char *filename )
         if( error != RS_OK ) {
             ReportCopyError( error, ERR_READING_DATA, full_filename,
                              err_code );
-            RcClose( handle );
+            RCCLOSE( handle );
             goto HANDLE_ERROR;
         }
     }
 
     loc.len = SemEndResource( loc.start );
 
-    RcClose( handle );
+    RCCLOSE( handle );
 
-    RcMemFree( buffer );
+    RCFREE( buffer );
 
     return( loc );
 
@@ -182,7 +181,7 @@ HANDLE_ERROR:
     ErrorHasOccured = TRUE;
     loc.start = 0;
     loc.len = 0;
-    RcMemFree( buffer );
+    RCFREE( buffer );
     return( loc );
 }
 
@@ -191,7 +190,7 @@ extern DataElemList *SemNewDataElemList( RawDataItem node )
 {
     DataElemList    *head;
 
-    head = RcMemMalloc( sizeof( DataElemList ) );
+    head = RCALLOC( sizeof( DataElemList ) );
     head->data[ 0 ] = node;
     head->count = 1;
     head->next = NULL;
@@ -240,7 +239,7 @@ extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend 
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
-        RcMemFree( curnode );
+        RCFREE( curnode );
         curnode = nextnode;
     }
     if( call_startend ) {
@@ -267,10 +266,10 @@ extern void SemFreeDataElemList( DataElemList *head )
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString == TRUE ) {
-                RcMemFree( curnode->data[i].Item.String );
+                RCFREE( curnode->data[i].Item.String );
             }
         }
-        RcMemFree( curnode );
+        RCFREE( curnode );
         curnode = nextnode;
     }
 }

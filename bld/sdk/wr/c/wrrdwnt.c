@@ -37,6 +37,7 @@
 #include "wrglbl.h"
 #include "wrrdwnt.h"
 #include "wrmsg.h"
+#include "wrmemi.h"
 
 /* forward declarations */
 int WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry );
@@ -199,10 +200,10 @@ int WRReadNTObjectTable( WResFileID file, exe_pe_header *hdr, pe_object **ot )
     } else {
         size = sizeof( pe_object ) * PE32( *hdr ).num_objects;
     }
-    *ot = (pe_object *)WRMemAlloc( size );
+    *ot = (pe_object *)MemAlloc( size );
     if( *ot != NULL ) {
         if( read( file, *ot, size ) != size ) {
-            WRMemFree( *ot );
+            MemFree( *ot );
             *ot = NULL;
         }
     }
@@ -298,7 +299,7 @@ int WRLoadWResDirFromWinNTEXE( WResFileID file_handle, WResDir *dir )
     }
 
     if( otable != NULL ) {
-        WRMemFree( otable );
+        MemFree( otable );
     }
 
     /* read the resource information */
@@ -328,7 +329,7 @@ int WRHandleWinNTTypeDir( WResFileID file, WResDir *dir, uint_32 offset )
              i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
             WRHandleWinNTTypeEntry( file, dir, &rd_entry[i], FALSE );
         }
-        WRMemFree( rd_entry );
+        MemFree( rd_entry );
     }
 
     return( ok );
@@ -393,7 +394,7 @@ int WRHandleWinNTNameDir( WResFileID file, WResDir *dir, WResID *type, uint_32 r
              i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
             WRHandleWinNTNameEntry( file, dir, type, &rd_entry[i], FALSE );
         }
-        WRMemFree( rd_entry );
+        MemFree( rd_entry );
     }
 
     return( ok );
@@ -478,7 +479,7 @@ int WRHandleWinNTLangIDDir( WResFileID file, WResDir *dir,
             WRHandleWinNTLangIDEntry( file, dir, type, name, &rd_entry[i] );
         }
         /* until more info is available only look for the first id entry */
-        WRMemFree( rd_entry );
+        MemFree( rd_entry );
     }
 
     return( ok );
@@ -536,7 +537,7 @@ int WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
     if( ok ) {
         rde_size = sizeof( resource_dir_entry ) *
                    (rd_hdr->num_name_entries + rd_hdr->num_id_entries);
-        *rd_entry = (resource_dir_entry *)WRMemAlloc( rde_size );
+        *rd_entry = (resource_dir_entry *)MemAlloc( rde_size );
         ok = (*rd_entry != NULL);
     }
 
@@ -545,7 +546,7 @@ int WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
     }
 
     if( !ok && *rd_entry != NULL ) {
-        WRMemFree( *rd_entry );
+        MemFree( *rd_entry );
     }
 
     return( ok );
@@ -572,7 +573,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
     if( ok ) {
         ResReadUint16( &len, file_handle );
         len *= 2;
-        unistr = (char *)WRMemAlloc( len + 2 );
+        unistr = (char *)MemAlloc( len + 2 );
         ok = (unistr != NULL);
     }
 
@@ -596,7 +597,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
 #endif
 
     if( unistr != NULL ) {
-        WRMemFree( unistr );
+        MemFree( unistr );
     }
 
     if( ok ) {

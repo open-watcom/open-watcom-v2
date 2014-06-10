@@ -32,11 +32,10 @@
 
 #include "wio.h"
 #include "global.h"
-#include "rcmem.h"
 #include "errors.h"
 #include "exeutil.h"
 #include "exeobj.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 static int readObjectTable( ExeFileInfo *exe )
 /********************************************/
@@ -54,7 +53,7 @@ static int readObjectTable( ExeFileInfo *exe )
         objects_size = PE32( *pehdr ).num_objects * sizeof( pe_object );
         file_offset = exe->WinHeadOffset + sizeof( pe_header );
     }
-    exe->u.PEInfo.Objects = RcMemMalloc( objects_size );
+    exe->u.PEInfo.Objects = RCALLOC( objects_size );
     error = SeekRead( exe->Handle, file_offset, exe->u.PEInfo.Objects, objects_size );
     switch( error ) {
     case RS_OK:
@@ -163,7 +162,7 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
         return( -1 );
     }
 
-    new->u.PEInfo.Objects = RcMemMalloc( new_obj_size );
+    new->u.PEInfo.Objects = RCALLOC( new_obj_size );
 
     for( obj_num = 0; obj_num < new_num_objects; obj_num++ ) {
         new->u.PEInfo.Objects[ obj_num ] = old->u.PEInfo.Objects[ obj_num ];
@@ -192,9 +191,9 @@ static RcStatus copyOneObject( WResFileID old_handle, pe_object * old_obj,
         ( old_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
-    if( RcSeek( old_handle, old_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RCSEEK( old_handle, old_obj->physical_offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RcSeek( new_handle, new_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RCSEEK( new_handle, new_obj->physical_offset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
     return( CopyExeData( old_handle, new_handle, old_obj->physical_size ) );

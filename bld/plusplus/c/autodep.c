@@ -84,7 +84,7 @@ void AdOpen( void )
     AutoDepFile = fopen( IoSuppOutFileName( OFT_DEP ), "wt" );
 }
 
-void AdClose( int and_erase )
+void AdClose( bool and_erase )
 {
     // for now fake out doing anything....
     // and_erase = TRUE;

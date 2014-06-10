@@ -32,12 +32,14 @@
 #include "sysdef.h"
 #include "bool.h"
 
-typedef         unsigned handle;
+typedef int             handle;
+
 typedef unsigned_8 seek_method; enum {
     DIO_SEEK_ORG,
     DIO_SEEK_CUR,
     DIO_SEEK_END
 };
+
 typedef unsigned_8 open_access; enum {
     OP_READ         = 0x01,
     OP_WRITE        = 0x02,
@@ -78,6 +80,6 @@ unsigned        StashErrCode( sys_error, open_access );
 char            *SkipPathInfo( char const *, open_access );
 char            *ExtPointer( char const *, open_access );
 char            *AppendPathDelim( char *, open_access );
-unsigned        MakeFileName( char *, char *, char *, open_access );
+unsigned        MakeFileName( char *, const char *, const char *, open_access );
 
 bool            FindWritable( char const *, char * );

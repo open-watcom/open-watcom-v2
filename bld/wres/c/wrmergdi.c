@@ -33,6 +33,7 @@
 #include <string.h>
 #include "wresall.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 typedef struct WResMergeError {
     struct WResMergeError       *next;

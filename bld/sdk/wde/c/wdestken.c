@@ -31,8 +31,8 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdestken.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -59,11 +59,11 @@ typedef struct WdeStackEnvType {
 /****************************************************************************/
 static WdeStackEnvType *WdeTop = NULL;
 
-Bool WdePushEnv( jmp_buf *e )
+bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    s = (WdeStackEnvType *)WdeMemAlloc( sizeof( WdeStackEnvType ) );
+    s = (WdeStackEnvType *)WRMemAlloc( sizeof( WdeStackEnvType ) );
     if( s == NULL ) {
         return( FALSE );
     }
@@ -75,7 +75,7 @@ Bool WdePushEnv( jmp_buf *e )
     return( TRUE );
 }
 
-Bool WdePopEnv( jmp_buf *e )
+bool WdePopEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
@@ -83,7 +83,7 @@ Bool WdePopEnv( jmp_buf *e )
         s = WdeTop;
         WdeTop = s->next;
         memcpy( e, &s->e, sizeof( jmp_buf ) );
-        WdeMemFree( s );
+        WRMemFree( s );
     } else {
         return( FALSE );
     }
@@ -91,7 +91,7 @@ Bool WdePopEnv( jmp_buf *e )
     return( TRUE );
 }
 
-Bool WdeTopEnv( jmp_buf *e )
+bool WdeTopEnv( jmp_buf *e )
 {
     if( WdeTop != NULL ) {
         memcpy( e, &WdeTop->e, sizeof( jmp_buf ) );

@@ -51,7 +51,7 @@ extern BOOL APIENTRY WinThreadAssocQueue( HAB, HMQ );
 
 extern HMQ              GUIPMmq;
 
-extern void     __far *ExtraAlloc( unsigned );
+extern void     __far *ExtraAlloc( size_t );
 extern void     ExtraFree( void __far * );
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
@@ -259,7 +259,7 @@ void FiniScreen()
  *                                                                           *
 \*****************************************************************************/
 
-void __far *uifaralloc( unsigned size )
+void __far *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
 }

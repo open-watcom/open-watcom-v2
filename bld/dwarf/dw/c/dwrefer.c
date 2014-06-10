@@ -35,8 +35,6 @@
 #include "dwutils.h"
 #include "dwmem.h"
 
-#define myWrite( __b, __l )     CLIWrite( DW_DEBUG_REF, __b, __l )
-
 /*
     We use these delayed_ref structures to avoid emitting sequences such
     as:
@@ -64,14 +62,14 @@ static void emitDelayed(
     while( cur ) {
         buf[0] = REF_BEGIN_SCOPE;
         WriteRef( buf + 1, cur->offset );
-        myWrite( buf, 1 + sizeof( debug_ref ) );
+        CLIWrite( DW_DEBUG_REF, buf, 1 + sizeof( debug_ref ) );
         cur = CarveFreeLink( cli->references.delay_carver, cur );
     }
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {
         buf[ 0 ] = REF_SET_FILE;
         end = ULEB128( buf + 1, cli->references.delayed_file );
-        myWrite( buf, end - buf );
+        CLIWrite( DW_DEBUG_REF, buf, end - buf );
         cli->references.delayed_file = 0;
     }
 }
@@ -112,7 +110,7 @@ void EndRef(
             CarveFreeLink( cli->references.delay_carver, this );
     } else {
         buf[ 0 ] = REF_END_SCOPE;
-        myWrite( buf, sizeof( buf ) );
+        CLIWrite( DW_DEBUG_REF, buf, sizeof( buf ) );
     }
 }
 
@@ -141,7 +139,7 @@ void DWENTRY DWReference(
         || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
         buf[ 0 ] = REF_ADD_LINE;
         end = LEB128( buf + 1, line_delta );
-        myWrite( buf, end - buf );
+        CLIWrite( DW_DEBUG_REF, buf, end - buf );
         cli->references.column = 0;
         line_delta = 0;
     } else if( line_delta != 0 ) {
@@ -152,7 +150,7 @@ void DWENTRY DWReference(
     if( column_delta < 0 || column_delta >= REF_COLUMN_RANGE ) {
         buf[ 0 ] = REF_ADD_COLUMN;
         end = LEB128( buf + 1, column_delta );
-        myWrite( buf, end - buf );
+        CLIWrite( DW_DEBUG_REF, buf, end - buf );
         column_delta = 0;
     }
     _Assert( line_delta >= 0
@@ -160,7 +158,7 @@ void DWENTRY DWReference(
         && column_delta >= 0
         && column_delta < REF_COLUMN_RANGE );
     buf[ 0 ] = REF_CODE_BASE + line_delta * REF_COLUMN_RANGE + column_delta;
-    myWrite( buf, 1 );
+    CLIWrite( DW_DEBUG_REF, buf, 1 );
     HandleReference( cli, dependant, DW_DEBUG_REF );
 }
 

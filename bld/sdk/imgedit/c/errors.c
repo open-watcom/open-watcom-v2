@@ -40,7 +40,7 @@ static char     *ErrorMsgTitle  = NULL;
  *                 errno - determines the string to go with the error
  *                 fname - if a file name goes with the error message
  */
-void WImgEditError( DWORD error, LPSTR fname )
+void WImgEditError( UINT error, LPSTR fname )
 {
     switch( error ) {
     case WIE_ERR_BITMAP_TOO_BIG:
@@ -163,7 +163,7 @@ void WImgEditError( DWORD error, LPSTR fname )
 /*
  * IEAllocRCString
  */
-char *IEAllocRCString( DWORD id )
+char *IEAllocRCString( UINT id )
 {
     return( AllocRCString( id ) );
 
@@ -181,7 +181,7 @@ void IEFreeRCString( char *str )
 /*
  * IECopyRCString
  */
-DWORD IECopyRCString( DWORD id, char *buf, DWORD bufsize )
+int IECopyRCString( UINT id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 
@@ -221,7 +221,7 @@ void IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style )
 /*
  * IEPrintErrorMsgByID
  */
-void IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style )
+void IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style )
 {
     char        *title_str;
     char        *msg_str;
@@ -249,7 +249,7 @@ void IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style )
 /*
  * IEDisplayErrorMsg
  */
-void IEDisplayErrorMsg( DWORD title, DWORD msg, UINT style )
+void IEDisplayErrorMsg( UINT title, UINT msg, UINT style )
 {
     char        *title_str;
 

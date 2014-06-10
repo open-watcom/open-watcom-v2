@@ -34,7 +34,7 @@
 #include "wrestrdp.h"
 
 #include <string.h>
-#include "wremem.h"
+#include "wrdll.h"
 
 char *WREStrDup( const char *src )
 {
@@ -44,7 +44,7 @@ char *WREStrDup( const char *src )
         return( NULL );
     }
 
-    dest = WREMemAlloc( strlen( src ) + 1 );
+    dest = WRMemAlloc( strlen( src ) + 1 );
 
     if( dest != NULL ) {
         strcpy( dest, src );

@@ -34,7 +34,6 @@
 #include <dos.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include "trpimp.h"
 #include "tcerr.h"
 #include "trpld.h"
@@ -69,7 +68,7 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         trapbuff = "std";
     have_ext = FALSE;
     ptr = trapbuff;
-    dst = (char *)trpfile;
+    dst = trpfile;
     for( ;; ) {
         chr = *ptr;
         if( chr == '\0' || chr == ';' ) break;
@@ -102,22 +101,18 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
     init_func = RdosGetModuleProc( TrapFile, "TrapInit_" );
     FiniFunc = RdosGetModuleProc( TrapFile, "TrapFini_" );
     ReqFunc  = RdosGetModuleProc( TrapFile, "TrapRequest_" );
+//    LibListFunc = RdosGetModuleProc( TrapFile, "TrapLibList_" );
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( init_func == NULL || FiniFunc == NULL || ReqFunc == NULL
-        /* || LibListFunc == NULL */ ) {
-        KillTrap();
-        return( buff );
+    if( init_func != NULL && FiniFunc != NULL && ReqFunc != NULL /* && LibListFunc != NULL */ ) {
+        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( NULL );
+            }
+            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        }
     }
-    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
-    if( trpfile[0] != '\0' ) {
-        strcpy( buff, (char *)trpfile );
-        KillTrap();
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }

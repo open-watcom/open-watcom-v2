@@ -32,7 +32,7 @@
 #include "wio.h"
 #include "global.h"
 #include "exeutil.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 /*
  * CopyExeData
@@ -52,7 +52,7 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
         if( length < bufflen ) {
             bufflen = length;
         }
-        numio = RcRead( inhandle, Pass2Info.IoBuffer, bufflen );
+        numio = RCREAD( inhandle, Pass2Info.IoBuffer, bufflen );
         if( numio != bufflen ) {
             if( numio == -1 ) {
                 return( RS_READ_ERROR );
@@ -60,7 +60,7 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
                 return( RS_READ_INCMPLT );
             }
         }
-        if( RcWrite( outhandle, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
+        if( RCWRITE( outhandle, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
             return( RS_WRITE_ERROR );
         }
         length -= bufflen;
@@ -77,17 +77,17 @@ RcStatus CopyExeDataTilEOF( WResFileID inhandle, WResFileID outhandle )
 {
     uint    numread;
 
-    numread = RcRead( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
+    numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
     if (numread == -1) {
         return( RS_READ_ERROR );
     }
 
     while (numread > 0) {
-        if (RcWrite( outhandle, Pass2Info.IoBuffer, numread ) != numread) {
+        if (RCWRITE( outhandle, Pass2Info.IoBuffer, numread ) != numread) {
             return( RS_WRITE_ERROR );
         }
 
-        numread = RcRead( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
+        numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
         if (numread == -1) {
             return( RS_READ_ERROR );
         }
@@ -165,13 +165,13 @@ RcStatus PadExeData( WResFileID handle, long length )
 
     while (length > IO_BUFFER_SIZE) {
         length -= IO_BUFFER_SIZE;
-        if (RcWrite( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE) {
+        if (RCWRITE( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE) {
             return( RS_WRITE_ERROR );
         }
     }
 
     if (length > 0) {
-        if (RcWrite( handle, Pass2Info.IoBuffer, length ) != length) {
+        if (RCWRITE( handle, Pass2Info.IoBuffer, length ) != length) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -184,7 +184,7 @@ extern void CheckDebugOffset( ExeFileInfo * exe )
 {
     uint_32     curroffset;
 
-    curroffset = RcTell( exe->Handle );
+    curroffset = RCTELL( exe->Handle );
     if (curroffset > exe->DebugOffset) {
         exe->DebugOffset = curroffset;
     }
@@ -227,9 +227,9 @@ RcStatus SeekRead( WResFileID handle, long newpos, void *buff, unsigned size )
 {
     unsigned   bytes_read;
 
-    if( RcSeek( handle, newpos, SEEK_SET ) == -1 ) 
+    if( RCSEEK( handle, newpos, SEEK_SET ) == -1 ) 
         return( RS_READ_ERROR );
-    bytes_read = RcRead( handle, buff, size );
+    bytes_read = RCREAD( handle, buff, size );
     if( bytes_read != size ) {
         if( bytes_read == -1 ) {
             return( RS_READ_ERROR );

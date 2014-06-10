@@ -47,7 +47,7 @@ WCLASS MFamily : public WObject
         MFamily( WTokenFile& fil, WString& tok );
         ~MFamily();
         void name( WString& name ) { name = _name; }
-        WPickList& switches() { return _switches; }
+        WPickList& switches() { return( _switches ); }
         bool WEXPORT hasSwitches( bool setable );
         MSwitch* WEXPORT findSwitch( MTool *tool, WString& switchtag, long fixed_version=0 );
         void WEXPORT addSwitches( WVList& list, const char* mask, bool setable );

@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include "wreglbl.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "statwnd.h"
 #include "wreribbn.h"
@@ -62,7 +63,7 @@ BOOL WREStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WREDisplayStatusText( char * );
+static bool WREDisplayStatusText( char * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -96,7 +97,7 @@ void WREDestroyStatusLine( void )
     }
 }
 
-Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
+bool WRECreateStatusLine( HWND main, HINSTANCE inst )
 {
     RECT                rect;
     LOGFONT             lf;
@@ -107,14 +108,14 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     char                *status_font;
     char                *cp;
     int                 point_size;
-    Bool                use_default;
+    bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
     lf.lfWeight = FW_BOLD;
     use_default = TRUE;
 
-    status_font = WREAllocRCString( WRE_STATUSFONT );
+    status_font = AllocRCString( WRE_STATUSFONT );
     if( status_font != NULL ) {
         cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
         if( cp != NULL ) {
@@ -124,7 +125,7 @@ Bool WRECreateStatusLine( HWND main, HINSTANCE inst )
             point_size = atoi( cp );
             use_default = FALSE;
         }
-        WREFreeRCString( status_font );
+        FreeRCString( status_font );
     }
 
     if( use_default ) {
@@ -181,44 +182,44 @@ void WREResizeStatusWindows( RECT *rect )
     }
 }
 
-Bool WRESetStatusReadyText( void )
+bool WRESetStatusReadyText( void )
 {
     WRESetStatusText( NULL, "", FALSE );
     return( WRESetStatusByID( WRE_READYMSG, -1 ) );
 }
 
-Bool WRESetStatusByID( DWORD id1, DWORD id2 )
+bool WRESetStatusByID( DWORD id1, DWORD id2 )
 {
     char        *str1;
     char        *str2;
-    Bool        ret;
+    bool        ret;
 
     ret = FALSE;
     str1 = NULL;
     str2 = NULL;
 
     if( id1 != -1 ) {
-        str1 = WREAllocRCString( id1 );
+        str1 = AllocRCString( id1 );
     }
 
     if( id2 != -1 ) {
-        str2 = WREAllocRCString( id2 );
+        str2 = AllocRCString( id2 );
     }
 
     ret = WRESetStatusText( str1, str2, TRUE );
 
     if( str1 != NULL ) {
-        WREFreeRCString( str1 );
+        FreeRCString( str1 );
     }
 
     if( str2 != NULL ) {
-        WREFreeRCString( str2 );
+        FreeRCString( str2 );
     }
 
     return( ret );
 }
 
-Bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
+bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
 {
     int len;
     int pos;
@@ -265,7 +266,7 @@ Bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
     return( TRUE );
 }
 
-Bool WREDisplayStatusText( char *str )
+bool WREDisplayStatusText( char *str )
 {
     HDC hdc;
 

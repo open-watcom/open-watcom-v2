@@ -578,9 +578,9 @@ static BOOL getSavePalName( char *fname )
     of.lpstrTitle = "Save Colour Palette File";
     of.lpstrInitialDir = initialDir;
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT | OFN_ENABLEHOOK;
-    of.lpfnHook = (LPVOID) MakeProcInstance( (LPVOID) SaveHook, Instance );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
     rc = GetSaveFileName( &of );
-    FreeProcInstance( (LPVOID) of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
     return( rc );
 
 } /* getSavePalName */

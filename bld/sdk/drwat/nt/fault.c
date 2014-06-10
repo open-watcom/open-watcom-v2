@@ -39,27 +39,27 @@
 #include "jdlg.h"
 #include "madrtn.h"
 #include "malloc.h"
-#include "madsys.h"
+#include "madsys1.h"
 
 
 msglist ExceptionMsgs[] = {
-    EXCEPTION_ACCESS_VIOLATION,         (char *)STR_ACCESS_VIOLATION,
-    EXCEPTION_BREAKPOINT,               (char *)STR_NADA,
-    EXCEPTION_DATATYPE_MISALIGNMENT,    (char *)STR_DATA_MISALIGNMENT,
-    EXCEPTION_SINGLE_STEP,              (char *)STR_NADA,
-    EXCEPTION_ARRAY_BOUNDS_EXCEEDED,    (char *)STR_ARRAY_BNDS_EXCEEDED,
-    EXCEPTION_FLT_DENORMAL_OPERAND,     (char *)STR_DENORMAL_FLOAT,
-    EXCEPTION_FLT_DIVIDE_BY_ZERO,       (char *)STR_FLT_DIV_BY_ZERO,
-    EXCEPTION_FLT_INEXACT_RESULT,       (char *)STR_FLT_INEXACT_RESULT,
-    EXCEPTION_FLT_INVALID_OPERATION,    (char *)STR_FLT_INV_OP,
-    EXCEPTION_FLT_OVERFLOW,             (char *)STR_FLT_PT_OVERFLOW,
-    EXCEPTION_FLT_STACK_CHECK,          (char *)STR_FLT_STACK_CHECK,
-    EXCEPTION_FLT_UNDERFLOW,            (char *)STR_FLT_UNDERFLOW,
-    EXCEPTION_INT_DIVIDE_BY_ZERO,       (char *)STR_INT_DIV_BY_ZERO,
-    EXCEPTION_INT_OVERFLOW,             (char *)STR_INT_OVERFLOW,
-    EXCEPTION_PRIV_INSTRUCTION,         (char *)STR_INV_INSTRUCTION,
-    STATUS_NONCONTINUABLE_EXCEPTION,    (char *)STR_NADA,
-    0,                                  (char *)-1
+    EXCEPTION_ACCESS_VIOLATION,         (char *)(pointer_int)STR_ACCESS_VIOLATION,
+    EXCEPTION_BREAKPOINT,               (char *)(pointer_int)STR_NADA,
+    EXCEPTION_DATATYPE_MISALIGNMENT,    (char *)(pointer_int)STR_DATA_MISALIGNMENT,
+    EXCEPTION_SINGLE_STEP,              (char *)(pointer_int)STR_NADA,
+    EXCEPTION_ARRAY_BOUNDS_EXCEEDED,    (char *)(pointer_int)STR_ARRAY_BNDS_EXCEEDED,
+    EXCEPTION_FLT_DENORMAL_OPERAND,     (char *)(pointer_int)STR_DENORMAL_FLOAT,
+    EXCEPTION_FLT_DIVIDE_BY_ZERO,       (char *)(pointer_int)STR_FLT_DIV_BY_ZERO,
+    EXCEPTION_FLT_INEXACT_RESULT,       (char *)(pointer_int)STR_FLT_INEXACT_RESULT,
+    EXCEPTION_FLT_INVALID_OPERATION,    (char *)(pointer_int)STR_FLT_INV_OP,
+    EXCEPTION_FLT_OVERFLOW,             (char *)(pointer_int)STR_FLT_PT_OVERFLOW,
+    EXCEPTION_FLT_STACK_CHECK,          (char *)(pointer_int)STR_FLT_STACK_CHECK,
+    EXCEPTION_FLT_UNDERFLOW,            (char *)(pointer_int)STR_FLT_UNDERFLOW,
+    EXCEPTION_INT_DIVIDE_BY_ZERO,       (char *)(pointer_int)STR_INT_DIV_BY_ZERO,
+    EXCEPTION_INT_OVERFLOW,             (char *)(pointer_int)STR_INT_OVERFLOW,
+    EXCEPTION_PRIV_INSTRUCTION,         (char *)(pointer_int)STR_INV_INSTRUCTION,
+    STATUS_NONCONTINUABLE_EXCEPTION,    (char *)(pointer_int)STR_NADA,
+    0,                                  (char *)(pointer_int)-1
 };
 
 #ifdef __NT__

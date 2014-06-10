@@ -47,7 +47,7 @@ static walk_result FindMods( imp_image_handle *ii,
     return( md->wk( ii, cde->iMod, md->d ) );
 }
 
-walk_result     DIPENTRY DIPImpWalkModList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
                         IMP_MOD_WKR *wk, void *d )
 {
     struct find_mod     find;
@@ -56,7 +56,7 @@ walk_result     DIPENTRY DIPImpWalkModList( imp_image_handle *ii,
     find.wk = wk;
     find.d  = d;
     wr = WalkDirList( ii, &FindMods, &find );
-    if( wr == WR_CONTINUE ) wr = wk( ii, MH_GBL, d );
+    if( wr == WR_CONTINUE ) wr = wk( ii, IMH_GBL, d );
     return( wr );
 }
 
@@ -66,7 +66,7 @@ walk_result     DIPENTRY DIPImpWalkModList( imp_image_handle *ii,
 
 #define GBL_NAME "__global"
 
-unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpModName( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, unsigned max )
 {
     cv_directory_entry  *cde;
@@ -76,7 +76,7 @@ unsigned        DIPENTRY DIPImpModName( imp_image_handle *ii,
     char                *end;
     unsigned            len;
 
-    if( im == MH_GBL ) {
+    if( im == IMH_GBL ) {
         return( NameCopy( buff, GBL_NAME, max, sizeof( GBL_NAME ) - 1 ) );
     }
     cde = FindDirEntry( ii, im, sstModule );
@@ -121,7 +121,7 @@ cs_compile *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
     }
 }
 
-char            *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
 {
     cs_compile  *comp_info;
 
@@ -139,7 +139,7 @@ char            *DIPENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle
     return( "c" );
 }
 
-dip_status      DIPENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     static const unsigned DmndType[] = {
@@ -212,9 +212,9 @@ search_result ImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
         We know the address is in the image. If it's an executable
         segment, we can find the module by checking all the sstModule
         sections and look at the code section information. If it's a
-        data segment, or we can't find it, return MH_GBL.
+        data segment, or we can't find it, return IMH_GBL.
     */
-    *im = MH_GBL;
+    *im = IMH_GBL;
     if( map->u.b.fExecute ) {
         d.d = &a;
         if( WalkDirList( ii, FindAddr, &d ) == WR_STOP ) {
@@ -224,13 +224,13 @@ search_result ImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
     return( SR_CLOSEST );
 }
 
-search_result   DIPENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
                         imp_mod_handle *im )
 {
     return( ImpAddrMod( ii, a, im ) );
 }
 
-address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
+address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
                                 imp_mod_handle im )
 {
     cv_sst_module       *mp;
@@ -248,7 +248,7 @@ address         DIPENTRY DIPImpModAddr( imp_image_handle *ii,
     return( addr );
 }
 
-dip_status      DIPENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     cs_compile  *comp_info;

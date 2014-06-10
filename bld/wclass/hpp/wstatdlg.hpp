@@ -46,7 +46,7 @@ WCLASS WStatDialog : public WDialog {
         virtual WControl * WEXPORT getControl( unsigned control_id );
 
         void WEXPORT getCtrlText( unsigned control_id, WString & str );
-        void WEXPORT getCtrlText( unsigned control_id, char* buff, unsigned len );
+        void WEXPORT getCtrlText( unsigned control_id, char* buff, size_t len );
         size_t WEXPORT getCtrlTextLength( unsigned control_id );
         void WEXPORT setCtrlText( unsigned control_id, const char *text );
         void WEXPORT getCtrlRect( unsigned control_id, WRect & r );

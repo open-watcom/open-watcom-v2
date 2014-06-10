@@ -46,8 +46,8 @@ typedef union {
     struct {
         addr_seg        rm;
         addr_seg        pm;
-    }           s;
-    unsigned_32 a;
+    }           segm;
+    unsigned_32 dpmi_adr;
 } dos_memory;
 
 #define         NUM_VECTS       256

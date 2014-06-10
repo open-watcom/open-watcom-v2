@@ -39,7 +39,7 @@
 WINEXPORT extern OBJPTR  CALLBACK WdeFrameCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeTextCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeIconCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeStaticInit( Bool );
+extern bool              WdeStaticInit( bool );
 extern void              WdeStaticFini( void );
 
 #endif

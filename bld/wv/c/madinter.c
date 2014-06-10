@@ -151,7 +151,8 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
     len = strlen( *strings[mstr] );
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( buff, *strings[mstr], max );
         buff[max] = '\0';
     }
@@ -161,6 +162,7 @@ unsigned        DIGCLIENT MADCliString( mad_string mstr, unsigned max, char *buf
 mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
 {
     //MAD: NYI
+    mstr = mstr; str = str;
     return( MS_FAIL );
 }
 
@@ -323,10 +325,10 @@ void CheckMADChange()
 
 static unsigned NormalizeString( char *p )
 {
-    char        *start;
+//    char        *start;
     char        *d;
 
-    start = p;
+//    start = p;
     d = p;
     while( *p != '\0' ) {
         switch( *p ) {
@@ -393,10 +395,11 @@ static walk_result FindTheMad( mad_handle mh, void *d )
 {
     struct find_mad     *fd = d;
     char                buff[80];
-    char                *p;
+//    char                *p;
 
     MADNameFile( mh, sizeof( buff ), buff );
-    p = SkipPathInfo( buff, 0 );
+//    p = SkipPathInfo( buff, 0 );
+    SkipPathInfo( buff, 0 );
     if( memicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->mad = mh;
         return( WR_STOP );

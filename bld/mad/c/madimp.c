@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #if defined( __WINDOWS__)
 #include <stdlib.h>
 #include <windows.h>
@@ -38,32 +37,12 @@
 #include "madimp.h"
 
 #if defined( __WATCOMC__ )
-#define _CODE_BASED __based( __segname( "_CODE" ) )
-#else
-#define _CODE_BASED
-#endif
-
-#if defined( __WINDOWS__ )
-    #define MAD_DLLEXPORT __declspec(dllexport) __declspec(__pascal)
-#elif defined( __WATCOMC__ )
-  #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
-    #define MAD_DLLEXPORT __declspec(dllexport)
-    #pragma aux MADLOAD "*"
+  #if defined( __WINDOWS__ )
   #elif defined( _M_I86 )
-    #define MAD_DLLEXPORT
     #pragma aux MADLOAD "*" __loadds
   #else
-    #define MAD_DLLEXPORT
     #pragma aux MADLOAD "*"
   #endif
-#elif !defined( __UNIX__ )
-    #define MAD_DLLEXPORT __declspec(dllexport)
-#else
-    #define MAD_DLLEXPORT
-#endif
-
-#if defined( __WINDOWS__ )
-typedef void (DIGENTRY INTER_FUNC)();
 #endif
 
 mad_client_routines     *MadClient;
@@ -150,10 +129,6 @@ mad_imp_routines        MadImpInterface = {
     MICallUpStackLevel,
 };
 
-#if defined( __DOS__ ) || defined( __UNIX__ )
-const char _CODE_BASED Signature[4] = "MAD";
-#endif
-
 #if defined( __WATCOMC__ ) && defined( __386__ )
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;
@@ -165,19 +140,23 @@ static HANDLE       TaskId;
 static HINSTANCE    ThisInst;
 #endif
 
-MAD_DLLEXPORT mad_imp_routines *MADLOAD( mad_status *status, mad_client_routines *client )
+#if defined( __WATCOMC__ ) && ( defined( __DOS__ ) || defined( __UNIX__ ) )
+const char __based( __segname( "_CODE" ) ) Signature[4] = "MAD";
+#endif
+
+DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_client_routines *client )
 {
     MadClient = client;
     *status = MS_OK;
     return( &MadImpInterface );
 }
 
-void            *MCAlloc( unsigned amount )
+void            *MCAlloc( size_t amount )
 {
     return( MadClient->MADCliAlloc( amount ) );
 }
 
-void            *MCRealloc( void *p, unsigned amount )
+void            *MCRealloc( void *p, size_t amount )
 {
     return( MadClient->MADCliRealloc( p, amount ) );
 }
@@ -289,6 +268,8 @@ void            MCStatus( mad_status ms )
 
 #if defined( __WINDOWS__)
 
+typedef void (DIGENTRY INTER_FUNC)();
+
 #ifdef DEBUGGING
 void Say( char *buff )
 {
@@ -296,7 +277,7 @@ void Say( char *buff )
 }
 #endif
 
-void DIGENTRY MADUNLOAD( void )
+DIG_DLLEXPORT void DIGENTRY MADUNLOAD( void )
 {
     PostAppMessage( TaskId, WM_QUIT, 0, 0 );
 }
@@ -311,8 +292,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     INTER_FUNC          **func;
     unsigned            count;
     struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
+        mad_init_func   *load;
+        mad_fini_func   *unload;
     }                   *link;
     unsigned            seg;
     unsigned            off;
@@ -333,8 +314,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
         ++func;
         --count;
     }
-    link->load = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADLOAD, this_inst );
-    link->unload = (INTER_FUNC *)MakeProcInstance( (FARPROC)MADUNLOAD, this_inst );
+    link->load = (mad_init_func *)MakeProcInstance( (FARPROC)MADLOAD, this_inst );
+    link->unload = (mad_fini_func *)MakeProcInstance( (FARPROC)MADUNLOAD, this_inst );
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );
         DispatchMessage( &msg );

@@ -35,6 +35,7 @@
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 WResIDName * WResIDNameFromStr( char * string )
 /*********************************************/

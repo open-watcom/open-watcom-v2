@@ -39,7 +39,6 @@
 #include "watcom.h"
 #include "wreglbl.h"
 #include "wreres.h"
-#include "wremem.h"
 #include "wrenames.h"
 #include "wreftype.h"
 #include "wrefres.h"
@@ -80,10 +79,10 @@ void *WREGetCurrentResData( WRECurrentResInfo *curr )
     return( rdata );
 }
 
-Bool WREGetCurrentResource( WRECurrentResInfo *current )
+bool WREGetCurrentResource( WRECurrentResInfo *current )
 {
     WRETypeName *tn;
-    Bool        ok;
+    bool        ok;
     HWND        resLbox;
     LRESULT     index;
 

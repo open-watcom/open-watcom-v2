@@ -37,11 +37,11 @@
 
 #include "wisedit.h"
 
-Bool WIsEdit( HWND hwnd )
+bool WIsEdit( HWND hwnd )
 {
     char        classname[12];
     int         ret;
-    Bool        isedit;
+    bool        isedit;
 
     isedit = FALSE;
     ret = GetClassName( hwnd, classname, sizeof( classname ) );
@@ -54,7 +54,7 @@ Bool WIsEdit( HWND hwnd )
     return( isedit );
 }
 
-Bool WDoesEditHaveFocus( void )
+bool WDoesEditHaveFocus( void )
 {
     HWND        focus;
     focus = GetFocus();

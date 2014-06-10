@@ -62,13 +62,13 @@ typedef struct {
 extern void WdeSetFocusToInfo( void );
 extern HWND WdeGetInfoWindowHandle( void );
 extern int  WdeGetInfoWindowDepth( void );
-extern Bool WdeCreateInfoWindow( HWND, HINSTANCE );
+extern bool WdeCreateInfoWindow( HWND, HINSTANCE );
 extern void WdeResizeInfoWindow( RECT * );
 extern void WdeInfoFini( void );
 extern void WdeWriteObjectDimensions( int, int, int, int );
 extern void WdeWriteInfo( WdeInfoStruct * );
 extern void WdeDestroyInfoWindow( void );
-extern void WdeShowInfoWindow( Bool );
+extern void WdeShowInfoWindow( bool );
 extern BOOL WdeIsInfoMessage( MSG *msg );
 
 #endif

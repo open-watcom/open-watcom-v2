@@ -57,7 +57,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #define INCL_BASE
 #define INCL_DOSDEVICES

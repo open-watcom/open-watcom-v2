@@ -35,16 +35,22 @@
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
+#include "madsys.h"
 #ifndef __WATCOMC__
     #include "clibext.h"
 #endif
 
 
+void MADSysUnload( mad_sys_handle *sys_hdl )
+{
+    dlclose( *sys_hdl );
+}
+
 mad_status MADSysLoad( char *path, mad_client_routines *cli,
-                       mad_imp_routines **imp, unsigned long *sys_hdl )
+                       mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     void                *shlib;
-    mad_imp_routines    *(*init_func)( mad_status *, mad_client_routines * );
+    mad_init_func       *init_func;
     char                newpath[PATH_MAX];
     char                full_path[PATH_MAX];
     mad_status          status;
@@ -56,24 +62,15 @@ mad_status MADSysLoad( char *path, mad_client_routines *cli,
         _searchenv( newpath, "PATH", full_path );
         shlib = dlopen( full_path, RTLD_NOW );
         if( shlib == NULL ) {
-            return( MS_ERR | MS_FOPEN_FAILED );
+            return( MS_ERR|MS_FOPEN_FAILED );
         }
     }
-    init_func = dlsym( shlib, "MADLOAD" );
-    if( init_func == NULL ) {
-        dlclose( shlib );
-        return( MS_ERR | MS_INVALID_MAD );
+    status = MS_ERR|MS_INVALID_MAD;
+    init_func = (mad_init_func *)dlsym( shlib, "MADLOAD" );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = shlib;
+        return( MS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        dlclose( shlib );
-        return( status );
-    }
-    *sys_hdl = (unsigned long)shlib;
-    return( MS_OK );
-}
-
-void MADSysUnload( unsigned long sys_hdl )
-{
-    dlclose( (void *)sys_hdl );
+    dlclose( shlib );
+    return( status );
 }

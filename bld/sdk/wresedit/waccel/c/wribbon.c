@@ -40,6 +40,7 @@
 #include "wmsg.h"
 #include "sys_rc.h"
 #include "wribbon.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -116,7 +117,7 @@ int WGetRibbonHeight( void )
     return( WRibbonHeight );
 }
 
-Bool WInitRibbons( HINSTANCE inst )
+bool WInitRibbons( HINSTANCE inst )
 {
     int i;
 
@@ -245,7 +246,7 @@ void WShutdownRibbons( void )
     }
 }
 
-Bool WCreateRibbon( WAccelEditInfo *einfo )
+bool WCreateRibbon( WAccelEditInfo *einfo )
 {
     RECT                r;
     WToolBarInfo        *rinfo;
@@ -277,7 +278,7 @@ Bool WCreateRibbon( WAccelEditInfo *einfo )
     }
 }
 
-Bool WResizeRibbon( WAccelEditInfo *einfo, RECT *prect )
+bool WResizeRibbon( WAccelEditInfo *einfo, RECT *prect )
 {
     if( einfo == NULL || einfo->ribbon == NULL || !einfo->show_ribbon || prect == NULL ||
         einfo->ribbon->win == (HWND)NULL ) {
@@ -301,11 +302,11 @@ void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
     mtext = NULL;
 
     if( einfo->show_ribbon ) {
-        mtext = WAllocRCString( W_SHOWTOOLBAR );
+        mtext = AllocRCString( W_SHOWTOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_HIDE );
         WSetStatusByID( einfo->wsb, -1, W_TOOLBARHIDDEN );
     } else {
-        mtext = WAllocRCString( W_HIDETOOLBAR );
+        mtext = AllocRCString( W_HIDETOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_SHOW );
         WSetStatusByID( einfo->wsb, -1, W_TOOLBARSHOWN );
     }
@@ -316,7 +317,7 @@ void WShowRibbon( WAccelEditInfo *einfo, HMENU menu )
                 IDM_ACC_SHOWRIBBON, mtext );
 
     if( mtext != NULL ) {
-        WFreeRCString( mtext );
+        FreeRCString( mtext );
     }
 }
 
@@ -341,7 +342,7 @@ void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 
 BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    Bool            ret;
+    BOOL            ret;
     WAccelEditInfo  *einfo;
 
     _wtouch( hwnd );

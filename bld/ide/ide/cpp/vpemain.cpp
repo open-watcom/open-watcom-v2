@@ -146,22 +146,22 @@ void VpeMain::loadNewEditor( WFileName &fn ) {
 WEXPORT VpeMain::VpeMain()
     : WMdiWindow( _viperTitle )
     , _project( NULL )
-    , _neverSaved( FALSE )
+    , _neverSaved( false )
     , _activeVComp( NULL )
     , _msgLog( NULL )
-    , _batchOk( TRUE )
-    , _quitAnyways( FALSE )
+    , _batchOk( true )
+    , _quitAnyways( false )
     , _targetPopup( NULL )
     , _itemsPopup( NULL )
     , _logPopup( NULL )
-    , _toolBarActive( FALSE )
+    , _toolBarActive( false )
     , _statusBar( NULL )
     , _myHandle( "V1234" )
     , _help( NULL )
     , _otherhelp( NULL )
     , _rcsClient( this )
-    , _refuseFileLists( FALSE )
-    , _autoRefresh( TRUE )
+    , _refuseFileLists( false )
+    , _autoRefresh( true )
 {
     /* check and fix env vars if needed; this should perhaps be done in
      * the GUI library and not here.
@@ -173,7 +173,7 @@ WEXPORT VpeMain::VpeMain()
         "IDE will not function correctly" );
     }
 
-    hookF1Key( TRUE );
+    hookF1Key( true );
 #if defined( __OS2__ )
     HelpStack.push( HLP_INDEX_OF_TOPICS );
 #else
@@ -195,9 +195,9 @@ WEXPORT VpeMain::VpeMain()
     WString cmd;
     proc.getCommandArgs( cmd );
 
-    bool debug = FALSE;
-    bool c_for_pb = FALSE;
-    bool c_for_pbnt = FALSE;
+    bool debug = false;
+    bool c_for_pb = false;
+    bool c_for_pbnt = false;
     WFileName pj;
     WFileName cfg;
     WStringList parms( cmd );
@@ -209,13 +209,13 @@ WEXPORT VpeMain::VpeMain()
                 cfg = parms.cStringAt( j );
             }
         } else if( parms.stringAt( j ) == "-b" ) {
-            _batchOk = FALSE;
+            _batchOk = false;
         } else if( parms.stringAt( j ) == "-d" ) {
-            debug = TRUE;
+            debug = true;
         } else if( parms.stringAt( j ) == "-pb" ) {
-            c_for_pb = TRUE;
+            c_for_pb = true;
         } else if( parms.stringAt( j ) == "-pbnt" ) {
-            c_for_pbnt = TRUE;
+            c_for_pbnt = true;
         } else {
             pj = parms.cStringAt( j );
         }
@@ -250,9 +250,9 @@ WEXPORT VpeMain::VpeMain()
 
     if( pj.size() > 0 ) {
         if( c_for_pb ) {
-            cForPBProject( pj, FALSE );
+            cForPBProject( pj, false );
         } else if( c_for_pbnt ) {
-            cForPBProject( pj, TRUE );
+            cForPBProject( pj, true );
         } else {
             validateProjectName( pj );
             loadProject( pj );
@@ -275,7 +275,7 @@ WEXPORT VpeMain::VpeMain()
 
 WEXPORT VpeMain::~VpeMain()
 {
-    hookF1Key( FALSE );
+    hookF1Key( false );
 //    delete _server;
 //    _editorClient->disconnect();
 //    delete _editorClient;
@@ -313,7 +313,7 @@ void WEXPORT VpeMain::readSelf( WObjectFile& p )
     }
     update();
     show();     //in case this is the first time
-    setUpdates( FALSE );
+    setUpdates( false );
     _project = (MProject*)p.readObject();
     attachModel( _project );
     p.readObject( &_compViews );
@@ -343,7 +343,7 @@ bool VpeMain::registerAccel( WKeyCode kc )
 {
     removeAccelKey( kc );
     addAccelKey( kc, this, (bcbk)&VpeMain::kDynAccel );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -382,16 +382,16 @@ bool VpeMain::toolChanged( WToolBar* /*tool*/, WToolBarState state )
 {
     switch( state ) {
         case WToolBarClosed: {
-            _toolBarActive = FALSE;
+            _toolBarActive = false;
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void VpeMain::buildMenuBar()
 {
-    setUpdates( FALSE );
+    setUpdates( false );
     delete clearToolBar();
     delete clearMenu();
 
@@ -473,7 +473,7 @@ void VpeMain::buildMenuBar()
     }
 
     setToolBar( toolBar );
-    _toolBarActive = TRUE;
+    _toolBarActive = true;
 
     addAccelKey( WKeyInsert, this, (bcbk)&VpeMain::kAddItem );
     addAccelKey( WKeyDelete, this, (bcbk)&VpeMain::kRemoveItem );
@@ -546,30 +546,30 @@ void VpeMain::onPopup0a( WPopupMenu* pop )
     unsigned    i;
 
     for( i=0; i < popup0a.count; i++ ) {
-        pop->checkItem( FALSE, i );
+        pop->checkItem( false, i );
     }
     systype = _rcsClient.QuerySystem();
     switch( systype ) {
     case GENERIC:
-        pop->checkItem( TRUE, 3 );
+        pop->checkItem( true, 3 );
         break;
     case NO_RCS:
-        pop->checkItem( TRUE, 4 );
+        pop->checkItem( true, 4 );
         break;
     case MKS_RCS:
-        pop->checkItem( TRUE, 1 );
+        pop->checkItem( true, 1 );
         break;
     case MKS_SI:
-        pop->checkItem( TRUE, 0 );
+        pop->checkItem( true, 0 );
         break;
     case O_CYCLE:
-        pop->checkItem( TRUE, 5 );
+        pop->checkItem( true, 5 );
         break;
     case PVCS:
-        pop->checkItem( TRUE, 2 );
+        pop->checkItem( true, 2 );
         break;
     case PERFORCE:
-        pop->checkItem( TRUE, 6 );
+        pop->checkItem( true, 6 );
         break;
     }
 }
@@ -585,7 +585,7 @@ void VpeMain::onPopup0( WPopupMenu* pop )
     if( _oldProjects.count() > 0 ) {
         pop->insertSeparator( base );
         for( int i=0; i<_oldProjects.count(); i++ ) {
-            WFileName* fn = (WFileName*)_oldProjects[ i ];
+            WFileName* fn = (WFileName*)_oldProjects[i];
             WString str; str.printf( "&%d. %s", i+1, (const char*)*fn );
             WMenuItem* mi = new WMenuItem( str, this, (cbm)&VpeMain::openOldProject );
             mi->setTagPtr( fn );
@@ -593,22 +593,22 @@ void VpeMain::onPopup0( WPopupMenu* pop )
         }
     }
     bool isp = (_project!=NULL);
-    pop->enableItem( TRUE, 0 );        //new
-    pop->enableItem( TRUE, 1 );        //open
+    pop->enableItem( true, 0 );        //new
+    pop->enableItem( true, 1 );        //open
     pop->enableItem( isp, 2 );         //save
     pop->enableItem( isp, 3 );         //save as
     pop->enableItem( isp, 4 );         //close
-    pop->enableItem( TRUE, 6 );        //toolbar
+    pop->enableItem( true, 6 );        //toolbar
     pop->checkItem( _toolBarActive, 6 );//...
-    pop->enableItem( TRUE, 7 );        //statusbar
+    pop->enableItem( true, 7 );        //statusbar
     pop->checkItem( (_statusBar!=NULL), 7 );//...
-    pop->enableItem( TRUE, 8 );        //AutoRefresh
+    pop->enableItem( true, 8 );        //AutoRefresh
     pop->checkItem( _autoRefresh, 8 ); //...
-    pop->enableItem( TRUE, 9 );        //set editor
-    pop->enableItem( TRUE, 10 );        //set source control
+    pop->enableItem( true, 9 );        //set editor
+    pop->enableItem( true, 10 );        //set source control
     pop->enableItem( isp, 12 );         //set before
     pop->enableItem( isp, 13 );        //set after
-    pop->enableItem( TRUE, 15 );       //always true   //exit
+    pop->enableItem( true, 15 );       //always true   //exit
 }
 
 MenuPop VpeMain::popup1 = { "&Actions", (cbp)&VpeMain::onPopup1, menu1, 1 };
@@ -640,9 +640,9 @@ void VpeMain::onPopup1( WPopupMenu* pop )
                                     "Invoke Source Control Shell." );
     pop->insertItem( mi, i);
     if( _rcsClient.HasShell() ) {
-        pop->enableItem( TRUE, i );
+        pop->enableItem( true, i );
     } else {
-        pop->enableItem( FALSE, i );
+        pop->enableItem( false, i );
     }
 }
 
@@ -839,7 +839,7 @@ void VpeMain::onPopup3a( WPopupMenu* pop )
         int ii = 0;
         for( int i=0; i<icount; i++ ) {
             MAction* action = (MAction*)actlist[i];
-            if( action->hasSwitches( TRUE ) ) {
+            if( action->hasSwitches( true ) ) {
                 if( ii == 0 ) {
                     pop->insertSeparator( base );
                     ii++;
@@ -920,8 +920,8 @@ MenuData VpeMain::menu5[] = {
 
 void VpeMain::onPopup5( WPopupMenu* pop )
 {
-    bool editOk = FALSE;
-    bool helpOk = FALSE;
+    bool editOk = false;
+    bool helpOk = false;
     if( _msgLog ) {
         _msgLog->getState( editOk, helpOk );
     }
@@ -952,7 +952,7 @@ void VpeMain::onPopup7( WPopupMenu* pop )
     pop->enableItem( hp, 0 );                  //contents
     pop->enableItem( hp, 1 );                  //search for help
     pop->enableItem( hp, 3 );                  //help on help
-    pop->enableItem( TRUE, 4 );                //about
+    pop->enableItem( true, 4 );                //about
 }
 
 int VpeMain::addComponentActionSetups( WPopupMenu* pop, int base )
@@ -966,7 +966,7 @@ int VpeMain::addComponentActionSetups( WPopupMenu* pop, int base )
             int icount = actlist.count();
             for( int i=0; i<icount; i++ ) {
                 MAction* action = (MAction*)actlist[i];
-                if( action->hasSwitches( TRUE ) ) {
+                if( action->hasSwitches( true ) ) {
                     if( ii == 0 ) {
                         pop->insertSeparator( base );
                         ii++;
@@ -1024,29 +1024,29 @@ bool VpeMain::keyDown( WORD key )
         if( _editorClient->connected() ) {
             _editorClient->sendMsg( "TakeFocus" );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::gettingFocus( WWindow* )
 {
     if( _activeVComp ) {
         _activeVComp->setFocus();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::appActivate( bool activated ) {
     if( activated && _project != NULL ) {
         if( _autoRefresh ) {
-            _project->refresh( FALSE );
+            _project->refresh( false );
         } else {
-            _project->refresh( TRUE );
+            _project->refresh( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::validateProjectName( WFileName& fn )
@@ -1057,17 +1057,17 @@ bool VpeMain::validateProjectName( WFileName& fn )
             if( strlen( fn.ext() ) == 0 ) {
                 fn.setExt( ".wpj" );
             }
-            return( TRUE );
+            return( true );
         }
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project name '%s' is invalid", (const char*)fn );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::kNewProject( WKeyCode )
 {
     newProject( NULL );
-    return( FALSE );
+    return( false );
 }
 
 void VpeMain::newProject( WMenuItem* )
@@ -1094,7 +1094,7 @@ void VpeMain::newProject( WMenuItem* )
             _project = new MProject( fn );
             attachModel( _project );
             if( addComponent( NULL ) ) {
-                _neverSaved = TRUE;
+                _neverSaved = true;
             }
         }
     }
@@ -1112,12 +1112,12 @@ bool VpeMain::loadProject( const WFileName& fn )
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project '%s' format is too new; you must use a newer version of the IDE.", (const char*)fn );
         } else {
             if( of.version() >= 34 ) {
-                char ident[ sizeof( _projectIdent ) + 1 ];
+                char ident[sizeof( _projectIdent ) + 1];
                 of.readObject( ident, sizeof( ident ) - 1 );
                 if( !streq( ident, _projectIdent ) ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project '%s' format is bad.", (const char*)fn );
                     of.close();
-                    return( FALSE );
+                    return( false );
                 }
             }
             setStatus( "Loading..." );
@@ -1126,18 +1126,18 @@ bool VpeMain::loadProject( const WFileName& fn )
             of.close();
             stopWait();
             setStatus( NULL );
-            return( TRUE );
+            return( true );
         }
         of.close();
-        return( FALSE );
+        return( false );
     }
     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to open project '%s'", (const char*)fn );
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::unloadProject( const WFileName& fn, bool checkout )
 {
-    bool ok = TRUE;
+    bool ok = true;
     setStatus( "Saving..." );
     startWait();
     WObjectFile of( LATEST_SUPPORTED_VERSION );
@@ -1149,14 +1149,14 @@ bool VpeMain::unloadProject( const WFileName& fn, bool checkout )
                 _viperRequest, "Project file '%s' is read-only. checkout? ",
                 (const char*)fn ) == MsgRetOk ) {
                 _rcsClient.Checkout( (WFileName*)&fn, proj, targ );
-                unloadProject( fn, FALSE );
+                unloadProject( fn, false );
             } else {
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to write project file '%s'", (const char*)fn );
-                ok = FALSE;
+                ok = false;
             }
         } else {
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to write project file '%s'", (const char*)fn );
-                ok = FALSE;
+                ok = false;
         }
     } else {
         of.writeObject( _projectIdent );
@@ -1164,7 +1164,7 @@ bool VpeMain::unloadProject( const WFileName& fn, bool checkout )
         of.close();
         ok = of.objOk();
         if( ok ) {
-            _neverSaved = FALSE;
+            _neverSaved = false;
         }
     }
     stopWait();
@@ -1174,7 +1174,7 @@ bool VpeMain::unloadProject( const WFileName& fn, bool checkout )
 
 bool VpeMain::kOpenProject( WKeyCode ) {
     openProject( NULL );
-    return FALSE;
+    return( false );
 }
 
 void VpeMain::openProject( WMenuItem* )
@@ -1200,7 +1200,7 @@ void VpeMain::addOldProject( const WFileName& filename )
     int i;
 
     for( i=0; i<_oldProjects.count(); i++ ) {
-        WFileName* fn = (WFileName*)_oldProjects[ i ];
+        WFileName* fn = (WFileName*)_oldProjects[i];
         if( *fn == filename ) {
             delete _oldProjects.removeAt( i );
             break;
@@ -1239,16 +1239,16 @@ bool VpeMain::okToReplace( WFileName& fn )
 {
     if( fn.attribs() ) {
         if( !confirm( "File '%s' exists! Ok to replace?", fn ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::kSaveProject( WKeyCode )
 {
     saveProject();
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::saveProject()
@@ -1264,7 +1264,7 @@ bool VpeMain::saveProject()
             return( unloadProject( fn ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool VpeMain::saveProjectAs( const WFileName& def )
@@ -1279,7 +1279,7 @@ bool VpeMain::saveProjectAs( const WFileName& def )
             return( unloadProject( fn ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void VpeMain::setBefore( WMenuItem* )
@@ -1325,12 +1325,12 @@ bool VpeMain::optionToSave()
     MsgRetType ret = WMessageDialog::messagef( this, MsgQuestion, MsgYesNoCancel, _viperRequest,
         "The project %s is being closed. Do you want to save the changes that were made in this session?", (const char*)_project->filename() );
     if( ret == MsgRetCancel ) {
-        return( FALSE );
+        return( false );
     }
     if( ret == MsgRetYes ) {
         return( saveProject() );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::okToQuit()
@@ -1339,34 +1339,34 @@ bool VpeMain::okToQuit()
         MsgRetType ret = WMessageDialog::messagef( this, MsgInfo, MsgOkCancel, NULL,
             "Batch execution is busy. Quit anyways?" );
         if( ret == MsgRetOk ) {
-            _quitAnyways = TRUE;
+            _quitAnyways = true;
             _msgLog->killBatcher();
         }
-        return( FALSE );
+        return( false );
     } else if( _project && _project->isDirty() ) {
         return( optionToSave() );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::okToClear()
 {
     if( running() ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Can't close project while batch execution is active" );
-        return( FALSE );
+        return( false );
     } else if( _project && _project->isDirty() ) {
         return( optionToSave() );
     }
-    return( TRUE );
+    return( true );
 }
 
 void VpeMain::clearProject()
 {
-    setUpdates( FALSE );
+    setUpdates( false );
     setStatus( "Clearing project..." );
     delete _project;
     _project = NULL;
-    _neverSaved = FALSE;
+    _neverSaved = false;
     _activeVComp = NULL;
     _compViews.deleteContents();
     deleteMsglog();
@@ -1384,7 +1384,7 @@ void VpeMain::toolBar( WMenuItem* )
 {
     if( _toolBarActive ) {
         delete clearToolBar();
-        _toolBarActive = FALSE;
+        _toolBarActive = false;
     } else {
         buildMenuBar();
     }
@@ -1443,15 +1443,15 @@ bool VpeMain::createDirectory( const WFileName& f )
     d.absoluteTo( _project->filename() );
     if( !d.dirExists() ) {
         if( !confirm( "Do you want to create directory for '%s'?", f ) ) {
-            return( FALSE );
+            return( false );
         }
         if( !d.makeDir() ) {
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                         "Unable to create directory for '%s'", (const char *)f );
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 #if 0
@@ -1477,7 +1477,7 @@ char* VpeMain::getFilters()
     maxLen += 14 + 1;
     filtList.add( new WString( "*.*" ) );
     maxLen += 3 + 1;
-    char* filts = new char[ maxLen + 1 ];
+    char* filts = new char[maxLen + 1];
     int off = 0;
     icount = filtList.count();
     for( i=0; i<icount; i++ ) {
@@ -1503,7 +1503,7 @@ WStyle VpeMain::vCompStyle()
 bool VpeMain::addComponent( WMenuItem* )
 {
 static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
-    bool ok = FALSE;
+    bool ok = false;
     HelpStack.push( HLP_ADDING_A_TARGET );
     VCompDialog dlg( this, "New Target", _project, cFilter );
     WFileName fn( _project->filename().fName() );
@@ -1521,7 +1521,7 @@ static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.e
                 VComponent* vcomp = new VComponent( this, mcomp, vCompStyle() );
                 _compViews.add( vcomp );
                 mcomp->updateItemList();
-                ok = TRUE;
+                ok = true;
             }
         }
         stopWait();
@@ -1538,14 +1538,14 @@ void VpeMain::vAddComponent( WMenuItem* )
 
 bool VpeMain::attachTgtFile( WFileName& fn )
 {
-    bool ok = FALSE;
+    bool ok = false;
     MComponent* mcomp = _project->attachComponent( fn );
     if( !mcomp ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Unable to read file '%s'", (const char*)fn );
     } else {
         VComponent* vcomp = new VComponent( this, mcomp, vCompStyle() );
         _compViews.add( vcomp );
-        ok = TRUE;
+        ok = true;
     }
     return( ok );
 }
@@ -1643,12 +1643,12 @@ bool VpeMain::kAddItem( WKeyCode  )
 {
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     if( _activeVComp ) {
         HelpStack.push( HLP_ADDING_SOURCE_FILES );
         _activeVComp->setFocus();
         _activeVComp->mAddItem();
-        ret = TRUE;
+        ret = true;
         HelpStack.pop();
     }
     return( ret );
@@ -1660,14 +1660,14 @@ bool VpeMain::kDynAccel( WKeyCode kc ) {
     MAction     *action;
     int         i;
 
-    done = FALSE;
+    done = false;
     // search project level accelerators
     int icount = _config->actions().count();
     for( i=0; i<icount; i++ ) {
         action = (MAction*)_config->actions()[i];
         if( action->menuAccel() == kc ) {
             doAction( action );
-            done = TRUE;
+            done = true;
             break;
         }
     }
@@ -1684,7 +1684,7 @@ bool VpeMain::kDynAccel( WKeyCode kc ) {
                     action = (MAction*)actlist[i];
                     if( action->menuAccel() == kc ) {
                         _activeVComp->doAction( _activeVComp->target(), action );
-                        done = TRUE;
+                        done = true;
                         break;
                     }
                 }
@@ -1701,14 +1701,14 @@ bool VpeMain::kDynAccel( WKeyCode kc ) {
                     action = (MAction*)actlist[i];
                     if( action->menuAccel() == kc ) {
                         _activeVComp->doAction( _activeVComp->selectedItem(), action );
-                        done = TRUE;
+                        done = true;
                         break;
                     }
                 }
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void VpeMain::mRemoveItem( WMenuItem* )
@@ -1720,17 +1720,17 @@ bool VpeMain::kRemoveItem( WKeyCode )
 {
     bool        ret;
 
-    ret = FALSE;
-    _refuseFileLists = TRUE;
+    ret = false;
+    _refuseFileLists = true;
     HelpStack.push( HLP_REMOVING_A_SOURCE_FILE );
     if( _activeVComp ) {
         _activeVComp->setFocus();
         if( _activeVComp->selectedItem() ) {
             _activeVComp->mRemoveItem();
-            ret = TRUE;
+            ret = true;
         }
     }
-    _refuseFileLists = FALSE;
+    _refuseFileLists = false;
     HelpStack.pop();
     return( ret );
 }
@@ -1738,19 +1738,19 @@ bool VpeMain::kRemoveItem( WKeyCode )
 void VpeMain::mRenameItem( WMenuItem* )
 {
     HelpStack.push( HLP_RENAMING_A_SOURCE_FILE );
-    _refuseFileLists = TRUE;
+    _refuseFileLists = true;
     _activeVComp->setFocus();
     _activeVComp->mRenameItem();
-    _refuseFileLists = FALSE;
+    _refuseFileLists = false;
     HelpStack.pop();
 }
 
 void VpeMain::mSetupItem( WMenuItem* )
 {
-    _refuseFileLists = TRUE;
+    _refuseFileLists = true;
     _activeVComp->setFocus();
     _activeVComp->setupItem( _activeVComp->selectedItem() );
-    _refuseFileLists = FALSE;
+    _refuseFileLists = false;
 }
 
 void VpeMain::mSetupItem2( WMenuItem* item )
@@ -1773,10 +1773,10 @@ void VpeMain::mTouchItem( WMenuItem* )
 
 void VpeMain::mIncludedItems( WMenuItem* )
 {
-    _refuseFileLists = TRUE;
+    _refuseFileLists = true;
     _activeVComp->setFocus();
     _activeVComp->mIncludedItems();
-    _refuseFileLists = FALSE;
+    _refuseFileLists = false;
 }
 
 void VpeMain::mActionItem( WMenuItem* item )
@@ -1929,7 +1929,7 @@ void VpeMain::browseNotify( const char* msg )
 #if(0)
 WString* VpeMain::serverNotify( const char* msg )
 {
-    bool ok = TRUE;
+    bool ok = true;
     WStringList toks( msg );
     if( toks.stringAt(0) == "Editor" ) {
         executeCommand( toks.cString( 1 ), EXECUTE_EDITOR, "AutoEdit" );
@@ -1973,7 +1973,7 @@ void VpeMain::runBatch( const WString& cmd )
             }
         }
         if( !_msgLog ) return;
-        WFileName dir; dir.getCWD( FALSE );
+        WFileName dir; dir.getCWD( false );
         _msgLog->setDirectory( dir );
         _msgLog->runCommand( cmd );
     }
@@ -1996,8 +1996,8 @@ void VpeMain::executeBrowse( const WString& cmd )
     const char *fn = x.cString(1);
 
     // don't allow browsing if no browseable files
-    bool browseable = FALSE;
-    bool exists = FALSE;
+    bool browseable = false;
+    bool exists = false;
     if( _activeVComp ) {
         MComponent* comp = _activeVComp->component();
         WVList itemlist;
@@ -2006,7 +2006,7 @@ void VpeMain::executeBrowse( const WString& cmd )
         for( int i=0; i<icount; i++ ) {
             MItem* m = (MItem*)itemlist[i];
             if( m->rule()->browseSwitch().size() != 0 ) {
-                browseable = TRUE;
+                browseable = true;
             }
         }
         exists = comp->tryBrowse();
@@ -2041,7 +2041,7 @@ SayReturn VpeMain::say( SayStyle style, SayCode code, const char* text )
 {
     static MsgLevel styles[] = { MsgInfo, MsgWarning, MsgError };
     static MsgButtons codes[] = { MsgOk, MsgOkCancel, MsgYesNoCancel };
-    switch( WMessageDialog::message( this, styles[ style ], codes[ code ], text ) ) {
+    switch( WMessageDialog::message( this, styles[style], codes[code], text ) ) {
         case MsgRetNo:
             return( RetNo );
         case MsgRetOk:
@@ -2057,16 +2057,16 @@ bool VpeMain::checkProject()
 {
     if( !_project ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "No active project" );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool VpeMain::contextHelp( bool is_act_wnd ) {
     if( !is_act_wnd && !HelpStack.isempty() ) {
         _help->sysHelpId( (int)HelpStack.getTop() );
     }
-    return( TRUE );
+    return( true );
 }
 
 void VpeMain::mCheckin( WMenuItem *) {
@@ -2082,7 +2082,7 @@ void VpeMain::mCheckin( WMenuItem *) {
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                 "Checkin was not completed" );
             } else if( _autoRefresh && _project != NULL ) {
-                _project->refresh( FALSE );
+                _project->refresh( false );
             }
         }
     }
@@ -2107,7 +2107,7 @@ void VpeMain::mCheckout( WMenuItem *) {
                     WMessageDialog::messagef( this, MsgError, MsgOk,
                                 _viperError, "Checkout was not completed" );
                 } else if( _autoRefresh && _project != NULL ) {
-                    _project->refresh( FALSE );
+                    _project->refresh( false );
                 }
             }
         }
@@ -2154,7 +2154,7 @@ void VpeMain::mRcsShell( WMenuItem *) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                 "Unable to run the Source Control Shell" );
     } else if( _autoRefresh && _project != NULL ) {
-        _project->refresh( FALSE );
+        _project->refresh( false );
     }
 }
 

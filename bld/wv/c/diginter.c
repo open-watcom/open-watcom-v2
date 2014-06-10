@@ -40,7 +40,7 @@
 
 extern unsigned         RemoteMachineData( address addr, unsigned, unsigned, const void *, unsigned, void * );
 
-void *DIGCLIENT DIGCliAlloc( unsigned amount )
+void *DIGCLIENT DIGCliAlloc( size_t amount )
 {
     void        *p;
 
@@ -48,7 +48,7 @@ void *DIGCLIENT DIGCliAlloc( unsigned amount )
     return( p );
 }
 
-void *DIGCLIENT DIGCliRealloc( void *p, unsigned amount )
+void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
 {
     _Realloc( p, amount );
     return( p );

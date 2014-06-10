@@ -37,8 +37,9 @@ typedef struct {
     uint_16     seg;
     uint_8      addr_size;
     uint_8      seg_size;
-    char        is_start;
-}dr_arange_data;
-typedef
-    int         (*DRARNGWLK)( void *, dr_arange_data * );
-extern void DRWalkARange( DRARNGWLK, void * );
+    bool        is_start;
+} dr_arange_data;
+
+typedef bool    (*DRARNGWLK)( void *, dr_arange_data * );
+
+extern void     DRWalkARange( DRARNGWLK, void * );

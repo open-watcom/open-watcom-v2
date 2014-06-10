@@ -165,61 +165,6 @@ enum {
     S_WARN_OUTPUTRESET          = 40404
 };
 
-/* GUIDs */
-EXTERN_C const IID      IID_IPropertySetter;
-EXTERN_C const IID      IID_IDxtCompositor;
-EXTERN_C const IID      IID_IDxtAlphaSetter;
-EXTERN_C const IID      IID_IDxtJpeg;
-EXTERN_C const IID      IID_IDxtKey;
-EXTERN_C const IID      IID_IMediaLocator;
-EXTERN_C const IID      IID_IMediaDet;
-EXTERN_C const IID      IID_IGrfCache;
-EXTERN_C const IID      IID_IRenderEngine;
-EXTERN_C const IID      IID_IRenderEngine2;
-EXTERN_C const IID      IID_IFindCompressorCB;
-EXTERN_C const IID      IID_ISmartRenderEngine;
-EXTERN_C const IID      IID_IAMTimelineObj;
-EXTERN_C const IID      IID_IAMTimelineEffectable;
-EXTERN_C const IID      IID_IAMTimelineEffect;
-EXTERN_C const IID      IID_IAMTimelineTransable;
-EXTERN_C const IID      IID_IAMTimelineSplittable;
-EXTERN_C const IID      IID_IAMTimelineTrans;
-EXTERN_C const IID      IID_IAMTimelineSrc;
-EXTERN_C const IID      IID_IAMTimelineTrack;
-EXTERN_C const IID      IID_IAMTimelineVirtualTrack;
-EXTERN_C const IID      IID_IAMTimelineComp;
-EXTERN_C const IID      IID_IAMTimelineGroup;
-EXTERN_C const IID      IID_IAMTimeline;
-EXTERN_C const IID      IID_IXml2Dex;
-EXTERN_C const IID      IID_IAMErrorLog;
-EXTERN_C const IID      IID_IAMSetErrorLog;
-EXTERN_C const IID      IID_ISampleGrabberCB;
-EXTERN_C const IID      IID_ISampleGrabber;
-EXTERN_C const IID      LIBID_DexterLib;
-EXTERN_C const IID      IID_IResize;
-EXTERN_C const CLSID    CLSID_AMTimeline;
-EXTERN_C const CLSID    CLSID_AMTimelineObj;
-EXTERN_C const CLSID    CLSID_AMTimelineSrc;
-EXTERN_C const CLSID    CLSID_AMTimelineTrack;
-EXTERN_C const CLSID    CLSID_AMTimelineComp;
-EXTERN_C const CLSID    CLSID_AMTimelineGroup;
-EXTERN_C const CLSID    CLSID_AMTimelineTrans;
-EXTERN_C const CLSID    CLSID_AMTimelineEffect;
-EXTERN_C const CLSID    CLSID_RenderEngine;
-EXTERN_C const CLSID    CLSID_SmartRenderEngine;
-EXTERN_C const CLSID    CLSID_AudMixer;
-EXTERN_C const CLSID    CLSID_Xml2Dex;
-EXTERN_C const CLSID    CLSID_MediaLocator;
-EXTERN_C const CLSID    CLSID_PropertySetter;
-EXTERN_C const CLSID    CLSID_MediaDet;
-EXTERN_C const CLSID    CLSID_SampleGrabber;
-EXTERN_C const CLSID    CLSID_NullRenderer;
-EXTERN_C const CLSID    CLSID_DxtCompositor;
-EXTERN_C const CLSID    CLSID_DxtAlphaSetter;
-EXTERN_C const CLSID    CLSID_DxtJpeg;
-EXTERN_C const CLSID    CLSID_ColorSource;
-EXTERN_C const CLSID    CLSID_DxtKey;
-
 /* IPropertySetter interface */
 #undef INTERFACE
 #define INTERFACE   IPropertySetter
@@ -1815,5 +1760,60 @@ DECLARE_INTERFACE_( IResize, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IPropertySetter;
+EXTERN_C const IID      __cdecl IID_IDxtCompositor;
+EXTERN_C const IID      __cdecl IID_IDxtAlphaSetter;
+EXTERN_C const IID      __cdecl IID_IDxtJpeg;
+EXTERN_C const IID      __cdecl IID_IDxtKey;
+EXTERN_C const IID      __cdecl IID_IMediaLocator;
+EXTERN_C const IID      __cdecl IID_IMediaDet;
+EXTERN_C const IID      __cdecl IID_IGrfCache;
+EXTERN_C const IID      __cdecl IID_IRenderEngine;
+EXTERN_C const IID      __cdecl IID_IRenderEngine2;
+EXTERN_C const IID      __cdecl IID_IFindCompressorCB;
+EXTERN_C const IID      __cdecl IID_ISmartRenderEngine;
+EXTERN_C const IID      __cdecl IID_IAMTimelineObj;
+EXTERN_C const IID      __cdecl IID_IAMTimelineEffectable;
+EXTERN_C const IID      __cdecl IID_IAMTimelineEffect;
+EXTERN_C const IID      __cdecl IID_IAMTimelineTransable;
+EXTERN_C const IID      __cdecl IID_IAMTimelineSplittable;
+EXTERN_C const IID      __cdecl IID_IAMTimelineTrans;
+EXTERN_C const IID      __cdecl IID_IAMTimelineSrc;
+EXTERN_C const IID      __cdecl IID_IAMTimelineTrack;
+EXTERN_C const IID      __cdecl IID_IAMTimelineVirtualTrack;
+EXTERN_C const IID      __cdecl IID_IAMTimelineComp;
+EXTERN_C const IID      __cdecl IID_IAMTimelineGroup;
+EXTERN_C const IID      __cdecl IID_IAMTimeline;
+EXTERN_C const IID      __cdecl IID_IXml2Dex;
+EXTERN_C const IID      __cdecl IID_IAMErrorLog;
+EXTERN_C const IID      __cdecl IID_IAMSetErrorLog;
+EXTERN_C const IID      __cdecl IID_ISampleGrabberCB;
+EXTERN_C const IID      __cdecl IID_ISampleGrabber;
+EXTERN_C const IID      __cdecl LIBID_DexterLib;
+EXTERN_C const IID      __cdecl IID_IResize;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimeline;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineObj;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineSrc;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineTrack;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineComp;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineGroup;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineTrans;
+EXTERN_C const CLSID    __cdecl CLSID_AMTimelineEffect;
+EXTERN_C const CLSID    __cdecl CLSID_RenderEngine;
+EXTERN_C const CLSID    __cdecl CLSID_SmartRenderEngine;
+EXTERN_C const CLSID    __cdecl CLSID_AudMixer;
+EXTERN_C const CLSID    __cdecl CLSID_Xml2Dex;
+EXTERN_C const CLSID    __cdecl CLSID_MediaLocator;
+EXTERN_C const CLSID    __cdecl CLSID_PropertySetter;
+EXTERN_C const CLSID    __cdecl CLSID_MediaDet;
+EXTERN_C const CLSID    __cdecl CLSID_SampleGrabber;
+EXTERN_C const CLSID    __cdecl CLSID_NullRenderer;
+EXTERN_C const CLSID    __cdecl CLSID_DxtCompositor;
+EXTERN_C const CLSID    __cdecl CLSID_DxtAlphaSetter;
+EXTERN_C const CLSID    __cdecl CLSID_DxtJpeg;
+EXTERN_C const CLSID    __cdecl CLSID_ColorSource;
+EXTERN_C const CLSID    __cdecl CLSID_DxtKey;
 
 #endif /* __qedit_h__ */

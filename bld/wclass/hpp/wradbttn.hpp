@@ -52,7 +52,7 @@ WCLASS WRadioButton : public WBoolSwitch {
         WEXPORT ~WRadioButton();
 
     protected:
-        virtual gui_control_class controlClass() { return GUI_RADIO_BUTTON; }
+        virtual gui_control_class controlClass() { return( GUI_RADIO_BUTTON ); }
 };
 
 #endif

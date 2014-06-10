@@ -320,9 +320,9 @@ typedef LPOPENCARDNAMEA     LPOPENCARDNAME;
 #define LPOPENCARDNAME_W    LPOPENCARDNAMEW
 
 /* Global variables in WINSCARD.DLL */
-WINSCARDDATA extern const SCARD_IO_REQUEST  g_rgSCardT0Pci;
-WINSCARDDATA extern const SCARD_IO_REQUEST  g_rgSCardT1Pci;
-WINSCARDDATA extern const SCARD_IO_REQUEST  g_rgSCardRawPci;
+WINSCARDDATA extern const SCARD_IO_REQUEST  __cdecl g_rgSCardT0Pci;
+WINSCARDDATA extern const SCARD_IO_REQUEST  __cdecl g_rgSCardT1Pci;
+WINSCARDDATA extern const SCARD_IO_REQUEST  __cdecl g_rgSCardRawPci;
 
 /* Functions in WINSCARD.DLL */
 WINSCARDAPI LONG WINAPI     SCardAddReaderToGroupA( SCARDCONTEXT, LPCSTR, LPCSTR );

@@ -180,7 +180,7 @@ VComponent* WEXPORT VComponent::createSelf( WObjectFile& p )
         component = new MComponent( parent->project(),
             _config->nilRule(), "", fn );
     }
-    return new VComponent( parent, r, component, style );
+    return( new VComponent( parent, r, component, style ) );
 }
 
 void WEXPORT VComponent::readSelf( WObjectFile& p )
@@ -215,7 +215,7 @@ bool VComponent::keyDown( WKeyCode kc, WKeyState ks )
     if( !WMdiChild::keyDown( kc, ks ) ) {
         return( _vItems->keyDown( kc, ks ) );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -294,7 +294,7 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
                                       "'%s' must be a legal filename",
                                       (const char*)*item );
         }
-        return FALSE;
+        return( false );
     }
     WFileName fullName( *item ); fullName.absoluteTo( _component->filename() );
     WFileName fullTarget; target()->absName( fullTarget );
@@ -304,7 +304,7 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
                                       "'%s' cannot include itself",
                                       (const char*)*item );
         }
-        return FALSE;
+        return( false );
     }
     MComponent* comp = NULL;
     MItem* m = _parent->project()->findSameResult( item, &comp );
@@ -314,16 +314,16 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
                                 "Conflicting file '%s' found in target '%s'",
                                 (const char*)*m, (const char*)*comp->target() );
         }
-        return FALSE;
+        return( false );
     }
-    return TRUE;
+    return( true );
 }
 
 bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
 {
     if( fn.size() > 0 ) {
         WFileName cwd;
-        _component->filename().path( cwd, TRUE );
+        _component->filename().path( cwd, true );
         int len = cwd.size();
         if( len > 0 ) {
             if( strnicmp( cwd, fn, len ) == 0 ) {
@@ -339,14 +339,14 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
             _component->newItem( item );
             _vItems->selectSameTag( item );
             if( mark ) {
-                item->setVisited( TRUE );
+                item->setVisited( true );
                 item->setOwner( owner );
             }
-            return TRUE;
+            return( true );
         }
         delete item;    //added to fix memory leak!
     }
-    return FALSE;
+    return( false );
 }
 
 void VComponent::mAddItem( WMenuItem* )
@@ -359,11 +359,12 @@ void VComponent::mAddItem( WMenuItem* )
     int         ret;
 #else
     WInputDialog add( this, h );
-    add.setBrowse( _config->fileFilters(), TRUE );
+    add.setBrowse( _config->fileFilters(), true );
 #endif
 
-    list_was_empty = FALSE;
-    if( _component->items().count() == 0 ) list_was_empty = TRUE;
+    list_was_empty = false;
+    if( _component->items().count() == 0 )
+        list_was_empty = true;
     for( ;; ) {
 #ifdef __OS2__
         rc = add.getInput( inp, "Enter filename(s) separated by spaces:" );
@@ -377,7 +378,7 @@ void VComponent::mAddItem( WMenuItem* )
         WStringList names( inp );
         startWait();
         //someday change this to use addFromFilename() in mcompon.cpp
-        bool done = FALSE;
+        bool done = false;
         _component->setBatchMode();
         for( ; !done && names.count() > 0; ) {
             WFileName search( names.cStringAt( 0 ) );
@@ -390,7 +391,7 @@ void VComponent::mAddItem( WMenuItem* )
                     WMessageDialog::messagef( this, MsgError, MsgOk,
                         _viperError, "no files found for '%s'",
                         (const char*)search );
-                    done = TRUE;
+                    done = true;
                 } else {
                     for(;;) {
                         struct dirent* ent = readdir( dir );
@@ -411,7 +412,7 @@ void VComponent::mAddItem( WMenuItem* )
                             newfile.setDrive( search.drive() );
                             newfile.setDir( search.dir() );
                             if( !newItem( newfile ) ) {
-                                done = TRUE;
+                                done = true;
                                 break;
                             }
                         }
@@ -423,7 +424,7 @@ void VComponent::mAddItem( WMenuItem* )
             }
             names.removeAt( 0 );
         }
-        _component->setBatchMode( FALSE );
+        _component->setBatchMode( false );
         stopWait();
         if( names.count() == 0 ) break;
         inp = names.cString();
@@ -437,7 +438,7 @@ void VComponent::mRemoveItem( WMenuItem* )
 {
     MItem* m = selectedItem();
     if( m ) {
-        bool ok = TRUE;
+        bool ok = true;
         if( m->isMask() ) {
             ok = _parent->confirm( "Remove all '%s' files?", m->ext() );
         } else {
@@ -455,9 +456,9 @@ void VComponent::mRenameItem( WMenuItem* )
     MItem* m = selectedItem();
     if( m ) {
         WInputDialog inp( this, "Rename file" );
-        inp.setBrowse( _config->fileFilters(), FALSE );
+        inp.setBrowse( _config->fileFilters(), false );
         WFileName fn( *m );
-        bool done = FALSE;
+        bool done = false;
         for( ; !done ; ) {
             if( !inp.getInput( fn, "Enter new filename" ) ) break;
 //            fn.toLower();
@@ -466,9 +467,9 @@ void VComponent::mRenameItem( WMenuItem* )
                               _component->mask() );
             if( rule ) {
                 MItem* item = new MItem( fn, _component, rule );
-                if( okToInclude( item, TRUE, m ) ) {
+                if( okToInclude( item, true, m ) ) {
                     _component->renameItem( m, fn, rule );
-                    done = TRUE;
+                    done = true;
                 }
                 delete item;
             }
@@ -567,7 +568,7 @@ static rtn_status captureName( time_t, char* name, void* data )
     if( rule ) {
         incList->add( new MItem( fn, comp, rule ) );
     }
-    return ADR_CONTINUE;
+    return( ADR_CONTINUE );
 }
 
 void VComponent::mIncludedItems( WMenuItem* )
@@ -605,7 +606,7 @@ void VComponent::mIncludedItems( WMenuItem* )
             WPickDialog dlg( incList, (cbs)&MItem::name, this, title );
             int index = dlg.pickOne( (const char *)*m );
             if( index >= 0 ) {
-                MItem* mi = (MItem*)incList[ index ];
+                MItem* mi = (MItem*)incList[index];
                 doAction( mi, NULL );
             }
         }
@@ -619,15 +620,15 @@ bool WEXPORT VComponent::gettingFocus( WWindow* )
 #if 0   //this code won't work because of a bug in GUI
     if( _vItems ) {
         _vItems->setFocus();
-        return TRUE;
+        return( true );
     }
 #endif
-    return FALSE;
+    return( false );
 }
 
 bool WEXPORT VComponent::losingFocus( WWindow* )
 {
-    return FALSE;
+    return( false );
 }
 
 void WEXPORT VComponent::updateView()
@@ -824,7 +825,7 @@ void WEXPORT VComponent::doAction( MItem* item, MAction* action )
 
 MItem* WEXPORT VComponent::selectedItem()
 {
-    return (MItem*)_vItems->selectedTagPtr();
+    return( (MItem*)_vItems->selectedTagPtr() );
 }
 
 void WEXPORT VComponent::removeItem( WFileName &fn )
@@ -841,7 +842,7 @@ void VComponent::beginFileList( unsigned owner ) {
     cnt = items.count();
     for( i=0; i < cnt; i++ ) {
         cur = (MItem *)items[i];
-        if( cur->owner() == owner ) cur->setVisited( FALSE );
+        if( cur->owner() == owner ) cur->setVisited( false );
     }
 }
 
@@ -864,11 +865,11 @@ void VComponent::markFile( WFileName &file, unsigned owner ) {
         if( file == fn ) break;
     }
     if( cur != NULL ) {
-        cur->setVisited( TRUE );
+        cur->setVisited( true );
         cur->setOwner( owner );
     } else{
         fn = file;
-        newItem( file, TRUE, TRUE, owner );
+        newItem( file, true, true, owner );
     }
 }
 

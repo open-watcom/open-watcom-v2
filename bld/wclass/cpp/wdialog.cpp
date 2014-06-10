@@ -124,17 +124,17 @@ bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
     switch( msg ) {
     case GUI_INIT_DIALOG:
         initialize();
-        return( TRUE );
+        return( true );
     case GUI_DIALOG_ESCAPE:
         cancelButton( NULL );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY:
         _accelKeys.deleteContents();
         while( children().count() > 0 ) {
-            delete children()[ children().count()-1 ];
+            delete children()[children().count() - 1];
         }
         setHandle( NULL );
-        return( TRUE );
+        return( true );
     }
     return( WWindow::processMsg( msg, parm ) );
 }
@@ -236,11 +236,11 @@ bool WEXPORT WDialog::keyDown( WKeyCode kc, WKeyState ks ) {
 
     if( kc == WKeyEnter ) {
         okButton( NULL );
-        return( TRUE );
+        return( true );
     } else if( kc == WKeyEscape ) {
         cancelButton( NULL );
-        return( TRUE );
+        return( true );
     }
     WWindow::keyDown( kc, ks );
-    return( TRUE ); // so we don't pass key messages to parents of dialogs
+    return( true ); // so we don't pass key messages to parents of dialogs
 }

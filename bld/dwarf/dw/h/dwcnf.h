@@ -76,7 +76,7 @@ typedef int_32          dw_linenum_delta;
     dw_column is a column number.  It must be an unsigned integer type.
 */
 typedef uint_16         dw_column;
-typedef int             dw_column_delta;
+typedef int_16          dw_column_delta;
 
 
 /*

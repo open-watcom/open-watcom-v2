@@ -33,11 +33,7 @@
 #include <ctype.h>
 #include "wresall.h"
 #include "rcstr.h"
-#ifdef INSIDE_WLINK
-#include "wlrcmem.h"
-#else
-#include "rcmem.h"
-#endif
+#include "rcrtns.h"
 
 static int RemoveRedundantStrings( void ** strlist, unsigned int num,
                     int (* compare) (const void **, const void **) )
@@ -200,7 +196,7 @@ static void ConstructStringBlock( StringBlock * str )
 #endif
 
     /* allocate the block for the strings */
-    str->StringBlock = RcMemMalloc( str->StringBlockSize );
+    str->StringBlock = RCALLOC( str->StringBlockSize );
 
     /* copy the strings into the block */
     nextstring = str->StringBlock;
@@ -238,7 +234,7 @@ extern void StringBlockBuild( StringBlock * str, WResDir dir, int use_unicode )
         /* set the initial list_len to be the max possible */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RcMemMalloc( list_len * sizeof(void *) );
+        str->StringList = RCALLOC( list_len * sizeof(void *) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList,
@@ -246,12 +242,12 @@ extern void StringBlockBuild( StringBlock * str, WResDir dir, int use_unicode )
         str->StringListLen = list_len;
 
         if( list_len == 0 ) {
-            RcMemFree( str->StringList );
+            RCFREE( str->StringList );
             str->StringList = NULL;
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            new_list = RcMemRealloc( str->StringList, list_len * sizeof(void *) );
+            new_list = RCREALLOC( str->StringList, list_len * sizeof(void *) );
             if( new_list != NULL ) {
                 str->StringList = new_list;
             }

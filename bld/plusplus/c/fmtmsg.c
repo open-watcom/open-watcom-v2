@@ -242,7 +242,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
                     retn_symbol = sym;
                 }
             }   break;
-            case 'C':   /* template specialisation */
+            case 'C':   /* template specialization */
             {   TEMPLATE_SPECIALIZATION * const tspec =
                     va_arg( arg, TEMPLATE_SPECIALIZATION * );
 

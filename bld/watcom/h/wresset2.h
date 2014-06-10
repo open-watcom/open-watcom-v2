@@ -33,15 +33,13 @@
 #define WRESSET2_INCLUDED
 
 #ifdef WIN_GUI
-  #include <windows.h>
+# include <windows.h>
+#elif defined( __WATCOMC__ )
+# ifndef _COMDEF_H_INCLUDED
+#  include <_comdef.h>
+# endif
 #else
-  #define LoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString2( Dir, hInstance, idResource, lpszBuffer, nBufferMax )
-  #define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
-  #ifndef _WCI86FAR
-    #define _WCI86FAR   // Is there a cleaner way?
-  #endif
+# define _WCI86FAR
 #endif
 
 typedef struct handle_info {
@@ -52,6 +50,8 @@ typedef struct handle_info {
 } HANDLE_INFO, *PHANDLE_INFO;
 
 #ifndef WIN_GUI
+#define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
+            WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
 typedef PHANDLE_INFO HINSTANCE;
 typedef unsigned int UINT;
 typedef char _WCI86FAR *LPSTR;
@@ -61,34 +61,19 @@ typedef char _WCI86FAR *LPSTR;
 extern "C" {
 #endif
 
-struct WResDirHead;
-
 extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename );
 extern int FindResources( PHANDLE_INFO hInstance );
 extern int InitResources( PHANDLE_INFO hInstance );
-extern int InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
 extern int WResLoadString( PHANDLE_INFO hInstance,
                            UINT idResource,
                            LPSTR lpszBuffer,
                            int nBufferMax );
-extern int WResLoadString2( struct WResDirHead *,
-                            PHANDLE_INFO hInstance,
-                            UINT idResource,
-                            LPSTR lpszBuffer,
-                            int nBufferMax );
 extern int WResLoadResource( PHANDLE_INFO       hInstance,
                              UINT               idType,
                              UINT               idResource,
                              LPSTR              *lpszBuffer,
                              int                *bufferSize );
-extern int WResLoadResource2( struct WResDirHead *,
-                              PHANDLE_INFO      hInstance,
-                              UINT              idType,
-                              UINT              idResource,
-                              LPSTR             *lpszBuffer,
-                              int               *bufferSize );
 extern int CloseResFile( PHANDLE_INFO hInstance );
-extern int CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );
 
 #if defined( __cplusplus )
 }

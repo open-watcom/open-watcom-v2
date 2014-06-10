@@ -36,7 +36,7 @@
         Stuff for source line cues
 */
 
-walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
                     void *d )
 {
@@ -54,17 +54,17 @@ walk_result     DIPENTRY DIPImpWalkFileList( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle  DIPENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 {
     //TODO:
     /*
         Return the module the source cue comes from.
      */
-     return( NO_MOD );
+     return( IMH_NOMOD );
 }
 
-unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
+unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, unsigned max )
 {
     /*
@@ -81,22 +81,22 @@ unsigned        DIPENTRY DIPImpCueFile( imp_image_handle *ii,
     return( 0 );
 }
 
-cue_file_id     DIPENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
     /*
-        Given a imp_cue_handle, return a cue_file_id. The cue_file_id is
+        Given a imp_cue_handle, return a cue_fileid. The cue_fileid is
         an unsigned_32 magic cookie as far as the client is concerned,
         except that the value zero is reserved to indicate "no file".
-        The client might pass the cue_file_id back to the LineCue
+        The client might pass the cue_fileid back to the LineCue
         function, or use it as a quick test to see if the source file
         has changed by comparing it against a previously returned value.
     */
     return( 0 );
 }
 
-dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
     //TODO:
@@ -119,7 +119,7 @@ dip_status      DIPENTRY DIPImpCueAdjust( imp_image_handle *ii,
     return( DS_ERR|DS_FAIL );
 }
 
-unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
@@ -131,7 +131,7 @@ unsigned long   DIPENTRY DIPImpCueLine( imp_image_handle *ii,
     return( 0 );
 }
 
-unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 {
     //TODO:
     /*
@@ -142,7 +142,7 @@ unsigned        DIPENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *
     return( 0 );
 }
 
-address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii,
+address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
@@ -154,8 +154,8 @@ address         DIPENTRY DIPImpCueAddr( imp_image_handle *ii,
     return( NilAddr );
 }
 
-search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
-                imp_mod_handle im, cue_file_id file, unsigned long line,
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
+                imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
     //TODO:
@@ -174,7 +174,7 @@ search_result   DIPENTRY DIPImpLineCue( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
     //TODO:
@@ -187,7 +187,7 @@ search_result   DIPENTRY DIPImpAddrCue( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-int DIPENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     //TODO:

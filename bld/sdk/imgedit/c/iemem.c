@@ -30,20 +30,7 @@
 
 
 #include "imgedit.h"
-#include "wrdll.h"
 #include "iemem.h"
-
-/*
- * MemStart
- */
-void MemStart( void )
-{
-#ifdef _M_I86
-    __win_alloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-    __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
-#endif
-
-} /* MemStart */
 
 /*
  * MemAlloc

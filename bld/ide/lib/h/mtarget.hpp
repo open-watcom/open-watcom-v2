@@ -43,13 +43,13 @@ WCLASS MTarget : public WObject
         MTarget() {}
         MTarget( WTokenFile& fil, WString& tok, WString& target_os );
         ~MTarget() {}
-        int compare( const WObject* o ) const { return _name.compare( &((MTarget*)o)->_name ); }
+        int compare( const WObject* o ) const { return( _name.compare( &((MTarget*)o)->_name ) ); }
         void name( WString& n );
-        const WString& help() { return _help; }
-        WString& mask() { return _mask; }
-        WFileName& tgtMask() { return _tgtMask; }
-        WString& targetOS() { return _targetOS; }
-        WString& imageName() { return _name; }
+        const WString& help() { return( _help ); }
+        WString& mask() { return( _mask ); }
+        WFileName& tgtMask() { return( _tgtMask ); }
+        WString& targetOS() { return( _targetOS ); }
+        WString& imageName() { return( _name ); }
     private:
         WFileName       _tgtMask;
         WString         _name;

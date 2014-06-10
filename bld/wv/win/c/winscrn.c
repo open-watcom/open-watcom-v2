@@ -298,7 +298,7 @@ static void GetDispConfig( void )
  *                                                                           *
 \*****************************************************************************/
 
-void *uifaralloc( int size )
+void *uifaralloc( size_t size )
 {
     return( ExtraAlloc( size ) );
 }

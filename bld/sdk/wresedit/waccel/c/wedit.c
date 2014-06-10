@@ -40,7 +40,6 @@
 #include "wmain.h"
 #include "wmsg.h"
 #include "wstat.h"
-#include "wmem.h"
 #include "wnewitem.h"
 #include "wdel.h"
 #include "wvk2str.h"
@@ -49,6 +48,7 @@
 #include "wsetedit.h"
 #include "wclip.h"
 #include "sys_rc.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "jdlg.h"
 
@@ -70,16 +70,16 @@ WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WInitEditWindow( WAccelEditInfo * );
+static bool WInitEditWindow( WAccelEditInfo * );
 static void WExpandEditWindowItem( HWND, int, RECT * );
 
-static Bool WSetEditWindowKey( HWND, uint_16, uint_16 );
-static Bool WSetEditWindowID( HWND, char *, uint_16 );
-static Bool WSetEditWindowFlags( HWND, uint_16 );
+static bool WSetEditWindowKey( HWND, uint_16, uint_16 );
+static bool WSetEditWindowID( HWND, char *, uint_16 );
+static bool WSetEditWindowFlags( HWND, uint_16 );
 
-static Bool WGetEditWindowKey( HWND, uint_16 *, uint_16 *, Bool * );
-static Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id, WRHashTable *symbol_table, Bool combo_change );
-static Bool WGetEditWindowFlags( HWND, uint_16 * );
+static bool WGetEditWindowKey( HWND, uint_16 *, uint_16 *, bool * );
+static bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id, WRHashTable *symbol_table, bool combo_change );
+static bool WGetEditWindowFlags( HWND, uint_16 * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -116,7 +116,7 @@ void WFiniEditWindows( void )
 }
 
 
-Bool WCreateAccelEditWindow( WAccelEditInfo *einfo, HINSTANCE inst )
+bool WCreateAccelEditWindow( WAccelEditInfo *einfo, HINSTANCE inst )
 {
     int tabstop;
 
@@ -137,7 +137,7 @@ Bool WCreateAccelEditWindow( WAccelEditInfo *einfo, HINSTANCE inst )
     return( WInitEditWindow( einfo ) );
 }
 
-Bool WResizeAccelEditWindow( WAccelEditInfo *einfo, RECT *prect )
+bool WResizeAccelEditWindow( WAccelEditInfo *einfo, RECT *prect )
 {
     int   width, height, ribbon_depth;
     HWND  win;
@@ -208,9 +208,9 @@ void WResetEditWindow( WAccelEditInfo *einfo )
     }
 }
 
-Bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
+bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
 {
-    Bool    ok;
+    bool    ok;
     uint_16 key, flags, id;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
@@ -247,11 +247,11 @@ Bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
     return( ok );
 }
 
-Bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
-                             Bool check_mod )
+bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
+                             bool check_mod )
 {
-    Bool        ok;
-    Bool        force_ascii;
+    bool        ok;
+    bool        force_ascii;
     uint_16     key, flags, id;
     char        *symbol;
 
@@ -316,23 +316,23 @@ Bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
             entry->entry.Id = id;
         }
         if( entry->symbol != NULL ) {
-            WMemFree( entry->symbol );
+            WRMemFree( entry->symbol );
         }
         entry->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WMemFree( symbol );
+            WRMemFree( symbol );
         }
     }
 
     return( ok );
 }
 
-static Bool WSetEditWindowKey( HWND dlg, uint_16 key, uint_16 flags )
+static bool WSetEditWindowKey( HWND dlg, uint_16 key, uint_16 flags )
 {
     char        *text;
     HWND        edit;
-    Bool        ok;
+    bool        ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -349,9 +349,9 @@ static Bool WSetEditWindowKey( HWND dlg, uint_16 key, uint_16 flags )
     return( ok );
 }
 
-Bool WGetEditWindowKey( HWND dlg, uint_16 *key, uint_16 *flags, Bool *force_ascii )
+bool WGetEditWindowKey( HWND dlg, uint_16 *key, uint_16 *flags, bool *force_ascii )
 {
-    Bool    ok;
+    bool    ok;
     char    *text;
 
     text = NULL;
@@ -368,15 +368,15 @@ Bool WGetEditWindowKey( HWND dlg, uint_16 *key, uint_16 *flags, Bool *force_asci
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-Bool WSetEditWindowID( HWND dlg, char *symbol, uint_16 id )
+bool WSetEditWindowID( HWND dlg, char *symbol, uint_16 id )
 {
-    Bool ok;
+    bool ok;
 
     ok = (dlg != (HWND)NULL);
 
@@ -395,8 +395,8 @@ Bool WSetEditWindowID( HWND dlg, char *symbol, uint_16 id )
     return( ok );
 }
 
-Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
-                       WRHashTable *symbol_table, Bool combo_change )
+bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
+                       WRHashTable *symbol_table, bool combo_change )
 {
     int_32      val;
     char        *ep;
@@ -448,7 +448,7 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WMemFree( *symbol );
+                WRMemFree( *symbol );
                 *symbol = NULL;
                 return( FALSE );
             }
@@ -456,16 +456,16 @@ Bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WMemFree( *symbol );
+        WRMemFree( *symbol );
         *symbol = NULL;
     }
 
     return( TRUE );
 }
 
-Bool WSetEditWindowFlags( HWND dlg, uint_16 flags )
+bool WSetEditWindowFlags( HWND dlg, uint_16 flags )
 {
-    Bool ok, is_virt;
+    bool ok, is_virt;
 
     ok = (dlg != (HWND)NULL);
 
@@ -502,9 +502,9 @@ Bool WSetEditWindowFlags( HWND dlg, uint_16 flags )
     return( ok );
 }
 
-Bool WGetEditWindowFlags( HWND dlg, uint_16 *flags )
+bool WGetEditWindowFlags( HWND dlg, uint_16 *flags )
 {
-    Bool ok, is_virt;
+    bool ok, is_virt;
 
     ok = (dlg != (HWND)NULL);
 
@@ -536,7 +536,7 @@ Bool WGetEditWindowFlags( HWND dlg, uint_16 *flags )
     return( ok );
 }
 
-Bool WSetEditWinResName( WAccelEditInfo *einfo )
+bool WSetEditWinResName( WAccelEditInfo *einfo )
 {
     if( einfo != NULL && einfo->edit_dlg != NULL && einfo->info->res_name != NULL ) {
         return( WSetEditWithWResID( GetDlgItem( einfo->edit_dlg, IDM_ACCEDRNAME ),
@@ -546,7 +546,7 @@ Bool WSetEditWinResName( WAccelEditInfo *einfo )
     return( TRUE );
 }
 
-void WSetVirtKey( HWND hDlg, Bool is_virt )
+void WSetVirtKey( HWND hDlg, bool is_virt )
 {
     CheckDlgButton( hDlg, IDM_ACCEDVIRT, is_virt );
     CheckDlgButton( hDlg, IDM_ACCEDASCII, !is_virt );
@@ -562,9 +562,9 @@ void WSetVirtKey( HWND hDlg, Bool is_virt )
     }
 }
 
-Bool WInitEditWindowListBox( WAccelEditInfo *einfo )
+bool WInitEditWindowListBox( WAccelEditInfo *einfo )
 {
-    Bool        ok;
+    bool        ok;
     HWND        lbox;
     WAccelEntry *entry;
 
@@ -585,10 +585,10 @@ Bool WInitEditWindowListBox( WAccelEditInfo *einfo )
     return( ok );
 }
 
-static Bool WInitEditWindow( WAccelEditInfo *einfo )
+static bool WInitEditWindow( WAccelEditInfo *einfo )
 {
     HWND    lbox;
-    Bool    ok;
+    bool    ok;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -615,12 +615,12 @@ static Bool WInitEditWindow( WAccelEditInfo *einfo )
     return( ok );
 }
 
-Bool WPasteAccelItem( WAccelEditInfo *einfo )
+bool WPasteAccelItem( WAccelEditInfo *einfo )
 {
     WAccelEntry entry;
     void        *data;
     uint_32     dsize;
-    Bool        ok;
+    bool        ok;
 
     data = NULL;
     entry.symbol = NULL;
@@ -645,24 +645,24 @@ Bool WPasteAccelItem( WAccelEditInfo *einfo )
     }
 
     if( entry.symbol != NULL ) {
-        WMemFree( entry.symbol );
+        WRMemFree( entry.symbol );
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
 }
 
-Bool WClipAccelItem( WAccelEditInfo *einfo, Bool cut )
+bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
 {
     HWND        lbox;
     LRESULT     index;
     WAccelEntry *entry;
     void        *data;
     uint_32     dsize;
-    Bool        ok;
+    bool        ok;
 
     data = NULL;
     ok = (einfo != NULL);
@@ -697,13 +697,13 @@ Bool WClipAccelItem( WAccelEditInfo *einfo, Bool cut )
     }
 
     if( data != NULL ) {
-        WMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
 }
 
-static Bool WQueryChangeEntry( WAccelEditInfo *einfo )
+static bool WQueryChangeEntry( WAccelEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -712,15 +712,15 @@ static Bool WQueryChangeEntry( WAccelEditInfo *einfo )
 
     style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_CHANGEMODIFIEDMENUITEM );
+    text = AllocRCString( W_CHANGEMODIFIEDMENUITEM );
 
     ret = MessageBox( einfo->edit_dlg, text, title, style );
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -730,12 +730,12 @@ static Bool WQueryChangeEntry( WAccelEditInfo *einfo )
     return( FALSE );
 }
 
-void WDoHandleSelChange( WAccelEditInfo *einfo, Bool change, Bool reset )
+void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
 {
     HWND        lbox;
     LRESULT     index;
     WAccelEntry *entry;
-    Bool        mod;
+    bool        mod;
 
     if( einfo == NULL ) {
         return;

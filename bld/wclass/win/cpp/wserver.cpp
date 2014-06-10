@@ -65,7 +65,7 @@ WEXPORT WServer::WServer( const char *service, const char *topic, WObject* owner
         : _procid( 0 )
         , _service( 0 )
         , _topic( 0 )
-        , _ok( FALSE ) {
+        , _ok( false ) {
 /**********************/
 
     if( _server == NULL ) {
@@ -77,7 +77,7 @@ WEXPORT WServer::WServer( const char *service, const char *topic, WObject* owner
             _service = DdeCreateStringHandle( _procid, (char *)service, CP_WINANSI );
             _topic = DdeCreateStringHandle( _procid, (char *)topic, CP_WINANSI );
             if( DdeNameService( _procid, _service, 0, DNS_REGISTER ) ) {
-                _ok = TRUE;
+                _ok = true;
             }
         }
     }
@@ -104,7 +104,7 @@ WEXPORT WServer::~WServer() {
 }
 
 
-bool WEXPORT WServer::xtConnect( HSZ htopic, HSZ hservice ) {
+BOOL WEXPORT WServer::xtConnect( HSZ htopic, HSZ hservice ) {
 /***********************************************************/
 
     if( (hservice == _service) && (htopic == _topic) ) {
@@ -120,11 +120,11 @@ HDDEDATA WEXPORT WServer::xtRequest( UINT fmt, HSZ /*htopic*/, HSZ hitem ) {
     HDDEDATA hdata = NULL;
     if( (_owner != NULL) && (_notify != NULL) ) {
         int len = (int)DdeQueryString( _procid, hitem, (LPSTR)NULL, 0L, CP_WINANSI );
-        char *request = new char[ len+1 ];
-        DdeQueryString( _procid, hitem, request, len+1, CP_WINANSI );
+        char *request = new char[len + 1];
+        DdeQueryString( _procid, hitem, request, len + 1, CP_WINANSI );
         WString *reply = (_owner->*_notify)( request );
         if( reply != NULL ) {
-            hdata = DdeCreateDataHandle( _procid, (unsigned char *)(const char *)*reply, (DWORD)( reply->size() + 1 ), 0, hitem, fmt, FALSE );
+            hdata = DdeCreateDataHandle( _procid, (unsigned char *)(const char *)*reply, (DWORD)( reply->size() + 1 ), 0, hitem, fmt, false );
             delete reply;
         }
         delete request;

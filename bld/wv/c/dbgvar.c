@@ -794,12 +794,12 @@ static void     VarNodeFini( var_node *v )
 {
     var_node    *junk;
     int         count;
-    var_node    *parent;
+//    var_node    *parent;
 
     count = 0;
-    parent = NULL;
+//    parent = NULL;
     while( v != NULL ) {
-        parent = v->parent;
+//        parent = v->parent;
         VarNodeFini( v->old_expand );
         VarNodeFini( v->expand );
         v->have_type = FALSE;

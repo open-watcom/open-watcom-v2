@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include <ctype.h>
 #include "ppc.h"
@@ -566,12 +565,12 @@ unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, uns
     unsigned    toggle;
     unsigned    *bits;
     unsigned    index;
-    unsigned    old;
+//    unsigned    old;
 
     toggle = on & off;
     index = rsd - &RegSet[CPU_REG_SET];
     bits = &MADState->reg_state[index];
-    old = *bits;
+//    old = *bits;
     *bits ^= toggle;
     *bits |= on & ~toggle;
     *bits &= ~off | toggle;

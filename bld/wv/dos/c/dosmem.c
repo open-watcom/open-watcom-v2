@@ -99,7 +99,7 @@ void MemInit()
     }
 }
 
-void *ExtraAlloc( unsigned size )
+void *ExtraAlloc( size_t size )
 {
     tiny_ret_t ret;
     unsigned   num_para;
@@ -127,7 +127,7 @@ void ExtraFree( void * ptr )
 }
 
 
-void *ExtraRealloc( void *p, unsigned size )
+void *ExtraRealloc( void *p, size_t size )
 {
     unsigned    seg;
     unsigned   num_para;

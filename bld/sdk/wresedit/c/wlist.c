@@ -35,8 +35,8 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wlist.h"
+#include "wrdll.h"
 
 void WInsertObject( LIST **list, void *obj )
 {
@@ -78,7 +78,7 @@ int WListConcat( LIST **dest, LIST *src, uint_32 size )
         if( size == 0 ) {
             elt = ListElement( olist );
         } else {
-            elt = WMemAlloc( size );
+            elt = WRMemAlloc( size );
             if( elt == NULL ) {
                 return( FALSE );
             }
@@ -122,7 +122,7 @@ void ListAddElt( LIST **head, void *obj )
 {
     LIST *new;
 
-    new = WMemAlloc( sizeof( LIST ) );
+    new = WRMemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = *head;
     new->prev = NULL;
@@ -138,7 +138,7 @@ void ListFree( LIST *lst )
 
     while( lst != NULL ) {
         next = lst->next;
-        WMemFree( lst );
+        WRMemFree( lst );
         lst = next;
     }
 }
@@ -172,7 +172,7 @@ void ListRemoveElt( LIST **lst, void *obj )
             } else {
                 *lst = node->next;
             }
-            WMemFree( node );
+            WRMemFree( node );
             break;
         }
     }
@@ -183,7 +183,7 @@ LIST *ListConsume( LIST *curr )
     LIST *next;
 
     next = curr->next;
-    WMemFree( curr );
+    WRMemFree( curr );
     return( next );
 }
 
@@ -224,7 +224,7 @@ void ListInsertElt( LIST *prev, void *obj )
 {
     LIST *new;
 
-    new = WMemAlloc( sizeof( LIST ) );
+    new = WRMemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = prev->next;
     new->prev = prev;

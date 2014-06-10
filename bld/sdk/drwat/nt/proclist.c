@@ -38,7 +38,7 @@
 #include "menu.h"
 #include "jdlg.h"
 #include "madrtn.h"
-#include "madsys.h"
+#include "madsys1.h"
 
 
 typedef struct {

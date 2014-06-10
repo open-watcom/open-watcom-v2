@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "write.h"
 #include "resstr.h"
+#include "wresrtns.h"
 
 extern void ResInitStringTableBlock( StringTableBlock * currblock )
 /*****************************************************************/

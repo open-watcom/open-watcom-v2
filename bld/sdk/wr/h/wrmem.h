@@ -36,11 +36,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern void *   WRAPI WRMemAlloc( unsigned );
+WRDLLENTRY extern void *   WRAPI WRMemAlloc( size_t );
 WRDLLENTRY extern void     WRAPI WRMemFree( void * );
-WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, unsigned );
+WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, size_t );
 WRDLLENTRY extern int      WRAPI WRMemValidate( void * );
-WRDLLENTRY extern int      WRAPI WRMemChkRange( void *, unsigned );
+WRDLLENTRY extern int      WRAPI WRMemChkRange( void *, size_t );
 WRDLLENTRY extern void     WRAPI WRMemPrtUsage( void );
 WRDLLENTRY extern unsigned WRAPI WRMemPrtList( void );
 

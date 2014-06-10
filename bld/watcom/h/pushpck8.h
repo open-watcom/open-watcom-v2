@@ -24,9 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  Interface to lexer, OS/2 variety.
+* Description:  Include this file to force 8-byte structure packing.
 *
 ****************************************************************************/
 
 
-extern int LookupKeywordOS2( ScanString newstring );
+#if defined( __WATCOMC__ )
+    #pragma pack(__push,8)
+#elif defined( _CFE ) || defined( __SUNPRO_C ) || defined( __sun )
+    #if !defined( _NO_PRAGMA_PUSH_PACK )
+        #define _NO_PRAGMA_PUSH_PACK
+    #endif
+    #pragma pack(8)
+#elif defined( MAC )
+    #if defined( __MWERKS__ )
+        #pragma options align= mac68k
+    #else
+        #error "Need a pshpk8.h for this Mac compiler"
+    #endif
+#elif defined( _MSC_VER )
+    #pragma warning(disable:4103)
+    #pragma pack(push,8)
+#else
+    #pragma pack(push,8)
+#endif
+
+#if defined( _NO_PRAGMA_PUSH_PACK )
+    #if defined( _PUSH_PACK )
+        #error Tried to push a pack at too great a depth
+    #else
+        #define _PUSH_PACK
+    #endif
+#endif

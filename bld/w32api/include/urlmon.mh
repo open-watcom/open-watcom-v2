@@ -1024,88 +1024,6 @@ struct CONFIRMSAFETY {
     DWORD       dwFlags;
 };
 
-/* GUIDs */
-EXTERN_C const IID  IID_IPersistMoniker;
-EXTERN_C const IID  IID_IMonikerProp;
-EXTERN_C const IID  IID_IBindProtocol;
-EXTERN_C const IID  IID_IBinding;
-EXTERN_C const IID  IID_IBindStatusCallback;
-EXTERN_C const IID  IID_IBindStatusCallbackEx;
-EXTERN_C const IID  IID_IAuthenticate;
-EXTERN_C const IID  IID_IAuthenticateEx;
-EXTERN_C const IID  IID_IHttpNegotiate;
-EXTERN_C const IID  IID_IHttpNegotiate2;
-EXTERN_C const IID  IID_IHttpNegotiate3;
-EXTERN_C const IID  IID_IWinInetFileStream;
-EXTERN_C const IID  IID_IWindowForBindingUI;
-EXTERN_C const IID  IID_ICodeInstall;
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID  IID_IUri;
-EXTERN_C const IID  IID_IUriContainer;
-EXTERN_C const IID  IID_IUriBuilder;
-EXTERN_C const IID  IID_IUriBuilderFactory;
-#endif
-EXTERN_C const IID  IID_IWinInetInfo;
-EXTERN_C const IID  IID_IHttpSecurity;
-EXTERN_C const IID  IID_IWinInetHttpInfo;
-#if (_WIN32_IE >= 0x0602)
-EXTERN_C const IID  IID_IWinInetCacheHints;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID  IID_IWinInetCacheHints2;
-#endif
-EXTERN_C const IID  IID_IBindHost;
-EXTERN_C const IID  IID_IInternet;
-EXTERN_C const IID  IID_IInternetBindInfo;
-EXTERN_C const IID  IID_IInternetBindInfoEx;
-EXTERN_C const IID  IID_IInternetProtocolRoot;
-EXTERN_C const IID  IID_IInternetProtocol;
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID  IID_IInternetProtocolEx;
-#endif
-EXTERN_C const IID  IID_IInternetProtocolSink;
-EXTERN_C const IID  IID_IInternetProtocolSinkStackable;
-EXTERN_C const IID  IID_IInternetSession;
-EXTERN_C const IID  IID_IInternetThreadSwitch;
-EXTERN_C const IID  IID_IInternetPriority;
-EXTERN_C const IID  IID_IInternetProtocolInfo;
-EXTERN_C const IID  IID_IInternetSecurityMgrSite;
-EXTERN_C const IID  IID_IInternetSecurityManager;
-#if (_WIN32_IE >= 0x0602)
-EXTERN_C const IID  IID_IInternetSecurityManagerEx;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID  IID_IInternetSecurityManagerEx2;
-#endif
-#if (_WIN32_IE >= 0x0602)
-EXTERN_C const IID  IID_IZoneIdentifier;
-#endif
-EXTERN_C const IID  IID_IInternetHostSecurityManager;
-EXTERN_C const IID  IID_IInternetZoneManager;
-#if (_WIN32_IE >= 0x0602)
-EXTERN_C const IID  IID_IInternetZoneManagerEx;
-#endif
-#if (_WIN32_IE >= 0x0700)
-EXTERN_C const IID  IID_IInternetZoneManagerEx2;
-#endif
-EXTERN_C const IID  IID_ISoftDistExt;
-EXTERN_C const IID  IID_ICatalogFileInfo;
-EXTERN_C const IID  IID_IDataFilter;
-EXTERN_C const IID  IID_IEncodingFilterFactory;
-EXTERN_C const IID  IID_IWrappedProtocol;
-
-/* Service identifiers */
-#define SID_IBindHost                       IID_IBindHost
-#define SID_SBindHost                       IID_IBindHost
-#define SID_SInternetSecurityManager        IID_IInternetSecurityManager
-#if (_WIN32_IE >= 0x0602)
-    #define SID_SInternetSecurityManagerEx  IID_IInternetSecurityManagerEx
-#endif
-#if (_WIN32_IE >= 0x0700)
-    #define SID_SInternetSecurityManagerEx2 IID_IInternetSecurityManagerEx2
-#endif
-#define SID_SInternetHostSecurityManager    IID_IInternetHostSecurityManager
-
 /* IPersistMoniker interface */
 #undef INTERFACE
 #define INTERFACE   IPersistMoniker
@@ -3044,5 +2962,87 @@ BOOL WINAPI WriteHitLogging( LPHIT_LOGGING_INFO );
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IPersistMoniker;
+EXTERN_C const IID  __cdecl IID_IMonikerProp;
+EXTERN_C const IID  __cdecl IID_IBindProtocol;
+EXTERN_C const IID  __cdecl IID_IBinding;
+EXTERN_C const IID  __cdecl IID_IBindStatusCallback;
+EXTERN_C const IID  __cdecl IID_IBindStatusCallbackEx;
+EXTERN_C const IID  __cdecl IID_IAuthenticate;
+EXTERN_C const IID  __cdecl IID_IAuthenticateEx;
+EXTERN_C const IID  __cdecl IID_IHttpNegotiate;
+EXTERN_C const IID  __cdecl IID_IHttpNegotiate2;
+EXTERN_C const IID  __cdecl IID_IHttpNegotiate3;
+EXTERN_C const IID  __cdecl IID_IWinInetFileStream;
+EXTERN_C const IID  __cdecl IID_IWindowForBindingUI;
+EXTERN_C const IID  __cdecl IID_ICodeInstall;
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID  __cdecl IID_IUri;
+EXTERN_C const IID  __cdecl IID_IUriContainer;
+EXTERN_C const IID  __cdecl IID_IUriBuilder;
+EXTERN_C const IID  __cdecl IID_IUriBuilderFactory;
+#endif
+EXTERN_C const IID  __cdecl IID_IWinInetInfo;
+EXTERN_C const IID  __cdecl IID_IHttpSecurity;
+EXTERN_C const IID  __cdecl IID_IWinInetHttpInfo;
+#if (_WIN32_IE >= 0x0602)
+EXTERN_C const IID  __cdecl IID_IWinInetCacheHints;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID  __cdecl IID_IWinInetCacheHints2;
+#endif
+EXTERN_C const IID  __cdecl IID_IBindHost;
+EXTERN_C const IID  __cdecl IID_IInternet;
+EXTERN_C const IID  __cdecl IID_IInternetBindInfo;
+EXTERN_C const IID  __cdecl IID_IInternetBindInfoEx;
+EXTERN_C const IID  __cdecl IID_IInternetProtocolRoot;
+EXTERN_C const IID  __cdecl IID_IInternetProtocol;
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID  __cdecl IID_IInternetProtocolEx;
+#endif
+EXTERN_C const IID  __cdecl IID_IInternetProtocolSink;
+EXTERN_C const IID  __cdecl IID_IInternetProtocolSinkStackable;
+EXTERN_C const IID  __cdecl IID_IInternetSession;
+EXTERN_C const IID  __cdecl IID_IInternetThreadSwitch;
+EXTERN_C const IID  __cdecl IID_IInternetPriority;
+EXTERN_C const IID  __cdecl IID_IInternetProtocolInfo;
+EXTERN_C const IID  __cdecl IID_IInternetSecurityMgrSite;
+EXTERN_C const IID  __cdecl IID_IInternetSecurityManager;
+#if (_WIN32_IE >= 0x0602)
+EXTERN_C const IID  __cdecl IID_IInternetSecurityManagerEx;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID  __cdecl IID_IInternetSecurityManagerEx2;
+#endif
+#if (_WIN32_IE >= 0x0602)
+EXTERN_C const IID  __cdecl IID_IZoneIdentifier;
+#endif
+EXTERN_C const IID  __cdecl IID_IInternetHostSecurityManager;
+EXTERN_C const IID  __cdecl IID_IInternetZoneManager;
+#if (_WIN32_IE >= 0x0602)
+EXTERN_C const IID  __cdecl IID_IInternetZoneManagerEx;
+#endif
+#if (_WIN32_IE >= 0x0700)
+EXTERN_C const IID  __cdecl IID_IInternetZoneManagerEx2;
+#endif
+EXTERN_C const IID  __cdecl IID_ISoftDistExt;
+EXTERN_C const IID  __cdecl IID_ICatalogFileInfo;
+EXTERN_C const IID  __cdecl IID_IDataFilter;
+EXTERN_C const IID  __cdecl IID_IEncodingFilterFactory;
+EXTERN_C const IID  __cdecl IID_IWrappedProtocol;
+
+/* Service identifiers */
+#define SID_IBindHost                       IID_IBindHost
+#define SID_SBindHost                       IID_IBindHost
+#define SID_SInternetSecurityManager        IID_IInternetSecurityManager
+#if (_WIN32_IE >= 0x0602)
+    #define SID_SInternetSecurityManagerEx  IID_IInternetSecurityManagerEx
+#endif
+#if (_WIN32_IE >= 0x0700)
+    #define SID_SInternetSecurityManagerEx2 IID_IInternetSecurityManagerEx2
+#endif
+#define SID_SInternetHostSecurityManager    IID_IInternetHostSecurityManager
 
 #endif /* __urlmon_h__ */

@@ -250,7 +250,7 @@ extern bool DRGetTypeInfo( dr_handle entry,  dr_typeinfo *info )
         }
         curr_ab = abbrev;
         curr_ent = entry;
-        if( DWRScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) != 0 ) {
+        if( DWRScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) ) {
             entry = DWRReadReference( curr_ab, curr_ent );
         } else {
             goto error;
@@ -391,7 +391,7 @@ extern dr_handle DRGetTypeAT( dr_handle entry )
 
     abbrev = DWRGetAbbrev( &entry );
     type = 0;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         type = DWRReadReference( abbrev, entry );
     }
     return( type );
@@ -459,7 +459,7 @@ extern dr_handle DRSkipTypeChain( dr_handle tref )
         default:
             goto end_loop;
         }
-        if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) != 0 ) {
+        if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
             entry = DWRReadReference( abbrev, entry );
             tref = entry;
         } else {
@@ -474,49 +474,41 @@ static unsigned_16 const MemTag[DR_WLKBLK_STRUCT] = {
     DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
 };
 
-extern int DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/****************************************************************/
+bool DRWalkStruct( dr_handle mod,  DRWLKBLK *wlks, void *d )
+/**********************************************************/
 // wlks[0] == member func, wlks[1] inherit func, wlks[2] default
 {
-    int ret;
-
-    ret = DWRWalkChildren( mod, MemTag, wlks, d );
-    return( ret );
+    return( DWRWalkChildren( mod, MemTag, wlks, d ) );
 }
 
 static unsigned_16 const ArrayTag[DR_WLKBLK_ARRSIB] = {
     DW_TAG_subrange_type, DW_TAG_enumerator, 0
 };
 
-extern int DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
-/************************************************&******************/
+bool DRWalkArraySibs( dr_handle mod,  DRWLKBLK *wlks, void *d )
+/*************************************************************/
 // wlks[0] == subrange [1] = enumerator , 0 = Null
 {
-    int ret;
-
-    ret = DWRWalkSiblings( mod, ArrayTag, wlks, d );
-    return( ret );
+    return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );
 }
 
 static unsigned_16 const EnumTag[DR_WLKBLK_ENUMS] = {
     DW_TAG_enumerator, 0
 };
 
-extern int DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
-/************************************************************/
+bool DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
+/******************************************************/
 // wlks[0] == Enum  func, [1] Null
 {
-    int         ret;
     DRWLKBLK    wlks[2];
 
     wlks[0] = wlk;
     wlks[1] = NULL;
-    ret = DWRWalkChildren( mod, EnumTag, wlks, d );
-    return( ret );
+    return( DWRWalkChildren( mod, EnumTag, wlks, d ) );
 }
 
-extern int DRConstValAT( dr_handle var, uint_32 *ret )
-/****************************************************/
+bool DRConstValAT( dr_handle var, uint_32 *ret )
+/**********************************************/
 {
     dr_handle   abbrev;
     unsigned    form;
@@ -524,7 +516,7 @@ extern int DRConstValAT( dr_handle var, uint_32 *ret )
     dwr_formcl  formcl;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_const_value ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_const_value ) ) {
         form = DWRVMReadULEB128( &abbrev );
         for( ;; ) {
             formcl = DWRFormClass( form );

@@ -83,14 +83,14 @@ void WAbout::initialize() {
     WPoint average;
     WPoint max;
 
-    setSystemFont( FALSE );
+    setSystemFont( false );
     textMetrics( average, max );
     if( _textArray ) {
         for( int i=0; _textArray[i]; i++ ) {
             int w = getTextExtentX( _textArray[i] );
             if( _width < w ) _width = w;
             _height += getTextExtentY( _textArray[i] );
-            _text.add( new WString( _textArray[ i ] ) );
+            _text.add( new WString( _textArray[i] ) );
         }
     }
 
@@ -135,7 +135,7 @@ WAbout::~WAbout() {
 void WAbout::okButton( WWindow * ) {
 /*********************************/
 
-    quit( TRUE );
+    quit( true );
 }
 
 
@@ -150,5 +150,5 @@ bool WAbout::paint() {
     WPoint hotSize;
     _hotSpot->hotSpotSize( _idx, hotSize );
     drawHotSpot( _idx, _text.count(), (_width - hotSize.x())/2 );
-    return TRUE;
+    return( true );
 }

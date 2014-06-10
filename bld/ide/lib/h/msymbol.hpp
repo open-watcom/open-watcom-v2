@@ -46,8 +46,8 @@ WCLASS MSymbol : public WObject
                 void setName( WString& name ) { _name = name; }
                 void name( WString& n ) { n = _name; }
                 void setMask( WFileName& mask ) { _mask = mask; }
-                WFileName& mask() { return _mask; }
-                bool define() { return _define; }
+                WFileName& mask() { return( _mask ); }
+                bool define() { return( _define ); }
         private:
                 WString         _name;
                 WFileName       _mask;

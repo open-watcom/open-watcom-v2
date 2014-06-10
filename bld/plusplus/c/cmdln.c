@@ -309,7 +309,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     ModuleName = NULL;
     ErrorFileName = strsave( "*" );
     ErrLimit = 20;
-    WngLevel = 1;
+    WngLevel = WLEVEL_DEFAULT;
     /* set CompFlags defaults */
     CompFlags.extensions_enabled = 1;
     CompFlags.oldmacros_enabled = 1;

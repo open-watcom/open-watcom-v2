@@ -52,8 +52,8 @@ WCLASS MProject : public WObject, public WModel
                 MProject( const char* filename );
                 ~MProject();
                 void setFilename( const WFileName& f );
-                WFileName& filename() { return _filename; }
-                WVList& components() { return _components; }
+                WFileName& filename() { return( _filename ); }
+                WVList& components() { return( _components ); }
                 MComponent* addComponent( MComponent* comp );
                 MComponent* removeComponent( MComponent* comp );
                 MComponent* attachComponent( WFileName& target );
@@ -61,16 +61,16 @@ WCLASS MProject : public WObject, public WModel
                 MComponent* findComponent( WFileName& fn );
                 MItem* findSameResult( MItem* item, MComponent** compp );
                 void resetRuleRefs();
-                const MCommand& before() const { return _before; }
+                const MCommand& before() const { return( _before ); }
                 void setBefore( const MCommand& before );
-                const MCommand& after() const { return _after; }
+                const MCommand& after() const { return( _after ); }
                 void setAfter( const MCommand& after );
                 bool makeMakeFile();
-                void setDirty( bool dirty=TRUE );
-                bool isDirty() { return _dirty; }
-                void setNeedsMake( bool needs=TRUE ) { _needsMake = needs; }
-                bool needsMake() { return _needsMake; }
-                void refresh( bool autotrack_only = FALSE );
+                void setDirty( bool dirty=true );
+                bool isDirty() { return( _dirty ); }
+                void setNeedsMake( bool needs=true ) { _needsMake = needs; }
+                bool needsMake() { return( _needsMake ); }
+                void refresh( bool autotrack_only=false );
                 void insertBlanks( WString& s );
                 void setRCS( WObject *obj, CheckoutFunction co );
                 bool tryOpenTargetFile( long version, bool try_checkout, MComponent* comp );

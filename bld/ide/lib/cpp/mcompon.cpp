@@ -50,8 +50,8 @@ extern "C" {
 Define( MComponent )
 
 MComponent::MComponent( MProject* project, MRule* rule, const WString& mask, const char* target )
-    : _dirty( TRUE )
-    , _needsMake( TRUE )
+    : _dirty( true )
+    , _needsMake( true )
     , _project( project )
     , _filename( NULL )
     , _relFilename( target )
@@ -60,11 +60,11 @@ MComponent::MComponent( MProject* project, MRule* rule, const WString& mask, con
     , _autodepend( rule->autodepend() )
     , _autotrack( rule->autotrack() )
     , _mode( SWMODE_DEBUG )
-    , _batchMode( FALSE )
+    , _batchMode( false )
 {
     WFileName targ;
     makeNames( target, _filename, _relFilename, targ );
-    _target = new MItem( targ, this, rule, TRUE );
+    _target = new MItem( targ, this, rule, true );
 }
 
 MComponent::~MComponent()
@@ -81,7 +81,7 @@ MComponent* WEXPORT MComponent::createSelf( WObjectFile& p )
     p.readObject( &ruletag );
     MRule* rule = _config->findRule( ruletag );
     if( !rule ) rule = _config->nilRule();
-    return new MComponent( project, rule, "", "" );
+    return( new MComponent( project, rule, "", "" ) );
 }
 
 void WEXPORT MComponent::readSelf( WObjectFile& p )
@@ -204,7 +204,7 @@ void MComponent::getMaskItems( WVList& list )
 {
     int icount = _items.count();
     for( int i=0; i<icount; i++ ) {
-        MItem* m = (MItem*)_items[ i ];
+        MItem* m = (MItem*)_items[i];
         if( m->isMask() ) {
             list.add( m );
         }
@@ -218,7 +218,7 @@ void MComponent::updateItemList( bool update )
     if( !_batchMode ) {
         _target->updateAttribs();
 //        MRule* nilRule = _config->nilRule();
-        _items.setUpdates( FALSE );
+        _items.setUpdates( false );
         for( i=0; i<_items.count(); i++ ) {
             MItem* item = (MItem*)_items[i];
             item->updateAttribs();
@@ -230,15 +230,15 @@ void MComponent::updateItemList( bool update )
             int icount = tracks.count();
             for( int i=0; i<icount; i++ ) {
                 WString err;
-                addFromMask( *(WFileName*)tracks[ i ], err );
+                addFromMask( *(WFileName*)tracks[i], err );
             }
 /*
             for( i=_items.count(); i>0; ) {
                 i--;
                 MItem* item = (MItem*)_items[i];
                 if( !item->exists() ) {
-                    WFileName f; item->path( f, FALSE );
-                    if( !f.size() ) {
+                    WFileName f; item->path( f, false );
+                    if( f.size() == 0 ) {
                         _items.removeAt( i );
                     }
                 }
@@ -310,9 +310,9 @@ bool MComponent::renameComponent( WFileName& fn, MRule* rule, WString& mask )
         }
         refresh();
         setDirty();
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 MItem* MComponent::findSameResult( MItem* item )
@@ -326,13 +326,13 @@ MItem* MComponent::findSameResult( MItem* item )
                 WFileName fi;
                 if( m->absResult( fi ) ) {
                     if( fn.match( fi, matchAll ) ) {
-                        return m;
+                        return( m );
                     }
                 }
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void MComponent::addItem( MItem* item )
@@ -345,11 +345,11 @@ void MComponent::addItem( MItem* item )
 
 void MComponent::newItem( MItem* item )
 {
-    _items.setUpdates( FALSE );
+    _items.setUpdates( false );
     addItem( item );
-    updateItemList( FALSE );
+    updateItemList( false );
     _items.setUpdates( !_batchMode );
-    touchTarget( FALSE );
+    touchTarget( false );
     setDirty();
 }
 
@@ -375,7 +375,7 @@ void MComponent::removeItem( WFileName &fn ) {
 
 void MComponent::removeItem( MItem* item )
 {
-    _items.setUpdates( FALSE );
+    _items.setUpdates( false );
     for( int i=_items.count(); i>0; i-- ) {
         MItem* m = (MItem*)_items[i-1];
         if( m->parent() == item ) {
@@ -384,7 +384,7 @@ void MComponent::removeItem( MItem* item )
     }
     delete _items.removeSame( item );
     updateItemList();
-    touchTarget( FALSE );
+    touchTarget( false );
     setDirty();
 }
 
@@ -394,9 +394,9 @@ bool MComponent::renameItem( MItem* item, WFileName& fn, MRule* rule )
         updateItemList();
         setDirty();
         item->touchResult();
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 void MComponent::refresh()
@@ -459,7 +459,7 @@ void MComponent::getItemCommand( MItem* item, WString& cmd )
 bool MComponent::addFromFilename( WFileName& filename, WString& err )
 {
     if( filename.isMask() ) {
-        return addFromMask( filename, err );
+        return( addFromMask( filename, err ) );
     }
 
     MRule* rule = _config->findMatchingRule( filename, _target->rule(), _mask );
@@ -469,13 +469,13 @@ bool MComponent::addFromFilename( WFileName& filename, WString& err )
 
             cnt = _items.count();
             for( ; cnt > 0; cnt-- ) {
-                if( *(MItem *)_items[ cnt - 1 ] == filename ) break;
+                if( *(MItem *)_items[cnt - 1] == filename ) break;
             }
             if( cnt == 0 ) {
                 MItem* item = new MItem( filename, this, rule );
                 newItem( item );
             } else {
-                return FALSE;
+                return( false );
             }
         } else {
             MItem* item = new MItem( filename, this, rule );
@@ -488,24 +488,24 @@ bool MComponent::addFromFilename( WFileName& filename, WString& err )
                 if( comp != this ) {
                     err.printf( "Conflicting file '%s' found in target '%s'",
                         (const char*)*m, (const char*)*comp->target() );
-                    return FALSE;
+                    return( false );
                 }
             }
         }
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 bool MComponent::addFromMask( WFileName& search, WString& err )
 {
-    bool ok = TRUE;
+    bool ok = true;
     WFileName asearch( search );
     asearch.absoluteTo( _filename );
     DIR* dir = opendir( asearch );
     if( !dir ) {
         err.printf( "no files found for '%s'", (const char*)search );
-        ok = FALSE;
+        ok = false;
     } else {
         for(;;) {
             struct dirent* ent = readdir( dir );
@@ -515,13 +515,13 @@ bool MComponent::addFromMask( WFileName& search, WString& err )
             newfile.setDir( search.dir() );
 //            newfile.toLower();
             if( !addFromFilename( newfile, err ) ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
         }
         closedir( dir );
     }
-    return ok;
+    return( ok );
 }
 
 static char makeExt[] = { ".mk1" };
@@ -538,7 +538,7 @@ void MComponent::addMakeFile( ContFile& pmak )
 
 bool MComponent::makeMakeFile()
 {
-    bool ok = TRUE;
+    bool ok = true;
     WFileName mk( _filename );
     mk.setExt( makeExt );
 
@@ -547,7 +547,7 @@ bool MComponent::makeMakeFile()
     if( needsMake() || !mk.attribs() ) {
         ContFile        tmak;
         if( !tmak.open( mk, OStyleWrite ) ) {
-            ok = FALSE;
+            ok = false;
         } else {
             tmak.puts( "!define BLANK \"\"\n" );
             initWorkFiles( _workFiles );
@@ -558,10 +558,10 @@ bool MComponent::makeMakeFile()
             finiWorkFiles();
             tmak.close();
             ok = tmak.ok();
-            setNeedsMake( FALSE );
+            setNeedsMake( false );
         }
     }
-    return ok;
+    return( ok );
 }
 
 void MComponent::addWorkFiles( WVList& workFiles, SwMode mode, MComponent* comp )
@@ -599,7 +599,7 @@ void MComponent::finiWorkFiles()
 void MComponent::writeTargetCD( ContFile& mak )
 {
     WFileName path;
-    _filename.path( path, FALSE );
+    _filename.path( path, false );
 
     if( path.match( NULL, matchDir ) ) {
         path.concat( "\\" );
@@ -702,8 +702,9 @@ void MComponent::expand( WString& c, const MCommand& cmd )
 
 bool MComponent::writeCBR( bool mustExist )
 {
-    bool found_a_mbr = FALSE;
-    if( mustExist ) found_a_mbr = TRUE;
+    bool found_a_mbr = false;
+    if( mustExist )
+        found_a_mbr = true;
     for( int i=0; i<_workFiles.count(); i++ ) {
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( w->browseable() ) {
@@ -724,7 +725,7 @@ bool MComponent::writeCBR( bool mustExist )
                             if( access( (const char*)tfile, F_OK ) == 0 )  {
                                 // file must be there
                                 brow.printf( "f %s\n", (const char*)tfile );
-                                found_a_mbr = TRUE;
+                                found_a_mbr = true;
                             }
                         } else {
                             brow.printf( "f %s\n", (const char*)tfile );
@@ -733,10 +734,10 @@ bool MComponent::writeCBR( bool mustExist )
                 }
                 brow.close();
             }
-            if( found_a_mbr ) return( TRUE );
+            if( found_a_mbr ) return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 void MComponent::resetRuleRefs()
@@ -776,7 +777,7 @@ void MComponent::makeNames( const char* spec, WFileName& filename, WFileName& re
 
 bool MComponent::tryBrowse()
 {
-    bool rc = FALSE;
+    bool rc = false;
     initWorkFiles( _workFiles );
 
     for( int i=0; i<_workFiles.count(); i++ ) {
@@ -787,7 +788,7 @@ bool MComponent::tryBrowse()
         fn.setExt( ".mbr" );
 
         if( access( (const char *)fn, F_OK ) == 0 ) {
-            rc = TRUE;
+            rc = true;
             break;
         }
     }

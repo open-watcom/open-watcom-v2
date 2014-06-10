@@ -37,6 +37,7 @@
 #include "memmgr.h"
 #include "ring.h"
 #include "defarg.h"
+#include "template.h"
 #include "class.h"
 #include "objmodel.h"
 

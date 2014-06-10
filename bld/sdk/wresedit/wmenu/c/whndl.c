@@ -35,7 +35,6 @@
 #include <limits.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "w_menu.h"
 #include "wlist.h"
 #include "wisedit.h"
@@ -197,7 +196,7 @@ WHndlInfo *WAllocHndlInfo( void )
 {
     WHndlInfo *info;
 
-    info = (WHndlInfo *)WMemAlloc( sizeof( WHndlInfo ) );
+    info = (WHndlInfo *)WRMemAlloc( sizeof( WHndlInfo ) );
 
     memset( info, 0, sizeof( WHndlInfo ) );
 
@@ -207,6 +206,6 @@ WHndlInfo *WAllocHndlInfo( void )
 void WFreeHndlInfo( WHndlInfo *info )
 {
     if( info != NULL ) {
-        WMemFree( info );
+        WRMemFree( info );
     }
 }

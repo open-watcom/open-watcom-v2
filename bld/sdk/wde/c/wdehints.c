@@ -32,13 +32,13 @@
 
 #include "wdeglbl.h"
 #include <stdio.h>
-#include "wdemem.h"
 #include "wdestat.h"
 #include "wdemain.h"
 #include "wde_rc.h"
 #include "wdehints.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -72,8 +72,8 @@ static WdeHintItem      *WdeGetHintItem( int id );
 static void             WdeHandlePopupHint( HMENU, HMENU );
 static DWORD            WdeGetPopupHint( WdePopupListItem *, HMENU );
 static WdePopupListItem *WdeFindPopupListItem( HMENU menu );
-static Bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
-static Bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
+static bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
+static bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -241,11 +241,11 @@ void WdeDisplayHint( int id )
     } else {
         mditext = WdeAllocRCString( WDE_HINT_MDIMSG );
         if( mditext != NULL ) {
-            buf = WdeMemAlloc( strlen( mditext ) + 20 + 1 );
+            buf = WRMemAlloc( strlen( mditext ) + 20 + 1 );
             if( buf != NULL ) {
                 sprintf( buf, mditext, WDE_MDI_FIRST + 1 - id );
                 WdeSetStatusText( NULL, buf, TRUE );
-                WdeMemFree( buf );
+                WRMemFree( buf );
             }
             WdeFreeRCString( mditext );
         }
@@ -314,9 +314,9 @@ void WdeHandlePopupHint( HMENU menu, HMENU popup )
     }
 }
 
-Bool WdeInitHints( void )
+bool WdeInitHints( void )
 {
-    Bool ret;
+    bool ret;
 
     ret = TRUE;
 
@@ -345,15 +345,15 @@ void WdeFiniHints( void )
 
     for ( plist = WdePopupList; plist != NULL; plist = ListConsume ( plist ) ) {
         p = (WdePopupListItem *)ListElement( plist );
-        WdeMemFree( p );
+        WRMemFree( p );
     }
 }
 
-Bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_items )
+bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_items )
 {
     WdePopupListItem *p;
 
-    p = (WdePopupListItem *)WdeMemAlloc( sizeof( WdePopupListItem ) );
+    p = (WdePopupListItem *)WRMemAlloc( sizeof( WdePopupListItem ) );
 
     if( p != NULL ) {
         p->num = num;
@@ -362,7 +362,7 @@ Bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_item
         if( WdeInitHintItems( num, menu, hint_items ) ) {
             ListAddElt( &WdePopupList, p );
         } else {
-            WdeMemFree( p );
+            WRMemFree( p );
             return( FALSE );
         }
     } else {
@@ -372,7 +372,7 @@ Bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_item
     return( TRUE );
 }
 
-Bool WdeInitHintItems( int num, HMENU menu, WdePopupHintItem *hint_items )
+bool WdeInitHintItems( int num, HMENU menu, WdePopupHintItem *hint_items )
 {
     int     i;
     int     j;

@@ -43,8 +43,8 @@ WCLASS VToolItem : public WToolBarItem
         WEXPORT VToolItem( ToolType typ, int toolId, WObject *client, cbtbi pick,
                            const char *htext = NULL, const char *tip = NULL );
         WEXPORT ~VToolItem();
-        int toolId() { return _toolId; }
-        ToolType toolType() { return _toolType; }
+        int toolId() { return( _toolId ); }
+        ToolType toolType() { return( _toolType ); }
     private:
         int             _toolId;
         ToolType        _toolType;
@@ -53,7 +53,7 @@ WCLASS VToolItem : public WToolBarItem
 WCLASS VToolBar : public WToolBar
 {
     public:
-        WEXPORT VToolBar() : WToolBar( TRUE, TRUE ) {}
+        WEXPORT VToolBar() : WToolBar( true, true ) {}
         WEXPORT ~VToolBar() {}
 };
 

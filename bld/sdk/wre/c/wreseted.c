@@ -35,17 +35,17 @@
 
 #include "watcom.h"
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wreseted.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 
-Bool WRESetEditWithWResID( HWND edit, WResID *id )
+bool WRESetEditWithWResID( HWND edit, WResID *id )
 {
     char    *cp;
-    Bool    ok;
+    bool    ok;
 
     cp = NULL;
 
@@ -60,15 +60,15 @@ Bool WRESetEditWithWResID( HWND edit, WResID *id )
     }
 
     if( cp != NULL ) {
-        WREMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( ok );
 }
 
-Bool WRESetEditWithStr( HWND edit, char *str )
+bool WRESetEditWithStr( HWND edit, char *str )
 {
-    Bool    ok;
+    bool    ok;
 
     ok = ( edit != (HWND)NULL && str != NULL );
     if( ok ) {
@@ -78,9 +78,9 @@ Bool WRESetEditWithStr( HWND edit, char *str )
     return( ok );
 }
 
-Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
+bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
 {
-    Bool    ok;
+    bool    ok;
     LRESULT index;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
@@ -98,9 +98,9 @@ Bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
     return( ok );
 }
 
-Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
+bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
 {
-    Bool    ok;
+    bool    ok;
     char    *name;
 
     name = NULL;
@@ -112,13 +112,13 @@ Bool WRESetLBoxWithWResID( HWND lbox, WResID *id, void *data )
     ok = ok && WRESetLBoxWithStr( lbox, name, data );
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
 }
 
-char *WREGetStrFromEdit( HWND edit, Bool *mod )
+char *WREGetStrFromEdit( HWND edit, bool *mod )
 {
     char    *cp;
     LRESULT text_length;
@@ -137,7 +137,7 @@ char *WREGetStrFromEdit( HWND edit, Bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WREMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -145,7 +145,7 @@ char *WREGetStrFromEdit( HWND edit, Bool *mod )
     text_copied = SendMessage( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WREMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -154,7 +154,7 @@ char *WREGetStrFromEdit( HWND edit, Bool *mod )
     return( cp );
 }
 
-WResID *WREGetWResIDFromEdit( HWND edit, Bool *mod )
+WResID *WREGetWResIDFromEdit( HWND edit, bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;
@@ -179,7 +179,7 @@ WResID *WREGetWResIDFromEdit( HWND edit, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WREMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );

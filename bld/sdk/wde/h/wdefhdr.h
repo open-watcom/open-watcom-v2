@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeHdrCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeHdrInit( Bool );
+extern bool              WdeHdrInit( bool );
 extern void              WdeHdrFini( void );
 
 #endif

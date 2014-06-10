@@ -242,7 +242,7 @@ static BRI_TypeID writeType     // DUMP A TYPE
                           , result
                           , code
                           , 2
-                          , addString( dtype->u.c.info->name )
+                          , addString( NameStr( dtype->u.c.info->name ) )
                           , symbolIDForClass( dtype->u.c.info ) );
             }
             break;
@@ -348,7 +348,7 @@ static void writeClassHdr       // WRITE BROWSE DEFN FOR CLASS HEADER
         }
         BRIAddSymbol( bri_handle
                       , symbolIDForClass( cltype->u.c.info )
-                      , addString( cltype->u.c.info->name )
+                      , addString( NameStr( cltype->u.c.info->name ) )
                       , type_id
                       , sym_attribs
                       , BRI_SA_AccessNone );
@@ -440,7 +440,7 @@ static void writeClassMembers   // WRITE BROWSE DEFN FOR MEMBERS
             sym_id = (BRI_SymbolID) SymbolGetIndex( sym );
             BRIAddSymbol( bri_handle
                           , sym_id
-                          , addString( sym->name->name )
+                          , addString( NameStr( sym->name->name ) )
                           , type_id
                           , sym_type
                           , BRI_SA_AccessNone );
@@ -620,7 +620,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                     SYMBOL      fn_symbol = (SYMBOL) owner;
                     BRIStartFnScope( bri_handle
                                  , (BRI_ScopeID) ScopeGetIndex( scope )
-                                 , addString( fn_symbol->name->name )
+                                 , addString( NameStr( fn_symbol->name->name ) )
                                  , writeType( fn_symbol->sym_type ) );
                 }
             }
@@ -730,7 +730,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                 sym_id = (BRI_SymbolID) SymbolGetIndex( td );
                 BRIAddSymbol( bri_handle
                               , sym_id
-                              , addString( td->name->name )
+                              , addString( NameStr( td->name->name ) )
                               , type_id
                               , BRI_SA_Typedef
                               , BRI_SA_AccessNone );
@@ -756,7 +756,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                 sym_id = (BRI_SymbolID) SymbolGetIndex( sym );
                 BRIAddSymbol( bri_handle
                               , sym_id
-                              , addString( sym->name->name )
+                              , addString( NameStr( sym->name->name ) )
                               , type_id
                               , sym_flag
                               , BRI_SA_AccessNone );
@@ -778,7 +778,7 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
                 attribs = BRI_SA_Function;
                 BRIAddSymbol( bri_handle
                               , sym_id
-                              , addString( sym->name->name )
+                              , addString( NameStr( sym->name->name ) )
                               , type_id
                               , attribs
                               , BRI_SA_AccessNone );

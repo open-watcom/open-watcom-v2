@@ -73,7 +73,7 @@ void WdeDisplayMsgBox( const char *msg )
     }
 }
 
-char *WdeAllocRCString( DWORD id )
+char *WdeAllocRCString( UINT id )
 {
     return( AllocRCString( id ) );
 }
@@ -83,7 +83,7 @@ void WdeFreeRCString( char *str )
     FreeRCString( str );
 }
 
-DWORD WdeCopyRCString( DWORD id, char *buf, DWORD bufsize )
+int WdeCopyRCString( UINT id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 }
@@ -93,7 +93,7 @@ void WdeInitDisplayError( HINSTANCE inst )
     SetInstance( inst );
 }
 
-void WdeDisplayErrorMsg( DWORD msg )
+void WdeDisplayErrorMsg( UINT msg )
 {
     char        *title;
 

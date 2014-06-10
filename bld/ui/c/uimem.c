@@ -32,8 +32,8 @@
 
 #include "uidef.h"
 
-LPPIXEL intern faralloc( unsigned size )
-/**************************************/
+LPPIXEL intern faralloc( size_t size )
+/************************************/
 {
     LPPIXEL     ptr;
 

@@ -58,14 +58,12 @@ typedef struct {
     dr_search_context * context;        /* context to resume search */
 } dr_sym_context;
 
+typedef bool (*DRSYMSRCH)( dr_sym_context *, void * );
 
 /* function prototypes */
 
-extern bool DRSymSearch( dr_search, dr_depth, void *, void *,
-                         int (*)(dr_sym_context *,void*));
-extern bool DRResumeSymSearch( dr_search_context *, dr_search,
-                               dr_depth, void *, void *,
-                               int (*)(dr_sym_context *,void*));
+extern bool DRSymSearch( dr_search, dr_depth, void *, void *, DRSYMSRCH );
+extern bool DRResumeSymSearch( dr_search_context *, dr_search, dr_depth, void *, void *, DRSYMSRCH );
 
 extern dr_search_context * DRDuplicateSearchContext( dr_search_context * );
 extern void                DRFreeSearchContext( dr_search_context * );

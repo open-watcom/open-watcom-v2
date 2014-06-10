@@ -64,7 +64,7 @@ void WEditDialog::initialize() {
 
     WPoint avg;
     WPoint max;
-    setSystemFont( FALSE );
+    setSystemFont( false );
     textMetrics( avg, max );
 
     int x = WSystemMetrics::dialogFrameWidth();
@@ -103,14 +103,14 @@ void WEXPORT WEditDialog::okButton( WWindow* ) {
 /**********************************************/
 
     _edit->getText( *_reply );
-    quit( TRUE );
+    quit( true );
 }
 
 
 void WEXPORT WEditDialog::cancelButton( WWindow* ) {
 /**************************************************/
 
-    quit( FALSE );
+    quit( false );
 }
 
 
@@ -118,7 +118,7 @@ bool WEXPORT WEditDialog::edit( WString& reply ) {
 /************************************************/
 
     _reply = &reply;
-    return( process() == TRUE );
+    return( process() == (int)true );
 }
 
 

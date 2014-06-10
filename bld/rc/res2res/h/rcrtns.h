@@ -30,22 +30,20 @@
 ****************************************************************************/
 
 
-#include <process.h>
-#include <unistd.h>
-#include <stdlib.h>
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
-int main( int argc, char **argv )
-{
-    char        *p;
+#include "wio.h"
+#include "trmemcvr.h"
 
-    p = argv[0];
-    for( ;; ) {
-        if( *p == '\0' ) {
-            return( 1 );
-        }
-        if( memicmp( p, "\\binp\\", 6 ) == 0 ) break;
-        ++p;
-    }
-    strcpy( p +4, p + 5 );
-    return( spawnv( P_WAIT, argv[0], argv ) );
-}
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       write
+#define RCREAD        read
+#define RCSEEK        lseek
+#define RCTELL        tell
+#define RCALLOC       TRMemAlloc
+#define RCFREE        TRMemFree
+#define RCREALLOC     TRMemRealloc
+
+#endif

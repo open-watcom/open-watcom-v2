@@ -33,10 +33,10 @@ enum {
     MODS_PER_BLK = 256,
 };
 
-typedef struct mod_blk{
+typedef struct mod_blk {
     struct mod_blk     *next;
     mod_info           *info; /*variable*/
-}mod_blk;
+} mod_blk;
 
 typedef enum {
     VER_NONE,
@@ -44,15 +44,16 @@ typedef enum {
     VER_V2,     /* Watcom 11.0 and early Open Watcom */
     VER_V3,     /* Open Watcom 1.4 and newer */
     VER_ERROR,
-}df_ver;
+} df_ver;
 
 typedef struct {
-    mod_blk  *head;
-    mod_blk  *curr;
-    mod_blk  **lnk;
-    int      count;
-    df_ver   version;
-}mod_list;
-extern void  InitModList( mod_list *list );
-extern  mod_info *NextModInfo( mod_list *list );
-extern mod_info  *FiniModInfo( mod_list *list );
+    mod_blk     *head;
+    mod_blk     *curr;
+    mod_blk     **lnk;
+    im_idx      count;
+    df_ver      version;
+} mod_list;
+
+extern void         InitModList( mod_list *list );
+extern mod_info     *NextModInfo( mod_list *list );
+extern mod_info     *FiniModInfo( mod_list *list );

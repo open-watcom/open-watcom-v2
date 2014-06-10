@@ -35,14 +35,15 @@
 #include <string.h>
 #include "watcom.h"
 #include "wreglbl.h"
-#include "wremem.h"
 #include "wrestat.h"
 #include "wremain.h"
 #include "wre_rc.h"
 #include "wrelist.h"
 #include "wrehints.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -76,9 +77,9 @@ static WREHintItem      *WREGetHintItem         ( int id );
 static void             WREHandlePopupHint      ( HMENU, HMENU );
 static DWORD            WREGetPopupHint         ( WREPopupListItem *, HMENU );
 static WREPopupListItem *WREFindPopupListItem   ( HMENU menu );
-static Bool             WRECreateWREPopupListItem ( int, HMENU,
+static bool             WRECreateWREPopupListItem ( int, HMENU,
                                                     WREPopupHintItem * );
-static Bool              WREInitHintItems       ( int, HMENU,
+static bool              WREInitHintItems       ( int, HMENU,
                                                   WREPopupHintItem * );
 
 /****************************************************************************/
@@ -175,15 +176,15 @@ void WREDisplayHint( int id )
             WRESetStatusByID( -1, hint->hint );
         }
     } else {
-        mditext = WREAllocRCString( WRE_HINT_MDIMSG );
+        mditext = AllocRCString( WRE_HINT_MDIMSG );
         if( mditext ) {
-            buf = WREMemAlloc( strlen(mditext) + 20 + 1 );
+            buf = WRMemAlloc( strlen(mditext) + 20 + 1 );
             if( buf ) {
                 sprintf( buf, mditext, WRE_MDI_FIRST + 1 - id );
                 WRESetStatusText( NULL, buf, TRUE );
-                WREMemFree( buf );
+                WRMemFree( buf );
             }
-            WREFreeRCString( mditext );
+            FreeRCString( mditext );
         }
     }
 
@@ -254,9 +255,9 @@ void WREHandlePopupHint( HMENU menu, HMENU popup )
     return;
 }
 
-Bool WREInitHints( void )
+bool WREInitHints( void )
 {
-    Bool ret;
+    bool ret;
 
     ret = WRECreateWREPopupListItem( 7, WREGetMenuHandle(), WREPopupHints );
 
@@ -270,16 +271,16 @@ void WREFiniHints ( void )
 
     for ( plist = WREPopupList; plist; plist = ListConsume ( plist ) ) {
         p = (WREPopupListItem *) ListElement ( plist );
-        WREMemFree ( p );
+        WRMemFree ( p );
     }
 }
 
-Bool WRECreateWREPopupListItem ( int num, HMENU menu,
+bool WRECreateWREPopupListItem ( int num, HMENU menu,
                                  WREPopupHintItem *hint_items )
 {
     WREPopupListItem *p;
 
-    p = (WREPopupListItem *) WREMemAlloc ( sizeof(WREPopupListItem) );
+    p = (WREPopupListItem *)WRMemAlloc( sizeof(WREPopupListItem) );
 
     if ( p ) {
         p->num        = num;
@@ -288,7 +289,7 @@ Bool WRECreateWREPopupListItem ( int num, HMENU menu,
         if ( WREInitHintItems ( num, menu, hint_items ) ) {
             ListAddElt ( &WREPopupList, p );
         } else {
-            WREMemFree ( p );
+            WRMemFree( p );
             return ( FALSE );
         }
     } else {
@@ -298,7 +299,7 @@ Bool WRECreateWREPopupListItem ( int num, HMENU menu,
     return ( TRUE );
 }
 
-Bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
+bool WREInitHintItems ( int num, HMENU menu, WREPopupHintItem *hint_items )
 {
     int   i;
     int   j;

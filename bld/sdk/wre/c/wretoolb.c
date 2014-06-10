@@ -37,12 +37,13 @@
 #include "wreglbl.h"
 #include "wrestat.h"
 #include "wremain.h"
-#include "wremem.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wrehints.h"
 #include "wrelist.h"
 #include "wretoolb.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -107,20 +108,20 @@ WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
         for( ; i > 0; i-- ) {
             DeleteMenu( sys_menu, i, MF_BYPOSITION );
         }
-        text = WREAllocRCString( WRE_SYSMENUMOVE );
+        text = AllocRCString( WRE_SYSMENUMOVE );
         AppendMenu( sys_menu, MF_STRING, SC_MOVE, text != NULL ? text : "Move" );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
-        text = WREAllocRCString( WRE_SYSMENUSIZE );
+        text = AllocRCString( WRE_SYSMENUSIZE );
         AppendMenu( sys_menu, MF_STRING, SC_SIZE, text != NULL ? text : "Size" );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
-        text = WREAllocRCString( WRE_SYSMENUHIDE );
+        text = AllocRCString( WRE_SYSMENUHIDE );
         AppendMenu( sys_menu, MF_STRING, SC_CLOSE, text != NULL ? text : "Hide" );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
     }
 
@@ -138,7 +139,7 @@ BOOL WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     MINMAXINFO  *minmax;
     WREToolBar  *tbar;
     int         bstate;
-    Bool        ret;
+    bool        ret;
 
     if( (tbar = WREFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
         return( FALSE );
@@ -207,7 +208,7 @@ WREToolBar *WREFindToolBar( HWND win )
     return( NULL );
 }
 
-Bool WRECloseToolBar( WREToolBar *tbar )
+bool WRECloseToolBar( WREToolBar *tbar )
 {
     if( tbar != NULL ) {
         tbar->win = (HWND)NULL;
@@ -222,12 +223,12 @@ void WREFreeToolBarInfo( WREToolBarInfo *info )
 {
     if( info != NULL ) {
         if( info->items != NULL ) {
-            WREMemFree( info->items );
+            WRMemFree( info->items );
         }
         if( info->dinfo.background != NULL ) {
             DeleteObject( info->dinfo.background );
         }
-        WREMemFree( info );
+        WRMemFree( info );
     }
 }
 
@@ -235,16 +236,16 @@ WREToolBarInfo *WREAllocToolBarInfo( int num )
 {
     WREToolBarInfo *info;
 
-    info = (WREToolBarInfo *)WREMemAlloc( sizeof( WREToolBarInfo ) );
+    info = (WREToolBarInfo *)WRMemAlloc( sizeof( WREToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)WREMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = (TOOLITEMINFO *)WRMemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WREMemFree( info );
+            WRMemFree( info );
             info = NULL;
         }
     }
@@ -256,7 +257,7 @@ WREToolBar *WREAllocToolBar( void )
 {
     WREToolBar *tbar;
 
-    tbar = (WREToolBar *)WREMemAlloc( sizeof( WREToolBar ) );
+    tbar = (WREToolBar *)WRMemAlloc( sizeof( WREToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WREToolBar ) );
     }
@@ -267,7 +268,7 @@ WREToolBar *WREAllocToolBar( void )
 void WREFreeToolBar( WREToolBar *tbar )
 {
     if( tbar != NULL ) {
-        WREMemFree( tbar );
+        WRMemFree( tbar );
     }
 }
 

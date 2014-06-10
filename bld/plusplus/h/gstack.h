@@ -32,9 +32,9 @@
 
 #ifndef _GSTACK_H
 #include "enum.h"
-#include "class.h"
 #include "datainit.h"
 #include "template.h"
+#include "class.h"
 #include "fmttype.h"
 
 typedef enum gstack_type {

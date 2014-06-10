@@ -73,7 +73,7 @@ unsigned RemoteRename( char * from, char *to )
     in[2].len = strlen( to ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 3, &in, 1, &out );
+    TrapAccess( 3, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -91,7 +91,7 @@ unsigned RemoteMkDir( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -109,7 +109,7 @@ unsigned RemoteRmDir( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -126,7 +126,7 @@ unsigned RemoteSetDrv( int drv )
     in[0].len = sizeof( in_mx );
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 1, &in, 1, &out );
+    TrapAccess( 1, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -142,7 +142,7 @@ int RemoteGetDrv()
     in[0].len = sizeof( in_mx );
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 1, &in, 1, &out );
+    TrapAccess( 1, in, 1, out );
     return( out_mx.drive );
 }
 
@@ -160,7 +160,7 @@ unsigned RemoteSetCWD( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -178,7 +178,7 @@ long RemoteGetFileAttr( char * name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     if( (out_mx.attribute & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( out_mx.attribute, OP_REMOTE );
         return( -1L );
@@ -201,7 +201,7 @@ unsigned RemoteSetFileAttr( char * name, long attrib )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -218,7 +218,7 @@ long RemoteGetFreeSpace( int drv )
     in[0].len = sizeof( in_mx );
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 1, &in, 1, &out );
+    TrapAccess( 1, in, 1, out );
     if( (out_mx.size & 0xffff0000) == 0xffff0000 ) {
         StashErrCode( out_mx.size, OP_REMOTE );
         return( -1L );
@@ -310,7 +310,7 @@ unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
 
         in[0].ptr = &in_mx;
         in[0].len = sizeof( in_mx );
-        TrapAccess( 1, &in, 0, NULL );
+        TrapAccess( 1, in, 0, NULL );
     } else {
         mx_entry                out[1];
         rfx_getdatetime_req     in_mx;
@@ -323,7 +323,7 @@ unsigned RemoteDateTime( sys_handle hdl, int *time, int *date, int set )
         in[0].len = sizeof( in_mx );
         out[0].ptr = &out_mx;
         out[0].len = sizeof( out_mx );
-        TrapAccess( 1, &in, 1, &out );
+        TrapAccess( 1, in, 1, out );
 
         mylocaltime( out_mx.time, time, date );
     }
@@ -348,7 +348,7 @@ unsigned RemoteGetCwd( int drv, char *where )
     out[0].len = sizeof( out_mx );
     out[1].ptr = where;
     out[1].len = MAX_STRING_LEN;
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -370,7 +370,7 @@ unsigned RemoteFindFirst( char *pattern, void *info,
     out[0].len = sizeof( out_mx );
     out[1].ptr = info;
     out[1].len = info_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -391,7 +391,7 @@ unsigned RemoteFindNext( void *info, unsigned info_len )
     out[0].len = sizeof( out_mx );
     out[1].ptr = info;
     out[1].len = info_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -408,7 +408,7 @@ unsigned RemoteFindClose()
     out_mx.err = 0;
     out[0].ptr = &out_mx;
     out[0].len = sizeof( out_mx );
-    TrapAccess( 1, &in, 1, &out );
+    TrapAccess( 1, in, 1, out );
     return( StashErrCode( out_mx.err, OP_REMOTE ) );
 }
 
@@ -428,7 +428,7 @@ unsigned RenameNameToCannonical( char *name, char *fullname, unsigned fullname_l
     out[0].len = sizeof( out_mx );
     out[1].ptr = fullname;
     out[1].len = fullname_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     if( out_mx.err != 0 ) {
         StashErrCode( out_mx.err, OP_REMOTE );
         *fullname = NULLCHAR;

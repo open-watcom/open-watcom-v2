@@ -35,6 +35,7 @@
 #include "fnovload.h"
 #include "cgsegid.h"
 #include "defarg.h"
+#include "template.h"
 #include "class.h"
 #include "objmodel.h"
 #include "ptrcnv.h"

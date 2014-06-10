@@ -24,17 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner interface, WIN specifics.
+* Description:  Debugger interface DIP/MAD/TRAP loader auxiliary functions.
 *
 ****************************************************************************/
 
 
-#ifndef SCANW_H_INCLUDED
-#define SCANW_H_INCLUDED
-
-#include "varstr.h"
-
-extern void  ScanInitWIN( void );
-extern int   ScanWIN( ScanValue * value );
-extern void  ScanInitStaticsWIN( void );
-#endif
+extern dig_fhandle  DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
+extern unsigned     DIGPathClose( dig_fhandle handle );
+extern long         DIGGetSystemHandle( dig_fhandle handle );

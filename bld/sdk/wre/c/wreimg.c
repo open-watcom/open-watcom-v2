@@ -40,8 +40,8 @@
 #include "wreglbl.h"
 #include "wresall.h"
 #include "wre_wres.h"
-#include "wremem.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wreres.h"
 #include "wrestrdp.h"
@@ -83,7 +83,7 @@ typedef struct WREImageSession {
     HCONV           server;
     HCONV           client;
     uint_16         type;
-    Bool            new;
+    bool            new;
     WREImageInfo    info;
     WResTypeNode    *tnode;
     WResResNode     *rnode;
@@ -94,7 +94,7 @@ typedef struct WREImageSession {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WREImageSession  *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, Bool new );
+static WREImageSession  *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, bool new );
 static WREImageSession  *WREAllocImageSession( void );
 static WREImageSession  *WREFindImageSession( HCONV conv );
 static WREImageSession  *WREFindResImageSession( WREResInfo *rinfo );
@@ -102,10 +102,10 @@ static WREImageSession  *WREFindLangImageSession( WResLangNode *lnode );
 static void             WRERemoveImageEditSession( WREImageSession *session );
 static void             WREFreeEditSession( WREImageSession *session );
 static void             WREDisconnectSession( WREImageSession *session );
-static Bool             WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type );
+static bool             WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type );
 static void             WREBringSessionToFront( WREImageSession *session );
-static void             WREShowSession( WREImageSession *session, Bool show );
-static void             WREPokeImageCmd( WREImageSession *session, char *cmd, Bool );
+static void             WREShowSession( WREImageSession *session, bool show );
+static void             WREPokeImageCmd( WREImageSession *session, char *cmd, bool );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -140,39 +140,39 @@ WResID *WRECreateImageTitle( uint_16 type )
     if( type == (uint_16)RT_BITMAP ) {
         WRENumBitmapTitles++;
         num = WRENumBitmapTitles;
-        text = WREAllocRCString( WRE_DEFBITMAPNAME );
+        text = AllocRCString( WRE_DEFBITMAPNAME );
     } else if( type == (uint_16)RT_GROUP_CURSOR ) {
         WRENumCursorTitles++;
         num = WRENumCursorTitles;
-        text = WREAllocRCString( WRE_DEFCURSORNAME );
+        text = AllocRCString( WRE_DEFCURSORNAME );
     } else if( type == (uint_16)RT_GROUP_ICON ) {
         WRENumIconTitles++;
         num = WRENumIconTitles;
-        text = WREAllocRCString( WRE_DEFICONNAME );
+        text = AllocRCString( WRE_DEFICONNAME );
     } else {
         return( NULL );
     }
 
     if( text != NULL ) {
-        title = (char *)WREMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, num );
             name = WResIDFromStr( title );
-            WREMemFree( title );
+            WRMemFree( title );
         }
-        WREFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( name );
 }
 
-Bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
+bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
 {
     WResLangType        lang;
     int                 dup, num_retries;
     WResID              *rname, *tname;
-    Bool                ok, tname_alloc;
+    bool                ok, tname_alloc;
 
     ok = TRUE;
     tname_alloc = FALSE;
@@ -212,7 +212,7 @@ Bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WREMemFree( rname );
+                WRMemFree( rname );
             }
         }
         if( dup ) {
@@ -225,16 +225,16 @@ Bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     }
 
     if( tname_alloc ) {
-        WREMemFree( tname );
+        WRMemFree( tname );
     }
 
     return( ok );
 }
 
-Bool WRENewImageResource( WRESPT service, uint_16 type )
+bool WRENewImageResource( WRESPT service, uint_16 type )
 {
     WRECurrentResInfo  curr;
-    Bool               ok;
+    bool               ok;
 
     ok = WREAddImageToDir( &curr, type );
 
@@ -245,9 +245,9 @@ Bool WRENewImageResource( WRESPT service, uint_16 type )
     return( ok );
 }
 
-Bool WREDumpPendingImageSession( void )
+bool WREDumpPendingImageSession( void )
 {
-    Bool                ret;
+    bool                ret;
 
     ret = TRUE;
 
@@ -262,10 +262,10 @@ Bool WREDumpPendingImageSession( void )
     return( ret );
 }
 
-Bool WREEndEditImageResource( HCONV conv )
+bool WREEndEditImageResource( HCONV conv )
 {
     WREImageSession     *session;
-    Bool                ret;
+    bool                ret;
 
     ret = FALSE;
 
@@ -280,9 +280,9 @@ Bool WREEndEditImageResource( HCONV conv )
     return( ret );
 }
 
-Bool WRECommitImageSession( HCONV server, HCONV client )
+bool WRECommitImageSession( HCONV server, HCONV client )
 {
-    Bool        ok;
+    bool        ok;
 
     ok = (client != (HCONV)NULL && server != (HCONV)NULL && PendingSession != NULL);
 
@@ -300,7 +300,7 @@ Bool WRECommitImageSession( HCONV server, HCONV client )
     return( ok );
 }
 
-Bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
 {
     WREImageSession *session;
 
@@ -321,7 +321,7 @@ Bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
     return( TRUE );
 }
 
-Bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
 {
     WREImageSession *session;
 
@@ -342,7 +342,7 @@ Bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
     return( TRUE );
 }
 
-Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
 {
     WREImageSession     *session;
 
@@ -362,7 +362,7 @@ Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     }
 
     *size = session->info.data_size;
-    *data = WREMemAlloc( *size );
+    *data = WRMemAlloc( *size );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -371,7 +371,7 @@ Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     if( session->type == (uint_16)RT_BITMAP ) {
         if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
             if( *data != NULL ) {
-                WREMemFree( *data );
+                WRMemFree( *data );
             }
             return( FALSE );
         }
@@ -380,13 +380,13 @@ Bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     return( TRUE );
 }
 
-Bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
 {
     WREImageSession     *session;
     WResID              *name;
     void                *data;
     uint_32             size;
-    Bool                ok;
+    bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
 
@@ -413,26 +413,26 @@ Bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( ok );
 }
 
-Bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
-    Bool                ok;
+    bool                ok;
 
     ok = (session != NULL);
 
     if( ok ) {
         WREStripBitmapFileHeader( (BYTE **)&data, &size );
         if( session->lnode->data != NULL ) {
-            WREMemFree( session->lnode->data );
+            WRMemFree( session->lnode->data );
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
@@ -442,10 +442,10 @@ Bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 s
     return( ok );
 }
 
-Bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
     WRECurrentResInfo   curr;
-    Bool                ok;
+    bool                ok;
 
     ok = (session != NULL);
 
@@ -467,10 +467,10 @@ Bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 s
     return( ok );
 }
 
-Bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
+bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 size )
 {
     WRECurrentResInfo   curr;
-    Bool                ok;
+    bool                ok;
 
     ok = (session != NULL);
 
@@ -492,12 +492,12 @@ Bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 siz
     return( ok );
 }
 
-Bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
+bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
 {
     WREImageSession     *session;
     void                *data;
     uint_32             size;
-    Bool                ok;
+    bool                ok;
 
     ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
 
@@ -523,7 +523,7 @@ Bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     return( ok );
 }
 
-WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, Bool new )
+WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, bool new )
 {
     WREImageSession     *session;
     BYTE                *data;
@@ -596,11 +596,11 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     return( session );
 }
 
-Bool WREEditImageResource( WRECurrentResInfo *curr )
+bool WREEditImageResource( WRECurrentResInfo *curr )
 {
     WREImageSession     *session;
     WRESPT              service;
-    Bool                ok;
+    bool                ok;
 
     ok = (curr != NULL && curr->lang != NULL);
 
@@ -638,11 +638,11 @@ Bool WREEditImageResource( WRECurrentResInfo *curr )
     return( ok );
 }
 
-Bool WREEndAllImageSessions( Bool fatal_exit )
+bool WREEndAllImageSessions( bool fatal_exit )
 {
     WREImageSession     *session;
     LIST                *slist;
-    Bool                ok;
+    bool                ok;
 
     _wre_touch( fatal_exit );
 
@@ -693,7 +693,7 @@ WREImageSession *WREAllocImageSession( void )
 {
     WREImageSession *session;
 
-    session = (WREImageSession *)WREMemAlloc( sizeof( WREImageSession ) );
+    session = (WREImageSession *)WRMemAlloc( sizeof( WREImageSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREImageSession ) );
@@ -759,12 +759,12 @@ void WREFreeEditSession( WREImageSession *session )
 {
     if( session != NULL ) {
         if( session->info.file_name != NULL ) {
-            WREMemFree( session->info.file_name );
+            WRMemFree( session->info.file_name );
         }
         if( session->info.res_name != NULL ) {
-            WREMemFree( session->info.res_name );
+            WRMemFree( session->info.res_name );
         }
-        WREMemFree( session );
+        WRMemFree( session );
     }
 }
 
@@ -789,7 +789,7 @@ void WREBringSessionToFront( WREImageSession *session )
     WREPokeImageCmd( session, "bringtofront", FALSE );
 }
 
-void WREShowAllImageSessions( Bool show )
+void WREShowAllImageSessions( bool show )
 {
     WREImageSession     *session;
     LIST                *slist;
@@ -804,7 +804,7 @@ void WREShowAllImageSessions( Bool show )
     }
 }
 
-void WREShowSession( WREImageSession *session, Bool show )
+void WREShowSession( WREImageSession *session, bool show )
 {
     if( show ) {
         WREPokeImageCmd( session, "show", FALSE );
@@ -813,7 +813,7 @@ void WREShowSession( WREImageSession *session, Bool show )
     }
 }
 
-void WREPokeImageCmd( WREImageSession *session, char *cmd, Bool retry )
+void WREPokeImageCmd( WREImageSession *session, char *cmd, bool retry )
 {
     if( session != NULL && cmd ) {
         WREPokeData( session->client, cmd, strlen( cmd ) + 1, retry );

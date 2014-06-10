@@ -31,11 +31,10 @@
 
 #include "wio.h"
 #include "global.h"
-#include "rcmem.h"
 #include "errors.h"
 #include "exeutil.h"
 #include "exeobj.h"
-#include "iortns.h"
+#include "rcrtns.h"
 
 static int readObjectAndPageTable( ExeFileInfo *exe )
 /***************************************************/
@@ -44,14 +43,14 @@ static int readObjectAndPageTable( ExeFileInfo *exe )
     size_t      table_size;
 
     table_size = exe->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
-    exe->u.LXInfo.Objects = RcMemMalloc( table_size );
+    exe->u.LXInfo.Objects = RCALLOC( table_size );
     error = SeekRead( exe->Handle,
                 exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objtab_off,
                 exe->u.LXInfo.Objects, table_size );
 
     if( error == RS_OK ) {
         table_size = exe->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
-        exe->u.LXInfo.Pages = RcMemMalloc( table_size );
+        exe->u.LXInfo.Pages = RCALLOC( table_size );
         error = SeekRead( exe->Handle,
                     exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objmap_off,
                     exe->u.LXInfo.Pages, table_size );
@@ -132,8 +131,8 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
     new->u.LXInfo.OS2Head.page_off = new_off;
 
     /* Allocate new object/page table */
-    new_obj  = RcMemMalloc( new_obj_size );
-    new_page = RcMemMalloc( new_page_size );
+    new_obj  = RCALLOC( new_obj_size );
+    new_page = RCALLOC( new_page_size );
     new->u.LXInfo.Objects = new_obj;
     new->u.LXInfo.Pages   = new_page;
 
@@ -185,10 +184,10 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
                     + old->u.LXInfo.OS2Head.page_off;
         new_offset = (new_map->page_offset << new->u.LXInfo.OS2Head.l.page_shift)
                     + new->u.LXInfo.OS2Head.page_off;
-        seek_rc = RcSeek( old->Handle, old_offset, SEEK_SET );
+        seek_rc = RCSEEK( old->Handle, old_offset, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );
-        seek_rc = RcSeek( new->Handle, new_offset, SEEK_SET );
+        seek_rc = RCSEEK( new->Handle, new_offset, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_WRITE_ERROR );
 
@@ -228,7 +227,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
            + new_head->num_objects * sizeof( object_record )
            + new_head->num_pages * sizeof( lx_map_entry )
            + new_head->num_rsrcs * sizeof( flat_res_table );
-    seek_rc = RcSeek( new->Handle, lx_off + offset, SEEK_SET );
+    seek_rc = RCSEEK( new->Handle, lx_off + offset, SEEK_SET );
     if( seek_rc == -1 )
         return( RS_WRITE_ERROR );
 
@@ -260,7 +259,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
     if( old_head->entry_off > old_head->resname_off ) {
         new_head->resname_off  = new_head->rsrc_off
                                + new_head->num_rsrcs * sizeof( flat_res_table );
-        seek_rc = RcSeek( old->Handle, lx_off + old_head->resname_off, SEEK_SET );
+        seek_rc = RCSEEK( old->Handle, lx_off + old_head->resname_off, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );
 
@@ -282,7 +281,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
         else
             length = old_head->fixpage_off - old_head->entry_off;
 
-        seek_rc = RcSeek( old->Handle, lx_off + old_head->entry_off, SEEK_SET );
+        seek_rc = RCSEEK( old->Handle, lx_off + old_head->entry_off, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );
 
@@ -310,7 +309,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
         // the fixup page table must be extended if resource pages were added
         old_pages = new_head->num_pages - new->u.LXInfo.Res.num_pages;
         length = sizeof( uint_32 ) * old_pages;
-        seek_rc = RcSeek( old->Handle, lx_off + old_head->fixpage_off, SEEK_SET );
+        seek_rc = RCSEEK( old->Handle, lx_off + old_head->fixpage_off, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );
 
@@ -319,13 +318,13 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
             return( ret );
 
         // read the last entry of fixup page table
-        ret = RcRead( old->Handle, &last_fix_pg, sizeof( last_fix_pg ) );
+        ret = RCREAD( old->Handle, &last_fix_pg, sizeof( last_fix_pg ) );
         if( ret != sizeof( last_fix_pg ) )
             return( RS_READ_ERROR );
 
         // replicate for each added page (plus one for final entry)
         for( i = 0; i < new->u.LXInfo.Res.num_pages + 1; i++ ) {
-            ret = RcWrite( new->Handle, &last_fix_pg, sizeof( last_fix_pg ) );
+            ret = RCWRITE( new->Handle, &last_fix_pg, sizeof( last_fix_pg ) );
             if( ret != sizeof( last_fix_pg ) )
                 return( RS_READ_ERROR );
         }
@@ -349,7 +348,7 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
         // copy the rest of fixup section
         offset += new_fixpg_length;
         length = old_head->fixup_size - old_fixpg_length;
-        seek_rc = RcSeek( old->Handle, lx_off + old_head->fixpage_off
+        seek_rc = RCSEEK( old->Handle, lx_off + old_head->fixpage_off
                                      + old_fixpg_length, SEEK_SET );
         if( seek_rc == -1 )
             return( RS_READ_ERROR );

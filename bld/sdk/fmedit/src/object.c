@@ -81,7 +81,7 @@ void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )
     LoadAccel( bitmap );
     if( bitmap & MENU_ALIGN ) {
         alignmenu = CreateMenu();
-        if( bitmap & EDIT_MENU_FLAGS != MENU_ALIGN ) {
+        if( (bitmap & EDIT_MENU_FLAGS) != MENU_ALIGN ) {
             AppendMenu( submenu, MF_SEPARATOR, 0, NULL );
         }
         AppendMenu( submenu, MF_POPUP, (UINT)alignmenu, "Group &Align" );

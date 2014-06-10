@@ -147,34 +147,6 @@ DECLARE_HANDLE( HMONITOR );
     #define D3DERR_PRESENT_STATISTICS_DISJOINT  MAKE_D3DHRESULT( 2180 )
 #endif
 
-/* GUIDs */
-EXTERN_C const IID  IID_IDirect3D9;
-EXTERN_C const IID  IID_IDirect3DDevice9;
-EXTERN_C const IID  IID_IDirect3DStateBlock9;
-EXTERN_C const IID  IID_IDirect3DSwapChain9;
-EXTERN_C const IID  IID_IDirect3DResource9;
-EXTERN_C const IID  IID_IDirect3DVertexDeclaration9;
-EXTERN_C const IID  IID_IDirect3DVertexShader9;
-EXTERN_C const IID  IID_IDirect3DPixelShader9;
-EXTERN_C const IID  IID_IDirect3DBaseTexture9;
-EXTERN_C const IID  IID_IDirect3DTexture9;
-EXTERN_C const IID  IID_IDirect3DVolumeTexture9;
-EXTERN_C const IID  IID_IDirect3DCubeTexture9;
-EXTERN_C const IID  IID_IDirect3DVertexBuffer9;
-EXTERN_C const IID  IID_IDirect3DIndexBuffer9;
-EXTERN_C const IID  IID_IDirect3DSurface9;
-EXTERN_C const IID  IID_IDirect3DVolume9;
-EXTERN_C const IID  IID_IDirect3DQuery9;
-#ifndef D3D_DISABLE_9EX
-EXTERN_C const IID  IID_IDirect3D9Ex;
-EXTERN_C const IID  IID_IDirect3DDevice9Ex;
-EXTERN_C const IID  IID_IDirect3DSwapChain9Ex;
-EXTERN_C const IID  IID_IDirect3D9ExOverlayExtension;
-EXTERN_C const IID  IID_IDirect3DDevice9Video;
-EXTERN_C const IID  IID_IDirect3DAuthenticatedChannel9;
-EXTERN_C const IID  IID_IDirect3DCryptoSession9;
-#endif
-
 /* IDirect3D9 interface */
 #undef INTERFACE
 #define INTERFACE   IDirect3D9
@@ -3122,5 +3094,33 @@ HRESULT WINAPI      Direct3DCreate9Ex( UINT, IDirect3D9Ex ** );
 #endif
 
 :include cpluspro.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IDirect3D9;
+EXTERN_C const IID  __cdecl IID_IDirect3DDevice9;
+EXTERN_C const IID  __cdecl IID_IDirect3DStateBlock9;
+EXTERN_C const IID  __cdecl IID_IDirect3DSwapChain9;
+EXTERN_C const IID  __cdecl IID_IDirect3DResource9;
+EXTERN_C const IID  __cdecl IID_IDirect3DVertexDeclaration9;
+EXTERN_C const IID  __cdecl IID_IDirect3DVertexShader9;
+EXTERN_C const IID  __cdecl IID_IDirect3DPixelShader9;
+EXTERN_C const IID  __cdecl IID_IDirect3DBaseTexture9;
+EXTERN_C const IID  __cdecl IID_IDirect3DTexture9;
+EXTERN_C const IID  __cdecl IID_IDirect3DVolumeTexture9;
+EXTERN_C const IID  __cdecl IID_IDirect3DCubeTexture9;
+EXTERN_C const IID  __cdecl IID_IDirect3DVertexBuffer9;
+EXTERN_C const IID  __cdecl IID_IDirect3DIndexBuffer9;
+EXTERN_C const IID  __cdecl IID_IDirect3DSurface9;
+EXTERN_C const IID  __cdecl IID_IDirect3DVolume9;
+EXTERN_C const IID  __cdecl IID_IDirect3DQuery9;
+#ifndef D3D_DISABLE_9EX
+EXTERN_C const IID  __cdecl IID_IDirect3D9Ex;
+EXTERN_C const IID  __cdecl IID_IDirect3DDevice9Ex;
+EXTERN_C const IID  __cdecl IID_IDirect3DSwapChain9Ex;
+EXTERN_C const IID  __cdecl IID_IDirect3D9ExOverlayExtension;
+EXTERN_C const IID  __cdecl IID_IDirect3DDevice9Video;
+EXTERN_C const IID  __cdecl IID_IDirect3DAuthenticatedChannel9;
+EXTERN_C const IID  __cdecl IID_IDirect3DCryptoSession9;
+#endif
 
 #endif /* _D3D9_H_ */

@@ -38,6 +38,7 @@
 #include "walloca.h"
 #include "wresset2.h"
 #include "loadstr.h"
+#include "wresrtns.h"
 
 extern WResDir    MainDir;
 

@@ -37,6 +37,7 @@
 #include "mad.h"
 #include "madimp.h"
 #include "madcli.h"
+#include "madsys.h"
 
 HMODULE MADLastHandle;  /* for Dr. WATCOM */
 
@@ -51,21 +52,18 @@ void Say( char *buff )
 #endif
 
 
-void MADSysUnload( unsigned long sys_hdl )
+void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    void        (DIGENTRY *fini_func)(void) = (void *)sys_hdl;
-
-    if( fini_func != NULL ) {
-        fini_func();
+    if( *sys_hdl != NULL ) {
+        (*sys_hdl)();
     }
 }
 
 
 mad_status MADSysLoad( char *path, mad_client_routines *cli,
-                                mad_imp_routines **imp, unsigned long *sys_hdl )
+                                mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
     HINSTANCE           dll;
-    mad_imp_routines    *(DIGENTRY *init_func)( mad_status *, mad_client_routines * );
     char                newpath[256];
     mad_status          status;
     char                parm[10];
@@ -80,15 +78,15 @@ mad_status MADSysLoad( char *path, mad_client_routines *cli,
         WORD            reserved;
     }                   parm_block;
     struct {
-        INTER_FUNC      *load;
-        INTER_FUNC      *unload;
+        mad_init_func   *load;
+        mad_fini_func   *unload;
     }                   transfer_block;
     char                *p;
     UINT                prev;
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    *sys_hdl = 0;
+    *sys_hdl = NULL_SYSHDL;
     p = parm;
     *p++ = ' ';
     utoa( FP_SEG( &transfer_block ), p, 16 );
@@ -110,16 +108,11 @@ mad_status MADSysLoad( char *path, mad_client_routines *cli,
     if( (UINT)dll < 32 ) {
         return( MS_ERR|MS_FOPEN_FAILED );
     }
-    *sys_hdl = (unsigned long)transfer_block.unload;
-    init_func = (mad_imp_routines*(DIGENTRY*)(mad_status*,mad_client_routines*)) transfer_block.load;
-    if( init_func == NULL ) {
-        MADSysUnload( *sys_hdl );
-        return( MS_ERR|MS_INVALID_MAD );
+    status = MS_ERR|MS_INVALID_MAD;
+    if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
+        *sys_hdl = transfer_block.unload;
+        return( MS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        MADSysUnload( *sys_hdl );
-        return( status );
-    }
-    return( MS_OK );
+    MADSysUnload( &transfer_block.unload );
+    return( status );
 }

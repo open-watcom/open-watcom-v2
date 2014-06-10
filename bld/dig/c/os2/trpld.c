@@ -35,7 +35,6 @@
 #define INCL_DOSMISC
 #include <os2.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include <stdio.h>
 #include "trptypes.h"
 #include "tcerr.h"
@@ -83,13 +82,14 @@ void KillTrap( void )
 char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char                trpfile[256];
-    int                 len;
+    unsigned            len;
     char                *ptr;
     char                *parm;
     unsigned            rc;
     trap_init_func      *init_func;
 
-    if( trapbuff == NULL ) trapbuff = "std";
+    if( trapbuff == NULL )
+        trapbuff = "std";
     ptr = trapbuff;
     while( *ptr != '\0' && *ptr != ';' ) {
         ++ptr;
@@ -119,28 +119,24 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
         return( buff );
     }
     strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
-    if( DosGetProcAddr( TrapFile, "#1", (PFN FAR *)&init_func ) != 0
-     || DosGetProcAddr( TrapFile, "#2", (PFN FAR *)&FiniFunc ) != 0
-     || DosGetProcAddr( TrapFile, "#3", (PFN FAR *)&ReqFunc ) != 0 ) {
-        KillTrap();
-        return( buff );
+    if( DosGetProcAddr( TrapFile, "#1", (PFN FAR *)&init_func ) == 0
+      && DosGetProcAddr( TrapFile, "#2", (PFN FAR *)&FiniFunc ) == 0
+      && DosGetProcAddr( TrapFile, "#3", (PFN FAR *)&ReqFunc ) == 0 ) {
+        if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
+            InfoFunc = NULL;
+        }
+        if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
+            HardFunc = NULL;
+        }
+        *trap_ver = init_func( parm, buff, trap_ver->remote );
+        if( buff[0] == '\0' ) {
+            if( TrapVersionOK( *trap_ver ) ) {
+                TrapVer = *trap_ver;
+                return( NULL );
+            }
+            strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
+        }
     }
-    if( DosGetProcAddr( TrapFile, "#4", (PFN FAR *)&InfoFunc ) != 0 ) {
-        InfoFunc = NULL;
-    }
-    if( DosGetProcAddr( TrapFile, "#5", (PFN FAR *)&HardFunc ) != 0 ) {
-        HardFunc = NULL;
-    }
-    *trap_ver = init_func( parm, trpfile, trap_ver->remote );
-    if( trpfile[0] != '\0' ) {
-        strcpy( buff, (char *)trpfile );
-        KillTrap();
-        return( buff );
-    }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( buff );
-    }
-    TrapVer = *trap_ver;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }

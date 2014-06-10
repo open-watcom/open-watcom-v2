@@ -39,11 +39,12 @@
 #include "wreglbl.h"
 #include "wremain.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wrestrdp.h"
 #include "wrectl3d.h"
-#include "wremem.h"
 #include "wregetfn.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -133,7 +134,7 @@ void WRESetFileFilter( char *filter )
 void WREFreeFileFilter( void )
 {
     if( LastFileFilter != NULL ) {
-        WREMemFree( LastFileFilter );
+        WRMemFree( LastFileFilter );
     }
 }
 
@@ -177,7 +178,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
 {
     OPENFILENAME  wreofn;
     HWND          owner_window;
-    Bool          ret;
+    bool          ret;
     DWORD         error;
     int           len;
     char          fn_drive[_MAX_DRIVE];
@@ -247,7 +248,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     wreofn.lpstrInitialDir = wre_initial_dir;
     wreofn.lpstrTitle = wrefntitle;
     wreofn.Flags = flags;
-    wreofn.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)WREOpenHookProc, app_inst );
+    wreofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WREOpenHookProc, app_inst );
 
 #if 0
     wreofn.nFileOffset = 0L;
@@ -318,10 +319,10 @@ UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
         //WRECtl3dSubclassDlg( hwnd, CTL3D_ALL );
 
-        title = WREAllocRCString( WRE_GETFNCOMBOTITLE );
+        title = AllocRCString( WRE_GETFNCOMBOTITLE );
         if( title != NULL ) {
             SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
-            WREFreeRCString( title );
+            FreeRCString( title );
         }
         return( TRUE );
     }

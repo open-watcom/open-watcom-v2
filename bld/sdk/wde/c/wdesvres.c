@@ -36,7 +36,6 @@
 #include "wresall.h"
 #include "wderesin.h"
 #include "wdeactn.h"
-#include "wdemem.h"
 #include "wdei2mem.h"
 #include "wdecsize.h"
 #include "wdefdiag.h"
@@ -50,10 +49,10 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool          WdeInfoToData( WdeResInfo * );
+static bool          WdeInfoToData( WdeResInfo * );
 static void          WdeFreeInfoData( WdeResInfo * );
 static WResResNode  *WdeRenameWResResNode( WResTypeNode *, WResResNode *, WResID * );
-static Bool          WdeAddResToType( WResTypeNode *, WResResNode * );
+static bool          WdeAddResToType( WResTypeNode *, WResResNode * );
 static WResTypeNode *WdeAddTypeToDir( WResDir, uint_16 );
 static WResResNode  *WdeCreateWResResNode( uint_16, WResID *, WResLangType *, uint_16, uint_32, uint_32, void * );
 static WResTypeNode *WdeAllocWResTypeNode( uint_16 );
@@ -64,7 +63,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *, uint_16, uint_32, uin
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WdeCreateDLGName( char *filename, char *newname )
+bool WdeCreateDLGName( char *filename, char *newname )
 {
     char        fn_drive[_MAX_DRIVE];
     char        fn_dir[_MAX_DIR];
@@ -81,9 +80,9 @@ Bool WdeCreateDLGName( char *filename, char *newname )
     return( FALSE );
 }
 
-Bool WdeSaveResourceToFile( WdeResInfo *res_info )
+bool WdeSaveResourceToFile( WdeResInfo *res_info )
 {
-    Bool        ok;
+    bool        ok;
     char        fn[_MAX_PATH];
 
     WdeSetWaitCursor( TRUE );
@@ -141,7 +140,7 @@ Bool WdeSaveResourceToFile( WdeResInfo *res_info )
     return( ok );
 }
 
-Bool WdeInfoToData( WdeResInfo *info )
+bool WdeInfoToData( WdeResInfo *info )
 {
     WResTypeNode        *dnode;
     WResResNode         *rnode;
@@ -177,7 +176,7 @@ Bool WdeInfoToData( WdeResInfo *info )
             if( data != NULL ) {
                 rnode = WdeRenameWResResNode( dnode, ditem->rnode, ditem->dialog_name );
                 if( rnode == NULL ) {
-                    WdeMemFree( data );
+                    WRMemFree( data );
                     return( FALSE );
                 }
                 ditem->rnode = rnode;
@@ -203,13 +202,13 @@ Bool WdeInfoToData( WdeResInfo *info )
                     ditem->rnode = rnode;
                     ditem->lnode = rnode->Head;
                 } else {
-                    WdeMemFree( rnode->Head );
-                    WdeMemFree( rnode );
-                    WdeMemFree( data );
+                    WRMemFree( rnode->Head );
+                    WRMemFree( rnode );
+                    WRMemFree( data );
                     return( FALSE );
                 }
             } else {
-                WdeMemFree( data );
+                WRMemFree( data );
                 return( FALSE );
             }
 
@@ -244,7 +243,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
             name = WdeCopyWResID( name );
             if( name != NULL ) {
                 if( ditem->dialog_name != NULL ) {
-                    WdeMemFree( ditem->dialog_name );
+                    WRMemFree( ditem->dialog_name );
                 }
                 ditem->dialog_name = name;
             }
@@ -265,7 +264,7 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
     return( dbi );
 }
 
-Bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
+bool WdeGetItemData( WdeResDlgItem *ditem, void *data, uint_32 *size )
 {
     WdeDialogBoxInfo   *dbi;
 
@@ -313,13 +312,13 @@ WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WRes
         if( rnode->Next != NULL ) {
             rnode->Next->Prev = new_rnode;
         }
-        WdeMemFree( rnode );
+        WRMemFree( rnode );
     }
 
     return( new_rnode );
 }
 
-Bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
+bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
 {
     if( tnode == NULL || rnode == NULL ) {
         return( FALSE );
@@ -369,7 +368,7 @@ WResTypeNode *WdeAllocWResTypeNode( uint_16 type )
 {
     WResTypeNode *tnode;
 
-    tnode = (WResTypeNode *)WdeMemAlloc( sizeof( WResTypeNode ) );
+    tnode = (WResTypeNode *)WRMemAlloc( sizeof( WResTypeNode ) );
 
     if( tnode != NULL ) {
         memset( tnode, 0, sizeof( WResTypeNode ) );
@@ -395,7 +394,7 @@ WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
             rnode->Head = lnode;
             rnode->Tail = lnode;
         } else {
-            WdeMemFree( lnode );
+            WRMemFree( lnode );
         }
     }
 
@@ -417,7 +416,7 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
             len += name->ID.Name.NumChars - 1;
         }
     }
-    new_rnode = (WResResNode *)WdeMemAlloc( len );
+    new_rnode = (WResResNode *)WRMemAlloc( len );
 
     if( new_rnode != NULL ) {
         new_rnode->Head = NULL;
@@ -447,7 +446,7 @@ WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
         return( NULL );
     }
 
-    new_lnode = (WResLangNode *)WdeMemAlloc( sizeof( WResLangNode ) );
+    new_lnode = (WResLangNode *)WRMemAlloc( sizeof( WResLangNode ) );
 
     if( new_lnode != NULL ) {
         new_lnode->Next = NULL;

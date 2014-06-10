@@ -92,8 +92,8 @@ void CreateListBox( HWND parent, ListBoxInfo *info )
  */
 void ResizeListBox( WORD width, WORD height, ListBoxInfo *info )
 {
-    int         nheight;
-    int         nwidth;
+    int     nheight;
+    int     nwidth;
 
     nheight = height - info->ypos - info->hinthite;
     if( nheight < 0 ) {

@@ -46,23 +46,23 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND, int, Bool *);
-extern WResID           *WdeGetWResIDFromEdit( HWND, int, Bool *);
+extern ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND, int, bool *);
+extern WResID           *WdeGetWResIDFromEdit( HWND, int, bool *);
 extern void             WdeSetEditWithWResID( WResID *, HWND, int );
 extern void             WdeSetEditWithResNameOr( ResNameOrOrdinal *, HWND, int );
 extern void             WdeSetEditWithControlClass( ControlClass *, HWND, int );
-extern ControlClass     *WdeGetControlClassFromEdit( HWND, int, Bool * );
+extern ControlClass     *WdeGetControlClassFromEdit( HWND, int, bool * );
 extern void             WdeSetComboWithStr( char *, HWND, int );
 extern void             WdeSetEditWithStr( char *, HWND, int );
 extern void             WdeSetEditWithUINT32( uint_32, int, HWND, int );
 extern void             WdeSetEditWithSINT32( int_32, int, HWND, int );
 extern void             WdeSetEditWithUINT16( uint_16, int, HWND, int );
 extern void             WdeSetEditWithSINT16( int_16, int, HWND, int );
-extern int_32           WdeGetSINT32FromEdit( HWND, int, Bool * );
-extern uint_32          WdeGetUINT32FromEdit( HWND, int, Bool * );
-extern int_16           WdeGetSINT16FromEdit( HWND, int, Bool * );
-extern uint_16          WdeGetUINT16FromEdit( HWND, int, Bool * );
-extern char             *WdeGetStrFromEdit( HWND, int, Bool * );
+extern int_32           WdeGetSINT32FromEdit( HWND, int, bool * );
+extern uint_32          WdeGetUINT32FromEdit( HWND, int, bool * );
+extern int_16           WdeGetSINT16FromEdit( HWND, int, bool * );
+extern uint_16          WdeGetUINT16FromEdit( HWND, int, bool * );
+extern char             *WdeGetStrFromEdit( HWND, int, bool * );
 extern char             *WdeGetStrFromCombo( HWND, int );
 extern uint_32          WdeGetUINT32FromCombo( HWND, int );
 extern char             *WdeGetStrFromListBox( HWND, int, int );

@@ -49,9 +49,9 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern BOOL WdeIsTestMessage( MSG * );
-extern Bool WdeGetTestMode( void );
-extern Bool WdeHandleTestModeMenu( WdeResInfo * );
-extern Bool WdeSetTestControlDefaults( HWND );
+extern bool WdeGetTestMode( void );
+extern bool WdeHandleTestModeMenu( WdeResInfo * );
+extern bool WdeSetTestControlDefaults( HWND );
 WINEXPORT extern BOOL CALLBACK WdeTestDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 #endif

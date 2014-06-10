@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include "ppc.h"
 #include "madregs.h"

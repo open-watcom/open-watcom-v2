@@ -36,7 +36,6 @@
 #include <malloc.h>
 #include <math.h>
 #include <limits.h>
-#include "wrdll.h"
 #include "wrbitmap.h"
 #include "wricon.h"
 #include "wrselft.h"
@@ -277,13 +276,13 @@ static BOOL getSaveFName( char *fname, int imgtype )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in WIN32, you will not get the nice dialog! */
-    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)SaveHook, Instance );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
     ret_val = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (LPVOID)of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
 
     if( ret_val ) {
@@ -1162,11 +1161,11 @@ static BOOL getSavePalName( char *fname )
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 #if !defined( __NT__ ) 
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPVOID)MakeProcInstance( (LPVOID)SaveHook, Instance );
+    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (LPVOID)of.lpfnHook );
+    FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
     return( rc );
 

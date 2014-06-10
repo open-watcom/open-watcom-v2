@@ -270,16 +270,16 @@ BOOL WRAPI WRCreateDLGInclude( WResDir *dir, char *include )
     }
 
     if( type != NULL ) {
-        WRMemFree( type );
+        MemFree( type );
     }
 
     if( res != NULL ) {
-        WRMemFree( res );
+        MemFree( res );
     }
 
     if( !ok ) {
         if( str != NULL ) {
-            WRMemFree( str );
+            MemFree( str );
         }
     }
 
@@ -310,7 +310,7 @@ WRHashTable * WRAPI WRInitHashTable( void )
 {
     WRHashTable         *table;
 
-    table = (WRHashTable *)WRMemAlloc( sizeof( WRHashTable ) );
+    table = (WRHashTable *)MemAlloc( sizeof( WRHashTable ) );
     if( table == NULL ) {
         return( NULL );
     }
@@ -336,11 +336,11 @@ void WRAPI WRFreeHashTable( WRHashTable *table )
                 break;
             }
             table->names[nhash] = entry->name_next;
-            WRMemFree( entry );
+            MemFree( entry );
         }
     }
 
-    WRMemFree( table );
+    MemFree( table );
 }
 
 BOOL WRAPI WRMergeHashTable( WRHashTable **dest, WRHashTable *src )
@@ -499,7 +499,7 @@ BOOL WRAPI WRWriteSymbolsToFile( WRHashTable *table, char *filename )
         return( FALSE );
     }
 
-    tbl = (WRHashEntry **)WRMemAlloc( sizeof( WRHashEntry * ) * table->count );
+    tbl = (WRHashEntry **)MemAlloc( sizeof( WRHashEntry * ) * table->count );
     if( tbl == NULL ) {
         return( FALSE );
     }
@@ -677,7 +677,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue 
 
     WRStripSymbol( symbol );
     if( !WRIsValidSymbol( symbol ) ) {
-        WRMemFree( symbol );
+        MemFree( symbol );
         return( NULL );
     }
 
@@ -711,7 +711,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue 
     }
 
     size = sizeof( WRHashEntry ) + strlen( symbol );
-    entry = (WRHashEntry *)WRMemAlloc( size );
+    entry = (WRHashEntry *)MemAlloc( size );
     if( entry != NULL ) {
         nhash = WRGetNameHash( symbol );
         vhash = WRGetValueHash( value );
@@ -736,7 +736,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue 
         table->flags |= WR_HASH_DIRTY;
     }
 
-    WRMemFree( symbol );
+    MemFree( symbol );
 
     return( entry );
 }
@@ -779,7 +779,7 @@ BOOL WRAPI WRRemoveName( WRHashTable *table, char *name )
 
     table->count--;
     table->flags |= WR_HASH_DIRTY;
-    WRMemFree( entry );
+    MemFree( entry );
 
     return( TRUE );
 }
@@ -867,7 +867,7 @@ static BOOL WRValueListInsert( WRHashValueList **list, WRHashEntry *entry )
         return( FALSE );
     }
 
-    new = WRMemAlloc( sizeof( WRHashValueList ) );
+    new = MemAlloc( sizeof( WRHashValueList ) );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -885,7 +885,7 @@ void WRAPI WRValueListFree( WRHashValueList *list )
 
     while( list != NULL ) {
         next = list->next;
-        WRMemFree( list );
+        MemFree( list );
         list = next;
     }
 }
@@ -1164,7 +1164,7 @@ static BOOL WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, BOOL mod
     }
 
     if( info.symbol != NULL ) {
-        WRMemFree( info.symbol );
+        MemFree( info.symbol );
     }
 
     return( ret );
@@ -1519,7 +1519,7 @@ static BOOL WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 
     WRStripSymbol( info->symbol );
     if( !WRIsValidSymbol( info->symbol ) ) {
-        WRMemFree( info->symbol );
+        MemFree( info->symbol );
         info->symbol = NULL;
         return( FALSE );
     }
@@ -1538,7 +1538,7 @@ static void WRSetAddSymOK( HWND hDlg )
     if( str != NULL ) {
         WRStripSymbol( str );
         enable = WRIsValidSymbol( str );
-        WRMemFree( str );
+        MemFree( str );
     }
 
     if( enable ) {

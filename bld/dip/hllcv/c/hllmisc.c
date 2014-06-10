@@ -48,7 +48,7 @@ const char      DIPImpName[] = "HLL/CV";
 /*
  * Get the size of a handle.
  */
-unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         sizeof( imp_image_handle ),
@@ -63,7 +63,7 @@ unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
 /*
  * Free memory.
  */
-dip_status DIPENTRY DIPImpMoreMem( unsigned size )
+dip_status DIGENTRY DIPImpMoreMem( unsigned size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
@@ -72,7 +72,7 @@ dip_status DIPENTRY DIPImpMoreMem( unsigned size )
 /*
  * Module startup.
  */
-dip_status DIPENTRY DIPImpStartup(void)
+dip_status DIGENTRY DIPImpStartup(void)
 {
     return( DS_OK );
 }
@@ -80,14 +80,14 @@ dip_status DIPENTRY DIPImpStartup(void)
 /*
  * Module shutdown.
  */
-void DIPENTRY DIPImpShutdown( void )
+void DIGENTRY DIPImpShutdown( void )
 {
 }
 
 /*
  * ?
  */
-void DIPENTRY DIPImpCancel( void )
+void DIGENTRY DIPImpCancel( void )
 {
 }
 

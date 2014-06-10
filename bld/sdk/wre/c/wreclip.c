@@ -40,8 +40,8 @@
 #include "wregcres.h"
 #include "wre_wres.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wredel.h"
 #include "wrenames.h"
 #include "wredde.h"
@@ -84,7 +84,7 @@ typedef struct WREClipData {
     uint_32     data_offset;
     uint_16     type;
     uint_16     memflags;
-    Bool        is32bit;
+    bool        is32bit;
     BYTE        name[1];
 } WREClipData;
 
@@ -98,10 +98,10 @@ typedef struct WREPasteData {
 /* static function prototypes                                               */
 /****************************************************************************/
 static WREClipData  *WRECreateClipData( WRECurrentResInfo *curr );
-static Bool         WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize );
-static Bool         WREClipBitmap( WRECurrentResInfo *curr, HWND main );
-static Bool         WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt );
-static Bool         WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace );
+static bool         WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize );
+static bool         WREClipBitmap( WRECurrentResInfo *curr, HWND main );
+static bool         WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt );
+static bool         WREQueryPasteReplace( WResID *name, uint_16 type, bool *replace );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -124,9 +124,9 @@ static WREClipFormat WREClipFormats[] = {
 
 static HBITMAP WPrivateFormat       = NULL;
 
-Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
+bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 {
-    Bool        ok;
+    bool        ok;
     HANDLE      hclipdata;
     void        *mem;
 
@@ -157,7 +157,7 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *data = WREMemAlloc( *dsize );
+        *data = WRMemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -167,7 +167,7 @@ Bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
 
     if( !ok ) {
         if( *data ) {
-            WREMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
             *dsize = 0;
         }
@@ -218,15 +218,15 @@ static WResID *WREGetClipDataName( WREClipData *clip_data )
     return( name );
 }
 
-static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
-                                    WResID **name, Bool *replace )
+static bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
+                                    WResID **name, bool *replace )
 {
     WRECurrentResInfo   curr;
     WREResRenameInfo    ren_info;
     uint_16             t;
     WResLangType        lang;
-    Bool                exists;
-    Bool                ok;
+    bool                exists;
+    bool                ok;
 
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
@@ -262,7 +262,7 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
                 ren_info.new_name = NULL;
                 ok = (WREGetNewName( &ren_info ) && ren_info.new_name != NULL);
                 if( ok ) {
-                    WREMemFree( *name );
+                    WRMemFree( *name );
                     *name = ren_info.new_name;
                 }
             }
@@ -277,7 +277,7 @@ static Bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
     return( ok );
 }
 
-static Bool WREGetAndPasteResource( WREClipFormat *fmt )
+static bool WREGetAndPasteResource( WREClipFormat *fmt )
 {
     WRETypeName         *tn;
     WRECurrentResInfo   curr;
@@ -288,9 +288,9 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     void                *data;
     uint_32             dsize;
     int                 dup;
-    Bool                new_type;
-    Bool                replace;
-    Bool                ok;
+    bool                new_type;
+    bool                replace;
+    bool                ok;
 
     cdata = NULL;
     cname = NULL;
@@ -322,7 +322,7 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        data = WREMemAlloc( cdata->data_size );
+        data = WRMemAlloc( cdata->data_size );
         ok = (data != NULL);
     }
 
@@ -362,27 +362,27 @@ static Bool WREGetAndPasteResource( WREClipFormat *fmt )
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
     return( ok );
 }
 
-static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
+static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
 {
     WRECurrentResInfo   curr;
     WREClipData         *cdata;
@@ -392,9 +392,9 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     void                *data;
     uint_32             dsize;
     int                 dup;
-    Bool                new_type;
-    Bool                replace;
-    Bool                ok;
+    bool                new_type;
+    bool                replace;
+    bool                ok;
 
     cdata = NULL;
     cname = NULL;
@@ -421,7 +421,7 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        data = WREMemAlloc( cdata->data_size );
+        data = WRMemAlloc( cdata->data_size );
         ok = (data != NULL);
     }
 
@@ -470,40 +470,40 @@ static Bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
     return( ok );
 }
 
-static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize )
+static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize )
 {
     WRECurrentResInfo   curr;
     WResLangType        lang;
     WResID              *ctype;
     WResID              *cname;
     int                 dup;
-    Bool                new_type;
-    Bool                replace;
-    Bool                ok;
+    bool                new_type;
+    bool                replace;
+    bool                ok;
 
     cname = NULL;
     ctype = NULL;
@@ -556,21 +556,21 @@ static Bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     }
 
     if( cname != NULL ) {
-        WREMemFree( cname );
+        WRMemFree( cname );
     }
 
     if( ctype != NULL ) {
-        WREMemFree( ctype );
+        WRMemFree( ctype );
     }
 
     return( ok );
 }
 
-static Bool WREGetAndPasteDIB( WREClipFormat *fmt )
+static bool WREGetAndPasteDIB( WREClipFormat *fmt )
 {
     void                *data;
     uint_32             dsize;
-    Bool                ok;
+    bool                ok;
 
     data = NULL;
 
@@ -586,19 +586,19 @@ static Bool WREGetAndPasteDIB( WREClipFormat *fmt )
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
     return( ok );
 }
 
-static Bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
+static bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 {
     HBITMAP             hbitmap;
     void                *data;
     uint_32             dsize;
-    Bool                ok;
+    bool                ok;
 
     data = NULL;
 
@@ -623,7 +623,7 @@ static Bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 
     if( !ok ) {
         if( data != NULL ) {
-            WREMemFree( data );
+            WRMemFree( data );
         }
     }
 
@@ -638,9 +638,9 @@ void WREFiniClipboard( void )
     WRForgetBitmapName();
 }
 
-Bool WRERegisterClipFormats( HINSTANCE inst )
+bool WRERegisterClipFormats( HINSTANCE inst )
 {
-    Bool        ok;
+    bool        ok;
     int         i;
 
     WPrivateFormat = LoadBitmap( inst, "PrivateFmt" );
@@ -703,7 +703,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
     void        *name;
     uint_32     name_size;
     uint_16     type;
-    Bool        ok;
+    bool        ok;
 
     cdata = NULL;
     rdata = NULL;
@@ -738,7 +738,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 
     if( ok ) {
         cdata_size = sizeof( WREClipData ) + name_size + rdata_size - 1;
-        cdata = (WREClipData *)WREMemAlloc( cdata_size );
+        cdata = (WREClipData *)WRMemAlloc( cdata_size );
         ok = (cdata != NULL);
     }
 
@@ -753,28 +753,28 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         memcpy( &cdata->name[name_size], rdata, rdata_size );
     } else {
         if( cdata != NULL ) {
-            WREMemFree( cdata );
+            WRMemFree( cdata );
             cdata = NULL;
         }
     }
 
     if( rdata != NULL ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
     }
 
     if( name != NULL ) {
-        WREMemFree( name );
+        WRMemFree( name );
     }
 
     return( cdata );
 }
 
-Bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
+bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
 {
     HBITMAP     hbitmap;
     BYTE        *data;
     uint_32     dsize;
-    Bool        ok;
+    bool        ok;
 
     data = NULL;
     hbitmap = (HBITMAP)NULL;
@@ -812,18 +812,18 @@ Bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     }
 
     if( data != NULL ) {
-        WREMemFree( data );
+        WRMemFree( data );
     }
 
     return( ok );
 }
 
-Bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
+bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
 {
     WREClipData *cdata;
     HGLOBAL     hmem;
     BYTE        *mem;
-    Bool        ok;
+    bool        ok;
     HINSTANCE   inst;
 
     cdata = NULL;
@@ -869,18 +869,18 @@ Bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
     }
 
     if( cdata != NULL ) {
-        WREMemFree( cdata );
+        WRMemFree( cdata );
     }
 
     return( ok );
 }
 
-Bool WREClipCurrentResource( HWND main, Bool cut )
+bool WREClipCurrentResource( HWND main, bool cut )
 {
     WRECurrentResInfo   curr;
     WREClipFormat       *fmt;
     uint_16             type;
-    Bool                ok;
+    bool                ok;
 
     WREGetCurrentResource( &curr );
 
@@ -919,12 +919,12 @@ Bool WREClipCurrentResource( HWND main, Bool cut )
     return( ok );
 }
 
-Bool WREPasteResource( HWND main )
+bool WREPasteResource( HWND main )
 {
     uint_16             type;
     WREClipFormat       *fmt;
-    Bool                clipbd_open;
-    Bool                ok;
+    bool                clipbd_open;
+    bool                ok;
 
     type = 0;
     clipbd_open = FALSE;
@@ -957,7 +957,7 @@ Bool WREPasteResource( HWND main )
     return( ok );
 }
 
-Bool WREQueryPasteReplace( WResID *name, uint_16 type, Bool *replace )
+bool WREQueryPasteReplace( WResID *name, uint_16 type, bool *replace )
 {
     WREPasteData        pdata;
     HWND                dialog_owner;
@@ -999,10 +999,10 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
 
     tn = WREGetTypeNameFromRT( pdata->type );
     if( tn != NULL ) {
-        text = WREAllocRCString( tn->name );
+        text = AllocRCString( tn->name );
         WRESetEditWithStr( GetDlgItem( hDlg, IDM_PASTE_TYPE ), text );
         if( text != NULL ) {
-            WREFreeRCString( text );
+            FreeRCString( text );
         }
     }
     WRESetEditWithWResID( GetDlgItem( hDlg, IDM_PASTE_NAME ), pdata->name );

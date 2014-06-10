@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 WResID *WResReadWResID( WResFileID handle )
 /*****************************************/

@@ -9,6 +9,7 @@
 #include "taskctl.h"
 #include "about.h"
 #include "rcstr.gh"
+#include "uistr.gh"
 #include "dbgopt.h"
 #include "segmap.h"
 #include "dipload.h"
@@ -35,6 +36,7 @@ BEGIN
   #endif
 
     #include "rcstrmsg.gh"
+    #include "uistrmsg.gh"
 
     #undef pick
 END

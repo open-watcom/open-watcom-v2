@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wderes.h"
 #include "wdeinfo.h"
 #include "wdereq.h"
@@ -74,12 +73,12 @@ void    WdeMouseRtn( HWND, RECT * );
 /* static function prototypes                                               */
 /****************************************************************************/
 static void         WdeSetCurrentRes( WdeResInfo * );
-static Bool         WdeCreateResourceWindow( WdeResInfo *, int, char * );
-static Bool         WdeAddDlgItems( WdeResInfo * );
-static Bool         WdeRemoveResource( WdeResInfo * );
+static bool         WdeCreateResourceWindow( WdeResInfo *, int, char * );
+static bool         WdeAddDlgItems( WdeResInfo * );
+static bool         WdeRemoveResource( WdeResInfo * );
 static char         *WdeGetQueryName( WdeResInfo * );
-static Bool         WdeQuerySaveResOnDeleteRes( WdeResInfo *, Bool );
-static Bool         WdeQuerySaveSymOnDeleteRes( WdeResInfo *, Bool );
+static bool         WdeQuerySaveResOnDeleteRes( WdeResInfo *, bool );
+static bool         WdeQuerySaveSymOnDeleteRes( WdeResInfo *, bool );
 static int          WdeIncNumRes( void );
 static int          WdeDecNumRes( void );
 static WdeResInfo   *WdeResInfoFromWin( HWND );
@@ -112,7 +111,7 @@ static LIST         *WdeResList         = NULL;
 static unsigned     WdeResCounter       = 0;
 static int          WdeNumRes           = 0;
 static WdeResInfo   *WdeCurrentRes      = NULL;
-static Bool         WdeOldStickyMode    = FALSE;
+static bool         WdeOldStickyMode    = FALSE;
 
 static void WdeMassageFilter( char *filter )
 {
@@ -191,9 +190,9 @@ void WdeFiniResStrings( void )
     }
 }
 
-Bool WdeInitResStrings( void )
+bool WdeInitResStrings( void )
 {
-    Bool        ok;
+    bool        ok;
 
     WdeResUntitled = WdeAllocRCString( WDE_UNTITLEDPROJECT );
     ok = (WdeResUntitled != NULL);
@@ -301,7 +300,7 @@ WdeResInfo *WdeGetCurrentRes( void )
     return( WdeCurrentRes );
 }
 
-Bool WdeRegisterResClass( HINSTANCE app_inst )
+bool WdeRegisterResClass( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -371,7 +370,7 @@ void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *item )
 WdeResInfo *WdeCreateNewResource( char *title )
 {
     WdeResInfo  *res_info;
-    Bool        ok;
+    bool        ok;
 
     ok = ((res_info = WdeAllocResInfo()) != NULL);
 
@@ -423,7 +422,7 @@ WdeResInfo *WdeCreateNewResource( char *title )
     return( res_info );
 }
 
-Bool WdeAddDlgItems( WdeResInfo *res_info )
+bool WdeAddDlgItems( WdeResInfo *res_info )
 {
     WResResNode         *rnode;
     WResLangNode        *lnode;
@@ -458,12 +457,12 @@ Bool WdeAddDlgItems( WdeResInfo *res_info )
     return( TRUE );
 }
 
-Bool WdeOpenResource( char *fn )
+bool WdeOpenResource( char *fn )
 {
     char                *name;
     WdeResInfo          *res_info;
     WdeGetFileStruct    gf;
-    Bool                ok, got_name;
+    bool                ok, got_name;
 
     WdeSetWaitCursor( TRUE );
 
@@ -531,7 +530,7 @@ Bool WdeOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WdeMemFree( name );
+        WRMemFree( name );
     }
 
     WdeSetWaitCursor( FALSE );
@@ -561,7 +560,7 @@ void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPARAM lPar
 {
     WdeResInfo  *info;
     OBJPTR      current_obj;
-    Bool        fActivate;
+    bool        fActivate;
     HWND        hwndDeact;
     WORD        id;
 
@@ -636,7 +635,7 @@ char *WdeGetQueryName( WdeResInfo *res_info )
     return( name );
 }
 
-Bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, Bool fatal_exit )
+bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -681,7 +680,7 @@ Bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, Bool fatal_exit )
+bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
 {
     int         ret;
     UINT        style;
@@ -726,9 +725,9 @@ Bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WdeDestroyResourceWindow( WdeResInfo *res_info )
+bool WdeDestroyResourceWindow( WdeResInfo *res_info )
 {
-    Bool        ret;
+    bool        ret;
 
     ret = (res_info != NULL && WdeQuerySaveResOnDeleteRes( res_info, FALSE ) &&
            WdeQuerySaveSymOnDeleteRes( res_info, FALSE ));
@@ -744,13 +743,13 @@ Bool WdeDestroyResourceWindow( WdeResInfo *res_info )
     return( ret );
 }
 
-Bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
+bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
 {
     MDICREATESTRUCT     mdics;
     LRESULT             ret;
     HWND                win;
-    Bool                ok;
-    Bool                old;
+    bool                ok;
+    bool                old;
     DWORD               style;
     RECT                r;
     HMENU               sys_menu;
@@ -784,7 +783,7 @@ Bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
         } else {
             WdeResCounter++;
             win_title_len = strlen( WdeResUntitled ) + 7;
-            win_title = (char *)WdeMemAlloc( win_title_len );
+            win_title = (char *)WRMemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WdeResUntitled, 0xffff & WdeResCounter );
             mdics.szTitle = win_title;
         }
@@ -808,7 +807,7 @@ Bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
     ret = SendMessage( win, WM_MDICREATE, 0, (LPARAM)&mdics );
 
     if( win_title != NULL ) {
-        WdeMemFree( win_title );
+        WRMemFree( win_title );
     }
 
 #ifdef __NT__
@@ -875,14 +874,14 @@ char *WdeSelectSaveFilter( WRFileType ftype )
     return( filter );
 }
 
-Bool WdeSaveResource( WdeResInfo *res_info, Bool get_name )
+bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
 {
     WdeGetFileStruct    gf;
     char                *filter;
     char                *fn;
     int                 fn_offset;
-    Bool                got_name;
-    Bool                ok;
+    bool                got_name;
+    bool                ok;
     OBJPTR              main_obj;
 
     fn_offset = 0;
@@ -914,7 +913,7 @@ Bool WdeSaveResource( WdeResInfo *res_info, Bool get_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WdeMemFree( res_info->info->save_name );
+            WRMemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {
@@ -961,11 +960,11 @@ Bool WdeSaveResource( WdeResInfo *res_info, Bool get_name )
     return( ok );
 }
 
-Bool WdeQueryKillApp( Bool fatal_exit )
+bool WdeQueryKillApp( bool fatal_exit )
 {
     LIST        *rlist;
     WdeResInfo  *res_info;
-    Bool        kill_app;
+    bool        kill_app;
 
     if( WdeResList != NULL ) {
         kill_app = TRUE;
@@ -1000,7 +999,7 @@ void WdeFreeResList( void )
     }
 }
 
-Bool WdeRemoveResource( WdeResInfo *res_info )
+bool WdeRemoveResource( WdeResInfo *res_info )
 {
     LIST *node;
 
@@ -1031,8 +1030,8 @@ Bool WdeRemoveResource( WdeResInfo *res_info )
     return( TRUE );
 }
 
-Bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
-                                 Bool destroy_object )
+bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
+                                 bool destroy_object )
 {
     WResResNode   *rnode;
     WResLangNode  *lnode;
@@ -1126,12 +1125,12 @@ WINEXPORT LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam
     return( ret );
 }
 
-Bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **di, WResID *id )
+bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **di, WResID *id )
 {
     WdeResInfo      *res_info;
     WdeResDlgItem   *item;
     WResID          *name;
-    Bool            ok;
+    bool            ok;
 
     ok = (dlg != NULL && id != NULL && ri != NULL && di != NULL);
 
@@ -1225,7 +1224,7 @@ OBJPTR WdeIsDialogInList( LIST *l )
     return( NULL );
 }
 
-Bool WdeMouseRtnCreate( HWND win, RECT *r )
+bool WdeMouseRtnCreate( HWND win, RECT *r )
 {
     RECT            *ncp;
     RECT            rect;
@@ -1233,7 +1232,7 @@ Bool WdeMouseRtnCreate( HWND win, RECT *r )
     SUBOBJ_REQUEST  req;
     OBJPTR          obj;
     OBJPTR          ro;
-    Bool            adjust;
+    bool            adjust;
     POINT           pt;
     WdeResizeRatio  resizer;
     WdeResInfo      *info;
@@ -1300,7 +1299,7 @@ Bool WdeMouseRtnCreate( HWND win, RECT *r )
     return( TRUE );
 }
 
-Bool WdeMouseRtnResize( HWND win, RECT *r )
+bool WdeMouseRtnResize( HWND win, RECT *r )
 {
     POINT           pt;
     LIST            *l;
@@ -1311,7 +1310,7 @@ Bool WdeMouseRtnResize( HWND win, RECT *r )
     RECT            rect;
     RECT            nc;
     WdeResizeRatio  resizer;
-    Bool            adjust;
+    bool            adjust;
     WdeResInfo      *info;
     DialogSizeInfo  d;
     SUBOBJ_REQUEST  req;

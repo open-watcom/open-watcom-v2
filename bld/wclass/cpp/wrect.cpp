@@ -49,7 +49,7 @@ void WEXPORT WRect::fitInside( const WRect& r ) {
 bool WEXPORT WRect::contains( WOrdinal x, WOrdinal y ) const {
 /************************************************************/
 
-    return ( ( x >= _x && x <= _x + _w ) && ( y >= _y && y <= _y + _h ) );
+    return( ( x >= _x && x <= _x + _w ) && ( y >= _y && y <= _y + _h ) );
 }
 
 
@@ -58,7 +58,7 @@ bool WEXPORT WRect::contains( WOrdinal x, WOrdinal y ) const {
 WRect * WEXPORT WRect::createSelf( WObjectFile & ) {
 /**************************************************/
 
-    return new WRect();
+    return( new WRect() );
 }
 
 

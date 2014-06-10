@@ -36,47 +36,11 @@
 #include "rcstr.gh"
 
 /* routine to create a message box */
-void WDisplayMsg( const char *msg )
+void WDisplayErrorMsg( UINT msg )
 {
     char        *title;
 
-    title = WAllocRCString( W_ERRMSG );
-
-    if( !MessageBox( (HWND) NULL, msg, title,
-                     MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
-    }
-
-    if( title != NULL ) {
-        WFreeRCString( title );
-    }
-}
-
-char *WAllocRCString( DWORD id )
-{
-    return( AllocRCString( id ) );
-}
-
-void WFreeRCString( char *str )
-{
-    FreeRCString( str );
-}
-
-DWORD WCopyRCString( DWORD id, char *buf, DWORD bufsize )
-{
-    return( CopyRCString( id, buf, bufsize ) );
-}
-
-void WInitDisplayError( HINSTANCE inst )
-{
-    SetInstance( inst );
-}
-
-void WDisplayErrorMsg( DWORD msg )
-{
-    char        *title;
-
-    title = WAllocRCString( W_ERRMSG );
+    title = AllocRCString( W_ERRMSG );
 
     if( !RCMessageBox( (HWND)NULL , msg, title,
                        MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
@@ -84,6 +48,6 @@ void WDisplayErrorMsg( DWORD msg )
     }
 
     if( title != NULL ) {
-        WFreeRCString( title );
+        FreeRCString( title );
     }
 }

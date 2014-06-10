@@ -30,13 +30,12 @@
 
 
 #include "global.h"
+#include "yydriver.h"
+#include "yydrivr2.h"
 #include "rctypes.h"
 #include "semantic.h"
 #include "rcmem.h"
 #include "errors.h"
-#include "os2ytab.h"
-#include "yydrivr2.h"
-#include "scan2.h"
 #include "errprt.h"
 
 #include "os2res.h"

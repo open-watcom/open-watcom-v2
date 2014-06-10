@@ -1,5 +1,7 @@
 proj_name = wprof
 
+wprof_autodepends = .AUTODEPEND
+
 additional_cleanup = usage.u
 
 wprof_trmem = 1

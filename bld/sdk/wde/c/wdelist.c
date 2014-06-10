@@ -31,9 +31,9 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdedebug.h"
 #include "wdelist.h"
+#include "wrdll.h"
 
 void WdeInsertObject( LIST **list, void *obj )
 {
@@ -70,7 +70,7 @@ void WdeListLastElt( LIST *list, LIST **last )
     *last = end;
 }
 
-Bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
+bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
 {
     LIST    *end;
     LIST    *olist;
@@ -86,7 +86,7 @@ Bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
         if( size == 0 ) {
             elt = ListElement( olist );
         } else {
-            elt = WdeMemAlloc( size );
+            elt = WRMemAlloc( size );
             if( elt == NULL ) {
                 return( FALSE );
             }

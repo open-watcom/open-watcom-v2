@@ -60,8 +60,8 @@ Define( MConfig )
 MConfig* MConfig::_configPtr;
 
 MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *include_path )
-    : _ok( FALSE )
-    , _dirty( FALSE )
+    : _ok( false )
+    , _dirty( false )
     , _filename( filename )
     , _debug( debug )
     , _fileFilters( NULL )
@@ -80,7 +80,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
     } host_info[] = {
         #undef pick
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) { batchserv, editor, DLL, parms, pathsep },
-        #include "hosttype.h"
+        #include "hosttype.hpp"
     };
 
     _configPtr = this;
@@ -134,12 +134,12 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
     if( _hostType == HOST_UNDEFINED ) {
         return;
     }
-    _batserv = host_info[ _hostType ].batserv;
+    _batserv = host_info[_hostType].batserv;
     // set editor to default values
-    _editor = host_info[ _hostType ].editor;
-    _editorIsDLL = host_info[ _hostType ].editorIsDLL;
-    _editorParms = host_info[ _hostType ].editorParms;
-    _pathsep = host_info[ _hostType ].pathsep;
+    _editor = host_info[_hostType].editor;
+    _editorIsDLL = host_info[_hostType].editorIsDLL;
+    _editorParms = host_info[_hostType].editorParms;
+    _pathsep = host_info[_hostType].pathsep;
 
     if( _filename.size() == 0 ) {
         _filename = "ide.cfg";
@@ -165,9 +165,9 @@ bool MConfig::readConfig()
     _rules.add( _nilRule );
     if( readFile( _filename ) ) {
         zapTargetMasks();
-        return TRUE;
+        return( true );
     }
-    return FALSE;
+    return( false );
 }
 
 void MConfig::zapTargetMasks()
@@ -175,14 +175,14 @@ void MConfig::zapTargetMasks()
     static char hostChars[] = {
         #undef pick
         #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) type,
-        #include "hosttype.h"
+        #include "hosttype.hpp"
     };
     size_t  i;
     int     j;
 
     for( i=0; i<_hostMask.size(); i++ ) {
         if( _hostMask[i] == '@' ) {
-            _hostMask.setChar( i, hostChars[ _hostType ] );
+            _hostMask.setChar( i, hostChars[_hostType] );
         }
     }
     for( j=0; j<_targets.count(); j++ ) {
@@ -196,7 +196,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
     WTokenFile fil;
     WFileName tmp_name( filename );
 
-    _ok = FALSE;
+    _ok = false;
     if( tmp_name.addPath( _include_path ) ) {
         _ok = fil.open( tmp_name, OStyleRead );
     }
@@ -224,7 +224,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
             } else if( tok == "IncludeFile" ) {
                 WFileName fn;
                 fil.token( fn );
-                if( !readFile( fn, FALSE ) ) break;
+                if( !readFile( fn, false ) ) break;
                 fil.token( tok );
             } else if( tok == "HostMask" ) {
                 fil.token( _hostMask );
@@ -232,7 +232,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
             } else if( tok == "Version" ) {
                 _version = (int)fil.token( tok );
                 if( _version > CUR_CFG_VERSION ) {
-                    _ok = FALSE;
+                    _ok = false;
                     _errMsg.printf( "Configuration file '%s' format is too new.  "
                                     "you must use a newer version of the IDE.",
                                     (const char*)filename );
@@ -250,7 +250,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
                 AddTypo( good, bad );
                 fil.token( tok );
             } else {
-                _ok = FALSE;
+                _ok = false;
                 _errMsg.printf( "Error in '%s', line %d, at '%s'", (const char*)filename, fil.lineCount(), (const char*)tok );
                 break;
             }
@@ -258,7 +258,7 @@ bool MConfig::readFile( const WFileName& filename, bool reqd )
         fil.close();
     }
     buildTargetOSList();
-    return _ok;
+    return( _ok );
 }
 
 MConfig::~MConfig()
@@ -279,7 +279,7 @@ MConfig::~MConfig()
 #ifndef NOPERSIST
 MConfig* WEXPORT MConfig::createSelf( WObjectFile& )
 {
-    return NULL;        //should never be called!
+    return( NULL );     //should never be called!
 }
 
 void WEXPORT MConfig::readSelf( WObjectFile& p )
@@ -425,9 +425,9 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             for( int i=0; i<2; i++ ) {
                 _fileFilters = REALLOC( _fileFilters, size + (tok.size() + 1) + 1 );
                 if( _fileFilters ) {
-                    strcpy( &_fileFilters[ size ], tok );
+                    strcpy( &_fileFilters[size], tok );
                     size += tok.size() + 1;
-                    _fileFilters[ size ] = '\0';
+                    _fileFilters[size] = '\0';
                 }
                 fil.token( tok );
             }
@@ -446,10 +446,10 @@ MTool* MConfig::findTool( WString& tooltag )
     int icount = _tools.count();
     for( int i=0; i<icount; i++ ) {
         if( tooltag == ((MTool*)_tools[i])->tag() ) {
-            return (MTool*)_tools[i];
+            return( (MTool*)_tools[i] );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void MConfig::addRules( WFileName& srcMask, WFileName& tgtMask, WVList& list, WString& tagMask )
@@ -469,10 +469,10 @@ MRule* MConfig::findRule( WString& ruletag )
     for( int i=0; i<icount; i++ ) {
         MRule* rule = (MRule*)_rules[i];
         if( ruletag == rule->tag() ) {
-            return rule;
+            return( rule );
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 MRule* MConfig::findMatchingRule( WFileName& fn, MRule* tgtRule, WString& mask )
@@ -484,10 +484,10 @@ MRule* MConfig::findMatchingRule( WFileName& fn, MRule* tgtRule, WString& mask )
         MSymbol& sym = *(MSymbol*)symbols[i];
         addRules( fn, sym.mask(), list, mask );
         if( list.count() > 0 ) {
-            return (MRule*)list[0];
+            return( (MRule*)list[0] );
         }
     }
-    return nilRule();
+    return( nilRule() );
 }
 
 int MConfig::findMatchingRules( WFileName& fn, WString& mask, WVList& list )
@@ -499,7 +499,7 @@ int MConfig::findMatchingRules( WFileName& fn, WString& mask, WVList& list )
             list.add( rule );
         }
     }
-    return list.count();
+    return( list.count() );
 }
 
 MRule* MConfig::findMatchingRule( WFileName& fn, WString& mask )
@@ -508,10 +508,10 @@ MRule* MConfig::findMatchingRule( WFileName& fn, WString& mask )
     for( int i=0; i<icount; i++ ) {
         MRule* rule = (MRule*)_rules[i];
         if( rule->match( mask, fn ) ) {
-            return rule;
+            return( rule );
         }
     }
-    return nilRule();
+    return( nilRule() );
 }
 
 void MConfig::zapMask( WString& mask )
@@ -528,7 +528,7 @@ void MConfig::kludgeMask( WString& str )
     if( _kludge ) {
         WString temp;
         for( size_t i=0; i<str.size(); i++ ) {
-            temp.concat( str[ i ] );
+            temp.concat( str[i] );
             if( _kludge == 3 && i == 0 ) temp.concat( '?' );
             if( _version > 1 && _kludge == 3 && i == 2 ) temp.concat( '?' );
             if( _version > 1 && _kludge == 4 && i == 3 ) temp.concat( '?' );

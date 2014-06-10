@@ -193,15 +193,6 @@ typedef enum AnnoScope {
     ANNO_CONTAINER  = 1
 } AnnoScope;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IAccessible;
-EXTERN_C const IID      IID_IAccessibleHandler;
-EXTERN_C const IID      IID_IAccIdentity;
-EXTERN_C const IID      IID_IAccPropServer;
-EXTERN_C const IID      IID_IAccPropServices;
-EXTERN_C const IID      LIBID_Accessibility;
-EXTERN_C const CLSID    CLSID_CAccPropServices;
-
 /* IAccessible interface */
 #undef INTERFACE
 #define INTERFACE   IAccessible
@@ -458,5 +449,14 @@ STDAPI              WindowFromAccessibleObject( IAccessible *, HWND * );
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IAccessible;
+EXTERN_C const IID      __cdecl IID_IAccessibleHandler;
+EXTERN_C const IID      __cdecl IID_IAccIdentity;
+EXTERN_C const IID      __cdecl IID_IAccPropServer;
+EXTERN_C const IID      __cdecl IID_IAccPropServices;
+EXTERN_C const IID      __cdecl LIBID_Accessibility;
+EXTERN_C const CLSID    __cdecl CLSID_CAccPropServices;
 
 #endif /* __oleacc_h__ */

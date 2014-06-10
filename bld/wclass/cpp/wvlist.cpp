@@ -52,7 +52,7 @@ WEXPORT WVList::WVList( WVList& x )
     , _free( x._free )
 {
     if( x._set != NULL ) {
-        _set = new WObject*[ _count ];
+        _set = new WObject*[_count];
         for( int i=0; i<_count; i++ ) {
             _set[i] = x._set[i];
         }
@@ -67,7 +67,7 @@ WEXPORT WVList::~WVList()
 #ifndef NOPERSIST
 WVList* WEXPORT WVList::createSelf( WObjectFile& )
 {
-    return new WVList();
+    return( new WVList() );
 }
 
 void WEXPORT WVList::readSelf( WObjectFile& p )
@@ -92,8 +92,8 @@ void WEXPORT WVList::deleteContents()
 {
     if( _set != NULL ) {
         for( int i=_free; i>0; i-- ) {
-            if( _set[ i-1 ] != NULL ) {
-                delete _set[ i-1 ];
+            if( _set[i - 1] != NULL ) {
+                delete _set[i - 1];
             }
         }
         _free = 0;
@@ -112,20 +112,20 @@ void WEXPORT WVList::reset()
 WObject* WEXPORT WVList::find( WObject* obj )
 {
     for( int i=0; i<_free; i++ ) {
-        if( _set[ i ] != NULL ) {
+        if( _set[i] != NULL ) {
             if( _set[i]->isEqual( obj ) ) {
-                return _set[ i ];
+                return( _set[i] );
             }
         }
     }
-    return NULL;
+    return( NULL );
 }
 
 void WVList::growBlock()
 {
     if( _set == NULL ) {
         static int _countInit = 10;
-        _set = new WObject*[ _countInit ];
+        _set = new WObject*[_countInit];
         if( _set != NULL ) {
             _count = _countInit;
             _free = 0;
@@ -134,7 +134,7 @@ void WVList::growBlock()
     if( _set != NULL ) {
         if( _free >= _count ) {
             static int _countIncr = 5;
-            WObject** nset = new WObject*[ _count + _countIncr ];
+            WObject** nset = new WObject*[_count + _countIncr];
             if( nset != NULL ) {
                 for( int i=0; i<_count; i++ ) {
                     nset[i] = _set[i];
@@ -151,11 +151,11 @@ WObject* WEXPORT WVList::add( WObject* obj )
 {
     growBlock();
     if( _set != NULL ) {
-        _set[ _free ] = obj;
+        _set[_free] = obj;
         _free += 1;
-        return obj;
+        return( obj );
     }
-    return NULL;
+    return( NULL );
 }
 
 WObject* WEXPORT WVList::insertAt( int i, WObject* obj )
@@ -163,68 +163,69 @@ WObject* WEXPORT WVList::insertAt( int i, WObject* obj )
  * NOTE: this doesn't insert anything after the end of the string.
 */
 {
-    if( i < 0 ) return add( obj );
+    if( i < 0 )
+        return( add( obj ) );
     growBlock();
     if( _set != NULL && i <= _free ) {
         if( i < _free ) {
             memmove( _set + i + 1, _set + i,
                     ( _free - i ) * sizeof( WObject * ) );
         }
-        _set[ i ] = obj;
+        _set[i] = obj;
         _free += 1;
-        return obj;
+        return( obj );
     }
-    return NULL;
+    return( NULL );
 }
 
 int WEXPORT WVList::indexOfSame( WObject* obj )
 {
     for( int i=0; i<_free; i++ ) {
-        if( _set[ i ] != NULL ) {
-            if( obj == _set[ i ] ) {
-                return i;
+        if( _set[i] != NULL ) {
+            if( obj == _set[i] ) {
+                return( i );
             }
         }
     }
-    return -1;
+    return( -1 );
 }
 
 WObject* WEXPORT WVList::replaceAt( int i, WObject* obj )
 {
     if( i >= 0 && i < _free ) {
-        WObject* o = _set[ i ];
-        _set[ i ] = obj;
-        return o;
+        WObject* o = _set[i];
+        _set[i] = obj;
+        return( o );
     }
-    return NULL;
+    return( NULL );
 }
 
 WObject* WEXPORT WVList::removeAt( int i )
 {
     if( i >= 0 && i < _free ) {
-        WObject* obj = _set[ i ];
+        WObject* obj = _set[i];
         _free -= 1;
         if( _free > 0 ) {
-            for( ; i< _count-1; i++ ) {
-                _set[ i ] = _set[ i+1 ];
+            for( ; i < _count - 1; i++ ) {
+                _set[i] = _set[i + 1];
             }
         } else {
             delete [] _set;
             _set = NULL;
         }
-        return obj;
+        return( obj );
     }
-    return NULL;
+    return( NULL );
 }
 
 WObject* WEXPORT WVList::removeSame( WObject* obj )
 {
-    return removeAt( indexOfSame( obj ) );
+    return( removeAt( indexOfSame( obj ) ) );
 }
 
 extern "C" int ccompare( const void* lhs, const void* rhs )
 {
-    return (*(WObject**)lhs)->compare( *(WObject**)rhs );
+    return( (*(WObject**)lhs)->compare( *(WObject**)rhs ) );
 }
 
 void WEXPORT WVList::sort()

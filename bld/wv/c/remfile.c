@@ -49,7 +49,7 @@ extern system_config    SysConfig;
 #endif
 
 extern trap_shandle GetSuppId( char * );
-extern handle           LclStringToFullName( char *name, unsigned len, char *full );
+extern handle           LclStringToFullName( const char *name, unsigned len, char *full );
 
 extern unsigned         MaxPacketLen;
 extern unsigned         CheckSize;
@@ -156,7 +156,7 @@ bool HaveRemoteFiles( void )
 }
 
 //NYI: The 'bool executable' should be changed to allow different file types
-unsigned RemoteStringToFullName( bool executable, char *name, char *res,
+unsigned RemoteStringToFullName( bool executable, const char *name, char *res,
                                  unsigned res_len )
 {
     mx_entry            in[2];
@@ -164,13 +164,22 @@ unsigned RemoteStringToFullName( bool executable, char *name, char *res,
     file_string_to_fullpath_req acc;
     file_string_to_fullpath_ret ret;
     handle              h;
+#ifdef __NT__
+    char short_filename[MAX_PATH + 1] = "";
+#endif
 
     if( SuppFileId == 0 ) {
         h = LclStringToFullName( name, strlen( name ), res );
-        if( h == NIL_HANDLE ) return( 0 );
+        if( h == NIL_HANDLE )
+            return( 0 );
         FileClose( h );
         return( strlen( res ) );
     }
+    SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
+    acc.file_type = ( executable ? TF_TYPE_EXE : TF_TYPE_PRS );
+    in[0].ptr = &acc;
+    in[0].len = sizeof( acc );
+    in[1].ptr = (void *)name;
 #ifdef __NT__
     // check whether short filename is necessary
     switch( SysConfig.os ) {
@@ -181,27 +190,20 @@ unsigned RemoteStringToFullName( bool executable, char *name, char *res,
     case OS_WINDOWS:
         // convert long file name to short "DOS" compatible form
         {
-            char short_filename[MAX_PATH + 1] = "";
-
             GetShortPathNameA( name, short_filename, MAX_PATH );
-            if( strlen( short_filename ) != 0 ) {
-                strcpy( name, short_filename );
+            if( *short_filename != '\0' ) {
+                in[1].ptr = short_filename;
             }
         }
         break;
     }
 #endif
-    SUPP_FILE_SERVICE( acc, REQ_FILE_STRING_TO_FULLPATH );
-    acc.file_type = ( executable ? TF_TYPE_EXE : TF_TYPE_PRS );
-    in[0].ptr = &acc;
-    in[0].len = sizeof( acc );
-    in[1].ptr = name;
-    in[1].len = strlen( name ) + 1;
+    in[1].len = strlen( in[1].ptr ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
     out[1].ptr = res;
     out[1].len = res_len;
-    TrapAccess( 2, &in, 2, &out );
+    TrapAccess( 2, in, 2, out );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         *res = NULLCHAR;
@@ -238,7 +240,7 @@ sys_handle RemoteOpen( char *name, open_access mode )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     CONV_LE_32( ret.handle );
     if( ret.err != 0 ) {
@@ -289,7 +291,7 @@ static unsigned DoAWrite( unsigned req, sys_handle hdl, void *ptr, unsigned len 
     in[1].len = len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     CONV_LE_16( ret.len );
     if( ret.err != 0 ) {
@@ -359,7 +361,7 @@ static unsigned DoRead( sys_handle hdl, void *ptr, unsigned len )
     out[1].len = len;
     CONV_LE_32( acc.handle );
     CONV_LE_16( acc.len );
-    got = TrapAccess( 1, &in, 2, &out );
+    got = TrapAccess( 1, in, 2, out );
     CONV_LE_32( ret.err );
     if( ret.err != 0 ) {
         StashErrCode( ret.err, OP_REMOTE );
@@ -477,7 +479,7 @@ unsigned RemoteErase( char *name )
     in[1].len = strlen( name ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
@@ -498,7 +500,7 @@ long RemoteFork( char *cmd, unsigned len )
     in[1].len = len;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_32( ret.err );
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }

@@ -42,7 +42,7 @@ void WREDisplayMsg( const char *msg )
 {
     char        *title;
 
-    title = WREAllocRCString( WRE_MSGBOXTITLE );
+    title = AllocRCString( WRE_MSGBOXTITLE );
 
     if( !MessageBox( (HWND)NULL, msg, title,
                      MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
@@ -50,35 +50,15 @@ void WREDisplayMsg( const char *msg )
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 }
 
-char *WREAllocRCString( DWORD id )
-{
-    return( AllocRCString( id ) );
-}
-
-void WREFreeRCString( char *str )
-{
-    FreeRCString( str );
-}
-
-DWORD WRECopyRCString( DWORD id, char *buf, DWORD bufsize )
-{
-    return( CopyRCString( id, buf, bufsize ) );
-}
-
-void WREInitDisplayError( HINSTANCE inst )
-{
-    SetInstance( inst );
-}
-
-void WREDisplayErrorMsg( DWORD msg )
+void WREDisplayErrorMsg( UINT msg )
 {
     char        *title;
 
-    title = WREAllocRCString( WRE_MSGBOXTITLE );
+    title = AllocRCString( WRE_MSGBOXTITLE );
 
     if( !RCMessageBox( (HWND)NULL , msg, title,
                        MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
@@ -86,6 +66,6 @@ void WREDisplayErrorMsg( DWORD msg )
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 }

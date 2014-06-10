@@ -46,7 +46,7 @@ MRState::MRState( MTool* tool, SwMode mode, MRSwitch* sw, bool b )
 #ifndef NOPERSIST
 MRState* WEXPORT MRState::createSelf( WObjectFile& )
 {
-    return new MRState( _config->nilTool() );
+    return( new MRState( _config->nilTool() ) );
 }
 
 void WEXPORT MRState::readSelf( WObjectFile& p )

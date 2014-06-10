@@ -84,14 +84,16 @@ void CreateListBox( HWND parent, ListBoxInfo *info, WORD type  )
  */
 void ResizeListBox( WORD width, WORD height, ListBoxInfo *info )
 {
-    int         nheight;
-    int         nwidth;
+    int     nheight;
+    int     nwidth;
 
     nheight = height - info->ypos;
-    if( nheight < 0 ) nheight = 0;
+    if( nheight < 0 )
+        nheight = 0;
 
     nwidth = width - SPY_X;
-    if( nwidth < SPY_X ) nwidth = SPY_X;
+    if( nwidth < SPY_X )
+        nwidth = SPY_X;
 
     MoveWindow( info->box, SPY_X, info->ypos, nwidth, nheight, TRUE );
 } /* ResizeListBox */

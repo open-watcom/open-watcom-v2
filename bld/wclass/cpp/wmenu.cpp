@@ -39,7 +39,7 @@
 
 WEXPORT WMenu::WMenu( bool )
     : _parent( NULL )
-    , _isFloatingPopup( FALSE ) {
+    , _isFloatingPopup( false ) {
 /*******************************/
 
     setMenuId( WMAIN_MENU_ID );
@@ -54,7 +54,7 @@ WEXPORT WMenu::~WMenu() {
         owner()->clearMenu();
     }
     while( _children.count() > 0 ) {
-        delete _children[ _children.count()-1 ];
+        delete _children[_children.count() - 1];
     }
 }
 
@@ -67,7 +67,7 @@ WPopupMenu* WEXPORT WMenu::insertPopup( WPopupMenu *popup, int index ) {
     if( owner() ) {
         popup->attachMenu( owner(), index );
     }
-    return popup;
+    return( popup );
 }
 
 
@@ -85,9 +85,9 @@ WPopupMenu * WEXPORT WMenu::removePopupAt( int index ) {
         WPopupMenu *popup = (WPopupMenu *)_children.removeAt( index );
         popup->detachMenu();
         popup->setParent( NULL );
-        return popup;
+        return( popup );
     }
-    return NULL;
+    return( NULL );
 }
 
 
@@ -99,9 +99,9 @@ void WEXPORT WMenu::enableItem( bool enable, int index ) {
     if( owner() ) {
         if( owner()->handle() ) {
             if( isFloatingPopup() ) {
-                GUIEnableMenuItem( owner()->handle(), item->menuId(), enable, TRUE );
+                GUIEnableMenuItem( owner()->handle(), item->menuId(), enable, true );
             }
-            GUIEnableMenuItem( owner()->handle(), item->menuId(), enable, FALSE );
+            GUIEnableMenuItem( owner()->handle(), item->menuId(), enable, false );
         }
     }
 }
@@ -121,9 +121,9 @@ void WEXPORT WMenu::checkItem( bool check, int index ) {
     if( owner() ) {
         if( owner()->handle() ) {
             if( isFloatingPopup() ) {
-                GUICheckMenuItem( owner()->handle(), item->menuId(), check, TRUE );
+                GUICheckMenuItem( owner()->handle(), item->menuId(), check, true );
             }
-            GUICheckMenuItem( owner()->handle(), item->menuId(), check, FALSE );
+            GUICheckMenuItem( owner()->handle(), item->menuId(), check, false );
         }
     }
 }
@@ -137,9 +137,9 @@ void WEXPORT WMenu::setItemText( const char *text, int index ) {
     if( owner() ) {
         if( owner()->handle() ) {
             if( isFloatingPopup() ) {
-                GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, TRUE );
+                GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, true );
             }
-            GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, FALSE );
+            GUISetMenuText( owner()->handle(), item->menuId(), (char *)text, false );
         }
     }
 }
@@ -172,9 +172,10 @@ void WMenu::detachMenu() {
 bool WMenu::isFloatingPopup() {
 /*****************************/
 
-    if( _isFloatingPopup ) return( TRUE );
+    if( _isFloatingPopup )
+        return( true );
     if( parent() ) {
         return( parent()->isFloatingPopup() );
     }
-    return( FALSE );
+    return( false );
 }

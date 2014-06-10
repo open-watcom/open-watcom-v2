@@ -67,7 +67,7 @@ extern void             WdeShutdownToolBars( void );
 extern void             WdeFreeToolBarInfo( WdeToolBarInfo * );
 extern WdeToolBarInfo   *WdeAllocToolBarInfo( int );
 extern void             WdeSetToolBarItemState( WdeToolBar *, UINT, UINT );
-extern Bool             WdeCloseToolBar( WdeToolBar * );
+extern bool             WdeCloseToolBar( WdeToolBar * );
 extern void             WdeFreeToolBar( WdeToolBar * );
 extern void             WdeHandleToolHint( WPARAM, BOOL );
 extern void             WdeHandleStickyToolPress( WdeToolBar *, WPARAM, LPARAM );

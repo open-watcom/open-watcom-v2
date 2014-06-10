@@ -214,7 +214,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
-    bool        ret;
+//    bool        ret;
     io_location *curr;
     int         i;
     unsigned    old, new;
@@ -222,7 +222,7 @@ static  bool    IOGetLine( a_window *wnd, int row, int piece,
 
     if( row >= io->num_rows ) return( FALSE );
     curr = &io->list[ row ];
-    ret = TRUE;
+//    ret = TRUE;
     line->text = TxtBuff;
     switch( piece ) {
     case PIECE_READ:

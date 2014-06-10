@@ -54,7 +54,7 @@ extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
 extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
             drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
             pefile.obj autoget.obj lddips.obj memwndcd.obj &
-            madrtn.obj madsys.obj regstr.obj reglist.obj bitman.obj &
+            madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
             strcnv.obj regcrt.obj &
             $(mad_objs)
 !ifeq drwatcom_95 1

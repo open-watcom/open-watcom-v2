@@ -42,19 +42,19 @@
 typedef struct {
     uint_16     type;
     DWORD       name;
-    Bool        exclude;
+    bool        exclude;
     char        *typeName;
 } WRETypeName;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool         WREInitResourceWindow( WREResInfo *, uint_16 );
-extern Bool         WRESetResNamesFromType( WREResInfo *, uint_16, Bool, WResID *, int );
+extern bool         WREInitResourceWindow( WREResInfo *, uint_16 );
+extern bool         WRESetResNamesFromType( WREResInfo *, uint_16, bool, WResID *, int );
 extern WRETypeName  *WREGetTypeNameFromRT( uint_16 );
 extern char         *WREGetResName( WResResNode *, uint_16 );
 
-extern Bool WREAddResNames( WREResInfo *info );
+extern bool WREAddResNames( WREResInfo *info );
 
 extern void WRESetTotalText( WREResInfo *info );
 
@@ -62,6 +62,6 @@ extern void WREInitTypeNames( void );
 extern void WREFiniTypeNames( void );
 
 extern void WREFiniTotalText( void );
-extern Bool WREInitTotalText( void );
+extern bool WREInitTotalText( void );
 
 #endif

@@ -37,5 +37,3 @@ extern WResFileOffset   RcSeek( WResFileID, WResFileOffset, int );
 extern WResFileOffset   RcTell( WResFileID );
 
 extern void     CloseAllFiles( void );
-extern void     RegisterOpenFile( WResFileID fhdl );
-extern void     UnRegisterOpenFile( WResFileID fhdl );

@@ -129,7 +129,7 @@ static virt_mem TypeIndexVM( imp_image_handle *ii, unsigned idx )
     unsigned_32         *p;
 
     if( idx < CV_FIRST_USER_TYPE ) return( 0 );
-    cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( 0 );
     p = VMBlock( ii,
         cde->lfo
@@ -1125,7 +1125,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     int                 (*cmp)( const void *, const void *, size_t );
     imp_sym_handle      *is;
 
-    if( li->mod != NO_MOD && li->mod != MH_GBL ) {
+    if( MH2IMH( li->mod ) != IMH_NOMOD && MH2IMH( li->mod ) != IMH_GBL ) {
         return( SR_NONE );
     }
     switch( li->type ) {
@@ -1144,7 +1144,7 @@ search_result TypeSearchTagName( imp_image_handle *ii, lookup_item *li,
     default:
         return( SR_NONE );
     }
-    cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
@@ -1314,7 +1314,7 @@ search_result TypeSearchNestedSym( imp_image_handle *ii, imp_type_handle *it,
 }
 
 
-walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
                     void *d )
 {
@@ -1324,8 +1324,9 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     unsigned_32         *array_p;
     walk_result         wr;
 
-    if( im != MH_GBL ) return( WR_CONTINUE );
-    cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    if( im != IMH_GBL )
+        return( WR_CONTINUE );
+    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde == NULL ) return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
@@ -1346,12 +1347,12 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     }
 }
 
-imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     ii = ii;
     it = it;
-    return( MH_GBL );
+    return( IMH_GBL );
 }
 
 static int IsFortranModule( imp_image_handle *ii, location_context *lc )
@@ -1360,12 +1361,12 @@ static int IsFortranModule( imp_image_handle *ii, location_context *lc )
     location_list       ll;
     cs_compile          *comp_info;
 
-    im = 1;
+    im = IMH_FORTRAN;
     if( DCItemLocation( lc, CI_EXECUTION, &ll ) == DS_OK ) {
         switch( ImpAddrMod( ii, ll.e[0].u.addr, &im ) ) {
         case SR_NONE:
         case SR_FAIL:
-            im = 1;
+            im = IMH_FORTRAN;
             break;
         }
     }
@@ -1528,7 +1529,7 @@ dip_status ImpTypeInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     return( ImpTypeInfo( ii, it, lc, ti ) );
@@ -1606,7 +1607,7 @@ dip_status ImpTypeBase( imp_image_handle *ii, imp_type_handle *it, imp_type_hand
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
@@ -1822,14 +1823,14 @@ static dip_status ImpTypeArrayInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
                         array_info *ai, imp_type_handle *index )
 {
     return( ImpTypeArrayInfo( ii, array, lc, ai, index ) );
 }
 
-dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     lf_all              *p;
@@ -1872,7 +1873,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     return( DS_NO_PARM );
 }
 
-dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *a )
 {
     lf_all              *p;
@@ -2002,7 +2003,7 @@ static walk_result ThunkSearch( imp_image_handle *ii, sym_walk_info swi,
     return( WR_CONTINUE );
 }
 
-dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
                         imp_type_handle *base, imp_type_handle *derived,
                         location_context *lc, address *addr )
 {
@@ -2061,14 +2062,14 @@ dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                                 imp_type_handle *it2 )
 {
     ii = ii;
     return( it2->idx - it1->idx );
 }
 
-unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     lf_all              *p;
@@ -2104,21 +2105,21 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     return( NameCopy( buff, name, max, len ) );
 }
 
-dip_status DIPENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

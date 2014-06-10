@@ -46,9 +46,9 @@ typedef struct WREResInfoStruct {
     HWND        res_win;
     HWND        info_win;
     uint_16     current_type;
-    Bool        is32bit;
-    Bool        modified;
-    Bool        active;
+    bool        is32bit;
+    bool        modified;
+    bool        active;
 } WREResInfo;
 
 /****************************************************************************/
@@ -56,7 +56,7 @@ typedef struct WREResInfoStruct {
 /****************************************************************************/
 extern void         WREFreeResInfo( WREResInfo * );
 extern WREResInfo   *WREAllocResInfo( void );
-extern Bool         WREIsResModified( WREResInfo * );
-extern void         WRESetResModified( WREResInfo *, Bool );
+extern bool         WREIsResModified( WREResInfo * );
+extern void         WRESetResModified( WREResInfo *, bool );
 
 #endif

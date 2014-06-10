@@ -32,27 +32,23 @@
 
 #include "wio.h"
 #include "global.h"
-#include "rcmem.h"
+#include "yydriver.h"
 #include "errors.h"
-#include "yydrivrw.h"
-#include "yydrivr2.h"
 #include "depend.h"
 #include "rcldstr.h"
 #include "preproc.h"
 #include "dbtable.h"
-#include "rclayer0.h"
 #include "tmpctl.h"
 #include "loadstr.h"
 #include "rcspawn.h"
-#include "iortns.h"
-#include "wresset2.h"
 #include "semantic.h"
-#include "scanw.h"
-#include "scan2.h"
+#include "rcrtns.h"
+#include "wresset2.h"
+#include "rclayer0.h"
 
 extern HANDLE_INFO  Instance;
 
-WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
+WResSetRtns(RCOPEN,RCCLOSE,RCREAD,RCWRITE,RCSEEK,RCTELL,RCALLOC,RCFREE);
 
 void InitGlobs( void )
 /********************/

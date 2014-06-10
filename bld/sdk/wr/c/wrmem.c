@@ -72,25 +72,7 @@ void WRMemClose( void )
 #endif
 }
 
-void *WRWResMemAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-void WRWResMemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-void *WRAPI WRMemAlloc( unsigned size )
+void *WRAPI WRMemAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), TRMemHandle ) );
@@ -108,7 +90,7 @@ void WRAPI WRMemFree( void *ptr )
 #endif
 }
 
-void *WRAPI WRMemRealloc( void *ptr, unsigned size )
+void *WRAPI WRMemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle ) );
@@ -127,7 +109,7 @@ int WRAPI WRMemValidate( void *ptr )
 #endif
 }
 
-int WRAPI WRMemChkRange( void *start, unsigned len )
+int WRAPI WRMemChkRange( void *start, size_t len )
 {
 #ifdef TRMEM
     return( _trmem_chk_range( start, len, _trmem_guess_who(), TRMemHandle ) );
@@ -155,7 +137,7 @@ unsigned WRAPI WRMemPrtList( void )
 }
 
 /* functions to replace those in mem.c in commonui */
-
+#if 0
 void MemStart( void )
 {
 #ifdef _M_I86
@@ -163,8 +145,9 @@ void MemStart( void )
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 }
+#endif
 
-void *MemAlloc( unsigned size )
+void *MemAlloc( size_t size )
 {
     void *p;
 
@@ -181,7 +164,7 @@ void *MemAlloc( unsigned size )
     return( p );
 }
 
-void *MemReAlloc( void *ptr, unsigned size )
+void *MemRealloc( void *ptr, size_t size )
 {
     void *p;
 

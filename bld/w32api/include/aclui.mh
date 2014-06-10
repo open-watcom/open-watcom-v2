@@ -121,15 +121,6 @@ typedef struct _SID_INFO_LIST {
 } SID_INFO_LIST;
 typedef SID_INFO_LIST   *PSID_INFO_LIST;
 
-/* GUIDs */
-EXTERN_C const IID  IID_ISecurityInformation;
-EXTERN_C const IID  IID_ISecurityInformation2;
-EXTERN_C const IID  IID_IEffectivePermission;
-EXTERN_C const IID  IID_ISecurityObjectTypeInfo;
-#if (NTDDI_VERSION >= 0x06000000)
-EXTERN_C const IID  IID_ISecurityInformation3;
-#endif
-
 /* ISecurityInformation interface */
 #undef INTERFACE
 #define INTERFACE   ISecurityInformation
@@ -218,5 +209,14 @@ HRESULT ACLUIAPI        EditSecurityAdvanced( HWND, LPSECURITYINFO, SI_PAGE_TYPE
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_ISecurityInformation;
+EXTERN_C const IID  __cdecl IID_ISecurityInformation2;
+EXTERN_C const IID  __cdecl IID_IEffectivePermission;
+EXTERN_C const IID  __cdecl IID_ISecurityObjectTypeInfo;
+#if (NTDDI_VERSION >= 0x06000000)
+EXTERN_C const IID  __cdecl IID_ISecurityInformation3;
+#endif
 
 #endif /* _ACLUI_H_ */

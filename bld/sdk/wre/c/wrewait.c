@@ -54,7 +54,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WRESetWaitCursor( Bool on )
+void WRESetWaitCursor( bool on )
 {
     static int      ref_count   = 0;
     static HCURSOR  wait_cursor = NULL;

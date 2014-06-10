@@ -701,7 +701,7 @@ static unsigned DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic,
 }
 
 
-static cue_file_id DIGREGISTER WVCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
+static cue_fileid   DIGREGISTER WVCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
@@ -738,7 +738,7 @@ static address DIGREGISTER WVCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 }
 
 
-static search_result DIGREGISTER WVLineCue( imp_image_handle *ii,imp_mod_handle im, cue_file_id file,
+static search_result DIGREGISTER WVLineCue( imp_image_handle *ii,imp_mod_handle im, cue_fileid file,
                     unsigned long line, unsigned column, imp_cue_handle *ic )
 {
     ii = ii; im=im; file = file; line = line; column = column; ic = ic;

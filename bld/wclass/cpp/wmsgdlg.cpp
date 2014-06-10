@@ -65,7 +65,7 @@ MsgRetType WMessageDialog::domessage( WWindow *parent,
                                                     (char *)text,
                                                     (char *)caption,
                                                     (gui_message_type)type );
-    return ret;
+    return( ret );
 }
 
 
@@ -76,7 +76,7 @@ MsgRetType WEXPORT WMessageDialog::messagef( WWindow* parent, MsgLevel level,
 /********************************************************************/
 
     MsgRetType rc;
-    char* txt = new char[ MAX_MESSAGE+1 ];
+    char* txt = new char[MAX_MESSAGE + 1];
     va_list args;
     va_start( args, text );
     vsprintf( (char *)txt, text, args );
@@ -116,7 +116,7 @@ MsgRetType WEXPORT WMessageDialog::messager( WWindow* parent, MsgLevel level,
 void WEXPORT WMessageDialog::info( WWindow* parent, const char *text, ... ) {
 /***************************************************************************/
 
-    char* txt = new char[ MAX_MESSAGE+1 ];
+    char* txt = new char[MAX_MESSAGE + 1];
     va_list args;
     va_start( args, text );
     vsprintf( txt, text, args );

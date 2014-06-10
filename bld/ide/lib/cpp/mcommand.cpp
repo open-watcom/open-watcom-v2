@@ -53,12 +53,12 @@ MCommand::MCommand( const char* str )
 MCommand& WEXPORT MCommand::operator=( const MCommand& x )
 {
     *(WString*)this = (WString&)x;
-    return *this;
+    return( *this );
 }
 
 bool MCommand::expandSwitches( WString& v, WVList& list, WVList* stateList, WString* browseSwitch, SwMode mode ) const
 {
-    bool browse = FALSE;
+    bool browse = false;
     int icount = list.count();
     for( int i=0; i<icount; i++ ) {
         MSwitch* sw = (MSwitch*)list[i];
@@ -70,16 +70,16 @@ bool MCommand::expandSwitches( WString& v, WVList& list, WVList* stateList, WStr
             }
             v.concat( swText );
             if( browseSwitch && swText == *browseSwitch ) {
-                browse = TRUE;
+                browse = true;
             }
         }
     }
-    return browse;
+    return( browse );
 }
 
 int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, const WString& mask, WVList* stateList, SwMode mode, WString* browseSwitch ) const
 {
-    bool browse = FALSE;
+    bool browse = false;
     const char* cmd = gets();
     int location = EXECUTE_NORMAL;
     size_t i=0;
@@ -126,7 +126,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                             if( !t ) {
                                 t = tool;
                             }
-                            t->addSwitches( list, mask, FALSE );
+                            t->addSwitches( list, mask, false );
                         }
                         browse = browse | expandSwitches( v, list, stateList, browseSwitch, mode );
                     }
@@ -258,22 +258,22 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     } else {
         command.concat( com );
     }
-    return location;
+    return( location );
 }
 
 #ifndef NOPERSIST
 MCommand* WEXPORT MCommand::createSelf( WObjectFile& )
 {
-        return new MCommand();
+    return( new MCommand() );
 }
 
 void WEXPORT MCommand::readSelf( WObjectFile& p )
 {
-        WString::readSelf( p );
+    WString::readSelf( p );
 }
 
 void WEXPORT MCommand::writeSelf( WObjectFile& p )
 {
-        WString::writeSelf( p );
+    WString::writeSelf( p );
 }
 #endif

@@ -19,10 +19,6 @@
 #include <oaidl.h>
 #include <ocidl.h>
 
-/* GUIDs */
-EXTERN_C const IID  IID_IObjectArray;
-EXTERN_C const IID  IID_IObjectCollection;
-
 /* IObjectArray interface */
 #undef INTERFACE
 #define INTERFACE   IObjectArray
@@ -80,5 +76,9 @@ DECLARE_INTERFACE_( IObjectCollection, IUnknown ) {
     #define IObjectCollection_Clear( x ) \
         (x)->lpVtbl->Clear( x )
 #endif
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IObjectArray;
+EXTERN_C const IID  __cdecl IID_IObjectCollection;
 
 #endif /* __objectarray_h__ */

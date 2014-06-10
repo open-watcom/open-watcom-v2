@@ -93,10 +93,10 @@ void GrabHandlers( void )
     OldInt23.a = MyGetRMVector( 0x23 );
     OldInt24.a = MyGetRMVector( 0x24 );
     OldInt28.a = MyGetRMVector( 0x28 );
-    MySetRMVector( 0x10, RMData.s.rm, RM_OFF( Interrupt10 ) );
-    MySetRMVector( CTRL_BREAK_VECTOR, RMData.s.rm, RM_OFF( Interrupt1b_23 ) );
-    MySetRMVector( 0x23, RMData.s.rm, RM_OFF( Interrupt1b_23 ) );
-    MySetRMVector( 0x24, RMData.s.rm, RM_OFF( Interrupt24 ) );
+    MySetRMVector( 0x10, RMData.segm.rm, RM_OFF( Interrupt10 ) );
+    MySetRMVector( CTRL_BREAK_VECTOR, RMData.segm.rm, RM_OFF( Interrupt1b_23 ) );
+    MySetRMVector( 0x23, RMData.segm.rm, RM_OFF( Interrupt1b_23 ) );
+    MySetRMVector( 0x24, RMData.segm.rm, RM_OFF( Interrupt24 ) );
     MySetRMVector( 0x28, Orig28.s.segment, Orig28.s.offset );
 }
 
@@ -123,8 +123,8 @@ void RestoreHandlers( void )
 static void Cleanup( void )
 {
     RestoreOrigVectors();
-    if( RMData.s.pm != 0 ) {
-        DPMIFreeDOSMemoryBlock( RMData.s.pm );
+    if( RMData.segm.pm != 0 ) {
+        DPMIFreeDOSMemoryBlock( RMData.segm.pm );
     }
 }
 
@@ -158,11 +158,11 @@ void GUImain( void )
     SaveOrigVectors();
     Orig28.a = MyGetRMVector( 0x28 );
 
-    RMData.a = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
-    if( RMData.s.pm == 0 ) {
+    RMData.dpmi_adr = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
+    if( RMData.segm.pm == 0 ) {
         StartupErr( LIT( Unable_to_alloc_DOS_mem ) );
     }
-    PMData = MK_FP( RMData.s.pm, 0 );
+    PMData = MK_FP( RMData.segm.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );
     if( _osmajor == 2 ) {
         PMData->fail = 0;

@@ -60,10 +60,10 @@ extern unsigned         GetMADTypeNameForCmd( mad_type_handle th, unsigned max, 
 extern void             DbgUpdate( update_list );
 extern char             *ReScan( char *point );
 
-extern tokens         CurrToken;
-extern unsigned char  DefRadix;
-extern unsigned char  CurrRadix;
-extern char           *TxtBuff;
+extern tokens           CurrToken;
+extern unsigned char    DefRadix;
+extern unsigned char    CurrRadix;
+extern char             *TxtBuff;
 
 extern void Scan( void );
 
@@ -75,15 +75,15 @@ typedef union {
 } token_value;
 
 
-static  rad_str     *RadStrs;
-static  char        *ScanPtr;
-static  token_value  TokenVal;
-static  char        *TokenStart;
-static  token_table *ExprTokens;
-        bool         scan_string = FALSE;
-        char        *StringStart = NULL;
-        unsigned     StringLength = 0;
-        unsigned     ScanCCharNum = TRUE;
+static  rad_str         *RadStrs;
+static  char            *ScanPtr;
+static  token_value     TokenVal;
+static  char            *TokenStart;
+static  token_table     *ExprTokens;
+        bool            scan_string = FALSE;
+        char            *StringStart = NULL;
+        unsigned        StringLength = 0;
+        unsigned        ScanCCharNum = TRUE;
 
 
 static void SetRadixSpec( char *str, unsigned len, unsigned radix, bool clear )
@@ -96,8 +96,10 @@ static void SetRadixSpec( char *str, unsigned len, unsigned radix, bool clear )
     pref = RadStrs;
     while( pref != NULL ) {
         if( pref->radstr[0] == len
-         && memicmp( &pref->radstr[1], str, pref->radstr[0] ) == 0 ) break;
-        if( pref->radstr[0] < len ) break;
+          && memicmp( &pref->radstr[1], str, pref->radstr[0] ) == 0 )
+            break;
+        if( pref->radstr[0] < len )
+            break;
         owner = &pref->next;
         pref = pref->next;
     }
@@ -246,19 +248,21 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
 
 mad_type_handle ScanType( mad_type_kind tk, mad_type_kind *tkr )
 {
-    mad_type_handle     th;
+    mad_type_handle     th = 0;
 
     if( tk & MAS_MEMORY ) {
         th = DoScanType( tk & ~MAS_IO, LIT( Empty ) );
         if( th != MAD_NIL_TYPE_HANDLE ) {
-            if( tkr != NULL ) *tkr = MAS_MEMORY;
+            if( tkr != NULL )
+                *tkr = MAS_MEMORY;
             return( th );
         }
     }
-    if( th & MAS_IO ) {
+    if( tk & MAS_IO ) {
         th = DoScanType( tk & ~MAS_MEMORY, LIT( IO ) );
         if( th != MAD_NIL_TYPE_HANDLE ) {
-            if( tkr != NULL ) *tkr = MAS_IO;
+            if( tkr != NULL )
+                *tkr = MAS_IO;
             return( th );
         }
     }

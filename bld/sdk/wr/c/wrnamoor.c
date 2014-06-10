@@ -71,7 +71,7 @@ ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
     data16 = (uint_16 *)data;
 
     if( *data16 == 0xffff ) {
-        new = (ResNameOrOrdinal *)WRMemAlloc( sizeof( ResNameOrOrdinal ) );
+        new = (ResNameOrOrdinal *)MemAlloc( sizeof( ResNameOrOrdinal ) );
         if( new == NULL ) {
             return( NULL );
         }
@@ -107,7 +107,7 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
         len = stringlen + 1;
     }
 
-    new = (ResNameOrOrdinal *)WRMemAlloc( max( len, sizeof( ResNameOrOrdinal ) ) );
+    new = (ResNameOrOrdinal *)MemAlloc( max( len, sizeof( ResNameOrOrdinal ) ) );
     if( new == NULL ) {
         return( NULL );
     }
@@ -138,7 +138,7 @@ int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, int *size )
         len = stringlen + 1;
     }
 
-    *data = WRMemAlloc( len );
+    *data = MemAlloc( len );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -165,7 +165,7 @@ int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, int *size )
 
     if( name->ord.fFlag == 0xff ) {
         *size = sizeof( uint_16 ) + sizeof( uint_16 );
-        *data = WRMemAlloc( *size );
+        *data = MemAlloc( *size );
     } else {
         uni_str = NULL;
         WRmbcs2unicode( &name->name[0], (char **)data, size );

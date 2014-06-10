@@ -36,13 +36,12 @@
 #include "system.hpp"
 
 #include "wobject.hpp"
-#include "wsyshelp.hpp"
 #include "wstates.hpp"
 
 typedef HINSTANCE  WModuleHandle;
 typedef FARPROC WProcAddr;
 
-WCLASS WSystemService : public WSystemHelp {
+WCLASS WSystemService {
     public:
         static int WEXPORT sysExec( const char *, WWindowState, WWindowType );
         static int WEXPORT sysExecBackground( const char * );

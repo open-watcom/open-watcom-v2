@@ -739,7 +739,7 @@ static void preProcStmt( void )
 TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
     bool expanding )
 {
-    int         lines_skipped;
+    bool        lines_skipped;
     ppctl_t     old_ppctl;
 
     while( CurrChar == '\n' ) {
@@ -748,7 +748,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
             CErr1( ERR_BREAK_KEY_HIT );
             CSuicide();
         }
-        lines_skipped = 0;
+        lines_skipped = FALSE;
         old_ppctl = PPControl;
         for(;;) {
             if( CompFlags.cpp_output )
@@ -791,7 +791,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
             if( CurrChar == LCHR_EOF )
                 break;
             if( CurrChar == '\n' ) {
-                lines_skipped = 1;
+                lines_skipped = TRUE;
             }
         }
         if( CompFlags.cpp_output ) {
@@ -833,10 +833,10 @@ void DirectiveFini(             // COMPLETE DIRECTIVE PROCESSING
 }
 
 
-int CppPrinting(                // TEST IF AT LEVEL FOR PREPROC PRINTING
+bool CppPrinting(               // TEST IF AT LEVEL FOR PREPROC PRINTING
     void )
 {
-    return ( NestLevel == SkipLevel ) && ( CppFile != NULL );
+    return( ( NestLevel == SkipLevel ) && ( CppFile != NULL ) );
 }
 
 

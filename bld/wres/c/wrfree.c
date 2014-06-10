@@ -38,6 +38,7 @@
 #include "write.h"
 #include "reserr.h"
 #include "read.h"
+#include "wresrtns.h"
 
 
 void MResFreeResourceHeader( MResResourceHeader * oldheader )

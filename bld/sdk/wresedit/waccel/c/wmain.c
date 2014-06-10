@@ -40,7 +40,6 @@
 #include "wglbl.h"
 #include "waccel.h"
 #include "winst.h"
-#include "wmem.h"
 #include "wmemf.h"
 #include "wrename.h"
 #include "wnewitem.h"
@@ -88,17 +87,17 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool         WInit( HINSTANCE );
+static bool         WInit( HINSTANCE );
 static void         WFini( void );
-static WAccelInfo   *WAccelGetEInfo( WAccelHandle, Bool );
-static Bool         WRegisterMainClass( HINSTANCE );
-static Bool         WCreateEditWindow( HINSTANCE, WAccelEditInfo * );
+static WAccelInfo   *WAccelGetEInfo( WAccelHandle, bool );
+static bool         WRegisterMainClass( HINSTANCE );
+static bool         WCreateEditWindow( HINSTANCE, WAccelEditInfo * );
 static void         WUpdateScreenPosOpt( HWND );
-static Bool         WCleanup( WAccelEditInfo * );
-static Bool         WQuerySave( WAccelEditInfo *, Bool );
-static Bool         WQuerySaveRes( WAccelEditInfo *, Bool );
-static Bool         WQuerySaveSym( WAccelEditInfo *, Bool );
-static Bool         WHandleWM_CLOSE( WAccelEditInfo *, Bool );
+static bool         WCleanup( WAccelEditInfo * );
+static bool         WQuerySave( WAccelEditInfo *, bool );
+static bool         WQuerySaveRes( WAccelEditInfo *, bool );
+static bool         WQuerySaveSym( WAccelEditInfo *, bool );
+static bool         WHandleWM_CLOSE( WAccelEditInfo *, bool );
 static void         WHandleClear( WAccelEditInfo * );
 
 /****************************************************************************/
@@ -121,8 +120,18 @@ UINT            WItemClipbdFormat = 0;
 extern int appWidth;
 extern int appHeight;
 
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WMemAlloc, WMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 #ifdef __NT__
 
@@ -184,7 +193,7 @@ void WRESEAPI WAccelInit( void )
     }
     if( ref_count == 0 ) {
         WRInit();
-        WInitDisplayError( inst );
+        SetInstance( inst );
         WInit( inst );
     }
     ref_count++;
@@ -312,7 +321,7 @@ int WRESEAPI WAccelCloseSession( WAccelHandle hndl, int force_exit )
     return( TRUE );
 }
 
-WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
+WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, bool keep )
 {
     WAccelEditInfo  *einfo;
     WAccelInfo      *info;
@@ -332,7 +341,7 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
     if( ok ) {
         if( einfo->info->modified ) {
             if( info->data != NULL ) {
-                WMemFree( info->data );
+                WRMemFree( info->data );
             }
             info->data = NULL;
             info->data_size = 0;
@@ -347,9 +356,9 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, Bool keep )
     return( info );
 }
 
-Bool WInit( HINSTANCE inst )
+bool WInit( HINSTANCE inst )
 {
-    Bool ok;
+    bool ok;
 
     ok = (inst != (HINSTANCE)NULL);
 
@@ -403,7 +412,7 @@ void WFini( void )
     JDialogFini();
 }
 
-Bool WRegisterMainClass( HINSTANCE inst )
+bool WRegisterMainClass( HINSTANCE inst )
 {
     WNDCLASS wc;
 
@@ -442,7 +451,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
         fname = einfo->file_name;
     }
 
-    text = WAllocRCString( W_ACCELAPPTITLE );
+    text = AllocRCString( W_ACCELAPPTITLE );
 
     if( fname == NULL || text == NULL ) {
         return( NULL );
@@ -451,7 +460,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)WMemAlloc( len );
+    title = (char *)WRMemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
@@ -460,7 +469,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     }
 
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
 
     return( title );
@@ -469,33 +478,33 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
 void WSetEditTitle( WAccelEditInfo *einfo )
 {
     char        *title;
-    Bool        is_rc;
+    bool        is_rc;
 
     title = WCreateEditTitle( einfo );
     is_rc = FALSE;
 
     if( title == NULL ) {
-        title = WAllocRCString( W_ACCELAPPTITLE );
+        title = AllocRCString( W_ACCELAPPTITLE );
         is_rc = TRUE;
     }
 
     if( title != NULL ) {
         SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
         if( is_rc ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         } else {
-            WMemFree( title );
+            WRMemFree( title );
         }
     }
 }
 
-Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
+bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
 {
     int         x, y, width, height;
     char        *title;
     HMENU       hmenu;
     HMENU       menu;
-    Bool        is_rc;
+    bool        is_rc;
     RECT        rect;
 
     if( einfo == NULL ) {
@@ -520,7 +529,7 @@ Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
     is_rc = FALSE;
     title = WCreateEditTitle( einfo );
     if( title == NULL ) {
-        title = WAllocRCString( W_ACCELAPPTITLE );
+        title = AllocRCString( W_ACCELAPPTITLE );
         is_rc = TRUE;
     }
 
@@ -535,9 +544,9 @@ Bool WCreateEditWindow( HINSTANCE inst, WAccelEditInfo *einfo )
 
     if( title != NULL ) {
         if( is_rc ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         } else {
-            WMemFree( title );
+            WRMemFree( title );
         }
     }
 
@@ -617,7 +626,7 @@ static void handleSymbols( WAccelEditInfo *einfo )
                             IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), text );
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     WHandleSelChange( einfo );
@@ -634,7 +643,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
     }
 
     if( einfo->info->symbol_file != NULL ) {
-        WMemFree( einfo->info->symbol_file );
+        WRMemFree( einfo->info->symbol_file );
     }
     einfo->info->symbol_file = file;
 
@@ -681,7 +690,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     HWND            win;
 #endif
     LRESULT         ret;
-    Bool            pass_to_def;
+    bool            pass_to_def;
     WAccelEditInfo  *einfo;
     WORD            wp;
     MINMAXINFO      *minmax;
@@ -936,7 +945,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_CLOSE:
         ret = TRUE;
-        pass_to_def = WHandleWM_CLOSE( einfo, (Bool)wParam );
+        pass_to_def = WHandleWM_CLOSE( einfo, wParam != 0 );
         wParam = 0;
         break;
     }
@@ -948,12 +957,12 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     return( ret );
 }
 
-Bool WQuerySave( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySave( WAccelEditInfo *einfo, bool force_exit )
 {
     return( WQuerySaveRes( einfo, force_exit ) && WQuerySaveSym( einfo, force_exit ) );
 }
 
-Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySaveRes( WAccelEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -969,13 +978,13 @@ Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
                 style = MB_YESNOCANCEL | MB_APPLMODAL | MB_ICONEXCLAMATION;
             }
             title = WCreateEditTitle( einfo );
-            text = WAllocRCString( W_UPDATEMODIFIEDACCEL );
+            text = AllocRCString( W_UPDATEMODIFIEDACCEL );
             ret = MessageBox( einfo->edit_dlg, text, title, style );
             if( text != NULL ) {
-                WFreeRCString( text );
+                FreeRCString( text );
             }
             if( title != NULL ) {
-                WMemFree( title );
+                WRMemFree( title );
             }
         }
         if( ret == IDYES ) {
@@ -993,7 +1002,7 @@ Bool WQuerySaveRes( WAccelEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
+bool WQuerySaveSym( WAccelEditInfo *einfo, bool force_exit )
 {
     int         ret;
     UINT        style;
@@ -1015,13 +1024,13 @@ Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
     }
 
     title = WCreateEditTitle( einfo );
-    text = WAllocRCString( W_UPDATEMODIFIEDSYM );
+    text = AllocRCString( W_UPDATEMODIFIEDSYM );
     ret = MessageBox( einfo->edit_dlg, text, title, style );
     if( text != NULL ) {
-        WFreeRCString( text );
+        FreeRCString( text );
     }
     if( title != NULL ) {
-        WMemFree( title );
+        WRMemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -1043,9 +1052,9 @@ Bool WQuerySaveSym( WAccelEditInfo *einfo, Bool force_exit )
     return( TRUE );
 }
 
-Bool WHandleWM_CLOSE( WAccelEditInfo *einfo, Bool force_exit )
+bool WHandleWM_CLOSE( WAccelEditInfo *einfo, bool force_exit )
 {
-    Bool        ret;
+    bool        ret;
 
     ret = TRUE;
 
@@ -1075,7 +1084,7 @@ void WHandleRename( WAccelEditInfo *einfo )
     }
 }
 
-Bool WQueryClearRes( WAccelEditInfo *einfo )
+bool WQueryClearRes( WAccelEditInfo *einfo )
 {
     int         ret;
     UINT        style;
@@ -1084,14 +1093,14 @@ Bool WQueryClearRes( WAccelEditInfo *einfo )
 
     if( einfo != NULL ) {
         style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
-        text = WAllocRCString( W_ACCELCLEARWARNING );
-        title = WAllocRCString( W_ACCELCLEARTITLE );
+        text = AllocRCString( W_ACCELCLEARWARNING );
+        title = AllocRCString( W_ACCELCLEARTITLE );
         ret = MessageBox( einfo->edit_dlg, text, title, style );
         if( text != NULL ) {
-            WFreeRCString( text );
+            FreeRCString( text );
         }
         if( title != NULL ) {
-            WFreeRCString( title );
+            FreeRCString( title );
         }
         if( ret == IDYES ) {
             return( TRUE );
@@ -1115,7 +1124,7 @@ void WHandleClear( WAccelEditInfo *einfo )
             einfo->getting_key = FALSE;
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
-                    WMemFree( einfo->file_name );
+                    WRMemFree( einfo->file_name );
                     einfo->file_name = NULL;
                     WSetEditTitle( einfo );
                 }
@@ -1156,10 +1165,10 @@ void WResizeWindows( WAccelEditInfo *einfo )
     }
 }
 
-Bool WCleanup( WAccelEditInfo *einfo )
+bool WCleanup( WAccelEditInfo *einfo )
 {
     HWND        owner;
-    Bool        ok;
+    bool        ok;
 
     ok = (einfo != NULL);
 

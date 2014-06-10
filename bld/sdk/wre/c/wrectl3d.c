@@ -56,13 +56,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WRECtl3DInit ( HINSTANCE inst )
+bool WRECtl3DInit ( HINSTANCE inst )
 {
 #if !defined( WRE_USE_3D )
     _wre_touch( inst );
     return( TRUE );
 #else
-    Bool ok;
+    bool ok;
 
     ok = WRCtl3dRegister( inst );
     if( ok ) {

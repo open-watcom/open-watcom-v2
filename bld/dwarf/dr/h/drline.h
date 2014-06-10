@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-/* get stmt list from ccu, if none return NULL */
-extern dr_handle  DRGetStmtList( dr_handle ccu );
-
 /* walk program statements */
 
-typedef struct{ /* current state of stmt prog */
+typedef struct { /* current state of stmt prog */
     uint_32 offset;
     uint_32 line;
     uint_16 col;
@@ -45,11 +42,7 @@ typedef struct{ /* current state of stmt prog */
     uint_8  basic_blk :1;
     uint_8  end_seq   :1;
     uint_8  addr_set  :1;
-}dr_line_data;
-/* walk lines given statement list handle */
-typedef
-    int         (*DRCUEWLK)( void *, dr_line_data * );
-extern int DRWalkLines( dr_handle, uint_16, DRCUEWLK, void * );
+} dr_line_data;
 
 /* walk directory and  file names */
 typedef struct {
@@ -58,19 +51,22 @@ typedef struct {
     uint_16  dir;
     uint_32  time;
     uint_32  len;
-}dr_line_file;
+} dr_line_file;
 
 typedef struct {
     uint_16  index;
     char*    name;
-}dr_line_dir;
+} dr_line_dir;
 
+typedef bool (*DRCUEWLK)( void *, dr_line_data * );
+typedef bool (*DRLFILEWLK)( void *, dr_line_file * );
+typedef bool (*DRLDIRWLK)( void *, dr_line_dir * );
 
-typedef
-    int         (*DRLFILEWLK)( void *, dr_line_file * );
-typedef
-    int         (*DRLDIRWLK)( void *, dr_line_dir * );
+/* get stmt list from ccu, if none return NULL */
+extern dr_handle    DRGetStmtList( dr_handle ccu );
+
+/* walk lines given statement list handle */
+extern bool         DRWalkLines( dr_handle, uint_16, DRCUEWLK, void * );
 
 /* walk files given statement list handle */
-extern int DRWalkLFiles( dr_handle, DRLFILEWLK, void *,
-                                    DRLDIRWLK,  void * );
+extern bool         DRWalkLFiles( dr_handle, DRLFILEWLK, void *, DRLDIRWLK, void * );

@@ -43,7 +43,6 @@
 
 #include "wreglbl.h"
 #include "wrehints.h"
-#include "wremem.h"
 #include "wrememf.h"
 #include "wremsg.h"
 #include "rcstr.gh"
@@ -95,21 +94,21 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT Bool CALLBACK WRESplash( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT bool CALLBACK WRESplash( HWND, WORD, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WREInit( HINSTANCE );
-static Bool     WREInitInst( HINSTANCE );
-static Bool     WREWasAcceleratorHandled( MSG * );
+static bool     WREInit( HINSTANCE );
+static bool     WREInitInst( HINSTANCE );
+static bool     WREWasAcceleratorHandled( MSG * );
 static HWND     WRECreateMDIClientWindow( HWND, HINSTANCE );
 static LRESULT  WREHandleMDIArrangeEvents( WORD );
 static void     WREUpdateScreenPosOpt( void );
-static Bool     WRECleanup( Bool );
-static Bool     WREProcessArgs( char **, int );
+static bool     WRECleanup( bool );
+static bool     WREProcessArgs( char **, int );
 static void     WREDisplaySplashScreen( HINSTANCE, HWND, UINT );
-static void     WREHideSessions( Bool show );
+static void     WREHideSessions( bool show );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -125,22 +124,32 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 static HINSTANCE WREInst;
 static HACCEL    WREAccel;
 static HMENU     WREMenu;
-static Bool      WREIsMinimized      = FALSE;
+static bool      WREIsMinimized      = FALSE;
 static HWND      WREMainWin          = NULL;
 static HWND      WREMDIWin           = NULL;
-static Bool      WRECleanupStarted   = FALSE;
-static Bool      WREFatalExit        = FALSE;
+static bool      WRECleanupStarted   = FALSE;
+static bool      WREFatalExit        = FALSE;
 static char      WREMainClass[]      = "WREMainClass";
 
-Bool WRECreateNewFiles  = FALSE;
-Bool WRENoInterface     = FALSE;
+bool WRECreateNewFiles  = FALSE;
+bool WRENoInterface     = FALSE;
 
-Bool WRERemoveResource( WREResInfo * );
-Bool pleaseOpenFile( UINT msg );
-Bool WREIsEditWindowDialogMessage( MSG *msg );
+bool WRERemoveResource( WREResInfo * );
+bool pleaseOpenFile( UINT msg );
+bool WREIsEditWindowDialogMessage( MSG *msg );
+
+static void *_MemAlloc( size_t size )
+{
+    return( WRMemAlloc( size ) );
+}
+
+static void _MemFree( void *p )
+{
+    WRMemFree( p );
+}
 
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, WREMemAlloc, WREMemFree );
+WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 static void peekArgs( char **argv, int argc )
 {
@@ -159,8 +168,8 @@ static void startEditors( void )
 {
     WRFileType  ftype;
     WREResInfo  *res_info;
-    Bool        editor_started;
-    Bool        ret;
+    bool        editor_started;
+    bool        ret;
     int         num_types;
     uint_16     type;
 
@@ -226,13 +235,13 @@ static void startEditors( void )
     }
 }
 
-Bool WREIsResInfoWinMsg( LPMSG pmsg );
+bool WREIsResInfoWinMsg( LPMSG pmsg );
 
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
     MSG         msg;
-    Bool        ret;
+    bool        ret;
 
 #if defined( __NT__ ) && !defined( __WATCOMC__ )
     _argc = __argc;
@@ -249,7 +258,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     WAccelInit();
     WMenuInit();
     WStringInit();
-    WREInitDisplayError( hinstCurrent );
+    SetInstance( hinstCurrent );
 
     /* store the handle to this instance of WRE in a static variable */
     WREInst = hinstCurrent;
@@ -308,7 +317,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 }
 
 /* Function to initialize the first instance of WRE */
-Bool WREInit( HINSTANCE app_inst )
+bool WREInit( HINSTANCE app_inst )
 {
     WNDCLASS wc;
 
@@ -338,7 +347,7 @@ Bool WREInit( HINSTANCE app_inst )
 }
 
 /* Function to initialize all instances of WRE */
-Bool WREInitInst( HINSTANCE app_inst )
+bool WREInitInst( HINSTANCE app_inst )
 {
     RECT        r, screen, t;
     char        *title;
@@ -376,7 +385,7 @@ Bool WREInitInst( HINSTANCE app_inst )
     GetWindowRect( GetDesktopWindow(), &screen );
     IntersectRect( &t, &screen, &r );
 
-    title = WREAllocRCString( WRE_APPNAME );
+    title = AllocRCString( WRE_APPNAME );
 
     /* attempt to create the main application window */
     style = WS_OVERLAPPEDWINDOW;
@@ -392,7 +401,7 @@ Bool WREInitInst( HINSTANCE app_inst )
     }
 
     if( title != NULL ) {
-        WREFreeRCString( title );
+        FreeRCString( title );
     }
 
     /* if the window could not be created return FALSE */
@@ -443,7 +452,7 @@ Bool WREInitInst( HINSTANCE app_inst )
     return( TRUE );
 }
 
-Bool WREIsEditWindowDialogMessage( MSG *msg )
+bool WREIsEditWindowDialogMessage( MSG *msg )
 {
     int ret;
 
@@ -451,10 +460,10 @@ Bool WREIsEditWindowDialogMessage( MSG *msg )
     ret |= WMenuIsDlgMsg( msg );
     ret |= WStringIsDlgMsg( msg );
 
-    return( (Bool)ret );
+    return( ret != 0 );
 }
 
-Bool WREWasAcceleratorHandled( MSG *msg )
+bool WREWasAcceleratorHandled( MSG *msg )
 {
     if( !TranslateMDISysAccel( WREMDIWin, msg ) &&
         !TranslateAccelerator( WREMainWin, WREAccel, msg ) ) {
@@ -497,7 +506,7 @@ HWND WRECreateMDIClientWindow( HWND win, HINSTANCE app_inst )
     return( client );
 }
 
-void WREEnableMenus( Bool enable )
+void WREEnableMenus( bool enable )
 {
     HMENU       submenu;
     int         flag;
@@ -545,7 +554,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 {
     HMENU       menu;
     LRESULT     ret;
-    Bool        pass_to_def;
+    bool        pass_to_def;
     WREResInfo  *res_info;
     WORD        wp;
     about_info  ai;
@@ -869,16 +878,16 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     return( ret );
 }
 
-void WREHideSessions( Bool show )
+void WREHideSessions( bool show )
 {
     WREShowAllDialogSessions( show );
     WREShowAllImageSessions( show );
 }
 
-Bool WREHandleResEdit( void )
+bool WREHandleResEdit( void )
 {
     WRECurrentResInfo  curr;
-    Bool               ok;
+    bool               ok;
 
     if( WREGetPendingService() != NoServicePending ) {
         WRESetStatusByID( 0, WRE_EDITSESSIONPENDING );
@@ -973,7 +982,7 @@ void WREResizeWindows( void )
     }
 }
 
-Bool WRECleanup( Bool fatal_exit )
+bool WRECleanup( bool fatal_exit )
 {
     /* clean up before we exit */
     if( !WREEndAllStringSessions( fatal_exit ) ||
@@ -1009,10 +1018,10 @@ Bool WRECleanup( Bool fatal_exit )
     return( TRUE );
 }
 
-Bool WREProcessArgs( char **argv, int argc )
+bool WREProcessArgs( char **argv, int argc )
 {
     int     i;
-    Bool    ok;
+    bool    ok;
 
     ok = TRUE;
 
@@ -1050,7 +1059,7 @@ void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
     FreeProcInstance( lpProcAbout );
 }
 
-Bool CALLBACK WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
+bool CALLBACK WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
     HDC         dc, tdc;

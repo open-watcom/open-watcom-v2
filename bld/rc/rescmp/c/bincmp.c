@@ -32,10 +32,10 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <io.h>
 #include "watcom.h"
 #include "types.h"
 #include "bincmp.h"
+#include "rcrtns.h"
 
 #define BUFFER_SIZE  1024
 
@@ -51,34 +51,34 @@ int BinaryCompare( int handle1, uint_32 offset1, int handle2, uint_32 offset2,
     uint_32 currpos2;
 
     /* seek to the start of the places to compare */
-    currpos1 = lseek( handle1, offset1, SEEK_SET );
+    currpos1 = RCSEEK( handle1, offset1, SEEK_SET );
     if (currpos1 == -1) {
         return( -1 );
     }
-    currpos2 = lseek( handle2, offset2, SEEK_SET );
+    currpos2 = RCSEEK( handle2, offset2, SEEK_SET );
     if (currpos2 == -1) {
-        lseek( handle1, currpos1, SEEK_SET );
+        RCSEEK( handle1, currpos1, SEEK_SET );
         return( -1 );
     }
 
     /* compare the parts that fill the buffer */
     while (length >= BUFFER_SIZE) {
-        numread = read( handle1, Buffer1, BUFFER_SIZE );
+        numread = RCREAD( handle1, Buffer1, BUFFER_SIZE );
         if (numread != BUFFER_SIZE) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( -1 );
         }
-        numread = read( handle2, Buffer2, BUFFER_SIZE );
+        numread = RCREAD( handle2, Buffer2, BUFFER_SIZE );
         if (numread != BUFFER_SIZE) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( -1 );
         }
 
         if (memcmp( Buffer1, Buffer2, BUFFER_SIZE ) != 0) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( 1 );
         }
 
@@ -86,27 +86,27 @@ int BinaryCompare( int handle1, uint_32 offset1, int handle2, uint_32 offset2,
     }
 
     if (length > 0) {
-        numread = read( handle1, Buffer1, length );
+        numread = RCREAD( handle1, Buffer1, length );
         if (numread != length) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( -1 );
         }
-        numread = read( handle2, Buffer2, length );
+        numread = RCREAD( handle2, Buffer2, length );
         if (numread != length) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( -1 );
         }
 
         if (memcmp( Buffer1, Buffer2, length ) != 0) {
-            lseek( handle2, currpos2, SEEK_SET );
-            lseek( handle1, currpos1, SEEK_SET );
+            RCSEEK( handle2, currpos2, SEEK_SET );
+            RCSEEK( handle1, currpos1, SEEK_SET );
             return( 1 );
         }
     }
 
-    lseek( handle2, currpos2, SEEK_SET );
-    lseek( handle1, currpos1, SEEK_SET );
+    RCSEEK( handle2, currpos2, SEEK_SET );
+    RCSEEK( handle1, currpos1, SEEK_SET );
     return( 0 );
 }

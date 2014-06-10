@@ -66,7 +66,7 @@ void Test_vsprintf( char *buf, char *format, ... );
 int  Test_vsnprintf( char *buf, char *format, ... );
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestCompareF( void );
 void TestCaseF( void );
 void TestMoveF( void );
@@ -126,7 +126,7 @@ void TestCompare( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestCompareF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -261,7 +261,7 @@ void TestBounded( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestMoveF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -347,7 +347,7 @@ void TestCase( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestCaseF( void )
 {
     char            bufA[80] = "FoO baR gOoBeR bLaH";
@@ -408,7 +408,7 @@ void TestSearch( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestSearchF( void )
 {
     char            buf[] = "The quick brown fox jumped over the lazy dogs.";
@@ -478,7 +478,7 @@ void TestSubstring( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestSubstringF( void )
 {
     char            buf[] = "The quick brown fox jumped over the lazy dogs.";
@@ -545,7 +545,7 @@ void TestToken( void )
 }
 
 
-#ifdef __X86__
+#ifdef _M_IX86
 void TestTokenF( void )
 {
     char            buf[] = "Find!all;the.tokens,";
@@ -734,7 +734,7 @@ int main( int argc, char *argv[] )
     TestError();                                /* error string stuff */
     TestFormatted();                            /* formatted I/O stuff */
     TestBounded();                              /* bounded string stuff */
-#ifdef __X86__
+#ifdef _M_IX86
     TestCompareF();
     TestMoveF();
     TestCaseF();

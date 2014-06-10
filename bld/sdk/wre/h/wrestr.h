@@ -44,11 +44,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRENewStringResource( void );
-extern Bool WREEditStringResource( WRECurrentResInfo * );
-extern Bool WRESaveEditStringResource( WStringHandle );
-extern Bool WREEndEditStringResource( WStringHandle );
-extern Bool WREEndAllStringSessions( Bool );
+extern bool WRENewStringResource( void );
+extern bool WREEditStringResource( WRECurrentResInfo * );
+extern bool WRESaveEditStringResource( WStringHandle );
+extern bool WREEndEditStringResource( WStringHandle );
+extern bool WREEndAllStringSessions( bool );
 extern void WREEndResStringSessions( WREResInfo *rinfo );
 
 #endif

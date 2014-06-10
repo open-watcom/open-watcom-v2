@@ -37,7 +37,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WINEXPORT extern OBJPTR  CALLBACK WdeTabCCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeTabCInit( Bool );
+extern bool              WdeTabCInit( bool );
 extern void              WdeTabCFini( void );
 
 #endif

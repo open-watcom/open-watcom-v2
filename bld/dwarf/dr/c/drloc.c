@@ -125,6 +125,7 @@ static void DoLocExpr( unsigned_8       *p,
 #define Pop( a )     (++a)
 #define Push( a )    (--a)
 #define IsEmpty( a, b )  ( (a) == (b) )
+
     end = &p[length];
     stk_top = &stack[100];
     top = stk_top;
@@ -337,13 +338,13 @@ static void DoLocExpr( unsigned_8       *p,
         case DW_OP_xderef:
             op1 = addr_size; /* fall thru */
         case DW_OP_xderef_size:
-           /*  xdref addr */
-           stk1 = top[0];
-           Pop( top );
+            /*  xdref addr */
+            stk1 = top[0];
+            Pop( top );
             if( !callbck->drefx( d, top, stk1, top[0], op1 ) ) {
                 return;
             }
-           break;
+            break;
         case DW_OP_abs:
             if( (int_32)stk1 < 0 ) {
                 stk1 = -(int_32)stk1;
@@ -474,18 +475,15 @@ static dr_handle SearchLocList( uint_32 start, uint_32 context,
     return( p );
 }
 
-static int DWRLocExpr( dr_handle        var,
-                       dr_handle        abbrev,
-                       dr_handle        info,
-                       dr_loc_callbck   *callbck,
-                       void             *d )
-/***********************************************/
+static bool DWRLocExpr( dr_handle var, dr_handle abbrev, dr_handle info,
+                                    dr_loc_callbck *callbck, void *d )
+/**********************************************************************/
 {
     unsigned    form;
     uint_32     size;
     uint_8      loc_buff[256];
     uint_8      *expr;
-    int         ret;
+    bool        ret;
     dr_handle   loclist;
     uint_32     context;
     int         addr_size;
@@ -500,8 +498,8 @@ static int DWRLocExpr( dr_handle        var,
             info += sizeof(unsigned_8);
             goto end_loop;
         case DW_FORM_block2:
-             size = DWRVMReadWord( info );
-             info += sizeof(unsigned_16);
+            size = DWRVMReadWord( info );
+            info += sizeof(unsigned_16);
             goto end_loop;
         case DW_FORM_block4:
             size = DWRVMReadDWord( info );
@@ -528,8 +526,8 @@ static int DWRLocExpr( dr_handle        var,
             form = DW_FORM_block2;
             break;
         case DW_FORM_data2: //TODO kludge
-            ret = DWRVMReadWord( info );
-            ret = callbck->ref( d, ret, addr_size, DR_LOC_ADDR );
+            size = DWRVMReadWord( info );
+            ret = callbck->ref( d, size, addr_size, DR_LOC_ADDR );
             goto exit;
         default:
             ret = FALSE;
@@ -537,7 +535,7 @@ static int DWRLocExpr( dr_handle        var,
         }
     } end_loop:;
     if( size > sizeof( loc_buff ) ) {
-         expr = DWRALLOC( size );
+        expr = DWRALLOC( size );
     } else if( size > 0 ) {
         expr = loc_buff;
     } else {
@@ -554,16 +552,14 @@ exit:
     return( ret );
 }
 
-extern int DRLocBasedAT( dr_handle      var,
-                         dr_loc_callbck *callbck,
-                         void           *d )
-/***********************************************/
+bool DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+/******************************************************************/
 {
     dw_tagnum   tag;
     dw_atnum    at;
     dr_handle   abbrev;
     dr_handle   sym = var;
-    int         ret;
+    bool        ret;
 
     abbrev = DWRVMReadULEB128( &var );
     abbrev = DWRLookupAbbrev( var, abbrev );
@@ -581,7 +577,7 @@ extern int DRLocBasedAT( dr_handle      var,
     default:
         return( FALSE );
     }
-    if( DWRScanForAttrib( &abbrev, &var, at ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &var, at ) ) {
         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         if( tag == DW_TAG_member ) {
@@ -602,16 +598,14 @@ extern int DRLocBasedAT( dr_handle      var,
     return( ret );
 }
 
-extern int DRLocationAT( dr_handle      var,
-                         dr_loc_callbck *callbck,
-                         void           *d )
-/***********************************************/
+bool DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+/******************************************************************/
 {
     dw_tagnum   tag;
     dw_atnum    at;
     dr_handle   abbrev;
     dr_handle   sym = var;
-    int         ret;
+    bool        ret;
 
     abbrev = DWRVMReadULEB128( &var );
     abbrev = DWRLookupAbbrev( var, abbrev );
@@ -630,77 +624,72 @@ extern int DRLocationAT( dr_handle      var,
     default:
         return( FALSE );
     }
-    if( DWRScanForAttrib( &abbrev, &var, at ) != 0 ) {
-         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
+    if( DWRScanForAttrib( &abbrev, &var, at ) ) {
+        ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
     }
     return( ret );
 }
 
-extern int DRParmEntryAT( dr_handle         var,
-                          dr_loc_callbck    *callbck,
-                          void              *d )
-/***************************************************/
+bool DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d )
+/*******************************************************************/
 {
     dr_handle   abbrev;
     dr_handle   sym = var;
-    int         ret;
+    bool        ret;
 
     abbrev = DWRVMReadULEB128( &var );
     abbrev = DWRLookupAbbrev( var, abbrev );
     DWRVMReadULEB128( &abbrev );    /* skip tag */
     ++abbrev;                       /* skip child flag */
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) != 0 ) {
-         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_WATCOM_parm_entry ) ) {
+        ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
     }
     return( ret );
 }
+
 extern dr_handle DRStringLengthAT( dr_handle str )
 /************************************************/
 {
     dr_handle   abbrev;
 
     abbrev = DWRGetAbbrev( &str );
-    if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) != 0 ) {
+    if( DWRScanForAttrib( &abbrev, &str, DW_AT_string_length ) ) {
          return( str );
     } else {
          return( 0 );
     }
 }
 
-extern int DRRetAddrLocation( dr_handle      var,
-                              dr_loc_callbck *callbck,
-                              void           *d )
-/****************************************************/
+bool DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
+/***********************************************************************/
 {
     dr_handle   abbrev;
     dr_handle   sym = var;
-    int         ret;
+    bool        ret;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) != 0 ) {
-         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_return_addr ) ) {
+        ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
     }
     return( ret );
 }
 
-extern int DRSegLocation( dr_handle      var,
-                          dr_loc_callbck *callbck,
-                          void           *d )
-/************************************************/
+bool DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d )
+/*******************************************************************/
 {
     dr_handle   abbrev;
     dr_handle   sym = var;
-    int         ret;
+    bool        ret;
 
     abbrev = DWRGetAbbrev( &var );
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) != 0 ) {
-         ret = DWRLocExpr( sym, abbrev, var, callbck, d );
+    if( DWRScanForAttrib( &abbrev, &var, DW_AT_segment ) ) {
+        ret = DWRLocExpr( sym, abbrev, var, callbck, d );
     } else {
         ret = FALSE;
     }

@@ -355,7 +355,7 @@ void CheckError( void )
     }
 }
 
-void *DbgAlloc( int size )
+void *DbgAlloc( size_t size )
 {
     return( malloc( size ) );
 }

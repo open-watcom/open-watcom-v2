@@ -55,14 +55,13 @@
 #include "wdefhtky.h"
 #include "wdefhdr.h"
 #include "wdemain.h"
-#include "wdemem.h"
 #include "wdefinit.h"
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    Bool    (*init)( Bool );
+    bool    (*init)( bool );
     void    (*fini)( void );
     OBJPTR  (CALLBACK *create)( OBJPTR , RECT *, OBJPTR );
 } WdeObjectRoutinesType;
@@ -109,16 +108,16 @@ CREATE_TABLE *WdeGetCreateTable( void )
     return( WdeCreateTable );
 }
 
-Bool WdeInitCreateTable( void )
+bool WdeInitCreateTable( void )
 {
     int         i;
-    Bool        first_inst;
+    bool        first_inst;
     HINSTANCE   inst;
 
     first_inst = WdeIsFirstInst();
     if( WdeCreateTable == NULL ) {
         inst = WdeGetAppInstance();
-        WdeCreateTable = (CREATE_TABLE *)WdeMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
+        WdeCreateTable = (CREATE_TABLE *)WRMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {
@@ -145,7 +144,7 @@ void WdeFiniCreateTable( void )
             FreeProcInstance( (FARPROC)(*WdeCreateTable)[i] );
 #endif
         }
-        WdeMemFree( WdeCreateTable );
+        WRMemFree( WdeCreateTable );
         WdeCreateTable = NULL;
     }
 }

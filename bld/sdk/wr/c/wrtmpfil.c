@@ -44,6 +44,7 @@
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
+#include "wrmemi.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -77,7 +78,7 @@ int WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
 
     if( ok ) {
         *size = s;
-        *data = (BYTE *)WRMemAlloc( *size );
+        *data = (BYTE *)MemAlloc( *size );
         ok = (*data != NULL);
     }
 
@@ -91,7 +92,7 @@ int WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
 
     if( !ok ) {
         if( *data != NULL ) {
-            WRMemFree( *data );
+            MemFree( *data );
             *data = NULL;
         }
         *size = 0;
@@ -184,7 +185,7 @@ int WRAPI WRBackupFile( const char *name, int use_rename )
 
 void WRAPI WRFreeTempFileName( char *name )
 {
-    WRMemFree( name );
+    MemFree( name );
 }
 
 char * WRAPI WRGetTempFileName( const char *ext )
@@ -238,7 +239,7 @@ char * WRAPI WRGetTempFileName( const char *ext )
 
     len = strlen( fn_path ) + 1;
 
-    buf = (char *)WRMemAlloc( len );
+    buf = (char *)MemAlloc( len );
     if( buf != NULL ) {
         memcpy( buf, fn_path, len );
     }
@@ -289,7 +290,7 @@ int WRCopyBinFile( int dest, int src )
     long int    dest_pos;
     int         ok;
 
-    buf = (char *)WRMemAlloc( WR_COPY_BUFFER_SIZE );
+    buf = (char *)MemAlloc( WR_COPY_BUFFER_SIZE );
     if( buf == NULL ) {
         return( FALSE );
     }
@@ -327,7 +328,7 @@ int WRCopyBinFile( int dest, int src )
         lseek( dest, dest_pos, SEEK_SET );
     }
 
-    WRMemFree( buf );
+    MemFree( buf );
 
     return( ok );
 }

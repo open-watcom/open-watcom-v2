@@ -49,26 +49,26 @@
 extern void WInitEditWindows( HINSTANCE );
 extern void WFiniEditWindows( void );
 extern void WInitEditDlg( HINSTANCE inst, HWND parent );
-extern Bool WCreateMenuEditWindow( WMenuEditInfo *, HINSTANCE );
-extern Bool WResizeMenuEditWindow( WMenuEditInfo *, RECT * );
-extern Bool WSetEditWinResName( WMenuEditInfo * );
-extern Bool WInitEditWindowListBox( WMenuEditInfo * );
+extern bool WCreateMenuEditWindow( WMenuEditInfo *, HINSTANCE );
+extern bool WResizeMenuEditWindow( WMenuEditInfo *, RECT * );
+extern bool WSetEditWinResName( WMenuEditInfo * );
+extern bool WInitEditWindowListBox( WMenuEditInfo * );
 extern void WHandleSelChange( WMenuEditInfo * );
-extern void WDoHandleSelChange( WMenuEditInfo *, Bool, Bool );
-extern Bool WResetEditWindowFlags( HWND dlg );
+extern void WDoHandleSelChange( WMenuEditInfo *, bool, bool );
+extern bool WResetEditWindowFlags( HWND dlg );
 
 extern void WSetEditWindowControls( WMenuEditInfo *, WMenuEntry * );
-extern Bool WSetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry * );
-extern Bool WGetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry *, Bool, Bool * );
+extern bool WSetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry * );
+extern bool WGetEditWindowMenuEntry( WMenuEditInfo *, WMenuEntry *, bool, bool * );
 
-extern Bool WSetEditWindowText( HWND, MenuFlags, char * );
-extern Bool WSetEditWindowID( HWND, uint_16, Bool, char * );
-extern Bool WSetEditWindowFlags( HWND, MenuFlags, Bool );
+extern bool WSetEditWindowText( HWND, MenuFlags, char * );
+extern bool WSetEditWindowID( HWND, uint_16, bool, char * );
+extern bool WSetEditWindowFlags( HWND, MenuFlags, bool );
 
-extern Bool WGetEditWindowText( HWND, char ** );
-extern Bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, Bool );
-extern Bool WGetEditWindowFlags( HWND, MenuFlags * );
-extern Bool WClipMenuItem( WMenuEditInfo *einfo, Bool cut );
-extern Bool WPasteMenuItem( WMenuEditInfo *einfo );
+extern bool WGetEditWindowText( HWND, char ** );
+extern bool WGetEditWindowID( HWND, char **, uint_16 *, WRHashTable *, bool );
+extern bool WGetEditWindowFlags( HWND, MenuFlags * );
+extern bool WClipMenuItem( WMenuEditInfo *einfo, bool cut );
+extern bool WPasteMenuItem( WMenuEditInfo *einfo );
 
 #endif

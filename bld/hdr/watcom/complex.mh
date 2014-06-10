@@ -454,6 +454,14 @@ inline double norm( Complex const &__cv ) {
  #include <cmath>
 #endif
 
+#ifndef _ISTREAM_INCLUDED
+ #include <istream>
+#endif
+
+#ifndef _OSTREAM_INCLUDED
+ #include <ostream>
+#endif
+
 namespace std {
 
   template< class FloatT >
@@ -920,6 +928,52 @@ namespace std {
     return( sinh( x ) / cosh( x ) );
   }
 
+  template< class FloatT >
+  _WPRTLINK ostream &operator << ( ostream &strm, const complex< FloatT > &z ) {
+  // Output a complex number
+    int width = strm.width() - 2;
+    strm << '(' << setw( width/2 ) << z.real()
+         << "," << setw( width/2 - ((width+1)&1)) << z.imag() << ')';
+    return( strm );
+  }
+
+  template< class FloatT >
+  _WPRTLINK istream &operator >> ( istream &strm, complex< FloatT > &z ) {
+    // read a complex number in one of the following forms:
+    // "r", "(r)", "(r, i)"
+
+    // lwg issue 156: extraction is performed as a series of simpler
+    // extractions. Therefore, the skipping of whitespace is specified
+    // to be the same for each of the simpler extractions.
+
+    FloatT re = FloatT (),
+           im = FloatT ();
+
+    char ch;
+
+    if (!(strm >> ch))
+      return strm;
+
+    if ('(' == ch) {
+      if (strm >> re && strm >> ch) {
+        if (',' == ch && strm >> im)
+          strm >> ch;
+
+          // avoid setting failbit if either badbit
+          // or failbit is already set in the stream
+          if (')' != ch && strm)
+            strm.setstate (strm.failbit);
+      }
+    }
+    else if (strm.putback (ch)) {
+      strm >> re;
+    }
+
+    if (strm)
+      z = complex< FloatT >(re, im);
+
+    return strm;
+  }
 } // namespace std
 
 #endif

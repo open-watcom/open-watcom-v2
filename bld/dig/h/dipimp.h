@@ -33,6 +33,7 @@
 #define DIPIMP_H_INCLUDED
 
 #include "diptypes.h"
+
 #include "digpck.h"
 
 struct imp_image_handle;
@@ -51,6 +52,17 @@ typedef unsigned_16     image_index;
 #define DIP_MAJOR       1
 #define DIP_MINOR       3
 #define DIP_MINOR_OLD   0
+
+#define MH2IMH( mh )    ((mh)&0x0000FFFF)
+#define IMH2MH( imh )   (imh)
+
+/*
+    An imp_mod_handle is defined as an unsigned_16. The value zero is
+    reserved to indicate "no module".
+*/
+#define IMH_NOMOD       ((imp_mod_handle)0)
+#define IMH_BASE        ((imp_mod_handle)1)
+#define IMH_GBL         ((imp_mod_handle)-1)
 
 typedef walk_result (DIGCLIENT IMP_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
 typedef walk_result (DIGCLIENT IMP_TYPE_WKR)( imp_image_handle *, imp_type_handle *, void * );
@@ -110,12 +122,12 @@ struct dip_imp_routines {
     walk_result         (DIGENTRY *walk_file_list)( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
     imp_mod_handle      (DIGENTRY *cue_mod)(imp_image_handle *, imp_cue_handle * );
     unsigned            (DIGENTRY *cue_file)( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-    cue_file_id         (DIGENTRY *cue_fyle_id)( imp_image_handle *, imp_cue_handle * );
+    cue_fileid          (DIGENTRY *cue_file_id)( imp_image_handle *, imp_cue_handle * );
     dip_status          (DIGENTRY *cue_adjust)( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
     unsigned long       (DIGENTRY *cue_line)( imp_image_handle *, imp_cue_handle * );
     unsigned            (DIGENTRY *cue_column)( imp_image_handle *, imp_cue_handle * );
     address             (DIGENTRY *cue_addr)( imp_image_handle *, imp_cue_handle * );
-    search_result       (DIGENTRY *line_cue)( imp_image_handle *, imp_mod_handle, cue_file_id, unsigned long, unsigned, imp_cue_handle * );
+    search_result       (DIGENTRY *line_cue)( imp_image_handle *, imp_mod_handle, cue_fileid, unsigned long, unsigned, imp_cue_handle * );
     search_result       (DIGENTRY *addr_cue)( imp_image_handle *, imp_mod_handle, address, imp_cue_handle * );
     int                 (DIGENTRY *cue_cmp)( imp_image_handle *, imp_cue_handle *, imp_cue_handle * );
 
@@ -190,12 +202,12 @@ dip_status      DIGENTRY DIPImpSymFreeAll( imp_image_handle * );
 walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *, imp_mod_handle, IMP_CUE_WKR *, imp_cue_handle *, void * );
 imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *, imp_cue_handle * );
 unsigned        DIGENTRY DIPImpCueFile( imp_image_handle *, imp_cue_handle *, char *, unsigned );
-cue_file_id     DIGENTRY DIPImpCueFileId( imp_image_handle *, imp_cue_handle * );
+cue_fileid      DIGENTRY DIPImpCueFileId( imp_image_handle *, imp_cue_handle * );
 dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *, imp_cue_handle *, int, imp_cue_handle * );
 unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *, imp_cue_handle * );
 unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *, imp_cue_handle * );
 address         DIGENTRY DIPImpCueAddr( imp_image_handle *, imp_cue_handle * );
-search_result   DIGENTRY DIPImpLineCue( imp_image_handle *, imp_mod_handle, cue_file_id, unsigned long, unsigned, imp_cue_handle * );
+search_result   DIGENTRY DIPImpLineCue( imp_image_handle *, imp_mod_handle, cue_fileid, unsigned long, unsigned, imp_cue_handle * );
 search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *, imp_mod_handle, address, imp_cue_handle * );
 int             DIGENTRY DIPImpCueCmp( imp_image_handle *, imp_cue_handle *, imp_cue_handle * );
 
@@ -205,8 +217,8 @@ typedef struct dip_client_routines {
     unsigned_8          minor;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *alloc)( unsigned );
-    void                *(DIGCLIENT *realloc)( void *, unsigned );
+    void                *(DIGCLIENT *alloc)( size_t );
+    void                *(DIGCLIENT *realloc)( void *, size_t );
     void                (DIGCLIENT *free)( void * );
 
     void                (DIGCLIENT *map_addr)( addr_ptr *, void * );
@@ -229,13 +241,25 @@ typedef struct dip_client_routines {
     unsigned            (DIGCLIENT *DIGCliMachineData)( address, unsigned, unsigned, void const*, unsigned, void * );
 } dip_client_routines;
 
-void            *DCAlloc( unsigned amount );
-void            *DCAllocZ( unsigned amount );
-void            *DCRealloc( void *p, unsigned amount );
+#include "digunpck.h"
+
+typedef dip_imp_routines * DIGENTRY dip_init_func( dip_status *status, dip_client_routines *client );
+#ifdef __WINDOWS__
+typedef void DIGENTRY dip_fini_func( void );
+#endif
+
+DIG_DLLEXPORT dip_init_func DIPLOAD;
+#ifdef __WINDOWS__
+DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
+#endif
+
+void            *DCAlloc( size_t amount );
+void            *DCAllocZ( size_t amount );
+void            *DCRealloc( void *p, size_t amount );
 void            DCFree( void *p );
 
 void            DCMapAddr( addr_ptr *a, void *d );
-imp_sym_handle  *DCSymCreate( imp_image_handle *ii, void *d );
+imp_sym_handle  *DCSymCreate( imp_image_handle *iih, void *d );
 dip_status      DCItemLocation( location_context *, context_item, location_list * );
 dip_status      DCAssignLocation( location_list *, location_list *, unsigned long );
 dip_status      DCSameAddrSpace( address, address );
@@ -254,5 +278,5 @@ void            DCStatus( dip_status );
 mad_handle      DCCurrMAD(void);
 
 unsigned        DCMachineData( address, unsigned, unsigned, void *, unsigned, void * );
-#include "digunpck.h"
+
 #endif

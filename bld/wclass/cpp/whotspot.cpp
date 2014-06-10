@@ -40,7 +40,7 @@ WEXPORT WHotSpots::WHotSpots( int num_hot_spots )
 /***************************************/
 {
 
-    _hotSpotItems = new gui_resource[ num_hot_spots ];
+    _hotSpotItems = new gui_resource[num_hot_spots];
 }
 
 

@@ -50,7 +50,7 @@ void WRDisplayMsg( const char *msg )
     }
 }
 
-char *WRAllocRCString( DWORD id )
+char *WRAllocRCString( UINT id )
 {
     return( AllocRCString( id ) );
 }
@@ -60,7 +60,7 @@ void WRFreeRCString( char *str )
     FreeRCString( str );
 }
 
-DWORD WRCopyRCString( DWORD id, char *buf, DWORD bufsize )
+int WRCopyRCString( UINT id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 }
@@ -70,7 +70,7 @@ void WRInitDisplayError( HINSTANCE inst )
     SetInstance( inst );
 }
 
-void WRDisplayErrorMsg( DWORD msg )
+void WRDisplayErrorMsg( UINT msg )
 {
     char        *title;
 
@@ -86,7 +86,7 @@ void WRDisplayErrorMsg( DWORD msg )
     }
 }
 
-void WRPrintErrorMsg( DWORD msg, ... )
+void WRPrintErrorMsg( UINT msg, ... )
 {
     va_list     al;
     char        *str;

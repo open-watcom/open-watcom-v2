@@ -52,7 +52,7 @@ MState::MState( MTool* tool, SwMode mode, MSwitch* sw )
 #ifndef NOPERSIST
 MState* WEXPORT MState::createSelf( WObjectFile& )
 {
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT MState::readSelf( WObjectFile& p )
@@ -103,5 +103,5 @@ void MState::resetRuleRefs()
 
 bool MState::legal()
 {
-    return _switch != NULL;
+    return( _switch != NULL );
 }

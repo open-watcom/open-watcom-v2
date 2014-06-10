@@ -35,6 +35,7 @@
 #include "memmgr.h"
 #include "ptree.h"
 #include "specname.h"
+#include "template.h"
 #include "class.h"
 #include "rtfuns.h"
 #include "analtyid.h"

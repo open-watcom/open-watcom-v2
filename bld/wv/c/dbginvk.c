@@ -50,7 +50,7 @@ extern bool             ScanItem( bool, char **, unsigned int * );
 extern bool             ScanEOC( void );
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
-extern handle           LocalFullPathOpen( char *name, char *ext, char *result, unsigned max_result );
+extern handle           LocalFullPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
 extern char             *ReScan( char * );
@@ -268,17 +268,13 @@ static void DoInvoke( handle hndl, char *name, char_ring *parmlist )
     TypeInpStack( INP_CMD_FILE );
 }
 
-void Invoke( char *invfile, int len, char_ring *parmlist )
+void Invoke( const char *invfile, int len, char_ring *parmlist )
 {
-    char        *invname;
     handle      hndl;
 
-    _AllocA( invname, len + 1 );
-    memcpy( invname, invfile, len );
-    invname[ len ] = '\0';
-    hndl = LocalFullPathOpen( invname, "dbg", TxtBuff, TXT_LEN );
+    hndl = LocalFullPathOpen( invfile, len, "dbg", TxtBuff, TXT_LEN );
     if( hndl == NIL_HANDLE ) {
-        MakeFileName( TxtBuff, invname, "dbg", 0 );
+        MakeFileName( TxtBuff, invfile, "dbg", 0 );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT( ERR_FILE_NOT_OPEN ), TxtBuff );
     }
@@ -311,7 +307,7 @@ void ProfileInvoke( char *name )
         strcpy( &name[1], EXENAME );
         strcat( name, "rc" );
         strlwr( name );
-        hndl = LocalFullPathOpen( name, LIT( Empty ), TxtBuff, TXT_LEN );
+        hndl = LocalFullPathOpen( name, strlen( name ), LIT( Empty ), TxtBuff, TXT_LEN );
         if( hndl != NIL_HANDLE ) {
             DoInvoke( hndl, TxtBuff, NULL );
             return;

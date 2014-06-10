@@ -37,17 +37,17 @@
 
 WCLASS WResStr : public WObject
 {
-        public:
-                WEXPORT WResStr( unsigned id );
-                const char * WEXPORT gets() const { return _buffer; }
-                WEXPORT operator const char*() const { return gets(); }
-                static char * WEXPORT formats( char * buf, unsigned len, unsigned id, ... );
+    public:
+        WEXPORT WResStr( unsigned id );
+        const char * WEXPORT gets() const { return( _buffer ); }
+        WEXPORT operator const char*() const { return( gets() ); }
+        static char * WEXPORT formats( char * buf, unsigned len, unsigned id, ... );
 
-        private:
-                enum {
-                    BUFFERSIZE = 256,
-                };
+    private:
+        enum {
+            BUFFERSIZE = 256,
+        };
 
-                char _buffer[ BUFFERSIZE ];
+        char _buffer[BUFFERSIZE];
 };
 #endif // wresstr_class

@@ -36,13 +36,13 @@
 #include "wmdichld.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
+#include "wsyshelp.hpp"
 #include "vlistbox.hpp"
 
 WCLASS VpeMain;
 WCLASS WListBox;
 WCLASS WMenuItem;
 WCLASS WTimer;
-WCLASS WSystemHelp;
 
 WCLASS VMsgLog : public WMdiChild
 {
@@ -53,13 +53,13 @@ WCLASS VMsgLog : public WMdiChild
         void startConnect();
         void WEXPORT setDirectory( const WFileName& dir ) { _cwd = dir; }
         void WEXPORT runCommand( const char* cmd );
-        bool WEXPORT running() { return _running; }
+        bool WEXPORT running() { return( _running ); }
         void editRequest( WMenuItem* );
         void helpRequest( WMenuItem* );
         void stopRequest( WMenuItem* );
         void killBatcher();
         void getState( bool& editOk, bool& helpOk );
-        bool logExists() const { return _data.count() > 0; }
+        bool logExists() const { return( _data.count() > 0 ); }
         bool saveLogAs();
         bool WEXPORT keyDown( WKeyCode, WKeyState );
         bool WEXPORT scrollNotify( WScrollNotification, int );
@@ -87,7 +87,7 @@ WCLASS VMsgLog : public WMdiChild
         bool            matchLine( int index, char* file, int& line, int& offset, char* help );
         void            selected( WWindow* );
         void            clearData();
-        void            addLine( const WString& str, bool newline=TRUE );
+        void            addLine( const WString& str, bool newline=true );
         void            focusHandoff();
 
         bool            _serverConnected;

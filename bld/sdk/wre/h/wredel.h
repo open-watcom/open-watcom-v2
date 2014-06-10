@@ -44,9 +44,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WREDeleteCurrResource( Bool force );
-extern Bool WREDeleteResource( WRECurrentResInfo *curr, Bool force );
-extern Bool WREDeleteStringResources( WRECurrentResInfo *curr, Bool );
-extern Bool WRERemoveEmptyResource( WRECurrentResInfo *curr );
+extern bool WREDeleteCurrResource( bool force );
+extern bool WREDeleteResource( WRECurrentResInfo *curr, bool force );
+extern bool WREDeleteStringResources( WRECurrentResInfo *curr, bool );
+extern bool WRERemoveEmptyResource( WRECurrentResInfo *curr );
 
 #endif

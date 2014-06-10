@@ -65,11 +65,11 @@ struct PopupMenuExItem {
 #include "wresall.h"
 #include "errors.h"
 #include "global.h"
-#include "rcmem.h"
 #include "winytab.h"
 #include "semantic.h"
 #include "semmenu.h"
 #include "wresdefn.h"
+#include "rcrtns.h"
 
 static void SemFreeSubMenu( FullMenu *submenu );
 
@@ -121,8 +121,8 @@ FullMenu *SemNewMenu( FullMenuItem firstitem )
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
 
-    newmenu = RcMemMalloc( sizeof(FullMenu) );
-    newitem = RcMemMalloc( sizeof(FullMenuItem) );
+    newmenu = RCALLOC( sizeof(FullMenu) );
+    newitem = RCALLOC( sizeof(FullMenuItem) );
 
     if (newmenu == NULL || newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -145,7 +145,7 @@ FullMenu *SemAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     FullMenuItem     *newitem;
 
 
-    newitem = RcMemMalloc( sizeof(FullMenuItem) );
+    newitem = RCALLOC( sizeof(FullMenuItem) );
 
     if (newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -264,11 +264,11 @@ static void SemFreeMenuItem( FullMenuItem *curritem )
     if (curritem->IsPopup) {
         SemFreeSubMenu( curritem->item.popup.submenu );
         if (curritem->item.popup.item.menuData.ItemText != NULL) {
-            RcMemFree( curritem->item.popup.item.menuData.ItemText );
+            RCFREE( curritem->item.popup.item.menuData.ItemText );
         }
     } else {
         if (curritem->item.normal.menuData.ItemText != NULL) {
-            RcMemFree( curritem->item.normal.menuData.ItemText );
+            RCFREE( curritem->item.normal.menuData.ItemText );
         }
     }
 }
@@ -284,10 +284,10 @@ static void SemFreeSubMenu( FullMenu *submenu )
         SemFreeMenuItem( curritem );
         olditem = curritem;
         curritem = curritem->next;
-        RcMemFree( olditem );
+        RCFREE( olditem );
     }
 
-    RcMemFree( submenu );
+    RCFREE( submenu );
 }
 
 void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
@@ -330,7 +330,7 @@ void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( (long)RT_MENU ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
     SemFreeSubMenu( menu );

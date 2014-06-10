@@ -34,7 +34,7 @@
 
 const char      DIPImpName[] = "MAPSYM";
 
-unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         sizeof( imp_image_handle ),
@@ -46,21 +46,21 @@ unsigned DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[ hk ] );
 }
 
-dip_status DIPENTRY DIPImpMoreMem( unsigned size )
+dip_status DIGENTRY DIPImpMoreMem( unsigned size )
 {
     size = size;
     return( DS_FAIL );
 }
 
-dip_status DIPENTRY DIPImpStartup( void )
+dip_status DIGENTRY DIPImpStartup( void )
 {
     return( DS_OK );
 }
 
-void DIPENTRY DIPImpShutdown( void )
+void DIGENTRY DIPImpShutdown( void )
 {
 }
 
-void DIPENTRY DIPImpCancel( void )
+void DIGENTRY DIPImpCancel( void )
 {
 }

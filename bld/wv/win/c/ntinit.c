@@ -173,7 +173,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
     return( TRUE );
 }
 
-char *CheckForPowerBuilder( char *name )
+const char *CheckForPowerBuilder( const char *name )
 {
     static char pid[20];
 
@@ -188,12 +188,12 @@ char *CheckForPowerBuilder( char *name )
         return( "" );
     } else {
         pid[0] = '#';
-        itoa( PidPB, pid+1, 16 );
-        #ifdef __GUI__
-            WndSetTitle( WndMain, LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
-        #else
-            SetConsoleTitle( LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
-        #endif
+        itoa( PidPB, pid + 1, 16 );
+#ifdef __GUI__
+        WndSetTitle( WndMain, LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+#else
+        SetConsoleTitle( LIT( The_WATCOM_Debugger_for_PowerBuilder ) );
+#endif
         return( pid );
     }
 }

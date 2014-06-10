@@ -51,6 +51,7 @@ libs =                       &
         mqrt.lib             &
         msacm32.lib          &
         mscms.lib            &
+        msi.lib              &
         msimg32.lib          &
         mswsock.lib          &
         ncrypt.lib           &
@@ -196,6 +197,10 @@ vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%create $@
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
+
+ws2_32.lbc: ws2_32.def ws2_cons.obj
+    awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@
+    @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
     awk -v cpu=$(host_cpu) -f $(w32api_dir)/def2lbc.awk $[@ > $@

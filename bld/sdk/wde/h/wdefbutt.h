@@ -41,7 +41,7 @@ WINEXPORT extern OBJPTR  CALLBACK WdeTButtonCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeCButtonCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeRButtonCreate( OBJPTR, RECT *, OBJPTR );
 WINEXPORT extern OBJPTR  CALLBACK WdeGButtonCreate( OBJPTR, RECT *, OBJPTR );
-extern Bool              WdeButtonInit( Bool );
+extern bool              WdeButtonInit( bool );
 extern void              WdeButtonFini( void );
 
 #endif

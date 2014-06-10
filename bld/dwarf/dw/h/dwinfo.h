@@ -60,6 +60,6 @@ void            InfoULEB128( dw_client, dw_uconst );
 void            InfoBytes( dw_client, const void *, dw_size_t );
 void            InfoString( dw_client, const char * );
 debug_ref       InfoSkip( dw_client, dw_size_t );
-void            InfoPatch( dw_client, debug_ref, const void *, size_t );
+void            InfoPatch( dw_client, debug_ref, const void *, dw_size_t );
 
 #endif

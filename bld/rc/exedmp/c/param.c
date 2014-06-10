@@ -58,7 +58,7 @@ bool loadParam( Parameters *param, int count, char *params[] )
 /*************************************************************/
 {
     int i;
-    int j;
+    unsigned_16 j;
     bool unknownParam;
 
     unknownParam = false;

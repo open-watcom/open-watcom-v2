@@ -119,7 +119,7 @@ static BITMAPINFO *WRReadDIBInfo( BYTE **data )
     pos = START_OF_HEADER;
     header = (BITMAPINFOHEADER *)((*data) + pos);
     bitmap_size = DIB_INFO_SIZE( header->biBitCount );
-    bm = WRMemAlloc( bitmap_size );
+    bm = MemAlloc( bitmap_size );
     if( bm != NULL ) {
         memcpy( bm, header, bitmap_size );
         *data += pos + bitmap_size;
@@ -142,7 +142,7 @@ static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
     pos = START_OF_HEADER;
     header = (BITMAPCOREHEADER *)(*data + pos);
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
-    bm_core = WRMemAlloc( bitmap_size );
+    bm_core = MemAlloc( bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }
@@ -158,7 +158,7 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     WORD                chunk_size;
 
     chunk_size = CHUNK_SIZE;
-    while( chunk_size != 0 && (buffer = WRMemAlloc( chunk_size )) == NULL ) {
+    while( chunk_size != 0 && (buffer = MemAlloc( chunk_size )) == NULL ) {
         chunk_size >>= 1;
     }
     if( buffer == NULL ) {
@@ -173,7 +173,7 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     }
     memcpy( buffer, data, size );
     HugeMemCopy( dst, buffer, size );
-    WRMemFree( buffer );
+    MemFree( buffer );
 }
 
 static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *info )
@@ -246,13 +246,13 @@ static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *in
         if( info != NULL ) {
             info->u.bm_core = bm_core;
         } else {
-            WRMemFree( bm_core );
+            MemFree( bm_core );
         }
     } else {
         if( info != NULL ) {
             info->u.bm_info = bm_info;
         } else {
-            WRMemFree( bm_info );
+            MemFree( bm_info );
         }
     }
     return( bitmap_handle );
@@ -292,7 +292,7 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
     }
 
     if( info != NULL ) {
-        info->is_core = ( core != 0 );
+        info->is_core = core;
     }
 
     return( bitmap_handle );
@@ -521,7 +521,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     is_core = (*(DWORD *)*data == sizeof( BITMAPCOREHEADER ));
 
     hsize = sizeof( BITMAPFILEHEADER );
-    *data = WRMemRealloc( *data, *size + hsize );
+    *data = MemRealloc( *data, *size + hsize );
     if( *data == NULL ) {
         return( FALSE );
     }
@@ -561,7 +561,7 @@ int WRAPI WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
 void WRAPI WRForgetBitmapName( void )
 {
     if( BitmapName != NULL ) {
-        WRMemFree( BitmapName );
+        MemFree( BitmapName );
         BitmapName = NULL;
     }
 }

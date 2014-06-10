@@ -38,7 +38,7 @@
 */
 
 
-walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
+walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
                     imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
                     void *d )
 {
@@ -55,17 +55,17 @@ walk_result     DIPENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle  DIPENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle  DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     //TODO:
     /*
         Return the module that the type handle comes from.
     */
-    return( NO_MOD );
+    return( IMH_NOMOD );
 }
 
-dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeInfo( imp_image_handle *ii,
                 imp_type_handle *it, location_context *lc, dip_type_info *ti )
 {
     //TODO:
@@ -80,7 +80,7 @@ dip_status      DIPENTRY DIPImpTypeInfo( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
@@ -100,7 +100,7 @@ dip_status      DIPENTRY DIPImpTypeBase( imp_image_handle *ii,
      return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
                         imp_type_handle *array, location_context *lc,
                         array_info *ai, imp_type_handle *index )
 {
@@ -121,7 +121,7 @@ dip_status      DIPENTRY DIPImpTypeArrayInfo( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
                 imp_type_handle *proc, imp_type_handle *parm, unsigned n )
 {
     //TODO:
@@ -136,7 +136,7 @@ dip_status      DIPENTRY DIPImpTypeProcInfo( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *a )
 {
     /*
@@ -149,7 +149,7 @@ dip_status      DIPENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status      DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
                         imp_type_handle *base, imp_type_handle *derived,
                         location_context *lc, address *addr )
 {
@@ -166,7 +166,7 @@ dip_status      DIPENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                                 imp_type_handle *it2 )
 {
     //TODO:
@@ -184,7 +184,7 @@ int DIPENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
     return( 0 );
 }
 
-unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+unsigned DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, unsigned max )
 {
     //TODO:
@@ -241,7 +241,7 @@ unsigned DIPENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     are called at the same time
 
 */
-dip_status DIPENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
 {
     /*
     it->r->refCount++;
@@ -249,7 +249,7 @@ dip_status DIPENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it 
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIGENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
 {
     /*
     it->r->refCount--;
@@ -257,7 +257,7 @@ dip_status DIPENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it
     return(DS_OK);
 }
 
-dip_status DIPENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
+dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
 {
     /*
     for( type = TypesList; type != NULL; type = type->link ) {

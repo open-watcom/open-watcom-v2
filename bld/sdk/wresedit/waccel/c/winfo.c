@@ -34,7 +34,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "waccel.h"
 #include "winfo.h"
 
@@ -62,7 +61,7 @@ WAccelInfo *WRESEAPI WAccAllocAccelInfo( void )
 {
     WAccelInfo *info;
 
-    info = (WAccelInfo *)WMemAlloc( sizeof( WAccelInfo ) );
+    info = (WAccelInfo *)WRMemAlloc( sizeof( WAccelInfo ) );
 
     memset( info, 0, sizeof( WAccelInfo ) );
 
@@ -73,14 +72,14 @@ void WRESEAPI WAccFreeAccelInfo( WAccelInfo *info )
 {
     if( info != NULL ) {
         if( info->res_name != NULL ) {
-            WMemFree( info->res_name );
+            WRMemFree( info->res_name );
         }
         if( info->file_name != NULL ) {
-            WMemFree( info->file_name );
+            WRMemFree( info->file_name );
         }
         if( info->data != NULL ) {
-            WMemFree( info->data );
+            WRMemFree( info->data );
         }
-        WMemFree( info );
+        WRMemFree( info );
     }
 }

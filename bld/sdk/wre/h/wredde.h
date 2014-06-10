@@ -54,9 +54,9 @@ typedef enum
 /****************************************************************************/
 extern WRESPT   WREGetPendingService( void );
 extern void     WRESetPendingService( WRESPT s );
-extern Bool     WREHData2Mem( HDDEDATA, void **, uint_32 * );
-extern Bool     WREDDEStart( HINSTANCE inst );
+extern bool     WREHData2Mem( HDDEDATA, void **, uint_32 * );
+extern bool     WREDDEStart( HINSTANCE inst );
 extern void     WREDDEEnd( void );
-extern Bool     WREPokeData( HCONV conv, void *data, int size, Bool );
+extern bool     WREPokeData( HCONV conv, void *data, int size, bool );
 
 #endif

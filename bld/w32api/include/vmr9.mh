@@ -252,24 +252,6 @@ typedef struct _VMR9VideoStreamInfo {
     REFERENCE_TIME      rtEnd;
     VMR9_SampleFormat   SampleFormat;
 } VMR9VideoStreamInfo;
-
-/* GUIDs */
-EXTERN_C const IID  IID_IVMRImagePresenter9;
-EXTERN_C const IID  IID_IVMRSurfaceAllocator9;
-EXTERN_C const IID  IID_IVMRSurfaceAllocatorEx9;
-EXTERN_C const IID  IID_IVMRSurfaceAllocatorNotify9;
-EXTERN_C const IID  IID_IVMRWindowlessControl9;
-EXTERN_C const IID  IID_IVMRMixerControl9;
-EXTERN_C const IID  IID_IVMRMixerBitmap9;
-EXTERN_C const IID  IID_IVMRSurface9;
-EXTERN_C const IID  IID_IVMRImagePresenterConfig9;
-EXTERN_C const IID  IID_IVMRVideoStreamControl9;
-EXTERN_C const IID  IID_IVMRFilterConfig9;
-EXTERN_C const IID  IID_IVMRAspectRatioControl9;
-EXTERN_C const IID  IID_IVMRMonitorConfig9;
-EXTERN_C const IID  IID_IVMRDeinterlaceControl9;
-EXTERN_C const IID  IID_IVMRImageCompositor9;
-
 /* IVMRImagePresenter9 interface */
 #undef INTERFACE
 #define INTERFACE   IVMRImagePresenter9
@@ -784,5 +766,22 @@ DECLARE_INTERFACE_( IVMRImageCompositor9, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IVMRImagePresenter9;
+EXTERN_C const IID  __cdecl IID_IVMRSurfaceAllocator9;
+EXTERN_C const IID  __cdecl IID_IVMRSurfaceAllocatorEx9;
+EXTERN_C const IID  __cdecl IID_IVMRSurfaceAllocatorNotify9;
+EXTERN_C const IID  __cdecl IID_IVMRWindowlessControl9;
+EXTERN_C const IID  __cdecl IID_IVMRMixerControl9;
+EXTERN_C const IID  __cdecl IID_IVMRMixerBitmap9;
+EXTERN_C const IID  __cdecl IID_IVMRSurface9;
+EXTERN_C const IID  __cdecl IID_IVMRImagePresenterConfig9;
+EXTERN_C const IID  __cdecl IID_IVMRVideoStreamControl9;
+EXTERN_C const IID  __cdecl IID_IVMRFilterConfig9;
+EXTERN_C const IID  __cdecl IID_IVMRAspectRatioControl9;
+EXTERN_C const IID  __cdecl IID_IVMRMonitorConfig9;
+EXTERN_C const IID  __cdecl IID_IVMRDeinterlaceControl9;
+EXTERN_C const IID  __cdecl IID_IVMRImageCompositor9;
 
 #endif /* __vmr9_h__ */

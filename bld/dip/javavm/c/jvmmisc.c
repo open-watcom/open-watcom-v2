@@ -38,7 +38,7 @@
 
 const char      DIPImpName[] = "Java";
 
-unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         sizeof( imp_image_handle ),
@@ -50,24 +50,24 @@ unsigned        DIPENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[ hk ] );
 }
 
-dip_status      DIPENTRY DIPImpMoreMem( unsigned size )
+dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
 {
     /* nothing to do */
     return( DS_FAIL );
 }
 
-dip_status      DIPENTRY DIPImpStartup( void )
+dip_status      DIGENTRY DIPImpStartup( void )
 {
     /* nothing to do */
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpShutdown( void )
+void            DIGENTRY DIPImpShutdown( void )
 {
     /* nothing to do */
 }
 
-void            DIPENTRY DIPImpCancel( void )
+void            DIGENTRY DIPImpCancel( void )
 {
     /* nothing to do */
 }

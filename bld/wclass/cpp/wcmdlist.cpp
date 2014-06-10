@@ -57,7 +57,7 @@ WString& WCommandList::getCommand( WString& command ) {
         int pos = insertString( command );
         select( pos );
     }
-    return command;
+    return( command );
 }
 
 #ifdef __WATCOMC__

@@ -61,7 +61,7 @@ long _fork( char *cmd, unsigned len )
     return( 0 );
 }
 
-char *CheckForPowerBuilder( char *name )
+const char *CheckForPowerBuilder( const char *name )
 {
     return( name );
 }

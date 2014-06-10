@@ -128,8 +128,8 @@ void Module::setModule()
     DRSetDebug( _dbgInfo );
 }
 
-static int searchHook( dr_sym_context * symctxt, void *data )
-//-----------------------------------------------------------
+static bool searchHook( dr_sym_context * symctxt, void *data )
+//------------------------------------------------------------
 {
     FindSymData * info;
     bool          accept;
@@ -159,13 +159,13 @@ static int searchHook( dr_sym_context * symctxt, void *data )
                                     symctxt->name );
         info->data->add( sym );
 
-        #if DEBUG
+#if DEBUG
         if( !(info->data->count() % 10) ) {
             WString stat;
             stat.printf( "Loading - %d found", info->data->count() );
             browseTop->statusText( stat.gets() );
         }
-        #endif
+#endif
     } else {
         WBRFree( symctxt->name );
     }
@@ -195,7 +195,7 @@ SearchContext * Module::findSymbols( WVList *symbols, KeySymbol *filter,
     info.context = NULL;
 
     if( ctxt ) {
-        done = DRResumeSymSearch( ctxt, DR_SEARCH_ALL, (dr_depth) depth,
+        done = DRResumeSymSearch( ctxt, DR_SEARCH_ALL, (dr_depth)depth,
                                   NULL, &info, searchHook);
     } else {
         done = DRSymSearch( DR_SEARCH_ALL, (dr_depth) depth,

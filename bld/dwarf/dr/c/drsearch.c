@@ -35,17 +35,16 @@
 #include <string.h>
 
 typedef struct {
-    int         (*callback)( dr_sym_context *, void * );
+    DRSYMSRCH   callback;
     regexp      *name;
     void        *data;
     dr_search   searchtype;
 } sym_search_data;
 
-static bool DRSearchMacro( regexp *, void *, int (*cb)(dr_sym_context *, void *) );
+static bool DRSearchMacro( regexp *, void *, DRSYMSRCH cb );
 
-static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo,
-                                                         void *data )
-/****************************************************************************/
+static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo, void *data )
+/*****************************************************************************************/
 {
     int                 index;
     sym_search_data     *sinfo;
@@ -74,12 +73,11 @@ static bool CheckEntry( dr_handle abbrev, dr_handle mod, mod_scan_info *minfo,
         }
     }
 
-    return( sinfo->callback( &symctxt, sinfo->data ) != 0 );
+    return( sinfo->callback( &symctxt, sinfo->data ) );
 }
 
 extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
-                         void *data,
-                         int (*callback)(dr_sym_context *, void *) )
+                                        void *data, DRSYMSRCH callback )
 /**********************************************************************/
 // search the debugging information for interesting symbols (of type dr_search)
 // optionally search inside lexical blocks or classes (dr_depth)
@@ -98,8 +96,7 @@ extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
         info.name = name;
         info.data = data;
         info.searchtype = search;
-        done |= DWRScanAllCompileUnits( NULL, CheckEntry,
-                                        SearchTypes[search], depth, &info );
+        done |= DWRScanAllCompileUnits( NULL, CheckEntry, SearchTypes[search], depth, &info );
     }
 
     return( done );
@@ -108,7 +105,7 @@ extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
 extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
                                dr_depth depth, void *_name,
                                void *data,
-                               int (*callback)(dr_sym_context *, void *) )
+                               DRSYMSRCH callback )
 /************************************************************************/
 // resume a search from context information in ctxt
 {
@@ -125,16 +122,14 @@ extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
         info.name = name;
         info.data = data;
         info.searchtype = search;
-        done |= DWRScanAllCompileUnits( ctxt, CheckEntry,
-                                        SearchTypes[search], depth, &info );
+        done |= DWRScanAllCompileUnits( ctxt, CheckEntry, SearchTypes[search], depth, &info );
     }
 
     return( done );
 }
 
-static bool DRSearchMacro( regexp *name, void * data,
-                int (*callback)( dr_sym_context *, void *) )
-/**********************************************************/
+static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
+/************************************************************************/
 {
     name = name;            // just to avoid warnings.
     data = data;

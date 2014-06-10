@@ -40,6 +40,7 @@
 #include "fnovload.h"
 #include "ppintnam.h"
 #include "name.h"
+#include "template.h"
 #include "class.h"
 #include "carve.h"
 #include "vstk.h"

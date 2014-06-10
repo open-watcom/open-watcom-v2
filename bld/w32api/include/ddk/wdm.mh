@@ -7742,40 +7742,40 @@ typedef struct _PCW_REGISTRATION_INFORMATION {
 typedef PCW_REGISTRATION_INFORMATION    *PPCW_REGISTRATION_INFORMATION;
 
 /* Global variables in NTOSKRNL.EXE and NTDLL.DLL */
-extern NTSYSAPI BOOLEAN *NlsMbCodePageTag;
-extern NTSYSAPI BOOLEAN *NlsMbOemCodePageTag;
+extern NTSYSAPI BOOLEAN * __cdecl NlsMbCodePageTag;
+extern NTSYSAPI BOOLEAN * __cdecl NlsMbOemCodePageTag;
 
 /* Global variables in NTOSKRNL.EXE */
-extern NTKERNELAPI PBOOLEAN                 KdDebuggerEnabled;
-extern NTKERNELAPI PBOOLEAN                 KdDebuggerNotPresent;
-extern NTKERNELAPI PBOOLEAN                 Mm64BitPhysicalAddress;
-extern NTKERNELAPI PVOID                    MmBadPointer;
-extern NTKERNELAPI POBJECT_TYPE             *CmKeyObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *IoFileObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *ExEventObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *ExSemaphoreObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *TmTransactionManagerObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *TmResourceManagerObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *TmEnlistmentObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *TmTransactionObjectType;
-extern NTKERNELAPI POBJECT_TYPE             *PsProcessType;
-extern NTKERNELAPI POBJECT_TYPE             *PsThreadType;
-extern NTKERNELAPI POBJECT_TYPE             *SeTokenObjectType;
+extern NTKERNELAPI PBOOLEAN                 __cdecl KdDebuggerEnabled;
+extern NTKERNELAPI PBOOLEAN                 __cdecl KdDebuggerNotPresent;
+extern NTKERNELAPI PBOOLEAN                 __cdecl Mm64BitPhysicalAddress;
+extern NTKERNELAPI PVOID                    __cdecl MmBadPointer;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl CmKeyObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl IoFileObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl ExEventObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl ExSemaphoreObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl TmTransactionManagerObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl TmResourceManagerObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl TmEnlistmentObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl TmTransactionObjectType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl PsProcessType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl PsThreadType;
+extern NTKERNELAPI POBJECT_TYPE             * __cdecl SeTokenObjectType;
 #ifdef _X86_
-extern NTKERNELAPI volatile KSYSTEM_TIME    KeTickCount;
+extern NTKERNELAPI volatile KSYSTEM_TIME    __cdecl KeTickCount;
 #endif
 #if (NTDDI_VERSION >= 0x06000000)
-extern NTKERNELAPI volatile CCHAR           KeNumberProcessors;
+extern NTKERNELAPI volatile CCHAR           __cdecl KeNumberProcessors;
 #elif (NTDDI_VERSION >= 0x05010000)
-extern NTKERNELAPI CCHAR                    KeNumberProcessors;
+extern NTKERNELAPI CCHAR                    __cdecl KeNumberProcessors;
 #else
-extern NTKERNELAPI PCCHAR                   KeNumberProcessors;
+extern NTKERNELAPI PCCHAR                   __cdecl KeNumberProcessors;
 #endif
 
 /* Global variables in CLFS.SYS */
 #if (NTDDI_VERSION >= 0x05020100)
-extern CLFSUSER_API const CLFS_LSN  CLFS_LSN_INVALID;
-extern CLFSUSER_API const CLFS_LSN  CLFS_LSN_NULL;
+extern CLFSUSER_API const CLFS_LSN  __cdecl CLFS_LSN_INVALID;
+extern CLFSUSER_API const CLFS_LSN  __cdecl CLFS_LSN_NULL;
 #endif
 
 /* Functions in NTOSKRNL.EXE and NTDLL.DLL */

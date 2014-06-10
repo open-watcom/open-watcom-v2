@@ -87,6 +87,7 @@ A destructor will return 'this' as its return value.
 #include "ring.h"
 #include "vstk.h"
 #include "rtfuns.h"
+#include "template.h"
 #include "class.h"
 #include "defarg.h"
 #include "ctexcept.h"

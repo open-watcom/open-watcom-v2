@@ -33,9 +33,9 @@
 #include "global.h"
 #include "errors.h"
 #include "tmpctl.h"
-#include "rcmem.h"
 #include "autodep.h"
 #include "semantic.h"
+#include "rcrtns.h"
 
 typedef struct DepNode {
     struct DepNode      *next;
@@ -54,7 +54,7 @@ int AddDependency( char *fname )
     int                 cmp;
 
     if( CmdLineParms.GenAutoDep ) {
-        name = RcMemMalloc( _MAX_PATH );
+        name = RCALLOC( _MAX_PATH );
         _fullpath( name, fname, _MAX_PATH );
         cur = &depList;
         for( ;; ) {
@@ -63,7 +63,7 @@ int AddDependency( char *fname )
             } else {
                 cmp = strcmp( name, (*cur)->info.name );
                 if( cmp == 0 ) {
-                    RcMemFree( name );
+                    RCFREE( name );
                     return( FALSE );
                 } else if( cmp > 0 ) {
                     break;
@@ -73,12 +73,12 @@ int AddDependency( char *fname )
             }
         }
         len = strlen( name ) + 1;
-        new = RcMemMalloc( sizeof( DepNode ) + len );
+        new = RCALLOC( sizeof( DepNode ) + len );
         new->next = *cur;
         new->info.len = len;
         strcpy( new->info.name, name );
         *cur = new;
-        RcMemFree( name );
+        RCFREE( name );
     }
     return( FALSE );
 }
@@ -128,7 +128,7 @@ static void freeDepList( void )
     while( cur != NULL ) {
         todel = cur;
         cur = cur->next;
-        RcMemFree( todel );
+        RCFREE( todel );
     }
 }
 

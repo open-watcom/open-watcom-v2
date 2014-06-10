@@ -30,9 +30,7 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "scan.h"
-#include "os2ytab.h"
-#include "keyword2.h"
+#include "yydrivr2.h"
 #include "weights2.gh"
 
 #define IGNORE_CASE

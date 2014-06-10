@@ -47,16 +47,16 @@ extern char     *WConvertStringFrom( char *str, char *from, char *to );
 extern char     *WConvertTo( char *str, char to, char from );
 extern char     *WConvertStringTo( char *str, char *to, char *from );
 
-extern Bool     WSetEditWithSINT32( HWND, int_32, int );
-extern Bool     WSetEditWithWResID( HWND, WResID * );
-extern Bool     WSetEditWithStr( HWND, char * );
-extern Bool     WSetLBoxWithStr( HWND, char *, void * );
-extern Bool     WInsertLBoxWithStr( HWND, int, char *, void * );
-extern Bool     WSetLBoxWithWResID( HWND, WResID *, void * );
+extern bool     WSetEditWithSINT32( HWND, int_32, int );
+extern bool     WSetEditWithWResID( HWND, WResID * );
+extern bool     WSetEditWithStr( HWND, char * );
+extern bool     WSetLBoxWithStr( HWND, char *, void * );
+extern bool     WInsertLBoxWithStr( HWND, int, char *, void * );
+extern bool     WSetLBoxWithWResID( HWND, WResID *, void * );
 
-extern char     *WGetStrFromEdit( HWND, Bool * );
-extern WResID   *WGetWResIDFromEdit( HWND, Bool * );
-extern int_32   WGetSINT32FromEdit( HWND, Bool * );
+extern char     *WGetStrFromEdit( HWND, bool * );
+extern WResID   *WGetWResIDFromEdit( HWND, bool * );
+extern int_32   WGetSINT32FromEdit( HWND, bool * );
 
 extern char     *WGetStrFromComboLBox( HWND combo, int index );
 

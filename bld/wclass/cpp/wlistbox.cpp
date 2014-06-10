@@ -62,7 +62,7 @@ bool WListBox::gettingFocus( WWindow* ) {
     if( count() > 0  && selected() < 0 ) {
         select( 0 );
     }
-    return FALSE;
+    return( false );
 }
 
 
@@ -99,11 +99,11 @@ int WListBox::findString( int index, const char *str ) {
             getString( i, s );
             for( k=0; isspace( s[k] ); k++ );
             if( strnicmp( str, &s[k], len ) == 0 ) {
-                return i;
+                return( i );
             }
         }
     }
-    return -1;
+    return( -1 );
 }
 
 
@@ -114,17 +114,17 @@ bool WListBox::processMsg( gui_event msg ) {
     case GUI_CONTROL_CLICKED:
         if( _changedClient && _changed ) {
             (_changedClient->*_changed)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     case GUI_CONTROL_DCLICKED:
         if( _dblClickClient && _dblClick ) {
             (_dblClickClient->*_dblClick)( this );
-            return( TRUE );
+            return( true );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -135,11 +135,11 @@ bool WEXPORT WListBox::keyDown( WKeyCode key, WKeyState ) {
         case WKeyEnter: {
             if( _dblClickClient && _dblClick ) {
                 (_dblClickClient->*_dblClick)( this );
-                return TRUE;
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -170,7 +170,7 @@ int WEXPORT WListBox::insertString( const char *s, int index ) {
     if( count() == 1 ) {
         select( 0 );
     }
-    return newIndex;
+    return( newIndex );
 }
 
 

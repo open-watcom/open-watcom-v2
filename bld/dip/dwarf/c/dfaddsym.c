@@ -236,8 +236,8 @@ static int  OffCmp( void const *_off1, void const *_off2 )
 }
 
 
-static int SortOffsets( void *d, void *_ctl )
-/*******************************************/
+static bool SortOffsets( void *d, void *_ctl )
+/********************************************/
 // Sort a seg's offsets
 {
     seg_info        *ctl = (seg_info *)_ctl;
@@ -275,8 +275,8 @@ struct wlk_glue {
     WLKADDRSYM  fn;
 };
 
-static int WalkOffsets( void *_wlk, void *_ctl )
-/**********************************************/
+static bool WalkOffsets( void *_wlk, void *_ctl )
+/***********************************************/
 // Sort a seg's offsets
 {
     seg_info            *ctl = (seg_info *)_ctl;
@@ -310,8 +310,8 @@ done:
 }
 
 
-extern  int WlkAddrSyms( seg_list *ctl, WLKADDRSYM fn, void *d )
-/**************************************************************/
+bool WlkAddrSyms( seg_list *ctl, WLKADDRSYM fn, void *d )
+/*******************************************************/
 {
     struct wlk_glue     wlk;
 
@@ -329,8 +329,8 @@ extern void  InitAddrSym( seg_list *list )
 }
 
 
-static int FreeSegOffsets( void *d, void *_curr )
-/***********************************************/
+static bool FreeSegOffsets( void *d, void *_curr )
+/************************************************/
 // Free all offset blocks for a segment
 {
     seg_info    *curr = (seg_info *)_curr;

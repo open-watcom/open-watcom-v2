@@ -237,11 +237,6 @@ typedef DDVIDEOPORTNOTIFY   *LPDDVIDEOPORTNOTIFY;
 /* DirectDraw video enumeration callbacks */
 typedef HRESULT (PASCAL *LPDDENUMVIDEOCALLBACK)( LPDDVIDEOPORTCAPS, LPVOID );
 
-/* GUIDs */
-EXTERN_C const IID  IID_IDDVideoPortContainer;
-EXTERN_C const IID  IID_IDirectDrawVideoPort;
-EXTERN_C const IID  IID_IDirectDrawVideoPortNotify;
-
 /* IDDVideoPortContainer interface */
 #undef INTERFACE
 #define INTERFACE   IDDVideoPortContainer
@@ -420,5 +415,10 @@ DECLARE_INTERFACE_( IDirectDrawVideoPortNotify, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IDDVideoPortContainer;
+EXTERN_C const IID  __cdecl IID_IDirectDrawVideoPort;
+EXTERN_C const IID  __cdecl IID_IDirectDrawVideoPortNotify;
 
 #endif /* __DVP_INCLUDED__ */

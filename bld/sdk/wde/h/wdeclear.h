@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern Bool WdeClearCurrentResource( void );
-extern Bool WdeDeleteAllObjects( void );
+extern bool WdeClearCurrentResource( void );
+extern bool WdeDeleteAllObjects( void );
 
 #endif

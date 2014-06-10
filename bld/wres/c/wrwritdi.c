@@ -35,6 +35,7 @@
 #include "layer1.h"
 #include "wres.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 static int writeLangList( WResFileID handle, WResLangNode *curlang )
 {

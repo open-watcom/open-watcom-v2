@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wstat.h"
 #include "sys_rc.h"
 #include "wlist.h"
@@ -66,7 +65,7 @@ typedef struct {
 static WHintItem    *WGetHintItem( int id );
 static void         WHandlePopupHint( WStatBar *, HMENU, HMENU );
 static DWORD        WGetPopupHint( WPopupHintItem *, int, HMENU );
-static Bool         WInitHintItems( int, HMENU, WPopupHintItem * );
+static bool         WInitHintItems( int, HMENU, WPopupHintItem * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -184,7 +183,7 @@ void WHandlePopupHint( WStatBar *wsb, HMENU menu, HMENU popup )
     }
 }
 
-Bool WInitHintItems( int num, HMENU menu, WPopupHintItem *hint_items )
+bool WInitHintItems( int num, HMENU menu, WPopupHintItem *hint_items )
 {
     int     i;
     int     j;

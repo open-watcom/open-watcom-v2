@@ -38,7 +38,6 @@
 #include "wreglbl.h"
 #include "wremsg.h"
 #include "rcstr.gh"
-#include "wremem.h"
 #include "wrewait.h"
 #include "wrdll.h"
 #include "wrselft.h"
@@ -57,8 +56,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool SaveObjectAs( WRECurrentResInfo *, void * );
-static Bool SaveObjectInto( WRECurrentResInfo *, void * );
+static bool SaveObjectAs( WRECurrentResInfo *, void * );
+static bool SaveObjectInto( WRECurrentResInfo *, void * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -71,11 +70,11 @@ extern char *WREResFilter;
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool SaveObject( Bool save_into )
+bool SaveObject( bool save_into )
 {
     WRECurrentResInfo   curr;
     void                *rdata;
-    Bool                ok;
+    bool                ok;
 
     WRESetWaitCursor( TRUE );
 
@@ -103,7 +102,7 @@ Bool SaveObject( Bool save_into )
     }
 
     if( rdata != NULL ) {
-        WREMemFree( rdata );
+        WRMemFree( rdata );
     }
 
     WRESetWaitCursor( FALSE );
@@ -111,9 +110,9 @@ Bool SaveObject( Bool save_into )
     return( ok );
 }
 
-Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
+bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
 {
-    Bool                ok;
+    bool                ok;
     char                *fname;
     WRFileType          ftype;
     WREGetFileStruct    gf;
@@ -152,15 +151,15 @@ Bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( fname != NULL ) {
-        WREMemFree( fname );
+        WRMemFree( fname );
     }
 
     return( ok );
 }
 
-Bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
+bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
 {
-    Bool                ok;
+    bool                ok;
     char                *fname;
     WREGetFileStruct    gf;
     WRSaveIntoData      idata;
@@ -199,7 +198,7 @@ Bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( fname != NULL ) {
-        WREMemFree( fname );
+        WRMemFree( fname );
     }
 
     return( ok );

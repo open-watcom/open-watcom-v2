@@ -49,13 +49,13 @@
 extern int          WREGetNumRes( void );
 extern WREResInfo   *WREGetCurrentRes( void );
 extern WREResInfo   *WREResInfoFromWin( HWND );
-extern Bool         WRERegisterResClass( HINSTANCE );
+extern bool         WRERegisterResClass( HINSTANCE );
 extern WREResInfo   *WRECreateNewResource( char * );
-extern Bool         WREOpenResource( char * );
-extern Bool         WRESaveResource( WREResInfo *, Bool );
-extern Bool         WREQueryKillApp( Bool );
+extern bool         WREOpenResource( char * );
+extern bool         WRESaveResource( WREResInfo *, bool );
+extern bool         WREQueryKillApp( bool );
 extern void         WREFreeResList( void );
-extern Bool         WREInitResources( HINSTANCE );
+extern bool         WREInitResources( HINSTANCE );
 extern void         WREFiniResources( void );
 extern char         *WREGetQueryName( WREResInfo * );
 

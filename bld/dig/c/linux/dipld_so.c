@@ -41,10 +41,15 @@
 #endif
 
 
+void DIPSysUnload( dip_sys_handle *sys_hdl )
+{
+    dlclose( *sys_hdl );
+}
+
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     void                *shlib;
-    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
+    dip_init_func       *init_func;
     char                newpath[PATH_MAX];
     char                full_path[PATH_MAX];
     dip_status          status;
@@ -52,28 +57,19 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
     strcpy( newpath, path );
     strcat( newpath, ".so" );
     shlib = dlopen( newpath, RTLD_NOW );
-    if( shlib == NULL ) {
+    if( shlib == NULL_SYSHDL ) {
         _searchenv( newpath, "PATH", full_path );
         shlib = dlopen( full_path, RTLD_NOW );
-        if( shlib == NULL ) {
+        if( shlib == NULL_SYSHDL ) {
             return( DS_ERR | DS_FOPEN_FAILED );
         }
     }
-    init_func = dlsym( shlib, "DIPLOAD" );
-    if( init_func == NULL ) {
-        dlclose( shlib );
-        return( DS_ERR | DS_INVALID_DIP );
+    status = DS_ERR | DS_INVALID_DIP;
+    init_func = (dip_init_func *)dlsym( shlib, "DIPLOAD" );
+    if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = shlib;
+        return( DS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        dlclose( shlib );
-        return( status );
-    }
-    *sys_hdl = (dip_sys_handle)shlib;
-    return( DS_OK );
-}
-
-void DIPSysUnload( dip_sys_handle sys_hdl )
-{
-    dlclose( (void *)sys_hdl );
+    dlclose( shlib );
+    return( status );
 }

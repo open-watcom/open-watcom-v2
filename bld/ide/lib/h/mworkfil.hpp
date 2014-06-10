@@ -49,9 +49,9 @@ WCLASS MWorkFile : public WFileName
         WEXPORT MWorkFile( const char* name, SwMode mode, MItem* item, MComponent* comp );
         WEXPORT ~MWorkFile() {}
 
-        MItem* item() const { return _item; }
-        bool browseable() const { return _browseable; }
-        WVList& states() { return _states; }
+        MItem* item() const { return( _item ); }
+        bool browseable() const { return( _browseable ); }
+        WVList& states() { return( _states ); }
         void makeCommand( WString& s, WVList* workFiles );
         void insertStates( MWorkFile* w );
 #ifndef PRODUCTION

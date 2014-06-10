@@ -83,7 +83,8 @@ bool WEXPORT WTimer::start( int interval, int count ) {
 bool WEXPORT WTimer::stop() {
 /***************************/
 
-    if( _id == 0 ) return( TRUE );
+    if( _id == 0 )
+        return( true );
     _timerMap.clearThis( this );
     int killed = KillTimer( NULL, _id );
     _id = 0;

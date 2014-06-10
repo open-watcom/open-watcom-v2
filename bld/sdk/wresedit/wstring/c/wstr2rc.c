@@ -35,16 +35,15 @@
 #include "watcom.h"
 #include "wglbl.h"
 #include "wsetedit.h"
-#include "wmem.h"
 #include "widn2str.h"
 #include "wstr2rc.h"
 #include "wresall.h"
 
-static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp )
+static bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp )
 {
     char        *strtext;
     char        *text;
-    Bool        ok;
+    bool        ok;
 
     strtext = NULL;
 
@@ -66,17 +65,17 @@ static Bool WWriteStringEntry( WStringBlock *block, uint_16 string_id, FILE *fp 
     }
 
     if( strtext != NULL ) {
-        WMemFree( strtext );
+        WRMemFree( strtext );
     }
 
     if( text != NULL ) {
-        WMemFree( text );
+        WRMemFree( text );
     }
 
     return( ok );
 }
 
-static Bool WWriteStringBlock( WStringBlock *block, FILE *fp )
+static bool WWriteStringBlock( WStringBlock *block, FILE *fp )
 {
     int         i;
 
@@ -95,11 +94,11 @@ static Bool WWriteStringBlock( WStringBlock *block, FILE *fp )
     return( TRUE );
 }
 
-Bool WWriteStringToRC( WStringEditInfo *einfo, char *file, Bool append )
+bool WWriteStringToRC( WStringEditInfo *einfo, char *file, bool append )
 {
     FILE                *fp;
     WStringBlock        *block;
-    Bool                ok;
+    bool                ok;
 
     ok = (einfo != NULL && einfo->tbl != NULL);
 

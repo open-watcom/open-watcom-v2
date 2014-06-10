@@ -31,9 +31,7 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "scan.h"
-#include "winytab.h"
-#include "keywordw.h"
+#include "yydrivrw.h"
 #include "weightsw.gh"
 
 #define IGNORE_CASE

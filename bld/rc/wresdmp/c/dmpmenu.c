@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#include <io.h>
 #include <stdio.h>
 #include "watcom.h"
 #include "wresall.h"
 #include "global.h"
 #include "flag.h"
 #include "dmpmenu.h"
+#include "rcrtns.h"
 
 static char * MenuOnFlags[16] = {
     "GRAYED",       /* 0x0001 */
@@ -109,7 +109,8 @@ extern int DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
     MenuItem *  item;
     MenuHeader  head;
 
-    prevpos = lseek( handle, offset, SEEK_SET );
+    length = length;
+    prevpos = RCSEEK( handle, offset, SEEK_SET );
     error = (prevpos == -1);
 
     if (!error) {
@@ -140,7 +141,7 @@ extern int DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
         ResFreeMenuItem( item );
     }
 
-    lseek( handle, prevpos, SEEK_SET );
+    RCSEEK( handle, prevpos, SEEK_SET );
 
     return( error );
 }

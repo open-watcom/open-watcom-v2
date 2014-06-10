@@ -252,7 +252,7 @@ static dip_status LoadMapping( imp_image_handle *ii )
     cv_sst_seg_map      *map;
     unsigned            size;
 
-    cde = FindDirEntry( ii, MH_GBL, sstSegMap );
+    cde = FindDirEntry( ii, IMH_GBL, sstSegMap );
     if( cde == NULL ) return( DS_ERR|DS_INFO_INVALID );
     map = VMBlock( ii, cde->lfo, cde->cb );
     if( map == NULL ) return( DS_ERR|DS_FAIL );
@@ -296,7 +296,7 @@ static dip_status SetMADType( imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     dip_status                  ds;
     unsigned long               off;
@@ -325,7 +325,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
         Cleanup( ii );
         return( ds );
     }
-    cde = FindDirEntry( ii, MH_GBL, sstGlobalTypes );
+    cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
     if( cde != NULL ) {
         hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
         if( hdr == NULL ) {
@@ -345,7 +345,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     unsigned    i;
     addr_ptr    addr;
@@ -378,7 +378,7 @@ void MapLogical( imp_image_handle *ii, address *a )
     a->indirect = 1;
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     Cleanup( ii );
     DCClose( ii->sym_file );

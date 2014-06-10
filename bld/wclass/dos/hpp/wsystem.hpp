@@ -36,9 +36,8 @@
 #include "system.hpp"
 
 #include "wobject.hpp"
-#include "wsyshelp.hpp"
 
-WCLASS WSystemService : public WSystemHelp {
+WCLASS WSystemService {
 };
 
 #endif

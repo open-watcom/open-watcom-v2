@@ -39,11 +39,11 @@ PDDESTRUCT WEXPORT WDDEObject::makeDDEObject( HWND hwnd,
                                               USHORT fsStatus,
                                               USHORT usFormat,
                                               const void *data,
-                                              int data_len ) {
-/************************************************************/
+                                              size_t data_len ) {
+/***************************************************************/
 
     DDESTRUCT   *dde;
-    int         item_len;
+    size_t      item_len;
     PID         pid;
     TID         tid;
 

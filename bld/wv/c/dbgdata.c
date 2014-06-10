@@ -38,8 +38,6 @@
 #include "dbginp.h"
 #include "trpcore.h"
 
-#pragma off(unreferenced);
-
 char                    *InitCmdList;
 char                    *TrpFile;
 #ifdef ENABLE_TRAP_LOGGING

@@ -41,7 +41,6 @@
 #include "wdestat.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wdemem.h"
 #include "wdeopts.h"
 #include "wdectl3d.h"
 #include "wde_rc.h"
@@ -50,25 +49,25 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT Bool CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
+WINEXPORT bool CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool     WdeTestCurrentObject( void );
-static Bool     WdeSetDefaultTestControlEntries( HWND );
+static bool     WdeTestCurrentObject( void );
+static bool     WdeSetDefaultTestControlEntries( HWND );
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HWND             WdeTestDialogHandle = NULL;
-static Bool             WdeTestMode = FALSE;
+static bool             WdeTestMode = FALSE;
 static WdeResInfo       *WdeTestResource = FALSE;
 
-Bool WdeHandleTestModeMenu( WdeResInfo *info )
+bool WdeHandleTestModeMenu( WdeResInfo *info )
 {
     HWND   main_window;
-    Bool   ret;
+    bool   ret;
 
     if( info == NULL ) {
         return( FALSE );
@@ -116,16 +115,16 @@ BOOL WdeIsTestMessage( MSG *msg )
     }
 }
 
-Bool WdeGetTestMode( void )
+bool WdeGetTestMode( void )
 {
     return( WdeTestMode );
 }
 
-static Bool WdeTestCurrentObject( void )
+static bool WdeTestCurrentObject( void )
 {
     OBJPTR              obj;
     WdeOrderMode        mode;
-    Bool                ret;
+    bool                ret;
 
     ret = ((obj = WdeGetCurrentDialog()) != NULL);
 
@@ -146,10 +145,10 @@ static Bool WdeTestCurrentObject( void )
     return( ret );
 }
 
-Bool WdeSetTestControlDefaults( HWND dialog )
+bool WdeSetTestControlDefaults( HWND dialog )
 {
     WNDENUMPROC child_proc;
-    Bool        ret;
+    bool        ret;
 
     if( dialog != NULL ) {
         child_proc = (WNDENUMPROC)MakeProcInstance( (FARPROC)WdeSetControlEnumProc,
@@ -161,7 +160,7 @@ Bool WdeSetTestControlDefaults( HWND dialog )
     return( ret );
 }
 
-WINEXPORT Bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
+WINEXPORT bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
     /* touch unused var to get rid of warning */
     _wde_touch( ret );
@@ -171,7 +170,7 @@ WINEXPORT Bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
     return( TRUE );
 }
 
-static Bool WdeSetDefaultTestControlEntries( HWND win )
+static bool WdeSetDefaultTestControlEntries( HWND win )
 {
     int         index;
     char        *text;
@@ -191,7 +190,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
         if( text != NULL ) {
-            str = (char *)WdeMemAlloc( strlen( text ) + 10 + 1 );
+            str = (char *)WRMemAlloc( strlen( text ) + 10 + 1 );
             if( str == NULL ) {
                 WdeFreeRCString( text );
                 return( TRUE );
@@ -210,7 +209,7 @@ static Bool WdeSetDefaultTestControlEntries( HWND win )
         }
         SendMessage( win, WM_SETREDRAW, TRUE, 0 );
         InvalidateRect( win, NULL, TRUE );
-        WdeMemFree( str );
+        WRMemFree( str );
         WdeFreeRCString( text );
     }
 

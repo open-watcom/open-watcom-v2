@@ -261,16 +261,6 @@ typedef DSBITEMA    DSBITEM;
 typedef PDSBITEMA   PDSBITEM;
 #endif
 
-/* GUIDs */
-EXTERN_C const CLSID    CLSID_MicrosoftDS;
-EXTERN_C const CLSID    CLSID_DsPropertyPages;
-EXTERN_C const CLSID    CLSID_DsDomainTreeBrowser;
-EXTERN_C const IID      IID_IDsBrowseDomainTree;
-EXTERN_C const CLSID    CLSID_DsDisplaySpecifier;
-EXTERN_C const CLSID    CLSID_DsFolderProperties;
-#define IID_IDsDisplaySpecifier CLSID_DsDisplaySpecifier
-#define IID_IDsFolderProperties CLSID_DsFolderProperties
-
 /* IDsBrowseDomainTree interface */
 #undef INTERFACE
 #define INTERFACE   IDsBrowseDomainTree
@@ -323,3 +313,13 @@ STDAPI_( HICON )    DsGetIcon( DWORD, LPCWSTR, INT, INT );
 #else
     #define DsBrowseForContainer    DsBrowseForContainerA
 #endif
+
+/* GUIDs */
+EXTERN_C const CLSID    __cdecl CLSID_MicrosoftDS;
+EXTERN_C const CLSID    __cdecl CLSID_DsPropertyPages;
+EXTERN_C const CLSID    __cdecl CLSID_DsDomainTreeBrowser;
+EXTERN_C const IID      __cdecl IID_IDsBrowseDomainTree;
+EXTERN_C const CLSID    __cdecl CLSID_DsDisplaySpecifier;
+EXTERN_C const CLSID    __cdecl CLSID_DsFolderProperties;
+#define IID_IDsDisplaySpecifier CLSID_DsDisplaySpecifier
+#define IID_IDsFolderProperties CLSID_DsFolderProperties

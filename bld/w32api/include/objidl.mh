@@ -478,101 +478,6 @@ typedef enum _THDTYPE {
     THDTYPE_BLOCKMESSAGES   = 0,
     THDTYPE_PROCESSMESSAGES = 1
 } THDTYPE;
-
-/* GUIDs */
-EXTERN_C const IID      IID_IMarshal;
-EXTERN_C const IID      IID_IMarshal2;
-EXTERN_C const IID      IID_IMalloc;
-EXTERN_C const IID      IID_IMallocSpy;
-EXTERN_C const IID      IID_IStdMarshalInfo;
-EXTERN_C const IID      IID_IExternalConnection;
-EXTERN_C const IID      IID_IMultiQI;
-EXTERN_C const IID      IID_IInternalUnknown;
-EXTERN_C const IID      IID_IEnumUnknown;
-EXTERN_C const IID      IID_IBindCtx;
-EXTERN_C const IID      IID_IEnumMoniker;
-EXTERN_C const IID      IID_IRunnableObject;
-EXTERN_C const IID      IID_IRunningObjectTable;
-EXTERN_C const IID      IID_IPersist;
-EXTERN_C const IID      IID_IPersistStream;
-EXTERN_C const IID      IID_IMoniker;
-EXTERN_C const IID      IID_IROTData;
-EXTERN_C const IID      IID_IEnumString;
-EXTERN_C const IID      IID_ISequentialStream;
-EXTERN_C const IID      IID_IStream;
-EXTERN_C const IID      IID_IEnumSTATSTG;
-EXTERN_C const IID      IID_IStorage;
-EXTERN_C const IID      IID_IPersistFile;
-EXTERN_C const IID      IID_IPersistStorage;
-EXTERN_C const IID      IID_ILockBytes;
-EXTERN_C const IID      IID_IEnumFORMATETC;
-EXTERN_C const IID      IID_IEnumSTATDATA;
-EXTERN_C const IID      IID_IRootStorage;
-EXTERN_C const IID      IID_IAdviseSink;
-EXTERN_C const IID      IID_IAdviseSink2;
-EXTERN_C const IID      IID_IDataObject;
-EXTERN_C const IID      IID_IDataAdviseHolder;
-EXTERN_C const IID      IID_IMessageFilter;
-EXTERN_C const IID      IID_IRpcChannelBuffer;
-EXTERN_C const IID      IID_IRpcChannelBuffer2;
-EXTERN_C const IID      IID_IAsyncRpcChannelBuffer;
-EXTERN_C const IID      IID_IRpcChannelBuffer3;
-EXTERN_C const IID      IID_IRpcSyntaxNegotiate;
-EXTERN_C const IID      IID_IRpcProxyBuffer;
-EXTERN_C const IID      IID_IRpcStubBuffer;
-EXTERN_C const IID      IID_IPSFactoryBuffer;
-#if (_WIN32_WINNT >= 0x0400)
-EXTERN_C const IID      IID_IChannelHook;
-EXTERN_C const IID      IID_IClientSecurity;
-EXTERN_C const IID      IID_IServerSecurity;
-EXTERN_C const IID      IID_IClassActivator;
-EXTERN_C const IID      IID_IRpcOptions;
-EXTERN_C const IID      IID_IGlobalOptions;
-#endif
-EXTERN_C const IID      IID_IFillLockBytes;
-EXTERN_C const IID      IID_IProgressNotify;
-EXTERN_C const IID      IID_ILayoutStorage;
-EXTERN_C const IID      IID_IBlockingLock;
-EXTERN_C const IID      IID_ITimeAndNoticeControl;
-EXTERN_C const IID      IID_IOplockStorage;
-EXTERN_C const IID      IID_ISurrogate;
-EXTERN_C const IID      IID_IGlobalInterfaceTable;
-EXTERN_C const IID      IID_IDirectWriterLock;
-EXTERN_C const IID      IID_ISynchronize;
-EXTERN_C const IID      IID_ISynchronizeHandle;
-EXTERN_C const IID      IID_ISynchronizeEvent;
-EXTERN_C const IID      IID_ISynchronizeContainer;
-EXTERN_C const IID      IID_ISynchronizeMutex;
-EXTERN_C const IID      IID_ICancelMethodCalls;
-EXTERN_C const IID      IID_IAsyncManager;
-EXTERN_C const IID      IID_ICallFactory;
-EXTERN_C const IID      IID_IRpcHelper;
-EXTERN_C const IID      IID_IReleaseMarshalBuffers;
-EXTERN_C const IID      IID_IWaitMultiple;
-EXTERN_C const IID      IID_IUrlMon;
-EXTERN_C const IID      IID_IForegroundTransfer;
-EXTERN_C const IID      IID_IAddrTrackingControl;
-EXTERN_C const IID      IID_IAddrExclusionControl;
-EXTERN_C const IID      IID_IPipeByte;
-EXTERN_C const IID      IID_IPipeLong;
-EXTERN_C const IID      IID_IPipeDouble;
-EXTERN_C const IID      IID_IThumbnailExtractor;
-EXTERN_C const IID      IID_IDummyHICONIncluder;
-EXTERN_C const IID      IID_IProcessLock;
-EXTERN_C const IID      IID_ISurrogateService;
-EXTERN_C const IID      IID_IComThreadingInfo;
-EXTERN_C const IID      IID_IProcessInitControl;
-#if (_WIN32_WINNT >= 0x0501)
-EXTERN_C const IID      IID_IInitializeSpy;
-#endif
-EXTERN_C const FMTID    FMTID_SummaryInformation;
-EXTERN_C const FMTID    FMTID_DocSummaryInformation;
-EXTERN_C const FMTID    FMTID_UserDefinedProperties;
-EXTERN_C const FMTID    FMTID_DiscardableInformation;
-EXTERN_C const FMTID    FMTID_ImageSummaryInformation;
-EXTERN_C const FMTID    FMTID_AudioSummaryInformation;
-EXTERN_C const FMTID    FMTID_VideoSummaryInformation;
-EXTERN_C const FMTID    FMTID_MediaFileSummaryInformation;
  
 /* IMarshal interface */
 #undef INTERFACE
@@ -3059,5 +2964,100 @@ typedef IInitializeSpy  *LPINITIALIZESPY;
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IMarshal;
+EXTERN_C const IID      __cdecl IID_IMarshal2;
+EXTERN_C const IID      __cdecl IID_IMalloc;
+EXTERN_C const IID      __cdecl IID_IMallocSpy;
+EXTERN_C const IID      __cdecl IID_IStdMarshalInfo;
+EXTERN_C const IID      __cdecl IID_IExternalConnection;
+EXTERN_C const IID      __cdecl IID_IMultiQI;
+EXTERN_C const IID      __cdecl IID_IInternalUnknown;
+EXTERN_C const IID      __cdecl IID_IEnumUnknown;
+EXTERN_C const IID      __cdecl IID_IBindCtx;
+EXTERN_C const IID      __cdecl IID_IEnumMoniker;
+EXTERN_C const IID      __cdecl IID_IRunnableObject;
+EXTERN_C const IID      __cdecl IID_IRunningObjectTable;
+EXTERN_C const IID      __cdecl IID_IPersist;
+EXTERN_C const IID      __cdecl IID_IPersistStream;
+EXTERN_C const IID      __cdecl IID_IMoniker;
+EXTERN_C const IID      __cdecl IID_IROTData;
+EXTERN_C const IID      __cdecl IID_IEnumString;
+EXTERN_C const IID      __cdecl IID_ISequentialStream;
+EXTERN_C const IID      __cdecl IID_IStream;
+EXTERN_C const IID      __cdecl IID_IEnumSTATSTG;
+EXTERN_C const IID      __cdecl IID_IStorage;
+EXTERN_C const IID      __cdecl IID_IPersistFile;
+EXTERN_C const IID      __cdecl IID_IPersistStorage;
+EXTERN_C const IID      __cdecl IID_ILockBytes;
+EXTERN_C const IID      __cdecl IID_IEnumFORMATETC;
+EXTERN_C const IID      __cdecl IID_IEnumSTATDATA;
+EXTERN_C const IID      __cdecl IID_IRootStorage;
+EXTERN_C const IID      __cdecl IID_IAdviseSink;
+EXTERN_C const IID      __cdecl IID_IAdviseSink2;
+EXTERN_C const IID      __cdecl IID_IDataObject;
+EXTERN_C const IID      __cdecl IID_IDataAdviseHolder;
+EXTERN_C const IID      __cdecl IID_IMessageFilter;
+EXTERN_C const IID      __cdecl IID_IRpcChannelBuffer;
+EXTERN_C const IID      __cdecl IID_IRpcChannelBuffer2;
+EXTERN_C const IID      __cdecl IID_IAsyncRpcChannelBuffer;
+EXTERN_C const IID      __cdecl IID_IRpcChannelBuffer3;
+EXTERN_C const IID      __cdecl IID_IRpcSyntaxNegotiate;
+EXTERN_C const IID      __cdecl IID_IRpcProxyBuffer;
+EXTERN_C const IID      __cdecl IID_IRpcStubBuffer;
+EXTERN_C const IID      __cdecl IID_IPSFactoryBuffer;
+#if (_WIN32_WINNT >= 0x0400)
+EXTERN_C const IID      __cdecl IID_IChannelHook;
+EXTERN_C const IID      __cdecl IID_IClientSecurity;
+EXTERN_C const IID      __cdecl IID_IServerSecurity;
+EXTERN_C const IID      __cdecl IID_IClassActivator;
+EXTERN_C const IID      __cdecl IID_IRpcOptions;
+EXTERN_C const IID      __cdecl IID_IGlobalOptions;
+#endif
+EXTERN_C const IID      __cdecl IID_IFillLockBytes;
+EXTERN_C const IID      __cdecl IID_IProgressNotify;
+EXTERN_C const IID      __cdecl IID_ILayoutStorage;
+EXTERN_C const IID      __cdecl IID_IBlockingLock;
+EXTERN_C const IID      __cdecl IID_ITimeAndNoticeControl;
+EXTERN_C const IID      __cdecl IID_IOplockStorage;
+EXTERN_C const IID      __cdecl IID_ISurrogate;
+EXTERN_C const IID      __cdecl IID_IGlobalInterfaceTable;
+EXTERN_C const IID      __cdecl IID_IDirectWriterLock;
+EXTERN_C const IID      __cdecl IID_ISynchronize;
+EXTERN_C const IID      __cdecl IID_ISynchronizeHandle;
+EXTERN_C const IID      __cdecl IID_ISynchronizeEvent;
+EXTERN_C const IID      __cdecl IID_ISynchronizeContainer;
+EXTERN_C const IID      __cdecl IID_ISynchronizeMutex;
+EXTERN_C const IID      __cdecl IID_ICancelMethodCalls;
+EXTERN_C const IID      __cdecl IID_IAsyncManager;
+EXTERN_C const IID      __cdecl IID_ICallFactory;
+EXTERN_C const IID      __cdecl IID_IRpcHelper;
+EXTERN_C const IID      __cdecl IID_IReleaseMarshalBuffers;
+EXTERN_C const IID      __cdecl IID_IWaitMultiple;
+EXTERN_C const IID      __cdecl IID_IUrlMon;
+EXTERN_C const IID      __cdecl IID_IForegroundTransfer;
+EXTERN_C const IID      __cdecl IID_IAddrTrackingControl;
+EXTERN_C const IID      __cdecl IID_IAddrExclusionControl;
+EXTERN_C const IID      __cdecl IID_IPipeByte;
+EXTERN_C const IID      __cdecl IID_IPipeLong;
+EXTERN_C const IID      __cdecl IID_IPipeDouble;
+EXTERN_C const IID      __cdecl IID_IThumbnailExtractor;
+EXTERN_C const IID      __cdecl IID_IDummyHICONIncluder;
+EXTERN_C const IID      __cdecl IID_IProcessLock;
+EXTERN_C const IID      __cdecl IID_ISurrogateService;
+EXTERN_C const IID      __cdecl IID_IComThreadingInfo;
+EXTERN_C const IID      __cdecl IID_IProcessInitControl;
+#if (_WIN32_WINNT >= 0x0501)
+EXTERN_C const IID      __cdecl IID_IInitializeSpy;
+#endif
+EXTERN_C const FMTID    __cdecl FMTID_SummaryInformation;
+EXTERN_C const FMTID    __cdecl FMTID_DocSummaryInformation;
+EXTERN_C const FMTID    __cdecl FMTID_UserDefinedProperties;
+EXTERN_C const FMTID    __cdecl FMTID_DiscardableInformation;
+EXTERN_C const FMTID    __cdecl FMTID_ImageSummaryInformation;
+EXTERN_C const FMTID    __cdecl FMTID_AudioSummaryInformation;
+EXTERN_C const FMTID    __cdecl FMTID_VideoSummaryInformation;
+EXTERN_C const FMTID    __cdecl FMTID_MediaFileSummaryInformation;
 
 #endif /* __objidl_h__ */

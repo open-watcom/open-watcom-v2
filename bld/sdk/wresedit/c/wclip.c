@@ -36,11 +36,11 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "winst.h"
 #include "wclip.h"
 #include "rcstr.gh"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -62,13 +62,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
+bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
 {
     void        **data = _data;
     HANDLE      hclipdata;
     void        *mem;
-    Bool        clipbd_open;
-    Bool        ok;
+    bool        clipbd_open;
+    bool        ok;
 
     hclipdata = (HANDLE)NULL;
     clipbd_open = FALSE;
@@ -103,7 +103,7 @@ Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     }
 
     if( ok ) {
-        *data = WMemAlloc( *dsize );
+        *data = WRMemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -113,7 +113,7 @@ Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
 
     if( !ok ) {
         if( *data != NULL ) {
-            WMemFree( *data );
+            WRMemFree( *data );
             *data = NULL;
             *dsize = 0;
         }
@@ -130,14 +130,14 @@ Bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     return( ok );
 }
 
-Bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
+bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
 {
     HBITMAP     hdsp_bitmap;
     HGLOBAL     hmem;
     BYTE        *mem;
     HINSTANCE   inst;
-    Bool        clipbd_open;
-    Bool        ok;
+    bool        clipbd_open;
+    bool        ok;
 
     clipbd_open = FALSE;
     hdsp_bitmap = (HBITMAP)NULL;

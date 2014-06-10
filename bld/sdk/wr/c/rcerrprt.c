@@ -103,7 +103,7 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     return( p - buf );
 }
 
-int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+int GetRcMsg( int resid, char *buff, unsigned buff_len )
 {
     if( LoadString( WRGetInstance(), resid, buff, buff_len ) != 0 ) {
         buff[0] = '\0';

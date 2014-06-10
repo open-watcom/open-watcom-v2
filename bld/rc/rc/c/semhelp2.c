@@ -31,18 +31,19 @@
 
 #include "global.h"
 #include "errors.h"
-#include "rcmem.h"
 #include "os2ytab.h"
 #include "semantic.h"
 #include "semhelp.h"
+#include "rcrtns.h"
 
 #include "reserr.h"
+
 int ResOS2WriteHelpEntry( HelpTableEntryOS2 * currentry, WResFileID handle )
 /**********************************************************************/
 {
     int     numwrote;
 
-    numwrote = WRESWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) );
+    numwrote = RCWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) );
     if( numwrote != sizeof( HelpTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
@@ -71,8 +72,8 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     FullHelpTableOS2   *newtable;
     FullHelpEntryOS2   *newentry;
 
-    newtable = RcMemMalloc( sizeof( FullHelpTableOS2 ) );
-    newentry = RcMemMalloc( sizeof( FullHelpEntryOS2 ) );
+    newtable = RCALLOC( sizeof( FullHelpTableOS2 ) );
+    newentry = RCALLOC( sizeof( FullHelpEntryOS2 ) );
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -95,7 +96,7 @@ extern FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
 {
     FullHelpEntryOS2     *newentry;
 
-    newentry = RcMemMalloc( sizeof(FullHelpEntryOS2) );
+    newentry = RCALLOC( sizeof(FullHelpEntryOS2) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -121,9 +122,9 @@ static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
         while( currentry != NULL ) {
             oldentry = currentry;
             currentry = currentry->next;
-            RcMemFree( oldentry );
+            RCFREE( oldentry );
         }
-        RcMemFree( helptable );
+        RCFREE( helptable );
     }
 }
 
@@ -166,7 +167,7 @@ extern void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPTABLE ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
     SemOS2FreeHelpTable( helptable );
@@ -188,8 +189,8 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * data )
     FullHelpSubTableOS2   *newtable;
     FullHelpSubEntryOS2   *newentry;
 
-    newtable = RcMemMalloc( sizeof( FullHelpSubTableOS2 ) );
-    newentry = RcMemMalloc( sizeof( FullHelpSubEntryOS2 ) );
+    newtable = RCALLOC( sizeof( FullHelpSubTableOS2 ) );
+    newentry = RCALLOC( sizeof( FullHelpSubEntryOS2 ) );
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -212,7 +213,7 @@ extern FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList * data,
 {
     FullHelpSubEntryOS2     *newentry;
 
-    newentry = RcMemMalloc( sizeof( FullHelpSubEntryOS2 ) );
+    newentry = RCALLOC( sizeof( FullHelpSubEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -239,9 +240,9 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
             SemFreeDataElemList( currentry->dataListHead );
             oldentry = currentry;
             currentry = currentry->next;
-            RcMemFree( oldentry );
+            RCFREE( oldentry );
         }
-        RcMemFree( helptable );
+        RCFREE( helptable );
     }
 }
 
@@ -315,7 +316,7 @@ extern void SemOS2WriteHelpSubTable( WResID * name, int numWords,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPSUBTABLE ), flags, loc );
     } else {
-        RcMemFree( name );
+        RCFREE( name );
     }
 
     SemOS2FreeHelpSubTable( helptable );

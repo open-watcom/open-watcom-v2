@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 #define UINT16_MAXDIGITS    5
 #define UINT32_MAXDIGITS    9

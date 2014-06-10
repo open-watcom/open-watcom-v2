@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include <ctype.h>
-#include "wdemem.h"
 #include "wdedebug.h"
 #include "wdesdup.h"
 #include "wdelist.h"
@@ -76,7 +75,7 @@ uint_32 WdeNumInHashTable( WdeHashTable *table )
     return( WRNumInHashTable( table ) );
 }
 
-Bool WdeIsHashTableDirty( WdeHashTable *table )
+bool WdeIsHashTableDirty( WdeHashTable *table )
 {
     return( WRIsHashTableDirty( table ) );
 }
@@ -86,7 +85,7 @@ void WdeMakeHashTableClean( WdeHashTable *table )
     WRMakeHashTableClean( table );
 }
 
-Bool WdeIsHashTableTouched( WdeHashTable *table )
+bool WdeIsHashTableTouched( WdeHashTable *table )
 {
     return( table != NULL && (table->user_flags & HASH_TOUCHED) );
 }
@@ -119,7 +118,7 @@ void WdeHashSaveRejected( WdeHashTable *table )
     }
 }
 
-Bool WdeIsHashSaveRejectedSet( WdeHashTable *table )
+bool WdeIsHashSaveRejectedSet( WdeHashTable *table )
 {
     return( table != NULL && (table->user_flags & HASH_SAVE_REJECT) );
 }
@@ -134,16 +133,16 @@ void WdeFreeHashTable( WdeHashTable *table )
     WRFreeHashTable( table );
 }
 
-Bool WdeMergeHashTables( WdeHashTable **dest, WdeHashTable *src )
+bool WdeMergeHashTables( WdeHashTable **dest, WdeHashTable *src )
 {
     WdeTouchHashTable( *dest );
-    return( (Bool)WRMergeHashTable( dest, src ) );
+    return( WRMergeHashTable( dest, src ) != 0 );
 }
 
-Bool WdeCopyHashTable( WdeHashTable **dest, WdeHashTable *src )
+bool WdeCopyHashTable( WdeHashTable **dest, WdeHashTable *src )
 {
     WdeTouchHashTable( *dest );
-    return( (Bool)WRCopyHashTable( dest, src ) );
+    return( WRCopyHashTable( dest, src ) != 0 );
 }
 
 void WdeAddSymbolsToListBox( WdeHashTable *table, HWND hDlg, int id )
@@ -151,9 +150,9 @@ void WdeAddSymbolsToListBox( WdeHashTable *table, HWND hDlg, int id )
     WRAddSymbolsToListBox( table, hDlg, id, WR_HASHENTRY_ALL );
 }
 
-Bool WdeWriteSymbolsToFile( WdeHashTable *table, char *name )
+bool WdeWriteSymbolsToFile( WdeHashTable *table, char *name )
 {
-    return( (Bool)WRWriteSymbolsToFile( table, name ) );
+    return( WRWriteSymbolsToFile( table, name ) != 0 );
 }
 
 void WdeAddSymbolsToComboBox( WdeHashTable *table, HWND hDlg, int id )
@@ -161,7 +160,7 @@ void WdeAddSymbolsToComboBox( WdeHashTable *table, HWND hDlg, int id )
     WRAddSymbolsToComboBox( table, hDlg, id, WR_HASHENTRY_ALL );
 }
 
-WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup )
+WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup )
 {
     WdeHashEntry        *entry;
     BOOL                d;
@@ -183,7 +182,7 @@ WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, Bool *dup )
 }
 
 WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
-                               WdeHashValue value, Bool *dup )
+                               WdeHashValue value, bool *dup )
 {
     WdeHashEntry        *entry;
     BOOL                d;
@@ -204,17 +203,17 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
     return( entry );
 }
 
-Bool WdeRemoveName( WdeHashTable *table, char *name )
+bool WdeRemoveName( WdeHashTable *table, char *name )
 {
     WdeTouchHashTable( table );
-    return( (Bool)WRRemoveName( table, name ) );
+    return( WRRemoveName( table, name ) != 0 );
 }
 
-WdeHashValue WdeLookupName( WdeHashTable *table, char *name, Bool *found )
+WdeHashValue WdeLookupName( WdeHashTable *table, char *name, bool *found )
 {
     WdeHashValue        val;
 
-    *found = (Bool)WRLookupName( table, name, &val );
+    *found = WRLookupName( table, name, &val ) != 0;
 
     if( !*found ) {
         return( (WdeHashValue)0 );
@@ -223,10 +222,10 @@ WdeHashValue WdeLookupName( WdeHashTable *table, char *name, Bool *found )
     return( val );
 }
 
-Bool WdeModifyName( WdeHashTable *table, char *name, WdeHashValue value )
+bool WdeModifyName( WdeHashTable *table, char *name, WdeHashValue value )
 {
     WdeTouchHashTable( table );
-    return( (Bool)WRModifyName( table, name, value, FALSE ) );
+    return( WRModifyName( table, name, value, FALSE ) != 0 );
 }
 
 char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
@@ -234,7 +233,7 @@ char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
     return( WRResolveValue( table, value ) );
 }
 
-Bool WdeIsValidSymbol( char *symbol )
+bool WdeIsValidSymbol( char *symbol )
 {
     return( WRIsValidSymbol( symbol ) );
 }

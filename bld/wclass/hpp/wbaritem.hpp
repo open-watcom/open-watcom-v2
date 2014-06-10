@@ -50,11 +50,11 @@ WCLASS WToolBarItem : public WObject {
         WEXPORT ~WToolBarItem();
 
         void WEXPORT setParent( WToolBar *parent ) { _parent = parent; }
-        WToolBar * WEXPORT parent() { return _parent; }
+        WToolBar * WEXPORT parent() { return( _parent ); }
         virtual void WEXPORT picked();
         gui_toolbar_struct * toolBarInfo( void ) { return( &_toolbar ); }
         void setTagPtr( void *tagPtr ) { _tagPtr = tagPtr; }
-        void *tagPtr() { return _tagPtr; }
+        void *tagPtr() { return( _tagPtr ); }
 
     private:
         WToolBar                *_parent;

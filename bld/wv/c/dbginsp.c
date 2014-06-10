@@ -45,7 +45,7 @@
 #include "mad.h"
 #include "srcmgt.h"
 
-search_result           LineCue( mod_handle, cue_file_id,
+search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
@@ -265,15 +265,15 @@ extern  a_window        *WndAsmInspect( address addr )
 static  a_window        *DoWndSrcInspect( address addr, bool existing )
 {
     a_window    *wnd;
-    bool        nil;
+//    bool        nil;
     mod_handle  mod;
     DIPHDL( cue, ch );
     a_window    *active;
 
     active = WndFindActive();
-    nil = FALSE;
+//    nil = FALSE;
     if( IS_NIL_ADDR( addr ) ) {
-        nil = TRUE;
+//        nil = TRUE;
         addr = Context.execution;
     }
     wnd = NULL;

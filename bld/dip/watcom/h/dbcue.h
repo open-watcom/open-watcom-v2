@@ -33,15 +33,13 @@
 /* this stuff is written out by wvtypes.c in codegen */
 typedef unsigned_16 cue_idx;
 
-#pragma pack(push,1);
-
+#include "pushpck1.h"
 typedef struct cue_state{
     cue_idx     cue;
     short       fno;
     unsigned_16 line;
     unsigned_16 col;
 } _WCUNALIGNED cue_state;
+#include "poppck.h"
 
 #define PRIMARY_RANGE   0x8000
-
-#pragma pack(pop);

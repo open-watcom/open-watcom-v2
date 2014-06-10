@@ -34,6 +34,7 @@
 #include "resutil.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 extern long ResSeek( WResFileID handle, long offset, int origin )
 /***************************************************************/

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "madregs.h"
 #include "trpimp.h"
 #include "trpld.h"
@@ -181,7 +180,7 @@ unsigned TrapAccess( unsigned num_in_mx, mx_entry_p mx_in, unsigned num_out_mx, 
     trap_retval     result;
 
     if( ReqFunc == NULL )
-        return( -1 );
+        return( (unsigned)-1 );
 
     result = ReqFuncProxy( num_in_mx, mx_in, num_out_mx, mx_out );
     if( result == REQUEST_FAILED ) {
@@ -194,7 +193,7 @@ unsigned TrapAccess( unsigned num_in_mx, mx_entry_p mx_in, unsigned num_out_mx, 
 #endif
 #endif
     if( result == REQUEST_FAILED )
-        return( -1 );
+        return( (unsigned)-1 );
     return( result );
 }
 
@@ -202,7 +201,7 @@ unsigned TrapSimpAccess( unsigned in_len, void *in_data, unsigned out_len, void 
 {
     mx_entry        in[1];
     mx_entry        out[1];
-    trap_retval     result;
+    unsigned        result;
 
     in[0].ptr = in_data;
     in[0].len = in_len;

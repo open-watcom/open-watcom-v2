@@ -30,17 +30,16 @@
 ****************************************************************************/
 
 
-#if defined( _M_IX86 )
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
 #pragma aux raise "__RAISE";
 void raise()    {}
 #endif
-
-#pragma off(unreferenced);
 
 double _matherr( why, who, arg1, arg2, result )
     int why;
     char *who;
     double *arg1, *arg2, result;
 {
+    why = why; who = who; arg1 = arg1; arg2 = arg2;
     return( result );
 }

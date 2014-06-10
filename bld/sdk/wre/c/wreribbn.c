@@ -37,6 +37,7 @@
 #include "wrestat.h"
 #include "wrehints.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wre_rc.h"
 #include "wreribbn.h"
@@ -94,7 +95,7 @@ int WREGetRibbonHeight( void )
     return( WRERibbonHeight );
 }
 
-Bool WREInitRibbon( HINSTANCE inst )
+bool WREInitRibbon( HINSTANCE inst )
 {
     int i;
 
@@ -168,7 +169,7 @@ void WREShutdownRibbon( void )
     WREFreeToolBarInfo( WRERibbonInfo );
 }
 
-Bool WRECreateRibbon( HWND parent )
+bool WRECreateRibbon( HWND parent )
 {
     if( WRERibbon != NULL || WRERibbonInfo == NULL || parent == (HWND)NULL ) {
         return( FALSE );
@@ -188,7 +189,7 @@ Bool WRECreateRibbon( HWND parent )
     return( WRERibbon != NULL );
 }
 
-Bool WREResizeRibbon( RECT *prect )
+bool WREResizeRibbon( RECT *prect )
 {
     if( WRERibbon == NULL || WRERibbonHeight == NULL ||
         WRERibbon->win == (HWND)NULL || prect == NULL ) {
@@ -209,21 +210,21 @@ void WREShowRibbon( HMENU menu )
         ShowWindow( WRERibbon->win, SW_HIDE );
         WRERibbonHeight = 0;
         WREResizeWindows();
-        mtext = WREAllocRCString( WRE_SHOWTOOLBAR );
+        mtext = AllocRCString( WRE_SHOWTOOLBAR );
     } else {
         ShowWindow( WRERibbon->win, SW_SHOW );
         WRERibbonHeight = 2 * WRERibbonInfo->dinfo.border_size.y +
                           WRERibbonInfo->dinfo.button_size.y +
                           2 * GetSystemMetrics( SM_CYBORDER );
         WREResizeWindows();
-        mtext = WREAllocRCString( WRE_HIDETOOLBAR );
+        mtext = AllocRCString( WRE_HIDETOOLBAR );
     }
 
     ModifyMenu( menu, IDM_SHOW_RIBBON, MF_BYCOMMAND | MF_STRING,
                 IDM_SHOW_RIBBON, mtext );
 
     if( mtext != NULL ) {
-        WREFreeRCString( mtext );
+        FreeRCString( mtext );
     }
 }
 
@@ -251,7 +252,7 @@ void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 
 BOOL WRERibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    Bool         ret;
+    bool         ret;
 
     _wre_touch( hwnd );
     _wre_touch( wParam );

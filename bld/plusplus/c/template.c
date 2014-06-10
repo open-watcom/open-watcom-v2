@@ -37,12 +37,12 @@
 #include "ring.h"
 #include "stack.h"
 #include "memmgr.h"
+#include "template.h"
 #include "class.h"
 #include "name.h"
 #include "yydriver.h"
 #include "fnovload.h"
 #include "context.h"
-#include "template.h"
 #include "pcheader.h"
 #include "initdefs.h"
 #include "conpool.h"
@@ -2409,7 +2409,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
-        printf( "try to find template class specialisation for %s<%s>\n",
+        printf( "try to find template class specialization for %s<%s>\n",
                             NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
         VbufFree( &vbuf );
     }
@@ -2435,7 +2435,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );
-                    printf( "found specialisation candidate %s<%s>\n",
+                    printf( "found specialization candidate %s<%s>\n",
                             NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
                     VbufFree( &vbuf );
                 }
@@ -2510,7 +2510,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms,
             VBUF vbuf;
 
             FormatPTreeList( tspec->spec_args, &vbuf );
-            printf( "chose specialisation %s<%s> ",
+            printf( "chose specialization %s<%s> ",
                               NameStr( tinfo->sym->name->name ), VbufString( &vbuf ) );
             DbgDumpTokenLocn( &tspec->locn );
             printf( "\n" );
@@ -2611,9 +2611,8 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
     return( typ );
 }
 
-void TemplateClassDirective( TYPE type, TOKEN_LOCN *locn,
-                             tc_directive tcd_control )
-/*******************************************************/
+void TemplateClassDirective( TYPE type, TOKEN_LOCN *locn, tc_directive tcd_control )
+/**********************************************************************************/
 {
     CLASS_INST *inst;
 

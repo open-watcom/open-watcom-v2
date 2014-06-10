@@ -73,24 +73,24 @@ static char     *logLine = { "==============================================="
                              "========================\n" };
 
 static msglist ProcessorNames[] = {
-    PROCESSOR_INTEL_386,                "80386",
-    PROCESSOR_INTEL_486,                "80486",
-    PROCESSOR_INTEL_PENTIUM,            "80586",
+    PROCESSOR_INTEL_386,        "80386",
+    PROCESSOR_INTEL_486,        "80486",
+    PROCESSOR_INTEL_PENTIUM,    "80586",
 #if 0
-    PROCESSOR_INTEL_860,                "860",
-    PROCESSOR_MIPS_R2000,               "MIPS R2000",
-    PROCESSOR_MIPS_R3000,               "MIPS R3000",
-    PROCESSOR_MIPS_R4000,               "MIPS R4000",
+    PROCESSOR_INTEL_860,        "860",
+    PROCESSOR_MIPS_R2000,       "MIPS R2000",
+    PROCESSOR_MIPS_R3000,       "MIPS R3000",
+    PROCESSOR_MIPS_R4000,       "MIPS R4000",
 #endif
-    PROCESSOR_ALPHA_21064,              "ALPHA 21064",
-    0,                                  NULL
+    PROCESSOR_ALPHA_21064,      "ALPHA 21064",
+    0,                          NULL
 };
 
 msglist Actions[] = {
-    INT_CHAIN_TO_NEXT,                  (char *)STR_FAULT_PASSED_ON,
-    INT_TERMINATE,                      (char *)STR_PROCESS_TERMINATED,
-    INT_RESTART,                        (char *)STR_INSTR_RESTARTED,
-    0,                                  (char *)-1
+    INT_CHAIN_TO_NEXT,          (char *)(pointer_int)STR_FAULT_PASSED_ON,
+    INT_TERMINATE,              (char *)(pointer_int)STR_PROCESS_TERMINATED,
+    INT_RESTART,                (char *)(pointer_int)STR_INSTR_RESTARTED,
+    0,                          (char *)(pointer_int)-1
 };
 
 /*
@@ -140,7 +140,7 @@ static void finishLogFile( void )
     fclose( logFileHdl );
 }
 
-static void logPrintf( DWORD id, ... ) {
+static void logPrintf( MSGID id, ... ) {
 
     va_list     al;
 
@@ -628,7 +628,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     char        fname[ FNAME_BUFLEN ];
     DWORD       type;
     DWORD       line;
-    DWORD       gptype;
+    MSGID       gptype;
     ProcStats   stats;
 
     logStrPrintf( "\n" );

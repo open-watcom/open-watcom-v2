@@ -36,7 +36,7 @@
 #include "wrdll.h"
 #include "wresall.h"
 
-static uint_32 WdeCalcStrlen( char *str, Bool is32bit )
+static uint_32 WdeCalcStrlen( char *str, bool is32bit )
 {
     int         len;
 
@@ -54,7 +54,7 @@ static uint_32 WdeCalcStrlen( char *str, Bool is32bit )
     return( len );
 }
 
-static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, Bool is32bit )
+static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
 {
     uint_32 size;
 
@@ -84,7 +84,7 @@ static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, Bool is32bit )
 }
 
 static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
-                                              Bool is32bit, Bool is32bitEx )
+                                              bool is32bit, bool is32bitEx )
 {
     uint_32 size;
 
@@ -149,8 +149,8 @@ uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     uint_32             csize;
     LIST                *clist;
     WdeDialogBoxControl *control;
-    Bool                is32bit;
-    Bool                is32bitEx;
+    bool                is32bit;
+    bool                is32bitEx;
 
     is32bit = info->dialog_header->is32bit;
     is32bitEx = info->dialog_header->is32bitEx;
@@ -180,7 +180,7 @@ uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     return( size );
 }
 
-uint_32 WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, Bool is32bit )
+uint_32 WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
 {
     uint_32 size;
 

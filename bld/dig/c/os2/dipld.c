@@ -36,29 +36,26 @@
 #include "dipimp.h"
 #include "dipsys.h"
 
+void DIPSysUnload( dip_sys_handle *sys_hdl )
+{
+    DosFreeModule( *sys_hdl );
+}
+
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HMODULE             dll;
-    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
+    dip_init_func       *init_func;
     dip_status          status;
 
     if( DosLoadModule( NULL, 0, path, &dll ) != 0 ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    if( DosGetProcAddr( dll, "DIPLOAD", (PFN FAR *)&init_func ) != 0 ) {
-        DosFreeModule( dll );
-        return( DS_ERR|DS_INVALID_DIP );
+    status = DS_ERR|DS_INVALID_DIP;
+    if( DosGetProcAddr( dll, "DIPLOAD", (PFN FAR *)&init_func ) == 0
+      && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = dll;
+        return( DS_OK );
     }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        DosFreeModule( dll );
-        return( status );
-    }
-    *sys_hdl = (dip_sys_handle)dll;
-    return( DS_OK );
-}
-
-void DIPSysUnload( dip_sys_handle sys_hdl )
-{
-    DosFreeModule( (HMODULE)sys_hdl );
+    DosFreeModule( dll );
+    return( status );
 }

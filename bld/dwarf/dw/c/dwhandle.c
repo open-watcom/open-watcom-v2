@@ -126,7 +126,7 @@ static handle_blk *newBlock(
 {
     handle_blk *                new;
     uint                        height;
-    int                         i;
+    uint                        i;
 
     /*
         FIXME: we use the power of two distribution... should we use a

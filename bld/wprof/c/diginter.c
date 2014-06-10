@@ -58,16 +58,16 @@ extern bool     IsX86RealAddr( address );
 extern sio_data         *CurrSIOData;
 
 
-void * DIGCLIENT DIGCliAlloc( unsigned amount )
-/*********************************************/
+void * DIGCLIENT DIGCliAlloc( size_t amount )
+/*******************************************/
 {
     return( _MALLOC( amount ) );
 }
 
 
 
-void * DIGCLIENT DIGCliRealloc( void * p, unsigned amount )
-/*********************************************************/
+void * DIGCLIENT DIGCliRealloc( void * p, size_t amount )
+/*******************************************************/
 {
     return( _REALLOC( p, amount ) );
 }

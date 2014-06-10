@@ -122,20 +122,20 @@ WEXPORT VMsgLog::VMsgLog( VpeMain* parent )
     : WMdiChild( parent, "IDE Log" )
     , _parent( parent )
     , _batcher( NULL )
-    , _connecting( FALSE )
-    , _runQueued( FALSE )
+    , _connecting( false )
+    , _runQueued( false )
     , _connectTimer( NULL )
-    , _serverConnected( FALSE )
+    , _serverConnected( false )
     , _maxLength( 0 )
-    , _running( FALSE )
-    , _batserv( TRUE )
-    , _localBatserv( FALSE )
-    , _vxdPresent( FALSE )
+    , _running( false )
+    , _batserv( true )
+    , _localBatserv( false )
+    , _vxdPresent( false )
 {
     if( _config->hostType() == HOST_WINDOWS ||
         _config->hostType() == HOST_NEC_WIN ||
         _config->hostType() == HOST_J_WIN ) {
-        _batserv = FALSE;
+        _batserv = false;
     }
     setIcon( I_MsgLog );
 
@@ -174,7 +174,7 @@ void VMsgLog::startConnect()
             if( !res ) {
                 WSystemService::sysExecBackground( _config->batserv() );
                 _connectionTries = CONNECTION_TRIES;
-                _connecting = TRUE;
+                _connecting = true;
                 _connectTimer->start( CONNECTION_INTERVAL );
                 addLine( "Connecting..." );
             } else {
@@ -188,19 +188,19 @@ void VMsgLog::startConnect()
 #ifdef __WINDOWS__
         const char* err = BatchLink( NULL );
         if( err ) {
-            _localBatserv = TRUE;
+            _localBatserv = true;
             WSystemService::sysExecBackground( _config->batserv() );
             _connectionTries = CONNECTION_TRIES;
-            _connecting = TRUE;
+            _connecting = true;
             _connectTimer->start( CONNECTION_INTERVAL );
             addLine( "Connecting..." );
         } else {
-            _serverConnected = TRUE;
+            _serverConnected = true;
         }
 #else
         const char* err = BatchLink( NULL );
         if( err ) {
-            _localBatserv = TRUE;
+            _localBatserv = true;
             WSystemService::sysExecBackground( _config->batserv() );
             addLine( "Connecting..." );
             _connectionTries = CONNECTION_TRIES;
@@ -215,7 +215,7 @@ void VMsgLog::startConnect()
             _parent->deleteMsglog();
             //zombie code at this point!!!!!!!!!!!!!!
         } else {
-            _serverConnected = TRUE;
+            _serverConnected = true;
         }
 #endif
     }
@@ -245,7 +245,7 @@ WEXPORT VMsgLog::~VMsgLog()
 #ifndef NOPERSIST
 VMsgLog* WEXPORT VMsgLog::createSelf( WObjectFile& )
 {
-    return NULL;
+    return( NULL );
 }
 
 void WEXPORT VMsgLog::readSelf( WObjectFile& )
@@ -264,11 +264,11 @@ void VMsgLog::getState( bool& editOk, bool& helpOk )
         char file[101]; int line, offset; char help[51];
         if( matchLine( index, file, line, offset, help ) ) {
             if( strlen( file ) > 0 ) {
-                editOk = TRUE;
+                editOk = true;
             }
             int hcount = _helpList.count();
             if( hcount > 0 && strlen( help ) > 0 ) {
-                helpOk = TRUE;
+                helpOk = true;
             }
         }
     }
@@ -276,7 +276,7 @@ void VMsgLog::getState( bool& editOk, bool& helpOk )
 
 bool VMsgLog::saveLogAs()
 {
-    bool ok = FALSE;
+    bool ok = false;
     WFileName fn( "log" );
     MProject* project = _parent->project();
     if( project ) {
@@ -297,10 +297,10 @@ bool VMsgLog::saveLogAs()
                 f.puts( "\n" );
             }
             f.close();
-            ok = TRUE;
+            ok = true;
         }
     }
-    return ok;
+    return( ok );
 }
 
 bool VMsgLog::kAccelKey( gui_key _key )
@@ -317,7 +317,7 @@ bool VMsgLog::kAccelKey( gui_key _key )
             break;
         }
     }
-    return TRUE;
+    return( true );
 }
 
 void VMsgLog::stopRequest( WMenuItem* )
@@ -359,19 +359,19 @@ void VMsgLog::connectTimer( WTimer* timer, DWORD )
     } else {
         err = BatchLink( NULL );
         if( !err ) {
-            _serverConnected = TRUE;
+            _serverConnected = true;
         }
     }
     if( _serverConnected ) {
         timer->stop();
-        _connecting = FALSE;
+        _connecting = false;
         if( _runQueued ) {
-            _runQueued = FALSE;
+            _runQueued = false;
             doRun();
         }
     } else if( _connectionTries == 0 ) {
         timer->stop();
-        _connecting = FALSE;
+        _connecting = false;
         WMessageDialog::info( this, err );
         _parent->deleteMsglog();
         //zombie code at this point!!!!!!!!!!!!!!
@@ -387,13 +387,13 @@ void WEXPORT VMsgLog::runCommand( const char* cmd )
         clearData();
         doRun();
     } else {
-        _runQueued = TRUE;
+        _runQueued = true;
     }
 }
 
 void VMsgLog::doRun()
 {
-    _running = TRUE;
+    _running = true;
     if( isIconic() ) {
         show( WWinStateShowNormal );
     } else {
@@ -426,7 +426,7 @@ void VMsgLog::doRun()
         }
     }
     addLine( "Execution complete" );
-    _running = FALSE;
+    _running = false;
     _parent->quickRefresh();
 }
 
@@ -505,15 +505,16 @@ static bool parseFortranId( WString &str, unsigned j, char *help ) {
     unsigned    i;
     bool        ret;
 
-    ret = TRUE;
+    ret = true;
     if( isalpha( str[j] ) && isalpha( str[j+1] ) && str[j+2] == '-' ) {
         groupid[0] = str[j];
         groupid[1] = str[j+1];
         j += 3;
     } else {
-        ret = FALSE;
+        ret = false;
     }
-    if( !isdigit( str[j] ) ) ret = FALSE;
+    if( !isdigit( str[j] ) )
+        ret = false;
     if( ret ) {
         i=0;
         while( isdigit( str[j] ) ) {
@@ -526,7 +527,7 @@ static bool parseFortranId( WString &str, unsigned j, char *help ) {
         table = fortranGrpCodes;
         for( ;; ) {
             if( table[0] == '\0' && table[1] == '\0' ) {
-                ret = FALSE;
+                ret = false;
                 break;
             }
             if( groupid[0] == table[0] && groupid[1] == table[1] ) {
@@ -555,12 +556,14 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
     WString str( *(WString*)_data[index] );
     int i = 0, j = 0; int k, kk;
     while( p[i] != '<' ) {
-        if( p[i] == '\0' ) return FALSE;
+        if( p[i] == '\0' )
+            return( false );
         i++;
     }
     i++;
     for(;;) {
-        if( p[i] == '\0' ) return FALSE;
+        if( p[i] == '\0' )
+            return( false );
         if( p[i] == '>' ) break;
         if( strncmp( &p[i], "%f", 2 ) == 0 ) {
             i += 2;
@@ -621,16 +624,19 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
     }
     if( p[i]=='>' && str[j]=='\0' ) {
         while( p[i] != '<' ) {
-            if( p[i] == '\0' ) return TRUE;
+            if( p[i] == '\0' )
+                return( true );
             i++;
         }
         while( index > 0 ) {
             index -= 1;
             int l, o;
-            if( matchPattern( &p[i], index, file, l, o, help ) ) return TRUE;
+            if( matchPattern( &p[i], index, file, l, o, help ) ) {
+                return( true );
+            }
         }
     }
-    return FALSE;
+    return( false );
 }
 
 bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* help )
@@ -654,10 +660,10 @@ bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* he
                     break;
                 }
             }
-            return TRUE;
+            return( true );
         }
     }
-    return FALSE;
+    return( false );
 }
 
 void VMsgLog::loadHelpList()
@@ -807,7 +813,7 @@ bool VMsgLog::keyDown( WKeyCode kc, WKeyState ks )
     if( !WMdiChild::keyDown( kc, ks ) ) {
         return( _batcher->keyDown( kc, ks ) );
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 

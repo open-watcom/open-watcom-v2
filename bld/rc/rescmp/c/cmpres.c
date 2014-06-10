@@ -32,10 +32,10 @@
 
 #include <stdio.h>
 #include "watcom.h"
-#include "trmemcvr.h"
 #include "wresall.h"
 #include "global.h"
 #include "bincmp.h"
+#include "rcrtns.h"
 
 static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
 /**********************************************************************/
@@ -58,7 +58,7 @@ static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
                         resname1, (int)lang1->lang.lang,
                         (int)lang1->lang.sublang,
                         CmdLineParms.FileName2 );
-        TRMemFree( resname1 );
+        RCFREE( resname1 );
     }
 
     return( wind2 );
@@ -88,7 +88,7 @@ static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
             resname1 = WResIDToStr( &(res1->ResName) );
             printf( "Error: memory flags for resource %s are not the same\n",
                             resname1 );
-            TRMemFree( resname1 );
+            RCFREE( resname1 );
         }
         oldretcode = 1;
     }
@@ -97,7 +97,7 @@ static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
             resname1 = WResIDToStr( &(res1->ResName) );
             printf( "Error: resource %s does not have the same length\n",
                             resname1 );
-            TRMemFree( resname1 );
+            RCFREE( resname1 );
         }
         oldretcode = 1;
     } else {
@@ -109,7 +109,7 @@ static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
                 resname1 = WResIDToStr( &(res1->ResName) );
                 printf( "Error: contents of resource %s are different.\n",
                                 resname1 );
-                TRMemFree( resname1 );
+                RCFREE( resname1 );
             }
             oldretcode = retcode;
             break;

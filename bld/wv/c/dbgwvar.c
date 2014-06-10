@@ -660,7 +660,7 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece,
     int         depth, inherited;
     int         indent;
     gui_ord     good_size;
-    bool        on_rhs;
+//    bool        on_rhs;
     int         outdent;
     var_node    *parent;
 
@@ -726,13 +726,13 @@ static  bool    VarGetLine( a_window *wnd, int row, int piece,
         if( v->standout ) {
             line->attr = WND_STANDOUT;
         }
-        on_rhs = TRUE;
+//        on_rhs = TRUE;
         indent = var->last_width - WndExtentX( wnd, line->text );
         good_size = REASONABLE_NAME_WIDTH * WndAvgCharX( wnd );
         if( indent < 0 ) indent = 0;
         if( indent >= good_size ) {
             indent = good_size;
-            on_rhs = FALSE;
+//            on_rhs = FALSE;
         }
         if( indent < var->name_end + WndAvgCharX( wnd ) ) {
             indent = var->name_end + WndAvgCharX( wnd );
@@ -800,6 +800,7 @@ static  void VarRefresh( a_window *wnd )
     bool        repaint;
     char        *p;
 
+    repaint = FALSE;
     if( !var->initialized ||
       ( WndFlags & (UP_MEM_CHANGE+UP_STACKPOS_CHANGE+UP_CSIP_CHANGE+UP_REG_CHANGE) ) ) {
         var->initialized = TRUE;

@@ -39,40 +39,40 @@ Define( MVSwitch )
 MVSwitch::MVSwitch( WTokenFile& fil, WString& tok )
     : MSwitch( fil, tok )
     , _quote( '\'' )
-    , _optional( FALSE )
-    , _multiple( FALSE )
+    , _optional( false )
+    , _multiple( false )
 {
     fil.token( _on );
     fil.token( _connector );
     _multiple = ( fil.token( tok ) == "MULTI" );
-    _optional = TRUE;
+    _optional = true;
     WString value;
-    bool state = FALSE;
+    bool state = false;
     for( int i=0; i<SWMODE_COUNT; i++ ) {
         if( !fil.eol() ) {
             fil.token( tok );
             if( _optional && tok == "ON" ) {
-                state = TRUE;
+                state = true;
                 fil.token( value );
             } else if( _optional && tok == "OFF" ) {
-                state = FALSE;
+                state = false;
                 fil.token( value );
             } else if( _optional && tok == "REQ" ) {
-                _optional = FALSE;
+                _optional = false;
                 fil.token( value );
             } else {
                 value = tok;
             }
         }
-        _state[ i ] = state;
-        _value[ i ] = value;
+        _state[i] = state;
+        _value[i] = value;
     }
 }
 
 #ifndef NOPERSIST
 MVSwitch* WEXPORT MVSwitch::createSelf( WObjectFile& )
 {
-    return new MVSwitch();
+    return( new MVSwitch() );
 }
 
 void WEXPORT MVSwitch::readSelf( WObjectFile& p )
@@ -84,14 +84,14 @@ void WEXPORT MVSwitch::readSelf( WObjectFile& p )
     }
     if( p.version() > 28 ) {
         for( int i=0; i<SWMODE_COUNT; i++ ) {
-            p.readObject( &_value[ i ] );
-            p.readObject( &_state[ i ] );
+            p.readObject( &_value[i] );
+            p.readObject( &_state[i] );
         }
     } else {
-        p.readObject( &_value[ SWMODE_RELEASE ] );
-        p.readObject( &_state[ SWMODE_RELEASE ] );
-        _value[ SWMODE_DEBUG ] = _value[ SWMODE_RELEASE ];
-        _state[ SWMODE_DEBUG ] = _state[ SWMODE_RELEASE ];
+        p.readObject( &_value[SWMODE_RELEASE] );
+        p.readObject( &_state[SWMODE_RELEASE] );
+        _value[SWMODE_DEBUG] = _value[SWMODE_RELEASE];
+        _state[SWMODE_DEBUG] = _state[SWMODE_RELEASE];
     }
     if( p.version() > 28 ) {
         p.readObject( &_multiple );
@@ -105,8 +105,8 @@ void WEXPORT MVSwitch::writeSelf( WObjectFile& p )
     p.writeObject( &_on );
     p.writeObject( &_connector );
     for( int i=0; i<SWMODE_COUNT; i++ ) {
-        p.writeObject( &_value[ i ] );
-        p.writeObject( _state[ i ] );
+        p.writeObject( &_value[i] );
+        p.writeObject( _state[i] );
     }
     p.writeObject( _multiple );
     p.writeObject( _optional );
@@ -119,11 +119,11 @@ static bool needsQuotes( const char* str )
     if( str ) {
         for( int i=0; str[i]; i++ ) {
             if( isspace( str[i] ) ) {
-                return TRUE;
+                return( true );
             }
         }
     }
-    return FALSE;
+    return( false );
 }
 #endif
 
@@ -132,7 +132,7 @@ void MVSwitch::addValues( WString& str, WStringList& values, bool& first )
     int count = values.count();
     for( int i=0; i<count; i++ ) {
         if( !first ) str.concat( ' ' );
-        first = FALSE;
+        first = false;
         str.concat( _on );
 #if 1
         WString& val = values.stringAt( i );
@@ -168,7 +168,7 @@ void MVSwitch::addone( WString& str, bool state, WString* value, bool& first )
                 addValues( str, values, first );
             } else {
                 if( !first ) str.concat( ' ' );
-                first = FALSE;
+                first = false;
                 str.concat( _on );
             }
         }
@@ -179,7 +179,7 @@ void MVSwitch::addone( WString& str, bool state, WString* value, bool& first )
 
 void MVSwitch::getText( WString& str, MState* state )
 {
-    bool first = TRUE;
+    bool first = true;
     MVState* st = (MVState*)state;
     addone( str, st->state(), &st->value(), first );
 }
@@ -189,20 +189,20 @@ void MVSwitch::getText( WString& str, WVList* states, SwMode mode )
     WVList found;
     findStates( states, found );
     int icount = found.count();
-    bool first = TRUE;
-    bool found_match = FALSE;
+    bool first = true;
+    bool found_match = false;
     if( icount > 0 ) {
         // used to check if( _multiple )
         for( int i=0; i<icount; i++ ) {
             MVState* st = (MVState*)found[i];
             if( st->mode() == mode ) {
-                found_match = TRUE;
+                found_match = true;
                 addone( str, st->state(), &st->value(), first );
             }
         }
     }
     if( !found_match ) {
-        addone( str, _state[ mode ], &_value[ mode ], first );
+        addone( str, _state[mode], &_value[mode], first );
     }
 }
 

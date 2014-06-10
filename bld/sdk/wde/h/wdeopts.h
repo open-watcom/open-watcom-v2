@@ -77,6 +77,6 @@ extern void WdeSetScreenPosOption( RECT *pos );
 extern void WdeGetCntlTBarPosOption( RECT *pos );
 extern void WdeSetCntlTBarPosOption( RECT *pos );
 extern void WdeInitOpts( void );
-extern Bool WdeDisplayOptions( void );
+extern bool WdeDisplayOptions( void );
 
 #endif

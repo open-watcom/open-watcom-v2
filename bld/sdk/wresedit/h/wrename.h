@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb );
+extern bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb );
 
 #endif

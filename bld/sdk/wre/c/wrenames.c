@@ -40,8 +40,8 @@
 #include "wrestrdp.h"
 #include "wreres.h"
 #include "wremain.h"
-#include "wremem.h"
 #include "wremsg.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 #include "wrehints.h"
 #include "wreseted.h"
@@ -84,7 +84,7 @@ WRETypeName WRETypeNames[] = {
     { 0,                        0,                      FALSE }
 };
 
-static Bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
 {
     return( WRSetResNamesFromTypeNode( lbox, tnode ) );
 }
@@ -101,7 +101,7 @@ static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNod
     WResTypeNode        *tnode;
     LRESULT             count;
     int                 i;
-    Bool                ok;
+    bool                ok;
 
     ok = (lbox != (HWND)NULL);
 
@@ -132,11 +132,11 @@ char *WREGetResName( WResResNode *rnode, uint_16 type )
     return( WRGetResName( rnode, type ) );
 }
 
-Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
+bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 {
     char                *text;
     WRETypeName         *tn;
-    Bool                ok;
+    bool                ok;
 
     text = NULL;
 
@@ -159,7 +159,7 @@ Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     }
 
     if( text != NULL && tnode->Info.TypeName.IsName ) {
-        WREMemFree( text );
+        WRMemFree( text );
     }
 
     if( !ok && tn != NULL && tn->exclude ) {
@@ -169,12 +169,12 @@ Bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     return( ok );
 }
 
-static Bool WREInitTypeListBox( HWND hDlg, WResDir dir )
+static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 {
     WResTypeNode        *tnode;
     HWND                lbox;
     int                 count;
-    Bool                ok;
+    bool                ok;
 
     if( hDlg == (HWND)NULL ) {
         return( FALSE );
@@ -207,9 +207,9 @@ static Bool WREInitTypeListBox( HWND hDlg, WResDir dir )
     return( ok );
 }
 
-Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
+bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
 {
-    Bool           ok;
+    bool           ok;
 
     ok = (info != NULL && info->info != NULL);
 
@@ -224,7 +224,7 @@ Bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
     return( ok );
 }
 
-Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
+bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
                              WResID *name, int index )
 {
     HWND                resLbox;
@@ -233,7 +233,7 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     WResTypeNode        *tnode;
     LRESULT             max_index;
     char                *str;
-    Bool                ok;
+    bool                ok;
 
     tnode = NULL;
 
@@ -284,7 +284,7 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
             str = WResIDToStr( name );
             if( str != NULL ) {
                 index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
-                WREMemFree( str );
+                WRMemFree( str );
             }
             if( index == LB_ERR ) {
                 index = 0;
@@ -305,14 +305,14 @@ Bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, Bool force,
     return( ok );
 }
 
-Bool WREAddResNames( WREResInfo *info )
+bool WREAddResNames( WREResInfo *info )
 {
     HWND                resLbox;
     HWND                typeLbox;
     WResTypeNode        *tnode;
-    Bool                redrawOff;
+    bool                redrawOff;
     LRESULT             index;
-    Bool                ok;
+    bool                ok;
 
     redrawOff = FALSE;
 
@@ -358,24 +358,24 @@ static char     *WRETotalTextNone       = NULL;
 void WREFiniTotalText( void )
 {
     if( WRETotalText != NULL ) {
-        WREFreeRCString( WRETotalText );
+        FreeRCString( WRETotalText );
         WRETotalText = NULL;
     }
     if( WRETotalTextOne != NULL ) {
-        WREFreeRCString( WRETotalTextOne );
+        FreeRCString( WRETotalTextOne );
         WRETotalTextOne = NULL;
     }
     if( WRETotalTextNone != NULL ) {
-        WREFreeRCString( WRETotalTextNone );
+        FreeRCString( WRETotalTextNone );
         WRETotalTextNone = NULL;
     }
 }
 
-Bool WREInitTotalText( void )
+bool WREInitTotalText( void )
 {
-    WRETotalText = WREAllocRCString( WRE_TOTALTEXT );
-    WRETotalTextOne = WREAllocRCString( WRE_TOTALTEXT_ONE );
-    WRETotalTextNone = WREAllocRCString( WRE_TOTALTEXT_NONE );
+    WRETotalText = AllocRCString( WRE_TOTALTEXT );
+    WRETotalTextOne = AllocRCString( WRE_TOTALTEXT_ONE );
+    WRETotalTextNone = AllocRCString( WRE_TOTALTEXT_NONE );
     if( WRETotalText == NULL || WRETotalTextOne == NULL || WRETotalTextNone == NULL ) {
         return( FALSE );
     }
@@ -410,11 +410,11 @@ void WRESetTotalText( WREResInfo *info )
     } else if( count == 1 ) {
         SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextOne );
     } else {
-        buf = WREMemAlloc( strlen( WRETotalText ) + 20 + 1 );
+        buf = WRMemAlloc( strlen( WRETotalText ) + 20 + 1 );
         if( buf != NULL ) {
             sprintf( buf, WRETotalText, count );
             SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)buf );
-            WREMemFree( buf );
+            WRMemFree( buf );
         }
     }
 }
@@ -436,7 +436,7 @@ void WREInitTypeNames( void )
     int i;
 
     for( i = 0; WRETypeNames[i].name != 0; i++ ) {
-        WRETypeNames[i].typeName = WREAllocRCString( WRETypeNames[i].name );
+        WRETypeNames[i].typeName = AllocRCString( WRETypeNames[i].name );
     }
 }
 
@@ -446,7 +446,7 @@ void WREFiniTypeNames( void )
 
     for( i = 0; WRETypeNames[i].name != 0; i++ ) {
         if( WRETypeNames[i].typeName != NULL ) {
-            WREFreeRCString( WRETypeNames[i].typeName );
+            FreeRCString( WRETypeNames[i].typeName );
         }
     }
 }

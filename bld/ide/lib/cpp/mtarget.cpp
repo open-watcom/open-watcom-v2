@@ -51,7 +51,7 @@ WEXPORT MTarget::MTarget( WTokenFile& fil, WString& tok, WString& target_os )
 #ifndef NOPERSIST
 MTarget* WEXPORT MTarget::createSelf( WObjectFile& )
 {
-    return new MTarget();
+    return( new MTarget() );
 }
 
 void WEXPORT MTarget::readSelf( WObjectFile& p )

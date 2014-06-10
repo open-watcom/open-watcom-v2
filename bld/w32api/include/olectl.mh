@@ -358,38 +358,6 @@ typedef struct tagPICTDESC {
 } PICTDESC;
 typedef PICTDESC    *LPPICTDESC;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IPropertyFrame;
-EXTERN_C const CLSID    CLSID_CFontPropPage;
-EXTERN_C const CLSID    CLSID_CColorPropPage;
-EXTERN_C const CLSID    CLSID_CPicturePropPage;
-EXTERN_C const CLSID    CLSID_PersistPropset;
-EXTERN_C const CLSID    CLSID_ConvertVBX;
-EXTERN_C const CLSID    CLSID_StdFont;
-EXTERN_C const CLSID    CLSID_StdPicture;
-EXTERN_C const GUID     GUID_HIMETRIC;
-EXTERN_C const GUID     GUID_COLOR;
-EXTERN_C const GUID     GUID_XPOSPIXEL;
-EXTERN_C const GUID     GUID_YPOSPIXEL;
-EXTERN_C const GUID     GUID_XSIZEPIXEL;
-EXTERN_C const GUID     GUID_YSIZEPIXEL;
-EXTERN_C const GUID     GUID_XPOS;
-EXTERN_C const GUID     GUID_YPOS;
-EXTERN_C const GUID     GUID_XSIZE;
-EXTERN_C const GUID     GUID_YSIZE;
-#ifndef __CGUID_H__
-EXTERN_C const GUID     GUID_TRISTATE;
-#endif
-EXTERN_C const GUID     GUID_OPTIONVALUEEXCLUSIVE;
-EXTERN_C const GUID     GUID_CHECKVALUEEXCLUSIVE;
-EXTERN_C const GUID     GUID_FONTNAME;
-EXTERN_C const GUID     GUID_FONTSIZE;
-EXTERN_C const GUID     GUID_FONTBOLD;
-EXTERN_C const GUID     GUID_FONTITALIC;
-EXTERN_C const GUID     GUID_FONTUNDERSCORE;
-EXTERN_C const GUID     GUID_FONTSTRIKETHROUGH;
-EXTERN_C const GUID     GUID_HANDLE;
-
 /* Functions exported to provide self-registration */
 STDAPI  DllRegisterServer( void );
 STDAPI  DllUnregisterServer( void );
@@ -409,5 +377,37 @@ WINOLECTLAPI                OleSavePictureFile( LPDISPATCH, BSTR );
 WINOLECTLAPI                OleTranslateColor( OLE_COLOR, HPALETTE, COLORREF * );
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IPropertyFrame;
+EXTERN_C const CLSID    __cdecl CLSID_CFontPropPage;
+EXTERN_C const CLSID    __cdecl CLSID_CColorPropPage;
+EXTERN_C const CLSID    __cdecl CLSID_CPicturePropPage;
+EXTERN_C const CLSID    __cdecl CLSID_PersistPropset;
+EXTERN_C const CLSID    __cdecl CLSID_ConvertVBX;
+EXTERN_C const CLSID    __cdecl CLSID_StdFont;
+EXTERN_C const CLSID    __cdecl CLSID_StdPicture;
+EXTERN_C const GUID     __cdecl GUID_HIMETRIC;
+EXTERN_C const GUID     __cdecl GUID_COLOR;
+EXTERN_C const GUID     __cdecl GUID_XPOSPIXEL;
+EXTERN_C const GUID     __cdecl GUID_YPOSPIXEL;
+EXTERN_C const GUID     __cdecl GUID_XSIZEPIXEL;
+EXTERN_C const GUID     __cdecl GUID_YSIZEPIXEL;
+EXTERN_C const GUID     __cdecl GUID_XPOS;
+EXTERN_C const GUID     __cdecl GUID_YPOS;
+EXTERN_C const GUID     __cdecl GUID_XSIZE;
+EXTERN_C const GUID     __cdecl GUID_YSIZE;
+#ifndef __CGUID_H__
+EXTERN_C const GUID     __cdecl GUID_TRISTATE;
+#endif
+EXTERN_C const GUID     __cdecl GUID_OPTIONVALUEEXCLUSIVE;
+EXTERN_C const GUID     __cdecl GUID_CHECKVALUEEXCLUSIVE;
+EXTERN_C const GUID     __cdecl GUID_FONTNAME;
+EXTERN_C const GUID     __cdecl GUID_FONTSIZE;
+EXTERN_C const GUID     __cdecl GUID_FONTBOLD;
+EXTERN_C const GUID     __cdecl GUID_FONTITALIC;
+EXTERN_C const GUID     __cdecl GUID_FONTUNDERSCORE;
+EXTERN_C const GUID     __cdecl GUID_FONTSTRIKETHROUGH;
+EXTERN_C const GUID     __cdecl GUID_HANDLE;
 
 #endif /* _OLECTL_H_ */

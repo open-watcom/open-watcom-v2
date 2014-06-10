@@ -30,26 +30,22 @@
 ****************************************************************************/
 
 
-#ifndef WREMEM_INCLUDED
-#define WREMEM_INCLUDED
+#ifndef RCRTNS_INLCUDED
+#define RCRTNS_INLCUDED
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
+#include "wio.h"
+#include "alloc.h"
+#include "wressetr.h"
+#include "iortns.h"
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern void WREMemOpen( void );
-extern void WREMemClose( void );
-extern void *WREMemAlloc( size_t );
-extern void WREMemFree( void * );
-extern void *WREMemRealloc( void *, size_t );
-extern int  WREMemValidate( void * );
-extern int  WREMemChkRange( void *, size_t );
+#define RCOPEN        open
+#define RCCLOSE       close
+#define RCWRITE       RcWrite
+#define RCREAD        read
+#define RCSEEK        RcSeek
+#define RCTELL        RcTell
+#define RCALLOC       ChkLAlloc
+#define RCFREE        LFree
+#define RCREALLOC     LnkReAlloc
 
 #endif

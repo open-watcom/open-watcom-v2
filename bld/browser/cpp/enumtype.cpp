@@ -73,7 +73,7 @@ void EnumType::loadElements( WVList & list )
     data.me = this;
     data.list = &list;
 
-    DRLoadEnum( getHandle(), &data, (enumCallback) &EnumType::loadHook );
+    DRLoadEnum( getHandle(), &data, EnumType::loadHook );
 }
 
 static bool EnumType::loadHook( char * name, unsigned_32 val, void * data )

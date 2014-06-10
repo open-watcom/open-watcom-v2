@@ -167,9 +167,9 @@
 
 typedef struct lstinfo {
     HWND        box;
-    WORD        hinthite;
+    LONG        hinthite;
     RECT        old_area;
-    WORD        ypos;
+    LONG        ypos;
 } ListBoxInfo;
 
 typedef struct ddewndinfo {
@@ -270,7 +270,7 @@ void    SetMainWndDefault( void );
 
 /* ddemsg.c */
 char    *HSZToString( HSZ hsz );
-char    *GetFmtStr( WORD fmt, char *buf );
+char    *GetFmtStr( UINT fmt, char *buf );
 void    RecordMsg( char *buf );
 void    InitAliases( void );
 void    RefreshAliases( void );
@@ -282,7 +282,7 @@ void    ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 /* ddetrack.c */
 void    InitTrackWnd( HWND hwnd );
 BOOL    CreateTrackWnd( void );
-void    DisplayTracking( WPARAM wparam );
+void    DisplayTracking( UINT itemid );
 void    TrackStringMsg( MONHSZSTRUCT *info );
 void    TrackLinkMsg( MONLINKSTRUCT *info );
 void    TrackConvMsg( MONCONVSTRUCT *info );
@@ -292,7 +292,7 @@ void    SetTrackWndDefault( void );
 void    SetTrackFont( void );
 
 /* ddefltr.c */
-BOOL    DoFilter( WORD msg, WORD filter_type );
+BOOL    DoFilter( UINT msg, WORD filter_type );
 void    SetFilter( char *msgfilter, char *cbfilter );
 void    GetFilter( char *msgfilter, char *cbfilter );
 
@@ -312,4 +312,4 @@ void    MakeDDEToolBar( HWND hwnd );
 void    DDEToolBarFini( void );
 void    ResizeTB( HWND owner );
 BOOL    ToggleTB( HWND parent );
-void    DDESetStickyState( WORD id, BOOL isdown );
+void    DDESetStickyState( UINT itemid, BOOL isdown );

@@ -45,7 +45,7 @@ MRESULT EXPENTRY clientWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2
         DDEINIT *ddei = (PDDEINIT)mp2;
         client->_serverWindow = (HWND)mp1;
         DosFreeMem( ddei );
-        client->_connected = TRUE;
+        client->_connected = true;
         return( (MRESULT)TRUE );
     } case WM_DDE_DATA:  // reply from server
       case WM_DDE_ACK: { // negative reply from server
@@ -66,7 +66,7 @@ MRESULT EXPENTRY clientWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2
 WEXPORT WClient::WClient( WObject *owner, cbc notify )
         : _owner( owner )
         , _notify( notify )
-        , _connected( FALSE )
+        , _connected( false )
         , _prevClientProc( NULL )
         , _serverWindow( NULLHANDLE ) {
 /*************************************/
@@ -95,13 +95,13 @@ WEXPORT WClient::~WClient() {
 bool WEXPORT WClient::connect( const char *server_name, const char *topic ) {
 /***************************************************************************/
 
-    _connected = FALSE;
+    _connected = false;
     if( WinDdeInitiate( _clientWindow, (PSZ)server_name, (PSZ)topic, &ConvContext ) ) {
         if( _connected ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -110,7 +110,7 @@ void WEXPORT WClient::disconnect() {
 
     if( _connected ) {
         WinDdePostMsg( _serverWindow, _clientWindow, WM_DDE_TERMINATE, NULL, 0 );
-        _connected = FALSE;
+        _connected = false;
     }
 }
 

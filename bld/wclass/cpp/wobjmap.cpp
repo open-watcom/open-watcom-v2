@@ -34,53 +34,53 @@
 
 class WObjectMapItem : public WObject
 {
-        public:
-                WEXPORT WObjectMapItem( WObject* obj, WHANDLE hand ) : _obj(obj), _hand(hand) {}
-                WEXPORT ~WObjectMapItem() {}
-                virtual bool WEXPORT isEqual( const WObject* obj ) const;
-                WObject* WEXPORT obj() { return _obj; }
+    public:
+        WEXPORT WObjectMapItem( WObject* obj, WHANDLE hand ) : _obj(obj), _hand(hand) {}
+        WEXPORT ~WObjectMapItem() {}
+        virtual bool WEXPORT isEqual( const WObject* obj ) const;
+        WObject* WEXPORT obj() { return( _obj ); }
 
-        private:
-                WObject*                _obj;
-                WHANDLE                 _hand;
+    private:
+        WObject*      _obj;
+        WHANDLE       _hand;
 };
 
 
 bool WEXPORT WObjectMapItem::isEqual( const WObject* obj ) const
 {
-        if( ((WObjectMapItem*)obj)->_obj != NULL ) {
-                if( ((WObjectMapItem*)obj)->_hand != NULL ) {
-                        return ((WObjectMapItem*)obj)->_obj == _obj && ((WObjectMapItem*)obj)->_hand == _hand;
-                }
-                return ((WObjectMapItem*)obj)->_obj == _obj;
-        } else if( ((WObjectMapItem*)obj)->_hand != NULL ) {
-                return ((WObjectMapItem*)obj)->_hand == _hand;
+    if( ((WObjectMapItem*)obj)->_obj != NULL ) {
+        if( ((WObjectMapItem*)obj)->_hand != NULL ) {
+            return( ((WObjectMapItem*)obj)->_obj == _obj && ((WObjectMapItem*)obj)->_hand == _hand );
         }
-        return FALSE;
+        return( ((WObjectMapItem*)obj)->_obj == _obj );
+    } else if( ((WObjectMapItem*)obj)->_hand != NULL ) {
+        return( ((WObjectMapItem*)obj)->_hand == _hand );
+    }
+    return( false );
 }
 
 void WEXPORT WObjectMap::setThis( WObject* obj, WHANDLE hand )
 {
-        add( new WObjectMapItem( obj, hand ) );
-        _currThis = NULL;
+    add( new WObjectMapItem( obj, hand ) );
+    _currThis = NULL;
 }
 
 void WEXPORT WObjectMap::clearThis( WObject* obj )
 {
-        WObjectMapItem  x( obj, NULL );
-        delete remove( &x );
+    WObjectMapItem  x( obj, NULL );
+    delete remove( &x );
 }
 
 WObject* WEXPORT WObjectMap::findThis( WHANDLE hand )
 {
-        if( hand != NULL ) {
-                WObjectMapItem  x( NULL, hand );
-                WObjectMapItem* m = (WObjectMapItem*)find( &x );
-                if( m == NULL ) {
-                        return _currThis;
-                }
-                return m->obj();
+    if( hand != NULL ) {
+        WObjectMapItem  x( NULL, hand );
+        WObjectMapItem* m = (WObjectMapItem*)find( &x );
+        if( m == NULL ) {
+            return( _currThis );
         }
-        return NULL;
+        return( m->obj() );
+    }
+    return( NULL );
 }
 

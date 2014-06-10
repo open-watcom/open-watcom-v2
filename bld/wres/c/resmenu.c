@@ -37,6 +37,7 @@
 #include "read.h"
 #include "resmenu.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 int ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 /***************************************************************/

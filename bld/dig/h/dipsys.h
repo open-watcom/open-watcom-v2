@@ -32,7 +32,26 @@
 // on WIN64 long is OK because HANDLE can be hold as 32-bit sign extended value
 // even if HANDLE is defined as 64-bit value
 
-typedef long        dip_sys_handle;
+#if defined( __WINDOWS__ )
+#define NULL_SYSHDL NULL
+typedef void (DIGENTRY *dip_sys_handle)( void );
+#elif defined( __NT__ )
+#define NULL_SYSHDL 0
+typedef size_t      dip_sys_handle;
+#elif defined( __OS2__ )
+#define NULL_SYSHDL 0
+#if defined( _M_I86 )
+typedef unsigned short dip_sys_handle;
+#else
+typedef unsigned long dip_sys_handle;
+#endif
+#elif defined( __RDOS__ )
+#define NULL_SYSHDL 0
+typedef int         dip_sys_handle;
+#else
+#define NULL_SYSHDL NULL
+typedef void        *dip_sys_handle;
+#endif
 
 extern dip_status   DIPSysLoad( char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );
-extern void         DIPSysUnload( dip_sys_handle );
+extern void         DIPSysUnload( dip_sys_handle * );

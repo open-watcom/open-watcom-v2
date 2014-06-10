@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <i86.h>
 #include <string.h>
 #include <termios.h>

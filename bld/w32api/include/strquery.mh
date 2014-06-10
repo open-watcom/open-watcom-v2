@@ -139,31 +139,6 @@ typedef struct tagHITRANGE {
     ULONG   cLength;
 } HITRANGE;
 
-/* GUIDs */
-EXTERN_C const IID      IID_IQueryParser;
-EXTERN_C const IID      IID_IConditionFactory;
-EXTERN_C const IID      IID_IConditionFactory2;
-EXTERN_C const IID      IID_IQuerySolution;
-EXTERN_C const IID      IID_IConditionGenerator;
-EXTERN_C const IID      IID_IInterval;
-EXTERN_C const IID      IID_IMetaData;
-EXTERN_C const IID      IID_IEntity;
-EXTERN_C const IID      IID_IRelationship;
-EXTERN_C const IID      IID_INamedEntity;
-EXTERN_C const IID      IID_ISchemaProvider;
-EXTERN_C const IID      IID_ITokenCollection;
-EXTERN_C const IID      IID_INamedEntityCollector;
-EXTERN_C const IID      IID_ISchemaLocalizerSupport;
-EXTERN_C const IID      IID_IQueryParserManager;
-EXTERN_C const IID      LIBID_StructuredQuery1;
-EXTERN_C const CLSID    CLSID_QueryParser;
-EXTERN_C const CLSID    CLSID_NegationCondition;
-EXTERN_C const CLSID    CLSID_CompoundCondition;
-EXTERN_C const CLSID    CLSID_LeafCondition;
-EXTERN_C const CLSID    CLSID_ConditionFactory;
-EXTERN_C const CLSID    CLSID_Interval;
-EXTERN_C const CLSID    CLSID_QueryParserManager;
-
 /* IQueryParser interface */
 #undef INTERFACE
 #define INTERFACE   IQueryParser
@@ -642,5 +617,30 @@ DECLARE_INTERFACE_( IQueryParserManager, IUnknown ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl IID_IQueryParser;
+EXTERN_C const IID      __cdecl IID_IConditionFactory;
+EXTERN_C const IID      __cdecl IID_IConditionFactory2;
+EXTERN_C const IID      __cdecl IID_IQuerySolution;
+EXTERN_C const IID      __cdecl IID_IConditionGenerator;
+EXTERN_C const IID      __cdecl IID_IInterval;
+EXTERN_C const IID      __cdecl IID_IMetaData;
+EXTERN_C const IID      __cdecl IID_IEntity;
+EXTERN_C const IID      __cdecl IID_IRelationship;
+EXTERN_C const IID      __cdecl IID_INamedEntity;
+EXTERN_C const IID      __cdecl IID_ISchemaProvider;
+EXTERN_C const IID      __cdecl IID_ITokenCollection;
+EXTERN_C const IID      __cdecl IID_INamedEntityCollector;
+EXTERN_C const IID      __cdecl IID_ISchemaLocalizerSupport;
+EXTERN_C const IID      __cdecl IID_IQueryParserManager;
+EXTERN_C const IID      __cdecl LIBID_StructuredQuery1;
+EXTERN_C const CLSID    __cdecl CLSID_QueryParser;
+EXTERN_C const CLSID    __cdecl CLSID_NegationCondition;
+EXTERN_C const CLSID    __cdecl CLSID_CompoundCondition;
+EXTERN_C const CLSID    __cdecl CLSID_LeafCondition;
+EXTERN_C const CLSID    __cdecl CLSID_ConditionFactory;
+EXTERN_C const CLSID    __cdecl CLSID_Interval;
+EXTERN_C const CLSID    __cdecl CLSID_QueryParserManager;
 
 #endif /* __structuredquery_h__ */

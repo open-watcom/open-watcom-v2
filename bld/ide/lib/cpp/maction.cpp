@@ -38,9 +38,9 @@
 Define( MAction )
 
 WEXPORT MAction::MAction( WTokenFile& fil, WString& tok )
-    : _defAction( FALSE )
-    , _button( FALSE )
-    , _okForMask( FALSE )
+    : _defAction( false )
+    , _button( false )
+    , _okForMask( false )
 {
     _accel = NULL;
     fil.token( _name );
@@ -66,10 +66,10 @@ WEXPORT MAction::MAction( WTokenFile& fil, WString& tok )
             fil.token( _accelString );
             fil.token( tok );
         } else if( tok == "Button" ) {
-            _button = TRUE;
+            _button = true;
             fil.token( tok );
         } else if( tok == "Default" ) {
-            _defAction = TRUE;
+            _defAction = true;
             fil.token( tok );
         } else if( tok == "Help" ) {
             fil.token( _help );
@@ -123,7 +123,7 @@ int MAction::expand( WString& command, WFileName* target, const WString& mask, W
             s.concat( *x );
         }
     }
-    return s.expand( command, target, _tool, mask, states, mode );
+    return( s.expand( command, target, _tool, mask, states, mode ) );
 }
 
 int MAction::accelKey()
@@ -136,13 +136,13 @@ int MAction::accelKey()
             accel = 0x006F + atoi( &_accelString[1] );
         }
     }
-    return accel;
+    return( accel );
 }
 
 #ifndef NOPERSIST
 MAction* WEXPORT MAction::createSelf( WObjectFile& )
 {
-    return new MAction();
+    return( new MAction() );
 }
 
 void WEXPORT MAction::readSelf( WObjectFile& p )
@@ -178,8 +178,8 @@ void MAction::text( WString& t )
 
 WKeyCode MAction::menuAccel() {
     if( _accel == NULL ) {
-        return WKeyNone;
+        return( WKeyNone );
     } else {
-        return _accel->keyStroke();
+        return( _accel->keyStroke() );
     }
 }

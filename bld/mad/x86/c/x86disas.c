@@ -30,7 +30,6 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include <ctype.h>
 #include "walloca.h"
 #include "x86.h"
@@ -64,7 +63,10 @@ void DoCode( mad_disasm_data *dd, int big )
 {
     DisDecodeInit( &DH, &dd->ins );
     dd->addr = DbgAddr;
-    dd->ins.flags.u.x86 = ( big ) ? DIF_X86_USE32_FLAGS : DIF_NONE;
+    dd->ins.flags.u.x86 = DIF_X86_NONE;
+    if( big ) {
+        dd->ins.flags.u.x86 = DIF_X86_USE32_FLAGS;
+    }
     DisDecode( &DH, dd, &dd->ins );
 }
 

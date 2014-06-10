@@ -32,7 +32,6 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
-#include "wdemem.h"
 #include "wderesin.h"
 #include "wdecsize.h"
 #include "wde_wres.h"
@@ -53,12 +52,12 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static WdeDialogBoxHeader  *WdeMem2DialogBoxHeader( uint_8 **data, Bool );
+static WdeDialogBoxHeader  *WdeMem2DialogBoxHeader( uint_8 **data, bool );
 static WdeDialogBoxHeader  *WdeMem2DialogBoxExHeader( uint_8 **data );
-static WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, Bool, Bool );
-static ResNameOrOrdinal    *WdeMem2NameOrOrdinal( uint_8 **data, Bool );
-static ControlClass        *WdeMem2ControlClass( uint_8 **data, Bool );
-static char                *WdeMem2String( uint_8 **data, Bool );
+static WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool, bool );
+static ResNameOrOrdinal    *WdeMem2NameOrOrdinal( uint_8 **data, bool );
+static ControlClass        *WdeMem2ControlClass( uint_8 **data, bool );
+static char                *WdeMem2String( uint_8 **data, bool );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -122,7 +121,7 @@ static int WdeNameOrOrdToMem( ResNameOrOrdinal *name, uint_8 use_unicode, uint_8
 
 static int WdeDialogBoxHeaderToMem( WdeDialogBoxHeader *head, uint_8 *mem )
 {
-    Bool                ok;
+    bool                ok;
     int                 pos, size;
     uint_16             pointsize;
     DialogBoxHeader32   h32;
@@ -236,7 +235,7 @@ static int WdeDialogBoxExHeaderToMem( WdeDialogBoxHeader *dhd, uint_8 *mem )
 }
 
 static int WdeDialogBoxControlToMem( WdeDialogBoxControl *control,
-                                     uint_8 *mem, Bool is32bit, Bool is32bitEx )
+                                     uint_8 *mem, bool is32bit, bool is32bitEx )
 {
     DialogBoxControl        *c16;
     DialogBoxControl32      *c32;
@@ -244,7 +243,7 @@ static int WdeDialogBoxControlToMem( WdeDialogBoxControl *control,
     ControlClass            *cclass;
     int                     pos, size;
     uint_16                 *data16;
-    Bool                    ok;
+    bool                    ok;
 
     ok = (control != NULL && mem != NULL);
 
@@ -319,14 +318,14 @@ static int WdeDialogBoxControlToMem( WdeDialogBoxControl *control,
 }
 
 
-Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
+bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
 {
-    Bool                ok;
+    bool                ok;
     uint_32             pos, memsize, sz, pad;
     LIST                *l;
     WdeDialogBoxControl *ci;
-    Bool                is32bit;
-    Bool                is32bitEx;
+    bool                is32bit;
+    bool                is32bitEx;
 
     is32bit = info->dialog_header->is32bit;
     is32bitEx = info->dialog_header->is32bitEx;
@@ -340,7 +339,7 @@ Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
     }
 
     if( ok ) {
-        *mem = WdeMemAlloc( memsize );
+        *mem = WRMemAlloc( memsize );
         ok = (*mem != NULL);
     }
 
@@ -387,7 +386,7 @@ Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
         }
     } else {
         if( mem != NULL && *mem != NULL ) {
-            WdeMemFree( *mem );
+            WRMemFree( *mem );
             *mem = NULL;
         }
     }
@@ -395,15 +394,15 @@ Bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
     return( ok );
 }
 
-WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, Bool is32bit )
+WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, bool is32bit )
 {
     WdeDialogBoxInfo    *dbi;
     WdeDialogBoxControl *control;
     LIST                *prev_control;
     int                 index, pad;
     uint_8              *d;
-    Bool                ok;
-    Bool                is32bitEx = FALSE;
+    bool                ok;
+    bool                is32bitEx = FALSE;
     uint_16             signa[2];
 
     dbi = NULL;
@@ -412,7 +411,7 @@ WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, Bool is32bit )
 
     if( ok ) {
         d = data;
-        dbi = (WdeDialogBoxInfo *)WdeMemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dbi = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = (dbi != NULL);
     }
 
@@ -468,13 +467,13 @@ WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, Bool is32bit )
     return( dbi );
 }
 
-WdeDialogBoxHeader *WdeMem2DialogBoxHeader( uint_8 **data, Bool is32bit )
+WdeDialogBoxHeader *WdeMem2DialogBoxHeader( uint_8 **data, bool is32bit )
 {
     DialogBoxHeader32   *h32;
     DialogBoxHeader     *h16;
     WdeDialogBoxHeader  *dbh;
     int                 fixedbytes;
-    Bool                ok;
+    bool                ok;
 
     dbh = NULL;
 
@@ -544,7 +543,7 @@ WdeDialogBoxHeader *WdeMem2DialogBoxExHeader( uint_8 **data )
 {
     uint_16             miscbytes[2] = { 0x0001, 0xFFFF };
     WdeDialogBoxHeader  *dbh;
-    Bool                ok;
+    bool                ok;
 
     dbh = NULL;
 
@@ -615,14 +614,14 @@ WdeDialogBoxHeader *WdeMem2DialogBoxExHeader( uint_8 **data )
     return( dbh );
 }
 
-WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, Bool is32bit, Bool is32bitEx )
+WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool is32bitEx )
 {
     DialogBoxControl            *c16;
     DialogBoxControl32          *c32;
     DialogBoxExControl32        *c32ex;
     WdeDialogBoxControl         *dbc;
     int                         fixedbytes;
-    Bool                        ok;
+    bool                        ok;
 
     dbc = NULL;
 
@@ -691,7 +690,7 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, Bool is32bit, Bool 
 }
 
 
-ResNameOrOrdinal *WdeMem2NameOrOrdinal( uint_8 **data, Bool is32bit )
+ResNameOrOrdinal *WdeMem2NameOrOrdinal( uint_8 **data, bool is32bit )
 {
     ResNameOrOrdinal    *new;
     int                 size;
@@ -715,7 +714,7 @@ ResNameOrOrdinal *WdeMem2NameOrOrdinal( uint_8 **data, Bool is32bit )
     return( new );
 }
 
-ControlClass *WdeMem2ControlClass( uint_8 **_data, Bool is32bit )
+ControlClass *WdeMem2ControlClass( uint_8 **_data, bool is32bit )
 {
     ControlClass        *new;
     uint_8              *data8;
@@ -744,7 +743,7 @@ ControlClass *WdeMem2ControlClass( uint_8 **_data, Bool is32bit )
         }
     }
 
-    new = (ControlClass *)WdeMemAlloc( len );
+    new = (ControlClass *)WRMemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -770,7 +769,7 @@ ControlClass *WdeMem2ControlClass( uint_8 **_data, Bool is32bit )
     return( new );
 }
 
-char *WdeMem2String( uint_8 **_data, Bool is32bit )
+char *WdeMem2String( uint_8 **_data, bool is32bit )
 {
     char        *new;
     int         len;
@@ -787,7 +786,7 @@ char *WdeMem2String( uint_8 **_data, Bool is32bit )
         len = strlen( data ) + 1;
     }
 
-    new = WdeMemAlloc( len );
+    new = WRMemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include <string.h>
 #include "trpimp.h"
 #include "tcerr.h"
 #include "trpld.h"
@@ -44,19 +44,20 @@ char *LoadTrap( char *trapbuff, char *buff, trap_version *trap_ver )
 {
     char        *ptr;
 
-    if( trapbuff == NULL ) trapbuff = "std";
-    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr ) ;
+    if( trapbuff == NULL )
+        trapbuff = "std";
+    for( ptr = trapbuff; *ptr != '\0' && *ptr != ';'; ++ptr )
+        ;
     ptr = (*ptr != '\0') ? ptr + 1 : ptr;
     *trap_ver = TrapInit( ptr, buff, trap_ver->remote );
-    if( buff[0] != '\0' ) {
-        KillTrap();
-        return( buff );
+    if( buff[0] == '\0' ) {
+        if( TrapVersionOK( *trap_ver ) ) {
+            TrapVer = *trap_ver;
+            ReqFunc = TrapRequest;
+            return( NULL );
+        }
+        strcpy( buff, TC_ERR_WRONG_TRAP_VERSION );
     }
-    if( !TrapVersionOK( *trap_ver ) ) {
-        KillTrap();
-        return( TC_ERR_WRONG_TRAP_VERSION );
-    }
-    TrapVer = *trap_ver;
-    ReqFunc = TrapRequest;
-    return( NULL );
+    KillTrap();
+    return( buff );
 }

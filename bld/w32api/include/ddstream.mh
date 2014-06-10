@@ -29,10 +29,6 @@ enum {
     DDSFF_PROGRESSIVERENDER = 0x00000001
 };
 
-/* GUIDs */
-EXTERN_C const IID  IID_IDirectDrawMediaStream;
-EXTERN_C const IID  IID_IDirectDrawStreamSample;
-
 /* IDirectDrawMediaStream interface */
 #undef INTERFACE
 #define INTERFACE   IDirectDrawMediaStream
@@ -135,5 +131,9 @@ DECLARE_INTERFACE_( IDirectDrawStreamSample, IStreamSample ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IDirectDrawMediaStream;
+EXTERN_C const IID  __cdecl IID_IDirectDrawStreamSample;
 
 #endif /* __ddstream_h__ */

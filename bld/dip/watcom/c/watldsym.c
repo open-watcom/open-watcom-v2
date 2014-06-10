@@ -86,7 +86,7 @@ static void UnloadInfo( imp_image_handle *ii )
     DCFree( ii->lang );
 }
 
-void DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     InfoClear( ii );
     DCClose( ii->sym_file );
@@ -241,7 +241,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
     byte                v2;
     char                *new;
 
-    end = DCSeek( ii->sym_file, -(int)sizeof( header ), DIG_END );
+    end = DCSeek( ii->sym_file, -(long)sizeof( header ), DIG_END );
     if( DCRead( ii->sym_file, &header, sizeof(header) ) != sizeof(header) ) {
         return( DS_FAIL );
     }
@@ -324,7 +324,7 @@ static dip_status DoPermInfo( imp_image_handle *ii )
 /*
  * DIPImpLoadInfo -- process symbol table info on end of .exe file
  */
-dip_status DIPENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
+dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
 {
     dip_status          ret;
 
@@ -369,7 +369,7 @@ dip_status InfoRead( section_info *inf, unsigned long offset, unsigned size,
  */
 
 
-void DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     unsigned        i;
 

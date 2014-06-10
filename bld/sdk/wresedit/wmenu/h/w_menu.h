@@ -84,12 +84,12 @@ typedef struct WMenuEditInfo {
     HWND        preview_window;
     WStatBar    *wsb;
     WToolBar    *ribbon;
-    Bool        show_ribbon;
+    bool        show_ribbon;
     char        *file_name;
     WRFileType  file_type;
-    Bool        insert_before;
-    Bool        insert_subitems;
-    Bool        combo_change;
+    bool        insert_before;
+    bool        insert_subitems;
+    bool        combo_change;
     WORD        first_preview_id;
 } WMenuEditInfo;
 
@@ -104,27 +104,27 @@ extern void             WMakeDataFromMenu( WMenu *, void **, int * );
 extern void             WFreeMenu( WMenu *menu );
 extern void             WFreeMenuEntries( WMenuEntry *entry );
 extern void             WFreeMenuEntry( WMenuEntry *entry );
-extern Bool             WRemoveMenuEntry( WMenu *, WMenuEntry * );
+extern bool             WRemoveMenuEntry( WMenu *, WMenuEntry * );
 extern WMenu            *WMakeMenuFromInfo( WMenuInfo * );
 extern int              WGetMenuEntryDepth( WMenuEntry *entry );
-extern Bool             WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after, WMenuEntry *parent, WMenuEntry *entry, Bool popup );
+extern bool             WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after, WMenuEntry *parent, WMenuEntry *entry, bool popup );
 extern int              WCountMenuChildren( WMenuEntry *entry );
-extern Bool             WResetPreviewIDs( WMenuEditInfo *einfo );
+extern bool             WResetPreviewIDs( WMenuEditInfo *einfo );
 extern HMENU            WCreatePreviewMenu( WMenuEditInfo *einfo );
 extern WMenuEntry       *WFindEntryFromPreviewID( WMenuEntry *, WORD );
 extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
-extern Bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, int * );
-extern Bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
+extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, int * );
+extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
-extern Bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );
+extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );
 extern WMenuEntry       *WMakeMenuEntryFromClipData( void *data, uint_32 dsize );
 
-extern Bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table );
-extern Bool WResolveMenuEntries( WMenuEditInfo *einfo );
-extern Bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table );
+extern bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table );
+extern bool WResolveMenuEntries( WMenuEditInfo *einfo );
+extern bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table );
 
-extern Bool WResolveMenuSymIDs( WMenuEditInfo *einfo );
-extern Bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table );
-extern Bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table );
+extern bool WResolveMenuSymIDs( WMenuEditInfo *einfo );
+extern bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table );
+extern bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table );
 
 #endif

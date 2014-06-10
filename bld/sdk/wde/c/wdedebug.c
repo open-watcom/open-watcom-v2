@@ -47,7 +47,7 @@ typedef enum {
     P1 = 1,
     P2,
     Point,
-    Boolean,
+    boolean,
     Rect,
     Req,
     Listp,
@@ -105,11 +105,11 @@ typedef struct {
 
 static WdeDebugActionItem WdeDebugActions[] = {
     { REGISTER,           "REGISTER          ", P1,      P2      },
-    { MOVE,               "MOVE              ", Point,   Boolean },
-    { RESIZE,             "RESIZE            ", Rect,    Boolean },
+    { MOVE,               "MOVE              ", Point,   boolean },
+    { RESIZE,             "RESIZE            ", Rect,    boolean },
     { LOCATE,             "LOCATE            ", Rect,    P2      },
     { FIND_SUBOBJECTS,    "FIND_SUBOBJECTS   ", Req,     Listp   },
-    { DESTROY,            "DESTROY           ", Boolean, P2      },
+    { DESTROY,            "DESTROY           ", boolean, P2      },
     { DRAW,               "DRAW              ", Rect,    Hdc     },
     { DEFINE,             "DEFINE            ", Point,   P2      },
     { NOTIFY,             "NOTIFY            ", Note_id, P2      },
@@ -125,14 +125,14 @@ static WdeDebugActionItem WdeDebugActions[] = {
     { GET_PRIORITY,       "GET_PRIORITY      ", Int,     P2      },
     { GET_RESIZE_INC,     "GET_RESIZE_INC    ", Point,   P2      },
     { GET_SCROLL_RECT,    "GET_SCROLL_RECT   ", Rect,    P2      },
-    { IS_MARK_VALID,      "IS_MARK_VALID     ", Boolean, P2      },
+    { IS_MARK_VALID,      "IS_MARK_VALID     ", boolean, P2      },
     { FIND_OBJECTS_PT,    "FIND_OBJECTS_PT   ", Point,   Listp   },
     { GET_WINDOW_HANDLE,  "GET_WINDOW_HANDLE ", Hwnd,    P2      },
     { GET_WINDOW_CLASS,   "GET_WINDOW_CLASS  ", Str,     P2      },
     { GET_SUBOBJ_LIST,    "GET_SUBOBJ_LIST   ", Listp,   P2      },
     { CREATE_WINDOW,      "CREATE_WINDOW     ", P1,      P2      },
-    { DESTROY_WINDOW,     "DESTROY_WINDOW    ", Boolean, Boolean },
-    { SHOW_WIN,           "SHOW_WIN          ", Boolean, P2      },
+    { DESTROY_WINDOW,     "DESTROY_WINDOW    ", boolean, boolean },
+    { SHOW_WIN,           "SHOW_WIN          ", boolean, P2      },
     { GET_OBJECT_INFO,    "GET_OBJECT_INFO   ", Infop,   P2      },
     { SET_OBJECT_INFO,    "SET_OBJECT_INFO   ", Info,    P2      },
     { IDENTIFY,           "IDENTIFY          ", Obj_id,  P2      },
@@ -146,12 +146,12 @@ static WdeDebugActionItem WdeDebugActions[] = {
     { SAVE_OBJECT,        "SAVE_OBJECT       ", Uint32,  P2      },
     { ON_TOP,             "ON_TOP            ", P1,      P2      },
     { TEST,               "TEST              ", P1,      P2      },
-    { IS_OBJECT_CLEAR,    "IS_OBJECT_CLEAR   ", Boolean, P2      },
-    { SET_CLEAR_INT,      "SET_CLEAR_INT     ", Boolean, P2      },
+    { IS_OBJECT_CLEAR,    "IS_OBJECT_CLEAR   ", boolean, P2      },
+    { SET_CLEAR_INT,      "SET_CLEAR_INT     ", boolean, P2      },
     { RESTORE_OBJECT,     "RESTORE_OBJECT    ", P1,      P2      },
-    { RESOLVE_SYMBOL,     "RESOLVE_SYMBOL    ", Boolean, P2      },
+    { RESOLVE_SYMBOL,     "RESOLVE_SYMBOL    ", boolean, P2      },
     { MODIFY_INFO,        "MODIFY_INFO       ", P1,      P2      },
-    { GET_NEXT_CHILD,     "GET_NEXT_CHILD    ", Objptrp, Boolean },
+    { GET_NEXT_CHILD,     "GET_NEXT_CHILD    ", Objptrp, boolean },
     { SET_ORDER_MODE,     "SET_ORDER_MODE    ", Int,     Int     },
     { SIZE_TO_TEXT,       "SIZE_TO_TEXT      ", P1,      P2      },
     { -1,                 NULL,                 NULL,    NULL    }
@@ -175,7 +175,7 @@ static void WdeDebugInterpretParam( WdeDebugParamTypes, void *, char * );
 /* static variables                                                         */
 /****************************************************************************/
 #if defined( WDE_DEBUG )
-static Bool WdeTrailOpen = FALSE;
+static bool WdeTrailOpen = FALSE;
 static FILE *WdeTrailFile = NULL;
 #if defined( WDE_DEBUG_DISPATCH ) || defined( WDE_DEBUG_CREATE )
 static char WdeDebugString[512];
@@ -226,8 +226,8 @@ static void WdeDebugInterpretParam( WdeDebugParamTypes type, void *param, char *
         }
         break;
 
-    case Boolean:
-        if ( *(Bool *)param ) {
+    case boolean:
+        if ( *(bool *)param ) {
             sprintf( temp, "%7s: TRUE, ", WdeDebugParamNames[type] );
         } else {
             sprintf( temp, "%7s: FALSE, ", WdeDebugParamNames[type] );
@@ -361,7 +361,7 @@ void WdeDebugCreate ( char *name, void * parent, RECT *obj_rect, void * handle )
 
 #ifdef WDE_DEBUG
 /* routine to write a trail string */
-Bool WdeWriteTrail( const char * msg )
+bool WdeWriteTrail( const char * msg )
 {
     if( !WdeTrailOpen ) {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "wa" );
@@ -393,7 +393,7 @@ Bool WdeWriteTrail( const char * msg )
 #endif
 }
 
-Bool WdeWriteTrailn( const char * msg, int len )
+bool WdeWriteTrailn( const char * msg, int len )
 {
     if( !WdeTrailOpen ) {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "wa" );
@@ -421,7 +421,7 @@ Bool WdeWriteTrailn( const char * msg, int len )
     return( TRUE );
 }
 
-Bool WdeWriteStatus( const char * msg )
+bool WdeWriteStatus( const char * msg )
 {
     WdeSetStatusText( NULL, msg, TRUE );
     return( TRUE );

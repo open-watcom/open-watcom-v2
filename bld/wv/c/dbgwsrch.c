@@ -45,7 +45,7 @@
 extern char             *TxtBuff;
 extern void             *SrchHistory;
 
-extern cue_file_id      CueFileId( cue_handle * );
+extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
 extern void             WndFuncInspect( mod_handle mod );
@@ -74,7 +74,7 @@ enum {
 typedef struct {
     char        *source_line;
     mod_handle  mod;
-    cue_file_id file_id;
+    cue_fileid  file_id;
     unsigned    open : 1;
 } found_item;
 

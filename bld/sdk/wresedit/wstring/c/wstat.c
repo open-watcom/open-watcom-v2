@@ -36,10 +36,10 @@
 #include <stdio.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wmsg.h"
 #include "wmain.h"
 #include "wstat.h"
+#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -62,7 +62,7 @@ BOOL WStatusWndProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WDisplayStatusText( WStatBar * );
+static bool WDisplayStatusText( WStatBar * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -70,7 +70,7 @@ static Bool WDisplayStatusText( WStatBar * );
 static int      WStatusDepth  = 0;
 static HFONT    WStatusFont   = NULL;
 
-Bool WInitStatusLines( HINSTANCE inst )
+bool WInitStatusLines( HINSTANCE inst )
 {
     LOGFONT             lf;
     TEXTMETRIC          tm;
@@ -79,14 +79,14 @@ Bool WInitStatusLines( HINSTANCE inst )
     char                *status_font;
     char                *cp;
     int                 point_size;
-    Bool                use_default;
+    bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( (HWND)NULL );
     lf.lfWeight = FW_BOLD;
     use_default = TRUE;
 
-    status_font = WAllocRCString( W_STATUSFONT );
+    status_font = AllocRCString( W_STATUSFONT );
     if( status_font != NULL ) {
         cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
         if( cp != NULL ) {
@@ -96,7 +96,7 @@ Bool WInitStatusLines( HINSTANCE inst )
             point_size = atoi( cp );
             use_default = FALSE;
         }
-        WFreeRCString( status_font );
+        FreeRCString( status_font );
     }
 
     if( use_default ) {
@@ -144,7 +144,7 @@ void WDestroyStatusLine( WStatBar *wsb )
 {
     if( wsb != NULL ) {
         StatusWndDestroy( wsb->stat );
-        WMemFree( wsb );
+        WRMemFree( wsb );
     }
 }
 
@@ -154,7 +154,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     RECT                rect;
     status_block_desc   sbd;
 
-    wsb = (WStatBar *)WMemAlloc( sizeof( WStatBar ) );
+    wsb = (WStatBar *)WRMemAlloc( sizeof( WStatBar ) );
     if( wsb != NULL ) {
         wsb->stat = StatusWndStart();
         if( wsb->stat == NULL ) {
@@ -189,44 +189,44 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     return( wsb );
 }
 
-Bool WSetStatusReadyText( WStatBar *wsb )
+bool WSetStatusReadyText( WStatBar *wsb )
 {
     WSetStatusText( wsb, NULL, "" );
     return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
 }
 
-Bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
+bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
 {
     char        *str1;
     char        *str2;
-    Bool        ret;
+    bool        ret;
 
     ret = FALSE;
     str1 = NULL;
     str2 = NULL;
 
     if( id1 != -1 ) {
-        str1 = WAllocRCString( id1 );
+        str1 = AllocRCString( id1 );
     }
 
     if( id2 != -1 ) {
-        str2 = WAllocRCString( id2 );
+        str2 = AllocRCString( id2 );
     }
 
     ret = WSetStatusText( wsb, str1, str2 );
 
     if( str1 != NULL ) {
-        WFreeRCString( str1 );
+        FreeRCString( str1 );
     }
 
     if( str2 != NULL ) {
-        WFreeRCString( str2 );
+        FreeRCString( str2 );
     }
 
     return( ret );
 }
 
-Bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
+bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
 {
     int             len;
     int             pos;
@@ -294,7 +294,7 @@ BOOL WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     return( FALSE );
 }
 
-Bool WDisplayStatusText( WStatBar *wsb )
+bool WDisplayStatusText( WStatBar *wsb )
 {
     HDC hdc;
 

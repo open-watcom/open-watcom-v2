@@ -34,7 +34,7 @@
 
 #define JAVA_SIG        "JAVA"
 
-dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 {
     struct {
         char    sig[sizeof( JAVA_SIG ) - 1];
@@ -72,7 +72,7 @@ dip_status      DIPENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( ds );
 }
 
-void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 {
     DefCodeAddr = NilAddr;
     DefCodeAddr.mach.segment = MAP_FLAT_CODE_SELECTOR;
@@ -82,7 +82,7 @@ void            DIPENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     DCMapAddr( &DefDataAddr.mach, d );
 }
 
-void            DIPENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
 {
     DCFree( ii->methods );
 }

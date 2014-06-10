@@ -215,7 +215,7 @@ AUX_INFO *PragmaMapIndex( AUX_INFO * );
 TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
     bool expanding )
 ;
-int CppPrinting(                // TEST IF AT LEVEL FOR PREPROC PRINTING
+bool CppPrinting(               // TEST IF AT LEVEL FOR PREPROC PRINTING
     void )
 ;
 void CPragma(                   // #PRAGMA PROCESSING

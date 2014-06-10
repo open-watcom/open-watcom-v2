@@ -146,10 +146,8 @@ private:
             VirtLevel       _virtual;
 
 
-    static  int             baseHook( dr_sym_type, dr_handle,
-                                      char *, dr_handle, void * );
-    static  int             deriveHook( dr_sym_type, dr_handle, char *,
-                                        dr_handle, void * );
+    static  bool            baseHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
+    static  bool            deriveHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
 };
 
 extern int findClass( ClassList& list, ClassLattice * node );

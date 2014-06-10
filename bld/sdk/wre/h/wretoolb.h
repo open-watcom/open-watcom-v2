@@ -67,7 +67,7 @@ extern void             WREShutdownToolBars( void );
 extern void             WREFreeToolBarInfo( WREToolBarInfo * );
 extern WREToolBarInfo   *WREAllocToolBarInfo( int );
 extern void             WRESetToolBarItemState( WREToolBar *, UINT, UINT );
-extern Bool             WRECloseToolBar( WREToolBar * );
+extern bool             WRECloseToolBar( WREToolBar * );
 extern void             WREFreeToolBar( WREToolBar * );
 
 #endif

@@ -103,8 +103,8 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, int mode, int shar
         rwmode = OPENMODE_ACCESS_RDWR;
     }
 #endif
-    if( share == SH_COMPAT ) {
-        share = SH_DENYNO;
+    if( share == OPENMODE_DENY_COMPAT ) {
+        share = OPENMODE_DENY_NONE;
     }
     openmode = share+rwmode;
 

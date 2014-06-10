@@ -32,6 +32,7 @@
 #ifndef _STDUI_H_INCLUDED_
 #define _STDUI_H_INCLUDED_
 
+#include <stddef.h>
 #include <stdio.h>
 #include "bool.h"
 
@@ -590,7 +591,7 @@ extern          MONITOR _FARD*  UIData;
 extern          void            finimouse( void );
 extern          bool            initmouse( int );
 extern          void            uiactivatemenus( void );
-extern          void           *uialloc( unsigned );
+extern          void           *uialloc( size_t );
 extern          bool            uiattrs( void );
 extern          bool            uivgaattrs( void );
 extern          void            uisetblinkattr( int );
@@ -617,7 +618,7 @@ extern          void            uidirty( SAREA );
 extern          void            uidrawbox( VSCREEN _FARD *, SAREA *area,
                                            ATTR attr, const char * );
 extern          EVENT           uieventsource( int );
-extern          void __FAR*     uifaralloc( int );
+extern          void __FAR*     uifaralloc( size_t );
 extern          void            uifarfree( void __FAR * );
 extern          void            uifini( void );
 extern          void            uifinicursor( void );

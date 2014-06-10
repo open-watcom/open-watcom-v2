@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include "sortlist.h"
 #include <stdlib.h>
 #include <limits.h>
+#include "sortlist.h"
 
 #define _NEXT( list, offset ) (*((void **)((char *)list + offset)))
 
@@ -94,7 +94,7 @@ static  void            *BuildList( void **array,
 static  void            *DoSortList( void *list, unsigned next_offset,
                                   int (*compare)(void*,void*),
                                   unsigned long length,
-                                  void *(*allocrtn)(unsigned),
+                                  void *(*allocrtn)(size_t),
                                   void (*freertn)(void*) ) {
 /**************************************************************************/
 
@@ -139,7 +139,7 @@ static  void            *DoSortList( void *list, unsigned next_offset,
 
 extern  void            *SortLinkedList( void *list, unsigned next_offset,
                                    int (*compare)(void*,void*),
-                                   void *(*allocrtn)(unsigned),
+                                   void *(*allocrtn)(size_t),
                                    void (*freertn)(void*) ) {
 /****************************************************************/
 

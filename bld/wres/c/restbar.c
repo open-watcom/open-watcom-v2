@@ -34,6 +34,7 @@
 #include "write.h"
 #include "restbar.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint_16 cnt )
 /***************************************************************************************/

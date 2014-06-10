@@ -70,7 +70,7 @@ WResTypeNode * WRAPI WRFindTypeNodeFromWResID( WResDir dir, WResID *type )
             type_name = WResIDToStr( type );
             if( type_name != NULL ) {
                 type_node = WRFindTypeNode( dir, 0, type_name );
-                WRMemFree( type_name );
+                MemFree( type_name );
             }
         } else {
             type_node = WRFindTypeNode( dir, type->ID.Num, NULL );
@@ -92,7 +92,7 @@ WResResNode * WRAPI WRFindResNodeFromWResID( WResTypeNode *type, WResID *res )
             res_name = WResIDToStr( res );
             if( res_name != NULL ) {
                 res_node = WRFindResNode( type, 0, res_name );
-                WRMemFree( res_name );
+                MemFree( res_name );
             }
         } else {
             res_node = WRFindResNode( type, res->ID.Num, NULL );
@@ -192,7 +192,7 @@ int WRIsCorrectNode( WResID *node, uint_16 id, char *name )
             if( !stricmp( type_name, name ) ) {
                 ret = TRUE;
             }
-            WRMemFree( type_name );
+            MemFree( type_name );
         }
     }
 

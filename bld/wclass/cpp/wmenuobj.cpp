@@ -36,8 +36,8 @@
 WEXPORT WMenuObject::WMenuObject()
     : _id( 0 )
     , _owner( NULL )
-    , _enabled( TRUE )
-    , _checked( FALSE )
+    , _enabled( true )
+    , _checked( false )
     , _text( NULL )
 /***********************/
 {

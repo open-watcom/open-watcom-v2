@@ -34,6 +34,7 @@
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 WResID * WResIDFromStr( const char * newstr )
 /*******************************************/

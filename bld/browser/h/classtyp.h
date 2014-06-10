@@ -63,10 +63,8 @@ public:
 
 private:
 
-    static  int         memberHook( dr_sym_type, dr_handle, dr_handle,
-                                    char *, void * );
-    static  void        doBases( ClassLattice *, dr_search,
-                                 MemberSearchData * );
+    static  bool        memberHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
+    static  void        doBases( ClassLattice *, dr_search, MemberSearchData * );
             void        getMembers( WVList &, dr_search );
 
     static MemoryPool   _pool;

@@ -38,46 +38,46 @@ Define( WPickList )
 #ifndef NOPERSIST
 WPickList* WEXPORT WPickList::createSelf( WObjectFile& )
 {
-    return new WPickList();
+    return( new WPickList() );
 }
 
 void WEXPORT WPickList::readSelf( WObjectFile& p )
 {
-    setUpdates( FALSE );
+    setUpdates( false );
     WVList::readSelf( p );
     setUpdates();
 }
 
 void WEXPORT WPickList::writeSelf( WObjectFile& p )
 {
-        WVList::writeSelf( p );
+    WVList::writeSelf( p );
 }
 #endif
 
 WObject* WEXPORT WPickList::add( WObject* obj )
 {
-        obj = WVList::add( obj );
-        updateAllViews();
-        return obj;
+    obj = WVList::add( obj );
+    updateAllViews();
+    return( obj );
 }
 
 WObject* WPickList::replaceAt( int index, WObject* obj )
 {
     obj = WVList::replaceAt( index, obj );
     updateAllViews();
-    return obj;
+    return( obj );
 }
 
 WObject* WPickList::insertAt( int index, WObject* obj )
 {
     obj = WVList::insertAt( index, obj );
     updateAllViews();
-    return obj;
+    return( obj );
 }
 
 WObject* WEXPORT WPickList::removeAt( int index )
 {
-        WObject* obj = WVList::removeAt( index );
-        updateAllViews();
-        return obj;
+    WObject* obj = WVList::removeAt( index );
+    updateAllViews();
+    return( obj );
 }

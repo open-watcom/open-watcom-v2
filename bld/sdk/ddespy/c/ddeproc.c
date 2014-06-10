@@ -99,12 +99,12 @@ void SetMainWndDefault( void )
 static void initMonitoring( HWND hwnd )
 {
     HMENU       mh;
-    WORD        i;
+    UINT        itemid;
 
     mh = GetMenu( hwnd );
-    for( i = DDE_MON_FIRST; i <= DDE_MON_LAST; i++ ) {
-        if( Monitoring[i - DDE_MON_FIRST] ) {
-            CheckMenuItem( mh, i, MF_BYCOMMAND | MF_CHECKED );
+    for( itemid = DDE_MON_FIRST; itemid <= DDE_MON_LAST; itemid++ ) {
+        if( Monitoring[itemid - DDE_MON_FIRST] ) {
+            CheckMenuItem( mh, itemid, MF_BYCOMMAND | MF_CHECKED );
         }
     }
 
@@ -114,16 +114,16 @@ static void initMonitoring( HWND hwnd )
  * monitorChange - change the check state a menu item to reflect a
  *                 change in the monitoring state
  */
-static void monitorChange( HWND hwnd, WPARAM wparam )
+static void monitorChange( HWND hwnd, UINT itemid )
 {
-    WORD        action;
+    UINT        action;
     HMENU       mh;
 
     action = MF_BYCOMMAND;
     mh = GetMenu( hwnd );
-    Monitoring[wparam - DDE_MON_FIRST] = !Monitoring[wparam - DDE_MON_FIRST];
-    action |= Monitoring[wparam - DDE_MON_FIRST] ? MF_CHECKED : MF_UNCHECKED;
-    CheckMenuItem( mh, wparam, action );
+    Monitoring[itemid - DDE_MON_FIRST] = !Monitoring[itemid - DDE_MON_FIRST];
+    action |= Monitoring[itemid - DDE_MON_FIRST] ? MF_CHECKED : MF_UNCHECKED;
+    CheckMenuItem( mh, itemid, action );
 
 } /* monitorChange */
 
@@ -182,7 +182,7 @@ static void hideHintBar( HWND hwnd, DDEWndInfo *info, BOOL hide )
         }
         CheckMenuItem( mh, DDEMENU_HINTBAR, MF_BYCOMMAND | MF_CHECKED );
     }
-    ResizeListBox( area.right - area.left, height, &info->list );
+    ResizeListBox( (WORD)( area.right - area.left ), height, &info->list );
 
 } /* hideHintBar */
 
@@ -196,7 +196,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     FARPROC             fp;
     RECT                area;
     HMENU               mh;
-    WORD                flag;
+    UINT                flag;
     HDC                 dc;
     HFONT               font;
     about_info          ai;

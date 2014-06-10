@@ -35,7 +35,6 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
-#include "wmem.h"
 #include "wedit.h"
 #include "wdel.h"
 #include "sys_rc.h"
@@ -60,10 +59,10 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-Bool WDeleteMenuEntry( WMenuEditInfo *einfo )
+bool WDeleteMenuEntry( WMenuEditInfo *einfo )
 {
     HWND        lbox;
-    Bool        ok;
+    bool        ok;
     LRESULT     ret;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
@@ -85,10 +84,10 @@ Bool WDeleteMenuEntry( WMenuEditInfo *einfo )
     return( ok );
 }
 
-Bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, int pos, Bool free_it )
+bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, int pos, bool free_it )
 {
     HWND        lbox;
-    Bool        ok;
+    bool        ok;
     WMenuEntry  *entry;
     LRESULT     ret, max;
 

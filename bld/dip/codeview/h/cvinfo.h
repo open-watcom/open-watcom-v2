@@ -32,7 +32,6 @@
 
 #ifndef DIP_CV
 
-#include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 #include "dip.h"
@@ -48,12 +47,11 @@ enum {
 CV_LAST_REG
 };
 
+#define IMH_FORTRAN	    IMH_BASE
+
 typedef unsigned long   virt_mem;
 
 #define BLOCK_FACTOR( i, n )    (((i)+((n)-1))/(n))
-
-#define MH_BASE         1
-#define MH_GBL          ((imp_mod_handle)-1)
 
 struct imp_sym_handle {
     virt_mem            handle;

@@ -127,13 +127,14 @@ enum {
 
 void Flip( unsigned wait )
 {
-    char        ch;
+//    char        ch;
 
     if( !(ScrnState & USR_SCRN_VISIBLE) ) {
         DUIWndUser();
     }
     if( !(ScrnState & DBG_SCRN_VISIBLE) ) {
-        ch = RemoteReadUserKey( wait );
+//        ch = RemoteReadUserKey( wait );
+        RemoteReadUserKey( wait );
     }
 }
 
@@ -506,6 +507,7 @@ static void FormThdState( thread_state *thd, char *buff )
     case THD_THAW:  p = LIT( Runnable ); break;
     case THD_FREEZE:p = LIT( Frozen );   break;
     case THD_DEAD:  p = LIT( Dead );     break;
+	default:        p = "";              break;
     }
     p = StrCopy( p, buff );
     while( (p - buff) < 10 ) *p++ = ' ';

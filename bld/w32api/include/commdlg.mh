@@ -813,10 +813,6 @@ typedef LPPAGESETUPDLGA LPPAGESETUPDLG;
 /* Revert to default packing. */
 #include <poppack.h>
 
-/* GUIDs */
-EXTERN_C const IID  IID_IPrintDialogCallback;
-EXTERN_C const IID  IID_IPrintDialogServices;
-
 /* IPrintDialogCallback interface */
 #if (WINVER >= 0x0500) && defined( STDMETHOD )
 #undef INTERFACE
@@ -940,5 +936,9 @@ WINCOMMDLGAPI HRESULT APIENTRY  PrintDlgExW( LPPRINTDLGEXW );
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID  __cdecl IID_IPrintDialogCallback;
+EXTERN_C const IID  __cdecl IID_IPrintDialogServices;
 
 #endif /* _INC_COMMDLG */

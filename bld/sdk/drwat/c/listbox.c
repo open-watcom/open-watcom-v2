@@ -97,9 +97,9 @@ void ClearListBox( LBoxHdl *lb ) {
  * MoveListBox - move/resize the ListBox
  */
 
-void MoveListBox( LBoxHdl *lb, int x, int y, int width, int hieght ) {
+void MoveListBox( LBoxHdl *lb, int x, int y, int width, int height ) {
 
-    MoveWindow( lb->hwnd, x, y, width, hieght, TRUE );
+    MoveWindow( lb->hwnd, x, y, width, height, TRUE );
 
     /* this is a kludge to make sure the window is properly
      * refreshed when it is horizontally scrolled */

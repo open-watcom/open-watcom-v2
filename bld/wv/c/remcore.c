@@ -131,7 +131,7 @@ static unsigned MemRead( address addr, void *ptr, unsigned size )
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
         CONV_LE_16( acc.len );
-        got = TrapAccess( 1, &in, 1, &out );
+        got = TrapAccess( 1, in, 1, out );
         if( int_tbl ) GrabHandlers();
 
         left -= got;
@@ -221,7 +221,7 @@ unsigned ProgPoke( address addr, void *data, unsigned len )
         if( int_tbl ) RestoreHandlers();
         CONV_LE_32( acc.mem_addr.offset );
         CONV_LE_16( acc.mem_addr.segment );
-        TrapAccess( 2, &in, 1, &out );
+        TrapAccess( 2, in, 1, out );
         CONV_LE_16( ret.len );
         if( int_tbl ) GrabHandlers();
 
@@ -264,7 +264,7 @@ unsigned PortPeek( unsigned port, void *data, unsigned size )
     in[0].len = sizeof( acc );
     out[0].ptr = data;
     out[0].len = size;
-    return( TrapAccess( 1, &in, 1, &out ) );
+    return( TrapAccess( 1, in, 1, out ) );
 }
 
 unsigned PortPoke( unsigned port, void *data, unsigned size )
@@ -282,7 +282,7 @@ unsigned PortPoke( unsigned port, void *data, unsigned size )
     in[1].len = size;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( ret.len );
 }
 
@@ -308,15 +308,16 @@ static void WriteRegs( machine_state *state )
 {
     mx_entry            in[2];
     write_regs_req      acc;
-    mad_status          ms;
+//    mad_status          ms;
 
-    ms = MADRegistersTarget( &state->mr );
+//    ms = MADRegistersTarget( &state->mr );
+    MADRegistersTarget( &state->mr );
     acc.req = REQ_WRITE_REGS;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
     in[1].ptr = &state->mr;
     in[1].len = CurrRegSize;
-    TrapAccess( 2, &in, 0, NULL );
+    TrapAccess( 2, in, 0, NULL );
     // Always convert regs back to host format; might be more
     // efficient to create a local copy instead
     MADRegistersHost( &state->mr );
@@ -372,7 +373,7 @@ unsigned DoLoad( char *args, unsigned long *phandle )
     ret.task_id = 0;
     RestoreHandlers();
     FiniSuppServices();
-    OnAnotherThread( TrapAccess, 2, &in, 1, &out );
+    OnAnotherThread( TrapAccess, 2, in, 1, out );
     InitSuppServices();
     GrabHandlers();
     GetSysConfig();
@@ -474,7 +475,7 @@ bool Redirect( bool input, char *hndlname )
     in[1].len = strlen( in[1].ptr ) + 1;
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     return( ret.err == 0 ? TRUE : FALSE );
 }
 
@@ -546,7 +547,7 @@ unsigned long RemoteGetLibName( unsigned long lib_hdl, void *ptr, unsigned buff_
     out[1].len = buff_len;
     ret.handle = 0;
     CONV_LE_32( acc.handle );
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
     CONV_LE_32( ret.handle );
     return( ret.handle );
 }
@@ -565,7 +566,7 @@ unsigned RemoteGetMsgText( char *msg, unsigned len )
     out[0].len = sizeof( ret );
     out[1].ptr = msg;
     out[1].len = len;
-    TrapAccess( 1, &in, 2, &out );
+    TrapAccess( 1, in, 2, out );
 //    TrapErrTranslate( msg, MAX_ERR_MSG_SIZE );
     return( ret.flags );
 }
@@ -599,7 +600,7 @@ unsigned RemoteMachineData( address addr, unsigned info_type,
     out[0].len = sizeof( ret );
     out[1].ptr = outp;
     out[1].len = out_size;
-    len = TrapAccess( 2, &in, 2, &out );
+    len = TrapAccess( 2, in, 2, out );
     if( len == 0 ) return( 0 );
     len -= sizeof( ret );
     if( len > MData->len ) {
@@ -683,7 +684,7 @@ void RemoteSplitCmd( char *cmd, char **end, char **parm )
     in[1].len = ArgsLen( cmd );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    TrapAccess( 2, &in, 1, &out );
+    TrapAccess( 2, in, 1, out );
     CONV_LE_16( ret.cmd_end );
     CONV_LE_16( ret.parm_start );
     *end = &cmd[ ret.cmd_end ];

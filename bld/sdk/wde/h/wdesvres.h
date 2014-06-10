@@ -44,8 +44,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern Bool             WdeSaveResourceToFile( WdeResInfo * );
+extern bool             WdeSaveResourceToFile( WdeResInfo * );
 extern WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem );
-extern Bool             WdeGetItemData( WdeResDlgItem *, void *, uint_32 * );
+extern bool             WdeGetItemData( WdeResDlgItem *, void *, uint_32 * );
 
 #endif

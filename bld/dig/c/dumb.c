@@ -210,6 +210,7 @@ trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, mx_entry_p mx_in, trap_e
 {
     trap_retval     result;
 
+    num_in_mx = num_in_mx; num_out_mx = num_out_mx;
     Out_Mx_Ptr = mx_out;
     result = DumbRequests[*(access_req *)mx_in[0].ptr]();
     return( result );

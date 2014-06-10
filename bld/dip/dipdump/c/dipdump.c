@@ -31,7 +31,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <stddef.h>
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -496,7 +495,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     cue_handle      *prev_cue = NULL;
     cue_handle      *cue2     = alloca( DIPHandleSize( HK_CUE ) );
     mod_handle      mod       = CueMod( cue );
-    cue_file_id     file_id   = CueFileId( cue );
+    cue_fileid      file_id   = CueFileId( cue );
     search_result   search_rc;
     char            buf[1024];
     int             len;
@@ -846,7 +845,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
                 "index   seg:offset    info  lang  name\n"
                 "---------------------------------------\n");
         i = 0;
-        walkres = WalkTypeList( /*mh*/ MH_GB, TypeCallback, &i );
+        walkres = WalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
         printf( "\n"
                 "\n" );
     }

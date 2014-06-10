@@ -63,11 +63,11 @@ extern void WdeDebugCreate( char *, void *, RECT *, void * );
 #define WdeDebugCreate( cp, obj, rect, handle ) {}
 #endif /* WDE_DEBUG_CREATE */
 
-extern Bool WdeWriteTrail( const char * );
-extern Bool WdeWriteTrailn( const char *, int );
+extern bool WdeWriteTrail( const char * );
+extern bool WdeWriteTrailn( const char *, int );
 
 #ifdef WDE_DEBUG_ON_STATUS
-extern Bool WdeWriteStatus( const char * );
+extern bool WdeWriteStatus( const char * );
 #else
 #define WdeWriteStatus( cp ) {}
 #endif /* WDE_DEBUG_ON_STATUS */

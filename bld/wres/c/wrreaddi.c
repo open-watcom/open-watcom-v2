@@ -34,6 +34,7 @@
 #include "wresall.h"
 #include "reserr.h"
 #include "wresdefn.h"
+#include "wresrtns.h"
 
 
 static int readLangInfoList( WResFileID handle, WResResNode *res, void *fileinfo )

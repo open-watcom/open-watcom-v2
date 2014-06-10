@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-extern seg_list *DFLoadAddrSym( imp_image_handle *ii,
-                                im_idx imx  );
+extern seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im );

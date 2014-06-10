@@ -36,10 +36,10 @@ typedef struct {
     dword           line;
     unsigned_16     col;
     unsigned_16     fno;
-}cue_item;
+} cue_item;
 
 typedef struct {
-    seg_cue *head;
-    im_idx   imx;
-    cue_item last;
-}cue_list;
+    seg_cue         *head;
+    imp_mod_handle  im;
+    cue_item        last;
+} cue_list;

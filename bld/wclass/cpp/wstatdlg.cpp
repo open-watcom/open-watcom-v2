@@ -54,13 +54,13 @@ WControl * WEXPORT WStatDialog::getControl( unsigned control_id ) {
     WControl *  test;
 
     for( i = 0; i < _controls.count(); i += 1 ) {
-        test = (WControl *)_controls[ i ];
+        test = (WControl *)_controls[i];
         if( test->controlId() == control_id ) {
-            return test;
+            return( test );
         }
     }
 
-    return NULL;
+    return( NULL );
 }
 
 extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm );
@@ -108,8 +108,8 @@ void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
 }
 
 void WEXPORT WStatDialog::getCtrlText( unsigned control_id,
-                                       char* buff, unsigned len ) {
-/*****************************************************************/
+                                       char* buff, size_t len ) {
+/***************************************************************/
 
     char * text;
     size_t text_len;

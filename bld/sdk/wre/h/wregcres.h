@@ -54,6 +54,6 @@ typedef struct WRECurrentResInfo {
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void *WREGetCurrentResData( WRECurrentResInfo * );
-extern Bool WREGetCurrentResource( WRECurrentResInfo * );
+extern bool WREGetCurrentResource( WRECurrentResInfo * );
 
 #endif

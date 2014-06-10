@@ -33,8 +33,8 @@
 #include "guiwind.h"
 #include "guideath.h"
 
-int GUIDeath ( void )
+bool GUIDeath ( void )
 {
-    return ( TRUE );
+    return( true );
 }
 

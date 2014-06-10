@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wderesin.h"
@@ -57,8 +56,8 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static Bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *, HWND );
-static Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *, HWND );
+static bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *, HWND );
+static bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void WdeSetObjectStyle( HWND, DialogStyle );
 static void WdeGetObjectStyle( HWND, DialogStyle * );
 
@@ -71,9 +70,9 @@ static DialogStyle WdeGenericMask =
     WS_MINIMIZE | WS_MAXIMIZE | WS_GROUP | WS_TABSTOP;
 
 
-Bool WdeDefineCurrentObject( WORD w )
+bool WdeDefineCurrentObject( WORD w )
 {
-    Bool    ret;
+    bool    ret;
     POINT   pnt;
     OBJPTR  obj;
     int     old_option;
@@ -102,7 +101,7 @@ Bool WdeDefineCurrentObject( WORD w )
     return( ret );
 }
 
-Bool WdeGenericDefine( WdeDefineObjectInfo *info )
+bool WdeGenericDefine( WdeDefineObjectInfo *info )
 {
     BOOL                 redraw;
     BOOL                 quick;
@@ -159,7 +158,7 @@ Bool WdeGenericDefine( WdeDefineObjectInfo *info )
     return( TRUE );
 }
 
-Bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
+bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 {
     DialogStyle style;
     char        *text;
@@ -223,12 +222,12 @@ Bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
     return( TRUE );
 }
 
-Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
+bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 {
     DialogStyle style;
     DialogStyle cstyle;
     void        *vp;
-    Bool        mod;
+    bool        mod;
 
     WdeGetWinStyles( hDlg, &style, WdeGenericMask );
 
@@ -244,7 +243,7 @@ Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetStrFromEdit ( hDlg, IDB_TEXT, &mod );
         if( mod && vp != NULL ) {
             if( GETHDR_CAPTION( info->info.d.header ) ) {
-                WdeMemFree( GETHDR_CAPTION( info->info.d.header ) );
+                WRMemFree( GETHDR_CAPTION( info->info.d.header ) );
             }
             SETHDR_CAPTION( info->info.d.header, (char *)vp );
         }
@@ -253,7 +252,7 @@ Bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetResNameOrFromEdit ( hDlg, IDB_TEXT, &mod );
         if ( mod && vp != NULL ) {
             if( GETCTL_TEXT( info->info.c.info ) ) {
-                WdeMemFree( GETCTL_TEXT( info->info.c.info ) );
+                WRMemFree( GETCTL_TEXT( info->info.c.info ) );
             }
             SETCTL_TEXT( info->info.c.info, (ResNameOrOrdinal *)vp );
         }
@@ -281,7 +280,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
 {
     static WdeDefineObjectInfo  *info = NULL;
     BOOL                        ret;
-    Bool                        use_id;
+    bool                        use_id;
     uint_16                     id;
 
     ret = FALSE;

@@ -37,7 +37,6 @@
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-#include "wio.h"
 #include "linkstd.h"
 #include "dbginfo.h"
 #include "alloc.h"
@@ -47,10 +46,10 @@
 #include "fileio.h"
 #include "ideentry.h"
 #include "loadfile.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "clibint.h"
+#include "rcrtns.h"
+#include "wresset2.h"
 
 #define NO_RES_MESSAGE "could not open message resource file"
 
@@ -70,7 +69,7 @@ static long res_seek( WResFileID handle, long position, int where )
     }
 }
 
-WResSetRtns( open, close, read, write, res_seek, tell, ChkLAlloc, LFree );
+WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 
 int InitMsg( void )
 {

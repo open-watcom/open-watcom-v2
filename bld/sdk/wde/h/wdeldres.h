@@ -43,6 +43,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern WdeResInfo       *WdeLoadResource( const char * );
-extern WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *,WResLangNode *, Bool );
+extern WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *,WResLangNode *, bool );
 
 #endif

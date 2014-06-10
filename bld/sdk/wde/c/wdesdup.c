@@ -31,8 +31,8 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wdesdup.h"
+#include "wrdll.h"
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -53,7 +53,7 @@ char *WdeStrDup( const char *src )
     if( src == NULL ) {
         return( NULL );
     }
-    dest = WdeMemAlloc( strlen( src ) + 1 );
+    dest = WRMemAlloc( strlen( src ) + 1 );
     if( dest != NULL ) {
         strcpy( dest, src );
     }

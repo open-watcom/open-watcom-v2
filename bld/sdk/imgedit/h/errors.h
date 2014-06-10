@@ -43,11 +43,11 @@
 #define WIE_INTERNAL_008            "Internal Error 008- Icon count imbalance"
 
 extern void     IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style );
-extern void     IEPrintErrorMsgByID( DWORD title, DWORD msg, char *fname, UINT style );
+extern void     IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style );
 extern void     IEInitDisplayError( HINSTANCE inst );
-extern void     IEDisplayErrorMsg( DWORD title, DWORD msg, UINT style );
-extern char     *IEAllocRCString( DWORD id );
+extern void     IEDisplayErrorMsg( UINT title, UINT msg, UINT style );
+extern char     *IEAllocRCString( UINT id );
 extern void     IEFreeRCString( char *str );
-extern DWORD    IECopyRCString( DWORD id, char *buf, DWORD bufsize );
+extern int      IECopyRCString( UINT id, char *buf, int bufsize );
 extern void     IEFiniErrors( void );
 extern BOOL     IEInitErrors( HINSTANCE inst );

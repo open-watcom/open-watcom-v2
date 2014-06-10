@@ -54,7 +54,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WdeSetWaitCursor( Bool on )
+void WdeSetWaitCursor( bool on )
 {
     static int      ref_count   = 0;
     static HCURSOR  wait_cursor = NULL;

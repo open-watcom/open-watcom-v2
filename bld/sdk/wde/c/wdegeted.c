@@ -31,7 +31,6 @@
 
 
 #include "wdeglbl.h"
-#include "wdemem.h"
 #include "wde_wres.h"
 #include "wdegeted.h"
 
@@ -57,7 +56,7 @@ uint_32 WdeGetUINT32FromCombo( HWND hDlg, int id )
     return( WdeGetUINT32FromEdit( hDlg, id, NULL ) );
 }
 
-char *WdeGetStrFromEdit( HWND hDlg, int id, Bool *mod )
+char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
 {
     char    *cp;
     int     text_length;
@@ -76,7 +75,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, Bool *mod )
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WdeMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -85,7 +84,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, Bool *mod )
                                       (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -110,7 +109,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
 
-    cp = (char *)WdeMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -119,7 +118,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
                                       (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -144,7 +143,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, CB_GETLBTEXTLEN, index, 0 );
 
-    cp = (char *)WdeMemAlloc( text_length + 1 );
+    cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -153,7 +152,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
                                       (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
         return( NULL );
     }
 
@@ -216,7 +215,7 @@ void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
     }
 }
 
-ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, Bool *mod )
+ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
 {
     ControlClass    *cc;
     int             class;
@@ -243,7 +242,7 @@ ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( cc );
@@ -256,7 +255,7 @@ void WdeSetEditWithControlClass( ControlClass *cc, HWND hDlg, int id )
     cp = WdeControlClassToStr( cc );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 }
 
@@ -268,7 +267,7 @@ void WdeSetEditWithResNameOr( ResNameOrOrdinal *rp, HWND hDlg, int id )
         cp = WdeResNameOrOrdinalToStr( rp, 10 );
         if( cp != NULL ) {
             WdeSetEditWithStr( cp, hDlg, id );
-            WdeMemFree( cp );
+            WRMemFree( cp );
         }
     } else {
         WdeSetEditWithStr( "", hDlg, id );
@@ -286,7 +285,7 @@ void WdeSetEditWithWResID( WResID *ip, HWND hDlg, int id )
     cp = WResIDToStr( ip );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 }
 
@@ -301,11 +300,11 @@ void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
     cp = WResHelpIDToStr( ip );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 }
 
-ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, Bool *mod )
+ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
 {
     ResNameOrOrdinal *rp;
     char             *cp;
@@ -320,20 +319,20 @@ ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, Bool *mod )
             return( NULL );
         }
         if( *cp == '\0' ) {
-            WdeMemFree( cp );
+            WRMemFree( cp );
             return( NULL );
         }
         rp = WdeStrToResNameOrOrdinal( cp );
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );
 }
 
-WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, Bool *mod )
+WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResID  *rp;
     uint_16 ordID;
@@ -358,13 +357,13 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );
 }
 
-WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, Bool *mod )
+WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 {
     WResHelpID  *rp;
     uint_32     ordID;
@@ -389,18 +388,18 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( rp );
 }
 
-int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, Bool *mod )
+int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *mod )
 {
     return( (int_16)WdeGetSINT32FromEdit( hDlg, id, mod ) );
 }
 
-int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, Bool *mod )
+int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
 {
     int_32  val;
     char    *cp;
@@ -425,18 +424,18 @@ int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( val );
 }
 
-uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, Bool *mod )
+uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, bool *mod )
 {
     return( (uint_16)WdeGetUINT32FromEdit( hDlg, id, mod ) );
 }
 
-uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, Bool *mod )
+uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *mod )
 {
     uint_32 val;
     char    *cp;
@@ -461,7 +460,7 @@ uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, Bool *mod )
     }
 
     if( cp != NULL ) {
-        WdeMemFree( cp );
+        WRMemFree( cp );
     }
 
     return( val );

@@ -100,7 +100,7 @@ extern wp_asmfile * WPAsmOpen( sio_data * curr_sio, int src_row, bint quiet )
     mod_handle          mh;
     file_handle         fh;
     address             addr;
-    cue_file_id         fid;
+    cue_fileid          fid;
     search_result       cue_find;
     int                 rows;
     int                 asm_group;

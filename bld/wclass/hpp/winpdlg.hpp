@@ -43,7 +43,7 @@ WCLASS WInputDialog  : public WDialog {
     public:
         WEXPORT WInputDialog( WWindow *parent, const char *text );
         WEXPORT ~WInputDialog();
-        void WEXPORT setBrowse( const char *filter=NULL, bool multi_select=FALSE );
+        void WEXPORT setBrowse( const char *filter=NULL, bool multi_select=false );
         void WEXPORT okButton( WWindow * );
         void WEXPORT cancelButton( WWindow * );
         bool WEXPORT getInput( WString& reply, const char *prompt );

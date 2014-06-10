@@ -150,7 +150,7 @@ void SetFilter( char *msgfilter, char *cbfilter )
  * DoFilter - return TRUE if we want to process this message or FALSE
  *            otherwise
  */
-BOOL DoFilter( WORD msg, WORD filter_type )
+BOOL DoFilter( UINT msg, WORD filter_type )
 {
     WORD        *match;
     char        *filter;

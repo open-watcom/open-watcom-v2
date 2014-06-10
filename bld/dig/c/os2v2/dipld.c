@@ -40,10 +40,15 @@
 #include "dipimp.h"
 #include "dipsys.h"
 
+void DIPSysUnload( dip_sys_handle *sys_hdl )
+{
+    DosFreeModule( *sys_hdl );
+}
+
 dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
     HMODULE             dll;
-    dip_imp_routines    *(*init_func)( dip_status *, dip_client_routines * );
+    dip_init_func       *init_func;
     dip_status          status;
     char                dipname[CCHMAXPATH] = "";
     char                dippath[CCHMAXPATH] = "";
@@ -54,26 +59,15 @@ dip_status DIPSysLoad( char *path, dip_client_routines *cli, dip_imp_routines **
     strcpy( dipname, path );
     strcat( dipname, ".D32" );
     _searchenv( dipname, "PATH", dippath );
-    if( dippath[0] == '\0' ) {
-        return( DS_ERR | DS_FOPEN_FAILED );
+    if( dippath[0] == '\0' || DosLoadModule( NULL, 0, dippath, &dll ) != 0 ) {
+        return( DS_ERR|DS_FOPEN_FAILED );
     }
-    if( DosLoadModule( NULL, 0, dippath, &dll ) != 0 ) {
-        return( DS_ERR | DS_FOPEN_FAILED );
+    status = DS_ERR|DS_INVALID_DIP;
+    if( DosQueryProcAddr( dll, 0, "DIPLOAD", (PFN FAR *)&init_func ) == 0
+      && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = dll;
+        return( DS_OK );
     }
-    if( DosQueryProcAddr( dll, 0, "DIPLOAD", (PFN FAR *)&init_func ) != 0 ) {
-        DosFreeModule( dll );
-        return( DS_ERR | DS_INVALID_DIP );
-    }
-    *imp = init_func( &status, cli );
-    if( *imp == NULL ) {
-        DosFreeModule( dll );
-        return( status );
-    }
-    *sys_hdl = (dip_sys_handle)dll;
-    return( DS_OK );
-}
-
-void DIPSysUnload( dip_sys_handle sys_hdl )
-{
-    DosFreeModule( (HMODULE)sys_hdl );
+    DosFreeModule( dll );
+    return( status );
 }

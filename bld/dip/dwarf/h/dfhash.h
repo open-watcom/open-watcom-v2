@@ -31,14 +31,14 @@
 
 
 typedef  struct name_ctl name_ctl;
-extern name_ctl *InitHashName( void );
-extern void FiniHashName( name_ctl *ctl );
-extern void AddHashName( name_ctl *ctl, char *name, dr_handle sym );
 
 typedef struct{
-    int         (*fn)( void *d, dr_handle sym, char *name );
+    bool        (*fn)( void *d, dr_handle sym, char *name );
     char        *name;
-    void       *d;
-}name_wlk;
+    void        *d;
+} name_wlk;
 
-extern int FindHashWalk( name_ctl *ctl, name_wlk *wlk );
+extern name_ctl *InitHashName( void );
+extern void     FiniHashName( name_ctl *ctl );
+extern void     AddHashName( name_ctl *ctl, char *name, dr_handle sym );
+extern bool     FindHashWalk( name_ctl *ctl, name_wlk *wlk );

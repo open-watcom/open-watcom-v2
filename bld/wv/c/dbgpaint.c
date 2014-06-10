@@ -58,9 +58,9 @@ extern char             WndNameTab[];
 static gui_colour_set   *WndClassColour[ WND_NUM_CLASSES ];
 gui_colour_set          WndStatusColour = { GUI_BRIGHT_WHITE, GUI_BLUE };
 
-extern wnd_attr WndPlainAttr = WND_PLAIN;
-extern wnd_attr WndSelectedAttr = WND_SELECTED;
-extern wnd_attr WndCursorAttr = WND_SELECTED;
+wnd_attr WndPlainAttr = WND_PLAIN;
+wnd_attr WndSelectedAttr = WND_SELECTED;
+wnd_attr WndCursorAttr = WND_SELECTED;
 
 static gui_colour_set   WndDlgColours[] = {
     { GUI_WHITE,        GUI_BLUE },     // GUI_DLG_NORMAL
@@ -74,7 +74,7 @@ static gui_colour_set   WndDlgColours[] = {
     { GUI_BRIGHT_WHITE, GUI_CYAN },     // GUI_DLG_BUTTON_ACTIVE_STANDOUT
 };
 
-extern gui_colour_set WndColours[] = {
+gui_colour_set WndColours[] = {
 
     { GUI_WHITE,        GUI_BLUE },             /* GUI_MENU_PLAIN    */
     { GUI_BRIGHT_WHITE, GUI_BLUE },             /* GUI_MENU_STANDOUT */
@@ -97,7 +97,7 @@ extern gui_colour_set WndColours[] = {
     { GUI_RED,          GUI_BRIGHT_WHITE },     /* WND_HOTSPOT */
     { GUI_BRIGHT_RED,   GUI_BLACK },            /* WND_STANDOUT_TABSTOP */
 };
-extern int WndNumColours = { ArraySize( WndColours ) };
+int WndNumColours = { ArraySize( WndColours ) };
 
 
 
@@ -259,7 +259,8 @@ wnd_attr WndMapTabAttr( wnd_attr attr )
     return( WND_TABSTOP );
 }
 
-extern wnd_attr WndTabStopAttr = WND_TABSTOP;
+wnd_attr WndTabStopAttr = WND_TABSTOP;
+
 static wnd_attr ScanAttr( attr_map *map, int size )
 {
     attr_bits   bits;
@@ -311,9 +312,10 @@ void ProcPaint( void )
     bool                dialog;
     int                 dlg_attr;
 
+    dlg_attr = 0;
+    dialog = FALSE;
     class = WND_NO_CLASS;
     if( ScanStatus() ) {
-        dialog = FALSE;
     } else if( ScanCmd( "DIalog\0" ) ) {
         dlg_attr = ScanAttr( DlgAttrMap, ArraySize( DlgAttrMap ) );
         dialog = TRUE;
@@ -448,7 +450,7 @@ static void GetAttrName( attr_map *map, int i, char *buff )
 
 static void GetColourName( gui_colour colour, char *buff )
 {
-    colour_bits bits;
+    colour_bits bits = 0;
     int         i;
     char        *p;
 

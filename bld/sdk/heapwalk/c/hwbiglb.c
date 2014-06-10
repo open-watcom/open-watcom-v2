@@ -212,7 +212,7 @@ BOOL RegTextBox( HANDLE instance ) {
     WNDCLASS    wc;
 
     wc.style = 0L;
-    wc.lpfnWndProc = (LPVOID) TextBoxProc;
+    wc.lpfnWndProc = (WNDPROC)TextBoxProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
     wc.hInstance = instance;

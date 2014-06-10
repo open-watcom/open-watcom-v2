@@ -61,7 +61,7 @@ WEXPORT MToolItem::MToolItem( WTokenFile& fil, WString& tok )
 #ifndef NOPERSIST
 MToolItem* WEXPORT MToolItem::createSelf( WObjectFile& )
 {
-    return new MToolItem();
+    return( new MToolItem() );
 }
 
 void WEXPORT MToolItem::readSelf( WObjectFile& p )

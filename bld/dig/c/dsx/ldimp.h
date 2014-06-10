@@ -37,7 +37,9 @@
 #endif    
 
 typedef struct {
+#ifdef __WATCOMC__
     unsigned long       sig;
+#endif
     unsigned_8          init_rtn[1];    /* offset is start of routine */
 } imp_header;
 

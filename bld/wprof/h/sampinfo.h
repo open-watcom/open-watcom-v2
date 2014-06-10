@@ -117,7 +117,7 @@ typedef struct rtn_info {
 } rtn_info;
 
 typedef struct file_info {
-    cue_file_id                 fid;
+    cue_fileid                  fid;
     clicks_t                    agg_count;
     clicks_t                    max_time;
     rtn_info * *                routine;

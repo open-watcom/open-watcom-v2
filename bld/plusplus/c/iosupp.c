@@ -193,7 +193,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     char *ext;
     char *extsrc;
     char *path;
-    int use_defaults;
+    bool use_defaults;
     unsigned mask;
     FILE *try_create;
     auto char buff[ _MAX_PATH2 ];
@@ -455,9 +455,9 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     char *ext;                  // - current extension
 
     if( nd->ext[0] == '\0' ) {
-        int doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
-        int doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
-        int doExt = (doSrc || doInc);
+        bool doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
+        bool doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
+        bool doExt = (doSrc || doInc);
 
         ext = openExt( NULL, nd, typ );
 

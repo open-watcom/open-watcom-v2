@@ -17,26 +17,6 @@ typedef LONG_PTR    OAEVENT;
 typedef LONG_PTR    OAHWND;
 typedef long        OAFilterState;
 
-/* GUIDs */
-EXTERN_C const IID      LIBID_QuartzTypeLib;
-EXTERN_C const IID      IID_IAMCollection;
-EXTERN_C const IID      IID_IMediaControl;
-EXTERN_C const IID      IID_IMediaEvent;
-EXTERN_C const IID      IID_IMediaEventEx;
-EXTERN_C const IID      IID_IMediaPosition;
-EXTERN_C const IID      IID_IBasicAudio;
-EXTERN_C const IID      IID_IVideoWindow;
-EXTERN_C const IID      IID_IBasicVideo;
-EXTERN_C const IID      IID_IBasicVideo2;
-EXTERN_C const IID      IID_IDeferredCommand;
-EXTERN_C const IID      IID_IQueueCommand;
-EXTERN_C const CLSID    CLSID_FilgraphManager;
-EXTERN_C const IID      IID_IFilterInfo;
-EXTERN_C const IID      IID_IRegFilterInfo;
-EXTERN_C const IID      IID_IMediaTypeInfo;
-EXTERN_C const IID      IID_IPinInfo;
-EXTERN_C const IID      IID_IAMStats;
-
 /* IAMCollection interface */
 #undef INTERFACE
 #define INTERFACE   IAMCollection
@@ -1079,5 +1059,25 @@ DECLARE_INTERFACE_( IAMStats, IDispatch ) {
 #endif
 
 :include cplusepi.sp
+
+/* GUIDs */
+EXTERN_C const IID      __cdecl LIBID_QuartzTypeLib;
+EXTERN_C const IID      __cdecl IID_IAMCollection;
+EXTERN_C const IID      __cdecl IID_IMediaControl;
+EXTERN_C const IID      __cdecl IID_IMediaEvent;
+EXTERN_C const IID      __cdecl IID_IMediaEventEx;
+EXTERN_C const IID      __cdecl IID_IMediaPosition;
+EXTERN_C const IID      __cdecl IID_IBasicAudio;
+EXTERN_C const IID      __cdecl IID_IVideoWindow;
+EXTERN_C const IID      __cdecl IID_IBasicVideo;
+EXTERN_C const IID      __cdecl IID_IBasicVideo2;
+EXTERN_C const IID      __cdecl IID_IDeferredCommand;
+EXTERN_C const IID      __cdecl IID_IQueueCommand;
+EXTERN_C const CLSID    __cdecl CLSID_FilgraphManager;
+EXTERN_C const IID      __cdecl IID_IFilterInfo;
+EXTERN_C const IID      __cdecl IID_IRegFilterInfo;
+EXTERN_C const IID      __cdecl IID_IMediaTypeInfo;
+EXTERN_C const IID      __cdecl IID_IPinInfo;
+EXTERN_C const IID      __cdecl IID_IAMStats;
 
 #endif /* __control_h__ */

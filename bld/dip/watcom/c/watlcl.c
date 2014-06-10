@@ -116,7 +116,8 @@ static void LclCreate( imp_sym_handle *is, byte *ptr, char *name, lclinfo *local
 static dip_status LoadLocalSyms( imp_image_handle *ii, imp_mod_handle im,
                                         lclinfo *new )
 {
-    if( im == (imp_mod_handle)NO_MOD ) return( DS_FAIL );
+    if( im == IMH_NOMOD )
+        return( DS_FAIL );
     new->start = InfoLoad( ii, im, DMND_LOCALS, 0, NULL );
     if( new->start == NULL ) {
         return( DS_FAIL );
@@ -399,7 +400,7 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     char                *name;
     unsigned            len;
     search_result       sr;
-    lookup_item         li_type;
+    lookup_item         type_li;
     imp_type_handle     it;
     imp_sym_handle      *is;
 
@@ -411,12 +412,12 @@ static search_result DoLclScope( imp_image_handle *ii, imp_mod_handle im,
     name = li->name.start;
     len  = li->name.len;
     if( li->scope.start != NULL ) {
-        li_type.name = li->scope;
-        li_type.file_scope = li->file_scope;
-        li_type.case_sensitive = li->case_sensitive;
-        li_type.scope.start = NULL;
-        li_type.type = ST_TYPE;
-        sr = LookupTypeName( ii, im, &li_type, &it );
+        type_li.name = li->scope;
+        type_li.file_scope = li->file_scope;
+        type_li.case_sensitive = li->case_sensitive;
+        type_li.scope.start = NULL;
+        type_li.type = ST_TYPE;
+        sr = LookupTypeName( ii, im, &type_li, &it );
         if( sr == SR_NONE ) return( SR_NONE );
         return( SearchMbr( ii, &it, li, d ) );
     }
@@ -717,7 +718,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-dip_status DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     lcl_defn    defn;
@@ -762,7 +763,7 @@ dip_status DIPENTRY DIPImpSymObjType( imp_image_handle *ii,
     return( FindTypeHandle( ii, is->im, defn.i.type_index, it ) );
 }
 
-dip_status DIPENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
         imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
@@ -925,7 +926,7 @@ dip_status WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
 }
 
 
-search_result DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
                         imp_mod_handle im, address addr, scope_block *scope )
 {
     lcl_defn            blk;
@@ -947,7 +948,7 @@ search_result DIPENTRY DIPImpAddrScope( imp_image_handle *ii,
 }
 
 
-search_result DIPENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
                         imp_mod_handle im, scope_block *in, scope_block *out )
 {
     lcl_defn            blk;
