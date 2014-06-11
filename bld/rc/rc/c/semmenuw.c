@@ -67,7 +67,6 @@ struct PopupMenuExItem {
 #include "global.h"
 #include "winytab.h"
 #include "semantic.h"
-#include "semmenu.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
 

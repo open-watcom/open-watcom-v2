@@ -56,7 +56,6 @@ struct MenuItem {
 #include "global.h"
 #include "os2ytab.h"
 #include "semantic.h"
-#include "semmenu.h"
 #include "layer0.h"
 #include "rcrtns.h"
 

@@ -35,6 +35,7 @@
 #include "winytab.h"
 #include "scan.h"
 
-extern int LookupKeywordWIN( ScanString newstring );
+extern int  LookupKeywordWIN( ScanString newstring );
+extern int  ScanWIN( ScanValue * value );
 
 #endif

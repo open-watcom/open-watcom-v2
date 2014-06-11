@@ -35,6 +35,7 @@
 #include "os2ytab.h"
 #include "scan.h"
 
-extern int LookupKeywordOS2( ScanString newstring );
+extern int  LookupKeywordOS2( ScanString newstring );
+extern int  ScanOS2( ScanValue * value );
 
 #endif

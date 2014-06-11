@@ -35,7 +35,6 @@
 #include "errors.h"
 #include "global.h"
 #include "semantic.h"
-#include "semstr.h"
 #include "rcrtns.h"
 
 
