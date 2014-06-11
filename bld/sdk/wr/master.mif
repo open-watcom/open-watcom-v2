@@ -44,7 +44,7 @@ object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
             wrstubs.obj &
             pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
             exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
-            global.obj semstr.obj semsingl.obj semantic.obj semraw.obj &
+            global.obj semstrw.obj semsnglw.obj semantcw.obj semraw.obj &
             errors.obj tmpctl.obj autodep.obj &
             dbtable.obj sharedio.obj rcspawn.obj
 
