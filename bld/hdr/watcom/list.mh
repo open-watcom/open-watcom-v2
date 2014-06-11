@@ -158,7 +158,7 @@ namespace std {
     
         size_type  size( )  const;
         size_type  max_size( )  const;
-        void       resize( size_type n, const value_type & c = value_type( ) );
+        void       resize( size_type n, const value_type &c );
         bool       empty( ) const;
         reference  front( );
         const_reference  front( ) const;
@@ -784,7 +784,7 @@ namespace std {
     // resize( size_type, Type )
     // *************************
     template< class Type, class Allocator >
-    void list< Type, Allocator >::resize( size_type n, const value_type & c )
+    void list< Type, Allocator >::resize( size_type n, const value_type &c )
     {
         if( n > item_count )
             insert( end( ), n - item_count, c );
