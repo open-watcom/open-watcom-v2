@@ -33,6 +33,7 @@
 #define SEMSTRUCT_INCLUDED
 
 #include "wresall.h"
+#include "scan.h"
 
 /**** Semantic structures ****/
 typedef struct FullMemFlags {

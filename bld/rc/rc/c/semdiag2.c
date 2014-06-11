@@ -70,7 +70,6 @@ struct DLGTITEM {
 #include "errors.h"
 #include "os2ytab.h"
 #include "semantic.h"
-#include "semdiag.h"
 #include "layer0.h"
 #include "rcrtns.h"
 

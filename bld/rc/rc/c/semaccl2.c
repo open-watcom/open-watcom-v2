@@ -33,7 +33,6 @@
 #include "errors.h"
 #include "os2ytab.h"
 #include "semantic.h"
-#include "semaccel.h"
 #include "reserr.h"
 #include "rcrtns.h"
 

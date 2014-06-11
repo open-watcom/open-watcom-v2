@@ -78,7 +78,6 @@ struct ControlData {
 #include "errors.h"
 #include "winytab.h"
 #include "semantic.h"
-#include "semdiag.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
 
