@@ -50,14 +50,16 @@ static char         MSFormatTmpFile[2 * _MAX_PATH] = "";
 #define MAKELANGID(p, s)       ((((uint_16)(s)) << 10) | (uint_16)(p))
 #endif
 
-void SetDefLang( void ) {
-/*************************/
+void SetDefLang( void )
+/*********************/
+{
     curLang.lang = DEF_LANG;
     curLang.sublang = DEF_SUBLANG;
 }
 
-void SemSetGlobalLanguage( WResLangType *newlang ) {
-/*******************************************************************/
+void SemSetGlobalLanguage( const WResLangType *newlang )
+/******************************************************/
+{
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         curLang = *newlang;
     } else {
@@ -65,34 +67,31 @@ void SemSetGlobalLanguage( WResLangType *newlang ) {
     }
 }
 
-void SemSetResourceLanguage( WResLangType *newlang, int from_parser ) {
-/**********************************************************************/
+void SemSetResourceLanguage( const WResLangType *newlang, int from_parser )
+/*************************************************************************/
+{
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-         resourceHasLang = TRUE;
-         resourceLang = *newlang;
+        resourceHasLang = TRUE;
+        resourceLang = *newlang;
     } else if( from_parser ) {
         RcWarning( ERR_NT_KEYWORD,  SemTokenToString( Y_LANGUAGE ) );
     }
 }
 
-WResLangType GetResourceLanguage( void ) {
-/******************************************/
-
+const WResLangType *SemGetResourceLanguage( void )
+/************************************************/
+{
     if( resourceHasLang ) {
-        return( resourceLang );
+        resourceHasLang = FALSE;
+        return( &resourceLang );
     } else {
-        return( curLang );
+        return( &curLang );
     }
 }
 
-void ClearResourceLanguage( void ) {
-/***********************************/
-    resourceHasLang = FALSE;
-}
-
-void SemUnsupported( uint_8 token ) {
-/***********************************/
-
+void SemUnsupported( uint_8 token )
+/*********************************/
+{
     RcWarning( ERR_UNSUPPORTED, SemTokenToString( token ) );
 }
 
@@ -156,7 +155,7 @@ void SemAddResourceFree( WResID * name, WResID * type, ResMemFlags flags,
 }
 
 static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
-                ResLocation loc, WResLangType *lang )
+                ResLocation loc, const WResLangType *lang )
 /***************************************************************************/
 {
     MResResourceHeader  ms_head;
@@ -247,7 +246,7 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
     int                 error;
     int                 duplicate;
     char *              namestr;
-    WResLangType        *lang;
+    const WResLangType  *lang;
 
     if( resourceHasLang ) {
         lang = &resourceLang;

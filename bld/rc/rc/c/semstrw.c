@@ -206,9 +206,9 @@ static void addTable( FullStringTable **tables, FullStringTable *newtable ) {
 }
 
 static FullStringTable *findTableFromLang( FullStringTable *tables,
-                                           WResLangType *lang ) {
+                                       const WResLangType *lang )
 /****************************************************************/
-
+{
     FullStringTable     *cur;
 
     cur = tables;
@@ -224,12 +224,11 @@ extern void SemMergeStrTable( FullStringTable * currtable, ResMemFlags flags )
 /****************************************************************************/
 {
     FullStringTable     *table;
-    WResLangType        lang;
+    const WResLangType  *lang;
 
-    lang = GetResourceLanguage();
-    ClearResourceLanguage();
-    currtable->lang = lang;
-    table = findTableFromLang( CurrResFile.StringTable, &lang );
+    lang = SemGetResourceLanguage();
+    currtable->lang = *lang;
+    table = findTableFromLang( CurrResFile.StringTable, lang );
     if( table == NULL ) {
         setStringTableMemFlags( currtable, flags );
         addTable( &CurrResFile.StringTable, currtable );
@@ -242,12 +241,11 @@ extern void SemMergeErrTable( FullStringTable * currtable, ResMemFlags flags )
 /****************************************************************************/
 {
     FullStringTable     *table;
-    WResLangType        lang;
+    const WResLangType  *lang;
 
-    lang = GetResourceLanguage();
-    ClearResourceLanguage();
-    currtable->lang = lang;
-    table = findTableFromLang( CurrResFile.ErrorTable, &lang );
+    lang = SemGetResourceLanguage();
+    currtable->lang = *lang;
+    table = findTableFromLang( CurrResFile.ErrorTable, lang );
 
     if( table == NULL ) {
         setStringTableMemFlags( currtable, flags );

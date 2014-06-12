@@ -93,10 +93,9 @@ extern char             *SemOS2TokenToString( uint_8 token );
 extern uint_32          SemOS2DefaultCodepage( void );
 extern void             SemOS2SetCodepage( uint_32 codepage );
 extern void             SetDefLang( void );
-extern void             SemSetGlobalLanguage( WResLangType *newlang );
-extern void             SemSetResourceLanguage( WResLangType *newlang, int from_parser );
-extern WResLangType     GetResourceLanguage( void );
-extern void             ClearResourceLanguage( void );
+extern void             SemSetGlobalLanguage( const WResLangType *newlang );
+extern void             SemSetResourceLanguage( const WResLangType *newlang, int from_parser );
+extern const WResLangType *SemGetResourceLanguage( void );
 extern void             SemUnsupported( uint_8 token );
 extern void             SemanticInitStatics( void );
 
