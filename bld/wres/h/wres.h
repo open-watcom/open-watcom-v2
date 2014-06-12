@@ -104,15 +104,15 @@ int             WResReadDir2( WResFileID handle, WResDir currdir,
                               int *dup_discarded, void *fileinfo );
 int             WResAddResource( const WResID * type, const WResID * name,
                         uint_16 memflags, long offset, uint_32 length,
-                        WResDir, WResLangType *lang, int * duplicate );
+                        WResDir, const WResLangType *lang, int * duplicate );
 int             WResAddResource2( const WResID *type, const WResID *name,
                         uint_16 memflags, long offset, uint_32 length,
-                        WResDir currdir, WResLangType *lang,
+                        WResDir currdir, const WResLangType *lang,
                         WResDirWindow *duplicate, void *fileinfo );
 WResDirWindow   WResFindResource( const WResID * type, const WResID * name,
-                        WResDir, WResLangType *lang );
+                        WResDir, const WResLangType *lang );
 void            WResRemoveResource( WResDir currdir, const WResID *type,
-                        const WResID *name, WResLangType *lang );
+                        const WResID *name, const WResLangType *lang );
 WResDirWindow   WResFirstResource( WResDir );
 void            WResSetEmptyWindow( WResDirWindow *wind );
 void            WResMakeWindow( WResDirWindow *wind, WResTypeNode *type,
@@ -134,6 +134,6 @@ WResResNode * __FindRes( const WResID * __name, WResTypeNode * __currtype );
 void __FreeTypeList( WResDirHead * __currdir );
 void __FreeResList( WResTypeNode *currtype );
 void __FreeLangList( WResResNode *curres );
-WResLangNode *__FindLang( WResLangType *lang, WResResNode *curres );
+WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres );
 
 #endif

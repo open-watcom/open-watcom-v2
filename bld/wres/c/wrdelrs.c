@@ -112,7 +112,7 @@ void WResDelResource( WResDir currdir, const WResID *type,
 /*
  * delALang - delete one language node and update pointers and counters
  */
-static void delALang( WResResNode *res, WResLangType *lang )
+static void delALang( WResResNode *res, const WResLangType *lang )
 {
     WResLangNode        *cur_lang;
 
@@ -133,7 +133,7 @@ static void delALang( WResResNode *res, WResLangType *lang )
 }
 
 void WResDelLang( WResDir currdir, const WResID *type,
-                        const WResID *name, WResLangType *lang ) {
+                        const WResID *name, const WResLangType *lang ) {
 
     WResTypeNode        *cur_type;
     WResResNode         *cur_res;

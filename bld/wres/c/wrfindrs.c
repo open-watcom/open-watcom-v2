@@ -61,16 +61,16 @@ WResResNode *__FindRes( const WResID *name, WResTypeNode *currtype )
     return( currres );
 }
 
-WResLangNode *__FindLang( WResLangType *lang, WResResNode *curres ) {
+WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres ) {
 /***********************************************************************/
 
     WResLangNode        *curlang;
     WResLangType        deflang;
 
     if( lang == NULL ) {
+        deflang.lang = DEF_LANG;
+        deflang.sublang = DEF_SUBLANG;
         lang = &deflang;
-        lang->lang = DEF_LANG;
-        lang->sublang = DEF_SUBLANG;
     }
     curlang = curres->Head;
     while( curlang != NULL ) {
@@ -87,7 +87,7 @@ WResLangNode *__FindLang( WResLangType *lang, WResResNode *curres ) {
  *                    type is returned
  */
 WResDirWindow WResFindResource( const WResID *type, const WResID *name,
-                        WResDir currdir, WResLangType *lang )
+                        WResDir currdir, const WResLangType *lang )
 {
     WResDirWindow   newwind;
 

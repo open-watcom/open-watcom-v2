@@ -57,7 +57,7 @@ static WResTypeNode *newTypeNode( const WResID *type )
 }
 
 static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
-                                  uint_32 length, WResLangType *type,
+                                  uint_32 length, const WResLangType *lang,
                                   void *fileinfo )
 {
     WResLangNode        *newnode;
@@ -73,11 +73,11 @@ static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
         newnode->Info.MemoryFlags = memflags;
         newnode->Info.Offset = offset;
         newnode->Info.Length = length;
-        if( type == NULL ) {
+        if( lang == NULL ) {
             newnode->Info.lang.lang = DEF_LANG;
             newnode->Info.lang.sublang = DEF_SUBLANG;
         } else {
-            newnode->Info.lang = *type;
+            newnode->Info.lang = *lang;
         }
     }
     return( newnode );
@@ -112,8 +112,9 @@ static WResResNode *newResNode( const WResID *name )
  *                   occured (including duplicate entry)
  */
 int WResAddResource( const WResID *type, const WResID *name,
-                        uint_16 memflags, long offset, uint_32 length,
-                        WResDir currdir, WResLangType *lang, int *duplicate )
+                    uint_16 memflags, long offset, uint_32 length,
+                    WResDir currdir, const WResLangType *lang,
+                    int *duplicate )
 /************************************************************/
 {
     int                 rc;
@@ -128,9 +129,9 @@ int WResAddResource( const WResID *type, const WResID *name,
 }
 
 int WResAddResource2( const WResID *type, const WResID *name,
-                        uint_16 memflags, long offset, uint_32 length,
-                        WResDir currdir, WResLangType *lang,
-                        WResDirWindow *duplicate, void *fileinfo )
+                    uint_16 memflags, long offset, uint_32 length,
+                    WResDir currdir, const WResLangType *lang,
+                    WResDirWindow *duplicate, void *fileinfo )
 /************************************************************/
 {
 
