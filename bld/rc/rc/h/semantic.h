@@ -108,7 +108,6 @@ extern void             SemanticInitStatics( void );
 #include "semdiag.h"
 #include "semraw.h"
 #include "semsingl.h"
-#include "semtbar.h"
 #include "semresfl.h"
 #include "semutil.h"
 

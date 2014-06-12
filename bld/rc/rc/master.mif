@@ -77,7 +77,7 @@ common_objs = &
     $(_subdir_)semdiagw.obj &
     $(_subdir_)semmenuw.obj &
     $(_subdir_)semverw.obj &
-    $(_subdir_)semtbar.obj &
+    $(_subdir_)semtbarw.obj &
     $(_subdir_)semantc2.obj &
     $(_subdir_)semdiag2.obj &
     $(_subdir_)semmenu2.obj &

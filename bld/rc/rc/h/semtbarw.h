@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#ifndef SEMTBAR_INCLUDED
-#define SEMTBAR_INCLUDED
+#ifndef SEMTBARW_H_INCLUDED
+#define SEMTBARW_H_INCLUDED
 
 #define TB_ITEM_CNT     30
 

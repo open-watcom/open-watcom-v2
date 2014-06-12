@@ -36,6 +36,7 @@
 #include "rctypes.h"
 #include "semantic.h"
 #include "semverw.h"
+#include "semtbarw.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"

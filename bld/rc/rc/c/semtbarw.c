@@ -33,7 +33,7 @@
 #include <string.h>
 #include "wresall.h"
 #include "semantic.h"
-#include "semtbar.h"
+#include "semtbarw.h"
 #include "global.h"
 #include "restbar.h"
 #include "wresdefn.h"
