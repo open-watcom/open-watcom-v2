@@ -35,6 +35,7 @@
 #include "yydrivrw.h"
 #include "rctypes.h"
 #include "semantic.h"
+#include "semverw.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"

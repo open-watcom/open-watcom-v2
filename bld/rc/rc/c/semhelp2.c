@@ -33,7 +33,7 @@
 #include "errors.h"
 #include "os2ytab.h"
 #include "semantic.h"
-#include "semhelp.h"
+#include "semhelp2.h"
 #include "rcrtns.h"
 
 #include "reserr.h"

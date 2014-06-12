@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#ifndef SEMHELP_INCLUDED
-#define SEMHELP_INCLUDED
+#ifndef SEMHELP2_H_INCLUDED
+#define SEMHELP2_H_INCLUDED
 
 #include "wresall.h"
 #include "os2res.h"
