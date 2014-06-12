@@ -101,16 +101,16 @@ typedef struct FullMenuItemOS2 {
 
 /**** Semantic routines ****/
 
-MenuFlags SemAddFirstMenuOption( uint_8 token );
-MenuFlags SemAddMenuOption( MenuFlags oldflags, uint_8 token );
-FullMenu * SemNewMenu( FullMenuItem firstitem );
-FullMenu * SemAddMenuItem( FullMenu * currmenu, FullMenuItem curritem );
-void SemWriteMenu( WResID * name, ResMemFlags flags, FullMenu * menu, uint_16 );
+extern MenuFlags    SemWINAddFirstMenuOption( uint_8 token );
+extern MenuFlags    SemWINAddMenuOption( MenuFlags oldflags, uint_8 token );
+extern FullMenu     *SemWINNewMenu( FullMenuItem firstitem );
+extern FullMenu     *SemWINAddMenuItem( FullMenu * currmenu, FullMenuItem curritem );
+extern void         SemWINWriteMenu( WResID * name, ResMemFlags flags, FullMenu * menu, uint_16 );
 
-MenuFlags SemOS2AddFirstMenuOption( uint_8 token );
-MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, uint_8 token );
-FullMenuOS2 * SemOS2NewMenu( FullMenuItemOS2 firstitem );
-FullMenuOS2 * SemOS2AddMenuItem( FullMenuOS2 * currmenu, FullMenuItemOS2 curritem );
-void SemOS2WriteMenu( WResID * name, ResMemFlags flags, FullMenuOS2 * menu, uint_16, uint_32 codepage );
+extern MenuFlags    SemOS2AddFirstMenuOption( uint_8 token );
+extern MenuFlags    SemOS2AddMenuOption( MenuFlags oldflags, uint_8 token );
+extern FullMenuOS2  *SemOS2NewMenu( FullMenuItemOS2 firstitem );
+extern FullMenuOS2  *SemOS2AddMenuItem( FullMenuOS2 * currmenu, FullMenuItemOS2 curritem );
+extern void         SemOS2WriteMenu( WResID * name, ResMemFlags flags, FullMenuOS2 * menu, uint_16, uint_32 codepage );
 
 #endif

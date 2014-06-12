@@ -72,14 +72,14 @@ struct PopupMenuExItem {
 
 static void SemFreeSubMenu( FullMenu *submenu );
 
-MenuFlags SemAddFirstMenuOption( uint_8 token )
-/*********************************************/
+MenuFlags SemWINAddFirstMenuOption( uint_8 token )
+/************************************************/
 {
-    return( SemAddMenuOption( 0, token ) );
+    return( SemWINAddMenuOption( 0, token ) );
 }
 
-MenuFlags SemAddMenuOption( MenuFlags oldflags, uint_8 token )
-/************************************************************/
+MenuFlags SemWINAddMenuOption( MenuFlags oldflags, uint_8 token )
+/***************************************************************/
 {
     switch (token) {
     case Y_GRAYED:
@@ -114,8 +114,8 @@ MenuFlags SemAddMenuOption( MenuFlags oldflags, uint_8 token )
     return( oldflags );
 }
 
-FullMenu *SemNewMenu( FullMenuItem firstitem )
-/*********************************************/
+FullMenu *SemWINNewMenu( FullMenuItem firstitem )
+/***********************************************/
 {
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
@@ -138,8 +138,8 @@ FullMenu *SemNewMenu( FullMenuItem firstitem )
     return( newmenu );
 }
 
-FullMenu *SemAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
-/********************************************************************/
+FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
+/**********************************************************************/
 {
     FullMenuItem     *newitem;
 
@@ -289,7 +289,7 @@ static void SemFreeSubMenu( FullMenu *submenu )
     RCFREE( submenu );
 }
 
-void SemWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
+void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
                    uint_16 tokentype )
 /********************************************************************/
 {
@@ -343,4 +343,3 @@ OutputWriteError:
     SemFreeSubMenu( menu );
     return;
 }
-

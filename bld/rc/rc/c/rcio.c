@@ -307,19 +307,19 @@ static int RemoveCurrResFile( void )
     }
 }
 
-static void WriteTables( void )
-/*****************************/
+static void WriteWINTables( void )
+/********************************/
 {
     if( CurrResFile.StringTable != NULL ) {
-        SemWriteStringTable( CurrResFile.StringTable,
+        SemWINWriteStringTable( CurrResFile.StringTable,
                     WResIDFromNum( (long)RT_STRING ) );
     }
     if( CurrResFile.ErrorTable != NULL ) {
-        SemWriteStringTable( CurrResFile.ErrorTable,
+        SemWINWriteStringTable( CurrResFile.ErrorTable,
                     WResIDFromNum( (long)RT_ERRTABLE ) );
     }
     if( CurrResFile.FontDir != NULL ) {
-        SemWriteFontDir();
+        SemWINWriteFontDir();
     }
 }
 
@@ -349,7 +349,7 @@ static void Pass1ResFileShutdown( void )
         if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 )
             WriteOS2Tables();
         else
-            WriteTables();
+            WriteWINTables();
         if( ErrorHasOccured ) {
             ResCloseFile( CurrResFile.handle );
             CurrResFile.IsOpen = false;

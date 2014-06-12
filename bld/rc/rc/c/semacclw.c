@@ -39,8 +39,8 @@
 
 const FullAccelFlags DefaultAccelFlags = { 0, FALSE };
 
-int SemStrToAccelEvent( char * string )
-/*************************************/
+int SemWINStrToAccelEvent( char * string )
+/****************************************/
 {
     if (*string == '^') {
         /* control character requested */
@@ -75,7 +75,7 @@ static void CheckAccelFlags( AccelFlags * flags, unsigned long idval )
     }
 }
 
-FullAccelEntry SemMakeAccItem( AccelEvent event, unsigned long idval,
+FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
                     FullAccelFlags flags )
 /***********************************************************************/
 {
@@ -107,8 +107,8 @@ FullAccelEntry SemMakeAccItem( AccelEvent event, unsigned long idval,
     return( entry );
 }
 
-void SemWriteAccelEntry( FullAccelEntry entry )
-/**************************************************/
+void SemWINWriteAccelEntry( FullAccelEntry entry )
+/************************************************/
 {
     int     error;
 
@@ -126,13 +126,13 @@ void SemWriteAccelEntry( FullAccelEntry entry )
     }
 }
 
-void SemWriteLastAccelEntry( FullAccelEntry entry )
-/******************************************************/
+void SemWINWriteLastAccelEntry( FullAccelEntry entry )
+/****************************************************/
 {
     if( entry.Win32 ) {
         entry.u.entry32.Flags |= ACCEL_LAST;
     } else {
         entry.u.entry.Flags |= ACCEL_LAST;
     }
-    SemWriteAccelEntry( entry );
+    SemWINWriteAccelEntry( entry );
 }

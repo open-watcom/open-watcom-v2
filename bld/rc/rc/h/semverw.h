@@ -69,17 +69,17 @@ typedef struct FullVerBlock {
     FullVerBlockNest *      Nest;
 } FullVerBlock;
 
-extern FullVerValueList * SemNewVerValueList( VerValueItem item );
-extern FullVerValueList * SemAddVerValueList( FullVerValueList *, VerValueItem);
-extern FullVerBlock * SemNewBlockVal( char * name, FullVerValueList * list );
-extern FullVerBlock * SemNameVerBlock( char * name, FullVerBlockNest * nest );
-extern FullVerBlockNest * SemNewBlockNest( FullVerBlock * child );
-extern FullVerBlockNest * SemAddBlockNest( FullVerBlockNest *, FullVerBlock * );
-extern FullVerBlockNest * SemMergeBlockNest( FullVerBlockNest * nest1,
+extern FullVerValueList *SemWINNewVerValueList( VerValueItem item );
+extern FullVerValueList *SemWINAddVerValueList( FullVerValueList *, VerValueItem);
+extern FullVerBlock     *SemWINNewBlockVal( char * name, FullVerValueList * list );
+extern FullVerBlock     *SemWINNameVerBlock( char * name, FullVerBlockNest * nest );
+extern FullVerBlockNest *SemWINNewBlockNest( FullVerBlock * child );
+extern FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *, FullVerBlock * );
+extern FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest * nest1,
                             FullVerBlockNest * nest2 );
-extern VerFixedInfo * SemNewVerFixedInfo( VerFixedOption option );
-extern VerFixedInfo * SemAddVerFixedInfo( VerFixedInfo * info, VerFixedOption );
-extern void SemWriteVerInfo( WResID * name, ResMemFlags flags,
-                        VerFixedInfo * info, FullVerBlockNest * nest );
+extern VerFixedInfo     *SemWINNewVerFixedInfo( VerFixedOption option );
+extern VerFixedInfo     *SemWINAddVerFixedInfo( VerFixedInfo * info, VerFixedOption );
+extern void             SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
+                            VerFixedInfo * info, FullVerBlockNest * nest );
 
 #endif

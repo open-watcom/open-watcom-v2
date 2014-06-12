@@ -57,15 +57,15 @@ typedef struct StringItem {
     char            *String;
 } StringItem;
 
-extern void SemWriteStringTable( FullStringTable *, WResID *type );
-extern void SemMergeErrTable( FullStringTable *, ResMemFlags newflags );
-extern void SemMergeStrTable( FullStringTable *, ResMemFlags newflags );
-extern void SemMergeStringTables( FullStringTable * currtable,
+extern void SemWINWriteStringTable( FullStringTable *, WResID *type );
+extern void SemWINMergeErrTable( FullStringTable *, ResMemFlags newflags );
+extern void SemWINMergeStrTable( FullStringTable *, ResMemFlags newflags );
+extern void SemWINMergeStringTables( FullStringTable * currtable,
             FullStringTable *oldtable, ResMemFlags newblockflags );
-extern void SemAddStrToStringTable( FullStringTable *currtable,
+extern void SemWINAddStrToStringTable( FullStringTable *currtable,
                             uint_16 stringid, char *string );
-extern void SemFreeStringTable( FullStringTable * oldtable );
-extern FullStringTable *SemNewStringTable( void );
+extern void SemWINFreeStringTable( FullStringTable * oldtable );
+extern FullStringTable *SemWINNewStringTable( void );
 
 extern void SemOS2WriteStringTable( FullStringTable *, WResID *type );
 extern void SemOS2AddStrToStringTable( FullStringTable *currtable,

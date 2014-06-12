@@ -47,9 +47,9 @@ typedef struct ToolBar {
     ToolBarItems        first;
 } ToolBar;
 
-ToolBar *SemCreateToolBar( void );
-void SemAddToolBarItem( ToolBar *toolbar, uint_16 item );
-void SemWriteToolBar( WResID *name, ToolBar *toolbar,
+extern ToolBar  *SemWINCreateToolBar( void );
+extern void     SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item );
+extern void     SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
                       ResMemFlags flags );
 #endif

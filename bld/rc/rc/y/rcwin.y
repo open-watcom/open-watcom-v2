@@ -348,7 +348,7 @@ name-id
             }
         }
     | keyword-name
-        { $$ = WResIDFromStr( SemTokenToString( $1 ) ); }
+        { $$ = WResIDFromStr( SemWINTokenToString( $1 ) ); }
     ;
 
 type-id
@@ -370,7 +370,7 @@ type-id
 includeres-statement
     : Y_INCLUDERES file-name
         {
-            SemAddResFile( $2.string );
+            SemWINAddResFile( $2.string );
         }
     ;
 
@@ -543,16 +543,16 @@ comma-opt
 
 single-line-resource
     : name-id resource-type file-name
-        { SemAddSingleLineResource( $1, $2, NULL, $3.string ); }
+        { SemWINAddSingleLineResource( $1, $2, NULL, $3.string ); }
     | name-id resource-type resource-options file-name
-        { SemAddSingleLineResource( $1, $2, &($3), $4.string ); }
+        { SemWINAddSingleLineResource( $1, $2, &($3), $4.string ); }
     ;
 
 resource-options
     : resource-option
-        { $$ = SemAddFirstMemOption( $1 ); }
+        { $$ = SemWINAddFirstMemOption( $1 ); }
     | resource-options resource-option
-        { $$ = SemAddMemOption( $1, $2 ); }
+        { $$ = SemWINAddMemOption( $1, $2 ); }
     ;
 
 resource-option
@@ -597,7 +597,7 @@ user-defined-resource
         }
     | name-id comma-opt user-defined-type-id resource-options user-defined-data
         {
-            SemCheckMemFlags( &($4), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
+            SemWINCheckMemFlags( &($4), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
             SemAddResourceFree( $1, $3, $4.flags, $5 );
         }
@@ -654,7 +654,7 @@ rcdata-resource
         }
     | name-id Y_RCDATA resource-options opt-resource-info-stmts user-defined-data
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
             SemAddResourceFree( $1, WResIDFromNum( (long)RT_RCDATA ), $3.flags, $5 );
         }
@@ -663,14 +663,14 @@ rcdata-resource
 string-table-resource
     : Y_STRINGTABLE opt-resource-info-stmts string-section
         {
-            SemMergeStrTable( $3,
+            SemWINMergeStrTable( $3,
                 MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE );
         }
     | Y_STRINGTABLE resource-options opt-resource-info-stmts string-section
         {
-            SemCheckMemFlags( &($2), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($2), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemMergeStrTable( $4, $2.flags );
+            SemWINMergeStrTable( $4, $2.flags );
         }
     ;
 
@@ -678,13 +678,13 @@ toolbar-resource
     : name-id Y_TOOLBAR resource-options constant-expression comma-opt
       constant-expression toolbar-block
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
-            SemWriteToolBar( $1, $7, $4.Value, $6.Value, $3.flags );
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3.flags );
         }
     | name-id Y_TOOLBAR constant-expression comma-opt
       constant-expression toolbar-block
         {
-            SemWriteToolBar( $1, $6, $3.Value, $5.Value,
+            SemWINWriteToolBar( $1, $6, $3.Value, $5.Value,
                                 MEMFLAG_PURE | MEMFLAG_MOVEABLE );
         }
     ;
@@ -703,13 +703,13 @@ toolbar-block
 toolbar-items
     : toolbar-item
         {
-            $$ = SemCreateToolBar();
-            SemAddToolBarItem( $$, $1 );
+            $$ = SemWINCreateToolBar();
+            SemWINAddToolBarItem( $$, $1 );
         }
     | toolbar-items toolbar-item
         {
             $$ = $1;
-            SemAddToolBarItem( $$, $2 );
+            SemWINAddToolBarItem( $$, $2 );
         }
     ;
 
@@ -727,7 +727,7 @@ toolbar-item
 message-table-resource
     : name-id Y_MESSAGETABLE file-name
         {
-            SemAddMessageTable( $1, &$3 );
+            SemWINAddMessageTable( $1, &$3 );
         }
     ;
 
@@ -735,14 +735,14 @@ message-table-resource
 error-table-resource
     : Y_ERRTABLE opt-resource-info-stmts string-section
         {
-            SemMergeErrTable( $3,
+            SemWINMergeErrTable( $3,
                 MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE );
         }
     | Y_ERRTABLE resource-options opt-resource-info-stmts string-section
         {
-            SemCheckMemFlags( &($2), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($2), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemMergeErrTable( $4, $2.flags );
+            SemWINMergeErrTable( $4, $2.flags );
         }
     ;
 
@@ -756,13 +756,13 @@ string-section
 string-items
     : string-item
         {
-            $$ = SemNewStringTable();
-            SemAddStrToStringTable( $$, $1.ItemID, $1.String );
+            $$ = SemWINNewStringTable();
+            SemWINAddStrToStringTable( $$, $1.ItemID, $1.String );
             RcMemFree( $1.String );
         }
     | string-items string-item
         {
-            SemAddStrToStringTable( $1, $2.ItemID, $2.String );
+            SemWINAddStrToStringTable( $1, $2.ItemID, $2.String );
             $$ = $1;
             RcMemFree( $2.String );
         }
@@ -786,7 +786,7 @@ accelerators-resource
         }
     | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             SemAddResourceFree( $1, WResIDFromNum( (long)RT_ACCELERATOR ),
                     $3.flags, $5 );
         }
@@ -795,13 +795,13 @@ accelerators-resource
 acc-section
     : Y_BEGIN acc-items Y_END
         {
-            SemWriteLastAccelEntry( $2 );
+            SemWINWriteLastAccelEntry( $2 );
             $$.start = $2.startoftable;
             $$.len = SemEndResource( $2.startoftable );
         }
     | Y_LBRACE acc-items Y_RBRACE
         {
-            SemWriteLastAccelEntry( $2 );
+            SemWINWriteLastAccelEntry( $2 );
             $$.start = $2.startoftable;
             $$.len = SemEndResource( $2.startoftable );
         }
@@ -812,7 +812,7 @@ acc-items
         { $$ = $1; $$.startoftable = SemStartResource(); }
     | acc-items acc-item
         {
-            SemWriteAccelEntry( $1 );
+            SemWINWriteAccelEntry( $1 );
             $$ = $2;
             $$.startoftable = $1.startoftable;
         }
@@ -820,15 +820,15 @@ acc-items
 
 acc-item
     : event comma-opt id-value comma-opt acc-item-options
-        { $$ = SemMakeAccItem( $1, $3, $5 ); }
+        { $$ = SemWINMakeAccItem( $1, $3, $5 ); }
     | event comma-opt id-value
-        { $$ = SemMakeAccItem( $1, $3, DefaultAccelFlags ); }
+        { $$ = SemWINMakeAccItem( $1, $3, DefaultAccelFlags ); }
     ;
 
 event
     : string-constant
         {
-            $$.event = SemStrToAccelEvent( $1.string );
+            $$.event = SemWINStrToAccelEvent( $1.string );
             $$.strevent = TRUE;
             RcMemFree( $1.string );
         }
@@ -874,25 +874,25 @@ acc-item-option
 
 menuex-resource
     : name-id Y_MENU_EX menu-section
-        { SemWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+        { SemWINWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                     $3, Y_MENU_EX ); }
     | name-id Y_MENU_EX resource-options menu-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteMenu( $1, $3.flags, $4, Y_MENU_EX );
+            SemWINWriteMenu( $1, $3.flags, $4, Y_MENU_EX );
         }
     ;
 
 menu-resource
     : name-id Y_MENU opt-resource-info-stmts menu-section
-        { SemWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
+        { SemWINWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                     $4, Y_MENU ); }
     | name-id Y_MENU resource-options opt-resource-info-stmts menu-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteMenu( $1, $3.flags, $5, Y_MENU );
+            SemWINWriteMenu( $1, $3.flags, $5, Y_MENU );
         }
     ;
 
@@ -905,9 +905,9 @@ menu-section
 
 menu-items
     : menu-item
-        { $$ = SemNewMenu( $1 ); }
+        { $$ = SemWINNewMenu( $1 ); }
     | menu-items menu-item
-        { $$ = SemAddMenuItem( $1, $2 ); }
+        { $$ = SemWINAddMenuItem( $1, $2 ); }
     ;
 
 menuId
@@ -1105,9 +1105,9 @@ menu-result
 
 menu-item-options
     : menu-item-option
-        { $$ = SemAddFirstMenuOption( $1 ); }
+        { $$ = SemWINAddFirstMenuOption( $1 ); }
     | menu-item-options comma-opt menu-item-option
-        { $$ = SemAddMenuOption( $1, $3 ); }
+        { $$ = SemWINAddMenuOption( $1, $3 ); }
     ;
 
 menu-item-option
@@ -1132,7 +1132,7 @@ menu-item-option
 language-resource
     : language-stmt
         {
-            SemSetGlobalLanguage( &$1 );
+            SemWINSetGlobalLanguage( &$1 );
         }
     ;
 
@@ -1149,7 +1149,7 @@ resource-info-stmts
 resource-info-stmt
     : language-stmt
         {
-            SemSetResourceLanguage( &$1, TRUE );
+            SemWINSetResourceLanguage( &$1, TRUE );
         }
     | characteristics-stmt
     | version-stmt
@@ -1162,12 +1162,12 @@ language-stmt
 
 characteristics-stmt
     : Y_CHARACTERISTICS constant-expression
-        { SemUnsupported( Y_CHARACTERISTICS ); }
+        { SemWINUnsupported( Y_CHARACTERISTICS ); }
     ;
 
 version-stmt
     : Y_VERSION constant-expression
-        { SemUnsupported( Y_VERSION ); }
+        { SemWINUnsupported( Y_VERSION ); }
     ;
 
 dialog-or-dialogEx
@@ -1188,59 +1188,59 @@ dlg-resource
     : name-id dialog-or-dialogEx size-info helpId-opt diag-options-section
               diag-control-section
         {
-            SemWriteDialogBox( $1,
+            SemWINWriteDialogBox( $1,
                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                $3, $5, $6, $4, $2 );
         }
     | name-id dialog-or-dialogEx size-info helpId-opt diag-control-section
         {
-            SemWriteDialogBox( $1,
+            SemWINWriteDialogBox( $1,
                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                $3, NULL, $5, $4, $2 );
         }
     | name-id dialog-or-dialogEx exstyle-equal-stmt size-info helpId-opt
               diag-options-section diag-control-section
         {
-            SemWriteDialogBox( $1,
+            SemWINWriteDialogBox( $1,
                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-               $4, SemDiagOptions( $6, &($3) ), $7, $5, $2 );
+               $4, SemWINDiagOptions( $6, &($3) ), $7, $5, $2 );
         }
     | name-id dialog-or-dialogEx exstyle-equal-stmt size-info helpId-opt
               diag-control-section
         {
-            SemWriteDialogBox( $1,
+            SemWINWriteDialogBox( $1,
                 MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                $4, SemNewDiagOptions( &($3 ) ), $6, $5, $2 );
+                $4, SemWINNewDiagOptions( &($3 ) ), $6, $5, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                diag-options-section diag-control-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteDialogBox( $1, $3.flags, $5, $7, $8, $6, $2 );
+            SemWINWriteDialogBox( $1, $3.flags, $5, $7, $8, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                 diag-control-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteDialogBox( $1, $3.flags, $5, NULL, $7, $6, $2 );
+            SemWINWriteDialogBox( $1, $3.flags, $5, NULL, $7, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
                 size-info helpId-opt diag-options-section diag-control-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteDialogBox( $1, $3.flags, $6,
-                                SemDiagOptions( $8, &($5) ) , $9, $7, $2 );
+            SemWINWriteDialogBox( $1, $3.flags, $6,
+                                SemWINDiagOptions( $8, &($5) ) , $9, $7, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
               size-info helpId-opt diag-control-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
                             MEMFLAG_PURE );
-            SemWriteDialogBox( $1, $3.flags, $6,
-                               SemNewDiagOptions( &($5 ) ), $8, $7, $2 );
+            SemWINWriteDialogBox( $1, $3.flags, $6,
+                               SemWINNewDiagOptions( &($5 ) ), $8, $7, $2 );
         }
     ;
 
@@ -1271,9 +1271,9 @@ size-h
 
 diag-options-section
     : diag-options-stmt
-        { $$ = SemNewDiagOptions( &($1) ); }
+        { $$ = SemWINNewDiagOptions( &($1) ); }
     | diag-options-section diag-options-stmt
-        { $$ = SemDiagOptions( $1, &($2) ); }
+        { $$ = SemWINDiagOptions( $1, &($2) ); }
     ;
 
 diag-options-stmt
@@ -1458,9 +1458,9 @@ diag-control-section
     | Y_LBRACE diag-control-stmts Y_RBRACE
         { $$ = $2; }
     | Y_BEGIN Y_END
-        { $$ = SemEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDiagCtrlList(); }
     | Y_LBRACE Y_RBRACE
-        { $$ = SemEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDiagCtrlList(); }
     ;
 
 diag-data-elements
@@ -1471,9 +1471,9 @@ diag-data-elements
 
 diag-control-stmts
     : diag-control-stmt diag-data-elements
-        { $$ = SemNewDiagCtrlList( $1, $2 ); }
+        { $$ = SemWINNewDiagCtrlList( $1, $2 ); }
     | diag-control-stmts diag-control-stmt diag-data-elements
-        { $$ = SemAddDiagCtrlList( $1, $2, $3 ); }
+        { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
     ;
 
 diag-control-stmt
@@ -1557,82 +1557,82 @@ cntl-id
 
 ltext-stmt
     : Y_LTEXT cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_LTEXT, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_LTEXT, $2 ); }
     ;
 
 rtext-stmt
     : Y_RTEXT cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_RTEXT, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_RTEXT, $2 ); }
     ;
 
 ctext-stmt
     : Y_CTEXT cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_CTEXT, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_CTEXT, $2 ); }
     ;
 
 autocheckbox-stmt
     : Y_AUTOCHECKBOX cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
     ;
 
 autoradiobutton-stmt
     : Y_AUTORADIOBUTTON cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
     ;
 
 auto3state-stmt
     : Y_AUTO3STATE cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_AUTO3STATE, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_AUTO3STATE, $2 ); }
     ;
 
 checkbox-stmt
     : Y_CHECKBOX cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_CHECKBOX, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_CHECKBOX, $2 ); }
     ;
 
 pushbutton-stmt
     : Y_PUSHBUTTON cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
     ;
 
 listbox-stmt
     : Y_LISTBOX cntl-options
-        { $$ = SemNewDiagCtrl( Y_LISTBOX, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_LISTBOX, $2 ); }
     ;
 
 groupbox-stmt
     : Y_GROUPBOX cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_GROUPBOX, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_GROUPBOX, $2 ); }
     ;
 
 defpushbutton-stmt
     : Y_DEFPUSHBUTTON cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
     ;
 
 radiobutton-stmt
     : Y_RADIOBUTTON cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
     ;
 
 edittext-stmt
     : Y_EDITTEXT cntl-options
-        { $$ = SemNewDiagCtrl( Y_EDITTEXT, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_EDITTEXT, $2 ); }
     ;
 
 combobox-stmt
     : Y_COMBOBOX cntl-options
-        { $$ = SemNewDiagCtrl( Y_COMBOBOX, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_COMBOBOX, $2 ); }
     ;
 
 icon-stmt
     : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms
-        { $6.Text = $2; $6.ID = $4; $$ = SemNewDiagCtrl( Y_ICON, $6 ); }
+        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDiagCtrl( Y_ICON, $6 ); }
     ;
 
 state3-stmt
     : Y_STATE3 cntl-text-options
-        { $$ = SemNewDiagCtrl( Y_STATE3, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_STATE3, $2 ); }
     ;
 
 icon-name
@@ -1691,20 +1691,20 @@ icon-parms
 
 scrollbar-stmt
     : Y_SCROLLBAR cntl-options
-        { $$ = SemNewDiagCtrl( Y_SCROLLBAR, $2 ); }
+        { $$ = SemWINNewDiagCtrl( Y_SCROLLBAR, $2 ); }
     ;
 
 control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
         {
-            $$ = SemSetControlData( $8, $4, $10, $2, $6, 0L, NULL );
+            $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL );
         }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info comma-opt exstyle helpId-opt
         {
-            $$ = SemSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) );
+            $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) );
         }
     ;
 
@@ -1715,21 +1715,21 @@ cntl-text
 version-info-resource
     : name-id Y_VERSIONINFO fixed-ver-section variable-ver-section
         {
-            SemWriteVerInfo( $1, MEMFLAG_MOVEABLE | MEMFLAG_PURE, $3, $4 );
+            SemWINWriteVerInfo( $1, MEMFLAG_MOVEABLE | MEMFLAG_PURE, $3, $4 );
         }
     | name-id Y_VERSIONINFO resource-options fixed-ver-section
                                 variable-ver-section
         {
-            SemCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
-            SemWriteVerInfo( $1, $3.flags, $4, $5 );
+            SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINWriteVerInfo( $1, $3.flags, $4, $5 );
         }
     ;
 
 fixed-ver-section
     : fixed-ver-stmt
-        { $$ = SemNewVerFixedInfo( $1 ); }
+        { $$ = SemWINNewVerFixedInfo( $1 ); }
     | fixed-ver-section fixed-ver-stmt
-        { $$ = SemAddVerFixedInfo( $1, $2 ); }
+        { $$ = SemWINAddVerFixedInfo( $1, $2 ); }
     ;
 
 fixed-ver-stmt
@@ -1808,14 +1808,14 @@ variable-ver-section
 
 block-stmts
     : block-stmt
-        { $$ = SemNewBlockNest( $1 ); }
+        { $$ = SemWINNewBlockNest( $1 ); }
     | block-stmts block-stmt
-        { $$ = SemAddBlockNest( $1, $2 ); }
+        { $$ = SemWINAddBlockNest( $1, $2 ); }
     ;
 
 block-stmt
     : Y_BLOCK block-name block-body
-        { $$ = SemNameVerBlock( $2.string, $3 ); }
+        { $$ = SemWINNameVerBlock( $2.string, $3 ); }
     ;
 
 block-name
@@ -1826,27 +1826,27 @@ block-body
     : Y_BEGIN value-stmts Y_END
         { $$ = $2; }
     | Y_BEGIN value-stmts block-stmts Y_END
-        { $$ = SemMergeBlockNest( $2, $3 ); }
+        { $$ = SemWINMergeBlockNest( $2, $3 ); }
     | Y_BEGIN block-stmts Y_END
         { $$ = $2; }
     | Y_LBRACE value-stmts Y_RBRACE
         { $$ = $2; }
     | Y_LBRACE value-stmts block-stmts Y_RBRACE
-        { $$ = SemMergeBlockNest( $2, $3 ); }
+        { $$ = SemWINMergeBlockNest( $2, $3 ); }
     | Y_LBRACE block-stmts Y_RBRACE
         { $$ = $2; }
     ;
 
 value-stmts
     : value-stmt
-        { $$ = SemNewBlockNest( $1 ); }
+        { $$ = SemWINNewBlockNest( $1 ); }
     | value-stmts value-stmt
-        { $$ = SemAddBlockNest( $1, $2 ); }
+        { $$ = SemWINAddBlockNest( $1, $2 ); }
     ;
 
 value-stmt
     : Y_VALUE value-name comma-opt value-list
-        { $$ = SemNewBlockVal( $2.string, $4 ); }
+        { $$ = SemWINNewBlockVal( $2.string, $4 ); }
     ;
 
 value-name
@@ -1855,9 +1855,9 @@ value-name
 
 value-list
     : value-item
-        { $$ = SemNewVerValueList( $1 ); }
+        { $$ = SemWINNewVerValueList( $1 ); }
     | value-list comma-opt value-item
-        { $$ = SemAddVerValueList( $1, $3 ); }
+        { $$ = SemWINAddVerValueList( $1, $3 ); }
     ;
 
 value-item

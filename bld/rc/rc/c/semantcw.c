@@ -57,29 +57,29 @@ void SetDefLang( void )
     curLang.sublang = DEF_SUBLANG;
 }
 
-void SemSetGlobalLanguage( const WResLangType *newlang )
-/******************************************************/
+void SemWINSetGlobalLanguage( const WResLangType *newlang )
+/*********************************************************/
 {
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         curLang = *newlang;
     } else {
-        RcWarning( ERR_NT_KEYWORD, SemTokenToString( Y_LANGUAGE ) );
+        RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( Y_LANGUAGE ) );
     }
 }
 
-void SemSetResourceLanguage( const WResLangType *newlang, int from_parser )
-/*************************************************************************/
+void SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser )
+/****************************************************************************/
 {
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         resourceHasLang = TRUE;
         resourceLang = *newlang;
     } else if( from_parser ) {
-        RcWarning( ERR_NT_KEYWORD,  SemTokenToString( Y_LANGUAGE ) );
+        RcWarning( ERR_NT_KEYWORD,  SemWINTokenToString( Y_LANGUAGE ) );
     }
 }
 
-const WResLangType *SemGetResourceLanguage( void )
-/************************************************/
+const WResLangType *SemWINGetResourceLanguage( void )
+/***************************************************/
 {
     if( resourceHasLang ) {
         resourceHasLang = FALSE;
@@ -89,10 +89,10 @@ const WResLangType *SemGetResourceLanguage( void )
     }
 }
 
-void SemUnsupported( uint_8 token )
+void SemWINUnsupported( uint_8 token )
 /*********************************/
 {
-    RcWarning( ERR_UNSUPPORTED, SemTokenToString( token ) );
+    RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
 SemOffset SemStartResource( void )
@@ -299,8 +299,8 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
     }
 }
 
-FullMemFlags SemAddFirstMemOption( uint_8 token )
-/***********************************************/
+FullMemFlags SemWINAddFirstMemOption( uint_8 token )
+/**************************************************/
 {
     FullMemFlags    newflags;
 
@@ -309,11 +309,11 @@ FullMemFlags SemAddFirstMemOption( uint_8 token )
     newflags.memOptGiven = FALSE;
     newflags.purityOptGiven = FALSE;
 
-    return( SemAddMemOption( newflags, token ) );
+    return( SemWINAddMemOption( newflags, token ) );
 }
 
-FullMemFlags SemAddMemOption( FullMemFlags currflags, uint_8 token )
-/******************************************************************/
+FullMemFlags SemWINAddMemOption( FullMemFlags currflags, uint_8 token )
+/*********************************************************************/
 {
     switch (token) {
     case Y_PRELOAD:
@@ -349,7 +349,7 @@ FullMemFlags SemAddMemOption( FullMemFlags currflags, uint_8 token )
     return( currflags );
 }
 
-void SemCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
+void SemWINCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
             ResMemFlags memopts, ResMemFlags pureopts )
 /********************************************************************/
 {
@@ -374,8 +374,8 @@ void SemCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
     }
 }
 
-extern char *SemTokenToString( uint_8 token )
-/********************************************/
+extern char *SemWINTokenToString( uint_8 token )
+/**********************************************/
 {
     switch (token) {
     case Y_LPAREN:

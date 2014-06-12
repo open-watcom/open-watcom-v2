@@ -54,7 +54,7 @@ static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 #define CUR_ICON_PURITY_30      MEMFLAG_PURE
 #define CUR_ICON_PURITY_31      0           /* impure */
 
-extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
+void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
 /********************************************************************/
 
     ResLocation         start;
@@ -66,7 +66,7 @@ extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
         SemAddResourceFree( name, WResIDFromNum( (long)RT_MESSAGETABLE ),
                             MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
     } else {
-        RcError( ERR_NT_KEYWORD, SemTokenToString( Y_MESSAGETABLE ) );
+        RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = TRUE;
         RCFREE( name );
         RCFREE( filename->string );
@@ -74,7 +74,7 @@ extern void SemAddMessageTable( WResID *name, ScanString *filename ) {
     }
 }
 
-extern void SemAddSingleLineResource( WResID * name, uint_8 type,
+extern void SemWINAddSingleLineResource( WResID * name, uint_8 type,
                       FullMemFlags * fullflags, char * filename )
 /***************************************************************/
 {
@@ -105,11 +105,11 @@ extern void SemAddSingleLineResource( WResID * name, uint_8 type,
     switch (type) {
     case Y_ICON:
         if (fullflags != NULL) {
-            SemCheckMemFlags( fullflags, 0,
+            SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
-            SemCheckMemFlags( fullflags, 0,
+            SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
@@ -121,11 +121,11 @@ extern void SemAddSingleLineResource( WResID * name, uint_8 type,
         break;
     case Y_CURSOR:
         if (fullflags != NULL) {
-            SemCheckMemFlags( fullflags, 0,
+            SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 purity_option );
             flags = fullflags->flags;
-            SemCheckMemFlags( fullflags, 0,
+            SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             group_flags = fullflags->flags;
@@ -137,7 +137,7 @@ extern void SemAddSingleLineResource( WResID * name, uint_8 type,
         break;
     case Y_BITMAP:
         if (fullflags != NULL) {
-            SemCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
             flags = MEMFLAG_MOVEABLE|MEMFLAG_PURE;
@@ -146,7 +146,7 @@ extern void SemAddSingleLineResource( WResID * name, uint_8 type,
         break;
     case Y_FONT:
         if (fullflags != NULL) {
-            SemCheckMemFlags( fullflags, 0,
+            SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
             flags = fullflags->flags;
@@ -168,7 +168,7 @@ HANDLE_ERROR:
     ErrorHasOccured = TRUE;
     RCFREE( name );
     RCFREE( filename );
-} /* SemAddSingleLineResource */
+} /* SemWINAddSingleLineResource */
 
 /*
  * ReadBitmapInfoHeader-
@@ -1044,8 +1044,8 @@ static void FreeFontDir( FullFontDir * olddir )
 #define FONT_DIR_NAME   "FONTDIR"
 #define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
 
-extern void SemWriteFontDir( void )
-/*********************************/
+void SemWINWriteFontDir( void )
+/*****************************/
 {
     FullFontDirEntry *  currentry;
     ResLocation         loc;

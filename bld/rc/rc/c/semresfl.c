@@ -40,7 +40,7 @@
 
 #define BUFFER_SIZE     1024
 
-int copyAResource( int handle, WResDirWindow *wind, char *buffer,
+static int copyAResource( int handle, WResDirWindow *wind, char *buffer,
                    char *filename )
 /******************************************************************/
 {
@@ -61,8 +61,8 @@ int copyAResource( int handle, WResDirWindow *wind, char *buffer,
     return( FALSE );
 }
 
-int copyResourcesFromRes( char *full_filename )
-/**********************************************/
+static int copyResourcesFromRes( char *full_filename )
+/****************************************************/
 {
     int                 handle;
     WResDir             dir;
@@ -120,8 +120,8 @@ HANDLE_ERROR:
     return( TRUE );
 }
 
-void SemAddResFile( char *filename )
-/**********************************/
+void SemWINAddResFile( char *filename )
+/*************************************/
 {
     char                full_filename[ _MAX_PATH ];
 

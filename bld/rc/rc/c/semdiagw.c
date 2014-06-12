@@ -130,15 +130,15 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
     return( newheader );
 } /* NewDialogBoxHeader */
 
-extern FullDialogBoxHeader *SemNewDiagOptions( FullDialogOptions *opt )
-/*********************************************************************/
+extern FullDialogBoxHeader *SemWINNewDiagOptions( FullDialogOptions *opt )
+/************************************************************************/
 {
     FullDialogBoxHeader *newheader;
 
     newheader = NewDialogBoxHeader();
 
-    return( SemDiagOptions( newheader, opt ) );
-} /* SemNewDiagOptions */
+    return( SemWINDiagOptions( newheader, opt ) );
+} /* SemWINNewDiagOptions */
 
 static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
 /************************************************************************/
@@ -175,7 +175,7 @@ static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
         head->Caption = opt->Opt.Str;
         break;
     case Y_EXSTYLE:
-        RcWarning( ERR_NT_KEYWORD, SemTokenToString( opt->token ) );
+        RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( opt->token ) );
         break;
     }
 } /* AddDiagOptions */
@@ -224,12 +224,12 @@ static void AddDiagOption32( DlgHeader32 *head,
         head->Head.Caption = opt->Opt.Str;
         break;
     case Y_LANGUAGE:
-        SemSetResourceLanguage( &opt->Opt.lang, TRUE );
+        SemWINSetResourceLanguage( &opt->Opt.lang, TRUE );
         break;
     }
 } /* AddDiagOptions32 */
 
-extern FullDialogBoxHeader *SemDiagOptions( FullDialogBoxHeader *head,
+extern FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
                                              FullDialogOptions *opt )
 /********************************************************************/
 {
@@ -245,8 +245,8 @@ extern FullDialogBoxHeader *SemDiagOptions( FullDialogBoxHeader *head,
     return( head );
 }
 
-extern FullDiagCtrlList *SemEmptyDiagCtrlList( void )
-/***************************************************/
+extern FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
+/******************************************************/
 {
     FullDiagCtrlList    *newlist;
 
@@ -257,17 +257,17 @@ extern FullDiagCtrlList *SemEmptyDiagCtrlList( void )
     return( newlist );
 }
 
-extern FullDiagCtrlList *SemNewDiagCtrlList( FullDialogBoxControl *ctrl,
+extern FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl,
                                              DataElemList *list )
 /**********************************************************************/
 {
     FullDiagCtrlList    *newlist;
 
-    newlist = SemEmptyDiagCtrlList();
-    return( SemAddDiagCtrlList( newlist, ctrl, list ) );
-} /* SemNewDiagCtrlList */
+    newlist = SemWINEmptyDiagCtrlList();
+    return( SemWINAddDiagCtrlList( newlist, ctrl, list ) );
+} /* SemWINNewDiagCtrlList */
 
-extern FullDiagCtrlList *SemAddDiagCtrlList( FullDiagCtrlList *list,
+extern FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
                     FullDialogBoxControl *ctrl, DataElemList *dataList )
 /**********************************************************************/
 {
@@ -277,7 +277,7 @@ extern FullDiagCtrlList *SemAddDiagCtrlList( FullDiagCtrlList *list,
         list->numctrls++;
     }
     return( list );
-} /* SemAddDiagCtrlList */
+} /* SemWINAddDiagCtrlList */
 
 extern FullDialogBoxControl *SemInitDiagCtrl( void )
 /**************************************************/
@@ -337,7 +337,7 @@ extern FullDialogBoxControl *SemInitDiagCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
+extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token,
                                 FullDiagCtrlOptions opts )
 /********************************************************/
 {
@@ -424,7 +424,7 @@ extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
             defstyle_hi = DEF_AUTO3STATE_HI;
             defstyle_lo = DEF_AUTO3STATE_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemTokenToString( token ) );
+            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -434,7 +434,7 @@ extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
             defstyle_hi = DEF_AUTOCHECKBOX_HI;
             defstyle_lo = DEF_AUTOCHECKBOX_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemTokenToString( token ) );
+            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -444,7 +444,7 @@ extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
             defstyle_hi = DEF_AUTORADIOBUTTON_HI;
             defstyle_lo = DEF_AUTORADIOBUTTON_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemTokenToString( token ) );
+            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -459,7 +459,7 @@ extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
             defstyle_hi = DEF_STATE3_HI;
             defstyle_lo = DEF_STATE3_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemTokenToString( token ) );
+            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -512,7 +512,7 @@ extern FullDialogBoxControl *SemNewDiagCtrl( uint_8 token,
     }
 
     return( newctrl );
-} /* SemNewDiagCtrl */
+} /* SemWINNewDiagCtrl */
 
 
 static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
@@ -681,7 +681,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, uint_16 tokentype,
     }
 }
 
-extern void SemWriteDialogBox( WResID *name, ResMemFlags flags,
+extern void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                     DialogSizeInfo size, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
                     uint_16 tokentype )
@@ -780,10 +780,10 @@ CustomError:
     SemFreeDialogHeader( head );
     SemFreeDiagCtrlList( ctrls );
     return;
-} /* SemWriteDialogBox */
+} /* SemWINWriteDialogBox */
 
 
-extern FullDialogBoxControl *SemSetControlData( IntMask ctrlstyle,
+extern FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
          unsigned long cntlid, DialogSizeInfo sizeinfo, WResID *cntltext,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
 /*************************************************************************/

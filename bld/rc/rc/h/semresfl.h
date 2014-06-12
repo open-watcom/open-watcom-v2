@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-void SemAddResFile( char *filename );
+extern void SemWINAddResFile( char *filename );

@@ -153,21 +153,17 @@ typedef struct FullDiagCtrlOptionsOS2 {
     ResNameOrOrdinal        *Text;
 } FullDiagCtrlOptionsOS2;
 
-extern FullDialogBoxHeader * SemNewDiagOptions( FullDialogOptions * opt );
-extern FullDialogBoxHeader * SemDiagOptions( FullDialogBoxHeader * head,
-                    FullDialogOptions * opt );
-extern FullDiagCtrlList * SemNewDiagCtrlList( FullDialogBoxControl * ctrl,
-                    DataElemList * );
-extern FullDiagCtrlList * SemAddDiagCtrlList( FullDiagCtrlList * list,
-                    FullDialogBoxControl * ctrl, DataElemList * );
-extern FullDialogBoxControl * SemNewDiagCtrl( uint_8 token,
-                    FullDiagCtrlOptions opts );
-extern FullDialogBoxControl * SemInitDiagCtrl( void );
-extern void SemWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
+extern FullDialogBoxHeader  *SemWINNewDiagOptions( FullDialogOptions * opt );
+extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader * head, FullDialogOptions * opt );
+extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl * ctrl, DataElemList * );
+extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList * list, FullDialogBoxControl * ctrl, DataElemList * );
+extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token, FullDiagCtrlOptions opts );
+extern FullDialogBoxControl *SemWINInitDiagCtrl( void );
+extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
                     FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
                     uint_16 );
-extern FullDiagCtrlList * SemEmptyDiagCtrlList( void );
-extern FullDialogBoxControl * SemSetControlData( IntMask, unsigned long,
+extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
+extern FullDialogBoxControl *SemWINSetControlData( IntMask, unsigned long,
          DialogSizeInfo, WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
 
 extern FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,

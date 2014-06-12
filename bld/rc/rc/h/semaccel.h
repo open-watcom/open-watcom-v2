@@ -77,18 +77,14 @@ extern const FullAccelFlags     DefaultAccelFlags;
 extern const FullAccelFlagsOS2  DefaultAccelFlagsOS2;
 
 /**** Semantic routines ****/
-extern int SemStrToAccelEvent( char * string );
-extern FullAccelEntry SemMakeAccItem( AccelEvent event, unsigned long idval,
-                    FullAccelFlags flags );
-extern void SemWriteAccelEntry( FullAccelEntry entry );
-extern void SemWriteLastAccelEntry( FullAccelEntry entry );
+extern int               SemWINStrToAccelEvent( char * string );
+extern FullAccelEntry    SemWINMakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlags flags );
+extern void              SemWINWriteAccelEntry( FullAccelEntry entry );
+extern void              SemWINWriteLastAccelEntry( FullAccelEntry entry );
 
-extern int SemOS2StrToAccelEvent( char *string );
+extern int               SemOS2StrToAccelEvent( char *string );
 extern FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 );
-extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2,
-                                               FullAccelTableOS2 * );
-extern FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval,
-                    FullAccelFlagsOS2 flags );
-extern void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags,
-                            uint_32 codepage, FullAccelTableOS2 *acctable );
+extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2, FullAccelTableOS2 * );
+extern FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlagsOS2 flags );
+extern void              SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage, FullAccelTableOS2 *acctable );
 #endif

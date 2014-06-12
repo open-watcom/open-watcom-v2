@@ -45,7 +45,7 @@ static void initToolBarItems( ToolBarItems *ret ) {
     memset( ret->items, 0, TB_ITEM_CNT * sizeof( uint_16 ) );
 }
 
-ToolBar *SemCreateToolBar( void ) {
+ToolBar *SemWINCreateToolBar( void ) {
     ToolBar     *ret;
 
     ret = RCALLOC( sizeof( ToolBar ) );
@@ -55,7 +55,7 @@ ToolBar *SemCreateToolBar( void ) {
     return( ret );
 }
 
-void SemAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
+void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
 
     ToolBarItems        *node;
 
@@ -84,7 +84,7 @@ void static semFreeToolBar( ToolBar *toolbar ) {
     RCFREE( toolbar );
 }
 
-void SemWriteToolBar( WResID *name, ToolBar *toolbar,
+void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
                       ResMemFlags flags ) {
 

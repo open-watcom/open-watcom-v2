@@ -48,8 +48,8 @@ static int SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle,
                                  int *err_code );
 static void FreeVerBlockNest( FullVerBlockNest * nest );
 
-extern FullVerValueList * SemNewVerValueList( VerValueItem item )
-/***************************************************************/
+extern FullVerValueList * SemWINNewVerValueList( VerValueItem item )
+/******************************************************************/
 {
     FullVerValueList *  list;
 
@@ -65,7 +65,7 @@ extern FullVerValueList * SemNewVerValueList( VerValueItem item )
     return( list );
 }
 
-extern FullVerValueList * SemAddVerValueList( FullVerValueList * list,
+extern FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
                                         VerValueItem item )
 /********************************************************************/
 {
@@ -132,8 +132,8 @@ static int semWriteVerValueList( FullVerValueList * list, uint_8 use_unicode,
 }
 
 
-extern FullVerBlock * SemNewBlockVal( char * name, FullVerValueList * list )
-/**************************************************************************/
+extern FullVerBlock * SemWINNewBlockVal( char * name, FullVerValueList * list )
+/*****************************************************************************/
 {
     FullVerBlock *  block;
 
@@ -152,8 +152,8 @@ extern FullVerBlock * SemNewBlockVal( char * name, FullVerValueList * list )
     return( block );
 }
 
-extern FullVerBlock * SemNameVerBlock( char * name, FullVerBlockNest * nest )
-/***************************************************************************/
+extern FullVerBlock * SemWINNameVerBlock( char * name, FullVerBlockNest * nest )
+/******************************************************************************/
 {
     FullVerBlock *  block;
 
@@ -256,8 +256,8 @@ static void FreeVerBlock( FullVerBlock * block )
     RCFREE( block );
 }
 
-extern FullVerBlockNest * SemNewBlockNest( FullVerBlock * child )
-/***************************************************************/
+extern FullVerBlockNest * SemWINNewBlockNest( FullVerBlock * child )
+/******************************************************************/
 {
     FullVerBlockNest *  parent;
 
@@ -265,10 +265,10 @@ extern FullVerBlockNest * SemNewBlockNest( FullVerBlock * child )
     parent->Head = NULL;
     parent->Tail = NULL;
 
-    return( SemAddBlockNest( parent, child ) );
+    return( SemWINAddBlockNest( parent, child ) );
 }
 
-extern FullVerBlockNest * SemAddBlockNest( FullVerBlockNest * parent,
+extern FullVerBlockNest * SemWINAddBlockNest( FullVerBlockNest * parent,
                                 FullVerBlock * child )
 /*******************************************************************/
 {
@@ -276,7 +276,7 @@ extern FullVerBlockNest * SemAddBlockNest( FullVerBlockNest * parent,
     return( parent );
 }
 
-extern FullVerBlockNest * SemMergeBlockNest( FullVerBlockNest * nest1,
+extern FullVerBlockNest * SemWINMergeBlockNest( FullVerBlockNest * nest1,
                             FullVerBlockNest * nest2 )
 /********************************************************************/
 {
@@ -338,22 +338,22 @@ static int SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle,
 }
 
 
-extern VerFixedInfo * SemNewVerFixedInfo( VerFixedOption option )
-/***************************************************************/
+extern VerFixedInfo * SemWINNewVerFixedInfo( VerFixedOption option )
+/******************************************************************/
 {
     VerFixedInfo *  info;
 
     info = RCALLOC( sizeof(VerFixedInfo) );
     memset( info, 0, sizeof(VerFixedInfo) );
 
-    return( SemAddVerFixedInfo( info, option ) );
+    return( SemWINAddVerFixedInfo( info, option ) );
 }
 
 
 #define MakeVersion( verp ) ((uint_32)(verp).LowWord | \
                             ((uint_32)(verp).HighWord << 16 ))
 
-extern VerFixedInfo * SemAddVerFixedInfo( VerFixedInfo * info,
+extern VerFixedInfo * SemWINAddVerFixedInfo( VerFixedInfo * info,
                                         VerFixedOption option )
 /*************************************************************/
 {
@@ -386,7 +386,7 @@ extern VerFixedInfo * SemAddVerFixedInfo( VerFixedInfo * info,
     return( info );
 }
 
-extern void SemWriteVerInfo( WResID * name, ResMemFlags flags,
+extern void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
                         VerFixedInfo * info, FullVerBlockNest * nest )
 /********************************************************************/
 {
@@ -452,7 +452,7 @@ extern void SemWriteVerInfo( WResID * name, ResMemFlags flags,
 
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        SemSetResourceLanguage( &lang, FALSE );
+        SemWINSetResourceLanguage( &lang, FALSE );
         SemAddResourceFree( name, WResIDFromNum( RT_VERSIONINFO ), flags, loc );
     } else {
         RCFREE( name );

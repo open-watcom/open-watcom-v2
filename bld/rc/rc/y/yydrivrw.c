@@ -365,7 +365,7 @@ static void handleError( YYCHKTYPE token, parse_stack * state, int error_state )
         case Y_SCAN_ERROR:
             break;
         default:
-            RcError( ERR_SYNTAX_STR, SemTokenToString( token ) );
+            RcError( ERR_SYNTAX_STR, SemWINTokenToString( token ) );
             break;
         }
     }
