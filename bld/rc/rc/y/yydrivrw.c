@@ -79,7 +79,7 @@ typedef union {
     FullVerBlockNest *          verblocknest;
     FullVerBlock *              verblock;
     VerFixedInfo *              verinforoot;
-    YYCHKTYPE                   token;
+    YTOKEN                      token;
     WResLangType                langinfo;
     DlgHelpId                   dlghelpid;
     DataElemList *              dataelem;
@@ -160,10 +160,10 @@ static void puts_far( const char YYFAR * string )
 
 #endif
 
-static int yylexWIN( void )
-/*************************/
+static YTOKEN yylexWIN( void )
+/****************************/
 {
-    int         curtoken;
+    YTOKEN      curtoken;
     ScanValue   value;
 
     curtoken = ScanWIN( &value );
@@ -347,7 +347,7 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YYCHKTYPE token, parse_stack * state, int error_state )
+static void handleError( YTOKEN token, parse_stack * state, int error_state )
 {
     if (!error_state) {
         switch (token) {
@@ -376,7 +376,7 @@ static p_action doParse( parse_stack * resource_state )
 {
     p_action    what;
     int         error_state;
-    YYCHKTYPE   token;
+    YTOKEN      token;
     int         token_count;
 
     error_state = FALSE;

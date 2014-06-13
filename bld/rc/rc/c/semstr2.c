@@ -150,7 +150,7 @@ static FullStringTableBlock *newStringTableBlock( void )
 
 void SemOS2AddStrToStringTable( FullStringTable *currtable,
                                  uint_16 stringid, char *string )
-/****************************************************************/
+/***************************************************************/
 {
     FullStringTableBlock        *currblock;
     uint_16                     blocknum;

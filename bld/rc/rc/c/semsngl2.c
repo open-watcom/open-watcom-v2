@@ -43,7 +43,7 @@
 static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 
 
-extern void SemOS2AddSingleLineResource( WResID *name, YTOKEN type,
+void SemOS2AddSingleLineResource( WResID *name, YTOKEN type,
                        FullOptFlagsOS2 *fullflags, char *filename )
 /*****************************************************************/
 {
@@ -393,8 +393,8 @@ static void FreeFontDir( FullFontDir * olddir )
 #define FONT_DIR_NAME   "FONTDIR"
 #define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
 
-extern void SemOS2WriteFontDir( void )
-/*********************************/
+void SemOS2WriteFontDir( void )
+/*****************************/
 {
     FullFontDirEntry *  currentry;
     ResLocation         loc;

@@ -69,7 +69,7 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
     node->cnt++;
 }
 
-void static semFreeToolBar( ToolBar *toolbar ) {
+static void semFreeToolBar( ToolBar *toolbar ) {
 
     ToolBarItems        *cur;
     ToolBarItems        *tmp;

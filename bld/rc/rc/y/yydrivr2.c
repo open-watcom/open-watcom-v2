@@ -82,7 +82,7 @@ typedef union {
     StringItem                  stritem;
     FullStringTable             *strtable;
     RawDataItem                 rawitem;
-    YYCHKTYPE                   token;
+    YTOKEN                      token;
     DataElemList                *dataelem;
     IntOpt                      optint;
 } YYSTYPE;
@@ -127,9 +127,9 @@ typedef enum {
 
 static void dump_rule( unsigned rule )
 {
-    unsigned                     i;
-    const YYCHKTYPE YYFAR       *tok;
-    const char YYFAR            *p;
+    unsigned                i;
+    const YTOKEN YYFAR      *tok;
+    const char YYFAR        *p;
 
     if (CmdLineParms.DebugParser) {
         for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
@@ -161,10 +161,10 @@ static void puts_far( const char YYFAR * string )
 
 #endif
 
-static int yylexOS2( void )
-/*************************/
+static YTOKEN yylexOS2( void )
+/****************************/
 {
-    int         curtoken;
+    YTOKEN      curtoken;
     ScanValue   value;
 
     curtoken = ScanOS2( &value );
@@ -210,7 +210,7 @@ static int yylexOS2( void )
     return( curtoken );
 }
 
-static p_action doAction( YYCHKTYPE t, parse_stack *state )
+static p_action doAction( YTOKEN t, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
@@ -348,7 +348,7 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YYCHKTYPE token, parse_stack * state, int error_state )
+static void handleError( YTOKEN token, parse_stack * state, int error_state )
 {
     if (!error_state) {
         switch (token) {
@@ -377,7 +377,7 @@ static p_action doParse( parse_stack * resource_state )
 {
     p_action    what;
     int         error_state;
-    YYCHKTYPE   token;
+    YTOKEN      token;
     int         token_count = 0;
 
     error_state = FALSE;

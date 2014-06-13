@@ -55,8 +55,8 @@ FullStringTable * SemWINNewStringTable( void )
     return( newtable );
 } /* SemWINNewStringTable */
 
-void SemWINFreeStringTable( FullStringTable * oldtable )
-/******************************************************/
+static void semFreeStringTable( FullStringTable * oldtable )
+/*************************************************************/
 {
     FullStringTableBlock *      currblock;
     FullStringTableBlock *      oldblock;
@@ -72,7 +72,7 @@ void SemWINFreeStringTable( FullStringTable * oldtable )
     }
 
     RCFREE( oldtable );
-} /* SemWINFreeStringTable */
+} /* semFreeStringTable */
 
 static FullStringTableBlock * findStringTableBlock( FullStringTable * table,
                         uint_16 blocknum )
@@ -182,7 +182,7 @@ static void semMergeStringTables( FullStringTable * currtable,
         oldblock = nextblock;
     }
 
-    SemWINFreeStringTable( oldtable );
+    semFreeStringTable( oldtable );
 } /* semMergeStringTables */
 
 static void setStringTableMemFlags( FullStringTable * currtable,
@@ -281,7 +281,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                          LastWresErrStr() );
                 ErrorHasOccured = TRUE;
-                SemWINFreeStringTable( currtable );
+                semFreeStringTable( currtable );
                 return;
             }
 
@@ -297,7 +297,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
 
         tofree = currtable;
         currtable = currtable->next;
-        SemWINFreeStringTable( tofree );
+        semFreeStringTable( tofree );
     }
     RCFREE( type );
     return;

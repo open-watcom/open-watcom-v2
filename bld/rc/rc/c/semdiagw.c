@@ -278,7 +278,7 @@ FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
     return( list );
 } /* SemWINAddDiagCtrlList */
 
-static FullDialogBoxControl *SemWINInitDiagCtrl( void )
+static FullDialogBoxControl *semInitDiagCtrl( void )
 /*****************************************************/
 {
     FullDialogBoxControl        *newctrl;
@@ -289,7 +289,7 @@ static FullDialogBoxControl *SemWINInitDiagCtrl( void )
     newctrl->Win32 = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
 
     return( newctrl );
-} /* SemWINInitDiagCtrl */
+} /* semInitDiagCtrl */
 
 /* These are the default styles used for all dialog box control statmens */
 /* except the control statement (see rc.y for it).  The HI style contains */
@@ -464,7 +464,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YTOKEN token,
         break;
     }
 
-    newctrl = SemWINInitDiagCtrl();
+    newctrl = semInitDiagCtrl();
     cont_class = ResNumToControlClass( class );
 
     style_mask = opts.Style.Mask;
@@ -796,7 +796,7 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     value = ctrlstyle.Value;
     style = (mask & value) | (~mask & (WS_CHILD|WS_VISIBLE));
 
-    control = SemWINInitDiagCtrl();
+    control = semInitDiagCtrl();
     if( control->Win32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.Size = sizeinfo;

@@ -42,7 +42,7 @@
 
 static int copyAResource( int handle, WResDirWindow *wind, char *buffer,
                    char *filename )
-/******************************************************************/
+/***********************************************************************/
 {
     ResLocation         loc;
     WResLangInfo        *langinfo;

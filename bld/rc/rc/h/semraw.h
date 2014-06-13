@@ -54,13 +54,13 @@ typedef struct DataElemList {
     uint_16                count;
 } DataElemList;
 
-extern void SemWriteRawDataItem( RawDataItem item );
-extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff, int buffsize, int *err_code );
-extern ResLocation SemCopyRawFile( const char *filename );
-extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend );
+extern void         SemWriteRawDataItem( RawDataItem item );
+extern RcStatus     SemCopyDataUntilEOF( long offset, int handle, void *buff, int buffsize, int *err_code );
+extern ResLocation  SemCopyRawFile( const char *filename );
+extern ResLocation  SemFlushDataElemList( DataElemList *head, char call_startend );
 extern DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node );
 extern DataElemList *SemNewDataElemList( RawDataItem node );
 extern DataElemList *SemNewDataElemListNode( void );
-extern void SemFreeDataElemList( DataElemList *head );
+extern void         SemFreeDataElemList( DataElemList *head );
 
 #endif

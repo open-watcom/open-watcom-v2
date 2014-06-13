@@ -482,6 +482,6 @@ void SemanticInitStaticsWIN( void )
 /*********************************/
 {
     memset( &curLang, 0, sizeof( WResLangType ) );
-    resourceHasLang = 0;
+    resourceHasLang = FALSE;
     memset( &resourceLang, 0, sizeof( WResLangType ) );
 }

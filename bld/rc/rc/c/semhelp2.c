@@ -33,7 +33,7 @@
 #include "errors.h"
 #include "os2ytab.h"
 #include "semantic.h"
-#include "semhelp2.h"
+#include "semantc2.h"
 #include "rcrtns.h"
 
 #include "reserr.h"
@@ -90,9 +90,9 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     return( newtable );
 }
 
-extern FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
-                                            FullHelpTableOS2 * currtable )
-/******************************************************************/
+FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
+                                    FullHelpTableOS2 * currtable )
+/****************************************************************/
 {
     FullHelpEntryOS2     *newentry;
 
@@ -149,9 +149,9 @@ static int SemOS2WriteHelpTableEntries( FullHelpTableOS2 * helptable,
     return( error );
 }
 
-extern void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
-                                   FullHelpTableOS2 * helptable )
-/******************************************************************/
+void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
+                               FullHelpTableOS2 * helptable )
+/***********************************************************/
 {
     ResLocation     loc;
     int             error;
@@ -207,9 +207,9 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * data )
     return( newtable );
 }
 
-extern FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList * data,
-                                                  FullHelpSubTableOS2 * currtable )
-/*********************************************************************************/
+FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList * data,
+                            FullHelpSubTableOS2 * currtable )
+/*************************************************************/
 {
     FullHelpSubEntryOS2     *newentry;
 
@@ -294,7 +294,7 @@ static int SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable,
     return( error );
 }
 
-extern void SemOS2WriteHelpSubTable( WResID * name, int numWords,
+void SemOS2WriteHelpSubTable( WResID * name, int numWords,
                                      ResMemFlags flags,
                                      FullHelpSubTableOS2 * helptable )
 /********************************************************************/

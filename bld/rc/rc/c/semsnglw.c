@@ -55,7 +55,7 @@ static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 #define CUR_ICON_PURITY_31      0           /* impure */
 
 void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
-/********************************************************************/
+/****************************************************************/
 
     ResLocation         start;
 
@@ -74,7 +74,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
     }
 }
 
-extern void SemWINAddSingleLineResource( WResID * name, YTOKEN type,
+void SemWINAddSingleLineResource( WResID * name, YTOKEN type,
                       FullMemFlags * fullflags, char * filename )
 /***************************************************************/
 {
