@@ -50,8 +50,8 @@ static char         MSFormatTmpFile[2 * _MAX_PATH] = "";
 #define MAKELANGID(p, s)       ((((uint_16)(s)) << 10) | (uint_16)(p))
 #endif
 
-void SetDefLang( void )
-/*********************/
+void SemSetDefLang( void )
+/************************/
 {
     curLang.lang = DEF_LANG;
     curLang.sublang = DEF_SUBLANG;

@@ -38,7 +38,7 @@
 #include "rcrtns.h"
 
 
-extern int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
+int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
                                         WResFileID handle, uint_32 codepage )
 /***************************************************************************/
 {
@@ -78,8 +78,8 @@ extern int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
     return( error );
 } /* ResOS2WriteStringTableBlock */
 
-extern FullStringTable *SemOS2NewStringTable( void )
-/**************************************************/
+FullStringTable *SemOS2NewStringTable( void )
+/*******************************************/
 {
     FullStringTable     *newtable;
 
@@ -95,8 +95,8 @@ extern FullStringTable *SemOS2NewStringTable( void )
     return( newtable );
 } /* SemOS2NewStringTable */
 
-extern void SemOS2FreeStringTable( FullStringTable *oldtable )
-/************************************************************/
+void SemOS2FreeStringTable( FullStringTable *oldtable )
+/*****************************************************/
 {
     FullStringTableBlock        *currblock;
     FullStringTableBlock        *oldblock;
@@ -148,7 +148,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     return( newblock );
 } /* newStringTableBlock */
 
-extern void SemOS2AddStrToStringTable( FullStringTable *currtable,
+void SemOS2AddStrToStringTable( FullStringTable *currtable,
                                  uint_16 stringid, char *string )
 /****************************************************************/
 {
@@ -173,7 +173,7 @@ extern void SemOS2AddStrToStringTable( FullStringTable *currtable,
     }
 
     currblock->Block.String[ stringnum ] = WResIDNameFromStr( string );
-} /* SemAddStrToStringTable */
+} /* SemOS2AddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock *currblock,
                                 FullStringTableBlock *oldblock )
@@ -258,7 +258,7 @@ static FullStringTable *findTable( FullStringTable *tables )
     return( tables );
 }
 
-extern void SemOS2MergeStrTable( FullStringTable *currtable,
+void SemOS2MergeStrTable( FullStringTable *currtable,
                                     ResMemFlags flags, uint_32 codepage )
 /***********************************************************************/
 {
@@ -273,8 +273,8 @@ extern void SemOS2MergeStrTable( FullStringTable *currtable,
     }
 }
 
-extern void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
-/******************************************************************************/
+void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
+/***********************************************************************/
 {
     FullStringTable     *table;
 
@@ -287,7 +287,7 @@ extern void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
     }
 }
 
-extern void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
+void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
 /****************************************************************************/
 /* write the table identified by currtable as a table of type type and then */
 /* free the memory that it occupied */

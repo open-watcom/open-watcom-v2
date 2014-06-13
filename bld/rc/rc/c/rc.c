@@ -123,7 +123,6 @@ static int Pass1( void )
     noerror = RcPass1IoInit();
     if( noerror ) {
         if( !CmdLineParms.PreprocessOnly ) {
-            SetDefLang();
             if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
                 ParseInitOS2();
                 ParseOS2();

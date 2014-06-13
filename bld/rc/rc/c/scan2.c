@@ -89,7 +89,7 @@ static void CharInit( void )
 #define state(s) s
 #define do_transition(s) GetNextChar(); goto s
 #define change_state(s) goto s
-#define enter_start_state CharInit()
+#define enter_start_state() CharInit()
 
 static void AddDigitToInt( long * value, int base, int newchar )
 {
@@ -169,11 +169,11 @@ static int scanCPPDirective( ScanValue *value )
     return( token );
 } /* scanCPPDirective */
 
-extern void ScanInitOS2( void )
-/*****************************/
+void ScanInitOS2( void )
+/**********************/
 {
-    enter_start_state;
-} /* ScanInitOS2 */
+    enter_start_state();
+}
 
 static int scanDFA( ScanValue *value )
 /************************************/
@@ -752,8 +752,8 @@ static int scanDFA( ScanValue *value )
         }
 } /* scanDFA */
 
-extern int ScanOS2( ScanValue *value )
-/************************************/
+int ScanOS2( ScanValue *value )
+/*****************************/
 {
     int     token;
 
@@ -765,8 +765,8 @@ extern int ScanOS2( ScanValue *value )
     return( token );
 } /* Scan */
 
-extern void ScanInitStaticsOS2( void )
-/************************************/
+void ScanInitStaticsOS2( void )
+/*****************************/
 {
     _next = 0;
     LookAhead = 0;

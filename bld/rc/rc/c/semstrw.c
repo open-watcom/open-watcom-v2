@@ -53,7 +53,7 @@ FullStringTable * SemWINNewStringTable( void )
     }
 
     return( newtable );
-} /* SemNewStringTable */
+} /* SemWINNewStringTable */
 
 void SemWINFreeStringTable( FullStringTable * oldtable )
 /******************************************************/
@@ -131,7 +131,7 @@ void SemWINAddStrToStringTable( FullStringTable * currtable,
     }
 
     currblock->Block.String[ stringnum ] = WResIDNameFromStr( string );
-} /* SemAddStrToStringTable */
+} /* SemWINAddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock * currblock,
                                 FullStringTableBlock * oldblock )

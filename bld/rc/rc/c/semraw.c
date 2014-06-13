@@ -34,13 +34,12 @@
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
-#include "semraw.h"
 #include "depend.h"
 #include "rcrtns.h"
 
 
-extern void SemWriteRawDataItem( RawDataItem item )
-/*************************************************/
+void SemWriteRawDataItem( RawDataItem item )
+/******************************************/
 {
     uint_16     num16;
     uint_32     num32;
@@ -91,7 +90,7 @@ extern void SemWriteRawDataItem( RawDataItem item )
 
 }
 
-extern RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
+RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
                 int buffsize, int *err_code )
 /****************************************************************/
 {
@@ -185,8 +184,8 @@ HANDLE_ERROR:
     return( loc );
 }
 
-extern DataElemList *SemNewDataElemList( RawDataItem node )
-/**********************************************************/
+DataElemList *SemNewDataElemList( RawDataItem node )
+/**************************************************/
 {
     DataElemList    *head;
 
@@ -198,8 +197,8 @@ extern DataElemList *SemNewDataElemList( RawDataItem node )
     return( head );
 }
 
-extern DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node )
-/****************************************************************************/
+DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node )
+/*********************************************************************/
 {
     DataElemList    *travptr;
     DataElemList    *newnode;
@@ -218,8 +217,8 @@ extern DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node )
     return( head );
 }
 
-extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend )
-/*****************************************************************************/
+ResLocation SemFlushDataElemList( DataElemList *head, char call_startend )
+/************************************************************************/
 {
     DataElemList    *curnode;
     DataElemList    *nextnode;
@@ -253,8 +252,8 @@ extern ResLocation SemFlushDataElemList( DataElemList *head, char call_startend 
     return( resLoc );
 }
 
-extern void SemFreeDataElemList( DataElemList *head )
-/****************************************************/
+void SemFreeDataElemList( DataElemList *head )
+/********************************************/
 {
     DataElemList    *curnode;
     DataElemList    *nextnode;

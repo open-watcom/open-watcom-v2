@@ -113,7 +113,7 @@ static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
     return( newlist );
 }
 
-extern FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
+FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
                                DataElemList *list, PresParamListOS2 *presparams )
 /*******************************************************************************/
 {
@@ -123,7 +123,7 @@ extern FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl
     return( SemOS2AddDiagCtrlList( newlist, ctrl, list, presparams ) );
 }
 
-extern FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
+FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
                     FullDialogBoxControlOS2 *ctrl, DataElemList *dataList,
                     PresParamListOS2 *presparams )
 /***************************************************************************/
@@ -137,7 +137,7 @@ extern FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
     return( list );
 }
 
-extern FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
+static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 /********************************************************/
 {
     FullDialogBoxControlOS2     *newctrl;
@@ -176,7 +176,7 @@ extern FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 #define DEF_SPINBUTTON       (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 #define DEF_VALUESET         (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 
-extern FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( uint_8 token,
+FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( uint_8 token,
                                     FullDiagCtrlOptionsOS2 opts,
                                     PresParamListOS2 *presparams )
 /****************************************************************/
@@ -667,7 +667,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
    resource (the size must be < 64K) and then dump the entire resource
    into the file - which certainly shouldn't hurt performance either.
 */
-extern void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
+void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
                                        uint_32 codepage,
                                        FullDiagCtrlListOS2 *ctrls )
 /*********************************************************************/
@@ -725,7 +725,7 @@ OutputWriteError:
 } /* SemOS2WriteDialogTemplate */
 
 
-extern FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
+FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
                     uint_32 id, DialogSizeInfo size, ResNameOrOrdinal *ctlclassname,
                     IntMask style, FullDiagCtrlListOS2 *childctls,
                     PresParamListOS2 *presparams )
@@ -748,7 +748,7 @@ extern FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     return( control );
 }
 
-extern FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
+FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
                     IntMask framectl, PresParamListOS2 *presparams,
                     FullDiagCtrlListOS2 *childctls, uint_16 token )
 /*******************************************************************************/
@@ -788,8 +788,8 @@ extern FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts
     return( control );
 }
 
-extern void SemOS2AddDlgincResource( WResID *name, char *filename )
-/*****************************************************************/
+void SemOS2AddDlgincResource( WResID *name, char *filename )
+/**********************************************************/
 {
     ResLocation loc;
     int         error, err_code;
@@ -815,8 +815,8 @@ OutputWriteError:
     return;
 }
 
-extern PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )
-/************************************************************************/
+PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )
+/*****************************************************************/
 {
     PresParamListOS2    *newlist;
 
@@ -826,7 +826,7 @@ extern PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )
     return( SemOS2AppendPresParam( newlist, presparam ) );
 }
 
-extern PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
+PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
                                                  PresParamsOS2 presparams )
 /*************************************************************************/
 {
@@ -837,4 +837,3 @@ extern PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
     ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), params );
     return( list );
 }
-

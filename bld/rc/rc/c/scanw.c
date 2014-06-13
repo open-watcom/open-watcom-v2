@@ -86,7 +86,7 @@ static void CharInit( void )
 #define state(s) s
 #define do_transition(s) GetNextChar(); goto s
 #define change_state(s) goto s
-#define enter_start_state CharInit()
+#define enter_start_state() CharInit()
 
 static void AddDigitToInt( long *value, int base, int newchar )
 {
@@ -169,8 +169,8 @@ static int ScanCPPDirective( ScanValue *value )
 void ScanInitWIN( void )
 /**********************/
 {
-    enter_start_state;
-} /* ScanInit */
+    enter_start_state();
+}
 
 static int ScanDFA( ScanValue * value )
 /*************************************/

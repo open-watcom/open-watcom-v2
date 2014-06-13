@@ -130,8 +130,8 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
     return( newheader );
 } /* NewDialogBoxHeader */
 
-extern FullDialogBoxHeader *SemWINNewDiagOptions( FullDialogOptions *opt )
-/************************************************************************/
+FullDialogBoxHeader *SemWINNewDiagOptions( FullDialogOptions *opt )
+/*****************************************************************/
 {
     FullDialogBoxHeader *newheader;
 
@@ -229,7 +229,7 @@ static void AddDiagOption32( DlgHeader32 *head,
     }
 } /* AddDiagOptions32 */
 
-extern FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
+FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
                                              FullDialogOptions *opt )
 /********************************************************************/
 {
@@ -245,8 +245,8 @@ extern FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
     return( head );
 }
 
-extern FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
-/******************************************************/
+FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
+/***********************************************/
 {
     FullDiagCtrlList    *newlist;
 
@@ -257,9 +257,9 @@ extern FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
     return( newlist );
 }
 
-extern FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl,
+FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl,
                                              DataElemList *list )
-/**********************************************************************/
+/******************************************************************/
 {
     FullDiagCtrlList    *newlist;
 
@@ -267,7 +267,7 @@ extern FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl,
     return( SemWINAddDiagCtrlList( newlist, ctrl, list ) );
 } /* SemWINNewDiagCtrlList */
 
-extern FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
+FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
                     FullDialogBoxControl *ctrl, DataElemList *dataList )
 /**********************************************************************/
 {
@@ -279,8 +279,8 @@ extern FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
     return( list );
 } /* SemWINAddDiagCtrlList */
 
-extern FullDialogBoxControl *SemInitDiagCtrl( void )
-/**************************************************/
+static FullDialogBoxControl *SemWINInitDiagCtrl( void )
+/*****************************************************/
 {
     FullDialogBoxControl        *newctrl;
 
@@ -290,7 +290,7 @@ extern FullDialogBoxControl *SemInitDiagCtrl( void )
     newctrl->Win32 = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
 
     return( newctrl );
-} /* SemInitDiagCtrl */
+} /* SemWINInitDiagCtrl */
 
 /* These are the default styles used for all dialog box control statmens */
 /* except the control statement (see rc.y for it).  The HI style contains */
@@ -337,7 +337,7 @@ extern FullDialogBoxControl *SemInitDiagCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token,
+FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token,
                                 FullDiagCtrlOptions opts )
 /********************************************************/
 {
@@ -465,7 +465,7 @@ extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token,
         break;
     }
 
-    newctrl = SemInitDiagCtrl();
+    newctrl = SemWINInitDiagCtrl();
     cont_class = ResNumToControlClass( class );
 
     style_mask = opts.Style.Mask;
@@ -681,7 +681,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, uint_16 tokentype,
     }
 }
 
-extern void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
+void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                     DialogSizeInfo size, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
                     uint_16 tokentype )
@@ -783,7 +783,7 @@ CustomError:
 } /* SemWINWriteDialogBox */
 
 
-extern FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
+FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
          unsigned long cntlid, DialogSizeInfo sizeinfo, WResID *cntltext,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
 /*************************************************************************/
@@ -797,7 +797,7 @@ extern FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     value = ctrlstyle.Value;
     style = (mask & value) | (~mask & (WS_CHILD|WS_VISIBLE));
 
-    control = SemInitDiagCtrl();
+    control = SemWINInitDiagCtrl();
     if( control->Win32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.Size = sizeinfo;
