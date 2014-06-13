@@ -158,7 +158,6 @@ extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader * head, Full
 extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl * ctrl, DataElemList * );
 extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList * list, FullDialogBoxControl * ctrl, DataElemList * );
 extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token, FullDiagCtrlOptions opts );
-extern FullDialogBoxControl *SemWINInitDiagCtrl( void );
 extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
                     FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
                     uint_16 );

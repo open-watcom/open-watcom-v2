@@ -78,7 +78,7 @@ extern void             SemAddResource( WResID * name, WResID * type,
 extern void             SemAddResource2( WResID * name, WResID * type,
                                         ResMemFlags flags, ResLocation loc,
                                         char *filename );
-extern void             SetDefLang( void );
+extern void             SemSetDefLang( void );
 extern const WResLangType *SemGetResourceLanguage( void );
 extern void             SemanticInitStatics( void );
 
@@ -105,8 +105,8 @@ extern void             SemOS2SetCodepage( uint_32 codepage );
 
 #include "semaccel.h"
 #include "semmenu.h"
-#include "semdiag.h"
 #include "semraw.h"
+#include "semdiag.h"
 #include "semsingl.h"
 #include "semresfl.h"
 #include "semutil.h"
