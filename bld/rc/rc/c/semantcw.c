@@ -369,8 +369,8 @@ void SemWINCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
     }
 }
 
-extern char *SemWINTokenToString( uint_8 token )
-/**********************************************/
+char *SemWINTokenToString( uint_8 token )
+/***************************************/
 {
     switch (token) {
     case Y_LPAREN:
@@ -686,12 +686,16 @@ extern char *SemWINTokenToString( uint_8 token )
     }
 }
 
-extern void SemanticInitStatics( void )
-/*************************************/
+void SemanticInitStaticsWIN( void )
+/*********************************/
 {
     memset( &curLang, 0, sizeof( WResLangType ) );
     resourceHasLang = 0;
     memset( &resourceLang, 0, sizeof( WResLangType ) );
-    MSFormatHandle = NIL_HANDLE;
 }
 
+void SemanticInitStatics( void )
+/******************************/
+{
+    MSFormatHandle = NIL_HANDLE;
+}

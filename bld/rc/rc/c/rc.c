@@ -62,6 +62,8 @@ void InitGlobs( void )
     TmpCtlInitStatics();
     Layer0InitStatics();
     SemanticInitStatics();
+    SemanticInitStaticsWIN();
+    SemanticInitStaticsOS2();
     ErrorInitStatics();
     SharedIOInitStatics();
     ScanInitStaticsWIN();

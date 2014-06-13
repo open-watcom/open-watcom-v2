@@ -32,18 +32,22 @@
 #ifndef _YYDRIVER_H
 #define _YYDRIVER_H
 
-extern void ScanInitOS2( void );
+extern void SemanticInitStaticsOS2( void );
 extern void ScanInitStaticsOS2( void );
+extern void ParseInitStaticsOS2( void );
+
+extern void SemanticInitStaticsWIN( void );
+extern void ScanInitStaticsWIN( void );
+extern void ParseInitStaticsWIN( void );
+
+extern void ScanInitOS2( void );
 extern void ParseInitOS2( void );
 extern void ParseFiniOS2( void );
 extern bool ParseOS2( void );
-extern void ParseInitStaticsOS2( void );
 
 extern void ScanInitWIN( void );
-extern void ScanInitStaticsWIN( void );
 extern void ParseInitWIN( void );
 extern void ParseFiniWIN( void );
 extern bool ParseWIN( void );
-extern void ParseInitStaticsWIN( void );
 
 #endif

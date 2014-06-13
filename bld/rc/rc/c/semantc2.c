@@ -140,8 +140,8 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
     }
 }
 
-extern char *SemOS2TokenToString( uint_8 token )
-/**********************************************/
+char *SemOS2TokenToString( uint_8 token )
+/***************************************/
 {
     switch( token ) {
     case Y_LPAREN:
@@ -405,8 +405,8 @@ extern char *SemOS2TokenToString( uint_8 token )
     }
 }
 
-extern void SemanticOS2InitStatics( void )
-/****************************************/
+void SemanticInitStaticsOS2( void )
+/*********************************/
 {
     curCodepage = 850;
 }
