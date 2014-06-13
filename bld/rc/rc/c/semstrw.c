@@ -226,7 +226,7 @@ void SemWINMergeStrTable( FullStringTable * currtable, ResMemFlags flags )
     FullStringTable     *table;
     const WResLangType  *lang;
 
-    lang = SemWINGetResourceLanguage();
+    lang = SemGetResourceLanguage();
     currtable->lang = *lang;
     table = findTableFromLang( CurrResFile.StringTable, lang );
     if( table == NULL ) {
@@ -243,7 +243,7 @@ void SemWINMergeErrTable( FullStringTable * currtable, ResMemFlags flags )
     FullStringTable     *table;
     const WResLangType  *lang;
 
-    lang = SemWINGetResourceLanguage();
+    lang = SemGetResourceLanguage();
     currtable->lang = *lang;
     table = findTableFromLang( CurrResFile.ErrorTable, lang );
 

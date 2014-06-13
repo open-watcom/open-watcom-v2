@@ -78,12 +78,19 @@ extern void             SemAddResource( WResID * name, WResID * type,
 extern void             SemAddResource2( WResID * name, WResID * type,
                                         ResMemFlags flags, ResLocation loc,
                                         char *filename );
+extern void             SetDefLang( void );
+extern const WResLangType *SemGetResourceLanguage( void );
+extern void             SemanticInitStatics( void );
+
 extern FullMemFlags     SemWINAddFirstMemOption( uint_8 token );
 extern FullMemFlags     SemWINAddMemOption( FullMemFlags, uint_8 token );
 extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
                                 ResMemFlags loadopts, ResMemFlags memopts,
                                 ResMemFlags pureopts );
 extern char             *SemWINTokenToString( uint_8 token );
+extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
+extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
+extern void             SemWINUnsupported( uint_8 token );
 extern FullOptFlagsOS2  SemOS2AddFirstResOption( uint_8 token, uint_32 value );
 extern FullOptFlagsOS2  SemOS2AddResOption( FullOptFlagsOS2, uint_8 token, uint_32 value );
 extern void             SemOS2CheckResFlags( FullOptFlagsOS2 *currflags,
@@ -92,13 +99,6 @@ extern void             SemOS2CheckResFlags( FullOptFlagsOS2 *currflags,
 extern char             *SemOS2TokenToString( uint_8 token );
 extern uint_32          SemOS2DefaultCodepage( void );
 extern void             SemOS2SetCodepage( uint_32 codepage );
-extern void             SetDefLang( void );
-extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
-extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
-extern const WResLangType *SemWINGetResourceLanguage( void );
-extern void             SemWINUnsupported( uint_8 token );
-extern void             SemanticInitStatics( void );
-
 
 /**** include all the semantic structures and routine prototypes for each ****/
 /**** type of structure ****/

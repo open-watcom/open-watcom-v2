@@ -78,8 +78,8 @@ void SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser )
     }
 }
 
-const WResLangType *SemWINGetResourceLanguage( void )
-/***************************************************/
+const WResLangType *SemGetResourceLanguage( void )
+/************************************************/
 {
     if( resourceHasLang ) {
         resourceHasLang = FALSE;
@@ -248,12 +248,7 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
     char *              namestr;
     const WResLangType  *lang;
 
-    if( resourceHasLang ) {
-        lang = &resourceLang;
-        resourceHasLang = FALSE;
-    } else {
-        lang = &curLang;
-    }
+    lang = SemGetResourceLanguage();
     // Windows 95 is currently unable to load an exe that contains a resource
     // with numeric type or numeric identifier greater than 0x7FFF
     // so we warn the user
