@@ -308,6 +308,7 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
 void ParseInitOS2( void )
 /***********************/
 {
+    SemSetDefLang();
     ScanInitOS2();
 }
 

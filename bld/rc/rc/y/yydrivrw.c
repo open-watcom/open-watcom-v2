@@ -314,6 +314,7 @@ static p_action doAction( YYCHKTYPE t, parse_stack *state )
 void ParseInitWIN( void )
 /***********************/
 {
+    SemSetDefLang();
     ScanInitWIN();
 }
 
