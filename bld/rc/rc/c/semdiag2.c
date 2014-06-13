@@ -65,11 +65,10 @@ struct DLGTITEM {
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
-#include "wresall.h"
 #include "global.h"
 #include "errors.h"
-#include "os2ytab.h"
 #include "semantic.h"
+#include "semantc2.h"
 #include "layer0.h"
 #include "rcrtns.h"
 
@@ -176,7 +175,7 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 #define DEF_SPINBUTTON       (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 #define DEF_VALUESET         (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 
-FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( uint_8 token,
+FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YTOKEN token,
                                     FullDiagCtrlOptionsOS2 opts,
                                     PresParamListOS2 *presparams )
 /****************************************************************/
@@ -750,7 +749,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
 
 FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
                     IntMask framectl, PresParamListOS2 *presparams,
-                    FullDiagCtrlListOS2 *childctls, uint_16 token )
+                    FullDiagCtrlListOS2 *childctls, YTOKEN token )
 /*******************************************************************************/
 {
     FullDialogBoxControlOS2 *control;

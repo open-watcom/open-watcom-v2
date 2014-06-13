@@ -32,11 +32,9 @@
 
 #include "global.h"
 #include "yydriver.h"
-#include "yydrivrw.h"
 #include "rctypes.h"
 #include "semantic.h"
-#include "semverw.h"
-#include "semtbarw.h"
+#include "semantcw.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"

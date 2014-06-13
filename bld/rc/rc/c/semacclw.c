@@ -31,11 +31,9 @@
 
 
 #include <ctype.h>
-#include "wresall.h"
-#include "errors.h"
 #include "global.h"
-#include "winytab.h"
-#include "semaccel.h"
+#include "errors.h"
+#include "semantic.h"
 
 const FullAccelFlags DefaultAccelFlags = { 0, FALSE };
 

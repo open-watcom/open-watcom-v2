@@ -24,54 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Stub routines for GUI resource editors (those only support
-*               Win16 and Win32 resources, not OS/2 resources).
+* Description:  Interface to semantic actions for single-line resources
+*               (OS/2 grammar).
 *
 ****************************************************************************/
 
 
-#include "global.h"
-#include "wresall.h"
+#ifndef SEMSNGL2_H_INCLUDED
+#define SEMSNGL2_H_INCLUDED
 
-void SemOS2WriteFontDir( void )
-{
-}
+extern void SemOS2AddSingleLineResource( WResID *name, YTOKEN type, FullOptFlagsOS2 *fullflags, char *filename );
 
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-{
-}
-
-int RcBuildLXResourceObjects( void )
-{
-    return( TRUE );
-}
-
-int CopyLXExeObjects( void )
-{
-    return( TRUE );
-}
-
-int RcWriteLXResourceObjects( void )
-{
-    return( TRUE );
-}
-
-int CopyOS2Resources( void )
-{
-    return( FALSE );
-}
-
-RcStatus InitOS2ResTable( int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-uint_32 ComputeOS2ResSegCount( WResDir dir )
-{
-    return( 0 );
-}
+#endif

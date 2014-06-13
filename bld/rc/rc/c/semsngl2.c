@@ -32,8 +32,8 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "os2ytab.h"
 #include "semantic.h"
+#include "semantc2.h"
 #include "reserr.h"
 #include "depend.h"
 #include "wresdefn.h"
@@ -43,7 +43,7 @@
 static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 
 
-extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type,
+extern void SemOS2AddSingleLineResource( WResID *name, YTOKEN type,
                        FullOptFlagsOS2 *fullflags, char *filename )
 /*****************************************************************/
 {

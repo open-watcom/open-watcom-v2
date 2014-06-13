@@ -24,54 +24,34 @@
 *
 *  ========================================================================
 *
-* Description:  Stub routines for GUI resource editors (those only support
-*               Win16 and Win32 resources, not OS/2 resources).
+* Description:  Semantic actions interface for OS/2 grammar (used by yydriver).
 *
 ****************************************************************************/
 
 
-#include "global.h"
-#include "wresall.h"
+#ifndef SEMANTC2_H_INCLUDED
+#define SEMANTC2_H_INCLUDED
 
-void SemOS2WriteFontDir( void )
-{
-}
+#include "os2ytab.h"
+#include "scan.h"
 
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-{
-}
+typedef unsigned short  YTOKEN;
 
-int RcBuildLXResourceObjects( void )
-{
-    return( TRUE );
-}
+extern int  LookupKeywordOS2( ScanString newstring );
+extern int  ScanOS2( ScanValue * value );
 
-int CopyLXExeObjects( void )
-{
-    return( TRUE );
-}
+#include "semmenu2.h"
+#include "semdiag2.h"
+#include "semhelp2.h"
+#include "semsngl2.h"
 
-int RcWriteLXResourceObjects( void )
-{
-    return( TRUE );
-}
+extern FullOptFlagsOS2  SemOS2AddFirstResOption( YTOKEN token, uint_32 value );
+extern FullOptFlagsOS2  SemOS2AddResOption( FullOptFlagsOS2, YTOKEN token, uint_32 value );
+extern void             SemOS2CheckResFlags( FullOptFlagsOS2 *currflags,
+                                ResMemFlags loadopts, ResMemFlags memopts,
+                                ResMemFlags pureopts );
+extern char             *SemOS2TokenToString( YTOKEN token );
+extern uint_32          SemOS2DefaultCodepage( void );
+extern void             SemOS2SetCodepage( uint_32 codepage );
 
-int CopyOS2Resources( void )
-{
-    return( FALSE );
-}
-
-RcStatus InitOS2ResTable( int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-uint_32 ComputeOS2ResSegCount( WResDir dir )
-{
-    return( 0 );
-}
+#endif

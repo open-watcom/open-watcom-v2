@@ -24,54 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Stub routines for GUI resource editors (those only support
-*               Win16 and Win32 resources, not OS/2 resources).
+* Description:  Semantic actions for processing menu resources (WIN grammar).
 *
 ****************************************************************************/
 
 
-#include "global.h"
-#include "wresall.h"
+#ifndef SEMMENUW_INCLUDED
+#define SEMMENUW_INCLUDED
 
-void SemOS2WriteFontDir( void )
-{
-}
+extern MenuFlags    SemWINAddFirstMenuOption( YTOKEN token );
+extern MenuFlags    SemWINAddMenuOption( MenuFlags oldflags, YTOKEN token );
+extern FullMenu     *SemWINNewMenu( FullMenuItem firstitem );
+extern FullMenu     *SemWINAddMenuItem( FullMenu * currmenu, FullMenuItem curritem );
+extern void         SemWINWriteMenu( WResID * name, ResMemFlags flags, FullMenu * menu, YTOKEN );
 
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-{
-}
-
-int RcBuildLXResourceObjects( void )
-{
-    return( TRUE );
-}
-
-int CopyLXExeObjects( void )
-{
-    return( TRUE );
-}
-
-int RcWriteLXResourceObjects( void )
-{
-    return( TRUE );
-}
-
-int CopyOS2Resources( void )
-{
-    return( FALSE );
-}
-
-RcStatus InitOS2ResTable( int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-uint_32 ComputeOS2ResSegCount( WResDir dir )
-{
-    return( 0 );
-}
+#endif

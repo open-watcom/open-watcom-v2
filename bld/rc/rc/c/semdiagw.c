@@ -73,11 +73,10 @@ struct ControlData {
 
 #include <stddef.h>
 #include <string.h>
-#include "wresall.h"
 #include "global.h"
 #include "errors.h"
-#include "winytab.h"
 #include "semantic.h"
+#include "semantcw.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
 
@@ -337,7 +336,7 @@ static FullDialogBoxControl *SemWINInitDiagCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token,
+FullDialogBoxControl *SemWINNewDiagCtrl( YTOKEN token,
                                 FullDiagCtrlOptions opts )
 /********************************************************/
 {
@@ -584,7 +583,7 @@ static void SemFreeDialogHeader( FullDialogBoxHeader *head )
 } /* SemFreeDialogHeader */
 
 static int SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
-                                 uint_16 tokentype )
+                                 YTOKEN tokentype )
 /*********************************************************************/
 {
     int                         error;
@@ -651,7 +650,7 @@ static uint_16 SemCountBytes( DataElemList *list )
     return( bytes );
 }
 
-static void SemCheckDialogBox( FullDialogBoxHeader *head, uint_16 tokentype,
+static void SemCheckDialogBox( FullDialogBoxHeader *head, YTOKEN tokentype,
                                DlgHelpId dlghelp, FullDiagCtrlList *ctrls )
 /***************************************************************************/
 {
@@ -684,7 +683,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, uint_16 tokentype,
 void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                     DialogSizeInfo size, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
-                    uint_16 tokentype )
+                    YTOKEN tokentype )
 /******************************************************************/
 {
     ResLocation              loc;

@@ -150,7 +150,7 @@
 %type <resid>           type-id
 %type <integral>        id-value
 %type <fullresflags>    resource-options
-%type <maskint>         resource-option
+%type <optint>          resource-option
 %type <string>          file-name
 %type <acceltable>      acc-section
 %type <accevent>        acc-event
@@ -510,30 +510,30 @@ single-line-resource
 
 resource-options
     : resource-option
-        { $$ = SemOS2AddFirstResOption( $1.Mask, $1.Value ); }
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
     | resource-options resource-option
-        { $$ = SemOS2AddResOption( $1, $2.Mask, $2.Value ); }
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 resource-option
     : Y_PRELOAD
-        { $$.Mask = Y_PRELOAD; }
+        { $$.Option = Y_PRELOAD; }
     | Y_LOADONCALL
-        { $$.Mask = Y_LOADONCALL; }
+        { $$.Option = Y_LOADONCALL; }
     | Y_FIXED
-        { $$.Mask = Y_FIXED; }
+        { $$.Option = Y_FIXED; }
     | Y_MOVEABLE
-        { $$.Mask = Y_MOVEABLE; }
+        { $$.Option = Y_MOVEABLE; }
     | Y_PURE
-        { $$.Mask = Y_PURE; }
+        { $$.Option = Y_PURE; }
     | Y_IMPURE
-        { $$.Mask = Y_IMPURE; }
+        { $$.Option = Y_IMPURE; }
     | Y_DISCARDABLE
-        { $$.Mask = Y_DISCARDABLE; }
+        { $$.Option = Y_DISCARDABLE; }
     | Y_SEGALIGN
-        { $$.Mask = Y_SEGALIGN; }
+        { $$.Option = Y_SEGALIGN; }
     | Y_INTEGER
-        { $$.Mask = Y_INTEGER; $$.Value = $1.val; }
+        { $$.Option = Y_INTEGER; $$.Value = $1.val; }
     ;
 
 file-name

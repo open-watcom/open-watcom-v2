@@ -32,31 +32,6 @@
 #ifndef SEMDIAG_INCLUDED
 #define SEMDIAG_INCLUDED
 
-#include "wresall.h"
-#include "semraw.h"
-
-typedef struct FullDialogOptions {
-    uint_8      token;
-    union {
-        ResNameOrOrdinal *  Name;
-        char *              Str;
-        DialogStyle         Style;
-        DialogExstyle       Exstyle;
-        WResLangType        lang;
-        struct {
-            uint_16         PointSize;
-            char *          FontName;
-            uint_16         FontWeight;
-            uint_8          FontItalic;
-            uint_8          FontExtra;  /* don't know what this is but
-                                         * MS rc accepts it and it appears in
-                                         * some samples */
-            char            FontWeightDefined;
-            char            FontItalicDefined;
-        } Font;
-    } Opt;
-} FullDialogOptions;
-
 typedef struct DlgHeader32 {
     DialogBoxHeader32    Head;
     DialogExHeader32     ExHead;
@@ -152,36 +127,5 @@ typedef struct FullDiagCtrlOptionsOS2 {
     uint_16                 ID;
     ResNameOrOrdinal        *Text;
 } FullDiagCtrlOptionsOS2;
-
-extern FullDialogBoxHeader  *SemWINNewDiagOptions( FullDialogOptions * opt );
-extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader * head, FullDialogOptions * opt );
-extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl * ctrl, DataElemList * );
-extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList * list, FullDialogBoxControl * ctrl, DataElemList * );
-extern FullDialogBoxControl *SemWINNewDiagCtrl( uint_8 token, FullDiagCtrlOptions opts );
-extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
-                    FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
-                    uint_16 );
-extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
-extern FullDialogBoxControl *SemWINSetControlData( IntMask, unsigned long,
-         DialogSizeInfo, WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
-
-extern FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
-                    DataElemList *, PresParamListOS2 * );
-extern FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
-                    FullDialogBoxControlOS2 *ctrl, DataElemList *, PresParamListOS2 * );
-extern FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( uint_8 token,
-                    FullDiagCtrlOptionsOS2 opts, PresParamListOS2 * );
-extern FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2,
-                    IntMask, PresParamListOS2 *, FullDiagCtrlListOS2 *, uint_16 );
-extern FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name, uint_32 id,
-                    DialogSizeInfo size, ResNameOrOrdinal *ctlclass,
-                    IntMask style, FullDiagCtrlListOS2 *, PresParamListOS2 * );
-extern PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam );
-extern PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
-                    PresParamsOS2 presparam );
-
-extern void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags,
-                    uint_32, FullDiagCtrlListOS2 * );
-extern void SemOS2AddDlgincResource( WResID *name, char *filename );
 
 #endif

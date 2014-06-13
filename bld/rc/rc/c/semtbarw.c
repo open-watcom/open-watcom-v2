@@ -31,10 +31,9 @@
 
 
 #include <string.h>
-#include "wresall.h"
+#include "global.h"
 #include "semantic.h"
 #include "semtbarw.h"
-#include "global.h"
 #include "restbar.h"
 #include "wresdefn.h"
 #include "rcrtns.h"

@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include "wresall.h"
+#include "global.h"
 #include "errors.h"
 #include "rcmem.h"
-#include "global.h"
-#include "os2ytab.h"
 #include "semantic.h"
+#include "semantc2.h"
 
 
 static uint_32  curCodepage = 850;  // default resource codepage
@@ -52,7 +51,7 @@ void SemOS2SetCodepage( uint_32 codepage )
     curCodepage = codepage;
 }
 
-FullOptFlagsOS2 SemOS2AddFirstResOption( uint_8 token, uint_32 value )
+FullOptFlagsOS2 SemOS2AddFirstResOption( YTOKEN token, uint_32 value )
 /********************************************************************/
 {
     FullOptFlagsOS2     newflags;
@@ -71,7 +70,7 @@ FullOptFlagsOS2 SemOS2AddFirstResOption( uint_8 token, uint_32 value )
  * are specified. The flag will be ignored by OS but we do the same
  * for compatibility.
  */
-FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, uint_8 token, uint_32 value )
+FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YTOKEN token, uint_32 value )
 /******************************************************************************************/
 {
     switch( token ) {
@@ -140,7 +139,7 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
     }
 }
 
-char *SemOS2TokenToString( uint_8 token )
+char *SemOS2TokenToString( YTOKEN token )
 /***************************************/
 {
     switch( token ) {

@@ -51,11 +51,10 @@ struct MenuItem {
 
 
 #include <string.h>
-#include "wresall.h"
-#include "errors.h"
 #include "global.h"
-#include "os2ytab.h"
+#include "errors.h"
 #include "semantic.h"
+#include "semantc2.h"
 #include "layer0.h"
 #include "rcrtns.h"
 
@@ -101,13 +100,13 @@ int ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
 
 static void SemOS2FreeSubMenu( FullMenuOS2 *submenu );
 
-MenuFlags SemOS2AddFirstMenuOption( uint_8 token )
+MenuFlags SemOS2AddFirstMenuOption( YTOKEN token )
 /************************************************/
 {
     return( SemOS2AddMenuOption( 0, token ) );
 }
 
-MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, uint_8 token )
+MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YTOKEN token )
 /***************************************************************/
 {
     switch( token ) {
@@ -277,7 +276,7 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
 }
 
 void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
-                   uint_16 tokentype, uint_32 codepage )
+                   YTOKEN tokentype, uint_32 codepage )
 /***********************************************************************/
 {
     ResLocation     loc;
@@ -301,8 +300,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = TRUE;
     SemOS2FreeSubMenu( menu );
     return;

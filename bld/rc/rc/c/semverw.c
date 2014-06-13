@@ -31,12 +31,10 @@
 
 
 #include <string.h>
-#include "wresall.h"
 #include "global.h"
 #include "errors.h"
-#include "winytab.h"
 #include "semantic.h"
-#include "semverw.h"
+#include "semantcw.h"
 #include "wresdefn.h"
 #include "layer0.h"
 #include "rcrtns.h"

@@ -31,10 +31,9 @@
 
 #include "global.h"
 #include "yydriver.h"
-#include "yydrivr2.h"
 #include "rctypes.h"
 #include "semantic.h"
-#include "semhelp2.h"
+#include "semantc2.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"
@@ -46,6 +45,11 @@ typedef uint_16         YYACTTYPE;
 typedef uint_16         YYPLHSTYPE;
 typedef uint_8          YYPLENTYPE;
 typedef uint_16         YYTOKENTYPE;
+
+typedef struct IntOpt {
+    YTOKEN      Option;
+    uint_32     Value;
+} IntOpt;
 
 typedef union {
     ScanInt                     intinfo;
@@ -80,6 +84,7 @@ typedef union {
     RawDataItem                 rawitem;
     YYCHKTYPE                   token;
     DataElemList                *dataelem;
+    IntOpt                      optint;
 } YYSTYPE;
 
 #ifdef _I86FAR

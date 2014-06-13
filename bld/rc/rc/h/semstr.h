@@ -33,8 +33,6 @@
 #ifndef SEMSTR_INCLUDED
 #define SEMSTR_INCLUDED
 
-#include "wresall.h"
-
 typedef struct FullStringTableBlock {
     struct FullStringTableBlock     *Next;
     struct FullStringTableBlock     *Prev;

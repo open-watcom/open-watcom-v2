@@ -33,8 +33,8 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "winytab.h"
 #include "semantic.h"
+#include "semantcw.h"
 #include "reserr.h"
 #include "depend.h"
 #include "wresdefn.h"
@@ -74,7 +74,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
     }
 }
 
-extern void SemWINAddSingleLineResource( WResID * name, uint_8 type,
+extern void SemWINAddSingleLineResource( WResID * name, YTOKEN type,
                       FullMemFlags * fullflags, char * filename )
 /***************************************************************/
 {

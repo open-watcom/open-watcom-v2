@@ -24,54 +24,37 @@
 *
 *  ========================================================================
 *
-* Description:  Stub routines for GUI resource editors (those only support
-*               Win16 and Win32 resources, not OS/2 resources).
+* Description:  Semantic actions interface for WIN grammar (used by yydriver).
 *
 ****************************************************************************/
 
 
-#include "global.h"
-#include "wresall.h"
+#ifndef SEMANTCW_H_INCLUDED
+#define SEMANTCW_H_INCLUDED
 
-void SemOS2WriteFontDir( void )
-{
-}
+#include "winytab.h"
+#include "scan.h"
 
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-{
-}
+typedef unsigned short  YTOKEN;
 
-int RcBuildLXResourceObjects( void )
-{
-    return( TRUE );
-}
+extern int  LookupKeywordWIN( ScanString newstring );
+extern int  ScanWIN( ScanValue * value );
 
-int CopyLXExeObjects( void )
-{
-    return( TRUE );
-}
+#include "semmenuw.h"
+#include "semdiagw.h"
+#include "semtbarw.h"
+#include "semverw.h"
+#include "semsnglw.h"
+#include "semresfl.h"
 
-int RcWriteLXResourceObjects( void )
-{
-    return( TRUE );
-}
+extern FullMemFlags     SemWINAddFirstMemOption( YTOKEN token );
+extern FullMemFlags     SemWINAddMemOption( FullMemFlags, YTOKEN token );
+extern char             *SemWINTokenToString( YTOKEN token );
+extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
+extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
+extern void             SemWINUnsupported( YTOKEN token );
+extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
+                                ResMemFlags loadopts, ResMemFlags memopts,
+                                ResMemFlags pureopts );
 
-int CopyOS2Resources( void )
-{
-    return( FALSE );
-}
-
-RcStatus InitOS2ResTable( int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
-{
-    return( RS_READ_ERROR );
-}
-
-uint_32 ComputeOS2ResSegCount( WResDir dir )
-{
-    return( 0 );
-}
+#endif

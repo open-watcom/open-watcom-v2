@@ -33,7 +33,6 @@
 #define SEMSTRUCT_INCLUDED
 
 #include "wresall.h"
-#include "scan.h"
 
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
@@ -67,39 +66,6 @@ typedef struct IntMask {
     unsigned    unsgVal         : 1;
 } IntMask;
 
-
-/**** Semantic routines ****/
-extern SemOffset        SemStartResource( void );
-extern SemLength        SemEndResource( SemOffset start );
-extern void             SemAddResourceFree( WResID * name, WResID * type,
-                                        ResMemFlags flags, ResLocation loc );
-extern void             SemAddResource( WResID * name, WResID * type,
-                                        ResMemFlags, ResLocation );
-extern void             SemAddResource2( WResID * name, WResID * type,
-                                        ResMemFlags flags, ResLocation loc,
-                                        char *filename );
-extern void             SemSetDefLang( void );
-extern const WResLangType *SemGetResourceLanguage( void );
-extern void             SemanticInitStatics( void );
-
-extern FullMemFlags     SemWINAddFirstMemOption( uint_8 token );
-extern FullMemFlags     SemWINAddMemOption( FullMemFlags, uint_8 token );
-extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
-                                ResMemFlags loadopts, ResMemFlags memopts,
-                                ResMemFlags pureopts );
-extern char             *SemWINTokenToString( uint_8 token );
-extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
-extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
-extern void             SemWINUnsupported( uint_8 token );
-extern FullOptFlagsOS2  SemOS2AddFirstResOption( uint_8 token, uint_32 value );
-extern FullOptFlagsOS2  SemOS2AddResOption( FullOptFlagsOS2, uint_8 token, uint_32 value );
-extern void             SemOS2CheckResFlags( FullOptFlagsOS2 *currflags,
-                                ResMemFlags loadopts, ResMemFlags memopts,
-                                ResMemFlags pureopts );
-extern char             *SemOS2TokenToString( uint_8 token );
-extern uint_32          SemOS2DefaultCodepage( void );
-extern void             SemOS2SetCodepage( uint_32 codepage );
-
 /**** include all the semantic structures and routine prototypes for each ****/
 /**** type of structure ****/
 
@@ -110,5 +76,19 @@ extern void             SemOS2SetCodepage( uint_32 codepage );
 #include "semsingl.h"
 #include "semresfl.h"
 #include "semutil.h"
+
+/**** Semantic global routines ****/
+extern SemOffset            SemStartResource( void );
+extern SemLength            SemEndResource( SemOffset start );
+extern void                 SemAddResourceFree( WResID * name, WResID * type,
+                                        ResMemFlags flags, ResLocation loc );
+extern void                 SemAddResource( WResID * name, WResID * type,
+                                        ResMemFlags, ResLocation );
+extern void                 SemAddResource2( WResID * name, WResID * type,
+                                        ResMemFlags flags, ResLocation loc,
+                                        char *filename );
+extern void                 SemSetDefLang( void );
+extern const WResLangType   *SemGetResourceLanguage( void );
+extern void                 SemanticInitStatics( void );
 
 #endif

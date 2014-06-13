@@ -33,7 +33,6 @@
 #ifndef SEMACCEL_INCLUDED
 #define SEMACCEL_INCLUDED
 
-#include "wresall.h"
 #include "os2res.h"
 
 /**** Semantic structures ****/

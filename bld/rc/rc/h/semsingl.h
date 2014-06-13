@@ -32,7 +32,6 @@
 #ifndef SEMSINGL_INCLUDED
 #define SEMSINGL_INCLUDED
 
-#include "wresall.h"
 #include "rctypes.h"
 
 #include "pushpck1.h"
@@ -100,10 +99,7 @@ typedef struct BitmapFileHeader {
 #define BITMAP_MAGIC    0x4d42      /* the letters BM */
 #define BMARRAY_MAGIC   0x4142      /* the letters BA */
 
-extern void SemWINAddMessageTable( WResID *name, ScanString *filename );
-extern void SemWINWriteFontDir( void );
-extern void SemWINAddSingleLineResource( WResID * name, uint_8 type, FullMemFlags * fullflags, char * filename );
 extern void SemOS2WriteFontDir( void );
-extern void SemOS2AddSingleLineResource( WResID *name, uint_8 type, FullOptFlagsOS2 *fullflags, char *filename );
+extern void SemWINWriteFontDir( void );
 
 #endif

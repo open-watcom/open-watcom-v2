@@ -31,10 +31,10 @@
 
 
 #include "watcom.h"
-#include "wresall.h"
-#include "errors.h"
 #include "global.h"
+#include "errors.h"
 #include "semantic.h"
+#include "semantcw.h"
 #include "rcrtns.h"
 
 

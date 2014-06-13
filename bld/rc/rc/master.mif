@@ -73,6 +73,7 @@ common_objs = &
     $(_subdir_)scanw.obj &
     $(_subdir_)scan2.obj &
     $(_subdir_)semacclw.obj &
+    $(_subdir_)semantic.obj &
     $(_subdir_)semantcw.obj &
     $(_subdir_)semdiagw.obj &
     $(_subdir_)semmenuw.obj &
