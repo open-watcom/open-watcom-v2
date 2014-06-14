@@ -1,0 +1,94 @@
+//    co-wc32.lnt
+//    Compiler Options for Watcom C, C++ 32 bit
+
+-cwc
+
+//    This file contains options to allow PC-lint to process source
+//    files for your compiler.  It is used as follows:
+//
+//    lint  co-wc32.lnt  source-file(s)
+//
+-d_M_IX86=300   // assume Intel 80386 architecture -- modify to suit
++rw(__declspec)
+        // We now support __declspec directly so that the following
+        // option is now commented out.  If trouble ensues you can
+        // once again disable __declspec through this option.
+        // -d__declspec()= // ignore this construct
+-d_declspec=__declspec  // the single '_' version is occasionally used
+
+  // additional reserve words needed
++rw(_loadds,_export)
++rw(__interrupt,__near,__far,__huge,__fortran,__pascal,__cdecl)
++rw(__export,__loadds,__saveregs,__asm,__fastcall,__stdcall)
++rw(_export)
+
++fcd            // makes cdecl significant -- used for proto generation
++fcu            // chars are by default unsigned
++fsu            // so are strings
+-d__386__       // pre-defined macro for 386 version, not set by -cwc
+-d__FLAT__      // not set by -cwc
+-si4            // sizeof(int)          is 4
+-spN4           // sizeof(near pointer) is 4
+-spF6           // sizeof( far pointer) is 6
+-sld10          // sizeof(long double)  is 10.
+-function(exit,_exit)   // _exit() is like exit()
+-emacro(734,putc)       // don't complain about items being too large.
+-emacro(413,offsetof)   // use of NULL pointer creates a stir
+-emacro(545,offsetof)   // addressing an array member is OK
+-emacro(506,putc)       // don't complain about constant Boolean
+-emacro((???),va_arg)   // the va_arg() macro can yield 415, 416, 661, 662
+                        // 796 and 797 (out-of-bounds errors).
+
+   // while processing compiler (library) header files ...
+-wlib(1)    // sets the warning level within library headers to 1
+	    // (no warnings, just syntax errors).  Comment out if you
+	    // are actually linting library headers.  This
+	    // option makes obsolete options of the form -elib(axxx) where
+	    // xxx >= 400 which may be retained for historical reasons.
+-elib(46)       // an unsigned short bit field is used as __FILLER__
+-elib(522)      // function return value ignored
+-elib(537)      // repeated include file (ios.h)
+-elib(641)      // converting enum to int
+-elib(652)      // suppress message about #define of earlier declared symbols
+-elib(655)      // ORing enum's
+-elib(726)      // extraneous comma in enumeration
+-elib(760)      // suppress message about multiple identical macro defs
+-elib(762)      // suppress message about multiple identical declarations and
+-elib(806)      // small bit field is signed
+-elib(1007)     // pure virtual within extern "C"
+-elib(1053)     // prototypes cannot be distinguished
+-elib(1511)     // member (rdbuf) hides nonvirtual member
+-elib(1704)     // private copy constructor
+-elib(1712)     // default constructor missing
+-elib(1717)     // empty prototypes
+-elib(1720)     // strange argument to assignment operator
+-elib(1721)     // unusual operator =() declaration
+-elib(1722)     // assignment operator does not return ref to class
+-elib(1724)     // strange argument to copy constructor
+-elib(1735)     // default parameter within virtual function
+-elib(1736)     // redundant access specifier
+
+-esym(1702,operator<<,operator>>)  // both a member and an ordinary function
+
+//  The following functions exhibit variable return modes.
+//  That is, they may equally-usefully be called for a value
+//  as called just for their effects.  Accordingly we inhibit
+//  Warning 534 for these functions.
+//  Feel free to add to or subtract from this list.
+
+-esym(534,close,creat,fclose,fflush,fprintf,fputc)
+-esym(534,fputs,fscanf,fseek,fwrite,lseek,memcpy,memmove,memset)
+-esym(534,printf,puts,scanf,sprintf,sscanf,strcat,strcpy)
+-esym(534,strncat,strncpy,unlink,write)
+
+//  These are the wide char variants of printf-scanf family
+
+-wprintf( 1, wprintf )
+-wprintf( 2, fwprintf, swprintf )
+-wscanf( 1, wscanf )
+-wscanf( 2, fwscanf, swscanf )
+
+
+//  Add elements of ole automation
+
+lib-ole.lnt

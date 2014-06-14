@@ -1,0 +1,8 @@
+
+// BSTR functions (part of OLE Automation)
+
+-sem( SysAllocString, @p == malloc(1p) || @p == 0, 1p )
+-sem( SysAllocStringByteLen, @P == malloc(2n+1) || @p == 0 )
+-sem( SysAllocStringLen, @p == malloc(2n+1) || @p == 0 )
+-sem( SysStringLen, 1p ? @n == 1p - 1 : @n == 0 )
+-function( free, SysFreeString )

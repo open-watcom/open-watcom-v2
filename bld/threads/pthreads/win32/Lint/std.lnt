@@ -1,0 +1,11 @@
+//  Watcom C, C++ (32 bit), -si4 -sp4, lib-stl.lnt lib-w32.lnt
+//  Standard lint options
+
+au-sm123.lnt
+co-wc32.lnt
+lib-stl.lnt
+lib-w32.lnt
+options.lnt
+-si4
+-sp4
+-iC:\WATCOM\H;C:\WATCOM\H\NT

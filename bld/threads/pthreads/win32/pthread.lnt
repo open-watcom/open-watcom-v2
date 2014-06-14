@@ -1,0 +1,24 @@
+
+
+// Environment Setup
+//==================
+-i..\h
+-iLint
+
+// General Options
+//================
+-e537    // Okay to #include the same header multiple times.
+-e641    // Okay to do arithemtic computations on enumeration variables.
+-e655    // Okay to do bitwise operations with "compatible" enumerators.
+-e830    // Turn off 'Location cited in prior message' messages. We are interactive.
+-e831    // ... turn this one off too (it is similar to 830).
+-e1904   // Okay to use C style comments.
+
+-hs      // Put a space between the messages so we have a prayer of being able to read them.
+
+// Special semantics
+// =================
+
+// Standard Library Options
+// ========================
+// Okay to ignore return values from the following.
