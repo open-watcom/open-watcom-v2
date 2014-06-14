@@ -122,24 +122,25 @@ typedef enum {
 /* */
 
 #ifdef YYDEBUG
+
 #include <stdio.h>
 #include "param.h"
 
 static void dump_rule( unsigned rule )
 {
     unsigned                i;
-    const YTOKEN YYFAR      *tok;
+    const YYCHKTYPE YYFAR   *tok;
     const char YYFAR        *p;
 
-    if (CmdLineParms.DebugParser) {
-        for( p = yytoknames[ yyplhstab[ rule ] ]; *p; ++p ) {
+    if( CmdLineParms.DebugParser ) {
+        for( p = yytoknames[yyplhstab[rule]]; *p; ++p ) {
             RcMsgFprintf( stdout, NULL, "%c", *p );
         }
         RcMsgFprintf( stdout, NULL, " <-" );
-        tok = &yyrhstoks[ yyrulebase[ rule ] ];
-        for( i = yyplentab[ rule ]; i != 0; --i ) {
+        tok = &yyrhstoks[yyrulebase[rule]];
+        for( i = yyplentab[rule]; i != 0; --i ) {
             RcMsgFprintf( stdout, NULL, " " );
-            for( p = yytoknames[ *tok ]; *p; ++p ) {
+            for( p = yytoknames[*tok]; *p; ++p ) {
                 RcMsgFprintf( stdout, NULL, "%c", *p );
             }
             ++tok;
@@ -147,11 +148,11 @@ static void dump_rule( unsigned rule )
         RcMsgFprintf( stdout, NULL, "\n" );
     }
 }
-static void puts_far( const char YYFAR * string )
+static void puts_far( const char YYFAR *string )
 {
     const char YYFAR            *p;
 
-    if (CmdLineParms.DebugParser) {
+    if( CmdLineParms.DebugParser ) {
         for( p = string; *p; ++p ) {
             RcMsgFprintf( stdout, NULL, "%c", *p );
         }
@@ -169,8 +170,8 @@ static YTOKEN yylexOS2( void )
 
     curtoken = ScanOS2( &value );
 
-    while (RcIoIsCOrHFile()) {
-        switch (curtoken) {
+    while( RcIoIsCOrHFile() ) {
+        switch( curtoken ) {
         case Y_NAME:
         case Y_STRING:
         case Y_DOS_FILENAME:
@@ -210,7 +211,7 @@ static YTOKEN yylexOS2( void )
     return( curtoken );
 }
 
-static p_action doAction( YTOKEN t, parse_stack *state )
+static p_action doAction( YYCHKTYPE t, parse_stack *state )
 {
     YYSTYPE yyval = { 0 };
     YYSTYPE *yyvp;
@@ -223,28 +224,28 @@ static p_action doAction( YTOKEN t, parse_stack *state )
     for(;;) {
         yyk = *(state->ssp);
         yyi = yyk + t;
-        while( yyi >= YYUSED || yychktab[ yyi ] != t ) {
+        while( yyi >= YYUSED || yychktab[yyi] != t ) {
             yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[ yyi ] != YYPTOKEN ) {
+            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                 goto use_d_token;
             }
-            yyk = yyacttab[ yyi ];
+            yyk = yyacttab[yyi];
             yyi = yyk + t;
         }
-        yyaction = yyacttab[ yyi ];
+        yyaction = yyacttab[yyi];
         if( yyaction == YYNOACTION ) {
     use_d_token:
             yyk = *(state->ssp);
             yyi = yyk + YYDTOKEN;
-            while( yyi >= YYUSED || yychktab[ yyi ] != YYDTOKEN ) {
+            while( yyi >= YYUSED || yychktab[yyi] != YYDTOKEN ) {
                 yyi = yyk + YYPTOKEN;
-                if( yyi >= YYUSED || yychktab[ yyi ] != YYPTOKEN ) {
+                if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                     return( P_SYNTAX );
                 }
-                yyk = yyacttab[ yyi ];
+                yyk = yyacttab[yyi];
                 yyi = yyk + YYDTOKEN;
             }
-            yyaction = yyacttab[ yyi ];
+            yyaction = yyacttab[yyi];
             if( yyaction == YYNOACTION ) {
                 return( P_SYNTAX );
             }
@@ -258,26 +259,26 @@ static p_action doAction( YTOKEN t, parse_stack *state )
             state->vsp++;
             *(state->vsp) = yylval;
 #ifdef YYDEBUG
-            puts_far( yytoknames[ t ] );
+            puts_far( yytoknames[t] );
 #endif
             return( P_SHIFT );
         }
         rule = yyaction - YYUSED;
-        yyi = yyplentab[ rule ];
+        yyi = yyplentab[rule];
         state->vsp -= yyi;
         state->ssp -= yyi;
         if( state->ssp < state->sstack ) {
             return( P_ERROR );
         }
-        yylhs = yyplhstab[ rule ];
+        yylhs = yyplhstab[rule];
         yyk = *(state->ssp);
         yyi = yyk + yylhs;
-        while( yyi >= YYUSED || yychktab[ yyi ] != yylhs ) {
+        while( yyi >= YYUSED || yychktab[yyi] != yylhs ) {
             yyi = yyk + YYPTOKEN;
-            if( yyi >= YYUSED || yychktab[ yyi ] != YYPTOKEN ) {
+            if( yyi >= YYUSED || yychktab[yyi] != YYPTOKEN ) {
                 return( P_ERROR );
             }
-            yyk = yyacttab[ yyi ];
+            yyk = yyacttab[yyi];
             yyi = yyk + yylhs;
         }
         state->ssp++;
@@ -290,7 +291,7 @@ static p_action doAction( YTOKEN t, parse_stack *state )
 #ifdef YYDEBUG
         dump_rule( rule );
 #endif
-        if (!yysyntaxerror) {
+        if( !yysyntaxerror ) {
             switch( rule ) {
             /*  */
 /* */
@@ -348,10 +349,10 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YTOKEN token, parse_stack * state, int error_state )
+static void handleError( YTOKEN token, parse_stack *state, int error_state )
 {
-    if (!error_state) {
-        switch (token) {
+    if( !error_state ) {
+        switch( token ) {
         case Y_INTEGER:
             RcError( ERR_SYNTAX_STR, yylval.intinfo.str );
             RcMemFree( yylval.intinfo.str );
@@ -373,7 +374,7 @@ static void handleError( YTOKEN token, parse_stack * state, int error_state )
     initParseStack( state );
 }
 
-static p_action doParse( parse_stack * resource_state )
+static p_action doParse( parse_stack *resource_state )
 {
     p_action    what;
     int         error_state;
@@ -384,9 +385,9 @@ static p_action doParse( parse_stack * resource_state )
 
     do {
         token = yylexOS2();
-        if (error_state) {
+        if( error_state ) {
             token_count++;
-            if (token_count >= YYERRORTHRESHOLD) {
+            if( token_count >= YYERRORTHRESHOLD ) {
                 error_state = FALSE;
             }
         }
@@ -403,7 +404,7 @@ static p_action doParse( parse_stack * resource_state )
             RcMemFree( yylval.intinfo.str );
             yylval.intinfo.str = NULL;
         }
-    } while (what != P_ACCEPT && what != P_ERROR);
+    } while( what != P_ACCEPT && what != P_ERROR );
 
     return( what );
 }
