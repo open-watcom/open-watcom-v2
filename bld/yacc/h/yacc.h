@@ -290,6 +290,7 @@ extern index_n  SR_conflicts;
 extern char     lineflag;
 extern char     bigflag;
 extern char     denseflag;
+extern char     enumflag;
 extern char     default_shiftflag;
 extern char     compactflag;
 extern char     fastflag;

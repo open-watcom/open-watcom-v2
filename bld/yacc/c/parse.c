@@ -61,6 +61,12 @@ typedef enum {
     TYPENAME,
 } a_token;
 
+typedef struct y_token {
+    struct y_token  *next;
+    token_n         value;
+    char            name[1];
+} y_token;
+
 static void                 copycurl( void );
 static void                 copyUniqueActions( void );
 static void                 copyact( rule_n, a_sym *, a_sym **, unsigned, unsigned );
@@ -103,6 +109,9 @@ a_SR_conflict               *ambiguousstates;
 
 #define TYPENAME_FIRST_CHAR(x) (isalpha(x)||x=='_')
 #define TYPENAME_NEXT_CHAR(x) (isalpha(x)||isdigit(x)||x=='_'||x=='.')
+
+static y_token  *tokens_head = NULL;
+static y_token  *tokens_tail = NULL;
 
 static a_token scan_typename( unsigned used )
 {
@@ -167,6 +176,93 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, unsigned index )
     return( am );
 }
 
+static void tlist_remove( char *name )
+{
+    y_token *curr;
+    y_token *last;
+
+    last = NULL;
+    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
+        if( strcmp( name, curr->name ) == 0 ) {
+            if( last == NULL ) {
+                tokens_head = curr->next;
+            } else {
+                last->next = curr->next;
+            }
+            if( curr->next == NULL ) {
+                tokens_tail = last;
+            }
+            FREE( curr );
+            break;
+        }
+        last = curr;
+    }
+}
+
+static void tlist_add( char *name, token_n value )
+{
+    y_token *tmp;
+    y_token *curr;
+
+    for( curr = tokens_head; curr != NULL; curr = curr->next ) {
+        if( strcmp( name, curr->name ) == 0 ) {
+            curr->value = value;
+            return;
+        }
+    }
+    tmp = (y_token *)MALLOC( strlen( name ) + sizeof( y_token ), char );
+    strcpy( tmp->name, name );
+    tmp->value = value;
+    tmp->next = NULL;
+    if( tokens_head == NULL ) {
+        tokens_head = tmp;
+    }
+    if( tokens_tail != NULL ) {
+        tokens_tail->next = tmp;
+    }
+    tokens_tail = tmp;
+}
+
+static void dump_header( char *union_name )
+{
+    const char  *fmt;
+    const char  *ttype;
+    y_token     *t;
+    y_token     *tmp;
+
+    if( fastflag || bigflag || compactflag ) {
+        ttype = "unsigned short";
+    } else {
+        ttype = "unsigned char";
+    }
+    if( enumflag ) {
+        fprintf( tokout, "typedef enum yytokentype {\n" );
+        fmt = "\t%-20s = 0x%02x,\n";
+    } else {
+        fmt = "#define %-20s 0x%02x\n";
+    }
+    t = tokens_head;
+    while( t != NULL ) {
+        fprintf( tokout, fmt, t->name, t->value );
+        tmp = t;
+        t = t->next;
+        FREE( tmp );
+    }
+    if( enumflag ) {
+        fprintf( tokout, "\tYTOKEN_ENUMSIZE_SETUP = (%s)-1\n", ttype );
+        fprintf( tokout, "} yytokentype;\n" );
+    } else {
+        fprintf( tokout, "typedef %s yytokentype;\n", ttype );
+    }
+    if( union_name != NULL ) {
+        fprintf( tokout, "#ifndef __YYSTYPE_DEFINED\n" );
+        fprintf( tokout, "#define __YYSTYPE_DEFINED\n" );
+        fprintf( tokout, "typedef union %s YYSTYPE;\n", union_name );
+        fprintf( tokout, "#endif\n" );
+        FREE( union_name );
+    }
+}
+
 void defs( void )
 {
     token_n     gentoken;
@@ -175,6 +271,7 @@ void defs( void )
     char        *dupbuf( void );
     char        *type;
     a_prec      prec;
+    char        *union_name = NULL;
 
     eofsym = make_sym( "$eof", TOKEN_EOF );
     nosym = make_sym( "$impossible", TOKEN_IMPOSSIBLE );
@@ -205,10 +302,12 @@ void defs( void )
             lineinfo();
             fprintf( actout, "%s YYSTYPE;\n", buf );
             fprintf( actout, "#endif\n" );
-            fprintf( tokout, "#ifndef __YYSTYPE_DEFINED\n" );
-            fprintf( tokout, "#define __YYSTYPE_DEFINED\n" );
-            fprintf( tokout, "typedef union %s YYSTYPE;\n", buf );
-            fprintf( tokout, "#endif\n" );
+            if( union_name == NULL ) {
+                union_name = MALLOC( strlen( buf ) + 1, char );
+                strcpy( union_name, buf );
+            } else {
+                msg( "%union already defined\n" );
+            }
             scan( 0 );
             break;
         case LCURL:
@@ -289,7 +388,7 @@ void defs( void )
                     if( scan( 0 ) == NUMBER ) {
                         if( sym->token != 0 ) {
                             if( sym->name[0] != '\'' ) {
-                                fprintf( tokout, "#undef\t%-20s\n", sym->name );
+                                tlist_remove( sym->name );
                             }
                         }
                         sym->token = (token_n)value;
@@ -299,7 +398,7 @@ void defs( void )
                         sym->token = gentoken++;
                     }
                     if( sym->name[0] != '\'' ) {
-                        fprintf( tokout, "#define\t%-20s\t0x%02x\n", sym->name, sym->token );
+                        tlist_add( sym->name, sym->token );
                     }
                 }
                 if( token == ',' ) {
@@ -312,6 +411,7 @@ void defs( void )
         }
     }
     scan( 0 );
+    dump_header( union_name );
 }
 
 static bool scanambig( unsigned used, a_SR_conflict_list **list )
@@ -653,7 +753,7 @@ static void addRuleToUniqueCase( uniq_case *p, rule_n pnum, a_sym *lhs )
 {
     rule_case   *r;
 
-    r = MALLOC(1,rule_case);
+    r = MALLOC( 1, rule_case );
     r->lhs = lhs;
     r->pnum = pnum;
     r->next = p->rules;
@@ -680,7 +780,7 @@ static void insertUniqueAction( rule_n pnum, char *buf, a_sym *lhs )
         }
         p = &(c->next);
     }
-    n = MALLOC(1,uniq_case);
+    n = MALLOC( 1, uniq_case );
     n->action = buf;
     n->rules = NULL;
     n->next = *p;

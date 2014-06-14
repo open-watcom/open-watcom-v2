@@ -47,6 +47,7 @@ char lineflag;
 char bigflag;
 char fastflag;
 char denseflag;
+char enumflag;
 char default_shiftflag;
 char compactflag;
 char eliminateunitflag;
@@ -106,6 +107,9 @@ static void setoptions( char *p )
             } else if( p[1] == 'd' ) {
                 ++p;
                 denseflag = 1;
+            } else if( p[1] == 'e' ) {
+                ++p;
+                enumflag = 1;
             } else if( p[1] == 'f' ) {
                 ++p;
                 fastflag = 1;
@@ -231,6 +235,7 @@ int main( int argc, char **argv )
         puts( "    -db   output bigger (less optimal) tables" );
         puts( "    -dc   output compact tables (slower to execute)" );
         puts( "    -dd   use dense tokens (no '+' style tokens allowed)" );
+        puts( "    -de   dump all symbols to header file as enum items, no macros" );
         puts( "    -df   output fast tables (larger size)" );
         puts( "    -dh   use 'default shift' optimization" );
         puts( "    -dp   dump all productions" );
