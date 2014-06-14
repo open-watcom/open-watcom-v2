@@ -33,7 +33,7 @@
 #define SEMDIAGW_H_INCLUDED
 
 typedef struct FullDialogOptions {
-    YTOKEN                  token;
+    YYTOKENTYPE             token;
     union {
         ResNameOrOrdinal *  Name;
         char *              Str;
@@ -61,11 +61,11 @@ extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl * ctrl,
                                 DataElemList * );
 extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList * list,
                                 FullDialogBoxControl * ctrl, DataElemList * );
-extern FullDialogBoxControl *SemWINNewDiagCtrl( YTOKEN token,
+extern FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token,
                                 FullDiagCtrlOptions opts );
 extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
                                 FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
-                                YTOKEN );
+                                YYTOKENTYPE );
 extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
 extern FullDialogBoxControl *SemWINSetControlData( IntMask, unsigned long, DialogSizeInfo,
                                 WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );

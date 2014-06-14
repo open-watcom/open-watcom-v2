@@ -71,14 +71,14 @@ struct PopupMenuExItem {
 
 static void SemFreeSubMenu( FullMenu *submenu );
 
-MenuFlags SemWINAddFirstMenuOption( YTOKEN token )
-/************************************************/
+MenuFlags SemWINAddFirstMenuOption( YYTOKENTYPE token )
+/*****************************************************/
 {
     return( SemWINAddMenuOption( 0, token ) );
 }
 
-MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YTOKEN token )
-/***************************************************************/
+MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
+/********************************************************************/
 {
     switch (token) {
     case Y_GRAYED:
@@ -158,8 +158,8 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     return( currmenu );
 }
 
-static void SemCheckMenuItemPopup( FullMenuItem *item, YTOKEN tokentype )
-/***********************************************************************/
+static void SemCheckMenuItemPopup( FullMenuItem *item, YYTOKENTYPE tokentype )
+/****************************************************************************/
 {
     if( tokentype == Y_MENU ) {
         if( item->item.popup.item.type == MT_MENUEX ) {
@@ -173,8 +173,8 @@ static void SemCheckMenuItemPopup( FullMenuItem *item, YTOKEN tokentype )
     }
 }
 
-static void SemCheckMenuItemNormal( FullMenuItem *item, YTOKEN tokentype )
-/************************************************************************/
+static void SemCheckMenuItemNormal( FullMenuItem *item, YYTOKENTYPE tokentype )
+/*****************************************************************************/
 {
     if( tokentype == Y_MENU ) {
         if( item->item.normal.type == MT_MENUEX ) {
@@ -191,7 +191,7 @@ static void SemCheckMenuItemNormal( FullMenuItem *item, YTOKEN tokentype )
 }
 
 static int SemWriteMenuItem( FullMenuItem *item, int islastitem,
-                             int *err_code, YTOKEN tokentype )
+                          int *err_code, YYTOKENTYPE tokentype )
 /**************************************************************/
 {
     int     error = 0;
@@ -227,8 +227,8 @@ static int SemWriteMenuItem( FullMenuItem *item, int islastitem,
     return( error );
 }
 
-static int SemWriteSubMenu( FullMenu *submenu, int *err_code, YTOKEN tokentype )
-/******************************************************************************/
+static int SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE tokentype )
+/***********************************************************************************/
 {
     int             error;
     int             islastitem;
@@ -289,7 +289,7 @@ static void SemFreeSubMenu( FullMenu *submenu )
 }
 
 void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
-                   YTOKEN tokentype )
+                   YYTOKENTYPE tokentype )
 /********************************************************************/
 {
     MenuHeader      head;

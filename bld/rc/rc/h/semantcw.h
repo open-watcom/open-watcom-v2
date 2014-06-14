@@ -41,12 +41,12 @@
 #include "semsnglw.h"
 #include "semresfl.h"
 
-extern FullMemFlags     SemWINAddFirstMemOption( YTOKEN token );
-extern FullMemFlags     SemWINAddMemOption( FullMemFlags, YTOKEN token );
-extern char             *SemWINTokenToString( YTOKEN token );
+extern FullMemFlags     SemWINAddFirstMemOption( YYTOKENTYPE token );
+extern FullMemFlags     SemWINAddMemOption( FullMemFlags, YYTOKENTYPE token );
+extern char             *SemWINTokenToString( YYTOKENTYPE token );
 extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
 extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
-extern void             SemWINUnsupported( YTOKEN token );
+extern void             SemWINUnsupported( YYTOKENTYPE token );
 extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
                                 ResMemFlags loadopts, ResMemFlags memopts,
                                 ResMemFlags pureopts );

@@ -122,11 +122,11 @@ static const unsigned char Weights[] = {
 };
 
 typedef struct HashEntry {
-    char    *keyword;
-    YTOKEN  token;
+    char        *keyword;
+    YYTOKENTYPE token;
 } HashEntry;
 
-#define TC_UNKNOWN  ((YTOKEN)-1)
+#define TC_UNKNOWN  ((YYTOKENTYPE)-1)
 
 /* create the hash table by using the a pick macro and the keywords?.gh files */
 
@@ -136,8 +136,8 @@ static const HashEntry HashTable[] = {
     #undef pick
 };
 
-YTOKEN  LookupKeywordWIN( ScanString newstring )
-/**********************************************/
+YYTOKENTYPE LookupKeywordWIN( ScanString newstring )
+/**************************************************/
 {
     int         hash;
     const char  *str = newstring.string;

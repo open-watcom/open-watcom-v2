@@ -43,7 +43,7 @@
 static void AddFontResources( WResID * name, ResMemFlags, char * filename );
 
 
-void SemOS2AddSingleLineResource( WResID *name, YTOKEN type,
+void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                        FullOptFlagsOS2 *fullflags, char *filename )
 /*****************************************************************/
 {

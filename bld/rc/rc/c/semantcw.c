@@ -80,14 +80,14 @@ const WResLangType *SemGetResourceLanguage( void )
     }
 }
 
-void SemWINUnsupported( YTOKEN token )
-/************************************/
+void SemWINUnsupported( YYTOKENTYPE token )
+/*****************************************/
 {
     RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
-FullMemFlags SemWINAddFirstMemOption( YTOKEN token )
-/**************************************************/
+FullMemFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
+/*******************************************************/
 {
     FullMemFlags    newflags;
 
@@ -99,8 +99,8 @@ FullMemFlags SemWINAddFirstMemOption( YTOKEN token )
     return( SemWINAddMemOption( newflags, token ) );
 }
 
-FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YTOKEN token )
-/*********************************************************************/
+FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YYTOKENTYPE token )
+/**************************************************************************/
 {
     switch (token) {
     case Y_PRELOAD:
@@ -161,8 +161,8 @@ void SemWINCheckMemFlags( FullMemFlags * currflags, ResMemFlags loadopts,
     }
 }
 
-char *SemWINTokenToString( YTOKEN token )
-/***************************************/
+char *SemWINTokenToString( YYTOKENTYPE token )
+/********************************************/
 {
     switch (token) {
     case Y_LPAREN:

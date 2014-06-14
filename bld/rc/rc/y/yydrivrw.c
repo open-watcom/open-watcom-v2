@@ -44,7 +44,6 @@ typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
 typedef uint_16         YYPLHSTYPE;
 typedef uint_8          YYPLENTYPE;
-typedef uint_16         YYTOKENTYPE;
 
 typedef union {
     ScanInt                     intinfo;
@@ -79,7 +78,7 @@ typedef union {
     FullVerBlockNest            *verblocknest;
     FullVerBlock                *verblock;
     VerFixedInfo                *verinforoot;
-    YTOKEN                      token;
+    YYTOKENTYPE                 token;
     WResLangType                langinfo;
     DlgHelpId                   dlghelpid;
     DataElemList                *dataelem;
@@ -161,10 +160,10 @@ static void puts_far( const char YYFAR *string )
 
 #endif
 
-static YTOKEN yylexWIN( void )
-/****************************/
+static YYTOKENTYPE yylexWIN( void )
+/*********************************/
 {
-    YTOKEN      curtoken;
+    YYTOKENTYPE curtoken;
     ScanValue   value;
 
     curtoken = ScanWIN( &value );
@@ -348,7 +347,7 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YTOKEN token, parse_stack *state, int error_state )
+static void handleError( YYTOKENTYPE token, parse_stack *state, int error_state )
 {
     if( !error_state ) {
         switch( token ) {
@@ -377,7 +376,7 @@ static p_action doParse( parse_stack *resource_state )
 {
     p_action    what;
     int         error_state;
-    YTOKEN      token;
+    YYTOKENTYPE token;
     int         token_count;
 
     error_state = FALSE;

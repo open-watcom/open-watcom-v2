@@ -39,7 +39,7 @@ typedef struct VersionPair {
 } VersionPair;
 
 typedef struct VerFixedOption {
-    YTOKEN      token;
+    YYTOKENTYPE token;
     union {
         uint_32     Option;
         struct {

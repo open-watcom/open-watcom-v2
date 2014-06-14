@@ -33,7 +33,7 @@
 #define SEMDIAG2_H_INCLUDED
 
 typedef struct FullDialogOptions {
-    YTOKEN                  token;
+    YYTOKENTYPE             token;
     union {
         ResNameOrOrdinal *  Name;
         char *              Str;
@@ -59,10 +59,10 @@ extern FullDiagCtrlListOS2      *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 
 extern FullDiagCtrlListOS2      *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
                                     FullDialogBoxControlOS2 *ctrl, DataElemList *,
                                     PresParamListOS2 * );
-extern FullDialogBoxControlOS2  *SemOS2NewDiagCtrl( YTOKEN token, FullDiagCtrlOptionsOS2 opts,
+extern FullDialogBoxControlOS2  *SemOS2NewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptionsOS2 opts,
                                     PresParamListOS2 * );
 extern FullDialogBoxControlOS2  *SemOS2SetWindowData( FullDiagCtrlOptionsOS2, IntMask,
-                                    PresParamListOS2 *, FullDiagCtrlListOS2 *, YTOKEN );
+                                    PresParamListOS2 *, FullDiagCtrlListOS2 *, YYTOKENTYPE );
 extern FullDialogBoxControlOS2  *SemOS2SetControlData( ResNameOrOrdinal *name, uint_32 id,
                                     DialogSizeInfo size, ResNameOrOrdinal *ctlclass,
                                     IntMask style, FullDiagCtrlListOS2 *, PresParamListOS2 * );

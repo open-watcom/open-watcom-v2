@@ -51,8 +51,8 @@ void SemOS2SetCodepage( uint_32 codepage )
     curCodepage = codepage;
 }
 
-FullOptFlagsOS2 SemOS2AddFirstResOption( YTOKEN token, uint_32 value )
-/********************************************************************/
+FullOptFlagsOS2 SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
+/*************************************************************************/
 {
     FullOptFlagsOS2     newflags;
 
@@ -70,8 +70,8 @@ FullOptFlagsOS2 SemOS2AddFirstResOption( YTOKEN token, uint_32 value )
  * are specified. The flag will be ignored by OS but we do the same
  * for compatibility.
  */
-FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YTOKEN token, uint_32 value )
-/******************************************************************************************/
+FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token, uint_32 value )
+/***********************************************************************************************/
 {
     switch( token ) {
     case Y_PRELOAD:
@@ -139,8 +139,8 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
     }
 }
 
-char *SemOS2TokenToString( YTOKEN token )
-/***************************************/
+char *SemOS2TokenToString( YYTOKENTYPE token )
+/********************************************/
 {
     switch( token ) {
     case Y_LPAREN:

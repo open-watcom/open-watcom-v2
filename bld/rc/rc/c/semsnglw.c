@@ -74,7 +74,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
     }
 }
 
-void SemWINAddSingleLineResource( WResID * name, YTOKEN type,
+void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
                       FullMemFlags * fullflags, char * filename )
 /***************************************************************/
 {

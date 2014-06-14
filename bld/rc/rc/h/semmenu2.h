@@ -32,10 +32,10 @@
 #ifndef SEMMENU2_INCLUDED
 #define SEMMENU2_INCLUDED
 
-extern MenuFlags    SemOS2AddFirstMenuOption( YTOKEN token );
-extern MenuFlags    SemOS2AddMenuOption( MenuFlags oldflags, YTOKEN token );
+extern MenuFlags    SemOS2AddFirstMenuOption( YYTOKENTYPE token );
+extern MenuFlags    SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token );
 extern FullMenuOS2  *SemOS2NewMenu( FullMenuItemOS2 firstitem );
 extern FullMenuOS2  *SemOS2AddMenuItem( FullMenuOS2 * currmenu, FullMenuItemOS2 curritem );
-extern void         SemOS2WriteMenu( WResID * name, ResMemFlags flags, FullMenuOS2 * menu, YTOKEN, uint_32 codepage );
+extern void         SemOS2WriteMenu( WResID * name, ResMemFlags flags, FullMenuOS2 * menu, YYTOKENTYPE, uint_32 codepage );
 
 #endif

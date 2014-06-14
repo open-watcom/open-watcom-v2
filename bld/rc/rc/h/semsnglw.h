@@ -33,7 +33,7 @@
 #ifndef SEMSNGLW_H_INCLUDED
 #define SEMSNGLW_H_INCLUDED
 
-extern void SemWINAddSingleLineResource( WResID * name, YTOKEN type, FullMemFlags * fullflags, char * filename );
+extern void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type, FullMemFlags * fullflags, char * filename );
 extern void SemWINAddMessageTable( WResID *name, ScanString *filename );
 
 #endif

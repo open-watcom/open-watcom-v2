@@ -35,9 +35,9 @@
 #include "winytab.h"
 #include "scan.h"
 
-typedef unsigned short  YTOKEN;
+typedef unsigned short  YYTOKENTYPE;
 
-extern YTOKEN   LookupKeywordWIN( ScanString newstring );
-extern YTOKEN   ScanWIN( ScanValue * value );
+extern YYTOKENTYPE  LookupKeywordWIN( ScanString newstring );
+extern YYTOKENTYPE  ScanWIN( ScanValue * value );
 
 #endif

@@ -175,7 +175,7 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 #define DEF_SPINBUTTON       (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 #define DEF_VALUESET         (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 
-FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YTOKEN token,
+FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YYTOKENTYPE token,
                                     FullDiagCtrlOptionsOS2 opts,
                                     PresParamListOS2 *presparams )
 /****************************************************************/
@@ -749,7 +749,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
 
 FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
                     IntMask framectl, PresParamListOS2 *presparams,
-                    FullDiagCtrlListOS2 *childctls, YTOKEN token )
+                    FullDiagCtrlListOS2 *childctls, YYTOKENTYPE token )
 /*******************************************************************************/
 {
     FullDialogBoxControlOS2 *control;

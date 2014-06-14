@@ -62,7 +62,7 @@ static int      LookAhead;
 static int      longString;
 static int      newLineInString = 0;
 
-static YTOKEN   scanDFA( ScanValue *value );
+static YYTOKENTYPE  scanDFA( ScanValue *value );
 
 static void GetNextChar( void )
 {
@@ -104,15 +104,15 @@ static void     AddDigitToInt( long * value, int base, int newchar )
     *value = *value * base + newdigit;
 } /* AddDigitToInt */
 
-static YTOKEN   scanCPPDirective( ScanValue *value )
-/**************************************************/
+static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
+/******************************************************/
 /* This function takes the correct action for the #line directive and returns */
 /* the token following the preprocessor stuff. It uses Scan to do it's */
 /* scanning. DON'T call this function from within Scan or the functions it */
 /* calls unless you are very careful about recurtion. */
 {
-    YTOKEN  token;
-    int     linenum;
+    YYTOKENTYPE token;
+    int         linenum;
 
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
@@ -175,12 +175,12 @@ void    ScanInitOS2( void )
     enter_start_state();
 }
 
-static YTOKEN scanDFA( ScanValue *value )
-/***************************************/
+static YYTOKENTYPE scanDFA( ScanValue *value )
+/********************************************/
 {
     long                newint;     /* these are used to accumulate parts of */
     VarString           *newstring; /* a new value */
-    YTOKEN              token;
+    YYTOKENTYPE         token;
 #ifdef SCANDEBUG
     char                debugstring[10];
 #endif
@@ -751,10 +751,10 @@ static YTOKEN scanDFA( ScanValue *value )
         }
 } /* scanDFA */
 
-YTOKEN ScanOS2( ScanValue *value )
-/********************************/
+YYTOKENTYPE ScanOS2( ScanValue *value )
+/*************************************/
 {
-    YTOKEN  token;
+    YYTOKENTYPE token;
 
     token = scanDFA( value );
     while( token == Y_POUND_SIGN ) {

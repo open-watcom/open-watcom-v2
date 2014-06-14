@@ -100,14 +100,14 @@ int ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
 
 static void SemOS2FreeSubMenu( FullMenuOS2 *submenu );
 
-MenuFlags SemOS2AddFirstMenuOption( YTOKEN token )
-/************************************************/
+MenuFlags SemOS2AddFirstMenuOption( YYTOKENTYPE token )
+/*****************************************************/
 {
     return( SemOS2AddMenuOption( 0, token ) );
 }
 
-MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YTOKEN token )
-/***************************************************************/
+MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
+/********************************************************************/
 {
     switch( token ) {
     case Y_BITMAP:
@@ -276,7 +276,7 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
 }
 
 void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
-                   YTOKEN tokentype, uint_32 codepage )
+                   YYTOKENTYPE tokentype, uint_32 codepage )
 /***********************************************************************/
 {
     ResLocation     loc;

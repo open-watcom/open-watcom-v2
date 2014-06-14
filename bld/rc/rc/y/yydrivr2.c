@@ -44,10 +44,9 @@ typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
 typedef uint_16         YYPLHSTYPE;
 typedef uint_8          YYPLENTYPE;
-typedef uint_16         YYTOKENTYPE;
 
 typedef struct IntOpt {
-    YTOKEN      Option;
+    YYTOKENTYPE Option;
     uint_32     Value;
 } IntOpt;
 
@@ -82,7 +81,7 @@ typedef union {
     StringItem                  stritem;
     FullStringTable             *strtable;
     RawDataItem                 rawitem;
-    YTOKEN                      token;
+    YYTOKENTYPE                 token;
     DataElemList                *dataelem;
     IntOpt                      optint;
 } YYSTYPE;
@@ -162,10 +161,10 @@ static void puts_far( const char YYFAR *string )
 
 #endif
 
-static YTOKEN yylexOS2( void )
-/****************************/
+static YYTOKENTYPE yylexOS2( void )
+/*********************************/
 {
-    YTOKEN      curtoken;
+    YYTOKENTYPE curtoken;
     ScanValue   value;
 
     curtoken = ScanOS2( &value );
@@ -349,7 +348,7 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YTOKEN token, parse_stack *state, int error_state )
+static void handleError( YYTOKENTYPE token, parse_stack *state, int error_state )
 {
     if( !error_state ) {
         switch( token ) {
@@ -378,7 +377,7 @@ static p_action doParse( parse_stack *resource_state )
 {
     p_action    what;
     int         error_state;
-    YTOKEN      token;
+    YYTOKENTYPE token;
     int         token_count = 0;
 
     error_state = FALSE;

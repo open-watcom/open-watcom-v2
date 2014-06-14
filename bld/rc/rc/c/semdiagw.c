@@ -336,7 +336,7 @@ static FullDialogBoxControl *semInitDiagCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-FullDialogBoxControl *SemWINNewDiagCtrl( YTOKEN token,
+FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token,
                                 FullDiagCtrlOptions opts )
 /********************************************************/
 {
@@ -583,7 +583,7 @@ static void SemFreeDialogHeader( FullDialogBoxHeader *head )
 } /* SemFreeDialogHeader */
 
 static int SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
-                                 YTOKEN tokentype )
+                                 YYTOKENTYPE tokentype )
 /*********************************************************************/
 {
     int                         error;
@@ -650,7 +650,7 @@ static uint_16 SemCountBytes( DataElemList *list )
     return( bytes );
 }
 
-static void SemCheckDialogBox( FullDialogBoxHeader *head, YTOKEN tokentype,
+static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
                                DlgHelpId dlghelp, FullDiagCtrlList *ctrls )
 /***************************************************************************/
 {
@@ -683,7 +683,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YTOKEN tokentype,
 void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                     DialogSizeInfo size, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
-                    YTOKEN tokentype )
+                    YYTOKENTYPE tokentype )
 /******************************************************************/
 {
     ResLocation              loc;

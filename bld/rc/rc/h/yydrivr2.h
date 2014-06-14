@@ -35,9 +35,9 @@
 #include "os2ytab.h"
 #include "scan.h"
 
-typedef unsigned short  YTOKEN;
+typedef unsigned short  YYTOKENTYPE;
 
-extern YTOKEN   LookupKeywordOS2( ScanString newstring );
-extern YTOKEN   ScanOS2( ScanValue * value );
+extern YYTOKENTYPE  LookupKeywordOS2( ScanString newstring );
+extern YYTOKENTYPE  ScanOS2( ScanValue * value );
 
 #endif
