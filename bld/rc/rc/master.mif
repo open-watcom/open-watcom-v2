@@ -245,8 +245,8 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(version_res_dll_$(host_os
         $(wstrip) -q -a -r $@ . wrc.res
 !endif
 
-win_yacc_options = -b $(win_yacc_prefix) -d -dd -db
-os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db
+win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
+os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
 $(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
         $(yacc) $(win_yacc_options) $< >$(nulldevice)

@@ -250,9 +250,9 @@ yylex.gh : ./umktable.exe
 xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.h
     $[@ $]@ $@
 
-yacc_options = -d -db -dd -df -dt -du
+yacc_options = -d -db -dd -df -dt -du -de
 # The -dp and -ds switches are v. useful when debugging parser but gen large file!
-#yacc_options = -d -db -dd -df -dp -ds -dt -du
+#yacc_options = -d -db -dd -df -dp -ds -dt -du -de
 
 ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
     $(yacc) $(yacc_options) $[@ $]@ >y.out

@@ -55,7 +55,7 @@ typedef uint_8          YYBITTYPE;
 typedef uint_8          YYPLENTYPE;
 typedef uint_16         YYPLHSTYPE;
 
-typedef unsigned        YYTOKENTYPE;
+typedef yytokentype     YYTOKENTYPE;
 
 typedef union {
     unsigned                    flags;
