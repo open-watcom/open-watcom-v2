@@ -121,11 +121,11 @@ static const unsigned char Weights[] = {
 };
 
 typedef struct HashEntry {
-    char *  keyword;
+    char    *keyword;
     YTOKEN  token;
 } HashEntry;
 
-#define TC_UNKNOWN ((YTOKEN)-1)
+#define TC_UNKNOWN  ((YTOKEN)-1)
 
 /* create the hash table by using the a pick macro and the keywords?.gh files */
 
@@ -141,10 +141,10 @@ YTOKEN LookupKeywordOS2( ScanString newstring )
     int     hash;
 
     hash = keyword_hash( newstring.string, Weights, newstring.length );
-    if( HashTable[ hash ].token == TC_UNKNOWN ) {
+    if( HashTable[hash].token == TC_UNKNOWN ) {
         return( Y_NAME );
-    } else if (! stricmp( newstring.string, HashTable[ hash ].keyword) ) {
-        return( HashTable[ hash ].token );
+    } else if( stricmp( newstring.string, HashTable[hash].keyword ) == 0 ) {
+        return( HashTable[hash].token );
     } else {
         return( Y_NAME );
     }

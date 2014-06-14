@@ -41,7 +41,7 @@
 
 #ifdef SCANDEBUG
 
-#define DEBUGPUTS(s) PutScanString(s);
+#define DEBUGPUTS(s)    PutScanString(s);
 
 static void PutScanString( const char *string )
 {
@@ -62,7 +62,7 @@ static int      LookAhead;
 static int      longString;
 static int      newLineInString = 0;
 
-static YTOKEN scanDFA( ScanValue *value );
+static YTOKEN   scanDFA( ScanValue *value );
 
 static void GetNextChar( void )
 {
@@ -86,26 +86,26 @@ static void CharInit( void )
 } /* CharInit */
 
 
-#define state(s) s
-#define do_transition(s) GetNextChar(); goto s
-#define change_state(s) goto s
+#define state(s)            s
+#define do_transition(s)    GetNextChar(); goto s
+#define change_state(s)     goto s
 #define enter_start_state() CharInit()
 
-static void AddDigitToInt( long * value, int base, int newchar )
+static void     AddDigitToInt( long * value, int base, int newchar )
 {
     int     newdigit;
 
-    if( isdigit(newchar) ) {
+    if( isdigit( newchar ) ) {
         newdigit = newchar - '0';
     } else {            /* assume it is a hex digit */
-        newdigit = toupper(newchar) - 'A' + 10;
+        newdigit = toupper( newchar ) - 'A' + 10;
     }
 
     *value = *value * base + newdigit;
 } /* AddDigitToInt */
 
-static YTOKEN scanCPPDirective( ScanValue *value )
-/************************************************/
+static YTOKEN   scanCPPDirective( ScanValue *value )
+/**************************************************/
 /* This function takes the correct action for the #line directive and returns */
 /* the token following the preprocessor stuff. It uses Scan to do it's */
 /* scanning. DON'T call this function from within Scan or the functions it */
@@ -169,8 +169,8 @@ static YTOKEN scanCPPDirective( ScanValue *value )
     return( token );
 } /* scanCPPDirective */
 
-void ScanInitOS2( void )
-/**********************/
+void    ScanInitOS2( void )
+/*************************/
 {
     enter_start_state();
 }
@@ -191,10 +191,10 @@ static YTOKEN scanDFA( ScanValue *value )
     value->string.string = NULL;
     longString = FALSE;
 
-    state(S_START):
-        if( isspace(LookAhead) ) {
+    state( S_START ):
+        if( isspace( LookAhead ) ) {
             do_transition( S_START );
-        } else if( isdigit(LookAhead) ) {
+        } else if( isdigit( LookAhead ) ) {
             newint = LookAhead - '0';
             newstring = VarStringStart();
             VarStringAddChar( newstring, LookAhead );
@@ -203,14 +203,14 @@ static YTOKEN scanDFA( ScanValue *value )
             } else {
                 do_transition( S_DECIMAL );
             }
-        } else if( isalpha(LookAhead) || LookAhead == '_' ) {
+        } else if( isalpha( LookAhead ) || LookAhead == '_' ) {
             newstring = VarStringStart();
             VarStringAddChar( newstring, LookAhead );
             if( LookAhead == 'l' || LookAhead == 'L' ) {
                 do_transition( S_L_STRING );
             }
             do_transition( S_NAME );
-        } else switch (LookAhead) {
+        } else switch( LookAhead ) {
             case '"':
                 newstring = VarStringStart();  /* don't include the " */
                 newLineInString = 0; /* reset newline in string status */
@@ -220,7 +220,7 @@ static YTOKEN scanDFA( ScanValue *value )
                 VarStringAddChar( newstring, LookAhead );
                 do_transition( S_DOS_FILENAME );
             case RC_EOF:
-                DEBUGPUTS("RC_EOF")
+                DEBUGPUTS( "RC_EOF" )
                 return( 0 );                /* yacc wants 0 on EOF */
             case '#':           do_transition( S_POUND_SIGN );
             case '(':           do_transition( S_LPAREN );
@@ -254,7 +254,7 @@ static YTOKEN scanDFA( ScanValue *value )
                 value->UnknownChar = LookAhead;
                 do_transition( S_ERROR );
         }
-    state(S_L_STRING):
+    state( S_L_STRING ):
         if( LookAhead =='"' ) {
             longString = TRUE;
             RCFREE( VarStringEnd( newstring, NULL ) );
@@ -262,26 +262,26 @@ static YTOKEN scanDFA( ScanValue *value )
         } else {
             change_state( S_NAME );
         }
-    state(S_ERROR):
+    state( S_ERROR ):
         ErrorHasOccured = TRUE;
         return( Y_SCAN_ERROR );
 
-    state(S_COMMENT):
+    state( S_COMMENT ):
         if( LookAhead == '\n' || LookAhead == RC_EOF ) {
             do_transition( S_START );
         } else {
             do_transition( S_COMMENT );
         }
 
-    state(S_POUND_SIGN):
+    state( S_POUND_SIGN ):
         DEBUGPUTS( "#" )
         return( Y_POUND_SIGN );
 
-    state(S_LPAREN):
+    state( S_LPAREN ):
         DEBUGPUTS( "(" )
         return( Y_LPAREN );
 
-    state(S_RPAREN):
+    state( S_RPAREN ):
         DEBUGPUTS( ")" )
         return( Y_RPAREN );
 
@@ -293,27 +293,27 @@ static YTOKEN scanDFA( ScanValue *value )
         DEBUGPUTS( "]" )
         return( Y_RSQ_BRACKET );
 
-    state(S_LBRACE):
+    state( S_LBRACE ):
         DEBUGPUTS( "{" )
         return( Y_LBRACE );
 
-    state(S_RBRACE):
+    state( S_RBRACE ):
         DEBUGPUTS( "}" )
         return( Y_RBRACE );
 
-    state(S_PLUS):
+    state( S_PLUS ):
         DEBUGPUTS( "+" )
         return( Y_PLUS );
 
-    state(S_MINUS):
+    state( S_MINUS ):
         DEBUGPUTS( "-" )
         return( Y_MINUS );
 
-    state(S_BITNOT):
+    state( S_BITNOT ):
         DEBUGPUTS( "~" )
         return( Y_BITNOT );
 
-    state(S_NOT):
+    state( S_NOT ):
         if( LookAhead == '=' ) {
             do_transition( S_NE );
         } else {
@@ -321,20 +321,20 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_NOT );
         }
 
-    state(S_TIMES):
+    state( S_TIMES ):
         DEBUGPUTS( "*" )
         return( Y_TIMES );
 
-    state(S_DIVIDE):
+    state( S_DIVIDE ):
         DEBUGPUTS( "/" )
         return( Y_DIVIDE );
 
-    state(S_MOD):
+    state( S_MOD ):
         DEBUGPUTS( "%" )
         return( Y_MOD );
 
-    state(S_GT):
-        switch (LookAhead) {
+    state( S_GT ):
+        switch( LookAhead ) {
         case '>':       do_transition( S_SHIFTR );
         case '=':       do_transition( S_GE );
         default:
@@ -342,8 +342,8 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_GT );
         }
 
-    state(S_LT):
-        switch (LookAhead) {
+    state( S_LT ):
+        switch( LookAhead ) {
         case '<':       do_transition( S_SHIFTL );
         case '=':       do_transition( S_LE );
         default:
@@ -351,7 +351,7 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_LT );
         }
 
-    state(S_EQ):
+    state( S_EQ ):
         if( LookAhead == '=' ) {
             do_transition( S_ENDEQ );
         } else {
@@ -359,7 +359,7 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_SINGLE_EQ );
         }
 
-    state(S_BITAND):
+    state( S_BITAND ):
         if( LookAhead == '&' ) {
             do_transition( S_AND );
         } else {
@@ -367,11 +367,11 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_BITAND );
         }
 
-    state(S_BITXOR):
+    state( S_BITXOR ):
         DEBUGPUTS( "^" )
         return( Y_BITXOR );
 
-    state(S_BITOR):
+    state( S_BITOR ):
         if( LookAhead == '|' ) {
             do_transition( S_OR );
         } else {
@@ -379,51 +379,51 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_BITOR );
         }
 
-    state(S_QUESTION):
+    state( S_QUESTION ):
         DEBUGPUTS( "?" )
         return( Y_QUESTION );
 
-    state(S_COLON):
+    state( S_COLON ):
         DEBUGPUTS( ":" )
         return( Y_COLON );
 
-    state(S_COMMA):
+    state( S_COMMA ):
         DEBUGPUTS( "," )
         return( Y_COMMA );
 
-    state(S_NE):
+    state( S_NE ):
         DEBUGPUTS( "!=" )
         return( Y_NE );
 
-    state(S_SHIFTR):
+    state( S_SHIFTR ):
         DEBUGPUTS( ">>" )
         return( Y_SHIFTR );
 
-    state(S_GE):
+    state( S_GE ):
         DEBUGPUTS( ">=" )
         return( Y_GE );
 
-    state(S_SHIFTL):
+    state( S_SHIFTL ):
         DEBUGPUTS( "<<" )
         return( Y_SHIFTL );
 
-    state(S_LE):
+    state( S_LE ):
         DEBUGPUTS( "<=" )
         return( Y_LE );
 
-    state(S_ENDEQ):
+    state( S_ENDEQ ):
         DEBUGPUTS( "==" )
         return( Y_EQ );
 
-    state(S_AND):
+    state( S_AND ):
         DEBUGPUTS( "&&" )
         return( Y_AND );
 
-    state(S_OR):
+    state( S_OR ):
         DEBUGPUTS( "||" )
         return( Y_OR );
 
-    state(S_STRING):
+    state( S_STRING ):
         /* handle double-byte characters */
         i = CharSetLen[LookAhead];
         if( i ) {
@@ -438,7 +438,7 @@ static YTOKEN scanDFA( ScanValue *value )
         // if newline in string was detected, remove all whitespace from
         // begining of the next line
         if( newLineInString ) {
-            if ( isspace( LookAhead ) ) {
+            if( isspace( LookAhead ) ) {
                 do_transition( S_STRING );
             } else {
                 // non whitespace was detected, reset newline flag, so whitespaces are treated normally
@@ -446,7 +446,7 @@ static YTOKEN scanDFA( ScanValue *value )
             }
         }
 
-        switch (LookAhead) {
+        switch( LookAhead ) {
         case '"':           do_transition( S_STRINGEND );
         case '\\':          do_transition( S_ESCAPE_CHAR );
         case '\n':
@@ -468,7 +468,7 @@ static YTOKEN scanDFA( ScanValue *value )
             do_transition( S_STRING );
         }
 
-    state(S_ESCAPE_CHAR):
+    state( S_ESCAPE_CHAR ):
         if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
             newint = LookAhead - '0';
             do_transition( S_OCTAL_ESCAPE_1 );
@@ -512,7 +512,7 @@ static YTOKEN scanDFA( ScanValue *value )
             break;
         }
 
-    state(S_HEX_ESCAPE_1):
+    state( S_HEX_ESCAPE_1 ):
         if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
             do_transition( S_HEX_ESCAPE_2 );
@@ -520,7 +520,7 @@ static YTOKEN scanDFA( ScanValue *value )
             change_state( S_STRING );
         }
 
-    state(S_HEX_ESCAPE_2):
+    state( S_HEX_ESCAPE_2 ):
         if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
             VarStringAddChar( newstring, newint );
@@ -530,7 +530,7 @@ static YTOKEN scanDFA( ScanValue *value )
             change_state( S_STRING );
         }
 
-    state(S_OCTAL_ESCAPE_1):
+    state( S_OCTAL_ESCAPE_1 ):
         if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_2 );
@@ -539,7 +539,7 @@ static YTOKEN scanDFA( ScanValue *value )
             change_state( S_STRING );
         }
 
-    state(S_OCTAL_ESCAPE_2):
+    state( S_OCTAL_ESCAPE_2 ):
         if( isdigit( LookAhead ) && LookAhead != '8' && LookAhead != '9' ) {
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_3 );
@@ -548,19 +548,18 @@ static YTOKEN scanDFA( ScanValue *value )
             change_state( S_STRING );
         }
 
-    state(S_OCTAL_ESCAPE_3):
+    state( S_OCTAL_ESCAPE_3 ):
         VarStringAddChar( newstring, newint );
         change_state( S_STRING );
 
-    state(S_STRINGEND):
+    state( S_STRINGEND ):
         if( LookAhead == '"' ) {   /* a "" in a string means include one " */
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_STRING );
         } else {
-            stringFromFile = VarStringEnd( newstring,
-                                           &( value->string.length ) );
+            stringFromFile = VarStringEnd( newstring, &(value->string.length) );
             value->string.string = stringFromFile;
-#if(0)
+#if 0
             //DRW - this code truncates trailing null chars in resources
             //          like user data.  It is commented until I fix it.
             if( CmdLineParms.FindAndReplace == TRUE ) {
@@ -585,14 +584,14 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_STRING );
         }
 
-    state(S_DECIMAL):
+    state( S_DECIMAL ):
         VarStringAddChar( newstring, LookAhead );
-        if( isdigit(LookAhead) ) {
+        if( isdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 10, LookAhead );
             do_transition( S_DECIMAL );
-        } else if( toupper(LookAhead) == 'L' ) {
+        } else if( toupper( LookAhead ) == 'L' ) {
             do_transition( S_LONGSUFFIX );
-        } else if( toupper(LookAhead) == 'U' ) {
+        } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -604,10 +603,10 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_LONGSUFFIX):
+    state( S_LONGSUFFIX ):
         VarStringAddChar( newstring, LookAhead );
         value->intinfo.type |= SCAN_INT_TYPE_LONG;
-        if( toupper(LookAhead) == 'U' ) {
+        if( toupper( LookAhead ) == 'U' ) {
             value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
             do_transition( S_ENDINT );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
@@ -620,10 +619,10 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_UNSIGNEDSUFFIX):
+    state( S_UNSIGNEDSUFFIX ):
         VarStringAddChar( newstring, LookAhead );
         value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
-        if( toupper(LookAhead) == 'L' ) {
+        if( toupper( LookAhead ) == 'L' ) {
             value->intinfo.type |= SCAN_INT_TYPE_LONG;
             do_transition( S_ENDINT );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
@@ -636,7 +635,7 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_ENDINT):
+    state( S_ENDINT ):
         if( isalpha( LookAhead ) || LookAhead == '.'
                || LookAhead == '\\' || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
@@ -648,20 +647,20 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_HEXSTART):
+    state( S_HEXSTART ):
         VarStringAddChar( newstring, LookAhead );
-        if( isdigit(LookAhead) ) {
+        if( isdigit( LookAhead ) ) {
             if( LookAhead == '8' || LookAhead == '9' ) {
                 do_transition( S_DOS_FILENAME );
             } else {
                 AddDigitToInt( &newint, 8, LookAhead );
                 do_transition( S_OCT );
             }
-        } else if( toupper(LookAhead) == 'X' ) {
+        } else if( toupper( LookAhead ) == 'X' ) {
             do_transition( S_HEX );
-        } else if( toupper(LookAhead) == 'L' ) {
+        } else if( toupper( LookAhead ) == 'L' ) {
             do_transition( S_LONGSUFFIX );
-        } else if( toupper(LookAhead) == 'U' ) {
+        } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -673,18 +672,18 @@ static YTOKEN scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_OCT):
+    state( S_OCT ):
         VarStringAddChar( newstring, LookAhead );
-        if( isdigit(LookAhead) ) {
+        if( isdigit( LookAhead ) ) {
             if( LookAhead == '8' || LookAhead == '9' ) {
                 do_transition( S_DOS_FILENAME );
             } else {
                 AddDigitToInt( &newint, 8, LookAhead );
                 do_transition( S_OCT );
             }
-        } else if( toupper(LookAhead) == 'L' ) {
+        } else if( toupper( LookAhead ) == 'L' ) {
             do_transition( S_LONGSUFFIX );
-        } else if( toupper(LookAhead) == 'U' ) {
+        } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -698,12 +697,12 @@ static YTOKEN scanDFA( ScanValue *value )
 
     state(S_HEX):
         VarStringAddChar( newstring, LookAhead );
-        if( isxdigit(LookAhead) ) {
+        if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
             do_transition( S_HEX );
-        } else if( toupper(LookAhead) == 'L' ) {
+        } else if( toupper( LookAhead ) == 'L' ) {
             do_transition( S_LONGSUFFIX );
-        } else if( toupper(LookAhead) == 'U' ) {
+        } else if( toupper( LookAhead ) == 'U' ) {
             do_transition( S_UNSIGNEDSUFFIX );
         } else if( isalpha( LookAhead ) || LookAhead == '.'
                    || LookAhead == '\\' || LookAhead == '_' ) {
@@ -716,7 +715,7 @@ static YTOKEN scanDFA( ScanValue *value )
         }
 
     state(S_NAME):
-        if( isalnum(LookAhead) || LookAhead == '_' ) {
+        if( isalnum( LookAhead ) || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_NAME );
         } else if( LookAhead == ':' || LookAhead == '\\' || LookAhead == '.' ) {
@@ -740,7 +739,7 @@ static YTOKEN scanDFA( ScanValue *value )
         }
 
     state(S_DOS_FILENAME):
-        if( isalnum(LookAhead) || LookAhead == ':' || LookAhead == '\\'
+        if( isalnum( LookAhead ) || LookAhead == ':' || LookAhead == '\\'
                 || LookAhead == '.' || LookAhead == '_' ) {
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
@@ -763,7 +762,7 @@ YTOKEN ScanOS2( ScanValue *value )
     }
 
     return( token );
-} /* Scan */
+}
 
 void ScanInitStaticsOS2( void )
 /*****************************/

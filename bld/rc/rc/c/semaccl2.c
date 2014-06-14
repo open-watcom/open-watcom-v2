@@ -31,8 +31,8 @@
 
 #include "global.h"
 #include "errors.h"
-#include "os2ytab.h"
 #include "semantic.h"
+#include "semantc2.h"
 #include "reserr.h"
 #include "rcrtns.h"
 
@@ -42,7 +42,7 @@ int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )
 {
     int     numwrote;
 
-    numwrote = RCWRITE( handle, currentry, sizeof(AccelTableEntryOS2) );
+    numwrote = RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) );
     if( numwrote != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
@@ -151,7 +151,7 @@ extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry,
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RCALLOC( sizeof(FullAccelEntryOS2) );
+    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );

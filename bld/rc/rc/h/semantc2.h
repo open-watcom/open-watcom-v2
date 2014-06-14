@@ -32,13 +32,7 @@
 #ifndef SEMANTC2_H_INCLUDED
 #define SEMANTC2_H_INCLUDED
 
-#include "os2ytab.h"
-#include "scan.h"
-
-typedef unsigned short  YTOKEN;
-
-extern int  LookupKeywordOS2( ScanString newstring );
-extern int  ScanOS2( ScanValue * value );
+#include "yydrivr2.h"
 
 #include "semmenu2.h"
 #include "semdiag2.h"

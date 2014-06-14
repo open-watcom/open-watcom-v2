@@ -37,7 +37,7 @@
 
 typedef unsigned short  YTOKEN;
 
-extern YTOKEN LookupKeywordOS2( ScanString newstring );
-extern YTOKEN ScanOS2( ScanValue * value );
+extern YTOKEN   LookupKeywordOS2( ScanString newstring );
+extern YTOKEN   ScanOS2( ScanValue * value );
 
 #endif

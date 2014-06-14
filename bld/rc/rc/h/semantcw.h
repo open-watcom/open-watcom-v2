@@ -32,13 +32,7 @@
 #ifndef SEMANTCW_H_INCLUDED
 #define SEMANTCW_H_INCLUDED
 
-#include "winytab.h"
-#include "scan.h"
-
-typedef unsigned short  YTOKEN;
-
-extern int  LookupKeywordWIN( ScanString newstring );
-extern int  ScanWIN( ScanValue * value );
+#include "yydrivrw.h"
 
 #include "semmenuw.h"
 #include "semdiagw.h"
