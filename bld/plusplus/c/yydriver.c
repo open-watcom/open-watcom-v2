@@ -2548,7 +2548,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     REWRITE     *last_rewrite;
     REWRITE     *save_token;
     PTREE       save_tree;
-    int         save_yytoken;
+    YYTOKENTYPE save_yytoken;
     unsigned    suppressState;
     void (*last_source)( void );
     auto error_state_t check;
@@ -2780,7 +2780,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     REWRITE     *last_rewrite;
     REWRITE     *save_token;
     PTREE       save_tree;
-    int         save_yytoken;
+    YYTOKENTYPE save_yytoken;
     void (*last_source)( void );
     auto error_state_t check;
     auto TOKEN_LOCN locn;
