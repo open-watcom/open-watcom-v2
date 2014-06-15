@@ -170,7 +170,7 @@ sym_list *ExprGetSymList( stack_entry *entry, bool source_only )
         ss = SS_SCOPED;
         d = &entry->lc->execution;
     }
-    syms = LookupSymList( ss, d, source_only, &entry->v.name );
+    syms = LookupSymList( ss, d, source_only, &entry->v.li );
     return( syms );
 }
 
@@ -258,8 +258,8 @@ void SymResolve( stack_entry *entry )
 void LValue( stack_entry *entry )
 {
     if( !NameResolve( entry, FALSE ) ) {
-        Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.name.name.start,
-                            entry->v.name.name.len );
+        Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
+                            entry->v.li.name.len );
     }
     SymResolve( entry );
     GetTrueEntry( entry );
@@ -325,13 +325,13 @@ static bool DoNameResolve( stack_entry *entry )
     /* check for raw name */
     if( entry->lc->sh != NULL ) return( FALSE );
     if( entry->lc->th != NULL ) return( FALSE );
-    if( entry->v.name.mod != NO_MOD ) return( FALSE );
-    if( entry->v.name.file_scope ) return( FALSE );
-    if( entry->v.name.type != ST_NONE ) return( FALSE );
-    if( entry->v.name.scope.start != NULL ) return( FALSE );
+    if( entry->v.li.mod != NO_MOD ) return( FALSE );
+    if( entry->v.li.file_scope ) return( FALSE );
+    if( entry->v.li.type != ST_NONE ) return( FALSE );
+    if( entry->v.li.scope.start != NULL ) return( FALSE );
 
-    if( !ForceSym2Num( entry->v.name.name.start,
-                    entry->v.name.name.len, &val ) ) return( FALSE );
+    if( !ForceSym2Num( entry->v.li.name.start,
+                    entry->v.li.name.len, &val ) ) return( FALSE );
     entry->v.uint = val;
     ClassNum( entry );
     return( TRUE );
@@ -343,8 +343,8 @@ void ExprResolve( stack_entry *entry )
 {
     if( entry->flags & SF_NAME ) {
         if( !DoNameResolve( entry ) ) {
-            Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.name.name.start,
-                                       entry->v.name.name.len );
+            Error( ERR_NONE, LIT( ERR_UNKNOWN_SYMBOL ), entry->v.li.name.start,
+                                       entry->v.li.name.len );
         }
     }
     SymResolve( entry );

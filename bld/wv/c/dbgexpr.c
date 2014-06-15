@@ -334,11 +334,11 @@ void DupStack( void )
  * PushName -- push a name onto the stack
  */
 
-void PushName( lookup_item *name )
+void PushName( lookup_item *li )
 {
     CreateEntry();
-    ExprSP->flags  = SF_NAME;
-    ExprSP->v.name = *name;
+    ExprSP->flags = SF_NAME;
+    ExprSP->v.li = *li;
 }
 
 

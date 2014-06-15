@@ -823,15 +823,15 @@ void DoScope( void )
     }
     p = buff;
     if( scope->flags & SF_SCOPE ) {
-        memcpy( p, scope->v.name.scope.start, scope->v.name.scope.len );
-        p += scope->v.name.scope.len;
+        memcpy( p, scope->v.li.scope.start, scope->v.li.scope.len );
+        p += scope->v.li.scope.len;
     }
-    memcpy( p, scope->v.name.name.start, scope->v.name.name.len );
-    p += scope->v.name.name.len;
+    memcpy( p, scope->v.li.name.start, scope->v.li.name.len );
+    p += scope->v.li.name.len;
     *p++ = '\0';
     memcpy( ScopeBuff, buff, p - buff );
-    ExprSP->v.name.scope.start = ScopeBuff;
-    ExprSP->v.name.scope.len = p - buff;
+    ExprSP->v.li.scope.start = ScopeBuff;
+    ExprSP->v.li.scope.len = p - buff;
     ExprSP->flags |= SF_SCOPE;
     NameResolve( scope, FALSE );
     if( (scope->flags & SF_SYM) ) {
@@ -860,9 +860,9 @@ void DoAssign( void )
     ExprResolve( ExprSP );
     LValue( ExprSP );
     if( (dest->flags & SF_NAME) && !NameResolve( dest, FALSE ) ) {
-        if( !CreateSym( &dest->v.name, &ExprSP->info ) ) {
-            Error( ERR_NONE, LIT( ERR_SYM_NOT_CREATED ), dest->v.name.name.start,
-                        dest->v.name.name.len );
+        if( !CreateSym( &dest->v.li, &ExprSP->info ) ) {
+            Error( ERR_NONE, LIT( ERR_SYM_NOT_CREATED ), dest->v.li.name.start,
+                        dest->v.li.name.len );
         }
     }
     LValue( dest );

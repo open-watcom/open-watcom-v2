@@ -513,14 +513,14 @@ static bool UserType( type_handle *th )
     if( ExprSP->flags & SF_NAME ) {
         static const char       * const TagIds[] = { "struct", "class", "union", "enum", NULL };
 
-        ExprSP->v.name.type = ST_TYPE;
+        ExprSP->v.li.type = ST_TYPE;
         for( i = 0; TagIds[i] != NULL; ++i ) {
             len = strlen( TagIds[i] );
-            if( len == ExprSP->v.name.name.len
-                && memcmp( ExprSP->v.name.name.start, TagIds[i], len ) == 0 ) {
-                ExprSP->v.name.type = ST_STRUCT_TAG + i;
-                ExprSP->v.name.name.start = NamePos();
-                ExprSP->v.name.name.len = NameLen();
+            if( len == ExprSP->v.li.name.len
+                && memcmp( ExprSP->v.li.name.start, TagIds[i], len ) == 0 ) {
+                ExprSP->v.li.type = ST_STRUCT_TAG + i;
+                ExprSP->v.li.name.start = NamePos();
+                ExprSP->v.li.name.len = NameLen();
                 Scan();
             }
         }
@@ -748,7 +748,7 @@ static unsigned MechDo( unsigned select, unsigned parm )
         if( parm ) {
             /* file scope */
             if( ExprSP->flags & SF_NAME ) {
-                ExprSP->v.name.file_scope = TRUE;
+                ExprSP->v.li.file_scope = TRUE;
             } else {
                 Error( ERR_LOC, LIT( ERR_WANT_NAME ) );
             }

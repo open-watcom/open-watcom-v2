@@ -50,7 +50,7 @@ typedef struct {
 } string;
 
 typedef union {
-    lookup_item         name;
+    lookup_item         li;
     sym_handle          *sh;
     location_list       loc;
     address             addr;
