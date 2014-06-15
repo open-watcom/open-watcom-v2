@@ -127,7 +127,7 @@ typedef enum {
 static void dump_rule( unsigned rule )
 {
     unsigned                i;
-    const YYCHKTYPE YYFAR   *tok;
+    const YYTOKENTYPE YYFAR *tok;
     const char YYFAR        *p;
 
     if( CmdLineParms.DebugParser ) {
