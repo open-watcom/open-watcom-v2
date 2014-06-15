@@ -58,15 +58,15 @@ typedef uint_16         YYPLHSTYPE;
 typedef yytokentype     YYTOKENTYPE;
 
 typedef union {
-    unsigned                    flags;
-    YYTOKENTYPE                 token;
-    TYPE                        type;
-    BASE_CLASS                  *base;
-    DECL_SPEC                   *dspec;
-    DECL_INFO                   *dinfo;
-    REWRITE                     *rewrite;
-    SYMBOL_NAME                 sym;
-    PTREE                       tree;
+    unsigned            flags;
+    YYTOKENTYPE         token;
+    TYPE                type;
+    BASE_CLASS          *base;
+    DECL_SPEC           *dspec;
+    DECL_INFO           *dinfo;
+    REWRITE             *rewrite;
+    SYMBOL_NAME         sym;
+    PTREE               tree;
 } YYSTYPE;
 
 enum {
@@ -143,10 +143,10 @@ typedef struct {
     unsigned            paren_depth;
 } angle_bracket_stack;
 
-static YYSTYPE yylval;
-static TOKEN_LOCN yylocation;
-static YYTOKENTYPE currToken;
-static PARSE_STACK *currParseStack;
+static YYSTYPE          yylval;
+static TOKEN_LOCN       yylocation;
+static YYTOKENTYPE      currToken;
+static PARSE_STACK      *currParseStack;
 static SUICIDE_CALLBACK parserSuicide;
 
 typedef enum {
@@ -195,13 +195,13 @@ enum {
     CH_NULL             = 0x00
 };
 
-static const unsigned lookupToken[] = {
+static const YYTOKENTYPE lookupToken[] = {
     #define LKDEF( e, t )       Y_##t,
     LK_DEFS
     #undef LKDEF
 };
 
-static const unsigned globalLookupToken[] = {
+static const YYTOKENTYPE globalLookupToken[] = {
     #define LKDEF( e, t )       Y_GLOBAL_##t,
     LK_DEFS
     #undef LKDEF
@@ -222,11 +222,12 @@ static void recordTemplateCtorInitializer( PARSE_STACK * );
 #include "yylex.gh"
 
 #ifndef NDEBUG
+
 static void dump_rule( unsigned rule )
 {
-    unsigned i;
+    unsigned                i;
     const YYTOKENTYPE YYFAR *tok;
-    const char YYFAR *p;
+    const char YYFAR        *p;
 
     for( p = yytoknames[yyplhstab[rule]]; *p; ++p ) {
         putchar( *p );
@@ -249,45 +250,39 @@ static void dump_state_stack(const char * label, PARSE_STACK * stack)
 {
     static PARSE_STACK * last_stack = NULL;
 
-    if(stack != last_stack)
-    {
-        printf("===============================================================================\n");
-        printf("*** PARSE STACK CHANGE *** New: 0x%p Old: 0x%p\n", stack, last_stack);
-        printf("===============================================================================\n");
+    if(stack != last_stack) {
+        printf( "===============================================================================\n" );
+        printf( "*** PARSE STACK CHANGE *** New: 0x%p Old: 0x%p\n", stack, last_stack );
+        printf( "===============================================================================\n" );
         last_stack = stack;
     }    
     
-    if(NULL == stack)
-    {
-        printf("dump_state_stack: NULL stack\n");
-    }
-    else
-    {
+    if(NULL == stack) {
+        printf( "dump_state_stack: NULL stack\n" );
+    } else {
         YYACTIONTYPE *  the_ssp = stack->ssp;
         YYACTIONTYPE *  the_sstack = stack->sstack;
         unsigned        index;
         
-        printf("dump_state_stack \"%s\" (0x%p):\n", label, the_sstack);
+        printf( "dump_state_stack \"%s\" (0x%p):\n", label, the_sstack );
         /*
         //  ensure we dump the top of stack (test &(ssp[1]))
         */
 #if 0
-        for(index = 0; &(the_sstack[index]) < &(the_ssp[1]); index++)
-        {
+        for(index = 0; &(the_sstack[index]) < &(the_ssp[1]); index++) {
               YYACTIONTYPE x = the_sstack[index];
-              printf("  Index: %03d State: %04u\n", index, x);
+              printf( "  Index: %03d State: %04u\n", index, x );
         }
 #else
-        printf(" State(s):");
-        for(index = 0; &(the_sstack[index]) < &(the_ssp[1]); index++)
-        {
+        printf( " State(s):" );
+        for( index = 0; &(the_sstack[index]) < &(the_ssp[1]); index++ ) {
               YYACTIONTYPE x = the_sstack[index];
-              printf(" %03u", x);
+              printf( " %03u", x );
         }
-        printf("\n");
+        printf( "\n" );
 #endif
     }
-    fflush(stdout);
+    fflush( stdout );
 }
 
 #endif
@@ -298,7 +293,7 @@ static PTREE setAnalysedFlag(
     PTREE expr )
 {
     expr->flags |= PTF_ALREADY_ANALYSED;
-    return expr;
+    return( expr );
 }
 
 static void parserSuicideHandler( void )
@@ -312,14 +307,10 @@ static void parseInit(          // PARSER INITIALIZATION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    carveRESTART_PARSE = CarveCreate( sizeof( RESTART_PARSE ),
-                                    BLOCK_RESTART_PARSE );
-    carveVALUE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYSTYPE ),
-                                    BLOCK_VALUE_STACK );
-    carveSTATE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYACTIONTYPE ),
-                                    BLOCK_STATE_STACK );
-    carveLOCATION_STACK = CarveCreate( STACK_DEPTH * sizeof( TOKEN_LOCN ),
-                                    BLOCK_LOCATION_STACK );
+    carveRESTART_PARSE = CarveCreate( sizeof( RESTART_PARSE ), BLOCK_RESTART_PARSE );
+    carveVALUE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYSTYPE ), BLOCK_VALUE_STACK );
+    carveSTATE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYACTIONTYPE ), BLOCK_STATE_STACK );
+    carveLOCATION_STACK = CarveCreate( STACK_DEPTH * sizeof( TOKEN_LOCN ), BLOCK_LOCATION_STACK );
     currToken = Y_IMPOSSIBLE;
     parserSuicide.call_back = parserSuicideHandler;
     RegisterSuicideCallback( &parserSuicide );
@@ -419,11 +410,11 @@ static PTREE makeId( void )
 static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
                               SYMBOL_NAME *psym_name )
 {
-    NAME name;
+    NAME        name;
     SYMBOL_NAME sym_name;
-    SYMBOL sym;
-    TYPE type;
-    TYPE class_type;
+    SYMBOL      sym;
+    TYPE        type;
+    TYPE        class_type;
 
     name = id->u.id.name;
     if( control & LK_LEXICAL ) {
@@ -498,11 +489,11 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
     return( LK_ID );
 }
 
-static int doId( SCOPE scope_member )
+static YYTOKENTYPE doId( SCOPE scope_member )
 {
-    PTREE id;
-    lk_control control;
-    lk_result id_check;
+    PTREE       id;
+    lk_control  control;
+    lk_result   id_check;
 
     id = makeId();
     yylval.tree = id;
@@ -656,7 +647,7 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
     return( scope );
 }
 
-static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
+static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
                         unsigned ctrl, bool special_typename )
 {
     lk_result id_check;
@@ -778,19 +769,19 @@ static int scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     }
 }
 
-static int templateScopedChain( PARSE_STACK *state, bool special_typename )
+static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typename )
 {
-    lk_result id_check;
-    PTREE scope_tree;
-    PTREE curr;
-    PTREE id;
-    TYPE template_type;
-    TYPE template_class_type;
-    NAME name;
-    SCOPE scope;
-    int adjusted_token;
-    bool undefined_scope;
-    bool special_template;
+    lk_result   id_check;
+    PTREE       scope_tree;
+    PTREE       curr;
+    PTREE       id;
+    TYPE        template_type;
+    TYPE        template_class_type;
+    NAME        name;
+    SCOPE       scope;
+    YYTOKENTYPE adjusted_token;
+    bool        undefined_scope;
+    bool        special_template;
 
     template_type = BindTemplateClass( state->class_colon, NULL, FALSE );
     name = SimpleTypeName( template_type );
@@ -822,8 +813,7 @@ static int templateScopedChain( PARSE_STACK *state, bool special_typename )
                 if( LAToken == T_COLON_COLON ) {
                     adjusted_token = scopedChain( state, curr, id, CH_ALREADY_STARTED, special_typename );
                     /* translate to the correct token value */
-                    adjusted_token -= Y_SCOPED_ID;
-                    adjusted_token += Y_TEMPLATE_SCOPED_ID;
+                    adjusted_token += Y_TEMPLATE_SCOPED_ID - Y_SCOPED_ID;
                     return( adjusted_token );
                 }
                 yylval.tree = makeBinary( CO_STORAGE, curr, id );
@@ -879,7 +869,7 @@ static int templateScopedChain( PARSE_STACK *state, bool special_typename )
     }
 }
 
-static int globalChain( PARSE_STACK *state, bool special_typename )
+static YYTOKENTYPE globalChain( PARSE_STACK *state, bool special_typename )
 {
     PTREE tree;
     PTREE id;
@@ -920,7 +910,7 @@ static int globalChain( PARSE_STACK *state, bool special_typename )
     return( Y_IMPOSSIBLE );
 }
 
-static int specialAngleBracket( PARSE_STACK *state, int token )
+static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
 {
     angle_bracket_stack *angle_state;
 
@@ -959,16 +949,16 @@ static int specialAngleBracket( PARSE_STACK *state, int token )
         }
     }
 
-    return token;
+    return( token );
 }
 
-static int yylex( PARSE_STACK *state )
-/************************************/
+static YYTOKENTYPE yylex( PARSE_STACK *state )
+/********************************************/
 {
-    lk_result id_check;
-    int token;
+    lk_result       id_check;
+    YYTOKENTYPE     token;
     STRING_CONSTANT literal;
-    PTREE tree;
+    PTREE           tree;
     look_ahead_storage *saved_token;
     struct {
         unsigned no_super_token : 1;
@@ -1119,7 +1109,7 @@ REWRITE *ParseGetRecordingInProgress( TOKEN_LOCN **plocn )
     return( r );
 }
 
-static bool tokenMakesPTREE( unsigned token )
+static bool tokenMakesPTREE( YYTOKENTYPE token )
 {
     switch( token ) {
     case Y_TYPE_NAME:
@@ -1531,9 +1521,9 @@ static void pushRestartDecl( PARSE_STACK *state )
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ){
-        printf("===============================================================================\n");
-        printf("*** pushRestartDecl: 0x%p 0x%p\n", state, restart);
-        printf("===============================================================================\n");
+        printf( "===============================================================================\n" );
+        printf( "*** pushRestartDecl: 0x%p 0x%p\n", state, restart );
+        printf( "===============================================================================\n" );
     }
 #endif
 }
@@ -1550,9 +1540,9 @@ static void popRestartDecl( PARSE_STACK *state )
     DbgStmt( restart = state->restart );
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ){
-        printf("===============================================================================\n");
-        printf("*** popRestartDecl: 0x%p 0x%p\n", state, restart);
-        printf("===============================================================================\n");
+        printf( "===============================================================================\n" );
+        printf( "*** popRestartDecl: 0x%p 0x%p\n", state, restart );
+        printf( "===============================================================================\n" );
     }
 #endif
     restartDeclOK( restart );
@@ -1731,7 +1721,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa 
         top_state = yyaction[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
         if( PragDbgToggle.dump_parse ) { 
-            printf("=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0]);
+            printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
         }
 #endif
         ssp[0] = top_state;
@@ -1830,7 +1820,7 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
     return( what );
 }
 
-static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, int tok )
+static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
 {
     look_ahead_storage *save;
 
@@ -1846,7 +1836,7 @@ static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, int tok )
     return( save );
 }
 
-static void lookAheadUnsaveToken( PARSE_STACK *state, int tok )
+static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
 {
     look_ahead_storage *save;
 
@@ -2041,7 +2031,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
-        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t]); );
+        DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
         DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
         /* 
@@ -2124,7 +2114,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
             }
 #ifndef NDEBUG
             if( PragDbgToggle.dump_parse ) {
-                printf("=== Parser stack reduced by %u levels ===\n", yyl);
+                printf( "=== Parser stack reduced by %u levels ===\n", yyl );
             }
 #endif
         } else {
@@ -2357,10 +2347,10 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
 
 static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg )
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK expr_state;
-    p_action what;
-    PTREE expr_tree;
+    p_action    what;
+    PTREE       expr_tree;
 
     newExprStack( &expr_state, tok );
     syncLocation();
@@ -2399,41 +2389,41 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg
 
 PTREE ParseExpr( TOKEN end_token )
 {
-    return genericParseExpr( Y_EXPRESSION_SPECIAL, end_token, ERR_COMPLICATED_EXPRESSION );
+    return( genericParseExpr( Y_EXPRESSION_SPECIAL, end_token, ERR_COMPLICATED_EXPRESSION ) );
 }
 
 PTREE ParseExprDecl( void )
 {
-    return genericParseExpr( Y_EXPR_DECL_SPECIAL, T_SEMI_COLON, ERR_COMPLICATED_STATEMENT );
+    return( genericParseExpr( Y_EXPR_DECL_SPECIAL, T_SEMI_COLON, ERR_COMPLICATED_STATEMENT ) );
 }
 
 PTREE ParseMemInit( void )
 {
-    return genericParseExpr( Y_MEM_INIT_SPECIAL, T_LEFT_BRACE, ERR_COMPLICATED_EXPRESSION );
+    return( genericParseExpr( Y_MEM_INIT_SPECIAL, T_LEFT_BRACE, ERR_COMPLICATED_EXPRESSION ) );
 }
 
 PTREE ParseDefArg( )
 {
-    return genericParseExpr( Y_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
+    return( genericParseExpr( Y_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }
 
 PTREE ParseTemplateIntDefArg( )
 {
-    return genericParseExpr( Y_TEMPLATE_INT_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
+    return( genericParseExpr( Y_TEMPLATE_INT_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }
 
 PTREE ParseTemplateTypeDefArg( )
 {
-    return genericParseExpr( Y_TEMPLATE_TYPE_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION );
+    return( genericParseExpr( Y_TEMPLATE_TYPE_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }
 
 DECL_INFO *ParseException( void )
 /*******************************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK except_state;
-    p_action what;
-    DECL_INFO *exception;
+    p_action    what;
+    DECL_INFO   *exception;
     auto error_state_t check;
 
     CErrCheckpoint( &check );
@@ -2489,9 +2479,9 @@ static void parseEpilogue( void )
 void ParseDecls( void )
 /*********************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK decl_state;
-    p_action what;
+    p_action    what;
 
     while( CurToken != T_EOF ) {
         /*
@@ -2551,15 +2541,15 @@ void ParseDecls( void )
 DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
 /*************************************************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK instantiate_state;
-    p_action what;
-    DECL_SPEC *new_type;
-    REWRITE *last_rewrite;
-    REWRITE *save_token;
-    PTREE save_tree;
-    int save_yytoken;
-    unsigned suppressState;
+    p_action    what;
+    DECL_SPEC   *new_type;
+    REWRITE     *last_rewrite;
+    REWRITE     *save_token;
+    PTREE       save_tree;
+    int         save_yytoken;
+    unsigned    suppressState;
     void (*last_source)( void );
     auto error_state_t check;
     auto TOKEN_LOCN locn;
@@ -2640,10 +2630,10 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
 void ParseClassMemberInstantiation( REWRITE *defn )
 /*************************************************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK instantiate_state;
-    p_action what;
-    REWRITE *last_rewrite;
+    p_action    what;
+    REWRITE     *last_rewrite;
     void (*last_source)( void );
     auto TOKEN_LOCN locn;
 
@@ -2695,10 +2685,10 @@ void ParseClassMemberInstantiation( REWRITE *defn )
 void ParseFunctionInstantiation( REWRITE *defn )
 /**********************************************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK instantiate_state;
-    p_action what;
-    REWRITE *last_rewrite;
+    p_action    what;
+    REWRITE     *last_rewrite;
     void (*last_source)( void );
     auto TOKEN_LOCN locn;
 
@@ -2783,14 +2773,14 @@ static void declOnlyRewriteToken( void )
 DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
 /****************************************************/
 {
-    int t;
+    YYTOKENTYPE t;
     PARSE_STACK decl_state;
-    p_action what;
-    DECL_INFO *dinfo;
-    REWRITE *last_rewrite;
-    REWRITE *save_token;
-    PTREE save_tree;
-    int save_yytoken;
+    p_action    what;
+    DECL_INFO   *dinfo;
+    REWRITE     *last_rewrite;
+    REWRITE     *save_token;
+    PTREE       save_tree;
+    int         save_yytoken;
     void (*last_source)( void );
     auto error_state_t check;
     auto TOKEN_LOCN locn;
@@ -2856,7 +2846,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
         }
     }
 
-    return dinfo;
+    return( dinfo );
 }
 
 pch_status PCHWriteParserData( void )

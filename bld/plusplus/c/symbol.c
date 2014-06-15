@@ -122,7 +122,7 @@ static SCOPE symClassScope(     // GET SCOPE FOR CLASS CONTAINING SYMBOL
     }
 
     symGetScope( sym, scope );
-    if( scope && ScopeType( scope, SCOPE_CLASS ) ) {
+    if( scope != NULL && ScopeType( scope, SCOPE_CLASS ) ) {
         return( scope );
     }
     return( NULL );
@@ -738,7 +738,7 @@ bool SymIsComdatData(           // TEST IF DATA SYMBOL IS COMDAT
     SYMBOL fn_sym;
 
     symGetScope( sym, scope );
-    if( !scope || ScopeEnclosedInUnnamedNameSpace( scope ) ) {
+    if( scope == NULL || ScopeEnclosedInUnnamedNameSpace( scope ) ) {
         return( FALSE );
     }
     var_type = TypeModFlags( sym->sym_type, &flag );

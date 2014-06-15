@@ -36,6 +36,15 @@
 #include <string.h>
 #include <ctype.h>
 
+
+#define ENUM_PREFIX     "\tY_"
+#define ENUM_LEN        1
+#define DEFINE_PREFIX   "#define Y_"
+#define DEFINE_LEN      8
+
+#define ENUM_ON         "typedef enum yytokentype {"
+#define ENUM_OFF        "} yytokentype;"
+
 char ibuff[1024];
 char mname[1024];
 char mvalue[1024];
@@ -50,43 +59,64 @@ static void fail( char *msg, ... )
     exit( EXIT_FAILURE );
 }
 
-static int is_define( void )
+static int chk_enum( int enumflag )
 {
-    char *p;
-
-    for( p = ibuff; *p; ++p ) {
-        if( ! isspace( *p ) ) break;
+    if( enumflag ) {
+        if( memcmp( ibuff, ENUM_OFF, sizeof( ENUM_OFF ) - 1 ) == 0 ) {
+            return( 1 );
+        }
+    } else {
+        if( memcmp( ibuff, ENUM_ON, sizeof( ENUM_ON ) - 1 ) == 0 ) {
+            return( 1 );
+        }
     }
-    return( memcmp( p, "#define", 7 ) == 0 );
+    return( 0 );
 }
 
-static void get_mname_mvalue( void )
+static int is_item( int enumflag )
+{
+    if( enumflag ) {
+        if( memcmp( ibuff, ENUM_PREFIX, sizeof( ENUM_PREFIX ) - 1 ) == 0 ) {
+            return( ENUM_LEN );
+        }
+    } else {
+        if( memcmp( ibuff, DEFINE_PREFIX, sizeof( DEFINE_PREFIX ) - 1 ) == 0 ) {
+            return( DEFINE_LEN );
+        }
+    }
+    return( 0 );
+}
+
+static void get_mname_mvalue( int prefix_len )
 {
     char *p;
     char *q;
     char *r;
 
-    for( p = ibuff; *p; ++p ) {
-        if( ! isspace( *p ) ) break;
-    }
+    p = ibuff + prefix_len;
     for( ; *p; ++p ) {
-        if( isspace( *p ) ) break;
-    }
-    for( ; *p; ++p ) {
-        if( ! isspace( *p ) ) break;
+        if( ! isspace( *p ) ) {
+            break;
+        }
     }
     q = mname;
     for( ; *p; ++p ) {
-        if( isspace( *p ) ) break;
+        if( isspace( *p ) )
+            break;
+        if( *p == '=' )
+            break;
         *q++ = *p;
     }
     *q = '\0';
     for( ; *p; ++p ) {
-        if( ! isspace( *p ) ) break;
+        if( ! isspace( *p ) && *p != '=' ) {
+            break;
+        }
     }
     r = mvalue;
     for( ; *p; ++p ) {
-        if( isspace( *p ) ) break;
+        if( isspace( *p ) || *p == ',' )
+            break;
         *r++ = *p;
     }
     *r = '\0';
@@ -112,6 +142,8 @@ int main( int argc, char **argv )
     FILE *ifp;
     FILE *ofp;
     char *check;
+    int prefix_len;
+    int enumflag;
 
     if( argc != 3 ) {
         fail( "mktrans <ytab-hfile> <xlat-hfile>" );
@@ -126,12 +158,23 @@ int main( int argc, char **argv )
     }
     fprintf( ofp, "static unsigned char toYACC[256];\n" );
     fprintf( ofp, "static void createTable( void )\n{\n" );
+    enumflag = 0;
     for(;;) {
-        check = fgets( ibuff, sizeof(ibuff), ifp );
-        if( check == NULL ) break;
-        if( ! is_define() ) continue;
-        get_mname_mvalue();
-        if( mname_suffix( "_NAME" ) || mname_suffix( "_SPECIAL" ) ) continue;
+        check = fgets( ibuff, sizeof( ibuff ), ifp );
+        if( check == NULL )
+            break;
+        if( chk_enum( enumflag ) ) {
+            if( enumflag )
+                break;
+            enumflag = 1;
+            continue;
+        }
+        prefix_len = is_item( enumflag );
+        if( prefix_len == 0 )
+            continue;
+        get_mname_mvalue( prefix_len );
+        if( mname_suffix( "_NAME" ) || mname_suffix( "_SPECIAL" ) )
+            continue;
         fprintf( ofp, "    toYACC[T_%s] = %s;\n", &mname[2], mvalue );
     }
     fprintf( ofp, "}\n" );
