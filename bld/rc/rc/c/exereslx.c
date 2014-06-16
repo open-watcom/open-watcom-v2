@@ -295,6 +295,8 @@ extern int BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
     unsigned_32     curr_total;
     unsigned_32     curr_offset;
 
+    res_obj = res_obj; rva = rva; offset = offset; writebyfile = writebyfile;
+
     dir = &exeinfo->u.LXInfo.Res;
 
     mergeDirectory( resinfo, &errs );

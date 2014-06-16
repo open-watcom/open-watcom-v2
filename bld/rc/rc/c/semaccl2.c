@@ -76,6 +76,8 @@ int SemOS2StrToAccelEvent( char * string )
 static void CheckAccelFlags( uint_16 * flags, unsigned long idval )
 /********************************************************************/
 {
+    idval = idval;
+
     /* CHAR is the default */
     if( !( *flags & OS2_ACCEL_VIRTUALKEY ) && !( *flags & OS2_ACCEL_CHAR ) )
         *flags |= OS2_ACCEL_CHAR;

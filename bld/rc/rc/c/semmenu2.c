@@ -283,6 +283,8 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
     int             error;
     int             err_code;
 
+    tokentype = tokentype;
+
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
         error = SemOS2WriteSubMenu( menu, &err_code, codepage );
