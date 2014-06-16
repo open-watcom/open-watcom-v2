@@ -191,7 +191,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
 static int_8 lineis( char *str, char *substr )
 /********************************************/
 {
-    int len;
+    size_t  len;
 
     len = strlen( substr );
     wipe_space( str );
@@ -371,8 +371,8 @@ static int macro_exam( int i )
     }
 }
 
-static int my_sprintf( char *dest, char *format, int argc, char *argv[] )
-/***********************************************************************/
+static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
+/**************************************************************************/
 {
     /* just like sprintf, except take argv & argc for parms */
     /* so far it only handles string parms */

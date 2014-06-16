@@ -144,12 +144,12 @@ static void ConcatDirSep( char *dir )
 }
 
 
-static char *mygets( char *buf, unsigned len, FILE *fp )
-/******************************************************/
+static char *mygets( char *buf, size_t len, FILE *fp )
+/****************************************************/
 {
     char        *p,*q,*start;
     int         lang;
-    unsigned    got;
+    size_t      got;
 
     /* syntax is //nstring//mstring//0 */
 

@@ -676,6 +676,6 @@ int main(int argc, char *argv[])
   */
 
   exval = (exval ? 0 : 1);
-  exit(exval); return exval;
+  return( exval );
 }
 

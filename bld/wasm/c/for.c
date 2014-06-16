@@ -51,7 +51,7 @@ int ForDirective( int i, enum irp_type type )
     char *next_parm;
     char *end_of_parms;
     char buffer[MAX_LINE_LEN];
-    int len = 0;
+    size_t len = 0;
 
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( i, FALSE, TRUE );
@@ -74,7 +74,7 @@ int ForDirective( int i, enum irp_type type )
             return( ERROR );
         }
         arg_loc = i;
-        for( ;AsmBuffer[i]->class != TC_COMMA; i++ ) {
+        for( ; AsmBuffer[i]->class != TC_COMMA; i++ ) {
             if( AsmBuffer[i]->class == TC_FINAL ) {
                 AsmError( EXPECTING_COMMA );
                 return( ERROR );
@@ -104,7 +104,8 @@ int ForDirective( int i, enum irp_type type )
     AsmBuffer[i]->class = TC_DIRECTIVE;
     AsmBuffer[i]->u.token = T_MACRO;
 
-    if( MacroDef( i, TRUE ) == ERROR ) return( ERROR );
+    if( MacroDef( i, TRUE ) == ERROR )
+        return( ERROR );
 
     /* now call the above macro with each of the given parms */
 
@@ -123,7 +124,7 @@ int ForDirective( int i, enum irp_type type )
             if( type == IRP_CHAR ) {
                 len = strlen( buffer );
                 buffer[len] = *ptr;
-                buffer[len+1] = NULLC;
+                buffer[len + 1] = NULLC;
                 ptr++;
             } else if( type == IRP_WORD ) {
                 next_parm = ptr + strcspn( ptr, ",\0" );

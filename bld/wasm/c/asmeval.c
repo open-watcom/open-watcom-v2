@@ -583,6 +583,8 @@ static void fix_struct_value( expr_list *token )
             token->mbr = NULL;
         }
     }
+#else
+    token = token;
 #endif
 }
 

@@ -233,6 +233,8 @@ bool MatchOne( parse_entry *entry , sep_type req , char *match, unsigned len )
     unsigned            plen;
     bool                ret = FALSE;
 
+    req = req;
+
     for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = match;

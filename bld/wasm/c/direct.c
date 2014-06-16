@@ -2155,7 +2155,7 @@ static void get_module_name( void )
 static void set_def_seg_name( void )
 /***********************************/
 {
-    int len;
+    size_t  len;
 
     /* set Options.code_class */
     if( Options.code_class == NULL ) {

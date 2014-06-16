@@ -97,13 +97,13 @@ public:
     int write( uint_8 c )
         { return fputc( c, _fp ); };
 
-    int write( uint_16 d )
+    size_t write( uint_16 d )
         { return fwrite( &d, sizeof( d ), 1, _fp ); };
 
-    int write( uint_32 d )
+    size_t write( uint_32 d )
         { return fwrite( &d, sizeof( d ), 1, _fp ); };
 
-    int write( const void *buf, size_t el_size, size_t nelems )
+    size_t write( const void *buf, size_t el_size, size_t nelems )
         { return fwrite( buf, el_size, nelems, _fp ); };
 };
 
@@ -124,7 +124,7 @@ public:
     int nextch()
         { return fgetc( _fp ); };
 
-    int readbuf( void *buf, size_t num, size_t el_size = 1 )
+    size_t readbuf( void *buf, size_t num, size_t el_size = 1 )
         { return fread( buf, el_size, num, _fp ); };
 
     int putback( int c )

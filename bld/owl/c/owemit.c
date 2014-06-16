@@ -46,6 +46,9 @@ void OWLENTRY OWLEmitLabel( owl_section_handle section, owl_symbol_handle symbol
 void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_symbol_handle alt_sym, owl_wksym_flags flags ) {
 //****************************************************************************************************************************
 
+#ifdef NDEBUG
+    file = file;
+#endif
     _Log(( file, "OWLWeakExt( %x, %x, %x, %x )\n", file, wk_sym, alt_sym, flags ));
     assert( alt_sym->linkage != OWL_SYM_WEAK );
     wk_sym->linkage = OWL_SYM_WEAK;

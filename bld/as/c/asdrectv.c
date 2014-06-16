@@ -100,7 +100,8 @@ static bool dirFuncStorageAlloc( directive_t *, dir_table_enum );
 static bool dirFuncBSS( directive_t *dir, dir_table_enum parm )
 //*************************************************************
 {
-    if( !dirHasOperand( dir ) ) return( dirFuncSwitchSection( dir, parm ) );
+    if( !dirHasOperand( dir ) )
+        return( dirFuncSwitchSection( dir, parm ) );
     return( dirFuncStorageAlloc( dir, parm ) ); // ".bss tag, bytes"
 }
 
@@ -110,11 +111,15 @@ static bool dirFuncErr( directive_t *dir, dir_table_enum parm )
 {
     char    *str;
 
+    parm = parm;
+
     if( dirHasOperand( dir ) ) {
         assert( dir->num_operands == 1 );
         assert( dir->operand_list->type == DIROP_LINE );
         str = STRING_CONTENT( dir->operand_list );
-        if( *str ) Error( GET_STRING, str );
+        if( *str ) {
+            Error( GET_STRING, str );
+        }
     }
     return( FALSE );    // so that yyparse will terminate
 }
@@ -148,11 +153,11 @@ static bool dirFuncNop( directive_t *dir, dir_table_enum parm )
 #ifdef AS_ALPHA
     assert( parm == DT_NOP_FNOP );
     opcode = INS_FNOP;
-#ifdef _STANDALONE_
+  #ifdef _STANDALONE_
     ObjEmitData( CurrentSection, (char *)&opcode, sizeof( opcode ), TRUE );
-#else
+  #else
     ObjEmitData( (char *)&opcode, sizeof( opcode ), TRUE );
-#endif
+  #endif
     return( TRUE );
 #else
     assert( FALSE );
@@ -447,6 +452,8 @@ static bool dirFuncString( directive_t *dir, dir_table_enum parm )
 static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm )
 //***********************************************************************
 {
+    dir = dir;
+
     switch( parm ) {
     /* The ones that need autoAlignment are here. */
     case DT_SEC_TEXT:

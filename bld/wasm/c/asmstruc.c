@@ -135,7 +135,7 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
     char            buffer[MAX_LINE_LEN];
     char            *ptr;
     char            *ptr1;
-    int             count = 0;
+    size_t          count;
     dir_node        *dir;
     field_list      *f;
 
@@ -162,21 +162,19 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
         strcat( buffer, " " );
         if( ptr == NULL ) {
             strcat( buffer, f->value );
-        } else if( ( ptr1 = strpbrk( ptr, "," ) ) != NULL ) {
-            count = (int)( ptr1 - ptr );
-            ptr1 = ptr;
-            while ( ptr1 < ptr + count ) {
-                if ( *ptr1 != ' ' ) break;
-                ptr1++;
-            }
-            if ( ptr1 >= ptr + count ) {
+        } else if( (ptr1 = strpbrk( ptr, "," )) != NULL ) {
+            count = ptr1 - ptr;
+            for( ptr1 = ptr; isspace( *ptr1 ); ptr1++ )
+                ;
+            if( ptr1 - ptr == count ) {
                 strcat( buffer, f->value );
             } else {
                 strncat( buffer, ptr, count );
             }
-            ptr += min( count + 1, strlen( ptr ) ); // go past the comma
+            ptr += count + 1;   // go past the comma
         } else {
-            for( ; *ptr != '\0' && isspace(*ptr); ptr++ );
+            for( ; isspace( *ptr ); ptr++ )
+                ;
             if( *ptr == '\0' ) {
                 strcat( buffer, f->value );
             } else {
@@ -193,9 +191,9 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
 int AddFieldToStruct( asm_sym *sym,  int loc )
 /*****************************/
 {
-    int offset;
-    int count = 0;
-    int i;
+    int         offset;
+    size_t      count;
+    int         i;
     struct_info *the_struct;
     field_list  *f;
 
@@ -220,11 +218,14 @@ int AddFieldToStruct( asm_sym *sym,  int loc )
     strcpy( f->initializer, AsmBuffer[ loc ]->string_ptr );
 
     /* now add the value to initialize the struct to */
+    count = 0;
     for( i = loc + 1; AsmBuffer[i]->class != TC_FINAL; i++ ) {
         if( AsmBuffer[i]->string_ptr != NULL ) {
             count += strlen( AsmBuffer[i]->string_ptr ) + 1;
         }
-        if( AsmBuffer[i]->class == TC_STRING ) count += 2;
+        if( AsmBuffer[i]->class == TC_STRING ) {
+            count += 2;
+        }
     }
 
     f->value = AsmAlloc( count + 1 );

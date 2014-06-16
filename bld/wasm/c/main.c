@@ -523,8 +523,8 @@ static void set_some_kinda_name( char token, char *name )
 /*******************************************************/
 /* set:  code class / data seg. / module name / text seg */
 {
-    int len;
-    char **tmp;
+    size_t  len;
+    char    **tmp;
 
     len = strlen( name ) + 1;
     switch( token ) {

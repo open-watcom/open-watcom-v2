@@ -111,7 +111,7 @@ char *my_fgets( char *buf, int n, FILE *fp )
 /******************************************/
 {
     char    *rc;
-    int     i;
+    size_t  i;
     
     if( (rc = fgets( buf, n, fp )) != NULL ) {
         for( i = strlen( buf ); i && isWSorCtrlZ( buf[ i - 1] ); --i ) {
@@ -161,7 +161,7 @@ int process_cmdl( int argc, char *argv[] )
     char    *p;
     char    *o;
     int     i, j;
-    int     len;
+    size_t  len;
 
     opt.quiet = 0;
     opt.hide = 0;
@@ -179,6 +179,7 @@ int process_cmdl( int argc, char *argv[] )
 #endif
             break;
         ++p;
+        len = 0;
         for( j = 0; options_text[ j ] != NULL; ++j ) {
             o = options_text[ j ];
             len = strlen( o );
@@ -337,6 +338,9 @@ void check_parm_item( char *keyword, char *parms[], control_type control, int pa
                 int tab_cnt, char *str, char **win_tab, char **os2_tab, int *retval )
 /************************************************************************************/
 {
+    parms = parms; control = control; parm_idx = parm_idx; tab_cnt = tab_cnt;
+    win_tab = win_tab; os2_tab = os2_tab;
+
     if( strstr( str, keyword ) != NULL ) {
         *retval = 1;
     }
@@ -768,7 +772,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
     char    *buff1;
     char    *p;
     char    **p2;
-    int     len;
+    size_t  len;
     int     sysmodal, visible;
     int     i;
     

@@ -270,6 +270,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
         Code->prefix.seg = EMPTY;
     }
 #else
+    sym = sym;
     if( Code->prefix.seg != EMPTY ) {
         switch( seg_reg ) {
         case T_SS:

@@ -526,7 +526,7 @@ int ExpandAllConsts( int start_pos, bool early_only )
 }
 
 int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
-/******************************************************************/
+/*****************************************************************/
 {
     if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
     if( early_only == FALSE ) {
@@ -541,7 +541,7 @@ int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
 }
 
 int ExpandTheConstant( int start_pos, bool early_only, bool flag_msg )
-/******************************************************************/
+/********************************************************************/
 {
     if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
     if( early_only == FALSE ) {
@@ -558,9 +558,11 @@ int ExpandTheConstant( int start_pos, bool early_only, bool flag_msg )
 #else
 
 int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
-/******************************************************************/
+/*****************************************************************/
 {
     int    val;
+
+    early_only = early_only;
 
     val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
     if( val == ERROR )

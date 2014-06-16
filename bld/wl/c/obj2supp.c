@@ -295,8 +295,8 @@ static void GetFrameAddr( frame_spec *frame, targ_addr *addr,
     }
 }
 
-static void GetTargetAddr( target_spec *target, targ_addr *addr, offset off )
-/***************************************************************************/
+static void GetTargetAddr( target_spec *target, targ_addr *addr )
+/***************************************************************/
 {
     switch( target->type ) {
     case FIX_TARGET_SEG:
@@ -418,7 +418,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
     faddr.off = 0;
     faddr.seg = 0;
     memset( &fix, 0, sizeof( fix_relo_data ) );        // to get all bitfields 0
-    GetTargetAddr( target, &fix.tgt_addr, off );
+    GetTargetAddr( target, &fix.tgt_addr );
     GetFrameAddr( frame, &faddr, &fix.tgt_addr, off );
     fix.type = fixtype;
     fix.loc_addr = CurrRec.addr;

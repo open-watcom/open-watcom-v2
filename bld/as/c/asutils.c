@@ -280,7 +280,7 @@ extern char *AsStrdup( const char *str ) {
 //****************************************
 
     char    *mem;
-    int     len;
+    size_t  len;
 
     len = strlen( str ) + 1;
     mem = MemAlloc( len );

@@ -457,11 +457,11 @@ char *ReadTextLine( char *string )
     return( string );
 }
 
-static char *join_multiline_cmds( char *line, int max_len )
-/*********************************************************/
+static char *join_multiline_cmds( char *line, size_t max_len )
+/************************************************************/
 {
-    int         linelen;
-    int         i;
+    size_t  linelen;
+    size_t  i;
 
     linelen = strlen( line );
 
@@ -477,8 +477,8 @@ static char *join_multiline_cmds( char *line, int max_len )
     return( line );
 }
 
-char *ScanLine( char *string, int max_len )
-/*****************************************/
+char *ScanLine( char *string, size_t max_len )
+/********************************************/
 {
     char        *line;
     char        buffer[MAX_LINE_LEN];

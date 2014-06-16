@@ -43,6 +43,7 @@
 
 void oe_init(Output_Encoder *o, FILE *out, int mode, int rate, int *buf)
 {
+  rate = rate;
 
   o->out = out;
   o->mode = mode;
