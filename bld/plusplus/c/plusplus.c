@@ -313,7 +313,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 CompFlags.cpp_output = TRUE;
                 CompFlags.ignore_fnf = FALSE;
-                if( ForceInclude ) {
+                if( ForceInclude != NULL ) {
                     EmitLine( 1, WholeFName );
                     openForceIncludeFile();
                     PpParse();
@@ -341,7 +341,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                     // in the primary source file
                     CompFlags.watch_for_pcheader = TRUE;
                 }
-                if( ForceInclude ) {
+                if( ForceInclude != NULL ) {
                     openForceIncludeFile();
                     DbgVerify( ! CompFlags.watch_for_pcheader,
                         "force include file wasn't used for PCH" );

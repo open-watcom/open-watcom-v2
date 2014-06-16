@@ -298,7 +298,7 @@ static char *reduceToOneString( OPT_STRING **h )
         if( s->data[0] != '\0' ) {
             *h = s->next;
             OPT_CLEAN_STRING( h );
-            p = (char*)s;
+            p = (char *)s;
             strcpy( p, s->data );
         } else {
             OPT_CLEAN_STRING( h );
@@ -381,7 +381,7 @@ void SetTargetLiteral( char **n, char *t )
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
     OPT_STORAGE *data,          // - options data
-    char *str );                // - scan position in command line
+    const char *str );          // - scan position in command line
 
 static void handleOptionFC( OPT_STORAGE *data, int value )
 {
@@ -500,7 +500,7 @@ static void processCmdFile(     // PROCESS A COMMAND FILE
 
 static void procOptions(        // PROCESS AN OPTIONS LINE
     OPT_STORAGE *data,          // - options data
-    char *str )                 // - scan position in command line
+    const char *str )           // - scan position in command line
 {
     int c;                      // - next character
     char const *fnm;            // - scanned @ name
@@ -1117,9 +1117,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.check_syntax = 1;
     }
     if( data->zv ) {
-    #if COMP_CFG_COFF == 0
+#if COMP_CFG_COFF == 0
         CompFlags.virtual_stripping = TRUE;
-    #endif
+#endif
     }
     if( data->na ) {
         CompFlags.disable_ialias = 1;

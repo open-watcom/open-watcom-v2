@@ -45,6 +45,7 @@
 #include "iosupp.h"
 #include "codegen.h"
 #include "initdefs.h"
+#include "feprotos.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #endif
@@ -72,7 +73,6 @@
 #define F_BUF_FMT   "[%3lx-%4x]"
 #define F_CPP_FLOAT "(%s)"
 
-extern char *FEName( SYMBOL );
 
 char *DbgSymNameFull(           // GET FULL SYMBOL NAME
     SYMBOL sym,                 // - symbol

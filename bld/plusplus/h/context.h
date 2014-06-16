@@ -61,16 +61,12 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
 void CtxFunction(               // SET FUNCTION BEING PROCESSED
     SYMBOL curr )               // - current function SYMBOL
 ;
-char const *CtxGetSwitchAddr(   // GET CURRENT SWITCH CONTEXT
-    void )
-;
 void CtxSetCurrContext(         // SET THE CURRENT CONTEXT
     CTX curr )                  // - new context
 ;
 void CtxSetSwitchAddr(          // SET ADDRESS OF CURRENT SWITCH
     char const *sw_addr )       // - address of switch
 ;
-
 char const *CtxGetSwitchAddr(   // GET ADDRESS OF CURRENT SWITCH
     void )
 ;
