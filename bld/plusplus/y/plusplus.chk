@@ -2114,5 +2114,5 @@ parser states:                             966
 reduce/reduce conflicts:                   115
 shift/reduce conflicts:                     43
 number of rules not reduced:                 0
-bytes used in tables:                    50980
-table space utilization:                    47
+bytes used in tables:                    51480
+table space utilization:                    46

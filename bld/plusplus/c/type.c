@@ -3984,11 +3984,13 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
 }
 
 
-DECL_INFO *AddMSCVQualifierKludge( type_flag extra_cv, DECL_INFO *dinfo )
-/***********************************************************************/
+DECL_INFO *AddMSCVQualifierKludge( specifier_t spec, DECL_INFO *dinfo )
+/*********************************************************************/
 {
+    type_flag extra_cv;
     TYPE cv_type;
 
+    extra_cv = convertCVSpec( spec );
     if( extra_cv != TF1_NULL ) {
         cv_type = MakeFlagModifier( extra_cv );
         dinfo = prependTypeToDeclarator( dinfo, cv_type );

@@ -334,12 +334,13 @@ Modified        By              Reason
 %token Y___WATCALL
 %token Y___UNALIGNED
 
-%type <flags> modifier
-%type <flags> access-specifier
-%type <flags> cv-qualifier-seq-opt
-%type <flags> base-qualifiers-opt
-%type <flags> segment-cast-opt
-%type <flags> packed-class-opt
+%type <segm_cast>  segment-cast-opt
+
+%type <flags_mod>  modifier
+%type <flags_acc>  access-specifier
+%type <flags_qual> cv-qualifier-seq-opt
+%type <flags_inh>  base-qualifiers-opt
+%type <flags_cls>  packed-class-opt
 
 %type <token> class-key
 %type <token> template-typename-key

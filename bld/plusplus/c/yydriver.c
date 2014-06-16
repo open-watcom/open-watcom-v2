@@ -58,7 +58,12 @@ typedef uint_16         YYPLHSTYPE;
 typedef yytokentype     YYTOKENTYPE;
 
 typedef union {
-    unsigned            flags;
+    inherit_flag        flags_inh;
+    type_flag           flags_mod;
+    specifier_t         flags_qual;
+    symbol_flag         flags_acc;
+    CLASS_INIT          flags_cls;
+    bool                segm_cast;
     YYTOKENTYPE         token;
     TYPE                type;
     BASE_CLASS          *base;
@@ -223,7 +228,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK * );
 
 #ifndef NDEBUG
 
-static void dump_rule( unsigned rule )
+static void dump_rule( YYACTIONTYPE rule )
 {
     unsigned                i;
     const YYTOKENTYPE YYFAR *tok;
@@ -1574,7 +1579,7 @@ static void syncToRestart( PARSE_STACK *state )
         while( state->gstack != restart_gstack ) {
             GStackPop( &(state->gstack) );
         }
-        pop_amount = state_ssp - restart_ssp;
+        pop_amount = (unsigned)( state_ssp - restart_ssp );
         if( pop_amount != 0 ) {
             state->ssp = restart_ssp;
             state->vsp -= pop_amount;
@@ -1662,12 +1667,12 @@ void *ParseCurrQualification( void )
     return( elt );
 }
 
-static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, unsigned rule )
+static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, YYACTIONTYPE rule )
 {
     YYACTIONTYPE *ssp;
     YYTOKENTYPE lhs;
-    unsigned top_state;
-    unsigned raw_action;
+    YYACTIONTYPE top_state;
+    YYACTIONTYPE raw_action;
 
     ssp = state->ssp;
     top_state = ssp[0];
@@ -1682,14 +1687,14 @@ static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, unsigned rule )
         ( yyaction[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
 #endif
 
-static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, unsigned *pa )
+static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE *pa )
 {
     YYACTIONTYPE *ssp;
     YYTOKENTYPE lhs;
-    unsigned top_state;
+    YYACTIONTYPE top_state;
     unsigned bit_index;
-    unsigned raw_action;
-    unsigned rule;
+    YYACTIONTYPE raw_action;
+    YYACTIONTYPE rule;
     unsigned mask;
 
     ssp = state->ssp;
@@ -1789,7 +1794,7 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
                                      , PARSE_STACK *host )
 {
     la_action what;
-    unsigned yyaction;
+    YYACTIONTYPE yyaction;
     unsigned yyk;
 
     for(;;) {
@@ -2016,9 +2021,9 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
     TOKEN_LOCN *yylp;
     unsigned yyk;
     unsigned yyl;
-    unsigned yyaction;
-    unsigned get_yyaction;
-    unsigned rule;
+    YYACTIONTYPE yyaction;
+    YYACTIONTYPE get_yyaction;
+    YYACTIONTYPE rule;
 
     #define INC_STACK( kind ) \
         curr_##kind = state->kind; \

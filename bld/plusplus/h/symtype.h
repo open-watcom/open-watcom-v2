@@ -1582,7 +1582,7 @@ extern DECL_INFO *DeclSpecDeclarator( DECL_SPEC * );
 extern DECL_INFO *AddDeclarator( DECL_INFO *, TYPE );
 extern DECL_INFO *AddExplicitParms( DECL_INFO *, DECL_INFO * );
 extern DECL_INFO *FinishDeclarator( DECL_SPEC *, DECL_INFO * );
-extern DECL_INFO *AddMSCVQualifierKludge( type_flag, DECL_INFO * );
+extern DECL_INFO *AddMSCVQualifierKludge( specifier_t, DECL_INFO * );
 extern DECL_INFO *AddArrayDeclarator( DECL_INFO *, PTREE );
 extern DECL_INFO *AddArgument( DECL_INFO *, DECL_INFO * );
 extern DECL_INFO *AddEllipseArg( DECL_INFO * );
