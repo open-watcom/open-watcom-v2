@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern  char    *CStrSave(char *);
+extern  char    *CStrSave(const char *);

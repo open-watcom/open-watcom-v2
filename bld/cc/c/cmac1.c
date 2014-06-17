@@ -575,7 +575,7 @@ static MACRO_ARG *CollectParms(void)
             if( mentry->parm_count - 1 != 0 ) {
                 CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
-        } else if( far_strcmp( mentry->macro_name, "va_start", 9 ) == 0 ) {
+        } else if( memcmp( mentry->macro_name, "va_start", 9 ) == 0 ) {
             if( SymLevel != 0  &&  ! VarParm( CurFunc ) ) {
                 CErr1( ERR_MUST_BE_VAR_PARM_FUNC );
             }
@@ -937,6 +937,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning )
 static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
 {
     size_t      gluelen;
+    size_t      tokenlen;
     char        *buf;
 
     buf = NULL;
@@ -949,8 +950,9 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
     } else if( gluebuf != NULL ) {
         /* now do a "strcat( gluebuf, buf )" */
         gluelen = strlen( gluebuf );
-        gluebuf = CMemRealloc( gluebuf, gluelen + strlen( buf ) + 1 );
-        strcpy( gluebuf + gluelen, buf );
+        tokenlen = strlen( buf );
+        gluebuf = CMemRealloc( gluebuf, gluelen + tokenlen + 1 );
+        memcpy( gluebuf + gluelen, buf, tokenlen + 1 );
         CMemFree( buf );
         buf = gluebuf;
     }
@@ -1101,10 +1103,10 @@ local MACRO_TOKEN *BuildString( char *p )
 {
     MACRO_TOKEN     *head;
     MACRO_TOKEN     **lnk;
-    int             i;
+    size_t          i;
     int             c;
     char            *tokenstr;
-    int             len;
+    size_t          len;
     char            *buf;
     size_t          bufsize;
     TOKEN           tok;
@@ -1121,7 +1123,7 @@ local MACRO_TOKEN *BuildString( char *p )
         }
         while( (tok = *(TOKEN *)p) != T_NULL ) {
             p += sizeof( TOKEN );
-            if( i >= (bufsize - 8) ) {
+            if( i >= ( bufsize - 8 ) ) {
                 buf = CMemRealloc( buf, 2 * i );
             }
             switch( tok ) {
@@ -1135,7 +1137,7 @@ local MACRO_TOKEN *BuildString( char *p )
                     if( c == '\0' ) break;
                     if( c == '\\' ) buf[i++] = c; /* 15-mar-88 */
                     buf[i++] = c;
-                    if( i >= (bufsize - 8) ) {
+                    if( i >= ( bufsize - 8 ) ) {
                         buf = CMemRealloc( buf, 2 * i );
                     }
                 }
@@ -1150,7 +1152,7 @@ local MACRO_TOKEN *BuildString( char *p )
                     if( c == '\0' ) break;
                     if( c == '\\'  ||  c == '"' ) buf[i++] = '\\';
                     buf[i++] = c;
-                    if( i >= (bufsize - 8) ) {
+                    if( i >= ( bufsize - 8 ) ) {
                         buf = CMemRealloc( buf, 2 * i );
                     }
                 }
@@ -1166,7 +1168,7 @@ local MACRO_TOKEN *BuildString( char *p )
                 }
                 break;
             case T_BAD_CHAR:
-                if( *p == '\\' && *(TOKEN *)(p+1) == T_NULL ) {
+                if( *p == '\\' && *(TOKEN *)( p + 1 ) == T_NULL ) {
                     CErr1( ERR_INVALID_STRING_LITERAL );
                 }
                 buf[i++] = *p++;
@@ -1174,7 +1176,7 @@ local MACRO_TOKEN *BuildString( char *p )
             default:
                 tokenstr = Tokens[tok];
                 len = strlen( tokenstr );
-                if( i >= (bufsize-len) )
+                if( i >= ( bufsize - len ) )
                     buf = CMemRealloc( buf, 2 * i );
                 memcpy( &buf[i], tokenstr, len );
                 i += len;
@@ -1333,7 +1335,7 @@ MACRO_TOKEN *MacroExpansion( int rescanning )
     MACRO_TOKEN     *mtok;
     NESTED_MACRO    *nested;
     char            *tokens;
-    int             len;
+    size_t          len;
 
     mentry = NextMacro;
     nested = (NESTED_MACRO *)CMemAlloc( sizeof( NESTED_MACRO ) );
@@ -1357,10 +1359,9 @@ MACRO_TOKEN *MacroExpansion( int rescanning )
         for( mtok = head; mtok; mtok = mtok->next ) {   /* 26-oct-93 */
             if( mtok->token == T_ID ) {
                 len = strlen( mtok->data ) + 1;
-                for( nested = NestedMacros; nested; nested = nested->next ) {
-                    if( far_strcmp( nested->mentry->macro_name,
-                                    mtok->data, len ) == 0 ) {
-                        if( nested->substituting_parms == 0 ) { /* 09-nov-93*/
+                for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
+                    if( memcmp( nested->mentry->macro_name, mtok->data, len ) == 0 ) {
+                        if( nested->substituting_parms == 0 ) {
                             // change token so it won't be considered a
                             // candidate as a macro
                             mtok->token = T_UNEXPANDABLE_ID;

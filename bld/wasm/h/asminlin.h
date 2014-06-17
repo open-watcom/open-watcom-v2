@@ -105,7 +105,7 @@ enum prefix_reg {
 
 #if !defined( _STANDALONE_ )
 
-extern void             *AsmQuerySymbol( char *name );
+extern void             *AsmQuerySymbol( const char *name );
 
 /*
    The following function is supplied by the user of the mini-assembler.

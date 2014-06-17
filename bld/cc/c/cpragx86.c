@@ -273,8 +273,8 @@ local fix_words FixupKeyword( void )
 }
 
 
-void *AsmQuerySymbol( char *name )
-/********************************/
+void *AsmQuerySymbol( const char *name )
+/**************************************/
 {
     return( SymLook( CalcHash( name, strlen( name ) ), name ) );
 }
@@ -1068,8 +1068,7 @@ void AsmSysMakeInlineAsmFunc( int code_ovrflw )
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( CStrSave( name ),
-                        FuncNode( GetType( TYPE_VOID ), 0, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), 0, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );

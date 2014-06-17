@@ -468,7 +468,7 @@ char *SegClassName( segment_id requested_seg )
     user_seg        *useg;
     textsegment     *tseg;
     char            *classname;
-    int             len;
+    size_t          len;
 
     if( requested_seg == SEG_CODE ) {
         return( CodeClassName );                        /* 01-mar-90*/
@@ -522,7 +522,6 @@ SYM_HANDLE SegSymHandle( segment_id segment )
 {
     seg_name        *seg;
     user_seg        *useg;
-    char            *sym_name;
 
     for( seg = &Predefined_Segs[0]; seg->name; seg++ ) {
         if( seg->segment == segment ) {
@@ -532,10 +531,7 @@ SYM_HANDLE SegSymHandle( segment_id segment )
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->segment == segment ) {
             if( useg->sym_handle == 0 ) {
-                sym_name = CMemAlloc( strlen( useg->name ) + 2 );
-                strcpy( &sym_name[1], useg->name );
-                sym_name[0] = '.';
-                useg->sym_handle = SegSymbol( sym_name, 0 );
+                useg->sym_handle = SegSymbol( useg->name, SEG_UNKNOWN );
             }
             return( useg->sym_handle );
         }

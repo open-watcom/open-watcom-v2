@@ -58,7 +58,7 @@ extern void AsmFini( void );        // Call after giving all the input and
                                     // before using the AsmCodeBuffer
 extern void AsmFiniRelocs( void );  // Call to free memory used by reloc items
 
-extern void             *AsmQuerySymbol( char *name );
+extern void             *AsmQuerySymbol( const char *name );
 
 /*
    The following function is supplied by the user of the mini-assembler.

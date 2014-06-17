@@ -44,11 +44,11 @@ static uint_32  buffer[MAX_NUM_INS];
 static int      curLine;
 
 
-void *AsmQuerySymbol( char *name ) {
-//**********************************
+void *AsmQuerySymbol( const char *name ) {
+//****************************************
 // CC provides this
 
-    return( name );
+    return( (void *)name );
 }
 
 enum sym_state AsmQueryState( void *name ) {

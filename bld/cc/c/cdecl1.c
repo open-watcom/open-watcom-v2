@@ -88,14 +88,14 @@ void ParsePgm( void )
 local void FuncDefn( SYMPTR sym )
 {
     SYM_NAMEPTR sym_name;
-    int         sym_len;
+    size_t      sym_len;
     TYPEPTR     typ;
 
     /* duplicate name in near space */
     sym_name = SymName( sym, CurFuncHandle );
-    sym_len = far_strlen_plus1( sym_name );
+    sym_len = strlen( sym_name ) + 1;
     sym->name = CMemAlloc( sym_len );
-    far_memcpy( sym->name, sym_name, sym_len );
+    memcpy( sym->name, sym_name, sym_len );
     if( sym->flags & SYM_DEFINED ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );   /* 03-aug-88 */
     }

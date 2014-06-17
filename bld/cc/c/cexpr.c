@@ -1938,12 +1938,12 @@ local int IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, int n, SYMPTR sym )
 {
     char    func_name[6];
 
-    if( far_strcmp( sym_name, MathFuncs[i].name, n ) == 0 )
+    if( memcmp( sym_name, MathFuncs[i].name, n ) == 0 )
         return( 1 );
     if( sym->flags & SYM_INTRINSIC ) {
         strcpy( func_name, &MathFuncs[i].name[2] ); /* copy name without __ */
         strlwr( func_name );
-        if( far_strcmp( sym_name, func_name, n ) == 0 )
+        if( memcmp( sym_name, func_name, n ) == 0 )
             return( 1 );
     }
     return( 0 );        /* indicate not a math intrinsic function */
@@ -2076,6 +2076,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     unsigned char   parm_count;
     SYM_NAMEPTR     sym_name;
     SYM_ENTRY       sym;
+    size_t          sym_len;
 
     flags = 0;
     parm_count = 1;
@@ -2137,7 +2138,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( functree->op.opr == OPR_PUSHADDR ) {
                     SymGet( &sym, functree->op.u2.sym_handle );
                     sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                    if( far_strcmp( sym_name, "_inline_strcmp", 15 ) == 0 ) {
+                    if( memcmp( sym_name, "_inline_strcmp", 15 ) == 0 ) {
                         SymGet( &sym, SymMEMCMP );
                         tree = VarLeaf( &sym, SymMEMCMP );
                         optimized = 1;
@@ -2153,20 +2154,19 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                 }
 #endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                n = far_strlen_plus1( sym_name );
+                sym_len = strlen( sym_name ) + 1;
                 if( (GenSwitches & NO_OPTIMIZATION) == 0  &&
                     CompFlags.extensions_enabled ) {
                     for( i = 0; MathFuncs[i].name; ++i ) {
                         if( parm_count == MathFuncs[i].parm_count  &&
-                            IntrinsicMathFunc( sym_name, i, n, &sym ) ) {
+                            IntrinsicMathFunc( sym_name, i, sym_len, &sym ) ) {
                             FreeExprNode( functree );
                             if( parm_count == 1 ) {
                                 tree = ExprNode( 0, OPR_MATHFUNC, last_parm );
                             } else {  /* parm_count == 2 */
                                 tree = ValueStack[ Level ]; /* op1 */
                                 --Level;
-                                tree = ExprNode( tree, OPR_MATHFUNC2,
-                                                        last_parm );
+                                tree = ExprNode( tree, OPR_MATHFUNC2, last_parm );
                             }
                             tree->u.expr_type = GetType( TYPE_DOUBLE );
                             tree->op.u1.mathfunc = MathFuncs[i].mathop;
@@ -2175,17 +2175,17 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                     }
                 }
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
-                if( far_strcmp( sym_name, "__builtin_va_start", n ) == 0 ) {
+                if( memcmp( sym_name, "__builtin_va_start", sym_len ) == 0 ) {
                     tree = GenVaStartNode( last_parm );
                     goto done_call;
                 }
-                if( far_strcmp( sym_name, "__builtin_alloca", n ) == 0 ) {
+                if( memcmp( sym_name, "__builtin_alloca", sym_len ) == 0 ) {
                     tree = GenAllocaNode( last_parm );
                     goto done_call;
                 }
 #endif
 #if  _CPU == _PPC
-                if( far_strcmp( sym_name, "__builtin_varg", n ) == 0 ) {
+                if( memcmp( sym_name, "__builtin_varg", sym_len ) == 0 ) {
                     tree = GenVaArgNode( last_parm );
                     goto done_call;
                 }

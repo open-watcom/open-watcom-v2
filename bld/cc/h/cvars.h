@@ -398,37 +398,6 @@ global TREEPTR         CurFuncNode;
 
 //================= Function Prototypes ========================
 
-#if defined(__WATCOMC__) && defined(_M_IX86) && defined(__FLAT__)
-
-extern int far_strcmp( const char *, const char *, size_t );
-#pragma aux far_strcmp = \
-    0xf3            /* rep     */ \
-    0xa6            /* cmpsb   */ \
-    0x74 0x01       /* je L1   */ \
-    0x41            /* inc ecx */ \
-    parm caller [edi] [esi] [ecx] value [ecx] modify exact [esi edi ecx];
-extern size_t far_strlen_plus1( const char * );
-#pragma aux far_strlen_plus1 = \
-    0x29 0xc0       /* sub eax,eax */ \
-    0x4f            /* dec edi     */ \
-    0x47            /* L1:inc edi  */ \
-    0x40            /* inc eax     */ \
-    0x80 0x3f 0x00  /* cmp [edi],0 */ \
-    0x75 0xf9       /* jne L1      */ \
-    parm caller [edi] value [eax] modify exact [edi eax];
-extern void far_memcpy( char *, const char *, size_t );
-#pragma aux     far_memcpy = \
-    0xf3 0xa4       /* rep movsb */ \
-    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx];
-
-#else
-
-#define far_strcmp(__p1,__p2,__len)     memcmp( __p1, __p2, __len )
-#define far_strlen_plus1( p )           (strlen( p ) + 1)
-#define far_memcpy( p1, p2, len )       memcpy( p1, p2, len )
-
-#endif
-
 extern  void    SetDBChar(int);                 /* casian */
 
 extern  int     ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, int topLevelCheck ); /*ccheck*/
@@ -783,21 +752,21 @@ extern  TREEPTR StringLeaf(int);                /* cstring */
 extern  void    SymInit(void);                  /* csym */
 extern  void    SpcSymInit(void);               /* csym */
 extern  void    SymFini(void);                  /* csym */
-extern  void    SymCreate(SYMPTR,char *);       /* csym */
-extern  SYM_HANDLE SegSymbol(char *,segment_id);/* csym */
-extern  SYM_HANDLE SpcSymbol(char *,int);       /* csym */
+extern  void    SymCreate(SYMPTR,const char *); /* csym */
+extern  SYM_HANDLE SegSymbol(const char *,segment_id); /* csym */
+extern  SYM_HANDLE SpcSymbol(const char *,stg_classes); /* csym */
 extern  SYM_HANDLE SymAdd(int,SYMPTR);          /* csym */
 extern  SYM_HANDLE SymAddL0(int,SYMPTR);        /* csym */
-extern  SYM_HANDLE SymLook(int,char *);         /* csym */
-extern  SYM_HANDLE Sym0Look(int,char *);        /* csym */
-extern  SYM_HANDLE SymLookTypedef(int,char *,SYMPTR);   /* csym */
+extern  SYM_HANDLE SymLook(int,const char *);   /* csym */
+extern  SYM_HANDLE Sym0Look(int,const char *);  /* csym */
+extern  SYM_HANDLE SymLookTypedef(int,const char *,SYMPTR); /* csym */
 extern  void    SymGet(SYMPTR,SYM_HANDLE);      /* csym */
 extern  SYMPTR  SymGetPtr(SYM_HANDLE);          /* csym */
 extern  void    SymReplace(SYMPTR,SYM_HANDLE);  /* csym */
 extern  void    EndBlock(void);                 /* csym */
-extern  SYM_HANDLE MakeFunction(char *,TYPEPTR);/* csym */
-extern  SYM_HANDLE MakeNewSym(SYMPTR,char,TYPEPTR,int); /* csym */
-extern  LABELPTR LkLabel(char *);               /* csym */
+extern  SYM_HANDLE MakeFunction(const char *,TYPEPTR); /* csym */
+extern  SYM_HANDLE MakeNewSym(SYMPTR,char,TYPEPTR,stg_classes); /* csym */
+extern  LABELPTR LkLabel(const char *);         /* csym */
 extern  void    FreeLabels(void);               /* csym */
 extern  XREFPTR NewXref(XREFPTR);               /* csym */
 extern  void    FreeXrefs(XREFPTR);             /* csym */
