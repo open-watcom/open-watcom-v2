@@ -234,7 +234,7 @@ void AsmSysDone( void )
     PragEnding( FALSE );
 }
 
-void *AsmQuerySymbol( char *name )
+void *AsmQuerySymbol( const char *name )
 {
     return( ScopeASMLookup( NameCreateNoLen( name ) ) );
 }

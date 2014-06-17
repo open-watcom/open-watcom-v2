@@ -1227,10 +1227,10 @@ static  void            ObjectName( void ) {
 }
 
 
-void                    *AsmQuerySymbol( char *name ) {
-//=====================================================
-
-    return( name );
+void    *AsmQuerySymbol( const char *name )
+//===========================================
+{
+    return( (void *)name );
 }
 
 

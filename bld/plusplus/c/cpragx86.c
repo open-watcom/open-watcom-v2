@@ -503,7 +503,7 @@ static fix_words FixupKeyword(
     return( retn );
 }
 
-void *AsmQuerySymbol( char *id )
+void *AsmQuerySymbol( const char *id )
 {
     return( ScopeASMLookup( NameCreateNoLen( id ) ) );
 }
