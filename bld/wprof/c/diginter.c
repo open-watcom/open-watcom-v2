@@ -132,7 +132,7 @@ unsigned DIGCLIENT DIGCliRead( dig_fhandle h, void * b , unsigned s )
 
 
 unsigned DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, unsigned s )
-/*******************************************************************/
+/*************************************************************************/
 {
     return( write( h, b, s ) );
 }
@@ -160,6 +160,7 @@ unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
 {
     enum x86_addr_characteristics       *d;
 
+    info_type = info_type; in_size = in_size; in = in; out_size = out_size;
     switch( CurrSIOData->config.mad ) {
     case MAD_X86:
         d = out;
