@@ -65,9 +65,9 @@ typedef struct mem_blk {
 } mem_blk;
 
 /* Size of permanent area. Needs to be reasonably big to satisfy
- * large allocation requests.
+ * large allocation requests. Must by multiple of 0x20
  */
-#define MAX_PERM_SIZE   0xffff0         /* was 0xfff0 */
+#define MAX_PERM_SIZE   0x100000        /* was 0xfff0 */
 
 /* Mask to get real allocation size */
 #define SIZE_MASK       ~1u             /* was 0xfffe */
@@ -118,7 +118,7 @@ static void AllocPermArea( void )
     char    *perm_area;
 
     perm_area = NULL;
-    for( PermSize = MAX_PERM_SIZE; PermSize != 0; PermSize -= 32 ) {
+    for( PermSize = MAX_PERM_SIZE; PermSize != 0; PermSize -= 0x20 ) {
         mem_blk *blk;
         blk = calloc( 1, sizeof( mem_blk ) + PermSize + sizeof( int ) );
         if( blk != NULL ) {
@@ -129,9 +129,6 @@ static void AllocPermArea( void )
             perm_area = (char *)blk + sizeof( mem_blk );
             *(int *)(perm_area + PermSize) = -1;     /* null length tag */
             break;
-        }
-        if( PermSize < 32 ) {
-            PermSize = 32;
         }
     }
     PermPtr = perm_area;
@@ -219,8 +216,8 @@ static void Ccoalesce( MCB *p1 )
 }
 
 
-void *CMemAlloc( unsigned size )
-/******************************/
+void *CMemAlloc( size_t size )
+/****************************/
 {
     void    *p;
 
@@ -240,8 +237,8 @@ void *CMemAlloc( unsigned size )
 }
 
 
-void *CMemRealloc( void *loc, unsigned size )
-/*******************************************/
+void *CMemRealloc( void *loc, size_t size )
+/*****************************************/
 {
     void            *p;
     MCB             *p1;
@@ -350,7 +347,7 @@ void CMemFree( void *loc )
 }
 
 
-void *CPermAlloc( unsigned amount )
+void *CPermAlloc( size_t amount )
 {
     char        *p;
 
@@ -364,11 +361,11 @@ void *CPermAlloc( unsigned amount )
     PermAvail -= amount;
     p = PermPtr;
     PermPtr += amount;
-    return( memset( p, 0, amount ) );       /* 27-jul-88 AFS */
+    return( memset( p, 0, amount ) );
 }
 
 
-void *FEmalloc( unsigned size )                 /* 16-jan-90 */
+void *FEmalloc( unsigned size )
 {
     void    *p;
 

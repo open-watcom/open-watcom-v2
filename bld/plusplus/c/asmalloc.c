@@ -33,8 +33,8 @@
 #include "plusplus.h"
 #include "memmgr.h"
 
-void *AsmAlloc( unsigned amount )
-/*******************************/
+void *AsmAlloc( size_t amount )
+/*****************************/
 {
     return( CMemAlloc( amount ) );
 }

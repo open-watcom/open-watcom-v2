@@ -30,11 +30,10 @@
 
 
 typedef void    *pointer;
-typedef size_t  mem_size;
 
-extern pointer  AsMemAlloc( mem_size );
+extern void     *AsMemAlloc( size_t );
 extern void     AsMemFree( pointer );
-extern pointer  AsMemRealloc( pointer, mem_size );
+extern void     *AsMemRealloc( pointer, size_t );
 
 extern void     AsMemInit( void );
 extern void     AsMemFini( void );

@@ -57,7 +57,7 @@ extern void         AsmSysCopyCode( void );
 extern void         AsmSysLine( char * );
 
 // in ASMALLOC
-void    *AsmAlloc( unsigned );
+void    *AsmAlloc( size_t );
 void    AsmFree( void * );
 
 #endif

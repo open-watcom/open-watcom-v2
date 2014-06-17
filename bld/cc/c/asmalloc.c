@@ -29,9 +29,10 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "cmemmgr.h"
 
-void *AsmAlloc( unsigned amount )
+void *AsmAlloc( size_t amount )
 {
     void    *ptr;
 

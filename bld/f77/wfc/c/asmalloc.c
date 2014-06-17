@@ -31,7 +31,7 @@
 
 #include "fmemmgr.h"
 
-void    *AsmAlloc( unsigned amount ) {
+void    *AsmAlloc( size_t amount ) {
 //====================================
 
     return( FMemAlloc( amount ) );

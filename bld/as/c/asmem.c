@@ -35,7 +35,7 @@
 #include "trmem.h"
 #include "trmemcvr.h"
 #else
-extern void *AsmAlloc( unsigned amount );
+extern void *AsmAlloc( size_t amount );
 extern void AsmFree( void *ptr );
 #endif
 
@@ -47,7 +47,7 @@ void MemInit( void ) {
 }
 #endif
 
-pointer MemAlloc( mem_size size ) {
+pointer MemAlloc( size_t size ) {
 //*********************************
 
 #ifdef _STANDALONE_
@@ -58,7 +58,7 @@ pointer MemAlloc( mem_size size ) {
 }
 
 #ifdef _STANDALONE_
-pointer MemRealloc( pointer p, mem_size size ) {
+pointer MemRealloc( pointer p, size_t size ) {
 //**********************************************
 
     return( TRMemRealloc( p, size ) );

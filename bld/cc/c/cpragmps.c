@@ -37,9 +37,6 @@
 #include "scan.h"
 #include <ctype.h>
 
-extern void *AsmAlloc( unsigned amount );
-extern void AsmFree( void *ptr );
-
 static  hw_reg_set      AsmRegsSaved = HW_D( HW_FULL );
 static  int             AsmFuncNum;
 static  aux_info        AuxInfo;

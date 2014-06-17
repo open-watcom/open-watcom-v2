@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-extern  void    CMemInit(void);                 /* cmemmgr */
-extern  void    CMemFini(void);                 /* cmemmgr */
-extern  void    *CPermAlloc(unsigned);          /* cmemmgr */
-extern  void    *CMemAlloc(unsigned);           /* cmemmgr */
-extern  void    *CMemRealloc( void *loc, unsigned size ); /* cmemmgr */
-extern  void    CMemFree(void *);               /* cmemmgr */
-extern  void    *FEmalloc(unsigned);            /* cmemmgr */
-extern  void    FEfree(void *);                 /* cmemmgr */
+extern  void    CMemInit(void);
+extern  void    CMemFini(void);
+extern  void    *CPermAlloc(size_t);
+extern  void    *CMemAlloc(size_t);
+extern  void    *CMemRealloc( void *loc, size_t size );
+extern  void    CMemFree(void *);
+extern  void    *FEmalloc(unsigned);
+extern  void    FEfree(void *);

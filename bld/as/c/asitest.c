@@ -96,8 +96,8 @@ void AsmWarning( char *msg ) {
     printf( "AsmWarning (line %d): %s\n", curLine, msg );
 }
 
-void *AsmAlloc( unsigned amount ) {
-//*********************************
+void *AsmAlloc( size_t amount ) {
+//*******************************
 // CC provides this
 
     return( TRMemAlloc( amount ) );
