@@ -132,7 +132,7 @@ SYM_NAMEPTR SymName( SYMPTR sym, SYM_HANDLE sym_handle )
         return( "char" );    /* 08-may-89 */
     if( sym->name != NULL )
         return( sym->name );
-    hsym = HashTab[ sym->info.hash_value ];
+    hsym = HashTab[ sym->info.hash ];
     while( hsym->handle != sym_handle )  hsym = hsym->next_sym;
     return( hsym->name );
 }

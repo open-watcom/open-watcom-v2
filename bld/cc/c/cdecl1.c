@@ -399,7 +399,7 @@ local void AddParms( void )
     SYM_HANDLE          new_sym_handle;
     TYPEPTR             typ = NULL;
     int                 parm_count;
-    int                 hash;
+    id_hash_idx         hash;
     parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
@@ -413,7 +413,7 @@ local void AddParms( void )
         new_sym_handle = 0;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = TRUE;
-        hash = parm->sym.info.hash_value;
+        hash = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
             parm->sym.sym_type = GetType( TYPE_DOT_DOT_DOT );
@@ -532,7 +532,7 @@ local void ChkParms( void )
                 parm->sym.sym_type = TypeDefault();
             }
             /* make sure name not already defined in this SymLevel */
-            sym_handle = SymAdd( parm->sym.info.hash_value, &parm->sym );
+            sym_handle = SymAdd( parm->sym.info.hash, &parm->sym );
             if( prev_parm == NULL ) {
                 CurFunc->u.func.parms = sym_handle;
             } else {

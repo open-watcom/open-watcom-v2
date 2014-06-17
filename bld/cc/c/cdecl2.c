@@ -175,22 +175,22 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             CErr1( ERR_INVALID_STG_CLASS_FOR_FUNC );
             stg_class = SC_NULL;
     }
-    old_sym_handle = SymLook( sym->info.hash_value, sym->name );
+    old_sym_handle = SymLook( sym->info.hash, sym->name );
     if( old_sym_handle == 0 ) {
-        ep = EnumLookup( sym->info.hash_value, sym->name );
+        ep = EnumLookup( sym->info.hash, sym->name );
         if( ep != NULL ) {
             SetDiagEnum( ep );
             CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
             SetDiagPop();
         }
-        sym_handle = SymAddL0( sym->info.hash_value, sym );
+        sym_handle = SymAddL0( sym->info.hash, sym );
     } else {
         SymGet( &old_sym, old_sym_handle );
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( (old_sym.flags & SYM_FUNCTION) == 0 ) {
             CErr2p( ERR_SYM_ALREADY_DEFINED_AS_VAR, sym->name );
             //02-jun-89 sym_handle = old_sym_handle;                /* 05-apr-89 */
-            sym_handle = SymAddL0( sym->info.hash_value, sym );     /* 02-jun-89 */
+            sym_handle = SymAddL0( sym->info.hash, sym );     /* 02-jun-89 */
         } else {
             CmpFuncDecls( sym, &old_sym );
             PrevProtoType = old_sym.sym_type;               /* 12-may-91 */
@@ -357,7 +357,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
         sym->flags |= SYM_IGNORE_UNREFERENCE;   /* 25-apr-91 */
     }
-    old_sym_handle = SymLook( sym->info.hash_value, sym->name );
+    old_sym_handle = SymLook( sym->info.hash, sym->name );
     if( old_sym_handle != 0 ) {                         /* 28-feb-94 */
         SymGet( &old_sym, old_sym_handle );
         if( old_sym.level == SymLevel ) {
@@ -373,7 +373,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         }
     }
     if( stg_class == SC_EXTERN ) {              /* 27-oct-88 */
-        old_sym_handle = Sym0Look( sym->info.hash_value, sym->name );
+        old_sym_handle = Sym0Look( sym->info.hash, sym->name );
     }
     if( old_sym_handle != 0 ) {
         SymGet( &old_sym, old_sym_handle );
@@ -463,7 +463,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         if( stg_class == SC_EXTERN  &&  SymLevel != 0 ) {
             ; /* do nothing  29-jan-93 */
         } else {
-            VfyNewSym( sym->info.hash_value, sym->name );
+            VfyNewSym( sym->info.hash, sym->name );
         }
 new_var:
         old_sym_handle = 0;
@@ -482,7 +482,7 @@ new_var:
             sym->sym_type = TypeDefault();
         }
         sym->attribs.stg_class = stg_class;
-        sym_handle = SymAdd( sym->info.hash_value, sym );
+        sym_handle = SymAdd( sym->info.hash, sym );
     }
     if( sym->u.var.segment == 0  &&     /* 22-oct-92 */
      (stg_class == SC_STATIC ||
@@ -595,7 +595,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
     SKIP_TYPEDEFS( typ );
     if( info->stg == SC_TYPEDEF ) {
         if( CompFlags.extensions_enabled ) {            /* 24-mar-91 */
-            old_sym_handle = SymLook( sym->info.hash_value, sym->name );
+            old_sym_handle = SymLook( sym->info.hash, sym->name );
             if( old_sym_handle != 0 ) {
                 SymGet( &old_sym, old_sym_handle );
                 otyp = old_sym.sym_type;        /* skip typedefs 25-sep-92 */
@@ -607,10 +607,10 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                 }
             }
         }
-        VfyNewSym( sym->info.hash_value, sym->name );
+        VfyNewSym( sym->info.hash, sym->name );
         sym->attribs.stg_class = info->stg;
         AdjSymTypeNode( sym, info->decl_mod );
-        sym_handle = SymAdd( sym->info.hash_value, sym );
+        sym_handle = SymAdd( sym->info.hash, sym );
     } else {
         sym->attribs.declspec = info->decl;
         sym->attribs.naked = info->naked;
@@ -1158,11 +1158,11 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
             for( ;; ) {
                 if( CurToken == T_ID ) {
                     SymCreate( sym, Buffer );
-                    sym->info.hash_value = HashValue;
+                    sym->info.hash = HashValue;
                     NextToken();
                 } else {
                     SymCreate( sym, SavedId );
-                    sym->info.hash_value = SavedHash;
+                    sym->info.hash = SavedHash;
                     CurToken = LAToken;
                 }
                 if( CurToken != T_ID && CurToken != T_TIMES ) break;
@@ -1663,7 +1663,7 @@ local void GetFuncParmList( void )
             parm->next_parm = newparm;
             parm = newparm;
         }
-        parm->sym.info.hash_value = HashValue;
+        parm->sym.info.hash = HashValue;
         if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
             parm->sym.flags |= SYM_REFERENCED;
         }

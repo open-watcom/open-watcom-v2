@@ -346,17 +346,17 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
 
 TREEPTR SymLeaf( void )
 {
-    SYM_HANDLE  sym_handle;
-    SYM_HANDLE  sym0_handle;
-    int         hash;
-    TREEPTR     tree;
-    SYM_ENTRY   sym;
-    ENUMPTR     ep;
+    SYM_HANDLE      sym_handle;
+    SYM_HANDLE      sym0_handle;
+    id_hash_idx     hash;
+    TREEPTR         tree;
+    SYM_ENTRY       sym;
+    ENUMPTR         ep;
 
     if( CurToken == T_SAVED_ID ) {
         CurToken = LAToken;
         hash = SavedHash;
-        ep = EnumLookup( hash, SavedId );       /* 12-sep-88 */
+        ep = EnumLookup( hash, SavedId );
         sym_handle = SymLook( hash, SavedId );
         if( sym_handle == 0 ) {
             if( ep != NULL ) {               /* if enum was found */

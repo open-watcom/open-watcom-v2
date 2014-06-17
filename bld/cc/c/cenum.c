@@ -37,10 +37,10 @@
 
 void EnumInit( void )
 {
-    int i;
+    enum_hash_idx   h;
 
-    for( i=0; i < ENUM_HASH_SIZE; i++ ) {
-        EnumTable[i] = NULL;
+    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+        EnumTable[h] = NULL;
     }
     EnumRecSize = 0;
 }
@@ -143,7 +143,7 @@ void get_msg_range( char *buff, enum enum_rng index )
     }
 }
 
-TYPEPTR EnumDecl( int flags )
+TYPEPTR EnumDecl( type_modifiers flags )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
@@ -304,11 +304,11 @@ TYPEPTR EnumDecl( int flags )
 }
 
 
-ENUMPTR EnumLookup( int hash_value, char *name )
+ENUMPTR EnumLookup( enum_hash_idx h, const char *name )
 {
     ENUMPTR     esym;
 
-    for( esym = EnumTable[hash_value]; esym != NULL; esym = esym->next_enum ) {
+    for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
         if( strcmp( esym->name, name ) == 0 ) {
             break;
         }
@@ -319,14 +319,14 @@ ENUMPTR EnumLookup( int hash_value, char *name )
 
 void FreeEnums( void )
 {
-    ENUMPTR     esym;
-    int         i;
+    ENUMPTR         esym;
+    enum_hash_idx   h;
 
-    for( i = 0; i < ENUM_HASH_SIZE; i++ ) {
-        for( ; (esym = EnumTable[i]) != NULL; ) {
+    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+        for( ; (esym = EnumTable[h]) != NULL; ) {
             if( esym->parent->level != SymLevel )
                 break;
-            EnumTable[i] = esym->next_enum;
+            EnumTable[h] = esym->next_enum;
         }
     }
 }
@@ -335,18 +335,17 @@ void FreeEnums( void )
 
 void DumpEnumTable( void )
 {
-    ENUMPTR     esym;
-    int         i;
+    ENUMPTR         esym;
+    enum_hash_idx   h;
 
     puts( "ENUM TABLE DUMP" );
-    for( i=0; i < ENUM_HASH_SIZE; i++ ) {
-        for( esym = EnumTable[i]; esym; ) {
+    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+        for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
             if( esym->parent->level == SymLevel ) {
                 printf( "%s = %d\n", esym->name, esym->value );
             }
-            esym = esym->next_enum;
         }
-        printf( "---------%d----------\n", i );
+        printf( "---------%d----------\n", h );
     }
 }
 #endif

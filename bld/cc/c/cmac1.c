@@ -94,9 +94,9 @@ static struct special_macro_names  SpcMacros[] = {
 
 void MacroInit( void )
 {
-    int         i;
+    mac_hash_idx    h;
     struct special_macro_names *mac;
-    MEPTR       mentry;
+    MEPTR           mentry;
 
     MTokenLen = 0;
     MacroCount = 0;
@@ -109,8 +109,8 @@ void MacroInit( void )
     AllocMacroSegment( 0x1000 );
     MacHash = (MEPTR *)MacroSegment;
     MacroOffset = MacroSegment + MACRO_HASH_SIZE * sizeof(MEPTR);
-    for( i=0; i < MACRO_HASH_SIZE; ++i ) {
-        MacHash[i] = NULL;
+    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
+        MacHash[h] = NULL;
     }
     for( mac = SpcMacros; mac->name != NULL; ++mac ) {
         mentry = CreateMEntry( mac->name );
@@ -150,12 +150,12 @@ void MacroFini( void )
 void MacroPurge( void )
 {
 #if 0
-    int         i;
-    MEPTR       mentry;
+    mac_hash_idx    h;
+    MEPTR           mentry;
 
-    for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
-        for( ; mentry = MacHash[i]; ) {
-            MacHash[i] = mentry->next_macro;
+    for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
+        for( ; mentry = MacHash[h]; ) {
+            MacHash[h] = mentry->next_macro;
             CMemFree( mentry );
         }
     }

@@ -37,6 +37,9 @@ typedef char    *SYM_NAMEPTR;
 /* only for long_double */
 #include "xfloat.h"
 
+#define L       I64LO32
+#define H       I64HI32
+
 typedef back_handle     BACK_HANDLE;
 typedef label_handle    LABEL_HANDLE;
 typedef char            *NAME_HANDLE;
@@ -49,8 +52,12 @@ typedef unsigned_64     uint64;
 typedef void            *SYM_HANDLE;
 typedef SYM_HANDLE      sym_handle;
 
-#define L       I64LO32
-#define H       I64HI32
+typedef unsigned char   id_hash_idx;
+typedef unsigned short  mac_hash_idx;
+
+typedef id_hash_idx     enum_hash_idx;
+typedef id_hash_idx     tag_hash_idx;
+typedef id_hash_idx     field_hash_idx;
 
 /* CONST, VOLATILE can appear in typ->u.p.decl_flags and leaf->leaf_flags.
 *  NEAR, FAR, HUGE can appear in typ->u.p.decl_flags, leaf->leaf_flags,
@@ -286,8 +293,8 @@ typedef struct xref_entry {
 
 extern  XREFPTR NewXref( XREFPTR );
 
-typedef struct sym_hash_entry {         /* SYMBOL TABLE structure */
-    struct sym_hash_entry   *next_sym;  /* also used by pre-compiled header */
+typedef struct id_hash_entry {         /* SYMBOL TABLE structure */
+    struct id_hash_entry   *next_sym;  /* also used by pre-compiled header */
     TYPEPTR         sym_type;           /* also used by pre-compiled header */
     SYM_HANDLE      handle;
 #if defined( _M_IX86 ) || defined( _M_X64 )
@@ -296,7 +303,7 @@ typedef struct sym_hash_entry {         /* SYMBOL TABLE structure */
     int             level;
 #endif
     char            name[1];
-} sym_hash_entry, *SYM_HASHPTR;
+} id_hash_entry, *SYM_HASHPTR;
 
 typedef struct expr_node    *TREEPTR;
 
@@ -307,7 +314,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     source_loc          src_loc;
     union {
         BACK_HANDLE     backinfo;
-        int             hash_value;
+        id_hash_idx     hash;
         temp_handle     return_var;     /* for the .R symbol */
     } info;
     union {
@@ -353,19 +360,17 @@ typedef struct field_entry {
     unsigned            offset;
     type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
     int                 level;
-    int                 hash;
+    field_hash_idx      hash;
     struct field_entry  *next_field_same_hash; /* also used by PCH for length */
     char                name[1];
 } FIELD_ENTRY, *FIELDPTR;
-
-#define FIELD_HASH_SIZE SYM_HASH_SIZE
 
 typedef struct enum_entry {
     struct enum_entry   *next_enum;     /* used in hash table, also used by PCH for length */
     struct enum_entry   *thread;        /* list belonging to same enum */
     XREFPTR             xref;
     struct tag_entry    *parent;        /* also used by pre-compiled header */
-    int                 hash;
+    enum_hash_idx       hash;
     uint64              value;
     source_loc          src_loc;
     char                name[1];
@@ -382,11 +387,11 @@ typedef struct tag_entry {
     unsigned            size;           /* size of STRUCT, UNION or ENUM */
     int                 refno;          /* also used by pre-compiled header */
 #if defined( _M_IX86 ) || defined( _M_X64 )
-    unsigned short      hash;           /* hash value for tag */
+    tag_hash_idx        hash;           /* hash value for tag */
     unsigned char       level;
     unsigned char       alignment;      /* alignment required */
 #else
-    unsigned            hash;
+    tag_hash_idx        hash;
     int                 level;
     unsigned            alignment;
 #endif
@@ -397,7 +402,6 @@ typedef struct tag_entry {
     char                name[1];
 } TAGDEFN, *TAGPTR;
 
-#define TAG_HASH_SIZE   SYM_HASH_SIZE
 extern  void WalkTagList( void (*func)(TAGPTR) );
 
 /* flags for QUAD.flags field */

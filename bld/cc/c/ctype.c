@@ -155,8 +155,10 @@ signed char Valid_Types[] = {
 
 void InitTypeHashTables( void )
 {
-    int         index;
-    int         base_type;
+    tag_hash_idx    h1;
+    field_hash_idx  h2;
+    int             index;
+    int             base_type;
 
     for( index = 0; index <= MAX_PARM_LIST_HASH_SIZE; ++index ) {
         FuncTypeHead[ index ] = NULL;
@@ -165,11 +167,11 @@ void InitTypeHashTables( void )
         CTypeHash[ base_type ] = NULL;
         PtrTypeHash[ base_type ] = NULL;
     }
-    for( index = 0; index <= TAG_HASH_SIZE; ++index ) {
-        TagHash[ index ] = NULL;
+    for( h1 = 0; h1 <= TAG_HASH_SIZE; ++h1 ) {
+        TagHash[h1] = NULL;
     }
-    for( index = 0; index < FIELD_HASH_SIZE; ++index ) {
-        FieldHash[ index ] = NULL;
+    for( h2 = 0; h2 < FIELD_HASH_SIZE; ++h2 ) {
+        FieldHash[h2] = NULL;
     }
 }
 
@@ -719,15 +721,15 @@ TYPEPTR TypeDefault( void )
 }
 
 
-static TAGPTR NewTag( char *name, int hash )
+static TAGPTR NewTag( const char *name, tag_hash_idx h )
 {
     TAGPTR      tag;
 
-    tag = (TAGPTR) CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
+    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
     tag->level = SymLevel;
-    tag->hash = hash;
-    tag->next_tag = TagHash[ hash ];
-    TagHash[ hash ] = tag;
+    tag->hash = h;
+    tag->next_tag = TagHash[h];
+    TagHash[h] = tag;
     strcpy( tag->name, name );
     ++TagCount;
     return( tag );
@@ -941,7 +943,7 @@ local void ClearFieldHashTable( TAGPTR tag )
         if( hash_field == field ) {
             /* first entry: easy kick out */
             FieldHash[field->hash] = field->next_field_same_hash;
-        } else while ( hash_field ) {
+        } else while( hash_field ) {
             /* search for candidate to kick */
             prev_field = hash_field;
             hash_field = hash_field->next_field_same_hash;
@@ -1309,19 +1311,19 @@ local void CheckBitfieldType( TYPEPTR typ )
 }
 
 
-void VfyNewSym( int hash_value, char *name )
+void VfyNewSym( id_hash_idx h, const char *name )
 {
     SYM_HANDLE  sym_handle;
     SYM_ENTRY   sym;
     ENUMPTR     ep;
 
-    ep = EnumLookup( hash_value, name );
+    ep = EnumLookup( h, name );
     if( ep != NULL && ep->parent->level == SymLevel ) {
         SetDiagEnum( ep );
         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
         SetDiagPop();
     }
-    sym_handle = SymLook( hash_value, name );
+    sym_handle = SymLook( h, name );
     if( sym_handle != 0 ) {
         SymGet( &sym, sym_handle );
         if( sym.level == SymLevel ) {
@@ -1335,28 +1337,26 @@ void VfyNewSym( int hash_value, char *name )
 
 TAGPTR TagLookup( void )
 {
-    TAGPTR      tag;
-    int         hash;
+    TAGPTR          tag;
 
-    hash = HashValue;
-    tag = TagHash[ hash ];;
-    while( tag != NULL ) {
-        if( strcmp( Buffer, tag->name ) == 0 ) return( tag );
-        tag = tag->next_tag;
+    for( tag = TagHash[HashValue]; tag != NULL; tag = tag->next_tag ) {
+        if( strcmp( Buffer, tag->name ) == 0 ) {
+            return( tag );
+        }
     }
-    return( NewTag( Buffer, hash ) );
+    return( NewTag( Buffer, HashValue ) );
 }
 
 void FreeTags( void )
 {
-    TAGPTR      tag;
-    int         hash;
+    TAGPTR          tag;
+    tag_hash_idx    h;
 
-    for( hash = 0; hash <= TAG_HASH_SIZE; ++hash ) {
-        for( ; (tag = TagHash[ hash ]) != NULL; ) {
+    for( h = 0; h <= TAG_HASH_SIZE; ++h ) {
+        for( ; (tag = TagHash[h]) != NULL; ) {
             if( tag->level < SymLevel )
                 break;
-            TagHash[ hash ] = tag->next_tag;
+            TagHash[h] = tag->next_tag;
             tag->next_tag = DeadTags;
             DeadTags = tag;
         }
@@ -1365,11 +1365,11 @@ void FreeTags( void )
 
 void WalkTagList( void (*func)(TAGPTR) )
 {
-    TAGPTR      tag;
-    int         index;
+    TAGPTR          tag;
+    tag_hash_idx    h;
 
-    for( index = 0; index <= TAG_HASH_SIZE; ++index ) {
-        for( tag = TagHash[index]; tag != NULL; tag = tag->next_tag ) {
+    for( h = 0; h <= TAG_HASH_SIZE; ++h ) {
+        for( tag = TagHash[h]; tag != NULL; tag = tag->next_tag ) {
             func( tag );
         }
     }

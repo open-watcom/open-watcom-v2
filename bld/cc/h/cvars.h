@@ -76,10 +76,14 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
     #define global  extern
 #endif
 
-#define SYM_HASH_SIZE           241
-#define ENUM_HASH_SIZE          241
-#define MACRO_HASH_SIZE         4093
 #define MAX_PARM_LIST_HASH_SIZE 15
+
+#define ID_HASH_SIZE            241
+#define MACRO_HASH_SIZE         4093
+
+#define ENUM_HASH_SIZE          ID_HASH_SIZE
+#define TAG_HASH_SIZE           ID_HASH_SIZE
+#define FIELD_HASH_SIZE         ID_HASH_SIZE
 
 global char     *PCH_Start;     // start of precompiled memory block
 global char     *PCH_End;       // end of precompiled memory block
@@ -488,9 +492,9 @@ extern  int     DataQuadsAvailable(void);       /* cdinit */
 extern  void *  StartDataQuadAccess( void );    /* cdinit */
 extern  void    EndDataQuadAccess( void * );    /* cdinit */
 extern  DATA_QUAD *NextDataQuad(void);          /* cdinit */
-extern  void    InitSymData(TYPEPTR,TYPEPTR,int);       /* cdinit */
+extern  void    InitSymData(TYPEPTR,TYPEPTR,int); /* cdinit */
 extern  void    StaticInit(SYMPTR,SYM_HANDLE);  /* cdinit */
-extern  void    VarDeclEquals(SYMPTR,SYM_HANDLE);/* cdinit */
+extern  void    VarDeclEquals(SYMPTR,SYM_HANDLE); /* cdinit */
 
 extern  void    DumpFuncDefn(void);             /* cdump */
 extern  void    SymDump(void);                  /* cdump */
@@ -499,8 +503,8 @@ extern  char *  DiagGetTypeName(TYPEPTR typ);   /* cdump */
 extern  SEGADDR_T AccessSegment(seg_info *);    /* cems */
 extern  SEGADDR_T AllocSegment(seg_info *);     /* cems */
 
-extern  TYPEPTR EnumDecl(int);                  /* cenum */
-extern  ENUMPTR EnumLookup(int,char *);         /* cenum */
+extern  TYPEPTR EnumDecl(type_modifiers);       /* cenum */
+extern  ENUMPTR EnumLookup(enum_hash_idx,const char *); /* cenum */
 extern  void    EnumInit(void);                 /* cenum */
 extern  void    FreeEnums(void);                /* cenum */
 
@@ -717,7 +721,7 @@ extern  void    PurgeMemory(void);              /* cpurge */
 extern  void    ScanInit( void );               /* cscan */
 extern  int     InitPPScan( void );             /* cscan */
 extern  void    FiniPPScan( int );              /* cscan */
-extern  int     CalcHash( const char *, int );  /* cscan */
+extern  id_hash_idx CalcHash( const char *, size_t ); /* cscan */
 extern  unsigned hashpjw( const char * );       /* cscan */
 extern  int     ESCChar( int, const unsigned char **, bool * );  /* cscan */
 extern  void    SkipAhead( void );              /* cscan */
@@ -726,8 +730,8 @@ extern  void    ReScanInit( char * );           /* cscan */
 extern  int     InReScanMode( void );           /* cscan */
 extern  int     ReScanToken( void );            /* cscan */
 extern  char    *ReScanPos( void );             /* cscan */
-extern  TOKEN   KwLookup( const char *, int );  /* cscan */
-extern  TOKEN   IdLookup( const char *, int );  /* cscan */
+extern  TOKEN   KwLookup( const char *, size_t ); /* cscan */
+extern  TOKEN   IdLookup( const char *, size_t ); /* cscan */
 extern  TOKEN   NextToken( void );              /* cscan */
 extern  TOKEN   PPNextToken( void );            /* cscan */
 
@@ -753,19 +757,19 @@ extern  void    SymInit(void);                  /* csym */
 extern  void    SpcSymInit(void);               /* csym */
 extern  void    SymFini(void);                  /* csym */
 extern  void    SymCreate(SYMPTR,const char *); /* csym */
-extern  SYM_HANDLE SegSymbol(const char *,segment_id); /* csym */
+extern  SYM_HANDLE SegSymbol(const char *,segment_id);  /* csym */
 extern  SYM_HANDLE SpcSymbol(const char *,stg_classes); /* csym */
-extern  SYM_HANDLE SymAdd(int,SYMPTR);          /* csym */
-extern  SYM_HANDLE SymAddL0(int,SYMPTR);        /* csym */
-extern  SYM_HANDLE SymLook(int,const char *);   /* csym */
-extern  SYM_HANDLE Sym0Look(int,const char *);  /* csym */
-extern  SYM_HANDLE SymLookTypedef(int,const char *,SYMPTR); /* csym */
+extern  SYM_HANDLE SymAdd(id_hash_idx,SYMPTR);         /* csym */
+extern  SYM_HANDLE SymAddL0(id_hash_idx,SYMPTR);       /* csym */
+extern  SYM_HANDLE SymLook(id_hash_idx,const char *);  /* csym */
+extern  SYM_HANDLE Sym0Look(id_hash_idx,const char *); /* csym */
+extern  SYM_HANDLE SymLookTypedef(id_hash_idx,const char *,SYMPTR); /* csym */
 extern  void    SymGet(SYMPTR,SYM_HANDLE);      /* csym */
 extern  SYMPTR  SymGetPtr(SYM_HANDLE);          /* csym */
 extern  void    SymReplace(SYMPTR,SYM_HANDLE);  /* csym */
 extern  void    EndBlock(void);                 /* csym */
-extern  SYM_HANDLE MakeFunction(const char *,TYPEPTR); /* csym */
-extern  SYM_HANDLE MakeNewSym(SYMPTR,char,TYPEPTR,stg_classes); /* csym */
+extern  SYM_HANDLE MakeFunction(const char *,TYPEPTR);/* csym */
+extern  SYM_HANDLE MakeNewSym(SYMPTR,const char,TYPEPTR,stg_classes); /* csym */
 extern  LABELPTR LkLabel(const char *);         /* csym */
 extern  void    FreeLabels(void);               /* csym */
 extern  XREFPTR NewXref(XREFPTR);               /* csym */
@@ -798,7 +802,7 @@ extern  unsigned TypeSize(TYPEPTR);
 extern  unsigned TypeSizeEx( TYPEPTR, unsigned *pFieldWidth );
 extern  TYPEPTR GetIntTypeBySize( unsigned size, bool sign, bool exact );
 extern  TAGPTR  VfyNewTag( TAGPTR, int );
-extern  void    VfyNewSym( int, char * );
+extern  void    VfyNewSym( id_hash_idx, const char * );
 extern  unsigned GetTypeAlignment( TYPEPTR );
 extern  void    TypesPurge( void );
 extern  void    AddTypeHash( TYPEPTR );

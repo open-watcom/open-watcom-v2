@@ -159,13 +159,13 @@ unsigned hashpjw( const char *s )
     return( h );
 }
 
-int CalcHash( const char *id, int len )
+id_hash_idx CalcHash( const char *id, size_t len )
 {
     unsigned    hash;
 
     len = len;
     hash = hashpjw( id );
-    HashValue = hash % SYM_HASH_SIZE;
+    HashValue = hash % ID_HASH_SIZE;
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
     hash &= 0x0fff;
     if( hash >= MACRO_HASH_SIZE ) {
@@ -178,7 +178,7 @@ int CalcHash( const char *id, int len )
     return( HashValue );
 }
 
-TOKEN KwLookup( const char *buf, int len )
+TOKEN KwLookup( const char *buf, size_t len )
 {
     char        *keyword;
     TOKEN       hash;
@@ -213,7 +213,7 @@ TOKEN KwLookup( const char *buf, int len )
     return( T_ID );
 }
 
-TOKEN IdLookup( const char *buf, int len )
+TOKEN IdLookup( const char *buf, size_t len )
 {
     MEPTR       mentry;
 
