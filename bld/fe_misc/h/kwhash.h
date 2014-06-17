@@ -29,27 +29,29 @@
 ****************************************************************************/
 
 
-static unsigned keyword_hash( const char *sym,
-                              const unsigned char *weights, unsigned len )
+static unsigned keyword_hash( const char *name, const unsigned char *weights, size_t len )
 {
-    const unsigned char  *name = (const unsigned char *)sym;
-    unsigned             hash;
+    unsigned        hash;
+    unsigned char   c;
 
+    c = name[LEN_MIN];
 #ifdef IGNORE_CASE
-    hash = len + tolower( name[ LEN_MIN ] );
+    hash = len + tolower( c );
 #else
-    hash = len + name[ LEN_MIN ];
+    hash = len + c;
 #endif
     if( len > FIRST_INDEX ) {
-        hash += weights[ name[ FIRST_INDEX ] ] * FIRST_SCALE;
+        c = name[FIRST_INDEX];
     } else {
-        hash += weights[ name[ len - 1 ] ] * FIRST_SCALE;
+        c = name[len - 1];
     }
+    hash += weights[c] * FIRST_SCALE;
     if( len > LAST_INDEX ) {
-        hash += weights[ name[ len - ( LAST_INDEX + 1 ) ] ] * LAST_SCALE;
+        c = name[len - ( LAST_INDEX + 1 )];
     } else {
-        hash += weights[ name[ 0 ] ] * LAST_SCALE;
+        c = name[0];
     }
+    hash += weights[c] * LAST_SCALE;
 #ifdef KEYWORD_HASH_MASK
     hash &= KEYWORD_HASH_MASK;
 #ifdef KEYWORD_HASH_EXTRA

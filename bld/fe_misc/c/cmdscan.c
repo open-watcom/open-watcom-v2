@@ -61,7 +61,7 @@ char const *CmdScanAddr(        // RETURN COMMAND-LINE SCAN ADDRESS
 int CmdScanChar(                // SCAN THE NEXT CHARACTER
     void )
 {
-    return( *cmd.curr_ptr++ );
+    return( (unsigned char)*cmd.curr_ptr++ );
 }
 
 

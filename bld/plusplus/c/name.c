@@ -88,8 +88,8 @@ const unsigned NameCmpMask[5] = {
     0xffffffff,
 };
 
-int NameMemCmp( const char *t1, const char *t2, unsigned len )
-/************************************************************/
+int NameMemCmp( const char *t1, const char *t2, size_t len )
+/**********************************************************/
 {
     const unsigned *s1 = (const unsigned *)t1;
     const unsigned *s2 = (const unsigned *)t2;
@@ -114,8 +114,8 @@ int NameMemCmp( const char *t1, const char *t2, unsigned len )
     return( ( *s1 & mask ) - ( *s2 & mask ) );
 }
 
-unsigned NameCalcHashLen( const char *id, unsigned len )
-/******************************************************/
+unsigned NameCalcHashLen( const char *id, size_t len )
+/****************************************************/
 {
     const unsigned *s = (const unsigned *)id;
     unsigned mask;
@@ -153,7 +153,7 @@ unsigned NameCalcHashLen( const char *id, unsigned len )
     return( h );
 }
 
-static NAME nameAdd( idname **head, unsigned bucket, unsigned xhash, const char *id, unsigned len )
+static NAME nameAdd( idname **head, unsigned bucket, unsigned xhash, const char *id, size_t len )
 {
     idname  *name;
 
@@ -175,12 +175,12 @@ static NAME nameAdd( idname **head, unsigned bucket, unsigned xhash, const char 
 }
 
 
-NAME NameCreateLen( const char *id, unsigned len )
-/************************************************/
+NAME NameCreateLen( const char *id, size_t len )
+/**********************************************/
 {
     unsigned xhash;
     unsigned bucket;
-    unsigned cmp_len;
+    size_t cmp_len;
     idname *name;
     idname **head;
     idname **prev;
@@ -193,7 +193,7 @@ NAME NameCreateLen( const char *id, unsigned len )
     bucket = xhash;
 #endif
     // xhash cannot overflow a uint_16 ( 0x0fff + 0x00ff <= 0x1fff )
-    xhash += (uint_8) len;
+    xhash += (uint_8)len;
     head = &(hashTable[ bucket ]);
     prev = head;
     cmp_len = len + 1;
@@ -224,7 +224,7 @@ NAME NameCreateLen( const char *id, unsigned len )
 NAME NameCreateNoLen( const char *id )
 /************************************/
 {
-    unsigned len;
+    size_t len;
     name_dummy_index_t ni;
     unsigned xhash;
     unsigned bucket;
@@ -255,7 +255,7 @@ NAME NameDummy( void )
     name_dummy_index_t ni;
     unsigned xhash;
     unsigned bucket;
-    unsigned len;
+    size_t len;
     idname **head;
     char buff[ 1 + 1 + sizeof( ni ) * 3 + 1 ];
 
@@ -363,7 +363,7 @@ pch_status PCHReadNames( void )
 
 pch_status PCHWriteNames( void )
 {
-    unsigned len;
+    size_t len;
     int i;
     idname *name;
     idname **p;

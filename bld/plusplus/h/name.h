@@ -48,20 +48,20 @@
 typedef unsigned            name_dummy_index_t;
 
 extern NAME                 NameCreateNoLen( const char *name );
-extern NAME                 NameCreateLen( const char *name, unsigned len );
+extern NAME                 NameCreateLen( const char *name, size_t len );
 extern NAME                 NameDummy( void );
 extern name_dummy_index_t   NameNextDummyIndex( void );
 extern bool                 IsNameDummy( NAME name );
 
 // hash returned is 0..4095 i.e., mod NAME_RAW_HASH
-extern unsigned             NameCalcHashLen( const char *, unsigned );
+extern unsigned             NameCalcHashLen( const char *, size_t );
 
 extern unsigned             NameHash( NAME name );
 
 extern NAME                 NameGetIndex( NAME name );
 extern NAME                 NameMapIndex( NAME name );
 
-extern int                  NameMemCmp( const char *, const char *, unsigned );
+extern int                  NameMemCmp( const char *, const char *, size_t );
 
 extern unsigned const       NameCmpMask[5];
 #define NAME_MAX_MASK_INDEX ( ARRAY_SIZE( NameCmpMask ) - 1 )
