@@ -400,14 +400,14 @@ global TREEPTR         CurFuncNode;
 
 #if defined(__WATCOMC__) && defined(_M_IX86) && defined(__FLAT__)
 
-extern  int far_strcmp( char *, char *, int );
+extern int far_strcmp( const char *, const char *, size_t );
 #pragma aux far_strcmp = \
     0xf3            /* rep     */ \
     0xa6            /* cmpsb   */ \
     0x74 0x01       /* je L1   */ \
     0x41            /* inc ecx */ \
     parm caller [edi] [esi] [ecx] value [ecx] modify exact [esi edi ecx];
-extern  int far_strlen_plus1( char * );
+extern size_t far_strlen_plus1( const char * );
 #pragma aux far_strlen_plus1 = \
     0x29 0xc0       /* sub eax,eax */ \
     0x4f            /* dec edi     */ \
@@ -416,7 +416,7 @@ extern  int far_strlen_plus1( char * );
     0x80 0x3f 0x00  /* cmp [edi],0 */ \
     0x75 0xf9       /* jne L1      */ \
     parm caller [edi] value [eax] modify exact [edi eax];
-extern  void    far_memcpy( char *, char *, int );
+extern void far_memcpy( char *, const char *, size_t );
 #pragma aux     far_memcpy = \
     0xf3 0xa4       /* rep movsb */ \
     parm caller [edi] [esi] [ecx] modify exact [esi edi ecx];
