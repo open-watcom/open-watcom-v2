@@ -36,9 +36,9 @@ static unsigned keyword_hash( const char *name, const unsigned char *weights, si
 
     c = name[LEN_MIN];
 #ifdef IGNORE_CASE
-    hash = len + tolower( c );
+    hash = (unsigned)( len + tolower( c ) );
 #else
-    hash = len + c;
+    hash = (unsigned)( len + c );
 #endif
     if( len > FIRST_INDEX ) {
         c = name[FIRST_INDEX];
