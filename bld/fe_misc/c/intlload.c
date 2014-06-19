@@ -146,7 +146,7 @@ IntlData *getData( int fh ) {
     data->errors_text = NULL;
     data->usage_text = NULL;
     raw_data = (char *)( data + 1 );
-    if( read( fh, raw_data, raw_size ) != raw_size ) {
+    if( (unsigned)read( fh, raw_data, raw_size ) != raw_size ) {
         return( data );
     }
     for( i = 0; i < LS_MAX; ++i ) {
@@ -185,7 +185,7 @@ IntlData *LoadInternationalData(
     IntlData *data;
     int fh;
     res_language_enumeration language;
-    unsigned len;
+    size_t len;
     char *drive;
     char *dir;
     char cmd_name[_MAX_PATH];
