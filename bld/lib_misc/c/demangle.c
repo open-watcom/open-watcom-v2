@@ -683,7 +683,7 @@ static unsigned char_to_digit( char c )
     if( c >= '0' && c <= '9' ) return( c - '0' );
     if( c >= 'A' && c <= 'Z' ) return( c - 'A' + 10 );
     if( c >= 'a' && c <= 'z' ) return( c - 'a' + 10 );
-    return( -1 );
+    return( (unsigned)-1 );
 }
 
 static int base_32_num( output_desc *data, long *value )

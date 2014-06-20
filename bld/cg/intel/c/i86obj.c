@@ -2830,7 +2830,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
         def_idx = GenImport( def_resolve, FALSE );
         EjectImports();
         cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-        type = (pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
+        type = (import_type)(pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
         switch( type ) {
         case IMPORT_IS_LAZY:
             OutShort( LAZY_EXTRN_COMMENT, cmt );

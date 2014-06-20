@@ -210,7 +210,7 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
         if( *src == '#' ) {
             int     size;
 
-            size = (pointer_int)FEExtName( sym, EXTN_PRMSIZE );
+            size = (int)(pointer_int)FEExtName( sym, EXTN_PRMSIZE );
             if( !(size < 0) ) {
                 *(p++) = '@';
                 p = xtoa( p, size );

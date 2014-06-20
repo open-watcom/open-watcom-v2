@@ -1235,7 +1235,7 @@ extern  void    InitFP( void ) {
     Initialize.
 */
 
-    Max87Stk = (pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
+    Max87Stk = (int)(pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
     if( Max87Stk > 8 ) Max87Stk = 8;
     if( Max87Stk < 4 ) Max87Stk = 4;
     Used87 = FALSE;

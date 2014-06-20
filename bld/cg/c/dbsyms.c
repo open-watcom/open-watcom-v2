@@ -96,8 +96,8 @@ static  void    DBSrcFileFini( void )
 extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
 /*************************************************/
 {
-    int         index;
-    int         len;
+    uint        index;
+    size_t      len;
     fname_lst   *curr;
     fname_lst   **lnk;
 
@@ -105,19 +105,19 @@ extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
     EchoAPI( "DBSrcFile( %c )", fname );
 #endif
     lnk  = &DBFiles.lst;
+    len = strlen( fname ) + 1;
     index = 0;
     for( curr = *lnk; (curr = *lnk) != NULL; lnk = &curr->next ) {
-       if( strcmp( fname, curr->fname ) == 0 ) {
+       if( memcmp( fname, curr->fname, len ) == 0 ) {
             break;
        }
        ++index;
     }
     if( curr == NULL ) {
-        len = strlen( fname );
-        curr = CGAlloc( sizeof( *curr ) + len );
-        curr->len = len + 1;
+        curr = CGAlloc( sizeof( *curr ) - 1 + len );
+        curr->len = len;
         curr->next = NULL;
-        strcpy( curr->fname, fname );
+        memcpy( curr->fname, fname, len );
         ++DBFiles.count;
         *lnk = curr;
     }

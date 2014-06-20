@@ -55,8 +55,8 @@
 #include "rsccvsup.h"
 #include "feprotos.h"
 
-#define HANDLE_TO_OWL(x)    ((owl_file_handle)(x + 1))
-#define OWL_TO_HANDLE(x)    ((pointer_int)x - 1)
+#define HANDLE_TO_OWL(x)    ((owl_file_handle)((pointer_int)x + 1))
+#define OWL_TO_HANDLE(x)    ((int)((pointer_int)x - 1))
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
@@ -867,7 +867,7 @@ static void DumpImportResolve( label_handle label )
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
         if( def_resolve != NULL && def_resolve != sym ) {
             bck =  FEBack( def_resolve);
-            type = (pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
+            type = (int)(pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
             switch( type ) {
             case IMPORT_IS_LAZY:
                 OWLWeakExt( owlFile, labelOwlSym( label ), labelOwlSym( bck->lbl ), OWL_WKSYM_LAZY );

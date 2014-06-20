@@ -471,24 +471,24 @@ static  void    DBSrcFileFini( void ){
 extern  uint    DBSrcFile( cchar_ptr fname )
 /******************************************/
 {
-    int          index;
-    int          len;
+    uint        index;
+    size_t      len;
     fname_lst   *curr, **lnk;
 
     lnk  = &SrcFiles;
     curr = *lnk;
     index = 0;
+    len = strlen( fname ) + 1;
     while( (curr = *lnk) != NULL ){
-       if( strcmp( fname, curr->fname ) == 0 ){
+        if( memcmp( fname, curr->fname, len ) == 0 ){
             goto found;
-       }
-       ++index;
-       lnk = &curr->next;
+        }
+        ++index;
+        lnk = &curr->next;
     }
-    len = strlen( fname );
-    curr = CGAlloc( sizeof( *curr )+len );
+    curr = CGAlloc( sizeof( *curr ) - 1 + len );
     curr->next = NULL;
-    strcpy( curr->fname, fname );
+    memcpy( curr->fname, fname, len );
     *lnk = curr;
 found:
     return( index );

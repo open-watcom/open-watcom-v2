@@ -479,7 +479,7 @@ static  int ProEpiDataSize( void )
 /***************************
 */
 {
-    return( _RoundUp( (pointer_int)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
+    return( _RoundUp( (int)(pointer_int)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
 }
 
 
