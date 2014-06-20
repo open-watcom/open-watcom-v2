@@ -32,6 +32,8 @@
 
 #include "dipwat.h"
 
+#define MODINFO_SIZE(p) (sizeof( mod_info ) + (unsigned char)((mod_info *)(p))->name[0])
+
 
 typedef struct {
     unsigned    count;
@@ -197,8 +199,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     num_links = 1;
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         count = 0;
-        for( mod_off = 0; mod_off < blk->size;
-                mod_off += sizeof( mod_info ) + mod->name[0] ) {
+        for( mod_off = 0; mod_off < blk->size; mod_off += MODINFO_SIZE( mod ) ) {
             ++count;
             mod = (mod_info *)((byte *)blk->info + mod_off);
         }
@@ -210,8 +211,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
         tbl->count = count;
         blk->link = tbl;
         count = 0;
-        for( mod_off = 0; mod_off < blk->size;
-                mod_off += sizeof( mod_info ) + mod->name[0] ) {
+        for( mod_off = 0; mod_off < blk->size; mod_off += MODINFO_SIZE( mod ) ) {
             tbl->mod_off[count++] = mod_off;
             mod = (mod_info *)((byte *)blk->info + mod_off);
             for( d = DMND_FIRST; d < DMND_NUM; ++d ) {
@@ -319,20 +319,14 @@ unsigned ModInfoSplit( info_block *blk, section_info *inf )
 {
     unsigned    off;
     unsigned    prev;
-    mod_info    *mod;
-    mod_info    *start;
+    byte        *start;
 
     inf = inf;
-    off = 0;
+    start = blk->info;
     prev = 0;
-    start = (mod_info *)blk->info;
-    for( ;; ) {
-        if( off > blk->size ) break;
-        if( blk->size - off < offsetof( mod_info, name ) ) break;
+    // following use check for 16-bit unsigned type overflow
+    for( off = MODINFO_SIZE( start ); off > prev && off <= blk->size; off += MODINFO_SIZE( start + off ) ) {
         prev = off;
-        mod = (mod_info *)((byte *)start + off );
-        off += sizeof( mod_info ) + mod->name[0];
-        if( off < prev ) break;
     }
     return( prev );
 }
@@ -341,14 +335,12 @@ unsigned ModOff2Idx( section_info *inf, unsigned off )
 {
     unsigned    count;
     unsigned    mod_off;
-    mod_info    *mod;
-    byte        *info;
+    byte        *start;
 
-    info = inf->mod_info->info;
+    start = inf->mod_info->info;
     count = 0;
-    for(mod_off = 0; mod_off < off; mod_off+=sizeof(mod_info)+mod->name[0]) {
+    for( mod_off = 0; mod_off < off; mod_off += MODINFO_SIZE( start + mod_off ) ) {
         ++count;
-        mod = (mod_info *)((byte *)info + mod_off);
     }
     return( count );
 }
@@ -454,7 +446,7 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
 
 
     name = ModPointer( ii, im )->name;
-    len = name[0];
+    len = (unsigned char)name[0];
     if( len == 0 ) {
         *buff = '\0';
         return( 0 );
@@ -505,10 +497,11 @@ unsigned PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     char        *name;
 
     name = ModPointer( ii, ic->im )->name;
-    len = name[0];
+    len = (unsigned char)name[0];
     if( max > 0 ) {
         --max;
-        if( max > len ) max = len;
+        if( max > len )
+            max = len;
         memcpy( buff, &name[1], max );
         buff[ max ] = '\0';
     }
