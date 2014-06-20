@@ -1558,17 +1558,17 @@ static void popRestartDecl( PARSE_STACK *state )
 
 static void syncToRestart( PARSE_STACK *state )
 {
-    unsigned pop_amount;
+    size_t pop_amount;
     RESTART_PARSE *restart;
     YYACTIONTYPE *state_ssp;
     YYACTIONTYPE *restart_ssp;
     GLOBAL_STACK *restart_gstack;
-    #if 0
+#if 0
     PARSE_STACK         *state;
     YYACTIONTYPE        *ssp;
     GLOBAL_STACK        *gstack;
     SCOPE               reset_scope;
-    #endif
+#endif
 
     restart = state->restart;
     restartDeclOK( restart );
@@ -1579,7 +1579,7 @@ static void syncToRestart( PARSE_STACK *state )
         while( state->gstack != restart_gstack ) {
             GStackPop( &(state->gstack) );
         }
-        pop_amount = (unsigned)( state_ssp - restart_ssp );
+        pop_amount = state_ssp - restart_ssp;
         if( pop_amount != 0 ) {
             state->ssp = restart_ssp;
             state->vsp -= pop_amount;
