@@ -1214,15 +1214,13 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is
 
 static bool FCB_Alloc( FILE *fp, const char *filename )
 {
-    int             i;
     FCB             *srcfcb;
     unsigned char   *src_buffer;
     FNAMEPTR        flist;
 
     --IncFileDepth;
     srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
-    i = SRC_BUF_SIZE;
-    src_buffer = FEmalloc( i + 3 );
+    src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
     if( srcfcb != NULL ) {
         srcfcb->src_buf = src_buffer;
         srcfcb->src_ptr = src_buffer;
@@ -1238,7 +1236,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
         srcfcb->prev_file = SrcFile;
         srcfcb->src_cnt = 0;
         srcfcb->prev_currchar = CurrChar;
-        srcfcb->src_bufsize = i;
+        srcfcb->src_bufsize = SRC_BUF_SIZE;
 #if _CPU == 370
         srcfcb->colum = 0;     /* init colum, trunc info */
         srcfcb->trunc = 0;

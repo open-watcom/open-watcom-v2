@@ -38,7 +38,7 @@
 MEPTR CreateMEntry( const char *name )
 {
     MEPTR   mentry;
-    int     macro_len;
+    size_t  macro_len;
 
     macro_len = strlen( name );
     if( macro_len == 0 )
@@ -57,9 +57,9 @@ void FreeMEntry( MEPTR mentry )
     CMemFree( mentry );
 }
 
-void MacroAdd( MEPTR mentry, char *buf, int len, macro_flags mflags )
+void MacroAdd( MEPTR mentry, char *buf, size_t len, macro_flags mflags )
 {
-    unsigned    size;
+    size_t      size;
 
     size = mentry->macro_len;
     if( len != 0 ) {                // if not a special macro
@@ -75,16 +75,16 @@ void MacroAdd( MEPTR mentry, char *buf, int len, macro_flags mflags )
 }
 
 
-void AllocMacroSegment( unsigned minimum )
+void AllocMacroSegment( size_t minimum )
 {
     struct macro_seg_list *msl;
-    unsigned amount;
+    size_t amount;
 
     amount = _RoundUp( minimum, 0x8000 );
     MacroSegment = FEmalloc( amount );
     MacroOffset = MacroSegment;
     MacroLimit = MacroOffset + amount - 2;
-    if( MacroSegment == 0 ) {
+    if( MacroSegment == NULL ) {
         CErr1( ERR_OUT_OF_MACRO_MEMORY );
         CSuicide();
     }
@@ -107,17 +107,17 @@ void FreeMacroSegments( void )
 }
 
 
-void MacroCopy( void *mptr, MACADDR_T offset, unsigned amount )
+void MacroCopy( void *mptr, MACADDR_T offset, size_t amount )
 {
     memcpy( offset, mptr, amount );
 }
 
 
-void MacroOverflow( unsigned amount_needed, unsigned amount_used )
+void MacroOverflow( size_t amount_needed, size_t amount_used )
 {
     MACADDR_T old_offset;
 
-    amount_needed = _RoundUp( amount_needed, sizeof(int) );
+    amount_needed = _RoundUp( amount_needed, sizeof( int ) );
     if( MacroLimit - MacroOffset < amount_needed ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
@@ -128,7 +128,7 @@ void MacroOverflow( unsigned amount_needed, unsigned amount_used )
 
 local MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 {
-    int         len;
+    size_t      len;
     MEPTR       mentry;
 
     len = strlen( name ) + 1;
@@ -141,7 +141,7 @@ local MEPTR *MacroLkUp( const char *name, MEPTR *lnk )
 }
 
 
-void MacLkAdd( MEPTR mentry, int len, macro_flags mflags )
+void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
 {
     MEPTR       old_mentry, *lnk;
     macro_flags old_mflags;
@@ -171,16 +171,16 @@ void MacLkAdd( MEPTR mentry, int len, macro_flags mflags )
         ++MacroCount;
         mentry->next_macro = MacHash[ MacHashValue ];
         MacHash[ MacHashValue ] = mentry;
-        MacroOffset += _RoundUp( len, sizeof(int) );
+        MacroOffset += _RoundUp( len, sizeof( int ) );
         mentry->macro_flags = InitialMacroFlag | mflags;
     }
 }
 
-SYM_HASHPTR SymHashAlloc( unsigned amount )
+SYM_HASHPTR SymHashAlloc( size_t amount )
 {
     SYM_HASHPTR hsym;
 
-    amount = _RoundUp( amount, sizeof(int) );
+    amount = _RoundUp( amount, sizeof( int ) );
     if( MacroLimit - MacroOffset < amount ) {
         AllocMacroSegment( amount );
     }

@@ -54,16 +54,16 @@ static unsigned_32 DwordMasks[] = {
 
 // len includes the trailing nullchar
 
-int NameCmp( const void *p1, const void *p2, int len )
+int NameCmp( const void *p1, const void *p2, size_t len )
 {
     const unsigned_32 *p = p1;
     const unsigned_32 *q = p2;
 
-    while( len > sizeof(unsigned_32) ) {
+    while( len > sizeof( unsigned_32 ) ) {
         if( *p != *q )  return( -1 );   // indicate names not equal
         ++p;
         ++q;
-        len -= sizeof(unsigned_32);
+        len -= sizeof( unsigned_32 );
     }
-    return( ((*p ^ *q) & DwordMasks[ len ]) != 0 );
+    return( ((*p ^ *q) & DwordMasks[len]) != 0 );
 }

@@ -83,7 +83,7 @@ char *BadCmdLine( int error_code, char *str )
 
 static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflags )
 {
-    int         i;
+    size_t      len;
     MEPTR       mentry;
     TOKEN       *p_token;
 
@@ -93,13 +93,13 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
         return( str );
     }
-    i = 0;
+    len = 0;
     if( !EqualChar( *str ) ) {
-        p_token = (TOKEN *)&TokenBuf[i];
+        p_token = (TOKEN *)&TokenBuf[len];
         *p_token = T_PPNUMBER;
-        i += sizeof( TOKEN );
-        TokenBuf[ i++ ] = '1';
-        TokenBuf[ i++ ] = '\0';
+        len += sizeof( TOKEN );
+        TokenBuf[ len++ ] = '1';
+        TokenBuf[ len++ ] = '\0';
     } else {
         int ppscan_mode;
 
@@ -111,13 +111,13 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
             if( ReScanPos() == str ) break;
             if( CurToken == T_WHITE_SPACE ) break;      /* 28-apr-94 */
             if( CurToken == T_BAD_CHAR && ! multiple_tokens ) break;
-            p_token = (TOKEN *)&TokenBuf[i];
+            p_token = (TOKEN *)&TokenBuf[len];
             *p_token = CurToken;
-            i += sizeof( TOKEN );
+            len += sizeof( TOKEN );
 
             switch( CurToken ) {
             case T_BAD_CHAR:
-                TokenBuf[i++] = Buffer[0];
+                TokenBuf[len++] = Buffer[0];
                 break;
             case T_CONSTANT:
             case T_PPNUMBER:
@@ -127,8 +127,8 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
                 /* fall through */
             case T_LSTRING:
             case T_STRING:
-                memcpy( &TokenBuf[i], &Buffer[0], TokenLen );
-                i += TokenLen;
+                memcpy( &TokenBuf[len], &Buffer[0], TokenLen );
+                len += TokenLen;
                 break;
             default:
                 break;
@@ -138,9 +138,9 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
         }
         FiniPPScan( ppscan_mode );
     }
-    *(TOKEN *)&TokenBuf[i] = T_NULL;
+    *(TOKEN *)&TokenBuf[len] = T_NULL;
     if( strcmp( mentry->macro_name, "defined" ) != 0 ){
-        MacroAdd( mentry, TokenBuf, i + sizeof( TOKEN ), mflags );
+        MacroAdd( mentry, TokenBuf, len + sizeof( TOKEN ), mflags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
     }
@@ -161,22 +161,22 @@ char *Define_UserMacro( char *str )
 void PreDefine_Macro( char *str )
 {
     undef_names     *uname;
-    int             len;
+    size_t          len;
     char            *p;
 
     if( ! CompFlags.undefine_all_macros ) {
         if( UndefNames != NULL ) {
-            p = str;
             len = 0;
-            for(;;) {
-                if( *p == '\0' ) break;
-                if( EqualChar( *p ) ) break;
+            for( p = str; *p != '\0'; ++p ) {
+                if( EqualChar( *p ) )
+                    break;
                 ++len;
-                ++p;
             }
             for( uname = UndefNames; uname; uname = uname->next ) {
                 if( memcmp( uname->name, str, len ) == 0 ) {
-                    if( uname->name[len] == '\0' ) return;
+                    if( uname->name[len] == '\0' ) {
+                        return;
+                    }
                 }
             }
         }

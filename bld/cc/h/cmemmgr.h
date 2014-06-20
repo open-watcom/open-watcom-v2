@@ -35,5 +35,5 @@ extern  void    *CPermAlloc(size_t);
 extern  void    *CMemAlloc(size_t);
 extern  void    *CMemRealloc( void *loc, size_t size );
 extern  void    CMemFree(void *);
-extern  void    *FEmalloc(unsigned);
+extern  void    *FEmalloc(size_t);
 extern  void    FEfree(void *);

@@ -52,7 +52,7 @@ static void    CError( void );
 static void    CIdent( void );
 
 local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name, source_loc *src_loc );
-local int  FormalParm( struct macro_parm *formal_parms );
+local unsigned char FormalParm( struct macro_parm *formal_parms );
 
 struct preproc {
     char  *directive;
@@ -409,13 +409,14 @@ local void CDefine( void )
 local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char *mac_name, source_loc *loc )
 {
     MEPTR       mentry;
+    size_t      len;
     int         i;
-    int         j;
     TOKEN       prev_token;
     int         prev_non_ws_token;
-    unsigned    mlen;
+    size_t      mlen;
     macro_flags mflags;
     TOKEN       *p_token;
+	unsigned char argno;
 
     mentry = CreateMEntry( mac_name );
     mflags = MFLAG_USER_DEFINED;
@@ -442,13 +443,13 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
         }
     }
     for( ;; ) {
-        i = 0;
+        len = 0;
         if( ( CurToken == T_STRING ) && CompFlags.wide_char_string ) {
             CurToken = T_LSTRING;                   /* 15-may-92 */
         }
-        p_token = (TOKEN *)&TokenBuf[ i ];
+        p_token = (TOKEN *)&TokenBuf[len];
         *p_token = CurToken;
-        i += sizeof( TOKEN );
+        len += sizeof( TOKEN );
         if( CurToken == T_NULL )
             break;
         if( CurToken == T_EOF )
@@ -466,29 +467,28 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
             break;
         case T_WHITE_SPACE:
             if( prev_token == T_WHITE_SPACE )
-                i -= sizeof( TOKEN );
+                len -= sizeof( TOKEN );
             break;
         case T_ID:
-            j = FormalParm( formal_parms );
-            if( j != 0 ) {
-                if( (mflags & MFLAG_VAR_ARGS) && (j == parm_cnt - 1) )
+            argno = FormalParm( formal_parms );
+            if( argno != 0 ) {
+                if( (mflags & MFLAG_VAR_ARGS) && (argno == parm_cnt - 1) )
                     CurToken = T_MACRO_VAR_PARM;
                 else
                     CurToken = T_MACRO_PARM;
                 *p_token = CurToken;
-                TokenBuf[ i ] = j - 1;
-                ++i;
+                TokenBuf[len++] = argno - 1;
             } else {
-                j = 0;
-                while( (TokenBuf[ i++ ] = Buffer[ j++ ]) != '\0' )
+                i = 0;
+                while( (TokenBuf[len++] = Buffer[i++]) != '\0' )
                     ;   /*empty*/
             }
             break;
         case T_BAD_CHAR:
-            TokenBuf[ i++ ] = Buffer[ 0 ];
-            if( Buffer[ 1 ] != '\0' ) {
-                *(TOKEN *)&TokenBuf[ i ] = T_WHITE_SPACE;
-                i += sizeof( TOKEN );
+            TokenBuf[len++] = Buffer[ 0 ];
+            if( Buffer[1] != '\0' ) {
+                *(TOKEN *)&TokenBuf[len] = T_WHITE_SPACE;
+                len += sizeof( TOKEN );
             }
             break;
         case T_CONSTANT:
@@ -496,8 +496,8 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
         case T_LSTRING:
         case T_BAD_TOKEN:
         case T_PPNUMBER:
-            j = 0;
-            while( (TokenBuf[ i++ ] = Buffer[ j++ ]) != '\0' )
+            i = 0;
+            while( (TokenBuf[len++] = Buffer[i++]) != '\0' )
                 ;   /* empty */
             break;
         default:
@@ -517,9 +517,9 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
         }
         prev_token = CurToken;
         CurToken = ScanToken();
-        MacroOverflow( mlen + i, mlen );
-        MacroCopy( TokenBuf, MacroOffset + mlen, i );
-        mlen += i;
+        MacroOverflow( mlen + len, mlen );
+        MacroCopy( TokenBuf, MacroOffset + mlen, len );
+        mlen += len;
     }
     if( prev_non_ws_token == T_MACRO_SHARP ) {
         CErr1( ERR_MUST_BE_MACRO_PARM );
@@ -540,9 +540,9 @@ local void GrabTokens( int parm_cnt, struct macro_parm *formal_parms, const char
 }
 
 
-local int FormalParm( struct macro_parm *formal_parms )
+local unsigned char FormalParm( struct macro_parm *formal_parms )
 {
-    int i;
+    unsigned char i;
 
     i = 1;
     while( formal_parms != NULL ) {

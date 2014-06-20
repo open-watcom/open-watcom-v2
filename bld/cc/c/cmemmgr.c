@@ -365,7 +365,7 @@ void *CPermAlloc( size_t amount )
 }
 
 
-void *FEmalloc( unsigned size )
+void *FEmalloc( size_t size )
 {
     void    *p;
 

@@ -629,17 +629,17 @@ extern  void    CppStackInit( void );
 extern  void    CppStackFini(void);
 
 //cmacadd.c
-extern  void    AllocMacroSegment(unsigned);
+extern  void    AllocMacroSegment(size_t);
 extern  void    FreeMacroSegments(void);
 extern  MEPTR   CreateMEntry(const char *);
 extern  void    FreeMEntry( MEPTR mentry );
-extern  void    MacLkAdd( MEPTR mentry, int len, macro_flags flags );
-extern  void    MacroAdd( MEPTR mentry, char *buf, int len, macro_flags flags );
+extern  void    MacLkAdd( MEPTR mentry, size_t len, macro_flags flags );
+extern  void    MacroAdd( MEPTR mentry, char *buf, size_t len, macro_flags flags );
 extern  int     MacroCompare(MEPTR,MEPTR);
-extern  void    MacroCopy(void *,MACADDR_T,unsigned);
+extern  void    MacroCopy(void *,MACADDR_T,size_t);
 extern  MEPTR   MacroLookup(const char *);
-extern  void    MacroOverflow(unsigned,unsigned);
-extern  SYM_HASHPTR SymHashAlloc(unsigned);
+extern  void    MacroOverflow(size_t,size_t);
+extern  SYM_HASHPTR SymHashAlloc(size_t);
 
 //cmath.c
 extern  TREEPTR AddOp(TREEPTR,TOKEN,TREEPTR);
@@ -679,7 +679,7 @@ extern char const * UsageText(void);      // GET INTERNATIONAL USAGE TEXT
 extern msgtype CGetMsgType( msg_codes msgcode );
 char const *CGetMsgPrefix( msg_codes msgcode );
 
-extern  int     NameCmp(const void *,const void *,int); /* cname */
+extern  int     NameCmp(const void *,const void *,size_t); /* cname */
 
 extern  int     EqualChar(int);                 /* coptions */
 extern  void    GenCOptions(char **);           /* coptions */
