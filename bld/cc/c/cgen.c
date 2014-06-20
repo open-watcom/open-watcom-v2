@@ -54,7 +54,7 @@ typedef struct  try_table_back_handles {
 #endif
 
 extern  SYM_LISTS       *SymListHeads;
-extern  int             LabelIndex;
+extern  LABEL_INDEX     LabelIndex;
 
 local void      FreeExtVars( void );
 local void      FreeGblVars( SYM_HANDLE sym_handle );
@@ -100,7 +100,7 @@ struct func_save {
     SYM_HANDLE      func_handle;
     OPNODE          *funcnode;
     label_handle    *cglabel_handles;
-    int             labelindex;
+    LABEL_INDEX     labelindex;
 };
 
 /* matches table of type in ctypes.h */
@@ -165,12 +165,11 @@ static void StartFunction( OPNODE *node )
 
 static void DefineLabels( OPNODE *node )
 {
-    int         i;
+    LABEL_INDEX     i;
 
     LabelIndex = node->u2.label_count;
     if( LabelIndex != 0 ) {
-        CGLabelHandles = (label_handle *)CMemAlloc( (LabelIndex + 1) *
-                                                sizeof(label_handle) );
+        CGLabelHandles = (label_handle *)CMemAlloc( (LabelIndex + 1) * sizeof(label_handle) );
         for( i = 1; i <= LabelIndex; i++ ) {
             CGLabelHandles[i] = BENewLabel();
         }
@@ -211,7 +210,7 @@ static cg_type ReturnType( cg_type type )
 
 static void EndFunction( OPNODE *node )
 {
-    int         i;
+    LABEL_INDEX i;
     cg_name     name;
     cg_type     dtype;
     SYM_ENTRY   sym;

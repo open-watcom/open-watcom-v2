@@ -744,7 +744,7 @@ extern  void    LookAhead(void);                /* cstmt */
 extern  void    Statement(void);                /* cstmt */
 extern  void    AddStmt(TREEPTR);               /* cstmt */
 extern  void    GenFunctionNode(SYM_HANDLE);    /* cstmt */
-extern  int     NextLabel(void);                /* cstmt */
+extern  LABEL_INDEX NextLabel(void);            /* cstmt */
 extern  void    StmtInit( void );               /* cstmt */
 
 extern  void    FreeLiteral(STRING_LITERAL *);  /* cstring */

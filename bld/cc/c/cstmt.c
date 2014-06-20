@@ -38,9 +38,9 @@ typedef struct block_entry {
     struct block_entry  *prev_block;
     struct block_entry  *prev_loop;
     TOKEN       block_type;
-    int         top_label;
-    int         break_label;
-    int         continue_label;
+    LABEL_INDEX top_label;
+    LABEL_INDEX break_label;
+    LABEL_INDEX continue_label;
     tryindex_t  try_index;      /* TRY: current index */
     tryindex_t  parent_index;   /* TRY: parent index */
     TREEPTR     inc_var;        /* variable used in FOR statement */
@@ -61,7 +61,7 @@ struct return_info {
 };
 
 extern int          NodeCount;
-int                 LabelIndex;
+LABEL_INDEX         LabelIndex;
 SYM_LISTS           *SymListHeads;
 
 static TREEPTR      LastStmt;
@@ -195,7 +195,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
 }
 
 
-int NextLabel( void )
+LABEL_INDEX NextLabel( void )
 {
     return( ++LabelIndex );
 }
@@ -704,7 +704,7 @@ static void ForStmt( void )
     if( CurToken != T_SEMI_COLON ) {
         BlockStack->break_label = NextLabel();
         if( !JumpFalse( Expr(), BlockStack->break_label ) ) {
-            BlockStack->break_label = 0;        /* 09-sep-92 */
+            BlockStack->break_label = 0;
         }
     }
     MustRecog( T_SEMI_COLON );

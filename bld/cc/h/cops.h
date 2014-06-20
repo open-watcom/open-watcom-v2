@@ -105,7 +105,7 @@ typedef struct  case_entry {
 
 typedef struct  switch_entry {
         struct  switch_entry *prev_switch;
-        unsigned int    default_label;
+        LABEL_INDEX     default_label;
         int             number_of_cases;
         struct  case_entry *case_list;
         unsigned        low_value;
@@ -162,7 +162,7 @@ typedef struct  opnode {
         STRING_LITERAL  *string_handle; // OPR_PUSHSTRING
         TYPEPTR         result_type;    // for operators(+-*/%|&^) etc
         TYPEPTR         compare_type;   // OPR_CMP
-        int             label_count;    // OPR_LABELCOUNT
+        LABEL_INDEX     label_count;    // OPR_LABELCOUNT
         LABEL_INDEX     label_index;
         void            *label_list;    // OPR_AND_AND, OPR_OR_OR
         SWITCHPTR       switch_info;    // OPR_SWITCH
