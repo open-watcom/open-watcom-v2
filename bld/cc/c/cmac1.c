@@ -69,16 +69,11 @@ static MACRO_TOKEN  *MacroExpansion( int );
 static MACRO_TOKEN  *NestedMacroExpansion( int );
 static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning );
 
-local void SaveParm( MEPTR      mentry,
-                     size_t     size,
-                     int        parm_cnt,
-                     MACRO_ARG  *macro_parms,
-                     struct tokens *token_list );
-
 struct special_macro_names {
     char    *name;
     int     value;
- };
+};
+
 static struct special_macro_names  SpcMacros[] = {
     { "__DATE__",           MACRO_DATE          },
     { "__FILE__",           MACRO_FILE          },
@@ -438,6 +433,38 @@ void EnlargeBuffer( size_t size )
     BufSize = size;
 }
 
+local void SaveParm( MEPTR      mentry,
+                     size_t     size,
+                     int        parm_cnt,
+                     MACRO_ARG  *macro_parms,
+                     struct tokens *token_list )
+{
+    struct tokens   *next_tokens;
+    char            *p;
+    TOKEN           *p_token;
+    size_t          total;
+
+    p_token = (TOKEN *)&TokenBuf[size];
+    *p_token = T_NULL;
+    size += sizeof( TOKEN );
+
+    if( parm_cnt < mentry->parm_count - 1 ) {
+        p = CMemAlloc( size );
+        macro_parms[parm_cnt].arg = p;
+        if( p != NULL ) {
+            total = 0;
+            while( token_list != NULL ) {
+                memcpy( &p[total], token_list->buf, token_list->length );
+                total += token_list->length;
+                next_tokens = token_list->next;
+                CMemFree( token_list );
+                token_list = next_tokens;
+            }
+            memcpy( &p[total], TokenBuf, size );
+        }
+    }
+}
+
 static MACRO_ARG *CollectParms(void)
 {
     MEPTR           mentry;
@@ -591,38 +618,6 @@ static MACRO_ARG *CollectParms(void)
     return( macro_parms );
 }
 
-
-local void SaveParm( MEPTR      mentry,
-                     size_t     size,
-                     int        parm_cnt,
-                     MACRO_ARG  *macro_parms,
-                     struct tokens *token_list )
-{
-    struct tokens   *next_tokens;
-    char            *p;
-    TOKEN           *p_token;
-    size_t          total;
-
-    p_token = (TOKEN *)&TokenBuf[size];
-    *p_token = T_NULL;
-    size += sizeof( TOKEN );
-
-    if( parm_cnt < mentry->parm_count - 1 ) {
-        p = CMemAlloc( size );
-        macro_parms[parm_cnt].arg = p;
-        if( p != NULL ) {
-            total = 0;
-            while( token_list != NULL ) {
-                memcpy( &p[total], token_list->buf, token_list->length );
-                total += token_list->length;
-                next_tokens = token_list->next;
-                CMemFree( token_list );
-                token_list = next_tokens;
-            }
-            memcpy( &p[total], TokenBuf, size );
-        }
-    }
-}
 
 #ifndef NDEBUG
 
