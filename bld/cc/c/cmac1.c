@@ -64,10 +64,10 @@ typedef struct nested_macros {
 static NESTED_MACRO *NestedMacros;
 static MACRO_TOKEN  *TokenList;
 static int          MTokenLen;              /* macro token length */
+
 static MACRO_TOKEN  *MacroExpansion( int );
 static MACRO_TOKEN  *NestedMacroExpansion( int );
-
-static int MacroBeingExpanded( MEPTR mentry );
+static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning );
 
 local void SaveParm( MEPTR      mentry,
                      size_t     size,
@@ -736,6 +736,20 @@ static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, char *data )
     return( head );
 }
 
+static int MacroBeingExpanded( MEPTR mentry )
+{
+    NESTED_MACRO    *nested;
+
+    for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
+        if( nested->mentry == mentry )
+            return( 1 );
+        if( !nested->rescanning ) {
+            break;
+        }
+    }
+    return( 0 );
+}
+
 static int Expandable( MACRO_TOKEN *mtok, int macro_parm )
 {
     int         lparen;
@@ -785,161 +799,6 @@ static int Expandable( MACRO_TOKEN *mtok, int macro_parm )
         }
     }
     return( 0 );
-}
-
-static int MacroBeingExpanded( MEPTR mentry )
-{
-    NESTED_MACRO    *nested;
-
-    for( nested = NestedMacros; nested != NULL; nested = nested->next ) {
-        if( nested->mentry == mentry )
-            return( 1 );
-        if( !nested->rescanning ) {
-            break;
-        }
-    }
-    return( 0 );
-}
-
-static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning )
-{
-    MACRO_TOKEN *mtok;
-    MACRO_TOKEN *toklist;
-    MACRO_TOKEN *prev_tok;
-    MACRO_TOKEN *old_tokenlist;
-    int         i;
-    size_t      len;
-    char        *buf;
-
-    mtok = head;
-    ++MacroDepth;
-    prev_tok = NULL;
-    for( ;; ) {
-        if( mtok == NULL )
-            break;
-        toklist = NULL;
-        if( mtok->token == T_ID ) {
-            // if macro and not being expanded, then expand it
-            // only tokens available for expansion are those in mtok list
-            buf = Buffer;
-            len = 0;
-            while( (buf[len] = mtok->data[len]) != '\0' )
-                len++;
-            CalcHash( buf, len );
-            if( IdLookup( buf, len ) == T_MACRO ) {
-                if( rescanning ) {
-                    if( MacroBeingExpanded( NextMacro ) ) {
-                        mtok->token = T_UNEXPANDABLE_ID;
-                    } else {
-                        toklist = mtok;
-                        while( toklist->next != NULL ) {
-                            toklist = toklist->next;
-                        }
-                        toklist->next = TokenList;
-                        i = Expandable( mtok->next, 0 );
-                        switch( i ) {
-                        case 0:         // macro is currently not expandable
-                            mtok->token = T_MACRO;
-                            toklist->next = NULL;
-                            toklist = NULL;
-                            break;
-                        case 1:         // macro is expandable
-                            TokenList = mtok->next;
-                            if( head == mtok ) {
-                                head = NULL;
-                                prev_tok = NULL;
-                            }
-                            CMemFree( mtok );
-                            toklist = MacroExpansion( rescanning );
-                            mtok = TokenList;
-                            TokenList = NULL;
-                            break;
-                        case 2:         // we skipped over some white space
-                            mtok->token = T_UNEXPANDABLE_ID;
-                            toklist->next = NULL;
-                            toklist = BuildAToken( " " );
-                            toklist->token = T_WHITE_SPACE;
-                            toklist->next = mtok->next;
-                            mtok->next = toklist;
-                            toklist = NULL;
-                            break;
-                        }
-                    }
-                } else {        // expanding a macro parm
-                    if( Expandable( mtok->next, 1 ) ) {
-                        old_tokenlist = TokenList;
-                        TokenList = mtok->next;
-                        if( head == mtok ) {
-                            head = NULL;
-                            prev_tok = NULL;
-                        }
-                        CMemFree( mtok );
-                        toklist = NestedMacroExpansion( rescanning );
-                        mtok = TokenList;
-                        TokenList = old_tokenlist;
-                    } else {
-                        prev_tok = mtok;
-                        mtok = mtok->next;      // advance onto next token
-                    }
-                }
-            } else {
-                mtok->token = T_SAVED_ID;       // avoid rechecking this ID
-                prev_tok = mtok;
-                mtok = mtok->next;      // advance onto next token
-            }
-        } else if( mtok->token == T_NULL ) {
-            toklist = mtok->next;
-            if( mtok->data[0] == 'Z' ) {        // end of a macro
-                rescanning = NestedMacros->rescanning;
-                DeleteNestedMacro();
-                CMemFree( mtok );
-                mtok = toklist;
-            } else {                            // end of a macro parm
-                if( toklist != NULL ) {
-                    TokenList = toklist;
-                }
-                CMemFree( mtok );
-                mtok = NULL;                    // will cause us to exit
-            }
-            toklist = NULL;
-        } else {                        // advance onto next token
-            prev_tok = mtok;
-            mtok = mtok->next;
-        }
-        if( toklist != NULL ) {         // new tokens to insert
-            if( prev_tok == NULL ) {
-                head = toklist;
-            } else {
-                prev_tok->next = toklist;
-            }
-            if( mtok != NULL ) {
-                while( toklist->next != NULL )
-                    toklist = toklist->next;
-                toklist->next = mtok;
-            }
-            if( prev_tok == NULL ) {
-                mtok = head;
-            } else {
-                mtok = prev_tok->next;
-            }
-        } else {
-            // either no change, or tokens were deleted
-            if( prev_tok == NULL ) {
-                head = mtok;
-            } else {
-                prev_tok->next = mtok;
-            }
-        }
-    }
-    for( mtok = head; mtok != NULL; mtok = mtok->next ) {
-        // change a temporarily unexpandable ID into an ID because it
-        // could become expandable in a later rescanning phase
-        if( mtok->token == T_MACRO ) {
-            mtok->token = T_ID;
-        }
-    }
-    --MacroDepth;
-    return( head );
 }
 
 static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
@@ -1393,6 +1252,147 @@ MACRO_TOKEN *MacroExpansion( int rescanning )
         }
     }
     head = AppendToken( head, T_NULL, "Z-<end of macro>" );
+    return( head );
+}
+
+static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, int rescanning )
+{
+    MACRO_TOKEN *mtok;
+    MACRO_TOKEN *toklist;
+    MACRO_TOKEN *prev_tok;
+    MACRO_TOKEN *old_tokenlist;
+    int         i;
+    size_t      len;
+    char        *buf;
+
+    mtok = head;
+    ++MacroDepth;
+    prev_tok = NULL;
+    for( ;; ) {
+        if( mtok == NULL )
+            break;
+        toklist = NULL;
+        if( mtok->token == T_ID ) {
+            // if macro and not being expanded, then expand it
+            // only tokens available for expansion are those in mtok list
+            buf = Buffer;
+            len = 0;
+            while( (buf[len] = mtok->data[len]) != '\0' )
+                len++;
+            CalcHash( buf, len );
+            if( IdLookup( buf, len ) == T_MACRO ) {
+                if( rescanning ) {
+                    if( MacroBeingExpanded( NextMacro ) ) {
+                        mtok->token = T_UNEXPANDABLE_ID;
+                    } else {
+                        toklist = mtok;
+                        while( toklist->next != NULL ) {
+                            toklist = toklist->next;
+                        }
+                        toklist->next = TokenList;
+                        i = Expandable( mtok->next, 0 );
+                        switch( i ) {
+                        case 0:         // macro is currently not expandable
+                            mtok->token = T_MACRO;
+                            toklist->next = NULL;
+                            toklist = NULL;
+                            break;
+                        case 1:         // macro is expandable
+                            TokenList = mtok->next;
+                            if( head == mtok ) {
+                                head = NULL;
+                                prev_tok = NULL;
+                            }
+                            CMemFree( mtok );
+                            toklist = MacroExpansion( rescanning );
+                            mtok = TokenList;
+                            TokenList = NULL;
+                            break;
+                        case 2:         // we skipped over some white space
+                            mtok->token = T_UNEXPANDABLE_ID;
+                            toklist->next = NULL;
+                            toklist = BuildAToken( " " );
+                            toklist->token = T_WHITE_SPACE;
+                            toklist->next = mtok->next;
+                            mtok->next = toklist;
+                            toklist = NULL;
+                            break;
+                        }
+                    }
+                } else {        // expanding a macro parm
+                    if( Expandable( mtok->next, 1 ) ) {
+                        old_tokenlist = TokenList;
+                        TokenList = mtok->next;
+                        if( head == mtok ) {
+                            head = NULL;
+                            prev_tok = NULL;
+                        }
+                        CMemFree( mtok );
+                        toklist = NestedMacroExpansion( rescanning );
+                        mtok = TokenList;
+                        TokenList = old_tokenlist;
+                    } else {
+                        prev_tok = mtok;
+                        mtok = mtok->next;      // advance onto next token
+                    }
+                }
+            } else {
+                mtok->token = T_SAVED_ID;       // avoid rechecking this ID
+                prev_tok = mtok;
+                mtok = mtok->next;      // advance onto next token
+            }
+        } else if( mtok->token == T_NULL ) {
+            toklist = mtok->next;
+            if( mtok->data[0] == 'Z' ) {        // end of a macro
+                rescanning = NestedMacros->rescanning;
+                DeleteNestedMacro();
+                CMemFree( mtok );
+                mtok = toklist;
+            } else {                            // end of a macro parm
+                if( toklist != NULL ) {
+                    TokenList = toklist;
+                }
+                CMemFree( mtok );
+                mtok = NULL;                    // will cause us to exit
+            }
+            toklist = NULL;
+        } else {                        // advance onto next token
+            prev_tok = mtok;
+            mtok = mtok->next;
+        }
+        if( toklist != NULL ) {         // new tokens to insert
+            if( prev_tok == NULL ) {
+                head = toklist;
+            } else {
+                prev_tok->next = toklist;
+            }
+            if( mtok != NULL ) {
+                while( toklist->next != NULL )
+                    toklist = toklist->next;
+                toklist->next = mtok;
+            }
+            if( prev_tok == NULL ) {
+                mtok = head;
+            } else {
+                mtok = prev_tok->next;
+            }
+        } else {
+            // either no change, or tokens were deleted
+            if( prev_tok == NULL ) {
+                head = mtok;
+            } else {
+                prev_tok->next = mtok;
+            }
+        }
+    }
+    for( mtok = head; mtok != NULL; mtok = mtok->next ) {
+        // change a temporarily unexpandable ID into an ID because it
+        // could become expandable in a later rescanning phase
+        if( mtok->token == T_MACRO ) {
+            mtok->token = T_ID;
+        }
+    }
+    --MacroDepth;
     return( head );
 }
 
