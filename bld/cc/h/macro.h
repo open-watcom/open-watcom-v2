@@ -29,8 +29,13 @@
 ****************************************************************************/
 
 
+#define MTOK(p)         (*(TOKEN *)(p))
+#define MTOKINC(p)      p += sizeof( TOKEN )
+#define MTOKDEC(p)      p -= sizeof( TOKEN )
+#define MTOKPARM(p)     (*(mac_parm_count *)(p))
+#define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
 
-enum    special_macros {
+typedef enum special_macros {
     MACRO_DATE,
     MACRO_FILE,
     MACRO_LINE,
@@ -40,12 +45,14 @@ enum    special_macros {
     MACRO_STDC_VERSION,
     MACRO_TIME,
     MACRO_FUNC,
-};
+} special_macros;
 
-struct  macro_parm {
-    struct macro_parm   *next_macro_parm;
+typedef unsigned char   mac_parm_count;
+
+typedef struct macro_parm {
+    struct macro_parm   *next;
     char                *parm;
-};
+} MPDEFN, *MPPTR;
 
 /* Actual macro definition is at (char *)mentry + mentry->macro_defn */
 typedef enum macro_flags {
@@ -61,12 +68,13 @@ typedef struct  macro_entry {
     struct macro_entry  *next_macro;    /* also used by pre-compiled header */
     unsigned            macro_defn;     /* offset to defn, 0 ==>special macro name*/
     unsigned            macro_len;      /* length of macro definition */
-    unsigned            parm_count;     /* special macro indicator if defn == 0 */
+    mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     macro_flags         macro_flags;    /* flags */
     source_loc          src_loc;        /* where macro defined, for diagnostic */
     char                macro_name[1];  /* name,parms, and macro definition */
 } MEDEFN, *MEPTR;
 
+#if 0
 typedef struct  macro_stack {
     struct macro_stack  *stacked_macro;
     MEPTR               prev_macro;
@@ -75,3 +83,4 @@ typedef struct  macro_stack {
     int                 macro_class;            /* T_MACRO or T_MACRO_PARM */
     char                macro_definition[1];    /* copy of current macro definition */
 } MSTACK, *MSTACKPTR;
+#endif

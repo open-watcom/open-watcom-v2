@@ -141,7 +141,7 @@ global int      NestLevel;      /* pre-processing level of #if */
 global int      SkipLevel;      /* pre-processing level of #if to skip to */
 global int      SymLevel;       /* current lex level (# of nested {) */
 global int      HashValue;      /* hash value for identifier */
-global int      MacHashValue;   /* hash value for macro name */
+global mac_hash_idx MacHashValue; /* hash value for macro name */
 global char     *SavedId;       /* saved id when doing look ahead */
 global int      SavedHash;      /* hash value for saved id */
 global source_loc SavedTokenLoc; /* value of TokenLine when id saved */
@@ -620,11 +620,11 @@ extern  void    MacroAddComp(void);
 extern  void    MacroFini(void);
 extern  void    MacroPurge(void);
 extern  void    GetMacroToken(void);
-extern  int     SpecialMacro(MEPTR);
+extern  TOKEN   SpecialMacro( special_macros spc_macro );
 extern  void    DoMacroExpansion(void);
 //cmac2.c
 extern  TOKEN   ChkControl(void);
-extern  bool    MacroDel( char *name );
+extern  bool    MacroDel( const char *name );
 extern  void    CppStackInit( void );
 extern  void    CppStackFini(void);
 
@@ -663,13 +663,13 @@ extern  TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp );
 extern  pointer_class   ExprTypeClass( TYPEPTR typ );
 extern  TREEPTR LCastAdj(  TREEPTR tree );
 
-extern  char    *BadCmdLine(int,char *);        /* cmodel */
-extern  char    *Define_Macro(char *);          /* cmodel */
-extern  char    *Define_UserMacro(char *);      /* cmodel */
-extern  void    PreDefine_Macro(char *);        /* cmodel */
-extern  char    *AddUndefName(char *);          /* cmodel */
-extern  void    InitModInfo(void);              /* cmodel */
-extern  void    MiscMacroDefs(void);            /* cmodel */
+extern  char    *BadCmdLine(int,const char *);      /* cmodel */
+extern  char    *Define_Macro(const char *);        /* cmodel */
+extern  char    *Define_UserMacro(const char *);    /* cmodel */
+extern  void    PreDefine_Macro(const char *);      /* cmodel */
+extern  char    *AddUndefName(const char *);        /* cmodel */
+extern  void    InitModInfo(void);                  /* cmodel */
+extern  void    MiscMacroDefs(void);                /* cmodel */
 //cmsg.c
 extern char const *CGetMsgStr(  msg_codes msgcode );
 extern void CGetMsg( char *msgbuf, msg_codes msgnum );
@@ -726,7 +726,7 @@ extern  unsigned hashpjw( const char * );       /* cscan */
 extern  int     ESCChar( int, const unsigned char **, bool * );  /* cscan */
 extern  void    SkipAhead( void );              /* cscan */
 extern  TOKEN   ScanToken( void );              /* cscan */
-extern  void    ReScanInit( char * );           /* cscan */
+extern  void    ReScanInit( const char * );     /* cscan */
 extern  int     InReScanMode( void );           /* cscan */
 extern  int     ReScanToken( void );            /* cscan */
 extern  char    *ReScanPos( void );             /* cscan */

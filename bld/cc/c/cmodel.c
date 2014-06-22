@@ -42,7 +42,7 @@ extern  char    CompilerID[];
 /* COMMAND LINE PARSING OF MACRO DEFINITIONS */
 
 
-static char *copy_eq( char *dest, char *src )
+static char *copy_eq( char *dest, const char *src )
 {
     char        c;
 
@@ -57,11 +57,11 @@ static char *copy_eq( char *dest, char *src )
         ++src;
     }
     *dest = '\0';
-    return( src );
+    return( (char *)src );
 }
 
 
-char *BadCmdLine( int error_code, char *str )
+char *BadCmdLine( int error_code, const char *str )
 {
     char        *p;
     auto char   buffer[128];
@@ -77,27 +77,25 @@ char *BadCmdLine( int error_code, char *str )
     *p = '\0';
     CBanner();
     CErr2p( error_code, buffer );
-    return( str );
+    return( (char *)str );
 }
 
 
-static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflags )
+static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags mflags )
 {
     size_t      len;
     MEPTR       mentry;
-    TOKEN       *p_token;
 
     str = copy_eq( Buffer, str);
     mentry = CreateMEntry( Buffer );
     if( mentry == NULL ) {
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
-        return( str );
+        return( (char *)str );
     }
     len = 0;
     if( !EqualChar( *str ) ) {
-        p_token = (TOKEN *)&TokenBuf[len];
-        *p_token = T_PPNUMBER;
-        len += sizeof( TOKEN );
+        MTOK( TokenBuf + len ) = T_PPNUMBER;
+        MTOKINC( len );
         TokenBuf[ len++ ] = '1';
         TokenBuf[ len++ ] = '\0';
     } else {
@@ -111,10 +109,8 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
             if( ReScanPos() == str ) break;
             if( CurToken == T_WHITE_SPACE ) break;      /* 28-apr-94 */
             if( CurToken == T_BAD_CHAR && ! multiple_tokens ) break;
-            p_token = (TOKEN *)&TokenBuf[len];
-            *p_token = CurToken;
-            len += sizeof( TOKEN );
-
+            MTOK( TokenBuf + len ) = CurToken;
+            MTOKINC( len );
             switch( CurToken ) {
             case T_BAD_CHAR:
                 TokenBuf[len++] = Buffer[0];
@@ -138,31 +134,32 @@ static char *Def_Macro_Tokens( char *str, int multiple_tokens, macro_flags mflag
         }
         FiniPPScan( ppscan_mode );
     }
-    *(TOKEN *)&TokenBuf[len] = T_NULL;
+    MTOK( TokenBuf + len ) = T_NULL;
+    MTOKINC( len );
     if( strcmp( mentry->macro_name, "defined" ) != 0 ){
-        MacroAdd( mentry, TokenBuf, len + sizeof( TOKEN ), mflags );
+        MacroAdd( mentry, TokenBuf, len, mflags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
     }
     FreeMEntry( mentry );
-    return( str );
+    return( (char *)str );
 }
 
-char *Define_Macro( char *str )
+char *Define_Macro( const char *str )
 {
     return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_NONE ) );
 }
 
-char *Define_UserMacro( char *str )
+char *Define_UserMacro( const char *str )
 {
     return( Def_Macro_Tokens( str, CompFlags.extended_defines, MFLAG_USER_DEFINED ) );
 }
 
-void PreDefine_Macro( char *str )
+void PreDefine_Macro( const char *str )
 {
     undef_names     *uname;
     size_t          len;
-    char            *p;
+    const char      *p;
 
     if( ! CompFlags.undefine_all_macros ) {
         if( UndefNames != NULL ) {
@@ -185,7 +182,7 @@ void PreDefine_Macro( char *str )
 }
 
 
-char *AddUndefName( char *str )
+char *AddUndefName( const char *str )
 {
     int             len;
     undef_names     *uname;
@@ -205,7 +202,7 @@ char *AddUndefName( char *str )
             str += len;
         }
     }
-    return( str );
+    return( (char *)str );
 }
 
 
