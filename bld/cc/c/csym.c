@@ -60,19 +60,6 @@ static void NewSym( void )
     }
 }
 
-
-static void CreateNewSym( SYMPTR sym, const char *id )
-{
-    size_t  len;
-
-    NewSym();
-    len = strlen( id ) + 1;
-    memset( sym, 0, sizeof( SYM_ENTRY ) );
-    sym->name = CMemAlloc( len );
-    memcpy( sym->name, id, len );
-}
-
-
 void SymInit( void )
 {
     id_hash_idx     h;
@@ -182,12 +169,17 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segment )
     return( handle );
 }
 
-SYM_HANDLE SpcSymbol( const char *name, stg_classes stg_class )
+SYM_HANDLE SpcSymbol( const char *name, TYPEPTR typ, stg_classes stg_class )
 {
     SYM_ENTRY       sym;
+    size_t          len;
 
-    CreateNewSym( &sym, name );
-    sym.sym_type = GetType( TYPE_USHORT );
+    NewSym();
+    len = strlen( name ) + 1;
+    memset( &sym, 0, sizeof( SYM_ENTRY ) );
+    sym.name = CMemAlloc( len );
+    memcpy( sym.name, name, len );
+    sym.sym_type = typ;
     sym.attribs.stg_class = stg_class;
     SymReplace( &sym, CURR_SYM_HANDLE() );
     return( CURR_SYM_HANDLE() );
@@ -204,18 +196,11 @@ void SpcSymInit( void )
     sym.sym_type = GetType( TYPE_VOID );
     SymReplace( &sym, 0 );
 #ifdef __SEH__
-    CreateNewSym( &sym, ".try" );
-    TrySymHandle = CURR_SYM_HANDLE();   /* create special _try sym */
-    sym.attribs.stg_class = SC_AUTO;
-    sym.sym_type = GetType( TYPE_VOID );
-    SymReplace( &sym, CURR_SYM_HANDLE() );
+    /* create special _try sym */
+    TrySymHandle = SpcSymbol( ".try", GetType( TYPE_VOID ), SC_AUTO );
 #endif
     /* create special symbol for "extern unsigned int __near __chipbug" */
-    CreateNewSym( &sym, "__chipbug" );
-    SymChipBug = CURR_SYM_HANDLE();
-    sym.attribs.stg_class = SC_EXTERN;
-    sym.sym_type = GetType( TYPE_UINT );
-    SymReplace( &sym, CURR_SYM_HANDLE() );
+    SymChipBug = SpcSymbol( "__chipbug", GetType( TYPE_UINT ), SC_EXTERN );
 
     /* create special symbol table entry for __segname("_CODE") */
     Sym_CS = SegSymbol( "CS", SEG_CODE );              /* 18-jan-92 */

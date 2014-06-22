@@ -498,11 +498,11 @@ static void SetGenSwitches( void )
         break;
     case SW_DF_DWARF_A:
         GenSwitches |= DBG_DF | DBG_PREDEF;
-        SymDFAbbr = SpcSymbol( "__DFABBREV", SC_EXTERN  );
+        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYPE_USHORT ), SC_EXTERN );
         break;
     case SW_DF_DWARF_G:
         GenSwitches |= DBG_DF | DBG_PREDEF;
-        SymDFAbbr = SpcSymbol( "__DFABBREV", SC_NULL  );
+        SymDFAbbr = SpcSymbol( "__DFABBREV", GetType( TYPE_USHORT ), SC_NULL );
         break;
     }
 }

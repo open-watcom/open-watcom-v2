@@ -758,7 +758,7 @@ extern  void    SpcSymInit(void);               /* csym */
 extern  void    SymFini(void);                  /* csym */
 extern  void    SymCreate(SYMPTR,const char *); /* csym */
 extern  SYM_HANDLE SegSymbol(const char *,segment_id);  /* csym */
-extern  SYM_HANDLE SpcSymbol(const char *,stg_classes); /* csym */
+extern  SYM_HANDLE SpcSymbol(const char *,TYPEPTR,stg_classes); /* csym */
 extern  SYM_HANDLE SymAdd(id_hash_idx,SYMPTR);         /* csym */
 extern  SYM_HANDLE SymAddL0(id_hash_idx,SYMPTR);       /* csym */
 extern  SYM_HANDLE SymLook(id_hash_idx,const char *);  /* csym */
