@@ -37,118 +37,106 @@
 
 /*       Target dependent set of hardware registers available */
 
-HW_DEFINE_SIMPLE( HW_AH,     0x0001U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_AL,     0x0002U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_BH,     0x0004U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_BL,     0x0008U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_CH,     0x0010U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_CL,     0x0020U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_DH,     0x0040U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_DL,     0x0080U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_SI,     0x0100U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_DI,     0x0200U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_BP,     0x0400U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_SP,     0x0800U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_DS,     0x1000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ES,     0x2000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_CS,     0x4000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_SS,     0x8000U, 0x0000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST0,    0x0000U, 0x0001U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST1,    0x0000U, 0x0002U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST2,    0x0000U, 0x0004U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST3,    0x0000U, 0x0008U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST4,    0x0000U, 0x0010U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST5,    0x0000U, 0x0020U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST6,    0x0000U, 0x0040U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ST7,    0x0000U, 0x0080U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_EAXH,   0x0000U, 0x0100U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_EBXH,   0x0000U, 0x0200U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ECXH,   0x0000U, 0x0400U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_EDXH,   0x0000U, 0x0800U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_ESIH,   0x0000U, 0x1000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_EDIH,   0x0000U, 0x2000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_FS,     0x0000U, 0x4000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_GS,     0x0000U, 0x8000U, 0x0000U, 0x0000U );
-HW_DEFINE_SIMPLE( HW_FULL,   0xffffU, 0xffffU, 0xffffU, 0xffffU );
-HW_DEFINE_SIMPLE( HW_UNUSED, 0x0000U, 0x0000U, 0xffffU, 0xffffU );
-HW_DEFINE_SIMPLE( HW_EMPTY,  0x0000U, 0x0000U, 0x0000U, 0x0000U );
+HW_DEFINE_SIMPLE( HW_AH,     0x00000001U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_AL,     0x00000002U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_BH,     0x00000004U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_BL,     0x00000008U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_CH,     0x00000010U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_CL,     0x00000020U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_DH,     0x00000040U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_DL,     0x00000080U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_SI,     0x00000100U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_DI,     0x00000200U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_BP,     0x00000400U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_SP,     0x00000800U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_DS,     0x00001000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ES,     0x00002000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_CS,     0x00004000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_SS,     0x00008000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST0,    0x00010000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST1,    0x00020000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST2,    0x00040000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST3,    0x00080000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST4,    0x00100000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST5,    0x00200000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST6,    0x00400000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ST7,    0x00800000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_EAXH,   0x01000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_EBXH,   0x02000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ECXH,   0x04000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_EDXH,   0x08000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ESIH,   0x10000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_EDIH,   0x20000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_FS,     0x40000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_GS,     0x80000000U, 0x00000000U );
+
+HW_DEFINE_SIMPLE( HW_FULL,   0xffffffffU, 0xffffffffU );
+HW_DEFINE_SIMPLE( HW_UNUSED, 0x00000000U, 0xffffffffU );
+HW_DEFINE_SIMPLE( HW_EMPTY,  0x00000000U, 0x00000000U );
 
 
 #define HW_DEFINE_COMPOUND( x ) \
-enum {                                                                        \
-                                                                              \
-HW_AX_##x    = (hw_reg_part)(HW_AL_##x+HW_AH_##x),                       \
-HW_BX_##x    = (hw_reg_part)(HW_BL_##x+HW_BH_##x),                       \
-HW_CX_##x    = (hw_reg_part)(HW_CL_##x+HW_CH_##x),                       \
-HW_DX_##x    = (hw_reg_part)(HW_DL_##x+HW_DH_##x),                       \
-                                                                              \
-                                                                              \
-HW_EAX_##x   = (hw_reg_part)(HW_EAXH_##x+HW_AX_##x),                     \
-HW_EBX_##x   = (hw_reg_part)(HW_EBXH_##x+HW_BX_##x),                     \
-HW_ECX_##x   = (hw_reg_part)(HW_ECXH_##x+HW_CX_##x),                     \
-HW_EDX_##x   = (hw_reg_part)(HW_EDXH_##x+HW_DX_##x),                     \
-HW_ESI_##x   = (hw_reg_part)(HW_ESIH_##x+HW_SI_##x),                     \
-HW_EDI_##x   = (hw_reg_part)(HW_EDIH_##x+HW_DI_##x),                     \
-                                                                              \
-HW_ABCD_##x  = (hw_reg_part)(HW_AX_##x+HW_BX_##x                         \
-               +HW_CX_##x+HW_DX_##x),                                         \
-                                                                              \
-HW_SDSB_##x  = (hw_reg_part)(HW_SI_##x+HW_DI_##x                         \
-               +HW_SP_##x+HW_BP_##x),                                         \
-                                                                              \
-HW_SEGS_##x  = (hw_reg_part)(HW_DS_##x+HW_ES_##x+HW_CS_##x               \
-               +HW_SS_##x+HW_FS_##x+HW_GS_##x),                               \
-                                                                              \
-HW_IDX16_##x  = (hw_reg_part)(HW_SI_##x+HW_DI_##x+HW_BX_##x),            \
-                                                                              \
-HW_FLTS_##x  = (hw_reg_part)(HW_ST0_##x+HW_ST1_##x                       \
-               +HW_ST2_##x+HW_ST3_##x                                         \
-               +HW_ST4_##x+HW_ST5_##x+HW_ST6_##x+HW_ST7_##x),                 \
-                                                                              \
-HW_FLTS_NOT_ST0_##x  = (hw_reg_part)(HW_ST1_##x                          \
-               +HW_ST2_##x+HW_ST3_##x                                         \
-               +HW_ST4_##x+HW_ST5_##x+HW_ST6_##x+HW_ST7_##x),                 \
-                                                                              \
-HW_32_##x    = (hw_reg_part)(HW_EAXH_##x+HW_EBXH_##x                     \
-               +HW_ECXH_##x+HW_EDXH_##x+HW_ESIH_##x+HW_EDIH_##x),             \
-                                                                              \
-HW_DX_AX_##x   = (hw_reg_part)(HW_DX_##x+HW_AX_##x),                     \
-HW_CX_BX_##x   = (hw_reg_part)(HW_CX_##x+HW_BX_##x),                     \
-HW_CX_DI_##x   = (hw_reg_part)(HW_CX_##x+HW_DI_##x),                     \
-HW_BX_SI_##x   = (hw_reg_part)(HW_BX_##x+HW_SI_##x),                     \
-HW_BX_DI_##x   = (hw_reg_part)(HW_BX_##x+HW_DI_##x),                     \
-HW_BP_SI_##x   = (hw_reg_part)(HW_BP_##x+HW_SI_##x),                     \
-HW_BP_DI_##x   = (hw_reg_part)(HW_BP_##x+HW_DI_##x),                     \
-HW_DS_BX_##x   = (hw_reg_part)(HW_DS_##x+HW_BX_##x),                     \
-HW_DS_SI_##x   = (hw_reg_part)(HW_DS_##x+HW_SI_##x),                     \
-HW_DS_ESI_##x  = (hw_reg_part)(HW_DS_##x+HW_ESI_##x),                    \
-HW_DS_DI_##x   = (hw_reg_part)(HW_DS_##x+HW_DI_##x),                     \
-HW_SS_BX_##x   = (hw_reg_part)(HW_SS_##x+HW_BX_##x),                     \
-HW_SS_SI_##x   = (hw_reg_part)(HW_SS_##x+HW_SI_##x),                     \
-HW_SS_DI_##x   = (hw_reg_part)(HW_SS_##x+HW_DI_##x),                     \
-HW_ES_BX_##x   = (hw_reg_part)(HW_ES_##x+HW_BX_##x),                     \
-HW_ES_SI_##x   = (hw_reg_part)(HW_ES_##x+HW_SI_##x),                     \
-HW_ES_DI_##x   = (hw_reg_part)(HW_ES_##x+HW_DI_##x),                     \
-HW_ES_EDI_##x  = (hw_reg_part)(HW_ES_##x+HW_EDI_##x),                    \
-HW_ECX_ESI_##x = (hw_reg_part)(HW_ECX_##x+HW_ESI_##x),                   \
-HW_ECX_EDI_##x = (hw_reg_part)(HW_ECX_##x+HW_EDI_##x),                   \
-HW_CS_EDI_##x  = (hw_reg_part)(HW_CS_##x+HW_EDI_##x),                    \
-HW_FS_GS_##x   = (hw_reg_part)(HW_FS_##x+HW_GS_##x),                     \
-HW_DS_GS_##x   = (hw_reg_part)(HW_DS_##x+HW_GS_##x),                     \
-HW_ECX_EBX_##x = (hw_reg_part)(HW_ECX_##x+HW_EBX_##x),                   \
-HW_32_BP_SP_##x= (hw_reg_part)(HW_32_##x+HW_BP_##x+HW_SP_##x),           \
-HW_DS_ES_FS_GS_##x = (hw_reg_part)(HW_DS_##x+HW_ES_##x+                  \
-                                        HW_FS_##x+HW_GS_##x),                 \
-HW_DS_ES_SS_CS_##x = (hw_reg_part)(HW_DS_##x+HW_ES_##x+                  \
-                                        HW_SS_##x+HW_CS_##x),                 \
-HW_AL_BL_CL_DL_##x = (hw_reg_part)(HW_AL_##x+HW_BL_##x+                  \
-                                        HW_CL_##x+HW_DL_##x),                 \
-HW_AH_BH_CH_DH_##x = (hw_reg_part)(HW_AH_##x+HW_BH_##x+                  \
-                                        HW_CH_##x+HW_DH_##x),                 \
-HW_AX_BX_CX_DX_SI_DI_##x = (hw_reg_part)(HW_AX_##x+HW_BX_##x             \
-                       +HW_CX_##x+HW_DX_##x+HW_SI_##x+HW_DI_##x),   \
-                                                                              \
-HW__COMPOUND_END_##x                                                          \
+enum {                                                              \
+                                                                    \
+HW_AX_##x       = (HW_AL_##x+HW_AH_##x),                            \
+HW_BX_##x       = (HW_BL_##x+HW_BH_##x),                            \
+HW_CX_##x       = (HW_CL_##x+HW_CH_##x),                            \
+HW_DX_##x       = (HW_DL_##x+HW_DH_##x),                            \
+                                                                    \
+HW_EAX_##x      = (HW_EAXH_##x+HW_AX_##x),                          \
+HW_EBX_##x      = (HW_EBXH_##x+HW_BX_##x),                          \
+HW_ECX_##x      = (HW_ECXH_##x+HW_CX_##x),                          \
+HW_EDX_##x      = (HW_EDXH_##x+HW_DX_##x),                          \
+HW_ESI_##x      = (HW_ESIH_##x+HW_SI_##x),                          \
+HW_EDI_##x      = (HW_EDIH_##x+HW_DI_##x),                          \
+                                                                    \
+HW_ABCD_##x     = (HW_AX_##x+HW_BX_##x+HW_CX_##x+HW_DX_##x),        \
+                                                                    \
+HW_SDSB_##x     = (HW_SI_##x+HW_DI_##x+HW_SP_##x+HW_BP_##x),        \
+                                                                    \
+HW_SEGS_##x     = (HW_DS_##x+HW_ES_##x+HW_CS_##x+HW_SS_##x+HW_FS_##x+HW_GS_##x), \
+                                                                    \
+HW_IDX16_##x    = (HW_SI_##x+HW_DI_##x+HW_BX_##x),                  \
+                                                                    \
+HW_FLTS_##x     =                                                   \
+    (HW_ST0_##x+HW_ST1_##x+HW_ST2_##x+HW_ST3_##x+HW_ST4_##x+HW_ST5_##x+HW_ST6_##x+HW_ST7_##x), \
+HW_FLTS_NOT_ST0_##x =                                               \
+    (HW_ST1_##x+HW_ST2_##x+HW_ST3_##x+HW_ST4_##x+HW_ST5_##x+HW_ST6_##x+HW_ST7_##x), \
+HW_32_##x       =                                                   \
+    (HW_EAXH_##x+HW_EBXH_##x+HW_ECXH_##x+HW_EDXH_##x+HW_ESIH_##x+HW_EDIH_##x), \
+HW_DX_AX_##x    = (HW_DX_##x+HW_AX_##x),                            \
+HW_CX_BX_##x    = (HW_CX_##x+HW_BX_##x),                            \
+HW_CX_DI_##x    = (HW_CX_##x+HW_DI_##x),                            \
+HW_BX_SI_##x    = (HW_BX_##x+HW_SI_##x),                            \
+HW_BX_DI_##x    = (HW_BX_##x+HW_DI_##x),                            \
+HW_BP_SI_##x    = (HW_BP_##x+HW_SI_##x),                            \
+HW_BP_DI_##x    = (HW_BP_##x+HW_DI_##x),                            \
+HW_DS_BX_##x    = (HW_DS_##x+HW_BX_##x),                            \
+HW_DS_SI_##x    = (HW_DS_##x+HW_SI_##x),                            \
+HW_DS_ESI_##x   = (HW_DS_##x+HW_ESI_##x),                           \
+HW_DS_DI_##x    = (HW_DS_##x+HW_DI_##x),                            \
+HW_SS_BX_##x    = (HW_SS_##x+HW_BX_##x),                            \
+HW_SS_SI_##x    = (HW_SS_##x+HW_SI_##x),                            \
+HW_SS_DI_##x    = (HW_SS_##x+HW_DI_##x),                            \
+HW_ES_BX_##x    = (HW_ES_##x+HW_BX_##x),                            \
+HW_ES_SI_##x    = (HW_ES_##x+HW_SI_##x),                            \
+HW_ES_DI_##x    = (HW_ES_##x+HW_DI_##x),                            \
+HW_ES_EDI_##x   = (HW_ES_##x+HW_EDI_##x),                           \
+HW_ECX_ESI_##x  = (HW_ECX_##x+HW_ESI_##x),                          \
+HW_ECX_EDI_##x  = (HW_ECX_##x+HW_EDI_##x),                          \
+HW_CS_EDI_##x   = (HW_CS_##x+HW_EDI_##x),                           \
+HW_FS_GS_##x    = (HW_FS_##x+HW_GS_##x),                            \
+HW_DS_GS_##x    = (HW_DS_##x+HW_GS_##x),                            \
+HW_ECX_EBX_##x  = (HW_ECX_##x+HW_EBX_##x),                          \
+HW_32_BP_SP_##x = (HW_32_##x+HW_BP_##x+HW_SP_##x),                  \
+HW_DS_ES_FS_GS_##x = (HW_DS_##x+HW_ES_##x+HW_FS_##x+HW_GS_##x),     \
+HW_DS_ES_SS_CS_##x = (HW_DS_##x+HW_ES_##x+HW_SS_##x+HW_CS_##x),     \
+HW_AL_BL_CL_DL_##x = (HW_AL_##x+HW_BL_##x+HW_CL_##x+HW_DL_##x),     \
+HW_AH_BH_CH_DH_##x = (HW_AH_##x+HW_BH_##x+HW_CH_##x+HW_DH_##x),     \
+HW_AX_BX_CX_DX_SI_DI_##x =                                          \
+    (HW_AX_##x+HW_BX_##x+HW_CX_##x+HW_DX_##x+HW_SI_##x+HW_DI_##x),  \
+                                                                    \
+HW__COMPOUND_END_##x                                                \
 }
 
 HW_ITER( HW_DEFINE_COMPOUND );
