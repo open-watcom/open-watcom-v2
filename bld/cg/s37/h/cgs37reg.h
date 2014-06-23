@@ -69,28 +69,28 @@ HW_DEFINE_SIMPLE( HW_SEGS,   0x0000U, 0x0000U, 0x0000U, 0x0000U );
 #define HW_DEFINE_COMPOUND( x ) \
 enum {                                                             \
                                                                    \
-HW_D0_##x    = (hw_reg_part)(HW_Y0_##x+HW_Y0d_##x),           \
-HW_D2_##x    = (hw_reg_part)(HW_Y2_##x+HW_Y2d_##x),           \
-HW_D4_##x    = (hw_reg_part)(HW_Y4_##x+HW_Y4d_##x),           \
-HW_D6_##x    = (hw_reg_part)(HW_Y6_##x+HW_Y6d_##x),           \
+HW_D0_##x    = (HW_Y0_##x+HW_Y0d_##x),           \
+HW_D2_##x    = (HW_Y2_##x+HW_Y2d_##x),           \
+HW_D4_##x    = (HW_Y4_##x+HW_Y4d_##x),           \
+HW_D6_##x    = (HW_Y6_##x+HW_Y6d_##x),           \
                                                                    \
-HW_E0_##x    = (hw_reg_part)(HW_D0_##x+HW_D2_##x),            \
-HW_E4_##x    = (hw_reg_part)(HW_D4_##x+HW_D6_##x),            \
+HW_E0_##x    = (HW_D0_##x+HW_D2_##x),            \
+HW_E4_##x    = (HW_D4_##x+HW_D6_##x),            \
                                                                    \
-HW_FLTS_##x  = (hw_reg_part)(HW_E0_##x+HW_E4_##x),            \
+HW_FLTS_##x  = (HW_E0_##x+HW_E4_##x),            \
                                                                    \
-HW_EVEN_##x  = (hw_reg_part)(HW_G0_##x+HW_G2_##x+HW_G4_##x    \
+HW_EVEN_##x  = (HW_G0_##x+HW_G2_##x+HW_G4_##x    \
                                  +HW_G6_##x+HW_G8_##x+HW_G10_##x   \
                                  +HW_G12_##x+HW_G14_##x),          \
                                                                    \
-HW_ODD_##x   = (hw_reg_part)(HW_G1_##x+HW_G3_##x+HW_G5_##x    \
+HW_ODD_##x   = (HW_G1_##x+HW_G3_##x+HW_G5_##x    \
                                  +HW_G7_##x+HW_G9_##x+HW_G11_##x   \
                                  +HW_G13_##x+HW_G15_##x),          \
                                                                    \
-HW_SNGL_##x  = (hw_reg_part)(HW_Y0_##x+HW_Y2_##x+HW_Y4_##x    \
+HW_SNGL_##x  = (HW_Y0_##x+HW_Y2_##x+HW_Y4_##x    \
                                  +HW_Y6_##x),                      \
                                                                    \
-HW_G0_G1_G2_##x=(hw_reg_part)(HW_G0_##x+HW_G1_##x+HW_G2_##x),  \
+HW_G0_G1_G2_##x=(HW_G0_##x+HW_G1_##x+HW_G2_##x),  \
                                                                    \
 HW__COMPOUND_END_##x                                               \
 }
