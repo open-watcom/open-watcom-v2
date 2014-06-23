@@ -1480,7 +1480,7 @@ extern TYPE TypePointedAtReplace( TYPE, TYPE );
 extern bool TypeHasVirtualBases( TYPE );
 extern bool TypeCtorDispRequired( TYPE, TYPE );
 extern bool TypeHasSpecialFields( TYPE );
-extern bool TypeParmSize( TYPE, target_size_t * );
+extern bool TypeParmSize( TYPE, unsigned * );
 extern bool TypeBasesEqual( type_flag, void *, void * );
 
 extern SCOPE TypeScope( TYPE );

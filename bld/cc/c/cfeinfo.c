@@ -693,10 +693,10 @@ static CGPOINTER NextAlias( int index, aux_class request )
 /* Return the size of function parameters or -1 if size could
  * not be determined (symbol isn't a function or is variadic)
  */
-static int GetParmsSize( SYM_HANDLE sym_handle )
+static unsigned GetParmsSize( SYM_HANDLE sym_handle )
 {
-    int         total_parm_size = 0;
-    int         parm_size;
+    unsigned    total_parm_size = 0;
+    unsigned    parm_size;
     TYPEPTR     fn_typ;
     TYPEPTR     *parm;
     TYPEPTR     typ;
@@ -710,7 +710,7 @@ static int GetParmsSize( SYM_HANDLE sym_handle )
         if( parm != NULL ) {
             for( ; (typ = *parm) != NULL; ++parm ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
-                    total_parm_size = -1;
+                    total_parm_size = (unsigned)-1;
                     break;
                 }
 
@@ -723,7 +723,7 @@ static int GetParmsSize( SYM_HANDLE sym_handle )
             }
         }
     } else {
-        total_parm_size = -1;
+        total_parm_size = (unsigned)-1;
     }
     return( total_parm_size );
 }

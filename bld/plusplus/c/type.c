@@ -7167,11 +7167,11 @@ bool TypeHasSpecialFields( TYPE type )
     return( FALSE );
 }
 
-bool TypeParmSize( TYPE fn_type, target_size_t *parm_size )
-/*********************************************************/
+bool TypeParmSize( TYPE fn_type, unsigned *parm_size )
+/****************************************************/
 {
     unsigned i;
-    target_size_t size;
+    unsigned size;
     arg_list *args;
     TYPE *p;
 

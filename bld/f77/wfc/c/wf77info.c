@@ -1188,9 +1188,9 @@ static char *GetNamePattern( sym_id sym )
     return( aux->objname );
 }
 
-static int GetParmsSize( sym_id sym )
+static unsigned GetParmsSize( sym_id sym )
 {
-    int         args_size;
+    unsigned    args_size;
     pass_by     *arg;
     aux_info    *aux;
 

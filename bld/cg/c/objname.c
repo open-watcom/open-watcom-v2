@@ -153,8 +153,8 @@ static int copyBaseName( char fce, char *dst, int dst_len, char *src, int src_le
     }
 }
 
-char *xtoa( char *p, int x )
-/**************************/
+char *xtoa( char *p, unsigned x )
+/*******************************/
 {
     if( x > 10 ) {
         p = xtoa( p, x/10 );
@@ -165,7 +165,7 @@ char *xtoa( char *p, int x )
 }
 
 static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
-/****************************************************************/
+/*******************************************************************/
 {
     char                 *src;
     char                 *dst;
@@ -208,10 +208,10 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
     p = dst;
     for( src = sufix; *src != '\0'; ++src ) {
         if( *src == '#' ) {
-            int     size;
+            unsigned    size;
 
-            size = (int)(pointer_int)FEExtName( sym, EXTN_PRMSIZE );
-            if( !(size < 0) ) {
+            size = (unsigned)(pointer_int)FEExtName( sym, EXTN_PRMSIZE );
+            if( size != (unsigned)-1 ) {
                 *(p++) = '@';
                 p = xtoa( p, size );
             }

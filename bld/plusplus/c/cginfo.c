@@ -618,15 +618,15 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
     return( inf );
 }
 
-static target_size_t GetParmsSize( SYMBOL sym )
+static unsigned GetParmsSize( SYMBOL sym )
 {
-    TYPE fn_type;
-    target_size_t size;
+    TYPE        fn_type;
+    unsigned    size;
 
     size = 0;
     fn_type = FunctionDeclarationType( sym->sym_type );
     if( fn_type == NULL ) {
-        size = ~0U;
+        size = (unsigned)-1;
     } else {
         TypeParmSize( fn_type, &size );
     }
