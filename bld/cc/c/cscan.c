@@ -89,7 +89,6 @@ static unsigned char InitClassTable[] = {
     '\0',       0
 };
 
-static  void    UnGetChar( int c );
 static  TOKEN   ScanString( void );
 static  TOKEN   CharConst( int char_type );
 static  void    ScanComment( void );
@@ -105,7 +104,7 @@ char *ReScanPos( void )
     return( (char *)rescan_tmp_file.src_ptr );
 }
 
-static int ReScanBuffer( void )
+static int reScanGetNextChar( void )
 {
     CurrChar = *SrcFile->src_ptr++;
     if( CurrChar == '\0' ) {
@@ -114,9 +113,18 @@ static int ReScanBuffer( void )
     return( CurrChar );
 }
 
-int InReScanMode( void )
+static int reScanGetCharCheck( int c )
 {
-    return( NextChar == ReScanBuffer );
+    if( c == '\0' ) {
+        CompFlags.rescan_buffer_done = 1;
+    }
+    return( c );
+}
+
+static void reScanGetNextCharUndo( int c )
+{
+    --SrcFile->src_ptr;
+    CompFlags.rescan_buffer_done = 0;
 }
 
 static int SaveNextChar( void )
@@ -234,7 +242,7 @@ static TOKEN doScanName( void )
     c = CurrChar;
 //      we know that NextChar will be pointing to GetNextChar()
 //      so it is safe to inline the function here.
-//      NextChar could also be pointing to ReScanBuffer().
+//      NextChar could also be pointing to ReScanGetNextChar().
     p = &Buffer[TokenLen - 1];
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
@@ -1641,43 +1649,42 @@ TOKEN PPNextToken( void )                     // called from macro pre-processor
     return( CurToken );
 }
 
-int ReScanToken( void )
+bool ReScanToken( void )
 {
     FCB             *oldSrcFile;
     int             saved_currchar;
     int             (*saved_nextchar)( void );
+    void            (*saved_ungetchar)( int );
+    int             (*saved_getcharcheck)( int );
 
     saved_currchar = CurrChar;
     saved_nextchar = NextChar;
+    saved_ungetchar = UnGetChar;
+    saved_getcharcheck = GetCharCheck;
     oldSrcFile = SrcFile;
+
     SrcFile = &rescan_tmp_file;
+    NextChar = reScanGetNextChar;
+    UnGetChar = reScanGetNextCharUndo;
+    GetCharCheck = reScanGetCharCheck;
+    CurrChar = NextChar();
+
     CompFlags.rescan_buffer_done = 0;
-    NextChar = ReScanBuffer;
-    CurrChar = ReScanBuffer();
     CompFlags.doing_macro_expansion = 1;        // return macros as ID's
     CurToken = ScanToken();
     CompFlags.doing_macro_expansion = 0;
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
-        CurToken = T_LSTRING;                   /* 12-nov-92 */
+        CurToken = T_LSTRING;
     }
     --SrcFile->src_ptr;
+
     SrcFile = oldSrcFile;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
-    if( CompFlags.rescan_buffer_done == 0 ) {
-        return( 1 );
-    }
-    return( 0 );
-}
+    UnGetChar = saved_ungetchar;
+    GetCharCheck = saved_getcharcheck;
 
-static void UnGetChar( int c )
-{
-    if( NextChar == ReScanBuffer ) {            /* 29-feb-92 */
-        --SrcFile->src_ptr;
-        CompFlags.rescan_buffer_done = 0;
-    } else {
-        GetNextCharUndo( c );
-    }
+    return( !CompFlags.rescan_buffer_done );
 }
 
 void ScanInit( void )
@@ -1702,6 +1709,8 @@ void ScanInit( void )
     CompFlags.scanning_comment = 0;
     SizeOfCount = 0;
     NextChar = GetNextChar;
+    UnGetChar = GetNextCharUndo;
+    GetCharCheck = GetCharCheckFile;
 }
 
 // called by CollectParms() to gather tokens for macro parms

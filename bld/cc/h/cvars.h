@@ -372,6 +372,9 @@ typedef struct extref_info {
 global extref_info  *ExtrefInfo;
 
 global int          (*NextChar)( void );
+global void         (*UnGetChar)( int c );
+global int          (*GetCharCheck)( int );
+
 global struct debug_fwd_types *DebugNameList;
 
 global unsigned     Column;             /* skip to Column when reading */
@@ -589,9 +592,9 @@ extern void         AlignIt(TYPEPTR);
 
 /* cgetch */
 extern int          GetNextChar(void);
-extern int          GetCharCheck(int);
-extern int          getCharAfterBackSlash(void);
 extern void         GetNextCharUndo(int);
+extern int          GetCharCheckFile(int);
+extern int          getCharAfterBackSlash(void);
 extern void         CloseSrcFile(FCB *);
 
 // cinfo.c
@@ -745,8 +748,7 @@ extern int          ESCChar( int, const unsigned char **, bool * );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );
-extern int          InReScanMode( void );
-extern int          ReScanToken( void );
+extern bool         ReScanToken( void );
 extern char         *ReScanPos( void );
 extern TOKEN        KwLookup( const char *, size_t );
 extern TOKEN        IdLookup( const char *, size_t );

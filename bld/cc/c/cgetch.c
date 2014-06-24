@@ -103,8 +103,6 @@ static int ReadBuffer( FCB *srcfcb )
 }
 
 
-int GetCharCheck( int c );
-
 int GetNextChar( void )
 {
     int c;
@@ -284,18 +282,12 @@ static int tryTrigraphAgain( void )
     return( c );
 }
 
-int GetCharCheck( int c )
+int GetCharCheckFile( int c )
 {
     int xc;
     int nc;
     int nnc;
 
-    if( InReScanMode() ) {
-        if( c == '\0' ) {
-            CompFlags.rescan_buffer_done = 1;
-        }
-        return( c );
-    }
     // column has not being changed for 'c' yet
     if( c != '?' ) {
         switch( c ) {
