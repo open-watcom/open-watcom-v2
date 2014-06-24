@@ -54,11 +54,11 @@ static unsigned keyword_hash( const char *name, const unsigned char *weights, si
     hash += weights[c] * LAST_SCALE;
 #ifdef KEYWORD_HASH_MASK
     hash &= KEYWORD_HASH_MASK;
-#ifdef KEYWORD_HASH_EXTRA
+  #ifdef KEYWORD_HASH_EXTRA
     if( hash >= KEYWORD_HASH ) {
         hash -= KEYWORD_HASH;
     }
-#endif
+  #endif
 #else
     hash %= KEYWORD_HASH;
 #endif
