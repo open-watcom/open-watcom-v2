@@ -69,12 +69,16 @@ void EmitDataQuads( void )
     if( StartDataQuadAccess() != NULL ) {
         for(;;) {
             dq = NextDataQuad();
-            if( dq == NULL ) break;
+            if( dq == NULL )
+                break;
             for(;;) {
                 EmitDQuad( dq );
-                if( ! (dq->flags & Q_REPEATED_DATA) ) break; /* 06-apr-92 */
+                if( ! (dq->flags & Q_REPEATED_DATA) )
+                    break;
                 dq->u.long_values[1]--;
-                if( dq->u.long_values[1] == 0 ) break;
+                if( dq->u.long_values[1] == 0 ) {
+                    break;
+                }
             }
         }
     }
@@ -83,7 +87,7 @@ void EmitDataQuads( void )
 static void EmitDQuad( DATA_QUAD *dq )
 {
     cg_type             data_type;
-    int                 size_of_item;
+    unsigned            size_of_item;
     unsigned            amount;
     auto SYM_ENTRY      sym;
 
@@ -115,7 +119,7 @@ static void EmitDQuad( DATA_QUAD *dq )
     }
 #if _CPU == 8086
     if( size >= 0x10000 ) {
-        if( segment != SEG_CONST  &&  segment != SEG_DATA ) {
+        if( segment != SEG_CONST && segment != SEG_DATA ) {
             ++segment;
             BESetSeg( segment );
             size -= 0x10000;
@@ -222,7 +226,7 @@ static void EmitDQuad( DATA_QUAD *dq )
         break;
     case QDT_CONSTANT:
 #if _CPU == 8086
-        for( amount = dq->u.long_values[0]; amount != 0; ) {
+        for( amount = dq->u.ulong_values[0]; amount != 0; ) {
             if( amount + size >= 0x00010000 ) {
                 EmitZeros( 0x10000 - size );
                 amount -= ( 0x10000 - size );
@@ -238,7 +242,7 @@ static void EmitDQuad( DATA_QUAD *dq )
             }
         }
 #else
-        amount = dq->u.long_values[0];
+        amount = dq->u.ulong_values[0];
         EmitZeros( amount );
         size += amount;
 #endif

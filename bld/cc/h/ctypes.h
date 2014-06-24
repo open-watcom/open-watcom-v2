@@ -430,6 +430,7 @@ enum quad_type {
 typedef struct {
     union   {
         int         long_values[2];
+        unsigned    ulong_values[2];
         int64       long64;
         double      double_value;
         long_double long_double_value;
