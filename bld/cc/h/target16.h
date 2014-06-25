@@ -67,3 +67,5 @@ typedef unsigned short  target_uint;
 typedef int             target_long;
 typedef unsigned int    target_ulong;
 
+typedef int             target_ssize;
+typedef unsigned int    target_size;
