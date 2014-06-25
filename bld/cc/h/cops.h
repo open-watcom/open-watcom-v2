@@ -44,21 +44,21 @@ typedef enum condition_codes {
 } cond_code;
 
 typedef enum{
-        OPFLAG_NONE        = 0x00,         // nothing
-        OPFLAG_CONST       = 0x01,         // this node contains a const
-        OPFLAG_VOLATILE    = 0x02,         // this node contains a volatile
-        OPFLAG_RVALUE      = 0x04,         // push rvalue of .  -> and *
-        OPFLAG_LVALUE_CAST = 0x08,      // lvalue has been casted
-        // Intel machines can have different kinds of pointers
-        OPFLAG_NEARPTR     = 0x10,         // address is a near pointer
-        OPFLAG_FARPTR      = 0x20,         // address is a far pointer
-        OPFLAG_HUGEPTR     = 0x40,         // address is a huge pointer
-        OPFLAG_FAR16PTR    = 0x60,         // address is a far16 pointer
-        // RISC machines only have one kind of pointer,
-        // but can have pointers to unaligned data
-        OPFLAG_UNALIGNED   = 0x80,         // pointer points to unaligned data
-        OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR
-                  | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
+    OPFLAG_NONE        = 0x00,          // nothing
+    OPFLAG_CONST       = 0x01,          // this node contains a const
+    OPFLAG_VOLATILE    = 0x02,          // this node contains a volatile
+    OPFLAG_RVALUE      = 0x04,          // push rvalue of .  -> and *
+    OPFLAG_LVALUE_CAST = 0x08,          // lvalue has been casted
+    // Intel machines can have different kinds of pointers
+    OPFLAG_NEARPTR     = 0x10,          // address is a near pointer
+    OPFLAG_FARPTR      = 0x20,          // address is a far pointer
+    OPFLAG_HUGEPTR     = 0x40,          // address is a huge pointer
+    OPFLAG_FAR16PTR    = 0x60,          // address is a far16 pointer
+    // RISC machines only have one kind of pointer,
+    // but can have pointers to unaligned data
+    OPFLAG_UNALIGNED   = 0x80,          // pointer points to unaligned data
+    OPFLAG_MEM_MODEL =  OPFLAG_NEARPTR | OPFLAG_FARPTR
+              | OPFLAG_HUGEPTR | OPFLAG_FAR16PTR,
 }op_flags;
 #define Far16Pointer(flags)   ((flags & OPFLAG_FAR16PTR) == OPFLAG_FAR16PTR)
 
@@ -79,48 +79,48 @@ typedef enum    pointer_class{
 
 #define FAR16_PTRCLASS(cls)     ((cls == PTR_FAR16) || (cls == PTR_FUNC_FAR16))
 
-#define MAX_INLINE_DEPTH  3         // how deep to inline
+#define MAX_INLINE_DEPTH  3             // how deep to inline
 typedef enum{
     FUNC_NONE         = 0x00,
-    FUNC_OK_TO_INLINE = 0x01,       // can inline this node
-    FUNC_INUSE        = 0x02,       // inuse as inline or gen
-    FUNC_USES_SEH     = 0x04,       // uses structure exceptions
-    FUNC_USED         = 0x08,       // function should really be emitted
-    FUNC_MARKED       = 0x10,       // function marked for emit investigation
+    FUNC_OK_TO_INLINE = 0x01,           // can inline this node
+    FUNC_INUSE        = 0x02,           // inuse as inline or gen
+    FUNC_USES_SEH     = 0x04,           // uses structure exceptions
+    FUNC_USED         = 0x08,           // function should really be emitted
+    FUNC_MARKED       = 0x10,           // function marked for emit investigation
 }func_flags;
 
 typedef unsigned short  LABEL_INDEX;
 
 struct patch_entry {
-        TREEPTR owner;
-        int     value;
+    TREEPTR owner;
+    int     value;
 };
 
-typedef struct  case_entry {
-        struct  case_entry  *next_case;
-        int                 value;
-        LABEL_INDEX         label;
-        bool                gen_label;
+typedef struct case_entry {
+    struct case_entry   *next_case;
+    int                 value;
+    LABEL_INDEX         label;
+    bool                gen_label;
 } CASEDEFN, *CASEPTR;
 
 typedef struct  switch_entry {
-        struct  switch_entry *prev_switch;
-        LABEL_INDEX     default_label;
-        int             number_of_cases;
-        struct  case_entry *case_list;
-        unsigned        low_value;
-        unsigned        high_value;
-        LABEL_INDEX     last_case_label;
-        char            *case_format;           /* "%ld" or "%lu" */
+    struct switch_entry *prev_switch;
+    LABEL_INDEX         default_label;
+    int                 number_of_cases;
+    CASEPTR             case_list;
+    unsigned            low_value;
+    unsigned            high_value;
+    LABEL_INDEX         last_case_label;
+    char                *case_format;   /* "%ld" or "%lu" */
 } SWITCHDEFN, *SWITCHPTR;
 
 typedef struct  string_literal {
-        struct string_literal *next_string;
-        BACK_HANDLE     back_handle;    /* back handle for string */
-        unsigned short  length;         /* length of literal string   */
-        unsigned short  ref_count;      /* reference count */
-        char            flags;          /* 0 or FLAG_FAR */
-        char           *literal;        /* actual literal string */
+    struct string_literal *next_string;
+    BACK_HANDLE         back_handle;    /* back handle for string */
+    unsigned short      length;         /* length of literal string */
+    unsigned short      ref_count;      /* reference count */
+    char                flags;          /* 0 or FLAG_FAR */
+    char                *literal;       /* actual literal string */
 } STRING_LITERAL;
 
 // if we end up converting the string to binary to store in long_double
@@ -168,7 +168,7 @@ typedef struct  opnode {
         SWITCHPTR       switch_info;    // OPR_SWITCH
         CASEPTR         case_info;      // OPR_CASE
         struct func_info {              // OPR_FUNCEND, OPR_RETURN
-            SYM_HANDLE      sym_handle;// OPR_FUNCTION
+            SYM_HANDLE      sym_handle; // OPR_FUNCTION
             func_flags      flags;
         } func;
         struct { /* try_info */
@@ -178,7 +178,7 @@ typedef struct  opnode {
             } u;
             tryindex_t  parent_scope;
         } st;
-        struct { /* ptr_conv_info */        // OPR_CONVERT_PTR
+        struct { /* ptr_conv_info */    // OPR_CONVERT_PTR
             char        oldptr_class;
             char        newptr_class;
         } sp;
@@ -197,23 +197,23 @@ typedef struct expr_node {
     bool            checked;            // opnd values have been checked
 } EXPRNODE;
 
-extern  TREEPTR LeafNode(opr_code);
-extern  TREEPTR ExprNode(TREEPTR,opr_code,TREEPTR);
-extern  TREEPTR ErrorNode(TREEPTR);
-extern  void    FreeExprNode(TREEPTR);
-extern  void    FreeExprTree(TREEPTR);
-extern  void    InitExprTree(void);
-extern  void    NoOp(TREEPTR);
-extern  int     WalkExprTree( TREEPTR,
-                        void (*operand)(TREEPTR),
-                        void (*prefix_operator)(TREEPTR),
-                        void (*infix_operator)(TREEPTR),
-                        void (*postfix_operator)(TREEPTR) );
-extern void     CastFloatValue(TREEPTR,DATA_TYPE);
-extern void     CastConstValue(TREEPTR,DATA_TYPE);
-extern void     MakeBinaryFloat(TREEPTR);
-
 typedef struct  sym_lists {
     struct sym_lists    *next;
     SYM_HANDLE          sym_head;
 } SYM_LISTS;
+
+extern TREEPTR  LeafNode(opr_code);
+extern TREEPTR  ExprNode(TREEPTR,opr_code,TREEPTR);
+extern TREEPTR  ErrorNode(TREEPTR);
+extern void     FreeExprNode(TREEPTR);
+extern void     FreeExprTree(TREEPTR);
+extern void     InitExprTree(void);
+extern void     NoOp(TREEPTR);
+extern int      WalkExprTree( TREEPTR,
+                    void (*operand)(TREEPTR),
+                    void (*prefix_operator)(TREEPTR),
+                    void (*infix_operator)(TREEPTR),
+                    void (*postfix_operator)(TREEPTR) );
+extern void     CastFloatValue(TREEPTR,DATA_TYPE);
+extern void     CastConstValue(TREEPTR,DATA_TYPE);
+extern void     MakeBinaryFloat(TREEPTR);
