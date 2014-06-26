@@ -162,7 +162,7 @@ void InitGlobalVars( void )
 
 
     /* The following 3 arrays are also used by CGEN for saving _try block info */
-    Level                   = 0;
+    ExprLevel               = 0;
 
     SegListHead             = NULL;
     SegImport               = 0;    /* next segment # for import sym */

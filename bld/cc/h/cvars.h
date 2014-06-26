@@ -235,7 +235,7 @@ global jmp_buf      *Environment;       /* var for Suicide() */
 global TREEPTR      ValueStack[MAX_LEVEL];
 global char         Token[MAX_LEVEL];
 global token_class  Class[MAX_LEVEL];
-global int          Level;
+global int          ExprLevel;
 
 global segment_list *SegListHead;
 global segment_id   SegImport;          /* next segment # for import sym */

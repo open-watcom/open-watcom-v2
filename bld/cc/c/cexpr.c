@@ -75,7 +75,7 @@ static  call_list   **FirstCallLnk;
 
 void ExprInit( void )
 {
-    Level = 0;
+    ExprLevel = 0;
     NestedParms = NULL;
     CallNodeList = NULL;
     LastCallLnk = &CallNodeList;
@@ -367,7 +367,6 @@ TREEPTR SymLeaf( void )
             SymGet( &sym, sym_handle );
             if( ep != NULL && ep->parent->level > sym.level )
                 return( EnumLeaf( ep ) );
-            /* 12-dec-88 */
             if( sym.attribs.stg_class == SC_EXTERN  &&  sym.level > 0 ) {
                 sym0_handle = Sym0Look( hash, SavedId );
                 if( sym0_handle != 0 ) {
@@ -446,7 +445,7 @@ local void IncSymWeight( SYMPTR sym )
             if( LoopDepth > 3 ) {
                 sym->u.var.offset = ~0u >> 1;
             } else {
-                sym->u.var.offset += LoopWeights[ LoopDepth ];
+                sym->u.var.offset += LoopWeights[LoopDepth];
             }
         }
     }
@@ -1096,9 +1095,9 @@ bool ConstExprAndType( const_val *val )
     bool        ret;
 
     save = FirstCallLnk;
-    ++Level;                    /* allow for nested expressions */
+    ++ExprLevel;                    /* allow for nested expressions */
     tree = SingleExpr();
-    --Level;                    /* put Level back */
+    --ExprLevel;                    /* put Level back */
     FirstCallLnk = save;
     val->type = TYPE_INT;
     switch( tree->op.opr ) {
@@ -1152,14 +1151,14 @@ int ConstExpr( void )
 
 TREEPTR Expr( void )
 {
-    Class[ Level ] = TC_START;
+    Class[ExprLevel] = TC_START;
     return( GetExpr() );
 }
 
 
 TREEPTR CommaExpr( void )
 {
-    Class[ Level ] = TC_START1;
+    Class[ExprLevel] = TC_START1;
     return( GetExpr() );
 }
 
@@ -1174,7 +1173,7 @@ TREEPTR SingleExpr( void )
 {
     TREEPTR     tree;
 
-    Class[ Level ] = TC_START2;
+    Class[ExprLevel] = TC_START2;
     tree = GetExpr();
     FoldExprTree( tree );
     return( tree );
@@ -1195,13 +1194,13 @@ local TREEPTR GetExpr( void )
     for( ;; ) {
         if( tree == 0 )
             tree = ExprOpnd();
-        curclass = TokenClass[ CurToken ];
-        while( curclass <= Class[ Level ] ) {
-            op1 = ValueStack[ Level ];
+        curclass = TokenClass[CurToken];
+        while( curclass <= Class[ExprLevel] ) {
+            op1 = ValueStack[ExprLevel];
 
             /* the following cases are listed from lowest to highest
                priority */
-            switch( Class[ Level ] ) {
+            switch( Class[ExprLevel] ) {
             case TC_START:
             case TC_START1:
             case TC_START2:
@@ -1209,7 +1208,7 @@ local TREEPTR GetExpr( void )
                 return( tree );
             case TC_LEFT_PAREN:         /* bracketed expression */
                 MustRecog( T_RIGHT_PAREN );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[CurToken];
                 break;
             case TC_COMMA:
                 if( op1->op.opr == OPR_ERROR ) {
@@ -1231,7 +1230,7 @@ local TREEPTR GetExpr( void )
                 break;
             case TC_ASSIGNMENT:  /*  = += -= *= /= %= >>= <<= &= ^= |=  */
                 ChkConst( op1 );
-                tree = AsgnOp( op1, Token[ Level ], tree );
+                tree = AsgnOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 0;
                 CompFlags.useful_side_effect = 1;
                 break;
@@ -1239,13 +1238,13 @@ local TREEPTR GetExpr( void )
                 MustRecog( T_COLON );
                 break;
             case TC_TERNARY_DONE:
-                CompFlags.meaningless_stmt &= Token[ Level ];/*13-mar-93*/
-                --Level;
-                tree = TernOp( ValueStack[ Level ], op1, tree );
+                CompFlags.meaningless_stmt &= Token[ExprLevel];
+                --ExprLevel;
+                tree = TernOp( ValueStack[ExprLevel], op1, tree );
                 CompFlags.pending_dead_code = 0;
                 break;
             case TC_OR_OR:
-                if( Token[ Level ] == 0 ) {
+                if( Token[ExprLevel] == 0 ) {
                     BoolExpr( tree );   /* checks type of op2 */
                     --SizeOfCount;
                     tree = op1;
@@ -1256,7 +1255,7 @@ local TREEPTR GetExpr( void )
                 CompFlags.pending_dead_code = 0;
                 break;
             case TC_AND_AND:
-                if( Token[ Level ] == 0 ) {
+                if( Token[ExprLevel] == 0 ) {
                     BoolExpr( tree );   /* checks type of op2 */
                     --SizeOfCount;
                     tree = op1;
@@ -1269,28 +1268,28 @@ local TREEPTR GetExpr( void )
             case TC_OR:
             case TC_XOR:
             case TC_AND:
-                tree = IntOp( op1, Token[ Level ], tree );
+                tree = IntOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_EQ_NE:
             case TC_REL_OP:
-                tree = RelOp( op1, Token[ Level ], tree );
+                tree = RelOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_SHIFT_OP:
-                tree = ShiftOp( op1, Token[ Level ], tree );
+                tree = ShiftOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_ADD_OP:
-                tree = AddOp( op1, Token[ Level ], tree );
+                tree = AddOp( op1, Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_MUL_OP:
-                tree = BinOp( RValue(op1), Token[ Level ], tree );
+                tree = BinOp( RValue(op1), Token[ExprLevel], tree );
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_PREINC:
-                tree = IncDec( tree, Token[ Level ] );
+                tree = IncDec( tree, Token[ExprLevel] );
                 break;
             case TC_ADDR:
                 tree = AddrOp( tree );
@@ -1333,7 +1332,7 @@ local TREEPTR GetExpr( void )
                 break;
             case TC_INDEX:
                 tree = IndexOp( op1, tree );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[CurToken];
                 CompFlags.meaningless_stmt = 1;
                 break;
             case TC_SEG_OP:                             /* 23-oct-91 */
@@ -1347,11 +1346,11 @@ local TREEPTR GetExpr( void )
                 TREEPTR     functree;
 
                 // find the corresponding function symbol
-                n = Level;
-                while( Token[ n ] != T_LEFT_PAREN ) {
+                n = ExprLevel;
+                while( Token[n] != T_LEFT_PAREN ) {
                     --n;
                 }
-                functree = ValueStack[ n ];
+                functree = ValueStack[n];
                 sym = SymGetPtr( functree->op.u2.sym_handle );
                 if( !(sym->flags & SYM_TEMP) )
                     SetDiagSymbol( sym, functree->op.u2.sym_handle );
@@ -1367,13 +1366,13 @@ local TREEPTR GetExpr( void )
                 if( !(sym->flags & SYM_TEMP) )
                     SetDiagPop();
                 PopNestedParms( &plist );
-                curclass = TokenClass[ CurToken ];
+                curclass = TokenClass[CurToken];
                 CompFlags.meaningless_stmt = 0;
                 CompFlags.useful_side_effect = 1;
                 }
                 break;
             }
-            --Level;
+            --ExprLevel;
         }
         switch( curclass ) {
         case TC_RIGHT_PAREN:                    /* 27-feb-94 */
@@ -1414,7 +1413,7 @@ local TREEPTR GetExpr( void )
             curclass = TC_INDEX;
             break;
         case TC_COMMA:
-            if( Class[ Level ] != TC_PARM_LIST ) {
+            if( Class[ExprLevel] != TC_PARM_LIST ) {
                 if( CompFlags.meaningless_stmt == 1 ) {
                     if( CompFlags.useful_side_effect ) {
                         CWarn1( WARN_USEFUL_SIDE_EFFECT, ERR_USEFUL_SIDE_EFFECT );
@@ -1447,15 +1446,15 @@ local TREEPTR GetExpr( void )
             NextToken();
             continue;
         }
-        if( Level >= (MAX_LEVEL - 1) ) {
+        if( ExprLevel >= (MAX_LEVEL - 1) ) {
             CErr1( ERR_EXPR_TOO_COMPLICATED );
             CSuicide();
         }
         if( tree != 0 ) {
-            ++Level;
-            ValueStack[ Level ] = tree;
-            Class[ Level ] = curclass;
-            Token[ Level ] = CurToken;
+            ++ExprLevel;
+            ValueStack[ExprLevel] = tree;
+            Class[ExprLevel] = curclass;
+            Token[ExprLevel] = CurToken;
             tree = 0;               /* indicate need opnd */
         }
         NextToken();
@@ -1470,41 +1469,41 @@ local TREEPTR ExprOpnd( void )
 
     CompFlags.meaningless_stmt = 1;
     for( ;; ) {
-        ++Level;
+        ++ExprLevel;
         switch( CurToken ) {
         case T_PLUS_PLUS:
         case T_MINUS_MINUS:
-            Token[ Level ] = CurToken - 1;
-            Class[ Level ] = TC_PREINC;
+            Token[ExprLevel] = CurToken - 1;
+            Class[ExprLevel] = TC_PREINC;
             NextToken();
             continue;
         case T_AND:
-            Class[ Level ] = TC_ADDR;
+            Class[ExprLevel] = TC_ADDR;
             NextToken();
             continue;
         case T_EXCLAMATION:
-            Class[ Level ] = TC_EXCLAMATION;
+            Class[ExprLevel] = TC_EXCLAMATION;
             NextToken();
             continue;
         case T_PLUS:
-            Class[ Level ] = TC_PLUS;
+            Class[ExprLevel] = TC_PLUS;
             NextToken();
             continue;
         case T_MINUS:
-            Class[ Level ] = TC_MINUS;
+            Class[ExprLevel] = TC_MINUS;
             NextToken();
             continue;
         case T_TILDE:
-            Class[ Level ] = TC_TILDE;
+            Class[ExprLevel] = TC_TILDE;
             NextToken();
             continue;
         case T_SIZEOF:
             if( CompFlags.pre_processing ) {
                 CErr1( ERR_NO_SIZEOF_DURING_PP );
             }
-            Class[ Level ] = TC_SIZEOF;
+            Class[ExprLevel] = TC_SIZEOF;
             NextToken();
-            Token[ Level ] = CurToken;
+            Token[ExprLevel] = CurToken;
             if( CurToken == T_LEFT_PAREN ) {
                 NextToken();
                 typ = TypeName();
@@ -1513,8 +1512,8 @@ local TREEPTR ExprOpnd( void )
                     MustRecog( T_RIGHT_PAREN );
                     break;
                 }
-                ++Level;
-                Class[ Level ] = TC_LEFT_PAREN;
+                ++ExprLevel;
+                Class[ExprLevel] = TC_LEFT_PAREN;
             }
             ++SizeOfCount;
             continue;
@@ -1546,7 +1545,7 @@ local TREEPTR ExprOpnd( void )
             }
             break;
         case T_TIMES:
-            Class[ Level ] = TC_INDIRECTION;
+            Class[ExprLevel] = TC_INDIRECTION;
             NextToken();
             continue;
         case T_LEFT_PAREN:
@@ -1557,12 +1556,12 @@ local TREEPTR ExprOpnd( void )
                     CErr1( ERR_NO_CAST_DURING_PP );
                 }
                 MustRecog( T_RIGHT_PAREN );
-                Class[ Level ] = TC_CAST;
+                Class[ExprLevel] = TC_CAST;
                 tree = LeafNode( OPR_CAST );
                 tree->u.expr_type = typ;
-                ValueStack[ Level ] = tree;
+                ValueStack[ExprLevel] = tree;
             } else {
-                Class[ Level ] = TC_LEFT_PAREN;
+                Class[ExprLevel] = TC_LEFT_PAREN;
             }
             continue;
         case T_ID:
@@ -1621,7 +1620,7 @@ local TREEPTR ExprOpnd( void )
         }
         break;
     }
-    --Level;
+    --ExprLevel;
     return( tree );
 }
 
@@ -1855,8 +1854,8 @@ static int ParmNum( void )
     int     parm_count, n;
 
     parm_count = 1;
-    n = Level;
-    while( Token[ n ] != T_LEFT_PAREN ) {
+    n = ExprLevel;
+    while( Token[n] != T_LEFT_PAREN ) {
         --n;
         ++parm_count;
     }
@@ -1970,16 +1969,16 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
     TREEPTR     tree;
 
     tree = NULL;
-    if( Level >= 2 &&
-        Token[Level] != T_LEFT_PAREN &&
-        Token[Level-1] != T_LEFT_PAREN &&
-        Token[Level-2] == T_LEFT_PAREN ) {
+    if( ExprLevel >= 2 &&
+        Token[ExprLevel] != T_LEFT_PAREN &&
+        Token[ExprLevel-1] != T_LEFT_PAREN &&
+        Token[ExprLevel-2] == T_LEFT_PAREN ) {
         offset = 0;
         if( last_parm->op.opr == OPR_PUSHINT &&
             last_parm->op.u2.long_value == 0 ) {           // varargs.h
             offset = -REG_SIZE;
         }
-        parmsym = ValueStack[Level];            // get name of parameter
+        parmsym = ValueStack[ExprLevel];            // get name of parameter
         parms_list = 0;
         if( parmsym->op.opr == OPR_PUSHSYM ) {
             parms_list = CurFunc->u.func.parms;
@@ -1998,13 +1997,13 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
                         SymName( sym, parmsym->op.u2.sym_handle ) );
         }
         FreeExprNode( parmsym );
-        tree = ValueStack[ Level - 1 ];
+        tree = ValueStack[ExprLevel - 1];
         if( tree->op.opr == OPR_PUSHSYM ) {
             tree->op.opr = OPR_PUSHADDR;        // want address of va_list
         }
         tree->op.flags &= ~OPFLAG_RVALUE;
         tree = ExprNode( tree, OPR_VASTART, IntLeaf(offset) );
-        Level -= 2;
+        ExprLevel -= 2;
     } else {
         // error
     }
@@ -2016,7 +2015,7 @@ local TREEPTR GenAllocaNode( TREEPTR size_parm )
     // there should be 1 parm __builtin_alloca( size )
     TREEPTR     tree;
 
-    if( Token[Level] == T_LEFT_PAREN ) {
+    if( Token[ExprLevel] == T_LEFT_PAREN ) {
         tree = ExprNode( 0, OPR_ALLOCA, size_parm );
         tree->u.expr_type = PtrNode( GetType( TYPE_VOID ), FLAG_NONE, SEG_STACK );
     } else {
@@ -2038,22 +2037,22 @@ local TREEPTR GenVaArgNode( TREEPTR last_parm )
     TREEPTR     tree;
 
     tree = NULL;
-    if( Level >= 2 &&
-        Token[Level] != T_LEFT_PAREN &&
-        Token[Level-1] != T_LEFT_PAREN &&
-        Token[Level-2] == T_LEFT_PAREN ) {
+    if( ExprLevel >= 2 &&
+        Token[ExprLevel] != T_LEFT_PAREN &&
+        Token[ExprLevel-1] != T_LEFT_PAREN &&
+        Token[ExprLevel-2] == T_LEFT_PAREN ) {
         if( last_parm->op.opr == OPR_PUSHINT &&
             last_parm->op.u2.long_value == 0 ) {           // varargs.h
         }
-        parmsym = ValueStack[Level];            // get name of parameter
+        parmsym = ValueStack[ExprLevel];            // get name of parameter
         FreeExprNode( parmsym );
-        tree = ValueStack[ Level - 1 ];
+        tree = ValueStack[ExprLevel - 1];
         if( tree->op.opr == OPR_PUSHSYM ) {
             tree->op.opr = OPR_PUSHADDR;        // want address of va_list
         }
         tree->op.flags &= ~OPFLAG_RVALUE;
         tree = ExprNode( tree, OPR_VASTART, IntLeaf( 0) );
-        Level -= 2;
+        ExprLevel -= 2;
     } else {
         // error
     }
@@ -2080,12 +2079,12 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
 
     flags = 0;
     parm_count = 1;
-    n = Level;
-    while( Token[ n ] != T_LEFT_PAREN ) {
+    n = ExprLevel;
+    while( Token[n] != T_LEFT_PAREN ) {
         --n;
         ++parm_count;
     }
-    functree = ValueStack[ n ];
+    functree = ValueStack[n];
     typ = TypeOf( functree );
     if( typ->decl_type == TYPE_FUNCTION ) {
         SymGet( &sym, functree->op.u2.sym_handle );
@@ -2115,21 +2114,21 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     func_result = typ;
     if( ParmsToBeReversed( flags, NULL ) ) {
         i = n;
-        if( i == Level ) {
+        if( i == ExprLevel ) {
             tree = ParmNode( NULL, last_parm, far16_func );
         } else {
             ++i;
             tree = ParmNode( NULL, ValueStack[i], far16_func );
         }
         tree->op.u2.result_type = typ;
-        while( i != Level ) {
+        while( i != ExprLevel ) {
             ++i;
             tree = ParmNode( tree, ValueStack[i], far16_func );
         }
-        if( n != Level ) {
+        if( n != ExprLevel ) {
             tree = ParmNode( tree, last_parm, far16_func );     // this is 1'st parm
         }
-        Level = n;
+        ExprLevel = n;
     } else {
         optimized = 0;
         if( last_parm->op.opr == OPR_PUSHSTRING ) {
@@ -2164,8 +2163,8 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                             if( parm_count == 1 ) {
                                 tree = ExprNode( 0, OPR_MATHFUNC, last_parm );
                             } else {  /* parm_count == 2 */
-                                tree = ValueStack[ Level ]; /* op1 */
-                                --Level;
+                                tree = ValueStack[ExprLevel]; /* op1 */
+                                --ExprLevel;
                                 tree = ExprNode( tree, OPR_MATHFUNC2, last_parm );
                             }
                             tree->u.expr_type = GetType( TYPE_DOUBLE );
@@ -2198,9 +2197,9 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
             tree = ParmNode( NULL, IntLeaf( string_len ), far16_func );
             tree = ParmNode( tree, last_parm, far16_func );
         }
-        while( Token[ Level ] != T_LEFT_PAREN ) {
-            tree = ParmNode( tree, ValueStack[ Level ], far16_func );
-            --Level;
+        while( Token[ExprLevel] != T_LEFT_PAREN ) {
+            tree = ParmNode( tree, ValueStack[ExprLevel], far16_func );
+            --ExprLevel;
         }
     }
     tree = CallNode( functree, tree, func_result );
@@ -2322,10 +2321,10 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         NestedParms = npl;
 
         *plistptr = parms;
-        ++Level;
-        ValueStack[ Level ] = tree;
-        Class[ Level ] = TC_PARM_LIST;
-        Token[ Level ] = T_LEFT_PAREN;
+        ++ExprLevel;
+        ValueStack[ExprLevel] = tree;
+        Class[ExprLevel] = TC_PARM_LIST;
+        Token[ExprLevel] = T_LEFT_PAREN;
         tree = NULL;               /* indicate need operand for parm */
     } else { // foo() build call
 #ifdef __SEH__
@@ -2511,7 +2510,7 @@ local TREEPTR StartTernary( TREEPTR tree )
 
 local TREEPTR ColonOp( TREEPTR true_part )
 {
-    if( Class[ Level ] != TC_TERNARY ) {
+    if( Class[ExprLevel] != TC_TERNARY ) {
         CErr1( ERR_MISSING_QUESTION_OR_MISPLACED_COLON );
         true_part = ErrorNode( NULL );
     }
