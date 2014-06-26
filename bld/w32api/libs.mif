@@ -17,6 +17,7 @@ libs =                       &
         adsiid.lib           &
         advapi32.lib         &
         bcrypt.lib           &
+        cabinet.lib          &
         comctl32.lib         &
         comdlg32.lib         &
         credui.lib           &

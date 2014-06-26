@@ -1,0 +1,26 @@
+LIBRARY CABINET.DLL
+EXPORTS
+Extract@8
+DeleteExtractedFiles@4
+FCIAddFile@32
+FCICreate@52
+FCIDestroy@4
+FCIFlushCabinet@16
+FCIFlushFolder@12
+FDICopy@28
+FDICreate@36
+FDIDestroy@4
+FDIIsCabinet@12
+FDITruncateCabinet@12
+CreateCompressor@12
+SetCompressorInformation@16
+QueryCompressorInformation@16
+Compress@24
+ResetCompressor@4
+CloseCompressor@4
+CreateDecompressor@12
+SetDecompressorInformation@16
+QueryDecompressorInformation@16
+Decompress@24
+ResetDecompressor@4
+CloseDecompressor@4
