@@ -1,0 +1,122 @@
+/*
+ *  fdi.h       File Decompression Interface
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __FDI_INCLUDED__
+#define __FDI_INCLUDED__
+
+:include readonly.sp
+
+#include <windows.h>
+
+:include cpluspro.sp
+
+#ifndef FAR
+#define FAR
+#endif
+
+typedef enum {
+    FDIERROR_NONE,
+    FDIERROR_CABINET_NOT_FOUND,
+    FDIERROR_NOT_A_CABINET,
+    FDIERROR_UNKNOWN_CABINET_VERSION,
+    FDIERROR_CORRUPT_CABINET,
+    FDIERROR_ALLOC_FAIL,
+    FDIERROR_BAD_COMPR_TYPE,
+    FDIERROR_MDI_FAIL,
+    FDIERROR_TARGET_FILE,
+    FDIERROR_RESERVE_MISMATCH,
+    FDIERROR_WRONG_CABINET,
+    FDIERROR_USER_ABORT
+} FDIERROR;
+
+typedef void *HFDI;
+
+typedef struct {
+    long cbCabinet;
+    USHORT cFolders;
+    USHORT cFiles;
+    USHORT setID;
+    USHORT iCabinet;
+    BOOL fReserve;
+    BOOL hasprev;
+    BOOL hasnext;
+} FDICABINETINFO, FAR *PFDICABINETINFO;
+
+typedef struct {
+    LONG cb;
+    char FAR *psz1;
+    char FAR *psz2;
+    char FAR *psz3;
+    void FAR *pv;
+    INT_PTR hf;
+    USHORT date;
+    USHORT time;
+    USHORT attribs;
+    USHORT setID;
+    USHORT iCabinet;
+    USHORT iFolder;
+    FDIERROR fdie;
+} FDINOTIFICATION, *PFDINOTIFICATION;
+
+/* This struct is defined in both fci.h and
+ * fdi.h, so we need to be careful
+ */
+#ifndef __FCI_FDI_ERF
+typedef struct {
+    int  erfOper;
+    int  erfType;
+    BOOL fError;
+} ERF FAR *PERF;
+#define __FCI_FDI_ERF
+#endif 
+
+typedef void *(DIAMONDAPI *PFNALLOC)( ULONG );
+#define FNALLOC(fn) void *DIAMONDAPI fn( ULONG )
+
+typedef void (DIAMONDAPI *PFNFREE)( void * );
+#define FNFREE(fn) void DIAMONDAPI fn( void * )
+
+typedef INT_PTR (DIAMONDAPI *PFNOPEN) ( char *, int, int );
+typedef UINT    (DIAMONDAPI *PFNREAD) ( INT_PTR , void *, UINT );
+typedef UINT    (DIAMONDAPI *PFNWRITE)( INT_PTR, void *, UINT );
+typedef int     (DIAMONDAPI *PFNCLOSE)( INT_PTR );
+typedef long    (DIAMONDAPI *PFNSEEK) ( INT_PTR, long, int );
+
+#define FNOPEN(fn)  INT_PTR DIAMONDAPI fn( char *, int ,int )
+#define FNREAD(fn)  UINT    DIAMONDAPI fn( INT_PTR, void *, UINT )
+#define FNWRITE(fn) UINT    DIAMONDAPI fn( INT_PTR, void *, UINT )
+#define FNCLOSE(fn) int     DIAMONDAPI fn( INT_PTR )
+#define FNSEEK(fn)  long    DIAMONDAPI fn( INT_PTR, long, int )
+
+typedef enum {
+    fdintCABINET_INFO,
+    fdintPARTIAL_FILE,
+    fdintCOPY_FILE,
+    fdintCLOSE_FILE_INFO,
+    fdintNEXT_CABINET,
+    fdintENUMERATE
+} FDINOTIFICATIONTYPE;
+
+typedef INT_PTR (DIAMONDAPI *PFNFDINOTIFY)( FDINOTIFICATIONTYPE, PFDINOTIFICATION );
+#define FNFDINOTIFY(fn) INT_PTR DIAMONDAPI fn( FDINOTIFICATIONTYPE, PFDINOTIFICATION )
+
+typedef int (DIAMONDAPI *PFNFDIDECRYPT)( PFDIDECRYPT );
+#define FNFDIDECRYPT(fn) int DIAMONDAPI fn( PFDIDECRYPT )
+  
+#define cpuUNKNOWN (-1)
+#define cpu80286 (0)
+#define cpu80386 (1)
+
+LWSTDAPI_( BOOL ) DIAMONDAPI FDICopy( HFDI, char *, char *, int, PFNFDINOTIFY, PFNFDIDECRYPT, void * );
+LWSTDAPI_( HFDI ) DIAMONDAPI FDICreate( PFNALLOC, PFNFREE, PFNOPEN, PFNREAD, PFNWRITE, PFNCLOSE, PFNSEEK, int, PERF );
+LWSTDAPI_( BOOL ) DIAMONDAPI FDIDestroy( HFDI );
+LWSTDAPI_( BOOL ) DIAMONDAPI FDIIsCabinet( HFDI, INT_PTR, PFDICABINETINFO );
+LWSTDAPI_( BOOL ) DIAMONDAPI FDITruncateCabinet( HFDI, char *, USHORT );
+
+
+:include cplusepi.sp
+
+#endif /* __FDI_INCLUDED__ */
