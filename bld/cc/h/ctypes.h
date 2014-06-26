@@ -54,10 +54,15 @@ typedef SYM_HANDLE      sym_handle;
 
 typedef unsigned char   id_hash_idx;
 typedef unsigned short  mac_hash_idx;
+typedef unsigned short  str_hash_idx;
+typedef unsigned char   parm_hash_idx;
 
-typedef id_hash_idx     enum_hash_idx;
-typedef id_hash_idx     tag_hash_idx;
-typedef id_hash_idx     field_hash_idx;
+typedef signed int      id_level_stype;
+typedef unsigned char   id_level_type;
+typedef int             field_level_stype;
+typedef int             expr_level_type;
+
+typedef unsigned char   bitfield_width;
 
 /* CONST, VOLATILE can appear in typ->u.p.decl_flags and leaf->leaf_flags.
 *  NEAR, FAR, HUGE can appear in typ->u.p.decl_flags, leaf->leaf_flags,
@@ -360,7 +365,7 @@ typedef struct field_entry {
     unsigned            offset;
     type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
     int                 level;
-    field_hash_idx      hash;
+    id_hash_idx         hash;
     struct field_entry  *next_field_same_hash; /* also used by PCH for length */
     char                name[1];
 } FIELD_ENTRY, *FIELDPTR;
@@ -370,7 +375,7 @@ typedef struct enum_entry {
     struct enum_entry   *thread;        /* list belonging to same enum */
     XREFPTR             xref;
     struct tag_entry    *parent;        /* also used by pre-compiled header */
-    enum_hash_idx       hash;
+    id_hash_idx         hash;
     uint64              value;
     source_loc          src_loc;
     char                name[1];
@@ -387,11 +392,11 @@ typedef struct tag_entry {
     unsigned            size;           /* size of STRUCT, UNION or ENUM */
     int                 refno;          /* also used by pre-compiled header */
 #if defined( _M_IX86 ) || defined( _M_X64 )
-    tag_hash_idx        hash;           /* hash value for tag */
+    id_hash_idx         hash;           /* hash value for tag */
     unsigned char       level;
     unsigned char       alignment;      /* alignment required */
 #else
-    tag_hash_idx        hash;
+    id_hash_idx         hash;
     int                 level;
     unsigned            alignment;
 #endif

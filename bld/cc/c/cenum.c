@@ -37,9 +37,9 @@
 
 void EnumInit( void )
 {
-    enum_hash_idx   h;
+    id_hash_idx   h;
 
-    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+    for( h = 0; h < ID_HASH_SIZE; h++ ) {
         EnumTable[h] = NULL;
     }
     EnumRecSize = 0;
@@ -304,7 +304,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
 }
 
 
-ENUMPTR EnumLookup( enum_hash_idx h, const char *name )
+ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 {
     ENUMPTR     esym;
 
@@ -320,9 +320,9 @@ ENUMPTR EnumLookup( enum_hash_idx h, const char *name )
 void FreeEnums( void )
 {
     ENUMPTR         esym;
-    enum_hash_idx   h;
+    id_hash_idx   h;
 
-    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+    for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( ; (esym = EnumTable[h]) != NULL; ) {
             if( esym->parent->level != SymLevel )
                 break;
@@ -336,10 +336,10 @@ void FreeEnums( void )
 void DumpEnumTable( void )
 {
     ENUMPTR         esym;
-    enum_hash_idx   h;
+    id_hash_idx     h;
 
     puts( "ENUM TABLE DUMP" );
-    for( h = 0; h < ENUM_HASH_SIZE; h++ ) {
+    for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
             if( esym->parent->level == SymLevel ) {
                 printf( "%s = %d\n", esym->name, esym->value );

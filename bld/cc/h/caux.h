@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern  aux_entry *AuxLookup( char * );         /* caux.c */
-extern  void    PragmaAuxInit( void );          /* caux.c */
-extern  void    PragmaAuxFini( void );          /* caux.c */
+extern  aux_entry   *AuxLookup( const char * );
+extern  void        PragmaAuxInit( void );
+extern  void        PragmaAuxFini( void );

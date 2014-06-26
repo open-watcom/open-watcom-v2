@@ -512,7 +512,7 @@ extern SEGADDR_T    AllocSegment(seg_info *);
 
 /* cenum */
 extern TYPEPTR      EnumDecl(type_modifiers);
-extern ENUMPTR      EnumLookup(enum_hash_idx,const char *);
+extern ENUMPTR      EnumLookup(id_hash_idx,const char *);
 extern void         EnumInit(void);
 extern void         FreeEnums(void);
 

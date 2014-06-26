@@ -66,8 +66,8 @@ typedef enum macro_flags {
 
 typedef struct  macro_entry {
     struct macro_entry  *next_macro;    /* also used by pre-compiled header */
-    unsigned            macro_defn;     /* offset to defn, 0 ==>special macro name*/
-    unsigned            macro_len;      /* length of macro definition */
+    size_t              macro_defn;     /* offset to defn, 0 ==>special macro name*/
+    size_t              macro_len;      /* length of macro definition */
     mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     macro_flags         macro_flags;    /* flags */
     source_loc          src_loc;        /* where macro defined, for diagnostic */

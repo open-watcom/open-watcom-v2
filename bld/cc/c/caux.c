@@ -35,7 +35,7 @@
 #include "caux.h"
 
 
-aux_entry *AuxLookup( char *name )
+aux_entry *AuxLookup( const char *name )
 {
     aux_entry   *ent;
 

@@ -59,8 +59,8 @@ static  char    CTypeSizes[] = {
 TYPEPTR CTypeHash[TYPE_LAST_ENTRY];
 TYPEPTR PtrTypeHash[TYPE_LAST_ENTRY];
 
-TAGPTR  TagHash[TAG_HASH_SIZE + 1];
-FIELDPTR FieldHash[FIELD_HASH_SIZE];
+TAGPTR  TagHash[ID_HASH_SIZE + 1];
+FIELDPTR FieldHash[ID_HASH_SIZE];
 
 enum {
     M_CHAR          = 0x0001,
@@ -155,8 +155,7 @@ signed char Valid_Types[] = {
 
 void InitTypeHashTables( void )
 {
-    tag_hash_idx    h1;
-    field_hash_idx  h2;
+    id_hash_idx     h;
     int             index;
     int             base_type;
 
@@ -167,12 +166,11 @@ void InitTypeHashTables( void )
         CTypeHash[ base_type ] = NULL;
         PtrTypeHash[ base_type ] = NULL;
     }
-    for( h1 = 0; h1 <= TAG_HASH_SIZE; ++h1 ) {
-        TagHash[h1] = NULL;
+    for( h = 0; h < ID_HASH_SIZE; ++h ) {
+        TagHash[h] = NULL;
+        FieldHash[h] = NULL;
     }
-    for( h2 = 0; h2 < FIELD_HASH_SIZE; ++h2 ) {
-        FieldHash[h2] = NULL;
-    }
+    TagHash[ID_HASH_SIZE] = NULL;
 }
 
 void CTypeInit( void )
@@ -721,7 +719,7 @@ TYPEPTR TypeDefault( void )
 }
 
 
-static TAGPTR NewTag( const char *name, tag_hash_idx h )
+static TAGPTR NewTag( const char *name, id_hash_idx h )
 {
     TAGPTR      tag;
 
@@ -738,7 +736,7 @@ static TAGPTR NewTag( const char *name, tag_hash_idx h )
 
 TAGPTR NullTag( void )
 {
-    return( NewTag( "", TAG_HASH_SIZE ) );
+    return( NewTag( "", ID_HASH_SIZE ) );
 }
 
 
@@ -1350,9 +1348,9 @@ TAGPTR TagLookup( void )
 void FreeTags( void )
 {
     TAGPTR          tag;
-    tag_hash_idx    h;
+    id_hash_idx     h;
 
-    for( h = 0; h <= TAG_HASH_SIZE; ++h ) {
+    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
         for( ; (tag = TagHash[h]) != NULL; ) {
             if( tag->level < SymLevel )
                 break;
@@ -1366,9 +1364,9 @@ void FreeTags( void )
 void WalkTagList( void (*func)(TAGPTR) )
 {
     TAGPTR          tag;
-    tag_hash_idx    h;
+    id_hash_idx     h;
 
-    for( h = 0; h <= TAG_HASH_SIZE; ++h ) {
+    for( h = 0; h <= ID_HASH_SIZE; ++h ) {
         for( tag = TagHash[h]; tag != NULL; tag = tag->next_tag ) {
             func( tag );
         }
