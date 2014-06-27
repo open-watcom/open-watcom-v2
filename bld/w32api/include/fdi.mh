@@ -13,8 +13,17 @@
 
 :include cpluspro.sp
 
+/* The Microsoft defintions all contain FAR and DIAMONDAPI
+ * declarations to maintain 16-bit compatibility.  Since
+ * we're building only for 32- and 64-bit (maybe), we can
+ * just leave these defines blank.  However, it's good to
+ * maintain the same terminology as Microsoft, I suppose...
+ */
 #ifndef FAR
 #define FAR
+#endif
+#ifndef DIAMONDAPI
+#define DIAMONDAPI __cdecl
 #endif
 
 typedef enum {
@@ -61,17 +70,11 @@ typedef struct {
     FDIERROR fdie;
 } FDINOTIFICATION, *PFDINOTIFICATION;
 
-/* This struct is defined in both fci.h and
- * fdi.h, so we need to be careful
- */
-#ifndef __FCI_FDI_ERF
 typedef struct {
     int  erfOper;
     int  erfType;
     BOOL fError;
-} ERF FAR *PERF;
-#define __FCI_FDI_ERF
-#endif 
+} ERF, FAR *PERF;
 
 typedef void *(DIAMONDAPI *PFNALLOC)( ULONG );
 #define FNALLOC(fn) void *DIAMONDAPI fn( ULONG )
@@ -110,12 +113,11 @@ typedef int (DIAMONDAPI *PFNFDIDECRYPT)( PFDIDECRYPT );
 #define cpu80286 (0)
 #define cpu80386 (1)
 
-LWSTDAPI_( BOOL ) DIAMONDAPI FDICopy( HFDI, char *, char *, int, PFNFDINOTIFY, PFNFDIDECRYPT, void * );
-LWSTDAPI_( HFDI ) DIAMONDAPI FDICreate( PFNALLOC, PFNFREE, PFNOPEN, PFNREAD, PFNWRITE, PFNCLOSE, PFNSEEK, int, PERF );
-LWSTDAPI_( BOOL ) DIAMONDAPI FDIDestroy( HFDI );
-LWSTDAPI_( BOOL ) DIAMONDAPI FDIIsCabinet( HFDI, INT_PTR, PFDICABINETINFO );
-LWSTDAPI_( BOOL ) DIAMONDAPI FDITruncateCabinet( HFDI, char *, USHORT );
-
+BOOL DIAMONDAPI FDICopy( HFDI, char *, char *, int, PFNFDINOTIFY, PFNFDIDECRYPT, void * );
+HFDI DIAMONDAPI FDICreate( PFNALLOC, PFNFREE, PFNOPEN, PFNREAD, PFNWRITE, PFNCLOSE, PFNSEEK, int, PERF );
+BOOL DIAMONDAPI FDIDestroy( HFDI );
+BOOL DIAMONDAPI FDIIsCabinet( HFDI, INT_PTR, PFDICABINETINFO );
+BOOL DIAMONDAPI FDITruncateCabinet( HFDI, char *, USHORT );
 
 :include cplusepi.sp
 
