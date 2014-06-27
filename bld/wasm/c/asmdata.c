@@ -397,7 +397,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             //          if( fixup == NULL ) return( ERROR );
             // fixme
             InsFixups[OPND1] = fixup;
-            data += fixup->offset;
+            data += fixup->u_offset;
 
             for( cur_pos++;
                 ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->class != TC_FINAL )
@@ -548,7 +548,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                         fixup = AddFixup( init_sym, fixup_type, OPTJ_NONE );
                         InsFixups[OPND1] = fixup;
                         if( AsmBuffer[seg_off_operator_loc]->u.token == T_OFFSET ) {
-                            data += fixup->offset;
+                            data += fixup->u_offset;
                         }
 #if defined( _STANDALONE_ )
                         if( store_fixup( OPND1 ) == ERROR )

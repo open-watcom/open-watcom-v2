@@ -596,7 +596,7 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
     fixnode->next = NULL;
     fixnode->self_relative = FALSE;
     fixnode->lr.is_secondary = FALSE;
-    fixnode->lr.target_offset = fixup->offset;
+    fixnode->lr.target_offset = fixup->u_offset;
     fixnode->loader_resolved = FALSE;
     fixnode->loc_offset = 0;
 

@@ -105,7 +105,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
         fixup->fixup_loc = AsmCodeAddress;
 #if defined( _STANDALONE_ )
         fixup->sym = sym;
-        fixup->offset = sym->offset;
+        fixup->u_offset = sym->offset;
         if( Modend ) {
             fixup->fixup_seg = NULL;
         } else {
@@ -118,7 +118,7 @@ struct asmfixup *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enu
         fixup->name = sym->name;
         fixup->next = FixupHead;
         FixupHead = fixup;
-        fixup->offset = 0;
+        fixup->u_offset = 0;
 #endif
         fixup->fixup_type = fixup_type;
         fixup->fixup_option = fixup_option;
@@ -146,7 +146,7 @@ static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
     uint_8  *dst;
 
     dst = fixup->fixup_loc + AsmCodeBuffer;
-    disp = fixup->offset + AsmCodeAddress - fixup->fixup_loc - size;
+    disp = fixup->u_offset + AsmCodeAddress - fixup->fixup_loc - size;
     for( ; size > 0; size-- ) {
         *(dst++) = (uint_8)disp;
         disp >>= 8;
@@ -205,16 +205,10 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
     case FIX_RELOFF8:
         size++;
         // calculate the displacement
-        disp = fixup->offset + AsmCodeAddress - fixup->fixup_loc - size;
+        disp = fixup->u_offset + AsmCodeAddress - fixup->fixup_loc - size;
         max_disp = (1UL << ((size * 8)-1)) - 1;
         if( disp > max_disp || disp < (-max_disp-1) ) {
-#if !defined( _STANDALONE_ )
-            AsmError( JUMP_OUT_OF_RANGE );
-            FixupHead = NULL;
-            return( ERROR );
-        } else {
-            PatchCodeBuffer( fixup, size );
-#else
+#if defined( _STANDALONE_ )
             PhaseError = TRUE;
             switch( size ) {
             case 1:
@@ -247,6 +241,12 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
                 AsmWarn( 4, JUMP_OUT_OF_RANGE );
                 break;
             }
+#else
+            AsmError( JUMP_OUT_OF_RANGE );
+            FixupHead = NULL;
+            return( ERROR );
+        } else {
+            PatchCodeBuffer( fixup, size );
 #endif
         }
         AsmFree( fixup );
@@ -300,14 +300,14 @@ void mark_fixupp( OPNDTYPE determinant, int index )
         // fixup->offset = Code->data[index];
         // Code->data[index] = 0; // fixme
         if( fixup->fixup_type != FIX_SEG ) {
-            Code->data[index] += fixup->offset;
+            Code->data[index] += fixup->u_offset;
         }
         /*
         20-Aug-92: put the offset in the location instead of attaching it
         to the fixup
         */
 #else
-        fixup->offset = Code->data[index];
+        fixup->u_offset = Code->data[index];
         Code->data[index] = 0;
 #endif
 
@@ -390,7 +390,7 @@ static int MakeFpFixup( char *patch_name )
             fixup->fixup_loc = AsmCodeAddress;
             fixup->fixup_seg = NULL;
             fixup->sym = &dir->sym;
-            fixup->offset = 0;
+            fixup->u_offset = 0;
             fixup->frame = NULL;
             fixup->next = dir->sym.fixup;
             dir->sym.fixup = fixup;
@@ -444,7 +444,7 @@ int AddFPPatchAndFixups( fp_patches patch )
         fixup->external = 0;
         fixup->fixup_loc = AsmCodeAddress;
         fixup->name = NULL;
-        fixup->offset = patch;
+        fixup->u_fppatch = patch;
         fixup->fixup_type = FIX_FPPATCH;
         fixup->fixup_option = OPTJ_NONE;
         if( patch == FPP_WAIT ) {

@@ -473,7 +473,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 #endif
                 switch( fix->fixup_type ) {
                 case FIX_FPPATCH:
-                    *dst++ = fix->offset;
+                    *dst++ = fix->u_fppatch;
                     break;
                 case FIX_SEG:
                     if( name == NULL ) {
@@ -541,7 +541,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     *dst++ = cg_fix;
                     *(BYTE_SEQ_SYM *)dst = sym_handle;
                     dst += sizeof( BYTE_SEQ_SYM );
-                    *((BYTE_SEQ_OFF *)dst) = fix->offset;
+                    *((BYTE_SEQ_OFF *)dst) = fix->u_offset;
                     dst += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
@@ -564,7 +564,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     */
                     fix->fixup_type = FIX_SEG;
                     fix->fixup_loc += skip;
-                    fix->offset = 0;
+                    fix->u_offset = 0;
                 } else {
                     head = fix;
                     fix = fix->next;
@@ -590,7 +590,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
             }
         }
         buff = temp;
-        len = dst - temp;
+        len = (byte_seq_len)( dst - temp );
         perform_fixups = TRUE;
     }
     seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
@@ -611,7 +611,7 @@ local void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
     fix->external = 1;
     fix->fixup_loc = loc;
     fix->name = name;
-    fix->offset = off;
+    fix->u_offset = off;
     fix->fixup_type = type;
     fix->next = FixupHead;
     FixupHead = fix;
@@ -678,7 +678,7 @@ local bool GetByteSeq( byte_seq **code )
                 use_fpu_emu = FALSE;
             }
 #endif
-            AsmCodeBuffer[AsmCodeAddress++] = Constant;
+            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
             NextToken();
         } else {
 #if _CPU == 8086
@@ -708,7 +708,7 @@ local bool GetByteSeq( byte_seq **code )
                     } else if( CurToken == T_MINUS ) {
                         NextToken();
                         if( CurToken == T_CONSTANT ) {
-                            offset = -Constant;
+                            offset = -(int)Constant;
                             NextToken();
                         }
                     }

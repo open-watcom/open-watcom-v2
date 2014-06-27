@@ -130,9 +130,15 @@ extern enum sym_type    AsmQueryType( void *handle );
 struct asmfixup {
         struct asmfixup         *next;
 #if defined( _STANDALONE_ )
-        unsigned long           offset;
+        unsigned long           _offset;
+  #define u_offset              _offset
 #else
-        unsigned                offset;
+        struct {
+            unsigned            _offset;
+            unsigned char       _fppatch;
+        } u;
+  #define u_offset              u._offset
+  #define u_fppatch             u._fppatch
 #endif
         unsigned                fixup_loc;
         enum fixup_types        fixup_type;
@@ -150,6 +156,14 @@ struct asmfixup {
 #endif
 
 };
+
+#if defined( _STANDALONE_ )
+#define axoffset                offset
+#define axfppatch               offset
+#else
+#define axoffset                u.offset
+#define axfppatch               u.fppatch
+#endif
 
 #if defined( _STANDALONE_ )
 #define AsmCodeAddress          ( GetCurrAddr() )

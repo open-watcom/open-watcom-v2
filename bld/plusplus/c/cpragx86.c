@@ -748,7 +748,7 @@ static int insertFixups( VBUF *src_code )
 #endif
                 switch( fix->fixup_type ) {
                 case FIX_FPPATCH:
-                    dst[len++] = fix->offset;
+                    dst[len++] = fix->u_fppatch;
                     break;
                 case FIX_SEG:
                     if( name == NULL ) {
@@ -816,7 +816,7 @@ static int insertFixups( VBUF *src_code )
                     dst[len++] = cg_fix;
                     *((BYTE_SEQ_SYM *)&dst[len]) = sym;
                     len += sizeof( BYTE_SEQ_SYM );
-                    *((BYTE_SEQ_OFF *)&dst[len]) = fix->offset;
+                    *((BYTE_SEQ_OFF *)&dst[len]) = fix->u_offset;
                     len += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
@@ -839,7 +839,7 @@ static int insertFixups( VBUF *src_code )
                     */
                     fix->fixup_type = FIX_SEG;
                     fix->fixup_loc += skip;
-                    fix->offset = 0;
+                    fix->u_offset = 0;
                 } else {
                     head = fix;
                     fix = fix->next;
@@ -885,7 +885,7 @@ static void AddAFix(
     fix->external = 1;
     fix->fixup_loc = i;
     fix->name = name;
-    fix->offset = off;
+    fix->u_offset = off;
     fix->fixup_type = type;
     fix->next = FixupHead;
     FixupHead = fix;

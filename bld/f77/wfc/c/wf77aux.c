@@ -1300,7 +1300,7 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
                 // only expect a 'fixup_type' of FIX_SEG
                 switch( fix->fixup_type ) {
                 case FIX_FPPATCH:
-                    *dst++ = fix->offset;
+                    *dst++ = fix->u_fppatch;
                     break;
                 case FIX_SEG:
                     if( name == NULL ) {
@@ -1422,7 +1422,7 @@ static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
     fix->external = 1;
     fix->fixup_loc = i;
     fix->name = name;
-    fix->offset = off;
+    fix->u_offset = off;
     fix->fixup_type = type;
     fix->next = FixupHead;
     FixupHead = fix;
