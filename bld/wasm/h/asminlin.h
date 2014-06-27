@@ -158,14 +158,6 @@ struct asmfixup {
 };
 
 #if defined( _STANDALONE_ )
-#define axoffset                offset
-#define axfppatch               offset
-#else
-#define axoffset                u.offset
-#define axfppatch               u.fppatch
-#endif
-
-#if defined( _STANDALONE_ )
 #define AsmCodeAddress          ( GetCurrAddr() )
 #else
 extern uint_32                  AsmCodeAddress;
