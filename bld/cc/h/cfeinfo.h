@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-extern int          VarFunc( SYMPTR );
-extern int          VarParm( SYMPTR );
+extern bool         VarFunc( SYMPTR );
+extern bool         VarParm( SYMPTR );
 extern call_class   GetCallClass( SYM_HANDLE );
 extern aux_info     *FindInfo( SYMPTR, SYM_HANDLE );
-extern int          FunctionAborts( SYMPTR, SYM_HANDLE );
+extern bool         FunctionAborts( SYMPTR, SYM_HANDLE );
 extern bool         ParmsToBeReversed( int, aux_info * );
 extern aux_info     *GetLangInfo( type_modifiers flags );
 extern char         *SrcFullPath( char const *, char *, unsigned );

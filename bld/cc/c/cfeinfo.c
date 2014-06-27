@@ -133,14 +133,14 @@ static struct STRUCT_byte_seq( 6 ) TryFiniCode = {
 /*
 //    does the specified symbol take variable parameters? manual search.
 */
-int VarParm( SYMPTR sym )
+bool VarParm( SYMPTR sym )
 {
     TYPEPTR     *parm;
     TYPEPTR     typ;
     TYPEPTR     fn_typ;
 
     if( sym == NULL )
-        return( 0 );
+        return( FALSE );
 
     if( sym->flags & SYM_FUNCTION ) {
         fn_typ = sym->sym_type;
@@ -149,26 +149,26 @@ int VarParm( SYMPTR sym )
         if( parm != NULL ) {
             for( ; (typ = *parm) != NULL; ++parm ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
-                    return( 1 );
+                    return( TRUE );
                 }
             }
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 /*
 //    does the specified symbol take variable args? hash calc'ed
 //
 */
-int VarFunc( SYMPTR sym )
+bool VarFunc( SYMPTR sym )
 {
     int         hash;
     size_t      len;
     char        *p;
 
     if( sym == NULL )
-        return( 0 );
+        return( FALSE );
 
     if( sym->flags & SYM_FUNCTION ) {
         p = sym->name;
@@ -177,11 +177,11 @@ int VarFunc( SYMPTR sym )
 
         if( strcmp( p, VarParmFuncs[ hash ] ) == 0 
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
-            return( 1 );
+            return( TRUE );
 
         return( VarParm( sym ) );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -203,7 +203,7 @@ static inline_funcs *Flat( inline_funcs *ifunc )
     return( ifunc );
 }
 
-inline_funcs *IF_Lookup( char *name )
+static inline_funcs *IF_Lookup( const char *name )
 {
     inline_funcs     *ifunc;
 
@@ -339,7 +339,7 @@ aux_info *InfoLookup( SYMPTR sym )
     name = sym->name;
     inf = &DefaultInfo;         /* assume default */
     if( name == NULL )
-        return( inf );                   /* 01-jun-90 */
+        return( inf );
     ent = AuxLookup( name );
     if( ent != NULL )
         inf = ent->info;
@@ -392,7 +392,7 @@ aux_info *InfoLookup( SYMPTR sym )
             }
             HW_CAsgn( inf->streturn, HW_EMPTY );
             inf->save = ifunc->save;
-            inf->objname = WatcallInfo.objname; /* 26-jan-93 */
+            inf->objname = WatcallInfo.objname;
             inf->use = 1;
         }
 #endif
@@ -455,20 +455,20 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     return( inf );
 }
 
-int FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )  /* 09-apr-93 */
+bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     aux_entry    *ent;
 
-    if( sym_handle != 0 ) {              /* 19-apr-93 */
+    if( sym_handle != 0 ) {
         SymGet( sym, sym_handle );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
             if( ent->info->cclass & SUICIDAL ) {
-                return( 1 );
+                return( TRUE );
             }
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 call_class GetCallClass( SYM_HANDLE sym_handle )
@@ -507,13 +507,13 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
             }
 #endif
 #ifdef DLL_EXPORT
-            if( sym.mods & FLAG_EXPORT ) {  /* 12-mar-90 */
+            if( sym.mods & FLAG_EXPORT ) {
                 cclass |= DLL_EXPORT;
             }
 #endif
 #ifdef LOAD_DS_ON_ENTRY
-            if( sym.mods & FLAG_LOADDS ) {  /* 26-apr-90 */
-  #if 0 /* John - 11-mar-93 */          /* 21-feb-93 */
+            if( sym.mods & FLAG_LOADDS ) {
+  #if 0
                 if( TargSys == TS_WINDOWS ) {
                     cclass |= FAT_WINDOWS_PROLOG;
                 } else {
@@ -540,7 +540,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
 #endif
     }
 #ifdef REVERSE
-    cclass &= ~ REVERSE_PARMS;               /* 28-may-89 */
+    cclass &= ~ REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
     if( CompFlags.ep_switch_used != 0 ) {
@@ -1125,7 +1125,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
-    case NEXT_DEPENDENCY:                               /* 03-dec-92 */
+    case NEXT_DEPENDENCY:
         if( CompFlags.emit_dependencies )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
@@ -1251,7 +1251,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)(pointer_int)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL:
         return( NULL );
-    case NEXT_DEPENDENCY:                               /* 03-dec-92 */
+    case NEXT_DEPENDENCY:
         if( CompFlags.emit_dependencies )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
