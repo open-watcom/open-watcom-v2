@@ -1151,7 +1151,7 @@ void EmitAbort( void )
 
 local TREEPTR GenOptimizedCode( TREEPTR tree )
 {
-    unsigned    unroll_count;
+    unroll_type     unroll_count;
 
     unroll_count = 0;
     while( tree != NULL ) {

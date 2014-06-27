@@ -39,7 +39,7 @@
 #include "autodept.h"
 #include "sopen.h"
 
-extern  TAGPTR  TagHash[TAG_HASH_SIZE + 1];
+extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (('H'<<24)|('C'<<16)|('P'<<8)|'W')     /* 'WPCH' */

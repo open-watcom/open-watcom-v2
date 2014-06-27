@@ -106,7 +106,7 @@ typedef struct case_entry {
 typedef struct  switch_entry {
     struct switch_entry *prev_switch;
     LABEL_INDEX         default_label;
-    int                 number_of_cases;
+    unsigned            number_of_cases;
     CASEPTR             case_list;
     unsigned            low_value;
     unsigned            high_value;
@@ -117,7 +117,7 @@ typedef struct  switch_entry {
 typedef struct  string_literal {
     struct string_literal *next_string;
     BACK_HANDLE         back_handle;    /* back handle for string */
-    unsigned short      length;         /* length of literal string */
+    target_size         length;         /* length of literal string */
     unsigned short      ref_count;      /* reference count */
     char                flags;          /* 0 or FLAG_FAR */
     char                *literal;       /* actual literal string */
@@ -148,7 +148,7 @@ typedef struct  opnode {
         DATA_TYPE       const_type;     // OPR_PUSHINT, OPR_PUSHFLOAT
         cond_code       cc;             // OPR_CMP: EQ,NE,LT,LE,GT,GE
         unsigned char   mathfunc;       // OPR_MATHFUNC
-        unsigned char   unroll_count;   // OPR_STMT
+        unroll_type     unroll_count;   // OPR_STMT
     } u1;
     union {
         SYM_HANDLE      sym_handle;     // OPR_PUSHSYM, OPR_PUSHADDR, ...
@@ -192,9 +192,9 @@ typedef struct expr_node {
         TYPEPTR         expr_type;      // used during pass 1
         TREEPTR         thread;         // used during pass 2 full codegen
     } u;
-    OPNODE          op;
-    bool            visit;
-    bool            checked;            // opnd values have been checked
+    OPNODE              op;
+    bool                visit;
+    bool                checked;            // opnd values have been checked
 } EXPRNODE;
 
 typedef struct  sym_lists {

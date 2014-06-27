@@ -64,6 +64,8 @@ typedef int             expr_level_type;
 
 typedef unsigned char   bitfield_width;
 
+typedef unsigned char   unroll_type;
+
 /* CONST, VOLATILE can appear in typ->u.p.decl_flags and leaf->leaf_flags.
 *  NEAR, FAR, HUGE can appear in typ->u.p.decl_flags, leaf->leaf_flags,
 *                               and sym->attrib.
@@ -158,7 +160,7 @@ typedef enum string_flags {     // string literal flags
 
 typedef struct string_literal *STR_HANDLE;
 
-#define SYM_INVALID     ((SYM_HANDLE)~0)    // invalid symbol; never a real sym
+#define SYM_INVALID     ((SYM_HANDLE)(pointer_int)-1)    // invalid symbol; never a real sym
 
 typedef struct parm_list {
     struct parm_list        *next_parm;
@@ -166,7 +168,7 @@ typedef struct parm_list {
 } parm_list;
 
 typedef struct array_info {
-    unsigned        dimension;
+    target_size     dimension;
     int             refno;
     bool            unspecified_dim;    // or flexible array member?
 } array_info;

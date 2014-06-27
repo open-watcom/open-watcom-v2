@@ -81,10 +81,6 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #define MACRO_HASH_SIZE         4093
 #define STRING_HASH_SIZE        1024
 
-#define ENUM_HASH_SIZE          ID_HASH_SIZE
-#define TAG_HASH_SIZE           ID_HASH_SIZE
-#define FIELD_HASH_SIZE         ID_HASH_SIZE
-
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header
@@ -103,7 +99,7 @@ global int          CurrChar;
 global DATA_TYPE    ConstType;
 global unsigned     Constant;
 global uint64       Const64;
-global int          CLitLength;         /* length of string literal */
+global target_size  CLitLength;         /* length of string literal */
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFile;
 global char         *SrcFName;          /* source file name without suffix */
@@ -140,10 +136,10 @@ global int          SizeOfCount;        /* # of nested sizeof() expressions  */
 global int          NestLevel;          /* pre-processing level of #if */
 global int          SkipLevel;          /* pre-processing level of #if to skip to */
 global int          SymLevel;           /* current lex level (# of nested {) */
-global int          HashValue;          /* hash value for identifier */
+global id_hash_idx  HashValue;          /* hash value for identifier */
 global mac_hash_idx MacHashValue;       /* hash value for macro name */
 global char         *SavedId;           /* saved id when doing look ahead */
-global int          SavedHash;          /* hash value for saved id */
+global id_hash_idx  SavedHash;          /* hash value for saved id */
 global source_loc   SavedTokenLoc;      /* value of TokenLine when id saved */
 global TOKEN        LAToken;            /* look ahead token */
 global LABELPTR     LabelHead;          /* list of all labels defined in function */
@@ -193,7 +189,7 @@ global char         *MacroPtr;
 global MEPTR        NextMacro;
 global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
-global ENUMPTR      EnumTable[ENUM_HASH_SIZE];
+global ENUMPTR      EnumTable[ID_HASH_SIZE];
 global SYM_HASHPTR  *HashTab;
 global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
 global int          CTypeCounts[TYPE_LAST_ENTRY];
@@ -208,20 +204,20 @@ global unsigned     TargetSwitches;     /* target specific code generator switch
 
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
-global int          ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
+global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
 global int          Toggles;            /* global toggle flags */
 global unsigned     ErrLimit;
 
 global unsigned     DataThreshold;      /* sizeof(obj) > this ==> separate segment */
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
 
-global int          DataPtrSize;
-global int          CodePtrSize;
+global unsigned     DataPtrSize;
+global unsigned     CodePtrSize;
 global int          DeadCode;           /* non-zero => next stmt is unreachable */
 global int          TmpSymCount;
 global int          LitCount;
-global int          LitPoolSize;
-global unsigned     MacroSize;
+global target_size  LitPoolSize;
+global size_t       MacroSize;
 global struct comp_flags CompFlags;
 global struct global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
@@ -379,7 +375,7 @@ global struct debug_fwd_types *DebugNameList;
 
 global unsigned     Column;             /* skip to Column when reading */
 global unsigned     Trunc;              /* stop at Trunc when reading  */
-global int          EnumRecSize;        /* size of largest enum entry */
+global size_t       EnumRecSize;        /* size of largest enum entry */
 global int          PreProcChar;
 global TYPEPTR      PrevProtoType;      /* prev func prototype */
 
@@ -388,7 +384,7 @@ global unsigned     TargSys;
 global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") */
 global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
 
-global unsigned     UnrollCount;        /* #pragma unroll(#); */
+global unroll_type  UnrollCount;        /* #pragma unroll(#); */
 global macro_flags  InitialMacroFlag;
 global unsigned char Stack87;
 global char         *ErrorFileName;
@@ -671,7 +667,7 @@ extern TREEPTR      UComplement(TREEPTR);
 extern TREEPTR      UMinus(TREEPTR);
 extern DATA_TYPE    BinExprType(TYPEPTR,TYPEPTR);
 extern DATA_TYPE    DataTypeOf(TYPEPTR);
-extern int          FuncPtr(TYPEPTR);
+extern bool         IsFuncPtr(TYPEPTR);
 extern TREEPTR      FixupAss( TREEPTR opnd, TYPEPTR newtyp );
 extern pointer_class ExprTypeClass( TYPEPTR typ );
 extern TREEPTR      LCastAdj(  TREEPTR tree );
@@ -707,26 +703,26 @@ extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
 extern bool         SetToggleFlag( char const *name, int const value );
 extern void         CPragma(void);
-extern textsegment  *LkSegName(char *,char *);
-extern textsegment  *NewTextSeg(char *,char *,char *);
+extern textsegment  *LkSegName(const char *,const char *);
+extern textsegment  *NewTextSeg(const char *,const char *,const char *);
 extern void         PragmaInit(void);
 extern void         PragmaFini(void);
 extern void         PragmaAuxInit(void);
 extern void         PragInit(void);
 extern void         PragEnding(void);
 extern void         PragObjNameInfo(char **);
-extern int          PragRecog(char *);
+extern bool         PragRecog(const char *);
 extern hw_reg_set   PragRegList(void);
 extern hw_reg_set   *PragManyRegSets(void);
-extern void         PragCurrAlias(char *);
+extern void         PragCurrAlias(const char *);
 extern TOKEN        PragRegSet(void);
 extern void         ChkPragmas(void);
-extern void         CreateAux(char *);
-extern void         SetCurrInfo(char *);
-extern void         XferPragInfo(char*,char*);
+extern void         CreateAux(const char *);
+extern void         SetCurrInfo(const char *);
+extern void         XferPragInfo(const char*,const char*);
 extern void         EnableDisableMessage(int,unsigned);
-extern void         AddLibraryName( char *, char );
-extern void         AddExtRefN( char * );
+extern void         AddLibraryName( const char *, char );
+extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
 
 /* cprag??? */
