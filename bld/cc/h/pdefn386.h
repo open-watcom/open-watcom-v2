@@ -118,83 +118,83 @@ aux_info        InlineInfo;
 
 #include "code386.gh"
 
-static hw_reg_set P_EAX_CL[]        = {
+static hw_reg_set P_EAX_CL[] = {
     HW_D( HW_EAX ),
     HW_D( HW_CL ),
     HW_D( HW_EMPTY ) };
 
-static hw_reg_set P_EAX_ECX[]        = {
+static hw_reg_set P_EAX_ECX[] = {
     HW_D( HW_EAX ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY ) };
 
-static hw_reg_set P_EDI_ESI[]        = {
+static hw_reg_set P_EDI_ESI[] = {
     HW_D( HW_EDI ),
     HW_D( HW_ESI ),
     HW_D( HW_EMPTY ) };
 
-static hw_reg_set P_EDI_ESI_ECX[]     = {
+static hw_reg_set P_EDI_ESI_ECX[] = {
     HW_D( HW_EDI ),
     HW_D( HW_ESI ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESI_EDI_ECX[]     = {
+static hw_reg_set P_ESI_EDI_ECX[] = {
     HW_D( HW_ESI ),
     HW_D( HW_EDI ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDI_AX_ECX[]     = {
+static hw_reg_set P_EDI_AX_ECX[] = {
     HW_D( HW_EDI ),
     HW_D( HW_AX ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDI_EAX_ECX[]     = {
+static hw_reg_set P_EDI_EAX_ECX[] = {
     HW_D( HW_EDI ),
     HW_D( HW_EAX ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDI_AL_ECX[]     = {
+static hw_reg_set P_EDI_AL_ECX[] = {
     HW_D( HW_EDI ),
     HW_D( HW_AL ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESEDI_DSESI[]    = {
+static hw_reg_set P_ESEDI_DSESI[] = {
     HW_D_2( HW_ES, HW_EDI ),
     HW_D_2( HW_DS, HW_ESI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DXEDI_CL[]= {
+static hw_reg_set P_DXEDI_CL[] = {
     HW_D_2( HW_DX, HW_EDI ),
     HW_D( HW_CL ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DXEDI_CXESI_EAX[]= {
+static hw_reg_set P_DXEDI_CXESI_EAX[] = {
     HW_D_2( HW_DX, HW_EDI ),
     HW_D_2( HW_CX, HW_ESI ),
     HW_D( HW_EAX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DXESI_CXEDI_EAX[]= {
+static hw_reg_set P_DXESI_CXEDI_EAX[] = {
     HW_D_2( HW_DX, HW_ESI ),
     HW_D_2( HW_CX, HW_EDI ),
     HW_D( HW_EAX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DXEAX_CXEBX[]  = {
+static hw_reg_set P_DXEAX_CXEBX[] = {
     HW_D_2( HW_DX, HW_EAX ),
     HW_D_2( HW_CX, HW_EBX ),
     HW_D( HW_EMPTY )
@@ -207,7 +207,7 @@ static hw_reg_set P_ESEDI_DSESI_ECX[] = {
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESEDI_AL_ECX[]   = {
+static hw_reg_set P_ESEDI_AL_ECX[] = {
     HW_D_2( HW_ES, HW_EDI ),
     HW_D( HW_AL ),
     HW_D( HW_ECX ),
@@ -221,14 +221,14 @@ static hw_reg_set P_DXEDI_AL_ECX[] = {
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESEDI_AX_ECX[]   = {
+static hw_reg_set P_ESEDI_AX_ECX[] = {
     HW_D_2( HW_ES, HW_EDI ),
     HW_D( HW_AX ),
     HW_D( HW_ECX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESEDI_EAX_ECX[]   = {
+static hw_reg_set P_ESEDI_EAX_ECX[] = {
     HW_D_2( HW_ES, HW_EDI ),
     HW_D( HW_EAX ),
     HW_D( HW_ECX ),
@@ -249,19 +249,19 @@ static hw_reg_set P_DXEDI_EAX_ECX[] = {
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESI_EDI[]        = {
+static hw_reg_set P_ESI_EDI[] = {
     HW_D( HW_ESI ),
     HW_D( HW_EDI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DSESI_ESEDI[]    = {
+static hw_reg_set P_DSESI_ESEDI[] = {
     HW_D_2( HW_DS, HW_ESI ),
     HW_D_2( HW_ES, HW_EDI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_SIEAX_CXEDI[]  = {
+static hw_reg_set P_SIEAX_CXEDI[] = {
     HW_D_2( HW_SI, HW_EAX ),
     HW_D_2( HW_CX, HW_EDI ),
     HW_D( HW_EMPTY )
@@ -274,62 +274,62 @@ static hw_reg_set P_DSESI_ESEDI_ECX[] = {
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_DSESI_CL[]      = {
+static hw_reg_set P_DSESI_CL[] = {
     HW_D_2( HW_DS, HW_ESI ),
     HW_D( HW_CL ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESI_DL[]        = {
+static hw_reg_set P_ESI_DL[] = {
     HW_D( HW_ESI ),
     HW_D( HW_DL ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDI[]           = {
+static hw_reg_set P_EDI[] = {
     HW_D( HW_EDI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_ESEDI[]         = {
+static hw_reg_set P_ESEDI[] = {
     HW_D_2( HW_ES, HW_EDI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_CXEDI[]        = {
+static hw_reg_set P_CXEDI[] = {
     HW_D_2( HW_CX, HW_EDI ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EAX[]           = {
+static hw_reg_set P_EAX[] = {
     HW_D( HW_EAX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDX[]           = {
+static hw_reg_set P_EDX[] = {
     HW_D( HW_EDX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDX_AL[]        = {
+static hw_reg_set P_EDX_AL[] = {
     HW_D( HW_EDX ),
     HW_D( HW_AL ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDX_EAX[]        = {
+static hw_reg_set P_EDX_EAX[] = {
     HW_D( HW_EDX ),
     HW_D( HW_EAX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EAX_EDX[]        = {
+static hw_reg_set P_EAX_EDX[] = {
     HW_D( HW_EAX ),
     HW_D( HW_EDX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EAX_ESI_EDX_EDI_ECX[]= {
+static hw_reg_set P_EAX_ESI_EDX_EDI_ECX[] = {
     HW_D( HW_EAX ),
     HW_D( HW_ESI ),
     HW_D( HW_EDX ),
@@ -338,27 +338,27 @@ static hw_reg_set P_EAX_ESI_EDX_EDI_ECX[]= {
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_EDXEAX[]       = {
+static hw_reg_set P_EDXEAX[] = {
     HW_D_2( HW_EDX, HW_EAX ),
     HW_D( HW_EMPTY )
 };
 
-static hw_reg_set P_8087[]         = {
+static hw_reg_set P_8087[] = {
     HW_D( HW_FLTS ),
     HW_D( HW_EMPTY )
 };
 
 
-byte_seq *FlatAlternates[] = {
-    (byte_seq *)&S_memset,   (byte_seq *)&FS_memset,
-    (byte_seq *)&C_memset,   (byte_seq *)&FC_memset,
-    (byte_seq *)&S_memcpy,   (byte_seq *)&FS_memcpy,
-    (byte_seq *)&C_memcpy,   (byte_seq *)&FC_memcpy,
-    (byte_seq *)&C_memcmp,   (byte_seq *)&FC_memcmp,
-    (byte_seq *)&C_memchr,   (byte_seq *)&FC_memchr,
-    (byte_seq *)&C_strlen,   (byte_seq *)&FC_strlen,
-    (byte_seq *)&C_strcat,   (byte_seq *)&FC_strcat,
-    NULL,       NULL
+const byte_seq *FlatAlternates[] = {
+    (byte_seq *)&S_memset,    (byte_seq *)&FS_memset,
+    (byte_seq *)&C_memset,    (byte_seq *)&FC_memset,
+    (byte_seq *)&S_memcpy,    (byte_seq *)&FS_memcpy,
+    (byte_seq *)&C_memcpy,    (byte_seq *)&FC_memcpy,
+    (byte_seq *)&C_memcmp,    (byte_seq *)&FC_memcmp,
+    (byte_seq *)&C_memchr,    (byte_seq *)&FC_memchr,
+    (byte_seq *)&C_strlen,    (byte_seq *)&FC_strlen,
+    (byte_seq *)&C_strcat,    (byte_seq *)&FC_strcat,
+    NULL,                     NULL
 };
 
 /* these must also work in FLAT model */
@@ -449,42 +449,42 @@ struct  inline_funcs BigDataNoDs_Functions[] = {
 
 /* these must also work in FLAT model */
 struct  inline_funcs _8087_Functions[] = {
- { "fabs",  (byte_seq *)&_8087_fabs, C_8087_fabs_parms, C_8087_fabs_ret, C_8087_fabs_saves  },
- { NULL }
- };
+    { "fabs",  (byte_seq *)&_8087_fabs, C_8087_fabs_parms, C_8087_fabs_ret, C_8087_fabs_saves  },
+    { NULL }
+};
 
 
 /* memory model independent functions */
 
 /* these must also work in FLAT model except _fmem & _fstr functions */
 struct  inline_funcs Common_Functions[] = {
-  { "abs",     (byte_seq *)&C_abs,    C_abs_parms,     C_abs_ret,     C_abs_saves      },
-  { "labs",    (byte_seq *)&C_labs,   C_labs_parms,    C_labs_ret,    C_labs_saves     },
-  { "fabs",    (byte_seq *)&C_fabs,   C_fabs_parms,    C_fabs_ret,    C_fabs_saves     },
-  { "inp",     (byte_seq *)&C_inp,    C_inp_parms,     C_inp_ret,     C_inp_saves      },
-  { "inpw",    (byte_seq *)&C_inpw,   C_inpw_parms,    C_inpw_ret,    C_inpw_saves     },
-  { "inpd",    (byte_seq *)&C_inpd,   C_inpd_parms,    C_inpd_ret,    C_inpd_saves     },
-  { "outp",    (byte_seq *)&C_outp,   C_outp_parms,    C_outp_ret,    C_outp_saves     },
-  { "outpw",   (byte_seq *)&C_outpw,  C_outpw_parms,   C_outpw_ret,   C_outpw_saves    },
-  { "outpd",   (byte_seq *)&C_outpd,  C_outpd_parms,   C_outpd_ret,   C_outpd_saves    },
+  { "abs",     (byte_seq *)&C_abs,     C_abs_parms,     C_abs_ret,     C_abs_saves      },
+  { "labs",    (byte_seq *)&C_labs,    C_labs_parms,    C_labs_ret,    C_labs_saves     },
+  { "fabs",    (byte_seq *)&C_fabs,    C_fabs_parms,    C_fabs_ret,    C_fabs_saves     },
+  { "inp",     (byte_seq *)&C_inp,     C_inp_parms,     C_inp_ret,     C_inp_saves      },
+  { "inpw",    (byte_seq *)&C_inpw,    C_inpw_parms,    C_inpw_ret,    C_inpw_saves     },
+  { "inpd",    (byte_seq *)&C_inpd,    C_inpd_parms,    C_inpd_ret,    C_inpd_saves     },
+  { "outp",    (byte_seq *)&C_outp,    C_outp_parms,    C_outp_ret,    C_outp_saves     },
+  { "outpw",   (byte_seq *)&C_outpw,   C_outpw_parms,   C_outpw_ret,   C_outpw_saves    },
+  { "outpd",   (byte_seq *)&C_outpd,   C_outpd_parms,   C_outpd_ret,   C_outpd_saves    },
   { "movedata",(byte_seq *)&C_movedata,C_movedata_parms,C_movedata_ret,C_movedata_saves },
-  { "_enable", (byte_seq *)&C_enable, C_enable_parms,  C_enable_ret,  C_enable_saves   },
-  { "_disable",(byte_seq *)&C_disable,C_disable_parms, C_disable_ret, C_disable_saves  },
-  { "_rotl",   (byte_seq *)&C_rotl,   C_rotl_parms,    C_rotl_ret,    C_rotl_saves     },
-  { "_rotr",   (byte_seq *)&C_rotr,   C_rotr_parms,    C_rotr_ret,    C_rotr_saves     },
-  { "_lrotl",  (byte_seq *)&C_rotl,   C_rotl_parms,    C_rotl_ret,    C_rotl_saves     },
-  { "_lrotr",  (byte_seq *)&C_rotr,   C_rotr_parms,    C_rotr_ret,    C_rotr_saves     },
-  { "div",     (byte_seq *)&C_div,    C_div_parms,     C_div_ret,     C_div_saves      },
-  { "ldiv",    (byte_seq *)&C_div,    C_div_parms,     C_div_ret,     C_div_saves      },
-  { "_fmemcpy",(byte_seq *)&DP_memcpy,DP_memcpy_parms, DP_memcpy_ret, DP_memcpy_saves  },
-  { "_fmemcmp",(byte_seq *)&DP_memcmp,DP_memcmp_parms, DP_memcmp_ret, DP_memcmp_saves  },
-  { "_fmemset",(byte_seq *)&DP_memset,DP_memset_parms, DP_memset_ret, DP_memset_saves  },
-  { "_fmemchr",(byte_seq *)&DP_memchr,DP_memchr_parms, DP_memchr_ret, DP_memchr_saves  },
-  { "_fstrcpy",(byte_seq *)&DP_strcpy,DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves  },
-  { "_fstrcat",(byte_seq *)&DP_strcat,DP_strcat_parms, DP_strcat_ret, DP_strcat_saves  },
-  { "_fstrcmp",(byte_seq *)&DP_strcmp,DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves  },
-  { "_fstrlen",(byte_seq *)&DP_strlen,DP_strlen_parms, DP_strlen_ret, DP_strlen_saves  },
-  { ".min",    (byte_seq *)&C_min,    C_min_parms,     C_min_ret,     C_min_saves      },
-  { ".max",    (byte_seq *)&C_max,    C_max_parms,     C_max_ret,     C_max_saves      },
+  { "_enable", (byte_seq *)&C_enable,  C_enable_parms,  C_enable_ret,  C_enable_saves   },
+  { "_disable",(byte_seq *)&C_disable, C_disable_parms, C_disable_ret, C_disable_saves  },
+  { "_rotl",   (byte_seq *)&C_rotl,    C_rotl_parms,    C_rotl_ret,    C_rotl_saves     },
+  { "_rotr",   (byte_seq *)&C_rotr,    C_rotr_parms,    C_rotr_ret,    C_rotr_saves     },
+  { "_lrotl",  (byte_seq *)&C_rotl,    C_rotl_parms,    C_rotl_ret,    C_rotl_saves     },
+  { "_lrotr",  (byte_seq *)&C_rotr,    C_rotr_parms,    C_rotr_ret,    C_rotr_saves     },
+  { "div",     (byte_seq *)&C_div,     C_div_parms,     C_div_ret,     C_div_saves      },
+  { "ldiv",    (byte_seq *)&C_div,     C_div_parms,     C_div_ret,     C_div_saves      },
+  { "_fmemcpy",(byte_seq *)&DP_memcpy, DP_memcpy_parms, DP_memcpy_ret, DP_memcpy_saves  },
+  { "_fmemcmp",(byte_seq *)&DP_memcmp, DP_memcmp_parms, DP_memcmp_ret, DP_memcmp_saves  },
+  { "_fmemset",(byte_seq *)&DP_memset, DP_memset_parms, DP_memset_ret, DP_memset_saves  },
+  { "_fmemchr",(byte_seq *)&DP_memchr, DP_memchr_parms, DP_memchr_ret, DP_memchr_saves  },
+  { "_fstrcpy",(byte_seq *)&DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves  },
+  { "_fstrcat",(byte_seq *)&DP_strcat, DP_strcat_parms, DP_strcat_ret, DP_strcat_saves  },
+  { "_fstrcmp",(byte_seq *)&DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves  },
+  { "_fstrlen",(byte_seq *)&DP_strlen, DP_strlen_parms, DP_strlen_ret, DP_strlen_saves  },
+  { ".min",    (byte_seq *)&C_min,     C_min_parms,     C_min_ret,     C_min_saves      },
+  { ".max",    (byte_seq *)&C_max,     C_max_parms,     C_max_ret,     C_max_saves      },
   { NULL }
 };

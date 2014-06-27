@@ -35,67 +35,67 @@
 struct  aux_info        InlineInfo;
 
 hw_reg_set DefaultParms[] = {
-        HW_D( HW_EMPTY )
+    HW_D( HW_EMPTY )
 };
 
 hw_reg_set DefaultVarParms[] = {
-        HW_D( HW_EMPTY )
+    HW_D( HW_EMPTY )
 };
 
 linkage_regs DefaultLinkage = {
-        HW_D( HW_G10 ),  /* GP */
-        HW_D( HW_G12 ),  /* SP */
-        HW_D( HW_G11 ),  /* LN */
-        HW_D( HW_G13 ),  /* RA */
-        HW_D( HW_G1 ),   /* PR */
-        HW_D( HW_G13 )   /* SA */
+    HW_D( HW_G10 ),  /* GP */
+    HW_D( HW_G12 ),  /* SP */
+    HW_D( HW_G11 ),  /* LN */
+    HW_D( HW_G13 ),  /* RA */
+    HW_D( HW_G1 ),   /* PR */
+    HW_D( HW_G13 )   /* SA */
 };
 
 linkage_regs OSLinkage[] = {
-        HW_D( HW_G10 ),  /* GP */
-        HW_D( HW_G12 ),  /* SP */
-        HW_D( HW_G15 ),  /* LN */
-        HW_D( HW_G14 ),  /* RA */
-        HW_D( HW_G1 ),   /* PR */
-        HW_D( HW_G13 )   /* SA */
+    HW_D( HW_G10 ),  /* GP */
+    HW_D( HW_G12 ),  /* SP */
+    HW_D( HW_G15 ),  /* LN */
+    HW_D( HW_G14 ),  /* RA */
+    HW_D( HW_G1 ),   /* PR */
+    HW_D( HW_G13 )   /* SA */
 };
 
 #define NC '\0'
 char Registers[] = {            /* table for TableLookup*/
-            '0',NC,
-            '1',NC,
-            '2',NC,
-            '3',NC,
-            '4',NC,
-            '5',NC,
-            '6',NC,
-            '7',NC,
-            '8',NC,
-            '9',NC,
-        '1','0',NC,
-        '1','1',NC,
-        '1','2',NC,
-        '1','3',NC,
-        '1','4',NC,
-        '1','5',NC,
-        NC
+        '0',NC,
+        '1',NC,
+        '2',NC,
+        '3',NC,
+        '4',NC,
+        '5',NC,
+        '6',NC,
+        '7',NC,
+        '8',NC,
+        '9',NC,
+    '1','0',NC,
+    '1','1',NC,
+    '1','2',NC,
+    '1','3',NC,
+    '1','4',NC,
+    '1','5',NC,
+    NC
 };
 
-hw_reg_set RegBits[] ={
-        HW_D( HW_G0 ),
-        HW_D( HW_G1 ),
-        HW_D( HW_G2 ),
-        HW_D( HW_G3 ),
-        HW_D( HW_G4 ),
-        HW_D( HW_G5 ),
-        HW_D( HW_G6 ),
-        HW_D( HW_G7 ),
-        HW_D( HW_G8 ),
-        HW_D( HW_G9 ),
-        HW_D( HW_G10 ),
-        HW_D( HW_G11 ),
-        HW_D( HW_G12 ),
-        HW_D( HW_G13 ),
-        HW_D( HW_G14 ),
-        HW_D( HW_G15 ),
+hw_reg_set RegBits[] = {
+    HW_D( HW_G0 ),
+    HW_D( HW_G1 ),
+    HW_D( HW_G2 ),
+    HW_D( HW_G3 ),
+    HW_D( HW_G4 ),
+    HW_D( HW_G5 ),
+    HW_D( HW_G6 ),
+    HW_D( HW_G7 ),
+    HW_D( HW_G8 ),
+    HW_D( HW_G9 ),
+    HW_D( HW_G10 ),
+    HW_D( HW_G11 ),
+    HW_D( HW_G12 ),
+    HW_D( HW_G13 ),
+    HW_D( HW_G14 ),
+    HW_D( HW_G15 ),
 };

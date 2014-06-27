@@ -31,31 +31,31 @@
 
 
 hw_reg_set DefaultParms[] = {
-        HW_D( HW_EMPTY )
+    HW_D( HW_EMPTY )
 };
 
 hw_reg_set DefaultVarParms[] = {
-        HW_D( HW_EMPTY )
+    HW_D( HW_EMPTY )
 };
 
 hw_reg_set DefaultLinkage[] = {
-        HW_D( HW_R16 ),
-        HW_D( HW_R17 ),
-        HW_D( HW_R18 ),
-        HW_D( HW_R19 ),
-        HW_D( HW_R20 ),
-        HW_D( HW_R21 ),
+    HW_D( HW_R16 ),
+    HW_D( HW_R17 ),
+    HW_D( HW_R18 ),
+    HW_D( HW_R19 ),
+    HW_D( HW_R20 ),
+    HW_D( HW_R21 ),
 };
 
 #define NC '\0'
 
 char Registers[] = {
-     1,        's','p',NC,
-     2,        'r','t','o','c',NC,
-     0,        NC
+    1,      's','p',NC,
+    2,      'r','t','o','c',NC,
+    0,      NC
 };
 
-hw_reg_set RegBits[] ={
+hw_reg_set RegBits[] = {
     HW_D( HW_R0 ),
     HW_D( HW_R1 ),
     HW_D( HW_R2 ),

@@ -83,7 +83,7 @@ char Registers[] = {
      0, NC
 };
 
-hw_reg_set RegBits[] ={
+hw_reg_set RegBits[] = {
     HW_D( HW_R0 ),
     HW_D( HW_R1 ),
     HW_D( HW_R2 ),
