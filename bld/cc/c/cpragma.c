@@ -38,7 +38,7 @@
 
 struct  pack_info {
     struct pack_info *next;
-    int         pack_amount;
+    align_type       pack_amount;
 } *PackInfo;
 
 struct enums_info {
@@ -277,17 +277,16 @@ void SetPackAmount( unsigned amount )
 /***********************************/
 {
     if( amount <= 1 ) {
-        amount = 1;
+        PackAmount = 1;
     } else if( amount <= 2 ) {
-        amount = 2;
+        PackAmount = 2;
     } else if( amount <= 4 ) {
-        amount = 4;
+        PackAmount = 4;
     } else if( amount <= 8 ) {
-        amount = 8;
+        PackAmount = 8;
     } else {
-        amount = 16;
+        PackAmount = 16;
     }
-    PackAmount = (align_type)amount;
 }
 
 local void getPackArgs( void )

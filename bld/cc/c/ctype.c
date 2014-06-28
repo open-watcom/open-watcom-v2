@@ -878,15 +878,18 @@ unsigned GetTypeAlignment( TYPEPTR typ )
 
 local unsigned FieldAlign( unsigned next_offset, FIELDPTR field, unsigned *worst_alignment )
 {
-    unsigned    pack_adjustment;
-    unsigned    align;
+    align_type  pack_adjustment;
+    align_type  align;
+    unsigned    type_align;
 
     pack_adjustment = PackAmount;
-    align = GetTypeAlignment( field->field_type );
-    if( align > pack_adjustment ) { // can't be any bigger than pack( x )
+    type_align = GetTypeAlignment( field->field_type );
+    if( type_align > pack_adjustment ) { // can't be any bigger than pack( x )
         align = pack_adjustment;
+    } else {
+        align = type_align;
     }
-    if( align > *worst_alignment ) {    /* 24-jul-91 */
+    if( align > *worst_alignment ) {
         *worst_alignment = align;
     }
     if( align != 1 ) {
@@ -1118,11 +1121,12 @@ local TYPEPTR StructDecl( int decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
-    int         saved_packamount;
+    align_type  saved_packamount;
     TAGPTR      TagLookup( void );
 
-    saved_packamount = PackAmount;                      /* 20-nov-91 */
-    if( packed )  PackAmount = 1;
+    saved_packamount = PackAmount;
+    if( packed )
+        PackAmount = 1;
     NextToken();
     if( CurToken == T_LEFT_BRACE ) {
         tag = NullTag();
@@ -1151,12 +1155,12 @@ local TYPEPTR StructDecl( int decl_typ, bool packed )
             if( typ == NULL ) {
                 typ = TypeNode( decl_typ, NULL );
             } else {
-                if( typ->decl_type != decl_typ ) {              /* 18-jan-89 */
+                if( typ->decl_type != decl_typ ) {
                     CErr2p( ERR_DUPLICATE_TAG, tag->name );
                 }
             }
             tag->sym_type = typ;
-            typ->u.tag = tag;   /* FWC 19-jan-87 */
+            typ->u.tag = tag;
             PackAmount = saved_packamount;
             return( typ );
         }
@@ -1171,7 +1175,7 @@ local TYPEPTR StructDecl( int decl_typ, bool packed )
     typ->u.tag = tag;
     tag->u.field_list = NULL;
     tag->size = GetFields( typ );
-    PackAmount = saved_packamount;                      /* 20-nov-91 */
+    PackAmount = saved_packamount;
     return( typ );
 }
 
@@ -1255,11 +1259,12 @@ local TYPEPTR ComplexDecl( int decl_typ, bool packed )
 {
     TYPEPTR     typ;
     TAGPTR      tag;
-    int         saved_packamount;
+    align_type  saved_packamount;
     TAGPTR      TagLookup( void );
 
     saved_packamount = PackAmount;
-    if( packed )  PackAmount = 1;
+    if( packed )
+        PackAmount = 1;
 
     tag = NullTag();
 

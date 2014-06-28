@@ -66,6 +66,8 @@ typedef unsigned char   bitfield_width;
 
 typedef unsigned char   unroll_type;
 
+typedef unsigned char   align_type;
+
 /* CONST, VOLATILE can appear in typ->u.p.decl_flags and leaf->leaf_flags.
 *  NEAR, FAR, HUGE can appear in typ->u.p.decl_flags, leaf->leaf_flags,
 *                               and sym->attrib.

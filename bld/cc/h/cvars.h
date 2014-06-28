@@ -347,8 +347,8 @@ global char         *DependHeaderPath;  /* path to prepend if included header ha
 global char         *DependTarget;      /* name of target in make style autodep */
 global char         *SrcDepName;        /* name of first depend (sourcefile)*/
 global char         DependForceSlash;   /* type of slash to force to in depend output */
-global int          PackAmount;         /* current packing alignment */
-global int          GblPackAmount;      /* packing alignment given on command line */
+global align_type   PackAmount;         /* current packing alignment */
+global align_type   GblPackAmount;      /* packing alignment given on command line */
 global textsegment  *TextSegList;       /* list of #pragma alloc_text segs*/
 
 typedef enum {
