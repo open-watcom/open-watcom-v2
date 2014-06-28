@@ -214,8 +214,10 @@ static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
                     buf[ j ] = c;
                 ++j;
                 c = c >> 8;
+#if _CPU == 370
             } else {
                 _ASCIIOUT( c );
+#endif
             }
         }
         if( buf != NULL )

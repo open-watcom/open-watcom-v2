@@ -1285,8 +1285,10 @@ static TOKEN CharConst( int char_type )
                 ++i;
                 value = (value << 8) + ((c & 0xFF00) >> 8);
                 c &= 0x00FF;
+#if _CPU == 370
             } else {
                 _ASCIIOUT( c );
+#endif
             }
             SaveNextChar();
         }
@@ -1464,7 +1466,9 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
             break;
 #endif
         }
+#if _CPU == 370
         _ASCIIOUT( c );
+#endif
         n = c;
         if( pbuf == NULL ) {
             SaveNextChar();

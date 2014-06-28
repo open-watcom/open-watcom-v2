@@ -24,11 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  EBCDIC<->ASCII character conversion in-line code macro
 *
 ****************************************************************************/
 
+
+/* 
+ * source code for conversion tables are in cg/s37/c directory
+ */
 
 #if _CPU != 370
     #define _ASCIIOUT( c )
