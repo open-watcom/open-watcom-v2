@@ -114,15 +114,6 @@ typedef struct  switch_entry {
     char                *case_format;   /* "%ld" or "%lu" */
 } SWITCHDEFN, *SWITCHPTR;
 
-typedef struct  string_literal {
-    struct string_literal *next_string;
-    BACK_HANDLE         back_handle;    /* back handle for string */
-    target_size         length;         /* length of literal string */
-    unsigned short      ref_count;      /* reference count */
-    char                flags;          /* 0 or FLAG_FAR */
-    char                *literal;       /* actual literal string */
-} STRING_LITERAL;
-
 // if we end up converting the string to binary to store in long_double
 // then at the same time, we should set string[0] to '\0' to indicate
 // that the string has been invalidated.

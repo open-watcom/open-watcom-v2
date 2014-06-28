@@ -158,7 +158,14 @@ typedef enum string_flags {     // string literal flags
     STRLIT_WIDE         = 0x80, // must not conflict with FLAG_MEM_MODEL
 } string_flags;
 
-typedef struct string_literal *STR_HANDLE;
+typedef struct  string_literal {
+    struct string_literal *next_string;
+    BACK_HANDLE         back_handle;    /* back handle for string */
+    target_size         length;         /* length of literal string */
+    unsigned short      ref_count;      /* reference count */
+    char                flags;          /* 0 or FLAG_FAR */
+    char                *literal;       /* actual literal string */
+} STRING_LITERAL, *STR_HANDLE;
 
 #define SYM_INVALID     ((SYM_HANDLE)(pointer_int)-1)    // invalid symbol; never a real sym
 
