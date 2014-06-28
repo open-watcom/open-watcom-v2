@@ -895,7 +895,7 @@ static void EnsureEndOfSwitch( void )
 static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = 1; }
 #endif
 
-static void SetPackAmount( void )   { PackAmount = OptValue; }
+static void Set_ZP( void )          { SetPackAmount( OptValue ); }
 static void Set_DbgFmt( void )      { SwData.dbg_fmt = OptValue; }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1760,7 +1760,7 @@ static struct option const CFE_Options[] = {
     { "zl",     0,              Set_ZL },
     { "zm",     0,              Set_ZM },
     { "zpw",    0,              Set_ZPW },
-    { "zp=#",   1,              SetPackAmount },
+    { "zp=#",   1,              Set_ZP },
 #if _CPU == _AXP
     { "zps",    0,              SetStructPack },
 #endif

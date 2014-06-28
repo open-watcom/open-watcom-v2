@@ -723,6 +723,7 @@ extern void         EnableDisableMessage(int,unsigned);
 extern void         AddLibraryName( const char *, char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
+extern void         SetPackAmount( unsigned amount );
 
 /* cprag??? */
 extern void         AsmStmt(void);

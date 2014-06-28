@@ -273,10 +273,10 @@ local void PragComment( void )
     }
 }
 
-local void SetPackAmount( void )
-/******************************/
+void SetPackAmount( unsigned amount )
+/***********************************/
 {
-    PackAmount = Constant;
+    PackAmount = amount;
     switch( PackAmount ) {
     case 1:
     case 2:
@@ -305,7 +305,7 @@ local void getPackArgs( void )
             NextToken();
             PPCTL_DISABLE_MACROS();
             if( ExpectingConstant() ) {
-                SetPackAmount();
+                SetPackAmount( Constant );
             }
             NextToken();
         }
@@ -329,7 +329,7 @@ local void PragPack( void )
         NextToken();
         PPCTL_DISABLE_MACROS();
         if( CurToken == T_CONSTANT ) {
-            SetPackAmount();
+            SetPackAmount( Constant );
             NextToken();
         } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
             getPackArgs();
