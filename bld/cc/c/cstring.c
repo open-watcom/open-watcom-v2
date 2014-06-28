@@ -37,7 +37,6 @@
 #include "asciiout.h"
 #include "unicode.h"                                    /* 05-jun-91 */
 
-static int RemoveEscapes( char *buf, const char *inbuf, size_t length );
 
 static int OpenUnicodeFile( const char *filename )
 {
@@ -109,64 +108,6 @@ void FreeLiteral( STRING_LITERAL *str_lit )
     CMemFree( str_lit );
 }
 
-STRING_LITERAL *GetLiteral( void )
-{
-    unsigned            len, len2;
-    char                *s;
-    STRING_LITERAL      *str_lit;
-    STRING_LITERAL      *p;
-    STRING_LITERAL      *q;
-    int                 is_wide;
-
-    /* first we store the whole string in a linked list to see if
-       the end result is wide or not wide */
-    p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
-    q = NULL;
-    is_wide = 0;
-    do {
-        /* if one component is wide then the whole string is wide */
-        if( CompFlags.wide_char_string )
-            is_wide = 1;
-        if( q != NULL ) {
-            p = CMemAlloc( sizeof( STRING_LITERAL ) );
-            q->next_string = p;
-        }
-        q = p;
-        p->length = CLitLength;
-        p->next_string = NULL;
-        p->literal = Buffer;
-        Buffer = CMemAlloc( BufSize );
-    } while( NextToken() == T_STRING );
-    CompFlags.wide_char_string = is_wide;
-    /* then remove escapes (C99: translation phase 5), and only then
-       concatenate (translation phase 6), not the other way around! */
-    len = 1;
-    s = NULL;
-    q = str_lit;
-    do {
-        len2 = RemoveEscapes( NULL, q->literal, q->length );
-        --len;
-        if( is_wide && len != 0 ) {
-            --len;
-        }
-        s = CMemRealloc( s, len + len2 + 1 );
-        RemoveEscapes( &s[len], q->literal, q->length );
-        len += len2;
-        p = q->next_string;
-        if( q != str_lit )
-            FreeLiteral( q );
-        q = p;
-    } while ( q );
-    CLitLength = len;
-    CMemFree( str_lit->literal );
-    str_lit->literal = s;
-    str_lit->length = len;
-    str_lit->flags = 0;
-    str_lit->back_handle = 0;
-    str_lit->ref_count = 0;
-    return( str_lit );
-}
-
 static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
 {
     int                 c;
@@ -230,6 +171,64 @@ static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
         }
     }
     return( j );
+}
+
+STRING_LITERAL *GetLiteral( void )
+{
+    unsigned            len, len2;
+    char                *s;
+    STRING_LITERAL      *str_lit;
+    STRING_LITERAL      *p;
+    STRING_LITERAL      *q;
+    int                 is_wide;
+
+    /* first we store the whole string in a linked list to see if
+       the end result is wide or not wide */
+    p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
+    q = NULL;
+    is_wide = 0;
+    do {
+        /* if one component is wide then the whole string is wide */
+        if( CompFlags.wide_char_string )
+            is_wide = 1;
+        if( q != NULL ) {
+            p = CMemAlloc( sizeof( STRING_LITERAL ) );
+            q->next_string = p;
+        }
+        q = p;
+        p->length = CLitLength;
+        p->next_string = NULL;
+        p->literal = Buffer;
+        Buffer = CMemAlloc( BufSize );
+    } while( NextToken() == T_STRING );
+    CompFlags.wide_char_string = is_wide;
+    /* then remove escapes (C99: translation phase 5), and only then
+       concatenate (translation phase 6), not the other way around! */
+    len = 1;
+    s = NULL;
+    q = str_lit;
+    do {
+        len2 = RemoveEscapes( NULL, q->literal, q->length );
+        --len;
+        if( is_wide && len != 0 ) {
+            --len;
+        }
+        s = CMemRealloc( s, len + len2 + 1 );
+        RemoveEscapes( &s[len], q->literal, q->length );
+        len += len2;
+        p = q->next_string;
+        if( q != str_lit )
+            FreeLiteral( q );
+        q = p;
+    } while ( q );
+    CLitLength = len;
+    CMemFree( str_lit->literal );
+    str_lit->literal = s;
+    str_lit->length = len;
+    str_lit->flags = 0;
+    str_lit->back_handle = 0;
+    str_lit->ref_count = 0;
+    return( str_lit );
 }
 
 static TYPEPTR StringLeafType( void )
