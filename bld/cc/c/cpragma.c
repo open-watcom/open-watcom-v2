@@ -276,17 +276,18 @@ local void PragComment( void )
 void SetPackAmount( unsigned amount )
 /***********************************/
 {
-    PackAmount = amount;
-    switch( PackAmount ) {
-    case 1:
-    case 2:
-    case 4:
-    case 8:
-    case 16:
-        break;
-    default:
-        PackAmount = 1;
+    if( amount <= 1 ) {
+        amount = 1;
+    } else if( amount <= 2 ) {
+        amount = 2;
+    } else if( amount <= 4 ) {
+        amount = 4;
+    } else if( amount <= 8 ) {
+        amount = 8;
+    } else {
+        amount = 16;
     }
+    PackAmount = (align_type)amount;
 }
 
 local void getPackArgs( void )
