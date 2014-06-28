@@ -150,7 +150,7 @@ typedef struct  opnode {
         int64           long64_value;   // OPR_PUSHINT
         uint64          ulong64_value;  // OPR_PUSHINT
         FLOATVAL        *float_value;   // OPR_PUSHFLOAT
-        STRING_LITERAL  *string_handle; // OPR_PUSHSTRING
+        STR_HANDLE      string_handle;  // OPR_PUSHSTRING
         TYPEPTR         result_type;    // for operators(+-*/%|&^) etc
         TYPEPTR         compare_type;   // OPR_CMP
         LABEL_INDEX     label_count;    // OPR_LABELCOUNT

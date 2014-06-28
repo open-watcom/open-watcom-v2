@@ -634,7 +634,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
         break;
     case OPR_POINTS:
         if( tree->left->op.opr == OPR_PUSHSTRING ) {    // *"abc"
-            STRING_LITERAL      *string;
+            STR_HANDLE  string;
 
             string = tree->left->op.u2.string_handle;
             value = string->literal[0];

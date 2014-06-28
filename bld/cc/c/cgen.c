@@ -677,7 +677,7 @@ static cg_name PushConstant( OPNODE *node )
 
 static cg_name PushString( OPNODE *node )
 {
-    STRING_LITERAL      *string;
+    STR_HANDLE      string;
 
     string = node->u2.string_handle;
     Emit1String( string );

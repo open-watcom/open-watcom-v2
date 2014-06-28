@@ -767,8 +767,8 @@ extern LABEL_INDEX  NextLabel(void);
 extern void         StmtInit( void );
 
 /* cstring */
-extern void         FreeLiteral(STRING_LITERAL *);
-extern STRING_LITERAL *GetLiteral(void);
+extern void         FreeLiteral(STR_HANDLE);
+extern STR_HANDLE   GetLiteral(void);
 extern void         LoadUnicodeTable(unsigned);
 extern void         StringInit(void);
 extern TREEPTR      StringLeaf(int);

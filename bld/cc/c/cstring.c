@@ -102,7 +102,7 @@ void StringInit( void )
     }
 }
 
-void FreeLiteral( STRING_LITERAL *str_lit )
+void FreeLiteral( STR_HANDLE str_lit )
 {
     CMemFree( str_lit->literal );
     CMemFree( str_lit );
@@ -173,13 +173,13 @@ static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
     return( j );
 }
 
-STRING_LITERAL *GetLiteral( void )
+STR_HANDLE GetLiteral( void )
 {
     unsigned            len, len2;
     char                *s;
-    STRING_LITERAL      *str_lit;
-    STRING_LITERAL      *p;
-    STRING_LITERAL      *q;
+    STR_HANDLE          str_lit;
+    STR_HANDLE          p;
+    STR_HANDLE          q;
     int                 is_wide;
 
     /* first we store the whole string in a linked list to see if
@@ -250,15 +250,15 @@ static TYPEPTR StringLeafType( void )
 }
 
 
-static unsigned CalcStringHash( STRING_LITERAL *lit )
+static unsigned CalcStringHash( STR_HANDLE lit )
 {
     return( hashpjw( lit->literal ) % STRING_HASH_SIZE );
 }
 
 TREEPTR StringLeaf( int flags )
 {
-    STRING_LITERAL      *new_lit;
-    STRING_LITERAL      *strlit;
+    STR_HANDLE          new_lit;
+    STR_HANDLE          strlit;
     TREEPTR             leaf_index;
     unsigned            hash;
 

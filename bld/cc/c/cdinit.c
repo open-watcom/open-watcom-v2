@@ -1061,7 +1061,7 @@ local bool WCharArray( TYPEPTR typ )
 local void InitCharArray( TYPEPTR typ )
 {
     unsigned            len;
-    STRING_LITERAL      *str_lit;
+    STR_HANDLE          str_lit;
     unsigned            size;
     DATA_QUAD           dq;
 
@@ -1096,7 +1096,7 @@ local void InitWCharArray( TYPEPTR typ )
 {
     unsigned            len;
     unsigned            i;
-    STRING_LITERAL      *str_lit;
+    STR_HANDLE          str_lit;
     unsigned            value;
     unsigned short      *pwc;
     unsigned            size;
