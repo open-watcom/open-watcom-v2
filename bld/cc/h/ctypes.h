@@ -148,14 +148,16 @@ typedef enum stg_classes {  // used in sym.stg_class
 } stg_classes;
 
 typedef enum declspec_class {      //note declspec field 2-bits in SYM_ENTRY
-    DECLSPEC_NONE       =    0,
+    DECLSPEC_NONE       = 0,
     DECLSPEC_DLLIMPORT,
     DECLSPEC_DLLEXPORT,
     DECLSPEC_THREAD,
 } declspec_class;
 
-typedef enum string_flags {     // string literal flags
-    STRLIT_WIDE         = 0x80, // must not conflict with FLAG_MEM_MODEL
+typedef enum string_flags { // string literal flags
+    STRLIT_FAR     = 0x01,
+    STRLIT_CONST   = 0x02,
+    STRLIT_WIDE    = 0x04,
 } string_flags;
 
 typedef struct  string_literal {
@@ -163,7 +165,7 @@ typedef struct  string_literal {
     BACK_HANDLE         back_handle;    /* back handle for string */
     target_size         length;         /* length of literal string */
     unsigned short      ref_count;      /* reference count */
-    char                flags;          /* 0 or FLAG_FAR */
+    string_flags        flags;          /* 0 or FLAG_FAR */
     char                *literal;       /* actual literal string */
 } STRING_LITERAL, *STR_HANDLE;
 

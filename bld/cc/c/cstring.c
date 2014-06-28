@@ -255,7 +255,7 @@ static unsigned CalcStringHash( STR_HANDLE lit )
     return( hashpjw( lit->literal ) % STRING_HASH_SIZE );
 }
 
-TREEPTR StringLeaf( int flags )
+TREEPTR StringLeaf( string_flags flags )
 {
     STR_HANDLE          new_lit;
     STR_HANDLE          strlit;
@@ -267,13 +267,13 @@ TREEPTR StringLeaf( int flags )
     if( TargetSwitches & BIG_DATA ) {                   /* 06-oct-88 */
         if( !CompFlags.strings_in_code_segment ) {      /* 01-sep-89 */
             if( new_lit->length > DataThreshold ) {
-                flags |= FLAG_FAR;
+                flags |= STRLIT_FAR;
             }
         }
     }
     if( CompFlags.wide_char_string )
         flags |= STRLIT_WIDE;
-    if( flags & FLAG_FAR )
+    if( flags & STRLIT_FAR )
         CompFlags.far_strings = 1;
     hash = CalcStringHash( new_lit );
     if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {    /* 24-mar-92 */

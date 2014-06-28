@@ -37,6 +37,7 @@
 #include "standard.h"
 #include "cgprotos.h"
 #include "feprotos.h"
+#include "cgen.h"
 
 static void EmitDQuad( DATA_QUAD *dq );
 

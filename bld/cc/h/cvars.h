@@ -576,7 +576,6 @@ extern bool         BoolConstExpr( void );
 extern void         DoCompile(void);
 extern void         EmitInit(void);
 extern void         EmitAbort(void);
-extern void         EmitStrPtr(STR_HANDLE,int);
 extern int          EmitBytes(STR_HANDLE);
 extern void         GenInLineFunc( SYM_HANDLE sym_handle );
 extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
@@ -771,7 +770,7 @@ extern void         FreeLiteral(STR_HANDLE);
 extern STR_HANDLE   GetLiteral(void);
 extern void         LoadUnicodeTable(unsigned);
 extern void         StringInit(void);
-extern TREEPTR      StringLeaf(int);
+extern TREEPTR      StringLeaf(string_flags);
 
 /* csym */
 extern void         SymInit(void);

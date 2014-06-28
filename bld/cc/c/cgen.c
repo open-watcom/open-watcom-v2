@@ -1450,7 +1450,7 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     CGenType( typ );    /* create refno for ARRAY type, etc */
     if( sym->attribs.stg_class != SC_EXTERN     &&  /* if not imported */
         sym->attribs.stg_class != SC_TYPEDEF ) {
-        if( ( sym->flags & SYM_FUNCTION ) == 0 ) {
+        if( (sym->flags & SYM_FUNCTION) == 0 ) {
             segment = sym->u.var.segment;
             if( (sym->flags & SYM_INITIALIZED) == 0 || segment == SEG_BSS) {
                 BESetSeg( segment );
@@ -1886,15 +1886,15 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 local segment_id StringSegment( STR_HANDLE strlit )
 {
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
-    if( strlit->flags & FLAG_FAR )
+    if( strlit->flags & STRLIT_FAR )
         return( FarStringSegment );
 #endif
-    if( strlit->flags & FLAG_CONST )
-        return( SEG_CODE );                 /* 01-sep-89*/
+    if( strlit->flags & STRLIT_CONST )
+        return( SEG_CODE );
     return( SEG_CONST );
 }
 
-void EmitStrPtr( STR_HANDLE str_handle, int pointer_type )
+void EmitStrPtr( STR_HANDLE str_handle, cg_type pointer_type )
 {
     str_handle->ref_count++;
     Emit1String( str_handle );
@@ -1906,7 +1906,7 @@ local void Emit1String( STR_HANDLE str_handle )
 {
     if( str_handle->back_handle == 0 ) {
         str_handle->back_handle = BENewBack( NULL );
-        if( ! (str_handle->flags & FLAG_CONST) ) {
+        if( !(str_handle->flags & STRLIT_CONST) ) {
             EmitLiteral( str_handle );
         }
     }
@@ -1958,8 +1958,7 @@ local void FreeStrings( void )
 local void DumpCS_Strings( STR_HANDLE strlit )
 {
     while( strlit != NULL ) {
-        if( strlit->flags & FLAG_CONST  &&
-            strlit->ref_count != 0 ) {          /* 17-aug-91 */
+        if( (strlit->flags & STRLIT_CONST) && strlit->ref_count != 0 ) {
             strlit->back_handle = BENewBack( NULL );
             EmitLiteral( strlit );
         }

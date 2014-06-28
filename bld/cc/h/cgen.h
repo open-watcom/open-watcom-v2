@@ -29,5 +29,6 @@
 ****************************************************************************/
 
 
-extern  cg_type PtrType( TYPEPTR typ, type_modifiers flags );
-extern  cg_type CGenType( TYPEPTR typ );
+extern cg_type  PtrType( TYPEPTR typ, type_modifiers flags );
+extern cg_type  CGenType( TYPEPTR typ );
+extern void     EmitStrPtr(STR_HANDLE,cg_type);

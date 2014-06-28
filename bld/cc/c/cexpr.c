@@ -1581,7 +1581,7 @@ local TREEPTR ExprOpnd( void )
             break;
         case T_STRING:
             if( CompFlags.strings_in_code_segment ) {
-                tree = StringLeaf( FLAG_CONST );        /* 01-sep-89 */
+                tree = StringLeaf( STRLIT_CONST );
             } else {
                 tree = StringLeaf( 0 );
             }
