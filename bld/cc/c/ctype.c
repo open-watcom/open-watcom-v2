@@ -743,7 +743,7 @@ TAGPTR NullTag( void )
 TAGPTR VfyNewTag( TAGPTR tag, int tag_type )
 {
     if( tag->sym_type != NULL ) {               /* tag already exists */
-        if( tag->level != SymLevel ) {
+        if( ChkSymLevel( tag, != ) ) {
             tag = NewTag( tag->name, tag->hash );
         } else if( tag->size != 0  ||   /* already defined */
                    tag->sym_type->decl_type != tag_type ) { /* 18-jan-89 */
@@ -1142,7 +1142,7 @@ local TYPEPTR StructDecl( int decl_typ, bool packed )
         }
         if( CurToken != T_LEFT_BRACE ) {
             if( CurToken == T_SEMI_COLON ) {
-                if( tag->level != SymLevel ) {
+                if( ChkSymLevel( tag, != ) ) {
                     tag = NewTag( tag->name, tag->hash );
                 }
             }
@@ -1316,7 +1316,7 @@ void VfyNewSym( id_hash_idx h, const char *name )
     ENUMPTR     ep;
 
     ep = EnumLookup( h, name );
-    if( ep != NULL && ep->parent->level == SymLevel ) {
+    if( ep != NULL && ChkSymLevel( ep->parent, == ) ) {
         SetDiagEnum( ep );
         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
         SetDiagPop();
@@ -1324,7 +1324,7 @@ void VfyNewSym( id_hash_idx h, const char *name )
     sym_handle = SymLook( h, name );
     if( sym_handle != 0 ) {
         SymGet( &sym, sym_handle );
-        if( sym.level == SymLevel ) {
+        if( ChkSymLevel( &sym, == ) ) {
             SetDiagSymbol( &sym, sym_handle );
             CErr2p( ERR_SYM_ALREADY_DEFINED, name );
             SetDiagPop();
@@ -1352,7 +1352,7 @@ void FreeTags( void )
 
     for( h = 0; h <= ID_HASH_SIZE; ++h ) {
         for( ; (tag = TagHash[h]) != NULL; ) {
-            if( tag->level < SymLevel )
+            if( ChkSymLevel( tag, < ) )
                 break;
             TagHash[h] = tag->next_tag;
             tag->next_tag = DeadTags;

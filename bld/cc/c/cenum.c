@@ -324,7 +324,7 @@ void FreeEnums( void )
 
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( ; (esym = EnumTable[h]) != NULL; ) {
-            if( esym->parent->level != SymLevel )
+            if( ChkSymLevel( esym->parent, != ) )
                 break;
             EnumTable[h] = esym->next_enum;
         }
@@ -341,7 +341,7 @@ void DumpEnumTable( void )
     puts( "ENUM TABLE DUMP" );
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
-            if( esym->parent->level == SymLevel ) {
+            if( ChkSymLevel( esym->parent, == ) ) {
                 printf( "%s = %d\n", esym->name, esym->value );
             }
         }

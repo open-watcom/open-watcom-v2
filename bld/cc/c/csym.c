@@ -408,7 +408,7 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
     sym->info.hash = h;
     /* add name to head of list */
     for( head = &HashTab[h]; *head != NULL; head = &(*head)->next_sym ) {
-        if( (*head)->level <= SymLevel ) {
+        if( ChkSymLevel( *head, <= ) ) {
             break;
         }
     }
@@ -750,7 +750,7 @@ local SYM_HASHPTR GetSymList( void )                    /* 25-jun-92 */
     sym_list = NULL;
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( hsym = HashTab[h]; hsym != NULL; hsym = next_hsymptr ) {
-            if( hsym->level != SymLevel ) break;
+            if( ChkSymLevel( hsym, != ) ) break;
             next_hsymptr = hsym->next_sym;
             hsym->next_sym = sym_list;
             sym_list = hsym;

@@ -360,7 +360,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     old_sym_handle = SymLook( sym->info.hash, sym->name );
     if( old_sym_handle != 0 ) {                         /* 28-feb-94 */
         SymGet( &old_sym, old_sym_handle );
-        if( old_sym.level == SymLevel ) {
+        if( ChkSymLevel( &old_sym, == ) ) {
             SetDiagSymbol( &old_sym, old_sym_handle );
             if( old_sym.attribs.stg_class == SC_EXTERN  &&  stg_class == SC_EXTERN ) {
                 if( ! IdenticalType( old_sym.sym_type, sym->sym_type ) ) {
@@ -378,8 +378,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     if( old_sym_handle != 0 ) {
         SymGet( &old_sym, old_sym_handle );
         SetDiagSymbol( &old_sym, old_sym_handle );
-        if( old_sym.level == SymLevel           /* 28-mar-88 */
-        ||      stg_class == SC_EXTERN ) {              /* 12-dec-88 */
+        if( ChkSymLevel( &old_sym, == ) || stg_class == SC_EXTERN ) {
             old_attrs = old_sym.mods;
             new_attrs = sym->mods;
             /* add default far/near flags depending on data model */
@@ -427,7 +426,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SetDiagSymbol( &old_sym, old_sym_handle );
         old_def = VerifyType( sym->sym_type, old_sym.sym_type, sym );
         SetDiagPop();
-        if( !old_def && old_sym.level == SymLevel ) { /* 06-jul-88 AFS */
+        if( !old_def && ChkSymLevel( &old_sym, == ) ) {
             /* new symbol's type supersedes old type */
             old_sym.sym_type = sym->sym_type;
             if( (old_sym.flags & SYM_FUNCTION) ) {
@@ -601,8 +600,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                 otyp = old_sym.sym_type;        /* skip typedefs 25-sep-92 */
                 SKIP_TYPEDEFS( otyp );
                 if( old_sym.attribs.stg_class == SC_TYPEDEF &&
-                    old_sym.level == SymLevel &&
-                    IdenticalType( typ, otyp ) ) {
+                    ChkSymLevel( &old_sym, == ) && IdenticalType( typ, otyp ) ) {
                     return( 0 );        /* indicate already in symbol tab */
                 }
             }

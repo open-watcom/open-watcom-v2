@@ -135,7 +135,8 @@ global int          EnumCount;          /* total # of enumerated symbols */
 global int          SizeOfCount;        /* # of nested sizeof() expressions  */
 global int          NestLevel;          /* pre-processing level of #if */
 global int          SkipLevel;          /* pre-processing level of #if to skip to */
-global int          SymLevel;           /* current lex level (# of nested {) */
+global id_level_stype SymLevel;         /* current lex level (# of nested {) */
+#define ChkSymLevel(p,x)  ((p)->level x (id_level_type)SymLevel)
 global id_hash_idx  HashValue;          /* hash value for identifier */
 global mac_hash_idx MacHashValue;       /* hash value for macro name */
 global char         *SavedId;           /* saved id when doing look ahead */
