@@ -1720,24 +1720,24 @@ void ScanInit( void )
 // called by CollectParms() to gather tokens for macro parms
 // and CDefine() to gather tokens for macro definition
 // example usage:
-//      int ppscan_mode;
+//      bool ppscan_mode;
 //      ppscan_mode = InitPPScan();
 //      CollectParms();
 //      FiniPPScan( ppscan_mode );
-int InitPPScan( void )
+bool InitPPScan( void )
 {
     if( ScanFunc[SCAN_NUM] == ScanNum ) {
         ScanFunc[SCAN_NUM] = ScanPPDigit;
         ScanFunc[SCAN_DOT] = ScanPPDot;
-        return( 1 );            // indicate changed to PP mode
+        return( TRUE );         // indicate changed to PP mode
     }
-    return( 0 );                // indicate already in PP mode
+    return( FALSE );            // indicate already in PP mode
 }
 
 // called when CollectParms() and CDefine() are finished gathering tokens
-void FiniPPScan( int ppscan_mode )
+void FiniPPScan( bool ppscan_mode )
 {
-    if( ppscan_mode == 1 ) {    // if InitPPScan() changed into PP mode
+    if( ppscan_mode ) {     // if InitPPScan() changed into PP mode
         ScanFunc[SCAN_NUM] = ScanNum; // reset back to normal mode
         ScanFunc[SCAN_DOT] = ScanDot;
     }

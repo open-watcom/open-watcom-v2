@@ -99,7 +99,7 @@ static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags
         TokenBuf[ len++ ] = '1';
         TokenBuf[ len++ ] = '\0';
     } else {
-        int ppscan_mode;
+        bool ppscan_mode;
 
         ppscan_mode = InitPPScan();
         ReScanInit( ++str );

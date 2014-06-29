@@ -198,7 +198,7 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
     return( OK );
 }
 
-static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, int topLevelCheck )
+static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
 {
     TYPEPTR         *plist1;
     TYPEPTR         *plist2;
@@ -244,18 +244,18 @@ static typecheck_err ChkCompatibleFunctionParms( TYPEPTR typ1, TYPEPTR typ2, int
     return( rc );
 }
 
-int ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 )
+bool ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 )
 {
     typ1 &= MASK_LANGUAGES;
     typ2 &= MASK_LANGUAGES;
     if( typ1 == typ2 ) {
-        return( 1 );
+        return( TRUE );
     } else if( typ1 == 0 ) {
         return( DftCallConv == GetLangInfo( typ2 ) );
     } else if( typ2 == 0 ) {
         return( DftCallConv == GetLangInfo( typ1 ) );
     } else  {
-        return( 0 );
+        return( FALSE );
     }
 }
 
@@ -335,7 +335,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             typ2_flags = typ2->u.fn.decl_flags;
             if( !ChkCompatibleLanguage( typ1_flags, typ2_flags ) ) {
                 ret_val = NO;
-            } else if( ChkCompatibleFunctionParms( typ1, typ2, 0 ) != TCE_OK ) {
+            } else if( ChkCompatibleFunctionParms( typ1, typ2, FALSE ) != TCE_OK ) {
                 ret_val = NO;
             } else if( !IdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
@@ -825,7 +825,7 @@ void ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         break;
     case AC:
         if( asgn_check ) {
-            unsigned    fsize_1 = 0, fsize_2 = 0;
+            bitfield_width  fsize_1 = 0, fsize_2 = 0;
 
             if( TypeSizeEx( typ2, &fsize_2 ) > TypeSizeEx( typ1, &fsize_1 ) ) {
                 CWarnP1( parmno, WARN_LOSE_PRECISION, ERR_LOSE_PRECISION );
@@ -974,7 +974,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
             break;
         }
         if( typ1->decl_type == TYPE_FUNCTION ) {
-            retcode = ChkCompatibleFunctionParms( typ1, typ2, 0 );
+            retcode = ChkCompatibleFunctionParms( typ1, typ2, FALSE );
             if( retcode != TCE_OK )
                 return( retcode );
             if( typ1->object == NULL  ||  typ2->object == NULL ) {
@@ -1021,7 +1021,7 @@ bool VerifyType( TYPEPTR new, TYPEPTR old, SYMPTR sym )
 }
 
 
-int ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, int topLevelCheck )
+bool ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck )
 {
     return( ChkCompatibleFunctionParms( typ1, typ2, topLevelCheck ) == TCE_OK );
 }

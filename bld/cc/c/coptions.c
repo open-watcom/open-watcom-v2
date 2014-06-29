@@ -142,7 +142,7 @@ static struct
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
-int EqualChar( int c )
+bool EqualChar( int c )
 {
     return( c == '#' || c == '=' );
 }

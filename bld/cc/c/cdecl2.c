@@ -144,7 +144,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     SetDiagPop();
 
     /* check types of parms, including promotion */
-    ChkCompatibleFunction( type_old, type_new, 1 );
+    ChkCompatibleFunction( type_old, type_new, TRUE );
 }
 
 
@@ -633,7 +633,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
     return( sym_handle );
 }
 
-int DeclList( SYM_HANDLE *sym_head )
+bool DeclList( SYM_HANDLE *sym_head )
 {
     decl_state          state;
     SYM_HANDLE          sym_handle;
@@ -656,10 +656,12 @@ int DeclList( SYM_HANDLE *sym_head )
                     }
                     NextToken();
                 }
-                if( CurToken == T_EOF ) return( 0 );
+                if( CurToken == T_EOF )
+                    return( FALSE );
                 FullDeclSpecifier( &info );
                 if( info.stg != SC_NULL  ||  info.typ != NULL ) break;
-                if( SymLevel != 0 ) return( 0 );
+                if( SymLevel != 0 )
+                    return( FALSE );
                 break;
             }
             state = DECL_STATE_NONE;
@@ -747,7 +749,7 @@ int DeclList( SYM_HANDLE *sym_head )
                     CurFuncHandle = sym_handle;
                     CurFunc = &CurFuncSym;
                     memcpy( CurFunc, &sym, sizeof( SYM_ENTRY ) );
-                    return( 1 );        /* indicate this is a function defn */
+                    return( TRUE );     /* indicate this is a function defn */
                 }
             }
             MustRecog( T_SEMI_COLON );
@@ -756,7 +758,7 @@ int DeclList( SYM_HANDLE *sym_head )
             NextToken();                /* skip over ';' */
         }
     }
-// can't get here!      return( 0 );
+// can't get here!      return( FALSE );
 }
 
 

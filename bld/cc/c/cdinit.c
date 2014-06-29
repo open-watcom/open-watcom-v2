@@ -94,7 +94,7 @@ local   void            InitWCharArray( TYPEPTR typ );
 local   void            StoreFloat( DATA_TYPE dtype, unsigned size );
 local   void            StoreInt64( TYPEPTR typ );
 
-int DataQuadsAvailable( void )
+bool DataQuadsAvailable( void )
 {
     DATA_QUAD_LIST  *dql = DataQuadSegs[ 0 ];
 

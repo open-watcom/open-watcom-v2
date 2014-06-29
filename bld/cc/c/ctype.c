@@ -1499,7 +1499,7 @@ unsigned TypeSize( TYPEPTR typ )
 }
 
 /* CarlYoung 31-Oct-03 */
-unsigned TypeSizeEx( TYPEPTR typ, unsigned *pFieldWidth )
+unsigned TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
 {
     unsigned    size;
 
@@ -1573,7 +1573,7 @@ unsigned TypeSizeEx( TYPEPTR typ, unsigned *pFieldWidth )
     case TYPE_UFIELD:
         size = CTypeSizes[ typ->u.f.field_type ];
         /* CarlYoung 31-Oct-03 */
-        if( pFieldWidth ) {
+        if( pFieldWidth != NULL ) {
             *pFieldWidth = typ->u.f.field_width;
         }
         break;

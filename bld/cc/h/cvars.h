@@ -404,8 +404,8 @@ global TREEPTR      CurFuncNode;
 extern void         SetDBChar(int);
 
 /*ccheck*/
-extern int          ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, int topLevelCheck );
-extern int          ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 );
+extern bool         ChkCompatibleFunction( TYPEPTR typ1, TYPEPTR typ2, bool topLevelCheck );
+extern bool         ChkCompatibleLanguage( type_modifiers typ1, type_modifiers typ2 );
 extern void         TernChk( TYPEPTR typ1, TYPEPTR typ2 );
 extern void         ChkCallParms(void);
 extern void         ChkRetType(TREEPTR);
@@ -473,7 +473,7 @@ extern void         ParsePgm(void);
 extern void         AdjParmType(SYMPTR sym);
 extern void         Chk_Struct_Union_Enum(TYPEPTR);
 extern void         Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state );
-extern int          DeclList(SYM_HANDLE *);
+extern bool         DeclList(SYM_HANDLE *);
 extern FIELDPTR     FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state );
 extern TYPEPTR      TypeName(void);
 
@@ -489,7 +489,7 @@ extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segment )
 /* cdinit */
 extern void         InitDataQuads(void);
 extern void         FreeDataQuads(void);
-extern int          DataQuadsAvailable(void);
+extern bool         DataQuadsAvailable(void);
 extern void         *StartDataQuadAccess( void );
 extern void         EndDataQuadAccess( void * );
 extern DATA_QUAD    *NextDataQuad(void);
@@ -693,7 +693,7 @@ extern char const   *CGetMsgPrefix( msg_codes msgcode );
 extern int          NameCmp(const void *,const void *,size_t);
 
 /* coptions */
-extern int          EqualChar(int);
+extern bool         EqualChar(int);
 extern void         GenCOptions(char **);
 extern void         MergeInclude(void);
 
@@ -736,8 +736,8 @@ extern void         PurgeMemory(void);
 
 /* cscan */
 extern void         ScanInit( void );
-extern int          InitPPScan( void );
-extern void         FiniPPScan( int );
+extern bool         InitPPScan( void );
+extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHash( const char *, size_t );
 extern unsigned     hashpjw( const char * );
 extern int          ESCChar( int, const unsigned char **, bool * );
@@ -821,7 +821,7 @@ extern TAGPTR       NullTag(void);
 extern TAGPTR       TagLookup(void);
 extern void         FreeTags(void);
 extern unsigned     TypeSize(TYPEPTR);
-extern unsigned     TypeSizeEx( TYPEPTR, unsigned *pFieldWidth );
+extern unsigned     TypeSizeEx( TYPEPTR, bitfield_width *pFieldWidth );
 extern TYPEPTR      GetIntTypeBySize( unsigned size, bool sign, bool exact );
 extern TAGPTR       VfyNewTag( TAGPTR, int );
 extern void         VfyNewSym( id_hash_idx, const char * );
@@ -836,9 +836,9 @@ extern void         CCusage( void );
 /* cutil */
 extern void         CErrSymName( int, SYMPTR,SYM_HANDLE );
 extern void         Expecting( char * );
-extern int          ExpectingToken( TOKEN );
+extern bool         ExpectingToken( TOKEN );
 extern void         ExpectingAfter( TOKEN, TOKEN );
-extern int          ExpectingConstant( void );
+extern bool         ExpectingConstant( void );
 extern void         ExpectEndOfLine( void );
 extern void         ExpectIdentifier( void );
 extern void         ExpectString( void );

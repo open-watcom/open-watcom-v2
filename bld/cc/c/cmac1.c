@@ -454,7 +454,7 @@ static MACRO_ARG *CollectParms(void)
     TOKEN           tok;
     TOKEN           prev_tok;
     mac_parm_count  parmno;
-    int             ppscan_mode;
+    bool            ppscan_mode;
     MACRO_ARG       *macro_parms;
     struct tokens   *token_head;
 
@@ -786,7 +786,7 @@ static MACRO_TOKEN *ReTokenGlueBuffer( char *gluebuf )
     MACRO_TOKEN *head;
     MACRO_TOKEN **lnk;
     MACRO_TOKEN *new;
-    int         ppscan_mode;
+    bool        ppscan_mode;
 
     ppscan_mode = InitPPScan();
     if( gluebuf == NULL )

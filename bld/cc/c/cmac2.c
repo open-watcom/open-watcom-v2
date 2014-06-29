@@ -326,7 +326,7 @@ local void CDefine( void )
     MPPTR           formal_parms;
     mac_parm_count  parm_count;
     macro_flags     mflags;
-    int             ppscan_mode;
+    bool            ppscan_mode;
     char            *token_buf;
     source_loc      macro_loc;
 
