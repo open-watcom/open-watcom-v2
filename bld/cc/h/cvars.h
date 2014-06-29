@@ -76,11 +76,6 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
     #define global  extern
 #endif
 
-#define MAX_PARM_LIST_HASH_SIZE 15
-#define ID_HASH_SIZE            241
-#define MACRO_HASH_SIZE         4093
-#define STRING_HASH_SIZE        1024
-
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
 global char         *PCH_Macros;        // macros loaded from pre-compiled header

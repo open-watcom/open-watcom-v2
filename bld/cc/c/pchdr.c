@@ -341,7 +341,7 @@ static void OutPutIncFileList( void )   // output primary include files
 
     for( ifile = IncFileList; ifile != NULL; ifile = next_file ) {
         next_file = ifile->nextfile;
-        len = offsetof( INCFILE, filename ) + ifile->len + 1;
+        len = offsetof( INCFILE, filename ) + strlen( ifile->filename ) + 1;
         ifile->nextfile = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( ifile, len );
         ifile->nextfile = next_file;

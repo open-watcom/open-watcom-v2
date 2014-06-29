@@ -40,6 +40,18 @@ typedef char    *SYM_NAMEPTR;
 #define L       I64LO32
 #define H       I64HI32
 
+#define ID_HASH_SIZE            241
+typedef unsigned char   id_hash_idx;
+
+#define MACRO_HASH_SIZE         4093
+typedef unsigned short  mac_hash_idx;
+
+#define STRING_HASH_SIZE        1024
+typedef unsigned short  str_hash_idx;
+
+#define MAX_PARM_LIST_HASH_SIZE 15
+typedef unsigned char   parm_hash_idx;
+
 typedef back_handle     BACK_HANDLE;
 typedef label_handle    LABEL_HANDLE;
 typedef char            *NAME_HANDLE;
@@ -52,20 +64,13 @@ typedef unsigned_64     uint64;
 typedef void            *SYM_HANDLE;
 typedef SYM_HANDLE      sym_handle;
 
-typedef unsigned char   id_hash_idx;
-typedef unsigned short  mac_hash_idx;
-typedef unsigned short  str_hash_idx;
-typedef unsigned char   parm_hash_idx;
-
 typedef signed int      id_level_stype;
 typedef unsigned char   id_level_type;
 typedef int             field_level_stype;
 typedef int             expr_level_type;
 
 typedef unsigned char   bitfield_width;
-
 typedef unsigned char   unroll_type;
-
 typedef unsigned char   align_type;
 
 /* CONST, VOLATILE can appear in typ->u.p.decl_flags and leaf->leaf_flags.
@@ -91,8 +96,8 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     LANG_CDECL      = 0x0040,       /* Y0040         Y0040 */
     LANG_PASCAL     = 0x0080,       /* Y0080         Y0080 */
     LANG_FORTRAN    = 0x00C0,       /* Y00C0         Y00C0 */
-    LANG_SYSCALL    = 0x0100,       /* Y0100         Y0100 */     /* 04-jul-91 */
-    LANG_STDCALL    = 0x0140,       /* Y0140         Y0140 */     /* 08-jan-92 */
+    LANG_SYSCALL    = 0x0100,       /* Y0100         Y0100 */
+    LANG_STDCALL    = 0x0140,       /* Y0140         Y0140 */
     LANG_OPTLINK    = 0x0180,       /* Y0180         Y0180 */
     LANG_FASTCALL   = 0x01C0,       /* Y01C0         Y01C0 */
     LANG_WATCALL    = 0x0200,       /* Y0200         Y0200 */
@@ -173,15 +178,10 @@ typedef struct  string_literal {
 
 #define SYM_INVALID     ((SYM_HANDLE)(pointer_int)-1)    // invalid symbol; never a real sym
 
-typedef struct parm_list {
-    struct parm_list        *next_parm;
-    struct type_definition  *parm_type;
-} parm_list;
-
 typedef struct array_info {
-    target_size     dimension;
-    int             refno;
-    bool            unspecified_dim;    // or flexible array member?
+    target_size         dimension;
+    int                 refno;
+    bool                unspecified_dim;    // or flexible array member?
 } array_info;
 
 typedef enum BASED_KIND {
@@ -252,13 +252,18 @@ typedef struct type_definition {
             type_modifiers  decl_flags; /* only symbols, fn and ptr have attribs */
         } fn;
         struct {                        /* TYPE_FIELD or TYPE_UFIELD */
-            unsigned char field_width;  /* # of bits */
-            unsigned char field_start;  /* # of bits to << by */
-            DATA_TYPE     field_type;   /* TYPE_xxxx of field */
+            bitfield_width  field_width;  /* # of bits */
+            bitfield_width  field_start;  /* # of bits to << by */
+            DATA_TYPE       field_type;   /* TYPE_xxxx of field */
         } f;
         array_info          *array;     /* TYPE_ARRAY, also used by pre-compiled header */
     } u;
 } TYPEDEFN, *TYPEPTR;
+
+typedef struct parm_list {
+    struct parm_list    *next_parm;
+    TYPEPTR             parm_type;
+} parm_list;
 
 extern  void WalkTypeList( void (*func)(TYPEPTR) );
 extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
@@ -281,6 +286,8 @@ typedef struct fname_list {
     char                name[1];
 } fname_list, *FNAMEPTR;
 
+#define DBIDX_NONE      ((unsigned)-1)
+
 typedef struct rdir_list {
     struct rdir_list    *next;      /* also used by pre-compiled header */
     char                name[1];
@@ -295,7 +302,6 @@ typedef struct ialias_list {
 
 typedef struct incfile {
     struct incfile      *nextfile;
-    int                 len;
     char                filename[1];
 } INCFILE;
 

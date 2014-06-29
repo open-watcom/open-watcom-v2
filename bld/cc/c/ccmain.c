@@ -1113,12 +1113,11 @@ void AddIncFile( INCFILE *ifile )
 void AddIncFileList( const char *filename )
 {
     INCFILE     *ifile;
-    int         len;
+    size_t      len;
 
-    len = strlen( filename );
-    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + len + 1 );
-    ifile->len = len;
-    strcpy( ifile->filename, filename );
+    len = strlen( filename ) + 1;
+    ifile = (INCFILE *)CMemAlloc( offsetof( INCFILE, filename ) + len );
+    memcpy( ifile->filename, filename, len );
     AddIncFile( ifile );
 }
 
