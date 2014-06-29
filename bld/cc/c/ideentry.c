@@ -289,7 +289,7 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
 IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
-    , IDEBool* fatal_error ){   // - addr[ fatality indication ]
+    , IDEBool* fatal_error ){   // - addr[fatality indication]
     
     //****************************
     // Do a compile of a file
@@ -326,7 +326,7 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
     ( IDEDllHdl hdl,            // - handle for this instantiation
     int argc,                   // - # of arguments
     char **args,                // - argument vector
-    IDEBool* fatal_error )      // - addr[ fatality indication ]
+    IDEBool* fatal_error )      // - addr[fatality indication]
 {
     //****************************
     // Do a compile of a file

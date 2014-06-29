@@ -173,9 +173,9 @@ bool VarFunc( SYMPTR sym )
     if( sym->flags & SYM_FUNCTION ) {
         p = sym->name;
         len = strlen( p );
-        hash = (len + VarFuncWeights[ p[0] - 'a' ] + VarFuncWeights[ p[len - 1] -'a' ]) & 31;
+        hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( strcmp( p, VarParmFuncs[ hash ] ) == 0 
+        if( strcmp( p, VarParmFuncs[hash] ) == 0 
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
             return( TRUE );
 

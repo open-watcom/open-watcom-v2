@@ -132,7 +132,7 @@ void DumpToken( void )
             value = Constant;
             printf( "%d\n", value );
         } else
-            printf( "'%s'\n", Tokens[ CurToken ] );
+            printf( "'%s'\n", Tokens[CurToken] );
     }
 }
 #endif
@@ -186,7 +186,7 @@ static TYPEPTR Object( TYPEPTR typ )
 
 static void put_keyword( int keyword, STRCHUNK *pch )
 {
-    ChunkSaveStrWord( pch, Tokens[ keyword ] );
+    ChunkSaveStrWord( pch, Tokens[keyword] );
 }
 
 
@@ -338,7 +338,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
         if( typ->type_flags & TF2_TYPE_PLAIN_CHAR ) {   /* 25-nov-94 */
             ChunkSaveStrWord( pch, "char" );
         } else {
-            ChunkSaveStrWord( pch, CTypeNames[ typ->decl_type ] );
+            ChunkSaveStrWord( pch, CTypeNames[typ->decl_type] );
         }
         if( typ->decl_type == TYPE_STRUCT ||
             typ->decl_type == TYPE_UNION  ||
@@ -550,7 +550,7 @@ static void DumpParmTags( TYPEPTR *parm, FILE *fp )
             if( typ->decl_type == TYPE_STRUCT  ||
                 typ->decl_type == TYPE_UNION ) {
                 ChunkInit(&chunk);
-                ChunkSaveStrWord( &chunk, CTypeNames[ typ->decl_type ] );
+                ChunkSaveStrWord( &chunk, CTypeNames[typ->decl_type] );
                 DumpTagName( typ->u.tag->name, &chunk );
                 result = ChunkToStr( &chunk );
                 fprintf( fp, "%s;\n", result );

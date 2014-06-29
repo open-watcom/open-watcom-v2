@@ -48,7 +48,7 @@ void AsmError( int msg_number )
 {
     char    msgbuf[80];
 
-    strcpy( msgbuf, AsmErrMsgs[ msg_number ] );
+    strcpy( msgbuf, AsmErrMsgs[msg_number] );
     CErr2p( ERR_ASSEMBLER_ERROR, msgbuf );
 }
 

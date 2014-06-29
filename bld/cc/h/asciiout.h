@@ -39,13 +39,13 @@
     #define _ASCIIOUT( c ) \
         if( CompFlags.asciiout_used ) { \
             extern char const etoatbl[]; \
-            c = etoatbl[ c ]; \
+            c = etoatbl[c]; \
         }
 #else
     #define _ASCIIOUT( c ) \
         if( !CompFlags.asciiout_used ) { \
             extern char const atoetbl[]; \
-            c = atoetbl[ c ]; \
+            c = atoetbl[c]; \
         }
 #endif
 

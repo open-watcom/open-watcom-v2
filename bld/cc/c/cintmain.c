@@ -81,7 +81,7 @@ int main( int argc, char **argv )
             argv[0] = buffer;
             argv[1] = NULL;
             _bgetcmd( buffer, len );
-            ret = FrontEnd( &argv[ 0 ] );
+            ret = FrontEnd( &argv[0] );
             free( buffer );
         } else {
             ret = -1;

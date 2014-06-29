@@ -64,7 +64,7 @@ static void GetAsmLine( void )
 {
     unsigned    AsmErrLine;
     TOKEN       LastToken;
-    char        buf[ MAX_ASM_LINE_LEN + 1 ];
+    char        buf[MAX_ASM_LINE_LEN + 1];
 
     PPCTL_ENABLE_EOL();
     AsmErrLine = TokenLoc.line;
@@ -83,7 +83,7 @@ static void GetAsmLine( void )
         LastToken = CurToken;
         NextToken();
     }
-    buf[ MAX_ASM_LINE_LEN ] = '\0';
+    buf[MAX_ASM_LINE_LEN] = '\0';
     if( *buf != '\0' ) {
         TokenLoc.line = AsmErrLine;
         AsmSysLine( buf );
@@ -95,7 +95,7 @@ void AsmStmt( void )
 /******************/
 {
     int             too_many_bytes;
-    unsigned char   buff[ MAXIMUM_BYTESEQ + 32 ];
+    unsigned char   buff[MAXIMUM_BYTESEQ + 32];
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
 

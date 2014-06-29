@@ -76,7 +76,7 @@ static int ReadBuffer( FCB *srcfcb )
      */
     srcfcb->src_ptr = srcfcb->src_buf;
     if( srcfcb->src_cnt ) {
-        last_char = srcfcb->src_ptr[ srcfcb->src_cnt - 1 ];
+        last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     } else {
         last_char = '\n';
     }
@@ -91,14 +91,14 @@ static int ReadBuffer( FCB *srcfcb )
         CloseSrcFile( srcfcb );
         return( 1 );
     } else if( srcfcb->src_cnt != 0 ) {
-        last_char = srcfcb->src_ptr[ srcfcb->src_cnt - 1 ];
+        last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     }
     if( ( srcfcb->src_cnt < srcfcb->src_bufsize ) && ( last_char != '\n' ) ) {
         srcfcb->no_eol = 1;         // emit warning later so line # is right
-        srcfcb->src_ptr[ srcfcb->src_cnt ] = '\n';      // mark end of buffer
+        srcfcb->src_ptr[srcfcb->src_cnt] = '\n';      // mark end of buffer
         srcfcb->src_cnt++;
     }
-    srcfcb->src_ptr[ srcfcb->src_cnt ] = '\0';          // mark end of buffer
+    srcfcb->src_ptr[srcfcb->src_cnt] = '\0';          // mark end of buffer
     return( 0 );            // indicate CurrChar does not contain a character
 }
 
@@ -108,7 +108,7 @@ int GetNextChar( void )
     int c;
 
     c = *SrcFile->src_ptr++;
-    if(( CharSet[ c ] & C_EX ) == 0 ) {
+    if(( CharSet[c] & C_EX ) == 0 ) {
 //      SrcFile->column++;
         CurrChar = c;
         return( c );
@@ -319,7 +319,7 @@ int GetCharCheckFile( int c )
             break;
         default:
 //          SrcFile->column++;
-            if( c > 0x7f && CharSet[ c ] & C_DB ) {
+            if( c > 0x7f && CharSet[c] & C_DB ) {
                 // we should not process the second byte through
                 // normal channels since its value is meaningless
                 // out of context

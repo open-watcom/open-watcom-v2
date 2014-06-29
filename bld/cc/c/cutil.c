@@ -39,7 +39,7 @@ void MustRecog( TOKEN this_token )
     } else {
 /*      if( CurToken != T_LEFT_BRACE && CurToken != T_RIGHT_BRACE */
         if( CurToken != T_EOF ) {
-            if( CurToken == T_SEMI_COLON ) {    /* 13-nov-94 */
+            if( CurToken == T_SEMI_COLON ) {
                 switch( this_token ) {
                 case T_RIGHT_BRACKET:
                 case T_RIGHT_PAREN:
@@ -48,7 +48,7 @@ void MustRecog( TOKEN this_token )
                     NextToken();
                     break;
                 }
-            } else if( this_token != T_SEMI_COLON ) {   /* 14-sep-95 */
+            } else if( this_token != T_SEMI_COLON ) {
                 NextToken();
             }
         }
@@ -129,11 +129,12 @@ SYM_NAMEPTR SymName( SYMPTR sym, SYM_HANDLE sym_handle )
     SYM_HASHPTR hsym;
 
     if( sym_handle == CharSymHandle )
-        return( "char" );    /* 08-may-89 */
+        return( "char" );
     if( sym->name != NULL )
         return( sym->name );
-    hsym = HashTab[ sym->info.hash ];
-    while( hsym->handle != sym_handle )  hsym = hsym->next_sym;
+    hsym = HashTab[sym->info.hash];
+    while( hsym->handle != sym_handle )
+        hsym = hsym->next_sym;
     return( hsym->name );
 }
 

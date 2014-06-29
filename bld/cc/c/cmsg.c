@@ -157,12 +157,12 @@ char const *CGetMsgStr(  msg_codes msgcode )
     msgnum = msgcode - LevelIndex[index] + GroupBase[index];
     if( internationalData != NULL ) {
         if( msgnum < internationalData->errors_count ) {
-            p = internationalData->errors_text[ msgnum ];
+            p = internationalData->errors_text[msgnum];
         } else {
             p = NULL;   // this might be a bug, but otherwise its random.
         }
     } else {
-        p = EMsgArray[ msgnum ];
+        p = EMsgArray[msgnum];
     }
     return( p );
 }

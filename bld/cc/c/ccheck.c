@@ -362,7 +362,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                     ret_val = NO;
                 }
             }
-        } else if( (TYPE_FIELD == typ1->decl_type) || (TYPE_UFIELD == typ1->decl_type) ) { /* CarlYoung 31-Oct-03 */
+        } else if( (TYPE_FIELD == typ1->decl_type) || (TYPE_UFIELD == typ1->decl_type) ) {
             if( typ2->u.f.field_width > typ1->u.f.field_width ) {
                 ret_val = AC;
             }
@@ -977,7 +977,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
             retcode = ChkCompatibleFunctionParms( typ1, typ2, FALSE );
             if( retcode != TCE_OK )
                 return( retcode );
-            if( typ1->object == NULL  ||  typ2->object == NULL ) {
+            if( typ1->object == NULL || typ2->object == NULL ) {
                 return( TCE_OK );
             }
         }

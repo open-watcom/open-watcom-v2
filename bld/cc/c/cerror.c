@@ -56,7 +56,7 @@ typedef struct ErrPostList
         /* POSTLIST_TWOTYPES */
         struct {
             TOKEN       opr;
-            TYPEPTR     types[ 2 ];
+            TYPEPTR     types[2];
         } o;
     } u;
 } ErrPostList;
@@ -91,7 +91,7 @@ void OpenErrFile( void )
 static int MsgDisabled( int msgnum )
 {
     if( MsgFlags != NULL ) {
-        if( MsgFlags[ msgnum >> 3 ]  &  (1 << (msgnum & 7)) ) {
+        if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
             return( 1 );
         }
     }
@@ -134,7 +134,7 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
     }
     msgstr = CGetMsgStr( msgnum );
     _vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
-    info->msgtxt[ MAX_MSG_LEN - 1 ] = '\0';
+    info->msgtxt[MAX_MSG_LEN - 1] = '\0';
     info->line = line;
     info->fname = fname;
 }
@@ -169,20 +169,20 @@ void FmtCMsg( char *buff, cmsg_info *info )
     len = 0;
     if( info->line != 0 ) {
         if( info->fname != NULL ) {
-            len += _snprintf( &buff[ len ], MAX_MSG_LEN - len, "%s(%u): ", info->fname, info->line );
+            len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s(%u): ", info->fname, info->line );
         }
     } else {
-        buff[ 0 ] = '\0';
+        buff[0] = '\0';
     }
     code_prefix = CGetMsgPrefix( info->msgnum );
     phrase = MsgClassPhrase( info->class );
-    len += _snprintf( &buff[ len ], MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
+    len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
 }
 
 // print message to streams
 static void OutMsg( cmsg_info  *info )
 {
-    char        pre[ MAX_MSG_LEN ]; //actual message text
+    char        pre[MAX_MSG_LEN]; //actual message text
 
     if( ErrFile == NULL )
         OpenErrFile();
@@ -217,13 +217,13 @@ static void PrintPostNotes( void )
             CInfoMsg( INFO_SYMBOL_DECLARATION, PostList->u.s.sym_name, PostList->u.s.sym_file, PostList->u.s.sym_line );
             break;
         case POSTLIST_TWOTYPES_1:
-            PrintType( INFO_SRC_CNV_TYPE, PostList->u.o.types[ 0 ] );
-            PrintType( INFO_TGT_CNV_TYPE, PostList->u.o.types[ 1 ] );
+            PrintType( INFO_SRC_CNV_TYPE, PostList->u.o.types[0] );
+            PrintType( INFO_TGT_CNV_TYPE, PostList->u.o.types[1] );
             break;
         case POSTLIST_TWOTYPES_2:
             CInfoMsg( INFO_OPERATOR, Tokens[PostList->u.o.opr] );
-            PrintType( INFO_FIRST_OPND_TYPE, PostList->u.o.types[ 0 ] );
-            PrintType( INFO_SECOND_OPND_TYPE, PostList->u.o.types[ 1 ] );
+            PrintType( INFO_FIRST_OPND_TYPE, PostList->u.o.types[0] );
+            PrintType( INFO_SECOND_OPND_TYPE, PostList->u.o.types[1] );
             break;
         }
         SetDiagPop();
@@ -345,7 +345,7 @@ void CInfoMsg( int msgnum, ... )
 void PCHNote( int msgnum, ... )
 {
     va_list     args1;
-    char        msgbuf[ MAX_MSG_LEN ];
+    char        msgbuf[MAX_MSG_LEN];
     char const  *msgstr;
 
     if( !CompFlags.no_pch_warnings ) {
@@ -411,7 +411,7 @@ static void DoMsgInfo( msg_codes msgnum )
 {
     cmsg_info   sinfo;
     cmsg_info   *info;
-    char        pre[ MAX_MSG_LEN ]; //actual message text
+    char        pre[MAX_MSG_LEN]; //actual message text
     unsigned    line;
 
     info = &sinfo;
@@ -491,8 +491,8 @@ void SetDiagType2( TYPEPTR typ_target, TYPEPTR typ_source )
 
     np = NewPostList( POSTLIST_TWOTYPES_1 );
     np->u.o.opr = 0;
-    np->u.o.types[ 0 ] = typ_source;
-    np->u.o.types[ 1 ] = typ_target;
+    np->u.o.types[0] = typ_source;
+    np->u.o.types[1] = typ_target;
 }
 
 void SetDiagType3( TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr )
@@ -501,8 +501,8 @@ void SetDiagType3( TYPEPTR typ_first, TYPEPTR typ_second, TOKEN opr )
 
     np = NewPostList( POSTLIST_TWOTYPES_2 );
     np->u.o.opr = opr;
-    np->u.o.types[ 0 ] = typ_first;
-    np->u.o.types[ 1 ] = typ_second;
+    np->u.o.types[0] = typ_first;
+    np->u.o.types[1] = typ_second;
 }
 
 void SetDiagPop( void )
