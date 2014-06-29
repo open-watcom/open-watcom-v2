@@ -461,7 +461,7 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
                 if( subnot & (MASK_QUALIFIERS & ~FLAG_UNALIGNED) ) {
                     ret_pq = PQ;
                 } else if( subnot & FLAG_UNALIGNED) {
-                    int align1;
+                    align_type align1;
 
                     align1 = GetTypeAlignment( typ1->object );
                     if( align1 > 1 ) {

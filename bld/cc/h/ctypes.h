@@ -404,18 +404,16 @@ typedef struct tag_entry {
     } u;
     unsigned            size;           /* size of STRUCT, UNION or ENUM */
     int                 refno;          /* also used by pre-compiled header */
-#if defined( _M_IX86 ) || defined( _M_X64 )
     id_hash_idx         hash;           /* hash value for tag */
+#if defined( _M_IX86 ) || defined( _M_X64 )
     unsigned char       level;
-    unsigned char       alignment;      /* alignment required */
 #else
-    id_hash_idx         hash;
     int                 level;
-    unsigned            alignment;
 #endif
+    align_type          alignment;      /* alignment required */
     union   {
-        ENUMPTR         last_enum;         /* for ENUM */
-        FIELDPTR        last_field;        /* for STRUCT or UNION */
+        ENUMPTR         last_enum;      /* for ENUM */
+        FIELDPTR        last_field;     /* for STRUCT or UNION */
     } u1;
     char                name[1];
 } TAGDEFN, *TAGPTR;

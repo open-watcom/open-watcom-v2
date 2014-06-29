@@ -379,7 +379,7 @@ global size_t       EnumRecSize;        /* size of largest enum entry */
 global int          PreProcChar;
 global TYPEPTR      PrevProtoType;      /* prev func prototype */
 
-global unsigned     SegAlignment[FIRST_PRIVATE_SEGMENT];
+global align_type   SegAlignment[FIRST_PRIVATE_SEGMENT];
 global unsigned     TargSys;
 global segment_id   DefDataSegment;     /* #pragma data_seg("segname","class") */
 global textsegment  *DefCodeSegment;    /* #pragma code_seg("seg","c") */
@@ -825,7 +825,7 @@ extern unsigned     TypeSizeEx( TYPEPTR, unsigned *pFieldWidth );
 extern TYPEPTR      GetIntTypeBySize( unsigned size, bool sign, bool exact );
 extern TAGPTR       VfyNewTag( TAGPTR, int );
 extern void         VfyNewSym( id_hash_idx, const char * );
-extern unsigned     GetTypeAlignment( TYPEPTR );
+extern align_type   GetTypeAlignment( TYPEPTR );
 extern void         TypesPurge( void );
 extern void         AddTypeHash( TYPEPTR );
 extern void         AddPtrTypeHash( TYPEPTR );

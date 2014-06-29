@@ -958,7 +958,7 @@ void SegInit( void )
 
 void SetSegAlign( SYMPTR sym )                          /* 02-feb-92 */
 {
-    unsigned int        align;
+    align_type          align;
     segment_id          segment;
 
     segment = sym->u.var.segment;

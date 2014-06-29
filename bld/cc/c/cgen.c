@@ -1785,7 +1785,7 @@ cg_type CGenType( TYPEPTR typ )
 {
     cg_type         dtype;
     type_modifiers  flags;
-    int             align;
+    align_type      align;
 
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {

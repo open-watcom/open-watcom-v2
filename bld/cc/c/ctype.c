@@ -849,38 +849,36 @@ local TYPEPTR EnumFieldType( TYPEPTR ftyp,
 }
 
 
-unsigned GetTypeAlignment( TYPEPTR typ )
+align_type GetTypeAlignment( TYPEPTR typ )
 {
-    unsigned size;
+    align_type  size;
 
     for(;;) {
-        if(( typ->decl_type == TYPE_TYPEDEF ) ||
-           ( typ->decl_type == TYPE_ARRAY )) {
+        if( typ->decl_type == TYPE_TYPEDEF || typ->decl_type == TYPE_ARRAY ) {
             typ = typ->object;
         } else {
             break;
         }
     }
-    if( typ->decl_type == TYPE_STRUCT  ||       /* 25-jul-91 */
-        typ->decl_type == TYPE_UNION ) {
+    if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
         size = typ->u.tag->alignment;
-    #if _CPU == _AXP
+#if _CPU == _AXP
         if( CompFlags.align_structs_on_qwords ) {
             size = 8;
         }
-    #endif
+#endif
     } else {
-        size = TypeSize( typ );
+        size = (align_type)TypeSize( typ );
     }
     return( size );
 }
 
 
-local unsigned FieldAlign( unsigned next_offset, FIELDPTR field, unsigned *worst_alignment )
+local unsigned FieldAlign( unsigned next_offset, FIELDPTR field, align_type *worst_alignment )
 {
     align_type  pack_adjustment;
     align_type  align;
-    unsigned    type_align;
+    align_type  type_align;
 
     pack_adjustment = PackAmount;
     type_align = GetTypeAlignment( field->field_type );
@@ -993,7 +991,7 @@ local unsigned GetFields( TYPEPTR decl )
     unsigned            struct_size;
     unsigned            next_offset;
     int                 width;
-    unsigned int        worst_alignment;                /* 24-jul-91 */
+    align_type          worst_alignment;
     char                unqualified_type, prev_unqualified_type;
     char                plain_int;
     decl_info           info;
@@ -1023,8 +1021,7 @@ local unsigned GetFields( TYPEPTR decl )
             if( CurToken == T_ID ) NextToken();
         }
         unqualified_type = UnQualifiedType( typ );
-        if( bits_available == bits_total ||
-            decl->decl_type == TYPE_UNION ) {           /* 12-nov-94 */
+        if( bits_available == bits_total || decl->decl_type == TYPE_UNION ) {
             bits_available = TypeSize( typ ) * 8;
             bits_total = bits_available;
         } else if( unqualified_type != prev_unqualified_type ) {
@@ -1043,8 +1040,7 @@ local unsigned GetFields( TYPEPTR decl )
             }
             if( CurToken == T_COLON ) {
                 if( field != NULL ) {
-                    next_offset = FieldAlign( next_offset, field,
-                                              &worst_alignment );
+                    next_offset = FieldAlign( next_offset, field, &worst_alignment );
                 }
                 CheckBitfieldType( typ );
                 NextToken();
@@ -1084,8 +1080,7 @@ local unsigned GetFields( TYPEPTR decl )
                     bits_available = TypeSize( typ ) * 8;
                     bits_total = bits_available;
                 }
-                next_offset = FieldAlign( next_offset, field,
-                                          &worst_alignment );
+                next_offset = FieldAlign( next_offset, field, &worst_alignment );
                 next_offset += SizeOfArg( field->field_type );
             }
             if( next_offset > struct_size )  struct_size = next_offset;
@@ -1108,7 +1103,7 @@ local unsigned GetFields( TYPEPTR decl )
         if( next_offset > struct_size )  struct_size = next_offset;
     }
     ClearFieldHashTable( decl->u.tag );
-    decl->u.tag->alignment = worst_alignment;   /* 25-jul-91 */
+    decl->u.tag->alignment = worst_alignment;
     struct_size = _RoundUp( struct_size, worst_alignment );
     _CHECK_SIZE( struct_size );
     NextToken();
@@ -1208,7 +1203,7 @@ local unsigned GetComplexFields( TYPEPTR decl )
     FIELDPTR            field;
     unsigned            struct_size;
     unsigned            next_offset;
-    unsigned int        worst_alignment;
+    align_type          worst_alignment;
     decl_info           info;
 
     worst_alignment = 1;
