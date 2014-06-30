@@ -304,15 +304,17 @@ void print_include_file_nesting_structure( void )
     }
 }
 
-void InputQueueLine( char *line )
-/*******************************/
+void InputQueueLine( const char *line )
+/*************************************/
 {
     line_list   *new;
+    size_t      len;
 
     DebugMsg(( "QUEUELINE: %s  ( line %lu ) \n", line, LineNumber ));
     new = enqueue();
-    new->line = AsmAlloc( strlen( line ) + 1 );
-    strcpy( new->line, line );
+    len = strlen( line ) + 1;
+    new->line = AsmAlloc( len );
+    memcpy( new->line, line, len );
 }
 
 static FILE *open_file_in_include_path( const char *name, char *fullpath )
@@ -351,32 +353,31 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
     return( file );
 }
 
-int InputQueueFile( char *path )
-/******************************/
+int InputQueueFile( const char *path )
+/************************************/
 {
     FILE        *file;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
-    char        *tmp;
     PGROUP      pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );
     file = fopen( fullpath, "r" );
-    tmp = path;
-    if( file == NULL && IncludePath != NULL ) {
-        tmp = pg.buffer;
-        file = open_file_in_include_path( path, tmp );
-    }
-
     if( file == NULL ) {
-        AsmErr( CANNOT_OPEN_INCLUDE_FILE, fullpath );
-        return( ERROR );
+        if( IncludePath != NULL ) {
+            file = open_file_in_include_path( path, pg.buffer );
+        }
+        if( file == NULL ) {
+            AsmErr( CANNOT_OPEN_INCLUDE_FILE, fullpath );
+            return( ERROR );
+        }
+        new = push_flist( pg.buffer, TRUE );
     } else {
-        new = push_flist( tmp, TRUE );
-        new->u.file = file;
-        return( NOT_ERROR );
+        new = push_flist( path, TRUE );
     }
+    new->u.file = file;
+    return( NOT_ERROR );
 }
 
 static char *input_get( char *string )
