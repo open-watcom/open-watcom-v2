@@ -1,6 +1,7 @@
 /*
  * Microsoft Windows Installer declarations
  *
+:include crwatcnt.sp
  */
 
 #ifndef _MSI_H_
