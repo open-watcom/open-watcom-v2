@@ -42,7 +42,7 @@ extern void AsLexerFini( void );
 extern int yyparse( void );
 
 
-char *AsmInStr;
+const char *AsmInStr;
 
 
 extern void AsmInit( void ) {
@@ -77,8 +77,9 @@ extern void AsmFiniRelocs( void ) {
     AsmRelocs = NULL;
 }
 
-extern int AsmLine( char *in_str ) {
-//***********************************
+extern int AsmLine( const char *in_str )
+//**************************************
+{
     int ret;
 
     AsmInStr = in_str;

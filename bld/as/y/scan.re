@@ -14,15 +14,15 @@
 
 extern YYSTYPE yylval;
 #ifndef _STANDALONE_
-extern char *AsmInStr;          // The input string.
+extern const char *AsmInStr;    // The input string.
 #endif
 
 #ifdef _STANDALONE_
 int CurrLineno = 1;             // This pair is used by the parser and the
 char *CurrFilename = NULL;      // outside world.
 
-int yylineno = 1;             // The lexer uses this pair for their own error
-char *yyfname = NULL;         // reporting. (globl also because parser needs
+int yylineno = 1;               // The lexer uses this pair for their own error
+char *yyfname = NULL;           // reporting. (globl also because parser needs
 /* NOTE: -- make sure yylineno is used correctly: update it when we get '\n' and
             when we get #line directive.
          -- CurrLineno should be set in the parser
@@ -32,8 +32,11 @@ char *yyfname = NULL;         // reporting. (globl also because parser needs
 #ifdef _STANDALONE_
 static int  newlineno;
 static char *bot, *pos, *top;
+static char *cursor, *limit, *marker, *tok, *eofPtr;
+#else
+static const char *cursor, *limit, *marker, *tok, *eofPtr;
 #endif
-static char *cursor, *limit, *marker, *tok, *eofPtr, *_yytext;
+static char *_yytext;
 static int  maxyytextlen = 1, yytextlen;
 static char *dirOpStr = NULL;   // used to keep directive string data
 static char *cStr = NULL;       // used to keep scanned C-style string data
