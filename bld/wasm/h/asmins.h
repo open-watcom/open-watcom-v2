@@ -128,7 +128,7 @@ extern int      check_override( int *i );
 extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
 extern int      cpu_directive( asm_token );
-extern int      AsmParse( void );
+extern int      AsmParse( const char *curline );
 extern int      NextArrayElement( void );
 extern int      data_init( int, int );
 

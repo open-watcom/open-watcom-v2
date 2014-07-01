@@ -112,7 +112,7 @@ extern bool             Use32;          // if 32-bit code is use
 extern int              Token_Count;    // number of tokens on line
 
 extern void             AsmByte( unsigned char );
-extern int              AsmScan( char * );
+extern int              AsmScan( const char * );
 
 #if defined( _STANDALONE_ )
 

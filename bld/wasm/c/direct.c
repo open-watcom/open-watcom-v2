@@ -120,10 +120,12 @@ extern char             write_to_file;  // write if there is no error
 extern uint_32          BufSize;
 extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
-extern bool             EndDirectiveFound;
 extern struct asm_sym   *SegOverride;
 extern void             FreeASym( struct asm_sym *sym );
 extern struct asmfixup  *ModendFixup;   // start address fixup
+
+bool                    EndDirectiveFound = FALSE;
+bool                    EndDirectiveProc = FALSE;
 
 seg_list                *CurrSeg;       // points to stack of opened segments
 
@@ -275,7 +277,6 @@ static const_info   info_Model = { TRUE, 0, 0, TRUE, &const_Model };
 static const_info   info_Interface = { TRUE, 0, 0, TRUE, &const_Interface };
 static const_info   info_data = { TRUE, 0, 0, TRUE, &const_data };
 static const_info   info_code = { TRUE, 0, 0, TRUE, &const_code };
-
 
 #define ROUND_UP( i, r ) (((i)+((r)-1)) & ~((r)-1))
 
@@ -2630,26 +2631,30 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
 int ModuleEnd( int count )
 /************************/
 {
+    char    buffer[ MAX_LINE_LEN ];
+    int     i;
+
     if( lastseg.seg != SIM_NONE ) {
         close_lastseg();
-        InputQueueLine( CurrString );
-        return( NOT_ERROR );
     }
 
-    if( Parse_Pass == PASS_1 ) {
-        EndDirectiveFound = TRUE;
-        return( NOT_ERROR );
-    }
-
-    if( StartupDirectiveFound ) {
-        if( count == 2 ) {
-            AsmError( SYNTAX_ERROR );
-            return( ERROR );
+    if( !EndDirectiveProc ) {
+        EndDirectiveProc = TRUE;
+        strcpy( buffer, "end" );
+        if( StartupDirectiveFound ) {
+            StartupDirectiveFound = FALSE;
+            if( count > 1 ) {
+                AsmError( SYNTAX_ERROR );
+            }
+            strcat( buffer, " " );
+            strcat( buffer, StartAddr );
+        } else {
+            for( i = 1; i < count; ++i ) {
+                strcat( buffer, " " );
+                strcat( buffer, AsmBuffer[i]->string_ptr );
+            }
         }
-        strcat( CurrString, " " );
-        strcat( CurrString, StartAddr );
-        InputQueueLine( CurrString );
-        StartupDirectiveFound = FALSE;
+        InputQueueLine( buffer );
         return( NOT_ERROR );
     }
 
@@ -3649,8 +3654,8 @@ static void pop_registers( regs_list *regist )
     InputQueueLine( buffer );
 }
 
-int WritePrologue( void )
-/***********************/
+int WritePrologue( const char *curline )
+/**************************************/
 {
     char                buffer[80];
     proc_info           *info;
@@ -3665,7 +3670,7 @@ int WritePrologue( void )
     info = CurrProc->e.procinfo;
 
     /* save 1st instruction following a procedure definition */
-    InputQueueLine( CurrString );
+    InputQueueLine( curline );
 
     if( Parse_Pass == PASS_1 ) {
         /* Figure out the replacing string for local variables */
@@ -4190,4 +4195,3 @@ int Locals( int i )
     AsmError( SYNTAX_ERROR );
     return( ERROR );
 }
-

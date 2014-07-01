@@ -44,6 +44,8 @@ extern char     *ScanLine( char *line, size_t len );
 extern void     AddItemToIncludePath( char *string, char *end );
 extern void     FreeIncludePath( void );
 
-extern char     *CurrString;    // Current Input Line
+#ifdef DEBUG_OUT
+extern const char   *CurrString;    // Current Input Line
+#endif
 
 #endif

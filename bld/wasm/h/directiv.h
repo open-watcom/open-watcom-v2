@@ -347,7 +347,7 @@ extern int              UsesDef( int );         // define used registers in proc
 extern int              EnumDef( int );         // handles enumerated values
 extern int              ProcEnd( int );         // end a procedure
 extern int              Ret( int, int, int );   // emit return statement from procedure
-extern int              WritePrologue( void );  // emit prologue statement after the
+extern int              WritePrologue( const char * ); // emit prologue statement after the
                                                 // declaration of a procedure
 extern int              MacroDef( int, bool );  // define a macro
 extern int              MacroEnd( bool );       // end a macro

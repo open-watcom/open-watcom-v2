@@ -36,7 +36,9 @@
 #endif
 #include <ctype.h>
 
-char                    *CurrString; // Current Input Line
+#ifdef DEBUG_OUT
+const char              *CurrString; // Current Input Line
+#endif
 
 extern int              get_instruction_position( char *string );
 
@@ -51,57 +53,55 @@ typedef union {
         long    l;
 } NUMBERFL;
 
-static int get_float( asm_tok *buf, char **input, char **output )
-/***************************************************************/
+static int get_float( asm_tok *buf, const char **input, char **output )
+/*********************************************************************/
 {
-    /* valid floats look like:  (int)[.(int)][e(int)] */
+    /* valid floats look like:  (int)[.(int)][e(int)][r] */
 
-//    char    got_decimal = FALSE;
-    char    got_e = FALSE;
-    char    *ptr = *input;
+    bool            got_decimal;
+    bool            got_e;
+    const char      *ptr;
+    size_t          len;
+    unsigned char   c;
+    int             extra;
 
-    for( ; *ptr != '\0'; ptr++ ) {
-        if( isdigit( *ptr ) )
+    extra = 0;
+    got_e = FALSE;
+    got_decimal = FALSE;
+    for( ptr = *input; (c = *ptr) != '\0'; ptr++ ) {
+        if( isdigit( c ) )
             continue;
-        if( isspace( *ptr ) )
+        if( isspace( c ) )
             break;
-        switch( tolower( *ptr ) ) {
-        case '.':
-//            got_decimal = TRUE;
+        if( c == '.' ) {
+            if( got_decimal || got_e )
+                break;
+            got_decimal = TRUE;
             continue;
-        case 'r':
-            *ptr=' ';
-            goto done_scanning_float;
-        case 'e':
-            if( !got_e ) {
-                got_e = TRUE;
-                /* accept e+2 / e-4 /etc. */
-
-                switch( *(ptr + 1) ) {
-                case '+':
-                case '-':
-                    ptr++;
-                    /* fall through */
-                default:
-                    continue;
-                }
-            }
-            /* fall through */
-        default:
-            goto done_scanning_float;
-//            return( get_string( buf, input, output ) );
+        }
+        c = tolower( c );
+        if( c == 'r' ) {
+            extra = 1;
+            break;
+        }
+        if( c != 'e' || got_e )
+            break;
+        // c == 'e'
+        got_e = TRUE;
+        /* accept e+2 / e-4 /etc. */
+        c = *(ptr + 1);
+        if( c == '+' || c == '-' ) {
+            ptr++;
         }
     }
-
-done_scanning_float:
-
     buf->class = TC_FLOAT;
     /* copy the string, fix input & output pointers */
-    strncpy( *output, *input, ptr - *input );
+    len = ptr - *input + extra;
+    memcpy( *output, *input, len );
     buf->string_ptr = *output;
-    *output += ( ptr - *input );
+    *output += len;
     *(*output)++ = '\0';
-    *input = ptr;
+    *input = ptr + extra;
 
     buf->u.float_value = (float)atof( buf->string_ptr );
     return( NOT_ERROR );
@@ -116,8 +116,8 @@ static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsi
     }
 }
 
-static int get_string( asm_tok *buf, char **input, char **output )
-/****************************************************************/
+static int get_string( asm_tok *buf, const char **input, char **output )
+/**********************************************************************/
 {
     char    symbol_o;
     char    symbol_c;
@@ -186,110 +186,93 @@ static int get_string( asm_tok *buf, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_number( asm_tok *buf, char **input, char **output )
+static int get_number( asm_tok *buf, const char **input, char **output )
 /****************************************************************/
 {
-    char                *ptr = *input;
-    char                *dig_start;
-    char                first_char_0 = FALSE;
+    const char          *ptr;
+    const char          *dig_start;
+    bool                first_char_0;
     unsigned            extra;
     unsigned            len;
     unsigned            base = 0;
     unsigned            digits_seen;
     unsigned long       val;
+    unsigned char       c;
+    unsigned char       c2;
 
 #define VALID_BINARY    0x0003
 #define VALID_OCTAL     0x00ff
 #define VALID_DECIMAL   0x03ff
 #define OK_NUM( t )     ((digits_seen & ~VALID_##t) == 0)
-    digits_seen = 0;
 
+    digits_seen = 0;
+    first_char_0 = FALSE;
     extra = 0;
+    ptr = *input;
     if( *ptr == '0' ) {
-        if( tolower( *(ptr + 1) ) == 'x' ) {
-            ptr += 2;
+        ++ptr;
+        if( tolower( *ptr ) == 'x' ) {
+            ++ptr;
             base = 16;
         } else {
-            ptr += 1;
             first_char_0 = TRUE;
         }
     }
     dig_start = ptr;
-    for( ;; ) {
-        switch( tolower( *ptr ) ) {
-        case '9':
-        case '8':
-        case '7':
-        case '6':
-        case '5':
-        case '4':
-        case '3':
-        case '2':
-        case '1':
-        case '0':
-            digits_seen |= 1 << (*ptr - '0');
+    for( ; (c = *ptr) != '\0'; ++ptr ) {
+        if( isdigit( c ) ) {
+            digits_seen |= 1 << (c - '0');
+            continue;
+        } else if( isspace( c ) ) {
             break;
-        case 'a':
-            digits_seen |= 1 << 10;
-            break;
-        case 'b':
-            if( base == 0
-             && OK_NUM( BINARY )
-             && !isxdigit( ptr[1] )
-             && tolower( ptr[1] ) != 'h' ) {
-                base = 2;
-                extra = 1;
-                goto done_scan;
-            }
-            digits_seen |= 1 << 11;
-            break;
-        case 'c':
-            digits_seen |= 1 << 12;
-            break;
-        case 'd':
-            if( base == 0
-             && OK_NUM( DECIMAL )
-             && !isxdigit( ptr[1] )
-             && tolower( ptr[1] ) != 'h' ) {
-                if( !isalnum( ptr[1] ) && ptr[1] != '_' ) {
-                    base = 10;
-                    extra = 1;
-                }
-                goto done_scan;
-            }
-            digits_seen |= 1 << 13;
-            break;
-        case 'e': /* note that this could NOT be part of a float */
-            digits_seen |= 1 << 14;
-            break;
-        case 'f':
-            digits_seen |= 1U << 15;
-            break;
-        case 'y':
-            base = 2;
-            extra = 1;
-            goto done_scan;
-        case 'h':
-            base = 16;
-            extra = 1;
-            goto done_scan;
-        case 'o':
-            base = 8;
-            extra = 1;
-            goto done_scan;
-        case '.':
-        case 'r':
+        } else if( c == '.' ) {
             /* note that a float MUST contain a dot
              * OR be ended with an "r"
              * 1234e78 is NOT a valid float */
-
             return( get_float( buf, input, output ) );
-         default:
-             goto done_scan;
         }
-        ++ptr;
+        c = tolower( c );
+        if( isxdigit( c ) ) {
+            if( c == 'b' ) {
+                if( base == 0 && OK_NUM( BINARY ) ) {
+                    c2 = ptr[1];
+                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                        base = 2;
+                        extra = 1;
+                        break;
+                    }
+                }
+            } else if( c == 'd' ) {
+                if( base == 0 && OK_NUM( DECIMAL ) ) {
+                    c2 = ptr[1];
+                    if( !isxdigit( c2 ) && tolower( c2 ) != 'h' ) {
+                        if( !isalnum( c2 ) && c2 != '_' ) {
+                            base = 10;
+                            extra = 1;
+                        }
+                        break;
+                    }
+                }
+            }
+            digits_seen |= 1 << (c - 'a' + 10);
+            continue;
+        } else if( c == 'h' ) {
+            base = 16;
+            extra = 1;
+        } else if( c == 'o' ) {
+            base = 8;
+            extra = 1;
+        } else if( c == 'r' ) {
+            /* note that a float MUST contain a dot
+             * OR be ended with an "r"
+             * 1234e78 is NOT a valid float */
+            return( get_float( buf, input, output ) );
+        } else if( c == 'y' ) {
+            base = 2;
+            extra = 1;
+        }
+        break;
     }
-done_scan:
     if( digits_seen == 0 ) {
         if( !first_char_0 ) {
             return( get_string( buf, input, output ) );
@@ -334,7 +317,7 @@ done_scan:
     }
     /* copy the string, fix input & output pointers */
     len = ptr - *input + extra;
-    strncpy( *output, *input, len );
+    memcpy( *output, *input, len );
     buf->string_ptr = *output;
     *output += len;
     *(*output)++ = '\0';
@@ -352,8 +335,8 @@ done_scan:
     return( NOT_ERROR );
 } /* get_number */
 
-static int get_id_in_backquotes( asm_tok *buf, char **input, char **output )
-/**************************************************************************/
+static int get_id_in_backquotes( asm_tok *buf, const char **input, char **output )
+/********************************************************************************/
 {
     buf->string_ptr = *output;
     buf->class = TC_ID;
@@ -373,8 +356,8 @@ static int get_id_in_backquotes( asm_tok *buf, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_id( unsigned int *buf_index, char **input, char **output )
-/***********************************************************************/
+static int get_id( unsigned int *buf_index, const char **input, char **output )
+/*****************************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
     asm_tok     *buf;
@@ -545,8 +528,8 @@ static int get_id( unsigned int *buf_index, char **input, char **output )
     return( NOT_ERROR );
 }
 
-static int get_special_symbol( asm_tok *buf, char **input, char **output )
-/************************************************************************/
+static int get_special_symbol( asm_tok *buf, const char **input, char **output )
+/******************************************************************************/
 {
     char        symbol;
     tok_class   cls;
@@ -627,8 +610,8 @@ static int get_special_symbol( asm_tok *buf, char **input, char **output )
 }
 
 #if defined( _STANDALONE_ )
-static int get_inc_path( asm_tok *buf, char **input, char **output )
-/******************************************************************/
+static int get_inc_path( asm_tok *buf, const char **input, char **output )
+/************************************************************************/
 {
     char symbol;
 
@@ -662,7 +645,7 @@ static int get_inc_path( asm_tok *buf, char **input, char **output )
 }
 #endif
 
-int AsmScan( char *string )
+int AsmScan( const char *string )
 /******************************************/
 /*
 - perform syntax checking on scan line;
@@ -670,13 +653,15 @@ int AsmScan( char *string )
 - string contains the WHOLE line to scan
 */
 {
-    char                        *ptr;
+    const char                  *ptr;
     char                        *output_ptr;
     unsigned int                buf_index = 0;
     // stringbuf - buffer in which to store strings
     static char                 stringbuf[MAX_LINE_LEN];
 
+#ifdef DEBUG_OUT
     CurrString = string;
+#endif
     output_ptr = stringbuf;
 #if defined( _STANDALONE_ )
     EnumDirective = FALSE;

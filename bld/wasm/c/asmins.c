@@ -942,8 +942,8 @@ static unsigned char get_sr_rm_byte( enum prefix_reg seg_prefix )
 
 #if defined( _STANDALONE_ )
 
-static int proc_check( void )
-/***************************/
+static int proc_check( const char *curline )
+/******************************************/
 /* Check if we are inside a procedure and write prologue statements if the
    current line is the first instruction line following the procedure
    declaration */
@@ -961,7 +961,7 @@ static int proc_check( void )
         }
     }
 
-    if( WritePrologue() == ERROR )
+    if( WritePrologue( curline ) == ERROR )
         return( ERROR );
     DefineProc = FALSE;
     return( TRUE );
@@ -2337,8 +2337,8 @@ static int process_reg( expr_list *opndx )
     return( NOT_ERROR );
 }
 
-int AsmParse( void )
-/******************/
+int AsmParse( const char *curline )
+/*********************************/
 /*
 - co-ordinate the parsing process;
 - it is a basically a big loop to loop through all the tokens and identify them
@@ -2354,7 +2354,7 @@ int AsmParse( void )
 
 #if defined( _STANDALONE_ )
     Code->use32 = Use32;
-    i = proc_check();
+    i = proc_check( curline );
     if( i == ERROR )
         return( ERROR );
     if( i == TRUE )

@@ -74,6 +74,9 @@ extern uint_32          BufSize;
 extern int              MacroExitState;
 extern int              in_prologue;
 
+extern bool             EndDirectiveFound;
+extern bool             EndDirectiveProc;
+
 int                     MacroLocalVarCounter = 0; // counter for temp. var names
 char                    Parse_Pass;     // phase of parsing
 char                    write_to_file;  // write if there is no error
@@ -85,7 +88,6 @@ dir_node                *CurrProc;      // current procedure
 bool                    Use32;          // if 32-bit code is use
 unsigned long           PassTotal;      // Total number of ledata bytes generated
 bool                    PhaseError;
-bool                    EndDirectiveFound = FALSE;
 
 struct asmfixup         *ModendFixup = NULL; // start address fixup
 
@@ -1144,6 +1146,7 @@ static void OnePassInit( void )
     Options.locals_len = 0;
 
     EndDirectiveFound = FALSE;
+    EndDirectiveProc = FALSE;
     PhaseError = FALSE;
     Modend = FALSE;
     PassTotal = 0;

@@ -697,8 +697,8 @@ void AsmByte( unsigned char byte )
 
 #if defined( _STANDALONE_ )
 
-void AsmLine( char *string )
-/**************************/
+void AsmLine( const char *string )
+/********************************/
 {
     int             count;
 
@@ -724,7 +724,7 @@ void AsmLine( char *string )
     }
 
     if( Token_Count > 0 ) {
-        if( AsmParse() == ERROR ) {
+        if( AsmParse( string ) == ERROR ) {
             write_to_file = FALSE;
         }
     } else if( Token_Count < 0 ) {
@@ -738,8 +738,8 @@ void AsmLine( char *string )
 
 #else
 
-void AsmLine( char *string, bool use_emu )
-/****************************************/
+void AsmLine( const char *string, bool use_emu )
+/**********************************************/
 {
     enum fpe    old_floating_point;
 
@@ -750,7 +750,7 @@ void AsmLine( char *string, bool use_emu )
     // Token_Count is the number of tokens scanned
     Token_Count = AsmScan( string );
     if( Token_Count > 0 ) {
-        AsmParse();
+        AsmParse( string );
     }
     floating_point = old_floating_point;
 }
