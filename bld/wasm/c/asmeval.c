@@ -599,8 +599,8 @@ static int check_direct_reg( expr_list *token_1, expr_list *token_2 )
     }
 }
 
-static int calculate( expr_list *token_1, expr_list *token_2, uint_8 index )
-/**************************************************************************/
+static int calculate( expr_list *token_1, expr_list *token_2, int index )
+/***********************************************************************/
 /* Perform the operation between token_1 and token_2 */
 {
     struct asm_sym      *sym;

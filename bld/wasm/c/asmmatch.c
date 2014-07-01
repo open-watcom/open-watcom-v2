@@ -664,7 +664,7 @@ static int match_phase_3( int *i, OPNDTYPE determinant )
     OPNDTYPE    cur_opnd;
     OPNDTYPE    last_opnd;
     OPNDTYPE    asm_op2;
-    unsigned    instruction;
+    asm_token   instruction;
 
     instruction = AsmOpTable[*i].token;
 

@@ -80,7 +80,7 @@ static void output_float( unsigned char index, unsigned no_of_bytes, bool negati
     double              double_value;
     float               float_value;
     char                *char_ptr = NULL;
-    uint_8              count;
+    unsigned            count;
     TB_LD               tbyte;
 
     if( no_of_bytes == BYTE_10 ) {
@@ -134,7 +134,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
 */
 {
     int                 cur_pos = start_pos;
-    char                count;
+    unsigned            count;
     char                *char_ptr = NULL;
     bool                negative = FALSE;
 
@@ -308,10 +308,10 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
             if( !struct_field ) {
 #endif
-                for( count = 0; count < AsmBuffer[cur_pos]->u.value; ++count ) {
+                for( count = AsmBuffer[cur_pos]->u.value; count > 0 ; --count ) {
                     AsmDataByte( *char_ptr++ );
                 }
-                for( ; count < no_of_bytes; ++count ) {
+                for( count = AsmBuffer[cur_pos]->u.value; count < no_of_bytes; ++count ) {
                     AsmDataByte( 0 );
                     char_ptr++;
                 }
@@ -648,7 +648,7 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
 {
     int                 cur_pos;
     int                 returned_pos = 0;
-    int                 count;
+    unsigned            count;
 #if defined( _STANDALONE_ )
     bool                was_first;
 #endif
