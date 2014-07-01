@@ -1103,8 +1103,8 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     }
 }
 
-void AsmSysLine( char *buf )
-/**************************/
+void AsmSysLine( const char *buf )
+/********************************/
 {
 #if _CPU == 8086
     AsmLine( buf, GET_FPU_EMU( CpuSwitches ) );

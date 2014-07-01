@@ -309,7 +309,7 @@ void AsmSysPCHReadCode( AUX_INFO *info )
     *head = NULL;
 }
 
-void AsmSysLine( char *buff )
+void AsmSysLine( const char *buff )
 {
     AsmLine( buff );
 }
