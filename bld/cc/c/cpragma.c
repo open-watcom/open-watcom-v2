@@ -592,7 +592,7 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     int             i;
 
     index = 0;
-    p = Registers;
+    p = registers;
     while( *p != '\0' ) {
         i = 0;
         for( ; (c = *p++) != '\0'; ) {
