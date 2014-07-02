@@ -176,51 +176,44 @@ enum sym_state AsmQueryState( void *handle )
     return( SYM_EXTERNAL );
 }
 
-hw_reg_set PragRegName( char *str )
-/*********************************/
+hw_reg_set PragRegName( const char *strreg, size_t len )
+/******************************************************/
 {
-    int         index;
-    char        *p;
-    hw_reg_set  name;
+    int             index;
+    char            *str;
+    hw_reg_set      name;
+    char            buffer[20];
 
-    if( *str == '\0' ) {
+    if( len == 0 ) {
         HW_CAsgn( name, HW_EMPTY );
         return( name );
     }
-    if( *str == '_' ) {
-        ++str;
-        if( *str == '_' ) {
-            ++str;
+    if( *strreg == '_' ) {
+        ++strreg;
+        --len;
+        if( *strreg == '_' ) {
+            ++strreg;
+            --len;
         }
     }
-    // search alias name
-    p = Registers;
-    index = *(p++);
-    while( *p != '\0' ) {
-        if( strcmp( p, str ) == 0 )
-            return( RegBits[ index ] );
-        while( *(p++) != '\0' )
-            ;
-        index = *(p++);
+    if( len > ( sizeof( buffer ) - 1 ) )
+        len = sizeof( buffer ) - 1;
+    str = memcpy( buffer, strreg, len );
+    str[len] = '\0';
+    // search register or alias name
+    index = PragRegIndex( Registers, str, len, FALSE );
+    if( index != -1 ) {
+        return( RegBits[RegMap[index]] );
     }
     // decode regular register name
-    if( *str == 'r' || *str == 'R' )
+    if( *str == 'r' || *str == 'R' ) {
         ++str;
+        --len;
+    }
     // decode regular register index
-    if( isdigit( *str ) ) {
-        index = atoi( str );
-        if( str[ 1 ] == '\0' ) {
-            //  0....9
-            if(( index > 0 )
-              || ( index == 0 ) && ( str[ 0 ] == '0' )) {
-                return( RegBits[ index ] );
-            }
-        } else if( str[ 2 ] == '\0' ) {
-            // 10....31
-            if(( index > 9 ) && ( index < 32 )) {
-                return( RegBits[ index ] );
-            }
-        }
+    index = PragRegNumIndex( str, 32 );
+    if( index != -1 ) {
+        return( RegBits[index] );
     }
     if( *(str - 1) == 'r' && *(str - 1) == 'R' ) {
         --str;
@@ -256,8 +249,8 @@ static byte_seq_reloc *GetFixups( void )
     return( head );
 }
 
-void AsmSysLine( char *buff )
-/***************************/
+void AsmSysLine( const char *buff )
+/*********************************/
 {
     AsmLine( buff );
 }
@@ -265,7 +258,7 @@ void AsmSysLine( char *buff )
 local int GetByteSeq( byte_seq **code )
 /*************************************/
 {
-    auto unsigned char  buff[ MAXIMUM_BYTESEQ + 32 ];
+    auto unsigned char  buff[MAXIMUM_BYTESEQ + 32];
     int                 uses_auto;
     char                too_many_bytes;
 

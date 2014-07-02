@@ -206,13 +206,14 @@ static inline_funcs *Flat( inline_funcs *ifunc )
 static inline_funcs *IF_Lookup( const char *name )
 {
     inline_funcs     *ifunc;
+    size_t           len;
 
+    len = strlen( name ) + 1;
     if( GET_FPU( ProcRevision ) > FPU_NONE ) {
-        ifunc = _8087_Functions;
-        while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 )
+        for( ifunc = _8087_Functions; ifunc->name != NULL; ++ifunc ) {
+            if( memcmp( ifunc->name, name, len ) == 0 ) {
                 return( Flat( ifunc ) );
-            ++ifunc;
+            }
         }
     }
     if( OptSize == 100 ) {              /* if /os specified */
@@ -232,19 +233,18 @@ static inline_funcs *IF_Lookup( const char *name )
             }
   #endif
         }
-        while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 )
+        for( ; ifunc->name != NULL; ++ifunc ) {
+            if( memcmp( ifunc->name, name, len ) == 0 ) {
                 return( Flat( ifunc ) );
-            ++ifunc;
+            }
         }
     }
   #if _CPU == 386
     if( TargetSwitches & FLAT_MODEL ) {
-        ifunc = Flat_Functions;
-        while( ifunc->name ) {
-            if( strcmp( ifunc->name, name ) == 0 )
+        for( ifunc = Flat_Functions; ifunc->name != NULL; ++ifunc ) {
+            if( memcmp( ifunc->name, name, len ) == 0 ) {
                 return( ifunc );
-            ++ifunc;
+            }
         }
     }
   #endif
@@ -264,16 +264,15 @@ static inline_funcs *IF_Lookup( const char *name )
         }
   #endif
     }
-    while( ifunc->name ) {
-        if( strcmp( ifunc->name, name ) == 0 )
+    for( ; ifunc->name != NULL; ++ifunc ) {
+        if( memcmp( ifunc->name, name, len ) == 0 ) {
             return( Flat( ifunc ) );
-        ++ifunc;
+        }
     }
-    ifunc = Common_Functions;
-    while( ifunc->name ) {
-        if( strcmp( ifunc->name, name ) == 0 )
+    for( ifunc = Common_Functions; ifunc->name != NULL; ++ifunc ) {
+        if( memcmp( ifunc->name, name, len ) == 0 ) {
             return( Flat( ifunc ) );
-        ++ifunc;
+        }
     }
     return( NULL );
 }

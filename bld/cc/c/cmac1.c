@@ -89,7 +89,7 @@ static void SpecialMacrosInit( special_macro_names *mac )
     MEPTR               mentry;
 
     for( ; mac->name != NULL; ++mac ) {
-        mentry = CreateMEntry( mac->name );
+        mentry = CreateMEntry( mac->name, strlen( mac->name ) );
         mentry->parm_count = (mac_parm_count)mac->value;
         MacroAdd( mentry, NULL, 0, MFLAG_NONE );
         FreeMEntry( mentry );
@@ -184,20 +184,18 @@ void GetMacroToken( void )
     } flag;
 
     buf = Buffer;
+    buf[0] = '\0';
+    TokenLen = 0;
     CurToken = T_NULL;
-    for( ;; ) {
-        flag.keep_token = FALSE;
-        flag.next_token = FALSE;
-        mtok = TokenList;
-        if( mtok == NULL ) {
-            MacroPtr = NULL;
-            break;
-        }
+    for( ; (mtok = TokenList) != NULL; ) {
         CurToken = mtok->token;
         len = 0;
         while( (buf[len] = mtok->data[len]) != '\0' ) {
             len++;
         }
+        TokenLen = len;
+        flag.keep_token = FALSE;
+        flag.next_token = FALSE;
         switch( CurToken ) {
         case T_UNEXPANDABLE_ID:
             CalcHash( buf, len );
@@ -263,6 +261,9 @@ void GetMacroToken( void )
         if( !flag.next_token ) {
             break;
         }
+    }
+    if( mtok == NULL ) {
+        MacroPtr = NULL;
     }
 }
 
@@ -344,11 +345,11 @@ TOKEN SpecialMacro( special_macros spc_macro )
         return( T_STRING );
     case MACRO_DATE:
         CLitLength = 12;
-        strcpy( Buffer, __Date );
+        memcpy( Buffer, __Date, CLitLength );
         return( T_STRING );
     case MACRO_TIME:
         CLitLength = 9;
-        strcpy( Buffer, __Time );
+        memcpy( Buffer, __Time, CLitLength );
         return( T_STRING );
     case MACRO_STDC:
         Buffer[0] = '1';
@@ -363,16 +364,16 @@ TOKEN SpecialMacro( special_macros spc_macro )
         ConstType = TYPE_INT;
         return( T_CONSTANT );
     case MACRO_STDC_LIB_EXT1:
-        strcpy( Buffer, "200509L" );
+        CPYLIT( Buffer, "200509L" );
         Constant = 200509;
         ConstType = TYPE_LONG;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
-            strcpy( Buffer, "199901L" );
+            CPYLIT( Buffer, "199901L" );
             Constant = 199901;
         } else {
-            strcpy( Buffer, "199409L" );
+            CPYLIT( Buffer, "199409L" );
             Constant = 199409;
         }
         ConstType = TYPE_LONG;
@@ -384,8 +385,8 @@ TOKEN SpecialMacro( special_macros spc_macro )
                 p = CurFunc->name;
             }
         }
-        CLitLength = strlen( p ) + 1;
-        strcpy( Buffer, p );
+        CLitLength = (target_size)( strlen( p ) + 1 );
+        memcpy( Buffer, p, CLitLength );
         return( T_STRING );
     default:
         return( 0 ); // shut up the compiler
@@ -410,7 +411,7 @@ void EnlargeBuffer( size_t size )
 
     newBuffer = CMemAlloc( size );
     memcpy( newBuffer, Buffer, BufSize );
-    CMemFree( Buffer );
+    CMemFree( (void *)Buffer );
     Buffer = newBuffer;
     newBuffer = CMemAlloc( size );
     memcpy( newBuffer, TokenBuf, BufSize );
@@ -579,7 +580,7 @@ static MACRO_ARG *CollectParms(void)
             if( mentry->parm_count - 1 != 0 ) {
                 CWarn2p( WARN_PARM_COUNT_MISMATCH, ERR_TOO_MANY_MACRO_PARMS, mentry->macro_name  );
             }
-        } else if( memcmp( mentry->macro_name, "va_start", 9 ) == 0 ) {
+        } else if( CMPLIT( mentry->macro_name, "va_start" ) == 0 ) {
             if( SymLevel != 0 && !VarParm( CurFunc ) ) {
                 CErr1( ERR_MUST_BE_VAR_PARM_FUNC );
             }

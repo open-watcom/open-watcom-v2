@@ -35,7 +35,7 @@
 #include "cgswitch.h"
 #include "scan.h"
 #include "asciiout.h"
-#include "unicode.h"                                    /* 05-jun-91 */
+#include "unicode.h"
 
 
 static int OpenUnicodeFile( const char *filename )
@@ -47,8 +47,8 @@ static int OpenUnicodeFile( const char *filename )
     _searchenv( filename, "ETC_PATH", fullpath );
     if( fullpath[0] == '\0' ) {
         #define ETC "/etc/"
-        strcpy( fullpath, ETC );
-        strcpy( &fullpath[ sizeof( ETC ) - 1 ], filename );
+        memcpy( fullpath, ETC, sizeof( ETC ) - 1 );
+        strcpy( fullpath + sizeof( ETC ) - 1, filename );
     }
 #else
     _searchenv( filename, "PATH", fullpath );

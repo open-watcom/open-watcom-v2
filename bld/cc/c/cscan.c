@@ -134,8 +134,7 @@ static int SaveNextChar( void )
     c = NextChar();
     if( TokenLen >= BufSize - 2 )
         EnlargeBuffer( TokenLen * 2 );
-    Buffer[TokenLen] = c;
-    ++TokenLen;
+    Buffer[TokenLen++] = c;
     return( c );
 }
 

@@ -41,38 +41,49 @@ hw_reg_set DefaultVarParms[] = {
     HW_D( HW_EMPTY )
 };
 
-char Registers[] = {    /* table for TableLookup*/
-    'e','s',NC,         /* should agree with RegBits*/
-    'd','s',NC,
-    'c','s',NC,
-    's','s',NC,
-    'a','x',NC,
-    'b','x',NC,
-    'c','x',NC,
-    'd','x',NC,
-    'a','l',NC,
-    'b','l',NC,
-    'c','l',NC,
-    'd','l',NC,
-    'a','h',NC,
-    'b','h',NC,
-    'c','h',NC,
-    'd','h',NC,
-    's','i',NC,
-    'd','i',NC,
-    'b','p',NC,
-    's','p',NC,
-    'f','s',NC,
-    'g','s',NC,
-    'e','a','x',NC,
-    'e','b','x',NC,
-    'e','c','x',NC,
-    'e','d','x',NC,
-    'e','s','i',NC,
-    'e','d','i',NC,
-    'e','b','p',NC,
-    'e','s','p',NC,
-    NC
+#define REGS_MAP \
+REG_PICK( "es",  0  ) \
+REG_PICK( "ds",  1  ) \
+REG_PICK( "cs",  2  ) \
+REG_PICK( "ss",  3  ) \
+REG_PICK( "ax",  4  ) \
+REG_PICK( "bx",  5  ) \
+REG_PICK( "cx",  6  ) \
+REG_PICK( "dx",  7  ) \
+REG_PICK( "al",  8  ) \
+REG_PICK( "bl",  9  ) \
+REG_PICK( "cl",  10 ) \
+REG_PICK( "dl",  11 ) \
+REG_PICK( "ah",  12 ) \
+REG_PICK( "bh",  13 ) \
+REG_PICK( "ch",  14 ) \
+REG_PICK( "dh",  15 ) \
+REG_PICK( "si",  16 ) \
+REG_PICK( "di",  17 ) \
+REG_PICK( "bp",  18 ) \
+REG_PICK( "sp",  19 ) \
+REG_PICK( "fs",  20 ) \
+REG_PICK( "gs",  21 ) \
+REG_PICK( "eax", 22 ) \
+REG_PICK( "ebx", 23 ) \
+REG_PICK( "ecx", 24 ) \
+REG_PICK( "edx", 25 ) \
+REG_PICK( "esi", 26 ) \
+REG_PICK( "edi", 27 ) \
+REG_PICK( "ebp", 18 ) \
+REG_PICK( "esp", 19 )
+
+char Registers[] = {
+    #define REG_PICK(t,r) t "\0"
+    REGS_MAP
+    "\0"
+    #undef REG_PICK
+};
+
+unsigned char RegMap[] = {
+    #define REG_PICK(t,r) r,
+    REGS_MAP
+    #undef REG_PICK
 };
 
 hw_reg_set RegBits[] = {
@@ -104,8 +115,6 @@ hw_reg_set RegBits[] = {
     HW_D( HW_EDX ),
     HW_D( HW_ESI ),
     HW_D( HW_EDI ),
-    HW_D( HW_BP ),
-    HW_D( HW_SP ),
 };
 
 /*      INLINE FUNCTIONS */

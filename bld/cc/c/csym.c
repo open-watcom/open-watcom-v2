@@ -641,13 +641,15 @@ local void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
+    size_t          len;
 
     new =  CMemAlloc( sizeof ( struct xlist ) );
     Copy8( name, new->xname );
     strupr( new->xname );
-    while( (curr = *link) != NULL ) {
+    len = strlen( new->xname ) + 1;
+    for( ; (curr = *link) != NULL; link = &curr->next ) {
         int cmp;
-        cmp =  strcmp( new->xname, curr->xname );
+        cmp = memcmp( new->xname, curr->xname, len );
         if( cmp == 0 ) {
             SetErrLoc( &sym->src_loc );
             CErr3p( ERR_DUPLICATE_ID, name, new->xname );
@@ -657,7 +659,6 @@ local void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
         } else if( cmp < 0 ) {
             break;
         }
-        link = &curr->next;
     }
     new->next = *link;
     *link = new;
@@ -805,7 +806,7 @@ local SYM_HASHPTR FreeSym( void )
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
     SYM_HASHPTR     sym_list;
-    int             sym_len;
+    size_t          sym_len;
     int             bucket;
     SYM_HANDLE      prev_tail;
     SYM_ENTRY       sym;
@@ -944,13 +945,12 @@ LABELPTR LkLabel( const char *name )
     LABELPTR    label;
     size_t      len;
 
-    label = LabelHead;
-    while( label != NULL ) {
-        if( strcmp( name, label->name ) == 0 )
-            return( label );
-        label = label->next_label;
-    }
     len = strlen( name ) + 1;
+    for( label = LabelHead; label != NULL; label = label->next_label ) {
+        if( memcmp( name, label->name, len ) == 0 ) {
+            return( label );
+        }
+    }
     label = (LABELPTR)CMemAlloc( sizeof( LABELDEFN ) - 1 + len );
     if( label != NULL ) {
         label->next_label = LabelHead;

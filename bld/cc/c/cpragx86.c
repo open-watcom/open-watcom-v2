@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "cvars.h"
 #include "cgswitch.h"
 #include "pragdefn.h"
@@ -629,8 +630,8 @@ local void FreeAsmFixups( void )
 }
 
 
-void AsmSysLine( char *buff )
-/***************************/
+void AsmSysLine( const char *buff )
+/*********************************/
 {
 #if _CPU == 8086
     AsmLine( buff, GET_FPU_EMU( ProcRevision ) );
@@ -759,34 +760,30 @@ local bool GetByteSeq( byte_seq **code )
 }
 
 
-hw_reg_set PragRegName( char *str )
-/*********************************/
+hw_reg_set PragRegName( const char *str, size_t len )
+/***************************************************/
 {
-    int         index;
-    char        *p;
-    hw_reg_set  name;
+    int             index;
+    hw_reg_set      name;
 
-    if( *str == '\0' ) {
+    if( len == 0 ) {
         HW_CAsgn( name, HW_EMPTY );
         return( name );
     }
     if( *str == '_' ) {
         ++str;
+        --len;
         if( *str == '_' ) {
             ++str;
+            --len;
         }
     }
-    index = 0;
-    p = Registers;
-    while( *p != '\0' ) {
-        if( stricmp( p, str ) == 0 )
-            return( RegBits[index] );
-        index++;
-        while( *p++ != '\0' ) {
-            ;
-        }
+    // search register or alias name
+    index = PragRegIndex( Registers, str, len, TRUE );
+    if( index != -1 ) {
+        return( RegBits[RegMap[index]] );
     }
-    if( strcmp( str, "8087" ) == 0 ) {
+    if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
         HW_CAsgn( name, HW_FLTS );
     } else {
         CErr2p( ERR_BAD_REGISTER_NAME, str );

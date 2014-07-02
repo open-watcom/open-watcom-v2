@@ -42,22 +42,18 @@ extern  char    CompilerID[];
 /* COMMAND LINE PARSING OF MACRO DEFINITIONS */
 
 
-static char *copy_eq( char *dest, const char *src )
+static size_t get_namelen( const char *start )
 {
     char        c;
+    const char  *src;
 
-    for(;;) {
-        c = *src;
-        if( c == '\0' ) break;
+    for( src = start; (c = *src) != '\0'; ++src ) {
         if( EqualChar( c ) ) break;
         if( c == ' '  ) break;
         if( c == '-'  ) break;
         if( c == SwitchChar  ) break;
-        *dest++ = c;
-        ++src;
     }
-    *dest = '\0';
-    return( (char *)src );
+    return( src - start );
 }
 
 
@@ -67,8 +63,7 @@ char *BadCmdLine( int error_code, const char *str )
     auto char   buffer[128];
 
     p = buffer;
-    for(;;) {
-        if( *str == '\0' ) break;
+    for( ; *str != '\0'; ) {
         *p++ = *str++;
         if( *str == ' ' ) break;
         if( *str == '-' ) break;
@@ -86,12 +81,13 @@ static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags
     size_t      len;
     MEPTR       mentry;
 
-    str = copy_eq( Buffer, str);
-    mentry = CreateMEntry( Buffer );
-    if( mentry == NULL ) {
+    len = get_namelen( str );
+    if( len == 0 ) {
         CErr1( ERR_NO_MACRO_ID_COMMAND_LINE );
         return( (char *)str );
     }
+    mentry = CreateMEntry( str, len );
+    str += len;
     len = 0;
     if( !EqualChar( *str ) ) {
         MTOK( TokenBuf + len ) = T_PPNUMBER;
@@ -136,7 +132,7 @@ static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags
     }
     MTOK( TokenBuf + len ) = T_NULL;
     MTOKINC( len );
-    if( strcmp( mentry->macro_name, "defined" ) != 0 ){
+    if( CMPLIT( mentry->macro_name, "defined" ) != 0 ){
         MacroAdd( mentry, TokenBuf, len, mflags );
     }else{
         CErr1( ERR_CANT_DEFINE_DEFINED );
@@ -184,7 +180,7 @@ void PreDefine_Macro( const char *str )
 
 char *AddUndefName( const char *str )
 {
-    int             len;
+    size_t          len;
     undef_names     *uname;
 
     len = strlen( str );

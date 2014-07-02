@@ -77,13 +77,11 @@ static char *ChunkToStr( STRCHUNK *pch )
 
 static void ChunkSaveData( STRCHUNK *pch, const char *data, size_t len )
 {
-    int   bytesleft;
-    int   requestbytes;
-    char *newdata;
+    size_t  requestbytes;
+    char    *newdata;
 
-    bytesleft = pch->maxsize - (pch->cursize+len+1);
-    if( bytesleft <= 0 ) {
-        requestbytes = -bytesleft;
+    if( ( pch->cursize + len + 1 ) > pch->maxsize ) {
+        requestbytes = ( pch->cursize + len + 1 ) - pch->maxsize;
         if( requestbytes < STRCHUNK_INCREMENT ) {
             requestbytes = STRCHUNK_INCREMENT;
         }
@@ -96,7 +94,7 @@ static void ChunkSaveData( STRCHUNK *pch, const char *data, size_t len )
         pch->data = newdata;
         pch->maxsize = requestbytes;
     }
-    memcpy( pch->data+pch->cursize, data, len );
+    memcpy( pch->data + pch->cursize, data, len );
     pch->cursize += len;
     pch->data[pch->cursize] = '\0';
 }

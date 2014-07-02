@@ -69,7 +69,7 @@ static void GetAsmLine( void )
     PPCTL_ENABLE_EOL();
     AsmErrLine = TokenLoc.line;
     *buf = '\0';
-    if( strcmp( Buffer, "_emit" ) == 0 ) {
+    if( CMPLIT( Buffer, "_emit" ) == 0 ) {
         strcpy( buf, AsmSysDefineByte() );
         NextToken();
     }

@@ -458,7 +458,7 @@ dw_client DwarfInit( void )
 
         incsize = strlen( HFileList ) + 1;
         inclist = CMemAlloc( incsize );
-        strcpy( inclist, HFileList );
+        memcpy( inclist, HFileList, incsize );
         // need to handle the case where there are multiple ';' in a row
         for( p = inclist; *p; p++ ) {
             if( *p == ';' )  *p = '\0';

@@ -303,23 +303,23 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 #endif
     }
 
-    if( strcmp( SwData.sys_name, "DOS" ) == 0 ) {
+    if( CMPLIT( SwData.sys_name, "DOS" ) == 0 ) {
         TargSys = TS_DOS;
-    } else if( strcmp( SwData.sys_name, "NETWARE" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "NETWARE" ) == 0 ) {
         TargSys = TS_NETWARE;
-    } else if( strcmp( SwData.sys_name, "NETWARE5" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "NETWARE5" ) == 0 ) {
         TargSys = TS_NETWARE5;
-    } else if( strcmp( SwData.sys_name, "WINDOWS" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "WINDOWS" ) == 0 ) {
         TargSys = TS_WINDOWS;
-    } else if( strcmp( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "CHEAP_WINDOWS" ) == 0 ) {
         TargSys = TS_CHEAP_WINDOWS;
-    } else if( strcmp( SwData.sys_name, "NT" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "NT" ) == 0 ) {
         TargSys = TS_NT;
-    } else if( strcmp( SwData.sys_name, "LINUX" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "LINUX" ) == 0 ) {
         TargSys = TS_LINUX;
-    } else if( strcmp( SwData.sys_name, "QNX" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "QNX" ) == 0 ) {
         TargSys = TS_QNX;
-    } else if( strcmp( SwData.sys_name, "OS2" ) == 0 ) {
+    } else if( CMPLIT( SwData.sys_name, "OS2" ) == 0 ) {
         TargSys = TS_OS2;
     } else {
         TargSys = TS_OTHER;
@@ -397,8 +397,8 @@ local void SetTargSystem( void )                            /* 07-aug-90 */
 #endif
         break;
     }
-    strcpy( buff, "__" );
-    strcat( buff, SwData.sys_name );
+    memcpy( buff, "__", 2 );
+    strcpy( buff + 2, SwData.sys_name );
     strcat( buff, "__" );
     PreDefine_Macro( buff );
 }
@@ -807,8 +807,8 @@ static void MacroDefs( void )
 
 static void AddIncList( const char *path_list )
 {
-    int         old_len;
-    int         len;
+    size_t      old_len;
+    size_t      len;
     char        *old_list;
     char        *p;
 
@@ -836,22 +836,26 @@ void MergeInclude( void )
     /* must be called after GenCOptions to get req'd IncPathList */
     char        *env_var;
     char        buff[128];
+    size_t      len;
 
     if( !CompFlags.cpp_ignore_env ) {
         switch( TargSys ) {
         case TS_CHEAP_WINDOWS:
         case TS_WINDOWS:
-            strcpy( buff, "WINDOWS" );
+            len = sizeof( "WINDOWS" ) - 1;
+            memcpy( buff, "WINDOWS", len );
             break;
         case TS_NETWARE:
         case TS_NETWARE5:
-            strcpy( buff, "NETWARE" );
+            len = sizeof( "NETWARE" ) - 1;
+            memcpy( buff, "NETWARE", len );
             break;
         default:
-            strcpy( buff, SwData.sys_name );
+            len = strlen( SwData.sys_name );
+            memcpy( buff, SwData.sys_name, len );
             break;
         }
-        strcat( buff, "_" INC_VAR );
+        CPYLIT( buff + len, "_" INC_VAR );
         AddIncList( FEGetEnv( buff ) );
 
 #if _CPU == 386
@@ -2144,65 +2148,65 @@ local void Define_Memory_Model( void )
     }
 #endif
 #if _CPU == 8086
-    strcpy( CLIB_Name, "1clib?" );                          /* 15-may-00 */
+    CPYLIT( CLIB_Name, "1clib?" );
     if( CompFlags.bm_switch_used ) {
-        strcpy( CLIB_Name, "1clibmt?" );
+        CPYLIT( CLIB_Name, "1clibmt?" );
     }
     if( CompFlags.bd_switch_used ) {
         if( TargSys == TS_WINDOWS ||
             TargSys == TS_CHEAP_WINDOWS ) {
-            strcpy( CLIB_Name, "1clib?" );
+            CPYLIT( CLIB_Name, "1clib?" );
         } else {
-            strcpy( CLIB_Name, "1clibdl?" );
+            CPYLIT( CLIB_Name, "1clibdl?" );
         }
     }
-    if( GET_FPU_EMU( ProcRevision ) ) {         /* 07-jan-90 */
-        strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8emu87";                     /* 02-apr-90 */
+    if( GET_FPU_EMU( ProcRevision ) ) {
+        CPYLIT( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8emu87";
     } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
-        strcpy( MATHLIB_Name, "5math?" );
+        CPYLIT( MATHLIB_Name, "5math?" );
         EmuLib_Name = NULL;
     } else {
-        strcpy( MATHLIB_Name, "7math87?" );
-        EmuLib_Name = "8noemu87";                   /* 02-apr-90 */
+        CPYLIT( MATHLIB_Name, "7math87?" );
+        EmuLib_Name = "8noemu87";
     }
 #elif _CPU == 386
-    model = 'r';                                    /* 07-nov-89 */
+    model = 'r';
     if( ! CompFlags.register_conventions ) model = 's';
-    if( CompFlags.br_switch_used ) {                /* 15-may-95 */
-        strcpy( CLIB_Name, "1clb?dll" );
+    if( CompFlags.br_switch_used ) {
+        CPYLIT( CLIB_Name, "1clb?dll" );
     } else {
-        strcpy( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
+        CPYLIT( CLIB_Name, "1clib3?" );     // There is only 1 CLIB now!
     }
     if( GET_FPU_EMU( ProcRevision ) ) {
-        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-            strcpy( MATHLIB_Name, "7mt7?dll" );
+        if( CompFlags.br_switch_used ) {
+            CPYLIT( MATHLIB_Name, "7mt7?dll" );
         } else {
-            strcpy( MATHLIB_Name, "7math387?" );
+            CPYLIT( MATHLIB_Name, "7math387?" );
         }
         EmuLib_Name = "8emu387";
     } else if( GET_FPU_LEVEL( ProcRevision ) == FPU_NONE ) {
-        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-            strcpy( MATHLIB_Name, "5mth?dll" );
+        if( CompFlags.br_switch_used ) {
+            CPYLIT( MATHLIB_Name, "5mth?dll" );
         } else {
-            strcpy( MATHLIB_Name, "5math3?" );
+            CPYLIT( MATHLIB_Name, "5math3?" );
         }
         EmuLib_Name = NULL;
     } else {
-        if( CompFlags.br_switch_used ) {            /* 19-jun-95 */
-            strcpy( MATHLIB_Name, "7mt7?dll" );
+        if( CompFlags.br_switch_used ) {
+            CPYLIT( MATHLIB_Name, "7mt7?dll" );
         } else {
-            strcpy( MATHLIB_Name, "7math387?" );
+            CPYLIT( MATHLIB_Name, "7math387?" );
         }
         EmuLib_Name = "8noemu387";
     }
 #elif _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
-    if( CompFlags.br_switch_used ) {                /* 15-may-95 */
-        strcpy( CLIB_Name, "1clbdll" );
-        strcpy( MATHLIB_Name, "7mthdll" );
+    if( CompFlags.br_switch_used ) {
+        CPYLIT( CLIB_Name, "1clbdll" );
+        CPYLIT( MATHLIB_Name, "7mthdll" );
     } else {
-        strcpy( CLIB_Name, "1clib" );
-        strcpy( MATHLIB_Name, "7math" );
+        CPYLIT( CLIB_Name, "1clib" );
+        CPYLIT( MATHLIB_Name, "7math" );
     }
     EmuLib_Name = NULL;
 #else

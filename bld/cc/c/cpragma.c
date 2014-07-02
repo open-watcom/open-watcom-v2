@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "cvars.h"
 #include "cgswitch.h"
 #include "pragdefn.h"
@@ -52,8 +53,8 @@ static struct toggle ToggleNames[] = {
     #define TOGDEF( a, b ) {  #a, b },
     #include "togdef.h"
     #undef TOGDEF
-        { NULL, 0 }
-    };
+    { NULL, 0 }
+};
 
 
 void CPragmaInit( void )
@@ -134,10 +135,12 @@ bool SetToggleFlag( char const *name, int const value )
     int     i;
     char    *pnt;
     bool    ret;
+    size_t  len;
 
+    len = strlen( name ) + 1;
     ret = FALSE;
     for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
-        if( strcmp( pnt, name ) == 0 ) {
+        if( memcmp( pnt, name, len ) == 0 ) {
             if( value == 0 ) {
                 Toggles &= ~ToggleNames[i].flag;
             } else {
@@ -153,19 +156,21 @@ bool SetToggleFlag( char const *name, int const value )
 local bool PragIdRecog( const char *what )
 /****************************************/
 {
-    char    *p = Buffer;
-    int     rc;
+    size_t  len;
+    bool    rc;
 
-    if( *p == '_' ) {
-        ++p;
-        if( *p == '_' ) {
-            ++p;
+    len = 0;
+    if( *(Buffer + len) == '_' ) {
+        ++len;
+        if( *(Buffer + len) == '_' ) {
+            ++len;
         }
     }
-    if( (rc = stricmp( what, p )) == 0 ) {
+    rc = ( stricmp( what, Buffer + len ) == 0 );
+    if( rc ) {
         NextToken();
     }
-    return( rc == 0 );
+    return( rc );
 }
 
 
@@ -352,6 +357,7 @@ struct magic_words {
 aux_info *MagicKeyword( const char *name )
 {
     int         i;
+    size_t      len;
 
     if( *name == '_' ) {
         ++name;
@@ -359,8 +365,9 @@ aux_info *MagicKeyword( const char *name )
             ++name;
         }
     }
+    len = strlen( name ) + 1;
     for( i = 0; MagicWords[i].name != NULL; ++i ) {
-        if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
+        if( memcmp( name, MagicWords[i].name + 2, len ) == 0 ) {
             break;
         }
     }
@@ -371,8 +378,11 @@ aux_info *MagicKeyword( const char *name )
 void CreateAux( const char *id )
 /******************************/
 {
-    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + strlen( id ) + 1 );
-    strcpy( CurrEntry->name, id );
+    size_t  len;
+
+    len = strlen( id ) + 1;
+    CurrEntry = (aux_entry *)CMemAlloc( offsetof( aux_entry, name ) + len );
+    memcpy( CurrEntry->name, id, len );
 #if _CPU == 370
     CurrEntry->offset = -1;
 #endif
@@ -572,13 +582,71 @@ TOKEN PragRegSet( void )
     return( T_NULL );
 }
 
+int PragRegIndex( const char *registers, const char *name, size_t len, bool ignorecase )
+/**************************************************************************************/
+{
+    int             index;
+    const char      *p;
+    unsigned char   c;
+    unsigned char   c2;
+    int             i;
+
+    index = 0;
+    p = Registers;
+    while( *p != '\0' ) {
+        i = 0;
+        for( ; (c = *p++) != '\0'; ) {
+            if( i > len )
+                continue;
+            if( i < len ) {
+                c2 = name[i++];
+                if( ignorecase )
+                    c2 = tolower( c2 );
+                if( c == c2 ) {
+                    continue;
+                }
+            }
+            i = len + 1;
+        }
+        if( i == len )
+            return( index );
+        ++index;
+    }
+    return( -1 );
+}
+
+int PragRegNumIndex( const char *str, int max_reg )
+/*************************************************/
+{
+    int             index;
+
+    // decode regular register index
+    if( isdigit( *str ) ) {
+        index = atoi( str );
+        if( index < max_reg ) {
+            if( str[1] == '\0' ) {
+                //  0....9
+                if(( index > 0 )
+                  || ( index == 0 ) && ( str[0] == '0' )) {
+                    return( index );
+                }
+            } else if( str[2] == '\0' ) {
+                // 10....max_reg-1
+                if( index > 9 ) {
+                    return( index );
+                }
+            }
+        }
+    }
+    return( -1 );
+}
+
 
 hw_reg_set PragRegList( void )
 /****************************/
 {
     hw_reg_set  res, reg;
     TOKEN       close;
-    char        buf[80];
 
     HW_CAsgn( res, HW_EMPTY );
     HW_CAsgn( reg, HW_EMPTY );
@@ -586,13 +654,10 @@ hw_reg_set PragRegList( void )
     if( close != T_NULL ) {
         PPCTL_ENABLE_MACROS();
         NextToken();
-        *buf = '\0';
         for( ; CurToken != close; ) {
-            strcat( buf, Buffer );
             if( CurToken != T_BAD_CHAR ) {
-                reg = PragRegName( buf );
+                reg = PragRegName( Buffer, TokenLen );
                 HW_TurnOn( res, reg );
-                *buf = '\0';
             }
             NextToken();
         }
@@ -630,7 +695,7 @@ hw_reg_set *PragManyRegSets( void )
 textsegment *NewTextSeg( const char *name, const char *suffix, const char *classname )
 /************************************************************************************/
 {
-    textsegment     *seg;
+    textsegment     *tseg;
     size_t          len1;
     size_t          len2;
     size_t          len3;
@@ -638,26 +703,29 @@ textsegment *NewTextSeg( const char *name, const char *suffix, const char *class
     len1 = strlen( name );
     len2 = strlen( suffix ) + 1;
     len3 = strlen( classname ) + 1;
-    seg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + len3 );
-    memcpy( seg->segname, name, len1 );
-    memcpy( &seg->segname[len1], suffix, len2 );
-    memcpy( &seg->segname[len1 + len2], classname, len3 );
-    seg->next = TextSegList;
-    TextSegList = seg;
-    return( seg );
+    tseg = CMemAlloc( offsetof( textsegment, segname ) + len1 + len2 + len3 );
+    tseg->class = len1 + len2;
+    memcpy( tseg->segname, name, len1 );
+    memcpy( tseg->segname + len1, suffix, len2 );
+    memcpy( tseg->segname + tseg->class, classname, len3 );
+    tseg->next = TextSegList;
+    TextSegList = tseg;
+    return( tseg );
 }
 
 textsegment *LkSegName( const char *segname, const char *classname )
 /******************************************************************/
 {
-    textsegment     *seg;
-    size_t          len;
+    textsegment     *tseg;
+    size_t          len1;
+    size_t          len2;
 
-    len = strlen( segname ) + 1;
-    for( seg = TextSegList; seg != NULL; seg = seg->next ) {
-        if( strcmp( seg->segname, segname ) == 0 ) {
-            if( strcmp( &seg->segname[len], classname ) == 0 ) {
-                return( seg );
+    len1 = strlen( segname ) + 1;
+    len2 = strlen( classname ) + 1;
+    for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
+        if( memcmp( tseg->segname, segname, len1 ) == 0 ) {
+            if( memcmp( tseg->segname + tseg->class, classname, len2 ) == 0 ) {
+                return( tseg );
             }
         }
     }
@@ -667,25 +735,25 @@ textsegment *LkSegName( const char *segname, const char *classname )
 local void PragAllocText( void )
 /******************************/
 {
-    struct textsegment  *seg;
+    struct textsegment  *tseg;
     SYM_HANDLE          sym_handle;
     auto SYM_ENTRY      sym;
 
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         /* current token can be an T_ID or a T_STRING */
-        seg = LkSegName( Buffer, "" );
+        tseg = LkSegName( Buffer, "" );
         NextToken();
         for( ; ; ) {
             MustRecog( T_COMMA );
             /* current token can be an T_ID or a T_STRING */
-            sym_handle = Sym0Look( CalcHash( Buffer, strlen( Buffer ) ), Buffer );
+            sym_handle = Sym0Look( CalcHash( Buffer, TokenLen ), Buffer );
             if( sym_handle == 0 ) {
                 /* error */
             } else {
                 SymGet( &sym, sym_handle );
                 if( sym.flags & SYM_FUNCTION ) {
-                    sym.seginfo = seg;
+                    sym.seginfo = tseg;
                     SymReplace( &sym, sym_handle );
                 } else {
                     /* error, must be function */
@@ -851,13 +919,13 @@ static void PragIntrinsic( int intrinsic )
 static void PragCodeSeg( void )
 /*****************************/
 {
-    textsegment     *seg;
+    textsegment     *tseg;
     char            *segname;
     char            *classname;
 
     if( CurToken == T_LEFT_PAREN ) {
         PPCTL_ENABLE_MACROS();
-        seg = NULL;
+        tseg = NULL;
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );
@@ -872,13 +940,13 @@ static void PragCodeSeg( void )
                     NextToken();
                 }
             }
-            seg = LkSegName( segname, classname );
+            tseg = LkSegName( segname, classname );
             CMemFree( segname );
             CMemFree( classname );
         }
         PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
-        DefCodeSegment = seg;
+        DefCodeSegment = tseg;
 #if _CPU == 8086 || _CPU == 386
         CompFlags.multiple_code_segments = 1;
 #endif
@@ -1076,11 +1144,13 @@ void AddExtRefN ( const char *name )
 {
     extref_info  **extref;
     extref_info  *new_extref;
+    size_t       len;
 
     for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
         ; /* nothing to do */
-    new_extref = CMemAlloc( sizeof( extref_info ) + strlen( name ) );
-    strcpy( new_extref->name, name );
+    len = strlen( name ) + 1;
+    new_extref = CMemAlloc( sizeof( extref_info ) + len - 1 );
+    memcpy( new_extref->name, name, len );
     new_extref->symbol = NULL;
     new_extref->next = NULL;
     *extref = new_extref;

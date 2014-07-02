@@ -42,6 +42,7 @@ global  hw_reg_set      PascalParms[];
 global  hw_reg_set      DefaultVarParms[];
 global  hw_reg_set      RegBits[];
 global  char            Registers[];
+global  unsigned char   RegMap[];
 global  aux_info        InlineInfo;
 global  inline_funcs    SInline_Functions[];
 global  inline_funcs    Inline_Functions[];

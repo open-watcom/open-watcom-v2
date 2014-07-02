@@ -43,7 +43,7 @@ extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (('H'<<24)|('C'<<16)|('P'<<8)|'W')     /* 'WPCH' */
-#define PCH_VERSION     0x0124
+#define PCH_VERSION     0x0125
 #if defined(_M_I86)
 #define PCH_VERSION_HOST ( ( 1L << 16 ) | PCH_VERSION )
 #elif defined(_M_IX86)
@@ -80,7 +80,7 @@ static  jmp_buf         PH_jmpbuf;
 static  int             PH_handle;
 static  char            *PH_Buffer;
 static  char            *PH_BufPtr;
-static  unsigned        PH_BufSize;
+static  size_t          PH_BufSize;
 static  MEPTR           *PCHMacroHash;
 static  MEPTR           PCHUndefMacroList;
 static  TYPEPTR         TypeArray;
@@ -109,7 +109,7 @@ static  char            PH_computing_size;
 static  RDIRPTR         PCHRDirNames;       /* list of read-only directories */
 static  IALIASPTR       PCHIAliasNames;     /* list of include aliases */
 static  INCFILE         *PCHOldIncFileList; /* temporary copy of old include file list */
-static  int             PCHOldIncListValid; /* flag to indicate if PCHOldIncFileList is valid */
+static  bool            PCHOldIncListValid; /* flag to indicate if PCHOldIncFileList is valid */
 
 typedef struct pheader {
     unsigned        signature;      //  'WPCH'
@@ -187,51 +187,49 @@ static void CreatePHeader( const char *filename )
     }
 }
 
-static int pch_write( const char *buf, unsigned len )
+static bool pch_write( const char *buf, size_t len )
 {
-    unsigned    amt_written;
+    size_t     amt_towrite;
 
     if( PH_Buffer != NULL ) {
         for( ; len != 0; ) {
-            amt_written = len;
-            if( amt_written > PH_BufSize )
-                amt_written = PH_BufSize;
-            memcpy( PH_BufPtr, buf, amt_written );
-            PH_BufSize -= amt_written;
-            PH_BufPtr  += amt_written;
-            buf += amt_written;
-            len -= amt_written;
+            amt_towrite = len;
+            if( amt_towrite > PH_BufSize )
+                amt_towrite = PH_BufSize;
+            memcpy( PH_BufPtr, buf, amt_towrite );
+            PH_BufSize -= amt_towrite;
+            PH_BufPtr  += amt_towrite;
+            buf += amt_towrite;
+            len -= amt_towrite;
             if( PH_BufSize == 0 ) {         // if buffer is full
                 PH_BufSize = PH_BUF_SIZE;
                 PH_BufPtr  = PH_Buffer;
-                amt_written = write( PH_handle, PH_Buffer, PH_BUF_SIZE );
-                if( amt_written != PH_BUF_SIZE ) {
-                    return( 1 );
+                if( write( PH_handle, PH_Buffer, PH_BUF_SIZE ) != PH_BUF_SIZE ) {
+                    return( TRUE );
                 }
             }
         }
     } else if( len > 0 ) {
-        amt_written = write( PH_handle, buf, len );
-        if( amt_written != len ) {
-            return( 1 );
+        if( write( PH_handle, buf, len ) != len ) {
+            return( TRUE );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
-static int pch_align( unsigned len )
+static bool pch_align( size_t len )
 {
     len = PCHAlign( len ) - len;
     if( len > 0 ) {
         char    padding[8] = {0};
         return( pch_write( padding, len ) );
     }
-    return( 0 );
+    return( FALSE );
 }
 
-static int PCHWrite( const void *bufptr, unsigned len )
+static bool PCHWrite( const void *bufptr, size_t len )
 {
-    int     rc = 0;
+    bool    rc = FALSE;
 
     if( len != 0 ) {
         if( PH_computing_size ) {
@@ -244,7 +242,7 @@ static int PCHWrite( const void *bufptr, unsigned len )
     return( rc );
 }
 
-static int PCHWriteUnalign( const void *bufptr, unsigned len )
+static bool PCHWriteUnalign( const void *bufptr, size_t len )
 {
     if( len != 0 ) {
         if( PH_computing_size ) {
@@ -253,7 +251,7 @@ static int PCHWriteUnalign( const void *bufptr, unsigned len )
             return( pch_write( bufptr, len ) );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static void FlushPHeader( void )
@@ -277,7 +275,7 @@ static void ClosePHeader( void )
 
 static void OutPutHeader( void )
 {
-    int             rc;
+    bool            rc;
     pheader         pch;
 
     pch.signature         = PCH_SIGNATURE;
@@ -315,27 +313,27 @@ static void OutPutHeader( void )
 
     rc  = PCHWriteVar( pch );
     rc |= PCHWrite( PH_Buffer + sizeof( pch ), pch.cwd_len );
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
 
 static void OutPutIncPathList( void )     // output include paths
 {
-    int         rc;
-    unsigned    len;
+    bool        rc;
+    size_t      len;
 
     len = strlen( IncPathList ) + 1;
     rc = PCHWrite( IncPathList, len );
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
 
 static void OutPutIncFileList( void )   // output primary include files
 {
-    int         rc;
-    unsigned    len;
+    bool        rc;
+    size_t      len;
     INCFILE     *ifile;
     INCFILE     *next_file;
 
@@ -345,7 +343,7 @@ static void OutPutIncFileList( void )   // output primary include files
         ifile->nextfile = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( ifile, len );
         ifile->nextfile = next_file;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_IncFileCount++;
@@ -354,8 +352,8 @@ static void OutPutIncFileList( void )   // output primary include files
 
 static void OutPutLibraries( void )
 {
-    int                 rc;
-    unsigned            len;
+    bool                rc;
+    size_t              len;
     library_list        *lib;
     library_list        *lib_next;
 
@@ -365,7 +363,7 @@ static void OutPutLibraries( void )
         lib->next = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( lib, len );
         lib->next = lib_next;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_LibraryCount++;
@@ -374,10 +372,10 @@ static void OutPutLibraries( void )
 
 static void OutPutAliases( void )
 {
-    int             rc;
-    unsigned        len;
-    unsigned        alias_len;
-    unsigned        subst_len;
+    bool            rc;
+    size_t          len;
+    size_t          alias_len;
+    size_t          subst_len;
     alias_list      *alias;
     alias_list      *alias_next;
     const char      *alias_name;
@@ -403,7 +401,7 @@ static void OutPutAliases( void )
         alias->subst = alias_subst;
         alias->name  = alias_name;
         alias->next  = alias_next;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_AliasCount++;
@@ -412,11 +410,11 @@ static void OutPutAliases( void )
 
 static void OutPutMsgFlags( void )
 {
-    int         rc;
+    bool        rc;
 
     if( MsgFlags != NULL ) {
         rc = PCHWrite( MsgFlags, ( MESSAGE_COUNT + 7 ) / 8 );
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
     }
@@ -426,8 +424,8 @@ static void OutPutIncludes( void )
 {
     FNAMEPTR    flist;
     FNAMEPTR    next_flist;
-    unsigned    len;
-    int         rc;
+    size_t      len;
+    bool        rc;
 
     // don't want to include the primary source file, skip first item
     for( flist = FNames->next; flist != NULL; flist = next_flist ) {
@@ -436,7 +434,7 @@ static void OutPutIncludes( void )
         flist->next = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( flist, len );
         flist->next = next_flist;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_FileCount++;
@@ -447,8 +445,8 @@ static void OutPutRoDirList( void )
 {
     RDIRPTR     dirlist;
     RDIRPTR     next_dirlist;
-    unsigned    len;
-    int         rc;
+    size_t      len;
+    bool        rc;
 
     for( dirlist = PCHRDirNames; dirlist != NULL; dirlist = next_dirlist ) {
         next_dirlist = dirlist->next;
@@ -456,7 +454,7 @@ static void OutPutRoDirList( void )
         dirlist->next = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( dirlist, len );
         dirlist->next = next_dirlist;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_RDirCount++;
@@ -468,9 +466,9 @@ static void OutPutIncAliasList( void )
     IALIASPTR   aliaslist;
     IALIASPTR   next_aliaslist;
     char        *real_name;
-    unsigned    len;
-    unsigned    alias_len;
-    int         rc;
+    size_t      len;
+    size_t      alias_len;
+    bool        rc;
 
     for( aliaslist = IAliasNames; aliaslist != NULL; aliaslist = next_aliaslist ) {
         next_aliaslist = aliaslist->next;
@@ -482,7 +480,7 @@ static void OutPutIncAliasList( void )
         rc = PCHWrite( aliaslist, len );
         aliaslist->real_name = real_name;
         aliaslist->next = next_aliaslist;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         PH_IAliasCount++;
@@ -491,22 +489,20 @@ static void OutPutIncAliasList( void )
 
 static void OutPutSegInfo( void )
 {
-    textsegment     *seg;
-    textsegment     *seg_next;
-    int             rc;
-    unsigned        len;
+    textsegment     *tseg;
+    textsegment     *tseg_next;
+    bool            rc;
+    size_t          len;
 
-    for( seg = TextSegList; seg != NULL; seg = seg_next ) {
-        seg_next = seg->next;                           // save next pointer
+    for( tseg = TextSegList; tseg != NULL; tseg = tseg_next ) {
+        tseg_next = tseg->next;             // save next pointer
         ++PH_SegCount;
-        seg->index = PH_SegCount;
-        len = strlen( seg->segname ) + 1;               // segment name
-        len += strlen( &seg->segname[len] ) + 1;        // class name
-        len += offsetof( textsegment, segname );
-        seg->next = PCHSetUInt( PCHAlign( len ) );
-        rc = PCHWrite( seg, len );
-        seg->next = seg_next;                           // restore next pointer
-        if( rc != 0 ) {
+        tseg->index = PH_SegCount;
+        len = offsetof( textsegment, segname ) + tseg->class + strlen( tseg->segname + tseg->class ) + 1;
+        tseg->next = PCHSetUInt( PCHAlign( len ) );
+        rc = PCHWrite( tseg, len );
+        tseg->next = tseg_next;             // restore next pointer
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
     }
@@ -514,15 +510,15 @@ static void OutPutSegInfo( void )
 
 static void OutPutEnums( ENUMPTR ep, TAGPTR parent )
 {
-    int         rc;
-    unsigned    len;
+    bool        rc;
+    size_t      len;
 
     for( ; ep != NULL; ep = ep->thread ) {
         len = offsetof( ENUMDEFN, name ) + strlen( ep->name ) + 1;
         ep->parent = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( ep, len );
         ep->parent = parent;
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
     }
@@ -530,8 +526,8 @@ static void OutPutEnums( ENUMPTR ep, TAGPTR parent )
 
 static void OutPutFields( FIELDPTR field )
 {
-    int         rc;
-    int         len;
+    bool        rc;
+    size_t      len;
     TYPEPTR     field_type;
 
     for( ; field != NULL; field = field->next_field ) {
@@ -541,7 +537,7 @@ static void OutPutFields( FIELDPTR field )
         field->field_type = PCHSetUInt( field_type->u1.type_index );
         rc = PCHWrite( field, len );
         field->field_type = field_type;         // restore pointer
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
     }
@@ -549,10 +545,10 @@ static void OutPutFields( FIELDPTR field )
 
 static void OutPutATag( TAGPTR tag )
 {
-    int         rc;
+    bool        rc;
     TYPEPTR     sym_type;
     TAGPTR      next_tag;
-    unsigned    len;
+    size_t      len;
 
     next_tag = tag->next_tag;
     sym_type = tag->sym_type;
@@ -562,7 +558,7 @@ static void OutPutATag( TAGPTR tag )
     rc = PCHWrite( tag, len );
     tag->sym_type = sym_type;
     tag->next_tag = next_tag;
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
     if( sym_type->decl_type == TYPE_ENUM ) {
@@ -618,9 +614,9 @@ static void InitDebugTags( void )
     WalkTagList( SetDebugTag );
 }
 
-static int WriteType( TYPEPTR typ )
+static bool WriteType( TYPEPTR typ )
 {
-    int         rc;
+    bool        rc;
     TYPEPTR     object;
 
     object = typ->object;
@@ -643,7 +639,7 @@ typedef struct type_indices {
 static void OutPutTypeIndexes( void )                       /* 02-jan-95 */
 {
     TYPEPTR             typ;
-    int                 rc;
+    bool                rc;
     int                 i;
     type_indices        typ_index;
 
@@ -658,7 +654,7 @@ static void OutPutTypeIndexes( void )                       /* 02-jan-95 */
     typ_index.stringtype_index = StringType->u1.type_index;
     typ_index.constchartype_index = ConstCharType->u1.type_index;
     rc = PCHWriteVar( typ_index );
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
@@ -666,7 +662,7 @@ static void OutPutTypeIndexes( void )                       /* 02-jan-95 */
 static void OutPutAType( TYPEPTR typ )
 {
     TAGPTR          tag;
-    int             rc;
+    bool            rc;
     array_info      *array;
 
     rc = 0;
@@ -691,7 +687,7 @@ static void OutPutAType( TYPEPTR typ )
         }
         break;
     }
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
@@ -699,13 +695,13 @@ static void OutPutAType( TYPEPTR typ )
 static void OutPutAFuncType( TYPEPTR typ, int index )
 {
     TYPEPTR     *parms_list;
-    int         rc;
+    bool        rc;
 
     parms_list = typ->u.fn.parms;           // save pointer
     typ->u.fn.parms = PCHSetUInt( index );  // replace with index
     rc = WriteType( typ );
     typ->u.fn.parms = parms_list;           // restore pointer
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
@@ -713,7 +709,7 @@ static void OutPutAFuncType( TYPEPTR typ, int index )
 static void OutPutFuncParmList( TYPEPTR typ, int index )
 {
     TYPEPTR     *parms_list;
-    int         rc;
+    bool        rc;
     TYPEPTR     parm_type;
 
     index = index;      /* unused */
@@ -722,14 +718,14 @@ static void OutPutFuncParmList( TYPEPTR typ, int index )
         while( (parm_type = *parms_list++) != NULL ) {
             parm_type = PCHSetUInt( parm_type->u1.type_index );
             rc = PCHWriteVar( parm_type );
-            if( rc != 0 ) {
+            if( rc ) {
                 longjmp( PH_jmpbuf, rc );
             }
         }
     }
     parm_type = PCHSetUInt( -1 );
     rc = PCHWriteVar( parm_type );
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
@@ -751,10 +747,10 @@ static void OutPutAuxInfo( aux_info *info )
     hw_reg_set          *info_parms;
     char                *info_objname;
     byte_seq            *info_code;
-    int                 rc;
-    unsigned            len;
-    unsigned            objname_len;
-    unsigned            code_len;
+    bool                rc;
+    size_t              len;
+    size_t              objname_len;
+    size_t              code_len;
 
     info_parms = info->parms;
     info_objname = info->objname;
@@ -795,7 +791,7 @@ static void OutPutAuxInfo( aux_info *info )
     info->parms = info_parms;
     info->objname = info_objname;
     info->code = info_code;
-    if( rc != 0 ) {
+    if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
 }
@@ -806,8 +802,8 @@ static void OutPutPragmaInfo( void )
     aux_entry       *ent_next;
     aux_info        *ent_info;
     int             index;
-    int             rc;
-    unsigned        len;
+    bool            rc;
+    size_t          len;
 
     // write built-in aux_info
     for( index = PCH_FIRST_INDEX; index < PCH_FIRST_USER_INDEX; ++index ) {
@@ -837,7 +833,7 @@ static void OutPutPragmaInfo( void )
         rc = PCHWrite( ent, len );
         ent->info = ent_info;                   // restore pointer
         ent->next = ent_next;                   // restore pointer
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         ++PH_PragmaEntryCount;
@@ -848,7 +844,7 @@ static void OutPutPragmaInfo( void )
 static void OutPutMacros( void )
 {
     mac_hash_idx    h;
-    int             rc;
+    bool            rc;
     MEPTR           mentry;
     MEPTR           mentry_next_macro;
 
@@ -860,7 +856,7 @@ static void OutPutMacros( void )
             mentry->next_macro = PCHSetUInt( h );
             rc = PCHWrite( mentry, mentry->macro_len );
             mentry->next_macro = mentry_next_macro;        // restore pointer
-            if( rc != 0 ) {
+            if( rc ) {
                 longjmp( PH_jmpbuf, rc );
             }
             ++PH_MacroCount;
@@ -870,7 +866,7 @@ static void OutPutMacros( void )
     PH_UndefMacroCount = 0;
     for( mentry = UndefMacroList; mentry != NULL; mentry = mentry->next_macro ) {
         rc = PCHWrite( mentry, mentry->macro_len );
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
         ++PH_UndefMacroCount;
@@ -885,8 +881,8 @@ static void OutPutSymHashTable( void )
     TYPEPTR         hsym_sym_typ;
     SYM_HASHPTR     sym_list;
     id_hash_idx     h;
-    int             rc;
-    unsigned        len;
+    bool            rc;
+    size_t          len;
 
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         // reverse the list
@@ -912,7 +908,7 @@ static void OutPutSymHashTable( void )
             hsym->next_sym = HashTab[h];
             HashTab[h] = hsym;
         }
-        if( rc != 0 ) {
+        if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
     }
@@ -922,7 +918,7 @@ static void OutPutSymbols( void )
 {
     SYM_ENTRY   sym;
     SYM_HANDLE  sym_handle;
-    int         rc;
+    bool        rc;
 
     if( PH_computing_size ) {
         PH_size += SymGetNumSyms() * sizeof( SYM_ENTRY );
@@ -937,7 +933,7 @@ static void OutPutSymbols( void )
             }
             sym.name = NULL; // can't carry a name across
             rc = PCHWriteVar( sym );
-            if( rc != 0 ) {
+            if( rc ) {
                 longjmp( PH_jmpbuf, rc );
             }
         }
@@ -1034,7 +1030,7 @@ static char *FixupIncFileList( char *p, unsigned incfile_count )
     INCFILE     *ifile;
 
     PCHOldIncFileList = IncFileList;
-    PCHOldIncListValid = 1;
+    PCHOldIncListValid = TRUE;
     IncFileList = NULL;
     for( ; incfile_count != 0; --incfile_count ) {
         ifile = (INCFILE *)p;
@@ -1062,7 +1058,7 @@ static void FreeOldIncFileList( void )
             CMemFree( ilist );
         }
         PCHOldIncFileList = NULL;
-        PCHOldIncListValid = 0;
+        PCHOldIncListValid = FALSE;
     }
 }
 
@@ -1200,18 +1196,18 @@ static char *FixupAliases( char *p, unsigned alias_count )
 
 static char *FixupSegInfo( char *p, unsigned seg_count )
 {
-    textsegment     *seg;
+    textsegment     *tseg;
     textsegment     **lnk;
 
     TextSegArray = (textsegment **)CMemAlloc( ( seg_count + 1 ) * sizeof( textsegment * ) );
     TextSegArray[0] = NULL;
-    lnk = &seg;
+    lnk = &tseg;
     for( ; seg_count != 0; --seg_count ) {
-        seg = (textsegment *)p;
-        p += PCHGetUInt( seg->next );
-        TextSegArray[seg->index + 1] = seg;
-        *lnk = seg;
-        lnk = &seg->next;
+        tseg = (textsegment *)p;
+        p += PCHGetUInt( tseg->next );
+        TextSegArray[tseg->index + 1] = tseg;
+        *lnk = tseg;
+        lnk = &tseg->next;
     }
     *lnk = NULL;
     return( p );
@@ -1650,7 +1646,7 @@ void FixupFNames( void )
     }
 }
 
-int ValidHeader( pheader *pch )
+bool ValidHeader( pheader *pch )
 {
     if( (pch->signature == PCH_SIGNATURE)
       && (pch->version == PCH_VERSION_HOST)
@@ -1659,9 +1655,9 @@ int ValidHeader( pheader *pch )
       && (pch->specialsyms_count == SymGetNumSpecialSyms())
       && (pch->pack_amount == PackAmount)
       && (pch->msgflags_len == MESSAGE_COUNT) ) {
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );                // indicate unusable pre-compiled header
+    return( FALSE );                // indicate unusable pre-compiled header
 }
 
 int LoadPreCompiledHeader( char *p, pheader *pch )
@@ -1701,7 +1697,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     return( 0 );
 }
 
-int SameCWD( char *p )
+bool SameCWD( char *p )
 {
     char        *cwd;
     int         same;
@@ -1749,7 +1745,7 @@ void AbortPreCompiledHeader( void )
 int UsePreCompiledHeader( const char *filename )
 {
     int                 handle;
-    unsigned            len;
+    size_t              len;
     char                *p;
     pheader             pch;
 
@@ -1763,7 +1759,7 @@ int UsePreCompiledHeader( const char *filename )
     TagArray = NULL;
     PCHMacroHash = NULL;
     PCHOldIncFileList = NULL;
-    PCHOldIncListValid = 0;
+    PCHOldIncListValid = FALSE;
     len = read( handle, &pch, sizeof( pheader ) );
     if( len != sizeof( pheader ) ) {
         close( handle );

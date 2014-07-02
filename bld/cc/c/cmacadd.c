@@ -35,18 +35,14 @@
 #include "cgstd.h"
 
 
-MEPTR CreateMEntry( const char *name )
+MEPTR CreateMEntry( const char *name, size_t len )
 {
     MEPTR   mentry;
-    size_t  macro_len;
 
-    macro_len = strlen( name );
-    if( macro_len == 0 )
-        return( NULL );
-    macro_len += sizeof( MEDEFN );
-    mentry = (MEPTR)CMemAlloc( macro_len );
-    strcpy( mentry->macro_name, name );
-    mentry->macro_len = macro_len;
+    mentry = (MEPTR)CMemAlloc( sizeof( MEDEFN ) + len );
+    memcpy( mentry->macro_name, name, len );
+    mentry->macro_name[len] = '\0';
+    mentry->macro_len = sizeof( MEDEFN ) + len;
     mentry->parm_count = 0;
     mentry->macro_defn = 0; /* indicate special macro */
     return( mentry );

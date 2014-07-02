@@ -258,7 +258,6 @@ void SetSegment( SYMPTR sym )
     segment_list        *seg;
     unsigned            size;
 
-
 #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
         if( CONSTANT( sym->mods )
@@ -330,7 +329,7 @@ void SetSegment( SYMPTR sym )
     }
 }
 
-static user_seg *AllocUserSeg( char *segname, char *class_name, seg_type segtype )
+static user_seg *AllocUserSeg( const char *segname, const char *class_name, seg_type segtype )
 {
     user_seg    *useg;
 
@@ -371,12 +370,14 @@ static struct spc_info InitFiniSegs[INITFINI_SIZE] = {
 };
 
 
-static struct spc_info *InitFiniLookup( char *name )
+static struct spc_info *InitFiniLookup( const char *name )
 {
     int     i;
+    size_t  len;
 
+    len = strlen( name ) + 1;
     for( i = 0; i < INITFINI_SIZE; ++i ) {
-        if( strcmp( InitFiniSegs[i].name, name ) == 0 ) {
+        if( memcmp( InitFiniSegs[i].name, name, len ) == 0 ) {
             i = (i / 3) * 3;
             return( &InitFiniSegs[i] );
         }
@@ -385,37 +386,33 @@ static struct spc_info *InitFiniLookup( char *name )
 }
 
 
-static segment_id AddSeg( char *segname, char *class_name, int segtype )
+static segment_id AddSeg( const char *segname, const char *class_name, int segtype )
 {
     seg_name        *seg;
     user_seg        *useg, **lnk;
     hw_reg_set      reg;
-    char            *p;
+    const char      *p;
+    size_t          len;
 
-    for( seg = &Predefined_Segs[0]; seg->name; seg++ ) {
-        if( strcmp( segname, seg->name ) == 0 ) {
+    len = strlen( segname ) + 1;
+    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
+        if( memcmp( segname, seg->name, len ) == 0 ) {
             return( seg->segment );
         }
     }
     HW_CAsgn( reg, HW_EMPTY );
-    p = segname;
-    for( ;; ) {
-        if( *p == '\0' ) break;
+    for( p = segname; *p != '\0'; ++p ) {
         if( *p == ':' ) {
-            *p = '\0';
-            reg = PragRegName( segname );
-            *p = ':';
+            reg = PragRegName( segname, p - segname );
             segname = p + 1;
+            len = strlen( segname ) + 1;
             break;
         }
-        ++p;
     }
-    lnk = &userSegments;
-    while( (useg = *lnk) != NULL ) {
-        if( strcmp( segname, useg->name ) == 0 ) {
-            return( useg->segment ); /* 11-mar-93 - was return( segment ) */
+    for( lnk = &userSegments; (useg = *lnk) != NULL; lnk = &useg->next ) {
+        if( memcmp( segname, useg->name, len ) == 0 ) {
+            return( useg->segment ); /* was return( segment ) */
         }
-        lnk = &useg->next;
     }
     useg = AllocUserSeg( segname, class_name, segtype );
     useg->next = *lnk;
@@ -425,7 +422,7 @@ static segment_id AddSeg( char *segname, char *class_name, int segtype )
 }
 
 
-segment_id AddSegName( char *segname, char *class_name, int segtype )
+segment_id AddSegName( const char *segname, const char *class_name, int segtype )
 {
     struct spc_info     *initfini;
     segment_id          segid;
@@ -492,9 +489,10 @@ char *SegClassName( segment_id requested_seg )
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {/*04-jun-94*/
         if( tseg->segment == requested_seg )  {
             // class name appears after the segment name
-            classname = strchr( tseg->segname, '\0' ) + 1;
+            classname = tseg->segname + tseg->class;
             // if class name not specified, then use the default
-            if( *classname == '\0' )  classname = CodeClassName;
+            if( *classname == '\0' )
+                classname = CodeClassName;
             return( classname );
         }
     }
@@ -509,7 +507,7 @@ void SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segment )
 {
     seg_name    *seg;
 
-    for( seg = &Predefined_Segs[0]; seg->name; seg++ ) {
+    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
         if( seg->segment == segment ) {
             seg->sym_handle = sym_handle;
             break;
@@ -523,7 +521,7 @@ SYM_HANDLE SegSymHandle( segment_id segment )
     seg_name        *seg;
     user_seg        *useg;
 
-    for( seg = &Predefined_Segs[0]; seg->name; seg++ ) {
+    for( seg = &Predefined_Segs[0]; seg->name != NULL; seg++ ) {
         if( seg->segment == segment ) {
             return( seg->sym_handle );
         }
@@ -600,10 +598,12 @@ void    SetSegs( void )
     if( CompFlags.far_strings ) {
         FarStringSegment = SegmentNum++;
     }
+    name = CMemAlloc( strlen( ModuleName ) + 10 + sizeof( "_DATA" ) );
     for( seg = FIRST_PRIVATE_SEGMENT; seg < SegmentNum; ++seg ) {
-        sprintf( Buffer, "%s%d_DATA", ModuleName, seg );
-        BEDefSeg( seg, INIT | PRIVATE, Buffer, SegAlign( 16 ) );
+        sprintf( name, "%s%d_DATA", ModuleName, seg );
+        BEDefSeg( seg, INIT | PRIVATE, name, SegAlign( 16 ) );
     }
+    CMemFree( name );
     for( useg = userSegments; useg != NULL ; useg = useg->next ) {
         seg = useg->segment;
         switch( useg->segtype ) {

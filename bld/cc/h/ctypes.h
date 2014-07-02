@@ -270,6 +270,7 @@ extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
 
 typedef struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
     struct textsegment *next;       /* also used by pre-compiled header */
+    size_t             class;
     segment_id         segment;
     int                index;
     char               segname[1];

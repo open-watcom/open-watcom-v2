@@ -49,13 +49,14 @@ void EnumInit( void )
 local ENUMPTR EnumLkAdd( TAGPTR tag )
 {
     ENUMPTR     esym;
-    int         len;
+    size_t      len;
 
     VfyNewSym( HashValue, Buffer );
-    len = sizeof(ENUMDEFN) + strlen(Buffer);
-    if( len > EnumRecSize ) EnumRecSize = len;
-    esym = (ENUMPTR) CPermAlloc( len );
-    strcpy( esym->name, Buffer );
+    len = sizeof(ENUMDEFN) + TokenLen;
+    if( len > EnumRecSize )
+        EnumRecSize = len;
+    esym = (ENUMPTR)CPermAlloc( len );
+    memcpy( esym->name, Buffer, TokenLen + 1 );
     esym->parent = tag;
     esym->hash = HashValue;
     esym->src_loc = TokenLoc;
@@ -307,9 +308,11 @@ TYPEPTR EnumDecl( type_modifiers flags )
 ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 {
     ENUMPTR     esym;
+    size_t      len;
 
+    len = strlen( name ) + 1;
     for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
-        if( strcmp( esym->name, name ) == 0 ) {
+        if( memcmp( esym->name, name, len ) == 0 ) {
             break;
         }
     }

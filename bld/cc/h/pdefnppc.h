@@ -47,12 +47,21 @@ hw_reg_set DefaultLinkage[] = {
     HW_D( HW_R21 ),
 };
 
-#define NC '\0'
+#define REGS_MAP \
+REG_PICK( "sp",   1 ) \
+REG_PICK( "rtoc", 2 )
 
 char Registers[] = {
-    1,      's','p',NC,
-    2,      'r','t','o','c',NC,
-    0,      NC
+    #define REG_PICK(t,r) t "\0"
+    REGS_MAP
+    "\0"
+    #undef REG_PICK
+};
+
+unsigned char RegMap[] = {
+    #define REG_PICK(t,r) r,
+    REGS_MAP
+    #undef REG_PICK
 };
 
 hw_reg_set RegBits[] = {

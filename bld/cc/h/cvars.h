@@ -53,6 +53,9 @@
     #define FNAMECMPSTR     stricmp     /* for case insensitive file systems */
 #endif
 
+#define CMPLIT(s,c) memcmp( s, c, sizeof( c ) )
+#define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
+
 typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
 typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 
@@ -557,7 +560,7 @@ extern TREEPTR      BasedPtrNode(TYPEPTR,TREEPTR);
 extern bool         IsLValue(TREEPTR);
 extern op_flags     OpFlags( type_modifiers  flags );
 extern type_modifiers FlagOps( op_flags ops );
-extern FIELDPTR     SearchFields( TYPEPTR *class_typ, unsigned *field_offset, char *name );
+extern FIELDPTR     SearchFields( TYPEPTR *class_typ, unsigned *field_offset, const char *name );
 
 //cfold.c
 extern int64        LongValue64( TREEPTR leaf );
@@ -590,7 +593,7 @@ extern void         CloseSrcFile(FCB *);
 
 // cinfo.c
 extern void         SegInit(void);
-extern segment_id   AddSegName(char *,char *,int);
+extern segment_id   AddSegName(const char *,const char *,int);
 extern segment_id   DefThreadSeg( void );
 extern void         EmitSegLabels(void);
 extern void         FiniSegLabels(void);
@@ -635,7 +638,7 @@ extern void         CppStackFini(void);
 //cmacadd.c
 extern void         AllocMacroSegment(size_t);
 extern void         FreeMacroSegments(void);
-extern MEPTR        CreateMEntry(const char *);
+extern MEPTR        CreateMEntry(const char *, size_t len);
 extern void         FreeMEntry( MEPTR mentry );
 extern void         MacLkAdd( MEPTR mentry, size_t len, macro_flags flags );
 extern void         MacroAdd( MEPTR mentry, char *buf, size_t len, macro_flags flags );
@@ -708,6 +711,8 @@ extern void         PragEnding(void);
 extern void         PragObjNameInfo(char **);
 extern bool         PragRecog(const char *);
 extern hw_reg_set   PragRegList(void);
+extern int          PragRegIndex(const char *,const char *,size_t,bool);
+extern int          PragRegNumIndex( const char *name, int max_reg );
 extern hw_reg_set   *PragManyRegSets(void);
 extern void         PragCurrAlias(const char *);
 extern TOKEN        PragRegSet(void);
@@ -724,7 +729,7 @@ extern void         SetPackAmount( unsigned amount );
 /* cprag??? */
 extern void         AsmStmt(void);
 extern void         PragAux(void);
-extern hw_reg_set   PragRegName(char *);
+extern hw_reg_set   PragRegName(const char *, size_t);
 
 /* cpurge */
 extern void         InitPurge(void);

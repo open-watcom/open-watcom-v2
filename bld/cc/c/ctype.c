@@ -568,15 +568,15 @@ static void DeclSpecifiers( char *plain_int, decl_info *info )
                             CErr1( ERR_INVALID_DECLARATOR );
                             break;
                         }
-                        if( strcmp( Buffer, "dllimport" ) == 0 ) {
+                        if( CMPLIT( Buffer, "dllimport" ) == 0 ) {
                             decl = DECLSPEC_DLLIMPORT;
-                        } else if( strcmp( Buffer, "overridable" ) == 0 ) {
+                        } else if( CMPLIT( Buffer, "overridable" ) == 0 ) {
                             decl = DECLSPEC_DLLIMPORT;
-                        } else if( strcmp( Buffer, "dllexport" ) == 0 ) {
+                        } else if( CMPLIT( Buffer, "dllexport" ) == 0 ) {
                             decl = DECLSPEC_DLLEXPORT;
-                        } else if( strcmp( Buffer, "thread" ) == 0 ) {
+                        } else if( CMPLIT( Buffer, "thread" ) == 0 ) {
                             decl = DECLSPEC_THREAD;
-                        } else if( strcmp( Buffer, "naked" ) == 0 ) {
+                        } else if( CMPLIT( Buffer, "naked" ) == 0 ) {
                             if( info->naked ) {
                                 CErr1( ERR_INVALID_DECLSPEC );
                             } else {
@@ -722,13 +722,15 @@ TYPEPTR TypeDefault( void )
 static TAGPTR NewTag( const char *name, id_hash_idx h )
 {
     TAGPTR      tag;
+    size_t      len;
 
-    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + strlen( name ) );
+    len = strlen( name ) + 1;
+    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + len - 1 );
     tag->level = SymLevel;
     tag->hash = h;
     tag->next_tag = TagHash[h];
     TagHash[h] = tag;
-    strcpy( tag->name, name );
+    memcpy( tag->name, name, len );
     ++TagCount;
     return( tag );
 }
@@ -760,6 +762,7 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     FIELDPTR    prev_field;
     TYPEPTR     typ;
     TAGPTR      tag;
+    size_t      len;
 
     ++FieldCount;
     typ = new_field->field_type;
@@ -787,13 +790,13 @@ local FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     tag = decl->u.tag;
     new_field->hash = HashValue;
     if( new_field->name[0] != '\0' ) {  /* only check non-empty names */
-        for( field = FieldHash[HashValue]; field;
-              field = field->next_field_same_hash ) {
+        len = strlen( new_field->name ) + 1;
+        for( field = FieldHash[HashValue]; field != NULL; field = field->next_field_same_hash ) {
             /* fields were added at the front of the hash linked list --
                may as well stop if the level isn't the same anymore */
             if( field->level != new_field->level )
                 break;
-            if( strcmp( field->name, new_field->name ) == 0 ) {
+            if( memcmp( field->name, new_field->name, len ) == 0 ) {
                 CErr2p( ERR_DUPLICATE_FIELD_NAME, field->name );
             }
         }
@@ -1338,7 +1341,7 @@ TAGPTR TagLookup( void )
     TAGPTR          tag;
 
     for( tag = TagHash[HashValue]; tag != NULL; tag = tag->next_tag ) {
-        if( strcmp( Buffer, tag->name ) == 0 ) {
+        if( memcmp( Buffer, tag->name, TokenLen + 1 ) == 0 ) {
             return( tag );
         }
     }

@@ -422,37 +422,34 @@ static void MakePgmName( void )
 // Get fname, if file name has no extension whack ".c" on
 // if stdin a "." then replace with "stdin" don't whack ".c"
 // If no module name make the same as fname
-    int         len;
-    char        *ptr;
+    size_t      len;
     char        buff[_MAX_PATH2];
     char        *fname;
     char        *ext;
 
-    ptr = WholeFName;
-    if( ptr[0] == '.' && ptr[1] == '\0' ) {
+    if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = 1;
         CMemFree( WholeFName );
-        len = strlen( STDIN_NAME );
-        WholeFName = CMemAlloc( len + 1 );
-        strcpy( WholeFName, STDIN_NAME );
+        WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
+        memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
         fname = WholeFName;
+        len = sizeof( STDIN_NAME );
     } else {
-        _splitpath2( ptr, buff, NULL, NULL, &fname, &ext );
+        _splitpath2( WholeFName, buff, NULL, NULL, &fname, &ext );
         if( *ext == '\0' ) { // no extension
             char *new;
 
             len = strlen( WholeFName );
-            len += sizeof( C_EXT );      /* for the ".c\0" */
-            new = CMemAlloc( len );
-            strcpy( new, WholeFName );
-            strcat( new, C_EXT );
+            new = CMemAlloc( len + sizeof( C_EXT ) );
+            memcpy( new, WholeFName, len );
+            memcpy( new + len, C_EXT, sizeof( C_EXT ) );
             CMemFree( WholeFName );
             WholeFName = new;
         }
+        len = strlen( fname ) + 1;
     }
-    len = strlen( fname );
-    SrcFName = CMemAlloc( len + 1 );
-    strcpy( SrcFName, fname );
+    SrcFName = CMemAlloc( len );
+    memcpy( SrcFName, fname, len );
     if( ModuleName == NULL ) {
         ModuleName = SrcFName;
     }
@@ -999,6 +996,8 @@ FNAMEPTR AddFlist( char const *filename )
     FNAMEPTR    flist;
     FNAMEPTR    *lnk;
     unsigned    index;
+    size_t	    len1;
+    size_t	    len2;
 
     index = 0;
     for( lnk = &FNames; (flist = *lnk) != NULL; lnk = &flist->next ) {
@@ -1007,17 +1006,20 @@ FNAMEPTR AddFlist( char const *filename )
         index++;
     }
     if( flist == NULL ) {
+        len1 = strlen( filename ) + 1;
         if( HAS_PATH( filename ) || DependHeaderPath == NULL ) {
-            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( filename ) + 1 );
-            strcpy( flist->name, filename );
+            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len1 );
+            memcpy( flist->name, filename, len1 );
         } else {
-            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + strlen( DependHeaderPath ) + strlen( filename ) + 1 );
-            sprintf( flist->name, "%s%s", DependHeaderPath, filename );
+            len2 = strlen( DependHeaderPath );
+            flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len2 + len1 );
+            memcpy( flist->name, DependHeaderPath, len2 );
+            memcpy( flist->name + len2, filename, len1 );
         }
         *lnk = flist;
         flist->next = NULL;
         flist->index = index;
-        flist->index_db = -1;
+        flist->index_db = DBIDX_NONE;
         flist->rwflag = TRUE;
         flist->once = FALSE;
         flist->fullpath = NULL;
@@ -1133,8 +1135,9 @@ void FreeIncFileList( void )
 
 RDIRPTR AddRDir( char *path )
 {
-    RDIRPTR   dirlist;
-    RDIRPTR  *lnk;
+    RDIRPTR     dirlist;
+    RDIRPTR     *lnk;
+    size_t      len;
 
     for( lnk = &RDirNames; (dirlist = *lnk) != NULL; lnk = &dirlist->next ) {
         if( stricmp( path, dirlist->name ) == 0 ) {
@@ -1142,9 +1145,10 @@ RDIRPTR AddRDir( char *path )
         }
     }
     if( dirlist == NULL ) {
-        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + strlen( path ) + 1 );
+        len = strlen( path ) + 1;
+        dirlist = (RDIRPTR)CMemAlloc( offsetof( rdir_list, name ) + len );
         dirlist->next = NULL;
-        strcpy( dirlist->name, path );
+        memcpy( dirlist->name, path, len );
         *lnk = dirlist;
     }
     return( dirlist );

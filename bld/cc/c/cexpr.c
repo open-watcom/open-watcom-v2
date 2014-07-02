@@ -247,7 +247,7 @@ TREEPTR ConstLeaf( void )
     case TYPE_LDIMAGINARY:
         flt = CMemAlloc( sizeof( FLOATVAL ) + TokenLen );
         flt->string[0] = '+';
-        strcpy( &flt->string[1], Buffer );
+        memcpy( flt->string + 1, Buffer, TokenLen + 1 );
         flt->len = TokenLen + 1;
         flt->type = ConstType;
         flt->next = NULL;
@@ -927,16 +927,17 @@ TREEPTR PtrOp( TREEPTR tree )
 
 
 
-FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned *field_offset, char *name )
+FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned *field_offset, const char *name )
 {
     FIELDPTR    field;
     FIELDPTR    subfield;
     TYPEPTR     typ;
     TAGPTR      tag;
+    size_t      len;
 
+    len = strlen( name ) + 1;
     tag = (*class_typ)->u.tag;
-    field = tag->u.field_list;
-    while( field != NULL ) {
+    for( field = tag->u.field_list; field != NULL; field = field->next_field ) {
         typ = field->field_type;
         SKIP_TYPEDEFS( typ );
         if( field->name[0] == '\0' ) {  /* if nameless field: 15-sep-90 */
@@ -949,13 +950,12 @@ FIELDPTR SearchFields( TYPEPTR *class_typ, unsigned *field_offset, char *name )
                     return( subfield );
                 }
             }
-        } else if( strcmp( name, field->name ) == 0 ) {
+        } else if( memcmp( name, field->name, len ) == 0 ) {
             if( typ->decl_type != TYPE_FUNCTION ) {
                 *field_offset += field->offset;
             }
             return( field );
         }
-        field = field->next_field;
     }
     return( NULL );
 }
@@ -1596,12 +1596,12 @@ local TREEPTR ExprOpnd( void )
             {
             FLOATVAL    *flt;
 
+#define FLOAT_PLUS_ONE "+1.0"
             tree = LeafNode( OPR_PUSHFLOAT );
             tree->op.u1.const_type = TYPE_DIMAGINARY;
-            flt = CMemAlloc( sizeof( FLOATVAL ) + 3 );
-            flt->string[0] = '+';
-            strcpy( &flt->string[1], "1.0" );
-            flt->len = 3 + 1;
+            flt = CMemAlloc( sizeof( FLOATVAL ) + sizeof( FLOAT_PLUS_ONE ) - 1 );
+            CPYLIT( flt->string, FLOAT_PLUS_ONE );
+            flt->len = sizeof( FLOAT_PLUS_ONE ) - 1;
             flt->type = TYPE_DIMAGINARY;
             flt->next = NULL;
             tree->op.u2.float_value = flt;
@@ -1649,7 +1649,7 @@ local TREEPTR ExprId( void )
     int         count;
 
     if( CompFlags.pre_processing ) {
-        if( strcmp( Buffer, "defined" ) == 0 ) {
+        if( CMPLIT( Buffer, "defined" ) == 0 ) {
             ppctl_t old_ppctl;
 
             old_ppctl = CompFlags.pre_processing;
@@ -1933,19 +1933,20 @@ local TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 }
 
 
-local int IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, int n, SYMPTR sym )
+local bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sym )
 {
     char    func_name[6];
 
-    if( memcmp( sym_name, MathFuncs[i].name, n ) == 0 )
-        return( 1 );
+    if( memcmp( sym_name, MathFuncs[i].name, len ) == 0 )
+        return( TRUE );
     if( sym->flags & SYM_INTRINSIC ) {
         strcpy( func_name, &MathFuncs[i].name[2] ); /* copy name without __ */
         strlwr( func_name );
-        if( memcmp( sym_name, func_name, n ) == 0 )
-            return( 1 );
+        if( memcmp( sym_name, func_name, len ) == 0 ) {
+            return( TRUE );
+        }
     }
-    return( 0 );        /* indicate not a math intrinsic function */
+    return( FALSE );        /* indicate not a math intrinsic function */
 }
 
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
@@ -2137,7 +2138,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                 if( functree->op.opr == OPR_PUSHADDR ) {
                     SymGet( &sym, functree->op.u2.sym_handle );
                     sym_name = SymName( &sym, functree->op.u2.sym_handle );
-                    if( memcmp( sym_name, "_inline_strcmp", 15 ) == 0 ) {
+                    if( CMPLIT( sym_name, "_inline_strcmp" ) == 0 ) {
                         SymGet( &sym, SymMEMCMP );
                         tree = VarLeaf( &sym, SymMEMCMP );
                         optimized = 1;
@@ -2174,17 +2175,17 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                     }
                 }
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
-                if( memcmp( sym_name, "__builtin_va_start", sym_len ) == 0 ) {
+                if( CMPLIT( sym_name, "__builtin_va_start" ) == 0 ) {
                     tree = GenVaStartNode( last_parm );
                     goto done_call;
                 }
-                if( memcmp( sym_name, "__builtin_alloca", sym_len ) == 0 ) {
+                if( CMPLIT( sym_name, "__builtin_alloca" ) == 0 ) {
                     tree = GenAllocaNode( last_parm );
                     goto done_call;
                 }
 #endif
 #if  _CPU == _PPC
-                if( memcmp( sym_name, "__builtin_varg", sym_len ) == 0 ) {
+                if( CMPLIT( sym_name, "__builtin_varg" ) == 0 ) {
                     tree = GenVaArgNode( last_parm );
                     goto done_call;
                 }
@@ -2338,16 +2339,16 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
                 sym_handle = tree->op.u2.sym_handle;
                 SymGet( &sym, sym_handle );
                 func_name = SymName( &sym, sym_handle );
-                if( strcmp( func_name, "_exception_code" ) == 0 ) {
+                if( CMPLIT( func_name, "_exception_code" ) == 0 ) {
                     if( CompFlags.exception_filter_expr ||
                         CompFlags.exception_handler ) {
                         opr = OPR_EXCEPT_CODE;
                     }
-                } else if( strcmp( func_name, "_exception_info" ) == 0 ) {
+                } else if( CMPLIT( func_name, "_exception_info" ) == 0 ) {
                     if( CompFlags.exception_filter_expr ) {
                         opr = OPR_EXCEPT_INFO;
                     }
-                } else if( strcmp( func_name, "_abnormal_termination" ) == 0 ) {
+                } else if( CMPLIT( func_name, "_abnormal_termination" ) == 0 ) {
                     if( CompFlags.in_finally_block ) {
                         opr = OPR_ABNORMAL_TERMINATION;
                     }

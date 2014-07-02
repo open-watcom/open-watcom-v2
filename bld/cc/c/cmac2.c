@@ -169,7 +169,7 @@ static void PreProcStmt( void )
         hash = (TokenLen + PreProcWeights[Buffer[0] - 'a']
                  + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &PreProcTable[hash];
-        if( strcmp( pp->directive, Buffer ) == 0 ) {
+        if( memcmp( pp->directive, Buffer, TokenLen + 1 ) == 0 ) {
             if( NestLevel == SkipLevel ) {
                 pp->samelevel();
             } else {
@@ -335,7 +335,7 @@ local void CDefine( void )
         ExpectIdentifier();
         return;
     }
-    if( strcmp( Buffer, "defined" ) == 0 ) {
+    if( CMPLIT( Buffer, "defined" ) == 0 ) {
         CErr1( ERR_CANT_DEFINE_DEFINED );
         return;
     }
@@ -416,7 +416,7 @@ local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR form
     size_t          mlen;
     mac_parm_count  parmno;
 
-    mentry = CreateMEntry( mac_name );
+    mentry = CreateMEntry( mac_name, strlen( mac_name ) );
     mentry->parm_count = parm_count;
     mentry->src_loc.fno = loc->fno;
     mentry->src_loc.line = loc->line;
@@ -534,7 +534,7 @@ local mac_parm_count FormalParm( MPPTR formal_parms )
 
     i = 1;
     for( ; formal_parms != NULL; formal_parms = formal_parms->next ) {
-        if( strcmp( formal_parms->parm, Buffer ) == 0 ) {
+        if( memcmp( formal_parms->parm, Buffer, TokenLen + 1 ) == 0 ) {
             return( i );
         }
         ++i;
@@ -703,18 +703,16 @@ bool MacroDel( const char *name )
     bool        ret;
 
     ret = FALSE;
-    if( strcmp( name, "defined" ) == 0 ) {
+    if( CMPLIT( name, "defined" ) == 0 ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
     }
     prev_entry = NULL;
     len = strlen( name ) + 1;
-    mentry = MacHash[MacHashValue];
-    while( mentry != NULL ) {
+    for( mentry = MacHash[MacHashValue]; mentry != NULL; mentry = mentry->next_macro ) {
         if( memcmp( mentry->macro_name, name, len ) == 0 )
             break;
         prev_entry = mentry;
-        mentry = mentry->next_macro;
     }
     if( mentry != NULL ) {
         if( mentry->macro_defn == 0 ) {

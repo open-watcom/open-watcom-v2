@@ -46,44 +46,53 @@ hw_reg_set DefaultLinkage[] = {
     HW_D( HW_R21 ),
 };
 
-#define NC '\0'
+#define REGS_MAP \
+REG_PICK( "v0",    0 ) \
+REG_PICK( "t0",    1 ) \
+REG_PICK( "t1",    2 ) \
+REG_PICK( "t2",    3 ) \
+REG_PICK( "t3",    4 ) \
+REG_PICK( "t4",    5 ) \
+REG_PICK( "t5",    6 ) \
+REG_PICK( "t6",    7 ) \
+REG_PICK( "t7",    8 ) \
+REG_PICK( "s0",    9 ) \
+REG_PICK( "s1",    10 ) \
+REG_PICK( "s2",    11 ) \
+REG_PICK( "s3",    12 ) \
+REG_PICK( "s4",    13 ) \
+REG_PICK( "s5",    14 ) \
+REG_PICK( "s6",    15 ) \
+REG_PICK( "fp",    15 ) \
+REG_PICK( "a0",    16 ) \
+REG_PICK( "a1",    17 ) \
+REG_PICK( "a2",    18 ) \
+REG_PICK( "a3",    19 ) \
+REG_PICK( "a4",    20 ) \
+REG_PICK( "a5",    21 ) \
+REG_PICK( "t8",    22 ) \
+REG_PICK( "t9",    23 ) \
+REG_PICK( "t10",   24 ) \
+REG_PICK( "t11",   25 ) \
+REG_PICK( "ra",    26 ) \
+REG_PICK( "t12",   27 ) \
+REG_PICK( "pv",    27 ) \
+REG_PICK( "at",    28 ) \
+REG_PICK( "gp",    29 ) \
+REG_PICK( "sp",    30 ) \
+REG_PICK( "zero",  31 )
 
 char Registers[] = {
-     0, 'v','0',NC,
-     1, 't','0',NC,
-     2, 't','1',NC,
-     3, 't','2',NC,
-     4, 't','3',NC,
-     5, 't','4',NC,
-     6, 't','5',NC,
-     7, 't','6',NC,
-     8, 't','7',NC,
-     9, 's','0',NC,
-    10, 's','1',NC,
-    11, 's','2',NC,
-    12, 's','3',NC, 
-    13, 's','4',NC, 
-    14, 's','5',NC, 
-    15, 's','6',NC, 
-    15, 'f','p',NC, 
-    16, 'a','0',NC, 
-    17, 'a','1',NC, 
-    18, 'a','2',NC, 
-    19, 'a','3',NC, 
-    20, 'a','4',NC, 
-    21, 'a','5',NC, 
-    22, 't','8',NC, 
-    23, 't','9',NC, 
-    24, 't','1','0',NC,
-    25, 't','1','1',NC,
-    26, 'r','a',NC,
-    27, 't','1','2',NC,
-    27, 'p','v',NC,
-    28, 'a','t',NC, 
-    29, 'g','p',NC, 
-    30, 's','p',NC, 
-    31, 'z','e','r','o',NC,
-    0,  NC
+    #define REG_PICK(t,r) t "\0"
+    REGS_MAP
+    "\0"
+    #undef REG_PICK
+};
+
+unsigned char RegMap[] = {
+    #define REG_PICK(t,r) r,
+    REGS_MAP
+    #undef REG_PICK
 };
 
 hw_reg_set RegBits[] = {

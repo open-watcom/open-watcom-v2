@@ -1385,13 +1385,16 @@ static TYPEPTR DeclPart2( TYPEPTR typ, type_modifiers mod )
 }
 
 
-local void CheckUniqueName( PARMPTR parm, char *name )  /* 13-apr-89 */
+local void CheckUniqueName( PARMPTR parm, const char *name )
 {
-    if( name != NULL ) {                                /* 29-oct-91 */
+    size_t  len;
+
+    if( name != NULL ) {
         if( *name != '\0' ) {
-            for( ; parm ; parm = parm->next_parm ) {
-                if( parm->sym.name != NULL ) {          /* 16-oct-92 */
-                    if( strcmp( parm->sym.name, name ) == 0 ) {
+            len = strlen( name ) + 1;
+            for( ; parm != NULL; parm = parm->next_parm ) {
+                if( parm->sym.name != NULL ) {
+                    if( memcmp( parm->sym.name, name, len ) == 0 ) {
                         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
                         parm->sym.flags |= SYM_REFERENCED;
                     }
