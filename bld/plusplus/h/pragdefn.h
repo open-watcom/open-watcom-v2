@@ -157,6 +157,16 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 bool PragRecog(              // RECOGNIZE PRAGMA ID
     char *what )                // - id
 ;
+int PragRegIndex(            // GET PRAGMA REGISTER INDEX
+    const char *registers,
+    const char *name,
+    size_t len,
+    bool ignorecase )
+;
+int PragRegNumIndex(         // GET PRAGMA REGISTER NUMBER INDEX (RISC CPU)
+    const char *str,
+    int max_reg )
+;
 hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 ;

@@ -30,6 +30,7 @@
 
 
 #include "plusplus.h"
+#include <ctype.h>
 #include "preproc.h"
 #include "memmgr.h"
 #include "cgdata.h"
@@ -1447,6 +1448,66 @@ AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
         break;
     }
     return( prag );
+}
+
+
+int PragRegIndex( const char *registers, const char *name, size_t len, bool ignorecase )
+/**************************************************************************************/
+{
+    int             index;
+    const char      *p;
+    unsigned char   c;
+    unsigned char   c2;
+    int             i;
+
+    index = 0;
+    p = registers;
+    while( *p != '\0' ) {
+        i = 0;
+        for( ; (c = *p++) != '\0'; ) {
+            if( i > len )
+                continue;
+            if( i < len ) {
+                c2 = name[i++];
+                if( ignorecase )
+                    c2 = tolower( c2 );
+                if( c == c2 ) {
+                    continue;
+                }
+            }
+            i = len + 1;
+        }
+        if( i == len )
+            return( index );
+        ++index;
+    }
+    return( -1 );
+}
+
+int PragRegNumIndex( const char *str, int max_reg )
+/*************************************************/
+{
+    int             index;
+
+    // decode regular register index
+    if( isdigit( *str ) ) {
+        index = atoi( str );
+        if( index < max_reg ) {
+            if( str[1] == '\0' ) {
+                //  0....9
+                if(( index > 0 )
+                  || ( index == 0 ) && ( str[0] == '0' )) {
+                    return( index );
+                }
+            } else if( str[2] == '\0' ) {
+                // 10....max_reg-1
+                if( index > 9 ) {
+                    return( index );
+                }
+            }
+        }
+    }
+    return( -1 );
 }
 
 

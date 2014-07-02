@@ -1231,9 +1231,10 @@ static int GetByteSeq( void )
 hw_reg_set PragRegName(         // GET REGISTER NAME
     char *str )                 // - register
 {
-    register int index;
-    register char *p;
+    register int    index;
+    register char   *p;
     hw_reg_set      name;
+    size_t          len;
 
     if( *str == '\0' ) {
         HW_CAsgn( name, HW_EMPTY );
@@ -1245,17 +1246,12 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
             ++str;
         }
     }
-    index = 0;
-    p = Registers;
-    while( *p != '\0' ) {
-        if( stricmp( p, str ) == 0 )
-            return( RegBits[ index ] );
-        index++;
-        while( *p++ != '\0' ) {
-            ;
-        }
+    len = strlen( str );
+    index = PragRegIndex( Registers, str, len, TRUE );
+    if( index != -1 ) {
+        return( RegBits[RegMap[index]] );
     }
-    if( strcmp( str, "8087" ) == 0 ) {
+    if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
         HW_CAsgn( name, HW_FLTS );
     } else {
         CErr2p( ERR_BAD_REGISTER_NAME, str );
