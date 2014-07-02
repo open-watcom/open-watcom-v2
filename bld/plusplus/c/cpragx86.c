@@ -1241,8 +1241,10 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     }
     if( *str == '_' ) {
         ++str;
+        --len;
         if( *str == '_' ) {
             ++str;
+            --len;
         }
     }
     index = PragRegIndex( Registers, str, len, TRUE );
