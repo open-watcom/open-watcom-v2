@@ -562,17 +562,14 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
     PC_SEGMENT *curr;           // - current segment
     struct seg_look lk;         // - look-up structure
 #if _INTEL_CPU
-    const char* pc_reg;         // - scans register bound to segment
-    char pc_reg_name[8];        // - name of pc register
+    const char *ptr;            // - scans register bound to segment
+    hw_reg_set seg_reg;
 
-    for( pc_reg = seg_name; ; ++pc_reg ) {
-        if( *pc_reg == '\0' ) {
-            pc_reg_name[0] = '\0';
-            break;
-        }
-        if( *pc_reg == ':' ) {
-            stvcpy( pc_reg_name, seg_name, pc_reg - seg_name );
-            seg_name = pc_reg + 1;
+    HW_CAsgn( seg_reg, HW_EMPTY );
+    for( ptr = seg_name; *ptr != '\0'; ++ptr ) {
+        if( *ptr == ':' ) {
+            seg_reg = PragRegName( seg_name, ptr - seg_name );
+            seg_name = ptr + 1;
             break;
         }
     }
@@ -591,8 +588,8 @@ static PC_SEGMENT *segmentDefine(// SEGMENT: DEFINE IF REQUIRED
     if( curr == NULL ) {
         curr = segmentAlloc( lk.seg_name, lk.class_name, lk.seg_id, lk.attrs, control );
 #if _INTEL_CPU
-        if( pc_reg_name[0] != '\0' ) {
-            curr->binding = PragRegName( pc_reg_name );
+        if( !HW_CEqual( seg_reg, HW_EMPTY ) ) {
+            curr->binding = seg_reg;
         }
 #endif
     }

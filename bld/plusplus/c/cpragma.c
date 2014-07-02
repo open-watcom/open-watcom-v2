@@ -1530,7 +1530,7 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     PPCTL_ENABLE_MACROS();
     NextToken();
     for( ; CurToken != close_token; ) {
-        reg = PragRegName( Buffer );
+        reg = PragRegName( Buffer, strlen( Buffer ) );
         HW_TurnOn( res, reg );
         NextToken();
     }

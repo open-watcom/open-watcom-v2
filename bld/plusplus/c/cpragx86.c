@@ -1229,12 +1229,11 @@ static int GetByteSeq( void )
 
 
 hw_reg_set PragRegName(         // GET REGISTER NAME
-    char *str )                 // - register
+    const char *str,            // - register name
+    size_t len )                // - register name len
 {
     register int    index;
-    register char   *p;
     hw_reg_set      name;
-    size_t          len;
 
     if( *str == '\0' ) {
         HW_CAsgn( name, HW_EMPTY );
@@ -1246,7 +1245,6 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
             ++str;
         }
     }
-    len = strlen( str );
     index = PragRegIndex( Registers, str, len, TRUE );
     if( index != -1 ) {
         return( RegBits[RegMap[index]] );

@@ -171,7 +171,8 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
     void )
 ;
 hw_reg_set PragRegName(         // GET REGISTER NAME
-    char *str )                 // - register
+    const char *str,            // - register name
+    size_t len )                // - register name len
 ;
 bool ReverseParms(           // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
