@@ -85,11 +85,11 @@ global char         *PCH_Macros;        // macros loaded from pre-compiled heade
 global char         *PCH_FileName;      // name to use for pre-compiled header
 global INCFILE      *IncFileList;       // list of primary include files for PCH
 global SYMPTR       *PCH_SymArray;      // array of symbol table pointers from PCH
-global int          PCH_MaxSymHandle;   // number of symbols in PCH_SymArray
+global unsigned     PCH_MaxSymHandle;   // number of symbols in PCH_SymArray
 global int          DebugFlag;
 global TOKEN        CurToken;
 global int          BadTokenInfo;
-global int          TokenLen;
+global size_t       TokenLen;
 global source_loc   TokenLoc;
 global source_loc   SrcFileLoc;         /* duplicate of SrcFile->src_line */
 global source_loc   CommentLoc;
@@ -97,7 +97,6 @@ global int          CurrChar;
 global DATA_TYPE    ConstType;
 global unsigned     Constant;
 global uint64       Const64;
-global target_size  CLitLength;         /* length of string literal */
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFile;
 global char         *SrcFName;          /* source file name without suffix */
@@ -134,7 +133,8 @@ global int          SizeOfCount;        /* # of nested sizeof() expressions  */
 global int          NestLevel;          /* pre-processing level of #if */
 global int          SkipLevel;          /* pre-processing level of #if to skip to */
 global id_level_stype SymLevel;         /* current lex level (# of nested {) */
-#define ChkSymLevel(p,x)  ((p)->level x (id_level_type)SymLevel)
+#define ChkEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
+#define ChkLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 global id_hash_idx  HashValue;          /* hash value for identifier */
 global mac_hash_idx MacHashValue;       /* hash value for macro name */
 global char         *SavedId;           /* saved id when doing look ahead */
@@ -191,7 +191,7 @@ global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
 global SYM_HASHPTR  *HashTab;
 global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
-global int          CTypeCounts[TYPE_LAST_ENTRY];
+global unsigned     CTypeCounts[TYPE_LAST_ENTRY];
 
 #define BUF_SIZE    512
 global size_t       BufSize;
@@ -207,7 +207,7 @@ global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook *
 global int          Toggles;            /* global toggle flags */
 global unsigned     ErrLimit;
 
-global unsigned     DataThreshold;      /* sizeof(obj) > this ==> separate segment */
+global target_size  DataThreshold;      /* sizeof(obj) > this ==> separate segment */
 global unsigned     Inline_Threshold;   /* -oe=num for function inlining */
 
 global unsigned     DataPtrSize;
@@ -230,7 +230,7 @@ global jmp_buf      *Environment;       /* var for Suicide() */
 global TREEPTR      ValueStack[MAX_LEVEL];
 global char         Token[MAX_LEVEL];
 global token_class  Class[MAX_LEVEL];
-global int          ExprLevel;
+global expr_level_type ExprLevel;
 
 global segment_list *SegListHead;
 global segment_id   SegImport;          /* next segment # for import sym */
@@ -479,7 +479,8 @@ extern TYPEPTR      TypeName(void);
 // cdecl2.c
 extern void         InvDecl( void );
 extern parm_list    *NewParm( TYPEPTR, parm_list * );
-extern TYPEPTR      *MakeParmList( parm_list *, int, int );
+extern TYPEPTR      *MakeParmList( parm_list *, bool );
+extern FIELDPTR     FieldCreate( const char *name );
 
 // cinfo.c
 extern segment_id   SymSegId( SYMPTR sym );
@@ -560,7 +561,7 @@ extern TREEPTR      BasedPtrNode(TYPEPTR,TREEPTR);
 extern bool         IsLValue(TREEPTR);
 extern op_flags     OpFlags( type_modifiers  flags );
 extern type_modifiers FlagOps( op_flags ops );
-extern FIELDPTR     SearchFields( TYPEPTR *class_typ, unsigned *field_offset, const char *name );
+extern FIELDPTR     SearchFields( TYPEPTR *class_typ, target_size *field_offset, const char *name );
 
 //cfold.c
 extern int64        LongValue64( TREEPTR leaf );
@@ -581,7 +582,7 @@ extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
 
 /* cgendata */
 extern void         EmitDataQuads(void);
-extern void         EmitZeros(unsigned);
+extern void         EmitZeros(target_size);
 extern void         AlignIt(TYPEPTR);
 
 /* cgetch */
@@ -641,9 +642,9 @@ extern void         FreeMacroSegments(void);
 extern MEPTR        CreateMEntry(const char *, size_t len);
 extern void         FreeMEntry( MEPTR mentry );
 extern void         MacLkAdd( MEPTR mentry, size_t len, macro_flags flags );
-extern void         MacroAdd( MEPTR mentry, char *buf, size_t len, macro_flags flags );
+extern void         MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags flags );
 extern int          MacroCompare(MEPTR,MEPTR);
-extern void         MacroCopy(void *,MACADDR_T,size_t);
+extern void         MacroCopy(const void *,MACADDR_T,size_t);
 extern MEPTR        MacroLookup(const char *);
 extern void         MacroOverflow(size_t,size_t);
 extern SYM_HASHPTR  SymHashAlloc(size_t);
@@ -721,7 +722,7 @@ extern void         CreateAux(const char *);
 extern void         SetCurrInfo(const char *);
 extern void         XferPragInfo(const char*,const char*);
 extern void         EnableDisableMessage(int,unsigned);
-extern void         AddLibraryName( const char *, char );
+extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
 extern void         SetPackAmount( unsigned amount );
@@ -753,7 +754,7 @@ extern TOKEN        NextToken( void );
 extern TOKEN        PPNextToken( void );
 
 /* csizeof */
-extern unsigned     SizeOfArg(TYPEPTR);
+extern target_size  SizeOfArg(TYPEPTR);
 
 /* cstats */
 extern void         InitStats(void);
@@ -815,16 +816,16 @@ extern TYPEPTR      TypeDefault(void);
 extern TYPEPTR      PtrNode(TYPEPTR,type_modifiers,segment_id);
 extern TYPEPTR      BPtrNode(TYPEPTR,type_modifiers,segment_id,SYM_HANDLE, BASED_KIND);
 extern TYPEPTR      TypeNode(DATA_TYPE,TYPEPTR);
-extern int          TypeQualifier(void);
+extern type_modifiers TypeQualifier(void);
 extern void         TypeSpecifier( decl_info *info );
 extern void         FullDeclSpecifier( decl_info *info );
 extern TAGPTR       NullTag(void);
 extern TAGPTR       TagLookup(void);
 extern void         FreeTags(void);
-extern unsigned     TypeSize(TYPEPTR);
-extern unsigned     TypeSizeEx( TYPEPTR, bitfield_width *pFieldWidth );
-extern TYPEPTR      GetIntTypeBySize( unsigned size, bool sign, bool exact );
-extern TAGPTR       VfyNewTag( TAGPTR, int );
+extern target_size  TypeSize(TYPEPTR);
+extern target_size  TypeSizeEx( TYPEPTR, bitfield_width *pFieldWidth );
+extern TYPEPTR      GetIntTypeBySize( target_size size, bool sign, bool exact );
+extern TAGPTR       VfyNewTag( TAGPTR, DATA_TYPE );
 extern void         VfyNewSym( id_hash_idx, const char * );
 extern align_type   GetTypeAlignment( TYPEPTR );
 extern void         TypesPurge( void );

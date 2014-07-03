@@ -459,17 +459,15 @@ void DumpDataQuads( void )
     if( cookie != NULL ) {
         size = 0;
         printf( "=== Data Quads ===\n" );
-        for( ;; ) {
-            dq = NextDataQuad();
-            if( dq == NULL )
-                break;
+        for( ; (dq = NextDataQuad()) != NULL; ) {
             for( ;; ) {
                 DumpDQuad( dq, &size );
-                if( ! (dq->flags & Q_REPEATED_DATA) )
+                if( (dq->flags & Q_REPEATED_DATA) == 0 )
                     break;
                 dq->u.long_values[1]--;
-                if( dq->u.long_values[1] == 0 )
+                if( dq->u.long_values[1] == 0 ) {
                     break;
+                }
             }
         }
         EndDataQuadAccess( cookie );

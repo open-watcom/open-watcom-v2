@@ -84,8 +84,8 @@ typedef struct mem_blk {
 */
 
 static  char        *PermPtr;   /* next free byte in PermArea */
-static  unsigned    PermSize;   /* total size of permanent memory block */
-static  unsigned    PermAvail;  /* # of bytes available in PermArea */
+static  size_t      PermSize;   /* total size of permanent memory block */
+static  size_t      PermAvail;  /* # of bytes available in PermArea */
 
 static  MCB         CFreeList;
 static  mem_blk     *Blks;
@@ -268,7 +268,7 @@ enum cmem_kind {
 static enum cmem_kind CMemKind( void *loc )
 {
     char            *ptr;
-    unsigned        size;
+    size_t          size;
     mem_blk         *blk;
 
     ptr  = PermPtr;

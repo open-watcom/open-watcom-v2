@@ -92,8 +92,8 @@ typedef enum{
 typedef unsigned short  LABEL_INDEX;
 
 struct patch_entry {
-    TREEPTR owner;
-    int     value;
+    TREEPTR             owner;
+    int                 value;
 };
 
 typedef struct case_entry {
@@ -121,7 +121,7 @@ typedef struct  switch_entry {
 typedef struct floatval {
     struct floatval     *next;
     long_double         ld;
-    unsigned short      len;
+    unsigned char       len;
     unsigned char       type;
     char                string[2];
 } FLOATVAL;

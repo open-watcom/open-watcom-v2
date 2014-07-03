@@ -56,7 +56,6 @@ void InitGlobalVars( void )
     CurrChar                = 0;
     ConstType               = 0;
     Constant                = 0;
-    CLitLength              = 0;    /* length of string literal */
     MainSrcFile             = NULL; /* primary source file being compiled */
     SrcFile                 = NULL;
     SrcFName                = NULL; /* source file name without suffix */

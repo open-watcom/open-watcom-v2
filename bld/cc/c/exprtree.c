@@ -32,8 +32,8 @@
 #include "cvars.h"
 
 
-TREEPTR ExprNodeList;
-int     NodeCount;
+TREEPTR     ExprNodeList;
+unsigned    NodeCount;
 
 void InitExprTree( void )
 {

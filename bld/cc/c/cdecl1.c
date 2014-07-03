@@ -109,7 +109,7 @@ local void FuncDefn( SYMPTR sym )
     }
     sym->flags |= /*SYM_REFERENCED | 18-jan-89 */ SYM_DEFINED;
 
-    if( !(GenSwitches & NO_OPTIMIZATION) ) {
+    if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
         sym->flags |= SYM_OK_TO_RECURSE;                /* 25-sep-91 */
     }
 
@@ -303,7 +303,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
                 if( sym.name == NULL  ||  sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
-                    for( parm = ParmList; parm; ) {
+                    for( parm = ParmList; parm != NULL; ) {
                         if( parm->sym.name != NULL ) {  /* 03-may-93 */
                             if( strcmp( parm->sym.name, sym.name ) == 0 ) {
                                 break;
@@ -399,7 +399,7 @@ local void AddParms( void )
     SYM_HANDLE          new_sym_handle;
     TYPEPTR             typ = NULL;
     int                 parm_count;
-    id_hash_idx         hash;
+    id_hash_idx         h;
     parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
@@ -413,7 +413,7 @@ local void AddParms( void )
         new_sym_handle = 0;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = TRUE;
-        hash = parm->sym.info.hash;
+        h = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
             parm->sym.sym_type = GetType( TYPE_DOT_DOT_DOT );
@@ -452,7 +452,7 @@ local void AddParms( void )
             case TYPE_FLOAT:
                 memcpy( &new_sym, &parm->sym, sizeof(SYM_ENTRY) );
                 new_sym.handle = CurFunc->u.func.locals;
-                new_sym_handle = SymAdd( hash, &new_sym );
+                new_sym_handle = SymAdd( h, &new_sym );
                 CurFunc->u.func.locals = new_sym_handle;
                 SymReplace( &new_sym, new_sym_handle );
                 parm->sym.name = ".P";
@@ -464,7 +464,7 @@ local void AddParms( void )
                 break;
             }
         }
-        sym_handle = SymAdd( hash, &parm->sym );
+        sym_handle = SymAdd( h, &parm->sym );
         if( new_sym_handle != 0 ) {
             TREEPTR         tree;
 
@@ -496,7 +496,7 @@ local void AddParms( void )
     typ = CurFunc->sym_type;
     // TODO not following my scheme
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
-        MakeParmList( parmlist, parm_count, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
+        MakeParmList( parmlist, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
     if( PrevProtoType != NULL ) {                       /* 12-may-91 */
         ChkProtoType();

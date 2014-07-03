@@ -69,12 +69,14 @@ local void FlushBadCode( void )
     count = 0;
     for( ;; ) {
         NextToken();
-        if( CurToken == T_EOF ) return;
+        if( CurToken == T_EOF )
+            return;
         if( CurToken == T_LEFT_BRACE ) {
             ++count;
         }
         if( CurToken == T_RIGHT_BRACE ) {
-            if( count == 0 ) break;
+            if( count == 0 )
+                break;
             --count;
         }
     }
@@ -87,7 +89,7 @@ static stg_classes SCSpecifier( void )
     stg_classes     stg_class;
 
     stg_class = SC_NULL;        /* assume no storage class specified */
-    if( TokenClass[ CurToken ] == TC_STG_CLASS ) {
+    if( TokenClass[CurToken] == TC_STG_CLASS ) {
         switch( CurToken ) {
         case T_EXTERN:  stg_class = SC_EXTERN;  break;
         case T_STATIC:  stg_class = SC_STATIC;  break;
@@ -117,7 +119,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     }
 
 /*      check for conflicting information */
-/*      skip over TYPEDEF's   29-aug-89   */
+    /* skip over TYPEDEF's  */
     type_new = new_sym->sym_type;
     SKIP_TYPEDEFS( type_new );
     type_old = old_sym->sym_type;
@@ -128,16 +130,17 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
     if( !IdenticalType( type_new->object, type_old->object ) ) {
         TYPEPTR     ret_new, ret_old;
 
-        ret_new = type_new->object;                    /* save return types */
+        /* save return types */
+        ret_new = type_new->object;
         ret_old = type_old->object;
-        // skip over typedef's 18-may-95
+        // skip over typedef's
         SKIP_TYPEDEFS( ret_new );
         SKIP_TYPEDEFS( ret_old );
         /* don't reorder this expression */
+        //return value used in forward
         if( old_sym->attribs.stg_class != SC_FORWARD ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
-        } else if( ret_new->decl_type != TYPE_VOID
-               || (old_sym->flags & SYM_TYPE_GIVEN) ) { //return value used in forward
+        } else if( ret_new->decl_type != TYPE_VOID || (old_sym->flags & SYM_TYPE_GIVEN) ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
         }
     }
@@ -160,7 +163,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
     size_t              sym_len;
     ENUMPTR             ep;
 
-    PrevProtoType = NULL;                               /* 12-may-91 */
+    PrevProtoType = NULL;
     // Warn if assuming 'int' return type - should be an error in strict C99 mode
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
@@ -189,15 +192,13 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( (old_sym.flags & SYM_FUNCTION) == 0 ) {
             CErr2p( ERR_SYM_ALREADY_DEFINED_AS_VAR, sym->name );
-            //02-jun-89 sym_handle = old_sym_handle;                /* 05-apr-89 */
-            sym_handle = SymAddL0( sym->info.hash, sym );     /* 02-jun-89 */
+            //02-jun-89 sym_handle = old_sym_handle
+            sym_handle = SymAddL0( sym->info.hash, sym );
         } else {
             CmpFuncDecls( sym, &old_sym );
-            PrevProtoType = old_sym.sym_type;               /* 12-may-91 */
+            PrevProtoType = old_sym.sym_type;
             if( (old_sym.flags & SYM_DEFINED) == 0 ) {
-                if( sym->sym_type->u.fn.parms != NULL ||    /* 11-jul-89 */
-                   ( CurToken != T_COMMA &&                 /* 18-jul-89 */
-                    CurToken != T_SEMI_COLON ) ) {
+                if( sym->sym_type->u.fn.parms != NULL || ( CurToken != T_COMMA && CurToken != T_SEMI_COLON ) ) {
                     old_typ = old_sym.sym_type;
                     if( old_typ->decl_type == TYPE_TYPEDEF &&
                        old_typ->object->decl_type == TYPE_FUNCTION ) {
@@ -247,7 +248,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
                 CWarn2p( WARN_FUNCTION_STG_CLASS_REDECLARED, ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
-            if( stg_class == SC_NULL && old_sym.attribs.stg_class != SC_FORWARD ) {     /* 05-jul-89 */
+            if( stg_class == SC_NULL && old_sym.attribs.stg_class != SC_FORWARD ) {
                 stg_class = old_sym.attribs.stg_class;
             }
             if( old_sym.sym_type->decl_type == TYPE_FUNCTION ) {
@@ -285,7 +286,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 
     // Warn if neither type nor storage class were given; this should probably be
     // an error in strict C89 (and naturally C99) mode
-    if( (stg_class == SC_NULL) && (*state & DECL_STATE_NOTYPE) && !(*state & DECL_STATE_NOSTWRN) ) {
+    if( (stg_class == SC_NULL) && (*state & DECL_STATE_NOTYPE) && (*state & DECL_STATE_NOSTWRN) == 0 ) {
         CWarn1( WARN_NO_STG_OR_TYPE, ERR_NO_STG_OR_TYPE );
         *state |= DECL_STATE_NOSTWRN;   // Only warn once for each declarator list
     }
@@ -299,7 +300,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     } else {
         sym->attribs.rent = FALSE;//Assume non instance data
     }
-    if( sym->attribs.naked ) {         /* 25-jul-95 */
+    if( sym->attribs.naked ) {
         CErr1( ERR_INVALID_DECLSPEC );
     }
 
@@ -313,7 +314,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         } else if( stg_class == SC_NULL ) {
             CompFlags.external_defn_found = 1;
         }
-        if( sym->attribs.declspec == DECLSPEC_THREAD ) {          /* 25-jul-95 */
+        if( sym->attribs.declspec == DECLSPEC_THREAD ) {
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
@@ -327,11 +328,11 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         if( stg_class == SC_NULL ) {
             stg_class = SC_AUTO;
         }
-        if( stg_class == SC_AUTO  ||  stg_class == SC_REGISTER ) {
+        if( stg_class == SC_AUTO || stg_class == SC_REGISTER ) {
             if( sym->mods & MASK_LANGUAGES ) {
                 CErr1( ERR_INVALID_DECLARATOR );
             }
-            if( sym->attribs.declspec != DECLSPEC_NONE ) {          /* 25-jul-95 */
+            if( sym->attribs.declspec != DECLSPEC_NONE ) {
                 CErr1( ERR_INVALID_DECLSPEC );
             }
             /*
@@ -346,7 +347,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         /*
         // static class variables can be thread local also
         */
-        if( (stg_class == SC_STATIC) && (sym->attribs.declspec == DECLSPEC_THREAD) ) {          /* 06-JAN-03 */
+        if( (stg_class == SC_STATIC) && (sym->attribs.declspec == DECLSPEC_THREAD) ) {
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
@@ -355,14 +356,14 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         }
     }
     if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
-        sym->flags |= SYM_IGNORE_UNREFERENCE;   /* 25-apr-91 */
+        sym->flags |= SYM_IGNORE_UNREFERENCE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
-    if( old_sym_handle != 0 ) {                         /* 28-feb-94 */
+    if( old_sym_handle != 0 ) {
         SymGet( &old_sym, old_sym_handle );
-        if( ChkSymLevel( &old_sym, == ) ) {
+        if( ChkEqSymLevel( &old_sym ) ) {
             SetDiagSymbol( &old_sym, old_sym_handle );
-            if( old_sym.attribs.stg_class == SC_EXTERN  &&  stg_class == SC_EXTERN ) {
+            if( old_sym.attribs.stg_class == SC_EXTERN && stg_class == SC_EXTERN ) {
                 if( ! IdenticalType( old_sym.sym_type, sym->sym_type ) ) {
                     CErr2p( ERR_TYPE_DOES_NOT_AGREE, sym->name );
                 }
@@ -372,13 +373,13 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             SetDiagPop();
         }
     }
-    if( stg_class == SC_EXTERN ) {              /* 27-oct-88 */
+    if( stg_class == SC_EXTERN ) {
         old_sym_handle = Sym0Look( sym->info.hash, sym->name );
     }
     if( old_sym_handle != 0 ) {
         SymGet( &old_sym, old_sym_handle );
         SetDiagSymbol( &old_sym, old_sym_handle );
-        if( ChkSymLevel( &old_sym, == ) || stg_class == SC_EXTERN ) {
+        if( ChkEqSymLevel( &old_sym ) || stg_class == SC_EXTERN ) {
             old_attrs = old_sym.mods;
             new_attrs = sym->mods;
             /* add default far/near flags depending on data model */
@@ -417,16 +418,16 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         }
         SetDiagPop();
     }
-    if( (old_sym_handle != 0)  &&
-        (stg_class == SC_NULL || stg_class == SC_EXTERN ||
-          (stg_class == SC_STATIC && SymLevel == 0)) ) {
+    if( (old_sym_handle != 0)
+      && (stg_class == SC_NULL || stg_class == SC_EXTERN
+      || (stg_class == SC_STATIC && SymLevel == 0)) ) {
 
         /* make sure sym->sym_type same type as old_sym->sym_type */
 
         SetDiagSymbol( &old_sym, old_sym_handle );
         old_def = VerifyType( sym->sym_type, old_sym.sym_type, sym );
         SetDiagPop();
-        if( !old_def && ChkSymLevel( &old_sym, == ) ) {
+        if( !old_def && ChkEqSymLevel( &old_sym ) ) {
             /* new symbol's type supersedes old type */
             old_sym.sym_type = sym->sym_type;
             if( (old_sym.flags & SYM_FUNCTION) ) {
@@ -434,7 +435,8 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             }
             SymReplace( &old_sym, old_sym_handle );
         }
-        if( stg_class == SC_EXTERN  &&  SymLevel != 0 ) goto new_var;
+        if( stg_class == SC_EXTERN && SymLevel != 0 )
+            goto new_var;
         CMemFree( sym->name );
         memcpy( sym, &old_sym, sizeof( SYM_ENTRY ) );
         sym_handle = old_sym_handle;
@@ -444,7 +446,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             if( sym->attribs.stg_class == SC_EXTERN ) {
                 /* was extern, OK to change to none */
                 if( stg_class == SC_NULL ) {
-                    sym->attribs.stg_class = stg_class;     /* 03-oct-88 */
+                    sym->attribs.stg_class = stg_class;
                 } else {
                     /* was extern, not OK to make static */
                     CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
@@ -459,8 +461,8 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         }
         SetDiagPop();
     } else {
-        if( stg_class == SC_EXTERN  &&  SymLevel != 0 ) {
-            ; /* do nothing  29-jan-93 */
+        if( stg_class == SC_EXTERN && SymLevel != 0 ) {
+            ; /* do nothing  */
         } else {
             VfyNewSym( sym->info.hash, sym->name );
         }
@@ -469,9 +471,9 @@ new_var:
         sym->flags |= SYM_DEFINED;
         typ = sym->sym_type;
         SKIP_DUMMY_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_TYPEDEF ) {          /* 12-mar-92 */
+        if( typ->decl_type == TYPE_TYPEDEF ) {
             SymGet( &sym2, typ->u.typedefn );
-            if( sym->u.var.segment == 0  &&  sym2.u.var.segment != 0 ) {
+            if( sym->u.var.segment == 0 && sym2.u.var.segment != 0 ) {
                 sym->u.var.segment = sym2.u.var.segment;
             }
             SKIP_TYPEDEFS( typ );
@@ -483,10 +485,10 @@ new_var:
         sym->attribs.stg_class = stg_class;
         sym_handle = SymAdd( sym->info.hash, sym );
     }
-    if( sym->u.var.segment == 0  &&     /* 22-oct-92 */
-     (stg_class == SC_STATIC ||
-      stg_class == SC_NULL   ||
-      stg_class == SC_EXTERN) ) {
+    if( sym->u.var.segment == 0
+      && ( stg_class == SC_STATIC
+      || stg_class == SC_NULL
+      || stg_class == SC_EXTERN ) ) {
         if( DefDataSegment != 0 ) {
             sym->u.var.segment = DefDataSegment;
             SymReplace( sym, sym_handle );
@@ -507,7 +509,7 @@ new_var:
         VarDeclEquals( sym, sym_handle );
         sym->flags |=  SYM_ASSIGNED;
     }
-    SymReplace( sym, sym_handle );                      /* 06-jul-88 */
+    SymReplace( sym, sym_handle );
     if( old_sym_handle != 0 ) {
         sym_handle = 0;
     }
@@ -574,9 +576,9 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
     if( ParmList != NULL ) {
         FreeParmList();
     }
-    memset( sym, 0, sizeof( SYM_ENTRY ) );              /* 02-apr-91 */
+    memset( sym, 0, sizeof( SYM_ENTRY ) );
     sym->name = "";
-    flags = TypeQualifier();                            /* 08-nov-94 */
+    flags = TypeQualifier();
     if( flags & info->mod ) {
        CErr1( ERR_INV_TYPE );
     }
@@ -590,17 +592,17 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         return( 0 );
     }
     typ = sym->sym_type;
-    /* skip over typedef's  29-aug-89 */
+    /* skip over typedef's */
     SKIP_TYPEDEFS( typ );
     if( info->stg == SC_TYPEDEF ) {
-        if( CompFlags.extensions_enabled ) {            /* 24-mar-91 */
+        if( CompFlags.extensions_enabled ) {
             old_sym_handle = SymLook( sym->info.hash, sym->name );
             if( old_sym_handle != 0 ) {
                 SymGet( &old_sym, old_sym_handle );
-                otyp = old_sym.sym_type;        /* skip typedefs 25-sep-92 */
+                otyp = old_sym.sym_type;        /* skip typedefs */
                 SKIP_TYPEDEFS( otyp );
                 if( old_sym.attribs.stg_class == SC_TYPEDEF &&
-                    ChkSymLevel( &old_sym, == ) && IdenticalType( typ, otyp ) ) {
+                    ChkEqSymLevel( &old_sym ) && IdenticalType( typ, otyp ) ) {
                     return( 0 );        /* indicate already in symbol tab */
                 }
             }
@@ -648,7 +650,7 @@ bool DeclList( SYM_HANDLE *sym_head )
             for( ;; ) {
                 while( CurToken == T_SEMI_COLON ) {
                     if( SymLevel == 0 ) {
-                        if( !CompFlags.extensions_enabled ) {  /* 28-nov-94 */
+                        if( !CompFlags.extensions_enabled ) {
                             CErr2p( ERR_EXPECTING_DECL_BUT_FOUND, ";" );
                         }
                     }
@@ -657,7 +659,8 @@ bool DeclList( SYM_HANDLE *sym_head )
                 if( CurToken == T_EOF )
                     return( FALSE );
                 FullDeclSpecifier( &info );
-                if( info.stg != SC_NULL  ||  info.typ != NULL ) break;
+                if( info.stg != SC_NULL || info.typ != NULL )
+                    break;
                 if( SymLevel != 0 )
                     return( FALSE );
                 break;
@@ -667,8 +670,8 @@ bool DeclList( SYM_HANDLE *sym_head )
                 state |= DECL_STATE_NOTYPE;
                 info.typ = TypeDefault();
             }
-            if( info.stg == SC_NULL  && (state & DECL_STATE_NOTYPE) ) {
-                if( TokenClass[ CurToken ] == TC_MODIFIER ) {
+            if( info.stg == SC_NULL && (state & DECL_STATE_NOTYPE) ) {
+                if( TokenClass[CurToken] == TC_MODIFIER ) {
                 } else {
                     switch( CurToken ) {
                     case T_ID:
@@ -712,7 +715,7 @@ bool DeclList( SYM_HANDLE *sym_head )
                 if( sym_handle != 0 ) {
                     sym.handle = 0;
                     if( sym.flags & SYM_FUNCTION ) {
-                        if( !(state & DECL_STATE_NOTYPE ) ) {
+                        if( (state & DECL_STATE_NOTYPE ) == 0 ) {
                             sym.flags |= SYM_TYPE_GIVEN;
                         }
                     } else if( SymLevel > 0 ) { /* variable */
@@ -730,7 +733,8 @@ bool DeclList( SYM_HANDLE *sym_head )
                 }
                 /* case "int x *p" ==> missing ',' msg already given */
                 if( CurToken != T_TIMES ) {
-                    if( CurToken != T_COMMA ) break;
+                    if( CurToken != T_COMMA )
+                        break;
                     NextToken();
                 }
             }
@@ -740,10 +744,8 @@ bool DeclList( SYM_HANDLE *sym_head )
             That's the reason for the check
                     "typ->decl_type != TYPE_FUNCTION"
 */
-            if( SymLevel == 0  &&  CurToken != T_SEMI_COLON
-                               &&  sym_handle != 0 ) {
-                if( sym.sym_type->decl_type == TYPE_FUNCTION
-                    &&  sym.sym_type != info.typ ) { /* 21-mar-89 */
+            if( SymLevel == 0 && CurToken != T_SEMI_COLON && sym_handle != 0 ) {
+                if( sym.sym_type->decl_type == TYPE_FUNCTION && sym.sym_type != info.typ ) {
                     CurFuncHandle = sym_handle;
                     CurFunc = &CurFuncSym;
                     memcpy( CurFunc, &sym, sizeof( SYM_ENTRY ) );
@@ -760,7 +762,7 @@ bool DeclList( SYM_HANDLE *sym_head )
 }
 
 
-int LoopDecl( SYM_HANDLE *sym_head )
+bool LoopDecl( SYM_HANDLE *sym_head )
 {
     decl_state          state;
     SYM_HANDLE          sym_handle;
@@ -772,10 +774,11 @@ int LoopDecl( SYM_HANDLE *sym_head )
     ParmList = NULL;
     prevsym_handle = 0;
     *sym_head = 0;
-    if( CurToken == T_EOF ) return( 0 );
+    if( CurToken == T_EOF )
+        return( FALSE );
     FullDeclSpecifier( &info );
-    if( info.stg == SC_NULL  &&  info.typ == NULL ) {
-        return( 0 );    /* No declaration-specifiers, get outta here */
+    if( info.stg == SC_NULL && info.typ == NULL ) {
+        return( FALSE );    /* No declaration-specifiers, get outta here */
     }
     if( info.stg != SC_NULL && info.stg != SC_AUTO && info.stg != SC_REGISTER ) {
         CErr1( ERR_INVALID_STG_CLASS_FOR_LOOP_DECL );
@@ -795,7 +798,7 @@ int LoopDecl( SYM_HANDLE *sym_head )
             if( sym_handle != 0 ) {
                 sym.handle = 0;
                 if( sym.flags & SYM_FUNCTION ) {
-                    if( !(state & DECL_STATE_NOTYPE ) ) {
+                    if( (state & DECL_STATE_NOTYPE ) == 0 ) {
                         sym.flags |= SYM_TYPE_GIVEN;
                     }
                 } else {    /* variable */
@@ -813,7 +816,8 @@ int LoopDecl( SYM_HANDLE *sym_head )
             }
             /* case "int x *p" ==> missing ',' msg already given */
             if( CurToken != T_TIMES ) {
-                if( CurToken != T_COMMA ) break;
+                if( CurToken != T_COMMA )
+                    break;
                 NextToken();
             }
         }
@@ -822,7 +826,7 @@ int LoopDecl( SYM_HANDLE *sym_head )
         //  Chk_Struct_Union_Enum( info.typ );
         NextToken();                /* skip over ';' */
     }
-    return( 1 );    /* We found a declaration */
+    return( TRUE );    /* We found a declaration */
 }
 
 
@@ -849,7 +853,7 @@ local type_modifiers GetModifiers( void )
     type_modifiers      modifier;
 
     modifier = 0;
-    for( ; TokenClass[ CurToken ] == TC_MODIFIER; ) {
+    for( ; TokenClass[CurToken] == TC_MODIFIER; ) {
         switch( CurToken ) {
         case T___NEAR:      modifier |= FLAG_NEAR;      break;
         case T___FAR:       modifier |= FLAG_FAR;       break;
@@ -955,7 +959,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                         if( ptr_typ->decl_type != TYPE_POINTER ) {
                            CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
                            info->based_kind = BASED_NONE;
-                       }
+                        }
                     } else if( ptr_typ->decl_type == TYPE_POINTER ) {
                         info->based_kind = BASED_VAR;
                     } else if( sym.mods & FLAG_SEGMENT ) {
@@ -965,7 +969,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                         info->based_kind = BASED_NONE;
                     }
                 }
-                if( !(sym.flags & SYM_REFERENCED) ) {
+                if( (sym.flags & SYM_REFERENCED) == 0 ) {
                     sym.flags |= SYM_REFERENCED;
                     SymReplace( &sym, sym_handle );
                 }
@@ -1018,7 +1022,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                     } else {
                         SymGet( &sym, sym_handle );
                     }
-                    if( !(sym.flags & SYM_REFERENCED) ) {
+                    if( (sym.flags & SYM_REFERENCED) == 0 ) {
                         sym.flags |= SYM_REFERENCED;
                         SymReplace( &sym, sym_handle );
                     }
@@ -1110,7 +1114,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
         }
     } else {
         sym->mods = info.modifier;
-        sym->u.var.segment = info.segment;              /* 01-dec-91 */
+        sym->u.var.segment = info.segment;
         typ = DeclPart2( typ, info.modifier );
         sym->sym_type = typ;
     }
@@ -1130,20 +1134,20 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
         if( state & DECL_STATE_ISPARM ) {
-            parm_type = TypeName();                     /* 14-mar-91 */
+            parm_type = TypeName();
         } else {
             parm_type = NULL;
         }
-        if( parm_type != NULL  ||  CurToken == T_RIGHT_PAREN ) {
+        if( parm_type != NULL || CurToken == T_RIGHT_PAREN ) {
             type_list = NULL;
             if( parm_type != NULL ) {
-                type_list = MakeParmList( NewParm( parm_type, NULL ), 1, 0 );
+                type_list = MakeParmList( NewParm( parm_type, NULL ), FALSE );
             }
             typ = FuncNode( typ, info.modifier, type_list );
             typ = PtrNode( typ, FLAG_NONE, SEG_DATA );
             MustRecog( T_RIGHT_PAREN );
         } else {
-            if( (state & DECL_STATE_ISPARM) && TokenClass[ CurToken ] == TC_STG_CLASS ) {
+            if( (state & DECL_STATE_ISPARM) && TokenClass[CurToken] == TC_STG_CLASS ) {
                 typ = DeclPart3( typ, info.modifier );
             } else {
                 Declarator( sym, info.modifier, (TYPEPTR)NULL, state );
@@ -1165,7 +1169,8 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
                     sym->info.hash = SavedHash;
                     CurToken = LAToken;
                 }
-                if( CurToken != T_ID && CurToken != T_TIMES ) break;
+                if( CurToken != T_ID && CurToken != T_TIMES )
+                    break;
                 if( state & DECL_STATE_NOTYPE ) {
                     CErr2p( ERR_MISSING_DATA_TYPE, sym->name );
                     if( CurToken == T_TIMES ) { /* "garbage *p" */
@@ -1176,22 +1181,24 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
                 } else {
                     Expecting( ",' or ';" );
                 }
-                if( CurToken != T_ID ) break;
+                if( CurToken != T_ID )
+                    break;
                 CMemFree( sym->name );
             }
         } else {
             SymCreate( sym, "" );
         }
         sym->mods = info.modifier;
-        sym->u.var.segment = info.segment;              /* 01-dec-91 */
+        sym->u.var.segment = info.segment;
 #if 0
-        if( modifier & FLAG_INTERRUPT )  sym->flags |= SYM_INTERRUPT_FN;
+        if( modifier & FLAG_INTERRUPT )
+            sym->flags |= SYM_INTERRUPT_FN;
 #endif
         typ = DeclPart2( typ, info.modifier );
         sym->sym_type = typ;
     }
     if( typ != NULL ) {
-        if( typ->decl_type == TYPE_FUNCTION ) {         /* 07-jun-94 */
+        if( typ->decl_type == TYPE_FUNCTION ) {
             if( state & DECL_STATE_FORLOOP ) {
                 CErr2p( ERR_DECL_IN_LOOP_NOT_OBJECT, sym->name );
             } else if( info.segment != 0 ) {            // __based( __segname("X"))
@@ -1238,7 +1245,8 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
             for( ;; ) {
                 field = FieldCreate( Buffer );
                 NextToken();
-                if( CurToken != T_ID && CurToken != T_TIMES ) break;
+                if( CurToken != T_ID && CurToken != T_TIMES )
+                    break;
                 if( state & DECL_STATE_NOTYPE ) {
                     CErr2p( ERR_MISSING_DATA_TYPE, field->name );
                     if( CurToken == T_TIMES ) { /* "garbage *p" */
@@ -1249,7 +1257,9 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
                 } else {
                     Expecting( ",' or ';" );
                 }
-                if( CurToken != T_ID ) break;
+                if( CurToken != T_ID ) {
+                    break;
+                }
             }
         } else {
             field = FieldCreate( "" );
@@ -1264,10 +1274,10 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
 
 local TYPEPTR ArrayDecl( TYPEPTR typ )
 {
-    int         dimension;
+    target_size dimension;
     TYPEPTR     first_node, next_node, prev_node;
 
-    if( typ != NULL ) {                                 /* 16-mar-90 */
+    if( typ != NULL ) {
         if( typ->decl_type == TYPE_FUNCTION ) {
             CErr1( ERR_CANT_HAVE_AN_ARRAY_OF_FUNCTIONS );
         }
@@ -1280,17 +1290,27 @@ local TYPEPTR ArrayDecl( TYPEPTR typ )
             const_val   val;
 
             if( ConstExprAndType( &val ) ) {
-                if( (val.type == TYPE_ULONG64) && !U64IsI32( val.value ) ) {
-                    CErr1( ERR_CONSTANT_TOO_BIG );
-                } else if( (val.type == TYPE_LONG64) && !I64IsI32( val.value ) ) {
-                    CErr1( ERR_CONSTANT_TOO_BIG );
+                dimension = U32FetchTrunc( val.value );
+                switch( val.type ) {
+                case TYPE_ULONG64:
+                    if( !U64IsU32( val.value ) )
+                        CErr1( ERR_CONSTANT_TOO_BIG );
+                    break;
+                case TYPE_LONG64:
+                    if( !U64IsI32( val.value ) )
+                        CErr1( ERR_CONSTANT_TOO_BIG );
+                    break;
+                case TYPE_ULONG:
+                case TYPE_UINT:
+                    break;
+                default:
+                    if( I32FetchTrunc( val.value ) <= 0 ) {
+                        CErr1( ERR_INVALID_DIMENSION );
+                        dimension = 1;
+                    }
+                    break;
                 }
-                dimension = I32FetchTrunc( val.value );
             } else {
-                dimension = 1;
-            }
-            if( dimension <= 0 ) {
-                CErr1( ERR_INVALID_DIMENSION );
                 dimension = 1;
             }
         } else {
@@ -1336,7 +1356,7 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
             /* Old-style declarations are obsolescent (ever since ANSI C89!) */
             CWarn1( WARN_OBSOLETE_FUNC_DECL, ERR_OBSOLETE_FUNC_DECL );
         }
-        if( parms_list != NULL )  {
+        if( parms_list != NULL ) {
             FreeParmList();
             ParmList = parms_list;
         }
@@ -1347,14 +1367,14 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
          * with variants both with and without arguments in use. Note that
          * __interrupt functions are unlikely to be called directly.
          */
-        if( !(mod & FLAG_INTERRUPT) ) {
+        if( (mod & FLAG_INTERRUPT) == 0 ) {
             CWarn1( WARN_OBSOLETE_FUNC_DECL, ERR_OBSOLETE_FUNC_DECL );
         }
     }
-    if( typ != NULL ) {                                 /* 09-apr-90 */
+    if( typ != NULL ) {
         TYPEPTR     typ2;
 
-        typ2 = typ;                                     /* 08-dec-93 */
+        typ2 = typ;
         SKIP_TYPEDEFS( typ2 );
         if( typ2->decl_type == TYPE_ARRAY ) {
             CErr1( ERR_FUNCTION_CANT_RETURN_AN_ARRAY );
@@ -1377,7 +1397,8 @@ static TYPEPTR DeclPart2( TYPEPTR typ, type_modifiers mod )
         if( CurToken == T_LEFT_BRACKET ) {
             typ = ArrayDecl( typ );
         }
-        if( CurToken != T_LEFT_PAREN ) break;
+        if( CurToken != T_LEFT_PAREN )
+            break;
         NextToken();
         typ = DeclPart3( typ, mod );
     }
@@ -1457,13 +1478,13 @@ local TYPEPTR *GetProtoType( decl_info *first )
 //        declspec  = info.decl;
         typ = info.typ;
         mod = info.mod;
-        if( stg_class != SC_NULL  &&  stg_class != SC_REGISTER ) {
+        if( stg_class != SC_NULL && stg_class != SC_REGISTER ) {
             CErr1( ERR_INVALID_STG_CLASS_FOR_PARM_PROTO );
         }
         state = DECL_STATE_ISPARM;
         if( typ == NULL ) {
             state |= DECL_STATE_NOTYPE;
-            if( stg_class == SC_NULL ) {                /* 30-nov-94 */
+            if( stg_class == SC_NULL ) {
                 CErr1( ERR_TYPE_REQUIRED_IN_PARM_LIST );
             }
             typ = TypeDefault();
@@ -1471,7 +1492,7 @@ local TYPEPTR *GetProtoType( decl_info *first )
         parm = (PARMPTR) CMemAlloc( sizeof( PARM_ENTRY ) );
         parm->next_parm = NULL;
         sym = &parm->sym;
-        memset( sym, 0, sizeof( SYM_ENTRY ) );              /* 02-apr-91 */
+        memset( sym, 0, sizeof( SYM_ENTRY ) );
         sym->name = "";
         Declarator( sym, mod, typ, state );
         typ = sym->sym_type;
@@ -1489,7 +1510,7 @@ local TYPEPTR *GetProtoType( decl_info *first )
             sym->sym_type = TypeDefault();
         }
         if( stg_class == SC_NULL ) {
-            stg_class = SCSpecifier();                  /* 17-mar-91 */
+            stg_class = SCSpecifier();
             if( stg_class == SC_NULL ) {
                 stg_class = SC_AUTO;
             }
@@ -1508,8 +1529,10 @@ local TYPEPTR *GetProtoType( decl_info *first )
             sym->flags |= SYM_REFERENCED;
         }
         ++parm_count;
-        if( CurToken == T_RIGHT_PAREN ) break;
-        if( (CurToken == T_EOF) || (CurToken == T_LEFT_BRACE) )  break;
+        if( CurToken == T_RIGHT_PAREN )
+            break;
+        if( (CurToken == T_EOF) || (CurToken == T_LEFT_BRACE) )
+            break;
         MustRecog( T_COMMA );
         if( CurToken == T_DOT_DOT_DOT ) {
             typ = GetType( TYPE_DOT_DOT_DOT );
@@ -1522,26 +1545,28 @@ local TYPEPTR *GetProtoType( decl_info *first )
     }
     ParmList = parm_namelist;
     /* if void is specified as a parm, it is the only parm allowed */
-    return( MakeParmList( parmlist, parm_count, 0 ) );
+    return( MakeParmList( parmlist, FALSE ) );
 }
 
 
-TYPEPTR *MakeParmList( parm_list *parm, int parm_count, int reversed )
+TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
 {
     TYPEPTR             *type_list;
     parm_list           *next_parm;
     parm_list           *prev_parm;
     TYPEPTR             typ;
-    int                 index;
+    parm_hash_idx       h;
+    int                 parm_count;
 
     type_list = NULL;
     if( parm != NULL ) {
-        if( ! reversed ) {
+        if( !reversed ) {
             prev_parm = NULL;
             for( ;; ) {
                 next_parm = parm->next_parm;
                 parm->next_parm = prev_parm;
-                if( next_parm == NULL ) break;
+                if( next_parm == NULL )
+                    break;
                 prev_parm = parm;
                 parm = next_parm;
             }
@@ -1553,17 +1578,18 @@ TYPEPTR *MakeParmList( parm_list *parm, int parm_count, int reversed )
             next_parm = next_parm->next_parm;
         }
 
-        /* try to find an existing parm list that matches, 29-dec-88 */
-        index = parm_count;
-        if( index > MAX_PARM_LIST_HASH_SIZE ) {
-            index = MAX_PARM_LIST_HASH_SIZE;
+        /* try to find an existing parm list that matches */
+        h = MAX_PARM_LIST_HASH_SIZE;
+        if( parm_count < MAX_PARM_LIST_HASH_SIZE ) {
+            h = (parm_hash_idx)parm_count;
         }
-        for( typ = FuncTypeHead[ index ]; typ; typ = typ->next_type ) {
+        for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
             type_list = typ->u.fn.parms;
             next_parm = parm;
             for( ;; ) {
                 if( next_parm == NULL ) {
-                    if( *type_list != NULL ) break;
+                    if( *type_list != NULL )
+                        break;
                     while( parm != NULL ) {
                         next_parm = parm->next_parm;
                         CMemFree( parm );
@@ -1571,18 +1597,19 @@ TYPEPTR *MakeParmList( parm_list *parm, int parm_count, int reversed )
                     }
                     return( typ->u.fn.parms );
                 }
-                if( next_parm->parm_type != *type_list ) break;
+                if( next_parm->parm_type != *type_list )
+                    break;
                 next_parm = next_parm->next_parm;
                 ++type_list;
             }
         }
 
-        type_list = (TYPEPTR *)CPermAlloc( (parm_count + 1) * sizeof( TYPEPTR ) );
+        type_list = (TYPEPTR *)CPermAlloc( ( parm_count + 1 ) * sizeof( TYPEPTR ) );
         if( type_list != NULL ) {
-            type_list[ parm_count ] = NULL;
+            type_list[parm_count] = NULL;
             parm_count = 0;
             while( parm != NULL ) {
-                type_list[ parm_count ] = parm->parm_type;
+                type_list[parm_count] = parm->parm_type;
                 next_parm = parm->next_parm;
                 CMemFree( parm );
                 parm = next_parm;
@@ -1593,15 +1620,15 @@ TYPEPTR *MakeParmList( parm_list *parm, int parm_count, int reversed )
     return( type_list );
 }
 
-local int VoidType( TYPEPTR typ )                       /* 03-oct-91 */
+local bool VoidType( TYPEPTR typ )
 {
     if( typ != NULL ) {
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_VOID ) {
-            return( 1 );
+            return( TRUE );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 local TYPEPTR *FuncProtoType( void )
@@ -1611,7 +1638,7 @@ local TYPEPTR *FuncProtoType( void )
     decl_info           info;
 
     if( !CompFlags.extensions_enabled ) {
-        ++SymLevel; /* 03-may-89 */
+        ++SymLevel;
     }
     old_taghead = TagHead;
     FullDeclSpecifier( &info );
@@ -1622,8 +1649,7 @@ local TYPEPTR *FuncProtoType( void )
         }
         type_list = NULL;
     } else {    /* function prototype present */
-        if( VoidType( info.typ )  &&  /*27-dec-88*/
-            info.stg== SC_NULL  &&  CurToken == T_RIGHT_PAREN ) {
+        if( VoidType( info.typ ) && info.stg == SC_NULL && CurToken == T_RIGHT_PAREN ) {
             type_list = VoidParmList;
         } else {
             type_list = GetProtoType( &info );
@@ -1631,17 +1657,17 @@ local TYPEPTR *FuncProtoType( void )
         if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
         }
-        if( CurToken != T_LEFT_BRACE ) {                /* 18-jan-89 */
-            if( SymLevel > 1  ||                        /* 03-dec-90 */
-            ! CompFlags.extensions_enabled ) {  /* 25-jul-91 */
-                /* get rid of any new tags regardless of SymLevel;  23-jul-90 */
-                TagHead = old_taghead;  /* get rid of new tags from proto */
-                FreeEnums();                    /* 03-may-89 */
+        if( CurToken != T_LEFT_BRACE ) {
+            if( SymLevel > 1 || !CompFlags.extensions_enabled ) {
+                /* get rid of any new tags regardless of SymLevel */
+                /* get rid of new tags from proto */
+                TagHead = old_taghead;
+                FreeEnums();
             }
         }
     }
     if( !CompFlags.extensions_enabled ) {
-        --SymLevel; /* 03-may-89 */
+        --SymLevel;
     }
     return( type_list );
 }
@@ -1654,7 +1680,8 @@ local void GetFuncParmList( void )
     PARMPTR     parm_namelist;
 
     parm_namelist = NULL;
-    while( CurToken == T_ID ) { /* scan off func parm list */
+    /* scan off func parm list */
+    while( CurToken == T_ID ) {
         if( parm_namelist == NULL ) {
             parm = (PARMPTR)CMemAlloc( sizeof( PARM_ENTRY ) );
             SymCreate( &parm->sym, Buffer );
@@ -1671,13 +1698,14 @@ local void GetFuncParmList( void )
             parm->sym.flags |= SYM_REFERENCED;
         }
         NextToken();
-        if( CurToken == T_RIGHT_PAREN ) break;
-        if( CurToken == T_EOF ) break;
-        if( CurToken != T_COMMA ) {     /* 04-jan-89 */
+        if( CurToken == T_RIGHT_PAREN )
+            break;
+        if( CurToken == T_EOF )
+            break;
+        if( CurToken != T_COMMA ) {
             MustRecog( T_COMMA );               /* forces error msg */
-            for( ;; ) {     /* skip until ')' to avoid cascading errors */
-                if( CurToken == T_RIGHT_PAREN ) break;
-                if( CurToken == T_EOF ) break;
+            /* skip until ')' to avoid cascading errors */
+            while( CurToken != T_RIGHT_PAREN && CurToken != T_EOF ) {
                 NextToken();
             }
             break;
@@ -1724,7 +1752,7 @@ local bool IsIntComp( TYPEPTR ret1 )
     case TYPE_SHORT:
     case TYPE_USHORT:
     case TYPE_INT:
-    case  TYPE_LONG:
+    case TYPE_LONG:
         ret = TRUE;
         break;
     default:

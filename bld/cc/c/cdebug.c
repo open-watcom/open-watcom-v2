@@ -128,7 +128,7 @@ void EmitDBType( void )
     WalkTypeList( EmitADBType );
 }
 
-static dbug_type DBIntegralType( int decl_type )
+static dbug_type DBIntegralType( DATA_TYPE decl_type )
 {
     dbug_type   ret_val;
 
@@ -216,7 +216,7 @@ dbug_type DBType( TYPEPTR typ )
     dbug_type       ret_val;
     dbg_proc        pr;
     TYPEPTR         *pparms;
-    unsigned long   size;
+    target_size     size;
     auto SYM_ENTRY  sym;
     auto struct debug_fwd_types fwd_info, *fip;
     cg_type         cgtype;
@@ -323,8 +323,8 @@ dbug_type DBType( TYPEPTR typ )
 }
 
 
-static void DumpFieldList( dbg_struct st,  unsigned long bias,
-                          FIELDPTR pfield, TYPEPTR  field_obj )
+static void DumpFieldList( dbg_struct st,  target_size bias,
+                          FIELDPTR pfield, TYPEPTR field_obj )
 {
     TYPEPTR field_typ;
 
@@ -369,7 +369,7 @@ static dbug_type DBTypeStruct( TYPEPTR typ )
         obj = NULL;
     }
     st = DBBegNameStruct( typ->u.tag->name, CGenType( typ ),
-                                typ->decl_type==TYPE_STRUCT );
+                                ( typ->decl_type == TYPE_STRUCT ) );
     ret_val = DBStructForward( st );
     if( ret_val != DBG_NIL_TYPE ) {
          typ->u1.debug_type = ret_val;

@@ -96,7 +96,7 @@ uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
         value = left ^ right;
         break;
     case OPR_NEG:
-        value = - right;
+        value = - (int_32)right;
         break;
     case OPR_COM:
         value = ~ right;
@@ -423,7 +423,9 @@ int DoUnSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     DATA_TYPE       const_type;
 
     if( op1 != NULL ) {
-        left =  LongValue64( op1 );
+        left = LongValue64( op1 );
+    } else {
+        U32ToU64( 0, &left );
     }
     right = LongValue64( op2 );
     const_type = tree->u.expr_type->decl_type;
@@ -479,7 +481,9 @@ int DoSignedOp64( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
     DATA_TYPE       const_type;
 
     if( op1 != NULL ) {
-        left =  LongValue64( op1 );
+        left = LongValue64( op1 );
+    } else {
+        U32ToU64( 0, &left );
     }
     right = LongValue64( op2 );
     const_type = tree->u.expr_type->decl_type;
@@ -657,8 +661,10 @@ int FltCmp( ld_arg ld1, ld_arg ld2 )
 #ifdef _LONG_DOUBLE_
     return( __FLDC( ld1, ld2 ) );
 #else
-    if( ld1->u.value == ld2->u.value ) return( 0 );
-    if( ld1->u.value <  ld2->u.value ) return( -1 );
+    if( ld1->u.value == ld2->u.value )
+        return( 0 );
+    if( ld1->u.value <  ld2->u.value )
+        return( -1 );
     return( 1 );
 #endif
 }
@@ -684,6 +690,11 @@ static int DoFloatOp( TREEPTR op1, TREEPTR tree, TREEPTR op2 )
         ld1 = op1->op.u2.float_value->ld;
         typ1 = TypeOf( op1 );
     } else {
+#ifdef _LONG_DOUBLE_
+        __I4LD( 0, &ld1 );
+#else
+        ld1.u.value = 0;
+#endif
         typ1 = TypeOf( op2 );           // default to same type
     }
 
@@ -1157,7 +1168,8 @@ static void CheckOpndValues( TREEPTR tree )
     TREEPTR             opnd;
     arithmetic_type     con;
 
-    if( tree->checked ) return;
+    if( tree->checked )
+        return;
 
     switch( tree->op.opr ) {
     case OPR_LSHIFT:
@@ -1201,7 +1213,7 @@ static void CheckOpndValues( TREEPTR tree )
                 break;
                 }
             case UNSIGNED_INT:
-                if( (uint_32)opnd->op.u2.long_value >= max_shift )
+                if( (uint_32)opnd->op.u2.long_value >= (uint_32)max_shift )
                     shift_too_big = TRUE;
                 break;
             case UNSIGNED_INT64: {

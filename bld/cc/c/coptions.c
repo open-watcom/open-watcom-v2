@@ -68,9 +68,9 @@ struct  option {
     void        (*function)(void);
 };
 
-static unsigned OptValue;
-static char    *OptScanPtr;
-static char    *OptParm;
+static unsigned     OptValue;
+static const char   *OptScanPtr;
+static const char   *OptParm;
 
 #define __isdigit(c)    ((c) >= '0' && (c) <= '9')
 
@@ -184,7 +184,7 @@ static void SetCharacterEncoding( void )
     }
 }
 
-local void SetTargName( char *name, unsigned len )
+local void SetTargName( const char *name, size_t len )
 {
     char        *p;
 
@@ -197,7 +197,7 @@ local void SetTargName( char *name, unsigned len )
     SwData.sys_name = CMemAlloc( len + 1 ); /* for NULLCHAR */
     p = SwData.sys_name;
     while( len != 0 ) {
-        *p++ = toupper( *name++ );
+        *p++ = toupper( *(unsigned char *)name++ );
         --len;
     }
     *p++ = '\0';
@@ -800,7 +800,7 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OP" );
     }
 #endif
-    if( !(Toggles & TOGGLE_CHECK_STACK) ) {
+    if( (Toggles & TOGGLE_CHECK_STACK) == 0 ) {
         Define_Macro( "__SW_S" );
     }
 }
@@ -872,12 +872,12 @@ void MergeInclude( void )
 }
 
 
-static int OptionDelimiter( char c )
+static bool OptionDelimiter( char c )
 {
     if( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar ) {
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 
 static void EnsureEndOfSwitch( void )
@@ -1080,10 +1080,10 @@ static void StripQuotes( char *fname )
 static char *CopyOfParm( void )
 {
     char        *p;
-    unsigned    len;
+    size_t      len;
 
     len = OptScanPtr - OptParm;
-    p = (char *) CMemAlloc( len + 1 );
+    p = (char *)CMemAlloc( len + 1 );
     memcpy( p, OptParm, len );
     p[len] = '\0';
     return( p );
@@ -1370,7 +1370,7 @@ static void Set_ZZ( void )
 #if _CPU == 8086
 static void ChkSmartWindows( void )
 {
-    if( tolower(*OptScanPtr) == 's' ) {        /* 22-mar-94 */
+    if( tolower( *(unsigned char *)OptScanPtr ) == 's' ) {
         TargetSwitches |= SMART_WINDOWS;
         ++OptScanPtr;
     }
@@ -1449,8 +1449,10 @@ static void Set_PC( void )
 }
 static void Set_PW( void )
 {
-    if( OptValue != 0 && OptValue < 20 ) OptValue = 20;
-    if( OptValue > 10000 ) OptValue = 10000;
+    if( OptValue != 0 && OptValue < 20 )
+        OptValue = 20;
+    if( OptValue > 10000 )
+        OptValue = 10000;
     SetCppWidth( OptValue );
 }
 static void Set_PreProcChar( void ) { PreProcChar = *OptScanPtr++; }
@@ -1791,18 +1793,15 @@ static struct option const CFE_Options[] = {
     { 0,        0,              0 },
 };
 
-static char *ProcessOption( struct option const *op_table, char *p, char *option_start )
+static const char *ProcessOption( struct option const *op_table, const char *p, const char *option_start )
 {
     int         i;
     int         j;
     char        *opt;
     char        c;
 
-    for( i = 0; ; i++ ) {
-        opt = op_table[i].option;
-        if( opt == NULL )
-            break;
-        c = tolower( *p );
+    for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
+        c = tolower( *(unsigned char *)p );
         if( c == *opt ) {
             OptValue = op_table[i].value;
             j = 1;
@@ -1873,9 +1872,11 @@ static char *ProcessOption( struct option const *op_table, char *p, char *option
                         }
                     }
                 } else if( *opt == '=' ) {      // collect an optional '='
-                    if( p[j] == '=' || p[j] == '#' ) ++j;
+                    if( p[j] == '=' || p[j] == '#' ) {
+                        ++j;
+                    }
                 } else {
-                    c = tolower( p[j] );
+                    c = tolower( (unsigned char)p[j] );
                     if( *opt != c ) {
                         if( *opt < 'A' || *opt > 'Z' )
                             break;
@@ -1898,7 +1899,7 @@ static char *ProcessOption( struct option const *op_table, char *p, char *option
 
 static void ProcessSubOption( struct option const *op_table )
 {
-    char        *option_start;
+    const char  *option_start;
 
     option_start = OptScanPtr - 2;
     for( ;; ) {
@@ -1922,7 +1923,7 @@ static void SetPreprocessOptions( void )
     }
 }
 
-static char *CollectEnvOrFileName( char *str )
+static const char *CollectEnvOrFileName( const char *str )
 {
     char        *env;
     char        ch;
@@ -1984,11 +1985,12 @@ static char *ReadIndirectFile( void )
 
 #define MAX_NESTING 32
 
-local void ProcOptions( char *str )
+local void ProcOptions( const char *str )
 {
     unsigned    level;
-    char        *save[MAX_NESTING];
+    const char  *save[MAX_NESTING];
     char        *buffers[MAX_NESTING];
+    char        *ptr;
 
     if( str != NULL ) {
         level = 0;
@@ -2000,13 +2002,15 @@ local void ProcOptions( char *str )
                 save[level] = CollectEnvOrFileName( str + 1 );
                 ++level;
                 buffers[level] = NULL;
-                str = FEGetEnv( TokenBuf );
-                if( str == NULL ) {
-                    str = ReadIndirectFile();
-                    buffers[level] = str;
+                ptr = FEGetEnv( TokenBuf );
+                if( ptr == NULL ) {
+                    ptr = ReadIndirectFile();
+                    buffers[level] = ptr;
                 }
-                if( str != NULL )
+                if( ptr != NULL ) {
+                    str = ptr;
                     continue;
+                }
                 str = save[--level];
             }
             if( *str == '\0' ) {
@@ -2022,8 +2026,9 @@ local void ProcOptions( char *str )
             if( *str == '-'  ||  *str == SwitchChar ) {
                 str = ProcessOption( CFE_Options, str + 1, str );
             } else {  /* collect  file name */
-                char *beg, *p;
-                int len;
+                const char *beg;
+                char *p;
+                size_t len;
 
                 beg = str;
                 if( *str == '"' ) {
@@ -2044,7 +2049,7 @@ local void ProcOptions( char *str )
                         if( *str == ' '  )
                             break;
                         if( *str == '\t'  )
-                            break;              /* 16-mar-91 */
+                            break;
 #if ! defined( __UNIX__ )
                         if( *str == SwitchChar )
                             break;
@@ -2052,8 +2057,8 @@ local void ProcOptions( char *str )
                         ++str;
                     }
                 }
-                len = str-beg;
-                p = (char *) CMemAlloc( len + 1 );
+                len = str - beg;
+                p = (char *)CMemAlloc( len + 1 );
                 memcpy( p, beg, len );
                 p[len] = '\0';
                 StripQuotes( p );

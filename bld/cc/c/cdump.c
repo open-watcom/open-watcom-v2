@@ -80,21 +80,21 @@ static void ChunkSaveData( STRCHUNK *pch, const char *data, size_t len )
     size_t  requestbytes;
     char    *newdata;
 
-    if( ( pch->cursize + len + 1 ) > pch->maxsize ) {
-        requestbytes = ( pch->cursize + len + 1 ) - pch->maxsize;
+    if( ( pch->cursize + len + 1 ) >= pch->maxsize ) {
+        requestbytes = pch->cursize + len + 1 - pch->maxsize;
         if( requestbytes < STRCHUNK_INCREMENT ) {
             requestbytes = STRCHUNK_INCREMENT;
         }
         requestbytes += pch->maxsize;
         newdata = CMemAlloc( requestbytes );
-        if( pch->data ) {
+        if( pch->data != NULL ) {
             memcpy( newdata, pch->data, pch->cursize );
             CMemFree( pch->data );
         }
         pch->data = newdata;
         pch->maxsize = requestbytes;
     }
-    memcpy( pch->data + pch->cursize, data, len );
+    memcpy( pch->data+pch->cursize, data, len );
     pch->cursize += len;
     pch->data[pch->cursize] = '\0';
 }
@@ -122,15 +122,16 @@ void DumpToken( void )
 
     if( DebugFlag >= 3 ) {
         printf( "%2d: ", CurToken );
-        if( CurToken == T_ID )
+        if( CurToken == T_ID ) {
             printf( "%s\n", Buffer );
-        else if( CurToken == T_STRING )
+        } else if( CurToken == T_STRING ) {
             printf( "\"%s\"\n", Buffer );
-        else if( CurToken == T_CONSTANT ) {
+        } else if( CurToken == T_CONSTANT ) {
             value = Constant;
             printf( "%d\n", value );
-        } else
+        } else {
             printf( "'%s'\n", Tokens[CurToken] );
+        }
     }
 }
 #endif
@@ -141,9 +142,9 @@ void DumpTypeCounts( void )
     int     i;
 
     for( i = TYPE_BOOL; i <= TYPE_VOID; ++i ) {
-        printf( "%3d %s\n", CTypeCounts[i], CTypeNames[i] );
+        printf( "%3u %s\n", CTypeCounts[i], CTypeNames[i] );
     }
-    printf( "%d pointer nodes\n", CTypeCounts[TYPE_POINTER] );
+    printf( "%u pointer nodes\n", CTypeCounts[TYPE_POINTER] );
 }
 #endif
 
@@ -162,8 +163,9 @@ static TYPEPTR TrueType( TYPEPTR typ )
                 newtyp->decl_type == TYPE_UNION  ||
                 newtyp->decl_type == TYPE_ENUM ) {
 
-                if( *newtyp->u.tag->name == '\0' )
+                if( *newtyp->u.tag->name == '\0' ) {
                     break;
+                }
             }
             typ = newtyp;
         }
@@ -261,13 +263,13 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
 
 static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 {
-    unsigned        size;
+    target_size     size;
     char            tempbuf[20];
 
     while( typ->decl_type == TYPE_ARRAY ) {
         size = typ->u.array->dimension;
         if( size != 0 ) {
-            sprintf( tempbuf, "[%u]", size );
+            sprintf( tempbuf, "[%u]", (unsigned)size );
             ChunkSaveStr( pch, tempbuf );
         } else {
             ChunkSaveStr( pch, "[]" );
@@ -280,10 +282,11 @@ static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 static void DumpTagName( char *tag_name, STRCHUNK *pch )
 {
     if( *tag_name == '\0' ) {
-        if (do_message_output)
+        if (do_message_output) {
             tag_name = "{...}";
-        else
+        } else {
             tag_name = "_no_name_";
+        }
     }
     ChunkSaveStrWord( pch, tag_name );
 }
@@ -368,9 +371,7 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
         } else {
             sym_handle = 0;
         }
-        for( ;; ) {
-            typ = *parm;
-            if( typ == NULL ) break;
+        for( ; (typ = *parm) != NULL; ) {
             typ = TrueType( typ );
             if( funcsym != NULL ) {
                 if( funcsym->flags & SYM_OLD_STYLE_FUNC ) {
@@ -383,10 +384,9 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
                 sym_handle = sym.handle;
                 sym_name   = sym.name;
             } else {
-                if( typ->decl_type != TYPE_VOID  &&
-                    typ->decl_type != TYPE_DOT_DOT_DOT ) {
-                        sym_name = temp_name;
-                        sprintf( temp_name, "__p%d", parm_num );
+                if( typ->decl_type != TYPE_VOID && typ->decl_type != TYPE_DOT_DOT_DOT ) {
+                    sym_name = temp_name;
+                    sprintf( temp_name, "__p%d", parm_num );
                 }
             }
             DoDumpType( typ, sym_name, pch );
@@ -421,7 +421,7 @@ static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags,
         }
         if( typ->decl_type == TYPE_ARRAY ) {
             ChunkSaveChar( pch, ')' );
-            if( pointer_flags & FLAG_WAS_ARRAY ) {      /* 07-jun-94 */
+            if( pointer_flags & FLAG_WAS_ARRAY ) {
                 /* we don't know the dimension anymore. just put out [1] */
                 ChunkSaveStr( pch, "[1]" );
                 pointer_flags = 0;
@@ -429,11 +429,13 @@ static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags,
             DumpArray( typ, pch) ;
             for( ;; ) {
                 obj = Object( typ );
-                if( obj->decl_type != TYPE_ARRAY ) break;
+                if( obj->decl_type != TYPE_ARRAY )
+                    break;
                 typ = obj;
             }
         } else {
-            if( typ->decl_type != TYPE_FUNCTION ) break;
+            if( typ->decl_type != TYPE_FUNCTION )
+                break;
             ChunkSaveChar( pch, ')' );
         }
     }
@@ -443,7 +445,7 @@ static void DumpPointer( TYPEPTR typ, STRCHUNK *pch )
 {
     if( typ->decl_type == TYPE_POINTER ) {
         DumpPointer( Object( typ ), pch );
-        if( !( typ->u.p.decl_flags & FLAG_WAS_ARRAY) ) {
+        if( ( typ->u.p.decl_flags & FLAG_WAS_ARRAY) == 0 ) {
             DumpFlags( typ->u.p.decl_flags & ~MASK_QUALIFIERS, typ, pch );
             DumpFlags( typ->u.p.decl_flags & MASK_QUALIFIERS, typ, pch );
             ChunkSaveChar( pch, '*' );
@@ -519,14 +521,14 @@ static void DoDumpType( TYPEPTR realtype, char *symname, STRCHUNK *pch )
         }
     }
     for( typ = realtype; typ != NULL; typ = Object( typ ) ) {
-        if( typ->decl_type == TYPE_TYPEDEF ) break; /* 17-jan-91 */
+        if( typ->decl_type == TYPE_TYPEDEF )
+            break;
         pointer_flags = 0;
         while( typ->decl_type == TYPE_POINTER ) {
             pointer_flags = typ->u.p.decl_flags;
             typ = Object( typ );
         }
-        if( typ->decl_type == TYPE_ARRAY  ||
-           typ->decl_type == TYPE_FUNCTION ) {
+        if( typ->decl_type == TYPE_ARRAY || typ->decl_type == TYPE_FUNCTION ) {
             DumpTail( realtype, NULL, pointer_flags, pch );
             break;
         }
@@ -541,12 +543,9 @@ static void DumpParmTags( TYPEPTR *parm, FILE *fp )
     char        *result;
 
     if( parm != NULL ) {
-        for( ;; ) {
-            typ = *parm;
-            if( typ == NULL ) break;
+        for( ; (typ = *parm) != NULL; ) {
             typ = TrueType( typ );
-            if( typ->decl_type == TYPE_STRUCT  ||
-                typ->decl_type == TYPE_UNION ) {
+            if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
                 ChunkInit(&chunk);
                 ChunkSaveStrWord( &chunk, CTypeNames[typ->decl_type] );
                 DumpTagName( typ->u.tag->name, &chunk );

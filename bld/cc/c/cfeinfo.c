@@ -345,7 +345,7 @@ aux_info *InfoLookup( SYMPTR sym )
     if( ( ent == NULL ) || (sym->flags & SYM_INTRINSIC) ) {
         if( sym->flags & SYM_DEFINED )
             return( inf );
-        if( !(sym->flags & SYM_INTRINSIC) ) {
+        if( (sym->flags & SYM_INTRINSIC) == 0 ) {
             if( memcmp( name, "_inline_", 8 ) != 0 )
                 return( inf );
             name += 8;
@@ -425,7 +425,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
         return( &InlineInfo );
     }
 #endif
-    if( !(sym->flags & SYM_TEMP) ) {
+    if( (sym->flags & SYM_TEMP) == 0 ) {
         /* not an indirect func call*/
         inf = InfoLookup( sym );
     }

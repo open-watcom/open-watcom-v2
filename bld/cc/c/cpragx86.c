@@ -191,7 +191,7 @@ static void CopyAuxInfo( void )
 
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_CTurnOn( CurrInfo->save, HW_FULL );
-        if( !( AuxInfo.cclass & MODIFY_EXACT ) && !CompFlags.save_restore_segregs ) {
+        if( (AuxInfo.cclass & MODIFY_EXACT) == 0 && !CompFlags.save_restore_segregs ) {
             HW_Asgn( default_flt_n_seg, WatcallInfo.save );
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
@@ -264,7 +264,7 @@ local fix_words FixupKeyword( void )
 /**********************************/
 {
     if( CurToken == T_FLOAT ) {
-        NextToken();                    /* 20-jun-92 */
+        NextToken();
         return( FIXWORD_FLOAT );
     }
     if( PragRecog( "seg" ) )    return( FIXWORD_SEGMENT );
@@ -289,7 +289,7 @@ enum sym_state AsmQueryState( void *handle )
     if( sym_handle == 0 )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
-    if( !(sym.flags & SYM_REFERENCED) ) {
+    if( (sym.flags & SYM_REFERENCED) == 0 ) {
         sym.flags |= SYM_REFERENCED;
         SymReplace( &sym, sym_handle );
     }
@@ -661,7 +661,7 @@ local bool GetByteSeq( byte_seq **code )
     offset = 0;
     name = NULL;
     for( ;; ) {
-        if( CurToken == T_STRING ) {    /* 06-sep-91 */
+        if( CurToken == T_STRING ) {
 #if _CPU == 8086
             AsmLine( Buffer, use_fpu_emu );
             use_fpu_emu = FALSE;
@@ -888,7 +888,7 @@ local void GetRetInfo( void )
     have.f_no8087  = 0;
     have.f_list    = 0;
     have.f_struct  = 0;
-    AuxInfo.cclass &= ~ NO_8087_RETURNS;               /* 29-mar-90 */
+    AuxInfo.cclass &= ~ NO_8087_RETURNS;
     AuxInfoFlg.f_8087_returns = 1;
     for( ;; ) {
         if( !have.f_no8087 && PragRecog( "no8087" ) ) {
@@ -965,7 +965,7 @@ void PragAux( void )
         have.f_value  = 0;
         have.f_modify = 0;
         have.f_frame = 0;
-        have.uses_auto = 0; /* BBB - Jan 26, 1994 */
+        have.uses_auto = 0;
         for( ;; ) {
             if( !have.f_call && CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );

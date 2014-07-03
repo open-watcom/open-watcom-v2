@@ -61,13 +61,13 @@ static  int     Blank2Count;
 static  int     Tab1Count;
 
 
-static int ReadBuffer( FCB *srcfcb )
+static bool ReadBuffer( FCB *srcfcb )
 {
     int         last_char;
 
     if( srcfcb->src_fp == NULL ) {          /* in-memory buffer */
         CloseSrcFile( srcfcb );
-        return( 0 );
+        return( FALSE );
     }
     /* ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
@@ -86,10 +86,10 @@ static int ReadBuffer( FCB *srcfcb )
     if( srcfcb->src_cnt == -1 ) {
         CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
         CloseSrcFile( srcfcb );
-        return( 1 );
+        return( TRUE );
     } else if( ( srcfcb->src_cnt == 0 ) && ( last_char == '\n' ) ) {
         CloseSrcFile( srcfcb );
-        return( 1 );
+        return( TRUE );
     } else if( srcfcb->src_cnt != 0 ) {
         last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     }
@@ -99,7 +99,7 @@ static int ReadBuffer( FCB *srcfcb )
         srcfcb->src_cnt++;
     }
     srcfcb->src_ptr[srcfcb->src_cnt] = '\0';          // mark end of buffer
-    return( 0 );            // indicate CurrChar does not contain a character
+    return( FALSE );            // indicate CurrChar does not contain a character
 }
 
 
@@ -161,10 +161,7 @@ static int getTestCharFromFile( void )
 {
     int c;
 
-    for( ;; ) {
-        c = *SrcFile->src_ptr++;
-        if( c != '\0' )
-            break;
+    for( ; (c = *SrcFile->src_ptr++) == '\0'; ) {
         /* check to make sure the NUL character we just found is at the
            end of the buffer, and not an embedded NUL character in the
            source file.  26-may-94 */
@@ -196,7 +193,7 @@ static char translateTriGraph( char c )
         if( c == p->tri ) {
             if( CompFlags.extensions_enabled ) {
                 if( NestLevel == SkipLevel ) {
-                    CompFlags.trigraph_alert = 1;
+                    CompFlags.trigraph_alert = TRUE;
                 }
             }
             return( p->new );
@@ -319,7 +316,7 @@ int GetCharCheckFile( int c )
             break;
         default:
 //          SrcFile->column++;
-            if( c > 0x7f && CharSet[c] & C_DB ) {
+            if( c > 0x7f && (CharSet[c] & C_DB) ) {
                 // we should not process the second byte through
                 // normal channels since its value is meaningless
                 // out of context

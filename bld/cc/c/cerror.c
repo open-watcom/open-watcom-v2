@@ -88,14 +88,14 @@ void OpenErrFile( void )
     }
 }
 
-static int MsgDisabled( int msgnum )
+static bool MsgDisabled( int msgnum )
 {
     if( MsgFlags != NULL ) {
         if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
-            return( 1 );
+            return( TRUE );
         }
     }
-    return( 0 );
+    return( FALSE );
 }
 
 // fill cmsg_info struct

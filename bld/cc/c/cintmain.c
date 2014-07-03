@@ -81,7 +81,7 @@ int main( int argc, char **argv )
             argv[0] = buffer;
             argv[1] = NULL;
             _bgetcmd( buffer, len );
-            ret = FrontEnd( &argv[0] );
+            ret = FrontEnd( &argv[ 0 ] );
             free( buffer );
         } else {
             ret = -1;
@@ -134,7 +134,7 @@ extern void ConBlip( void ){
 
 extern bool ConTTY( void ){
 // C compiler do a blip to console
-    return( isatty( fileno( stdout )  ) );
+    return( isatty( fileno( stdout ) ) != 0 );
 }
 
 extern void BannerMsg( char const  *line ){

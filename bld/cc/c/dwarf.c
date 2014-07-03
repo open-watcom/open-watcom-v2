@@ -62,7 +62,7 @@ static void type_update( TYPEPTR typ, int mask, dw_handle dh )
 static void dwarfFile( unsigned filenum )
 /***************************************/
 {
-    static unsigned short Current_File_Index = ~0;
+    static unsigned Current_File_Index = ~0U;
     FNAMEPTR    flist;
     char       *fname;
 
@@ -104,9 +104,9 @@ static void dwarfStructInfo( TAGPTR tag )
         typ = field->field_type;
         if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
             fld_dh = dwarfType( GetType( typ->u.f.field_type ), DC_DEFAULT );
-            if( xref != NULL ){  //stupid struct { int x; int y[] ) = init thing
-            // Also watch for side effects with the DWDeclPos and a dwtype
-                 dwarfLocation( &xref->src_loc );
+            if( xref != NULL ) {    //stupid struct { int x; int y[] ) = init thing
+                // Also watch for side effects with the DWDeclPos and a dwtype
+                dwarfLocation( &xref->src_loc );
             }
             dh = DWAddBitField( Client,
                         fld_dh,
@@ -118,9 +118,9 @@ static void dwarfStructInfo( TAGPTR tag )
                         DW_FLAG_PUBLIC );
         } else {
             fld_dh =  dwarfType( typ, DC_DEFAULT );
-            xref = field->xref; // re-get in case the struct was freed during recursion
-            if( xref != NULL ){  //stupid struct { int x; int y[] ) = init thing
-                 dwarfLocation( &xref->src_loc );
+            xref = field->xref;     // re-get in case the struct was freed during recursion
+            if( xref != NULL ) {    //stupid struct { int x; int y[] ) = init thing
+                dwarfLocation( &xref->src_loc );
             }
             dh = DWAddField( Client,
                         fld_dh,
@@ -128,7 +128,7 @@ static void dwarfStructInfo( TAGPTR tag )
                         field->name,
                         DW_FLAG_PUBLIC );
         }
-        if( xref != NULL ){
+        if( xref != NULL ) {
             for( ; (xref = xref->next_xref) != NULL; ) {
                 dwarfReference( dh, &xref->src_loc );
             }
@@ -209,7 +209,7 @@ static dw_handle dwarfEnum( TYPEPTR typ )
                              0,
                              0 );
     enum_list = ReverseEnums( typ->u.tag->u.enum_list );
-    for( esym = enum_list; esym; esym = esym->thread ) {
+    for( esym = enum_list; esym != NULL; esym = esym->thread ) {
         DWAddConstant( Client, esym->value.u._32[L], esym->name );
     }
     ReverseEnums( enum_list );
@@ -412,7 +412,7 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
         break;
     }
 #ifdef FDEBUG
-    if( dh == 0 && !(control & DC_RETURN) ) {
+    if( dh == 0 && (control & DC_RETURN) == 0 ) {
         DumpFullType( type );
         CFatal( "dwarf: unable to define type" );
     }
@@ -462,7 +462,7 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
                    0,
                    flags );
     func_sym->dwarf_handle = func_dh;
-    for( sym_handle = func_sym->u.func.parms; sym_handle; ) {
+    for( sym_handle = func_sym->u.func.parms; sym_handle != 0; ) {
         sym = SymGetPtr( sym_handle );
         dh = DWFormalParameter( Client,
                         dwarfType( sym->sym_type, DC_DEFAULT ),
@@ -549,11 +549,11 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
 
     while( sym_handle ) {
         sym = SymGetPtr( sym_handle );
-        if( !(sym->flags & SYM_TEMP) ) {
+        if( (sym->flags & SYM_TEMP) == 0 ) {
             typ = sym->sym_type;
             dh = 0;
             if( sym->flags & SYM_FUNCTION ) {
-                if( !(sym->flags & SYM_DEFINED) ) {
+                if( (sym->flags & SYM_DEFINED) == 0 ) {
                     dh = dwarfFunctionDecl( sym );
                 }
 //              printf( "func: %s", sym->name );
@@ -595,7 +595,7 @@ static void dwarfDumpNode( TREEPTR node )
     case OPR_PUSHADDR:          // push address of sym_handle
     case OPR_FUNCNAME:          // function name
         sym = SymGetPtr( node->op.u2.sym_handle );
-        if( !(sym->flags & SYM_TEMP) ) {
+        if( (sym->flags & SYM_TEMP) == 0 ) {
             dw_handle   dh;
 
             dh = sym->dwarf_handle;
@@ -653,7 +653,7 @@ static void dwarfInitTypes( void )
 static void dwarfEmit( void )
 /***************************/
 {
-    int         i;
+    DATA_TYPE   i;
 
     dwarfInitTypes();
     for( i = TYPE_BOOL; i <= TYPE_DOUBLE; i++ ) {

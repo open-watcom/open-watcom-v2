@@ -260,7 +260,7 @@ static void FlushPHeader( void )
 
     if( PH_BufSize != PH_BUF_SIZE ) {   // if buffer has some stuff in it
         len = PH_BUF_SIZE - PH_BufSize;
-        if( write( PH_handle, PH_Buffer, len ) != len ) {
+        if( (unsigned)write( PH_handle, PH_Buffer, len ) != len ) {
             longjmp( PH_jmpbuf, 1 );
         }
     }
@@ -752,6 +752,8 @@ static void OutPutAuxInfo( aux_info *info )
     size_t              objname_len;
     size_t              code_len;
 
+    objname_len = 0;
+    code_len = 0;
     info_parms = info->parms;
     info_objname = info->objname;
     info_code = info->code;
@@ -1315,7 +1317,7 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
                     break;
                 }
             }
-            if( mpch == NULL || !(mpch->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) ) {
+            if( mpch == NULL || (mpch->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE) == 0 ) {
             // macro may either have been undef'd (mpch == NULL ) or undef'd and defined
                 if( mcur->macro_flags & MFLAG_USER_DEFINED ) {  //compiler defined macros not saved on undefs
                     for( mpch = PCHUndefMacroList; mpch != NULL; mpch = mpch->next_macro ) {
@@ -1402,7 +1404,7 @@ static char *FixupSymbols( char *p, unsigned symbol_count )
 
 static void FixupTypeIndexes( type_indices *typ_index ) /* 02-jan-95 */
 {
-    int         i;
+    DATA_TYPE   i;
     int         index;
 
     for( i = TYPE_BOOL; i < TYPE_LAST_ENTRY; ++i ) {
@@ -1419,9 +1421,10 @@ static void FixupTypeIndexes( type_indices *typ_index ) /* 02-jan-95 */
 static char *FixupTypes( char *p, unsigned type_count )
 {
     TYPEPTR         typ;
-    int             index;
+    parm_hash_idx   h;
     array_info      *array;
     TYPEPTR         *parms_list;
+    int             idx;
 
     InitTypeHashTables();
     typ = (TYPEPTR)p;
@@ -1443,9 +1446,9 @@ static char *FixupTypes( char *p, unsigned type_count )
     }
     parms_list = (TYPEPTR *)( typ + type_count );
     for( ; type_count != 0; --type_count ) {
-        index = PCHGetUInt( typ->u.fn.parms );
-        typ->next_type = FuncTypeHead[index];
-        FuncTypeHead[index] = typ;
+        h = (parm_hash_idx)PCHGetUInt( typ->u.fn.parms );
+        typ->next_type = FuncTypeHead[h];
+        FuncTypeHead[h] = typ;
         if( PCHGetUInt( typ->object ) != 0 ) {
             typ->object = TypeArray + PCHGetUInt( typ->object );
         }
@@ -1453,8 +1456,8 @@ static char *FixupTypes( char *p, unsigned type_count )
             typ->u.fn.parms = NULL;
         } else {
             typ->u.fn.parms = parms_list;
-            while( (index = PCHGetUInt( *parms_list )) != -1 ) {
-                *parms_list++ = TypeArray + index;
+            while( (idx = PCHGetUInt( *parms_list )) != -1 ) {
+                *parms_list++ = TypeArray + idx;
             }
         }
         *parms_list++ = NULL;
@@ -1590,7 +1593,7 @@ static char *FixupPragmaInfo( char *p, unsigned pragma_count, unsigned entry_cou
     aux_entry       **lnk;
     aux_info        *info;
     aux_info        **info_array;
-    int             index;
+    unsigned        index;
 
     info_array = (aux_info **)CMemAlloc( pragma_count * sizeof( aux_info * ) );
     for( index = 0; index < pragma_count; ++index ) {
@@ -1642,7 +1645,7 @@ void FixupFNames( void )
     }
     *lnk = FNameList;
     for( flist = FNameList; flist != NULL; flist = flist->next ) {
-        flist->index_db = -1;
+        flist->index_db = DBIDX_NONE;
     }
 }
 
@@ -1745,6 +1748,7 @@ void AbortPreCompiledHeader( void )
 int UsePreCompiledHeader( const char *filename )
 {
     int                 handle;
+    unsigned            size;
     size_t              len;
     char                *p;
     pheader             pch;
@@ -1760,8 +1764,8 @@ int UsePreCompiledHeader( const char *filename )
     PCHMacroHash = NULL;
     PCHOldIncFileList = NULL;
     PCHOldIncListValid = FALSE;
-    len = read( handle, &pch, sizeof( pheader ) );
-    if( len != sizeof( pheader ) ) {
+    size = read( handle, &pch, sizeof( pheader ) );
+    if( size != sizeof( pheader ) ) {
         close( handle );
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
@@ -1784,10 +1788,10 @@ int UsePreCompiledHeader( const char *filename )
     PCH_End = p + pch.size;
     PH_size = read( handle, p, pch.size );      // read rest of the file
     PCH_Macros = FEmalloc( pch.macro_size );
-    len = read( handle, PCH_Macros, pch.macro_size );
+    size = read( handle, PCH_Macros, pch.macro_size );
     close( handle );
     PCH_SymArray = (SYMPTR *)FEmalloc( pch.symbol_count * sizeof( SYMPTR ) );
-    if( PH_size != pch.size || len != pch.macro_size ) {
+    if( PH_size != pch.size || size != pch.macro_size ) {
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
         return( -1 );

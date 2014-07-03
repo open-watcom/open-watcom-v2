@@ -74,7 +74,7 @@ void EmitDataQuads( void )
                 break;
             for(;;) {
                 EmitDQuad( dq );
-                if( ! (dq->flags & Q_REPEATED_DATA) )
+                if( (dq->flags & Q_REPEATED_DATA) == 0 )
                     break;
                 dq->u.long_values[1]--;
                 if( dq->u.long_values[1] == 0 ) {
@@ -93,7 +93,7 @@ static void EmitDQuad( DATA_QUAD *dq )
     auto SYM_ENTRY      sym;
 
     static segment_id   segment;
-    static unsigned     size = 0;
+    static target_size  size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {
         data_type = TY_NEAR_POINTER;
@@ -232,7 +232,7 @@ static void EmitDQuad( DATA_QUAD *dq )
                 EmitZeros( 0x10000 - size );
                 amount -= ( 0x10000 - size );
                 size = 0;
-                if( segment != SEG_CONST  &&  segment != SEG_DATA ) {
+                if( segment != SEG_CONST && segment != SEG_DATA ) {
                     ++segment;
                     BESetSeg( segment );
                 }

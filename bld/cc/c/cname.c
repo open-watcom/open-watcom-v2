@@ -60,7 +60,8 @@ int NameCmp( const void *p1, const void *p2, size_t len )
     const unsigned_32 *q = p2;
 
     while( len > sizeof( unsigned_32 ) ) {
-        if( *p != *q )  return( -1 );   // indicate names not equal
+        if( *p != *q )
+            return( -1 );   // indicate names not equal
         ++p;
         ++q;
         len -= sizeof( unsigned_32 );

@@ -60,7 +60,8 @@ struct return_info {
     bool                with_expr;
 };
 
-extern int          NodeCount;
+extern unsigned     NodeCount;
+
 LABEL_INDEX         LabelIndex;
 SYM_LISTS           *SymListHeads;
 
@@ -102,7 +103,7 @@ static void ChkStmtExpr( void )
     TREEPTR     tree;
 
     tree = Expr();
-    if( CompFlags.meaningless_stmt == 1 ) {
+    if( CompFlags.meaningless_stmt ) {
         ChkUseful();
     }
     AddStmt( tree );
@@ -150,7 +151,8 @@ void AddStmt( TREEPTR stmt )
     stmt = ExprNode( 0, OPR_STMT, stmt );
     stmt->op.u2.src_loc = SrcLoc;
     stmt->op.u1.unroll_count = UnrollCount;
-    if( FirstStmt == NULL )  FirstStmt = stmt;
+    if( FirstStmt == NULL )
+        FirstStmt = stmt;
     if( LastStmt != NULL ) {
         LastStmt->left = stmt;
     }
@@ -263,7 +265,7 @@ static void Jump( LABEL_INDEX label )
 {
     TREEPTR     tree;
 
-    if( ! DeadCode ) {
+    if( DeadCode == 0 ) {
         tree = LeafNode( OPR_JUMP );
         tree->op.u2.label_index = label;
         AddStmt( tree );
@@ -315,7 +317,7 @@ void LookAhead( void )
 }
 
 
-static int GrabLabels( void )
+static bool GrabLabels( void )
 {
     LABELPTR    label;
 
@@ -325,10 +327,12 @@ static int GrabLabels( void )
             SrcLoc = SavedTokenLoc;
         } else {
             SrcLoc = TokenLoc;
-            if( CurToken != T_ID ) break;
+            if( CurToken != T_ID )
+                break;
             LookAhead();
         }
-        if( LAToken != T_COLON ) break; /* quit if look ahead not : */
+        if( LAToken != T_COLON )
+            break; /* quit if look ahead not : */
         label = LkLabel( SavedId );
         if( label->defined != 0 ) {
             CErr2p( ERR_LABEL_ALREADY_DEFINED, label->name );
@@ -344,9 +348,9 @@ static int GrabLabels( void )
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }
-        return( 1 );                    // indicate label found
+        return( TRUE );                    // indicate label found
     }
-    return( 0 );
+    return( FALSE );
 }
 
 
@@ -443,7 +447,8 @@ static SYM_HANDLE GetLocalVarDecls( void )
         if( symhandle != 0 ) {          // if some temporaries were created
             for( ;; ) {                 // - find end of list
                 SymGet( &sym, symhandle );
-                if( sym.handle == 0 ) break;
+                if( sym.handle == 0 )
+                    break;
                 symhandle = sym.handle;
             }
             sym.handle = symlist;
@@ -505,7 +510,7 @@ static void LeftBrace( void )
 
 static void JumpBreak( BLOCKPTR block )
 {
-    if( !DeadCode ) {                           /* 05-apr-92 */
+    if( DeadCode == 0 ) {
         if( block->break_label == 0 ) {
             block->break_label = NextLabel();
         }
@@ -573,7 +578,7 @@ static void ContinueStmt( void )
 
     NextToken();
     if( LoopStack != NULL ) {
-        if( ! DeadCode ) {                              /* 05-apr-92 */
+        if( DeadCode == 0 ) {
             try_scope = TRYSCOPE_UNDEF;
             block = BlockStack;
             while( block != LoopStack ) {
@@ -625,11 +630,11 @@ static void ElseStmt( void )
     NextToken();
     BlockStack->block_type = T_ELSE;
     if_label = BlockStack->break_label;
-    if( DeadCode ) {                            /* 05-apr-92 */
-        BlockStack->break_label = 0;
-    } else {
+    if( DeadCode == 0 ) {
         BlockStack->break_label = NextLabel();
         Jump( BlockStack->break_label );
+    } else {
+        BlockStack->break_label = 0;
     }
     DropLabel( if_label );
 }
@@ -711,7 +716,7 @@ static void ForStmt( void )
     BlockStack->inc_var = NULL;
     if( CurToken != T_RIGHT_PAREN ) {
         BlockStack->inc_var = Expr();                   // save this
-        if( CompFlags.meaningless_stmt == 1 ) {
+        if( CompFlags.meaningless_stmt ) {
             ChkUseful();
         }
     }
@@ -758,7 +763,8 @@ static void AddCaseLabel( unsigned value )
     old_value = converted_value + 1;  /* make old_value different */
     for( ce = SwitchStack->case_list; ce; ce = ce->next_case ) {
         old_value = ce->value;
-        if( old_value >= converted_value ) break;
+        if( old_value >= converted_value )
+            break;
         prev_ce = ce;
     }
     if( converted_value == old_value ) {   /* duplicate case value found */
@@ -830,8 +836,7 @@ static void MarkTryVolatile( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY   sym;
 
-    for( ;; ) {
-        if( sym_handle == 0 ) break;
+    for( ; sym_handle != 0; ) {
         SymGet( &sym, sym_handle );
         sym.flags |= SYM_TRY_VOLATILE; //force into memory
         SymReplace( &sym, sym_handle );
@@ -873,14 +878,14 @@ static SYM_HANDLE DummyTrySymbol( void )
 }
 
 
-static int EndTry( void )
+static bool EndTry( void )
 {
     tryindex_t  parent_scope;
     TREEPTR     expr;
     TREEPTR     func;
     TREEPTR     tree;
     TYPEPTR     typ;
-    int         expr_type;
+    DATA_TYPE   expr_type;
 
     DropBreakLabel();           /* _leave jumps to this label */
     parent_scope = BlockStack->parent_index;
@@ -917,7 +922,7 @@ static int EndTry( void )
         tree = ExprNode( func, OPR_CALL, expr );
         tree->u.expr_type = GetType( TYPE_VOID );
         AddStmt( tree );
-        return( 1 );
+        return( TRUE );
     } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
         CompFlags.in_finally_block = 1;
         NextToken();
@@ -927,9 +932,9 @@ static int EndTry( void )
         tree->op.u2.st.u.try_sym_handle = DummyTrySymbol();
         tree->op.u2.st.parent_scope = parent_scope;
         AddStmt( tree );
-        return( 1 );
+        return( TRUE );
     }
-    return( 0 );
+    return( FALSE );
 }
 #endif
 
@@ -965,8 +970,8 @@ static void SwitchStmt( void )
     NextToken();
     sw = (SWITCHPTR)CMemAlloc( sizeof( SWITCHDEFN ) );
     sw->prev_switch = SwitchStack;
-    sw->low_value = ~0l;
-    sw->high_value = 0;
+    sw->low_value = ~0U;
+    sw->high_value = 0U;
     sw->case_format = "%ld";        /* assume signed cases */
     SwitchStack = sw;
 //    switch_type = TYPE_INT;         /* assume int */
@@ -1102,7 +1107,9 @@ static void EndOfStmt( void )
 #endif
         }
         PopBlock();
-        if( BlockStack == NULL ) break;
+        if( BlockStack == NULL ) {
+            break;
+        }
     } while( BlockStack->block_type != T_LEFT_BRACE );
 }
 
@@ -1114,8 +1121,8 @@ static bool IsDeclarator( TOKEN token )
 
     /* If token class is storage class or qualifier, it's a declaration */
     if( TokenClass[ token ] == TC_STG_CLASS
-    ||  TokenClass[ token ] == TC_QUALIFIER
-    ||  TokenClass[ token ] == TC_DECLSPEC ) {
+      || TokenClass[ token ] == TC_QUALIFIER
+      || TokenClass[ token ] == TC_DECLSPEC ) {
         return( TRUE );
     }
 
@@ -1198,9 +1205,9 @@ void Statement( void )
     return_info.with = RETURN_WITH_NONE; /* indicate no return statements */
     return_info.with_expr = FALSE;
     CompFlags.label_dropped = 0;
-    CompFlags.addr_of_auto_taken = 0;           /* 23-oct-91 */
+    CompFlags.addr_of_auto_taken = 0;
     end_of_func_label = 0;
-    return_at_outer_level = FALSE;              /* 28-feb-92 */
+    return_at_outer_level = FALSE;
     declaration_allowed   = FALSE;
     DeadCode = 0;
     LoopDepth = 0;
@@ -1217,14 +1224,14 @@ void Statement( void )
     ++SymLevel;
     tree = LeafNode( OPR_LABELCOUNT );
     AddStmt( tree );
-    if( GrabLabels() == 0 ) {                           /* 29-nov-94 */
+    if( GrabLabels() == 0 ) {
         GetLocalVarDecls();
     }
     func_result = MakeNewSym( &sym, 'R', CurFunc->sym_type->object, SC_AUTO );
-    sym.flags |= SYM_FUNC_RETURN_VAR;   /* 25-oct-91 */
+    sym.flags |= SYM_FUNC_RETURN_VAR;
     SymReplace( &sym, func_result );
     for( ;; ) {
-        CompFlags.pending_dead_code = 0;
+        CompFlags.pending_dead_code = FALSE;
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
@@ -1242,8 +1249,8 @@ void Statement( void )
             if( CurToken == T_SEMI_COLON  &&  SrcLoc.line == TokenLoc.line && SrcLoc.fno == TokenLoc.fno ) {
                 SetErrLoc( &TokenLoc );
                 NextToken();    /* look ahead for else keyword */
-                if( CurToken != T_ELSE ) {              /* 02-apr-91 */
-                    ChkUseful();                        /* 08-dec-88 */
+                if( CurToken != T_ELSE ) {
+                    ChkUseful();
                 }
                 InitErrLoc();
                 break;
@@ -1255,9 +1262,9 @@ void Statement( void )
             NextToken();
             BlockStack->break_label = NextLabel();
             if( !JumpFalse( BracketExpr(), BlockStack->break_label ) ) {
-                BlockStack->break_label = 0;            /* 09-sep-92 */
+                BlockStack->break_label = 0;
             }
-            if( CurToken == T_SEMI_COLON ) {            /* 08-dec-88 */
+            if( CurToken == T_SEMI_COLON ) {
                 if( ! CompFlags.useful_side_effect ) {
                     CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
                 }
@@ -1294,24 +1301,27 @@ void Statement( void )
         case T_BREAK:
             BreakStmt();
             DeadCode = 1;
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
         case T_CONTINUE:
             ContinueStmt();
             DeadCode = 1;
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
 #ifdef __SEH__
         case T__LEAVE:
         case T___LEAVE:
             LeaveStmt();
             DeadCode = 1;
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
 #endif
         case T_RETURN:
             ReturnStmt( func_result, &return_info );
-            if( BlockStack->prev_block == NULL ) {      /* 28-feb-92 */
+            if( BlockStack->prev_block == NULL ) {
                 return_at_outer_level = TRUE;
             }
             MustRecog( T_SEMI_COLON );
@@ -1322,11 +1332,13 @@ void Statement( void )
                 }
                 Jump( end_of_func_label );
             }
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
         case T_GOTO:
             GotoStmt();
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
         case T_SEMI_COLON:
             NextToken();
@@ -1385,11 +1397,13 @@ void Statement( void )
                 DeadMsg();
             }
             StmtExpr();
-            if( BlockStack->block_type != T_LEFT_BRACE ) break;
+            if( BlockStack->block_type != T_LEFT_BRACE )
+                break;
             continue;
         }
         EndOfStmt();
-        if( BlockStack == NULL ) break;
+        if( BlockStack == NULL )
+            break;
         if( skip_to_next_token ) {
             NextToken();
         }
@@ -1402,11 +1416,11 @@ void Statement( void )
         }
     }
     if( !return_info.with_expr ) {   /* no return values present */
-        if( !DeadCode && !CurFunc->attribs.naked ) {
+        if( DeadCode == 0 && !CurFunc->attribs.naked ) {
             ChkRetValue();
         }
-    } else if( ! return_at_outer_level ) {              /* 28-feb-92 */
-        if( ! DeadCode && !CurFunc->attribs.naked ) {
+    } else if( ! return_at_outer_level ) {
+        if( DeadCode == 0 && !CurFunc->attribs.naked ) {
             CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
         }
     }
@@ -1449,7 +1463,7 @@ void Statement( void )
         CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
     }
     NodeCount = 0;
-    if( CompFlags.addr_of_auto_taken ) {                /* 23-oct-91 */
+    if( CompFlags.addr_of_auto_taken ) {
         CurFunc->flags &= ~ SYM_OK_TO_RECURSE;
     }
 }

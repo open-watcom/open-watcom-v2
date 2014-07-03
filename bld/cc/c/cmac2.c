@@ -270,7 +270,7 @@ void CInclude( void )
 
     if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {     /* 27-jun-94 */
-            CompFlags.use_precompiled_header = 1;
+            CompFlags.use_precompiled_header = TRUE;
         }
     }
     if( CompFlags.use_precompiled_header ) {
@@ -797,8 +797,8 @@ local void CLine( void )
 
 local void CError( void )
 {
-    size_t  len;
-    bool    save;
+    size_t      len;
+    bool        save;
 
     len = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {

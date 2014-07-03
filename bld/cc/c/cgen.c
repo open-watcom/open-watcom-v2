@@ -139,9 +139,7 @@ static int heap_size( struct heap_stat *stat )
     h_info._pentry = NULL;
     stat->free = 0;
     stat->used = 0;
-    for( ;; ) {
-        heap_status = _heapwalk( &h_info );
-        if( heap_status != _HEAPOK ) break;
+    for( ; (heap_status = _heapwalk( &h_info )) == _HEAPOK; ) {
         if( h_info._useflag ) {
             stat->used += h_info._size;
         } else {
@@ -165,11 +163,11 @@ static void StartFunction( OPNODE *node )
 
 static void DefineLabels( OPNODE *node )
 {
-    LABEL_INDEX     i;
+    LABEL_INDEX i;
 
     LabelIndex = node->u2.label_count;
     if( LabelIndex != 0 ) {
-        CGLabelHandles = (label_handle *)CMemAlloc( (LabelIndex + 1) * sizeof(label_handle) );
+        CGLabelHandles = (label_handle *)CMemAlloc( ( LabelIndex + 1 ) * sizeof( label_handle ) );
         for( i = 1; i <= LabelIndex; i++ ) {
             CGLabelHandles[i] = BENewLabel();
         }
@@ -581,7 +579,7 @@ static cg_name ArrowOperator( cg_name op1, OPNODE *node, cg_name op2 )
 static cg_name IndexOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
     int         element_size;
-    int         index_type;
+    cg_type     index_type;
 
     // node->u2.result_type is the type of the data
     // for the O_PLUS we want a pointer type
@@ -695,8 +693,9 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
         // Do NOT convert __far16 function pointers to flat because the
         // thunk routine expects 16:16 pointers!
         if( ( typ->object != NULL ) &&
-            ( typ->object->decl_type != TYPE_FUNCTION ) )
+            ( typ->object->decl_type != TYPE_FUNCTION ) ) {
             name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
+        }
     }
 #endif
     if( node->flags & OPFLAG_UNALIGNED ) {
@@ -760,7 +759,7 @@ local void DoSwitch( OPNODE *node, cg_name name )
 
     table = CGSelInit();
     sw = node->u2.switch_info;
-    for( ce = sw->case_list; ce; ce = ce->next_case ) {
+    for( ce = sw->case_list; ce != NULL; ce = ce->next_case ) {
         CGSelCase( table, CGLabelHandles[ ce->label ], ce->value );
     }
     CGSelOther( table, CGLabelHandles[ sw->default_label ] );
@@ -967,8 +966,7 @@ local void EmitNodes( TREEPTR tree )
         case OPR_CONVERT:
             if( node->u2.result_type->decl_type != TYPE_VOID ) {
                 op1 = PopCGName();      // - get expression
-                PushCGName( CGUnary( O_CONVERT, op1,
-                                CGenType( node->u2.result_type )) );
+                PushCGName( CGUnary( O_CONVERT, op1, CGenType( node->u2.result_type )) );
             }
             break;
         case OPR_CONVERT_PTR:           // convert pointer
@@ -1116,8 +1114,10 @@ local void EmitNodes( TREEPTR tree )
 
 local void ThreadNode( TREEPTR node )
 {
-    if( FirstNode == NULL )  FirstNode = node;
-    if( LastNode != NULL )   LastNode->u.thread = node;
+    if( FirstNode == NULL )
+        FirstNode = node;
+    if( LastNode != NULL )
+        LastNode->u.thread = node;
     LastNode = node;
 }
 
@@ -1151,7 +1151,7 @@ void EmitAbort( void )
 
 local TREEPTR GenOptimizedCode( TREEPTR tree )
 {
-    unroll_type     unroll_count;
+    unroll_type unroll_count;
 
     unroll_count = 0;
     while( tree != NULL ) {
@@ -1160,7 +1160,7 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
                 FNAMEPTR    flist;
 
                 flist = FileIndexToFName( tree->op.u2.src_loc.fno );
-                if( flist->index_db == -1 ) {
+                if( flist->index_db == DBIDX_NONE ) {
                     char *fullpath;
 
                     fullpath = FNameFullPath( flist );
@@ -1179,7 +1179,7 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
             TREEPTR right;
 
             right = tree->right;
-            if ( ! ( right->op.u2.func.flags & FUNC_USED ) ) {
+            if ( ( right->op.u2.func.flags & FUNC_USED ) == 0 ) {
                 if( InLineDepth == 0 ) {
                     while( tree->right->op.opr != OPR_FUNCEND ) {
                         tree = tree->left;
@@ -1196,7 +1196,8 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
            }
         }
 #endif
-        if( tree->right->op.opr == OPR_FUNCEND ) break;
+        if( tree->right->op.opr == OPR_FUNCEND )
+            break;
         tree = tree->left;
     }
     return( tree );
@@ -1255,7 +1256,7 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
         tree = FindFuncStmtTree(sym_handle);
         if( tree != NULL ) {
            right = tree->right;
-           if( !(right->op.u2.func.flags & FUNC_INUSE) ) {
+           if( (right->op.u2.func.flags & FUNC_INUSE) == 0 ) {
                ret =  right->op.u2.func.flags & FUNC_OK_TO_INLINE;
            }
         }
@@ -1276,13 +1277,14 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
     struct func_info   *f;
     int                 marked;
 
-    if( tree == NULL || tree->right == NULL ) return 0;
+    if( tree == NULL || tree->right == NULL )
+        return 0;
     f = &tree->right->op.u2.func;
 
     if( inline_depth == -1 ) {
         /* non-recursive call */
         inline_depth = 0;
-    } else if( ( f->flags & FUNC_OK_TO_INLINE ) && ! ( f->flags & FUNC_INUSE ) &&
+    } else if( (f->flags & FUNC_OK_TO_INLINE) && (f->flags & FUNC_INUSE) == 0 &&
         inline_depth < MAX_INLINE_DEPTH ) {
         /* simulate inlining when appropriate */
         inline_depth++;
@@ -1304,7 +1306,8 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
                                         inline_depth );
             right = right->u.thread;
         }
-        if( tree->right->op.opr == OPR_FUNCEND ) break;
+        if( tree->right->op.opr == OPR_FUNCEND )
+            break;
         tree = tree->left;
     }
     f->flags &= ~FUNC_INUSE;
@@ -1370,7 +1373,7 @@ void DoCompile( void )
     cg_init_info    cgi_info;
 
     old_env = Environment;
-    if( ! setjmp( env ) ) {
+    if( setjmp( env ) == 0 ) {
         Environment = &env;
         if( BELoad( NULL ) ) {
             if( ! CompFlags.zu_switch_used ) {
@@ -1437,20 +1440,19 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
     segment_id          segment;
-    unsigned            size;
+    target_size         size;
 
     typ = sym->sym_type;
     if( (GenSwitches & DBG_TYPES) && (sym->attribs.stg_class == SC_TYPEDEF) ) {
         if( typ->decl_type != TYPE_TYPEDEF ) {
-            DBEndName( DBBegName( sym->name, DBG_NIL_TYPE ),
-                                  DBType( typ ) );
+            DBEndName( DBBegName( sym->name, DBG_NIL_TYPE ), DBType( typ ) );
         }
     }
     SKIP_TYPEDEFS( typ );
     CGenType( typ );    /* create refno for ARRAY type, etc */
     if( sym->attribs.stg_class != SC_EXTERN     &&  /* if not imported */
         sym->attribs.stg_class != SC_TYPEDEF ) {
-        if( (sym->flags & SYM_FUNCTION) == 0 ) {
+        if( ( sym->flags & SYM_FUNCTION ) == 0 ) {
             segment = sym->u.var.segment;
             if( (sym->flags & SYM_INITIALIZED) == 0 || segment == SEG_BSS) {
                 BESetSeg( segment );
@@ -1466,14 +1468,17 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
                     while( size >= 0x10000 ) {
                         EmitZeros( 0x10000 );
                         size -= 0x10000;
-                        if( size == 0 ) break;
+                        if( size == 0 )
+                            break;
                         if( segment != SEG_CONST && segment != SEG_DATA ) {
                             ++segment;
                             BESetSeg( segment );
                         }
                     }
 #endif
-                    if( size != 0 ) EmitZeros( size );
+                    if( size != 0 ) {
+                        EmitZeros( size );
+                    }
                 }
             }
         }
@@ -1486,19 +1491,19 @@ local void EmitSyms( void )
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
 
-    for( sym_handle = GlobalSym; sym_handle; ) {
+    for( sym_handle = GlobalSym; sym_handle != 0; ) {
         SymGet( &sym, sym_handle );
         EmitSym( &sym, sym_handle );
-        if( ( GenSwitches & DBG_LOCALS ) &&
-            ( sym.sym_type->decl_type != TYPE_FUNCTION ) &&
-            ( (sym.flags & SYM_TEMP) == 0 )  && /* 06-oct-93 */
-            ( sym.attribs.stg_class != SC_TYPEDEF )) {
+        if( ( GenSwitches & DBG_LOCALS )
+          && ( sym.sym_type->decl_type != TYPE_FUNCTION )
+          && ( (sym.flags & SYM_TEMP) == 0 )
+          && ( sym.attribs.stg_class != SC_TYPEDEF ) ) {
 #if _CPU == 370
-                if( sym.attribs.stg_class != SC_EXTERN || sym.flags & SYM_REFERENCED) {
-                    DBModSym( sym_handle, TY_DEFAULT );
-                }
-#else
+            if( sym.attribs.stg_class != SC_EXTERN || sym.flags & SYM_REFERENCED) {
                 DBModSym( sym_handle, TY_DEFAULT );
+            }
+#else
+            DBModSym( sym_handle, TY_DEFAULT );
 #endif
         }
         sym_handle = sym.handle;
@@ -1538,7 +1543,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
         FunctionProfileBlock = BENewBack( NULL );
         DGLabel( FunctionProfileBlock );
         DGInteger( 0,   TY_INTEGER );
-        DGInteger( -1,  TY_INTEGER );
+        DGInteger( (unsigned)-1,  TY_INTEGER );
         DGInteger( 0,   TY_INTEGER );
         DGInteger( 0,   TY_INTEGER );
         DGBytes( len, fn_name );
@@ -1559,15 +1564,16 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     parms_reversed = 0;
     sym_handle = CurFunc->u.func.parms;
     if( sym_handle ) {
-        if( GetCallClass( CurFuncHandle ) & REVERSE_PARMS ) {                       /* 22-jan-90 */
+        if( GetCallClass( CurFuncHandle ) & REVERSE_PARMS ) {
             ParmReverse( sym_handle );
             parms_reversed = 1;
         } else {
-            for( ; sym_handle; ) {
+            for( ; sym_handle != 0; ) {
                 SYMPTR      sym;
 
                 sym = SymGetPtr( sym_handle );
-                if( sym->sym_type->decl_type == TYPE_DOT_DOT_DOT ) break;
+                if( sym->sym_type->decl_type == TYPE_DOT_DOT_DOT )
+                    break;
                 CDoParmDecl( sym, sym_handle );
                 sym_handle = sym->handle;
             }
@@ -1593,11 +1599,12 @@ local void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     SKIP_TYPEDEFS( typ );
     dtype = CGenType( typ );
     CGParmDecl( sym_handle, dtype );
-    if( (GenSwitches & NO_OPTIMIZATION)     /* 20-sep-88 */
 #if _CPU == 386
-        || (!CompFlags.register_conventions && CompFlags.debug_info_some)
+    if( (GenSwitches & NO_OPTIMIZATION)
+      || (!CompFlags.register_conventions && CompFlags.debug_info_some) ) {
+#else
+    if( (GenSwitches & NO_OPTIMIZATION) ) {
 #endif
-    ) {
         if( GenSwitches & DBG_LOCALS ) {
             DBLocalSym( sym_handle, TY_DEFAULT );
         }
@@ -1628,7 +1635,8 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
         SymGet( &sym, sym_handle );
         emit_debug_info = 0;
         emit_extra_info = 0;
-        if( (GenSwitches & NO_OPTIMIZATION) )  emit_debug_info = 1;
+        if( (GenSwitches & NO_OPTIMIZATION) )
+            emit_debug_info = 1;
         if( sym.attribs.stg_class == SC_STATIC ) {
             emit_debug_info = 0;
             if( (sym.flags & SYM_EMITTED) == 0 ) {
@@ -1668,12 +1676,13 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
             }
         }
 #if _CPU != 370
-        if( ! CompFlags.debug_info_some ) emit_extra_info = 0;
+        if( ! CompFlags.debug_info_some )
+            emit_extra_info = 0;
 #endif
         if( emit_debug_info != 0 || emit_extra_info != 0 ) {
             if( Saved_CurFunc == 0 ) {  /* if we are not inlining */
                 if( GenSwitches & DBG_LOCALS ) {
-                    if( !(sym.flags & SYM_TEMP) ) {
+                    if( (sym.flags & SYM_TEMP) == 0 ) {
                         DBLocalSym( sym_handle, TY_DEFAULT );
                     }
                 }
@@ -1707,9 +1716,7 @@ static void FreeTryTableBackHandles( void )
 {
     try_table_back_handles  *try_backinfo;
 
-    for( ;; ) {
-        try_backinfo = TryTableBackHandles;
-        if( try_backinfo == NULL ) break;
+    for( ; (try_backinfo = TryTableBackHandles) != NULL; ) {
         TryTableBackHandles = try_backinfo->next;
         BEFreeBack( try_backinfo->back_handle );
         CMemFree( try_backinfo );
@@ -1726,7 +1733,7 @@ local void FreeLocalVars( SYM_HANDLE sym_list )
         SymGet( &sym, sym_handle );
         sym_list = sym.handle;
         if( sym.attribs.stg_class != SC_EXTERN ) {
-            if( ! (sym.flags & SYM_FUNC_RETURN_VAR) ) {
+            if( (sym.flags & SYM_FUNC_RETURN_VAR) == 0 ) {
                 if( sym.sym_type->decl_type != TYPE_VOID ) {
                     FreeSymBackInfo( &sym, sym_handle );
                 }
@@ -1740,7 +1747,7 @@ local void FreeGblVars( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
-    for( ; sym_handle; ) {
+    for( ; sym_handle != 0; ) {
         sym = SymGetPtr( sym_handle );
         sym_handle = sym->handle;
         if( sym->info.backinfo != NULL ) {
@@ -1754,10 +1761,10 @@ local void RelExtVars( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
-    for( ; sym_handle; ) {
+    for( ; sym_handle != 0; ) {
         sym = SymGetPtr( sym_handle );
         sym_handle = sym->handle;
-        if( !(sym->flags & SYM_FUNC_RETURN_VAR) ) {
+        if( (sym->flags & SYM_FUNC_RETURN_VAR) == 0 ) {
             if( sym->attribs.stg_class == SC_EXTERN || sym->attribs.stg_class == SC_STATIC ||
                 sym->sym_type->decl_type == TYPE_VOID ) {
                 if( sym->info.backinfo != NULL ) {
@@ -1773,7 +1780,7 @@ local void FreeExtVars( void )                          /* 02-apr-92 */
     SYM_LISTS   *sym_list;
     SYM_LISTS   *next_sym;
 
-    for( sym_list = SymListHeads; sym_list; ) {
+    for( sym_list = SymListHeads; sym_list != NULL; ) {
         RelExtVars( sym_list->sym_head );
         next_sym = sym_list->next;
         CMemFree( sym_list );
@@ -1852,6 +1859,7 @@ local cg_type CodePtrType( type_modifiers flags )
     }
     return( dtype );
 #else
+    flags = flags;
     return( TY_CODE_PTR );
 #endif
 }
@@ -1906,7 +1914,7 @@ local void Emit1String( STR_HANDLE str_handle )
 {
     if( str_handle->back_handle == 0 ) {
         str_handle->back_handle = BENewBack( NULL );
-        if( !(str_handle->flags & STRLIT_CONST) ) {
+        if( (str_handle->flags & STRLIT_CONST) == 0 ) {
             EmitLiteral( str_handle );
         }
     }
@@ -1936,11 +1944,11 @@ local void EmitLiteral( STR_HANDLE strlit )
 
 local void FreeStrings( void )
 {
-    STR_HANDLE  strlit, next;
-    int         i;
+    STR_HANDLE      strlit, next;
+    str_hash_idx    h;
 
-    for( i = 0; i < STRING_HASH_SIZE; ++i ) {
-        for( strlit = StringHash[i]; strlit; ) {
+    for( h = 0; h < STRING_HASH_SIZE; ++h ) {
+        for( strlit = StringHash[h]; strlit != NULL; ) {
             if( strlit->back_handle != 0 ) {
                 BEFiniBack( strlit->back_handle );
                 BEFreeBack( strlit->back_handle );
@@ -1950,7 +1958,7 @@ local void FreeStrings( void )
             FreeLiteral( strlit );
             strlit = next;
         }
-        StringHash[i] = 0;
+        StringHash[h] = 0;
     }
 }
 
@@ -1969,11 +1977,11 @@ local void DumpCS_Strings( STR_HANDLE strlit )
 
 local void EmitCS_Strings( void )
 {
-    int         i;
+    str_hash_idx    h;
 
     if( CompFlags.strings_in_code_segment ) {
-        for( i = STRING_HASH_SIZE - 1; i >= 0; --i ) {
-            DumpCS_Strings( StringHash[i] );
+        for( h = STRING_HASH_SIZE; h-- > 0; ) {
+            DumpCS_Strings( StringHash[h] );
         }
     }
 }

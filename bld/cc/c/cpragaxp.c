@@ -77,7 +77,7 @@ enum sym_state AsmQueryState( void *handle )
     if( sym_handle == 0 )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
-    if( !(sym.flags & SYM_REFERENCED) ) {
+    if( (sym.flags & SYM_REFERENCED) == 0 ) {
         sym.flags |= SYM_REFERENCED;
         SymReplace( &sym, sym_handle );
     }
@@ -250,37 +250,37 @@ static void CopyAuxInfo( void )
     }
 }
 
-static int GetAliasInfo( void )
-/*****************************/
+static bool GetAliasInfo( void )
+/******************************/
 {
     if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
-        return( 1 );
+        return( TRUE );
     NextToken();
     if( CurToken != T_ID )                  // error
-        return( 0 );
+        return( FALSE );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
         PragCurrAlias( SavedId );
         AdvanceToken();
         NextToken();
-        return( 1 );
+        return( TRUE );
     } else if( LAToken == T_COMMA ) {       // #pragma aux (symbol, alias)
         HashValue = SavedHash;
         SetCurrInfo( SavedId );
         AdvanceToken();
         NextToken();
         if( CurToken != T_ID )              // error
-            return( 0 );
+            return( FALSE );
         PragCurrAlias( Buffer );
         NextToken();
         if( CurToken == T_RIGHT_PAREN )
             NextToken();
         CopyAuxInfo();
         PragEnding();
-        return( 0 ); /* process no more! */
+        return( FALSE ); /* process no more! */
     } else {                                // error
         AdvanceToken();
-        return( 0 ); // shut up the compiler
+        return( FALSE ); // shut up the compiler
     }
 }
 

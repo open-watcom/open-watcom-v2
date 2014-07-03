@@ -38,13 +38,13 @@
 #include "cfeinfo.h"
 
 struct  pack_info {
-    struct pack_info *next;
-    align_type       pack_amount;
+    struct pack_info    *next;
+    align_type          pack_amount;
 } *PackInfo;
 
 struct enums_info {
     struct enums_info *next;
-    int    make_enums;
+    bool   make_enums;
 } *EnumInfo;
 
 
@@ -139,12 +139,12 @@ bool SetToggleFlag( char const *name, int const value )
 
     len = strlen( name ) + 1;
     ret = FALSE;
-    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
+    for( i = 0; (pnt = ToggleNames[ i ].name) != NULL; ++i ) {
         if( memcmp( pnt, name, len ) == 0 ) {
             if( value == 0 ) {
-                Toggles &= ~ToggleNames[i].flag;
+                Toggles &= ~ToggleNames[ i ].flag;
             } else {
-                Toggles |= ToggleNames[i].flag;
+                Toggles |= ToggleNames[ i ].flag;
             }
             ret = TRUE;
             break;
@@ -209,8 +209,8 @@ local void PragFlag( int value )
     }
 }
 
-void AddLibraryName( const char *name, char priority )
-/****************************************************/
+void AddLibraryName( const char *name, const char priority )
+/**********************************************************/
 {
     library_list    **new_owner;
     library_list    **owner;
@@ -346,8 +346,8 @@ local void PragPack( void )
 }
 
 struct magic_words {
-    const char  *name;
-    aux_info    *info;
+    const char      *name;
+    aux_info        *info;
 } MagicWords[] = {
     #define pick(a,b,c) { b, c },
     #include "auxinfo.h"
@@ -366,12 +366,12 @@ aux_info *MagicKeyword( const char *name )
         }
     }
     len = strlen( name ) + 1;
-    for( i = 0; MagicWords[i].name != NULL; ++i ) {
+    for( i = 0; MagicWords[ i ].name != NULL; ++i ) {
         if( memcmp( name, MagicWords[i].name + 2, len ) == 0 ) {
             break;
         }
     }
-    return( MagicWords[i].info );
+    return( MagicWords[ i ].info );
 }
 
 
@@ -489,7 +489,8 @@ local void CopyCode( void )
 /*************************/
 {
     byte_seq    *code;
-    int         size;
+    unsigned    size;
+
 //TODO deal with reloc list
     if( CurrInfo->code == NULL )
         return;
@@ -673,15 +674,16 @@ hw_reg_set *PragManyRegSets( void )
     int         i;
     hw_reg_set  list;
     hw_reg_set  *sets;
-    hw_reg_set  buff[MAXIMUM_PARMSETS];
+    hw_reg_set  buff[ MAXIMUM_PARMSETS ];
 
     list = PragRegList();
-    i = 0;
-    while( !HW_CEqual( list, HW_EMPTY ) && ( i != MAXIMUM_PARMSETS ) ) {
-        buff[i++] = list;
+    for( i = 0; i < MAXIMUM_PARMSETS; ++i ) {
+        if( HW_CEqual( list, HW_EMPTY ) )
+            break;
+        buff[i] = list;
         list = PragRegList();
     }
-    if( !HW_CEqual( list, HW_EMPTY ) ) {
+    if( i == MAXIMUM_PARMSETS ) {
         CErr1( ERR_TOO_MANY_PARM_SETS );
     }
     HW_CAsgn( buff[i], HW_EMPTY );
@@ -787,9 +789,9 @@ void EnableDisableMessage( int enable, unsigned msg_num )
         mask = 1 << ( msg_num & 7 );
         msg_num = msg_num >> 3;
         if( enable ) {
-            MsgFlags[msg_num] &= ~mask;
+            MsgFlags[ msg_num ] &= ~mask;
         } else {
-            MsgFlags[msg_num] |= mask;
+            MsgFlags[ msg_num ] |= mask;
         }
     }
 }
@@ -851,8 +853,9 @@ static void PragMessage( void )
 //
 // 1-3 all push previous value before affecting value
 //
-static void PushEnum( void ) {
-/***************************/
+static void PushEnum( void )
+/**************************/
+{
     struct enums_info *ei;
 
     ei = CMemAlloc( sizeof( struct enums_info ) );
@@ -878,10 +881,10 @@ static void PragEnum( void )    // #pragma enum PARSING
 {
     if( PragRecog( "int" ) ) {
         PushEnum();
-        CompFlags.make_enums_an_int = 1;
+        CompFlags.make_enums_an_int = TRUE;
     } else if( PragRecog( "minimum" ) ) {
         PushEnum();
-        CompFlags.make_enums_an_int = 0;
+        CompFlags.make_enums_an_int = FALSE;
     } else if( PragRecog( "original" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
@@ -988,18 +991,16 @@ static void PragDataSeg( void )
 static void PragUnroll( void )
 /****************************/
 {
-    unsigned    unroll_count;
+    unroll_type unroll_count;
 
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         unroll_count = 0;
         NextToken();
         if( CurToken == T_CONSTANT ) {
-            unroll_count = Constant;
+            unroll_count = ( Constant > 255 ) ? 255 : Constant;
             NextToken();
         }
-        if( unroll_count > 255 )
-            unroll_count = 255;
-        UnrollCount = (unroll_type)unroll_count;
+        UnrollCount = unroll_count;
         MustRecog( T_RIGHT_PAREN );
     }
 }
@@ -1068,10 +1069,10 @@ static void PragIncludeAlias( void )
             }
             CMemFree( alias_name );
         } else if( CurToken == T_LT ) {
-            char    a_buf[82];    /* same size as CInclude() in cmac2.c */
-            char    r_buf[82];
+            char    a_buf[ 82 ];    /* same size as CInclude() in cmac2.c */
+            char    r_buf[ 82 ];
 
-            a_buf[0] = '\0';
+            a_buf[ 0 ] = '\0';
             for( ;; ) {
                 NextToken();
                 if( CurToken == T_GT ) {
@@ -1085,7 +1086,7 @@ static void PragIncludeAlias( void )
             }
             MustRecog( T_COMMA );
             if( CurToken == T_LT ) {
-                r_buf[0] = '\0';
+                r_buf[ 0 ] = '\0';
                 for( ;; ) {
                     NextToken();
                     if( CurToken == T_GT ) {
@@ -1142,14 +1143,14 @@ static void PragSTDC( void )
 void AddExtRefN ( const char *name )
 /**********************************/
 {
-    extref_info  **extref;
-    extref_info  *new_extref;
-    size_t       len;
+    extref_info     **extref;
+    extref_info     *new_extref;
+    size_t          len;
 
     for( extref = &ExtrefInfo; *extref != NULL; extref = &(*extref)->next )
         ; /* nothing to do */
     len = strlen( name ) + 1;
-    new_extref = CMemAlloc( sizeof( extref_info ) + len - 1 );
+    new_extref = CMemAlloc( sizeof( extref_info ) - 1 + len );
     memcpy( new_extref->name, name, len );
     new_extref->symbol = NULL;
     new_extref->next = NULL;

@@ -47,25 +47,25 @@
 typedef struct user_seg {
     struct user_seg *next;
     char            *name;
-    SYM_HANDLE      sym_handle;                     /* 15-mar-92 */
-    int             segtype;                        /* 22-oct-92 */
-    segment_id      segment;                        /* 22-oct-92 */
-    char            *class_name;                    /* 22-oct-92 */
-    hw_reg_set      pegged_register;                /* 29-may-93 */
+    SYM_HANDLE      sym_handle;
+    int             segtype;
+    segment_id      segment;
+    char            *class_name;
+    hw_reg_set      pegged_register;
     bool            used;
 } user_seg;
 
 typedef struct seg_name {
     char            *name;
     segment_id      segment;
-    SYM_HANDLE      sym_handle;                     /* 13-jan-06 */
+    SYM_HANDLE      sym_handle;
 } seg_name;
 
 static seg_name Predefined_Segs[] = {
     { "_CODE",      SEG_CODE,   0 },
     { "_CONST",     SEG_CONST,  0 },
     { "_DATA",      SEG_DATA,   0 },
-    { "_STACK",     SEG_STACK,  0 },                /* 13-dec-92 */
+    { "_STACK",     SEG_STACK,  0 },
     { NULL,         0,          0 }
 };
 
@@ -84,14 +84,14 @@ void AssignSeg( SYMPTR sym )
         sym->u.var.segment = 0;
     } else if( sym->attribs.stg_class != SC_EXTERN ) {  /* if not imported */
         if( (sym->flags & SYM_INITIALIZED) == 0 ) {
-            if( sym->u.var.segment == 0 ) {             /* 15-mar-92 */
+            if( sym->u.var.segment == 0 ) {
                 SetSegment( sym );
             }
             if( sym->u.var.segment == SEG_DATA ) {
                 sym->u.var.segment = SEG_BSS;
                 CompFlags.bss_segment_used = 1;
             }
-            SetSegAlign( sym );                 /* 02-feb-92 */
+            SetSegAlign( sym );
         }
     } else if( sym->mods & (FLAG_FAR | FLAG_HUGE) ) {
         sym->u.var.segment = SegImport--;
@@ -105,12 +105,12 @@ void SetFarHuge( SYMPTR sym, int report )
 {
     TYPEPTR             typ;
     type_modifiers      attrib;
-    unsigned            size;
+    target_size         size;
 
     report = report; /* in case not used */
 #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
-     || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {      /* 16-dec-94 */
+     || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
         sym->mods |= FLAG_FAR;
     } else if( sym->mods & FLAG_EXPORT ) {
         sym->mods |= FLAG_FAR;
@@ -142,7 +142,7 @@ void SetFarHuge( SYMPTR sym, int report )
         }
     }
 #if _CPU == 8086
-   if( report && size > 0x10000 && !(sym->mods & FLAG_HUGE) ) {
+   if( report && size > 0x10000 && (sym->mods & FLAG_HUGE) == 0 ) {
         SetErrLoc( &sym->src_loc );
         CErr1( ERR_VAR_TOO_LARGE );
         InitErrLoc();
@@ -256,7 +256,7 @@ segment_id SymSegId( SYMPTR sym )
 void SetSegment( SYMPTR sym )
 {
     segment_list        *seg;
-    unsigned            size;
+    target_size         size;
 
 #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
@@ -285,11 +285,8 @@ void SetSegment( SYMPTR sym )
         seg = NULL;
 #if _CPU == 8086
         if( size < 0x10000 ) {
-            unsigned int    isize;
-
-            isize = size;
             for( seg = SegListHead; seg != NULL; seg = seg->next_segment ) {
-                if( seg->size_left >= isize ) {
+                if( seg->size_left >= size ) {
                     break;
                 }
             }
@@ -468,12 +465,12 @@ char *SegClassName( segment_id requested_seg )
     size_t          len;
 
     if( requested_seg == SEG_CODE ) {
-        return( CodeClassName );                        /* 01-mar-90*/
+        return( CodeClassName );
     }
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->segment == requested_seg  &&  useg->class_name != NULL ) {
             classname = useg->class_name;
-            if( classname[0] == '\0' ) {                /* 07-jun-94 */
+            if( classname[0] == '\0' ) {
                 len = strlen( useg->name );
                 if( len >= 4 ) {
                     if( stricmp( useg->name + len - 4, "DATA" ) == 0 ) {
@@ -486,7 +483,7 @@ char *SegClassName( segment_id requested_seg )
             return( classname );
         }
     }
-    for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {/*04-jun-94*/
+    for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
         if( tseg->segment == requested_seg )  {
             // class name appears after the segment name
             classname = tseg->segname + tseg->class;
@@ -497,7 +494,7 @@ char *SegClassName( segment_id requested_seg )
         }
     }
     if( DataSegName != NULL && *DataSegName != '\0' ) {
-        return( "FAR_DATA" );                           /* 10-nov-92 */
+        return( "FAR_DATA" );
     }
     return( NULL );
 }
@@ -549,10 +546,10 @@ hw_reg_set *SegPeggedReg( segment_id requested_seg )
 }
 
 
-static unsigned SegAlign( unsigned suggested )
-/********************************************/
+static align_type SegAlign( align_type suggested )
+/************************************************/
 {
-    unsigned            align;
+    align_type     align;
 
     align = suggested;
     if( CompFlags.unaligned_segs ) {
@@ -578,22 +575,17 @@ void    SetSegs( void )
         name = TextSegName;
         flags |= GIVEN_NAME;
     }
-    BEDefSeg( SEG_CODE, flags, name,
-                SegAlign( (OptSize == 0) ? BETypeLength( TY_INTEGER ) : 1 ) );
-    BEDefSeg( SEG_CONST, BACK|INIT|ROM, TS_SEG_CONST,
-                SegAlign( SegAlignment[SEG_CONST] ) );
-    BEDefSeg( SEG_CONST2, INIT | ROM, TS_SEG_CONST2,
-                SegAlign( SegAlignment[SEG_CONST2] ) );
-    BEDefSeg( SEG_DATA,  GLOBAL | INIT, TS_SEG_DATA,
-                SegAlign( SegAlignment[SEG_DATA] ) );
-    if( CompFlags.ec_switch_used ) {            /* 04-apr-92 */
+    BEDefSeg( SEG_CODE, flags, name, SegAlign( (OptSize == 0) ? BETypeLength( TY_INTEGER ) : 1 ) );
+    BEDefSeg( SEG_CONST, BACK|INIT|ROM, TS_SEG_CONST, SegAlign( SegAlignment[SEG_CONST] ) );
+    BEDefSeg( SEG_CONST2, INIT | ROM, TS_SEG_CONST2, SegAlign( SegAlignment[SEG_CONST2] ) );
+    BEDefSeg( SEG_DATA,  GLOBAL | INIT, TS_SEG_DATA, SegAlign( SegAlignment[SEG_DATA] ) );
+    if( CompFlags.ec_switch_used ) {
         BEDefSeg( SEG_YIB,      GLOBAL | INIT,  TS_SEG_YIB, 2 );
         BEDefSeg( SEG_YI,       GLOBAL | INIT,  TS_SEG_YI,  2 );
         BEDefSeg( SEG_YIE,      GLOBAL | INIT,  TS_SEG_YIE, 2 );
     }
     if( CompFlags.bss_segment_used ) {
-        BEDefSeg( SEG_BSS,      GLOBAL,         TS_SEG_BSS,
-                SegAlign( SegAlignment[ SEG_BSS ] ) );
+        BEDefSeg( SEG_BSS, GLOBAL, TS_SEG_BSS, SegAlign( SegAlignment[SEG_BSS] ) );
     }
     if( CompFlags.far_strings ) {
         FarStringSegment = SegmentNum++;
@@ -631,7 +623,7 @@ void    SetSegs( void )
     }
 }
 
-void EmitSegLabels( void )                                  /* 15-mar-92 */
+void EmitSegLabels( void )
 {
     segment_id          seg;
     user_seg            *useg;
@@ -653,7 +645,7 @@ void EmitSegLabels( void )                                  /* 15-mar-92 */
 }
 
 
-void FiniSegLabels( void )                                  /* 15-mar-92 */
+void FiniSegLabels( void )
 {
     user_seg        *useg;
     SYM_ENTRY       sym;
@@ -667,7 +659,7 @@ void FiniSegLabels( void )                                  /* 15-mar-92 */
 }
 
 
-void FiniSegBacks( void )                                   /* 15-mar-92 */
+void FiniSegBacks( void )
 {
     user_seg        *useg;
     SYM_ENTRY       sym;
@@ -744,10 +736,10 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_BAD_RETURN_REGISTER:
         CErr2p( ERR_BAD_RETURN_REGISTER, FEName( (CGSYM_HANDLE)parm ) );
         break;
-    case MSG_SCHEDULER_DIED:                    /* 26-oct-91 */
+    case MSG_SCHEDULER_DIED:
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
-        if( !(GenSwitches & NO_OPTIMIZATION) ) {
+        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( LastFuncOutOfMem != (CGSYM_HANDLE)parm ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE,
                             FEName( (CGSYM_HANDLE)parm ) );
@@ -756,7 +748,7 @@ void FEMessage( int class, CGPOINTER parm )
         }
         break;
     case MSG_PEEPHOLE_FLUSHED:
-        if( !(GenSwitches & NO_OPTIMIZATION) ) {
+        if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( WngLevel >= 4 ) {
                 if( CompFlags.low_on_memory_printed == 0 ) {
                     CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
@@ -819,7 +811,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
         attr = FESymAttr( sym );
         if( attr & FE_PROC ) {
             /* in large code models, should return different segment #
-             * for every imported routine.  24-jun-88
+             * for every imported routine.
              */
             id = SEG_CODE;
             if( sym->seginfo != NULL ) {
@@ -921,7 +913,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     case TY_INT_1:
     case TY_UINT_1:
 #if _CPU == 386
-        if( sym_handle != 0 ) {                         /* 22-mar-94 */
+        if( sym_handle != 0 ) {
             sym = SymGetPtr( sym_handle );
             if( sym->mods & FLAG_FAR16 ) {
                 return( TY_INT_2 );
@@ -947,7 +939,7 @@ int FEStackChk( CGSYM_HANDLE cgsym_handle )
 
 void SegInit( void )
 {
-    int         seg;
+    segment_id  seg;
 
     userSegments = NULL;
     userSegment = FIRST_USER_SEGMENT;
@@ -956,13 +948,13 @@ void SegInit( void )
     }
 }
 
-void SetSegAlign( SYMPTR sym )                          /* 02-feb-92 */
+void SetSegAlign( SYMPTR sym )
 {
     align_type          align;
     segment_id          segment;
 
     segment = sym->u.var.segment;
-    if( segment < FIRST_PRIVATE_SEGMENT  &&  OptSize == 0 ) {
+    if( segment < FIRST_PRIVATE_SEGMENT && OptSize == 0 ) {
         align = GetTypeAlignment( sym->sym_type );
         SegAlignment[segment] = max( align, SegAlignment[segment] );
     }

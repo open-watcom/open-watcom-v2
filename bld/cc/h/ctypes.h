@@ -307,27 +307,23 @@ typedef struct incfile {
 } INCFILE;
 
 typedef struct source_loc {
-    unsigned        fno;
-    unsigned        line;
+    unsigned            fno;
+    unsigned            line;
 } source_loc;
 
 typedef struct xref_entry {
-    struct xref_entry       *next_xref;
-    source_loc              src_loc;
+    struct xref_entry   *next_xref;
+    source_loc          src_loc;
 } XREF_ENTRY, *XREFPTR;
 
 extern  XREFPTR NewXref( XREFPTR );
 
 typedef struct id_hash_entry {         /* SYMBOL TABLE structure */
     struct id_hash_entry   *next_sym;  /* also used by pre-compiled header */
-    TYPEPTR         sym_type;           /* also used by pre-compiled header */
-    SYM_HANDLE      handle;
-#if defined( _M_IX86 ) || defined( _M_X64 )
-    unsigned char   level;
-#else
-    int             level;
-#endif
-    char            name[1];
+    TYPEPTR             sym_type;      /* also used by pre-compiled header */
+    SYM_HANDLE          handle;
+    id_level_type       level;
+    char                name[1];
 } id_hash_entry, *SYM_HASHPTR;
 
 typedef struct expr_node    *TREEPTR;
@@ -344,13 +340,13 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     } info;
     union {
         struct {
-            int         offset;
+            target_ssize offset;
             segment_id  segment;        /* segment identifier */
         } var;
         struct {
-            SYM_HANDLE      parms;
-            SYM_HANDLE      locals;
-            TREEPTR         start_of_func;  /* starting tree node */
+            SYM_HANDLE  parms;
+            SYM_HANDLE  locals;
+            TREEPTR     start_of_func;  /* starting tree node */
         } func;
     } u;
     textsegment         *seginfo;           /* also used by pre-compiled header */
@@ -358,11 +354,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
                                              * perhaps stored in 'info' union. */
     type_modifiers      mods;               /* LANG_CDECL, _PASCAL, _FORTRAN */
     sym_flags           flags;
-#if defined( _M_IX86 ) || defined( _M_X64 )
-    unsigned char       level;
-#else
-    int                 level;
-#endif
+    id_level_type       level;
     struct {
         unsigned char stg_class  : 3;
         unsigned char declspec   : 2;
@@ -373,8 +365,8 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
 } SYM_ENTRY, *SYMPTR;
 
 typedef struct parm_entry {
-    struct  parm_entry      *next_parm;
-    SYM_ENTRY               sym;
+    struct  parm_entry  *next_parm;
+    SYM_ENTRY           sym;
 } PARM_ENTRY, *PARMPTR;
 
 
@@ -382,9 +374,9 @@ typedef struct field_entry {
     struct field_entry  *next_field;    /* also used by pre-compiled header */
     TYPEPTR             field_type;     /* also used by pre-compiled header */
     XREFPTR             xref;
-    unsigned            offset;
+    target_size         offset;
     type_modifiers      attrib;         /* LANG_CDECL, _PASCAL, _FORTRAN */
-    int                 level;
+    field_level_stype   level;
     id_hash_idx         hash;
     struct field_entry  *next_field_same_hash; /* also used by PCH for length */
     char                name[1];
@@ -409,14 +401,10 @@ typedef struct tag_entry {
         ENUMPTR         enum_list;      /* for ENUM */
         FIELDPTR        field_list;     /* for STRUCT or UNION */
     } u;
-    unsigned            size;           /* size of STRUCT, UNION or ENUM */
+    target_size         size;           /* size of STRUCT, UNION or ENUM */
     int                 refno;          /* also used by pre-compiled header */
     id_hash_idx         hash;           /* hash value for tag */
-#if defined( _M_IX86 ) || defined( _M_X64 )
-    unsigned char       level;
-#else
-    int                 level;
-#endif
+    id_level_type       level;
     align_type          alignment;      /* alignment required */
     union   {
         ENUMPTR         last_enum;      /* for ENUM */
@@ -452,29 +440,29 @@ enum quad_type {
 
 typedef struct {
     union   {
-        int         long_values[2];
-        unsigned    ulong_values[2];
-        int64       long64;
-        double      double_value;
-        long_double long_double_value;
-        STR_HANDLE  string_leaf;
+        int             long_values[2];
+        unsigned        ulong_values[2];
+        int64           long64;
+        double          double_value;
+        long_double     long_double_value;
+        STR_HANDLE      string_leaf;
         struct {
-            int         offset;
+            target_ssize offset;
             SYM_HANDLE  sym_handle;
         } var;
     } u;
-    enum quad_type  type;
-    enum quad_flags flags;
+    enum quad_type      type;
+    enum quad_flags     flags;
 } DATA_QUAD;
 
 typedef struct {
-    TYPEPTR              typ;       // type seen
-    int                  seg;       // seg from a typedef
-    stg_classes          stg;       // storage class
-    type_modifiers       mod;       // const, vol flags
-    type_modifiers       decl_mod;  // declspec call info
-    declspec_class       decl;      // dllimport...
-    bool                 naked;     // declspec naked
+    TYPEPTR             typ;        // type seen
+    int                 seg;        // seg from a typedef
+    stg_classes         stg;        // storage class
+    type_modifiers      mod;        // const, vol flags
+    type_modifiers      decl_mod;   // declspec call info
+    declspec_class      decl;       // dllimport...
+    bool                naked;      // declspec naked
 } decl_info;
 
 typedef enum {

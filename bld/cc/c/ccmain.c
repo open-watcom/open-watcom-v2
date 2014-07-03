@@ -675,7 +675,7 @@ void OpenCppFile( void )
         MyExit( 1 );
     } else {
         if( CppWidth == 0 ) {
-            CppWidth = ~0;
+            CppWidth = ~0U;
         }
         setvbuf( CppFile, CPermAlloc( 4096 ), _IOFBF, 4096 );
     }
@@ -952,10 +952,7 @@ static bool TryOpen( const char *path, const char *fname )
     if( IsFNameOnce( filename ) ) {
         return( TRUE );
     }
-    for( ;; ) {
-        fp = fopen( filename, "rb" );
-        if( fp != NULL )
-            break;
+    for( ; (fp = fopen( filename, "rb" )) == NULL; ) {
         if( errno != ENOMEM && errno != ENFILE && errno != EMFILE )
             break;
         if( !FreeSrcFP() ) {        // try closing an include file
@@ -1373,15 +1370,15 @@ void CppPrtToken( void )
 {
     if( CppPrinting() ) {
         switch( CurToken ) {
-        case T_BAD_CHAR:                    /* 12-apr-89 */
-        case T_BAD_TOKEN:                   /* 12-apr-89 */
+        case T_BAD_CHAR:
+        case T_BAD_TOKEN:
         case T_ID:
         case T_CONSTANT:
             CppPrtf( "%s", Buffer );
             break;
         case T_STRING:
-                if( CompFlags.wide_char_string )
-                    CppPutc( 'L' );
+            if( CompFlags.wide_char_string )
+                CppPutc( 'L' );
             CppPrtf( "\"%s\"", Buffer );
             break;
         case T_EOF:

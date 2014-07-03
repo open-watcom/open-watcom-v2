@@ -36,22 +36,9 @@
 #include "caux.h"
 
 
-extern  void    NextToken();            /* cscan */
-extern  void    SetCurrInfo();
-extern  char    *CMemAlloc();           /* cmemmgr */
-extern  unsigned long SizeOfArg();      /* csizeof */
-extern  void    PragObjNameInfo();
-extern  void    MustRecog();
-extern  void    PragEnding();
-extern  int     PragRecog();
-extern  void    PragCurrAlias();
-extern  hw_reg_set PragRegList();
-extern  void    PragManyRegSets(void);
-extern  aux_entry *AuxLookup();  /* caux.c */
-
 static  int     Offset;
 
-hw_reg_set PragRegName( char * buffer )
+hw_reg_set PragRegName( const char * buffer )
     {
         hw_reg_set      name;
 

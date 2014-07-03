@@ -53,7 +53,7 @@ void FreeMEntry( MEPTR mentry )
     CMemFree( mentry );
 }
 
-void MacroAdd( MEPTR mentry, char *buf, size_t len, macro_flags mflags )
+void MacroAdd( MEPTR mentry, const char *buf, size_t len, macro_flags mflags )
 {
     size_t      size;
 
@@ -103,7 +103,7 @@ void FreeMacroSegments( void )
 }
 
 
-void MacroCopy( void *mptr, MACADDR_T offset, size_t amount )
+void MacroCopy( const void *mptr, MACADDR_T offset, size_t amount )
 {
     memcpy( offset, mptr, amount );
 }
@@ -114,7 +114,7 @@ void MacroOverflow( size_t amount_needed, size_t amount_used )
     MACADDR_T old_offset;
 
     amount_needed = _RoundUp( amount_needed, sizeof( int ) );
-    if( MacroLimit - MacroOffset < amount_needed ) {
+    if( MacroOffset + amount_needed > MacroLimit ) {
         old_offset = MacroOffset;
         AllocMacroSegment( amount_needed );
         MacroCopy( old_offset, MacroOffset, amount_used );
@@ -177,7 +177,7 @@ SYM_HASHPTR SymHashAlloc( size_t amount )
     SYM_HASHPTR hsym;
 
     amount = _RoundUp( amount, sizeof( int ) );
-    if( MacroLimit - MacroOffset < amount ) {
+    if( MacroOffset + amount > MacroLimit ) {
         AllocMacroSegment( amount );
     }
     hsym = (SYM_HASHPTR) MacroOffset;

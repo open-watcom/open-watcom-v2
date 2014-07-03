@@ -619,7 +619,7 @@ extern void ChkCallParms( void )
             SymGet( &sym, callsite->op.u2.sym_handle );
             typ = sym.sym_type;
             SKIP_TYPEDEFS( typ );
-            if( !(sym.flags & SYM_TEMP) )
+            if( (sym.flags & SYM_TEMP) == 0 )
                 SetDiagSymbol( &sym, callsite->op.u2.sym_handle );
             SetErrLoc( &nextcall->src_loc );
             if( typ->u.fn.parms != NULL ) {
@@ -635,7 +635,7 @@ extern void ChkCallParms( void )
                 }
             }
             InitErrLoc();
-            if( !(sym.flags & SYM_TEMP) ) {
+            if( (sym.flags & SYM_TEMP) == 0 ) {
                 SetDiagPop();
             }
         }

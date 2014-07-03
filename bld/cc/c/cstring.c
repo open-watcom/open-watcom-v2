@@ -37,6 +37,7 @@
 #include "asciiout.h"
 #include "unicode.h"
 
+static target_size  CLitLength;         /* length of string literal */
 
 static int OpenUnicodeFile( const char *filename )
 {
@@ -95,10 +96,10 @@ void LoadUnicodeTable( unsigned codePage )
 
 void StringInit( void )
 {
-    int     i;
+    str_hash_idx    h;
 
-    for( i = 0; i < STRING_HASH_SIZE; ++i ) {
-        StringHash[i] = 0;
+    for( h = 0; h < STRING_HASH_SIZE; ++h ) {
+        StringHash[h] = 0;
     }
 }
 
@@ -108,52 +109,46 @@ void FreeLiteral( STR_HANDLE str_lit )
     CMemFree( str_lit );
 }
 
-static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
+#define WRITE_BYTE(x) if( buf != NULL ) buf[olen] = x; ++olen
+
+static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen )
 {
     int                 c;
-    size_t              j;
+    target_size         olen;
     bool                error;
     const unsigned char *end;
     const unsigned char *p = (const unsigned char *)inbuf;
 
-    j = 0;
+    olen = 0;
     error = FALSE;
-    end = p + length;
+    end = p + ilen;
     while( p < end ) {
         c = *p++;
         if( c == '\\' ) {
             c = ESCChar( *p, &p, &error );
             if( CompFlags.wide_char_string ) {
-                if( buf != NULL )
-                    buf[ j ] = c;
-                ++j;
-                c = c >> 8;                     /* 31-may-91 */
+                WRITE_BYTE( c );
+                c = c >> 8;
             }
         } else {
             if( CharSet[ c ] & C_DB ) {       /* if double-byte character */
-                if( CompFlags.jis_to_unicode &&
-                    CompFlags.wide_char_string ) {      /* 15-jun-93 */
+                if( CompFlags.jis_to_unicode && CompFlags.wide_char_string ) {
                     c = (c << 8) + *p;
                     c = JIS2Unicode( c );
-                    if( buf != NULL )
-                        buf[ j ] = c;
+                    WRITE_BYTE( c );
                     c = c >> 8;
                 } else {
-                    if( buf != NULL )
-                        buf[ j ] = c;
+                    WRITE_BYTE( c );
                     c = *p;
                 }
-                ++j;
                 ++p;
             } else if( CompFlags.wide_char_string ) {
-                if( CompFlags.use_unicode ) {   /* 05-jun-91 */
+                if( CompFlags.use_unicode ) {
                     c = UniCode[ c ];
                 } else if( CompFlags.jis_to_unicode ) {
                     c = JIS2Unicode( c );
                 }
-                if( buf != NULL )
-                    buf[ j ] = c;
-                ++j;
+                WRITE_BYTE( c );
                 c = c >> 8;
 #if _CPU == 370
             } else {
@@ -161,42 +156,41 @@ static int RemoveEscapes( char *buf, const char *inbuf, size_t length )
 #endif
             }
         }
-        if( buf != NULL )
-            buf[ j ] = c;
-        ++j;
+        WRITE_BYTE( c );
     }
-    if( error && buf != NULL ) {                   /* 16-nov-94 */
+    if( error && buf != NULL ) {
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }
     }
-    return( j );
+    return( olen );
 }
 
 STR_HANDLE GetLiteral( void )
 {
-    unsigned            len, len2;
+    target_size         len;
+    target_size         len2;
     char                *s;
     STR_HANDLE          str_lit;
     STR_HANDLE          p;
     STR_HANDLE          q;
-    int                 is_wide;
+    bool                is_wide;
 
     /* first we store the whole string in a linked list to see if
        the end result is wide or not wide */
     p = str_lit = CMemAlloc( sizeof( STRING_LITERAL ) );
     q = NULL;
-    is_wide = 0;
+    is_wide = FALSE;
     do {
         /* if one component is wide then the whole string is wide */
         if( CompFlags.wide_char_string )
-            is_wide = 1;
+            is_wide = TRUE;
         if( q != NULL ) {
             p = CMemAlloc( sizeof( STRING_LITERAL ) );
             q->next_string = p;
         }
         q = p;
-        p->length = CLitLength;
+        p->length = TokenLen + 1;
         p->next_string = NULL;
         p->literal = Buffer;
         Buffer = CMemAlloc( BufSize );
@@ -220,7 +214,7 @@ STR_HANDLE GetLiteral( void )
         if( q != str_lit )
             FreeLiteral( q );
         q = p;
-    } while ( q );
+    } while ( q != NULL );
     CLitLength = len;
     CMemFree( str_lit->literal );
     str_lit->literal = s;
@@ -235,7 +229,7 @@ static TYPEPTR StringLeafType( void )
 {
     TYPEPTR     typ;
 
-    if( CompFlags.wide_char_string ) {          /* 01-aug-91 */
+    if( CompFlags.wide_char_string ) {
         typ = ArrayNode( GetType( TYPE_USHORT ) );
         typ->u.array->dimension = CLitLength >> 1;
     } else if( StringArrayType != NULL ) {
@@ -243,16 +237,16 @@ static TYPEPTR StringLeafType( void )
         StringArrayType->u.array->dimension = CLitLength;
         StringArrayType = NULL;
     } else {
-        typ = ArrayNode( GetType( TYPE_PLAIN_CHAR ) );  /* 25-nov-94 */
+        typ = ArrayNode( GetType( TYPE_PLAIN_CHAR ) );
         typ->u.array->dimension = CLitLength;
     }
     return( typ );
 }
 
 
-static unsigned CalcStringHash( STR_HANDLE lit )
+static str_hash_idx CalcStringHash( STR_HANDLE lit )
 {
-    return( hashpjw( lit->literal ) % STRING_HASH_SIZE );
+    return( (str_hash_idx)( hashpjw( lit->literal ) % STRING_HASH_SIZE ) );
 }
 
 TREEPTR StringLeaf( string_flags flags )
@@ -260,12 +254,12 @@ TREEPTR StringLeaf( string_flags flags )
     STR_HANDLE          new_lit;
     STR_HANDLE          strlit;
     TREEPTR             leaf_index;
-    unsigned            hash;
+    str_hash_idx        h;
 
     strlit = NULL;
     new_lit = GetLiteral();
-    if( TargetSwitches & BIG_DATA ) {                   /* 06-oct-88 */
-        if( !CompFlags.strings_in_code_segment ) {      /* 01-sep-89 */
+    if( TargetSwitches & BIG_DATA ) {
+        if( !CompFlags.strings_in_code_segment ) {
             if( new_lit->length > DataThreshold ) {
                 flags |= STRLIT_FAR;
             }
@@ -275,9 +269,9 @@ TREEPTR StringLeaf( string_flags flags )
         flags |= STRLIT_WIDE;
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = 1;
-    hash = CalcStringHash( new_lit );
-    if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {    /* 24-mar-92 */
-        for( strlit = StringHash[ hash ]; strlit != NULL; strlit = strlit->next_string ) {
+    h = CalcStringHash( new_lit );
+    if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {
+        for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
                 if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {
                     break;
@@ -289,8 +283,8 @@ TREEPTR StringLeaf( string_flags flags )
         new_lit->flags = flags;
         ++LitCount;
         LitPoolSize += CLitLength;
-        new_lit->next_string = StringHash[ hash ];
-        StringHash[ hash ] = new_lit;
+        new_lit->next_string = StringHash[h];
+        StringHash[h] = new_lit;
     } else {            // we found a duplicate
         FreeLiteral( new_lit );
         new_lit = strlit;

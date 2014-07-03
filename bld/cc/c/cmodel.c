@@ -48,10 +48,15 @@ static size_t get_namelen( const char *start )
     const char  *src;
 
     for( src = start; (c = *src) != '\0'; ++src ) {
-        if( EqualChar( c ) ) break;
-        if( c == ' '  ) break;
-        if( c == '-'  ) break;
-        if( c == SwitchChar  ) break;
+        if( EqualChar( c ) )
+            break;
+        if( c == ' ' )
+            break;
+        if( c == '-' )
+            break;
+        if( c == SwitchChar ) {
+            break;
+        }
     }
     return( src - start );
 }
@@ -65,9 +70,13 @@ char *BadCmdLine( int error_code, const char *str )
     p = buffer;
     for( ; *str != '\0'; ) {
         *p++ = *str++;
-        if( *str == ' ' ) break;
-        if( *str == '-' ) break;
-        if( *str == SwitchChar ) break;
+        if( *str == ' ' )
+            break;
+        if( *str == '-' )
+            break;
+        if( *str == SwitchChar ) {
+            break;
+        }
     }
     *p = '\0';
     CBanner();
@@ -76,7 +85,7 @@ char *BadCmdLine( int error_code, const char *str )
 }
 
 
-static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags mflags )
+static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flags mflags )
 {
     size_t      len;
     MEPTR       mentry;
@@ -99,12 +108,14 @@ static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags
 
         ppscan_mode = InitPPScan();
         ReScanInit( ++str );
-        for(;;) {
-            if( *str == '\0' ) break;
+        for( ; *str != '\0'; ) {
             ReScanToken();
-            if( ReScanPos() == str ) break;
-            if( CurToken == T_WHITE_SPACE ) break;      /* 28-apr-94 */
-            if( CurToken == T_BAD_CHAR && ! multiple_tokens ) break;
+            if( ReScanPos() == str )
+                break;
+            if( CurToken == T_WHITE_SPACE )
+                break;
+            if( CurToken == T_BAD_CHAR && !multiple_tokens )
+                break;
             MTOK( TokenBuf + len ) = CurToken;
             MTOKINC( len );
             switch( CurToken ) {
@@ -113,20 +124,19 @@ static char *Def_Macro_Tokens( const char *str, int multiple_tokens, macro_flags
                 break;
             case T_CONSTANT:
             case T_PPNUMBER:
-                /* fall through */
             case T_ID:
-                ++TokenLen; /* to pick up NULLCHAR */
-                /* fall through */
             case T_LSTRING:
             case T_STRING:
-                memcpy( &TokenBuf[len], &Buffer[0], TokenLen );
-                len += TokenLen;
+                memcpy( &TokenBuf[len], &Buffer[0], TokenLen + 1 );
+                len += TokenLen + 1;
                 break;
             default:
                 break;
             }
             str = ReScanPos();
-            if( !multiple_tokens ) break;
+            if( !multiple_tokens ) {
+                break;
+            }
         }
         FiniPPScan( ppscan_mode );
     }
@@ -157,7 +167,7 @@ void PreDefine_Macro( const char *str )
     size_t          len;
     const char      *p;
 
-    if( ! CompFlags.undefine_all_macros ) {
+    if( !CompFlags.undefine_all_macros ) {
         if( UndefNames != NULL ) {
             len = 0;
             for( p = str; *p != '\0'; ++p ) {
@@ -173,7 +183,7 @@ void PreDefine_Macro( const char *str )
                 }
             }
         }
-        Def_Macro_Tokens( str, 1, MFLAG_CAN_BE_REDEFINED );
+        Def_Macro_Tokens( str, TRUE, MFLAG_CAN_BE_REDEFINED );
     }
 }
 
@@ -192,8 +202,7 @@ char *AddUndefName( const char *str )
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
             uname->name = CMemAlloc( len + 1 );
-            memcpy( uname->name, str, len );
-            uname->name[len] = '\0';
+            memcpy( uname->name, str, len + 1 );
             UndefNames = uname;
             str += len;
         }
@@ -298,17 +307,14 @@ void InitModInfo( void )
     ModuleName = NULL;
     ErrLimit = 20;
     WngLevel = 1;
+#if _CPU == 8086
+    PackAmount = TARGET_INT;     /* pack structs on word boundaries */
+#elif _CPU == 386
     PackAmount = 8;
-#if _CPU == _AXP || _CPU == _PPC || _CPU == _MIPS
+#else
     CompFlags.make_enums_an_int = 1;     // make enums ints
     CompFlags.original_enum_setting = 1;
     PackAmount = 8;
-#else
-    #if _CPU == 386
-        PackAmount = 8;                 // BBB - Aug 15,1996
-    #else
-        PackAmount = TARGET_INT;     /* pack structs on word boundaries */
-    #endif
 #endif
     PreProcChar = '#';
     CompFlags.check_syntax          = 0;

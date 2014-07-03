@@ -52,7 +52,7 @@ local ENUMPTR EnumLkAdd( TAGPTR tag )
     size_t      len;
 
     VfyNewSym( HashValue, Buffer );
-    len = sizeof(ENUMDEFN) + TokenLen;
+    len = sizeof( ENUMDEFN ) + TokenLen;
     if( len > EnumRecSize )
         EnumRecSize = len;
     esym = (ENUMPTR)CPermAlloc( len );
@@ -113,7 +113,7 @@ static uint64 const RangeTable[ENUM_SIZE][2] =
     { i64val( 0x00000000, 0x00000000 ),i64val( 0xFFFFFFFF, 0xFFFFFFFF ) },//u64
 };
 
-struct { DATA_TYPE decl_type; int size; } ItypeTable[ENUM_SIZE] =
+struct { DATA_TYPE decl_type; target_size size; } ItypeTable[ENUM_SIZE] =
 {
     { TYPE_CHAR, TARGET_CHAR  },    //S8
     { TYPE_UCHAR,TARGET_CHAR  },    //U8
@@ -248,9 +248,13 @@ TYPEPTR EnumDecl( type_modifiers flags )
             }
             for( index = start_index; index < ENUM_SIZE; index += step ) {
                 if( minus ) {
-                    if( I64Cmp( &n, &( RangeTable[ index ][LOW] ) ) >= 0 ) break;
+                    if( I64Cmp( &n, &( RangeTable[ index ][LOW] ) ) >= 0 ) {
+                        break;
+                    }
                 } else {
-                    if( U64Cmp( &n, &( RangeTable[ index ][HIGH]) ) <= 0 ) break;
+                    if( U64Cmp( &n, &( RangeTable[ index ][HIGH]) ) <= 0 ) {
+                        break;
+                    }
                 }
             }
             error = ENUM_UNDEF;
@@ -278,7 +282,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 if( index > const_index ) {
                     const_index = index;
                     typ->object = GetType( ItypeTable[const_index].decl_type );
-                    tag->size   = ItypeTable[const_index].size;
+                    tag->size = ItypeTable[const_index].size;
                 }
             }
             if( error != ENUM_UNDEF ) {
@@ -323,11 +327,11 @@ ENUMPTR EnumLookup( id_hash_idx h, const char *name )
 void FreeEnums( void )
 {
     ENUMPTR         esym;
-    id_hash_idx   h;
+    id_hash_idx     h;
 
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( ; (esym = EnumTable[h]) != NULL; ) {
-            if( ChkSymLevel( esym->parent, != ) )
+            if( !ChkEqSymLevel( esym->parent ) )
                 break;
             EnumTable[h] = esym->next_enum;
         }
@@ -344,7 +348,7 @@ void DumpEnumTable( void )
     puts( "ENUM TABLE DUMP" );
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
-            if( ChkSymLevel( esym->parent, == ) ) {
+            if( ChkEqSymLevel( esym->parent ) ) {
                 printf( "%s = %d\n", esym->name, esym->value );
             }
         }
