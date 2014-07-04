@@ -1063,7 +1063,9 @@ local void InitCharArray( TYPEPTR typ )
         typ->u.array->dimension = len;
     size = typ->u.array->dimension;
     if( len > size ) {
-        CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+        if( ( len - size ) > 1 ) {
+            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+        }
         /* chop the string */
         len = size;
         str_lit->length = size;
@@ -1104,7 +1106,9 @@ local void InitWCharArray( TYPEPTR typ )
     }
     size = typ->u.array->dimension;
     if( len > size ) {
-        CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+        if( ( len - size ) > 1 ) {
+            CWarn1( WARN_LIT_TOO_LONG, ERR_LIT_TOO_LONG );
+        }
         len = size;
     }
     pwc = (unsigned short *)str_lit->literal;
