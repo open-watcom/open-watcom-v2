@@ -47,12 +47,12 @@ char    *CCOps[] = {
 
 static void DumpAString( STR_HANDLE str_handle )
 {
-    unsigned    len;
+    target_size len;
     char        *p;
 
     len = str_handle->length;
     printf( "\"" );
-    p = &str_handle->literal[0];
+    p = str_handle->literal;
     while( len != 0 ) {
         if( *p == '\0' )
             break;
@@ -124,7 +124,7 @@ void DumpOpnd( TREEPTR opnd )
         break;
     case OPR_EXCEPT_CODE:
     case OPR_EXCEPT_INFO:
-        printf( "%s ", _Ops[ opnd->op.opr ] );
+        printf( "%s ", _Ops[opnd->op.opr] );
         break;
     case OPR_NOP:
         break;
@@ -199,10 +199,10 @@ void DumpInfix( TREEPTR node )
     case OPR_JUMP:
     case OPR_JUMPTRUE:
     case OPR_JUMPFALSE:
-        printf( "%s L%u ", _Ops[ node->op.opr ], node->op.u2.label_index );
+        printf( "%s L%u ", _Ops[node->op.opr], node->op.u2.label_index );
         break;
     case OPR_CASE:
-        printf( "%s %lu (L%u)", _Ops[ node->op.opr ], 
+        printf( "%s %lu (L%u)", _Ops[node->op.opr], 
                 node->op.u2.case_info->value, node->op.u2.case_info->label );
         break;
     case OPR_INDEX:
@@ -214,7 +214,7 @@ void DumpInfix( TREEPTR node )
     case OPR_COM:
     case OPR_NOT:
     case OPR_ADDROF:
-        printf( "%s", _Ops[ node->op.opr ] );
+        printf( "%s", _Ops[node->op.opr] );
         break;
     case OPR_MATHFUNC:
     case OPR_MATHFUNC2:
@@ -225,23 +225,23 @@ void DumpInfix( TREEPTR node )
         }
         break;
     case OPR_CMP:
-        printf( " %s ", CCOps[ node->op.u1.cc ] );
+        printf( " %s ", CCOps[node->op.u1.cc] );
         break;
     case OPR_TRY:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.u2.st.parent_scope );
+        printf( "%s %d", _Ops[node->op.opr], node->op.u2.st.parent_scope );
         break;
     case OPR_UNWIND:
-        printf( "%s %d", _Ops[ node->op.opr ], node->op.u2.st.u.try_index );
+        printf( "%s %d", _Ops[node->op.opr], node->op.u2.st.u.try_index );
         break;
     case OPR_EXCEPT:
     case OPR_FINALLY:
-        printf( "%s parent=%d", _Ops[ node->op.opr ], node->op.u2.st.parent_scope );
+        printf( "%s parent=%d", _Ops[node->op.opr], node->op.u2.st.parent_scope );
         break;
     default:
         printf( " " );
         // fall through
     case OPR_RETURN:
-        printf( "%s ", _Ops[ node->op.opr ] );
+        printf( "%s ", _Ops[node->op.opr] );
         break;
     case OPR_POINTS:
         // already printed in prefix routine
@@ -291,32 +291,26 @@ void DumpProgram( void )
 {
     TREEPTR     tree;
 
-    tree = FirstStmt;
-    while( tree != NULL ) {
+    for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         if( tree->op.opr != OPR_STMT ) {
             printf( "expecting OPR_STMT node\n" );
             exit( 1 );
         }
         DumpStmt( tree );
-        tree = tree->left;
     }
 }
 
-static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
+static void DumpDQuad( DATA_QUAD *dq, target_size *psize )
 {
-    cg_type             data_type;
-    int                 size_of_item;
-    unsigned            amount;
+    target_size         size_of_item;
+    target_size         amount;
     SYM_ENTRY           sym;
 
     if( dq->flags & Q_NEAR_POINTER ) {
-        data_type = TY_NEAR_POINTER;
         size_of_item = TARGET_NEAR_POINTER;
     } else if( dq->flags & Q_FAR_POINTER ) {
-        data_type = TY_LONG_POINTER;
         size_of_item = TARGET_FAR_POINTER;
     } else if( dq->flags & Q_CODE_POINTER ) {
-        data_type = TY_CODE_PTR;
         size_of_item = TARGET_POINTER;
 #if _CPU == 8086
         if( TargetSwitches & BIG_CODE ) {
@@ -324,7 +318,6 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         }
 #endif
     } else {
-        data_type = TY_POINTER;
         size_of_item = TARGET_POINTER;
 #if _CPU == 8086
         if( TargetSwitches & BIG_DATA ) {
@@ -334,7 +327,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
     }
     switch( dq->type ) {
     case QDT_STATIC:
-        printf( "%6u bytes (QDT_STATIC): segment %d\n", 0UL, sym.u.var.segment );
+        printf( "%6u bytes (QDT_STATIC): segment %d\n", 0U, sym.u.var.segment );
         *psize = 0;
         break;
     case QDT_CHAR:
@@ -344,10 +337,10 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         printf( "%6u byte char (%s): %d\n",
                 amount, dq->type == QDT_CHAR ? "QDT_CHAR" :
                 dq->type == QDT_UCHAR ? "QDT_UCHAR" : "QDT_BOOL",
-                dq->u.long_values[0] );
+                dq->u_long_value1 );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6u byte second char: %d\n", amount, dq->u.long_values[1] );
+            printf( "%6u byte second char: %d\n", amount, dq->u_long_value2 );
             *psize += amount;
         }
         break;
@@ -356,10 +349,10 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         amount = TARGET_SHORT;
         printf( "%6u byte short (%s): %d\n",
                 amount, dq->type == QDT_SHORT ? "QDT_SHORT" :
-                "QDT_UINT", dq->u.long_values[0] );
+                "QDT_UINT", dq->u_long_value1 );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6u byte second short: %d\n", amount, dq->u.long_values[1] );
+            printf( "%6u byte second short: %d\n", amount, dq->u_long_value2 );
             *psize += amount;
         }
         break;
@@ -368,10 +361,10 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         amount = TARGET_INT;
         printf( "%6u byte int (%s): %d\n",
                 amount, dq->type == QDT_INT ? "QDT_INT" :
-                "QDT_UINT", dq->u.long_values[0] );
+                "QDT_UINT", dq->u_long_value1 );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6u byte second int: %d\n", amount, dq->u.long_values[1] );
+            printf( "%6u byte second int: %d\n", amount, dq->u_long_value2 );
             *psize += amount;
         }
         break;
@@ -380,10 +373,10 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         amount = TARGET_LONG;
         printf( "%6u byte long (%s): %d\n",
                 amount, dq->type == QDT_LONG ? "QDT_LONG" :
-                "QDT_ULONG", dq->u.long_values[0] );
+                "QDT_ULONG", dq->u_long_value1 );
         *psize += amount;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            printf( "%6u byte second long: %d\n", amount, dq->u.long_values[1] );
+            printf( "%6u byte second long: %d\n", amount, dq->u_long_value2 );
             *psize += amount;
         }
         break;
@@ -428,7 +421,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
     case QDT_POINTER:
     case QDT_ID:
         amount = size_of_item;
-        printf( "%6u byte pointer (%s): offset %lx\n",
+        printf( "%6u byte pointer (%s): offset %x\n",
                 amount, dq->type == QDT_POINTER ? "QDT_POINTER" :
                 "QDT_ID", dq->u.var.offset );
         *psize += amount;
@@ -440,7 +433,7 @@ static void DumpDQuad( DATA_QUAD *dq, unsigned *psize )
         *psize += amount;
         break;
     case QDT_CONSTANT:
-        amount = dq->u.ulong_values[0];
+        amount = dq->u_size;
         printf( "%6u zero bytes (QDT_CONSTANT)\n", amount );
         *psize += amount;
         break;
@@ -453,22 +446,16 @@ void DumpDataQuads( void )
 {
     DATA_QUAD       *dq;
     void            *cookie;
-    unsigned        size;
+    target_size     size;
 
     cookie = StartDataQuadAccess();
     if( cookie != NULL ) {
         size = 0;
         printf( "=== Data Quads ===\n" );
         for( ; (dq = NextDataQuad()) != NULL; ) {
-            for( ;; ) {
+            do {
                 DumpDQuad( dq, &size );
-                if( (dq->flags & Q_REPEATED_DATA) == 0 )
-                    break;
-                dq->u.long_values[1]--;
-                if( dq->u.long_values[1] == 0 ) {
-                    break;
-                }
-            }
+            } while( (dq->flags & Q_REPEATED_DATA) && (dq->u_rpt_count)-- > 1 );
         }
         EndDataQuadAccess( cookie );
     }

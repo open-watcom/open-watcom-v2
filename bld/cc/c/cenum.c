@@ -60,7 +60,7 @@ local ENUMPTR EnumLkAdd( TAGPTR tag )
     esym->parent = tag;
     esym->hash = HashValue;
     esym->src_loc = TokenLoc;
-    esym->next_enum = EnumTable[ esym->hash ];
+    esym->next_enum = EnumTable[esym->hash];
     ++EnumCount;
     if( tag->u.enum_list == NULL ) {
         tag->u.enum_list = esym;
@@ -164,7 +164,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 CErr1( ERR_INCOMPLETE_ENUM_DECL );
                 typ = TypeDefault();
             } else {
-                if( typ->decl_type != TYPE_ENUM ) {         /* 18-jan-89 */
+                if( typ->decl_type != TYPE_ENUM ) {
                     CErr2p( ERR_DUPLICATE_TAG, tag->name );
                 }
                 typ->u.tag = tag;
@@ -248,11 +248,11 @@ TYPEPTR EnumDecl( type_modifiers flags )
             }
             for( index = start_index; index < ENUM_SIZE; index += step ) {
                 if( minus ) {
-                    if( I64Cmp( &n, &( RangeTable[ index ][LOW] ) ) >= 0 ) {
+                    if( I64Cmp( &n, &( RangeTable[index][LOW] ) ) >= 0 ) {
                         break;
                     }
                 } else {
-                    if( U64Cmp( &n, &( RangeTable[ index ][HIGH]) ) <= 0 ) {
+                    if( U64Cmp( &n, &( RangeTable[index][HIGH]) ) <= 0 ) {
                         break;
                     }
                 }
@@ -292,7 +292,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 InitErrLoc();
             }
             esym->value = n;
-            EnumTable[ esym->hash ] = esym;             /* 08-nov-94 */
+            EnumTable[esym->hash] = esym;
             if( CurToken == T_RIGHT_BRACE )
                 break;
             U64Add( &n, &Inc, &n );
@@ -300,7 +300,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
             if( !CompFlags.extensions_enabled
               && !CompFlags.c99_extensions
               && ( CurToken == T_RIGHT_BRACE )) {
-                ExpectIdentifier();         /* 13-may-91 */
+                ExpectIdentifier();
             }
         }
         MustRecog( T_RIGHT_BRACE );

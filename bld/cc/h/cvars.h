@@ -576,7 +576,7 @@ extern bool         BoolConstExpr( void );
 extern void         DoCompile(void);
 extern void         EmitInit(void);
 extern void         EmitAbort(void);
-extern int          EmitBytes(STR_HANDLE);
+extern target_size  EmitBytes(STR_HANDLE);
 extern void         GenInLineFunc( SYM_HANDLE sym_handle );
 extern bool         IsInLineFunc( SYM_HANDLE sym_handle );
 

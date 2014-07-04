@@ -131,7 +131,7 @@ void ClearGlobals( void )
 }
 
 
-unsigned char _8087;                                    /* 27-may-91 */
+unsigned char _8087;
 unsigned char _real87;
 
 int FrontEnd( char **cmdline )
@@ -206,7 +206,7 @@ void OpenDepFile( void )
 {
     char        *name;
 
-    if( CompFlags.generate_auto_depend ) {                        /* 15-dec-88 */
+    if( CompFlags.generate_auto_depend ) {
         name = DepFileName();
         if( name != NULL ) {
             DepFile = fopen( name, "w" );
@@ -327,7 +327,7 @@ static void DoCCompile( char **cmdline )
     jmp_buf     env;
 
     Environment = &env;
-    if( setjmp( env ) ) {       /* if fatal error has occurred */
+    if( setjmp( env ) ) {           /* if fatal error has occurred */
         EmitAbort();                /* abort code generator */
         CPragmaFini();
         CloseFiles();
@@ -662,7 +662,7 @@ void OpenCppFile( void )
 {
     char  *name = NULL;
 
-    if( CompFlags.cpp_output_to_file ) {                /* 29-sep-90 */
+    if( CompFlags.cpp_output_to_file ) {
         name = CppFileName();
         CppFile = fopen( name, "w" );
     } else {
@@ -711,7 +711,7 @@ FILE *OpenBrowseFile( void )
     char        *fname;
     FILE        *mbr_file;
 
-    if( CompFlags.cpp_output_to_file ) {                /* 29-sep-90 */
+    if( CompFlags.cpp_output_to_file ) {
         strcpy( name, CreateFileName( ObjectFileName, MBR_EXT, TRUE ) );
     } else {
         _splitpath2( SrcFName, buff, NULL, NULL, &fname, NULL );
@@ -820,7 +820,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         }
     }
     save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {                        /* 18-aug-91 */
+    if( CompFlags.cpp_output ) {
         if( is_lib ) {
             CppPrtf( "#include <%s>", filename );
         } else {
@@ -993,8 +993,8 @@ FNAMEPTR AddFlist( char const *filename )
     FNAMEPTR    flist;
     FNAMEPTR    *lnk;
     unsigned    index;
-    size_t	    len1;
-    size_t	    len2;
+    size_t      len1;
+    size_t      len2;
 
     index = 0;
     for( lnk = &FNames; (flist = *lnk) != NULL; lnk = &flist->next ) {
@@ -1016,7 +1016,7 @@ FNAMEPTR AddFlist( char const *filename )
         *lnk = flist;
         flist->next = NULL;
         flist->index = index;
-        flist->index_db = DBIDX_NONE;
+        flist->index_db = DBFILE_INVALID;
         flist->rwflag = TRUE;
         flist->once = FALSE;
         flist->fullpath = NULL;
@@ -1242,7 +1242,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
         srcfcb->trunc = 0;
         srcfcb->prevcount = 0;
 #endif
-        if( SrcFile != NULL ) {                 /* 28-jan-94 */
+        if( SrcFile != NULL ) {
             if( SrcFile == MainSrcFile ) {
                 // remember name of included file
                 AddIncFileList( filename );
@@ -1252,7 +1252,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
         srcfcb->no_eol = 0;
         SrcFile = srcfcb;
         CurrChar = '\n';    /* set next character to newline */
-        if( CompFlags.cpp_output ) {            /* 10-aug-91 */
+        if( CompFlags.cpp_output ) {
             if( CppFile == NULL )
                 OpenCppFile();
             EmitPoundLine( 1, filename, TRUE );
@@ -1279,7 +1279,7 @@ static void ParseInit( void )
     InitDataQuads();
     ExprInit();
     StmtInit();
-    SegInit();                                  /* 02-feb-92 */
+    SegInit();
 }
 
 
@@ -1290,8 +1290,8 @@ local void Parse( void )
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled
     // header if the user requested such and it is a #include directive.
-    CompFlags.ok_to_use_precompiled_hdr = 1;    /* 27-jun-94 */
-    if( ForceInclude ) {                        /* 17-feb-95 */
+    CompFlags.ok_to_use_precompiled_hdr = 1;
+    if( ForceInclude ) {
         if( PCH_FileName != NULL ) {
             CompFlags.use_precompiled_header = 1;
         }
@@ -1313,7 +1313,7 @@ local void Parse( void )
     NextToken();
     // If we didn't get a #include with the above call to NextToken()
     // it's too late to use pre-compiled header now.
-    CompFlags.ok_to_use_precompiled_hdr = 0;    /* 27-jun-94 */
+    CompFlags.ok_to_use_precompiled_hdr = 0;
     ParsePgm();
     if( DefFile != NULL ) {
         fclose( DefFile );

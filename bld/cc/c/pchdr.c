@@ -636,7 +636,7 @@ typedef struct type_indices {
     int     constchartype_index;
 } type_indices;
 
-static void OutPutTypeIndexes( void )                       /* 02-jan-95 */
+static void OutPutTypeIndexes( void )
 {
     TYPEPTR             typ;
     bool                rc;
@@ -864,7 +864,7 @@ static void OutPutMacros( void )
             ++PH_MacroCount;
         }
     }
-    /* write out undefined macro list.  26-may-94 */
+    /* write out undefined macro list. */
     PH_UndefMacroCount = 0;
     for( mentry = UndefMacroList; mentry != NULL; mentry = mentry->next_macro ) {
         rc = PCHWrite( mentry, mentry->macro_len );
@@ -1402,7 +1402,7 @@ static char *FixupSymbols( char *p, unsigned symbol_count )
     return( p );
 }
 
-static void FixupTypeIndexes( type_indices *typ_index ) /* 02-jan-95 */
+static void FixupTypeIndexes( type_indices *typ_index )
 {
     DATA_TYPE   i;
     int         index;
@@ -1645,7 +1645,7 @@ void FixupFNames( void )
     }
     *lnk = FNameList;
     for( flist = FNameList; flist != NULL; flist = flist->next ) {
-        flist->index_db = DBIDX_NONE;
+        flist->index_db = DBFILE_INVALID;
     }
 }
 

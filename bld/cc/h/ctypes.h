@@ -162,6 +162,7 @@ typedef enum declspec_class {      //note declspec field 2-bits in SYM_ENTRY
 } declspec_class;
 
 typedef enum string_flags { // string literal flags
+    STRLIT_NONE    = 0,
     STRLIT_FAR     = 0x01,
     STRLIT_CONST   = 0x02,
     STRLIT_WIDE    = 0x04,
@@ -268,7 +269,7 @@ typedef struct parm_list {
 extern  void WalkTypeList( void (*func)(TYPEPTR) );
 extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
 
-typedef struct textsegment {    /* used for #pragma alloc_text(seg,func1,func2,...) */
+typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,func2,...) */
     struct textsegment *next;       /* also used by pre-compiled header */
     size_t             class;
     segment_id         segment;
@@ -287,7 +288,7 @@ typedef struct fname_list {
     char                name[1];
 } fname_list, *FNAMEPTR;
 
-#define DBIDX_NONE      ((unsigned)-1)
+#define DBFILE_INVALID  ((unsigned)-1)
 
 typedef struct rdir_list {
     struct rdir_list    *next;      /* also used by pre-compiled header */
@@ -349,18 +350,17 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
             TREEPTR     start_of_func;  /* starting tree node */
         } func;
     } u;
-    textsegment         *seginfo;           /* also used by pre-compiled header */
-    dw_handle           dwarf_handle;       /* used for browsing info; could be
-                                             * perhaps stored in 'info' union. */
-    type_modifiers      mods;               /* LANG_CDECL, _PASCAL, _FORTRAN */
+    textsegment         *seginfo;       /* also used by pre-compiled header */
+    dw_handle           dwarf_handle;   /* used for browsing info; could be perhaps stored in 'info' union. */
+    type_modifiers      mods;           /* LANG_CDECL, _PASCAL, _FORTRAN */
     sym_flags           flags;
     id_level_type       level;
     struct {
-        unsigned char stg_class  : 3;
-        unsigned char declspec   : 2;
-        unsigned char naked      : 1;
-        unsigned char is_parm    : 1;
-        unsigned char rent       : 1;
+        unsigned char   stg_class : 3;
+        unsigned char   declspec  : 2;
+        unsigned char   naked     : 1;
+        unsigned char   is_parm   : 1;
+        unsigned char   rent      : 1;
     } attribs;
 } SYM_ENTRY, *SYMPTR;
 
@@ -454,6 +454,11 @@ typedef struct {
     enum quad_type      type;
     enum quad_flags     flags;
 } DATA_QUAD;
+/* macros to accessing data in data quad structure */
+#define u_size          u.ulong_values[0]
+#define u_rpt_count     u.ulong_values[1]
+#define u_long_value1   u.long_values[0]
+#define u_long_value2   u.long_values[1]
 
 typedef struct {
     TYPEPTR             typ;        // type seen
@@ -466,11 +471,11 @@ typedef struct {
 } decl_info;
 
 typedef enum {
-    DECL_STATE_NONE    = 0x00,
-    DECL_STATE_NOTYPE  = 0x01,
-    DECL_STATE_ISPARM  = 0x02,
-    DECL_STATE_NOSTWRN = 0x04,
-    DECL_STATE_FORLOOP = 0x08,
+    DECL_STATE_NONE     = 0x00,
+    DECL_STATE_NOTYPE   = 0x01,
+    DECL_STATE_ISPARM   = 0x02,
+    DECL_STATE_NOSTWRN  = 0x04,
+    DECL_STATE_FORLOOP  = 0x08,
 } decl_state;
 
 #include <stddef.h>
@@ -478,37 +483,37 @@ typedef enum {
 #include "cops.h"
 
 typedef struct label_entry {
-    struct symtab_entry     *thread;
-    struct label_entry      *next_label;
-    LABEL_INDEX             ref_list;
-    unsigned                defined     : 1;
-    unsigned                referenced  : 1;
-    char                    name[1];
+    struct symtab_entry *thread;
+    struct label_entry  *next_label;
+    LABEL_INDEX         ref_list;
+    unsigned            defined     : 1;
+    unsigned            referenced  : 1;
+    char                name[1];
 } LABELDEFN, *LABELPTR;
 
 typedef struct segment_list {
-    struct segment_list     *next_segment;
-    segment_id              segment;
-    unsigned                size_left;
+    struct segment_list *next_segment;
+    segment_id          segment;
+    unsigned            size_left;
 } segment_list;
 
 struct debug_fwd_types {
     struct  debug_fwd_types *next;
-    TYPEPTR                 typ;
-    dbg_name                debug_name;
-    unsigned                scope;
+    TYPEPTR             typ;
+    dbg_name            debug_name;
+    unsigned            scope;
 };
 
 typedef struct seg_info {
-    SEGADDR_T index;        /* segment #, EMS page #, disk seek # */
-    unsigned allocated : 1; /* 1 => has been allocated */
+    SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
+    unsigned            allocated : 1;  /* 1 => has been allocated */
 } seg_info;
 
 typedef enum {
-    PPCTL_NORMAL          = 0x00, // expand macros, treat <eol> as white space
-    PPCTL_EOL             = 0x01, // return <end-of-line> as a token
-    PPCTL_NO_EXPAND       = 0x02, // don't expand macros
-    PPCTL_ASM             = 0x04, // pre-processor is in _asm statement
+    PPCTL_NORMAL        = 0x00,         // expand macros, treat <eol> as white space
+    PPCTL_EOL           = 0x01,         // return <end-of-line> as a token
+    PPCTL_NO_EXPAND     = 0x02,         // don't expand macros
+    PPCTL_ASM           = 0x04,         // pre-processor is in _asm statement
 } ppctl_t;
 
 #define PPCTL_ENABLE_ASM()      CompFlags.pre_processing |= PPCTL_ASM

@@ -1580,7 +1580,7 @@ local TREEPTR ExprOpnd( void )
             if( CompFlags.strings_in_code_segment ) {
                 tree = StringLeaf( STRLIT_CONST );
             } else {
-                tree = StringLeaf( 0 );
+                tree = StringLeaf( STRLIT_NONE );
             }
             break;
         case T_BAD_TOKEN:

@@ -39,17 +39,15 @@
 #include "feprotos.h"
 #include "cgen.h"
 
-static void EmitDQuad( DATA_QUAD *dq );
+#define ZEROS_BLOCK_SIZE    (8 * 1024)
 
-void EmitZeros( unsigned amount )
+void EmitZeros( target_size amount )
 {
-    while( amount > 8*1024 ) {
-        DGIBytes( 8*1024, 0 );
-        amount -= 8*1024;
+    for( ; amount > ZEROS_BLOCK_SIZE; amount -= ZEROS_BLOCK_SIZE ) {
+        DGIBytes( ZEROS_BLOCK_SIZE, 0 );
     }
     DGIBytes( amount, 0 );
 }
-
 
 void AlignIt( TYPEPTR typ )
 {
@@ -62,37 +60,14 @@ void AlignIt( TYPEPTR typ )
 #endif
 }
 
-
-void EmitDataQuads( void )
-{
-    DATA_QUAD   *dq;
-
-    if( StartDataQuadAccess() != NULL ) {
-        for(;;) {
-            dq = NextDataQuad();
-            if( dq == NULL )
-                break;
-            for(;;) {
-                EmitDQuad( dq );
-                if( (dq->flags & Q_REPEATED_DATA) == 0 )
-                    break;
-                dq->u.long_values[1]--;
-                if( dq->u.long_values[1] == 0 ) {
-                    break;
-                }
-            }
-        }
-    }
-}
-
 static void EmitDQuad( DATA_QUAD *dq )
 {
     cg_type             data_type;
-    unsigned            size_of_item;
-    unsigned            amount;
+    target_size         size_of_item;
+    target_size         amount;
     auto SYM_ENTRY      sym;
 
-    static segment_id   segment;
+    static segment_id   segment = SEG_UNKNOWN;
     static target_size  size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {
@@ -139,37 +114,37 @@ static void EmitDQuad( DATA_QUAD *dq )
     case QDT_CHAR:
     case QDT_UCHAR:
     case QDT_BOOL:
-        DGInteger( dq->u.long_values[0], TY_UINT_1 );
+        DGInteger( dq->u_long_value1, TY_UINT_1 );
         size += sizeof( char );
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u.long_values[1], TY_UINT_1 );
+            DGInteger( dq->u_long_value2, TY_UINT_1 );
             size += sizeof( char );
         }
         break;
     case QDT_SHORT:
     case QDT_USHORT:
-        DGInteger( dq->u.long_values[0], TY_UINT_2 );
+        DGInteger( dq->u_long_value1, TY_UINT_2 );
         size += TARGET_SHORT;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u.long_values[1], TY_UINT_2 );
+            DGInteger( dq->u_long_value2, TY_UINT_2 );
             size += TARGET_SHORT;
         }
         break;
     case QDT_INT:
     case QDT_UINT:
-        DGInteger( dq->u.long_values[0], TY_INTEGER );
+        DGInteger( dq->u_long_value1, TY_INTEGER );
         size += TARGET_INT;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u.long_values[1], TY_INTEGER );
+            DGInteger( dq->u_long_value2, TY_INTEGER );
             size += TARGET_INT;
         }
         break;
     case QDT_LONG:
     case QDT_ULONG:
-        DGInteger( dq->u.long_values[0], TY_UINT_4 );
+        DGInteger( dq->u_long_value1, TY_UINT_4 );
         size += TARGET_LONG;
         if( dq->flags & Q_2_INTS_IN_ONE ) {
-            DGInteger( dq->u.long_values[1], TY_UINT_4 );
+            DGInteger( dq->u_long_value2, TY_UINT_4 );
             size += TARGET_LONG;
         }
         break;
@@ -190,8 +165,8 @@ static void EmitDQuad( DATA_QUAD *dq )
             // dq->u.double_value may not have proper alignment on Alpha
             // so copy pieces to local copy on stack which will have
             // proper alignment
-            local_dq.u.long_values[0] = dq->u.long_values[0];
-            local_dq.u.long_values[1] = dq->u.long_values[1];
+            local_dq.u_long_value1 = dq->u_long_value1;
+            local_dq.u_long_value2 = dq->u_long_value2;
             float_value = (float)local_dq.u.double_value;
             DGBytes( TARGET_FLOAT, (char *)&float_value );
         }
@@ -227,7 +202,7 @@ static void EmitDQuad( DATA_QUAD *dq )
         break;
     case QDT_CONSTANT:
 #if _CPU == 8086
-        for( amount = dq->u.ulong_values[0]; amount != 0; ) {
+        for( amount = dq->u_size; amount != 0; ) {
             if( amount + size >= 0x00010000 ) {
                 EmitZeros( 0x10000 - size );
                 amount -= ( 0x10000 - size );
@@ -243,10 +218,24 @@ static void EmitDQuad( DATA_QUAD *dq )
             }
         }
 #else
-        amount = dq->u.ulong_values[0];
+        amount = dq->u_size;
         EmitZeros( amount );
         size += amount;
 #endif
         break;
+    }
+}
+
+
+void EmitDataQuads( void )
+{
+    DATA_QUAD   *dq;
+
+    if( StartDataQuadAccess() != NULL ) {
+        for( ; (dq = NextDataQuad()) != NULL; ) {
+            do {
+                EmitDQuad( dq );
+            } while( (dq->flags & Q_REPEATED_DATA) && (dq->u_rpt_count)-- > 1 );
+        }
     }
 }

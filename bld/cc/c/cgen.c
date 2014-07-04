@@ -186,7 +186,7 @@ static struct local_vars *ReleaseVars( SYM_HANDLE sym_list,
     return( local_entry );
 }
 
-static void RelLocalVars( struct local_vars *local_var_list ) /* 12-mar-92 */
+static void RelLocalVars( struct local_vars *local_var_list )
 {
     struct local_vars   *local_entry;
 
@@ -284,7 +284,7 @@ static cg_type DataPointerType( OPNODE *node )
 #endif
 }
 
-local cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ ) /* 05-sep-92 */
+local cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
 {
     if( CompFlags.op_switch_used ) {
         if( typ->decl_type == TYPE_FLOAT  ||
@@ -303,12 +303,12 @@ static cg_name PushSymSeg( OPNODE *node )
     SYM_HANDLE  sym_handle;
 
     sym_handle = node->u2.sym_handle;
-    if( sym_handle == 0 ) {         /* 30-nov-91 */
+    if( sym_handle == 0 ) {
         segname = CGInteger( 0, TY_UNSIGNED );
     } else {
-        if( sym_handle == Sym_CS ) { /* 23-jan-92 */
+        if( sym_handle == Sym_CS ) {
             segname = CGFEName(  CurFuncHandle, TY_LONG_CODE_PTR );
-        } else if( sym_handle == Sym_SS ) { /* 13-dec-92 */
+        } else if( sym_handle == Sym_SS ) {
             if( SSVar == NULL ) {
                 SSVar = CGTemp( TY_UINT_2 );
             }
@@ -632,7 +632,7 @@ static cg_name PushConstant( OPNODE *node )
     FLOATVAL    *flt;
     char        *flt_string;
 
-    dtype = CGDataType[ node->u1.const_type ];
+    dtype = CGDataType[node->u1.const_type];
     switch( node->u1.const_type ) {
     case TYPE_CHAR:
     case TYPE_UCHAR:
@@ -760,9 +760,9 @@ local void DoSwitch( OPNODE *node, cg_name name )
     table = CGSelInit();
     sw = node->u2.switch_info;
     for( ce = sw->case_list; ce != NULL; ce = ce->next_case ) {
-        CGSelCase( table, CGLabelHandles[ ce->label ], ce->value );
+        CGSelCase( table, CGLabelHandles[ce->label], ce->value );
     }
-    CGSelOther( table, CGLabelHandles[ sw->default_label ] );
+    CGSelOther( table, CGLabelHandles[sw->default_label] );
     CGSelect( table, name );
 }
 
@@ -883,7 +883,7 @@ local void EmitNodes( TREEPTR tree )
         case OPR_CMP:                   // compare
             op2 = PopCGName();
             op1 = PopCGName();
-            PushCGName( CGCompare( CC2CGOp[ node->u1.cc ], op1, op2,
+            PushCGName( CGCompare( CC2CGOp[node->u1.cc], op1, op2,
                                     CGenType( node->u2.compare_type ) ) );
             break;
         case OPR_COM:                   // ~
@@ -915,7 +915,7 @@ local void EmitNodes( TREEPTR tree )
         case OPR_AND_AND:               // &&
             op2 = PopCGName();
             op1 = PopCGName();
-            PushCGName( CGFlow( CGOperator[ node->opr ], op1, op2 ) );
+            PushCGName( CGFlow( CGOperator[node->opr], op1, op2 ) );
             break;
         case OPR_POINTS:                // *ptr
             op1 = PopCGName();
@@ -1038,23 +1038,23 @@ local void EmitNodes( TREEPTR tree )
             PushCGName( call_list );
             break;
         case OPR_LABEL:                 // label
-            CGControl( O_LABEL, NULL, CGLabelHandles[ node->u2.label_index ] );
+            CGControl( O_LABEL, NULL, CGLabelHandles[node->u2.label_index] );
             break;
         case OPR_CASE:                  // case label
             if( node->u2.case_info->gen_label ) {
-                CGControl( O_LABEL, NULL, CGLabelHandles[ node->u2.case_info->label ] );
+                CGControl( O_LABEL, NULL, CGLabelHandles[node->u2.case_info->label] );
             }
             break;
         case OPR_JUMP:                  // jump
-            CGControl( O_GOTO, NULL, CGLabelHandles[ node->u2.label_index ] );
+            CGControl( O_GOTO, NULL, CGLabelHandles[node->u2.label_index] );
             break;
         case OPR_JUMPTRUE:              // jump if true
             op1 = PopCGName();
-            CGControl( O_IF_TRUE, op1, CGLabelHandles[ node->u2.label_index ] );
+            CGControl( O_IF_TRUE, op1, CGLabelHandles[node->u2.label_index] );
             break;
         case OPR_JUMPFALSE:             // jump if false
             op1 = PopCGName();
-            CGControl( O_IF_FALSE, op1, CGLabelHandles[ node->u2.label_index ] );
+            CGControl( O_IF_FALSE, op1, CGLabelHandles[node->u2.label_index] );
             break;
         case OPR_SWITCH:                // switch
             op1 = PopCGName();
@@ -1156,11 +1156,11 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
     unroll_count = 0;
     while( tree != NULL ) {
         if( tree->op.u2.src_loc.line != SrcLoc.line || tree->op.u2.src_loc.fno != SrcLoc.fno ) {
-            if( Saved_CurFunc == 0 ) {      /* 24-nov-91 */
+            if( Saved_CurFunc == 0 ) {
                 FNAMEPTR    flist;
 
                 flist = FileIndexToFName( tree->op.u2.src_loc.fno );
-                if( flist->index_db == DBIDX_NONE ) {
+                if( flist->index_db == DBFILE_INVALID ) {
                     char *fullpath;
 
                     fullpath = FNameFullPath( flist );
@@ -1396,7 +1396,7 @@ void DoCompile( void )
 #endif
                 SetSegs();
                 BEStart();
-                EmitSegLabels();                        /* 15-mar-92 */
+                EmitSegLabels();
                 if( GenSwitches & DBG_TYPES )
                     EmitDBType();
                 EmitSyms();
@@ -1413,15 +1413,15 @@ void DoCompile( void )
                 PruneFunctions();
                 GenModuleCode();
                 FreeStrings();
-                FiniSegLabels();                        /* 15-mar-92 */
+                FiniSegLabels();
                 if( ErrCount != 0 ) {
                     BEAbort();
                 }
                 BEStop();
-                FiniSegBacks();                /* 15-mar-92 */
+                FiniSegBacks();
                 FreeGblVars( GlobalSym );
-                FreeGblVars( SpecialSyms );     /* 05-dec-89 */
-                FreeExtVars();                          /* 02-apr-92 */
+                FreeGblVars( SpecialSyms );
+                FreeExtVars();
 #ifdef __SEH__
                 FreeTryTableBackHandles();
 #endif
@@ -1611,7 +1611,7 @@ local void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     }
 }
 
-local void ParmReverse( SYM_HANDLE sym_handle ) /* 22-jan-90 */
+local void ParmReverse( SYM_HANDLE sym_handle )
 {
     SYMPTR      sym;
 
@@ -1627,8 +1627,8 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
     cg_type             dtype;
-    char                emit_debug_info;                /* 01-mar-91 */
-    char                emit_extra_info;                /* 25-nov-91 */
+    char                emit_debug_info;
+    char                emit_extra_info;
     SYM_ENTRY           sym;
 
     while( sym_handle != 0 ) {
@@ -1649,7 +1649,7 @@ local void CDoAutoDecl( SYM_HANDLE sym_handle )
                 }
             }
         } else if( sym.attribs.stg_class != SC_EXTERN &&
-                   sym.attribs.stg_class != SC_TYPEDEF ) {      /* 25-nov-94 */
+                   sym.attribs.stg_class != SC_TYPEDEF ) {
             if( sym.flags & SYM_ADDR_TAKEN ) {
                 emit_extra_info = 1;
             }
@@ -1775,7 +1775,7 @@ local void RelExtVars( SYM_HANDLE sym_handle )
     }
 }
 
-local void FreeExtVars( void )                          /* 02-apr-92 */
+local void FreeExtVars( void )
 {
     SYM_LISTS   *sym_list;
     SYM_LISTS   *next_sym;
@@ -1802,7 +1802,7 @@ cg_type CGenType( TYPEPTR typ )
     case TYPE_LDCOMPLEX:
     case TYPE_STRUCT:
     case TYPE_UNION:
-        if( typ->object != NULL ) { /* 15-jun-94 */
+        if( typ->object != NULL ) {
             /* structure has a zero length array as last field */
             dtype = NewRefno();
             align = GetTypeAlignment( typ );
@@ -1827,10 +1827,10 @@ cg_type CGenType( TYPEPTR typ )
         break;
     case TYPE_FIELD:
     case TYPE_UFIELD:
-        dtype = CGDataType[ typ->u.f.field_type ];
+        dtype = CGDataType[typ->u.f.field_type];
         break;
     case TYPE_FUNCTION:
-        dtype = CodePtrType( FLAG_NONE ); /* 20-nov-87 */
+        dtype = CodePtrType( FLAG_NONE );
         break;
     case TYPE_POINTER:
         flags = typ->u.p.decl_flags;
@@ -1839,7 +1839,7 @@ cg_type CGenType( TYPEPTR typ )
     case TYPE_ENUM:
         typ = typ->object;
     default:
-        dtype = CGDataType[ typ->decl_type ];
+        dtype = CGDataType[typ->decl_type];
     }
     return( dtype );
 }
@@ -1921,7 +1921,7 @@ local void Emit1String( STR_HANDLE str_handle )
 }
 
 
-int EmitBytes( STR_HANDLE strlit )
+target_size EmitBytes( STR_HANDLE strlit )
 {
     DGBytes( strlit->length, strlit->literal );
     return( strlit->length );
@@ -2007,7 +2007,7 @@ static void GenerateTryBlock( TREEPTR tree )
             break;
         case OPR_EXCEPT:
         case OPR_FINALLY:
-            ValueStack[ try_index ] = stmt;
+            ValueStack[try_index] = stmt;
             break;
         default:
             break;
@@ -2027,7 +2027,7 @@ static void GenerateTryBlock( TREEPTR tree )
         TryTableBackHandles = try_backinfo;
         DGLabel( except_table );
         for( try_index = 0; try_index <= max_try_index; try_index++ ) {
-            stmt = ValueStack[ try_index ];
+            stmt = ValueStack[try_index];
             DGInteger( stmt->op.u2.st.parent_scope, TY_UINT_1 );  // parent index
             if( stmt->op.opr == OPR_EXCEPT ) {
                 DGInteger( 0, TY_UINT_1 );
