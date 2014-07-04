@@ -201,16 +201,16 @@ local void SplitDataQuad( DATA_QUAD_LIST *dql, target_size size )
         if( dq->flags & Q_2_INTS_IN_ONE ) {
             dq->flags = ndq->flags = Q_DATA;
             ndq->u_long_value1 = dq->u_long_value2;
-            ndq->u_long_value2 = d0;
+            ndq->u_long_value2 = 0;
             dq->u_long_value2 = 0;
             size = 0;
         } else if( dq->flags & Q_REPEATED_DATA ) {
-            dq->u_rpt_count = size / (oldsize / dq->u_rpt_count);
+            dq->u_rpt_count = size / ( oldsize / dq->u_rpt_count );
             ndq->u_rpt_count -= dq->u_rpt_count;
             size = 0;
         } else if( dq->type == QDT_CONSTANT ) {
             dq->u_size = size;
-            ndq->u_size -= dq->u_size;
+            ndq->u_size -= size;
             size = 0;
         } else if( dq->type == QDT_CONST ) {
             dq->u.string_leaf->length = size;
@@ -333,7 +333,7 @@ local void StoreIValue( DATA_TYPE dtype, int value, target_size size )
     } else if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == Q_DATA ) {
         if( dq_ptr->u_long_value1 == value ) {
             dq_ptr->flags |= Q_REPEATED_DATA;
-            dq_ptr->u_rpt_count= 2;             /* repeat count */
+            dq_ptr->u_rpt_count = 2;            /* repeat count */
         } else {
             dq_ptr->flags |= Q_2_INTS_IN_ONE;
             dq_ptr->u_long_value2 = value;
@@ -1120,7 +1120,7 @@ local void InitWCharArray( TYPEPTR typ )
         ZeroBytes( ( size - i ) * sizeof( unsigned short ) );
     }
     FreeLiteral( str_lit );
- }
+}
 
 
 local void StoreFloat( DATA_TYPE dtype, target_size size )
@@ -1352,7 +1352,6 @@ static bool SimpleStruct( TYPEPTR typ )
     for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
         typ = field->field_type;
         SKIP_TYPEDEFS( typ );
-
         switch( typ->decl_type ) {
         case TYPE_UNION:
             if( SimpleUnion( typ ) ) {

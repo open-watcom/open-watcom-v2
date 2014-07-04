@@ -100,7 +100,7 @@ void DumpOpnd( TREEPTR opnd )
         printf( "error" );
         break;
     case OPR_PUSHINT:
-        printf( "%ld", opnd->op.u2.long_value );
+        printf( "%d", opnd->op.u2.long_value );
         break;
     case OPR_PUSHFLOAT:
 #ifdef _LONG_DOUBLE_
@@ -202,7 +202,7 @@ void DumpInfix( TREEPTR node )
         printf( "%s L%u ", _Ops[node->op.opr], node->op.u2.label_index );
         break;
     case OPR_CASE:
-        printf( "%s %lu (L%u)", _Ops[node->op.opr], 
+        printf( "%s %u (L%u)", _Ops[node->op.opr], 
                 node->op.u2.case_info->value, node->op.u2.case_info->label );
         break;
     case OPR_INDEX:

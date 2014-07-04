@@ -136,7 +136,9 @@ unsigned char _real87;
 
 int FrontEnd( char **cmdline )
 {
-    _real87 = _8087 = 0;/* set to 0 in case 8087 is present; 27-may-91 */
+    /* set to 0 in case 8087 is present */
+    _real87 = 0;
+    _8087 = 0;
 
     InitGlobalVars();
     CMemInit();
@@ -1361,9 +1363,7 @@ void EmitLine( unsigned line_num, const char *filename )
 
 bool CppPrinting( void )
 {
-    if( NestLevel != SkipLevel )
-        return( FALSE );
-    return( TRUE );
+    return( NestLevel == SkipLevel );
 }
 
 void CppPrtToken( void )

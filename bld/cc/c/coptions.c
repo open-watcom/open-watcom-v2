@@ -205,7 +205,7 @@ local void SetTargName( const char *name, size_t len )
 
 #define _SetConstTarg( name ) SetTargName( name, sizeof( name ) - 1 )
 
-local void SetTargSystem( void )                            /* 07-aug-90 */
+local void SetTargSystem( void )
 {
     char        buff[128];
 
@@ -763,7 +763,7 @@ static void MacroDefs( void )
     }
     switch( SwData.fpt ) {
     case SW_FPT_CALLS:
-        CompFlags.op_switch_used = 0;           /* 05-sep-92 */
+        CompFlags.op_switch_used = 0;
         Define_Macro( "__SW_FPC" );
         break;
     case SW_FPT_EMU:
@@ -796,7 +796,7 @@ static void MacroDefs( void )
     if( SwData.nd_used ) {
         Define_Macro( "__SW_ND" );
     }
-    if( CompFlags.op_switch_used ) {            /* 05-sep-92 */
+    if( CompFlags.op_switch_used ) {
         Define_Macro( "__SW_OP" );
     }
 #endif
@@ -1278,7 +1278,7 @@ static void Set_ZAM( void )
 static void Set_ZC( void )
 {
     CompFlags.strings_in_code_segment = 1;
-    CompFlags.zc_switch_used = 1;       /* 04-jun-91 */
+    CompFlags.zc_switch_used = 1;
     TargetSwitches |= CONST_IN_CODE;
 }
 static void Set_ZDF( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 0; }
@@ -2227,7 +2227,7 @@ void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
     EnableDisableMessage( 0, ERR_PARM_NOT_REFERENCED );
-    /* 29-oct-03 Add precision warning but disabled by default */
+    /* Add precision warning but disabled by default */
     EnableDisableMessage( 0, ERR_LOSE_PRECISION );
     /* Warning about non-prototype declarations is disabled by default
      * because Windows and OS/2 API headers use it
@@ -2245,9 +2245,9 @@ void GenCOptions( char **cmdline )
     InitModInfo();
     InitCPUModInfo();
 #if _CPU == 386
-    ProcOptions( FEGetEnv( "WCC386" ) );              /* 12-mar-90 */
+    ProcOptions( FEGetEnv( "WCC386" ) );
 #elif _CPU == 8086
-    ProcOptions( FEGetEnv( "WCC" ) );                 /* 12-mar-90 */
+    ProcOptions( FEGetEnv( "WCC" ) );
 #elif _CPU == _AXP
     ProcOptions( FEGetEnv( "WCCAXP" ) );
 #elif _CPU == _PPC
@@ -2265,7 +2265,7 @@ void GenCOptions( char **cmdline )
     if( CompFlags.cpp_output_requested )
         CompFlags.cpp_output = 1;
     if( CompFlags.cpp_output )
-        CompFlags.quiet_mode = 1;       /* 29-sep-90 */
+        CompFlags.quiet_mode = 1;
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
     SetTargSystem();
@@ -2277,7 +2277,7 @@ void GenCOptions( char **cmdline )
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
         TargetSwitches &= ~(FLOATING_FS|FLOATING_GS);
     }
-    if( ! CompFlags.save_restore_segregs ) {                /* 11-apr-91 */
+    if( ! CompFlags.save_restore_segregs ) {
         if( TargetSwitches & FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
@@ -2296,6 +2296,6 @@ void GenCOptions( char **cmdline )
         SetAuxStackConventions();
   #endif
 #endif
-    MacroDefs();                                        /* 07-aug-90 */
+    MacroDefs();
     MiscMacroDefs();
 }

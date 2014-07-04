@@ -323,7 +323,7 @@ dbug_type DBType( TYPEPTR typ )
 }
 
 
-static void DumpFieldList( dbg_struct st,  target_size bias,
+static void DumpFieldList( dbg_struct st, target_size bias,
                           FIELDPTR pfield, TYPEPTR field_obj )
 {
     TYPEPTR field_typ;

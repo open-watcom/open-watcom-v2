@@ -118,7 +118,7 @@ local void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
         CErr2p( ERR_MODIFIERS_DISAGREE, new_sym->name );
     }
 
-/*      check for conflicting information */
+    /* check for conflicting information */
     /* skip over TYPEDEF's  */
     type_new = new_sym->sym_type;
     SKIP_TYPEDEFS( type_new );
@@ -192,13 +192,14 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( (old_sym.flags & SYM_FUNCTION) == 0 ) {
             CErr2p( ERR_SYM_ALREADY_DEFINED_AS_VAR, sym->name );
-            //02-jun-89 sym_handle = old_sym_handle
+            // sym_handle = old_sym_handle;
             sym_handle = SymAddL0( sym->info.hash, sym );
         } else {
             CmpFuncDecls( sym, &old_sym );
             PrevProtoType = old_sym.sym_type;
             if( (old_sym.flags & SYM_DEFINED) == 0 ) {
-                if( sym->sym_type->u.fn.parms != NULL || ( CurToken != T_COMMA && CurToken != T_SEMI_COLON ) ) {
+                if( sym->sym_type->u.fn.parms != NULL
+                  || ( CurToken != T_COMMA && CurToken != T_SEMI_COLON ) ) {
                     old_typ = old_sym.sym_type;
                     if( old_typ->decl_type == TYPE_TYPEDEF &&
                        old_typ->object->decl_type == TYPE_FUNCTION ) {
@@ -462,7 +463,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SetDiagPop();
     } else {
         if( stg_class == SC_EXTERN && SymLevel != 0 ) {
-            ; /* do nothing  */
+            ; /* do nothing */
         } else {
             VfyNewSym( sym->info.hash, sym->name );
         }

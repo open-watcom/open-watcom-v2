@@ -110,7 +110,7 @@ void SetFarHuge( SYMPTR sym, int report )
     report = report; /* in case not used */
 #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
-     || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
+      || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
         sym->mods |= FLAG_FAR;
     } else if( sym->mods & FLAG_EXPORT ) {
         sym->mods |= FLAG_FAR;
@@ -245,9 +245,12 @@ segment_id SymSegId( SYMPTR sym )
     fe_attr     attr;
 
     attr = FESymAttr( sym );
-    if( attr & FE_PROC ) return( SEG_CODE );
+    if( attr & FE_PROC )
+        return( SEG_CODE );
     if( !CompFlags.rent ) {
-        if( attr & FE_CONSTANT ) return( SEG_CONST2 );
+        if( attr & FE_CONSTANT ) {
+            return( SEG_CONST2 );
+        }
     }
     return( SEG_DATA );
 }
@@ -539,8 +542,9 @@ hw_reg_set *SegPeggedReg( segment_id requested_seg )
     user_seg    *useg;
 
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
-        if( useg->segment == requested_seg )
+        if( useg->segment == requested_seg ) {
             return( &useg->pegged_register );
+        }
     }
     return( NULL );
 }
@@ -680,7 +684,8 @@ char *FEName( CGSYM_HANDLE cgsym_handle )
     SYMPTR      sym;
 
     sym_handle = cgsym_handle;
-    if( sym_handle == 0 ) return( "*** NULL ***" );
+    if( sym_handle == 0 )
+        return( "*** NULL ***" );
     sym = SymGetPtr( sym_handle );
     return( sym->name );
 }
@@ -741,8 +746,7 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_SCOREBOARD_DIED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( LastFuncOutOfMem != (CGSYM_HANDLE)parm ) {
-                CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE,
-                            FEName( (CGSYM_HANDLE)parm ) );
+                CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE, FEName( (CGSYM_HANDLE)parm ) );
                 LastFuncOutOfMem = (CGSYM_HANDLE)parm;
             }
         }

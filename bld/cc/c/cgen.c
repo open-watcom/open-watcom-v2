@@ -46,6 +46,11 @@
 #define PushCGName(name)        ValueStack[index++] = (TREEPTR)name
 #define PopCGName()             (cg_name)ValueStack[--index]
 
+typedef struct local_vars {
+    struct local_vars   *next;
+    SYM_HANDLE          sym_list;
+} local_vars;
+
 #ifdef __SEH__
 typedef struct  try_table_back_handles {
     struct try_table_back_handles   *next;
@@ -76,11 +81,7 @@ static void     CallTryFini( void );
 static void     GenerateTryBlock( TREEPTR tree );
 #endif
 
-static  struct  local_vars {
-    struct local_vars       *next;
-    SYM_HANDLE              sym_list;
-} *LocalVarList;
-
+static local_vars       *LocalVarList;
 static label_handle     *CGLabelHandles;
 static TREEPTR          FirstNode;
 static TREEPTR          LastNode;
@@ -174,21 +175,19 @@ static void DefineLabels( OPNODE *node )
     }
 }
 
-static struct local_vars *ReleaseVars( SYM_HANDLE sym_list,
-                                struct local_vars *local_var_list )
+static local_vars *ReleaseVars( SYM_HANDLE sym_list, local_vars *local_var_list )
 {
-    struct local_vars *local_entry;
+    local_vars  *local_entry;
 
-    local_entry = (struct local_vars *)
-                    CMemAlloc( sizeof( struct local_vars ) );
+    local_entry = (local_vars *)CMemAlloc( sizeof( local_vars ) );
     local_entry->next = local_var_list;
     local_entry->sym_list = sym_list;
     return( local_entry );
 }
 
-static void RelLocalVars( struct local_vars *local_var_list )
+static void RelLocalVars( local_vars *local_var_list )
 {
-    struct local_vars   *local_entry;
+    local_vars  *local_entry;
 
     while( local_var_list != NULL ) {
         FreeLocalVars( local_var_list->sym_list );
@@ -692,8 +691,7 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
     if( Far16Pointer( node->flags ) ) {
         // Do NOT convert __far16 function pointers to flat because the
         // thunk routine expects 16:16 pointers!
-        if( ( typ->object != NULL ) &&
-            ( typ->object->decl_type != TYPE_FUNCTION ) ) {
+        if( ( typ->object != NULL ) && ( typ->object->decl_type != TYPE_FUNCTION ) ) {
             name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
         }
     }
@@ -770,12 +768,12 @@ static bool IsStruct( TYPEPTR typ )
 /*********************************/
 {
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_STRUCT  ||
-        typ->decl_type == TYPE_FCOMPLEX ||
-        typ->decl_type == TYPE_DCOMPLEX ||
-        typ->decl_type == TYPE_LDCOMPLEX ||
-        typ->decl_type == TYPE_UNION ) {
-            return( TRUE );
+    if( typ->decl_type == TYPE_STRUCT
+      || typ->decl_type == TYPE_FCOMPLEX
+      || typ->decl_type == TYPE_DCOMPLEX
+      || typ->decl_type == TYPE_LDCOMPLEX
+      || typ->decl_type == TYPE_UNION ) {
+        return( TRUE );
     }
     return( FALSE );
 }
@@ -1154,7 +1152,7 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
     unroll_type unroll_count;
 
     unroll_count = 0;
-    while( tree != NULL ) {
+    for( ; tree != NULL; tree = tree->left ) {
         if( tree->op.u2.src_loc.line != SrcLoc.line || tree->op.u2.src_loc.fno != SrcLoc.fno ) {
             if( Saved_CurFunc == 0 ) {
                 FNAMEPTR    flist;
@@ -1191,14 +1189,14 @@ local TREEPTR GenOptimizedCode( TREEPTR tree )
         EmitNodes( LinearizeTree( tree->right ) );
 #ifdef __SEH__
         if( tree->right->op.opr == OPR_FUNCTION ) {     // if start of func
-           if( FuncNodePtr->u2.func.flags & FUNC_USES_SEH ) {
+            if( FuncNodePtr->u2.func.flags & FUNC_USES_SEH ) {
                 GenerateTryBlock( tree->left );
-           }
+            }
         }
 #endif
-        if( tree->right->op.opr == OPR_FUNCEND )
+        if( tree->right->op.opr == OPR_FUNCEND ) {
             break;
-        tree = tree->left;
+        }
     }
     return( tree );
 }
@@ -1257,7 +1255,7 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
         if( tree != NULL ) {
            right = tree->right;
            if( (right->op.u2.func.flags & FUNC_INUSE) == 0 ) {
-               ret =  right->op.u2.func.flags & FUNC_OK_TO_INLINE;
+               ret = ( (right->op.u2.func.flags & FUNC_OK_TO_INLINE) != 0 );
            }
         }
     }
@@ -1278,7 +1276,7 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
     int                 marked;
 
     if( tree == NULL || tree->right == NULL )
-        return 0;
+        return( 0 );
     f = &tree->right->op.u2.func;
 
     if( inline_depth == -1 ) {
@@ -1293,25 +1291,23 @@ local int ScanFunction( TREEPTR tree, int inline_depth )
         if( f->flags & FUNC_USED )
             return 0;
         f->flags |= FUNC_USED | FUNC_MARKED;
-        return 1;
+        return( 1 );
     }
 
     f->flags |= FUNC_INUSE;
     marked = 0;
-    while( tree != NULL ) {
-        right = LinearizeTree( tree->right );
-        while( right ) {
-            if( right->op.opr == OPR_FUNCNAME )
-                marked += ScanFunction( FindFuncStmtTree( right->op.u2.sym_handle ),
-                                        inline_depth );
-            right = right->u.thread;
+    for( ; tree != NULL; tree = tree->left ) {
+        for( right = LinearizeTree( tree->right ); right != NULL; right = right->u.thread ) {
+            if( right->op.opr == OPR_FUNCNAME ) {
+                marked += ScanFunction( FindFuncStmtTree( right->op.u2.sym_handle ), inline_depth );
+            }
         }
-        if( tree->right->op.opr == OPR_FUNCEND )
+        if( tree->right->op.opr == OPR_FUNCEND ) {
             break;
-        tree = tree->left;
+        }
     }
     f->flags &= ~FUNC_INUSE;
-    return marked;
+    return( marked );
 }
 
 /* This function scans the source file tree for functions. Any non-static
@@ -1352,12 +1348,10 @@ local void GenModuleCode( void )
 {
     TREEPTR     tree;
 
-    tree = FirstStmt;
     InLineDepth = 0;
 //  InLineFuncStack = NULL;
-    while( tree != NULL ) {
+    for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         tree = GenOptimizedCode( tree );
-        tree = tree->left;
     }
 }
 
@@ -1450,7 +1444,7 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     }
     SKIP_TYPEDEFS( typ );
     CGenType( typ );    /* create refno for ARRAY type, etc */
-    if( sym->attribs.stg_class != SC_EXTERN     &&  /* if not imported */
+    if( sym->attribs.stg_class != SC_EXTERN &&  /* if not imported */
         sym->attribs.stg_class != SC_TYPEDEF ) {
         if( ( sym->flags & SYM_FUNCTION ) == 0 ) {
             segment = sym->u.var.segment;
@@ -1499,7 +1493,7 @@ local void EmitSyms( void )
           && ( (sym.flags & SYM_TEMP) == 0 )
           && ( sym.attribs.stg_class != SC_TYPEDEF ) ) {
 #if _CPU == 370
-            if( sym.attribs.stg_class != SC_EXTERN || sym.flags & SYM_REFERENCED) {
+            if( sym.attribs.stg_class != SC_EXTERN || (sym.flags & SYM_REFERENCED) ) {
                 DBModSym( sym_handle, TY_DEFAULT );
             }
 #else
@@ -1603,7 +1597,7 @@ local void CDoParmDecl( SYMPTR sym, SYM_HANDLE sym_handle )
     if( (GenSwitches & NO_OPTIMIZATION)
       || (!CompFlags.register_conventions && CompFlags.debug_info_some) ) {
 #else
-    if( (GenSwitches & NO_OPTIMIZATION) ) {
+    if( GenSwitches & NO_OPTIMIZATION ) {
 #endif
         if( GenSwitches & DBG_LOCALS ) {
             DBLocalSym( sym_handle, TY_DEFAULT );
@@ -1944,11 +1938,12 @@ local void EmitLiteral( STR_HANDLE strlit )
 
 local void FreeStrings( void )
 {
-    STR_HANDLE      strlit, next;
+    STR_HANDLE      strlit;
+    STR_HANDLE      next;
     str_hash_idx    h;
 
     for( h = 0; h < STRING_HASH_SIZE; ++h ) {
-        for( strlit = StringHash[h]; strlit != NULL; ) {
+        for( strlit = StringHash[h]; strlit; ) {
             if( strlit->back_handle != 0 ) {
                 BEFiniBack( strlit->back_handle );
                 BEFreeBack( strlit->back_handle );
@@ -1958,19 +1953,18 @@ local void FreeStrings( void )
             FreeLiteral( strlit );
             strlit = next;
         }
-        StringHash[h] = 0;
+        StringHash[h] = NULL;
     }
 }
 
 
 local void DumpCS_Strings( STR_HANDLE strlit )
 {
-    while( strlit != NULL ) {
+    for( ; strlit != NULL; strlit = strlit->next_string ) {
         if( (strlit->flags & STRLIT_CONST) && strlit->ref_count != 0 ) {
             strlit->back_handle = BENewBack( NULL );
             EmitLiteral( strlit );
         }
-        strlit = strlit->next_string;
     }
 }
 

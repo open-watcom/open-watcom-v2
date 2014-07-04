@@ -101,8 +101,8 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
     if( !EqualChar( *str ) ) {
         MTOK( TokenBuf + len ) = T_PPNUMBER;
         MTOKINC( len );
-        TokenBuf[ len++ ] = '1';
-        TokenBuf[ len++ ] = '\0';
+        TokenBuf[len++] = '1';
+        TokenBuf[len++] = '\0';
     } else {
         bool ppscan_mode;
 
@@ -144,7 +144,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
     MTOKINC( len );
     if( CMPLIT( mentry->macro_name, "defined" ) != 0 ){
         MacroAdd( mentry, TokenBuf, len, mflags );
-    }else{
+    } else {
         CErr1( ERR_CANT_DEFINE_DEFINED );
     }
     FreeMEntry( mentry );

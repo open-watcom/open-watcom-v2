@@ -221,7 +221,7 @@ void GetMacroToken( void )
             ReScanInit( mtok->data );
             if( ReScanToken() ) {   // didn't finish string bad boy
                 char    *tcur;
-                char        *tbeg;
+                char    *tbeg;
 
                 tbeg = mtok->data;
                 tcur = ReScanPos();
@@ -583,10 +583,10 @@ static MACRO_ARG *CollectParms(void)
 
 #ifndef NDEBUG
 
-void DumpMDefn( unsigned char *p )
+void DumpMDefn( const char *p )
 {
-    int         c;
-    TOKEN       tok;
+    unsigned char   c;
+    TOKEN           tok;
 
     while( (tok = MTOK( p )) != T_NULL ) {
         MTOKINC( p );
@@ -843,8 +843,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         gluebuf = GlueTokenToBuffer( next, NULL );
                     } else {
                         gluebuf = GlueTokenToBuffer( mtok, NULL );
-                        if( next != NULL &&
-                            next->token != T_MACRO_EMPTY_VAR_PARM ) {
+                        if( next != NULL &&  next->token != T_MACRO_EMPTY_VAR_PARM ) {
                             gluebuf = GlueTokenToBuffer( next, gluebuf ); //paste in next
                         }
                     }
@@ -875,7 +874,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         lnk = &mtok->next;
                         mtok = *lnk;
                         if( mtok == mtok->next ) {
-                            return head;
+                            return( head );
                         }
                     }
                     // mtok == last token of retokenizing

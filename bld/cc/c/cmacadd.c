@@ -145,7 +145,7 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
     MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
     mentry = (MEPTR)MacroOffset;
     CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
-    lnk  = &MacHash[ MacHashValue ];
+    lnk  = &MacHash[MacHashValue];
     lnk = MacroLkUp( mentry->macro_name, lnk );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
@@ -165,8 +165,8 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
     }
     if( old_mentry == NULL ) {  //add new entry
         ++MacroCount;
-        mentry->next_macro = MacHash[ MacHashValue ];
-        MacHash[ MacHashValue ] = mentry;
+        mentry->next_macro = MacHash[MacHashValue];
+        MacHash[MacHashValue] = mentry;
         MacroOffset += _RoundUp( len, sizeof( int ) );
         mentry->macro_flags = InitialMacroFlag | mflags;
     }
@@ -202,7 +202,7 @@ MEPTR MacroLookup( const char *buf )
 {
     MEPTR       mentry, *lnk;
 
-    lnk = MacroLkUp( buf, &MacHash[ MacHashValue ] );
+    lnk = MacroLkUp( buf, &MacHash[MacHashValue] );
     mentry = *lnk;
     return( mentry );
 }

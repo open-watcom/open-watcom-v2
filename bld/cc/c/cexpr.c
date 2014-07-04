@@ -563,7 +563,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             symb_flags = sym.flags;
             sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
             if( symb_flags != sym.flags ) {
-                    SymReplace( &sym, tree->op.u2.sym_handle );
+                SymReplace( &sym, tree->op.u2.sym_handle );
             }
         } else if( tree->op.opr == OPR_POINTS ) {
             decl_flags = tree->op.u2.result_type->u.p.decl_flags;
@@ -2150,7 +2150,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                 SymGet( &sym, functree->op.u2.sym_handle );
 #if 0
                 if( functree->op.u2.sym_handle == CurFuncHandle ) {
-                    recursive = 1;                      /* 22-sep-91 */
+                    recursive = 1;
                 }
 #endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
