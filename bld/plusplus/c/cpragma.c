@@ -1458,20 +1458,17 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     const char      *p;
     unsigned char   c;
     unsigned char   c2;
-    int             i;
+    size_t          i;
 
     index = 0;
-    p = registers;
-    while( *p != '\0' ) {
+    for( p = registers; *p != '\0'; ) {
         i = 0;
-        for( ; (c = *p++) != '\0'; ) {
+        while( (c = *p++) != '\0' ) {
             if( i > len )
                 continue;
             if( i < len ) {
                 c2 = name[i++];
-                if( ignorecase )
-                    c2 = tolower( c2 );
-                if( c == c2 ) {
+                if( c == c2 || ignorecase && tolower( c ) == tolower( c2 ) ) {
                     continue;
                 }
             }

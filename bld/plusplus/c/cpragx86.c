@@ -1232,31 +1232,29 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
     const char *str,            // - register name
     size_t len )                // - register name len
 {
-    register int    index;
+    int             index;
     hw_reg_set      name;
 
-    if( *str == '\0' ) {
-        HW_CAsgn( name, HW_EMPTY );
-        return( name );
-    }
-    if( *str == '_' ) {
-        ++str;
-        --len;
+    if( *str != '\0' ) {
         if( *str == '_' ) {
             ++str;
             --len;
+            if( *str == '_' ) {
+                ++str;
+                --len;
+            }
         }
-    }
-    index = PragRegIndex( Registers, str, len, TRUE );
-    if( index != -1 ) {
-        return( RegBits[RegMap[index]] );
-    }
-    if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
-        HW_CAsgn( name, HW_FLTS );
-    } else {
+        index = PragRegIndex( Registers, str, len, TRUE );
+        if( index != -1 ) {
+            return( RegBits[RegMap[index]] );
+        }
+        if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
+            HW_CAsgn( name, HW_FLTS );
+            return( name );
+        }
         CErr2p( ERR_BAD_REGISTER_NAME, str );
-        HW_CAsgn( name, HW_EMPTY );
     }
+    HW_CAsgn( name, HW_EMPTY );
     return( name );
 }
 
