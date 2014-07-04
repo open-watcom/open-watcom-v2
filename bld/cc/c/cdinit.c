@@ -843,7 +843,6 @@ local void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
 
     n = typ->u.tag->size;      /* get full size of the struct or union */
     offset = 0;
-
     for( ;; ) {
         field = DesignatedInit( typ, ctyp, field );
         if( field == NULL )

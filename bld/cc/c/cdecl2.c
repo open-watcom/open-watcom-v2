@@ -1215,9 +1215,9 @@ FIELDPTR FieldCreate( const char *name )
     FIELDPTR    field;
     size_t      len;
 
-    len = strlen( name );
-    field = (FIELDPTR)CPermAlloc( sizeof( FIELD_ENTRY ) + len );
-    memcpy( field->name, name, len + 1 );
+    len = strlen( name ) + 1;
+    field = (FIELDPTR)CPermAlloc( sizeof( FIELD_ENTRY ) - 1 + len );
+    memcpy( field->name, name, len );
     if( CompFlags.emit_browser_info ) {
         field->xref = NewXref( NULL );
     }

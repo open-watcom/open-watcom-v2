@@ -198,7 +198,7 @@ char *AddUndefName( const char *str )
         CompFlags.undefine_all_macros = 1;
     } else {
         CalcHash( str, len );
-        if( !MacroDel( str ) ){
+        if( !MacroDel( str ) ) {
             uname = (undef_names *)CMemAlloc( sizeof( undef_names ) );
             uname->next = UndefNames;
             uname->name = CMemAlloc( len + 1 );

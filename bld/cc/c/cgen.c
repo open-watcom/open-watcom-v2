@@ -1529,10 +1529,12 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     CGProcDecl( funcsym_handle, ret_type );
 #if _CPU == 386
     if( TargetSwitches & P5_PROFILING ) {
-        char *fn_name = FEName( funcsym_handle );
-        size_t len = strlen( fn_name ) + 1;
+        char       *fn_name;
+        size_t     len;
         segment_id old_segment;
 
+        fn_name = FEName( funcsym_handle );
+        len = strlen( fn_name ) + 1;
         old_segment = BESetSeg( FunctionProfileSegment );
         FunctionProfileBlock = BENewBack( NULL );
         DGLabel( FunctionProfileBlock );

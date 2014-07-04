@@ -441,7 +441,7 @@ local void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
     }
 }
 
-static MACRO_ARG *CollectParms(void)
+static MACRO_ARG *CollectParms( void )
 {
     MEPTR           mentry;
     size_t          len;

@@ -208,6 +208,7 @@ local void SetTargName( const char *name, size_t len )
 local void SetTargSystem( void )
 {
     char        buff[128];
+    size_t      len;
 
     if( CompFlags.oldmacros_enabled ) {
 #if _CPU == _AXP
@@ -397,9 +398,13 @@ local void SetTargSystem( void )
 #endif
         break;
     }
-    memcpy( buff, "__", 2 );
-    strcpy( buff + 2, SwData.sys_name );
-    strcat( buff, "__" );
+    len = strlen( SwData.sys_name );
+    buff[0] = '_';
+    buff[1] = '_';
+    memcpy( buff + 2, SwData.sys_name, len );
+    buff[2 + len] = '_';
+    buff[2 + len + 1] = '_';
+    buff[2 + len + 2] = '\0';
     PreDefine_Macro( buff );
 }
 

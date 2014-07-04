@@ -161,7 +161,7 @@ local void CUnknown( void )
 static void PreProcStmt( void )
 {
     struct preproc      *pp;
-    int                 hash;
+    unsigned            hash;
 
     NextChar();                 /* skip over '#' */
     PPNextToken();

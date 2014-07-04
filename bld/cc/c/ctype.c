@@ -733,7 +733,7 @@ static TAGPTR NewTag( const char *name, id_hash_idx h )
     size_t      len;
 
     len = strlen( name ) + 1;
-    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) + len - 1 );
+    tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) - 1 + len );
     tag->level = SymLevel;
     tag->hash = h;
     tag->next_tag = TagHash[h];
@@ -861,7 +861,7 @@ align_type GetTypeAlignment( TYPEPTR typ )
     align_type  size;
 
     while( typ->decl_type == TYPE_TYPEDEF || typ->decl_type == TYPE_ARRAY ) {
-            typ = typ->object;
+        typ = typ->object;
     }
     if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
         size = typ->u.tag->alignment;
