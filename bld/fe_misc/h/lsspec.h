@@ -83,7 +83,7 @@ typedef struct _LocaleItem {
 // Errors
 typedef struct LocaleErrors {
     _LocaleItem header;
-    uint_32     number;
+    int_32      number;
     char        data[1];        // <byte-strlen> <text> ... <0>
 } LocaleErrors;
 

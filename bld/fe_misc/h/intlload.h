@@ -36,7 +36,7 @@
 #include "watcom.h"
 
 typedef struct _IntlData {
-    unsigned            errors_count;
+    int                 errors_count;
     char                **errors_text;
     char                *usage_text;
 } IntlData;
