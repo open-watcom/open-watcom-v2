@@ -49,7 +49,7 @@ uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
         value = left * right;
         break;
     case OPR_DIV:
-        if( right == 0 ) {                 /* 10-mar-90 */
+        if( right == 0 ) {
             value = 0;
         } else {
             if( sign ) {
@@ -60,7 +60,7 @@ uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
         }
         break;
     case OPR_MOD:
-        if( right == 0 ) {                 /* 10-mar-90 */
+        if( right == 0 ) {
             value = 0;
         } else {
             if( sign ) {
@@ -939,7 +939,7 @@ static bool IsConstantZero( TREEPTR tree )
         uint64      val64;
 
         val64 = LongValue64( tree );
-        return( !U64Test( &val64 ) );
+        return( U64Test( &val64 ) == 0 );
     } else {
         FLOATVAL    *flt;
         char        *endptr;
@@ -958,7 +958,7 @@ static bool IsConstantZero( TREEPTR tree )
 #else
         ldzero.u.value = 0;
 #endif
-        return( !FltCmp( &ld, &ldzero ) );
+        return( FltCmp( &ld, &ldzero ) == 0 );
     }
 }
 

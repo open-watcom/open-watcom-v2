@@ -589,7 +589,7 @@ local void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
             }
         }
     } else {    /* not defined */
-        if( sym->flags & SYM_REFERENCED ) {     /* 28-apr-88 AFS */
+        if( sym->flags & SYM_REFERENCED ) {
             if( sym->attribs.stg_class == SC_STATIC ) {
                 if( sym->flags & SYM_FUNCTION ) {
                     /* Check to see if we have a matching aux entry with code attached */
@@ -607,7 +607,7 @@ local void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
 
 local void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
-#if _CPU == 8086 || _CPU == 386                         /* 05-nov-91 */
+#if _CPU == 8086 || _CPU == 386
     if( sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_ADDR_TAKEN ) {
             if( CompFlags.using_overlays ) {
@@ -739,7 +739,7 @@ local int SymBucket( SYMPTR sym )   /* determine bucket # for symbol */
     return( bucket );
 }
 
-local SYM_HASHPTR GetSymList( void )                    /* 25-jun-92 */
+local SYM_HASHPTR GetSymList( void )
 {
     SYM_HASHPTR     hsym;
     SYM_HASHPTR     next_hsymptr;
@@ -817,7 +817,7 @@ local SYM_HASHPTR FreeSym( void )
     SYM_ENTRY       sym;
     SYM_HANDLE      head[BUCKETS];
     SYM_HANDLE      tail[BUCKETS];
-  #if _CPU == 370  /* MJC  */
+  #if _CPU == 370
     void            *xlist;
     InitExtName( &xlist );
   #endif
@@ -978,7 +978,7 @@ void FreeLabels( void )
         LabelHead = label->next_label;
         if( label->defined == 0 ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );
-        } else if( label->referenced == 0 ) {           /* 05-apr-91 */
+        } else if( label->referenced == 0 ) {
             CWarn2p( WARN_UNREFERENCED_LABEL, ERR_UNREFERENCED_LABEL, label->name );
         }
         CMemFree( label );

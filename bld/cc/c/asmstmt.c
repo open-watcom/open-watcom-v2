@@ -94,7 +94,7 @@ static void GetAsmLine( void )
 void AsmStmt( void )
 /******************/
 {
-    int             too_many_bytes;
+    bool            too_many_bytes;
     unsigned char   buff[MAXIMUM_BYTESEQ + 32];
     TOKEN           skip_token;
     ppctl_t         old_ppctl;
@@ -106,15 +106,15 @@ void AsmStmt( void )
 
     NextToken();
     AsmSysInit( buff );
-    too_many_bytes = 0;
+    too_many_bytes = FALSE;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
         for( ;; ) {             // grab assembler lines
             GetAsmLine();
             if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
-                if( ! too_many_bytes ) {
+                if( !too_many_bytes ) {
                     CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                    too_many_bytes = 1;
+                    too_many_bytes = TRUE;
                 }
                 // reset index to we don't overrun buffer
                 AsmCodeAddress = 0;

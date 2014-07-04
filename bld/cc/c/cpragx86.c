@@ -211,8 +211,8 @@ static void AdvanceToken( void )
     CurToken = LAToken;
 }
 
-static int GetAliasInfo( void )
-/*****************************/
+static bool GetAliasInfo( void )
+/******************************/
 {
     int     isfar16;
 
@@ -220,7 +220,7 @@ static int GetAliasInfo( void )
         return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
-        return( 0 );
+        return( FALSE );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
         PragCurrAlias( SavedId );
@@ -233,7 +233,7 @@ static int GetAliasInfo( void )
         AdvanceToken();
         NextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) ) // error
-            return( 0 );
+            return( FALSE );
         isfar16 = PragRecog( "far16" );
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             PragCurrAlias( Buffer );
@@ -245,10 +245,10 @@ static int GetAliasInfo( void )
             AuxInfo.flags |= AUX_FLAG_FAR16;
         CopyAuxInfo();
         PragEnding();
-        return( 0 ); /* process no more! */
+        return( FALSE ); /* process no more! */
     } else {                                // error
         AdvanceToken();
-        return( 0 ); // shut up the compiler
+        return( FALSE ); // shut up the compiler
     }
 }
 
@@ -450,7 +450,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
                     if( sym_handle == 0 ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
-                        return( 0 );
+                        return( FALSE );
                     }
                     SymGet( &sym, sym_handle );
                     sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
@@ -587,7 +587,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
             }
             if( dst > &temp[MAXIMUM_BYTESEQ] ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                return( 0 );
+                return( FALSE );
             }
         }
         buff = temp;
@@ -648,7 +648,7 @@ local bool GetByteSeq( byte_seq **code )
     unsigned            offset;
     fix_words           fixword;
     bool                uses_auto;
-    char                too_many_bytes;
+    bool                too_many_bytes;
 #if _CPU == 8086
     bool                use_fpu_emu = FALSE;
 #endif
@@ -656,7 +656,7 @@ local bool GetByteSeq( byte_seq **code )
     AsmSysInit( buff );
     PPCTL_ENABLE_MACROS();
     NextToken();
-    too_many_bytes = 0;
+    too_many_bytes = FALSE;
     uses_auto = FALSE;
     offset = 0;
     name = NULL;
@@ -741,9 +741,9 @@ local bool GetByteSeq( byte_seq **code )
             }
         }
         if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
-            if( ! too_many_bytes ) {
+            if( !too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                too_many_bytes = 1;
+                too_many_bytes = TRUE;
             }
             AsmCodeAddress = 0;          // reset index to we don't overrun buffer
         }
@@ -766,29 +766,27 @@ hw_reg_set PragRegName( const char *str, size_t len )
     int             index;
     hw_reg_set      name;
 
-    if( len == 0 ) {
-        HW_CAsgn( name, HW_EMPTY );
-        return( name );
-    }
-    if( *str == '_' ) {
-        ++str;
-        --len;
+    if( len != 0 ) {
         if( *str == '_' ) {
             ++str;
             --len;
+            if( *str == '_' ) {
+                ++str;
+                --len;
+            }
         }
-    }
-    // search register or alias name
-    index = PragRegIndex( Registers, str, len, TRUE );
-    if( index != -1 ) {
-        return( RegBits[RegMap[index]] );
-    }
-    if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
-        HW_CAsgn( name, HW_FLTS );
-    } else {
+        // search register or alias name
+        index = PragRegIndex( Registers, str, len, TRUE );
+        if( index != -1 ) {
+            return( RegBits[RegMap[index]] );
+        }
+        if( len == 4 && memcmp( str, "8087", 4 ) == 0 ) {
+            HW_CAsgn( name, HW_FLTS );
+            return( name );
+        }
         CErr2p( ERR_BAD_REGISTER_NAME, str );
-        HW_CAsgn( name, HW_EMPTY );
     }
+    HW_CAsgn( name, HW_EMPTY );
     return( name );
 }
 
@@ -1033,8 +1031,8 @@ void AsmSysFini( void )
     AsmRestoreCPUInfo();
 }
 
-void AsmSysMakeInlineAsmFunc( int code_ovrflw )
-/*********************************************/
+void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
+/*************************************************/
 {
     int                 code_length;
     SYM_HANDLE          sym_handle;
@@ -1042,7 +1040,7 @@ void AsmSysMakeInlineAsmFunc( int code_ovrflw )
     bool                uses_auto;
     char                name[8];
 
-    code_ovrflw = code_ovrflw;
+    too_many_bytes = too_many_bytes;
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );

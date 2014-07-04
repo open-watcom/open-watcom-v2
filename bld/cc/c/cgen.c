@@ -1863,7 +1863,7 @@ extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 {
     cg_type     dtype;
 
-    SKIP_TYPEDEFS( typ );       /*03-dec-91*/
+    SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_FUNCTION ) {
         dtype = CodePtrType( flags );
     } else {

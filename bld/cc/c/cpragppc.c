@@ -185,41 +185,39 @@ hw_reg_set PragRegName( const char *strreg, size_t len )
     hw_reg_set      name;
     char            buffer[20];
 
-    if( len == 0 ) {
-        HW_CAsgn( name, HW_EMPTY );
-        return( name );
-    }
-    if( *strreg == '_' ) {
-        ++strreg;
-        --len;
+    if( len != 0 ) {
         if( *strreg == '_' ) {
             ++strreg;
             --len;
+            if( *strreg == '_' ) {
+                ++strreg;
+                --len;
+            }
         }
+        if( len > ( sizeof( buffer ) - 1 ) )
+            len = sizeof( buffer ) - 1;
+        str = memcpy( buffer, strreg, len );
+        str[len] = '\0';
+        // search register or alias name
+        index = PragRegIndex( Registers, str, len, FALSE );
+        if( index != -1 ) {
+            return( RegBits[RegMap[index]] );
+        }
+        // decode regular register name
+        if( *str == 'r' || *str == 'R' ) {
+            ++str;
+            --len;
+        }
+        // decode regular register index
+        index = PragRegNumIndex( str, 32 );
+        if( index != -1 ) {
+            return( RegBits[index] );
+        }
+        if( *(str - 1) == 'r' && *(str - 1) == 'R' ) {
+            --str;
+        }
+        CErr2p( ERR_BAD_REGISTER_NAME, str );
     }
-    if( len > ( sizeof( buffer ) - 1 ) )
-        len = sizeof( buffer ) - 1;
-    str = memcpy( buffer, strreg, len );
-    str[len] = '\0';
-    // search register or alias name
-    index = PragRegIndex( Registers, str, len, FALSE );
-    if( index != -1 ) {
-        return( RegBits[RegMap[index]] );
-    }
-    // decode regular register name
-    if( *str == 'r' || *str == 'R' ) {
-        ++str;
-        --len;
-    }
-    // decode regular register index
-    index = PragRegNumIndex( str, 32 );
-    if( index != -1 ) {
-        return( RegBits[index] );
-    }
-    if( *(str - 1) == 'r' && *(str - 1) == 'R' ) {
-        --str;
-    }
-    CErr2p( ERR_BAD_REGISTER_NAME, str );
     HW_CAsgn( name, HW_EMPTY );
     return( name );
 }
@@ -256,18 +254,18 @@ void AsmSysLine( const char *buff )
     AsmLine( buff );
 }
 
-local int GetByteSeq( byte_seq **code )
-/*************************************/
+local bool GetByteSeq( byte_seq **code )
+/**************************************/
 {
     auto unsigned char  buff[MAXIMUM_BYTESEQ + 32];
-    int                 uses_auto;
-    char                too_many_bytes;
+    bool                uses_auto;
+    bool                too_many_bytes;
 
     AsmSysInit( buff );
     PPCTL_ENABLE_MACROS();
     NextToken();
-    too_many_bytes = 0;
-    uses_auto = 0;
+    too_many_bytes = FALSE;
+    uses_auto = FALSE;
     for(;;) {
         if( CurToken == T_STRING ) {
             AsmLine( Buffer );
@@ -284,7 +282,7 @@ local int GetByteSeq( byte_seq **code )
         if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
             if( !too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                too_many_bytes = 1;
+                too_many_bytes = TRUE;
             }
             AsmCodeAddress = 0; // reset index to we don't overrun buffer
         }
@@ -292,7 +290,7 @@ local int GetByteSeq( byte_seq **code )
     PPCTL_DISABLE_MACROS();
     AsmFini();
     if( too_many_bytes ) {
-        uses_auto = 0;
+        uses_auto = FALSE;
     } else {
         byte_seq      *seq;
         byte_seq_len  len;
@@ -331,7 +329,7 @@ void PragAux( void )
         have.f_value  = 0;
         have.f_modify = 0;
         have.f_frame = 0;
-        have.uses_auto = 0; /* BBB - Jan 26, 1994 */
+        have.uses_auto = 0;
         for( ;; ) {
             if( CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );
@@ -384,17 +382,17 @@ void AsmSysFini( void )
     AsmFini();
 }
 
-void AsmSysMakeInlineAsmFunc( int too_many_bytes )
-/************************************************/
+void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
+/*************************************************/
 {
     byte_seq_len        code_length;
     SYM_HANDLE          sym_handle;
     TREEPTR             tree;
-    int                 uses_auto;
+    bool                uses_auto;
     auto char           name[8];
 
     AsmFini();
-    uses_auto = 0;
+    uses_auto = FALSE;
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );
@@ -405,7 +403,7 @@ void AsmSysMakeInlineAsmFunc( int too_many_bytes )
         CurrInfo->use = 1;
         CurrInfo->save = AsmRegsSaved;  // indicate no registers saved
         if( too_many_bytes ) {
-             uses_auto = 0;
+             uses_auto = FALSE;
         } else {
             byte_seq    *seq;
 

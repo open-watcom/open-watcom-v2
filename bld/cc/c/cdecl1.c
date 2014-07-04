@@ -78,7 +78,7 @@ void ParsePgm( void )
     } while( CurToken != T_EOF );
 
     if( CompFlags.external_defn_found == 0 ) {
-        if( !CompFlags.extensions_enabled ) {       /* 20-mar-90 */
+        if( !CompFlags.extensions_enabled ) {
             CErr1( ERR_NO_EXTERNAL_DEFNS_FOUND );
         }
     }
@@ -97,20 +97,20 @@ local void FuncDefn( SYMPTR sym )
     sym->name = CMemAlloc( sym_len );
     memcpy( sym->name, sym_name, sym_len );
     if( sym->flags & SYM_DEFINED ) {
-        CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );   /* 03-aug-88 */
+        CErr2p( ERR_SYM_ALREADY_DEFINED, sym->name );
     }
     typ = sym->sym_type->object;                /* get return type */
     SKIP_TYPEDEFS( typ );
 
-    if( typ->decl_type != TYPE_VOID ) {         /* 26-mar-91 */
+    if( typ->decl_type != TYPE_VOID ) {
         if( TypeSize( typ ) == 0 ) {
             CErr2p( ERR_INCOMPLETE_TYPE, sym_name );
         }
     }
-    sym->flags |= /*SYM_REFERENCED | 18-jan-89 */ SYM_DEFINED;
+    sym->flags |= SYM_DEFINED /* | SYM_REFERENCED */;
 
     if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-        sym->flags |= SYM_OK_TO_RECURSE;                /* 25-sep-91 */
+        sym->flags |= SYM_OK_TO_RECURSE;
     }
 
     if( sym->attribs.stg_class == SC_EXTERN  ||  sym->attribs.stg_class == SC_FORWARD ) {
@@ -167,11 +167,11 @@ local void BeginFunc( void )
     char                *segname;
     enum main_names     main_entry;
 
-    if( CurFunc->seginfo == NULL ) {                /* 18-nov-92 */
-        CurFunc->seginfo = DefCodeSegment;          /* 22-oct-92 */
-        if( CurFunc->seginfo == NULL ) {            /* 08-dec-92 */
+    if( CurFunc->seginfo == NULL ) {
+        CurFunc->seginfo = DefCodeSegment;
+        if( CurFunc->seginfo == NULL ) {
             if( CompFlags.zm_switch_used ) {
-                name = "";                          /* 05-feb-93 */
+                name = "";
                 if( TargetSwitches & BIG_CODE )
                     name = CurFunc->name;
                 segname = TS_SEG_CODE; /* "_TEXT" */
@@ -194,7 +194,7 @@ local void BeginFunc( void )
         CompFlags.has_wchar_entry =1;
         // fall through!
     case MAIN_MAIN:
-        if( CurFunc->u.func.parms ) {               /* 07-dec-88 */
+        if( CurFunc->u.func.parms ) {
             CompFlags.main_has_parms = 1;
         } else {
             CompFlags.main_has_parms = 0;
@@ -298,13 +298,13 @@ local void ParmDeclList( void )     /* process old style function definitions */
             if( CurToken == T_SEMI_COLON ) {
                 Chk_Struct_Union_Enum( typ );
             } else {
-                sym.name = NULL;                        /* 04-oct-91 */
+                sym.name = NULL;
                 Declarator( &sym, info.mod, typ, state );
                 if( sym.name == NULL  ||  sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
                     for( parm = ParmList; parm != NULL; ) {
-                        if( parm->sym.name != NULL ) {  /* 03-may-93 */
+                        if( parm->sym.name != NULL ) {
                             if( strcmp( parm->sym.name, sym.name ) == 0 ) {
                                 break;
                             }
@@ -339,14 +339,14 @@ local void ParmDeclList( void )     /* process old style function definitions */
     }
     ReverseParms();
     if( CurFunc->sym_type->u.fn.parms == NULL ) {
-        CurFunc->flags |= SYM_OLD_STYLE_FUNC;   /* 13-sep-89 */
+        CurFunc->flags |= SYM_OLD_STYLE_FUNC;
         AddParms();
     } else {
         ChkParms();
     }
     ParmList = NULL;
     if( VarParm( CurFunc ) ) {
-        CurFunc->flags &= ~ SYM_OK_TO_RECURSE;  /* 25-sep-91 */
+        CurFunc->flags &= ~ SYM_OK_TO_RECURSE;
     }
 }
 
@@ -456,7 +456,7 @@ local void AddParms( void )
                 CurFunc->u.func.locals = new_sym_handle;
                 SymReplace( &new_sym, new_sym_handle );
                 parm->sym.name = ".P";
-                parm->sym.flags |= SYM_REFERENCED;      /* 24-nov-89 */
+                parm->sym.flags |= SYM_REFERENCED;
                 parm->sym.sym_type = GetType( TYPE_DOUBLE );
                 break;
 
@@ -498,7 +498,7 @@ local void AddParms( void )
     CurFunc->sym_type = FuncNode( typ->object, FLAG_NONE,
         MakeParmList( parmlist, ParmsToBeReversed( CurFunc->mods, NULL ) ) );
 
-    if( PrevProtoType != NULL ) {                       /* 12-may-91 */
+    if( PrevProtoType != NULL ) {
         ChkProtoType();
     }
 }
@@ -520,7 +520,7 @@ local void ChkParms( void )
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_VOID ) {
         while( parm != NULL ) {
-            if( parm->sym.name == NULL ) {              /* 03-may-93 */
+            if( parm->sym.name == NULL ) {
                 parm->sym.name = ".J";
                 parm->sym.flags |= SYM_REFERENCED;
             }
@@ -547,7 +547,7 @@ local void ChkParms( void )
             parm = parm->next_parm;
         }
         if( prev_parm != NULL ) {
-#if _CPU == 370                     /* 24-oct-91 */
+#if _CPU == 370
             {
                 SYM_ENTRY   var_parm;
 

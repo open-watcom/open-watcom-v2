@@ -35,7 +35,7 @@
 #include "wio.h"
 #include "exeelf.h"
 
-static uint_32          relocValues[ DW_W_MAX ];
+static uint_32          relocValues[DW_W_MAX];
 
 typedef struct c_dw_section {
     unsigned        bufcount;
@@ -176,10 +176,10 @@ void mywrite( FILE *fp, void *data, size_t len )
     }
 }
 
-static int createBrowseFile(FILE* browseFile,              /* target file */
-                     C_DW_SECTION* abbrevFile,     /* .debug_abbrev section */
+static int createBrowseFile(FILE* browseFile,       /* target file */
+                     C_DW_SECTION* abbrevFile,      /* .debug_abbrev section */
                      C_DW_SECTION* debugFile,       /* .debug_info section */
-                     C_DW_SECTION* referenceFile,  /* .WATCOM_reference section */
+                     C_DW_SECTION* referenceFile,   /* .WATCOM_reference section */
                      C_DW_SECTION* lineFile,        /* .debug_line section */
                      C_DW_SECTION* macroFile        /* .debug_macinfo section */
                     )
@@ -219,7 +219,7 @@ static int createBrowseFile(FILE* browseFile,              /* target file */
     sectionOffset[4] = sectionOffset[3] + inFile[3]->length;
 
     for( fileNum = 0; fileNum < 5; fileNum++ ) {
-        dwsect = inFile[ fileNum ];
+        dwsect = inFile[fileNum];
         bufnum = 0;
         sectionSize = dwsect->length;
         while( sectionSize ) {
@@ -440,9 +440,9 @@ dw_client DwarfInit( void )
     memcpy( &info.exception_handler, Environment, sizeof( jmp_buf ) );
     info.funcs = cli_funcs;
 
-    relocValues[ DW_W_LOW_PC ] = 0x0;
-    relocValues[ DW_W_HIGH_PC ] = 0x1;
-    relocValues[ DW_W_UNIT_SIZE ] = 0x1;
+    relocValues[DW_W_LOW_PC] = 0x0;
+    relocValues[DW_W_HIGH_PC] = 0x1;
+    relocValues[DW_W_UNIT_SIZE] = 0x1;
 
 
     client = DWInit( &info );
@@ -460,10 +460,14 @@ dw_client DwarfInit( void )
         inclist = CMemAlloc( incsize );
         memcpy( inclist, HFileList, incsize );
         // need to handle the case where there are multiple ';' in a row
-        for( p = inclist; *p; p++ ) {
-            if( *p == ';' )  *p = '\0';
+        for( p = inclist; *p != '\0'; p++ ) {
+            if( *p == ';' ) {
+                *p = '\0';
+            }
         }
-        if( inclist[ incsize - 2 ] == '\0' )  --incsize; /* 27-may-94 */
+        if( inclist[incsize - 2] == '\0' ) {
+            --incsize;
+        }
     }
 #endif
     cu.source_filename = fname;

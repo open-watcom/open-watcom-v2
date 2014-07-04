@@ -231,7 +231,7 @@ TOKEN ChkControl( void )
         }
         if( CompFlags.cpp_output ) {
             if( lines_skipped ) {
-                if( SrcFile != NULL ) {                 /* 14-may-92 */
+                if( SrcFile != NULL ) {
                     EmitLine( SrcFile->src_loc.line, SrcFile->src_name );
                 }
             }
@@ -269,7 +269,7 @@ void CInclude( void )
     auto char   buf[82];
 
     if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
-        if( CompFlags.ok_to_use_precompiled_hdr ) {     /* 27-jun-94 */
+        if( CompFlags.ok_to_use_precompiled_hdr ) {
             CompFlags.use_precompiled_header = TRUE;
         }
     }
@@ -660,7 +660,7 @@ local void CElse( void )
             CppStack->processing = FALSE;
         } else if( NestLevel == SkipLevel + 1 ) {
             /* cpp_type will be PRE_ELIF if an elif was true */
-            if( CppStack->cpp_type == PRE_IF ) {        /* 19-sep-88 */
+            if( CppStack->cpp_type == PRE_IF ) {
                 SkipLevel = NestLevel;  /* start including else part */
                 CppStack->processing = TRUE;
             }

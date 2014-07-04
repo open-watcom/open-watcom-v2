@@ -217,7 +217,7 @@ static void DropLabel( LABEL_INDEX label )
 
 static void DropBreakLabel( void )
 {
-    if( BlockStack->break_label != 0 ) {        /* 05-apr-92 */
+    if( BlockStack->break_label != 0 ) {
         DropLabel( BlockStack->break_label );
     }
 }
@@ -310,7 +310,7 @@ void LookAhead( void )
 {
     SavedId = CStrSave( Buffer );       /* save current id */
     SavedHash = HashValue;              /* and its hash value */
-    SavedTokenLoc = TokenLoc;           /* save linenum and fno 09-jul-95 */
+    SavedTokenLoc = TokenLoc;           /* save linenum and fno */
     NextToken();                        /* get next token */
     LAToken = CurToken;                 /* save it in look ahead */
     CurToken = T_SAVED_ID;              /* go back to saved id */
@@ -323,7 +323,7 @@ static bool GrabLabels( void )
 
     label = NULL;
     for( ;; ) {
-        if( CurToken == T_SAVED_ID ) {          /* 09-jul-95 */
+        if( CurToken == T_SAVED_ID ) {
             SrcLoc = SavedTokenLoc;
         } else {
             SrcLoc = TokenLoc;
@@ -649,7 +649,7 @@ static void GotoStmt( void )
         CErr1( ERR_EXPECTING_LABEL );
     } else {
         label = LkLabel( Buffer );
-        label->referenced = 1;                          /* 05-apr-91 */
+        label->referenced = 1;
         Jump( label->ref_list );
     }
     NextToken();
@@ -1120,9 +1120,9 @@ static bool IsDeclarator( TOKEN token )
     SYM_ENTRY       sym;
 
     /* If token class is storage class or qualifier, it's a declaration */
-    if( TokenClass[ token ] == TC_STG_CLASS
-      || TokenClass[ token ] == TC_QUALIFIER
-      || TokenClass[ token ] == TC_DECLSPEC ) {
+    if( TokenClass[token] == TC_STG_CLASS
+      || TokenClass[token] == TC_QUALIFIER
+      || TokenClass[token] == TC_DECLSPEC ) {
         return( TRUE );
     }
 
@@ -1245,7 +1245,7 @@ void Statement( void )
             NextToken();
             BlockStack->break_label = NextLabel();
             JumpFalse( BracketExpr(), BlockStack->break_label );
-            /* 23-dec-88, only issue msg if ';' is on same line as 'if' */
+            /* only issue msg if ';' is on same line as 'if' */
             if( CurToken == T_SEMI_COLON  &&  SrcLoc.line == TokenLoc.line && SrcLoc.fno == TokenLoc.fno ) {
                 SetErrLoc( &TokenLoc );
                 NextToken();    /* look ahead for else keyword */

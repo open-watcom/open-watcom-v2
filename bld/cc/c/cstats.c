@@ -65,7 +65,8 @@ void PrintStats( void )
     if( ! CompFlags.stats_printed ) {
         len = 0;
         fname = WholeFName;
-        if( fname == NULL ) fname = "";         /* 27-may-91 */
+        if( fname == NULL )
+            fname = "";
         len += sprintf( &msgbuf[len], "%s: ", fname );
         if( SrcLineCount == 0 ) {
             nest_fcb = SrcFile;

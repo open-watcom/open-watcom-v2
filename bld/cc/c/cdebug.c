@@ -185,15 +185,15 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
         dl = DBLocConst( dl, 0 );
         dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
     } else {
-        if( sym_handle == Sym_CS ) { /* 23-jan-92 */
+        if( sym_handle == Sym_CS ) {
             ret_val = DBPtr( cgtype, DBType( typ->object ) );
             have_retval = 1;
-        } else if( sym_handle == Sym_SS ) { /* 13-dec-92 */
+        } else if( sym_handle == Sym_SS ) {
             ret_val = DBPtr( cgtype, DBType( typ->object ) );
             have_retval = 1;
         } else {
             SymGet( &sym, sym_handle );
-            if( sym.name[0] == '.' ) {  /* if segment label 15-mar-92 */
+            if( sym.name[0] == '.' ) {  /* if segment label */
                 ret_val = DBPtr( cgtype, DBType( typ->object ) );
                 have_retval = 1;
             } else {
@@ -362,9 +362,9 @@ static dbug_type DBTypeStruct( TYPEPTR typ )
     dbg_struct  st;
     TYPEPTR     obj;
 
-    if( typ->object != NULL ) {                     /* 17-mar-92 */
+    if( typ->object != NULL ) {
         /* structure has a zero length array as last field */
-        obj = typ->object;    /* 14-jun-94 */
+        obj = typ->object;
     } else {
         obj = NULL;
     }

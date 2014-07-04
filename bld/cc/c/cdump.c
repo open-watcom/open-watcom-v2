@@ -336,7 +336,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
         SymGet( &sym, typ->u.typedefn );
         ChunkSaveStrWord( pch, SymName( &sym, typ->u.typedefn ) );
     } else {
-        if( typ->type_flags & TF2_TYPE_PLAIN_CHAR ) {   /* 25-nov-94 */
+        if( typ->type_flags & TF2_TYPE_PLAIN_CHAR ) {
             ChunkSaveStrWord( pch, "char" );
         } else {
             ChunkSaveStrWord( pch, CTypeNames[typ->decl_type] );
@@ -471,7 +471,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
             if( flags & FLAG_SAVEREGS)
                 put_keyword( T___SAVEREGS, pch );
             flags &= ~(FLAG_LOADDS | FLAG_EXPORT | FLAG_SAVEREGS);
-            DumpFlags( flags, typ, pch );               /* 03-aug-88, FWC */
+            DumpFlags( flags, typ, pch );
             ChunkSaveStr( pch, funcsym->name );
         }
     case TYPE_ARRAY:
@@ -495,7 +495,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
         default:
             break;
         }
-        DumpPointer( typ, pch );         /* 26-may-89 */
+        DumpPointer( typ, pch );
         break;
     default:
         break;
@@ -569,7 +569,7 @@ void DumpFuncDefn( void )
     typ = CurFunc->sym_type;
     DumpParmTags( typ->u.fn.parms, DefFile );
     flist = FileIndexToFName( CurFunc->src_loc.fno );
-    fprintf( DefFile, "//#line \"%s\" %u\n",            /* 07-jun-94 */
+    fprintf( DefFile, "//#line \"%s\" %u\n",
                 flist->name,
                 CurFunc->src_loc.line );
 

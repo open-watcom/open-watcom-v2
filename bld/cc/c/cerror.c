@@ -77,7 +77,7 @@ void OpenErrFile( void )
 {
     char        *name;
 
-    if( SrcFName != NULL ) {                        /* 15-dec-88 */
+    if( SrcFName != NULL ) {
         name = ErrFileName();
         if( name != NULL ) {
             ErrFile = fopen( name, "w" );

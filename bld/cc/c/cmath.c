@@ -381,14 +381,14 @@ static  char    Operator[] = {
 
 opr_code TokenToOperator( TOKEN token )
 {
-    return( Operator[ token ] );
+    return( Operator[token] );
 }
 
 static DATA_TYPE BinExprTypeDT( DATA_TYPE typ1, DATA_TYPE typ2 )
 {
     DATA_TYPE   data_type;
 
-    data_type = BinResult[ typ1 ][ typ2 ];
+    data_type = BinResult[typ1][typ2];
     return( data_type );
 }
 
@@ -638,7 +638,7 @@ bool IsZero( TREEPTR tree )
         uint64      val64;
         
         val64 = LongValue64( tree );
-        ret = !U64Test( &val64 );
+        ret = ( U64Test( &val64 ) == 0 );
     } else {
         ret = FALSE;
     }
@@ -1146,7 +1146,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     } else {
         switch( opr ) {
         case T_PLUS:
-            result_type = AddResult[ op1_type ][ op2_type ];
+            result_type = AddResult[op1_type][op2_type];
             break;
         case T_PLUS_PLUS:
         case T_MINUS_MINUS:
@@ -1158,7 +1158,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             result_type = op1_type;
             break;
         default:
-            result_type = SubResult[ op1_type ][ op2_type ];
+            result_type = SubResult[op1_type][op2_type];
             if(( op1_type == PTR )&&( op2_type == PTR )) {
                 /* make sure both pointers are same type */
                 CompatiblePtrType( op1_tp, op2_tp, opr );
@@ -1298,7 +1298,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     case T_LSHIFT_EQUAL:
     case T_PERCENT_EQUAL:
         /* check for integral operand. */
-        result_type = IntResult[ op1_type ][ op2_type ];
+        result_type = IntResult[op1_type][op2_type];
         if( result_type == ERR ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
         }
@@ -1460,7 +1460,7 @@ TREEPTR IntOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     } else if( op1_type == TYPE_UNION  ||  op2_type == TYPE_UNION ) {
         result_type = ERR;
     } else {
-        result_type = IntResult[ op1_type ][ op2_type ];
+        result_type = IntResult[op1_type][op2_type];
     }
     if( result_type == ERR ) {
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
@@ -1499,7 +1499,7 @@ TREEPTR ShiftOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         result_type = TYPE_VOID;
     } else {
         if( op1_type <= TYPE_STRUCT ) {
-            result_type = ShiftResult[ op1_type ];
+            result_type = ShiftResult[op1_type];
         } else {
             result_type = ERR;
         }
@@ -1646,8 +1646,8 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
         }
     } else if( typ->decl_type != TYPE_VOID ) {
 convert:                                /* moved here */
-        cnv = CnvTable[ DataTypeOf( typ ) ]
-                      [ DataTypeOf( newtyp ) ];
+        cnv = CnvTable[DataTypeOf( typ )]
+                      [DataTypeOf( newtyp )];
         if( cnv == CER ) {
             CErr1( ERR_INVALID_CONVERSION );
             SetDiagPop();
@@ -1790,7 +1790,7 @@ TREEPTR FixupAss( TREEPTR opnd, TYPEPTR newtyp )
     if( decl1 > TYPE_POINTER || decl2 > TYPE_POINTER ) {
         return( opnd );
     }
-    cnv = CnvTable[ decl1 ][ decl2 ];
+    cnv = CnvTable[decl1][decl2];
     if( cnv == CER ) {
         return(  opnd  );
     } else if( cnv == P2P ) {

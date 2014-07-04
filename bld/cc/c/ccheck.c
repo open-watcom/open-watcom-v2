@@ -47,7 +47,7 @@ typedef enum {
 typedef enum {
     NO,         /* not compatible */
     PW,         /* pointers with inconsistent levels of indirection */
-    PM,         /* pointers point to different objects (Mismatch) 16-may-91 */
+    PM,         /* pointers point to different objects (Mismatch) */
     PC,         /* might be compatible if integer value is 0 */
     OK,         /* compatible */
     PQ,         /* pointers to different qualified types */
@@ -185,7 +185,7 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
                 if( CompatibleStructs( typ1->u.tag, typ2->u.tag ) != OK ) {
                     return( NO );
                 }
-            } else {                                /* 11-jul-90 */
+            } else {
                 return( NO );
             }
         }
@@ -341,8 +341,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 ret_val = NO;
             }
         } else if( typ1->decl_type == TYPE_STRUCT  || typ1->decl_type == TYPE_UNION ) {
-           /* 11-jul-90: allow pointers to different structs */
-           /* 29-oct-03: stop this for ANSI! */
+           /* allow pointers to different structs */
+           /* stop this for ANSI! */
             if( ( typ1 != typ2 ) ) {
                 // Types are not the same
                 // if extensions are enabled, then we can do a compatible struct test
@@ -496,7 +496,7 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
 {
     SetDiagType3( typ1, typ2, opr ); /* Called with source, target. */
     switch( CompatibleType( typ1, typ2, FALSE, FALSE ) ) {
-    case PT:                                        /* 31-aug-89 */
+    case PT:
     case PX:
         break;
     case PQ:
@@ -504,7 +504,7 @@ void CompatiblePtrType( TYPEPTR typ1, TYPEPTR typ2, TOKEN opr )
             CWarn1( WARN_QUALIFIER_MISMATCH, ERR_QUALIFIER_MISMATCH );
         }
         break;
-    case PM:                                    /* 16-may-91 */
+    case PM:
     case NO:
         CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
         break;
@@ -531,7 +531,7 @@ static bool IsNullConst( TREEPTR tree )
     if( tree->op.opr == OPR_PUSHINT ) {
         uint64  val64 = LongValue64( tree );
 
-        rc = !U64Test( &val64 );
+        rc = ( U64Test( &val64 ) == 0 );
     }
     return( rc );
 }
@@ -925,7 +925,7 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
     for( ;; ) {
         typ1 = SkipTypeFluff( typ1 ); // skip typedefs, go into enum base
         typ2 = SkipTypeFluff( typ2 );
-        /* this compare was moved here 20-sep-88 */
+        /* this compare was moved here */
         /* ptr to typedef struct failed when this was before typedef skips */
         if( typ1 == typ2 )
             return( retcode );
@@ -962,7 +962,6 @@ static typecheck_err TypeCheck( TYPEPTR typ1, TYPEPTR typ2, SYMPTR sym )
                 return( retcode );
             }
         }
-        /* CarlYoung 31-Oct-03 */
         if( ( TYPE_FIELD == typ1->decl_type ) || ( TYPE_UFIELD == typ1->decl_type ) ) {
             if( typ1->u.f.field_width != typ2->u.f.field_width ) {
                 break;

@@ -82,7 +82,7 @@ enum {
     M___LAST        = 0
 };
 
-#define TYPE_PLAIN_INT  TYPE_UFIELD                     /* 19-mar-91 */
+#define TYPE_PLAIN_INT  TYPE_UFIELD
 
 signed char Valid_Types[] = {
         -1,             //
@@ -517,9 +517,9 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                 CErr1( ERR_INV_TYPE );
             typ = EnumDecl( flags );
             continue;
-        case T___SEGMENT:                               /* 21-oct-91 */
+        case T___SEGMENT:
             bit = M_UNSIGNED | M_SHORT;
-            flags |= FLAG_SEGMENT;                      /* 15-nov-91 */
+            flags |= FLAG_SEGMENT;
             break;
 
         case T___DECLSPEC:
@@ -635,7 +635,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             ++SymTypedef;
             typ = sym.sym_type;
             SymGet( &sym, sym_handle );  // get rest of sym from nutty sym table
-            if( flags & sym.mods ) {      /* 24-mar-91, 12-may-91 */
+            if( flags & sym.mods ) {
                 CErr1( ERR_INV_TYPE );
             }
             flags |= sym.mods;
@@ -1310,7 +1310,7 @@ local void CheckBitfieldType( TYPEPTR typ )
     case TYPE_UCHAR:
     case TYPE_SHORT:
     case TYPE_USHORT:
-    case TYPE_LONG:                     /* + AFS 05-mar-91 */
+    case TYPE_LONG:
     case TYPE_ULONG:
     case TYPE_LONG64:
     case TYPE_ULONG64:

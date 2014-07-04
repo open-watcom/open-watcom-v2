@@ -44,7 +44,7 @@
 
 void ResetHandlers( void )
 {
-    CloseFiles();                       /* 09-may-89 */
+    CloseFiles();
 }
 
 #if defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
@@ -72,7 +72,7 @@ int main( int argc, char **argv )
         ret = FrontEnd( &argv[0] );
 #elif defined( __DOS__ ) || defined( __OS2__ ) || defined( __NT__ )
   #ifdef __DOS__
-        fclose( stdaux );                   /* 15-dec-92 */
+        fclose( stdaux );
         fclose( stdprn );
   #endif
         len = _bgetcmd( NULL, INT_MAX ) + 1;
@@ -81,7 +81,7 @@ int main( int argc, char **argv )
             argv[0] = buffer;
             argv[1] = NULL;
             _bgetcmd( buffer, len );
-            ret = FrontEnd( &argv[ 0 ] );
+            ret = FrontEnd( &argv[0] );
             free( buffer );
         } else {
             ret = -1;
@@ -89,7 +89,7 @@ int main( int argc, char **argv )
 #else
     #ifdef __OSI__
         if( __OS == OS_DOS ) {
-            fclose( stdaux );                       /* 15-dec-92 */
+            fclose( stdaux );
             fclose( stdprn );
         }
     #endif

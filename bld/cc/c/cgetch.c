@@ -232,7 +232,7 @@ static int tryBackSlashNewLine( void )
         if( CompFlags.scanning_cpp_comment && NestLevel == SkipLevel ) {
             CWarn1( WARN_SPLICE_IN_CPP_COMMENT, ERR_SPLICE_IN_CPP_COMMENT );
         }
-        if( CompFlags.cpp_output ) {            /* 30-may-95 */
+        if( CompFlags.cpp_output ) {
             if( CompFlags.in_pragma ) {
                 CppPrtChar( '\\' );
                 CppPrtChar( '\n' );

@@ -139,12 +139,12 @@ bool SetToggleFlag( char const *name, int const value )
 
     len = strlen( name ) + 1;
     ret = FALSE;
-    for( i = 0; (pnt = ToggleNames[ i ].name) != NULL; ++i ) {
+    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
         if( memcmp( pnt, name, len ) == 0 ) {
             if( value == 0 ) {
-                Toggles &= ~ToggleNames[ i ].flag;
+                Toggles &= ~ToggleNames[i].flag;
             } else {
-                Toggles |= ToggleNames[ i ].flag;
+                Toggles |= ToggleNames[i].flag;
             }
             ret = TRUE;
             break;
@@ -366,12 +366,12 @@ aux_info *MagicKeyword( const char *name )
         }
     }
     len = strlen( name ) + 1;
-    for( i = 0; MagicWords[ i ].name != NULL; ++i ) {
+    for( i = 0; MagicWords[i].name != NULL; ++i ) {
         if( memcmp( name, MagicWords[i].name + 2, len ) == 0 ) {
             break;
         }
     }
-    return( MagicWords[ i ].info );
+    return( MagicWords[i].info );
 }
 
 
@@ -590,20 +590,17 @@ int PragRegIndex( const char *registers, const char *name, size_t len, bool igno
     const char      *p;
     unsigned char   c;
     unsigned char   c2;
-    int             i;
+    size_t          i;
 
     index = 0;
-    p = registers;
-    while( *p != '\0' ) {
+    for( p = registers; *p != '\0'; ) {
         i = 0;
-        for( ; (c = *p++) != '\0'; ) {
+        while( (c = *p++) != '\0' ) {
             if( i > len )
                 continue;
             if( i < len ) {
                 c2 = name[i++];
-                if( ignorecase )
-                    c2 = tolower( c2 );
-                if( c == c2 ) {
+                if( c == c2 || ignorecase && tolower( c ) == tolower( c2 ) ) {
                     continue;
                 }
             }
@@ -674,7 +671,7 @@ hw_reg_set *PragManyRegSets( void )
     int         i;
     hw_reg_set  list;
     hw_reg_set  *sets;
-    hw_reg_set  buff[ MAXIMUM_PARMSETS ];
+    hw_reg_set  buff[MAXIMUM_PARMSETS];
 
     list = PragRegList();
     for( i = 0; i < MAXIMUM_PARMSETS; ++i ) {
@@ -789,9 +786,9 @@ void EnableDisableMessage( int enable, unsigned msg_num )
         mask = 1 << ( msg_num & 7 );
         msg_num = msg_num >> 3;
         if( enable ) {
-            MsgFlags[ msg_num ] &= ~mask;
+            MsgFlags[msg_num] &= ~mask;
         } else {
-            MsgFlags[ msg_num ] |= mask;
+            MsgFlags[msg_num] |= mask;
         }
     }
 }
@@ -1069,10 +1066,10 @@ static void PragIncludeAlias( void )
             }
             CMemFree( alias_name );
         } else if( CurToken == T_LT ) {
-            char    a_buf[ 82 ];    /* same size as CInclude() in cmac2.c */
-            char    r_buf[ 82 ];
+            char    a_buf[82];    /* same size as CInclude() in cmac2.c */
+            char    r_buf[82];
 
-            a_buf[ 0 ] = '\0';
+            a_buf[0] = '\0';
             for( ;; ) {
                 NextToken();
                 if( CurToken == T_GT ) {
@@ -1086,7 +1083,7 @@ static void PragIncludeAlias( void )
             }
             MustRecog( T_COMMA );
             if( CurToken == T_LT ) {
-                r_buf[ 0 ] = '\0';
+                r_buf[0] = '\0';
                 for( ;; ) {
                     NextToken();
                     if( CurToken == T_GT ) {

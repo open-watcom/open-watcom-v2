@@ -570,6 +570,7 @@ void    SetSegs( void )
     textsegment     *tseg;
     int             flags;
     char            *name;
+    align_type      optsize_segalign;
 
     CompFlags.low_on_memory_printed = 0;
     flags = GLOBAL | INIT | EXEC;
@@ -579,7 +580,9 @@ void    SetSegs( void )
         name = TextSegName;
         flags |= GIVEN_NAME;
     }
-    BEDefSeg( SEG_CODE, flags, name, SegAlign( (OptSize == 0) ? BETypeLength( TY_INTEGER ) : 1 ) );
+    optsize_segalign = ( OptSize == 0 ) ? (align_type)BETypeLength( TY_INTEGER ) : 1;
+
+    BEDefSeg( SEG_CODE, flags, name, SegAlign( optsize_segalign ) );
     BEDefSeg( SEG_CONST, BACK|INIT|ROM, TS_SEG_CONST, SegAlign( SegAlignment[SEG_CONST] ) );
     BEDefSeg( SEG_CONST2, INIT | ROM, TS_SEG_CONST2, SegAlign( SegAlignment[SEG_CONST2] ) );
     BEDefSeg( SEG_DATA,  GLOBAL | INIT, TS_SEG_DATA, SegAlign( SegAlignment[SEG_DATA] ) );
@@ -622,8 +625,7 @@ void    SetSegs( void )
     }
     for( tseg = TextSegList; tseg != NULL; tseg = tseg->next ) {
         tseg->segment = ++SegmentNum;
-        BEDefSeg( tseg->segment,  GLOBAL | INIT | EXEC | GIVEN_NAME, tseg->segname,
-                SegAlign( (OptSize == 0) ? BETypeLength( TY_INTEGER ) : 1 ) );
+        BEDefSeg( tseg->segment,  GLOBAL | INIT | EXEC | GIVEN_NAME, tseg->segname, SegAlign( optsize_segalign ) );
     }
 }
 

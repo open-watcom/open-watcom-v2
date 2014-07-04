@@ -42,7 +42,7 @@ static target_size  CLitLength;         /* length of string literal */
 static int OpenUnicodeFile( const char *filename )
 {
     int         handle;
-    char        fullpath[ _MAX_PATH ];
+    char        fullpath[_MAX_PATH];
 
 #if defined(__QNX__)
     _searchenv( filename, "ETC_PATH", fullpath );
@@ -76,12 +76,12 @@ static void ReadUnicodeFile( int handle )
 void LoadUnicodeTable( unsigned codePage )
 {
     int         handle;
-    char        filename[ 20 ];
+    char        filename[20];
 
     sprintf( filename, "unicode.%3.3u", codePage );
-    if( filename[ 11 ] != '\0' ) {
-        filename[ 7 ] = filename[ 8 ];
-        filename[ 8 ] = '.';
+    if( filename[11] != '\0' ) {
+        filename[7] = filename[8];
+        filename[8] = '.';
     }
     handle = OpenUnicodeFile( filename );
     if( handle != -1 ) {
@@ -131,7 +131,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                 c = c >> 8;
             }
         } else {
-            if( CharSet[ c ] & C_DB ) {       /* if double-byte character */
+            if( CharSet[c] & C_DB ) {       /* if double-byte character */
                 if( CompFlags.jis_to_unicode && CompFlags.wide_char_string ) {
                     c = (c << 8) + *p;
                     c = JIS2Unicode( c );
@@ -144,7 +144,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
                 ++p;
             } else if( CompFlags.wide_char_string ) {
                 if( CompFlags.use_unicode ) {
-                    c = UniCode[ c ];
+                    c = UniCode[c];
                 } else if( CompFlags.jis_to_unicode ) {
                     c = JIS2Unicode( c );
                 }
@@ -295,7 +295,7 @@ TREEPTR StringLeaf( string_flags flags )
     // set op.flags field
     leaf_index->u.expr_type = StringLeafType();
 
-    if( CurFunc != NULL ) {                             /* 22-feb-92 */
+    if( CurFunc != NULL ) {
         CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
     }
     return( leaf_index );

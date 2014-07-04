@@ -278,7 +278,7 @@ static TOKEN doScanName( void )
         if( NextMacro->parm_count != 0 ) {
             SkipAhead();
             if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {            /* 30-sep-90 */
+                if( CompFlags.cpp_output ) {
                     Buffer[TokenLen++] = ' ';
                     Buffer[TokenLen] = '\0';
                     return( T_ID );
@@ -537,9 +537,9 @@ static bool ScanHex( int max, const unsigned char **pbuf )
         return( FALSE );            /* indicate no characters matched */
 /*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
     }
-    if( too_big ) {                                     /* 26-mar-91 */
+    if( too_big ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-        if( NestLevel == SkipLevel ) {  /* 10-sep-92 */
+        if( NestLevel == SkipLevel ) {
             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
         }
     }
@@ -638,7 +638,7 @@ static cnv_cc Cnv10( void )
     value = 0;
     while( --len > 0 ) {
         c = *curr;
-        if( value >= 429496729 ) {          /* 15-feb-93 */
+        if( value >= 429496729 ) {
             if( value == 429496729 ) {
                 if( c > '5' ) {
                     goto is64;
@@ -830,7 +830,7 @@ static TOKEN ScanNum( void )
         }
         if( ov == CNV_64 && value < 64 ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {      /* 10-sep-92 */
+            if( NestLevel == SkipLevel ) {
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
             Constant =  Const64.u._32[I64LO32];
@@ -919,7 +919,7 @@ static TOKEN ScanNum( void )
     } else {
         if( ov == CNV_OVR ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {      /* 10-sep-92 */
+            if( NestLevel == SkipLevel ) {
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
         }
@@ -1283,7 +1283,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
         value = (value << 8) + c;
         /* handle case where user wants a \ but doesn't escape it */
         if( c == '\'' && CurrChar != '\'' ) {
-            if( !CompFlags.cpp_output ) {       /* 08-feb-93 */
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -1292,7 +1292,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
         if( c == '\'' )
             break;
         if( i >= 4 ) {
-            if( !CompFlags.cpp_output ) {       /* 08-feb-93 */
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -1302,7 +1302,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
         BadTokenInfo = ERR_INV_CHAR_CONSTANT;
     } else {
         NextChar();
-        if( error ) {                      /* 16-nov-94 */
+        if( error ) {
             BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
             token = T_BAD_TOKEN;
         }
@@ -1358,13 +1358,13 @@ static TOKEN ScanString( void )
             break;
         }
 
-        if( c == '\\' ) {               /* 23-mar-90 */
+        if( c == '\\' ) {
             if( TokenLen > BufSize - 32 ) {
                 EnlargeBuffer( TokenLen * 2 );
             }
             c = NextChar();
             Buffer[TokenLen++] = c;
-            if( (CharSet[c] & C_WS) == 0 ) {    /* 04-nov-88 */
+            if( (CharSet[c] & C_WS) == 0 ) {
                 ESCChar( c, NULL, &error );
             }
             c = CurrChar;
@@ -1414,7 +1414,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
     } else if( c == 'x' ) {         /* get hex escape sequence */
         if( ScanHex( 127, pbuf ) ) {
             n = Constant;
-        } else {                        /*  '\xz' where z is not a hex char */
+        } else {                        /* '\xz' where z is not a hex char */
             *error = TRUE;
             n = 'x';
         }
@@ -1560,7 +1560,7 @@ static TOKEN ScanInvalid( void )
     Buffer[1] = '\0';
 #ifdef SYS_EOF_CHAR
     if( Buffer[0] == SYS_EOF_CHAR ) {
-        CloseSrcFile( SrcFile );                /* 13-sep-94 */
+        CloseSrcFile( SrcFile );
         return( T_WHITE_SPACE );
     }
 #endif
