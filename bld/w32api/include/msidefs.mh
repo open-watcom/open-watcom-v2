@@ -530,4 +530,4 @@ enum msidbEmbeddedUIAttributes {
 };
 #endif
 
-#endif /* _MSI_H_ */
+#endif /* _MSIDEFS_H_ */
