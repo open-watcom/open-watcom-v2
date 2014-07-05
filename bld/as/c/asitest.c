@@ -82,17 +82,17 @@ uint_32 AsmQuerySPOffsetOf( void *name ) {
     return( ans );
 }
 
-void AsmError( char *msg ) {
-//**************************
+void AsmError( const char *msg )
+//******************************
 // CC provides this
-
+{
     printf( "AsmError (line %d): %s\n", curLine, msg );
 }
 
-void AsmWarning( char *msg ) {
-//****************************
+void AsmWarning( const char *msg )
+//********************************
 // CC provides this
-
+{
     printf( "AsmWarning (line %d): %s\n", curLine, msg );
 }
 

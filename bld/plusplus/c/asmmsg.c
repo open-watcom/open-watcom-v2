@@ -31,14 +31,11 @@
 
 
 #include "plusplus.h"
+#include "asmstmt.h"
 
 #if _INTEL_CPU
 
-#ifdef _M_I86
-#define ASMFAR __far
-#else
 #define ASMFAR
-#endif
 
 #define asmerr(code,msg)   msg
 #include "asmerr.h"
@@ -51,14 +48,14 @@ void AsmError( int msg_number )
 
 #else
 
-void AsmError( int *msg )
-/***********************/
+void AsmError( const char *msg )
+/******************************/
 {
     CErr2p( ERR_ASSEMBLER_ERROR, msg );
 }
 
-void AsmWarning( char *msg )
-/**************************/
+void AsmWarning( const char *msg )
+/*********************************/
 {
     CErr2p( WARN_ASSEMBLER_WARNING, msg );
 }

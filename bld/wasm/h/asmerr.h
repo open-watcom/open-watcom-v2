@@ -46,7 +46,6 @@
 
 #define         AsmWarning( errno )             AsmWarn( 0,errno )
 
-extern void             AsmError( int msgnum );
 extern void             AsmErr( int msgnum, ... );
 extern void             AsmWarn( int level, int msgnum, ... );
 extern void             AsmNote( int level, int msgnum, ... );

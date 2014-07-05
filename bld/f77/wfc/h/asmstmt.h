@@ -24,47 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  describe interface between asmstmt and cprag???
 *
 ****************************************************************************/
 
 
-//
-// ASMMSG       : error message interface for in-line assembler
-//
-
-#include "ftnstd.h"
-#include "cioconst.h"
-#include "errcod.h"
-#include "ferror.h"
-#include "asmstmt.h"
+#ifndef _ASMSTMT_H
+#define _ASMSTMT_H
 
 #if _INTEL_CPU
-
-extern  void    MsgBuffer(uint,char *,...);
-
-void    AsmError( int msg ) {
-//===========================
-
-    char        buff[LIST_BUFF_SIZE+1];
-
-    MsgBuffer( msg, buff );
-    Error( CP_ERROR, &buff[1] ); // skip leading space
-}
-
+    #include "asminlin.h"
 #else
-
-void    AsmError( const char *msg )
-//=================================
-{
-    Error( CP_ERROR, msg );
-}
-
-void    AsmWarning( const char *msg )
-//===================================
-{
-    Error( CP_ERROR, msg );
-}
+    #include "asinline.h"
+#endif
 
 #endif

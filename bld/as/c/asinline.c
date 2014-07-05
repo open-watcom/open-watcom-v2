@@ -37,7 +37,6 @@
 #error For inline-assembler only!
 #endif
 
-extern void AsmError( char * );
 extern void AsLexerFini( void );
 extern int yyparse( void );
 

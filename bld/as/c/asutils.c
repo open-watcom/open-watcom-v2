@@ -34,6 +34,11 @@
 #ifdef _STANDALONE_
 #include <setjmp.h>
 #include "banner.h"
+#else
+#include "asinline.h"
+#endif
+
+#ifdef _STANDALONE_
 
 typedef enum {
     MSG_ERROR,
@@ -240,15 +245,14 @@ extern void DebugPrintf( char *fmt, ... ) {
     fflush( stdout );
 }
 #endif
+
 #else   // !_STANDALONE_
-extern void AsmError( char * );
-extern void AsmWarning( char * );
 
 char        AsResBuffer[ MAX_RESOURCE_SIZE ];
 
-extern void AsError( int resource_id, ... ) {
-//*******************************************
-
+extern void AsError( int resource_id, ... )
+//*****************************************
+{
     va_list     arglist;
     char        msg[ MAX_RESOURCE_SIZE ];
 
@@ -259,9 +263,9 @@ extern void AsError( int resource_id, ... ) {
     AsmError( msg );    // CC provides this
 }
 
-extern void AsWarning( int resource_id, ... ) {
-//*********************************************
-
+extern void AsWarning( int resource_id, ... )
+//*******************************************
+{
     va_list     arglist;
     char        msg[ MAX_RESOURCE_SIZE ];
 

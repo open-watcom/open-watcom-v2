@@ -41,15 +41,7 @@
 #include "ferror.h"
 #include "inout.h"
 #include "cspawn.h"
-
-#if _INTEL_CPU
-  #include "asminlin.h"
-#elif ( _CPU == _AXP || _CPU == _PPC )
-  #include "asinline.h"
-#else
-  #error Unknow Target Platform
-#endif
-
+#include "asmstmt.h"
 #include <string.h>
 #include <ctype.h>
 #include <sys/types.h>

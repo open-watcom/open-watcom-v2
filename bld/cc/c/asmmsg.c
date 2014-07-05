@@ -31,14 +31,11 @@
 
 #include <string.h>
 #include "cvars.h"
+#include "asmstmt.h"
 
 #if _INTEL_CPU
 
-#ifdef _M_I86
-#define ASMFAR __far
-#else
 #define ASMFAR
-#endif
 
 #define asmerr(code,msg)   msg
 #include "asmerr.h"
@@ -46,17 +43,20 @@
 
 void AsmError( int msg_number )
 {
-    char    msgbuf[80];
-
-    strcpy( msgbuf, AsmErrMsgs[msg_number] );
-    CErr2p( ERR_ASSEMBLER_ERROR, msgbuf );
+    CErr2p( ERR_ASSEMBLER_ERROR, AsmErrMsgs[msg_number] );
 }
 
 #else
 
-void AsmError( char *msg )
+void AsmError( const char *msg )
 {
     CErr2p( ERR_ASSEMBLER_ERROR, msg );
+}
+
+void AsmWarning( const char *msg )
+/********************************/
+{
+    CWarn2p( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
 }
 
 #endif

@@ -73,3 +73,6 @@ extern enum sym_state   AsmQueryState( void *handle );
 
 // This function finds out how far away is the auto variable from $sp
 extern uint_32          AsmQuerySPOffsetOf( void *handle );
+
+extern void             AsmError( const char * );
+extern void             AsmWarning( const char * );
