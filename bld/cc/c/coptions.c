@@ -879,10 +879,7 @@ void MergeInclude( void )
 
 static bool OptionDelimiter( char c )
 {
-    if( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar );
 }
 
 static void EnsureEndOfSwitch( void )

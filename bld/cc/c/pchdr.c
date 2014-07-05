@@ -665,7 +665,7 @@ static void OutPutAType( TYPEPTR typ )
     bool            rc;
     array_info      *array;
 
-    rc = 0;
+    rc = FALSE;
     switch( typ->decl_type ) {
     case TYPE_ARRAY:
         array = typ->u.array;                   // save pointer
@@ -896,7 +896,7 @@ static void OutPutSymHashTable( void )
             ++PH_SymHashCount;
         }
         HashTab[h] = NULL;
-        rc = 0;
+        rc = FALSE;
         for( hsym = sym_list; hsym != NULL; hsym = hsym_next_sym ) {
             hsym_next_sym = hsym->next_sym;
             hsym->next_sym = PCHSetUInt( h );

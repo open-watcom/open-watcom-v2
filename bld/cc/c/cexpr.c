@@ -490,17 +490,10 @@ bool IsLValue( TREEPTR tree )
 
 static bool IsCallValue( TREEPTR tree )
 {
-    bool ret;
-
     while( tree->op.opr == OPR_DOT || tree->op.opr == OPR_INDEX ) {
         tree = tree->left;
     }
-    if( tree->op.opr == OPR_CALL ) {
-        ret = TRUE;
-    } else {
-        ret = FALSE;
-    }
-    return( ret );
+    return( tree->op.opr == OPR_CALL );
 }
 
 // This RVALUE thing is backwards -mjc

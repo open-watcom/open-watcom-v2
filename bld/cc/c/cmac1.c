@@ -842,7 +842,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         gluebuf = GlueTokenToBuffer( next, NULL );
                     } else {
                         gluebuf = GlueTokenToBuffer( mtok, NULL );
-                        if( next != NULL &&  next->token != T_MACRO_EMPTY_VAR_PARM ) {
+                        if( next != NULL && next->token != T_MACRO_EMPTY_VAR_PARM ) {
                             gluebuf = GlueTokenToBuffer( next, gluebuf ); //paste in next
                         }
                     }

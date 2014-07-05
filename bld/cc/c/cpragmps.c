@@ -56,6 +56,7 @@ void *AsmQuerySymbol( const char *name )
 uint_32 AsmQuerySPOffsetOf( void *handle )
 /****************************************/
 {
+    handle = handle;
 // CC provides this
     return( 0 );
 }
@@ -149,7 +150,7 @@ local bool GetByteSeq( byte_seq **code )
                 NextToken();
             }
         } else if( CurToken == T_CONSTANT ) {
-            AsmCodeBuffer[AsmCodeAddress++] = Constant;
+            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
             NextToken();
         } else {
             break;
