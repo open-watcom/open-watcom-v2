@@ -180,8 +180,8 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.u2.func.sym_handle = sym_handle;
     tree->op.u2.func.flags = FUNC_NONE;
-    if( (Toggles & TOGGLE_INLINE) || (sym->mods & FLAG_INLINE) ){
-        if( !sym->attribs.naked ){
+    if( (Toggles & TOGGLE_INLINE) || (sym->mods & FLAG_INLINE) ) {
+        if( !sym->attribs.naked ) {
             if( CMPLIT( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
             }
@@ -344,7 +344,7 @@ static bool GrabLabels( void )
         SavedId = NULL;
         NextToken();                    /* get next token */
     }
-    if( label != NULL ) {                       /* label was found */
+    if( label != NULL ) {               /* label was found */
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }

@@ -105,7 +105,7 @@ static void FiniPermArea( void )
 {
     mem_blk *curr, *next;
     curr = Blks;
-    while( curr != NULL ){
+    while( curr != NULL ) {
         next = curr->next;
         free( curr );
         curr = next;

@@ -223,7 +223,7 @@ char *ForceSlash( char *name, char slash )
 {
     char    *save = name;
 
-    if( !slash || !save )
+    if( slash == '\0' || name == NULL )
         return( name );
     while( name[0] != '\0' ) {
         if( name[0] == '\\' || name[0] == '/' )
@@ -457,7 +457,7 @@ static void MakePgmName( void )
     }
 }
 
-local void CantOpenFile( char *name )
+local void CantOpenFile( const char *name )
 {
     char    msgtxt[80];
     char    msgbuf[MAX_MSG_LEN];
@@ -492,21 +492,20 @@ static bool OpenPgmFile( void )
 }
 
 
-char *CreateFileName( char *template, char *extension, bool forceext )
+char *CreateFileName( const char *template, const char *extension, bool forceext )
 {
 #if !defined( __CMS__ )
-    char    buff[_MAX_PATH2];
-    char    *drive;
-    char    *dir;
-    char    *fname;
-    char    *ext;
-    char    *path;
+    char        buff[_MAX_PATH2];
+    char        *drive;
+    char        *dir;
+    char        *fname;
+    char        *ext;
+    const char  *path;
 
     path = (template == NULL) ? WholeFName : template;
-
     _splitpath2( path, buff, &drive, &dir, &fname, &ext );
-    if( forceext || template == NULL || ext[0] == '\0' ) {
-        ext = extension;
+    if( !forceext && template != NULL && ext[0] != '\0' ) {
+        extension = ext;
     }
     if( fname[0] == '\0' || fname[0] == '*' ) {
         fname = ModuleName;
@@ -516,7 +515,7 @@ char *CreateFileName( char *template, char *extension, bool forceext )
         drive = "";
         dir = "";
     }
-    _makepath( FNameBuf, drive, dir, fname, ext );
+    _makepath( FNameBuf, drive, dir, fname, extension );
 #else
     char    *p;
 
@@ -1132,7 +1131,7 @@ void FreeIncFileList( void )
     }
 }
 
-RDIRPTR AddRDir( char *path )
+RDIRPTR AddRDir( const char *path )
 {
     RDIRPTR     dirlist;
     RDIRPTR     *lnk;
@@ -1341,7 +1340,7 @@ static void CPP_Parse( void )
 }
 
 
-void EmitPoundLine( unsigned line_num, const char *filename, int newline )
+void EmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
     if( CompFlags.cpp_line_wanted && CppPrinting() ) {
         CppPrtf( "#line %u \"", line_num );

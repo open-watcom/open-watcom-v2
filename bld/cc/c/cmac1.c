@@ -110,7 +110,7 @@ void MacroInit( void )
     InitialMacroFlag = MFLAG_DEFINED_BEFORE_FIRST_INCLUDE;
     AllocMacroSegment( 0x1000 );
     MacHash = (MEPTR *)MacroSegment;
-    MacroOffset = MacroSegment + MACRO_HASH_SIZE * sizeof(MEPTR);
+    MacroOffset = MacroSegment + MACRO_HASH_SIZE * sizeof( MEPTR );
     for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
         MacHash[h] = NULL;
     }

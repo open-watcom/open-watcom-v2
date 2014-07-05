@@ -450,7 +450,7 @@ local void AddParms( void )
                 break;
 
             case TYPE_FLOAT:
-                memcpy( &new_sym, &parm->sym, sizeof(SYM_ENTRY) );
+                memcpy( &new_sym, &parm->sym, sizeof( SYM_ENTRY ) );
                 new_sym.handle = CurFunc->u.func.locals;
                 new_sym_handle = SymAdd( h, &new_sym );
                 CurFunc->u.func.locals = new_sym_handle;
@@ -469,7 +469,7 @@ local void AddParms( void )
             TREEPTR         tree;
 
             tree = ExprNode( VarLeaf( &new_sym, new_sym_handle ),
-                 OPR_EQUALS, RValue( VarLeaf(&parm->sym, sym_handle) ) );
+                 OPR_EQUALS, RValue( VarLeaf( &parm->sym, sym_handle ) ) );
             tree->op.u2.result_type = typ;
             tree->u.expr_type = typ;
             AddStmt( tree );

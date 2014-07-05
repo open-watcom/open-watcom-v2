@@ -223,7 +223,7 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 NextToken();
                 error_loc = TokenLoc;
                 ConstExprAndType( &val );
-                switch( val.type ){
+                switch( val.type ) {
                 case TYPE_ULONG:
                 case TYPE_UINT:
                 case TYPE_ULONG64:

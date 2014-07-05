@@ -57,7 +57,7 @@ static unsigned char VarFuncWeights[] = {
   0, 0,13, 0, 2, 1, 0, 0, 0, 0, 0,12, 0,14, 4,10, 0, 0, 6, 0, 0, 0, 0, 0, 0,0
 };
 
-static char *VarParmFuncs[] = {
+static const char *VarParmFuncs[] = {
     /* functions with var parm lists */
     "",             // 0
     "",             // 1

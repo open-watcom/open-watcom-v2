@@ -48,7 +48,7 @@ static C_DW_SECTION DWSections[DW_DEBUG_MAX];
 static void DWSectInit( void  )
 {
     int i;
-    for( i = 0; i < DW_DEBUG_MAX; ++i ){
+    for( i = 0; i < DW_DEBUG_MAX; ++i ) {
         DWSections[i].bufcount  = 0;
         DWSections[i].bufptrs   = NULL;
         DWSections[i].offset    = 0;
@@ -160,7 +160,7 @@ Elf32_Shdr section_header_template = {
     0
 };
 
-void CFatal( char *msg )
+void CFatal( const char *msg )
 {
     printf( "%s\n", msg );
 }
@@ -418,12 +418,12 @@ static void dw_free( void *ptr )
 dw_client DwarfInit( void )
 /********************/
 {
-    dw_client    client;
-    dw_init_info info;
+    dw_client       client;
+    dw_init_info    info;
     dw_cu_info      cu;
-    unsigned    incsize;
-    char        *inclist;
-    char       *fname;
+    size_t          incsize;
+    char            *inclist;
+    char            *fname;
     static const dw_funcs cli_funcs = {
         dw_reloc,
         dw_write,

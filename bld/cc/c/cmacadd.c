@@ -150,7 +150,7 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
     old_mentry = *lnk;
     if( old_mentry != NULL ) {
         old_mflags = old_mentry->macro_flags;
-        if( old_mflags & MFLAG_CAN_BE_REDEFINED ){//delete old entry
+        if( old_mflags & MFLAG_CAN_BE_REDEFINED ) {//delete old entry
             *lnk = old_mentry->next_macro;
             old_mentry = NULL;
         } else if( MacroCompare( mentry, old_mentry ) != 0 ) {

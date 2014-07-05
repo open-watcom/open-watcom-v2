@@ -141,10 +141,10 @@ static int SaveNextChar( void )
 
 unsigned hashpjw( const char *s )
 {
-    unsigned    h;
-    char        c;
+    unsigned        h;
+    unsigned char   c;
 
-    h = *s++;
+    h = *(const unsigned char *)s++;
     if( h != 0 ) {
         c = *s++;
         if( c != '\0' ) {
@@ -585,14 +585,14 @@ is64:
 
 static cnv_cc Cnv16( void )
 {
-    unsigned char   *curr;
+    const char      *curr;
     unsigned char   c;
     size_t          len;
     unsigned        value;
     uint64          value64;
     cnv_cc          ret;
 
-    curr = (unsigned char *)Buffer + 2;      // skip 0x thing
+    curr = Buffer + 2;      // skip 0x thing
     len = TokenLen - 2;
     value = 0;
     while( --len > 0 ) {
@@ -626,8 +626,8 @@ is64:
 
 static cnv_cc Cnv10( void )
 {
-    char            *curr;
-    char            c;
+    const char      *curr;
+    unsigned char   c;
     size_t          len;
     unsigned        value;
     uint64          value64;
@@ -712,7 +712,7 @@ static TOKEN ScanNum( void )
             con.form = CON_OCT;
             digit_mask = 0;
             // if collecting tokens for macro preprocessor, allow 8 and 9
-            // since the argument may be used in with # or ##. 28-oct-92
+            // since the argument may be used in with # or ##.
             while( c >= '0' && c <= '9' ) {
                 digit_mask |= c;
                 c = SaveNextChar();
@@ -1370,7 +1370,7 @@ static TOKEN ScanString( void )
             c = CurrChar;
         } else {
             /* if first character of a double-byte character, then
-               save it and get the next one.    10-nov-89  */
+               save it and get the next one. */
             if( CharSet[c] & C_DB ) {
                 SaveNextChar();
             }

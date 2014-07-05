@@ -45,11 +45,6 @@ static  aux_info        AuxInfo;
 //    unsigned    f_streturn : 1;
 //} AuxInfoFlg;
 
-void AsmWarning( const char *msg )
-/********************************/
-{
-    CWarn2p( WARN_ASSEMBLER_WARNING, ERR_ASSEMBLER_WARNING, msg );
-}
 
 void *AsmQuerySymbol( const char *name )
 /**************************************/

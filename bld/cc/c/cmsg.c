@@ -95,7 +95,7 @@ void InitMsg( void )
 
 void FiniMsg( void )
 {
-    if( internationalData != NULL ){
+    if( internationalData != NULL ) {
         FreeInternationalData( internationalData );
     }
 }
@@ -117,7 +117,7 @@ static enum grp_index  GetGrpIndex( msg_codes msgcode )
     enum grp_index   index;
 
     index = grp_index_max;
-    while( --index > 0 ){
+    while( --index > 0 ) {
         if( msgcode >= LevelIndex[index] ) {
             break;
         }

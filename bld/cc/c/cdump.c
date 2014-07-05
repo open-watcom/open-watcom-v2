@@ -42,7 +42,7 @@ typedef struct {
 
 extern  char    *Tokens[];
 
-static void DoDumpType( TYPEPTR realtype, char *symname, STRCHUNK *pch );
+static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch );
 
 /* matches table of type in ctypes.h */
 static  char    *CTypeNames[] = {
@@ -279,7 +279,7 @@ static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 }
 
 
-static void DumpTagName( char *tag_name, STRCHUNK *pch )
+static void DumpTagName( const char *tag_name, STRCHUNK *pch )
 {
     if( *tag_name == '\0' ) {
         if (do_message_output) {
@@ -502,7 +502,7 @@ static void DumpDecl( TYPEPTR typ, SYMPTR funcsym, STRCHUNK *pch )
     }
 }
 
-static void DoDumpType( TYPEPTR realtype, char *symname, STRCHUNK *pch )
+static void DoDumpType( TYPEPTR realtype, const char *symname, STRCHUNK *pch )
 {
     type_modifiers  pointer_flags;
     TYPEPTR         typ;

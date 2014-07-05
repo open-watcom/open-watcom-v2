@@ -101,7 +101,7 @@ int main( int argc, char **argv )
 
 
 
-extern void ConsErrMsg( cmsg_info  *info ){
+extern void ConsErrMsg( cmsg_info  *info ) {
 // C compiler call back to do a print to stderr
     char        pre[MAX_MSG_LEN];
 
@@ -112,53 +112,53 @@ extern void ConsErrMsg( cmsg_info  *info ){
     fflush( errout );
 }
 
-extern void ConsErrMsgVerbatim( char const  *line ){
+extern void ConsErrMsgVerbatim( char const  *line ) {
 // C compiler call back to do a print to stderr
     fputs( line, errout );
     fputc( '\n', errout );
     fflush( errout );
 }
 
-extern void ConsMsg( char const  *line ){
+extern void ConsMsg( char const  *line ) {
 // C compiler call back to do a print to stdout
     fputs( line, stdout );
     fputc( '\n', stdout );
     fflush( stdout );
 }
 
-extern void ConBlip( void ){
+extern void ConBlip( void ) {
 // C compiler do a blip to console
     putchar( '.' );
     fflush( stdout );
 }
 
-extern bool ConTTY( void ){
+extern bool ConTTY( void ) {
 // C compiler do a blip to console
     return( isatty( fileno( stdout ) ) != 0 );
 }
 
-extern void BannerMsg( char const  *line ){
+extern void BannerMsg( char const  *line ) {
 // C compiler call back to do a print a banner msg
     fputs( line, stdout );
     fputc( '\n', stdout );
     fflush( stdout );
 }
 
-extern void DebugMsg( char const  *line ){
+extern void DebugMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
     fputs( line, stdout );
     fputc( '\n', stdout );
     fflush( stdout );
 }
 
-extern void NoteMsg( char const  *line ){
+extern void NoteMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
     fputs( line, stdout );
     fputc( '\n', stdout );
     fflush( stdout );
 }
 
-extern char *FEGetEnv( char const *name ){
+extern char *FEGetEnv( char const *name ) {
 // get enviorment variable
     char *ret;
 
@@ -166,7 +166,7 @@ extern char *FEGetEnv( char const *name ){
     return( ret );
 }
 
-extern void FESetCurInc( void ){
+extern void FESetCurInc( void ) {
 }
 
 extern void MyExit( int rc )

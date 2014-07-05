@@ -214,7 +214,7 @@ static void AdvanceToken( void )
 static bool GetAliasInfo( void )
 /******************************/
 {
-    int     isfar16;
+    bool    isfar16;
 
     if( CurToken != T_LEFT_PAREN )          // #pragma aux symbol .....
         return( IS_ID_OR_KEYWORD( CurToken ) );
@@ -426,12 +426,10 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
         FixupHead = NULL;
         /* sort the fixup list in increasing fixup_loc's */
         for( fix = head; fix != NULL; fix = next ) {
-            owner = &FixupHead;
-            for( ;; ) {
-                chk = *owner;
-                if( chk == NULL ) break;
-                if( chk->fixup_loc > fix->fixup_loc ) break;
-                owner = &chk->next;
+            for( owner = &FixupHead; (chk = *owner) != NULL; owner = &chk->next ) {
+                if( chk->fixup_loc > fix->fixup_loc ) {
+                    break;
+                }
             }
             next = fix->next;
             fix->next = *owner;

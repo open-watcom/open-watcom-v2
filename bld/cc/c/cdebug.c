@@ -52,9 +52,9 @@ static void InitDBType( void )
     ScopeUnion = DBScope( "union" );
     ScopeEnum = DBScope( "enum" );
     typ = GetType( TYPE_PLAIN_CHAR );
-    if( typ->decl_type == TYPE_UCHAR ){
+    if( typ->decl_type == TYPE_UCHAR ) {
         typ->u1.debug_type = DBScalar( "char", TY_UINT_1 );
-    }else{
+    } else {
         typ->u1.debug_type = DBScalar( "char", TY_INT_1 );
     }
     B_Int_1  = DBScalar( "signed char", TY_INT_1 );
@@ -304,7 +304,7 @@ dbug_type DBType( TYPEPTR typ )
             ret_val = DBType( typ->object );
             if( fwd_info.debug_name != NULL ) {
                 ret_val = DBEndName( fwd_info.debug_name, ret_val );
-                if( GenSwitches & DBG_CV ){
+                if( GenSwitches & DBG_CV ) {
                     DBTypeDef( sym.name, ret_val ); //get codeview typedef out
                 }
             }
@@ -346,7 +346,7 @@ static void DumpFieldList( dbg_struct st, target_size bias,
                 field_typ->u1.debug_type );
         } else if( field_obj != NULL
                 && field_typ->decl_type == TYPE_ARRAY
-                && field_typ->u.array->dimension == 0 ){
+                && field_typ->u.array->dimension == 0 ) {
             DBAddField( st, bias + pfield->offset,
                 pfield->name, DBType( field_obj ));
         } else {

@@ -142,7 +142,7 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
     }
     MTOK( TokenBuf + len ) = T_NULL;
     MTOKINC( len );
-    if( CMPLIT( mentry->macro_name, "defined" ) != 0 ){
+    if( CMPLIT( mentry->macro_name, "defined" ) != 0 ) {
         MacroAdd( mentry, TokenBuf, len, mflags );
     } else {
         CErr1( ERR_CANT_DEFINE_DEFINED );

@@ -974,7 +974,7 @@ void InitBuildPreCompiledHeader( void )
     RDIRPTR     start;
 
     start = RDirNames;
-    if( start != NULL ){
+    if( start != NULL ) {
         start = start->next;
     }
     PCHRDirNames = start;
@@ -1137,7 +1137,7 @@ static bool VerifyIncludes( const char *filename )
             }
             filename = NULL;
         }
-        if( flist->rwflag ){
+        if( flist->rwflag ) {
             if( SrcFileInRDir( flist ) ) {
                 flist->rwflag = FALSE;
             }
@@ -1700,7 +1700,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     return( 0 );
 }
 
-bool SameCWD( char *p )
+static bool SameCWD( const char *p )
 {
     char        *cwd;
     int         same;

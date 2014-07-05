@@ -592,7 +592,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #endif
             break;
         }
-        flt = CMemAlloc( sizeof(FLOATVAL) );
+        flt = CMemAlloc( sizeof( FLOATVAL ) );
         leaf->op.u2.float_value = flt;
         leaf->op.opr = OPR_PUSHFLOAT;
     }

@@ -438,7 +438,7 @@ extern char         *DepFileName(void);
 extern char         *ObjFileName(void);
 extern char         *CppFileName(void);
 extern char         *ForceSlash(char *, char );
-extern char         *CreateFileName( char *template, char *extension, bool forceext );
+extern char         *CreateFileName( const char *template, const char *extension, bool forceext );
 extern char         *GetSourceDepName( void );
 extern FNAMEPTR     NextDependency( FNAMEPTR );
 
@@ -455,7 +455,7 @@ extern int          SrcFileTime(char const *,time_t *);
 extern void         SetSrcFNameOnce( void );
 extern void         GetNextToken(void);
 extern void         EmitLine(unsigned,const char *);
-extern void         EmitPoundLine(unsigned,const char *,int);
+extern void         EmitPoundLine(unsigned,const char *,bool);
 
 extern void         AddIncFile( INCFILE * );
 extern void         AddIncFileList( const char *filename );
@@ -837,7 +837,7 @@ extern void         CCusage( void );
 
 /* cutil */
 extern void         CErrSymName( int, SYMPTR,SYM_HANDLE );
-extern void         Expecting( char * );
+extern void         Expecting( const char * );
 extern bool         ExpectingToken( TOKEN );
 extern void         ExpectingAfter( TOKEN, TOKEN );
 extern bool         ExpectingConstant( void );

@@ -80,7 +80,7 @@ static IDEBool __stdcall getInfo          // GET INFORMATION  (NYI)
 {
     IDEBool ret;
     hdl = hdl;
-    switch( type ){
+    switch( type ) {
     case IDE_GET_SOURCE_FILE:
     case IDE_GET_TARGET_FILE:
     case IDE_GET_OBJ_FILE:
@@ -127,18 +127,18 @@ IDECallBacks callbacks = // DLL call-backs
 // DLL DRIVER
 //-------------------------------------------------------------------
 #ifdef HEAP_DUMP
-static void heap_dump( void ){
+static void heap_dump( void ) {
     struct _heapinfo h_info;
     int heap_status;
     h_info._pentry = NULL;
-    for(;;){
+    for(;;) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK )break;
         printf( " %s block at %Fp of size %4.4X\n",
         (h_info._useflag == _USEDENTRY ? "USED" : "FREE" ),
         h_info._pentry, h_info._size );
     }
-    switch( heap_status ){
+    switch( heap_status ) {
     case _HEAPEND:
         printf( "end of heap\n" );
         break;
@@ -162,25 +162,25 @@ struct heap_stat {
     int used;
 };
 
-static int heap_size( struct heap_stat *stat ){
+static int heap_size( struct heap_stat *stat ) {
     struct _heapinfo h_info;
     int heap_status;
     h_info._pentry = NULL;
     stat->free = 0;
     stat->used = 0;
-    for(;;){
+    for(;;) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK )break;
-        if( h_info._useflag ){
+        if( h_info._useflag ) {
             stat->used += h_info._size;
-        }else{
+        } else {
             stat->free += h_info._size;
         }
     }
     return( heap_status );
 }
 
-int main( int argc, char **argv ){
+int main( int argc, char **argv ) {
     FILE                *in;
     char                buff[140];
     char                *cmdline;
@@ -195,7 +195,7 @@ int main( int argc, char **argv ){
         printf( "Useage wcc386f fn\n" );
         exit( 1 );
     }
-    if( (in = fopen( argv[1], "r"))== NULL ){
+    if( (in = fopen( argv[1], "r"))== NULL ) {
         printf( "Coundn't open %s\n", argv[1]  );
         exit( 1 );
     }
@@ -204,7 +204,7 @@ int main( int argc, char **argv ){
 //  setmode( STDOUT_FILENO, O_BINARY );
     fatal = FALSE;
 
-    if(  IDE_CUR_DLL_VER != IDEGetVersion() ){
+    if(  IDE_CUR_DLL_VER != IDEGetVersion() ) {
          printf( "invalid DLL version\n" );
     }
     IDEInitDLL( NULL, &callbacks, &hdl );
@@ -212,15 +212,15 @@ int main( int argc, char **argv ){
     info.ignore_env = FALSE;
     info.cmd_line_has_files = TRUE;
     IDEPassInitInfo( NULL, &info );
-    while( fgets( buff, sizeof( buff ), in ) != NULL ){
+    while( fgets( buff, sizeof( buff ), in ) != NULL ) {
         char *tmp;
         cmdline = buff;
         printf( "%s", cmdline );
         while( isspace( *cmdline ) )++cmdline; // skip wcc386 whatever
         while( isalnum( *cmdline ) )++cmdline;
         tmp = cmdline;
-        while( *tmp != '\0' ){
-            if( *tmp == '\n' ){
+        while( *tmp != '\0' ) {
+            if( *tmp == '\n' ) {
                 *tmp = '\0';
                 break;
             }
@@ -230,10 +230,10 @@ int main( int argc, char **argv ){
         heap_size( &before );
         retn = IDERunYourSelf( hdl, cmdline, &fatal );
         heap_size( &after );
-        if( before.free != after.free ){
+        if( before.free != after.free ) {
             printf( "Free different\n" );
         }
-        if( before.used != after.used ){
+        if( before.used != after.used ) {
             printf( "Used different\n" );
         }
 #ifdef HEAP_DUMP

@@ -1414,7 +1414,7 @@ TYPEPTR TypeNode( DATA_TYPE type_spec, TYPEPTR the_object )
 {
     TYPEPTR     typ;
 
-    typ = (TYPEPTR) CPermAlloc( sizeof(TYPEDEFN) );
+    typ = (TYPEPTR) CPermAlloc( sizeof( TYPEDEFN ) );
     typ->decl_type = type_spec;
     typ->object = the_object;
     typ->u.tag = NULL;

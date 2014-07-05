@@ -46,29 +46,29 @@ static   IDECBHdl      Hdl;          // - handle for this instantiation
 static   IDECallBacks* Cbs;          // - call backs into IDE
 //static   IDEInitInfo   Info;
 
-extern void ConsMsg( char const  *line ){
+extern void ConsMsg( char const  *line ) {
 // C compiler call back to do a  console print to stdout
 
     (*Cbs->PrintMessage)( Hdl, line );
     // we are ignoring return for now
 }
 
-extern void ConBlip( void ){
+extern void ConBlip( void ) {
 // C compiler do a blip to console
 }
 
-extern bool ConTTY( void ){
+extern bool ConTTY( void ) {
 // C compiler do a blip to console
     return( GlobalCompFlags.ide_console_output != 0 );
 }
 
-extern void ConsErrMsg( cmsg_info  *cinfo ){
+extern void ConsErrMsg( cmsg_info  *cinfo ) {
 // C compiler call back to do a  console print to stderr
 
     IDEMsgInfo  info;
     IDEMsgSeverity severity;
 
-    switch( cinfo->class ){
+    switch( cinfo->class ) {
     case CMSG_INFO:
         severity = IDEMSGSEV_NOTE;
         break;
@@ -82,17 +82,17 @@ extern void ConsErrMsg( cmsg_info  *cinfo ){
     IdeMsgInit( &info, severity, cinfo->msgtxt );
     IdeMsgSetHelp( &info, "wccerrs.hlp", cinfo->msgnum );
     IdeMsgSetMsgNo( &info, cinfo->msgnum );
-    if( cinfo->fname != NULL ){
+    if( cinfo->fname != NULL ) {
         IdeMsgSetSrcFile( &info, cinfo->fname );
     }
-    if( cinfo->line != 0 ){
+    if( cinfo->line != 0 ) {
         IdeMsgSetSrcLine( &info, cinfo->line );
     }
      (*Cbs->PrintWithInfo)( Hdl, &info );
     // we are ignoring return for now
 }
 
-extern void ConsErrMsgVerbatim( char const  *line ){
+extern void ConsErrMsgVerbatim( char const  *line ) {
 // C compiler call back to a console print to stderr
 
     IDEMsgInfo info;
@@ -101,7 +101,7 @@ extern void ConsErrMsgVerbatim( char const  *line ){
     // we are ignoring return for now
 }
 
-extern void BannerMsg( char const  *line ){
+extern void BannerMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
      IDEMsgInfo info;
@@ -110,7 +110,7 @@ extern void BannerMsg( char const  *line ){
     // we are ignoring return for now
 }
 
-extern void DebugMsg( char const  *line ){
+extern void DebugMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
      IDEMsgInfo info;
@@ -119,7 +119,7 @@ extern void DebugMsg( char const  *line ){
     // we are ignoring return for now
 }
 
-extern void NoteMsg( char const  *line ){
+extern void NoteMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
      IDEMsgInfo info;
@@ -128,11 +128,11 @@ extern void NoteMsg( char const  *line ){
     // we are ignoring return for now
 }
 
-extern char *FEGetEnv( char const *name ){
+extern char *FEGetEnv( char const *name ) {
 // get enviorment variable
     char *ret;
     ret = NULL;
-    if( !GlobalCompFlags.ignore_environment ){
+    if( !GlobalCompFlags.ignore_environment ) {
         if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {
             ret = NULL;
         }
@@ -141,14 +141,14 @@ extern char *FEGetEnv( char const *name ){
 }
 
 static   jmp_buf *FatalEnv;
-extern void MyExit( int ret ){
+extern void MyExit( int ret ) {
     longjmp( *FatalEnv, ret );
 }
 
 // IDE INTERFACE
 
 
-unsigned IDEAPI IDEGetVersion ( void ){
+unsigned IDEAPI IDEGetVersion ( void ) {
  // GET IDE VERSION
     return IDE_CUR_DLL_VER;
 }
@@ -163,7 +163,7 @@ static long HeapFreeHi;
 IDEBool IDEAPI IDEInitDLL
     ( IDECBHdl      hdl             // - handle for this instantiation
     , IDECallBacks* cbs             // - call backs into IDE
-    , IDEDllHdl*    info ){         // - uninitialized info
+    , IDEDllHdl*    info ) {         // - uninitialized info
 //***********************
 // DLL INITIALIZATION
 //***********************
@@ -178,7 +178,7 @@ IDEBool IDEAPI IDEInitDLL
     return FALSE;
 }
 
-void IDEAPI IDEFreeHeap( void ){
+void IDEAPI IDEFreeHeap( void ) {
 //*************************************
 //Cleanup Heap
 //*************************************
@@ -187,7 +187,7 @@ void IDEAPI IDEFreeHeap( void ){
 #endif
 }
 
-void IDEAPI IDEFiniDLL( IDEDllHdl hdl ){
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl ) {
 //*********************************************
 //DLL COMPLETION
 //********************************************
@@ -198,19 +198,19 @@ void IDEAPI IDEFiniDLL( IDEDllHdl hdl ){
 #if HEAP_CHK == 1
 #include <stdio.h>
 #if 0
-static void heap_dump( void ){
+static void heap_dump( void ) {
     struct _heapinfo h_info;
     int heap_status;
     h_info._pentry = NULL;
-    for(;;){
+    for(;;) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK )break;
-        if( h_info._useflag == _USEDENTRY  ){
+        if( h_info._useflag == _USEDENTRY  ) {
             printf( " %s block at %Fp of size %4.4X\n",
                 "USED", h_info._pentry, h_info._size );
         }
     }
-    switch( heap_status ){
+    switch( heap_status ) {
     case _HEAPEND:
         printf( "end of heap\n" );
         break;
@@ -234,18 +234,18 @@ struct heap_stat {
     int used;
 };
 
-static int heap_size( struct heap_stat *stat ){
+static int heap_size( struct heap_stat *stat ) {
     struct _heapinfo h_info;
     int heap_status;
     h_info._pentry = NULL;
     stat->free = 0;
     stat->used = 0;
-    for(;;){
+    for(;;) {
         heap_status = _heapwalk( &h_info );
         if( heap_status != _HEAPOK )break;
-        if( h_info._useflag == _USEDENTRY ){
+        if( h_info._useflag == _USEDENTRY ) {
             stat->used += h_info._size;
-        }else{
+        } else {
             stat->free += h_info._size;
         }
     }
@@ -289,7 +289,7 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
 IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
-    , IDEBool* fatal_error ){   // - addr[fatality indication]
+    , IDEBool* fatal_error ) {   // - addr[fatality indication]
     
     //****************************
     // Do a compile of a file

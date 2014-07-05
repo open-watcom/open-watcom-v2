@@ -48,7 +48,7 @@
   #define DLL_NAME_STR _str(DLL_NAME)
 #endif
 
-int main( int argc, char* argv[] ){
+int main( int argc, char* argv[] ) {
 /**********************************/
     IDEDRV  info;
 #ifndef __UNIX__

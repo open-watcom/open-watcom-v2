@@ -74,7 +74,7 @@ static char *NameOfCurToken( void )
     return( token );
 }
 
-void Expecting( char *a_token )
+void Expecting( const char *a_token )
 {
     CErr3p( ERR_EXPECTING_BUT_FOUND, a_token, NameOfCurToken() );
 }
