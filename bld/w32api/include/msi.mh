@@ -1,12 +1,15 @@
 /*
  * Microsoft Windows Installer declarations
  *
+:include crwatcnt.sp
  */
 
 #ifndef _MSI_H_
 #define _MSI_H_
 
 :include readonly.sp
+
+#include <windows.h>
 
 :include winver.sp
 
@@ -58,6 +61,14 @@ typedef enum tagINSTALLUILEVEL {
     INSTALLUILEVEL_HIDECANCEL = 0x20,
     INSTALLUILEVEL_SOURCERESONLY = 0x100
 } INSTALLUILEVEL;
+
+typedef int (WINAPI *INSTALLUI_HANDLERA)(LPVOID pvContext,UINT iMessageType,LPCSTR szMessage);
+typedef int (WINAPI *INSTALLUI_HANDLERW)(LPVOID pvContext,UINT iMessageType,LPCWSTR szMessage);
+
+#if (_WIN32_MSI >= 310)
+typedef int (WINAPI *INSTALLUI_HANDLER_RECORD)(LPVOID pvContext,UINT iMessageType,MSIHANDLE hRecord);
+typedef INSTALLUI_HANDLER_RECORD *PINSTALLUI_HANDLER_RECORD;
+#endif
 
 typedef enum tagINSTALLSTATE {
     INSTALLSTATE_NOTUSED = -7,
@@ -314,90 +325,90 @@ typedef enum tagMSICODE {
 
 :include cpluspro.sp
 
-  LWSTDAPI_( INSTALLUILEVEL )       MsiSetInternalUI( INSTALLUILEVEL, HWND * );
-  LWSTDAPI_( INSTALLUI_HANDLERA )   MsiSetExternalUIA( INSTALLUI_HANDLERA, DWORD, LPVOID );
-  LWSTDAPI_( INSTALLUI_HANDLERA )   MsiSetExternalUIW( INSTALLUI_HANDLERW, DWORD, LPVOID );
+  INSTALLUILEVEL WINAPI  MsiSetInternalUI( INSTALLUILEVEL, HWND * );
+  INSTALLUI_HANDLERA WINAPI   MsiSetExternalUIA( INSTALLUI_HANDLERA, DWORD, LPVOID );
+  INSTALLUI_HANDLERA WINAPI   MsiSetExternalUIW( INSTALLUI_HANDLERW, DWORD, LPVOID );
 
-  LWSTDAPI_( UINT )                 MsiEnableLogA( DWORD, LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiEnableLogW( DWORD, LPCWSTR, DWORD );
-  LWSTDAPI_( INSTALLSTATE )         MsiQueryProductStateA( LPCSTR szProduct);
-  LWSTDAPI_( INSTALLSTATE )         MsiQueryProductStateW( LPCWSTR szProduct);
-  LWSTDAPI_( UINT )                 MsiGetProductInfoA( LPCSTR, LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetProductInfoW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiInstallProductA( LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiInstallProductW( LPCWSTR, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiConfigureProductA( LPCSTR, int, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiConfigureProductW( LPCWSTR, int, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiConfigureProductExA( LPCSTR, int, INSTALLSTATE, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiConfigureProductExW( LPCWSTR, int, INSTALLSTATE, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiReinstallProductA( LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiReinstallProductW( LPCWSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiAdvertiseProductA( LPCSTR, LPCSTR, LPCSTR, LANGID );
-  LWSTDAPI_( UINT )                 MsiAdvertiseProductW( LPCWSTR, LPCWSTR, LPCWSTR, LANGID );
-  LWSTDAPI_( UINT )                 MsiAdvertiseScriptA( LPCSTR, DWORD, PHKEY, WINBOOL );
-  LWSTDAPI_( UINT )                 MsiAdvertiseScriptW( LPCWSTR, DWORD, PHKEY, WINBOOL );
-  LWSTDAPI_( UINT )                 MsiGetProductInfoFromScriptA( LPCSTR, LPSTR, LANGID *, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetProductInfoFromScriptW( LPCWSTR, LPWSTR, LANGID *, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetProductCodeA( LPCSTR, LPSTR );
-  LWSTDAPI_( UINT )                 MsiGetProductCodeW( LPCWSTR, LPWSTR );
-  LWSTDAPI_( USERINFOSTATE )        MsiGetUserInfoA( LPCSTR, LPSTR, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
-  LWSTDAPI_( USERINFOSTATE )        MsiGetUserInfoW( LPCWSTR, LPWSTR, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiCollectUserInfoA( LPCSTR );
-  LWSTDAPI_( UINT )                 MsiCollectUserInfoW( LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiApplyPatchA( LPCSTR, LPCSTR, INSTALLTYPE, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiApplyPatchW( LPCWSTR, LPCWSTR, INSTALLTYPE, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiGetPatchInfoA( LPCSTR, LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetPatchInfoW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiEnumPatchesA( LPCSTR, DWORD, LPSTR, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiEnumPatchesW( LPCWSTR, DWORD, LPWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( INSTALLSTATE )         MsiQueryFeatureStateA( LPCSTR, LPCSTR );
-  LWSTDAPI_( INSTALLSTATE )         MsiQueryFeatureStateW( LPCWSTR, LPCWSTR );
-  LWSTDAPI_( INSTALLSTATE )         MsiUseFeatureA( LPCSTR, LPCSTR );
-  LWSTDAPI_( INSTALLSTATE )         MsiUseFeatureW( LPCWSTR, LPCWSTR );
-  LWSTDAPI_( INSTALLSTATE )         MsiUseFeatureExA( LPCSTR, LPCSTR, DWORD, DWORD );
-  LWSTDAPI_( INSTALLSTATE )         MsiUseFeatureExW( LPCWSTR, LPCWSTR, DWORD, DWORD );
-  LWSTDAPI_( UINT )                 MsiGetFeatureUsageA( LPCSTR, LPCSTR, DWORD *, WORD * );
-  LWSTDAPI_( UINT )                 MsiGetFeatureUsageW( LPCWSTR, LPCWSTR, DWORD *, WORD * );
-  LWSTDAPI_( UINT )                 MsiConfigureFeatureA( LPCSTR, LPCSTR, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiConfigureFeatureW( LPCWSTR, LPCWSTR, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiReinstallFeatureA( LPCSTR, LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiReinstallFeatureW( LPCWSTR, LPCWSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiProvideComponentA( LPCSTR, LPCSTR, LPCSTR, DWORD, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideComponentW( LPCWSTR, LPCWSTR, LPCWSTR, DWORD, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideQualifiedComponentA( LPCSTR, LPCSTR, DWORD, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideQualifiedComponentW( LPCWSTR, LPCWSTR, DWORD, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideQualifiedComponentExA( LPCSTR, LPCSTR, DWORD, LPCSTR, DWORD, DWORD, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideQualifiedComponentExW( LPCWSTR, LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD, LPWSTR, DWORD * );
-  LWSTDAPI_( INSTALLSTATE )         MsiGetComponentPathA( LPCSTR, LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( INSTALLSTATE )         MsiGetComponentPathW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiEnumProductsA( DWORD, LPSTR );
-  LWSTDAPI_( UINT )                 MsiEnumProductsW( DWORD, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiEnumFeaturesA( LPCSTR, DWORD, LPSTR, LPSTR );
-  LWSTDAPI_( UINT )                 MsiEnumFeaturesW( LPCWSTR, DWORD, LPWSTR, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiEnumComponentsA( DWORD, LPSTR );
-  LWSTDAPI_( UINT )                 MsiEnumComponentsW( DWORD, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiEnumClientsA( LPCSTR, DWORD, LPSTR );
-  LWSTDAPI_( UINT )                 MsiEnumClientsW( LPCWSTR, DWORD, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiEnumComponentQualifiersA( LPCSTR, DWORD, LPSTR, DWORD *, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiEnumComponentQualifiersW( LPCWSTR, DWORD, LPWSTR, DWORD *, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiOpenProductA( LPCSTR, MSIHANDLE * );
-  LWSTDAPI_( UINT )                 MsiOpenProductW( LPCWSTR, MSIHANDLE * );
-  LWSTDAPI_( UINT )                 MsiOpenPackageA( LPCSTR, MSIHANDLE * );
-  LWSTDAPI_( UINT )                 MsiOpenPackageW( LPCWSTR, MSIHANDLE * );
-  LWSTDAPI_( UINT )                 MsiGetProductPropertyA( MSIHANDLE, LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetProductPropertyW( MSIHANDLE, LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiVerifyPackageA( LPCSTR );
-  LWSTDAPI_( UINT )                 MsiVerifyPackageW( LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiGetFeatureInfoA( MSIHANDLE, LPCSTR, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetFeatureInfoW( MSIHANDLE, LPCWSTR, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiInstallMissingComponentA( LPCSTR, LPCSTR, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiInstallMissingComponentW( LPCWSTR, LPCWSTR, INSTALLSTATE );
-  LWSTDAPI_( UINT )                 MsiInstallMissingFileA( LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiInstallMissingFileW( LPCWSTR, LPCWSTR );
-  LWSTDAPI_( INSTALLSTATE )         MsiLocateComponentA( LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( INSTALLSTATE )         MsiLocateComponentW( LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetFileVersionA( LPCSTR, LPSTR, DWORD *, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetFileVersionW( LPCWSTR, LPWSTR, DWORD *, LPWSTR, DWORD * );
+  UINT WINAPI            MsiEnableLogA( DWORD, LPCSTR, DWORD );
+  UINT WINAPI            MsiEnableLogW( DWORD, LPCWSTR, DWORD );
+  INSTALLSTATE WINAPI    MsiQueryProductStateA( LPCSTR szProduct);
+  INSTALLSTATE WINAPI    MsiQueryProductStateW( LPCWSTR szProduct);
+  UINT WINAPI            MsiGetProductInfoA( LPCSTR, LPCSTR, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetProductInfoW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiInstallProductA( LPCSTR, LPCSTR );
+  UINT WINAPI            MsiInstallProductW( LPCWSTR, LPCWSTR );
+  UINT WINAPI            MsiConfigureProductA( LPCSTR, int, INSTALLSTATE );
+  UINT WINAPI            MsiConfigureProductW( LPCWSTR, int, INSTALLSTATE );
+  UINT WINAPI            MsiConfigureProductExA( LPCSTR, int, INSTALLSTATE, LPCSTR );
+  UINT WINAPI            MsiConfigureProductExW( LPCWSTR, int, INSTALLSTATE, LPCWSTR );
+  UINT WINAPI            MsiReinstallProductA( LPCSTR, DWORD );
+  UINT WINAPI            MsiReinstallProductW( LPCWSTR, DWORD );
+  UINT WINAPI            MsiAdvertiseProductA( LPCSTR, LPCSTR, LPCSTR, LANGID );
+  UINT WINAPI            MsiAdvertiseProductW( LPCWSTR, LPCWSTR, LPCWSTR, LANGID );
+  UINT WINAPI            MsiAdvertiseScriptA( LPCSTR, DWORD, PHKEY, BOOL );
+  UINT WINAPI            MsiAdvertiseScriptW( LPCWSTR, DWORD, PHKEY, BOOL );
+  UINT WINAPI            MsiGetProductInfoFromScriptA( LPCSTR, LPSTR, LANGID *, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetProductInfoFromScriptW( LPCWSTR, LPWSTR, LANGID *, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
+  UINT WINAPI            MsiGetProductCodeA( LPCSTR, LPSTR );
+  UINT WINAPI            MsiGetProductCodeW( LPCWSTR, LPWSTR );
+  USERINFOSTATE WINAPI   MsiGetUserInfoA( LPCSTR, LPSTR, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
+  USERINFOSTATE WINAPI   MsiGetUserInfoW( LPCWSTR, LPWSTR, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
+  UINT WINAPI            MsiCollectUserInfoA( LPCSTR );
+  UINT WINAPI            MsiCollectUserInfoW( LPCWSTR );
+  UINT WINAPI            MsiApplyPatchA( LPCSTR, LPCSTR, INSTALLTYPE, LPCSTR );
+  UINT WINAPI            MsiApplyPatchW( LPCWSTR, LPCWSTR, INSTALLTYPE, LPCWSTR );
+  UINT WINAPI            MsiGetPatchInfoA( LPCSTR, LPCSTR, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetPatchInfoW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiEnumPatchesA( LPCSTR, DWORD, LPSTR, LPSTR, DWORD * );
+  UINT WINAPI            MsiEnumPatchesW( LPCWSTR, DWORD, LPWSTR, LPWSTR, DWORD * );
+  INSTALLSTATE WINAPI    MsiQueryFeatureStateA( LPCSTR, LPCSTR );
+  INSTALLSTATE WINAPI    MsiQueryFeatureStateW( LPCWSTR, LPCWSTR );
+  INSTALLSTATE WINAPI    MsiUseFeatureA( LPCSTR, LPCSTR );
+  INSTALLSTATE WINAPI    MsiUseFeatureW( LPCWSTR, LPCWSTR );
+  INSTALLSTATE WINAPI    MsiUseFeatureExA( LPCSTR, LPCSTR, DWORD, DWORD );
+  INSTALLSTATE WINAPI    MsiUseFeatureExW( LPCWSTR, LPCWSTR, DWORD, DWORD );
+  UINT WINAPI            MsiGetFeatureUsageA( LPCSTR, LPCSTR, DWORD *, WORD * );
+  UINT WINAPI            MsiGetFeatureUsageW( LPCWSTR, LPCWSTR, DWORD *, WORD * );
+  UINT WINAPI            MsiConfigureFeatureA( LPCSTR, LPCSTR, INSTALLSTATE );
+  UINT WINAPI            MsiConfigureFeatureW( LPCWSTR, LPCWSTR, INSTALLSTATE );
+  UINT WINAPI            MsiReinstallFeatureA( LPCSTR, LPCSTR, DWORD );
+  UINT WINAPI            MsiReinstallFeatureW( LPCWSTR, LPCWSTR, DWORD );
+  UINT WINAPI            MsiProvideComponentA( LPCSTR, LPCSTR, LPCSTR, DWORD, LPSTR, DWORD * );
+  UINT WINAPI            MsiProvideComponentW( LPCWSTR, LPCWSTR, LPCWSTR, DWORD, LPWSTR, DWORD * );
+  UINT WINAPI            MsiProvideQualifiedComponentA( LPCSTR, LPCSTR, DWORD, LPSTR, DWORD * );
+  UINT WINAPI            MsiProvideQualifiedComponentW( LPCWSTR, LPCWSTR, DWORD, LPWSTR, DWORD * );
+  UINT WINAPI            MsiProvideQualifiedComponentExA( LPCSTR, LPCSTR, DWORD, LPCSTR, DWORD, DWORD, LPSTR, DWORD * );
+  UINT WINAPI            MsiProvideQualifiedComponentExW( LPCWSTR, LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD, LPWSTR, DWORD * );
+  INSTALLSTATE WINAPI    MsiGetComponentPathA( LPCSTR, LPCSTR, LPSTR, DWORD * );
+  INSTALLSTATE WINAPI    MsiGetComponentPathW( LPCWSTR, LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiEnumProductsA( DWORD, LPSTR );
+  UINT WINAPI            MsiEnumProductsW( DWORD, LPWSTR );
+  UINT WINAPI            MsiEnumFeaturesA( LPCSTR, DWORD, LPSTR, LPSTR );
+  UINT WINAPI            MsiEnumFeaturesW( LPCWSTR, DWORD, LPWSTR, LPWSTR );
+  UINT WINAPI            MsiEnumComponentsA( DWORD, LPSTR );
+  UINT WINAPI            MsiEnumComponentsW( DWORD, LPWSTR );
+  UINT WINAPI            MsiEnumClientsA( LPCSTR, DWORD, LPSTR );
+  UINT WINAPI            MsiEnumClientsW( LPCWSTR, DWORD, LPWSTR );
+  UINT WINAPI            MsiEnumComponentQualifiersA( LPCSTR, DWORD, LPSTR, DWORD *, LPSTR, DWORD * );
+  UINT WINAPI            MsiEnumComponentQualifiersW( LPCWSTR, DWORD, LPWSTR, DWORD *, LPWSTR, DWORD * );
+  UINT WINAPI            MsiOpenProductA( LPCSTR, MSIHANDLE * );
+  UINT WINAPI            MsiOpenProductW( LPCWSTR, MSIHANDLE * );
+  UINT WINAPI            MsiOpenPackageA( LPCSTR, MSIHANDLE * );
+  UINT WINAPI            MsiOpenPackageW( LPCWSTR, MSIHANDLE * );
+  UINT WINAPI            MsiGetProductPropertyA( MSIHANDLE, LPCSTR, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetProductPropertyW( MSIHANDLE, LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiVerifyPackageA( LPCSTR );
+  UINT WINAPI            MsiVerifyPackageW( LPCWSTR );
+  UINT WINAPI            MsiGetFeatureInfoA( MSIHANDLE, LPCSTR, DWORD *, LPSTR, DWORD *, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetFeatureInfoW( MSIHANDLE, LPCWSTR, DWORD *, LPWSTR, DWORD *, LPWSTR, DWORD * );
+  UINT WINAPI            MsiInstallMissingComponentA( LPCSTR, LPCSTR, INSTALLSTATE );
+  UINT WINAPI            MsiInstallMissingComponentW( LPCWSTR, LPCWSTR, INSTALLSTATE );
+  UINT WINAPI            MsiInstallMissingFileA( LPCSTR, LPCSTR );
+  UINT WINAPI            MsiInstallMissingFileW( LPCWSTR, LPCWSTR );
+  INSTALLSTATE WINAPI    MsiLocateComponentA( LPCSTR, LPSTR, DWORD * );
+  INSTALLSTATE WINAPI    MsiLocateComponentW( LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiGetFileVersionA( LPCSTR, LPSTR, DWORD *, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetFileVersionW( LPCWSTR, LPWSTR, DWORD *, LPWSTR, DWORD * );
 
 #ifdef UNICODE
     #define MsiSetExternalUI                MsiSetExternalUIW
@@ -487,18 +498,18 @@ typedef enum tagMSICODE {
 
 
 #if (_WIN32_MSI >= 110)
-  LWSTDAPI_( UINT )                 MsiGetShortcutTargetA( LPCSTR, LPSTR, LPSTR, LPSTR );
-  LWSTDAPI_( UINT )                 MsiGetShortcutTargetW( LPCWSTR, LPWSTR, LPWSTR, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiIsProductElevatedA( LPCSTR, WINBOOL * );
-  LWSTDAPI_( UINT )                 MsiIsProductElevatedW( LPCWSTR, WINBOOL * );
-  LWSTDAPI_( UINT )                 MsiEnumRelatedProductsA( LPCSTR, DWORD, DWORD, LPSTR );
-  LWSTDAPI_( UINT )                 MsiEnumRelatedProductsW( LPCWSTR, DWORD, DWORD, LPWSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListClearAllA( LPCSTR, LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListClearAllW( LPCWSTR, LPCWSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListAddSourceA( LPCSTR, LPCSTR, DWORD, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListAddSourceW( LPCWSTR, LPCWSTR, DWORD, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListForceResolutionA( LPCSTR, LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListForceResolutionW( LPCWSTR, LPCWSTR, DWORD );
+  UINT WINAPI            MsiGetShortcutTargetA( LPCSTR, LPSTR, LPSTR, LPSTR );
+  UINT WINAPI            MsiGetShortcutTargetW( LPCWSTR, LPWSTR, LPWSTR, LPWSTR );
+  UINT WINAPI            MsiIsProductElevatedA( LPCSTR, BOOL * );
+  UINT WINAPI            MsiIsProductElevatedW( LPCWSTR, BOOL * );
+  UINT WINAPI            MsiEnumRelatedProductsA( LPCSTR, DWORD, DWORD, LPSTR );
+  UINT WINAPI            MsiEnumRelatedProductsW( LPCWSTR, DWORD, DWORD, LPWSTR );
+  UINT WINAPI            MsiSourceListClearAllA( LPCSTR, LPCSTR, DWORD );
+  UINT WINAPI            MsiSourceListClearAllW( LPCWSTR, LPCWSTR, DWORD );
+  UINT WINAPI            MsiSourceListAddSourceA( LPCSTR, LPCSTR, DWORD, LPCSTR );
+  UINT WINAPI            MsiSourceListAddSourceW( LPCWSTR, LPCWSTR, DWORD, LPCWSTR );
+  UINT WINAPI            MsiSourceListForceResolutionA( LPCSTR, LPCSTR, DWORD );
+  UINT WINAPI            MsiSourceListForceResolutionW( LPCWSTR, LPCWSTR, DWORD );
   
 #ifdef UNICODE
     #define MsiGetShortcutTarget            MsiGetShortcutTargetW
@@ -519,20 +530,20 @@ typedef enum tagMSICODE {
 #endif /* _WIN32_MSI >= 110 */
 
 #if (_WIN32_MSI >= 150)
-  LWSTDAPI_( UINT )                 MsiGetFileHashA( LPCSTR, DWORD, PMSIFILEHASHINFO );
-  LWSTDAPI_( UINT )                 MsiGetFileHashW( LPCWSTR, DWORD, PMSIFILEHASHINFO );
-  LWSTDAPI_( UINT )                 MsiAdvertiseProductExA( LPCSTR, LPCSTR, LPCSTR, LANGID, DWORD, DWORD );
-  LWSTDAPI_( UINT )                 MsiAdvertiseProductExW( LPCWSTR, LPCWSTR, LPCWSTR, LANGID, DWORD, DWORD );
-  LWSTDAPI_( UINT )                 MsiProcessAdvertiseScriptA( LPCSTR, LPCSTR, HKEY, WINBOOL, WINBOOL );
-  LWSTDAPI_( UINT )                 MsiProcessAdvertiseScriptW( LPCWSTR, LPCWSTR, HKEY, WINBOOL, WINBOOL );
+  UINT WINAPI            MsiGetFileHashA( LPCSTR, DWORD, PMSIFILEHASHINFO );
+  UINT WINAPI            MsiGetFileHashW( LPCWSTR, DWORD, PMSIFILEHASHINFO );
+  UINT WINAPI            MsiAdvertiseProductExA( LPCSTR, LPCSTR, LPCSTR, LANGID, DWORD, DWORD );
+  UINT WINAPI            MsiAdvertiseProductExW( LPCWSTR, LPCWSTR, LPCWSTR, LANGID, DWORD, DWORD );
+  UINT WINAPI            MsiProcessAdvertiseScriptA( LPCSTR, LPCSTR, HKEY, BOOL, BOOL );
+  UINT WINAPI            MsiProcessAdvertiseScriptW( LPCWSTR, LPCWSTR, HKEY, BOOL, BOOL );
 
 #define MSIASSEMBLYINFO_NETASSEMBLY 0
 #define MSIASSEMBLYINFO_WIN32ASSEMBLY 1
 
-  LWSTDAPI_( UINT )                 MsiProvideAssemblyA( LPCSTR, LPCSTR, DWORD, DWORD, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiProvideAssemblyW( LPCWSTR, LPCWSTR, DWORD, DWORD, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiOpenPackageExA( LPCSTR, DWORD, MSIHANDLE * );
-  LWSTDAPI_( UINT )                 MsiOpenPackageExW( LPCWSTR, DWORD, MSIHANDLE * );
+  UINT WINAPI            MsiProvideAssemblyA( LPCSTR, LPCSTR, DWORD, DWORD, LPSTR, DWORD * );
+  UINT WINAPI            MsiProvideAssemblyW( LPCWSTR, LPCWSTR, DWORD, DWORD, LPWSTR, DWORD * );
+  UINT WINAPI            MsiOpenPackageExA( LPCSTR, DWORD, MSIHANDLE * );
+  UINT WINAPI            MsiOpenPackageExW( LPCWSTR, DWORD, MSIHANDLE * );
 
 #ifdef UNICODE
     #define MsiGetFileHash                  MsiGetFileHashW
@@ -549,8 +560,8 @@ typedef enum tagMSICODE {
 #endif
 
 #ifndef _MSI_NO_CRYPTO
-  LWSTDAPI_( HRESULT )              MsiGetFileSignatureInformationA( LPCSTR, DWORD, PCCERT_CONTEXT *, BYTE *, DWORD * );
-  LWSTDAPI_( HRESULT )              MsiGetFileSignatureInformationW( LPCWSTR, DWORD, PCCERT_CONTEXT *, BYTE *, DWORD * );
+  HRESULT WINAPI         MsiGetFileSignatureInformationA( LPCSTR, DWORD, PCCERT_CONTEXT *, BYTE *, DWORD * );
+  HRESULT WINAPI         MsiGetFileSignatureInformationW( LPCWSTR, DWORD, PCCERT_CONTEXT *, BYTE *, DWORD * );
 
 #ifdef UNICODE
     #define MsiGetFileSignatureInformation  MsiGetFileSignatureInformationW
@@ -565,50 +576,52 @@ typedef enum tagMSICODE {
 
 #if (_WIN32_MSI >= 300)
 
-  LWSTDAPI_( UINT )                 MsiGetProductInfoExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiGetProductInfoExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, LPWSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiRemovePatchesA( LPCSTR, LPCSTR, INSTALLTYPE, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiRemovePatchesW( LPCWSTR, LPCWSTR, INSTALLTYPE, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiExtractPatchXMLDataA( LPCSTR, DWORD, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiExtractPatchXMLDataW( LPCWSTR, DWORD, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetPatchInfoExA( LPCSTR, LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, LPSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiGetPatchInfoExW( LPCWSTR, LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, LPWSTR, DWORD * );
-  LWSTDAPI_( UINT )                 MsiApplyMultiplePatchesA( LPCSTR, LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiApplyMultiplePatchesW( LPCWSTR, LPCWSTR, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiDeterminePatchSequenceA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, PMSIPATCHSEQUENCEINFOA );
-  LWSTDAPI_( UINT )                 MsiDeterminePatchSequenceW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, PMSIPATCHSEQUENCEINFOW );
-  LWSTDAPI_( UINT )                 MsiDetermineApplicablePatchesA( LPCSTR, DWORD, PMSIPATCHSEQUENCEINFOA );
-  LWSTDAPI_( UINT )                 MsiDetermineApplicablePatchesW( LPCWSTR, DWORD, PMSIPATCHSEQUENCEINFOW );
-  LWSTDAPI_( UINT )                 MsiEnumPatchesExA( LPCSTR, LPCSTR, DWORD, DWORD, DWORD, CHAR[39], CHAR[39], MSIINSTALLCONTEXT *, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiEnumPatchesExW( LPCWSTR, LPCWSTR, DWORD, DWORD, DWORD, WCHAR[39],WCHAR[39], MSIINSTALLCONTEXT *, LPWSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiQueryFeatureStateExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, INSTALLSTATE * );
-  LWSTDAPI_( UINT )                 MsiQueryFeatureStateExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, INSTALLSTATE * );
-  LWSTDAPI_( UINT )                 MsiQueryComponentStateA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, INSTALLSTATE * );
-  LWSTDAPI_( UINT )                 MsiQueryComponentStateW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, INSTALLSTATE * );
-  LWSTDAPI_( UINT )                 MsiEnumProductsExA( LPCSTR, LPCSTR, DWORD, DWORD, CHAR[39], MSIINSTALLCONTEXT *, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiEnumProductsExW( LPCWSTR, LPCWSTR, DWORD, DWORD, WCHAR[39], MSIINSTALLCONTEXT *, LPWSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListAddSourceExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListAddSourceExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListAddMediaDiskA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListAddMediaDiskW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPCWSTR, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListClearSourceA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListClearSourceW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListClearMediaDiskA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListClearMediaDiskW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListClearAllExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListClearAllExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListForceResolutionExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListForceResolutionExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListSetInfoA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListSetInfoW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, LPCWSTR );
-  LWSTDAPI_( UINT )                 MsiSourceListGetInfoA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListGetInfoW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, LPWSTR, LPDWORD 
-  LWSTDAPI_( UINT )                 MsiSourceListEnumSourcesA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListEnumSourcesW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPWSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListEnumMediaDisksA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPDWORD, LPSTR, LPDWORD, LPSTR, LPDWORD );
-  LWSTDAPI_( UINT )                 MsiSourceListEnumMediaDisksW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPDWORD, LPWSTR, LPDWORD, LPWSTR, LPDWORD );
+  UINT WINAPI            MsiGetProductInfoExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, LPSTR, LPDWORD );
+  UINT WINAPI            MsiGetProductInfoExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, LPWSTR, LPDWORD );
+  UINT WINAPI            MsiRemovePatchesA( LPCSTR, LPCSTR, INSTALLTYPE, LPCSTR );
+  UINT WINAPI            MsiRemovePatchesW( LPCWSTR, LPCWSTR, INSTALLTYPE, LPCWSTR );
+  UINT WINAPI            MsiExtractPatchXMLDataA( LPCSTR, DWORD, LPSTR, DWORD * );
+  UINT WINAPI            MsiExtractPatchXMLDataW( LPCWSTR, DWORD, LPWSTR, DWORD * );
+  UINT WINAPI            MsiGetPatchInfoExA( LPCSTR, LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, LPSTR, DWORD * );
+  UINT WINAPI            MsiGetPatchInfoExW( LPCWSTR, LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, LPWSTR, DWORD * );
+  UINT WINAPI            MsiApplyMultiplePatchesA( LPCSTR, LPCSTR, LPCSTR );
+  UINT WINAPI            MsiApplyMultiplePatchesW( LPCWSTR, LPCWSTR, LPCWSTR );
+  UINT WINAPI            MsiDeterminePatchSequenceA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, PMSIPATCHSEQUENCEINFOA );
+  UINT WINAPI            MsiDeterminePatchSequenceW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, PMSIPATCHSEQUENCEINFOW );
+  UINT WINAPI            MsiDetermineApplicablePatchesA( LPCSTR, DWORD, PMSIPATCHSEQUENCEINFOA );
+  UINT WINAPI            MsiDetermineApplicablePatchesW( LPCWSTR, DWORD, PMSIPATCHSEQUENCEINFOW );
+  UINT WINAPI            MsiEnumPatchesExA( LPCSTR, LPCSTR, DWORD, DWORD, DWORD, CHAR[39], CHAR[39], MSIINSTALLCONTEXT *, LPSTR, LPDWORD );
+  UINT WINAPI            MsiEnumPatchesExW( LPCWSTR, LPCWSTR, DWORD, DWORD, DWORD, WCHAR[39],WCHAR[39], MSIINSTALLCONTEXT *, LPWSTR, LPDWORD );
+  UINT WINAPI            MsiQueryFeatureStateExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, INSTALLSTATE * );
+  UINT WINAPI            MsiQueryFeatureStateExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, INSTALLSTATE * );
+  UINT WINAPI            MsiQueryComponentStateA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, LPCSTR, INSTALLSTATE * );
+  UINT WINAPI            MsiQueryComponentStateW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, LPCWSTR, INSTALLSTATE * );
+  UINT WINAPI            MsiEnumProductsExA( LPCSTR, LPCSTR, DWORD, DWORD, CHAR[39], MSIINSTALLCONTEXT *, LPSTR, LPDWORD );
+  UINT WINAPI            MsiEnumProductsExW( LPCWSTR, LPCWSTR, DWORD, DWORD, WCHAR[39], MSIINSTALLCONTEXT *, LPWSTR, LPDWORD );
+  UINT WINAPI            MsiSourceListAddSourceExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, DWORD );
+  UINT WINAPI            MsiSourceListAddSourceExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, DWORD );
+  UINT WINAPI            MsiSourceListAddMediaDiskA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPCSTR, LPCSTR );
+  UINT WINAPI            MsiSourceListAddMediaDiskW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPCWSTR, LPCWSTR );
+  UINT WINAPI            MsiSourceListClearSourceA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR );
+  UINT WINAPI            MsiSourceListClearSourceW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR );
+  UINT WINAPI            MsiSourceListClearMediaDiskA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD );
+  UINT WINAPI            MsiSourceListClearMediaDiskW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD );
+  UINT WINAPI            MsiSourceListClearAllExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD );
+  UINT WINAPI            MsiSourceListClearAllExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD );
+  UINT WINAPI            MsiSourceListForceResolutionExA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD );
+  UINT WINAPI            MsiSourceListForceResolutionExW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD );
+  UINT WINAPI            MsiSourceListSetInfoA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, LPCSTR );
+  UINT WINAPI            MsiSourceListSetInfoW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, LPCWSTR );
+  UINT WINAPI            MsiSourceListGetInfoA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, LPCSTR, LPSTR, LPDWORD );
+  UINT WINAPI            MsiSourceListGetInfoW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, LPCWSTR, LPWSTR, LPDWORD 
+  UINT WINAPI            MsiSourceListEnumSourcesA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPSTR, LPDWORD );
+  UINT WINAPI            MsiSourceListEnumSourcesW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPWSTR, LPDWORD );
+  UINT WINAPI            MsiSourceListEnumMediaDisksA( LPCSTR, LPCSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPDWORD, LPSTR, LPDWORD, LPSTR, LPDWORD );
+  UINT WINAPI            MsiSourceListEnumMediaDisksW( LPCWSTR, LPCWSTR, MSIINSTALLCONTEXT, DWORD, DWORD, LPDWORD, LPWSTR, LPDWORD, LPWSTR, LPDWORD );
 
 #ifdef UNICODE
+    #define INSTALLUI_HANDLER               INSTALLUI_HANDLERW
+    
     #define MsiGetProductInfoEx             MsiGetProductInfoExW
     #define MsiRemovePatches                MsiRemovePatchesW
     #define MsiExtractPatchXMLData          MsiExtractPatchXMLDataW
@@ -631,6 +644,8 @@ typedef enum tagMSICODE {
     #define MsiSourceListEnumSources        MsiSourceListEnumSourcesW
     #define MsiSourceListEnumMediaDisks     MsiSourceListEnumMediaDisksW
 #else
+    #define INSTALLUI_HANDLER               INSTALLUI_HANDLERA
+    
     #define MsiGetProductInfoEx             MsiGetProductInfoExA
     #define MsiRemovePatches                MsiRemovePatchesA
     #define MsiExtractPatchXMLData          MsiExtractPatchXMLDataA
@@ -658,9 +673,9 @@ typedef enum tagMSICODE {
 
 #if (_WIN32_MSI >= 310)
   
-  LWSTDAPI_( UINT )                 MsiSetExternalUIRecord( INSTALLUI_HANDLER_RECORD, DWORD, LPVOID, PINSTALLUI_HANDLER_RECORD );
-  LWSTDAPI_( UINT )                 MsiNotifySidChangeA( LPCSTR, LPCSTR );
-  LWSTDAPI_( UINT )                 MsiNotifySidChangeW( LPCWSTR, LPCWSTR );
+  UINT WINAPI            MsiSetExternalUIRecord( INSTALLUI_HANDLER_RECORD, DWORD, LPVOID, PINSTALLUI_HANDLER_RECORD );
+  UINT WINAPI            MsiNotifySidChangeA( LPCSTR, LPCSTR );
+  UINT WINAPI            MsiNotifySidChangeW( LPCWSTR, LPCWSTR );
   
 #ifdef UNICODE
     #define MsiNotifySidChange              MsiNotifySidChangeW
