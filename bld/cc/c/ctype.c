@@ -433,9 +433,9 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     flags = FLAG_NONE;
     packed = FALSE;
     typ = NULL;
-    specified_stg_class = SC_NULL;
+    specified_stg_class = SC_NONE;
     for(;;) {
-        stg_class = SC_NULL;
+        stg_class = SC_NONE;
         bit = 0;
         switch( CurToken ) {
         case T_CHAR:      bit = M_CHAR;         break;
@@ -563,7 +563,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                         break;
                     case T_ID:
                         decl = DECLSPEC_NONE;
-                        if( info->stg == 0 ) {
+                        if( info->stg == SC_NONE ) {
                             CErr1( ERR_INVALID_DECLARATOR );
                             break;
                         }
@@ -661,10 +661,10 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         default:
             goto got_specifier;
         }
-        if( stg_class != SC_NULL ) {
-            if( info->stg == SC_NULL )
+        if( stg_class != SC_NONE ) {
+            if( info->stg == SC_NONE )
                 break;       // don't want any stg class
-            if( specified_stg_class != SC_NULL ) {
+            if( specified_stg_class != SC_NONE ) {
                 CErr1( ERR_TOO_MANY_STORAGE_CLASS_SPECIFIERS );
             }
             specified_stg_class = stg_class;
@@ -702,14 +702,14 @@ void TypeSpecifier( decl_info *info )
 {
     bool                plain_int;
 
-    info->stg = SC_NULL;      // indicate don't want any storage class specifiers
+    info->stg = SC_NONE;      // indicate don't want any storage class specifiers
     DeclSpecifiers( &plain_int, info );
 }
 
 void GetFieldTypeSpecifier( bool *plain_int, decl_info *info )
 {
 
-    info->stg = SC_NULL;      // indicate don't want any storage class specifiers
+    info->stg = SC_NONE;      // indicate don't want any storage class specifiers
     DeclSpecifiers( plain_int, info );
 }
 
@@ -1201,7 +1201,7 @@ struct {
 /*
 local void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
 {
-    info->stg = SC_NULL;      // indicate don't want any storage class specifiers
+    info->stg = SC_NONE;      // indicate don't want any storage class specifiers
     info->mod = FLAG_NONE;
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;

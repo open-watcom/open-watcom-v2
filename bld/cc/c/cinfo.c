@@ -166,7 +166,7 @@ static fe_attr FESymAttr( SYMPTR sym )
     case SC_EXTERN:
         attr = FE_GLOBAL | FE_IMPORT | FE_STATIC;
         break;
-    case SC_NULL:
+    case SC_NONE:
         attr = FE_GLOBAL | FE_STATIC;
         break;
     case SC_STATIC:
@@ -204,7 +204,7 @@ static fe_attr FESymAttr( SYMPTR sym )
         }
         break;
     case DECLSPEC_DLLEXPORT:
-        if( sym->attribs.stg_class == SC_NULL ) {
+        if( sym->attribs.stg_class == SC_NONE ) {
             attr |= FE_DLLEXPORT;
         }
         break;

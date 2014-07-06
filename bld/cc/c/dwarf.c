@@ -523,7 +523,7 @@ static dw_handle dwarfVariable( SYMPTR sym )
     uint      flags;
 
     flags = 0;
-    if( sym->attribs.stg_class == SC_NULL ) {
+    if( sym->attribs.stg_class == SC_NONE ) {
         flags = DW_FLAG_GLOBAL;
     }
     dh = dwarfType( sym->sym_type, DC_DEFAULT );

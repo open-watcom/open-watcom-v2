@@ -114,7 +114,7 @@ local void FuncDefn( SYMPTR sym )
     }
 
     if( sym->attribs.stg_class == SC_EXTERN  ||  sym->attribs.stg_class == SC_FORWARD ) {
-        sym->attribs.stg_class = SC_NULL;       /* indicate exported function */
+        sym->attribs.stg_class = SC_NONE;       /* indicate exported function */
     }
 
     CompFlags.external_defn_found = 1;
@@ -276,14 +276,14 @@ local void ParmDeclList( void )     /* process old style function definitions */
 
     while( CurToken != T_LEFT_BRACE ) {
         FullDeclSpecifier( &info );
-        if( info.stg == SC_NULL  &&  info.typ == NULL ) {
+        if( info.stg == SC_NONE  &&  info.typ == NULL ) {
             if( CurToken == T_ID ) {
                 CErr2p( ERR_MISSING_DATA_TYPE, Buffer );
             }
         }
-        if( info.stg != SC_NULL  &&  info.stg != SC_REGISTER ) {
+        if( info.stg != SC_NONE  &&  info.stg != SC_REGISTER ) {
             CErr1( ERR_INVALID_STG_CLASS_FOR_PARM );
-            info.stg = SC_NULL;
+            info.stg = SC_NONE;
         }
         state = DECL_STATE_NONE;
         typ = info.typ;
@@ -291,7 +291,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
             state |= DECL_STATE_NOTYPE;
             typ = TypeDefault();
         }
-        if( info.stg == SC_NULL )
+        if( info.stg == SC_NONE )
             info.stg = SC_AUTO;
 
         for( ;; ) {

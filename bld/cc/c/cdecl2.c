@@ -88,7 +88,7 @@ static stg_classes SCSpecifier( void )
 {
     stg_classes     stg_class;
 
-    stg_class = SC_NULL;        /* assume no storage class specified */
+    stg_class = SC_NONE;        /* assume no storage class specified */
     if( TokenClass[CurToken] == TC_STG_CLASS ) {
         switch( CurToken ) {
         case T_EXTERN:  stg_class = SC_EXTERN;  break;
@@ -176,7 +176,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         stg_class == SC_AUTO ||
         stg_class == SC_TYPEDEF ) {
             CErr1( ERR_INVALID_STG_CLASS_FOR_FUNC );
-            stg_class = SC_NULL;
+            stg_class = SC_NONE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
     if( old_sym_handle == 0 ) {
@@ -249,7 +249,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
                 CWarn2p( WARN_FUNCTION_STG_CLASS_REDECLARED, ERR_FUNCTION_STG_CLASS_REDECLARED, sym->name );
             }
             CMemFree( sym->name );
-            if( stg_class == SC_NULL && old_sym.attribs.stg_class != SC_FORWARD ) {
+            if( stg_class == SC_NONE && old_sym.attribs.stg_class != SC_FORWARD ) {
                 stg_class = old_sym.attribs.stg_class;
             }
             if( old_sym.sym_type->decl_type == TYPE_FUNCTION ) {
@@ -266,7 +266,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         if( sym->mods & FLAG_INLINE ) {
             sym->flags |= SYM_IGNORE_UNREFERENCE;
             stg_class = SC_STATIC;
-        } else if( stg_class == SC_NULL ) {
+        } else if( stg_class == SC_NONE ) {
             stg_class = SC_EXTERN;  /* SC_FORWARD; */
         }
         sym->attribs.stg_class = stg_class;
@@ -287,7 +287,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
 
     // Warn if neither type nor storage class were given; this should probably be
     // an error in strict C89 (and naturally C99) mode
-    if( (stg_class == SC_NULL) && (*state & DECL_STATE_NOTYPE) && (*state & DECL_STATE_NOSTWRN) == 0 ) {
+    if( (stg_class == SC_NONE) && (*state & DECL_STATE_NOTYPE) && (*state & DECL_STATE_NOSTWRN) == 0 ) {
         CWarn1( WARN_NO_STG_OR_TYPE, ERR_NO_STG_OR_TYPE );
         *state |= DECL_STATE_NOSTWRN;   // Only warn once for each declarator list
     }
@@ -312,7 +312,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         if( (stg_class == SC_AUTO) || (stg_class == SC_REGISTER) ) {
             CErr1( ERR_INV_STG_CLASS_FOR_GLOBAL );
             stg_class = SC_STATIC;
-        } else if( stg_class == SC_NULL ) {
+        } else if( stg_class == SC_NONE ) {
             CompFlags.external_defn_found = 1;
         }
         if( sym->attribs.declspec == DECLSPEC_THREAD ) {
@@ -326,7 +326,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         /*
         //  SymLevel != 0 is function scoped (SymLevel is the count of nested {'s)
         */
-        if( stg_class == SC_NULL ) {
+        if( stg_class == SC_NONE ) {
             stg_class = SC_AUTO;
         }
         if( stg_class == SC_AUTO || stg_class == SC_REGISTER ) {
@@ -420,7 +420,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         SetDiagPop();
     }
     if( (old_sym_handle != 0)
-      && (stg_class == SC_NULL || stg_class == SC_EXTERN
+      && (stg_class == SC_NONE || stg_class == SC_EXTERN
       || (stg_class == SC_STATIC && SymLevel == 0)) ) {
 
         /* make sure sym->sym_type same type as old_sym->sym_type */
@@ -443,19 +443,19 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         sym_handle = old_sym_handle;
         SetDiagSymbol( &old_sym, old_sym_handle );
         /* verify that newly specified storage class doesn't conflict */
-        if( (stg_class == SC_NULL) || (stg_class == SC_STATIC) ) {
+        if( (stg_class == SC_NONE) || (stg_class == SC_STATIC) ) {
             if( sym->attribs.stg_class == SC_EXTERN ) {
                 /* was extern, OK to change to none */
-                if( stg_class == SC_NULL ) {
+                if( stg_class == SC_NONE ) {
                     sym->attribs.stg_class = stg_class;
                 } else {
                     /* was extern, not OK to make static */
                     CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
                 }
-            } else if( sym->attribs.stg_class == SC_STATIC && stg_class == SC_NULL ) {
+            } else if( sym->attribs.stg_class == SC_STATIC && stg_class == SC_NONE ) {
                 /* was static, not OK to redefine */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
-            } else if( sym->attribs.stg_class == SC_NULL && stg_class == SC_STATIC ) {
+            } else if( sym->attribs.stg_class == SC_NONE && stg_class == SC_STATIC ) {
                 /* was extern linkage, not OK to to make static */
                 CErrSymName( ERR_STG_CLASS_DISAGREES, sym, sym_handle );
             }
@@ -488,7 +488,7 @@ new_var:
     }
     if( sym->u.var.segid == SEG_UNKNOWN
       && ( stg_class == SC_STATIC
-      || stg_class == SC_NULL
+      || stg_class == SC_NONE
       || stg_class == SC_EXTERN ) ) {
         if( DefDataSegment != SEG_UNKNOWN ) {
             sym->u.var.segid = DefDataSegment;
@@ -500,7 +500,7 @@ new_var:
             stg_class = SC_STATIC;
             if( SymLevel == 0 ) {
                 CompFlags.external_defn_found = 1;
-                stg_class = SC_NULL;
+                stg_class = SC_NONE;
             } else {
                 CErr1( ERR_CANT_INITIALIZE_EXTERN_VAR );
             }
@@ -660,7 +660,7 @@ bool DeclList( SYM_HANDLE *sym_head )
                 if( CurToken == T_EOF )
                     return( FALSE );
                 FullDeclSpecifier( &info );
-                if( info.stg != SC_NULL || info.typ != NULL )
+                if( info.stg != SC_NONE || info.typ != NULL )
                     break;
                 if( SymLevel != 0 )
                     return( FALSE );
@@ -671,7 +671,7 @@ bool DeclList( SYM_HANDLE *sym_head )
                 state |= DECL_STATE_NOTYPE;
                 info.typ = TypeDefault();
             }
-            if( info.stg == SC_NULL && (state & DECL_STATE_NOTYPE) ) {
+            if( info.stg == SC_NONE && (state & DECL_STATE_NOTYPE) ) {
                 if( TokenClass[CurToken] == TC_MODIFIER ) {
                 } else {
                     switch( CurToken ) {
@@ -705,7 +705,7 @@ bool DeclList( SYM_HANDLE *sym_head )
         if( CurToken != T_SEMI_COLON ) {
             if( info.decl == DECLSPEC_DLLIMPORT ) {
                 if( !CompFlags.rent ) {
-                    if( info.stg == SC_NULL ) {
+                    if( info.stg == SC_NONE ) {
                         info.stg = SC_EXTERN;
                     }
                 }
@@ -778,10 +778,10 @@ bool LoopDecl( SYM_HANDLE *sym_head )
     if( CurToken == T_EOF )
         return( FALSE );
     FullDeclSpecifier( &info );
-    if( info.stg == SC_NULL && info.typ == NULL ) {
+    if( info.stg == SC_NONE && info.typ == NULL ) {
         return( FALSE );    /* No declaration-specifiers, get outta here */
     }
-    if( info.stg != SC_NULL && info.stg != SC_AUTO && info.stg != SC_REGISTER ) {
+    if( info.stg != SC_NONE && info.stg != SC_AUTO && info.stg != SC_REGISTER ) {
         CErr1( ERR_INVALID_STG_CLASS_FOR_LOOP_DECL );
     }
     state = DECL_STATE_FORLOOP;
@@ -1479,13 +1479,13 @@ local TYPEPTR *GetProtoType( decl_info *first )
 //        declspec  = info.decl;
         typ = info.typ;
         mod = info.mod;
-        if( stg_class != SC_NULL && stg_class != SC_REGISTER ) {
+        if( stg_class != SC_NONE && stg_class != SC_REGISTER ) {
             CErr1( ERR_INVALID_STG_CLASS_FOR_PARM_PROTO );
         }
         state = DECL_STATE_ISPARM;
         if( typ == NULL ) {
             state |= DECL_STATE_NOTYPE;
-            if( stg_class == SC_NULL ) {
+            if( stg_class == SC_NONE ) {
                 CErr1( ERR_TYPE_REQUIRED_IN_PARM_LIST );
             }
             typ = TypeDefault();
@@ -1510,9 +1510,9 @@ local TYPEPTR *GetProtoType( decl_info *first )
             CErr2p( ERR_VAR_CANT_BE_VOID, name );
             sym->sym_type = TypeDefault();
         }
-        if( stg_class == SC_NULL ) {
+        if( stg_class == SC_NONE ) {
             stg_class = SCSpecifier();
-            if( stg_class == SC_NULL ) {
+            if( stg_class == SC_NONE ) {
                 stg_class = SC_AUTO;
             }
         }
@@ -1643,14 +1643,14 @@ local TYPEPTR *FuncProtoType( void )
     }
     old_taghead = TagHead;
     FullDeclSpecifier( &info );
-    if( (info.stg == SC_NULL) && (info.typ == NULL) ) {
+    if( (info.stg == SC_NONE) && (info.typ == NULL) ) {
         GetFuncParmList();
         if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
         }
         type_list = NULL;
     } else {    /* function prototype present */
-        if( VoidType( info.typ ) && info.stg == SC_NULL && CurToken == T_RIGHT_PAREN ) {
+        if( VoidType( info.typ ) && info.stg == SC_NONE && CurToken == T_RIGHT_PAREN ) {
             type_list = VoidParmList;
         } else {
             type_list = GetProtoType( &info );

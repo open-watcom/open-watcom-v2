@@ -145,7 +145,7 @@ typedef enum sym_flags {
 } sym_flags;
 
 typedef enum stg_classes {  // used in sym.stg_class
-    SC_NULL         = 0,    // storage class not specified
+    SC_NONE         = 0,    // storage class not specified
     SC_FORWARD,             // forward declaration
     SC_EXTERN,              // extern
     SC_STATIC,              // static

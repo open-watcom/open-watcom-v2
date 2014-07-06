@@ -569,7 +569,7 @@ local void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
             SKIP_TYPEDEFS( typ );
             if( SizeOfArg( typ ) == 0 && typ->decl_type != TYPE_FUNCTION
               && typ->decl_type != TYPE_DOT_DOT_DOT ) {
-                if( (sym->attribs.stg_class == SC_EXTERN) == 0 ) {
+                if( sym->attribs.stg_class != SC_EXTERN ) {
                     CErr2p( ERR_INCOMPLETE_TYPE, name );
                 }
             }
@@ -833,13 +833,13 @@ local SYM_HASHPTR FreeSym( void )
         if( (sym.attribs.stg_class == SC_TYPEDEF
           || (SymLevel != 0)
           || (sym.flags & (SYM_REFERENCED | SYM_DEFINED)))
-          || (sym.attribs.stg_class == SC_NULL) ) {
+          || (sym.attribs.stg_class == SC_NONE) ) {
             if( SymLevel == 0 ) {
                 bucket = SymBucket( &sym );
                 sym.handle = head[bucket];
                 if( ( sym.flags & SYM_FUNCTION ) == 0 ) {
                     /* VARIABLE */
-                    if( sym.attribs.stg_class == SC_NULL ) {
+                    if( sym.attribs.stg_class == SC_NONE ) {
                         if( sym.sym_type->decl_type == TYPE_ARRAY ) {
                             if( sym.sym_type->u.array->dimension == 0 ) {
                                 sym.sym_type->u.array->dimension = 1;

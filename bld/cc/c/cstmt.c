@@ -1448,7 +1448,7 @@ void Statement( void )
         if( DefFile == NULL ) {
             OpenDefFile();
         }
-        if( DefFile != NULL && CurFunc->attribs.stg_class == SC_NULL ) {
+        if( DefFile != NULL && CurFunc->attribs.stg_class == SC_NONE ) {
             /* function exported */
             DumpFuncDefn();
         }
