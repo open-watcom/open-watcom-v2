@@ -128,7 +128,7 @@ void InitGlobalVars( void )
 
 #if _CPU == 386
     FunctionProfileBlock    = NULL; /* handle for profiling data block */
-    FunctionProfileSegment  = 0;    /* segment for profiling data block */
+    FunctionProfileSegment  = SEG_UNKNOWN; /* segment for profiling data block */
 #endif
 
     MacroDepth              = 0;
@@ -155,7 +155,7 @@ void InitGlobalVars( void )
     LitPoolSize             = 0;
     MacroSize               = 0;
     SegmentNum              = 0;    /* next PRIVATE segment number to use */
-    FarStringSegment        = 0;
+    FarStringSegment        = SEG_UNKNOWN;
 
     Environment             = NULL; /* var for Suicide() */
 
@@ -164,8 +164,8 @@ void InitGlobalVars( void )
     ExprLevel               = 0;
 
     SegListHead             = NULL;
-    SegImport               = 0;    /* next segment # for import sym */
-    SegData                 = 0;    /* data seg # for -nd option */
+    SegImport               = SEG_UNKNOWN; /* next segment # for import sym */
+    SegData                 = SEG_UNKNOWN; /* data seg # for -nd option */
 
     ScopeStruct             = 0;
     ScopeUnion              = 0;
@@ -193,7 +193,7 @@ void InitGlobalVars( void )
     LastFuncOutOfMem        = 0;    /* cinfo: */
     HashFreeList            = NULL; /* list of available hash entries */
 
-    SymSegNum               = 0;    /* segment # containing buffer */
+    SymBufSegNum            = 0;    /* segment # containing buffer */
 
     StringType              = NULL; /* "unsigned char *" for use by literals */
     ConstCharType           = NULL; /* "const char" type */
@@ -215,7 +215,7 @@ void InitGlobalVars( void )
     PrevProtoType           = NULL; /* prev func prototype */
 
     TargSys                 = TS_OTHER;
-    DefDataSegment          = 0;    /* #pragma data_seg("segname","class") */
+    DefDataSegment          = SEG_UNKNOWN; /* #pragma data_seg("segname","class") */
     DefCodeSegment          = NULL; /* #pragma code_seg("seg","c") */
 
     UnrollCount             = 0;    /* #pragma unroll(#); */

@@ -1246,7 +1246,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
         typ->u.array->unspecified_dim = TRUE;
         typ->u.array->dimension = 0;    /* Reset back to 0 */
     }
-    if( sym->u.var.segment == 0 ) {
+    if( sym->u.var.segid == SEG_UNKNOWN ) {
         SetFarHuge( sym, 0 );
         SetSegment( sym );
         SetSegAlign( sym );
@@ -1409,7 +1409,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         if( CharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segment == 0 ) {
+            if( sym2.u.var.segid == SEG_UNKNOWN ) {
                 SetFarHuge( &sym2, 0 );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
@@ -1422,7 +1422,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         } else if( WCharArray( typ->object ) ) {
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
-            if( sym2.u.var.segment == 0 ) {
+            if( sym2.u.var.segid == SEG_UNKNOWN ) {
                 SetFarHuge( &sym2, 0 );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );

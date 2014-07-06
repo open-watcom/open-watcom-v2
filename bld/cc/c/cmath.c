@@ -668,10 +668,10 @@ TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
             if( (TargetSwitches & FLAT_MODEL) == 0 ) {
-                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, 0 ), 1 );
+                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), 1 );
             }
 #else
-            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, 0 ), 1 );
+            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), 1 );
 #endif
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
@@ -1542,8 +1542,8 @@ bool IsFuncPtr( TYPEPTR typ )
 bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
 {
     bool                is_safe = TRUE;
-    segment_id          new_seg;
-    segment_id          old_seg;
+    segment_id          new_segid;
+    segment_id          old_segid;
     type_modifiers      new_flags;
     type_modifiers      old_flags;
 
@@ -1559,32 +1559,32 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
         if( new_flags & FLAG_BASED ) {
             switch( newtyp->u.p.based_kind ) {
             case BASED_SEGNAME:
-                new_seg = newtyp->u.p.segment;
+                new_segid = newtyp->u.p.segid;
                 break;
             /* NYI: This could be smarter and check other based types. */
             default:
-                new_seg = SEG_UNKNOWN;
+                new_segid = SEG_UNKNOWN;
             }
         } else if( IsFuncPtr( newtyp ) ) {
-            new_seg = SEG_CODE;
+            new_segid = SEG_CODE;
         } else {
-            new_seg = SEG_DATA;
+            new_segid = SEG_DATA;
         }
         /* Determine source pointer base. */
         old_flags = oldtyp->u.p.decl_flags;
         if( old_flags & FLAG_BASED ) {
             switch( oldtyp->u.p.based_kind ) {
             case BASED_SEGNAME:
-                old_seg = oldtyp->u.p.segment;
+                old_segid = oldtyp->u.p.segid;
                 break;
             /* NYI: This could be smarter and check other based types. */
             default:
-                old_seg = SEG_UNKNOWN;
+                old_segid = SEG_UNKNOWN;
             }
         } else {
-            old_seg = oldtyp->u.p.segment;
+            old_segid = oldtyp->u.p.segid;
         }
-        is_safe = ( old_seg == new_seg ) || IsZero( src );
+        is_safe = ( old_segid == new_segid ) || IsZero( src );
     }
     return( is_safe );
 }
@@ -1991,7 +1991,7 @@ local TYPEPTR MergedType( TYPEPTR typ1, TYPEPTR typ2 )
         new_flags |= FLAG_NEAR;
     }
     if( typ1->u.p.decl_flags != typ2->u.p.decl_flags ) {
-        typ = PtrNode( typ1->object, new_flags, typ1->u.p.segment );
+        typ = PtrNode( typ1->object, new_flags, typ1->u.p.segid );
     }
     return( typ );
 }

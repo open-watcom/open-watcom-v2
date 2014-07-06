@@ -428,7 +428,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
     info->naked = FALSE;
-    info->seg = 0;
+    info->segid = SEG_UNKNOWN;
     bmask = 0;
     flags = FLAG_NONE;
     packed = FALSE;
@@ -640,7 +640,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             }
             flags |= sym.mods;
             if( sym.mods & FLAG_BASED ) {
-                info->seg = sym.u.var.segment;
+                info->segid = sym.u.var.segid;
             }
             if( sym.attribs.declspec != DECLSPEC_NONE ) {
                 if( info->decl == DECLSPEC_NONE ) {
@@ -1206,7 +1206,7 @@ local void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
     info->naked = FALSE;
-    info->seg = 0;
+    info->segid = SEG_UNKNOWN;
     info->typ = GetType( data_type );
 }
 
@@ -1444,7 +1444,7 @@ local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
         for( ; ptrtyp != NULL; ptrtyp = ptrtyp->next_type ) {
             if( ptrtyp->decl_type == TYPE_POINTER &&
                 ptrtyp->object == typ &&
-                ptrtyp->u.p.segment == segid &&
+                ptrtyp->u.p.segid == segid &&
                 ptrtyp->u.p.based_sym == base &&
                 ptrtyp->u.p.based_kind == based_kind &&
                 ptrtyp->u.p.decl_flags == flags ) {
@@ -1454,7 +1454,7 @@ local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
     }
     ptrtyp = TypeNode( TYPE_POINTER, typ );
     ptrtyp->u.p.decl_flags = flags;
-    ptrtyp->u.p.segment = segid;
+    ptrtyp->u.p.segid = segid;
     ptrtyp->u.p.based_sym = base;
     ptrtyp->u.p.based_kind = based_kind;
     return( ptrtyp );

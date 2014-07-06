@@ -302,10 +302,10 @@ global SYM_HANDLE   LastFuncOutOfMem;   /* cinfo: */
 global SYM_HASHPTR  HashFreeList;       /* list of available hash entries */
 
 global unsigned     SymBufNum;          /* current buffer in memory */
-global unsigned     SymSegNum;          /* segment # containing buffer */
+global unsigned     SymBufSegNum;       /* segment # containing buffer */
 global unsigned     LastSymBuf;         /* # of last symbol table buffer */
 global unsigned     SymBufDirty;        /* 1 => buffer has been changed */
-global SEGADDR_T    SymSegment;         /* segment # for symbol table buffers */
+global SEGADDR_T    SymBufSegment;      /* segment # for symbol table buffers */
 
 global TYPEPTR      StringType;         /* "unsigned char *" for use by literals */
 global TYPEPTR      ConstCharType;      /* "const char" type */
@@ -333,7 +333,7 @@ global nested_parm_lists    *NestedParms;
 
 #define MAX_SYM_SEGS    (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
 
-global seg_info     SymSegs[MAX_SYM_SEGS];  /* segments for symbols */
+global seg_info     SymBufSegs[MAX_SYM_SEGS]; /* segments for symbols */
 
 global STR_HANDLE   StringHash[STRING_HASH_SIZE]; /* string literals */
 global char         *TextSegName;       /* name of the text segment */
@@ -484,7 +484,7 @@ extern FIELDPTR     FieldCreate( const char *name );
 
 // cinfo.c
 extern segment_id   SymSegId( SYMPTR sym );
-extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segment );
+extern void         SetSegSymHandle( SYM_HANDLE sym_handle, segment_id segid );
 
 /* cdinit */
 extern void         InitDataQuads(void);

@@ -1433,7 +1433,7 @@ void DoCompile( void )
 local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR             typ;
-    segment_id          segment;
+    segment_id          segid;
     target_size         size;
 
     typ = sym->sym_type;
@@ -1447,15 +1447,15 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
     if( sym->attribs.stg_class != SC_EXTERN &&  /* if not imported */
         sym->attribs.stg_class != SC_TYPEDEF ) {
         if( ( sym->flags & SYM_FUNCTION ) == 0 ) {
-            segment = sym->u.var.segment;
-            if( (sym->flags & SYM_INITIALIZED) == 0 || segment == SEG_BSS) {
-                BESetSeg( segment );
+            segid = sym->u.var.segid;
+            if( (sym->flags & SYM_INITIALIZED) == 0 || segid == SEG_BSS) {
+                BESetSeg( segid );
                 AlignIt( typ );
                 DGLabel( FEBack( sym_handle ) );
                 /* initialize all bytes to 0 */
                 /* if size > 64k, have to break it into chunks of 64k */
                 size = SizeOfArg( typ );
-                if( segment == SEG_BSS ) {
+                if( segid == SEG_BSS ) {
                     DGUBytes( size );
                 } else {
 #if _CPU == 8086
@@ -1464,9 +1464,9 @@ local void EmitSym( SYMPTR sym, SYM_HANDLE sym_handle )
                         size -= 0x10000;
                         if( size == 0 )
                             break;
-                        if( segment != SEG_CONST && segment != SEG_DATA ) {
-                            ++segment;
-                            BESetSeg( segment );
+                        if( segid != SEG_CONST && segid != SEG_DATA ) {
+                            ++segid;
+                            BESetSeg( segid );
                         }
                     }
 #endif
@@ -1531,11 +1531,11 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
     if( TargetSwitches & P5_PROFILING ) {
         char       *fn_name;
         size_t     len;
-        segment_id old_segment;
+        segment_id old_segid;
 
         fn_name = FEName( funcsym_handle );
         len = strlen( fn_name ) + 1;
-        old_segment = BESetSeg( FunctionProfileSegment );
+        old_segid = BESetSeg( FunctionProfileSegment );
         FunctionProfileBlock = BENewBack( NULL );
         DGLabel( FunctionProfileBlock );
         DGInteger( 0,   TY_INTEGER );
@@ -1547,7 +1547,7 @@ local int DoFuncDefn( SYM_HANDLE funcsym_handle )
         if( len ) {
             DGIBytes( 4 - len, 0 );
         }
-        BESetSeg( old_segment );
+        BESetSeg( old_segid );
     }
 #endif
     if( GenSwitches & DBG_LOCALS ) {
@@ -1926,15 +1926,15 @@ target_size EmitBytes( STR_HANDLE strlit )
 
 local void EmitLiteral( STR_HANDLE strlit )
 {
-    segment_id  old_segment;
+    segment_id  old_segid;
 
-    old_segment = BESetSeg( StringSegment( strlit ) );
+    old_segid = BESetSeg( StringSegment( strlit ) );
     if( strlit->flags & STRLIT_WIDE ) {
         DGAlign( TARGET_SHORT );    /* NT requires word aligned wide strings */
     }
     DGLabel( strlit->back_handle );
     EmitBytes( strlit );
-    BESetSeg( old_segment );
+    BESetSeg( old_segid );
 }
 
 
@@ -2010,12 +2010,12 @@ static void GenerateTryBlock( TREEPTR tree )
         }
     }
     if( max_try_index != TRYSCOPE_NONE ) {
-        segment_id      old_segment;
+        segment_id      old_segid;
         BACK_HANDLE     except_label;
         BACK_HANDLE     except_table;
         try_table_back_handles *try_backinfo;
 
-        old_segment = BESetSeg( SEG_DATA );
+        old_segid = BESetSeg( SEG_DATA );
         except_table = BENewBack( NULL );
         try_backinfo = (try_table_back_handles *)CMemAlloc( sizeof( try_table_back_handles ) );
         try_backinfo->back_handle = except_table;
@@ -2033,7 +2033,7 @@ static void GenerateTryBlock( TREEPTR tree )
             except_label = FEBack( stmt->op.u2.st.u.try_sym_handle );
             DGBackPtr( except_label, FESegID( CurFuncHandle ), 0, TY_CODE_PTR );
         }
-        BESetSeg( old_segment );
+        BESetSeg( old_segid );
         SetTryTable( except_table );
         BEFiniBack( except_table );
     }

@@ -320,7 +320,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
             }
-            sym->u.var.segment = ThreadSeg;
+            sym->u.var.segid = ThreadSeg;
         }
     } else {
         /*
@@ -353,7 +353,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
                 ThreadSeg = DefThreadSeg();
                 CompFlags.thread_data_present = 1;
             }
-            sym->u.var.segment = ThreadSeg;
+            sym->u.var.segid = ThreadSeg;
         }
     }
     if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
@@ -474,8 +474,8 @@ new_var:
         SKIP_DUMMY_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_TYPEDEF ) {
             SymGet( &sym2, typ->u.typedefn );
-            if( sym->u.var.segment == 0 && sym2.u.var.segment != 0 ) {
-                sym->u.var.segment = sym2.u.var.segment;
+            if( sym->u.var.segid == SEG_UNKNOWN && sym2.u.var.segid != SEG_UNKNOWN ) {
+                sym->u.var.segid = sym2.u.var.segid;
             }
             SKIP_TYPEDEFS( typ );
         }
@@ -486,12 +486,12 @@ new_var:
         sym->attribs.stg_class = stg_class;
         sym_handle = SymAdd( sym->info.hash, sym );
     }
-    if( sym->u.var.segment == 0
+    if( sym->u.var.segid == SEG_UNKNOWN
       && ( stg_class == SC_STATIC
       || stg_class == SC_NULL
       || stg_class == SC_EXTERN ) ) {
-        if( DefDataSegment != 0 ) {
-            sym->u.var.segment = DefDataSegment;
+        if( DefDataSegment != SEG_UNKNOWN ) {
+            sym->u.var.segid = DefDataSegment;
             SymReplace( sym, sym_handle );
         }
     }
@@ -893,7 +893,7 @@ local type_modifiers GetModifiers( void )
 }
 
 struct mod_info {
-    segment_id       segment;
+    segment_id       segid;
     type_modifiers   modifier;  // const, vol flags
     BASED_KIND       based_kind;
     SYM_HANDLE       based_sym;
@@ -916,8 +916,8 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
         if( ptr_typ->decl_type == TYPE_TYPEDEF ) {
             symp = SymGetPtr( ptr_typ->u.typedefn );
             if( info->modifier & FLAG_BASED ) {
-                info->segment = symp->u.var.segment;
-                sym_handle = SegSymHandle( info->segment );
+                info->segid = symp->u.var.segid;
+                sym_handle = SegSymHandle( info->segid );
             }
         }
     }
@@ -991,10 +991,10 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                 NextToken();
                 MustRecog( T_LEFT_PAREN );
                 if( CurToken == T_STRING ) {
-                    info->segment = AddSegName( Buffer, "", SEGTYPE_BASED);
-                    sym_handle = SegSymHandle( info->segment );
+                    info->segid = AddSegName( Buffer, "", SEGTYPE_BASED);
+                    sym_handle = SegSymHandle( info->segid );
                     SymGet( &sym, sym_handle );
-                    sym.u.var.segment = info->segment;
+                    sym.u.var.segid = info->segid;
                     SymReplace( &sym, sym_handle );
                     NextToken();
                 } else {
@@ -1055,9 +1055,9 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             }
 #endif
             flags = info->modifier & ~FLAG_EXPORT;
-            typ = BPtrNode( typ, flags, info->segment, sym_handle, info->based_kind );
+            typ = BPtrNode( typ, flags, info->segid, sym_handle, info->based_kind );
             sym_handle = 0;
-            info->segment = 0;  // start over
+            info->segid = SEG_UNKNOWN;  // start over
             info->modifier = (flags & FLAG_INLINE) | TypeQualifier();  // .. * const
             info->based_kind = BASED_NONE;
         } else {
@@ -1098,7 +1098,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
 {
     struct mod_info     info;
 
-    info.segment = 0;
+    info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = 0;
@@ -1115,7 +1115,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
         }
     } else {
         sym->mods = info.modifier;
-        sym->u.var.segment = info.segment;
+        sym->u.var.segid = info.segid;
         typ = DeclPart2( typ, info.modifier );
         sym->sym_type = typ;
     }
@@ -1127,7 +1127,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
     TYPEPTR             parm_type;
     struct mod_info     info;
 
-    info.segment = 0;
+    info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = 0;
@@ -1190,7 +1190,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
             SymCreate( sym, "" );
         }
         sym->mods = info.modifier;
-        sym->u.var.segment = info.segment;
+        sym->u.var.segid = info.segid;
 #if 0
         if( modifier & FLAG_INTERRUPT )
             sym->flags |= SYM_INTERRUPT_FN;
@@ -1202,8 +1202,8 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
         if( typ->decl_type == TYPE_FUNCTION ) {
             if( state & DECL_STATE_FORLOOP ) {
                 CErr2p( ERR_DECL_IN_LOOP_NOT_OBJECT, sym->name );
-            } else if( info.segment != 0 ) {            // __based( __segname("X"))
-                SetFuncSegment( sym, info.segment );
+            } else if( info.segid != SEG_UNKNOWN ) {            // __based( __segname("X"))
+                SetFuncSegment( sym, info.segid );
             }
         }
     }
@@ -1230,7 +1230,7 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
     FIELDPTR            field;
     struct mod_info     info;
 
-    info.segment = 0;
+    info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
     info.based_sym = 0;

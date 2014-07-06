@@ -87,10 +87,10 @@ void SymInit( void )
     SymBufDirty = 0;
     CurFuncHandle = 0;
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
-        SymSegs[seg_num].allocated = 0;
+        SymBufSegs[seg_num].allocated = 0;
     }
-    SymSegment = AllocSegment( &SymSegs[0] );
-    SymBufPtr = (char *)SymSegment;
+    SymBufSegment = AllocSegment( &SymBufSegs[0] );
+    SymBufPtr = (char *)SymBufSegment;
     EnumInit();
 }
 
@@ -101,7 +101,7 @@ void SymFini( void )
     seg_info    *si;
 
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
-        si = &SymSegs[seg_num];
+        si = &SymBufSegs[seg_num];
         if( si->allocated ) {
             CSegFree( si->index );
         }
@@ -146,7 +146,7 @@ void SetNextSymHandle( unsigned val )
     NextSymHandle = val;
 }
 
-SYM_HANDLE SegSymbol( const char *name, segment_id segment )
+SYM_HANDLE SegSymbol( const char *name, segment_id segid )
 {
     SYM_ENTRY       sym;
     SYM_HANDLE      handle;
@@ -163,8 +163,8 @@ SYM_HANDLE SegSymbol( const char *name, segment_id segment )
     sym.attribs.stg_class = SC_STATIC;
     sym.level = 1;  // make invisible
     SymReplace( &sym, handle );
-    if( segment != SEG_UNKNOWN ) {
-        SetSegSymHandle( handle, segment );
+    if( segid != SEG_UNKNOWN ) {
+        SetSegSymHandle( handle, segid );
     }
     return( handle );
 }
@@ -290,18 +290,18 @@ void SymAccess( unsigned sym_num )
         buf_num = sym_num / SYMS_PER_BUF;
         if( SymBufDirty ) {
             ++SymStats.write;
-            si = &SymSegs[SymSegNum];
+            si = &SymBufSegs[SymBufSegNum];
             if( !si->allocated ) {
-                SymSegment = AllocSegment( si );
+                SymBufSegment = AllocSegment( si );
             }
             SymBufDirty = 0;
         }
         seg_num = buf_num / SYMBUFS_PER_SEG;
-        si = &SymSegs[seg_num];
-        SymSegment = AccessSegment( si );
-        SymBufPtr = (char *)SymSegment + (buf_num % SYMBUFS_PER_SEG) * SYM_BUF_SIZE;
+        si = &SymBufSegs[seg_num];
+        SymBufSegment = AccessSegment( si );
+        SymBufPtr = (char *)SymBufSegment + (buf_num % SYMBUFS_PER_SEG) * SYM_BUF_SIZE;
         SymBufNum = buf_num;
-        SymSegNum = seg_num;
+        SymBufSegNum = seg_num;
         FirstSymInBuf = buf_num * SYMS_PER_BUF;
     }
     Cached_sym_addr = SymBufPtr + (sym_num - FirstSymInBuf) * sizeof( SYM_ENTRY );

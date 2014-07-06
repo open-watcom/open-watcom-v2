@@ -571,7 +571,7 @@ local TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             decl_flags = FLAG_NONE;
         }
         tree = ExprNode( NULL, OPR_ADDROF, tree );
-        tree->u.expr_type = PtrNode( typ, decl_flags, 0 );
+        tree->u.expr_type = PtrNode( typ, decl_flags, SEG_UNKNOWN );
     } else if( TypeSize( typ ) == 0 ) {
         SetDiagType1( typ );
         CErr1( ERR_INCOMPLETE_EXPR_TYPE );
@@ -773,7 +773,7 @@ static TREEPTR FarPtrCvt( SYMPTR sym, SYM_HANDLE sym_handle )
             tree->op.opr = OPR_PUSHSYM;
             tree = ExprNode( NULL, OPR_CONVERT, tree );
             tree->u.expr_type = typ;
-            tree->op.u2.result_type = PtrNode( typ->object, FLAG_FAR, 0 );
+            tree->op.u2.result_type = PtrNode( typ->object, FLAG_FAR, SEG_UNKNOWN );
         }
     } else {
         assert( 0 );
@@ -788,7 +788,7 @@ static TREEPTR MakeFarOp( TREEPTR based_sym, TREEPTR tree )
 
     typ = tree->u.expr_type;
     SKIP_TYPEDEFS( typ );
-    typ = PtrNode( typ->object, FLAG_FAR, 0 );
+    typ = PtrNode( typ->object, FLAG_FAR, SEG_UNKNOWN );
     tree = ExprNode( based_sym, OPR_FARPTR, tree );
     tree->u.expr_type = typ;
     return( tree );
@@ -802,7 +802,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
     segment_id  segid;
 
     sym_handle = ptrtyp->u.p.based_sym;
-    segid =  ptrtyp->u.p.segment;
+    segid =  ptrtyp->u.p.segid;
     switch( ptrtyp->u.p.based_kind ) {
     case BASED_VOID:          //__based( void )       segment:>offset base op
         break;
@@ -833,7 +833,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
             typ = based_sym->u.expr_type;
             SKIP_TYPEDEFS( typ );
         }
-        old = PtrNode( old->object, typ->u.p.decl_flags, 0 );
+        old = PtrNode( old->object, typ->u.p.decl_flags, SEG_UNKNOWN );
         tree = ExprNode( based_sym, OPR_ADD, tree );
         tree->u.expr_type = old;
         tree->op.u2.result_type = old;
@@ -2677,6 +2677,6 @@ local TREEPTR SegOp( TREEPTR seg, TREEPTR offset )
     if( typ == NULL )
         typ = GetType( TYPE_VOID );
     tree = ExprNode( RValue(seg), OPR_FARPTR, RValue(offset) );
-    tree->u.expr_type = PtrNode( typ, FLAG_FAR, 0 );
+    tree->u.expr_type = PtrNode( typ, FLAG_FAR, SEG_UNKNOWN );
     return( tree );
 }

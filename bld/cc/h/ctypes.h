@@ -241,7 +241,7 @@ typedef struct type_definition {
     } u1;
     union {
         struct {
-            segment_id      segment;    /* TYPE_POINTER */
+            segment_id      segid;      /* TYPE_POINTER */
             SYM_HANDLE      based_sym;  /* var with seg of based ptr*/
             BASED_KIND      based_kind; /* kind of base variable    */
             type_modifiers  decl_flags; /* only symbols, fn and ptr have attribs */
@@ -272,7 +272,7 @@ extern  void WalkFuncTypeList( void (*func)(TYPEPTR,int) );
 typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,func2,...) */
     struct textsegment *next;       /* also used by pre-compiled header */
     size_t             class;
-    segment_id         segment;
+    segment_id         segid;
     int                index;
     char               segname[1];
 } textsegment;
@@ -342,7 +342,7 @@ typedef struct symtab_entry {           /* SYMBOL TABLE structure */
     union {
         struct {
             target_ssize offset;
-            segment_id  segment;        /* segment identifier */
+            segment_id  segid;          /* segment identifier */
         } var;
         struct {
             SYM_HANDLE  parms;
@@ -462,7 +462,7 @@ typedef struct {
 
 typedef struct {
     TYPEPTR             typ;        // type seen
-    int                 seg;        // seg from a typedef
+    segment_id          segid;      // seg from a typedef
     stg_classes         stg;        // storage class
     type_modifiers      mod;        // const, vol flags
     type_modifiers      decl_mod;   // declspec call info
@@ -493,7 +493,7 @@ typedef struct label_entry {
 
 typedef struct segment_list {
     struct segment_list *next_segment;
-    segment_id          segment;
+    segment_id          segid;
     unsigned            size_left;
 } segment_list;
 

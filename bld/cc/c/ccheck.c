@@ -899,7 +899,7 @@ void ChkRetType( TREEPTR tree )
     if( func_type->decl_type == TYPE_VOID ) {
         CErr2p( ERR_NOT_EXPECTING_RETURN_VALUE, CurFunc->name );
     } else if( ret_type->decl_type == TYPE_POINTER ) {
-        if( ret_type->u.p.segment == SEG_STACK ) {
+        if( ret_type->u.p.segid == SEG_STACK ) {
             CWarn1( WARN_RET_ADDR_OF_AUTO, ERR_RET_ADDR_OF_AUTO );
         }
     }

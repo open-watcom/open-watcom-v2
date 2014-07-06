@@ -957,11 +957,11 @@ static void PragDataSeg( void )
 /*****************************/
 {
     char        *segname;
-    segment_id  segment;
+    segment_id  segid;
 
     if( CurToken == T_LEFT_PAREN ) {
         PPCTL_ENABLE_MACROS();
-        segment = 0;
+        segid = SEG_UNKNOWN;
         NextToken();
         if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
             segname = CStrSave( Buffer );
@@ -969,19 +969,19 @@ static void PragDataSeg( void )
             if( CurToken == T_COMMA ) {
                 NextToken();
                 if( ( CurToken == T_STRING ) || ( CurToken == T_ID ) ) {
-                    segment = AddSegName( segname, Buffer, SEGTYPE_DATA );
+                    segid = AddSegName( segname, Buffer, SEGTYPE_DATA );
                     NextToken();
                 } else {
-                    segment = AddSegName( segname, NULL, SEGTYPE_DATA );
+                    segid = AddSegName( segname, NULL, SEGTYPE_DATA );
                 }
             } else {
-                segment = AddSegName( segname, NULL, SEGTYPE_DATA );
+                segid = AddSegName( segname, NULL, SEGTYPE_DATA );
             }
             CMemFree( segname );
         }
         PPCTL_DISABLE_MACROS();
         MustRecog( T_RIGHT_PAREN );
-        DefDataSegment = segment;
+        DefDataSegment = segid;
     }
 }
 

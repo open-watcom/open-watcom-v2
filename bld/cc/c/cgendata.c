@@ -67,7 +67,7 @@ static void EmitDQuad( DATA_QUAD *dq )
     target_size         amount;
     auto SYM_ENTRY      sym;
 
-    static segment_id   segment = SEG_UNKNOWN;
+    static segment_id   segid = SEG_UNKNOWN;
     static target_size  size = 0;
 
     if( dq->flags & Q_NEAR_POINTER ) {
@@ -95,9 +95,9 @@ static void EmitDQuad( DATA_QUAD *dq )
     }
 #if _CPU == 8086
     if( size >= 0x10000 ) {
-        if( segment != SEG_CONST && segment != SEG_DATA ) {
-            ++segment;
-            BESetSeg( segment );
+        if( segid != SEG_CONST && segid != SEG_DATA ) {
+            ++segid;
+            BESetSeg( segid );
             size -= 0x10000;
         }
     }
@@ -105,8 +105,8 @@ static void EmitDQuad( DATA_QUAD *dq )
     switch( dq->type ) {
     case QDT_STATIC:
         SymGet( &sym, dq->u.var.sym_handle );
-        segment = sym.u.var.segment;
-        BESetSeg( segment );
+        segid = sym.u.var.segid;
+        BESetSeg( segid );
         AlignIt( sym.sym_type );
         DGLabel( FEBack( dq->u.var.sym_handle ) );
         size = 0;
@@ -207,9 +207,9 @@ static void EmitDQuad( DATA_QUAD *dq )
                 EmitZeros( 0x10000 - size );
                 amount -= ( 0x10000 - size );
                 size = 0;
-                if( segment != SEG_CONST && segment != SEG_DATA ) {
-                    ++segment;
-                    BESetSeg( segment );
+                if( segid != SEG_CONST && segid != SEG_DATA ) {
+                    ++segid;
+                    BESetSeg( segid );
                 }
             } else {
                 EmitZeros( amount );
