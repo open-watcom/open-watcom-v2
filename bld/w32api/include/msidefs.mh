@@ -279,8 +279,12 @@
 
 #undef PID_SECURITY
 
-#define PID_DICTIONARY (0)
-#define PID_CODEPAGE (0x1)
+#ifndef PID_DICTIONARY
+    #define PID_DICTIONARY (0)
+#endif
+#ifndef PID_CODEPAGE
+    #define PID_CODEPAGE (0x1)
+#endif
 #define PID_TITLE 2
 #define PID_SUBJECT 3
 #define PID_AUTHOR 4
@@ -531,3 +535,4 @@ enum msidbEmbeddedUIAttributes {
 #endif
 
 #endif /* _MSIDEFS_H_ */
+
