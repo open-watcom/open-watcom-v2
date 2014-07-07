@@ -654,7 +654,7 @@ void DumpNestedMacros( void )
 #endif
 
 
-static MACRO_TOKEN *BuildAToken( const char *p )
+static MACRO_TOKEN *BuildAToken( TOKEN token, const char *p )
 {
     size_t      len;
     MACRO_TOKEN *mtok;
@@ -662,6 +662,7 @@ static MACRO_TOKEN *BuildAToken( const char *p )
     len = strlen( p ) + 1;
     mtok = (MACRO_TOKEN *)CMemAlloc( sizeof( MACRO_TOKEN ) - 1 + len );
     memcpy( mtok->data, p, len );
+    mtok->token = token;
     mtok->next = NULL;
     return( mtok );
 }
@@ -672,8 +673,7 @@ static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *dat
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
 
-    new = BuildAToken( data );
-    new->token = token;
+    new = BuildAToken( token, data );
     if( head == NULL ) {
         head = new;
     } else {
@@ -787,8 +787,7 @@ static MACRO_TOKEN *ReTokenGlueBuffer( char *gluebuf )
     lnk = &head;
     for( ;; ) {
         ReScanToken();
-        new = BuildAToken( Buffer );
-        new->token = CurToken;
+        new = BuildAToken( CurToken, Buffer );
         *lnk = new;
         lnk = &new->next;
         if( CompFlags.rescan_buffer_done ) {
@@ -865,8 +864,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         CMemFree( gluebuf );
                     } else {
                         /* Both ends of ## were empty */
-                        mtok = BuildAToken( "P-<placemarker>" );
-                        mtok->token = T_NULL;
+                        mtok = BuildAToken( T_NULL, "P-<placemarker>" );
                     }
                     *lnk = mtok;  // link in new mtok to mtok's link
                     while( mtok != NULL && mtok->next != NULL ) {   //position mtok & lnk to last token
@@ -904,8 +902,7 @@ static MACRO_TOKEN **NextString( MACRO_TOKEN **lnk, const char *buf )
 {
     MACRO_TOKEN *mtok;
 
-    mtok = BuildAToken( buf );
-    mtok->token = T_STRING;
+    mtok = BuildAToken( T_STRING, buf );
     *lnk = mtok;
     lnk = &mtok->next;
     return( lnk );
@@ -1034,21 +1031,18 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
         case T_BAD_TOKEN:
         case T_LSTRING:
         case T_STRING:
-            mtok = BuildAToken( p );
-            mtok->token = tok;
+            mtok = BuildAToken( tok, p );
             while( *p++ != '\0' )
                 ;
             break;
         case T_WHITE_SPACE:
             if( prev_token == T_MACRO_SHARP_SHARP )
                 continue;
-            mtok = BuildAToken( " " );
-            mtok->token = T_WHITE_SPACE;
+            mtok = BuildAToken( T_WHITE_SPACE, " " );
             break;
         case T_BAD_CHAR:
             buf[0] = *p++;
-            mtok = BuildAToken( buf );
-            mtok->token = T_BAD_CHAR;
+            mtok = BuildAToken( T_BAD_CHAR, buf );
             break;
         case T_MACRO_SHARP:
             while( MTOK( p ) == T_WHITE_SPACE ) {
@@ -1061,8 +1055,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             if( macro_parms != NULL && macro_parms[parmno].arg != NULL && macro_parms[parmno].arg[0] != '\0' ) {
                 mtok = BuildString( macro_parms[parmno].arg );
             } else {
-                mtok = BuildAToken( "" );
-                mtok->token = T_STRING;
+                mtok = BuildAToken( T_STRING, "" );
             }
             break;
         case T_MACRO_PARM:
@@ -1077,8 +1070,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
                 mtok = BuildMTokenList( macro_parms[parmno].arg, NULL );
                 /* NB: mtok is now NULL if macro arg was empty */
             } else {
-                mtok = BuildAToken( "" );
-                mtok->token = T_WHITE_SPACE;
+                mtok = BuildAToken( T_WHITE_SPACE, "" );
             }
             if( MTOK( p2 ) != T_MACRO_SHARP_SHARP && prev_token != T_MACRO_SHARP_SHARP ) {
                 if( mtok != NULL ) {
@@ -1086,8 +1078,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
                     mtok = ExpandNestedMacros( mtok, FALSE );
                 }
             } else if( mtok == NULL ) {
-                mtok = BuildAToken( "P-<placemarker>" );
-                mtok->token = T_NULL;
+                mtok = BuildAToken( T_NULL, "P-<placemarker>" );
             }
             nested->substituting_parms = FALSE;
             break;
@@ -1103,16 +1094,13 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
                     mtok = BuildMTokenList( macro_parms[parmno].arg, NULL );
                 } else {
                     if( prev_token == T_MACRO_SHARP_SHARP || MTOK( p2 ) == T_MACRO_SHARP_SHARP ) {
-                        mtok = BuildAToken( "" );
-                        mtok->token = T_MACRO_EMPTY_VAR_PARM;
+                        mtok = BuildAToken( T_MACRO_EMPTY_VAR_PARM, "" );
                     } else {
-                        mtok = BuildAToken( "" );
-                        mtok->token = T_WHITE_SPACE;
+                        mtok = BuildAToken( T_WHITE_SPACE, "" );
                     }
                 }
             } else {
-                mtok = BuildAToken( "" );
-                mtok->token = T_WHITE_SPACE;
+                mtok = BuildAToken( T_WHITE_SPACE, "" );
             }
             if( MTOK( p2 ) != T_MACRO_SHARP_SHARP  &&
                 prev_token != T_MACRO_SHARP_SHARP ) {
@@ -1124,8 +1112,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             nested->substituting_parms = FALSE;
             break;
         default:
-            mtok = BuildAToken( Tokens[tok] );
-            mtok->token = tok;
+            mtok = BuildAToken( tok, Tokens[tok] );
             break;
         }
         if( mtok != NULL ) {
@@ -1160,8 +1147,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning )
     nested->macro_parms = NULL;
     if( mentry->macro_defn == 0 ) {     /* if special macro */
         tok = SpecialMacro( (special_macros)mentry->parm_count );
-        head = BuildAToken( Buffer );
-        head->token = tok;
+        head = BuildAToken( tok, Buffer );
         nested->next = NestedMacros;
         NestedMacros = nested;
     } else {
@@ -1244,8 +1230,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         case 2:                 // we skipped over some white space
                             mtok->token = T_UNEXPANDABLE_ID;
                             toklist->next = NULL;
-                            toklist = BuildAToken( " " );
-                            toklist->token = T_WHITE_SPACE;
+                            toklist = BuildAToken( T_WHITE_SPACE, " " );
                             toklist->next = mtok->next;
                             mtok->next = toklist;
                             toklist = NULL;
