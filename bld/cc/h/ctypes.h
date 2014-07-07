@@ -62,7 +62,6 @@ typedef signed_64       int64;
 typedef unsigned_64     uint64;
 
 typedef void            *SYM_HANDLE;
-typedef SYM_HANDLE      sym_handle;
 
 typedef signed int      id_level_stype;
 typedef unsigned char   id_level_type;
