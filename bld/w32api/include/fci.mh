@@ -1,5 +1,5 @@
 /*
- *  fdi.h       File Compression Interface
+ *  fci.h       File Compression Interface
  *
 :include crwatcnt.sp
  */
