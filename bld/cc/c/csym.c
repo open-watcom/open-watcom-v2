@@ -404,7 +404,7 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
         ++LclSymCount;
     }
     NewSym();
-    sym->level = SymLevel;
+    sym->level = (id_level_type)SymLevel;
     hsym = SymHash( sym, CURR_SYM_HANDLE() );
     sym->info.hash = h;
     /* add name to head of list */
