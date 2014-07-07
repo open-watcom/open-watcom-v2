@@ -2008,7 +2008,7 @@ local TREEPTR GenAllocaNode( TREEPTR size_parm )
     TREEPTR     tree;
 
     if( Token[ExprLevel] == T_LEFT_PAREN ) {
-        tree = ExprNode( 0, OPR_ALLOCA, size_parm );
+        tree = ExprNode( NULL, OPR_ALLOCA, size_parm );
         tree->u.expr_type = PtrNode( GetType( TYPE_VOID ), FLAG_NONE, SEG_STACK );
     } else {
         // error
@@ -2154,7 +2154,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
                           && IntrinsicMathFunc( sym_name, i, sym_len, &sym ) ) {
                             FreeExprNode( functree );
                             if( parm_count == 1 ) {
-                                tree = ExprNode( 0, OPR_MATHFUNC, last_parm );
+                                tree = ExprNode( NULL, OPR_MATHFUNC, last_parm );
                             } else {  /* parm_count == 2 */
                                 tree = ValueStack[ExprLevel]; /* op1 */
                                 --ExprLevel;
@@ -2286,7 +2286,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             sym.flags |= SYM_FUNCTION;
             sym.mods = decl_flags;
             SymReplace( &sym, sym_handle );
-            tree = ExprNode( 0, OPR_CALL_INDIRECT, tree );
+            tree = ExprNode( NULL, OPR_CALL_INDIRECT, tree );
             tree->u.expr_type = typ;
             tree->op.u2.sym_handle = sym_handle;
         }

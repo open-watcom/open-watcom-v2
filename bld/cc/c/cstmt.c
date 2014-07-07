@@ -148,7 +148,7 @@ void SwitchPurge( void )
 void AddStmt( TREEPTR stmt )
 {
     WalkExprTree( stmt, ChkStringLeaf, NoOp, NoOp, DoConstFold );
-    stmt = ExprNode( 0, OPR_STMT, stmt );
+    stmt = ExprNode( NULL, OPR_STMT, stmt );
     stmt->op.u2.src_loc = SrcLoc;
     stmt->op.u1.unroll_count = UnrollCount;
     if( FirstStmt == NULL )
@@ -254,7 +254,7 @@ static void JumpCond( TREEPTR expr,
     if( tree->op.opr == OPR_NOT ) {
         tree->op.opr = jump_opposite;
     } else {
-        tree = ExprNode( 0, jump_opcode, tree );
+        tree = ExprNode( NULL, jump_opcode, tree );
     }
     tree->op.u2.label_index = label;
     AddStmt( tree );
@@ -383,7 +383,7 @@ static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
         tree = RValue( Expr() );
         ChkRetType( tree );
         tree = FixupAss( tree, func_type );
-        tree = ExprNode( 0, OPR_RETURN, tree );
+        tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = func_type;
         tree->op.u2.sym_handle = func_result;
         AddStmt( tree );
@@ -1006,7 +1006,7 @@ static void SwitchStmt( void )
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
     }
-    tree = ExprNode( 0, OPR_SWITCH, tree );
+    tree = ExprNode( NULL, OPR_SWITCH, tree );
     tree->op.u2.switch_info = sw;
     AddStmt( tree );
 }
@@ -1175,7 +1175,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info
     /* ... as long as return type is compatible with int */
     if( main_type->decl_type == TYPE_INT ) {
         tree = IntLeaf( 0 );    /* zero is the default return value */
-        tree = ExprNode( 0, OPR_RETURN, tree );
+        tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = main_type;
         tree->op.u2.sym_handle = func_result;
         AddStmt( tree );

@@ -1621,7 +1621,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
     SetDiagType2( newtyp, typ );
     if( newtyp->decl_type > TYPE_POINTER ) {
         if( newtyp->decl_type == TYPE_VOID ) {
-            opnd = ExprNode( 0, OPR_CONVERT, opnd );
+            opnd = ExprNode( NULL, OPR_CONVERT, opnd );
             opnd->u.expr_type = newtyp;
             opnd->op.u2.result_type = newtyp;
             if( cast_op ) {
@@ -1832,7 +1832,7 @@ TREEPTR UMinus( TREEPTR opnd )
                 CErr1( ERR_EXPR_MUST_BE_ARITHMETIC );
                 opnd = ErrorNode( opnd );
             } else {
-                opnd = ExprNode( 0, OPR_NEG, opnd );
+                opnd = ExprNode( NULL, OPR_NEG, opnd );
                 opnd->u.expr_type = GetType( SubResult[t][t] );
                 opnd->op.u2.result_type = opnd->u.expr_type;
             }
@@ -1885,7 +1885,7 @@ TREEPTR UMinus( TREEPTR opnd )
             CErr1( ERR_EXPR_MUST_BE_ARITHMETIC );
             opnd = ErrorNode( opnd );
         } else {
-            opnd = ExprNode( 0, OPR_NEG, opnd );
+            opnd = ExprNode( NULL, OPR_NEG, opnd );
             opnd->u.expr_type = GetType( SubResult[t][t] );
             opnd->op.u2.result_type = opnd->u.expr_type;
         }
@@ -1911,7 +1911,7 @@ TREEPTR UComplement( TREEPTR opnd )
                 CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
                 opnd = ErrorNode( opnd );
             } else {
-                opnd = ExprNode( 0, OPR_COM, opnd );
+                opnd = ExprNode( NULL, OPR_COM, opnd );
                 opnd->u.expr_type = GetType( SubResult[t][t] );
                 opnd->op.u2.result_type = opnd->u.expr_type;
             }
@@ -1953,7 +1953,7 @@ TREEPTR UComplement( TREEPTR opnd )
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             opnd = ErrorNode( opnd );
         } else {
-            opnd = ExprNode( 0, OPR_COM, opnd );
+            opnd = ExprNode( NULL, OPR_COM, opnd );
             opnd->u.expr_type = GetType( SubResult[t][t] );
             opnd->op.u2.result_type = opnd->u.expr_type;
         }
