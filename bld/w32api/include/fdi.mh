@@ -16,7 +16,7 @@
 /* The Microsoft defintions all contain FAR and DIAMONDAPI
  * declarations to maintain 16-bit compatibility.  Since
  * we're building only for 32- and 64-bit (maybe), we can
- * just leave these defines blank.  However, it's good to
+ * just leave the FAR define blank.  However, it's good to
  * maintain the same terminology as Microsoft, I suppose...
  */
 #ifndef FAR
@@ -77,22 +77,22 @@ typedef struct {
 } ERF, FAR *PERF;
 
 typedef void *(DIAMONDAPI *PFNALLOC)( ULONG );
-#define FNALLOC(fn) void *DIAMONDAPI fn( ULONG )
+#define FNALLOC(fn) void *DIAMONDAPI fn( ULONG cb )
 
 typedef void (DIAMONDAPI *PFNFREE)( void * );
-#define FNFREE(fn) void DIAMONDAPI fn( void * )
+#define FNFREE(fn) void DIAMONDAPI fn( void *memory )
 
-typedef INT_PTR (DIAMONDAPI *PFNOPEN) ( char *, int, int );
+typedef INT_PTR (DIAMONDAPI *PFNOPEN) ( LPSTR, int, int );
 typedef UINT    (DIAMONDAPI *PFNREAD) ( INT_PTR , void *, UINT );
 typedef UINT    (DIAMONDAPI *PFNWRITE)( INT_PTR, void *, UINT );
 typedef int     (DIAMONDAPI *PFNCLOSE)( INT_PTR );
 typedef long    (DIAMONDAPI *PFNSEEK) ( INT_PTR, long, int );
 
-#define FNOPEN(fn)  INT_PTR DIAMONDAPI fn( char *, int ,int )
-#define FNREAD(fn)  UINT    DIAMONDAPI fn( INT_PTR, void *, UINT )
-#define FNWRITE(fn) UINT    DIAMONDAPI fn( INT_PTR, void *, UINT )
-#define FNCLOSE(fn) int     DIAMONDAPI fn( INT_PTR )
-#define FNSEEK(fn)  long    DIAMONDAPI fn( INT_PTR, long, int )
+#define FNOPEN(fn)  INT_PTR DIAMONDAPI fn( LPSTR pszFile, int oflag, int pmode )
+#define FNREAD(fn)  UINT    DIAMONDAPI fn( INT_PTR hf, void FAR *pv, UINT cb )
+#define FNWRITE(fn) UINT    DIAMONDAPI fn( INT_PTR hf, void FAR *pv, UINT cb )
+#define FNCLOSE(fn) int     DIAMONDAPI fn( INT_PTR hf )
+#define FNSEEK(fn)  long    DIAMONDAPI fn( INT_PTR hf, long dist, int seektype )
 
 typedef enum {
     fdintCABINET_INFO,
@@ -104,10 +104,10 @@ typedef enum {
 } FDINOTIFICATIONTYPE;
 
 typedef INT_PTR (DIAMONDAPI *PFNFDINOTIFY)( FDINOTIFICATIONTYPE, PFDINOTIFICATION );
-#define FNFDINOTIFY(fn) INT_PTR DIAMONDAPI fn( FDINOTIFICATIONTYPE, PFDINOTIFICATION )
+#define FNFDINOTIFY(fn) INT_PTR DIAMONDAPI fn( FDINOTIFICATIONTYPE fdint, PFDINOTIFICATION pfdin )
 
 typedef int (DIAMONDAPI *PFNFDIDECRYPT)( PFDIDECRYPT );
-#define FNFDIDECRYPT(fn) int DIAMONDAPI fn( PFDIDECRYPT )
+#define FNFDIDECRYPT(fn) int DIAMONDAPI fn( PFDIDECRYPT pfdid)
   
 #define cpuUNKNOWN (-1)
 #define cpu80286 (0)
