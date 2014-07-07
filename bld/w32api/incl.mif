@@ -75,6 +75,8 @@ headers = &
         evntrace.h           &
         exdisp.h             &
         exdispid.h           &
+        fci.h                &
+        fdi.h                &
         fltdefs.h            &
         guiddef.h            &
         htmlhelp.h           &
