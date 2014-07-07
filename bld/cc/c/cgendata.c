@@ -108,7 +108,7 @@ static void EmitDQuad( DATA_QUAD *dq )
         segid = sym.u.var.segid;
         BESetSeg( segid );
         AlignIt( sym.sym_type );
-        DGLabel( FEBack( dq->u.var.sym_handle ) );
+        DGLabel( FEBack( (CGSYM_HANDLE)dq->u.var.sym_handle ) );
         size = 0;
         break;
     case QDT_CHAR:
@@ -190,10 +190,10 @@ static void EmitDQuad( DATA_QUAD *dq )
         break;
     case QDT_POINTER:
     case QDT_ID:
-        if( dq->u.var.sym_handle == 0 ) {
+        if( dq->u.var.sym_handle == SYM_NULL ) {
             DGInteger( dq->u.var.offset, data_type );
         } else {
-            DGFEPtr( dq->u.var.sym_handle, data_type, dq->u.var.offset );
+            DGFEPtr( (CGSYM_HANDLE)dq->u.var.sym_handle, data_type, dq->u.var.offset );
         }
         size += size_of_item;
         break;

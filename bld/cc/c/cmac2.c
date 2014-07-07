@@ -410,7 +410,6 @@ local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR form
 {
     MEPTR           mentry;
     size_t          len;
-    size_t          i;
     TOKEN           prev_token;
     TOKEN           prev_non_ws_token;
     size_t          mlen;
@@ -465,10 +464,8 @@ local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR form
                 MTOKPARM( TokenBuf + len ) = parmno - 1;
                 MTOKPARMINC( len );
             } else {
-                i = 0;
-                while( (TokenBuf[len++] = Buffer[i++]) != '\0' ) {
-                    ;   /*empty*/
-                }
+                memcpy( TokenBuf + len, Buffer, TokenLen + 1 );
+                len += TokenLen + 1;
             }
             break;
         case T_BAD_CHAR:
@@ -488,9 +485,8 @@ local void GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR form
         case T_LSTRING:
         case T_BAD_TOKEN:
         case T_PPNUMBER:
-            i = 0;
-            while( (TokenBuf[len++] = Buffer[i++]) != '\0' )
-                ;   /* empty */
+            memcpy( TokenBuf + len, Buffer, TokenLen + 1 );
+            len += TokenLen + 1;
             break;
         default:
             break;

@@ -48,13 +48,11 @@ void SrcPurge( void )
 {
     FCB *src_file;
 
-    src_file = SrcFile;
-    while( src_file != NULL ) {
+    while( (src_file = SrcFile) != NULL ) {
         SrcFile = src_file->prev_file;
         CClose( src_file->src_fp );
         FEfree( src_file->src_buf );
         CMemFree( src_file );
-        src_file = SrcFile;
     }
 }
 

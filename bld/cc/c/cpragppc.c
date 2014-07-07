@@ -155,7 +155,7 @@ enum sym_state AsmQueryState( void *handle )
     SYM_HANDLE sym_handle = (SYM_HANDLE)handle;
     auto SYM_ENTRY sym;
 
-    if( sym_handle == 0 )
+    if( sym_handle == SYM_NULL )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
     if( (sym.flags & SYM_REFERENCED) == 0 ) {
@@ -226,9 +226,9 @@ static byte_seq_reloc *GetFixups( void )
     SYM_HANDLE      sym_handle;
 
     lnk = &head;
-    for( reloc = AsmRelocs; reloc; reloc = reloc->next ) {
+    for( reloc = AsmRelocs; reloc != NULL; reloc = reloc->next ) {
         sym_handle = SymLook( CalcHash( reloc->name, strlen( reloc->name ) ), reloc->name );
-        if( sym_handle == 0 ) {
+        if( sym_handle == SYM_NULL ) {
             CErr2p( ERR_UNDECLARED_SYM, reloc->name );
             return( NULL );
         }
@@ -261,7 +261,7 @@ local bool GetByteSeq( byte_seq **code )
     NextToken();
     too_many_bytes = FALSE;
     uses_auto = FALSE;
-    for(;;) {
+    for( ;; ) {
         if( CurToken == T_STRING ) {
             AsmLine( Buffer );
             NextToken();
@@ -420,7 +420,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), 0, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );

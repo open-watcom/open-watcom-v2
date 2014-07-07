@@ -85,7 +85,7 @@ void SymInit( void )
     FirstSymInBuf = 0;
     LastSymBuf = 0;
     SymBufDirty = 0;
-    CurFuncHandle = 0;
+    CurFuncHandle = SYM_NULL;
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
         SymBufSegs[seg_num].allocated = 0;
     }
@@ -126,7 +126,7 @@ unsigned SymGetNumSpecialSyms( void )
 
 SYM_HANDLE SymGetFirst( void )
 {
-    return( 0 );
+    return( (SYM_HANDLE)0 );
 }
 
 SYM_HANDLE SymGetNext( SYM_HANDLE sym_handle )
@@ -397,7 +397,7 @@ SYM_HANDLE SymAdd( id_hash_idx h, SYMPTR sym )
     SYM_HASHPTR     *head;
 
     if( sym == NULL )
-        return( 0 );
+        return( SYM_NULL );
     if( SymLevel == 0 ) {
         ++GblSymCount;
     } else {
@@ -426,7 +426,7 @@ SYM_HANDLE SymAddL0( id_hash_idx h, SYMPTR new_sym )
     SYM_HASHPTR     new_hsym;
 
     if( new_sym == NULL )
-        return( 0 );
+        return( SYM_NULL );
     ++GblSymCount;
     NewSym();
     new_sym->level = 0;
@@ -488,7 +488,7 @@ SYM_HANDLE SymLook( id_hash_idx h, const char *id )
             return( hsym->handle );
         }
     }
-    return( 0 );
+    return( SYM_NULL );
 }
 
 
@@ -508,7 +508,7 @@ SYM_HANDLE SymLookTypedef( id_hash_idx h, const char *id, SYMPTR sym )
             return( hsym->handle );
         }
     }
-    return( 0 );
+    return( SYM_NULL );
 }
 
 
@@ -526,7 +526,7 @@ SYM_HANDLE Sym0Look( id_hash_idx h, const char *id )
             }
         }
     }
-    return( 0 );
+    return( SYM_NULL );
 }
 
 
@@ -823,8 +823,8 @@ local SYM_HASHPTR FreeSym( void )
   #endif
 
     for( bucket = 0; bucket < BUCKETS; ++bucket ) {
-        head[bucket] = 0;
-        tail[bucket] = 0;
+        head[bucket] = SYM_NULL;
+        tail[bucket] = SYM_NULL;
     }
     sym_list = GetSymList();
     for( hsym = sym_list; hsym != NULL; hsym = next_hsymptr ) {
@@ -851,7 +851,7 @@ local SYM_HASHPTR FreeSym( void )
                     /* FUNCTION */
                     ChkFunction( &sym, hsym->name );
                 }
-                if( tail[bucket] == 0 ) {
+                if( tail[bucket] == SYM_NULL ) {
                     tail[bucket] = hsym->handle;
                 }
                 head[bucket] = hsym->handle;
@@ -878,14 +878,14 @@ local SYM_HASHPTR FreeSym( void )
         InitErrLoc();
     }
     if( SymLevel == 0 ) {
-        GlobalSym = 0;
-        prev_tail = 0;
+        GlobalSym = SYM_NULL;
+        prev_tail = SYM_NULL;
         for( bucket = BUCKETS - 1; bucket >= 0; --bucket ) {
-            if( head[bucket] != 0 ) {
-                if( GlobalSym == 0 ) {
+            if( head[bucket] != SYM_NULL ) {
+                if( GlobalSym == SYM_NULL ) {
                     GlobalSym = head[bucket];
                 }
-                if( prev_tail != 0 ) {
+                if( prev_tail != SYM_NULL ) {
                     SymGet( &sym, prev_tail );
                     sym.handle = head[bucket];
                     SymReplace( &sym, prev_tail );
@@ -902,13 +902,12 @@ void AsgnSegs( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY   sym;
 
-    for( ; sym_handle != 0; ) {
+    for( ; sym_handle != SYM_NULL; sym_handle = sym.handle ) {
         SymGet( &sym, sym_handle );
         if( ( sym.flags & SYM_FUNCTION ) == 0 ) {  /* if variable */
             AssignSeg( &sym );
             SymReplace( &sym, sym_handle );
         }
-        sym_handle = sym.handle;
     }
 }
 
@@ -1015,11 +1014,9 @@ void SymsPurge( void )
 {
     LABELPTR    label;
 
-    label = LabelHead;
-    while( label != NULL ) {
+    while( (label = LabelHead) != NULL ) {
         LabelHead = label->next_label;
         CMemFree( label );
-        label = LabelHead;
     }
 //      EnumInit();
 //      PurgeTags( TagHead );
@@ -1042,18 +1039,14 @@ void SymsPurge( void )
             }
         }
 
-        sym = GlobalSym;
-        while( sym != NULL ) {
+        while( (sym = GlobalSym) != SYM_NULL ) {
             GlobalSym = sym->thread;
             DoSymPurge( sym );
-            sym = GlobalSym;
         }
 
-        sym = SpecialSyms;
-        while( sym != NULL ) {
+        while( (sym = SpecialSyms) != SYM_NULL ) {
             SpecialSyms = sym->thread;
             DoSymPurge( sym );
-            sym = SpecialSyms;
         }
     }
 #endif
@@ -1069,16 +1062,16 @@ local void PurgeTags( TAGPTR tag_head )
     DATA_TYPE   tag_type;
 
     for( ; (tag = tag_head) != NULL; ) {
+        tag_head = tag->next_tag;
         tag_type = tag->sym_type->decl_type;
         if( tag_type == TYPE_STRUCT || tag_type == TYPE_UNION ) {
             for( ; (field = tag->u.field_list) != NULL; ) {
                 tag->u.field_list = field->next_field;
                 CMemFree( field );
             }
-        } else {        /* tag_type == TYPE_ENUM */
+        } else {    /* tag_type == TYPE_ENUM */
             PurgeEnums( tag->u.enum_list );
         }
-        tag_head = tag->next_tag;
         CMemFree( tag );
     }
 }
@@ -1106,13 +1099,12 @@ XREFPTR NewXref( XREFPTR next_xref )
     return( xref );
 }
 
-void FreeXrefs( XREFPTR xref )
+void FreeXrefs( XREFPTR xref_list )
 {
-    XREFPTR     next;
+    XREFPTR     xref;
 
-    while( xref != NULL ) {
-        next = xref->next_xref;
+    while( (xref = xref_list) != NULL ) {
+        xref_list = xref->next_xref;
         CMemFree( xref );
-        xref = next;
     }
 }

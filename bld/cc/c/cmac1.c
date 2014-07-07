@@ -383,7 +383,8 @@ TOKEN SpecialMacro( special_macros spc_macro )
         strcpy( Buffer, p );
         return( T_STRING );
     default:
-        return( 0 ); // shut up the compiler
+        Buffer[0] = '\0';
+        return( T_NULL ); // shut up the compiler
     }
 }
 
@@ -417,7 +418,7 @@ void EnlargeBuffer( size_t size )
 local void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
                      MACRO_ARG *macro_parms, tokens *token_list )
 {
-    tokens          *next_tokens;
+    tokens          *token;
     char            *p;
     size_t          total;
 
@@ -429,12 +430,11 @@ local void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
         macro_parms[parmno].arg = p;
         if( p != NULL ) {
             total = 0;
-            while( token_list != NULL ) {
-                memcpy( &p[total], token_list->buf, token_list->length );
-                total += token_list->length;
-                next_tokens = token_list->next;
-                CMemFree( token_list );
-                token_list = next_tokens;
+            while( (token = token_list) != NULL ) {
+                token_list = token->next;
+                memcpy( &p[total], token->buf, token->length );
+                total += token->length;
+                CMemFree( token );
             }
             memcpy( &p[total], TokenBuf, size );
         }

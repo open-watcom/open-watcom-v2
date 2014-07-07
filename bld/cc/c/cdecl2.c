@@ -179,7 +179,7 @@ local SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             stg_class = SC_NONE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
-    if( old_sym_handle == 0 ) {
+    if( old_sym_handle == SYM_NULL ) {
         ep = EnumLookup( sym->info.hash, sym->name );
         if( ep != NULL ) {
             SetDiagEnum( ep );
@@ -360,7 +360,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         sym->flags |= SYM_IGNORE_UNREFERENCE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
-    if( old_sym_handle != 0 ) {
+    if( old_sym_handle != SYM_NULL ) {
         SymGet( &old_sym, old_sym_handle );
         if( ChkEqSymLevel( &old_sym ) ) {
             SetDiagSymbol( &old_sym, old_sym_handle );
@@ -377,7 +377,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
     if( stg_class == SC_EXTERN ) {
         old_sym_handle = Sym0Look( sym->info.hash, sym->name );
     }
-    if( old_sym_handle != 0 ) {
+    if( old_sym_handle != SYM_NULL ) {
         SymGet( &old_sym, old_sym_handle );
         SetDiagSymbol( &old_sym, old_sym_handle );
         if( ChkEqSymLevel( &old_sym ) || stg_class == SC_EXTERN ) {
@@ -419,7 +419,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
         }
         SetDiagPop();
     }
-    if( (old_sym_handle != 0)
+    if( ( old_sym_handle != SYM_NULL )
       && (stg_class == SC_NONE || stg_class == SC_EXTERN
       || (stg_class == SC_STATIC && SymLevel == 0)) ) {
 
@@ -468,7 +468,7 @@ local SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state )
             VfyNewSym( sym->info.hash, sym->name );
         }
 new_var:
-        old_sym_handle = 0;
+        old_sym_handle = SYM_NULL;
         sym->flags |= SYM_DEFINED;
         typ = sym->sym_type;
         SKIP_DUMMY_TYPEDEFS( typ );
@@ -511,8 +511,8 @@ new_var:
         sym->flags |=  SYM_ASSIGNED;
     }
     SymReplace( sym, sym_handle );
-    if( old_sym_handle != 0 ) {
-        sym_handle = 0;
+    if( old_sym_handle != SYM_NULL ) {
+        sym_handle = SYM_NULL;
     }
     return( sym_handle );
 }
@@ -590,7 +590,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
     Declarator( sym, flags, info->typ, *state );
     if( sym->name[0] == '\0' ) {
         InvDecl();
-        return( 0 );
+        return( SYM_NULL );
     }
     typ = sym->sym_type;
     /* skip over typedef's */
@@ -598,13 +598,13 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
     if( info->stg == SC_TYPEDEF ) {
         if( CompFlags.extensions_enabled ) {
             old_sym_handle = SymLook( sym->info.hash, sym->name );
-            if( old_sym_handle != 0 ) {
+            if( old_sym_handle != SYM_NULL ) {
                 SymGet( &old_sym, old_sym_handle );
                 otyp = old_sym.sym_type;        /* skip typedefs */
                 SKIP_TYPEDEFS( otyp );
                 if( old_sym.attribs.stg_class == SC_TYPEDEF &&
                     ChkEqSymLevel( &old_sym ) && IdenticalType( typ, otyp ) ) {
-                    return( 0 );        /* indicate already in symbol tab */
+                    return( SYM_NULL );        /* indicate already in symbol tab */
                 }
             }
         }
@@ -644,8 +644,8 @@ bool DeclList( SYM_HANDLE *sym_head )
     decl_info           info;
 
     ParmList = NULL;
-    prevsym_handle = 0;
-    *sym_head = 0;
+    prevsym_handle = SYM_NULL;
+    *sym_head = SYM_NULL;
     for( ;; ) {
         for( ;; ) {
             for( ;; ) {
@@ -713,19 +713,19 @@ bool DeclList( SYM_HANDLE *sym_head )
             for( ;; ) {
                 sym_handle = InitDeclarator( &sym, &info, &state );
                 /* NULL is returned if sym already exists in symbol table */
-                if( sym_handle != 0 ) {
-                    sym.handle = 0;
+                if( sym_handle != SYM_NULL ) {
+                    sym.handle = SYM_NULL;
                     if( sym.flags & SYM_FUNCTION ) {
                         if( (state & DECL_STATE_NOTYPE ) == 0 ) {
                             sym.flags |= SYM_TYPE_GIVEN;
                         }
                     } else if( SymLevel > 0 ) { /* variable */
-                        if( prevsym_handle != 0 ) {
+                        if( prevsym_handle != SYM_NULL ) {
                             SymGet( &prevsym, prevsym_handle );
                             prevsym.handle = sym_handle;
                             SymReplace( &prevsym, prevsym_handle );
                         }
-                        if( *sym_head == 0 ) {
+                        if( *sym_head == SYM_NULL ) {
                             *sym_head = sym_handle;
                         }
                         prevsym_handle = sym_handle;
@@ -745,7 +745,7 @@ bool DeclList( SYM_HANDLE *sym_head )
             That's the reason for the check
                     "typ->decl_type != TYPE_FUNCTION"
 */
-            if( SymLevel == 0 && CurToken != T_SEMI_COLON && sym_handle != 0 ) {
+            if( SymLevel == 0 && CurToken != T_SEMI_COLON && sym_handle != SYM_NULL ) {
                 if( sym.sym_type->decl_type == TYPE_FUNCTION && sym.sym_type != info.typ ) {
                     CurFuncHandle = sym_handle;
                     CurFunc = &CurFuncSym;
@@ -773,8 +773,8 @@ bool LoopDecl( SYM_HANDLE *sym_head )
     decl_info           info;
 
     ParmList = NULL;
-    prevsym_handle = 0;
-    *sym_head = 0;
+    prevsym_handle = SYM_NULL;
+    *sym_head = SYM_NULL;
     if( CurToken == T_EOF )
         return( FALSE );
     FullDeclSpecifier( &info );
@@ -796,19 +796,19 @@ bool LoopDecl( SYM_HANDLE *sym_head )
         for( ;; ) {
             sym_handle = InitDeclarator( &sym, &info, &state );
             /* NULL is returned if sym already exists in symbol table */
-            if( sym_handle != 0 ) {
-                sym.handle = 0;
+            if( sym_handle != SYM_NULL ) {
+                sym.handle = SYM_NULL;
                 if( sym.flags & SYM_FUNCTION ) {
                     if( (state & DECL_STATE_NOTYPE ) == 0 ) {
                         sym.flags |= SYM_TYPE_GIVEN;
                     }
                 } else {    /* variable */
-                    if( prevsym_handle != 0 ) {
+                    if( prevsym_handle != SYM_NULL ) {
                         SymGet( &prevsym, prevsym_handle );
                         prevsym.handle = sym_handle;
                         SymReplace( &prevsym, prevsym_handle );
                     }
-                    if( *sym_head == 0 ) {
+                    if( *sym_head == SYM_NULL ) {
                         *sym_head = sym_handle;
                     }
                     prevsym_handle = sym_handle;
@@ -905,7 +905,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
     SYM_HANDLE      sym_handle;
     SYM_ENTRY       sym;
 
-    sym_handle = 0;
+    sym_handle = SYM_NULL;
     if( (typ != NULL) && (typ->decl_type == TYPE_TYPEDEF) ) {
         // get segment from typedef TODO should be done sooner
         TYPEPTR     ptr_typ;
@@ -943,7 +943,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             switch( CurToken ) {
             case T_ID:                                  /* __based(variable) */
                 sym_handle = SymLook( HashValue, Buffer );
-                if( sym_handle == 0 ) {
+                if( sym_handle == SYM_NULL ) {
                     SymCreate( &sym, Buffer );
                     sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                     CErr2p( ERR_UNDECLARED_SYM, Buffer );
@@ -1014,7 +1014,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                 NextToken();
                 if( CurToken == T_ID ) {
                     sym_handle = SymLook( HashValue, Buffer );
-                    if( sym_handle == 0 ) {
+                    if( sym_handle == SYM_NULL ) {
                         SymCreate( &sym, Buffer );
                         sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                         CErr2p( ERR_UNDECLARED_SYM, Buffer );
@@ -1056,7 +1056,7 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
 #endif
             flags = info->modifier & ~FLAG_EXPORT;
             typ = BPtrNode( typ, flags, info->segid, sym_handle, info->based_kind );
-            sym_handle = 0;
+            sym_handle = SYM_NULL;
             info->segid = SEG_UNKNOWN;  // start over
             info->modifier = (flags & FLAG_INLINE) | TypeQualifier();  // .. * const
             info->based_kind = BASED_NONE;
@@ -1101,7 +1101,7 @@ static void AbsDecl( SYMPTR sym, type_modifiers mod, TYPEPTR typ )
     info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
-    info.based_sym = 0;
+    info.based_sym = SYM_NULL;
     typ = Pointer( typ, &info );
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
@@ -1130,7 +1130,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
     info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
-    info.based_sym = 0;
+    info.based_sym = SYM_NULL;
     typ = Pointer( typ, &info );
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
@@ -1233,7 +1233,7 @@ FIELDPTR FieldDecl( TYPEPTR typ, type_modifiers mod, decl_state state )
     info.segid = SEG_UNKNOWN;
     info.modifier = mod;
     info.based_kind = BASED_NONE;
-    info.based_sym = 0;
+    info.based_sym = SYM_NULL;
     typ = Pointer( typ, &info );
     if( CurToken == T_LEFT_PAREN ) {
         NextToken();
@@ -1552,14 +1552,14 @@ local TYPEPTR *GetProtoType( decl_info *first )
 
 TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
 {
-    TYPEPTR             *type_list;
+    TYPEPTR             *parm_types;
     parm_list           *next_parm;
     parm_list           *prev_parm;
     TYPEPTR             typ;
     parm_hash_idx       h;
     int                 parm_count;
 
-    type_list = NULL;
+    parm_types = NULL;
     if( parm != NULL ) {
         if( !reversed ) {
             prev_parm = NULL;
@@ -1573,10 +1573,8 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
             }
         }
         parm_count = 0;
-        next_parm = parm;
-        while( next_parm != NULL ) {
+        for( next_parm = parm; next_parm != NULL; next_parm = next_parm->next_parm ) {
             ++parm_count;
-            next_parm = next_parm->next_parm;
         }
 
         /* try to find an existing parm list that matches */
@@ -1585,11 +1583,10 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
             h = (parm_hash_idx)parm_count;
         }
         for( typ = FuncTypeHead[h]; typ != NULL; typ = typ->next_type ) {
-            type_list = typ->u.fn.parms;
             next_parm = parm;
-            for( ;; ) {
+            for( parm_types = typ->u.fn.parms; ; ++parm_types ) {
                 if( next_parm == NULL ) {
-                    if( *type_list != NULL )
+                    if( *parm_types != NULL )
                         break;
                     while( parm != NULL ) {
                         next_parm = parm->next_parm;
@@ -1598,27 +1595,24 @@ TYPEPTR *MakeParmList( parm_list *parm, bool reversed )
                     }
                     return( typ->u.fn.parms );
                 }
-                if( next_parm->parm_type != *type_list )
+                if( next_parm->parm_type != *parm_types )
                     break;
                 next_parm = next_parm->next_parm;
-                ++type_list;
             }
         }
 
-        type_list = (TYPEPTR *)CPermAlloc( ( parm_count + 1 ) * sizeof( TYPEPTR ) );
-        if( type_list != NULL ) {
-            type_list[parm_count] = NULL;
+        parm_types = (TYPEPTR *)CPermAlloc( ( parm_count + 1 ) * sizeof( TYPEPTR ) );
+        if( parm_types != NULL ) {
+            parm_types[parm_count] = NULL;
             parm_count = 0;
-            while( parm != NULL ) {
-                type_list[parm_count] = parm->parm_type;
+            for( ; parm != NULL; parm = next_parm ) {
                 next_parm = parm->next_parm;
+                parm_types[parm_count++] = parm->parm_type;
                 CMemFree( parm );
-                parm = next_parm;
-                ++parm_count;
             }
         }
     }
-    return( type_list );
+    return( parm_types );
 }
 
 local bool VoidType( TYPEPTR typ )
@@ -1634,7 +1628,7 @@ local bool VoidType( TYPEPTR typ )
 
 local TYPEPTR *FuncProtoType( void )
 {
-    TYPEPTR             *type_list;
+    TYPEPTR             *parm_types;
     TAGPTR              old_taghead;
     decl_info           info;
 
@@ -1648,12 +1642,12 @@ local TYPEPTR *FuncProtoType( void )
         if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
         }
-        type_list = NULL;
+        parm_types = NULL;
     } else {    /* function prototype present */
         if( VoidType( info.typ ) && info.stg == SC_NONE && CurToken == T_RIGHT_PAREN ) {
-            type_list = VoidParmList;
+            parm_types = VoidParmList;
         } else {
-            type_list = GetProtoType( &info );
+            parm_types = GetProtoType( &info );
         }
         if( ExpectingToken( T_RIGHT_PAREN ) ) {
             NextToken();
@@ -1670,7 +1664,7 @@ local TYPEPTR *FuncProtoType( void )
     if( !CompFlags.extensions_enabled ) {
         --SymLevel;
     }
-    return( type_list );
+    return( parm_types );
 }
 
 

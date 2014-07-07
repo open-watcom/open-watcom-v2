@@ -86,15 +86,15 @@ void ExprInit( void )
 }
 
 //-----------------------------CNODE-----------------------------------
-TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result )
+TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
 {
     TREEPTR     tree;
     TYPEPTR     typ;
 
     tree = ExprNode( func, OPR_CALL, parms );
-    tree->u.expr_type = func_result;
-    tree->op.u2.result_type = func_result;
-    typ = func_result;
+    tree->u.expr_type = func_result_type;
+    tree->op.u2.result_type = func_result_type;
+    typ = func_result_type;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_VOID && TypeSize( typ ) == 0 ) {
         CErr1( ERR_INCOMPLETE_EXPR_TYPE );
@@ -360,7 +360,7 @@ TREEPTR SymLeaf( void )
         h = SavedHash;
         ep = EnumLookup( h, SavedId );
         sym_handle = SymLook( h, SavedId );
-        if( sym_handle == 0 ) {
+        if( sym_handle == SYM_NULL ) {
             if( ep != NULL ) {               /* if enum was found */
                 return( EnumLeaf( ep ) );
             }
@@ -371,7 +371,7 @@ TREEPTR SymLeaf( void )
                 return( EnumLeaf( ep ) );
             if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
                 sym0_handle = Sym0Look( h, SavedId );
-                if( sym0_handle != 0 ) {
+                if( sym0_handle != SYM_NULL ) {
                     sym_handle = sym0_handle;
                     SymGet( &sym, sym_handle );
                 }
@@ -385,7 +385,7 @@ TREEPTR SymLeaf( void )
         h = HashValue;
         ep = EnumLookup( h, Buffer );
         sym_handle = SymLook( h, Buffer );
-        if( sym_handle == 0 ) {
+        if( sym_handle == SYM_NULL ) {
             if( ep != NULL ) {               /* if enum was found */
                 NextToken();
                 return( EnumLeaf( ep ) );
@@ -399,7 +399,7 @@ TREEPTR SymLeaf( void )
             }
             if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
                 sym0_handle = Sym0Look( h, Buffer );
-                if( sym0_handle != 0 ) {
+                if( sym0_handle != SYM_NULL ) {
                     sym_handle = sym0_handle;
                     SymGet( &sym, sym_handle );
                 }
@@ -415,14 +415,14 @@ TREEPTR SymLeaf( void )
     /* always turning it on can cause referenced but not assigned */
     /* for the case:  int i;  j = sizeof(i);  */
     sym.flags |= SYM_REFERENCED;
-    if( sym_handle == 0 ) {
+    if( sym_handle == SYM_NULL ) {
         if( CurToken == T_LEFT_PAREN ) {
             sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
             /* Warn about unprototyped function */
             CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
             sym_handle = SymAddL0( h, &sym ); /* add symbol to level 0 */
             sym.flags |= SYM_FUNCTION;
-            sym.sym_type = FuncNode( GetType( TYPE_INT ), 0, NULL );
+            sym.sym_type = FuncNode( GetType( TYPE_INT ), FLAG_NONE, NULL );
         } else {
             sym.attribs.stg_class = SC_EXTERN;      /* indicate extern decl */
             CErr2p( ERR_UNDECLARED_SYM, sym.name );
@@ -705,7 +705,7 @@ static TREEPTR AddrOp( TREEPTR tree )
             return( leaf );
         }
     }
-//    based_sym = 0;
+//    based_sym = SYM_NULL;
     modifiers  = FLAG_NONE;
     segid = SEG_DATA;
     if( leaf->op.opr == OPR_PUSHADDR ) {
@@ -822,7 +822,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         typ = sym->sym_type;
         SKIP_TYPEDEFS( typ );
         if( typ->u.p.decl_flags & FLAG_BASED ) {
-            based_sym  = BasedPtrNode( typ, based_sym );
+            based_sym = BasedPtrNode( typ, based_sym );
             typ = based_sym->u.expr_type;
             SKIP_TYPEDEFS( typ );
         }
@@ -843,7 +843,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         tree = MakeFarOp( based_sym, tree );
         break;
     case BASED_SEGNAME:       //__based( __segname( "name" )   use seg of segname
-        if( sym_handle != 0 ) {
+        if( sym_handle != SYM_NULL ) {
             sym = SymGetPtr( sym_handle );
             based_sym = VarLeaf( sym, sym_handle );
             based_sym->op.opr = OPR_PUSHSEG;
@@ -851,7 +851,7 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
             based_sym = LeafNode( OPR_PUSHINT );
             based_sym->op.u1.const_type = TYPE_INT;
             based_sym->op.u2.long_value = segid;
-            based_sym->u.expr_type =  GetType( TYPE_USHORT );
+            based_sym->u.expr_type = GetType( TYPE_USHORT );
         }
         tree = MakeFarOp( based_sym, tree );
     }
@@ -1315,7 +1315,7 @@ local TREEPTR GetExpr( void )
                 CompFlags.meaningless_stmt = TRUE;
                 break;
             case TC_CAST:
-                tree = CnvOp( tree, TypeOf( op1 ), 1 );
+                tree = CnvOp( tree, TypeOf( op1 ), TRUE );
                 FreeExprTree( op1 );
                 break;
             case TC_INDEX:
@@ -1440,7 +1440,7 @@ local TREEPTR GetExpr( void )
             CErr1( ERR_EXPR_TOO_COMPLICATED );
             CSuicide();
         }
-        if( tree != 0 ) {
+        if( tree != NULL ) {
             ++ExprLevel;
             ValueStack[ExprLevel] = tree;
             Class[ExprLevel] = curclass;
@@ -1760,7 +1760,7 @@ local TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
             if( (tree_flags & OPFLAG_HUGEPTR)
               || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA
               && (tree_flags & (OPFLAG_NEARPTR | OPFLAG_FARPTR)) == 0) ) {
-                index_expr = CnvOp( index_expr, GetType( TYPE_LONG ), 0 );
+                index_expr = CnvOp( index_expr, GetType( TYPE_LONG ), FALSE );
             }
         }
 #endif
@@ -1829,13 +1829,11 @@ void ChkCallNode( TREEPTR tree )
     call_list   **lnk;
     call_list   *curr;
 
-    lnk = FirstCallLnk;
-    while( (curr = *lnk) != NULL ) {
+    for( lnk = FirstCallLnk; (curr = *lnk) != NULL; lnk = &curr->next ) {
         if( curr->callnode == tree ) {
             curr->callnode = NULL;
             break;
         }
-        lnk = &curr->next;
     }
 }
 
@@ -1846,9 +1844,7 @@ static int ParmNum( void )
     expr_level_type n;
 
     parm_count = 1;
-    n = ExprLevel;
-    while( Token[n] != T_LEFT_PAREN ) {
-        --n;
+    for( n = ExprLevel; Token[n] != T_LEFT_PAREN; --n ) {
         ++parm_count;
     }
     return( parm_count );
@@ -1956,7 +1952,7 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
     // - last_parm should be an integer 0 or 1 (0=>varargs, 1=>stdarg)
 
     SYMPTR      sym;
-    SYM_HANDLE  parms_list;
+    SYM_HANDLE  sym_handle;
     int         offset;
     TREEPTR     parmsym;
     TREEPTR     tree;
@@ -1972,19 +1968,18 @@ local TREEPTR GenVaStartNode( TREEPTR last_parm )
             offset = -REG_SIZE;
         }
         parmsym = ValueStack[ExprLevel];            // get name of parameter
-        parms_list = 0;
+        sym_handle = SYM_NULL;
         if( parmsym->op.opr == OPR_PUSHSYM ) {
-            parms_list = CurFunc->u.func.parms;
-            while( parms_list != 0 ) {
-                sym = SymGetPtr( parms_list );
+            for( sym_handle = CurFunc->u.func.parms; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
+                sym = SymGetPtr( sym_handle );
                 offset += _RoundUp( SizeOfArg( sym->sym_type ), REG_SIZE );
-                if( parms_list == parmsym->op.u2.sym_handle )
+                if( sym_handle == parmsym->op.u2.sym_handle ) {
                     break;
-                parms_list = sym->handle;
+                }
             }
         }
-        if( offset == 0 || parms_list == 0 ) {
-            // error: name not found in parm list
+        if( offset == 0 || sym_handle == SYM_NULL ) {
+            // error: name not found in symbol list
             sym = SymGetPtr( parmsym->op.u2.sym_handle );
             CErr2p( ERR_SYM_NOT_IN_PARM_LIST, SymName( sym, parmsym->op.u2.sym_handle ) );
         }
@@ -2012,7 +2007,7 @@ local TREEPTR GenAllocaNode( TREEPTR size_parm )
         tree->u.expr_type = PtrNode( GetType( TYPE_VOID ), FLAG_NONE, SEG_STACK );
     } else {
         // error
-        tree = 0;
+        tree = NULL;
     }
     return( tree );
 }
@@ -2058,7 +2053,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     expr_level_type n;
     TREEPTR         functree;
     TREEPTR         tree;
-    TYPEPTR         func_result;
+    TYPEPTR         func_result_type;
     TYPEPTR         typ;
     type_modifiers  flags;
     target_size     string_len;
@@ -2072,9 +2067,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
 
     flags = 0;
     parm_count = 1;
-    n = ExprLevel;
-    while( Token[n] != T_LEFT_PAREN ) {
-        --n;
+    for( n = ExprLevel; Token[n] != T_LEFT_PAREN; --n ) {
         ++parm_count;
     }
     functree = ValueStack[n];
@@ -2104,7 +2097,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
     } else {
         typ = TypeDefault();
     }
-    func_result = typ;
+    func_result_type = typ;
     if( ParmsToBeReversed( flags, NULL ) ) {
         i = n;
         if( i == ExprLevel ) {
@@ -2195,7 +2188,7 @@ local TREEPTR GenFuncCall( TREEPTR last_parm )
             --ExprLevel;
         }
     }
-    tree = CallNode( functree, tree, func_result );
+    tree = CallNode( functree, tree, func_result_type );
     if( DeadCode == 0 ) {
         if( functree->op.opr == OPR_FUNCNAME ) {
             CompFlags.pending_dead_code |= FunctionAborts( &sym, functree->op.u2.sym_handle );
@@ -2227,7 +2220,7 @@ static TREEPTR DummyFuncName( void )
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
 
-    typ = FuncNode( GetType( TYPE_INT ), 0, NULL );
+    typ = FuncNode( GetType( TYPE_INT ), FLAG_NONE, NULL );
     sym_handle = MakeNewSym( &sym, 'F', typ, SC_AUTO );
     sym.flags |= SYM_FUNCTION;
     sym.mods = FLAG_NONE;
@@ -2240,7 +2233,8 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
 {
     TYPEPTR             typ;
     TYPEPTR             orig_typ;
-    TYPEPTR             *parms;
+    TYPEPTR             *parm_types;
+    TYPEPTR             parm_type;
     type_modifiers      decl_flags;
 //    char                recursive = 0;
 #ifdef __SEH__
@@ -2276,7 +2270,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     } else {                                    /* indirect call */
         if( CompFlags.initializing_data ) {
             CErr1( ERR_NOT_A_CONSTANT_EXPR );
-            sym_handle = 0;
+            sym_handle = SYM_NULL;
             sym.flags = 0;
         } else {
             if( tree->op.opr == OPR_POINTS ) {  //need to recover decl flags
@@ -2302,8 +2296,8 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             }
         }
     }
-    parms = typ->u.fn.parms;   /* Parameters (prototype), if any */
-    NextToken();                                /* skip over '(' */
+    parm_types = typ->u.fn.parms;   /* Parameters (prototype), if any */
+    NextToken();                        /* skip over '(' */
     if( CurToken != T_RIGHT_PAREN ) {
         // push previous plist for nested calls
         struct nested_parm_lists    *npl;
@@ -2313,7 +2307,7 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         npl->next_parm_type = *plistptr;
         NestedParms = npl;
 
-        *plistptr = parms;
+        *plistptr = parm_types;
         ++ExprLevel;
         ValueStack[ExprLevel] = tree;
         Class[ExprLevel] = TC_PARM_LIST;
@@ -2360,12 +2354,13 @@ local TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
                 SetDiagSymbol( &sym, sym_handle );
             }
             tree = CallNode( tree, NULL, typ );
-            if( parms != NULL ) {        /* function has prototype */
-                if( *parms != NULL && (*parms)->decl_type != TYPE_VOID ) {
+            if( parm_types != NULL ) {        /* function has prototype */
+                parm_type = *parm_types;
+                if( parm_type != NULL && parm_type->decl_type != TYPE_VOID ) {
                     CErr1( ERR_PARM_COUNT_MISMATCH );
                 }
             } else {                                /* check later */
-                AddCallNode(tree);
+                AddCallNode( tree );
             }
             if( (sym.flags & SYM_TEMP) == 0 ) {
                 SetDiagPop();

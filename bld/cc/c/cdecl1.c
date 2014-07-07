@@ -50,8 +50,8 @@ void ParsePgm( void )
 
     CompFlags.external_defn_found = 0;
     CompFlags.initializing_data   = 0;
-    dummysym = 0;
-    GlobalSym = 0;
+    dummysym = SYM_NULL;
+    GlobalSym = SYM_NULL;
 
     do {
         if( DeclList( &dummysym ) ) {  /* if this is a function defn */
@@ -70,7 +70,7 @@ void ParsePgm( void )
                 SymReplace( CurFunc, CurFuncHandle );
                 CurFunc = NULL;
                 CurFuncNode = NULL;
-                CurFuncHandle = 0;
+                CurFuncHandle = SYM_NULL;
             } else {
                 MustRecog( T_LEFT_BRACE );
             }
@@ -194,7 +194,7 @@ local void BeginFunc( void )
         CompFlags.has_wchar_entry =1;
         // fall through!
     case MAIN_MAIN:
-        if( CurFunc->u.func.parms ) {
+        if( CurFunc->u.func.parms != SYM_NULL ) {
             CompFlags.main_has_parms = 1;
         } else {
             CompFlags.main_has_parms = 0;
@@ -276,12 +276,12 @@ local void ParmDeclList( void )     /* process old style function definitions */
 
     while( CurToken != T_LEFT_BRACE ) {
         FullDeclSpecifier( &info );
-        if( info.stg == SC_NONE  &&  info.typ == NULL ) {
+        if( info.stg == SC_NONE && info.typ == NULL ) {
             if( CurToken == T_ID ) {
                 CErr2p( ERR_MISSING_DATA_TYPE, Buffer );
             }
         }
-        if( info.stg != SC_NONE  &&  info.stg != SC_REGISTER ) {
+        if( info.stg != SC_NONE && info.stg != SC_REGISTER ) {
             CErr1( ERR_INVALID_STG_CLASS_FOR_PARM );
             info.stg = SC_NONE;
         }
@@ -303,13 +303,12 @@ local void ParmDeclList( void )     /* process old style function definitions */
                 if( sym.name == NULL  ||  sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
-                    for( parm = ParmList; parm != NULL; ) {
+                    for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
                         if( parm->sym.name != NULL ) {
                             if( strcmp( parm->sym.name, sym.name ) == 0 ) {
                                 break;
                             }
                         }
-                        parm = parm->next_parm;
                     }
                     if( parm == NULL ) {
                         CErr2p( ERR_SYM_NOT_IN_PARM_LIST, sym.name );
@@ -357,12 +356,10 @@ local void ReverseParms( void )       /* reverse order of parms */
 
     if( ParmsToBeReversed( CurFunc->mods, NULL ) ) {
         prev_parm = NULL;
-        parm = ParmList;
-        while( parm != NULL ) {
+        for( parm = ParmList; parm != NULL; parm = next_parm ) {
             next_parm = parm->next_parm;
             parm->next_parm = prev_parm;
             prev_parm = parm;
-            parm = next_parm;
         }
         ParmList = prev_parm;
     }
@@ -395,7 +392,7 @@ local void AddParms( void )
     PARMPTR             parm;
     PARMPTR             prev_parm;
     SYM_HANDLE          sym_handle;
-    SYM_HANDLE          prev_sym_handle = 0;
+    SYM_HANDLE          prev_sym_handle;
     SYM_HANDLE          new_sym_handle;
     TYPEPTR             typ = NULL;
     int                 parm_count;
@@ -403,14 +400,14 @@ local void AddParms( void )
     parm_list           *parmlist;
     SYM_ENTRY           new_sym;
 
-    CurFunc->u.func.locals = 0;
-    CurFunc->u.func.parms = 0;
-    parm = ParmList;
+    CurFunc->u.func.locals = SYM_NULL;
+    CurFunc->u.func.parms = SYM_NULL;
     parmlist = NULL;
+    prev_sym_handle = SYM_NULL;
     parm_count = 0;
     prev_parm = NULL;
-    while( parm != NULL ) {
-        new_sym_handle = 0;
+    for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
+        new_sym_handle = SYM_NULL;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
         parm->sym.attribs.is_parm = TRUE;
         h = parm->sym.info.hash;
@@ -465,7 +462,7 @@ local void AddParms( void )
             }
         }
         sym_handle = SymAdd( h, &parm->sym );
-        if( new_sym_handle != 0 ) {
+        if( new_sym_handle != SYM_NULL ) {
             TREEPTR         tree;
 
             tree = ExprNode( VarLeaf( &new_sym, new_sym_handle ),
@@ -486,10 +483,9 @@ local void AddParms( void )
         prev_sym_handle = sym_handle;
         ++parm_count;
         parmlist = NewParm( parm->sym.sym_type, parmlist );
-        parm = parm->next_parm;
     }
     if( prev_parm != NULL ) {
-        prev_parm->sym.handle = 0;
+        prev_parm->sym.handle = SYM_NULL;
         SymReplace( &prev_parm->sym, prev_sym_handle );
         CMemFree( prev_parm );
     }
@@ -509,17 +505,17 @@ local void ChkParms( void )
     PARMPTR             parm;
     PARMPTR             prev_parm;
     SYM_HANDLE          sym_handle;
-    SYM_HANDLE          prev_sym_handle = 0;
+    SYM_HANDLE          prev_sym_handle;
     TYPEPTR             typ;
 
-    CurFunc->u.func.locals = 0;
-    CurFunc->u.func.parms  = 0;
-    parm = ParmList;
-    prev_parm = NULL;
+    CurFunc->u.func.locals = SYM_NULL;
+    CurFunc->u.func.parms = SYM_NULL;
     typ = *(CurFunc->sym_type->u.fn.parms);
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type != TYPE_VOID ) {
-        while( parm != NULL ) {
+        prev_sym_handle = SYM_NULL;
+        prev_parm = NULL;
+        for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
             if( parm->sym.name == NULL ) {
                 parm->sym.name = ".J";
                 parm->sym.flags |= SYM_REFERENCED;
@@ -544,7 +540,6 @@ local void ChkParms( void )
             prev_sym_handle = sym_handle;
             parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
             parm->sym.attribs.is_parm = TRUE;
-            parm = parm->next_parm;
         }
         if( prev_parm != NULL ) {
 #if _CPU == 370

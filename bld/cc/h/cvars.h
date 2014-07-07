@@ -298,7 +298,7 @@ global alias_list   *AliasHead;
 global SYMPTR       CurFunc;            /* current function being worked on */
 global SYM_ENTRY    CurFuncSym;         /* for contents of current function symbol */
 global SYM_HANDLE   CurFuncHandle;      /* sym_handle for current function */
-global SYM_HANDLE   LastFuncOutOfMem;   /* cinfo: */
+global CGPOINTER    LastFuncOutOfMem;   /* cinfo: */
 global SYM_HASHPTR  HashFreeList;       /* list of available hash entries */
 
 global unsigned     SymBufNum;          /* current buffer in memory */
@@ -602,7 +602,7 @@ extern void         FiniSegBacks(void);
 extern void         SetSegs(void);
 extern SYM_HANDLE   SegSymHandle(segment_id);
 extern void         SetFuncSegment(SYMPTR,segment_id);
-extern void         SetFarHuge(SYMPTR,int);
+extern void         SetFarHuge(SYMPTR,bool);
 extern char         *SegClassName(segment_id);
 extern hw_reg_set   *SegPeggedReg(segment_id);
 extern void         SetSegment(SYMPTR);
@@ -655,7 +655,7 @@ extern TREEPTR      InitAsgn( TYPEPTR,TREEPTR );
 extern TREEPTR      AsgnOp(TREEPTR,TOKEN,TREEPTR);
 extern TREEPTR      BinOp(TREEPTR,TOKEN,TREEPTR);
 extern bool         IsPtrConvSafe( TREEPTR, TYPEPTR, TYPEPTR );
-extern TREEPTR      CnvOp(TREEPTR,TYPEPTR,int);
+extern TREEPTR      CnvOp(TREEPTR,TYPEPTR,bool);
 extern TREEPTR      FlowOp(TREEPTR,opr_code,TREEPTR);
 extern TREEPTR      IntOp(TREEPTR,TOKEN,TREEPTR);
 extern TREEPTR      RelOp(TREEPTR,TOKEN,TREEPTR);

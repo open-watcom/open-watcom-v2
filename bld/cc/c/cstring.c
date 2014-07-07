@@ -220,7 +220,7 @@ STR_HANDLE GetLiteral( void )
     str_lit->literal = s;
     str_lit->length = len;
     str_lit->flags = 0;
-    str_lit->back_handle = 0;
+    str_lit->back_handle = NULL;
     str_lit->ref_count = 0;
     return( str_lit );
 }

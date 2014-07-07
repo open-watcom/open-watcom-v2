@@ -620,7 +620,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             } else {    /* T_SAVED_ID */
                 sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
             }
-            if( sym_handle == 0 )
+            if( sym_handle == SYM_NULL )
                 goto got_specifier;
             if( sym.attribs.stg_class != SC_TYPEDEF )
                 goto got_specifier;
@@ -734,7 +734,7 @@ static TAGPTR NewTag( const char *name, id_hash_idx h )
 
     len = strlen( name ) + 1;
     tag = (TAGPTR)CPermAlloc( sizeof( TAGDEFN ) - 1 + len );
-    tag->level = SymLevel;
+    tag->level = (id_level_type)SymLevel;
     tag->hash = h;
     tag->next_tag = TagHash[h];
     TagHash[h] = tag;
@@ -907,6 +907,8 @@ local DATA_TYPE UnQualifiedType( TYPEPTR typ )
     SKIP_TYPEDEFS( typ );
     SKIP_ENUM( typ );
     switch( typ->decl_type ) {
+    case TYPE_BOOL:
+        return( TYPE_BOOL );
     case TYPE_CHAR:
     case TYPE_UCHAR:
         return( TYPE_CHAR );
@@ -925,7 +927,7 @@ local DATA_TYPE UnQualifiedType( TYPEPTR typ )
     default:
         break;
     }
-    return( 0 );
+    return( TYPE_UNDEFINED );
 }
 
 /* clear the hash table of all fields that were just defined
@@ -1078,7 +1080,8 @@ local target_size GetFields( TYPEPTR decl )
                 if( field != NULL ) {
                     field->offset = next_offset;
                     field->field_type = EnumFieldType( typ, plain_int,
-                              bits_total - bits_available, width );
+                              (bitfield_width)( bits_total - bits_available ),
+                              (bitfield_width)width );
                 }
                 bits_available -= width;
             } else {
@@ -1338,7 +1341,7 @@ void VfyNewSym( id_hash_idx h, const char *name )
         SetDiagPop();
     }
     sym_handle = SymLook( h, name );
-    if( sym_handle != 0 ) {
+    if( sym_handle != SYM_NULL ) {
         SymGet( &sym, sym_handle );
         if( ChkEqSymLevel( &sym ) ) {
             SetDiagSymbol( &sym, sym_handle );
@@ -1462,7 +1465,7 @@ local TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
 
 TYPEPTR PtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid )
 {
-    return( MkPtrNode( typ, flags, segid, 0, BASED_NONE ) );
+    return( MkPtrNode( typ, flags, segid, SYM_NULL, BASED_NONE ) );
 }
 
 TYPEPTR BPtrNode( TYPEPTR typ, type_modifiers flags, segment_id segid, SYM_HANDLE base, BASED_KIND kind )

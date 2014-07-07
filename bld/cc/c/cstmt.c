@@ -63,7 +63,7 @@ struct return_info {
 extern unsigned     NodeCount;
 
 LABEL_INDEX         LabelIndex;
-SYM_LISTS           *SymListHeads;
+SYM_LIST_HEADS      *SymListHeads;
 
 static TREEPTR      LastStmt;
 static BLOCKPTR     BlockStack;
@@ -162,12 +162,12 @@ void AddStmt( TREEPTR stmt )
 
 static void AddSymList( SYM_HANDLE sym_handle )
 {
-    SYM_LISTS   *symlist;
+    SYM_LIST_HEADS   *symlisthead;
 
-    symlist = (SYM_LISTS *)CMemAlloc( sizeof( SYM_LISTS ) );
-    symlist->next = SymListHeads;
-    symlist->sym_head = sym_handle;
-    SymListHeads = symlist;
+    symlisthead = (SYM_LIST_HEADS *)CMemAlloc( sizeof( SYM_LIST_HEADS ) );
+    symlisthead->next = SymListHeads;
+    symlisthead->sym_head = sym_handle;
+    SymListHeads = symlisthead;
 }
 
 
@@ -274,20 +274,20 @@ static void Jump( LABEL_INDEX label )
 }
 
 
-static int JumpFalse( TREEPTR expr, LABEL_INDEX label )
+static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 {
-    int         jump_generated;
+    bool        jump_generated;
 
-    jump_generated = 0;
+    jump_generated = FALSE;
     if( expr->op.opr == OPR_PUSHINT ) {
         if( ! expr->op.u2.long_value ) {
             Jump( label );
-            jump_generated = 1;
+            jump_generated = TRUE;
         }
         FreeExprNode( expr );
     } else {
         JumpCond( expr, label, OPR_JUMPFALSE, OPR_JUMPTRUE );
-        jump_generated = 1;
+        jump_generated = TRUE;
     }
     return( jump_generated );
 }
@@ -368,7 +368,7 @@ static void UnWindTry( tryindex_t try_scope )
 }
 
 
-static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
+static void ReturnStmt( SYM_HANDLE func_result_handle, struct return_info *info )
 {
     TREEPTR             tree;
     BLOCKPTR            block;
@@ -385,7 +385,7 @@ static void ReturnStmt( SYM_HANDLE func_result, struct return_info *info )
         tree = FixupAss( tree, func_type );
         tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = func_type;
-        tree->op.u2.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result_handle;
         AddStmt( tree );
         with = RETURN_WITH_EXPR;
         info->with_expr = TRUE;
@@ -440,14 +440,14 @@ static SYM_HANDLE GetLocalVarDecls( void )
     SYM_ENTRY   sym;
 
     DeclList( &symlist );
-    if( symlist != 0 ) {
+    if( symlist != SYM_NULL ) {
         symhandle = CurFunc->u.func.locals;
         // symhandle will be non-zero if MakeNewSym was called while
         // parsing the declaration list.
-        if( symhandle != 0 ) {          // if some temporaries were created
+        if( symhandle != SYM_NULL ) {   // if some temporaries were created
             for( ;; ) {                 // - find end of list
                 SymGet( &sym, symhandle );
-                if( sym.handle == 0 )
+                if( sym.handle == SYM_NULL )
                     break;
                 symhandle = sym.handle;
             }
@@ -501,7 +501,7 @@ static void LeftBrace( void )
     ++SymLevel;
     tree = LeafNode( OPR_NEWBLOCK );
     AddStmt( tree );
-    BlockStack->sym_list = 0;
+    BlockStack->sym_list = SYM_NULL;
     BlockStack->gen_endblock = TRUE;
     DeclList( &BlockStack->sym_list );
     tree->op.u2.sym_handle = BlockStack->sym_list;
@@ -661,7 +661,7 @@ static void PushBlock( void )
 {
     StartNewBlock();
     ++SymLevel;
-    BlockStack->sym_list = 0;
+    BlockStack->sym_list = SYM_NULL;
 }
 
 
@@ -761,7 +761,7 @@ static void AddCaseLabel( unsigned value )
     converted_value = value;
 #endif
     old_value = converted_value + 1;  /* make old_value different */
-    for( ce = SwitchStack->case_list; ce; ce = ce->next_case ) {
+    for( ce = SwitchStack->case_list; ce != NULL; ce = ce->next_case ) {
         old_value = ce->value;
         if( old_value >= converted_value )
             break;
@@ -836,11 +836,10 @@ static void MarkTryVolatile( SYM_HANDLE sym_handle )
 {
     SYM_ENTRY   sym;
 
-    for( ; sym_handle != 0; ) {
+    for( ; sym_handle != SYM_NULL; sym_handle = sym.handle ) {
         SymGet( &sym, sym_handle );
         sym.flags |= SYM_TRY_VOLATILE; //force into memory
         SymReplace( &sym, sym_handle );
-        sym_handle = sym.handle;
     }
 }
 
@@ -949,7 +948,7 @@ static void PopBlock( void )
         tree->op.u2.sym_handle = BlockStack->sym_list;
         AddStmt( tree );
     }
-    if( BlockStack->sym_list != 0 ) {
+    if( BlockStack->sym_list != SYM_NULL ) {
         AddSymList( BlockStack->sym_list );
     }
     block = BlockStack;
@@ -1031,7 +1030,7 @@ static void EndSwitch( void )
 //          CWarn1( WARN_EMPTY_SWITCH, ERR_EMPTY_SWITCH );
 //      }
 #if 0
-    for( ; ce = sw->case_list; ) {
+    for( ; (ce = sw->case_list) != NULL; ) {
         sw->case_list = ce->next_case;
         CMemFree( ce );
     }
@@ -1156,7 +1155,7 @@ static bool IsDeclarator( TOKEN token )
         } else {    /* T_SAVED_ID */
             sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
         }
-        if( sym_handle != 0 && sym.attribs.stg_class == SC_TYPEDEF ) {
+        if( sym_handle != SYM_NULL && sym.attribs.stg_class == SC_TYPEDEF ) {
             return( TRUE );
         }
     }
@@ -1164,7 +1163,7 @@ static bool IsDeclarator( TOKEN token )
 }
 
 
-static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info )
+static void FixupC99MainReturn( SYM_HANDLE func_result_handle, struct return_info *info )
 {
     TREEPTR             tree;
     TYPEPTR             main_type;
@@ -1177,7 +1176,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info
         tree = IntLeaf( 0 );    /* zero is the default return value */
         tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = main_type;
-        tree->op.u2.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result_handle;
         AddStmt( tree );
         info->with_expr = TRUE;
     }
@@ -1187,7 +1186,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result, struct return_info *info
 void Statement( void )
 {
     LABEL_INDEX         end_of_func_label;
-    SYM_HANDLE          func_result;
+    SYM_HANDLE          func_result_handle;
     TREEPTR             tree;
     bool                return_at_outer_level;
     bool                skip_to_next_token;
@@ -1227,9 +1226,9 @@ void Statement( void )
     if( GrabLabels() == 0 ) {
         GetLocalVarDecls();
     }
-    func_result = MakeNewSym( &sym, 'R', CurFunc->sym_type->object, SC_AUTO );
+    func_result_handle = MakeNewSym( &sym, 'R', CurFunc->sym_type->object, SC_AUTO );
     sym.flags |= SYM_FUNC_RETURN_VAR;
-    SymReplace( &sym, func_result );
+    SymReplace( &sym, func_result_handle );
     for( ;; ) {
         CompFlags.pending_dead_code = FALSE;
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
@@ -1320,7 +1319,7 @@ void Statement( void )
             continue;
 #endif
         case T_RETURN:
-            ReturnStmt( func_result, &return_info );
+            ReturnStmt( func_result_handle, &return_info );
             if( BlockStack->prev_block == NULL ) {
                 return_at_outer_level = TRUE;
             }
@@ -1411,7 +1410,7 @@ void Statement( void )
     /* C99 has special semantics for return value of main() */
     if( CompFlags.c99_extensions && !CMPLIT( CurFunc->name, "main" ) ) {
         if( !return_at_outer_level ) {
-            FixupC99MainReturn( func_result, &return_info );
+            FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = TRUE;
         }
     }
@@ -1432,9 +1431,9 @@ void Statement( void )
     tree = LeafNode( OPR_FUNCEND );
     if( !return_info.with_expr ) {
         tree->u.expr_type = NULL;
-        tree->op.u2.sym_handle = 0;
+        tree->op.u2.sym_handle = SYM_NULL;
     } else {
-        tree->op.u2.sym_handle = func_result;
+        tree->op.u2.sym_handle = func_result_handle;
         SetFuncReturnNode( tree );
     }
     AddStmt( tree );

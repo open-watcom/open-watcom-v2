@@ -33,7 +33,7 @@
 
 static char const *nextUsage( char const *p )
 {
-    while( *p ) {
+    while( *p != '\0' ) {
         ++p;
     }
     return( p + 1 );

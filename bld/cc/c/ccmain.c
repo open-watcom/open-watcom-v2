@@ -63,7 +63,7 @@
 
 #define MAX_INC_DEPTH   255
 
-static  char    IsStdIn;
+static  bool    IsStdIn;
 static  int     IncFileDepth;
 static  char    *FNameBuf = NULL;
 
@@ -111,7 +111,7 @@ void FrontEndFini( void )
 void ClearGlobals( void )
 {
     InitStats();
-    IsStdIn = 0;
+    IsStdIn = FALSE;
     FNames = NULL;
     RDirNames = NULL;
     IAliasNames = NULL;
@@ -430,7 +430,7 @@ static void MakePgmName( void )
     char        *ext;
 
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
-        IsStdIn = 1;
+        IsStdIn = TRUE;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         memcpy( WholeFName, STDIN_NAME, sizeof( STDIN_NAME ) );
@@ -917,13 +917,12 @@ bool FreeSrcFP( void )
     FCB     *next;
     bool    ret;
 
-    src_file = SrcFile;
     ret = FALSE;
-    while( src_file != NULL ) {
+    for( src_file = SrcFile; src_file != NULL; src_file = next ) {
         next = src_file->prev_file;
-        if( next == NULL || next->src_fp == NULL )
+        if( next == NULL || next->src_fp == NULL ) {
             break;
-        src_file = next;
+        }
     }
     if( src_file != NULL && src_file->src_fp != NULL ) {
         src_file->rseekpos = ftell( src_file->src_fp );

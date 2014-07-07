@@ -400,7 +400,7 @@ void SetCurrInfo( const char *name )
     if( CurrInfo == NULL ) {
         if( CurrAlias == NULL ) {
             sym_handle = SymLook( HashValue, name );
-            if( sym_handle != 0 ) {
+            if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym_attrib = sym.mods;
             }
@@ -551,7 +551,7 @@ void PragEnding( void )
         SYM_HANDLE  sym_handle;
         SYM_ENTRY   sym;
 
-        if( 0 != (sym_handle = SymLook( CalcHash( CurrEntry->name, strlen( CurrEntry->name ) ), CurrEntry->name )) ) {
+        if( SYM_NULL != (sym_handle = SymLook( CalcHash( CurrEntry->name, strlen( CurrEntry->name ) ), CurrEntry->name )) ) {
             SymGet( &sym, sym_handle );
             if( ( sym.flags & SYM_DEFINED ) && ( sym.flags & SYM_FUNCTION ) ) {
                 CErr2p( ERR_SYM_ALREADY_DEFINED, CurrEntry->name );
@@ -651,13 +651,11 @@ hw_reg_set PragRegList( void )
     close = PragRegSet();
     if( close != T_NULL ) {
         PPCTL_ENABLE_MACROS();
-        NextToken();
-        for( ; CurToken != close; ) {
+        for( ; NextToken() != close; ) {
             if( CurToken != T_BAD_CHAR ) {
                 reg = PragRegName( Buffer, TokenLen );
                 HW_TurnOn( res, reg );
             }
-            NextToken();
         }
         PPCTL_DISABLE_MACROS();
         MustRecog( close );
@@ -673,18 +671,16 @@ hw_reg_set *PragManyRegSets( void )
     hw_reg_set  *sets;
     hw_reg_set  buff[MAXIMUM_PARMSETS];
 
-    list = PragRegList();
     for( i = 0; i < MAXIMUM_PARMSETS; ++i ) {
+        list = PragRegList();
         if( HW_CEqual( list, HW_EMPTY ) )
             break;
         buff[i] = list;
-        list = PragRegList();
     }
     if( i == MAXIMUM_PARMSETS ) {
         CErr1( ERR_TOO_MANY_PARM_SETS );
     }
-    HW_CAsgn( buff[i], HW_EMPTY );
-    i++;
+    HW_CAsgn( buff[i++], HW_EMPTY );
     i *= sizeof( hw_reg_set );
     sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
@@ -743,11 +739,11 @@ local void PragAllocText( void )
         /* current token can be an T_ID or a T_STRING */
         tseg = LkSegName( Buffer, "" );
         NextToken();
-        for( ; ; ) {
+        for( ;; ) {
             MustRecog( T_COMMA );
             /* current token can be an T_ID or a T_STRING */
             sym_handle = Sym0Look( CalcHash( Buffer, TokenLen ), Buffer );
-            if( sym_handle == 0 ) {
+            if( sym_handle == SYM_NULL ) {
                 /* error */
             } else {
                 SymGet( &sym, sym_handle );
@@ -900,7 +896,7 @@ static void PragIntrinsic( int intrinsic )
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
             sym_handle = SymLook( HashValue, Buffer );
-            if( sym_handle != 0 ) {
+            if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym.flags &= ~ SYM_INTRINSIC;
                 if( intrinsic )
@@ -1070,13 +1066,9 @@ static void PragIncludeAlias( void )
             char    r_buf[82];
 
             a_buf[0] = '\0';
-            for( ;; ) {
-                NextToken();
+            for( ; NextToken() != T_NULL; ) {
                 if( CurToken == T_GT ) {
                     NextToken();
-                    break;
-                }
-                if( CurToken == T_NULL ) {
                     break;
                 }
                 strncat( a_buf, Buffer, sizeof( a_buf ) - 2 );
@@ -1084,13 +1076,9 @@ static void PragIncludeAlias( void )
             MustRecog( T_COMMA );
             if( CurToken == T_LT ) {
                 r_buf[0] = '\0';
-                for( ;; ) {
-                    NextToken();
+                for( ; NextToken() != T_NULL; ) {
                     if( CurToken == T_GT ) {
                         NextToken();
-                        break;
-                    }
-                    if( CurToken == T_NULL ) {
                         break;
                     }
                     strncat( r_buf, Buffer, sizeof( r_buf ) - 2 );
@@ -1226,14 +1214,14 @@ static void PragAlias( void )
     alias_list      *new_alias;
 
     alias_name = subst_name = NULL;
-    alias_sym  = subst_sym  = NULL;
+    alias_sym  = subst_sym  = SYM_NULL;
 
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPCTL_ENABLE_MACROS();
         PPNextToken();
         if( CurToken == T_ID ) {
             alias_sym = SymLook( HashValue, Buffer );
-            if( alias_sym == 0 ) {
+            if( alias_sym == SYM_NULL ) {
                 CErr2p( ERR_UNDECLARED_SYM, Buffer );
             }
         } else if( CurToken == T_STRING ) {
@@ -1255,7 +1243,7 @@ static void PragAlias( void )
     }
 
     /* Add a new alias record - if it's valid - to the list */
-    if( ( alias_name != NULL || alias_sym != NULL ) && ( subst_name != NULL || subst_sym != NULL ) ) {
+    if( ( alias_name != NULL || alias_sym != SYM_NULL ) && ( subst_name != NULL || subst_sym != SYM_NULL ) ) {
         for( alias = &AliasHead; *alias != NULL; alias = &(*alias)->next )
             ; /* nothing to do */
         new_alias = (void *)CMemAlloc( sizeof( alias_list ) );

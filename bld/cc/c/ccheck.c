@@ -99,7 +99,7 @@ static cmp_type const   CompTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 };
 
 
-static cmp_type InUnion( TYPEPTR typ1, TYPEPTR typ2, int reversed )
+static cmp_type InUnion( TYPEPTR typ1, TYPEPTR typ2, bool reversed )
 {
     FIELDPTR    field;
 
@@ -170,11 +170,7 @@ static cmp_type CompatibleStructs( TAGPTR tag1, TAGPTR tag2 )
     /* if either struct is undefined, let's be conservative */
     if( (field1 == NULL) || (field2 == NULL) )
         return( NO );
-    for( ;; ) {
-        if( field1 == NULL )
-            break;
-        if( field2 == NULL )
-            break;
+    for( ; field1 != NULL && field2 != NULL; ) {
         typ1 = field1->field_type;
         SKIP_TYPEDEFS( typ1 );
         typ2 = field2->field_type;
@@ -291,8 +287,8 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             }
             if( (typ1_flags & MASK_ALL_MEM_MODELS) != (typ2_flags & MASK_ALL_MEM_MODELS) ) {
                 if( ( (typ1_flags & MASK_ALL_MEM_MODELS) != FLAG_NONE    // if same as mem model ok
-                    && (typ2_flags & MASK_ALL_MEM_MODELS) != FLAG_NONE )
-                    || TypeSize( typ1 ) != TypeSize( typ2 ) ) {
+                  && (typ2_flags & MASK_ALL_MEM_MODELS) != FLAG_NONE )
+                  || TypeSize( typ1 ) != TypeSize( typ2 ) ) {
                     return( NO );
                 }
             }
@@ -368,13 +364,13 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             }
         }
     } else if( typ1->decl_type == TYPE_UNION && ptr_indir_level > 0 ) {
-        if( InUnion( typ1, typ2, 0 ) != OK ) {
+        if( InUnion( typ1, typ2, FALSE ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
         }
     } else if( typ2->decl_type == TYPE_UNION && ptr_indir_level > 0 ) {
-        if( InUnion( typ2, typ1, 1 )!= OK ) {
+        if( InUnion( typ2, typ1, TRUE ) != OK ) {
             ret_val = NO;
         } else {
             ret_val = PM;
@@ -399,8 +395,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
                 ret_val = PM;
             }
         }
-    } else if( typ1->decl_type >= TYPE_LAST_ENTRY  ||
-            typ2->decl_type >= TYPE_LAST_ENTRY ) {
+    } else if( typ1->decl_type >= TYPE_LAST_ENTRY || typ2->decl_type >= TYPE_LAST_ENTRY ) {
         ret_val = NO;
     } else if( ptr_indir_level == 0 ) {
         ret_val = CompTable[typ1->decl_type][typ2->decl_type];
@@ -470,7 +465,7 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
                 }
             }
             if( (typ1_flags & MASK_ALL_MEM_MODELS) != (typ2_flags & MASK_ALL_MEM_MODELS) ) {
-                int size1, size2;
+                target_size size1, size2;
 
                 size1 = TypeSize( typ1 );
                 size2 = TypeSize( typ2 );

@@ -96,34 +96,34 @@ void InitGlobalVars( void )
     DeadTags                = NULL; /* list of all tags that are out of scope */
     CurFunc                 = NULL; /* current function being worked on */
     ParmList                = NULL; /* list of parms for function */
-    GlobalSym               = 0;    /* global symbol table list head */
+    GlobalSym               = SYM_NULL; /* global symbol table list head */
 #if _CPU == 386
-    SymSTOD                 = 0;    /* builtin symbol for 'rep stosd' */
-    SymSTOSB                = 0;    /* builtin symbol for '__STOSB' */
-    SymSTOSD                = 0;    /* builtin symbol for '__STOSD' */
+    SymSTOD                 = SYM_NULL; /* builtin symbol for 'rep stosd' */
+    SymSTOSB                = SYM_NULL; /* builtin symbol for '__STOSB' */
+    SymSTOSD                = SYM_NULL; /* builtin symbol for '__STOSD' */
 #endif
 #ifdef __SEH__
-    SymTryInit              = 0;    /* builtin symbol for '__TryInit' */
-    SymTryFini              = 0;    /* builtin symbol for '__TryFini' */
-    SymExcept               = 0;    /* builtin symbol for '__Except' */
-    SymFinally              = 0;    /* builtin symbol for '__Finally' */
-    SymTryUnwind            = 0;    /* builtin symbol for '__TryUnwind' */
-    TrySymHandle            = 0;    /* builtin symbol for local try block */
+    SymTryInit              = SYM_NULL; /* builtin symbol for '__TryInit' */
+    SymTryFini              = SYM_NULL; /* builtin symbol for '__TryFini' */
+    SymExcept               = SYM_NULL; /* builtin symbol for '__Except' */
+    SymFinally              = SYM_NULL; /* builtin symbol for '__Finally' */
+    SymTryUnwind            = SYM_NULL; /* builtin symbol for '__TryUnwind' */
+    TrySymHandle            = SYM_NULL; /* builtin symbol for local try block */
     TryScope                = 0;    /* current scope of _try blocks */
     TryCount                = 0;    /* current number of _try blocks */
 #endif
-    SymSTOW                 = 0;    /* builtin symbol for 'rep stosw' */
-    SymSTOWB                = 0;    /* builtin symbol for 'rep stosw, stosb' */
-    SymMIN                  = 0;    /* builtin symbol for 'min(a,b)' */
-    SymMAX                  = 0;    /* builtin symbol for 'max(a,b)' */
-    SymMEMCMP               = 0;    /* builtin symbol for 'memcmp' func */
-    SpecialSyms             = 0;    /* builtin symbols (thread linked) */
-    CharSymHandle           = 0;    /* sym handle for "char" typedef */
-    Sym_CS                  = 0;    /* sym handle for __segname("_CODE") ie. CS */
-    Sym_SS                  = 0;    /* sym handle for __segname("_STACK")ie. SS */
-    SymCover                = 0;    /* sym handle for '__COVERAGE' */
-    SymDFAbbr               = 0;    /* sym handle for '__DFABBREV' */
-    SymChipBug              = 0;    /* sym handle for '__chipbug' */
+    SymSTOW                 = SYM_NULL; /* builtin symbol for 'rep stosw' */
+    SymSTOWB                = SYM_NULL; /* builtin symbol for 'rep stosw, stosb' */
+    SymMIN                  = SYM_NULL; /* builtin symbol for 'min(a,b)' */
+    SymMAX                  = SYM_NULL; /* builtin symbol for 'max(a,b)' */
+    SymMEMCMP               = SYM_NULL; /* builtin symbol for 'memcmp' func */
+    SpecialSyms             = SYM_NULL; /* builtin symbols (thread linked) */
+    CharSymHandle           = SYM_NULL; /* sym handle for "char" typedef */
+    Sym_CS                  = SYM_NULL; /* sym handle for __segname("_CODE") ie. CS */
+    Sym_SS                  = SYM_NULL; /* sym handle for __segname("_STACK")ie. SS */
+    SymCover                = SYM_NULL; /* sym handle for '__COVERAGE' */
+    SymDFAbbr               = SYM_NULL; /* sym handle for '__DFABBREV' */
+    SymChipBug              = SYM_NULL; /* sym handle for '__chipbug' */
     ErrSym                  = NULL;
 
 #if _CPU == 386
@@ -189,8 +189,8 @@ void InitGlobalVars( void )
     LoopDepth               = 0;    /* current nesting of loop constructs */
     HeadLibs                = 0;    /* list of library search records */
     AliasHead               = 0;    /* list of symbol alias records */
-    CurFuncHandle           = 0;    /* sym_handle for current function */
-    LastFuncOutOfMem        = 0;    /* cinfo: */
+    CurFuncHandle           = SYM_NULL; /* sym_handle for current function */
+    LastFuncOutOfMem        = NULL; /* cinfo: */
     HashFreeList            = NULL; /* list of available hash entries */
 
     SymBufSegNum            = 0;    /* segment # containing buffer */

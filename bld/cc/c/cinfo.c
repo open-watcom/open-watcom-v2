@@ -62,11 +62,11 @@ typedef struct seg_name {
 } seg_name;
 
 static seg_name Predefined_Segs[] = {
-    { "_CODE",      SEG_CODE,   0 },
-    { "_CONST",     SEG_CONST,  0 },
-    { "_DATA",      SEG_DATA,   0 },
-    { "_STACK",     SEG_STACK,  0 },
-    { NULL,         0,          0 }
+    { "_CODE",      SEG_CODE,       SYM_NULL },
+    { "_CONST",     SEG_CONST,      SYM_NULL },
+    { "_DATA",      SEG_DATA,       SYM_NULL },
+    { "_STACK",     SEG_STACK,      SYM_NULL },
+    { NULL,         SEG_UNKNOWN,    SYM_NULL }
 };
 
 #define FIRST_USER_SEGMENT      10000
@@ -77,7 +77,7 @@ static  segment_id  userSegment;
 
 void AssignSeg( SYMPTR sym )
 {
-    SetFarHuge( sym, 1 );
+    SetFarHuge( sym, TRUE );
     if( (sym->attribs.stg_class == SC_AUTO) || (sym->attribs.stg_class == SC_REGISTER)
      || (sym->attribs.stg_class == SC_TYPEDEF) ) {
         /* if stack/register var, there is no segment */
@@ -101,7 +101,7 @@ void AssignSeg( SYMPTR sym )
 }
 
 
-void SetFarHuge( SYMPTR sym, int report )
+void SetFarHuge( SYMPTR sym, bool report )
 {
     TYPEPTR             typ;
     type_modifiers      attrib;
@@ -225,7 +225,7 @@ static fe_attr FESymAttr( SYMPTR sym )
 void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
 /**********************************************************/
 {
-    SYM_HANDLE      sym_handle = hdl;
+    SYM_HANDLE      sym_handle = (SYM_HANDLE)hdl;
 
     call_list = call_list;
     GenInLineFunc( sym_handle );
@@ -235,7 +235,7 @@ void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
 fe_attr FEAttr( CGSYM_HANDLE cgsym_handle )
 /*****************************************/
 {
-    SYM_HANDLE sym_handle = cgsym_handle;
+    SYM_HANDLE sym_handle = (SYM_HANDLE)cgsym_handle;
 
     return( FESymAttr( SymGetPtr( sym_handle ) ) );
 }
@@ -527,13 +527,13 @@ SYM_HANDLE SegSymHandle( segment_id segid )
     }
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
         if( useg->segid == segid ) {
-            if( useg->sym_handle == 0 ) {
+            if( useg->sym_handle == SYM_NULL ) {
                 useg->sym_handle = SegSymbol( useg->name, SEG_UNKNOWN );
             }
             return( useg->sym_handle );
         }
     }
-    return( 0 );
+    return( SYM_NULL );
 }
 
 hw_reg_set *SegPeggedReg( segment_id segid )
@@ -637,9 +637,9 @@ void EmitSegLabels( void )
 
     segid = FIRST_USER_SEGMENT;
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
-        if( useg->sym_handle != 0 ) {
+        if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
-            bck = BENewBack( useg->sym_handle );
+            bck = BENewBack( (CGSYM_HANDLE)useg->sym_handle );
             sym.info.backinfo = bck;
             SymReplace( &sym, useg->sym_handle );
             BESetSeg( segid );
@@ -656,7 +656,7 @@ void FiniSegLabels( void )
     SYM_ENTRY       sym;
 
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
-        if( useg->sym_handle != 0 ) {
+        if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
             BEFiniBack( sym.info.backinfo );
         }
@@ -670,7 +670,7 @@ void FiniSegBacks( void )
     SYM_ENTRY       sym;
 
     for( useg = userSegments; useg != NULL; useg = useg->next ) {
-        if( useg->sym_handle != 0 ) {
+        if( useg->sym_handle != SYM_NULL ) {
             SymGet( &sym, useg->sym_handle );
             BEFreeBack( sym.info.backinfo );
         }
@@ -684,8 +684,8 @@ char *FEName( CGSYM_HANDLE cgsym_handle )
     SYM_HANDLE  sym_handle;
     SYMPTR      sym;
 
-    sym_handle = cgsym_handle;
-    if( sym_handle == 0 )
+    sym_handle = (SYM_HANDLE)cgsym_handle;
+    if( sym_handle == SYM_NULL )
         return( "*** NULL ***" );
     sym = SymGetPtr( sym_handle );
     return( sym->name );
@@ -746,9 +746,9 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_REGALLOC_DIED:
     case MSG_SCOREBOARD_DIED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-            if( LastFuncOutOfMem != (CGSYM_HANDLE)parm ) {
+            if( LastFuncOutOfMem != parm ) {
                 CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_FULLY_OPTIMIZE, FEName( (CGSYM_HANDLE)parm ) );
-                LastFuncOutOfMem = (CGSYM_HANDLE)parm;
+                LastFuncOutOfMem = parm;
             }
         }
         break;
@@ -800,7 +800,7 @@ int FETrue( void )
 segment_id FESegID( CGSYM_HANDLE cgsym_handle )
 /*********************************************/
 {
-    SYM_HANDLE  sym_handle = cgsym_handle;
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)cgsym_handle;
     segment_id  segid;
     SYMPTR      sym;
 
@@ -844,7 +844,7 @@ segment_id FESegID( CGSYM_HANDLE cgsym_handle )
 BACK_HANDLE FEBack( CGSYM_HANDLE cgsym_handle )
 /*********************************************/
 {
-    SYM_HANDLE          sym_handle = cgsym_handle;
+    SYM_HANDLE          sym_handle = (SYM_HANDLE)cgsym_handle;
     BACK_HANDLE         bck;
     SYMPTR              symptr;
     SYM_ENTRY           sym;
@@ -852,7 +852,7 @@ BACK_HANDLE FEBack( CGSYM_HANDLE cgsym_handle )
     symptr = SymGetPtr( sym_handle );
     bck = symptr->info.backinfo;
     if( bck == NULL ) {
-        bck = BENewBack( sym_handle );
+        bck = BENewBack( (CGSYM_HANDLE)sym_handle );
         SymGet( &sym, sym_handle );
         sym.info.backinfo = bck;
         SymReplace( &sym, sym_handle );
@@ -903,7 +903,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
 /**********************************************************************/
 {
 #if _CPU == 386
-    SYM_HANDLE  sym_handle = func;
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)func;
     SYMPTR      sym;
 #else
     func = func;
@@ -918,7 +918,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     case TY_INT_1:
     case TY_UINT_1:
 #if _CPU == 386
-        if( sym_handle != 0 ) {
+        if( sym_handle != SYM_NULL ) {
             sym = SymGetPtr( sym_handle );
             if( sym->mods & FLAG_FAR16 ) {
                 return( TY_INT_2 );
@@ -935,7 +935,7 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
 int FEStackChk( CGSYM_HANDLE cgsym_handle )
 /*****************************************/
 {
-    SYM_HANDLE  sym_handle = cgsym_handle;
+    SYM_HANDLE  sym_handle = (SYM_HANDLE)cgsym_handle;
     SYMPTR      sym;
 
     sym = SymGetPtr( sym_handle );

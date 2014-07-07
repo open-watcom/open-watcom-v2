@@ -188,10 +188,10 @@ typedef struct expr_node {
     bool                checked;            // opnd values have been checked
 } EXPRNODE;
 
-typedef struct  sym_lists {
-    struct sym_lists    *next;
-    SYM_HANDLE          sym_head;
-} SYM_LISTS;
+typedef struct  sym_list_heads {
+    struct sym_list_heads   *next;
+    SYM_HANDLE               sym_head;
+} SYM_LIST_HEADS;
 
 extern TREEPTR  LeafNode(opr_code);
 extern TREEPTR  ExprNode(TREEPTR,opr_code,TREEPTR);

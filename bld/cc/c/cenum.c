@@ -330,10 +330,10 @@ void FreeEnums( void )
     id_hash_idx     h;
 
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
-        for( ; (esym = EnumTable[h]) != NULL; ) {
-            if( !ChkEqSymLevel( esym->parent ) )
+        for( ; (esym = EnumTable[h]) != NULL; EnumTable[h] = esym->next_enum ) {
+            if( !ChkEqSymLevel( esym->parent ) ) {
                 break;
-            EnumTable[h] = esym->next_enum;
+            }
         }
     }
 }

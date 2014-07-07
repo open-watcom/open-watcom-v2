@@ -50,19 +50,14 @@ static void DumpAString( STR_HANDLE str_handle )
     target_size len;
     char        *p;
 
-    len = str_handle->length;
     printf( "\"" );
-    p = str_handle->literal;
-    while( len != 0 ) {
-        if( *p == '\0' )
-            break;
+    for( p = str_handle->literal, len = str_handle->length;
+      len > 0 && *p != '\0'; --len, ++p ) {
         if( *p == '\n' ) {
             printf( "\\n" );
         } else {
             printf( "%c", *p );
         }
-        ++p;
-        --len;
     }
     printf( "\"" );
 }

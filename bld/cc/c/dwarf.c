@@ -98,8 +98,7 @@ static void dwarfStructInfo( TAGPTR tag )
     FIELDPTR    field;
     XREFPTR     xref;
 
-    field = tag->u.field_list;
-    while( field != NULL ) {
+    for( field = tag->u.field_list; field != NULL; field = field->next_field ) {
         xref = field->xref;
         typ = field->field_type;
         if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
@@ -135,7 +134,6 @@ static void dwarfStructInfo( TAGPTR tag )
             FreeXrefs( field->xref );
             field->xref = NULL;
         }
-        field = field->next_field;
     }
 }
 
@@ -236,7 +234,7 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
 /***********************************************************/
 {
     dw_handle   dh;
-    TYPEPTR     *parms_list;
+    TYPEPTR     *parm_types;
 
     if( typ->type_flags & TF2_DWARF )
         return( typ->u1.dwarf_type );
@@ -247,19 +245,17 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
                                 0,
                                 DW_FLAG_DECLARATION | DW_FLAG_PROTOTYPED );
     type_update( typ, TF2_DWARF_DEF, dh );
-    parms_list = typ->u.fn.parms;
-    while( parms_list != NULL ) {
-        typ = *parms_list++;
-        if( typ == NULL )
-            break;
-        if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
-            DWAddEllipsisToSubroutineType( Client );
-        } else {
-            DWAddParmToSubroutineType( Client,
+    if( typ->u.fn.parms != NULL ) {
+        for( parm_types = typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
+            if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                DWAddEllipsisToSubroutineType( Client );
+            } else {
+                DWAddParmToSubroutineType( Client,
                                        dwarfType( typ, DC_DEFAULT ),
                                        dummyLoc,
                                        dummyLoc,
                                        NULL );
+            }
         }
     }
     DWEndSubroutineType( Client );
@@ -420,8 +416,8 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
     return( dh );
 }
 
-static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
-/***********************************************************************/
+static void dwarfFunctionDefine( SYMPTR func_sym )
+/************************************************/
 {
     TYPEPTR     typ;
     dw_handle   return_dh;
@@ -430,6 +426,7 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
     uint        call_type;
     uint        flags;
     SYMPTR      sym;
+    SYM_HANDLE  sym_handle;
 
     call_type = 0;
     typ = func_sym->sym_type;
@@ -462,7 +459,7 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
                    0,
                    flags );
     func_sym->dwarf_handle = func_dh;
-    for( sym_handle = func_sym->u.func.parms; sym_handle != 0; ) {
+    for( sym_handle = func_sym->u.func.parms; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
         sym = SymGetPtr( sym_handle );
         dh = DWFormalParameter( Client,
                         dwarfType( sym->sym_type, DC_DEFAULT ),
@@ -471,7 +468,6 @@ static void dwarfFunctionDefine( SYM_HANDLE sym_handle, SYMPTR func_sym )
                         sym->name,
                         DW_DEFAULT_NONE );
         sym->dwarf_handle = dh;
-        sym_handle = sym->handle;
     }
     dwarfEmitVariables( func_sym->u.func.locals );
 }
@@ -547,7 +543,7 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
     TYPEPTR     typ;
     dw_handle   dh;
 
-    while( sym_handle ) {
+    for( ; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
         sym = SymGetPtr( sym_handle );
         if( (sym->flags & SYM_TEMP) == 0 ) {
             typ = sym->sym_type;
@@ -567,7 +563,6 @@ static void dwarfEmitVariables( SYM_HANDLE sym_handle )
             sym->dwarf_handle = dh;
 //          printf( " defined on line %u\n", sym->d.defn_line );
         }
-        sym_handle = sym->handle;
     }
 }
 
@@ -579,7 +574,7 @@ static void dwarfDumpNode( TREEPTR node )
     switch( node->op.opr ) {
     case OPR_FUNCTION:          // start of function
         sym = SymGetPtr( node->op.u2.func.sym_handle );
-        dwarfFunctionDefine( node->op.u2.func.sym_handle, sym );
+        dwarfFunctionDefine( sym );
         break;
     case OPR_FUNCEND:           // end of function
         DWEndSubroutine( Client );
@@ -617,11 +612,9 @@ static void dwarfEmitFunctions( void )
 {
     TREEPTR     tree;
 
-    tree = FirstStmt;
-    while( tree != NULL ) {
+    for( tree = FirstStmt; tree != NULL; tree = tree->left ) {
         CurLoc = tree->op.u2.src_loc;
         WalkExprTree( tree->right, dwarfDumpNode, NoOp, NoOp, dwarfDumpNode );
-        tree = tree->left;
     }
 }
 

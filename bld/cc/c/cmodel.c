@@ -175,7 +175,7 @@ void PreDefine_Macro( const char *str )
                     break;
                 ++len;
             }
-            for( uname = UndefNames; uname; uname = uname->next ) {
+            for( uname = UndefNames; uname != NULL; uname = uname->next ) {
                 if( memcmp( uname->name, str, len ) == 0 ) {
                     if( uname->name[len] == '\0' ) {
                         return;
@@ -215,7 +215,7 @@ static void FreeUndefNames( void )
 {
     undef_names     *uname;
 
-    for(; (uname = UndefNames) != NULL; ) {
+    for( ; (uname = UndefNames) != NULL; ) {
         UndefNames = uname->next;
         CMemFree( uname->name );
         CMemFree( uname );

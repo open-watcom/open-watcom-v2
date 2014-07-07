@@ -177,6 +177,7 @@ typedef struct  string_literal {
 } STRING_LITERAL, *STR_HANDLE;
 
 #define SYM_INVALID     ((SYM_HANDLE)(pointer_int)-1)    // invalid symbol; never a real sym
+#define SYM_NULL        ((SYM_HANDLE)(pointer_int)0)
 
 typedef struct array_info {
     target_size         dimension;

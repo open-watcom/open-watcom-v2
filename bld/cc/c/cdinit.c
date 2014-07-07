@@ -33,6 +33,31 @@
 #include <limits.h>
 #include "i64.h"
 
+#define DATA_QUAD_SEG_SIZE      (32 * 1024)
+#define DATA_QUADS_PER_SEG      (DATA_QUAD_SEG_SIZE / sizeof( DATA_QUAD_LIST ))
+
+#define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
+
+typedef enum { IS_VALUE, IS_ADDR } fold_state;
+
+typedef struct {
+    target_ssize        offset;
+    union {
+        STR_HANDLE      str_h;
+        SYM_HANDLE      sym_h;
+    } u;
+    bool                is_str;
+    bool                addr_set;
+    bool                is_error;
+    fold_state          state;
+} addrfold_info;
+
+/* use a double-linked list of dataquads to facilitate insertions */
+typedef struct data_quad_list {
+    DATA_QUAD               dq;
+    target_size             size;
+    struct data_quad_list   *prev, *next;
+} DATA_QUAD_LIST;
 
 local unsigned BitMask[] = {
     0x00000001,
@@ -67,24 +92,12 @@ local unsigned BitMask[] = {
     0x3FFFFFFF,
     0x7FFFFFFF,
     0xFFFFFFFF
- };
+};
 
-/* use a double-linked list of dataquads to facilitate insertions */
-typedef struct data_quad_list {
-    DATA_QUAD               dq;
-    target_size             size;
-    struct data_quad_list   *prev, *next;
-} DATA_QUAD_LIST;
-
-#define DATA_QUAD_SEG_SIZE      (32 * 1024)
-#define DATA_QUADS_PER_SEG      (DATA_QUAD_SEG_SIZE / sizeof( DATA_QUAD_LIST ))
-
-#define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
-
-static DATA_QUAD_LIST  *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
-static DATA_QUAD_LIST  *CurDataQuad;
-static int             DataQuadSegIndex;
-static int             DataQuadIndex;
+static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS];/* segments for data quads*/
+static DATA_QUAD_LIST   *CurDataQuad;
+static int              DataQuadSegIndex;
+static int              DataQuadIndex;
 
 local   DATA_QUAD_LIST  *NewDataQuad( void );
 local   bool            CharArray( TYPEPTR typ );
@@ -325,8 +338,7 @@ local void StoreIValue( DATA_TYPE dtype, int value, target_size size )
     if( LastCurDataQuad == CurDataQuad ) {
         dq_ptr = &CurDataQuad->dq;
     }
-    if( (DATA_TYPE)dq_ptr->type == dtype
-      && dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)
+    if( (DATA_TYPE)dq_ptr->type == dtype && dq_ptr->flags == (Q_DATA | Q_REPEATED_DATA)
       && dq_ptr->u_long_value1 == value ) {
         dq_ptr->u_rpt_count++;                  /* increment repeat count */
         CurDataQuad->size += size;
@@ -370,20 +382,6 @@ local void StoreIValue64( DATA_TYPE dtype, int64 value )
     CompFlags.non_zero_data = TRUE;
     GenDataQuad( &dq, TARGET_LONG64 );
 }
-
-typedef enum { IS_VALUE, IS_ADDR } fold_state;
-
-typedef struct {
-    target_ssize        offset;
-    union {
-        STR_HANDLE      str_h;
-        SYM_HANDLE      sym_h;
-    } u;
-    bool                is_str;
-    bool                addr_set;
-    bool                is_error;
-    fold_state          state;
-} addrfold_info;
 
 local void AddrFold( TREEPTR tree, addrfold_info *info )
 {
@@ -554,13 +552,13 @@ local void StorePointer( TYPEPTR typ, target_size size )
     }
 
     dq.type = QDT_ID;
-    dq.u.var.sym_handle = 0;
+    dq.u.var.sym_handle = SYM_NULL;
     dq.u.var.offset = 0;
     if( CurToken != T_RIGHT_BRACE) {
         tree = AddrExpr();
         tree = InitAsgn( typ, tree ); // as if we are assigning
         info.offset = 0;
-        info.u.sym_h = 0;
+        info.u.sym_h = SYM_NULL;
         info.addr_set = FALSE;
         info.state = IS_VALUE;
         info.is_str = FALSE;
@@ -595,7 +593,7 @@ local void StorePointer( TYPEPTR typ, target_size size )
         }
         GenDataQuad( &dq, size );
     } else { /* dq.type == QDT_ID */
-        if( dq.u.var.sym_handle != 0 ) {
+        if( dq.u.var.sym_handle != SYM_NULL ) {
             if( TypeSize( typ ) != DataPtrSize ) {
                 CErr1( ERR_INVALID_INITIALIZER );
             }
@@ -632,24 +630,24 @@ local void StoreInt64( TYPEPTR typ )
 local FIELDPTR InitBitField( FIELDPTR field )
 {
     TYPEPTR             typ;
-    unsigned            value;
     target_size         size;
     uint64              value64;
+    uint64              tmp;
     unsigned            bit_value;
     target_size         offset;
     TOKEN               token;
     bool                is64bit;
+    DATA_TYPE           dtype;
 
     token = CurToken;
     if( CurToken == T_LEFT_BRACE )
         NextToken();
     typ = field->field_type;
     size = SizeOfArg( typ );
-    is64bit = ( typ->u.f.field_type == TYPE_LONG64 || typ->u.f.field_type == TYPE_ULONG64 );
-    if( is64bit )
-        U32ToU64( 0, &value64 );
+    dtype = typ->u.f.field_type;
+    is64bit = ( dtype == TYPE_LONG64 || dtype == TYPE_ULONG64 );
+    U32ToU64( 0, &value64 );
     offset = field->offset;
-    value = 0;
     while( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
         bit_value = 0;
         if( CurToken != T_RIGHT_BRACE )
@@ -663,13 +661,12 @@ local FIELDPTR InitBitField( FIELDPTR field )
             bit_value &= BitMask[typ->u.f.field_width - 1];
         }
         if( is64bit ) {
-            uint64 tmp;
             U32ToU64( bit_value, &tmp );
             U64ShiftL( &tmp, typ->u.f.field_start, &tmp );
             value64.u._32[L] |= tmp.u._32[L];
             value64.u._32[H] |= tmp.u._32[H];
         } else {
-            value |= bit_value << typ->u.f.field_start;
+            value64.u._32[L] |= bit_value << typ->u.f.field_start;
         }
         field = field->next_field;
         if( field == NULL )
@@ -684,9 +681,9 @@ local FIELDPTR InitBitField( FIELDPTR field )
         }
     }
     if( is64bit ) {
-        StoreIValue64( typ->u.f.field_type, value64 );
+        StoreIValue64( dtype, value64 );
     } else {
-        StoreIValue( typ->u.f.field_type, value, size );
+        StoreIValue( dtype, value64.u._32[L], size );
     }
     if( token == T_LEFT_BRACE ) {
         if( CurToken == T_COMMA )
@@ -853,8 +850,7 @@ local void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
         }
         ftyp = field->field_type;
         offset = field->offset + SizeOfArg( ftyp );
-        if( ftyp->decl_type == TYPE_FIELD  ||
-            ftyp->decl_type == TYPE_UFIELD ) {
+        if( ftyp->decl_type == TYPE_FIELD || ftyp->decl_type == TYPE_UFIELD ) {
             field = InitBitField( field );
         } else {
             InitSymData( ftyp, ctyp, 1 );
@@ -1247,7 +1243,7 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
         typ->u.array->dimension = 0;    /* Reset back to 0 */
     }
     if( sym->u.var.segid == SEG_UNKNOWN ) {
-        SetFarHuge( sym, 0 );
+        SetFarHuge( sym, FALSE );
         SetSegment( sym );
         SetSegAlign( sym );
     }
@@ -1410,7 +1406,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_UNKNOWN ) {
-                SetFarHuge( &sym2, 0 );
+                SetFarHuge( &sym2, FALSE );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
             }
@@ -1423,7 +1419,7 @@ local void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_UNKNOWN ) {
-                SetFarHuge( &sym2, 0 );
+                SetFarHuge( &sym2, FALSE );
                 SetSegment( &sym2 );
                 SetSegAlign( &sym2 );
             }

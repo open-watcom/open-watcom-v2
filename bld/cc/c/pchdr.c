@@ -80,7 +80,7 @@ static  jmp_buf         PH_jmpbuf;
 static  int             PH_handle;
 static  char            *PH_Buffer;
 static  char            *PH_BufPtr;
-static  size_t          PH_BufSize;
+static  unsigned        PH_BufSize;
 static  MEPTR           *PCHMacroHash;
 static  MEPTR           PCHUndefMacroList;
 static  TYPEPTR         TypeArray;
@@ -259,7 +259,7 @@ static void FlushPHeader( void )
     unsigned    len;
 
     if( PH_BufSize != PH_BUF_SIZE ) {   // if buffer has some stuff in it
-        len = PH_BUF_SIZE - PH_BufSize;
+        len = (unsigned)( PH_BUF_SIZE - PH_BufSize );
         if( (unsigned)write( PH_handle, PH_Buffer, len ) != len ) {
             longjmp( PH_jmpbuf, 1 );
         }
@@ -694,13 +694,13 @@ static void OutPutAType( TYPEPTR typ )
 
 static void OutPutAFuncType( TYPEPTR typ, int index )
 {
-    TYPEPTR     *parms_list;
+    TYPEPTR     *parm_types;
     bool        rc;
 
-    parms_list = typ->u.fn.parms;           // save pointer
+    parm_types = typ->u.fn.parms;           // save pointer
     typ->u.fn.parms = PCHSetUInt( index );  // replace with index
     rc = WriteType( typ );
-    typ->u.fn.parms = parms_list;           // restore pointer
+    typ->u.fn.parms = parm_types;           // restore pointer
     if( rc ) {
         longjmp( PH_jmpbuf, rc );
     }
@@ -708,14 +708,13 @@ static void OutPutAFuncType( TYPEPTR typ, int index )
 
 static void OutPutFuncParmList( TYPEPTR typ, int index )
 {
-    TYPEPTR     *parms_list;
+    TYPEPTR     *parm_types;
     bool        rc;
     TYPEPTR     parm_type;
 
     index = index;      /* unused */
-    parms_list = typ->u.fn.parms;
-    if( parms_list != NULL ) {
-        while( (parm_type = *parms_list++) != NULL ) {
+    if( typ->u.fn.parms != NULL ) {
+        for( parm_types = typ->u.fn.parms; (parm_type = *parm_types) != NULL; ++parm_types ) {
             parm_type = PCHSetUInt( parm_type->u1.type_index );
             rc = PCHWriteVar( parm_type );
             if( rc ) {
@@ -1423,7 +1422,7 @@ static char *FixupTypes( char *p, unsigned type_count )
     TYPEPTR         typ;
     parm_hash_idx   h;
     array_info      *array;
-    TYPEPTR         *parms_list;
+    TYPEPTR         *parm_types;
     int             idx;
 
     InitTypeHashTables();
@@ -1444,7 +1443,7 @@ static char *FixupTypes( char *p, unsigned type_count )
         AddTypeHash( typ );
         ++typ;
     }
-    parms_list = (TYPEPTR *)( typ + type_count );
+    parm_types = (TYPEPTR *)( typ + type_count );
     for( ; type_count != 0; --type_count ) {
         h = (parm_hash_idx)PCHGetUInt( typ->u.fn.parms );
         typ->next_type = FuncTypeHead[h];
@@ -1452,19 +1451,19 @@ static char *FixupTypes( char *p, unsigned type_count )
         if( PCHGetUInt( typ->object ) != 0 ) {
             typ->object = TypeArray + PCHGetUInt( typ->object );
         }
-        if( PCHGetUInt( *parms_list ) == -1 ) {
+        if( PCHGetUInt( *parm_types ) == -1 ) {
             typ->u.fn.parms = NULL;
         } else {
-            typ->u.fn.parms = parms_list;
-            while( (idx = PCHGetUInt( *parms_list )) != -1 ) {
-                *parms_list++ = TypeArray + idx;
+            typ->u.fn.parms = parm_types;
+            while( (idx = PCHGetUInt( *parm_types )) != -1 ) {
+                *parm_types++ = TypeArray + idx;
             }
         }
-        *parms_list++ = NULL;
+        *parm_types++ = NULL;
         ++typ;
     }
-    FixupTypeIndexes( (type_indices *)parms_list );
-    return( (char *)parms_list + sizeof( type_indices ) );
+    FixupTypeIndexes( (type_indices *)parm_types );
+    return( (char *)parm_types + sizeof( type_indices ) );
 }
 
 static char *FixupEnums( char *p, TAGPTR parent )

@@ -214,7 +214,7 @@ static void DumpFlags( type_modifiers flags, TYPEPTR typ, STRCHUNK *fp )
     } else if( flags & FLAG_NEAR ) {
         if( flags & FLAG_BASED ) {
             ChunkSaveStr( fp, "__based(" );
-            if( typ->u.p.based_sym == 0 ) {
+            if( typ->u.p.based_sym == SYM_NULL ) {
                 ChunkSaveStr( fp, "void" );
             } else {
                 SymGet( &sym, typ->u.p.based_sym );
@@ -353,7 +353,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
     }
 }
 
-static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
+static void DumpParmList( TYPEPTR *parm_types, SYMPTR funcsym, STRCHUNK *pch )
 {
     TYPEPTR            typ;
     int                parm_num;
@@ -362,16 +362,16 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
     char               *sym_name;
     char               temp_name[20];
 
-    if( parm == NULL ) {
+    if( parm_types == NULL ) {
         ChunkSaveStr( pch, "void" );
     } else {
         parm_num = 1;
         if( funcsym != NULL ) {
             sym_handle = funcsym->u.func.parms;
         } else {
-            sym_handle = 0;
+            sym_handle = SYM_NULL;
         }
-        for( ; (typ = *parm) != NULL; ) {
+        for( ; (typ = *parm_types) != NULL; ++parm_types ) {
             typ = TrueType( typ );
             if( funcsym != NULL ) {
                 if( funcsym->flags & SYM_OLD_STYLE_FUNC ) {
@@ -379,10 +379,10 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
                 }
             }
             sym_name = NULL;
-            if( sym_handle != 0 ) {
+            if( sym_handle != SYM_NULL ) {
                 SymGet( &sym, sym_handle );
                 sym_handle = sym.handle;
-                sym_name   = sym.name;
+                sym_name = sym.name;
             } else {
                 if( typ->decl_type != TYPE_VOID && typ->decl_type != TYPE_DOT_DOT_DOT ) {
                     sym_name = temp_name;
@@ -390,8 +390,7 @@ static void DumpParmList( TYPEPTR *parm, SYMPTR funcsym, STRCHUNK *pch )
                 }
             }
             DoDumpType( typ, sym_name, pch );
-            ++parm;
-            if( *parm != NULL ) {
+            if( *(parm_types + 1) != NULL ) {
                 ChunkSaveChar( pch, ',' );
             }
             ++parm_num;

@@ -1062,18 +1062,21 @@ static void StripQuotes( char *fname )
 {
     char    *s;
     char    *d;
+    char    c;
 
     if( *fname == '"' ) {
         // string will shrink so we can reduce in place
         d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
+        for( s = fname + 1; (c = *s++) != '\0'; ) {
+            if( c == '"' )
+                break;
             // collapse double backslashes, only then look for escaped quotes
-            if( s[0] == '\\' && s[1] == '\\' ) {
-                ++s;
-            } else if( s[0] == '\\' && s[1] == '"' ) {
-                ++s;
+            if( c == '\\' ) {
+                if( *s == '\\' || *s == '"' ) {
+                    c = *s++;
+                }
             }
-            *d++ = *s;
+            *d++ = c;
         }
         *d = '\0';
     }
@@ -1804,7 +1807,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
 
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
         c = tolower( *(unsigned char *)p );
-        if( c == *opt ) {
+        if( c == *(unsigned char *)opt ) {
             OptValue = op_table[i].value;
             j = 1;
             for( ;; ) {
@@ -1848,14 +1851,11 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                     OptParm = &p[j];
                     c = p[j];
                     if( c == '"' ) { // "filename"
-                        for( ;; ) {
-                            c = p[++j];
+                        for( ; (c = p[++j]) != '\0'; ) {
                             if( c == '"' ) {
                                 ++j;
                                 break;
                             }
-                            if( c == '\0' )
-                                break;
                             if( c == '\\' ) {
                                 ++j;
                             }
@@ -1879,7 +1879,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                     }
                 } else {
                     c = tolower( (unsigned char)p[j] );
-                    if( *opt != c ) {
+                    if( *(unsigned char *)opt != c ) {
                         if( *opt < 'A' || *opt > 'Z' )
                             break;
                         if( *opt != p[j] ) {
@@ -2028,35 +2028,34 @@ local void ProcOptions( const char *str )
             if( *str == '-'  ||  *str == SwitchChar ) {
                 str = ProcessOption( CFE_Options, str + 1, str );
             } else {  /* collect  file name */
-                const char *beg;
-                char *p;
-                size_t len;
+                const char  *beg;
+                char        *p;
+                size_t      len;
+                char        c;
 
                 beg = str;
                 if( *str == '"' ) {
-                    for( ;; ) {
+                    ++str;
+                    for( ; (c = *str) != '\0';  ) {
                         ++str;
-                        if( *str == '"' ) {
-                            ++str;
+                        if( c == '"' ) {
                             break;
                         }
-                        if( *str == '\0' )
-                            break;
-                        if( *str == '\\' ) {
+                        if( c == '\\' ) {
                             ++str;
                         }
                     }
                 } else {
-                    for( ; *str != '\0'; ) {
-                        if( *str == ' '  )
+                    for( ; (c = *str) != '\0'; ++str ) {
+                        if( c == ' '  )
                             break;
-                        if( *str == '\t'  )
+                        if( c == '\t'  )
                             break;
 #if ! defined( __UNIX__ )
-                        if( *str == SwitchChar )
+                        if( c == SwitchChar ) {
                             break;
+                        }
 #endif
-                        ++str;
                     }
                 }
                 len = str - beg;

@@ -110,14 +110,13 @@ void FreeExprTree( TREEPTR root )
     while( root != NULL ) {
         subtree = root->right;
         root->right = NULL;
-        while( subtree != NULL ) {
-            node = subtree;
+        while( (node = subtree) != NULL ) {
             subtree = node->left;
             node->left = root;
             root = node;
         }
-        subtree = root;
+        node = root;
         root = root->left;
-        FreeExprNode( subtree );
+        FreeExprNode( node );
     }
 }

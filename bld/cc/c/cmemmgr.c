@@ -104,11 +104,9 @@ static void InitPermArea( void )
 static void FiniPermArea( void )
 {
     mem_blk *curr, *next;
-    curr = Blks;
-    while( curr != NULL ) {
+    for( curr = Blks; curr != NULL; curr = next ) {
         next = curr->next;
         free( curr );
-        curr = next;
     }
     Blks = NULL;
 }

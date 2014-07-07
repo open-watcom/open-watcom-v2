@@ -286,7 +286,7 @@ enum sym_state AsmQueryState( void *handle )
     SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
     SYM_ENTRY   sym;
 
-    if( sym_handle == 0 )
+    if( sym_handle == SYM_NULL )
         return( SYM_UNDEFINED );
     SymGet( &sym, sym_handle );
     if( (sym.flags & SYM_REFERENCED) == 0 ) {
@@ -386,7 +386,7 @@ enum sym_type AsmQueryType( void *handle )
     SYM_HANDLE  sym_handle = (SYM_HANDLE)handle;
     SYM_ENTRY   sym;
 
-    if( sym_handle == 0 )
+    if( sym_handle == SYM_NULL )
         return( SYM_INT1 );
     SymGet( &sym, sym_handle );
     return( AsmType( sym.sym_type, sym.mods ) );
@@ -418,7 +418,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     int                 fixup_padding;
 #endif
 
-    sym_handle = 0;
+    sym_handle = SYM_NULL;
     uses_auto = FALSE;
     perform_fixups = FALSE;
     head = FixupHead;
@@ -446,7 +446,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 name = fix->name;
                 if( name != NULL ) {
                     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
-                    if( sym_handle == 0 ) {
+                    if( sym_handle == SYM_NULL ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
                         return( FALSE );
                     }
@@ -1061,7 +1061,7 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), 0, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );

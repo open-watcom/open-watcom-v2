@@ -135,7 +135,7 @@ static struct STRUCT_byte_seq( 6 ) TryFiniCode = {
 */
 bool VarParm( SYMPTR sym )
 {
-    TYPEPTR     *parm;
+    TYPEPTR     *parm_types;
     TYPEPTR     typ;
     TYPEPTR     fn_typ;
 
@@ -145,9 +145,8 @@ bool VarParm( SYMPTR sym )
     if( sym->flags & SYM_FUNCTION ) {
         fn_typ = sym->sym_type;
         SKIP_TYPEDEFS( fn_typ );
-        parm = fn_typ->u.fn.parms;
-        if( parm != NULL ) {
-            for( ; (typ = *parm) != NULL; ++parm ) {
+        if( fn_typ->u.fn.parms != NULL ) {
+            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
                     return( TRUE );
                 }
@@ -407,7 +406,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     aux_info        *inf;
 
     inf = &DefaultInfo;         /* assume default */
-    if( sym_handle == 0 )
+    if( sym_handle == SYM_NULL )
         return( inf );
 
     SymGet( sym, sym_handle );
@@ -458,7 +457,7 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     aux_entry    *ent;
 
-    if( sym_handle != 0 ) {
+    if( sym_handle != SYM_NULL ) {
         SymGet( sym, sym_handle );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
@@ -477,7 +476,7 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     call_class          cclass;
 
     cclass = DefaultInfo.cclass;
-    if( sym_handle != 0 ) {
+    if( sym_handle != SYM_NULL ) {
         inf = FindInfo( &sym, sym_handle );
         if( sym.flags & SYM_FUNCTION ) {
             if( inf != &DefaultInfo ) {
@@ -655,8 +654,8 @@ static CGPOINTER NextLibrary( int index, aux_class request )
 static CGPOINTER NextAlias( int index, aux_class request )
 {
     alias_list          *aliaslist;
-    SYM_HANDLE          alias_sym = NULL;
-    SYM_HANDLE          subst_sym = NULL;
+    SYM_HANDLE          alias_sym = SYM_NULL;
+    SYM_HANDLE          subst_sym = SYM_NULL;
     const char          *alias_name = NULL;
     const char          *subst_name = NULL;
     int                 i;
@@ -697,7 +696,7 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     unsigned    total_parm_size = 0;
     unsigned    parm_size;
     TYPEPTR     fn_typ;
-    TYPEPTR     *parm;
+    TYPEPTR     *parm_types;
     TYPEPTR     typ;
     SYM_ENTRY   sym;
 
@@ -705,9 +704,8 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     fn_typ = sym.sym_type;
     SKIP_TYPEDEFS( fn_typ );
     if( fn_typ->decl_type == TYPE_FUNCTION ) {
-        parm = fn_typ->u.fn.parms;
-        if( parm != NULL ) {
-            for( ; (typ = *parm) != NULL; ++parm ) {
+        if( fn_typ->u.fn.parms != NULL ) {
+            for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
                     total_parm_size = (unsigned)-1;
                     break;

@@ -83,12 +83,10 @@ static void RevTypeList( void )
 
     previous = NULL;
     current = TypeHead;
-    following = current->next_type;
-    for(; following ;) {
+    for( following = current->next_type; following != NULL; following = following->next_type ) {
         current->next_type = previous;
         previous = current;
         current = following;
-        following = current->next_type;
     }
     current->next_type = previous;
     TypeHead = current;
@@ -181,7 +179,7 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
 
     dl = DBLocInit();
     sym_handle = typ->u.p.based_sym;
-    if( sym_handle == 0 ) {
+    if( sym_handle == SYM_NULL ) {
         dl = DBLocConst( dl, 0 );
         dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
     } else {
@@ -197,7 +195,7 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
                 ret_val = DBPtr( cgtype, DBType( typ->object ) );
                 have_retval = 1;
             } else {
-                dl = DBLocSym( dl, sym_handle );
+                dl = DBLocSym( dl, (CGSYM_HANDLE)sym_handle );
                 dl = DBLocOp( dl, DB_OP_POINTS, TY_UINT_2 );
                 dl = DBLocConst( dl, 0 );
                 dl = DBLocOp( dl, DB_OP_MK_FP, 0 );
@@ -215,7 +213,8 @@ dbug_type DBType( TYPEPTR typ )
 {
     dbug_type       ret_val;
     dbg_proc        pr;
-    TYPEPTR         *pparms;
+    TYPEPTR         *parm_types;
+    TYPEPTR         parm_type;
     target_size     size;
     auto SYM_ENTRY  sym;
     auto struct debug_fwd_types fwd_info, *fip;
@@ -284,10 +283,13 @@ dbug_type DBType( TYPEPTR typ )
     case TYPE_FUNCTION:
         cgtype = TY_CODE_PTR;
         pr = DBBegProc( cgtype, DBType( typ->object ) );
-        for( pparms = typ->u.fn.parms; pparms; pparms++ ) {
-            if( (*pparms == NULL) ) break;
-            if( (*pparms)->decl_type == TYPE_DOT_DOT_DOT ) break;
-            DBAddParm( pr, DBType( *pparms ));
+        if( typ->u.fn.parms != NULL ) {
+            for( parm_types = typ->u.fn.parms; (parm_type = *parm_types) != NULL; ++parm_types ) {
+                if( parm_type->decl_type == TYPE_DOT_DOT_DOT ) {
+                    break;
+                }
+                DBAddParm( pr, DBType( parm_type ) );
+            }
         }
         ret_val = DBEndProc( pr );
         break;
@@ -328,7 +330,7 @@ static void DumpFieldList( dbg_struct st, target_size bias,
 {
     TYPEPTR field_typ;
 
-    for( ; pfield; pfield = pfield->next_field ) {
+    for( ; pfield != NULL; pfield = pfield->next_field ) {
         field_typ = pfield->field_type;
         if( pfield->name[0] == '\0' ) {
             /* anonymous struct/union -- suck up to this level */
@@ -387,7 +389,7 @@ static dbug_type DBTypeEnum( TYPEPTR typ )
     ENUMPTR     ep;
 
     e = DBBegEnum( CGenType( typ->object ) );
-    for( ep = typ->u.tag->u.enum_list; ep; ep = ep->thread ) {
+    for( ep = typ->u.tag->u.enum_list; ep != NULL; ep = ep->thread ) {
         DBAddConst64( e, ep->name, ep->value );
     }
     ret_val = DBEndEnum( e );
@@ -399,14 +401,14 @@ static dbug_type DBTypeEnum( TYPEPTR typ )
 
 dbug_type FEDbgType( CGSYM_HANDLE cgsym_handle )
 {
-    SYM_HANDLE     sym_handle = cgsym_handle;
+    SYM_HANDLE     sym_handle = (SYM_HANDLE)cgsym_handle;
 
     return( DBType( SymGetPtr( sym_handle )->sym_type ) );
 }
 
 dbug_type FEDbgRetType( CGSYM_HANDLE cgsym_handle )
 {
-    SYM_HANDLE     sym_handle = cgsym_handle;
+    SYM_HANDLE     sym_handle = (SYM_HANDLE)cgsym_handle;
     TYPEPTR        typ;
 
     typ = SymGetPtr( sym_handle )->sym_type;

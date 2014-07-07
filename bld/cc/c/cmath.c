@@ -668,17 +668,17 @@ TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
             if( (TargetSwitches & FLAT_MODEL) == 0 ) {
-                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), 1 );
+                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), TRUE );
             }
 #else
-            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), 1 );
+            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), TRUE );
 #endif
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
         // If we're converting an arithmetic type to a pointer, first convert
         // it to appropriately sized integer to correctly extend/truncate.
         if( TypeSize( typ1 ) != TypeSize( typ2 ) ) {
-            op2 = CnvOp( op2, GetIntTypeBySize( TypeSize( typ1 ), FALSE, FALSE ), 1 );
+            op2 = CnvOp( op2, GetIntTypeBySize( TypeSize( typ1 ), FALSE, FALSE ), TRUE );
         }
     }
     return( op2 );
@@ -1106,16 +1106,16 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         break;
     case T_MINUS:
         result = ArrayMinusConst( op1, op2 );
-        if( result != 0 )
+        if( result != NULL )
             return( result );
         op1 = RValue( op1 );
         break;
     case T_PLUS:
         result = ArrayPlusConst( op1, op2 );    // check for array + const
-        if( result != 0 )
+        if( result != NULL )
             return( result );
         result = ArrayPlusConst( op2, op1 );    // check for const + array
-        if( result != 0 ) {
+        if( result != NULL ) {
             return( result );
         }
         /* fall through */
@@ -1135,7 +1135,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     op2_tp = TypeOf( op2 );
     op1_type = DataTypeOf( op1_tp );
     op2_type = DataTypeOf( op2_tp );
-    result = 0;
+    result = NULL;
     if( op1_type == TYPE_UNION || op1_type == TYPE_STRUCT
       || op2_type == TYPE_UNION || op2_type == TYPE_STRUCT ) {
         result_type = ERR;
@@ -1197,7 +1197,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             } else if( (op1_tp->u.p.decl_flags & FLAG_HUGE) ||
                       ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op2_type != LNG) && (op2_type != ULN) ) {
-                    op2 = CnvOp( op2, GetType( TYPE_LONG ), 1 );
+                    op2 = CnvOp( op2, GetType( TYPE_LONG ), TRUE );
                 }
             }
             op2 = MulByConst( op2, size );
@@ -1216,7 +1216,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
             if( (op2_tp->u.p.decl_flags & FLAG_HUGE)
               || ((TargetSwitches & (BIG_DATA | CHEAP_POINTER)) == BIG_DATA) ) {
                 if( (op1_type != LNG ) && (op1_type != ULN) ) {
-                    op2 = CnvOp( op2, GetType( TYPE_LONG ), 1 );
+                    op2 = CnvOp( op2, GetType( TYPE_LONG ), TRUE );
                 }
             }
             op1 = MulByConst( op1, size );
@@ -1326,7 +1326,8 @@ local void SetSymAssigned( TREEPTR opnd )
 {
     SYM_ENTRY   sym;
 
-    while( opnd->op.opr == OPR_INDEX ) opnd = opnd->left;
+    while( opnd->op.opr == OPR_INDEX )
+        opnd = opnd->left;
     if( opnd->op.opr == OPR_PUSHADDR ) {
         SymGet( &sym, opnd->op.u2.sym_handle );
         if( sym.level != 0 ) {
@@ -1589,7 +1590,7 @@ bool IsPtrConvSafe( TREEPTR src, TYPEPTR newtyp, TYPEPTR oldtyp )
     return( is_safe );
 }
 
-TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, int cast_op )
+TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, bool cast_op )
 {
     TYPEPTR             typ;
     enum  conv_types    cnv;
@@ -1664,7 +1665,7 @@ convert:                                /* moved here */
                             CWarn1( WARN_POINTER_TRUNCATION, ERR_POINTER_TRUNCATION );
                         }
                     }
-                    if( cast_op == 0 ) {
+                    if( !cast_op ) {
                         if( (typ->u.p.decl_flags & FLAG_BASED) &&
                             (newtyp->u.p.decl_flags & FLAG_FAR) ) {
                             opnd = BasedPtrNode( typ, opnd );
@@ -1673,14 +1674,14 @@ convert:                                /* moved here */
                             SetDiagPop();
                             return( opnd );
                         }
-                        cast_op = 1;        /* force a convert */
+                        cast_op = TRUE;        /* force a convert */
                     }
                 } else if( IsFuncPtr( typ ) || IsFuncPtr( newtyp ) ) {
-                    cast_op = 1;    /* force a convert */
+                    cast_op = TRUE;    /* force a convert */
                 } else if( TypeSize( typ ) != TypeSize( newtyp ) ) {
-                    cast_op = 1;    /* force a convert */
+                    cast_op = TRUE;    /* force a convert */
                 } else if( typ->decl_type != TYPE_POINTER || newtyp->decl_type != TYPE_POINTER ) {
-                    cast_op = 1;    /* force a convert */
+                    cast_op = TRUE;    /* force a convert */
                 } else if( opr == OPR_PUSHADDR && opnd->op.opr == OPR_ADDROF ) {
                     opnd->u.expr_type = newtyp;
                     SetDiagPop();
@@ -1723,7 +1724,7 @@ convert:                                /* moved here */
                 // Conversion to _Bool needs special treatment
                 opnd = BoolConv( newtyp, opnd );
             }
-            if( cast_op  ||  cnv != P2P ) {
+            if( cast_op || cnv != P2P ) {
 /* convert: moved */
                 if( IsConstLeaf( opnd ) ) {
                     CastConstNode( opnd, newtyp );
