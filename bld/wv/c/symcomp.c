@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbglit.h"
 #include "namelist.h"
 #include "dui.h"
-#include <string.h>
 
 typedef struct sorted_names {
     struct sorted_names *next;

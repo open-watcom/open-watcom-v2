@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -39,7 +41,6 @@
 #include "dbghook.h"
 #include "dbgio.h"
 #include "spawn.h"
-#include <ctype.h>
 
 extern mod_handle       CodeAddrMod;
 extern input_stack      *InpStack;

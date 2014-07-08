@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dip.h"
 #include "dbgerr.h"
@@ -43,11 +44,11 @@
 
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
-extern cmd_list         *AllocCmdList(char *,unsigned int );
+extern cmd_list         *AllocCmdList(char *,size_t );
 extern unsigned         ScanCmd( char * );
 extern bool             ScanEOC(void);
 extern void             ReqEOC(void);
-extern bool             ScanItem( bool, char **,unsigned int *);
+extern bool             ScanItem( bool, char **, size_t *);
 extern char             *GetCmdEntry(char *,int ,char *);
 extern input_type       SetInpStack( input_type );
 extern char             *Format(char *,char *,... );
@@ -100,7 +101,7 @@ static char HookNames[] = {
 void ProcHook()
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
     unsigned    idx;
     cmd_list    *list;
 

@@ -157,7 +157,7 @@ unsigned EnvLkup( char *name, char *buff, unsigned max_len )
     return( len );
 }
 
-long _fork( char *cmd, unsigned len )
+long _fork( char *cmd, size_t len )
 {
     char        *dst;
     char        *args;

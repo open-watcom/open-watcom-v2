@@ -142,7 +142,7 @@ bool TBreak()
     return( ret );
 }
 
-long _fork( char *cmd, unsigned len )
+long _fork( char *cmd, size_t len )
 {
     char    buff[256];
     char    *argv[4];

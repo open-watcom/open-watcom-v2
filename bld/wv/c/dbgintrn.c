@@ -46,7 +46,6 @@
 extern unsigned int     ScanCmd(char *);
 extern void             Scan( void );
 extern bool             ScanEOC(void);
-extern bool             ScanItem(bool ,char **,unsigned int *);
 extern void             ReqEOC(void);
 extern unsigned         SetCurrRadix(unsigned int );
 extern char             *GetCmdEntry(char *,int ,char *);

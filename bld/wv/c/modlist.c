@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 //#include "dbgwind.h"
 #include "dbglit.h"
 #include "dbgerr.h"
 #include "modlist.h"
-#include <string.h>
-#include <stdlib.h>
 
 extern char             *TxtBuff;
 extern address          NilAddr;

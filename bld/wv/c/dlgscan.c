@@ -55,7 +55,7 @@ extern unsigned int     ScanLen( void );
 extern mod_handle       LookupModName( mod_handle, char *, unsigned );
 extern void             Scan( void );
 extern void             RawScanInit( void );
-extern bool             ScanItem( bool, char **, unsigned * );
+extern bool             ScanItem( bool, char **, size_t * );
 
 
 OVL_EXTERN void GetExprAny( void *value )
@@ -100,7 +100,7 @@ OVL_EXTERN void GetModName( void *value )
 {
     mod_handle  mod;
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     RawScanInit();
     ScanItem( FALSE, &start, &len );

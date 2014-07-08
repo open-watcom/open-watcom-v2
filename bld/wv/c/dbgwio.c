@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
@@ -39,8 +41,6 @@
 #include "madcli.h"
 #include "memtypes.h"
 #include "dbgitem.h"
-#include <string.h>
-#include <stdlib.h>
 
 extern char             *TxtBuff;
 extern address          NilAddr;

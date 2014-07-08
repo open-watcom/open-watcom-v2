@@ -31,11 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include <string.h>
+#include <stddef.h>
 #include "dbginfo.h"
 #include "dbglit.h"
 #include "sortlist.h"
-#include <string.h>
-#include <stddef.h>
 
 
 extern void             SetLastSym( char *to );
@@ -71,7 +71,7 @@ static int ImageCompare( void *_pa, void *_pb )
     return( DIPImagePriority( (*pa)->dip_handle ) - DIPImagePriority( (*pb)->dip_handle ) );
 }
 
-void    ImgSort()
+void    ImgSort( void )
 {
     DbgImageList = SortLinkedList( DbgImageList, offsetof( image_entry, link ),
                                 ImageCompare, DbgAlloc, DbgFree );

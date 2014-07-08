@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -41,7 +42,6 @@
 #include "dbgio.h"
 #include "guidlg.h"
 #include "dlgcmd.h"
-#include <string.h>
 
 extern char             *ReScan(char *);
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );

@@ -112,7 +112,7 @@ extern void             RValue( stack_entry * );
 extern void             LRValue( stack_entry * );
 extern void             ParseRegSet( bool, location_list *, dip_type_info * );
 extern void             Recog( unsigned int );
-extern bool             ScanQuote( char **, unsigned * );
+extern bool             ScanQuote( char **, size_t * );
 extern void             Scan( void );
 extern char             *ScanPos( void );
 extern unsigned         ScanLen( void );

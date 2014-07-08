@@ -30,20 +30,20 @@
 
 
 
+#include <limits.h>
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgwind.h"//
+#include "dbgwind.h"
 #include "dbgadget.h"
 #include "dbgitem.h"
 #include "dbgtoggl.h"
 #include "dlgvarx.h"
 #include "dbgvar.h"
 #include "spawn.h"
-#include <limits.h>
-#include <string.h>
 
 extern char             *ScanPos( void );
 extern void             ReqEOC( void );

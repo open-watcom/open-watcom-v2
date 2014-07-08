@@ -41,7 +41,7 @@
 extern bool             RemovePoint( brkp * );
 extern brkp             *FindBreak( address );
 extern brkp             *AddBreak( address );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern cmd_list         *AllocCmdList( char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             DlgSetLong( gui_window *gui, unsigned id, long value );
 extern bool             DlgGetLong( gui_window *gui, unsigned id, long *value );

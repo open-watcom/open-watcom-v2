@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbginfo.h"
@@ -38,12 +39,11 @@
 #include "dbgrep.h"
 #include "dbgevent.h"
 #include "dui.h"
-#include <string.h>
 
 
 extern void             RecordPointStart( void );
 extern void             RecordNewProg( void );
-extern cmd_list         *AllocCmdList( char *start, unsigned len );
+extern cmd_list         *AllocCmdList( char *start, size_t );
 extern void             FreeCmdList( cmd_list *cmds );
 extern void             PointFini( void );
 extern void             PushCmdList( cmd_list *cmds );
@@ -56,7 +56,7 @@ extern address          GetRegIP( void );
 extern void             CreateInvokeFile( char *name, void (*rtn)( void ) );
 extern void             InvokeAFile( char * );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
+extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
 extern void             ReqEOC( void );
 extern char             *StrCopy( char *src, char *dest );
 extern char             *StrAddr( address *addr, char *p, unsigned);
@@ -143,7 +143,7 @@ void RestoreReplayFromFile( char *name )
     ReplayTo( NULL );
 }
 
-static void AddEvent( char *start, unsigned len, address ip )
+static void AddEvent( char *start, size_t len, address ip )
 {
     event_record        **owner;
     event_record        *new;
@@ -168,7 +168,7 @@ static void AddEvent( char *start, unsigned len, address ip )
 void ProcRecord( void )
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
     unsigned    rad;
     unsigned    old;
 

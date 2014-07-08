@@ -54,13 +54,13 @@ extern unsigned long    ReqLongExpr( void );
 extern unsigned int     ReqExpr( void );
 extern char             *ReScan( char * );
 extern void             ReqMemAddr( memory_expr, address * );
-extern bool             ScanQuote( char **, unsigned int * );
+extern bool             ScanQuote( char **, size_t * );
 extern bool             ScanEOC( void );
 extern int              AddrComp( address, address );
 extern unsigned int     ScanCmd( char * );
 extern void             ReqEOC( void );
 extern void             Scan( void );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern cmd_list         *AllocCmdList( char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             PushCmdList( cmd_list * );
 extern address          GetRegIP( void );
@@ -86,7 +86,7 @@ extern bool             DlgBreak( address );
 extern void             SetProgState( unsigned );
 extern void             TypeInpStack( input_type );
 extern char             *DupStr( char * );
-extern char             *DupStrLen( char const *str, unsigned len );
+extern char             *DupStrLen( char const *str, size_t len );
 extern bool             CheckBPIns( void );
 extern char             *GetCmdEntry( char *, int, char * );
 extern char             *Format( char *buff, char *fmt, ... );
@@ -111,7 +111,7 @@ extern char             *CnvULongHex( unsigned long value, char *p );
 extern unsigned         NewCurrRadix( unsigned );
 extern void             WriteDbgRegs( void );
 extern void             BreakOnImageLoad( char *name, unsigned len, bool clear );
-extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
+extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
 extern void             InitMappableAddr( mappable_addr *loc );
 extern void             FiniMappableAddr( mappable_addr *loc );
 extern void             UnMapPoints( image_entry * );
@@ -837,7 +837,7 @@ OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
 OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
     bool        clear = FALSE;
 
     def_seg=def_seg;
@@ -1027,7 +1027,7 @@ void SetPointAddr( brkp *bp, address addr )
     image_entry *image;
     mod_handle  mod;
     char  const *start;
-    unsigned    len;
+    size_t      len;
     bool        ok;
 
     if( bp->status.b.unmapped ) return;
@@ -1328,7 +1328,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
 {
     brkp            *bp;
     char            *start;
-    unsigned        len;
+    size_t          len;
     address         loc;
     cmd_list        *cmds;
     char            *condition;

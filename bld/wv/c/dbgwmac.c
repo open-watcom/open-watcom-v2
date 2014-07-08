@@ -31,6 +31,9 @@
 
 
 #include "dbgdefn.h"
+#include <string.h>
+#include <stddef.h>
+#include <ctype.h>
 #include "dbgwind.h"
 #include "dbginfo.h"
 #include "dbgadget.h"
@@ -38,9 +41,6 @@
 #include "sortlist.h"
 #include "dbgerr.h"
 #include "dbgtoggl.h"
-#include <string.h>
-#include <stddef.h>
-#include <ctype.h>
 
 extern char             *GetCmdEntry(char *,int ,char *);
 extern char             *KeyName( unsigned key );
@@ -50,7 +50,7 @@ extern void             LockCmdList( cmd_list *cmds );
 extern char             *Format( char *buff, char *fmt, ... );
 extern char             *GetCmdName( int index );
 extern char             *GetMenuLabel( unsigned size, gui_menu_struct *menu, unsigned id, char *buff, bool strip_amp );
-extern cmd_list         *AllocCmdList( char *start, unsigned len );
+extern cmd_list         *AllocCmdList( char *start, size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);

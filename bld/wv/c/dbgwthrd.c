@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
 #include "dbgreg.h"
-#include <string.h>
-#include <stdlib.h>
 
 extern bool             IsThdCurr( thread_state *thd );
 extern void             MakeThdCurr( thread_state * );

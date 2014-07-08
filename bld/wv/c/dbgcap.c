@@ -30,14 +30,15 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbginp.h"
 #include "dbgerr.h"
 #include "trptypes.h"
 
-extern bool             ScanItem( bool, char **, unsigned int * );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern bool             ScanItem( bool, char **, size_t * );
+extern cmd_list         *AllocCmdList( char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern void             WndTmpFileInspect( char *file, bool binary );
 extern char             *ReScan( char * );
@@ -89,7 +90,7 @@ extern void ProcCapture( void )
 {
     cmd_list    *cmds;
     char        *start;
-    unsigned    len;
+    size_t      len;
     char        *old;
     char        *p;
 

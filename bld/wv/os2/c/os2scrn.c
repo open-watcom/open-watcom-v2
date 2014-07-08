@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
-#include "dbgdefn.h"
-#include "dbgio.h"
-#include <stdui.h>
 #include <string.h>
 #include <stddef.h>
+#include "dbgdefn.h"
+#include "dbgio.h"
+#include "stdui.h"
 #include "dbgtoggl.h"
 
 #define INCL_SUB

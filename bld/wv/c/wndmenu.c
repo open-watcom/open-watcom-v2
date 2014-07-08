@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -37,8 +39,6 @@
 #include "dbgerr.h"
 #include "trpcore.h"
 #include "madcli.h"
-#include <ctype.h>
-#include <string.h>
 
 extern a_window         *WndClassInspect( wnd_class class );
 extern void             DebugExit( void );
@@ -50,7 +50,7 @@ extern void             ProcWndFindNext( a_window * );
 extern void             ProcWndFindPrev( a_window * );
 extern void             DlgOptSet( void );
 extern void             DlgCmd( void );
-extern void             DoSystem( char *, unsigned int, int );
+extern void             DoSystem( char *, size_t, int );
 extern void             ExecTrace( trace_cmd_type, debug_level );
 extern unsigned         Go( bool );
 extern void             ReStart( void );
@@ -67,7 +67,7 @@ extern void             ConfigSave( bool );
 extern void             ReqEOC( void );
 extern bool             ScanEOC( void );
 extern unsigned         ScanCmd( char *cmd_table );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern wnd_class        ReqWndName( void );
 extern char             *StrCopy( char *, char * );
 extern void             FileBrowse( void );
@@ -226,7 +226,7 @@ static bool StrAmpEqual( char *str, char *menu, int len )
 static gui_menu_struct *FindMainMenu( gui_menu_struct *menu, int size )
 {
     char                *start;
-    unsigned            len;
+    size_t              len;
 
     if( !ScanItem( TRUE, &start, &len ) ) return( NULL );
     while( --size >= 0 ) {
@@ -317,7 +317,7 @@ static bool DoProcAccel( bool add_to_menu, gui_menu_struct **menu,
     wnd_info            *info;
     a_window            *wnd;
     char                *start;
-    unsigned            len;
+    size_t              len;
 
     *menu = *parent = NULL;
     child = NULL;

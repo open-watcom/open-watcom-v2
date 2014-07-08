@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
@@ -37,8 +39,6 @@
 #include "modlist.h"
 #include "dbgio.h"
 #include "dbgtoggl.h"
-#include <string.h>
-#include <stdlib.h>
 
 
 extern char             *TxtBuff;

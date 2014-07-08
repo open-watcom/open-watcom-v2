@@ -29,19 +29,19 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbginfo.h"
 #include "dbglit.h"
 #include "spawn.h"
 #include "dui.h"
-#include <string.h>
 #include "trpcore.h"
 #include "trpcapb.h"
 
 
 // This list of extern functions is in alphabetic order.:
-extern cmd_list         *AllocCmdList( char *,unsigned int );
+extern cmd_list         *AllocCmdList( char *,size_t );
 extern void             ClearInpStack( input_type  );
 extern void             FingClose( void );
 extern void             FingFront( void );

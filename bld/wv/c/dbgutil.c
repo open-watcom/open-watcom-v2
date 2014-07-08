@@ -29,6 +29,10 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include <string.h>
+#include <float.h>
+#include <limits.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbginfo.h"
@@ -43,11 +47,6 @@
 #include "ldsupp.h"
 #include "mad.h"
 #include "dui.h"
-
-#include <ctype.h>
-#include <string.h>
-#include <float.h>
-#include <limits.h>
 
 
 extern char             *NameBuff;
@@ -398,7 +397,7 @@ static char *Rtrm( char *p )
  * AllocCmdList -- allocate a command list
  */
 
-cmd_list *AllocCmdList( char *start, unsigned len )
+cmd_list *AllocCmdList( char *start, size_t len )
 {
     cmd_list *cmds;
 

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
@@ -50,7 +51,7 @@ extern char             *StrCopy( char *, char * );
 extern char             *GetCmdName( int );
 extern char             *GetCmdEntry( char *, int, char * );
 extern void             Scan( void );
-extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
+extern bool             ScanItem( bool blank_delim, char **start, size_t *len );
 extern unsigned int     ScanCmd( char * );
 extern void             ReqEOC( void );
 
@@ -244,7 +245,7 @@ static char *ScanName( void )
 /***************************/
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     ScanItem( TRUE, &start, &len );
     memcpy( TxtBuff, start, len );

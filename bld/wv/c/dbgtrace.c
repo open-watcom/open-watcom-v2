@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "_srcmgt.h"
 #include "dbgdefn.h"
 #include "dbgtoken.h"

@@ -46,7 +46,7 @@ extern unsigned         InvCount;
 extern char             *TxtBuff;
 
 
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern bool             ScanEOC( void );
 extern bool             SwitchOnOff( void );
 extern void             ShowSwitch( bool );
@@ -325,12 +325,12 @@ void ProfileInvoke( char *name )
 void ProcInvoke( void )
 {
     char      *fstart;
-    unsigned   flen;
+    size_t    flen;
     char      *start;
     char_ring *parmlist;
     char_ring **owner;
     char_ring *path;
-    unsigned   len;
+    size_t    len;
 
     if( !ScanItem( TRUE, &fstart, &flen ) ) Error( ERR_LOC, LIT( ERR_WANT_FILENAME ) );
     parmlist = NULL;

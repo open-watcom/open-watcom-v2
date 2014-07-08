@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <limits.h>
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
@@ -43,8 +45,6 @@
 #include "dbgmem.h"
 #include "spawn.h"
 #include "dui.h"
-#include <limits.h>
-#include <string.h>
 
 extern image_entry      *ImageEntry( mod_handle mh );
 extern char             *ScanPos( void );

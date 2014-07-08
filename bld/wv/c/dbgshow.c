@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
@@ -38,8 +40,6 @@
 #include "dbgtback.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include <string.h>
-#include <ctype.h>
 
 
 extern unsigned int     ScanCmd( char * );

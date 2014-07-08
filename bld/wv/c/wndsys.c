@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -39,8 +41,6 @@
 #include "dbgadget.h"
 #include "dbghook.h"
 #include "dbgio.h"
-#include <stdio.h>
-#include <ctype.h>
 #if defined( __NT__ ) && defined( __GUI__ )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -70,7 +70,6 @@ extern bool             DlgSearchAll( char **, void * );
 extern unsigned int     ScanCmd( char * );
 extern void             ReqEOC( void );
 extern gui_colour_set   *GetWndColours( wnd_class class );
-extern bool             ScanItem( bool, char **, unsigned int * );
 extern bool             WndDlgTxt( char * );
 extern a_window         *WndSrchOpen( char * );
 extern void             *GetWndFont( a_window * );

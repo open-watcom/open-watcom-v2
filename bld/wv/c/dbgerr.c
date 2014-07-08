@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <stdarg.h>
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbginvk.h"
 #include "dbgtoken.h"
@@ -38,8 +40,6 @@
 #include "dbgtoggl.h"
 #include "dbgerr.h"
 #include "dui.h"
-#include <stdarg.h>
-#include <string.h>
 
 
 extern   char   *TxtBuff;

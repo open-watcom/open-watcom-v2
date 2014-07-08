@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "diptypes.h"
 #include "dbgio.h"
 #include "dbgmem.h"

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbgerr.h"
@@ -40,7 +41,6 @@
 #include "dbgreg.h"
 #include "dui.h"
 #include "dbglit.h"
-#include <string.h>
 
 
 extern void     ReqEOC( void );

@@ -54,7 +54,7 @@ extern wnd_class        ReqWndName( void );
 extern void             WndToolOpen( gui_ord, bool );
 extern void             WndToolClose( void );
 extern char             *DupStrLen( char *, unsigned );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern char             *GetCmdName( int );
 extern void             PushInpStack( void *, bool (*rtn)( void *, inp_rtn_action ), bool );
 extern void             TypeInpStack( input_type );
@@ -229,7 +229,7 @@ void ProcFont( void )
 {
     wnd_class class;
     char        *start;
-    unsigned    len;
+    size_t      len;
     int         i;
 
     class = ReqWndName();

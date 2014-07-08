@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgtoken.h"
@@ -38,14 +39,14 @@
 #include "dui.h"
 
 
-extern long         _fork( char *, unsigned int );
-extern long         RemoteFork(char *,unsigned int );
+extern long         _fork( char *, size_t );
+extern long         RemoteFork(char *,size_t );
 extern void         RemoteSuspend(void);
 extern void         RemoteResume(void);
 extern unsigned int ScanCmd(char *);
 extern void         ReqEOC(void);
 extern void         Scan(void);
-extern bool         ScanItem(bool ,char **,unsigned int *);
+extern bool         ScanItem(bool ,char **,size_t *);
 extern bool         CheckPointMem( unsigned, char * );
 extern void         CheckPointRestore( void );
 extern char         *GetCmdName( int );
@@ -56,7 +57,7 @@ extern char         *TxtBuff;
 
 static char SystemOps[] = { "Remote\0Local\0" };
 
-void DoSystem( char *cmd, unsigned len, int loc )
+void DoSystem( char *cmd, size_t len, int loc )
 {
     long        ret;
     bool        chk;
@@ -80,7 +81,7 @@ void DoSystem( char *cmd, unsigned len, int loc )
 void ProcSystem()
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
     int         loc;
 
     loc = 0;

@@ -55,7 +55,7 @@ bool TBreak()
     return( FALSE );
 }
 
-long _fork( char *cmd, unsigned len )
+long _fork( char *cmd, size_t len )
 {
     cmd=cmd;len=len;
     return( 0 );

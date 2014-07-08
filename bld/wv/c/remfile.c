@@ -484,7 +484,7 @@ unsigned RemoteErase( char *name )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-long RemoteFork( char *cmd, unsigned len )
+long RemoteFork( char *cmd, size_t len )
 {
     mx_entry            in[2];
     mx_entry            out[1];

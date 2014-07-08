@@ -62,7 +62,7 @@ extern void             DoGivenField( sym_handle * );
 extern void             ReqEOC( void );
 extern void             Scan( void );
 extern unsigned int     ScanCmd( char * );
-extern bool             ScanQuote( char **, unsigned int * );
+extern bool             ScanQuote( char **, size_t * );
 extern bool             ScanEOC( void );
 extern char             *LineAddr( address *, char * );
 extern char             *StrAddr( address *, char *, unsigned );
@@ -953,7 +953,7 @@ static void DoDefault( void )
 void DoPrintList( bool output )
 {
     char        *fmt_start;
-    unsigned    fmt_len;
+    size_t      fmt_len;
 
     OutPgm = output;
     First = TRUE;
@@ -978,7 +978,7 @@ void ChkPrintList( void )
 {
     bool        first;
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     first = TRUE;
     while( !ScanEOC() ) {

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"

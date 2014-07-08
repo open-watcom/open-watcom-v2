@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "_srcmgt.h"
 #include "dbgdefn.h"
 #include "dbglit.h"
@@ -37,14 +38,13 @@
 #include "dbgmem.h"
 #include "dbginfo.h"
 #include "dui.h"
-#include <string.h>
 #include "srcmgt.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );
 extern unsigned long    CueLine( cue_handle *ch );
-extern bool             ScanItem( bool ,char **,unsigned int *);
+extern bool             ScanItem( bool ,char **,size_t *);
 extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
 extern void             ConfigLine( char * );
@@ -157,7 +157,7 @@ void SourceSet( void )
 {
     char_ring **owner;
     char      *start;
-    unsigned   len;
+    size_t    len;
 
     if( CurrToken == T_DIV ) {
         Scan();

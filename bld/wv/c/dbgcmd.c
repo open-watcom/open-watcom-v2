@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -40,7 +41,6 @@
 #include "dbgio.h"
 #include "spawn.h"
 #include "dui.h"
-#include <string.h>
 
 
 extern char             *ReScan( char * );

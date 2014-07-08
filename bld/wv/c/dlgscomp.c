@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "namelist.h"
-#include "string.h"
 
 extern char *TxtBuff;
 

@@ -49,7 +49,7 @@ extern void             Scan( void );
 extern char             *ScanPos( void );
 extern char             *ReScan( char * );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( char *, int, char * );
@@ -77,7 +77,6 @@ extern void             LangInit( void );
 extern void             LangFini( void );
 extern bool             LangLoad( const char *, unsigned );
 extern char             *StrCopy( char *, char * );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
 extern void             FreeCmdList( cmd_list * );
 extern char             *Format( char *, char *, ... );
 extern void             Recog( unsigned int );
@@ -454,7 +453,7 @@ void NewLang( char *lang )
 static void LangSet( void )
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     ScanItem( TRUE, &start, &len );
     ReqEOC();
@@ -565,7 +564,7 @@ static bool DoOneToggle( mad_window_toggles wt )
 {
     unsigned                    bit;
     char                        *start;
-    unsigned                    len;
+    size_t                      len;
     const mad_toggle_strings    *toggles;
     const mad_reg_set_data      *rsd;
 
@@ -652,7 +651,7 @@ void PendingToggles( void )
 static bool OneToggle( mad_window_toggles wt )
 {
     char                *name;
-    unsigned            len;
+    size_t              len;
     mad_handle          old_mad;
     mad_handle          new_mad;
     char                *scan;
@@ -1041,7 +1040,7 @@ static void SupportSet( void )
 {
     char_ring   *new;
     char        *start;
-    unsigned    len;
+    size_t      len;
     unsigned    count;
 
     count = 0;

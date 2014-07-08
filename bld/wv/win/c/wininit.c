@@ -148,7 +148,7 @@ void RestoreHandlers()
 {
 }
 
-long _fork( char *cmd, unsigned len )
+long _fork( char *cmd, size_t len )
 {
     //NYI: check out WinExec
     cmd = cmd; len = len;

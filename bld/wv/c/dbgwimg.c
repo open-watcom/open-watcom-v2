@@ -31,11 +31,11 @@
 
 
 #include "dbgdefn.h"
+#include <string.h>
+#include <stddef.h>
 #include "dbgwind.h"
 #include "dbginfo.h"
 #include "sortlist.h"
-#include <string.h>
-#include <stddef.h>
 
 
 extern bool             ReLoadSymInfo( image_entry *image );

@@ -374,7 +374,7 @@ void Recog( unsigned token )
  * ScanQuote -- scan a debugger quoted string
  */
 
-bool ScanQuote( char **start, unsigned *len )
+bool ScanQuote( char **start, size_t *len )
 {
     int   cnt;
 
@@ -405,7 +405,7 @@ bool ScanQuote( char **start, unsigned *len )
  * ScanItem - scan to a blank or EOC
  */
 
-bool ScanItem( bool blank_delim, char **start, unsigned *len )
+bool ScanItem( bool blank_delim, char **start, size_t *len )
 {
     if( ScanEOC() ) {
         *start = NULL;

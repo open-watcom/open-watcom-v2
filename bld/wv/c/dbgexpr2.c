@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgstk.h"

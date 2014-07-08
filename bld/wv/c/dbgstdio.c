@@ -36,16 +36,16 @@
 #include <string.h>
 
 
-extern bool ScanItem(bool ,char **,unsigned int *);
+extern bool ScanItem(bool ,char **,size_t *);
 extern void ReqEOC(void);
 extern bool Redirect(bool ,char *);
 
 
 static void StdioRedirect( bool input )
 {
-    char      *start;
-    unsigned   len;
-    char       buff[160];
+    char        *start;
+    size_t      len;
+    char        buff[160];
 
     ScanItem( TRUE, &start, &len );
     memcpy( buff, start, len );

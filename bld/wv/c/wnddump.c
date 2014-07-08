@@ -39,7 +39,7 @@
 
 extern char             *GetDmpName( void );
 extern void             ReqEOC( void );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern bool             WndDlgTxt( char *buff );
 extern char             *StrCopy( char *src, char *dest );
 
@@ -147,7 +147,7 @@ void WndDumpPrompt( a_window *wnd )
 void WndDumpFile( a_window *wnd )
 {
     char                *start;
-    unsigned            len;
+    size_t              len;
     bool                got;
 
     got = ScanItem( TRUE, &start, &len );

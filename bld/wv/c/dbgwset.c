@@ -48,7 +48,7 @@ extern void             Scan( void );
 extern char             *ScanPos( void );
 extern char             *ReScan( char * );
 extern bool             ScanEOC( void );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern unsigned         SetCurrRadix( unsigned int );
 extern char             *GetCmdEntry( char *, int, char * );
@@ -78,7 +78,7 @@ extern bool             LangLoad( const char *, unsigned );
 extern char             *StrCopy( char *, char * );
 extern void             WndRedraw( wnd_class );
 extern a_window         *WndFindActive( void );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern cmd_list         *AllocCmdList( char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern char             *Format( char *, char *, ... );
 extern void             Recog( unsigned int );
@@ -517,7 +517,7 @@ extern void MacroSet( void )
     cmd_list    *cmds;
     unsigned    key;
     char        *start;
-    unsigned    len;
+    size_t      len;
     bool        scanned;
     char        *p,*q;
     int         i;
@@ -634,7 +634,7 @@ enum {
 extern void SearchSet( void )
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     while( CurrToken == T_DIV ) {
         Scan();

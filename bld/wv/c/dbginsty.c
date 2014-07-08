@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoken.h"
 #include "dbginfo.h"
@@ -40,8 +42,6 @@
 #include "dbginfo.h"
 #include "spawn.h"
 #include "mad.h"
-#include <string.h>
-#include <ctype.h>
 
 extern void             PopEntry(void);
 extern void             ExprValue(stack_entry *);

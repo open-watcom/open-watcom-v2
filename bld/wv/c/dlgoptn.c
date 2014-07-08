@@ -29,12 +29,12 @@
 *
 ****************************************************************************/
 
+#include <string.h>
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "guidlg.h"
 #include "dbgerr.h"
 #include "dlgoptn.h"
-#include "string.h"
 
 extern char             *TxtBuff;
 

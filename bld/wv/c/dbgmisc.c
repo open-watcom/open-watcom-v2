@@ -52,14 +52,14 @@ extern unsigned         OptExpr( unsigned );
 extern unsigned int     ScanCmd( char * );
 extern void             DebugExit( void );
 extern void             ReqEOC( void );
-extern bool             ScanQuote( char **, unsigned int * );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanQuote( char **, size_t * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             Scan( void );
 extern bool             ScanEOC( void );
 extern unsigned         Go( bool );
 extern void             PopEntry( void );
 extern void             NormalExpr( void );
-extern cmd_list         *AllocCmdList( char *, unsigned int );
+extern cmd_list         *AllocCmdList( char *, size_t );
 extern void             FreeCmdList( cmd_list * );
 extern char             *GetCmdEntry( char *, int , char * );
 extern char             *GetCmdName( int );
@@ -396,9 +396,9 @@ void ProcSkip( void )
 void ProcIf( void )
 {
     char                *start;
-    unsigned            len;
+    size_t              len;
     char                *true_start;
-    unsigned            true_len;
+    size_t              true_len;
     unsigned_64         res;
     cmd_list            *cmd;
     bool                have_true;
@@ -445,7 +445,7 @@ void ProcIf( void )
 void ProcWhile( void )
 {
     char                *start;
-    unsigned            len;
+    size_t              len;
     unsigned_64         res;
     cmd_list            *cmd;
 
@@ -471,7 +471,7 @@ void ProcWhile( void )
 void ProcError( void )
 {
     char        *start;
-    unsigned    len;
+    size_t      len;
 
     ScanItem( FALSE, &start, &len );
     ReqEOC();

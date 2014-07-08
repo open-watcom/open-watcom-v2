@@ -102,7 +102,7 @@ extern unsigned         ProgPoke( address, void *, unsigned );
 extern bool             DlgScanDataAddr( char *str, address *value );
 extern bool             DlgScanLong( char *str, long *value );
 extern unsigned         NewCurrRadix( unsigned rad );
-extern cmd_list         *AllocCmdList(char *,unsigned int );
+extern cmd_list         *AllocCmdList(char *,size_t );
 extern void             FreeCmdList(cmd_list *);
 extern void             PushCmdList(cmd_list *);
 extern void             TypeInpStack(input_type);

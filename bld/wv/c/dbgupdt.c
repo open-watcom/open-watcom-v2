@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
@@ -39,7 +41,6 @@
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dui.h"
-#include <ctype.h>
 
 extern void             BrkAddrRefresh( void );
 extern void             InitLC( location_context *new, bool use_real_regs );

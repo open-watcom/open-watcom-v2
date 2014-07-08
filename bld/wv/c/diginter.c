@@ -64,8 +64,7 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
     return( FileOpen( name, mode ) );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p,
-                                dig_seek k )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
 {
     return( SeekStream( h, p, k ) );
 }

@@ -45,7 +45,7 @@
 #include "dbgstk.h"
 #include "srcmgt.h"
 
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern bool             ScanSelectedExpr( char * );
 extern void             BreakOnSelected( char *item );
@@ -939,7 +939,7 @@ extern a_window *WndSrcOpen( void )
 void ProcView( void )
 {
     char                *start;
-    unsigned            len;
+    size_t              len;
     bool                binary;
 
     binary = FALSE;

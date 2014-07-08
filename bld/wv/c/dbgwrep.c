@@ -42,7 +42,6 @@
 
 extern void             RecordPointStart(void);
 extern void             RecordNewProg(void);
-extern cmd_list         *AllocCmdList( char *start, unsigned len );
 extern void             FreeCmdList( cmd_list *cmds );
 extern void             PointFini();
 extern void             PushCmdList( cmd_list *cmds );
@@ -57,7 +56,6 @@ extern  a_window        *WndAsmInspect( address addr );
 extern void             CreateInvokeFile( char *name, void (*rtn)(void) );
 extern void             InvokeAFile(char*);
 extern bool             ScanEOC();
-extern bool             ScanItem( bool blank_delim, char **start, unsigned *len );
 extern void             ReqEOC();
 extern bool             WndDlgTxt( char *buff );
 extern char             *StrCopy( char *src, char *dest );

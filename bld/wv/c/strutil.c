@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdarg.h>
 #include "dbgdefn.h"
 #include "dbgtoggl.h"
 #include "dbginfo.h"
 #include "dbgio.h"
-#include <string.h>
-#include <stdarg.h>
 
 
 extern char *StrAddr(address *,char *,unsigned);

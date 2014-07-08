@@ -40,7 +40,7 @@
 extern void         ReqEOC( void );
 extern void         Scan( void );
 extern unsigned int ScanCmd( char * );
-extern bool         ScanItem( bool, char **, unsigned int * );
+extern bool         ScanItem( bool, char **, size_t * );
 extern bool         ScanEOC( void );
 extern char         *GetCmdName( int );
 
@@ -125,7 +125,7 @@ void LogPut( char *str )
 static void OpenLog( open_access mode )
 {
     char   *start;
-    unsigned len;
+    size_t len;
 
     if( LogHndl != NIL_HANDLE ) {
         Error( ERR_NONE, LIT( ERR_LOG_STARTED ) );

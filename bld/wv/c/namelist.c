@@ -31,15 +31,15 @@
 
 
 #include "dbgdefn.h"
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include "dbginfo.h"
 //#include "dbgwind.h"
 #include "dbgerr.h"
 #include "namelist.h"
 #include "sortlist.h"
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 extern char             *TxtBuff;
 extern address          NilAddr;

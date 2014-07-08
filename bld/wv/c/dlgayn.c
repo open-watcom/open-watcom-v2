@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbginfo.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "guidlg.h"
 #include "dlgayn.h"
-#include <string.h>
 
 extern char             *Format( char *buff, char *fmt, ... );
 

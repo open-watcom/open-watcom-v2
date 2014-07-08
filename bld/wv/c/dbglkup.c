@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbglit.h"
 #include "dbgtoken.h"
@@ -37,13 +39,11 @@
 #include "dbgmem.h"
 #include "dbgtoggl.h"
 #include "dbgio.h"
-#include <ctype.h>
-#include <string.h>
 
 
 extern void             Scan( void );
 extern unsigned         ScanCmd( char * );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern void             ConfigLine( char * );
 extern char             *StrCopy( char *, char * );
@@ -139,7 +139,7 @@ void LookSet( void )
 {
     struct {
         char     *start;
-        unsigned len;
+        size_t   len;
         bool     respect;
     }       *curr, new[20];
     lookup  *old, *next;

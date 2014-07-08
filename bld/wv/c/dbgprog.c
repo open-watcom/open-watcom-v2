@@ -61,7 +61,7 @@ extern void             StdOutNew( void );
 extern void             Warn( char * );
 extern unsigned int     ScanCmd( char * );
 extern void             Scan( void );
-extern bool             ScanItem( bool, char **, unsigned int * );
+extern bool             ScanItem( bool, char **, size_t * );
 extern void             ReqEOC( void );
 extern bool             KillProgOvlay( void );
 extern void             ReportTask( task_status, unsigned );
@@ -1240,8 +1240,8 @@ static void DoReStart( bool have_parms, unsigned clen, char *start, unsigned len
 static void ResNew( void )
 {
     char                *start;
-    unsigned            len;
-    unsigned            clen;
+    size_t              len;
+    size_t              clen;
     bool                have_parms;
 
     clen = strlen( TaskCmd );
@@ -1296,7 +1296,7 @@ static void ProgNew( void )
     char        *end;
     char        *new;
     char        *sym;
-    unsigned    len;
+    size_t      len;
     unsigned    clen;
     unsigned    plen;
     bool        have_parms;
@@ -1426,7 +1426,7 @@ OVL_EXTERN void MapAddrUser( image_entry *image, addr_ptr *addr,
 OVL_EXTERN void SymFileNew( void )
 {
     char        *fname;
-    unsigned    fname_len;
+    size_t      fname_len;
     image_entry *image;
     address     addr;
     map_entry   **owner;
