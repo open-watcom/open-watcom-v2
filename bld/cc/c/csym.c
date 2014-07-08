@@ -961,9 +961,9 @@ LABELPTR LkLabel( const char *name )
         label->next_label = LabelHead;
         LabelHead = label;
         memcpy( label->name, name, len );
-        label->defined    = 0;
+        label->defined = 0;
         label->referenced = 0;
-        label->ref_list   = NextLabel();
+        label->ref_list = NextLabel();
     }
     return( label );
 }

@@ -55,7 +55,7 @@ int WalkExprTree( TREEPTR p,
             temp = p;
             p = p->left;
             temp->left = parent;
-            temp->visit  = TRUE;
+            temp->visit = TRUE;
             parent = temp;
         }
         if( parent == NULL ) {

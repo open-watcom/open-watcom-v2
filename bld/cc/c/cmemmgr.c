@@ -269,7 +269,7 @@ static enum cmem_kind CMemKind( void *loc )
     size_t          size;
     mem_blk         *blk;
 
-    ptr  = PermPtr;
+    ptr = PermPtr;
     size = PermSize;
     for( blk = Blks; blk != NULL; blk = blk->next ) {
         if( (mem_blk *)loc > blk ) {

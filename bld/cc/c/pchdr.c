@@ -203,7 +203,7 @@ static bool pch_write( const char *buf, size_t len )
             len -= amt_towrite;
             if( PH_BufSize == 0 ) {         // if buffer is full
                 PH_BufSize = PH_BUF_SIZE;
-                PH_BufPtr  = PH_Buffer;
+                PH_BufPtr = PH_Buffer;
                 if( write( PH_handle, PH_Buffer, PH_BUF_SIZE ) != PH_BUF_SIZE ) {
                     return( TRUE );
                 }
@@ -311,7 +311,7 @@ static void OutPutHeader( void )
     pch.cpp_ignore_env    = CompFlags.cpp_ignore_env;
     pch.ignore_default_dirs = CompFlags.ignore_default_dirs;
 
-    rc  = PCHWriteVar( pch );
+    rc = PCHWriteVar( pch );
     rc |= PCHWrite( PH_Buffer + sizeof( pch ), pch.cwd_len );
     if( rc ) {
         longjmp( PH_jmpbuf, rc );
@@ -382,8 +382,8 @@ static void OutPutAliases( void )
     const char      *alias_subst;
 
     for( alias = AliasHead; alias != NULL; alias = alias->next ) {
-        alias_next  = alias->next;
-        alias_name  = alias->name;
+        alias_next = alias->next;
+        alias_name = alias->name;
         alias_subst = alias->subst;
         len = offsetof( alias_list, names );
         if( alias_name != NULL ) {
@@ -399,8 +399,8 @@ static void OutPutAliases( void )
         alias->next = PCHSetUInt( PCHAlign( len ) );
         rc = PCHWrite( alias, len );
         alias->subst = alias_subst;
-        alias->name  = alias_name;
-        alias->next  = alias_next;
+        alias->name = alias_name;
+        alias->next = alias_next;
         if( rc ) {
             longjmp( PH_jmpbuf, rc );
         }
@@ -944,10 +944,10 @@ static void OutPutSymbols( void )
 void OutPutEverything( void )
 {
     PH_SymHashCount = 0;
-    PH_FileCount    = 0;
-    PH_RDirCount    = 0;
-    PH_IAliasCount  = 0;
-    PH_SegCount     = 0;
+    PH_FileCount = 0;
+    PH_RDirCount = 0;
+    PH_IAliasCount = 0;
+    PH_SegCount = 0;
     OutPutIncludes();
     OutPutRoDirList();
     OutPutIncAliasList();
@@ -1395,7 +1395,7 @@ static char *FixupSymbols( char *p, unsigned symbol_count )
     }
     for( handle = 0; handle < (unsigned)(pointer_int)SpecialSyms; ++handle ) {
         SymGet( &sym, (SYM_HANDLE)(pointer_int)handle );  // Redo special syms
-        symptr  = PCH_SymArray[handle];
+        symptr = PCH_SymArray[handle];
         *symptr = sym;
     }
     return( p );
@@ -1413,7 +1413,7 @@ static void FixupTypeIndexes( type_indices *typ_index )
         }
     }
     VoidParmList[0] = BaseTypes[TYPE_VOID];
-    StringType    = TypeArray + typ_index->stringtype_index;
+    StringType = TypeArray + typ_index->stringtype_index;
     ConstCharType = TypeArray + typ_index->constchartype_index;
 }
 
@@ -1723,16 +1723,16 @@ void AbortPreCompiledHeader( void )
     CMemFree( TagArray );
     CMemFree( TextSegArray );
     CMemFree( PCHMacroHash );
-    PCH_Start        = NULL;
-    PCH_End          = NULL;
-    PCH_Macros       = NULL;
-    PCH_SymArray     = NULL;
+    PCH_Start = NULL;
+    PCH_End = NULL;
+    PCH_Macros = NULL;
+    PCH_SymArray = NULL;
     PCH_MaxSymHandle = 0;
-    TagArray         = NULL;
-    TextSegArray     = NULL;
-    FNameList        = NULL;
-    PCHMacroHash     = NULL;
-    IAliasNames      = PCHIAliasNames;
+    TagArray = NULL;
+    TextSegArray = NULL;
+    FNameList = NULL;
+    PCHMacroHash = NULL;
+    IAliasNames = PCHIAliasNames;
     RestoreIncFileList();
     CompFlags.make_precompiled_header = 1;      // force new PCH to be created
 }

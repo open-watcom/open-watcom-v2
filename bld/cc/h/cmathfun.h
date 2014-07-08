@@ -31,22 +31,22 @@
 
 
 #if _CPU == 8086 || _CPU == 386
-mathfunc( "__LOG", 1,  O_LOG ),
-mathfunc( "__COS", 1,  O_COS ),
-mathfunc( "__SIN", 1,  O_SIN ),
-mathfunc( "__TAN", 1,  O_TAN ),
-mathfunc( "__SQRT", 1, O_SQRT ),
-mathfunc( "__FABS", 1, O_FABS ),
-mathfunc( "__POW", 2, O_POW ),
+mathfunc( "__LOG",   1, O_LOG ),
+mathfunc( "__COS",   1, O_COS ),
+mathfunc( "__SIN",   1, O_SIN ),
+mathfunc( "__TAN",   1, O_TAN ),
+mathfunc( "__SQRT",  1, O_SQRT ),
+mathfunc( "__FABS",  1, O_FABS ),
+mathfunc( "__POW",   2, O_POW ),
 mathfunc( "__ATAN2", 2, O_ATAN2 ),
-mathfunc( "__FMOD", 2, O_FMOD ),
-mathfunc( "__ACOS", 1, O_ACOS ),
-mathfunc( "__ASIN", 1, O_ASIN ),
-mathfunc( "__ATAN", 1, O_ATAN ),
-mathfunc( "__COSH", 1, O_COSH ),
-mathfunc( "__EXP", 1, O_EXP ),
+mathfunc( "__FMOD",  2, O_FMOD ),
+mathfunc( "__ACOS",  1, O_ACOS ),
+mathfunc( "__ASIN",  1, O_ASIN ),
+mathfunc( "__ATAN",  1, O_ATAN ),
+mathfunc( "__COSH",  1, O_COSH ),
+mathfunc( "__EXP",   1, O_EXP ),
 mathfunc( "__LOG10", 1, O_LOG10 ),
-mathfunc( "__SINH", 1, O_SINH ),
-mathfunc( "__TANH", 1, O_TANH ),
+mathfunc( "__SINH",  1, O_SINH ),
+mathfunc( "__TANH",  1, O_TANH ),
 #endif
-mathfunc( NULL, 0, 0 )
+mathfunc( NULL,      0, 0 )

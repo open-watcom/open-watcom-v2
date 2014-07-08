@@ -1213,8 +1213,10 @@ static void PragAlias( void )
     alias_list      **alias;
     alias_list      *new_alias;
 
-    alias_name = subst_name = NULL;
-    alias_sym  = subst_sym  = SYM_NULL;
+    alias_name = NULL;
+    subst_name = NULL;
+    alias_sym = SYM_NULL;
+    subst_sym = SYM_NULL;
 
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         PPCTL_ENABLE_MACROS();

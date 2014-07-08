@@ -706,7 +706,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         }
     }
 //    based_sym = SYM_NULL;
-    modifiers  = FLAG_NONE;
+    modifiers = FLAG_NONE;
     segid = SEG_DATA;
     if( leaf->op.opr == OPR_PUSHADDR ) {
         SymGet( &sym, leaf->op.u2.sym_handle );
@@ -1927,14 +1927,14 @@ local bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sy
 
     if( memcmp( sym_name, MathFuncs[i].name, len ) == 0 )
         return( TRUE );
-    if( sym->flags & SYM_INTRINSIC ) {
-        strcpy( func_name, &MathFuncs[i].name[2] ); /* copy name without __ */
-        strlwr( func_name );
-        if( memcmp( sym_name, func_name, len ) == 0 ) {
-            return( TRUE );
+    if( (sym->flags & SYM_INTRINSIC) == 0 ) {
+        return( FALSE );        /* indicate not a math intrinsic function */
+    for( j = 0; j < len - 2; ++j ) {
+        if( sym_name[j] != tolower( (unsigned char)MathFuncs[i].name[j + 2] ) ) {
+            return( FALSE );        /* indicate not a math intrinsic function */
         }
     }
-    return( FALSE );        /* indicate not a math intrinsic function */
+    return( TRUE );
 }
 
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)

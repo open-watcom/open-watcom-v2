@@ -336,7 +336,7 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
             } else if( !IdenticalType( typ1->object, typ2->object ) ) {
                 ret_val = NO;
             }
-        } else if( typ1->decl_type == TYPE_STRUCT  || typ1->decl_type == TYPE_UNION ) {
+        } else if( typ1->decl_type == TYPE_STRUCT || typ1->decl_type == TYPE_UNION ) {
            /* allow pointers to different structs */
            /* stop this for ANSI! */
             if( ( typ1 != typ2 ) ) {

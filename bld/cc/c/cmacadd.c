@@ -145,7 +145,7 @@ void MacLkAdd( MEPTR mentry, size_t len, macro_flags mflags )
     MacroCopy( mentry, MacroOffset, offsetof(MEDEFN,macro_name) );
     mentry = (MEPTR)MacroOffset;
     CalcHash( mentry->macro_name, strlen( mentry->macro_name ) );
-    lnk  = &MacHash[MacHashValue];
+    lnk = &MacHash[MacHashValue];
     lnk = MacroLkUp( mentry->macro_name, lnk );
     old_mentry = *lnk;
     if( old_mentry != NULL ) {

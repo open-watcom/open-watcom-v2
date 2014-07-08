@@ -93,7 +93,7 @@ static IDEBool __stdcall getInfo          // GET INFORMATION  (NYI)
         char **rval;
 
         name = (char*)wparam;
-        rval  = (char**)lparam;
+        rval = (char**)lparam;
         *rval = getenv( name );
         ret = FALSE;
         }break;

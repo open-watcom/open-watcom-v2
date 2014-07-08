@@ -1476,7 +1476,7 @@ local TYPEPTR *GetProtoType( decl_info *first )
         SYMPTR           sym; // parm sym
 
         stg_class = info.stg;
-//        declspec  = info.decl;
+//        declspec = info.decl;
         typ = info.typ;
         mod = info.mod;
         if( stg_class != SC_NONE && stg_class != SC_REGISTER ) {

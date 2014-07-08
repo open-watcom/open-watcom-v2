@@ -69,7 +69,7 @@ static void InitDBType( void )
     B_UInt   = DBScalar( "unsigned int", TY_UINT_2 );
 #endif
     B_Int32  = DBScalar( "long", TY_INT_4 );
-    B_UInt32  = DBScalar( "unsigned long", TY_UINT_4 );
+    B_UInt32 = DBScalar( "unsigned long", TY_UINT_4 );
     B_Int64  = DBScalar( "__int64", TY_INT_8 );
     B_UInt64 = DBScalar( "unsigned __int64", TY_UINT_8 );
     B_Bool   = DBScalar( "_Bool", TY_UINT_1 );

@@ -159,10 +159,8 @@ static TYPEPTR TrueType( TYPEPTR typ )
         /* For human: smart typedef expansion. Stop before unnamed struct */
         while( typ->decl_type == TYPE_TYPEDEF ) {
             newtyp = typ->object;
-            if( newtyp->decl_type == TYPE_STRUCT ||
-                newtyp->decl_type == TYPE_UNION  ||
-                newtyp->decl_type == TYPE_ENUM ) {
-
+            if( newtyp->decl_type == TYPE_STRUCT || newtyp->decl_type == TYPE_UNION
+              || newtyp->decl_type == TYPE_ENUM ) {
                 if( *newtyp->u.tag->name == '\0' ) {
                     break;
                 }
@@ -323,9 +321,7 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
     SYM_ENTRY           sym;
     TYPEPTR             obj;
 
-    for( ;; ) {
-        if( typ->decl_type == TYPE_TYPEDEF || typ->decl_type == TYPE_ENUM )
-            break;
+    for( ; typ->decl_type != TYPE_TYPEDEF && typ->decl_type != TYPE_ENUM; ) {
         obj = Object( typ );
         if( obj == NULL )
             break;
@@ -341,9 +337,8 @@ static void DumpBaseType( TYPEPTR typ, STRCHUNK *pch )
         } else {
             ChunkSaveStrWord( pch, CTypeNames[typ->decl_type] );
         }
-        if( typ->decl_type == TYPE_STRUCT ||
-            typ->decl_type == TYPE_UNION  ||
-            typ->decl_type == TYPE_ENUM  ) {
+        if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION
+          || typ->decl_type == TYPE_ENUM ) {
 
             /* if there is no tag name, then should print out the
                entire structure or union definition or enum list */
@@ -408,7 +403,7 @@ static void DumpTail( TYPEPTR typ, SYMPTR funcsym, type_modifiers pointer_flags,
     for( ;; ) {
         if( typ->decl_type == TYPE_FUNCTION ) {
             ChunkSaveChar( pch, '(' );
-            if( typ == top_typ  ||  typ->u.fn.parms != NULL ) {
+            if( typ == top_typ || typ->u.fn.parms != NULL ) {
                 DumpParmList( typ->u.fn.parms, funcsym, pch);
                 funcsym = NULL;
             }

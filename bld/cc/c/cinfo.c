@@ -264,7 +264,7 @@ void SetSegment( SYMPTR sym )
 #if _CPU == 8086
     if( (sym->mods & FLAG_FAR) && CompFlags.zc_switch_used ) {
         if( CONSTANT( sym->mods )
-        || (sym->attribs.stg_class == SC_STATIC  &&  (sym->flags & SYM_TEMP)) ) {
+        || (sym->attribs.stg_class == SC_STATIC && (sym->flags & SYM_TEMP)) ) {
             sym->u.var.segid = SEG_CODE;
             return;
         }

@@ -37,7 +37,7 @@
 
 /* The following table is ASCII dependent. */
 
-charset_flags CharSet[]  = {                              /* ASCII */
+charset_flags CharSet[] = {                             /* ASCII */
 
 /* 00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL */
     C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, /* NUL to BEL */
@@ -178,7 +178,7 @@ charset_flags CharSet[]  = {                              /* ASCII */
     0                   // EOF_CHAR
 };
 
-unsigned char TokValue[]  = {            /* ASCII */
+unsigned char TokValue[] = {            /* ASCII */
 
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 00 - 0F */
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, /* 10 - 1F */

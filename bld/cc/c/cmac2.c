@@ -596,10 +596,10 @@ local bool GetConstExpr( void )
 /*   #endif                                     */
 
     useful_side_effect = CompFlags.useful_side_effect;
-    meaningless_stmt   = CompFlags.meaningless_stmt;
+    meaningless_stmt = CompFlags.meaningless_stmt;
     value = BoolConstExpr();
     CompFlags.useful_side_effect = useful_side_effect;
-    CompFlags.meaningless_stmt   = meaningless_stmt;
+    CompFlags.meaningless_stmt = meaningless_stmt;
     return( value );
 }
 
@@ -776,7 +776,7 @@ local void CLine( void )
                         flist = AddFlist( Buffer );
                         flist->rwflag = FALSE;  // not a real file so no autodep
                         SrcFile->src_name = flist->name;
-                        SrcFile->src_loc.fno  = flist->index;
+                        SrcFile->src_loc.fno = flist->index;
                         if( CompFlags.cpp_output ) {
                             EmitLine( src_line, SrcFile->src_name );
                         }

@@ -69,10 +69,10 @@ void DumpALD( long_double *pld )
     CVT_INFO    cvt;
     char        buf[256];
 
-    cvt.ndigits  = 20;
-    cvt.scale    = 0;
-    cvt.flags    = G_FMT | NO_TRUNC;
-    cvt.expchar  = 'e';
+    cvt.ndigits = 20;
+    cvt.scale = 0;
+    cvt.flags = G_FMT | NO_TRUNC;
+    cvt.expchar = 'e';
     cvt.expwidth = 8;
     __LDcvt( pld, &cvt, buf );
     printf( "%s", buf );

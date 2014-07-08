@@ -50,9 +50,9 @@ typedef struct block_entry {
 
 // values for return_type
 enum return_with {
-    RETURN_WITH_NONE    = 0,
+    RETURN_WITH_NONE = 0,
     RETURN_WITH_NO_EXPR = 1,
-    RETURN_WITH_EXPR    = 2,
+    RETURN_WITH_EXPR = 2,
 };
 
 struct return_info {
@@ -121,8 +121,8 @@ SYM_HANDLE GetBlockSymList( void )
 
 void InitStmt( void )
 {
-    BlockStack  = NULL;
-    LoopStack   = NULL;
+    BlockStack = NULL;
+    LoopStack = NULL;
     SwitchStack = NULL;
 }
 
@@ -1207,7 +1207,7 @@ void Statement( void )
     CompFlags.addr_of_auto_taken = 0;
     end_of_func_label = 0;
     return_at_outer_level = FALSE;
-    declaration_allowed   = FALSE;
+    declaration_allowed = FALSE;
     DeadCode = 0;
     LoopDepth = 0;
     LabelIndex = 0;
@@ -1245,7 +1245,7 @@ void Statement( void )
             BlockStack->break_label = NextLabel();
             JumpFalse( BracketExpr(), BlockStack->break_label );
             /* only issue msg if ';' is on same line as 'if' */
-            if( CurToken == T_SEMI_COLON  &&  SrcLoc.line == TokenLoc.line && SrcLoc.fno == TokenLoc.fno ) {
+            if( CurToken == T_SEMI_COLON && SrcLoc.line == TokenLoc.line && SrcLoc.fno == TokenLoc.fno ) {
                 SetErrLoc( &TokenLoc );
                 NextToken();    /* look ahead for else keyword */
                 if( CurToken != T_ELSE ) {
@@ -1324,8 +1324,8 @@ void Statement( void )
                 return_at_outer_level = TRUE;
             }
             MustRecog( T_SEMI_COLON );
-            if( SymLevel != 1  ||  CurToken != T_RIGHT_BRACE  ||
-                    BlockStack->block_type != T_LEFT_BRACE ) {
+            if( SymLevel != 1 || CurToken != T_RIGHT_BRACE
+              || BlockStack->block_type != T_LEFT_BRACE ) {
                 if( end_of_func_label == 0 ) {
                     end_of_func_label = NextLabel();
                 }

@@ -91,12 +91,12 @@ void FrontEndInit( bool reuse )
 {
     GlobalCompFlags.cc_reuse = reuse;
     GlobalCompFlags.cc_first_use = TRUE;
-    GlobalCompFlags.ignore_environment  = FALSE;
-    GlobalCompFlags.ignore_current_dir  = FALSE;
+    GlobalCompFlags.ignore_environment = FALSE;
+    GlobalCompFlags.ignore_current_dir = FALSE;
     GlobalCompFlags.ide_cmd_line_has_files = FALSE;
-    GlobalCompFlags.ide_console_output  = FALSE;
-    GlobalCompFlags.progress_messages   = FALSE;
-//    GlobalCompFlags.dll_active          = FALSE;
+    GlobalCompFlags.ide_console_output = FALSE;
+    GlobalCompFlags.progress_messages = FALSE;
+//    GlobalCompFlags.dll_active = FALSE;
 }
 
 void FrontEndFini( void )

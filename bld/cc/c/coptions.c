@@ -1302,7 +1302,7 @@ static void Set_ZE( void )
 static void Set_ZG( void )
 {
     CompFlags.generate_prototypes = 1;
-    CompFlags.dump_prototypes     = 1;
+    CompFlags.dump_prototypes = 1;
 }
 
 static void Set_ZI( void )          { CompFlags.extra_stats_wanted = 1; }
@@ -1352,7 +1352,7 @@ static void Set_ZQ( void )          { CompFlags.quiet_mode = 1; }
 static void Set_ZS( void )          { CompFlags.check_syntax = 1; }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_EQ( void )          { CompFlags.no_conmsg  = 1; }
+static void Set_EQ( void )          { CompFlags.no_conmsg = 1; }
 
 static void Set_ZFW( void )
 {
@@ -1807,7 +1807,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
 
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
         c = tolower( *(unsigned char *)p );
-        if( c == *(unsigned char *)opt ) {
+        if( c == *opt ) {
             OptValue = op_table[i].value;
             j = 1;
             for( ;; ) {
@@ -1879,7 +1879,7 @@ static const char *ProcessOption( struct option const *op_table, const char *p, 
                     }
                 } else {
                     c = tolower( (unsigned char)p[j] );
-                    if( *(unsigned char *)opt != c ) {
+                    if( *opt != c ) {
                         if( *opt < 'A' || *opt > 'Z' )
                             break;
                         if( *opt != p[j] ) {
@@ -2025,7 +2025,7 @@ local void ProcOptions( const char *str )
                 str = save[--level];
                 continue;
             }
-            if( *str == '-'  ||  *str == SwitchChar ) {
+            if( *str == '-' || *str == SwitchChar ) {
                 str = ProcessOption( CFE_Options, str + 1, str );
             } else {  /* collect  file name */
                 const char  *beg;
@@ -2078,26 +2078,26 @@ local void ProcOptions( const char *str )
 static void InitCPUModInfo( void )
 {
     CodeClassName = NULL;
-    PCH_FileName  = NULL;
+    PCH_FileName = NULL;
     TargetSwitches = 0;
     TargSys = TS_OTHER;
 #if _CPU == _AXP || _CPU == _PPC || _CPU == _SPARC || _CPU == _MIPS
-    TextSegName   = ".text";
-    DataSegName   = ".data";
-    GenCodeGroup  = "";
-    DataPtrSize   = TARGET_POINTER;
-    CodePtrSize   = TARGET_POINTER;
-    GenSwitches   = MEMORY_LOW_FAILS;
+    TextSegName = ".text";
+    DataSegName = ".data";
+    GenCodeGroup = "";
+    DataPtrSize = TARGET_POINTER;
+    CodePtrSize = TARGET_POINTER;
+    GenSwitches = MEMORY_LOW_FAILS;
   #if _CPU == _AXP
-    GenSwitches  |= OBJ_COFF;
+    GenSwitches |= OBJ_COFF;
   #else
-    GenSwitches  |= OBJ_ELF;
+    GenSwitches |= OBJ_ELF;
   #endif
 #elif _CPU == 386 || _CPU == 8086
     Stack87 = 8;
-    TextSegName   = "";
-    DataSegName   = "";
-    GenCodeGroup  = "";
+    TextSegName = "";
+    DataSegName = "";
+    GenCodeGroup = "";
     CompFlags.register_conv_set = 0;
     CompFlags.register_conventions = 1;
     GenSwitches = MEMORY_LOW_FAILS;

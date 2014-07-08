@@ -47,7 +47,7 @@ char *ftoa( FLOATVAL *flt )
     cvt.scale = 1;
     cvt.ndigits = MAX_DIGIT;
     cvt.expwidth = 0;
-    cvt.expchar  = 0;
+    cvt.expchar = 0;
     __LDcvt( &flt->ld, &cvt, mant );
     if( !isdigit( *mant ) ) {
         /* special magical thingy (nan, inf, ...) */

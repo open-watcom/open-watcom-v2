@@ -139,16 +139,16 @@ void PragmaFini( void )
 static void InitAuxInfo( void )
 /*****************************/
 {
-    CurrAlias   = NULL;
-    CurrInfo    = NULL;
-    CurrEntry   = NULL;
+    CurrAlias = NULL;
+    CurrInfo = NULL;
+    CurrEntry = NULL;
 
     memset( &AuxInfo, 0, sizeof( AuxInfo ) );
 
-    AuxInfoFlg.f_near           = 0;
-    AuxInfoFlg.f_routine_pops   = 0;
-    AuxInfoFlg.f_caller_return  = 0;
-    AuxInfoFlg.f_8087_returns   = 0;
+    AuxInfoFlg.f_near = 0;
+    AuxInfoFlg.f_routine_pops = 0;
+    AuxInfoFlg.f_caller_return = 0;
+    AuxInfoFlg.f_8087_returns = 0;
 }
 
 static void CopyAuxInfo( void )
@@ -801,11 +801,11 @@ local void GetParmInfo( void )
         unsigned f_list          : 1;
     } have;
 
-    have.f_pop           = 0;
-    have.f_reverse       = 0;
-    have.f_loadds        = 0;
-    have.f_nomemory      = 0;
-    have.f_list          = 0;
+    have.f_pop = 0;
+    have.f_reverse = 0;
+    have.f_loadds = 0;
+    have.f_nomemory = 0;
+    have.f_list = 0;
     for( ;; ) {
         if( !have.f_pop && PragRecog( "caller" ) ) {
             AuxInfo.cclass |= CALLER_POPS;
@@ -843,10 +843,10 @@ local void GetSTRetInfo( void )
         unsigned f_list         : 1;
     } have;
 
-    have.f_float  = 0;
+    have.f_float = 0;
     have.f_struct = 0;
     have.f_allocs = 0;
-    have.f_list   = 0;
+    have.f_list = 0;
     for( ;; ) {
         if( !have.f_float && PragRecog( "float" ) ) {
             have.f_float = 1;
@@ -881,9 +881,9 @@ local void GetRetInfo( void )
         unsigned f_struct        : 1;
     } have;
 
-    have.f_no8087  = 0;
-    have.f_list    = 0;
-    have.f_struct  = 0;
+    have.f_no8087 = 0;
+    have.f_list = 0;
+    have.f_struct = 0;
     AuxInfo.cclass &= ~ NO_8087_RETURNS;
     AuxInfoFlg.f_8087_returns = 1;
     for( ;; ) {
@@ -914,9 +914,9 @@ local void GetSaveInfo( void )
         unsigned    f_list      : 1;
     } have;
 
-    have.f_exact    = 0;
+    have.f_exact = 0;
     have.f_nomemory = 0;
-    have.f_list     = 0;
+    have.f_list = 0;
     for( ;; ) {
         if( !have.f_exact && PragRecog( "exact" ) ) {
             AuxInfo.cclass |= MODIFY_EXACT;
@@ -953,12 +953,12 @@ void PragAux( void )
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
-        have.f_call   = 0;
+        have.f_call = 0;
         have.f_loadds = 0;
         have.f_rdosdev = 0;
         have.f_export = 0;
-        have.f_parm   = 0;
-        have.f_value  = 0;
+        have.f_parm = 0;
+        have.f_value = 0;
         have.f_modify = 0;
         have.f_frame = 0;
         have.uses_auto = 0;

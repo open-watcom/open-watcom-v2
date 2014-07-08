@@ -791,7 +791,7 @@ static TOKEN ScanNum( void )
     if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
         unsigned_32 value;
 
-        value  = 0;
+        value = 0;
         while( c >= '0' && c <= '9' ) {
             value = value * 10 + c - '0';
             c = SaveNextChar();

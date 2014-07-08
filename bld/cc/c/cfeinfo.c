@@ -665,9 +665,9 @@ static CGPOINTER NextAlias( int index, aux_class request )
 
     for( i = 1, aliaslist = AliasHead; aliaslist; aliaslist = aliaslist->next, ++i ) {
         alias_name = aliaslist->name;
-        alias_sym  = aliaslist->a_sym;
+        alias_sym = aliaslist->a_sym;
         subst_name = aliaslist->subst;
-        subst_sym  = aliaslist->s_sym;
+        subst_sym = aliaslist->s_sym;
         if( i == index ) {
             break;
         }

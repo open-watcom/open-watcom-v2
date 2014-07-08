@@ -285,8 +285,7 @@ static cg_type DataPointerType( OPNODE *node )
 local cg_name ForceVolatileFloat( cg_name name, TYPEPTR typ )
 {
     if( CompFlags.op_switch_used ) {
-        if( typ->decl_type == TYPE_FLOAT  ||
-            typ->decl_type == TYPE_DOUBLE ) {
+        if( typ->decl_type == TYPE_FLOAT || typ->decl_type == TYPE_DOUBLE ) {
             name = CGVolatile( name );
         }
     }
@@ -1083,7 +1082,7 @@ local void EmitNodes( TREEPTR tree )
             PushCGName( TryAbnormalTermination() );
             break;
 #endif
-#if (_CPU == _AXP)  || (_CPU == _PPC) || (_CPU == _MIPS)
+#if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
         case OPR_VASTART:
             op2 = PopCGName();          // - get offset of parm
             op1 = PopCGName();          // - get address of va_list
@@ -1207,7 +1206,7 @@ static void DoInLineFunction( TREEPTR tree )
     ++InLineDepth;
     save.func = CurFunc;
     save.func_handle = CurFuncHandle;
-    save.funcnode    = FuncNodePtr;
+    save.funcnode = FuncNodePtr;
     save.cglabel_handles = CGLabelHandles;
     save.labelindex = LabelIndex;
     CurFuncHandle = SYM_NULL;

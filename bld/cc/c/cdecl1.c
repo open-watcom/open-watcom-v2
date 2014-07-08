@@ -49,7 +49,7 @@ void ParsePgm( void )
     SYM_HANDLE      dummysym;
 
     CompFlags.external_defn_found = 0;
-    CompFlags.initializing_data   = 0;
+    CompFlags.initializing_data = 0;
     dummysym = SYM_NULL;
     GlobalSym = SYM_NULL;
 
@@ -113,7 +113,7 @@ local void FuncDefn( SYMPTR sym )
         sym->flags |= SYM_OK_TO_RECURSE;
     }
 
-    if( sym->attribs.stg_class == SC_EXTERN  ||  sym->attribs.stg_class == SC_FORWARD ) {
+    if( sym->attribs.stg_class == SC_EXTERN || sym->attribs.stg_class == SC_FORWARD ) {
         sym->attribs.stg_class = SC_NONE;       /* indicate exported function */
     }
 
@@ -206,9 +206,7 @@ local void BeginFunc( void )
         CompFlags.has_wchar_entry =1;
         // fall through!
     case MAIN_WINMAIN:
-        if( TargSys == TS_WINDOWS || TargSys == TS_CHEAP_WINDOWS
-            || TargSys == TS_NT )
-        {
+        if( TargSys == TS_WINDOWS || TargSys == TS_CHEAP_WINDOWS || TargSys == TS_NT ) {
             CompFlags.has_winmain = 1;
         } else {
             CompFlags.has_wchar_entry =0;
@@ -300,7 +298,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
             } else {
                 sym.name = NULL;
                 Declarator( &sym, info.mod, typ, state );
-                if( sym.name == NULL  ||  sym.name[0] == '\0' ) {
+                if( sym.name == NULL || sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
                     for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {

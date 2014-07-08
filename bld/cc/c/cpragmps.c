@@ -199,14 +199,14 @@ void PragmaFini( void )
 
 static void InitAuxInfo( void )
 {
-    CurrAlias   = NULL;
-    CurrInfo    = NULL;
-    CurrEntry   = NULL;
+    CurrAlias = NULL;
+    CurrInfo = NULL;
+    CurrEntry = NULL;
 
     memset( &AuxInfo, 0, sizeof( AuxInfo ) );
 
-    AuxInfoFlg.f_returns    = 0;
-//    AuxInfoFlg.f_streturn   = 0;
+    AuxInfoFlg.f_returns = 0;
+//    AuxInfoFlg.f_streturn = 0;
 }
 
 static void AdvanceToken( void )
@@ -323,8 +323,8 @@ void PragAux( void )
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
         have.f_export = 0;
-        have.f_parm   = 0;
-        have.f_value  = 0;
+        have.f_parm = 0;
+        have.f_value = 0;
         have.f_modify = 0;
         have.f_frame = 0;
         have.f_except = 0;

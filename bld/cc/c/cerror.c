@@ -108,7 +108,7 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
 
     info->msgnum = msgnum;
 //  CMsgSetClass( info, msgnum );
-    info->col   = 0;
+    info->col = 0;
     switch( msgnum ) {
     case ERR_INVALID_MEMORY_MODEL:
     case ERR_INVALID_OPTION:
@@ -240,7 +240,7 @@ static void CErr( int parmno, int msgnum, ... )
         return;
     info.class = CMSG_ERRO;
     va_start( args1, msgnum );
-    if( ErrLimit == -1  ||  ErrCount < ErrLimit ) {
+    if( ErrLimit == -1 || ErrCount < ErrLimit ) {
         CMsgInfo( &info, parmno, msgnum, args1 );
         OutMsg( &info );
         ++ErrCount;

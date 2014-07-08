@@ -488,7 +488,7 @@ static MACRO_ARG *CollectParms( void )
                     break;
                 --bracket;
             } else if( tok == T_COMMA && bracket == 0
-              && !( (mentry->macro_flags & MFLAG_VAR_ARGS ) && parmno == mentry->parm_count - 2 ) ) {
+              && ( (mentry->macro_flags & MFLAG_VAR_ARGS) == 0 || parmno != mentry->parm_count - 2 ) ) {
                 if( prev_tok == T_WHITE_SPACE ) {
                     MTOKDEC( MTokenLen );
                 }
@@ -809,7 +809,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 
     gluebuf = NULL;
     _lnk = NULL;
-    lnk  = &head;
+    lnk = &head;
     mtok = *lnk;
     buf = Buffer;
     for( ; mtok != NULL; ) {
@@ -1102,8 +1102,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             } else {
                 mtok = BuildAToken( T_WHITE_SPACE, "" );
             }
-            if( MTOK( p2 ) != T_MACRO_SHARP_SHARP  &&
-                prev_token != T_MACRO_SHARP_SHARP ) {
+            if( MTOK( p2 ) != T_MACRO_SHARP_SHARP && prev_token != T_MACRO_SHARP_SHARP ) {
                 if( mtok != NULL ) {
                     mtok = AppendToken( mtok, T_NULL, "P-<end of parm>" );
                     mtok = ExpandNestedMacros( mtok, FALSE );

@@ -149,10 +149,10 @@ void PragAux()
         NextToken();
         PragInitCurrInfo( linkage );
         have.f_offset = 0;
-        have.f_equal  = 0;
-        have.f_parm   = 0;
-        have.f_linkage= 0;
-        have.f_value  = 0;
+        have.f_equal = 0;
+        have.f_parm = 0;
+        have.f_linkage = 0;
+        have.f_value = 0;
         have.f_modify = 0;
         for( ;; ) {
             if( !have.f_equal && CurToken == T_EQUAL ) {

@@ -971,7 +971,7 @@ static void FoldQuestionTree( TREEPTR tree )
     op_flags    ops;
 
     node = tree->right;                 // point to OPR_COLON node
-    true_part  = node->left;
+    true_part = node->left;
     false_part = node->right;
     FreeExprNode( node );
     if( IsConstantZero( tree->left ) ) {
