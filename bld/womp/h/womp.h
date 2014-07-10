@@ -58,24 +58,14 @@
   #error This code can only be compiled for a large data model
 #endif
 
-#if defined( __BIG_ENDIAN__ )
-  #define ReadU16(p)      (((uint_8*)p)[0] | (((uint_8*)p)[1] << 8))
-  #define ReadU32(p)      (ReadU16(p) | (ReadU16(p+2) << 16))
-  #define ReadS16(p)      (((uint_8*)p)[0] | (((uint_8*)p)[1] << 8))
-  #define ReadS32(p)      (ReadS16(p) | (ReadS16(p+2) << 16))
-  #define WriteU16(r,n)   (*(uint_16*)(r) = (uint_16)(((n) & 0xff) << 8) | (((n) & 0xff00) >> 8))
-  #define WriteU32(r,n)   (*(uint_32*)(r) = (uint_32)(((n) & 0xff) << 24) | (((n) & 0xff00) << 8) | (((n) & 0xff0000) >> 8) | (((n) & 0xff000000) >> 24))
-  #define WriteS16(r,n)   (*(int_16*)(r) = (int_16)(((n) & 0xff) << 8) | (((n) & 0xff00) >> 8))
-  #define WriteS32(r,n)   (*(int_32*)(r) = (int_32)(((n) & 0xff) << 24) | (((n) & 0xff00) << 8) | (((n) & 0xff0000) >> 8) | (((n) & 0xff000000) >> 24))
-#else
-  #define ReadU16(p)      (*(uint_16*)(p))
-  #define ReadU32(p)      (*(uint_32*)(p))
-  #define ReadS16(p)      (*(int_16*)(p))
-  #define ReadS32(p)      (*(int_16*)(p))
-  #define WriteU16(p,n)   (*(uint_16*)(p) = (uint_16)(n))
-  #define WriteU32(p,n)   (*(uint_32*)(p) = (uint_32)(n))
-  #define WriteS16(p,n)   (*(int_16*)(p) = (int_16)(n))
-  #define WriteS32(p,n)   (*(int_32*)(p) = (int_32)(n))
-#endif
+#define ReadU16(p)      GET_LE_16(*(uint_16*)(p))
+#define ReadU32(p)      GET_LE_32(*(uint_32*)(p))
+#define ReadS16(p)      GET_LE_16(*(int_16*)(p))
+#define ReadS32(p)      GET_LE_32(*(int_32*)(p))
+#define WriteU16(p,n)   (*(uint_16*)(p) = GET_LE_16((uint_16)(n)))
+#define WriteU32(p,n)   (*(uint_32*)(p) = GET_LE_32((uint_32)(n)))
+#define WriteS16(p,n)   (*(int_16*)(p) = GET_LE_16((int_16)(n)))
+#define WriteS32(p,n)   (*(int_32*)(p) = GET_LE_32((int_32)(n)))
 
 #endif
+

@@ -66,8 +66,9 @@ obj_rec *ObjNewRec( uint_8 command ) {
     return( new );
 }
 
-void ObjKillRec( obj_rec *objr ) {
+void ObjKillRec( obj_rec *objr )
 /******************************/
+{
 /**/myassert( objr != NULL );
     if( objr->free_data && objr->data != NULL ) {
         ObjDetachData( objr );
@@ -90,7 +91,7 @@ void ObjKillRec( obj_rec *objr ) {
     case CMD_LINNUM:
     case CMD_LINSYM:
         {
-            struct linnum_data *lines;
+            linnum_data *lines;
 
             lines = objr->d.linnum.lines;
             if( lines != NULL ) {
@@ -170,7 +171,7 @@ uint_32 ObjGetEither( obj_rec *objr ) {
     if( objr->is_32 || objr->is_phar ) {
         return( ObjGet32( objr ) );
     } else {
-        return( (uint_32)ObjGet16( objr ) );
+        return( ObjGet16( objr ) );
     }
 }
 

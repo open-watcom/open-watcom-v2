@@ -31,6 +31,7 @@
 
 #ifndef OBJREC_H
 #define OBJREC_H    1
+
 typedef struct obj_rec      obj_rec;
 typedef struct linnum_data  linnum_data;
 typedef struct pubdef_data  pubdef_data;
@@ -45,8 +46,6 @@ typedef struct pubdef_data  pubdef_data;
 #include "namemgr.h"
 #endif
 
-
-#include "pushpck1.h"
 
 struct coment_info {
     uint_8  attr;           /* attribute field from coment record       */
@@ -103,12 +102,12 @@ enum segdef_align_values {
 
 struct segdef_info {
     uint_16 idx;            /* index for this segment                   */
-    uint_8      align       :4; /* align field (enum segdef_align_values)   */
-    uint_8      combine     :4; /* combine field (values in pcobj.h)        */
+    uint_8  align       :4; /* align field (enum segdef_align_values)   */
+    uint_8  combine     :4; /* combine field (values in pcobj.h)        */
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
-    uint_8      use_32      :1; /* use_32 for this segment                  */
-    uint_8      access_valid:1; /* does next field have valid value         */
-    uint_8      access_attr :2; /* easy omf access attributes (see pcobj.h) */
+    uint_8  use_32      :1; /* use_32 for this segment                  */
+    uint_8  access_valid:1; /* does next field have valid value         */
+    uint_8  access_attr :2; /* easy omf access attributes (see pcobj.h) */
     physref abs;            /* (conditional) absolute physical reference*/
 #endif
     uint_32 seg_length;     /* length of this segment                   */
@@ -125,11 +124,11 @@ struct segdef_info {
 
 
 struct ledata_info {
-    uint_16 idx;            /* index of segment the data belongs to     */
-    uint_32 offset;         /* offset into segment of start of data     */
+    uint_16     idx;        /* index of segment the data belongs to     */
+    uint_32     offset;     /* offset into segment of start of data     */
 #if _WOMP_OPT & _WOMP_WATFOR
-    void        *fixup;         /* ptr to linked list of fixups             */
-    unsigned_8 num;             /* number of fixups                         */
+    void        *fixup;     /* ptr to linked list of fixups             */
+    unsigned_8  num;        /* number of fixups                         */
 #endif
 };
 /*
@@ -138,11 +137,11 @@ struct ledata_info {
 */
 
 
-struct base_info {
+typedef struct base_info {
     uint_16 grp_idx;        /* index of the group base                  */
     uint_16 seg_idx;        /* index of the segment                     */
     uint_16 frame;          /* valid if grp_idx == 0 && seg_idx == 0    */
-};                          /* appears at beginning of appropriate recs */
+} base_info;                /* appears at beginning of appropriate recs */
 /*
     This appears at the beginning of LINNUMs and PUBDEFs.  (see the
     appropriate structures.
@@ -152,7 +151,7 @@ struct base_info {
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
 
 struct comdat_info {
-    struct base_info base;
+    base_info   base;
     uint_8      flags;
     uint_8      attributes;
     uint_8      align;
@@ -174,42 +173,44 @@ struct fixup_info {
     the linked list of fixup records.
 */
 
+typedef struct linnum_data {
+    uint_16 number;         /* line number in source file               */
+    uint_32 offset;         /* offset into segment                      */
+} linnum_data;
 
 struct linnum_info {
     union {
-        struct base_info base;/* base information                       */
+        base_info   base;       /* base information                         */
         struct {
-            uint_8 flags;       /* for LINSYM records                   */
-            uint_16 public_name_idx; /* for LINSYM records              */
+            uint_8  flags;      /* for LINSYM records                       */
+            uint_16 public_name_idx; /* for LINSYM records                  */
         } linsym;
     } d;
-    uint_16 num_lines;      /* number of elements in following array    */
-    struct linnum_data {
-        uint_16 number;     /* line number in source file               */
-        uint_32 offset;     /* offset into segment                      */
-    } *lines;               /* array of size num_lines                  */
+    uint_16         num_lines;  /* number of elements in following array    */
+    linnum_data     *lines;     /* array of size num_lines                  */
 };
 /*
     No data should be attached to these records.  All necessary information
     is in the lines array.
 */
 
+typedef struct pubdef_data {
+    name_handle name;           /* name of this public                      */
+    uint_32     offset;         /* public offset                            */
+    union {                     /* see PUBDEF.h for more information        */
+        uint_16     idx;        /* Intel OMF type index                     */
+#if _WOMP_OPT & _WOMP_WOMP
+        symb_handle hdl;        /* internal symbol handle...                */
+#endif
+    } type;
+} pubdef_data;
 
 struct pubdef_info {
-    struct base_info base;  /* base information                         */
-    uint_16 num_pubs;       /* number of publics in following array     */
-    struct pubdef_data {
-        name_handle name;   /* name of this public                      */
-        uint_32     offset; /* public offset                            */
-        union {             /* see PUBDEF.h for more information        */
-            uint_16     idx;/* Intel OMF type index                     */
-#if _WOMP_OPT & _WOMP_WOMP
-            symb_handle hdl;/* internal symbol handle...                */
-#endif
-        } type;
-    } *pubs;                /* array of size num_pubs                   */
-    uint_8 free_pubs : 1;   /* can we MemFree the pubs array?           */
-    uint_8 processed : 1;   /* for use by dbg_generator (init'd to 0)   */
+    base_info   base;           /* base information                         */
+    uint_16     num_pubs;       /* number of publics in following array     */
+    pubdef_data *pubs;          /* array of size num_pubs                   */
+    uint_8      free_pubs : 1;  /* can we MemFree the pubs array?           */
+    uint_8      processed : 1;  /* for use by dbg_generator (init'd to 0)   */
 };
 /*
     (This format for PUBDEFs is probably only useful for WOMP.)  No data
@@ -252,8 +253,6 @@ struct obj_rec {
     uint_8      free_data:1;/* should we MemFree( data )??       (PRIVATE)  */
     union objrec_info d;    /* data depending on record type                */
 };
-
-#include "poppck.h"
 
 /*
     Nothing should rely on the data pointing to the same buffer all the time.

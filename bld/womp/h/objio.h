@@ -52,7 +52,7 @@ typedef struct {
 typedef struct {
     int         fh;         /* file handle                                  */
     uint_16     length;     /* number of bytes written since rec header     */
-    size_t      in_buf;     /* number of bytes in buffer                    */
+    uint_16     in_buf;     /* number of bytes in buffer                    */
     uint_8      checksum;   /* for current record                           */
     uint_8      in_rec : 1; /* a record is open                             */
     uint_8      buffer[1];  /* for writing                                  */
@@ -84,7 +84,7 @@ extern void         ObjWrite8( OBJ_WFILE *obj, uint_8 byte );
 extern void         ObjWrite16( OBJ_WFILE *obj, uint_16 word );
 extern void         ObjWrite32( OBJ_WFILE *obj, uint_32 dword );
 extern void         ObjWriteIndex( OBJ_WFILE *obj, uint_16 index );
-extern void         ObjWrite( OBJ_WFILE *obj, const uint_8 *buffer, size_t len );
+extern void         ObjWrite( OBJ_WFILE *obj, const uint_8 *buffer, uint_16 len );
 extern void         ObjWriteRec( OBJ_WFILE *obj, uint_8 command,
                         uint_16 length, const uint_8 *contents );
 extern obj_offset   ObjWSkip32( OBJ_WFILE *obj );

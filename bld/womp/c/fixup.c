@@ -31,8 +31,8 @@
 
 
 #include <stddef.h>
-#include <watcom.h>
-#include <pcobj.h>
+#include "watcom.h"
+#include "pcobj.h"
 #include "womp.h"
 #include "memutil.h"
 #include "fixup.h"
@@ -303,15 +303,15 @@ STATIC uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
     return( putIndex( p, datum ) );
 }
 
-size_t FixGenLRef( logref *log, uint_8 *buf, int type ) {
-/*****************************************************/
+uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
+/******************************************************/
+{
     uint_8  *p;
     uint_8  target;
 
 /**/myassert( log != NULL );
 /**/myassert( buf != NULL );
-/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP ||
-        type == FIX_GEN_MS386 );
+/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP || type == FIX_GEN_MS386 );
 
     /*
         According to the discussion on p102 of the Intel OMF document, we
@@ -333,48 +333,48 @@ size_t FixGenLRef( logref *log, uint_8 *buf, int type ) {
             p = put16( p, (uint_16)log->target_offset );
         }
     }
-    return( p - buf );
+    return( (uint_16)( p - buf ) );
 }
 
-size_t FixGenPRef( physref *ref, uint_8 *buf, int type ) {
-/******************************************************/
+uint_16 FixGenPRef( physref *ref, uint_8 *buf, int type )
+/*******************************************************/
+{
     uint_8  *p;
 
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
-/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP ||
-        type == FIX_GEN_MS386 );
+/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP || type == FIX_GEN_MS386 );
     p = put16( buf, ref->frame );
     if( type == FIX_GEN_PHARLAP ) {
         p = put32( p, ref->offset );
     } else {
-        p = put16( p, ref->offset );
+        p = put16( p, (uint_16)ref->offset );
     }
-    return( p - buf );
+    return( (uint_16)( p - buf ) );
 }
 
-size_t FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type ) {
-/*********************************************************************/
+uint_16 FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type )
+/**********************************************************************/
+{
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
-/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP ||
-        type == FIX_GEN_MS386 );
+/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP || type == FIX_GEN_MS386 );
     if( is_logical ) {
         return( FixGenLRef( &ref->log, buf, type ) );
     }
     return( FixGenPRef( &ref->phys, buf, type ) );
 }
 
-size_t FixGenFix( fixup *fix, uint_8 *buf, int type ) {
-/***************************************************/
+uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
+/****************************************************/
+{
     uint_8  *p;
     uint_8  byte;
     uint_16 data_rec_offset;
 
 /**/myassert( fix != NULL );
 /**/myassert( buf != NULL );
-/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP ||
-        type == FIX_GEN_MS386 );
+/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_PHARLAP || type == FIX_GEN_MS386 );
     p = buf;
     byte = fix->self_relative ? 0x80 : 0xc0;    /* explicit fixup */
     switch( fix->loc_method ) {
@@ -424,12 +424,12 @@ size_t FixGenFix( fixup *fix, uint_8 *buf, int type ) {
 /**/    never_reach();
     }
 /**/myassert( fix->loc_offset < 1024 );
-    data_rec_offset = fix->loc_offset;
+    data_rec_offset = (uint_16)fix->loc_offset;
     byte |= data_rec_offset >> 8;
     *p++ = byte;
     *p++ = (uint_8)data_rec_offset;
     p += FixGenLRef( &fix->lr, p, type );
-    return( p - buf );
+    return( (uint_16)( p - buf ) );
 }
 
 #endif

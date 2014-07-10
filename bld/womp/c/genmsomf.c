@@ -136,7 +136,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
 /**/myassert( state->pass == POBJ_WRITE_PASS );
     out = state->file_out;
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
-    is32 = objr->d.segdef.use_32;
+    is32 = objr->d.segdef.use_32 != 0;
 #else
   #ifdef _WOMP_WATFOR_8086
     is32 = 0;
@@ -145,7 +145,10 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
   #endif
 #endif
     ObjWBegRec( out, is32 ? CMD_SEGD32 : CMD_SEGDEF );
-    acbp = ( objr->d.segdef.combine << 2 ) | ( is32 != 0 );
+    acbp = objr->d.segdef.combine << 2;
+    if( is32 ) {
+        acbp |= 1;
+    }
     align = objr->d.segdef.align;
     switch( align ) {
     case SEGDEF_ALIGN_ABS:      acbp |= ALIGN_ABS << 5;     break;
@@ -163,7 +166,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     default:
 /**/    never_reach();
     }
-    if( is32 == 0 && objr->d.segdef.seg_length == 0x10000 ) {
+    if( !is32 && objr->d.segdef.seg_length == 0x10000 ) {
         acbp |= 0x02;   /* BIG bit */ /* FIXME no support for 2**32 */
     }
     ObjWrite8( out, acbp );
@@ -177,32 +180,31 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     }
 #endif
     if( is32 ) {
-        #if ( _WOMP_OPT & _WOMP_NASM )
-            patch = ObjWSkip32( out );
-        #else
-            ObjWrite32( out, objr->d.segdef.seg_length );
-        #endif
+#if ( _WOMP_OPT & _WOMP_NASM )
+        patch = ObjWSkip32( out );
+#else
+        ObjWrite32( out, objr->d.segdef.seg_length );
+#endif
     } else {
-        #if ( _WOMP_OPT & _WOMP_NASM )
-            patch = ObjWSkip16( out );
-        #else
-            ObjWrite16( out, objr->d.segdef.seg_length & 0xffff );
-        #endif
+#if ( _WOMP_OPT & _WOMP_NASM )
+        patch = ObjWSkip16( out );
+#else
+        ObjWrite16( out, objr->d.segdef.seg_length );
+#endif
     }
-    #if ( _WOMP_OPT & _WOMP_NASM )
-/**/    myassert( objr->data != NULL );
-        memcpy( objr->data, &patch, sizeof patch);
-    #endif
-
+#if ( _WOMP_OPT & _WOMP_NASM )
+/**/myassert( objr->data != NULL );
+    memcpy( objr->data, &patch, sizeof patch);
+#endif
     ObjWriteIndex( out, objr->d.segdef.seg_name_idx );
     ObjWriteIndex( out, objr->d.segdef.class_name_idx );
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
     ObjWriteIndex( out, objr->d.segdef.ovl_name_idx );
-#if ( _WOMP_OPT & _WOMP_EXTRAS )
+  #if ( _WOMP_OPT & _WOMP_EXTRAS )
     if( objr->d.segdef.access_valid ) {
         PrtMsg( MSG_MS386_NO_ACCESS );
     }
-#endif
+  #endif
 #else
     ObjWriteIndex( out, 1 );
 #endif
@@ -217,8 +219,10 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     int         is32;
     fixup       *walk;
     uint_8      buf[ FIX_GEN_MAX ];
-    size_t      len;
-    size_t      len_written;
+    uint_16     len;
+    uint_16     len_written;
+    uint_8      cmd1;
+    uint_8      cmd2;
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_FIXUP );
@@ -231,11 +235,13 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     }
     out = state->file_out;
     is32 = objr->is_32 || objr->is_phar;
+    cmd1 = is32 ? CMD_FIXU32 : CMD_FIXUP;
+    cmd2 = is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL;
     /* we don't want to write FIXUP records that are too large, so we limit
        our records to approximately 1024 bytes */
     do {
         len_written = 0;
-        ObjWBegRec( out, is32 ? CMD_FIXU32 : CMD_FIXUP );
+        ObjWBegRec( out, cmd1 );
         while( walk != NULL && len_written < 1024 - FIX_GEN_MAX ) {
             walk->loc_offset += LifixDelta( &lifList, walk->loc_offset );
 #if _WOMP_OPT & _WOMP_WOMP
@@ -253,7 +259,7 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
                 }
             }
 #endif
-            len = FixGenFix( walk, buf, is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
+            len = FixGenFix( walk, buf, cmd2 );
             ObjWrite( out, buf, len );
             walk = walk->next;
             len_written += len;
@@ -281,7 +287,7 @@ STATIC int writeLedata( obj_rec *objr, pobj_state *state ) {
     LifixInit( &lifList );
 #endif
     out = state->file_out;
-    is32 = ( objr->is_32 || objr->is_phar ) != 0;
+    is32 = objr->is_32 || objr->is_phar;
     ObjWBegRec( out, is32 ? CMD_LEDA32 : CMD_LEDATA );
     ObjWriteIndex( out, objr->d.ledata.idx );
     if( is32 ) {
@@ -392,25 +398,29 @@ STATIC int writeTheadr( obj_rec *objr, pobj_state *state ) {
 
 STATIC int writeModend( obj_rec *objr, pobj_state *state ) {
 
-    size_t  len;
-    char    is32;
+    uint_16 len;
+    int     is32;
 #if _WOMP_OPT & _WOMP_WATFOR
     uint_8  buf[ 1 ];
 #else
     uint_8  buf[ 1 + FIX_GEN_MAX ];
-    uint_8  is_log;
+    int     is_log;
 #endif
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_MODEND );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_WRITE_PASS );
-    is32 = ( objr->is_32 || objr->is_phar );
+    is32 = objr->is_32 || objr->is_phar;
     len = 1;
-    buf[0]  = objr->d.modend.main_module ? 0x80 : 0;
+    buf[0] = objr->d.modend.main_module != 0 ? 0x80 : 0;
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
     if( objr->d.modend.start_addrs ) {
-        is_log = objr->d.modend.is_logical ? 1 : 0;
+        buf[0] |= 0x40;
+        is_log = objr->d.modend.is_logical != 0;
+        if( is_log ) {
+            buf[0] |= 1;
+        }
 #if _WOMP_OPT & _WOMP_WOMP
         if( is_log && Can2MsOS2Flat() ) {
             switch( objr->d.modend.ref.log.frame ) {
@@ -423,18 +433,14 @@ STATIC int writeModend( obj_rec *objr, pobj_state *state ) {
             }
         }
 #endif
-        buf[0] |= 0x40 | is_log;
-        len += FixGenRef( &objr->d.modend.ref, is_log, buf + 1,
-            is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
+        len += FixGenRef( &objr->d.modend.ref, is_log, buf + 1, is32 ? FIX_GEN_MS386 : FIX_GEN_INTEL );
     }
 #endif
     if( buf[0] == 0 ) {
         is32 = 0;       /* no need for MODE32 in this case */
     }
-    ObjWriteRec( state->file_out, is32 ? CMD_MODE32 : CMD_MODEND,
-        len, buf );
-
-        /* here's our fini code */
+    ObjWriteRec( state->file_out, is32 ? CMD_MODE32 : CMD_MODEND, len, buf );
+    /* here's our fini code */
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
     LifixDestroy( &lifList );
 #endif
@@ -464,20 +470,23 @@ STATIC int writeComdat( obj_rec *objr, pobj_state *state ) {
     uint_8      *ptr;
     uint_16     len;
     uint_16     save;
-    int         is_32;
+    int         is32;
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_COMDAT );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_WRITE_PASS );
     save = ObjRTell( objr );
-    is_32 = objr->is_32 || objr->is_phar;
+    is32 = objr->is_32 || objr->is_phar;
+    if( is32 ) {
+        objr->command |= 1;
+    }
     out = state->file_out;
-    ObjWBegRec( out, objr->command | ( is_32 ? 1 : 0 ) );
+    ObjWBegRec( out, objr->command );
     ObjWrite8( out, objr->d.comdat.flags );
     ObjWrite8( out, objr->d.comdat.attributes );
     ObjWrite8( out, objr->d.comdat.align );
-    if( is_32 ) {
+    if( is32 ) {
         ObjWrite32( out, objr->d.comdat.offset );
     } else {
         ObjWrite16( out, objr->d.comdat.offset );
@@ -518,13 +527,15 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
     pubdef_data *pubstop;
 
 /**/myassert( objr != NULL );
-/**/myassert(   objr->command == CMD_PUBDEF ||
-                objr->command == CMD_STATIC_PUBDEF );
+/**/myassert( objr->command == CMD_PUBDEF || objr->command == CMD_STATIC_PUBDEF );
 /**/myassert( state != NULL );
 /**/myassert( state->pass == POBJ_WRITE_PASS );
     is32 = objr->is_32 || objr->is_phar;
+    if( is32 ) {
+        objr->command |= 1;
+    }
     out = state->file_out;
-    ObjWBegRec( out, objr->command | ( is32 ? 1 : 0 ) );
+    ObjWBegRec( out, objr->command );
     writeBase( objr, out );
     pubdata = objr->d.pubdef.pubs;
     if( pubdata != NULL ) {
@@ -533,7 +544,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
             ObjWrite8( out, name_len );
-            ObjWrite( out, (uint_8 *)name, (size_t)name_len );
+            ObjWrite( out, (uint_8 *)name, name_len );
             if( is32 ) {
                 ObjWrite32( out, pubdata->offset );
             } else {
@@ -549,47 +560,25 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
 
 STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
 
-    int is32;
+    int  is32;
+    linnum_data *cur;
+    linnum_data *stop;
 
 /**/myassert( objr != NULL );
 /**/myassert( out != NULL );
     is32 = objr->is_32 || objr->is_phar;
-#if defined( __BIG_ENDIAN__ )
-    {
-        linnum_data *cur;
-        linnum_data *stop;
-
-        cur = objr->d.linnum.lines;
-        stop = cur + objr->d.linnum.num_lines;
-        while( cur < stop ) {
-            ObjWrite16( out, cur->number );
-            if( is32 ) {
-                ObjWrite32( out, cur->offset );
-            } else {
-                ObjWrite16( out, (uint_16)cur->offset );
-            }
-            ++cur;
-        }
-    }
-#else
-    if( is32 ) {
-        ObjWrite( out, (uint_8 *)objr->d.linnum.lines,
-            6 * objr->d.linnum.num_lines );
-/**/    myassert( sizeof( linnum_data ) == 6 );
-    } else {
-        linnum_data *cur;
-        linnum_data *stop;
-
-        cur = objr->d.linnum.lines;
-        stop = cur + objr->d.linnum.num_lines;
-        while( cur < stop ) {
-            ObjWrite16( out, cur->number );
+    cur = objr->d.linnum.lines;
+    stop = cur + objr->d.linnum.num_lines;
+    while( cur < stop ) {
+        ObjWrite16( out, cur->number );
+        if( is32 ) {
+            ObjWrite32( out, cur->offset );
+        } else {
 /**/        myassert( ( cur->offset & 0xffff0000 ) == 0 );
-            ObjWrite16( out, (uint_16)cur->offset );
-            ++cur;
+            ObjWrite16( out, cur->offset );
         }
+        ++cur;
     }
-#endif
 }
 
 STATIC int writeLinnum( obj_rec *objr, pobj_state *state ) {

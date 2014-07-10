@@ -50,7 +50,7 @@ extern  void            ObjWriteError( void );
 
 STATIC void safeSeek( int fh, long offset, int mode ) {
 
-    if( lseek( fh, offset, mode ) == -1 ) {
+    if( lseek( fh, offset, mode ) == -1L ) {
         Fatal( MSG_DISK_ERROR, "lseek" );
     }
 }
@@ -93,11 +93,11 @@ void ObjReadClose( OBJ_RFILE *obj ) {
     MemFree( obj );
 }
 
-STATIC uint_8 *readData( OBJ_RFILE *obj, size_t len_reqd ) {
+STATIC uint_8 *readData( OBJ_RFILE *obj, uint_16 len_reqd ) {
 
     objread_buf *cur;
     objread_buf *buf;
-    size_t      len_read;
+    unsigned    len_read;
     size_t      cur_off;
     size_t      partial_len;
 
@@ -214,8 +214,8 @@ void ObjRSkipPage( OBJ_RFILE *obj, size_t page_len ) {
     Routines for buffered writing of an object file
 */
 
-STATIC void safeWrite( int fh, const uint_8 *buf, size_t len ) {
-
+STATIC void safeWrite( int fh, const uint_8 *buf, uint_16 len )
+{
     if( write( fh, buf, len ) != len ) {
         Fatal( MSG_DISK_ERROR, "write" );
     }
@@ -267,7 +267,7 @@ void ObjWBegRec( OBJ_WFILE *obj, uint_8 command ) {
 
 static void objWFlushBuffer( OBJ_WFILE *obj ) {
 /*******************************************/
-    size_t  len_to_write;
+    uint_16 len_to_write;
     uint_8  checksum;
     uint_8  *p;
 
@@ -301,7 +301,7 @@ void ObjWEndRec( OBJ_WFILE *obj ) {
     checksum = -checksum;
     safeWrite( obj->fh, &checksum, 1 );
         /* back up to length */
-    safeSeek( obj->fh, - (int_32)obj->length - 2, SEEK_CUR );
+    safeSeek( obj->fh, -(long)obj->length - 2, SEEK_CUR );
     safeWrite( obj->fh, buf, 2 );                   /* write the length */
     safeSeek( obj->fh, 0L, SEEK_END );       /* move to end of file again */
     obj->in_rec = 0;
@@ -347,10 +347,11 @@ void ObjWriteIndex( OBJ_WFILE *obj, uint_16 index ) {
     ObjWrite8( obj, index & 0xff );
 }
 
-void ObjWrite( OBJ_WFILE *obj, const uint_8 *buf, size_t length ) {
-/***************************************************************/
+void ObjWrite( OBJ_WFILE *obj, const uint_8 *buf, uint_16 length )
+/****************************************************************/
+{
     const uint_8    *write;
-    size_t          amt;
+    uint_16         amt;
 
 /**/myassert( obj != NULL && buf != NULL );
 
@@ -420,31 +421,18 @@ obj_offset ObjWSkip32( OBJ_WFILE *obj ) {
 
 void ObjWRedo32( OBJ_WFILE *obj, obj_offset off, uint_32 dword ) {
 /*************************************************************/
-#if defined( __BIG_ENDIAN__ )
-    unsigned char    buf[4];
-#endif
     uint_16 rec_length;
     char    checksum;
-    int i;
+    int     i;
 
 /**/myassert( obj != NULL );
     safeSeek( obj->fh, off.rec_begin, SEEK_SET );
-#if defined( __BIG_ENDIAN__ )
-    safeRead( obj->fh, buf, 2 );
-    rec_length = ReadU16( buf );
-#else
     safeRead( obj->fh, (char *)&rec_length, 2 );
-#endif
+    CVT_LE_16( rec_length );
     safeSeek( obj->fh, off.offset, SEEK_CUR );
-#if defined( __BIG_ENDIAN__ )
-    for (i = 0; i < 4; i++) {
-        buf[i] = ((char*)&dword)[3-i];
-    }
-    safeWrite( obj->fh, buf, 4 );
-#else
+    CVT_LE_32( dword );
     safeWrite( obj->fh, (char *)&dword, 4 );
-#endif
-    safeSeek( obj->fh, (int_32)rec_length - off.offset - 5, SEEK_CUR );
+    safeSeek( obj->fh, (long)rec_length - off.offset - 5, SEEK_CUR );
     safeRead( obj->fh, &checksum, 1 );
     checksum = -checksum;
     for (i = 0; i < 4; i++) {
@@ -476,29 +464,17 @@ STATIC void safeRead( int fh, char *buf, size_t len ) {
 
 void ObjWRedo16( OBJ_WFILE *obj, obj_offset off, uint_16 word ) {
 /*************************************************************/
-#if defined( __BIG_ENDIAN__ )
-    char    buf[2];
-#endif
     uint_16 rec_length;
     char    checksum;
 
 /**/myassert( obj != NULL );
     safeSeek( obj->fh, off.rec_begin, SEEK_SET );
-#if defined( __BIG_ENDIAN__ )
-    safeRead( obj->fh, buf, 2 );
-    rec_length = ReadU16( buf );
-#else
     safeRead( obj->fh, (char *)&rec_length, 2 );
-#endif
+    CVT_LE_16( rec_length );
     safeSeek( obj->fh, off.offset, SEEK_CUR );
-#if defined( __BIG_ENDIAN__ )
-    buf[0] = word & 0xff;
-    buf[1] = word >> 8;
-    safeWrite( obj->fh, buf, 2 );
-#else
+    CVT_LE_16( word );
     safeWrite( obj->fh, (char *)&word, 2 );
-#endif
-    safeSeek( obj->fh, (int_32)rec_length - off.offset - 3, SEEK_CUR );
+    safeSeek( obj->fh, (long)rec_length - off.offset - 3, SEEK_CUR );
     safeRead( obj->fh, &checksum, 1 );
     checksum = -checksum;
     checksum += word & 0xff;

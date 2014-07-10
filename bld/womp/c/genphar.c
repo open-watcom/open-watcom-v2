@@ -94,7 +94,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
     uint_8      acbp;
     uint_8      align;
     uint_8      buf[ FIX_GEN_MAX ];
-    size_t      len;
+    uint_16     len;
     uint_8      access;
 
 /**/myassert( objr != NULL );
@@ -144,8 +144,8 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
     OBJ_WFILE   *out;
     fixup       *walk;
     uint_8      buf[ FIX_GEN_MAX ];
-    size_t      len;
-    size_t      len_written;
+    uint_16     len;
+    uint_16     len_written;
 
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_FIXUP );
@@ -353,7 +353,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
             ObjWrite8( out, name_len );
-            ObjWrite( out, (uint_8 *)name, (size_t)name_len );
+            ObjWrite( out, (uint_8 *)name, name_len );
             ObjWrite32( out, pubdata->offset );
             ObjWriteIndex( out, pubdata->type.idx );
             ++pubdata;
@@ -363,26 +363,19 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
     return( 0 );
 }
 
-STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
+STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out )
+{
+    linnum_data *cur;
+    linnum_data *stop;
 
 /**/myassert( out != NULL );
-#if defined( __BIG_ENDIAN__ )
-    {
-        linnum_data *cur;
-        linnum_data *stop;
-
-        cur = objr->d.linnum.lines;
-        stop = cur + objr->d.linnum.num_lines;
-        while( cur < stop ) {
-            ObjWrite16( out, cur->number );
-            ObjWrite32( out, cur->offset );
-            ++cur;
-        }
+    cur = objr->d.linnum.lines;
+    stop = cur + objr->d.linnum.num_lines;
+    while( cur < stop ) {
+        ObjWrite16( out, cur->number );
+        ObjWrite32( out, cur->offset );
+        ++cur;
     }
-#else
-    ObjWrite( out, (uint_8 *)objr->d.linnum.lines, 6 * objr->d.linnum.num_lines );
-/**/myassert( sizeof( linnum_data ) == 6 );
-#endif
 }
 
 STATIC int writeLinnum( obj_rec *objr, pobj_state *state ) {

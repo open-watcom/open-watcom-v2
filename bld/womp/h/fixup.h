@@ -164,8 +164,7 @@ extern void FixGetPRef( fixinfo *info, obj_rec *objr, physref *phys );
 */
 
 
-extern void FixGetRef( fixinfo *info, obj_rec *objr, logphys *lp,
-        int is_logical );
+extern void FixGetRef( fixinfo *info, obj_rec *objr, logphys *lp, int is_logical );
 /*
     Read a logical or a physical reference depending on is_logical.
 */
@@ -179,7 +178,7 @@ extern void FixEnd( fixinfo *info );
 
 /********** the following are used for generating fixups *************/
 
-extern size_t FixGenFix( fixup *fix, uint_8 *buf, int type );
+extern uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type );
 /*
     Create the binary representation of fix, for the OMF described by
     fixgen_type type, into buf.  Returns the number of bytes written.
@@ -187,9 +186,9 @@ extern size_t FixGenFix( fixup *fix, uint_8 *buf, int type );
 */
 
 
-extern size_t FixGenLRef( logref *log, uint_8 *buf, int type );
-extern size_t FixGenPRef( physref *phys, uint_8 *buf, int type );
-extern size_t FixGenRef( logphys *lp, int is_logical, uint_8 *buf, int type );
+extern uint_16 FixGenLRef( logref *log, uint_8 *buf, int type );
+extern uint_16 FixGenPRef( physref *phys, uint_8 *buf, int type );
+extern uint_16 FixGenRef( logphys *lp, int is_logical, uint_8 *buf, int type );
 /*
     Generate references.  See FixGenFix comment for details.
 */
