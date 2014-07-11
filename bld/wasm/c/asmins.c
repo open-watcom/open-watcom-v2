@@ -57,7 +57,7 @@
 #include "asmopsd.gh"
 
 extern bool             match_phase_1( void );
-extern bool             ptr_operator( memtype, uint_8 );
+extern bool             ptr_operator( memtype, bool );
 extern int              jmp( expr_list * );
 
 static struct asm_code  Code_Info;
@@ -71,7 +71,7 @@ static int              segm_override_jumps( expr_list *opndx );
 
 
 #if defined( _STANDALONE_ )
-extern bool             directive( token_idx , asm_token );
+extern bool             directive( token_idx, asm_token );
 extern bool             SymIs32( struct asm_sym *sym );
 
 extern bool             DefineProc;     // TRUE if the definition of procedure
@@ -96,7 +96,7 @@ extern void             make_inst_hash_table( void );
 static int              curr_ptr_type;
 static char             ConstantOnly;
 
-static bool             mem2code( char, asm_token, asm_token, asm_sym * );
+static bool             mem2code( uint_8, asm_token, asm_token, asm_sym * );
 
 /* moved here from asmline */
 static asm_tok          tokens[MAX_TOKEN];
@@ -162,7 +162,7 @@ void GetInsString( asm_token token, char *string, int len )
 void AsmBufferInit( void )
 /************************/
 {
-    int         count;
+    token_idx   count;
 
     for( count = 0; count < MAX_TOKEN; count ++ ) {
         AsmBuffer[count] = &tokens[count];
@@ -470,8 +470,8 @@ bool InRange( unsigned long val, unsigned bytes )
 
 }
 
-static bool mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
-/****************************************************************************/
+static bool mem2code( uint_8 ss, asm_token index, asm_token base, asm_sym *sym )
+/******************************************************************************/
 /*
   encode the memory operand to machine code
 */
@@ -1174,7 +1174,7 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
     return( ERROR );
 }
 
-int get_stack_argument( token_idx index, char *buffer )
+static bool get_stack_argument( token_idx index, char *buffer )
 {
     token_idx   i;
     int         size;
@@ -1209,14 +1209,14 @@ int get_stack_argument( token_idx index, char *buffer )
                 }
             default:
                 AsmError( STRANGE_PARM_TYPE );
-                return( ERROR );
+                return( RC_ERROR );
             }
             i++;
         }
         if( ( AsmBuffer[i]->class != TC_ID ) ||
             ( AsmBuffer[i + 1]->class != TC_CL_SQ_BRACKET ) ) {
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
         if( Use32 ) {
             switch( size ) {
@@ -1225,17 +1225,17 @@ int get_stack_argument( token_idx index, char *buffer )
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 2:
                 sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 4:
                 sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 6:
                 sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
@@ -1243,13 +1243,13 @@ int get_stack_argument( token_idx index, char *buffer )
                 InputQueueLine( buffer );
                 sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 8:
                 sprintf( buffer, "push [dword %s+4]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             }
         } else {
             switch( size ) {
@@ -1260,17 +1260,17 @@ int get_stack_argument( token_idx index, char *buffer )
                 InputQueueLine( buffer );
                 sprintf( buffer, "push ax" );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 2:
                 sprintf( buffer, "push [%s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             case 4:
                 sprintf( buffer, "push [word %s+2]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push [word %s]", AsmBuffer[i]->string_ptr );
                 InputQueueLine( buffer );
-                return( 0 );
+                return( RC_OK );
             }
         }
     }
@@ -1280,7 +1280,7 @@ int get_stack_argument( token_idx index, char *buffer )
         strcat( buffer, AsmBuffer[i++]->string_ptr );
     }
     InputQueueLine( buffer );
-    return( 0 );
+    return( RC_OK );
 }
 
 bool expand_call( token_idx index, int lang_type )
@@ -1396,7 +1396,7 @@ static int process_jumps( expr_list *opndx )
 
     segm_override_jumps( opndx );
 
-    flag = ( opndx->explicit ) ? TRUE : FALSE ;
+    flag = ( opndx->explicit != 0 );
     if( ptr_operator( opndx->mem_type, flag ) )
         return( ERROR );
     if( ptr_operator( MT_PTR, flag ) ) {
@@ -1853,7 +1853,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     struct asm_sym      *sym;
     bool                base_lock = FALSE;
     enum fixup_types    fixup_type;
-    int                 flag;
+    bool                flag;
 #if defined( _STANDALONE_ )
     bool                sym32;
 #endif
@@ -1864,7 +1864,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
 
     segm_override_memory( opndx );
 
-    flag = ( opndx->explicit ) ? TRUE : FALSE ;
+    flag = ( opndx->explicit != 0 );
     if( ptr_operator( opndx->mem_type, flag ) )
         return( ERROR );
     if( ptr_operator( MT_PTR, flag ) ) {

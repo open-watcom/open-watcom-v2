@@ -40,7 +40,7 @@
 #endif
 
 /* prototypes */
-bool ptr_operator( memtype mem_type, uint_8 fix_mem_type );
+bool ptr_operator( memtype mem_type, bool fix_mem_type );
 int jmp( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
@@ -655,8 +655,8 @@ int jmp( expr_list *opndx )
     return( NOT_ERROR );
 }
 
-bool ptr_operator( memtype mem_type, uint_8 fix_mem_type )
-/********************************************************/
+bool ptr_operator( memtype mem_type, bool fix_mem_type )
+/******************************************************/
 /*
   determine what should be done with SHORT, NEAR, FAR, BYTE, WORD, DWORD, PTR
   operator;
