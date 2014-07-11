@@ -48,10 +48,6 @@
 #define W_BIT           0x01
 #define NOT_W_BIT       0xFE
 
-#define OPND1           0
-#define OPND2           1
-#define OPND3           2
-
 #define ADRSIZ          0x67
 #define OPSIZ           0x66
 #define OP_WAIT         0x9B
@@ -106,13 +102,13 @@ extern asm_tok          *AsmBuffer[];
 extern struct asm_code  *Code;
 extern struct asm_sym   *Frame;
 extern char             Parse_Pass;     // phase of parsing
-extern unsigned char    Opnd_Count;
+extern operand_idx      Opnd_Count;
 extern bool             Modend;         // end of module is reached
 extern bool             Use32;          // if 32-bit code is use
-extern int              Token_Count;    // number of tokens on line
+extern token_idx        Token_Count;    // number of tokens on line
 
 extern void             AsmByte( unsigned char );
-extern int              AsmScan( const char * );
+extern token_idx        AsmScan( const char * );
 
 #if defined( _STANDALONE_ )
 

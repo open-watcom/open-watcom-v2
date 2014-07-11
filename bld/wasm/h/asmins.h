@@ -36,6 +36,26 @@
 #include "asmsym.h"
 #include "asmops.h"
 
+typedef unsigned char   token_idx;
+#define INVALID_IDX     ((token_idx)-1)
+
+typedef enum operand_idx {
+    OPND1 = 0,
+    OPND2,
+    OPND3,
+    OPND_MAX
+} operand_idx;
+
+typedef unsigned short  asmins_idx;
+#define INVALID_POS     ((asmins_idx)-1)
+
+struct AsmCodeName {
+    asmins_idx      position;       // starting position in AsmOpTable
+    unsigned short  len :4;         // length of command, e.g. "AX" = 2
+    unsigned short  index :12;      // index into AsmChars[] in asmops2.h
+    unsigned short  next;           // index to next item in hash item list
+};
+
 typedef struct asm_ins {
     asm_token           token;                  /* T_ADD, etc */
     unsigned            allowed_prefix  : 4;    /* allowed prefix */
@@ -51,17 +71,17 @@ typedef struct asm_ins {
 
 typedef struct asm_code {
     struct {
-        asm_token       ins;           // prefix before instruction, e.g. lock
-        enum prefix_reg seg;           // segment register override
-        unsigned        adrsiz:1;      // address size prefix
-        unsigned        opsiz:1;       // operand size prefix
+        asm_token       ins;            // prefix before instruction, e.g. lock
+        enum prefix_reg seg;            // segment register override
+        unsigned        adrsiz:1;       // address size prefix
+        unsigned        opsiz:1;        // operand size prefix
     } prefix;
-    memtype         mem_type;       // byte / word / etc. NOT near/far
-    long            data[3];
+    memtype             mem_type;       // byte / word / etc. NOT near/far
+    long                data[OPND_MAX];
     struct {
         asm_token       token;
         asm_cpu         cpu;
-        OPNDTYPE        opnd_type[3];
+        OPNDTYPE        opnd_type[OPND_MAX];
         unsigned char   opcode;
         unsigned char   rm_byte;
     } info;
@@ -124,12 +144,12 @@ extern void     GetInsString( asm_token, char *, int );
 
 #endif
 
-extern int      check_override( int *i );
+extern bool     check_override( token_idx *i );
 extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
-extern int      cpu_directive( asm_token );
-extern int      AsmParse( const char *curline );
+extern bool     cpu_directive( asm_token );
+extern bool     AsmParse( const char *curline );
 extern int      NextArrayElement( void );
-extern int      data_init( int, int );
+extern bool     data_init( token_idx, token_idx );
 
 #endif

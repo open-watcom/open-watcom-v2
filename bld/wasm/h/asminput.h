@@ -37,7 +37,7 @@
 extern void     PushLineQueue( void );
 extern bool     PopLineQueue( void );
 extern void     InputQueueLine( const char *line );
-extern int      InputQueueFile( const char *path );
+extern bool     InputQueueFile( const char *path );
 extern char     *ReadTextLine( char *string );
 extern void     PushMacro( const char *name, bool hidden );
 extern char     *ScanLine( char *line, size_t len );

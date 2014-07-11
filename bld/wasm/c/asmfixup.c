@@ -46,7 +46,7 @@ struct asmfixup         *FixupListTail;
 #else
 struct asmfixup         *FixupHead;
 #endif
-struct asmfixup         *InsFixups[3];
+struct asmfixup         *InsFixups[OPND_MAX];
 
 #if defined( _STANDALONE_ )
 
@@ -155,8 +155,8 @@ static void PatchCodeBuffer( struct asmfixup *fixup, unsigned size )
 
 #endif
 
-static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
-/***************************************************************/
+static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
+/****************************************************************/
 {
     long                disp;
     long                max_disp;
@@ -170,7 +170,7 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
     if( seg == NULL || fixup->fixup_seg != seg ) {
         /* can't backpatch if fixup location is in diff seg than symbol */
         SkipFixup();
-        return( NOT_ERROR );
+        return( RC_OK );
     } else if( Parse_Pass != PASS_1 ) {
     } else if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
         // convert far call to near, only at first pass
@@ -178,20 +178,20 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         sym->offset++;
         AsmByte( 0 );
         AsmFree( fixup );
-        return( NOT_ERROR );
+        return( RC_OK );
     } else if( sym->mem_type == MT_NEAR ) {
         // near forward reference, only at first pass
         switch( fixup->fixup_type ) {
         case FIX_RELOFF32:
         case FIX_RELOFF16:
             AsmFree( fixup );
-            return( NOT_ERROR );
+            return( RC_OK );
         }
     }
 #else
     if( fixup->name != sym->name ) {
         SkipFixup();
-        return( NOT_ERROR );
+        return( RC_OK );
     }
 #endif
     size = 0;
@@ -216,7 +216,7 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
                 case OPTJ_EXPLICIT:
                     AsmError( JUMP_OUT_OF_RANGE );
                     sym->fixup = NULL;
-                    return( ERROR );
+                    return( RC_ERROR );
                 case OPTJ_EXTEND:
                     sym->offset++;
                     AsmByte( 0 );
@@ -244,7 +244,7 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
 #else
             AsmError( JUMP_OUT_OF_RANGE );
             FixupHead = NULL;
-            return( ERROR );
+            return( RC_ERROR );
         } else {
             PatchCodeBuffer( fixup, size );
 #endif
@@ -255,10 +255,10 @@ static int DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         SkipFixup();
         break;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int BackPatch( struct asm_sym *sym )
+bool BackPatch( struct asm_sym *sym )
 /**********************************/
 /*
 - patching for forward reference labels in Jmp/Call instructions;
@@ -277,15 +277,15 @@ int BackPatch( struct asm_sym *sym )
 #endif
     for( ; fixup != NULL; fixup = next ) {
         next = fixup->next;
-        if( DoPatch( sym, fixup ) == ERROR ) {
-            return( ERROR );
+        if( DoPatch( sym, fixup ) ) {
+            return( RC_ERROR );
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-void mark_fixupp( OPNDTYPE determinant, int index )
-/*************************************************/
+void mark_fixupp( OPNDTYPE determinant, operand_idx index )
+/*********************************************************/
 /*
   this routine marks the correct target offset and data record address for
   FIXUPP record;
@@ -340,19 +340,19 @@ void mark_fixupp( OPNDTYPE determinant, int index )
 
 #if defined( _STANDALONE_ )
 
-int store_fixup( int index )
-/**************************/
+bool store_fixup( operand_idx index )
+/***********************************/
 /* Store the fixup information in a WOMP fixup record */
 {
     struct asmfixup     *fixnode;
 
     if( Parse_Pass == PASS_1 )
-        return( NOT_ERROR );
+        return( RC_OK );
     if( InsFixups[index] == NULL )
-        return( NOT_ERROR );
+        return( RC_OK );
     fixnode = InsFixups[index];
     if( fixnode == NULL )
-        return( ERROR );
+        return( RC_ERROR );
 
     if( FixupListHead == NULL ) {
         FixupListTail = FixupListHead = fixnode;
@@ -361,11 +361,11 @@ int store_fixup( int index )
         FixupListTail = fixnode;
     }
     fixnode->next_loc = NULL;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int MakeFpFixup( char *patch_name )
-/****************************************/
+static bool MakeFpFixup( char *patch_name )
+/*****************************************/
 {
     dir_node            *dir;
     struct asmfixup     *fixup;
@@ -385,7 +385,7 @@ static int MakeFpFixup( char *patch_name )
         if( Parse_Pass != PASS_1 ) {
             fixup = AsmAlloc( sizeof( struct asmfixup ) );
             if( fixup == NULL )
-                return( ERROR );
+                return( RC_ERROR );
             fixup->external = 0;
             fixup->fixup_loc = AsmCodeAddress;
             fixup->fixup_seg = NULL;
@@ -404,23 +404,23 @@ static int MakeFpFixup( char *patch_name )
             }
             fixup->next_loc = NULL;
         }
-        return( NOT_ERROR );
+        return( RC_OK );
     }
-    return( ERROR );
+    return( RC_ERROR );
 }
 
 #endif
 
-int AddFPPatchAndFixups( fp_patches patch )
-/*****************************************/
+bool AddFPPatchAndFixups( fp_patches patch )
+/******************************************/
 {
 #if defined( _STANDALONE_ )
     char    *patch_name;
 
     if( FPPatchName[patch] != NULL ) {
         patch_name = FPPatchName[patch];
-        if( MakeFpFixup( patch_name ) == ERROR )
-            return( ERROR );
+        if( MakeFpFixup( patch_name ) )
+            return( RC_ERROR );
         if( patch == FPP_WAIT ) {
             AsmCodeByte( OP_NOP );
         } else {
@@ -437,7 +437,7 @@ int AddFPPatchAndFixups( fp_patches patch )
     if( patch != FPP_NONE ) {
         fixup = AsmAlloc( sizeof( struct asmfixup ) );
         if( fixup == NULL ) {
-            return( ERROR );
+            return( RC_ERROR );
         }
         fixup->next = FixupHead;
         FixupHead = fixup;
@@ -454,5 +454,5 @@ int AddFPPatchAndFixups( fp_patches patch )
         }
     }
 #endif
-    return( NOT_ERROR );
+    return( RC_OK );
 }

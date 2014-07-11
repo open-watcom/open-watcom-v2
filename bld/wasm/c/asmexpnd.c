@@ -43,7 +43,7 @@
 
 #define    MAX_EQU_NESTING      20
 
-static int              createconstant( char *, bool, int, bool, bool );
+static bool         createconstant( char *, bool, token_idx, bool, bool );
 
 static label_list *label_cmp( char *name, label_list *head )
 {
@@ -58,34 +58,34 @@ static label_list *label_cmp( char *name, label_list *head )
 }
 
 
-void AddTokens( asm_tok **buffer, int start, int count )
-/************************************************************/
+void AddTokens( asm_tok **buffer, token_idx start, token_idx count )
+/******************************************************************/
 {
-    int i;
+    token_idx   i;
 
     switch( count ) {
     case 0:
         return;
-    case -1:
+    case INVALID_IDX:
         /* it's an empty expansion */
         for( i = start; i <= Token_Count; ++i ) {
-            *buffer[i] = *buffer[i+1];
+            *buffer[i] = *buffer[i + 1];
         }
         break;
     default:
-        for( i=Token_Count; i >= start; i-- ) {
-            *buffer[i+count] = *buffer[i];
+        for( i = Token_Count; i >= start; i-- ) {
+            *buffer[i + count] = *buffer[i];
         }
         break;
     }
     Token_Count += count;
 }
 
-int ExpandSymbol( int i, bool early_only )
-/***************************************/
+int ExpandSymbol( token_idx i, bool early_only )
+/**********************************************/
 {
     dir_node            *dir;
-    int                 j;
+    token_idx           j;
 
     /* expand constant */
     dir = (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr );
@@ -102,13 +102,13 @@ int ExpandSymbol( int i, bool early_only )
             AsmBuffer[i+j]->class = dir->e.constinfo->data[j].class;
             AsmBuffer[i+j]->u.value = dir->e.constinfo->data[j].u.value;
             AsmBuffer[i+j]->string_ptr = dir->e.constinfo->data[j].string_ptr;
-            #ifdef DEBUG_OUT
+#ifdef DEBUG_OUT
             if( AsmBuffer[i+j]->class == TC_NUM ) {
                 DebugMsg(( " %d", AsmBuffer[i+j]->u.value ));
             } else {
                 DebugMsg(( " %s", AsmBuffer[i+j]->string_ptr ));
             }
-            #endif
+#endif
         }
         DebugMsg(( "\n" ));
         Globals.expand_count++;
@@ -121,20 +121,20 @@ int ExpandSymbol( int i, bool early_only )
     return( NOT_ERROR );
 }
 
-int ExpandProcString( int index )
-/*******************************/
+int ExpandProcString( token_idx index )
+/*************************************/
 {
-    int_8               i;
-    int_8               cnt;
-    int_8               count = 0; /* number of words in the name string */
+    token_idx           i;
+    int                 cnt;
+    int                 count = 0; /* number of words in the name string */
     int                 offset;
-    int                 left_bracket = 0;
-    int                 right_bracket = 0;
+    token_idx           left_bracket = 0;
+    token_idx           right_bracket = 0;
     char                *string;
     char                *word;
     char                *replace = NULL;
     char                buffer[MAX_LINE_LEN];
-    label_list          *label;
+    label_list          *label = NULL;
     proc_info           *info = CurrProc->e.procinfo;
 
     string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
@@ -238,7 +238,6 @@ int ExpandProcString( int index )
                 if( ( i >= left_bracket ) && ( i <= right_bracket ) )
                     continue;   /*yes, skip it */
             }
-            // if( expand_directive_string( buffer, i ) == ERROR ) return( ERROR );
             if( AsmBuffer[i]->class == TC_STRING ) {
                 strcat( buffer, "<" );
                 strcat( buffer, AsmBuffer[i]->string_ptr );
@@ -251,7 +250,6 @@ int ExpandProcString( int index )
                 /* don't save the % */
                 i++;
             }
-            // if( expand_directive_string( buffer, i ) == ERROR ) return( ERROR );
 
             /* copy the string in ... 1 word at a time */
             string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
@@ -280,8 +278,8 @@ int ExpandProcString( int index )
     return( STRING_EXPANDED );
 }
 
-int DefineConstant( int i, bool redefine, bool expand_early )
-/***********************************************************/
+bool DefineConstant( token_idx i, bool redefine, bool expand_early )
+/******************************************************************/
 /* if expand_early is TRUE, expand before doing any parsing */
 {
 
@@ -289,7 +287,7 @@ int DefineConstant( int i, bool redefine, bool expand_early )
 
     if( i != 0 ) {
         AsmError( SYNTAX_ERROR );
-        return( ERROR );
+        return( RC_ERROR );
     }
 
     /* get the name */
@@ -299,7 +297,7 @@ int DefineConstant( int i, bool redefine, bool expand_early )
     return( createconstant( name, FALSE, i, redefine, expand_early ) );
 }
 
-int StoreConstant( char *name, char *value, bool redefine )
+bool StoreConstant( char *name, char *value, bool redefine )
 /**********************************************************/
 {
     AsmScan( value );
@@ -340,7 +338,7 @@ static void FreeConstData( const_info *constinfo )
     }
 }
 
-int StoreConstantNumber( char *name, long value, bool redefine )
+bool StoreConstantNumber( char *name, long value, bool redefine )
 {
     struct asm_tok  *new;
     dir_node        *dir;
@@ -352,7 +350,7 @@ int StoreConstantNumber( char *name, long value, bool redefine )
     if( sym == NULL ) {
         dir = dir_insert( name, TAB_CONST );
         if( dir == NULL ) {
-            return( ERROR );
+            return( RC_ERROR );
         }
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = FALSE;
@@ -368,7 +366,7 @@ int StoreConstantNumber( char *name, long value, bool redefine )
                    ( Parse_Pass == PASS_1 ) ) ) {
             /* error */
             AsmError( LABEL_ALREADY_DEFINED );
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
     new = AsmAlloc( sizeof( struct asm_tok ) );
@@ -379,17 +377,17 @@ int StoreConstantNumber( char *name, long value, bool redefine )
     FreeConstData( dir->e.constinfo );
     dir->e.constinfo->count = 1;
     dir->e.constinfo->data = new;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int createconstant( char *name, bool value, int start, bool redefine, bool expand_early )
-/**********************************************************************************************/
+static bool createconstant( char *name, bool value, token_idx start, bool redefine, bool expand_early )
+/*****************************************************************************************************/
 {
     asm_tok             *new;
     dir_node            *dir;
-    int                 i;
-    int                 count;
-    int                 counta;
+    token_idx           i;
+    token_idx           count;
+    token_idx           counta;
     bool                can_be_redefine;
     bool                new_constant;
 
@@ -401,7 +399,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         new_constant = TRUE;
         dir = dir_insert( name, TAB_CONST );
         if( dir == NULL ) {
-            return( ERROR );
+            return( RC_ERROR );
         }
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = expand_early;
@@ -413,7 +411,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
         /* error */
         AsmError( LABEL_ALREADY_DEFINED );
-        return( ERROR );
+        return( RC_ERROR );
     }
 
     if( value ) {
@@ -426,16 +424,15 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         FreeConstData( dir->e.constinfo );
         dir->e.constinfo->count = 1;
         dir->e.constinfo->data = new;
-        return( NOT_ERROR );
+        return( RC_OK );
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, FALSE, TRUE ) == ERROR )
-        return( ERROR );
+    if( ExpandTheWorld( start, FALSE, TRUE ) )
+        return( RC_ERROR );
 
     for( counta = 0, i = start; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( ( AsmBuffer[i]->class != TC_STRING )
-            || ( AsmBuffer[i]->u.value != 0 ) ) {
+        if( ( AsmBuffer[i]->class != TC_STRING ) || ( AsmBuffer[i]->u.value != 0 ) ) {
             counta++;
         }
     }
@@ -449,7 +446,7 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
         new = AsmAlloc( counta * sizeof( asm_tok ) );
         can_be_redefine = ( counta > 1 ) ? TRUE : FALSE;
     }
-    for( i=0; i < count; i++ ) {
+    for( i = 0; i < count; i++ ) {
         switch( AsmBuffer[start+i]->class ) {
         case TC_STRING:
             if( AsmBuffer[start+i]->u.value == 0 ) {
@@ -495,13 +492,13 @@ static int createconstant( char *name, bool value, int start, bool redefine, boo
     FreeConstData( dir->e.constinfo );
     dir->e.constinfo->count = count;
     dir->e.constinfo->data = new;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int ExpandAllConsts( int start_pos, bool early_only )
-/***************************************************/
+bool ExpandAllConsts( token_idx start_pos, bool early_only )
+/**********************************************************/
 {
-    int i;
+    token_idx   i;
 
     if( AsmBuffer[start_pos+1]->class == TC_DIRECTIVE ) {
         switch( AsmBuffer[start_pos+1]->u.token ) {
@@ -516,59 +513,60 @@ int ExpandAllConsts( int start_pos, bool early_only )
         if( AsmBuffer[i]->class != TC_ID ) continue;
         switch( ExpandSymbol( i, early_only ) ) {
         case ERROR:
-            return( ERROR );
+            return( RC_ERROR );
         case STRING_EXPANDED:
             i--; // in case the new symbol also needs to be expanded
             continue;
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
-/*****************************************************************/
+bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
+/************************************************************************/
 {
-    if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
-    if( early_only == FALSE ) {
-        int    val;
+    token_idx   val;
 
+    if( ExpandAllConsts( start_pos, early_only ) )
+        return( RC_ERROR );
+    if( early_only == FALSE ) {
         val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
-        if( val == ERROR )
-            return( ERROR );
+        if( val == INVALID_IDX )
+            return( RC_ERROR );
         Token_Count = val;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int ExpandTheConstant( int start_pos, bool early_only, bool flag_msg )
-/********************************************************************/
+bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg )
+/***************************************************************************/
 {
-    if( ExpandAllConsts( start_pos, early_only ) == ERROR ) return( ERROR );
-    if( early_only == FALSE ) {
-        int    val;
+    token_idx   val;
 
+    if( ExpandAllConsts( start_pos, early_only ) )
+        return( RC_ERROR );
+    if( early_only == FALSE ) {
         val = EvalConstant( Token_Count, start_pos + 2, Token_Count, flag_msg );
-        if( val == ERROR )
-            return( ERROR );
+        if( val == INVALID_IDX )
+            return( RC_ERROR );
         Token_Count = val;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 #else
 
-int ExpandTheWorld( int start_pos, bool early_only, bool flag_msg )
-/*****************************************************************/
+bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
+/************************************************************************/
 {
-    int    val;
+    token_idx   val;
 
     early_only = early_only;
-
     val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
-    if( val == ERROR )
-        return( ERROR );
+    if( val == INVALID_IDX )
+        return( RC_ERROR );
     Token_Count = val;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 #endif

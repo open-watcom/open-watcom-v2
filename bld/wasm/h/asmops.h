@@ -41,13 +41,6 @@ typedef enum asm_token {
         T_OP_DIVIDE,
 } asm_token;
 
-struct AsmCodeName {
-        unsigned short  position;       // starting position in AsmOpTable
-        unsigned short  len :4,         // length of command, e.g. "AX" = 2
-                        index :12;      // index into AsmChars[] in asmops2.h
-        unsigned short  next;           // index to next item in hash item list
-};
-
 typedef enum asm_cpu {
         /* bit count from left: ( need at least 7 bits )
            bit 0-2:   Math coprocessor

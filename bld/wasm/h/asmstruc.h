@@ -31,9 +31,9 @@
 #ifndef _ASMSTRUC_H_INCLUDED
 #define _ASMSTRUC_H_INCLUDED
 
-extern int              StructDef( int );
-extern int              AddFieldToStruct( asm_sym *, int );
+extern bool             StructDef( token_idx );
+extern int              AddFieldToStruct( asm_sym *, token_idx );
 extern int              GetStructSize( asm_sym * );
-extern int              InitializeStructure( asm_sym *, asm_sym *, int );
+extern int              InitializeStructure( asm_sym *, asm_sym *, token_idx );
 
 #endif

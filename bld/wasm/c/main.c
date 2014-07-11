@@ -336,24 +336,24 @@ static void SetMemoryModel( void )
     InputQueueLine( buffer );
 }
 
-static int isvalidident( char *id )
-/*********************************/
+static bool isvalidident( char *id )
+/**********************************/
 {
     char *s;
     char lwr_char;
 
     if( isdigit( *id ) )
-        return( ERROR ); /* can't start with a number */
+        return( TRUE ); /* can't start with a number */
     for( s = id; *s != '\0'; s++ ) {
         lwr_char = tolower( *s );
         if( !( lwr_char == '_' || lwr_char == '.' || lwr_char == '$'
                 || lwr_char == '@' || lwr_char == '?'
                 || isdigit( lwr_char )
                 || islower( lwr_char ) ) ) {
-            return( ERROR );
+            return( TRUE );
         }
     }
-    return( NOT_ERROR );
+    return( FALSE );
 }
 
 static void add_constant( char *string )
@@ -376,7 +376,7 @@ static void add_constant( char *string )
         tmp++;
     }
 
-    if( isvalidident( string ) == ERROR ) {
+    if( isvalidident( string ) ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return;
     }
@@ -699,10 +699,7 @@ static struct option const cmdl_options[] = {
 static bool OptionDelimiter( char c )
 /***********************************/
 {
-    if( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( c == ' ' || c == '-' || c == '\0' || c == '\t' || c == SwitchChar );
 }
 
 static void get_os_include( void )

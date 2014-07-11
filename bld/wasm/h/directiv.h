@@ -165,7 +165,7 @@ typedef struct {
     unsigned            predef      :1; // whether it is predefined symbol
     unsigned            redefine    :1; // whether it is redefinable or not
     unsigned            expand_early:1; // if TRUE expand before parsing
-    int                 count;          // number of tokens
+    token_idx           count;          // number of tokens
     asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
 
@@ -184,7 +184,7 @@ typedef struct label_list {
     int                 is_register;    // for arguments only
     union {
         unsigned        is_vararg   :1; // if it is a vararg
-        int             count;          // number of element in this label
+        token_idx       count;          // number of element in this label
     } u;
 } label_list;
 
@@ -241,7 +241,7 @@ typedef struct field_list {
 } field_list;
 
 typedef struct {
-    unsigned short      size;       // size in bytes ( including alignment )
+    unsigned            size;       // size in bytes ( including alignment )
     unsigned short      alignment;
     field_list          *head;
     field_list          *tail;
@@ -333,39 +333,38 @@ extern uint_32          GetCurrAddr( void );    // Get offset from current segme
 extern dir_node         *GetCurrSeg( void );
 /* Get current segment; NULL means none */
 
-extern int              ExtDef( int, bool );    // define an global or external symbol
-extern int              CommDef( int );         // define an communal symbol
-extern int              PubDef( int );          // define a public symbol
-extern int              GrpDef( int );          // define a group
-extern int              SegDef( int );          // open or close a segment
-extern int              SetCurrSeg( int );      // open or close a segment in
+extern bool             ExtDef( token_idx, bool );    // define an global or external symbol
+extern bool             CommDef( token_idx );         // define an communal symbol
+extern bool             PubDef( token_idx );          // define a public symbol
+extern bool             GrpDef( token_idx );          // define a group
+extern bool             SegDef( token_idx );          // open or close a segment
+extern bool             SetCurrSeg( token_idx );      // open or close a segment in
                                                 // the second pass
-extern int              ProcDef( int, bool );   // define a procedure
-extern int              LocalDef( int );        // define local variables to procedure
-extern int              ArgDef( int );          // define arguments in procedure
-extern int              UsesDef( int );         // define used registers in procedure
-extern int              EnumDef( int );         // handles enumerated values
-extern int              ProcEnd( int );         // end a procedure
-extern int              Ret( int, int, int );   // emit return statement from procedure
-extern int              WritePrologue( const char * ); // emit prologue statement after the
+extern bool             ProcDef( token_idx, bool );   // define a procedure
+extern bool             ProcEnd( token_idx );         // end a procedure
+extern bool             LocalDef( token_idx );        // define local variables to procedure
+extern bool             ArgDef( token_idx );          // define arguments in procedure
+extern bool             UsesDef( token_idx );         // define used registers in procedure
+extern bool             EnumDef( token_idx );         // handles enumerated values
+extern bool             Ret( token_idx, token_idx, bool ); // emit return statement from procedure
+extern bool             WritePrologue( const char * ); // emit prologue statement after the
                                                 // declaration of a procedure
-extern int              MacroDef( int, bool );  // define a macro
-extern int              MacroEnd( bool );       // end a macro
-extern int              Startup( int );         // handle .startup & .exit
-extern int              SimSeg( int );          // handle simplified segment
-extern int              Include( int );         // handle an INCLUDE statement
-extern int              IncludeLib( int );      // handle an INCLUDELIB statement
-extern int              Model( int );           // handle .MODEL statement
+extern bool             MacroDef( token_idx, bool );  // define a macro
+extern bool             MacroEnd( bool );       // end a macro
+extern bool             Startup( token_idx );         // handle .startup & .exit
+extern bool             SimSeg( token_idx );          // handle simplified segment
+extern bool             Include( token_idx );         // handle an INCLUDE statement
+extern bool             IncludeLib( token_idx );      // handle an INCLUDELIB statement
+extern bool             Model( token_idx );           // handle .MODEL statement
 
-extern int              CheckForLang( int );
+extern int              CheckForLang( token_idx );
 
 extern void             ModuleInit( void );
-/* Initializes the information about the module, which are contained in
-   ModuleInfo */
+/* Initializes the information about the module, which are contained in ModuleInfo */
 
-extern int              ModuleEnd( int );       // handle END statement
+extern bool             ModuleEnd( token_idx );       // handle END statement
 
-extern int              Locals( int );          // handle [NO]LOCALS statement
+extern bool             Locals( token_idx );          // handle [NO]LOCALS statement
 
 extern void             ProcStackInit( void );
 extern void             ProcStackFini( void );
@@ -380,7 +379,7 @@ extern uint_32          GetCurrSegStart(void);
 extern struct asm_sym   *GetGrp( struct asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
-extern int              SetAssume( int );       // Assume a register
+extern bool             SetAssume( token_idx );       // Assume a register
 
 extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
@@ -389,23 +388,23 @@ extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
 extern enum assume_reg  GetPrefixAssume( struct asm_sym*, enum assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
-extern int              FixOverride( int );
+extern bool             FixOverride( token_idx );
 /* Get the correct frame and frame_datum for a label when there is a segment
    or group override. */
 
 extern void             GetSymInfo( struct asm_sym * );
 /* Store location information about a symbol */
-extern int              NameDirective( int );
+extern bool             NameDirective( token_idx );
 
-extern int              Comment( int, int ); /* handle COMMENT directives */
+extern bool             Comment( int, token_idx, const char * ); /* handle COMMENT directives */
 
-extern int              AddAlias( int );
+extern bool             AddAlias( token_idx );
 extern void             FreeInfo( dir_node * );
 extern void             push( void *stack, void *elt );
 extern void             *pop( void *stack );
 extern uint_32          GetCurrSegAlign( void );
 extern void             wipe_space( char *token );
-extern int              SetUse32Def( bool );
+extern bool             SetUse32Def( bool );
 
 /*---------------------------------------------------------------------------
  *   included from write.c

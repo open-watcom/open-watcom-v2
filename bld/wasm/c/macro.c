@@ -77,8 +77,8 @@ static asmlines *asmline_insert( asmlines **head, void *data )
     return( entry );
 }
 
-static char *replace_parm( parm_list *parms, char *start, char len, asmlines *lstruct )
-/*************************************************************************************/
+static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *lstruct )
+/***************************************************************************************/
 {
     /* search through parm list for word pointed at by start,
      * if you find it, set up the line string
@@ -91,7 +91,7 @@ static char *replace_parm( parm_list *parms, char *start, char len, asmlines *ls
     parm_list       *p;
     char            *new_line;
     char            *old_line;
-    char            before;             // length of text before placeholder
+    size_t          before;             // length of text before placeholder
     char            count = 0;
 
     old_line = lstruct->line;
@@ -100,19 +100,22 @@ static char *replace_parm( parm_list *parms, char *start, char len, asmlines *ls
             ( strncmp( start, p->label, len ) == 0 ) ) {
             /* hey! it matches! */
 
-            new_line = AsmAlloc( strlen(old_line) - len + PLACEHOLDER_SIZE +1 );
+            new_line = AsmAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
-            if( *(start-1) == '&' ) before--;
+            if( *(start - 1) == '&' )
+                before--;
             strncpy( new_line, old_line, before );
-            *(new_line+before) = '\0';
+            *(new_line + before) = '\0';
             strcat( new_line, "#" );
-            if( sprintf(buffer,"%2d", count ) != 2 ) {
+            if( sprintf( buffer, "%2d", count ) != 2 ) {
                 myassert( 0 );
             }
-            if( buffer[0] == ' ' ) buffer[0]='0'; /* no spaces */
+            if( buffer[0] == ' ' )
+                buffer[0] = '0'; /* no spaces */
             strcat( new_line, buffer );
-            if( *(start+len) == '&' ) len++;
-            strcat( new_line, start+len );
+            if( *(start + len) == '&' )
+                len++;
+            strcat( new_line, start + len );
             lstruct->line = new_line;
             lstruct->parmcount++;
 
@@ -122,7 +125,7 @@ static char *replace_parm( parm_list *parms, char *start, char len, asmlines *ls
         }
         count++;
     }
-    return( start+len );
+    return( start + len );
 }
 
 #define is_valid_id_char( ch ) \
@@ -135,7 +138,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
     char *tmp;
     char *start;
     char quote = FALSE;
-    char len;
+    size_t len;
 
     /* handle the substitution operator ( & ) */
     line = linestruct->line;
@@ -180,7 +183,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
         len = tmp - start;
         /* look for this word in the macro parms, and replace it if it is */
         /* this would change line - it will have to be reallocated */
-        if( !quote || *start =='&' || *(start-1)=='&' || *(start+len+1)=='&' ) {
+        if( !quote || *start =='&' || *(start-1)=='&' || *(start + len + 1)=='&' ) {
             if( *start != '\0' && len > 0 ) {
                 tmp = replace_parm( parms, start, len, linestruct );
             }
@@ -188,8 +191,8 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
     }
 }
 
-static int_8 lineis( char *str, char *substr )
-/********************************************/
+static bool lineis( char *str, char *substr )
+/*******************************************/
 {
     size_t  len;
 
@@ -204,17 +207,17 @@ static int_8 lineis( char *str, char *substr )
     return( TRUE );
 }
 
-static int macro_local( void )
-/****************************/
+static bool macro_local( void )
+/*****************************/
 {
     /* take a line that looks like  LOCAL varname [, varname * ] */
 
-    int i = 0;
-    char buffer[MAX_LINE_LEN];
+    token_idx   i = 0;
+    char        buffer[MAX_LINE_LEN];
 
     if( AsmBuffer[i]->u.token != T_LOCAL ) {
         AsmError( SYNTAX_ERROR );
-        return( ERROR );
+        return( RC_ERROR );
     }
 
     PushLineQueue();
@@ -222,7 +225,7 @@ static int macro_local( void )
         /* define an equ to expand the specified variable to a temp. name */
         if( AsmBuffer[i]->class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
-            return( ERROR );
+            return( RC_ERROR );
         }
         strcpy( buffer, AsmBuffer[i]->string_ptr );
         strcat( buffer, " TEXTEQU " );
@@ -234,15 +237,15 @@ static int macro_local( void )
         /* now skip the comma */
         if( AsmBuffer[i]->class != TC_COMMA ) {
             AsmError( EXPECTING_COMMA );
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 
-static int macro_exam( int i )
-/****************************/
+static bool macro_exam( token_idx i )
+/***********************************/
 {
     macro_info          *info;
     char                *string;
@@ -289,7 +292,7 @@ static int macro_exam( int i )
                     i++;
                     if( AsmBuffer[i]->class != TC_STRING ) {
                         AsmError( SYNTAX_ERROR );
-                        return( ERROR );
+                        return( RC_ERROR );
                     }
                     token = AsmBuffer[i]->string_ptr;
                     paranode->def = AsmAlloc( strlen( token ) + 1 );
@@ -303,7 +306,7 @@ static int macro_exam( int i )
             }
             if( i< Token_Count && AsmBuffer[i]->class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
-                return( ERROR );
+                return( RC_ERROR );
             }
             /* go past comma */
             i++;
@@ -330,12 +333,12 @@ static int macro_exam( int i )
         string = ReadTextLine( buffer );
         if( string == NULL ) {
             AsmError( UNEXPECTED_END_OF_FILE );
-            return( ERROR );
+            return( RC_ERROR );
         } else if( lineis( string, "endm" ) ) {
             if( nesting_depth ) {
                 nesting_depth--;
             } else {
-                return( NOT_ERROR );
+                return( RC_OK );
             }
         }
         ptr = string;
@@ -446,8 +449,8 @@ static void free_parmlist( parm_list *head )
     return;
 }
 
-int ExpandMacro( int tok_count)
-/*****************************/
+token_idx ExpandMacro( token_idx tok_count )
+/******************************************/
 {
     char        buffer[MAX_LINE_LEN];
     dir_node    *dir;
@@ -456,34 +459,36 @@ int ExpandMacro( int tok_count)
     parm_list   *parm;
     asmlines    *lnode;
     char        *line;
-    int         count = 0;
-    int         macro_name_loc;
+    token_idx   i;
+    token_idx   macro_name_loc;
     char        expansion_flag = FALSE;
-    int         exp_start = 0;
+    token_idx   exp_start = 0;
     int         nesting_depth;
     char        *ptr;
 
-    if( AsmBuffer[count]->class == TC_FINAL ) return( tok_count );
+    if( AsmBuffer[0]->class == TC_FINAL )
+        return( tok_count );
 
     /* first, find out if it is a macro */
-    for( ; count < tok_count; count++ ) {
-        if( AsmBuffer[count]->class == TC_ID ) {
-            sym = AsmGetSymbol( AsmBuffer[count]->string_ptr );
+    for( macro_name_loc = 0; macro_name_loc < tok_count; macro_name_loc++ ) {
+        if( AsmBuffer[macro_name_loc]->class == TC_ID ) {
+            sym = AsmGetSymbol( AsmBuffer[macro_name_loc]->string_ptr );
         }
-        if( sym != NULL && sym->state == SYM_MACRO ) break;
+        if( sym != NULL && sym->state == SYM_MACRO ) {
+            break;
+        }
     }
     if( sym == NULL || sym->state != SYM_MACRO ) {
         return( tok_count );
     }
-    macro_name_loc = count;
-    if( Options.mode & MODE_IDEAL ) {
-        count--;
-    } else {
-        count++;
-    }
-    if( count >= 0 ) {
-        if( AsmBuffer[count]->class == TC_DIRECTIVE &&
-            AsmBuffer[count]->u.token == T_MACRO ) {
+    if( macro_name_loc > 0 || (Options.mode & MODE_IDEAL) == 0 ) {
+        if( Options.mode & MODE_IDEAL ) {
+            i = macro_name_loc - 1;
+        } else {
+            i = macro_name_loc + 1;
+        }
+        if( AsmBuffer[i]->class == TC_DIRECTIVE &&
+            AsmBuffer[i]->u.token == T_MACRO ) {
             /* this is a macro DEFINITION! */
             return( tok_count );
         }
@@ -492,78 +497,78 @@ int ExpandMacro( int tok_count)
         /* save the rest of the line from before the macro */
         PushLineQueue();
         buffer[0]='\0';
-        for( count=0; count < macro_name_loc; count++ ) {
-            strcat( buffer, AsmBuffer[count]->string_ptr );
+        for( i = 0; i < macro_name_loc; i++ ) {
+            strcat( buffer, AsmBuffer[i]->string_ptr );
             strcat( buffer, " " );
         }
         InputQueueLine( buffer );
     }
-    count = macro_name_loc + 1;
+    i = macro_name_loc + 1;
 
     /* now get all the parameters from asmbuffer
      * they should alternate: parm /  comma
      */
 
-    DebugMsg(( "Macro expansion:  %s \n", AsmBuffer[count-1]->string_ptr ));
+    DebugMsg(( "Macro expansion:  %s \n", AsmBuffer[i - 1]->string_ptr ));
     dir = (dir_node *)sym;
     info = dir->e.macroinfo;
 
     for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
         buffer[0]='\0';
-        if( count < tok_count ) {
-            if( AsmBuffer[count]->class == TC_COMMA ||
-                ( AsmBuffer[count]->class == TC_STRING &&
-                  strlen( AsmBuffer[count]->string_ptr ) == 0 ) ) {
+        if( i < tok_count ) {
+            if( AsmBuffer[i]->class == TC_COMMA ||
+                ( AsmBuffer[i]->class == TC_STRING &&
+                  strlen( AsmBuffer[i]->string_ptr ) == 0 ) ) {
                 /* blank parm */
 
                 if( parm->required ) {
                     AsmError( PARM_REQUIRED );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
                 if( parm->def ) {
                     /* fill in the default value */
                     parm->replace = AsmAlloc( strlen( parm->def )+1 );
                     strcpy( parm->replace, parm->def );
                 }
-                if( AsmBuffer[count]->class != TC_COMMA ) {
-                    count++;
-                    if( count < tok_count &&
-                        AsmBuffer[count]->class != TC_COMMA ) {
+                if( AsmBuffer[i]->class != TC_COMMA ) {
+                    i++;
+                    if( i < tok_count &&
+                        AsmBuffer[i]->class != TC_COMMA ) {
                         AsmError( EXPECTING_COMMA );
-                        return( ERROR );
+                        return( INVALID_IDX );
                     }
                 }
                 /* go past comma */
-                count++;
+                i++;
             } else {
                 /* we have a parm! :) */
                 for( ; ; ) {
-                    if( AsmBuffer[count]->class == TC_FINAL ) break;
-                    if( *(AsmBuffer[count]->string_ptr) == '%' ) {
-                        *(AsmBuffer[count]->string_ptr) = ' ';
+                    if( AsmBuffer[i]->class == TC_FINAL )
+                        break;
+                    if( *(AsmBuffer[i]->string_ptr) == '%' ) {
+                        *(AsmBuffer[i]->string_ptr) = ' ';
                         expansion_flag = TRUE;
-                        exp_start = count;
+                        exp_start = i;
                     }
 
                     if( !expansion_flag ) {
-                        if( AsmBuffer[count]->class == TC_COMMA ||
-                            AsmBuffer[count]->string_ptr == NULL ||
-                            count == tok_count ) {
+                        if( AsmBuffer[i]->class == TC_COMMA ||
+                            AsmBuffer[i]->string_ptr == NULL ||
+                            i == tok_count ) {
                             break;
                         }
-                        if( AsmBuffer[count]->class == TC_NUM ) {
-                            if( *AsmBuffer[count]->string_ptr == 0 ) {
-                                itoa( AsmBuffer[count]->u.value, buffer+strlen( buffer ), 10 );
+                        if( AsmBuffer[i]->class == TC_NUM ) {
+                            if( *AsmBuffer[i]->string_ptr == 0 ) {
+                                itoa( AsmBuffer[i]->u.value, buffer + strlen( buffer ), 10 );
                             } else {
-                                strcpy( buffer+strlen( buffer ), AsmBuffer[count]->string_ptr );
+                                strcpy( buffer + strlen( buffer ), AsmBuffer[i]->string_ptr );
                             }
-                        } else if( AsmBuffer[count]->class == TC_STRING ) {
+                        } else if( AsmBuffer[i]->class == TC_STRING ) {
                             char        *src;
                             char        *dst;
 
-                            dst = &buffer[strlen(buffer)];
-
-                            src = AsmBuffer[count]->string_ptr;
+                            dst = &buffer[strlen( buffer )];
+                            src = AsmBuffer[i]->string_ptr;
                             while( *src != '\0' ) {
                                 if( *src == '\'' ) {
                                     *dst++ = '\''; /* have to escape delim */
@@ -572,38 +577,39 @@ int ExpandMacro( int tok_count)
                             }
                             *dst = '\0';
                         } else {
-                            strcat( buffer, AsmBuffer[count]->string_ptr );
+                            strcat( buffer, AsmBuffer[i]->string_ptr );
                         }
                     } else {
-                        switch( ExpandSymbol( count, FALSE ) ) {
+                        switch( ExpandSymbol( i, FALSE ) ) {
                         case ERROR:
                             free_parmlist( info->parmlist );
-                            return( ERROR );
+                            return( INVALID_IDX );
                         case STRING_EXPANDED:
                             tok_count = Token_Count;
                             continue;
                         }
 
-                        if( AsmBuffer[count]->class == TC_COMMA ||
-                            AsmBuffer[count]->string_ptr == NULL ||
-                            AsmBuffer[count+1]->class == TC_FINAL ) {
-                            if( AsmBuffer[count+1]->class == TC_FINAL ) count++;
-                            tok_count = EvalExpr( tok_count, exp_start, count-1, TRUE );
+                        if( AsmBuffer[i]->class == TC_COMMA ||
+                            AsmBuffer[i]->string_ptr == NULL ||
+                            AsmBuffer[i + 1]->class == TC_FINAL ) {
+                            if( AsmBuffer[i + 1]->class == TC_FINAL )
+                                i++;
+                            tok_count = EvalExpr( tok_count, exp_start, i - 1, TRUE );
                             expansion_flag = FALSE;
                             Token_Count = tok_count;
-                            count = exp_start;
+                            i = exp_start;
                         }
                     }
-                    count++;
+                    i++;
                 }
-                count++; /* go past the comma */
-                parm->replace = AsmAlloc( strlen( buffer )+1 );
+                i++; /* go past the comma */
+                parm->replace = AsmAlloc( strlen( buffer ) + 1 );
                 strcpy( parm->replace, buffer );
             }
         } else {
             if( parm->required ) {
                 AsmError( PARM_REQUIRED );
-                return( ERROR );
+                return( INVALID_IDX );
             }
         }
     }
@@ -620,7 +626,8 @@ int ExpandMacro( int tok_count)
         } else if( lineis( line, "local" ) ) {
             if( nesting_depth == 0 ) {
                 AsmScan( line );
-                if( macro_local() == ERROR ) return( ERROR );
+                if( macro_local() )
+                    return( INVALID_IDX );
                 AsmFree( line );
                 continue;
             }
@@ -647,22 +654,24 @@ int ExpandMacro( int tok_count)
     return( 0 );
 }
 
-int MacroDef( int i, bool hidden )
-/********************************/
+bool MacroDef( token_idx i, bool hidden )
+/***************************************/
 {
     char        *name;
-    int         n;
+    token_idx   n;
     dir_node    *currproc;
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-    } else {
+    } else if( i > 0 ) {
         n = --i;
+    } else {
+        n = INVALID_IDX;
     }
     if( ( Parse_Pass == PASS_1 ) &&
-        ( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) ) {
+        ( ( n == INVALID_IDX ) || ( AsmBuffer[n]->class != TC_ID ) ) ) {
         AsmError( PROC_MUST_HAVE_A_NAME );
-        return( ERROR );
+        return( RC_ERROR );
     }
     name = AsmBuffer[n]->string_ptr;
     currproc = (dir_node *)AsmGetSymbol( name );
@@ -672,13 +681,13 @@ int MacroDef( int i, bool hidden )
         currproc->e.macroinfo->hidden = hidden;
     } else if( Parse_Pass == PASS_1 ) {
         AsmError( PROC_ALREADY_DEFINED );
-        return( ERROR );
+        return( RC_ERROR );
     }
     return( macro_exam( i ) );
 }
 
-int MacroEnd( bool exit_flag )
-/*******************/
+bool MacroEnd( bool exit_flag )
+/*****************************/
 {
     if( exit_flag ) {
         MacroExitState = 2;
@@ -691,5 +700,5 @@ int MacroEnd( bool exit_flag )
     } else {
         MacroExitState = 0;
     }
-    return( 0 );
+    return( RC_OK );
 }

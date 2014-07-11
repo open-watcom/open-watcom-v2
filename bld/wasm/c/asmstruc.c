@@ -55,25 +55,29 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
     return( NULL );
 }
 
-int StructDef( int i )
-/********************/
+bool StructDef( token_idx i )
+/***************************/
 {
     char        *name;
     dir_node    *dir;
-    int         n;
+    token_idx   n;
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
         if( ( AsmBuffer[i]->u.token == T_STRUC ) &&
             ( AsmBuffer[n]->class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
     } else {
-        n = i - 1;
-        if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {
+        if( i > 0 ) {
+            n = i - 1;
+        } else {
+            n = INVALID_IDX;
+        }
+        if( ( n == INVALID_IDX ) || ( AsmBuffer[n]->class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
     name = AsmBuffer[n]->string_ptr;
@@ -92,7 +96,7 @@ int StructDef( int i )
                 dir_init( dir, TAB_STRUCT );
             } else {
                 AsmError( SYMBOL_ALREADY_DEFINED );
-                return( ERROR );
+                return( RC_ERROR );
             }
         }
         /* even if the current is null */
@@ -109,7 +113,7 @@ int StructDef( int i )
                 break;
             default:
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
         }
         if( Definition.curr_struct != NULL &&
@@ -119,23 +123,23 @@ int StructDef( int i )
             Definition.struct_depth--;
         } else {
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
-/********************************************************************/
+int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
+/**************************************************************************/
 {
     /* input: a line that looks like : sym_name struct_name { init. values }
      * where i marks the struct_name
      */
 
     char            buffer[MAX_LINE_LEN];
-    char            *ptr;
-    char            *ptr1;
-    size_t          count;
+    const char      *ptr;
+    const char      *ptr1;
+    const char      *ptr2;
     dir_node        *dir;
     field_list      *f;
 
@@ -162,16 +166,16 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
         strcat( buffer, " " );
         if( ptr == NULL ) {
             strcat( buffer, f->value );
-        } else if( (ptr1 = strpbrk( ptr, "," )) != NULL ) {
-            count = ptr1 - ptr;
-            for( ptr1 = ptr; isspace( *ptr1 ); ptr1++ )
-                ;
-            if( ptr1 - ptr == count ) {
+        } else if( (ptr2 = strpbrk( ptr, "," )) != NULL ) {
+            for( ptr1 = ptr; isspace( *ptr1 ); ) {
+                ++ptr1;
+            }
+            if( ptr1 == ptr2 ) {
                 strcat( buffer, f->value );
             } else {
-                strncat( buffer, ptr, count );
+                strncat( buffer, ptr1, ptr2 - ptr1 );
             }
-            ptr += count + 1;   // go past the comma
+            ptr = ptr2 + 1;   // go past the comma
         } else {
             for( ; isspace( *ptr ); ptr++ )
                 ;
@@ -188,12 +192,12 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, int i )
     return( NOT_ERROR );
 }
 
-int AddFieldToStruct( asm_sym *sym,  int loc )
-/*****************************/
+int AddFieldToStruct( asm_sym *sym, token_idx loc )
+/*************************************************/
 {
     int         offset;
     size_t      count;
-    int         i;
+    token_idx   i;
     struct_info *the_struct;
     field_list  *f;
 
@@ -203,7 +207,7 @@ int AddFieldToStruct( asm_sym *sym,  int loc )
 
     f = AsmAlloc( sizeof( field_list ) );
 
-    if( loc == -1 ) {
+    if( loc == INVALID_IDX ) {
         for( loc = 0; AsmBuffer[loc]->class != TC_FINAL; ++loc ) {
             /* nothing to do */
         }

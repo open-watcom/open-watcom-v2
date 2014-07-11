@@ -186,8 +186,8 @@ static struct asm_sym *FindLocalLabel( const char *name )
     return( NULL );
 }
 
-static int AddLocalLabel( asm_sym *sym )
-/**************************************/
+static bool AddLocalLabel( asm_sym *sym )
+/***************************************/
 {
     label_list  *label;
     label_list  *curr;
@@ -195,7 +195,7 @@ static int AddLocalLabel( asm_sym *sym )
 
     if( ( sym->state != SYM_UNDEFINED ) && ( Parse_Pass == PASS_1 ) ) {
         AsmErr( SYMBOL_PREVIOUSLY_DEFINED, sym->name );
-        return( ERROR );
+        return( RC_ERROR );
     } else {
         sym->state = SYM_INTERNAL;
         sym->mem_type = MT_SHORT;
@@ -219,7 +219,7 @@ static int AddLocalLabel( asm_sym *sym )
         }
         curr->next = label;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 #endif
 
@@ -248,7 +248,7 @@ struct asm_sym *AsmLookup( const char *name )
                 if( sym == NULL ) {
                     sym = AllocASym( name );
                     if( sym != NULL) {
-                        if( AddLocalLabel( sym ) == ERROR ) {
+                        if( AddLocalLabel( sym ) ) {
                             return( NULL );
                         }
                     }

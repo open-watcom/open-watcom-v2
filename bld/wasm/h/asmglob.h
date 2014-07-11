@@ -46,6 +46,9 @@
 #define ASMFAR
 #endif
 
+#define RC_ERROR                true
+#define RC_OK                   false
+
 #define ERROR                   -1
 #define NOT_ERROR               1
 #define EMPTY                   -2

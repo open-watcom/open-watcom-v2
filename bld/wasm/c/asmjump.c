@@ -40,7 +40,7 @@
 #endif
 
 /* prototypes */
-int ptr_operator( memtype mem_type, uint_8 fix_mem_type );
+bool ptr_operator( memtype mem_type, uint_8 fix_mem_type );
 int jmp( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
@@ -93,7 +93,7 @@ static void getJumpNegation( asm_token tok, char *buffer, int len )
 static void jumpExtend( int far_flag )
 /*************************************/
 {
-    unsigned    i;
+    token_idx   i;
     unsigned    next_ins_size;
     char        buffer[MAX_LINE_LEN];
 
@@ -143,8 +143,8 @@ static void jumpExtend( int far_flag )
 static void FarCallToNear( void )
 /*******************************/
 {
-    unsigned i;
-    char buffer[MAX_LINE_LEN];
+    token_idx   i;
+    char        buffer[MAX_LINE_LEN];
 
     /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
@@ -405,7 +405,7 @@ int jmp( expr_list *opndx )
                 break;
 #endif
             case MT_FWORD:
-                if( ptr_operator( MT_FWORD, TRUE ) == ERROR )
+                if( ptr_operator( MT_FWORD, TRUE ) )
                     return( ERROR );
                 break;
             default:
@@ -655,8 +655,8 @@ int jmp( expr_list *opndx )
     return( NOT_ERROR );
 }
 
-int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
-/***********************************************/
+bool ptr_operator( memtype mem_type, uint_8 fix_mem_type )
+/********************************************************/
 /*
   determine what should be done with SHORT, NEAR, FAR, BYTE, WORD, DWORD, PTR
   operator;
@@ -668,9 +668,9 @@ int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
      */
 
     if( Code->info.token == T_LEA )
-        return( NOT_ERROR );
+        return( RC_OK );
     if( Code->info.token == T_SMSW )
-        return( NOT_ERROR );
+        return( RC_OK );
     if( mem_type == MT_PTR ) {
         /* finish deciding what type to make the inst NOW
          * ie: decide size overrides etc.
@@ -753,5 +753,5 @@ int ptr_operator( memtype mem_type, uint_8 fix_mem_type )
 #endif
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }

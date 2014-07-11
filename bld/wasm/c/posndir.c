@@ -57,11 +57,11 @@ static byte NopList32[] = {
 
 static byte *NopLists[] = { NopList16, NopList32 };
 
-int ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
-/************************************************************************/
+bool ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
+/*************************************************************************/
 {
     if( CurrSeg == NULL )
-        return( ERROR );
+        return( RC_ERROR );
     if( relative ) {
         value += GetCurrAddr();
     }
@@ -75,11 +75,11 @@ int ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
         CurrSeg->seg->e.seginfo->length = CurrSeg->seg->e.seginfo->current_loc;
     }
 
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-int OrgDirective( int i )
-/***********************/
+bool OrgDirective( token_idx i )
+/******************************/
 {
     struct asm_sym  *sym;
     int_32          value = 0;
@@ -95,14 +95,14 @@ int OrgDirective( int i )
         return( ChangeCurrentLocation( FALSE, sym->offset + value, FALSE ) );
     }
     AsmError( EXPECTING_NUMBER );
-    return( ERROR );
+    return( RC_ERROR );
 }
 
-static void fill_in_objfile_space( uint size )
-/********************************************/
+static void fill_in_objfile_space( uint_32 size )
+/***********************************************/
 {
-    int i;
-    int nop_type;
+    uint_32     i;
+    uint_32     nop_type;
 
     /* first decide whether to output nulls or nops - is it a code seg? */
     if( ! SEGISCODE( CurrSeg ) ) {
@@ -133,30 +133,30 @@ static void fill_in_objfile_space( uint size )
     }
 }
 
-int AlignDirective( asm_token directive, int i )
-/********************************************/
+bool AlignDirective( asm_token directive, token_idx i )
+/*****************************************************/
 {
-    int_32 align_val = 0;
-    int seg_align;
+    uint_32     align_val = 0;
+    unsigned    seg_align;
 
     switch( directive ) {
     case T_ALIGN:
         if( AsmBuffer[i+1]->class == TC_NUM ) {
-            int power;
+            uint_32 power;
 
             align_val = AsmBuffer[i+1]->u.value;
             /* check that the parm is a power of 2 */
             for( power = 1; power < align_val; power <<= 1 );
             if( power != align_val ) {
                 AsmError( POWER_OF_2 );
-                return( ERROR );
+                return( RC_ERROR );
             }
         } else {
             if( Token_Count == i + 1 ) {
                 align_val = GetCurrSegAlign();
             } else {
                 AsmError( EXPECTING_NUMBER );
-                return( ERROR );
+                return( RC_ERROR );
             }
         }
         break;
@@ -165,13 +165,13 @@ int AlignDirective( asm_token directive, int i )
         break;
     }
     seg_align = GetCurrSegAlign(); // # of bytes
-    if( seg_align <= 0 ) {
+    if( seg_align == 0 ) {
         AsmError( NO_SEGMENT_OPENED );
-        return( ERROR );
+        return( RC_ERROR );
     }
     if( align_val > seg_align ) {
         AsmWarn( 1, ALIGN_TOO_HIGH );
-        return( ERROR );
+        return( RC_ERROR );
     }
     /* find out how many bytes past alignment we are & add the remainder */
     //store temp. value
@@ -180,5 +180,5 @@ int AlignDirective( asm_token directive, int i )
         align_val -= seg_align;
         fill_in_objfile_space( align_val );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }

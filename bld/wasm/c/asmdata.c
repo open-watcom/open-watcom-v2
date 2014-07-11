@@ -46,7 +46,7 @@
 
 #if defined( _STANDALONE_ )
 
-extern int              ChangeCurrentLocation( bool, int_32, bool );
+extern bool             ChangeCurrentLocation( bool, int_32, bool );
 extern bool             SymIs32( struct asm_sym *sym );
 
 /* static globals */
@@ -57,7 +57,7 @@ static bool             first;
 
 #endif
 
-static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes );
+static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_pos, unsigned no_of_bytes );
 
 static bool             More_Array_Element = FALSE;
 static unsigned         Last_Element_Size;
@@ -74,8 +74,8 @@ static void little_endian( char *string, unsigned no_of_bytes )
     return;
 }
 
-static void output_float( unsigned char index, unsigned no_of_bytes, bool negative )
-/**********************************************************************************/
+static void output_float( token_idx index, unsigned no_of_bytes, bool negative )
+/******************************************************************************/
 {
     double              double_value;
     float               float_value;
@@ -126,21 +126,21 @@ static void update_sizes( asm_sym *sym, bool first, unsigned no_of_bytes )
 }
 #endif
 
-static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes )
-/************************************************************************************************/
+static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx start_pos, unsigned no_of_bytes )
+/************************************************************************************************************/
 /*
 - parse an array and initialize the number;
 - call by dup_array() only;
 */
 {
-    int                 cur_pos = start_pos;
+    token_idx           cur_pos = start_pos;
     unsigned            count;
     char                *char_ptr = NULL;
     bool                negative = FALSE;
 
 #if defined( _STANDALONE_ )
     asm_sym             *the_struct;
-    int                 tmp;
+    token_idx           tmp;
 
     the_struct = (asm_sym*)Definition.curr_struct;
 
@@ -156,8 +156,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
         if( AsmBuffer[cur_pos]->class == TC_RES_ID )
             continue;
         tmp = cur_pos;
-        if( check_override( &tmp ) == ERROR )
-            return( ERROR );
+        if( check_override( &tmp ) )
+            return( INVALID_IDX );
         cur_pos = tmp;
 #endif
         if(( cur_pos == Token_Count - 1 )
@@ -168,7 +168,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             if( cur_pos != start_pos ) {
                 if( AsmBuffer[cur_pos - 1]->class != TC_COMMA ) {
                     AsmError( EXPECTING_COMMA );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
             }
 #if defined( _STANDALONE_ )
@@ -203,7 +203,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 break;
             default:
                 AsmError( EXPECTING_NUMBER );
-                return( ERROR );
+                return( INVALID_IDX );
             }
             break;
         case TC_PLUS:
@@ -214,8 +214,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             if( AsmBuffer[cur_pos+1]->class == TC_RES_ID &&
                 AsmBuffer[cur_pos+1]->u.token == T_DUP ) {
                 cur_pos = dup_array( sym, struct_sym, cur_pos, no_of_bytes );
-                if( cur_pos == ERROR )
-                    return( ERROR );
+                if( cur_pos == INVALID_IDX )
+                    return( INVALID_IDX );
                 break;
             }
 
@@ -231,7 +231,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                         break;
                 default:
                     AsmError( EXPECTING_COMMA );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
             }
             if( AsmBuffer[cur_pos]->class == TC_FLOAT ) {
@@ -265,7 +265,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             if( cur_pos != start_pos ) {
                 if( AsmBuffer[cur_pos - 1]->class == TC_COMMA ) {
                     AsmError( EXPECTING_NUMBER );
-                    return( ERROR );
+                    return( INVALID_IDX );
                     /********SHOULD WE DO IT THIS WAY?*********
                     for( count = 0; count < no_of_bytes; count++ ) {
                     AsmDataByte( 0x00 );
@@ -274,7 +274,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 }
             } else {
                 AsmError( EXPECTING_NUMBER );
-                return( ERROR );
+                return( INVALID_IDX );
             }
             if( cur_pos == ( Token_Count - 1 ) ) {
                 More_Array_Element = TRUE;
@@ -289,9 +289,9 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
 #endif
             if( no_of_bytes != 1 ) {
-                if( AsmBuffer[cur_pos]->u.value > no_of_bytes ) {
+                if( (unsigned)AsmBuffer[cur_pos]->u.value > no_of_bytes ) {
                     AsmError( INITIALIZER_OUT_OF_RANGE );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
             }
             char_ptr = AsmBuffer[cur_pos]->string_ptr;
@@ -325,7 +325,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
 #endif
             break;
         case TC_ID: {
-            int                 i;
+            token_idx           i;
             enum fixup_types    fixup_type = 0;
             asm_sym             *init_sym;
             char                *ptr;
@@ -334,15 +334,15 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             /* temporary test .. if this works, combine code for id & resid */
 #if defined( _STANDALONE_ )
             i = ++cur_pos;
-            if( check_override( &i ) == ERROR ) {
-                return( ERROR );
+            if( check_override( &i ) ) {
+                return( INVALID_IDX );
             }
             i--;
             cur_pos = i;
 
             switch( ExpandSymbol( i, FALSE ) ) {
             case ERROR:
-                return( ERROR );
+                return( INVALID_IDX );
             case STRING_EXPANDED:
                 continue;
             }
@@ -351,7 +351,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
 
             if( init_sym == NULL )
-                return( ERROR );
+                return( INVALID_IDX );
 
 #if defined( _STANDALONE_ )
             switch( init_sym->state ) {
@@ -368,7 +368,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 switch( no_of_bytes ) {
                 case 1:
                     AsmError( OFFSET_TOO_SMALL ); // fixme
-                    return( ERROR );
+                    return( INVALID_IDX );
                 case 2:
                     fixup_type = FIX_OFF16;
                     break;
@@ -386,7 +386,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                     break;
                 default:
                     AsmError( NOT_IMPLEMENTED );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
 #if defined( _STANDALONE_ )
                 /* switch( init_sym->state ) from above */
@@ -394,7 +394,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             find_frame( init_sym );
 #endif
             fixup = AddFixup( init_sym, fixup_type, OPTJ_NONE );
-            //          if( fixup == NULL ) return( ERROR );
+            //          if( fixup == NULL ) return( INVALID_IDX );
             // fixme
             InsFixups[OPND1] = fixup;
             data += fixup->u_offset;
@@ -418,7 +418,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 case TC_MINUS:
                     if( AsmBuffer[cur_pos+1]->class != TC_NUM ) {
                         AsmError( EXPECTING_NUMBER );
-                        return( ERROR );
+                        return( INVALID_IDX );
                     }
                     AsmBuffer[cur_pos+1]->u.value = -AsmBuffer[cur_pos+1]->u.value;
                     break;
@@ -428,8 +428,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             }
 
 #if defined( _STANDALONE_ )
-            if( store_fixup( OPND1 ) == ERROR )
-                return( ERROR );
+            if( store_fixup( OPND1 ) )
+                return( INVALID_IDX );
 #endif
             /* now actually output the data */
             ptr = (char *)&data;
@@ -459,9 +459,9 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             break;
             }
         case TC_UNARY_OPERATOR: {
-            int                 i;
+            token_idx           i;
             enum fixup_types    fixup_type = 0;
-            int                 seg_off_operator_loc = 0;
+            token_idx           seg_off_operator_loc = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
@@ -472,7 +472,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 // see asmins.h about T_SEG
                 if( no_of_bytes < 2 ) {
                     AsmError( OFFSET_TOO_SMALL );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
             }
             seg_off_operator_loc = cur_pos;
@@ -485,8 +485,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                     i += 2;
                 }
             }
-            if( check_override( &i ) == ERROR ) {
-                return( ERROR );
+            if( check_override( &i ) ) {
+                return( INVALID_IDX );
             }
             i--;
             cur_pos = i;
@@ -495,22 +495,22 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                 if( AsmBuffer[++cur_pos]->class == TC_ID ) {
                     init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
                     if( init_sym == NULL )
-                        return( ERROR );
+                        return( INVALID_IDX );
 
                     if( AsmBuffer[seg_off_operator_loc]->u.token == T_OFFSET ) {
                         if( init_sym->state == SYM_STACK ) {
                             AsmError( CANNOT_OFFSET_AUTO );
-                            return( ERROR );
+                            return( INVALID_IDX );
 #if defined( _STANDALONE_ )
                         } else if( init_sym->state == SYM_GRP ) {
                             AsmError( CANNOT_OFFSET_GRP );
-                            return( ERROR );
+                            return( INVALID_IDX );
 #endif
                         }
                         switch( no_of_bytes ) {
                         case 1:
                             AsmError( OFFSET_TOO_SMALL ); // fixme
-                            return( ERROR );
+                            return( INVALID_IDX );
                         case 2:
                             fixup_type = FIX_OFF16;
                             break;
@@ -524,7 +524,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                             break;
                         default:
                             AsmError( NOT_IMPLEMENTED );
-                            return( ERROR );
+                            return( INVALID_IDX );
                         }
                     } else if( AsmBuffer[seg_off_operator_loc]->u.token == T_SEG ) {
                         if( init_sym->state == SYM_STACK ) {
@@ -551,8 +551,8 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                             data += fixup->u_offset;
                         }
 #if defined( _STANDALONE_ )
-                        if( store_fixup( OPND1 ) == ERROR )
-                            return( ERROR );
+                        if( store_fixup( OPND1 ) )
+                            return( INVALID_IDX );
 #endif
                         break;
 #if defined( _STANDALONE_ )
@@ -571,7 +571,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
 #endif
                     default:
                         AsmError( SYNTAX_ERROR );
-                        return( ERROR );
+                        return( INVALID_IDX );
                     }
                     for( cur_pos++;
                         ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->class != TC_FINAL)
@@ -591,7 +591,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
                         case TC_MINUS:
                             if( AsmBuffer[cur_pos+1]->class != TC_NUM ) {
                                 AsmError( EXPECTING_NUMBER );
-                                return( ERROR );
+                                return( INVALID_IDX );
                             }
                             AsmBuffer[cur_pos+1]->u.value = -AsmBuffer[cur_pos+1]->u.value;
                             break;
@@ -622,7 +622,7 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
 #endif
                 } else {
                     AsmError( SYNTAX_ERROR );
-                    return( ERROR );
+                    return( INVALID_IDX );
                 }
             }
             // set position back to main loop worked correctly
@@ -634,20 +634,20 @@ static int array_element( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsi
             return( cur_pos );
         default:
             AsmError( EXPECTING_NUMBER );
-            return( ERROR );
+            return( INVALID_IDX );
         }
     }
     return( cur_pos );
 }
 
-static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned no_of_bytes )
-/********************************************************************************************/
+static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_pos, unsigned no_of_bytes )
+/********************************************************************************************************/
 /*
   parse array with DUP operator;
 */
 {
-    int                 cur_pos;
-    int                 returned_pos = 0;
+    token_idx           cur_pos;
+    token_idx           returned_pos = 0;
     unsigned            count;
 #if defined( _STANDALONE_ )
     bool                was_first;
@@ -659,13 +659,13 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
             && ( AsmBuffer[cur_pos + 1]->u.token == T_DUP )) {
             if( AsmBuffer[cur_pos]->class != TC_NUM ) {
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( INVALID_IDX );
             }
             count = AsmBuffer[cur_pos]->u.value;
             cur_pos += 2;
             if( AsmBuffer[cur_pos]->class != TC_OP_BRACKET ) {
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( INVALID_IDX );
             }
 
             cur_pos++;
@@ -691,18 +691,18 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
                 first = was_first;
 #endif
                 returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
-                if( returned_pos == ERROR ) {
-                    return( ERROR );
+                if( returned_pos == INVALID_IDX ) {
+                    return( INVALID_IDX );
                 }
             }
             if( AsmBuffer[returned_pos]->class != TC_CL_BRACKET ) {
                 AsmError( BRACKET_EXPECTED );
-                return( ERROR );
+                return( INVALID_IDX );
             }
         } else {
             returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
-            if( returned_pos == ERROR )
-                return( ERROR );
+            if( returned_pos == INVALID_IDX )
+                return( INVALID_IDX );
             if( AsmBuffer[returned_pos]->class != TC_CL_BRACKET ) {
                 /* array_element hit TC_FINAL so stop */
                 return( returned_pos );
@@ -719,8 +719,8 @@ static int dup_array( asm_sym *sym, asm_sym *struct_sym, int start_pos, unsigned
     return( array_element( sym, struct_sym, cur_pos, no_of_bytes ) );
 }
 
-int data_init( int sym_loc, int initializer_loc )
-/***********************************************/
+bool data_init( token_idx sym_loc, token_idx initializer_loc )
+/************************************************************/
 /*
   parse data initialization assembly line;
 */
@@ -737,10 +737,10 @@ int data_init( int sym_loc, int initializer_loc )
     first = TRUE;
 #endif
 
-    if( sym_loc >= 0 ) {
+    if( sym_loc != INVALID_IDX ) {
         sym = AsmLookup( AsmBuffer[sym_loc]->string_ptr );
         if( sym == NULL ) {
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
     switch( AsmBuffer[initializer_loc]->u.token ) {
@@ -804,25 +804,29 @@ int data_init( int sym_loc, int initializer_loc )
         break;
     default:
         AsmError( INVALID_LABEL_DEFINITION );
-        return( ERROR );
+        return( RC_ERROR );
     }
     if( AsmBuffer[ initializer_loc + 1 ]->class == TC_FINAL ) {
         AsmError( SYNTAX_ERROR );
-        return( ERROR );
+        return( RC_ERROR );
     }
 
 #if defined( _STANDALONE_ )
-    if( sym_loc >= 0 && AsmBuffer[ sym_loc ]->u.token == T_LABEL ) {
+    if( sym_loc != INVALID_IDX && AsmBuffer[ sym_loc ]->u.token == T_LABEL ) {
         label_dir = TRUE;
-        sym_loc--;
+        if( sym_loc > 0 ) {
+            sym_loc--;
+        } else {
+            sym_loc = INVALID_IDX;
+        }
     }
-    if( sym_loc < 0 ) {
+    if( sym_loc == INVALID_IDX ) {
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
                 AddFieldToStruct( sym, initializer_loc );
                 struct_field = TRUE;
             } else {
-                return( NOT_ERROR );
+                return( RC_OK );
             }
         }
     }
@@ -830,7 +834,7 @@ int data_init( int sym_loc, int initializer_loc )
 
     if( More_Array_Element == TRUE ) {
         More_Array_Element = FALSE;
-    } else if( sym_loc >= 0 ) {
+    } else if( sym_loc != INVALID_IDX ) {
 #if defined( _STANDALONE_ )
         /* defining a field in a structure */
         if( Definition.struct_depth != 0 ) {
@@ -839,11 +843,11 @@ int data_init( int sym_loc, int initializer_loc )
                 struct_field = TRUE;
                 sym->state = SYM_STRUCT_FIELD;
                 sym->mem_type = mem_type;
-                if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == ERROR ) {
-                    return( ERROR );
+                if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
+                    return( RC_ERROR );
                 }
             }
-            return( NOT_ERROR );
+            return( RC_OK );
         }
 
         if( Parse_Pass == PASS_1 ) {
@@ -858,7 +862,7 @@ int data_init( int sym_loc, int initializer_loc )
             } else if( sym->state != SYM_UNDEFINED ) {
                 // redefine label
                 AsmError( SYMBOL_ALREADY_DEFINED );
-                return( ERROR );
+                return( RC_ERROR );
             }
         } else {
             old_offset = sym->offset;
@@ -871,7 +875,7 @@ int data_init( int sym_loc, int initializer_loc )
         if( sym->state != SYM_UNDEFINED ) {
             // redefine label
             AsmError( SYMBOL_ALREADY_DEFINED );
-            return( ERROR );
+            return( RC_ERROR );
         }
 #endif
         sym->state = SYM_INTERNAL;
@@ -880,19 +884,24 @@ int data_init( int sym_loc, int initializer_loc )
     }
 #if defined( _STANDALONE_ )
     if( label_dir )
-        return( NOT_ERROR );
+        return( RC_OK );
 #endif
-    if( dup_array( sym, struct_sym, initializer_loc + 1, no_of_bytes ) == ERROR ) {
-        return( ERROR );
+    if( dup_array( sym, struct_sym, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
+        return( RC_ERROR );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 int NextArrayElement( void )
 {
+    token_idx   rc;
+
     if( More_Array_Element ) {
         More_Array_Element = FALSE;
-        return( dup_array( NULL, NULL, 0, Last_Element_Size ) );
+        rc = dup_array( NULL, NULL, 0, Last_Element_Size );
+        if( rc == INVALID_IDX )
+            return( ERROR );
+        return( (int)rc );
     } else {
         return( EMPTY );
     }

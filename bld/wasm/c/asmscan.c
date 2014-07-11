@@ -40,7 +40,7 @@
 const char              *CurrString; // Current Input Line
 #endif
 
-extern int              get_instruction_position( char *string );
+extern asmins_idx       get_instruction_position( char *string );
 
 #if defined( _STANDALONE_ )
 
@@ -49,12 +49,12 @@ bool                    EnumDirective;
 #endif
 
 typedef union {
-        float   f;
-        long    l;
+    float   f;
+    long    l;
 } NUMBERFL;
 
-static int get_float( asm_tok *buf, const char **input, char **output )
-/*********************************************************************/
+static bool get_float( asm_tok *buf, const char **input, char **output )
+/**********************************************************************/
 {
     /* valid floats look like:  (int)[.(int)][e(int)][r] */
 
@@ -104,7 +104,7 @@ static int get_float( asm_tok *buf, const char **input, char **output )
     *input = ptr + extra;
 
     buf->u.float_value = (float)atof( buf->string_ptr );
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsigned size )
@@ -116,8 +116,8 @@ static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsi
     }
 }
 
-static int get_string( asm_tok *buf, const char **input, char **output )
-/**********************************************************************/
+static bool get_string( asm_tok *buf, const char **input, char **output )
+/***********************************************************************/
 {
     char    symbol_o;
     char    symbol_c;
@@ -150,7 +150,7 @@ static int get_string( asm_tok *buf, const char **input, char **output )
         }
         *(*output)++ = '\0';
         buf->u.value = count;
-        return( NOT_ERROR );
+        return( RC_OK );
     }
     (*input)++;
     count = 0;
@@ -177,17 +177,17 @@ static int get_string( asm_tok *buf, const char **input, char **output )
         } else if( **input == '\0' || **input == '\n' ) {
             *(*output)++ = '\0';
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
         *(*output)++ = *(*input)++;
     }
     *(*output)++ = '\0';
     buf->u.value = count;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int get_number( asm_tok *buf, const char **input, char **output )
-/****************************************************************/
+static bool get_number( asm_tok *buf, const char **input, char **output )
+/***********************************************************************/
 {
     const char          *ptr;
     const char          *dig_start;
@@ -332,11 +332,11 @@ static int get_number( asm_tok *buf, const char **input, char **output )
         array_mul_add( buf->u.bytes, base, val, sizeof( buf->u.bytes ) );
         ++dig_start;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 } /* get_number */
 
-static int get_id_in_backquotes( asm_tok *buf, const char **input, char **output )
-/********************************************************************************/
+static bool get_id_in_backquotes( asm_tok *buf, const char **input, char **output )
+/*********************************************************************************/
 {
     buf->string_ptr = *output;
     buf->class = TC_ID;
@@ -348,21 +348,21 @@ static int get_id_in_backquotes( asm_tok *buf, const char **input, char **output
         *(*output)++ = *(*input)++;
         if( **input == '\0' || **input == ';' ) {
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         }
     }
     (*input)++;         /* don't output the last '`' */
     *(*output)++ = '\0';
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int get_id( unsigned int *buf_index, const char **input, char **output )
-/*****************************************************************************/
+static bool get_id( token_idx *buf_index, const char **input, char **output )
+/***************************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
     asm_tok     *buf;
     char        cur_char;
-    int         count;
+    asmins_idx  ins_pos;
 
     buf = AsmBuffer[ *buf_index ];
 
@@ -397,21 +397,21 @@ static int get_id( unsigned int *buf_index, const char **input, char **output )
     /* now decide what to do with it */
 
     if( buf->class == TC_PATH )
-        return( NOT_ERROR );
-    count = get_instruction_position( buf->string_ptr );
-    if( count == EMPTY ) {
+        return( RC_OK );
+    ins_pos = get_instruction_position( buf->string_ptr );
+    if( ins_pos == INVALID_POS ) {
         if( buf->string_ptr[1] == '\0' && buf->string_ptr[0] == '?' ) {
             buf->class = TC_QUESTION_MARK;
         }
     } else {
-        buf->u.token = AsmOpTable[count].token;
+        buf->u.token = AsmOpTable[ins_pos].token;
 #if defined( _STANDALONE_ )
-        switch( AsmOpTable[count].token ) {
+        switch( AsmOpTable[ins_pos].token ) {
         // MASM6 keywords
         case T_FOR:
         case T_FORC:
             if( Options.mode & (MODE_MASM5 | MODE_TASM) ) {
-                return( NOT_ERROR );
+                return( RC_OK );
             }
             break;
         // TASM keywords
@@ -422,7 +422,7 @@ static int get_id( unsigned int *buf_index, const char **input, char **output )
         case T_MASM:
         case T_NOLOCALS:
             if( (Options.mode & MODE_TASM) == 0 ) {
-                return( NOT_ERROR );
+                return( RC_OK );
             }
             break;
         // TASM IDEAL keywords
@@ -470,39 +470,39 @@ static int get_id( unsigned int *buf_index, const char **input, char **output )
         case T_UFARDATA:
         case T_WARN:
             if( (Options.mode & MODE_IDEAL) == 0 ) {
-                return( NOT_ERROR );
+                return( RC_OK );
             }
             break;
         }
 #endif
 
-        if( AsmOpTable[count].opnd_type[OPND1] == OP_SPECIAL ) {
-            if( AsmOpTable[count].rm_byte == OP_REGISTER ) {
+        if( AsmOpTable[ins_pos].opnd_type[OPND1] == OP_SPECIAL ) {
+            if( AsmOpTable[ins_pos].rm_byte == OP_REGISTER ) {
                 buf->class = TC_REG;
-            } else if( AsmOpTable[count].rm_byte == OP_RES_ID ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_RES_ID ) {
                 buf->class = TC_RES_ID;
                 if( buf->u.token == T_DP ) {
                     buf->u.token = T_DF;
                 }
-            } else if( AsmOpTable[count].rm_byte == OP_RES_ID_PTR_MODIF ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_RES_ID_PTR_MODIF ) {
                 buf->class = TC_RES_ID;
                 if( buf->u.token == T_PWORD ) {
                     buf->u.token = T_FWORD;
                 }
-            } else if( AsmOpTable[count].rm_byte == OP_UNARY_OPERATOR ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_UNARY_OPERATOR ) {
                 buf->class = TC_UNARY_OPERATOR;
 #if defined( _STANDALONE_ )
-            } else if( AsmOpTable[count].rm_byte == OP_RELATION_OPERATOR ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_RELATION_OPERATOR ) {
                 buf->class = TC_RELATION_OPERATOR;
 #endif
-            } else if( AsmOpTable[count].rm_byte == OP_ARITH_OPERATOR ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_ARITH_OPERATOR ) {
                 buf->class = TC_ARITH_OPERATOR;
-            } else if( AsmOpTable[count].rm_byte == OP_DIRECTIVE ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_DIRECTIVE ) {
                 buf->class = TC_DIRECTIVE;
 #if defined( _STANDALONE_ )
-                if( AsmOpTable[count].token == T_ENUM ) {
+                if( AsmOpTable[ins_pos].token == T_ENUM ) {
                     EnumDirective = TRUE;
-                } else if( AsmOpTable[count].token == T_COMMENT ) {
+                } else if( AsmOpTable[ins_pos].token == T_COMMENT ) {
                     /* save the whole line .. we need to check
                      * if the delim. char shows up 2 times */
                     (*buf_index)++;
@@ -515,7 +515,7 @@ static int get_id( unsigned int *buf_index, const char **input, char **output )
                     buf->class = TC_STRING;
                     buf->u.value = 0;
                 }
-            } else if( AsmOpTable[count].rm_byte == OP_DIRECT_EXPR ) {
+            } else if( AsmOpTable[ins_pos].rm_byte == OP_DIRECT_EXPR ) {
                 buf->class = TC_DIRECT_EXPR;
 #endif
             } else {
@@ -525,11 +525,11 @@ static int get_id( unsigned int *buf_index, const char **input, char **output )
             buf->class = TC_INSTR;
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int get_special_symbol( asm_tok *buf, const char **input, char **output )
-/******************************************************************************/
+static bool get_special_symbol( asm_tok *buf, const char **input, char **output )
+/*******************************************************************************/
 {
     char        symbol;
     tok_class   cls;
@@ -606,12 +606,12 @@ static int get_special_symbol( asm_tok *buf, const char **input, char **output )
     buf->class = cls;
     *(*output)++ = *(*input)++;
     *(*output)++ = '\0';
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 #if defined( _STANDALONE_ )
-static int get_inc_path( asm_tok *buf, const char **input, char **output )
-/************************************************************************/
+static bool get_inc_path( asm_tok *buf, const char **input, char **output )
+/*************************************************************************/
 {
     char symbol;
 
@@ -630,23 +630,20 @@ static int get_inc_path( asm_tok *buf, const char **input, char **output )
     case '<' :
     case '{' :
         /* string delimiters -- just get the path as a string */
-        if( get_string( buf, input, output ) == ERROR ) {
-            return( ERROR );
-        }
-        return( NOT_ERROR );
+        return( get_string( buf, input, output ) );
     default:
         /* otherwise, just copy whatever is here */
         while( **input && !isspace( **input )  ) {
             *(*output)++ = *(*input)++;
         }
         *(*output)++ = '\0';
-        return( NOT_ERROR );
+        return( RC_OK );
     }
 }
 #endif
 
-int AsmScan( const char *string )
-/******************************************/
+token_idx AsmScan( const char *string )
+/*************************************/
 /*
 - perform syntax checking on scan line;
 - pass back tokens for later use;
@@ -655,7 +652,7 @@ int AsmScan( const char *string )
 {
     const char                  *ptr;
     char                        *output_ptr;
-    unsigned int                buf_index = 0;
+    token_idx                   buf_index = 0;
     // stringbuf - buffer in which to store strings
     static char                 stringbuf[MAX_LINE_LEN];
 
@@ -690,8 +687,8 @@ int AsmScan( const char *string )
             || *ptr == '?'
             || *ptr == '\\'
             || ( *ptr == '.' && buf_index == 0 ) ) {
-            if( get_id( &buf_index, &ptr, &output_ptr ) == ERROR ) {
-                return( ERROR );
+            if( get_id( &buf_index, &ptr, &output_ptr ) ) {
+                return( INVALID_IDX );
             }
 #if defined( _STANDALONE_ )
             // this mess allows include directives with undelimited file names
@@ -703,22 +700,22 @@ int AsmScan( const char *string )
             }
 #endif
         } else if( isdigit( *ptr ) ) {
-            if( get_number( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
-                return( ERROR );
+            if( get_number( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+                return( INVALID_IDX );
             }
         } else if( *ptr == '`' ) {
-            if( get_id_in_backquotes( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
-                return( ERROR );
+            if( get_id_in_backquotes( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+                return( INVALID_IDX );
             }
         } else {
-            if( get_special_symbol( AsmBuffer[buf_index], &ptr, &output_ptr ) == ERROR ) {
-                return( ERROR );
+            if( get_special_symbol( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+                return( INVALID_IDX );
             }
         }
         buf_index++;
         if( buf_index >= MAX_TOKEN ) {
             AsmError( TOO_MANY_TOKENS );
-            return( ERROR );
+            return( INVALID_IDX );
         }
     }
     AsmBuffer[buf_index]->class = TC_FINAL;

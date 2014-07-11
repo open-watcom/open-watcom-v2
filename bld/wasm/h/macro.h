@@ -32,6 +32,6 @@
 #ifndef _MACRO_H_
 #define _MACRO_H_
 
-extern int              ExpandMacro( int );
+extern token_idx        ExpandMacro( token_idx );
 
 #endif

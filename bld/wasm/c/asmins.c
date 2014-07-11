@@ -56,22 +56,22 @@
 #include "asminsd.h"
 #include "asmopsd.gh"
 
-extern int              match_phase_1( void );
-extern int              ptr_operator( memtype, uint_8 );
+extern bool             match_phase_1( void );
+extern bool             ptr_operator( memtype, uint_8 );
 extern int              jmp( expr_list * );
 
 static struct asm_code  Code_Info;
 struct asm_code         *Code = &Code_Info;
 
-unsigned char           Opnd_Count;
+operand_idx             Opnd_Count;
 
 static void             SizeString( unsigned op_size );
-static int              check_size( void );
+static bool             check_size( void );
 static int              segm_override_jumps( expr_list *opndx );
 
 
 #if defined( _STANDALONE_ )
-extern int              directive( int , asm_token );
+extern bool             directive( token_idx , asm_token );
 extern bool             SymIs32( struct asm_sym *sym );
 
 extern bool             DefineProc;     // TRUE if the definition of procedure
@@ -96,7 +96,7 @@ extern void             make_inst_hash_table( void );
 static int              curr_ptr_type;
 static char             ConstantOnly;
 
-static int              mem2code( char, asm_token, asm_token, asm_sym * );
+static bool             mem2code( char, asm_token, asm_token, asm_sym * );
 
 /* moved here from asmline */
 static asm_tok          tokens[MAX_TOKEN];
@@ -169,8 +169,8 @@ void AsmBufferInit( void )
     }
 }
 
-int get_instruction_position( char *string )
-/******************************************/
+asmins_idx get_instruction_position( char *string )
+/*************************************************/
 {
     asm_token   token;
 
@@ -180,7 +180,7 @@ int get_instruction_position( char *string )
             return( AsmOpcode[token].position );
         }
     }
-    return( EMPTY );
+    return( INVALID_POS );
 }
 
 static int comp_mem( asm_token reg1, asm_token reg2 )
@@ -350,11 +350,11 @@ static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
     }
 }
 
-int check_override( int *i )
-/**************************/
+bool check_override( token_idx *i )
+/*********************************/
 /* Check if there is a register, segment or group override */
 {
-    int         index;
+    token_idx   index;
 
     index = *i;
 
@@ -367,17 +367,17 @@ int check_override( int *i )
                 (*i) += 2;
                 if( *i >= Token_Count ) {
                     AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
                 break;
             case TC_ID:      // Segment or Group override
-                if( FixOverride(*i) != NOT_ERROR ) {
-                    return( ERROR );
+                if( FixOverride(*i) ) {
+                    return( RC_ERROR );
                 }
                 (*i) += 2;
                 if( *i >= Token_Count ) {
                     AsmError( LABEL_EXPECTED_AFTER_COLON );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
                 break;
             default:
@@ -385,7 +385,7 @@ int check_override( int *i )
             }
         }
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 #endif
 
@@ -470,8 +470,8 @@ bool InRange( unsigned long val, unsigned bytes )
 
 }
 
-static int mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
-/***************************************************************************/
+static bool mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
+/****************************************************************************/
 /*
   encode the memory operand to machine code
 */
@@ -501,7 +501,7 @@ static int mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
             if( !InRange( rCode->data[Opnd_Count], 2 ) ) {
                 // expect 16-bit but got 32-bit address
                 AsmError( DISPLACEMENT_OUT_OF_RANGE );
-                return( ERROR );
+                return( RC_ERROR );
             }
             rm_field = D16;
         } else {
@@ -563,24 +563,24 @@ static int mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
         case T_BX:
         case T_BP:
             if( ( temp = comp_mem( index, base ) ) == ERROR )
-                return( ERROR );
+                return( RC_ERROR );
             rm_field = temp;
             seg_override( index, sym );
             break;
         case T_SI:
         case T_DI:
             if( ( temp = comp_mem( base, index ) ) == ERROR )
-                return( ERROR );
+                return( RC_ERROR );
             rm_field = temp;
             seg_override( base, sym );
             break;
         case T_ESP:
             AsmError( ESP_CANNOT_BE_USED_AS_INDEX );
-            return( ERROR );
+            return( RC_ERROR );
         default:
             if( base < T_EAX ) {
                 AsmError( CANNOT_MIX_16_AND_32_BIT_REGISTERS );
-                return( ERROR );
+                return( RC_ERROR );
             } else if( base == T_EBP ) {
                 if( mod_field == MOD_00 ) {
                     mod_field = MOD_01;
@@ -598,7 +598,7 @@ static int mem2code( char ss, asm_token index, asm_token base, asm_sym *sym )
     } else if( Opnd_Count == OPND1 ) {
         rCode->info.rm_byte = mod_field | rm_field;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 static int comp_opt( asm_token direct )
@@ -804,7 +804,7 @@ static void MakeCPUConstant( asm_token tok )
 }
 #endif
 
-int cpu_directive( asm_token token )
+bool cpu_directive( asm_token token )
 /***********************************/
 {
     int                 temp;
@@ -825,7 +825,7 @@ int cpu_directive( asm_token token )
         }
     } else {
         AsmError( UNKNOWN_DIRECTIVE );
-        return( ERROR );
+        return( RC_ERROR );
     }
 
 #if defined( _STANDALONE_ )
@@ -866,11 +866,11 @@ int cpu_directive( asm_token token )
         break;
     }
 #endif
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int idata_float( long value )
-/**********************************/
+static bool idata_float( long value )
+/***********************************/
 /*
   check the correct operand/data size for float immediate operand;
 */
@@ -880,7 +880,7 @@ static int idata_float( long value )
         if( Code->info.token == T_PUSHW ) { // sigh. another special case
             // expect 32-bit code but get 16-bit
             AsmError( IMMEDIATE_DATA_OUT_OF_RANGE );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case MT_FAR:
@@ -890,7 +890,7 @@ static int idata_float( long value )
     case MT_PROC:
 #endif
         AsmError( SYNTAX_ERROR );
-        return( ERROR );
+        return( RC_ERROR );
 #if defined( _STANDALONE_ )
     case MT_SBYTE:
     case MT_SWORD:
@@ -898,7 +898,7 @@ static int idata_float( long value )
     case MT_BYTE:
     case MT_WORD:
         AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
-        return( ERROR );
+        return( RC_ERROR );
 #if defined( _STANDALONE_ )
     case MT_SDWORD:
 #endif
@@ -912,7 +912,7 @@ static int idata_float( long value )
     SET_OPSIZ_32( Code );
     Code->info.opnd_type[Opnd_Count] = OP_I32;
     Code->data[Opnd_Count] = value;
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 static unsigned char get_sr_rm_byte( enum prefix_reg seg_prefix )
@@ -961,7 +961,7 @@ static int proc_check( const char *curline )
         }
     }
 
-    if( WritePrologue( curline ) == ERROR )
+    if( WritePrologue( curline ) )
         return( ERROR );
     DefineProc = FALSE;
     return( TRUE );
@@ -969,10 +969,11 @@ static int proc_check( const char *curline )
 
 char *regs[4] = { "ax",  "dx",  "bx",  "cx" };
 
-int get_register_argument( int index, char *buffer, int *register_count )
+int get_register_argument( token_idx index, char *buffer, int *register_count )
 {
-    int     size, i, j;
-    char    ch;
+    token_idx   i;
+    int         size, j;
+    char        ch;
 
     i = index;
     j = *register_count;
@@ -1173,14 +1174,16 @@ int get_register_argument( int index, char *buffer, int *register_count )
     return( ERROR );
 }
 
-int get_stack_argument( int index, char *buffer )
+int get_stack_argument( token_idx index, char *buffer )
 {
-    int     size, i = index;
+    token_idx   i;
+    int         size;
 
     if( Use32 )
         size = 4;
     else
         size = 2;
+    i = index;
     if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
         i++;
         if( AsmBuffer[i]->class == TC_RES_ID ) {
@@ -1280,10 +1283,11 @@ int get_stack_argument( int index, char *buffer )
     return( 0 );
 }
 
-int expand_call( int index, int lang_type )
+bool expand_call( token_idx index, int lang_type )
 {
-    int         i, j;
-    int         arglist[16];
+    token_idx   i, j;
+    token_idx   arglist[16];
+    int         k;
     int         argcount, cleanup, reversed, register_count, register_arguments, parameter_on_stack;
     char        buffer[MAX_LINE_LEN];
 
@@ -1313,17 +1317,17 @@ int expand_call( int index, int lang_type )
         if( AsmBuffer[index]->class == TC_FINAL )
             break;
         AsmError( SYNTAX_ERROR );
-        return ( ERROR );
+        return( RC_ERROR );
     }
     for( i = index; AsmBuffer[i]->class != TC_FINAL; ) {
         if( ( AsmBuffer[i]->class != TC_COMMA ) ||
             ( AsmBuffer[i+1]->class == TC_FINAL ) ) {
             AsmError( SYNTAX_ERROR );
-            return ( ERROR );
+            return( RC_ERROR );
         }
         if( argcount == 16 ) {
             AsmError( TOO_MANY_ARGS );
-            return( ERROR );
+            return( RC_ERROR );
         }
         for( j = ++i; ; j++ ) {
             if( ( AsmBuffer[j]->class == TC_FINAL ) ||
@@ -1335,11 +1339,10 @@ int expand_call( int index, int lang_type )
         i = j;
     }
     if( parameter_on_stack == FALSE ) {
-        for( i = 0; i < argcount; i++ ) {
-            parameter_on_stack = get_register_argument( arglist[i], buffer,
-                                                        &register_count );
+        for( k = 0; k < argcount; k++ ) {
+            parameter_on_stack = get_register_argument( arglist[k], buffer, &register_count );
             if( parameter_on_stack == ERROR )
-                return( ERROR );
+                return( RC_ERROR );
             if( parameter_on_stack )
                 break;
             register_count++;
@@ -1348,18 +1351,19 @@ int expand_call( int index, int lang_type )
     }
     /* put parameters on top of stack */
     if( reversed ) {    /* Reversed order (right to left)*/
-
-        i = argcount;
-        while( i > register_arguments ) {
-            j = arglist[--i];
-            if( get_stack_argument( j, buffer ) )
-                return( ERROR );
+        k = argcount;
+        while( k > register_arguments ) {
+            j = arglist[--k];
+            if( get_stack_argument( j, buffer ) ) {
+                return( RC_ERROR );
+            }
         }
     } else {
-        for( i = 0; i < argcount; i++ ) {
-            j = arglist[i];
-            if( get_stack_argument( j, buffer ) )
-                return( ERROR );
+        for( k = 0; k < argcount; k++ ) {
+            j = arglist[k];
+            if( get_stack_argument( j, buffer ) ) {
+                return( RC_ERROR );
+            }
         }
     }
     *buffer = 0;
@@ -1376,7 +1380,7 @@ int expand_call( int index, int lang_type )
             sprintf( buffer, "add sp,%d", argcount << 1 );
         InputQueueLine( buffer );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 #endif
@@ -1393,16 +1397,16 @@ static int process_jumps( expr_list *opndx )
     segm_override_jumps( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
-    if( ptr_operator( opndx->mem_type, flag ) == ERROR )
+    if( ptr_operator( opndx->mem_type, flag ) )
         return( ERROR );
-    if( ptr_operator( MT_PTR, flag ) == ERROR ) {
+    if( ptr_operator( MT_PTR, flag ) ) {
         return( ERROR );
     }
     if( opndx->mbr != NULL ) {
         flag = FALSE;
-        if( ptr_operator( opndx->mbr->mem_type, flag ) == ERROR )
+        if( ptr_operator( opndx->mbr->mem_type, flag ) )
             return( ERROR );
-        if( ptr_operator( MT_PTR, flag ) == ERROR ) {
+        if( ptr_operator( MT_PTR, flag ) ) {
             return( ERROR );
         }
     }
@@ -1422,12 +1426,12 @@ static int process_jumps( expr_list *opndx )
 static int segm_override_jumps( expr_list *opndx )
 /******************************************/
 {
-    if( opndx->override != EMPTY ) {
+    if( opndx->override != INVALID_IDX ) {
         if( AsmBuffer[opndx->override]->class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) != NOT_ERROR ) {
+            if( FixOverride( opndx->override ) ) {
                 return( ERROR );
             }
 #endif
@@ -1440,12 +1444,12 @@ static int segm_override_jumps( expr_list *opndx )
 static int segm_override_idata( expr_list *opndx )
 /******************************************/
 {
-    if( opndx->override != EMPTY ) {
+    if( opndx->override != INVALID_IDX ) {
         if( AsmBuffer[opndx->override]->class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) != NOT_ERROR ) {
+            if( FixOverride( opndx->override ) ) {
                 return( ERROR );
             }
 #endif
@@ -1458,12 +1462,12 @@ static int segm_override_idata( expr_list *opndx )
 static int segm_override_memory( expr_list *opndx )
 /******************************************/
 {
-    if( opndx->override != EMPTY ) {
+    if( opndx->override != INVALID_IDX ) {
         if( AsmBuffer[opndx->override]->class == TC_REG ) {
             Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
-            if( FixOverride( opndx->override ) != NOT_ERROR ) {
+            if( FixOverride( opndx->override ) ) {
                 return( ERROR );
             }
 #endif
@@ -1723,9 +1727,9 @@ static int idata_fixup( expr_list *opndx )
 #else
     sym32 = Code->use32;
 #endif
-    if( opndx->instr != EMPTY ) {
-        if( ( opndx->base_reg != EMPTY )
-            || ( opndx->idx_reg != EMPTY ) ) {
+    if( opndx->instr != T_NULL ) {
+        if( ( opndx->base_reg != INVALID_IDX )
+            || ( opndx->idx_reg != INVALID_IDX ) ) {
             AsmError( INVALID_MEMORY_POINTER );
             return( ERROR );
         }
@@ -1861,20 +1865,20 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
     segm_override_memory( opndx );
 
     flag = ( opndx->explicit ) ? TRUE : FALSE ;
-    if( ptr_operator( opndx->mem_type, flag ) == ERROR )
+    if( ptr_operator( opndx->mem_type, flag ) )
         return( ERROR );
-    if( ptr_operator( MT_PTR, flag ) == ERROR ) {
+    if( ptr_operator( MT_PTR, flag ) ) {
         return( ERROR );
     }
     if( opndx->mbr != NULL ) {
         flag = FALSE;
-        if( ptr_operator( opndx->mbr->mem_type, flag ) == ERROR )
+        if( ptr_operator( opndx->mbr->mem_type, flag ) )
             return( ERROR );
-        if( ptr_operator( MT_PTR, flag ) == ERROR ) {
+        if( ptr_operator( MT_PTR, flag ) ) {
             return( ERROR );
         }
     }
-    if( opndx->base_reg != EMPTY ) {
+    if( opndx->base_reg != INVALID_IDX ) {
         base = AsmBuffer[opndx->base_reg]->u.token;
         switch( base ) {     // check for base registers
         case T_EAX:
@@ -1903,7 +1907,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             return( ERROR );
         }
     }
-    if( opndx->idx_reg != EMPTY ) {
+    if( opndx->idx_reg != INVALID_IDX ) {
         index = AsmBuffer[opndx->idx_reg]->u.token;
         switch( index ) {     // check for index registers
         case T_EAX:
@@ -2014,9 +2018,9 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             /* fall through */
         default:
             if( Code->mem_type == MT_EMPTY ) {
-                if( ptr_operator( sym->mem_type, FALSE ) == ERROR )
+                if( ptr_operator( sym->mem_type, FALSE ) )
                     return( ERROR );
-                if( ptr_operator( MT_PTR, FALSE ) == ERROR ) {
+                if( ptr_operator( MT_PTR, FALSE ) ) {
                     return( ERROR );
                 }
             }
@@ -2029,7 +2033,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         } else {
             sym32 = SymIs32( sym );
         }
-        if( ( opndx->base_reg == EMPTY ) && ( opndx->idx_reg == EMPTY ) ) {
+        if( ( opndx->base_reg == INVALID_IDX ) && ( opndx->idx_reg == INVALID_IDX ) ) {
             SET_ADRSIZ( Code, sym32 );
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
         } else {
@@ -2050,7 +2054,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         if( Modend ) {
             GetAssume( sym, ASSUME_NOTHING );
         } else {
-            if( mem2code( ss, index, base, sym ) == ERROR ) {
+            if( mem2code( ss, index, base, sym ) ) {
                 return( ERROR );
             }
         }
@@ -2060,12 +2064,12 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
 
         AddFixup( sym, fixup_type, OPTJ_NONE );
 
-        if( mem2code( ss, index, base, sym ) == ERROR ) {
+        if( mem2code( ss, index, base, sym ) ) {
             return( ERROR );
         }
 #endif
     } else {
-        if( mem2code( ss, index, base, sym ) == ERROR ) {
+        if( mem2code( ss, index, base, sym ) ) {
             return( ERROR );
         }
     }
@@ -2094,7 +2098,7 @@ static int process_address( expr_list *opndx )
             return( memory_operand( opndx, TRUE ) );
         }
     } else {                          // direct operand
-        if( opndx->instr != EMPTY ) { // OFFSET ..., SEG ...
+        if( opndx->instr != T_NULL ) { // OFFSET ..., SEG ...
             if( opndx->sym == NULL ) {
                 return( idata_nofixup( opndx ) );
             } else {
@@ -2102,7 +2106,7 @@ static int process_address( expr_list *opndx )
             }
         } else {                      // direct operand only
             if( opndx->sym == NULL ) {       // without symbol
-                if( opndx->override != EMPTY ) {
+                if( opndx->override != INVALID_IDX ) {
                     // direct absolute memory without fixup ... DS:[0]
                     return( memory_operand( opndx, FALSE ) );
                 } else {
@@ -2226,13 +2230,14 @@ static int process_reg( expr_list *opndx )
 {
     int                 temp;
     int                 reg;
+    asmins_idx          ins_pos;
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
         return( process_address( opndx ) );
-    temp = AsmOpcode[AsmBuffer[opndx->base_reg]->u.token].position;
-    reg = AsmOpTable[temp].opcode;
-    Code->info.opnd_type[Opnd_Count] = AsmOpTable[temp].opnd_type[OPND2];
-    switch( AsmOpTable[temp].opnd_type[OPND2] ) {
+    ins_pos = AsmOpcode[AsmBuffer[opndx->base_reg]->u.token].position;
+    reg = AsmOpTable[ins_pos].opcode;
+    Code->info.opnd_type[Opnd_Count] = AsmOpTable[ins_pos].opnd_type[OPND2];
+    switch( AsmOpTable[ins_pos].opnd_type[OPND2] ) {
     case OP_AL:
     case OP_R8:
         Code->info.opcode &= NOT_W_BIT;         // clear w-bit
@@ -2251,7 +2256,7 @@ static int process_reg( expr_list *opndx )
     case OP_XMM:
         break;
     case OP_ST:
-        temp = opndx->idx_reg & BIT_012;
+        temp = (int)opndx->idx_reg & BIT_012;
         Code->info.rm_byte |= temp;
         if( temp != 0 )
             Code->info.opnd_type[Opnd_Count] = OP_ST_REG;
@@ -2271,7 +2276,7 @@ static int process_reg( expr_list *opndx )
                 return( ERROR );
             }
         }
-        reg = get_sr_rm_byte( AsmOpTable[temp].opcode );
+        reg = get_sr_rm_byte( AsmOpTable[ins_pos].opcode );
         break;
     case OP_EAX:
     case OP_R32:
@@ -2291,7 +2296,7 @@ static int process_reg( expr_list *opndx )
         case T_TR5:
             if( ( ( ( Code->info.cpu & P_CPU_MASK ) < P_486 )
                || ( ( Code->info.cpu & P_CPU_MASK ) >= P_686 ) )
-                && ( ( AsmOpTable[temp].cpu & P_CPU_MASK ) >= P_486 ) ) {
+                && ( ( AsmOpTable[ins_pos].cpu & P_CPU_MASK ) >= P_486 ) ) {
                 // TR3, TR4, TR5 are available on 486 only
                 AsmError( CANNOT_USE_TR3_TR4_TR5_IN_CURRENT_CPU_SETTING );
                 return( ERROR );
@@ -2301,7 +2306,7 @@ static int process_reg( expr_list *opndx )
         case T_TR7:
             if( ( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
                || ( ( Code->info.cpu & P_CPU_MASK ) >= P_686 ) )
-                && ( ( AsmOpTable[temp].cpu & P_CPU_MASK ) >= P_386 ) ) {
+                && ( ( AsmOpTable[ins_pos].cpu & P_CPU_MASK ) >= P_386 ) ) {
                 // TR6, TR7 are available on 386...586 only
                 AsmError( CANNOT_USE_TR3_TR4_TR5_IN_CURRENT_CPU_SETTING );
                 return( ERROR );
@@ -2337,28 +2342,32 @@ static int process_reg( expr_list *opndx )
     return( NOT_ERROR );
 }
 
-int AsmParse( const char *curline )
-/*********************************/
+bool AsmParse( const char *curline )
+/**********************************/
 /*
 - co-ordinate the parsing process;
 - it is a basically a big loop to loop through all the tokens and identify them
   with the switch statement;
 */
 {
-    int                 i;
+    token_idx           i;
     bool                cur_opnd_label = FALSE;
     bool                last_opnd_label = FALSE;
     struct asm_code     *rCode = Code;
     expr_list           opndx;
     int                 temp;
+    token_idx           n;
+    operand_idx         j;
 
 #if defined( _STANDALONE_ )
     Code->use32 = Use32;
-    i = proc_check( curline );
-    if( i == ERROR )
-        return( ERROR );
-    if( i == TRUE )
-        return( NOT_ERROR );
+    temp = proc_check( curline );
+    if( temp == ERROR )
+        return( RC_ERROR );
+    if( temp == TRUE )
+        return( RC_OK );
+#else
+    curline = curline;
 #endif
 
     //init
@@ -2374,10 +2383,10 @@ int AsmParse( const char *curline )
     rCode->extended_ins   = EMPTY;
     rCode->sib            = 0;            // assume ss is *1
     rCode->indirect       = FALSE;
-    for( i = 0; i < 3; i++ ) {
-        rCode->info.opnd_type[i] = OP_NONE;
-        rCode->data[i] = 0;
-        InsFixups[i] = NULL;
+    for( j = 0; j < OPND_MAX; j++ ) {
+        rCode->info.opnd_type[j] = OP_NONE;
+        rCode->data[j] = 0;
+        InsFixups[j] = NULL;
     }
     Opnd_Count = 0;
     curr_ptr_type = EMPTY;
@@ -2385,7 +2394,7 @@ int AsmParse( const char *curline )
     // check if continue initializing array
     temp = NextArrayElement();
     if( temp != EMPTY )
-        return( temp );
+        return( temp == ERROR );
 
 #if defined( _STANDALONE_ )
     CheckSeg = TRUE;
@@ -2398,13 +2407,13 @@ int AsmParse( const char *curline )
         case TC_INSTR:
 //            ExpandTheWorld( i, FALSE, TRUE );
 #if defined( _STANDALONE_ )
-            if( ExpandAllConsts( i, FALSE ) == ERROR )
-                return( ERROR );
+            if( ExpandAllConsts( i, FALSE ) )
+                return( RC_ERROR );
 #endif
             if( last_opnd_label ) {
                 // illegal operand is put before instruction
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
             cur_opnd_label = FALSE;
 #if defined( _STANDALONE_ )
@@ -2428,7 +2437,7 @@ int AsmParse( const char *curline )
                 // prefix has to be followed by an instruction
                 if( AsmBuffer[i+1]->class != TC_INSTR ) {
                     AsmError( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
                 continue;
 #if defined( _STANDALONE_ )
@@ -2455,13 +2464,10 @@ int AsmParse( const char *curline )
                 break;
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
-                    int n;
-                    int lang_type;
-
                     for( n = i + 2; n < Token_Count; n++ ) {
-                        lang_type = CheckForLang( n );
-                        if( lang_type != ERROR ) {
-                            return( expand_call( n + 1, lang_type ) );
+                        temp = CheckForLang( n );
+                        if( temp != ERROR ) {
+                            return( expand_call( n + 1, temp ) );
                         }
                     }
                 }
@@ -2472,8 +2478,8 @@ int AsmParse( const char *curline )
                 break;
             }
             i++;
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
-                return( ERROR );
+            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) ) {
+                return( RC_ERROR );
             }
             if( opndx.empty )
                 break;
@@ -2481,9 +2487,9 @@ int AsmParse( const char *curline )
             case EXPR_ADDR:
                 temp = process_address( &opndx );
                 if( temp == SCRAP_INSTRUCTION )
-                    return( SCRAP_INSTRUCTION );
+                    return( RC_OK );
                 if( temp == ERROR )
-                    return( ERROR );
+                    return( RC_ERROR );
                 break;
             case EXPR_CONST:
                 process_const( &opndx );
@@ -2492,7 +2498,7 @@ int AsmParse( const char *curline )
                 process_reg( &opndx );
                 break;
             case EXPR_UNDEF:
-                return( ERROR );
+                return( RC_ERROR );
             default:
                 break;
             }
@@ -2500,22 +2506,20 @@ int AsmParse( const char *curline )
             break;
         case TC_RES_ID:
             if( rCode->info.token == T_NULL ) {
-                temp = ( i == 0 ) ? -1 : 0;
-                return( data_init( temp, i ) );
+                n = ( i == 0 ) ? INVALID_IDX : 0;
+                return( data_init( n, i ) );
             }
             AsmError( SYNTAX_ERROR );
-            return( ERROR );
+            return( RC_ERROR );
         case TC_DIRECTIVE:
             return( directive( i, AsmBuffer[i]->u.token ) );
-            break;
 #if defined( _STANDALONE_ )
         case TC_DIRECT_EXPR:
             if( Parse_Pass != PASS_1 ) {
                 Modend = TRUE;
-                temp = i;
-                temp++;
-                if( EvalOperand( &temp, Token_Count, &opndx, TRUE ) == ERROR ) {
-                    return( ERROR );
+                n = i + 1;
+                if( EvalOperand( &n, Token_Count, &opndx, TRUE ) ) {
+                    return( RC_ERROR );
                 }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
                     process_address( &opndx );
@@ -2532,7 +2536,7 @@ int AsmParse( const char *curline )
                 || ( AsmBuffer[i+1]->u.token == T_TEXTEQU ) ) ) ) {
                 switch( ExpandSymbol( i, FALSE ) ) {
                 case ERROR:
-                    return( ERROR );
+                    return( RC_ERROR );
                 case STRING_EXPANDED:
                     // restart token processing
                     i--;
@@ -2543,7 +2547,7 @@ int AsmParse( const char *curline )
 #if 0
             if( last_opnd_label ) {
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
 #endif
             if( i == 0 ) {   // a new label
@@ -2553,7 +2557,7 @@ int AsmParse( const char *curline )
                     && ( AsmBuffer[i+1]->class != TC_DIRECTIVE ) ) {
                     AsmBuffer[i]->class = TC_DIRECTIVE;
                     AsmBuffer[i]->u.token = T_STRUCT;
-                    return( data_init( -1, 0 ) );
+                    return( data_init( INVALID_IDX, 0 ) );
                 }
 #endif
 #endif
@@ -2571,7 +2575,7 @@ int AsmParse( const char *curline )
                         AsmBuffer[i+1]->u.token = T_STRUCT;
                     } else {
                         AsmError( SYNTAX_ERROR );
-                        return( ERROR );
+                        return( RC_ERROR );
                     }
                     /* fall through */
 #endif
@@ -2586,14 +2590,14 @@ int AsmParse( const char *curline )
 #endif
                 default:
                     AsmError( SYNTAX_ERROR );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
             }
             break;
         case TC_COMMA:
             if( Opnd_Count > OPND2 ) {
                 AsmError( TOO_MANY_COMMAS );
-                return( ERROR );
+                return( RC_ERROR );
             }
             i++;
             cur_opnd_label = FALSE;
@@ -2602,8 +2606,8 @@ int AsmParse( const char *curline )
             Frame = NULL;
             SegOverride = NULL;
 #endif
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) == ERROR ) {
-                return( ERROR );
+            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) ) {
+                return( RC_ERROR );
             }
             Opnd_Count++;
             if( opndx.empty ) {
@@ -2614,7 +2618,7 @@ int AsmParse( const char *curline )
                     continue;
                 }
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
             if( Opnd_Count == OPND3 ) {
                 if( rCode->info.token == T_SHLD || rCode->info.token == T_SHRD ) {
@@ -2633,9 +2637,9 @@ int AsmParse( const char *curline )
             case EXPR_ADDR:
                 temp = process_address( &opndx );
                 if( temp == SCRAP_INSTRUCTION )
-                    return( SCRAP_INSTRUCTION );
+                    return( RC_OK );
                 if( temp == ERROR )
-                    return( ERROR );
+                    return( RC_ERROR );
                 break;
             case EXPR_CONST:
                 process_const( &opndx );
@@ -2644,7 +2648,7 @@ int AsmParse( const char *curline )
                 process_reg( &opndx );
                 break;
             case EXPR_UNDEF:
-                return( ERROR );
+                return( RC_ERROR );
             default:
                 break;
             }
@@ -2653,22 +2657,22 @@ int AsmParse( const char *curline )
         case TC_COLON:
             if( last_opnd_label ) {
                 if( AsmBuffer[i+1]->class != TC_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR )==ERROR ) {
-                         return( ERROR );
+                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR ) ) {
+                         return( RC_ERROR );
                     }
                 }
                 cur_opnd_label = FALSE;
             } else {
                 AsmError( SYNTAX_ERROR_UNEXPECTED_COLON );
-                return( ERROR );
+                return( RC_ERROR );
             }
             break;
         case TC_PLUS:
         case TC_MINUS:
             break;
         case TC_FLOAT:
-            if( idata_float( AsmBuffer[i]->u.value ) == ERROR ) {
-                return( ERROR );
+            if( idata_float( AsmBuffer[i]->u.value ) ) {
+                return( RC_ERROR );
             }
             if( AsmBuffer[i-1]->class == TC_MINUS ) {
                 rCode->data[Opnd_Count] ^= 0x80000000;
@@ -2693,8 +2697,8 @@ int AsmParse( const char *curline )
         break;
     }
     if( Opnd_Count > OPND1 ) {
-        if( check_size() == ERROR ) {
-            return( ERROR );
+        if( check_size() ) {
+            return( RC_ERROR );
         }
     }
     return( match_phase_1() );
@@ -2724,8 +2728,8 @@ static void SizeString( unsigned op_size )
     }
 }
 
-static int check_size( void )
-/***************************/
+static bool check_size( void )
+/****************************/
 /*
 - use to make sure the size of first operand match the size of second operand;
 - optimize MOV instruction;
@@ -2733,12 +2737,13 @@ static int check_size( void )
 {
     OPNDTYPE    op1 = Code->info.opnd_type[OPND1];
     OPNDTYPE    op2 = Code->info.opnd_type[OPND2];
-    int         state = NOT_ERROR;
+    bool        state;
     int         temp;
     int         op1_size;
     int         op2_size;
     int         op_size = 0;
 
+    state = RC_OK;
     switch( Code->info.token ) {
 #if 0
     case T_PSLLW:
@@ -2754,7 +2759,7 @@ static int check_size( void )
             op_size = OperandSize( op2 );
             if( op_size >= 2 ) {
                 AsmError( OP_2_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
         }
         break;
@@ -2806,7 +2811,7 @@ static int check_size( void )
             break;
         default:
             AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
-            state = ERROR;
+            state = RC_ERROR;
         }
         break;
     case T_RCL:
@@ -2831,7 +2836,7 @@ static int check_size( void )
             if( Code->data[OPND1] > (signed long)USHRT_MAX ) {
                 // if op1 is really 32-bit data, then error
                 AsmError( IMMEDIATE_DATA_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
         }
         // type cast op1 to OP_I16
@@ -2840,7 +2845,7 @@ static int check_size( void )
         if( op2 >= OP_I16 ) {
             if( Code->data[OPND2] > UCHAR_MAX ) {
                 AsmError( IMMEDIATE_DATA_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
             Code->info.opnd_type[OPND2] = OP_I8;
         }
@@ -2850,13 +2855,13 @@ static int check_size( void )
         // segment can only be 16-bit
         if( op1 > OP_I16 ) {
             AsmError( SEGMENT_TOO_BIG );
-            state = ERROR;
+            state = RC_ERROR;
         }
         if( ( Code->info.cpu & ( P_CPU_MASK | P_PM ) ) <= P_286p ) {
             // offset can only be 16-bit if CPU is 286 and down
             if( op2 > OP_I16 ) {
                 AsmError( OFFSET_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
         }
         // swap the 2 opnds to make output easier
@@ -2887,7 +2892,7 @@ static int check_size( void )
                 break;
             case 4:
                 AsmError( OP_2_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
             if( Code->use32 ) {
                 Code->prefix.opsiz = FALSE;     // - don't need opnd size prefix
@@ -2896,13 +2901,13 @@ static int check_size( void )
         case 2:
             if( op2_size >= 2 ) {
                 AsmError( OP_2_TOO_BIG );
-                state = ERROR;
+                state = RC_ERROR;
             }
             break;
         default:
             // op1 have to be r16/r32
             AsmError( OP_1_TOO_SMALL );
-            state = ERROR;
+            state = RC_ERROR;
         }
         break;
     case T_LSL:                                 /* 19-sep-93 */
@@ -2927,7 +2932,7 @@ static int check_size( void )
             break;
         default:
             AsmError( INVALID_SIZE );
-            state = ERROR;
+            state = RC_ERROR;
             break;
         }
         break;
@@ -2944,7 +2949,7 @@ static int check_size( void )
         if( ( op1_size != 0 ) && ( op1_size != 4 )
             || ( op2_size != 0 ) && ( op2_size != 4 ) ) {
             AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
-            state = ERROR;
+            state = RC_ERROR;
         }
 #endif
         break;
@@ -3011,7 +3016,7 @@ static int check_size( void )
             if( ( op1 | op2 ) & ( OP_MMX | OP_XMM ) ) {
             } else if( ( op1_size != 0 ) && ( op2_size != 0 ) ) {
                 AsmError( OPERANDS_MUST_BE_THE_SAME_SIZE );
-//                state = ERROR;
+//                state = RC_ERROR;
             }
             if( op1_size == 0 ) {
                 if( ( op1 & OP_M_ANY ) && ( op2 & OP_I ) ) {

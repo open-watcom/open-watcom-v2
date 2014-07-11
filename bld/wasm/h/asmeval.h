@@ -46,13 +46,13 @@ typedef struct expr_list {
     int_32          value;          // For constant, which may also be the offset
                                     //   to a label
     char            *string;        // for strings only -- NULL otherwise
-    int             base_reg;       // position of token for base register
+    token_idx       base_reg;       // position of token for base register
                                     // if type is EXPR_REG, it holds register
-    int             idx_reg;        // position of token for index register
-    int             label;          // Position of token holding the label
-    int             override;       // Position of token holding the override label
+    token_idx       idx_reg;        // position of token for index register
+    token_idx       label;          // Position of token holding the label
+    token_idx       override;       // Position of token holding the override label
                                     //   or register
-    int             instr;          // instruction token for label
+    asm_token       instr;          // instruction token for label
                                     //
     unsigned        indirect : 1;   // Whether inside [] or not
     unsigned        explicit : 1;   // Whether expression type explicitly given
@@ -64,10 +64,10 @@ typedef struct expr_list {
     struct asm_sym  *mbr;
 } expr_list;
 
-extern int          EvalExpr( int, int, int, bool );
-extern int          EvalOperand( int *, int, expr_list *, bool );
+extern token_idx    EvalExpr( token_idx, token_idx, token_idx, bool );
+extern bool         EvalOperand( token_idx *, token_idx, expr_list *, bool );
 #if defined( _STANDALONE_ )
-extern int          EvalConstant( int, int, int, bool );
+extern token_idx    EvalConstant( token_idx, token_idx, token_idx, bool );
 #endif
 
 #endif

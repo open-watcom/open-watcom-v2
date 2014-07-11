@@ -37,15 +37,15 @@
 #include "asmexpnd.h"
 #include "asminput.h"
 
-extern void             AddTokens( asm_tok **, int, int );
+extern void             AddTokens( asm_tok **, token_idx, token_idx );
 
 static const char macroname[] = "__STATIC_IRP_MACRO_";
 
-int ForDirective( int i, enum irp_type type )
-/*******************************************/
+bool ForDirective( token_idx i, enum irp_type type )
+/**************************************************/
 {
-    int start = i - 1; /* location of "directive name .. after any labels" */
-    int arg_loc;
+    token_idx start = i - 1; /* location of "directive name .. after any labels" */
+    token_idx arg_loc;
     char *parmstring = NULL;
     char *ptr;
     char *next_parm;
@@ -58,32 +58,32 @@ int ForDirective( int i, enum irp_type type )
         /* make a temporary macro, then call it */
         if( AsmBuffer[i]->class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
-            return( ERROR );
+            return( RC_ERROR );
         }
         arg_loc = i;
         len = AsmBuffer[i]->u.value;
         i++;
         if( AsmBuffer[i]->class != TC_FINAL ) {
             AsmError( OPERAND_EXPECTED );
-            return( ERROR );
+            return( RC_ERROR );
         }
     } else {
         /* save the parm list, make a temporary macro, then call it with each parm */
         if( AsmBuffer[i]->class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
-            return( ERROR );
+            return( RC_ERROR );
         }
         arg_loc = i;
         for( ; AsmBuffer[i]->class != TC_COMMA; i++ ) {
             if( AsmBuffer[i]->class == TC_FINAL ) {
                 AsmError( EXPECTING_COMMA );
-                return( ERROR );
+                return( RC_ERROR );
             }
         }
         i++;
         if( AsmBuffer[i]->class != TC_STRING ) {
             AsmError( PARM_REQUIRED );
-            return( ERROR );
+            return( RC_ERROR );
         }
         parmstring = AsmTmpAlloc( strlen( AsmBuffer[i]->string_ptr ) + 1 );
         strcpy( parmstring, AsmBuffer[i]->string_ptr );
@@ -104,8 +104,8 @@ int ForDirective( int i, enum irp_type type )
     AsmBuffer[i]->class = TC_DIRECTIVE;
     AsmBuffer[i]->u.token = T_MACRO;
 
-    if( MacroDef( i, TRUE ) == ERROR )
-        return( ERROR );
+    if( MacroDef( i, TRUE ) )
+        return( RC_ERROR );
 
     /* now call the above macro with each of the given parms */
 
@@ -139,5 +139,5 @@ int ForDirective( int i, enum irp_type type )
     }
     Globals.for_counter++;
     PushMacro( buffer, TRUE );
-    return( NOT_ERROR );
+    return( RC_OK );
 }

@@ -69,12 +69,12 @@ bool IsLabelStruct( char *name )
 }
 #endif
 
-int MakeLabel( char *symbol_name, memtype mem_type )
-/**********************************************/
+bool MakeLabel( char *symbol_name, memtype mem_type )
+/***************************************************/
 {
     struct asm_sym      *sym;
 #if defined( _STANDALONE_ )
-    int                 addr = 0;
+    uint_32             addr = 0;
     char                buffer[20];
     struct asm_sym      *newsym;
 //    proc_info           *info;
@@ -109,38 +109,38 @@ int MakeLabel( char *symbol_name, memtype mem_type )
         if( sym != NULL ) {
             AsmChangeName( sym->name, "@F" );
         }
-        return( NOT_ERROR );
+        return( RC_OK );
     }
     if( (Options.mode & MODE_IDEAL) && Options.locals_len ) {
         if( memcmp( symbol_name, Options.locals_prefix, Options.locals_len ) == 0
             && symbol_name[Options.locals_len] != '\0' ) {
             if( CurrProc == NULL ) {
                 AsmError( SYNTAX_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
 //            info = CurrProc->e.procinfo;
             sym = AsmLookup( symbol_name );
             if( sym == NULL )
-                return( ERROR );
+                return( RC_ERROR );
             GetSymInfo( sym );
             BackPatch( sym );
-            return( NOT_ERROR );
+            return( RC_OK );
         }
     }
      sym = AsmLookup( symbol_name );
     if( sym == NULL )
-        return( ERROR );
+        return( RC_ERROR );
     if( Parse_Pass == PASS_1 ) {
         if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
             dir_to_sym( (dir_node *)sym );
             AddPublicData( (dir_node *)sym );
             if( sym->mem_type != mem_type ) {
                 AsmErr( SYMBOL_TYPE_DIFF, sym->name );
-                return( ERROR );
+                return( RC_ERROR );
             }
         } else if( sym->state != SYM_UNDEFINED ) {
             AsmErr( SYMBOL_PREVIOUSLY_DEFINED, symbol_name );
-            return( ERROR );
+            return( RC_ERROR );
         }
     } else {
         /* save old offset */
@@ -148,7 +148,7 @@ int MakeLabel( char *symbol_name, memtype mem_type )
     }
     if( Definition.struct_depth != 0 ) {
         if( Parse_Pass == PASS_1 ) {
-            sym->offset = AddFieldToStruct( sym,  -1 );
+            sym->offset = AddFieldToStruct( sym, INVALID_IDX );
             sym->state = SYM_STRUCT_FIELD;
         }
     } else {
@@ -162,10 +162,10 @@ int MakeLabel( char *symbol_name, memtype mem_type )
 #else
     sym = AsmLookup( symbol_name );
     if( sym == NULL )
-        return( ERROR );
+        return( RC_ERROR );
     if( sym->state != SYM_UNDEFINED ) {
         AsmError( SYMBOL_ALREADY_DEFINED );
-        return( ERROR );
+        return( RC_ERROR );
     }
     sym->state = SYM_INTERNAL;
     sym->addr = AsmCodeAddress;
@@ -173,23 +173,25 @@ int MakeLabel( char *symbol_name, memtype mem_type )
     sym->mem_type = mem_type;  // fixme ??
 #endif
     BackPatch( sym );
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 #if defined( _STANDALONE_ )
-int LabelDirective( int i )
-/***************************/
+bool LabelDirective( token_idx i )
+/********************************/
 {
-    int n;
+    token_idx   n;
 
     if( Options.mode & MODE_IDEAL ) {
         n = ++i;
-    } else {
+    } else if( i > 0 ) {
         n = i - 1;
+    } else {
+        n = INVALID_IDX;
     }
-    if( ( n < 0 ) || ( AsmBuffer[n]->class != TC_ID ) ) {
+    if( ( n == INVALID_IDX ) || ( AsmBuffer[n]->class != TC_ID ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
-        return( ERROR );
+        return( RC_ERROR );
     }
     if( AsmBuffer[++i]->class == TC_ID ) {
         if( IsLabelStruct( AsmBuffer[i]->string_ptr ) )
@@ -198,7 +200,7 @@ int LabelDirective( int i )
     if( ( AsmBuffer[i]->class != TC_RES_ID ) &&
         ( AsmBuffer[i]->class != TC_DIRECTIVE ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
-        return( ERROR );
+        return( RC_ERROR );
     }
     switch( AsmBuffer[i]->u.token ) {
     case T_NEAR:
@@ -225,7 +227,7 @@ int LabelDirective( int i )
         return( MakeLabel( AsmBuffer[n]->string_ptr, CurrProc->e.procinfo->mem_type ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
-        return( ERROR );
+        return( RC_ERROR );
     }
 }
 #endif

@@ -47,7 +47,7 @@ typedef enum if_state {
                                everything until we see an endif */
 } if_state;
 
-extern int          get_instruction_position( char *string );
+extern asmins_idx   get_instruction_position( char *string );
 
 extern int          MacroExitState;
 
@@ -79,14 +79,12 @@ void prep_line_for_conditional_assembly( char *line )
 {
     char        *ptr;
     char        *end;
-    int         count;
-    char        delim;
+    asmins_idx  ins_pos;
     char        fix;
 
-    if( Comment( QUERY_COMMENT, 0 ) ) {
-        delim = (char)Comment( QUERY_COMMENT_DELIM, 0 );
-        if( strchr( line, delim ) != NULL ) {
-            Comment( END_COMMENT, 0 );
+    if( Comment( QUERY_COMMENT, 0, NULL ) ) {
+        if( Comment( QUERY_COMMENT_DELIM, 0, line ) ) {
+            Comment( END_COMMENT, 0, NULL );
         }
         *line = '\0';
         return;
@@ -108,9 +106,9 @@ void prep_line_for_conditional_assembly( char *line )
         ptr++;
     }
 
-    count = get_instruction_position( ptr );
+    ins_pos = get_instruction_position( ptr );
     *end = fix;
-    if( count == EMPTY ) {
+    if( ins_pos == INVALID_POS ) {
         /* if it is not in the table */
         if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroExitState ) {
             *line = '\0';
@@ -120,7 +118,7 @@ void prep_line_for_conditional_assembly( char *line )
 
     /* otherwise, see if it is a conditional assembly directive */
 
-    switch( AsmOpTable[count].token) {
+    switch( AsmOpTable[ins_pos].token) {
     case T_ELSE:
     case T_ELSEIF:
     case T_ELSEIF1:
@@ -185,12 +183,12 @@ static bool check_dif( bool sensitive, char *string, char *string2 )
     }
 }
 
-int conditional_error_directive( int i )
-/**************************************/
+bool conditional_error_directive( token_idx i )
+/*********************************************/
 {
-    uint_16         direct;
+    asm_token   direct;
 
-    direct = AsmBuffer[i]->u.value;
+    direct = AsmBuffer[i]->u.token;
 
     /* expand any constants if necessary */
     switch( direct ) {
@@ -212,32 +210,32 @@ int conditional_error_directive( int i )
     case T_DOT_ERR:
     case T_ERR:
         AsmErr( FORCED );
-        return( ERROR );
+        return( RC_ERROR );
     case T_DOT_ERRNZ:
         if( AsmBuffer[i+1]->class == TC_NUM && AsmBuffer[i+1]->u.value ) {
             AsmErr( FORCED_NOT_ZERO, AsmBuffer[i+1]->u.value );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRE:
     case T_ERRIFE:
         if( AsmBuffer[i+1]->class == TC_NUM && !AsmBuffer[i+1]->u.value ) {
             AsmErr( FORCED_EQUAL, AsmBuffer[i+1]->u.value );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDEF:
     case T_ERRIFDEF:
         if( check_defd( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_DEF, AsmBuffer[i+1]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNDEF:
     case T_ERRIFNDEF:
         if( !check_defd( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_NOT_DEF, AsmBuffer[i+1]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRB:
@@ -245,7 +243,7 @@ int conditional_error_directive( int i )
         if( AsmBuffer[i+1]->class == TC_STRING &&
             check_blank( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_BLANK, AsmBuffer[i+1]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNB:
@@ -253,42 +251,42 @@ int conditional_error_directive( int i )
         if( AsmBuffer[i+1]->class != TC_STRING ||
             !check_blank( AsmBuffer[i+1]->string_ptr ) ) {
             AsmErr( FORCED_NOT_BLANK, AsmBuffer[i+1]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIF:
     case T_ERRIFDIF:
         if( check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
             AsmErr( FORCED_DIF, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIFI:
     case T_ERRIFDIFI:
         if( check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
             AsmErr( FORCED_DIF, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDN:
     case T_ERRIFIDN:
         if( !check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
             AsmErr( FORCED_IDN, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDNI:
     case T_ERRIFIDNI:
         if( !check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
             AsmErr( FORCED_IDN, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
-            return( ERROR );
+            return( RC_ERROR );
         }
         break;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static if_state get_cond_state( int i )
+static if_state get_cond_state( token_idx i )
 {
     asm_token   direct;
     if_state    cond_state;
@@ -370,8 +368,8 @@ static if_state get_cond_state( int i )
     return( cond_state );
 }
 
-int conditional_assembly_directive( int i )
-/*****************************************/
+bool conditional_assembly_directive( token_idx i )
+/************************************************/
 {
     asm_token   direct;
 
@@ -395,7 +393,7 @@ int conditional_assembly_directive( int i )
             if( NestLevel > MAX_NESTING ) {
                 /*fixme */
                 AsmError( NESTING_LEVEL_TOO_DEEP );
-                return( ERROR );
+                return( RC_ERROR );
             }
             CurState = get_cond_state( i );
         } else {
@@ -437,7 +435,7 @@ int conditional_assembly_directive( int i )
             if( NestLevel < 0 ) {
                 NestLevel = 0;
                 AsmError( BLOCK_NESTING_ERROR );
-                return( ERROR );
+                return( RC_ERROR );
             }
             CurState = ACTIVE;
         } else {
@@ -446,7 +444,7 @@ int conditional_assembly_directive( int i )
         break;
     default:
         /**/myassert( 0 );
-        return( ERROR );
+        return( RC_ERROR );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
