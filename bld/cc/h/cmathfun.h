@@ -49,4 +49,3 @@ mathfunc( "__LOG10", 1, O_LOG10 ),
 mathfunc( "__SINH",  1, O_SINH ),
 mathfunc( "__TANH",  1, O_TANH ),
 #endif
-mathfunc( NULL,      0, 0 )

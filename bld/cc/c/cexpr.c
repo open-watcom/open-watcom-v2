@@ -47,6 +47,7 @@ struct mathfuncs {
     #define mathfunc(name,num,op) {name,num,op}
     #include "cmathfun.h"
     #undef mathfunc
+    { NULL,      0, 0 }
 };
 
 local   TREEPTR GenNextParm(TREEPTR,TYPEPTR **);
@@ -1926,13 +1927,13 @@ local bool IntrinsicMathFunc( SYM_NAMEPTR sym_name, int i, size_t len, SYMPTR sy
 {
     size_t  j;
 
-    if( memcmp( sym_name, MathFuncs[i].name, len ) == 0 )
-        return( TRUE );
-    if( (sym->flags & SYM_INTRINSIC) == 0 )
-        return( FALSE );        /* indicate not a math intrinsic function */
-    for( j = 0; j < len - 2; ++j ) {
-        if( sym_name[j] != tolower( (unsigned char)MathFuncs[i].name[j + 2] ) ) {
+    if( memcmp( sym_name, MathFuncs[i].name, len ) != 0 ) {
+        if( (sym->flags & SYM_INTRINSIC) == 0 )
             return( FALSE );        /* indicate not a math intrinsic function */
+        for( j = 0; j < len; ++j ) {
+            if( sym_name[j] != tolower( (unsigned char)MathFuncs[i].name[j + 2] ) ) {
+                return( FALSE );        /* indicate not a math intrinsic function */
+            }
         }
     }
     return( TRUE );
