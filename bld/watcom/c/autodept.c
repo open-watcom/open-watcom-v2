@@ -71,12 +71,12 @@ time_t _timet2dos(time_t x)
     unsigned short dos_date;
 
     ltime = localtime( &x );
-    dos_date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
+    dos_date = (unsigned short)((( ltime->tm_year - 80 ) << DATE_YEAR_B )
              | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B );
-    dos_time = (( ltime->tm_hour ) << TIME_HOUR_B )
+             | (( ltime->tm_mday ) << DATE_DAY_B ));
+    dos_time = (unsigned short)((( ltime->tm_hour ) << TIME_HOUR_B )
              | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
+             | (( ltime->tm_sec / 2 ) << TIME_SEC_B ));
     return( dos_date * 0x10000L + dos_time );
 }
 
@@ -87,8 +87,8 @@ time_t _dos2timet(time_t x)
     unsigned short dos_time;
     unsigned short dos_date;
 
-    dos_date = x / 0x10000L;
-    dos_time = x;
+    dos_date = (unsigned short)( x / 0x10000L );
+    dos_time = (unsigned short)( x );
 
     ltime.tm_year = ( ( dos_date & DATE_YEAR_F ) >> DATE_YEAR_B ) + 80;
     ltime.tm_mon  = ( ( dos_date & DATE_MON_F ) >> DATE_MON_B ) - 1;
