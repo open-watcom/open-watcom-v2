@@ -62,8 +62,8 @@ static bool get_float( asm_tok *buf, const char **input, char **output )
     bool            got_e;
     const char      *ptr;
     size_t          len;
-    unsigned char   c;
-    int             extra;
+    int             c;
+    unsigned char   extra;
 
     extra = 0;
     got_e = FALSE;
@@ -96,9 +96,9 @@ static bool get_float( asm_tok *buf, const char **input, char **output )
     }
     buf->class = TC_FLOAT;
     /* copy the string, fix input & output pointers */
+    buf->string_ptr = *output;
     len = ptr - *input + extra;
     memcpy( *output, *input, len );
-    buf->string_ptr = *output;
     *output += len;
     *(*output)++ = '\0';
     *input = ptr + extra;
@@ -111,7 +111,7 @@ static void array_mul_add( unsigned char *buf, unsigned base, unsigned num, unsi
 {
     while( size-- > 0 ) {
         num += *buf * base;
-        *(buf++) = num;
+        *(buf++) = (unsigned char)num;
         num >>= 8;
     }
 }
@@ -192,13 +192,13 @@ static bool get_number( asm_tok *buf, const char **input, char **output )
     const char          *ptr;
     const char          *dig_start;
     bool                first_char_0;
-    unsigned            extra;
-    unsigned            len;
+    unsigned char       extra;
+    size_t              len;
     unsigned            base = 0;
     unsigned            digits_seen;
     unsigned long       val;
-    unsigned char       c;
-    unsigned char       c2;
+    int                 c;
+    int                 c2;
 
 #define VALID_BINARY    0x0003
 #define VALID_OCTAL     0x00ff
@@ -316,9 +316,9 @@ static bool get_number( asm_tok *buf, const char **input, char **output )
         break;
     }
     /* copy the string, fix input & output pointers */
+    buf->string_ptr = *output;
     len = ptr - *input + extra;
     memcpy( *output, *input, len );
-    buf->string_ptr = *output;
     *output += len;
     *(*output)++ = '\0';
     *input = ptr + extra;
@@ -503,15 +503,17 @@ static bool get_id( token_idx *buf_index, const char **input, char **output )
                 if( AsmOpTable[ins_pos].token == T_ENUM ) {
                     EnumDirective = TRUE;
                 } else if( AsmOpTable[ins_pos].token == T_COMMENT ) {
+                    size_t  len;
                     /* save the whole line .. we need to check
                      * if the delim. char shows up 2 times */
                     (*buf_index)++;
                     buf = AsmBuffer[ *buf_index ];
                     buf->string_ptr = *output;
-                    strcpy( buf->string_ptr, *input );
-                    (*output) += strlen( *input );
+                    len = strlen( *input );
+                    memcpy( buf->string_ptr, *input, len );
+                    (*output) += len;
                     *(*output)++ = '\0';
-                    (*input) += strlen( *input );
+                    *input += len;
                     buf->class = TC_STRING;
                     buf->u.value = 0;
                 }

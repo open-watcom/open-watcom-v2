@@ -77,7 +77,7 @@ extern bool             SymIs32( struct asm_sym *sym );
 extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 
-static void             check_assume( struct asm_sym *, enum prefix_reg );
+static void             check_assume( struct asm_sym *, prefix_reg );
 
 bool                    CheckSeg;       // if checking of opened segment is needed
 struct asm_sym          *Frame;         // Frame of current fixup
@@ -96,7 +96,7 @@ extern void             make_inst_hash_table( void );
 static int              curr_ptr_type;
 static char             ConstantOnly;
 
-static bool             mem2code( uint_8, asm_token, asm_token, asm_sym * );
+static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
 
 /* moved here from asmline */
 static asm_tok          tokens[MAX_TOKEN];
@@ -214,7 +214,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 - determine if segment override is necessary with the current address mode;
 */
 {
-    enum prefix_reg     default_seg;
+    prefix_reg          default_seg;
 #if defined( _STANDALONE_ )
     enum assume_reg     assume_seg;
 
@@ -230,9 +230,9 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
         break;
     }
     if( sym != NULL ) {
-        if( Code->prefix.seg == EMPTY ) {
+        if( Code->prefix.seg == PREFIX_EMPTY ) {
             if( Code->info.token == T_LEA ) {
-                check_assume( sym, EMPTY );
+                check_assume( sym, PREFIX_EMPTY );
             } else {
                 check_assume( sym, default_seg );
             }
@@ -267,11 +267,11 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
     }
 
     if( Code->prefix.seg == default_seg ) {
-        Code->prefix.seg = EMPTY;
+        Code->prefix.seg = PREFIX_EMPTY;
     }
 #else
     sym = sym;
-    if( Code->prefix.seg != EMPTY ) {
+    if( Code->prefix.seg != PREFIX_EMPTY ) {
         switch( seg_reg ) {
         case T_SS:
         case T_BP:
@@ -283,7 +283,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
             default_seg = PREFIX_DS;
         }
         if( Code->prefix.seg == default_seg ) {
-            Code->prefix.seg = EMPTY;
+            Code->prefix.seg = PREFIX_EMPTY;
         }
     }
 #endif
@@ -291,7 +291,7 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 
 #if defined( _STANDALONE_ )
 
-static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
+static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
 /**************************************************************************/
 /* Check if an assumed register is found, and prefix a register if necessary */
 {
@@ -324,7 +324,7 @@ static void check_assume( struct asm_sym *sym, enum prefix_reg default_reg )
         } else {
             Code->prefix.seg = default_reg;
         }
-    } else if( default_reg != EMPTY ) {
+    } else if( default_reg != PREFIX_EMPTY ) {
         switch( reg ) {
         case ASSUME_ES:
             Code->prefix.seg = PREFIX_ES;
@@ -389,8 +389,8 @@ bool check_override( token_idx *i )
 }
 #endif
 
-static int Reg386( asm_token reg_token )
-/**************************************/
+static unsigned char Reg386( asm_token reg_token )
+/************************************************/
 {
     switch( reg_token ) {
     case T_EAX:         return( 0 );
@@ -470,8 +470,8 @@ bool InRange( unsigned long val, unsigned bytes )
 
 }
 
-static bool mem2code( uint_8 ss, asm_token index, asm_token base, asm_sym *sym )
-/******************************************************************************/
+static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym *sym )
+/*************************************************************************************/
 /*
   encode the memory operand to machine code
 */
@@ -493,23 +493,23 @@ static bool mem2code( uint_8 ss, asm_token index, asm_token base, asm_sym *sym )
     } else {
         mod_field = MOD_01;
     }
-    if( ( index == EMPTY ) && ( base == EMPTY ) ) {
+    if( ( index == T_NULL ) && ( base == T_NULL ) ) {
         // direct memory
         // clear the rightmost 3 bits
         mod_field = MOD_00;
-        if( !addr_32( rCode ) ) {
+        if( IS_ADRSIZ_32( rCode ) ) {
+            rm_field = D32;
+        } else {
             if( !InRange( rCode->data[Opnd_Count], 2 ) ) {
                 // expect 16-bit but got 32-bit address
                 AsmError( DISPLACEMENT_OUT_OF_RANGE );
                 return( RC_ERROR );
             }
             rm_field = D16;
-        } else {
-            rm_field = D32;
         }
         // default is DS:[], DS: segment override is not needed
         seg_override( T_DS, sym );
-    } else if( ( index == EMPTY ) && ( base != EMPTY ) ) {
+    } else if( ( index == T_NULL ) && ( base != T_NULL ) ) {
         switch( base ) {
         case T_SI:
             rm_field = 0x04; // SI
@@ -548,30 +548,30 @@ static bool mem2code( uint_8 ss, asm_token index, asm_token base, asm_sym *sym )
             // default is DS:[], DS: segment override is not needed
         }
         seg_override( base, sym );
-    } else if( ( index != EMPTY ) && ( base == EMPTY ) ) {
+    } else if( ( index != T_NULL ) && ( base == T_NULL ) ) {
         // mod field is 00
         mod_field = MOD_00;
         // s-i-b is present ( r/m = 100 )
         rm_field = S_I_B;
         // scale factor, index, base ( 0x05 => no base reg )
-        rCode->sib = ( ss | ( Reg386(index) << 3 ) | 0x05 );
+        rCode->sib = ( ss | ( Reg386( index ) << 3 ) | 0x05 );
         // default is DS:[], DS: segment override is not needed
         seg_override( T_DS, sym );
     } else {
-        // base != EMPTY && index != EMPTY
+        // base != T_NULL && index != T_NULL
         switch( index ) {
         case T_BX:
         case T_BP:
             if( ( temp = comp_mem( index, base ) ) == ERROR )
                 return( RC_ERROR );
-            rm_field = temp;
+            rm_field = (unsigned char)temp;
             seg_override( index, sym );
             break;
         case T_SI:
         case T_DI:
             if( ( temp = comp_mem( base, index ) ) == ERROR )
                 return( RC_ERROR );
-            rm_field = temp;
+            rm_field = (unsigned char)temp;
             seg_override( base, sym );
             break;
         case T_ESP:
@@ -588,7 +588,7 @@ static bool mem2code( uint_8 ss, asm_token index, asm_token base, asm_sym *sym )
             }
             // s-i-b is present ( r/m = 100 )
             rm_field |= S_I_B;
-            rCode->sib = ( ss | (Reg386(index) << 3) | Reg386(base) );
+            rCode->sib = ( ss | (Reg386( index ) << 3) | Reg386( base ) );
             seg_override( base, sym );
         }
     }
@@ -915,7 +915,7 @@ static bool idata_float( long value )
     return( RC_OK );
 }
 
-static unsigned char get_sr_rm_byte( enum prefix_reg seg_prefix )
+static unsigned char get_sr_rm_byte( prefix_reg seg_prefix )
 /***************************************************************/
 {
     switch( seg_prefix ) {
@@ -1776,8 +1776,8 @@ static int idata_fixup( expr_list *opndx )
                 Code->info.opnd_type[Opnd_Count] = OP_I8;
                 break;
             } else if( opndx->mem_type == MT_EMPTY ) {
-                SET_OPSIZ_NO( Code );
-                if( oper_32( Code ) ) {
+                SET_OPSIZ_OFF( Code );
+                if( IS_OPSIZ_32( Code ) ) {
                     Code->mem_type = MT_DWORD;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
                     sym32 = TRUE;
@@ -1817,7 +1817,7 @@ static int idata_fixup( expr_list *opndx )
     } else {
         if( Code->mem_type == MT_BYTE ) {
             fixup_type = FIX_LOBYTE;
-        } else if( oper_32( Code ) ) {
+        } else if( IS_OPSIZ_32( Code ) ) {
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
         } else {
             if( sym32 ) {
@@ -1847,9 +1847,9 @@ static int idata_fixup( expr_list *opndx )
 static int memory_operand( expr_list *opndx, bool with_fixup )
 /************************************************************/
 {
-    uint_8              ss = SCALE_FACTOR_1;
-    asm_token           index = EMPTY;
-    asm_token           base = EMPTY;
+    unsigned char       ss = SCALE_FACTOR_1;
+    asm_token           index = T_NULL;
+    asm_token           base = T_NULL;
     struct asm_sym      *sym;
     bool                base_lock = FALSE;
     enum fixup_types    fixup_type;
@@ -1944,10 +1944,10 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
                 return( ERROR );
             }
         }
-        if( addr_32( Code ) ) {
+        if( IS_ADRSIZ_32( Code ) ) {
             if( ( Code->info.cpu & P_CPU_MASK ) >= P_386 ) {
                 if( !Code->use32 )
-                    Code->prefix.adrsiz = TRUE;
+                    SET_ADRSIZ_ON( Code );
                 switch( index ) {
                 case T_ESP:
                 case T_BX:
@@ -1959,7 +1959,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
                     return( ERROR );
                 default:
                     if( !Code->use32 )
-                        Code->prefix.adrsiz = TRUE;
+                        SET_ADRSIZ_ON( Code );
                     switch( opndx->scale ) {
                     case 1:
                         // ss = 00
@@ -2000,7 +2000,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             break;
 #endif
         case SYM_STACK:
-            if( base != EMPTY ) {
+            if( base != T_NULL ) {
                 if( base_lock ) {
                     // [reg + data][reg + data] is not allowed
                     AsmError( TOO_MANY_BASE_REGISTERS );
@@ -2029,7 +2029,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
 
 #if defined( _STANDALONE_ )
         if( opndx->abs ) {
-            sym32 = addr_32( Code );
+            sym32 = IS_ADRSIZ_32( Code );
         } else {
             sym32 = SymIs32( sym );
         }
@@ -2037,7 +2037,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             SET_ADRSIZ( Code, sym32 );
             fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
         } else {
-            if( addr_32( Code ) ) {
+            if( IS_ADRSIZ_32( Code ) ) {
                 fixup_type = ( sym32 ) ? FIX_OFF32 : FIX_OFF16;
             } else {
                 if( sym32 ) {
@@ -2228,8 +2228,8 @@ static int process_reg( expr_list *opndx )
 - parse and encode the register operand;
 */
 {
-    int                 temp;
-    int                 reg;
+    unsigned char       st_reg;
+    unsigned char       reg;
     asmins_idx          ins_pos;
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
@@ -2249,16 +2249,16 @@ static int process_reg( expr_list *opndx )
     case OP_R16:
         Code->info.opcode |= W_BIT;             // set w-bit
         if( Code->use32 )
-            Code->prefix.opsiz = TRUE;
+            SET_OPSIZ_ON( Code );
         break;
     case OP_MMX:
         break;
     case OP_XMM:
         break;
     case OP_ST:
-        temp = (int)opndx->idx_reg & BIT_012;
-        Code->info.rm_byte |= temp;
-        if( temp != 0 )
+        st_reg = (unsigned char)opndx->idx_reg & BIT_012;
+        Code->info.rm_byte |= st_reg;
+        if( st_reg != 0 )
             Code->info.opnd_type[Opnd_Count] = OP_ST_REG;
         break;
     case OP_SR3:                        // 386 segment register
@@ -2287,7 +2287,7 @@ static int process_reg( expr_list *opndx )
         }
         Code->info.opcode |= W_BIT;             // set w-bit
         if( !Code->use32 )
-            Code->prefix.opsiz = TRUE;
+            SET_OPSIZ_ON( Code );
         break;
     case OP_TR:                 // Test registers
         switch( AsmBuffer[opndx->base_reg]->u.token ) {
@@ -2374,10 +2374,10 @@ bool AsmParse( const char *curline )
     rCode->info.token     = T_NULL;
     rCode->info.opcode    = 0;
     rCode->info.rm_byte   = 0;
-    rCode->prefix.ins     = EMPTY;
-    rCode->prefix.seg     = EMPTY;
-    rCode->prefix.adrsiz  = FALSE;
-    rCode->prefix.opsiz   = FALSE;
+    rCode->prefix.ins     = T_NULL;
+    rCode->prefix.seg     = PREFIX_EMPTY;
+    SET_ADRSIZ_OFF( rCode );
+    SET_OPSIZ_OFF( rCode );
     rCode->mem_type       = MT_EMPTY;
     rCode->mem_type_fixed = FALSE;
     rCode->extended_ins   = EMPTY;
@@ -2713,17 +2713,17 @@ static void SizeString( unsigned op_size )
         Code->mem_type = MT_BYTE;
         Code->info.opcode &= NOT_W_BIT;
         if( Code->use32 )
-            Code->prefix.opsiz = FALSE;
+            SET_OPSIZ_OFF( Code );
         break;
     case 2:
         Code->mem_type = MT_WORD;
         Code->info.opcode |= W_BIT;
-        Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
+        SET_OPSIZ_16( Code );
         break;
     case 4:
         Code->mem_type = MT_DWORD;
         Code->info.opcode |= W_BIT;
-        Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
+        SET_OPSIZ_32( Code );
         break;
     }
 }
@@ -2735,13 +2735,14 @@ static bool check_size( void )
 - optimize MOV instruction;
 */
 {
-    OPNDTYPE    op1 = Code->info.opnd_type[OPND1];
-    OPNDTYPE    op2 = Code->info.opnd_type[OPND2];
-    bool        state;
-    int         temp;
-    int         op1_size;
-    int         op2_size;
-    int         op_size = 0;
+    OPNDTYPE        op1 = Code->info.opnd_type[OPND1];
+    OPNDTYPE        op2 = Code->info.opnd_type[OPND2];
+    bool            state;
+    long            temp;
+    int             op1_size;
+    int             op2_size;
+    int             op_size = 0;
+    unsigned char   rm_byte;
 
     state = RC_OK;
     switch( Code->info.token ) {
@@ -2773,7 +2774,7 @@ static bool check_size( void )
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
                 if( Code->use32 ) {
-                    Code->prefix.opsiz = FALSE;
+                    SET_OPSIZ_OFF( Code );
                 }
                 break;
             }
@@ -2788,7 +2789,7 @@ static bool check_size( void )
                 Code->info.opcode &= NOT_W_BIT;         // clear w-bit
             case OP_EAX:
                 if( Code->use32 ) {
-                    Code->prefix.opsiz = FALSE;
+                    SET_OPSIZ_OFF( Code );
                 }
             }
         }
@@ -2895,7 +2896,7 @@ static bool check_size( void )
                 state = RC_ERROR;
             }
             if( Code->use32 ) {
-                Code->prefix.opsiz = FALSE;     // - don't need opnd size prefix
+                SET_OPSIZ_OFF( Code );     // - don't need opnd size prefix
             }
             break;
         case 2:
@@ -2915,15 +2916,15 @@ static bool check_size( void )
         switch( op1_size ) {
         case 2:
             if( Code->use32 )
-                Code->prefix.opsiz = TRUE;
+                SET_OPSIZ_ON( Code );
             break;
         case 4:
             if( Code->use32 )
-                Code->prefix.opsiz = FALSE;
+                SET_OPSIZ_OFF( Code );
             break;
         default:
             AsmError( INVALID_SIZE );
-            return( ERROR );
+            return( RC_ERROR );
         }
         op2_size = OperandSize( op2 );
         switch( op2_size ) {
@@ -2957,40 +2958,39 @@ static bool check_size( void )
         if( op1 & OP_SR ) {
             op2_size = OperandSize( op2 );
             if( ( op2_size == 2 ) || ( op2_size == 4 ) ) {
-//                Code->prefix.opsiz = FALSE;
+//                SET_OPSIZ_OFF( Code );
                 return( state );
             }
         } else if( op2 & OP_SR ) {
             op1_size = OperandSize( op1 );
             if( ( op1_size == 2 ) || ( op1_size == 4 ) ) {
 //                if( op1 == OP_M )
-//                    Code->prefix.opsiz = FALSE;
+//                    SET_OPSIZ_OFF( Code );
                 return( state );
             }
         } else if( ( op1 == OP_M ) || ( op2 == OP_M ) ) {
             // to optimize MOV
-            temp = Code->info.rm_byte;
+            rm_byte = Code->info.rm_byte;
             if( Code->info.opnd_type[OPND1] & OP_A ) {
-                temp = ( temp & BIT_67 ) | ( ( temp & BIT_012 ) << 3 ) | ( ( temp & BIT_345 ) >> 3 );
-                if( addr_32( Code ) && ( temp == D32 )
-                    || !addr_32( Code ) && ( temp == D16 ) ) {
+                rm_byte = ( rm_byte & BIT_67 ) | ( ( rm_byte & BIT_012 ) << 3 ) | ( ( rm_byte & BIT_345 ) >> 3 );
+                if( IS_ADRSIZ_32( Code ) && ( rm_byte == D32 )
+                    || IS_ADRSIZ_16( Code ) && ( rm_byte == D16 ) ) {
                     // DS:[d32] or DS:[d16] can use MOV Mem with Acc (short form)
                 } else {
                     // we have to change OP_A to OP_R
                     Code->info.opnd_type[OPND1] &= ~OP_A;
                 }
             } else if( Code->info.opnd_type[OPND2] & OP_A ) {
-                if( addr_32( Code ) && ( temp == D32 )
-                    || !addr_32( Code ) && ( temp == D16 ) ) {
+                if( IS_ADRSIZ_32( Code ) && ( rm_byte == D32 )
+                    || IS_ADRSIZ_16( Code ) && ( rm_byte == D16 ) ) {
                     // DS:[d32] or DS:[d16] can use MOV Mem with Acc (short form)
-                    temp = EMPTY;
                 } else {
                     // we have to change OP_A to OP_R
                     Code->info.opnd_type[OPND2] &= ~OP_A;
                 }
             }
         } else if( ( op1 & OP_SPEC_REG ) || ( op2 & OP_SPEC_REG ) ) {
-            Code->prefix.opsiz = FALSE;
+            SET_OPSIZ_OFF( Code );
             return( state );
         }
         // no break;
@@ -3089,7 +3089,7 @@ static bool check_size( void )
                         }
 #endif
                         if( Code->use32 )
-                            Code->prefix.opsiz = TRUE;
+                            SET_OPSIZ_ON( Code );
                         break;
                     case 4:
                         Code->mem_type = MT_DWORD;

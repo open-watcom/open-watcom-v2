@@ -72,9 +72,9 @@ typedef struct asm_ins {
 typedef struct asm_code {
     struct {
         asm_token       ins;            // prefix before instruction, e.g. lock
-        enum prefix_reg seg;            // segment register override
-        unsigned        adrsiz:1;       // address size prefix
-        unsigned        opsiz:1;        // operand size prefix
+        prefix_reg      seg;            // segment register override
+        bool            adrsiz:1;       // address size prefix
+        bool            opsiz:1;        // operand size prefix
     } prefix;
     memtype             mem_type;       // byte / word / etc. NOT near/far
     long                data[OPND_MAX];
@@ -87,9 +87,9 @@ typedef struct asm_code {
     } info;
     signed char     extended_ins;
     unsigned char   sib;
-    unsigned        use32:1;
-    unsigned        indirect:1;     // CALL/JMP indirect jump
-    unsigned        mem_type_fixed:1;
+    bool            use32:1;
+    bool            indirect:1;     // CALL/JMP indirect jump
+    bool            mem_type_fixed:1;
 } asm_code;
 
 #define NO_PREFIX   0x00

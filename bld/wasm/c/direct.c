@@ -65,8 +65,8 @@ typedef struct {
 typedef struct {
     asm_sym             *symbol;        /* segment or group that is to
                                            be associated with the register */
-    unsigned            error:1;        // the register is assumed to ERROR
-    unsigned            flat:1;         // the register is assumed to FLAT
+    bool                error:1;        // the register is assumed to ERROR
+    bool                flat:1;         // the register is assumed to FLAT
 } assume_info;
 
 typedef enum {
@@ -117,7 +117,7 @@ static int              token_cmp( char **token, int start, int end );
 static void             ModelAssumeInit( void );
 
 extern char             write_to_file;  // write if there is no error
-extern uint_32          BufSize;
+extern unsigned         BufSize;
 extern bool             DefineProc;     // TRUE if the definition of procedure
                                         // has not ended
 extern struct asm_sym   *SegOverride;
@@ -1577,14 +1577,14 @@ bool SegDef( token_idx i )
             case TOK_DWORD:
             case TOK_PARA:
             case TOK_PAGE:
-                new->align = TypeInfo[type].value;
+                new->align = (uint_8)TypeInfo[type].value;
                 break;
             case TOK_PRIVATE:
             case TOK_PUBLIC:
             case TOK_STACK:
             case TOK_COMMON:
             case TOK_MEMORY:
-                new->combine = TypeInfo[type].value;
+                new->combine = (uint_8)TypeInfo[type].value;
                 break;
             case TOK_USE16:
             case TOK_USE32:

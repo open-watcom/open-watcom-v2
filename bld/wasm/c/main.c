@@ -82,7 +82,7 @@ static struct SWData {
 #define MAX_NESTING 15
 #define BUF_SIZE 512
 
-static char             ParamBuf[ BUF_SIZE ];
+static char             ParamBuf[BUF_SIZE];
 static unsigned char    SwitchChar;
 static unsigned         OptValue;
 static char             *OptScanPtr;
@@ -128,11 +128,11 @@ global_options Options = {
 static char *CopyOfParm( void )
 /*****************************/
 {
-    unsigned    len;
+    size_t  len;
 
     len = OptScanPtr - OptParm;
     memcpy( ParamBuf, OptParm, len );
-    ParamBuf[ len ] = '\0';
+    ParamBuf[len] = '\0';
     return( ParamBuf );
 }
 
@@ -167,8 +167,8 @@ static char *GetAFileName( void )
     return( fname );
 }
 
-static void SetTargName( char *name, unsigned len )
-/*************************************************/
+static void SetTargName( char *name, size_t len )
+/***********************************************/
 {
     char        *p;
 
@@ -181,7 +181,7 @@ static void SetTargName( char *name, unsigned len )
     Options.build_target = AsmAlloc( len + 1 );
     p = Options.build_target;
     for( ; len != 0; --len ) {
-        *p++ = toupper( *name++ );
+        *p++ = (char)toupper( *name++ );
     }
     *p++ = '\0';
 }
@@ -269,12 +269,12 @@ static void SetFPU( void )
     }
 }
 
-static char memory_model = 0;
+static char memory_model = '\0';
 
 static void SetMM( void )
 /***********************/
 {
-    char buffer[20];
+    char buffer[4];
 
     switch( OptValue ) {
     case 'c':
@@ -286,13 +286,15 @@ static void SetMM( void )
     case 't':
         break;
     default:
-        strcpy( buffer, "/m" );
-        strcat( buffer, (char *)&OptValue );
+        buffer[0] = '/';
+        buffer[1] = 'm';
+        buffer[2] = (char)OptValue;
+        buffer[3] = '\0';
         MsgPrintf1( MSG_UNKNOWN_OPTION, buffer );
         exit( 1 );
     }
 
-    memory_model = OptValue;
+    memory_model = (char)OptValue;
 }
 
 static void SetMemoryModel( void )
@@ -339,8 +341,8 @@ static void SetMemoryModel( void )
 static bool isvalidident( char *id )
 /**********************************/
 {
-    char *s;
-    char lwr_char;
+    char    *s;
+    int     lwr_char;
 
     if( isdigit( *id ) )
         return( TRUE ); /* can't start with a number */
@@ -415,7 +417,7 @@ static void get_fname( char *token, int type )
  * fill in default object file name if it is null
  */
 {
-    char        name [ _MAX_PATH  ];
+    char        name [_MAX_PATH ];
     char        msgbuf[80];
     PGROUP      pg;
     PGROUP      def;
@@ -563,7 +565,7 @@ static void Set_BT( void ) { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
 static void Set_C( void ) { Options.output_comment_data_in_code_records = FALSE; }
 
-static void Set_D( void ) { Options.debug_flag = (OptValue != 0) ? TRUE : FALSE; }
+static void Set_D( void ) { Options.debug_flag = (OptValue != 0); }
 
 static void DefineMacro( void ) { add_constant( CopyOfParm() ); }
 
@@ -583,17 +585,17 @@ static void SetInclude( void ) { AddStringToIncludePath( OptParm, OptScanPtr ); 
 
 static void Set_S( void ) { Options.sign_value = TRUE; }
 
-static void Set_N( void ) { set_some_kinda_name( OptValue, CopyOfParm() ); }
+static void Set_N( void ) { set_some_kinda_name( (char)OptValue, CopyOfParm() ); }
 
 static void Set_O( void ) { Options.allow_c_octals = TRUE; }
 
-static void Set_OF( void ) { Options.trace_stack = OptValue; }
+static void Set_OF( void ) { Options.trace_stack = (char)OptValue; }
 
 static void Set_WE( void ) { Options.warning_error = TRUE; }
 
 static void Set_WX( void ) { Options.warning_level = 4; }
 
-static void SetWarningLevel( void ) { Options.warning_level = OptValue; }
+static void SetWarningLevel( void ) { Options.warning_level = (char)OptValue; }
 
 static void Set_ZCM( void )
 {
@@ -867,7 +869,7 @@ static char *ProcessOption( char *p, char *option_start )
     int         i;
     int         j;
     char        *opt;
-    char        c;
+    int         c;
 
     for( i = 0; ; i++ ) {
         opt = cmdl_options[i].option;
@@ -1007,7 +1009,7 @@ static int ProcOptions( char *str, int *level )
             }
         } else {  /* collect file name */
             char *beg, *p;
-            int len;
+            size_t len;
 
             beg = str;
             if( *str == '"' ) {
@@ -1038,10 +1040,10 @@ static int ProcOptions( char *str, int *level )
                     ++str;
                 }
             }
-            len = str-beg;
+            len = str - beg;
             p = AsmAlloc( len + 1 );
             memcpy( p, beg, len );
-            p[ len ] = '\0';
+            p[len] = '\0';
             StripQuotes( p );
             get_fname( p, ASM );
             AsmFree(p);

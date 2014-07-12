@@ -37,6 +37,7 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmeval.h"
+#include "womp.h"
 #include "objprs.h"
 #include "fixup.h"
 #include "autodept.h"
@@ -69,7 +70,7 @@ extern void             CmdlParamsInit( void );
 extern void             PrintStats( void );
 
 extern symbol_queue     Tables[];       // tables of definitions
-extern uint_32          BufSize;
+extern unsigned         BufSize;
 
 extern int              MacroExitState;
 extern int              in_prologue;
@@ -104,23 +105,27 @@ const FNAME *AddFlist( char const *name )
     int     index;
     char    *fname;
     char    buff[2*_MAX_PATH];
+    size_t  len1;
+    size_t  len2;
 
     index = 0;
+    len1 = strlen( name ) + 1;
     fname = _getFilenameFullPath( buff, name, sizeof( buff ) );
+    len2 = strlen( fname ) + 1;
     last = (FNAME *)FNames;
     for( flist = last; flist != NULL; flist = flist->next ) {
-        if( strcmp( name, flist->name ) == 0 )
+        if( memcmp( name, flist->name, len1 ) == 0 )
             return( flist );
-        if( strcmp( fname, flist->fullname ) == 0 )
+        if( memcmp( fname, flist->fullname, len2 ) == 0 )
             return( flist );
         index++;
         last = flist;
     }
     flist = AsmAlloc( sizeof( FNAME ) );
-    flist->name = AsmAlloc( strlen( name ) + 1 );
-    strcpy( flist->name, name );
-    flist->fullname = AsmAlloc( strlen( fname ) + 1 );
-    strcpy( flist->fullname, fname );
+    flist->name = AsmAlloc( len1 );
+    memcpy( flist->name, name, len1 );
+    flist->fullname = AsmAlloc( len2 );
+    memcpy( flist->fullname, fname, len2 );
     flist->mtime = _getFilenameTimeStamp( fname );
     flist->next = NULL;
     if( FNames == NULL ) {
@@ -194,18 +199,19 @@ void OutSelect( bool starts )
             objr->d.coment.attr = 0x80;
             objr->d.coment.class = CMT_DISASM_DIRECTIVE;
 
-            ObjAllocData( objr, 11 );
             curr = GetCurrAddr();
             if( (Globals.sel_start > 0xffffUL) || (curr > 0xffffUL) ) {
+                ObjAllocData( objr, 11 );
                 ObjPut8( objr, DDIR_SCAN_TABLE_32 );
                 ObjPutIndex( objr, Globals.sel_idx );
                 ObjPut32( objr, Globals.sel_start );
                 ObjPut32( objr, GetCurrAddr() );
             } else {
+                ObjAllocData( objr, 7 );
                 ObjPut8( objr, DDIR_SCAN_TABLE );
                 ObjPutIndex( objr, Globals.sel_idx );
-                ObjPut16( objr, Globals.sel_start );
-                ObjPut16( objr, GetCurrAddr() );
+                ObjPut16( objr, (uint_16)Globals.sel_start );
+                ObjPut16( objr, (uint_16)GetCurrAddr() );
             }
             ObjTruncRec( objr );
             write_record( objr, TRUE );
@@ -245,13 +251,17 @@ static void write_lib( void )
     obj_rec             *objr;
     struct dir_node     *curr;
     char                *name;
+    size_t                              len;
 
     for( curr = Tables[TAB_LIB].head; curr; curr = curr->next ) {
         name = curr->sym.name;
+        len = strlen( name );
+        if( len > 255 )
+            len = 255;
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEFAULT_LIBRARY;
-        ObjAttachData( objr, (uint_8 *)name, strlen( name ) );
+        ObjAttachData( objr, (uint_8 *)name, (uint_16)len );
         write_record( objr, TRUE );
     }
 }
@@ -262,6 +272,7 @@ static void write_one_export( dir_node *dir )
     obj_rec     *objr;
     char        *name;
     proc_info   *info;
+    size_t      len;
 
     info = dir->e.procinfo;
     if( info->export ) {
@@ -270,11 +281,14 @@ static void write_one_export( dir_node *dir )
         objr->d.coment.class = CMT_DLL_ENTRY;
 
         name = Mangle( &dir->sym, NULL );
+        len = strlen( name );
+        if( len > 255 )
+            len = 255;
 
-        ObjAllocData( objr, 4 + strlen( name )  );
+        ObjAllocData( objr, (uint_16)( 1 + 1 + 1 + len + 1 ) );
         ObjPut8( objr, 2 );
         ObjPut8( objr, 0 );             // temporary
-        ObjPutName( objr, name, strlen( name ) );
+        ObjPutName( objr, name, (uint_8)len );
         ObjPut8( objr, 0 );
         write_record( objr, TRUE );
 
@@ -310,10 +324,10 @@ static void write_grp( void )
         /**/myassert( objr != NULL );
         grp_idx++;
         objr->d.grpdef.idx = grp_idx;
-        /* we might need up to 3 bytes for each seg in dgroup and 1 byte for
+        /* we might need up to 3 bytes for each seg in dgroup and 2 byte for
            the group name index */
-        ObjAllocData( objr, 1 + 3 * grp->e.grpinfo->numseg );
-        ObjPut8( objr, grp->e.grpinfo->idx );
+        ObjAllocData( objr, 2 + 3 * grp->e.grpinfo->numseg );
+        ObjPutIndex( objr, grp->e.grpinfo->idx );
         for( seg = grp->e.grpinfo->seglist; seg != NULL; seg = seg->next ) {
             segminfo = (dir_node *)seg->seg;
             if( segminfo->sym.segment == NULL ) {
@@ -341,7 +355,7 @@ static void write_seg( void )
 {
     dir_node    *dir;
     obj_rec     *objr;
-    uint        seg_idx;
+    direct_idx  seg_idx;
 
     seg_idx = 0;
     for( dir = Tables[TAB_SEG].head; dir; dir = dir->next ) {
@@ -372,6 +386,7 @@ static void write_seg( void )
             ObjAllocData( objr, 3  );
             ObjPut8( objr, LDIR_OPT_FAR_CALLS );
             ObjPutIndex( objr, seg_idx );
+            ObjTruncRec( objr );
             write_record( objr, TRUE );
         }
         dir->e.seginfo->idx = seg_idx;
@@ -393,8 +408,8 @@ static void write_lnames( void )
     }
 }
 
-static int opsize( memtype mem_type )
-/************************************/
+static unsigned char opsize( memtype mem_type )
+/*********************************************/
 {
     switch( mem_type ) {
     case MT_EMPTY:  return( 0 );
@@ -441,13 +456,13 @@ static void write_external( void )
     dir_node        *curr;
     dir_node        *last;
     direct_idx      ext_idx;
-    long            total_size;
-    unsigned        len;
+    size_t          total_size;
+    size_t          len;
     char            *name;
     uint            varsize;
     uint            symsize;
     unsigned long   value;
-    int             i;
+    uint            i;
 
     last = NULL;
     ext_idx = 0;
@@ -462,10 +477,13 @@ static void write_external( void )
             if( first == NULL ) {
                 first = curr;
             }
-            /* + 1 for string len + 1 for type index */
             name = Mangle( &curr->sym, NULL );
-            len = strlen( name ) + 2;
+            len = strlen( name );
             AsmFree( name );
+            if( len > 255 )
+                len = 255;
+            /* + 1 for string len + 1 for type index */
+            len += 2;
             if( first->e.extinfo->comm ) {
                 //  + 1 for data type //
                 len += 1;
@@ -487,7 +505,7 @@ static void write_external( void )
         objr = ObjNewRec( ( first->e.extinfo->comm ) ? CMD_COMDEF : CMD_EXTDEF );
         objr->d.extdef.first_idx = 0;
         objr->d.extdef.num_names = 0;
-        ObjAllocData( objr, total_size );
+        ObjAllocData( objr, (uint_16)total_size );
         for( curr = first;
           ( curr != last ) && ( curr->e.extinfo->comm == first->e.extinfo->comm );
           curr = curr->next ) {
@@ -498,7 +516,9 @@ static void write_external( void )
             curr->e.extinfo->idx = ext_idx;
             name = Mangle( &curr->sym, NULL );
             len = strlen( name );
-            ObjPutName( objr, name, len );
+            if( len > 255 )
+                len = 255;
+            ObjPutName( objr, name, (uint_8)len );
             AsmFree( name );
             ObjPut8( objr, 0 );    // for the type index
             if( first->e.extinfo->comm ) {
@@ -534,9 +554,10 @@ static void write_external( void )
                     value >>= 8;
                 }
                 if( curr->e.comminfo->distance == T_FAR ) {
+                    /* element size for FAR type */
                     /* mem type always needs <= 1 byte */
                     myassert( symsize < UCHAR_MAX );
-                    ObjPut8( objr, symsize );
+                    ObjPut8( objr, (uint_8)symsize );
                 }
             }
         }
@@ -552,12 +573,14 @@ static void write_header( char *name )
 /************************************/
 {
     obj_rec     *objr;
-    unsigned    len;
+    size_t      len;
 
     objr = ObjNewRec( CMD_THEADR );
     len = strlen( name );
-    ObjAllocData( objr, len + 1 );
-    ObjPutName( objr, name, len );
+    if( len > 255 )
+        len = 255;
+    ObjAllocData( objr, (uint_16)( len + 1 ) );
+    ObjPutName( objr, name, (uint_8)len );
     write_record( objr, TRUE );
 }
 
@@ -663,26 +686,24 @@ static int write_autodep( void )
 /******************************/
 {
     obj_rec         *objr;
-    char            buff[2*PATH_MAX + 5];
-    unsigned int    len;
+    char            buff[4 + 1 + 255];
+    size_t          len;
     const FNAME     *curr;
 
     if( !Options.emit_dependencies )
         return NOT_ERROR;
 
     for( curr = FNames; curr != NULL; curr = curr->next ) {
+        len = strlen(curr->fullname);
+        if( len > 255 )
+            len = 255;
         objr = ObjNewRec( CMD_COMENT );
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEPENDENCY;
-
-        len = strlen(curr->fullname);
-        *((time_t *)buff) = _timet2dos(curr->mtime);
-        *(buff + 4) = (unsigned char)len;
-        strcpy(buff + 5, curr->fullname);
-        len += 5;
-
-        ObjAttachData( objr, (uint_8 *)buff, len );
-
+        WriteU32( buff, _timet2dos( curr->mtime ) );
+        buff[4] = (unsigned char)len;
+        memcpy( buff + 4 + 1, curr->fullname, len );
+        ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );
         write_record( objr, TRUE );
     }
     // one NULL dependency record must be on the end
@@ -709,7 +730,7 @@ void AddLinnumDataRef( void )
     if( line_num < 0x8000 )  {
         if( lastLineNumber != line_num ) {
             curr = AsmAlloc( sizeof( struct line_num_info ) );
-            curr->number = line_num;
+            curr->number = (uint_16)line_num;
             curr->offset = AsmCodeAddress;
             curr->srcfile = get_curr_srcfile();
 
@@ -727,25 +748,24 @@ static void write_linnum( void )
     obj_rec             *objr;
     bool                need_32;
 
-    count = GetLinnumData( &ldata, &need_32 );
-    if( count == 0 )
-        return;
-    if( ldata == NULL ) {
-        AsmError( NO_MEMORY );
-    } else {
-        objr = ObjNewRec( CMD_LINNUM );
-        objr->is_32 = need_32;
-        objr->d.linnum.num_lines = count;
-        objr->d.linnum.lines = ldata;
-        objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->idx;
-        if( CurrSeg->seg->e.seginfo->group == NULL ) {
-            objr->d.linnum.d.base.grp_idx = 0;
+    while( (count = GetLinnumData( 0x1000, &ldata, &need_32 )) != 0 ) {
+        if( ldata == NULL ) {
+            AsmError( NO_MEMORY );
         } else {
-            objr->d.linnum.d.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
+            objr = ObjNewRec( CMD_LINNUM );
+            objr->is_32 = need_32;
+            objr->d.linnum.num_lines = (uint_16)count;
+            objr->d.linnum.lines = ldata;
+            objr->d.linnum.d.base.seg_idx = CurrSeg->seg->e.seginfo->idx;
+            if( CurrSeg->seg->e.seginfo->group == NULL ) {
+                objr->d.linnum.d.base.grp_idx = 0;
+            } else {
+                objr->d.linnum.d.base.grp_idx = ((dir_node *)CurrSeg->seg->e.seginfo->group)->e.grpinfo->idx;
+            }
+            objr->d.linnum.d.base.frame = 0; // fixme ?
+    
+            write_record( objr, TRUE );
         }
-        objr->d.linnum.d.base.frame = 0; // fixme ?
-
-        write_record( objr, TRUE );
     }
 }
 
@@ -950,7 +970,7 @@ static void write_ledata( void )
 
     if( BufSize > 0 ) {
         objr = ObjNewRec( CMD_LEDATA );
-        ObjAttachData( objr, AsmCodeBuffer, BufSize );
+        ObjAttachData( objr, AsmCodeBuffer, (uint_16)BufSize );
         objr->d.ledata.idx = CurrSeg->seg->e.seginfo->idx;
         objr->d.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
         if( objr->d.ledata.offset > 0xffffUL )
@@ -1010,31 +1030,27 @@ static void write_alias( void )
     obj_rec             *objr;
     char                *alias;
     char                *subst;
-    char                *new;
-    char                len1;
-    char                len2;
-    bool                first = TRUE;
+    char                new[2 * 256];
+    size_t              len1;
+    size_t              len2;
+    bool                first;
 
+    first = TRUE;
     while( ( alias = GetAliasData( first ) ) != NULL ) {
         /* output an alias record for this alias */
-        subst = alias + strlen( alias ) + 1;
-
         len1 = strlen( alias );
+        subst = alias + len1 + 1;
         len2 = strlen( subst );
-
-        new = AsmTmpAlloc( len1 + len2 + 2 );
-
-        *new = len1;
-        new++;
-        strncpy( new, alias, len1 );
-        new+=len1;
-        *new = len2;
-        new++;
-        strncpy( new, subst, len2 );
-        new -= len1 + 2;
-
+        if( len1 > 255 )
+            len1 = 255;
+        if( len2 > 255 )
+            len2 = 255;
+        new[0] = (unsigned char)len1;
+        memcpy( new + 1, alias, len1 );
+        new[1 + len1] = (unsigned char)len2;
+        memcpy( new + 1 + len1 + 1, subst, len2 );
         objr = ObjNewRec( CMD_ALIAS );
-        ObjAttachData( objr, (uint_8 *)new, len1+len2+2);
+        ObjAttachData( objr, (uint_8 *)new, (uint_16)( 1 + len1 + 1 + len2 ) );
         write_record( objr, TRUE );
         first = FALSE;
     }

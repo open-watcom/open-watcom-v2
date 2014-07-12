@@ -48,7 +48,7 @@ extern void     AddLinnumData( struct line_num_info *data );
 extern bool     GetLnameData( obj_rec * );
 extern char     *GetAliasData( bool );
 extern bool     GetPublicData( void );
-extern int      GetLinnumData( struct linnum_data **ldata, bool *need32 );
+extern int      GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 );
 
 extern void     FreeAllQueues( void );
 

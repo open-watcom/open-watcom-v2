@@ -135,7 +135,7 @@ static int add_check_u96_overflow( u96 *x, unsigned int c)
         cy = c;
         for( i = 0; i < 3; i++ ) {
             cy += (u64)x->m32[i] * 10;
-            x->m32[i] = cy;
+            x->m32[i] = (u32)cy;
             cy >>= 32;
         }
         return 0;
@@ -195,7 +195,7 @@ static int U96LD(u96 *op, ELD *res)
     if( bs == 0 ) {
         res->e = 0;
     } else {
-        res->e = bs - 1 + EXPONENT_BIAS;
+        res->e = (unsigned short)( bs - 1 + EXPONENT_BIAS );
         bs %= 32;
         if( bs ) {
             shft = 32 - bs;
@@ -258,13 +258,13 @@ static int add192(u192 *res, u64 x, int pos)
     cy = (u32)x;
     for( i = pos; i < 6; i++ ) {
         cy += res->m32[i];
-        res->m32[i] = cy;
+        res->m32[i] = (u32)cy;
         cy >>= 32;
     }
     cy = x >> 32;
     for( i = pos + 1; i < 6; i++ ) {
         cy += res->m32[i];
-        res->m32[i] = cy;
+        res->m32[i] = (u32)cy;
         cy >>= 32;
     }
     return 0;

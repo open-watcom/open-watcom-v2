@@ -91,17 +91,15 @@ enum fixup_options {
     OPTJ_CALL               /* forward reference CALL (NEAR or converted FAR to NEAR) */
 };
 
-enum prefix_reg {
-#if defined( _STANDALONE_ )
-    PREFIX_EMPTY = EMPTY,
-#endif
-    PREFIX_ES = 0x26,
-    PREFIX_CS = 0x2E,
-    PREFIX_SS = 0x36,
-    PREFIX_DS = 0x3E,
-    PREFIX_FS = 0x64,
-    PREFIX_GS = 0x65
-};
+typedef enum prefix_reg {
+    PREFIX_EMPTY    = 0,
+    PREFIX_ES       = 0x26,
+    PREFIX_CS       = 0x2E,
+    PREFIX_SS       = 0x36,
+    PREFIX_DS       = 0x3E,
+    PREFIX_FS       = 0x64,
+    PREFIX_GS       = 0x65
+} prefix_reg;
 
 #if !defined( _STANDALONE_ )
 

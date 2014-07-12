@@ -188,9 +188,9 @@ extern global_options Options;
 
 typedef struct global_vars{
     uint    code_seg;
-    uint    data_in_code:1,     /* have we just written data to a code seg */
-            dosseg:1;           /* have we seen a .dosseg directive */
-    uint    sel_idx;
+    bool    data_in_code:1;     /* have we just written data to a code seg */
+    bool    dosseg:1;           /* have we seen a .dosseg directive */
+    uint_16 sel_idx;
     uint_32 sel_start;
     uint    expand_count;
     uint    for_counter;

@@ -49,7 +49,7 @@ static label_list *label_cmp( char *name, label_list *head )
 {
     label_list  *curr;
 
-    for( curr = head; curr; curr = curr->next ) {
+    for( curr = head; curr != NULL; curr = curr->next ) {
         if( stricmp( curr->label, name ) == 0 ) {
             return( curr );
         }
@@ -94,19 +94,20 @@ int ExpandSymbol( token_idx i, bool early_only )
     switch( dir->sym.state ) {
     case SYM_CONST:
         if(( dir->e.constinfo->expand_early == FALSE )
-            && ( early_only == TRUE )) return( NOT_ERROR );
+          && ( early_only == TRUE ))
+            return( NOT_ERROR );
         DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
         /* insert the pre-scanned data for this constant */
         AddTokens( AsmBuffer, i, dir->e.constinfo->count - 1 );
         for( j = 0; j < dir->e.constinfo->count; j++ ) {
-            AsmBuffer[i+j]->class = dir->e.constinfo->data[j].class;
-            AsmBuffer[i+j]->u.value = dir->e.constinfo->data[j].u.value;
-            AsmBuffer[i+j]->string_ptr = dir->e.constinfo->data[j].string_ptr;
+            AsmBuffer[i + j]->class = dir->e.constinfo->data[j].class;
+            AsmBuffer[i + j]->u.value = dir->e.constinfo->data[j].u.value;
+            AsmBuffer[i + j]->string_ptr = dir->e.constinfo->data[j].string_ptr;
 #ifdef DEBUG_OUT
-            if( AsmBuffer[i+j]->class == TC_NUM ) {
-                DebugMsg(( " %d", AsmBuffer[i+j]->u.value ));
+            if( AsmBuffer[i + j]->class == TC_NUM ) {
+                DebugMsg(( " %d", AsmBuffer[i + j]->u.value ));
             } else {
-                DebugMsg(( " %s", AsmBuffer[i+j]->string_ptr ));
+                DebugMsg(( " %s", AsmBuffer[i + j]->string_ptr ));
             }
 #endif
         }
@@ -166,17 +167,19 @@ int ExpandProcString( token_idx index )
                         return( ERROR );
                     }
                     /* Point to second register string */
-                    if( Use32 )
+                    if( Use32 ) {
                         replace += 4;
-                    else
+                    } else {
                         replace += 3;
+                    }
                 }
             }
             if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
                 left_bracket = right_bracket = 0;   /* reset bracket indexes */
                 for( i = 0; i < index; i++ ) {
-                    if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET )
+                    if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
                         break;
+                    }
                 }
                 if( i < index ) {
                     left_bracket = i;
@@ -198,8 +201,8 @@ int ExpandProcString( token_idx index )
                     right_bracket = index;
                 }
             }
-            if( index > 0 && AsmBuffer[index-1]->class == TC_DIRECTIVE ) {
-                switch( AsmBuffer[index-1]->u.token ) {
+            if( index > 0 && AsmBuffer[index - 1]->class == TC_DIRECTIVE ) {
+                switch( AsmBuffer[index - 1]->u.token ) {
                 case T_IFDEF:
                 case T_IFNDEF:
                 case T_ELSEIFDEF:
@@ -211,9 +214,9 @@ int ExpandProcString( token_idx index )
                     return( NOT_ERROR );
                 }
             }
-            if( AsmBuffer[index+1]->class == TC_DIRECTIVE ) {
+            if( AsmBuffer[index + 1]->class == TC_DIRECTIVE ) {
                 /* this will never happen with multiple words in a string */
-                switch( AsmBuffer[index+1]->u.token ) {
+                switch( AsmBuffer[index + 1]->u.token ) {
                 case T_EQU:
                 case T_EQU2:
                 case T_TEXTEQU:
@@ -223,7 +226,8 @@ int ExpandProcString( token_idx index )
             break;
         }
     }
-    if( replace == NULL ) return( NOT_ERROR );
+    if( replace == NULL )
+        return( NOT_ERROR );
 
     DebugMsg(( "ExpandString: %s -> %s \n", word, replace ));
 
@@ -323,7 +327,7 @@ static void FreeConstData( const_info *constinfo )
 
         int i;
 
-        for( i=0; i < constinfo->count; i++ ) {
+        for( i = 0; i < constinfo->count; i++ ) {
 #ifdef DEBUG_OUT
             if( constinfo->data[i].class == TC_NUM ) {
                 DebugMsg(( "%d ", constinfo->data[i].u.value ));
@@ -447,9 +451,9 @@ static bool createconstant( char *name, bool value, token_idx start, bool redefi
         can_be_redefine = ( counta > 1 ) ? TRUE : FALSE;
     }
     for( i = 0; i < count; i++ ) {
-        switch( AsmBuffer[start+i]->class ) {
+        switch( AsmBuffer[start + i]->class ) {
         case TC_STRING:
-            if( AsmBuffer[start+i]->u.value == 0 ) {
+            if( AsmBuffer[start + i]->u.value == 0 ) {
                 i--;
                 count--;
                 start++;
@@ -460,14 +464,14 @@ static bool createconstant( char *name, bool value, token_idx start, bool redefi
         case TC_NUM:
             break;
         case TC_ID:
-            if( IS_SYM_COUNTER( AsmBuffer[start+i]->string_ptr ) ) {
+            if( IS_SYM_COUNTER( AsmBuffer[start + i]->string_ptr ) ) {
                 char            buff[40];
                 /*
                     We want a '$' symbol to have the value at it's
                     point of definition, not point of expansion.
                 */
                 sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
-                AsmBuffer[start+i]->string_ptr = buff;
+                AsmBuffer[start + i]->string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = TRUE;
                     MakeLabel( buff, MT_NEAR );
@@ -480,11 +484,11 @@ static bool createconstant( char *name, bool value, token_idx start, bool redefi
         }
         new[i].class = AsmBuffer[start + i]->class;
         memcpy( new[i].u.bytes, AsmBuffer[start + i]->u.bytes, sizeof( new[i].u.bytes ) );
-        if( AsmBuffer[start+i]->string_ptr == NULL ) {
+        if( AsmBuffer[start + i]->string_ptr == NULL ) {
             new[i].string_ptr = NULL;
         } else {
-            new[i].string_ptr = AsmAlloc( strlen( AsmBuffer[start+i]->string_ptr ) + 1 );
-            strcpy( new[i].string_ptr, AsmBuffer[start+i]->string_ptr );
+            new[i].string_ptr = AsmAlloc( strlen( AsmBuffer[start + i]->string_ptr ) + 1 );
+            strcpy( new[i].string_ptr, AsmBuffer[start + i]->string_ptr );
         }
     }
     if( new_constant && can_be_redefine )
@@ -500,17 +504,18 @@ bool ExpandAllConsts( token_idx start_pos, bool early_only )
 {
     token_idx   i;
 
-    if( AsmBuffer[start_pos+1]->class == TC_DIRECTIVE ) {
-        switch( AsmBuffer[start_pos+1]->u.token ) {
+    if( AsmBuffer[start_pos + 1]->class == TC_DIRECTIVE ) {
+        switch( AsmBuffer[start_pos + 1]->u.token ) {
         case T_EQU:
         case T_EQU2:
         case T_TEXTEQU:
-            start_pos+=2;
+            start_pos += 2;
         }
     }
     Globals.expand_count = 0;
-    for( i=start_pos; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i]->class != TC_ID ) continue;
+    for( i = start_pos; AsmBuffer[i]->class != TC_FINAL; i++ ) {
+        if( AsmBuffer[i]->class != TC_ID )
+            continue;
         switch( ExpandSymbol( i, early_only ) ) {
         case ERROR:
             return( RC_ERROR );

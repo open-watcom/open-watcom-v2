@@ -48,7 +48,7 @@ extern bool     AddFPPatchAndFixups( fp_patches patch );
 
 enum fpe        floating_point = DO_FP_EMULATION;
 
-static bool match_phase_3( bool *notfound, asmins_idx *i, OPNDTYPE determinant );
+static bool match_phase_3( bool *found, asmins_idx *i, OPNDTYPE determinant );
 
 static bool output_3DNow( asmins_idx ins_pos )
 /********************************************/
@@ -111,7 +111,7 @@ static bool output( asmins_idx ins_pos )
             }
         } else if( ins->allowed_prefix != NO_FWAIT ) {
             switch( Code->prefix.seg ) {
-            case EMPTY:     patch = FPP_NORMAL; break;
+            case PREFIX_EMPTY: patch = FPP_NORMAL; break;
             case PREFIX_ES: patch = FPP_ES;     break;
             case PREFIX_CS: patch = FPP_CS;     break;
             case PREFIX_SS: patch = FPP_SS;     break;
@@ -137,7 +137,7 @@ static bool output( asmins_idx ins_pos )
     /*
      * Output instruction prefix LOCK, REP or REPNE
      */
-    if( rCode->prefix.ins != EMPTY ) {
+    if( rCode->prefix.ins != T_NULL ) {
         switch( rCode->prefix.ins ) {
         case T_LOCK:
             if( ins->allowed_prefix != LOCK ) {
@@ -195,21 +195,21 @@ static bool output( asmins_idx ins_pos )
      * Output operand size prefix
      */
     if( ins->cpu & NO_OPPRFX ) {
-        rCode->prefix.opsiz = FALSE;
+        SET_OPSIZ_OFF( rCode );
     }
     switch( ins->byte1_info ) {
     case F_16:
         if( rCode->use32 ) {
-            rCode->prefix.opsiz = TRUE;
+            SET_OPSIZ_ON( rCode );
         }
         break;
     case F_32:
         if( !rCode->use32 ) {
-            rCode->prefix.opsiz = TRUE;
+            SET_OPSIZ_ON( rCode );
         }
         break;
     case F_660F:
-        rCode->prefix.opsiz = TRUE;
+        SET_OPSIZ_ON( rCode );
         break;
     case F_0F:
     case F_0F0F:
@@ -258,7 +258,7 @@ static bool output( asmins_idx ins_pos )
     /*
      * Output segment prefix
      */
-    if( rCode->prefix.seg != EMPTY ) {
+    if( rCode->prefix.seg != PREFIX_EMPTY ) {
         AsmCodeByte( rCode->prefix.seg );
     }
     /*
@@ -302,7 +302,7 @@ static bool output( asmins_idx ins_pos )
         }
         tmp = ins->rm_byte | rCode->info.rm_byte;
         AsmCodeByte( tmp );
-        if( addr_32( rCode ) ) {
+        if( IS_ADRSIZ_32( rCode ) ) {
             switch( tmp & NOT_BIT_345 ) {
             case 0x04:
                  // mod = 00, r/m = 100
@@ -362,11 +362,7 @@ static bool output_data( OPNDTYPE determinant, operand_idx index )
             out = 1;
             break;
         case MOD_00:
-            if( !addr_32( Code ) ) {
-                if( (Code->info.rm_byte & BIT_012) == D16 ) {
-                     out = 2;
-                }
-            } else {
+            if( IS_ADRSIZ_32( Code ) ) {
                 switch( Code->info.rm_byte & BIT_012 ) {
                 case S_I_B:
                     if( (Code->sib & BIT_012) != D32 ) {
@@ -376,13 +372,17 @@ static bool output_data( OPNDTYPE determinant, operand_idx index )
                 case D32:
                     out = 4;
                 }
+            } else {
+                if( (Code->info.rm_byte & BIT_012) == D16 ) {
+                     out = 2;
+                }
             }
             break;
         case MOD_10:  // mode = 10
-            if( !addr_32( Code ) ) {
-                out = 2;
-            } else {
+            if( IS_ADRSIZ_32( Code ) ) {
                 out = 4;
+            } else {
+                out = 2;
             }
         }
     }
@@ -394,7 +394,7 @@ static bool output_data( OPNDTYPE determinant, operand_idx index )
     return( RC_OK );
 }
 
-static bool match_phase_2( bool *notfound, asmins_idx *ins_pos )
+static bool match_phase_2( bool *found, asmins_idx *ins_pos )
 /***************************************************************
 - a routine used by match_phase_1() to determine whether both operands match
   with that in the assembly instructions table;
@@ -403,7 +403,7 @@ static bool match_phase_2( bool *notfound, asmins_idx *ins_pos )
 {
     if( Code->info.opnd_type[OPND2] != OP_NONE ) {
         // 2 opnds instruction
-        return( match_phase_3( notfound, ins_pos, AsmOpTable[*ins_pos].opnd_type[OPND1] ) );
+        return( match_phase_3( found, ins_pos, AsmOpTable[*ins_pos].opnd_type[OPND1] ) );
     } else {
         // 1 opnd instruction
         // make sure the second opnd also match, i.e. has to be OP_NONE
@@ -415,7 +415,7 @@ static bool match_phase_2( bool *notfound, asmins_idx *ins_pos )
             return( output_data( Code->info.opnd_type[OPND1], OPND1 ) );
         } else {
             // still cannot find match
-            *notfound = TRUE;
+            *found = FALSE;
             return( RC_ERROR );
         }
     }
@@ -430,15 +430,15 @@ bool match_phase_1( void )
 */
 {
     asmins_idx      ins_pos;
-    int             rc;
+    bool            rc;
     bool            temp_opsiz = FALSE;
     OPNDTYPE        cur_opnd;
     OPNDTYPE        asm_op1;
-    bool            notfound = FALSE;
+    bool            found = TRUE;
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
-        if( Code->prefix.seg != EMPTY ) {
+        if( Code->prefix.seg != PREFIX_EMPTY ) {
             /* we have:     REG: on line */
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
@@ -458,7 +458,7 @@ bool match_phase_1( void )
             AsmError( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING );
             return( RC_ERROR );
         } else {
-            Code->prefix.opsiz = FALSE;
+            SET_OPSIZ_OFF( Code );
         }
     }
 
@@ -515,32 +515,32 @@ bool match_phase_1( void )
         switch( asm_op1 ) {
         case OP_MMX:
             if( cur_opnd & OP_MMX ) {
-                return( match_phase_2( &notfound, &ins_pos ) );
+                return( match_phase_2( &found, &ins_pos ) );
             }
             break;
         case OP_XMM:
             if( cur_opnd & OP_XMM ) {
-                return( match_phase_2( &notfound, &ins_pos ) );
+                return( match_phase_2( &found, &ins_pos ) );
             }
             break;
         case OP_R16:
             if( cur_opnd & asm_op1 ) {
                 temp_opsiz = Code->prefix.opsiz;
-                Code->prefix.opsiz = FALSE;
-                rc = match_phase_2( &notfound, &ins_pos );
-                if( !notfound )
+                SET_OPSIZ_OFF( Code );
+                rc = match_phase_2( &found, &ins_pos );
+                if( found )
                     return( rc );
-                notfound = FALSE;
+                found = TRUE;
                 Code->prefix.opsiz = temp_opsiz;
             }
             break;
         case OP_M16:
             if( cur_opnd & asm_op1 ) {
                 temp_opsiz = Code->prefix.opsiz;
-                rc = match_phase_2( &notfound, &ins_pos );
-                if( !notfound )
+                rc = match_phase_2( &found, &ins_pos );
+                if( found )
                     return( rc );
-                notfound = FALSE;
+                found = TRUE;
                 Code->prefix.opsiz = temp_opsiz;
             }
             break;
@@ -548,10 +548,10 @@ bool match_phase_1( void )
         case OP_I16:
             if( cur_opnd & asm_op1 ) {
                 Code->info.opnd_type[OPND1] = asm_op1;
-                rc = match_phase_2( &notfound, &ins_pos );
-                if( !notfound )
+                rc = match_phase_2( &found, &ins_pos );
+                if( found )
                     return( rc );
-                notfound = FALSE;
+                found = TRUE;
             }
             break;
         case OP_I8_U:
@@ -559,10 +559,10 @@ bool match_phase_1( void )
                 if( Code->data[OPND1] <= UCHAR_MAX ) {
                     temp_opsiz = Code->prefix.opsiz;
                     Code->info.opnd_type[OPND1] = OP_I8;
-                    rc = match_phase_2( &notfound, &ins_pos );
-                    if( !notfound )
+                    rc = match_phase_2( &found, &ins_pos );
+                    if( found )
                         return( rc );
-                    notfound = FALSE;
+                    found = TRUE;
                     Code->prefix.opsiz = temp_opsiz;
                 }
             }
@@ -586,17 +586,17 @@ bool match_phase_1( void )
             if( (asm_op1 & cur_opnd)
                 && ( ( (cur_opnd & OP_M_ANY) == 0 )
                     || ( (asm_op1 & OP_M_DFT) == (cur_opnd & OP_M_DFT) ) ) ) {
-                rc = match_phase_2( &notfound, &ins_pos );
-                if( !notfound )
+                rc = match_phase_2( &found, &ins_pos );
+                if( found )
                     return( rc );
-                notfound = FALSE;
+                found = TRUE;
             }
             break;
         }
         ins_pos++;
     }
     AsmError( INVALID_INSTRUCTION_OPERANDS );
-    return( ERROR );
+    return( RC_ERROR );
 }
 
 static bool check_3rd_operand( asmins_idx ins_pos )
@@ -638,7 +638,7 @@ static bool output_3rd_operand( asmins_idx ins_pos )
     }
 }
 
-static bool match_phase_3( bool *notfound, asmins_idx *ins_pos, OPNDTYPE determinant )
+static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinant )
 /************************************************************************
 - this routine will look up the assembler opcode table and try to match
   the second operand with what we get;
@@ -698,7 +698,7 @@ static bool match_phase_3( bool *notfound, asmins_idx *ins_pos, OPNDTYPE determi
             break;
         case OP_R16:
             if( cur_opnd & asm_op2 ) {
-                Code->prefix.opsiz = FALSE;
+                SET_OPSIZ_OFF( Code );
                 if( output( *ins_pos ) )
                     return( RC_ERROR );
                 return( output_data( last_opnd, OPND1 ) );
@@ -716,7 +716,7 @@ static bool match_phase_3( bool *notfound, asmins_idx *ins_pos, OPNDTYPE determi
                         AsmWarn( 1, IMMEDIATE_CONSTANT_TOO_LARGE );
                     }
 #endif
-                    Code->prefix.opsiz = FALSE;
+                    SET_OPSIZ_OFF( Code );
                     cur_opnd = OP_I8;
                     if( InsFixups[OPND2] != NULL ) {
                         InsFixups[OPND2]->fixup_type = FIX_LOBYTE;
@@ -731,22 +731,22 @@ static bool match_phase_3( bool *notfound, asmins_idx *ins_pos, OPNDTYPE determi
                     cur_opnd = OP_I16;
                 } else if( last_opnd & OP_R32 ) {
                     // 32-bit register, so output 32-bit data
-                    Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;/* 12-feb-92 */
+                    SET_OPSIZ_32( Code );
                     cur_opnd = OP_I32;
                 } else if( last_opnd & OP_M_ANY ) {
                     /* there is no reason this should be only for T_MOV */
                     switch( OperandSize( last_opnd ) ) {
                     case 1:
                         cur_opnd = OP_I8;
-                        Code->prefix.opsiz = FALSE;
+                        SET_OPSIZ_OFF( Code );
                         break;
                     case 2:
                         cur_opnd = OP_I16;
-                        Code->prefix.opsiz = Code->use32 ? TRUE : FALSE;
+                        SET_OPSIZ_16( Code );
                         break;
                     case 4:
                         cur_opnd = OP_I32;
-                        Code->prefix.opsiz = Code->use32 ? FALSE : TRUE;
+                        SET_OPSIZ_32( Code );
                         break;
                     default:
                         AsmError( INVALID_INSTRUCTION_OPERANDS );
@@ -865,6 +865,6 @@ static bool match_phase_3( bool *notfound, asmins_idx *ins_pos, OPNDTYPE determi
         (*ins_pos)++;
     }
     (*ins_pos)--;
-    *notfound = TRUE;
+    *found = FALSE;
     return( RC_ERROR );
 }

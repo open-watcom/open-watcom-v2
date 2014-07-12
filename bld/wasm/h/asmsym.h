@@ -85,8 +85,8 @@ typedef struct asm_sym {
         uint_32         total_length;   /* total number of elements (lengthof) */
         uint_32         count;
         char            *(*mangler)( struct asm_sym *sym, char *buffer );
-        unsigned        public      :1;
-        unsigned        referenced  :1;
+        bool            public      :1;
+        bool            referenced  :1;
         lang_type       langtype;
 #else
         long            addr;

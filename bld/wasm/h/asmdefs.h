@@ -75,17 +75,21 @@
 #define FPE_MIN         0xD8
 #define FPE_MAX         0xDF
 
-#define SET_ADRSIZ( s, x ) ( s->prefix.adrsiz = (( x ) ^ ( s->use32 )) ? TRUE : FALSE )
-#define SET_ADRSIZ_32( s ) ( s->prefix.adrsiz = ( s->use32 ) ? FALSE : TRUE )
-#define SET_ADRSIZ_16( s ) ( s->prefix.adrsiz = ( s->use32 ) ? TRUE : FALSE )
-#define SET_ADRSIZ_NO( s ) ( s->prefix.adrsiz = FALSE )
-#define SET_OPSIZ( s, x ) ( s->prefix.opsiz = (( x ) ^ ( s->use32 )) ? TRUE : FALSE )
-#define SET_OPSIZ_32( s ) ( s->prefix.opsiz = ( s->use32 ) ? FALSE : TRUE )
-#define SET_OPSIZ_16( s ) ( s->prefix.opsiz = ( s->use32 ) ? TRUE : FALSE )
-#define SET_OPSIZ_NO( s ) ( s->prefix.opsiz = FALSE )
+#define SET_ADRSIZ( s, x )  ( s->prefix.adrsiz = (( x ) ^ ( s->use32 )) != 0 )
+#define SET_ADRSIZ_32( s )  ( s->prefix.adrsiz = ( s->use32 == 0 ) )
+#define SET_ADRSIZ_16( s )  ( s->prefix.adrsiz = ( s->use32 != 0 ) )
+#define SET_ADRSIZ_ON( s )  ( s->prefix.adrsiz = 1 )
+#define SET_ADRSIZ_OFF( s ) ( s->prefix.adrsiz = 0 )
+#define SET_OPSIZ( s, x )   ( s->prefix.opsiz = (( x ) ^ ( s->use32 )) != 0 )
+#define SET_OPSIZ_32( s )   ( s->prefix.opsiz = ( s->use32 == 0 ) )
+#define SET_OPSIZ_16( s )   ( s->prefix.opsiz = ( s->use32 != 0 ) )
+#define SET_OPSIZ_ON( s )   ( s->prefix.opsiz = 1 )
+#define SET_OPSIZ_OFF( s )  ( s->prefix.opsiz = 0 )
 
-#define addr_32( s )     ( s->use32 ? ( s->prefix.adrsiz == FALSE ) : ( s->prefix.adrsiz == TRUE ))
-#define oper_32( s )     ( s->use32 ? ( s->prefix.opsiz == FALSE ) : ( s->prefix.opsiz == TRUE ))
+#define IS_ADRSIZ_16( s )   ( ( s->use32 ^ s->prefix.adrsiz ) == 0 )
+#define IS_ADRSIZ_32( s )   ( ( s->use32 ^ s->prefix.adrsiz ) != 0 )
+#define IS_OPSIZ_16( s )    ( ( s->use32 ^ s->prefix.opsiz ) == 0 )
+#define IS_OPSIZ_32( s )    ( ( s->use32 ^ s->prefix.opsiz ) != 0 )
 
 #if defined( _STANDALONE_ )
 

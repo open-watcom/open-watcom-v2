@@ -46,7 +46,7 @@ int jmp( expr_list *opndx );
 #if defined( _STANDALONE_ )
 
 extern bool             SymIs32( struct asm_sym *sym );
-extern void             check_assume( struct asm_sym *sym, enum prefix_reg default_reg );
+extern void             check_assume( struct asm_sym *sym, prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
 
 static void getJumpNegation( asm_token tok, char *buffer, int len )
@@ -437,7 +437,7 @@ int jmp( expr_list *opndx )
                 find_frame( sym );
 #endif
                 if( Opnd_Count == OPND2 ) {
-                    if( oper_32( Code ) ) {
+                    if( IS_OPSIZ_32( Code ) ) {
                         fixup_type = FIX_OFF32;
                         Code->info.opnd_type[Opnd_Count] = OP_I32;
                     } else {
@@ -445,7 +445,7 @@ int jmp( expr_list *opndx )
                         Code->info.opnd_type[Opnd_Count] = OP_I16;
                     }
                 } else {
-                    if( oper_32( Code ) ) {
+                    if( IS_OPSIZ_32( Code ) ) {
                         fixup_type = FIX_PTR32;
                         Code->info.opnd_type[Opnd_Count] = OP_J48;
                     } else {
@@ -552,7 +552,7 @@ int jmp( expr_list *opndx )
                 AsmError( INVALID_SIZE );
                 return( ERROR );
             }
-//            check_assume( sym, EMPTY );
+//            check_assume( sym, PREFIX_EMPTY );
             break;
         case T_JCXZ:
         case T_JECXZ:
@@ -692,7 +692,7 @@ bool ptr_operator( memtype mem_type, bool fix_mem_type )
                     case T_MOVZX:
                         break;
                     default:
-                        Code->prefix.opsiz = TRUE;
+                        SET_OPSIZ_ON( Code );
                         break;
                     }
                 }
@@ -726,7 +726,7 @@ bool ptr_operator( memtype mem_type, bool fix_mem_type )
                         break;
                     default:
                         // OPSIZ prefix
-                        Code->prefix.opsiz = TRUE;
+                        SET_OPSIZ_ON( Code );
                     }
                 }
             }

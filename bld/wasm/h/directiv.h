@@ -37,8 +37,8 @@
 #define MAX_LNAME       255
 #define LNAME_NULL      0
 
-typedef int     direct_idx;     // directive index, such as segment index,
-                                // group index or lname index, etc.
+typedef uint_16 direct_idx; // directive index, such as segment index,
+                            //group index or lname index, etc. follow womp (OMF)
 
 /* Paul Edwards
    Note that there is code that is dependent on the ordering
@@ -127,18 +127,18 @@ typedef struct seg_list {
 typedef struct {
     direct_idx          idx;            // group lname/order index
     seg_list            *seglist;       // list of segments in the group
-    uint                numseg;         // number of segments in the group
+    direct_idx          numseg;         // number of segments in the group
 } grp_info;
 
 typedef struct {
     direct_idx          idx;            // segment lname/order index
     struct asm_sym      *group;         // its group
     uint_32             start_loc;      // starting offset of current ledata or lidata
-    unsigned            readonly    :1; // if the segment is readonly
-    unsigned            ignore      :1; // ignore this if the seg is redefined
-    unsigned            align       :4; // align field (enum segdef_align_values)
-    unsigned            combine     :4; // combine field (values in pcobj.h)
-    unsigned            use_32      :1; // 32-bit segment
+    uint_8              align       :4; // align field (enum segdef_align_values)
+    uint_8              combine     :4; // combine field (values in pcobj.h)
+    bool                readonly    :1; // if the segment is readonly
+    bool                ignore      :1; // ignore this if the seg is redefined
+    bool                use_32      :1; // 32-bit segment
     seg_type            iscode;         // segment is belonging to "CODE" or 'DATA' class
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
@@ -148,23 +148,23 @@ typedef struct {
 
 typedef struct {
     direct_idx          idx;            // external definition index
-    unsigned            use32       :1;
-    unsigned            comm        :1;
-    unsigned            global      :1;
+    bool                use32       :1;
+    bool                comm        :1;
+    bool                global      :1;
 } ext_info;
 
 typedef struct {
     direct_idx          idx;            // external definition index
-    unsigned            use32       :1;
-    unsigned            comm        :1;
+    bool                use32       :1;
+    bool                comm        :1;
     unsigned long       size;
     uint                distance;
 } comm_info;
 
 typedef struct {
-    unsigned            predef      :1; // whether it is predefined symbol
-    unsigned            redefine    :1; // whether it is redefinable or not
-    unsigned            expand_early:1; // if TRUE expand before parsing
+    bool                predef      :1; // whether it is predefined symbol
+    bool                redefine    :1; // whether it is redefinable or not
+    bool                expand_early:1; // if TRUE expand before parsing
     token_idx           count;          // number of tokens
     asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
@@ -183,7 +183,7 @@ typedef struct label_list {
     int                 factor;         // for local var only
     int                 is_register;    // for arguments only
     union {
-        unsigned        is_vararg   :1; // if it is a vararg
+        bool            is_vararg   :1; // if it is a vararg
         token_idx       count;          // number of element in this label
     } u;
 } label_list;
@@ -196,9 +196,9 @@ typedef struct {
     unsigned long       parasize;       // total no. of bytes used by parameters
     unsigned long       localsize;      // total no. of bytes used by local variables
     memtype             mem_type;       // distance of procedure: near or far
-    unsigned            is_vararg   :1; // if it has a vararg
-    unsigned            pe_type     :1; // prolog/epilog code type 0:8086/186 1:286 and above
-    unsigned            export      :1; // EXPORT procedure
+    bool                is_vararg   :1; // if it has a vararg
+    bool                pe_type     :1; // prolog/epilog code type 0:8086/186 1:286 and above
+    bool                export      :1; // EXPORT procedure
 } proc_info;
 
 typedef struct parm_list {
@@ -292,10 +292,10 @@ typedef struct {
     lang_type           langtype;        // language;
 #endif
     os_type             ostype;          // operating system;
-    unsigned            use32       :1;  // If 32-bit segment is used
-    unsigned            cmdline     :1;
-    unsigned            defUse32    :1;  // default segment size 32-bit
-    unsigned            mseg        :1;  // mixed segments (16/32-bit)
+    bool                use32       :1;  // If 32-bit segment is used
+    bool                cmdline     :1;
+    bool                defUse32    :1;  // default segment size 32-bit
+    bool                mseg        :1;  // mixed segments (16/32-bit)
     struct asm_sym      *flat_grp;       // FLAT group symbol
     char                name[_MAX_FNAME];// name of module
     const FNAME         *srcfile;

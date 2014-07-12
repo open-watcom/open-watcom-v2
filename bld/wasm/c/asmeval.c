@@ -1839,7 +1839,7 @@ static bool fix_parens( void )
                 return( RC_ERROR );
             }
             TakeOut[store].idx = i;               // Store the location
-            TakeOut[store++].close_bracket = false;
+            TakeOut[store++].close_bracket = FALSE;
             AsmBuffer[i]->class = TC_NOOP;
         } else if( AsmBuffer[i]->class == TC_OP_BRACKET ) {
             non_dup_bracket_count++;
@@ -1849,7 +1849,7 @@ static bool fix_parens( void )
             } else {
                 dup_count--;
                 TakeOut[store].idx = i;  // store close brackets as -ve values
-                TakeOut[store++].close_bracket = true;
+                TakeOut[store++].close_bracket = TRUE;
                 AsmBuffer[i]->class = TC_NOOP;
             }
         }
@@ -1860,7 +1860,7 @@ static bool fix_parens( void )
         return( RC_ERROR );
     }
     TakeOut[store].idx = INVALID_IDX;        // Mark the end
-    TakeOut[store].close_bracket = false;
+    TakeOut[store].close_bracket = FALSE;
     return( RC_OK );
 }
 
@@ -1873,7 +1873,7 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
     token_idx           i;
     token_idx           old_start;
 //    int                 old_end;
-    int                 need_number;
+    bool                need_number;
 
     MakeConst( res );
     if( res->type == EXPR_CONST ) {
@@ -1928,23 +1928,23 @@ static token_idx fix( expr_list *res, token_idx start, token_idx end )
         if( res->override != INVALID_IDX ) {
             size += 2;
         }
-        need_number = 1;
+        need_number = TRUE;
         if( res->scale != 1 ) {
             size += 2;          // [ reg * 2 ] == 2 tokens more than [ reg ]
         }
         if( res->base_reg != INVALID_IDX ) {
             size += 3;                  // e.g. [ ax ] == 3 tokens
-            need_number = 0;
+            need_number = FALSE;
         }
         if( res->idx_reg != INVALID_IDX ) {
             size += 3;                  // e.g. [ ax ] == 3 tokens
-            need_number = 0;
+            need_number = FALSE;
         }
         if( res->label != INVALID_IDX ) {
-            need_number = 0;
+            need_number = FALSE;
         }
         if( res->value != 0 ) {
-            need_number = 1;
+            need_number = TRUE;
         }
         if( need_number ) {
             size += 3;                  // [ value ] == 3 tokens
@@ -2094,12 +2094,12 @@ static void fix_final( void )
     for( i = 0;; i++ ) {
         if( dup_count == 0 && TakeOut[i].idx == INVALID_IDX )
             break;
-        if( !TakeOut[i].close_bracket ) {
-            AsmBuffer[TakeOut[i].idx]->class = TC_OP_BRACKET;
-            dup_count++;
-        } else {
+        if( TakeOut[i].close_bracket ) {
             AsmBuffer[TakeOut[i].idx]->class = TC_CL_BRACKET;
             dup_count--;
+        } else {
+            AsmBuffer[TakeOut[i].idx]->class = TC_OP_BRACKET;
+            dup_count++;
         }
         myassert( i < MAX_TOKEN );
     }
@@ -2107,8 +2107,7 @@ static void fix_final( void )
     for( start = 0; start < TokCnt; start++ ) {
         if( AsmBuffer[start]->class == TC_NOOP ) {
             for( end = start + 1;; end++ ) {
-                if( AsmBuffer[end]->class != TC_NOOP
-                    || end == TokCnt ) {
+                if( AsmBuffer[end]->class != TC_NOOP || end == TokCnt ) {
                     break;
                 }
             }
