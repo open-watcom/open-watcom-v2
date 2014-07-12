@@ -263,7 +263,7 @@ STATIC uint_8 *putIndex( uint_8 *p, uint_16 index ) {
     if( index > 0x7f ) {
         *p++ = 0x80 | ( index >> 8 );
     }
-    *p++ = index;
+    *p++ = (uint_8)index;
     return( p );
 }
 

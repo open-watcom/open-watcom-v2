@@ -303,7 +303,7 @@ STATIC void mapAdd( type_handle hdl ) {
 */
     type_map_elm    *elm;
 
-    elm = ArrNewElm( typeMap, (size_t)wat->index );
+    elm = ArrNewElm( typeMap, wat->index );
     elm->hdl = hdl;
 }
 
@@ -313,7 +313,7 @@ STATIC void initTypeMap( void ) {
 
     typeMapDef.hdl = unDefdType;
     typeMap = ArrCreate( sizeof( type_map_elm ), &typeMapDef );
-    elm = ArrNewElm( typeMap, (size_t)0 );
+    elm = ArrNewElm( typeMap, 0 );
     elm->hdl = CANT_NULL;
 }
 
@@ -322,7 +322,7 @@ STATIC type_handle mapIdx( uint_16 index ) {
     type_map_elm    *elm;
     type_handle     hdl;
 
-    elm = ArrNewElm( typeMap, (size_t)index );
+    elm = ArrNewElm( typeMap, index );
     hdl = elm->hdl;
     if( hdl == unDefdType ) {       /* aha! forward reference!          */
 /**/    myassert( parsingTypes );
@@ -330,7 +330,7 @@ STATIC type_handle mapIdx( uint_16 index ) {
         seekIndex( index );
         parseType();
         popPosn();
-        elm = ArrAccess( typeMap, (size_t)index );
+        elm = ArrAccess( typeMap, index );
         hdl = elm->hdl;
 /**/    myassert( hdl != unDefdType );
     }

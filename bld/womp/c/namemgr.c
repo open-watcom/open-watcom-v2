@@ -119,7 +119,7 @@ extern const char *NameGet( name_handle hdl ) {
     if( hdl == NAME_NULL ) {
         return( nullString );
     }
-    elm = ArrAccess( nameArr, (size_t)hdl );
+    elm = ArrAccess( nameArr, hdl );
 /**/myassert( elm->name != NULL );
     return( elm->name );
 }

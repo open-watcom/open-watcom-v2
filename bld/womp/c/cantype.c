@@ -94,7 +94,7 @@ void CanTFini( void ) {
 cantype *CanTFind( type_handle hdl ) {
 /**********************************/
 /**/myassert( validHdl( hdl ) );
-    return( (cantype *)ArrAccess( cantArr, (size_t)hdl ) );
+    return( (cantype *)ArrAccess( cantArr, hdl ) );
 }
 
 STATIC cantype *newNode( uint_8 class ) {
@@ -102,11 +102,11 @@ STATIC cantype *newNode( uint_8 class ) {
     cantype *type;
 
     if( reUseHdl != CANT_NULL ) {
-        type = (cantype *)ArrAccess( cantArr, (size_t)reUseHdl );
+        type = (cantype *)ArrAccess( cantArr, reUseHdl );
         type->hdl = reUseHdl;
         reUseHdl = CANT_NULL;
     } else {
-        type = (cantype *)ArrNewElm( cantArr, (size_t)nextHdl );
+        type = (cantype *)ArrNewElm( cantArr, nextHdl );
         type->hdl = nextHdl;
         ++nextHdl;
     }

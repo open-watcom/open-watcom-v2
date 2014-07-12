@@ -176,7 +176,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
         // it isn't fixupp physical reference
         // and don't depend on segment size (16/32bit)
         ObjWrite16( out, objr->d.segdef.abs.frame );
-        ObjWrite8( out, objr->d.segdef.abs.offset );
+        ObjWrite8( out, (uint_8)objr->d.segdef.abs.offset );
     }
 #endif
     if( is32 ) {
@@ -189,7 +189,7 @@ STATIC int writeSegdef( obj_rec *objr, pobj_state *state ) {
 #if ( _WOMP_OPT & _WOMP_NASM )
         patch = ObjWSkip16( out );
 #else
-        ObjWrite16( out, objr->d.segdef.seg_length );
+        ObjWrite16( out, (uint_16)objr->d.segdef.seg_length );
 #endif
     }
 #if ( _WOMP_OPT & _WOMP_NASM )
@@ -243,7 +243,7 @@ STATIC int writeFixup( obj_rec *objr, pobj_state *state ) {
         len_written = 0;
         ObjWBegRec( out, cmd1 );
         while( walk != NULL && len_written < 1024 - FIX_GEN_MAX ) {
-            walk->loc_offset += LifixDelta( &lifList, walk->loc_offset );
+            walk->loc_offset += LifixDelta( &lifList, (uint_16)walk->loc_offset );
 #if _WOMP_OPT & _WOMP_WOMP
             if( Can2MsOS2Flat() &&
                 ( walk->loc_method == FIX_OFFSET386
@@ -293,7 +293,7 @@ STATIC int writeLedata( obj_rec *objr, pobj_state *state ) {
     if( is32 ) {
         ObjWrite32( out, objr->d.ledata.offset );
     } else {
-        ObjWrite16( out, objr->d.ledata.offset );
+        ObjWrite16( out, (uint_16)objr->d.ledata.offset );
     }
     save = ObjRTell( objr );
     len = ObjRemain( objr );
@@ -358,7 +358,7 @@ STATIC int writeLidata( obj_rec *objr, pobj_state *state ) {
     if( is32 ) {
         ObjWrite32( out, objr->d.lidata.offset );
     } else {
-        ObjWrite16( out, objr->d.lidata.offset );
+        ObjWrite16( out, (uint_16)objr->d.lidata.offset );
     }
     if( objr->is_phar == 0 ) {
         /* ok, already in our format */
@@ -489,7 +489,7 @@ STATIC int writeComdat( obj_rec *objr, pobj_state *state ) {
     if( is32 ) {
         ObjWrite32( out, objr->d.comdat.offset );
     } else {
-        ObjWrite16( out, objr->d.comdat.offset );
+        ObjWrite16( out, (uint_16)objr->d.comdat.offset );
     }
     ObjWriteIndex( out, objr->d.comdat.type_idx );
     if( ( objr->d.comdat.attributes & COMDAT_ALLOC_MASK ) == COMDAT_EXPLICIT ) {
@@ -522,7 +522,7 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
     int         is32;
     OBJ_WFILE   *out;
     const char  *name;
-    uint_8      name_len;
+    size_t       name_len;
     pubdef_data *pubdata;
     pubdef_data *pubstop;
 
@@ -543,12 +543,14 @@ STATIC int writePubdef( obj_rec *objr, pobj_state *state ) {
         while( pubdata < pubstop ) {
             name = NameGet( pubdata->name );
             name_len = strlen( name );
-            ObjWrite8( out, name_len );
-            ObjWrite( out, (uint_8 *)name, name_len );
+            if( name_len > 255 )
+                name_len = 255;
+            ObjWrite8( out, (uint_8)name_len );
+            ObjWrite( out, (uint_8 *)name, (uint_16)name_len );
             if( is32 ) {
                 ObjWrite32( out, pubdata->offset );
             } else {
-                ObjWrite16( out, pubdata->offset );
+                ObjWrite16( out, (uint_16)pubdata->offset );
             }
             ObjWriteIndex( out, pubdata->type.idx );
             ++pubdata;
@@ -575,7 +577,7 @@ STATIC void writeLinnumData( obj_rec *objr, OBJ_WFILE *out ) {
             ObjWrite32( out, cur->offset );
         } else {
 /**/        myassert( ( cur->offset & 0xffff0000 ) == 0 );
-            ObjWrite16( out, cur->offset );
+            ObjWrite16( out, (uint_16)cur->offset );
         }
         ++cur;
     }
