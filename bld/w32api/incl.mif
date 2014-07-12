@@ -40,7 +40,6 @@ headers = &
         commctrl.rh          &
         commdlg.h            &
         compobj.h            &
-        compressapi.h        &
         control.h            &
         cpl.h                &
         cplext.h             &
@@ -282,6 +281,7 @@ headers = &
         vssym32.h            &
         w32api.h             &
         wbemcli.h            &
+        wcompres.h           &
         winable.h            &
         winbase.h            &
         winber.h             &
