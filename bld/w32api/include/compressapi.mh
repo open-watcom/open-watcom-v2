@@ -1,0 +1,61 @@
+/*
+ * Microsoft Windows Compression API
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef _COMPRESSAPI_H_
+#define _COMPRESSAPI_H_
+
+:include readonly.sp
+
+#include <windows.h>
+
+typedef unsigned long COMPRESSOR_HANDLE;
+typedef COMPRESSOR_HANDLE *PCOMPRESSOR_HANDLE;
+
+typedef COMPRESSOR_HANDLE  DECOMPRESSOR_HANDLE;
+typedef DECOMPRESSOR_HANDLE *PDECOMPRESSOR_HANDLE;
+
+typedef void * (__cdecl *PFN_COMPRESS_ALLOCATE) (void *, size_t);
+typedef VOID (__cdecl *PFN_COMPRESS_FREE) (void *, void *);
+
+typedef struct _COMPRESS_ALLOCATION_ROUTINES {
+  PFN_COMPRESS_ALLOCATE Allocate;
+  PFN_COMPRESS_FREE     Free;
+  void *                 UserContext;
+} COMPRESS_ALLOCATION_ROUTINES, *PCOMPRESS_ALLOCATION_ROUTINES;
+
+typedef enum  { 
+  COMPRESS_INFORMATION_CLASS_INVALID     = 0x0,
+  COMPRESS_INFORMATION_CLASS_LEVEL,
+  COMPRESS_INFORMATION_CLASS_BLOCK_SIZE
+} COMPRESS_INFORMATION_CLASS;
+
+#define COMPRESS_ALGORITHM_INVALID      0
+#define COMPRESS_ALGORITHM_NULL         1
+#define COMPRESS_ALGORITHM_MSZIP        2
+#define COMPRESS_ALGORITHM_XPRESS       3
+#define COMPRESS_ALGORITHM_XPRESS_HUFF  4
+#define COMPRESS_ALGORITHM_LZMS         5
+#define COMPRESS_ALGORITHM_MAX          6
+
+:include cpluspro.sp
+
+  BOOL WINAPI CloseCompressor( COMPRESSOR_HANDLE );
+  BOOL WINAPI CloseDecompressor( DECOMPRESSOR_HANDLE );
+  BOOL WINAPI Compress( COMPRESSOR_HANDLE, void *, size_t, void *, size_t, size_t * );
+  BOOL WINAPI CreateCompressor( DWORD, PCOMPRESS_ALLOCATION_ROUTINES, PCOMPRESSOR_HANDLE );
+  BOOL WINAPI CreateDecompressor( DWORD, PCOMPRESS_ALLOCATION_ROUTINES, PDECOMPRESSOR_HANDLE );
+  BOOL WINAPI Decompress( DECOMPRESSOR_HANDLE, void *, size_t, void *, size_t, size_t * );
+  BOOL WINAPI QueryCompressorInformation( COMPRESSOR_HANDLE, COMPRESS_INFORMATION_CLASS, void *, size_t );
+  BOOL WINAPI QueryDecompressorInformation( DECOMPRESSOR_HANDLE, COMPRESS_INFORMATION_CLASS, void *, size_t );
+  BOOL WINAPI ResetCompressor( COMPRESSOR_HANDLE );
+  BOOL WINAPI ResetDecompressor( DECOMPRESSOR_HANDLE );
+  BOOL WINAPI SetCompressorInformation( COMPRESSOR_HANDLE, COMPRESS_INFORMATION_CLASS, void *, size_t );
+  BOOL WINAPI SetDecompressorInformation( DECOMPRESSOR_HANDLE, COMPRESS_INFORMATION_CLASS, void *, size_t );
+  
+:include cplusepi.sp
+
+#endif /* _COMPRESSAPI_H_ */
+

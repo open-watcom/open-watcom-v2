@@ -40,6 +40,7 @@ headers = &
         commctrl.rh          &
         commdlg.h            &
         compobj.h            &
+        compressapi.h        &
         control.h            &
         cpl.h                &
         cplext.h             &
