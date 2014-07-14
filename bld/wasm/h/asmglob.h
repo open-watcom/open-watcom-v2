@@ -72,6 +72,14 @@
 
 /* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
 
+#define CMPLIT(s,c)     memcmp( s, c, sizeof( c ) )
+#define CMPLITBEG(s,c)  memcmp( s, c, sizeof( c ) - 1 )
+#define CMPLITEND(s,c)  memcmp( s - ( sizeof( c ) - 1 ), c, sizeof( c ) - 1 )
+
+#define CPYLIT(s,c)     memcpy( s, c, sizeof( c ) )
+#define CATLIT(s,c)     (char *)memcpy( s, c, sizeof( c ) - 1 ) + sizeof( c ) - 1
+#define CATSTR(s,c,l)   (char *)memcpy( s, c, l ) + l
+
 #include "asmerr.h"
 #include "asmins.h"
 #include "asmdefs.h"
