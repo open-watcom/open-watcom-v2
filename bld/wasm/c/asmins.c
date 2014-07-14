@@ -138,8 +138,8 @@ void find_frame( struct asm_sym *sym )
     }
 }
 
-void GetInsString( asm_token token, char *string, int len )
-/**************************************************************/
+int GetInsString( asm_token token, char *string, int len )
+/********************************************************/
 {
     int index;
 
@@ -154,8 +154,9 @@ void GetInsString( asm_token token, char *string, int len )
         string[len] = '\0';
     } else {
         *string='\0';
+        len = 0;
     }
-    return;
+    return( len );
 }
 #endif
 

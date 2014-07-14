@@ -31,16 +31,18 @@
 
 
 #define HASH_TABLE_SIZE 211
+
 /* use the same hash fcn */
 static unsigned int hashpjw( const char *s )
 /******************************************/
 {
-    unsigned h;
-    unsigned g;
+    unsigned        h;
+    unsigned        g;
+    unsigned char   c;
 
-    for( h = 0; *s; ++s ) {
+    for( h = 0; (c = *s) != '\0'; ++s ) {
         /* ( h & ~0x0fff ) == 0 is always true here */
-        h = (h << 4) + (*s | ' ');
+        h = (h << 4) + (c | ' ');
         g = h & ~0x0fff;
         h ^= g;
         h ^= g >> 12;

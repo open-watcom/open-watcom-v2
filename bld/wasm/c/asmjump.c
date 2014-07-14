@@ -49,8 +49,8 @@ extern bool             SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
 
-static void getJumpNegation( asm_token tok, char *buffer, int len )
-/*****************************************************************/
+static int getJumpNegation( asm_token tok, char *buffer, int len )
+/****************************************************************/
 {
     switch( tok ) {
     case T_JA:      tok = T_JNA;    break;
@@ -85,9 +85,9 @@ static void getJumpNegation( asm_token tok, char *buffer, int len )
     case T_JZ:      tok = T_JNZ;    break;
     default:
         *buffer = '\0';
-        return;
+        return( 0 );
     }
-    GetInsString( tok, buffer, len );
+    return( GetInsString( tok, buffer, len ) );
 }
 
 static void jumpExtend( int far_flag )

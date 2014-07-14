@@ -140,7 +140,7 @@ extern const char                   AsmChars[];
 #if defined( _STANDALONE_ )
 
 extern void     find_frame( struct asm_sym *sym );
-extern void     GetInsString( asm_token, char *, int );
+extern int      GetInsString( asm_token, char *, int );
 
 #endif
 
