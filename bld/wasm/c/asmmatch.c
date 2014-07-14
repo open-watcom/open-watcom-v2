@@ -188,7 +188,7 @@ static bool output( asmins_idx ins_pos )
     /*
      * Output address size prefix
      */
-    if( rCode->prefix.adrsiz == TRUE ) {
+    if( rCode->prefix.adrsiz ) {
         AsmCodeByte( ADRSIZ );
     }
     /*
@@ -218,7 +218,7 @@ static bool output( asmins_idx ins_pos )
     default:
         break;
     }
-    if( rCode->prefix.opsiz == TRUE ) {
+    if( rCode->prefix.opsiz ) {
         if( (rCode->info.cpu & P_CPU_MASK) < P_386 ) {
             AsmError( CANNOT_USE_386_OPSIZE_MODE_WITH_CURRENT_CPU_SETTING );
             return( RC_ERROR );
