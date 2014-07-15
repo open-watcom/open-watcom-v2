@@ -91,8 +91,10 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
 
+## The following tools are required by tests
+[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
+
 ## The following tools are not required during build
-#[ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/orl/test/builder.ctl ]
