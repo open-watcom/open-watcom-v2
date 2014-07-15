@@ -358,32 +358,36 @@ static bool isvalidident( char *id )
     return( FALSE );
 }
 
-static void add_constant( char *string )
-/**************************************/
+static void add_constant( const char *string, bool underscored )
+/**************************************************************/
 {
-    char *tmp;
-    char *one = "1";
+    char    name[MAX_LINE_LEN];
+    char    *tmp;
+    char    c;
 
-    tmp = strchr( string, '=' );
-    if( tmp == NULL ) {
-        tmp = strchr( string, '#' );
-        if( tmp == NULL ) {
-            tmp = one;
-        } else {
-            *tmp = '\0';
-            tmp++;
-        }
-    } else {
-        *tmp = '\0';
-        tmp++;
+    tmp = name;
+    if( underscored ) {
+        *tmp++ = '_'; *tmp++ = '_';
     }
+    while( (c = *string) != '\0' ) {
+        ++string;
+        if( c == '=' || c == '#' )
+            break;
+        *tmp++ = c;
+    }
+    if( underscored ) {
+        *tmp++ = '_'; *tmp++ = '_';
+    }
+    *tmp = '\0';
+    if( *string == '\0' )
+        string = "1";
 
-    if( isvalidident( string ) ) {
+    if( isvalidident( name ) ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return;
     }
 
-    StoreConstant( string, tmp, FALSE ); // don't allow it to be redef'd
+    StoreConstant( name, string, FALSE ); // don't allow it to be redef'd
 }
 
 static void AddStringToIncludePath( char *str, const char *end )
@@ -567,7 +571,7 @@ static void Set_C( void ) { Options.output_comment_data_in_code_records = FALSE;
 
 static void Set_D( void ) { Options.debug_flag = (OptValue != 0); }
 
-static void DefineMacro( void ) { add_constant( CopyOfParm() ); }
+static void DefineMacro( void ) { add_constant( CopyOfParm(), FALSE ); }
 
 static void SetErrorLimit( void ) { Options.error_limit = OptValue; }
 
@@ -1067,9 +1071,6 @@ static void do_envvar_cmdline( char *envvar )
 static int set_build_target( void )
 /*********************************/
 {
-    char *tmp;
-    char *uscores = "__";
-
     if( Options.build_target == NULL ) {
 #if defined(__OSI__)
         if( __OS == OS_DOS ) {
@@ -1106,33 +1107,22 @@ static int set_build_target( void )
 #endif
     }
 
-    tmp = AsmTmpAlloc( strlen( Options.build_target ) + 5 ); // null + 4 uscores
-    strcpy( tmp, uscores );
-    strcat( tmp, Options.build_target );
-    strcat( tmp, uscores );
-
-    add_constant( tmp ); // always define something
+    add_constant( Options.build_target, TRUE ); // always define something
 
     if( stricmp( Options.build_target, "DOS" ) == 0 ) {
-        add_constant( "__MSDOS__" );
+        add_constant( "MSDOS", TRUE );
     } else if( stricmp( Options.build_target, "NETWARE" ) == 0 ) {
         if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-            add_constant( "__NETWARE_386__" );
-        } else {
-            /* do nothing ... __NETWARE__ already defined */
+            add_constant( "NETWARE_386", TRUE );
         }
     } else if( stricmp( Options.build_target, "WINDOWS" ) == 0 ) {
         if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-            add_constant( "__WINDOWS_386__" );
-        } else {
-            /* do nothing ... __WINDOWS__ already defined */
+            add_constant( "WINDOWS_386", TRUE );
         }
-    } else if( stricmp( Options.build_target, "QNX" ) == 0 ) {
-        add_constant( "__UNIX__" );
-    } else if( stricmp( Options.build_target, "LINUX" ) == 0 ) {
-        add_constant( "__UNIX__" );
-    } else if( stricmp( Options.build_target, "BSD" ) == 0 ) {
-        add_constant( "__UNIX__" );
+    } else if( stricmp( Options.build_target, "QNX" ) == 0
+      || stricmp( Options.build_target, "LINUX" ) == 0
+      || stricmp( Options.build_target, "BSD" ) == 0 ) {
+        add_constant( "UNIX", TRUE );
     }
     return( NOT_ERROR );
 }
@@ -1159,14 +1149,12 @@ static void do_init_stuff( char **cmdline )
 /*****************************************/
 {
     char        *env;
-    char        buff[80];
 
     if( !MsgInit() )
         exit(1);
 
     AsmBufferInit();
-    strcpy( buff, "__WASM__=" BANSTR( _BANVER ) );
-    add_constant( buff );
+    add_constant( "WASM=" BANSTR( _BANVER ), TRUE );
     ForceInclude = getenv( "FORCE" );
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );
@@ -1240,9 +1228,9 @@ void set_cpu_parameters( void )
     // set parameters passing convention macro
     if( SWData.cpu >= 3 ) {
         if( Options.watcom_parms_passed_by_regs ) {
-            add_constant( "__REGISTER__" );
+            add_constant( "REGISTER", TRUE );
         } else {
-            add_constant( "__STACK__" );
+            add_constant( "STACK", TRUE );
         }
     }
     switch( SWData.cpu ) {
@@ -1280,13 +1268,13 @@ void set_fpu_parameters( void )
 
     switch( floating_point ) {
     case DO_FP_EMULATION:
-        add_constant( "__FPI__" );
+        add_constant( "FPI", TRUE );
         break;
     case NO_FP_EMULATION:
-        add_constant( "__FPI87__" );
+        add_constant( "FPI87", TRUE );
         break;
     case NO_FP_ALLOWED:
-        add_constant( "__FPC__" );
+        add_constant( "FPC", TRUE );
         cpu_directive( T_DOT_NO87 );
         return;
     }

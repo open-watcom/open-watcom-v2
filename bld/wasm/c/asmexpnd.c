@@ -43,7 +43,7 @@
 
 #define    MAX_EQU_NESTING      20
 
-static bool         createconstant( char *, bool, token_idx, bool, bool );
+static bool         createconstant( const char *, bool, token_idx, bool, bool );
 
 static label_list *label_cmp( char *name, label_list *head )
 {
@@ -301,14 +301,14 @@ bool DefineConstant( token_idx i, bool redefine, bool expand_early )
     return( createconstant( name, FALSE, i, redefine, expand_early ) );
 }
 
-bool StoreConstant( char *name, char *value, bool redefine )
-/**********************************************************/
+bool StoreConstant( const char *name, const char *value, bool redefine )
+/**********************************************************************/
 {
     AsmScan( value );
     return( createconstant( name, FALSE, 0, redefine, FALSE ) );
 }
 
-void MakeConstantUnderscored( char const *name )
+void MakeConstantUnderscored( const char *name )
 /**********************************************/
 {
     char    buffer[MAX_LINE_LEN];
@@ -341,7 +341,7 @@ static void FreeConstData( const_info *constinfo )
     }
 }
 
-bool StoreConstantNumber( char *name, long value, bool redefine )
+bool StoreConstantNumber( const char *name, long value, bool redefine )
 {
     struct asm_tok  *new;
     dir_node        *dir;
@@ -383,8 +383,8 @@ bool StoreConstantNumber( char *name, long value, bool redefine )
     return( RC_OK );
 }
 
-static bool createconstant( char *name, bool value, token_idx start, bool redefine, bool expand_early )
-/*****************************************************************************************************/
+static bool createconstant( const char *name, bool value, token_idx start, bool redefine, bool expand_early )
+/***********************************************************************************************************/
 {
     asm_tok             *new;
     dir_node            *dir;
