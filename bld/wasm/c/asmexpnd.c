@@ -317,7 +317,6 @@ void MakeConstantUnderscored( char const *name )
     strcpy( buffer, "__" );
     strcpy( buffer + 2, name );
     strcat( buffer, "__" );
-    strupr( buffer );
     createconstant( buffer, TRUE, 0, TRUE, FALSE );
 }
 

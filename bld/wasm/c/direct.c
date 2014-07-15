@@ -2185,7 +2185,7 @@ static void set_def_seg_name( void )
             len = strlen( ModuleInfo.name );
             Options.text_seg = AsmAlloc( len + sizeof( SIM_NAME_CODE ) );
             memcpy( Options.text_seg, ModuleInfo.name, len );
-            strcpy( Options.text_seg, SIM_NAME_CODE );
+            strcpy( Options.text_seg + len, SIM_NAME_CODE );
             break;
         default:
             break;
@@ -2254,7 +2254,7 @@ bool Model( token_idx i )
                 }
             }
         }
-        MakeConstantUnderscored( token );
+        MakeConstantUnderscored( TypeInfo[type].string );
 
         if( initstate & TypeInfo[type].init ) {
             AsmError( MODEL_PARA_DEFINED ); // initialized already
