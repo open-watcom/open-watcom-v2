@@ -451,9 +451,9 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __OS2__
 !      define comp_wasm_386 $(%OWSRCDIR)\wasm\os2386\wasm
 !    else ifdef __LINUX386__
-!      define comp_wasm_386 $(%OWSRCDIR)/wasm/linux386/wasm
+!      define comp_wasm_386 $(%OWSRCDIR)/wasm/linux386/wasm.exe
 !    else ifdef __LINUXX64__
-!      define comp_wasm_386 $(%OWSRCDIR)/wasm/linuxx64/wasm
+!      define comp_wasm_386 $(%OWSRCDIR)/wasm/linuxx64/wasm.exe
 !    else ifdef __NT386__
 !      define comp_wasm_386 $(%OWSRCDIR)\wasm\nt386\wasm
 !    else ifdef __NTX64__
@@ -500,7 +500,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wasm_ppc $(%OWSRCDIR)/as/ppc/linuxppc/wasppc
+!      define comp_wasm_ppc $(%OWSRCDIR)/as/ppc/linuxppc/wasppc.exe
 !    endif
 !  else ifdef %WASMTEST_WASM_PPC
 !    define comp_wasm_ppc $(%WASMTEST_WASM_PPC)
@@ -513,7 +513,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of assembler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wasm_mps $(%OWSRCDIR)/as/mps/linuxmps/wasmps
+!      define comp_wasm_mps $(%OWSRCDIR)/as/mps/linuxmps/wasmps.exe
 !    endif
 !  else ifdef %WASMTEST_WASM_MPS
 !    define comp_wasm_mps $(%WASMTEST_WASM_MPS)
@@ -530,9 +530,9 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __OS2__
 !      define comp_wcc_386 $(%OWSRCDIR)\cc\386\os2386.dll\wcc386
 !    else ifdef __LINUX386__
-!      define comp_wcc_386 $(%OWSRCDIR)/cc/386/linux386/wcc386
+!      define comp_wcc_386 $(%OWSRCDIR)/cc/386/linux386/wcc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wcc_386 $(%OWSRCDIR)/cc/386/linuxx64/wcc386
+!      define comp_wcc_386 $(%OWSRCDIR)/cc/386/linuxx64/wcc386.exe
 !    else ifdef __NT386__
 !      define comp_wcc_386 $(%OWSRCDIR)\cc\386\nt386.dll\wcc386
 !    else ifdef __NTX64__
@@ -581,7 +581,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wcc_ppc $(%OWSRCDIR)/cc/ppc/linuxppc/wccppc
+!      define comp_wcc_ppc $(%OWSRCDIR)/cc/ppc/linuxppc/wccppc.exe
 !    endif
 !  else ifdef %CTEST_WCC_PPC
 !    define comp_wcc_ppc $(%CTEST_WCC_PPC)
@@ -594,7 +594,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wcc_mps $(%OWSRCDIR)/cc/mps/linuxmps/wccmps
+!      define comp_wcc_mps $(%OWSRCDIR)/cc/mps/linuxmps/wccmps.exe
 !    endif
 !  else ifdef %CTEST_WCC_MPS
 !    define comp_wcc_mps $(%CTEST_WCC_MPS)
@@ -655,9 +655,9 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __OS2__
 !      define comp_wpp_386 $(%OWSRCDIR)\plusplus\386\os2386.dll\wpp386
 !    else ifdef __LINUX386__
-!      define comp_wpp_386 $(%OWSRCDIR)/plusplus/386/linux386/wpp386
+!      define comp_wpp_386 $(%OWSRCDIR)/plusplus/386/linux386/wpp386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wpp_386 $(%OWSRCDIR)/plusplus/386/linuxx64/wpp386
+!      define comp_wpp_386 $(%OWSRCDIR)/plusplus/386/linuxx64/wpp386.exe
 !    else ifdef __NT386__
 !      define comp_wpp_386 $(%OWSRCDIR)\plusplus\386\nt386.dll\wpp386
 !    else ifdef __NTX64__
@@ -706,7 +706,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wpp_ppc $(%OWSRCDIR)/plusplus/ppc/linuxppc/wppppc
+!      define comp_wpp_ppc $(%OWSRCDIR)/plusplus/ppc/linuxppc/wppppc.exe
 !    endif
 !  else ifdef %PLUSTEST_WPP_PPC
 !    define comp_wpp_ppc $(%PLUSTEST_WPP_PPC)
@@ -719,7 +719,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C++ compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wpp_mps $(%OWSRCDIR)/plusplus/mps/linuxmps/wppmps
+!      define comp_wpp_mps $(%OWSRCDIR)/plusplus/mps/linuxmps/wppmps.exe
 !    endif
 !  else ifdef %PLUSTEST_WPP_MPS
 !    define comp_wpp_mps $(%PLUSTEST_WPP_MPS)
@@ -780,9 +780,9 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __OS2__
 !      define comp_wfc_386 $(%OWSRCDIR)\f77\wfc\386\os2386\wfc386
 !    else ifdef __LINUX386__
-!      define comp_wfc_386 $(%OWSRCDIR)/f77/wfc/386/linux386/wfc386
+!      define comp_wfc_386 $(%OWSRCDIR)/f77/wfc/386/linux386/wfc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wfc_386 $(%OWSRCDIR)/f77/wfc/386/linuxx64/wfc386
+!      define comp_wfc_386 $(%OWSRCDIR)/f77/wfc/386/linuxx64/wfc386.exe
 !    else ifdef __NT386__
 !      define comp_wfc_386 $(%OWSRCDIR)\f77\wfc\386\nt386\wfc386
 !    else ifdef __NTX64__
@@ -900,13 +900,13 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __NTX64__
 !      define linker $(%OWSRCDIR)\wl\ntx64.dll\wlink
 !    else ifdef __LINUXPPC__
-!      define linker $(%OWSRCDIR)\wl\linuxppc\wlink
+!      define linker $(%OWSRCDIR)/wl/linuxppc/wlink.exe
 !    else ifdef __LINUXMIPS__
-!      define linker $(%OWSRCDIR)\wl\linuxmps\wlink
+!      define linker $(%OWSRCDIR)/wl/linuxmps/wlink.exe
 !    else ifdef __LINUX386__
-!      define linker $(%OWSRCDIR)\wl\linux386\wlink
+!      define linker $(%OWSRCDIR)/wl/linux386/wlink.exe
 !    else ifdef __LINUXX64__
-!      define linker $(%OWSRCDIR)\wl\linuxx64\wlink
+!      define linker $(%OWSRCDIR)/wl/linuxx64/wlink.exe
 !    endif
 !    ifdef use_dll
 !      ifdef __OS2__
@@ -956,13 +956,13 @@ bld_extra_defines = -DINLINETEST
 !  else ifdef __NTX64__
 !    define wlib_any $(%OWSRCDIR)\nwlib\ntx64.dll\wlib
 !  else ifdef __LINUXPPC__
-!    define wlib_any $(%OWSRCDIR)\nwlib\linuxppc\wlib
+!    define wlib_any $(%OWSRCDIR)/nwlib/linuxppc/wlib.exe
 !  else ifdef __LINUXMIPS__
-!    define wlib_any $(%OWSRCDIR)\nwlib\linuxmps\wlib
+!    define wlib_any $(%OWSRCDIR)/nwlib/linuxmps/wlib.exe
 !  else ifdef __LINUX386__
-!    define wlib_any $(%OWSRCDIR)\nwlib\linux386\wlib
+!    define wlib_any $(%OWSRCDIR)/nwlib/linux386/wlib.exe
 !  else ifdef __LINUXX64__
-!    define wlib_any $(%OWSRCDIR)\nwlib\linuxx64\wlib
+!    define wlib_any $(%OWSRCDIR)/nwlib/linuxx64/wlib.exe
 !  endif
 !  ifdef use_dll
 !    ifdef __OS2__

@@ -337,6 +337,10 @@ system begin linux
     libpath %OWSRCDIR%/mathlib/library/msdos.387/ms_s
     libpath %OWSRCDIR%/cpplib/library/generic.386/ms_r
     libpath %OWSRCDIR%/cpplib/library/generic.386/ms_s
+    libpath %OWSRCDIR%/f77/f77lib/linux.386/mf_r
+    libpath %OWSRCDIR%/f77/f77lib/linux.386/mf_s
+    libpath %OWSRCDIR%/f77/f77lib/linux.387/mf_r
+    libpath %OWSRCDIR%/f77/f77lib/linux.387/mf_s
     libpath %OWSRCDIR%/fpuemu/386/stub386
     format elf
     runtime linux
