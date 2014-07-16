@@ -72,7 +72,7 @@ dmc.$(exe) : dmc.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
     tr -d "\r" <dmc.cpp >dmctest.out
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
     @%make set_old_path

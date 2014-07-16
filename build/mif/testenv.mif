@@ -77,7 +77,7 @@ buildtest = 1
 !ifdef buildtest
 old_path=$+$(%PATH)$-
 !ifdef __OS2__
-path_dll = $(%OWSRCDIR)\clib\rtdll\os2.386\mf_r;$(%OWSRCDIR)\clib\rtdll\os2.386\mf_s;&
+path_rtdll = $(%OWSRCDIR)\clib\rtdll\os2.386\mf_r;$(%OWSRCDIR)\clib\rtdll\os2.386\mf_s;&
 $(%OWSRCDIR)\cpplib\rtdll\os2.386\mf_r;$(%OWSRCDIR)\cpplib\rtdll\os2.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\os2.386\mf_r;$(%OWSRCDIR)\mathlib\rtdll\os2.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\os2.387\mf_r;$(%OWSRCDIR)\mathlib\rtdll\os2.387\mf_s
@@ -87,7 +87,7 @@ path_wpp = $(%OWSRCDIR)\plusplus\386\os2386.dll;$(%OWSRCDIR)\plusplus\i86\os2386
 path_wlib = $(%OWSRCDIR)\nwlib\os2386.dll
 path_wlink = $(%OWSRCDIR)\wl\os2386.dll
 !else ifdef __NTAXP__
-path_dll = $(%OWSRCDIR)\clib\rtdll\winnt.axp\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.axp\mf_s;&
+path_rtdll = $(%OWSRCDIR)\clib\rtdll\winnt.axp\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.axp\mf_s;&
 $(%OWSRCDIR)\cpplib\rtdll\winnt.axp\mf_r;$(%OWSRCDIR)\cpplib\rtdll\winnt.axp\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\winnt.axp\mf_r;$(%OWSRCDIR)\mathlib\rtdll\winnt.axp\mf_s
 path_wcc = $(%OWSRCDIR)\cc\axp\ntaxp.dll
@@ -96,7 +96,7 @@ path_wpp = $(%OWSRCDIR)\plusplus\axp\ntaxp.dll
 path_wlib = $(%OWSRCDIR)\nwlib\ntaxp.dll
 path_wlink = $(%OWSRCDIR)\wl\ntaxp.dll
 !else ifdef __NT386__
-path_dll = $(%OWSRCDIR)\clib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.386\mf_s;&
+path_rtdll = $(%OWSRCDIR)\clib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\cpplib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\cpplib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\mathlib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\winnt.387\mf_r;$(%OWSRCDIR)\mathlib\rtdll\winnt.387\mf_s
@@ -106,7 +106,7 @@ path_wpp = $(%OWSRCDIR)\plusplus\386\nt386.dll;$(%OWSRCDIR)\plusplus\i86\nt386.d
 path_wlib = $(%OWSRCDIR)\nwlib\nt386.dll
 path_wlink = $(%OWSRCDIR)\wl\nt386.dll
 !else ifdef __NTX64__
-path_dll = $(%OWSRCDIR)\clib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.386\mf_s;&
+path_rtdll = $(%OWSRCDIR)\clib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\clib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\cpplib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\cpplib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\winnt.386\mf_r;$(%OWSRCDIR)\mathlib\rtdll\winnt.386\mf_s;&
 $(%OWSRCDIR)\mathlib\rtdll\winnt.387\mf_r;$(%OWSRCDIR)\mathlib\rtdll\winnt.387\mf_s
@@ -1375,7 +1375,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_path_dll
+    @%make set_path_rtdll
 !ifdef ftest_name
     $(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
 !else ifeq plustest_name except
@@ -1431,10 +1431,10 @@ set_path_wlink : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wlink);$(path_wlib);$(old_path)
 !endif
 
-set_path_dll : .PROCEDURE .EXPLICIT
-!ifdef path_dll
+set_path_rtdll : .PROCEDURE .EXPLICIT
+!ifdef path_rtdll
 #    @echo Set PATH for RTDLL
-    @set PATH=$(path_dll);$(old_path)
+    @set PATH=$(path_rtdll);$(old_path)
 !endif
 
 set_old_path : .PROCEDURE .EXPLICIT

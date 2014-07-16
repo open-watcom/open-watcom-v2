@@ -112,7 +112,7 @@ $(names) : test.lnk .symbolic
     @%make $^*.obj
     @%make set_path_wlink
     $(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $(exec_prefix)$^*.exe
     @%make set_old_path
     @echo PASS

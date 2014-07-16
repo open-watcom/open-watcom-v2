@@ -28,7 +28,7 @@ test : .symbolic start clean start_test ./opt.$(exe)
     @%make set_path_wlink
     $(linker) @$]@ NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $@ >>$(%ERROR_FILE)
     $(run) $@ -h >>$(%ERROR_FILE)
     -$(run) $@ -hopeless >>$(%ERROR_FILE)

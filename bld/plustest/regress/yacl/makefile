@@ -67,7 +67,7 @@ dkbtrtst.$(exe) : dkbtrtst.obj
     $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
@@ -80,7 +80,7 @@ perstest.$(exe) : perstest.obj
     $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%append $(%ERROR_FILE) PASS executing $^&
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)

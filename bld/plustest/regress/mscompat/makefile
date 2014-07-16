@@ -24,7 +24,7 @@ udcnv17$(ext)
 
 .cpp.exe :
     e:\cmds\mclauto.cmd $[* 
-    @%make set_path_dll
+    @%make set_path_rtdll
     $(run) $(exec_prefix)$[*.exe >> $(%ERROR_FILE)
     @%make set_old_path
     
