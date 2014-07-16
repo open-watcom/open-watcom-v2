@@ -93,10 +93,10 @@ cdsay .
 
 ## The following tools are required by tests
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
 
 ## The following tools are not required during build
 #[ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/orl/test/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/dwarf/util/builder.ctl ]
 ## Debugger/profiler libraries

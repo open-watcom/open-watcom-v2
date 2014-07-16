@@ -1305,7 +1305,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ESM_CHECK=%null
     @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
     $(%ESM_CHECK)
-    @dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
     @set EMP_CHECK=@%null
     @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
     $(%EMP_CHECK)
@@ -1317,7 +1317,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ESM_CHECK=%null
     @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dib $^&.esm
     $(%ESM_CHECK)
-    @dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
+    @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
     @set EMP_CHECK=@%null
     @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
     $(%EMP_CHECK)
@@ -1343,7 +1343,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(%ESM_CHECK)
     @set EMP_CHECK=@%null
     @if exist $(wasmtest_dir)/inline/$^&.emp @set EMP_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.emp
-    -dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$@
+    -$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$@
     $(%EMP_CHECK)
     @%append $(%ERROR_FILE) PASS decoding $[@
 

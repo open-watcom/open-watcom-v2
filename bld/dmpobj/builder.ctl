@@ -7,10 +7,20 @@ set PROJNAME=dmpobj
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
+
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/dmpobj.exe <OWBINDIR>/bdmpobj<CMDEXT>
+
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/bdmpobj<CMDEXT>
+    rm -f <OWBINDIR>/bdmpobj<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
