@@ -7,10 +7,20 @@ set PROJNAME=wdis
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deftool.ctl ]
+[ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
     cdsay <PROJDIR>
+
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay <PROJDIR>
+    <CPCMD> <OWOBJDIR>/wdis.exe <OWBINDIR>/bwdis<CMDEXT>
+
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f <OWBINDIR>/bwdis<CMDEXT>
+    rm -f <OWBINDIR>/bwdis<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================
