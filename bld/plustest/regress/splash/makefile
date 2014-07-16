@@ -56,9 +56,9 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 regex.obj : regex.c
-    %make set_path_wcc
+    @%make set_path_wcc
     $(wcc_$(arch)) $[* $(test_flags_$(arch)) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav

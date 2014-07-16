@@ -53,9 +53,9 @@ testsys : .symbolic diag$(arch).out
     @rm diff$(arch).out
 
 diagspec.out : .procedure source/diag0001.c
-    %make set_path_wpp
+    @%make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001) -eq
-    %make set_old_path
+    @%make set_old_path
     @sed -f fixpath.sed diag0001.err >diagspec.out
 
 test_special : .symbolic diagspec.out

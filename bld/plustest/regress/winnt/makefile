@@ -44,14 +44,14 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 tomdll.dll : tomdll.obj tomdll.lnk
-    %make set_path_wlink
+    @%make set_path_wlink
     $(linker) @$]@ NAME $@
-    %make set_old_path
+    @%make set_old_path
 
 tomdll.obj : tomdll.c
-    %make set_path_wpp
+    @%make set_path_wpp
     $(wpp_$(arch)) $[@ $(test_flags) -bd
-    %make set_old_path
+    @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)
     %create $^@

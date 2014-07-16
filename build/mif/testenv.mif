@@ -131,7 +131,7 @@ path_wlink = $(%OWSRCDIR)\wl\ntx64.dll
 .ERASE
 
 .ERROR
-    %make set_old_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
 !ifdef buildtest
@@ -1248,35 +1248,35 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .c.obj:
     @set ERROR_MSG=failure to compile $^&
-    %make set_path_wcc
+    @%make set_path_wcc
     $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
 
 .cpp.obj:
     @set ERROR_MSG=failure to compile $^@
-    %make set_path_wpp
+    @%make set_path_wpp
     $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
 
 .gc.obj:
     @set ERROR_MSG=failure to compile $^&
-    %make set_path_wcc
+    @%make set_path_wcc
     $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
 .gcp.obj:
     @set ERROR_MSG=failure to compile $^&
-    %make set_path_wpp
+    @%make set_path_wpp
     $(wpp_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
 .for.obj:
     @set ERROR_MSG=failure to compile $^@
-    %make set_path_wfc
+    @%make set_path_wfc
     $(wfc_$(arch)) $[@ $(fflags_$(arch)) $(opt_$^*) -FO=.obj
-    %make set_old_path
+    @%make set_old_path
 
 .asm.obj:
     @set ERROR_MSG=failure to compile $^@
@@ -1293,11 +1293,11 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 # Rule for compiling via preprocessor
 .p.obj:
     @set ERROR_MSG=failure to preprocess $^@
-    %make set_path_wcc
+    @%make set_path_wcc
     $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
     @set ERROR_MSG=failure to compile $[&.i
     $(wcc_$(arch)) $[&.i $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
-    %make set_old_path
+    @%make set_old_path
 
 .obj.dis:
     @set ERROR_MSG=failure to decode $[@
@@ -1349,33 +1349,33 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .c.err:
 !ifdef plustest_name
-    %make set_path_wpp
+    @%make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) -fo=.obj
 !else
-    %make set_path_wcc
+    @%make set_path_wcc
     -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) -fo=.obj
 !endif
-    %make set_old_path
+    @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
 
 .c.ser:
 !ifdef plustest_name
-    %make set_path_wpp
+    @%make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) $(archdep_opts) -fo=.obj
 !else
-    %make set_path_wcc
+    @%make set_path_wcc
     -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
 !endif
-    %make set_old_path
+    @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
 
 .obj.$(exe):
     @set ERROR_MSG=*** failure to link $^&
-    %make set_path_wlink
+    @%make set_path_wlink
     $(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
-    %make set_path_dll
+    @%make set_path_dll
 !ifdef ftest_name
     $(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
 !else ifeq plustest_name except
@@ -1383,7 +1383,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !else
     $(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
 !endif
-    %make set_old_path
+    @%make set_old_path
     @%append $(%ERROR_FILE) PASS executing $^&
 !ifdef ftest_name
     diff $*.out expected/$*.chk >> exec.out
@@ -1400,21 +1400,25 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 set_path_wcc : .PROCEDURE .EXPLICIT
 !ifdef path_wcc
+#    @echo Set PATH for wcc DLL
     @set PATH=$(path_wcc);$(old_path)
 !endif
 
 set_path_wpp : .PROCEDURE .EXPLICIT
 !ifdef path_wpp
+#    @echo Set PATH for wpp DLL
     @set PATH=$(path_wpp);$(old_path)
 !endif
 
 set_path_wfc : .PROCEDURE .EXPLICIT
 !ifdef path_wfc
+#    @echo Set PATH for wfc DLL
     @set PATH=$(path_wfc);$(old_path)
 !endif
 
 set_path_wlib : .PROCEDURE .EXPLICIT
 !ifdef path_wlib
+#    @echo Set PATH for wlib DLL
     @set PATH=$(path_wlib);$(old_path)
 !endif
 
@@ -1423,16 +1427,19 @@ set_path_wlink : .PROCEDURE .EXPLICIT
     @set WLINK_LNK=bwlink.lnk
 !endif
 !ifdef path_wlink
+#    @echo Set PATH for wlink DLL
     @set PATH=$(path_wlink);$(path_wlib);$(old_path)
 !endif
 
 set_path_dll : .PROCEDURE .EXPLICIT
 !ifdef path_dll
+#    @echo Set PATH for RTDLL
     @set PATH=$(path_dll);$(old_path)
 !endif
 
 set_old_path : .PROCEDURE .EXPLICIT
 !ifdef old_path
+#    @echo Restore old PATH
     @set PATH=$(old_path)
 !endif
 

@@ -106,11 +106,11 @@ $(batch_cmp) : $(__MAKEFILES__)
     @for %i in ( $(srcs) ) do %append $(batch_cmp) %i
 
 batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
-    %make set_path_wpp
+    @%make set_path_wpp
     $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags_$(arch)) 
-    %make set_path_wlink
+    @%make set_path_wlink
     $(linker) @$(batch_lnk)
-    %make set_old_path
+    @%make set_old_path
 !endif
 
 save : .symbolic

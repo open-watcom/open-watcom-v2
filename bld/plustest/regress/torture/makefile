@@ -43,9 +43,9 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 tort.lib : tort.lbc $(objs)
-    %make set_path_wlib
+    @%make set_path_wlib
     $(librarian) @$[@
-    %make set_old_path
+    @%make set_old_path
 
 tort.lbc : $(__MAKEFILES__)
     %create $^@

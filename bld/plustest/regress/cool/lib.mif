@@ -9,9 +9,9 @@ lib_objs = &
    test.obj timer.obj timezone.obj value.obj vector.obj
 
 ../cool.lib : $(lib_objs) cool.lbc
-    %make set_path_wlib
+    @%make set_path_wlib
     $(librarian) -p=512 $@ @cool.lbc
-    %make set_old_path
+    @%make set_old_path
 
 cool.lbc : makefile
     %create $^@
