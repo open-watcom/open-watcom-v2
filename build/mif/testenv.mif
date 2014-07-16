@@ -536,7 +536,7 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __NT386__
 !      define comp_wcc_386 $(%OWSRCDIR)\cc\386\nt386.dll\wcc386
 !    else ifdef __NTX64__
-!      define comp_wcc_386 $(%OWSRCDIR)\cc\386\ntx64\wcc386
+!      define comp_wcc_386 $(%OWSRCDIR)\cc\386\ntx64.dll\wcc386
 !    endif
 !  else ifdef %CTEST_WCC_386
 !    define comp_wcc_386 $(%CTEST_WCC_386)
@@ -661,7 +661,7 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __NT386__
 !      define comp_wpp_386 $(%OWSRCDIR)\plusplus\386\nt386.dll\wpp386
 !    else ifdef __NTX64__
-!      define comp_wpp_386 $(%OWSRCDIR)\plusplus\386\ntx64\wpp386
+!      define comp_wpp_386 $(%OWSRCDIR)\plusplus\386\ntx64.dll\wpp386
 !    endif
 !  else ifdef %PLUSTEST_WPP_386
 !    define comp_wpp_386 $(%PLUSTEST_WPP_386)
@@ -786,7 +786,7 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __NT386__
 !      define comp_wfc_386 $(%OWSRCDIR)\f77\wfc\386\nt386\wfc386
 !    else ifdef __NTX64__
-!      define comp_wfc_386 $(%OWSRCDIR)\f77\wfc\386\ntx64\wfc386
+!      define comp_wfc_386 $(%OWSRCDIR)\f77\wfc\386\ntx64.dll\wfc386
 !    endif
 !  else ifdef %FTEST_WFC_386
 !    define comp_wfc_386 $(%FTEST_WFC_386)
