@@ -82,7 +82,9 @@ test : .symbolic start clean start_test
     @%make clean
 
 test.$(exe) : $(objs) test1.lnk
+    %make set_path_wlink
     $(linker) @$]@ NAME $@
+    %make set_old_path
 
 test1.lnk : makefile $(objs)
     %create $@

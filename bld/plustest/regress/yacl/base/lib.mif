@@ -35,4 +35,6 @@ opt_map = -zm -oxs
 !endif
 
 base.lib : $(BASE_LIB_OBJECTS)
+    %make set_path_wlib
     $(librarian) $@ $(BASE_LIB_OBJECTS)
+    %make set_old_path

@@ -9,13 +9,6 @@ alt_error=00
 
 .c: source
 
-.c.err:
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) -fo=.obj
-    @if not exist $@ %write $@ I did not generate errors for $^&
-.c.ser:
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
-    @if not exist $@ %write $@ I did not generate errors for $^&
-
 test : .symbolic start clean start_test diag0000.out
     @set ERROR_FILE=error.out
     @set ERROR_MSG=

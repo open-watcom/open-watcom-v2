@@ -71,6 +71,6 @@ int       psfist<T>::free(unsigned n)
    return psfist_Imp<unsigned(sizeof(T))>::free(n);
 }
 
-#include "psf2.c"
+#include "psf2.cpp"
 
 #endif

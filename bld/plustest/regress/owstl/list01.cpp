@@ -786,6 +786,7 @@ bool sort_test( )
     }
     l2.sort( );
     if( INSANE( l2 ) ) FAIL
+//    l2.resize( 11000 );
     c = 0;
     int last = l2.front( ).x;
     while( !l2.empty( ) ) {

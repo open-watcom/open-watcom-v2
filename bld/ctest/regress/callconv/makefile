@@ -84,9 +84,11 @@ save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
     @if exist symbols.out cp symbols.out x$(arch)_$(alt_error).sav
 
-$(all_objs) : source/obj.c
+$(callconv_all_objs) : source/obj.c
     @set ERROR_MSG=failure to compile $^@
+    %make set_path_wcc
     $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=$^@
+    %make set_old_path
     %append $(%RUN_FILE) **** $^@ pubdef ****
     objxdef $^@ >>$(%RUN_FILE)
     %append $(%RUN_FILE) **** $^@ extdef ****

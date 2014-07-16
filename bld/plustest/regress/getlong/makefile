@@ -25,8 +25,10 @@ test : .symbolic start clean start_test ./opt.$(exe)
 
 ./opt.$(exe) : $(objs) test.lnk
     @set ERROR_MSG=failure to link $^*
+    %make set_path_wlink
     $(linker) @$]@ NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
+    %make set_path_dll
     $(run) $@ >>$(%ERROR_FILE)
     $(run) $@ -h >>$(%ERROR_FILE)
     -$(run) $@ -hopeless >>$(%ERROR_FILE)
@@ -34,6 +36,7 @@ test : .symbolic start clean start_test ./opt.$(exe)
     $(run) $@ -v >>$(%ERROR_FILE)
     -$(run) $@ -o >>$(%ERROR_FILE)
     -$(run) $@ -v=1 >>$(%ERROR_FILE)
+    %make set_old_path
 
 start_test : .symbolic
     @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav

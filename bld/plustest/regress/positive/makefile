@@ -86,7 +86,7 @@ test_flags = -we-w0 -Isource
 # Some tests require more than the default stack size
 stack_i86 = op stack=12k
 
-.c: source
+.cpp: source
 
 test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
     @set ERROR_FILE=error.out

@@ -43,7 +43,9 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 matrix.lib : $(objs) matrix.lbc
+    %make set_path_wlib
     $(librarian) $@ @matrix.lbc
+    %make set_old_path
 
 matrix.lbc : makefile
     %create $@

@@ -1,4 +1,4 @@
-// excrt_10.c -- test throw when none allowed
+// excrt_10.cpp -- test throw when none allowed
 
 void foo() throw()
 {

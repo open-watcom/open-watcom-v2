@@ -5,23 +5,27 @@ plustest_name = preproc
 
 alt_error=00
 
-testcomp =  $(wpp_$(arch))
-
 .c.i:
     %append $(%ERROR_FILE) @@@ $^@ @@@
-    $(testcomp) $[@ -w0 -pl -fo=.i -na
+    %make set_path_wpp
+    $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -na
+    %make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)
 
 .c.i1:
     %append $(%ERROR_FILE) @@@ $^@ @@@
-    $(testcomp) $[@ -w0 -plc -fo=.i1 -na
+    %make set_path_wpp
+    $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -na
+    %make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)
 
 .c.i0:
     %append $(%ERROR_FILE) @@@ $^@ @@@
-    $(testcomp) $[@ -w0 -pl -pw=0 -fo=.i0 -na
+    %make set_path_wpp
+    $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -na
+    %make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)
 

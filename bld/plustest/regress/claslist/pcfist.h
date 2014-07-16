@@ -58,6 +58,6 @@ public:
       }
 };
 
-#include "pcfist.c"
+#include "pcfist.cpp"
 
 #endif

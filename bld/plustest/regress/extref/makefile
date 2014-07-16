@@ -68,10 +68,14 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 er01.lib : er01b.obj er01c.obj er01d.obj
+    %make set_path_wlib
     $(librarian) $^@ $?
+    %make set_old_path
 
 er03.lib : er03b.obj er03c.obj
+    %make set_path_wlib
     $(librarian) $^@ +er03b.obj +er03c.obj
+    %make set_old_path
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav

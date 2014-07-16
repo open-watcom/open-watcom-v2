@@ -34,7 +34,7 @@ stack_386=opt stack=64k
 stack_i86=opt stack=8k
 stack_axp=opt stack=64k
 
-extra_run_justify = 13 <justify.c
+extra_run_justify = 13 <justify.cpp
 
 exes = &
     splassoc.$(exe) &
@@ -56,7 +56,9 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 regex.obj : regex.c
+    %make set_path_wcc
     $(wcc_$(arch)) $[* $(test_flags_$(arch)) -fo=.obj
+    %make set_old_path
 
 save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav

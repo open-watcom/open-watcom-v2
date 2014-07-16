@@ -67,11 +67,15 @@ start_test : .symbolic
     %create $(%ERROR_FILE)
 
 dmc.$(exe) : dmc.obj
+    %make set_path_wlink
     $(linker) @test.lnk NAME $@ FILE $[@
+    %make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
     tr -d "\r" <dmc.cpp >dmctest.out
+    %make set_path_dll
     $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
+    %make set_old_path
     diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 save : .symbolic

@@ -23,14 +23,6 @@ dosystest = testsys
 
 .c: source
 
-.c.err:
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) -fo=.obj
-    @if not exist $^&.err %write $^&.err I did not generate errors for $^&
-
-.c.ser:
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -na $(opt_$^&) $(archdep_opts) -fo=.obj
-    @if not exist $^&.ser %write $^&.ser I did not generate errors for $^&
-
 test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
@@ -61,7 +53,9 @@ testsys : .symbolic diag$(arch).out
     @rm diff$(arch).out
 
 diagspec.out : .procedure source/diag0001.c
+    %make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001) -eq
+    %make set_old_path
     @sed -f fixpath.sed diag0001.err >diagspec.out
 
 test_special : .symbolic diagspec.out

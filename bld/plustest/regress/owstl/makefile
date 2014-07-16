@@ -110,8 +110,11 @@ test : .symbolic start clean start_test test.lnk $(exes)
 # this is my laziness bit...
 $(names) : test.lnk .symbolic
     @%make $^*.obj
+    %make set_path_wlink
     $(linker) @test.lnk NAME $^*.exe FILE $^*.obj
+    %make set_path_dll
     $(run) $(exec_prefix)$^*.exe
+    %make set_old_path
     @echo PASS
 
 !ifdef __OS2__

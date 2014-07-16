@@ -13,7 +13,7 @@
 # i86 specific
 !endif
 
-all_exes = &
+callconv_all_exes = &
 obj11.exe &
 obj21.exe &
 obj31.exe &
@@ -89,7 +89,7 @@ obj8s4.exe &
 obj9s4.exe &
 !endif
 
-all_objs = &
+callconv_all_objs = &
 obj11.obj &
 obj21.obj &
 obj31.obj &
@@ -238,5 +238,5 @@ opt_obj7s4 = -3s-ecr -ox-fpi87
 opt_obj8s4 = -3s-ecw -ox-fpi87
 opt_obj9s4 = -3s -ox-fpi87
 
-callconv_exes = $+ $(all_exes) $-
-callconv_objs = $+ $(all_objs) $-
+callconv_exes = $+ $(callconv_all_exes) $-
+callconv_objs = $+ $(callconv_all_objs) $-

@@ -16,12 +16,15 @@ alt_error = 00
 test_flags_386 += -s -os -wx -we
 test_flags_i86 += -s -os -wx -we
 
-.c: $(wasmtest_dir)/inline
+.src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-.asm.gc:
+.asm.gcp:
     @set ERROR_MSG=failure to create $^&
     @awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk $[@ >$@
+
+.src.gcp:
+    @cp $< $@
 
 test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe
     @set ERROR_FILE=error.out
@@ -44,7 +47,7 @@ save : .symbolic
     @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
 
 clean : .procedure
-    @if exist *.gc rm -f *.gc
+    @if exist *.gcp rm -f *.gcp
     @if exist *.ls1 rm -f *.ls1
     @if exist *.dis rm -f *.dis
     @if exist failure rm failure
