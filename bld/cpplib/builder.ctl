@@ -89,18 +89,15 @@ set PROJNAME=cpplib
     <CCCMD> library/winnt.386/mf_smt/plibmt3s.lib   <OWRELROOT>/lib386/nt/
 
     <CCCMD> rtdll/winnt.386/mf_r/plb*.lib           <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_r/plbrdll.lib        <OWRELROOT>/lib386/nt/plbrdllx.lib
     <CCCMD> rtdll/winnt.386/mf_r/plb*.dll           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_r/plb*.sym           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_s/plb*.lib           <OWRELROOT>/lib386/nt/
+    <CCCMD> rtdll/winnt.386/mf_s/plb*.dll           <OWRELROOT>/binnt/
+    <CCCMD> rtdll/winnt.386/mf_s/plb*.sym           <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_rd/plb*.lib          <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_rd/plbrdlld.lib      <OWRELROOT>/lib386/nt/plbrdlxd.lib
     <CCCMD> rtdll/winnt.386/mf_rd/plb*.dll          <OWRELROOT>/binnt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.lib          <OWRELROOT>/lib386/nt/
     <CCCMD> rtdll/winnt.386/mf_rp/plb*.dll          <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_s/plb*.lib           <OWRELROOT>/lib386/nt/
-    <CCCMD> rtdll/winnt.386/mf_s/plbsdll.lib        <OWRELROOT>/lib386/nt/plbsdllx.lib
-    <CCCMD> rtdll/winnt.386/mf_s/plb*.dll           <OWRELROOT>/binnt/
-    <CCCMD> rtdll/winnt.386/mf_s/plb*.sym           <OWRELROOT>/binnt/
 
     <CCCMD> library/os2.386/mf_r/plbx3r.lib         <OWRELROOT>/lib386/os2/
     <CCCMD> library/os2.386/mf_r/plib3r.lib         <OWRELROOT>/lib386/os2/
@@ -112,16 +109,13 @@ set PROJNAME=cpplib
     <CCCMD> library/os2.386/mf_smt/plibmt3s.lib     <OWRELROOT>/lib386/os2/
 
     <CCCMD> rtdll/os2.386/mf_r/plb*.lib             <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_r/plbrdll.lib          <OWRELROOT>/lib386/os2/plbrdllx.lib
     <CCCMD> rtdll/os2.386/mf_r/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_r/plb*.sym             <OWRELROOT>/binp/dll/
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_rd/plbrdlld.lib        <OWRELROOT>/lib386/os2/plbrdlxd.lib
-    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.lib             <OWRELROOT>/lib386/os2/
-    <CCCMD> rtdll/os2.386/mf_s/plbsdll.lib          <OWRELROOT>/lib386/os2/plbsdllx.lib
     <CCCMD> rtdll/os2.386/mf_s/plb*.dll             <OWRELROOT>/binp/dll/
     <CCCMD> rtdll/os2.386/mf_s/plb*.sym             <OWRELROOT>/binp/dll/
+    <CCCMD> rtdll/os2.386/mf_rd/plb*.lib            <OWRELROOT>/lib386/os2/
+    <CCCMD> rtdll/os2.386/mf_rd/plb*.dll            <OWRELROOT>/binp/dll/
 
     <CCCMD> complex/netware.386/ms_s/cplx3s.lib     <OWRELROOT>/lib386/netware/
     <CCCMD> complex/netware.387/ms_s/cplx73s.lib    <OWRELROOT>/lib386/netware/
@@ -133,9 +127,9 @@ set PROJNAME=cpplib
 
     <CCCMD> library/winnt.axp/_s/plib.lib           <OWRELROOT>/libaxp/nt/plib.lib
     <CCCMD> library/winnt.axp/_s/plbx.lib           <OWRELROOT>/libaxp/nt/plbx.lib
+    <CCCMD> complex/winnt.axp/_s/cplx.lib           <OWRELROOT>/libaxp/cplx.lib
     <CCCMD> library/winnt.axp/_smt/plibmt.lib       <OWRELROOT>/libaxp/nt/plibmt.lib
     <CCCMD> library/winnt.axp/_smt/plbxmt.lib       <OWRELROOT>/libaxp/nt/plbxmt.lib
-    <CCCMD> complex/winnt.axp/_s/cplx.lib           <OWRELROOT>/libaxp/cplx.lib
 
 [ BLOCK . . ]
 #============

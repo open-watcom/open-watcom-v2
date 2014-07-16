@@ -40,6 +40,11 @@ verrc_dll_skel = ../verinfo.rc
 verrc_dll      = $(dllname)
 !include verrc.mif
 
+target_lib = $(libdllname).lib
+!ifeq component cpplib
+target_lib += $(libdllname)x.lib
+!endif
+
 !ifdef profile
 rtdll_nosymfile = 1
 !else ifeq release 0
@@ -71,7 +76,7 @@ extra_lib_flags = -irn
 extra_lib_flags += -s-t-zld
 !endif
 
-$(libdllname).lib : $(dllname).lbc
+$(target_lib) : $(dllname).lbc
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
