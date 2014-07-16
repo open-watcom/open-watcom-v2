@@ -373,7 +373,7 @@ static void typeFree( TYPE type )
     ExtraRptDecrementCtr( types_defined );
 }
 
-TYPE MakeArrayType( unsigned long size )
+TYPE MakeArrayType( target_size_t size )
 /**************************************/
 {
     TYPE    new_type;
@@ -383,7 +383,7 @@ TYPE MakeArrayType( unsigned long size )
     return( new_type );
 }
 
-TYPE MakeArrayOf( unsigned long size, TYPE base )
+TYPE MakeArrayOf( target_size_t size, TYPE base )
 /***********************************************/
 {
     TYPE array_type;
