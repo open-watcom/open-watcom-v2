@@ -69,16 +69,16 @@ set CCCMD=accopy
     echo **** BOOTCLEAN rule
     set 1=bootclean
 
+[ BLOCK <1> test ]
+#=================
+    set LOGFNAME=<1>
+    echo **** TEST rule
+    set 1=test
+
 [ BLOCK <1> buildtest ]
 #======================
     set BUILDTEST=1
     set LOGFNAME=bldtest
-    echo **** TEST rule
-    set 1=test
-
-[ BLOCK <1> test ]
-#=================
-    set LOGFNAME=<1>
     echo **** TEST rule
     set 1=test
 
