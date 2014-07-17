@@ -145,6 +145,9 @@ clib_dir        = $(src_dir)/clib
 !ifndef mathlib_dir
 mathlib_dir     = $(src_dir)/mathlib
 !endif
+!ifndef mathtest_dir
+mathtest_dir    = $(src_dir)/mathtest
+!endif
 !ifndef rtdll_dir
 rtdll_dir       = $(src_dir)/rtdll
 !endif
