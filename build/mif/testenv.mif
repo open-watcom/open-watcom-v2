@@ -295,6 +295,14 @@ bld_extra_defines = -DINLINETEST
 !    else
 !      define log_file $(plustest_dir)/$(plustest_name).log
 !    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_LOG_FILE
+!      define log_file $+$(%MATHTEST_LOG_FILE)$-
+!    else ifdef %PLUSTEST_NAME
+!      define log_file $(mathtest_dir)/$+$(%MATHTEST_NAME)$-.log
+!    else
+!      define log_file $(mathtest_dir)/$(mathtest_name).log
+!    endif
 !  endif
 !endif
 
@@ -314,6 +322,10 @@ bld_extra_defines = -DINLINETEST
 !  else ifdef plustest_name
 !    ifdef %PLUSTEST_TARG_ENV_386
 !      define targ_env_386 $(%PLUSTEST_TARG_ENV_386)
+!    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_TARG_ENV_386
+!      define targ_env_386 $(%MATHTEST_TARG_ENV_386)
 !    endif
 !  endif
 !endif
@@ -351,6 +363,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_I86
 !      define targ_env_i86 $(%PLUSTEST_TARG_ENV_I86)
 !    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_TARG_ENV_I86
+!      define targ_env_i86 $(%MATHTEST_TARG_ENV_I86)
+!    endif
 !  endif
 !endif
 !ifndef targ_env_i86
@@ -379,6 +395,10 @@ bld_extra_defines = -DINLINETEST
 !  else ifdef plustest_name
 !    ifdef %PLUSTEST_TARG_ENV_AXP
 !      define targ_env_axp $(%PLUSTEST_TARG_ENV_AXP)
+!    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_TARG_ENV_AXP
+!      define targ_env_axp $(%MATHTEST_TARG_ENV_AXP)
 !    endif
 !  endif
 !endif
@@ -409,6 +429,10 @@ bld_extra_defines = -DINLINETEST
 !    ifdef %PLUSTEST_TARG_ENV_PPC
 !      define targ_env_ppc $(%PLUSTEST_TARG_ENV_PPC)
 !    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_TARG_ENV_PPC
+!      define targ_env_ppc $(%MATHTEST_TARG_ENV_PPC)
+!    endif
 !  endif
 !endif
 !ifndef targ_env_ppc
@@ -434,6 +458,10 @@ bld_extra_defines = -DINLINETEST
 !  else ifdef plustest_name
 !    ifdef %PLUSTEST_TARG_ENV_MPS
 !      define targ_env_mps $(%PLUSTEST_TARG_ENV_MPS)
+!    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_TARG_ENV_MPS
+!      define targ_env_mps $(%MATHTEST_TARG_ENV_MPS)
 !    endif
 !  endif
 !endif
@@ -884,6 +912,8 @@ bld_extra_defines = -DINLINETEST
 !    loaddll $(comp_wfc_$(arch)) $(dll_wfc_$(arch))
 !  else ifdef plustest_name
 !    loaddll $(comp_wpp_$(arch)) $(dll_wpp_$(arch))
+!  else ifdef mathtest_name
+!    loaddll $(comp_wcc_$(arch)) $(dll_wcc_$(arch))
 !  endif
 !endif
 
@@ -934,6 +964,10 @@ bld_extra_defines = -DINLINETEST
 !  else ifdef plustest_name
 !    ifdef %PLUSTEST_LINKER
 !      define linker $+$(%PLUSTEST_LINKER)$-
+!    endif
+!  else ifdef mathtest_name
+!    ifdef %MATHTEST_LINKER
+!      define linker $+$(%MATHTEST_LINKER)$-
 !    endif
 !  endif
 !endif
@@ -1235,6 +1269,8 @@ start : .SYMBOLIC .EXPLICIT
      @echo using !loaddll $(dll_wfc_$(arch))
 !  else ifdef plustest_name
      @echo using !loaddll $(dll_wpp_$(arch))
+!  else ifdef mathtest_name
+     @echo using !loaddll $(dll_wcc_$(arch))
 !  endif
 !endif
     @echo ==== $(%__CTIME__) $(%__CWD__) ====
