@@ -21,9 +21,9 @@ alt_error=00
 
 test_flags = -zq -I"$(%WATCOM)/h"
 
-test_flags_i86 += -zw -I"$(%WATCOM)/h/win" -bt=windows -DSTRICT
-test_flags_386 += -I"$(%WATCOM)/h/nt"
-test_flags_axp += -I"$(%WATCOM)/h/nt"
+test_flags_i86 += -zw $(incl_sys_win) -bt=windows -DSTRICT
+test_flags_386 += $(incl_sys_nt)
+test_flags_axp += $(incl_sys_nt)
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

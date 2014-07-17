@@ -88,8 +88,8 @@ names = $+ $(template) $-
 
 # define flags specific to tests here
 opt_typetr01 = -za0x
-opt_mmwin16 = -I"$(%WATCOM)/h/win" -dmmWin16
-opt_mmwindef = -I"$(%WATCOM)/h/nt"
+opt_mmwin16 = $(incl_sys_win) -dmmWin16
+opt_mmwindef = $(incl_sys_nt)
 !ifeq arch i86
 opt_mmwindef += -3
 !endif

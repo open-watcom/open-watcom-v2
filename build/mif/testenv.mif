@@ -1082,12 +1082,14 @@ incl_sys_linux  = -I"$(hdr_dir)/linux"
 incl_sys_nt     = -I"$(w32api_dir)/nt"
 incl_sys_os2286 = -I"$(os2api_dir)/os2286/h"
 incl_sys_os2386 = -I"$(os2api_dir)/os2386/h"
+incl_sys_win    = -I"$(w16api_dir)/wini86"
 !else
 incl_sys_dos    = -I"$(watcom_root)/h"
 incl_sys_linux  = -I"$(watcom_root)/lh"
 incl_sys_nt     = -I"$(watcom_root)/h/nt"
 incl_sys_os2286 = -I"$(watcom_root)/h/os21x"
 incl_sys_os2386 = -I"$(watcom_root)/h/os2"
+incl_sys_win    = -I"$(watcom_root)/h/win"
 !endif
 
 targ_bld_cxx_pls386 = -bt=dos $(incl_sys_dos)

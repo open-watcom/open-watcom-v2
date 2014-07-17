@@ -16,7 +16,7 @@ test_flags = -d2
 alt_error=00
 !endif
 
-test_flags += -w0 -I"$(%WATCOM)/h/nt"
+test_flags += -w0 $(incl_sys_nt)
 
 stack_386 = op stack=128k
 
