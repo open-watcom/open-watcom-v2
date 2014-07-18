@@ -46,27 +46,23 @@ include struct.inc
 
         defpe   __FSFD
         _guess  xx1             ; guess: number is 0.0 or infinity
-          xchg  ax,dx
-          or    dx,dx           ; - ...
+          mov   bx,ax           ; - move rest of mantissa to correct reg.
+          mov   ax,dx           ; - get high word to ax
+          sub   cx,cx           ; - ...
+          or    bx,bx           ; -
           _quif ne              ; - quit if not 0.0 or infinity (low word not zero)
-          sub   bx,bx           ; -
-          mov   cx,ax           ; - get high word
-          and   cx,7fffh        ; - get rid of sign bit
+          and   dx,7fffh        ; - get rid of sign bit
           _quif e,xx1           ; - quit if 0.0
-          cmp   cx,7f80h        ; - check if infinity
+          cmp   dx,7f80h        ; - check if infinity
           _quif ne              ; - quit if not infinity
-          or    ax,7ff0h        ; - set infinity
-          sub   cx,cx           ; - ...
+          or    al,0f0h         ; - set infinity ax = 7ff0h or 0fff0h
         _admit                  ; guess: number is not 0
-          mov   bx,dx           ; - move rest of mantissa to correct reg.
-          sub   cx,cx           ; - ...
-          mov   dx,ax
-          and   dx,7f80h
+          and   dh,7fh
           cmp   dx,7f80h
-          _if   e
-            mov   dx,(2047-255) * 32 ;- put NaN exponent in dx
+          _if   ae
+            mov   dx,( 7ffh - 0ffh ) shl 5 ;- put NaN exponent - ax in dx (ax = 0ffh)
           _else
-            mov   dx,(1023-127) * 32 ;- put exponent bias in dx
+            mov   dx,( 3ffh - 7fh ) shl 5  ;- put exponent bias in dx
           _endif
           shl   ax,1
           rcr   dx,1
@@ -82,9 +78,9 @@ include struct.inc
           rcr   cx,1            ; - ...
           test  ax,0ff0h        ; - if exponent is 0 (denormal number)
           _if   e               ; - then
-            add  dx,0010h       ; - - - add 1 to exponent adjustment
             _loop               ; - - loop (normalize the fraction)
               sub  dx,0010h     ; - - - subtract 1 from exponent adjustment
+              and  al,0fh       ; - - - clean msb after shift
               _shl cx,1         ; - - - shift fraction left
               _rcl bx,1         ; - - - . . .
               _rcl ax,1         ; - - - . . .
