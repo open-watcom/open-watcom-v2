@@ -535,7 +535,7 @@ void test_fp_rounding( void )
 #endif
 }
 
-void main( void )
+int main( void )
 {
     test_complex_math();
     test_trig();
@@ -550,4 +550,5 @@ void main( void )
     test_fp_rounding();
     
     printf( "Tests completed.\n" );
+    return( 0 );
 }
