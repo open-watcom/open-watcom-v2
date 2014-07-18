@@ -65,7 +65,7 @@ set PROJNAME=cpplib
     <CCCMD> library/generic.386/mf_smt/plbxmt3s.lib <OWRELROOT>/lib386/
     <CCCMD> complex/generic.386/mf_r/cplx3r.lib     <OWRELROOT>/lib386/
     <CCCMD> complex/generic.386/mf_s/cplx3s.lib     <OWRELROOT>/lib386/
-    <CCCMD> complex/generic.387/mf_s/cplx73r.lib    <OWRELROOT>/lib386/
+    <CCCMD> complex/generic.387/mf_r/cplx73r.lib    <OWRELROOT>/lib386/
     <CCCMD> complex/generic.387/mf_s/cplx73s.lib    <OWRELROOT>/lib386/
 
     <CCCMD> library/generic.386/ms_r/plib3r.lib     <OWRELROOT>/lib386/dos/
@@ -78,7 +78,7 @@ set PROJNAME=cpplib
     <CCCMD> library/generic.386/ms_smt/plbxmt3s.lib <OWRELROOT>/lib386/dos/
     <CCCMD> complex/generic.386/ms_r/cplx3r.lib     <OWRELROOT>/lib386/dos/
     <CCCMD> complex/generic.386/ms_s/cplx3s.lib     <OWRELROOT>/lib386/dos/
-    <CCCMD> complex/generic.387/ms_s/cplx73r.lib    <OWRELROOT>/lib386/dos/
+    <CCCMD> complex/generic.387/ms_r/cplx73r.lib    <OWRELROOT>/lib386/dos/
     <CCCMD> complex/generic.387/ms_s/cplx73s.lib    <OWRELROOT>/lib386/dos/
 
     <CCCMD> library/winnt.386/mf_r/plib3r.lib       <OWRELROOT>/lib386/nt/
