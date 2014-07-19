@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "rtenv.h"
-#include "mathcode.h"
+#include "fmthcode.h"
 
 
 extended PowXI( extended base, intstar4 power ) {

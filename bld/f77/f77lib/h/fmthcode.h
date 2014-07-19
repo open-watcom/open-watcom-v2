@@ -28,7 +28,12 @@
 *
 ****************************************************************************/
 
-#include <mathcode.h>
+#include "mathcode.h"
+
+/*      The first parm to __...math1err and __...math2err is an unsigned int
+        that indicates the math function, the type of error, and the
+        expected result value.
+*/
 
 extern  intstar4        __imath1err(unsigned int,intstar4 *);
 extern  intstar4        __imath2err(unsigned int,intstar4 *,intstar4 *);
@@ -38,3 +43,5 @@ extern  complex         __zmath1err(unsigned int,complex *);
 extern  complex         __zmath2err(unsigned int,complex *,complex *);
 extern  dcomplex        __qmath1err(unsigned int,dcomplex *);
 extern  dcomplex        __qmath2err(unsigned int,dcomplex *,dcomplex *);
+extern  double          __math1err(unsigned int,double *);
+extern  double          __math2err(unsigned int,double *,double *);

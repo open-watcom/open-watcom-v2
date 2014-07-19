@@ -37,7 +37,7 @@
 #include "ftnstd.h"
 #include "errcod.h"
 #include "rtenv.h"
-#include "mathcode.h"
+#include "fmthcode.h"
 
 
 double  PowRI( double base, intstar4 power ) {

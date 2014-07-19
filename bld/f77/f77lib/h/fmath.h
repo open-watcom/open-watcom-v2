@@ -30,6 +30,6 @@
 
 #define complex __complex
 #define cabs __cabs
-#include "math.h"
+#include <math.h>
 #undef complex
 #undef cabs
