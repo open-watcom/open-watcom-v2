@@ -31,20 +31,15 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <math.h>
 #include <limits.h>
+#include "mathlib.h"
 #include "clibsupp.h"
 #include "ifprag.h"
-#include "mathcode.h"
 #include "rtdata.h"
-#include "mathlib.h"
 
 #define PI              3.14159265358979323846
 #define PIby2   (PI/2)
 #define PIby4   (PI/4)
-
-extern  double  _EvalPoly( double, const double *, int );
-extern  double  _OddPoly( double, const double *, int );
 
 
 static const double _sinpoly[] = {

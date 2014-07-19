@@ -31,9 +31,8 @@
 
 
 #include "variety.h"
-#include "mathcode.h"
+#include "mathlib.h"
 #include "_matherr.h"
-#include "cplx.h"
 
 // q1 not used
 _WMRTLINK dcomplex __qmath1err( unsigned int err_info, dcomplex *arg1 )

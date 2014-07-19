@@ -31,8 +31,7 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
-#include "mathcode.h"
+#include "mathlib.h"
 #include "ifprag.h"
 
 //      acosh(x) = log( x + sqrt(x*x - 1.0) );

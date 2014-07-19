@@ -32,11 +32,10 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
 #include <limits.h>
+#include "mathlib.h"
 #include "ifprag.h"
 #include "cplx.h"
-#include "mathcode.h"
 
 
 _WMRTLINK long _IF_ipow( long base, long power )

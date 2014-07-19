@@ -31,8 +31,7 @@
 
 
 #include "variety.h"
-#include "cplx.h"
-#include "mathcode.h"
+#include "mathlib.h"
 
 _WMRTLINK xcomplex _IF_C32PowI( extended a, extended b, intstar4 i )
 //==================================================================

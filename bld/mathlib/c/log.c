@@ -31,14 +31,10 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
-#include "ifprag.h"
-#include "mathcode.h"
-#include "rtdata.h"
 #include "mathlib.h"
+#include "ifprag.h"
+#include "rtdata.h"
 
-
-extern  double  _EvalPoly( double, const double *, int );
 
 #define sqrt_of_half    0.7071067811865475244
 #define C1              (355./512.)

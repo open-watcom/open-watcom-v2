@@ -41,13 +41,12 @@
 */
 
 #include "variety.h"
-#include <math.h>
 #include <float.h>
+#include "mathlib.h"
 #include "pi.h"
-#include <ifprag.h>
+#include "ifprag.h"
 #include "rtdata.h"
 #include "pdiv.h"
-#include "mathlib.h"
 
 #define FALSE           0
 #define TRUE            1
@@ -55,9 +54,6 @@
 #define tan15           0.26794919243112270647
 #define sqrt3           1.73205080756887729353
 #define sqrt3m1         0.73205080756887729353
-
-
-extern  double          _OddPoly(double, const double *, int);
 
 
 #define MIN_POLY_CONST 0.04

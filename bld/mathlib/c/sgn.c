@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include <math.h>
 #include "mathlib.h"
 
 

@@ -30,8 +30,7 @@
 
 
 #include "variety.h"
-#include <math.h>
-#include "mathcode.h"
+#include "mathlib.h"
 #include "pdiv.h"
 
 

@@ -31,11 +31,9 @@
 
 #include "variety.h"
 #include <stdio.h>
-#include <math.h>
 #include <unistd.h>
-#include "clibsupp.h"
 #include "mathlib.h"
-#include "mathcode.h"
+#include "clibsupp.h"
 #include "_matherr.h"
 
 static const char * const Msgs[] = {

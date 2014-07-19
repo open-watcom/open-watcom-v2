@@ -30,10 +30,8 @@
 
 
 #include "variety.h"
-#include <math.h>
+#include "mathlib.h"
 #include "pdiv.h"
-
-extern  double _EvalPoly( double, const double *, int );
 
 #define Two_over_pi  0.63661977236758134307
 #define PI           3.14159265358979323846

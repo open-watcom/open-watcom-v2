@@ -30,10 +30,8 @@
 
 
 #include "variety.h"
-#include <math.h>
-#include "ifprag.h"
-#include "mathcode.h"
 #include "mathlib.h"
+#include "ifprag.h"
 
 #define log10_of_e    0.4342944819032518
 

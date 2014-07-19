@@ -30,9 +30,10 @@
 
 
 #include "variety.h"
+#include "mathlib.h"
 
-_WMRTLINK double _EvalPoly( double x, const double *poly, int degree )
-/********************************************************************/
+double _EvalPoly( double x, const double *poly, int degree )
+/**********************************************************/
 {
     double  z;
 
@@ -44,8 +45,8 @@ _WMRTLINK double _EvalPoly( double x, const double *poly, int degree )
 }
 
 
-_WMRTLINK double _OddPoly( double x, const double *poly, int degree )
-/*******************************************************************/
+double _OddPoly( double x, const double *poly, int degree )
+/*********************************************************/
 {
     return( _EvalPoly( x * x, poly, degree ) * x );
 }

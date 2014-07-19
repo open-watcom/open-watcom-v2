@@ -32,12 +32,10 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
 #include <limits.h>
+#include "mathlib.h"
 #include "ifprag.h"
 #include "rtdata.h"
-#include "cplx.h"
-#include "mathcode.h"
 
 
 _WMRTLINK float _IF_powi( float base, long power )

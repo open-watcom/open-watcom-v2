@@ -31,9 +31,8 @@
 
 
 #include "variety.h"
-#include "mathcode.h"
+#include "mathlib.h"
 #include "_matherr.h"
-#include "cplx.h"
 
 // z1 not used
 _WMRTLINK complex __zmath1err( unsigned int err_info, complex *arg1 )

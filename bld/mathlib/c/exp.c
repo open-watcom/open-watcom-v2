@@ -31,11 +31,9 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
-#include "ifprag.h"
-#include "mathcode.h"
-#include "rtdata.h"
 #include "mathlib.h"
+#include "ifprag.h"
+#include "rtdata.h"
 
 
 #define log2e           1.4426950408889633

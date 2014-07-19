@@ -32,12 +32,10 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
 #include <limits.h>
+#include "mathlib.h"
 #include "clibsupp.h"
 #include "ifprag.h"
-#include "mathcode.h"
-#include "mathlib.h"
 
 
 _WMRTLINK float _IF_pow( float x, float y )

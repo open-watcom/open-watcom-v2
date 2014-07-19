@@ -48,13 +48,11 @@ otherwise: compute z = atan( y/x )
 */
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
 #include <float.h>
+#include "mathlib.h"
 #include "pi.h"
 #include "ifprag.h"
-#include "mathcode.h"
 #include "pdiv.h"
-#include "mathlib.h"
 
 
 _WMRTLINK float _IF_atan2( float y, float x )

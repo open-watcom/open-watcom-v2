@@ -31,8 +31,7 @@
 
 
 #include "variety.h"
-#include "cplx.h"
-#include "mathcode.h"
+#include "mathlib.h"
 
 
 _WMRTLINK complex _IF_C8PowI( single a, single b, intstar4 i )

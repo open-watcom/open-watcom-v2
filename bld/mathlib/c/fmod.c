@@ -30,9 +30,8 @@
 
 
 #include "variety.h"
-#include <math.h>
-#include <ifprag.h>
 #include "mathlib.h"
+#include "ifprag.h"
 
 /*  The fmod function computes the floating-point remainder of x/y.
     It returns x if y is 0, otherwise it returns the value f that has

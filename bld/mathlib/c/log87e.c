@@ -32,8 +32,6 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <math.h>
-#include "mathcode.h"
 #include "mathlib.h"
 
 

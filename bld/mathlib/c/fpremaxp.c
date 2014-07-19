@@ -30,12 +30,10 @@
 
 
 #include "variety.h"
-#include <math.h>
 #include <float.h>
 #include <limits.h>
-
-#include "xfloat.h"
 #include "mathlib.h"
+#include "xfloat.h"
 
 void __fprem( double x, double y, int *quot, double *rem )
 {

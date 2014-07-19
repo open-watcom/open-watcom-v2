@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include "cplx.h"
+#include "mathlib.h"
 
 /*
 extern  extended          QSIN(extended);
