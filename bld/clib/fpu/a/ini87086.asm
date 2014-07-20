@@ -57,11 +57,19 @@ __x87id proc near
         finit                           ; use default infinity mode
         fstcw   word ptr [BP-2]         ; save control word
         fwait
-        pop     AX
-        mov     AL,0
-        cmp     AH,3
-        jnz     nox87
-        push    AX                      ; allocate space for status word
+        mov     AL,0                    ; assume no coprocessor present
+        mov     AH,[BP + 1]             ; upper byte is 03h if
+        cmp     AH,3                    ;   coprocessor is present
+        jnz     nox87                   ; exit if no coprocessor present
+        and     word ptr [BP-2],NOT 80h ; turn interrupts on (IEM=0)
+        fldcw   [bp-2]                  ; load control word
+        fdisi                           ; disable interrupts (IEM=1)
+        fstcw   [bp-2]                  ; store control word
+        fwait                           ; wait fstsw to complete
+        mov     al,1                    ; assume it is an 8087
+        test    word ptr [BP-2],80h     ; if IEM=1
+        jnz     return                  ; then 8087
+        finit                           ; use default infinity mode
         fld1                            ; generate infinity by
         fldz                            ;   dividing 1 by 0
         fdiv                            ; ...
@@ -70,13 +78,13 @@ __x87id proc near
         fcompp                          ; compare +/- infinity
         fstsw   word ptr [BP-2]         ; equal for 87/287
         fwait                           ; wait fstsw to complete
-        pop     AX                      ; get NDP status word
         mov     AL,2                    ; assume 80287
+        mov     AH,[BP + 1]             ; get upper byte of control word
         sahf                            ; store condition bits in flags
-        jz      not387                  ; it's 287 if infinities equal
+        jz      return                  ; it's 287 if infinities equal
         mov     AL,3                    ; indicate 80387
-not387: finit                           ; re-initialize the 8087
-nox87:  mov     AH,0
+return: finit                           ; re-initialize the 8087
+nox87:  cbw
         mov     SP,BP                   ; clean up stack
         pop     BP                      ; restore BP
         ret                             ; return

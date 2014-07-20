@@ -81,7 +81,7 @@ extern void __init_80x87( void );
         "fldcw  __8087cw" ;
 #endif
 
-/* 0 => no 8087; 2 => 8087,287; 3 => 387 */
+/* 0 => no x87; 1 => 8087; 2 => 80287; 3 => 80387 */
 extern unsigned char _WCI86NEAR __x87id( void );
 #pragma aux __x87id "*";
 
