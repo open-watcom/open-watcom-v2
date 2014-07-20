@@ -122,20 +122,20 @@ typedef struct cvt_info {
  * point into the data segment.
  */
 
-#if defined( _M_I86 )
-typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
-typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
-typedef float       __based( __segname( "_STACK" ) )    *flt_arg;
-typedef char        __based( __segname( "_STACK" ) )    *buf_arg;
-typedef void        __based( __segname( "_STACK" ) )    *i8_arg;
-typedef void        __based( __segname( "_STACK" ) )    *u8_arg;
-#else
+#if !defined( _M_IX86 ) || defined( __FLAT__ )
 typedef long_double _WCNEAR                             *ld_arg;
 typedef double      _WCNEAR                             *dbl_arg;
 typedef float       _WCNEAR                             *flt_arg;
 typedef char        _WCNEAR                             *buf_arg;
 typedef void        _WCNEAR                             *i8_arg;
 typedef void        _WCNEAR                             *u8_arg;
+#else
+typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
+typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
+typedef float       __based( __segname( "_STACK" ) )    *flt_arg;
+typedef char        __based( __segname( "_STACK" ) )    *buf_arg;
+typedef void        __based( __segname( "_STACK" ) )    *i8_arg;
+typedef void        __based( __segname( "_STACK" ) )    *u8_arg;
 #endif
 
 _WMRTLINK extern void __LDcvt(

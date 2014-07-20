@@ -30,14 +30,6 @@
 ****************************************************************************/
 
 
-/*      The first parm to __math1err and __math2err is an unsigned int
-        that indicates the math function, the type of error, and the
-        expected result value.
-*/
-#ifndef _COMDEF_H_INCLUDED
- #include <_comdef.h>
-#endif
-
 enum func_codes {
     FUNC_NULL,
     #define pick(enum,name) enum,
@@ -61,6 +53,3 @@ enum func_codes {
 #define V_ZERO          0x2000
 #define V_ONE           0x4000
 #define V_HUGEVAL       0x8000
-
-_WMRTLINK extern double __math1err( unsigned int, double *arg1 );
-_WMRTLINK extern double __math2err( unsigned int, double *arg1, double *arg2 );
