@@ -181,7 +181,7 @@ xdefp           macro   p1,p2
                 endif
                 endm
 
-xref            macro   p1,p2
+xrefp           macro   p1,p2
                 ifb <p2>
                 extrn `p1` : far
                 else
@@ -282,7 +282,7 @@ xdefp           macro   p1,p2
                 endif
                 endm
 
-xref            macro   p1,p2
+xrefp           macro   p1,p2
                 ifb <p2>
                 extrn `p1` : near
                 else
@@ -333,9 +333,9 @@ _BSS            ends
 
 alias_function  macro   alias, function
                 ifb <function>
-                    xref    "C",_&alias
+                    xrefp   "C",_&alias
                 else
-                    xref    "C",function
+                    xrefp   "C",function
                 endif
                 .code
                 public      "C",`alias`
@@ -352,7 +352,7 @@ alias_function  macro   alias, function
          `alias`    endp
                 endm
 
-xred            macro   p1,p2,p3
+xrefd           macro   p1,p2,p3
                 ifb <p3>
                 extrn p1 : p2
                 else

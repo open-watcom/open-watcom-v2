@@ -4,7 +4,7 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xref    FPInvalidOp
+        xrefp   FPInvalidOp
 
         modstart    fsld086, word
 

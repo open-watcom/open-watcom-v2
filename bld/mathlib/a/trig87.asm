@@ -39,7 +39,7 @@ include struct.inc
 include math87.inc
 
         extern_chipbug
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         modstart        trig87
 

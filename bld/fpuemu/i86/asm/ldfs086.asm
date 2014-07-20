@@ -4,7 +4,7 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xref    FPOverFlow
+        xrefp   FPOverFlow
 
         modstart    ldfs086, word
 

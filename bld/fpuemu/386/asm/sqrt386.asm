@@ -33,8 +33,8 @@ ifdef _BUILDING_MATHLIB
 include mdef.inc
 include struct.inc
 
-        xref    __iFDLD
-        xref    __iLDFD
+        xrefp   __iFDLD
+        xrefp   __iLDFD
 
         modstart  sqrt386
 
