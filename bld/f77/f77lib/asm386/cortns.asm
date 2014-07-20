@@ -42,16 +42,16 @@ include struct.inc
 include mdef.inc
 include xinit.inc
 
-        xref    "C",__ReleaseIOSys
+        xrefp   "C",__ReleaseIOSys
 
         dataseg
 
-        xred    "C",IORslt,         word
-        xred    __ASTACKSIZ,        dword
-        xred    __ASTACKPTR,        dword
+        xrefd   "C",IORslt,         word
+        xrefd   __ASTACKSIZ,        dword
+        xrefd   __ASTACKPTR,        dword
 
 ifdef __MT__
-        xred    "C",__SwitchStkLow, dword
+        xrefd   "C",__SwitchStkLow, dword
 endif
 
 ALT_STACK_SIZE = 8*1024

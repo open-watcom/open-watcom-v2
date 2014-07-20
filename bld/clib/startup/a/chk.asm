@@ -32,7 +32,7 @@
 include mdef.inc
 include struct.inc
 
-        xref __STK
+        xrefp __STK
 
         modstart        chk
 

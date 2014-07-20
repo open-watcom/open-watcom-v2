@@ -1,16 +1,16 @@
 
         modstart  e86log
 
-        xref    __FLDA          ; add
-        xref    __FLDS          ; subtract
-        xref    __FLDD          ; divide
-        xref    __FLDM          ; multiply
-        xref    __FLDAC         ; add
-        xref    __FLDSC         ; subtract
-        xref    __FLDMC         ; multiply
-        xref    __I4LD          ; convert long to long double
-        xref    __EvalPoly      ; evaluate polynomial
-        xref    __Poly          ; poly
+        xrefp   __FLDA          ; add
+        xrefp   __FLDS          ; subtract
+        xrefp   __FLDD          ; divide
+        xrefp   __FLDM          ; multiply
+        xrefp   __FLDAC         ; add
+        xrefp   __FLDSC         ; subtract
+        xrefp   __FLDMC         ; multiply
+        xrefp   __I4LD          ; convert long to long double
+        xrefp   __EvalPoly      ; evaluate polynomial
+        xrefp   __Poly          ; poly
 
         xdefp   __log           ; calc log(fac1)
         xdefp   __fyl2x         ; calc. log2([ax]) * [dx]

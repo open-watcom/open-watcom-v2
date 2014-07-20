@@ -42,14 +42,14 @@ include mdef.inc
 include struct.inc
 include math87.inc
 
-        xref    __8087  ; indicate that NDP instructions are present
+        xrefp   __8087  ; indicate that NDP instructions are present
 
         modstart    exp87
 
         ;datasegment
         ;enddata
 
-        xref    "C",__math87_err
+        xrefp   "C",__math87_err
 
         xdefp   "C",exp         ; calc exp(fac1)
 

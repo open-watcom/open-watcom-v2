@@ -35,7 +35,7 @@
         include struct.inc
 
         name    dospawn
-        xref    "C",_dosretax
+        xrefp   "C",_dosretax
 
 _TEXT   segment byte public 'CODE'
 _TEXT   ends

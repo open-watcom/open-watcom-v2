@@ -34,7 +34,7 @@
 include mdef.inc
 include struct.inc
 
-        xref            _IPXInitialize_
+        xrefp           _IPXInitialize_
         extrn           IPXLoc : dword
 
         modstart        SPX

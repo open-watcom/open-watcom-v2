@@ -34,7 +34,7 @@ include mdef.inc
 
         modstart    _8087
 
-        xref    "C",__chk8087
+        xrefp   "C",__chk8087
 
 datasegment
         public  __8087

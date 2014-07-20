@@ -32,7 +32,7 @@
 
 include mdef.inc
 
-                xref    "C",__verify_pentium_fdiv_bug
+                xrefp   "C",__verify_pentium_fdiv_bug
 
                 name    chipvar
 

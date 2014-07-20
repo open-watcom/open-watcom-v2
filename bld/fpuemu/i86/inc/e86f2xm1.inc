@@ -1,16 +1,16 @@
 
-        xref    _COne            ; 1.0
+        xrefp   _COne            ; 1.0
 
         modstart  e86f2xm1
 
-        xref    __FLDA          ; add
-        xref    __FLDS          ; subtract
-        xref    __FLDD          ; divide
-        xref    __FLDM          ; multiply
+        xrefp   __FLDA          ; add
+        xrefp   __FLDS          ; subtract
+        xrefp   __FLDD          ; divide
+        xrefp   __FLDM          ; multiply
 
-        xref    __FLDAC         ; add
-        xref    __FLDSC         ; subtract
-        xref    __FLDMC         ; multiply
+        xrefp   __FLDAC         ; add
+        xrefp   __FLDSC         ; subtract
+        xrefp   __FLDMC         ; multiply
 
         xdefp   __f2xm1         ; calc 2**x - 1
 

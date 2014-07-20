@@ -36,10 +36,10 @@ include struct.inc
 include mdef.inc
 include extender.inc
 
-        xref    __Phar_hook_init_       ; setup interupts for Pharlap
-        xref    __Phar_hook_fini_       ; restore interupts for Pharlap
-        xref    __DOS4G_hook_init_      ; setup interupts for Rational
-        xref    __DOS4G_hook_fini_      ; restore interupts for Rational
+        xrefp   __Phar_hook_init_       ; setup interupts for Pharlap
+        xrefp   __Phar_hook_fini_       ; restore interupts for Pharlap
+        xrefp   __DOS4G_hook_init_      ; setup interupts for Rational
+        xrefp   __DOS4G_hook_fini_      ; restore interupts for Rational
 
         modstart        fpe387
 

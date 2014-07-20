@@ -88,7 +88,7 @@ _TEXT   SEGMENT   PARA USE16 PUBLIC 'CODE'
 ;  PRELIMINARY VERSION for FPATAN instruction replacement
 ;
 
-        xref   __fpatan_chk
+        xrefp  __fpatan_chk
 
         defpe   __fpatan_wrap
         push    ax

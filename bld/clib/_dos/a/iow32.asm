@@ -36,7 +36,7 @@ include mdef.inc
 include struct.inc
 include int21.inc
 
-        xref    __doserror_
+        xrefp   __doserror_
         modstart iow32
 
         defp    _dos_read

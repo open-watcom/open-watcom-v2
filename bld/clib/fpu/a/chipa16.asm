@@ -49,7 +49,7 @@ include mdef.inc
         .386
         .387
 
-        xref __fdiv_fpr
+        xrefp __fdiv_fpr
 
 _TEXT   SEGMENT PARA PUBLIC USE16 'CODE'
 

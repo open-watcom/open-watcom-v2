@@ -29,7 +29,7 @@ epilog          macro
                 pop     EBP
                 endm
 
-xref            macro   dsym
+xrefp           macro   dsym
                 extrn   dsym : near
                 endm
 

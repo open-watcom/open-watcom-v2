@@ -33,7 +33,7 @@
 include mdef.inc
 include struct.inc
 
-        xref        "C",matherr
+        xrefp       "C",matherr
         modstart    __mtherr
 
 _DATA   segment word public 'DATA'

@@ -71,7 +71,7 @@ defp            macro   dsym
          dsym   proc    near
                 endm
 
-xref            macro   dsym
+xrefp           macro   dsym
                 endm
 
 ifdef __WIN387__

@@ -39,9 +39,9 @@ include env387.inc
 include fstatus.inc
 
 ifndef  __NETWARE__
-        xref            __GETDS
+        xrefp           __GETDS
 endif
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         modstart        fpeinth
 

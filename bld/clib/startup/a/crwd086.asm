@@ -98,7 +98,7 @@ _DATA   ends
 
 ifdef _PROT_MODE_
 
-        xref    __HeapInit_
+        xrefp   __HeapInit_
 
 _TEXT   segment word public 'CODE'
         assume  cs:_TEXT

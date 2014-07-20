@@ -45,7 +45,7 @@ include struct.inc
 
         modstart        ldiv086
 
-        xref    __I4D
+        xrefp   __I4D
 
         defpe   ldiv
         xdefp   "C",ldiv

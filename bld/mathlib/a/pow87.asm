@@ -43,12 +43,12 @@ include struct.inc
 include math87.inc
 
         extern_chipbug
-        xref    __8087  ; indicate that NDP instructions are present
+        xrefp   __8087  ; indicate that NDP instructions are present
 
         modstart    pow87
 
-        xref    "C",__pow87_err
-        xref    __@DEXP
+        xrefp   "C",__pow87_err
+        xrefp   __@DEXP
 
         xdefp   "C",pow ; calc pow(x,y)
 

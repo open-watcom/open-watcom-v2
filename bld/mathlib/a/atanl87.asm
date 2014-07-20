@@ -41,8 +41,8 @@ include math87.inc
 
         modstart        atanl87
 
-        xref            IF@DATAN
-        xref            IF@DATAN2
+        xrefp           IF@DATAN
+        xrefp           IF@DATAN2
 
         xdefp   atanl_  ; long double atanl( long double x )
         xdefp   atan2l_ ; long double atan2l( long double y, long double x )

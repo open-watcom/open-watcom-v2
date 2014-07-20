@@ -41,12 +41,12 @@ include ptypes.inc
 include struct.inc
 include mdef.inc
 
-        xref    "C",DoRead
-        xref    RT@SetIOCB
+        xrefp   "C",DoRead
+        xrefp   RT@SetIOCB
 
         dataseg
 
-        xred    "C",IORslt,        word
+        xrefd   "C",IORslt,        word
 
         enddata
 

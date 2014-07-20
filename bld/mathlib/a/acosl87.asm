@@ -41,7 +41,7 @@ include math87.inc
 
         modstart        acosl87
 
-        xref            IF@DACOS
+        xrefp           IF@DACOS
 
         xdefp   acosl_          ; long double acosl( long double x )
 

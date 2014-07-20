@@ -39,12 +39,12 @@ include mdef.inc
 include struct.inc
 include math87.inc
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         modstart        acos87
 
-        xref            IF@DATAN2
-        xref            __@DSQRT
+        xrefp           IF@DATAN2
+        xrefp           __@DSQRT
 
         xdefp           "C",acos        ; double acos( double x )
 

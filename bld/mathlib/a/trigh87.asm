@@ -40,7 +40,7 @@ include struct.inc
 include math87.inc
 
         extern_chipbug
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         modstart        trigh87
 
@@ -53,9 +53,9 @@ ifdef __386__
     enddata
 endif
 
-        xref            __@DEXP
-        xref            __@DEXP1
-        xref            IF@DEXP
+        xrefp           __@DEXP
+        xrefp           __@DEXP1
+        xrefp           IF@DEXP
 
         xdefp   "C",sinh        ; calc sinh(fac1)
         xdefp   "C",cosh        ; calc cosh(fac1)

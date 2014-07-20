@@ -41,7 +41,7 @@ include math87.inc
 
         modstart        asinl87
 
-        xref            IF@DASIN
+        xrefp           IF@DASIN
 
         xdefp   asinl_          ; long double asinl( long double x )
 

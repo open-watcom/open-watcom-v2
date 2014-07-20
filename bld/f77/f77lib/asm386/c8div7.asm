@@ -41,7 +41,7 @@ include mdef.inc
 
         modstart        divc8
 
-        xref    CplxDivide
+        xrefp   CplxDivide
 
 
         xdefp   RT@C8DIV

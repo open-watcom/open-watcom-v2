@@ -31,8 +31,8 @@
 
 include graph.inc
 
-        xref    _CoXor_
-        xref    _CoOr_
+        xrefp   _CoXor_
+        xrefp   _CoOr_
 
         extrn   __PlotAct : word
         extrn   __Transparent : word

@@ -38,8 +38,8 @@ include struct.inc
 
         modstart        fdi8386
 
-        xref    __U8LS
-        xref    __U8RS
+        xrefp   __U8LS
+        xrefp   __U8RS
 
 ; Convert double precision float to unsigned 64-bit integer with truncation
 ; Input: [EDX, EAX] = 64-bit float

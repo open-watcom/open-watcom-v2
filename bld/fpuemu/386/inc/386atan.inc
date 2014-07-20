@@ -32,12 +32,12 @@
 
         modstart  386atan
 
-        xref    __FLDAC         ; add constant from stack
-        xref    __FLDD          ; divide
-        xref    ___LDA          ; add
-        xref    ___LDD          ; divide
-        xref    ___LDM          ; multiply
-        xref    __OddPoly       ; evaluate polynomial
+        xrefp   __FLDAC         ; add constant from stack
+        xrefp   __FLDD          ; divide
+        xrefp   ___LDA          ; add
+        xrefp   ___LDD          ; divide
+        xrefp   ___LDM          ; multiply
+        xrefp   __OddPoly       ; evaluate polynomial
 
         xdefp   __fpatan        ; calc atan2(y,x)
 ;;/*

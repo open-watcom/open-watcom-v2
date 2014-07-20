@@ -45,15 +45,15 @@ include struct.inc
 .8087
         modstart        fdmth386
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         datasegment
         extrn   __real87 : byte         ; 8087.asm
         enddata
 
-        xref    F8DivZero       ; Fstatus
-        xref    F8OverFlow      ; Fstatus
-        xref    F8UnderFlow     ; Fstatus
+        xrefp   F8DivZero       ; Fstatus
+        xrefp   F8OverFlow      ; Fstatus
+        xrefp   F8UnderFlow     ; Fstatus
 
         xdefp   __FDA           ; add real*8 to real*8
         xdefp   __FDS           ; subtract real*8 from real*8

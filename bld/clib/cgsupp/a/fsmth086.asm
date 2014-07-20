@@ -62,12 +62,12 @@ include struct.inc
 .8087
         modstart        fsmth086
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
-        xref    F4DivZero       ; Fstatus
-        xref    F4OverFlow      ; Fstatus
-        xref    F4UnderFlow     ; Fstatus
-        xref    __fdiv_m32
+        xrefp   F4DivZero       ; Fstatus
+        xrefp   F4OverFlow      ; Fstatus
+        xrefp   F4UnderFlow     ; Fstatus
+        xrefp   __fdiv_m32
 
 go_to   macro frtn
 if _MODEL and _DS_PEGGED

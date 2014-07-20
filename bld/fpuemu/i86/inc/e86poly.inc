@@ -1,7 +1,7 @@
 
-        xref    __FLDA          ; add
-        xref    __FLDM          ; multiply
-        xref    __FLDMC         ; multiply by constant from polynomial
+        xrefp   __FLDA          ; add
+        xrefp   __FLDM          ; multiply
+        xrefp   __FLDMC         ; multiply by constant from polynomial
 
         modstart  e86poly
 

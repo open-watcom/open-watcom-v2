@@ -35,7 +35,7 @@ include msdos.inc
 include struct.inc
 
         name    dospawn
-        xref    "C",_dosretax
+        xrefp   "C",_dosretax
         extrn   __close_ovl_file    :dword
 if _MODEL eq _SMALL
         extrn   __GETDS         :near

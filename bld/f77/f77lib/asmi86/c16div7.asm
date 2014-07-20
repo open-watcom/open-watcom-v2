@@ -41,7 +41,7 @@ include mdef.inc
 
         modstart        c16div7
 
-        xref            CplxDivide
+        xrefp           CplxDivide
 
 
         xdefp   RT@C16DIV

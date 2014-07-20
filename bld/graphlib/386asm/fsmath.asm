@@ -48,9 +48,9 @@ include struct.inc
 
         modstart        grmath,WORD
 
-        xref    F4DivZero       ; Fstatus
-        xref    F4OverFlow      ; Fstatus
-        xref    F4UnderFlow     ; Fstatus
+        xrefp   F4DivZero       ; Fstatus
+        xrefp   F4OverFlow      ; Fstatus
+        xrefp   F4UnderFlow     ; Fstatus
 
         xdefp   __FSA           ; add real*4 to real*4
         xdefp   __FSS           ; subtract real*4 from real*4

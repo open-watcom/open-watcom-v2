@@ -45,8 +45,8 @@ include mdef.inc
         dataseg
         assume  ES:DGROUP
 
-        xred    "C",IORslt,      word
-        xred    "C",_STACKLOW,   word
+        xrefd   "C",IORslt,      word
+        xrefd   "C",_STACKLOW,   word
 
 ; for all 16-bit systems we now use a 4K coroutine stack
 COSTACK_SIZE = 4096

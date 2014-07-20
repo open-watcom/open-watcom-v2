@@ -44,11 +44,11 @@ endif
 
 ifdef __386__
 ifdef __OS2__
-        xref    DosUnwindException
+        xrefp   DosUnwindException
 endif
 endif
 ifdef __NT__
-        xref    _RtlUnwind@16
+        xrefp   _RtlUnwind@16
 endif
 
         xdefp   "C",_setjmp

@@ -47,7 +47,7 @@ include mdef.inc
         assume  nothing
 
 
-        xref    __OS2Main
+        xrefp   __OS2Main
         extrn   __DOSseg__      : byte
 
 

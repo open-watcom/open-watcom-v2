@@ -41,20 +41,20 @@ include struct.inc
 
         modstart        i8f086
 
-        xref    __U4FS
-        xref    __I4FS
-        xref    __U4FD
-        xref    __I4FD
+        xrefp   __U4FS
+        xrefp   __I4FS
+        xrefp   __U4FD
+        xrefp   __I4FD
 
-        xref    __FSI4
-        xref    __FSU4
-;       xref    __RSI4
-;       xref    __RSU4
+        xrefp   __FSI4
+        xrefp   __FSU4
+;       xrefp   __RSI4
+;       xrefp   __RSU4
 
-        xref    __FDI4
-        xref    __FDU4
-        xref    __RDI4
-        xref    __RDU4
+        xrefp   __FDI4
+        xrefp   __FDU4
+        xrefp   __RDI4
+        xrefp   __RDU4
 
 ; Convert signed 64-bit integer to single precision float
 ; Input: [AX BX CX DX] = 64-bit integer

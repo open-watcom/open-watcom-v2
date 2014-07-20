@@ -32,8 +32,8 @@
 
         modstart  386poly
 
-        xref    ___LDA          ; add
-        xref    ___LDM          ; multiply
+        xrefp   ___LDA          ; add
+        xrefp   ___LDM          ; multiply
 
         xdefp   __EvalPoly      ; calc polynomial
         xdefp   __OddPoly       ; calc polynomial

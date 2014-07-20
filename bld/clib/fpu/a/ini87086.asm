@@ -33,13 +33,13 @@ include mdef.inc
         modstart init8087
 
 datasegment
-        xred    __8087cw, word
+        xrefd   __8087cw, word
 ifdef __DOS__
-        xred    __dos87emucall, word
+        xrefd   __dos87emucall, word
 endif
 enddata
 
-        xref    __init_8087_            ; in chk8087.c
+        xrefp   __init_8087_            ; in chk8087.c
 
         xdefp   __init_8087_emu
         xdefp   __x87id

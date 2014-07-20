@@ -1,16 +1,16 @@
 
-        xref    __FLDA          ; add
-        xref    __FLDS          ; subtract
-        xref    __FLDD          ; divide
-        xref    __FLDM          ; multiply
-        xref    __FLDAC         ; add
-        xref    __fprem         ; remainder
-        xref    __OddPoly       ; evaluate odd degree polynomial
-        xref    __Poly          ; evaluate polynomial
+        xrefp   __FLDA          ; add
+        xrefp   __FLDS          ; subtract
+        xrefp   __FLDD          ; divide
+        xrefp   __FLDM          ; multiply
+        xrefp   __FLDAC         ; add
+        xrefp   __fprem         ; remainder
+        xrefp   __OddPoly       ; evaluate odd degree polynomial
+        xrefp   __Poly          ; evaluate polynomial
 
-        xref    __PIby4         ; pi/4
-        xref    __SinPoly       ; polynomial for sin
-        xref    __CosPoly       ; polynomial for cos
+        xrefp   __PIby4         ; pi/4
+        xrefp   __SinPoly       ; polynomial for sin
+        xrefp   __CosPoly       ; polynomial for cos
 
         modstart  e86sin
 

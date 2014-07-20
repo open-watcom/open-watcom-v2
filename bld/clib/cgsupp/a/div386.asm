@@ -37,17 +37,17 @@ include struct.inc
 .8087
         modstart        div386
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         datasegment
         extrn   __real87 : byte         ; 8087.asm
         extrn   __chipbug: byte
         enddata
 
-        xref    F8DivZero       ; Fstatus
-        xref    F8OverFlow      ; Fstatus
-        xref    F8UnderFlow     ; Fstatus
-        xref    __fdiv_m64
+        xrefp   F8DivZero       ; Fstatus
+        xrefp   F8OverFlow      ; Fstatus
+        xrefp   F8UnderFlow     ; Fstatus
+        xrefp   __fdiv_m64
 
         xdefp   __FDD
 

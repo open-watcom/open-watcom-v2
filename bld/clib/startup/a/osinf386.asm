@@ -31,7 +31,7 @@
 
 include mdef.inc
 
-        xref    "C",__DetOSInfo
+        xrefp   "C",__DetOSInfo
 
         name    osinf386
 

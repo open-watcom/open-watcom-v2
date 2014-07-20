@@ -34,9 +34,9 @@
 include mdef.inc
 include struct.inc
 
-        xref    SAPWait_
-        xref    SAPBroad_
-        xref    ServResp_
+        xrefp   SAPWait_
+        xrefp   SAPBroad_
+        xrefp   ServResp_
 
         modstart        IPX
 

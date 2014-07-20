@@ -1056,28 +1056,28 @@ dosib:  mov     bl,[esi]                ; get sib byte in bl           ssiiibbb
         ret                             ; return to caller
 
 
-        xref    __FLDA
-        xref    __FLDS
-        xref    __FLDM
-        xref    __FLDD
-        xref    __FLDC
-        xref    __I4LD
-        xref    __I8LD
-        xref    __LDI4
-        xref    __LDI8
-        xref    __EmuFSLD
-        xref    __EmuLDFS
-        xref    __EmuFDLD
-        xref    __EmuLDFD
-        xref    __sqrt
-        xref    __fprem
-        xref    __sin
-        xref    __cos
-        xref    __tan
-        xref    __fpatan
-        xref    __fyl2x
-        xref    __f2xm1
-        xref    __frndint                 ; 24-mar-90
+        xrefp   __FLDA
+        xrefp   __FLDS
+        xrefp   __FLDM
+        xrefp   __FLDD
+        xrefp   __FLDC
+        xrefp   __I4LD
+        xrefp   __I8LD
+        xrefp   __LDI4
+        xrefp   __LDI8
+        xrefp   __EmuFSLD
+        xrefp   __EmuLDFS
+        xrefp   __EmuFDLD
+        xrefp   __EmuLDFD
+        xrefp   __sqrt
+        xrefp   __fprem
+        xrefp   __sin
+        xrefp   __cos
+        xrefp   __tan
+        xrefp   __fpatan
+        xrefp   __fyl2x
+        xrefp   __f2xm1
+        xrefp   __frndint                 ; 24-mar-90
 
 ifndef NDEBUG
 badop   proc    near

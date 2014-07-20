@@ -31,11 +31,11 @@
 
 include graph.inc
 
-        xref    BitCopy
-        xref    BitReplace
-        xref    BitAnd
-        xref    BitOr
-        xref    BitXor
+        xrefp   BitCopy
+        xrefp   BitReplace
+        xrefp   BitAnd
+        xrefp   BitOr
+        xrefp   BitXor
 
         extrn   __PlotAct : word
         extrn   __Transparent : word

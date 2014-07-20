@@ -32,11 +32,11 @@
 
         modstart  386f2xm1
 
-        xref    __FLDAC         ; add constant from stack
-        xref    ___LDA          ; add
-        xref    __FLDD          ; divide
-        xref    ___LDD          ; divide
-        xref    ___LDM          ; multiply
+        xrefp   __FLDAC         ; add constant from stack
+        xrefp   ___LDA          ; add
+        xrefp   __FLDD          ; divide
+        xrefp   ___LDD          ; divide
+        xrefp   ___LDM          ; multiply
 
         xdefp   __f2xm1         ; calc 2**x - 1
 

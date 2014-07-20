@@ -6,7 +6,7 @@ include struct.inc
         modstart    ldfd086, word
 endif
 
-        xref    FPOverFlow
+        xrefp   FPOverFlow
 
 ;
 ;       convert long double to double

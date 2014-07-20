@@ -35,8 +35,8 @@ include fstatus.inc
 
         modstart        fstat386
 
-        xref    "C",__set_ERANGE
-        xref    __FPE_exception_
+        xrefp   "C",__set_ERANGE
+        xrefp   __FPE_exception_
 
         datasegment
         enddata

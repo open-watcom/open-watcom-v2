@@ -6,8 +6,8 @@ include struct.inc
 
         modstart  sqrt086
 
-        xref    __iFDLD
-        xref    __iLDFD
+        xrefp   __iFDLD
+        xrefp   __iLDFD
 
         xdefp   __sqrtd
 

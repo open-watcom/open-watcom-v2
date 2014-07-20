@@ -41,9 +41,9 @@ include math87.inc
 
         modstart        trigl87
 
-        xref            IF@DCOS
-        xref            IF@DSIN
-        xref            IF@DTAN
+        xrefp           IF@DCOS
+        xrefp           IF@DSIN
+        xrefp           IF@DTAN
 
         xdefp   "C",_cosl       ; long double _cosl( long double x )
         xdefp   "C",_sinl       ; long double _sinl( long double x )

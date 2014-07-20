@@ -848,32 +848,32 @@ stkop:  dw      s00,s01,s02,s03,s04,s05,s06,s07         ; stack operand
 
 ;========================================================
 
-        xref    __FLDA
-        xref    __FLDS
-        xref    __FLDM
-        xref    __FLDD
-        xref    __FLDC
-        xref    __I4LD
-        xref    __I8LD
-        xref    __U4LD
-        xref    __LDI4
-        xref    __LDU4
-        xref    __LDI8
-        xref    __EmuFSLD
-        xref    __EmuLDFS
-        xref    __EmuFDLD
-        xref    __EmuLDFD
-        xref    __sqrt
-        xref    __fprem
-        xref    __sin
-        xref    __cos
-        xref    __tan
-        xref    __fpatan
-        xref    __fyl2x
-        xref    __fyl2xp1
-        xref    __f2xm1
-        xref    __fxam
-        xref    __frndint
+        xrefp   __FLDA
+        xrefp   __FLDS
+        xrefp   __FLDM
+        xrefp   __FLDD
+        xrefp   __FLDC
+        xrefp   __I4LD
+        xrefp   __I8LD
+        xrefp   __U4LD
+        xrefp   __LDI4
+        xrefp   __LDU4
+        xrefp   __LDI8
+        xrefp   __EmuFSLD
+        xrefp   __EmuLDFS
+        xrefp   __EmuFDLD
+        xrefp   __EmuLDFD
+        xrefp   __sqrt
+        xrefp   __fprem
+        xrefp   __sin
+        xrefp   __cos
+        xrefp   __tan
+        xrefp   __fpatan
+        xrefp   __fyl2x
+        xrefp   __fyl2xp1
+        xrefp   __f2xm1
+        xrefp   __fxam
+        xrefp   __frndint
 
 ifdef _DEBUG
 badop   proc    near

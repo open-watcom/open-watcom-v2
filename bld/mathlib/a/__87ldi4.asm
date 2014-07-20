@@ -47,7 +47,7 @@ endif
 include mdef.inc
 include math87.inc
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
         modstart __87LDI4
 

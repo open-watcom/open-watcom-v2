@@ -40,8 +40,8 @@ include ptypes.inc
 include struct.inc
 include mdef.inc
 
-        xref    "C",DoWrite
-        xref    RT@SetIOCB
+        xrefp   "C",DoWrite
+        xrefp   RT@SetIOCB
 
         extrn   IOSwitch        : near
         extrn   IOChar          : near
@@ -55,7 +55,7 @@ include mdef.inc
         dataseg
         assume  ES:DGROUP
 
-        xred    "C",IORslt,       word
+        xrefd   "C",IORslt,       word
 
 if _MATH eq _EMULATION
         saveSI          dw      ?

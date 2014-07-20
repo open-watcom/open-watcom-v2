@@ -45,7 +45,7 @@ include struct.inc
 
         modstart        i8fd086
 
-        xref    __U4FD
+        xrefp   __U4FD
 
         xdefp   __I8FD
         defp    __I8FD

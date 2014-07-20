@@ -39,11 +39,11 @@ include mdef.inc
 include struct.inc
 include math87.inc
 
-        xref    __8087  ; indicate that NDP instructions are present
+        xrefp   __8087  ; indicate that NDP instructions are present
 
         modstart    acosh87
 
-        xref    "C",__log87_err
+        xrefp   "C",__log87_err
 
         xdefp   "C",acosh       ; double acosh( double x )
 ;

@@ -1,15 +1,15 @@
 
         modstart  e86atan
 
-        xref    __FLDA          ; add
-        xref    __FLDC          ; compare
-        xref    __FLDD          ; divide
-        xref    __FLDM          ; multiply
-        xref    __FLDS          ; subtract
-        xref    __FLDAC         ; add
-        xref    __FLDSC         ; subtract
-        xref    __FLDMC         ; multiply
-        xref    __OddPoly       ; evaluate polynomial
+        xrefp   __FLDA          ; add
+        xrefp   __FLDC          ; compare
+        xrefp   __FLDD          ; divide
+        xrefp   __FLDM          ; multiply
+        xrefp   __FLDS          ; subtract
+        xrefp   __FLDAC         ; add
+        xrefp   __FLDSC         ; subtract
+        xrefp   __FLDMC         ; multiply
+        xrefp   __OddPoly       ; evaluate polynomial
 
         xdefp   __fpatan        ; calc atan2(y,x)
 ;;/*

@@ -32,7 +32,7 @@
 
 include mdef.inc
 
-        xref    <"C",__verify_problems>
+        xrefp   <"C",__verify_problems>
 
         name    chipvar
 

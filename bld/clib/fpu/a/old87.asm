@@ -41,10 +41,10 @@ endif
         modstart _old8087
 
 datasegment
-        xref    __8087
+        xrefp   __8087
 ifdef __DOS_086__
-        xred    __dos87emucall, word
-        xred    __dos87real, byte
+        xrefd   __dos87emucall, word
+        xrefd   __dos87real, byte
 endif
 enddata
 

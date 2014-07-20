@@ -46,7 +46,7 @@ include p5prof.inc
 endif
         modstart        lldiv386
 
-        xref    __I8D
+        xrefp   __I8D
 
 ;        defpe   imaxdiv
 ;        xdefp   "C",imaxdiv

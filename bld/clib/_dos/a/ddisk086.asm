@@ -35,7 +35,7 @@
 include mdef.inc
 include struct.inc
 
-        xref    "C",__set_EINVAL
+        xrefp   "C",__set_EINVAL
         modstart dosdisk
 
         defp    _dos_getdiskfree

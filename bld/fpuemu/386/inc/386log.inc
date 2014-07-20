@@ -31,17 +31,17 @@
 
         modstart  386log
 
-        xref    __FLDAC         ; add constant from stack
-        xref    ___LDA          ; add
-        xref    __FLDS          ; subtract
-        xref    __FLDD          ; divide
-        xref    ___LDD          ; divide
-        xref    __FLDM          ; multiply
-        xref    ___LDM          ; multiply
-        xref    __I4LD          ; convert long to long double
-        xref    __EvalPoly      ; evaluate polynomial
-        xref    __poly          ; evaluate polynomial
-        xref    __OddPoly       ; oddpoly
+        xrefp   __FLDAC         ; add constant from stack
+        xrefp   ___LDA          ; add
+        xrefp   __FLDS          ; subtract
+        xrefp   __FLDD          ; divide
+        xrefp   ___LDD          ; divide
+        xrefp   __FLDM          ; multiply
+        xrefp   ___LDM          ; multiply
+        xrefp   __I4LD          ; convert long to long double
+        xrefp   __EvalPoly      ; evaluate polynomial
+        xrefp   __poly          ; evaluate polynomial
+        xrefp   __OddPoly       ; oddpoly
 
         xdefp   __log           ; calc log(fac1)
         xdefp   __fyl2x         ; calc. log2([eax]) * [edx]

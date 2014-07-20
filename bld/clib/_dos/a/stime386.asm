@@ -36,7 +36,7 @@ include mdef.inc
 include struct.inc
 include int21.inc
 
-        xref    "C",__set_EINVAL
+        xrefp   "C",__set_EINVAL
         modstart dosstime
 
         defp    _dos_setdate

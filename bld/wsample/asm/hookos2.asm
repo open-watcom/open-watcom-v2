@@ -33,7 +33,7 @@
 include mdef.inc
 include struct.inc
 
-        xref    DosScanEnv
+        xrefp   DosScanEnv
 
 dgroup  group           _data
         modstart        hook,word

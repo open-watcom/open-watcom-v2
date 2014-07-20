@@ -90,7 +90,7 @@ include mdef.inc
 include extender.inc
 
 
-        xref            __FPE2Handler_  ; handle exceptions w/o OUT's
+        xrefp           __FPE2Handler_  ; handle exceptions w/o OUT's
 
         modstart fpedos4g
 

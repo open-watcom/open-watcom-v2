@@ -41,7 +41,7 @@ extrn   DosExit         : far
 extrn   DosWrite        : far
 extrn   DosReallocSeg   : far
 
-xref    main_
+xrefp   main_
 
                 modstart startup
 

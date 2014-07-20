@@ -53,9 +53,9 @@ include struct.inc
 .287
         modstart        fsmth386
 
-        xref            __8087  ; indicate that NDP instructions are present
+        xrefp           __8087  ; indicate that NDP instructions are present
 
-        xref    __fdiv_m32
+        xrefp   __fdiv_m32
 
         datasegment
         extrn   __real87 : byte         ; cstart
@@ -66,9 +66,9 @@ fsdiv   dd      _chkdiv
         enddata
 
 
-        xref    F4DivZero       ; Fstatus
-        xref    F4OverFlow      ; Fstatus
-        xref    F4UnderFlow     ; Fstatus
+        xrefp   F4DivZero       ; Fstatus
+        xrefp   F4OverFlow      ; Fstatus
+        xrefp   F4UnderFlow     ; Fstatus
 
         xdefp   __FSA           ; add real*4 to real*4
         xdefp   __FSS           ; subtract real*4 from real*4

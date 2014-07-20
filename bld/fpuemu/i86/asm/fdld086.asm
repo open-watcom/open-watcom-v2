@@ -6,7 +6,7 @@ include struct.inc
         modstart    fdld086, word
 endif
 
-        xref    FPInvalidOp
+        xrefp   FPInvalidOp
 
 ;
 ;       convert double to long double

@@ -35,8 +35,8 @@ include struct.inc
 
         modstart        i8fs386
 
-        xref    __I8LS
-        xref    __I8RS
+        xrefp   __I8LS
+        xrefp   __I8RS
 
 ; Convert signed 64-bit integer to single precision float
 ; Input: [EDX, EAX] = 64-bit integer

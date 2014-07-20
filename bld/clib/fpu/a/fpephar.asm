@@ -89,8 +89,8 @@ include struct.inc
 include mdef.inc
 include extender.inc
 
-        xref            __FPEHandler_   ; handle exceptions
-        xref            __FPE2Handler_  ; handle exceptions w/o OUT's
+        xrefp           __FPEHandler_   ; handle exceptions
+        xrefp           __FPE2Handler_  ; handle exceptions w/o OUT's
 
         modstart        fpephar
 

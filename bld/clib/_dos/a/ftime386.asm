@@ -35,7 +35,7 @@ include mdef.inc
 include struct.inc
 include int21.inc
 
-        xref    __doserror_
+        xrefp   __doserror_
         modstart dosftime
 
         defp    _dos_getftime

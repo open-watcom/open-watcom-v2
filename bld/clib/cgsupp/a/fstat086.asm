@@ -35,7 +35,7 @@ include fstatus.inc
 
         modstart        fstat086
 
-        xref    "C",__set_ERANGE
+        xrefp   "C",__set_ERANGE
 
         datasegment
         extrn   "C",__FPE_handler:dword

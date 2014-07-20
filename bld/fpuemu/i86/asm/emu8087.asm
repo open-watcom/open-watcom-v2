@@ -54,7 +54,7 @@ defp            macro   dsym
          dsym   proc    near
                 endm
 
-xref            macro   dsym
+xrefp           macro   dsym
                 endm
 
 endproc         macro   dsym

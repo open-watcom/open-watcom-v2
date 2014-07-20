@@ -32,10 +32,10 @@
 include graph.inc
 
 
-        xref    _Zap19_
-        xref    _Fill19_
-        xref    _PixCopy19_
-        xref    _PixRead19_
+        xrefp   _Zap19_
+        xrefp   _Fill19_
+        xrefp   _PixCopy19_
+        xrefp   _PixRead19_
 
         extrn   __PlotAct : word
         extrn   __Transparent : word
@@ -47,10 +47,10 @@ endif
         extrn   __VGAGran : byte
         extptr  __SetVGAPage
 ifdef VERSION2
-        xref    _EGAZap_
-        xref    _EGAFill_
-        xref    _EGAPixCopy_
-        xref    _EGAReadRow_
+        xrefp   _EGAZap_
+        xrefp   _EGAFill_
+        xrefp   _EGAPixCopy_
+        xrefp   _EGAReadRow_
 endif
 
         modstart svgautil,WORD

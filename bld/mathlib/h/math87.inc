@@ -153,7 +153,7 @@ endif
         endm
 
 do_fdiv_raw macro op1,op2,rev,popper
-        xref    __fdiv_fpr
+        xrefp   __fdiv_fpr
         chk_baddiv
         _if e
             do_real_fdiv op1,op2,rev,popper
@@ -173,7 +173,7 @@ do_fdiv_raw macro op1,op2,rev,popper
 endm
 
 do_fpatan macro
-        xref    __fpatan_wrap
+        xrefp   __fpatan_wrap
         chk_baddiv
         _if e
           fpatan
@@ -183,7 +183,7 @@ do_fpatan macro
 endm
 
 do_fptan macro
-        xref    __fptan_chk
+        xrefp   __fptan_chk
         chk_baddiv
         _if e
           fptan
@@ -193,7 +193,7 @@ do_fptan macro
 endm
 
 do_fprem macro
-        xref    __fprem_chk
+        xrefp   __fprem_chk
         chk_baddiv
         _if e
           fprem
@@ -203,7 +203,7 @@ do_fprem macro
 endm
 
 do_fprem1 macro
-        xref    __fprem1_chk
+        xrefp   __fprem1_chk
         chk_baddiv
         _if e
           fprem1
