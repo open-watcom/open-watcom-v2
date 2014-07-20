@@ -45,44 +45,44 @@ include struct.inc
         xdefp   __FSFD
 
         defpe   __FSFD
-        _guess                   ; guess: number is 0.0 or -0.0
-          mov   EDX,EAX          ; - get float
-          and   EAX,7fffffffh    ; - remove sign
-          _quif ne               ; - quit if number is not +0.0 or -0.0
-        _admit                   ; guess: number is +-infinity
-          cmp   EAX,7f800000h    ; - quit if not +-infinity
-          _quif ne               ; - ...
-          or    EDX,7ff00000h    ; - set double precision infinity
-          sub   EAX,EAX          ; - ...
-        _admit                   ; admit: not a special number
-          test  EAX,7f800000h    ; - if exponent is 0 (denormal number)
-          _if   e                ; - then
-            or    EDX,7F800000h  ; - - set exponent to 0xFF
-            _loop                ; - - loop (normalize the fraction)
-              sub  EDX,00800000h ; - - - subtract 1 from exponent adjustment
-              _shl EAX,1         ; - - - shift fraction left
-              test EAX,00800000h ; - - - check to see if fraction is normalized
-            _until ne            ; - - until normalized
-            and   EDX,0FF800000h ; - - copy fraction back to EDX
-            and   EAX,007FFFFFh  ; - - ...
-            or    EDX,EAX        ; - - ...
-            sar   EDX,3          ; - shift over 3
-            and   EDX,8FFFFFFFh  ; - reset exponent extended bits
-            add   EDX,28200000h  ; - adjust exponent by (3FF - FF -7F + 1) shl 20   
-          _else                  ; - else 
-            sar   EDX,3          ; - shift over 3
-            and   EDX,8FFFFFFFh  ; - reset exponent extended bits
-            cmp   EAX,7F800000h  ; - if number is not number (NaN)
-            _if   a              ;
-              or    EDX,7FF00000h; - adjust exponent to NaN 7FF shl 20
-            _else
-              add   EDX,38000000h; - adjust exponent by (3FF-7F) shl 20
-            _endif
-          _endif                ; - endif
-          and   EAX,7           ; - get bottom 3 bits of fraction
-          ror   EAX,3           ; - shift them to the top
-        _endguess               ; endguess
-        ret                     ; return
+        _guess                          ; guess: number is 0.0 or -0.0
+          mov   EDX,EAX                 ; - get float
+          and   EAX,7fffffffh           ; - remove sign
+          _quif ne                      ; - quit if number is not +0.0 or -0.0
+        _admit                          ; admit: number is +-infinity
+          cmp   EAX,7f800000h           ; - quit if not +-infinity
+          _quif ne                      ; - ...
+          or    EDX,7ff00000h           ; - set double precision infinity
+          sub   EAX,EAX                 ; - ...
+        _admit                          ; admit: not a special number
+          push  ECX                     ; - save register ECX
+          mov   ECX,EDX                 ; - set result sign to ECX
+          xor   ECX,EAX                 ; - ...
+          mov   EDX,EAX                 ; - get value to EDX:EAX for shift
+          sub   EAX,EAX                 ; - ...
+          shrd  EAX,EDX,3               ; - shift EDX:EAX right 3 times
+          shr   EDX,3                   ; - ...
+          cmp   EDX,0ffh shl 20         ; - if exponent is NaN
+          _if ae                        ; - then
+            or    ECX,(7FFh - 0ffh) shl 20; - - set result exponent adjustment for NaN
+          _else                         ; - else 
+            or    ECX,(3ffh - 7fh) shl 20; - - set result exponent adjustment
+            test  EDX,0ffh shl 20       ; - - if exponent is 0 (denormal number)
+            _if e                       ; - - then
+              add  ECX,1 shl 20         ; - - - add 1 to result exponent adjustment
+              _loop                     ; - - - loop (normalize the fraction)
+                sub  ECX,1 shl 20       ; - - - - subtract 1 from result exponent adjustment
+                _shl EAX,1              ; - - - - shift fraction left
+                _rcl EDX,1              ; - - - - ...
+                test EDX,1 shl 20       ; - - - - check to see if fraction is normalized
+              _until ne                 ; - - - until normalized
+              and EDX,(1 shl 20) - 1    ; - - - mask fraction after normalization
+            _endif                      ; - - endif
+          _endif                        ; - endif
+          add   EDX,ECX                 ; - adjust result exponent and set result sign
+          pop   ECX                     ; - restore register ECX
+        _endguess                       ; endguess
+        ret                             ; return
         endproc __FSFD
 
         endmod

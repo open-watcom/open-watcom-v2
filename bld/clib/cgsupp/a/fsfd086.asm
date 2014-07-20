@@ -50,23 +50,16 @@ include struct.inc
           mov   ax,dx           ; - get high word to ax
           sub   cx,cx           ; - ...
           or    bx,bx           ; -
-          _quif ne              ; - quit if not 0.0 or infinity (low word not zero)
-          and   dx,7fffh        ; - get rid of sign bit
+          _quif ne              ; - quit if low word not 0
+          and   dx,7fffh        ; - get rid of sign bit and check high word for 0
           _quif e,xx1           ; - quit if 0.0
           cmp   dx,7f80h        ; - check if infinity
           _quif ne              ; - quit if not infinity
-          or    al,0f0h         ; - set infinity ax = 7ff0h or 0fff0h
-        _admit                  ; guess: number is not 0
-          and   dh,7fh
-          cmp   dx,7f80h
-          _if   ae
-            mov   dx,( 7ffh - 0ffh ) shl 5 ;- put NaN exponent - ax in dx (ax = 0ffh)
-          _else
-            mov   dx,( 3ffh - 7fh ) shl 5  ;- put exponent bias in dx
-          _endif
-          shl   ax,1
-          rcr   dx,1
-          shr   ax,1
+          or    al,0f0h         ; - set result +/- infinity
+        _admit                  ; admit: number is not 0
+          and   dh,7fh          ; - get sign to dx
+          xor   dx,ax           ; - ...
+          xor   ah,dh           ; - reset sign in ax
           shr   ax,1            ; - now shift everything three bits
           rcr   bx,1            ; - ...
           rcr   cx,1            ; - ...
@@ -76,20 +69,27 @@ include struct.inc
           shr   ax,1            ; - ...
           rcr   bx,1            ; - ...
           rcr   cx,1            ; - ...
-          test  ax,0ff0h        ; - if exponent is 0 (denormal number)
-          _if   e               ; - then
-            _loop               ; - - loop (normalize the fraction)
-              sub  dx,0010h     ; - - - subtract 1 from exponent adjustment
-              and  al,0fh       ; - - - clean msb after shift
-              _shl cx,1         ; - - - shift fraction left
-              _rcl bx,1         ; - - - . . .
-              _rcl ax,1         ; - - - . . .
-              test al,10h       ; - - - check to see if fraction is normalized
-            _until ne           ; - - until normalized
+          cmp   ax,0ffh shl 4   ; - if exponent is NaN
+          _if   ae              ; - then
+            or  dx,(7ffh - 0ffh) shl 4 ; - - set result exponent adjustment for NaN
+          _else                 ; - else
+            or  dx,(3ffh - 7fh) shl 4;- - set result exponent adjustment
+            test  ax,0ff0h      ; - - if exponent is 0 (denormal number)
+            _if   e             ; - - then do normalization
+              add  dx,1 shl 4   ; - - - add 1 to result exponent adjustment
+              _loop             ; - - - loop (normalize the fraction)
+                sub  dx,1 shl 4 ; - - - - subtract 1 from result exponent adjustment
+                _shl cx,1       ; - - - - shift fraction left
+                _rcl bx,1       ; - - - - . . .
+                _rcl al,1       ; - - - - . . .
+                test al,1 shl 4 ; - - - - check to see if result fraction is normalized
+              _until ne         ; - - - until not normalized
+              and al,(1 shl 4)-1; - - - mask result fraction after normalization
+            _endif              ; - - endif
           _endif                ; - endif
-          add   ax,dx           ; - add in the exponent adjustment
+          add   ax,dx           ; - adjust result exponent and set result sign
         _endguess               ; endguess
-        sub     dx,dx           ; clear bottom bits of mantissa
+        sub     dx,dx           ; clear result bottom bits of mantissa
         ret                     ; and return
         endproc __FSFD
 
