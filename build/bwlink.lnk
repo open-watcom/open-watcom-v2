@@ -6,6 +6,7 @@ system begin dos
     libpath %OWSRCDIR%/clib/library/msdos.086/mc
     libpath %OWSRCDIR%/clib/library/msdos.086/mm
     libpath %OWSRCDIR%/clib/library/msdos.086/ml
+    libpath %OWSRCDIR%/clib/library/msdos.086/mh
     libpath %OWSRCDIR%/mathlib/library/msdos.286/ms
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ms
     libpath %OWSRCDIR%/mathlib/library/msdos.286/mc
@@ -14,18 +15,23 @@ system begin dos
     libpath %OWSRCDIR%/mathlib/library/msdos.287/mm
     libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/mh
+    libpath %OWSRCDIR%/mathlib/library/msdos.287/mh
     libpath %OWSRCDIR%/cpplib/library/generic.086/ms
     libpath %OWSRCDIR%/cpplib/library/generic.086/mc
     libpath %OWSRCDIR%/cpplib/library/generic.086/mm
     libpath %OWSRCDIR%/cpplib/library/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/library/generic.086/mh
     libpath %OWSRCDIR%/cpplib/complex/generic.086/ms
     libpath %OWSRCDIR%/cpplib/complex/generic.086/mc
     libpath %OWSRCDIR%/cpplib/complex/generic.086/mm
     libpath %OWSRCDIR%/cpplib/complex/generic.086/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.086/mh
     libpath %OWSRCDIR%/cpplib/complex/generic.087/ms
     libpath %OWSRCDIR%/cpplib/complex/generic.087/mc
     libpath %OWSRCDIR%/cpplib/complex/generic.087/mm
     libpath %OWSRCDIR%/cpplib/complex/generic.087/ml
+    libpath %OWSRCDIR%/cpplib/complex/generic.087/mh
     libpath %OWSRCDIR%/f77/f77lib/msdos.086/ml
     libpath %OWSRCDIR%/f77/f77lib/msdos.086/mm
     libpath %OWSRCDIR%/f77/f77lib/msdos.087/ml
