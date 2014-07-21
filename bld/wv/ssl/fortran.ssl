@@ -1,14 +1,14 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Copyright (C) 1987, by WATCOM Systems Inc. All rights	  %
-%	reserved. No part of this software may be reproduced	  %
-%	in any form or by any means - graphic, electronic or	  %
-%	mechanical, including photocopying, recording, taping	  %
-%	or information storage and retrieval systems - except	  %
-%	with the written permission of WATCOM Systems Inc.	  %
+%       Copyright (C) 1987, by WATCOM Systems Inc. All rights     %
+%       reserved. No part of this software may be reproduced      %
+%       in any form or by any means - graphic, electronic or      %
+%       mechanical, including photocopying, recording, taping     %
+%       or information storage and retrieval systems - except     %
+%       with the written permission of WATCOM Systems Inc.        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Modified     By	       Reason
-% --------     --	       ------
+% Modified     By              Reason
+% --------     --              ------
 %
 %
 
@@ -16,1098 +16,1098 @@
 !include "dbgintr.ssl"
 
 input:
-    ET_GETS		'=' = 0x20
-    ET_MUL_GETS 	'*='
-    ET_DIV_GETS 	'/='
-    ET_MOD_GETS 	'%='
-    ET_PLUS_GETS	'+='
-    ET_MINUS_GETS	'-='
-    ET_AND_GETS 	'&='
-    ET_XOR_GETS 	'^='
-    ET_OR_GETS		'|='
-    ET_LSHFT_GETS	'<<='
-    ET_RSHFT_GETS	'>>='
-    ET_L_EQV		'.EQV.'     % L_ stands for 'logical'
-    ET_L_NEQV		'.NEQV.'
-    ET_L_OR		'.OR.'
-    ET_L_AND		'.AND.'
-    ET_L_NOT		'.NOT.'
-    ET_OR		'|'
-    ET_XOR		'^'
-    ET_AND		'&'
-    ET_STRING_CONCAT	'//'
-    ET_LT		'.LT.'
-    ET_GT		'.GT.'
-    ET_EQ		'.EQ.'
-    ET_NE		'.NE.'
-    ET_LE		'.LE.'
-    ET_GE		'.GE.'
-    ET_LSHIFT		'<<'
-    ET_RSHIFT		'>>'
-    ET_PLUS		'+'
-    ET_MINUS		'-'
-    ET_MUL		'*'
-    ET_DIV		'/'
-    ET_MOD		'%'
-    ET_EXP		'**'
-    ET_PLUS_PLUS	'++'
-    ET_MINUS_MINUS	'--'
-    ET_NOT		'~'
-    ET_COLON		':'
-    ET_COMMA		','
-    ET_LEFT_PAREN	'('
-    ET_RIGHT_PAREN	')'
-    ET_LEFT_BRACKET	'['
-    ET_RIGHT_BRACKET	']'
-    ET_DOT		'.'
-    ET_MODULE_SPEC	'@'
-    ET_VAR_EXIST	'?'
-    ET_RIGHT_ARROW	'->'
-    ET_STRING_QUOTE	'\''
+    ET_GETS             '=' = 0x20
+    ET_MUL_GETS         '*='
+    ET_DIV_GETS         '/='
+    ET_MOD_GETS         '%='
+    ET_PLUS_GETS        '+='
+    ET_MINUS_GETS       '-='
+    ET_AND_GETS         '&='
+    ET_XOR_GETS         '^='
+    ET_OR_GETS          '|='
+    ET_LSHFT_GETS       '<<='
+    ET_RSHFT_GETS       '>>='
+    ET_L_EQV            '.EQV.'     % L_ stands for 'logical'
+    ET_L_NEQV           '.NEQV.'
+    ET_L_OR             '.OR.'
+    ET_L_AND            '.AND.'
+    ET_L_NOT            '.NOT.'
+    ET_OR               '|'
+    ET_XOR              '^'
+    ET_AND              '&'
+    ET_STRING_CONCAT    '//'
+    ET_LT               '.LT.'
+    ET_GT               '.GT.'
+    ET_EQ               '.EQ.'
+    ET_NE               '.NE.'
+    ET_LE               '.LE.'
+    ET_GE               '.GE.'
+    ET_LSHIFT           '<<'
+    ET_RSHIFT           '>>'
+    ET_PLUS             '+'
+    ET_MINUS            '-'
+    ET_MUL              '*'
+    ET_DIV              '/'
+    ET_MOD              '%'
+    ET_EXP              '**'
+    ET_PLUS_PLUS        '++'
+    ET_MINUS_MINUS      '--'
+    ET_NOT              '~'
+    ET_COLON            ':'
+    ET_COMMA            ','
+    ET_LEFT_PAREN       '('
+    ET_RIGHT_PAREN      ')'
+    ET_LEFT_BRACKET     '['
+    ET_RIGHT_BRACKET    ']'
+    ET_DOT              '.'
+    ET_MODULE_SPEC      '@'
+    ET_VAR_EXIST        '?'
+    ET_RIGHT_ARROW      '->'
+    ET_STRING_QUOTE     '\''
 
-    ET_C_NOT		'!'
-    ET_C_EQ		'=='
-    ET_C_NE		'!='
-    ET_C_LT		'<'
-    ET_C_LE		'<='
-    ET_C_GT		'>'
-    ET_C_GE		'>='
-    ET_C_AND		'&&'
-    ET_C_OR		'||'
+    ET_C_NOT            '!'
+    ET_C_EQ             '=='
+    ET_C_NE             '!='
+    ET_C_LT             '<'
+    ET_C_LE             '<='
+    ET_C_GT             '>'
+    ET_C_GE             '>='
+    ET_C_AND            '&&'
+    ET_C_OR             '||'
 
-	% keywords
-    ET_INT		'INT'
-    ET_REAL		'REAL'
-    ET_DBLE		'DBLE'
-    ET_CMPLX		'CMPLX'
-    ET_DCMPLX		'DCMPLX';
+        % keywords
+    ET_INT              'INT'
+    ET_REAL             'REAL'
+    ET_DBLE             'DBLE'
+    ET_CMPLX            'CMPLX'
+    ET_DCMPLX           'DCMPLX';
     
 type info_type: INFO_ARRAY INFO_FUNC INFO_STRING INFO_OTHER;
 
 input :
-	% character strings for various structure display operators
-	% first character is priority
-    TSTR_PAREN		'9(x)' = 0x1000
-    TSTR_POINTER_IND	'1*x'
-    TSTR_FIELD_SELECT	'2x.y'
-    TSTR_POINTER_FIELD	'2x->y'
-    TSTR_ARRAY		'2x(y)'
-    TSTR_SELF		'0x'
-    TSTR_NULL		'0NULL';
+        % character strings for various structure display operators
+        % first character is priority
+    TSTR_PAREN          '9(x)' = 0x1000
+    TSTR_POINTER_IND    '1*x'
+    TSTR_FIELD_SELECT   '2x.y'
+    TSTR_POINTER_FIELD  '2x->y'
+    TSTR_ARRAY          '2x(y)'
+    TSTR_SELF           '0x'
+    TSTR_NULL           '0NULL';
 
 
 rules
 
     expr:
-	MarkArrayOrder( true )
-	SwitchOff( sw_case_sensitive )
-	ScanCCharNum( false )
-	SetEvalSubstring( false )
-	MoveScanPtr( 0 )    % rescan current token
-	PurgePgmStack
-	@assignment
+        MarkArrayOrder( true )
+        SwitchOff( sw_case_sensitive )
+        ScanCCharNum( false )
+        SetEvalSubstring( false )
+        MoveScanPtr( 0 )    % rescan current token
+        PurgePgmStack
+        @assignment
     ;
     
 
     parse_qualified_name >>bool:
-	[GetName
-	| false:
-	    >>false
-	| *:
-	    >>true
-	]
+        [GetName
+        | false:
+            >>false
+        | *:
+            >>true
+        ]
     ;
 
     parse_string:
-	ScanString( true )  %
-	ScanRestore	    % do these so that Scan() won't skip leading spaces
-	MoveScanPtr( 1 )
-	{
-	    [
-	      | ET_STRING_QUOTE:
-		MoveScanPtr( 1 )
-		[
-		  | ET_STRING_QUOTE:
-		    AddChar
-		    MoveScanPtr( 1 )
-		  | *:
-		    PushString
-		    ScanString( false )
-		    >>
-		]
-	      | *:
-		AddChar
-		MoveScanPtr( 1 )
-	    ]
-	}
+        ScanString( true )  %
+        ScanRestore         % do these so that Scan() won't skip leading spaces
+        MoveScanPtr( 1 )
+        {
+            [
+              | ET_STRING_QUOTE:
+                MoveScanPtr( 1 )
+                [
+                  | ET_STRING_QUOTE:
+                    AddChar
+                    MoveScanPtr( 1 )
+                  | *:
+                    PushString
+                    ScanString( false )
+                    >>
+                ]
+              | *:
+                AddChar
+                MoveScanPtr( 1 )
+            ]
+        }
     ;
 
 
 !include "dbgrules.ssl"
 
     nest_expr:
-	@assignment
+        @assignment
     ;
 
 
     nest_callexpr:
-	ExprDepthAdj( 1 )
-	@assignment
-	ExprDepthAdj( -1 )
+        ExprDepthAdj( 1 )
+        @assignment
+        ExprDepthAdj( -1 )
     ;
 
 
     assignment:
-	@logical_equiv
-	[
-	  | ET_GETS:
-	    @assignment
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoAssign
-	      | *:
-	    ]
-	  | ET_MUL_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoMul
-		DoAssign
-	      | *:
-	    ]
-	  | ET_DIV_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoDiv
-		DoAssign
-	      | *:
-	    ]
-	  | ET_MOD_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoMod
-		DoAssign
-	      | *:
-	    ]
-	  | ET_PLUS_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		@perform_add
-		DoAssign
-	      | *:
-	    ]
-	  | ET_MINUS_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		@perform_minus
-		DoAssign
-	      | *:
-	    ]
-	  | ET_RSHFT_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		@negate
-		DoShift
-		DoAssign
-	      | *:
-	    ]
-	  | ET_LSHFT_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoShift
-		DoAssign
-	      | *:
-	    ]
-	  | ET_AND_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoAnd
-		DoAssign
-	      | *:
-	    ]
-	  | ET_XOR_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoXor
-		DoAssign
-	      | *:
-	    ]
-	  | ET_OR_GETS:
-	    @check_dup
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		DoOr
-		DoAssign
-	      | *:
-	    ]
-	  | *:
-	]
+        @logical_equiv
+        [
+          | ET_GETS:
+            @assignment
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoAssign
+              | *:
+            ]
+          | ET_MUL_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoMul
+                DoAssign
+              | *:
+            ]
+          | ET_DIV_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoDiv
+                DoAssign
+              | *:
+            ]
+          | ET_MOD_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoMod
+                DoAssign
+              | *:
+            ]
+          | ET_PLUS_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                @perform_add
+                DoAssign
+              | *:
+            ]
+          | ET_MINUS_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                @perform_minus
+                DoAssign
+              | *:
+            ]
+          | ET_RSHFT_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                @negate
+                DoShift
+                DoAssign
+              | *:
+            ]
+          | ET_LSHFT_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoShift
+                DoAssign
+              | *:
+            ]
+          | ET_AND_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoAnd
+                DoAssign
+              | *:
+            ]
+          | ET_XOR_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoXor
+                DoAssign
+              | *:
+            ]
+          | ET_OR_GETS:
+            @check_dup
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                DoOr
+                DoAssign
+              | *:
+            ]
+          | *:
+        ]
     ;
 
     check_dup:
-	[SkipCount
-	  | 0:
-	    PushDup
-	  | *:
-	]
-	@assignment
+        [SkipCount
+          | 0:
+            PushDup
+          | *:
+        ]
+        @assignment
     ;
 
 
     logical_equiv:
-	@logical_or
-	{
-	    [
-	      | ET_L_EQV:
-		@logical_or
-		[SkipCount
-		  | 0:
-		    DoTstTrue( 1 )	% assure both args are true or false
-		    StackSwap( 1 )
-		    DoTstTrue( 1 )
-		    DoTstEQ( 1 )	% value is (x1.EQV.x2)
-		  | *:
-		]
-	      | ET_L_NEQV:
-		@logical_or
-		[SkipCount
-		  | 0:
-		    DoTstTrue( 1 )	% assure both args are true or false
-		    StackSwap( 1 )
-		    DoTstTrue( 1 )
-		    DoTstEQ( 1 )	% value is (x1.EQV.x2)
-		    @perform_not	% value is now (x1.NEQV.x2)
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @logical_or
+        {
+            [
+              | ET_L_EQV:
+                @logical_or
+                [SkipCount
+                  | 0:
+                    DoTstTrue( 1 )      % assure both args are true or false
+                    StackSwap( 1 )
+                    DoTstTrue( 1 )
+                    DoTstEQ( 1 )        % value is (x1.EQV.x2)
+                  | *:
+                ]
+              | ET_L_NEQV:
+                @logical_or
+                [SkipCount
+                  | 0:
+                    DoTstTrue( 1 )      % assure both args are true or false
+                    StackSwap( 1 )
+                    DoTstTrue( 1 )
+                    DoTstEQ( 1 )        % value is (x1.EQV.x2)
+                    @perform_not        % value is now (x1.NEQV.x2)
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     logical_or:
-	@logical_and
-	{
-	    [
-	      | ET_L_OR,ET_C_OR:
-		[SkipCount
-		  | 0:
-		    [DoTstTrue( 1 )
-		      | false:
-			PopEntry
-		      | *:
-			@skip_ors
-			>
-		    ]
-		  | *:
-		]
-		@logical_and
-		[SkipCount
-		  | 0:
-		    DoTstTrue( 1 )	% make result either true or false
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @logical_and
+        {
+            [
+              | ET_L_OR,ET_C_OR:
+                [SkipCount
+                  | 0:
+                    [DoTstTrue( 1 )
+                      | false:
+                        PopEntry
+                      | *:
+                        @skip_ors
+                        >
+                    ]
+                  | *:
+                ]
+                @logical_and
+                [SkipCount
+                  | 0:
+                    DoTstTrue( 1 )      % make result either true or false
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     skip_ors:
-	SkipCountAdd( 1 )
-	{
-	    @logical_and
-	    [
-	      | ET_L_OR,ET_C_OR:
-	      | *:
-		>
-	    ]
-	}
-	SkipCountAdd( -1 )
+        SkipCountAdd( 1 )
+        {
+            @logical_and
+            [
+              | ET_L_OR,ET_C_OR:
+              | *:
+                >
+            ]
+        }
+        SkipCountAdd( -1 )
     ;
 
 
     logical_and:
-	@logical_not
-	{
-	    [
-	      | ET_L_AND,ET_C_AND:
-		[SkipCount
-		  | 0:
-		    [DoTstTrue( 1 )
-		      | false:
-			@skip_ands
-			>
-		      | *:
-			PopEntry
-		    ]
-		  | *:
-		]
-		@logical_not
-		[SkipCount
-		  | 0:
-		    DoTstTrue( 1 )	% make result either true or false
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @logical_not
+        {
+            [
+              | ET_L_AND,ET_C_AND:
+                [SkipCount
+                  | 0:
+                    [DoTstTrue( 1 )
+                      | false:
+                        @skip_ands
+                        >
+                      | *:
+                        PopEntry
+                    ]
+                  | *:
+                ]
+                @logical_not
+                [SkipCount
+                  | 0:
+                    DoTstTrue( 1 )      % make result either true or false
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     skip_ands:
-	SkipCountAdd( 1 )
-	{
-	    @logical_not
-	    [
-	      | ET_L_AND,ET_C_AND:
-	      | *:
-		>
-	    ]
-	}
-	SkipCountAdd( -1 )
+        SkipCountAdd( 1 )
+        {
+            @logical_not
+            [
+              | ET_L_AND,ET_C_AND:
+              | *:
+                >
+            ]
+        }
+        SkipCountAdd( -1 )
     ;
 
 
 
     logical_not:
-	[
-	  | ET_L_NOT,ET_C_NOT:
-	    @bit_inclusive_or
-	    [SkipCount
-	      | 0:
-		DoTstTrue( 1 )	    % make result either true or false
-		@perform_not
-	      | *:
-	    ]
-	  | *:
-	    @bit_inclusive_or
-	]
+        [
+          | ET_L_NOT,ET_C_NOT:
+            @bit_inclusive_or
+            [SkipCount
+              | 0:
+                DoTstTrue( 1 )      % make result either true or false
+                @perform_not
+              | *:
+            ]
+          | *:
+            @bit_inclusive_or
+        ]
     ;
 
 
-    perform_not:	% do .NOT. on the top stack element
-	PushInt( 1 )
-	DoXor
+    perform_not:        % do .NOT. on the top stack element
+        PushInt( 1 )
+        DoXor
     ;
 
 
 
     bit_inclusive_or:
-	@bit_exclusive_or
-	{
-	    [
-	      | ET_OR:
-		@bit_exclusive_or
-		[SkipCount
-		  | 0:
-		    DoOr
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @bit_exclusive_or
+        {
+            [
+              | ET_OR:
+                @bit_exclusive_or
+                [SkipCount
+                  | 0:
+                    DoOr
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     bit_exclusive_or:
-	@bit_and
-	{
-	    [
-	      | ET_XOR:
-		@bit_and
-		[SkipCount
-		  | 0:
-		    DoXor
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @bit_and
+        {
+            [
+              | ET_XOR:
+                @bit_and
+                [SkipCount
+                  | 0:
+                    DoXor
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     bit_and:
-	@relational_expr
-	{
-	    [
-	      | ET_AND:
-		@relational_expr
-		[SkipCount
-		  | 0:
-		    DoAnd
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @relational_expr
+        {
+            [
+              | ET_AND:
+                @relational_expr
+                [SkipCount
+                  | 0:
+                    DoAnd
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
 
     relational_expr:
-	@arith_shift
-	{
-	    [
-	      | ET_EQ,ET_C_EQ:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    DoTstEQ( 1 )
-		  | *:
-		]
-	      | ET_NE,ET_C_NE:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    DoTstEQ(1)
-		    @perform_not
-		  | *:
-		]
-	      | ET_LT,ET_C_LT:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    DoTstLT( 1 )
-		  | *:
-		]
-	      | ET_GE,ET_C_GE:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    DoTstLT( 1 )
-		    @perform_not
-		  | *:
-		]
-	      | ET_GT,ET_C_GT:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    StackSwap( 1 )
-		    DoTstLT( 1 )
-		  | *:
-		]
-	      | ET_LE,ET_C_LE:
-		@arith_shift
-		[SkipCount
-		  | 0:
-		    StackSwap( 1 )
-		    DoTstLT( 1 )
-		    @perform_not
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @arith_shift
+        {
+            [
+              | ET_EQ,ET_C_EQ:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    DoTstEQ( 1 )
+                  | *:
+                ]
+              | ET_NE,ET_C_NE:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    DoTstEQ(1)
+                    @perform_not
+                  | *:
+                ]
+              | ET_LT,ET_C_LT:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    DoTstLT( 1 )
+                  | *:
+                ]
+              | ET_GE,ET_C_GE:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    DoTstLT( 1 )
+                    @perform_not
+                  | *:
+                ]
+              | ET_GT,ET_C_GT:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    StackSwap( 1 )
+                    DoTstLT( 1 )
+                  | *:
+                ]
+              | ET_LE,ET_C_LE:
+                @arith_shift
+                [SkipCount
+                  | 0:
+                    StackSwap( 1 )
+                    DoTstLT( 1 )
+                    @perform_not
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
 
     arith_shift:
-	@additive
-	{
-	    [
-	      | ET_LSHIFT:
-		@additive
-		[SkipCount
-		  | 0:
-		    DoShift
-		  | *:
-		]
-	      | ET_RSHIFT:
-		@additive
-		[SkipCount
-		  | 0:
-		    @negate
-		    DoShift
-		  | *:
-		]
-	      | ET_STRING_CONCAT:
-		@additive
-		[SkipCount
-		  | 0:
-		    DoStringConcat
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @additive
+        {
+            [
+              | ET_LSHIFT:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoShift
+                  | *:
+                ]
+              | ET_RSHIFT:
+                @additive
+                [SkipCount
+                  | 0:
+                    @negate
+                    DoShift
+                  | *:
+                ]
+              | ET_STRING_CONCAT:
+                @additive
+                [SkipCount
+                  | 0:
+                    DoStringConcat
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
     additive:
-	[
-	  | ET_PLUS:
-	    @multiplicative
-	  | ET_MINUS:
-	    @multiplicative
-	    [SkipCount
-	      | 0:
-		@negate
-	      | *:
-	    ]
-	  | *:
-	    @multiplicative
-	]
-	{
-	    [
-	      | ET_PLUS:
-		@multiplicative
-		[SkipCount
-		  | 0:
-		    @perform_add
-		  | *:
-		]
-	      | ET_MINUS:
-		@multiplicative
-		[SkipCount
-		  | 0:
-		    @perform_minus
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        [
+          | ET_PLUS:
+            @multiplicative
+          | ET_MINUS:
+            @multiplicative
+            [SkipCount
+              | 0:
+                @negate
+              | *:
+            ]
+          | *:
+            @multiplicative
+        ]
+        {
+            [
+              | ET_PLUS:
+                @multiplicative
+                [SkipCount
+                  | 0:
+                    @perform_add
+                  | *:
+                ]
+              | ET_MINUS:
+                @multiplicative
+                [SkipCount
+                  | 0:
+                    @perform_minus
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
 
     multiplicative:
-	@exponentiation
-	{
-	    [
-	      | ET_MUL:
-		@exponentiation
-		[SkipCount
-		  | 0:
-		    DoMul
-		  | *:
-		]
-	      | ET_DIV:
-		@exponentiation
-		[SkipCount
-		  | 0:
-		    DoDiv
-		  | *:
-		]
-	      | ET_MOD:
-		@exponentiation
-		[SkipCount
-		  | 0:
-		    DoMod
-		  | *:
-		]
-	      | *:
-		>>
-	    ]
-	}
+        @exponentiation
+        {
+            [
+              | ET_MUL:
+                @exponentiation
+                [SkipCount
+                  | 0:
+                    DoMul
+                  | *:
+                ]
+              | ET_DIV:
+                @exponentiation
+                [SkipCount
+                  | 0:
+                    DoDiv
+                  | *:
+                ]
+              | ET_MOD:
+                @exponentiation
+                [SkipCount
+                  | 0:
+                    DoMod
+                  | *:
+                ]
+              | *:
+                >>
+            ]
+        }
     ;
 
 
 
     exponentiation:
-	@unary
+        @unary
 %   not implemented (yet ?)
-%	[
-%	  | ET_EXP:
-%	    @exponentiation
-%	    [SkipCount
-%	      | 0:
-%		DoExp
-%	      | *:
-%	    ]
-%	  | *:
-%	]
+%       [
+%         | ET_EXP:
+%           @exponentiation
+%           [SkipCount
+%             | 0:
+%               DoExp
+%             | *:
+%           ]
+%         | *:
+%       ]
     ;
 
 
 
     unary:
-	[
-	  | ET_PLUS_PLUS:
-	    @unary
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		PushDup
-		PushInt( 1 )
-		@perform_add
-		DoAssign
-	      | *:
-	    ]
-	  | ET_MINUS_MINUS:
-	    @unary
-	    SwitchOn( sw_side_effect )
-	    [SkipCount
-	      | 0:
-		PushDup
-		PushInt( -1 )
-		@perform_add
-		DoAssign
-	      | *:
-	    ]
-	  | ET_AND:
-	    @unary
-	    [SkipCount
-	      | 0:
-		DoAddr
-	      | *:
-	    ]
-	  | ET_MUL:
-	    @unary
-	    [SkipCount
-	      | 0:
-	        @do_points_unsigned
-	      | *:
-	    ]
-	  | ET_MOD:
-	    @unary
-	    [SkipCount
-	      | 0:
-	        @do_points_addr
-	      | *:
-	    ]
-	  | ET_NOT:
-	    @unary
-	    [SkipCount
-	      | 0:
-		PushInt( -1 )
-		DoXor
-	      | *:
-	    ]
-	  | *:
-	    @postfix
-	]
+        [
+          | ET_PLUS_PLUS:
+            @unary
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                PushDup
+                PushInt( 1 )
+                @perform_add
+                DoAssign
+              | *:
+            ]
+          | ET_MINUS_MINUS:
+            @unary
+            SwitchOn( sw_side_effect )
+            [SkipCount
+              | 0:
+                PushDup
+                PushInt( -1 )
+                @perform_add
+                DoAssign
+              | *:
+            ]
+          | ET_AND:
+            @unary
+            [SkipCount
+              | 0:
+                DoAddr
+              | *:
+            ]
+          | ET_MUL:
+            @unary
+            [SkipCount
+              | 0:
+                @do_points_unsigned
+              | *:
+            ]
+          | ET_MOD:
+            @unary
+            [SkipCount
+              | 0:
+                @do_points_addr
+              | *:
+            ]
+          | ET_NOT:
+            @unary
+            [SkipCount
+              | 0:
+                PushInt( -1 )
+                DoXor
+              | *:
+            ]
+          | *:
+            @postfix
+        ]
     ;
 
   
 
     stack_info >> info_type:
         [SSLVersion( version_dip )
-    	  | false:
-	    [StackClass( 0 )	%OBSOLETE
-	      | stk_array, stk_near_ptr, stk_far_ptr: 
-	          >>INFO_ARRAY
-	      | stk_func, stk_addr: 
-	          >>INFO_FUNC
-	      | stk_string: 
-	          >>INFO_STRING
-	      | *:
-	          >>INFO_OTHER
-	      ]
-	  | *:
-	      [StackKind( 0 ) 
-	        | TK_POINTER, TK_ARRAY:
-		    >>INFO_ARRAY
-		| TK_FUNCTION, TK_CODE:
-		    >>INFO_FUNC
-		| TK_STRING:
-		    >>INFO_STRING
-	        | *:
-		    >>INFO_OTHER
-		]
-	  ]
+          | false:
+            [StackClass( 0 )    %OBSOLETE
+              | stk_array, stk_near_ptr, stk_far_ptr: 
+                  >>INFO_ARRAY
+              | stk_func, stk_addr: 
+                  >>INFO_FUNC
+              | stk_string: 
+                  >>INFO_STRING
+              | *:
+                  >>INFO_OTHER
+              ]
+          | *:
+              [StackKind( 0 ) 
+                | TK_POINTER, TK_ARRAY:
+                    >>INFO_ARRAY
+                | TK_FUNCTION, TK_CODE:
+                    >>INFO_FUNC
+                | TK_STRING:
+                    >>INFO_STRING
+                | *:
+                    >>INFO_OTHER
+                ]
+          ]
     ;
 
 
     postfix:
-	@segmented
-	{
-	    ScanSave
-	    [
-	      | ET_LEFT_PAREN:
-		[SkipCount
-		  | 0:
-		    [@stack_info
-		      | INFO_ARRAY:
-			[SkipCount
-			  | 0:
-			    StartSubscript
-			  | *:
-			]
-			{
-			    @nest_callexpr
-			    [SkipCount
-			      | 0:
-				AddSubscriptIndex
-			      | *:
-			    ]
-			    [
-			      | ET_COMMA:
-				% null statement
-			      | ET_RIGHT_PAREN:
-				>
-			      | *:
-				ET_RIGHT_PAREN	% cause an error
-			    ]
-			}
-			[SkipCount
-			  | 0:
-			    EndSubscript
-			  | *:
-			]
-		      | INFO_FUNC:
-			[ExprIsCall
-			  | true:
-			    ScanRestore	% unget '(' token
-			    >>
-			  | *:
-			]
-			NextNestedCall
-			NumSet( 0 )
-			[
-			  | ET_RIGHT_PAREN:
-			    % endchoice
-			  | *:
-			    {
-				NumPush
-				@nest_callexpr
-				[SkipCount
-				  | 0:
-				    StackSwap( 1 )
-				  | *:
-				]
-				NumPop
-				NumAdd( 1 )
-				[
-				  | ET_COMMA:
-				    % null statement
-				  | ET_RIGHT_PAREN:
-				    >
-				  | *:
-				    ET_RIGHT_PAREN % cause error
-				]
-			    }
-			]
-			SwitchOn( sw_side_effect )
-			[SkipCount
-			  | 0:
-			    DoCall( true )
-			  | *:
-			]
-		      | INFO_STRING:
-			SetEvalSubstring( true )
-			[
-			  | ET_COLON:
-			    @substring_index_2
-			  | *:
-			    @nest_callexpr
-			    ET_COLON
-			    UseSubstringIndex1
-			    @substring_index_2
-			]
-		      | *:
-			#err_ill_type
-		    ]
-		  | *:
-		    [ExprIsCall
-		      | true:
-			ScanRestore     % unget '(' token
-			>>
-		      | *:
-		    ]
-		    [
-		      | ET_RIGHT_PAREN:
-			% endchoice
-		      | *:
-			{
-			    @nest_callexpr
-			    [
-			      | ET_COMMA, ET_COLON:
-				% null statement
-			      | ET_RIGHT_PAREN:
-				>
-			      | *:
-				ET_RIGHT_PAREN % cause error
-			    ]
-			}
-		    ]
-		]
-	      | ET_DOT:
-		@field_name
-	      | ET_RIGHT_ARROW:
-		[SkipCount
-		  | 0:
-		    @do_points_unsigned
-		  | *:
-		]
-		@field_name
-	      | ET_PLUS_PLUS:
-		SwitchOn( sw_side_effect )
-		[SkipCount
-		  | 0:
-		    PushDup
-		    StackRValue( 0 )
-		    StackSwap( 1 )
-		    PushDup
-		    PushInt( 1 )
-		    @perform_add
-		    DoAssign
-		    PopEntry
-		  | *:
-		]
-	      | ET_MINUS_MINUS:
-		SwitchOn( sw_side_effect )
-		[SkipCount
-		  | 0:
-		    PushDup
-		    StackRValue( 0 )
-		    StackSwap( 1 )
-		    PushDup
-		    PushInt( -1 )
-		    @perform_add
-		    DoAssign
-		    PopEntry
-		  | *:
-		]
-	      | *:
-		ScanPop
-		>>
-		SwitchOn( sw_side_effect )
-	    ]
-	    ScanPop
-	}
+        @segmented
+        {
+            ScanSave
+            [
+              | ET_LEFT_PAREN:
+                [SkipCount
+                  | 0:
+                    [@stack_info
+                      | INFO_ARRAY:
+                        [SkipCount
+                          | 0:
+                            StartSubscript
+                          | *:
+                        ]
+                        {
+                            @nest_callexpr
+                            [SkipCount
+                              | 0:
+                                AddSubscriptIndex
+                              | *:
+                            ]
+                            [
+                              | ET_COMMA:
+                                % null statement
+                              | ET_RIGHT_PAREN:
+                                >
+                              | *:
+                                ET_RIGHT_PAREN  % cause an error
+                            ]
+                        }
+                        [SkipCount
+                          | 0:
+                            EndSubscript
+                          | *:
+                        ]
+                      | INFO_FUNC:
+                        [ExprIsCall
+                          | true:
+                            ScanRestore % unget '(' token
+                            >>
+                          | *:
+                        ]
+                        NextNestedCall
+                        NumSet( 0 )
+                        [
+                          | ET_RIGHT_PAREN:
+                            % endchoice
+                          | *:
+                            {
+                                NumPush
+                                @nest_callexpr
+                                [SkipCount
+                                  | 0:
+                                    StackSwap( 1 )
+                                  | *:
+                                ]
+                                NumPop
+                                NumAdd( 1 )
+                                [
+                                  | ET_COMMA:
+                                    % null statement
+                                  | ET_RIGHT_PAREN:
+                                    >
+                                  | *:
+                                    ET_RIGHT_PAREN % cause error
+                                ]
+                            }
+                        ]
+                        SwitchOn( sw_side_effect )
+                        [SkipCount
+                          | 0:
+                            DoCall( true )
+                          | *:
+                        ]
+                      | INFO_STRING:
+                        SetEvalSubstring( true )
+                        [
+                          | ET_COLON:
+                            @substring_index_2
+                          | *:
+                            @nest_callexpr
+                            ET_COLON
+                            UseSubstringIndex1
+                            @substring_index_2
+                        ]
+                      | *:
+                        #err_ill_type
+                    ]
+                  | *:
+                    [ExprIsCall
+                      | true:
+                        ScanRestore     % unget '(' token
+                        >>
+                      | *:
+                    ]
+                    [
+                      | ET_RIGHT_PAREN:
+                        % endchoice
+                      | *:
+                        {
+                            @nest_callexpr
+                            [
+                              | ET_COMMA, ET_COLON:
+                                % null statement
+                              | ET_RIGHT_PAREN:
+                                >
+                              | *:
+                                ET_RIGHT_PAREN % cause error
+                            ]
+                        }
+                    ]
+                ]
+              | ET_DOT:
+                @field_name
+              | ET_RIGHT_ARROW:
+                [SkipCount
+                  | 0:
+                    @do_points_unsigned
+                  | *:
+                ]
+                @field_name
+              | ET_PLUS_PLUS:
+                SwitchOn( sw_side_effect )
+                [SkipCount
+                  | 0:
+                    PushDup
+                    StackRValue( 0 )
+                    StackSwap( 1 )
+                    PushDup
+                    PushInt( 1 )
+                    @perform_add
+                    DoAssign
+                    PopEntry
+                  | *:
+                ]
+              | ET_MINUS_MINUS:
+                SwitchOn( sw_side_effect )
+                [SkipCount
+                  | 0:
+                    PushDup
+                    StackRValue( 0 )
+                    StackSwap( 1 )
+                    PushDup
+                    PushInt( -1 )
+                    @perform_add
+                    DoAssign
+                    PopEntry
+                  | *:
+                ]
+              | *:
+                ScanPop
+                >>
+                SwitchOn( sw_side_effect )
+            ]
+            ScanPop
+        }
     ;
 
     substring_index_2:
-	[
-	  | ET_RIGHT_PAREN:
-	    % null statement
-	  | *:
-	    @nest_callexpr
-	    ET_RIGHT_PAREN
-	    UseSubstringIndex2
-	]
-	SetEvalSubstring( false )
+        [
+          | ET_RIGHT_PAREN:
+            % null statement
+          | *:
+            @nest_callexpr
+            ET_RIGHT_PAREN
+            UseSubstringIndex2
+        ]
+        SetEvalSubstring( false )
     ;
 
 
     field_name:
         @push_name
-	[SkipCount
-	  | 0:
-	    DoField
-	  | *:
-	]
+        [SkipCount
+          | 0:
+            DoField
+          | *:
+        ]
     ;
 
 
     segmented:
-	[
-	  | ET_DOT:
-	    [SkipCount
-	      | 0:
-		PushDot
-	      | *:
-	    ]
-	  | ET_VAR_EXIST:
-	    @primary
-	    [SkipCount
-	      | 0:
-		DoTstExist( 1 )
-	      | *:
-	    ]
-	  | *:
-	    @primary
-	    [EvalSubstring
-	      | false:
-		[
-		  | ET_COLON:
-		    @primary
-		    [SkipCount
-		      | 0:
-			DoMakeAddr
-		      | *:
-		    ]
-		  | *:
-		]
-	      | *:
-	    ]
-	]
+        [
+          | ET_DOT:
+            [SkipCount
+              | 0:
+                PushDot
+              | *:
+            ]
+          | ET_VAR_EXIST:
+            @primary
+            [SkipCount
+              | 0:
+                DoTstExist( 1 )
+              | *:
+            ]
+          | *:
+            @primary
+            [EvalSubstring
+              | false:
+                [
+                  | ET_COLON:
+                    @primary
+                    [SkipCount
+                      | 0:
+                        DoMakeAddr
+                      | *:
+                    ]
+                  | *:
+                ]
+              | *:
+            ]
+        ]
     ;
 
 
     not_complex_constant:
-	ScanRestore
-	@nest_expr
-	@req_right_paren
+        ScanRestore
+        @nest_expr
+        @req_right_paren
     ;
 
     complex_constant_or_nested_expression:
-	ScanSave
-	[
-	  | ET_PLUS:
-	    PushInt( 1 )
-	  | ET_MINUS:
-	    PushInt( -1 )
-	  | *:
-	    PushInt( 1 )
-	]
-	[PushNum
-	  | true:
-	    DoMul
-	  | *:
-	    PopEntry
-	    @not_complex_constant
-	    >>
-	]
-	[
-	  | ET_COMMA:
-	    [
-	      | ET_PLUS:
-		PushInt( 1 )
-	      | ET_MINUS:
-		PushInt( -1 )
-	      | *:
-		PushInt( 1 )
-	    ]
-	    [PushNum
-	      | true:
-		DoMul
-	      | *:
-		PopEntry
-		PopEntry
-		@not_complex_constant
-		>>
-	    ]
-	    [
-	      | ET_RIGHT_PAREN:
-		[SkipCount
-		  | 0:
-		    DoMakeComplex
-		  | *:
-		    PopEntry
-		    PopEntry
-		]
-		ScanPop
-		>>
-	      | *:
-		PopEntry
-		PopEntry
-		@not_complex_constant
-		>>
-	    ]
-	  | *:
-	    PopEntry
-	    @not_complex_constant
-	    >>
-	]
+        ScanSave
+        [
+          | ET_PLUS:
+            PushInt( 1 )
+          | ET_MINUS:
+            PushInt( -1 )
+          | *:
+            PushInt( 1 )
+        ]
+        [PushNum
+          | true:
+            DoMul
+          | *:
+            PopEntry
+            @not_complex_constant
+            >>
+        ]
+        [
+          | ET_COMMA:
+            [
+              | ET_PLUS:
+                PushInt( 1 )
+              | ET_MINUS:
+                PushInt( -1 )
+              | *:
+                PushInt( 1 )
+            ]
+            [PushNum
+              | true:
+                DoMul
+              | *:
+                PopEntry
+                PopEntry
+                @not_complex_constant
+                >>
+            ]
+            [
+              | ET_RIGHT_PAREN:
+                [SkipCount
+                  | 0:
+                    DoMakeComplex
+                  | *:
+                    PopEntry
+                    PopEntry
+                ]
+                ScanPop
+                >>
+              | *:
+                PopEntry
+                PopEntry
+                @not_complex_constant
+                >>
+            ]
+          | *:
+            PopEntry
+            @not_complex_constant
+            >>
+        ]
     ;
 
     push_type_i4:
         [SSLVersion( version_dip )
-	| false:
-	    PushScalarType( type_s4 )
-	| *:
-	    PushType( TI_integer_signed_4 )
-	]
+        | false:
+            PushScalarType( type_s4 )
+        | *:
+            PushType( TI_integer_signed_4 )
+        ]
     ;
     
     push_type_f8:
         [SSLVersion( version_dip )
-	| false:
-	    PushScalarType( type_f8 )
-	| *:
-	    PushType( TI_real_8 )
-	]
+        | false:
+            PushScalarType( type_f8 )
+        | *:
+            PushType( TI_real_8 )
+        ]
     ;
     
     push_type_z16:
         [SSLVersion( version_dip )
-	| false:
-	    PushScalarType( type_z16 )
-	| *:
-	    PushType( TI_complex_16 )
-	]
+        | false:
+            PushScalarType( type_z16 )
+        | *:
+            PushType( TI_complex_16 )
+        ]
     ;
 
     primary:
-	[
-	  | ET_INT:
-	    ET_LEFT_PAREN
-	    @push_type_i4
-	    @nest_callexpr
-	    @req_right_paren
-	    [SkipCount
-	      | 0:
-		DoConvert
-	      | *:
-		PopEntry
-	    ]
-	  | ET_REAL, ET_DBLE:
-	    ET_LEFT_PAREN
-	    @push_type_f8
-	    @nest_callexpr
-	    @req_right_paren
-	    [SkipCount
-	      | 0:
-		DoConvert
-	      | *:
-		PopEntry
-	    ]
-	  | ET_CMPLX, ET_DCMPLX:
-	    ET_LEFT_PAREN
-	    @nest_callexpr
-	    [
-	      | ET_RIGHT_PAREN:
-		[SkipCount
-		  | 0:
-		    @push_type_z16
-		    StackSwap( 1 )
-		    DoConvert
-		  | *:
-		]
-	      | ET_COMMA:
-		@nest_callexpr
-		@req_right_paren
-		[SkipCount
-		  | 0:
-		    DoMakeComplex
-		  | *:
-		]
-	      | *:
-		ET_COMMA    % cause error
-	    ]
-	  | ET_LEFT_PAREN:
-	    @complex_constant_or_nested_expression
-	  | ET_LEFT_BRACKET:
-	    [PushRegSet
-	      | false:
-		#err_loc_and_want_reg_name
-	      | *:
-	        @skip_pop
-	    ]
-	    ET_RIGHT_BRACKET
-	  | *:
-	    @push_token
-	    @skip_pop
-	]
+        [
+          | ET_INT:
+            ET_LEFT_PAREN
+            @push_type_i4
+            @nest_callexpr
+            @req_right_paren
+            [SkipCount
+              | 0:
+                DoConvert
+              | *:
+                PopEntry
+            ]
+          | ET_REAL, ET_DBLE:
+            ET_LEFT_PAREN
+            @push_type_f8
+            @nest_callexpr
+            @req_right_paren
+            [SkipCount
+              | 0:
+                DoConvert
+              | *:
+                PopEntry
+            ]
+          | ET_CMPLX, ET_DCMPLX:
+            ET_LEFT_PAREN
+            @nest_callexpr
+            [
+              | ET_RIGHT_PAREN:
+                [SkipCount
+                  | 0:
+                    @push_type_z16
+                    StackSwap( 1 )
+                    DoConvert
+                  | *:
+                ]
+              | ET_COMMA:
+                @nest_callexpr
+                @req_right_paren
+                [SkipCount
+                  | 0:
+                    DoMakeComplex
+                  | *:
+                ]
+              | *:
+                ET_COMMA    % cause error
+            ]
+          | ET_LEFT_PAREN:
+            @complex_constant_or_nested_expression
+          | ET_LEFT_BRACKET:
+            [PushRegSet
+              | false:
+                #err_loc_and_want_reg_name
+              | *:
+                @skip_pop
+            ]
+            ET_RIGHT_BRACKET
+          | *:
+            @push_token
+            @skip_pop
+        ]
     ;

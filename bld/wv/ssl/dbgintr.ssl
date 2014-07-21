@@ -1,141 +1,145 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	Copyright (C) 1987, by WATCOM Systems Inc. All rights	  %
-%	reserved. No part of this software may be reproduced	  %
-%	in any form or by any means - graphic, electronic or	  %
-%	mechanical, including photocopying, recording, taping	  %
-%	or information storage and retrieval systems - except	  %
-%	with the written permission of WATCOM Systems Inc.	  %
+%       Copyright (C) 1987, by WATCOM Systems Inc. All rights     %
+%       reserved. No part of this software may be reproduced      %
+%       in any form or by any means - graphic, electronic or      %
+%       mechanical, including photocopying, recording, taping     %
+%       or information storage and retrieval systems - except     %
+%       with the written permission of WATCOM Systems Inc.        %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Modified  By			Reason
-% --------  --			------
-% 89/12/15  B.J. Stecher	split out from C.SSL / FORTRAN.SSL
+% Modified  By                  Reason
+% --------  --                  ------
+% 89/12/15  B.J. Stecher        split out from C.SSL / FORTRAN.SSL
 %
 
 % high byte => major version, low byte => minor version
-type version_info:	
-    'version_dip'	= 0x100
-    'version_curr'	= 0x100;
+type version_info:      
+    'version_dip'       = 0x100
+    'version_curr'      = 0x100
+    ;
 
 type int:
-    '-2'	= -2
-    '-1'	= -1
-     '0'	=  0
-     '1'	=  1
-     '2'	=  2
-     '3'	=  3;
+    '-2'        = -2
+    '-1'        = -1
+     '0'        =  0
+     '1'        =  1
+     '2'        =  2
+     '3'        =  3
+     ;
 
 type bool:
     false
-    true;
+    true
+    ;
     
 type type_info:
-    TK_NONE	= 0x0000
-    TK_DATA	= 0x1000
-    TK_CODE	= 0x2000
-    TK_ADDRESS	= 0x3000
-    TK_VOID	= 0x4000
-    TK_BOOL	= 0x5000
-    TK_ENUM	= 0x6000
-    TK_CHAR	= 0x7000
-    TK_INTEGER	= 0x8000
-    TK_REAL	= 0x9000
-    TK_COMPLEX	= 0xa000
-    TK_STRING	= 0xb000
-    TK_POINTER	= 0xc000
-    TK_STRUCT	= 0xd000
-    TK_ARRAY	= 0xe000
-    TK_FUNCTION	= 0xf000
+    TK_NONE     = 0x0000
+    TK_DATA     = 0x1000
+    TK_CODE     = 0x2000
+    TK_ADDRESS  = 0x3000
+    TK_VOID     = 0x4000
+    TK_BOOL     = 0x5000
+    TK_ENUM     = 0x6000
+    TK_CHAR     = 0x7000
+    TK_INTEGER  = 0x8000
+    TK_REAL     = 0x9000
+    TK_COMPLEX  = 0xa000
+    TK_STRING   = 0xb000
+    TK_POINTER  = 0xc000
+    TK_STRUCT   = 0xd000
+    TK_ARRAY    = 0xe000
+    TK_FUNCTION = 0xf000
     
-    TM_NONE	= 0x0000
+    TM_NONE     = 0x0000
 
     % for pointer/address types 
     
-    TM_NEAR	= 0x0100
-    TM_FAR	= 0x0200
-    TM_HUGE	= 0x0300
+    TM_NEAR     = 0x0100
+    TM_FAR      = 0x0200
+    TM_HUGE     = 0x0300
 
     % for integer types 
     
-    TM_SIGNED	= 0x0100
-    TM_UNSIGNED	= 0x0200
+    TM_SIGNED   = 0x0100
+    TM_UNSIGNED = 0x0200
 
     % for floating point types
     
-    TM_IEEE	= 0x0100
-    TM_VAX1	= 0x0200
-    TM_VAX2	= 0x0300
+    TM_IEEE     = 0x0100
+    TM_VAX1     = 0x0200
+    TM_VAX2     = 0x0300
 
     % for string types
     
-    TM_ASCII	= 0x0100
-    TM_EBCIDIC	= 0x0200
-    TM_UNICODE	= 0x0300
+    TM_ASCII    = 0x0100
+    TM_EBCIDIC  = 0x0200
+    TM_UNICODE  = 0x0300
     
     % size is stored in low byte
     
     
-    TI_bool_unsigned_1		= 0x5201
+    TI_bool_unsigned_1      = 0x5201
     
-    TI_char_unsigned_2		= 0x7202
+    TI_char_unsigned_2      = 0x7202
     
-    TI_integer_unsigned_0	= 0x8200
-    TI_integer_unsigned_1	= 0x8201
-    TI_integer_unsigned_2	= 0x8202
-    TI_integer_unsigned_4	= 0x8204
-    TI_integer_unsigned_8	= 0x8208
+    TI_integer_unsigned_0   = 0x8200
+    TI_integer_unsigned_1   = 0x8201
+    TI_integer_unsigned_2   = 0x8202
+    TI_integer_unsigned_4   = 0x8204
+    TI_integer_unsigned_8   = 0x8208
    
-    TI_integer_signed_0		= 0x8100
-    TI_integer_signed_1		= 0x8101
-    TI_integer_signed_2		= 0x8102
-    TI_integer_signed_4		= 0x8104
-    TI_integer_signed_8		= 0x8108
+    TI_integer_signed_0     = 0x8100
+    TI_integer_signed_1     = 0x8101
+    TI_integer_signed_2     = 0x8102
+    TI_integer_signed_4     = 0x8104
+    TI_integer_signed_8     = 0x8108
    
-    TI_real_4			= 0x9004
-    TI_real_8			= 0x9008
+    TI_real_4               = 0x9004
+    TI_real_8               = 0x9008
     
-    TI_complex_8		= 0xa008
-    TI_complex_16		= 0xa010
+    TI_complex_8            = 0xa008
+    TI_complex_16           = 0xa010
    
-    TI_address_0		= 0x3000
+    TI_address_0            = 0x3000
     
-    TI_void			= 0x4000
+    TI_void                 = 0x4000
     ;
 
 type symbol_type:
-    ST_NONE			= 0
-    ST_OPERATOR			= 1
-    ST_DESTRUCTOR		= 2
-    ST_TYPE			= 3
-    ST_STRUCT_TAG		= 4
-    ST_CLASS_TAG		= 5
-    ST_UNION_TAG		= 6
-    ST_ENUM_TAG			= 7
-    ST_NAMESPACE		= 8
+    ST_NONE                 = 0
+    ST_OPERATOR             = 1
+    ST_DESTRUCTOR           = 2
+    ST_TYPE                 = 3
+    ST_STRUCT_TAG           = 4
+    ST_CLASS_TAG            = 5
+    ST_UNION_TAG            = 6
+    ST_ENUM_TAG             = 7
+    ST_NAMESPACE            = 8
     ;
     
 type symbol_kind:
-    SK_NONE			= 0
-    SK_CODE			= 1
-    SK_DATA			= 2
-    SK_CONST			= 3
-    SK_TYPE			= 4
-    SK_PROCEDURE		= 5
-    SK_NAMESPACE		= 6
+    SK_NONE                 = 0
+    SK_CODE                 = 1
+    SK_DATA                 = 2
+    SK_CONST                = 3
+    SK_TYPE                 = 4
+    SK_PROCEDURE            = 5
+    SK_NAMESPACE            = 6
     ;
     
 type stack_form:
-    SF_NAME			= 0
-    SF_SYMBOL			= 1
-    SF_LVALUE			= 2
-    SF_RVALUE			= 3
+    SF_NAME                 = 0
+    SF_SYMBOL               = 1
+    SF_LVALUE               = 2
+    SF_RVALUE               = 3
     ;
 
-type type_classes:	%OBSOLETE
+type type_classes:      %OBSOLETE
     class_near
-    class_far;
+    class_far
+    ;
 
-type stack_class:	%OBSOLETE
+type stack_class:       %OBSOLETE
     stk_void
     stk_bool
     stk_enum
@@ -153,12 +157,13 @@ type stack_class:	%OBSOLETE
     stk_reg_set
     stk_complex
     stk_string
-    stk_unsigned	= 0x104
-    stk_unsigned_long	= 0x304
-    stk_far_ptr_long	= 0x206
-    stk_addr_long	= 0x207;
+    stk_unsigned        = 0x104
+    stk_unsigned_long   = 0x304
+    stk_far_ptr_long    = 0x206
+    stk_addr_long       = 0x207
+    ;
 
-type type_scalar:	%OBSOLETE
+type type_scalar:       %OBSOLETE
     type_void
     type_u1
     type_s1
@@ -169,15 +174,17 @@ type type_scalar:	%OBSOLETE
     type_f4
     type_f8
     type_z8
-    type_z16;
+    type_z16
+    ;
 
 type dbg_switch:
-    sw_case_sensitive	    = 0x01
-    sw_side_effect	    = 0x02
-    sw_32_bit		    = 0x04;	%OBSOLETE
+    sw_case_sensitive       = 0x01
+    sw_side_effect          = 0x02
+    sw_32_bit               = 0x04      %OBSOLETE
+    ;
 
 mechanism Misc:
-    ExprDepthAdj(int) >>int	= 0x00
+    ExprDepthAdj(int) >>int     = 0x00
     ExprIsCall >>bool
     SkipCountAdd(int)
     SkipCount >>int
@@ -185,8 +192,8 @@ mechanism Misc:
     ScanSave
     ScanRestore
     ScanPop
-    ScanString(bool)	% arg:	 true -- start string scan mode
-			%	false -- end string scan mode
+    ScanString(bool)    % arg:  true -- start string scan mode
+                        %       false -- end string scan mode
     MoveScanPtr(int)
     AddChar
     AddCEscapeChar
@@ -201,18 +208,15 @@ mechanism Misc:
     SwitchOn( dbg_switch )
     SwitchOff( dbg_switch )
     SwitchChk( dbg_switch ) >>bool
-
-	    % false => row major order (C)
-	    % true  => column major order (fortran)
-    MarkArrayOrder( bool )
+    MarkArrayOrder( bool )  % false => row major order (C)
+                            % true  => column major order (fortran)
     StartSubscript
     AddSubscriptIndex
-    EndSubscript;
-
-
+    EndSubscript
+    ;
 
 mechanism Do:
-    DoAssign		= 0x20
+    DoAssign            = 0x20
     DoMul
     DoDiv
     DoMod
@@ -222,9 +226,9 @@ mechanism Do:
     DoXor
     DoOr
     DoAddr
-    DoPoints(stack_class)	%OBSOLETE
+    DoPoints(stack_class)       %OBSOLETE
     DoField
-    DoCall( bool )	      % always takes var num
+    DoCall( bool )              % always takes var num
     DoConvert
     DoPlus
     DoMakeAddr
@@ -234,7 +238,7 @@ mechanism Do:
     DoTstExist(int) >>bool
     DoSizeType
     DoBaseType
-    DoPointType(type_classes)	%OBSOLETE
+    DoPointType(type_classes)   %OBSOLETE
     DoLkupType >>bool
     DoMakeComplex
     DoStringConcat
@@ -242,19 +246,19 @@ mechanism Do:
     %
     % Following added in version 0x100
     %
-    DoPlusScaled	
+    DoPlusScaled
     DoMinusScaled
     DoPoints2(type_info)
     DoPointType2(type_info)
-    DoScope(bool);
-
+    DoScope(bool)
+    ;
 
 mechanism Push_n_Pop:
-    PushInt(int)	= 0x40
+    PushInt(int)        = 0x40
     PushDot
     PushRegSet >>bool
     PushNum >>bool
-    PushScalarType(type_scalar)	%OBSOLETE
+    PushScalarType(type_scalar) %OBSOLETE
     PushDup
     PopEntry
     PushString
@@ -262,11 +266,11 @@ mechanism Push_n_Pop:
     % Following added in version 0x100
     %
     SSLVersion(version_info) >>bool %Here since old wd's will return FALSE
-    PushType(type_info);
-
+    PushType(type_info)
+    ;
 
 mechanism Stack:
-    StackSwap(int)	= 0x60
+    StackSwap(int)      = 0x60
     StackMoveSP(int)
     StackClass(int) >>stack_class
     StackValue(int)
@@ -279,72 +283,72 @@ mechanism Stack:
     StackKind(int) >>type_info
     StackSymKind(int) >>symbol_kind
     StackSymValue(int) >>bool
-    StackForm(int) >>stack_form;
-
+    StackForm(int) >>stack_form
+    ;
 
 % Variables
 
-
 mechanism Num:
-    NumSet(int) 	= 0x80
+    NumSet(int)         = 0x80
     NumAdd(int)
     NumPush
-    NumPop;
-
+    NumPop
+    ;
 
 type bits_type:
-    bits_none		= 0x00
-    bits_char		= 0x01
-    bits_int		= 0x02
-    bits_short		= 0x04
-    bits_long		= 0x08
-    bits_signed 	= 0x10
-    bits_unsigned	= 0x20
-    bits_float		= 0x40
-    bits_double 	= 0x80
-    bits_void		= 0x100
-    bits_byte		= 0x200
-    bits_boolean	= 0x400
-    bits_signed_char	= 0x11
-    bits_unsigned_char	= 0x21
-    bits_signed_int	= 0x12
-    bits_unsigned_int	= 0x22
-    bits_signed_short	= 0x14
-    bits_unsigned_short = 0x24
-    bits_short_int	= 0x06
-    bits_signed_short_int=0x16
-    bits_unsigned_short_int=0x26
-    bits_signed_long	= 0x18
-    bits_unsigned_long	= 0x28
-    bits_long_int	= 0x0a
-    bits_signed_long_int= 0x1a
-    bits_unsigned_long_int=0x2a
-    bits_long_float	= 0x48
-    bits_long_double	= 0x88;
+    bits_none               = 0x000
+    bits_char               = 0x001
+    bits_int                = 0x002
+    bits_short              = 0x004
+    bits_long               = 0x008
+    bits_signed             = 0x010
+    bits_unsigned           = 0x020
+    bits_float              = 0x040
+    bits_double             = 0x080
+    bits_void               = 0x100
+    bits_byte               = 0x200
+    bits_boolean            = 0x400
+    bits_signed_char        = 0x011
+    bits_unsigned_char      = 0x021
+    bits_signed_int         = 0x012
+    bits_unsigned_int       = 0x022
+    bits_signed_short       = 0x014
+    bits_unsigned_short     = 0x024
+    bits_short_int          = 0x006
+    bits_signed_short_int   = 0x016
+    bits_unsigned_short_int = 0x026
+    bits_signed_long        = 0x018
+    bits_unsigned_long      = 0x028
+    bits_long_int           = 0x00a
+    bits_signed_long_int    = 0x01a
+    bits_unsigned_long_int  = 0x02a
+    bits_long_float         = 0x048
+    bits_long_double        = 0x088
+    ;
 
 mechanism Bits:
-    BitsSet(bits_type)	= 0xa0
+    BitsSet(bits_type)  = 0xa0
     BitsGet >>bits_type
     BitsOr(bits_type) >>bool
-    BitsAnd(bits_type) >>bool;
+    BitsAnd(bits_type) >>bool
+    ;
 
 mechanism Get:
-    GetInit		= 0xc0
+    GetInit             = 0xc0
     GetFini
     GetModCurr
     GetModNameLkup
-    GetScopeSetFile		%OBSOLETE
-    GetScopeSetCurr		%OBSOLETE
-    GetScopeLkup		%OBSOLETE
+    GetScopeSetFile             %OBSOLETE
+    GetScopeSetCurr             %OBSOLETE
+    GetScopeLkup                %OBSOLETE
     GetName >>bool
     GetOperatorName
     GetLineNum >>bool
-    GetDtorName >>bool		
+    GetDtorName >>bool          
     GetSetNameType(symbol_type) 
-    GetQueryName >>bool		%OBSOLETE
-    GetAddScope			%OBSOLETE
+    GetQueryName >>bool         %OBSOLETE
+    GetAddScope                 %OBSOLETE
     ;
-
 
 error:
     err_duplicate_type_spec
@@ -353,4 +357,5 @@ error:
     err_loc_and_want_reg_name
     err_loc_and_want_operand
     err_loc_and_want_name
-    err_bad_version;
+    err_bad_version
+    ;

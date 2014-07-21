@@ -1,233 +1,229 @@
     push_name >>bool:
         GetInit
-	[GetName
-	| false:
-	    >>false
-	| *:
-	    GetFini
-	    >>true
-	]
+        [GetName
+        | false:
+            >>false
+        | *:
+            GetFini
+            >>true
+        ]
     ;
-	
 
     name_or_op_or_lnum:
-	[@parse_qualified_name	% provided by the individual languages
-	  | false:
-	    [GetLineNum
-	      | false:
-		#err_loc_and_want_operand
-	      | *:
-	    ]
-	  | *:
-	]
+        [@parse_qualified_name  % provided by the individual languages
+          | false:
+            [GetLineNum
+              | false:
+                #err_loc_and_want_operand
+              | *:
+            ]
+          | *:
+        ]
     ;
     
     skip_pop >>bool:
       [SkipCount
-	| 0:
-	  >>false
-	| *:
-	  PopEntry
-	  >>true
+        | 0:
+          >>false
+        | *:
+          PopEntry
+          >>true
       ]
     ;
 
     push_symbol >>bool:
        GetInit
        [
-	| ET_MODULE_SPEC:
-	  GetModCurr
-	  @name_or_op_or_lnum
-	| *:
-	  [@parse_qualified_name
-	    | false:
-	      >>false
-	    | *:
-	      [
-	        | ET_MODULE_SPEC:
-		  GetModNameLkup
-		  @name_or_op_or_lnum
-		| *:
-	      ]
-	  ]
-	]
-	GetFini	
-	>>true
+        | ET_MODULE_SPEC:
+          GetModCurr
+          @name_or_op_or_lnum
+        | *:
+          [@parse_qualified_name
+            | false:
+              >>false
+            | *:
+              [
+                | ET_MODULE_SPEC:
+                  GetModNameLkup
+                  @name_or_op_or_lnum
+                | *:
+              ]
+          ]
+        ]
+        GetFini 
+        >>true
     ;
 
     push_token:
-	[@push_symbol
-	  | false :
-	    [PushNum
-	      | false:
-		ScanSave
-		[
-		  | ET_STRING_QUOTE:
-		    @parse_string	% provided by individual languages
-		  | *:
-		    ScanPop
-		    #err_loc_and_want_operand
-		]
-	      | *:
-	    ]
-	  | *:
-	]
+        [@push_symbol
+          | false :
+            [PushNum
+              | false:
+                ScanSave
+                [
+                  | ET_STRING_QUOTE:
+                    @parse_string       % provided by individual languages
+                  | *:
+                    ScanPop
+                    #err_loc_and_want_operand
+                ]
+              | *:
+            ]
+          | *:
+        ]
     ;
 
-
-    negate:		    % arithmetic negative of a value
-	PushInt( 0 )
-	StackSwap( 1 )
-	DoMinus
+    negate:                 % arithmetic negative of a value
+        PushInt( 0 )
+        StackSwap( 1 )
+        DoMinus
     ;
-
 
     req_right_paren:
-	[
-	  | ET_RIGHT_PAREN:
-	    % endchoice
-	  | *:
-	    StackLValue( 0 )
-	    ET_RIGHT_PAREN % cause error
-	]
+        [
+          | ET_RIGHT_PAREN:
+            % endchoice
+          | *:
+            StackLValue( 0 )
+            ET_RIGHT_PAREN % cause error
+        ]
     ;
-
 
     perform_add:
         [SSLVersion( version_dip )
-	| false:
-	  StackLRValue( 1 )
-	  StackRValue( 0 )
-	  [StackClass( 1 )
-	    | stk_near_ptr, stk_far_ptr:
-	      @scale_int
-	    | *:
-	      [StackClass( 0 )
-		| stk_near_ptr, stk_far_ptr:
-		  StackSwap( 1 )
-		  @scale_int
-		| *:
-	      ]
-	    ]
-	    DoPlus
-	| *:
-	  DoPlusScaled
-	]
+        | false:
+          StackLRValue( 1 )
+          StackRValue( 0 )
+          [StackClass( 1 )
+            | stk_near_ptr, stk_far_ptr:
+              @scale_int
+            | *:
+              [StackClass( 0 )
+                | stk_near_ptr, stk_far_ptr:
+                  StackSwap( 1 )
+                  @scale_int
+                | *:
+              ]
+            ]
+            DoPlus
+        | *:
+          DoPlusScaled
+        ]
     ;
 
     scale_int:
-	StackMoveSP( 1 )
-	PushDup
-	DoBaseType
-	DoSizeType
-	StackMoveSP( -1 )
-	DoMul
+        StackMoveSP( 1 )
+        PushDup
+        DoBaseType
+        DoSizeType
+        StackMoveSP( -1 )
+        DoMul
     ;
 
     perform_minus:
         [SSLVersion( version_dip )
-	| false:
-	    StackLRValue( 1 )
-	    StackRValue( 0 )
-	    [StackClass( 1 )
-	      | stk_near_ptr, stk_far_ptr:
-		[StackClass( 0 )
-		  | stk_near_ptr, stk_far_ptr:
-		    % have to check if base type sizes are the same
-		    PushDup
-		    DoBaseType
-		    DoSizeType
-		    PushDup
-		    StackSwap( 3 )
-		    PushDup
-		    DoBaseType
-		    DoSizeType
-		    StackMoveSP( 1 )
-		    StackSwap( 3 )
-		    StackMoveSP( -1 )
-		    [DoTstEQ( 1 )
-		      | false:
-			#err_ill_type
-		      | *:
-			PopEntry
-			StackMoveSP( 1 )
-			DoMinus
-			StackMoveSP( -1 )
-			DoDiv
-		    ]
-		  | *:
-		    @scale_int
-		    DoMinus
-		]
-	      | *:
-		[StackClass( 0 )
-		  | stk_near_ptr, stk_far_ptr:
-		    #err_ill_type
-		  | *:
-		    DoMinus
-		]
-	    ]
-	| *:
-	    DoMinusScaled
-	]
+        | false:
+            StackLRValue( 1 )
+            StackRValue( 0 )
+            [StackClass( 1 )
+              | stk_near_ptr, stk_far_ptr:
+                [StackClass( 0 )
+                  | stk_near_ptr, stk_far_ptr:
+                    % have to check if base type sizes are the same
+                    PushDup
+                    DoBaseType
+                    DoSizeType
+                    PushDup
+                    StackSwap( 3 )
+                    PushDup
+                    DoBaseType
+                    DoSizeType
+                    StackMoveSP( 1 )
+                    StackSwap( 3 )
+                    StackMoveSP( -1 )
+                    [DoTstEQ( 1 )
+                      | false:
+                        #err_ill_type
+                      | *:
+                        PopEntry
+                        StackMoveSP( 1 )
+                        DoMinus
+                        StackMoveSP( -1 )
+                        DoDiv
+                    ]
+                  | *:
+                    @scale_int
+                    DoMinus
+                ]
+              | *:
+                [StackClass( 0 )
+                  | stk_near_ptr, stk_far_ptr:
+                    #err_ill_type
+                  | *:
+                    DoMinus
+                ]
+            ]
+        | *:
+            DoMinusScaled
+        ]
     ;
     
     do_points_unsigned:
         [SSLVersion( version_dip )
-	| false:
-	    [SwitchChk(sw_32_bit)
-	      | false:
-		DoPoints(stk_unsigned)
-	      | *:
-		DoPoints(stk_unsigned_long)
-	    ]
-	| *:
-	    DoPoints2( TI_integer_unsigned_0 )
-	]
+        | false:
+            [SwitchChk(sw_32_bit)
+              | false:
+                DoPoints(stk_unsigned)
+              | *:
+                DoPoints(stk_unsigned_long)
+            ]
+        | *:
+            DoPoints2( TI_integer_unsigned_0 )
+        ]
     ;
     
     do_points_addr:
         [SSLVersion( version_dip )
-	| false:
-	    [SwitchChk(sw_32_bit)
-	      | false:
-		DoPoints(stk_addr)
-	      | *:
-		DoPoints(stk_addr_long)
-	    ]
-	| *:
-	    DoPoints2( TI_address_0 )
-	]
+        | false:
+            [SwitchChk(sw_32_bit)
+              | false:
+                DoPoints(stk_addr)
+              | *:
+                DoPoints(stk_addr_long)
+            ]
+        | *:
+            DoPoints2( TI_address_0 )
+        ]
     ;
     
     do_point_type_default:
         [SSLVersion( version_dip )
-	| false:
-	    [SwitchChk(sw_32_bit)
-	      | false:
-		DoPointType( class_far )
-	      | *:
-		DoPointType( class_near )
-	    ]
-	| *:
-	    DoPointType2( TM_NONE )
-	]
+        | false:
+            [SwitchChk(sw_32_bit)
+              | false:
+                DoPointType( class_far )
+              | *:
+                DoPointType( class_near )
+            ]
+        | *:
+            DoPointType2( TM_NONE )
+        ]
     ;
     
     do_point_type_near:
         [SSLVersion( version_dip )
-	| false:
-	    DoPointType( class_near )
-	| *:
-	    DoPointType2( TM_NEAR )
-	]
+        | false:
+            DoPointType( class_near )
+        | *:
+            DoPointType2( TM_NEAR )
+        ]
     ;
     
     do_point_type_far:
         [SSLVersion( version_dip )
-	| false:
-	    DoPointType( class_far )
-	| *:
-	    DoPointType2( TM_FAR )
-	]
+        | false:
+            DoPointType( class_far )
+        | *:
+            DoPointType2( TM_FAR )
+        ]
     ;
