@@ -40,7 +40,7 @@
 const char              *CurrString; // Current Input Line
 #endif
 
-extern asmins_idx       get_instruction_position( char *string );
+extern const asm_ins    ASMFAR *get_instruction( char *string );
 
 #if defined( _STANDALONE_ )
 
@@ -356,15 +356,12 @@ static bool get_id_in_backquotes( asm_tok *buf, const char **input, char **outpu
     return( RC_OK );
 }
 
-static bool get_id( token_idx *buf_index, const char **input, char **output )
-/***************************************************************************/
+static bool get_id( asm_tok *buf, const char **input, char **output )
+/*********************************************************************/
 /* get_id could change buf_index, if a COMMENT directive is found */
 {
-    asm_tok     *buf;
-    char        cur_char;
-    asmins_idx  ins_pos;
-
-    buf = AsmBuffer[ *buf_index ];
+    char            cur_char;
+    const asm_ins   ASMFAR *ins;
 
     buf->string_ptr = *output;
     if( **input != '\\' ) {
@@ -398,15 +395,15 @@ static bool get_id( token_idx *buf_index, const char **input, char **output )
 
     if( buf->class == TC_PATH )
         return( RC_OK );
-    ins_pos = get_instruction_position( buf->string_ptr );
-    if( ins_pos == INVALID_POS ) {
+    ins = get_instruction( buf->string_ptr );
+    if( ins == NULL ) {
         if( buf->string_ptr[1] == '\0' && buf->string_ptr[0] == '?' ) {
             buf->class = TC_QUESTION_MARK;
         }
     } else {
-        buf->u.token = AsmOpTable[ins_pos].token;
+        buf->u.token = ins->token;
 #if defined( _STANDALONE_ )
-        switch( AsmOpTable[ins_pos].token ) {
+        switch( ins->token ) {
         // MASM6 keywords
         case T_FOR:
         case T_FORC:
@@ -476,48 +473,34 @@ static bool get_id( token_idx *buf_index, const char **input, char **output )
         }
 #endif
 
-        if( AsmOpTable[ins_pos].opnd_type[OPND1] == OP_SPECIAL ) {
-            if( AsmOpTable[ins_pos].rm_byte == OP_REGISTER ) {
+        if( ins->opnd_type[OPND1] == OP_SPECIAL ) {
+            if( ins->rm_byte == OP_REGISTER ) {
                 buf->class = TC_REG;
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_RES_ID ) {
+            } else if( ins->rm_byte == OP_RES_ID ) {
                 buf->class = TC_RES_ID;
                 if( buf->u.token == T_DP ) {
                     buf->u.token = T_DF;
                 }
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_RES_ID_PTR_MODIF ) {
+            } else if( ins->rm_byte == OP_RES_ID_PTR_MODIF ) {
                 buf->class = TC_RES_ID;
                 if( buf->u.token == T_PWORD ) {
                     buf->u.token = T_FWORD;
                 }
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_UNARY_OPERATOR ) {
+            } else if( ins->rm_byte == OP_UNARY_OPERATOR ) {
                 buf->class = TC_UNARY_OPERATOR;
 #if defined( _STANDALONE_ )
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_RELATION_OPERATOR ) {
+            } else if( ins->rm_byte == OP_RELATION_OPERATOR ) {
                 buf->class = TC_RELATION_OPERATOR;
 #endif
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_ARITH_OPERATOR ) {
+            } else if( ins->rm_byte == OP_ARITH_OPERATOR ) {
                 buf->class = TC_ARITH_OPERATOR;
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_DIRECTIVE ) {
+            } else if( ins->rm_byte == OP_DIRECTIVE ) {
                 buf->class = TC_DIRECTIVE;
 #if defined( _STANDALONE_ )
-                if( AsmOpTable[ins_pos].token == T_ENUM ) {
+                if( ins->token == T_ENUM ) {
                     EnumDirective = TRUE;
-                } else if( AsmOpTable[ins_pos].token == T_COMMENT ) {
-                    size_t  len;
-                    /* save the whole line .. we need to check
-                     * if the delim. char shows up 2 times */
-                    (*buf_index)++;
-                    buf = AsmBuffer[ *buf_index ];
-                    buf->string_ptr = *output;
-                    len = strlen( *input );
-                    memcpy( buf->string_ptr, *input, len );
-                    (*output) += len;
-                    *(*output)++ = '\0';
-                    *input += len;
-                    buf->class = TC_STRING;
-                    buf->u.value = 0;
                 }
-            } else if( AsmOpTable[ins_pos].rm_byte == OP_DIRECT_EXPR ) {
+            } else if( ins->rm_byte == OP_DIRECT_EXPR ) {
                 buf->class = TC_DIRECT_EXPR;
 #endif
             } else {
@@ -527,6 +510,22 @@ static bool get_id( token_idx *buf_index, const char **input, char **output )
             buf->class = TC_INSTR;
         }
     }
+    return( RC_OK );
+}
+
+static bool get_comment( asm_tok *buf, const char **input, char **output )
+{
+    size_t  len;
+    /* save the whole line .. we need to check
+     * if the delim. char shows up 2 times */
+    buf->string_ptr = *output;
+    len = strlen( *input );
+    memcpy( buf->string_ptr, *input, len );
+    (*output) += len;
+    *(*output)++ = '\0';
+    *input += len;
+    buf->class = TC_STRING;
+    buf->u.value = 0;
     return( RC_OK );
 }
 
@@ -654,9 +653,10 @@ token_idx AsmScan( const char *string )
 {
     const char                  *ptr;
     char                        *output_ptr;
-    token_idx                   buf_index = 0;
+    token_idx                   idx;
     // stringbuf - buffer in which to store strings
     static char                 stringbuf[MAX_LINE_LEN];
+    asm_tok                     *buf;
 
 #ifdef DEBUG_OUT
     CurrString = string;
@@ -672,15 +672,17 @@ token_idx AsmScan( const char *string )
     while( isspace( *ptr ) || (*ptr == '%') ) {
         ptr++;
     }
-
-    for( ;; ) {
-        AsmBuffer[buf_index]->string_ptr = output_ptr;
-
+    for( idx = 0; idx < MAX_TOKEN; ++idx ) {
+        buf = AsmBuffer[idx];
+        buf->string_ptr = output_ptr;
         while( isspace( *ptr ) ) {
             ptr++;
         }
-        if( *ptr == NULLC )
-            break;
+        if( *ptr == NULLC ) {
+            buf->class = TC_FINAL;
+            *output_ptr='\0';
+            return( idx );
+        }
 
         if( isalpha( *ptr )
             || *ptr == '_'
@@ -688,39 +690,40 @@ token_idx AsmScan( const char *string )
             || *ptr == '@'
             || *ptr == '?'
             || *ptr == '\\'
-            || ( *ptr == '.' && buf_index == 0 ) ) {
-            if( get_id( &buf_index, &ptr, &output_ptr ) ) {
+            || ( *ptr == '.' && idx == 0 ) ) {
+            if( get_id( buf, &ptr, &output_ptr ) ) {
                 return( INVALID_IDX );
             }
 #if defined( _STANDALONE_ )
-            // this mess allows include directives with undelimited file names
-            if( AsmBuffer[buf_index]->class == TC_DIRECTIVE &&
-                ( AsmBuffer[buf_index]->u.token == T_INCLUDE ||
-                AsmBuffer[buf_index]->u.token == T_INCLUDELIB ) ) {
-                buf_index++;
-                get_inc_path( AsmBuffer[buf_index], &ptr, &output_ptr );
+            if( buf->class == TC_DIRECTIVE ) {
+                if( buf->u.token == T_COMMENT ) {
+                    if( ++idx >= MAX_TOKEN )
+                        break;
+                    buf = AsmBuffer[idx];
+                    get_comment( buf, &ptr, &output_ptr );
+                } else if( buf->u.token == T_INCLUDE || buf->u.token == T_INCLUDELIB ) {
+                    // this mess allows include directives with undelimited file names
+                    if( ++idx >= MAX_TOKEN )
+                        break;
+                    buf = AsmBuffer[idx];
+                    get_inc_path( buf, &ptr, &output_ptr );
+                }
             }
 #endif
         } else if( isdigit( *ptr ) ) {
-            if( get_number( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+            if( get_number( buf, &ptr, &output_ptr ) ) {
                 return( INVALID_IDX );
             }
         } else if( *ptr == '`' ) {
-            if( get_id_in_backquotes( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+            if( get_id_in_backquotes( buf, &ptr, &output_ptr ) ) {
                 return( INVALID_IDX );
             }
         } else {
-            if( get_special_symbol( AsmBuffer[buf_index], &ptr, &output_ptr ) ) {
+            if( get_special_symbol( buf, &ptr, &output_ptr ) ) {
                 return( INVALID_IDX );
             }
         }
-        buf_index++;
-        if( buf_index >= MAX_TOKEN ) {
-            AsmError( TOO_MANY_TOKENS );
-            return( INVALID_IDX );
-        }
     }
-    AsmBuffer[buf_index]->class = TC_FINAL;
-    *output_ptr='\0';
-    return( buf_index );
+    AsmError( TOO_MANY_TOKENS );
+    return( INVALID_IDX );
 }

@@ -104,6 +104,7 @@ static asm_tok          tokens[MAX_TOKEN];
 asm_tok                 *AsmBuffer[MAX_TOKEN];  // buffer to store token
 
 #if defined( _STANDALONE_ )
+
 void find_frame( struct asm_sym *sym )
 /*******************************************/
 {
@@ -138,24 +139,20 @@ void find_frame( struct asm_sym *sym )
     }
 }
 
-int GetInsString( asm_token token, char *string, int len )
-/********************************************************/
+int GetInsString( asm_token token, char *string )
+/***********************************************/
 {
     int index;
+    int len;
 
-    if( len > AsmOpcode[token].len ) {
-        len = AsmOpcode[token].len;
-        index = AsmOpcode[token].index;
-        if( AsmChars[index]== '.' ) {
-            index++;
-            len--;
-        }
-        strncpy( string, &(AsmChars[index]), len );
-        string[len] = '\0';
-    } else {
-        *string='\0';
-        len = 0;
+    len = AsmOpcode[token].len;
+    index = AsmOpcode[token].index;
+    if( AsmChars[index] == '.' ) {
+        index++;
+        len--;
     }
+    memcpy( string, AsmChars + index, len );
+    string[len] = '\0';
     return( len );
 }
 #endif
@@ -170,18 +167,18 @@ void AsmBufferInit( void )
     }
 }
 
-asmins_idx get_instruction_position( char *string )
-/*************************************************/
+const asm_ins ASMFAR *get_instruction( char *string )
+/***************************************************/
 {
     asm_token   token;
 
     for( token = inst_table[hashpjw( string )]; token--; token = AsmOpcode[token].next ) {
-        if( strnicmp( string, &AsmChars[AsmOpcode[token].index], AsmOpcode[token].len ) == 0
+        if( strnicmp( string, AsmChars + AsmOpcode[token].index, AsmOpcode[token].len ) == 0
             && string[AsmOpcode[token].len] == '\0' ) {
-            return( AsmOpcode[token].position );
+            return( AsmOpTable + AsmOpcode[token].position );
         }
     }
-    return( INVALID_POS );
+    return( NULL );
 }
 
 static int comp_mem( asm_token reg1, asm_token reg2 )
@@ -602,8 +599,8 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
     return( RC_OK );
 }
 
-static int comp_opt( asm_token direct )
-/*************************************/
+static asm_cpu comp_opt( asm_token direct )
+/*****************************************/
 /*
   Compare function for CPU directive
 */
@@ -717,8 +714,8 @@ static int comp_opt( asm_token direct )
     }
 }
 
-static int def_fpu( asm_token direct )
-/************************************/
+static asm_cpu def_fpu( asm_token direct )
+/****************************************/
 /*
   get FPU from CPU directive
 */
@@ -766,9 +763,9 @@ static int def_fpu( asm_token direct )
 static void MakeCPUConstant( asm_token tok )
 /******************************************/
 {
-    char    buffer[MAX_LINE_LEN];
+    char    buffer[MAX_KEYWORD_LEN + 1];
 
-    GetInsString( tok, buffer, MAX_LINE_LEN );
+    GetInsString( tok, buffer );
     MakeConstantUnderscored( buffer );
 
     switch( tok ) {
@@ -808,7 +805,7 @@ static void MakeCPUConstant( asm_token tok )
 bool cpu_directive( asm_token token )
 /***********************************/
 {
-    int                 temp;
+    asm_cpu     temp;
 
     if( (temp = comp_opt( token )) != EMPTY ) {
         if( token == T_DOT_NO87 ) {
@@ -2231,14 +2228,14 @@ static int process_reg( expr_list *opndx )
 {
     unsigned char       st_reg;
     unsigned char       reg;
-    asmins_idx          ins_pos;
+    const asm_ins       ASMFAR *ins;
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
         return( process_address( opndx ) );
-    ins_pos = AsmOpcode[AsmBuffer[opndx->base_reg]->u.token].position;
-    reg = AsmOpTable[ins_pos].opcode;
-    Code->info.opnd_type[Opnd_Count] = AsmOpTable[ins_pos].opnd_type[OPND2];
-    switch( AsmOpTable[ins_pos].opnd_type[OPND2] ) {
+    ins = AsmOpTable + AsmOpcode[AsmBuffer[opndx->base_reg]->u.token].position;
+    reg = ins->opcode;
+    Code->info.opnd_type[Opnd_Count] = ins->opnd_type[OPND2];
+    switch( ins->opnd_type[OPND2] ) {
     case OP_AL:
     case OP_R8:
         Code->info.opcode &= NOT_W_BIT;         // clear w-bit
@@ -2277,7 +2274,7 @@ static int process_reg( expr_list *opndx )
                 return( ERROR );
             }
         }
-        reg = get_sr_rm_byte( AsmOpTable[ins_pos].opcode );
+        reg = get_sr_rm_byte( ins->opcode );
         break;
     case OP_EAX:
     case OP_R32:
@@ -2297,7 +2294,7 @@ static int process_reg( expr_list *opndx )
         case T_TR5:
             if( ( ( ( Code->info.cpu & P_CPU_MASK ) < P_486 )
                || ( ( Code->info.cpu & P_CPU_MASK ) >= P_686 ) )
-                && ( ( AsmOpTable[ins_pos].cpu & P_CPU_MASK ) >= P_486 ) ) {
+                && ( ( ins->cpu & P_CPU_MASK ) >= P_486 ) ) {
                 // TR3, TR4, TR5 are available on 486 only
                 AsmError( CANNOT_USE_TR3_TR4_TR5_IN_CURRENT_CPU_SETTING );
                 return( ERROR );
@@ -2307,7 +2304,7 @@ static int process_reg( expr_list *opndx )
         case T_TR7:
             if( ( ( ( Code->info.cpu & P_CPU_MASK ) < P_386 )
                || ( ( Code->info.cpu & P_CPU_MASK ) >= P_686 ) )
-                && ( ( AsmOpTable[ins_pos].cpu & P_CPU_MASK ) >= P_386 ) ) {
+                && ( ( ins->cpu & P_CPU_MASK ) >= P_386 ) ) {
                 // TR6, TR7 are available on 386...586 only
                 AsmError( CANNOT_USE_TR3_TR4_TR5_IN_CURRENT_CPU_SETTING );
                 return( ERROR );

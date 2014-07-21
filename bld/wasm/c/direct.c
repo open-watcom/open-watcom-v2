@@ -294,7 +294,7 @@ enum regsize {
     A_DWORD,
 };
 
-static char         code_segment_name[ MAX_LINE_LEN ];
+static char         code_segment_name[MAX_LINE_LEN];
 static asm_tok      const_CodeSize = { TC_NUM, NULL, 0 };
 static asm_tok      const_DataSize = { TC_NUM, NULL, 0 };
 static asm_tok      const_Model = { TC_NUM, NULL, 0 };
@@ -454,7 +454,7 @@ static int SetAssumeCSCurrSeg( void )
 {
     assume_info     *info;
 
-    info = &(AssumeTable[ ASSUME_CS ]);
+    info = &(AssumeTable[ASSUME_CS]);
     if( CurrSeg == NULL ) {
         info->symbol = NULL;
         info->flat = FALSE;
@@ -938,7 +938,7 @@ static struct asm_sym *InsertClassLname( char *name )
         AsmError( LNAME_TOO_LONG );
         return( NULL );
     }
-    for( dir = Tables[ TAB_CLASS_LNAME ].head; dir != NULL; dir = dir->next ) {
+    for( dir = Tables[TAB_CLASS_LNAME].head; dir != NULL; dir = dir->next ) {
         if( stricmp( dir->sym.name, name ) == 0 ) {
             return( &dir->sym );
         }
@@ -1386,7 +1386,7 @@ bool SetCurrSeg( token_idx i )
 
 static int token_cmp( char **token, int start, int end )
 /******************************************************/
-/* compare token against those specified in TypeInfo[ start...end ] */
+/* compare token against those specified in TypeInfo[start...end] */
 {
     int         i;
     char        *str;
@@ -1420,7 +1420,7 @@ static seg_type ClassNameType( char *name )
         }
     }
     slen = strlen( name );
-    strcpy( uname, name );
+    memcpy( uname, name, slen + 1 );
     strupr( uname );
     if( slen >= 3 ) {
         // 'CONST'
@@ -1456,7 +1456,7 @@ static seg_type SegmentNameType( char *name )
     char    uname[257];
 
     slen = strlen( name );
-    strcpy( uname, name );
+    memcpy( uname, name, slen + 1 );
     strupr( uname );
     if( slen >= 4 ) {
         // '..._TEXT'
@@ -1475,7 +1475,6 @@ static seg_type SegmentNameType( char *name )
     }
     return( SEGTYPE_UNDEF );
 }
-
 
 bool SegDef( token_idx i )
 /************************/
@@ -1833,7 +1832,9 @@ bool Startup( token_idx i )
     /* handles .STARTUP/STARTUPCODE and .EXIT/EXITCODE directives */
 
     int         count;
-    char        buffer[ MAX_LINE_LEN ];
+    char        buffer[MAX_LINE_LEN];
+    char        *p;
+    size_t      len;
 
     if( ModuleInfo.model == MOD_NONE ) {
         AsmError( MODEL_IS_NOT_DECLARED );
@@ -1845,8 +1846,10 @@ bool Startup( token_idx i )
     case T_DOT_STARTUP:
     case T_STARTUPCODE:
         count = 0;
-        strcpy( buffer, StartAddr );
-        strcat( buffer, ":" );
+        len = strlen( StartAddr );
+        p = CATSTR( buffer, StartAddr, len );
+        *p++ = ':';
+        *p = '\0';
         InputQueueLine( buffer );
         if( ModuleInfo.ostype == OPSYS_DOS ) {
             if( ModuleInfo.distance == STACK_NEAR ) {
@@ -1864,10 +1867,12 @@ bool Startup( token_idx i )
     case T_DOT_EXIT:
     case T_EXITCODE:
         i++;
-        if( ( AsmBuffer[i]->string_ptr != NULL )
-            && ( *(AsmBuffer[i]->string_ptr) != '\0' ) ) {
-            strcpy( buffer, RetVal );
-            strcat( buffer, AsmBuffer[i]->string_ptr );
+        if( ( AsmBuffer[i]->string_ptr != NULL ) && ( *(AsmBuffer[i]->string_ptr) != '\0' ) ) {
+            len = strlen( RetVal );
+            p = CATSTR( buffer, RetVal, len );
+            len = strlen( AsmBuffer[i]->string_ptr );
+            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
+            *p = '\0';
             InputQueueLine( buffer );
         }
         count = 0;
@@ -1970,10 +1975,9 @@ bool SimSeg( token_idx i )
     close_lastseg();
     type = AsmBuffer[i]->u.token;
     i++; /* get past the directive token */
+    name = NULL;
     if( i < Token_Count ) {
         name = AsmBuffer[i]->string_ptr;
-    } else {
-        name = NULL;
     }
     switch( type ) {
     case T_DOT_CODE:
@@ -2641,8 +2645,10 @@ enum assume_reg GetAssume( struct asm_sym *sym, enum assume_reg def )
 bool ModuleEnd( token_idx count )
 /*******************************/
 {
-    char        buffer[ MAX_LINE_LEN ];
+    char        buffer[MAX_LINE_LEN];
     token_idx   i;
+    char        *p;
+    size_t      len;
 
     if( lastseg.seg != SIM_NONE ) {
         close_lastseg();
@@ -2650,20 +2656,23 @@ bool ModuleEnd( token_idx count )
 
     if( !EndDirectiveProc ) {
         EndDirectiveProc = TRUE;
-        strcpy( buffer, "end" );
+        p = CATLIT( buffer, "END" );
         if( StartupDirectiveFound ) {
             StartupDirectiveFound = FALSE;
             if( count > 1 ) {
                 AsmError( SYNTAX_ERROR );
             }
-            strcat( buffer, " " );
-            strcat( buffer, StartAddr );
+            *p++ = ' ';
+            len = strlen( StartAddr );
+            p = CATSTR( p, StartAddr, len );
         } else {
             for( i = 1; i < count; ++i ) {
-                strcat( buffer, " " );
-                strcat( buffer, AsmBuffer[i]->string_ptr );
+                *p++ = ' ';
+                len = strlen( AsmBuffer[i]->string_ptr );
+                p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
             }
         }
+        *p = '\0';
         InputQueueLine( buffer );
         return( RC_OK );
     }
@@ -2678,7 +2687,7 @@ bool ModuleEnd( token_idx count )
         AsmError( INVALID_START_ADDRESS );
         return( RC_ERROR );
     }
-    ModendFixup = InsFixups[ OPND1 ];
+    ModendFixup = InsFixups[OPND1];
     return( RC_OK );
 }
 
@@ -2797,6 +2806,7 @@ bool LocalDef( token_idx i )
     proc_info       *info;
     struct asm_sym  *sym;
     struct asm_sym  *tmp = NULL;
+    size_t          len;
 
     /*
 
@@ -2839,8 +2849,9 @@ bool LocalDef( token_idx i )
         }
 
         local = AsmAlloc( sizeof( label_list ) );
-        local->label = AsmAlloc( strlen( AsmBuffer[i]->string_ptr ) + 1 );
-        strcpy( local->label, AsmBuffer[i++]->string_ptr );
+        len = strlen( AsmBuffer[i]->string_ptr ) + 1;
+        local->label = AsmAlloc( len );
+        memcpy( local->label, AsmBuffer[i++]->string_ptr, len );
         local->size = LOCAL_DEFAULT_SIZE;
         local->replace = NULL;
         local->sym = NULL;
@@ -2943,6 +2954,7 @@ bool ArgDef( token_idx i )
 
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
+    size_t          len;
 
     /*
 
@@ -3050,10 +3062,11 @@ bool ArgDef( token_idx i )
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
         paranode->size = parameter_size;
-        paranode->label = AsmAlloc( strlen( token ) + 1 );
+        len = strlen( token ) + 1;
+        paranode->label = AsmAlloc( len );
         paranode->replace = NULL;
         paranode->sym = tmp;
-        strcpy( paranode->label, token );
+        memcpy( paranode->label, token, len );
         if( parameter_on_stack ) {
             paranode->is_register = FALSE;
             if( Use32 ) {
@@ -3126,6 +3139,7 @@ bool UsesDef( token_idx i )
     proc_info   *info;
     regs_list   *regist;
     regs_list   *temp_regist;
+    size_t      len;
 
     if( DefineProc == FALSE ) {
         AsmError( USES_MUST_FOLLOW_PROC );
@@ -3145,8 +3159,9 @@ bool UsesDef( token_idx i )
         token = AsmBuffer[i]->string_ptr;
         regist = AsmAlloc( sizeof( regs_list ));
         regist->next = NULL;
-        regist->reg = AsmAlloc( strlen(token) + 1 );
-        strcpy( regist->reg, token );
+        len = strlen( token ) + 1;
+        regist->reg = AsmAlloc( len );
+        memcpy( regist->reg, token, len );
         if( info->regslist == NULL ) {
             info->regslist = regist;
         } else {
@@ -3170,7 +3185,7 @@ bool UsesDef( token_idx i )
 
 bool EnumDef( token_idx i )
 {
-    char            *name, string[ MAX_LINE_LEN ];
+    char            *name, string[MAX_LINE_LEN];
     token_idx       n;
     int             enums, in_braces;
     long            count;
@@ -3284,6 +3299,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
     label_list      *paracurr;
     int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
     struct asm_sym  *param;
+    size_t          len;
 
     info = proc->e.procinfo;
 
@@ -3360,8 +3376,9 @@ static bool proc_exam( dir_node *proc, token_idx i )
                 token = AsmBuffer[i]->string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
-                regist->reg = AsmAlloc( strlen(token) + 1 );
-                strcpy( regist->reg, token );
+                len = strlen(token) + 1;
+                regist->reg = AsmAlloc( len );
+                memcpy( regist->reg, token, len );
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
@@ -3461,9 +3478,10 @@ parms:
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
         paranode->size = parameter_size;
-        paranode->label = AsmAlloc( strlen( token ) + 1 );
+        len = strlen( token ) + 1;
+        paranode->label = AsmAlloc( len );
         paranode->replace = NULL;
-        strcpy( paranode->label, token );
+        memcpy( paranode->label, token, len );
         if( parameter_on_stack ) {
             paranode->is_register = FALSE;
             if( Use32 ) {
@@ -3646,11 +3664,15 @@ static void push_registers( regs_list *regist )
 /* Push the registers list */
 {
     char        buffer[20];
+    char        *p;
+    size_t      len;
 
     if( regist == NULL )
         return;
-    strcpy( buffer, "push " );
-    strcpy( buffer + strlen( buffer ), regist->reg );
+    p = CATLIT( buffer, "push " );
+    len = strlen( regist->reg );
+    p = CATSTR( p, regist->reg, len );
+    *p = '\0';
     InputQueueLine( buffer );
     push_registers( regist->next );
 }
@@ -3660,19 +3682,23 @@ static void pop_registers( regs_list *regist )
 /* Pop the registers list */
 {
     char        buffer[20];
+    char        *p;
+    size_t      len;
 
     if( regist == NULL )
         return;
     pop_registers( regist->next );
-    strcpy( buffer, "pop " );
-    strcpy( buffer + strlen( buffer ), regist->reg );
+    p = CATLIT( buffer, "pop " );
+    len = strlen( regist->reg );
+    p = CATSTR( p, regist->reg, len );
+    *p = '\0';
     InputQueueLine( buffer );
 }
 
 bool WritePrologue( const char *curline )
 /***************************************/
 {
-    char                buffer[80];
+    char                buffer[MAX_LINE_LEN];
     proc_info           *info;
     label_list          *curr;
     unsigned long       offset;
@@ -3680,6 +3706,8 @@ bool WritePrologue( const char *curline )
     int                 register_count = 0;
     int                 parameter_on_stack = TRUE;
     int                 align = Use32 ? 4 : 2;
+    char                *p;
+    size_t              len;
 
     /**/myassert( CurrProc != NULL );
     info = CurrProc->e.procinfo;
@@ -3706,8 +3734,9 @@ bool WritePrologue( const char *curline )
                 sprintf( buffer + strlen(buffer), "%s%lu]",
                          Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
-            curr->replace = AsmAlloc( strlen( buffer ) + 1 );
-            strcpy( curr->replace, buffer );
+            len = strlen( buffer ) + 1;
+            curr->replace = AsmAlloc( len );
+            memcpy( curr->replace, buffer, len );
         }
         info->localsize = offset;
 
@@ -3765,8 +3794,9 @@ bool WritePrologue( const char *curline )
             } else {
                 register_count++;
             }
-            curr->replace = AsmAlloc( strlen( buffer ) + 1 );
-            strcpy( curr->replace, buffer );
+            len = strlen( buffer ) + 1;
+            curr->replace = AsmAlloc( len );
+            memcpy( curr->replace, buffer, len );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
                 if( Use32 )
@@ -3804,9 +3834,9 @@ bool WritePrologue( const char *curline )
         // write prolog code
         if( Options.trace_stack && info->mem_type == MT_FAR ) {
             if( Use32 ) {
-                strcpy( buffer, "inc ebp" );
+                CPYLIT( buffer, "inc ebp" );
             } else {
-                strcpy( buffer, "inc bp" );
+                CPYLIT( buffer, "inc bp" );
             }
             InputQueueLine( buffer );
         }
@@ -3815,26 +3845,26 @@ bool WritePrologue( const char *curline )
             // PUSH EBP
             // MOV  EBP, ESP
             // SUB  ESP, the number of localbytes
-            strcpy( buffer, "push ebp" );
+            CPYLIT( buffer, "push ebp" );
             InputQueueLine( buffer );
-            strcpy( buffer, "mov ebp,esp" );
+            CPYLIT( buffer, "mov ebp,esp" );
             if( info->localsize != 0 ) {
                 InputQueueLine( buffer );
-                strcpy( buffer, "sub esp," );
-                sprintf( buffer + strlen( buffer ), "%lu", info->localsize );
+                p = CATLIT( buffer, "sub esp," );
+                sprintf( p, "%lu", info->localsize );
             }
         } else {
             // write 8086 prolog code
             // PUSH BP
             // MOV  BP, SP
             // SUB  SP, the number of localbytes
-            strcpy( buffer, "push bp" );
+            CPYLIT( buffer, "push bp" );
             InputQueueLine( buffer );
-            strcpy( buffer, "mov bp,sp" );
+            CPYLIT( buffer, "mov bp,sp" );
             if( info->localsize != 0 ) {
                 InputQueueLine( buffer );
-                strcpy( buffer, "sub sp," );
-                sprintf( buffer + strlen( buffer ), "%lu", info->localsize );
+                p = CATLIT( buffer, "sub sp," );
+                sprintf( p, "%lu", info->localsize );
             }
         }
         InputQueueLine( buffer );
@@ -3847,7 +3877,7 @@ bool WritePrologue( const char *curline )
 static void write_epilogue( void )
 /********************************/
 {
-    char        buffer[80];
+    char        buffer[MAX_LINE_LEN];
     proc_info   *info;
 
     /**/myassert( CurrProc != NULL );
@@ -3923,32 +3953,32 @@ static void write_epilogue( void )
     if( info->pe_type ) {
         // write 80286 and 80386 epilog code
         // LEAVE
-        strcpy( buffer, "leave" );
+        CPYLIT( buffer, "leave" );
     } else if( Use32 ) {
         // write 32-bit 80486 or P epilog code
         // Mov ESP, EBP
         // POP EBP
         if( info->localsize != 0 ) {
-            strcpy( buffer, "mov esp,ebp" );
+            CPYLIT( buffer, "mov esp,ebp" );
             InputQueueLine( buffer );
         }
-        strcpy( buffer, "pop ebp" );
+        CPYLIT( buffer, "pop ebp" );
     } else {
         // write 16-bit 8086 or 80486 or P epilog code
         // Mov SP, BP
         // POP BP
         if( info->localsize != 0 ) {
-            strcpy( buffer, "mov sp,bp" );
+            CPYLIT( buffer, "mov sp,bp" );
             InputQueueLine( buffer );
         }
-        strcpy( buffer, "pop bp" );
+        CPYLIT( buffer, "pop bp" );
     }
     InputQueueLine( buffer );
     if( Options.trace_stack && info->mem_type == MT_FAR ) {
         if( Use32 ) {
-            strcpy( buffer, "dec ebp" );
+            CPYLIT( buffer, "dec ebp" );
         } else {
-            strcpy( buffer, "dec bp" );
+            CPYLIT( buffer, "dec bp" );
         }
         InputQueueLine( buffer );
     }
@@ -3960,20 +3990,21 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
     char        buffer[20];
     proc_info   *info;
     expr_list   opndx;
+    char        *p;
 
     info = CurrProc->e.procinfo;
 
     if( flag_iret ) {
         if( AsmBuffer[i]->u.token == T_IRET ) {
-            strcpy( buffer, "iretf" );
+            p = CATLIT( buffer, "iretf" );
         } else {
-            strcpy( buffer, "iretdf" );
+            p = CATLIT( buffer, "iretdf" );
         }
     } else {
         if( info->mem_type == MT_NEAR ) {
-            strcpy( buffer, "retn " );
+            p = CATLIT( buffer, "retn " );
         } else {
-            strcpy( buffer, "retf " );
+            p = CATLIT( buffer, "retf " );
         }
     }
 
@@ -3986,19 +4017,19 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
             case LANG_FORTRAN:
             case LANG_PASCAL:
                 if( info->parasize != 0 ) {
-                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
+                    sprintf( p, "%lu", info->parasize );
                 }
                 break;
             case LANG_STDCALL:
                 if( !info->is_vararg && info->parasize != 0 ) {
-                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
+                    sprintf( p, "%lu", info->parasize );
                 }
                 break;
             case LANG_WATCOM_C:
                 if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
                     ( info->is_vararg == FALSE ) &&
                     ( info->parasize != 0 ) ) {
-                    sprintf( buffer + strlen( buffer ), "%lu", info->parasize );
+                    sprintf( p, "%lu", info->parasize );
                 }
                 break;
             default:
@@ -4010,7 +4041,7 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
             }
-            sprintf( buffer + strlen( buffer ), "%d", opndx.value );
+            sprintf( p, "%d", opndx.value );
         }
     }
     InputQueueLine( buffer );
@@ -4066,6 +4097,9 @@ bool AddAlias( token_idx i )
 /**************************/
 {
     char    *tmp;
+    char    *p;
+    size_t  len1;
+    size_t  len2;
 
     if( ( AsmBuffer[i + 1]->class == TC_DIRECTIVE )
       && ( AsmBuffer[i + 1]->u.token == T_EQU2 ) ) {
@@ -4086,24 +4120,28 @@ bool AddAlias( token_idx i )
 
     /* aliases are stored as:  <len><alias_name><len><substitute_name> */
 
-    tmp = AsmAlloc( strlen( AsmBuffer[i]->string_ptr ) +
-                    strlen( AsmBuffer[i + 2]->string_ptr ) + 2 );
+    len1 = strlen( AsmBuffer[i]->string_ptr );
+    len2 = strlen( AsmBuffer[i + 2]->string_ptr );
+    tmp = AsmAlloc( len1 + len2 + 2 );
     AddAliasData( tmp );
-
-    strcpy( tmp, AsmBuffer[i]->string_ptr );
-    tmp += strlen( tmp ) + 1 ;
-    strcpy( tmp, AsmBuffer[i + 2]->string_ptr );
-
+    p = tmp;
+    *p++ = (uint_8)len1;
+    p = CATSTR( p, AsmBuffer[i]->string_ptr, len1 );
+    *p++ = (uint_8)len2;
+    p = CATSTR( p, AsmBuffer[i + 2]->string_ptr, len2 );
     return( RC_OK );
 }
 
 bool NameDirective( token_idx i )
 /*******************************/
 {
+    size_t  len;
+
     if( Options.module_name != NULL )
         return( RC_OK );
-    Options.module_name = AsmAlloc( strlen( AsmBuffer[i + 1]->string_ptr ) + 1 );
-    strcpy( Options.module_name, AsmBuffer[i + 1]->string_ptr );
+    len = strlen( AsmBuffer[i + 1]->string_ptr ) + 1;
+    Options.module_name = AsmAlloc( len );
+    memcpy( Options.module_name, AsmBuffer[i + 1]->string_ptr, len );
     return( RC_OK );
 }
 

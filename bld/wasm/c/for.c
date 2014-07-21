@@ -85,8 +85,9 @@ bool ForDirective( token_idx i, enum irp_type type )
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        parmstring = AsmTmpAlloc( strlen( AsmBuffer[i]->string_ptr ) + 1 );
-        strcpy( parmstring, AsmBuffer[i]->string_ptr );
+        len = strlen( AsmBuffer[i]->string_ptr ) + 1;
+        parmstring = AsmTmpAlloc( len );
+        memcpy( parmstring, AsmBuffer[i]->string_ptr, len );
         AsmBuffer[i]->class = TC_FINAL;
 
         AddTokens( AsmBuffer, arg_loc, 1 );

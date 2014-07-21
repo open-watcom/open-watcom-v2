@@ -47,6 +47,7 @@ int main( int argc, char *argv[] )
     int             idx;
     sword           *Words;
     char            buf[ KEY_MAX_LEN ];
+    size_t          max_len;
 
     out_name = argv[ argc - 1 ];
     --argc;
@@ -97,10 +98,24 @@ int main( int argc, char *argv[] )
         printf( "Unable to open '%s'\n", out_name );
         exit( 1 );
     }
+    fprintf( out, "typedef enum asm_token {\n" );
+    max_len = 0;
     for( i = 0; i < count; i++ ) {
-        fprintf( out, "%s,\n", get_enum_key( Words[ i ].word ) );
+        size_t len = strlen( Words[i].word );
+        if( len > max_len )
+            max_len = len;
+        fprintf( out, "    %s,\n", get_enum_key( Words[i].word ) );
     }
-    fprintf( out, "T_NULL,\n" );
+    // following are not real tokens
+    // empty token
+    fprintf( out, "    T_NULL,\n" );
+    // enable to include '*' in arithmetic operators class
+    fprintf( out, "    T_OP_TIMES,\n" );
+    // enable to include '/' in arithmetic operators class
+    fprintf( out, "    T_OP_DIVIDE,\n" );
+    fprintf( out, "} asm_token;\n" );
+    fprintf( out, "\n" );
+    fprintf( out, "#define MAX_KEYWORD_LEN %u\n", (unsigned)max_len );
     fclose( out );
     return( 0 );
 }

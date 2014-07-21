@@ -38,9 +38,9 @@
 
 /* constants used by the name manglers ( changes ) */
 enum changes {
-    NORMAL           = 0,
-    USCORE_FRONT     = 1,
-    USCORE_BACK      = 2
+    USCORE_NONE      = 0,
+    USCORE_BEFORE    = 1,
+    USCORE_AFTER     = 2
 };
 
 #define USCORE "_"
@@ -53,13 +53,15 @@ static char *AsmMangler( struct asm_sym *sym, char *buffer )
 /**********************************************************/
 {
     char        *name;
+    size_t      len;
 
+    len = strlen( sym->name ) + 1;
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( sym->name ) + 1 );
+        name = AsmAlloc( len );
     } else {
         name = buffer;
     }
-    strcpy( name, sym->name );
+    memcpy( name, sym->name, len );
     return( name );
 }
 
@@ -67,13 +69,15 @@ static char *UCaseMangler( struct asm_sym *sym, char *buffer )
 /************************************************************/
 {
     char        *name;
+    size_t      len;
 
+    len = strlen( sym->name ) + 1;
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( sym->name ) + 1 );
+        name = AsmAlloc( len );
     } else {
         name = buffer;
     }
-    strcpy( name, sym->name );
+    memcpy( name, sym->name, len );
     strupr( name );
     return( name );
 }
@@ -82,14 +86,16 @@ static char *UScoreMangler( struct asm_sym *sym, char *buffer )
 /*************************************************************/
 {
     char        *name;
+    size_t      len;
 
+    len = strlen( sym->name ) + 1;
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( sym->name ) + 2 );
+        name = AsmAlloc( len + 1 );
     } else {
         name = buffer;
     }
-    strcpy( name, USCORE );
-    strcat( name, sym->name );
+    name[0] = '_';
+    memcpy( name + 1, sym->name, len );
     return( name );
 }
 
@@ -127,39 +133,41 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
     char                *name;
     char                *ptr = sym->name;
     enum changes        changes;
+    size_t              len;
+    char                *p;
 
     if( Options.watcom_parms_passed_by_regs == FALSE && SymIs32( sym ) ) {
-        changes = NORMAL;
+        changes = USCORE_NONE;
     } else if( sym->state == SYM_PROC ) {
-        changes = USCORE_BACK;
+        changes = USCORE_AFTER;
     } else {
         switch( sym->mem_type ) {
         case MT_NEAR:
         case MT_FAR:
         case MT_EMPTY:
         case MT_PROC:
-            changes = USCORE_BACK;
+            changes = USCORE_AFTER;
             break;
         default:
-            changes = USCORE_FRONT;
+            changes = USCORE_BEFORE;
         }
     }
 
+    len = strlen( ptr );
     if( buffer == NULL ) {
-        name = AsmAlloc( strlen( ptr ) + 2 );
+        name = AsmAlloc( len + 3 );
     } else {
         name = buffer;
     }
-
-    if( changes & USCORE_FRONT ) {
-        strcpy( name, USCORE );
-    } else {
-        strcpy( name, NULLS );
+    p = name;
+    if( changes & USCORE_BEFORE ) {
+        *p++ = '_';
     }
-    strcat( name, ptr );
-    if( changes & USCORE_BACK ) {
-        strcat( name, USCORE );
+    p = CATSTR( p, ptr, len );
+    if( changes & USCORE_AFTER ) {
+        *p++ = '_';
     }
+    *p = '\0';
     return( name );
 }
 

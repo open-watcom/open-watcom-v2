@@ -49,8 +49,8 @@ extern bool             SymIs32( struct asm_sym *sym );
 extern void             check_assume( struct asm_sym *sym, prefix_reg default_reg );
 extern void             find_frame( struct asm_sym *sym );
 
-static int getJumpNegation( asm_token tok, char *buffer, int len )
-/****************************************************************/
+static int getJumpNegation( asm_token tok, char *buffer )
+/*******************************************************/
 {
     switch( tok ) {
     case T_JA:      tok = T_JNA;    break;
@@ -87,7 +87,7 @@ static int getJumpNegation( asm_token tok, char *buffer, int len )
         *buffer = '\0';
         return( 0 );
     }
-    return( GetInsString( tok, buffer, len ) );
+    return( GetInsString( tok, buffer ) );
 }
 
 static void jumpExtend( int far_flag )
@@ -96,6 +96,8 @@ static void jumpExtend( int far_flag )
     token_idx   i;
     unsigned    next_ins_size;
     char        buffer[MAX_LINE_LEN];
+    char        *p;
+    size_t      len;
 
     /* there MUST be a conditional jump instruction in asmbuffer */
     for( i = 0; ; i++ ) {
@@ -107,7 +109,7 @@ static void jumpExtend( int far_flag )
 
     AsmNote( 4, EXTENDING_JUMP );
 
-    getJumpNegation( AsmBuffer[i]->u.token, buffer, MAX_LINE_LEN );
+    p = buffer + getJumpNegation( AsmBuffer[i]->u.token, buffer );
     if( far_flag ) {
         next_ins_size = Code->use32 ? 7 : 5;
     } else {
@@ -115,27 +117,30 @@ static void jumpExtend( int far_flag )
     }
     sprintf( buffer + strlen( buffer ), " SHORT $+%d ", next_ins_size + 2 );
     InputQueueLine( buffer );
+    p = buffer;
     if( far_flag ) {
-        strcpy( buffer, "jmpf " );
+        p = CATLIT( buffer, "jmpf " );
     } else {
-        strcpy( buffer, "jmp " );
+        p = CATLIT( buffer, "jmp " );
     }
     for( i++; AsmBuffer[i]->class != TC_FINAL; i++ ) {
         switch( AsmBuffer[i]->class ) {
         case TC_NUM:
-            itoa( AsmBuffer[i]->u.value, buffer + strlen( buffer ), 10 );
+            p += sprintf( p, "%lu", AsmBuffer[i]->u.value );
             break;
         case TC_OP_SQ_BRACKET:
-            strcat( buffer, "[" );
+            *p++ = '[';
             break;
         case TC_CL_SQ_BRACKET:
-            strcat( buffer, "]" );
+            *p++ = ']';
             break;
         default:
-            strcat( buffer, AsmBuffer[i]->string_ptr );
+            len = strlen( AsmBuffer[i]->string_ptr );
+            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
             break;
         }
     }
+    *p = '\0';
     InputQueueLine( buffer );
     return;
 }
@@ -145,6 +150,8 @@ static void FarCallToNear( void )
 {
     token_idx   i;
     char        buffer[MAX_LINE_LEN];
+    char        *p;
+    size_t      len;
 
     /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
@@ -156,31 +163,34 @@ static void FarCallToNear( void )
     if( Parse_Pass == PASS_2 )
         AsmNote( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
+    p = buffer;
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_IDEAL ) {
-        strcpy( buffer, "CALL NEAR " );
+        p = CATLIT( p, "CALL NEAR " );
     } else {
-        strcpy( buffer, "CALL NEAR PTR " );
+        p = CATLIT( p, "CALL NEAR PTR " );
     }
 #else
-    strcpy( buffer, "CALL NEAR PTR " );
+    p = CATLIT( p, "CALL NEAR PTR " );
 #endif
     for( i++; AsmBuffer[i]->class != TC_FINAL; i++ ) {
         switch( AsmBuffer[i]->class ) {
         case TC_NUM:
-            itoa( AsmBuffer[i]->u.value, buffer+strlen( buffer ), 10 );
+            p += sprintf( p, "%lu", AsmBuffer[i]->u.value );
             break;
         case TC_OP_SQ_BRACKET:
-            strcat( buffer, "[" );
+            *p++ = '[';
             break;
         case TC_CL_SQ_BRACKET:
-            strcat( buffer, "]" );
+            *p++ = ']';
             break;
         default:
-            strcat( buffer, AsmBuffer[i]->string_ptr );
+            len = strlen( AsmBuffer[i]->string_ptr );
+            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
             break;
         }
     }
+    *p = '\0';
     InputQueueLine( buffer );
     return;
 }

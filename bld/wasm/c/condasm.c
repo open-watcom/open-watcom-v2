@@ -47,7 +47,7 @@ typedef enum if_state {
                                everything until we see an endif */
 } if_state;
 
-extern asmins_idx   get_instruction_position( char *string );
+extern const asm_ins    ASMFAR *get_instruction( char *string );
 
 extern int          MacroExitState;
 
@@ -77,10 +77,10 @@ void IfCondFini( void )
 void prep_line_for_conditional_assembly( char *line )
 /***************************************************/
 {
-    char        *ptr;
-    char        *end;
-    asmins_idx  ins_pos;
-    char        fix;
+    char            *ptr;
+    char            *end;
+    char            fix;
+    const asm_ins   ASMFAR *ins;
 
     if( Comment( QUERY_COMMENT, 0, NULL ) ) {
         if( Comment( QUERY_COMMENT_DELIM, 0, line ) ) {
@@ -106,9 +106,9 @@ void prep_line_for_conditional_assembly( char *line )
         ptr++;
     }
 
-    ins_pos = get_instruction_position( ptr );
+    ins = get_instruction( ptr );
     *end = fix;
-    if( ins_pos == INVALID_POS ) {
+    if( ins == NULL ) {
         /* if it is not in the table */
         if( CurState == LOOKING_FOR_TRUE_COND || CurState == DONE || MacroExitState ) {
             *line = '\0';
@@ -118,7 +118,7 @@ void prep_line_for_conditional_assembly( char *line )
 
     /* otherwise, see if it is a conditional assembly directive */
 
-    switch( AsmOpTable[ins_pos].token) {
+    switch( ins->token) {
     case T_ELSE:
     case T_ELSEIF:
     case T_ELSEIF1:

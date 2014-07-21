@@ -422,9 +422,10 @@ static void get_fname( char *token, int type )
  */
 {
     char        name [_MAX_PATH ];
-    char        msgbuf[80];
+    char        msgbuf[MAX_MESSAGE_SIZE];
     PGROUP      pg;
     PGROUP      def;
+    size_t      len;
 
     /* get filename for source file */
 
@@ -442,8 +443,9 @@ static void get_fname( char *token, int type )
             pg.ext = ASM_EXT;
         }
         _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        AsmFiles.fname[ASM] = AsmAlloc( strlen( name ) + 1 );
-        strcpy( AsmFiles.fname[ASM], name );
+        len = strlen( name ) + 1;
+        AsmFiles.fname[ASM] = AsmAlloc( len );
+        memcpy( AsmFiles.fname[ASM], name, len );
 
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
         /* add the source path to the include path */
@@ -464,8 +466,9 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[OBJ] );
         }
-        AsmFiles.fname[OBJ] = AsmAlloc( strlen( name ) + 1 );
-        strcpy( AsmFiles.fname[OBJ], name );
+        len = strlen( name ) + 1;
+        AsmFiles.fname[OBJ] = AsmAlloc( len );
+        memcpy( AsmFiles.fname[OBJ], name, len );
 
         if( AsmFiles.fname[ERR] == NULL ) {
             pg.ext = ERR_EXT;
@@ -480,8 +483,9 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[ERR] );
         }
-        AsmFiles.fname[ERR] = AsmAlloc( strlen( name ) + 1 );
-        strcpy( AsmFiles.fname[ERR], name );
+        len = strlen( name ) + 1;
+        AsmFiles.fname[ERR] = AsmAlloc( len );
+        memcpy( AsmFiles.fname[ERR], name, len );
 
         if( AsmFiles.fname[LST] == NULL ) {
             pg.ext = LST_EXT;
@@ -496,8 +500,9 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[LST] );
         }
-        AsmFiles.fname[LST] = AsmAlloc( strlen( name ) + 1 );
-        strcpy( AsmFiles.fname[LST], name );
+        len = strlen( name ) + 1;
+        AsmFiles.fname[LST] = AsmAlloc( len );
+        memcpy( AsmFiles.fname[LST], name, len );
 
     } else {
         /* get filename for object, error, or listing file */
@@ -520,8 +525,9 @@ static void get_fname( char *token, int type )
         if( AsmFiles.fname[type] != NULL ) {
             AsmFree( AsmFiles.fname[type] );
         }
-        AsmFiles.fname[type] = AsmAlloc( strlen( name ) + 1 );
-        strcpy( AsmFiles.fname[type], name );
+        len = strlen( name ) + 1;
+        AsmFiles.fname[type] = AsmAlloc( len );
+        memcpy( AsmFiles.fname[type], name, len );
     }
 }
 
@@ -532,7 +538,6 @@ static void set_some_kinda_name( char token, char *name )
     size_t  len;
     char    **tmp;
 
-    len = strlen( name ) + 1;
     switch( token ) {
     case 'c':
         tmp = &Options.code_class;
@@ -552,8 +557,9 @@ static void set_some_kinda_name( char token, char *name )
     if( *tmp != NULL ) {
         AsmFree(*tmp);
     }
+    len = strlen( name ) + 1;
     *tmp = AsmAlloc( len );
-    strcpy( *tmp, name );
+    memcpy( *tmp, name, len );
 }
 
 static void usage_msg( void )
@@ -711,15 +717,18 @@ static bool OptionDelimiter( char c )
 static void get_os_include( void )
 /********************************/
 {
-    char *env;
-    char *tmp;
+    char        *env;
+    char        *tmp;
+    char        *p;
+    size_t      len;
 
     /* add OS_include to the include path */
 
-    tmp = AsmTmpAlloc( strlen( Options.build_target ) + 10 );
-    strcpy( tmp, Options.build_target );
-    strcat( tmp, "_INCLUDE" );
-
+    len = strlen( Options.build_target );
+    tmp = AsmTmpAlloc( len + 10 );
+    p = CATSTR( tmp, Options.build_target, len );
+    p = CATLIT( p, "_INCLUDE" );
+    *p = '\0';
     env = getenv( tmp );
     if( env != NULL ) {
         AddItemToIncludePath( env, NULL );
@@ -1130,7 +1139,7 @@ static int set_build_target( void )
 static void parse_cmdline( char **cmdline )
 /*****************************************/
 {
-    char msgbuf[80];
+    char msgbuf[MAX_MESSAGE_SIZE];
     int  level = 0;
 
     if( cmdline == NULL || *cmdline == NULL || **cmdline == 0 ) {

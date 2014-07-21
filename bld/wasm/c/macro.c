@@ -64,15 +64,17 @@ static asmlines *asmline_insert( asmlines **head, void *data )
 {
     asmlines *entry;
     asmlines **ptr;
+    size_t   len;
 
     /* get a pointer to the last next ptr ( or Head if empty ) */
     for( ptr = head; *ptr; ptr = &((*ptr)->next) );
 
     entry = AsmAlloc( sizeof( asmlines ) );
     entry->next = NULL;
-    entry->line = AsmAlloc( strlen( data ) + 1 );
     entry->parmcount = 0;
-    strcpy( entry->line, data );
+    len = strlen( data ) + 1;
+    entry->line = AsmAlloc( len );
+    memcpy( entry->line, data, len );
     *ptr = entry;
     return( entry );
 }
@@ -214,6 +216,8 @@ static bool macro_local( void )
 
     token_idx   i = 0;
     char        buffer[MAX_LINE_LEN];
+    char        *p;
+    size_t      len;
 
     if( AsmBuffer[i]->u.token != T_LOCAL ) {
         AsmError( SYNTAX_ERROR );
@@ -227,9 +231,10 @@ static bool macro_local( void )
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
-        strcpy( buffer, AsmBuffer[i]->string_ptr );
-        strcat( buffer, " TEXTEQU " );
-        sprintf( buffer + strlen( buffer ), "??%04d", MacroLocalVarCounter );
+        len = strlen( AsmBuffer[i]->string_ptr );
+        p = CATSTR( buffer, AsmBuffer[i]->string_ptr, len );
+        p = CATLIT( p, " TEXTEQU " );
+        sprintf( p, "??%04d", MacroLocalVarCounter );
         MacroLocalVarCounter++;
         InputQueueLine( buffer );
         i++;
@@ -258,6 +263,7 @@ static bool macro_exam( token_idx i )
     dir_node            *dir;
     uint                nesting_depth = 0;
     bool                store_data;
+    size_t              len;
 
     if( Options.mode & MODE_IDEAL ) {
         name = AsmBuffer[i+1]->string_ptr;
@@ -281,8 +287,9 @@ static bool macro_exam( token_idx i )
             paranode->required = FALSE;
 
             /* first get the parm. name */
-            paranode->label = AsmAlloc( strlen( token ) + 1 );
-            strcpy( paranode->label, token );
+            len = strlen( token ) + 1;
+            paranode->label = AsmAlloc( len );
+            memcpy( paranode->label, token, len );
             i++;
 
             /* now see if it has a default value or is required */
@@ -295,10 +302,11 @@ static bool macro_exam( token_idx i )
                         return( RC_ERROR );
                     }
                     token = AsmBuffer[i]->string_ptr;
-                    paranode->def = AsmAlloc( strlen( token ) + 1 );
-                    strcpy( paranode->def, token );
+                    len = strlen( token ) + 1;
+                    paranode->def = AsmAlloc( len );
+                    memcpy( paranode->def, token, len );
                     i++;
-                } else if( strcmp( AsmBuffer[i]->string_ptr, "REQ" ) == 0 ) {
+                } else if( CMPLIT( AsmBuffer[i]->string_ptr, "REQ" ) == 0 ) {
                     /* required parameter */
                     paranode->required = TRUE;
                     i++;
@@ -420,6 +428,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
     int                 count = 0;
+    size_t              len;
 
     for( parm = parmlist; parm != NULL; parm = parm->next ) {
         count ++;
@@ -432,8 +441,9 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    new_line = AsmAlloc( strlen( buffer ) + 1 );
-    strcpy( new_line, buffer );
+    len = strlen( buffer ) + 1;
+    new_line = AsmAlloc( len );
+    memcpy( new_line, buffer, len );
     return( new_line );
 }
 
@@ -464,7 +474,8 @@ token_idx ExpandMacro( token_idx tok_count )
     char        expansion_flag = FALSE;
     token_idx   exp_start = 0;
     int         nesting_depth;
-    char        *ptr;
+    char        *p;
+    size_t      len;
 
     if( AsmBuffer[0]->class == TC_FINAL )
         return( tok_count );
@@ -496,11 +507,13 @@ token_idx ExpandMacro( token_idx tok_count )
     if( macro_name_loc != 0 ) {
         /* save the rest of the line from before the macro */
         PushLineQueue();
-        buffer[0]='\0';
+        p = buffer;
         for( i = 0; i < macro_name_loc; i++ ) {
-            strcat( buffer, AsmBuffer[i]->string_ptr );
-            strcat( buffer, " " );
+            len = strlen( AsmBuffer[i]->string_ptr );
+            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
+            *p++ = ' ';;
         }
+        *p = '\0';
         InputQueueLine( buffer );
     }
     i = macro_name_loc + 1;
@@ -514,7 +527,7 @@ token_idx ExpandMacro( token_idx tok_count )
     info = dir->e.macroinfo;
 
     for( parm = info->parmlist; parm != NULL; parm = parm->next ) {
-        buffer[0]='\0';
+        p = buffer;
         if( i < tok_count ) {
             if( AsmBuffer[i]->class == TC_COMMA ||
                 ( AsmBuffer[i]->class == TC_STRING &&
@@ -527,8 +540,9 @@ token_idx ExpandMacro( token_idx tok_count )
                 }
                 if( parm->def ) {
                     /* fill in the default value */
-                    parm->replace = AsmAlloc( strlen( parm->def )+1 );
-                    strcpy( parm->replace, parm->def );
+                    len = strlen( parm->def ) + 1;
+                    parm->replace = AsmAlloc( len );
+                    memcpy( parm->replace, parm->def, len );
                 }
                 if( AsmBuffer[i]->class != TC_COMMA ) {
                     i++;
@@ -559,25 +573,24 @@ token_idx ExpandMacro( token_idx tok_count )
                         }
                         if( AsmBuffer[i]->class == TC_NUM ) {
                             if( *AsmBuffer[i]->string_ptr == 0 ) {
-                                itoa( AsmBuffer[i]->u.value, buffer + strlen( buffer ), 10 );
+                                p += sprintf( p, "%lu", AsmBuffer[i]->u.value );
                             } else {
-                                strcpy( buffer + strlen( buffer ), AsmBuffer[i]->string_ptr );
+                                len = strlen( AsmBuffer[i]->string_ptr );
+                                p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
                             }
                         } else if( AsmBuffer[i]->class == TC_STRING ) {
                             char        *src;
-                            char        *dst;
 
-                            dst = &buffer[strlen( buffer )];
                             src = AsmBuffer[i]->string_ptr;
                             while( *src != '\0' ) {
                                 if( *src == '\'' ) {
-                                    *dst++ = '\''; /* have to escape delim */
+                                    *p++ = '\''; /* have to escape delim */
                                 }
-                                *dst++ = *src++;
+                                *p++ = *src++;
                             }
-                            *dst = '\0';
                         } else {
-                            strcat( buffer, AsmBuffer[i]->string_ptr );
+                            len = strlen( AsmBuffer[i]->string_ptr );
+                            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
                         }
                     } else {
                         switch( ExpandSymbol( i, FALSE ) ) {
@@ -603,8 +616,10 @@ token_idx ExpandMacro( token_idx tok_count )
                     i++;
                 }
                 i++; /* go past the comma */
-                parm->replace = AsmAlloc( strlen( buffer ) + 1 );
-                strcpy( parm->replace, buffer );
+                *p = '\0';
+                len = p + 1 - buffer;
+                parm->replace = AsmAlloc( len );
+                memcpy( parm->replace, buffer, len );
             }
         } else {
             if( parm->required ) {
@@ -632,12 +647,12 @@ token_idx ExpandMacro( token_idx tok_count )
                 continue;
             }
         } else {
-            ptr = line;
-            while( *ptr != '\0' && !isspace( *ptr ) )
-                ptr++; // skip 1st token
-            while( isspace( *ptr ) )
-                ptr++; // skip all spaces
-            if( lineis( ptr, "macro" ) ) {
+            p = line;
+            while( *p != '\0' && !isspace( *p ) )
+                p++; // skip 1st token
+            while( isspace( *p ) )
+                p++; // skip all spaces
+            if( lineis( p, "macro" ) ) {
                 nesting_depth++;
             }
         }

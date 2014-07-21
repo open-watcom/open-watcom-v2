@@ -215,7 +215,7 @@ static void PutMsg( FILE *fp, char *prefix, int msgnum, va_list args )
 /********************************************************************/
 {
     const FNAME     *fname;
-    char            msgbuf[MAX_LINE_LEN];
+    char            msgbuf[MAX_MESSAGE_SIZE];
 
     if( fp != NULL ) {
         fname = get_curr_srcfile();

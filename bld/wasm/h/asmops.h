@@ -33,13 +33,7 @@
 #ifndef _ASMOPS_H_
 #define _ASMOPS_H_
 
-typedef enum asm_token {
 #include "asmops.gh"
-        // this is not real tokens
-        // enable to include this operators to arithmetic operator class
-        T_OP_TIMES,
-        T_OP_DIVIDE,
-} asm_token;
 
 typedef enum asm_cpu {
         /* bit count from left: ( need at least 7 bits )

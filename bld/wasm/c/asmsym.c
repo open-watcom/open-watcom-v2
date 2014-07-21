@@ -80,12 +80,14 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
 /**************************************************************/
 {
 #if !defined( _STANDALONE_ )
-    void    *handle;
+    void        *handle;
 #endif
+    size_t      len;
 
-    sym->name = AsmAlloc( strlen( name ) + 1 );
+    len = strlen( name ) + 1;
+    sym->name = AsmAlloc( len );
     if( sym->name != NULL ) {
-        strcpy( sym->name, name );
+        memcpy( sym->name, name, len );
         sym->next = NULL;
         sym->fixup = NULL;
 #if defined( _STANDALONE_ )
@@ -146,26 +148,26 @@ static struct asm_sym **AsmFind( const char *name )
 /* find a symbol in the symbol table, return NULL if not found */
 {
     struct asm_sym      **sym;
+    size_t              len;
 
 #if defined( _STANDALONE_ )
     sym = &sym_table[ hashpjw( name ) ];
 #else
     sym = &AsmSymHead;
 #endif
+    len = strlen( name ) + 1;
     for( ; *sym; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
         if( Options.mode & MODE_IDEAL ) {
-            if( strcmp( name, (*sym)->name ) == 0 ) {
+            if( memcmp( name, (*sym)->name, len ) == 0 ) {
                 break;
             }
         } else {
-            if( stricmp( name, (*sym)->name ) == 0 ) {
+#endif
+            if( strnicmp( name, (*sym)->name, len ) == 0 ) {
                 break;
             }
-        }
-#else
-        if( stricmp( name, (*sym)->name ) == 0 ) {
-            break;
+#if defined( _STANDALONE_ )
         }
 #endif
     }
@@ -177,9 +179,11 @@ static struct asm_sym *FindLocalLabel( const char *name )
 /*******************************************************/
 {
     label_list  *curr;
+    size_t      len;
 
+    len = strlen( name ) + 1;
     for( curr = CurrProc->e.procinfo->labellist; curr != NULL; curr = curr->next ) {
-        if( strcmp( curr->sym->name, name ) == 0 ) {
+        if( memcmp( curr->sym->name, name, len ) == 0 ) {
             return( curr->sym );
         }
     }
@@ -324,14 +328,16 @@ int AsmChangeName( const char *old, const char *new )
 {
     struct asm_sym      **sym_ptr;
     struct asm_sym      *sym;
+    size_t              len;
 
     sym_ptr = AsmFind( old );
     if( *sym_ptr != NULL ) {
         sym = *sym_ptr;
         *sym_ptr = sym->next;
         AsmFree( sym->name );
-        sym->name = AsmAlloc( strlen( new ) + 1 );
-        strcpy( sym->name, new );
+        len = strlen( new ) + 1;
+        sym->name = AsmAlloc( len );
+        memcpy( sym->name, new, len );
 
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )

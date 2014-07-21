@@ -47,7 +47,6 @@ typedef enum operand_idx {
 } operand_idx;
 
 typedef unsigned short  asmins_idx;
-#define INVALID_POS     ((asmins_idx)-1)
 
 struct AsmCodeName {
     asmins_idx      position;       // starting position in AsmOpTable
@@ -140,7 +139,7 @@ extern const char                   AsmChars[];
 #if defined( _STANDALONE_ )
 
 extern void     find_frame( struct asm_sym *sym );
-extern int      GetInsString( asm_token, char *, int );
+extern int      GetInsString( asm_token, char * );
 
 #endif
 

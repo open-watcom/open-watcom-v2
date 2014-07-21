@@ -48,28 +48,25 @@ extern bool     AddFPPatchAndFixups( fp_patches patch );
 
 enum fpe        floating_point = DO_FP_EMULATION;
 
-static bool match_phase_3( bool *found, asmins_idx *i, OPNDTYPE determinant );
+static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE determinant );
 
-static bool output_3DNow( asmins_idx ins_pos )
-/********************************************/
+static bool output_3DNow( const asm_ins ASMFAR *ins )
+/***************************************************/
 {
-    const struct asm_ins ASMFAR *ins = &AsmOpTable[ins_pos];
-
     if( ins->byte1_info == F_0F0F ) {
         AsmCodeByte( ins->opcode | Code->info.opcode );
     }
     return( RC_OK );
 }
 
-static bool output( asmins_idx ins_pos )
-/**************************************/
+static bool output( const asm_ins ASMFAR *ins )
+/*********************************************/
 /*
 - determine what code should be output and their order;
 - output prefix bytes ( ADRSIZ, OPSIZ, LOCK, REPxx, segment override prefix, etc )
   , opcode, "mod r/m" byte and "s-i-b" byte;
 */
 {
-    const struct asm_ins ASMFAR *ins = &AsmOpTable[ins_pos];
     struct asm_code             *rCode = Code;
     unsigned_8                  tmp;
     fp_patches                  patch = FPP_NONE;
@@ -394,21 +391,24 @@ static bool output_data( OPNDTYPE determinant, operand_idx index )
     return( RC_OK );
 }
 
-static bool match_phase_2( bool *found, asmins_idx *ins_pos )
-/***************************************************************
+static bool match_phase_2( bool *found, const asm_ins ASMFAR **pins )
+/********************************************************************
 - a routine used by match_phase_1() to determine whether both operands match
   with that in the assembly instructions table;
 - call by match_phase_1() only;
 */
 {
+    const asm_ins   ASMFAR *ins;
+
+    ins = *pins;
     if( Code->info.opnd_type[OPND2] != OP_NONE ) {
         // 2 opnds instruction
-        return( match_phase_3( found, ins_pos, AsmOpTable[*ins_pos].opnd_type[OPND1] ) );
+        return( match_phase_3( found, pins, ins->opnd_type[OPND1] ) );
     } else {
         // 1 opnd instruction
         // make sure the second opnd also match, i.e. has to be OP_NONE
-        if( AsmOpTable[*ins_pos].opnd_type[OPND2] == OP_NONE ) {
-            if( output( *ins_pos ) ) {
+        if( ins->opnd_type[OPND2] == OP_NONE ) {
+            if( output( ins ) ) {
                 return( RC_ERROR );
             }
             // output idata or disp ( if first opnd is OP_M / OP_I )
@@ -429,12 +429,12 @@ bool match_phase_1( void )
   second operand also match; if not, it must be error;
 */
 {
-    asmins_idx      ins_pos;
     bool            rc;
     bool            temp_opsiz = FALSE;
     OPNDTYPE        cur_opnd;
     OPNDTYPE        asm_op1;
     bool            found = TRUE;
+    const asm_ins   ASMFAR *ins;
 
     // if nothing inside, no need to output anything
     if( Code->info.token == T_NULL ) {
@@ -450,10 +450,10 @@ bool match_phase_1( void )
         }
     }
     // look up the hash table to get the real position of instruction
-    ins_pos = AsmOpcode[Code->info.token].position;
+    ins = AsmOpTable + AsmOpcode[Code->info.token].position;
 
     // make sure the user want 80x87 ins
-    if( (AsmOpTable[ins_pos].cpu & P_FPU_MASK) != P_NO87 ) {
+    if( (ins->cpu & P_FPU_MASK) != P_NO87 ) {
         if( (Code->info.cpu & P_FPU_MASK) == P_NO87 ) {
             AsmError( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING );
             return( RC_ERROR );
@@ -463,7 +463,7 @@ bool match_phase_1( void )
     }
 
     // make sure the user want 80x86 protected mode ins
-    if( AsmOpTable[ins_pos].cpu & P_PM ) {
+    if( ins->cpu & P_PM ) {
         if( (Code->info.cpu & P_PM) == 0 ) {
             AsmError( INVALID_INSTRUCTION_WITH_CURRENT_CPU_SETTING );
             return( RC_ERROR );
@@ -472,9 +472,9 @@ bool match_phase_1( void )
 
     // fixme
     // moved down 4 lines cur_opnd = Code->info.opnd_type[OPND1];
-    while( AsmOpTable[ins_pos].token == Code->info.token ) {
+    while( ins->token == Code->info.token ) {
         // get the real opnd
-        asm_op1 = AsmOpTable[ins_pos].opnd_type[OPND1];
+        asm_op1 = ins->opnd_type[OPND1];
         cur_opnd = Code->info.opnd_type[OPND1];
 
         /* fixme -- temporary fix for all OP_M types */
@@ -515,19 +515,19 @@ bool match_phase_1( void )
         switch( asm_op1 ) {
         case OP_MMX:
             if( cur_opnd & OP_MMX ) {
-                return( match_phase_2( &found, &ins_pos ) );
+                return( match_phase_2( &found, &ins ) );
             }
             break;
         case OP_XMM:
             if( cur_opnd & OP_XMM ) {
-                return( match_phase_2( &found, &ins_pos ) );
+                return( match_phase_2( &found, &ins ) );
             }
             break;
         case OP_R16:
             if( cur_opnd & asm_op1 ) {
                 temp_opsiz = Code->prefix.opsiz;
                 SET_OPSIZ_OFF( Code );
-                rc = match_phase_2( &found, &ins_pos );
+                rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
                 found = TRUE;
@@ -537,7 +537,7 @@ bool match_phase_1( void )
         case OP_M16:
             if( cur_opnd & asm_op1 ) {
                 temp_opsiz = Code->prefix.opsiz;
-                rc = match_phase_2( &found, &ins_pos );
+                rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
                 found = TRUE;
@@ -548,7 +548,7 @@ bool match_phase_1( void )
         case OP_I16:
             if( cur_opnd & asm_op1 ) {
                 Code->info.opnd_type[OPND1] = asm_op1;
-                rc = match_phase_2( &found, &ins_pos );
+                rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
                 found = TRUE;
@@ -559,7 +559,7 @@ bool match_phase_1( void )
                 if( Code->data[OPND1] <= UCHAR_MAX ) {
                     temp_opsiz = Code->prefix.opsiz;
                     Code->info.opnd_type[OPND1] = OP_I8;
-                    rc = match_phase_2( &found, &ins_pos );
+                    rc = match_phase_2( &found, &ins );
                     if( found )
                         return( rc );
                     found = TRUE;
@@ -570,13 +570,13 @@ bool match_phase_1( void )
         case OP_I_3:                    // for INT only
             if( ( (cur_opnd & OP_I8) && Code->data[OPND1] == 3 ) &&
                                 Code->info.opnd_type[OPND2] == OP_NONE ) {
-                return( output( ins_pos ) );
+                return( output( ins ) );
             }
             break;
         case OP_NONE:
             if( cur_opnd == OP_NONE &&
                     Code->info.opnd_type[OPND2] == OP_NONE ) {
-                return( output( ins_pos ) );
+                return( output( ins ) );
             }
             break;
         default:
@@ -586,27 +586,27 @@ bool match_phase_1( void )
             if( (asm_op1 & cur_opnd)
                 && ( ( (cur_opnd & OP_M_ANY) == 0 )
                     || ( (asm_op1 & OP_M_DFT) == (cur_opnd & OP_M_DFT) ) ) ) {
-                rc = match_phase_2( &found, &ins_pos );
+                rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
                 found = TRUE;
             }
             break;
         }
-        ins_pos++;
+        ins++;
     }
     AsmError( INVALID_INSTRUCTION_OPERANDS );
     return( RC_ERROR );
 }
 
-static bool check_3rd_operand( asmins_idx ins_pos )
-/*************************************************/
+static bool check_3rd_operand( const asm_ins ASMFAR *ins )
+/********************************************************/
 {
     OPNDTYPE    cur_opnd;
 
     cur_opnd = Code->info.opnd_type[OPND3];
-    if( ( AsmOpTable[ins_pos].opnd_type_3rd == OP3_NONE )
-        || (AsmOpTable[ins_pos].opnd_type_3rd & OP3_HID) ) {
+    if( ( ins->opnd_type_3rd == OP3_NONE )
+        || (ins->opnd_type_3rd & OP3_HID) ) {
         if( cur_opnd == OP_NONE ) {
             return( RC_OK );
         } else {
@@ -619,26 +619,26 @@ static bool check_3rd_operand( asmins_idx ins_pos )
     }
 }
 
-static bool output_3rd_operand( asmins_idx ins_pos )
-/**************************************************/
+static bool output_3rd_operand( const asm_ins ASMFAR *ins )
+/*********************************************************/
 {
-    if( AsmOpTable[ins_pos].opnd_type_3rd == OP3_NONE ) {
+    if( ins->opnd_type_3rd == OP3_NONE ) {
         return( RC_OK );
-    } else if( AsmOpTable[ins_pos].opnd_type_3rd == OP3_I8_U ) {
+    } else if( ins->opnd_type_3rd == OP3_I8_U ) {
         if( Code->info.opnd_type[OPND3] & OP_I ) {
             return( output_data( OP_I8, OPND3 ) );
         } else {
             return( RC_ERROR );
         }
-    } else if( AsmOpTable[ins_pos].opnd_type_3rd & OP3_HID ) {
-        Code->data[OPND3] = AsmOpTable[ins_pos].opnd_type_3rd & ~OP3_HID;
+    } else if( ins->opnd_type_3rd & OP3_HID ) {
+        Code->data[OPND3] = ins->opnd_type_3rd & ~OP3_HID;
         return( output_data( OP_I8, OPND3 ) );
     } else {
         return( RC_OK );
     }
 }
 
-static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinant )
+static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE determinant )
 /************************************************************************
 - this routine will look up the assembler opcode table and try to match
   the second operand with what we get;
@@ -647,19 +647,19 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
 - call by match_phase_2() only;
 */
 {
-    OPNDTYPE    cur_opnd;
-    OPNDTYPE    last_opnd;
-    OPNDTYPE    asm_op2;
-    asm_token   instruction;
+    OPNDTYPE        cur_opnd;
+    OPNDTYPE        last_opnd;
+    OPNDTYPE        asm_op2;
+    asm_token       instruction;
+    const asm_ins   ASMFAR *ins;
 
-    instruction = AsmOpTable[*ins_pos].token;
-
+    ins = *pins;
+    instruction = ins->token;
     last_opnd = Code->info.opnd_type[OPND1];
     cur_opnd  = Code->info.opnd_type[OPND2];
 
-    while( AsmOpTable[*ins_pos].opnd_type[OPND1] == determinant &&
-           AsmOpTable[*ins_pos].token == instruction ) {
-        asm_op2 = AsmOpTable[*ins_pos].opnd_type[OPND2];
+    while( ins->opnd_type[OPND1] == determinant && ins->token == instruction ) {
+        asm_op2 = ins->opnd_type[OPND2];
         switch( asm_op2 ) {
         case OP_CR:
         case OP_DR:
@@ -667,7 +667,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
         case OP_ST:
         case OP_STI:
             if( cur_opnd & asm_op2 ) {
-                return( output( *ins_pos ) );
+                return( output( ins ) );
             }
             break;
         case OP_SR:
@@ -677,13 +677,13 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
         case OP_R1632:
         case OP_R32:
             if( cur_opnd & asm_op2 ) {
-                if( check_3rd_operand( *ins_pos ) )
+                if( check_3rd_operand( ins ) )
                     break;
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 if( output_data( last_opnd, OPND1 ) )
                     return( RC_ERROR );
-                return( output_3rd_operand( *ins_pos ) );
+                return( output_3rd_operand( ins ) );
             }
             break;
         case OP_CL:
@@ -691,7 +691,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
                 // CL is encoded in bit 345 of rm_byte, but we don't need it
                 // so clear it here
                 Code->info.rm_byte &= NOT_BIT_345;
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 return( output_data( last_opnd, OPND1 ) );
             }
@@ -699,7 +699,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
         case OP_R16:
             if( cur_opnd & asm_op2 ) {
                 SET_OPSIZ_OFF( Code );
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 return( output_data( last_opnd, OPND1 ) );
             }
@@ -753,7 +753,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
                         break;
                     }
                 }
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 if( output_data( last_opnd, OPND1 ) )
                     return( RC_ERROR );
@@ -770,7 +770,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
             if( Code->data[OPND2] > UCHAR_MAX ) {
                 break;
             }
-            if( output( *ins_pos ) )
+            if( output( ins ) )
                 return( RC_ERROR );
             if( output_data( last_opnd, OPND1 ) )
                 return( RC_ERROR );
@@ -804,14 +804,14 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
             } else {
                 break;
             }
-            if( output( *ins_pos ) )
+            if( output( ins ) )
                 return( RC_ERROR );
             if( output_data( last_opnd, OPND1 ) )
                 return( RC_ERROR );
             return( output_data( OP_I8, OPND2 ) );
         case OP_I_1:
             if( cur_opnd == OP_I8 && Code->data[OPND2] == 1 ) {
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 return( output_data( last_opnd, OPND1 ) );
             }
@@ -820,7 +820,7 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
             if( (cur_opnd & OP_M)
               && ( MEM_TYPE( Code->mem_type, WORD )
                 || Code->mem_type == MT_EMPTY ) ) {
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 if( output_data( last_opnd, OPND1 ) )
                     return( RC_ERROR );
@@ -829,25 +829,25 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
             break;
         case OP_M:
             if( cur_opnd & asm_op2 ) {
-                if( check_3rd_operand( *ins_pos ) )
+                if( check_3rd_operand( ins ) )
                     break;
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 if( output_data( last_opnd, OPND1 ) )
                     return( RC_ERROR );
                 if( output_data( cur_opnd, OPND2 ) )
                     return( RC_ERROR );
-                if( output_3rd_operand( *ins_pos ) )
+                if( output_3rd_operand( ins ) )
                     return( RC_ERROR );
-                return( output_3DNow( *ins_pos ) );
+                return( output_3DNow( ins ) );
             }
             break;
         default:
             if( (asm_op2 & (OP_MMX | OP_XMM))
               && (cur_opnd & asm_op2) ) {
-                if( check_3rd_operand( *ins_pos ) )
+                if( check_3rd_operand( ins ) )
                     break;
-                if( output( *ins_pos ) )
+                if( output( ins ) )
                     return( RC_ERROR );
                 if( output_data( last_opnd, OPND1 ) )
                     return( RC_ERROR );
@@ -856,15 +856,17 @@ static bool match_phase_3( bool *found, asmins_idx *ins_pos, OPNDTYPE determinan
                         return( RC_ERROR );
                     }
                 }
-                if( output_3rd_operand( *ins_pos ) )
+                if( output_3rd_operand( ins ) )
                     return( RC_ERROR );
-                return( output_3DNow( *ins_pos ) );
+                return( output_3DNow( ins ) );
             }
             break;
         }
-        (*ins_pos)++;
+        ins++;
+        *pins = ins;
     }
-    (*ins_pos)--;
+    ins--;
+    *pins = ins;
     *found = FALSE;
     return( RC_ERROR );
 }

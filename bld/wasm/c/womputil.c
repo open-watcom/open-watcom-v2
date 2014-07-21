@@ -71,8 +71,7 @@ int InternalError( const char *file, unsigned line )
 /**************************************************/
 // it is used by WOMP myassert function in debug version
 {
-
-    char msgbuf[80];
+    char msgbuf[MAX_MESSAGE_SIZE];
 
     MsgGet( MSG_INTERNAL_ERROR, msgbuf );
     fprintf( errout, msgbuf, file, line );

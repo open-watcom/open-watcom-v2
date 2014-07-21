@@ -59,7 +59,7 @@ int len_compare( const void *pv1, const void *pv2 )
         return( 1 );
     if( len1 > len2 )
         return( -1 );
-    return( strcmp( p1->word, p2->word ) );
+    return( memcmp( p1->word, p2->word, len1 + 1 ) );
 }
 
 void make_inst_hash_tables( unsigned int count, sword *Words )
@@ -107,6 +107,7 @@ int main( int argc, char *argv[] )
     unsigned        words_count;
     size_t          chars_count;
     size_t          len;
+    size_t          len1;
     unsigned        idx;
     size_t          idxs;
     sword           *Words;
@@ -143,7 +144,7 @@ int main( int argc, char *argv[] )
             exit( 1 );
         }
         for( ; fgets( buf, KEY_MAX_LEN, in ) != NULL; ) {
-            for( i2 = 0; buf[i2] && !isspace( buf[i2] ); i2++ )
+            for( i2 = 0; buf[i2] != '\0' && !isspace( buf[i2] ); i2++ )
                 ;
             buf[i2] = '\0';
             Words[words_count].word = strdup( buf );
@@ -162,21 +163,19 @@ int main( int argc, char *argv[] )
         word = strstr( Chars, Words[idx].word );
         if( word == NULL ) {
             word = &Chars[chars_count];
-            len = strlen( Words[idx].word ) - 1;
+            len1 = strlen( Words[idx].word );
+            len = len1 - 1;
             if( chars_count < len )
                 len = chars_count;
-            for( ; ; ) {
-                if( len == 0 )
-                    break;
+            for( ; len > 0; --len ) {
                 if( memcmp( word - len, Words[idx].word, len ) == 0 ) {
-                    word -= len;
-                    chars_count -= len;
                     break;
                 }
-                len--;
             }
-            strcpy( word, Words[idx].word );
-            chars_count += strlen( word );
+            len1 -= len;
+            memcpy( word, Words[idx].word + len, len1 + 1 );
+            chars_count += len1;
+            word -= len;
         }
         Words[idx].index = (unsigned)( word - Chars );
     }

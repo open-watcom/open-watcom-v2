@@ -137,9 +137,12 @@ int ExpandProcString( token_idx index )
     char                buffer[MAX_LINE_LEN];
     label_list          *label = NULL;
     proc_info           *info = CurrProc->e.procinfo;
+    size_t              len;
+    char                *p;
 
-    string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
-    strcpy( string, AsmBuffer[index]->string_ptr );
+    len = strlen( AsmBuffer[index]->string_ptr ) + 1;
+    string = AsmTmpAlloc( len );
+    memcpy( string, AsmBuffer[index]->string_ptr, len );
     wipe_space( string );
     for( word = strtok( string, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
         count++;
@@ -232,22 +235,23 @@ int ExpandProcString( token_idx index )
     DebugMsg(( "ExpandString: %s -> %s \n", word, replace ));
 
     /* now we need to build the new line string to pass through the scanner */
-    buffer[0] = '\0';
+    p = buffer;
     /* NOTE: if we have a TC_DIRECTIVE, token_count is always set to 1 !??! */
     for( i = 0; i < Token_Count; i++ ) {
         if( i != index ) {
             /* register parameter ? */
             if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
                 /* token within brackets ? */
-                if( ( i >= left_bracket ) && ( i <= right_bracket ) )
+                if( ( i >= left_bracket ) && ( i <= right_bracket ) ) {
                     continue;   /*yes, skip it */
+                }
             }
+            len = strlen( AsmBuffer[i]->string_ptr );
+            if( AsmBuffer[i]->class == TC_STRING )
+                *p++ = '<';
+            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
             if( AsmBuffer[i]->class == TC_STRING ) {
-                strcat( buffer, "<" );
-                strcat( buffer, AsmBuffer[i]->string_ptr );
-                strcat( buffer, ">" );
-            } else {
-                strcat( buffer, AsmBuffer[i]->string_ptr );
+                *p++ = '>';
             }
         } else {
             if( AsmBuffer[i]->class == TC_PERCENT ) {
@@ -256,23 +260,28 @@ int ExpandProcString( token_idx index )
             }
 
             /* copy the string in ... 1 word at a time */
-            string = AsmTmpAlloc( strlen( AsmBuffer[index]->string_ptr ) + 1 );
-            strcpy( string, AsmBuffer[index]->string_ptr );
+            len = strlen( AsmBuffer[index]->string_ptr ) + 1;
+            string = AsmTmpAlloc( len );
+            memcpy( string, AsmBuffer[index]->string_ptr, len );
             wipe_space( string );
             word = strtok( string, " \t" );
             for( cnt = 1; cnt < count; cnt++ ) {
-                strcat( buffer, word );
-                strcat( buffer, " " );
+                len = strlen( word );
+                p = CATSTR( p, word, len );
+                *p++ = ' ';
                 word = strtok( NULL, " \t" );
             }
-            strcat( buffer, replace );
+            len = strlen( replace );
+            p = CATSTR( p, replace, len );
             for( word = strtok( NULL, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
-                strcat( buffer, " " );
-                strcat( buffer, word );
+                *p++ = ' ';
+                len = strlen( word );
+                p = CATSTR( p, word, len );
             }
         }
-        strcat( buffer, " " );
+        *p++ = ' ';
     }
+    *p = '\0';
     /* make sure this line goes at the front of the queue */
     PushLineQueue();
     InputQueueLine( buffer );
@@ -393,6 +402,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     token_idx           counta;
     bool                can_be_redefine;
     bool                new_constant;
+    size_t              len;
 
     new_constant = FALSE;
     dir = (dir_node *)AsmGetSymbol( name );
@@ -486,8 +496,9 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         if( AsmBuffer[start + i]->string_ptr == NULL ) {
             new[i].string_ptr = NULL;
         } else {
-            new[i].string_ptr = AsmAlloc( strlen( AsmBuffer[start + i]->string_ptr ) + 1 );
-            strcpy( new[i].string_ptr, AsmBuffer[start + i]->string_ptr );
+            len = strlen( AsmBuffer[start + i]->string_ptr ) + 1;
+            new[i].string_ptr = AsmAlloc( len );
+            memcpy( new[i].string_ptr, AsmBuffer[start + i]->string_ptr, len );
         }
     }
     if( new_constant && can_be_redefine )

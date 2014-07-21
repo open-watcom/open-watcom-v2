@@ -324,12 +324,14 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
     char            *p;
     FILE            *file = NULL;
     char            c;
+    size_t          len;
 
     while( isspace( *name ) )
         name++;
 
     path_list = IncludePath;
     if( path_list != NULL ) {
+        len = strlen( name ) + 1;
         while( (c = *path_list) != '\0' ) {
             p = fullpath;
             do {
@@ -343,7 +345,7 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
             if( !IS_PATH_SEP( c ) ) {
                 *p++ = DIR_SEP;
             }
-            strcpy( p, name );
+            memcpy( p, name, len );
             file = fopen( fullpath, "r" );
             if( file != NULL ) {
                 break;
@@ -483,6 +485,7 @@ char *ScanLine( char *string, size_t max_len )
 {
     char        *line;
     char        buffer[MAX_LINE_LEN];
+    size_t      len;
 
     line = ( max_len < MAX_LINE_LEN ? buffer : string );
     line = ReadTextLine( line );
@@ -490,8 +493,9 @@ char *ScanLine( char *string, size_t max_len )
 
         prep_line_for_conditional_assembly( line );
         if( line != string ) {          /* comparing the pointers */
-            if( strlen( line ) <= max_len ) {
-                strcpy( string, line );
+            len = strlen( line ) + 1;
+            if( len <= max_len ) {
+                memcpy( string, line, len );
             } else {
                 AsmError( ASM_CODE_TOO_LONG );
                 return( NULL );

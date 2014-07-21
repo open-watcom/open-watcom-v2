@@ -44,12 +44,14 @@ struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 {
     field_list      *field;
     struct asm_sym  *sym;
+    size_t          len;
 
-    for( field = ((dir_node *)symbol)->e.structinfo->head ; field; field = field->next ) {
-        sym = field->sym;
-        if( sym != NULL ) {
-            if( strcmp( name, sym->name ) == 0 )
+    len = strlen( name ) + 1;
+    for( field = ((dir_node *)symbol)->e.structinfo->head ; field != NULL; field = field->next ) {
+        if( (sym = field->sym) != NULL ) {
+            if( memcmp( name, sym->name, len ) == 0 ) {
                 return( sym );
+            }
         }
     }
     return( NULL );
@@ -142,6 +144,8 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
     const char      *ptr2;
     dir_node        *dir;
     field_list      *f;
+    char            *p;
+    size_t          len;
 
     dir = (dir_node *)struct_symbol;
 
@@ -162,30 +166,35 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
          */
-        strcpy( buffer, f->initializer );
-        strcat( buffer, " " );
+        len = strlen( f->initializer );
+        p = CATSTR( buffer, f->initializer, len );
+        *p++ = ' ' ;
+        len = strlen( f->value );
         if( ptr == NULL ) {
-            strcat( buffer, f->value );
+            p = CATSTR( p, f->value, len );
         } else if( (ptr2 = strpbrk( ptr, "," )) != NULL ) {
             for( ptr1 = ptr; isspace( *ptr1 ); ) {
                 ++ptr1;
             }
             if( ptr1 == ptr2 ) {
-                strcat( buffer, f->value );
+                p = CATSTR( p, f->value, len );
             } else {
-                strncat( buffer, ptr1, ptr2 - ptr1 );
+                len = ptr2 - ptr1;
+                p = CATSTR( p, ptr1, len );
             }
             ptr = ptr2 + 1;   // go past the comma
         } else {
             for( ; isspace( *ptr ); ptr++ )
                 ;
             if( *ptr == '\0' ) {
-                strcat( buffer, f->value );
+                p = CATSTR( p, f->value, len );
             } else {
-                strcat( buffer, ptr );
+                len = strlen( ptr );
+                p = CATSTR( p, ptr, len );
             }
             ptr = NULL;
         }
+        *p = '\0';
         InputQueueLine( buffer );
     }
 
@@ -200,6 +209,7 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
     token_idx   i;
     struct_info *the_struct;
     field_list  *f;
+    size_t      len;
 
     the_struct = Definition.curr_struct->e.structinfo;
 
@@ -218,8 +228,9 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    f->initializer = AsmAlloc( strlen( AsmBuffer[loc]->string_ptr ) + 1 );
-    strcpy( f->initializer, AsmBuffer[ loc ]->string_ptr );
+    len = strlen( AsmBuffer[loc]->string_ptr ) + 1;
+    f->initializer = AsmAlloc( len );
+    memcpy( f->initializer, AsmBuffer[ loc ]->string_ptr, len );
 
     /* now add the value to initialize the struct to */
     count = 0;
