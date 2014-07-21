@@ -35,7 +35,6 @@
 #include <limits.h>
 #include "mathlib.h"
 #include "ifprag.h"
-#include "cplx.h"
 
 
 _WMRTLINK long _IF_ipow( long base, long power )
