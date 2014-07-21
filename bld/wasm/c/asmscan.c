@@ -513,6 +513,8 @@ static bool get_id( token_idx idx, const char **input, char **output )
     return( RC_OK );
 }
 
+#if defined( _STANDALONE_ )
+
 static bool get_comment( token_idx idx, const char **input, char **output )
 {
     size_t  len;
@@ -528,6 +530,8 @@ static bool get_comment( token_idx idx, const char **input, char **output )
     AsmBuffer[idx].u.value = 0;
     return( RC_OK );
 }
+
+#endif
 
 static bool get_special_symbol( token_idx idx, const char **input, char **output )
 /*******************************************************************************/
