@@ -101,15 +101,15 @@ static void jumpExtend( int far_flag )
 
     /* there MUST be a conditional jump instruction in asmbuffer */
     for( i = 0; ; i++ ) {
-        if( ( AsmBuffer[i]->class == TC_INSTR )
-            && IS_JMP( AsmBuffer[i]->u.token ) ) {
+        if( ( AsmBuffer[i].class == TC_INSTR )
+            && IS_JMP( AsmBuffer[i].u.token ) ) {
             break;
         }
     }
 
     AsmNote( 4, EXTENDING_JUMP );
 
-    p = buffer + getJumpNegation( AsmBuffer[i]->u.token, buffer );
+    p = buffer + getJumpNegation( AsmBuffer[i].u.token, buffer );
     if( far_flag ) {
         next_ins_size = Code->use32 ? 7 : 5;
     } else {
@@ -123,10 +123,10 @@ static void jumpExtend( int far_flag )
     } else {
         p = CATLIT( buffer, "jmp " );
     }
-    for( i++; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        switch( AsmBuffer[i]->class ) {
+    for( i++; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        switch( AsmBuffer[i].class ) {
         case TC_NUM:
-            p += sprintf( p, "%lu", AsmBuffer[i]->u.value );
+            p += sprintf( p, "%lu", AsmBuffer[i].u.value );
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
@@ -135,8 +135,8 @@ static void jumpExtend( int far_flag )
             *p++ = ']';
             break;
         default:
-            len = strlen( AsmBuffer[i]->string_ptr );
-            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
+            len = strlen( AsmBuffer[i].string_ptr );
+            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
             break;
         }
     }
@@ -155,8 +155,8 @@ static void FarCallToNear( void )
 
     /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
-        if( ( AsmBuffer[i]->class == TC_INSTR )
-            && ( AsmBuffer[i]->u.token == T_CALL ) ) {
+        if( ( AsmBuffer[i].class == TC_INSTR )
+            && ( AsmBuffer[i].u.token == T_CALL ) ) {
             break;
         }
     }
@@ -173,10 +173,10 @@ static void FarCallToNear( void )
 #else
     p = CATLIT( p, "CALL NEAR PTR " );
 #endif
-    for( i++; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        switch( AsmBuffer[i]->class ) {
+    for( i++; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        switch( AsmBuffer[i].class ) {
         case TC_NUM:
-            p += sprintf( p, "%lu", AsmBuffer[i]->u.value );
+            p += sprintf( p, "%lu", AsmBuffer[i].u.value );
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
@@ -185,8 +185,8 @@ static void FarCallToNear( void )
             *p++ = ']';
             break;
         default:
-            len = strlen( AsmBuffer[i]->string_ptr );
-            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
+            len = strlen( AsmBuffer[i].string_ptr );
+            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
             break;
         }
     }

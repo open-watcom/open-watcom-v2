@@ -58,7 +58,7 @@ static label_list *label_cmp( char *name, label_list *head )
 }
 
 
-void AddTokens( asm_tok **buffer, token_idx start, token_idx count )
+void AddTokens( asm_tok *buffer, token_idx start, token_idx count )
 /******************************************************************/
 {
     token_idx   i;
@@ -69,12 +69,12 @@ void AddTokens( asm_tok **buffer, token_idx start, token_idx count )
     case INVALID_IDX:
         /* it's an empty expansion */
         for( i = start; i <= Token_Count; ++i ) {
-            *buffer[i] = *buffer[i + 1];
+            buffer[i] = buffer[i + 1];
         }
         break;
     default:
         for( i = Token_Count; i >= start; i-- ) {
-            *buffer[i + count] = *buffer[i];
+            buffer[i + count] = buffer[i];
         }
         break;
     }
@@ -88,7 +88,7 @@ int ExpandSymbol( token_idx i, bool early_only )
     token_idx           j;
 
     /* expand constant */
-    dir = (dir_node *)AsmGetSymbol( AsmBuffer[i]->string_ptr );
+    dir = (dir_node *)AsmGetSymbol( AsmBuffer[i].string_ptr );
     if( dir == NULL )
         return( NOT_ERROR );
     switch( dir->sym.state ) {
@@ -100,14 +100,14 @@ int ExpandSymbol( token_idx i, bool early_only )
         /* insert the pre-scanned data for this constant */
         AddTokens( AsmBuffer, i, dir->e.constinfo->count - 1 );
         for( j = 0; j < dir->e.constinfo->count; j++ ) {
-            AsmBuffer[i + j]->class = dir->e.constinfo->data[j].class;
-            AsmBuffer[i + j]->u.value = dir->e.constinfo->data[j].u.value;
-            AsmBuffer[i + j]->string_ptr = dir->e.constinfo->data[j].string_ptr;
+            AsmBuffer[i + j].class = dir->e.constinfo->data[j].class;
+            AsmBuffer[i + j].u.value = dir->e.constinfo->data[j].u.value;
+            AsmBuffer[i + j].string_ptr = dir->e.constinfo->data[j].string_ptr;
 #ifdef DEBUG_OUT
-            if( AsmBuffer[i + j]->class == TC_NUM ) {
-                DebugMsg(( " %d", AsmBuffer[i + j]->u.value ));
+            if( AsmBuffer[i + j].class == TC_NUM ) {
+                DebugMsg(( " %d", AsmBuffer[i + j].u.value ));
             } else {
-                DebugMsg(( " %s", AsmBuffer[i + j]->string_ptr ));
+                DebugMsg(( " %s", AsmBuffer[i + j].string_ptr ));
             }
 #endif
         }
@@ -140,9 +140,9 @@ int ExpandProcString( token_idx index )
     size_t              len;
     char                *p;
 
-    len = strlen( AsmBuffer[index]->string_ptr ) + 1;
+    len = strlen( AsmBuffer[index].string_ptr ) + 1;
     string = AsmTmpAlloc( len );
-    memcpy( string, AsmBuffer[index]->string_ptr, len );
+    memcpy( string, AsmBuffer[index].string_ptr, len );
     wipe_space( string );
     for( word = strtok( string, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
         count++;
@@ -161,9 +161,9 @@ int ExpandProcString( token_idx index )
         if( replace != NULL ) {
             if( *replace == '\0' ) {
                 replace++;  /* point to first register string */
-                if( ( AsmBuffer[index + 1]->class == TC_PLUS ) &&
-                    ( AsmBuffer[index + 2]->class == TC_NUM ) ) {
-                    offset = AsmBuffer[index + 2]->u.value;
+                if( ( AsmBuffer[index + 1].class == TC_PLUS ) &&
+                    ( AsmBuffer[index + 2].class == TC_NUM ) ) {
+                    offset = AsmBuffer[index + 2].u.value;
                     if( ( ( Use32 ) && ( offset != 4 ) ) ||
                         ( ( !Use32 ) && ( offset != 2 ) ) ) {
                         AsmErr( CANT_ACCESS_MULTI_REG_PARMS, replace );
@@ -180,14 +180,14 @@ int ExpandProcString( token_idx index )
             if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
                 left_bracket = right_bracket = 0;   /* reset bracket indexes */
                 for( i = 0; i < index; i++ ) {
-                    if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
+                    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
                         break;
                     }
                 }
                 if( i < index ) {
                     left_bracket = i;
                     for( i = index + 1; i < Token_Count; i++ ) {
-                        if( AsmBuffer[i]->class == TC_CL_SQ_BRACKET ) {
+                        if( AsmBuffer[i].class == TC_CL_SQ_BRACKET ) {
                             right_bracket = i;
                             break;
                         }
@@ -204,8 +204,8 @@ int ExpandProcString( token_idx index )
                     right_bracket = index;
                 }
             }
-            if( index > 0 && AsmBuffer[index - 1]->class == TC_DIRECTIVE ) {
-                switch( AsmBuffer[index - 1]->u.token ) {
+            if( index > 0 && AsmBuffer[index - 1].class == TC_DIRECTIVE ) {
+                switch( AsmBuffer[index - 1].u.token ) {
                 case T_IFDEF:
                 case T_IFNDEF:
                 case T_ELSEIFDEF:
@@ -217,9 +217,9 @@ int ExpandProcString( token_idx index )
                     return( NOT_ERROR );
                 }
             }
-            if( AsmBuffer[index + 1]->class == TC_DIRECTIVE ) {
+            if( AsmBuffer[index + 1].class == TC_DIRECTIVE ) {
                 /* this will never happen with multiple words in a string */
-                switch( AsmBuffer[index + 1]->u.token ) {
+                switch( AsmBuffer[index + 1].u.token ) {
                 case T_EQU:
                 case T_EQU2:
                 case T_TEXTEQU:
@@ -246,23 +246,23 @@ int ExpandProcString( token_idx index )
                     continue;   /*yes, skip it */
                 }
             }
-            len = strlen( AsmBuffer[i]->string_ptr );
-            if( AsmBuffer[i]->class == TC_STRING )
+            len = strlen( AsmBuffer[i].string_ptr );
+            if( AsmBuffer[i].class == TC_STRING )
                 *p++ = '<';
-            p = CATSTR( p, AsmBuffer[i]->string_ptr, len );
-            if( AsmBuffer[i]->class == TC_STRING ) {
+            p = CATSTR( p, AsmBuffer[i].string_ptr, len );
+            if( AsmBuffer[i].class == TC_STRING ) {
                 *p++ = '>';
             }
         } else {
-            if( AsmBuffer[i]->class == TC_PERCENT ) {
+            if( AsmBuffer[i].class == TC_PERCENT ) {
                 /* don't save the % */
                 i++;
             }
 
             /* copy the string in ... 1 word at a time */
-            len = strlen( AsmBuffer[index]->string_ptr ) + 1;
+            len = strlen( AsmBuffer[index].string_ptr ) + 1;
             string = AsmTmpAlloc( len );
-            memcpy( string, AsmBuffer[index]->string_ptr, len );
+            memcpy( string, AsmBuffer[index].string_ptr, len );
             wipe_space( string );
             word = strtok( string, " \t" );
             for( cnt = 1; cnt < count; cnt++ ) {
@@ -285,9 +285,9 @@ int ExpandProcString( token_idx index )
     /* make sure this line goes at the front of the queue */
     PushLineQueue();
     InputQueueLine( buffer );
-    AsmBuffer[0]->class = 0;
-    AsmBuffer[0]->string_ptr = NULL;
-    AsmBuffer[0]->u.value = 0;
+    AsmBuffer[0].class = 0;
+    AsmBuffer[0].string_ptr = NULL;
+    AsmBuffer[0].u.value = 0;
     return( STRING_EXPANDED );
 }
 
@@ -304,7 +304,7 @@ bool DefineConstant( token_idx i, bool redefine, bool expand_early )
     }
 
     /* get the name */
-    name = AsmBuffer[i++]->string_ptr;
+    name = AsmBuffer[i++].string_ptr;
     i++;
 
     return( createconstant( name, FALSE, i, redefine, expand_early ) );
@@ -444,8 +444,8 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     if( ExpandTheWorld( start, FALSE, TRUE ) )
         return( RC_ERROR );
 
-    for( counta = 0, i = start; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( ( AsmBuffer[i]->class != TC_STRING ) || ( AsmBuffer[i]->u.value != 0 ) ) {
+    for( counta = 0, i = start; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        if( ( AsmBuffer[i].class != TC_STRING ) || ( AsmBuffer[i].u.value != 0 ) ) {
             counta++;
         }
     }
@@ -460,9 +460,9 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         can_be_redefine = ( counta > 1 ) ? TRUE : FALSE;
     }
     for( i = 0; i < count; i++ ) {
-        switch( AsmBuffer[start + i]->class ) {
+        switch( AsmBuffer[start + i].class ) {
         case TC_STRING:
-            if( AsmBuffer[start + i]->u.value == 0 ) {
+            if( AsmBuffer[start + i].u.value == 0 ) {
                 i--;
                 count--;
                 start++;
@@ -473,14 +473,14 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         case TC_NUM:
             break;
         case TC_ID:
-            if( IS_SYM_COUNTER( AsmBuffer[start + i]->string_ptr ) ) {
+            if( IS_SYM_COUNTER( AsmBuffer[start + i].string_ptr ) ) {
                 char            buff[40];
                 /*
                     We want a '$' symbol to have the value at it's
                     point of definition, not point of expansion.
                 */
                 sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
-                AsmBuffer[start + i]->string_ptr = buff;
+                AsmBuffer[start + i].string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
                     new_constant = TRUE;
                     MakeLabel( buff, MT_NEAR );
@@ -491,14 +491,14 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
             can_be_redefine = TRUE;
             break;
         }
-        new[i].class = AsmBuffer[start + i]->class;
-        memcpy( new[i].u.bytes, AsmBuffer[start + i]->u.bytes, sizeof( new[i].u.bytes ) );
-        if( AsmBuffer[start + i]->string_ptr == NULL ) {
+        new[i].class = AsmBuffer[start + i].class;
+        memcpy( new[i].u.bytes, AsmBuffer[start + i].u.bytes, sizeof( new[i].u.bytes ) );
+        if( AsmBuffer[start + i].string_ptr == NULL ) {
             new[i].string_ptr = NULL;
         } else {
-            len = strlen( AsmBuffer[start + i]->string_ptr ) + 1;
+            len = strlen( AsmBuffer[start + i].string_ptr ) + 1;
             new[i].string_ptr = AsmAlloc( len );
-            memcpy( new[i].string_ptr, AsmBuffer[start + i]->string_ptr, len );
+            memcpy( new[i].string_ptr, AsmBuffer[start + i].string_ptr, len );
         }
     }
     if( new_constant && can_be_redefine )
@@ -514,8 +514,8 @@ bool ExpandAllConsts( token_idx start_pos, bool early_only )
 {
     token_idx   i;
 
-    if( AsmBuffer[start_pos + 1]->class == TC_DIRECTIVE ) {
-        switch( AsmBuffer[start_pos + 1]->u.token ) {
+    if( AsmBuffer[start_pos + 1].class == TC_DIRECTIVE ) {
+        switch( AsmBuffer[start_pos + 1].u.token ) {
         case T_EQU:
         case T_EQU2:
         case T_TEXTEQU:
@@ -523,8 +523,8 @@ bool ExpandAllConsts( token_idx start_pos, bool early_only )
         }
     }
     Globals.expand_count = 0;
-    for( i = start_pos; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i]->class != TC_ID )
+    for( i = start_pos; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        if( AsmBuffer[i].class != TC_ID )
             continue;
         switch( ExpandSymbol( i, early_only ) ) {
         case ERROR:

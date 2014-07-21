@@ -84,13 +84,13 @@ bool OrgDirective( token_idx i )
     struct asm_sym  *sym;
     int_32          value = 0;
 
-    if( AsmBuffer[i+1]->class == TC_NUM ) {
-        return( ChangeCurrentLocation( FALSE, AsmBuffer[i+1]->u.value, FALSE ) );
-    } else if( AsmBuffer[i+1]->class == TC_ID ) {
-        sym = AsmLookup( AsmBuffer[i+1]->string_ptr );
-        if( AsmBuffer[i+2]->class == TC_OP_SQ_BRACKET &&
-            AsmBuffer[i+3]->class == TC_NUM ) {
-            value = AsmBuffer[i+3]->u.value;
+    if( AsmBuffer[i+1].class == TC_NUM ) {
+        return( ChangeCurrentLocation( FALSE, AsmBuffer[i+1].u.value, FALSE ) );
+    } else if( AsmBuffer[i+1].class == TC_ID ) {
+        sym = AsmLookup( AsmBuffer[i+1].string_ptr );
+        if( AsmBuffer[i+2].class == TC_OP_SQ_BRACKET &&
+            AsmBuffer[i+3].class == TC_NUM ) {
+            value = AsmBuffer[i+3].u.value;
         }
         return( ChangeCurrentLocation( FALSE, sym->offset + value, FALSE ) );
     }
@@ -141,10 +141,10 @@ bool AlignDirective( asm_token directive, token_idx i )
 
     switch( directive ) {
     case T_ALIGN:
-        if( AsmBuffer[i+1]->class == TC_NUM ) {
+        if( AsmBuffer[i+1].class == TC_NUM ) {
             uint_32 power;
 
-            align_val = AsmBuffer[i+1]->u.value;
+            align_val = AsmBuffer[i+1].u.value;
             /* check that the parm is a power of 2 */
             for( power = 1; power < align_val; power <<= 1 );
             if( power != align_val ) {

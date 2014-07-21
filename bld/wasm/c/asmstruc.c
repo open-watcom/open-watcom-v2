@@ -66,8 +66,8 @@ bool StructDef( token_idx i )
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-        if( ( AsmBuffer[i]->u.token == T_STRUC ) &&
-            ( AsmBuffer[n]->class != TC_ID ) ) {
+        if( ( AsmBuffer[i].u.token == T_STRUC ) &&
+            ( AsmBuffer[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -77,13 +77,13 @@ bool StructDef( token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ( n == INVALID_IDX ) || ( AsmBuffer[n]->class != TC_ID ) ) {
+        if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
     }
-    name = AsmBuffer[n]->string_ptr;
-    switch( AsmBuffer[i]->u.token ) {
+    name = AsmBuffer[n].string_ptr;
+    switch( AsmBuffer[i].u.token ) {
     case T_STRUC:
     case T_STRUCT:
         dir = (dir_node *)AsmGetSymbol( name );
@@ -108,7 +108,7 @@ bool StructDef( token_idx i )
         break;
     case T_ENDS:
         if( Options.mode & MODE_IDEAL ) {
-            switch( AsmBuffer[n]->class ) {
+            switch( AsmBuffer[n].class ) {
             case TC_FINAL:   /* Name absent */
                 name = Definition.curr_struct->sym.name;
             case TC_ID:
@@ -150,7 +150,7 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
     dir = (dir_node *)struct_symbol;
 
     PushLineQueue();
-    if( AsmBuffer[i]->class != TC_STRING ) {
+    if( AsmBuffer[i].class != TC_STRING ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return( ERROR );
     }
@@ -161,7 +161,7 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
         sym->first_length = struct_symbol->first_length;
     }
 
-    ptr = AsmBuffer[i]->string_ptr;
+    ptr = AsmBuffer[i].string_ptr;
     for( f = dir->e.structinfo->head; f != NULL; f = f->next ) {
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
@@ -218,7 +218,7 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
     f = AsmAlloc( sizeof( field_list ) );
 
     if( loc == INVALID_IDX ) {
-        for( loc = 0; AsmBuffer[loc]->class != TC_FINAL; ++loc ) {
+        for( loc = 0; AsmBuffer[loc].class != TC_FINAL; ++loc ) {
             /* nothing to do */
         }
     }
@@ -228,17 +228,17 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    len = strlen( AsmBuffer[loc]->string_ptr ) + 1;
+    len = strlen( AsmBuffer[loc].string_ptr ) + 1;
     f->initializer = AsmAlloc( len );
-    memcpy( f->initializer, AsmBuffer[ loc ]->string_ptr, len );
+    memcpy( f->initializer, AsmBuffer[ loc ].string_ptr, len );
 
     /* now add the value to initialize the struct to */
     count = 0;
-    for( i = loc + 1; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i]->string_ptr != NULL ) {
-            count += strlen( AsmBuffer[i]->string_ptr ) + 1;
+    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        if( AsmBuffer[i].string_ptr != NULL ) {
+            count += strlen( AsmBuffer[i].string_ptr ) + 1;
         }
-        if( AsmBuffer[i]->class == TC_STRING ) {
+        if( AsmBuffer[i].class == TC_STRING ) {
             count += 2;
         }
     }
@@ -246,14 +246,14 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
     f->value = AsmAlloc( count + 1 );
     f->value[0] = '\0';
 
-    for( i = loc + 1; AsmBuffer[i]->class != TC_FINAL; i++ ) {
-        if( AsmBuffer[i]->class == TC_STRING ) {
+    for( i = loc + 1; AsmBuffer[i].class != TC_FINAL; i++ ) {
+        if( AsmBuffer[i].class == TC_STRING ) {
             strcat( f->value, "<" );
         }
-        if( AsmBuffer[i]->string_ptr != NULL ) {
-            strcat( f->value, AsmBuffer[i]->string_ptr );
+        if( AsmBuffer[i].string_ptr != NULL ) {
+            strcat( f->value, AsmBuffer[i].string_ptr );
         }
-        if( AsmBuffer[i]->class == TC_STRING ) {
+        if( AsmBuffer[i].class == TC_STRING ) {
             strcat( f->value, ">" );
         }
         strcat( f->value, " " );

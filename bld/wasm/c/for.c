@@ -37,8 +37,6 @@
 #include "asmexpnd.h"
 #include "asminput.h"
 
-extern void             AddTokens( asm_tok **, token_idx, token_idx );
-
 static const char macroname[] = "__STATIC_IRP_MACRO_";
 
 bool ForDirective( token_idx i, enum irp_type type )
@@ -56,39 +54,39 @@ bool ForDirective( token_idx i, enum irp_type type )
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( i, FALSE, TRUE );
         /* make a temporary macro, then call it */
-        if( AsmBuffer[i]->class != TC_NUM ) {
+        if( AsmBuffer[i].class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
         arg_loc = i;
-        len = AsmBuffer[i]->u.value;
+        len = AsmBuffer[i].u.value;
         i++;
-        if( AsmBuffer[i]->class != TC_FINAL ) {
+        if( AsmBuffer[i].class != TC_FINAL ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
     } else {
         /* save the parm list, make a temporary macro, then call it with each parm */
-        if( AsmBuffer[i]->class != TC_ID ) {
+        if( AsmBuffer[i].class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
         arg_loc = i;
-        for( ; AsmBuffer[i]->class != TC_COMMA; i++ ) {
-            if( AsmBuffer[i]->class == TC_FINAL ) {
+        for( ; AsmBuffer[i].class != TC_COMMA; i++ ) {
+            if( AsmBuffer[i].class == TC_FINAL ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
             }
         }
         i++;
-        if( AsmBuffer[i]->class != TC_STRING ) {
+        if( AsmBuffer[i].class != TC_STRING ) {
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        len = strlen( AsmBuffer[i]->string_ptr ) + 1;
+        len = strlen( AsmBuffer[i].string_ptr ) + 1;
         parmstring = AsmTmpAlloc( len );
-        memcpy( parmstring, AsmBuffer[i]->string_ptr, len );
-        AsmBuffer[i]->class = TC_FINAL;
+        memcpy( parmstring, AsmBuffer[i].string_ptr, len );
+        AsmBuffer[i].class = TC_FINAL;
 
         AddTokens( AsmBuffer, arg_loc, 1 );
     }
@@ -96,14 +94,14 @@ bool ForDirective( token_idx i, enum irp_type type )
     i = start;
     sprintf( buffer, "%s%d", macroname, Globals.for_counter );
     if( Options.mode & MODE_IDEAL ) {
-        AsmBuffer[i+1]->string_ptr = buffer;
-        AsmBuffer[i+1]->class = TC_ID;
+        AsmBuffer[i+1].string_ptr = buffer;
+        AsmBuffer[i+1].class = TC_ID;
     } else {
-        AsmBuffer[i]->string_ptr = buffer;
-        AsmBuffer[i++]->class = TC_ID;
+        AsmBuffer[i].string_ptr = buffer;
+        AsmBuffer[i++].class = TC_ID;
     }
-    AsmBuffer[i]->class = TC_DIRECTIVE;
-    AsmBuffer[i]->u.token = T_MACRO;
+    AsmBuffer[i].class = TC_DIRECTIVE;
+    AsmBuffer[i].u.token = T_MACRO;
 
     if( MacroDef( i, TRUE ) )
         return( RC_ERROR );

@@ -188,7 +188,7 @@ bool conditional_error_directive( token_idx i )
 {
     asm_token   direct;
 
-    direct = AsmBuffer[i]->u.token;
+    direct = AsmBuffer[i].u.token;
 
     /* expand any constants if necessary */
     switch( direct ) {
@@ -212,73 +212,73 @@ bool conditional_error_directive( token_idx i )
         AsmErr( FORCED );
         return( RC_ERROR );
     case T_DOT_ERRNZ:
-        if( AsmBuffer[i+1]->class == TC_NUM && AsmBuffer[i+1]->u.value ) {
-            AsmErr( FORCED_NOT_ZERO, AsmBuffer[i+1]->u.value );
+        if( AsmBuffer[i+1].class == TC_NUM && AsmBuffer[i+1].u.value ) {
+            AsmErr( FORCED_NOT_ZERO, AsmBuffer[i+1].u.value );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRE:
     case T_ERRIFE:
-        if( AsmBuffer[i+1]->class == TC_NUM && !AsmBuffer[i+1]->u.value ) {
-            AsmErr( FORCED_EQUAL, AsmBuffer[i+1]->u.value );
+        if( AsmBuffer[i+1].class == TC_NUM && !AsmBuffer[i+1].u.value ) {
+            AsmErr( FORCED_EQUAL, AsmBuffer[i+1].u.value );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDEF:
     case T_ERRIFDEF:
-        if( check_defd( AsmBuffer[i+1]->string_ptr ) ) {
-            AsmErr( FORCED_DEF, AsmBuffer[i+1]->string_ptr );
+        if( check_defd( AsmBuffer[i+1].string_ptr ) ) {
+            AsmErr( FORCED_DEF, AsmBuffer[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNDEF:
     case T_ERRIFNDEF:
-        if( !check_defd( AsmBuffer[i+1]->string_ptr ) ) {
-            AsmErr( FORCED_NOT_DEF, AsmBuffer[i+1]->string_ptr );
+        if( !check_defd( AsmBuffer[i+1].string_ptr ) ) {
+            AsmErr( FORCED_NOT_DEF, AsmBuffer[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRB:
     case T_ERRIFB:
-        if( AsmBuffer[i+1]->class == TC_STRING &&
-            check_blank( AsmBuffer[i+1]->string_ptr ) ) {
-            AsmErr( FORCED_BLANK, AsmBuffer[i+1]->string_ptr );
+        if( AsmBuffer[i+1].class == TC_STRING &&
+            check_blank( AsmBuffer[i+1].string_ptr ) ) {
+            AsmErr( FORCED_BLANK, AsmBuffer[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRNB:
     case T_ERRIFNB:
-        if( AsmBuffer[i+1]->class != TC_STRING ||
-            !check_blank( AsmBuffer[i+1]->string_ptr ) ) {
-            AsmErr( FORCED_NOT_BLANK, AsmBuffer[i+1]->string_ptr );
+        if( AsmBuffer[i+1].class != TC_STRING ||
+            !check_blank( AsmBuffer[i+1].string_ptr ) ) {
+            AsmErr( FORCED_NOT_BLANK, AsmBuffer[i+1].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIF:
     case T_ERRIFDIF:
-        if( check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
-            AsmErr( FORCED_DIF, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
+        if( check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+            AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIFI:
     case T_ERRIFDIFI:
-        if( check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
-            AsmErr( FORCED_DIF, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
+        if( check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+            AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDN:
     case T_ERRIFIDN:
-        if( !check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
-            AsmErr( FORCED_IDN, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
+        if( !check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+            AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDNI:
     case T_ERRIFIDNI:
-        if( !check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ) {
-            AsmErr( FORCED_IDN, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr );
+        if( !check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+            AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
@@ -291,7 +291,7 @@ static if_state get_cond_state( token_idx i )
     asm_token   direct;
     if_state    cond_state;
 
-    direct = AsmBuffer[i]->u.token;
+    direct = AsmBuffer[i].u.token;
 
     /* expand any constants if necessary */
     switch( direct ) {
@@ -313,7 +313,7 @@ static if_state get_cond_state( token_idx i )
     switch( direct ) {
     case T_IF:
     case T_ELSEIF:
-        cond_state = ( AsmBuffer[i+1]->class == TC_NUM && AsmBuffer[i+1]->u.value )
+        cond_state = ( AsmBuffer[i+1].class == TC_NUM && AsmBuffer[i+1].u.value )
                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IF1:
@@ -326,40 +326,40 @@ static if_state get_cond_state( token_idx i )
         break;
     case T_IFB:
     case T_ELSEIFB:
-        cond_state = check_blank( AsmBuffer[i+1]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_blank( AsmBuffer[i+1].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDEF:
     case T_ELSEIFDEF:
-        cond_state = check_defd( AsmBuffer[i+1]->string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_defd( AsmBuffer[i+1].string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFE:
     case T_ELSEIFE:
-        cond_state = ( AsmBuffer[i+1]->class == TC_NUM && !AsmBuffer[i+1]->u.value )
+        cond_state = ( AsmBuffer[i+1].class == TC_NUM && !AsmBuffer[i+1].u.value )
                    ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIF:
     case T_ELSEIFDIF:
-        cond_state = check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIFI:
     case T_ELSEIFDIFI:
-        cond_state = check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDN:
     case T_ELSEIFIDN:
-        cond_state = !check_dif( TRUE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDNI:
     case T_ELSEIFIDNI:
-        cond_state = !check_dif( FALSE, AsmBuffer[i+1]->string_ptr, AsmBuffer[i+3]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNB:
     case T_ELSEIFNB:
-        cond_state = !check_blank( AsmBuffer[i+1]->string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_blank( AsmBuffer[i+1].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNDEF:
     case T_ELSEIFNDEF:
-        cond_state = !check_defd( AsmBuffer[i+1]->string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_defd( AsmBuffer[i+1].string_ptr )  ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     default:
         cond_state = DONE;
@@ -373,7 +373,7 @@ bool conditional_assembly_directive( token_idx i )
 {
     asm_token   direct;
 
-    direct = AsmBuffer[i]->u.token;
+    direct = AsmBuffer[i].u.token;
 
     switch( direct ) {
     case T_IF:

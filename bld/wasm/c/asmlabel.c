@@ -189,42 +189,42 @@ bool LabelDirective( token_idx i )
     } else {
         n = INVALID_IDX;
     }
-    if( ( n == INVALID_IDX ) || ( AsmBuffer[n]->class != TC_ID ) ) {
+    if( ( n == INVALID_IDX ) || ( AsmBuffer[n].class != TC_ID ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    if( AsmBuffer[++i]->class == TC_ID ) {
-        if( IsLabelStruct( AsmBuffer[i]->string_ptr ) )
-            return( MakeLabel( AsmBuffer[n]->string_ptr, MT_STRUCT ) );
+    if( AsmBuffer[++i].class == TC_ID ) {
+        if( IsLabelStruct( AsmBuffer[i].string_ptr ) )
+            return( MakeLabel( AsmBuffer[n].string_ptr, MT_STRUCT ) );
     }
-    if( ( AsmBuffer[i]->class != TC_RES_ID ) &&
-        ( AsmBuffer[i]->class != TC_DIRECTIVE ) ) {
+    if( ( AsmBuffer[i].class != TC_RES_ID ) &&
+        ( AsmBuffer[i].class != TC_DIRECTIVE ) ) {
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    switch( AsmBuffer[i]->u.token ) {
+    switch( AsmBuffer[i].u.token ) {
     case T_NEAR:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_NEAR ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_NEAR ));
     case T_FAR:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FAR ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_FAR ));
     case T_BYTE:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_BYTE ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_BYTE ));
     case T_WORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_WORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_WORD ));
     case T_DWORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_DWORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_DWORD ));
     case T_FWORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FWORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_FWORD ));
     case T_PWORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_FWORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_FWORD ));
     case T_QWORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_QWORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_QWORD ));
     case T_TBYTE:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_TBYTE ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_TBYTE ));
     case T_OWORD:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, MT_OWORD ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, MT_OWORD ));
     case T_PROC:
-        return( MakeLabel( AsmBuffer[n]->string_ptr, CurrProc->e.procinfo->mem_type ));
+        return( MakeLabel( AsmBuffer[n].string_ptr, CurrProc->e.procinfo->mem_type ));
     default:
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );

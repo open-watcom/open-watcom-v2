@@ -603,12 +603,12 @@ static void dbg_output( void )
         DebugMsg(("Line: %lu ", LineNumber ));
         DebugMsg(("Output :"));
         for( i = 0; i < Token_Count; i++ ) {
-            switch( AsmBuffer[i]->class ) {
+            switch( AsmBuffer[i].class ) {
             case TC_NUM:
-                DebugMsg(( " %d ", AsmBuffer[i]->u.value ));
+                DebugMsg(( " %d ", AsmBuffer[i].u.value ));
                 break;
             case TC_STRING:
-                DebugMsg(( " '%s' ", AsmBuffer[i]->string_ptr));
+                DebugMsg(( " '%s' ", AsmBuffer[i].string_ptr));
                 break;
             case TC_OP_SQ_BRACKET:
                 DebugMsg(( " %s ", "[" ));
@@ -620,7 +620,7 @@ static void dbg_output( void )
                 DebugMsg(( " %s ", ":" ));
                 break;
             case TC_RES_ID:
-                switch( AsmBuffer[i]->u.token ) {
+                switch( AsmBuffer[i].u.token ) {
                 case T_PTR:
                     DebugMsg(( " %s ", "Ptr" ));
                     break;
@@ -659,12 +659,12 @@ static void dbg_output( void )
                     DebugMsg(( " %s ", "OWord" ));
                     break;
                 default:
-                    DebugMsg((" %s ", AsmBuffer[i]->string_ptr ));
+                    DebugMsg((" %s ", AsmBuffer[i].string_ptr ));
                     break;
                 }
                 break;
             default:
-                DebugMsg((" %s ", AsmBuffer[i]->string_ptr ));
+                DebugMsg((" %s ", AsmBuffer[i].string_ptr ));
                 break;
             }
         }

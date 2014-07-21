@@ -84,9 +84,9 @@ static void output_float( token_idx index, unsigned no_of_bytes, bool negative )
     TB_LD               tbyte;
 
     if( no_of_bytes == BYTE_10 ) {
-        char_ptr = (char *)strtotb( AsmBuffer[index]->string_ptr, &tbyte, negative );
+        char_ptr = (char *)strtotb( AsmBuffer[index].string_ptr, &tbyte, negative );
     } else {
-        double_value = strtod( AsmBuffer[index]->string_ptr, NULL );
+        double_value = strtod( AsmBuffer[index].string_ptr, NULL );
         if( negative )
             double_value = -double_value;
         switch( no_of_bytes ) {
@@ -95,7 +95,7 @@ static void output_float( token_idx index, unsigned no_of_bytes, bool negative )
 #if defined( _STANDALONE_ )
             AsmWarn( 4, FLOAT_OPERAND );
 #endif
-            char_ptr = (char *)&AsmBuffer[index]->u.value;
+            char_ptr = (char *)&AsmBuffer[index].u.value;
             break;
         case BYTE_4:
             float_value = (float)double_value;
@@ -150,10 +150,10 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #endif
 
     for( cur_pos = start_pos;
-        ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->class != TC_FINAL );
+        ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos].class != TC_FINAL );
         cur_pos++ ) {
 #if defined( _STANDALONE_ )
-        if( AsmBuffer[cur_pos]->class == TC_RES_ID )
+        if( AsmBuffer[cur_pos].class == TC_RES_ID )
             continue;
         tmp = cur_pos;
         if( check_override( &tmp ) )
@@ -161,12 +161,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
         cur_pos = tmp;
 #endif
         if(( cur_pos == Token_Count - 1 )
-            && ( AsmBuffer[cur_pos]->class == TC_CL_BRACKET ))
+            && ( AsmBuffer[cur_pos].class == TC_CL_BRACKET ))
             break;
-        switch( AsmBuffer[cur_pos]->class ) {
+        switch( AsmBuffer[cur_pos].class ) {
         case TC_QUESTION_MARK:
             if( cur_pos != start_pos ) {
-                if( AsmBuffer[cur_pos - 1]->class != TC_COMMA ) {
+                if( AsmBuffer[cur_pos - 1].class != TC_COMMA ) {
                     AsmError( EXPECTING_COMMA );
                     return( INVALID_IDX );
                 }
@@ -193,10 +193,10 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #endif
             break;
         case TC_MINUS:
-            switch( AsmBuffer[cur_pos+1]->class ) {
+            switch( AsmBuffer[cur_pos+1].class ) {
             case TC_NUM:
-                AsmBuffer[cur_pos+1]->u.value = -AsmBuffer[cur_pos+1]->u.value;
-                AsmBuffer[cur_pos]->class = TC_PLUS;
+                AsmBuffer[cur_pos+1].u.value = -AsmBuffer[cur_pos+1].u.value;
+                AsmBuffer[cur_pos].class = TC_PLUS;
                 break;
             case TC_FLOAT:
                 negative = TRUE;
@@ -211,8 +211,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             break; // go around again
         case TC_NUM:
         case TC_FLOAT:
-            if( AsmBuffer[cur_pos+1]->class == TC_RES_ID &&
-                AsmBuffer[cur_pos+1]->u.token == T_DUP ) {
+            if( AsmBuffer[cur_pos+1].class == TC_RES_ID &&
+                AsmBuffer[cur_pos+1].u.token == T_DUP ) {
                 cur_pos = dup_array( sym, struct_sym, cur_pos, no_of_bytes );
                 if( cur_pos == INVALID_IDX )
                     return( INVALID_IDX );
@@ -220,12 +220,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 
             if( cur_pos != start_pos ) {
-                switch( AsmBuffer[cur_pos - 1]->class ) {
+                switch( AsmBuffer[cur_pos - 1].class ) {
                 case TC_COMMA:
                     break;
                 case TC_PLUS:
                 case TC_MINUS:
-                    if( AsmBuffer[cur_pos - 2]->class == TC_COMMA )
+                    if( AsmBuffer[cur_pos - 2].class == TC_COMMA )
                         break;
                     if( cur_pos - 1 == start_pos )
                         break;
@@ -234,12 +234,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                     return( INVALID_IDX );
                 }
             }
-            if( AsmBuffer[cur_pos]->class == TC_FLOAT ) {
+            if( AsmBuffer[cur_pos].class == TC_FLOAT ) {
                 output_float( cur_pos, no_of_bytes, negative );
                 negative = FALSE;
                 break;
             }
-            char_ptr = (char *)AsmBuffer[cur_pos]->u.bytes;
+            char_ptr = (char *)AsmBuffer[cur_pos].u.bytes;
 #if defined( _STANDALONE_ )
             if( sym && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first, no_of_bytes );
@@ -263,7 +263,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             first = FALSE;
 #endif
             if( cur_pos != start_pos ) {
-                if( AsmBuffer[cur_pos - 1]->class == TC_COMMA ) {
+                if( AsmBuffer[cur_pos - 1].class == TC_COMMA ) {
                     AsmError( EXPECTING_NUMBER );
                     return( INVALID_IDX );
                     /********SHOULD WE DO IT THIS WAY?*********
@@ -289,29 +289,29 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 #endif
             if( no_of_bytes != 1 ) {
-                if( (unsigned)AsmBuffer[cur_pos]->u.value > no_of_bytes ) {
+                if( (unsigned)AsmBuffer[cur_pos].u.value > no_of_bytes ) {
                     AsmError( INITIALIZER_OUT_OF_RANGE );
                     return( INVALID_IDX );
                 }
             }
-            char_ptr = AsmBuffer[cur_pos]->string_ptr;
+            char_ptr = AsmBuffer[cur_pos].string_ptr;
 
             /* anything bigger than a byte must be stored in little-endian
             * format -- LSB first */
             little_endian( char_ptr, no_of_bytes );
 #if defined( _STANDALONE_ )
             if( no_of_bytes == 1 && struct_field ) {
-                no_of_bytes = AsmBuffer[cur_pos]->u.value;
+                no_of_bytes = AsmBuffer[cur_pos].u.value;
             }
             if( sym && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first, no_of_bytes );
             }
             if( !struct_field ) {
 #endif
-                for( count = AsmBuffer[cur_pos]->u.value; count > 0 ; --count ) {
+                for( count = AsmBuffer[cur_pos].u.value; count > 0 ; --count ) {
                     AsmDataByte( *char_ptr++ );
                 }
-                for( count = AsmBuffer[cur_pos]->u.value; count < no_of_bytes; ++count ) {
+                for( count = AsmBuffer[cur_pos].u.value; count < no_of_bytes; ++count ) {
                     AsmDataByte( 0 );
                     char_ptr++;
                 }
@@ -348,7 +348,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 #endif
 
-            init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
+            init_sym = AsmLookup( AsmBuffer[cur_pos].string_ptr );
 
             if( init_sym == NULL )
                 return( INVALID_IDX );
@@ -356,8 +356,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #if defined( _STANDALONE_ )
             switch( init_sym->state ) {
             case SYM_STRUCT_FIELD:
-                AsmBuffer[cur_pos]->class = TC_NUM;
-                AsmBuffer[cur_pos]->u.value = init_sym->offset;
+                AsmBuffer[cur_pos].class = TC_NUM;
+                AsmBuffer[cur_pos].u.value = init_sym->offset;
                 continue;
             case SYM_GRP:
             case SYM_SEG:
@@ -400,30 +400,30 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             data += fixup->u_offset;
 
             for( cur_pos++;
-                ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->class != TC_FINAL )
-                    && ( AsmBuffer[cur_pos]->class != TC_COMMA )
-                    && ( AsmBuffer[cur_pos]->class != TC_CL_BRACKET );
+                ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos].class != TC_FINAL )
+                    && ( AsmBuffer[cur_pos].class != TC_COMMA )
+                    && ( AsmBuffer[cur_pos].class != TC_CL_BRACKET );
                 cur_pos++ ) {
-                switch( AsmBuffer[cur_pos]->class ) {
+                switch( AsmBuffer[cur_pos].class ) {
                 case TC_PLUS:
                 case TC_DOT:
                 case TC_OP_SQ_BRACKET:
                     break;
 #if defined( _STANDALONE_ )
                 case TC_ID:
-                    init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
+                    init_sym = AsmLookup( AsmBuffer[cur_pos].string_ptr );
                     data += init_sym->offset;
                     break;
 #endif
                 case TC_MINUS:
-                    if( AsmBuffer[cur_pos+1]->class != TC_NUM ) {
+                    if( AsmBuffer[cur_pos+1].class != TC_NUM ) {
                         AsmError( EXPECTING_NUMBER );
                         return( INVALID_IDX );
                     }
-                    AsmBuffer[cur_pos+1]->u.value = -AsmBuffer[cur_pos+1]->u.value;
+                    AsmBuffer[cur_pos+1].u.value = -AsmBuffer[cur_pos+1].u.value;
                     break;
                 case TC_NUM:
-                    data += AsmBuffer[cur_pos]->u.value;
+                    data += AsmBuffer[cur_pos].u.value;
                 }
             }
 
@@ -467,8 +467,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             long                data = 0;
             struct asmfixup     *fixup;
 
-            if( AsmBuffer[cur_pos]->u.token == T_OFFSET ||
-                AsmBuffer[cur_pos]->u.token == T_SEG ) {
+            if( AsmBuffer[cur_pos].u.token == T_OFFSET ||
+                AsmBuffer[cur_pos].u.token == T_SEG ) {
                 // see asmins.h about T_SEG
                 if( no_of_bytes < 2 ) {
                     AsmError( OFFSET_TOO_SMALL );
@@ -479,9 +479,9 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #if defined( _STANDALONE_ )
             i = ++cur_pos;
             if( i + 2 < Token_Count ) {
-                if( ( AsmBuffer[i]->class == TC_RES_ID )
-                    && ( AsmBuffer[i + 1]->class == TC_RES_ID )
-                    && ( AsmBuffer[i + 1]->u.token == T_PTR ) ) {
+                if( ( AsmBuffer[i].class == TC_RES_ID )
+                    && ( AsmBuffer[i + 1].class == TC_RES_ID )
+                    && ( AsmBuffer[i + 1].u.token == T_PTR ) ) {
                     i += 2;
                 }
             }
@@ -492,12 +492,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             cur_pos = i;
 #endif
             if( cur_pos + 1 < Token_Count ) {
-                if( AsmBuffer[++cur_pos]->class == TC_ID ) {
-                    init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
+                if( AsmBuffer[++cur_pos].class == TC_ID ) {
+                    init_sym = AsmLookup( AsmBuffer[cur_pos].string_ptr );
                     if( init_sym == NULL )
                         return( INVALID_IDX );
 
-                    if( AsmBuffer[seg_off_operator_loc]->u.token == T_OFFSET ) {
+                    if( AsmBuffer[seg_off_operator_loc].u.token == T_OFFSET ) {
                         if( init_sym->state == SYM_STACK ) {
                             AsmError( CANNOT_OFFSET_AUTO );
                             return( INVALID_IDX );
@@ -526,14 +526,14 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                             AsmError( NOT_IMPLEMENTED );
                             return( INVALID_IDX );
                         }
-                    } else if( AsmBuffer[seg_off_operator_loc]->u.token == T_SEG ) {
+                    } else if( AsmBuffer[seg_off_operator_loc].u.token == T_SEG ) {
                         if( init_sym->state == SYM_STACK ) {
                             AsmError( CANNOT_SEG_AUTO );
                         }
                         fixup_type = FIX_SEG;
                     }
 
-                    switch( AsmBuffer[seg_off_operator_loc]->u.token ) {
+                    switch( AsmBuffer[seg_off_operator_loc].u.token ) {
                     case T_OFFSET:
 #if defined( _STANDALONE_ )
                         if( init_sym->state == SYM_STRUCT_FIELD ) {
@@ -547,7 +547,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
 #endif
                         fixup = AddFixup( init_sym, fixup_type, OPTJ_NONE );
                         InsFixups[OPND1] = fixup;
-                        if( AsmBuffer[seg_off_operator_loc]->u.token == T_OFFSET ) {
+                        if( AsmBuffer[seg_off_operator_loc].u.token == T_OFFSET ) {
                             data += fixup->u_offset;
                         }
 #if defined( _STANDALONE_ )
@@ -574,29 +574,29 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                         return( INVALID_IDX );
                     }
                     for( cur_pos++;
-                        ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos]->class != TC_FINAL)
-                        && ( AsmBuffer[cur_pos]->class != TC_COMMA );
+                        ( cur_pos < Token_Count ) && ( AsmBuffer[cur_pos].class != TC_FINAL)
+                        && ( AsmBuffer[cur_pos].class != TC_COMMA );
                         cur_pos++ ) {
-                        switch( AsmBuffer[cur_pos]->class ) {
+                        switch( AsmBuffer[cur_pos].class ) {
                         case TC_PLUS:
                         case TC_DOT:
                         case TC_OP_SQ_BRACKET:
                             break;
 #if defined( _STANDALONE_ )
                         case TC_ID:
-                            init_sym = AsmLookup( AsmBuffer[cur_pos]->string_ptr );
+                            init_sym = AsmLookup( AsmBuffer[cur_pos].string_ptr );
                             data += init_sym->offset;
                             break;
 #endif
                         case TC_MINUS:
-                            if( AsmBuffer[cur_pos+1]->class != TC_NUM ) {
+                            if( AsmBuffer[cur_pos+1].class != TC_NUM ) {
                                 AsmError( EXPECTING_NUMBER );
                                 return( INVALID_IDX );
                             }
-                            AsmBuffer[cur_pos+1]->u.value = -AsmBuffer[cur_pos+1]->u.value;
+                            AsmBuffer[cur_pos+1].u.value = -AsmBuffer[cur_pos+1].u.value;
                             break;
                         case TC_NUM:
-                            data += AsmBuffer[cur_pos]->u.value;
+                            data += AsmBuffer[cur_pos].u.value;
                         }
                     }
 
@@ -655,15 +655,15 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
 
     ExpandTheWorld( start_pos, FALSE, TRUE );
     for( cur_pos = start_pos; cur_pos + 2 < Token_Count; ) {
-        if(( AsmBuffer[cur_pos + 1]->class == TC_RES_ID )
-            && ( AsmBuffer[cur_pos + 1]->u.token == T_DUP )) {
-            if( AsmBuffer[cur_pos]->class != TC_NUM ) {
+        if(( AsmBuffer[cur_pos + 1].class == TC_RES_ID )
+            && ( AsmBuffer[cur_pos + 1].u.token == T_DUP )) {
+            if( AsmBuffer[cur_pos].class != TC_NUM ) {
                 AsmError( SYNTAX_ERROR );
                 return( INVALID_IDX );
             }
-            count = AsmBuffer[cur_pos]->u.value;
+            count = AsmBuffer[cur_pos].u.value;
             cur_pos += 2;
-            if( AsmBuffer[cur_pos]->class != TC_OP_BRACKET ) {
+            if( AsmBuffer[cur_pos].class != TC_OP_BRACKET ) {
                 AsmError( SYNTAX_ERROR );
                 return( INVALID_IDX );
             }
@@ -675,10 +675,10 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
             if( count == 0 ) {
                 int     level;
                 /* zero count is valid, needs special processing */
-                for( level = 0; AsmBuffer[cur_pos]->class != TC_FINAL; cur_pos++ ) {
-                    if( AsmBuffer[cur_pos]->class == TC_OP_BRACKET )
+                for( level = 0; AsmBuffer[cur_pos].class != TC_FINAL; cur_pos++ ) {
+                    if( AsmBuffer[cur_pos].class == TC_OP_BRACKET )
                         level++;
-                    else if( AsmBuffer[cur_pos]->class == TC_CL_BRACKET )
+                    else if( AsmBuffer[cur_pos].class == TC_CL_BRACKET )
                         level--;
                     if( level < 0 )
                         break;
@@ -695,7 +695,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
                     return( INVALID_IDX );
                 }
             }
-            if( AsmBuffer[returned_pos]->class != TC_CL_BRACKET ) {
+            if( AsmBuffer[returned_pos].class != TC_CL_BRACKET ) {
                 AsmError( BRACKET_EXPECTED );
                 return( INVALID_IDX );
             }
@@ -703,12 +703,12 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
             returned_pos = array_element( sym, struct_sym, cur_pos, no_of_bytes );
             if( returned_pos == INVALID_IDX )
                 return( INVALID_IDX );
-            if( AsmBuffer[returned_pos]->class != TC_CL_BRACKET ) {
+            if( AsmBuffer[returned_pos].class != TC_CL_BRACKET ) {
                 /* array_element hit TC_FINAL so stop */
                 return( returned_pos );
             }
         }
-        if( AsmBuffer[returned_pos+1]->class != TC_COMMA ) {
+        if( AsmBuffer[returned_pos+1].class != TC_COMMA ) {
             return( returned_pos );
         }
         cur_pos = returned_pos + 2;
@@ -738,12 +738,12 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
 #endif
 
     if( sym_loc != INVALID_IDX ) {
-        sym = AsmLookup( AsmBuffer[sym_loc]->string_ptr );
+        sym = AsmLookup( AsmBuffer[sym_loc].string_ptr );
         if( sym == NULL ) {
             return( RC_ERROR );
         }
     }
-    switch( AsmBuffer[initializer_loc]->u.token ) {
+    switch( AsmBuffer[initializer_loc].u.token ) {
 #if defined( _STANDALONE_ )
     case T_SBYTE:                       // 20-Aug-92
         mem_type = MT_SBYTE;
@@ -774,7 +774,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     case T_STRUC:
     case T_STRUCT:
         mem_type = MT_STRUCT;
-        struct_sym = AsmLookup( AsmBuffer[initializer_loc]->string_ptr );
+        struct_sym = AsmLookup( AsmBuffer[initializer_loc].string_ptr );
         no_of_bytes = GetStructSize( struct_sym );
         if( Options.mode & MODE_IDEAL )
             sym->structure = struct_sym;
@@ -806,13 +806,13 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
         AsmError( INVALID_LABEL_DEFINITION );
         return( RC_ERROR );
     }
-    if( AsmBuffer[ initializer_loc + 1 ]->class == TC_FINAL ) {
+    if( AsmBuffer[ initializer_loc + 1 ].class == TC_FINAL ) {
         AsmError( SYNTAX_ERROR );
         return( RC_ERROR );
     }
 
 #if defined( _STANDALONE_ )
-    if( sym_loc != INVALID_IDX && AsmBuffer[ sym_loc ]->u.token == T_LABEL ) {
+    if( sym_loc != INVALID_IDX && AsmBuffer[ sym_loc ].u.token == T_LABEL ) {
         label_dir = TRUE;
         if( sym_loc > 0 ) {
             sym_loc--;

@@ -98,10 +98,7 @@ static char             ConstantOnly;
 
 static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
 
-/* moved here from asmline */
-static asm_tok          tokens[MAX_TOKEN];
-
-asm_tok                 *AsmBuffer[MAX_TOKEN];  // buffer to store token
+asm_tok                 AsmBuffer[MAX_TOKEN];  // buffer to store token
 
 #if defined( _STANDALONE_ )
 
@@ -160,11 +157,6 @@ int GetInsString( asm_token token, char *string )
 void AsmBufferInit( void )
 /************************/
 {
-    token_idx   count;
-
-    for( count = 0; count < MAX_TOKEN; count ++ ) {
-        AsmBuffer[count] = &tokens[count];
-    }
 }
 
 const asm_ins ASMFAR *get_instruction( char *string )
@@ -357,11 +349,11 @@ bool check_override( token_idx *i )
     index = *i;
 
     if( ( index + 2 ) < Token_Count ) {
-        if( AsmBuffer[index+1]->class == TC_COLON ) {
-            switch( AsmBuffer[index]->class ) {
+        if( AsmBuffer[index+1].class == TC_COLON ) {
+            switch( AsmBuffer[index].class ) {
             case TC_REG:
                 Code->prefix.seg =
-                    AsmOpTable[AsmOpcode[AsmBuffer[index]->u.token].position].opcode;
+                    AsmOpTable[AsmOpcode[AsmBuffer[index].u.token].position].opcode;
                 (*i) += 2;
                 if( *i >= Token_Count ) {
                     AsmError( LABEL_EXPECTED_AFTER_COLON );
@@ -949,12 +941,12 @@ static int proc_check( const char *curline )
     if( ( CurrProc == NULL ) || ( Token_Count == 0 ) || !DefineProc )
         return( FALSE );
 
-    if( AsmBuffer[0]->class == TC_DIRECTIVE )
+    if( AsmBuffer[0].class == TC_DIRECTIVE )
         return( FALSE );
 
     if( Token_Count > 1 ) {
-        if( ( AsmBuffer[1]->class == TC_DIRECTIVE )
-            || ( AsmBuffer[1]->class == TC_DIRECT_EXPR ) ) {
+        if( ( AsmBuffer[1].class == TC_DIRECTIVE )
+            || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
             return( FALSE );
         }
     }
@@ -981,10 +973,10 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
         size = 4;
     else
         size = 2;
-    if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
+    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
         i++;
-        if( AsmBuffer[i]->class == TC_RES_ID ) {
-            switch( AsmBuffer[i]->u.token ) {
+        if( AsmBuffer[i].class == TC_RES_ID ) {
+            switch( AsmBuffer[i].u.token ) {
             case T_BYTE:
                 size = 1;
                 break;
@@ -1010,33 +1002,33 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
             }
             i++;
         }
-        if( ( AsmBuffer[i]->class != TC_ID ) &&
-            ( AsmBuffer[i+1]->class != TC_CL_SQ_BRACKET ) ) {
+        if( ( AsmBuffer[i].class != TC_ID ) &&
+            ( AsmBuffer[i+1].class != TC_CL_SQ_BRACKET ) ) {
             AsmError( SYNTAX_ERROR );
             return( ERROR );
         }
         if( Use32 ) {
             switch( size ) {
             case 1:
-                sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             case 2:
-                sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             case 4:
-                sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             case 6:
                 if( j > 2 ) {
                     return( TRUE );
                 } else {
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     *register_count = j;
                     return( FALSE );
@@ -1045,10 +1037,10 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
                 if( j > 2 ) {
                     return( TRUE );
                 } else {
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     *register_count = j;
                     return( FALSE );
@@ -1060,31 +1052,31 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
                 ch = regs[j][0];
                 sprintf( buffer, "xor %ch,%ch", ch, ch );
                 InputQueueLine( buffer );
-                sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             case 2:
-                sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             case 4:
                 if( j > 2 ) {
                     return( TRUE );
                 } else {
-                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i]->string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     *register_count = j;
                     return( FALSE );
                 }
             }
         }
-    } else if( ( AsmBuffer[i]->class == TC_REG ) &&
-               ( ( AsmBuffer[i+1]->class == TC_COMMA ) ||
-                 ( AsmBuffer[i+1]->class == TC_FINAL ) ) ) {
-        switch( AsmBuffer[i]->u.token ) {
+    } else if( ( AsmBuffer[i].class == TC_REG ) &&
+               ( ( AsmBuffer[i+1].class == TC_COMMA ) ||
+                 ( AsmBuffer[i+1].class == TC_FINAL ) ) ) {
+        switch( AsmBuffer[i].u.token ) {
         case T_EAX:
         case T_EBX:
         case T_ECX:
@@ -1131,39 +1123,39 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
         switch( size ) {
         case 1:
             if( Use32 ) {
-                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
             } else {
                 ch = regs[j][0];
-                sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i].string_ptr );
             }
             InputQueueLine( buffer );
             return( FALSE );
         case 2:
             if( Use32 ) {
-                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
             } else {
-                sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i].string_ptr );
             }
             InputQueueLine( buffer );
             return( FALSE );
         case 4:
             if( Use32 ) {
-                sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( FALSE );
             }
             break;
         }
-    } else if( AsmBuffer[i]->class == TC_QUESTION_MARK ) {
+    } else if( AsmBuffer[i].class == TC_QUESTION_MARK ) {
         return FALSE;
     } else {
         if( Use32 )
             sprintf( buffer, "mov e%s,", regs[j] );
         else
             sprintf( buffer, "mov %s,", regs[j] );
-        while( ( AsmBuffer[i]->class != TC_FINAL ) &&
-               ( AsmBuffer[i]->class != TC_COMMA ) ) {
-            strcat( buffer, AsmBuffer[i++]->string_ptr );
+        while( ( AsmBuffer[i].class != TC_FINAL ) &&
+               ( AsmBuffer[i].class != TC_COMMA ) ) {
+            strcat( buffer, AsmBuffer[i++].string_ptr );
         }
         InputQueueLine( buffer );
         return( FALSE );
@@ -1182,10 +1174,10 @@ static bool get_stack_argument( token_idx index, char *buffer )
     else
         size = 2;
     i = index;
-    if( AsmBuffer[i]->class == TC_OP_SQ_BRACKET ) {
+    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
         i++;
-        if( AsmBuffer[i]->class == TC_RES_ID ) {
-            switch( AsmBuffer[i]->u.token ) {
+        if( AsmBuffer[i].class == TC_RES_ID ) {
+            switch( AsmBuffer[i].u.token ) {
             case T_BYTE:
                 size = 1;
                 break;
@@ -1211,41 +1203,41 @@ static bool get_stack_argument( token_idx index, char *buffer )
             }
             i++;
         }
-        if( ( AsmBuffer[i]->class != TC_ID ) ||
-            ( AsmBuffer[i + 1]->class != TC_CL_SQ_BRACKET ) ) {
+        if( ( AsmBuffer[i].class != TC_ID ) ||
+            ( AsmBuffer[i + 1].class != TC_CL_SQ_BRACKET ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
         if( Use32 ) {
             switch( size ) {
             case 1:
-                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 2:
-                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 4:
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 6:
-                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 8:
-                sprintf( buffer, "push [dword %s+4]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [dword %s+4]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( RC_OK );
             }
@@ -1254,28 +1246,28 @@ static bool get_stack_argument( token_idx index, char *buffer )
             case 1:
                 sprintf( buffer, "xor ah,ah" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "mov al,[%s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "mov al,[%s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push ax" );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 2:
-                sprintf( buffer, "push [%s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [%s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( RC_OK );
             case 4:
-                sprintf( buffer, "push [word %s+2]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [word %s+2]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [word %s]", AsmBuffer[i]->string_ptr );
+                sprintf( buffer, "push [word %s]", AsmBuffer[i].string_ptr );
                 InputQueueLine( buffer );
                 return( RC_OK );
             }
         }
     }
     sprintf( buffer, "push " );
-    while( ( AsmBuffer[i]->class != TC_FINAL ) &&
-           ( AsmBuffer[i]->class != TC_COMMA ) ) {
-        strcat( buffer, AsmBuffer[i++]->string_ptr );
+    while( ( AsmBuffer[i].class != TC_FINAL ) &&
+           ( AsmBuffer[i].class != TC_COMMA ) ) {
+        strcat( buffer, AsmBuffer[i++].string_ptr );
     }
     InputQueueLine( buffer );
     return( RC_OK );
@@ -1312,14 +1304,14 @@ bool expand_call( token_idx index, int lang_type )
     case LANG_BASIC:
         break;
     case LANG_NONE:
-        if( AsmBuffer[index]->class == TC_FINAL )
+        if( AsmBuffer[index].class == TC_FINAL )
             break;
         AsmError( SYNTAX_ERROR );
         return( RC_ERROR );
     }
-    for( i = index; AsmBuffer[i]->class != TC_FINAL; ) {
-        if( ( AsmBuffer[i]->class != TC_COMMA ) ||
-            ( AsmBuffer[i+1]->class == TC_FINAL ) ) {
+    for( i = index; AsmBuffer[i].class != TC_FINAL; ) {
+        if( ( AsmBuffer[i].class != TC_COMMA ) ||
+            ( AsmBuffer[i+1].class == TC_FINAL ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -1328,8 +1320,8 @@ bool expand_call( token_idx index, int lang_type )
             return( RC_ERROR );
         }
         for( j = ++i; ; j++ ) {
-            if( ( AsmBuffer[j]->class == TC_FINAL ) ||
-                ( AsmBuffer[j]->class == TC_COMMA ) ) {
+            if( ( AsmBuffer[j].class == TC_FINAL ) ||
+                ( AsmBuffer[j].class == TC_COMMA ) ) {
                 break;
             }
         }
@@ -1367,7 +1359,7 @@ bool expand_call( token_idx index, int lang_type )
     *buffer = 0;
     /* add original line up to before language */
     for( i = 0; i < index - 1; i++ ) {
-        sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i]->string_ptr );
+        sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i].string_ptr );
     }
     InputQueueLine( buffer );
     /* add cleanup after call */
@@ -1425,8 +1417,8 @@ static int segm_override_jumps( expr_list *opndx )
 /******************************************/
 {
     if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override]->class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
+        if( AsmBuffer[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) ) {
@@ -1443,8 +1435,8 @@ static int segm_override_idata( expr_list *opndx )
 /******************************************/
 {
     if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override]->class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
+        if( AsmBuffer[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) ) {
@@ -1461,8 +1453,8 @@ static int segm_override_memory( expr_list *opndx )
 /******************************************/
 {
     if( opndx->override != INVALID_IDX ) {
-        if( AsmBuffer[opndx->override]->class == TC_REG ) {
-            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override]->u.token].position].opcode;
+        if( AsmBuffer[opndx->override].class == TC_REG ) {
+            Code->prefix.seg = AsmOpTable[AsmOpcode[AsmBuffer[opndx->override].u.token].position].opcode;
         } else {
 #if defined( _STANDALONE_ )
             if( FixOverride( opndx->override ) ) {
@@ -1877,7 +1869,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         }
     }
     if( opndx->base_reg != INVALID_IDX ) {
-        base = AsmBuffer[opndx->base_reg]->u.token;
+        base = AsmBuffer[opndx->base_reg].u.token;
         switch( base ) {     // check for base registers
         case T_EAX:
         case T_EBX:
@@ -1906,7 +1898,7 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
         }
     }
     if( opndx->idx_reg != INVALID_IDX ) {
-        index = AsmBuffer[opndx->idx_reg]->u.token;
+        index = AsmBuffer[opndx->idx_reg].u.token;
         switch( index ) {     // check for index registers
         case T_EAX:
         case T_EBX:
@@ -1933,10 +1925,10 @@ static int memory_operand( expr_list *opndx, bool with_fixup )
             AsmError( INVALID_MEMORY_POINTER );
             return( ERROR );
         }
-        if( AsmBuffer[opndx->idx_reg]->u.token == T_ESP ) {
+        if( AsmBuffer[opndx->idx_reg].u.token == T_ESP ) {
             if( opndx->scale == 1 ) {
                 index = base;
-                base = AsmBuffer[opndx->idx_reg]->u.token;
+                base = AsmBuffer[opndx->idx_reg].u.token;
             } else {
                 AsmError( ESP_CANNOT_BE_USED_AS_INDEX );
                 return( ERROR );
@@ -2232,7 +2224,7 @@ static int process_reg( expr_list *opndx )
 
     if( opndx->indirect )  // simple register indirect operand ... [EBX]
         return( process_address( opndx ) );
-    ins = AsmOpTable + AsmOpcode[AsmBuffer[opndx->base_reg]->u.token].position;
+    ins = AsmOpTable + AsmOpcode[AsmBuffer[opndx->base_reg].u.token].position;
     reg = ins->opcode;
     Code->info.opnd_type[Opnd_Count] = ins->opnd_type[OPND2];
     switch( ins->opnd_type[OPND2] ) {
@@ -2267,7 +2259,7 @@ static int process_reg( expr_list *opndx )
         }
     case OP_SR:                                 // any seg reg
     case OP_SR2:                                // 8086 segment register
-        if( AsmBuffer[opndx->base_reg]->u.token == T_CS ) {
+        if( AsmBuffer[opndx->base_reg].u.token == T_CS ) {
             // POP CS is not allowed
             if( Code->info.token == T_POP ) {
                 AsmError( POP_CS_IS_NOT_ALLOWED );
@@ -2288,7 +2280,7 @@ static int process_reg( expr_list *opndx )
             SET_OPSIZ_ON( Code );
         break;
     case OP_TR:                 // Test registers
-        switch( AsmBuffer[opndx->base_reg]->u.token ) {
+        switch( AsmBuffer[opndx->base_reg].u.token ) {
         case T_TR3:
         case T_TR4:
         case T_TR5:
@@ -2401,7 +2393,7 @@ bool AsmParse( const char *curline )
 #endif
 
     for( i = 0; i < Token_Count; i++ ) {
-        switch( AsmBuffer[i]->class ) {
+        switch( AsmBuffer[i].class ) {
         case TC_INSTR:
 //            ExpandTheWorld( i, FALSE, TRUE );
 #if defined( _STANDALONE_ )
@@ -2415,15 +2407,15 @@ bool AsmParse( const char *curline )
             }
             cur_opnd_label = FALSE;
 #if defined( _STANDALONE_ )
-            if( ( AsmBuffer[i+1]->class == TC_DIRECTIVE )
-                || ( AsmBuffer[i+1]->class == TC_COLON ) ) {
+            if( ( AsmBuffer[i+1].class == TC_DIRECTIVE )
+                || ( AsmBuffer[i+1].class == TC_COLON ) ) {
                 // instruction name is label
-                AsmBuffer[i]->class = TC_ID;
+                AsmBuffer[i].class = TC_ID;
                 i--;
                 continue;
             }
 #endif
-            switch( AsmBuffer[i]->u.token ) {
+            switch( AsmBuffer[i].u.token ) {
             // prefix
             case T_LOCK:
             case T_REP:
@@ -2431,9 +2423,9 @@ bool AsmParse( const char *curline )
             case T_REPNE:
             case T_REPNZ:
             case T_REPZ:
-                rCode->prefix.ins = AsmBuffer[i]->u.token;
+                rCode->prefix.ins = AsmBuffer[i].u.token;
                 // prefix has to be followed by an instruction
-                if( AsmBuffer[i+1]->class != TC_INSTR ) {
+                if( AsmBuffer[i+1].class != TC_INSTR ) {
                     AsmError( PREFIX_MUST_BE_FOLLOWED_BY_AN_INSTRUCTION );
                     return( RC_ERROR );
                 }
@@ -2447,7 +2439,7 @@ bool AsmParse( const char *curline )
             case T_RETN:
             case T_RETF:
                 in_epilogue = 0;
-                rCode->info.token = AsmBuffer[i]->u.token;
+                rCode->info.token = AsmBuffer[i].u.token;
                 break;
             case T_IRET:
             case T_IRETD:
@@ -2458,7 +2450,7 @@ bool AsmParse( const char *curline )
             case T_IRETF:
             case T_IRETDF:
                 in_epilogue = 0;
-                rCode->info.token = AsmBuffer[i]->u.token;
+                rCode->info.token = AsmBuffer[i].u.token;
                 break;
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
@@ -2472,7 +2464,7 @@ bool AsmParse( const char *curline )
                 /* fall into default */
 #endif
             default:
-                rCode->info.token = AsmBuffer[i]->u.token;
+                rCode->info.token = AsmBuffer[i].u.token;
                 break;
             }
             i++;
@@ -2510,7 +2502,7 @@ bool AsmParse( const char *curline )
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         case TC_DIRECTIVE:
-            return( directive( i, AsmBuffer[i]->u.token ) );
+            return( directive( i, AsmBuffer[i].u.token ) );
 #if defined( _STANDALONE_ )
         case TC_DIRECT_EXPR:
             if( Parse_Pass != PASS_1 ) {
@@ -2523,15 +2515,15 @@ bool AsmParse( const char *curline )
                     process_address( &opndx );
                 }
             }
-            return( directive( i, AsmBuffer[i]->u.token ) );
+            return( directive( i, AsmBuffer[i].u.token ) );
             break;
 #endif
         case TC_ID:
 #if defined( _STANDALONE_ )
-            if( !( ( AsmBuffer[i+1]->class == TC_DIRECTIVE )
-                && ( ( AsmBuffer[i+1]->u.token == T_EQU )
-                || ( AsmBuffer[i+1]->u.token == T_EQU2 )
-                || ( AsmBuffer[i+1]->u.token == T_TEXTEQU ) ) ) ) {
+            if( !( ( AsmBuffer[i+1].class == TC_DIRECTIVE )
+                && ( ( AsmBuffer[i+1].u.token == T_EQU )
+                || ( AsmBuffer[i+1].u.token == T_EQU2 )
+                || ( AsmBuffer[i+1].u.token == T_TEXTEQU ) ) ) ) {
                 switch( ExpandSymbol( i, FALSE ) ) {
                 case ERROR:
                     return( RC_ERROR );
@@ -2551,16 +2543,16 @@ bool AsmParse( const char *curline )
             if( i == 0 ) {   // a new label
 #if ALLOW_STRUCT_INIT
 #if defined( _STANDALONE_ )
-                if( IsLabelStruct( AsmBuffer[i]->string_ptr )
-                    && ( AsmBuffer[i+1]->class != TC_DIRECTIVE ) ) {
-                    AsmBuffer[i]->class = TC_DIRECTIVE;
-                    AsmBuffer[i]->u.token = T_STRUCT;
+                if( IsLabelStruct( AsmBuffer[i].string_ptr )
+                    && ( AsmBuffer[i+1].class != TC_DIRECTIVE ) ) {
+                    AsmBuffer[i].class = TC_DIRECTIVE;
+                    AsmBuffer[i].u.token = T_STRUCT;
                     return( data_init( INVALID_IDX, 0 ) );
                 }
 #endif
 #endif
 
-                switch( AsmBuffer[i+1]->class ) {
+                switch( AsmBuffer[i+1].class ) {
                 case TC_COLON:
                     cur_opnd_label = TRUE;
                     break;
@@ -2568,9 +2560,9 @@ bool AsmParse( const char *curline )
 #if defined( _STANDALONE_ )
                 case TC_ID:
                     /* structure declaration */
-                    if( IsLabelStruct( AsmBuffer[i+1]->string_ptr ) ) {
-                        AsmBuffer[i+1]->class = TC_DIRECTIVE;
-                        AsmBuffer[i+1]->u.token = T_STRUCT;
+                    if( IsLabelStruct( AsmBuffer[i+1].string_ptr ) ) {
+                        AsmBuffer[i+1].class = TC_DIRECTIVE;
+                        AsmBuffer[i+1].u.token = T_STRUCT;
                     } else {
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
@@ -2583,7 +2575,7 @@ bool AsmParse( const char *curline )
                     break;
 #if defined( _STANDALONE_ )
                 case TC_DIRECTIVE:
-                    return( directive( i+1, AsmBuffer[i+1]->u.token ) );
+                    return( directive( i+1, AsmBuffer[i+1].u.token ) );
                     break;
 #endif
                 default:
@@ -2609,9 +2601,9 @@ bool AsmParse( const char *curline )
             }
             Opnd_Count++;
             if( opndx.empty ) {
-                if( AsmBuffer[i]->class == TC_FLOAT
-                    || AsmBuffer[i]->class == TC_MINUS
-                    || AsmBuffer[i]->class == TC_PLUS ) {
+                if( AsmBuffer[i].class == TC_FLOAT
+                    || AsmBuffer[i].class == TC_MINUS
+                    || AsmBuffer[i].class == TC_PLUS ) {
                     i--;
                     continue;
                 }
@@ -2623,7 +2615,7 @@ bool AsmParse( const char *curline )
                     if( opndx.type == EXPR_CONST ) {
                         Opnd_Count--;
                     } else if( opndx.type == EXPR_REG ) {
-                        if( AsmBuffer[opndx.base_reg]->u.token == T_CL ) {
+                        if( AsmBuffer[opndx.base_reg].u.token == T_CL ) {
                             Opnd_Count--;
                             i--;
                             break;
@@ -2654,8 +2646,8 @@ bool AsmParse( const char *curline )
             break;
         case TC_COLON:
             if( last_opnd_label ) {
-                if( AsmBuffer[i+1]->class != TC_RES_ID ) {
-                    if( MakeLabel( AsmBuffer[i-1]->string_ptr, MT_NEAR ) ) {
+                if( AsmBuffer[i+1].class != TC_RES_ID ) {
+                    if( MakeLabel( AsmBuffer[i-1].string_ptr, MT_NEAR ) ) {
                          return( RC_ERROR );
                     }
                 }
@@ -2669,10 +2661,10 @@ bool AsmParse( const char *curline )
         case TC_MINUS:
             break;
         case TC_FLOAT:
-            if( idata_float( AsmBuffer[i]->u.value ) ) {
+            if( idata_float( AsmBuffer[i].u.value ) ) {
                 return( RC_ERROR );
             }
-            if( AsmBuffer[i-1]->class == TC_MINUS ) {
+            if( AsmBuffer[i-1].class == TC_MINUS ) {
                 rCode->data[Opnd_Count] ^= 0x80000000;
             }
 #if defined( _STANDALONE_ )
