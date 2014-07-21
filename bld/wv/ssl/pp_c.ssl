@@ -16,7 +16,7 @@
 !include "dbgintr.ssl"
 
 input:
-        % one character delimiters
+    % one character delimiters
     ET_GETS            '=' = 0x20
     ET_LT              '<'
     ET_GT              '>'
@@ -40,7 +40,7 @@ input:
     ET_MODULE_SPEC     '@'
     ET_VAR_EXIST       '?'
     ET_STRING_QUOTE    '"'
-        % two character delimiters
+    % two character delimiters
     ET_EQ              '=='
     ET_NE              '!='
     ET_LE              '<='
@@ -63,10 +63,10 @@ input:
 !ifdef CPP
     ET_SCOPE            '::'
 !endif
-        % three character delimiters
+    % three character delimiters
     ET_LSHFT_GETS      '<<='
     ET_RSHFT_GETS      '>>='
-        % keywords
+    % keywords
     ET_CHAR            'char'
     ET_DOUBLE          'double'
     ET_FLOAT           'float'
@@ -91,9 +91,9 @@ input:
     ET_FALSE            'false'
 !endif
 
-        % character string escape sequences
-        % do NOT alter their values or sequences without corresponding
-        %    modifications in dbgscan.c
+    % character string escape sequences
+    % do NOT alter their values or sequences without corresponding
+    %    modifications in dbgscan.c
     ET_NL              '\\n' = 0x80
     ET_HT              '\\t'
     ET_VT              '\\v'
@@ -108,8 +108,8 @@ input:
     ET_ZERO            '\\0';
 
 input :
-        % character strings for various structure display operators
-        % first character is priority
+    % character strings for various structure display operators
+    % first character is priority
     TSTR_PAREN          '9(x)' = 0x1000
     TSTR_POINTER_IND    '1*x'
     TSTR_FIELD_SELECT   '2x.y'
@@ -132,7 +132,7 @@ rules
         MarkArrayOrder( false )
         SwitchOn( sw_case_sensitive )
         ScanCCharNum( true )    % tell scanner to recognise C char as numbers
-        MoveScanPtr( 0 )    % rescan current token
+        MoveScanPtr( 0 )        % rescan current token
         PurgePgmStack
         @assignment
     ;
@@ -295,7 +295,11 @@ rules
                 [BitsOr( bits_long )
                   | false:
                   | *:
-                    #err_duplicate_type_spec
+                    [BitsOr( bits_2nd_long )
+                      | false:
+                      | *:
+                        #err_duplicate_type_spec
+                    ]
                 ]
               | ET_FLOAT:
                 [BitsOr( bits_float )
@@ -400,6 +404,8 @@ rules
             PushType( TI_integer_signed_2 )
           | bits_long, bits_signed_long, bits_long_int, bits_signed_long_int:
             PushType( TI_integer_signed_4 )
+          | bits_long_long, bits_signed_long_long, bits_long_long_int, bits_signed_long_long_int:
+            PushType( TI_integer_signed_8 )
           | bits_float:
             PushType( TI_real_4 )
           | bits_double, bits_long_float, bits_long_double:
@@ -414,6 +420,8 @@ rules
             PushType( TI_integer_unsigned_2 )
           | bits_unsigned_long, bits_unsigned_long_int:
             PushType( TI_integer_unsigned_4 )
+          | bits_unsigned_long_long, bits_unsigned_long_long_int:
+            PushType( TI_integer_unsigned_8 )
           | *:
             #err_illegal_type_spec
         ]

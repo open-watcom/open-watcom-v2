@@ -296,34 +296,41 @@ mechanism Num:
     ;
 
 type bits_type:
-    bits_none               = 0x000
-    bits_char               = 0x001
-    bits_int                = 0x002
-    bits_short              = 0x004
-    bits_long               = 0x008
-    bits_signed             = 0x010
-    bits_unsigned           = 0x020
-    bits_float              = 0x040
-    bits_double             = 0x080
-    bits_void               = 0x100
-    bits_byte               = 0x200
-    bits_boolean            = 0x400
-    bits_signed_char        = 0x011
-    bits_unsigned_char      = 0x021
-    bits_signed_int         = 0x012
-    bits_unsigned_int       = 0x022
-    bits_signed_short       = 0x014
-    bits_unsigned_short     = 0x024
-    bits_short_int          = 0x006
-    bits_signed_short_int   = 0x016
-    bits_unsigned_short_int = 0x026
-    bits_signed_long        = 0x018
-    bits_unsigned_long      = 0x028
-    bits_long_int           = 0x00a
-    bits_signed_long_int    = 0x01a
-    bits_unsigned_long_int  = 0x02a
-    bits_long_float         = 0x048
-    bits_long_double        = 0x088
+    bits_none                   = 0x000
+    bits_char                   = 0x001
+    bits_int                    = 0x002
+    bits_short                  = 0x004
+    bits_long                   = 0x008
+    bits_signed                 = 0x010
+    bits_unsigned               = 0x020
+    bits_float                  = 0x040
+    bits_double                 = 0x080
+    bits_void                   = 0x100
+    bits_byte                   = 0x200
+    bits_boolean                = 0x400
+    bits_2nd_long               = 0x800
+    bits_signed_char            = 0x011
+    bits_unsigned_char          = 0x021
+    bits_signed_int             = 0x012
+    bits_unsigned_int           = 0x022
+    bits_signed_short           = 0x014
+    bits_unsigned_short         = 0x024
+    bits_short_int              = 0x006
+    bits_signed_short_int       = 0x016
+    bits_unsigned_short_int     = 0x026
+    bits_signed_long            = 0x018
+    bits_unsigned_long          = 0x028
+    bits_long_int               = 0x00a
+    bits_signed_long_int        = 0x01a
+    bits_unsigned_long_int      = 0x02a
+    bits_long_float             = 0x048
+    bits_long_double            = 0x088
+    bits_long_long              = 0x808
+    bits_signed_long_long       = 0x818
+    bits_unsigned_long_long     = 0x828
+    bits_long_long_int          = 0x80a
+    bits_signed_long_long_int   = 0x81a
+    bits_unsigned_long_long_int = 0x82a
     ;
 
 mechanism Bits:
