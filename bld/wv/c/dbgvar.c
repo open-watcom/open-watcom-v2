@@ -1906,7 +1906,7 @@ void VarDisplaySetArrayDec( var_node *v )
     next_v = v->expand;
             
     while( next_v ) {
-        VarSetType( next_v, CurrRadix != 10, 0, 0, 0, 0 );
+        VarSetType( next_v, 0, CurrRadix != 10, 0, 0, 0 );
         next_v = next_v->next;
     }
 }
