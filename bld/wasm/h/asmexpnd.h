@@ -35,7 +35,7 @@
 extern bool ExpandAllConsts( token_idx start_pos, bool early_only );
 extern int  ExpandProcString( token_idx index );
 extern int  ExpandSymbol( token_idx i, bool early_only );
-extern void AddTokens( asm_tok **buffer, token_idx start, token_idx count );
+extern void AddTokens( asm_tok *buffer, token_idx start, token_idx count );
 extern bool DefineConstant( token_idx i, bool redefine, bool expand_early );
 extern bool StoreConstant( const char *name, const char *value, bool redefine );
 extern bool StoreConstantNumber( const char *name, long value, bool redefine );
