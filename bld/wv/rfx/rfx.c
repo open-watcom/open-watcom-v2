@@ -239,7 +239,7 @@ extern  void    FinishName( char *fn, file_parse *parse, int loc, int addext );
 extern  int     GetFreeSpace( dir_handle *h, int loc );
 extern  void    Format( char *buff, trap_dta *dir, bool wide );
 extern  void    CopyStrMax( char *src, char *dst, unsigned int max_len );
-        
+
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
 int     ProcessCmd( char * cmd );
@@ -803,7 +803,10 @@ int ProcessCmd( char * cmd ) {
         ++argc;
         p = strtok( NULL, " " );
     }
-    return( ProcessArgv( argc, argv, cmd ) );
+    if( argc )
+        return( ProcessArgv( argc, argv, cmd ) );
+    else
+        return( 0 );    /* No useful input. */
 }
 
 
