@@ -209,6 +209,7 @@ bool jmp( expr_list *opndx, int *flags )
     dir_node            *seg;
 #endif
 
+    *flags = 0;
     Code->data[Opnd_Count] = opndx->value;
     sym = opndx->sym;
     if( sym == NULL ) {
