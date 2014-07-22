@@ -102,7 +102,7 @@ extern  struct asm_sym  *AsmGetSymbol( const char *name );
 #if defined( _STANDALONE_ )
 
 extern  void            AsmTakeOut( const char *name );
-extern  int             AsmChangeName( const char *old, const char *new );
+extern  bool            AsmChangeName( const char *old, const char *new );
 extern  void            WriteListing( void );
 
 extern  struct asm_sym  *AllocDSym( const char *, int );

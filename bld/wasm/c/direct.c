@@ -311,8 +311,8 @@ static const_info   info_code = { TRUE, 0, 0, TRUE, &const_code };
 
 #define ROUND_UP( i, r ) (((i)+((r)-1)) & ~((r)-1))
 
-int AddPredefinedConstant( char *name, const_info *info )
-/*******************************************************/
+static bool AddPredefinedConstant( char *name, const_info *info )
+/***************************************************************/
 {
     dir_node            *dir;
 
@@ -320,116 +320,111 @@ int AddPredefinedConstant( char *name, const_info *info )
     if( dir == NULL ) {
         dir = dir_insert( name, TAB_CONST );
         if( dir == NULL ) {
-            return( ERROR );
+            return( RC_ERROR );
         }
     } else if( dir->sym.state == SYM_UNDEFINED ) {
         dir_change( dir, TAB_CONST );
     } else if( dir->sym.state != SYM_CONST ) {
         AsmError( LABEL_ALREADY_DEFINED );
-        return( ERROR );
+        return( RC_ERROR );
     }
     if( !dir->e.constinfo->predef ) {
         FreeInfo( dir );
         dir->e.constinfo = info;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int get_watcom_argument( int size, int *parm_number )
+static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
 /* returns status for a parameter using the watcom register parm passing
    conventions ( A D B C ) */
 {
     int parm = *parm_number;
 
-    switch( size ) {
-    case 1:
-    case 2:
-        if( parm > 3 )
-            return( TRUE );
-        return( FALSE );
-    case 4:
-        if( Use32 ) {
-            if( parm > 3 )
-                return( TRUE );
-        } else {
-            if( parm > 2 )
-                return( TRUE );
-            *parm_number = ++parm;
+    *on_stack = TRUE;
+    if( parm <= 3 ) {
+        switch( size ) {
+        case 1:
+        case 2:
+            break;
+        case 4:
+            if( !Use32 ) {
+                if( parm > 2 )
+                    return( RC_OK );
+                *parm_number = ++parm;
+            }
+            break;
+        case 10:
+            AsmErr( TBYTE_NOT_SUPPORTED );
+            return( RC_ERROR );
+        case 6:
+        case 8:
+            if( Use32 ) {
+                if( parm > 2 )
+                    return( RC_OK );
+                *parm_number = ++parm;
+                break;
+            }
+        default:
+            // something wierd
+            AsmError( STRANGE_PARM_TYPE );
+            return( RC_ERROR );
         }
-        return( FALSE );
-    case 10:
-        AsmErr( TBYTE_NOT_SUPPORTED );
-        return( ERROR );
-    case 6:
-    case 8:
-        if( Use32 ) {
-            if( parm > 2 )
-                return( TRUE );
-            *parm_number = ++parm;
-            return( FALSE );
-        }
-    default:
-        // something wierd
-        AsmError( STRANGE_PARM_TYPE );
-        return( ERROR );
+        *on_stack = FALSE;
     }
+    return( RC_OK );
 }
 
-static int get_watcom_argument_string( char *buffer, int size, int *parm_number )
-/*************************************************************************************/
+static bool get_watcom_argument_string( char *buffer, int size, int *parm_number, bool *on_stack )
+/*************************************************************************************************/
 /* get the register for parms 0 to 3,
    using the watcom register parm passing conventions ( A D B C ) */
 {
     int parm = *parm_number;
 
-    if( parm > 3 )
-        return( TRUE );
-    switch( size ) {
-    case 1:
-        sprintf( buffer, parm_reg[A_BYTE][parm] );
-        return( FALSE );
-    case 2:
-        sprintf( buffer, parm_reg[A_WORD][parm] );
-        return( FALSE );
-    case 4:
-        if( Use32 ) {
-            sprintf( buffer, parm_reg[A_DWORD][parm] );
-        } else {
-            if( parm > 2 )
-                return( TRUE );
-            sprintf( buffer, " %s %s", parm_reg[A_WORD][parm],
-                     parm_reg[A_WORD][parm + 1] );
-            *parm_number = ++parm;
-        }
-        return( FALSE );
-    case 10:
+    *on_stack = TRUE;
+    if( parm <= 3 ) {
+        switch( size ) {
+        case 1:
+            sprintf( buffer, parm_reg[A_BYTE][parm] );
+            break;
+        case 2:
+            sprintf( buffer, parm_reg[A_WORD][parm] );
+            break;
+        case 4:
+            if( Use32 ) {
+                sprintf( buffer, parm_reg[A_DWORD][parm] );
+            } else {
+                if( parm > 2 )
+                    return( RC_OK );
+                sprintf( buffer, " %s %s", parm_reg[A_WORD][parm], parm_reg[A_WORD][parm + 1] );
+                *parm_number = ++parm;
+            }
+            break;
+        case 10:
             AsmErr( TBYTE_NOT_SUPPORTED );
-            return( ERROR );
-    case 6:
-        if( Use32 ) {
-            if( parm < 3 ) {
-                sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm],
-                         parm_reg[A_WORD][parm + 1] );
+            return( RC_ERROR );
+        case 6:
+        case 8:
+            if( Use32 ) {
+                if( parm > 2 )
+                    return( RC_OK );
+                if( size == 6 ) {
+                    sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm], parm_reg[A_WORD][parm + 1] );
+                } else {
+                    sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm], parm_reg[A_DWORD][parm + 1] );
+                }
                 *parm_number = ++parm;
-                return( FALSE );
+                break;
             }
-            return( TRUE );
+        default:
+            // something wierd
+            AsmError( STRANGE_PARM_TYPE );
+            return( RC_ERROR );
         }
-    case 8:
-        if( Use32 ) {
-            if( parm < 3 ) {
-                sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm],
-                         parm_reg[A_DWORD][parm + 1] );
-                *parm_number = ++parm;
-                return( FALSE );
-            }
-            return( TRUE );
-        }
-    default:
-        // something wierd
-        AsmError( STRANGE_PARM_TYPE );
-        return( ERROR );
+        *on_stack = FALSE;
     }
+    return( RC_OK );
 }
 
 #ifdef DEBUG_OUT
@@ -449,8 +444,8 @@ void heap( char *func ) // for debugging only
 }
 #endif
 
-static int SetAssumeCSCurrSeg( void )
-/*************************************/
+static bool SetAssumeCSCurrSeg( void )
+/************************************/
 {
     assume_info     *info;
 
@@ -467,7 +462,7 @@ static int SetAssumeCSCurrSeg( void )
         info->flat = FALSE;
         info->error = FALSE;
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 void push( void *stk, void *elt )
@@ -2950,7 +2945,8 @@ bool ArgDef( token_idx i )
     proc_info       *info;
     label_list      *paranode;
     label_list      *paracurr;
-    int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
+    int             type, register_count, parameter_size, unused_stack_space;
+    bool            parameter_on_stack = TRUE;
 
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
@@ -3054,10 +3050,10 @@ bool ArgDef( token_idx i )
             parameter_size = find_size( type );
             tmp = NULL;
         }
-        if( parameter_on_stack == FALSE ) {
-            parameter_on_stack = get_watcom_argument( parameter_size, &register_count );
-            if( parameter_on_stack == ERROR )
+        if( !parameter_on_stack ) {
+            if( get_watcom_argument( parameter_size, &register_count, &parameter_on_stack ) ) {
                 return( RC_ERROR );
+            }
         }
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
@@ -3297,7 +3293,8 @@ static bool proc_exam( dir_node *proc, token_idx i )
     regs_list       *temp_regist;
     label_list      *paranode;
     label_list      *paracurr;
-    int             type, register_count, parameter_size, unused_stack_space, parameter_on_stack = TRUE;
+    int             type, register_count, parameter_size, unused_stack_space;
+    bool            parameter_on_stack = TRUE;
     struct asm_sym  *param;
     size_t          len;
 
@@ -3415,7 +3412,8 @@ parms:
 
 
     /* reset register count and unused stack space counter */
-    register_count = unused_stack_space = 0;
+    register_count = 0;
+    unused_stack_space = 0;
 
     /* now parse parms */
     for( ; i < Token_Count; i++ ) {
@@ -3470,10 +3468,10 @@ parms:
         }
 
         parameter_size = find_size( type );
-        if( parameter_on_stack == FALSE ) {
-            parameter_on_stack = get_watcom_argument( parameter_size, &register_count );
-            if( parameter_on_stack == ERROR )
+        if( !parameter_on_stack ) {
+            if( get_watcom_argument( parameter_size, &register_count, &parameter_on_stack ) ) {
                 return( RC_ERROR );
+            }
         }
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
@@ -3704,7 +3702,7 @@ bool WritePrologue( const char *curline )
     unsigned long       offset;
     unsigned long       size;
     int                 register_count = 0;
-    int                 parameter_on_stack = TRUE;
+    bool                parameter_on_stack = TRUE;
     int                 align = Use32 ? 4 : 2;
     char                *p;
     size_t              len;
@@ -3755,9 +3753,8 @@ bool WritePrologue( const char *curline )
             parameter_on_stack = FALSE;
         }
         for( curr = info->paralist; curr; curr = curr->next ) {
-            if( parameter_on_stack == FALSE ) {
-                parameter_on_stack = get_watcom_argument_string( buffer, curr->size, &register_count );
-                if( parameter_on_stack == ERROR ) {
+            if( !parameter_on_stack ) {
+                if( get_watcom_argument_string( buffer, curr->size, &register_count, &parameter_on_stack ) ) {
                     return( RC_ERROR );
                 }
             }
@@ -3799,10 +3796,11 @@ bool WritePrologue( const char *curline )
             memcpy( curr->replace, buffer, len );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
-                if( Use32 )
+                if( Use32 ) {
                     curr->replace[4] = '\0';
-                else
+                } else {
                     curr->replace[3] = '\0';
+                }
             }
         }
     }

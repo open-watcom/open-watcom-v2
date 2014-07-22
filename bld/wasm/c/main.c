@@ -1077,8 +1077,8 @@ static void do_envvar_cmdline( char *envvar )
     }
 }
 
-static int set_build_target( void )
-/*********************************/
+static bool set_build_target( void )
+/**********************************/
 {
     if( Options.build_target == NULL ) {
 #if defined(__OSI__)
@@ -1133,7 +1133,36 @@ static int set_build_target( void )
       || stricmp( Options.build_target, "BSD" ) == 0 ) {
         add_constant( "UNIX", TRUE );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
+}
+
+static void set_cpu_mode( void )
+/******************************/
+{
+    // set parameters passing convention macro
+    if( SWData.cpu >= 3 ) {
+        if( Options.watcom_parms_passed_by_regs ) {
+            add_constant( "REGISTER", TRUE );
+        } else {
+            add_constant( "STACK", TRUE );
+        }
+    }
+}
+
+static void set_fpu_mode( void )
+/******************************/
+{
+    switch( floating_point ) {
+    case DO_FP_EMULATION:
+        add_constant( "FPI", TRUE );
+        break;
+    case NO_FP_EMULATION:
+        add_constant( "FPI87", TRUE );
+        break;
+    case NO_FP_ALLOWED:
+        add_constant( "FPC", TRUE );
+        break;
+    }
 }
 
 static void parse_cmdline( char **cmdline )
@@ -1168,6 +1197,8 @@ static void do_init_stuff( char **cmdline )
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );
     set_build_target();
+    set_cpu_mode();
+    set_fpu_mode();
     get_os_include();
     env = getenv( "INCLUDE" );
     if( env != NULL )
@@ -1234,14 +1265,6 @@ void set_cpu_parameters( void )
 
     // Start in masm mode
     Options.mode &= ~MODE_IDEAL;
-    // set parameters passing convention macro
-    if( SWData.cpu >= 3 ) {
-        if( Options.watcom_parms_passed_by_regs ) {
-            add_constant( "REGISTER", TRUE );
-        } else {
-            add_constant( "STACK", TRUE );
-        }
-    }
     switch( SWData.cpu ) {
     case 0:
         token = T_DOT_8086;
@@ -1277,13 +1300,9 @@ void set_fpu_parameters( void )
 
     switch( floating_point ) {
     case DO_FP_EMULATION:
-        add_constant( "FPI", TRUE );
-        break;
     case NO_FP_EMULATION:
-        add_constant( "FPI87", TRUE );
         break;
     case NO_FP_ALLOWED:
-        add_constant( "FPC", TRUE );
         cpu_directive( T_DOT_NO87 );
         return;
     }

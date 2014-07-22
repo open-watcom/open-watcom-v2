@@ -80,7 +80,7 @@ extern bool             EndDirectiveProc;
 
 int                     MacroLocalVarCounter = 0; // counter for temp. var names
 char                    Parse_Pass;     // phase of parsing
-char                    write_to_file;  // write if there is no error
+bool                    write_to_file;  // write if there is no error
 unsigned long           LineNumber;
 bool                    Modend;         // end of module is reached
 bool                    DefineProc;     // TRUE if the definition of procedure
@@ -658,8 +658,8 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
     }
 }
 
-static int write_modend( void )
-/*****************************/
+static bool write_modend( void )
+/******************************/
 {
     obj_rec     *objr;
     fixup       *fix;
@@ -679,11 +679,11 @@ static int write_modend( void )
         }
     }
     write_record( objr, TRUE );
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
-static int write_autodep( void )
-/******************************/
+static bool write_autodep( void )
+/*******************************/
 {
     obj_rec         *objr;
     char            buff[4 + 1 + 255];
@@ -691,7 +691,7 @@ static int write_autodep( void )
     const FNAME     *curr;
 
     if( !Options.emit_dependencies )
-        return NOT_ERROR;
+        return( RC_OK );
 
     for( curr = FNames; curr != NULL; curr = curr->next ) {
         len = strlen(curr->fullname);
@@ -712,7 +712,7 @@ static int write_autodep( void )
     objr->d.coment.class = CMT_DEPENDENCY;
     ObjAttachData( objr, (uint_8 *)"", 0 );
     write_record( objr, TRUE );
-    return NOT_ERROR;
+    return( RC_OK );
 }
 
 void AddLinnumDataRef( void )
@@ -1056,12 +1056,12 @@ static void write_alias( void )
     }
 }
 
-static int write_pub( void )
-/**************************/
+static bool write_pub( void )
+/***************************/
 /* note that procedures with public or export visibility are written out here */
 {
     GetPublicData();
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 void FlushCurrSeg( void )
@@ -1145,7 +1145,7 @@ static void writepass1stuff( char *name )
     write_grp();
     write_external();
     write_alias();
-    if( write_pub() == ERROR )
+    if( write_pub() )
         return;
     write_export();
     write_end_of_pass1();

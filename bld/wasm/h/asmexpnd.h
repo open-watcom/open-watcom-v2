@@ -33,14 +33,13 @@
 #if defined( _STANDALONE_ )
 
 extern bool ExpandAllConsts( token_idx start_pos, bool early_only );
-extern int  ExpandProcString( token_idx index );
-extern int  ExpandSymbol( token_idx i, bool early_only );
+extern bool ExpandProcString( token_idx index, bool *expanded );
+extern bool ExpandSymbol( token_idx i, bool early_only, bool *expanded );
 extern void AddTokens( asm_tok *buffer, token_idx start, token_idx count );
 extern bool DefineConstant( token_idx i, bool redefine, bool expand_early );
 extern bool StoreConstant( const char *name, const char *value, bool redefine );
 extern bool StoreConstantNumber( const char *name, long value, bool redefine );
 extern void MakeConstantUnderscored( const char * );
-#define STRING_EXPANDED (NOT_ERROR+1)
 
 extern bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg );
 

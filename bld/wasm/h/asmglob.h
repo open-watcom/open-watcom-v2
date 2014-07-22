@@ -50,12 +50,9 @@
 #define RC_OK                   false
 
 #define ERROR                   -1
-#define NOT_ERROR               1
 #define EMPTY                   -2
-#define NOT_EMPTY               2
-#define EMPTY_U_LONG            0xFFFFFFFF // U_LONG is Unsigned Long
 
-/* these come back from the jmp() routine */
+/* these come back from the jmp() routine as jump_flags */
 #define SCRAP_INSTRUCTION       3
 #define INDIRECT_JUMP           4
 

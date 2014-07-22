@@ -171,21 +171,23 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         /* can't backpatch if fixup location is in diff seg than symbol */
         SkipFixup();
         return( RC_OK );
-    } else if( Parse_Pass != PASS_1 ) {
-    } else if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
-        // convert far call to near, only at first pass
-        PhaseError = TRUE;
-        sym->offset++;
-        AsmByte( 0 );
-        AsmFree( fixup );
-        return( RC_OK );
-    } else if( sym->mem_type == MT_NEAR ) {
-        // near forward reference, only at first pass
-        switch( fixup->fixup_type ) {
-        case FIX_RELOFF32:
-        case FIX_RELOFF16:
+    }
+    if( Parse_Pass == PASS_1 ) {
+        if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
+            // convert far call to near, only at first pass
+            PhaseError = TRUE;
+            sym->offset++;
+            AsmByte( 0 );
             AsmFree( fixup );
             return( RC_OK );
+        } else if( sym->mem_type == MT_NEAR ) {
+            // near forward reference, only at first pass
+            switch( fixup->fixup_type ) {
+            case FIX_RELOFF32:
+            case FIX_RELOFF16:
+                AsmFree( fixup );
+                return( RC_OK );
+            }
         }
     }
 #else
@@ -207,7 +209,7 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         // calculate the displacement
         disp = fixup->u_offset + AsmCodeAddress - fixup->fixup_loc - size;
         max_disp = (1UL << ((size * 8)-1)) - 1;
-        if( disp > max_disp || disp < (-max_disp-1) ) {
+        if( disp > max_disp || disp < -(max_disp + 1) ) {
 #if defined( _STANDALONE_ )
             PhaseError = TRUE;
             switch( size ) {

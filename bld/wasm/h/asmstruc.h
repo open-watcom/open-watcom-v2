@@ -34,6 +34,6 @@
 extern bool             StructDef( token_idx );
 extern int              AddFieldToStruct( asm_sym *, token_idx );
 extern int              GetStructSize( asm_sym * );
-extern int              InitializeStructure( asm_sym *, asm_sym *, token_idx );
+extern bool             InitializeStructure( asm_sym *, asm_sym *, token_idx );
 
 #endif

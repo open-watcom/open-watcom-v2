@@ -131,7 +131,7 @@ bool StructDef( token_idx i )
     return( RC_OK );
 }
 
-int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
+bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
 /**************************************************************************/
 {
     /* input: a line that looks like : sym_name struct_name { init. values }
@@ -152,7 +152,7 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
     PushLineQueue();
     if( AsmBuffer[i].class != TC_STRING ) {
         AsmError( SYNTAX_ERROR ); // fixme
-        return( ERROR );
+        return( RC_ERROR );
     }
     if( sym != NULL ) {
         sym->total_size   = struct_symbol->total_size;
@@ -197,8 +197,7 @@ int InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_idx i )
         *p = '\0';
         InputQueueLine( buffer );
     }
-
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 int AddFieldToStruct( asm_sym *sym, token_idx loc )

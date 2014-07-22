@@ -331,6 +331,10 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             char                *ptr;
             long                data = 0;
             struct asmfixup     *fixup;
+#if defined( _STANDALONE_ )
+            bool                expanded;
+#endif
+
             /* temporary test .. if this works, combine code for id & resid */
 #if defined( _STANDALONE_ )
             i = ++cur_pos;
@@ -340,10 +344,9 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             i--;
             cur_pos = i;
 
-            switch( ExpandSymbol( i, FALSE ) ) {
-            case ERROR:
+            if( ExpandSymbol( i, FALSE, &expanded ) )
                 return( INVALID_IDX );
-            case STRING_EXPANDED:
+            if( expanded ) {
                 continue;
             }
 #endif

@@ -716,11 +716,12 @@ void AsmLine( const char *string )
 
     if( CurrProc != NULL && !DefineProc ) {
         for( count = 0; count < Token_Count; count++ ) {
-            switch( ExpandProcString( count ) ) {
-            case ERROR:
+            bool expanded;
+            if( ExpandProcString( count, &expanded ) ) {
                 write_to_file = FALSE;
-                /* fall through */
-            case STRING_EXPANDED:
+                return;
+            }
+            if( expanded ) {
                 return;
             }
         }

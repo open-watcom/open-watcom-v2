@@ -41,7 +41,6 @@
 
 /* prototypes */
 bool ptr_operator( memtype mem_type, bool fix_mem_type );
-int jmp( expr_list *opndx );
 
 #if defined( _STANDALONE_ )
 
@@ -196,7 +195,7 @@ static void FarCallToNear( void )
 }
 #endif
 
-int jmp( expr_list *opndx )
+bool jmp( expr_list *opndx, int *flags )
 /*
   determine the displacement of jmp;
 */
@@ -222,13 +221,13 @@ int jmp( expr_list *opndx )
             Code->info.opnd_type[Opnd_Count] = OP_I32;
         else
             Code->info.opnd_type[Opnd_Count] = OP_I16;
-        return( NOT_ERROR );
+        return( RC_OK );
     }
 
 #if defined( _STANDALONE_ )
     if( sym->mem_type == MT_ERROR ) {
         AsmError( LABEL_NOT_DEFINED );
-        return( ERROR );
+        return( RC_ERROR );
     }
 #endif
     state = sym->state;
@@ -261,7 +260,8 @@ int jmp( expr_list *opndx )
                 && ( Code->mem_type == MT_EMPTY )
                 && ( sym->mem_type == MT_FAR ) ) {
                 FarCallToNear();
-                return( SCRAP_INSTRUCTION );
+                *flags = SCRAP_INSTRUCTION;
+                return( RC_OK );
             }
             addr = sym->offset;
 #else
@@ -345,13 +345,12 @@ int jmp( expr_list *opndx )
             case T_LOOPNZW:
             case T_LOOPZW:
 #if defined( _STANDALONE_ )
-    #define GOOD_PHASE  !PhaseError &&
+                if( !PhaseError && (Code->info.opnd_type[Opnd_Count] != OP_I8) ) {
 #else
-    #define GOOD_PHASE
+                if( (Code->info.opnd_type[Opnd_Count] != OP_I8) ) {
 #endif
-                if( GOOD_PHASE (Code->info.opnd_type[Opnd_Count] != OP_I8) ) {
                     AsmError( JUMP_OUT_OF_RANGE );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
                 Code->info.opnd_type[Opnd_Count] = OP_I8;
                 break;
@@ -368,14 +367,15 @@ int jmp( expr_list *opndx )
 #if defined( _STANDALONE_ )
                         if( Code->mem_type == MT_EMPTY ) {
                             jumpExtend( 0 );
-                            return( SCRAP_INSTRUCTION );
+                            *flags = SCRAP_INSTRUCTION;
+                            return( RC_OK );
                         } else if( !PhaseError ) {
                             AsmError( JUMP_OUT_OF_RANGE );
-                            return( ERROR );
+                            return( RC_ERROR );
                         }
 #else
                         AsmError( JUMP_OUT_OF_RANGE );
-                        return( ERROR );
+                        return( RC_ERROR );
 #endif
                     }
                 }
@@ -416,7 +416,7 @@ int jmp( expr_list *opndx )
 #endif
             case MT_FWORD:
                 if( ptr_operator( MT_FWORD, TRUE ) )
-                    return( ERROR );
+                    return( RC_ERROR );
                 break;
             default:
                 Code->mem_type = sym->mem_type;
@@ -437,7 +437,7 @@ int jmp( expr_list *opndx )
             case MT_NEAR:
                 if( Opnd_Count == OPND1 && Code->mem_type_fixed ) {
                     AsmError( CANNOT_USE_SHORT_OR_NEAR );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
                 /* fall through */
             case MT_FAR:
@@ -471,24 +471,25 @@ int jmp( expr_list *opndx )
             case MT_SWORD:
 #endif
                 AsmError( INVALID_SIZE );
-                return( ERROR );
+                return( RC_ERROR );
             case MT_DWORD:
             case MT_FWORD:
 #if defined( _STANDALONE_ )
             case MT_SDWORD:
 #endif
-                return( INDIRECT_JUMP );
+                *flags = INDIRECT_JUMP;
+                return( RC_OK );
             case MT_QWORD:
             case MT_TBYTE:
             case MT_OWORD:
                 AsmError( INVALID_SIZE );
-                return( ERROR );
+                return( RC_ERROR );
             }
             break;
         case T_CALL:
             if( Code->mem_type == MT_SHORT ) {
                 AsmError( CANNOT_USE_SHORT_WITH_CALL );
-                return( ERROR );
+                return( RC_ERROR );
             } else if( Code->mem_type == MT_EMPTY ) {
 #if defined( _STANDALONE_ )
                 fixup_option = OPTJ_CALL;
@@ -550,7 +551,8 @@ int jmp( expr_list *opndx )
             case MT_SDWORD:
             case MT_SWORD:
 #endif
-                return( INDIRECT_JUMP );
+                *flags = INDIRECT_JUMP;
+                return( RC_OK );
 #if defined( _STANDALONE_ )
             case MT_SBYTE:
 #endif
@@ -560,7 +562,7 @@ int jmp( expr_list *opndx )
             case MT_TBYTE:
             case MT_OWORD:
                 AsmError( INVALID_SIZE );
-                return( ERROR );
+                return( RC_ERROR );
             }
 //            check_assume( sym, PREFIX_EMPTY );
             break;
@@ -591,7 +593,7 @@ int jmp( expr_list *opndx )
                 ( Code->mem_type != MT_SHORT ) ) {
 #endif
                 AsmError( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED );
-                return( ERROR );
+                return( RC_ERROR );
             }
             Code->info.opnd_type[Opnd_Count] = OP_I8;
             fixup_option = OPTJ_EXPLICIT;
@@ -628,11 +630,12 @@ int jmp( expr_list *opndx )
                 case MT_FAR:
 #if defined( _STANDALONE_ )
                     jumpExtend( 1 );
-                    return( SCRAP_INSTRUCTION );
+                    *flags = SCRAP_INSTRUCTION;
+                    return( RC_OK );
 #endif
                 default:
                     AsmError( ONLY_SHORT_AND_NEAR_DISPLACEMENT_IS_ALLOWED );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
             } else {
                 // the only mode in 8086, 80186, 80286 is
@@ -652,7 +655,7 @@ int jmp( expr_list *opndx )
                     break;
                 default:
                     AsmError( ONLY_SHORT_DISPLACEMENT_IS_ALLOWED );
-                    return( ERROR );
+                    return( RC_ERROR );
                 }
             }
         }
@@ -660,9 +663,9 @@ int jmp( expr_list *opndx )
         break;
     default: /* SYM_STACK */
         AsmError( NO_JUMP_TO_AUTO );
-        return( ERROR );
+        return( RC_ERROR );
     }
-    return( NOT_ERROR );
+    return( RC_OK );
 }
 
 bool ptr_operator( memtype mem_type, bool fix_mem_type )

@@ -156,7 +156,7 @@ static struct asm_sym **AsmFind( const char *name )
     sym = &AsmSymHead;
 #endif
     len = strlen( name ) + 1;
-    for( ; *sym; sym = &((*sym)->next) ) {
+    for( ; *sym != NULL; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
         if( Options.mode & MODE_IDEAL ) {
             if( memcmp( name, (*sym)->name, len ) == 0 ) {
@@ -323,8 +323,8 @@ void FreeASym( struct asm_sym *sym )
 
 #if defined( _STANDALONE_ )
 
-int AsmChangeName( const char *old, const char *new )
-/***************************************************/
+bool AsmChangeName( const char *old, const char *new )
+/****************************************************/
 {
     struct asm_sym      **sym_ptr;
     struct asm_sym      *sym;
@@ -341,12 +341,12 @@ int AsmChangeName( const char *old, const char *new )
 
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )
-            return( ERROR );
+            return( TRUE );
 
         sym->next = *sym_ptr;
         *sym_ptr = sym;
     }
-    return( NOT_ERROR );
+    return( FALSE );
 }
 
 void AsmTakeOut( const char *name )

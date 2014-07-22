@@ -593,11 +593,12 @@ token_idx ExpandMacro( token_idx tok_count )
                             p = CATSTR( p, AsmBuffer[i].string_ptr, len );
                         }
                     } else {
-                        switch( ExpandSymbol( i, FALSE ) ) {
-                        case ERROR:
+                        bool expanded;
+                        if( ExpandSymbol( i, FALSE, &expanded ) ) {
                             free_parmlist( info->parmlist );
                             return( INVALID_IDX );
-                        case STRING_EXPANDED:
+                        }
+                        if( expanded ) {
                             tok_count = Token_Count;
                             continue;
                         }

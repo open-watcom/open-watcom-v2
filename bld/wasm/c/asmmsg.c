@@ -54,7 +54,7 @@ void                    print_include_file_nesting_structure( void );
 #define WngCount Options.warning_count
 #define WngLevel Options.warning_level
 
-static int              Errfile_Written = FALSE;
+static bool             Errfile_Written = FALSE;
 static FILE             *ErrFile = NULL;
 
 static void             AsmSuicide( void );
