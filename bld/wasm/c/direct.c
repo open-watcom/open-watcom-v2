@@ -4007,6 +4007,7 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
             p = CATLIT( buffer, "retf " );
         }
     }
+    *p = '\0';
 
     write_epilogue();
 
