@@ -167,7 +167,7 @@ extern void DBAddParm(proc_list *_5,dbg_type _4){}
 extern dbg_type DBEndProc(proc_list *_6){return(0);}
 extern void DBGenSym(cg_sym_handle _1,dbg_loc _2,int _3){}
 extern dbg_type DBBasedPtr(cg_type _1,dbg_type _2,dbg_loc _3){return 0;}
-extern void DBAddLocField(dbg_struct _1,dbg_loc _2,uint _3,byte _4,byte _5,char* _6,dbg_type _7){}
+extern void DBAddLocField(dbg_struct _1,dbg_loc _2,uint _3,byte _4,byte _5,char * _6,dbg_type _7){}
 extern void DBAddInheritance(dbg_struct _1,dbg_type _2,dbg_loc _3){}
 extern dbg_loc DBLocInit(void){return 0;}
 extern dbg_loc DBLocSym(dbg_loc _1,cg_sym_handle _2){return 0;}

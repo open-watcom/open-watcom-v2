@@ -427,7 +427,7 @@ static pointer  GetFromBlk( size_t amount )
         block = block->next;
     }
     if( block ) {
-        alloc = (tag*)((char*)block + block->size - block->free);
+        alloc = (tag *)((char *)block + block->size - block->free);
         assert( *alloc == 0 );
         *alloc = amount | ALLOCATED;
         block->free -= amount;
@@ -562,12 +562,12 @@ static  pointer MemFromSys( size_t amount )
         if( amount ) {
             blk->size -= amount + sizeof( blk_hdr );
             blk->free -= sizeof( blk_hdr );
-            allocated = (blk_hdr*)((char*)blk + sizeof( mem_blk ) + blk->free);
+            allocated = (blk_hdr *)((char *)blk + sizeof( mem_blk ) + blk->free);
             allocated->block = blk;
             allocated->size  = amount | ALLOCATED;
-            ptr = (char*)allocated + sizeof( blk_hdr );
+            ptr = (char *)allocated + sizeof( blk_hdr );
         } else {
-            ptr = (char*)blk + sizeof( mem_blk );
+            ptr = (char *)blk + sizeof( mem_blk );
         }
         return( ptr );
     }

@@ -113,8 +113,8 @@ extern  void    LNBlip( unsigned num ) {
 }
 
 
-extern  void    PGBlip(char *name) {
-/***********************************/
+extern  void    PGBlip( const char *name ) {
+/******************************************/
 
     name = name;
     // strncpy( &fileMapping->rtn_name[ 0 ], name, MAX_RTN );

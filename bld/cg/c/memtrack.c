@@ -50,8 +50,8 @@ typedef struct tracker {
         size_t          memory_in_use;
         size_t          max_memory_used;
         void            *(*alloc)(size_t);
-        void            (*free)(void*);
-        void            (*print_line)(char*,unsigned);
+        void            (*free)(void *);
+        void            (*print_line)(char *,unsigned);
         char            name[1];
 } tracker;
 

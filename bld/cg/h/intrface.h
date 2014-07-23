@@ -36,7 +36,7 @@ void            (*_CGParmDecl)(cg_sym_handle,cg_type);
 label_handle    (*_CGLastParm)(void);
 void            (*_CGAutoDecl)(cg_sym_handle,cg_type);
 cg_name         (*_CGInteger)(signed_32,cg_type);
-cg_name         (*_CGFloat)(char*,cg_type);
+cg_name         (*_CGFloat)(char *,cg_type);
 cg_name         (*_CGFEName)(cg_sym_handle,cg_type);
 cg_name         (*_CGBackName)(back_handle,cg_type);
 cg_name         (*_CGAssign)(cg_name,cg_name,cg_type);

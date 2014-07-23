@@ -53,7 +53,7 @@ extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch *);
 extern  void            BuffBack(back_handle, offset);
-extern  void            BuffString(uint,char*);
+extern  void            BuffString(uint,char *);
 extern  void            BuffValue(unsigned_32,uint);
 extern  void            BuffWord(uint);
 extern  void            BuffDWord(unsigned_32);

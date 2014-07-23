@@ -41,7 +41,7 @@ extern  void            FindReferences( void );
 extern  conflict_node   *AddConflictNode(name*);
 extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
-extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
+extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
 
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );

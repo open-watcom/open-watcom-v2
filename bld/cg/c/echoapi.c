@@ -219,7 +219,7 @@ static void dumpLineHeader( void ) // let us know how deep inline we are
 
 // debug output
 void EchoAPI              // EchoAPI ROUTINE
-    ( const char* text          // - text
+    ( const char *text          // - text
     , ... )                     // - operands
 {
     if( _IsModel( ECHO_API_CALLS ) ) {
@@ -513,7 +513,7 @@ void EchoAPIFini( void )
     EchoAPIUnredirect();
 }
 
-static char* callBackName       // MAKE CALL-BACK NAME FOR PRINTING
+static char *callBackName       // MAKE CALL-BACK NAME FOR PRINTING
     ( cg_callback rtn           // - rtn address
     , char *buffer )            // - buffer
 {

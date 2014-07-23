@@ -90,7 +90,7 @@
 
 #define _CopyTrans( src, dst, len )        Copy( src, dst, len )
 
-#define _ARRAY( what, type )    (*(type *)((char*)(what)->array + (what)->used))
+#define _ARRAY( what, type )    (*(type *)((char *)(what)->array + (what)->used))
 #define _ARRAYOF( what, type )  ((type *)(what)->array)
 #define _CHGTYPE( what, type )  (*(type *)&(what))
 
@@ -145,7 +145,7 @@ extern  void            EmptyQueue( void );
 extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
 extern  void            KillLblRedirects( void );
-extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char*,void*),void*,import_type);
+extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char *,void *),void *,import_type);
 
 extern  bool            Used87;
 

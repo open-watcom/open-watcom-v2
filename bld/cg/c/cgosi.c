@@ -106,7 +106,7 @@ void    LNBlip( source_line_number num )
     CheckEvents();
 }
 
-void    PGBlip( char *name )
+void    PGBlip( const char *name )
 {
     name = name;
     CheckEvents();

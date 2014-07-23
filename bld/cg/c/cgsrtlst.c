@@ -39,7 +39,7 @@ extern  mem_out_action          SetMemOut(mem_out_action);
 #define _NEXT( list, offset ) (*((void **)((char *)list + offset)))
 
 static  void            ShellSort( void **array, unsigned length,
-                                   bool (*before)(void*,void*) );
+                                   bool (*before)(void *,void *) );
 
 static  void    *BuildList( void **array, unsigned next_offset, unsigned length )
 /*******************************************************************************/
@@ -61,7 +61,7 @@ static  void    *BuildList( void **array, unsigned next_offset, unsigned length 
 
 static  void            *MergeList( void *list1, void *list2,
                                    unsigned next_offset,
-                                   bool (*before)(void*,void*) ) {
+                                   bool (*before)(void *,void *) ) {
 /***************************************************************/
 
     void        *list;
@@ -95,7 +95,7 @@ static  void            *MergeList( void *list1, void *list2,
 
 
 static  void            *DoSortList( void *list, unsigned next_offset,
-                                  bool (*before)(void*,void*),
+                                  bool (*before)(void *,void *),
                                   unsigned length ) {
 /**************************************************************************/
 
@@ -132,7 +132,7 @@ static  void            *DoSortList( void *list, unsigned next_offset,
 }
 
 static  void            ShellSort( void **array, unsigned length,
-                                   bool (*before)(void*,void*) ) {
+                                   bool (*before)(void *,void *) ) {
 /****************************************************************/
 
 
@@ -163,7 +163,7 @@ static  void            ShellSort( void **array, unsigned length,
 
 
 extern  void            *SortList( void *list, unsigned next_offset,
-                                  bool (*before)(void*,void*) ) {
+                                  bool (*before)(void *,void *) ) {
 /****************************************************************/
 
     void                *list2;

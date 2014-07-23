@@ -64,8 +64,8 @@ extern  void    URBlip() {
 /************************/
 }
 
-extern  void    PGBlip(char *name) {
-/***********************************/
+extern  void    PGBlip( const char *name ) {
+/******************************************/
 }
 
 

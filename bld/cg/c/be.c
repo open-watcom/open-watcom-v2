@@ -62,7 +62,7 @@ extern  void            VerBack(b *);
 extern  int             FCreate(char *);
 extern  void            FShut(int);
 extern  int             FStdOut();
-extern  char            *EnvVar(char*);
+extern  char            *EnvVar(char *);
 
 extern  void            DumpTree(pointer);
 extern  void            exit(int);

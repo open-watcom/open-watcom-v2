@@ -52,13 +52,13 @@ typedef struct stack_entry {
         type_length             size;
 } stack_entry;
 
-extern  name            *DeAlias(name*);
-extern  bool            SideEffect(instruction*);
-extern  void            *SortList(void*,unsigned int,bool(*)(void*,void*));
-extern  void            DoNothing(instruction*);
+extern  name            *DeAlias(name *);
+extern  bool            SideEffect(instruction *);
+extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
+extern  void            DoNothing(instruction *);
 extern  void            TransferTempFlags(void);
 extern  void            PushLocals(void);
-extern  void            SetTempLocation(name*,type_length);
+extern  void            SetTempLocation(name *,type_length);
 extern  type_length     TempLocation( name * );
 extern  bool            TempAllocBefore( void *, void * );
 

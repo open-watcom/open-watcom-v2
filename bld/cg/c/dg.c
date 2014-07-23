@@ -609,7 +609,7 @@ extern  dbg_name        DBBegName( cchar_ptr nm, dbg_type scope )
 
     Action( "DBBegName( %s, %d )", nm, scope );
     name = CGAlloc( sizeof( name_entry ) );
-    name->name = (char*)ACopyOf( nm );
+    name->name = (char *)ACopyOf( nm );
     name->scope = scope;
     name->refno = DBG_NIL_TYPE;
     Action( " -> %p%n", name );

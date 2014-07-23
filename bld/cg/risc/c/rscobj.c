@@ -63,7 +63,7 @@ extern  void            OpenObj( void );
 extern  void            PutObjBytes( const void *, uint );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( label_handle );
-extern  void            DoOutObjectName(cg_sym_handle,void(*)(char*,void*),void*,import_type);
+extern  void            DoOutObjectName(cg_sym_handle,void(*)(char *,void *),void *,import_type);
 extern  bool            SymIsExported( cg_sym_handle );
 extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
 extern  void            TellAddress( label_handle, offset );
@@ -185,7 +185,7 @@ static  void    DefaultLibs( void )
     for( ;; ) {  //Library dependencies
         lib = FEAuxInfo( lib, NEXT_LIBRARY );
         if( lib == NULL ) break;
-        name =  (char*)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
+        name =  (char *)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
         if( name == NULL || *name == '\0' ) continue;
         if( comments == NULL ){
             comments = OWLSectionInit( owlFile, ".drectve", OWL_SECTION_INFO, 1 );

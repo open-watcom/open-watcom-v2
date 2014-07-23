@@ -51,11 +51,11 @@ extern  signed_32       JumpCost(sel_handle);
 extern  void            Generate(bool);
 extern  signed_32       ScanCost(sel_handle);
 extern  void            GenBlock( block_class, int );
-extern  tbl_control     *MakeScanTab(select_list*,signed_32,label_handle,cg_type,cg_type);
-extern  tbl_control     *MakeJmpTab(select_list*,signed_32,signed_32,label_handle);
-extern  name            *SelIdx(tbl_control*,an);
+extern  tbl_control     *MakeScanTab(select_list *,signed_32,label_handle,cg_type,cg_type);
+extern  tbl_control     *MakeJmpTab(select_list *,signed_32,signed_32,label_handle);
+extern  name            *SelIdx(tbl_control *,an);
 extern  type_def        *SelNodeType(an,bool);
-extern  void            *SortList(void *,unsigned,bool (*)(void*,void*) );
+extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  void            MkSelOp( name *idx, type_class_def class );
 
 /* forward declarations */

@@ -61,7 +61,7 @@ extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
-extern  void            PGBlip(char*);
+extern  void            PGBlip(const char *);
 extern  void            EnLink(label_handle,bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
 extern  void            NewProc(int);

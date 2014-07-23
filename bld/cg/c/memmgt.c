@@ -53,7 +53,7 @@
 
 extern  void            CalcMemLimit( void );
 extern  void            FatalError(const char *);
-extern  bool            GetEnvVar(char*,char*,int);
+extern  bool            GetEnvVar(char *,char *,int);
 
 
 static          mem_out_action  MemOut;

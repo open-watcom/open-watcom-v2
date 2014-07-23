@@ -198,8 +198,8 @@ extern  void    LNBlip( source_line_number num )
 }
 
 
-extern  void    PGBlip(char *name)
-/********************************/
+extern  void    PGBlip( const char *name )
+/****************************************/
 {
     int         count;
 

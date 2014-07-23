@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 
-extern  int             FrontEnd(char*);
+extern  int             FrontEnd(char *);
 
 extern  int     main( char *p ) {
 /*******************************/
