@@ -502,12 +502,12 @@ bld_extra_defines = -DINLINETEST
 !    else ifdef __OS2__
 !      define comp_wasm_i86 $(%OWSRCDIR)\wasm\os2386\wasm
 !    else ifdef __NT386__
-!      define comp_wasm_i86 $(%OWSRCDIR)\wasm\nt386\wasm
+!      define comp_wasm_i86 $(%OWSRCDIR)\wasm\dosi86\wasm
 !    endif
 !  else ifdef %WASMTEST_WASM_I86
 !    define comp_wasm_i86 $(%WASMTEST_WASM_I86)
 !  else
-!    define comp_wasm_i86 wasm
+!    define comp_wasm_i86 wasmr
 !  endif
 !endif
 
