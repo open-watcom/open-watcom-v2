@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-
 #include "ssl.h"
 #include "sslint.h"
 
-extern token            CurrToken;
 
 static void Action( symbol *, instruction * );
 

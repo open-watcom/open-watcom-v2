@@ -29,19 +29,11 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 #include "ssl.h"
 #include "sslint.h"
-
-
-extern char     TokenBuff[];
-extern unsigned TokenLen;
-extern FILE     *PrsFile;
-extern token    CurrToken;
 
 
 symbol          *SymLst;

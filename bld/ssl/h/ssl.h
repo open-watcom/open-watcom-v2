@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "sslops.h"
 
 #include "pushpck1.h"
@@ -126,3 +127,9 @@ typedef struct symbol {
 } symbol;
 
 #include "poppck.h"
+
+
+extern token           CurrToken;
+extern char            TokenBuff[MAX_TOKEN_LEN];
+extern unsigned        TokenLen;
+extern FILE            *PrsFile;

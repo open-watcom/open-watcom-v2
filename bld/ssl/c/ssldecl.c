@@ -31,13 +31,8 @@
 
 
 #include <stdlib.h>
-
 #include "ssl.h"
 #include "sslint.h"
-
-
-extern token    CurrToken;
-extern char     TokenBuff[];
 
 
 
