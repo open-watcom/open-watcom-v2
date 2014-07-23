@@ -170,8 +170,8 @@ const asm_ins ASMFAR *get_instruction( char *string )
     return( NULL );
 }
 
-static int comp_mem( asm_token reg1, asm_token reg2 )
-/***************************************************/
+static bool comp_mem( asm_token reg1, asm_token reg2, unsigned char *rm_field )
+/*****************************************************************************/
 /*
 - compare and return the r/m field encoding of 16-bit address mode;
 - call by mem2code() only;
@@ -180,19 +180,27 @@ static int comp_mem( asm_token reg1, asm_token reg2 )
     switch( reg1 ) {
     case T_BX:
         switch( reg2 ) {
-        case T_SI: return( MEM_BX_SI );
-        case T_DI: return( MEM_BX_DI );
+        case T_SI:
+            *rm_field = MEM_BX_SI;
+            return( RC_OK );
+        case T_DI:
+            *rm_field = MEM_BX_DI;
+            return( RC_OK );
         }
         break;
     case T_BP:
         switch( reg2 ) {
-        case T_SI: return( MEM_BP_SI );
-        case T_DI: return( MEM_BP_DI );
+        case T_SI:
+            *rm_field = MEM_BP_SI;
+            return( RC_OK );
+        case T_DI:
+            *rm_field = MEM_BP_DI;
+            return( RC_OK );
         }
         break;
     }
     AsmError( INVALID_MEMORY_POINTER );
-    return( ERROR );
+    return( RC_ERROR );
 }
 
 static void seg_override( asm_token seg_reg, asm_sym *sym )
@@ -464,7 +472,6 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
 */
 {
     struct asm_code     *rCode = Code;
-    int                 temp;
     unsigned char       mod_field;
     unsigned char       rm_field;
 
@@ -549,16 +556,14 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
         switch( index ) {
         case T_BX:
         case T_BP:
-            if( ( temp = comp_mem( index, base ) ) == ERROR )
+            if( comp_mem( index, base, &rm_field ) )
                 return( RC_ERROR );
-            rm_field = (unsigned char)temp;
             seg_override( index, sym );
             break;
         case T_SI:
         case T_DI:
-            if( ( temp = comp_mem( base, index ) ) == ERROR )
+            if( comp_mem( base, index, &rm_field ) )
                 return( RC_ERROR );
-            rm_field = (unsigned char)temp;
             seg_override( base, sym );
             break;
         case T_ESP:
@@ -2319,12 +2324,12 @@ bool AsmParse( const char *curline )
     bool                last_opnd_label = FALSE;
     struct asm_code     *rCode = Code;
     expr_list           opndx;
-    int                 temp;
     token_idx           n;
     operand_idx         j;
     int                 jmp_flags;
     bool                flag;
 #if defined( _STANDALONE_ )
+    int                 temp;
     static bool         in_epilogue = FALSE;
 #endif
 
@@ -2433,8 +2438,7 @@ bool AsmParse( const char *curline )
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
                     for( n = i + 2; n < Token_Count; n++ ) {
-                        temp = CheckForLang( n );
-                        if( temp != ERROR ) {
+                        if( !CheckForLang( n, &temp ) ) {
                             return( expand_call( n + 1, temp ) );
                         }
                     }

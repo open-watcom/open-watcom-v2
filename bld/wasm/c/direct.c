@@ -1065,25 +1065,26 @@ uint_32 GetCurrSegStart( void )
     return( CurrSeg->seg->e.seginfo->start_loc );
 }
 
-int CheckForLang( token_idx i )
-/*****************************/
+bool CheckForLang( token_idx i, int *lang )
+/*****************************************/
 {
     char        *token;
-    int         lang;
+    int         lang_idx;
 
     if( AsmBuffer[i].class == TC_ID) {
         token = AsmBuffer[i].string_ptr;
         // look up the type of token
         if( Options.mode & MODE_TASM ) {
-            lang = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
+            lang_idx = token_cmp( &token, TOK_LANG_NOLANG, TOK_LANG_SYSCALL );
         } else {
-            lang = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
+            lang_idx = token_cmp( &token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
         }
-        if( lang != ERROR ) {
-            return( TypeInfo[lang].value );
+        if( lang_idx != ERROR ) {
+            *lang = TypeInfo[lang_idx].value;
+            return( RC_OK );
         }
     }
-    return( ERROR );
+    return( RC_ERROR );
 }
 
 static int GetLangType( token_idx *i )
@@ -1091,12 +1092,10 @@ static int GetLangType( token_idx *i )
 {
     int         lang_type;
 
-    lang_type = CheckForLang( *i );
-    if( lang_type == ERROR ) {
+    if( CheckForLang( *i, &lang_type ) ) {
         return( ModuleInfo.langtype );
-    } else {
-        (*i)++;
     }
+    (*i)++;
     return( lang_type );
 }
 

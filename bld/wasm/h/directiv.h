@@ -357,7 +357,7 @@ extern bool             Include( token_idx );         // handle an INCLUDE state
 extern bool             IncludeLib( token_idx );      // handle an INCLUDELIB statement
 extern bool             Model( token_idx );           // handle .MODEL statement
 
-extern int              CheckForLang( token_idx );
+extern bool             CheckForLang( token_idx, int *lang );
 
 extern void             ModuleInit( void );
 /* Initializes the information about the module, which are contained in ModuleInfo */
