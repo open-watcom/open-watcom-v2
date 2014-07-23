@@ -75,7 +75,7 @@ extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
 
-extern  void            CodeBytes( byte *src, byte_seq_len len );
+extern  void            CodeBytes( const byte *src, byte_seq_len len );
 extern  void            GenReturn( int pop, bool is_long, bool iret );
 
 static  void            JumpReg( instruction *ins, name *reg_name );
@@ -629,38 +629,46 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
     }
 }
 
-static  void    DoCodeBytes( byte *src, byte_seq_len len, oc_class class ) {
-/***************************************************************************
+static  void    DoCodeBytes( const byte *src, byte_seq_len len, oc_class class ) {
+/*******************************************************************************
     Dump bytes "src" directly into the queue, for length "len".
 */
-
     any_oc    *oc;
+    uint      addlen;
 
     oc = CGAlloc( offsetof( oc_entry, data ) + MAX_OBJ_LEN );
     oc->oc_entry.hdr.class = class;
     oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + MAX_OBJ_LEN;
     oc->oc_entry.hdr.objlen = MAX_OBJ_LEN;
-    while( len > MAX_OBJ_LEN ) {
+    addlen = 0;
+    if( class == OC_IDATA ) {
+        if( len > 255 )
+            len = 255;
+        addlen = 1;
+    }
+    while( len + addlen > MAX_OBJ_LEN ) {
         Copy( src, oc->oc_entry.data, MAX_OBJ_LEN );
         InputOC( oc );
         src += MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
-    oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + len;
-    oc->oc_entry.hdr.objlen = len;
+    oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + len + addlen;
+    oc->oc_entry.hdr.objlen = len + addlen;
     Copy( src, oc->oc_entry.data, len );
+    if( addlen )
+        oc->oc_entry.data[len] = (byte)len;
     InputOC( oc );
     CGFree( oc );
 }
 
-extern  void    CodeBytes( byte *src, byte_seq_len len ) {
-/********************************************************/
+extern  void    CodeBytes( const byte *src, byte_seq_len len ) {
+/**************************************************************/
 
     DoCodeBytes( src, len, OC_BDATA );
 }
 
-extern  void    EyeCatchBytes( byte *src, byte_seq_len len ) {
-/************************************************************/
+extern  void    EyeCatchBytes( const byte *src, byte_seq_len len ) {
+/******************************************************************/
 
     DoCodeBytes( src, len, OC_IDATA );
 }

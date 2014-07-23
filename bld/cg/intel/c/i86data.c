@@ -51,7 +51,7 @@ extern  void            TellKeepLabel(label_handle);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutBckImport( const char *name, back_handle bck, fix_class class );
-extern  void            CodeBytes(byte*,uint);
+extern  void            CodeBytes(const byte*,uint);
 extern  void            CodeLabel(label_handle, unsigned);
 extern  void            OutIBytes(byte,offset);
 extern  void            OutDataLong(unsigned_32);

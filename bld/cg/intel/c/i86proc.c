@@ -80,7 +80,7 @@ extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
 extern  unsigned    DepthAlign( unsigned );
-extern  void        EyeCatchBytes(byte*,byte_seq_len);
+extern  void        EyeCatchBytes(const byte*,byte_seq_len);
 extern  void        GenSelEntry(bool);
 extern  void        TellKeepLabel(label_handle);
 extern  void        GenKillLabel(label_handle);
@@ -456,22 +456,19 @@ static  void    EmitNameInCode( void ) {
 
     cg_sym_handle   sym;
     char            *name;
-    char            *endname;
-    char            b[128];
     label_handle    lbl;
+    uint            len;
 
     sym = AskForLblSym( CurrProc->label );
     if( sym == NULL )
         return;
     name = FEName( sym );
-    endname = CopyStr( name, b );
-    name = b;
-    *endname = endname - name;
+    len = Length( name );
     lbl = AskForNewLabel();
     TellKeepLabel( lbl );
     CodeLabel( lbl, 0 );
     GenKillLabel( lbl );
-    EyeCatchBytes( (byte *)name, *(unsigned char *)endname + 1 );
+    EyeCatchBytes( (byte *)name, len );
 }
 
 
