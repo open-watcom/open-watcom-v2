@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  FPE interrupt handler hook for DOS/4G style DOS extenders.
 ;*
 ;*****************************************************************************
 

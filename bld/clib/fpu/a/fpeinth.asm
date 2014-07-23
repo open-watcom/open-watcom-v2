@@ -24,7 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  80x87 interrupt handler.
+;* Description:  Generic 80x87 floating-point exception interrupt handler.
 ;*
 ;*****************************************************************************
 
