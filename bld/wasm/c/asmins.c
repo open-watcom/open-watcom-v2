@@ -929,34 +929,36 @@ static unsigned char get_sr_rm_byte( prefix_reg seg_prefix )
 
 #if defined( _STANDALONE_ )
 
-static int proc_check( const char *curline )
-/******************************************/
+static bool proc_check( const char *curline, bool *prolog )
+/*********************************************************/
 /* Check if we are inside a procedure and write prologue statements if the
    current line is the first instruction line following the procedure
    declaration */
 {
+    *prolog = FALSE;
     if( ( CurrProc == NULL ) || ( Token_Count == 0 ) || !DefineProc )
-        return( FALSE );
+        return( RC_OK );
 
     if( AsmBuffer[0].class == TC_DIRECTIVE )
-        return( FALSE );
+        return( RC_OK );
 
     if( Token_Count > 1 ) {
         if( ( AsmBuffer[1].class == TC_DIRECTIVE )
             || ( AsmBuffer[1].class == TC_DIRECT_EXPR ) ) {
-            return( FALSE );
+            return( RC_OK );
         }
     }
 
     if( WritePrologue( curline ) )
-        return( ERROR );
+        return( RC_ERROR );
     DefineProc = FALSE;
-    return( TRUE );
+    *prolog = TRUE;
+    return( RC_OK );
 }
 
 char *regs[4] = { "ax",  "dx",  "bx",  "cx" };
 
-int get_register_argument( token_idx index, char *buffer, int *register_count )
+bool get_register_argument( token_idx index, char *buffer, int *register_count, bool *on_stack )
 {
     token_idx   i;
     int         size, j;
@@ -964,217 +966,216 @@ int get_register_argument( token_idx index, char *buffer, int *register_count )
 
     i = index;
     j = *register_count;
-    if( j > 3 )
-        return( TRUE );
-    if( Use32 )
-        size = 4;
-    else
-        size = 2;
-    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
-        i++;
-        if( AsmBuffer[i].class == TC_RES_ID ) {
+    if( j > 3 ) {
+        *on_stack = TRUE;
+    } else {
+        if( Use32 ) {
+            size = 4;
+        } else {
+            size = 2;
+        }
+        if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
+            i++;
+            if( AsmBuffer[i].class == TC_RES_ID ) {
+                switch( AsmBuffer[i].u.token ) {
+                case T_BYTE:
+                    size = 1;
+                    break;
+                case T_WORD:
+                    size = 2;
+                    break;
+                case T_DWORD:
+                    size = 4;
+                    break;
+                case T_FWORD:
+                    if( Use32 ) {
+                        size = 6;
+                        break;
+                    }
+                case T_QWORD:
+                    if( Use32 ) {
+                        size = 8;
+                        break;
+                    }
+                default:
+                    AsmError( STRANGE_PARM_TYPE );
+                    return( RC_ERROR );
+                }
+                i++;
+            }
+            if( ( AsmBuffer[i].class != TC_ID ) && ( AsmBuffer[i+1].class != TC_CL_SQ_BRACKET ) ) {
+                AsmError( SYNTAX_ERROR );
+                return( RC_ERROR );
+            }
+            if( Use32 ) {
+                switch( size ) {
+                case 1:
+                    sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i].string_ptr );
+                    break;
+                case 2:
+                    sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    break;
+                case 4:
+                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    break;
+                case 6:
+                    if( j > 2 ) {
+                        *on_stack = TRUE;
+                        return( RC_OK );
+                    } else {
+                        sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                        InputQueueLine( buffer );
+                        j++;
+                        sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                        *register_count = j;
+                    }
+                    break;
+                case 8:
+                    if( j > 2 ) {
+                        *on_stack = TRUE;
+                        return( RC_OK );
+                    } else {
+                        sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                        InputQueueLine( buffer );
+                        j++;
+                        sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                        *register_count = j;
+                    }
+                    break;
+                default:
+                    AsmError( SYNTAX_ERROR );
+                    return( RC_ERROR );
+                }
+            } else {
+                switch( size ) {
+                case 1:
+                    ch = regs[j][0];
+                    sprintf( buffer, "xor %ch,%ch", ch, ch );
+                    InputQueueLine( buffer );
+                    sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i].string_ptr );
+                    break;
+                case 2:
+                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    break;
+                case 4:
+                    if( j > 2 ) {
+                        *on_stack = TRUE;
+                        return( RC_OK );
+                    } else {
+                        sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                        InputQueueLine( buffer );
+                        j++;
+                        sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
+                        *register_count = j;
+                    }
+                    break;
+                default:
+                    AsmError( SYNTAX_ERROR );
+                    return( RC_ERROR );
+                }
+            }
+        } else if( ( AsmBuffer[i].class == TC_REG ) &&
+                   ( ( AsmBuffer[i+1].class == TC_COMMA ) ||
+                     ( AsmBuffer[i+1].class == TC_FINAL ) ) ) {
             switch( AsmBuffer[i].u.token ) {
-            case T_BYTE:
-                size = 1;
+            case T_EAX:
+            case T_EBX:
+            case T_ECX:
+            case T_EDX:
+            case T_EDI:
+            case T_ESI:
+            case T_EBP:
+            case T_ESP:
+                if( Use32 )
+                    size = 4;
                 break;
-            case T_WORD:
+            case T_AX:
+            case T_BX:
+            case T_CX:
+            case T_DX:
+            case T_DI:
+            case T_SI:
+            case T_BP:
+            case T_SP:
                 size = 2;
                 break;
-            case T_DWORD:
-                size = 4;
+            case T_DS:
+            case T_CS:
+            case T_ES:
+            case T_SS:
+            case T_FS:
+            case T_GS:
+                if( Use32 )
+                    size = 4;
+                else
+                    size = 2;
                 break;
-            case T_FWORD:
+            case T_AL:
+            case T_AH:
+            case T_BL:
+            case T_BH:
+            case T_CL:
+            case T_CH:
+            case T_DL:
+            case T_DH:
+                size = 1;
+                break;
+            }
+            switch( size ) {
+            case 1:
                 if( Use32 ) {
-                    size = 6;
-                    break;
+                    sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
+                } else {
+                    ch = regs[j][0];
+                    sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i].string_ptr );
                 }
-            case T_QWORD:
+                break;
+            case 2:
                 if( Use32 ) {
-                    size = 8;
+                    sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
+                } else {
+                    sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i].string_ptr );
+                }
+                break;
+            case 4:
+                if( Use32 ) {
+                    sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i].string_ptr );
                     break;
                 }
             default:
-                AsmError( STRANGE_PARM_TYPE );
-                return( ERROR );
+                AsmError( SYNTAX_ERROR );
+                return( RC_ERROR );
             }
-            i++;
-        }
-        if( ( AsmBuffer[i].class != TC_ID ) &&
-            ( AsmBuffer[i+1].class != TC_CL_SQ_BRACKET ) ) {
-            AsmError( SYNTAX_ERROR );
-            return( ERROR );
-        }
-        if( Use32 ) {
-            switch( size ) {
-            case 1:
-                sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            case 2:
-                sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            case 4:
-                sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            case 6:
-                if( j > 2 ) {
-                    return( TRUE );
-                } else {
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    j++;
-                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    *register_count = j;
-                    return( FALSE );
-                }
-            case 8:
-                if( j > 2 ) {
-                    return( TRUE );
-                } else {
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    j++;
-                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    *register_count = j;
-                    return( FALSE );
-                }
-            }
+        } else if( AsmBuffer[i].class == TC_QUESTION_MARK ) {
+            return( RC_OK );
         } else {
-            switch( size ) {
-            case 1:
-                ch = regs[j][0];
-                sprintf( buffer, "xor %ch,%ch", ch, ch );
-                InputQueueLine( buffer );
-                sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            case 2:
-                sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            case 4:
-                if( j > 2 ) {
-                    return( TRUE );
-                } else {
-                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    j++;
-                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
-                    InputQueueLine( buffer );
-                    *register_count = j;
-                    return( FALSE );
-                }
-            }
-        }
-    } else if( ( AsmBuffer[i].class == TC_REG ) &&
-               ( ( AsmBuffer[i+1].class == TC_COMMA ) ||
-                 ( AsmBuffer[i+1].class == TC_FINAL ) ) ) {
-        switch( AsmBuffer[i].u.token ) {
-        case T_EAX:
-        case T_EBX:
-        case T_ECX:
-        case T_EDX:
-        case T_EDI:
-        case T_ESI:
-        case T_EBP:
-        case T_ESP:
             if( Use32 )
-                size = 4;
-            break;
-        case T_AX:
-        case T_BX:
-        case T_CX:
-        case T_DX:
-        case T_DI:
-        case T_SI:
-        case T_BP:
-        case T_SP:
-            size = 2;
-            break;
-        case T_DS:
-        case T_CS:
-        case T_ES:
-        case T_SS:
-        case T_FS:
-        case T_GS:
-            if( Use32 )
-                size = 4;
+                sprintf( buffer, "mov e%s,", regs[j] );
             else
-                size = 2;
-            break;
-        case T_AL:
-        case T_AH:
-        case T_BL:
-        case T_BH:
-        case T_CL:
-        case T_CH:
-        case T_DL:
-        case T_DH:
-            size = 1;
-            break;
-        }
-        switch( size ) {
-        case 1:
-            if( Use32 ) {
-                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
-            } else {
-                ch = regs[j][0];
-                sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i].string_ptr );
+                sprintf( buffer, "mov %s,", regs[j] );
+            while( ( AsmBuffer[i].class != TC_FINAL ) &&
+                   ( AsmBuffer[i].class != TC_COMMA ) ) {
+                strcat( buffer, AsmBuffer[i++].string_ptr );
             }
-            InputQueueLine( buffer );
-            return( FALSE );
-        case 2:
-            if( Use32 ) {
-                sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
-            } else {
-                sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i].string_ptr );
-            }
-            InputQueueLine( buffer );
-            return( FALSE );
-        case 4:
-            if( Use32 ) {
-                sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( FALSE );
-            }
-            break;
-        }
-    } else if( AsmBuffer[i].class == TC_QUESTION_MARK ) {
-        return FALSE;
-    } else {
-        if( Use32 )
-            sprintf( buffer, "mov e%s,", regs[j] );
-        else
-            sprintf( buffer, "mov %s,", regs[j] );
-        while( ( AsmBuffer[i].class != TC_FINAL ) &&
-               ( AsmBuffer[i].class != TC_COMMA ) ) {
-            strcat( buffer, AsmBuffer[i++].string_ptr );
         }
         InputQueueLine( buffer );
-        return( FALSE );
     }
-    AsmError( SYNTAX_ERROR );
-    return( ERROR );
+    return( RC_OK );
 }
 
-static bool get_stack_argument( token_idx index, char *buffer )
+static bool get_stack_argument( token_idx idx, char *buffer )
 {
-    token_idx   i;
     int         size;
 
-    if( Use32 )
+    if( Use32 ) {
         size = 4;
-    else
+    } else {
         size = 2;
-    i = index;
-    if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
-        i++;
-        if( AsmBuffer[i].class == TC_RES_ID ) {
-            switch( AsmBuffer[i].u.token ) {
+    }
+    if( AsmBuffer[idx].class == TC_OP_SQ_BRACKET ) {
+        idx++;
+        if( AsmBuffer[idx].class == TC_RES_ID ) {
+            switch( AsmBuffer[idx].u.token ) {
             case T_BYTE:
                 size = 1;
                 break;
@@ -1185,86 +1186,78 @@ static bool get_stack_argument( token_idx index, char *buffer )
                 size = 4;
                 break;
             case T_FWORD:
-                if( Use32 ) {
-                    size = 6;
-                    break;
-                }
             case T_QWORD:
                 if( Use32 ) {
-                    size = 8;
+                    if( AsmBuffer[idx].u.token == T_FWORD ) {
+                        size = 6;
+                    } else {
+                        size = 8;
+                    }
                     break;
                 }
+                // fall down
             default:
                 AsmError( STRANGE_PARM_TYPE );
                 return( RC_ERROR );
             }
-            i++;
+            idx++;
         }
-        if( ( AsmBuffer[i].class != TC_ID ) ||
-            ( AsmBuffer[i + 1].class != TC_CL_SQ_BRACKET ) ) {
+        if( ( AsmBuffer[idx].class != TC_ID ) || ( AsmBuffer[idx + 1].class != TC_CL_SQ_BRACKET ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
         if( Use32 ) {
             switch( size ) {
             case 1:
-                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "movzx eax,[byte %s]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                break;
             case 2:
-                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "movzx eax,[word %s]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                break;
             case 4:
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                break;
             case 6:
-                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "movzx eax,[word %s+4]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push eax" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                break;
             case 8:
-                sprintf( buffer, "push [dword %s+4]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "push [dword %s+4]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [dword %s]", AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                sprintf( buffer, "push [dword %s]", AsmBuffer[idx].string_ptr );
+                break;
             }
         } else {
             switch( size ) {
             case 1:
                 sprintf( buffer, "xor ah,ah" );
                 InputQueueLine( buffer );
-                sprintf( buffer, "mov al,[%s]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "mov al,[%s]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
                 sprintf( buffer, "push ax" );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                break;
             case 2:
-                sprintf( buffer, "push [%s]", AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                sprintf( buffer, "push [%s]", AsmBuffer[idx].string_ptr );
+                break;
             case 4:
-                sprintf( buffer, "push [word %s+2]", AsmBuffer[i].string_ptr );
+                sprintf( buffer, "push [word %s+2]", AsmBuffer[idx].string_ptr );
                 InputQueueLine( buffer );
-                sprintf( buffer, "push [word %s]", AsmBuffer[i].string_ptr );
-                InputQueueLine( buffer );
-                return( RC_OK );
+                sprintf( buffer, "push [word %s]", AsmBuffer[idx].string_ptr );
+                break;
             }
         }
-    }
-    sprintf( buffer, "push " );
-    while( ( AsmBuffer[i].class != TC_FINAL ) &&
-           ( AsmBuffer[i].class != TC_COMMA ) ) {
-        strcat( buffer, AsmBuffer[i++].string_ptr );
+    } else {
+        sprintf( buffer, "push " );
+        while( ( AsmBuffer[idx].class != TC_FINAL ) && ( AsmBuffer[idx].class != TC_COMMA ) ) {
+            strcat( buffer, AsmBuffer[idx++].string_ptr );
+        }
     }
     InputQueueLine( buffer );
     return( RC_OK );
@@ -1275,7 +1268,8 @@ bool expand_call( token_idx index, int lang_type )
     token_idx   i, j;
     token_idx   arglist[16];
     int         k;
-    int         argcount, cleanup, reversed, register_count, register_arguments, parameter_on_stack;
+    int         argcount, cleanup, reversed, register_count, register_arguments;
+    bool        parameter_on_stack;
     char        buffer[MAX_LINE_LEN];
 
     argcount = cleanup = reversed = register_count = register_arguments = 0;
@@ -1325,10 +1319,9 @@ bool expand_call( token_idx index, int lang_type )
         arglist[argcount++] = i;
         i = j;
     }
-    if( parameter_on_stack == FALSE ) {
+    if( !parameter_on_stack ) {
         for( k = 0; k < argcount; k++ ) {
-            parameter_on_stack = get_register_argument( arglist[k], buffer, &register_count );
-            if( parameter_on_stack == ERROR )
+            if( get_register_argument( arglist[k], buffer, &register_count, &parameter_on_stack ) )
                 return( RC_ERROR );
             if( parameter_on_stack )
                 break;
@@ -2330,16 +2323,16 @@ bool AsmParse( const char *curline )
     token_idx           n;
     operand_idx         j;
     int                 jmp_flags;
+    bool                flag;
 #if defined( _STANDALONE_ )
     static bool         in_epilogue = FALSE;
 #endif
 
 #if defined( _STANDALONE_ )
     Code->use32 = Use32;
-    temp = proc_check( curline );
-    if( temp == ERROR )
+    if( proc_check( curline, &flag ) )
         return( RC_ERROR );
-    if( temp == TRUE )
+    if( flag )
         return( RC_OK );
 #else
     curline = curline;
@@ -2366,9 +2359,10 @@ bool AsmParse( const char *curline )
     Opnd_Count = 0;
 
     // check if continue initializing array
-    temp = NextArrayElement();
-    if( temp != EMPTY )
-        return( temp == ERROR );
+    if( NextArrayElement( &flag ) )
+        return( RC_ERROR );
+    if( flag )
+        return( RC_OK );
 
 #if defined( _STANDALONE_ )
     CheckSeg = TRUE;

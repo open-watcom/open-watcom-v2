@@ -148,7 +148,7 @@ extern int      OperandSize( OPNDTYPE opnd );
 extern bool     InRange( unsigned long val, unsigned bytes );
 extern bool     cpu_directive( asm_token );
 extern bool     AsmParse( const char *curline );
-extern int      NextArrayElement( void );
+extern bool     NextArrayElement( bool *next );
 extern bool     data_init( token_idx, token_idx );
 
 #endif

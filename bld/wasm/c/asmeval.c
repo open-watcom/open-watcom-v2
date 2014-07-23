@@ -65,7 +65,7 @@ static void init_expr( expr_list *new )
 /*************************************/
 {
     new->empty    = TRUE;
-    new->type     = EMPTY;
+    new->type     = EXPR_EMPTY;
     new->label    = INVALID_IDX;
     new->override = INVALID_IDX;
     new->instr    = T_NULL;
@@ -488,15 +488,15 @@ static bool cmp_token_cls( token_idx i, tok_class cls )
     return( AsmBuffer[i].class == cls );
 }
 
-static bool check_same( expr_list *tok_1, expr_list *tok_2, int_8 type )
-/**********************************************************************/
+static bool check_same( expr_list *tok_1, expr_list *tok_2, exprtype type )
+/*************************************************************************/
 /* Check if both tok_1 and tok_2 equal type */
 {
     return( tok_1->type == type && tok_2->type == type );
 }
 
-static bool check_both( expr_list *tok_1, expr_list *tok_2, int_8 type1, int_8 type2 )
-/************************************************************************************/
+static bool check_both( expr_list *tok_1, expr_list *tok_2, exprtype type1, exprtype type2 )
+/******************************************************************************************/
 /* Check if tok_1 == type1 and tok_2 == type2 or vice versa */
 {
     if( tok_1->type == type1 && tok_2->type == type2 ) {

@@ -33,16 +33,16 @@
 #ifndef ASMEVAL_H
 #define ASMEVAL_H
 
-enum exprtype {
+typedef enum exprtype {
     EXPR_ADDR,          // e.g. "foo", "seg foo" and "offset foo"
     EXPR_CONST,         // A constant; note that "label1 - label2" -> constant
     EXPR_REG,           // A register
     EXPR_UNDEF,         // undefined type when error occures or result is undefined
-    EXPR_EMPTY = EMPTY
-};
+    EXPR_EMPTY
+} exprtype;
 
 typedef struct expr_list {
-    enum exprtype   type;           // Type of expression
+    exprtype        type;           // Type of expression
     int_32          value;          // For constant, which may also be the offset
                                     //   to a label
     char            *string;        // for strings only -- NULL otherwise

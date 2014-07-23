@@ -341,16 +341,19 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
 {
     int parm = *parm_number;
 
-    *on_stack = TRUE;
-    if( parm <= 3 ) {
+    if( parm > 3 ) {
+        *on_stack = TRUE;
+    } else {
         switch( size ) {
         case 1:
         case 2:
             break;
         case 4:
             if( !Use32 ) {
-                if( parm > 2 )
-                    return( RC_OK );
+                if( parm > 2 ) {
+                    *on_stack = TRUE;
+                    break;
+                }
                 *parm_number = ++parm;
             }
             break;
@@ -360,8 +363,10 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
         case 6:
         case 8:
             if( Use32 ) {
-                if( parm > 2 )
-                    return( RC_OK );
+                if( parm > 2 ) {
+                    *on_stack = TRUE;
+                    break;
+                }
                 *parm_number = ++parm;
                 break;
             }
@@ -370,7 +375,6 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
             AsmError( STRANGE_PARM_TYPE );
             return( RC_ERROR );
         }
-        *on_stack = FALSE;
     }
     return( RC_OK );
 }
@@ -382,8 +386,9 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
 {
     int parm = *parm_number;
 
-    *on_stack = TRUE;
-    if( parm <= 3 ) {
+    if( parm > 3 ) {
+        *on_stack = TRUE;
+    } else {
         switch( size ) {
         case 1:
             sprintf( buffer, parm_reg[A_BYTE][parm] );
@@ -395,8 +400,10 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
             if( Use32 ) {
                 sprintf( buffer, parm_reg[A_DWORD][parm] );
             } else {
-                if( parm > 2 )
-                    return( RC_OK );
+                if( parm > 2 ) {
+                    *on_stack = TRUE;
+                    break;
+                }
                 sprintf( buffer, " %s %s", parm_reg[A_WORD][parm], parm_reg[A_WORD][parm + 1] );
                 *parm_number = ++parm;
             }
@@ -407,8 +414,10 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
         case 6:
         case 8:
             if( Use32 ) {
-                if( parm > 2 )
-                    return( RC_OK );
+                if( parm > 2 ) {
+                    *on_stack = TRUE;
+                    break;
+                }
                 if( size == 6 ) {
                     sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm], parm_reg[A_WORD][parm + 1] );
                 } else {
@@ -422,7 +431,6 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
             AsmError( STRANGE_PARM_TYPE );
             return( RC_ERROR );
         }
-        *on_stack = FALSE;
     }
     return( RC_OK );
 }

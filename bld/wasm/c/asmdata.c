@@ -895,17 +895,17 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     return( RC_OK );
 }
 
-int NextArrayElement( void )
+bool NextArrayElement( bool *next )
 {
     token_idx   rc;
 
+    *next = FALSE;
     if( More_Array_Element ) {
         More_Array_Element = FALSE;
         rc = dup_array( NULL, NULL, 0, Last_Element_Size );
         if( rc == INVALID_IDX )
-            return( ERROR );
-        return( (int)rc );
-    } else {
-        return( EMPTY );
+            return( RC_ERROR );
+        *next = TRUE;
     }
+    return( RC_OK );
 }
