@@ -24,7 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  80x87 interrupt handler.
+;* Description:  80x87 interrupt handler and connect/disconnect routines.
 ;*
 ;*****************************************************************************
 

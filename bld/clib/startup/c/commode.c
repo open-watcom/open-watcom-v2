@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  set commit mode initialization function
+* Description:  Set commit mode initialization function.
 *
 ****************************************************************************/
 

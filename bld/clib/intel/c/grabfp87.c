@@ -24,14 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Set up OS-specific floating-point exception intercepts.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-//#include <signal.h>
 #include "rtdata.h"
 
 #ifndef __WINDOWS__
