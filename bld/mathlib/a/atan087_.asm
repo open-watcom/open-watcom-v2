@@ -47,6 +47,9 @@ include math87.inc
 ;<>                                                                     <>
 ;<>     _atan   - compute arctan(st0) using 8087                        <>
 ;<>                                                                     <>
+;<>     input:  AX:BX:CX:DX                                             <>
+;<>     output: AX:BX:CX:DX                                             <>
+;<>                                                                     <>
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         defp    __atan87
         push    BP              ; save BP

@@ -96,7 +96,7 @@
 
 extern  int     (*__matherr_handler)( struct _exception * );
 
-extern  void    __fprem( double, double, int *, double * );
+extern  void    __fprem( double, double, m_int_arg, m_dbl_arg );
 extern  int     __sgn( double );
 extern  double  _EvalPoly( double x, const double *poly, int degree );
 extern  double  _OddPoly( double x, const double *poly, int degree );

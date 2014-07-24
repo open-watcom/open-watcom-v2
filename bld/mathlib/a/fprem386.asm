@@ -38,7 +38,7 @@ include struct.inc
         xdefp   __fprem_
 
 ;
-;                     EDX:EAX    ECX:EBX
+;                     EDX:EAX    ECX:EBX        SS:...     SS:...
 ;       void fprem( double x, double modulus, int *quot, double *rem )
 ;
         defpe   __fprem_
@@ -55,17 +55,8 @@ include struct.inc
         or      ECX,ECX         ; if modulus is zero
         _if     e               ; then
           sub   EAX,EAX         ; - set result to 0
-          mov   EBX,24[EBP]     ; - quot = 0
-          mov   [EBX],EAX       ; - ...
-          mov   EBX,28[EBP]     ; - remainder = 0
-          mov   [EBX],EAX       ; - ...
-          mov   4[EBX],EAX      ; - ...
-          pop   EAX             ; - restore registers
-          pop   EBX             ; - ...
-          pop   ECX             ; - ...
-          pop   EDX             ; - ...
-          pop   EBP             ; - restore EBP
-          ret                   ; - return
+          mov   EDX,EAX         ; - ...
+          jmp _return
         _endif                  ; endif
         push    ESI             ; save ESI
         push    EDI             ; save EDI
@@ -160,13 +151,16 @@ _done:    sub   ESI,ESI         ; - set SI to 0
         _if     s               ; if quotient should be negative
           neg   EDI             ; - negate quotient
         _endif                  ; endif
-        mov     ESI,24[EBP]     ; get address of quotient
-        mov     [ESI],EDI       ; store quotient
-        mov     ESI,28[EBP]     ; get address of remainder
-        mov     [ESI],EAX       ; store remainder
-        mov     4[ESI],EDX      ; ...
+        mov     ECX,EDI
         pop     EDI             ; restore EDI
         pop     ESI             ; restore ESI
+_return:
+        mov     EBX,28[EBP]     ; store address of remainder
+        mov     EBP,24[EBP]     ; get address of quotient
+        mov     [EBP],ECX       ; store quotient
+        mov     EBP,EBX         ; get address of remainder
+        mov     [EBP],EAX       ; store remainder
+        mov     4[EBP],EDX      ; ...
         pop     EAX             ; restore registers
         pop     EBX             ; ...
         pop     ECX             ; ...

@@ -173,25 +173,14 @@ _done:    sub   SI,SI           ; - set SI to 0
           neg   DI              ; - negate quotient
         _endif                  ; endif
 _return:
-if _MODEL and (_BIG_DATA or _HUGE_DATA)
-        push    ES              ; save ES
-        les     SI,8[BP]        ; get address of quotient
-        mov     ES:[SI],DI      ; store quotient
-        les     SI,8+4[BP]      ; get address of remainder
-        mov     ES:[SI],DX      ; store remainder
-        mov     ES:2[SI],CX     ; ...
-        mov     ES:4[SI],BX     ; ...
-        mov     ES:6[SI],AX     ; ...
-        pop     ES              ; restore ES
-else
-        mov     SI,8[BP]        ; get address of quotient
-        mov     [SI],DI         ; store quotient
-        mov     SI,10[BP]       ; get address of remainder
-        mov     [SI],DX         ; store remainder
-        mov     2[SI],CX        ; ...
-        mov     4[SI],BX        ; ...
-        mov     6[SI],AX        ; ...
-endif
+        mov     SI,[BP+10]      ; store address of remainder
+        mov     BP,[BP+8]       ; get address of quotient
+        mov     [BP],DI         ; store quotient
+        mov     BP,SI           ; get address of remainder
+        mov     [BP],DX         ; store remainder
+        mov     [BP+2],CX       ; ...
+        mov     [BP+4],BX       ; ...
+        mov     [BP+6],AX       ; ...
         pop     BX              ; restore BX
         pop     CX              ; restore CX
         pop     DX              ; restore DX

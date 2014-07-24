@@ -46,6 +46,9 @@ include math87.inc
 ;<>                                                                     <>
 ;<>     _atan   - compute arctan(st0) using 8087                        <>
 ;<>                                                                     <>
+;<>     input:  EDX:EAX                                                 <>
+;<>     output: EDX:EAX                                                 <>
+;<>                                                                     <>
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
         defp    __atan87
         push    EBP             ; save BP
