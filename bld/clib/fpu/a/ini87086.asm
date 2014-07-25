@@ -58,7 +58,7 @@ __x87id proc near
         fstcw   word ptr [BP-2]         ; save control word
         fwait
         mov     AL,0                    ; assume no coprocessor present
-        mov     AH,[BP + 1]             ; upper byte is 03h if
+        mov     AH,[BP-1]               ; upper byte is 03h if
         cmp     AH,3                    ;   coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present
         and     word ptr [BP-2],NOT 80h ; turn interrupts on (IEM=0)
@@ -79,7 +79,7 @@ __x87id proc near
         fstsw   word ptr [BP-2]         ; equal for 87/287
         fwait                           ; wait fstsw to complete
         mov     AL,2                    ; assume 80287
-        mov     AH,[BP + 1]             ; get upper byte of control word
+        mov     AH,[BP-1]               ; get upper byte of status word (condition bits)
         sahf                            ; store condition bits in flags
         jz      return                  ; it's 287 if infinities equal
         mov     AL,3                    ; indicate 80387
