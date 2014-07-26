@@ -539,8 +539,8 @@ static bool CheckHaveSeg( void )
     return( FALSE );
 }
 
-void AddItemToIncludePath( char *path_list, char *end )
-/*****************************************************/
+void AddItemToIncludePath( const char *path_list, const char *end )
+/*****************************************************************/
 {
     size_t      len;
     size_t      old_len;
