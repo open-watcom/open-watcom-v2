@@ -177,9 +177,22 @@ void __init_8087( void )
 
 #if defined( __DOS__ ) || defined( __OS2_286__ )
 
+extern unsigned char _bin_to_ascii_offs( unsigned char c );
+#pragma aux _bin_to_ascii_offs = \
+    "and  al,0Fh" \
+    "cmp  al,9" \
+    "jbe short L1" \
+    "add  al,7" \
+    "L1:" \
+    parm routine [al] value [al];
+
 void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
 {
-    __fatal_runtime_error( "Floating point exception", EXIT_FAILURE );
+    char    msg[] = "Floating point exception (00)";
+
+    msg[sizeof( msg ) - 4] += _bin_to_ascii_offs( fpe_sig >> 4 );
+    msg[sizeof( msg ) - 3] += _bin_to_ascii_offs( fpe_sig );
+    __fatal_runtime_error( msg, EXIT_FAILURE );
 }
 #endif
 
