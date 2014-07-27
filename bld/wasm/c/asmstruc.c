@@ -208,7 +208,6 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
     token_idx   i;
     struct_info *the_struct;
     field_list  *f;
-    size_t      len;
 
     the_struct = Definition.curr_struct->e.structinfo;
 
@@ -227,9 +226,7 @@ int AddFieldToStruct( asm_sym *sym, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    len = strlen( AsmBuffer[loc].string_ptr ) + 1;
-    f->initializer = AsmAlloc( len );
-    memcpy( f->initializer, AsmBuffer[ loc ].string_ptr, len );
+    f->initializer = AsmStrDup( AsmBuffer[loc].string_ptr );
 
     /* now add the value to initialize the struct to */
     count = 0;

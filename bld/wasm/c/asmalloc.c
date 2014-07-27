@@ -35,6 +35,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 #include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
@@ -98,6 +99,25 @@ void *AsmAlloc( size_t size )
         Fatal( MSG_OUT_OF_MEMORY );
     }
     return( ptr );
+}
+
+void *AsmStrDup( const char *str )
+{
+    size_t      size;
+    void        *ptr;
+
+    if( str == NULL )
+        return( NULL );
+    size = strlen( str ) + 1;
+#ifdef TRMEM
+    ptr = _trmem_alloc( size, _trmem_guess_who(), memHandle );
+#else
+    ptr = malloc( size );
+#endif
+    if( ptr == NULL ) {
+        Fatal( MSG_OUT_OF_MEMORY );
+    }
+    return( memcpy( ptr, str, size ) );
 }
 
 void AsmFree( void *ptr )

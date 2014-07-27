@@ -64,7 +64,6 @@ static asmlines *asmline_insert( asmlines **head, void *data )
 {
     asmlines *entry;
     asmlines **ptr;
-    size_t   len;
 
     /* get a pointer to the last next ptr ( or Head if empty ) */
     for( ptr = head; *ptr; ptr = &((*ptr)->next) );
@@ -72,9 +71,7 @@ static asmlines *asmline_insert( asmlines **head, void *data )
     entry = AsmAlloc( sizeof( asmlines ) );
     entry->next = NULL;
     entry->parmcount = 0;
-    len = strlen( data ) + 1;
-    entry->line = AsmAlloc( len );
-    memcpy( entry->line, data, len );
+    entry->line = AsmStrDup( data );
     *ptr = entry;
     return( entry );
 }
@@ -254,7 +251,6 @@ static bool macro_exam( token_idx i )
 {
     macro_info          *info;
     char                *string;
-    char                *token;
     char                *name;
     parm_list           *paranode;
     parm_list           *paracurr;
@@ -263,7 +259,6 @@ static bool macro_exam( token_idx i )
     dir_node            *dir;
     uint                nesting_depth = 0;
     bool                store_data;
-    size_t              len;
 
     if( Options.mode & MODE_IDEAL ) {
         name = AsmBuffer[i+1].string_ptr;
@@ -280,16 +275,13 @@ static bool macro_exam( token_idx i )
 
     if( store_data ) {
         for( ; i < Token_Count ; ) {
-            token = AsmBuffer[i].string_ptr;
             paranode = AsmAlloc( sizeof( parm_list ) );
             paranode->def = NULL;
             paranode->replace = NULL;
             paranode->required = FALSE;
 
             /* first get the parm. name */
-            len = strlen( token ) + 1;
-            paranode->label = AsmAlloc( len );
-            memcpy( paranode->label, token, len );
+            paranode->label = AsmStrDup( AsmBuffer[i].string_ptr );
             i++;
 
             /* now see if it has a default value or is required */
@@ -301,10 +293,7 @@ static bool macro_exam( token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    token = AsmBuffer[i].string_ptr;
-                    len = strlen( token ) + 1;
-                    paranode->def = AsmAlloc( len );
-                    memcpy( paranode->def, token, len );
+                    paranode->def = AsmStrDup( AsmBuffer[i].string_ptr );
                     i++;
                 } else if( CMPLIT( AsmBuffer[i].string_ptr, "REQ" ) == 0 ) {
                     /* required parameter */
@@ -428,7 +417,6 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     char                *new_line;
     char                **parm_array; /* array of ptrs to parm replace str's */
     int                 count = 0;
-    size_t              len;
 
     for( parm = parmlist; parm != NULL; parm = parm->next ) {
         count ++;
@@ -441,9 +429,7 @@ static char *fill_in_parms( asmlines *lnode, parm_list *parmlist )
     }
 
     my_sprintf( buffer, lnode->line, count-1, parm_array );
-    len = strlen( buffer ) + 1;
-    new_line = AsmAlloc( len );
-    memcpy( new_line, buffer, len );
+    new_line = AsmStrDup( buffer );
     return( new_line );
 }
 
@@ -540,9 +526,7 @@ token_idx ExpandMacro( token_idx tok_count )
                 }
                 if( parm->def ) {
                     /* fill in the default value */
-                    len = strlen( parm->def ) + 1;
-                    parm->replace = AsmAlloc( len );
-                    memcpy( parm->replace, parm->def, len );
+                    parm->replace = AsmStrDup( parm->def );
                 }
                 if( AsmBuffer[i].class != TC_COMMA ) {
                     i++;
@@ -618,9 +602,7 @@ token_idx ExpandMacro( token_idx tok_count )
                 }
                 i++; /* go past the comma */
                 *p = '\0';
-                len = p + 1 - buffer;
-                parm->replace = AsmAlloc( len );
-                memcpy( parm->replace, buffer, len );
+                parm->replace = AsmStrDup( buffer );
             }
         } else {
             if( parm->required ) {

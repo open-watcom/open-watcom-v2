@@ -46,10 +46,8 @@ bool ForDirective( token_idx i, enum irp_type type )
     token_idx arg_loc;
     char *parmstring = NULL;
     char *ptr;
-    char *next_parm;
-    char *end_of_parms;
     char buffer[MAX_LINE_LEN];
-    size_t len = 0;
+    size_t len;
 
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( i, FALSE, TRUE );
@@ -115,23 +113,23 @@ bool ForDirective( token_idx i, enum irp_type type )
             InputQueueLine( buffer );
         }
     } else {
-        end_of_parms = parmstring + strlen( parmstring );
-        for( ptr = parmstring; ptr < end_of_parms; ) {
-            sprintf( buffer, "%s%d", macroname, Globals.for_counter );
-            strcat( buffer, " " );
-
+        for( ptr = parmstring; *ptr != NULLC; ) {
+            len = sprintf( buffer, "%s%d", macroname, Globals.for_counter );
+            buffer[len++] = ' ';
             if( type == IRP_CHAR ) {
-                len = strlen( buffer );
-                buffer[len] = *ptr;
-                buffer[len + 1] = NULLC;
-                ptr++;
+                buffer[len++] = *ptr++;
             } else if( type == IRP_WORD ) {
-                next_parm = ptr + strcspn( ptr, ",\0" );
-                *next_parm = NULLC;
-                next_parm++;
-                strcat( buffer, ptr );
-                ptr = next_parm;
+                size_t len1;
+
+                len1 = strcspn( ptr, "," );
+                memcpy( buffer + len, ptr, len1 );
+                len += len1;
+                ptr += len1;
+                if( *ptr == ',' ) {
+                    ++ptr;
+                }
             }
+            buffer[len] = NULLC;
             InputQueueLine( buffer );
         }
         sprintf( buffer, "%s%d", macroname, Globals.for_counter );

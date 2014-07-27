@@ -36,6 +36,8 @@
   #include "memutil.h"  // WOMP memory routines declaration
 
   #define AsmTmpAlloc( amount )   alloca( amount )
+
+extern  void    *AsmStrDup( const char *str );
 #endif
 
 extern  void    *AsmAlloc( size_t );

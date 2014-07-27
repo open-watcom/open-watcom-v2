@@ -425,7 +425,6 @@ static void get_fname( char *token, int type )
     char        msgbuf[MAX_MESSAGE_SIZE];
     PGROUP      pg;
     PGROUP      def;
-    size_t      len;
 
     /* get filename for source file */
 
@@ -443,9 +442,7 @@ static void get_fname( char *token, int type )
             pg.ext = ASM_EXT;
         }
         _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        len = strlen( name ) + 1;
-        AsmFiles.fname[ASM] = AsmAlloc( len );
-        memcpy( AsmFiles.fname[ASM], name, len );
+        AsmFiles.fname[ASM] = AsmStrDup( name );
 
         _makepath( name, pg.drive, pg.dir, NULL, NULL );
         /* add the source path to the include path */
@@ -466,9 +463,7 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[OBJ] );
         }
-        len = strlen( name ) + 1;
-        AsmFiles.fname[OBJ] = AsmAlloc( len );
-        memcpy( AsmFiles.fname[OBJ], name, len );
+        AsmFiles.fname[OBJ] = AsmStrDup( name );
 
         if( AsmFiles.fname[ERR] == NULL ) {
             pg.ext = ERR_EXT;
@@ -483,9 +478,7 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[ERR] );
         }
-        len = strlen( name ) + 1;
-        AsmFiles.fname[ERR] = AsmAlloc( len );
-        memcpy( AsmFiles.fname[ERR], name, len );
+        AsmFiles.fname[ERR] = AsmStrDup( name );
 
         if( AsmFiles.fname[LST] == NULL ) {
             pg.ext = LST_EXT;
@@ -500,9 +493,7 @@ static void get_fname( char *token, int type )
             _makepath( name, def.drive, def.dir, def.fname, def.ext );
             AsmFree( AsmFiles.fname[LST] );
         }
-        len = strlen( name ) + 1;
-        AsmFiles.fname[LST] = AsmAlloc( len );
-        memcpy( AsmFiles.fname[LST], name, len );
+        AsmFiles.fname[LST] = AsmStrDup( name );
 
     } else {
         /* get filename for object, error, or listing file */
@@ -525,9 +516,7 @@ static void get_fname( char *token, int type )
         if( AsmFiles.fname[type] != NULL ) {
             AsmFree( AsmFiles.fname[type] );
         }
-        len = strlen( name ) + 1;
-        AsmFiles.fname[type] = AsmAlloc( len );
-        memcpy( AsmFiles.fname[type], name, len );
+        AsmFiles.fname[type] = AsmStrDup( name );
     }
 }
 
@@ -535,7 +524,6 @@ static void set_some_kinda_name( char token, char *name )
 /*******************************************************/
 /* set:  code class / data seg. / module name / text seg */
 {
-    size_t  len;
     char    **tmp;
 
     switch( token ) {
@@ -557,9 +545,7 @@ static void set_some_kinda_name( char token, char *name )
     if( *tmp != NULL ) {
         AsmFree(*tmp);
     }
-    len = strlen( name ) + 1;
-    *tmp = AsmAlloc( len );
-    memcpy( *tmp, name, len );
+    *tmp = AsmStrDup( name );
 }
 
 static void usage_msg( void )

@@ -143,11 +143,9 @@ bool ExpandProcString( token_idx index, bool *expanded )
     char                *p;
 
     *expanded = FALSE;
-    len = strlen( AsmBuffer[index].string_ptr ) + 1;
-    string = AsmTmpAlloc( len );
-    memcpy( string, AsmBuffer[index].string_ptr, len );
-    wipe_space( string );
-    for( word = strtok( string, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
+    strcpy( buffer, AsmBuffer[index].string_ptr );
+    wipe_space( buffer );
+    for( word = strtok( buffer, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
         count++;
 
         /**/myassert( CurrProc != NULL );

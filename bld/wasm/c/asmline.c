@@ -308,13 +308,10 @@ void InputQueueLine( const char *line )
 /*************************************/
 {
     line_list   *new;
-    size_t      len;
 
     DebugMsg(( "QUEUELINE: %s  ( line %lu ) \n", line, LineNumber ));
     new = enqueue();
-    len = strlen( line ) + 1;
-    new->line = AsmAlloc( len );
-    memcpy( new->line, line, len );
+    new->line = AsmStrDup( line );
 }
 
 static FILE *open_file_in_include_path( const char *name, char *fullpath )

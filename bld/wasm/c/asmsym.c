@@ -81,13 +81,19 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
 {
 #if !defined( _STANDALONE_ )
     void        *handle;
-#endif
     size_t      len;
+#endif
 
+#if defined( _STANDALONE_ )
+    sym->name = AsmStrDup( name );
+#else
     len = strlen( name ) + 1;
     sym->name = AsmAlloc( len );
+#endif
     if( sym->name != NULL ) {
+#if !defined( _STANDALONE_ )
         memcpy( sym->name, name, len );
+#endif
         sym->next = NULL;
         sym->fixup = NULL;
 #if defined( _STANDALONE_ )
@@ -328,17 +334,13 @@ bool AsmChangeName( const char *old, const char *new )
 {
     struct asm_sym      **sym_ptr;
     struct asm_sym      *sym;
-    size_t              len;
 
     sym_ptr = AsmFind( old );
     if( *sym_ptr != NULL ) {
         sym = *sym_ptr;
         *sym_ptr = sym->next;
         AsmFree( sym->name );
-        len = strlen( new ) + 1;
-        sym->name = AsmAlloc( len );
-        memcpy( sym->name, new, len );
-
+        sym->name = AsmStrDup( new );
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )
             return( TRUE );

@@ -2808,7 +2808,6 @@ bool LocalDef( token_idx i )
     proc_info       *info;
     struct asm_sym  *sym;
     struct asm_sym  *tmp = NULL;
-    size_t          len;
 
     /*
 
@@ -2851,9 +2850,7 @@ bool LocalDef( token_idx i )
         }
 
         local = AsmAlloc( sizeof( label_list ) );
-        len = strlen( AsmBuffer[i].string_ptr ) + 1;
-        local->label = AsmAlloc( len );
-        memcpy( local->label, AsmBuffer[i++].string_ptr, len );
+        local->label = AsmStrDup( AsmBuffer[i++].string_ptr );
         local->size = LOCAL_DEFAULT_SIZE;
         local->replace = NULL;
         local->sym = NULL;
@@ -2957,7 +2954,6 @@ bool ArgDef( token_idx i )
 
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
-    size_t          len;
 
     /*
 
@@ -3065,11 +3061,9 @@ bool ArgDef( token_idx i )
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
         paranode->size = parameter_size;
-        len = strlen( token ) + 1;
-        paranode->label = AsmAlloc( len );
+        paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
         paranode->sym = tmp;
-        memcpy( paranode->label, token, len );
         if( parameter_on_stack ) {
             paranode->is_register = FALSE;
             if( Use32 ) {
@@ -3138,11 +3132,9 @@ bool ArgDef( token_idx i )
 bool UsesDef( token_idx i )
 /*************************/
 {
-    char        *token;
     proc_info   *info;
     regs_list   *regist;
     regs_list   *temp_regist;
-    size_t      len;
 
     if( DefineProc == FALSE ) {
         AsmError( USES_MUST_FOLLOW_PROC );
@@ -3159,17 +3151,13 @@ bool UsesDef( token_idx i )
     info = CurrProc->e.procinfo;
 
     for( i++; ( i < Token_Count ) && ( AsmBuffer[i].class != TC_FINAL ); i++ ) {
-        token = AsmBuffer[i].string_ptr;
         regist = AsmAlloc( sizeof( regs_list ));
         regist->next = NULL;
-        len = strlen( token ) + 1;
-        regist->reg = AsmAlloc( len );
-        memcpy( regist->reg, token, len );
+        regist->reg = AsmStrDup( AsmBuffer[i].string_ptr );
         if( info->regslist == NULL ) {
             info->regslist = regist;
         } else {
-            for( temp_regist = info->regslist;;
-                 temp_regist = temp_regist->next ) {
+            for( temp_regist = info->regslist; ; temp_regist = temp_regist->next ) {
                 if( temp_regist->next == NULL ) {
                     break;
                 }
@@ -3303,7 +3291,6 @@ static bool proc_exam( dir_node *proc, token_idx i )
     int             type, register_count, parameter_size, unused_stack_space;
     bool            parameter_on_stack = TRUE;
     struct asm_sym  *param;
-    size_t          len;
 
     info = proc->e.procinfo;
 
@@ -3380,9 +3367,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
                 token = AsmBuffer[i].string_ptr;
                 regist = AsmAlloc( sizeof( regs_list ));
                 regist->next = NULL;
-                len = strlen(token) + 1;
-                regist->reg = AsmAlloc( len );
-                memcpy( regist->reg, token, len );
+                regist->reg = AsmStrDup( token );
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
@@ -3483,10 +3468,8 @@ parms:
         paranode = AsmAlloc( sizeof( label_list ) );
         paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
         paranode->size = parameter_size;
-        len = strlen( token ) + 1;
-        paranode->label = AsmAlloc( len );
+        paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
-        memcpy( paranode->label, token, len );
         if( parameter_on_stack ) {
             paranode->is_register = FALSE;
             if( Use32 ) {
@@ -3712,7 +3695,6 @@ bool WritePrologue( const char *curline )
     bool                parameter_on_stack = TRUE;
     int                 align = Use32 ? 4 : 2;
     char                *p;
-    size_t              len;
 
     /**/myassert( CurrProc != NULL );
     info = CurrProc->e.procinfo;
@@ -3739,9 +3721,7 @@ bool WritePrologue( const char *curline )
                 sprintf( buffer + strlen(buffer), "%s%lu]",
                          Use32 ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
-            len = strlen( buffer ) + 1;
-            curr->replace = AsmAlloc( len );
-            memcpy( curr->replace, buffer, len );
+            curr->replace = AsmStrDup( buffer );
         }
         info->localsize = offset;
 
@@ -3798,9 +3778,7 @@ bool WritePrologue( const char *curline )
             } else {
                 register_count++;
             }
-            len = strlen( buffer ) + 1;
-            curr->replace = AsmAlloc( len );
-            memcpy( curr->replace, buffer, len );
+            curr->replace = AsmStrDup( buffer );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
                 if( Use32 ) {
@@ -4141,13 +4119,8 @@ bool AddAlias( token_idx i )
 bool NameDirective( token_idx i )
 /*******************************/
 {
-    size_t  len;
-
-    if( Options.module_name != NULL )
-        return( RC_OK );
-    len = strlen( AsmBuffer[i + 1].string_ptr ) + 1;
-    Options.module_name = AsmAlloc( len );
-    memcpy( Options.module_name, AsmBuffer[i + 1].string_ptr, len );
+    if( Options.module_name == NULL )
+        Options.module_name = AsmStrDup( AsmBuffer[i + 1].string_ptr );
     return( RC_OK );
 }
 
