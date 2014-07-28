@@ -82,7 +82,7 @@ _STACKLOW  dw 0                 ; lowest address in stack
 _STACKTOP  dw 0                 ; highest address in stack
 _cbyte     dw 0                 ; used by getch, getche
 _child     dw 0                 ; non-zero => a spawned process is running
-__no87     dw 0                 ; non-zero => "NO87" environment var present
+__no87     db 0                 ; non-zero => "NO87" environment var present
 ifndef __QNX__
 __get_ovl_stack     dw 0,0      ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer

@@ -136,7 +136,7 @@ _osmode    db 0                 ; 0 => DOS real mode
 _HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
 _child     dw 0                 ; non-zero => a spawned process is running
-__no87     dw 0                 ; always try to use the 8087
+__no87     db 0                 ; always try to use the 8087
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer
 __FPE_handler dd 0              ; FPE handler
@@ -221,7 +221,7 @@ __exit:
         public  "C",__exit
 
         push    ax              ; save return code
-        mov     ax,00h          ; run finalizers
+        xor     ax,ax           ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FFiniRtns     ; call finalizer routines
         pop     ax              ; restore return code

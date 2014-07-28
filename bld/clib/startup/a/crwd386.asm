@@ -86,7 +86,7 @@ _cbyte     dd 0                 ; used by getch, getche
 _cbyte2    dd 0                 ; used by getch, getche
 _child     dd 0                 ; non-zero => a spawned process is running
 endif
-__no87     dw 0                 ; non-zero => "NO87" environment var present
+__no87     db 0                 ; non-zero => "NO87" environment var present
 ifndef __NETWARE__
 ifdef __DOS__
 _Extender         db 0          ; see clib\h\extender.inc for values

@@ -111,7 +111,7 @@ endif                           ; dx:ax points at retaddr
         stosb
         pop     bx              ; get offset
         call    _putw
-        mov     al,0
+        xor     al,al
         stosb
         mov     ds,cs:dgroupp
         mov     dx,ss           ; ds:ax  points at

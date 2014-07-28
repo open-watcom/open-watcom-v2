@@ -44,8 +44,8 @@ _WCRTDATA unsigned int      _STACKLOW;      // lowest address in stack
 _WCRTDATA unsigned int      _STACKTOP;      // highest address in stack
 _WCRTDATA void              *__ASTACKSIZ;   // alternate stack size
 _WCRTDATA void              *__ASTACKPTR;   // alternate stack pointer
-_WCRTDATA unsigned int      _cbyte;         // used by getch, getche
-_WCRTDATA unsigned int      _cbyte2;        // used by getch, getche
+_WCRTDATA int               _cbyte;         // used by getch, getche
+_WCRTDATA int               _cbyte2;        // used by getch, getche
 _WCRTDATA char              *_Envptr;       // offset part of environment pointer
 _WCRTDATA unsigned char     _osmajor;       // major OS version number
 _WCRTDATA unsigned char     _osminor;       // minor OS version number

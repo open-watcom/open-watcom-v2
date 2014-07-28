@@ -157,7 +157,7 @@ _osmode    db 0                 ; 0 => DOS real mode
 _HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
 _child     dw 0                 ; non-zero => a spawned process is running
-__no87     dw 0                 ; always try to use the 8087
+__no87     db 0                 ; always try to use the 8087
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer
 __FPE_handler dd 0              ; FPE handler
@@ -248,7 +248,7 @@ _loop:  mov     al,es:0[bx]
         mov     [si],al
         inc     si
         inc     bx
-        cmp     al,0
+        test    al,al
         jne     _loop
         mov     _STACKLOW,si
         pop     bx
@@ -267,7 +267,7 @@ endif
         mov     cx,offset DGROUP:_end   ; end of _BSS segment (start of STACK)
         mov     di,offset DGROUP:_edata ; start of _BSS segment
         sub     cx,di                   ; calc # of bytes in _BSS segment
-        mov     al,0                    ; zero the _BSS segment
+        xor     al,al                   ; zero the _BSS segment
         rep     stosb                   ; . . .
         mov     ax,offset __AHSHIFT     ; get huge shift value
         mov     _HShift,al              ; ...
@@ -307,7 +307,7 @@ __exit  proc near
         public  "C",__exit
 _error:
         push    ax                      ; save return code
-        mov     ax,00h                  ; run finalizers
+        xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FFiniRtns             ; call finalizer routines
         pop     ax                      ; restore return code

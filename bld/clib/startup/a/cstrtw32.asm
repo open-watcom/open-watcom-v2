@@ -107,72 +107,81 @@ _DATA   segment use32 word public 'DATA'
 
 MAX_FILE_NAME   equ     144
 TMPSTACK        equ     _STACKLOW ; location on stack to copy command line
+
 ;
 ; these variables must all be kept in order
 ;
 _LocalPtr   dw  0
 public _LocalPtr
-hInstance  dw  0
-hPrevInstance  dw  0
-lpCmdLine  dd  0
-cmdShow    dw  0
-__no87     dw 0                 ; non-zero => "NO87" environment var present
-
+;
+; This must correspond with structure definition wstart_vars in wininit.c
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Begin of wstart_vars structure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hInstance      dw   0
+hPrevInstance  dw   0
+lpCmdLine      dd   0
+cmdShow        dw   0
+__no87         dw   0       ; non-zero => "NO87" environment var present
 ; magical selectors for real memory
 public ___A000,___B000,___B800,___C000,___D000,___E000,___F000
-___A000 dw      0
-___B000 dw      0
-___B800 dw      0
-___C000 dw      0
-___D000 dw      0
-___E000 dw      0
-___F000 dw      0
+___A000        dw   0
+___B000        dw   0
+___B800        dw   0
+___C000        dw   0
+___D000        dw   0
+___E000        dw   0
+___F000        dw   0
 
 ; data ptrs
-cFarProc _CodeSelectorBaseAddr
-cFarProc _DataSelectorBaseAddr
-FarProc __32BitCallBackAddr
-cFarProc _DLLEntryAddr
-cFarProc _WEPAddr
+cFarProc    _CodeSelectorBaseAddr
+cFarProc    _DataSelectorBaseAddr
+FarProc     __32BitCallBackAddr
+cFarProc    _DLLEntryAddr
+cFarProc    _WEPAddr
 
 public  __16BitCallBackAddr
 __16BitCallBackAddr dd 0
 
 ; proc lists
-FarProc Invoke16BitFunctionAddr
-FarProc __INT21ADDR
-FarProc __WIN16THUNK1ADDR
-FarProc __WIN16THUNK2ADDR
-FarProc __WIN16THUNK3ADDR
-FarProc __WIN16THUNK4ADDR
-FarProc __WIN16THUNK5ADDR
-FarProc __WIN16THUNK6ADDR
-FarProc __Call16Addr
+FarProc     Invoke16BitFunctionAddr
+FarProc     __INT21ADDR
+FarProc     __WIN16THUNK1ADDR
+FarProc     __WIN16THUNK2ADDR
+FarProc     __WIN16THUNK3ADDR
+FarProc     __WIN16THUNK4ADDR
+FarProc     __WIN16THUNK5ADDR
+FarProc     __WIN16THUNK6ADDR
+FarProc     __Call16Addr
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; End of wstart_vars structure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-_LpCmdLine dd 0         ; pointer to raw command line
-_LpPgmName dd 0         ; pointer to program name (for argv[0])
-_STACKLOW dd 0          ; lowest address in stack
-_STACKTOP dd 0          ; highest address in stack
-__ASTACKSIZ dd 0                ; alternate stack size
-__ASTACKPTR dd 0                ; alternate stack pointer
-_curbrk   dd 0          ; top of usable memory
-_cbyte    dd 0          ; used by getch, getche
-_osmajor  db 4          ; major DOS version number
-_osminor  db 0          ; minor DOS version number
-_Extender db 0          ; 10 => 386 windows
-__init_387_emulator db 0        ; to prevent emulator from coming in with
-                                ;       -fpi
+_LpCmdLine  dd 0          ; pointer to raw command line
+_LpPgmName  dd 0          ; pointer to program name (for argv[0])
+_STACKLOW   dd 0          ; lowest address in stack
+_STACKTOP   dd 0          ; highest address in stack
+__ASTACKSIZ dd 0          ; alternate stack size
+__ASTACKPTR dd 0          ; alternate stack pointer
+_curbrk     dd 0          ; top of usable memory
+_cbyte      dd 0          ; used by getch, getche
+_osmajor    db 4          ; major DOS version number
+_osminor    db 0          ; minor DOS version number
+_Extender   db 0          ; 10 => 386 windows
+__init_387_emulator db 0  ; to prevent emulator from coming in with
+                          ;       -fpi
 
 public  "C",_pid
-_pid    dw      0
+_pid        dw 0
 public  "C",_wincmdptr
 _wincmdptr LABEL FWORD
-cmd_offset dd 0
-cmd_seg    dw 0
-filename   db MAX_FILE_NAME dup(0)
+cmd_offset  dd 0
+cmd_seg     dw 0
+filename    db MAX_FILE_NAME dup(0)
 public  "C",__Is_DLL
 __Is_DLL    label byte
-__inDLL db      0               ; 0 => ordinary EXE, non-zero => DLL
+__inDLL     db 0               ; 0 => ordinary EXE, non-zero => DLL
 
 __FPE_handler dd __null_FPE_rtn ; FPE handler
 
@@ -272,7 +281,7 @@ __DLLstart_:
         mov     esi,lpCmdLine           ; offset + selector
         mov     edx,esi                 ; get the
         shr     edx,10h                 ;   selector
-        cmp     edx,0                   ; is it zero?
+        test    edx,edx                 ; is it zero?
         jne     short okcpy             ; no, do the copy
         mov     byte ptr ds:[ebx],0     ; put a trailing zero
         jmp     short donecpy
@@ -282,7 +291,7 @@ okcpy:  mov     es,dx
         mov     ds:cmd_offset,esi
 again:  mov     al,byte ptr es:[esi]
         mov     byte ptr ds:[ebx],al
-        cmp     al,0
+        test    al,al
         je      short donecpy
         inc     esi
         inc     ebx
@@ -348,7 +357,7 @@ endif
         jne     short skip_fini         ; skip fini rtns if we are
         push    eax                     ; save return value
         push    edx                     ; save edx
-        mov     eax,00h                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
@@ -368,7 +377,7 @@ __WEP   proc    far
         push    cs                      ; simulate far call
         call    WEP                     ; call user's WEP function
         push    edx                     ; save edx
-        mov     eax,00h                 ; run all finalizers
+        xor     eax,eax                 ; run all finalizers
         mov     edx,0ffh                ; run all finalizers
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx

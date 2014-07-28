@@ -331,7 +331,7 @@ mem_setup:
         mov     es,di                   ; ...
         mov     di,CMDLDATA             ; DOS command buffer _psp:80
         mov     cl,-1[di]               ; get length of command
-        mov     ch,0
+        xor     ch,ch
         cld                             ; set direction forward
         mov     al,' '
         repe    scasb
@@ -351,8 +351,7 @@ endif
         rep     movsb
 noparm: sub     al,al
         stosb                           ; store NULLCHAR
-        mov     al,0                    ; assume no pgm name
-        stosb                           ; . . .
+        stosb                           ; assume no pgm name, store NULLCHAR
         dec     di                      ; back up pointer 1
 ;
 ;       get DOS version number
@@ -420,7 +419,7 @@ nopgmname:                              ; endif
         mov     cx,offset DGROUP:_end   ; end of _BSS segment (start of STACK)
         mov     di,offset DGROUP:_edata ; start of _BSS segment
         sub     cx,di                   ; calc # of bytes in _BSS segment
-        mov     al,0                    ; zero the _BSS segment
+        xor     al,al                   ; zero the _BSS segment
         rep     stosb                   ; . . .
 
         cmp     word ptr __get_ovl_stack,0 ; if program not overlayed
@@ -495,7 +494,7 @@ __do_exit_with_msg__:
         mov     si,dx                   ; get address of msg
         cld                             ; make sure direction forward
 L6:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L6                      ; no
         mov     cx,si                   ; calc length of string
         sub     cx,dx                   ; . . .
@@ -523,7 +522,7 @@ if _MODEL and _BIG_CODE
 no_ovl:                                 ; endif
 endif
         push    ax                      ; save return code
-        mov     ax,00h                  ; run finalizers
+        xor     ax,ax                   ; run finalizers
         mov     dx,FINI_PRIORITY_EXIT-1 ; less than exit
         call    __FiniRtns              ; do finalization
         pop     ax                      ; restore return code
