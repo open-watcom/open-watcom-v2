@@ -65,126 +65,114 @@
 #define C7   5.7083835261E-03
 
 #define XBIG    171.624
-#define XMININ    2.23E-308
-#define XINF      _INFINITY
-#define XNAN      NAN
+#define XMININ  2.23E-308
+#define XINF    _INFINITY
+#define XNAN    NAN
+#define EPS     DBL_EPSILON
 
 
-_WMRTLINK double tgamma(double x)
+_WMRTLINK double tgamma( double x )
 {
-int i, n;
-int parity;
-double fact;
-double y, y1, ysq, z;
-double res;
-double summation;
-double xnum, xden;
+    int     i, n;
+    int     parity;
+    double  fact;
+    double  y, y1, ysq, z;
+    double  res;
+    double  summation;
+    double  xnum, xden;
     
     parity = 0;
     fact = 1.0;
     n = 0;
     y = x;
     
-    if(isnan(x) || x == -INFINITY)
-        return XNAN;
+    if( isnan( x ) || x == -INFINITY )
+        return( XNAN );
     
     /* Argument is negative */
-    if(y < 0)
-    {
+    if( y < 0 ) {
         y = -x;
-        y1 = trunc(y);
-        res = y-y1;
-        if(res != 0) 
-        {
-            if(y1 != trunc(0.5*y1)*2.0) 
+        y1 = trunc( y );
+        res = y - y1;
+        if( res != 0 ) {
+            if( y1 != trunc( 0.5 * y1 ) * 2.0 ) 
                 parity = 1;
-            fact = -PI / sin(PI*res);
+            fact = -PI / sin( PI * res );
             y += 1.0;
+        } else {
+            return( XNAN );
         }
-        else 
-            return XNAN;
     }
     
-    /* Argument < eps */
-    if(y < DBL_EPSILON) {
-        if(y >= XMININ)
+    if( y < EPS ) {                     /* 0 <= y < EPS */
+        if( y >= XMININ ) {
             res = 1.0 / y;
-        else
-            return XINF;
-    }
-    else if(y < 12.0)
-    {   
+        } else {
+            return( XINF );
+        }
+    } else if( y < 12.0 ) {         /* EPS <= y < 12.0 */
         y1 = y;
-        if(y < 1.0)
-        {
+        if( y < 1.0 ) {
             z = y;
             y += 1.0;
-        }
-        else
-        {
+        } else {
             n = (int)y - 1;
             y -= (double)n;
             z = y - 1.0;
         }
         
         xnum = 0.0;
-        xnum = (xnum + P1)*z;
-        xnum = (xnum + P2)*z;
-        xnum = (xnum + P3)*z;
-        xnum = (xnum + P4)*z;
-        xnum = (xnum + P5)*z;
-        xnum = (xnum + P6)*z;
-        xnum = (xnum + P7)*z;
-        xnum = (xnum + P8)*z;
+        xnum = ( xnum + P1 ) * z;
+        xnum = ( xnum + P2 ) * z;
+        xnum = ( xnum + P3 ) * z;
+        xnum = ( xnum + P4 ) * z;
+        xnum = ( xnum + P5 ) * z;
+        xnum = ( xnum + P6 ) * z;
+        xnum = ( xnum + P7 ) * z;
+        xnum = ( xnum + P8 ) * z;
         
         xden = 1.0;
-        xden = xden*z + Q1;
-        xden = xden*z + Q2;
-        xden = xden*z + Q3;
-        xden = xden*z + Q4;
-        xden = xden*z + Q5;
-        xden = xden*z + Q6;
-        xden = xden*z + Q7;
-        xden = xden*z + Q8;
+        xden = xden * z + Q1;
+        xden = xden * z + Q2;
+        xden = xden * z + Q3;
+        xden = xden * z + Q4;
+        xden = xden * z + Q5;
+        xden = xden * z + Q6;
+        xden = xden * z + Q7;
+        xden = xden * z + Q8;
         
         res = xnum  / xden + 1.0;
         
-        if(y1 < y) 
-            res = res / y1;
-        else if(y1 > y) {
-            for(i=0; i < n; i++) {
+        if( y1 < y ) {
+            res = res / y1; 
+        } else if( y1 > y ) {
+            for( i = 0; i < n; i++ ) {
                 res = res * y;
                 y = y + 1.0;
             }
         }
+    } else if( y <= XBIG ) {        /* 12.0 <= y <= XBIG */
+        ysq = y * y;
+        summation = C7;
+        summation = summation / ysq + C1;
+        summation = summation / ysq + C2;
+        summation = summation / ysq + C3;
+        summation = summation / ysq + C4;
+        summation = summation / ysq + C5;
+        summation = summation / ysq + C6;
         
-    }
-    else
-    {
-        if(y <= XBIG)
-        {
-            ysq = y * y;
-            summation = C7;
-            summation = summation / ysq + C1;
-            summation = summation / ysq + C2;
-            summation = summation / ysq + C3;
-            summation = summation / ysq + C4;
-            summation = summation / ysq + C5;
-            summation = summation / ysq + C6;
-            
-            summation = summation/y - y + LnSqrt2PI;
-            summation += (y-0.5)*log(y);
-            res = exp(summation);
-        }
-        else
-            return XINF;
+        summation = summation / y - y + LnSqrt2PI;
+        summation += ( y - 0.5 ) * log( y );
+        res = exp( summation );
+    } else {                        /* XBIG < y */
+        return( XINF );
     }
     
-    if(parity == 1)
+    if( parity == 1 )
         res = -res;
         
-    if(fact != 1.0)
-        res = fact/res;
+    if( fact != 1.0 )
+        res = fact / res;
     
-    return res;
+    return( res );
 }

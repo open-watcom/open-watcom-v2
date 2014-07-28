@@ -123,113 +123,92 @@ _WMRTDATA extern const double __d_infinity;
 #define EPS      2.22E-16
 #define FRTBIG   2.25E76
 
-_WMRTLINK double lgamma_r(double x, int *sign)
+_WMRTLINK double lgamma_r( double x, int *sign )
 {
-double y;
-double res;
-double corr;
-double xm1, xm2, xm4, ysq;
-double xden, xnum;
+    double y;
+    double res;
+    double corr;
+    double xm1, xm2, xm4, ysq;
+    double xden, xnum;
 
-    if(isnan(x))
-        return x;
+    if( isnan( x ) )
+        return( x );
     
     y = x;
-    if(y > 0 && y < XBIG) {
-        
-        if(y < EPS)
-            res = -log(y);
-        
-        /* EPS < x <= 1.5 */
-        else if(y <= 1.5) 
-        {
-            if(y < PNT68) 
-            {
-                corr = -log(y);
+    if( y > 0 && y < XBIG ) {
+        if( y < EPS ) {                 /* 0 < x < EPS */
+            res = -log( y );
+        } else if( y <= 1.5 ) {         /* EPS < x <= 1.5 */
+            if( y < PNT68 ) {
+                corr = -log( y );
                 xm1 = y;
-            } 
-            else 
-            {
+            } else {
                 corr = 0.0;
-                xm1 = (y - 0.5) - 0.5;
+                xm1 = ( y - 0.5 ) - 0.5;
             }
-            
-            if(y <= 0.5 || y >= PNT68) 
-            {
+            if( y <= 0.5 || y >= PNT68 ) {
                 xden = 1.0; xnum = 0.0;
                 
-                xnum = xnum*xm1 + P11;  xden  = xden*xm1 + Q11;
-                xnum = xnum*xm1 + P12;  xden  = xden*xm1 + Q12;
-                xnum = xnum*xm1 + P13;  xden  = xden*xm1 + Q13;
-                xnum = xnum*xm1 + P14;  xden  = xden*xm1 + Q14;
-                xnum = xnum*xm1 + P15;  xden  = xden*xm1 + Q15;
-                xnum = xnum*xm1 + P16;  xden  = xden*xm1 + Q16;
-                xnum = xnum*xm1 + P17;  xden  = xden*xm1 + Q17;
-                xnum = xnum*xm1 + P18;  xden  = xden*xm1 + Q18;
+                xnum = xnum * xm1 + P11;  xden = xden * xm1 + Q11;
+                xnum = xnum * xm1 + P12;  xden = xden * xm1 + Q12;
+                xnum = xnum * xm1 + P13;  xden = xden * xm1 + Q13;
+                xnum = xnum * xm1 + P14;  xden = xden * xm1 + Q14;
+                xnum = xnum * xm1 + P15;  xden = xden * xm1 + Q15;
+                xnum = xnum * xm1 + P16;  xden = xden * xm1 + Q16;
+                xnum = xnum * xm1 + P17;  xden = xden * xm1 + Q17;
+                xnum = xnum * xm1 + P18;  xden = xden * xm1 + Q18;
                 
-                res = corr + xm1*(D1 + xm1*(xnum/xden));
-            }
-            else
-            {
-                xm2 = (y - 0.5) - 0.5;
+                res = corr + xm1 * ( D1 + xm1 * ( xnum / xden ) );
+            } else {
+                xm2 = ( y - 0.5 ) - 0.5;
                 
                 xden = 1.0; xnum = 0.0;
                 
-                xnum = xnum*xm2 + P21;  xden  = xden*xm2 + Q21;
-                xnum = xnum*xm2 + P22;  xden  = xden*xm2 + Q22;
-                xnum = xnum*xm2 + P23;  xden  = xden*xm2 + Q23;
-                xnum = xnum*xm2 + P24;  xden  = xden*xm2 + Q24;
-                xnum = xnum*xm2 + P25;  xden  = xden*xm2 + Q25;
-                xnum = xnum*xm2 + P26;  xden  = xden*xm2 + Q26;
-                xnum = xnum*xm2 + P27;  xden  = xden*xm2 + Q27;
-                xnum = xnum*xm2 + P28;  xden  = xden*xm2 + Q28;
+                xnum = xnum * xm2 + P21;  xden = xden * xm2 + Q21;
+                xnum = xnum * xm2 + P22;  xden = xden * xm2 + Q22;
+                xnum = xnum * xm2 + P23;  xden = xden * xm2 + Q23;
+                xnum = xnum * xm2 + P24;  xden = xden * xm2 + Q24;
+                xnum = xnum * xm2 + P25;  xden = xden * xm2 + Q25;
+                xnum = xnum * xm2 + P26;  xden = xden * xm2 + Q26;
+                xnum = xnum * xm2 + P27;  xden = xden * xm2 + Q27;
+                xnum = xnum * xm2 + P28;  xden = xden * xm2 + Q28;
                 
-                res = corr + xm2 * (D2 + xm2*(xnum/xden));
+                res = corr + xm2 * ( D2 + xm2 * ( xnum / xden ) );
             }
-        
-        }
-        /* 1.5 < x < 4.0 */
-        else if(y <= 4.0)
-        {
+        } else if( y <= 4.0 ) {         /* 1.5 < x <= 4.0 */
             xm2 = y - 2.0;
             xden = 1.0; xnum = 0.0;
                 
-            xnum = xnum*xm2 + P21;  xden  = xden*xm2 + Q21;
-            xnum = xnum*xm2 + P22;  xden  = xden*xm2 + Q22;
-            xnum = xnum*xm2 + P23;  xden  = xden*xm2 + Q23;
-            xnum = xnum*xm2 + P24;  xden  = xden*xm2 + Q24;
-            xnum = xnum*xm2 + P25;  xden  = xden*xm2 + Q25;
-            xnum = xnum*xm2 + P26;  xden  = xden*xm2 + Q26;
-            xnum = xnum*xm2 + P27;  xden  = xden*xm2 + Q27;
-            xnum = xnum*xm2 + P28;  xden  = xden*xm2 + Q28;
+            xnum = xnum * xm2 + P21;  xden = xden * xm2 + Q21;
+            xnum = xnum * xm2 + P22;  xden = xden * xm2 + Q22;
+            xnum = xnum * xm2 + P23;  xden = xden * xm2 + Q23;
+            xnum = xnum * xm2 + P24;  xden = xden * xm2 + Q24;
+            xnum = xnum * xm2 + P25;  xden = xden * xm2 + Q25;
+            xnum = xnum * xm2 + P26;  xden = xden * xm2 + Q26;
+            xnum = xnum * xm2 + P27;  xden = xden * xm2 + Q27;
+            xnum = xnum * xm2 + P28;  xden = xden * xm2 + Q28;
             
-            res = xm2 * (D2 + xm2*(xnum/xden));
-        }
-        /* 4.0 < x <= 12.0 */
-        else if(y <= 12.0) 
-        {
+            res = xm2 * ( D2 + xm2 * ( xnum / xden ) );
+        } else if( y <= 12.0 ) {        /* 4.0 < x <= 12.0 */
             xm4 = y - 4.0;
             xden = -1.0; xnum = 0.0;
                 
-            xnum = xnum*xm4 + P41;  xden  = xden*xm4 + Q41;
-            xnum = xnum*xm4 + P42;  xden  = xden*xm4 + Q42;
-            xnum = xnum*xm4 + P43;  xden  = xden*xm4 + Q43;
-            xnum = xnum*xm4 + P44;  xden  = xden*xm4 + Q44;
-            xnum = xnum*xm4 + P45;  xden  = xden*xm4 + Q45;
-            xnum = xnum*xm4 + P46;  xden  = xden*xm4 + Q46;
-            xnum = xnum*xm4 + P47;  xden  = xden*xm4 + Q47;
-            xnum = xnum*xm4 + P48;  xden  = xden*xm4 + Q48;
+            xnum = xnum * xm4 + P41;  xden = xden * xm4 + Q41;
+            xnum = xnum * xm4 + P42;  xden = xden * xm4 + Q42;
+            xnum = xnum * xm4 + P43;  xden = xden * xm4 + Q43;
+            xnum = xnum * xm4 + P44;  xden = xden * xm4 + Q44;
+            xnum = xnum * xm4 + P45;  xden = xden * xm4 + Q45;
+            xnum = xnum * xm4 + P46;  xden = xden * xm4 + Q46;
+            xnum = xnum * xm4 + P47;  xden = xden * xm4 + Q47;
+            xnum = xnum * xm4 + P48;  xden = xden * xm4 + Q48;
 
-            res = D4 + xm4*(xnum/xden);
-        }
-        /* x > 12.0 */
-        else 
-        {
+            res = D4 + xm4 * ( xnum / xden );
+        } else {                        /* 12.0 < x < XBIG  */
             res = 0.0;
             
-            if(y <= FRTBIG) {
+            if( y <= FRTBIG ) {
                 res = C7;
-                ysq = y*y;
+                ysq = y * y;
                 
                 res = res / ysq + C1;
                 res = res / ysq + C2;
@@ -239,28 +218,27 @@ double xden, xnum;
                 res = res / ysq + C6;
             }
             res = res / y;
-            corr = log(y);
-            res = res + LnSqrt2PI - 0.5*corr;
-            res = res + y*(corr-1.0);
+            corr = log( y );
+            res = res + LnSqrt2PI - 0.5 * corr;
+            res = res + y * ( corr - 1.0 );
         }
-         
-    } else if(y < 0 && y > -INFINITY)
-        res = log(fabs(tgamma(y)));
-    else
+    } else if( -INFINITY < y && y < 0 ) {
+        res = log( fabs( tgamma( y ) ) );
+    } else {
         res = XINF;
-
-    /* Set the sign parameter before leaving */
-    if(sign != (int *)0) {
-        if(x >= 0) 
-            *sign = 1.0;
-        else
-            *sign = sin(PI*x) >= 0 ? 1 : -1;
     }
-    
-    return res;
+    /* Set the sign parameter before leaving */
+    if( sign != NULL ) {
+        if( x >= 0 ) {
+            *sign = 1.0;
+        } else {
+            *sign = sin( PI * x ) >= 0 ? 1 : -1;
+        }
+    }
+    return( res );
 }
 
-_WMRTLINK double lgamma(double x)
+_WMRTLINK double lgamma( double x )
 {
-    return lgamma_r(x, &signgam);
+    return( lgamma_r( x, &signgam ) );
 }
