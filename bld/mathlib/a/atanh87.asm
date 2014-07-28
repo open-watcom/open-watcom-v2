@@ -79,7 +79,7 @@ endif
         sahf                        ; set flags
         _if     ae                  ; if number is >= 1.0
           fstp  qword ptr data      ; - push argument on stack
-          mov   AL,FUNC_ATANH       ; - indicate "atanh"
+          mov   AL,FP_FUNC_ATANH    ; - indicate "atanh"
           mov   func,_AX            ; - push code
 ifdef __STACK__
           mov   sedx,EDX            ; - save EDX (-3s)

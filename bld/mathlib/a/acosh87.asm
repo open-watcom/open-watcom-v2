@@ -68,7 +68,7 @@ endif
         sahf                        ; set flags
         _if     a                   ; if 1.0 > x
           fstp  qword ptr data      ; - push argument on stack
-          mov   AL,FUNC_ACOSH       ; - indicate "acosh"
+          mov   AL,FP_FUNC_ACOSH    ; - indicate "acosh"
           mov   func,_AX            ; - push code
 ifdef __STACK__
           mov   sedx,EDX            ; - save EDX (-3s)

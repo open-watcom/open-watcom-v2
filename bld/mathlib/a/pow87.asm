@@ -189,7 +189,7 @@ exp_log:  fldln2                        ; - load ln(2)
           fxch    st(1)                 ; - flip
           fabs                          ; - make sure x is positive
           fyl2x                         ; - calc log(x) * y
-          mov     AL,FUNC_POW           ; - indicate pow function
+          mov     AL,FP_FUNC_POW        ; - indicate pow function
           call    __@DEXP               ; - calc. exp( log(x) * y )
           cmp     AL,0                  ; - check for error
           jne     pow_err2              ; - if argument to exp was too large

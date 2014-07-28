@@ -90,7 +90,7 @@ endif
         defp    IF@EXP
 
 ;       calculate exp(st(0)) using 387
-        mov     AL,FUNC_EXP             ; indicate exp function
+        mov     AL,FP_FUNC_EXP          ; indicate exp function
 
         public  __@DEXP
         defp    __@DEXP
@@ -107,7 +107,7 @@ endif
         mov     AH,byte ptr func+1      ; get status word
         sahf                            ; set flags
         _if     a                       ; if number is too large
-          cmp   AL,FUNC_POW             ; - if not "pow" function
+          cmp   AL,FP_FUNC_POW          ; - if not "pow" function
           _if   ne                      ; - then
             fstp  qword ptr data        ; - - push argument on stack
             mov   func,_AX              ; - - set func code

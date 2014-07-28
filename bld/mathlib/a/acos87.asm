@@ -98,7 +98,7 @@ endif
             fldpi               ; - - result is pi
           _endif                ; - endif
         _else                   ; else
-          mov   AL,FUNC_ACOS    ; - indicate ACOS function
+          mov   AL,FP_FUNC_ACOS ; - indicate ACOS function
           call  __@DSQRT        ; - calculate sqrt( 1.0 - x * x )
           cmp   AL,0            ; - if no error
           _if   e               ; - then

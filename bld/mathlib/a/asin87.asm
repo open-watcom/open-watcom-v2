@@ -62,7 +62,7 @@ endif
         fmul    st(0),st        ; calc. x * x
         fld1                    ; 1.0
         fsubrp  st(1),st        ; 1.0 - x * x
-        mov     AL,FUNC_ASIN    ; indicate ASIN function
+        mov     AL,FP_FUNC_ASIN ; indicate ASIN function
         call    __@DSQRT        ; calculate sqrt( 1.0 - x * x )
         cmp     AL,0            ; if no error
         _if     e               ; then

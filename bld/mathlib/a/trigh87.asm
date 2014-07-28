@@ -81,7 +81,7 @@ endif
         defp    IF@SINH
         call    ChkMag          ; check magnitude of argument
         _if     nc              ; if argument is not small
-          mov     AL,FUNC_SINH  ; - indicate "sinh" function
+          mov     AL,FP_FUNC_SINH; - indicate "sinh" function
           call    __@DEXP       ; - calc. z = exp(x)
           cmp     AL,0          ; - if no overflow
           _if     e             ; - then
@@ -108,7 +108,7 @@ endif
         defp    IF@COSH
         call    ChkMag          ; check magnitude of argument
         _if     nc              ; if argument is not small
-          mov     AL,FUNC_COSH  ; - indicate "cosh" function
+          mov     AL,FP_FUNC_COSH; - indicate "cosh" function
           call    __@DEXP       ; - calc. z = exp(x)
           cmp     AL,0          ; - if no overflow
           _if     e             ; - then

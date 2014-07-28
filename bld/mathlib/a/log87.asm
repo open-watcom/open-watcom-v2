@@ -69,7 +69,7 @@ elseifdef __STACK__
 else
         local   func:DWORD,data:QWORD
 endif
-        mov     AL,FUNC_LOG             ; indicate log
+        mov     AL,FP_FUNC_LOG          ; indicate log
 do_log:
         ftst                            ; test sign of argument
         fstsw   word ptr func           ; get status word
@@ -94,11 +94,11 @@ else
 endif
           mov   AL,1                    ; - indicate error
         _else                           ; else
-          cmp   AL,FUNC_LOG10           ; - if "log10"
+          cmp   AL,FP_FUNC_LOG10        ; - if "log10"
           _if   e                       ; - then
             fldlg2                      ; - - load log10(2)
           _else                         ; - else
-            cmp   AL,FUNC_LOG2          ; - - if "log2"
+            cmp   AL,FP_FUNC_LOG2       ; - - if "log2"
             _if   e                     ; - - then
               fld1                      ; - - - load 1.0
             _else                       ; - - else
@@ -125,7 +125,7 @@ elseifdef __STACK__
 else
         local   func:DWORD,data:QWORD
 endif
-        mov     AL,FUNC_LOG2            ; indicate log2
+        mov     AL,FP_FUNC_LOG2         ; indicate log2
         jmp     do_log                  ; calculate log2
         endproc IF@LOG2
         endproc IF@DLOG2
@@ -142,7 +142,7 @@ elseifdef __STACK__
 else
         local   func:DWORD,data:QWORD
 endif
-        mov     AL,FUNC_LOG10           ; indicate log10
+        mov     AL,FP_FUNC_LOG10        ; indicate log10
         jmp     do_log                  ; calculate log10
         endproc IF@LOG10
         endproc IF@DLOG10
