@@ -39,11 +39,11 @@ intstar4 __imath2err( unsigned int err_info, intstar4 *a1, intstar4 *a2 ) {
 
     a1 = a1; a2 = a2;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_POW:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_POW:
             RTErr( EX_Z_2_NOT_POS );
             break;
-        case FUNC_MOD:
+        case FP_FUNC_MOD:
             RTErr( LI_ARG_ZERO );
             break;
         }
@@ -58,8 +58,8 @@ single  __amath1err( unsigned int err_info, single *a1 ) {
 
     a1 = a1;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_COTAN:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_COTAN:
             RTErr( KO_FOVERFLOW );
             break;
         }
@@ -74,8 +74,8 @@ single  __amath2err( unsigned int err_info, single *a1, single *a2 ) {
 
     a1 = a1; a2 = a2;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_MOD:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_MOD:
             RTErr( LI_ARG_ZERO );
             break;
         }
@@ -90,43 +90,43 @@ double  __math2err( unsigned int err_info, double *a1, double *a2 ) {
 
     a2 = a2;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_SQRT:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_SQRT:
             RTErr( LI_ARG_NEG );
             break;
-        case FUNC_ASIN:
-        case FUNC_ACOS:
+        case FP_FUNC_ASIN:
+        case FP_FUNC_ACOS:
             RTErr( LI_ARG_LE_ONE );
             break;
-        case FUNC_ATAN2:
+        case FP_FUNC_ATAN2:
             RTErr( LI_ARG_ZERO );
             break;
-        case FUNC_POW:
+        case FP_FUNC_POW:
             if( *a1 == 0.0 ) { // 0.0**y, y < 0
                 RTErr( EX_Z_2_NOT_POS );
             } else { // base < 0 and non-integer power
                 RTErr( EX_NOT_INT_ARG );
             }
             break;
-        case FUNC_DPOWI:
-        case FUNC_IPOW:
+        case FP_FUNC_DPOWI:
+        case FP_FUNC_IPOW:
             RTErr( EX_Z_2_NOT_POS );
             break;
-        case FUNC_LOG:
-        case FUNC_LOG10:
+        case FP_FUNC_LOG:
+        case FP_FUNC_LOG10:
             RTErr( LI_ARG_GT_ZERO );
             break;
-        case FUNC_MOD:
+        case FP_FUNC_MOD:
             RTErr( LI_ARG_ZERO );
             break;
-        case FUNC_COTAN:
+        case FP_FUNC_COTAN:
             RTErr( KO_FOVERFLOW );
             break;
         }
     } else if( err_info & M_SING ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_LOG:
-        case FUNC_LOG10:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_LOG:
+        case FP_FUNC_LOG10:
             RTErr( LI_ARG_ZERO );
             break;
         }
@@ -154,8 +154,8 @@ complex __zmath2err( unsigned int err_info, complex *a1, complex *a2 ) {
 
     a1 = a1;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_POW:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_POW:
             if( a2->imagpart != 0 ) {
                 RTErr( EX_CZ_2_NOT_REAL );
             } else {
@@ -178,8 +178,8 @@ dcomplex __qmath2err( unsigned int err_info, dcomplex *a1, dcomplex *a2 ) {
 
     a1 = a1;
     if( err_info & M_DOMAIN ) {
-        switch( err_info & FUNC_MASK ) {
-        case FUNC_POW:
+        switch( err_info & FP_FUNC_MASK ) {
+        case FP_FUNC_POW:
             if( a2->imagpart != 0 ) {
                 RTErr( EX_CZ_2_NOT_REAL );
             } else {

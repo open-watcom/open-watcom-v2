@@ -45,7 +45,7 @@ _WMRTLINK extended _IF_PowXI( extended base, intstar4 power )
     if( base == 0.0 ) {
         if( power <= 0 ) {
             result = power;
-            return( __math2err( FUNC_DPOWI | M_DOMAIN | V_ZERO, &base, &result ) );
+            return( __math2err( FP_FUNC_DPOWI | M_DOMAIN | V_ZERO, &base, &result ) );
         } else {
             return( 0.0 );
         }

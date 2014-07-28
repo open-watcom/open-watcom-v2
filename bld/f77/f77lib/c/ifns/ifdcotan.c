@@ -53,7 +53,7 @@ double DCOTAN( double arg ) {
 
     tangent = tan( arg );
     if( tangent == 0.0 ) {
-        return( __math1err( FUNC_COTAN | M_OVERFLOW | V_HUGEVAL, &arg ) );
+        return( __math1err( FP_FUNC_COTAN | M_OVERFLOW | V_HUGEVAL, &arg ) );
     }
     return( 1.0 / tangent );
 }

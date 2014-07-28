@@ -56,8 +56,7 @@ _WMRTLINK double _IF_dpowi( double base, long power )
     if( base == 0.0 ) {
         if( power <= 0 ) {
             result = power;
-            result = __math2err( FUNC_DPOWI | M_DOMAIN | V_ZERO,
-                                     &base, &result  );
+            result = __math2err( FP_FUNC_DPOWI | M_DOMAIN | V_ZERO, &base, &result );
         } else {
             result = 0.0;
         }

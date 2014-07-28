@@ -54,7 +54,7 @@ single COTAN( single arg ) {
 
     tangent = tan( arg );
     if( tangent == 0.0 ) {
-        return( __amath1err( FUNC_COTAN | M_OVERFLOW | V_HUGEVAL, &arg ) );
+        return( __amath1err( FP_FUNC_COTAN | M_OVERFLOW | V_HUGEVAL, &arg ) );
     }
     return( 1.0 / tangent );
 }

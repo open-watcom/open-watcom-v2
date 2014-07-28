@@ -64,7 +64,7 @@ ifdef __386__
  ifdef __STACK__
           push  ECX
  endif
-          push  FUNC_SQRT               ; - indicate "sqrt"
+          push  FP_FUNC_SQRT             ; - indicate "sqrt"
           push  argx[ESP]               ; - push argument
           push  argx[ESP]               ; - ...
           call  __math87_err            ; - math error
@@ -93,7 +93,7 @@ else
           or    AX,argx+2[BP]           ; - ...
           or    AX,argx+0[BP]           ; - ...
           _quif e                       ; - quit if -0.0
-          mov   AX,FUNC_SQRT            ; - indicate "sqrt"
+          mov   AX,FP_FUNC_SQRT         ; - indicate "sqrt"
           push  AX                      ; - ...
           push  argx+6[BP]              ; - push argument
           push  argx+4[BP]              ; - ...
@@ -114,7 +114,7 @@ endif
         public  IF@DSQRT
         defp    IF@DSQRT
         defp    IF@SQRT
-        mov     AL,FUNC_SQRT            ; indicate sqrt function
+        mov     AL,FP_FUNC_SQRT         ; indicate sqrt function
 
         public  __@DSQRT
         defp    __@DSQRT
@@ -132,7 +132,7 @@ endif
         sahf                            ; set flags
         _if     b                       ; if number is negative
           fstp  qword ptr data          ; - push argument on stack
-          cmp   AL,FUNC_SQRT            ; - if not "sqrt"
+          cmp   AL,FP_FUNC_SQRT         ; - if not "sqrt"
           _if   ne                      ; - then
             fstp  qword ptr data        ; - - get the argument for "asin","acos"
                                         ; - - 8087 stack now in proper state

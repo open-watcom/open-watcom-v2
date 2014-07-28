@@ -54,7 +54,7 @@ _WMRTLINK dcomplex _IF_C16PowI( double a, double b, intstar4 i )
         arg1.imagpart = b;
         arg2.realpart = i;
         arg2.imagpart = 0;
-        return( __qmath2err( FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __qmath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     } else {
         if( i < 0 ) {
             i = -i;

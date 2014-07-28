@@ -55,7 +55,7 @@ _WMRTLINK complex __zmath2err( unsigned int err_info, complex *arg1, complex *ar
     else if( err_info & M_UNDERFLOW) { why = UNDERFLOW;}
     else if( err_info & M_PLOSS    ) { why = PLOSS;    }
     else if( err_info & M_TLOSS    ) { why = TLOSS;    }*/
-    __rterrmsg( why, __rtmathfuncname( err_info & FUNC_MASK ) );
+    __rterrmsg( why, __rtmathfuncname( err_info & FP_FUNC_MASK ) );
     if( err_info & V_ZERO ) {
         res.realpart = 0.0;
         res.imagpart = 0.0;

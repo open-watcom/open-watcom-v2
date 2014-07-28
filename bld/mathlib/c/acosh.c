@@ -47,7 +47,7 @@ _WMRTLINK double acosh( double x )
     double  z;
 
     if( x < 1.0 ) {
-        z = __math1err( FUNC_ACOSH | M_DOMAIN | V_NEG_HUGEVAL, &x );
+        z = __math1err( FP_FUNC_ACOSH | M_DOMAIN | V_NEG_HUGEVAL, &x );
     } else {
         z = log( x + sqrt( x * x - 1.0 ) );
     }

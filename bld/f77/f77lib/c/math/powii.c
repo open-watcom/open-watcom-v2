@@ -49,7 +49,7 @@ intstar4        PowII( intstar4 base, intstar4 power ) {
 
     if( base == 0 ) {
         if( power <= 0 ) {
-            return( __imath2err( FUNC_POW | M_DOMAIN | V_ZERO, &base, &power ) );
+            return( __imath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &base, &power ) );
         } else {
             return( 0 );
         }

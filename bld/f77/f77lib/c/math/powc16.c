@@ -74,7 +74,7 @@ dcomplex C16Pow( double a, double b, double c, double d ) {
         arg1.imagpart = b;
         arg2.realpart = c;
         arg2.imagpart = d;
-        return( __qmath2err( FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __qmath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     } else {
         u = DLOG( a*a + b*b ) / 2;
         v = DATAN2( b, a );

@@ -53,7 +53,7 @@ _WMRTLINK double _IF_dsqrt( double x )
 /************************************/
 {
     if( x < 0.0 ) {
-        x = __math1err( FUNC_SQRT | M_DOMAIN | V_ZERO, &x );
+        x = __math1err( FP_FUNC_SQRT | M_DOMAIN | V_ZERO, &x );
 #if defined(_M_IX86)
     } else if( _RWD_real87 ) {
         x = __sqrt87( x );

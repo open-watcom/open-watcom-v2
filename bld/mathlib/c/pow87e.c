@@ -44,19 +44,19 @@ double __pow87_err( double x, double y, unsigned char code )
         if( y > 0.0 )
             return( 0.0 );
         if( y < 0.0 ) {
-            err_code = FUNC_POW | M_DOMAIN | V_HUGEVAL; /* 0.0 ** -ve */
+            err_code = FP_FUNC_POW | M_DOMAIN | V_HUGEVAL; /* 0.0 ** -ve */
         } else {
-            err_code = FUNC_POW | M_DOMAIN | V_ONE;     /* 0.0 ** 0.0 */
+            err_code = FP_FUNC_POW | M_DOMAIN | V_ONE;     /* 0.0 ** 0.0 */
         }
     } else if( code == 1 ) {    /* negative ** fraction  */
-        err_code = FUNC_POW | M_DOMAIN | V_ZERO;        /* -ve ** frac*/
+        err_code = FP_FUNC_POW | M_DOMAIN | V_ZERO;        /* -ve ** frac*/
     } else {                    /* code == 2 */
         if( y <= 0.0 )
             return( 0.0 );
         if( x > 0.0 ) {
-            err_code = FUNC_POW | M_OVERFLOW | V_HUGEVAL;
+            err_code = FP_FUNC_POW | M_OVERFLOW | V_HUGEVAL;
         } else {
-            err_code = FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
+            err_code = FP_FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
         }
     }
     return( __math2err( err_code, &x, &y ) );

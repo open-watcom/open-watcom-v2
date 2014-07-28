@@ -31,12 +31,11 @@
 
 
 enum func_codes {
-    FUNC_NULL,
     #define pick(enum,name) enum,
     #include "_mathfun.h"
     #undef pick
 };
-#define FUNC_MASK       0x001F
+#define FP_FUNC_MASK    0x001F
 
 /*       bits for the type of math errors */
 

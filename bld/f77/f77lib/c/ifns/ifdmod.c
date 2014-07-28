@@ -50,7 +50,7 @@ double DMOD( double arg1, double arg2 ) {
 // Return arg1 mod arg2.
 
     if( arg2 == 0.0 ) {
-        return( __math2err( FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __math2err( FP_FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     }
     return( fmod( arg1, arg2 ) );
 }

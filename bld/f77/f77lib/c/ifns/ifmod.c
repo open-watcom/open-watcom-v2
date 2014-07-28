@@ -46,7 +46,7 @@ intstar4 MOD( intstar4 arg1, intstar4 arg2 ) {
 // Return arg1 mod arg2.
 
     if( arg2 == 0 ) {
-        return( __imath2err( FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __imath2err( FP_FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     }
     return( arg1 % arg2 );
 }

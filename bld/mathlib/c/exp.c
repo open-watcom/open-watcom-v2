@@ -83,7 +83,7 @@ _WMRTLINK double _IF_dexp( double x )
             /* FPStatus = FPS_UNDERFLOW;   - - underflow */
             x = 0.0;                    /* - - set result to 0 */
         } else {
-            x = __math1err( FUNC_EXP | M_OVERFLOW | V_HUGEVAL, &x );
+            x = __math1err( FP_FUNC_EXP | M_OVERFLOW | V_HUGEVAL, &x );
         }
 #if defined(_M_IX86)
     } else if( _RWD_real87 ) {

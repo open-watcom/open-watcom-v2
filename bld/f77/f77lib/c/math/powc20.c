@@ -83,7 +83,7 @@ xcomplex C32Pow( extended a, extended b, extended c, extended d ) {
         arg1.imagpart = b;
         arg2.realpart = c;
         arg2.imagpart = d;
-        return( __qmath2err( FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __qmath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     } else {
         u = QLOG( a*a + b*b ) / 2;
         v = QATAN2( b, a );

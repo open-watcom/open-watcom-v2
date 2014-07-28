@@ -50,7 +50,7 @@ single AMOD( single arg1, single arg2 ) {
 // Return a1 mod a2.
 
     if( arg2 == 0 ) {
-        return( __amath2err( FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __amath2err( FP_FUNC_MOD | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     }
     return( fmod( arg1, arg2 ) );
 }

@@ -30,6 +30,8 @@
 ;*****************************************************************************
 
 
+include _mathfun.inc
+
 ifdef   __386__
  _BP    equ     EBP
  _SP    equ     ESP
@@ -86,33 +88,6 @@ else
  endif
 endif
         endm
-
-; The following must be in sync
-;  with watcom/mathcode.h
-;
-FUNC_ACOS  equ  1
-FUNC_ASIN  equ  2
-FUNC_SQRT  equ  3
-FUNC_EXP   equ  4
-FUNC_COSH  equ  5
-FUNC_SINH  equ  6
-FUNC_POW   equ  7
-FUNC_ACOSH equ  8
-FUNC_LOG2  equ  9
-FUNC_LOG   equ  10
-FUNC_LOG10 equ  11
-FUNC_ATANH equ  12
-FUNC_ATAN2 equ  13
-FUNC_IPOW  equ  14
-FUNC_DPOWI equ  15
-FUNC_COS   equ  16
-FUNC_SIN   equ  17
-FUNC_TAN   equ  18
-FUNC_Y0    equ  19
-FUNC_Y1    equ  20
-FUNC_YN    equ  21
-FUNC_MOD   equ  22
-FUNC_COTAN equ  23
 
 do_real_fdiv macro op1, op2, rev, popper
 if rev

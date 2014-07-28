@@ -63,7 +63,7 @@ xcomplex C32PowI( extended a, extended b, intstar4 i ) {
         arg1.imagpart = b;
         arg2.realpart = i;
         arg2.imagpart = 0;
-        return( __xmath2err( FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __xmath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     } else {
         if( i < 0 ) {
             i = -i;

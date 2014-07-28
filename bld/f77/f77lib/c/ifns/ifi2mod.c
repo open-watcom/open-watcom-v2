@@ -48,7 +48,7 @@ intstar2 I2MOD( intstar2 arg1, intstar2 arg2 ) {
     if( arg2 == 0 ) {
         intstar4 a1 = arg1;
         intstar4 a2 = arg2;
-        return( __imath2err( FUNC_MOD | M_DOMAIN | V_ZERO, &a1, &a2 ) );
+        return( __imath2err( FP_FUNC_MOD | M_DOMAIN | V_ZERO, &a1, &a2 ) );
     }
     return( arg1 % arg2 );
 }

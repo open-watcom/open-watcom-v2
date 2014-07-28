@@ -76,7 +76,7 @@ void __rterrmsg( int errcode, const char *funcname )
 
 char *__rtmathfuncname( int funccode )
 {
-    return( MathFuncNames[funccode - 1] );
+    return( MathFuncNames[funccode] );
 }
 
 _WMRTLINK double _matherr( struct _exception *excp )

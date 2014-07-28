@@ -55,7 +55,7 @@ _WMRTLINK double _IF_dcosh( double x )
 
     z = fabs( x );
     if( z > 709.782712893384 ) {            /* if argument is too large */
-        z = __math1err( FUNC_COSH | M_OVERFLOW | V_HUGEVAL, &x );
+        z = __math1err( FP_FUNC_COSH | M_OVERFLOW | V_HUGEVAL, &x );
     } else {
 /*          if( z <= ldexp( 1.0, -26 ) ) { */
         if( z <= 1.49011611938476580e-008 ) { /* if x is small */

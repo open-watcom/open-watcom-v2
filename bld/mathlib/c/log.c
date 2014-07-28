@@ -73,7 +73,7 @@ _WMRTLINK double _IF_dlog( double x )
     double  z;
 
     if( x <= 0.0 ) {
-        x = __log87_err( x, FUNC_LOG );
+        x = __log87_err( x, FP_FUNC_LOG );
 #if defined(_M_IX86)
     } else if( _RWD_real87 ) {
         x = _log87( x );

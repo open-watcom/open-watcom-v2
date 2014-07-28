@@ -74,7 +74,7 @@ complex C8Pow( single a, single b, single c, single d ) {
         arg1.imagpart = b;
         arg2.realpart = c;
         arg2.imagpart = d;
-        return( __zmath2err( FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
+        return( __zmath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &arg1, &arg2 ) );
     } else {
         u = ALOG( a*a + b*b ) / 2;
         v = ATAN2( b, a );

@@ -48,11 +48,11 @@ double  PowRR( double base, double power ) {
 // Return base ** power.
 
     if( base < 0.0 ) {
-        return( __math2err( FUNC_POW | M_DOMAIN | V_ZERO, &base, &power ) );
+        return( __math2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &base, &power ) );
     } else {
         if( base == 0.0 ) {
             if( power <= 0.0 ) {
-                return( __math2err( FUNC_POW | M_DOMAIN | V_ZERO,
+                return( __math2err( FP_FUNC_POW | M_DOMAIN | V_ZERO,
                                     &base, &power ) );
             }
         }

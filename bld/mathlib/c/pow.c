@@ -62,16 +62,16 @@ _WMRTLINK double _IF_dpow( double x, double y )
     sign = __sgn( x );
     if( sign == 0 ) {
         if( y < 0.0 ) {
-            x = __math2err( FUNC_POW | M_DOMAIN | V_HUGEVAL, &x, &y );
+            x = __math2err( FP_FUNC_POW | M_DOMAIN | V_HUGEVAL, &x, &y );
         } else if( y == 0.0 ) {
-            x = __math2err( FUNC_POW | M_DOMAIN | V_ONE, &x, &y );
+            x = __math2err( FP_FUNC_POW | M_DOMAIN | V_ONE, &x, &y );
         }
     } else {
         fraction = modf( y, &z );
         exponent = z;
         if( sign < 0 ) {
             if( fraction != 0.0 ) {     /* negative ** fraction */
-                return( __math2err( FUNC_POW | M_DOMAIN | V_ZERO, &x, &y ) );
+                return( __math2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &x, &y ) );
             }
             x = -x;
             if( (exponent & 1) == 0 ) {         /* 01-mar-89 */
@@ -86,9 +86,9 @@ _WMRTLINK double _IF_dpow( double x, double y )
                 x = 0.0;                    /* - - set result to 0 */
             } else {                        /* - else */
                 if( sign > 0 ) {
-                    err_code = FUNC_POW | M_OVERFLOW | V_HUGEVAL;
+                    err_code = FP_FUNC_POW | M_OVERFLOW | V_HUGEVAL;
                 } else {
-                    err_code = FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
+                    err_code = FP_FUNC_POW | M_OVERFLOW | V_NEG_HUGEVAL;
                 }
                 x = __math2err( err_code, &x, &y );
             }

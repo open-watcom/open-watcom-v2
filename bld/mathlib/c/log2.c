@@ -44,7 +44,7 @@ _WMRTLINK double log2( double x )
 /*******************************/
 {
     if( x <= 0.0 ) {
-        x = __log87_err( x, FUNC_LOG2 );
+        x = __log87_err( x, FP_FUNC_LOG2 );
     } else {
         x =  log(x) * log2_of_e;
     }

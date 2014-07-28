@@ -42,16 +42,16 @@ double __math87_err( double x, unsigned char code )
 
     err_code = code | M_OVERFLOW | V_HUGEVAL;
     switch( code ) {
-    case FUNC_ACOS:
-    case FUNC_ASIN:
-    case FUNC_SQRT:
+    case FP_FUNC_ACOS:
+    case FP_FUNC_ASIN:
+    case FP_FUNC_SQRT:
         err_code = code | M_DOMAIN | V_ZERO;
         break;
-    case FUNC_EXP:
+    case FP_FUNC_EXP:
         if( x < 0.0 )
             return( 0.0 );
         break;
-    case FUNC_SINH:
+    case FP_FUNC_SINH:
         if( x < 0.0 )
             err_code = code | M_OVERFLOW | V_NEG_HUGEVAL;
         break;

@@ -57,9 +57,9 @@ _WMRTLINK double _IF_dsinh( double x )
     z = fabs( x );
     if( z > 709.782712893384 ) {            /* if argument is too large */
         if( x < 0.0 ) {
-            err_code = FUNC_SINH | M_OVERFLOW | V_NEG_HUGEVAL;
+            err_code = FP_FUNC_SINH | M_OVERFLOW | V_NEG_HUGEVAL;
         } else {
-            err_code = FUNC_SINH | M_OVERFLOW | V_HUGEVAL;
+            err_code = FP_FUNC_SINH | M_OVERFLOW | V_HUGEVAL;
         }
         z = __math1err( err_code, &x );
     } else {

@@ -51,9 +51,9 @@ _WMRTLINK long _IF_ipow( long base, long power )
 //              used to be like this:
 //              result = _matherr( DOMAIN, "ipow", NULL, NULL, 1.0 );
 //              now it is like this:
-            result = __math1err( FUNC_IPOW | M_DOMAIN | V_ONE, &dummy );
+            result = __math1err( FP_FUNC_IPOW | M_DOMAIN | V_ONE, &dummy );
 //              should be more like this:
-//              result = __imath2err( FUNC_POW | M_DOMAIN | V_ZERO, &base, &power );
+//              result = __imath2err( FP_FUNC_POW | M_DOMAIN | V_ZERO, &base, &power );
         } else {
             result = 0;
         }
