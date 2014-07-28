@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Signal/interrupt handling for OS/2.
 *
 ****************************************************************************/
 
@@ -52,7 +51,7 @@ static void BrkHandler( int sig_num )
 static volatile int     exitThread;
 
 #ifndef __OS2V2__
-#define TSTACK_SIZE     1024
+#define TSTACK_SIZE     2048
 static unsigned char    __far thread_stack[TSTACK_SIZE];
 #else
 #define TSTACK_SIZE     10240
