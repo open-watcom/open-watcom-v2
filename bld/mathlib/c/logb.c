@@ -43,29 +43,29 @@
 #include <math.h>
 #include "xfloat.h"
 
-_WMRTLINK double logb(double x)
+_WMRTLINK double logb( double x )
 {
-	i4 lx,ix;
-    
-    float_double fdx;
+    i4              lx, ix;
+    float_double    fdx;
     
     fdx.u.value = x;
     
-	ix = (fdx.u.word[1]) & ((u4)0x7fffffff);	/* high |x| */
-	lx = fdx.u.word[0]; 	                    /* low x */
+    ix = fdx.u.word[1] & (u4)0x7fffffff;    /* high |x| */
+    lx = fdx.u.word[0];                     /* low x */
     
-    if(x == 0)
-        return INFINITY;
+    if( x == 0 )
+        return( INFINITY );
     
-	if((ix|lx)==0) 
-        return -1.0/fabs(x);
-	
-    if(ix>=((u4)0x7ff00000)) 
-        return x*x;
+    if( (ix | lx) == 0 ) 
+        return( -1.0 / fabs( x ) );
         
-	if((ix>>=20)==0) 			/* IEEE 754 logb */
-		return -1022.0; 
-	else
-		return (double) (ix-1023);
+    if( ix >= (u4)0x7ff00000 ) 
+        return( x * x );
+        
+    if( (ix >>= 20) == 0 ) {                /* IEEE 754 logb */
+        return( -1022.0 );
+    } else {
+        return( (double)( ix - 1023 ) );
+    }
 }
 
