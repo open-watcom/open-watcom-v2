@@ -59,9 +59,9 @@ _WMRTLINK double _IF_dasin( double x )
         z = __math1err( FP_FUNC_ASIN | M_DOMAIN | V_ZERO, &x );
     } else if( z == 0.0 ) {
         if( x < 0.0 ) {
-            z = -Piby2;
+            z = -PIby2;
         } else {
-            z = Piby2;
+            z = PIby2;
         }
     } else {
         z = atan( PDIV( x, sqrt( z ) ) );

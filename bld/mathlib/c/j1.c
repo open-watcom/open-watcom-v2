@@ -32,10 +32,7 @@
 #include "variety.h"
 #include "mathlib.h"
 #include "pdiv.h"
-
-#define Two_over_pi  0.63661977236758134307
-#define PI           3.14159265358979323846
-#define ThreePIby4   (PI*0.75)
+#include "pi.h"
 
 
 static const double _J1P[] = {
@@ -107,7 +104,7 @@ _WMRTLINK double j1( double x )         /* Bessel function j1(x) */
         z = PDIV( 8.0, ax );
         y = z * z;
         xx = ax - ThreePIby4;
-        z = sqrt( PDIV( Two_over_pi, ax ) ) *
+        z = sqrt( PDIV( TwobyPI, ax ) ) *
             ( PDIV( cos( xx ) * _EvalPoly( y, _P1P, 4 ) , _EvalPoly( y, _P1Q, 5 ) )
         - z * sin( xx ) * (PDIV( _EvalPoly( y, _Q1P, 4 ) , _EvalPoly( y, _Q1Q, 4 ) )) );
         if( x < 0.0 ) {

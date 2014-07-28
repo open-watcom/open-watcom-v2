@@ -35,6 +35,7 @@
 
 #include "variety.h"
 #include <math.h>
+#include "pi.h"
 
 /* Numerator and denominator coefficients for rational minimax
  *     approximation over (0.5,1.5).
@@ -112,8 +113,6 @@
 #define C6       8.333333333333333331554247E-02
 #define C7       5.7083835261E-03
 
-#define SQRTPI   0.9189385332046727417803297
-#define PI       3.1415926535897932384626434
 #define PNT68    0.6796875E0
 
 _WMRTDATA extern const double __d_infinity;
@@ -241,7 +240,7 @@ double xden, xnum;
             }
             res = res / y;
             corr = log(y);
-            res = res + SQRTPI - 0.5*corr;
+            res = res + LnSqrt2PI - 0.5*corr;
             res = res + y*(corr-1.0);
         }
          

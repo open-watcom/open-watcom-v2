@@ -24,13 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  PI related constant definitions
 *
 ****************************************************************************/
 
 
-#define Pi              3.141592653589793238
-#define Twopi           6.283185307179586476
-#define Piby2           1.570796326794896619
-#define Piby6           0.523598775598298873
+#define PI              3.1415926535897932384626434
+
+#define TwoPI           (PI*2)      // 6.283185307179586476
+#define ThreePIby4      (PI*0.75)   // 3*pi/4
+#define PIby2           (PI/2)      // 1.570796326794896619
+#define PIby4           (PI/4)
+#define PIby6           (PI/6)      // 0.523598775598298873
+
+#define TwobyPI         (2/PI)      // 0.63661977236758134307
+#define LnSqrt2PI       0.9189385332046727417803297 // ln(sqrt(2*pi))
+#define OnebySqrtPI     0.56418958354775628695      // 1/sqrt(pi)
+#define SqrtPI          1.7724538509055160273       // sqrt(pi)

@@ -98,9 +98,9 @@ _WMRTLINK double _IF_datan( double x )
     sgnx = __sgn( x );
     x = fabs( x );
     if( x == 1.0 ) {        /* 06-dec-88 */
-        x = Pi / 4;
+        x = PIby4;
     } else if( x > (1.0 / DBL_MIN) ) {
-        x = Pi / 2;
+        x = PIby2;
     } else if( x < (DBL_MIN / MIN_POLY_CONST) ) {
         x = DBL_MIN;
     } else {
@@ -117,10 +117,10 @@ _WMRTLINK double _IF_datan( double x )
         }
         x = _OddPoly( x, AtanPoly, 8 );
         if( add_piby6 ) {
-            x += Piby6;
+            x += PIby6;
         }
         if( add_piby2 ) {
-            x = Piby2 - x;
+            x = PIby2 - x;
         }
     }
     if( sgnx < 0 ) {

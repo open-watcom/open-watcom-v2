@@ -36,6 +36,7 @@
 #include "variety.h"
 #include <math.h>
 #include <float.h>
+#include "pi.h"
 
 #define P1  -1.71618513886549492533811
 #define P2   2.47656508055759199108314E+1
@@ -68,8 +69,6 @@
 #define XINF      _INFINITY
 #define XNAN      NAN
 
-#define SQRTPI  0.9189385332046727417803297
-#define PI      3.1415926535897932384626434
 
 _WMRTLINK double tgamma(double x)
 {
@@ -173,7 +172,7 @@ double xnum, xden;
             summation = summation / ysq + C5;
             summation = summation / ysq + C6;
             
-            summation = summation/y - y + SQRTPI;
+            summation = summation/y - y + LnSqrt2PI;
             summation += (y-0.5)*log(y);
             res = exp(summation);
         }

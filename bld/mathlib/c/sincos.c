@@ -36,10 +36,7 @@
 #include "clibsupp.h"
 #include "ifprag.h"
 #include "rtdata.h"
-
-#define PI              3.14159265358979323846
-#define PIby2   (PI/2)
-#define PIby4   (PI/4)
+#include "pi.h"
 
 
 static const double _sinpoly[] = {

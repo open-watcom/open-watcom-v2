@@ -35,8 +35,8 @@
 
 #include "variety.h"
 #include <math.h>
+#include "pi.h"
 
-#define SQRPI   5.6418958354775628695E-1
 #define THRESH  0.46875E0
 
 #define XINF    1.79E308
@@ -155,7 +155,7 @@ double del;
                 goto signcorrect;
             if(y >= XHUGE) 
             {
-                result = SQRPI / y;
+                result = OnebySqrtPI / y;
                 goto signcorrect;
             }
         }
@@ -170,7 +170,7 @@ double del;
         xnum = (xnum + P4)  * ysq; xden = (xden + Q4)  * ysq;
         
         result = ysq * (xnum + P5) / (xden + Q5);
-        result = (SQRPI - result) / y;
+        result = (OnebySqrtPI - result) / y;
         if(jint != 2) 
         {
             ysq = floor(y*16.0)/16.0;

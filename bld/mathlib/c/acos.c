@@ -59,12 +59,12 @@ _WMRTLINK double _IF_dacos( double x )
         z = __math1err( FP_FUNC_ACOS | M_DOMAIN | V_ZERO, &x );
     } else if( z == 0.0 ) {
         if( x < 0.0 ) {
-            z = Pi;
+            z = PI;
         } else {
             z = 0.0;
         }
     } else {
-        z = Piby2 - atan( PDIV( x, sqrt( z ) ) );
+        z = PIby2 - atan( PDIV( x, sqrt( z ) ) );
     }
     return( z );
 }

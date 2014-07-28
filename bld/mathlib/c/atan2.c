@@ -80,15 +80,15 @@ _WMRTLINK double _IF_datan2( double y, double x )
         if( sgnx == 0 ) {
             x = __math2err( FP_FUNC_ATAN2 | M_DOMAIN | V_ZERO, &y, &x );
         } else if( sgnx < 0 ) {
-            x = Pi;
+            x = PI;
         } else {
             x = 0.0;
         }
     } else if( sgnx == 0 ) {        /* case 2 */
         if( sgny < 0 ) {
-            x = -Piby2;
+            x = -PIby2;
         } else {
-            x = Piby2;
+            x = PIby2;
         }
     } else {
         int exp_x;
@@ -119,11 +119,11 @@ _WMRTLINK double _IF_datan2( double y, double x )
         sgnz = __sgn( x );
         if( sgny >= 0 ) {
             if( sgnz < 0 ) {
-                x += Pi;
+                x += PI;
             }
         } else {
             if( sgnz > 0 ) {
-                x -= Pi;
+                x -= PI;
             }
         }
     }
