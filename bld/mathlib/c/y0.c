@@ -73,7 +73,7 @@ _WMRTLINK double y0( double x )         /* Bessel function y0(x) */
     double  xx, y, z;
 
     if( x < 0.0 ) {
-        z = __math1err( FUNC_Y0 | M_DOMAIN | V_NEG_HUGEVAL, &x );
+        z = __math1err( FP_FUNC_Y0 | M_DOMAIN | V_NEG_HUGEVAL, &x );
     } else if( x < 8.0 ) {
         y = x * x;
         z = PDIV( _EvalPoly( y, _Y0P, 7 ),  _EvalPoly( y, _Y0Q, 8 ) )

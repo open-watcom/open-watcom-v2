@@ -56,7 +56,7 @@ _WMRTLINK double _IF_dasin( double x )
 
     z =  1.0 - x * x;
     if( z < 0.0 ) {
-        z = __math1err( FUNC_ASIN | M_DOMAIN | V_ZERO, &x );
+        z = __math1err( FP_FUNC_ASIN | M_DOMAIN | V_ZERO, &x );
     } else if( z == 0.0 ) {
         if( x < 0.0 ) {
             z = -Piby2;

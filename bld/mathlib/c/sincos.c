@@ -83,7 +83,7 @@ static double __sincos( double x, int func )
         return( __math1err( func | M_TLOSS | V_ZERO, &x ) );
     }
     __fprem( x, PIby4, &i, &y );    /* 24-nov-88 */
-    if( func == FUNC_COS ) {
+    if( func == FP_FUNC_COS ) {
         i += 2;
     }
     i = i & 7;
@@ -106,10 +106,10 @@ static double __sincos( double x, int func )
         }
         index = Degree[ index ];
         /* only calculate the necessary polynomials */
-        if( ((i + 1) & 2) || func == FUNC_TAN ) {
+        if( ((i + 1) & 2) || func == FP_FUNC_TAN ) {
             cosy = _EvalPoly( y * y, &_cospoly[index], 8 - index );
         }
-        if( (((i + 1) & 2) == 0) || func == FUNC_TAN ) {
+        if( (((i + 1) & 2) == 0) || func == FP_FUNC_TAN ) {
             siny = _OddPoly( y, &_sinpoly[index], 8 - index );
         }
     }
@@ -133,7 +133,7 @@ static double __sincos( double x, int func )
     if( i & 4 ) {
         sinx = - sinx;      /* octants 4,5,6,7 */
     }
-    if( func == FUNC_TAN ) {           /* if "tan" */
+    if( func == FP_FUNC_TAN ) {           /* if "tan" */
 
         /* cos is out of phase with sin by 2 octants */
 
@@ -181,7 +181,7 @@ _WMRTLINK double _IF_dsin( double x )
     if( _RWD_real87 )
         return( _sin87(x) );
 #endif
-    return( __sincos( x, FUNC_SIN ) );
+    return( __sincos( x, FP_FUNC_SIN ) );
 }
 
 
@@ -205,7 +205,7 @@ _WMRTLINK double _IF_dcos( double x )
     if( _RWD_real87 )
         return( _cos87(x) );
 #endif
-    return( __sincos( x, FUNC_COS ) );
+    return( __sincos( x, FP_FUNC_COS ) );
 }
 
 
@@ -229,5 +229,5 @@ _WMRTLINK double _IF_dtan( double x )
     if( _RWD_real87 )
         return( _tan87(x) );
 #endif
-    return( __sincos( x, FUNC_TAN ) );
+    return( __sincos( x, FP_FUNC_TAN ) );
 }
