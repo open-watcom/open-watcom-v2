@@ -31,7 +31,7 @@
 
 #include <stdlib.h>
 #include "wio.h"
-//#include "clibext.h"
+#include "clibext.h"
 #include "wressetr.h"
 
 WResSetRtns( open, close, read, write, lseek, tell, malloc, free );
