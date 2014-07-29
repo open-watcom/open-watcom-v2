@@ -39,10 +39,18 @@
   #endif
 #endif
 
-#include <errno.h>
 #ifndef __WATCOMC__
+#if defined( __GNUC__ ) || defined( __SUNPRO_C )
+#define _INTEGRAL_MAX_BITS  64
+#endif
+/* An equivalent of the __unaligned keyword may be necessary on RISC
+ * architectures, but on x86/x64 it's useless
+ */
+#define _WCUNALIGNED
 #include "clibext.h"
 #endif
+
+#include <errno.h>
 
 #if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
 typedef unsigned        uint;

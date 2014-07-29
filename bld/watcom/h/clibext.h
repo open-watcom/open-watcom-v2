@@ -20,15 +20,6 @@
 #endif
 #include "clibint.h"
 
-#if defined( __GNUC__ ) || defined( __SUNPRO_C )
-#define _INTEGRAL_MAX_BITS  64
-#endif
-
-/* An equivalent of the __unaligned keyword may be necessary on RISC
- * architectures, but on x86/x64 it's useless
- */
-#define _WCUNALIGNED
-
 #define _WCRTLINK
 #define _WCI86FAR
 #define _WCNEAR
