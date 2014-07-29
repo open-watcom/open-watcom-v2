@@ -62,7 +62,6 @@ static void setATBit( thread_info *ti, set_t set )
 #elif defined( MD_axp )
     {
         DWORD           bytes;
-        brkpnt_type     brk = BRK_POINT;
 
         if( set != T_OFF ) {
             ti->brk_addr = AdjustIP( &con, 0 );
@@ -71,9 +70,10 @@ static void setATBit( thread_info *ti, set_t set )
                 ReadProcessMemory( ProcessInfo.process_handle,
                     (LPVOID)ti->brk_addr, (LPVOID)&ti->brk_opcode,
                     sizeof( ti->brk_opcode ), (LPDWORD)&bytes );
-            if( ti->brk_opcode != brk ) {
+            if( ti->brk_opcode != BRKPOINT ) {
+                opcode_type brk_opcode = BRK_POINT;
                 WriteProcessMemory( ProcessInfo.process_handle,
-                    (LPVOID)ti->brk_addr, (LPVOID)&brk, sizeof( brk ),
+                    (LPVOID)ti->brk_addr, (LPVOID)&brk_opcode, sizeof( brk_opcode ),
                     (LPDWORD)&bytes );
             } else {
                 ti->brk_addr = 0;
@@ -283,7 +283,7 @@ static int handleInt1( DWORD state )
 #if defined( MD_x86 )
         HANDLE      proc;
         DWORD       written;
-        brkpnt_type ch;
+        opcode_type brk_opcode;
         thread_info *ti;
 
         if( BreakFixed == 0 ) {
@@ -293,9 +293,9 @@ static int handleInt1( DWORD state )
         if( ti && !ti->is_foreign ) {
             return( COND_TRACE );
         }
-        ch = BRK_POINT;
+        brk_opcode = BRKPOINT;
         proc = OpenProcess( PROCESS_ALL_ACCESS, FALSE, DebugeePid );
-        WriteProcessMemory( proc, (LPVOID)BreakFixed, &ch, 1, &written );
+        WriteProcessMemory( proc, (LPVOID)BreakFixed, &brk_opcode, sizeof( brk_opcode ), &written );
         CloseHandle( proc );
         BreakFixed = 0;
         return( 0 );

@@ -144,13 +144,6 @@ typedef struct {
 
 #define MAX_WP          32
 
-#define TRACE_BIT       0x100
-
-typedef unsigned char bp_t;
-
-/* 'int 3' instruction */
-#define BRK_POINT       0xCC
-
 #endif
 
 #if defined( MD_ppc )
@@ -197,11 +190,6 @@ typedef struct user {
     char            u_comm[32];     /* user command name */
 } user_struct;
 
-typedef unsigned long bp_t;
-
-/* 'trap' instruction */
-#define BRK_POINT       0x7FE00008
-
 #define REGSIZE         sizeof( unsigned long )
 #define PTRACE_SETREGS  13
 
@@ -239,11 +227,6 @@ typedef struct user {
     unsigned long   magic;                  /* identifies a core file */
     char            u_comm[32];             /* user command name */
 } user_struct;
-
-typedef unsigned_32     bp_t;
-
-/* 'break' instruction */
-#define BRK_POINT       0x0000000D
 
 #define REGSIZE         sizeof( unsigned long )
 

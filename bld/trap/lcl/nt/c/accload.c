@@ -48,8 +48,8 @@
 static BOOL executeUntilStart( BOOL was_running )
 {
     HANDLE      ph;
-    brkpnt_type old;
-    brkpnt_type brk = BRK_POINT;
+    opcode_type saved_opcode;
+    opcode_type brk_opcode = BRKPOINT;
     LPVOID      base;
     SIZE_T      bytes;
     MYCONTEXT   con;
@@ -62,8 +62,8 @@ static BOOL executeUntilStart( BOOL was_running )
          * plant a breakpoint at the first instruction of our new app
          */
         base = (LPVOID)DebugEvent.u.CreateProcessInfo.lpStartAddress;
-        ReadProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
-        WriteProcessMemory( ph, base, (LPVOID)&brk, sizeof( brk ), &bytes );
+        ReadProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
+        WriteProcessMemory( ph, base, (LPVOID)&brk_opcode, sizeof( brk_opcode ), &bytes );
     } else {
         // a trick to make app execute long enough to hit a breakpoint
         PostMessage( HWND_TOPMOST, WM_NULL, 0, 0L );
@@ -78,7 +78,7 @@ static BOOL executeUntilStart( BOOL was_running )
             ti = FindThread( DebugEvent.dwThreadId );
             MyGetThreadContext( ti, &con );
             if( was_running ) {
-                AdjustIP( &con, sizeof( brk ) );
+                AdjustIP( &con, sizeof( brk_opcode ) );
                 MySetThreadContext( ti, &con );
                 return( TRUE );
             }
@@ -87,8 +87,8 @@ static BOOL executeUntilStart( BOOL was_running )
                  * the user has asked us to stop before any DLL's run
                  * their startup code (";dll"), so we do.
                  */
-                WriteProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
-                AdjustIP( &con, sizeof( brk ) );
+                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
+                AdjustIP( &con, sizeof( brk_opcode ) );
                 MySetThreadContext( ti, &con );
                 return( TRUE );
             }
@@ -97,13 +97,13 @@ static BOOL executeUntilStart( BOOL was_running )
                  * we stopped at the applications starting address,
                  * so we can offically declare that the app has loaded
                  */
-                WriteProcessMemory( ph, base, (LPVOID)&old, sizeof( old ), &bytes );
+                WriteProcessMemory( ph, base, (LPVOID)&saved_opcode, sizeof( saved_opcode ), &bytes );
                 return( TRUE );
             }
             /*
              * skip this breakpoint and continue
              */
-            AdjustIP( &con, sizeof( brk ) );
+            AdjustIP( &con, sizeof( brk_opcode ) );
             MySetThreadContext( ti, &con );
         } else {
             return( FALSE );
@@ -469,8 +469,8 @@ trap_retval ReqProg_load( void )
          * we use our own CS and DS as the Flat CS and DS, for lack
          * of anything better
          */
-        FlatDS = DS();
-        FlatCS = CS();
+        FlatDS = GetDS();
+        FlatCS = GetCS();
         if( !executeUntilVDMStart() ) {
             ret->err = GetLastError();
             goto error_exit;
@@ -500,8 +500,8 @@ trap_retval ReqProg_load( void )
          * we use our own CS and DS as the Flat CS and DS, for lack
          * of anything better
          */
-        FlatDS = DS();
-        FlatCS = CS();
+        FlatDS = GetDS();
+        FlatCS = GetCS();
         if( !executeUntilVDMStart() ) {
             ret->err = GetLastError();
             goto error_exit;

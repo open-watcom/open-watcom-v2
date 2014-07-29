@@ -50,6 +50,7 @@
 #include "tinyio.h"
 #include "exeos2.h"
 #include "exeflat.h"
+#include "cpuglob.h"
 
 #define MAX_WATCHES         256
 
@@ -916,37 +917,37 @@ trap_retval ReqClear_watch( void )
 }
 
 trap_retval ReqSet_break( void )
-/***************************/
+/******************************/
 {
-    byte            ch;
+    opcode_type     brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     _DBG( "AccSetBreak\r\n" );
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadMemory( &acc->break_addr, &ch, 1 );
-    ret->old = ch;
-    ch = 0xCC;
-    WriteMemory( &acc->break_addr, &ch, 1 );
+    ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqClear_break( void )
 /*****************************/
 {
-    byte            ch;
+    opcode_type     brk_opcode;
     clear_break_req *acc;
 
     _DBG( "AccClearBreak\r\n" );
     acc = GetInPtr( 0 );
-    ch = acc->old;
-    WriteMemory( &acc->break_addr, &ch, 1 );
+    brk_opcode = acc->old;
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     return( 0 );
 }
 
 trap_retval ReqGet_next_alias( void )
-/********************************/
+/***********************************/
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

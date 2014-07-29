@@ -69,7 +69,6 @@ typedef enum {
     ACCESS_SEGMENT
 } restart_opts;
 
-#define TRACE_BIT       0x100
 #define NIL_HANDLE      -1
 
 #define MAX_STR 512

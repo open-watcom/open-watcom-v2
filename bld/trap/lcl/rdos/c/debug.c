@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "rdos.h"
 #include "debug.h"
+#include "cpuglob.h"
 
 #define FALSE   0
 #define TRUE    !FALSE
@@ -302,64 +303,66 @@ int WriteMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Siz
 
 static void SetupGo( struct TDebugThread *obj )
 {
-    int update = FALSE;
-    Tss tss;
-    unsigned char ch = 0;
+    int         update = FALSE;
+    Tss         tss;
+    opcode_type brk_opcode = 0;
 
     obj->FDebug = FALSE;
     obj->FWasTrace = FALSE;
 
     RdosGetThreadTss( obj->ThreadID, &tss );
-    RdosReadThreadMem( obj->ThreadID, tss.cs, tss.eip, (char *)&ch, 1 );
+    RdosReadThreadMem( obj->ThreadID, tss.cs, tss.eip, (char *)&brk_opcode, sizeof( brk_opcode ) );
 
-    if( ch == 0xCC ) {
+    if( brk_opcode == BRKPOINT ) {
         tss.eip++;
         update = TRUE;
     }
 
-    if( ( tss.eflags & 0x100 ) != 0 ) {
-        tss.eflags &= ~0x100;
+    if( ( tss.eflags & TRACE_BIT ) != 0 ) {
+        tss.eflags &= ~TRACE_BIT;
         update = TRUE;
     }
 
-    if( update )
+    if( update ) {
         RdosSetThreadTss( obj->ThreadID, &tss );
+    }
 
 }
 
 static void SetupTrace( struct TDebugThread *obj )
 {
-    int update = FALSE;
-    Tss tss;
-    unsigned char ch = 0;
+    int         update = FALSE;
+    Tss         tss;
+    opcode_type brk_opcode = 0;
 
     obj->FDebug = FALSE;
     obj->FWasTrace = TRUE;
 
     RdosGetThreadTss( obj->ThreadID, &tss );
 
-    RdosReadThreadMem( obj->ThreadID, tss.cs, tss.eip, (char *)&ch, 1 );
+    RdosReadThreadMem( obj->ThreadID, tss.cs, tss.eip, (char *)&brk_opcode, sizeof( brk_opcode ) );
 
-    if( ch == 0xCC ) {
+    if( brk_opcode == BRKPOINT ) {
         tss.eip++;
         update = TRUE;
     }
 
-    if( ( tss.eflags & 0x100 ) == 0 ) {
-        tss.eflags |= 0x100;
+    if( ( tss.eflags & TRACE_BIT ) == 0 ) {
+        tss.eflags |= TRACE_BIT;
         update = TRUE;
     }
 
-    if( update )
+    if( update ) {
         RdosSetThreadTss( obj->ThreadID, &tss );
+    }
 }
 
 static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakList, struct TDebugWatch *WatchList )
 {
-    struct TDebugBreak *b = BreakList;
-    struct TDebugWatch *w = WatchList;
-    char brinstr = '\xCC';
-    int bnum = 0;
+    struct TDebugBreak  *b = BreakList;
+    struct TDebugWatch  *w = WatchList;
+    opcode_type         brk_opcode = BRKPOINT;
+    int                 bnum = 0;
 
     while( w ) {
         if (bnum < 4) {
@@ -371,8 +374,9 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakL
 
     while( b ) {
         if ((b->Sel & 0x3) == 0x3) {
-            RdosReadThreadMem( obj->ThreadID, b->Sel, b->Offset, &b->Instr, 1 );
-            RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, &brinstr, 1 );
+            RdosReadThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
+            b->Instr = brk_opcode;
+            RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
         } else {
             if (bnum < 4) {
                 RdosSetCodeBreak( obj->ThreadID, bnum, b->Sel, b->Offset );
@@ -385,9 +389,10 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakL
 
 static void DeactivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakList, struct TDebugWatch *WatchList )
 {
-    struct TDebugBreak *b = BreakList;
-    struct TDebugWatch *w = WatchList;
-    int bnum = 0;
+    struct TDebugBreak  *b = BreakList;
+    struct TDebugWatch  *w = WatchList;
+    int                 bnum = 0;
+    opcode_type         brk_opcode;
 
     if( !obj->FWasTrace ) {
         while( w ) {
@@ -400,7 +405,8 @@ static void DeactivateBreaks( struct TDebugThread *obj, struct TDebugBreak *Brea
 
         while( b ) {
             if ((b->Sel & 0x3) == 0x3) {
-                RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, &b->Instr, 1 );
+                RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
+                b->Instr = brk_opcode;
             } else {
                 if (bnum < 4) {
                     RdosClearBreak( obj->ThreadID, bnum );
@@ -414,9 +420,9 @@ static void DeactivateBreaks( struct TDebugThread *obj, struct TDebugBreak *Brea
 
 static void SetException( struct TDebugThread *obj, struct TExceptionEvent *event )
 {
-    Tss tss;
-    int i;
-    unsigned char ch = 0;
+    Tss         tss;
+    int         i;
+    opcode_type brk_opcode = 0;
 
     obj->FHasBreak = FALSE;
     obj->FHasTrace = FALSE;
@@ -428,9 +434,9 @@ static void SetException( struct TDebugThread *obj, struct TExceptionEvent *even
     obj->Cs = event->Cs;
     obj->Eip = event->Eip;
 
-    RdosReadThreadMem( obj->ThreadID, obj->Cs, obj->Eip, (char *)&ch, 1 );
+    RdosReadThreadMem( obj->ThreadID, obj->Cs, obj->Eip, (char *)&brk_opcode, sizeof( brk_opcode ) );
         
-    if (ch == 0xCC)
+    if( brk_opcode == BRKPOINT )
         event->Code = 0x80000003;
 
     switch( event->Code ) {

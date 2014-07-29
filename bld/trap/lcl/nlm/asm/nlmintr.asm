@@ -72,18 +72,6 @@ DoALongJumpTo   proc    near
                 iretd
 DoALongJumpTo   endp
 
-public          GetDS
-GetDS           proc    near
-                mov     ax,ds
-                ret
-GetDS           endp
-
-public          GetCS
-GetCS           proc    near
-                mov     ax,cs
-                ret
-GetCS           endp
-
 _text           ends
 
                 end

@@ -34,6 +34,7 @@
 #include <windows.h>
 #include <string.h>
 #include <dos.h>
+#include "cpuglob.h"
 #include "wdebug.h"
 
 #define MAX_ISTACK      4096
@@ -99,7 +100,7 @@ int __export FAR PASCAL SetDebugInterrupts32( void )
     if( CheckWin386Debug() != WGOD_VERSION ) {
         return( 0 );
     }
-    DPL = (CS() & 0x03) << 5;
+    DPL = (GetCS() & 0x03) << 5;
     OurOwnInt = 0;
 
     /*
@@ -136,8 +137,8 @@ void __export FAR PASCAL ResetDebugInterrupts32( void )
 {
     SetCount--;
     if( SetCount == 0 ) {
-        CopyMemory386( IDTSel, (DWORD) 1*8, DS(), (DWORD) &IdtInt1, 8 );
-        CopyMemory386( IDTSel, (DWORD) 3*8, DS(), (DWORD) &IdtInt3, 8 );
+        CopyMemory386( IDTSel, (DWORD) 1*8, GetDS(), (DWORD) &IdtInt1, 8 );
+        CopyMemory386( IDTSel, (DWORD) 3*8, GetDS(), (DWORD) &IdtInt3, 8 );
         IDTFini();
         ReleaseIDTSel();
         UnRegisterInterruptCallback( (LPVOID) InterruptCallback );

@@ -14,7 +14,7 @@ sys_dll = 1
 
 objs = intmain.obj ints.obj int32.obj
 
-extra_c_flags = -s -fpc -zu -zw
+extra_c_flags = -s -fpc -zu -zw -I"$(trap_dir)/h"
 
 lflags_dll_win_i86 += initinstance memory
 

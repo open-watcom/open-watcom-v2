@@ -120,13 +120,13 @@ bool CausePgmToLoadThisDLL( ULONG startLinear )
 
 void DoOpen( char __far *name, int mode, int flags )
 {
-    BreakPoint( OpenFile( name, mode, flags ) );
+    BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
 
 static void doClose( HFILE hdl )
 {
-    BreakPoint( DosClose( hdl ) );
+    BreakPointParm( DosClose( hdl ) );
 }
 
 void DoDupFile( HFILE old, HFILE new )
@@ -137,9 +137,9 @@ void DoDupFile( HFILE old, HFILE new )
     new_t = new;
     rc = DosDupHandle( old, &new_t );
     if( rc != 0 ) {
-        BreakPoint( NIL_DOS_HANDLE );
+        BreakPointParm( NIL_DOS_HANDLE );
     } else {
-        BreakPoint( new_t );
+        BreakPointParm( new_t );
     }
 }
 

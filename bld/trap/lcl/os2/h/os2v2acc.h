@@ -50,10 +50,6 @@ int IsUnknownGDTSeg( USHORT seg );
 extern  void    LoadThisDLL( void );
 extern  void    EndLoadThisDLL( void );
 
-extern  void    BreakPoint( ULONG );
-#pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
-extern void     bp( void );
-#pragma aux     bp = 0xCC;
 extern  void __far *Automagic( unsigned short );
 #pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
                             0x89 0xe0 /* mov ax,sp */\

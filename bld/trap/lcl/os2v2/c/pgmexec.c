@@ -64,6 +64,7 @@
 #define INCL_DOSSIGNALS
 #include <os2.h>
 #include <string.h>
+#include "cpuglob.h"
 #include "dosdebug.h"
 #include "trpimp.h"
 #include "os2trap.h"

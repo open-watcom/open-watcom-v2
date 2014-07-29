@@ -34,6 +34,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <i86.h>
+#include "cpuglob.h"
 #include "trptypes.h"
 #include "packet.h"
 #include "trperr.h"
@@ -147,10 +148,6 @@ typedef struct RMBuff {
     extern const char   __far *DOSEnvFind( char * );
 
 #endif
-
-extern unsigned short   GetCS( void );
-#pragma aux GetCS = "mov ax,cs" value [ ax ];
-
 
 trap_retval RemoteGet( byte *rec, trap_elen len )
 {

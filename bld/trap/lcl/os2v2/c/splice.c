@@ -38,6 +38,7 @@
 #define MD_x86
 #include "madregs.h"
 #include "splice.h"
+#include "cpuglob.h"
 
 /* We need separate stack for executing spliced code. We really wouldn't
  * want to mess up debuggee's stack!
@@ -81,9 +82,6 @@ long OpenFile( char *name, ULONG mode, int flags )
 }
 
 
-void BreakPoint(ULONG);
-#pragma aux BreakPoint = 0xCC parm [eax] aborts;
-
 void doReadWord( void );
 #pragma aux doReadWord =           \
     "mov  ax, word ptr gs:[ebx]"   \
@@ -106,12 +104,12 @@ void __export DoWriteWord( void )
 
 void __export DoOpen( char *name, int mode, int flags )
 {
-    BreakPoint( OpenFile( name, mode, flags ) );
+    BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
 void __export DoClose( HFILE hdl )
 {
-    BreakPoint( DosClose( hdl ) );
+    BreakPointParm( DosClose( hdl ) );
 }
 
 void __export DoDupFile( HFILE old, HFILE new )
@@ -122,9 +120,9 @@ void __export DoDupFile( HFILE old, HFILE new )
     new_t = new;
     rc = DosDupHandle( old, &new_t );
     if( rc != 0 ) {
-        BreakPoint( (HFILE) - 1 );
+        BreakPointParm( (HFILE) - 1 );
     } else {
-        BreakPoint( new_t );
+        BreakPointParm( new_t );
     }
 }
 
@@ -133,7 +131,7 @@ void __export DoWritePgmScrn( char *buff, ULONG len )
     ULONG   written;
 
     DosWrite( 2, buff, len, &written );
-    BreakPoint( 0 );
+    BreakPointParm( 0 );
 }
 
 
@@ -153,7 +151,7 @@ void __export DoReadXMMRegs( struct x86_xmm *xmm_regs )
     fxsave( aligned_buf );
     memcpy( xmm_regs->xmm, aligned_buf + 160, 8 * 16 );
     xmm_regs->mxcsr = *(unsigned_32*)(aligned_buf + 20);
-    BreakPoint( 0 );
+    BreakPointParm( 0 );
 }
 
 void fxrstor( unsigned char *addr );
@@ -172,5 +170,5 @@ void __export DoWriteXMMRegs( struct x86_xmm *xmm_regs )
     memcpy( aligned_buf + 160, xmm_regs->xmm, 8 * 16 );
     *(unsigned_32*)(aligned_buf + 20) = xmm_regs->mxcsr;
     fxrstor( aligned_buf );
-    BreakPoint( 0 );
+    BreakPointParm( 0 );
 }

@@ -32,6 +32,7 @@
 #include "miniproc.h"
 #include "debugme.h"
 #include <string.h>
+#include "cpuglob.h"
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
 #include <conio.h>
@@ -45,9 +46,6 @@
 
 extern int main( int arg, char **argv ); // defined by user
 extern void TrapFini(void);
-
-extern void breakpt(void);
-#pragma aux breakpt = 0xcc;
 
 static  BYTE    stack[8192];
 
@@ -333,7 +331,7 @@ LONG _Prelude(
         while( isalpha( *cmdLineP ) ) {
             switch( lower( *cmdLineP ) ) {
             case 'b':
-                breakpt();
+                BreakPoint();
                 break;
             case 'a':
                 DebugClasses = -1;

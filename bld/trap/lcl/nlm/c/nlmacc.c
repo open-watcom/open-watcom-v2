@@ -47,6 +47,7 @@
 #undef TRUE
 #undef FALSE
 
+#include "cpuglob.h"
 #include "dbg386.h"
 #include "trpimp.h"
 #include "trperr.h"
@@ -158,7 +159,7 @@ bool                                    FakeBreak;
 bool                                    DebuggerRunning;
 bool                                    ExpectingEvent;
 bool                                    TrapInt1;
-byte                                    SavedFirstByte;
+opcode_type                             saved_opcode;
 dword                                   DebugProcess;
 byte                                    DebugPriority;
 byte                                    RunningPriority;
@@ -185,8 +186,6 @@ extern void                     DoALongJumpTo( unsigned_32, unsigned_32, unsigne
 dword                           ReturnESP;
 extern void                     Return( void );
 extern int                      AdjustStack( dword old_esp, dword adjust );
-extern word                     GetDS( void );
-extern word                     GetCS( void );
 
 /* from NLMCLIB.C */
 
@@ -590,8 +589,8 @@ static LONG DebugEntry( StackFrame *frame )
             m->description = NULL;
             m->load = load;
             m->in_start_proc = TRUE;
-            SavedFirstByte = *(byte *)(m->load->LDInitializationProcedure);
-            *(byte *)(m->load->LDInitializationProcedure) = 0xCC;
+            saved_opcode = *(opcode_type *)(m->load->LDInitializationProcedure);
+            *(opcode_type *)(m->load->LDInitializationProcedure) = BRKPOINT;
             NLMState = NLM_LOADING;
             _DBG_EVENT(( "MSB=%x NLMState = NLM_LOADING\r\n", m ));
         } else {
@@ -665,7 +664,7 @@ static LONG DebugEntry( StackFrame *frame )
             SaveRegs( HelperThreadRegs );
             DebuggerLoadedNLM = m->load;
             --(FieldEIP( frame ));
-            *(byte *)(FieldEIP( frame )) = SavedFirstByte;
+            *(opcode_type *)(FieldEIP( frame )) = saved_opcode;
             NLMState = NLM_IN_START_PROC;
             _DBG_EVENT(( "  3: NLMState = NLM_IN_START_PROC\r\n" ));
         } else {
@@ -1521,20 +1520,19 @@ trap_retval ReqClear_watch( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte            l;
     set_break_req   *acc;
     set_break_ret   *ret;
-    byte            ch;
+    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    if( ReadMemory( &acc->break_addr, 1UL, &l ) != 0 ) {
+    if( ReadMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode ) != 0 ) {
         ret->old = 0;
     } else {
-        ch = 0xCC;
-        WriteMemory( &acc->break_addr, 1UL, &ch );
-        ret->old = l;
+        ret->old = brk_opcode;
+        brk_opcode = BRKPOINT;
+        WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
     }
     return( sizeof( *ret ) );
 }
@@ -1542,9 +1540,11 @@ trap_retval ReqSet_break( void )
 trap_retval ReqClear_break( void )
 {
     clear_break_req     *acc;
+    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
-    WriteMemory( &acc->break_addr, 1UL, &acc->old );
+    brk_opcode = acc->old;
+    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
     return( 0 );
 }
 

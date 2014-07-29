@@ -35,6 +35,7 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
+#include "cpuglob.h"
 #include "stdwin.h"
 #include "dbg386.h"
 #include "wdebug.h"
@@ -110,7 +111,7 @@ break_point __far * findBrkEntry( void )
     int         i;
     int         old_num;
 
-    for( i=0; i<numBreaks; i++ ) {
+    for( i = 0; i < numBreaks; i++ ) {
         if( !brkList[i].in_use ) {
             return( &brkList[i] );
             break;
@@ -122,8 +123,7 @@ break_point __far * findBrkEntry( void )
         brkHandle = GlobalAlloc( GMEM_FLAGS, numBreaks * sizeof( brkList[0] ) );
     } else {
         GlobalUnlock( brkHandle );
-        brkHandle = GlobalReAlloc( brkHandle,
-                                   numBreaks*sizeof( brkList[0] ), GMEM_FLAGS );
+        brkHandle = GlobalReAlloc( brkHandle, numBreaks*sizeof( brkList[0] ), GMEM_FLAGS );
     }
     brkList = (break_point __huge *)GlobalLock( brkHandle );
     return( &brkList[old_num] );
@@ -131,7 +131,7 @@ break_point __far * findBrkEntry( void )
 
 trap_retval ReqSet_break( void )
 {
-    BYTE                ch;
+    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
     break_point         *brk;
@@ -141,10 +141,10 @@ trap_retval ReqSet_break( void )
 
     Out((OUT_BREAK,"AccSetBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
-    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &ch, sizeof(BYTE) );
-    ret->old = ch;
-    ch = 0xCC;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &ch, sizeof(BYTE) );
+    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
 
     brk = findBrkEntry();
     brk->value = ret->old;
@@ -156,17 +156,16 @@ trap_retval ReqSet_break( void )
 
 trap_retval ReqClear_break( void )
 {
-    BYTE                        ch;
-    int                         i;
-    clear_break_req             *acc;
+    opcode_type         brk_opcode;
+    int                 i;
+    clear_break_req     *acc;
 
     acc = GetInPtr( 0 );
-    ch = acc->old;
+    brk_opcode = acc->old;
     Out((OUT_BREAK,"AccRestoreBreak %4.4x:%8.8x", acc->break_addr.segment, acc->break_addr.offset ));
     Out((OUT_BREAK,"task=%4.4x", DebugeeTask ));
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &ch, sizeof(BYTE) );
-
-    for( i=0;i<numBreaks;i++ ) {
+    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    for( i = 0; i < numBreaks; i++ ) {
         if( brkList[i].loc.segment == acc->break_addr.segment &&
                         brkList[i].loc.offset == acc->break_addr.offset ) {
             brkList[i].in_use = FALSE;

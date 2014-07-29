@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <dos.h>
+#include "cpuglob.h"
 #include "wdebug.h"
 #include "stdwin.h"
 #include "trperr.h"
@@ -95,7 +96,7 @@ char *InitDebugging( void )
 //    SubClassProcInstance = MakeProcInstance( (FARPROC)SubClassProc, Instance );
 
     InitDebugHook();
-    CSAlias = AllocCSToDSAlias( CS() );
+    CSAlias = AllocCSToDSAlias( GetCS() );
     return( "" );
 
 } /* InitDebugging */

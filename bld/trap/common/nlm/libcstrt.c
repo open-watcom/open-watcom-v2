@@ -32,6 +32,7 @@
 
 #include "miniproc.h"
 #include "debugme.h"
+#include "cpuglob.h"
 #include <string.h>
 #undef POP_UP_SCREEN
 #define ConsolePrintf _
@@ -71,9 +72,6 @@ extern LONG _LibCPrelude(
 
 extern int main( int arg, char **argv ); // defined by user
 extern void TrapFini(void);
-
-extern void breakpt(void);
-#pragma aux breakpt = 0xcc;
 
 struct LoadDefinitionStruct             *MyNLMHandle;
 struct ScreenStruct                     *screenID;
@@ -389,7 +387,7 @@ int      __init_environment(void *  reserved){
         while( isalpha( *cmdLineP ) ) {
             switch( lower( *cmdLineP ) ) {
             case 'b':
-                breakpt();
+                BreakPoint();
                 break;
             case 'a':
                 DebugClasses = -1;

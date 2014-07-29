@@ -449,23 +449,6 @@ SetPSP_         proc near
                 ret
 SetPSP_         endp
 
-
-public          GetDS_
-GetDS_          proc    near
-                xor     eax,eax
-                mov     ax,ds
-                ret
-GetDS_          endp
-
-
-public          GetCS_
-GetCS_          proc    near
-                xor     eax,eax
-                mov     ax,cs
-                ret
-GetCS_          endp
-
-
 public          SetMSW_
 SetMSW_         proc near
                 push    edx             ; save regs

@@ -283,30 +283,6 @@ oldvect         macro   name,num
                 ret                             ; return to caller
 ReleVects      endp
 
-public          GetDS
-GetDS           proc    near
-                xor     eax,eax
-                mov     ax,ds
-                ret
-GetDS           endp
-
-
-public          GetSS
-GetSS           proc    near
-                xor     eax,eax
-                mov     ax,ss
-                ret
-GetSS           endp
-
-
-public          GetCS
-GetCS           proc    near
-                xor     eax,eax
-                mov     ax,cs
-                ret
-GetCS           endp
-
-
 public          GetFL
 GetFL           proc    near
                 pushfd

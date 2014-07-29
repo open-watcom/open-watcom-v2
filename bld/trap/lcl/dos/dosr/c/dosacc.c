@@ -50,6 +50,7 @@
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
+#include "cpuglob.h"
 
 typedef enum {
     EXE_UNKNOWN,
@@ -156,7 +157,7 @@ static dword            NEOffset;
 static word             NumSegments;
 static dword            SegTable;
 static dword            StartByte;
-static byte             SavedByte;
+static opcode_type      saved_opcode;
 static addr48_ptr       BadBreak;
 static bool             GotABadBreak;
 static int              ExceptNum;
@@ -525,7 +526,7 @@ static EXE_TYPE CheckEXEType( char *name )
         tiny_file_stamp_t stamp;
     } exe_time;
     word                  value;
-    byte                  breakpt;
+    opcode_type           brk_opcode;
     static dos_exe_header head;
     static os2_exe_header os2_head;
 
@@ -564,14 +565,14 @@ static EXE_TYPE CheckEXEType( char *name )
         SegTable = NEOffset + os2_head.segment_off;
         if( os2_head.align == 0 )
             os2_head.align = 9;
-        SeekEXEset( SegTable+(os2_head.entrynum-1)*8 );
+        SeekEXEset( SegTable + ( os2_head.entrynum - 1 ) * 8 );
         ReadEXE( value );
         StartByte = ( (long)value << os2_head.align ) + os2_head.IP;
         SeekEXEset( StartByte );
-        ReadEXE( SavedByte );
-        breakpt = 0xCC;
+        ReadEXE( saved_opcode );
         SeekEXEset( StartByte );
-        rc = WriteEXE( breakpt );
+        brk_opcode = BRKPOINT;
+        rc = WriteEXE( brk_opcode );
         return( EXE_OS2 );
     default:
         Flags.com_file = TRUE;
@@ -666,20 +667,20 @@ trap_retval ReqProg_load( void )
     if( TINY_OK( rc ) ) {
         if( Flags.NoOvlMgr || !CheckOvl( parmblock.startcsip ) ) {
             if( exe == EXE_OS2 ) {
-                byte    __far *pbyte;
+                opcode_type __far *loc_brk_opcode;
 
                 BoundAppLoading = TRUE;
                 RunProg( &TaskRegs, &TaskRegs );
-                pbyte = MK_FP(TaskRegs.CS, TaskRegs.EIP);
-                if( *pbyte == 0xCC ) {
-                    *pbyte = SavedByte;
+                loc_brk_opcode = MK_FP(TaskRegs.CS, TaskRegs.EIP);
+                if( *loc_brk_opcode == BRKPOINT ) {
+                    *loc_brk_opcode = saved_opcode;
                 }
                 BoundAppLoading = FALSE;
                 rc = TinyOpen( exe_name, TIO_READ_WRITE );
                 if( TINY_OK( rc ) ) {
                     EXEhandle = TINY_INFO( rc );
                     SeekEXEset( StartByte );
-                    WriteEXE( SavedByte );
+                    WriteEXE( saved_opcode );
                     TinySetFileStamp( EXEhandle, EXETime, EXEDate );
                     TinyClose( EXEhandle );
                     EXEhandle = 0;
@@ -762,17 +763,17 @@ trap_retval ReqClear_watch( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte            __far *loc;
+    opcode_type     __far *loc_brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    loc = MK_FP( acc->break_addr.segment, acc->break_addr.offset );
-    ret->old = *loc;
-    *loc = 0xCC;
-    if( *loc != 0xCC ) {
+    loc_brk_opcode = MK_FP( acc->break_addr.segment, acc->break_addr.offset );
+    ret->old = *loc_brk_opcode;
+    *loc_brk_opcode = BRKPOINT;
+    if( *loc_brk_opcode != BRKPOINT ) {
         BadBreak = acc->break_addr;
         GotABadBreak = TRUE;
     }
@@ -785,7 +786,7 @@ trap_retval ReqClear_break( void )
     clear_break_req     *bp;
 
     bp = GetInPtr( 0 );
-    *(char __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
+    *(opcode_type __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
     GotABadBreak = FALSE;
     return( 0 );
 }

@@ -52,6 +52,7 @@
 #include "trperr.h"
 #include "doserr.h"
 #include "doscomm.h"
+#include "cpuglob.h"
 
 trap_cpu_regs   Regs;
 int             IntNum;
@@ -62,9 +63,6 @@ extern void DumpDbgRegs(void);
 
 extern  void            GrabVects(void);
 extern  void            ReleVects(void);
-extern  dword           GetDS(void);
-extern  dword           GetCS(void);
-extern  dword           GetSS(void);
 extern  dword           GetFL(void);
 extern  void            DoRunProg(void);
 extern  word            DoMapSeg(word);
@@ -503,8 +501,6 @@ void StackCheck()
 }
 
 
-#pragma aux BreakPoint = 0xCC;
-extern void BreakPoint( void );
 void ADSLoop()
 {
     short scode = RSRSLT;             /* Normal result code (default) */
@@ -657,16 +653,17 @@ trap_retval ReqSet_break( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
+    opcode_type         brk_opcode; /* cause maybe SS != DS */
 
-    static byte brake = 0xCC; /* cause maybe SS != DS */
-
-                                                                          _DBG1(( "AccSetBreak" ));
+_DBG1(( "AccSetBreak" ));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    if( ReadMemory( &acc->break_addr, (byte *)&ret->old, 1 ) == 0 ) {
+    if( ReadMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) ) == 0 ) {
         ret->old = 0;
     } else {
-        WriteMemory( &acc->break_addr, &brake, 1 );
+        ret->old = brk_opcode;
+        brk_opcode = BRKPOINT;
+        WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     }
     return( sizeof( *ret ) );
 }
@@ -674,9 +671,11 @@ trap_retval ReqSet_break( void )
 trap_retval ReqClear_break( void )
 {
     clear_break_req     *acc;
+    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
-    WriteMemory( &acc->break_addr, (byte *)&acc->old, 1 );
+    brk_opcode = acc->old;
+    WriteMemory( &acc->break_addr, &brk_opcode, sizeof( brk_opcode ) );
     _DBG1(( "AccRestoreBreak" ));
     return( 0 );
 }
@@ -727,7 +726,7 @@ static unsigned ProgRun( bool step )
                                                                           _DBG1(( "ProgRun" ));
     ret = GetOutPtr( 0 );
     ret->conditions = COND_CONFIG;
-    trace = step ? 0x100 : 0;
+    trace = step ? TRACE_BIT : 0;
     Regs.EFL |= trace;
     if( AtEnd ) {
                                                                           _DBG2(("No RunProg"));
@@ -740,7 +739,7 @@ static unsigned ProgRun( bool step )
             SysRegs.dr7 = 0;
         } else {
             for( ;; ) {
-                Regs.EFL |= 0x100;
+                Regs.EFL |= TRACE_BIT;
                 MyRunProg();
                 if( DoneAutoCAD ) break;
                 if( IntNum != 1 ) break;

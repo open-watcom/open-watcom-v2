@@ -48,11 +48,6 @@ int    IsUnknownGDTSeg( USHORT seg );
 extern  void    LoadHelperDLL( void );
 extern  void    EndLoadHelperDLL( void );
 
-extern  void    BreakPoint( ULONG );
-#pragma aux     BreakPoint = 0xCC parm [eax] aborts;
-extern void     bp( void );
-#pragma aux     bp = 0xCC;
-
 /* Stack layout for calling Dos32LoadModule */
 typedef struct {
     PSZ        fail_name;           /* 32-bit flat address */

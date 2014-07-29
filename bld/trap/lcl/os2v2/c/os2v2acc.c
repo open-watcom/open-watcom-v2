@@ -39,6 +39,7 @@
 #define INCL_DOSSESMGR
 #define INCL_DOSMODULEMGR
 #include <os2.h>
+#include "cpuglob.h"
 #include "dosdebug.h"
 #include "trpimp.h"
 #include "os2trap.h"
@@ -58,7 +59,7 @@ uDB_t                   Buff;
 static BOOL             stopOnSecond;
 static BOOL             isAttached;
 USHORT                  TaskFS;
-static byte             saved_splice_bp;
+static byte             saved_opcode;
 static BOOL             splice_bp_set;
 static ULONG            splice_bp_lin_addr;
 extern VOID             InitDebugThread( VOID );
@@ -398,7 +399,7 @@ bool DebugExecute( uDB_t *buff, ULONG cmd, bool stop_on_module_load )
                     uDB_t       save;
 
                     // Remove breakpoint
-                    WriteLinear( &saved_splice_bp, splice_bp_lin_addr, sizeof( byte ) );
+                    WriteLinear( &saved_opcode, splice_bp_lin_addr, sizeof( saved_opcode ) );
                     splice_bp_set = FALSE;
                     splice_bp_lin_addr = 0;
 
@@ -1020,11 +1021,11 @@ static bool FindLinearStartAddress( ULONG *pLin, char *name )
 
 static BOOL ExecuteUntilLinearAddressHit( ULONG lin )
 {
-    byte        breakpnt = 0xCC;
+    opcode_type brk_opcode = BRKPOINT;
     BOOL        rc = TRUE;
 
-    ReadLinear( &saved_splice_bp, lin, sizeof( byte ) );
-    WriteLinear( &breakpnt, lin, sizeof( byte ) );
+    ReadLinear( &saved_opcode, lin, sizeof( saved_opcode ) );
+    WriteLinear( &brk_opcode, lin, sizeof( brk_opcode ) );
     splice_bp_set = TRUE;
     splice_bp_lin_addr = lin;
     do {
@@ -1236,7 +1237,7 @@ trap_retval ReqProg_load( void )
                 // it later
             } else {
                 // Remove breakpoint
-                WriteLinear( &saved_splice_bp, startLinear, sizeof( byte ) );
+                WriteLinear( &saved_opcode, startLinear, sizeof( saved_opcode ) );
                 splice_bp_set = FALSE;
                 splice_bp_lin_addr = 0;
             }
@@ -1287,27 +1288,27 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte                ch;
+    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
-    ret->old = ch;
-    ch = 0xCC;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
+    ReadBuffer( &brk_opcode, acc->break_addr.segment, acc->break_addr.offset, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteBuffer( &brk_opcode, acc->break_addr.segment, acc->break_addr.offset, sizeof( brk_opcode ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqClear_break( void )
 {
     clear_break_req     *acc;
-    byte                ch;
+    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
-    ch = acc->old;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
+    brk_opcode = acc->old;
+    WriteBuffer( &brk_opcode, acc->break_addr.segment, acc->break_addr.offset, sizeof( brk_opcode ) );
     return( 0 );
 }
 

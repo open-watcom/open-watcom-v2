@@ -51,6 +51,7 @@
 #include "madregs.h"
 #include "exeelf.h"
 #include "lnxcomm.h"
+#include "cpuglob.h"
 
 u_short                 flatCS;
 u_short                 flatDS;
@@ -66,7 +67,7 @@ static struct r_debug   rdebug;         /* Copy of debuggee's r_debug (if presen
 static struct r_debug   *dbg_rdebug;    /* Ptr to r_debug in debuggee's space */
 static int              have_rdebug;    /* Flag indicating valid r_debug */
 static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if present) */
-static bp_t             old_ld_bp;
+static opcode_type      saved_opcode;
 
 
 trap_retval ReqChecksum_mem( void )
@@ -350,16 +351,16 @@ trap_retval ReqSet_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
-    bp_t            opcode;
+    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    ReadMem( pid, &opcode, acc->break_addr.offset, sizeof( opcode ) );
-    ret->old = opcode;
-    opcode = BRK_POINT;
-    WriteMem( pid, &opcode, acc->break_addr.offset, sizeof( opcode ) );
+    ReadMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
     Out( "ReqSet_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (was " );
@@ -371,17 +372,17 @@ trap_retval ReqSet_break( void )
 trap_retval ReqClear_break( void )
 {
     clear_break_req *acc;
-    bp_t            opcode;
+    opcode_type     brk_opcode;
 
     acc = GetInPtr( 0 );
     CONV_LE_32( acc->break_addr.offset );
     CONV_LE_16( acc->break_addr.segment );
-    opcode = acc->old;
-    WriteMem( pid, &opcode, acc->break_addr.offset, sizeof( opcode ) );
+    brk_opcode = acc->old;
+    WriteMem( pid, &brk_opcode, acc->break_addr.offset, sizeof( brk_opcode ) );
     Out( "ReqClear_break at " );
     OutNum( acc->break_addr.offset );
     Out( " (setting to " );
-    OutNum( opcode );
+    OutNum( brk_opcode );
     Out( ")\n" );
     return( 0 );
 }
@@ -490,13 +491,13 @@ static trap_elen ProgRun( int step )
 
     if( ret->conditions == COND_BREAK ) {
 #if defined( MD_x86 )
-        if( regs.eip == rdebug.r_brk + sizeof( old_ld_bp ) ) {
+        if( regs.eip == rdebug.r_brk + sizeof( saved_opcode ) ) {
 #elif defined( MD_ppc ) || defined( MD_mips )
         if( regs.eip == rdebug.r_brk ) {
 #endif
             int         psig = 0;
             void        (*oldsig)(int);
-            bp_t        opcode = BRK_POINT;
+            opcode_type brk_opcode;
 
             /* The dynamic linker breakpoint was hit, meaning that
              * libraries are being loaded or unloaded. This gets a bit
@@ -504,7 +505,7 @@ static trap_elen ProgRun( int step )
              * at the breakpoint and execute it, but we still want to
              * keep the breakpoint.
              */
-            WriteMem( pid, &old_ld_bp, rdebug.r_brk, sizeof( old_ld_bp ) );
+            WriteMem( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
             ReadMem( pid, &rdebug, (addr48_off)dbg_rdebug, sizeof( rdebug ) );
             Out( "ld breakpoint hit, state is " );
             switch( rdebug.r_state ) {
@@ -536,7 +537,8 @@ static trap_elen ProgRun( int step )
             ptrace( PTRACE_SINGLESTEP, pid, NULL, (void *)psig );
             waitpid( pid, &status, 0 );
             setsig( SIGINT, oldsig );
-            WriteMem( pid, &opcode, rdebug.r_brk, sizeof( old_ld_bp ) );
+            brk_opcode = BRKPOINT;
+            WriteMem( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
             ret->conditions = COND_LIBRARIES;
         } else {
 #if defined( MD_x86 )
@@ -561,7 +563,7 @@ static trap_elen ProgRun( int step )
      */
     if( !have_rdebug && (dbg_dyn != NULL) ) {
         if( Get_ld_info( pid, dbg_dyn, &rdebug, &dbg_rdebug ) ) {
-            bp_t        opcode;
+            opcode_type     brk_opcode;
 
             AddInitialLibs( rdebug.r_map );
             have_rdebug = TRUE;
@@ -570,14 +572,14 @@ static trap_elen ProgRun( int step )
             /* Set a breakpoint in dynamic linker. That way we can be
              * informed on dynamic library load/unload events.
              */
-            ReadMem( pid, &old_ld_bp, rdebug.r_brk, sizeof( old_ld_bp ) );
+            ReadMem( pid, &saved_opcode, rdebug.r_brk, sizeof( saved_opcode ) );
             Out( "Setting ld breakpoint at " );
             OutNum( rdebug.r_brk );
             Out( " old opcode was " );
-            OutNum( old_ld_bp );
+            OutNum( saved_opcode );
             Out( "\n" );
-            opcode = BRK_POINT;
-            WriteMem( pid, &opcode, rdebug.r_brk, sizeof( opcode ) );
+            brk_opcode = BRKPOINT;
+            WriteMem( pid, &brk_opcode, rdebug.r_brk, sizeof( brk_opcode ) );
         }
     }
  end:

@@ -36,6 +36,7 @@
 #include <direct.h>
 #include <ctype.h>
 #include <dos.h>
+#include "cpuglob.h"
 #include "stdwin.h"
 #include "wdebug.h"
 

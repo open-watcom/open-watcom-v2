@@ -60,7 +60,7 @@ static break_point      *Breaks = NULL;
 
 trap_retval ReqSet_break( void )
 {
-    brkpnt_type     ch;
+    opcode_type     brk_opcode;
     set_break_req   *acc;
     set_break_ret   *ret;
     break_point     *new;
@@ -68,23 +68,21 @@ trap_retval ReqSet_break( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &ch,
-        sizeof( ch ) );
-    ret->old = ch;
+    ReadMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
     new = LocalAlloc( LMEM_FIXED, sizeof( *new ) );
-    new->byte = ch;
+    new->byte = brk_opcode;
     new->addr = acc->break_addr;
     new->next = Breaks;
     Breaks = new;
-    ch = BRK_POINT;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &ch,
-        sizeof( ch ) );
+    brk_opcode = BRKPOINT;
+    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqClear_break( void )
 {
-    brkpnt_type     ch;
+    opcode_type     brk_opcode;
     clear_break_req *acc;
     break_point     *brk;
     break_point     *next;
@@ -97,9 +95,8 @@ trap_retval ReqClear_break( void )
     }
     Breaks = NULL;
     acc = GetInPtr( 0 );
-    ch = acc->old;
-    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &ch,
-        sizeof( ch ) );
+    brk_opcode = acc->old;
+    WriteMem( acc->break_addr.segment, acc->break_addr.offset, &brk_opcode, sizeof( brk_opcode ) );
     return( 0 );
 }
 

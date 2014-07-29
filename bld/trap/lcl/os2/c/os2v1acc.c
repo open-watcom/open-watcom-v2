@@ -46,8 +46,6 @@
 
 typedef void (*excfn)();
 
-extern  void    BreakPoint( ULONG );
-#pragma aux     BreakPoint = 0xCC parm [ dx ax ] aborts;
 extern  void    __far *Automagic( unsigned short );
 #pragma aux     Automagic = 0x29 0xc4 /* sub sp,ax */\
                             0x89 0xe0 /* mov ax,sp */\
@@ -55,7 +53,6 @@ extern  void    __far *Automagic( unsigned short );
                             parm caller [ax] \
                             value [ax dx] \
                             modify [sp];
-
 
 
 extern  void    LoadThisDLL( void );
@@ -247,14 +244,14 @@ static void ExecuteCode( TRACEBUF __far *buff )
 #pragma aux DoOpen parm [ dx ax ] [ bx ] [ cx ];
 static void DoOpen( char FAR *name, int mode, int flags )
 {
-    BreakPoint( OpenFile( name, mode, flags ) );
+    BreakPointParm( OpenFile( name, mode, flags ) );
 }
 
 
 #pragma aux DoClose parm [ ax ];
 static void DoClose( HFILE hdl )
 {
-    BreakPoint( DosClose( hdl ) );
+    BreakPointParm( DosClose( hdl ) );
 }
 
 
@@ -267,9 +264,9 @@ static void DoDupFile( HFILE old, HFILE new )
     new_t = new;
     rc = DosDupHandle( old, &new_t );
     if( rc != 0 ) {
-        BreakPoint( NIL_DOS_HANDLE );
+        BreakPointParm( NIL_DOS_HANDLE );
     } else {
-        BreakPoint( new_t );
+        BreakPointParm( new_t );
     }
 }
 
@@ -279,12 +276,12 @@ static void DoWritePgmScrn( char __far *buff, USHORT len )
     USHORT  written;
 
     DosWrite( 2, buff, len, &written );
-    BreakPoint( 0 );
+    BreakPointParm( 0 );
 }
 
 static void DoGetMSW( void )
 {
-    BreakPoint( GetMSW() );
+    BreakPointParm( GetMSW() );
 }
 
 
@@ -795,17 +792,17 @@ static bool CausePgmToLoadThisDLL( USHORT startCS, USHORT startIP )
 
 static void ExecuteUntil( USHORT CS, USHORT IP )
 {
-    byte        saved;
-    byte        breakpt = 0xCC;
+    opcode_type saved_opcode;
+    opcode_type brk_opcode = BRKPOINT;
 
-    ReadBuffer( &saved, CS, IP, sizeof( byte ) );
-    WriteBuffer( &breakpt, CS, IP, sizeof( byte ) );
+    ReadBuffer( &saved_opcode, CS, IP, sizeof( saved_opcode ) );
+    WriteBuffer( &brk_opcode, CS, IP, sizeof( brk_opcode ) );
     do {
         Buff.cmd = PT_CMD_GO;
         LibLoadPTrace( &Buff );
         ReadRegs( &Buff );
     } while( Buff.u.r.CS != CS || Buff.u.r.IP != IP );
-    WriteBuffer( &saved, CS, IP, sizeof( byte ) );
+    WriteBuffer( &saved_opcode, CS, IP, sizeof( saved_opcode ) );
 }
 
 
@@ -947,28 +944,28 @@ trap_retval ReqProg_kill( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte                ch;
+    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    ReadBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
-    ret->old = ch;
-    ch = 0xCC;
-    WriteBuffer( &ch, acc->break_addr.segment, acc->break_addr.offset, sizeof( byte ) );
+    ReadBuffer( &brk_opcode, acc->break_addr.segment, acc->break_addr.offset, sizeof( brk_opcode ) );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteBuffer( &brk_opcode, acc->break_addr.segment, acc->break_addr.offset, sizeof( brk_opcode ) );
     return( sizeof( *ret ) );
 }
 
 trap_retval ReqClear_break( void )
 {
     clear_break_req     *bp;
-    byte                ch;
+    opcode_type         brk_opcode;
 
     bp = GetInPtr( 0 );
-    ch = bp->old;
-    WriteBuffer( &ch, bp->break_addr.segment, bp->break_addr.offset, sizeof( byte ) );
+    brk_opcode = bp->old;
+    WriteBuffer( &brk_opcode, bp->break_addr.segment, bp->break_addr.offset, sizeof( brk_opcode ) );
     return( 0 );
 }
 

@@ -59,23 +59,10 @@
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doscomm.h"
+#include "cpuglob.h"
 
 #define INT_PRT_SCRN_KEY    0x05
 
-TSF32   Proc;
-byte    Break;
-
-bool                    FakeBreak;
-bool                    AtEnd;
-unsigned                NumObjects;
-struct {
-    unsigned_32         size;
-    unsigned_32         start;
-}                       *ObjInfo;
-
-static unsigned_8       RealNPXType;
-#define BUFF_SIZE       256
-char                    UtilBuff[BUFF_SIZE];
 #define IsDPMI          (_d16info.swmode == 0)
 
 typedef struct watch {
@@ -88,10 +75,24 @@ typedef struct watch {
     dpmi_watch_handle   handle2;
 } watch;
 
-#define MAX_WP 32
-watch   WatchPoints[ MAX_WP ];
-int     WatchCount;
+static struct {
+    unsigned_32         size;
+    unsigned_32         start;
+} *ObjInfo;
 
+static TSF32            Proc;
+static opcode_type      Break;
+static bool             FakeBreak;
+static bool             AtEnd;
+static unsigned         NumObjects;
+static unsigned_8       RealNPXType;
+
+#define BUFF_SIZE       256
+static char             UtilBuff[BUFF_SIZE];
+
+#define MAX_WP 32
+static watch            WatchPoints[ MAX_WP ];
+static int              WatchCount;
 
 int SetUsrTask( void )
 {
@@ -635,25 +636,29 @@ trap_retval ReqSet_break( void )
 {
     set_break_req       *acc;
     set_break_ret       *ret;
+    opcode_type         brk_opcode;
 
     _DBG_Writeln( "AccSetBreak" );
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, (byte FarPtr)&ret->old );
+    brk_opcode = ret->old;
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &Break, &brk_opcode );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval ReqClear_break( void )
 {
-    clear_break_req *acc;
-    byte            dummy;
+    clear_break_req     *acc;
+    opcode_type         dummy;
+    opcode_type         brk_opcode;
 
     acc = GetInPtr( 0 );
     _DBG_Writeln( "AccRestoreBreak" );
     /* assume all breaks removed at same time */
-    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, (byte FarPtr)&acc->old, &dummy );
+    brk_opcode = acc->old;
+    D32DebugSetBreak( acc->break_addr.offset, acc->break_addr.segment, FALSE, &brk_opcode, &dummy );
     return( 0 );
 }
 
@@ -811,17 +816,19 @@ static bool CheckWatchPoints( void )
 static unsigned ProgRun( bool step )
 {
     prog_go_ret *ret;
-    byte        int_buff[3];
+    byte        int_buff[2];
     addr48_ptr  addr;
+    opcode_type brk_opcode;
+    opcode_type saved_opcode;
 
     _DBG_Writeln( "AccRunProg" );
 
     ret = GetOutPtr( 0 );
 
     if( step ) {
-        Proc.eflags |= 0x100;
+        Proc.eflags |= TRACE_BIT;
         ret->conditions = DoRun();
-        Proc.eflags &= ~0x100;
+        Proc.eflags &= ~TRACE_BIT;
     } else if( WatchCount != 0 ) {
         if( SetDebugRegs() ) {
             ret->conditions = DoRun();
@@ -835,25 +842,26 @@ static unsigned ProgRun( bool step )
                 addr.segment = Proc.cs;
                 addr.offset = Proc.eip;
 
-                if( ReadMemory( &addr, int_buff, 3 ) == 3 && int_buff[0] == 0xcd ) {
-                    /* have to breakpoint across software interrupts because Intel
-                        doesn't know how to design chips */
-                    addr.offset = Proc.eip + 2;
-                    int_buff[0] = 0xcc;
-                    WriteMemory( &addr, int_buff, 1 );
+                /* have to breakpoint across software interrupts because Intel
+                    doesn't know how to design chips */
+                if( ReadMemory( &addr, int_buff, 2 ) == 2 && int_buff[0] == 0xcd ) {
+                    addr.offset += 2;
                 } else {
-                    Proc.eflags |= 0x100;
                     int_buff[0] = 0;
                 }
-
-                ret->conditions = DoRun();
-                if( int_buff[0] != 0 ) {
+                if( int_buff[0] != 0 && ReadMemory( &addr, &saved_opcode, sizeof( saved_opcode ) ) == sizeof( saved_opcode ) ) {
+                    brk_opcode = BRKPOINT;
+                    WriteMemory( &addr, &brk_opcode, sizeof( brk_opcode ) );
+                    ret->conditions = DoRun();
                     addr.offset = Proc.eip;
-                    WriteMemory( &addr, &int_buff[2], 1 );
+                    WriteMemory( &addr, &saved_opcode, sizeof( saved_opcode ) );
                 } else {
-                    Proc.eflags &= ~0x100;
+                    Proc.eflags |= TRACE_BIT;
+                    ret->conditions = DoRun();
+                    Proc.eflags &= ~TRACE_BIT;
                 }
-                if( !(ret->conditions & (COND_TRACE|COND_BREAK)) ) break;
+                if( !(ret->conditions & (COND_TRACE|COND_BREAK)) )
+                    break;
                 if( CheckWatchPoints() ) {
                     ret->conditions |= COND_WATCH;
                     ret->conditions &= ~(COND_TRACE|COND_BREAK);

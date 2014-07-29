@@ -33,6 +33,7 @@
 #include <windows.h>
 #undef WIN32_LEAN_AND_MEAN
 #include <tlhelp32.h>
+#include "cpuglob.h"
 #include "trpimp.h"
 #include "packet.h"
 #include "exepe.h"
@@ -124,67 +125,13 @@ typedef struct {
 #define STATE_WAIT_FOR_VDM_START        0x00000010
 #define STATE_IGNORE_DEBUG_OUT          0x00000020
 
-#if defined( _M_IX86 )
-
-    #define TRACE_BIT   0x100
-    #define BRK_POINT   0xcc
-    typedef unsigned_8  brkpnt_type;
-
-    extern void BreakPoint( void );
-    #pragma aux BreakPoint = BRK_POINT;
-
-    extern WORD DS( void );
-    #pragma aux DS = \
-            "mov        ax,ds" \
-            value[ax];
-
-    extern WORD CS( void );
-    #pragma aux CS = \
-            "mov        ax,cs" \
-            value[ax];
-
-#elif defined( _M_X64 )
-
-    #define TRACE_BIT   0x100
-    #define BRK_POINT   0xcc
-    typedef unsigned_8  brkpnt_type;
-
-    extern void BreakPoint( void );
-//    #pragma aux BreakPoint = BRK_POINT;
-
-    #define DS()        0
-    #define CS()        0
-
-#elif defined( __ALPHA__ )
-
-    #define BRK_POINT   0x00000080
-    typedef unsigned_32 brkpnt_type;
-
-    #define DS()        0
-    #define CS()        0
-
-#elif defined( __PPC__ )
-
-    #define TRACE_BIT   (1UL << MSR_L_se)
-    #define BRK_POINT   0x00000000
-    typedef unsigned_32 brkpnt_type;
-
-    #define DS()        0
-    #define CS()        0
-
-#else
-
-    #error stdnt.h not configured for machine
-
-#endif
-
 typedef struct thread_info {
     struct thread_info  *next;
     DWORD               tid;
     HANDLE              thread_handle;
     LPVOID              start_addr;
     addr_off            brk_addr;
-    brkpnt_type         brk_opcode;
+    opcode_type         brk_opcode;
     char                alive:1;
     char                suspended:1;
     char                is_wow:1;

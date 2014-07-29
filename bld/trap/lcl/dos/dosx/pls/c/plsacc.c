@@ -59,9 +59,6 @@ extern void     RelePrtScrn( void );
 
 extern bool     SetPSP( USHORT );
 
-extern short    GetDS( void );
-extern short    GetCS( void );
-
 extern void     SetMSW(unsigned);
 
 #ifdef DEBUG_TRAP
@@ -108,7 +105,7 @@ static char *DBErrors[] = {
 };
 
 extern  long            _STACKTOP;
-extern  char            _8087;
+extern  unsigned char   _8087;
 
 
 #pragma aux (metaware)  _dil_global;
@@ -849,30 +846,30 @@ trap_retval ReqClear_watch( void )
 
 trap_retval ReqSet_break( void )
 {
-    byte             ch;
+    opcode_type         brk_opcode;
     set_break_req       *acc;
     set_break_ret       *ret;
 
     _DBG(("AccSetBreak\r\n"));
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ReadMemory( &acc->break_addr, 1UL, &ch );
-    ret->old = ch;
-    ch = 0xCC;
-    WriteMemory( &acc->break_addr, 1UL, &ch );
+    ReadMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
+    ret->old = brk_opcode;
+    brk_opcode = BRKPOINT;
+    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
     return( sizeof( *ret ) );
 }
 
 
 trap_retval ReqClear_break( void )
 {
-    byte                 ch;
+    opcode_type         brk_opcode;
     clear_break_req     *acc;
 
     _DBG(("AccRestoreBreak\r\n"));
     acc = GetInPtr( 0 );
-    ch = acc->old;
-    WriteMemory( &acc->break_addr, 1UL, &ch );
+    brk_opcode = acc->old;
+    WriteMemory( &acc->break_addr, sizeof( brk_opcode ), &brk_opcode );
     return( 0 );
 }
 

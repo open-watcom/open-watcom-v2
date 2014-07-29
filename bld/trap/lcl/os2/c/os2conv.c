@@ -79,9 +79,6 @@ extern void __far *DoReturn();
 extern USHORT   DoCall( void __far *, ULONG, ULONG );
 #pragma aux DoCall parm [dx ax] [cx bx] [di si] modify [ax bx cx dx si di es];
 
-extern void bp( void );
-#pragma aux bp = 0xcc;
-
 #define LOCATOR     "OS2V2HLP.EXE"
 
 unsigned int Call32BitDosDebug( dos_debug __far *buff )
