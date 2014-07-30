@@ -61,11 +61,12 @@ essentially no worst case performance scenario.
 
 #include "cgstd.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "cg.h"
+#include "cgdefs.h"
 #if defined( _M_IX86 ) && defined( __WATCOMC__ )
     #include <i86.h>
 #endif
-#include "wio.h"
 #if defined( __NT__ )
     #include <windows.h>
 #elif defined( __OSI__ )
@@ -76,6 +77,7 @@ essentially no worst case performance scenario.
     #include <sys/seginfo.h>
 #endif
 #include "utils.h"
+#include "feprotos.h"
 
 #ifdef __DOS__
 

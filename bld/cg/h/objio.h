@@ -24,86 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Abnormal termination processing.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "cgstd.h"
-#include <stdlib.h>
-#include <signal.h>
-#include "cgdefs.h"
-#include "cg.h"
-#include "cgmisc.h"
-#include "coderep.h"
-#include "objio.h"
-#include "feprotos.h"
-
-extern void             GrabTimer( void );
-extern void             ReleTimer( void );
-
-static  bool volatile   BrkFlag;
-static  bool            OnExitFlag = TRUE;
-
-
-void SigIntFunc( int sig_num )
-/****************************/
-{
-    sig_num = sig_num;
-    BrkFlag = TRUE;
-}
-
-
-void BrkInit( void )
-/******************/
-{
-    signal( SIGINT, SigIntFunc );
-}
-
-
-void BrkFini( void )
-/******************/
-{
-}
-
-
-void InitOnExit( void )
-/*********************/
-{
-    if( OnExitFlag ) {
-        BrkInit();
-        GrabTimer();
-        atexit( BrkFini );
-        atexit( ReleTimer );
-        OnExitFlag = FALSE;
-    }
-}
-
-
-bool TBreak( void )
-/*****************/
-{
-    int         brk;
-
-    InitOnExit();
-    brk = BrkFlag;
-    BrkFlag = 0;
-    return( brk != 0 );
-}
-
-
-void CauseTBreak( void )
-/**********************/
-{
-    BrkFlag = TRUE;
-}
-
-
-void FatalError( const char *str )
-/********************************/
-{
-     ReleTimer();
-     BrkFini();
-     ScratchObj();
-     FEMessage( MSG_FATAL, (pointer)str );
-}
+extern  void            CloseObj( void );
+extern  void            OpenObj( void );
+extern  void            AbortObj( void );
+extern  void            ScratchObj( void );
+extern  void            PatchObj(objhandle,uint,byte*,uint);
+extern  void            GetFromObj(objhandle,uint,byte*,uint);
+extern  objhandle       AskObjHandle( void );
+extern  void            PutObjBytes( const void *buff, uint len );
+extern  void            PutObjOMFRec( byte class, byte *buff, uint len );

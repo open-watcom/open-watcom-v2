@@ -41,7 +41,6 @@
 #include "cgdefs.h"
 #include "seldef.h"
 #include "pccode.h"
-#include "objrep.h"
 #include "fppatch.h"
 #include "cypfunc.h"
 #include "encode.h"

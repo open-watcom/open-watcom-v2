@@ -36,7 +36,6 @@
 #include "bckdef.h"
 #include "optlbl.h"
 #include "ocentry.h"
-#include "objrep.h"
 #include "optq.h"
 #include "optclass.h"
 #include "optsave.h"

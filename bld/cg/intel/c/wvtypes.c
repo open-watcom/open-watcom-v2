@@ -34,7 +34,6 @@
 #include "coderep.h"
 #include "cgmem.h"
 #include "ocentry.h"
-#include "objrep.h"
 #include "zoiks.h"
 #include "wvdbg.h"
 #include "data.h"

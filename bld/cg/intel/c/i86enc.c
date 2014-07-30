@@ -37,7 +37,6 @@
 #include "pccode.h"
 #include "system.h"
 #include "pcencode.h"
-#include "objrep.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"

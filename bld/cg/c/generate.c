@@ -42,6 +42,7 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "makeaddr.h"
+#include "objio.h"
 #include "feprotos.h"
 
 
@@ -100,7 +101,6 @@ extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
 extern  type_class_def  TypeClass( type_def * );
-extern  void            AbortObj( void );
 extern  void            FlushOpt( void );
 extern  hw_reg_set      AllCacheRegs( void );
 extern  void            AllocALocal( name * );

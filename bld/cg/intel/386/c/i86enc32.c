@@ -36,7 +36,6 @@
 #include "system.h"
 #include "ocentry.h"
 #include "pcencode.h"
-#include "objrep.h"
 #include "zoiks.h"
 #include "zeropage.h"
 #include "fppatch.h"

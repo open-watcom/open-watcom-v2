@@ -35,7 +35,6 @@
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "ocentry.h"
-#include "objrep.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"

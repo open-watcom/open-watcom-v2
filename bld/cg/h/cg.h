@@ -96,6 +96,8 @@ typedef short               segment_id;         /* must be signed */
 
 typedef unsigned_32         cg_linenum;
 
+typedef unsigned            objhandle;
+
 /* symbolic debugging type handles */
 typedef unsigned_32         dbg_type;
 typedef struct struct_list  *dbg_struct;

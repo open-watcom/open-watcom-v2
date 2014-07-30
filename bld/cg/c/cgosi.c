@@ -34,6 +34,7 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cg.h"
+#include "objio.h"
 #include "feprotos.h"
 
 extern  char            *_BreakFlagPtr;

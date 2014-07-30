@@ -33,13 +33,11 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
-#include "wio.h"
 #include "cgdefs.h"
 #include "cgmem.h"
 #include "cg.h"
 #include "cgaux.h"
 #include "bckdef.h"
-#include "objrep.h"
 #include "system.h"
 #include "pcobj.h"
 #include "zoiks.h"
@@ -48,44 +46,43 @@
 #include "feprotos.h"
 
 
-typedef int             handle;
-typedef objhandle       objoffset;
+#define INVALID_HANDLE  NULL
 
-enum stdfd { HStdIn=0, HStdOut =1, HStdErr = 2 };
-
-extern  void            FatalError( const char * );
-
-
-static  objoffset       ObjOffset;
-static  handle          ObjFile;
-static  bool            NeedSeek;
-static  char            ObjName[PATH_MAX+1];
-static  bool            EraseObj;
-
-
-#define BOUNDARY 64
-#define LIMIT    0x7FFFFFFFL
-#define BIGGEST  0x7FFFFFFFL
-#define MASK     0x80000000U
+#define BOUNDARY        64
+#define LIMIT           0x7FFFFFFF
+#define BIGGEST         0x7FFFFFFF
+#define MASK            0x80000000U
 
 #define IOBUFSIZE       8192
-struct buf {
+
+typedef FILE            *handle;
+
+typedef objhandle       objoffset;
+
+typedef struct buf {
     struct buf  *nextbuf;
     char        *bufptr;        // current position within buffer
     char        *buf;           // start of buffer
     uint        bytes_left;     // number of bytes remaining in buffer
     uint        bytes_written;  // number of bytes written to buffer
-};
-static  struct buf      *BufList;       // start of list of buffers
-static  struct buf      *CurBuf;        // current buffer
+} buf;
+
+extern  void            FatalError( const char * );
+
+static  objoffset       ObjOffset;
+static  handle          ObjFile;
+static  bool            NeedSeek;
+static  bool            EraseObj;
+static  buf             *BufList;       // start of list of buffers
+static  buf             *CurBuf;        // current buffer
 
 
-static struct buf *NewBuffer( void )
-/**********************************/
+static buf *NewBuffer( void )
+/***************************/
 {
-    struct buf  *newbuf;
+    buf     *newbuf;
 
-    newbuf = CGAlloc( sizeof(struct buf) );
+    newbuf = CGAlloc( sizeof( buf ) );
     newbuf->buf = CGAlloc( IOBUFSIZE );
     newbuf->bufptr = newbuf->buf;
     newbuf->bytes_left = IOBUFSIZE;
@@ -98,18 +95,18 @@ static struct buf *NewBuffer( void )
 static  void    CloseStream( handle h )
 /*************************************/
 {
-    close( h );
+    fclose( h );
 }
 
 
-static  void    EraseStream( char *name )
-/***************************************/
+static  void    EraseStream( const char *name )
+/*********************************************/
 {
     remove( name );
 }
 
 
-static void cleanupLastBuffer( struct buf *pbuf )
+static void cleanupLastBuffer( buf *pbuf )
 {
     uint amt_used;
 
@@ -127,13 +124,13 @@ static  void    ObjError( int errcode )
 }
 
 
-static  handle  CreateStream( char *name )
-/****************************************/
+static  handle  CreateStream( const char *name )
+/**********************************************/
 {
-    int         retc;
+    handle      retc;
 
-    retc = open( name, O_CREAT | O_TRUNC | O_RDWR | O_BINARY, PMODE_RW );
-    if( retc == -1 ) {
+    retc = fopen( name, "wb" );
+    if( retc == INVALID_HANDLE ) {
         ObjError( errno );
     }
     return( retc );
@@ -143,10 +140,9 @@ static  handle  CreateStream( char *name )
 bool    CGOpenf( void )
 /*********************/
 {
-    CopyStr( FEAuxInfo( NULL, OBJECT_FILE_NAME ), ObjName );
-    ObjFile = -1;
-    ObjFile = CreateStream( ObjName );
-    if( ObjFile == -1 ) return( FALSE );
+    ObjFile = CreateStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
+    if( ObjFile == INVALID_HANDLE )
+        return( FALSE );
     BufList = NewBuffer();              // allocate first buffer
     CurBuf = BufList;
     return( TRUE );
@@ -162,8 +158,8 @@ void    OpenObj( void )
 }
 
 
-static  byte    DoSum( byte *buff, uint len )
-/*******************************************/
+static  byte    DoSum( const byte *buff, uint len )
+/*************************************************/
 {
     byte        sum;
 
@@ -197,17 +193,6 @@ static  objhandle   Offset( objoffset offset )
 static  void    PutStream( handle h, const byte *b, uint len )
 /************************************************************/
 {
-#if 0
-    int         retc;
-
-    retc = write( h, b, len );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    if( (unsigned_16)retc != len ) {
-        FatalError( "Error writing object file - disk is full" );
-    }
-#else
     uint        n;
 
     h = h;
@@ -224,7 +209,8 @@ static  void    PutStream( handle h, const byte *b, uint len )
             cleanupLastBuffer( CurBuf );
         }
         len -= n;
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         if( CurBuf->nextbuf == NULL ) {
             CurBuf->nextbuf = NewBuffer();
             CurBuf = CurBuf->nextbuf;
@@ -234,24 +220,12 @@ static  void    PutStream( handle h, const byte *b, uint len )
             CurBuf->bytes_left = IOBUFSIZE;
         }
     }
-#endif
 }
 
 
 static  void    GetStream( handle h, byte *b, uint len )
 /******************************************************/
 {
-#if 0
-    int         retc;
-
-    retc = read( h, b, len );
-    if( retc == -1 ) {
-        ObjError( errno );
-    }
-    if( (unsigned_16)retc != len ) {
-        _Zoiks( ZOIKS_006 );
-    }
-#else
     uint        n;
 
     h = h;
@@ -265,7 +239,8 @@ static  void    GetStream( handle h, byte *b, uint len )
         CurBuf->bufptr += n;
         CurBuf->bytes_left -= n;
         len -= n;
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         CurBuf = CurBuf->nextbuf;
         if( CurBuf == NULL ) {
             _Zoiks( ZOIKS_006 );
@@ -273,20 +248,13 @@ static  void    GetStream( handle h, byte *b, uint len )
         CurBuf->bufptr = CurBuf->buf;
         CurBuf->bytes_left = IOBUFSIZE;
     }
-#endif
 }
 
 
 static  void    SeekStream( handle h, objoffset offset )
 /******************************************************/
 {
-#if 0
-    offset = lseek( h, offset, 0 );
-    if( offset == -1 ) {
-        ObjError( errno );
-    }
-#else
-    struct buf  *pbuf;
+    buf         *pbuf;
     objoffset   n;
 
     h = h;
@@ -294,7 +262,8 @@ static  void    SeekStream( handle h, objoffset offset )
     n = 0;
     for( ;; ) {
         n += IOBUFSIZE;
-        if( n > offset ) break;
+        if( n > offset )
+            break;
         if( pbuf->nextbuf == NULL ) {
             // seeking past the end of the file (extend file)
             pbuf->bytes_written = IOBUFSIZE;
@@ -309,7 +278,6 @@ static  void    SeekStream( handle h, objoffset offset )
         cleanupLastBuffer( pbuf );
     }
     CurBuf = pbuf;
-#endif
 }
 
 
@@ -330,42 +298,31 @@ void    PutObjBytes( const void *buff, uint len )
     ObjOffset += len;
 }
 
-void    PutObjRec( byte class, byte *buff, uint len )
-/***************************************************/
+void    PutObjOMFRec( byte class, const void *buff, uint len )
+/************************************************************/
 {
-#include "pushpck1.h"
-    static struct {
-        byte            class;
-        unsigned_16     len;
-        unsigned_8      data[1024+1]; /* +1 for check sum */
-    } header;
-#include "poppck.h"
-    byte        cksum;
+    unsigned_16     blen;
+    byte            cksum;
 
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
         NeedSeek = FALSE;
     }
-    header.class = class;
-    header.len = _TargetShort( len + 1 );
-    cksum = DoSum( (byte *)&header, 3 );
-    cksum += DoSum( buff, len );
+    blen = _TargetShort( len + 1 );
+    cksum = class;
+    cksum += DoSum( (const void *)&blen, sizeof( blen ) );
+    cksum += DoSum( buff, blen );
     cksum = -cksum;
-    if( len <= (sizeof( header.data ) - 1) ) {
-        memcpy( header.data, buff, len );
-        header.data[len] = cksum;
-        PutStream( ObjFile, (byte *)&header, len + 4 );
-    } else {
-        PutStream( ObjFile, (byte *)&header, 3 );
-        PutStream( ObjFile, buff, len );
-        PutStream( ObjFile, &cksum, 1 );
-    }
+    PutStream( ObjFile, &class, 1 );
+    PutStream( ObjFile, (const byte *)&blen, sizeof( blen ) );
+    PutStream( ObjFile, buff, len );
+    PutStream( ObjFile, &cksum, 1 );
     ObjOffset += len + 4;
 }
 
 
-void    PatchObj( objhandle rec, uint roffset, byte *buff, uint len )
-/*******************************************************************/
+void    PatchObj( objhandle rec, uint roffset, const byte *buff, uint len )
+/*************************************************************************/
 {
     objoffset       recoffset;
     byte            cksum;
@@ -415,17 +372,15 @@ void    AbortObj( void )
 static void FlushBuffers( handle h )
 /**********************************/
 {
-    struct buf  *pbuf;
+    buf         *pbuf;
     int         retc;
 
-    for( ;; ) {
-        pbuf = BufList;
-        if( pbuf == NULL ) break;
-        retc = write( h, pbuf->buf, pbuf->bytes_written );
+    for( ; (pbuf = BufList) != NULL; ) {
+        BufList = pbuf->nextbuf;
+        retc = fwrite( pbuf->buf, 1, pbuf->bytes_written, h );
         if( (unsigned_16)retc != pbuf->bytes_written ) {
             FatalError( "Error writing object file" );
         }
-        BufList = pbuf->nextbuf;
         CGFree( pbuf->buf );
         CGFree( pbuf );
     }
@@ -436,13 +391,13 @@ static void FlushBuffers( handle h )
 void    CloseObj( void )
 /**********************/
 {
-    if( ObjFile != -1 ) {
+    if( ObjFile != INVALID_HANDLE ) {
         FlushBuffers( ObjFile );
         CloseStream( ObjFile );
         if( EraseObj ) {
-            EraseStream( ObjName );
+            EraseStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
         }
-        ObjFile = -1;
+        ObjFile = INVALID_HANDLE;
     }
 }
 

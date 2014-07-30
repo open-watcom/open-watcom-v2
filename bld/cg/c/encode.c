@@ -36,7 +36,6 @@
 #include "system.h"
 #include "cgaux.h"
 #include "cgdefs.h"
-#include "objrep.h"
 #include "encode.h"
 #include "data.h"
 #include "objout.h"

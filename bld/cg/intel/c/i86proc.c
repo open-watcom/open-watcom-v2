@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "objrep.h"
 #include "ocentry.h"
 #include "gen8087.h"
 #include "cgaux.h"

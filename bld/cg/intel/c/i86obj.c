@@ -35,7 +35,6 @@
 #include "cgdefs.h"
 #include "cgauxinf.h"
 #include "system.h"
-#include "objrep.h"
 #include "import.h"
 #include "fppatch.h"
 #include "cgmem.h"
@@ -51,6 +50,7 @@
 #include "dfsyms.h"
 #include "wvsyms.h"
 #include "wvtypes.h"
+#include "objio.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -140,7 +140,6 @@ extern  import_handle   AskImportHandle(cg_sym_handle);
 extern  void            TellDonePatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
 extern  void            FatalError(const char *);
-extern  void            PutObjRec(byte,byte*,uint);
 extern  void            EmptyQueue( void );
 extern  void            TellCommonLabel(label_handle,import_handle);
 extern  void            TellUnreachLabels(void);
@@ -276,7 +275,7 @@ static void FlushNames( void )
     dmp = NameCacheDumped != NULL ? NameCacheDumped->next : NameCache;
     for( ; dmp != NULL; dmp = dmp->next ) {
         if( (i + dmp->name[0]) > (sizeof( buff ) - 1) ) {
-            PutObjRec( CMD_LNAMES, buff, i );
+            PutObjOMFRec( CMD_LNAMES, buff, i );
             i = 0;
         }
         buff[i++] = dmp->name[0];
@@ -285,7 +284,7 @@ static void FlushNames( void )
         NameCacheDumped = dmp;
     }
     if( i > 0 ) {
-        PutObjRec( CMD_LNAMES, buff, i );
+        PutObjOMFRec( CMD_LNAMES, buff, i );
     }
 }
 
@@ -584,13 +583,13 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
         cmd = CMD_SEGDEF;
     }
 #endif
-    PutObjRec( cmd, obj->data.array, obj->data.used );
+    PutObjOMFRec( cmd, obj->data.array, obj->data.used );
     if( rec->exec ) {
         obj->data.used = 0;
         OutShort( LINKER_COMMENT, &obj->data );
         OutByte( LDIR_OPT_FAR_CALLS, &obj->data );
         OutIdx( rec->sidx, &obj->data );
-        PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
+        PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
     }
     obj->data.used = 0;
     rec->location = 0;
@@ -604,7 +603,7 @@ static  void    OutCGroup( omf_idx sidx, array_control *dest )
     OutIdx( CodeGroupNIdx, dest );
     OutByte( GRP_SEGIDX, dest );
     OutIdx( sidx, dest );
-    PutObjRec( CMD_GRPDEF, dest->array, dest->used );
+    PutObjOMFRec( CMD_GRPDEF, dest->array, dest->used );
     dest->used = 0;
 }
 
@@ -1026,7 +1025,7 @@ extern  void    ObjInit( void )
     OpenObj();
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
     OutName( FEAuxInfo( NULL, SOURCE_NAME ), names );
-    PutObjRec( CMD_THEADR, names->array, names->used );
+    PutObjOMFRec( CMD_THEADR, names->array, names->used );
     names->used = 0;
 #ifdef _OMF_32
     if( _IsTargetModel( EZ_OMF ) || _IsTargetModel( FLAT_MODEL ) ) {
@@ -1037,22 +1036,22 @@ extern  void    ObjInit( void )
         } else {
             OutString( "80386", names );
         }
-        PutObjRec( CMD_COMENT, names->array, names->used );
+        PutObjOMFRec( CMD_COMENT, names->array, names->used );
     }
 #else
     OutShort( DEBUG_COMMENT, names );
-    PutObjRec( CMD_COMENT, names->array, names->used );
+    PutObjOMFRec( CMD_COMENT, names->array, names->used );
 #endif
 
     names->used = 0;
     OutShort( MODEL_COMMENT, names );
     OutModel( names );
-    PutObjRec( CMD_COMENT, names->array, names->used );
+    PutObjOMFRec( CMD_COMENT, names->array, names->used );
     if( _IsTargetModel( FLAT_MODEL ) && _IsModel( DBG_DF ) ) {
         names->used = 0;
         OutShort( LINKER_COMMENT, names );
         OutByte( LDIR_FLAT_ADDRS, names );
-        PutObjRec( CMD_COMENT, names->array, names->used );
+        PutObjOMFRec( CMD_COMENT, names->array, names->used );
     }
     if( _IsntModel( DBG_DF | DBG_CV ) ) {
         names->used = 0;
@@ -1065,7 +1064,7 @@ extern  void    ObjInit( void )
             OutByte( 0, names );
         }
         OutString( FEAuxInfo( NULL, SOURCE_LANGUAGE ), names );
-        PutObjRec( CMD_COMENT, names->array, names->used );
+        PutObjOMFRec( CMD_COMENT, names->array, names->used );
     }
     names->used = 0;
     depend = NULL;
@@ -1076,12 +1075,12 @@ extern  void    ObjInit( void )
         OutShort( DEPENDENCY_COMMENT, names );
         OutLongInt( *(unsigned_32 *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
-        PutObjRec( CMD_COMENT, names->array, names->used );
+        PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
     }
     /* mark end of dependancy list */
     OutShort( DEPENDENCY_COMMENT, names );
-    PutObjRec( CMD_COMENT, names->array, names->used );
+    PutObjOMFRec( CMD_COMENT, names->array, names->used );
     names->used = 0;
 
     dgroup_def = InitArray( sizeof( byte ), MODEST_INFO, INCREMENT_INFO );
@@ -1090,11 +1089,11 @@ extern  void    ObjInit( void )
     DoSegGrpNames( dgroup_def, tgroup_def );
     if( dgroup_def->used >= 1 ) {
         FlushNames();
-        PutObjRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
+        PutObjOMFRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
     }
     if( tgroup_def->used >= 1 ) {
         FlushNames();
-        PutObjRec( CMD_GRPDEF, tgroup_def->array, tgroup_def->used );
+        PutObjOMFRec( CMD_GRPDEF, tgroup_def->array, tgroup_def->used );
     }
     KillArray( tgroup_def );
 #ifdef _OMF_32
@@ -1103,7 +1102,7 @@ extern  void    ObjInit( void )
         FlatGIndex = ++GroupIndex;
         OutIdx( FlatNIndex, dgroup_def );
         FlushNames();
-        PutObjRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
+        PutObjOMFRec( CMD_GRPDEF, dgroup_def->array, dgroup_def->used );
         dgroup_def->used = 0;
     }
 #endif
@@ -1289,7 +1288,7 @@ static  void    EjectImports( void )
         } else {
             cmd = CMD_EXTDEF;
         }
-        PutObjRec( cmd, Imports->array, Imports->used );
+        PutObjOMFRec( cmd, Imports->array, Imports->used );
         Imports->used = 0;
     }
 }
@@ -1360,15 +1359,15 @@ static void     EjectLEData( void )
             }
 #endif
         }
-        PutObjRec( cmd, obj->data.array, obj->data.used );
+        PutObjOMFRec( cmd, obj->data.array, obj->data.used );
         if( obj->fixes.used != 0 ) {
             if( CurrSeg->data_ptr_in_code ) {
                 obj->data.used = 0;
                 OutShort( LINKER_COMMENT, &obj->data );
                 OutByte( LDIR_OPT_UNSAFE, &obj->data );
-                PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
+                PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
             }
-            PutObjRec( PickOMF( CMD_FIXUPP ), obj->fixes.array, obj->fixes.used );
+            PutObjOMFRec( PickOMF( CMD_FIXUPP ), obj->fixes.array, obj->fixes.used );
             obj->fixes.used = 0;
         }
         CurrSeg->data_ptr_in_code = FALSE;
@@ -1422,7 +1421,7 @@ extern  void    OutSelect( bool starts )
             }
             OutOffset( SelStart, &obj->data );
             OutOffset( (offset)CurrSeg->location, &obj->data );
-            PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
+            PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
             obj->data.used = 0;
         }
         selIdx = 0;
@@ -1605,7 +1604,7 @@ static  void    GenComdef( void )
         } else {
             cmd = CMD_LCOMDEF;
         }
-        PutObjRec( cmd, comdef->array, comdef->used );
+        PutObjOMFRec( cmd, comdef->array, comdef->used );
         KillArray( comdef );
         TellImportHandle( sym, ImportHdl++ );
     }
@@ -1624,7 +1623,7 @@ static  void    EjectExports( void )
         } else {
             cmd = CMD_PUBDEF;
         }
-        PutObjRec( PickOMF( cmd ), obj->exports->array, obj->exports->used );
+        PutObjOMFRec( PickOMF( cmd ), obj->exports->array, obj->exports->used );
         obj->exports->used = 0;
     }
 }
@@ -1641,7 +1640,7 @@ static  void    FlushLineNum( object *obj )
         } else {
             cmd = CMD_LINNUM;
         }
-        PutObjRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
+        PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
         obj->lines_generated = 1;
         obj->line_info = FALSE;
@@ -1900,9 +1899,9 @@ static  void    EndModule( void )
 //  MODEND386 record in some situations. We can get around it by only outputing
 //  16-bit MODEND records. This causes us no pain, since we never need any
 //  features provided by the 32-bit form anyway. --- BJS
-//    PutObjRec( PickOMF( CMD_MODEND ), &b, sizeof( byte ) );
+//    PutObjOMFRec( PickOMF( CMD_MODEND ), &b, sizeof( byte ) );
 
-    PutObjRec( CMD_MODEND, &b, sizeof( byte ) );
+    PutObjOMFRec( CMD_MODEND, &b, sizeof( byte ) );
 }
 
 
@@ -1964,7 +1963,7 @@ extern  void    ObjFini( void )
         OutName( FEAuxInfo( auto_import, IMPORT_NAME ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
-            PutObjRec( CMD_EXTDEF, Imports->array, Imports->used );
+            PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
             Imports->used = 0;
         }
     }
@@ -1976,12 +1975,12 @@ extern  void    ObjFini( void )
         OutObjectName( FEAuxInfo( auto_import, IMPORT_NAME_S ), Imports );
         OutIdx( 0, Imports );           /* type index*/
         if( Imports->used >= BUFFSIZE - TOLERANCE ) {
-            PutObjRec( CMD_EXTDEF, Imports->array, Imports->used );
+            PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
             Imports->used = 0;
         }
     }
     if( Imports->used != 0 ) {
-        PutObjRec( CMD_EXTDEF, Imports->array, Imports->used );
+        PutObjOMFRec( CMD_EXTDEF, Imports->array, Imports->used );
         Imports->used = 0;
     }
     /* Emit default library search records. */
@@ -1992,7 +1991,7 @@ extern  void    ObjFini( void )
             break;
         OutShort( LIBNAME_COMMENT, Imports );
         OutString( ( (char *)FEAuxInfo( lib, LIBRARY_NAME ) ) + 1, Imports );
-        PutObjRec( CMD_COMENT, Imports->array, Imports->used );
+        PutObjOMFRec( CMD_COMENT, Imports->array, Imports->used );
         Imports->used = 0;
     }
     /* Emit alias definition records. */
@@ -2016,7 +2015,7 @@ extern  void    ObjFini( void )
         } else {
             OutName( subst_name, Imports );
         }
-        PutObjRec( CMD_ALIAS, Imports->array, Imports->used );
+        PutObjOMFRec( CMD_ALIAS, Imports->array, Imports->used );
         Imports->used = 0;
     }
 
@@ -2218,7 +2217,7 @@ static void     OutVirtFuncRef( cg_sym_handle virt )
     } else {
         OutIdx( CurrSeg->sidx, &obj->data );
     }
-    PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
+    PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
     obj->data.used = 0;
 }
 
@@ -2244,7 +2243,7 @@ extern  void    OutDLLExport( uint words, cg_sym_handle sym )
 #endif
     OutObjectName( sym, &obj->data );
     OutByte( 0, &obj->data );
-    PutObjRec( CMD_COMENT, obj->data.array, obj->data.used );
+    PutObjOMFRec( CMD_COMENT, obj->data.array, obj->data.used );
     obj->data.used = 0;
 }
 
@@ -2660,7 +2659,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
                 CurrFNo = info.fno;
                 FlushLineNum( obj );
                 OutName( fname, obj->lines );
-                PutObjRec( CMD_THEADR, obj->lines->array, obj->lines->used );
+                PutObjOMFRec( CMD_THEADR, obj->lines->array, obj->lines->used );
                 obj->lines->used = 0;
                 InitLineInfo( obj );
             }
@@ -2846,7 +2845,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
             OutShort( WEAK_EXTRN_COMMENT, cmt );
             OutIdx( idx, cmt );
             OutIdx( def_idx, cmt );
-            PutObjRec( CMD_COMENT, cmt->array, cmt->used );
+            PutObjOMFRec( CMD_COMENT, cmt->array, cmt->used );
             cmt->used = 0;
             /* fall through */
         case IMPORT_IS_CONDITIONAL:
@@ -2866,7 +2865,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
             FlushNames();
             break;
         }
-        PutObjRec( CMD_COMENT, cmt->array, cmt->used );
+        PutObjOMFRec( CMD_COMENT, cmt->array, cmt->used );
         KillArray( cmt );
     }
 }
@@ -3132,7 +3131,7 @@ extern  void    OutIBytes( byte pat, offset len )
         } else {
             cmd = CMD_LIDATA;
         }
-        PutObjRec( PickOMF( cmd ), obj->data.array, obj->data.used );
+        PutObjOMFRec( PickOMF( cmd ), obj->data.array, obj->data.used );
         obj->data.used = 0;
         IncLocation( len );
         SetMaxWritten();

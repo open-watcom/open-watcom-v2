@@ -34,7 +34,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
-#include "objrep.h"
 #include "system.h"
 #include "jumps.h"
 #include "zoiks.h"

@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "objrep.h"
 #include "cgmem.h"
 #include "data.h"
 #include "addrfold.h"

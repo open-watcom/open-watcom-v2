@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include <setjmp.h>
-#include "wio.h"
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgauxinf.h"
@@ -53,14 +52,12 @@
 #include "dw.h"
 #include "dfsyms.h"
 #include "rsccvsup.h"
+#include "objio.h"
 #include "feprotos.h"
 
-#define HANDLE_TO_OWL(x)    ((owl_file_handle)((pointer_int)x + 1))
-#define OWL_TO_HANDLE(x)    ((int)((pointer_int)x - 1))
+#define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
+#define OWL_TO_HANDLE(x)    ((FILE *)x)
 
-extern  void            CloseObj( void );
-extern  void            OpenObj( void );
-extern  void            PutObjBytes( const void *, uint );
 extern  char            *AskRTName( rt_class );
 extern  void            TryScrapLabel( label_handle );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(char *,void *),void *,import_type);
@@ -92,7 +89,6 @@ static  section_def             *currSection;
 
 static  section_def             *sectionDefs[ N_SECTIONS ];
 
-extern  int                     ObjFile;
 static  short                   CurrFNo;
 
 extern section_def *FindSection( segment_id id )
@@ -375,7 +371,7 @@ static  int PutBytes( void *handle, const char *buffer, unsigned len )
     if( handle == NULL ) {
         PutObjBytes( buffer, len );
     } else {
-        write( OWL_TO_HANDLE( handle ), buffer, len );
+        fwrite( buffer, 1, len, OWL_TO_HANDLE( handle ) );
     }
 #else
     PutObjBytes( buffer, len );
@@ -451,17 +447,15 @@ extern  void    InitSegDefs( void )
     owl_client_funcs    funcs = { PutBytes, NULL, NULL, CGAlloc, CGFree };
     owl_format          format;
 
-    owlHandle = OWLInit( &funcs,
 #if _TARGET & _TARG_AXP
-        OWL_CPU_ALPHA
+    owlHandle = OWLInit( &funcs, OWL_CPU_ALPHA );
 #elif _TARGET & _TARG_PPC
-        OWL_CPU_PPC
+    owlHandle = OWLInit( &funcs, OWL_CPU_PPC );
 #elif _TARGET & _TARG_MIPS
-        OWL_CPU_MIPS
+    owlHandle = OWLInit( &funcs, OWL_CPU_MIPS );
 #else
     #error Unknown RISC target
 #endif
-        );
 
     if( _IsModel( OBJ_ELF ) ) {
         format = OWL_FORMAT_ELF;
@@ -471,7 +465,7 @@ extern  void    InitSegDefs( void )
 
     owlFile = OWLFileInit( owlHandle, FEAuxInfo( NULL, SOURCE_NAME ), NULL, format, OWL_FILE_OBJECT );
     if( _IsTargetModel( OWL_LOGGING ) ) {
-        OWLLogEnable( owlFile, HANDLE_TO_OWL( STDOUT_FILENO ) );
+        OWLLogEnable( owlFile, HANDLE_TO_OWL( stdout ) );
     }
 
     codeSection = BACKSEGS;

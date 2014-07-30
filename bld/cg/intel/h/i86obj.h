@@ -31,6 +31,7 @@
 
 
 /* aligned */
+#include "objrep.h"
 #include "pcobj.h"
 #include "targsys.h"
 #include "escape.h"
