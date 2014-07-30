@@ -218,22 +218,6 @@ static int myatoi( char *p )
 }
 
 
-static void myitoa( int i, char *p )
-/**********************************/
-{
-    char        buff[20];
-    char        *q;
-
-    q = buff + 20;
-    *--q = '\0';
-    while( i != 0 ) {
-        *--q = ( i % 10 ) + '0';
-        i /= 10;
-    }
-    CopyStr( q, p );
-}
-
-
 static  void    CalcMemSize( void )
 /*********************************/
 {
@@ -342,9 +326,8 @@ static  void    CalcMemSize( void )
     memory_available = _16M;
 #endif
     if( max_size_queried || size_queried ) {
-        myitoa( (int)(memory_available/_1K), CopyStr( "Maximum WCGMEMORY=", buff ) );
-        write( 1, buff, Length( buff ) );
-        write( 1, "\r\n", 2 );
+        sprintf( buff, "Maximum WCGMEMORY=%d\n", (int)(memory_available/_1K) );
+        FEMessage( MSG_INFO, buff );
     }
 }
 
@@ -585,8 +568,8 @@ static  void MemToSys( mem_blk *what )
 extern void MemFini( void )
 /*************************/
 {
-    mem_blk *curr;
-    mem_blk *next;
+    mem_blk     *curr;
+    mem_blk     *next;
 
     for( curr = _Blks; curr != NULL; curr = next ) {
         next = curr->next;
@@ -596,9 +579,8 @@ extern void MemFini( void )
     {
         char    buff[80];
 
-        myitoa( (int)(PeakAlloc/_1K), CopyStr( "Peak WCG memory usage (KB): ", buff ) );
-        write( 1, buff, Length( buff ) );
-        write( 1, "\r\n", 2 );
+        sprintf( buff, "Peak WCG memory usage (KB): %d\n", (int)(PeakAlloc/_1K) );
+        FEMessage( MSG_INFO, buff );
         PeakAlloc = 0;
     }
 #endif

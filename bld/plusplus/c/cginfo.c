@@ -129,6 +129,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
             }
         }
         break;
+    case MSG_INFO:
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
         if( CompFlags.ide_console_output ) {

@@ -714,6 +714,7 @@ void FEMessage( int class, CGPOINTER parm )
             ConBlip();
         }
         break;
+    case MSG_INFO:
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
         NoteMsg( parm );

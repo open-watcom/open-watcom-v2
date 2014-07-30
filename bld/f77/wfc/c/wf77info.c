@@ -1421,6 +1421,9 @@ void    FEMessage( int msg, pointer x ) {
             SendBlip();
         }
         break;
+    case MSG_INFO :
+        PrtLst( x );
+        break;
     case MSG_INFO_PROC :
         PrintErr( x );
         break;
