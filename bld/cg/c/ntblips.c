@@ -33,7 +33,9 @@
 #undef FAR
 #include "cgstd.h"
 #include "cgdefs.h"
+#if 0
 #include "cgblip.h"
+#endif
 #include "zoiks.h"
 #include "cgaux.h"
 #include "cg.h"
