@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Spawn external commands (DOS host).
 *
 ****************************************************************************/
 
@@ -61,11 +60,16 @@ typedef struct {
 
 typedef char _fcb[16];
 
+/* Mis-aligned struct! */
+#pragma pack( push, 1 )
+
 typedef struct {
     char        chain;  /* 'M' memory block, 'Z' is last in chain */
     unsigned    owner;  /* 0x0000 ==> free, otherwise psp address */
     unsigned    size;   /* in paragraphs, not including header  */
 } dos_mem_block;
+
+#pragma pack( pop )
 
 #define MEMORY_BLOCK 'M'
 #define END_OF_CHAIN 'Z'
