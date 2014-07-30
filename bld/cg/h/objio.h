@@ -32,10 +32,11 @@
 
 extern  void            CloseObj( void );
 extern  void            OpenObj( void );
+extern  bool            CGOpenf( void );
 extern  void            AbortObj( void );
 extern  void            ScratchObj( void );
-extern  void            PatchObj(objhandle,uint,byte*,uint);
+extern  void            PatchObj(objhandle,uint,const byte *,uint);
 extern  void            GetFromObj(objhandle,uint,byte*,uint);
 extern  objhandle       AskObjHandle( void );
 extern  void            PutObjBytes( const void *buff, uint len );
-extern  void            PutObjOMFRec( byte class, byte *buff, uint len );
+extern  void            PutObjOMFRec( byte class, const void *buff, uint len );

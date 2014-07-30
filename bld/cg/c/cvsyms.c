@@ -48,7 +48,6 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  void            SetUpObj(bool);
 extern  name            *DeAlias(name*);
 extern  void            DataLong( unsigned_32 );
 extern  char            GetMemModel( void );

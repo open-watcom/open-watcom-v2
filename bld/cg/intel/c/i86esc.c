@@ -45,6 +45,7 @@
 #include "objout.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
+#include "objio.h"
 #include "feprotos.h"
 
 extern  void            OutFPPatch(fp_patches);

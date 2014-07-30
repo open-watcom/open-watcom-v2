@@ -50,6 +50,7 @@
 #include "makeaddr.h"
 #include "patch.h"
 #include "dbsyms.h"
+#include "objio.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -63,7 +64,6 @@ extern  void            FiniBlip(void);
 extern  void            InitWeights(uint);
 extern  void            CGMemInit(void);
 extern  void            TInit(void);
-extern  bool            CGOpenf(void);
 extern  void            InitCG(void);
 extern  void            SillyMemLimit(void);
 extern  void            FiniCG(void);

@@ -43,6 +43,7 @@
 #include "utils.h"
 #include "objout.h"
 #include "namelist.h"
+#include "objio.h"
 #include "feprotos.h"
 
 extern  void            OutPatch(label_handle,patch_attr);

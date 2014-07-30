@@ -42,6 +42,7 @@
 #include "types.h"
 #include "objout.h"
 #include "wvsyms.h"
+#include "objio.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 

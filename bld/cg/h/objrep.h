@@ -42,8 +42,6 @@ typedef enum {
         LONG_PATCH              = 0x04
 } patch_attr;
 
-#define INVALID 0       /*  invalid value for an objhandle */
-
 typedef struct array_control {
         pointer         array;  /*  pointer to allocated array */
         unsigned        alloc;  /*  number of elements allocated */

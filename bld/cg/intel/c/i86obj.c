@@ -1327,7 +1327,7 @@ static  void    SetAbsPatches( void )
 
     obj = CurrSeg->obj;
     for( patch = AbsPatches; patch != NULL; patch = patch->link ) {
-        if( patch->pat.ref == INVALID && patch->obj == obj ) {
+        if( patch->pat.ref == INVALID_OBJHANDLE && patch->obj == obj ) {
             patch->pat.ref = AskObjHandle();
             patch->flags |= AP_HAVE_OFFSET;
         }
@@ -2602,7 +2602,7 @@ extern  void    OutPatch( label_handle lbl, patch_attr attr )
     obj = CurrSeg->obj;
     pat->link = obj->patches;
     pat->lbl = lbl;
-    pat->pat.ref = INVALID;
+    pat->pat.ref = INVALID_OBJHANDLE;
     pat->pat.where = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     pat->pat.attr = attr;
     obj->patches = pat;
@@ -2799,7 +2799,7 @@ extern  void    OutAbsPatch( abspatch *patch, patch_attr attr )
     } else {
         obj = CurrSeg->obj;
         patch->obj = obj;
-        patch->pat.ref = INVALID;
+        patch->pat.ref = INVALID_OBJHANDLE;
         patch->pat.where = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
         patch->pat.attr = attr;
         value = 0;

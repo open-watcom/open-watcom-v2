@@ -164,7 +164,9 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
             actual = FlagsToAlignment( op->i.index_flags );
         }
         if( ( op->i.constant % 8 ) != 0 ) {
-            actual = min( actual, op->i.constant & 0x07 );
+            if( op->i.constant & 0x07 < actual ) {
+                actual = op->i.constant & 0x07;
+            }
         }
         return( align <= actual );
     }

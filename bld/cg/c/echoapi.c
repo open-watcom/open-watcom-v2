@@ -200,10 +200,8 @@ static void EchoAPIHandle        // EchoAPI A HANDLE
 {
     char buffer[16];
     EchoAPIString( lab );
-    EchoAPIChar( '[' );
-    itoa( handle, buffer, 16 );
+    sprintf( buffer, "[%x]", handle );
     EchoAPIString( buffer );
-    EchoAPIChar( ']' );
 }
 
 static void dumpLineHeader( void ) // let us know how deep inline we are
@@ -246,7 +244,7 @@ void EchoAPI              // EchoAPI ROUTINE
                   }
                   case 'i' : {
                     int val = va_arg( args, int );
-                    itoa( val, buffer, 10 );
+                    sprintf( buffer, "%d", val );
                     EchoAPIString( buffer );
                     break;
                   }
@@ -267,8 +265,7 @@ void EchoAPI              // EchoAPI ROUTINE
 #undef STR1
 #undef STR
                       default :
-                        EchoAPIString( "O_0" );
-                        itoa( op, buffer, 10 );
+                        sprintf( buffer, "O_0%d", op );
                         EchoAPIString( buffer );
                         break;
                     }
@@ -285,10 +282,8 @@ void EchoAPI              // EchoAPI ROUTINE
                   case 's' : {
                     cg_sym_handle handle = va_arg( args, cg_sym_handle );
                     EchoAPIString( FEName( handle ) );
-                    EchoAPIChar( '[' );
-                    itoa( (int)(pointer_int)handle, buffer, 16 );
+                    sprintf( buffer, "[%x]", (int)(pointer_int)handle );
                     EchoAPIString( buffer );
-                    EchoAPIChar( ']' );
                     break;
                   }
                   case 'S' : {
@@ -327,8 +322,7 @@ void EchoAPI              // EchoAPI ROUTINE
                       case_str( TY_BOOLEAN )
                       case_str( TY_PROC_PARM )
                       default :
-                        EchoAPIString( "TY_0" );
-                        itoa( type, buffer, 10 );
+                        sprintf( buffer, "TY_0%d", type );
                         EchoAPIString( buffer );
                         break;
                     }
@@ -336,8 +330,7 @@ void EchoAPI              // EchoAPI ROUTINE
                   }
                   case 'x' : {
                     int val = va_arg( args, int );
-                    EchoAPIString( "0x" );
-                    itoa( val, buffer, 16 );
+                    sprintf( buffer, "0x%x", val );
                     EchoAPIString( buffer );
                     break;
                   }

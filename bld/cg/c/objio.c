@@ -43,6 +43,7 @@
 #include "zoiks.h"
 #include "banner.h"
 #include "utils.h"
+#include "objio.h"
 #include "feprotos.h"
 
 
@@ -152,7 +153,7 @@ bool    CGOpenf( void )
 void    OpenObj( void )
 /*********************/
 {
-    ObjOffset = 0;
+    ObjOffset = INVALID_OBJHANDLE;
     NeedSeek = FALSE;
     EraseObj = FALSE;
 }
@@ -183,7 +184,7 @@ static  objhandle   Offset( objoffset offset )
 {
     if( offset > BIGGEST ) {
         FatalError( "Object file too large" );
-        return( 0 );
+        return( INVALID_OBJHANDLE );
     } else {
         return( offset );
     }
