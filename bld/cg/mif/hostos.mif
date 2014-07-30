@@ -1,5 +1,5 @@
 os2_objs = &
-    posixio.obj &
+    objio.obj &
     memlimit.obj &
     envvar.obj &
     onexit.obj &
@@ -9,7 +9,7 @@ os2_objs = &
     stack.obj
 
 osi_objs = &
-    posixio.obj &
+    objio.obj &
     memlimit.obj &
     envvar.obj &
     cgosi.obj &
@@ -17,7 +17,7 @@ osi_objs = &
     stack.obj
 
 nt_objs = &
-    posixio.obj &
+    objio.obj &
     memlimit.obj &
     envvar.obj &
     onexit.obj &
@@ -27,7 +27,7 @@ nt_objs = &
     stack.obj
 
 dos_objs = &
-    posixio.obj &
+    objio.obj &
     memlimit.obj &
     memmgr.obj &
     doblips.obj &
@@ -38,7 +38,7 @@ dos_objs = &
     stack.obj
 
 unix_objs = &
-    posixio.obj &
+    objio.obj &
     memlimit.obj &
     envvar.obj &
     onexit.obj &
