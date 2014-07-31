@@ -28,12 +28,6 @@
 
 #if defined( __UNIX__ )
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_TEXT
-#define O_TEXT 0
-#endif
 #ifndef P_WAIT
 #define P_WAIT 0
 #endif
@@ -62,10 +56,6 @@
 #define S_ISREG(x) (((x)&_S_IFMT)==_S_IFREG)
 #define S_ISCHR(x) (((x)&_S_IFMT)==_S_IFCHR)
 #define _A_VOLID 0
-#define F_OK 0
-#define X_OK 1
-#define W_OK 2
-#define R_OK 4
 #define FNM_NOMATCH     1
 #define FNM_NOESCAPE    0x01
 #define FNM_PATHNAME    0x02

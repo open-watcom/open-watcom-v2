@@ -50,6 +50,22 @@
     #endif
 #endif
 
+#if defined( _MSC_VER )
+    #define F_OK 0
+    #define X_OK 1
+    #define W_OK 2
+    #define R_OK 4
+#endif
+
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
+  #ifndef O_BINARY
+    #define O_BINARY 0
+  #endif
+  #ifndef O_TEXT
+    #define O_TEXT 0
+  #endif
+#endif
+
 /*
  * MACROS to unify file permision
  *
