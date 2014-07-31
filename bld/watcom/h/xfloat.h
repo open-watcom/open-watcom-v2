@@ -123,12 +123,12 @@ typedef struct cvt_info {
  */
 
 #if !defined( _M_IX86 ) || defined( __FLAT__ )
-typedef long_double _WCNEAR                             *ld_arg;
-typedef double      _WCNEAR                             *dbl_arg;
-typedef float       _WCNEAR                             *flt_arg;
-typedef char        _WCNEAR                             *buf_arg;
-typedef void        _WCNEAR                             *i8_arg;
-typedef void        _WCNEAR                             *u8_arg;
+typedef long_double                                     *ld_arg;
+typedef double                                          *dbl_arg;
+typedef float                                           *flt_arg;
+typedef char                                            *buf_arg;
+typedef void                                            *i8_arg;
+typedef void                                            *u8_arg;
 #else
 typedef long_double __based( __segname( "_STACK" ) )    *ld_arg;
 typedef double      __based( __segname( "_STACK" ) )    *dbl_arg;
