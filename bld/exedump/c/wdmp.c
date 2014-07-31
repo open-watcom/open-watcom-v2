@@ -38,6 +38,7 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 #include "banner.h"
+#include "clibext.h"
 
 
 char  Fname[ _MAX_FNAME ];

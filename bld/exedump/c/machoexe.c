@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-static  char    *m_segment_msg[] = {
+static  const_string_table m_segment_msg[] = {
     "4cmd                                         = ",
     "4cmdsize                                     = ",
     "016segname                                     = ",
@@ -53,7 +53,7 @@ static  char    *m_segment_msg[] = {
     NULL
 };
 
-static  char    *elf_prog_msg[] = {
+static  const_string_table elf_prog_msg[] = {
     "4type of segment                             = ",
     "4offset of segment from beginning of file    = ",
     "4segment virtual address                     = ",
@@ -65,7 +65,7 @@ static  char    *elf_prog_msg[] = {
     NULL
 };
 
-static  char    *elf_sec_msg[] = {
+static  const_string_table elf_sec_msg[] = {
     "4name of the section                         = ",
     "4section type                                = ",
     "4flags                                       = ",

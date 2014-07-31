@@ -129,6 +129,8 @@ enum {
     FORM_LX
 };
 
+typedef const char * const const_string_table;
+
 typedef struct {
     unsigned_16 len;
     char        *rname;
@@ -172,7 +174,7 @@ struct section_data {
 
 typedef struct {
     uint_32     value;
-    char        *name;
+    const char  *name;
 } readable_name;
 
 /* the debugging sections */

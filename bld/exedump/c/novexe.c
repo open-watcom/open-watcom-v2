@@ -37,7 +37,7 @@
 #include "wdfunc.h"
 
 
-static  char    *nlm_exe_msg[] = {
+static  const_string_table nlm_exe_msg[] = {
     "4code image offset                         = ",
     "4code image size                           = ",
     "4data image offset                         = ",
@@ -64,7 +64,7 @@ static  char    *nlm_exe_msg[] = {
     NULL
 };
 
-static  char    *nlm_date_msg[] = {
+static  const_string_table nlm_date_msg[] = {
     "4major version number                      = ",
     "4minor version number                      = ",
     "4revision                                  = ",
@@ -74,7 +74,7 @@ static  char    *nlm_date_msg[] = {
     NULL
 };
 
-static  char    *nlm_ext_msg[] = {
+static  const_string_table nlm_ext_msg[] = {
     "4language id                               = ",
     "4message file offset                       = ",
     "4message file length                       = ",

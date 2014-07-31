@@ -75,7 +75,7 @@ static readable_name readableReferenceOps[] = {
 #define NUM_REFERENCE_OPS \
     ( sizeof( readableReferenceOps ) / sizeof( readableReferenceOps[0] ) )
 
-static char *sectionNames[] = {
+static const_string_table sectionNames[] = {
     ".debug_info",
     ".debug_pubnames",
     ".debug_aranges",
@@ -117,24 +117,23 @@ static void sort_tables( void )
 }
 
 
-char *Getname( uint_32 value, readable_name *table, size_t size )
+const char *Getname( uint_32 value, readable_name *table, size_t size )
 /***************************************************************/
 {
     readable_name       dummy;
     readable_name       *result;
 
     dummy.value = value;
-    result = bsearch( &dummy, table, size, sizeof( readable_name ),
-        compare_table );
+    result = bsearch( &dummy, table, size, sizeof( readable_name ), compare_table );
     if( result == NULL ) return( NULL );
-    return( result->name );
+    return( (const char *)result->name );
 }
 
 
 static void getTAG( uint_32 value )
 /*********************************/
 {
-    char        *result;
+    const char  *result;
     int         i;
 
     result = Getname( value, readableTAGs, NUM_TAGS );
@@ -154,7 +153,7 @@ static void getTAG( uint_32 value )
 static void getFORM( uint_32 value )
 /**********************************/
 {
-    char        *result;
+    const char  *result;
     int         i;
 
     result = Getname( value, readableFORMs, NUM_FORMS );
@@ -174,7 +173,7 @@ static void getFORM( uint_32 value )
 static void getAT( uint_32 value )
 /********************************/
 {
-    char        *result;
+    const char  *result;
     int         i;
 
     result = Getname( value, readableATs, NUM_ATS );
@@ -310,12 +309,12 @@ static dw_locop_op const LocOpr[] = {
 #undef DW_LOC_OP
 };
 
-static char   * const OpName[] = {
+static const_string_table OpName[] = {
 #define DW_LOC_OP( __n, __v )    #__n,
 #include "dwlocinf.h"
 #undef DW_LOC_OP
 };
-static char  * const RegName[] = {
+static const_string_table RegName[] = {
 #define DW_REG( __n )    #__n,
 #include "dwreginf.h"
 #undef DW_REG
@@ -1016,7 +1015,7 @@ extern void dump_abbrevs( const uint_8 *input, uint length )
 static void get_reference_op( uint_8 value )
 /******************************************/
 {
-    char        *result;
+    const char  *result;
     int         i;
 
     result = Getname( value, readableReferenceOps, NUM_REFERENCE_OPS );

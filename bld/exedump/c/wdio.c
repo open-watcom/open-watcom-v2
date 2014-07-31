@@ -157,8 +157,8 @@ void Wdputslc( const char *buf )
     fputs( buf, stdout );
 }
 
-void Dump_header( void *data_ptr, char **msg )
-/********************************************/
+void Dump_header( void *data_ptr, const_string_table *msg )
+/**************************************************/
 {
     unsigned_8  *data = (unsigned_8 *)data_ptr;
     int         skip;
@@ -210,9 +210,9 @@ void Dump_header( void *data_ptr, char **msg )
 
 #define MAX_FLAG_SIZE   256
 
-extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore, char **msg,
-               char *prefix )
-/***********************************************************************/
+extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore,
+                       const_string_table *msg, const char *prefix )
+/****************************************************************/
 {
     char            name[MAX_FLAG_SIZE];
     char            *currpos;
@@ -235,14 +235,13 @@ extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore, char **msg,
     while( flags != 0 ) {
         if( flags & 1 ) {
             if( *msg == NULL ) {
-            if( currpos - name + 9 > MAX_FLAG_SIZE ) break;
-                *currpos = '?';
-                currpos++;
-                ultoa( mask, currpos, 16 );
-                currpos += strlen( currpos );
+                if( currpos - name + 9 > MAX_FLAG_SIZE )
+                    break;
+                currpos += sprintf( currpos, "?%x", mask );
             } else {
                 len = strlen( *msg );
-                if( currpos - name + len + 1 > MAX_FLAG_SIZE ) break;
+                if( currpos - name + len + 1 > MAX_FLAG_SIZE )
+                    break;
                 memcpy( currpos, *msg, len );
                 currpos += len;
             }
@@ -311,8 +310,8 @@ void * Wmalloc( size_t size )
 /*
  * print out a banner
  */
-void Banner( char *title )
-/************************/
+void Banner( const char *title )
+/******************************/
 {
     char    line[LINE_LEN + 1];
     int     title_len;

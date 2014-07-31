@@ -36,7 +36,7 @@
 #include "wdfunc.h"
 
 
-static  char    *pe_resource_msg[] = {
+static  const_string_table pe_resource_msg[] = {
         "4          resource flags               = ",
         "4          time/date stamp              = ",
         "2          major version number         = ",
@@ -46,7 +46,7 @@ static  char    *pe_resource_msg[] = {
         NULL
 };
 
-static  char    *pe_fixup_msg[] = {
+static  const_string_table pe_fixup_msg[] = {
         "4          page rva                       = ",
         "4          number of bytes in fixup block = ",
         NULL

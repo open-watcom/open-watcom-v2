@@ -36,7 +36,7 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 
-static  char    *dos16m_exe_msg[] = {
+static  const_string_table dos16m_exe_msg[] = {
     "2length of load module mod 200H                       = ",
     "2number of 200H pages in load module                  = ",
     "2reserved1                                            = ",
@@ -70,7 +70,7 @@ static  char    *dos16m_exe_msg[] = {
 };
 
 #if 0
-static  char    *dos16m_gdt_msg[] = {
+static  const_string_table dos16m_gdt_msg[] = {
     "2gdtlen      = ",
     "2gdtaddr     = ",
     "1gdtaddr_hi  = ",

@@ -41,7 +41,7 @@
 /* Check for a very old NE module with shorter header. */
 #define IS_OLD_NE( x )      (x.segment_off < offsetof( os2_exe_header, align ))
 
-static  char    *os2_exe_msg[] = {
+static  const_string_table os2_exe_msg[] = {
     "2link version                                         = ",
     "2offset of entry table                                = ",
     "2length of entry table                                = ",
@@ -67,7 +67,7 @@ static  char    *os2_exe_msg[] = {
     NULL
 };
 
-static  char    *os2_exe_msg_new[] = {
+static  const_string_table os2_exe_msg_new[] = {
     "2alignment shift count (0 => 9)                       = ",
     "2number of resource segments (OS/2 only)              = ",
     "1target OS (1==OS/2, 2==Windows, 3==DOS4, 4==Win386)  = ",
@@ -79,7 +79,7 @@ static  char    *os2_exe_msg_new[] = {
     NULL
 };
 
-static  char    *os2_386_msg[] = {
+static  const_string_table os2_386_msg[] = {
     "1byte order (0==little endian, 1==big endian)      = ",
     "1word order       \"                \"               = ",
     "4linear EXE format level                           = ",
@@ -129,7 +129,7 @@ static  char    *os2_386_msg[] = {
     NULL
 };
 
-static  char    *os2_obj_msg[] = {
+static  const_string_table os2_obj_msg[] = {
     "4virtual memory size              = ",
     "4          relocation base address          = ",
     "4          object flag bits                 = ",
@@ -139,7 +139,7 @@ static  char    *os2_obj_msg[] = {
     NULL
 };
 
-static  char    *map_flgs[] = {
+static  const_string_table map_flgs[] = {
     "Valid", "Iterated", "Invalid", "Zeroed", "Range", "Compressed"
 };
 

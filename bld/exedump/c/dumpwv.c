@@ -42,7 +42,7 @@
 
 static  int     currSect;
 
-static  char    *sdh_msg[] = {
+static  const_string_table sdh_msg[] = {
     "4  Module info offset   = ",
     "4  Global info offset   = ",
     "4  Address info offset  = ",
@@ -53,16 +53,12 @@ static  char    *sdh_msg[] = {
 /*
  * print_info_title - print out a title for an info section
  */
-static void print_info_title( char *title )
-/*****************************************/
+static void print_info_title( const char *title )
+/***********************************************/
 {
     char        buff[80];
-    char        sec;
 
-    strcpy( buff, title );
-    strcat( buff, " Info (section " );
-    strcat( buff, itoa( currSect, &sec, 10 ) );
-    strcat( buff, ")" );
+    sprintf( buff, "%s Info (section %d)", title, currSect );
     Banner( buff );
 
 } /* print_info_title */
@@ -70,8 +66,8 @@ static void print_info_title( char *title )
 /*
  * get_len_prefix_string - make a length-prefixed string a 0 terminated string
  */
-static void get_len_prefix_string( char *res, char *str )
-/*******************************************************/
+static void get_len_prefix_string( char *res, const char *str )
+/*************************************************************/
 {
     {
         int     i;      // WTF?!
@@ -221,7 +217,7 @@ static void dump_block( unsigned_8 *buff, bool is32 )
 
 } /* dump_block */
 
-static char *regLocStrs[] =
+static const_string_table regLocStrs[] =
 {
     "AL",
     "AH",

@@ -80,7 +80,7 @@ extern bool Dmp_mdbg_head( void );
 /*
  * wsect.c
  */
-extern char *Getname( uint_32, readable_name *, size_t );
+extern const char *Getname( uint_32, readable_name *, size_t );
 extern uint_8 *DecodeULEB128( const uint_8 *, uint_32 * );
 extern uint_8 *DecodeLEB128( const uint_8 *, int_32 * );
 uint_8 *find_abbrev( uint_32 start, uint_32 code );
@@ -181,11 +181,11 @@ extern unsigned long    WFileSize( void );
 extern void             Wdputc( char );
 extern void             Wdputs( const char * );
 extern void             Wdputslc( const char * );
-extern void             Dump_header( void *, char ** );
+extern void             Dump_header( void *, const char * const * );
 extern void             Dump_asciiz( unsigned long offset );
-extern void             DumpFlags( unsigned_32, unsigned_32, char **, char * );
+extern void             DumpFlags( unsigned_32, unsigned_32, const char * const *, const char * );
 extern void             *Wmalloc( size_t );
-extern void             Banner( char * );
+extern void             Banner( const char * );
 
 /*
  * wdres.c
@@ -198,7 +198,7 @@ extern void Dmp_resrc2_tab( void );
  */
 extern bool Dmp_coff_head( void );
 extern bool Dmp_ar_head( void );
-extern char *Coff_obj_name( char * );
+extern const char *Coff_obj_name( const char * );
 
 /*
  * dumpcv.c

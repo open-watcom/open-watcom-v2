@@ -39,7 +39,7 @@
 #include "wdfunc.h"
 
 
-static  char    *mdh_msg[] = {
+static  const_string_table mdh_msg[] = {
     "1EXE major                 = ",
     "1EXE minor                 = ",
     "1OBJ major                 = ",

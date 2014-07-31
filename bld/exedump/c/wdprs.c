@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-static char     hexchar[] = "0123456789ABCDEF";
+static const char   hexchar[] = "0123456789ABCDEF";
 
 /*
  * Put a hex number

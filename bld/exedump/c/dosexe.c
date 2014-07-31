@@ -35,7 +35,7 @@
 #include "wdglb.h"
 #include "wdfunc.h"
 
-static  char    *dos_exe_msg[] = {
+static  const_string_table dos_exe_msg[] = {
     "2length of load module mod 200H                       = ",
     "2number of 200H pages in load module                  = ",
     "2number of relocation items                           = ",

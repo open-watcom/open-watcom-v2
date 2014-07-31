@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-static  char    *coff_hdr_msg[] = {
+static  const_string_table coff_hdr_msg[] = {
     "2cpu type                                        = ",
     "2number of object entries                        = ",
     "4time/date stamp                                 = ",
@@ -75,12 +75,13 @@ static void load_string_table( coff_file_header *header )
     }
 }
 
-extern char *Coff_obj_name( char *id )
-/************************************/
+extern const char *Coff_obj_name( const char *id )
+/************************************************/
 {
     unsigned_32 offset;
 
-    if( String_table == NULL ) return( id );
+    if( String_table == NULL )
+        return( id );
     if( *id == '/' ) {
         offset = 0;
         id += 1;

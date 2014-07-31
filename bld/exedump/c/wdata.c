@@ -39,7 +39,7 @@
 #include "wdfunc.h"
 
 
-static  char    *reloc_addr_type[] = {
+static  const_string_table reloc_addr_type[] = {
     "OFF",
     "BAS",
     "PTR",

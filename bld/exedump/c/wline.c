@@ -108,8 +108,8 @@ static void dump_state( state_info *state )
 static void get_standard_op( uint_8 value )
 /*****************************************/
 {
-    char *              result;
-    int                 i;
+    const char      *result;
+    int             i;
 
     result = Getname( value, readableStandardOps, NUM_STANDARD_OPS );
     if( result == NULL ) {

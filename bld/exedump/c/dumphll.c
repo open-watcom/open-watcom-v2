@@ -41,14 +41,14 @@
 #include "hll.h"
 
 
-static  char    *hll_dir_info_msg[] = {
+static  const_string_table hll_dir_info_msg[] = {
     "2cbDirHeader - length of directory header      = ",
     "2cbDirEntry  - lentgh of each entry            = ",
     "4cDir        - number of directory entries     = ",
     NULL
 };
 
-static  char    *hll_dir_entry_msg[] = {
+static  const_string_table hll_dir_entry_msg[] = {
     "2subsection  - subsection index                = ",
     "2iMod        - module index (1 based)          = ",
     "4lfo         - offset from base                = ",
@@ -56,7 +56,7 @@ static  char    *hll_dir_entry_msg[] = {
     NULL
 };
 
-static  char    *hll_sstModules_msg[] = {
+static  const_string_table hll_sstModules_msg[] = {
     "2  Seg          - segment index                = ",
     "4  Off          - code start within segment    = ",
     "4  cbSeg        - size of code in segment      = ",
@@ -68,40 +68,40 @@ static  char    *hll_sstModules_msg[] = {
     NULL
 };
 
-static  char    *hll_seg_msg[] = {
+static  const_string_table hll_seg_msg[] = {
     "2    Seg      - segment index                  = ",
     "4    Off      - code start within segment      = ",
     "4    cbSeg    - size of code in segment        = ",
     NULL
 };
 
-static  char    *cv_sstPublics_msg[] = {
+static  const_string_table cv_sstPublics_msg[] = {
     "2  offset       - symbol offset within segment = ",
     "2  seg          - segment index                = ",
     "2  type         - type index (0 if no data)    = ",
     NULL
 };
 
-static  char    *hll_sstPublics_msg[] = {
+static  const_string_table hll_sstPublics_msg[] = {
     "4  offset       - symbol offset within segment = ",
     "2  seg          - segment index                = ",
     "2  type         - type index (0 if no data)    = ",
     NULL
 };
 
-static  char    *cv_sstSrcLnSeg_msg[] = {
+static  const_string_table cv_sstSrcLnSeg_msg[] = {
     "2  seg          - segment index                = ",
     "2  cPair        - number of line/offset pairs  = ",
     NULL
 };
 
-static  char    *cv_lnoff16_msg[] = {
+static  const_string_table cv_lnoff16_msg[] = {
     "2  line         - source line number           = ",
     "2  offset       - offset within segment        = ",
     NULL
 };
 
-static  char    *cv_dir_entry_msg[] = {
+static  const_string_table cv_dir_entry_msg[] = {
     "2SubSectionType  - subsection type             = ",
     "2ModuleIndex     - module index (1 based)      = ",
     "4lfoStart        - offset from base            = ",
@@ -109,7 +109,7 @@ static  char    *cv_dir_entry_msg[] = {
     NULL
 };
 
-static  char    *cv_sstModules_msg[] = {
+static  const_string_table cv_sstModules_msg[] = {
     "2  Seg          - segment index                = ",
     "2  Off          - code start within segment    = ",
     "2  cbSeg        - size of code in segment      = ",
@@ -120,7 +120,7 @@ static  char    *cv_sstModules_msg[] = {
     NULL
 };
 
-static  char    *cv_seg_msg[] = {
+static  const_string_table cv_seg_msg[] = {
     "2    Seg      - segment index                  = ",
     "2    Off      - code start within segment      = ",
     "2    cbSeg    - size of code in segment        = ",
@@ -128,7 +128,7 @@ static  char    *cv_seg_msg[] = {
 };
 
 #if 0 /* not currently used, code is broken. */
-static  char    *hl4_linnum_first_msg[] = {
+static  const_string_table hl4_linnum_first_msg[] = {
     "2  line        - line number (must be zero)     = ",
     "1  entryType   - format of entry                = ",
     "1  reserved    - padding                        = ",
@@ -138,14 +138,14 @@ static  char    *hl4_linnum_first_msg[] = {
     NULL
 };
 
-static  char    *hl4_filetab_entry_msg[] = {
+static  const_string_table hl4_filetab_entry_msg[] = {
     "4  firstChar  - first displayable listing char = ",
     "4  numChars   - displayable chars per line     = ",
     "4  numFiles   - number of files in table       = ",
     NULL
 };
 
-static  char    *hl3_linnum_first_msg[] = {
+static  const_string_table hl3_linnum_first_msg[] = {
     "2  line        - line number (must be zero)     = ",
     "1  entry_type  - format of entry                = ",
     "1  reserved    - padding                        = ",
@@ -155,14 +155,14 @@ static  char    *hl3_linnum_first_msg[] = {
     NULL
 };
 
-static  char    *hl3_filetab_entry_msg[] = {
+static  const_string_table hl3_filetab_entry_msg[] = {
     "4  srcStart   - start of source                = ",
     "4  numRecords - number of source records       = ",
     "4  numFiles   - number of files in table       = ",
     NULL
 };
 
-static  char    *hll_linnum_entry_msg[] = {
+static  const_string_table hll_linnum_entry_msg[] = {
     "2    line     - line number                    = ",
     "2    sfi      - source file index              = ",
     "4    offset   - offset within segment          = ",

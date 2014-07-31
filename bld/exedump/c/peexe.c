@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-static  char    *pe_exe_msg[] = {
+static  const_string_table pe_exe_msg[] = {
     "2cpu type                                        = ",
     "2number of object entries                        = ",
     "4time/date stamp                                 = ",
@@ -79,7 +79,7 @@ static  char    *pe_exe_msg[] = {
     NULL
 };
 
-static  char    *pe_obj_msg[] = {
+static  const_string_table pe_obj_msg[] = {
     "4          virtual memory size                = ",
     "4          relative virtual address           = ",
     "4          physical size of initialized data  = ",
@@ -91,7 +91,7 @@ static  char    *pe_obj_msg[] = {
     NULL
 };
 
-static  char    *PEHeadFlags[] = {
+static  const_string_table PEHeadFlags[] = {
     "RELOCS_STRIPPED",
     "EXECUTABLE",
     "LINES_STRIPPED",
@@ -110,7 +110,7 @@ static  char    *PEHeadFlags[] = {
     "BIG_ENDIAN"
 };
 
-static  char    *PEObjFlags[] = {
+static  const_string_table PEObjFlags[] = {
     "DUMMY",
     "NOLOAD",
     "GROUPED",
@@ -291,8 +291,7 @@ static void DumpPEObjFlags( unsigned_32 flags )
 
     alignval = (flags & PE_OBJ_ALIGN_MASK) >> PE_OBJ_ALIGN_SHIFT;
     if( alignval != 0 ) {
-        memcpy( buf, "ALIGN", 5 );
-        utoa( 1 << (alignval - 1), buf + 5, 10 );
+        sprintf( buf, "ALIGN%u", 1 << (alignval - 1) );
     } else {
         buf[0] = '\0';
     }

@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-static  char    *qnx_def_msg[] = {
+static  const_string_table qnx_def_msg[] = {
     "2version number                              = ",
     "2cflags                                      = ",
     "2cpu (86, 186, 286, 386, 486)                = ",
@@ -60,7 +60,7 @@ static  char    *qnx_def_msg[] = {
     NULL
 };
 
-static  char    *qnx_data_msg[] = {
+static  const_string_table qnx_data_msg[] = {
     "2segment index          = ",
     "4offset                 = ",
     NULL
@@ -220,10 +220,8 @@ static void dmp_banner( void )
 /****************************/
 {
     char        buff[80];
-    char        sec;
 
-    strcpy( buff, "Data Table " );
-    strcat( buff, itoa( Data_count, &sec, 10 ) );
+    sprintf( buff, "Data Table %u", Data_count );
     Banner( buff );
 }
 

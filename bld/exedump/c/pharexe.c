@@ -37,7 +37,7 @@
 #include "wdfunc.h"
 
 
-static  char    *phar_exe_msg[] = {
+static  const_string_table phar_exe_msg[] = {
     "2file size mod 512                         = ",
     "2file size in blocks                       = ",
     "2number of relocation items                = ",
@@ -53,7 +53,7 @@ static  char    *phar_exe_msg[] = {
     NULL
 };
 
-static  char    *phar_ext_msg[] = {
+static  const_string_table phar_ext_msg[] = {
     "2file format level (1==flat, 2==multi-seg) = ",
     "2header size in bytes                      = ",
     "4file size in bytes                        = ",
@@ -91,7 +91,7 @@ static  char    *phar_ext_msg[] = {
     NULL
 };
 
-static  char    *rtp_blk_msg[] = {
+static  const_string_table rtp_blk_msg[] = {
     "2-MINREAL   switch value                   = ",
     "2-MAXREAL   switch value                   = ",
     "2-MINIBUF   switch value                   = ",
@@ -105,7 +105,7 @@ static  char    *rtp_blk_msg[] = {
     NULL
 };
 
-static  char    *tss_msg[] = {
+static  const_string_table tss_msg[] = {
     "2        LINK TO PREV TSS    = ",
     "2        zero                = ",
     "4        ESP0                = ",

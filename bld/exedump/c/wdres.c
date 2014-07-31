@@ -42,7 +42,7 @@ typedef struct os2_res_entry {
     unsigned_16         name_id;
 } os2_res_entry;
 
-static  char    *resource_type[] = {
+static  const_string_table resource_type[] = {
     "Unkown resource type\n",
     "Cursor\n",
     "Bitmap\n",
@@ -61,7 +61,7 @@ static  char    *resource_type[] = {
     "Nametable\n"
 };
 
-static  char    *resource_type_os2[] = {
+static  const_string_table resource_type_os2[] = {
     "Unkown resource type\n",
     "Pointer\n",
     "Bitmap\n",

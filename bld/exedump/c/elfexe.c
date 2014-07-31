@@ -44,7 +44,7 @@
     #define NATIVE_ENDIAN   1
 #endif
 
-static  char    *elf_exe_msg[] = {
+static  const_string_table elf_exe_msg[] = {
     "2file type (i.e. object, executable file)    = ",
     "2required architecture                       = ",
     "4version of the file                         = ",
@@ -61,7 +61,7 @@ static  char    *elf_exe_msg[] = {
     NULL
 };
 
-static  char    *elf_prog_msg[] = {
+static  const_string_table elf_prog_msg[] = {
     "4type of segment                             = ",
     "4offset of segment from beginning of file    = ",
     "4segment virtual address                     = ",
@@ -73,7 +73,7 @@ static  char    *elf_prog_msg[] = {
     NULL
 };
 
-static  char    *elf_sec_msg[] = {
+static  const_string_table elf_sec_msg[] = {
     "4name of the section                         = ",
     "4section type                                = ",
     "4flags                                       = ",

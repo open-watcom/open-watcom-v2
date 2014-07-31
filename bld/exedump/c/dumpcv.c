@@ -40,7 +40,7 @@
 #include "cv4.h"
 
 
-static  char    *cv4_dir_hdr_msg[] = {
+static  const_string_table cv4_dir_hdr_msg[] = {
     "2cbDirHeader - length of directory header      = ",
     "2cbDirEntry  - lentgh of each entry            = ",
     "4cDir        - number of directory entries     = ",
@@ -49,7 +49,7 @@ static  char    *cv4_dir_hdr_msg[] = {
     NULL
 };
 
-static  char    *cv4_dir_entry_msg[] = {
+static  const_string_table cv4_dir_entry_msg[] = {
     "2  subsection  - subsection index              = ",
     "2  iMod        - module index (1 based)        = ",
     "4  lfo         - offset from base              = ",
@@ -57,7 +57,7 @@ static  char    *cv4_dir_entry_msg[] = {
     NULL
 };
 
-static  char    *cv4_sstModule_msg[] = {
+static  const_string_table cv4_sstModule_msg[] = {
     "2    ovlNumber  - overlay number               = ",
     "2    iLib       - index into sstLibraries      = ",
     "2    cSeg       - number of code segments      = ",
@@ -65,19 +65,19 @@ static  char    *cv4_sstModule_msg[] = {
     NULL
 };
 
-static  char    *cv4_sstSrcModule_msg[] = {
+static  const_string_table cv4_sstSrcModule_msg[] = {
     "2    cFile      - number of source files       = ",
     "2    cSeg       - number of code segments      = ",
     NULL
 };
 
-static  char    *cv4_src_file_msg[] = {
+static  const_string_table cv4_src_file_msg[] = {
     "2      cSeg     - file's code segments         = ",
     "2      pad      - alignment padding            = ",
     NULL
 };
 
-static  char    *cv_sstPublic_msg[] = {
+static  const_string_table cv_sstPublic_msg[] = {
     "2  offset       - symbol offset within segment = ",
     "2  seg          - segment index                = ",
     "2  type         - type index (0 if no data)    = ",
@@ -85,7 +85,7 @@ static  char    *cv_sstPublic_msg[] = {
 };
 
 /*
-static  char    *cv_sstPublic32_msg[] = {
+static  const_string_table cv_sstPublic32_msg[] = {
     "4  offset       - symbol offset within segment = ",
     "2  seg          - segment index                = ",
     "2  type         - type index (0 if no data)    = ",
@@ -93,13 +93,13 @@ static  char    *cv_sstPublic32_msg[] = {
 };
 */
 
-static  char    *cv4_sstSrcLnSeg_msg[] = {
+static  const_string_table cv4_sstSrcLnSeg_msg[] = {
     "2  seg          - segment index                = ",
     "2  cPair        - number of line/offset pairs  = ",
     NULL
 };
 
-static  char    *cv_lnoff16_msg[] = {
+static  const_string_table cv_lnoff16_msg[] = {
     "2  line         - source line number           = ",
     "2  offset       - offset within segment        = ",
     NULL
