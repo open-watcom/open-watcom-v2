@@ -312,7 +312,7 @@ void    PutObjOMFRec( byte class, const void *buff, uint len )
     blen = _TargetShort( len + 1 );
     cksum = class;
     cksum += DoSum( (const void *)&blen, sizeof( blen ) );
-    cksum += DoSum( buff, blen );
+    cksum += DoSum( buff, len );
     cksum = -cksum;
     PutStream( ObjFile, &class, 1 );
     PutStream( ObjFile, (const byte *)&blen, sizeof( blen ) );
