@@ -31,9 +31,8 @@
 
 #include <string.h>
 #include <ctype.h>
-#ifdef __UNIX__
 #include <stdlib.h>
-#else
+#ifndef __UNIX__
 #include <direct.h>
 #endif
 #include "wio.h"
