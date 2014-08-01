@@ -33,8 +33,8 @@
 #define EXERES_INCLUDED
 
 #include "exeos2.h"
-//#include "rcstr.h"
 #include "wresall.h"
+#include "rcstrblk.h"
 
 typedef struct FullResourceRecord {
     struct FullResourceRecord   *Next;

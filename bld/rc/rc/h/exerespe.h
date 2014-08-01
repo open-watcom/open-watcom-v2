@@ -35,7 +35,7 @@
 
 #include "exepe.h"
 #include "wresall.h"
-//#include "rcstrblk.h"
+#include "rcstrblk.h"
 
 typedef struct PEResDirEntry {
     resource_dir_header Head;

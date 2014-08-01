@@ -37,7 +37,6 @@
 #include <limits.h>
 #include "wio.h"
 #include "watcom.h"
-#include "clibext.h"
 #include "diff.h"
 #include "clibext.h"
 
