@@ -445,7 +445,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         if( PE[0] == 'P' && PE[1] == 'E' && PE[2] == '\0' && PE[3] == '\0' ) {
             PEoffset = pe_hdr->offset + 4;
         } else {
-            _ClientSeek( coff_file_hnd, -pe_hdr->offset-4, SEEK_CUR );
+            _ClientSeek( coff_file_hnd, -(long)(pe_hdr->offset-4), SEEK_CUR );
         }
     }
     coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );

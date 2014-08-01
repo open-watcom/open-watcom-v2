@@ -123,7 +123,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
             }
             chksum = magic[0] + magic[1] + magic[2] + magic[3];
             magic = orl_hnd->funcs->read( file, len );
-            if( orl_hnd->funcs->seek( file, -( 4 + len ), SEEK_CUR ) == -1 ) {
+            if( orl_hnd->funcs->seek( file, -(long)( 4 + len ), SEEK_CUR ) == -1 ) {
                 return ORL_UNRECOGNIZED_FORMAT;
             }
             if( magic ) {
@@ -184,7 +184,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
             if( magic == NULL ) {
                 return ORL_UNRECOGNIZED_FORMAT;
             }
-            if( orl_hnd->funcs->seek( file, -offset-8, SEEK_CUR ) == -1 ) {
+            if( orl_hnd->funcs->seek( file, -(long)(offset-8), SEEK_CUR ) == -1 ) {
                 return ORL_UNRECOGNIZED_FORMAT;
             }
             machine_type = *( (uint_16 *) magic );
