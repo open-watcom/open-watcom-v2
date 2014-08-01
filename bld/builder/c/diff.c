@@ -39,6 +39,7 @@
 #include "watcom.h"
 #include "clibext.h"
 #include "diff.h"
+#include "clibext.h"
 
 typedef unsigned long ULONG;
 typedef signed long SLONG;
