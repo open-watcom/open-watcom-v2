@@ -42,8 +42,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "walloca.h"
 #include "watcom.h"
+#include "walloca.h"
 #include "demangle.h"
 #include "clibext.h"
 

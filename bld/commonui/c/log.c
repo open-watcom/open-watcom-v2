@@ -34,10 +34,8 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <io.h>
-#include <fcntl.h>
 #include <time.h>
+#include "wio.h"
 #include "watcom.h"
 #include "log.h"
 #include "mem.h"

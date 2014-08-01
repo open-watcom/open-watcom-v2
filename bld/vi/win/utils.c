@@ -41,6 +41,7 @@
 #ifdef __NT__
     #include <commctrl.h>
 #endif
+#include "clibext.h"
 
 static char windowBordersG[] =  {
 #if defined( __UNIX__ )

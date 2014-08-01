@@ -33,7 +33,7 @@
 #define EXERES_INCLUDED
 
 #include "exeos2.h"
-#include "rcstr.h"
+//#include "rcstr.h"
 #include "wresall.h"
 
 typedef struct FullResourceRecord {
@@ -60,8 +60,8 @@ typedef struct ExeResDir {
 } ExeResDir;
 
 typedef struct ResTable {
-    ExeResDir   Dir;
-    StringBlock Str;
+    ExeResDir       Dir;
+    StringsBlock    Str;
 } ResTable;
 
 typedef struct OS2ResEntry {

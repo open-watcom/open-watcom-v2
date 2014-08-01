@@ -33,9 +33,8 @@
 #include "idedrv.h"
 #ifdef __WATCOMC__
 #include <process.h>
-#else
-#include "clibext.h"
 #endif
+#include "clibext.h"
 
 #ifndef DLL_NAME
   #error DLL_NAME must be given with -d switch when DLL Driver

@@ -35,7 +35,7 @@
 
 #include "exepe.h"
 #include "wresall.h"
-#include "rcstr.h"
+//#include "rcstrblk.h"
 
 typedef struct PEResDirEntry {
     resource_dir_header Head;
@@ -64,7 +64,7 @@ typedef struct PEResDir {
     pe_va           ResRVA;
     uint_32         ResOffset;
     uint_32         ResSize;
-    StringBlock     String;
+    StringsBlock    String;
 } PEResDir;
 
 struct ResFileInfo;     // ANSI/gcc

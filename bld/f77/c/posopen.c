@@ -33,7 +33,7 @@
 #include "ftextvar.h"
 #include "posio.h"
 #include "sopen.h"
-#include "watcom.h"
+#include "clibext.h"
 
 #if defined( __RT__ )
 #include "rmemmgr.h"

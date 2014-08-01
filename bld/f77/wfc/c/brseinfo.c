@@ -46,6 +46,7 @@
 #include "fmemmgr.h"
 #include "types.h"
 #include "ferror.h"
+#include "clibext.h"
 
 // linked list storage facility
 typedef struct sym_list {

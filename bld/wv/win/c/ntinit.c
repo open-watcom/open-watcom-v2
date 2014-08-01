@@ -45,8 +45,9 @@
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
-
-extern int _8087;
+#ifdef __WATCOMC__
+#include "clibint.h"
+#endif
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
@@ -76,7 +77,7 @@ void GUImain( void )
     watcom_setup_env();
 
     SetErrorMode( ERR_MODE );
-#if defined(__386__)
+#if defined( _M_IX86 )
     _8087 = 0;
 #endif
     len = _bgetcmd( NULL, 0 );

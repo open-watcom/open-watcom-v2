@@ -1099,11 +1099,11 @@ static int tool_exec( tool_type utl, char *p1, char *p2 )
     }
     fflush( NULL );
     if( utl == TYPE_DIS ) {
-        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, "-s", "-a", p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, "-s", "-a", p1, p2, NULL );
     } else if( p2 == NULL ) {
-        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
+        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
     } else {
-        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
     }
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {

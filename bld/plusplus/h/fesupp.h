@@ -44,6 +44,7 @@
 
 #include "plusplus.h"
 #include "memmgr.h"
+#include "clibext.h"
 
 // MACRO DEFINITIONS
 

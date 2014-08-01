@@ -30,8 +30,8 @@
 
 #include "precomp.h"
 #include <direct.h>
-#include <io.h>
 #include <string.h>
+#include "wio.h"
 #ifdef __NT__
     #include <shellapi.h>
     #include <shlobj.h>

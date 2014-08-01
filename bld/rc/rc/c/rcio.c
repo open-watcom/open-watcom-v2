@@ -314,11 +314,11 @@ static void WriteWINTables( void )
 {
     if( CurrResFile.StringTable != NULL ) {
         SemWINWriteStringTable( CurrResFile.StringTable,
-                    WResIDFromNum( (long)RT_STRING ) );
+                    WResIDFromNum( (long)(pointer_int)RT_STRING ) );
     }
     if( CurrResFile.ErrorTable != NULL ) {
         SemWINWriteStringTable( CurrResFile.ErrorTable,
-                    WResIDFromNum( (long)RT_ERRTABLE ) );
+                    WResIDFromNum( (long)(pointer_int)RT_ERRTABLE ) );
     }
     if( CurrResFile.FontDir != NULL ) {
         SemWINWriteFontDir();

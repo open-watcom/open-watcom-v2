@@ -33,6 +33,7 @@
 #include "drutils.h"
 #include <string.h>
 #include "walloca.h"
+#include "clibext.h"
 
 
 static unsigned_32 ReadVWord( dr_handle where, int size )
@@ -78,9 +79,9 @@ static dr_handle  DefineFile( dr_handle start, dr_line_file *df )
 {
 
     df->name = DWRCopyString( &start );
-    df->dir = DWRVMReadULEB128( &start );  	// directory index
+    df->dir = DWRVMReadULEB128( &start );       // directory index
     df->time = DWRVMReadULEB128( &start );  // time
-    df->len = DWRVMReadULEB128( &start ); 	// length
+    df->len = DWRVMReadULEB128( &start );       // length
     return( start );
 }
 
@@ -236,9 +237,6 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 }
             }
             info->state.addr_set = FALSE;
-            if( !cont ) {
-                goto end_loop;
-            }
             info->state.basic_blk = FALSE;
         }
     } end_loop:;

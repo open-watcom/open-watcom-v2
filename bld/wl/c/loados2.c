@@ -57,7 +57,7 @@
 #include "carve.h"
 #include "permdata.h"
 #include "loadpe.h"
-#include "rcstr.h"
+#include "rcstrblk.h"
 #include "wres.h"
 #include "loados2.h"
 #include "impexp.h"
@@ -89,8 +89,8 @@ typedef struct ExeResDir {
 } ExeResDir;
 
 typedef struct ResTable {
-    ExeResDir   Dir;
-    StringBlock Str;
+    ExeResDir       Dir;
+    StringsBlock    Str;
 } ResTable;
 
 

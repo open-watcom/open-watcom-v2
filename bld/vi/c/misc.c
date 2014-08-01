@@ -41,6 +41,7 @@
 #include "source.h"
 #include "posix.h"
 #include "win.h"
+#include "clibext.h"
 
 static char *oldPrompt;
 

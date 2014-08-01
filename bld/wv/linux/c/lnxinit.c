@@ -41,8 +41,11 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-int                     _8087 = 0;
-int                     _real87 = 0;
+#ifdef __WATCOMC__
+#include "clibint.h"
+int             _8087 = 0;
+int             _real87 = 0;
+#endif
 
 
 extern void     DebugMain( void );

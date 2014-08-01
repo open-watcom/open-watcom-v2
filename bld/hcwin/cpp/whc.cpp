@@ -42,7 +42,6 @@
 #include "hpjread.h"
 #include "parsing.h"
 #include "hcerrors.h"
-
 #include <stdlib.h>
 #include <ctype.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )

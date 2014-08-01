@@ -36,16 +36,15 @@
 #include "mworkfil.hpp"
 #include "msymbol.hpp"
 #include "mtarget.hpp"
-#include "wio.h"
-
-extern "C" {
 #ifdef __UNIX__
-    #include <dirent.h>
+#include <dirent.h>
 #else
-    #include <dos.h>
-    #include <direct.h>
+#include <dos.h>
+#include <direct.h>
 #endif
-};
+#include "wio.h"
+#include "clibext.h"
+
 
 Define( MComponent )
 

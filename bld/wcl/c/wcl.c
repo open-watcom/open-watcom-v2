@@ -48,9 +48,9 @@
 #include "swchar.h"
 #include "diskos.h"
 #include "cmdlhelp.h"
-#include "clibext.h"
 #include "clcommon.h"
 #include "banner.h"
+#include "clibext.h"
 
 #ifdef BOOTSTRAP
 #define BPRFX   "b"

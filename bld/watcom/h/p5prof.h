@@ -29,6 +29,10 @@
 ****************************************************************************/
 
 
+#if defined( __WATCOMC__ ) && !defined( _COMDEF_H_INCLUDED )
+ #include <_comdef.h>
+#endif
+
 typedef unsigned long reg_32;
 
 #include "pushpck1.h"

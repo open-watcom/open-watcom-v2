@@ -32,6 +32,7 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
+#include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcrtns.h"
 #include "clibext.h"
@@ -44,7 +45,7 @@ extern void InitResTable( void )
 /******************************/
 {
     ExeResDir           *res;
-    StringBlock         *str;
+    StringsBlock        *str;
     WResDir             dir;
 
     res = &(Pass2Info.TmpFile.u.NEInfo.Res.Dir);
@@ -384,8 +385,8 @@ static void freeResTable( ResTable *restab )
  * writeStringBlock
  * NB when an error occurs this function must return without altering errno
  */
-static int writeStringBlock( int handle, StringBlock *str )
-/*********************************************************/
+static int writeStringBlock( int handle, StringsBlock *str )
+/**********************************************************/
 {
     int     numwrote;
 

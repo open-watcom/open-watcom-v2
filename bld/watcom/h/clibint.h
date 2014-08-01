@@ -41,10 +41,13 @@
 extern "C" {
 #endif
 
-extern char     *_LpDllName;    /* pointer to dll name */
+extern char             *_LpDllName;    /* pointer to dll name */
 
-extern char     **_argv;        /* argument vector */
-extern int      _argc;
+extern char             **_argv;        /* argument vector */
+extern int              _argc;
+
+extern unsigned char    _8087;
+extern unsigned char    _real87;
 
 #ifdef __cplusplus
 }

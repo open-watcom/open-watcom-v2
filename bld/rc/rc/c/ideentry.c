@@ -39,7 +39,6 @@
 #include "global.h"
 #include "errprt.h"
 #include "idedll.h"
-#include "clibint.h"
 #include "rcmem.h"
 #include "rcspawn.h"
 #include "rcldstr.h"

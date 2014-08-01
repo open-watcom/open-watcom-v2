@@ -44,6 +44,7 @@
 #include "regexp.h"
 #include "misc.h"
 #include "fnutils.h"
+#include "clibext.h"
 #include "filerx.h"
 
 static char *rxErrorStrings[] = {

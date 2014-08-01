@@ -39,6 +39,7 @@
 
 #include "memmgr.h"
 #include "idedrv.h"
+#include "clibext.h"
 
 #ifdef wpp_drv
 #   ifndef DLL_NAME

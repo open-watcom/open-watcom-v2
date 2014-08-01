@@ -30,10 +30,10 @@
 
 
 #include "vi.h"
-#include <fcntl.h>
 #include <direct.h>
-#include <io.h>
 #include <dos.h>
+#include "wio.h"
+#include "clibext.h"
 
 /*
  * MyGetFileSize - do just that

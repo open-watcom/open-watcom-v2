@@ -40,8 +40,9 @@
 #include "watcom.h"
 #include "cp.h"
 #include "getopt.h"
-#include "filerx.h"
 #include "iopath.h"
+#include "clibext.h"
+#include "filerx.h"
 
 char *OptEnvVar="cp";
 

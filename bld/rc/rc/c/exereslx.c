@@ -33,7 +33,7 @@
 #include <time.h>
 #include "wio.h"
 #include "global.h"
-#include "rcstr.h"
+#include "rcstrblk.h"
 #include "errors.h"
 #include "os2res.h"
 #include "wrmergdi.h"

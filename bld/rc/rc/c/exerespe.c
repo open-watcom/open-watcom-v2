@@ -33,6 +33,7 @@
 #include <time.h>
 #include "wio.h"
 #include "global.h"
+#include "rcstrblk.h"
 #include "rcstr.h"
 #include "errors.h"
 #include "wrmergdi.h"
@@ -148,7 +149,7 @@ static void PEResDirEntryInit( PEResDirEntry * entry, int num_entries )
 }
 
 static void PEResDirAdd( PEResDirEntry * entry, WResID * name,
-                    StringBlock * strings )
+                    StringsBlock *strings )
 /***********************************************************/
 {
     int             entry_num;
@@ -181,7 +182,7 @@ static void PEResDirAdd( PEResDirEntry * entry, WResID * name,
 
 
 static int PEResDirAddDir( PEResDirEntry * entry, WResID * name,
-                    int num_sub_entries, StringBlock * strings )
+                    int num_sub_entries, StringsBlock *strings )
 /***************************************************************/
 {
     int             entry_num;
@@ -200,7 +201,7 @@ static int PEResDirAddDir( PEResDirEntry * entry, WResID * name,
 }
 
 static int PEResDirAddData( PEResDirEntry * entry, WResID * name,
-                    WResDirWindow wind, StringBlock * strings )
+                    WResDirWindow wind, StringsBlock *strings )
 /***************************************************************/
 {
     int             entry_num;

@@ -54,6 +54,7 @@
 #include "exeelf.h"
 #include "dbgcomm.h"
 #include "dbgdwarf.h"
+#include "clibext.h"
 
 typedef struct {
     uint_32                     address;

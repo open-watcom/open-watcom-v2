@@ -34,7 +34,7 @@
 
 #include "exeflat.h"
 #include "wresall.h"
-#include "rcstr.h"
+//#include "rcstr.h"
 
 typedef struct LXResEntry {
     flat_res_table  resource;

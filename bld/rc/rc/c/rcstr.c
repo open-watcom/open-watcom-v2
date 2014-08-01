@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "wresall.h"
+#include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcrtns.h"
 #include "clibext.h"
@@ -158,7 +159,7 @@ static void CopyString( void **nextstr, WResIDName **name, int use_unicode )
     }
 } /* CopyString */
 
-static void ConstructStringBlock( StringBlock * str )
+static void ConstructStringBlock( StringsBlock * str )
 /***************************************************/
 /* the string list should be filled in when this is called */
 {
@@ -222,7 +223,7 @@ static int CompareWResIDNames( const void ** name1, const void ** name2 )
     return( WResIDNameCmp( *name1, *name2 ) );
 } /* CompareWResIDNames */
 
-extern void StringBlockBuild( StringBlock * str, WResDir dir, int use_unicode )
+extern void StringBlockBuild( StringsBlock *str, WResDir dir, int use_unicode )
 /*****************************************************************************/
 {
     int     list_len;
@@ -364,7 +365,7 @@ int CompareStringItems32( const StringItem32 *item1,
     }
 }
 
-extern int_32 StringBlockFind( StringBlock * str, WResIDName * name )
+extern int_32 StringBlockFind( StringsBlock *str, WResIDName * name )
 /*******************************************************************/
 /* if the return code is -1 the name was not found, otherwise it is the */
 /* number of bytes into the StringBlock at which to find the name. */

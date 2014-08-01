@@ -50,9 +50,8 @@
 #include "rcs.h"
 #include "autoenv.h"
 #include "iopath.h"
-#ifdef __WATCOMC__
+#include "clibext.h"
 #include "clibint.h"
-#endif
 
 static char     nullFN[] = "no_name";
 static char     *cFN;

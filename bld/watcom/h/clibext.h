@@ -79,9 +79,9 @@
 
 #define _MAX_PATH2 (_MAX_PATH + 3)
 
-#ifndef getch
-#define getch getchar
-#endif
+//#ifndef getch
+//#define getch getchar
+//#endif
 #define _vsnprintf vsnprintf
 #define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))

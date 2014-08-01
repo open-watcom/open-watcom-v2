@@ -33,8 +33,6 @@
 #include <string.h>
 #ifdef __WATCOMC__
 #include <process.h>
-#else
-#include "clibext.h"
 #endif
 #ifdef IDE_PGM
 #include <stdio.h>
@@ -42,6 +40,8 @@
 #include "main.h"
 #endif
 #include "idedrv.h"
+#include "clibext.h"
+#include "clibint.h"
 
 #define AR_MODE_ENV "WLIB$AR"
 

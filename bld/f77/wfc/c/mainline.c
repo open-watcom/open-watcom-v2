@@ -35,12 +35,12 @@
 #include "fcgbls.h"
 #include "boot77.h"
 #include "errrtns.h"
-
 #include <stdlib.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include <string.h>
+#include "clibext.h"
 
 #if defined( __INCL_ERRMSGS__ )
 extern  void            __InitError(void);

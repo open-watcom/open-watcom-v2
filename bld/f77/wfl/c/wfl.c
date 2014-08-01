@@ -56,6 +56,7 @@
 #include "banner.h"
 #include "errrtns.h"
 #include "swchar.h"
+#include "clibext.h"
 #include "pathgrp.h"
 
 #if _CPU == 8086

@@ -32,11 +32,11 @@
 #include "precomp.h"
 #include <string.h>
 #include <stdio.h>
-#include <io.h>
 #include <dos.h>
 #include <ctype.h>
 #include <direct.h>
 #include <stdlib.h>
+#include "wio.h"
 #include "watcom.h"
 #include "savelbox.h"
 #ifndef NOUSE3D
@@ -45,14 +45,15 @@
 #include "ldstr.h"
 #include "uistr.gh"
 #include "wprocmap.h"
+#include "clibext.h"
 
 /*
  * writeListBoxContents
  */
 static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
 {
-    WORD        i;
-    LRESULT     count;
+    int         i;
+    int         count;
     FILE        *f;
     char        str[256];
 

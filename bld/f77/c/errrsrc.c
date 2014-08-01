@@ -38,6 +38,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "clibext.h"
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  char            ResFlags = { 0 };

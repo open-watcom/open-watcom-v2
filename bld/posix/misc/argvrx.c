@@ -41,6 +41,7 @@
 #include "misc.h"
 #include "argvrx.h"
 #include "fnutils.h"
+#include "clibext.h"
 #include "filerx.h"
 
 char **ExpandArgv( int *oargc, char *oargv[], int isrx )

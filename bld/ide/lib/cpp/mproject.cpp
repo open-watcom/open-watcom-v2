@@ -33,6 +33,7 @@
 #include "wobjfile.hpp"
 #include "mproject.hpp"
 #include "mcompon.hpp"
+#include "clibext.h"
 
 static char _targetIdent[] = { "targetIdent" };
 

@@ -285,7 +285,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, char *file1,
         name = namebuf;
         itoa( nameid->ID.Num, name, 10 );
     }
-    if( !typeid->IsName && typeid->ID.Num == (uint_16)RT_STRING ) {
+    if( !typeid->IsName && typeid->ID.Num == (uint_16)(pointer_int)RT_STRING ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;
         if( file1 != NULL && file2 != NULL ) {
             if( warn ) {

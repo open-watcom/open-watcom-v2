@@ -66,7 +66,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
         start = SemCopyRawFile( filename->string );
         RCFREE( filename->string );
         RCFREE( filename );
-        SemAddResourceFree( name, WResIDFromNum( (long)RT_MESSAGETABLE ),
+        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_MESSAGETABLE ),
                             MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
@@ -322,7 +322,7 @@ static RcStatus copyIcons( FullIconDir * dir, int handle, ResMemFlags flags,
         loc.len = SemEndResource( loc.start );
         /* add the icon to the RES file directory */
         SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
-                WResIDFromNum( (long)RT_ICON ), flags, loc );
+                WResIDFromNum( (long)(pointer_int)RT_ICON ), flags, loc );
         /* change the reference in the ICON directory */
         entry->IsIcoFileEntry = FALSE;
         entry->Entry.Res.IconID = CurrResFile.NextCurOrIcon;
@@ -369,7 +369,7 @@ static int writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
     if (!error) {
         loc.len = SemEndResource( loc.start );
 #ifdef PREPROC_BUG
-        SemAddResourceFree( name, WResIDFromNum( (long)(RT_GROUP_ICON) ),
+        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_ICON ),
                             flags, loc );
 #else
         SemAddResourceFree( name, WResIDFromNum( (long)14 ),
@@ -465,7 +465,7 @@ static int writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
     if (!error) {
         loc.len = SemEndResource( loc.start );
 #ifdef PREPROC_BUG
-        SemAddResourceFree( name, WResIDFromNum( (long)RT_GROUP_CURSOR ),
+        SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_CURSOR ),
                          flags, loc );
 #else
         SemAddResourceFree( name, WResIDFromNum( (long)12 ),
@@ -555,7 +555,7 @@ static RcStatus copyCursors( FullCurDir * dir, int handle,
         loc.len = SemEndResource( loc.start );
         /* add the cursor to the RES file directory */
         SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
-                WResIDFromNum( (long)RT_CURSOR ), flags, loc );
+                WResIDFromNum( (long)(pointer_int)RT_CURSOR ), flags, loc );
         /* change the reference in the cursor directory */
         fileentry = entry->Entry.Cur;
         entry->IsCurFileEntry = FALSE;
@@ -747,7 +747,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, int handle, WResID *name,
 
     loc.len = SemEndResource( loc.start );
     /* add the bitmap to the RES file directory */
-    SemAddResourceFree( name, WResIDFromNum( (long)RT_BITMAP ), flags, loc );
+    SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_BITMAP ), flags, loc );
 
     RCFREE( buffer );
 
@@ -854,7 +854,7 @@ static RcStatus copyFont( FontInfo * info, int handle, WResID * name,
 
     loc.len = SemEndResource( loc.start );
     /* add the font to the RES file directory */
-    SemAddResourceFree( name, WResIDFromNum( (long)RT_FONT ), flags, loc );
+    SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_FONT ), flags, loc );
 
     RCFREE( buffer );
 
@@ -1073,7 +1073,7 @@ void SemWINWriteFontDir( void )
     loc.len = SemEndResource( loc.start );
 
     SemAddResourceFree( WResIDFromStr( FONT_DIR_NAME ),
-                WResIDFromNum( (long)RT_FONTDIR ), FONT_DIR_FLAGS, loc );
+                WResIDFromNum( (long)(pointer_int)RT_FONTDIR ), FONT_DIR_FLAGS, loc );
 
     FreeFontDir( CurrResFile.FontDir );
     CurrResFile.FontDir = NULL;

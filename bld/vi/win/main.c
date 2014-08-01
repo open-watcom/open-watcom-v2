@@ -32,17 +32,17 @@
 #include "vi.h"
 #ifdef __WATCOMC__
 #include <process.h>
-#include "clibint.h"
 #endif
 // #include "ole2def.h"
 #include "font.h"
 #include "color.h"
 #include "ldstr.h"
+#include "clibext.h"
 
 window_id       Root;
 window_id       EditContainer;
 HINSTANCE       InstanceHandle;
-char            __near EditorName[] = "Open Watcom Text Editor";
+char            _NEAR EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
 
 extern BOOL RegisterMainWindow( HANDLE );
@@ -126,7 +126,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 
     InitMem();
 
-#ifndef __NT__
+#ifdef __WINDOWS__
     if( prev != NULL && !HasShare() ) {
         MessageBox( NULLHANDLE, "SHARE.EXE must be loaded before starting Windows in order to run multiple instances of the editor",
                     EditorName, MB_OK );
@@ -137,10 +137,10 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
 #endif
 
     Comspec = getenv( "COMSPEC" );
-#ifdef __NT__
-    VarAddGlobalStr( "OS", "winnt" );
-#else
+#ifdef __WINDOWS__
     VarAddGlobalStr( "OS", "win" );
+#else
+    VarAddGlobalStr( "OS", "winnt" );
 #endif
     SetConfigFileName( CFG_NAME );
     ReadProfile();

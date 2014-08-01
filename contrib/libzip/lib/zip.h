@@ -47,6 +47,7 @@ extern "C" {
 #include <time.h>
 
 #include "watcom.h"
+#include "clibext.h"
 
 /* flags for zip_open */
 

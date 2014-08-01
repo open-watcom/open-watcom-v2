@@ -50,6 +50,7 @@
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
+#include "clibext.h"
 
 extern touchflags   TouchFlags;
 extern timestruct   TimeAdjust;

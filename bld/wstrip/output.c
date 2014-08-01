@@ -38,6 +38,7 @@
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
+#include "clibext.h"
 
 #define RESOURCE_MAX_SIZE       128
 
