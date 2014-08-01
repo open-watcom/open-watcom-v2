@@ -44,7 +44,6 @@
 #include "sample.h"
 #include "wmsg.h"
 #include "smpstuff.h"
-
 // Helper functions shared with debugger
 #if defined( __386__ )
     #define MD_x86
@@ -55,6 +54,7 @@
 #endif
 #include "exeelf.h"
 #include "lnxcomm.h"
+#include "cpuglob.h"
 
 #if 0
     #define dbg_printf( ... ) printf( __VA_ARGS__ )
@@ -86,7 +86,7 @@ static struct r_debug   *DbgRdebug;     // address of r_debug in child's space
 static Elf32_Dyn        *DbgDyn;        // VA of child's dynamic section (if present)
 static volatile bool    TimerTicked;
 static unsigned short   FlatSeg = 1;    // hardcoded value, no real segments
-static bp_t             Old_ld_bp;
+static opcode_type      saved_opcode;
 
 static seg_offset       CommonAddr;
 
@@ -495,11 +495,11 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
     // instruction, so we must be careful
     ptrace( PTRACE_GETREGS, pid, NULL, &regs );
 
-    if( ip == Rdebug.r_brk + sizeof( bp_t ) ) {
+    if( ip == Rdebug.r_brk + sizeof( opcode_type ) ) {
 #elif defined( MD_ppc )
     if( ip == Rdebug.r_brk ) {
 #endif
-        bp_t                bp_opcode = BRK_POINT;
+        opcode_type         brk_opcode = BRKPOINT;
         int                 status;
         int                 ret;
 
@@ -509,7 +509,7 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
          * at the breakpoint and execute it, but we still want to
          * keep the breakpoint.
          */
-        if( WriteMem( pid, &Old_ld_bp, Rdebug.r_brk, sizeof( bp_t ) ) != sizeof( bp_t ) )
+        if( WriteMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) ) != sizeof( saved_opcode ) )
             printf( "WriteMem() #1 failed\n" );
         ReadMem( pid, &Rdebug, (addr_off)DbgRdebug, sizeof( Rdebug ) );
         dbg_printf( "ld breakpoint hit, state is " );
@@ -545,8 +545,8 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
         } while( (ret < 0) && (errno == EINTR) );
         if( ret == -1)
             perror( "waitpid()" );
-        if( WriteMem( pid, &bp_opcode, Rdebug.r_brk, sizeof( bp_t ) ) != sizeof( bp_t ) )
-            dbg_printf( "WriteMem() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( bp_t ), Rdebug.r_brk );
+        if( WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
+            dbg_printf( "WriteMem() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
         return( TRUE ); // indicate this was our breakpoint
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
@@ -610,7 +610,7 @@ static void SampleLoop( pid_t pid )
     user_regs_struct    regs;
     bool                sample_continue = TRUE;
     int                 ret;
-
+    opcode_type         brk_opcode = BRKPOINT;
 
     TimerTicked = FALSE;
     InstSigHandler( SleepTime );
@@ -648,7 +648,6 @@ static void SampleLoop( pid_t pid )
              */
             if( !HaveRdebug && (DbgDyn != NULL) ) {
                 if( Get_ld_info( pid, DbgDyn, &Rdebug, &DbgRdebug ) ) {
-                    bp_t        opcode;
 
                     AddLibrary( pid, Rdebug.r_map );
                     HaveRdebug = TRUE;
@@ -656,10 +655,9 @@ static void SampleLoop( pid_t pid )
                     /* Set a breakpoint in dynamic linker. That way we can be
                      * informed on dynamic library load/unload events.
                      */
-                    ReadMem( pid, &Old_ld_bp, Rdebug.r_brk, sizeof( Old_ld_bp ) );
-                    dbg_printf( "setting ld breakpoint at %p, old opcode was %X\n", Rdebug.r_brk, Old_ld_bp );
-                    opcode = BRK_POINT;
-                    WriteMem( pid, &opcode, Rdebug.r_brk, sizeof( opcode ) );
+                    ReadMem( pid, &saved_opcode, Rdebug.r_brk, sizeof( saved_opcode ) );
+                    dbg_printf( "setting ld breakpoint at %p, old opcode was %X\n", Rdebug.r_brk, saved_opcode );
+                    WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) );
                 }
             }
 

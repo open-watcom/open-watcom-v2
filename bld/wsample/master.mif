@@ -129,7 +129,7 @@ inc_dirs = -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target pls
 inc_dirs = -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
 !else ifeq target linux
-inc_dirs = -I"../h" -I"$(trap_dir)/lcl/linux/h" -I"$(dig_dir)/h"
+inc_dirs = -I"../h" -I"$(trap_dir)/lcl/linux/h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 !else
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
 !endif
