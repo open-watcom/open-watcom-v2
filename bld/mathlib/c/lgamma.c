@@ -35,6 +35,7 @@
 
 #include "variety.h"
 #include <math.h>
+#include <float.h>
 #include "pi.h"
 
 /* Numerator and denominator coefficients for rational minimax
@@ -115,11 +116,9 @@
 
 #define PNT68    0.6796875E0
 
-_WMRTDATA extern const double __d_infinity;
-
 #define XBIG     2.55E305
 #define XMININ   2.23E-308
-#define XINF     __d_infinity
+#define XINF     _INFINITY
 #define EPS      2.22E-16
 #define FRTBIG   2.25E76
 
