@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include "wio.h"
 #include "linkstd.h"
 #include "ring.h"
 #include "pcobj.h"
