@@ -35,10 +35,9 @@
 
 #include "variety.h"
 #include <math.h>
+#include <float.h>
 
-_WMRTDATA extern const double __d_infinity;
-
-#define XINF    __d_infinity
+#define XINF    _INFINITY
 
 #define ALNRCS1   1.0378693562743770E0
 #define ALNRCS2   -.13364301504908918E0 

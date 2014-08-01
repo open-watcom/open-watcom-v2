@@ -130,6 +130,8 @@ _WMRTLINK double lgamma_r( double x, int *sign )
     double xm1, xm2, xm4, ysq;
     double xden, xnum;
 
+    if( sign != NULL )
+        *sign = 1;
     if( isnan( x ) )
         return( x );
     
@@ -221,17 +223,17 @@ _WMRTLINK double lgamma_r( double x, int *sign )
             res = res + LnSqrt2PI - 0.5 * corr;
             res = res + y * ( corr - 1.0 );
         }
-    } else if( -INFINITY < y && y < 0 ) {
+    } else if( -XINF < y && y < 0 ) {   /* -XINF < y < 0 */
         res = log( fabs( tgamma( y ) ) );
     } else {
-        res = XINF;
+        return( XINF );
     }
     /* Set the sign parameter before leaving */
     if( sign != NULL ) {
-        if( x >= 0 ) {
-            *sign = 1.0;
-        } else {
-            *sign = sin( PI * x ) >= 0 ? 1 : -1;
+        if( x < 0 ) {
+            if( sin( PI * x ) < 0 ) {
+                *sign = -1;
+            }
         }
     }
     return( res );

@@ -57,55 +57,51 @@ static const double
 _WMRTLINK double cbrt( double x ) 
 {
     float_double    fdx, fdt;
-    i4              hx;
+	u4 				hx;
     double          r,s,w;
     i4              sign;
 
-    if( x < 0.0 )
-        return( -cbrt( fabs( x ) ) );
-    
     fdx.u.value = x;
+	hx = fdx.u.word[1];         /* high word of x */
+	sign = hx & 0x80000000;     /* sign = sign(x) */
+	hx ^= (u4)sign;             /* hx <- |hx| ) */
 
-    hx = fdx.u.word[1];                     /* high word of x */
-    sign = hx & (u4)0x80000000;             /* sign= sign(x) */
-    hx ^= sign;
-        
-    if( hx >= (u4)0x7ff00000 )              /* cbrt(NaN,INF) is itself */
-        return( x + x ); 
-        
-    if( (hx | fdx.u.word[0]) == 0 ) 
-        return( x );                        /* cbrt(0) is itself */
+    if( hx >= 0x7FF00000 )           /* cbrt(NaN,INF) is itself */
+        return( x );
 
-    fdx.u.word[1] = hx;                     /* x <- |x| */
+    if( (hx | fdx.u.word[0]) == 0 )  /* cbrt(0) is itself */
+        return( x );
+
+	fdx.u.word[1] = hx;	            /* fdx <- |x| */
     
     fdt.u.value = 0.0;
     
     /* rough cbrt to 5 bits */
-    if( hx < (u4)0x00100000 ) {             /* subnormal number */
-        fdt.u.word[1] = (u4)0x43500000;     /* set t= 2**54 */
-        fdt.u.value *= x; 
+    if( hx < 0x00100000 ) {                 /* subnormal number */
+        fdt.u.word[1]= 0x43500000;          /* set t= 2**54 */
+        fdt.u.value *= fdx.u.value; 
         fdt.u.word[1] = fdt.u.word[1] / 3 + B2;
     } else {
-        fdt.u.word[1] = hx / 3 + B1;        
+        fdt.u.word[1] = hx / 3 + B1;
     }
 
     /* new cbrt to 23 bits, may be implemented in single precision */
-    r = fdt.u.value * fdt.u.value / x;
+    r = fdt.u.value * fdt.u.value / fdx.u.value;
     s = C + r * fdt.u.value;
     fdt.u.value *= G + F / ( s + E + D / s );   
 
     /* chopped to 20 bits and make it larger than cbrt(x) */ 
     fdt.u.word[0] = 0; 
-    fdt.u.word[1] += (u4)0x00000001;
+    fdt.u.word[1] += 1;
 
     /* one step newton iteration to 53 bits with error less than 0.667 ulps */
     s = fdt.u.value * fdt.u.value;          /* t*t is exact */
-    r = x / s;
+    r = fdx.u.value / s;
     w = fdt.u.value + fdt.u.value;
     r = ( r - fdt.u.value ) / ( w + r );    /* r-s is exact */
     fdt.u.value = fdt.u.value + fdt.u.value * r;
 
-    /* retore the sign bit */
+    /* restore the sign bit */
     fdt.u.word[1] |= sign;
         
     return( fdt.u.value );

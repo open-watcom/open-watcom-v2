@@ -67,7 +67,7 @@
 #define XBIG    171.624
 #define XMININ  2.23E-308
 #define XINF    _INFINITY
-#define XNAN    NAN
+#define XNAN    _NAN
 #define EPS     DBL_EPSILON
 
 
@@ -86,8 +86,12 @@ _WMRTLINK double tgamma( double x )
     n = 0;
     y = x;
     
-    if( isnan( x ) || x == -INFINITY )
+    if( isnan( x ) || x == XINF )
+        return( x );
+    if( x == -XINF )
         return( XNAN );
+    if( x == 0.0 )
+        return( copysign( XINF, x ) );
     
     /* Argument is negative */
     if( y < 0 ) {
@@ -100,7 +104,7 @@ _WMRTLINK double tgamma( double x )
             fact = -PI / sin( PI * res );
             y += 1.0;
         } else {
-            return( XNAN );
+            return( copysign( XINF, res ) );
         }
     }
     
@@ -144,7 +148,7 @@ _WMRTLINK double tgamma( double x )
         res = xnum  / xden + 1.0;
         
         if( y1 < y ) {
-            res = res / y1; 
+            res = res / y1;
         } else if( y1 > y ) {
             for( i = 0; i < n; i++ ) {
                 res = res * y;
