@@ -419,7 +419,7 @@ void test_fp_exp( void )
     VERIFY( CompDbl( log1p( 0.10 ), 0.095310 ) );
     
     /* logb/ilogb tests */
-    VERIFY( logb( 0.0 ) == INFINITY );
+    VERIFY( logb( 0.0 ) == -INFINITY );
     VERIFY( CompDbl( logb( 1024.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1025.0 ), 10.0 ) );
     VERIFY( CompDbl( logb( 1.0/1024.0 ), -10.0 ) );
