@@ -30,31 +30,33 @@
 ****************************************************************************/
 
 
-#include "wio.h"
-#include "layer0.h"
-#include "opcl.h"
-#include "reserr.h"
-#include "wresrtns.h"
-#include "clibext.h"
+#ifndef RCVARS_INCLUDED
+#define RCVARS_INCLUDED
 
-WResFileID ResOpenFileRO( const char *filename )
-/**********************************************/
-/* use this function to open Microsoft .RES files also */
-{
-    WResFileID  ret;
-
-#if defined( __WATCOMC__ ) && defined( __QNX__ )
-    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
-    ret = WRESOPEN( filename, O_RDONLY );
-    if( ret == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
-    setmode( ret, O_BINARY );
+/****** initialized global data ******/
+/* This variable is set to true if any error occurs. No further file I/O will */
+/* then take place. */
+#ifndef RCEXTERN
+extern int                  ErrorHasOccured;
 #else
-    ret = WRESOPEN( filename, O_RDONLY | O_BINARY );
-    if( ret == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
+RCEXTERN int                ErrorHasOccured = false;
 #endif
-    return( ret );
-}
+
+#ifndef RCEXTERN
+#define RCEXTERN extern
+#endif
+
+/****** uninitialized global data ******/
+RCEXTERN struct RCParams    CmdLineParms;
+RCEXTERN RcResFileID        CurrResFile;
+RCEXTERN RcPass2Info        Pass2Info;
+RCEXTERN char               CharSetLen[256];
+RCEXTERN bool               StopInvoked;
+RCEXTERN bool               IgnoreINCLUDE;
+RCEXTERN bool               IgnoreCWD;
+
+#undef RCEXTERN
+
+#endif
+
+

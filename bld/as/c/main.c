@@ -32,6 +32,7 @@
 #include "as.h"
 #include <setjmp.h>
 #include "preproc.h"
+#include "clibint.h"
 
 extern bool     OptionsInit( int argc, char *argv[] );
 extern void     OptionsFini( void );

@@ -33,10 +33,12 @@
 #include "global.h"
 #include "errors.h"
 #include "rcstr.h"
+#include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 #include "exeobj.h"
 #include "exelxobj.h"
 #include "exeutil.h"
-#include "rcrtns.h"
 
 /*
  * copyStubFile - copy from the begining of the file to the start of

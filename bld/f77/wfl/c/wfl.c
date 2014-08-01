@@ -55,9 +55,8 @@
 #include "cioconst.h"
 #include "banner.h"
 #include "errrtns.h"
-
-#include "pathgrp.h"
 #include "swchar.h"
+#include "pathgrp.h"
 
 #if _CPU == 8086
     #define _TARGET_    "x86 16-bit"

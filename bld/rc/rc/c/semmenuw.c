@@ -61,13 +61,15 @@ struct PopupMenuExItem {
 */
 
 
-#include <string.h>
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "wresdefn.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 static void SemFreeSubMenu( FullMenu *submenu );
 

@@ -39,6 +39,7 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mtarget.h"
+#include "clibext.h"
 
 
 /* just for people to copy in */

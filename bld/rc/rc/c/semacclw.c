@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
+#include "clibext.h"
+#include "rccore.h"
 
 const FullAccelFlags DefaultAccelFlags = { 0, FALSE };
 

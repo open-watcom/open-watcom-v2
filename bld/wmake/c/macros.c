@@ -45,12 +45,13 @@
 #include "mmemory.h"
 
 #include "mmisc.h"
-#include "pathgrp.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 
 /* arbitrarily set the length of the command line */

@@ -362,7 +362,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
 {
     switch( fmentry->parm_count ) {
     case MACRO_LINE:
-        ultoa( TokenLine, Buffer, 10 );
+        sprintf( Buffer, "%u", TokenLine );
         U32ToU64( TokenLine, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );

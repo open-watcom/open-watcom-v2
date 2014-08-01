@@ -56,6 +56,7 @@
 #include "loadfile.h"
 #include "objstrip.h"
 #include "toc.h"
+#include "clibext.h"
 
 
 static orl_handle       ORLHandle;

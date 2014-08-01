@@ -44,7 +44,6 @@
 #include "mexec.h"
 #include "mmisc.h"
 #include "mlex.h"
-#include "pathgrp.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
@@ -53,6 +52,8 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 
 STATIC BOOLEAN checkForAutoDeps( TARGET *targ, char *name, time_t *max_time );

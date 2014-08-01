@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include "clibext.h"
 
 static void GetARValue( char *element, ar_len len, char delimiter, char *buffer );
 

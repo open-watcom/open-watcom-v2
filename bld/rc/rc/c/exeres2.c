@@ -31,9 +31,12 @@
 
 #include "global.h"
 #include "errors.h"
-#include "exeutil.h"
 #include "os2res.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+#include "exeutil.h"
+#include "exeres.h"
 
 
 /* Note: IBM's OS/2 RC accepts string resource IDs/types but quietly

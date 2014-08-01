@@ -1320,7 +1320,10 @@ static void dataInitRunTimeCallHuge( target_size_t position, target_size_t diff 
     while( diff != 0 && currInit->state != DS_ERROR ) {
         dataInitCheckHugeSegment( position );
         position %= (TARGET_UINT_MAX + 1);
-        increment = min( diff, TARGET_UINT_MAX + 1 - position );
+        increment = TARGET_UINT_MAX + 1 - position;
+        if( increment > diff ) {
+            increment = diff;
+        }
         increment -= (increment % currInit->size_type );
         dataInitRunTimeCall( position, increment );
         diff -= increment;
@@ -1570,7 +1573,10 @@ static void dataInitPadOutHuge( INITIALIZE_INFO *top )
     while( diff != 0 ) {
         dataInitCheckHugeSegment( position );
         position %= (TARGET_UINT_MAX+1);
-        increment = min( diff, TARGET_UINT_MAX+1 - position );
+        increment = TARGET_UINT_MAX+1 - position;
+        if( increment > diff ) {
+            increment = diff;
+        }
         DgPadBytes( increment );
         diff -= increment;
         position += increment;

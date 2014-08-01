@@ -45,6 +45,7 @@
 #include "walloca.h"
 #include "watcom.h"
 #include "demangle.h"
+#include "clibext.h"
 
 #if defined( __WATCOMC__ )
 #define STRNCMP _fstrncmp

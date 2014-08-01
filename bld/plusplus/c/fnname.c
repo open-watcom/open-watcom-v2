@@ -55,6 +55,7 @@
 #include "stats.h"
 #include "srcfile.h"
 #include "pragdefn.h"
+#include "clibext.h"
 
 #ifdef ZZ_LEN_3
 #define ZZ_LEN_LIMIT    (36 * 36 * 36)

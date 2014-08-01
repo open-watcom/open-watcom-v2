@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
@@ -38,6 +37,8 @@
 #include "wresdefn.h"
 #include "layer0.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 /*** Forward References ***/

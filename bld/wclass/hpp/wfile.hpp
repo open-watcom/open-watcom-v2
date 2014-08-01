@@ -35,8 +35,7 @@
 
 #include "wfilenam.hpp"
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "wio.h"
 
 typedef int Handle;
 

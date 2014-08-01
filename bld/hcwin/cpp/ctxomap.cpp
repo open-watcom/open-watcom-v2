@@ -110,19 +110,19 @@ uint_32 HFCtxomap::size()
 {
     CmapRec *current = _firstRec;
     uint_32 true_offset;
-    if( !_resolved ){
-    while( current != NULL ){
-        true_offset = _offsetFile->getOffset( current->_offset );
-        if( true_offset == HFContext::_badValue ){
-        char str[16] = "MAP number ";
-        ltoa( current->_mapnum, str+11, 10 );
-        HCWarning( HLP_NOTOPIC, (const char *) str );
-        } else {
-        current->_offset = true_offset;
+    if( !_resolved ) {
+        while( current != NULL ) {
+            true_offset = _offsetFile->getOffset( current->_offset );
+            if( true_offset == HFContext::_badValue ) {
+                char str[16];
+                sprintf( str, "MAP number %ld", (long)current->_mapnum );
+                HCWarning( HLP_NOTOPIC, (const char *)str );
+            } else {
+                current->_offset = true_offset;
+            }
+            current = current->_nextRec;
         }
-        current = current->_nextRec;
-    }
-    _resolved = 1;
+        _resolved = 1;
     }
     return _size;
 }

@@ -42,6 +42,7 @@
 #include "memfuncs.h"
 #include "print.h"
 #include "cmdlhelp.h"
+#include "clibext.h"
 
 static const char * const banner[]={
     banner1w( "Multi-processor Disassembler", _WDISASM_VERSION_ ),

@@ -37,7 +37,7 @@
 #include "memmgr.h"
 #include "scan.h"
 #include "escchars.h"
-
+#include "clibext.h"
 
 char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
     char *tgt,                  // - target

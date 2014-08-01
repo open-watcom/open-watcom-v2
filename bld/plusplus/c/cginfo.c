@@ -141,9 +141,9 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_CODE_SIZE:
         if( CompFlags.ide_console_output ) {
             if( ! CompFlags.quiet_mode ) {
-                char buffer[16];
-                ultoa( (unsigned)(pointer_int)parm, buffer, 10 );
-                MsgDisplayLineArgs( "\rCode size: ", buffer, NULL );
+                char buffer[30];
+                sprintf( buffer, "\rCode size: %u", (unsigned)(pointer_int)parm );
+                MsgDisplayLine( buffer );
             }
         }
         break;

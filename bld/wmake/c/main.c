@@ -51,6 +51,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+#include "clibext.h"
 
 
 STATIC TLIST    *mustTargs;         /* targets we must update           */

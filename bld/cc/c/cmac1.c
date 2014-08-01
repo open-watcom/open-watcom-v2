@@ -33,6 +33,7 @@
 #include "scan.h"
 #include "pragdefn.h"
 #include "cfeinfo.h"
+#include "clibext.h"
 
 
 #define T_UNEXPANDABLE_ID       T_LAST_TOKEN
@@ -328,7 +329,7 @@ TOKEN SpecialMacro( special_macros spc_macro )
     CompFlags.wide_char_string = FALSE;
     switch( spc_macro ) {
     case MACRO_LINE:
-        ultoa( TokenLoc.line, Buffer, 10 );
+        sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
         ConstType = TYPE_INT;
         return( T_CONSTANT );

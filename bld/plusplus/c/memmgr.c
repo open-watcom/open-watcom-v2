@@ -44,12 +44,8 @@
 #include "pragdefn.h"
 #include "codegen.h"
 
-#ifdef USE_CG_MEMMGT
-#   undef TRACKER
-#else
-#   ifdef TRACKER
-#       include "trmem.h"
-#   endif
+#ifdef TRACKER
+    #include "trmem.h"
 #endif
 
 
@@ -277,9 +273,6 @@ static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
     defn = defn;
-#ifdef USE_CG_MEMMGT
-    BEMemInit();
-#endif
 #ifdef TRACKER
     {
         unsigned trmem_flags;
@@ -291,8 +284,12 @@ static void cmemInit(           // INITIALIZATION
         trackerHdl = _trmem_open( malloc, free, NULL, NULL, NULL,printLine,
                                   trmem_flags );
     }
+#elif defined( USE_CG_MEMMGT )
+    BEMemInit();
 #endif
-    DbgStmt( deferredFreeList = NULL );
+#ifndef NDEBUG
+    deferredFreeList = NULL;
+#endif
     cleanupList = NULL;
     permList = NULL;
     addPerm( 0 );
@@ -306,11 +303,8 @@ static void cmemFini(           // COMPLETION
 #ifndef NDEBUG
     RingFree( &deferredFreeList );
 #endif
-#ifdef USE_CG_MEMMGT
-    BEMemFini();
-#endif
 #ifdef TRACKER
-#ifndef NDEBUG
+ #ifndef NDEBUG
     if( PragDbgToggle.dump_memory ) {
         _trmem_prt_list( trackerHdl );
     }
@@ -320,7 +314,9 @@ static void cmemFini(           // COMPLETION
         __trap();
   #endif
     }
-#endif
+ #endif
+#elif defined( USE_CG_MEMMGT )
+    BEMemFini();
 #endif
 }
 

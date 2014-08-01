@@ -36,8 +36,8 @@
 #include <ctype.h>
 #include <limits.h>
 #include "watcom.h"
-
 #include "parsedlg.h"
+#include "clibext.h"
 
 #define OLD_FORMAT
 

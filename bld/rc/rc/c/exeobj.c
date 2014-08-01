@@ -33,9 +33,12 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
+#include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 #include "exeutil.h"
 #include "exeobj.h"
-#include "rcrtns.h"
+
 
 static int readObjectTable( ExeFileInfo *exe )
 /********************************************/

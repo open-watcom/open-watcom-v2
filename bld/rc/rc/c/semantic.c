@@ -36,6 +36,8 @@
 #include "semantic.h"
 #include "tmpctl.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 /* used in the work around for MS format RES files */
 static WResFileID   MSFormatHandle;     /* holding place for the RES file handle */

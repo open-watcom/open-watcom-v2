@@ -38,6 +38,9 @@
 #include "mfamily.hpp"
 #include "mstate.hpp"
 #include "mworkfil.hpp"
+extern "C" {
+    #include "clibext.h"
+};
 
 Define( MRule )
 

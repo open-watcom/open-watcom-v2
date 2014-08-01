@@ -509,11 +509,11 @@ static long doCompare( long val1, long (_NEAR *fn)( void ) )
     if( wasString ) {
         strcpy( tmp2, lastString );
         if( !cmp_str ) {
-            ltoa( val1, tmp1, 10 );
+            sprintf( tmp1, "%ld", val1 );
         }
         cmp_str = 1;
     } else if( cmp_str ) {
-        ltoa( val2, tmp2, 10 );
+        sprintf( tmp2, "%ld", val2 );
     }
     if( cmp_str ) {
         return( strcmp( tmp1, tmp2 ) );

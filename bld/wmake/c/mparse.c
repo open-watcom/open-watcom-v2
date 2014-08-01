@@ -44,6 +44,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mparse.h"
+#include "clibext.h"
 
 
 UINT16          inlineLevel;

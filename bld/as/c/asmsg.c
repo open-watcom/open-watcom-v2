@@ -40,6 +40,7 @@
 #include <fcntl.h>
 #include "wressetr.h"
 #include "wresset2.h"
+#include "clibext.h"
 
 #else
 

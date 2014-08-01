@@ -41,6 +41,7 @@
 #include "loadfile.h"
 #include "demangle.h"
 #include "msg.h"
+#include "clibext.h"
 
 char *MsgStrings[] = {
     #define pick( name, string ) string,

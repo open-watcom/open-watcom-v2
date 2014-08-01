@@ -51,6 +51,7 @@
 #include "objio.h"
 #include "mapio.h"
 #include "pathlist.h"
+#include "clibext.h"
 
 
 void WriteNulls( f_handle file, unsigned_32 len, char *name )

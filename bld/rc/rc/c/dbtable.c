@@ -35,6 +35,9 @@
 #include "dbtable.h"
 #include "write.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 typedef struct {
     DBTableHeader       header;
@@ -132,15 +135,15 @@ RcStatus OpenTable( char *fname, char *path )
         status = RS_OPEN_ERROR;
     }
     if( status == RS_OK )
-    	status = readDBHeader( fp );
+        status = readDBHeader( fp );
     if( status == RS_OK )
-    	status = readDBRanges( fp );
+        status = readDBRanges( fp );
     if( status == RS_OK )
-    	status = readDBIndex( fp );
+        status = readDBIndex( fp );
     if( status == RS_OK )
-    	status = readDBTable( fp );
+        status = readDBTable( fp );
     if( status != RS_OPEN_ERROR )
-    	RCCLOSE( fp );
+        RCCLOSE( fp );
     if( status == RS_OK ) {
         ConvToUnicode = DBStringToUnicode;
     }

@@ -29,16 +29,18 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "global.h"
 #include "yydriver.h"
-#include "rctypes.h"
 #include "semantic.h"
 #include "semantc2.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"
+//#include "os2res.h"
+#include "clibext.h"
+#include "rccore.h"
 
-#include "os2res.h"
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
@@ -121,9 +123,6 @@ typedef enum {
 /* */
 
 #ifdef YYDEBUG
-
-#include <stdio.h>
-#include "param.h"
 
 static void dump_rule( unsigned rule )
 {

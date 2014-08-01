@@ -66,6 +66,7 @@
 #include "toc.h"
 #include "objstrip.h"
 #include "rcrtns.h"
+#include "clibext.h"
 
 #define I386_TRANSFER_OP1       0xff    /* first byte of a "JMP [FOO]" */
 #define I386_TRANSFER_OP2       0x25    /* second byte of a "JMP [FOO]" */

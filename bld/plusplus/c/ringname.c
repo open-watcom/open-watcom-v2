@@ -33,6 +33,7 @@
 #include "plusplus.h"
 #include "ring.h"
 #include "ringname.h"
+#include "clibext.h"
 
 
 char *RingNameAllocVct(         // ALLOCATE A NAME, FOR A VECTOR

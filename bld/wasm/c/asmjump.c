@@ -30,10 +30,8 @@
 
 
 #include "asmglob.h"
-
 #include "asmfixup.h"
 #include "asmeval.h"
-
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "asminput.h"

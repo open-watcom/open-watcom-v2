@@ -61,6 +61,7 @@
 #include "autodep.h"
 #include "swchar.h"
 #include "ialias.h"
+#include "clibext.h"
 
 #ifndef NDEBUG
 #include "pragdefn.h"

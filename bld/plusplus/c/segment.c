@@ -47,6 +47,7 @@
 #include "dbgsupp.h"
 #include "initdefs.h"
 #include "cgbackut.h"
+#include "clibext.h"
 
 
 typedef struct pc_segment PC_SEGMENT;
@@ -610,7 +611,10 @@ static fe_seg_id createHugeSegment( target_size_t size, unsigned ads_control )
         if( id == SEG_NULL ) {
             id = curr->seg_id;
         }
-        used = min( size, TARGET_UINT_MAX+1 );
+        used = TARGET_UINT_MAX + 1;
+        if( used > size ) {
+            used = size;
+        }
         curr->offset = used;
         curr->align = 16;
         _markUsed( curr, TRUE );
@@ -652,7 +656,9 @@ fe_seg_id SegmentAddConstHuge(  // SEGMENT: ADD CONST SYMBOL TO HUGE SEGMENT
 static void accumAlignment( PC_SEGMENT *curr, target_offset_t align )
 {
     if( ! curr->fixed_alignment ) {
-        curr->align = max( curr->align, align );
+        if( curr->align < align ) {
+            curr->align = align;
+        }
     }
 }
 

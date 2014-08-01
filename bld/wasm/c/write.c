@@ -33,7 +33,6 @@
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
-
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmeval.h"
@@ -49,8 +48,8 @@
 #include "asminput.h"
 #include "asmfixup.h"
 #include "condasm.h"
-
 #include "myassert.h"
+#include "clibext.h"
 
 
 // MASM doesn't mix 16 and 32-bit fixupp into one record, but WASM does
@@ -173,6 +172,7 @@ static void write_fini( void )
 /****************************/
 {
     FixFini();
+    ModuleFini();
     FreeFlist();
 }
 

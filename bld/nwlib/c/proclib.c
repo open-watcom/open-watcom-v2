@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "clibext.h"
 
 static void SkipObject( libfile io )
 {

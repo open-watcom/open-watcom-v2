@@ -68,6 +68,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "clibext.h"
 
 #ifdef __UNIX__
   #define MASK_ALL_ITEMS  "*"

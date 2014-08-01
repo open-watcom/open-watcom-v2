@@ -36,6 +36,9 @@
 #include "autodep.h"
 #include "semantic.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 typedef struct DepNode {
     struct DepNode      *next;

@@ -44,6 +44,7 @@
 #include "impexp.h"
 #include "loadfile.h"
 #include "loadnov.h"
+#include "clibext.h"
 
 
 #define DUMMY_THREAD_NAME " LONG"

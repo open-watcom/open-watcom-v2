@@ -39,8 +39,8 @@
 #define _RWD_matherr    __matherr_handler
 
 #if !defined(_M_IX86) || defined(__FLAT__)
-    typedef double _WCNEAR                              *m_dbl_arg;
-    typedef int _WCNEAR                                 *m_int_arg;
+    typedef double                                      *m_dbl_arg;
+    typedef int                                         *m_int_arg;
 #else
     typedef double __based( __segname( "_STACK" ) )     *m_dbl_arg;
     typedef int __based( __segname( "_STACK" ) )        *m_int_arg;

@@ -33,9 +33,6 @@
 #ifndef TYPES_INCLUDED
 #define TYPES_INCLUDED
 
-#include <stddef.h>
-#include "bool.h"
-
 typedef enum {
     RS_OK = 0,                  /* this must be 0 because it is sometimes
                                  * checked like this:

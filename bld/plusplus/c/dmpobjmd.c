@@ -80,11 +80,11 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
 {
     char buf[16];               // - buffer
 
-    VbufConcDecimal( &di->buffer, numb );
+    sprintf( buf, "%d", numb );
+    VbufConcStr( &di->buffer, buf );
     if( numb >= 10 ) {
-        itoa( numb, buf, 16 );
-        di = bufferStr( di, "/0x" );
-        di = bufferStr( di, buf );
+        sprintf( buf, "/0x%X", numb, numb );
+        VbufConcStr( &di->buffer, buf );
     }
     return di;
 }
@@ -411,22 +411,22 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     }
     for( ; ; ) {
         sym = sym->thread;
-        if( ! SymIsEnumeration( sym ) ) break;
+        if( ! SymIsEnumeration( sym ) )
+            break;
         VbufRewind( &buffer );
         VbufConcStr( &buffer, "    " );
         VbufConcStr( &buffer, NameStr( sym->name->name ) );
         VbufConcStr( &buffer, " = " );
         numb = sym->u.sval;
-        if( sign && numb < 0 ) {
-            VbufConcChr( &buffer, '-' );
-            VbufConcDecimal( &buffer, -numb );
+        if( sign ) {
+            sprintf( buf, "%d", numb );
         } else {
-            VbufConcDecimal( &buffer, numb );
+            sprintf( buf, "%u", numb );
         }
+        VbufConcStr( &buffer, buf );
         val = mask & numb;
-        if( val > 10 ) {
-            itoa( val, buf, 16 );
-            VbufConcStr( &buffer, " /0x" );
+        if( val >= 10 ) {
+            sprintf( buf, " /0x%X", val );
             VbufConcStr( &buffer, buf );
         }
         vbufWrite( &buffer );

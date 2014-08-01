@@ -41,6 +41,7 @@
 #endif
 #include "cgdefs.h"
 #include "feprotos.h"
+#include "clibext.h"
 
 void ResetHandlers( void )
 {

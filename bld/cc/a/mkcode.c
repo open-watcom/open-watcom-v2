@@ -44,6 +44,7 @@
 #include <sys/types.h>
 #include "wio.h"
 #include "watcom.h"
+#include "clibext.h"
 
 struct bursts {
     unsigned short defs;

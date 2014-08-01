@@ -32,7 +32,6 @@
 
 #include "asmglob.h"
 #include <ctype.h>
-
 #include "asmalloc.h"
 #include "directiv.h"
 #include "asminput.h"

@@ -33,8 +33,11 @@
 #include "global.h"
 #include "errors.h"
 #include "rcstr.h"
-#include "exeutil.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+#include "exeutil.h"
+#include "exeres.h"
 
 
 extern void InitResTable( void )

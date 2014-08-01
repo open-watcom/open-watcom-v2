@@ -236,10 +236,8 @@ static void printMangledId( IDMANGLE *id )
 {
     auto char buff[32];
 
-    prt_cpp_char( '_' );
-    ultoa( id->index, buff, 10 );
+    sprintf( buff, "_%u_", id->index );
     PrtString( buff );
-    prt_cpp_char( '_' );
 }
 
 static IDMANGLE *addNewId( IDMANGLE **head, IDMANGLE *next )

@@ -36,6 +36,7 @@
 #include "pdefn2.h"
 #include "caux.h"
 #include "cfeinfo.h"
+#include "clibext.h"
 
 struct  pack_info {
     struct pack_info    *next;

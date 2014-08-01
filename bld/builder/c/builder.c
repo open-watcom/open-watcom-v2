@@ -39,6 +39,8 @@
 #endif
 #include "watcom.h"
 #include "builder.h"
+#include "clibext.h"
+#include "bldstruc.h"
 
 #define DEFCTLNAME      "builder.ctl"
 #define DEFCTLENV       "BUILDER_CTL"
@@ -47,6 +49,11 @@
 #define MAX_BACKUP      9
 
 #define DOS_EOF_CHAR    0x1a
+
+typedef struct ctl_file {
+    struct ctl_file     *next;
+    char                name[_MAX_PATH];
+} ctl_file;
 
 bool               Quiet;
 include            *IncludeStk;

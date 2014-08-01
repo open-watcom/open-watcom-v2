@@ -34,8 +34,10 @@
 #include "semantic.h"
 #include "semantc2.h"
 #include "rcrtns.h"
-
 #include "reserr.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 int ResOS2WriteHelpEntry( HelpTableEntryOS2 * currentry, WResFileID handle )
 /**********************************************************************/

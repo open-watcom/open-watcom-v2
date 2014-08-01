@@ -39,7 +39,6 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "exeutil.h"
 #include "preproc.h"
 #include "reserr.h"
 #include "tmpctl.h"
@@ -52,6 +51,9 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+#include "exeutil.h"
 
 
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )

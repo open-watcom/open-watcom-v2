@@ -35,7 +35,6 @@
  */
 
 #include "asmglob.h"
-
 #include "directiv.h"
 #include "condasm.h"
 #include "asmexpnd.h"

@@ -160,7 +160,8 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         if( !CreateStringHandle( tmp2, &hdl ) ) {
             rc = ERR_DDE_FAIL;
         } else {
-            VarAddStr( tmp1, ltoa( (long) hdl, tmp2, 10 ), vl );
+            sprintf( tmp2, "%ld", (long)hdl );
+            VarAddStr( tmp1, tmp2, vl );
         }
         break;
 
@@ -220,7 +221,8 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         if( data == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            VarAddStr( tmp1, ltoa( (long) data, tmp2, 10 ), vl );
+            sprintf( tmp2, "%ld", (long)data );
+            VarAddStr( tmp1, tmp2, vl );
         }
         break;
 
@@ -245,7 +247,8 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         if( hconv == (HDDEDATA)NULL ) {
             rc = ERR_DDE_FAIL;
         } else {
-            VarAddStr( tmp1, ltoa( (long) hconv, tmp2, 10 ), vl );
+            sprintf( tmp2, "%ld", (long)hconv );
+            VarAddStr( tmp1, tmp2, vl );
         }
         break;
     case T_DDEDISCONNECT:

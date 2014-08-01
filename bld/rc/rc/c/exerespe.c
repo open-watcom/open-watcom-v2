@@ -33,12 +33,16 @@
 #include <time.h>
 #include "wio.h"
 #include "global.h"
-#include "wrmergdi.h"
 #include "rcstr.h"
-#include "exeutil.h"
-#include "exeobj.h"
 #include "errors.h"
+#include "wrmergdi.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+#include "exeobj.h"
+#include "exeutil.h"
+#include "exerespe.h"
+
 
 #define RESOURCE_OBJECT_NAME ".rsrc"
 

@@ -33,7 +33,6 @@
 
 #include "asmglob.h"
 #include <stdarg.h>
-
 #include "directiv.h"
 #include "asminput.h"
 #include "fatal.h"

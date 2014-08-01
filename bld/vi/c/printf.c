@@ -89,19 +89,19 @@ static void basePrintf( const char *in, va_list al )
                 break;
             case 'u':
                 i = va_arg( al, int );
-                ultoa( (unsigned)i, buff, 10 );
+                sprintf( buff, "%u", (unsigned)i );
                 goto copyloop1;
             case 'd':
                 i = va_arg( al, int );
-                itoa( (unsigned int)i, buff, 10 );
+                sprintf( buff, "%d", (unsigned)i );
                 goto copyloop1;
             case 'U':
                 l = va_arg( al, long );
-                ultoa( (unsigned long)l, buff, 10 );
+                sprintf( buff, "%lu", (unsigned long)l );
                 goto copyloop1;
             case 'l':
                 l = va_arg( al, long );
-                ltoa( (long)l, buff, 10 );
+                sprintf( buff, "%ld", (long)l );
                 goto copyloop1;
             case 's':
                 tmp = va_arg( al, char * );
@@ -111,46 +111,39 @@ static void basePrintf( const char *in, va_list al )
 #ifdef _M_I86
                 i = va_arg( al, int );
                 j = va_arg( al, int );
-                itoa( j, buff, 16 );
-                Lead( '0', 4, buff );
-                buff[4] = ':';
-                itoa( i, &buff[5], 16 );
-                Lead( '0', 4, &buff[5] );
+                sprintf( buff, "%04x:%04x", j, i );
 #else
                 i = va_arg( al, int );
-                itoa( j, buff, 16 );
-                Lead( '0', 8, buff );
+                sprintf( buff, "%08x", i );
 #endif
                 goto copyloop1;
 #endif
             case 'Z':   /* %02x */
                 i = va_arg( al, int );
-                itoa( i, buff, 16 );
-                Lead( '0', 2, buff );
+                sprintf( buff, "%02x", i );
                 goto copyloop1;
             case 'D':   /* %02d */
                 i = va_arg( al, int );
-                itoa( i, buff, 10 );
-                Lead( '0', 2, buff );
+                sprintf( buff, "%02d", i );
                 goto copyloop1;
             case 'L':   /* %8ld */
                 l = va_arg( al, long );
-                ltoa( l, buff, 10 );
+                sprintf( buff, "%8ld", l );
                 j = 8;
                 goto copyloop;
             case 'M':   /* %5ld */
                 l = va_arg( al, long );
-                ltoa( l, buff, 10 );
+                sprintf( buff, "%5ld", l );
                 j = 5;
                 goto copyloop;
             case 'N':   /* %6ld */
                 l = va_arg( al, long );
-                ltoa( l, buff, 10 );
+                sprintf( buff, "%6ld", l );
                 j = 6;
                 goto copyloop;
             case 'O':   /* %6d */
-                l = va_arg( al, int );
-                itoa( l, buff, 10 );
+                i = va_arg( al, int );
+                sprintf( buff, "%6d", i );
                 j = 6;
                 goto copyloop;
             case 'S':   /* %-12s */

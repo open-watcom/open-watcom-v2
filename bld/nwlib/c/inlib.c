@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include "clibext.h"
 
 static input_lib *InputLibs;
 

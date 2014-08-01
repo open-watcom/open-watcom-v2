@@ -47,7 +47,6 @@
  * architectures, but on x86/x64 it's useless
  */
 #define _WCUNALIGNED
-#include "clibext.h"
 #endif
 
 #include <errno.h>

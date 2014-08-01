@@ -78,7 +78,7 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
             str = BoolStr[j];
         } else {
             str = tmpstr;
-            itoa( j, tmpstr, 10 );
+            sprintf( tmpstr, "%d", j );
         }
     } else {
         switch( token ) {
@@ -87,9 +87,8 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
             *str = 0;
             for( i = 0; i < EditVars.NumStatusSections; i++ ) {
                 char        buff[16];
-                itoa( EditVars.StatusSections[i], buff, 10 );
+                sprintf( buff, "%d ", EditVars.StatusSections[i] );
                 strcat( str, buff );
-                strcat( str, " " );
             }
             break;
         case SETVAR_T_FILEENDSTRING:
@@ -288,8 +287,8 @@ static char *getOneSetVal( int token, bool isnonbool, char *tmpstr,
                 j = EditVars.ToolBarColor;
                 break;
             }
-            itoa( j, tmpstr, 10 );
             str = tmpstr;
+            sprintf( tmpstr, "%d ", j );
             break;
         }
     }
@@ -387,7 +386,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 if( !bvalue ) {
                     j *= -1;
                 }
-                itoa( j, str, 10 );
+                sprintf( str, "%d", j );
                 StrMerge( 2, WorkLine->data, str, SingleBlank );
                 return( ERR_NO_ERR );
 #ifndef VICOMP
@@ -610,7 +609,7 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
 #ifndef VICOMP
         if( EditFlags.CompileScript ) {
 #endif
-            itoa( j, str, 10 );
+            sprintf( str, "%d", j );
             strcat( WorkLine->data, str );
             if( fn[0] == '\0' )
                 return( ERR_NO_ERR );

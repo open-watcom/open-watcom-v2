@@ -45,6 +45,7 @@
 #include "specials.h"
 #include "library.h"
 #include "procfile.h"
+#include "clibext.h"
 
 
 static bool SearchAndProcLibFile( file_list *lib, char *name )

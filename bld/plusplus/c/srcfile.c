@@ -53,6 +53,7 @@
 #include "pragdefn.h"
 #endif
 #include "brinfo.h"
+#include "clibext.h"
 
 
 //

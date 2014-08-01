@@ -45,6 +45,8 @@
 #include "rcldstr.h"
 #include "errors.h"
 #include "banner.h"
+#include "clibext.h"
+#include "rccore.h"
 
 #define PRINTF_BUF_SIZE         2048
 

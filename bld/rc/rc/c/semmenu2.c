@@ -50,15 +50,16 @@ struct MenuItem {
 */
 
 
-#include <string.h>
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
 #include "semantc2.h"
 #include "layer0.h"
 #include "rcrtns.h"
-
 #include "reserr.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 int ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
 /*********************************************************************/

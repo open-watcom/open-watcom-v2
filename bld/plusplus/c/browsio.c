@@ -50,6 +50,7 @@
 #else
  #include <direct.h>
 #endif
+#include "clibext.h"
 
 
 typedef struct cppdw_section {
@@ -215,7 +216,9 @@ static int createBrowseFile(FILE* browseFile,       /* target file */
         sectionSize = inFile[fileNum]->length;
         while( sectionSize ) {
             ptr = DwioRead( inFile[fileNum]->file, &readSize );
-            readSize = min( readSize, sectionSize );
+            if( sectionSize < readSize ) {
+                readSize = sectionSize;
+            }
             sectionSize -= readSize;
             mywrite( browseFile, (void *)ptr, readSize );
         }

@@ -42,7 +42,7 @@ BMX:  Image file handling
 #endif
 #include "bmx.h"
 #include "compress.h"
-
+#include "clibext.h"
 
 // Magic numbers for the supported image formats.
 #define BITMAP_MAGIC    0x4D42
@@ -499,12 +499,12 @@ uint_16 HFBitmaps::use( char const name[] )
     // Check to see if this bitmap has already been referenced.
     current = _usedFiles;
     result = (uint_16) 0;
-    while( current != NULL && stricmp( name, current->_name ) != 0 ){
-    result ++;
-    current = current->_next;
+    while( current != NULL && stricmp( name, current->_name ) != 0 ) {
+        result ++;
+        current = current->_next;
     }
-    if( current != NULL ){
-    return result;
+    if( current != NULL ) {
+        return result;
     }
 
     // Check to see if the bitmap was referenced by note().
@@ -512,79 +512,77 @@ uint_16 HFBitmaps::use( char const name[] )
 
     current = _files;
     temp = NULL;
-    while( current != NULL && stricmp( name, current->_name ) != 0 ){
-    temp = current;
-    current = current->_next;
+    while( current != NULL && stricmp( name, current->_name ) != 0 ) {
+        temp = current;
+        current = current->_next;
     }
 
     newimage = _usedFiles;
-    if( newimage != NULL ){
-    while( newimage->_next != NULL ){
-        newimage = newimage->_next;
-    }
-    }
-
-    if( current != NULL ){
-
-    if( !current->_image->validImage() ){
-        throw ImageNotValid();  // EXCEPTION
-    }
-
-    if( temp != NULL ){
-        temp->_next = current->_next;
-    } else {
-        _files = current->_next;
-    }
-    } else {
-    // Now we have to search for the file.
-    curdir = _root;
-    bmp = new InFile( name, 1 );
-
-    while( bmp->bad() && curdir != NULL ){
-        chdir( curdir->_name );
-        bmp->open( name, 1 );
-        chdir( _startDir );
-        curdir = curdir->_next;
-    }
-
-    if( bmp->bad() ){
-        delete bmp;
-        throw ImageNotFound();  // EXCEPTION
-    } else {
-        uint_16 magic;
-
-        bmp->reset();
-        bmp->readbuf( &magic, 1, sizeof( uint_16 ) );
-        switch( magic ){
-        case BITMAP_MAGIC:
-        case SHG1_MAGIC:
-        case SHG2_MAGIC:
-        break;
-
-        default:
-        throw ImageNotSupported();  // EXCEPTION
+    if( newimage != NULL ) {
+        while( newimage->_next != NULL ) {
+            newimage = newimage->_next;
         }
-        bmp->reset();
+    }
 
-        current = new Image;
-        current->_name = new char[strlen(name)+1];
-        strcpy( current->_name, name );
-        if( magic == BITMAP_MAGIC ){
-        current->_image = new Bitmap(bmp);
+    if( current != NULL ) {
+        if( !current->_image->validImage() ) {
+            throw ImageNotValid();  // EXCEPTION
+        }
+    
+        if( temp != NULL ){
+            temp->_next = current->_next;
         } else {
-        current->_image = new SegGraph(bmp);
+            _files = current->_next;
         }
-    }
+    } else {
+        // Now we have to search for the file.
+        curdir = _root;
+        bmp = new InFile( name, 1 );
+    
+        while( bmp->bad() && curdir != NULL ) {
+            chdir( curdir->_name );
+            bmp->open( name, 1 );
+            chdir( _startDir );
+            curdir = curdir->_next;
+        }
+    
+        if( bmp->bad() ) {
+            delete bmp;
+            throw ImageNotFound();  // EXCEPTION
+        } else {
+            uint_16 magic;
+    
+            bmp->reset();
+            bmp->readbuf( &magic, 1, sizeof( uint_16 ) );
+            switch( magic ) {
+            case BITMAP_MAGIC:
+            case SHG1_MAGIC:
+            case SHG2_MAGIC:
+                break;
+    
+            default:
+                throw ImageNotSupported();  // EXCEPTION
+            }
+            bmp->reset();
+    
+            current = new Image;
+            current->_name = new char[strlen(name)+1];
+            strcpy( current->_name, name );
+            if( magic == BITMAP_MAGIC ) {
+                current->_image = new Bitmap(bmp);
+            } else {
+                current->_image = new SegGraph(bmp);
+            }
+        }
     }
 
     current->_next = NULL;
     if( newimage != NULL ){
-    newimage->_next = current;
+        newimage->_next = current;
     } else {
-    _usedFiles = current;
+        _usedFiles = current;
     }
-
-    ltoa( result, filename+3, 10 );
+    sprintf( filename + 3, "%d", result );
     _dfile->addFile( current->_image, filename );
 
     _numImages += 1;

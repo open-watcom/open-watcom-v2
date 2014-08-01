@@ -58,6 +58,7 @@
 #include "cmdlnprs.gh"
 #include "cmdlnprs.h"
 #include "cmdlnsys.h"
+#include "clibext.h"
 
 
 #define MAX_INDIRECTION                 5       // max. '@' indirections

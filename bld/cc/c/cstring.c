@@ -36,6 +36,7 @@
 #include "scan.h"
 #include "asciiout.h"
 #include "unicode.h"
+#include "clibext.h"
 
 static target_size  CLitLength;         /* length of string literal */
 

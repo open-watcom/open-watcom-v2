@@ -29,12 +29,16 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "global.h"
 #include "yydrivrw.h"
 #include "errors.h"
 #include "depend.h"
 #include "errprt.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 #ifdef SCANDEBUG
 

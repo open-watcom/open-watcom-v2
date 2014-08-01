@@ -32,8 +32,11 @@
 #include "wio.h"
 #include "global.h"
 #include "errors.h"
-#include "exeutil.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
+//#include "exeobj.h"
+#include "exeutil.h"
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {

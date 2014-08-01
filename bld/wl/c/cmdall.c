@@ -50,6 +50,7 @@
 #include "permdata.h"
 #include "pathlist.h"
 #include "cmdall.h"
+#include "clibext.h"
 
 static void         *LastFile;
 static file_list    **LastLibFile;

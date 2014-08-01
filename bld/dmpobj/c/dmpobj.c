@@ -33,8 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "banner.h"
-
 #include "dmpobj.h"
+#include "clibext.h"
 
 bool Descriptions;
 bool InterpretComent;

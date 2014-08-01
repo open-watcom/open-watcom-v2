@@ -61,6 +61,7 @@
 #include "wres.h"
 #include "loados2.h"
 #include "impexp.h"
+#include "clibext.h"
 
 #define STUB_ALIGN 16
 

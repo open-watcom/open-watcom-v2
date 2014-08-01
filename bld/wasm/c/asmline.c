@@ -31,18 +31,20 @@
 
 #include "asmglob.h"
 #include <ctype.h>
-
 #if defined( _STANDALONE_ )
-
 #include "directiv.h"
 #include "asmalloc.h"
 #include "condasm.h"
 #include "asmexpnd.h"
 #include "macro.h"
 #include "asminput.h"
-#include "pathgrp.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "clibext.h"
+#include "pathgrp.h"
+#endif
+
+#if defined( _STANDALONE_ )
 
 extern int              in_prologue;
 

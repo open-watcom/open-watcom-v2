@@ -52,6 +52,7 @@
 #include "virtmem.h"
 #include "load16m.h"
 #include "objpass1.h"
+#include "clibext.h"
 
 
 typedef enum {

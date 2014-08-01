@@ -33,12 +33,13 @@
 #include "asmalloc.h"
 #include "asmfixup.h"
 #include "asmlabel.h"
-
 #if defined( _STANDALONE_ )
-
 #include "directiv.h"
 #include "asmstruc.h"
 #include "queues.h"
+#endif
+
+#if defined( _STANDALONE_ )
 
 static unsigned   AnonymousCounter = 0;
 

@@ -32,6 +32,7 @@
 #include "coffload.h"
 #include "coffimpl.h"
 #include "cofforl.h"
+#include "clibext.h"
 
 /* This is a hack for a flaw in wlib. Because wlib does not keep track
  * of member sizes, one can't tell if a read past the end of file occurred.

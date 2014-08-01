@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include "bool.h"
 #include "rctypes.h"
 #include "tmpctl.h"
 

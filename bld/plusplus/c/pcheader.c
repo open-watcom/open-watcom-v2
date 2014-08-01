@@ -52,6 +52,7 @@
 #include "pcheader.h"
 #include "cgiobuff.h"
 #include "brinfo.h"
+#include "clibext.h"
 
 typedef struct pch_reloc_info {
     long        start;

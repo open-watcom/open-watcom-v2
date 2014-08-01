@@ -31,9 +31,7 @@
 
 
 #include "asmglob.h"
-
 #include "directiv.h"
-
 #include "myassert.h"
 
 typedef unsigned char   byte;

@@ -42,6 +42,7 @@
 #include "pragdefn.h"
 #include "caux.h"
 #include "cfeinfo.h"
+#include "clibext.h"
 
 
 typedef struct user_seg {
@@ -962,6 +963,8 @@ void SetSegAlign( SYMPTR sym )
     segid = sym->u.var.segid;
     if( segid < FIRST_PRIVATE_SEGMENT && OptSize == 0 ) {
         align = GetTypeAlignment( sym->sym_type );
-        SegAlignment[segid] = max( align, SegAlignment[segid] );
+        if( SegAlignment[segid] < align ) {
+            SegAlignment[segid] = align;
+        }
     }
 }

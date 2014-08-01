@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "clibext.h"
 
 static sym_table        FileTable;
 static sym_file         *CurrFile;

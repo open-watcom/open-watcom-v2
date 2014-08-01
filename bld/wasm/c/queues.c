@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 #include "asmglob.h"
-
 #include "asmalloc.h"
 #include "mangle.h"
 #include "directiv.h"
@@ -37,7 +36,6 @@
 #include "objprs.h"
 #include "namemgr.h"
 #include "womputil.h"
-
 #include "myassert.h"
 
 typedef struct queuenode {

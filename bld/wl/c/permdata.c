@@ -49,6 +49,7 @@
 #include "wlnkmsg.h"
 #include "objcalc.h"
 #include "permdata.h"
+#include "clibext.h"
 
 stringtable             PermStrings;
 stringtable             PrefixStrings;  /* these are NetWare prefix strings of which there could possibly be several */

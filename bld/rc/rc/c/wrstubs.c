@@ -31,7 +31,6 @@
 
 
 #include "global.h"
-#include "wresall.h"
 
 void SemOS2WriteFontDir( void )
 {

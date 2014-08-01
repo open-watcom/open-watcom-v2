@@ -43,6 +43,7 @@
 #include "exedos.h"
 #include "exeos2.h"
 #include "exephar.h"
+#include "clibext.h"
 
 #undef _WBIND_VERSION_
 #define _WBIND_VERSION_ "2.3"

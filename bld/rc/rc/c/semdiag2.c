@@ -62,8 +62,6 @@ struct DLGTITEM {
 
 */
 
-#include <stddef.h>
-#include <string.h>
 #include <assert.h>
 #include "global.h"
 #include "errors.h"
@@ -71,8 +69,10 @@ struct DLGTITEM {
 #include "semantc2.h"
 #include "layer0.h"
 #include "rcrtns.h"
-
 #include "reserr.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 static int ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID handle )
 /******************************************************************************/

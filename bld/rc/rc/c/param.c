@@ -39,6 +39,8 @@
  #include "ostype.h"
 #endif
 #include "leadbyte.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 /* forward declaration */

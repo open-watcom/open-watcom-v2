@@ -309,7 +309,8 @@ static vi_rc initSource( vlist *vl, char *data )
      */
     all[0] = 0;
     for( j = 1; GetStringWithPossibleQuote( data, tmp ) == ERR_NO_ERR; ++j ) {
-        VarAddStr( itoa( j, name, 10 ), tmp, vl );
+        sprintf( name, "%d", j );
+        VarAddStr( name, tmp, vl );
         StrMerge( 2, all, tmp, SingleBlank );
     }
     VarAddStr( "*", all, vl );

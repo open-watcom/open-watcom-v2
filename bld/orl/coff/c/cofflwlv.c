@@ -33,6 +33,7 @@
 #include "cofforl.h"
 #include "orlhash.h"
 #include "walloca.h"
+#include "clibext.h"
 #ifdef _BSD_SOURCE
 #define stricmp strcasecmp
 #endif

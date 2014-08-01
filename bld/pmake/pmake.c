@@ -36,19 +36,18 @@
 #include <stdlib.h>
 #ifdef __UNIX__
 #include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #else
 #include <direct.h>
 #include <dos.h>
-#include <io.h>
 #endif
 #include <assert.h>
 #include <setjmp.h>
 #include <stdarg.h>
+#include "wio.h"
 #include "watcom.h"
 #include "pmake.h"
 #include "iopath.h"
+#include "clibext.h"
 
 #ifdef __UNIX__
 #define DEFAULT_MAKE_CMD        "wmake"
@@ -68,7 +67,7 @@ typedef struct dirqueue {
     struct dirqueue     *next;
     unsigned            depth;
     char                name[_MAX_PATH];
-}                       dirqueue;
+} dirqueue;
 
 int                     NumDirectories;
 

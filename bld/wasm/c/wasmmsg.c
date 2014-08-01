@@ -36,6 +36,7 @@
   #include <process.h>
 #endif
 #include "wio.h"
+#include "clibext.h"
 
 #if defined( USE_TEXT_MSGS )
 

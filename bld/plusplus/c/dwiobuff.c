@@ -223,7 +223,10 @@ DWIOBUFF *DwioBuffWrite(        // WRITE A RECORD
     size_t len;                 // - amount to write
 
     for(;;) {
-        len = min( size, DWBLOCK_BSIZE - ctl->current_offset );
+        len = DWBLOCK_BSIZE - ctl->current_offset;
+        if( len > size ) {
+            len = size;
+        }
         memcpy( pointXfer( ctl ), record, len );
         ctl->written = FALSE;
         ctl->current_offset += len;

@@ -38,6 +38,7 @@
 #include "pragdefn.h"
 #include "autodept.h"
 #include "sopen.h"
+#include "clibext.h"
 
 extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 

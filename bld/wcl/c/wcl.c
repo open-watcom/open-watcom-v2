@@ -48,6 +48,7 @@
 #include "swchar.h"
 #include "diskos.h"
 #include "cmdlhelp.h"
+#include "clibext.h"
 #include "clcommon.h"
 #include "banner.h"
 
@@ -560,7 +561,9 @@ static int Parse( char *Cmd )
                             end = p;
                             /* remove quotes from target executable filename */
                             UnquoteFName( unquoted, sizeof( unquoted ), Word + 2 );
-                            strcpy( Exe_Name, unquoted );
+                            if( Exe_Name != NULL )
+                                MemFree( Exe_Name );
+                            Exe_Name = MemStrDup( unquoted );
                         }
                         wcc_option = 0;
                         break;
@@ -990,11 +993,11 @@ static  int  CompLink( void )
                 strcpy( Word, file );
             }
             AddName( Word, Fp );
-            if( Exe_Name[0] == '\0' ) {
+            if( Exe_Name == NULL ) {
                 p = strrchr( Word, '.' );
                 if( p != NULL )
                     *p = '\0';
-                strcpy( Exe_Name, Word );
+                Exe_Name = MemStrDup( Word );
             }
 #ifdef __UNIX__
             MemFree( file );
@@ -1033,8 +1036,8 @@ static  int  CompLink( void )
 
 static int ProcMemInit( void )
 {
-    *Exe_Name = '\0';
     Conventions = 'r';
+    Exe_Name = NULL;
     Map_Name = NULL;
     Obj_Name = NULL;
     Link_Name = NULL;
@@ -1050,6 +1053,7 @@ static int ProcMemInit( void )
 
 static int ProcMemFini( void )
 {
+    MemFree( Exe_Name );
     MemFree( Map_Name );
     MemFree( Obj_Name );
     MemFree( Link_Name );

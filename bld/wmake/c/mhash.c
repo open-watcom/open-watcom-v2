@@ -34,6 +34,7 @@
 #include "make.h"
 #include "mmemory.h"
 #include "mhash.h"
+#include "clibext.h"
 
 
 HASH_T Hash( const char *s, HASH_T prime )

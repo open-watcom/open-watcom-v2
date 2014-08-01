@@ -42,6 +42,7 @@ extern "C" {
     #include <stdlib.h>
     #include <stdarg.h>
     #include "wio.h"
+    #include "clibext.h"
 };
 
 #define MAX_FORMATTED 500
@@ -213,7 +214,7 @@ void WEXPORT WFile::ungetch( char chr )
 bool WEXPORT WFile::putl( long n )
 {
     char temp[11];
-    ltoa( n, temp, 10 );
+    sprintf( temp, "%ld", n );
     return( puts( temp ) );
 }
 

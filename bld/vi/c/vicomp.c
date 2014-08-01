@@ -35,6 +35,7 @@
 #include "posix.h"
 #include "source.h"
 #include "specio.h"
+#include "clibext.h"
 
 #define MAX_SRC_LINE    512
 

@@ -33,14 +33,13 @@
 
 #include "asmglob.h"
 #include <ctype.h>
-
 #include "asmalloc.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
 #include "directiv.h"
 #include "asminput.h"
-
 #include "myassert.h"
+#include "clibext.h"
 
 extern bool             GetQueueMacroHidden( void );
 

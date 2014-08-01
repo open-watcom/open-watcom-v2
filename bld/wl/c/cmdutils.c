@@ -46,6 +46,7 @@
 #if !defined( __UNIX__ )
 #include <direct.h>
 #endif
+#include "clibext.h"
 
 #define _LinkerPrompt "WLINK>"
 

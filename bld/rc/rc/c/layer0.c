@@ -36,6 +36,8 @@
 #include "rcmem.h"
 #include "iortns.h"
 #include "wresset2.h"
+#include "clibext.h"
+#include "rccore.h"
 
 #define MAX_OPEN_FILES          100
 

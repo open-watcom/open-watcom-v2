@@ -705,9 +705,9 @@ static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
     RingIterBeg( my_switch->u.s.cases, curr ) {
         if( curr->value == case_uint ) {
             if( my_switch->u.s.is_signed ) {
-                ltoa( case_value->u.int_constant, buff, 10 );
+                sprintf( buff, "%d", case_value->u.int_constant );
             } else {
-                ultoa( case_value->u.uint_constant, buff, 10 );
+                sprintf( buff, "%u", case_value->u.uint_constant );
             }
             CErr2p( err_code, buff );
             InfMsgPtr( INF_PREVIOUS_CASE, &curr->defined );

@@ -46,6 +46,7 @@
 #include "helpchar.h"
 #include "helpmem.h"
 #include "helpscan.h"
+#include "clibext.h"
 
 #define DEFTOPIC        "DEFTOPIC::::"
 #define DESCRIPTION     "DESCRIPTION::::"

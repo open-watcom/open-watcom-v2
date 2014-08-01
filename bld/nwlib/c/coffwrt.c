@@ -35,6 +35,7 @@
 #include <error.h>
 #include "coff.h"
 #include "coffwrt.h"
+#include "clibext.h"
 
 typedef struct name_len {
     unsigned    len;

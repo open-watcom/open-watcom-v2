@@ -31,12 +31,11 @@
 
 #include "asmglob.h"
 #include <ctype.h>
-
 #include "directiv.h"
 #include "asmexpnd.h"
 #include "condasm.h"
-
 #include "myassert.h"
+#include "clibext.h"
 
 #define    MAX_NESTING  20
 

@@ -43,6 +43,7 @@
 #ifdef __WATCOMC__
 #include <malloc.h>     /* For _heapmin() */
 #endif
+#include "clibext.h"
 
 #ifndef NDEBUG
 // #undef DbgVerify

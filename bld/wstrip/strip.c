@@ -49,6 +49,7 @@
 #include "tistrail.h"
 #include "wstrip.h"
 #include "wressetr.h"
+#include "clibext.h"
 
 #include "pushpck1.h"
 typedef struct WResHeader {

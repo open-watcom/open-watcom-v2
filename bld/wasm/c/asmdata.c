@@ -33,12 +33,12 @@
 #include "asmexpnd.h"
 #include "tbyte.h"
 #include "asmfixup.h"
-
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "asmstruc.h"
   #include "queues.h"
 #endif
+#include "clibext.h"
 
 #ifndef min
 #define min(x,y) (((x) < (y)) ? (x) : (y))

@@ -46,15 +46,14 @@
 #include "asmfixup.h"
 #include "asmeval.h"
 #include "asmlabel.h"
-
 #if defined( _STANDALONE_ )
   #include "directiv.h"
   #include "myassert.h"
   #include "asminput.h"
 #endif
-
 #include "asminsd.h"
 #include "asmopsd.gh"
+#include "clibext.h"
 
 extern bool             match_phase_1( void );
 extern bool             ptr_operator( memtype, bool );
@@ -1307,7 +1306,7 @@ bool expand_call( token_idx index, int lang_type )
     }
     for( i = index; AsmBuffer[i].class != TC_FINAL; ) {
         if( ( AsmBuffer[i].class != TC_COMMA ) ||
-            ( AsmBuffer[i+1].class == TC_FINAL ) ) {
+            ( AsmBuffer[i + 1].class == TC_FINAL ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -1354,7 +1353,7 @@ bool expand_call( token_idx index, int lang_type )
     *buffer = 0;
     /* add original line up to before language */
     for( i = 0; i < index - 1; i++ ) {
-        sprintf( buffer + strlen(buffer), "%s ", AsmBuffer[i].string_ptr );
+        sprintf( buffer + strlen( buffer ), "%s ", AsmBuffer[i].string_ptr );
     }
     InputQueueLine( buffer );
     /* add cleanup after call */

@@ -42,6 +42,7 @@
 #include "name.h"
 #include "cmacsupp.h"
 #include "brinfo.h"
+#include "clibext.h"
 
 
 typedef struct mac_parm MAC_PARM;

@@ -42,6 +42,7 @@
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#include "clibext.h"
 
 /*
  * This module presents a stream of characters to mlex.c.  Stripped from the

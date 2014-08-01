@@ -34,9 +34,12 @@
 #include "wtext.hpp"
 #include "weditbox.hpp"
 #include "wpshbttn.hpp"
-#include "wfiledlg.hpp"
 #include "wfilenam.hpp"
 #include "wmetrics.hpp"
+extern "C" {
+    #include "clibext.h"
+};
+#include "wfiledlg.hpp"
 
 static  char    BrowseText[] = "&Browse...";
 static  char    CancelText[] = "&Cancel";

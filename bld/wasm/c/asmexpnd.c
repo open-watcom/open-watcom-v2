@@ -31,15 +31,16 @@
 #include "asmglob.h"
 #include "asmeval.h"
 #include "asmexpnd.h"
-
 #if defined( _STANDALONE_ )
-
 #include "asmalloc.h"
 #include "directiv.h"
 #include "asmlabel.h"
 #include "asminput.h"
-
 #include "myassert.h"
+#include "clibext.h"
+#endif
+
+#if defined( _STANDALONE_ )
 
 #define    MAX_EQU_NESTING      20
 

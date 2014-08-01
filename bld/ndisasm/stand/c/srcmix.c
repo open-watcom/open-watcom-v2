@@ -40,6 +40,7 @@
 #include "buffer.h"
 #include "mydwarf.h"
 #include "memfuncs.h"
+#include "clibext.h"
 
 extern char *   ObjFileName;
 extern char *   CommentString;

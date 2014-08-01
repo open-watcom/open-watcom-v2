@@ -35,6 +35,8 @@
 #include "semantc2.h"
 #include "reserr.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )

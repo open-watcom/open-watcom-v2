@@ -36,12 +36,13 @@
 #include "mmemory.h"
 #include "mhash.h"
 #include "mmisc.h"
-#include "pathgrp.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mtarget.h"
 #include "mvecstr.h"
 #include "msuffix.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 
 #define HASH_PRIME  13

@@ -31,10 +31,11 @@
 
 #include <string.h>
 #include "topic.h"
+#include "clibext.h"
 
 #define COMP_PAGE_SIZE 4096
 
-#define NULLVAL32	((uint_32)-1L)
+#define NULLVAL32       ((uint_32)-1L)
 
 //
 //  TextAttr    --Structure to record changes to text.

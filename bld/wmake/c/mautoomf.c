@@ -38,6 +38,7 @@
 #include "mautodep.h"
 #include "autodept.h"
 #include "pcobj.h"
+#include "clibext.h"
 
 typedef struct {
     int     handle;         // file handle of open obj file

@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "clibext.h"
 
 static orl_handle       ORLHnd;
 static orl_funcs        OrlFuncs;

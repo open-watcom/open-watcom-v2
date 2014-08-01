@@ -24,37 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Builder & Langdat utility functions.
 *
 ****************************************************************************/
 
+#include <stdio.h>
+#include <stddef.h>
+#include "bool.h"
 
-#include "wio.h"
-#include "layer0.h"
-#include "opcl.h"
-#include "reserr.h"
-#include "wresrtns.h"
-#include "clibext.h"
+#define MAX_LINE    4096
 
-WResFileID ResOpenFileRO( const char *filename )
-/**********************************************/
-/* use this function to open Microsoft .RES files also */
-{
-    WResFileID  ret;
+extern FILE         *LogFile;
 
-#if defined( __WATCOMC__ ) && defined( __QNX__ )
-    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
-    ret = WRESOPEN( filename, O_RDONLY );
-    if( ret == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
-    setmode( ret, O_BINARY );
-#else
-    ret = WRESOPEN( filename, O_RDONLY | O_BINARY );
-    if( ret == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
-#endif
-    return( ret );
-}
+extern void         Fatal( const char *, ... );
+extern void         Log( bool quiet, const char *, ... );
+extern void         LogFlush( void );
+extern void         OpenLog( const char * );
+extern void         CloseLog( void );
+extern void         *Alloc( size_t );
+extern char         *SkipBlanks( const char * );

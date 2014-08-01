@@ -44,6 +44,7 @@
 #include "procfile.h"
 #include "ar.h"
 #include "omfhash.h"
+#include "clibext.h"
 
 typedef struct omf_dict_entry {
     void            **cache;        /* for extra memory store of dictionary */

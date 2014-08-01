@@ -44,6 +44,7 @@
 #include "pragdefn.h"
 #include "cfeinfo.h"
 #include "pathlist.h"
+#include "clibext.h"
 
 #if defined(__UNIX__)
  #define C_PATH         "../c/"

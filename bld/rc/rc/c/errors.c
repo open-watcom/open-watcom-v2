@@ -38,9 +38,11 @@
 #include "tmpctl.h"
 #include "errprt.h"
 #include "rcldstr.h"
-#include "iortns.h"
 #include "preproc.h"
 #include "rcspawn.h"
+#include "iortns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 static char             rcStrBuf[1024];

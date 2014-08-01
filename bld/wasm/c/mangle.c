@@ -30,10 +30,10 @@
 
 
 #include "asmglob.h"
-
 #include "asmalloc.h"
 #include "directiv.h"
 #include "mangle.h"
+#include "clibext.h"
 
 
 /* constants used by the name manglers ( changes ) */

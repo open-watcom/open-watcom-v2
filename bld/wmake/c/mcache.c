@@ -44,9 +44,10 @@
 #include "mmemory.h"
 #include "mmisc.h"
 #include "autodept.h"
-#include "pathgrp.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
 #define USE_DIR_CACHE

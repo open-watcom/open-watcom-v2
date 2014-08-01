@@ -37,6 +37,7 @@
 #include "fmttype.h"
 #include "template.h"
 #include "fmtsym.h"
+#include "clibext.h"
 
 
 static char scopeError[]        = "***SCOPE ERROR***";

@@ -54,6 +54,7 @@
 #include "diskos.h"
 #include "clcommon.h"
 #include "banner.h"
+#include "clibext.h"
 
 #if defined(__UNIX__)
 #define strfcmp strcmp
@@ -991,9 +992,8 @@ static  int  ParseArgs( int argc, char **argv )
             MemFree( Obj_Name );
             Obj_Name = O_Name;
         } else {
-            strcpy( Exe_Name, O_Name );
+            Exe_Name = O_Name;
             Flags.keep_exename = 1;
-            MemFree( O_Name );
         }
         O_Name = NULL;
     }
@@ -1227,7 +1227,7 @@ static  int  CompLink( void )
                 sfname[1] = 'l';
                 sfname[2] = '=';
 
-                if( Exe_Name[0] != '\0' ) {     /* have "-S -o output.name" */
+                if( Exe_Name != NULL ) {     /* have "-S -o output.name" */
                     DoQuoted( ofname, file );
                     DoQuoted( sfname + 3, Exe_Name );
                 } else {
@@ -1247,16 +1247,16 @@ static  int  CompLink( void )
                 }
                 rc = tool_exec( TYPE_DIS, ofname, sfname );
             }
-            if( Exe_Name[0] == '\0' ) {
+            if( Exe_Name == NULL ) {
 #ifdef __UNIX__
-                strcpy( Exe_Name, OUTPUTFILE );
+                Exe_Name = MemStrDup( OUTPUTFILE );
                 Flags.keep_exename = 1;
 #else
                 p = strrchr( Word, '.' );
                 if( p != NULL ) {
                     *p = '\0';
                 }
-                strcpy( Exe_Name, Word );
+                Exe_Name = MemStrDup( Word );
 #endif
             }
 #ifdef __UNIX__
@@ -1316,6 +1316,7 @@ static void ExitHandler( void )
 
 static int ProcMemInit( void )
 {
+    Exe_Name = NULL;
     Map_Name = NULL;
     Obj_Name = MemStrDup( ".o" );
     Link_Name = NULL;
@@ -1334,6 +1335,7 @@ static int ProcMemFini( void )
     ListFree( Files_List );
     ListFree( Obj_List );
     ListFree( Libs_List );
+    MemFree( Exe_Name );
     MemFree( Map_Name );
     MemFree( Obj_Name );
     MemFree( Link_Name );

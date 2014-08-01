@@ -33,17 +33,15 @@
 #ifndef RCGLOBAL_INCLUDED
 #define RCGLOBAL_INCLUDED
 
-#ifndef RCEXTERN
-#define RCEXTERN extern
-#endif
-
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <ctype.h>
 #include "watcom.h"
-#include "pass2.h"
-#include "param.h"
-#include "rcio.h"
+#include "bool.h"
+#include "rctypes.h"
+#include "wresall.h"
+
 
 /****** constants describing global data ******/
 /* this is the size of the text input buffer for pass 1 and the data trasfer */
@@ -51,20 +49,7 @@
 #if defined( _STANDALONE_ ) || defined( __NT__ )
 #define IO_BUFFER_SIZE  0x8000      /* 32k */
 #else
-#define IO_BUFFER_SIZE  0x4000      /* 16 */
+#define IO_BUFFER_SIZE  0x4000      /* 16k */
 #endif
 
-/****** uninitialized global data ******/
-RCEXTERN struct RCParams    CmdLineParms;
-RCEXTERN RcResFileID        CurrResFile;
-RCEXTERN RcPass2Info        Pass2Info;
-RCEXTERN char               CharSetLen[256];
-RCEXTERN bool               StopInvoked;
-RCEXTERN bool               IgnoreINCLUDE;
-RCEXTERN bool               IgnoreCWD;
-
-/****** initialized global data ******/
-extern int                  ErrorHasOccured;
-
-#undef RCEXTERN
 #endif

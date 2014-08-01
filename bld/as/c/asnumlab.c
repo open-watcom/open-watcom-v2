@@ -31,6 +31,7 @@
 
 
 #include "as.h"
+#include "clibext.h"
 
 typedef struct numlab_reloc numlab_reloc;
 
@@ -91,11 +92,10 @@ extern char *AsNumLabelMakeName( int_32 num ) {
 // each labelnums. Their roles interchange as new labels are emitted.
 // (Since forward ref becomes backward ref once a new label is generated)
 
-    static char buffer[4];
-    char        *suffix[2] = { "e", "o" };      // even/odd
+    static char buffer[12];
 
-    ultoa( abs( num ), buffer, 10 );
-    strcat( buffer, suffix[ numLabelCounts[ abs( num ) - 1 ] & 1 ] );
+    num = abs( num );
+    sprintf( buffer, ( numLabelCounts[num - 1] & 1 ) ? "%do" : "%de", num );
     return( buffer );
 }
 

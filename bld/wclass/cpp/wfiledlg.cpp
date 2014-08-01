@@ -30,9 +30,12 @@
 ****************************************************************************/
 
 
-#include "wfiledlg.hpp"
 #include "wfilenam.hpp"
 #include "wresstr.hpp"
+extern "C" {
+    #include "clibext.h"
+};
+#include "wfiledlg.hpp"
 
 static  const char          *FilterList = "All files(*.*)\0*.*\0\0";
 

@@ -41,6 +41,7 @@
 #include "msuffix.h"
 #include "mmemory.h"
 #include "mpreproc.h"
+#include "clibext.h"
 
 /*
  * This file implements something I'll call a "stream".  A stream consists

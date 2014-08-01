@@ -32,13 +32,15 @@
 
 #include "global.h"
 #include "yydriver.h"
-#include "rctypes.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "rcmem.h"
 #include "errors.h"
 #include "errprt.h"
 #include "wresdefn.h"
+#include "clibext.h"
+#include "rccore.h"
+
 
 typedef uint_16         YYCHKTYPE;
 typedef uint_16         YYACTTYPE;
@@ -120,9 +122,6 @@ typedef enum {
 /* */
 
 #ifdef YYDEBUG
-
-#include <stdio.h>
-#include "param.h"
 
 static void dump_rule( unsigned rule )
 {

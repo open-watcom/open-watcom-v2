@@ -30,19 +30,20 @@
 
 
 #include "asmglob.h"
-
 #include "asmalloc.h"
+#if defined( _STANDALONE_ )
+#include "directiv.h"
+#include "queues.h"
+#include "hash.h"
+#include "myassert.h"
+#endif
+#include "clibext.h"
 
 #ifdef __USE_BSD
 #define stricmp strcasecmp
 #endif
 
 #if defined( _STANDALONE_ )
-
-#include "directiv.h"
-#include "queues.h"
-#include "hash.h"
-#include "myassert.h"
 
 static struct asm_sym   *sym_table[ HASH_TABLE_SIZE ] = { NULL };
 /* initialize the whole table to null pointers */

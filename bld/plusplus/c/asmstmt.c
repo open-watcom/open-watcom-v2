@@ -58,12 +58,12 @@ static void ensureBufferReflectsCurToken( void )
             case TYP_UCHAR:
             case TYP_UINT:
             case TYP_ULONG:
-                ultoa( U32Fetch( Constant64 ), Buffer, 10 );
+                sprintf( Buffer, "%u", U32Fetch( Constant64 ) );
                 break;
             case TYP_SCHAR:
             case TYP_SINT:
             case TYP_SLONG:
-                ltoa( U32Fetch( Constant64 ), Buffer, 10 );
+                sprintf( Buffer, "%d", U32Fetch( Constant64 ) );
                 break;
             case TYP_ULONG64:
             case TYP_SLONG64:

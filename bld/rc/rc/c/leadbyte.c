@@ -32,8 +32,9 @@
 
 #include <stdlib.h>
 #include "watcom.h"
-#include "param.h"
 #include "leadbyte.h"
+#include "clibext.h"
+#include "rccore.h"
 
 #ifdef __NT__
 

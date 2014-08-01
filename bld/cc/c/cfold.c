@@ -31,6 +31,7 @@
 
 #include "cvars.h"
 #include "i64.h"
+#include "clibext.h"
 
 static bool IsConstantZero( TREEPTR tree );
 
@@ -1187,8 +1188,10 @@ static void CheckOpndValues( TREEPTR tree )
 
             // shift arguments undergo integral promotion; 'char c = 1 << 10;'
             // is not undefined, though it will overflow
-            max_shift = max( SizeOfArg( tree->left->u.expr_type ),
-                        SizeOfArg( GetType( TYPE_INT ) ) ) * 8;
+            max_shift = SizeOfArg( GetType( TYPE_INT ) );
+            if( max_shift < SizeOfArg( tree->left->u.expr_type ) )
+                max_shift = SizeOfArg( tree->left->u.expr_type );
+            max_shift *= 8;
             switch( con ) {
             case SIGNED_INT: {
                 int_32      right;

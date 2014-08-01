@@ -51,6 +51,7 @@
 #include "overlays.h"
 #include "ring.h"
 #include "specials.h"
+#include "clibext.h"
 
 static segdata      *OvlSegData;
 static symbol       *OverlayTable;   /* symbol entry for overlay table */

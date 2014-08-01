@@ -29,15 +29,15 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <string.h>
+#include <stdio.h>
 #include "global.h"
 #include "yydrivr2.h"
-#include "rctypes.h"
 #include "errors.h"
 #include "depend.h"
 #include "errprt.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 #ifdef SCANDEBUG
 

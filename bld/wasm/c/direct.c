@@ -31,7 +31,6 @@
 
 #include "asmglob.h"
 #include <ctype.h>
-
 #include "asmalloc.h"
 #include "directiv.h"
 #include "queues.h"
@@ -43,6 +42,7 @@
 #include "asmeval.h"
 #include "myassert.h"
 #include "asmdefs.h"
+#include "clibext.h"
 
 #define BIT16           0
 #define BIT32           1
@@ -92,7 +92,6 @@ enum {
     #include "directd.h"
     #undef pick
 };
-
 
 static typeinfo TypeInfo[] = {
     #define pick(token,string,value,init_val)   { string, value, init_val }
@@ -426,6 +425,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
                 *parm_number = ++parm;
                 break;
             }
+            /* fall down */
         default:
             // something wierd
             AsmError( STRANGE_PARM_TYPE );
@@ -2151,19 +2151,27 @@ void ModuleInit( void )
     ModuleInfo.cmdline = FALSE;
     ModuleInfo.mseg = FALSE;
     ModuleInfo.flat_grp = NULL;
-    ModuleInfo.name[0] = '\0';
+    ModuleInfo.name = NULL;
     // add source file to autodependency list
     ModuleInfo.srcfile = AddFlist( AsmFiles.fname[ASM] );
+}
+
+void ModuleFini( void )
+/*********************/
+{
+    AsmFree( ModuleInfo.name );
 }
 
 static void get_module_name( void )
 /*********************************/
 {
     char dummy[_MAX_EXT];
+    char fname[_MAX_FNAME];
     char        *p;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );
-    _splitpath( AsmFiles.fname[ASM], NULL, NULL, ModuleInfo.name, dummy );
+    _splitpath( AsmFiles.fname[ASM], NULL, NULL, fname, dummy );
+    ModuleInfo.name = AsmStrDup( fname );
     for( p = ModuleInfo.name; *p != '\0'; ++p ) {
         if( !( isalnum( *p ) || ( *p == '_' ) || ( *p == '$' )
             || ( *p == '@' ) || ( *p == '?') ) ) {

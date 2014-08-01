@@ -49,6 +49,7 @@
 #include "initdefs.h"
 #include "asmstmt.h"
 #include "ialias.h"
+#include "clibext.h"
 
 // from \watcom\h
 #include "rtprior.h"

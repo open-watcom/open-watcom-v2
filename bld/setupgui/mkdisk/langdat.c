@@ -38,16 +38,32 @@
 #endif
 #include "wio.h"
 #include "watcom.h"
-#include "builder.h"
+#include "bldutils.h"
 #include "iopath.h"
+#include "clibext.h"
 
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
 
+typedef struct ctl_file {
+    struct ctl_file     *next;
+    char                name[_MAX_PATH];
+} ctl_file;
+
+typedef struct include {
+    struct include      *prev;
+    FILE                *fp;
+    unsigned            skipping;
+    unsigned            ifdefskipping;
+    unsigned            lineno;
+    char                name[_MAX_PATH];
+    char                cwd[_MAX_PATH];
+} include;
+
 bool            Quiet;
 FILE            *LogFile;
 static ctl_file *CtlList = NULL;
-       include  *IncludeStk;
+static include  *IncludeStk;
 static char     Line[MAX_LINE];
 static char     ProcLine[MAX_LINE];
 static unsigned VerbLevel;
@@ -175,7 +191,6 @@ static void PushInclude( const char *name )
     new->skipping = 0;
     new->ifdefskipping = 0;
     new->lineno = 0;
-    new->reset_abit = NULL;
     IncludeStk = new;
     new->fp = fopen( name, "rb" );
     if( new->fp == NULL ) {

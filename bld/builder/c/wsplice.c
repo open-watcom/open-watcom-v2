@@ -77,6 +77,7 @@
 #include <sys/utime.h>
 #endif
 #include "watcom.h"
+#include "clibext.h"
 
 //#define local static
 #define local

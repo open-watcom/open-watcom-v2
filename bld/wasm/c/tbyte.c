@@ -40,6 +40,7 @@
 #include "bool.h"
 #include "tbyte.h"
 #include "watcom.h"
+#include "clibext.h"
 
 typedef unsigned __int64 u64;
 typedef unsigned_32 u32;

@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#define RCEXTERN            /* nothing */
 #include "global.h"
 
-/****** initialized global data ******/
-/* This variable is set to true if any error occurs. No further file I/O will */
-/* then take place. */
-int                 ErrorHasOccured = false;
+#include "clibext.h"
+#define RCEXTERN            /* nothing */
+#include "rccore.h"

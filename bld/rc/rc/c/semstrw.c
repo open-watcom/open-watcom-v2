@@ -36,6 +36,8 @@
 #include "semantic.h"
 #include "semantcw.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 FullStringTable * SemWINNewStringTable( void )

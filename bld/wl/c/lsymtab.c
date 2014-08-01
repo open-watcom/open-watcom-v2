@@ -53,6 +53,7 @@
 #include "command.h"
 #include "symtab.h"
 #include "symmem.h"
+#include "clibext.h"
 
 
 #define STATIC_TABSIZE  241  /* should be prime */

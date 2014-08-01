@@ -50,6 +50,7 @@
 #include "loados2.h"
 #include "loadpe.h"
 #include "impexp.h"
+#include "clibext.h"
 
 static void ReadOldLib( void );
 static void ReadNameTable( f_handle the_file );

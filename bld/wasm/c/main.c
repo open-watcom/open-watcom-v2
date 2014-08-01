@@ -40,16 +40,16 @@
 #include "asmexpnd.h"
 #include "objprs.h"
 #include "genmsomf.h"
-#include "directiv.h"
 #include "womputil.h"
 #include "swchar.h"
 #include "asminput.h"
-#include "pathgrp.h"
 #include "banner.h"
-
 #ifdef __OSI__
     #include "ostype.h"
 #endif
+#include "directiv.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 extern void             Fatal( unsigned msg, ... );
 extern void             ObjRecInit( void );

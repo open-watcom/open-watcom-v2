@@ -285,6 +285,20 @@ typedef struct a_definition_struct {
 
 extern a_definition_struct      Definition;
 
+enum assume_reg {
+    ASSUME_DS = 0,
+    ASSUME_ES,
+    ASSUME_SS,
+    ASSUME_FS,
+    ASSUME_GS,
+    ASSUME_CS,
+    ASSUME_ERROR,
+    ASSUME_NOTHING
+};
+
+#define ASSUME_FIRST    ASSUME_DS
+#define ASSUME_LAST     ASSUME_ERROR
+
 typedef struct {
     dist_type           distance;        // stack distance;
     mod_type            model;           // memory model;
@@ -297,23 +311,9 @@ typedef struct {
     bool                defUse32    :1;  // default segment size 32-bit
     bool                mseg        :1;  // mixed segments (16/32-bit)
     struct asm_sym      *flat_grp;       // FLAT group symbol
-    char                name[_MAX_FNAME];// name of module
+    char                *name;           // name of module
     const FNAME         *srcfile;
 } module_info;                           // Information about the module
-
-enum assume_reg {
-    ASSUME_DS=0,
-    ASSUME_ES,
-    ASSUME_SS,
-    ASSUME_FS,
-    ASSUME_GS,
-    ASSUME_CS,
-    ASSUME_ERROR,
-    ASSUME_NOTHING
-};
-
-#define ASSUME_FIRST    ASSUME_DS
-#define ASSUME_LAST     ASSUME_ERROR
 
 extern module_info      ModuleInfo;
 
@@ -359,8 +359,9 @@ extern bool             Model( token_idx );           // handle .MODEL statement
 
 extern bool             CheckForLang( token_idx, int *lang );
 
+/* Init/fini the information about the module, which are contained in ModuleInfo */
 extern void             ModuleInit( void );
-/* Initializes the information about the module, which are contained in ModuleInfo */
+extern void             ModuleFini( void );
 
 extern bool             ModuleEnd( token_idx );       // handle END statement
 

@@ -98,9 +98,9 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                 case '#':
                     src++;
                     CFindLastLine( &ll );
-                    ltoa( ll, buff, 10 );
+                    sprintf( buff, "%ld", ll );
                     i = strlen( buff );
-                    ltoa( lineno, buff, 10 );
+                    sprintf( buff, "%ld", lineno );
                     Lead( '0', i, buff );
                     for( j = 0; j < i; j++ ) {
                         *dst++ = buff[j];

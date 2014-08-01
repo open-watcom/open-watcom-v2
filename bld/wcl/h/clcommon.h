@@ -85,7 +85,7 @@ typedef struct  flags {
 } flags;
 
 extern FILE     *Fp;                /* file pointer for Temp_Link         */
-extern char     Exe_Name[_MAX_PATH];/* name of executable                 */
+extern char     *Exe_Name;          /* name of executable                 */
 extern char     *Map_Name;          /* name of map file                   */
 extern char     *Obj_Name;          /* object file name pattern           */
 extern list     *Libs_List;         /* list of libraires from Cmd         */
@@ -97,20 +97,20 @@ extern flags    Flags;
 extern char     *DebugOptions[];
 
 extern void     PrintMsg( const char *fmt, ... );
-extern void     FindPath( char *name, char *buf );
+extern void     FindPath( const char *name, char *buf );
 extern void     BuildLinkFile( void );
 extern void     AddName( char *, FILE * );
 extern void     ListAppend( list **, list * );
 extern void     ListFree( list * );
-extern void     Fputnl( char *, FILE * );
-extern void     FputnlQuoted( char *, FILE * );
+extern void     Fputnl( const char *, FILE * );
+extern void     FputnlQuoted( const char *, FILE * );
 extern void     MemInit( void );
 extern void     MemFini( void );
 extern void     *MemAlloc( size_t );
 extern char     *MemStrDup( const char * );
 extern void     *MemReAlloc( void *, size_t );
 extern void     MemFree( void * );
-extern char     *MakePath( char * );
-extern char     *GetName( char * );
+extern char     *MakePath( const char * );
+extern char     *GetName( const char * );
 extern char     *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars );
-extern char     *DoQuoted( char *buffer, char *name );
+extern char     *DoQuoted( char *buffer, const char *name );

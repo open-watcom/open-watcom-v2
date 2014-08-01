@@ -131,7 +131,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
             switch( j ) {
             case STR_T_STRLEN:
                 if( v != NULL ) {
-                    itoa( v->len, v1, 10 );
+                    sprintf( v1, "%d", v->len );
                 } else {
                     strcpy( v1, "0" );
                 }
@@ -177,7 +177,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
                     }
                     j++;
                 }
-                itoa( j, v1, 10 );
+                sprintf( v1, "%d", j );
                 break;
             }
         } else {

@@ -31,8 +31,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-
 #include "dmpobj.h"
+#include "clibext.h"
 
 data_ptr    NamePtr;
 byte        NameLen;

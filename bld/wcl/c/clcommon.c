@@ -41,14 +41,14 @@
 #include <dirent.h>
 #endif
 #include "wio.h"
-#include "clibext.h"
 #include "diskos.h"
-#include "pathgrp.h"
 #include "cmdlhelp.h"
 #include "clcommon.h"
 #ifdef TRMEM
 #include "trmem.h"
 #endif
+#include "clibext.h"
+#include "pathgrp.h"
 
 #ifndef __UNIX__
 #define ATTR_MASK   _A_HIDDEN + _A_SYSTEM + _A_VOLID + _A_SUBDIR
@@ -60,7 +60,7 @@ list    *Libs_List;         /* list of libraires from Cmd         */
 char    *Map_Name;          /* name of map file                   */
 list    *Obj_List;          /* linked list of object filenames    */
 char    *Obj_Name;          /* object file name pattern           */
-char    Exe_Name[_MAX_PATH];/* name of executable                 */
+char    *Exe_Name;          /* name of executable                 */
 
 char *DebugOptions[] = {
     "",
@@ -119,15 +119,15 @@ void PrintMsg( const char *fmt, ... )
     }
 }
 
-void  Fputnl( char *text, FILE *fptr )
-/************************************/
+void  Fputnl( const char *text, FILE *fptr )
+/******************************************/
 {
     fputs( text, fptr );
     fputs( "\n", fptr );
 }
 
-void FputnlQuoted( char *text, FILE *fptr )
-/****************************************/
+void FputnlQuoted( const char *text, FILE *fptr )
+/***********************************************/
 {
     if( strchr( text, ' ' ) != NULL ) {
         fputs( "'", fptr );
@@ -342,8 +342,8 @@ void  AddName( char *name, FILE *link_fp )
 }
 
 
-char  *MakePath( char *path )
-/***************************/
+char  *MakePath( const char *path )
+/*********************************/
 {
     char        *p;
     size_t      len;
@@ -365,8 +365,8 @@ char  *MakePath( char *path )
     }
 }
 
-char  *GetName( char *path )
-/**************************/
+char  *GetName( const char *path )
+/********************************/
 {
 #ifndef __UNIX__
     static      DIR     *dirp;
@@ -392,10 +392,10 @@ char  *GetName( char *path )
     closedir( dirp );
     return( NULL );
 #else
-    char    *name;
+    const char      *name;
 
     if( path == NULL )
-            return( NULL );
+        return( NULL );
     name = strrchr( path, '/' );
     if( name == NULL ) {
         name = path;
@@ -406,8 +406,8 @@ char  *GetName( char *path )
 #endif
 }
 
-void FindPath( char *name, char *buf )
-/************************************/
+void FindPath( const char *name, char *buf )
+/******************************************/
 {
     _searchenv( name, "PATH", buf );
     if( buf[0] == '\0' ) {
@@ -469,12 +469,12 @@ char *FindNextWSOrOpt( char *str, char opt, char *Switch_Chars )
     return( str );
 }
 
-static int needQuotes( char const *name )
+static int needQuotes( const char *name )
 {
     return( strchr( name, ' ' ) != NULL );
 }
 
-char *DoQuoted( char *buffer, char *name )
+char *DoQuoted( char *buffer, const char *name )
 {
     char *p = buffer;
     int  quotes;

@@ -40,8 +40,9 @@
 #include "make.h"
 #include "mmemory.h"
 #include "mmisc.h"
-#include "pathgrp.h"
 #include "mlex.h"
+#include "clibext.h"
+#include "pathgrp.h"
 
 static ENV_TRACKER  *envList;
 

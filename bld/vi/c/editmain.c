@@ -478,11 +478,8 @@ void DoneRepeat( void )
  */
 void SetRepeatCount( long num )
 {
-    char        str[MAX_NUM_STR];
-
-    ltoa( num, str, 10 );
-    strcpy( RepeatString, str );
-    RepeatDigits = strlen( str );
+    sprintf( RepeatString, "%ld", num );
+    RepeatDigits = strlen( RepeatString );
 
 } /* SetRepeatCount */
 

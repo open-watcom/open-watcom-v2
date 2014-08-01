@@ -56,7 +56,12 @@ void AlignIt( TYPEPTR typ )
         DGAlign( GetTypeAlignment( typ ) );
     }
 #else
-    DGAlign( max( 4, GetTypeAlignment( typ ) ) );
+    align_type  align;
+
+    align = GetTypeAlignment( typ );
+    if( align < 4 )
+        align = 4;
+    DGAlign( align );
 #endif
 }
 

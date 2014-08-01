@@ -317,7 +317,7 @@ static void setDefaultSizeStyle( void )
     SendMessage( hwndSize, CB_SETCURSEL, 0, 0L );
     SendMessage( hwndStyle, LB_SETCURSEL, 0, 0L );
 
-    itoa( abs( FontlfHeight( SEType[SE_WHITESPACE].font ) ), buf, 10 );
+    sprintf( buf, "%d", abs( FontlfHeight( SEType[SE_WHITESPACE].font ) ) );
     i = SendMessage( hwndSize, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)buf );
     if( i != CB_ERR ) {
         SendMessage( hwndSize, CB_SETCURSEL, i, 0L );

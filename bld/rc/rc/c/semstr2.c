@@ -29,13 +29,14 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "watcom.h"
 #include "global.h"
 #include "errors.h"
 #include "semantic.h"
 #include "semantc2.h"
 #include "rcrtns.h"
+#include "clibext.h"
+#include "rccore.h"
 
 
 int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
