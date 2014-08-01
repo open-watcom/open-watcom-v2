@@ -32,7 +32,6 @@
 typedef unsigned long reg_32;
 
 #include "pushpck1.h"
-
 typedef struct P5_timing_info {
     reg_32      count;
     reg_32      semaphore;
@@ -47,9 +46,9 @@ typedef struct new_P5_timing_info {
     struct new_P5_timing_info *stack;
     reg_32      esp;
     struct new_P5_timing_info *dynamic;
-    __int64     count;
-    __int64     cycles;
-    __int64     start_time;
+    long long   count;
+    long long   cycles;
+    long long   start_time;
     reg_32      caller;
     reg_32      call_ins;
     reg_32      callee;
@@ -62,13 +61,16 @@ typedef struct block_count_info {
     reg_32      address;
     reg_32      function;
 } block_count_info;
-
 #include "poppck.h"
 
 #define PROFILE_FLAG_DYNAMIC    '+'
 #define PROFILE_FLAG_END_GROUP  '-'
 #define PROFILE_FLAG_BLOCK      'b'
 #define PROFILE_LONG_FORMAT_LEN 20
+
+extern void *__ProfAlloc( unsigned long size );
+
+#if defined( __WATCOMC__ )
 
 _WCRTLINK extern void __ProfInit( void );
 _WCRTLINK extern void __ProfExitCriticalSection( void );
@@ -77,12 +79,11 @@ _WCRTLINK extern void __ProfEnable( void );
 _WCRTLINK extern void __ProfDisable( void );
 _WCRTLINK extern __int64 __P5_overhead( void );
 
-extern void *__ProfAlloc( unsigned long size );
-
-#if defined( __WATCOMC__ ) && defined( __386__ )
+#if !defined( _M_I86 )
 #pragma aux __ProfProlog "__PON" parm routine [] modify []
 _WCRTLINK extern void __ProfProlog( new_P5_timing_info *block );
-
 #pragma aux __ProfEpilog "__POFF" parm routine [] modify []
 _WCRTLINK extern void __ProfEpilog( new_P5_timing_info *block );
+#endif
+
 #endif
