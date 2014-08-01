@@ -36,6 +36,7 @@
 #include <sys/types.h>
 #ifdef __WATCOMC__
 #include <process.h>
+#include "clibint.h"
 #endif
 #include "linkstd.h"
 #include "dbginfo.h"
@@ -47,7 +48,6 @@
 #include "ideentry.h"
 #include "loadfile.h"
 #include "wreslang.h"
-#include "clibint.h"
 #include "rcrtns.h"
 #include "wresset2.h"
 #include "clibext.h"

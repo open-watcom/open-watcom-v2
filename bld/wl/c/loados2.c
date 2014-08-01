@@ -57,10 +57,11 @@
 #include "carve.h"
 #include "permdata.h"
 #include "loadpe.h"
-#include "rcstrblk.h"
-#include "wres.h"
-#include "loados2.h"
 #include "impexp.h"
+#include "wres.h"
+#include "rcstrblk.h"
+#include "rcstr.h"
+#include "loados2.h"
 #include "clibext.h"
 
 #define STUB_ALIGN 16
