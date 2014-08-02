@@ -43,29 +43,33 @@ enum {
     TAB_IDX_PATH
 };
 
+typedef unsigned_16     file_tab_idx;
+
 typedef struct {
-    unsigned_16 fnameidx;
-    unsigned_16 pathidx;
+    file_tab_idx        fnameidx;
+    file_tab_idx        pathidx;
 } fileidx_entry;
 
-typedef union {
-    fileidx_entry       idx;
-    char *              name;
+typedef struct {
+    union {
+        fileidx_entry   idx;
+        char            *name;
+    } u;
 } filetab_entry;
 
 typedef struct {
     unsigned            len;
-    filetab_entry *     tab;
+    filetab_entry       *tab;
 } file_table;
 
 typedef struct {
-    file_table  fnametab;
-    file_table  pathtab;
+    file_table          fnametab;
+    file_table          pathtab;
 } file_info;
 
 typedef struct {
-    unsigned_32 size;
-    dr_handle   base;
+    unsigned_32         size;
+    dr_handle           base;
 } sect_info;
 
 typedef struct COMPUNIT_INFO {

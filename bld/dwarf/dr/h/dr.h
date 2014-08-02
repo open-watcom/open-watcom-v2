@@ -110,6 +110,8 @@ typedef struct dr_dbg_info      *dr_dbg_handle;
 
 typedef unsigned long           dr_handle;
 
+typedef unsigned                dr_fileidx;
+
 #define DWRSetRtns( read, seek, alloc, realloc, free, except ) \
     struct WDRRoutines DWRRtns = { \
         read,       \

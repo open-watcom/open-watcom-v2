@@ -608,8 +608,8 @@ abbrev_data const abbrevInfo[] = {
 
 
 typedef struct {
-    uint_32             data_offset;
-    uint_32             data_len;
+    size_t              data_offset;
+    size_t              data_len;
 } extra_info;
 
 extra_info abbrevExtra[ AB_MAX ];
@@ -631,6 +631,8 @@ size_t topOfEncoding;
 uint_8 encodingBuf[ AB_MAX * MAX_LEB128 * MAX_CODES ];
 uint_8 tempEncoding[ MAX_LEB128 * MAX_CODES ];
 
+#define ANCHOR_NONE ((size_t)-1)
+
 size_t addToEncoding(
     size_t                      this_size )
 {
@@ -647,18 +649,18 @@ size_t addToEncoding(
     */
     dest = 0;
     src = 0;
-    anchor = ~0;
+    anchor = ANCHOR_NONE;
     while( dest < topOfEncoding ) {
         if( encodingBuf[ dest ] != tempEncoding[ src ] ) {
             src = 0;
-            if( anchor == ~0 ) {
+            if( anchor == ANCHOR_NONE ) {
                 ++dest;
             } else {
                 dest = anchor + 1;
-                anchor = ~0;
+                anchor = ANCHOR_NONE;
             }
         } else {
-            if( anchor == ~0 ) {
+            if( anchor == ANCHOR_NONE ) {
                 anchor = dest;
             }
             ++dest;
@@ -675,7 +677,7 @@ size_t addToEncoding(
     */
     memcpy( &encodingBuf[ dest ], &tempEncoding[ src ], this_size - src );
     topOfEncoding += this_size - src;
-    if( anchor == ~0 ) {
+    if( anchor == ANCHOR_NONE ) {
         return( dest );
     }
     return( anchor );

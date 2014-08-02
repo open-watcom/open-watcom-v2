@@ -86,10 +86,10 @@ uint GetFileNumber(
     dw_include                  *walk;
 
     len = strlen( name ) + 1;
-    walk = cli->debug_line.files;
-    while( walk != NULL ) {
-        if( memcmp( name, walk->name, len ) == 0 ) break;
-        walk = walk->next;
+    for( walk = cli->debug_line.files; walk != NULL; walk = walk->next ) {
+        if( memcmp( name, walk->name, len ) == 0 ) {
+            break;
+        }
     }
     if( walk == NULL ) {
         walk = CLIAlloc( ( sizeof( dw_include ) - 1 ) + len );
@@ -166,10 +166,10 @@ void DWENTRY DWLineNum(
     cli->debug_line.line = line_num;
 }
 
-void DWLineAddr(  dw_client  cli, dw_sym_handle sym, dw_addr_offset addr )
+void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
 {
-    uint_8                      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
-    uint_8                      *end;
+    uint_8      buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
+    uint_8      *end;
 
     buf[ 0 ] = 0;  //extended
     end = ULEB128(buf+1, 1+cli->offset_size ); // write the opcode size
@@ -198,7 +198,7 @@ void DWLineSeg(  dw_client  cli, dw_sym_handle sym )
 void InitDebugLine(
     dw_client                   cli,
     const char                  *source_filename,
-    char                        *inc_list,
+    const char                  *inc_list,
     unsigned                    inc_list_len )
 {
     stmt_prologue prol = {

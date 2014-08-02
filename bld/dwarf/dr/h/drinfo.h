@@ -69,7 +69,7 @@ extern long             DRGetColumn( dr_handle );
 extern long             DRGetLine( dr_handle );
 extern char             *DRGetFileName( dr_handle );
 extern void             DRGetFileNameList( DRFNAMECB, void * );
-extern char             *DRIndexFileName( dr_handle mod, unsigned fileno  );
+extern char             *DRIndexFileName( dr_handle mod, dr_fileidx fileidx );
 extern dr_access        DRGetAccess( dr_handle );
 extern bool             DRIsMemberStatic( dr_handle );
 extern bool             DRIsFunc( dr_handle );

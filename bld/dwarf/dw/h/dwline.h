@@ -50,7 +50,7 @@ typedef struct dw_include_stack {
 #define FiniDebugLine           DW_FiniDebugLine
 #define GetFileNumber           DW_GetFileNumber
 
-extern  void    InitDebugLine( dw_client cli, const char *, char *, unsigned );
+extern  void    InitDebugLine( dw_client cli, const char *, const char *, unsigned );
 extern  void    FiniDebugLine( dw_client cli );
 extern  uint    GetFileNumber( dw_client cli, const char * );
 

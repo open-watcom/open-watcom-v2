@@ -33,8 +33,8 @@
 extern void     DWRFiniFileTable( file_table *, bool );
 extern void     DWRInitFileTable( file_table * );
 extern void     DWRScanFileTable( dr_handle, file_info *, file_table * );
-extern char *   DWRIndexFileName( unsigned_16, file_table * );
-extern unsigned_16 DWRIndexFile( unsigned_16, file_table * );
-extern char *   DWRFindFileName( unsigned, dr_handle );
+extern char *   DWRIndexFileName( file_tab_idx, file_table * );
+extern file_tab_idx DWRIndexFile( dr_fileidx, file_table * );
+extern char *   DWRFindFileName( dr_fileidx, dr_handle );
 
 extern file_info                FileNameTable;

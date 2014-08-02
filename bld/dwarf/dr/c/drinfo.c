@@ -295,13 +295,13 @@ extern char *DRGetFileName( dr_handle entry )
 {
     dr_handle           abbrev;
     char *              name;
-    unsigned            fileno;
+    dr_fileidx          fileidx;
 
     name = NULL;
     abbrev = DWRGetAbbrev( &entry );
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_decl_file ) ) {
-        fileno = DWRReadConstant( abbrev, entry );
-        name = DWRFindFileName( fileno, entry );
+        fileidx = DWRReadConstant( abbrev, entry );
+        name = DWRFindFileName( fileidx, entry );
     }
     return( name );
 }
@@ -310,17 +310,17 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
 /******************************************************/
 {
     compunit_info       *compunit;
-    unsigned            num;
-    unsigned            fileno;
+    dr_fileidx          fileidx;
+    file_tab_idx        ftidx;
     char                *name;
 
     compunit = &DWRCurrNode->compunit;
     do {
-        num = compunit->filetab.len;
-        while( num > 0 ) {
-            num--;
-            fileno = DWRIndexFile( num, &compunit->filetab );
-            name = DWRIndexFileName( fileno, &FileNameTable.fnametab );
+        fileidx = compunit->filetab.len;
+        while( fileidx > 0 ) {
+            fileidx--;
+            ftidx = DWRIndexFile( fileidx, &compunit->filetab );
+            name = DWRIndexFileName( ftidx, &FileNameTable.fnametab );
             if( !callback( name, data ) ) {
                 return;
             }
@@ -329,15 +329,16 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
     } while( compunit != NULL );
 }
 
-char *DRIndexFileName( dr_handle mod, unsigned fileno  )
-/******************************************************/
+char *DRIndexFileName( dr_handle mod, dr_fileidx fileidx  )
+/********************************************************/
 {
     compunit_info       *compunit;
     char                *name;
+    file_tab_idx        ftidx;
 
     compunit = DWRFindCompileInfo( mod );
-    fileno = DWRIndexFile( fileno-1, &compunit->filetab );
-    name = DWRIndexFileName( fileno, &FileNameTable.fnametab );
+    ftidx = DWRIndexFile( fileidx - 1, &compunit->filetab );
+    name = DWRIndexFileName( ftidx, &FileNameTable.fnametab );
     return( name );
 }
 

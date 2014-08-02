@@ -260,13 +260,13 @@ void            DWENTRY DWFini( dw_client );
 
 /* compilation units */
 typedef struct {
-    char           *source_filename;
-    char           *directory;
+    char const     *source_filename;
+    char const     *directory;
     unsigned        flags;
     unsigned        offset_size;
     unsigned        segment_size;
     dw_model        model;
-    char           *inc_list;
+    char const     *inc_list;
     unsigned        inc_list_len;
     dw_sym_handle   dbg_pch;
 }dw_cu_info;

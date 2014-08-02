@@ -40,22 +40,20 @@
 #include "dwdie.h"
 
 
-void InitDIE(
-    dw_client                   cli )
+void InitDIE( dw_client cli )
 {
     cli->die.tree = NULL;
 }
 
 
-void FiniDIE(
-    dw_client                   cli )
+void FiniDIE( dw_client cli )
 {
+    cli = cli;
     _Assert( cli->die.tree == NULL );
 }
 
 
-void StartChildren(
-    dw_client                   cli )
+void StartChildren( dw_client cli )
 {
     die_tree    *new;
 
@@ -69,8 +67,7 @@ void StartChildren(
 }
 
 
-static void doTheSiblingThing(
-    dw_client                   cli )
+static void doTheSiblingThing( dw_client cli )
 {
     debug_ref                   sibling;
     char                        buf[ sizeof( debug_ref ) ];
@@ -84,8 +81,7 @@ static void doTheSiblingThing(
 }
 
 
-void EndChildren(
-    dw_client                   cli )
+void EndChildren( dw_client cli )
 {
     doTheSiblingThing( cli );
 
