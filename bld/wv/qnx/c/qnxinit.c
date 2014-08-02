@@ -43,10 +43,10 @@
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include "clibint.h"
 
-int                     _8087 = 0;
-int                     _real87 = 0;
-
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );

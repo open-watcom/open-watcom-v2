@@ -44,8 +44,7 @@
 #include "dbgtoggl.h"
 #include "dbgmem.h"
 #include "autoenv.h"
-
-extern int _8087;
+#include "clibint.h"
 
 extern void     DebugMain( void );
 extern void     DebugFini( void );
