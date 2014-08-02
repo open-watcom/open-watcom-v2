@@ -56,10 +56,10 @@ include struct.inc
 ;[] __ModF
 ;[]
 ;[]     void __ModF( double near *AX, double near *DX );
-;[]     Input:  AX          - pointer to double precision float
-;[]             DX          - place to store integral part
-;[]     Output: [AX]        - fractional part of value.
-;[]             [DX]        - integral part of value
+;[]     Input:  SS:AX       - pointer to double precision float
+;[]             SS:DX       - place to store integral part
+;[]     Output: SS:[AX]     - fractional part of value.
+;[]             SS:[DX]     - integral part of value
 ;[]
 ;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -112,9 +112,9 @@ done:     sub   AX,AX           ; - set fraction(or integer) to 0
           rol   BL,1            ; - rotate into position
           rol   BL,1            ; - ...
           rol   BL,1            ; - ...
-          mov   BH,0            ; - zero high byte for indexing
+          xor   BH,BH           ; - zero high byte for indexing
           mov   AL,AH           ; - get high part of exponent
-          mov   AH,0            ; - zero high part
+          mov   AH,BH           ; - zero high part
           mov   DI,AX           ; - ...
           inc   DI              ; - add 1
           mov   AH,Masks[BX]    ; - get mask for last 3 bits of exponent
@@ -207,7 +207,7 @@ done:     sub   AX,AX           ; - set fraction(or integer) to 0
         mov     BX,DX           ; . . .
         _loop                   ; loop (convert digits into 54-bit int)
           mov   AL,ss:[SI]      ; - get next digit
-          cmp   AL,0            ; - quit if at end of buffer
+          test  AL,AL           ; - quit if at end of buffer
           _quif e               ; - . . .
 
 ;[]  multiply current value in DL:BX:CX:DI by 10
@@ -286,7 +286,7 @@ Norm    proc    near            ; normalize floating point number
           mov   CH,CL           ; - . . .
           mov   CL,DH           ; - . . .
           mov   DH,DL           ; - . . .
-          mov   DL,0            ; - . . .
+          xor   DL,DL           ; - . . .
           sub   DI,0080h        ; - exp <-- exp - 8
         _endloop                ; endloop
         test    AX,0FFF0h       ; see if we have to shift forward or backward

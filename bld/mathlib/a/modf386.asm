@@ -56,10 +56,10 @@ include struct.inc
 ;[] __ModF
 ;[]
 ;[]     void __ModF( double near *AX, double near *DX );
-;[]     Input:  EAX         - pointer to double precision float
-;[]             EDX         - place to store integral part
-;[]     Output: [EAX]       - fractional part of value.
-;[]             [EDX]       - integral part of value
+;[]     Input:  SS:EAX      - pointer to double precision float
+;[]             SS:EDX      - place to store integral part
+;[]     Output: SS:[EAX]    - fractional part of value.
+;[]             SS:[EDX]    - integral part of value
 ;[]
 ;[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -157,7 +157,7 @@ done:     sub   EAX,EAX         ; - set fraction(or integer) to 0
         sub     EAX,EAX         ; zero out EAX
         _loop                   ; loop (convert digits into 54-bit int)
           mov   AL,[ESI]        ; - get next digit
-          cmp   AL,0            ; - quit if at end of buffer
+          test  AL,AL           ; - quit if at end of buffer
           _quif e               ; - . . .
 
 ;[]  multiply current value in EDX:ECX by 10
