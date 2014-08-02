@@ -48,14 +48,17 @@ uint    readbytes( b_file *io, char *buff, uint len ) {
     int         amt;
 
     total = 0;
+    amt = MAX_SYSIO_SIZE;
     while( len != 0 ) {
-        amt = min( len, MAX_SYSIO_SIZE );
+        if( len < amt )
+            amt = len;
         bytes_read = read( io->handle, buff, amt );
         if( bytes_read < 0 ) {
             FSetSysErr( io );
             return( READ_ERROR );
         } else if( bytes_read == 0 ) {
-            if( total != 0 ) break;
+            if( total != 0 )
+                break;
             FSetEof( io );
             return( READ_ERROR );
         }
@@ -63,7 +66,9 @@ uint    readbytes( b_file *io, char *buff, uint len ) {
         total += bytes_read;
         buff += bytes_read;
         len -= bytes_read;
-        if( bytes_read < amt ) break;
+        if( bytes_read < amt ) {
+            break;
+        }
     }
     return( total );
 }

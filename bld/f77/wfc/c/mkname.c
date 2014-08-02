@@ -37,6 +37,7 @@
 #include "ftnstd.h"
 #include <stdlib.h>
 #include <string.h>
+#include "clibext.h"
 
 
 int     CopyMaxStr( char *str, char *buff, int max_len ) {

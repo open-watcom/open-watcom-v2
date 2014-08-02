@@ -46,6 +46,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "clibext.h"
 
 extern  int             KwLookUp(char **,int,char *,int,bool);
 extern  int             MkHexConst(char *,char *,int);

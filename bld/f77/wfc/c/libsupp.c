@@ -39,11 +39,11 @@
 #include "omodes.h"
 #include "inout.h"
 #include "iopath.h"
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include "clibext.h"
 
 extern  void            SDClose(file_handle);
 extern  file_handle     SDOpen(char *,int);

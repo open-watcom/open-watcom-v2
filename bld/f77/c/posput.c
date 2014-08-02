@@ -155,8 +155,10 @@ uint    writebytes( b_file *io, char *buff, uint len ) {
     uint        amt;
 
     total = 0;
+    amt = MAX_SYSIO_SIZE;
     while( len != 0 ) {
-        amt = min( len, MAX_SYSIO_SIZE );
+        if( len < amt )
+            amt = len;
         written = write( io->handle, buff, amt );
         if( written < 0 ) {
             FSetSysErr( io );

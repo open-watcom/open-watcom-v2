@@ -41,12 +41,11 @@
 #include "ferror.h"
 #include "comio.h"
 #include "inout.h"
-
 #include "banner.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include "clibext.h"
 
 #if _CPU == 8086
     #define _Banner "FORTRAN 77 x86 16-bit Optimizing Compiler"

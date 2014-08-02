@@ -114,7 +114,9 @@ static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size ) {
         CSuicide();
     };
     cur_sec->cur_offset += size;
-    cur_sec->max_offset = max( cur_sec->cur_offset, cur_sec->max_offset );
+    if( cur_sec->cur_offset > cur_sec->max_offset ) {
+        cur_sec->max_offset = cur_sec->cur_offset;
+    }
 }
 
 
@@ -290,8 +292,10 @@ void CLIRewind( void ) {
 int CLIRead( char *buf, int size, int sec ) {
 /*******************************************/
 
-    size = min(size, Sections[sec].max_offset - Sections[sec].cur_offset);
-    if ( !size ) return( 0 );
+    if( Sections[sec].max_offset - Sections[sec].cur_offset < size )
+        size = Sections[sec].max_offset - Sections[sec].cur_offset;
+    if ( !size )
+        return( 0 );
     if ( ( Sections[sec].sec_type == FILE_SECTION ) && Sections[sec].u1.fp ) {
         SDRead( Sections[sec].u1.fp, buf, size );
         chkIOErr( Sections[sec].u1.fp, SM_IO_READ_ERR, "temporary file" );

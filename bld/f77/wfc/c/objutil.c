@@ -48,6 +48,7 @@
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "clibext.h"
 
 #if defined( __386__ )
   #define PAGE_SIZE     (16*1024)
