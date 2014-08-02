@@ -33,9 +33,9 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "wdglb.h"
 #include "wdfunc.h"
+#include "clibext.h"
 
 
 static  const_string_table pe_export_msg[] = {
@@ -187,7 +187,7 @@ static void dmp_imp_lookup( unsigned_32 offset )
         Puthex( address, 8 );
         if( address & PE_IMPORT_BY_ORDINAL ) {
             Wdputs( "          " );
-	    Putdecl( address & ~PE_IMPORT_BY_ORDINAL, 8 );
+            Putdecl( address & ~PE_IMPORT_BY_ORDINAL, 8 );
         } else {
             Wlseek( address - Pe_head.table[ PE_TBL_IMPORT ].rva + Imp_off );
             Wread( &hint, sizeof( hint ) );

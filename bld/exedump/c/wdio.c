@@ -38,6 +38,7 @@
 #include "wio.h"
 #include "wdglb.h"
 #include "wdfunc.h"
+#include "clibext.h"
 
 bool Weof( void )
 /***************/
