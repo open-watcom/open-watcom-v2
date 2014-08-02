@@ -105,7 +105,9 @@ WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
             shi.dwSize = sizeof( shi );
             if( SystemHeapInfo( &shi ) ) {
-                pcfree = min( shi.wGDIFreePercent, shi.wUserFreePercent );
+                pcfree = shi.wGDIFreePercent;
+                if( pcfree > shi.wUserFreePercent )
+                    pcfree = shi.wUserFreePercent;
                 RCsprintf( buff, ABT_SYS_RESOURCES_FREE, pcfree );
             } else {
                 CopyRCString( ABT_SYS_RESOURCES_N_A, buff, sizeof( buff ) );

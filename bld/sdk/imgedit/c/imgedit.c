@@ -35,9 +35,7 @@
 #include <stdarg.h>
 #include "title.h"
 #include "iedde.h"
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 
 #ifdef __NT__
     #pragma library( "shell32.lib" )

@@ -269,7 +269,7 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
             strncpy( idtext, block->symbol[string_id & 0xf], MAX_ID_CHARS );
             idtext[MAX_ID_CHARS] = '\0';
         } else {
-            utoa( (int)string_id, idtext, 10 );
+            sprintf( idtext, "%u", (unsigned)string_id );
         }
         idlen = strlen( idtext );
         idtext[idlen] = '\t';

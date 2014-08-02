@@ -78,9 +78,7 @@
 #include "jdlg.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 
 /****************************************************************************/
 /* macro definitions                                                        */

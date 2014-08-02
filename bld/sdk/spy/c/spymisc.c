@@ -57,7 +57,7 @@ typedef struct {
     WORD        *style_array_size;
 } class_styles;
 
-static style_info __near StyleArray[] = {
+static style_info _NEAR StyleArray[] = {
     { "WS_POPUP",           WS_POPUP,           WS_POPUP            },
     { "WS_CHILD",           WS_CHILD,           WS_CHILD            },
     { "WS_OVERLAPPED",      WS_OVERLAPPED,      WS_POPUP | WS_CHILD },
@@ -82,7 +82,7 @@ static style_info __near StyleArray[] = {
 
 static WORD StyleArraySize = sizeof( StyleArray ) / sizeof( style_info );
 
-static style_info __near ButtonStyleArray[] = {
+static style_info _NEAR ButtonStyleArray[] = {
     { "BS_PUSHBUTTON",      BS_PUSHBUTTON,      BS_TYPEMASK         },
     { "BS_DEFPUSHBUTTON",   BS_DEFPUSHBUTTON,   BS_TYPEMASK         },
     { "BS_CHECKBOX",        BS_CHECKBOX,        BS_TYPEMASK         },
@@ -116,7 +116,7 @@ static style_info __near ButtonStyleArray[] = {
 
 static WORD ButtonStyleArraySize = sizeof( ButtonStyleArray ) / sizeof( style_info );
 
-static style_info __near EditStyleArray[] = {
+static style_info _NEAR EditStyleArray[] = {
     { "ES_LEFT",        ES_LEFT,        ES_CENTER | ES_RIGHT },
     { "ES_CENTER",      ES_CENTER,      ES_CENTER | ES_RIGHT },
     { "ES_RIGHT",       ES_RIGHT,       ES_CENTER | ES_RIGHT },
@@ -139,7 +139,7 @@ static style_info __near EditStyleArray[] = {
 
 static WORD EditStyleArraySize = sizeof( EditStyleArray ) / sizeof( style_info );
 
-static style_info __near StaticStyleArray[] = {
+static style_info _NEAR StaticStyleArray[] = {
     { "SS_LEFT",            SS_LEFT,            SS_TYPEMASK        },
     { "SS_CENTER",          SS_CENTER,          SS_TYPEMASK        },
     { "SS_RIGHT",           SS_RIGHT,           SS_TYPEMASK        },
@@ -180,7 +180,7 @@ static style_info __near StaticStyleArray[] = {
 
 static WORD StaticStyleArraySize = sizeof( StaticStyleArray ) / sizeof( style_info );
 
-static style_info __near ListBoxStyleArray[] = {
+static style_info _NEAR ListBoxStyleArray[] = {
     { "LBS_NOTIFY",             LBS_NOTIFY,             LBS_NOTIFY            },
     { "LBS_SORT",               LBS_SORT,               LBS_SORT              },
     { "LBS_NOREDRAW",           LBS_NOREDRAW,           LBS_NOREDRAW          },
@@ -205,7 +205,7 @@ static style_info __near ListBoxStyleArray[] = {
 
 static WORD ListBoxStyleArraySize = sizeof( ListBoxStyleArray ) / sizeof( style_info );
 
-static style_info __near ComboBoxStyleArray[] = {
+static style_info _NEAR ComboBoxStyleArray[] = {
     { "CBS_SIMPLE",             CBS_SIMPLE,             CBS_SIMPLE | CBS_DROPDOWN },
     { "CBS_DROPDOWN",           CBS_DROPDOWN,           CBS_SIMPLE | CBS_DROPDOWN },
     { "CBS_DROPDOWNLIST",       CBS_DROPDOWNLIST,       CBS_SIMPLE | CBS_DROPDOWN },
@@ -227,7 +227,7 @@ static style_info __near ComboBoxStyleArray[] = {
 
 static WORD ComboBoxStyleArraySize = sizeof( ComboBoxStyleArray ) / sizeof( style_info );
 
-static style_info __near DialogStyleArray[] = {
+static style_info _NEAR DialogStyleArray[] = {
     { "DS_ABSALIGN",        DS_ABSALIGN,        DS_ABSALIGN              },
     { "DS_SYSMODAL",        DS_SYSMODAL,        DS_SYSMODAL              },
     { "DS_LOCALEDIT",       DS_LOCALEDIT,       DS_LOCALEDIT             },
@@ -250,7 +250,7 @@ static style_info __near DialogStyleArray[] = {
 static WORD DialogStyleArraySize = sizeof( DialogStyleArray ) / sizeof( style_info );
 
 #ifdef __NT__
-static style_info __near AnimateStyleArray[] = {
+static style_info _NEAR AnimateStyleArray[] = {
     { "ACS_CENTER",         ACS_CENTER,         ACS_CENTER      },
     { "ACS_TRANSPARENT",    ACS_TRANSPARENT,    ACS_TRANSPARENT },
     { "ACS_AUTOPLAY",       ACS_AUTOPLAY,       ACS_AUTOPLAY    },
@@ -259,7 +259,7 @@ static style_info __near AnimateStyleArray[] = {
 
 static WORD AnimateStyleArraySize = sizeof( AnimateStyleArray ) / sizeof( style_info );
 
-static style_info __near DateTimeStyleArray[] = {
+static style_info _NEAR DateTimeStyleArray[] = {
     { "DTS_UPDOWN",             DTS_UPDOWN,         DTS_UPDOWN         },
     { "DTS_SHOWNONE",           DTS_SHOWNONE,       DTS_SHOWNONE       },
     { "DTS_SHORTDATECENTURYFORMAT", DTS_SHORTDATECENTURYFORMAT,
@@ -274,7 +274,7 @@ static style_info __near DateTimeStyleArray[] = {
 
 static WORD DateTimeStyleArraySize = sizeof( DateTimeStyleArray ) / sizeof( style_info );
 
-static style_info __near MonthCalStyleArray[] = {
+static style_info _NEAR MonthCalStyleArray[] = {
     { "MCS_DAYSTATE",           MCS_DAYSTATE,           MCS_DAYSTATE         },
     { "MCS_MULTISELECT",        MCS_MULTISELECT,        MCS_MULTISELECT      },
     { "MCS_WEEKNUMBERS",        MCS_WEEKNUMBERS,        MCS_WEEKNUMBERS      },
@@ -287,7 +287,7 @@ static style_info __near MonthCalStyleArray[] = {
 
 static WORD MonthCalStyleArraySize = sizeof( MonthCalStyleArray ) / sizeof( style_info );
 
-static style_info __near ProgressBarStyleArray[] = {
+static style_info _NEAR ProgressBarStyleArray[] = {
     { "PBS_SMOOTH",         PBS_SMOOTH,         PBS_SMOOTH        },
     { "PBS_VERTICAL",       PBS_VERTICAL,       PBS_VERTICAL      },
     { "PBS_MARQUEE",        PBS_MARQUEE,        PBS_MARQUEE       },
@@ -297,7 +297,7 @@ static style_info __near ProgressBarStyleArray[] = {
 static WORD ProgressBarStyleArraySize = sizeof( ProgressBarStyleArray ) /
                                         sizeof( style_info );
 
-static style_info __near RebarStyleArray[] = {
+static style_info _NEAR RebarStyleArray[] = {
     { "RBS_TOOLTIPS",           RBS_TOOLTIPS,           RBS_TOOLTIPS        },
     { "RBS_VARHEIGHT",          RBS_VARHEIGHT,          RBS_VARHEIGHT       },
     { "RBS_BANDBORDERS",        RBS_BANDBORDERS,        RBS_BANDBORDERS     },
@@ -310,7 +310,7 @@ static style_info __near RebarStyleArray[] = {
 
 static WORD RebarStyleArraySize = sizeof( RebarStyleArray ) / sizeof( style_info );
 
-static style_info __near StatusBarStyleArray[] = {
+static style_info _NEAR StatusBarStyleArray[] = {
     { "SBARS_SIZEGRIP", SBARS_SIZEGRIP, SBARS_SIZEGRIP },
     { "SBARS_TOOLTIPS", SBARS_TOOLTIPS, SBARS_TOOLTIPS }
 };
@@ -318,7 +318,7 @@ static style_info __near StatusBarStyleArray[] = {
 static WORD StatusBarStyleArraySize = sizeof( StatusBarStyleArray ) /
                                       sizeof( style_info );
 
-static style_info __near ToolbarStyleArray[] = {
+static style_info _NEAR ToolbarStyleArray[] = {
     { "TBSTYLE_TOOLTIPS",       TBSTYLE_TOOLTIPS,       TBSTYLE_TOOLTIPS     },
     { "TBSTYLE_WRAPABLE",       TBSTYLE_WRAPABLE,       TBSTYLE_WRAPABLE     },
     { "TBSTYLE_ALTDRAG",        TBSTYLE_ALTDRAG,        TBSTYLE_ALTDRAG      },
@@ -331,7 +331,7 @@ static style_info __near ToolbarStyleArray[] = {
 
 static WORD ToolbarStyleArraySize = sizeof( ToolbarStyleArray ) / sizeof( style_info );
 
-static style_info __near ToolTipsStyleArray[] = {
+static style_info _NEAR ToolTipsStyleArray[] = {
     { "TTS_ALWAYSTIP",      TTS_ALWAYSTIP,      TTS_ALWAYSTIP      },
     { "TTS_NOPREFIX",       TTS_NOPREFIX,       TTS_NOPREFIX       },
     { "TTS_NOANIMATE",      TTS_NOANIMATE,      TTS_NOANIMATE      },
@@ -343,7 +343,7 @@ static style_info __near ToolTipsStyleArray[] = {
 
 static WORD ToolTipsStyleArraySize = sizeof( ToolTipsStyleArray ) / sizeof( style_info );
 
-static style_info __near TrackBarStyleArray[] = {
+static style_info _NEAR TrackBarStyleArray[] = {
     { "TBS_AUTOTICKS",          TBS_AUTOTICKS,          TBS_AUTOTICKS        },
     { "TBS_VERT",               TBS_VERT,               TBS_VERT             },
     { "TBS_LEFT",               TBS_VERT | TBS_LEFT,    TBS_VERT | TBS_LEFT  },
@@ -367,7 +367,7 @@ static style_info __near TrackBarStyleArray[] = {
 
 static WORD TrackBarStyleArraySize = sizeof( TrackBarStyleArray ) / sizeof( style_info );
 
-static style_info __near UpDownStyleArray[] = {
+static style_info _NEAR UpDownStyleArray[] = {
     { "UDS_WRAP",           UDS_WRAP,           UDS_WRAP        },
     { "UDS_SETBUDDYINT",    UDS_SETBUDDYINT,    UDS_SETBUDDYINT },
     { "UDS_ALIGNRIGHT",     UDS_ALIGNRIGHT,     UDS_ALIGNRIGHT  },
@@ -381,7 +381,7 @@ static style_info __near UpDownStyleArray[] = {
 
 static WORD UpDownStyleArraySize = sizeof( UpDownStyleArray ) / sizeof( style_info );
 
-static style_info __near HeaderStyleArray[] = {
+static style_info _NEAR HeaderStyleArray[] = {
     { "HDS_BUTTONS",    HDS_BUTTONS,    HDS_BUTTONS    },
     { "HDS_HOTTRACK",   HDS_HOTTRACK,   HDS_HOTTRACK   },
     { "HDS_HIDDEN",     HDS_HIDDEN,     HDS_HIDDEN     },
@@ -396,7 +396,7 @@ static style_info __near HeaderStyleArray[] = {
 
 static WORD HeaderStyleArraySize = sizeof( HeaderStyleArray ) / sizeof( style_info );
 
-static style_info __near ListViewStyleArray[] = {
+static style_info _NEAR ListViewStyleArray[] = {
     { "LVS_ICON",               LVS_ICON,               LVS_TYPEMASK        },
     { "LVS_REPORT",             LVS_REPORT,             LVS_TYPEMASK        },
     { "LVS_SMALLICON",          LVS_SMALLICON,          LVS_TYPEMASK        },
@@ -420,7 +420,7 @@ static style_info __near ListViewStyleArray[] = {
 
 static WORD ListViewStyleArraySize = sizeof( ListViewStyleArray ) / sizeof( style_info );
 
-static style_info __near TabControlStyleArray[] = {
+static style_info _NEAR TabControlStyleArray[] = {
     { "TCS_SCROLLOPPOSITE",     TCS_SCROLLOPPOSITE,         TCS_SCROLLOPPOSITE        },
     { "TCS_BOTTOM",             TCS_BOTTOM | TCS_VERTICAL,  TCS_BOTTOM | TCS_VERTICAL },
     { "TCS_RIGHT",              TCS_RIGHT,                  TCS_BOTTOM | TCS_VERTICAL },
@@ -447,7 +447,7 @@ static style_info __near TabControlStyleArray[] = {
 static WORD TabControlStyleArraySize = sizeof( TabControlStyleArray ) /
                                        sizeof( style_info );
 
-static style_info __near TreeViewStyleArray[] = {
+static style_info _NEAR TreeViewStyleArray[] = {
     { "TVS_HASBUTTONS",         TVS_HASBUTTONS,         TVS_HASBUTTONS      },
     { "TVS_HASLINES",           TVS_HASLINES,           TVS_HASLINES        },
     { "TVS_LINESATROOT",        TVS_LINESATROOT,        TVS_LINESATROOT     },
@@ -470,7 +470,7 @@ static WORD TreeViewStyleArraySize = sizeof( TreeViewStyleArray ) /
                                      sizeof( style_info );
 #endif
 
-static class_styles __near ClassStyles[] = {
+static class_styles _NEAR ClassStyles[] = {
     { "button",             ButtonStyleArray,       &ButtonStyleArraySize      },
     { "edit",               EditStyleArray,         &EditStyleArraySize        },
     { "static",             StaticStyleArray,       &StaticStyleArraySize      },
@@ -499,7 +499,7 @@ static class_styles __near ClassStyles[] = {
 
 static WORD ClassStylesSize = sizeof( ClassStyles ) / sizeof( class_styles );
 
-static style_info __near ExStyleArray[] = {
+static style_info _NEAR ExStyleArray[] = {
     { "WS_EX_DLGMODALFRAME",    WS_EX_DLGMODALFRAME,    WS_EX_DLGMODALFRAME   },
     { "WS_EX_NOPARENTNOTIFY",   WS_EX_NOPARENTNOTIFY,   WS_EX_NOPARENTNOTIFY  },
     { "WS_EX_TOPMOST",          WS_EX_TOPMOST,          WS_EX_TOPMOST         },
@@ -529,7 +529,7 @@ static style_info __near ExStyleArray[] = {
 
 static WORD ExStyleArraySize = sizeof( ExStyleArray ) / sizeof( style_info );
 
-static style_info __near ClassStyleArray[] = {
+static style_info _NEAR ClassStyleArray[] = {
     { "CS_VREDRAW",         CS_VREDRAW,         CS_VREDRAW         },
     { "CS_HREDRAW",         CS_HREDRAW,         CS_HREDRAW         },
     { "CS_KEYCVTWINDOW",    CS_KEYCVTWINDOW,    CS_KEYCVTWINDOW    },

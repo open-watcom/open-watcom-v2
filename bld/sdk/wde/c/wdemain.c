@@ -76,9 +76,7 @@
 #include "wwinhelp.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
-#ifdef __WATCOMC__
 #include "clibint.h"
-#endif
 
 static void *_MemAlloc( size_t size )
 {
@@ -100,12 +98,6 @@ WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 #define ABOUT_TIMEOUT   2000
 #define DDE_OPT         "-DDE"
 #define CREATE_NEW_FLAG "/n"
-
-#ifndef __ALPHA__
-void WdeInt3( void );
-#pragma aux WdeInt3 = \
-        "int 3h"
-#endif
 
 /****************************************************************************/
 /* external function prototypes                                             */

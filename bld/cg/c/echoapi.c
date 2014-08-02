@@ -44,6 +44,7 @@
 #include "useinfo.h"
 #include "dumpio.h"
 #include "feprotos.h"
+#include "clibext.h"
 
 extern  void            FatalError(const char *);
 extern  bool            GetEnvVar(const char *,char *,int);

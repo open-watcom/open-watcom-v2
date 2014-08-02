@@ -35,6 +35,12 @@
     #define _WIN32_IE   0x0600
 #endif
 
+#if defined( _M_I86 )
+    #define _NEAR   __near
+#else
+    #define _NEAR
+#endif
+
 #include "precomp.h"
 #include "bool.h"
 #define MSG_RC_BASE     0
@@ -181,7 +187,7 @@ extern char             *TitleBar;
 extern char             *TitleBarULine;
 extern int              TitleBarLen;
 extern spystate         SpyState;
-extern char             __near SpyPickClass[];
+extern char             _NEAR SpyPickClass[];
 extern HWND             SpyListBox;
 extern HWND             SpyListBoxTitle;
 extern BOOL             SpyMessagesPaused;
@@ -190,9 +196,9 @@ extern HANDLE           MyTask;
 extern HANDLE           Instance;
 extern HANDLE           ResInstance;
 extern WORD             MessageArraySize;
-extern message          __near MessageArray[];
+extern message          _NEAR MessageArray[];
 extern WORD             ClassMessagesSize;
-extern class_messages   __near ClassMessages[];
+extern class_messages   _NEAR ClassMessages[];
 extern BOOL             SpyMessagesAutoScroll;
 extern BOOL             AutoSaveConfig;
 extern WORD             WindowCount;

@@ -31,6 +31,8 @@
 
 
 #include "global.h"
+#include "clibext.h"
+#include "rccore.h"
 
 void SemOS2WriteFontDir( void )
 {

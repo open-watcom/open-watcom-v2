@@ -30,17 +30,15 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "wwindows.h"
 #include <limits.h>
-#include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <direct.h>
 #include <errno.h>
+#include "wio.h"
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"

@@ -32,6 +32,7 @@
 #include "ftextfun.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -90,10 +91,10 @@ void    Substitute( char *msg, char *buffer, va_list args ) {
 // Do the necessary "%" substitutions.
 
     char        *subs_ptr;
-    int         subs_len;
+    size_t      subs_len;
+    size_t      width;
     char        chr;
     char        temp_buff[MAX_INT_SIZE];
-    int         width;
     int         arg_count;
     int         idx;
     msg_arg     ordered_args[MAX_SUBSTITUTABLE_ARGS];
@@ -131,11 +132,11 @@ void    Substitute( char *msg, char *buffer, va_list args ) {
         } else if( chr == 's' ) {
             subs_ptr = ordered_args[idx].s;
         } else if( chr == 'd' ) {
-            itoa( ordered_args[idx].d, temp_buff, 10 );
+            sprintf( temp_buff, "%d", ordered_args[idx].d );
         } else if( chr == 'u' ) {
-            utoa( ordered_args[idx].u, temp_buff, 10 );
+            sprintf( temp_buff, "%u", ordered_args[idx].u );
         } else {   // assume -->  fflag == 'i'
-            ultoa( ordered_args[idx].i, temp_buff, 10 );
+            sprintf( temp_buff, "%lu", ordered_args[idx].i );
         }
         subs_len = strlen( subs_ptr );
         if( width < subs_len ) {

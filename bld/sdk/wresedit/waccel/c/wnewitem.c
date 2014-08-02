@@ -176,7 +176,7 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
             strncpy( idtext, entry->symbol, MAX_ID_CHARS );
             idtext[MAX_ID_CHARS] = '\0';
         } else {
-            utoa( (unsigned)id, idtext, 10 );
+            sprintf( idtext, "%u", (unsigned)id );
         }
         ilen = strlen( idtext );
         idtext[ilen] = '\t';

@@ -117,7 +117,7 @@ char *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff ) {
-            utoa( name->ord.wOrdinalID, temp, base );
+            sprintf( temp, ( base == 10 ) ? "%u" : "%x", name->ord.wOrdinalID );
             cp = WdeStrDup( temp );
         } else {
             cp = (char *)WdeStrDup( name->name );
@@ -158,7 +158,7 @@ char *WdeControlClassToStr( ControlClass *name )
         if( name->Class & 0x80 ) {
             class_name = WdeGetClassNameFromClass( name->Class );
             if( class_name == NULL ) {
-                ultoa( name->Class, temp, 10 );
+                sprintf( temp, "%lu", name->Class );
                 cp = WdeStrDup( temp );
                 return( cp );
             }

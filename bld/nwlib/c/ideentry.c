@@ -35,6 +35,7 @@
     #include <malloc.h> // for _heapshrink()
 #endif
 #include <banner.h>
+#include "clibext.h"
 
 static IDECBHdl     ideHdl;
 static IDECallBacks *ideCb;
