@@ -38,4 +38,12 @@
     #include <stdlib.h>
 #endif
 
+#if !defined( __WATCOMC__ )
+#if defined( _MSC_VER )
+    #define __alloca    _alloca
+#else
+    #define __alloca    alloca
+#endif
+#endif
+
 #endif

@@ -42,7 +42,6 @@
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
 #define __int64 long long
-#define __alloca alloca
 #ifndef _I32_MIN
 #define _I32_MIN (-2147483647L-1L)
 #endif
@@ -64,7 +63,6 @@
 #define FNM_LEADING_DIR 0x10
 #define NAME_MAX FILENAME_MAX
 #define PATH_MAX FILENAME_MAX
-#define __alloca _alloca
 #define fseeko fseek
 #define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
