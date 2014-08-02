@@ -46,8 +46,12 @@ extern char             *_LpDllName;    /* pointer to dll name */
 extern char             **_argv;        /* argument vector */
 extern int              _argc;
 
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+
 extern unsigned char    _8087;
 extern unsigned char    _real87;
+
+#endif
 
 #ifdef __cplusplus
 }
