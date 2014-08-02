@@ -105,11 +105,12 @@ uint    SysRead( b_file *io, char *b, uint len ) {
         }
         // if we're beyond that position then we must fill the buffer
         if( io->b_curs >= max_valid ) {
-            if( FillBuffer( io ) < 0 ) return( READ_ERROR );
+            if( FillBuffer( io ) < 0 )
+                return( READ_ERROR );
             max_valid = io->read_len;
         }
         amt = max_valid - io->b_curs;
-        if( amt > len ) {
+        if( len < amt ) {
             amt = len;
         }
         memcpy( b, &io->buffer[ io->b_curs ], amt );
@@ -118,20 +119,24 @@ uint    SysRead( b_file *io, char *b, uint len ) {
         len -= amt;
         if( len ) {
             // flush the buffer
-            if( FlushBuffer( io ) < 0 ) return( READ_ERROR );
+            if( FlushBuffer( io ) < 0 )
+                return( READ_ERROR );
             if( len > io->buff_size ) {
                 // read a multiple of io->buff_size bytes
                 amt = len - len % io->buff_size;
                 bytes_read = readbytes( io, b + offs_in_b, amt );
-                if( bytes_read == READ_ERROR ) return( READ_ERROR );
+                if( bytes_read == READ_ERROR )
+                    return( READ_ERROR );
                 offs_in_b += bytes_read;
-                if( bytes_read < amt ) return( offs_in_b );
+                if( bytes_read < amt )
+                    return( offs_in_b );
                 len -= amt;
             }
             if( len ) {
                 // first fill the buffer
                 bytes_read = readbytes( io, io->buffer, io->buff_size );
-                if( bytes_read == READ_ERROR ) return( READ_ERROR );
+                if( bytes_read == READ_ERROR )
+                    return( READ_ERROR );
                 io->attrs |= READ_AHEAD;
                 io->read_len = bytes_read;
                 // then grab our bytes from it

@@ -289,9 +289,9 @@ void CLIRewind( void ) {
     }
 }
 
-int CLIRead( char *buf, int size, int sec ) {
-/*******************************************/
-
+int CLIRead( char *buf, int size, int sec )
+/*****************************************/
+{
     if( Sections[sec].max_offset - Sections[sec].cur_offset < size )
         size = Sections[sec].max_offset - Sections[sec].cur_offset;
     if ( !size )
