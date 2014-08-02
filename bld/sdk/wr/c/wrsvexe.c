@@ -85,7 +85,7 @@ int WRPass2( void )
     if( ok ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            ok = MergeResExeNE();
+            ok = MergeResExeWINNE();
             break;
         case EXE_TYPE_PE:
             ok = MergeResExePE();
