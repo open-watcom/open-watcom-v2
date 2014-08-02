@@ -58,7 +58,7 @@ typedef struct {
 } filetab_entry;
 
 typedef struct {
-    unsigned            len;
+    file_tab_idx        len;
     filetab_entry       *tab;
 } file_table;
 
