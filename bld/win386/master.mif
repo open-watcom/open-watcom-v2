@@ -11,45 +11,42 @@ fpu_flags_win_i86  = -fpc
 wdebug_name  = WDEBUG
 wemu387_name = WEMU387
 
-!ifeq fmt vxd
-all : wdebug.386 wemu387.386
-!else ifeq fmt dll
-all : w386dll.ext
-!else ifeq fmt exe
-all : win386.ext
-!endif
+all_vxd = wdebug.386 wemu387.386
+all_dll = w386dll.ext
+all_exe = win386.ext
+
+all : $(all_$(fmt))
 
 OBJS_common = &
-        begin.obj  &
-        wininit.obj &
-        win16thk.obj &
-        winglue.obj &
-        wincall.obj &
-        windpmi.obj &
-        call16.obj &
-        clib.obj &
-        fints.obj &
-        windata.obj &
-        winstubs.obj &
-        dllpatch.obj &
-        dllthk.obj &
-        wincb.obj &
-        bitmap.obj &
-        int21win.obj &
-        dllthunk.obj &
-        toolhelp.obj
+    begin.obj  &
+    wininit.obj &
+    win16thk.obj &
+    winglue.obj &
+    wincall.obj &
+    windpmi.obj &
+    call16.obj &
+    clib.obj &
+    fints.obj &
+    windata.obj &
+    winstubs.obj &
+    dllpatch.obj &
+    dllthk.obj &
+    wincb.obj &
+    bitmap.obj &
+    int21win.obj &
+    dllthunk.obj &
+    toolhelp.obj
 
 OBJS_dll = $(OBJS_common) &
-        windll.obj &
-        libmain.obj
+    windll.obj &
+    libmain.obj
 
 OBJS_exe = $(OBJS_common) &
-        winext.obj &
-        winmain.obj
+    winext.obj &
+    winmain.obj
 
 OBJS_vxd = wdebug.obj &
-        $(fpuemu_dir)/386/win386/emu387.obj
-
+    $(fpuemu_dir)/386/win386/emu387.obj
 
 .asm : ../conv/win386;../asm
 .c : ../conv/win386;../c
@@ -142,68 +139,68 @@ exportlink : .PROCEDURE
 LNK = $^&.lnk
 
 vxdlink : .PROCEDURE
-        %create $(LNK)
-        @%append $(LNK) system win_vxd
-        @%append $(LNK) name $^&.386
-        @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version 1.1 Open Watcom)'
-        @%append $(LNK) option modname=WDEBUG
-        @%append $(LNK) option map
-        @%append $(LNK) segment '_LTEXT'  preload nondiscardable
-        @%append $(LNK) segment '_LDATA'  preload nondiscardable
-        @%append $(LNK) segment '_ITEXT'  discardable
-        @%append $(LNK) segment '_IDATA'  discardable
-        @%append $(LNK) segment '_TEXT'   nondiscardable
-        @%append $(LNK) segment '_DATA'   nondiscardable
-        @%append $(LNK) export WDEBUG_DDB.1
-        @%append $(LNK) file $(fpuemu_dir)/386/win386/emu387.obj
-        @%append $(LNK) file wdebug.obj
+    %create $(LNK)
+    @%append $(LNK) system win_vxd
+    @%append $(LNK) name $^&.386
+    @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version 1.1 Open Watcom)'
+    @%append $(LNK) option modname=WDEBUG
+    @%append $(LNK) option map
+    @%append $(LNK) segment '_LTEXT'  preload nondiscardable
+    @%append $(LNK) segment '_LDATA'  preload nondiscardable
+    @%append $(LNK) segment '_ITEXT'  discardable
+    @%append $(LNK) segment '_IDATA'  discardable
+    @%append $(LNK) segment '_TEXT'   nondiscardable
+    @%append $(LNK) segment '_DATA'   nondiscardable
+    @%append $(LNK) export WDEBUG_DDB.1
+    @%append $(LNK) file $(fpuemu_dir)/386/win386/emu387.obj
+    @%append $(LNK) file wdebug.obj
 
 dllexelink : .PROCEDURE
-        @%make importlink
-        @%make exportlink
-        %create $(LNK)
-        @%append $(LNK) debug all
-        @%append $(LNK) name $^&.ext
-        @%append $(LNK) library clibs
-        @%append $(LNK) option modname=win38600
-        @%append $(LNK) option desc '                                                                                '
-        @%append $(LNK) option map
-        @%append $(LNK) option nodefault
-        @%append $(LNK) option heapsize=8k
-        @%append $(LNK) option align=512
-        @%append $(LNK) option symf=$^&.sym
-        @%append $(LNK) segment CLASS 'CODE' PRELOAD MOVEABLE
-        @%append $(LNK) segment CLASS 'BEGDATA' PRELOAD MOVEABLE
-        @%append $(LNK) segment CLASS 'DATA' PRELOAD MOVEABLE
-        @%append $(LNK) segment CLASS 'BSS' PRELOAD MOVEABLE
-        @for %i in ($(OBJS_$(fmt))) do @%append $(LNK) file %i
-        @%append $(LNK) @imports.lnk
+    @%make importlink
+    @%make exportlink
+    %create $(LNK)
+    @%append $(LNK) debug all
+    @%append $(LNK) name $^&.ext
+    @%append $(LNK) library clibs
+    @%append $(LNK) option modname=win38600
+    @%append $(LNK) option desc '                                                                                '
+    @%append $(LNK) option map
+    @%append $(LNK) option nodefault
+    @%append $(LNK) option heapsize=8k
+    @%append $(LNK) option align=512
+    @%append $(LNK) option symf=$^&.sym
+    @%append $(LNK) segment CLASS 'CODE' PRELOAD MOVEABLE
+    @%append $(LNK) segment CLASS 'BEGDATA' PRELOAD MOVEABLE
+    @%append $(LNK) segment CLASS 'DATA' PRELOAD MOVEABLE
+    @%append $(LNK) segment CLASS 'BSS' PRELOAD MOVEABLE
+    @for %i in ($(OBJS_$(fmt))) do @%append $(LNK) file %i
+    @%append $(LNK) @imports.lnk
 !ifeq fmt exe
-        @%append $(LNK) sys windows mem font
-        @%append $(LNK) option rwr
-        @%append $(LNK) option stack=12K
-        @%append $(LNK) segment CLASS 'STACK' PRELOAD
+    @%append $(LNK) sys windows mem font
+    @%append $(LNK) option rwr
+    @%append $(LNK) option stack=12K
+    @%append $(LNK) segment CLASS 'STACK' PRELOAD
 !else
-        @%append $(LNK) sys windows dll initinstance memory
-        @%append $(LNK) option stack=8K
-        @%append $(LNK) segment CLASS 'EMU' PRELOAD MOVEABLE
-        @%append $(LNK) @exports.lnk
+    @%append $(LNK) sys windows dll initinstance memory
+    @%append $(LNK) option stack=8K
+    @%append $(LNK) segment CLASS 'EMU' PRELOAD MOVEABLE
+    @%append $(LNK) @exports.lnk
 !endif
 
 # explicit rules
 #################
 wdebug.386: $(OBJS_vxd)
-        @%make vxdlink
-        $(linker) @$(LNK)
+    @%make vxdlink
+    $(linker) @$(LNK)
 
 wemu387.386: $(OBJS_vxd)
-        @%make vxdlink
-        $(linker) @$(LNK)
+    @%make vxdlink
+    $(linker) @$(LNK)
 
 w386dll.ext : $(OBJS_dll)
-        @%make dllexelink
-        $(linker) @$(LNK)
+    @%make dllexelink
+    $(linker) @$(LNK)
 
 win386.ext : $(OBJS_exe)
-        @%make dllexelink
-        $(linker) @$(LNK)
+    @%make dllexelink
+    $(linker) @$(LNK)

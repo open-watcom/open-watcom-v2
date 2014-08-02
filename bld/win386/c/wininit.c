@@ -82,6 +82,7 @@ struct  fpu_area {
 extern void BreakPoint( void );
 #pragma aux BreakPoint = "int 3";
 
+#include "pushpck1.h"
 struct wstart_vars {
     WORD        thishandle;
     WORD        prevhandle;
@@ -103,6 +104,7 @@ struct wstart_vars {
     void        (FAR *_16BitCallBackAddr)();
     addr_48     gluertns[5];
 };
+#include "poppck.h"
 
 extern DWORD __far deadbeef;
 extern WORD     InDebugger;
@@ -129,7 +131,7 @@ extern DWORD    ReturnCode;
 extern DWORD    SaveSP;
 extern DWORD    StackSize;
 extern DWORD    EDataAddr;              // end of loaded code+data
-extern WORD     _no87;
+extern BYTE     _no87;
 extern WORD     DPL,Has87,HasWGod;
 
 extern void     FAR __CallBack( void );

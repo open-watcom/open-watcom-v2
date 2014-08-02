@@ -36,7 +36,7 @@
 ;****************************************************************************
 .386p
 
- DGROUP group _NULL,_DATA,DATA,_emu_init_start,_emu_init,_emu_init_end,_BSS
+DGROUP group _NULL,_DATA,DATA,_emu_init_start,_emu_init,_emu_init_end,_BSS
 
 public  pLocalHeap
 public  pAtomTable
@@ -82,13 +82,15 @@ __STACKTOP dw   0               ; pStackMin:
 _NULL   ends
 
 _DATA segment word public 'DATA' use16
-;*
-;*** externals we need
-;*
+
 assume es:nothing
 assume ss:nothing
 assume ds:dgroup
 assume cs:_TEXT
+
+;*
+;*** externals we need
+;*
 extrn   Fini_:proc
 extrn   _DataSelector:WORD
 extrn   _StackSelector:WORD
@@ -101,21 +103,20 @@ extrn   _CodeEntry:FWORD
 extrn   __DLLEntryAddr:DWORD
 extrn   __WEPAddr:DWORD
 
-__aaltstkovr dw -1              ; alternate stack overflow routine address
-__curbrk   dw 0                 ; top of usable memory
-__psp      dw 0                 ; segment addr of program segment prefix
-__osmajor  db 0                 ; major DOS version number
-__osminor  db 0                 ; minor DOS version number
-__child    dw 0                 ; non-zero => a spawned process is running
-__no87     dw 0                 ; always try to use the 8087
-__FPE_handler dd 0              ; FPE handler
-__HShift   db 0                 ; Huge Shift value
-__osmode   db 1                 ; mode
-__WEPflag  db 0                 ; non-zero => WEP has been run
+__aaltstkovr    dw -1           ; alternate stack overflow routine address
+__curbrk        dw 0            ; top of usable memory
+__psp           dw 0            ; segment addr of program segment prefix
+__osmajor       db 0            ; major DOS version number
+__osminor       db 0            ; minor DOS version number
+__child         dw 0            ; non-zero => a spawned process is running
+__FPE_handler   dd 0            ; FPE handler
+__no87          db 0            ; always try to use the 8087
+__HShift        db 0            ; Huge Shift value
+__osmode        db 1            ; mode
+__WEPflag       db 0            ; non-zero => WEP has been run
 
 PUBLIC  _InDebugger
 _InDebugger     dw 0
-
 
         public  __osmode
         public  __curbrk
@@ -134,8 +135,6 @@ DLLEIP          dd 0
 DLLCS           dw 0
 _DATA ends
 
-extrn LOCALINIT:FAR
-
 ;*
 ;*** the windows extender code lies here
 ;*
@@ -149,7 +148,10 @@ _small_code_    equ 0
 ;*** LibEntry - 16-bit library entry point                                ***
 ;***                                                                      ***
 ;****************************************************************************
+
 extrn LibMain:FAR
+extrn LOCALINIT:FAR
+
 PUBLIC LibEntry
 LibEntry PROC FAR
 __DLLstart_:
@@ -181,7 +183,6 @@ callc:
         jmp     short exit      ; LibMain is responsible for stack clean up
 
 error1:
-
         pop     si               ; clean up stack on a LocalInit error
         pop     es
         pop     cx
@@ -194,7 +195,6 @@ __exit_with_msg_:
 
         public  __exit_with_msg_
 exit:
-
          lea    sp,-2H[bp]
          pop    ds
          pop    bp
@@ -484,7 +484,7 @@ __CommonLibEntry proc near
         jne     loopme                  ; no
         sub     si,2                    ; get to start of parm
 loopme:
-        cmp     cx,0                    ; done?
+        test    cx,cx                   ; done?
         je      doneparms               ; yep
         mov     ax,word ptr ds:[edi]    ; get size
         cmp     ax,2                    ; two bytes?
