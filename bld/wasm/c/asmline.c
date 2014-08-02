@@ -76,6 +76,7 @@ typedef struct file_list {
 } file_list;
 
 extern void             heap( char * );
+extern void             FreeForceInclude( void );
 
 extern char             write_to_file;
 extern bool             CheckSeg;
@@ -576,6 +577,7 @@ void FreeIncludePath( void )
 /**************************/
 {
     AsmFree( IncludePath );
+    FreeForceInclude();
 }
 
 void PushMacro( const char *name, bool hidden )

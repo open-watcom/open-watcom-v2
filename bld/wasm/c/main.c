@@ -571,7 +571,7 @@ static void SetStopEnd( void ) { Options.stop_at_end = TRUE; }
 
 static void Set_FR( void ) { get_fname( GetAFileName(), ERR ); }
 
-static void Set_FI( void ) { ForceInclude = GetAFileName(); }
+static void Set_FI( void ) { ForceInclude = AsmStrDup( GetAFileName() ); }
 
 static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_listing = TRUE; }
 
@@ -1179,7 +1179,7 @@ static void do_init_stuff( char **cmdline )
 
     AsmBufferInit();
     add_constant( "WASM=" BANSTR( _BANVER ), TRUE );
-    ForceInclude = getenv( "FORCE" );
+    ForceInclude = AsmStrDup( getenv( "FORCE" ) );
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );
     set_build_target();
@@ -1231,6 +1231,7 @@ int main( void )
         return( -1 );
     }
     do_init_stuff( argv );
+    free( buff );
 #else
     do_init_stuff( &argv[1] );
 #endif
@@ -1238,9 +1239,6 @@ int main( void )
     WriteObjModule();           // main body: parse the source file
     MsgFini();
     main_fini();
-#ifndef __UNIX__
-    free( buff );
-#endif
     return( Options.error_count ); /* zero if no errors */
 }
 
@@ -1340,4 +1338,10 @@ void CmdlParamsInit( void )
 
     set_cpu_parameters();
     set_fpu_parameters();
+}
+
+void FreeForceInclude( void )
+/***************************/
+{
+    AsmFree( ForceInclude );
 }
