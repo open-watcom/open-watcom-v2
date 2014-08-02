@@ -36,9 +36,13 @@
 #include "rcrtns.h"
 #include "clibext.h"
 #include "rccore.h"
-#include "exeobj.h"
-#include "exelxobj.h"
 #include "exeutil.h"
+#include "exeseg.h"
+#include "exeres.h"
+#include "exeobj.h"
+#include "exerespe.h"
+#include "exelxobj.h"
+#include "exereslx.h"
 
 /*
  * copyStubFile - copy from the begining of the file to the start of
@@ -126,7 +130,7 @@ static int computeShiftCount( void )
     filelen += ComputeSegmentSize( Pass2Info.OldFile.Handle,
                     &(tmp->Seg), old->WinHead.align );
     if( ! CmdLineParms.NoResFile ) {
-        filelen += ComputeResourceSize( Pass2Info.ResFiles->Dir );
+        filelen += ComputeWINResourceSize( Pass2Info.ResFiles->Dir );
     }
 
     num_segs = old->WinHead.segments;
@@ -207,7 +211,7 @@ static int copyBody( void )
     /* third arg to Copy???? is FALSE --> copy section one */
     gangloadstart = RCTELL( Pass2Info.TmpFile.Handle );
     gangloadstart += AlignAmount( gangloadstart, tmp->Res.Dir.ResShiftCount );
-    copy_segs_ret = CopySegments( sect2mask, sect2bits, FALSE );
+    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, FALSE );
     switch (copy_segs_ret) {
     case CPSEG_SEG_TOO_BIG:
         if( use_gangload ) {
@@ -222,18 +226,18 @@ static int copyBody( void )
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        error = CopyResources( sect2mask, sect2bits, FALSE );
+        error = CopyWINResources( sect2mask, sect2bits, FALSE );
         if( error) return( TRUE  );
     }
     gangloadlen = RCTELL( Pass2Info.TmpFile.Handle ) - gangloadstart;
 
     /* third arg to Copy???? is TRUE  --> copy section two */
-    copy_segs_ret = CopySegments( sect2mask, sect2bits, TRUE );
+    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, TRUE );
     if( copy_segs_ret == CPSEG_ERROR) {
         return( TRUE  );
     }
     if( !CmdLineParms.NoResFile ) {
-        error = CopyResources( sect2mask, sect2bits, TRUE );
+        error = CopyWINResources( sect2mask, sect2bits, TRUE );
         if( error) return( TRUE  );
     }
 
@@ -383,7 +387,7 @@ static int writeHeadAndTables( int *err_code )
     }
 
     /* write the resource table */
-    error = WriteResTable( tmpfile->Handle, &(tmpne->Res), err_code );
+    error = WriteWINResTable( tmpfile->Handle, &(tmpne->Res), err_code );
     return( error );
 
 } /* writeHeadAndTables */
@@ -606,7 +610,7 @@ static RcStatus writePEHeadAndObjTable( void )
  * segment(s). The OS/2 resource table is completely different as well and
  * only contains resource types/IDs.
  */
-int MergeResExeNE( void )
+int MergeResExeWINNE( void )
 {
     RcStatus        error;
     int             err_code;
@@ -615,11 +619,11 @@ int MergeResExeNE( void )
     if( error != RS_OK ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = AllocAndReadSegTables( &err_code );
+    error = AllocAndReadWINSegTables( &err_code );
     if( error != RS_OK ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    InitResTable();
+    InitWINResTable();
 
     error = seekPastResTable( &err_code );
     if( error != RS_OK ) goto HANDLE_ERROR;
@@ -675,7 +679,7 @@ STOP_ERROR:
 #if !defined( __WATCOMC__ )
     return( FALSE );
 #endif
-} /* MergeResExeNE */
+} /* MergeResExeWINNE */
 
 
 int MergeResExeOS2NE( void )

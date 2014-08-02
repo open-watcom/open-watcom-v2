@@ -35,7 +35,7 @@
 #include "rcrtns.h"
 #include "clibext.h"
 #include "rccore.h"
-#include "exeobj.h"
+#include "exelxobj.h"
 #include "exeutil.h"
 
 static int readObjectAndPageTable( ExeFileInfo *exe )

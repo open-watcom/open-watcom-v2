@@ -35,8 +35,8 @@
 #include "rcrtns.h"
 #include "clibext.h"
 #include "rccore.h"
-//#include "exeobj.h"
 #include "exeutil.h"
+#include "exeseg.h"
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {
@@ -65,7 +65,8 @@ static RcStatus readSegTable( int handle, uint_32 offset, SegTable * seg )
     tablesize = seg->NumSegs * sizeof(segment_record);
 
     seek_rc = RCSEEK( handle, offset, SEEK_SET );
-    if( seek_rc == -1 ) return( RS_READ_ERROR );
+    if( seek_rc == -1 )
+        return( RS_READ_ERROR );
     numread = RCREAD( handle, seg->Segments, tablesize );
     if( numread != tablesize ) {
         if( numread == -1 ) {
@@ -78,7 +79,7 @@ static RcStatus readSegTable( int handle, uint_32 offset, SegTable * seg )
 
 } /* readSegTable */
 
-extern int AllocAndReadSegTables( int *err_code )
+extern int AllocAndReadWINSegTables( int *err_code )
 {
     int                 error;
     int                 oldhandle;
@@ -97,22 +98,22 @@ extern int AllocAndReadSegTables( int *err_code )
     oldseg->NumSegs = head->segments;
     tmpseg->NumSegs = head->segments;
     error = allocSegTable( oldseg, err_code );
-    if( error != RS_OK ) return( error );
+    if( error != RS_OK )
+        return( error );
     error = allocSegTable( tmpseg, err_code );
-    if( error != RS_OK ) return( error );
+    if( error != RS_OK )
+        return( error );
 
-    error = readSegTable( oldhandle, head_offset + head->segment_off,
-                                oldseg );
+    error = readSegTable( oldhandle, head_offset + head->segment_off, oldseg );
     if( error != RS_OK ){
         *err_code = errno;
         return( error );
     }
-    error = readSegTable( oldhandle, head_offset + head->segment_off,
-                                tmpseg );
+    error = readSegTable( oldhandle, head_offset + head->segment_off, tmpseg );
     *err_code = errno;
     return( error );
 
-} /* AllocAndReadSegTables */
+} /* AllocAndReadWINSegTables */
 
 
 extern int AllocAndReadOS2SegTables( int *err_code )
@@ -168,8 +169,7 @@ extern int AllocAndReadOS2SegTables( int *err_code )
 /* in order to get that structure */
 #define OS_RELOC_ITEM_SIZE      8
 
-extern uint_32 ComputeSegmentSize( int handle, SegTable * segs,
-                    int shift_count )
+extern uint_32 ComputeSegmentSize( int handle, SegTable * segs, int shift_count )
 {
     segment_record *    currseg;
     segment_record *    afterlast;
@@ -195,8 +195,7 @@ extern uint_32 ComputeSegmentSize( int handle, SegTable * segs,
 
 } /* ComputeSegmentSize */
 
-static int myCopyExeData( ExeFileInfo *inexe, ExeFileInfo *outexe,
-                          uint_32 length )
+static int myCopyExeData( ExeFileInfo *inexe, ExeFileInfo *outexe, uint_32 length )
 {
     switch( CopyExeData( inexe->Handle, outexe->Handle, length ) ) {
     case RS_OK:
@@ -338,10 +337,10 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 } /* copyOneSegment */
 
 
-extern CpSegRc CopySegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/*****************************************************************************/
+extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/********************************************************************************/
 /* Note: sect2 must be either 1 (do section 2) or 0 (do section 1) */
-/* CopySegments should be called twice, once with sect2 false, and once with */
+/* CopyWINSegments should be called twice, once with sect2 false, and once with */
 /* it true. The values of sect2mask and sect2bits should be the same for both */
 /* calls. The segment table for the temporary file will not be properly */
 /* filled in until after the second call */
@@ -370,12 +369,11 @@ extern CpSegRc CopySegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
     cponeret = CPSEG_OK;
     padend = !sect2;
 
-    currseg = 0;
-    while (currseg < num_segs) {
+    for( currseg = 0; currseg < num_segs; ++currseg ) {
         /* if the bits are unequal and this is section 1 --> copy segment */
         /* if the bits are equal and this is section 2   --> copy segment */
         /* otherwise                                     --> do nothing */
-        if (ARE_BITS_EQUAL( sect2mask, sect2bits, oldseg->info ) == sect2) {
+        if( ARE_BITS_EQUAL( sect2mask, sect2bits, oldseg->info ) == sect2 ) {
             cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
                                         tmp_exe_info, old_shift_count,
                                         new_shift_count, padend );
@@ -386,31 +384,30 @@ extern CpSegRc CopySegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
             CheckDebugOffset( &(Pass2Info.OldFile) );
             CheckDebugOffset( &(Pass2Info.TmpFile) );
         }
-        if (cponeret == CPSEG_ERROR) break;
+        if( cponeret == CPSEG_ERROR )
+            break;
         /* mark section 1 segments as preload */
-        if (!sect2) {
+        if( !sect2 ) {
             tmpseg->info |= SEG_PRELOAD;
         }
-        currseg++;
         oldseg++;
         tmpseg++;
     }
 
-    if (cponeret == CPSEG_ERROR) {
+    if( cponeret == CPSEG_ERROR ) {
         ret = CPSEG_ERROR;
         Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = 0;
     } else {
-        Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs =
-                        Pass2Info.OldFile.u.NEInfo.Seg.NumSegs;
+        Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs;
     }
 
     return( ret );
 
-} /* CopySegments */
+} /* CopyWINSegments */
 
 extern CpSegRc CopyOS2Segments( void )
 /*************************************
- * Akin to CopySegments() only much, much simpler - just copies all segments
+ * Akin to CopyWINSegments() only much, much simpler - just copies all segments
  * without messing with them in any way. Only called once. Won't copy
  * resource segments.
  */
@@ -439,8 +436,7 @@ extern CpSegRc CopyOS2Segments( void )
     ret = CPSEG_OK;
     cponeret = CPSEG_OK;
 
-    currseg = 0;
-    while( currseg < num_segs ) {
+    for( currseg = 0; currseg < num_segs; ++currseg ) {
         cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
                                     tmp_exe_info, old_shift_count,
                                     new_shift_count, FALSE );
@@ -452,7 +448,6 @@ extern CpSegRc CopyOS2Segments( void )
         if( cponeret == CPSEG_ERROR ) {
             break;
         }
-        currseg++;
         oldseg++;
         tmpseg++;
     }

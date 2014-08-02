@@ -156,7 +156,7 @@ static int Pass2( void )
     if( noerror ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            noerror = MergeResExeNE();
+            noerror = MergeResExeWINNE();
             break;
         case EXE_TYPE_NE_OS2:
             noerror = MergeResExeOS2NE();

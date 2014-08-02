@@ -41,8 +41,8 @@
 #include "exeres.h"
 
 
-extern void InitResTable( void )
-/******************************/
+extern void InitWINResTable( void )
+/*********************************/
 {
     ExeResDir           *res;
     StringsBlock        *str;
@@ -76,11 +76,11 @@ extern void InitResTable( void )
 
         StringBlockBuild( str, dir, FALSE );
     }
-} /* InitResTable */
+} /* InitWINResTable */
 
 
-extern uint_32 ComputeResourceSize( WResDir dir )
-/***********************************************/
+extern uint_32 ComputeWINResourceSize( WResDir dir )
+/**************************************************/
 {
     uint_32         length;
     WResDirWindow   wind;
@@ -94,7 +94,7 @@ extern uint_32 ComputeResourceSize( WResDir dir )
         wind = WResNextResource( wind, dir );
     }
     return( length );
-} /* ComputeResourceSize */
+} /* ComputeWINResourceSize */
 
 
 static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
@@ -243,10 +243,10 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     return( error );
 } /* copyOneResource */
 
-extern int CopyResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/**************************************************************************/
+extern int CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
+/*****************************************************************************/
 /* Note: sect2 must be either 1 (do section 2) or 0 (do section 1) */
-/* CopyResources should be called twice, once with sect2 false, and once with */
+/* CopyWINResources should be called twice, once with sect2 false, and once with */
 /* it true. The values of sect2mask and sect2bits should be the same for both */
 /* calls. The resource table for the temporary file will not be properly */
 /* filled in until after the second call */
@@ -313,7 +313,7 @@ extern int CopyResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
         break;
     }
     return( error );
-} /* CopyResources */
+} /* CopyWINResources */
 
 
 /*
@@ -400,11 +400,11 @@ static int writeStringBlock( int handle, StringsBlock *str )
 } /* writeStringBlock */
 
 /*
- * WriteResTable
+ * WriteWINResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code )
-/**************************************************************************/
+extern RcStatus WriteWINResTable( int handle, ResTable *restab, int *err_code )
+/*****************************************************************************/
 {
     FullTypeRecord              *exe_type;
     FullResourceRecord          *exe_res;
@@ -443,4 +443,4 @@ extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code )
     freeResTable( restab );
 
     return( error );
-} /* WriteResTable */
+} /* WriteWINResTable */

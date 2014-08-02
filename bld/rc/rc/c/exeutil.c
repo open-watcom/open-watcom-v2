@@ -34,7 +34,6 @@
 #include "rcrtns.h"
 #include "clibext.h"
 #include "rccore.h"
-//#include "exeobj.h"
 #include "exeutil.h"
 
 /*

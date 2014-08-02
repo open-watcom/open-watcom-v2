@@ -79,13 +79,13 @@ typedef struct OS2ResTable {
     uint_16         num_res_segs;   /* number of resource segments/'resources' entries */
 } OS2ResTable;
 
-extern void InitResTable( void );
-extern uint_32 ComputeResourceSize( WResDir dir );
-extern int CopyResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
-extern RcStatus WriteResTable( int handle, ResTable *restab, int *err_code );
+extern void     InitWINResTable( void );
+extern uint_32  ComputeWINResourceSize( WResDir dir );
+extern int      CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern RcStatus WriteWINResTable( int handle, ResTable *restab, int *err_code );
 extern RcStatus InitOS2ResTable( int *err_code );
-extern uint_32 ComputeOS2ResSegCount( WResDir dir );
-extern int CopyOS2Resources( void );
+extern uint_32  ComputeOS2ResSegCount( WResDir dir );
+extern int      CopyOS2Resources( void );
 extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code );
 
 #endif
