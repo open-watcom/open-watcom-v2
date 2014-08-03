@@ -115,7 +115,7 @@ extern window           RepeatCountWindow;
 extern RECT             ToolBarFloatRect;
 extern RECT             RootRect;
 extern int              RootState;
-extern char             __near EditorName[];
+extern char             _NEAR EditorName[];
 extern window_id        CommandId;
 
 #endif
