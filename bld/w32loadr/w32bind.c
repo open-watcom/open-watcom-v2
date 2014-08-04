@@ -332,7 +332,8 @@ int main( int argc, char *argv[] )
     w32_header->start_of_W32_file = size;
     w32_header->size_of_W32_file = codesize + relocsize;
     w32_header->offset_to_relocs = codesize;
-    maxmem = max( w32_header->size_of_W32_file, maxmem );
+    if( maxmem < w32_header->size_of_W32_file )
+        maxmem = w32_header->size_of_W32_file;
     maxmem = Align4K( maxmem );
     w32_header->memory_size = maxmem;
     w32_header->initial_EIP = exehdr.hdr.initial_eip;
