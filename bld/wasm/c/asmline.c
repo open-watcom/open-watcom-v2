@@ -93,6 +93,7 @@ static char             *IncludePath = NULL;
 #else
 
 uint_32                 AsmCodeAddress;     // program counter
+uint_32                 AsmCodeLimit;       // program counter limit
 
 #endif
 
@@ -694,8 +695,10 @@ void AsmByte( unsigned char byte )
     }
     PassTotal++;
 #else
-    AsmCodeBuffer[AsmCodeAddress] = byte;
-    ++AsmCodeAddress;
+    if( AsmCodeAddress <= AsmCodeLimit ) {
+        AsmCodeBuffer[AsmCodeAddress] = byte;
+        ++AsmCodeAddress;
+    }
 #endif
 }
 

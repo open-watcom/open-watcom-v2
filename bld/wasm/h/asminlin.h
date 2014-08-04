@@ -159,6 +159,7 @@ struct asmfixup {
 #define AsmCodeAddress      ( GetCurrAddr() )
 #else
 extern uint_32              AsmCodeAddress;
+extern uint_32              AsmCodeLimit;
 #endif
 
 extern struct asmfixup      *FixupHead;
