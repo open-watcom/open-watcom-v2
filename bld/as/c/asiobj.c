@@ -41,6 +41,7 @@
 unsigned char           *AsmCodeBuffer;
 uint_32                 AsmCodeAddress;
 uint_32                 AsmLastAddress;
+uint_32                 AsmCodeLimit;
 asmreloc                *AsmRelocs;
 uint_8                  CurrAlignment;
 

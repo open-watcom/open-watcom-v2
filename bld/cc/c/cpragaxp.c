@@ -437,6 +437,7 @@ void AsmSysInit( unsigned char *buf )
 {
     AsmInit();
     AsmCodeBuffer = buf;
+    AsmCodeLimit = MAXIMUM_BYTESEQ;
     AsmCodeAddress = 0;
 }
 

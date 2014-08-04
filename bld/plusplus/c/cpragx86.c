@@ -1135,6 +1135,7 @@ static int GetByteSeq( void )
     for( ;; ) {
         /* reserve at least ASM_BLOCK bytes in the buffer */
         VbufReqd( &code_buffer, _RoundUp( len + ASM_BLOCK, ASM_BLOCK ) );
+        AsmCodeLimit = VbufSize( &code_buffer ) - 1;
         if( CurToken == T_STRING ) {
             AsmCodeAddress = len;
             AsmCodeBuffer = VbufBuffer( &code_buffer );

@@ -1447,6 +1447,7 @@ static  void    GetByteSeq( void ) {
                 CSuicide();
             *(char *)(TokEnd - 1) = NULLCHAR;
             AsmCodeAddress = seq_len;
+            AsmCodeLimit = MAXIMUM_BYTESEQ;
             AsmCodeBuffer = buff;
 #if _INTEL_CPU
   #if _CPU == 8086

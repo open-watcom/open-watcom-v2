@@ -1018,6 +1018,7 @@ void AsmSysInit( unsigned char *buf )
 /***********************************/
 {
     AsmCodeBuffer = buf;
+    AsmCodeLimit = MAXIMUM_BYTESEQ;
     AsmCodeAddress = 0;
     AsmSaveCPUInfo();
 }
