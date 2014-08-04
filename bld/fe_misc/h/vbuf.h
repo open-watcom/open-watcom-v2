@@ -119,6 +119,8 @@ void VbufPrepStr(               // PREPEND STRING TO vbuf->buf
 ;
 #define VbufString(v)           ((v)->buf)                  // RETURN POINTER OF BUFFER
 ;
+#define VbufSize(v)             ((v)->len)                  // RETURN SIZE OF BUFFER
+;
 
 #ifdef __cplusplus
 };
