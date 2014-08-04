@@ -103,8 +103,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
     if( orl_hnd->funcs->seek( file, -4, SEEK_CUR ) == -1 ) {
         return ORL_UNRECOGNIZED_FORMAT;
     }
-    if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' &&
-            magic[3] == 'F' ) {
+    if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
         return ORL_ELF;
     }
 
@@ -184,7 +183,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
             if( magic == NULL ) {
                 return ORL_UNRECOGNIZED_FORMAT;
             }
-            if( orl_hnd->funcs->seek( file, -(long)(offset-8), SEEK_CUR ) == -1 ) {
+            if( orl_hnd->funcs->seek( file, -(long)(offset+8), SEEK_CUR ) == -1 ) {
                 return ORL_UNRECOGNIZED_FORMAT;
             }
             machine_type = *( (uint_16 *) magic );
