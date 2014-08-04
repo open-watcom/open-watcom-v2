@@ -449,7 +449,12 @@ void DCValidateLine( dc dc_line, int start_col, char *text )
             dc_line->text = MemAlloc( nlen );
         }
     } else {
-        dc_line->text = MemAlloc( max( MIN_CACHE_LINE_LENGTH, nlen ) );
+        size_t  len;
+
+        len = nlen;
+        if( len < MIN_CACHE_LINE_LENGTH )
+            len = MIN_CACHE_LINE_LENGTH;
+        dc_line->text = MemAlloc( len );
     }
     memcpy( dc_line->text, text, nlen );
     dc_line->textlen = nlen;

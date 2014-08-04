@@ -102,7 +102,7 @@ static char *StrAlloc( str_ctl *ctl, int len )
             size += len;
         }
 
-        new = DCAlloc( sizeof( str_blk )+size );
+        new = DCAlloc( sizeof( str_blk ) + size );
         new->next = ctl->blks;
         ctl->blks = new;
         ctl->rem  = size;

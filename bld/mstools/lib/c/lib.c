@@ -42,6 +42,7 @@
 #include "lib.h"
 #include "message.h"
 #include "translat.h"
+#include "clibint.h"
 
 
 #if defined(__TARGET_386__)

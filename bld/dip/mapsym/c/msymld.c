@@ -129,7 +129,9 @@ static void *HunkAlloc( imp_image_handle *ii, size_t size )
     size = ROUND_UP( size, sizeof( void * ) );
     hunk = ii->hunks;
     if( hunk == NULL || size > hunk->left ) {
-        alloc = max( HUNK_SIZE, size );
+        alloc = HUNK_SIZE;
+        if( alloc < size )
+            alloc = size;
         hunk = DCAlloc( (sizeof( *hunk ) - HUNK_SIZE) + alloc );
         if( hunk == NULL )
             return( NULL );

@@ -177,7 +177,8 @@ void WREResizeStatusWindows( RECT *rect )
 
     if( WREStatusWindow != NULL ) {
         y = WREGetRibbonHeight();
-        y = max( y, (rect->bottom - rect->top) - WREStatusDepth );
+        if( y < ( rect->bottom - rect->top ) - WREStatusDepth )
+            y = ( rect->bottom - rect->top ) - WREStatusDepth;
         MoveWindow( WREStatusWindow, 0, y, rect->right - rect->left, WREStatusDepth, TRUE );
     }
 }
@@ -232,7 +233,9 @@ bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
     }
 
     if( status1 != NULL ) {
-        len = min( strlen( status1 ), MAX_STATUS_TEXT );
+        len = strlen( status1 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy( WREStatusText, status1, len );
             pos = len;
@@ -247,7 +250,9 @@ bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
     if( status2 != NULL ) {
         WREStatusText[pos++] = STATUS_ESC_CHAR;
         WREStatusText[pos++] = STATUS_NEXT_BLOCK;
-        len = min( strlen( status2 ), MAX_STATUS_TEXT );
+        len = strlen( status2 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy ( WREStatusText + pos, status2, len );
             WREStatusText[pos + len] = '\0';

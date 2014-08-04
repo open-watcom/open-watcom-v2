@@ -192,8 +192,12 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
     centre_pt.x = (width / 2) + left;
     centre_pt.y = (height / 2) + top;
 
-    topleft.x = max( left, centre_pt.x - centre_pt.y + top );
-    topleft.y = max( top, centre_pt.y - centre_pt.x + left );
+    topleft.x = centre_pt.x - centre_pt.y + top;
+    if( topleft.x < left )
+        topleft.x = left;
+    topleft.y = centre_pt.y - centre_pt.x + left;
+    if( topleft.y < top )
+        topleft.y = top;
 
     if( topleft.x == left ) {
         start_x = (short)(left - (centre_pt.x - centre_pt.y + top));

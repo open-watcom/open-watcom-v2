@@ -877,11 +877,13 @@ static char *find_break( char *text, DIALOG_INFO *dlg, int *chwidth )
         width = GUIGetExtentX( MainWnd, text, len );
         if( width < winwidth ) {
             *chwidth = (width / CharWidth) + 1;
-            dlg->max_width = max( dlg->max_width, *chwidth );
+            if( dlg->max_width < *chwidth )
+                dlg->max_width = *chwidth;
             return( text + len );
         }
     }
-    dlg->max_width = max( dlg->max_width, dlg->wrap_width );
+    if( dlg->max_width < dlg->wrap_width )
+        dlg->max_width = dlg->wrap_width;
     *chwidth = dlg->max_width;
     br = text;
     for( e = text;; ) {
@@ -934,7 +936,9 @@ static bool dialog_static( char *next, DIALOG_INFO *dlg )
             len = strlen( text );
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->array.num - 1,
                 text, VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + len );
-            dlg->max_width = max( dlg->max_width, dlg->col_num + len );
+            if( dlg->max_width < dlg->col_num + len ) {
+                dlg->max_width = dlg->col_num + len;
+            }
         } else {
             set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->array.num - 1,
                 "", VarGetId( var_handle ), dlg->col_num, dlg->row_num, dlg->col_num + 0 );
@@ -1153,7 +1157,10 @@ static bool dialog_dynamic( char *next, DIALOG_INFO *dlg )
             GUIStrDup( line,
                        &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
         }
-        dlg->max_width = max( dlg->max_width, max( len, 60 ) );
+        if( dlg->max_width < len )
+            dlg->max_width = len;
+        if( dlg->max_width < 60 )
+            dlg->max_width = 60;
         set_dlg_dynamstring( dlg->curr_dialog->controls, dlg->array.num - 1,
                              text, VarGetId( var_handle ), C0, dlg->row_num,
                              C0 + dlg->max_width );
@@ -1192,12 +1199,13 @@ static bool dialog_pushbutton( char *next, DIALOG_INFO *dlg )
         if( def_ret ) {
             dlg->curr_dialog->ret_val = IdToDlgState( id );
         }
-        dlg->max_width = max( dlg->max_width, dlg->num_push_buttons * ((3 * BW) / 2) );
-        line = next; next = NextToken( line, ',' );
+        if( dlg->max_width < dlg->num_push_buttons * ( ( 3 * BW ) / 2 ) )
+            dlg->max_width = dlg->num_push_buttons * ( ( 3 * BW ) / 2 );
+        line = next;
+        next = NextToken( line, ',' );
         if( line != NULL ) {
             // condition for visibility (dynamic)
-            GUIStrDup( line,
-                       &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
+            GUIStrDup( line, &dlg->curr_dialog->pVisibilityConds[dlg->curr_dialog->num_controls] );
         }
     } else {
         rc = FALSE;
@@ -1307,7 +1315,9 @@ static bool dialog_edit_button( char *next, DIALOG_INFO *dlg )
                                  VarGetId( var_handle ), C0, dlg->row_num,
                                  C0 + strlen( buff ) );
         }
-        dlg->max_width = max( dlg->max_width, 2 * strlen( buff ) );
+        if( dlg->max_width < 2 * strlen( buff ) ) {
+            dlg->max_width = 2 * strlen( buff );
+        }
     } else {
         rc = FALSE;
     }
@@ -1423,7 +1433,9 @@ static bool dialog_radiobutton( char *next, DIALOG_INFO *dlg )
         set_dlg_radio( dlg->curr_dialog->controls, dlg->array.num - 1,
                        dlg->num_radio_buttons, text, VarGetId( var_handle ), C0,
                        dlg->row_num, C0 + len );
-        dlg->max_width = max( dlg->max_width, len );
+        if( dlg->max_width < len ) {
+            dlg->max_width = len;
+        }
     } else {
         rc = FALSE;
     }
@@ -1468,12 +1480,16 @@ static bool dialog_checkbox( char *next, DIALOG_INFO *dlg )
                        dlg->col_num + len );
         if( dlg->col_num == C0 ) {
             // 1st check-box on line
-            dlg->max_width = max( dlg->max_width, len );
+            if( dlg->max_width < len )
+                dlg->max_width = len;
             dlg->col_num += len + 1;    // update col_num for next time
         } else {
             // 2nd check-box
-            len = max( dlg->col_num - 1, len );
-            dlg->max_width = max( dlg->max_width, 2 * len + 1 );  // add 1 for space
+            if( len < dlg->col_num - 1 )
+                len = dlg->col_num - 1;
+            if( dlg->max_width < 2 * len + 1 ) {    // add 1 for space
+                dlg->max_width = 2 * len + 1;
+            }
         }
     } else {
         rc = FALSE;
@@ -1610,7 +1626,9 @@ static bool dialog_editcontrol( char *next, DIALOG_INFO *dlg )
                                  VarGetId( var_handle ), C0, dlg->row_num,
                                  C0 + strlen( buff ) );
         }
-        dlg->max_width = max( dlg->max_width, 2 * strlen( buff ) );
+        if( dlg->max_width < 2 * strlen( buff ) ) {
+            dlg->max_width = 2 * strlen( buff );
+        }
     } else {
         rc = FALSE;
     }

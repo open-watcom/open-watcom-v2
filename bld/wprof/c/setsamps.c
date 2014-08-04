@@ -42,6 +42,7 @@
 #include "myassert.h"
 #include "sampinfo.h"
 #include "memutil.h"
+#include "clibext.h"
 
 
 extern void         ClearMassaged(sio_data *curr_sio);

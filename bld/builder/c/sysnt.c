@@ -39,6 +39,7 @@
 #include <io.h>
 #include "builder.h"
 #include <windows.h>
+#include "clibext.h"
 
 #define TITLESIZE 256
 

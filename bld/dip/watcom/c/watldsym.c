@@ -110,7 +110,7 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
     if( size == 0 ) return( DS_OK );
     for( ;; ) {
         block_size = (size > INFO_MAX_BLOCK) ? INFO_MAX_BLOCK : size;
-        curr = DCAlloc( (sizeof( info_block )-1) + block_size );
+        curr = DCAlloc( sizeof( info_block ) -1 + block_size );
         if( curr == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( DS_ERR|DS_NO_MEM );

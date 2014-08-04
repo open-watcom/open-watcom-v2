@@ -701,7 +701,8 @@ void global uidescmenu( MENUITEM *iptr, DESCMENU *desc )
                     desc->flags |= MENU_HAS_TAB;
                     tab_loc++;
                     if( tab_loc != NULL ) {
-                        tab_length = max( tab_length, strlen( tab_loc ) );
+                        if( tab_length < strlen( tab_loc ) )
+                            tab_length = strlen( tab_loc );
                         len -= strlen( tab_loc ); /* for text after TABCHAR */
                     }
                     len--;  /* for TABCHAR */
@@ -712,7 +713,9 @@ void global uidescmenu( MENUITEM *iptr, DESCMENU *desc )
                 if( iptr->popup != NULL ) {
                     desc->flags |= MENU_HAS_POPUP;
                 }
-                desc->area.width = (ORD) max( desc->area.width, len );
+                if( desc->area.width < len ) {
+                    desc->area.width = len;
+                }
             }
             ++iptr;
         }
@@ -727,7 +730,8 @@ void global uidescmenu( MENUITEM *iptr, DESCMENU *desc )
             to_add++;
         }
         to_add += 4;
-        desc->area.width = min( desc->area.width, UIData->width - to_add );
+        if( desc->area.width > UIData->width - to_add )
+            desc->area.width = UIData->width - to_add;
         desc->flags |= ( ( desc->area.width + 1 ) & MENU_TAB_OFFSET );
         desc->area.width += to_add;
         desc->area.height = (ORD) item + 2;

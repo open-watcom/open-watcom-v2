@@ -268,7 +268,15 @@ PE_MODULE * PE_loadLibraryExt(
         }
 
     /* Make sure the .reloc section is after everything else we load! */
-    image_end = max(max(max(max(bss_end,data_end),text_end),import_end),export_end);
+    image_end = bss_end;
+    if( image_end < data_end )
+        image_end = data_end;
+    if( image_end < text_end )
+        image_end = text_end;
+    if( image_end < import_end )
+        image_end = import_end;
+    if( image_end < export_end )
+        image_end = export_end;
     if (reloc_base <= image_end) {
         result = PE_unknownImageFormat;
         goto Error;

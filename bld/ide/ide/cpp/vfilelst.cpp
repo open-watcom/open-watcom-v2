@@ -49,6 +49,8 @@
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
 
+#include "clibext.h"
+
 typedef struct {
     WString     *result;
     const char  *tgt_file;

@@ -190,13 +190,18 @@ void zapOUnit(pOUnit unit) {
 
 pOUnit addOUnitPostfixImmediate(pOUnit unit, char *postString) {
     int len;
+    int len1;
     char *s;
+
     if (unit == NULL || postString == NULL) {
         return unit;
     }
     s = unit->string;
     len = strlen(s);
-    strncpy(s+len, postString, max(0, MAX_TOKEN_SIZE - len - 1));
+    len1 = MAX_TOKEN_SIZE - len - 1;
+    if( len1 < 0 )
+        len1 = 0;
+    strncpy( s + len, postString, len1 );
     return unit;
 }
 
@@ -1018,7 +1023,8 @@ char *getTokListString(pSLList context) {
         incCurrSLListPos(context);
         tokStr = staticGetTokenStr(tok, 0);
         tokStrSize = strlen(tokStr);
-        tokStrSize = min(maxBufSize-bufSize-1,  tokStrSize);
+        if( tokStrSize > maxBufSize - bufSize - 1 )
+            tokStrSize = maxBufSize - bufSize - 1;
         if (tokStrSize <= 0) {
             goto Return;
         }

@@ -91,17 +91,16 @@ void CalculateDims( short img_width, short img_height, short *area_width,
     max_height = _wpi_getheightrect( rcclient ) - y_adj;
 #endif
 
-    point_size1 = max( 1, max_width / img_width );
-    point_size2 = max( 1, max_height / img_height );
-
-    if( point_size1 < 1 ) {
+    point_size1 = max_width / img_width;
+    if( point_size1 < 1 )
         point_size1 = 1;
-    }
-    if( point_size2 < 1 ) {
+    point_size2 = max_height / img_height;
+    if( point_size2 < 1 )
         point_size2 = 1;
-    }
 
-    pointSize.x = min( point_size1, point_size2 );
+    pointSize.x = point_size1;
+    if( pointSize.x > point_size2 )
+        pointSize.x = point_size2;
     while( pointSize.x * img_width < MIN_DRAW_WIN_WIDTH ) {
         pointSize.x++;
     }
@@ -318,15 +317,25 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
                    pointSize.x >= POINTSIZE_MIN && pointSize.y >= POINTSIZE_MIN);
     if( gridvisible ) {
         if( toolType == IMGED_BRUSH ) {
-            truncated_x = max( 0, pt->x / pointSize.x - brushsize / 2 ) * pointSize.x + 1;
-            truncated_y = max( 0, pt->y / pointSize.y - brushsize / 2 ) * pointSize.y + 1;
+            truncated_x = 0;
+            if( pointSize.x > brushsize )
+                truncated_x = ( pt->x / pointSize.x - brushsize / 2 ) * pointSize.x;
+            ++truncated_x;
+
+            truncated_y = 0;
+            if( pointSize.y > brushsize )
+                truncated_y = ( pt->y / pointSize.y - brushsize / 2 ) * pointSize.y;
+            ++truncated_y;
             width = (short)(pointSize.x - 1);
             height = (short)(pointSize.y - 1);
             /*
              * We just have to check that we don't spill over the image dimensions
              */
-            truncated_x = min( truncated_x, wndwidth - pointSize.x * brushsize + 1 );
-            truncated_y = min( truncated_y, wndheight - pointSize.y * brushsize + 1 );
+            if( truncated_x > wndwidth - pointSize.x * brushsize + 1 )
+                truncated_x = wndwidth - pointSize.x * brushsize + 1;
+            if( truncated_y > wndheight - pointSize.y * brushsize + 1 ) {
+                truncated_y = wndheight - pointSize.y * brushsize + 1;
+            }
         } else {
             truncated_x = (pt->x / pointSize.x) * pointSize.x + 1;
             truncated_y = (pt->y / pointSize.y) * pointSize.y + 1;
@@ -335,15 +344,22 @@ void DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton )
         }
     } else {
         if( toolType == IMGED_BRUSH ) {
-            truncated_x = max( 0, pt->x / pointSize.x - brushsize / 2 ) * pointSize.x;
-            truncated_y = max( 0, pt->y / pointSize.y - brushsize / 2 ) * pointSize.y;
+            truncated_x = 0;
+            if( pointSize.x > brushsize )
+                truncated_x = ( pt->x / pointSize.x - brushsize / 2 ) * pointSize.x;
+            truncated_y = 0;
+            if( pointSize.y > brushsize )
+                truncated_y = ( pt->y / pointSize.y - brushsize / 2 ) * pointSize.y;
             width = (short)(pointSize.x * brushsize);
             height = (short)(pointSize.y * brushsize);
             /*
              * We just have to check that we don't spill over the image dimensions
              */
-            truncated_x = min( truncated_x, wndwidth - width );
-            truncated_y = min( truncated_y, wndheight - width );
+            if( truncated_x > wndwidth - width )
+                truncated_x = wndwidth - width;
+            if( truncated_y > wndheight - width ) {
+                truncated_y = wndheight - width;
+            }
         } else {
             truncated_x = (pt->x / pointSize.x) * pointSize.x;
             truncated_y = (pt->y / pointSize.y) * pointSize.y;
@@ -442,30 +458,46 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         width = (short)pointSize.x;
         height = (short)pointSize.y;
     } else if( !gridvisible && toolType == IMGED_BRUSH ) {
-        area_x = max( 0, xpos - brushsize / 2 ) * pointSize.x;
-        area_y = max( 0, ypos - brushsize / 2 ) * pointSize.y;
+        area_x = 0;
+        if( xpos > brushsize )
+            area_x = ( xpos - brushsize / 2 ) * pointSize.x;
+        area_y = 0;
+        if( ypos > brushsize )
+            area_y = ( ypos - brushsize / 2 ) * pointSize.y;
         width = (short)(brushsize * pointSize.x);
         height = (short)(brushsize * pointSize.y);
         /*
          * We just have to check that we don't spill over the image dimensions.
          */
-        area_x = min( area_x, _wpi_getwidthrect( rcclient ) - width );
-        area_y = min( area_y, _wpi_getheightrect( rcclient ) - width );
+        if( area_x > _wpi_getwidthrect( rcclient ) - width )
+            area_x = _wpi_getwidthrect( rcclient ) - width;
+        if( area_y > _wpi_getheightrect( rcclient ) - width ) {
+            area_y = _wpi_getheightrect( rcclient ) - width;
+        }
     } else if( gridvisible && toolType == IMGED_FREEHAND ) {
         area_x = xpos * pointSize.x + 1;
         area_y = ypos * pointSize.y + 1;
         width = (short)(pointSize.x - 1);
         height = (short)(pointSize.y - 1);
     } else {
-        area_x = max( 0, xpos - brushsize / 2 ) * pointSize.x + 1;
-        area_y = max( 0, ypos - brushsize / 2 ) * pointSize.y + 1;
+        area_x = 0;
+        if( xpos > brushsize )
+            area_x = ( xpos - brushsize / 2 ) * pointSize.x;
+        ++area_x;
+        area_y = 0;
+        if( ypos > brushsize )
+            area_y = ( ypos - brushsize / 2 ) * pointSize.y;
+        ++area_y;
         width = (short)(pointSize.x - 1);
         height = (short)(pointSize.y - 1);
         /*
          * We just have to check that we don't spill over the image dimensions.
          */
-        area_x = min( area_x, _wpi_getwidthrect( rcclient ) - pointSize.x * brushsize + 1 );
-        area_y = min( area_y, _wpi_getheightrect( rcclient ) - pointSize.y * brushsize + 1 );
+        if( area_x > _wpi_getwidthrect( rcclient ) - pointSize.x * brushsize + 1 )
+            area_x = _wpi_getwidthrect( rcclient ) - pointSize.x * brushsize + 1;
+        if( area_y > _wpi_getheightrect( rcclient ) - pointSize.y * brushsize + 1 ) {
+            area_y = _wpi_getheightrect( rcclient ) - pointSize.y * brushsize + 1;
+        }
     }
 
     pres = _wpi_getpres( hwnd );
@@ -648,20 +680,41 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     BOOL        is_rect;
     wie_clrtype type;
     img_node    *node;
+    int         tmps;
+    int         tmpe;
 
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
-    imgstart_pt.x = min( start_pt->x / pointSize.x, end_pt->x / pointSize.x );
-    imgend_pt.x = max( start_pt->x / pointSize.x, end_pt->x / pointSize.x );
-#ifdef __OS2_PM__
-    imgstart_pt.y = max( start_pt->y / pointSize.y, end_pt->y / pointSize.y );
-    imgend_pt.y = min( start_pt->y / pointSize.y, end_pt->y / pointSize.y ) - 1;
-#else
-    imgstart_pt.y = min( start_pt->y / pointSize.y, end_pt->y / pointSize.y );
-    imgend_pt.y = max( start_pt->y / pointSize.y, end_pt->y / pointSize.y ) + 1;
-#endif
-
+    tmps = start_pt->x / pointSize.x;
+    tmpe = end_pt->x / pointSize.x;
+    imgstart_pt.x = tmps;
+    if( imgstart_pt.x > tmpe )
+        imgstart_pt.x = tmpe;
+    imgend_pt.x = tmps;
+    if( imgend_pt.x > tmpe )
+        imgend_pt.x = tmpe;
     imgend_pt.x++;
+
+    tmps = start_pt->y / pointSize.y;
+    tmpe = end_pt->y / pointSize.y;
+    imgstart_pt.y = tmps;
+#ifdef __OS2_PM__
+    if( imgstart_pt.y < tmpe )
+        imgstart_pt.y = tmpe;
+#else
+    if( imgstart_pt.y > tmpe )
+        imgstart_pt.y = tmpe;
+#endif
+    imgend_pt.y = tmps;
+#ifdef __OS2_PM__
+    if( imgend_pt.y > tmpe )
+        imgend_pt.y = tmpe;
+    --imgend_pt.y;
+#else
+    if( imgend_pt.y < tmpe )
+        imgend_pt.y = tmpe;
+    ++imgend_pt.y;
+#endif
 
     dithered = GetSelectedColor( mousebutton, &solid, &type );
     switch( toolType ) {
@@ -929,8 +982,12 @@ void CreateDrawnImage( img_node *node )
     cx = cx / node->width;
     cy = cy / node->height;
 
-    pointSize.x = max( 1, cx );
-    pointSize.y = max( 1, cy );
+    if( cx < 1 )
+        cx = 1;
+    pointSize.x = cx;
+    if( cy < 1 )
+        cy = 1;
+    pointSize.y = cy;
 
 } /* CreateDrawnImage */
 
@@ -982,8 +1039,12 @@ void ResetDrawArea( img_node *node )
 
     GetClientRect( node->hwnd, &rcclient );
 
-    pointSize.x = max( 1, _wpi_getwidthrect( rcclient ) / node->width );
-    pointSize.y = max( 1, _wpi_getheightrect( rcclient ) / node->height );
+    pointSize.x = _wpi_getwidthrect( rcclient ) / node->width;
+    if( pointSize.x < 1 )
+        pointSize.x = 1;
+    pointSize.y = _wpi_getheightrect( rcclient ) / node->height;
+    if( pointSize.y < 1 )
+        pointSize.y = 1;
 
     if( ImgedConfigInfo.square_grid ) {
         GetClientRect( ClientWindow, &rc );
@@ -995,8 +1056,8 @@ void ResetDrawArea( img_node *node )
         /*
          * I add 1 to cause ResizeChild to resize the window.
          */
-        new_width = (short)(pointSize.x * node->width + 1);
-        new_height = (short)(pointSize.y * node->height + 1);
+        new_width = (short)( pointSize.x * node->width + 1 );
+        new_height = (short)( pointSize.y * node->height + 1 );
         lparam = WPI_MAKEP2( new_width, new_height );
         ResizeChild( lparam, node->hwnd, TRUE );
     }
@@ -1138,14 +1199,21 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
     }
 
     // the following assumes that max.x >> min_width
-    point_size.x = min( max.x / node->width, width / node->width );
-    point_size.x = max( min_width / node->width + 1, point_size.x );
+    point_size.x = max.x / node->width;
+    if( point_size.x > width / node->width )
+        point_size.x = width / node->width;
+    if( point_size.x < min_width / node->width + 1 )
+        point_size.x = min_width / node->width + 1;
 
-    point_size.y = min( max.y / node->height, height / node->height );
-    point_size.y = max( 1, point_size.y );
+    point_size.y = max.y / node->height;
+    if( point_size.y > height / node->height )
+        point_size.y = height / node->height;
+    if( point_size.y < 1 )
+        point_size.y = 1;
 
     if( ImgedConfigInfo.square_grid ) {
-        point_size.x = min( point_size.x, point_size.y );
+        if( point_size.x > point_size.y )
+            point_size.x = point_size.y;
         if( point_size.x < min_width / node->width + 1 ) {
             point_size.x = min_width / node->width + 1;
         }
@@ -1224,7 +1292,8 @@ void MaximizeCurrentChild( void )
     max_pt_size.y = max_height / node->height;
 
     if( ImgedConfigInfo.square_grid ) {
-        max_pt_size.x = min( max_pt_size.x, max_pt_size.y );
+        if( max_pt_size.x > max_pt_size.y )
+            max_pt_size.x = max_pt_size.y;
         max_pt_size.y = max_pt_size.x;
     }
 

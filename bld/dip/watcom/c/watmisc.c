@@ -269,6 +269,7 @@ search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 
+    lc = lc;
     if( *li->name.start == (char)SH_ESCAPE ) {
         CollectSymHdl( (byte *)li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
@@ -534,7 +535,8 @@ int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
     ii = ii;
-    if( is1->im != is2->im ) return( is1->im - is2->im );
+    if( is1->im != is2->im )
+        return( is1->im - is2->im );
     switch( is1->type ) {
     case SH_GBL:
         switch( is2->type ) {

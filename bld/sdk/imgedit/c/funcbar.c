@@ -244,13 +244,16 @@ void InitFunctionBar( HWND hparent )
     WPI_RECT            rect;
     int                 width;
     int                 height;
+    int                 max_width;
 
     _wpi_getclientrect( hparent, &rect );
     width = _wpi_getwidthrect( rect );
     height = _wpi_getheightrect( rect );
 
-    _wpi_setwrectvalues( &functionbar_loc, 0, 0, max( MIN_WIDTH, width ),
-                         FUNC_BUTTON_HEIGHT + 5 );
+    max_width = width;
+    if( max_width < MIN_WIDTH )
+        max_width = MIN_WIDTH;
+    _wpi_setwrectvalues( &functionbar_loc, 0, 0, max_width, FUNC_BUTTON_HEIGHT + 5 );
     _wpi_cvth_rect( &functionbar_loc, height );
 #ifdef __OS2_PM__
     functionbar_loc.yBottom += 1;
@@ -307,12 +310,15 @@ void ResizeFunctionBar( WPI_PARAM2 lparam )
         return;
     }
 #ifndef __OS2_PM__
-    width = max( MIN_WIDTH, LOWORD( lparam ) );
+    width = LOWORD( lparam );
+    if( width < MIN_WIDTH )
+        width = MIN_WIDTH;
     top = 0;
     bottom = FUNC_BUTTON_HEIGHT + 5;
 #else
-    width = max( MIN_WIDTH, SHORT1FROMMP( lparam ) );
-
+    width = SHORT1FROMMP( lparam );
+    if( width < MIN_WIDTH )
+        width = MIN_WIDTH;
     _wpi_getclientrect( HMainWindow, &rect );
     height = _wpi_getheightrect( rect );
     /*

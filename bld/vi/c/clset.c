@@ -995,7 +995,8 @@ static vi_rc processSetToken( int j, char *value, int *winflag, bool isnonbool )
                 break;
             case SETVAR_T_MAXLINELEN:
                 /* file save fails if 1 line is > MAX_IO_BUFFER */
-                i = min( i, MAX_IO_BUFFER );
+                if( i > MAX_IO_BUFFER )
+                    i = MAX_IO_BUFFER;
                 EditVars.MaxLine = i;
                 StaticStart();
                 WorkLine = MemReAlloc( WorkLine, sizeof( line ) + EditVars.MaxLine + 2 );

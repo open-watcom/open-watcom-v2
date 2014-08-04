@@ -179,8 +179,9 @@ int addHTableElem(pHTable table, void *elem) {
     chainLen++;
 
     table->stats.numElems++;
-    table->stats.longestChainLen = max(table->stats.longestChainLen, chainLen);
-    return 1;
+    if( table->stats.longestChainLen < chainLen )
+        table->stats.longestChainLen = chainLen;
+    return( 1 );
 }
 
 void* findHTableElem(pHTable table, void *elem) {

@@ -92,6 +92,7 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
     uint_8              *data8;
     int                 stringlen;
     int                 len;
+    size_t              len1;
 
     if( data == NULL ) {
         return( NULL );
@@ -107,7 +108,10 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
         len = stringlen + 1;
     }
 
-    new = (ResNameOrOrdinal *)MemAlloc( max( len, sizeof( ResNameOrOrdinal ) ) );
+    len1 = len;
+    if( len1 < sizeof( ResNameOrOrdinal ) )
+        len1 = sizeof( ResNameOrOrdinal );
+    new = (ResNameOrOrdinal *)MemAlloc( len1 );
     if( new == NULL ) {
         return( NULL );
     }

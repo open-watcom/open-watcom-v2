@@ -372,7 +372,9 @@ img_node *GetNthIcon( HWND hwnd, short index )
         }
     }
 
-    tableptr->index = min( i, index );
+    tableptr->index = i;
+    if( i > index )
+        tableptr->index = index;
     return( node );
 
 } /* GetNthIcon */

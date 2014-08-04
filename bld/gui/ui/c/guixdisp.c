@@ -321,8 +321,8 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
 
 static int UpdateCols( gui_control_info *control_info, int cols )
 {
-    cols = max( cols, control_info->rect.x  - DLG_COL_0 +
-                control_info->rect.width - DLG_COL_0 );
+    if( cols < control_info->rect.x - DLG_COL_0 + control_info->rect.width - DLG_COL_0 )
+        cols = control_info->rect.x - DLG_COL_0 + control_info->rect.width - DLG_COL_0;
     return( cols );
 }
 

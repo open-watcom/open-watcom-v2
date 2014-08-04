@@ -454,33 +454,51 @@ LRESULT CControlBar::OnSizeParent( WPARAM wParam, LPARAM lParam )
             rect.left = pSPP->rect.left;
             rect.top = pSPP->rect.top;
             rect.right = pSPP->rect.left + size.cx;
-            rect.bottom = min( pSPP->rect.top + size.cy, pSPP->rect.bottom );
+            rect.bottom = pSPP->rect.top + size.cy;
+            if( rect.bottom > pSPP->rect.bottom )
+                rect.bottom = pSPP->rect.bottom;
             pSPP->rect.left += size.cx;
             pSPP->sizeTotal.cx += size.cx;
-            pSPP->sizeTotal.cy = max( pSPP->sizeTotal.cy, size.cy );
+            pSPP->sizeTotal.cy = pSPP->sizeTotal.cy;
+            if( pSPP->sizeTotal.cy < size.cy ) {
+                pSPP->sizeTotal.cy = size.cy;
+            }
         } else if( m_dwStyle & CBRS_ALIGN_RIGHT ) {
             rect.left = pSPP->rect.right - size.cx;
             rect.top = pSPP->rect.top;
             rect.right = pSPP->rect.right;
-            rect.bottom = min( pSPP->rect.top + size.cy, pSPP->rect.bottom );
+            rect.bottom = pSPP->rect.top + size.cy;
+            if( rect.bottom > pSPP->rect.bottom )
+                rect.bottom = pSPP->rect.bottom;
             pSPP->rect.right -= size.cx;
             pSPP->sizeTotal.cx += size.cx;
-            pSPP->sizeTotal.cy = max( pSPP->sizeTotal.cy, size.cy );
+            pSPP->sizeTotal.cy = pSPP->sizeTotal.cy;
+            if( pSPP->sizeTotal.cy < size.cy ) {
+                pSPP->sizeTotal.cy = size.cy;
+            }
         } else if( m_dwStyle & CBRS_ALIGN_BOTTOM ) {
             rect.left = pSPP->rect.left;
             rect.top = pSPP->rect.bottom - size.cy;
-            rect.right = min( pSPP->rect.left + size.cx, pSPP->rect.right );
+            rect.right = pSPP->rect.left + size.cx;
+            if( rect.right > pSPP->rect.right )
+                rect.right = pSPP->rect.right;
             rect.bottom = pSPP->rect.bottom;
             pSPP->rect.bottom -= size.cy;
-            pSPP->sizeTotal.cx = max( pSPP->sizeTotal.cx, size.cx );
+            pSPP->sizeTotal.cx = pSPP->sizeTotal.cx;
+            if( pSPP->sizeTotal.cx < size.cx )
+                pSPP->sizeTotal.cx = size.cx;
             pSPP->sizeTotal.cy += size.cy;
         } else {
             rect.left = pSPP->rect.left;
             rect.top = pSPP->rect.top;
-            rect.right = min( pSPP->rect.left + size.cx, pSPP->rect.right );
+            rect.right = pSPP->rect.left + size.cx;
+            if( rect.right > pSPP->rect.right )
+                rect.right = pSPP->rect.right;
             rect.bottom = pSPP->rect.top + size.cy;
             pSPP->rect.top += size.cy;
-            pSPP->sizeTotal.cx = max( pSPP->sizeTotal.cx, size.cx );
+            pSPP->sizeTotal.cx = pSPP->sizeTotal.cx;
+            if( pSPP->sizeTotal.cx < size.cx )
+                pSPP->sizeTotal.cx = size.cx;
             pSPP->sizeTotal.cy += size.cy;
         }
         AfxRepositionWindow( pSPP, m_hWnd, &rect );

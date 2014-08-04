@@ -138,7 +138,10 @@ void WdeHandleMeasureItem( MEASUREITEMSTRUCT *mis )
         DrawText( hdc, od_data->string, -1, &rc, DT_LEFT | DT_SINGLELINE | DT_CALCRECT );
         ReleaseDC( NULL, hdc );
         mis->itemWidth = bm.bmWidth + check_bm.bmWidth + spacing + rc.right;
-        mis->itemHeight = max( bm.bmHeight, rc.bottom );
+        mis->itemHeight = bm.bmHeight;
+        if( mis->itemHeight < rc.bottom ) {
+            mis->itemHeight = rc.bottom;
+        }
     }
 }
 

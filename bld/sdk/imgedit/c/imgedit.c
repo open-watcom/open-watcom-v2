@@ -37,8 +37,10 @@
 #include "iedde.h"
 #include "clibint.h"
 
+#ifdef __WATCOMC__
 #ifdef __NT__
     #pragma library( "shell32.lib" )
+#endif
 #endif
 
 #define DDE_OPT     "-DDE"

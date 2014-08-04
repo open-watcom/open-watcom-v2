@@ -149,15 +149,33 @@ static void updateRegion( void )
 {
 #ifdef __WIN__
     if( SelRgn.selected == FALSE ) {
-        DCDisplaySomeLines( min( last_start_line, last_end_line ) - LeftTopPos.line,
-                            max( last_start_line, last_end_line ) - LeftTopPos.line );
+        int min_line, max_line;
+        min_line = last_start_line;
+        if( min_line > last_start_line )
+            min_line = last_start_line;
+        max_line = last_start_line;
+        if( max_line < last_end_line )
+            max_line = last_end_line;
+        DCDisplaySomeLines( min_line - LeftTopPos.line, max_line - LeftTopPos.line );
         last_start_line = last_end_line = 1;
         return;
     } else {
-        DCDisplaySomeLines( min( SelRgn.start.line, last_start_line ) - LeftTopPos.line,
-                            max( SelRgn.start.line, last_start_line ) - LeftTopPos.line );
-        DCDisplaySomeLines( min( SelRgn.end.line, last_end_line ) - LeftTopPos.line,
-                            max( SelRgn.end.line, last_end_line ) - LeftTopPos.line );
+        int min_start, max_start;
+        int min_end, max_end;
+        min_start = SelRgn.start.line;
+        if( min_start > last_start_line )
+            min_start = last_start_line;
+        max_start = SelRgn.start.line;
+        if( max_start < last_start_line )
+            max_start = last_start_line;
+        min_end = SelRgn.end.line;
+        if( min_end > last_end_line )
+            min_end = last_end_line;
+        max_end = SelRgn.end.line;
+        if( max_end < last_end_line )
+            max_end = last_end_line;
+        DCDisplaySomeLines( min_start - LeftTopPos.line, max_start - LeftTopPos.line );
+        DCDisplaySomeLines( min_end - LeftTopPos.line, max_end - LeftTopPos.line );
     }
     last_start_line = SelRgn.start.line;
     last_end_line = SelRgn.end.line;

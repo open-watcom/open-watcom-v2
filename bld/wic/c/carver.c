@@ -65,13 +65,17 @@ Data &12345678: aa bb cc dd; Size 123 chk a5
     int len = 0;
     int temp;
     int i;
+    int len1;
 
     if (blkElem == NULL) {
         len += sprintf(str+len, "Data could not be accessed");
     } else {
         len += sprintf(str+len, "Data &%X:", blkElem->data);
     }
-    for (i = 0; i < min(blkElem->info.size, 4); i++) {
+    len1 = blkElem->info.size;
+    if( len1 > 4 )
+        len1 = 4;
+    for( i = 0; i < len1; i++ ) {
         len += sprintf(str+len, " %2X", blkElem->data[i]);
     }
     len += sprintf(str+len, "; Size %d", blkElem->info.size);
@@ -194,8 +198,13 @@ static long getCurrBlockSize(pCarver carver) {
     assert(carver != NULL);
     assert(carver->numBlks != 0);
     if (carver->blkSize == 0) {
-        int temp2 = min(carver->numBlks, 15);
-        temp = min(1 << temp2-1, MAX_NUM_ELEM_IN_BLOCK);
+        int temp2 = carver->numBlks;
+        if( temp2 > 15 )
+            temp2 = 15;
+        temp = 1 << temp2 - 1;
+        if( temp > MAX_NUM_ELEM_IN_BLOCK ) {
+            temp = MAX_NUM_ELEM_IN_BLOCK;
+        }
     } else {
         temp = carver->blkSize;
     }

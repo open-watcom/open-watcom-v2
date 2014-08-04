@@ -1022,7 +1022,9 @@ search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
     walk_result                 walk_rc;
     hll_find_line_cue_in_file   state = {0};
     state.file = file;
-    state.line = min(line, UINT16_MAX);
+    state.line = line;
+    if( state.line > UINT16_MAX )
+        state.line = UINT16_MAX;
     state.rc   = SR_NONE;
     walk_rc = DIPImpWalkFileList( ii, im, hllFindLineCueInFile, ic, &state );
     HLL_LOG(( "DIPImpLineCue: mod=%x file=%lx line=%lx -> %d (%lx)\n",

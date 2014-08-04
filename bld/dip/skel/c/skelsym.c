@@ -50,7 +50,7 @@ walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
 
         SS_MODULE:
                 The 'source' is a pointer to an imp_mod_handle. If
-                the *(imp_mod_handle *)source is NO_MOD, The list is
+                the *(imp_mod_handle *)source is IMH_NOMOD, The list is
                 all the module scope/global symbols in the image, otherwise
                 it is the list of module scope/global symbols in the
                 indicated module.
@@ -288,7 +288,7 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
         SS_MODULE:
                 The 'source' is a pointer to an imp_mod_handle.
                 Search all the file scope symbols in that module.
-                If *(imp_mod_handle *)source is NO_MOD, Search all file
+                If *(imp_mod_handle *)source is IMH_NOMOD, Search all file
                 scope symbols in the image.
 
         SS_SCOPED:
@@ -316,8 +316,8 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
 
         mod_handle              mod;
                 Inside the implmentation, this field is actually an
-                'imp_mod_handle'. If 'mod' is not NO_MOD, then the symbol
-                must be in the indicated module. If it is NO_MOD, the
+                'imp_mod_handle'. If 'mod' is not IMH_NOMOD, then the symbol
+                must be in the indicated module. If it is IMH_NOMOD, the
                 symbol can be from any module in the image.
 
         lookup_token    name;

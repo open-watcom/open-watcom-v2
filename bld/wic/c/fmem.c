@@ -130,16 +130,19 @@ void FiniFMem(int checkMem) {
 }
 
 
-int adjustSize(size_t size) {
-    if (size > MAX_ELEM_SIZE_INTO_CARVER) {
-        return -1;
-    } else if (size > 0) {
+int adjustSize( size_t size )
+{
+    if( size > MAX_ELEM_SIZE_INTO_CARVER ) {
+        return( -1 );
+    } else if( size > 0 ) {
         // Try to align on sizeof(void *) - byte boundary
-        return min(MAX_ELEM_SIZE_INTO_CARVER,
-                     size + sizeof(void*) - (size % sizeof(void*)) );
+        int rc = size + sizeof( void * ) - ( size % sizeof( void * ) );
+        if( rc > MAX_ELEM_SIZE_INTO_CARVER )
+            rc = MAX_ELEM_SIZE_INTO_CARVER;
+        return( rc );
     } else {
-        assert(0);
-        return 0;
+        assert( 0 );
+        return( 0 );
     }
 }
 

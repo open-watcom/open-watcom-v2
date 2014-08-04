@@ -374,8 +374,12 @@ bool WdeCreateControlsToolBar( void )
     if( !IntersectRect( &r, &screen, &t ) ) {
         r.right = t.right - t.left;
         r.bottom = t.bottom - t.top;
-        r.left = min( 0, screen.right - r.right ) / 2;
-        r.top = min( 0, screen.bottom - screen.top - r.bottom ) / 2;
+        r.left = 0;
+        if( screen.right > r.right )
+            r.left = ( screen.right - r.right ) / 2;
+        r.top = 0;
+        if( screen.bottom - screen.top - r.bottom  > 0 )
+            r.top = ( screen.bottom - screen.top - r.bottom ) / 2;
         r.right += r.left;
         r.bottom += r.top;
         t = r;

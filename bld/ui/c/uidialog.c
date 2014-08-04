@@ -194,7 +194,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
     case FLD_INVISIBLE_EDIT :
         edit = field->ptr;
         if( edit->buffer != NULL ) {
-            length = min( edit->length, CTRL_BUF_LEN );
+            length = edit->length;
+            if( length > CTRL_BUF_LEN )
+                length = CTRL_BUF_LEN;
             if( length > area->width ) {
                 length = area->width;
             }
@@ -219,7 +221,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
             ctrlbuf[0] = '\0';
         }
         if( edit->buffer != NULL ) {
-            length = min( edit->length, CTRL_BUF_LEN );
+            length = edit->length;
+            if( length > CTRL_BUF_LEN )
+                length = CTRL_BUF_LEN;
             strncpy( ctrlbuf, edit->buffer, length );
         } else {
             length = 0;
@@ -403,14 +407,17 @@ void *uiinitdialog( char *heading, ATTR attr, char *lines[],
         for( t = s + len ; s < t ; ) {
             ++ depth;
             linelen = ui_split_line( &s, t, width );
-            maxlen = max( linelen+2, maxlen );
+            if( maxlen < linelen + 2 ) {
+                maxlen = linelen + 2;
+            }
         }
     }
     if( depth > 0 ) {
         /* never put text on the first line of the dialog */
         ++depth;
     }
-    maxlen = min( maxlen, width );
+    if( maxlen > width )
+        maxlen = width;
     vs = makevs( heading, maxlen, depth + extra_rows, cpos, rpos );
     uisetarea( &area, vs );
     width = area.width;

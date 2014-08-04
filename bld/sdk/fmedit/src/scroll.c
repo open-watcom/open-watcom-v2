@@ -250,9 +250,15 @@ extern void AutoScroll( RECT eatom, POINT delta )
           mouse.x < clrect.left)) ) {
         xdel = delta.x;
         if( xdel > 0 ) {
-            xdel = max( 1, (xdel * SLOW_DOWN_N) / SLOW_DOWN_D );
+            xdel = ( xdel * SLOW_DOWN_N ) / SLOW_DOWN_D;
+            if( xdel < 1 ) {
+                xdel = 1;
+            }
         } else {
-            xdel = min( -1, (xdel * SLOW_DOWN_N) / SLOW_DOWN_D );
+            xdel = ( xdel * SLOW_DOWN_N ) / SLOW_DOWN_D;
+            if( xdel > -1 ) {
+                xdel = -1;
+            }
         }
     }
     if( (delta.y > 0 &&
@@ -263,9 +269,15 @@ extern void AutoScroll( RECT eatom, POINT delta )
           mouse.y < clrect.top)) ) {
         ydel = delta.y;
         if( ydel > 0 ) {
-            ydel = max( 1, (ydel * SLOW_DOWN_N) / SLOW_DOWN_D );
+            ydel = ( ydel * SLOW_DOWN_N ) / SLOW_DOWN_D;
+            if( ydel < 1 ) {
+                ydel = 1;
+            }
         } else {
-            ydel = min( -1, (ydel * SLOW_DOWN_N) / SLOW_DOWN_D );
+            ydel = ( ydel * SLOW_DOWN_N ) / SLOW_DOWN_D;
+            if( ydel > -1 ) {
+                ydel = -1;
+            }
         }
     }
 
@@ -293,9 +305,6 @@ static int AdjustScroll( int curr, int low, int high, int delta )
     }
 }
 
-#define _constrain_short( l ) \
-        max( (long)SHRT_MIN, min( (long)SHRT_MAX, (l) ) )
-
 static void GetScrollBounds( LPRECT rect, BOOL lock )
 /***************************************************/
 {
@@ -312,9 +321,21 @@ static void GetScrollBounds( LPRECT rect, BOOL lock )
     if( !lock ) {
         GetClientRect( GetAppWnd(), &clrect );
         bound = (long)rect->left + SHRT_MAX - clrect.right - UNLOCK_SCROLL_FUDGE;
-        rect->right = _constrain_short( bound );
+        if( bound > (long)SHRT_MAX ) {
+            rect->right = SHRT_MAX;
+        } else if( bound < (long)SHRT_MIN ) {
+            rect->right = SHRT_MIN;
+        } else {
+            rect->right = bound;
+        }
         bound = (long)rect->top + SHRT_MAX - clrect.bottom - UNLOCK_SCROLL_FUDGE;
-        rect->bottom = _constrain_short( bound );
+        if( bound > (long)SHRT_MAX ) {
+            rect->bottom = SHRT_MAX;
+        } else if( bound < (long)SHRT_MIN ) {
+            rect->bottom = SHRT_MIN;
+        } else {
+            rect->bottom = bound;
+        }
     }
 }
 

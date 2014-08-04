@@ -1362,6 +1362,7 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
     mad_type_info       host;
     unsigned_8    const *p;
     unsigned            len;
+    unsigned            len1;
     mad_status          ms;
 #if defined( _LONG_DOUBLE_ )
     xreal               val;
@@ -1388,8 +1389,12 @@ static mad_status FloatTypeToString( unsigned radix, mad_type_info const *mti,
             ++p;
 #endif
         }
-        if( max > 0 )
-            res[ min( len, max ) ] = '\0';
+        if( max > 0 ) {
+            len1 = len;
+            if( len1 > max )
+                len1 = max;
+            res[len1] = '\0';
+        }
         *maxp = len;
         return( MS_OK );
     case 10:
@@ -1734,6 +1739,7 @@ static walk_result FindFullName( const mad_reg_info *ri, int has_sublist, void *
 unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, unsigned max, char *buff )
 {
     struct full_name    name;
+    unsigned            len;
 
     name.components = NULL;
     name.ri = ri;
@@ -1743,7 +1749,10 @@ unsigned        MADRegFullName( const mad_reg_info *ri, const char *op, unsigned
     name.len = 0;
     MADRegWalk( NULL, NULL, FindFullName, &name );
     if( max > 0 ) {
-        buff[ min( name.len, max ) ] = '\0';
+        len = name.len;
+        if( len > max )
+            len = max;
+        buff[len] = '\0';
     }
     return( name.len );
 }

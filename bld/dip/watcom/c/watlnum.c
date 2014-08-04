@@ -646,7 +646,9 @@ int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     ii = ii;
-    if( ic1->im != ic2->im ) return( ic1->im - ic2->im );
-    if( ic1->entry != ic2->entry ) return( ic1->entry - ic2->entry );
+    if( ic1->im != ic2->im )
+        return( ic1->im - ic2->im );
+    if( ic1->entry != ic2->entry )
+        return( ic1->entry - ic2->entry );
     return( ic1->info_bias - ic2->info_bias );
 }

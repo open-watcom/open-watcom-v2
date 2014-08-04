@@ -42,6 +42,7 @@
 #include "message.h"
 #include "pathconv.h"
 #include "parse.h"
+#include "clibint.h"
 
 
 #define CVTRES_SUCCESS          0

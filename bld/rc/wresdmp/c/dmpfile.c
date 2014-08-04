@@ -49,7 +49,9 @@ static void ConvertIDToStr( WResID * id, char * str, int maxlen )
     int     numchars;
 
     if (id->IsName) {
-        numchars = min( maxlen - 1, id->ID.Name.NumChars );
+        numchars = id->ID.Name.NumChars;
+        if( numchars > maxlen - 1 )
+            numchars = maxlen - 1;
         memcpy( str, &(id->ID.Name.Name), numchars );
         str[ numchars ] = '\0';
     } else {

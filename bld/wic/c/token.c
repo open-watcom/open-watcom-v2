@@ -1162,9 +1162,13 @@ pToken combine2Token(pToken t1, pToken t2) {
             }
         } else {
             char errStr[100];
-            char *s = staticGetTokenStr(t1, 0);
-            int m = min(strlen(s), 99);
-            memcpy(errStr, s, m);
+            char *s;
+            int m;
+            s = staticGetTokenStr( t1, 0 );
+            m = strlen( s );
+            if( m > 99 )
+                m = 99;
+            memcpy( errStr, s, m );
             errStr[m] = 0;
             reportError(RERR_CANT_COMBINE_2_TOKENS, errStr,
                                                 staticGetTokenStr(t2, 0) );

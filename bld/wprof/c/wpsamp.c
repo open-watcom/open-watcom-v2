@@ -229,9 +229,9 @@ static bint         barMaxTime;
 static bint         dispHighLight;
 static bint         absGraphBar;
 static bint         relGraphBar;
-static char         relData[20];
-static char         absData[20];
-static char         lineData[64];
+static char         relData[30];
+static char         absData[30];
+static char         lineData[96];
 
 
 wnd_info WPSampleInfo = {
@@ -276,14 +276,10 @@ STATIC void *sampleCreateWin( void )
 {
     a_window            *wnd;
     wnd_create_struct   info;
-    char                *title;
+    char                title[512];
 
-#define TITLE_LEN       255
-
-    title = alloca( TITLE_LEN );
-    if( title == NULL ) return( NULL );
     WndInitCreateStruct( &info );
-    snprintf( title, TITLE_LEN, LIT( Sample_Data ), CurrSIOData->samp_file_name );
+    sprintf( title, LIT( Sample_Data ), CurrSIOData->samp_file_name );
     info.text = title;
     info.info = &WPSampleInfo;
     info.extra = CurrSIOData;
@@ -291,7 +287,8 @@ STATIC void *sampleCreateWin( void )
     info.title_size = STATUS_ROW + 1;
     info.style |= GUI_INIT_INVISIBLE;
     wnd = WndCreateWithStruct( &info );
-    if( wnd == NULL ) return( wnd );
+    if( wnd == NULL )
+        return( wnd );
 //    WndSetFontInfo( wnd, GetWndFont( wnd ) );
 //-//    WndSetSysFont( wnd, P_TRUE );
     WndClrSwitches( wnd, WSW_MUST_CLICK_ON_PIECE|WSW_ONLY_MODIFY_TABSTOP );
@@ -500,10 +497,8 @@ STATIC bint sampleProcStatus( a_window *wnd, int row, int piece,
         line->text = LIT( Empty_Str );
         abs_count = curr_sio->abs_count;
         rel_count = curr_sio->rel_count;
-        snprintf( relData, sizeof( relData ), "%ld.%ld%%", rel_count/10,
-                 rel_count-((rel_count/10)*10) );
-        snprintf( absData, sizeof( absData ), "%ld.%ld%%", abs_count/10,
-                 abs_count-((abs_count/10)*10) );
+        sprintf( relData, "%ld.%ld%%", rel_count/10, rel_count-((rel_count/10)*10) );
+        sprintf( absData, "%ld.%ld%%", abs_count/10, abs_count-((abs_count/10)*10) );
         if( WPPixelTruncWidth( WndMaxCharX( wnd ) / 2 ) == 0 ) {
             point_adjust = WndMaxCharX( wnd ) / 2;
         } else {
@@ -579,9 +574,7 @@ STATIC bint sampleProcStatus( a_window *wnd, int row, int piece,
         line->indent = SEPARATOR_POINT + WndMaxCharX( wnd );
         curr_sio = WndExtra( wnd );
         if( curr_sio->level_open == LEVEL_ROUTINE ) {
-            snprintf( lineData, sizeof( lineData ), "%s: %.5d",
-                     statusHeaders[curr_sio->level_open],
-                     curr_sio->curr_display_row+1 );
+            sprintf( lineData, "%s: %.5d", statusHeaders[curr_sio->level_open], curr_sio->curr_display_row+1 );
             line->text = lineData;
         } else {
             line->text = statusHeaders[curr_sio->level_open];

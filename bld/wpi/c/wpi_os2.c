@@ -1120,8 +1120,11 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     GpiSetCharSet( hps, 1L );
 
     /* Critical for printing                            */
-    pix_per_inch = min( _wpi_devicecapableinch( hps, LOGPIXELSX ),
-                    _wpi_devicecapableinch( hps, LOGPIXELSY ) );
+    /* get minimum of pixel density                     */
+    pix_per_inch = _wpi_devicecapableinch( hps, LOGPIXELSX );
+    i = _wpi_devicecapableinch( hps, LOGPIXELSY );
+    if( i < pix_per_inch )
+        pix_per_inch = i;
     pix_per_point = ( pix_per_inch + 71 ) / 72;
 
     /* Set the font size ( for outline/sizeable fonts ) */
@@ -1769,7 +1772,9 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
     oldbitmap = GpiSetBitmap( memhps, obj->bitmap );
-    slcount = min( ih.cy, (32 * size) / (4 * ih.cx * ih.cBitCount) );
+    slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
+    if( ih.cy < slcount )
+        slcount = ih.cy;
     ret = GpiQueryBitmapBits( memhps, 0L, slcount, bits, (WPI_BITMAPINFO *)bmi);
 
     GpiSetBitmap( memhps, oldbitmap );
@@ -1806,7 +1811,9 @@ LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
     oldbitmap = GpiSetBitmap( memhps, obj->bitmap );
-    slcount = min( ih.cy, (32 * size) / (4 * ih.cx * ih.cBitCount) );
+    slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
+    if( ih.cy < slcount )
+        slcount = ih.cy;
     GpiQueryBitmapBits( memhps, 0L, (LONG)slcount, NULL, (WPI_BITMAPINFO *)bmi);
     ret = GpiSetBitmapBits( memhps, 0L, (LONG)slcount, bits, (WPI_BITMAPINFO *)bmi );
 
@@ -2799,20 +2806,39 @@ void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
 
     GpiQueryTextBox( pres, (LONG)len_string, (PCH)string, TXTBOX_COUNT, pts );
 
-    t_max = max( pts[TXTBOX_TOPLEFT].x, pts[TXTBOX_TOPRIGHT].x );
-    t_max = max( t_max, pts[TXTBOX_BOTTOMLEFT].x );
-    t_max = max( t_max, pts[TXTBOX_BOTTOMRIGHT].x );
-    t_min = min( pts[TXTBOX_TOPLEFT].x, pts[TXTBOX_TOPRIGHT].x );
-    t_min = min( t_min, pts[TXTBOX_BOTTOMLEFT].x );
-    t_min = min( t_min, pts[TXTBOX_BOTTOMRIGHT].x );
+    t_max = pts[TXTBOX_TOPLEFT].x;
+    if( t_max < pts[TXTBOX_TOPRIGHT].x )
+        t_max = pts[TXTBOX_TOPRIGHT].x;
+    if( t_max < pts[TXTBOX_BOTTOMLEFT].x )
+        t_max = pts[TXTBOX_BOTTOMLEFT].x;
+    if( t_max < pts[TXTBOX_BOTTOMRIGHT].x )
+        t_max = pts[TXTBOX_BOTTOMRIGHT].x;
+
+    t_min = pts[TXTBOX_TOPLEFT].x;
+    if( t_min > pts[TXTBOX_TOPRIGHT].x )
+        t_min = pts[TXTBOX_TOPRIGHT].x;
+    if( t_min > pts[TXTBOX_BOTTOMLEFT].x )
+        t_min = pts[TXTBOX_BOTTOMLEFT].x;
+    if( t_min > pts[TXTBOX_BOTTOMRIGHT].x )
+        t_min = pts[TXTBOX_BOTTOMRIGHT].x;
+
     *width = abs( t_max - t_min );
 
-    t_max = max( pts[TXTBOX_TOPLEFT].y, pts[TXTBOX_TOPRIGHT].y );
-    t_max = max( t_max, pts[TXTBOX_BOTTOMLEFT].y );
-    t_max = max( t_max, pts[TXTBOX_BOTTOMRIGHT].y );
-    t_min = min( pts[TXTBOX_TOPLEFT].y, pts[TXTBOX_TOPRIGHT].y );
-    t_min = min( t_min, pts[TXTBOX_BOTTOMLEFT].y );
-    t_min = min( t_min, pts[TXTBOX_BOTTOMRIGHT].y );
+    t_max = pts[TXTBOX_TOPLEFT].y;
+    if( t_max < pts[TXTBOX_TOPRIGHT].y )
+        t_max = pts[TXTBOX_TOPRIGHT].y;
+    if( t_max < pts[TXTBOX_BOTTOMLEFT].y )
+        t_max = pts[TXTBOX_BOTTOMLEFT].y;
+    if( t_max < pts[TXTBOX_BOTTOMRIGHT].y )
+        t_max = pts[TXTBOX_BOTTOMRIGHT].y;
+
+    t_min = pts[TXTBOX_TOPLEFT].y;
+    if( t_min > pts[TXTBOX_TOPRIGHT].y )
+        t_min = pts[TXTBOX_TOPRIGHT].y;
+    if( t_min > pts[TXTBOX_BOTTOMLEFT].y )
+        t_min = pts[TXTBOX_BOTTOMLEFT].y;
+    if( t_min > pts[TXTBOX_BOTTOMRIGHT].y )
+        t_min = pts[TXTBOX_BOTTOMRIGHT].y;
 
     *height = abs( t_max - t_min );
 
@@ -2868,7 +2894,9 @@ void _wpi_gettextface( WPI_PRES pres, int size, LPSTR buf )
     int                         min_size;
 
     GpiQueryFontMetrics( pres, sizeof( FONTMETRICS ), &metric );
-    min_size = min( size, strlen( metric.szFacename ) + 1 );
+    min_size = strlen( metric.szFacename ) + 1;
+    if( min_size > size )
+        min_size = size;
     strncpy( buf, metric.szFacename, min_size );
 } /* _wpi_gettextface */
 

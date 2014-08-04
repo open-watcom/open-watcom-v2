@@ -615,7 +615,9 @@ static void AddToLeader( seg_leader *seg, segdata *sdata )
     sdata->u.leader = seg;
     if( sdata->combine == COMBINE_COMMON ) {
         first = RingFirst( seg->pieces );
-        length = max( first->length, sdata->length );
+        length = first->length;
+        if( length < sdata->length )
+            length = sdata->length;
         if( first->isuninit ) {
             first->isdead = TRUE;
             RingPush( &seg->pieces, sdata );
@@ -918,7 +920,8 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
         Ring2Append( &CurrMod->publist, sym );
     } else {
         if( IS_SYM_NICOMDEF( sym ) ) {
-            size = max( sym->p.seg->length, size );
+            if( size < sym->p.seg->length )
+                size = sym->p.seg->length;
             sym->p.seg->length = size;
         }
         altsym = AddAltDef( sym, symtype );
@@ -941,7 +944,9 @@ void CheckComdatSym( symbol *sym, sym_info flags )
     if( flags == SYM_CDAT_SEL_NODUP || symflags == SYM_CDAT_SEL_NODUP ) {
         symflags = SYM_CDAT_SEL_NODUP;
     } else {
-        symflags = max( flags, symflags );
+        if( symflags < flags ) {
+            symflags = flags;
+        }
     }
     if( symflags == SYM_CDAT_SEL_NODUP ) {
         ReportMultiple( sym, sym->name, strlen(sym->name) );

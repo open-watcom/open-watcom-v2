@@ -151,7 +151,9 @@ void uiupdatelistbox( a_list *list )
     }
     maxline = uilistsize( list );
     list->box->row = list->choice;
-    list->box->gadget.total_size = max( maxline, (int)list->box->area.height );
+    list->box->gadget.total_size = maxline;
+    if( list->box->gadget.total_size < (int)list->box->area.height )
+        list->box->gadget.total_size = (int)list->box->area.height;
     uisetgadget( &list->box->gadget, list->choice );
     setstartline( list );
     if( selectoutofrange( list->box ) ) {
@@ -243,7 +245,9 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->gadget.slider = EV_SCROLL_VERTICAL,
     box->gadget.pageforward = EV_SCROLL_PAGE_DOWN;
     box->gadget.pagebackward = EV_SCROLL_PAGE_UP;
-    box->gadget.total_size = max( (int)maxline, (int)box->area.height );
+    box->gadget.total_size = (int)maxline;
+    if( box->gadget.total_size < (int)box->area.height )
+        box->gadget.total_size = (int)box->area.height;
     box->gadget.page_size = box->area.height;
     box->gadget.pos = 0;
     box->gadget.flags = GADGET_NONE;

@@ -333,7 +333,9 @@ void RecordImage( HWND hwnd )
      * Here's a bit of a problem:  I'm not sure how much Windows is going
      * to need to keep running relatively happily!
      */
-    space_needed =  max( SPACE_MIN, SPACE_LIMIT * bytes );
+    space_needed = SPACE_LIMIT * bytes;
+    if( space_needed < SPACE_MIN )
+        space_needed = SPACE_MIN;
 
 #ifndef __OS2_PM__
 #ifndef __NT__

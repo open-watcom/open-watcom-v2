@@ -248,8 +248,9 @@ void SetRGBValues( RGBQUAD *argbvals, int upperlimit )
     ReleaseDC( HColorPalette, hdc );
 
     argb = argbvals;
-
-    for( i = 0; i < min( upperlimit, num ); i++ ) {
+    if( num > upperlimit )
+        num = upperlimit;
+    for( i = 0; i < num; i++ ) {
         argb[i].rgbBlue = pe[i].peBlue;
         argb[i].rgbGreen = pe[i].peGreen;
         argb[i].rgbRed = pe[i].peRed;

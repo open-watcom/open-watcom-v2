@@ -153,7 +153,9 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
     }
 
     /* In event of the rare case that the algorithm blew up take the min */
-    return( min( shift, shift_old ) );
+    if( shift > shift_old )
+        shift = shift_old;
+    return( shift );
 } /* FindShiftCount */
 
 /*

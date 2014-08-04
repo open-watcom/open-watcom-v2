@@ -234,7 +234,10 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     }
 
     if( filter == 0 ) {
-        filter = max( 1, WdeFindFileFilterIndex( gf->filter, WdeFileFilter ) );
+        filter = WdeFindFileFilterIndex( gf->filter, WdeFileFilter );
+        if( filter < 1 ) {
+            filter = 1;
+        }
     }
 
     // CTL3D no longer requires this

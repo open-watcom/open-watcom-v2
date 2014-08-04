@@ -45,7 +45,9 @@ bool GetExtent( gui_window * wnd, const char * text, size_t length, gui_coord *c
         got_new = GUIGetTheDC( wnd );
         my_length = strlen( text );
         if( length != (size_t)-1 ) {
-            my_length = min( length, my_length );
+            if( my_length > length ) {
+                my_length = length;
+            }
         }
         GUIGetTextExtent( wnd, text, my_length, &coord->x, &coord->y );
         if( got_new ) {
@@ -100,7 +102,9 @@ bool GetControlExtent( gui_window * wnd, unsigned id, const char *text, size_t l
     if( text && GetControlInfo( wnd, id, &hwnd, &dc ) ) {
         my_length = strlen( text );
         if( length != (size_t)-1 ) {
-            my_length = min( length, my_length );
+            if( my_length > length ) {
+                my_length = length;
+            }
         }
         if( wnd->font != NULL ) {
             old = _wpi_selectfont( dc, wnd->font );

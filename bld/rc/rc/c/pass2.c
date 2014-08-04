@@ -799,11 +799,15 @@ static RcStatus updateDebugDirectory( void )
         return( RS_READ_ERROR );
     debug_cnt = debug_size / sizeof( debug_directory );
     while( debug_cnt > 0 ) {
-        read_cnt = min( IO_BUFFER_SIZE / sizeof( debug_directory), debug_cnt );
+        read_cnt = IO_BUFFER_SIZE / sizeof( debug_directory);
+        if( read_cnt > debug_cnt )
+            read_cnt = debug_cnt;
         read_size = read_cnt * sizeof( debug_directory );
         io_rc = RCREAD( old->Handle, Pass2Info.IoBuffer, read_size );
-        if( io_rc == -1 ) return( RS_READ_ERROR );
-        if( io_rc != read_size ) return( RS_READ_INCMPLT );
+        if( io_rc == -1 )
+            return( RS_READ_ERROR );
+        if( io_rc != read_size )
+            return( RS_READ_INCMPLT );
         entry = Pass2Info.IoBuffer;
         for( i=0; i < read_cnt; i++ ) {
             if( entry[i].data_seek >= old->DebugOffset ) {

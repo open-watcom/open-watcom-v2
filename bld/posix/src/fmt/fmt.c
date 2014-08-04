@@ -372,7 +372,9 @@ static char *insertWord( wordlist **list, char *wtext, unsigned wlen )
             return( text );
         }
     }
-    size = max( wlen + 1, DEF_LIST_LEN );
+    size = wlen + 1;
+    if( size < DEF_LIST_LEN )
+        size = DEF_LIST_LEN;
     while( size > wlen ) {
         temp = (wordlist *) realloc( temp, sizeof( wordlist ) + size - sizeof( char ) );
         if( temp != NULL ) {

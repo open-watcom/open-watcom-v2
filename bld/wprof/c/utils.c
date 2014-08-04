@@ -62,6 +62,7 @@
 #include "pathlist.h"
 #include "digcli.h"
 #include "digio.h"
+#include "clibext.h"
 
 #if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"

@@ -36,6 +36,7 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "msg.h"
+#include "clibext.h"
 
 
 extern void OpenSample(void);

@@ -60,7 +60,7 @@ extern  mod_info  *NextModInfo( mod_list *list ){
         blk->next = NULL;
         *list->lnk = blk;
         list->lnk =  &blk->next;
-        blk->info = DCAlloc( sizeof( mod_info )*MODS_PER_BLK );
+        blk->info = DCAlloc( sizeof( mod_info ) * MODS_PER_BLK );
         list->curr = blk;
     }
     blk = list->curr;
@@ -69,22 +69,23 @@ extern  mod_info  *NextModInfo( mod_list *list ){
     return( next );
 }
 
-extern mod_info  *FiniModInfo( mod_list *list ){
+extern mod_info  *FiniModInfo( mod_list *list )
 /*****************************************/
 //Free all offset blocks for a line segment
 //Free all line segments
-    mod_info  *new, *cpy;
-    mod_blk   *curr, *next;
-    long      size;
+{
+    mod_info    *new, *cpy;
+    mod_blk     *curr, *next;
+    size_t      size;
 
-    size = sizeof( mod_info )*list->count;
-    if( size > 0 ){
+    size = sizeof( mod_info ) * list->count;
+    if( size > 0 ) {
         new = DCAlloc( size );
         curr = list->head;
         cpy = new;
         while( curr->next != NULL ){
-            size -= sizeof( mod_info )*MODS_PER_BLK;
-            memcpy( cpy, curr->info, sizeof( mod_info )*MODS_PER_BLK );
+            size -= sizeof( mod_info ) * MODS_PER_BLK;
+            memcpy( cpy, curr->info, sizeof( mod_info ) * MODS_PER_BLK );
             cpy = &cpy[MODS_PER_BLK];
             DCFree( curr->info );
             next = curr->next;
@@ -94,7 +95,7 @@ extern mod_info  *FiniModInfo( mod_list *list ){
        memcpy( cpy, curr->info, size );
        DCFree( curr->info );
        DCFree( curr );
-    }else{
+    } else {
         new = NULL;
     }
     list->head = NULL;

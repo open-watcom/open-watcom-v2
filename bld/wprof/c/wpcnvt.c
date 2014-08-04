@@ -119,10 +119,15 @@ STATIC void countDIFData( char * image, char * module, char * file,
 {
     count=count;
     convertEntryCount++;
-    convertEntrySize[0] = max( convertEntrySize[0], strlen( image ) );
-    convertEntrySize[1] = max( convertEntrySize[1], strlen( module ) );
-    convertEntrySize[2] = max( convertEntrySize[2], strlen( file ) );
-    convertEntrySize[3] = max( convertEntrySize[3], strlen( routine ) );
+    if( convertEntrySize[0] < strlen( image ) )
+        convertEntrySize[0] = strlen( image );
+    if( convertEntrySize[1] < strlen( module ) )
+        convertEntrySize[1] = strlen( module );
+    if( convertEntrySize[2] < strlen( file ) )
+        convertEntrySize[2] = strlen( file );
+    if( convertEntrySize[3] < strlen( routine ) ) {
+        convertEntrySize[3] = strlen( routine );
+    }
 }
 
 

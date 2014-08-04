@@ -117,7 +117,7 @@ static bool ACueFile( void *_info, dr_line_file *curr )
                     }
                 }
                 if( i < info->num_dirs ) {
-                    info->ret = DCAlloc( strlen( curr->name ) + strlen( info->dirs[i].name ) + 2);
+                    info->ret = DCAlloc( strlen( curr->name ) + strlen( info->dirs[i].name ) + 2 );
                     strcpy( info->ret, info->dirs[i].name );
                     strcat( info->ret, "/");
                     strcat( info->ret, curr->name );

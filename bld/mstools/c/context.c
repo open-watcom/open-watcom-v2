@@ -39,6 +39,7 @@
 #include "context.h"
 #include "error.h"
 #include "memory.h"
+#include "clibext.h"
 
 #define MAX_INDIRECTIONS        8
 

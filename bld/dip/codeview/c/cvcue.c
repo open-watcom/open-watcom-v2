@@ -56,7 +56,8 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
         return( WR_CONTINUE );
 
     cde = FindDirEntry( ii, im, sstSrcModule );
-    if( cde == NULL ) return(  WR_CONTINUE );
+    if( cde == NULL )
+        return(  WR_CONTINUE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
     if( hdr == NULL ) return( WR_FAIL );
     file_tab_count = hdr->cFile;
@@ -449,9 +450,11 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     search_result                       rc;
 
     cde = FindDirEntry( ii, im, sstSrcModule );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL )
+        return( SR_NONE );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) );
-    if( hdr == NULL ) return( SR_NONE );
+    if( hdr == NULL )
+        return( SR_NONE );
     ic->im = im;
     num_files = hdr->cFile;
     file_tab_size = num_files * sizeof( unsigned_32 );
@@ -472,8 +475,11 @@ int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     ii = ii;
-    if( ic1->im != ic2->im ) return( ic1->im - ic2->im );
-    if( ic1->line < ic2->line ) return( -1 );
-    if( ic1->line > ic2->line ) return( +1 );
+    if( ic1->im != ic2->im )
+        return( ic1->im - ic2->im );
+    if( ic1->line < ic2->line )
+        return( -1 );
+    if( ic1->line > ic2->line )
+        return( +1 );
     return( ic1->pair - ic2->pair );
 }

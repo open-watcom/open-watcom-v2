@@ -1080,13 +1080,13 @@ static void listNewLine( FILE *fp )
 static void fpadch( FILE *fp, char ch, int len )
 {
     fp = fp;
-    if( len <= 0 ) {
-        return;
+    if( len > 0 ) {
+        if( len > MAX_MESSAGE_LEN - msgLength )
+            len = MAX_MESSAGE_LEN - msgLength;
+        memset( listMsg + msgLength, ch, len );
+        msgLength += len;
+        listMsg[ msgLength ] = '\0';
     }
-    len = min( MAX_MESSAGE_LEN - msgLength, len );
-    memset( listMsg + msgLength, ch, len );
-    msgLength += len;
-    listMsg[ msgLength ] = '\0';
 }
 
 static void printVerboseTableEntry( arch_header *arch )

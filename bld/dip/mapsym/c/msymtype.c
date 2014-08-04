@@ -67,7 +67,7 @@ dip_status DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
-    ii = ii;
+    ii = ii; lc = lc; ll = ll;
     *base = *it;
     return( DS_FAIL );
 }

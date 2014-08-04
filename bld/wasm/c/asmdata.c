@@ -40,10 +40,6 @@
 #endif
 #include "clibext.h"
 
-#ifndef min
-#define min(x,y) (((x) < (y)) ? (x) : (y))
-#endif
-
 #if defined( _STANDALONE_ )
 
 extern bool             ChangeCurrentLocation( bool, int_32, bool );
@@ -443,13 +439,14 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             if( !struct_field ) {
 #endif
                 /* only output up to 4 bytes of offset (segment is on fixup) */
-                for( i = 0; i < min( no_of_bytes, 4 ); i++ ) {
-                    AsmDataByte( *ptr );
-                    ptr++;
-                }
-                /* leave space for segment */
-                for( ; i < no_of_bytes; i++ ) {
-                    AsmDataByte( 0 );
+                for( i = 0; i < no_of_bytes; i++ ) {
+                    if( i < 4 ) {
+                        /* copy offset */
+                        AsmDataByte( *ptr++ );
+                    } else {
+                        /* leave space for segment */
+                        AsmDataByte( 0 );
+                    }
                 }
 #if defined( _STANDALONE_ )
             } else if( the_struct != NULL ) {

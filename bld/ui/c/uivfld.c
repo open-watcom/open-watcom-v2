@@ -103,16 +103,18 @@ static EVENT movecursor( VSCREEN *vptr, VFIELDEDIT *header, int row, int col )
         col -= vptr->area.width;
         row += 1;
     }
-    row = max( 0, min( row, vptr->area.height - 1 ) );
+    if( row > vptr->area.height - 1 )
+        row = vptr->area.height - 1;
+    if( row < 0 )
+        row = 0;
     cursor = row * vptr->area.width + col;
     vptr->row = row;
     vptr->col = col;
-    cur = header->fieldlist;
-    for( ; ; ) {
-        if( cur == NULL ) break;
+    for( cur = header->fieldlist; cur != NULL; cur = cur->link ) {
         field = cur->row * vptr->area.width + cur->col;
-        if( ( field <= cursor ) && ( field + cur->length > cursor ) ) break;
-        cur = cur->link;
+        if( ( field <= cursor ) && ( field + cur->length > cursor ) ) {
+            break;
+        }
     }
     return( setfield( vptr, header, cur, cursor - field ) );
 }

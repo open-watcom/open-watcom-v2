@@ -66,16 +66,17 @@ section_info *FindInfo( imp_image_handle *ii, imp_mod_handle im )
  * ModPointer - given a mod_handle, return the module information pointer
  */
 
-mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle mod )
+mod_info *ModPointer( imp_image_handle *ii, imp_mod_handle im )
 {
     info_block          *blk;
     mod_table           *tbl;
     unsigned            index;
     section_info        *inf;
 
-    inf = FindInfo( ii, mod );
-    if( inf == NULL ) return( NULL );
-    index = mod - inf->mod_base_idx;
+    inf = FindInfo( ii, im );
+    if( inf == NULL )
+        return( NULL );
+    index = im - inf->mod_base_idx;
     for( blk = inf->mod_info; blk != NULL; blk = blk->next ) {
         tbl = blk->link;
         if( index < tbl->count ) {
@@ -117,7 +118,7 @@ static dip_status AllocLinkTable( section_info *inf, unsigned long num_links,
     count = num_links;
     while( count != 0 ) {
         num = (count>MAX_LINK_ENTRIES) ? MAX_LINK_ENTRIES : count;
-        lnk = DCAlloc( num * sizeof( pointer_int ));
+        lnk = DCAlloc( num * sizeof( pointer_int ) );
         if( lnk == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( DS_ERR|DS_NO_MEM );
@@ -203,7 +204,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
             ++count;
             mod = (mod_info *)((byte *)blk->info + mod_off);
         }
-        tbl = DCAlloc( sizeof(mod_table) + (count-1)*sizeof(mod_info *) );
+        tbl = DCAlloc( sizeof( mod_table ) + ( count - 1 ) * sizeof( mod_info * ) );
         if( tbl == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( DS_ERR|DS_NO_MEM );
@@ -367,7 +368,8 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
                 wr = wk( ii, im, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 ++im;
             }
         }
@@ -394,7 +396,8 @@ walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk,
             tbl = blk->link;
             for( count = 0; count < tbl->count; ++count ) {
                 wr = wk( ii, im, d );
-                if( wr != WR_CONTINUE ) return( wr );
+                if( wr != WR_CONTINUE )
+                    return( wr );
                 ++im;
             }
         }
@@ -443,7 +446,6 @@ unsigned DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
     char        *start;
     char        *end;
     unsigned    len;
-
 
     name = ModPointer( ii, im )->name;
     len = (unsigned char)name[0];

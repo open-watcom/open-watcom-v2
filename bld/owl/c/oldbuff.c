@@ -85,7 +85,9 @@ static owl_offset fillBlock( owl_buffer *buffer, const char *src, owl_offset siz
 
     block = &buffer->blocks[ buffer->curr_bin ][ buffer->curr_block ];
     bytes_left = _BlockSize( buffer->curr_bin ) - buffer->curr_addr;
-    bytes_to_write = min( size, bytes_left );
+    bytes_to_write = size;
+    if( bytes_to_write > bytes_left )
+        bytes_to_write = bytes_left;
     memcpy( block->mem + buffer->curr_addr, src, bytes_to_write );
     buffer->curr_addr += bytes_to_write;
     if( bytes_to_write < size ) {

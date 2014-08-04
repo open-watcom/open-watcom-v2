@@ -767,8 +767,9 @@ static void resolveTypePrototypes( void ) {
 
     /* generate constructors and destructor prototypes if necessary */
     libname = GetLibName();
-    len = max( sizeof( DES_DECL_TEMPLATE ) + strlen( SRU.des_name ),
-               sizeof( CONS_DECL_TEMPLATE ) + strlen( SRU.con_name ) );
+    len = sizeof( DES_DECL_TEMPLATE ) + strlen( SRU.des_name );
+    if( len < sizeof( CONS_DECL_TEMPLATE ) + strlen( SRU.con_name ) )
+        len = sizeof( CONS_DECL_TEMPLATE ) + strlen( SRU.con_name );
     name = alloca( len + strlen( libname ) + 1 );
     if( !( SRU.flags & DESTRUCTOR_DEFINED ) ) {
         sprintf( name, DES_DECL_TEMPLATE, SRU.des_name, libname );

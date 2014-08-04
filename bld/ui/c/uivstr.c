@@ -47,8 +47,12 @@ void global uitextfield( VSCREEN *vptr, ORD row, ORD col, ORD len,
     if( slen < 0 ) {
         slen = 0;
     }
-    count = min( vptr->area.width - col, len );
-    scount = min( count, slen );
+    count = vptr->area.width - col;
+    if( count > len )
+        count = len;
+    scount = count;
+    if( scount > slen )
+        scount = slen;
     if( count > 0 ) {
         okopen( vptr );
         okline( row, col, count, vptr->area );

@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "guiwind.h"
 #include "guistr.h"
@@ -133,10 +134,7 @@ static void MakeLabel( int index, char *name, char *label )
     if( GUIGetWindowText( MDIWindows[index], name, MAX_LENGTH - 3 ) == 0 ) {
         name[0] = '\0';
     }
-    label[0] = '&';
-    itoa( index + 1, label + 1, 10 );
-    label[2] = ' ';
-    strcpy( label+3, name );
+    sprintf( label, "&%d %s", index + 1, name );
 }
 
 
@@ -365,7 +363,9 @@ void MDIDelete( gui_window *wnd )
             MDIWindows[index] = NULL;
         } else {
             // delete all MDI menu items from this index on
-            num_menu_windows = min( NumMDIWindows, MAX_NUM_MDI_WINDOWS-1 );
+            num_menu_windows = NumMDIWindows;
+            if( num_menu_windows > MAX_NUM_MDI_WINDOWS - 1 )
+                num_menu_windows = MAX_NUM_MDI_WINDOWS - 1;
             for( i = index; i < num_menu_windows; i++ ) {
                 GUIDeleteMenuItem( root, i + GUI_MDI_FIRST_WINDOW, FALSE );
                 MDIWindows[i] = MDIWindows[i+1];

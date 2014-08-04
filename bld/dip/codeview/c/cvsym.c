@@ -526,7 +526,7 @@ static dip_status ScopeFindFirst( imp_image_handle *ii, imp_mod_handle im,
         ds = ScopeFillIn( ii, chk, scope, NULL );
         if( ds != DS_OK ) return( DS_ERR|ds );
         if( addr.mach.offset >= scope->start.mach.offset
-         && addr.mach.offset < (scope->start.mach.offset + scope->len) ) {
+          && addr.mach.offset < (scope->start.mach.offset + scope->len) ) {
             break;
         }
         if( scope->next == 0 ) return( DS_FAIL );
@@ -678,8 +678,10 @@ static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
     scope_info          scope;
 
     ds = ScopeFindFirst( ii, im, addr, &scope );
-    if( ds & DS_ERR ) return( WR_FAIL );
-    if( ds != DS_OK ) return( WR_CONTINUE );
+    if( ds & DS_ERR )
+        return( WR_FAIL );
+    if( ds != DS_OK )
+        return( WR_CONTINUE );
     for( ;; ) {
         wr = ScopeWalkOne( ii, &scope, wk, d );
         if( wr != WR_CONTINUE ) return( wr );
@@ -1074,16 +1076,22 @@ walk_result     DoWalkSymList( imp_image_handle *ii,
         if( sc_info.cde == NULL ) return( WR_FAIL );
         ds = ScopeFillIn( ii, sc_block->unique & SCOPE_UNIQUE_MASK,
                                 &sc_info, &p );
-        if( ds & DS_ERR ) return( WR_FAIL );
-        if( ds != DS_OK ) return( WR_CONTINUE );
+        if( ds & DS_ERR )
+            return( WR_FAIL );
+        if( ds != DS_OK )
+            return( WR_CONTINUE );
         if( sc_block->unique & SCOPE_CLASS_FLAG ) {
             /* Walk the member function class scope */
             ds = TypeIndexFillIn( ii, SymTypeIdx( ii, p ), &it );
-            if( ds & DS_ERR ) return( WR_FAIL );
-            if( ds != DS_OK ) return( WR_CONTINUE );
+            if( ds & DS_ERR )
+                return( WR_FAIL );
+            if( ds != DS_OK )
+                return( WR_CONTINUE );
             ds = TypeMemberFuncInfo( ii, &it, &it, NULL, NULL );
-            if( ds & DS_ERR ) return( WR_FAIL );
-            if( ds != DS_OK ) return( WR_CONTINUE );
+            if( ds & DS_ERR )
+                return( WR_FAIL );
+            if( ds != DS_OK )
+                return( WR_CONTINUE );
             return( TypeSymWalkList( ii, &it, wk, is, d ) );
         } else {
             return( ScopeWalkOne( ii, &sc_info, WalkGlue, &glue ) );
@@ -1725,6 +1733,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     char                *new;
     unsigned            new_len;
 
+    lc = lc;
     save_type = li->type;
     save_name = li->name;
     new_len = 0;
@@ -1790,8 +1799,10 @@ search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
 
     scope->unique = 0;
     ds = ScopeFindFirst( ii, im, addr, &sc_info );
-    if( ds & DS_ERR ) return( SR_FAIL );
-    if( ds != DS_OK ) return( SR_NONE );
+    if( ds & DS_ERR )
+        return( SR_FAIL );
+    if( ds != DS_OK )
+        return( SR_NONE );
     scope->start = sc_info.start;
     scope->len   = sc_info.len;
     scope->unique= sc_info.scope;
@@ -1804,11 +1815,14 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
     scope_info  sc_info;
     dip_status  ds;
 
-    if( in->unique == 0 ) return( SR_NONE );
+    if( in->unique == 0 )
+        return( SR_NONE );
     sc_info.cde = FindDirEntry( ii, im, sstAlignSym );
-    if( sc_info.cde == NULL ) return( SR_FAIL );
+    if( sc_info.cde == NULL )
+        return( SR_FAIL );
     ds = ScopeFillIn( ii, in->unique & SCOPE_UNIQUE_MASK, &sc_info, NULL );
-    if( ds != DS_OK ) return( SR_FAIL );
+    if( ds != DS_OK )
+        return( SR_FAIL );
     if( !(in->unique & SCOPE_CLASS_FLAG) ) {
         switch( sc_info.code ) {
         case S_GPROC16:

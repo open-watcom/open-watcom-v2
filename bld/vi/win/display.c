@@ -180,13 +180,16 @@ static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
     // draw bit at the beginning
     smallrect.left = x;
     width = MyTextExtent( id, ts, display, len );
-    max_width = min( width, max_width );
+    if( max_width > width )
+        max_width = width;
     smallrect.right = max_width + x;
     FillRect( hdc, &smallrect, brush );
 
     // and at the end
     advance = x + width;
-    smallrect.left = max( advance - max_width, smallrect.right );
+    smallrect.left = advance - max_width;
+    if( smallrect.left < smallrect.right )
+        smallrect.left = smallrect.right;
     smallrect.right = advance;
     FillRect( hdc, &smallrect, brush );
 }

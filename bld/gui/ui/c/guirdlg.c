@@ -92,7 +92,7 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff) {
-            utoa( name->ord.wOrdinalID, temp,  base );
+            sprintf( temp, ( base == 10 ) ? "%d" : "%x", name->ord.wOrdinalID );
             ok = GUIStrDup( temp, &cp );
         } else {
             ok = GUIStrDup( name->name, &cp );
@@ -157,7 +157,10 @@ static ResNameOrOrdinal *Data2NameOrOrdinal( uint_8 **data )
         len = sizeof(ResNameOrOrdinal);
     } else {
         stringlen = strlen( (char *)data8 ) + 1;
-        len = max( sizeof(ResNameOrOrdinal), stringlen );
+        len = sizeof( ResNameOrOrdinal );
+        if( len < stringlen ) {
+            len = stringlen;
+        }
     }
 
     new = (ResNameOrOrdinal *)GUIMemAlloc( len );
@@ -484,8 +487,12 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
         // set the control postion
         area.row = ctl->Size.y / DLG_Y_MULT;
         area.col = ctl->Size.x / DLG_X_MULT;
-        area.width = max( 1, ( ( ctl->Size.width + DLG_X_MULT/2 ) / DLG_X_MULT ) );
-        area.height = max( 1, ( ( ctl->Size.height + DLG_Y_MULT/2 ) / DLG_Y_MULT ) );
+        area.width = ( ( ctl->Size.width + DLG_X_MULT/2 ) / DLG_X_MULT );
+        if( area.width < 1 )
+            area.width = 1;
+        area.height = ( ( ctl->Size.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
+        if( area.height < 1 )
+            area.height = 1;
         ok = GUIScreenToScaleRectR( &area, &gci->rect );
     }
 
@@ -525,8 +532,12 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
         GUIGetScreenArea( &bounding );
         area.width = hdr->Size.width / DLG_X_MULT + 2;
         area.height = hdr->Size.height / DLG_Y_MULT + 2;
-        area.row = max( 0, ( bounding.height - area.height ) / 2 );
-        area.col = max( 0, ( bounding.width - area.width ) / 2 );
+        area.row = 0;
+        if( bounding.height > area.height )
+            area.row = ( bounding.height - area.height ) / 2;
+        area.col = 0;
+        if( bounding.width > area.width )
+            area.col = ( bounding.width - area.width ) / 2;
         ok = GUIScreenToScaleRect( &area, &gci->rect );
     }
 

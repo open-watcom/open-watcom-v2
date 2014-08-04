@@ -333,7 +333,9 @@ int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
     num = GetSystemPaletteEntries( hdc, 0, upperlimit, pe );
     ReleaseDC( HWND_DESKTOP, hdc );
 
-    for( i = 0; i < min( upperlimit, num ); i++ ) {
+    if( num > upperlimit )
+        num = upperlimit;
+    for( i = 0; i < num; i++ ) {
         argbvals[i].rgbBlue = pe[i].peBlue;
         argbvals[i].rgbGreen = pe[i].peGreen;
         argbvals[i].rgbRed = pe[i].peRed;

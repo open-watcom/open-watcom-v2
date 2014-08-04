@@ -481,7 +481,10 @@ tparam_internal(const char *string, va_list ap)
 
     if (number > 9)
 	number = 9;
-    for (i = 0; i < max(popcount, number); i++) {
+    len = popcount;
+    if( len < number )
+        len = number;
+    for (i = 0; i < len; i++) {
 	/*
 	 * A few caps (such as plab_norm) have string-valued parms.
 	 * We'll have to assume that the caller knows the difference, since

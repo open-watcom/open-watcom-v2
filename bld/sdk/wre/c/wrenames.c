@@ -294,7 +294,8 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
         if( max_index == LB_ERR ) {
             max_index = 0;
         }
-        index = min( index, max_index - 1 );
+        if( index > max_index - 1 )
+            index = max_index - 1;
         SendMessage( resLbox, LB_SETCURSEL, (WPARAM)index, 0 );
         WRESetTotalText( info );
         if( GetActiveWindow() == WREGetMainWindowHandle() ) {

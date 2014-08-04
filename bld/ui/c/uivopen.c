@@ -123,12 +123,16 @@ do not delete this stuff
                 len = area.width;
                 bstring( &(vptr->window.type.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], " ", len );
-                len = min( strlen( vptr->name ), area.width );
+                len = strlen( vptr->name );
+                if( len > area.width )
+                    len = area.width;
                 col = ( area.width - len ) / 2;
                 bstring( &(vptr->window.type.buffer), 0, col,
                          UIData->attrs[ATTR_CURR_SELECT_DIAL], vptr->name, len );
 #else
-                len = min( strlen( vptr->name ), area.width );
+                len = strlen( vptr->name );
+                if( len > area.width )
+                    len = area.width;
                 col = ( area.width - len ) / 2;
                 bstring( &(vptr->window.type.buffer), 0, col,
                          attr, vptr->name, len );
@@ -177,6 +181,7 @@ VSCREEN * global uivresize( VSCREEN *vptr, SAREA new )
     UI_WINDOW   *wptr;
     SAREA       old;
     int         min_width;
+    int         min_height;
 
     wptr = &(vptr->window);
     if( vptr->open ) {
@@ -195,8 +200,13 @@ VSCREEN * global uivresize( VSCREEN *vptr, SAREA new )
         }
         wptr->area = new;
         okarea( vptr->area );
-        min_width = min( new.width, old.width );
-        for( i = 0; i < min( new.height, old.height ); i++ ) {
+        min_width = new.width;
+        if( min_width > old.width )
+            min_width = old.width;
+        min_height = new.height;
+        if( min_height = old.height )
+            min_height = old.height;
+        for( i = 0; i < min_height; i++ ) {
             uibcopy( &(old_buff), i, 0, &(wptr->type.buffer), i, 0, min_width );
         }
         bfree( &old_buff );

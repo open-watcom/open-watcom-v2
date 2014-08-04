@@ -37,6 +37,7 @@
 #include "bdiff.h"
 #include "wpatchio.h"
 #include "msg.h"
+#include "clibext.h"
 
 #define FALSE 0
 

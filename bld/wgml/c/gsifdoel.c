@@ -270,7 +270,9 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
         char    *   p2 = t2->term_string;
         size_t      length;
 
-        length = min( t1->term_length, t2->term_length );
+        length = t1->term_length;
+        if( length > t2->term_length )
+            length = t2->term_length;
         while( length > 0 ) {           // try to find a difference
             if( *p1 != *p2 ) {
                 break;                  // found

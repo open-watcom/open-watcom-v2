@@ -760,7 +760,10 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 
     if( resize_dialog_width ) {
         if( obj_rect->left + DIALOG_MIN_WIDTH >= parent_rect.right ) {
-            obj_rect->left = max( 0, obj_rect->right - DIALOG_MIN_WIDTH );
+            obj_rect->left = 0;
+            if( obj_rect->right > DIALOG_MIN_WIDTH ) {
+                obj_rect->left = obj_rect->right - DIALOG_MIN_WIDTH;
+            }
         } else {
             obj_rect->right = obj_rect->left + DIALOG_MIN_WIDTH;
         }
@@ -768,7 +771,10 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 
     if( resize_dialog_height ) {
         if( obj_rect->top + DIALOG_MIN_HEIGHT >= parent_rect.bottom ) {
-            obj_rect->top = max( 0, obj_rect->bottom - DIALOG_MIN_HEIGHT );
+            obj_rect->top = 0;
+            if( obj_rect->bottom > DIALOG_MIN_HEIGHT ) {
+                obj_rect->top = obj_rect->bottom - DIALOG_MIN_HEIGHT;
+            }
         } else {
             obj_rect->bottom = obj_rect->top + DIALOG_MIN_WIDTH;
         }
@@ -1921,10 +1927,18 @@ static BOOL WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION act 
 
     Location( (OBJPTR)obj, &obj_rect );
 
-    nc_size.left = max( obj->nc_size.left, DIALOG_MIN_SIZE_BORDER );
-    nc_size.top = max( obj->nc_size.top, DIALOG_MIN_SIZE_BORDER );
-    nc_size.right = max( obj->nc_size.right, DIALOG_MIN_SIZE_BORDER );
-    nc_size.bottom = max( obj->nc_size.bottom, DIALOG_MIN_SIZE_BORDER );
+    nc_size.left = obj->nc_size.left;
+    if( nc_size.left < DIALOG_MIN_SIZE_BORDER )
+        nc_size.left = DIALOG_MIN_SIZE_BORDER;
+    nc_size.top = obj->nc_size.top;
+    if( nc_size.top < DIALOG_MIN_SIZE_BORDER )
+        nc_size.top = DIALOG_MIN_SIZE_BORDER;
+    nc_size.right = obj->nc_size.right;
+    if( nc_size.right < DIALOG_MIN_SIZE_BORDER )
+        nc_size.right = DIALOG_MIN_SIZE_BORDER;
+    nc_size.bottom = obj->nc_size.bottom;
+    if( nc_size.bottom < DIALOG_MIN_SIZE_BORDER )
+        nc_size.bottom = DIALOG_MIN_SIZE_BORDER;
 
     obj_rect.left += nc_size.left;
     obj_rect.right -= nc_size.right;

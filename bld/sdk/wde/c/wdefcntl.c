@@ -1920,7 +1920,9 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
         case PBUTTON_OBJ:
             SetRectEmpty( &pos );
             WdeChangeSizeToDefIfSmallRect( obj->parent, PBUTTON_OBJ, &pos );
-            width = max( size.cx + (WDE_SIZE_TO_TEXT_PAD * 2), pos.right );
+            width = size.cx + (WDE_SIZE_TO_TEXT_PAD * 2);
+            if( width < pos.right )
+                width = pos.right;
             ok = TRUE;
             break;
 

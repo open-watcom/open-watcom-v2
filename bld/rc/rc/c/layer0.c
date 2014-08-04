@@ -261,8 +261,9 @@ WResFileSSize RcWrite( WResFileID fileno, const void *out_buff, WResFileSize siz
 
     total_wrote = 0;
     while (size > 0) {
-        copy_bytes = min( size, RC_BUFFER_SIZE - buff->Count );
-
+        copy_bytes = RC_BUFFER_SIZE - buff->Count;
+        if( copy_bytes > size )
+            copy_bytes = size;
         memcpy( buff->NextChar, out_buff, copy_bytes );
         buff->IsDirty = TRUE;
 
@@ -331,9 +332,9 @@ WResFileSSize RcRead( WResFileID fileno, void * in_buff, WResFileSize size )
                 return( total_read );
             }
         }
-
-        copy_bytes = min( size, buff->Count );
-
+        copy_bytes = size;
+        if( copy_bytes > buff->Count )
+            copy_bytes = buff->Count;
         memcpy( in_buff, buff->NextChar, copy_bytes );
 
         buff->NextChar += copy_bytes;

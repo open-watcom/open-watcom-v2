@@ -482,9 +482,13 @@ WResResNode *WRRenameWResResNode( WResTypeNode *type_node,
 {
     WResResNode *new_res_node;
     int         len;
+    int         len1;
 
     len = strlen( name );
-    new_res_node = (WResResNode *)MemAlloc( sizeof( WResResNode ) + max( 0, len - 1 ) );
+    len1 = len - 1;
+    if( len1 < 0 )
+        len1 = 0;
+    new_res_node = (WResResNode *)MemAlloc( sizeof( WResResNode ) + len1 );
     if( new_res_node == NULL ) {
         return( NULL );
     }

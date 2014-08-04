@@ -135,8 +135,12 @@ int WGetStatusDepth( void )
 void WResizeStatusWindows( WStatBar *wsb, RECT *rect )
 {
     if( wsb->win != NULL ) {
-        MoveWindow( wsb->win, 0, max( 0, (rect->bottom - rect->top) - WStatusDepth ),
-                    rect->right - rect->left, WStatusDepth, TRUE );
+        int height;
+
+        height = ( rect->bottom - rect->top ) - WStatusDepth;
+        if( height < 0 )
+            height = 0;
+        MoveWindow( wsb->win, 0, height, rect->right - rect->left, WStatusDepth, TRUE );
     }
 }
 
@@ -249,7 +253,9 @@ bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
     }
 
     if( s1 != NULL ) {
-        len = min( strlen( s1 ), MAX_STATUS_TEXT );
+        len = strlen( s1 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy( wsb->text, s1, len );
             pos = len;
@@ -264,7 +270,9 @@ bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
     if( s2 != NULL ) {
         wsb->text[pos++] = STATUS_ESC_CHAR;
         wsb->text[pos++] = STATUS_NEXT_BLOCK;
-        len = min( strlen( s2 ), MAX_STATUS_TEXT );
+        len = strlen( s2 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy( wsb->text + pos, s2, len );
             wsb->text[pos + len] = '\0';

@@ -88,7 +88,10 @@ static owl_string_handle patInsert( owl_string_table *table, const char *text ) 
     if( strcmp( text, curr->text ) == 0 ) return( curr );
 
     curr_len = strlen( curr->text ) + 1;
-    last_bit = min( len * 8, curr_len * 8 );
+    last_bit = curr_len;
+    if( last_bit > len )
+        last_bit = len;
+    last_bit *= 8;
 
     for( diff_bit = 0; diff_bit < last_bit; diff_bit++ ) {
         if( getBit( text, len, diff_bit ) != getBit( curr->text, curr_len, diff_bit ) ) break;

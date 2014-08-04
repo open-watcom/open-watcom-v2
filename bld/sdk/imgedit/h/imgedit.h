@@ -108,7 +108,7 @@ typedef enum {
 #define UM_EXIT_NO_SAVE         (WM_USER + 102)
 #define UM_SAVE_ALL             (WM_USER + 103)
 
-#define RGBQ_SIZE( bc )         (sizeof( RGBQUAD ) * (1 << (bc)))
+#define RGBQ_SIZE( bc )         ((unsigned_32)sizeof( RGBQUAD ) * ((unsigned_32)1 << (bc)))
 #define IMGED_DIM               WPI_RECTDIM
 
 /*

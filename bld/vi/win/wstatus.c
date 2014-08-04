@@ -137,7 +137,9 @@ void processMouseMove( WPARAM w, LPARAM l )
         maxmove = sections[next] - sections[next - 1] - BOUNDARY_WIDTH;
         movedby = 0;
         if( maxmove > 0 ) {
-            movedby = min( maxmove, delta );
+            movedby = maxmove;
+            if( movedby > delta )
+                movedby = delta;
             delta -= movedby;
         }
         for( i = next; i <= secIndex; i++ ) {
@@ -154,7 +156,9 @@ void processMouseMove( WPARAM w, LPARAM l )
         maxmove = sections[next + 1] - sections[next] - BOUNDARY_WIDTH;
         movedby = 0;
         if( maxmove > 0 ) {
-            movedby = min( maxmove, delta );
+            movedby = maxmove;
+            if( movedby > delta )
+                movedby = delta;
             delta -= movedby;
         }
         for( i = secIndex; i <= next; i++ ) {

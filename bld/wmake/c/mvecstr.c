@@ -39,10 +39,6 @@
 #include "msg.h"
 #include "mvecstr.h"
 
-#ifndef max
-#define max(a,b)    ( ( a ) > ( b ) ? ( a ) : ( b ) )
-#endif
-
 #define MIN_TEXT    507     /* minimum length we'll create text */
 
 #ifndef USE_FAR
@@ -235,6 +231,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     ENTRYPTR    tail;
     size_t      clen;
     char FAR    *fptr;      /* we use this to help the optimizer */
+    size_t      len1;
 
     assert( vec != NULL && text != NULL && *text != NULLCHAR );
 
@@ -266,7 +263,10 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     }
 
         /* allocate a new buffer, and copy text into it */
-    new = myMalloc( sizeof( *new ) + max( len, MIN_TEXT ) );
+    len1 = len;
+    if( len1 < MIN_TEXT )
+        len1 = MIN_TEXT;
+    new = myMalloc( sizeof( *new ) + len1 );
     _fmemcpy( new->text, text, len );
     new->len = len;
     new->next = NULL;

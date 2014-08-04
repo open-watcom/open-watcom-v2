@@ -497,6 +497,8 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         location_context *lc, location_list *ll )
 {
     dr_handle  btype;
+
+    lc = lc; ll = ll;
     /*
         Given an implementation type handle, fill in 'base' with the
         base type of the handle.
@@ -1016,10 +1018,10 @@ static DRWLKBLK StrucWlkLookup[DR_WLKBLK_STRUCT] = {
 static bool AMemLookup( dr_handle var, int index, void *_d )
 /**********************************************************/
 {
-    type_wlk_lookup  *d = _d;
-    imp_sym_handle   *is;
-    char   *name;
-    int    len;
+    type_wlk_lookup *d = _d;
+    imp_sym_handle  *is;
+    char            *name;
+    unsigned        len;
 
     name =  DRGetName( var );
     if( name == NULL ){
@@ -1027,7 +1029,7 @@ static bool AMemLookup( dr_handle var, int index, void *_d )
         return( FALSE );
     }
     len = strlen( name );
-    if( len == d->li->name.len && d->comp(name, d->li->name.start,len)==0 ) {
+    if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
         is = DCSymCreate( d->com.ii, d->com.d );
         SetSymHandle( (type_wlk *)d, is );
         is->sym = var;
@@ -1102,10 +1104,10 @@ static bool AEnumMem( dr_handle var, int index, void *_d )
 static bool AEnumMemLookup( dr_handle var, int index, void *_d )
 /**************************************************************/
 {
-    type_wlk_lookup  *d = _d;
-    imp_sym_handle   *is;
-    char   *name;
-    int    len;
+    type_wlk_lookup *d = _d;
+    imp_sym_handle  *is;
+    char            *name;
+    unsigned        len;
 
     index = index;
     name =  DRGetName( var );
@@ -1114,7 +1116,7 @@ static bool AEnumMemLookup( dr_handle var, int index, void *_d )
         return( FALSE );
     }
     len = strlen( name );
-    if( len == d->li->name.len && d->comp(name, d->li->name.start,len)==0 ) {
+    if( len == d->li->name.len && d->comp( name, d->li->name.start, len ) == 0 ) {
         is = DCSymCreate( d->com.ii, d->com.d );
         SetSymHandle( (type_wlk *)d, is );
         is->sym = var;

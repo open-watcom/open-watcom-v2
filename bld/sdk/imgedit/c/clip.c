@@ -200,18 +200,41 @@ void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT poi
     IMGED_DIM   top;
     IMGED_DIM   right;
     IMGED_DIM   bottom;
+    IMGED_DIM   tmps;
+    IMGED_DIM   tmpe;
 
     CheckBounds( hwnd, startpt );
     CheckBounds( hwnd, endpt );
 
-    left = min( startpt->x / pointsize.x, endpt->x / pointsize.x );
-    right = max( startpt->x / pointsize.x, endpt->x / pointsize.x ) + 1;
+    tmps = startpt->x / pointsize.x;
+    tmpe = endpt->x / pointsize.x;
+    left = tmps;
+    if( left > tmpe )
+        left = tmpe;
+    right = tmps;
+    if( right < tmpe )
+        right = tmpe;
+    ++right;
+
+    tmps = startpt->y / pointsize.y;
+    tmpe = endpt->y / pointsize.y;
+    top = tmps;
 #ifdef __OS2_PM__
-    top = max( startpt->y / pointsize.y, endpt->y / pointsize.y ) + 1;
-    bottom = min( startpt->y / pointsize.y, endpt->y / pointsize.y );
+    if( top < tmpe )
+        top = tmpe;
+    ++top;
 #else
-    top = min( startpt->y / pointsize.y, endpt->y / pointsize.y );
-    bottom = max( startpt->y / pointsize.y, endpt->y / pointsize.y ) + 1;
+    if( top > tmpe )
+        top = tmpe;
+#endif
+    bottom = tmps;
+#ifdef __OS2_PM__
+    if( bottom > tmpe )
+        bottom = tmpe;
+#else
+    if( bottom < tmpe )
+        bottom = tmpe;
+    ++bottom;
 #endif
     _wpi_setrectvalues( &clipRect.rect, left, top, right, bottom );
     clipRect.hwnd = hwnd;
@@ -379,8 +402,13 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
             height = (short)_wpi_getheightrect( clipRect.rect );
         } else {
             _wpi_getrectvalues( client, &client_l, &client_t, &client_r, &client_b );
-            width = (short)min( client_r / pointsize.x - truept.x, bm_width );
-            height = (short)min( client_b / pointsize.y - truept.y, bm_height );
+            width = (short)( client_r / pointsize.x - truept.x );
+            if( width > (short)bm_width )
+                width = (short)bm_width;
+            height = (short)( client_b / pointsize.y - truept.y );
+            if( height > (short)bm_height ) {
+                height = (short)bm_height;
+            }
         }
 
         mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -391,8 +419,12 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         oldbitmap2 = _wpi_selectbitmap( clippres, hAndClipped );
 
         if( fstretchbmp == FALSE ) {
-            clipwidth = (short)min( bm_width, width );
-            clipheight = (short)min( bm_height, height );
+            clipwidth = (short)bm_width;
+            if( clipwidth > (short)width )
+                clipwidth = (short)width;
+            clipheight = (short)bm_height;
+            if( clipheight > (short)height )
+                clipheight = (short)height;
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, BLACKNESS );
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
@@ -412,8 +444,12 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         oldbitmap2 = _wpi_selectbitmap( clippres, hbitmapdup );
 
         if( fstretchbmp == FALSE ) {
-            clipwidth = (short)min( bm_width, width );
-            clipheight = (short)min( bm_height, height );
+            clipwidth = (short)bm_width;
+            if( clipwidth > (short)width )
+                clipwidth = (short)width;
+            clipheight = (short)bm_height;
+            if( clipheight > (short)height )
+                clipheight = (short)height;
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, WHITENESS );
 #ifdef __OS2_PM__
@@ -459,8 +495,13 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
             height = (short)_wpi_getheightrect( clipRect.rect );
         } else {
             _wpi_getrectvalues( client, &client_l, &client_t, &client_r, &client_b );
-            width = (short)min( client_r / pointsize.x - truept.x, bm_width );
-            height = (short)min( client_b / pointsize.y - truept.y, bm_height );
+            width = (short)( client_r / pointsize.x - truept.x );
+            if( width > (short)bm_width )
+                width = (short)bm_width;
+            height = (short)( client_b / pointsize.y - truept.y );
+            if( height > (short)bm_height ) {
+                height = (short)bm_height;
+            }
         }
 
         clippres = _wpi_createcompatiblepres( pres, Instance, &clipdc );
@@ -471,8 +512,12 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
 
         if( fstretchbmp == FALSE ) {
-            clipwidth = (short)min( bm_width, width );
-            clipheight = (short)min( bm_height, height );
+            clipwidth = (short)bm_width;
+            if( clipwidth > (short)width )
+                clipwidth = (short)width;
+            clipheight = (short)bm_height;
+            if( clipheight > (short)height )
+                clipheight = (short)height;
 
             _wpi_patblt( mempres, truept.x, truept.y, width, height, WHITENESS );
 #ifdef __OS2_PM__

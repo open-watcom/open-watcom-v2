@@ -573,8 +573,13 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         if( !IsRectEmpty( &rect ) ) {
             x = rect.left;
             y = rect.top;
-            width = max( appWidth, rect.right - rect.left );
-            height = max( appHeight, rect.bottom - rect.top );
+            width = appWidth;
+            if( width < rect.right - rect.left )
+                width = rect.right - rect.left;
+            height = appHeight;
+            if( height < rect.bottom - rect.top ) {
+                height = rect.bottom - rect.top;
+            }
         }
     }
 

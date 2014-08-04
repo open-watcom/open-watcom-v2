@@ -374,7 +374,8 @@ static void UpdateRegList(HWND list, RegListData *list_data)
     GetScrollRange( list, SB_HORZ, &min, &new_maxx );
     GetScrollRange( list, SB_VERT, &min, &new_maxy );
     left -= old_maxx - new_maxx;
-    y = min( new_maxy, y );
+    if( y > new_maxy )
+        y = new_maxy;
     SetScrollPos( list, SB_HORZ, left, TRUE );
     SetScrollPos( list, SB_VERT, y, TRUE );
     left *= -1;

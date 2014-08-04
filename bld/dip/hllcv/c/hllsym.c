@@ -1280,7 +1280,7 @@ static walk_result hllWalkModuleGlobals( imp_image_handle *ii,
  *
  *  SS_MODULE:
  *          The 'source' is a pointer to an imp_mod_handle. If
- *          the *(imp_mod_handle *)source is NO_MOD, The list is
+ *          the *(imp_mod_handle *)source is IMH_NOMOD, The list is
  *          all the module scope/global symbols in the image, otherwise
  *          it is the list of module scope/global symbols in the
  *          indicated module.
@@ -1361,7 +1361,7 @@ walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
     switch( ss ) {
         /*
          * The 'source' is a pointer to an imp_mod_handle. If the
-         * '*(imp_mod_handle *)source' is NO_MOD, the list is all the module
+         * '*(imp_mod_handle *)source' is IMH_NOMOD, the list is all the module
          * scope & global symbols in the image, otherwise it is the list of
          * module scope & global symbols in the indicated module.
          */

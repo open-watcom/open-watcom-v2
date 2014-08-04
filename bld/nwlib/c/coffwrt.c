@@ -481,7 +481,12 @@ void CoffWriteImport( libfile io, sym_file *sfile, int long_format )
             }
         }
         if( long_format ) {
-            buffer = alloca( max( symName.len + 7, modName.len + 21 ) );
+            size_t len;
+
+            len = symName.len + 7;
+            if( len < modName.len + 21 )
+                len = modName.len + 21;
+            buffer = alloca( len );
             SetCoffFile( &c_file, sfile->import->processor, sfile->arch.date, 0 );
             switch( sfile->import->processor ) {
             case WL_PROC_AXP:

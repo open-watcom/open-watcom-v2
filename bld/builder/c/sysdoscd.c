@@ -33,6 +33,7 @@
 #include <direct.h>
 #include <ctype.h>
 #include "builder.h"
+#include "clibext.h"
 
 int SysDosChdir( char *dir )
 {
@@ -47,7 +48,7 @@ int SysDosChdir( char *dir )
     switch( *end ) {
     case '\\':
     case '/':
-        if( end > dir && end[ -1] != ':' ) {
+        if( end > dir && end[-1] != ':' ) {
             *end = '\0';
             --len;
         }

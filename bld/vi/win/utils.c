@@ -289,10 +289,13 @@ void ClientToRowCol( HWND hwnd, int x, int y, int *row, int *col, int divide )
     if( ss->end >= BEYOND_TEXT ) {
         lenBlock = strlen( str );
     }
-    lenBlock = max( lenBlock, 0 );
+    if( lenBlock < 0 )
+        lenBlock = 0;
 
     // avg_width must be greater than 0 (this probablly isn't needed but ...)
-    avg_width = max( FontAverageWidth( SEType[ss->type].font ), 1 );
+    avg_width = FontAverageWidth( SEType[ss->type].font );
+    if( avg_width < 1 )
+        avg_width = 1;
 
     if( EditFlags.RealTabs ) {
         char    *start_str, *end_str;

@@ -197,6 +197,7 @@ static void DWRRead( void *_f, dr_section sect, void *buff, size_t size )
     imp_image       f = _f;
 //    unsigned long   base;
 
+    sect = sect;
 //    base = f->dwarf->sect_offsets[sect];
     DCRead( f->sym_file, buff, size );
 }

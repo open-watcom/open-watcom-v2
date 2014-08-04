@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
-#include <io.h>
+#include "wio.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
     #ifdef __NT__

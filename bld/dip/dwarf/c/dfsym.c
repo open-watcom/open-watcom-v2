@@ -115,7 +115,7 @@ unsigned        DIGENTRY DIPImpSymName( imp_image_handle *ii,
                 DCStatus( DS_FAIL );
                 return( 0 );
             }
-            len = NameCopy(buff, name, max );
+            len = NameCopy( buff, name, max );
             DCFree( name );
         } else if( buff == NULL ) {
             return( 0 );
@@ -263,7 +263,7 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
     mem_func_wlk    *df = _df;
     bool            cont;
     char            buff[256];
-//    int             len;
+//    unsigned        len;
     dr_handle       contain;
 
     cont = TRUE;
@@ -642,7 +642,7 @@ static bool AThis( dr_handle var, int index, void *_var_ptr )
     dr_handle   *var_ptr = _var_ptr;
     char        name[sizeof( "this" )];
     bool        ret;
-    int         len;
+    unsigned    len;
 
     index = index;
     ret = TRUE;
@@ -814,15 +814,15 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
     addr_sym = DFLoadAddrSym( ii, im );
     Real2Map( ii->addr_map, &a );
     if( FindAddrSym( addr_sym, &a.mach, &info ) >= 0 ) {
-           is->sclass = SYM_VAR;
-           is->im = im;
-           is->sym = info.sym;
-           is->state = DF_NOT;
-           if( info.map_offset == a.mach.offset ) {
-               ret = SR_EXACT;
-           } else {
-               ret = SR_CLOSEST;
-           }
+        is->sclass = SYM_VAR;
+        is->im = im;
+        is->sym = info.sym;
+        is->state = DF_NOT;
+        if( info.map_offset == a.mach.offset ) {
+            ret = SR_EXACT;
+        } else {
+            ret = SR_CLOSEST;
+        }
     } else {
         ret = SR_NONE;
     }
@@ -1208,8 +1208,9 @@ static bool ASymLookup( dr_handle var, int index, void *_df )
 {
     blk_wlk_lookup  *df = _df;
     imp_sym_handle  *is;
-    int             len;
+    unsigned        len;
 
+    index = index;
     len = DRGetNameBuff( var, df->buff, df->len );
     if( len == df->len
       && df->comp( df->buff, df->li->name.start, df->li->name.len ) == 0 ) {
@@ -1611,7 +1612,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
 /*****************************************************************/
 {
     char                buff[256];
-    int                 len;
+    unsigned            len;
     search_result       sr;
     hash_look_data      data;
     name_wlk            wlk;
@@ -1657,6 +1658,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     char                buff[256];
     bool                cont;
 
+    lc = lc;
     if( *(unsigned_8 *)li->name.start == SH_ESCAPE ) {
         CollectSymHdl( (unsigned_8 *)li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );

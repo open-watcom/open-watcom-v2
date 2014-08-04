@@ -44,6 +44,7 @@
 #include "setup.h"
 #include "setupinf.h"
 #include "genvbl.h"
+#include "clibext.h"
 
 #define DDE_WAITTIME    3000
 

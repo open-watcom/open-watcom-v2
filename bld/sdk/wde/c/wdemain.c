@@ -375,8 +375,12 @@ bool WdeInitInst( HINSTANCE app_inst )
     if( !IntersectRect( &t, &screen, &rect ) ) {
         t.right = rect.right - rect.left;
         t.bottom = rect.bottom - rect.top;
-        t.left = min( 0, screen.right - screen.left - t.right ) / 2;
-        t.top = min( 0, screen.bottom - screen.top - t.bottom ) / 2;
+        t.left = 0;
+        if( screen.right - screen.left - t.right > 0 )
+            t.left = ( screen.right - screen.left - t.right ) / 2;
+        t.top = 0;
+        if( screen.bottom - screen.top - t.bottom > 0 )
+            t.top = ( screen.bottom - screen.top - t.bottom ) / 2;
         t.right += t.left;
         t.bottom += t.top;
     } else {

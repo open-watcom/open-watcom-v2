@@ -113,10 +113,14 @@ vi_mouse_event GetMouseEvent( void )
 
     // in a windowed OS values can be beyond screen boundries
     // this confuses us so disallow it.
-    row = max( row, 0 );
-    col = max( col, 0 );
-    row = min( row, EditVars.WindMaxHeight - 1 );
-    col = min( col, EditVars.WindMaxWidth - 1 );
+    if( row > EditVars.WindMaxHeight - 1 )
+        row = EditVars.WindMaxHeight - 1;
+    if( row < 0 )
+        row = 0;
+    if( col > EditVars.WindMaxWidth - 1 )
+        col = EditVars.WindMaxWidth - 1;
+    if( col < 0 )
+        col = 0;
 
     moved = (row != MouseRow || col != MouseCol);
     diff = (status ^ MouseStatus) & MOUSE_ANY_BUTTON_DOWN;

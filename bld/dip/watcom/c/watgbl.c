@@ -273,15 +273,15 @@ search_result SearchGbl( imp_image_handle *ii, imp_mod_handle cim,
 }
 
 
-static int MachAddrComp( addr_ptr a, imp_mod_handle ma,
-                         addr_ptr b, imp_mod_handle mb )
+static int MachAddrComp( addr_ptr a, imp_mod_handle ima,
+                         addr_ptr b, imp_mod_handle imb )
 {
     if( a.segment < b.segment ) return( -1 );
     if( a.segment > b.segment ) return( 1 );
     if( a.offset < b.offset ) return( -1 );
     if( a.offset > b.offset ) return( 1 );
-    if( ma < mb ) return( -1 );
-    if( ma > mb ) return( 1 );
+    if( ima < imb ) return( -1 );
+    if( ima > imb ) return( 1 );
     return( 0 );
 }
 
@@ -315,7 +315,7 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is,
         if( comp_rtn < 0 ) {
             high = target - 1;
         } else if( comp_rtn > 0 ) {
-            if( GBL_MOD( gbl )==is->im && gbl->addr.segment==addr.segment ) {
+            if( GBL_MOD( gbl ) == is->im && gbl->addr.segment == addr.segment ) {
                 nearest = target;
             }
             low = target + 1;

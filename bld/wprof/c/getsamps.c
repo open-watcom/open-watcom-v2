@@ -39,6 +39,7 @@
 #include "msg.h"
 #include "sampinfo.h"
 #include "memutil.h"
+#include "clibext.h"
 
 
 extern void ClearSample(sio_data *curr_sio);

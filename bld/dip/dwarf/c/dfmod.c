@@ -104,7 +104,7 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
     if( path != NULL ) {
         GetModName( path, fname );
         DCFree( path );
-        name = DCAlloc( strlen( fname )+1 );
+        name = DCAlloc( strlen( fname ) + 1 );
         strcpy( name, fname );
     } else {
         name = NULL;
@@ -596,8 +596,8 @@ dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     return( DS_OK );
 }
 
-unsigned    NameCopy( char *to, char *from, unsigned max )
-/********************************************************/
+unsigned    NameCopy( char *to, const char *from, unsigned max )
+/**************************************************************/
 {
     unsigned    len;
 

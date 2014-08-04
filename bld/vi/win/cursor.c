@@ -251,8 +251,12 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
         if( *end_str == '\t' ){
             // in strange case, tab may start before end of prev string
             end_tab = (old_col - LeftTopPos.column + 1) * avg_width;
-            *x = min( left + extent, end_tab );
-            *width = max( end_tab - *x, 1 );
+            *x = left + extent;
+            if( *x > end_tab )
+                *x = end_tab;
+            *width = end_tab - *x;
+            if( *width < 1 )
+                *width = 1;
             funny = 0;
         } else {
             *x = left + extent;

@@ -516,6 +516,7 @@ static int lineLen = 0;
 void dribble(void) {
     int newLineLen = 0;
     static char line[200];
+    int         len;
 
     g_dribbleCounter++;
     cprintf("\r");
@@ -536,15 +537,24 @@ void dribble(void) {
         newLineLen = 79;
         line[newLineLen] = 0;
     }
-    cprintf("%s%*s", line, max(0, lineLen-newLineLen), "");
+    len = lineLen - newLineLen;
+    if( len < 0 )
+        len = 0;
+    cprintf("%s%*s", line, len, "");
     lineLen = newLineLen;
     cprintf("\r");
 }
 
-void wicPrintMessage(char *s) {
+void wicPrintMessage(char *s)
+{
     int newLineLen;
+    int len;
+
     newLineLen = printf("%s", s); fflush(stdout);
-    cprintf("%*s", max(0, lineLen-newLineLen), "");
+    len = lineLen - newLineLen;
+    if( len < 0 )
+        len = 0;
+    cprintf("%*s", len, "");
     printf("\n");
     lineLen = 0;
 }
@@ -553,13 +563,18 @@ void wicPrintMessage(char *s) {
 char *setNewFileExt(char *newName, char *oldName, char *newExt) {
     int i;
     int len = strlen(oldName);
+    int len1;
+
     if (oldName != newName) {
         memmove(newName, oldName, len);
     }
-    for (i = len-1; i >= max(len-4, 0); i--) {
-        if (newName[i] == '.') {
-            strcpy(newName + i+1, newExt);
-            return newName;
+    len1 = len - 4;
+    if( len1 < 0 )
+        len1 = 0;
+    for( i = len - 1; i >= len1; i-- ) {
+        if( newName[i] == '.' ) {
+            strcpy( newName + i + 1, newExt );
+            return( newName );
         }
     }
     newName[len] = '.';
@@ -570,12 +585,17 @@ char *setNewFileExt(char *newName, char *oldName, char *newExt) {
 void setDefaultExt(char *fname, char *ext) {
     int i;
     int len = strlen(fname);
-    for (i = len-1; i >= max(len-4, 0); i--) {
-        if (fname[i] == '.') {
+    int len1;
+
+    len1 = len - 4;
+    if( len1 < 0 )
+        len1 = 0;
+    for( i = len - 1; i >= len1; i-- ) {
+        if( fname[i] == '.' ) {
             return;
         }
     }
     fname[len] = '.';
-    strcpy(fname+len+1, ext);
+    strcpy( fname + len + 1, ext );
 }
 

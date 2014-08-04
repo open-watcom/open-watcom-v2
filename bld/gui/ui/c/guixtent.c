@@ -43,7 +43,9 @@ gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
     wnd = wnd;
 
     if( text ) {
-        coord.x = min( length, strlen( text ) );
+        coord.x = strlen( text );
+        if( coord.x > length )
+            coord.x = length;
         coord.y = 1;
         GUIScreenToScaleR( &coord );
         return( coord.x );

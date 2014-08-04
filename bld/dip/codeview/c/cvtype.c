@@ -1327,15 +1327,18 @@ walk_result     DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     if( im != IMH_GBL )
         return( WR_CONTINUE );
     cde = FindDirEntry( ii, IMH_GBL, sstGlobalTypes );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL )
+        return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
-    if( array_p == NULL ) return( SR_FAIL );
+    if( array_p == NULL )
+        return( SR_FAIL );
     it->array_dim = 0;
     it->idx = CV_FIRST_USER_TYPE;
     count = *array_p;
     for( ;; ) {
-        if( count == 0 ) return( WR_CONTINUE );
+        if( count == 0 )
+            return( WR_CONTINUE );
         array_vm += sizeof( *array_p );
         array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
         if( array_p == NULL ) return( WR_FAIL );
@@ -1371,7 +1374,8 @@ static int IsFortranModule( imp_image_handle *ii, location_context *lc )
         }
     }
     comp_info = GetCompInfo( ii, im );
-    if( comp_info == NULL ) return( 0 );
+    if( comp_info == NULL )
+        return( 0 );
     return( comp_info->language == LANG_FORTRAN );
 }
 
@@ -1611,6 +1615,7 @@ dip_status      DIGENTRY DIPImpTypeBase( imp_image_handle *ii,
                         imp_type_handle *it, imp_type_handle *base,
                         location_context *lc, location_list *ll )
 {
+    lc = lc; ll = ll;
     return( ImpTypeBase( ii, it, base ) );
 }
 

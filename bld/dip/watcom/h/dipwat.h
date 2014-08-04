@@ -31,12 +31,17 @@
 
 
 #ifndef DIP_WATCOM
+#define DIP_WATCOM
 
 #include <string.h>
 #include <stdlib.h>
 #include "dip.h"
 #include "dipimp.h"
 #include "dbginfo.h"
+
+#define INFO_MAX_BLOCK   0xff80
+
+#define MAX_LINK_ENTRIES (4 * 1024U) /* per table block */
 
 struct type_pos {
     unsigned short      entry;
@@ -111,7 +116,7 @@ typedef struct section_info {
     info_block                  *addr_info;
     info_block                  *gbl;
     pointer_int                 **dmnd_link;
-    unsigned                    mod_base_idx;
+    imp_mod_handle              mod_base_idx;
     unsigned                    sect_id;
 } section_info;
 
@@ -137,11 +142,6 @@ typedef enum {
 typedef walk_result (INT_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
 walk_result     MyWalkModList( imp_image_handle *, INT_MOD_WKR *, void * );
 
-#define INFO_MAX_BLOCK   0xff80
-
-#define MAX_LINK_ENTRIES (4 * 1024U) /* per table block */
-
 extern dip_imp_routines ImpInterface;
 
-#define DIP_WATCOM
 #endif

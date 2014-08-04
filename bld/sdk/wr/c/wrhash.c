@@ -511,7 +511,8 @@ BOOL WRAPI WRWriteSymbolsToFile( WRHashTable *table, char *filename )
             if( !(entry->flags & WR_HASHENTRY_STANDARD) ) {
                 tbl[count] = entry;
                 len = strlen( entry->name );
-                max_len = max( len, max_len );
+                if( max_len < len )
+                    max_len = len;
                 count++;
             }
         }

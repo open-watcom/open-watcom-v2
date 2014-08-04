@@ -164,7 +164,8 @@ static void SetKbdMoveGrid( void )
     curr = GetECurrObject();
     while( curr != NULL ) {
         if( ResizeIncrements( curr, &pt ) ) {
-            hinc = max( hinc, pt.x );
+            if( hinc < pt.x )
+                hinc = pt.x;
             vinc = max( vinc, pt.y );
         }
         curr = GetNextECurrObject( curr );

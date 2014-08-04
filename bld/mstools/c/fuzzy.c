@@ -32,9 +32,9 @@
 
 #include <ctype.h>
 #include <fcntl.h>
-#include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include "wio.h"
 #include "bool.h"
 #include "demangle.h"           /* from lib_misc project */
 #include "dlltool.h"

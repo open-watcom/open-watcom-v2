@@ -93,11 +93,15 @@ void    init_page_geometry( void )
         g_suicide();                        // no recovery possible
     }
 
-    g_page_left_org = max( lm + bin_device->x_start, bin_device->x_start );
+    g_page_left_org = lm + bin_device->x_start;
+    if( g_page_left_org < bin_device->x_start )
+        g_page_left_org = bin_device->x_start;
     g_page_left = g_page_left_org;
     g_cur_left = g_page_left;               // set initial value
 
-    g_page_right_org = min( rm + bin_device->x_start, bin_device->page_width );
+    g_page_right_org = rm + bin_device->x_start;
+    if( g_page_right_org > bin_device->page_width )
+        g_page_right_org = bin_device->page_width;
     g_page_right = g_page_right_org;
 
     if( g_page_right > bin_device->page_width ) {// output must appear on page
@@ -141,9 +145,14 @@ void    init_page_geometry( void )
         lcmax = 1 + (g_net_page_depth + bin_device->y_offset)
                  / wgml_fonts[g_curr_font].line_height;   // usable no of lines
     } else {
-        net_y_start = max( bin_device->y_start, net_top_margin );
+        net_y_start = bin_device->y_start;
+        if( net_y_start < net_top_margin )
+            net_y_start = net_top_margin;
         if( bin_device->y_start > net_top_margin ) {
-            y_start_correction = min( bin_device->y_start - net_top_margin, wgml_fonts[g_curr_font].line_height );
+            y_start_correction = bin_device->y_start - net_top_margin;
+            if( y_start_correction > wgml_fonts[g_curr_font].line_height ) {
+                y_start_correction = wgml_fonts[g_curr_font].line_height;
+            }
         } else {
             y_start_correction = 0;
         }

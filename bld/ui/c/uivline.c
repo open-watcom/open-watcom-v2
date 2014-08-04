@@ -66,7 +66,9 @@ static void echoline( VSCREEN *vptr, VEDITLINE *editline )
         for( trim = editline->length ; trim > editline->index ; --trim ) {
             if( editline->buffer[ trim - 1 ] != ' ' ) break;
         }
-        area.width = min( editline->fldlen, trim - editline->scroll );
+        area.width = editline->fldlen;
+        if( area.width > trim - editline->scroll )
+            area.width = trim - editline->scroll;
         uivfill( vptr, area, editline->attr, '*' );
     } else {
         uitextfield( vptr, editline->row, editline->col, editline->fldlen,
@@ -115,8 +117,11 @@ EVENT global uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
         }
         uipadblanks( editline->buffer, editline->length );
         vptr->row = editline->row;
-        scroll = min( editline->scroll, editline->index );
-        scroll = max( scroll, editline->index - editline->fldlen + 1 );
+        scroll = editline->scroll;
+        if( scroll > editline->index )
+            scroll = editline->index;
+        if( scroll < editline->index - editline->fldlen + 1 )
+            scroll = editline->index - editline->fldlen + 1;
         editline->scroll = scroll;
         vptr->col = editline->col + editline->index - editline->scroll;
         echoline( vptr, editline );
@@ -139,8 +144,12 @@ EVENT global uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
             editline->index = buffer.index;
             vptr->cursor = buffer.insert ? C_INSERT : C_NORMAL ;
             if( scrollable ) {
-                scroll = min( editline->scroll, editline->index );
-                scroll = max( scroll, editline->index - editline->fldlen + 1 );
+                scroll = editline->scroll;
+                if( scroll > editline->index )
+                    scroll = editline->index;
+                if( scroll < editline->index - editline->fldlen + 1 ) {
+                    scroll = editline->index - editline->fldlen + 1;
+                }
             } else {
                 scroll = 0;
             }

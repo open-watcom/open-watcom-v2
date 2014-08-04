@@ -213,8 +213,10 @@ unsigned WriteOmfDict( sym_file *first_sfile )
     unsigned    int i;
     unsigned    int j;
 
-    num_blocks = max( (symCount + NUM_BUCKETS - 1 ) / NUM_BUCKETS,
-                    ( charCount + 3 + BLOCK_NAME_LEN - 1 ) / BLOCK_NAME_LEN ) -1;
+    num_blocks = ( symCount + NUM_BUCKETS - 1 ) / NUM_BUCKETS;
+    if( num_blocks < ( charCount + 3 + BLOCK_NAME_LEN - 1 ) / BLOCK_NAME_LEN )
+        num_blocks = ( charCount + 3 + BLOCK_NAME_LEN - 1 ) / BLOCK_NAME_LEN;
+    --num_blocks;
 
     lib_block = NULL;
     do {

@@ -184,7 +184,9 @@ void HelpDialogCallBack( a_dialog *info )
     if( info->curr == editVField ) {
         if( info->edit_data->edit_eline.dirty ) {
             curHelpDialog->edit_data->edit_eline.dirty = FALSE;
-            len = min( editCtl.length, sizeof( buf ) );
+            len = editCtl.length;
+            if( len > sizeof( buf ) )
+                len = sizeof( buf );
             strncpy( buf, editCtl.buffer, len );
             buf[ len ] = '\0';
             len--;

@@ -71,7 +71,7 @@ dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
 search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
                 imp_mod_handle *im )
 {
-    ii = ii; a = a; im = im;
+    ii = ii; a = a;
     if( FindAddrBlock( ii, a.mach ) != NULL ) {
         *im = IMH_EXPORT;
         return( SR_CLOSEST );

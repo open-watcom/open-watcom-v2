@@ -140,7 +140,9 @@ file_offset LibRead( libfile lio, void *buff, file_offset len )
         lio->buf_pos = 0;
         return( b_read );
     }
-    b_read = min( len, lio->buf_size - lio->buf_pos );
+    b_read = lio->buf_size - lio->buf_pos;
+    if( b_read > len )
+        b_read = len;
     if( b_read ) {
         memcpy( buff, lio->buffer + lio->buf_pos, b_read );
         lio->buf_pos += b_read;
@@ -156,7 +158,8 @@ file_offset LibRead( libfile lio, void *buff, file_offset len )
             return( b_read );
         }
         if( b_read < len ) {
-            ret = min( ret, len - b_read );
+            if( ret > len - b_read )
+                ret = len - b_read;
             memcpy( (char *)buff + b_read, lio->buffer, ret );
             b_read += ret;
             lio->buf_pos += ret;
@@ -176,7 +179,9 @@ void LibWrite( libfile lio, void *buff, file_offset len )
         }
         return;
     }
-    num = min( WRITE_FILE_BUFFER_SIZE - lio->buf_size, len );
+    num = WRITE_FILE_BUFFER_SIZE - lio->buf_size;
+    if( num > len )
+        num = len;
     memcpy( lio->buffer + lio->buf_size, buff, num );
     len -= num;
     lio->buf_size += num;

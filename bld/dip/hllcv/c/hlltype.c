@@ -1340,7 +1340,8 @@ walk_result DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii,
     if( im != IMH_GBL )
         return( WR_CONTINUE );
     cde = hllFindDirEntry( ii, IMH_GBL, sstGlobalTypes );
-    if( cde == NULL ) return( SR_NONE );
+    if( cde == NULL )
+        return( SR_NONE );
     array_vm = cde->lfo + sizeof( unsigned_32 );
     array_p = VMBlock( ii, array_vm, sizeof( *array_p ) );
     if( array_p == NULL ) return( SR_FAIL );

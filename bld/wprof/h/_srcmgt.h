@@ -32,6 +32,7 @@
 
 #include <malloc.h>
 #include "wio.h"
+#include "clibext.h"
 
 #define SMTabIntervalGet()              8
 

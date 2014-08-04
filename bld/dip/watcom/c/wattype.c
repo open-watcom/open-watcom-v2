@@ -338,14 +338,16 @@ static dip_status FindRawTypeHandle( imp_image_handle *ii, imp_mod_handle im,
     unsigned    entry;
     unsigned    count;
 
-    if( index == 0 ) return( DS_FAIL );
+    if( index == 0 )
+        return( DS_FAIL );
     if( FindTypeCache( ii, im, index, it ) == DS_OK ) {
         return( DS_OK );
     }
     entry = 0;
     count = index;
     for( ;; ) {
-        if( LoadType( ii, im, entry ) != DS_OK ) break;
+        if( LoadType( ii, im, entry ) != DS_OK )
+            break;
         for( p = Type->start; p < Type->end; p = NEXT_TYPE( p ) ) {
             kind = *(p+1);
             switch( kind & CLASS_MASK ) {
@@ -444,7 +446,8 @@ static dip_status DoFindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
     dip_status          ret;
 
     ret = FindRawTypeHandle( ii, im, index, it );
-    if( ret != DS_OK ) return( ret );
+    if( ret != DS_OK )
+        return( ret );
     type = GetRealTypeHandle( ii, it );
     switch( type & CLASS_MASK ) {
     case NO_TYPE:
@@ -946,6 +949,7 @@ dip_status DIGENTRY DIPImpTypeBase(imp_image_handle *ii, imp_type_handle *it,
     dip_status  ret;
     typeinfo    typeld;
 
+    lc = lc; ll = ll;
     PushLoad( &typeld );
     *base = *it;
     ret = LoadType( ii, it->im, it->t.entry );
@@ -1813,12 +1817,15 @@ void *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im, void **base )
             entry = 0;
             for( ;; ) {
                 size = InfoSize( ii, im, DMND_TYPES, entry );
-                if( size == 0 ) goto missing;
-                if( size > offset ) break;
+                if( size == 0 )
+                    goto missing;
+                if( size > offset )
+                    break;
                 offset -= size;
                 ++entry;
             }
-            if( LoadType( ii, im, entry ) != DS_OK ) goto missing;
+            if( LoadType( ii, im, entry ) != DS_OK )
+                goto missing;
             p = Type->start;
             *base = p;
             InfoSpecLock( p ); /* so that the PopLoad doesn't free it */
@@ -1836,7 +1843,8 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
                         imp_type_handle *it2 )
 {
     ii = ii;
-    if( it1->im != it2->im ) return( it1->im - it2->im );
+    if( it1->im != it2->im )
+        return( it1->im - it2->im );
     if( it1->t.entry != it2->t.entry ) return( it1->t.entry - it2->t.entry );
     return( it1->t.offset - it2->t.offset );
 }

@@ -342,8 +342,12 @@ static void WResizeInfoWindow( WREResInfo *info )
     }
 
     GetClientRect( info->res_win, &rect );
-    dwidth = max( InfoPad.dlg_min_size.x, rect.right - rect.left );
-    dheight = max( InfoPad.dlg_min_size.y, rect.bottom - rect.top );
+    dwidth = InfoPad.dlg_min_size.x;
+    if( dwidth < rect.right - rect.left )
+        dwidth = rect.right - rect.left;
+    dheight = InfoPad.dlg_min_size.y;
+    if( dheight < rect.bottom - rect.top )
+        dheight = rect.bottom - rect.top;
     ok = SetWindowPos( info->info_win, (HWND)NULL, 0, 0, dwidth, dheight, SWP_NOZORDER );
 
     if( ok ) {

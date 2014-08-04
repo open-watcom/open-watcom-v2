@@ -606,7 +606,10 @@ static struct ifi_info * get_ifi_info( int family, int doaliases )
         ifr = (struct ifreq *) ptr;
 
       #if HAVE_SA_LEN
-        len = max( sizeof( struct sockaddr ), ifr->ifr_addr.sa_len );
+        len = sizeof( struct sockaddr );
+        if( len < ifr->ifr_addr.sa_len ) {
+            len = ifr->ifr_addr.sa_len ;
+        }
       #else
         len = sizeof( struct sockaddr );
       #endif

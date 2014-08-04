@@ -65,10 +65,13 @@ extern int WResIDNameCmp( const WResIDName * name1, const WResIDName * name2 )
 /****************************************************************************/
 /* Note: don't use stricmp since the names in WResID's are not NULL terminated */
 {
-    int     cmp_rc;
+    int         cmp_rc;
+    unsigned    len;
 
-    cmp_rc = wresMemicmp( name1->Name, name2->Name,
-                        min( name1->NumChars, name2->NumChars) );
+    len = name1->NumChars;
+    if( len > name2->NumChars )
+        len = name2->NumChars;
+    cmp_rc = wresMemicmp( name1->Name, name2->Name, len );
     if (cmp_rc == 0) {
         if (name1->NumChars == name2->NumChars) {
             return( 0 );

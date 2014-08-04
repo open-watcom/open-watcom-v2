@@ -42,10 +42,12 @@
 #include "wrselimg.h"
 #include "iemem.h"
 
+#ifdef __WATCOMC__
 #ifdef __NT__
     #pragma library( "shell32.lib" )
 #else
     #pragma library( "commdlg.lib" )
+#endif
 #endif
 
 static signed short     imgType = BITMAP_IMG;
@@ -683,7 +685,7 @@ static BOOL readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)RT_BITMAP ) {
+        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
             imgType = BITMAP_IMG;
             data = WRCopyResData( info, sii->lnode );
             dsize = sii->lnode->Info.Length;
@@ -691,10 +693,10 @@ static BOOL readInResourceFile( char *fullname )
             if( ok ) {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
-        } else if( sii->type == (uint_16)RT_GROUP_CURSOR ) {
+        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
             imgType = CURSOR_IMG;
             ok = WRCreateCursorData( info, sii->lnode, &data, &dsize );
-        } else if( sii->type == (uint_16)RT_GROUP_ICON ) {
+        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             imgType = ICON_IMG;
             ok = WRCreateIconData( info, sii->lnode, &data, &dsize );
         } else {
@@ -704,11 +706,11 @@ static BOOL readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)RT_BITMAP ) {
+        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
             ok = ReadBitmapFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)RT_GROUP_CURSOR ) {
+        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
             ok = ReadCursorFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)RT_GROUP_ICON ) {
+        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ok = ReadIconFromData( data, fullname, info, sii->lnode );
         }
     }
@@ -778,7 +780,7 @@ int OpenImage( HANDLE hDrop )
         /*
          * Not doing a drag-drop
          */
-        if( !getOpenFName( &fname ) ) {
+        if( !getOpenFName( fname ) ) {
             if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
                 WImgEditError( WIE_ERR_BAD_FILENAME, fname );
                 return( FALSE );
@@ -872,7 +874,7 @@ BOOL LoadColorPalette( void )
     FILE                *fp;
     WORD                file_type;
 
-    if( !getOpenPalName( &fname ) ) {
+    if( !getOpenPalName( fname ) ) {
         if( CommDlgExtendedError() == FNERR_INVALIDFILENAME ) {
             WImgEditError( WIE_ERR_BAD_FILENAME, fname );
             return( FALSE );

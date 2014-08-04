@@ -123,11 +123,21 @@ void ENTRYPOINT three_d_box(
     float       depth;
 
     handle = handle;
-    pt1.xcoord = min( x1, x2 );
-    pt1.ycoord = min( y1, y2 );
-    pt1.zcoord = max( z1, z2 );
-    pt2.xcoord = max( x1, x2 );
-    pt2.ycoord = max( y1, y2 );
+    pt1.xcoord = x1;
+    if( pt1.xcoord > x2 )
+        pt1.xcoord = x2;
+    pt1.ycoord = y1;
+    if( pt1.ycoord > y2 )
+        pt1.ycoord = y2;
+    pt1.zcoord = z1;
+    if( pt1.zcoord < z2 )
+        pt1.zcoord = z2;
+    pt2.xcoord = x1;
+    if( pt2.xcoord < x2 )
+        pt2.xcoord = x2;
+    pt2.ycoord = y1;
+    if( pt2.ycoord < y2 )
+        pt2.ycoord = y2;
     pt2.zcoord = pt1.zcoord;
     depth = fabs( z1 - z2 );
     _w3setcolour( RGB(red,green,blue) );

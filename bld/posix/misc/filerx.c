@@ -244,7 +244,8 @@ int FileMatchNoRx( char *name, char *wild )
     }
 
     len = strlen( cfname );
-    len = max( len, flen );
+    if( len < flen )
+        len = flen;
     for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cfname[i], fname[i] ) != 0 && fname[i] != '?' ) {
             return( FALSE );
@@ -252,7 +253,8 @@ int FileMatchNoRx( char *name, char *wild )
     }
 
     len = strlen( cext );
-    len = max( len, elen );
+    if( len < elen )
+        len = elen;
     for( i = 0; i < len; i++ ) {
         if( FNameCharCmp( cext[i], ext[i] ) != 0 && ext[i] != '?' ) {
             return( FALSE );

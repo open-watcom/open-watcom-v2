@@ -42,6 +42,7 @@
 #include "message.h"
 #include "rc.h"
 #include "translat.h"
+#include "clibint.h"
 
 
 #define RESCOMPILER             "wrc"

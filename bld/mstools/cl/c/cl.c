@@ -44,6 +44,7 @@
 #include "message.h"
 #include "pathconv.h"
 #include "translat.h"
+#include "clibint.h"
 
 
 #if defined(__TARGET_386__)

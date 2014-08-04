@@ -124,7 +124,8 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
     if( ok ) {
         einfo->current_entry = NULL;
         einfo->current_pos = -1;
-        pos = min( max - 2, pos );
+        if( pos > max - 2 )
+            pos = max - 2;
         ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
         ok = (ret != LB_ERR);
         if( ok ) {

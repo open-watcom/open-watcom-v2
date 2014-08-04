@@ -59,7 +59,9 @@ BOOL CFileException::GetErrorMessage( LPTSTR lpszError, UINT nMaxError,
         CString str;
         str.FormatMessage( AFX_IDP_FILE_NONE + m_cause, (LPCTSTR)m_strFileName );
 
-        int nLength = max( str.GetLength() + 1, nMaxError );
+        int nLength = str.GetLength() + 1;
+        if( nLength < nMaxError )
+            nLength = nMaxError;
         _tcsncpy( lpszError, str, nLength );
     }
     return( TRUE );

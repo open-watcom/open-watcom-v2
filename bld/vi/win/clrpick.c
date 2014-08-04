@@ -273,8 +273,13 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );
 
-    cursx = min( (short)(LOWORD( lparam ) / Width), NUM_ACROSS - 1 );
-    cursy = min( (short)(HIWORD( lparam ) / Height), NUM_DOWN - 1 );
+    cursx = (short)( LOWORD( lparam ) / Width );
+    if( cursx > NUM_ACROSS - 1 )
+        cursx = NUM_ACROSS - 1;
+    cursy = (short)( HIWORD( lparam ) / Height );
+    if( cursy > NUM_DOWN - 1 ) {
+        cursy = NUM_DOWN - 1;
+    }
 
     drawSelected( hdc, cursx, cursy );
     ReleaseDC( hwnd, hdc );

@@ -162,7 +162,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             DCFree( pg );
         }
         num_pages = BLOCK_FACTOR( len, PAGE_SIZE );
-        pg = DCAlloc( num_pages * (sizeof(*pg)+PAGE_SIZE) + sizeof(loaded_block)-1 );
+        pg = DCAlloc( num_pages * ( sizeof( *pg ) + PAGE_SIZE ) + sizeof( loaded_block ) - 1 );
         if( pg == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( NULL );

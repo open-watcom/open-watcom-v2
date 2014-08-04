@@ -98,8 +98,11 @@ static void getRegSetInfo( mad_reg_set_data *data, mad_registers *regs, int *max
         if( temp_maxd == 0 && discript != NULL ) {
             temp_maxd = strlen( discript );
         }
-        maxd = max( maxd, temp_maxd );
-        maxv = max( maxv, temp_maxv );
+        if( maxd < temp_maxd )
+            maxd = temp_maxd;
+        if( maxv < temp_maxv ) {
+            maxv = temp_maxv;
+        }
     }
     *max_len = maxd + maxv + 2;
     *num_reg = i;
@@ -181,21 +184,26 @@ void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,
 
     getRegSetInfo( reg_set, regs, &max_len, &maxv, &num_regs );
     reg_create = MemAlloc( sizeof(RegStringCreateData) * num_regs );
-    for ( i = 0; i < num_regs; i++ ){
+    for( i = 0; i < num_regs; i++ ){
         reg_create[i].buffer = MemAlloc( max_len + 1 );
         reg_create[i].value = MemAlloc( maxv + 1 );
         getMadString( reg_set, regs, i, reg_create );
     }
 
     num_columns = MADRegSetDisplayGrouping(reg_set);
-    if ( num_columns == 0 ){
-            num_columns = width / max_len;
+    if( num_columns == 0 ){
+        num_columns = width / max_len;
     }
-    num_columns = min( num_columns, num_regs );
+    num_columns = num_columns;
+    if( num_columns > num_regs )
+        num_columns = num_regs;
     for( i = 0; i < num_columns; i++ ){
         for( j = i; j < num_regs; j += num_columns ) {
-            reg_create[i].maxd = max( reg_create[j].maxd, reg_create[i].maxd );
-            reg_create[i].length = max( reg_create[j].length, reg_create[i].length );
+            if( reg_create[i].maxd < reg_create[j].maxd )
+                reg_create[i].maxd = reg_create[j].maxd;
+            if( reg_create[i].length = reg_create[j].length ) {
+                reg_create[i].length = reg_create[j].length;
+            }
         }
         reg_create[i].length += reg_create[i].maxd;
     }

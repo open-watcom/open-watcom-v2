@@ -106,9 +106,13 @@ void FormatFileEntry( direct_ent *file, char *res )
     long        size;
     struct tm   *tm;
     time_t      tt;
+    size_t      size1;
 
     size = strlen( file->name ) + 4;
-    tmp = malloc( max( size, NAMEWIDTH + 1 ) );
+    size1 = size;
+    if( size1 < NAMEWIDTH + 1 )
+        size1 = NAMEWIDTH + 1;
+    tmp = malloc( size1 );
 
     strcpy( buff, "----------" );
     size = file->fsize;

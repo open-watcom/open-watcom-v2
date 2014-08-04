@@ -83,34 +83,58 @@ void intern dividearea( SAREA area, SAREA centre, SAREA areas[ 5 ] )
     for( i = 0 ; i < 5 ; ++i ) {
         switch( i ) {
         case 0:
-            row = max( arow, crow );
-            maxrow = min( amaxrow, cmaxrow );
-            col = max( acol, ccol );
-            maxcol = min( amaxcol, cmaxcol );
+            row = arow;
+            if( row > crow )
+                row = crow;
+            maxrow = amaxrow;
+            if( maxrow > cmaxrow )
+                maxrow = cmaxrow;
+            col = acol;
+            if( col > ccol )
+                col = ccol;
+            maxcol = amaxcol;
+            if( maxcol > cmaxcol )
+                maxcol = cmaxcol;
             break;
         case 1:
             row = arow;
-            maxrow = min( amaxrow, crow - 1 );
+            maxrow = amaxrow;
+            if( maxrow > crow - 1 )
+                maxrow = crow - 1;
             col = acol;
-            maxcol = min( amaxcol, cmaxcol );
+            maxcol = amaxcol;
+            if( maxcol > cmaxcol )
+                maxcol = cmaxcol;
             break;
         case 2:
             row = arow;
-            maxrow = min( amaxrow, cmaxrow );
-            col = max( acol, cmaxcol + 1 );
+            maxrow = amaxrow;
+            if( maxrow > cmaxrow )
+                maxrow = cmaxrow;
+            col = acol;
+            if( col > cmaxcol + 1 )
+                col = cmaxcol + 1;
             maxcol = amaxcol;
             break;
         case 3:
-            row = max( arow, cmaxrow + 1 );
+            row = arow;
+            if( row > cmaxrow + 1 )
+                row = cmaxrow + 1;
             maxrow = amaxrow;
-            col = max( acol, ccol );
+            col = acol;
+            if( col > ccol )
+                col = ccol;
             maxcol = amaxcol;
             break;
         case 4:
-            row = max( arow, crow );
+            row = arow;
+            if( row > crow )
+                row = crow;
             maxrow = amaxrow;
             col = acol;
-            maxcol = min( amaxcol, ccol - 1 );
+            maxcol = amaxcol;
+            if( maxcol > ccol - 1 )
+                maxcol = ccol - 1;
             break;
         }
         if( ( row > maxrow ) || ( col > maxcol ) ) {

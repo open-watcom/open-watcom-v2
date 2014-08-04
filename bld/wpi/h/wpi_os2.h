@@ -944,8 +944,8 @@ extern void _wpi_gettextface( WPI_PRES pres, int size, LPSTR buf );
 extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
                                             int *pix_size, int *match_num );
 
-    #define _wpi_metricmaxcharwidth( metric ) max( (metric).lAveCharWidth, \
-                                                        (metric).lMaxCharInc )
+    #define _wpi_metricmaxcharwidth( metric ) \
+                ((((metric).lAveCharWidth) > ((metric).lMaxCharInc)) ? ((metric).lAveCharWidth) : ((metric).lMaxCharInc))
 
     #define _wpi_metricileading( metric ) (metric).lInternalLeading
 

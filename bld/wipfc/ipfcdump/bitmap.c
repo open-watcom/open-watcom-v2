@@ -330,13 +330,17 @@ void readBitMaps( FILE *in, FILE *out )
                 blockToHex( compressed, sizeof( uint8_t ) * ( bmb.size - 1 ), lzw );
                 if( bmb.type ) {
                     uint8_t filler = 0;
+                    int32_t len;
                     size_t bytes = expand( compressed, expanded, bmb.size );
                     if( bytes < blockSize ) {
                         memset(expanded + bytes, filler, blockSize - bytes);
                         //fprintf(out, "Adding %u bytes of filler %2.2x\n", blockSize - bytes, filler);
                     }
-                    fwrite( expanded, sizeof( uint8_t ), min( bytesLeft, blockSize ), btmp );
-                    bytesLeft -= min( bytesLeft, blockSize );
+                    len = bytesLeft;
+                    if( len > blockSize )
+                        len = blockSize;
+                    fwrite( expanded, sizeof( uint8_t ), len, btmp );
+                    bytesLeft -= len;
                 }
                 else
                     fwrite( compressed, sizeof( uint8_t ), bmb.size - 1, btmp );

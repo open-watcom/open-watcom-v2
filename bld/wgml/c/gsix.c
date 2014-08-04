@@ -235,7 +235,10 @@ void    scr_ix( void )
         for( k = 0; k < lvl; ++k ) {
             do_nothing = false;
             while( *ixhwork != NULL ) { // find alfabetic point to insert
-                comp_len = min( ixlen[k], (*ixhwork)->ix_term_len ) + 1;
+                comp_len = ixlen[k];
+                if( comp_len > (*ixhwork)->ix_term_len )
+                    comp_len = (*ixhwork)->ix_term_len;
+                ++comp_len;
                 comp_res = strnicmp( ix[k], (*ixhwork)->ix_term, comp_len );
                 if( comp_res > 0 ) {    // new is later in alfabet
                     ixhwork = &((*ixhwork)->next);

@@ -269,7 +269,9 @@ static int genericCompare( const char *name1, uint_16 len1,
     uint_16             *char2u;
     uint_16             min_chars;
 
-    min_chars = min( len1, len2 );
+    min_chars = len1;
+    if( min_chars > len2 )
+        min_chars = len2;
     char_num = 0;
 
     if( !use_unicode ) {
@@ -342,7 +344,9 @@ int CompareStringItems32( const StringItem32 *item1,
     char_num = 0;
     ptr1 = (uint_16 *)item1->Name;
     ptr2 = (uint_16 *)item2->Name;
-    min_chars = min( item1->NumChars, item2->NumChars );
+    min_chars = item1->NumChars;
+    if( min_chars > item2->NumChars )
+        min_chars = item2->NumChars;
     while( char_num < min_chars ) {
         ch1 = toupper( *ptr1 );
         ch2 = toupper( *ptr2 );

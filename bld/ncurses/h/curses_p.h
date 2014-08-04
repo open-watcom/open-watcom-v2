@@ -493,14 +493,6 @@ extern NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain;
 /* The terminfo source is assumed to be 7-bit ASCII */
 #define is7bits(c)      ((unsigned)(c) < 128)
 
-#ifndef min
-#define min(a,b)        ((a) > (b)  ?  (b)  :  (a))
-#endif
-
-#ifndef max
-#define max(a,b)        ((a) < (b)  ?  (b)  :  (a))
-#endif
-
 /* usually in <unistd.h> */
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0

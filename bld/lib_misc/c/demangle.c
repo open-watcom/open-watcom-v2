@@ -339,7 +339,9 @@ static void zapSpace( output_desc *data )
     }
     data->count--;
     if( data->index != (data->count + 1) ) {
-        size_t last = min( data->size, data->count );
+        size_t last = data->size;
+        if( last > data->count )
+            last = data->count;
         if( last >= data->index ) {
             memmove( &data->output[data->index - 1], &data->output[data->index], ( last - data->index ) + 1 );
         }
@@ -381,7 +383,9 @@ static void emitChar( output_desc *data, char c )
     }
     if( data->index < data->size ) {
         if( data->index < (data->count - 1) ) {
-            size_t last = min( data->size, data->count );
+            size_t last = data->size;
+            if( last > data->count )
+                last = data->count;
             memmove( &data->output[data->index + 1], &data->output[data->index], ( last - data->index ) - 1 );
         }
         data->output[data->index] = c;

@@ -59,7 +59,8 @@ void *BasicAlloc(size_t size) {
     if (size != 0) {
         g_memUsed += _msize(newBlock);
     }
-    g_maxMemUsage = max(g_maxMemUsage, g_memUsed);
+    if( g_maxMemUsage < g_memUsed )
+        g_maxMemUsage = g_memUsed;
     g_numAllocCalls++;
     return newBlock;
 }

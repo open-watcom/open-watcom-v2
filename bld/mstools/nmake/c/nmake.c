@@ -42,6 +42,7 @@
 #include "nmake.h"
 #include "message.h"
 #include "translat.h"
+#include "clibint.h"
 
 
 #define MAKE                    "wmake"

@@ -110,8 +110,14 @@ BOOL InitStatusLine( HWND parent )
     SetCursorText = IEAllocRCString( WIE_CURSORIMAGETEXT );
     SetIconText = IEAllocRCString( WIE_ICONIMAGETEXT );
     if( SetBitmapText != NULL && SetCursorText != NULL && SetIconText != NULL ) {
-        len = max( strlen( SetBitmapText ), strlen( SetCursorText ) );
-        len = max( len, strlen( SetIconText ) );
+        int len1;
+        len = strlen( SetBitmapText );
+        len1 = strlen( SetCursorText );
+        if( len1 > len )
+            len = len1;
+        len1 = strlen( SetIconText );
+        if( len1 > len )
+            len = len1;
         len += strlen( imgSizePosition ) + 30 + 1;
         ImageText = (char *)MemAlloc( len );
     }
@@ -238,17 +244,29 @@ void SetSizeInStatus( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT
     CheckBounds( hwnd, startpt );
     CheckBounds( hwnd, endpt );
 
-    pt1.x = min( startpt->x, endpt->x ) / pointsize->x;
-    pt1.y = min( startpt->y, endpt->y ) / pointsize->y;
-    pt2.x = max( startpt->x, endpt->x ) / pointsize->x;
-    pt2.y = max( startpt->y, endpt->y ) / pointsize->y;
+    pt1.x = startpt->x;
+    if( pt1.x > endpt->x )
+        pt1.x = endpt->x;
+    pt1.x /= pointsize->x;
+    pt1.y = startpt->y;
+    if( pt1.y > endpt->y )
+        pt1.y = endpt->y;
+    pt1.y /= pointsize->y;
+    pt2.x = startpt->x;
+    if( pt2.x < endpt->x )
+        pt2.x = endpt->x;
+    pt2.x /= pointsize->x;
+    pt2.y = startpt->y;
+    if( pt2.y < endpt->y )
+        pt2.y = endpt->y;
+    pt2.y /= pointsize->y;
+
     width = pt2.x - pt1.x + 1;
     height = pt2.y - pt1.y + 1;
 
     pos.x = endpt->x / pointsize->x;
     pos.y = endpt->y / pointsize->y;
-    sprintf( PositionSizeText, SetSizeText, leftBlock, pos.x, pos.y,
-             nextBlock, width, height );
+    sprintf( PositionSizeText, SetSizeText, leftBlock, pos.x, pos.y, nextBlock, width, height );
     pres = _wpi_getpres( statusBarWnd );
     StatusWndDrawLine( statusBar, pres, SmallFont, PositionSizeText, -1 );
     _wpi_releasepres( statusBarWnd, pres );
@@ -275,10 +293,11 @@ void ResizeStatusBar( WPI_PARAM2 lparam )
 #else
     width = (int_16)LOWORD( lparam ) + 2;
     height = (int_16)HIWORD( lparam );
-    y = max( height - StatusWidth + 1, FUNCTIONBAR_WIDTH );
+    y = height - StatusWidth + 1;
+    if( y < FUNCTIONBAR_WIDTH )
+        y = FUNCTIONBAR_WIDTH;
 #endif
-    _wpi_setwindowpos( statusBarWnd, HWND_TOP, -1, y, width, StatusWidth,
-                       SWP_SHOWWINDOW | SWP_MOVE | SWP_SIZE );
+    _wpi_setwindowpos( statusBarWnd, HWND_TOP, -1, y, width, StatusWidth, SWP_SHOWWINDOW | SWP_MOVE | SWP_SIZE );
 
 } /* ResizeStatusBar */
 

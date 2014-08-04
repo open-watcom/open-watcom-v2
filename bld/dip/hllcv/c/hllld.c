@@ -373,7 +373,9 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
             if( IsHllSignature( &buf ) ) {
                 rc = FoundHLLSign( ii, debug_off, debug_len );
             } else {
-                left = max( debug_len / sizeof( debug_directory ), 16 );
+                left = debug_len / sizeof( debug_directory );
+                if( left < 16 )
+                    left = 16;
                 for ( ;; ) {
                     if( buf.dbg_dir.debug_type == DEBUG_TYPE_CODEVIEW ) {
                         /* found something? */

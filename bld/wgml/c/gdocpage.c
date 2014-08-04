@@ -224,7 +224,9 @@ static void set_v_positions( doc_element * list, uint32_t v_start )
                     }
                 } else {                                
                     if( t_page.top_ban == NULL ) {      // minimun height
-                        cur_spacing = max( wgml_fonts[g_curr_font].line_height, cur_spacing );
+                        if( cur_spacing < wgml_fonts[g_curr_font].line_height ) {
+                            cur_spacing = wgml_fonts[g_curr_font].line_height;
+                        }
                     }
                 }
                 if( bin_driver->y_positive == 0x00 ) {

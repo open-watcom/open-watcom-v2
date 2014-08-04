@@ -364,7 +364,9 @@ static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela
         old_loc = OWLBufferTell( sec->buffer );
         OWLBufferSeek( sec->buffer, reloc->location );
         data = 0;
-        data_size = min( 4, OWLBufferSize( sec->buffer ) - reloc->location );
+        data_size = OWLBufferSize( sec->buffer ) - reloc->location;
+        if( data_size > 4 )
+            data_size = 4;
         OWLBufferRead( sec->buffer, reloc->location, (char *)&data, data_size );
         elf_reloc->r_addend = ( data & bit_mask );
         data &= ~bit_mask;

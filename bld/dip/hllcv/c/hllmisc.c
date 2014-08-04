@@ -121,7 +121,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
     for( block = 0; block < full_blocks; ++block ) {
         for( i = 0; i < DIRECTORY_BLOCK_ENTRIES; ++i ) {
             p = &ii->directory[block][i];
-            if( p->iMod == im && p->subsection == sst) {
+            if( p->iMod == im && p->subsection == sst ) {
                 return( p );
             }
         }
@@ -129,7 +129,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
     remainder = ii->dir_count - (full_blocks * DIRECTORY_BLOCK_ENTRIES);
     for( i = 0; i < remainder; ++i ) {
         p = &ii->directory[block][i];
-        if( p->iMod == im && p->subsection == sst) {
+        if( p->iMod == im && p->subsection == sst ) {
             return( p );
         }
     }

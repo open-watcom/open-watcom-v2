@@ -702,6 +702,7 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
     gui_control_info    *control, *next, *prev;
     int                 width;
     int                 but_pos;
+    int                 max_width;
 
     if( curr_dialog->def_dlg )
         return;
@@ -750,24 +751,18 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
             num_push_buttons = 1;
             while( ++j < curr_dialog->num_controls ) {
                 next = &curr_dialog->controls[j];
-                if( next->control_class != GUI_CHECK_BOX ||
-                    next->rect.y != control->rect.y )
+                if( next->control_class != GUI_CHECK_BOX || next->rect.y != control->rect.y )
                     break;
                 ++num_push_buttons;
             }
             curr_button = 0;
             while( i < j ) {
-                control->rect.width =
-                    DLG_COL( (width / num_push_buttons) - C0 - 1 );
+                control->rect.width = DLG_COL( (width / num_push_buttons) - C0 - 1 );
 #if defined( __NT__ ) && !defined( _UI )
-                but_pos = WIN_BUTTON_POS( curr_button + 1,
-                                          NORMAL_CHECKMARKS,
-                                          width,
-                                          WIN_BW );
+                but_pos = WIN_BUTTON_POS( curr_button + 1, NORMAL_CHECKMARKS, width, WIN_BW );
                 control->rect.x = DLG_COL( but_pos );
 #else
-                control->rect.x = DLG_COL(
-                    C0 + (width / num_push_buttons) * curr_button );
+                control->rect.x = DLG_COL( C0 + (width / num_push_buttons) * curr_button );
 #endif
                 ++curr_button;
                 ++i;
@@ -792,42 +787,43 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 }
             }
             if( j == curr_dialog->num_controls ) {
-                for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button )
-                {
+                for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
+                    max_width = strlen( control->text ) + BUTTON_EXTRA;
 #if !defined( _UI )
-                    but_pos = WIN_BUTTON_POS( curr_button, num_push_buttons,
-                                              width, WIN_BW );
-                    control->rect.x     = DLG_COL( but_pos );
-                    control->rect.width =
-                        DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
-                                      WIN_BW ) );
+                    if( max_width < WIN_BW ) {
+                        max_width = WIN_BW;
+                    }
+                    but_pos = WIN_BUTTON_POS( curr_button, num_push_buttons, width, WIN_BW );
+                    control->rect.x = DLG_COL( but_pos );
+                    control->rect.width = DLG_COL( max_width );
 #else
+                    if( max_width < BW ) {
+                        max_width = BW;
+                    }
                     but_pos = BUTTON_POS( curr_button, num_push_buttons, width, BW );
-                    control->rect.x     = DLG_COL( but_pos );
-                    control->rect.width = DLG_COL(
-                        max( strlen( control->text ) + BUTTON_EXTRA,
-                             BW ) );
+                    control->rect.x = DLG_COL( but_pos );
+                    control->rect.width = DLG_COL( max_width );
 #endif
                     ++control;
                 }
             } else {
+                max_width = strlen( control->text ) + BUTTON_EXTRA;
 #if !defined( _UI )
-                but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS,
-                                          NORMAL_BUTTONS,
-                                          width,
-                                          WIN_BW );
-                control->rect.x     = DLG_COL( but_pos );
+                if( max_width < WIN_BW ) {
+                    max_width = WIN_BW;
+                }
+                but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS, NORMAL_BUTTONS, width, WIN_BW );
+                control->rect.x = DLG_COL( but_pos );
                 /* The dynamic system does not handle buttons too wide for dialog. */
-                control->rect.width =
-                    DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
-                                  WIN_BW ) );
+                control->rect.width = max_width;
                 /* control->rect.width = DLG_COL( WIN_BW ); */
 #else
+                if( max_width < BW ) {
+                    max_width = BW;
+                }
                 but_pos = BUTTON_POS( NORMAL_BUTTONS, MAX_CTRL_PER_LINE, width, BW );
-                control->rect.x     = DLG_COL( but_pos );
-                control->rect.width =
-                    DLG_COL( max( strlen( control->text ) + BUTTON_EXTRA,
-                                  BW ) );
+                control->rect.x = DLG_COL( but_pos );
+                control->rect.width = max_width;
 #endif
             }
             break;
@@ -838,14 +834,12 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
                 if( prev->control_class == GUI_PUSH_BUTTON &&
                     prev->rect.y == control->rect.y ) {
                     // dialog_edit_button  (edit control and push button together)
-                    control->rect.width =
-                        DLG_COL( prev->rect.x - control->rect.x - BUTTON_EXTRA );
+                    control->rect.width = DLG_COL( prev->rect.x - control->rect.x - BUTTON_EXTRA );
                     break;
                 }
             }
             if( control->text != NULL ) {
-                control->rect.width =
-                    DLG_COL( width - strlen(control->text) - BUTTON_EXTRA );
+                control->rect.width = DLG_COL( width - strlen( control->text ) - BUTTON_EXTRA );
             } else {
                 control->rect.width = DLG_COL( width - C0 - 5 );
             }
@@ -863,7 +857,9 @@ static void AdjustDialogControls( a_dialog_header *curr_dialog )
 #endif
                 control->rect.width = DLG_COL( width - 1 );
             } else {
-                control->rect.width  = min( control->rect.width, DLG_COL( width ) );
+                if( control->rect.width > DLG_COL( width ) ) {
+                    control->rect.width = DLG_COL( width );
+                }
             }
             break;
 

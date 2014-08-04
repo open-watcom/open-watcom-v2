@@ -45,10 +45,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef min
-    #define min( a, b ) ( ((a)<(b)) ? (a) : (b) )
-#endif
-
 /* Support OS/2 16-bit protected mode - will never get stack overflow */
 #define MAXDEPTH        (sizeof(long) * 8)
 
@@ -329,11 +325,15 @@ void wpack_qsort( char *base, size_t n, size_t size,
                     pc = pc - size;
                 }
                 pn = base + n * size;
-                s = min( pa - base, pb - pa );
+                s = pa - base;
+                if( s > pb - pa )
+                    s = pb - pa;
                 if( s > 0 ) {
                     inline_swap( base, pb - s, s );
                 }
-                s = min( pd - pc, pn - pd - size);
+                s = pd - pc;
+                if( s > pn - pd - size )
+                    s = pn - pd - size;
                 if( s > 0 ) {
                     inline_swap( pb, pn - s, s );
                 }

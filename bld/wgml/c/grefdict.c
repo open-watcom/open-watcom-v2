@@ -76,7 +76,9 @@ char * get_refid_value( char * p )
     /*  much longer ids                                  TBD       */
     /***************************************************************/
 
-    val_len = min( ID_LEN, len );       // restrict length
+    val_len = len;                      // restrict length
+    if( val_len > ID_LEN )
+        val_len = ID_LEN;
     *(val_start + val_len) = '\0';
     return( p );
 }
@@ -172,7 +174,8 @@ void fill_id( ref_entry * re, char * id, size_t len )
 {
     int     k;
 
-    len = min( len, ID_LEN );
+    if( len > ID_LEN )
+        len = ID_LEN;
     for( k = 0; k < len; k++ ) {
         (re->id)[k] = tolower( *(id + k) );
     }

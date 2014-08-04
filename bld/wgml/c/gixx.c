@@ -55,7 +55,9 @@ static ix_h_blk * find_create_ix_h_entry( ix_h_blk * * ixhwork,
 
     do_nothing = false;
     while( (*ixhwork != NULL) ) {       // find alfabetic point to insert
-        comp_len = min( txtlen, (*ixhwork)->ix_term_len );
+        comp_len = txtlen;
+        if( comp_len > (*ixhwork)->ix_term_len )
+            comp_len = (*ixhwork)->ix_term_len;
         comp_res = strnicmp( txt, (*ixhwork)->ix_term, comp_len + 1 );
         if( comp_res > 0 ) {            // new is later in alfabet
             ixhwork = &((*ixhwork)->next);

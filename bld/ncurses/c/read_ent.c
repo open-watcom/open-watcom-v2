@@ -157,6 +157,7 @@ read_termtype(int fd, TERMTYPE * ptr)
     int name_size, bool_count, num_count, str_count, str_size;
     int i;
     char buf[MAX_ENTRY_SIZE];
+    unsigned read_size;
 
     TR(TRACE_DATABASE, ("READ termtype header @%d", tell(fd)));
 
@@ -198,7 +199,10 @@ read_termtype(int fd, TERMTYPE * ptr)
     }
 
     /* grab the name (a null-terminate string) */
-    read(fd, buf, min(MAX_NAME_SIZE, (unsigned) name_size));
+    read_size = (unsigned)name_size;
+    if( read_size > MAX_NAME_SIZE )
+        read_size = MAX_NAME_SIZE;
+    read(fd, buf, read_size);
     buf[MAX_NAME_SIZE] = '\0';
     ptr->term_names = typeCalloc(char, strlen(buf) + 1);
     if (ptr->term_names == NULL) {
@@ -209,7 +213,10 @@ read_termtype(int fd, TERMTYPE * ptr)
 	lseek(fd, (off_t) (name_size - MAX_NAME_SIZE), 1);
 
     /* grab the booleans */
-    if ((ptr->Booleans = typeCalloc(char, max(BOOLCOUNT, bool_count))) == 0
+    i = bool_count;
+    if( i < BOOLCOUNT )
+        i = BOOLCOUNT;
+    if( (ptr->Booleans = typeCalloc( char, i )) == 0
 	|| read(fd, ptr->Booleans, (unsigned) bool_count) < bool_count) {
 	return (0);
     }
@@ -223,13 +230,18 @@ read_termtype(int fd, TERMTYPE * ptr)
     even_boundary(name_size + bool_count);
 
     /* grab the numbers */
-    if ((ptr->Numbers = typeCalloc(short, max(NUMCOUNT, num_count))) == 0
+    i = num_count;
+    if( i < NUMCOUNT )
+        i = NUMCOUNT;
+    if( (ptr->Numbers = typeCalloc( short, i )) == 0
 	|| !read_shorts(fd, buf, num_count)) {
 	return (0);
     }
     convert_shorts(buf, ptr->Numbers, num_count);
-
-    if ((ptr->Strings = typeCalloc(char *, max(STRCOUNT, str_count))) == 0)
+    i = str_count;
+    if( i < STRCOUNT )
+        i = STRCOUNT;
+    if( (ptr->Strings = typeCalloc( char *, i )) == 0 )
 	  return (0);
 
     if (str_count) {

@@ -198,6 +198,7 @@ search_result DoLookupSym( imp_image_handle *ii,
     int         (*cmp)(const void *, const void *, size_t);
     msym_sym    *s;
 
+    lc = lc;
     source = source;
     switch( ss ) {
     case SS_MODULE:

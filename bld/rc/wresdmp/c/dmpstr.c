@@ -80,13 +80,13 @@ extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
         }
         if( cursor < numread ) {
             for( ; stringlen > 0; --stringlen ) {
-                if( cursor >= numread ) break;
+                if( cursor >= numread )
+                    break;
                 if( stringbuff[ cursor ] != '\0' && stringbuff[ cursor ] != '\n' ) {
                     putchar( stringbuff[ cursor ] );
                 }
                 cursor++;
             }
-            stringlen = max( stringlen, 0 );
         } else {
             numread = 0;
         }

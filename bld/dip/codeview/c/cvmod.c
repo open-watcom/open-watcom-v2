@@ -56,7 +56,8 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
     find.wk = wk;
     find.d  = d;
     wr = WalkDirList( ii, &FindMods, &find );
-    if( wr == WR_CONTINUE ) wr = wk( ii, IMH_GBL, d );
+    if( wr == WR_CONTINUE )
+        wr = wk( ii, IMH_GBL, d );
     return( wr );
 }
 
@@ -109,7 +110,8 @@ cs_compile *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
     long                left;
 
     cde = FindDirEntry( ii, im, sstAlignSym );
-    if( cde == NULL ) return( NULL );
+    if( cde == NULL )
+        return( NULL );
     vm = cde->lfo + sizeof( unsigned_32 );
     left = cde->cb - sizeof( unsigned_32 );
     for( ;; ) {
@@ -200,7 +202,8 @@ search_result ImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
     map = &ii->mapping[0];
     left = ii->map_count;
     for( ;; ) {
-        if( left <= 0 ) return( SR_NONE );
+        if( left <= 0 )
+            return( SR_NONE );
         if( map->ovl == a.sect_id &&
             map->frame == a.mach.segment &&
             map->offset <= a.mach.offset &&
@@ -254,7 +257,8 @@ dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
     cs_compile  *comp_info;
 
     comp_info = GetCompInfo( ii, im );
-    if( comp_info == NULL ) return( DS_FAIL );
+    if( comp_info == NULL )
+        return( DS_FAIL );
     ti->kind = TK_POINTER;
     ti->modifier = TM_NEAR;
     ti->size = comp_info->flags.f.Mode32 ? sizeof( addr48_off ) : sizeof( addr32_off );

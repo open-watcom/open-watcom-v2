@@ -431,7 +431,9 @@ trap_retval ReqSet_watch( void )
         WPCount++;
 #if defined( MD_x86 )
         linear = CalcLinear( acc->watch_addr.segment, acc->watch_addr.offset );
-        lencalc = min(curr->len, 4);
+        lencalc = curr->len;
+        if( lencalc > 4 )
+            lencalc = 4;
 
         /* Calculate where the breakpoint should be */
         /* 1 byte breakpoint starts at where it says on the tin -   OK */

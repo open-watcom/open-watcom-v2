@@ -35,6 +35,7 @@
 #include "aui.h"
 #include "dip.h"
 #include "msg.h"
+#include "clibext.h"
 
 #define HELPNAME        "wprof.hlp"
 #define HTMLHELPNAME    "wprof.chm"

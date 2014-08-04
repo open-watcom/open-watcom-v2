@@ -171,10 +171,13 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
 void WdeResizeStatusWindows( RECT *rect )
 {
+    int ypos;
+
     if( WdeStatusWindow != NULL ) {
-        MoveWindow( WdeStatusWindow, 0,
-                    max( 0, (rect->bottom - rect->top) - WdeStatusDepth ),
-                    rect->right - rect->left, WdeStatusDepth, TRUE );
+        ypos = ( rect->bottom - rect->top ) - WdeStatusDepth;
+        if( ypos < 0 )
+            ypos = 0;
+        MoveWindow( WdeStatusWindow, 0, ypos, rect->right - rect->left, WdeStatusDepth, TRUE );
     }
 }
 
@@ -228,7 +231,9 @@ bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
     }
 
     if( status1 != NULL ) {
-        len = min( strlen( status1 ), MAX_STATUS_TEXT );
+        len = strlen( status1 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy( WdeStatusText, status1, len );
             pos = len;
@@ -243,7 +248,9 @@ bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
     if( status2 != NULL ) {
         WdeStatusText[pos++] = STATUS_ESC_CHAR;
         WdeStatusText[pos++] = STATUS_NEXT_BLOCK;
-        len = min( strlen( status2 ), MAX_STATUS_TEXT );
+        len = strlen( status2 );
+        if( len > MAX_STATUS_TEXT )
+            len = MAX_STATUS_TEXT;
         if( len != 0 ) {
             memcpy( WdeStatusText + pos, status2, len );
             WdeStatusText[pos + len] = '\0';

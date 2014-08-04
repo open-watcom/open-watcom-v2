@@ -64,8 +64,8 @@
 #include "bdiff.h"
 #include "wpack.h"
 #endif
-
 #include "errno.h"
+#include "clibext.h"
 
 #if defined( WINNT ) || defined( WIN )
     #define UNC_SUPPORT

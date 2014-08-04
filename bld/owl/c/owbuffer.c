@@ -213,7 +213,9 @@ void OWLENTRY OWLBufferRead( owl_buffer *buffer, owl_offset location, char *dst,
             memset( dst, 0, bytes_remaining );
             break;
         }
-        chunk_size = min( buffer->bin_size - location % buffer->bin_size, bytes_remaining );
+        chunk_size = buffer->bin_size - location % buffer->bin_size;
+        if( chunk_size > bytes_remaining )
+            chunk_size = bytes_remaining;
         memcpy( dst, &buffer->bins[ index ][ location % buffer->bin_size ], chunk_size );
         location += chunk_size;
         bytes_remaining -= chunk_size;

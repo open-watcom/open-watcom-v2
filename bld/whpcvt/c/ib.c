@@ -83,11 +83,6 @@ static int              Line_postfix=LPOSTFIX_NONE;
 #define MAX_TABS                100     // up to 100 tab stops
 static int Tab_list[MAX_TABS];
 
-// Use this instead of Cursor_X outside of trans_add_char_wrap!!!
-#define CUR_HPOS                (Cursor_X - \
-                                max( Curr_indent, 0 ) - \
-                                (Box_Mode ? 2 : 0 ))
-
 // turns off bold and underline
 static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
 
@@ -256,7 +251,9 @@ int trans_add_char_wrap( int ch, section_def *section, int *alloc_size )
     #define MY_MARGIN ( Right_Margin + 1 - ( Box_Mode ? 2 : 0 ) )
 
     // find out the real indentation
-    indent = max( Curr_indent, 0 );
+    indent = Curr_indent;
+    if( indent < 0 )
+        indent = 0;
 
     // add character
     if( ch == '\n' ) {
@@ -466,9 +463,13 @@ static int tab_align(
     int                 i;
     int                 len;
     int                 ch_len;
+    int                 indent;
 
+    indent = Curr_indent;
+    if( indent < 0 )
+        indent = 0;
     // find out how close we are to "col 0" for the current indent
-    ch_len = CUR_HPOS;
+    ch_len = (Cursor_X - indent - (Box_Mode ? 2 : 0 ));
 
     // find the tab we should use
     i = 0;
@@ -722,9 +723,11 @@ int ib_trans_line(
             // We don't want links to break as IB doesn't like this...
             to_nobreak( ctx_text );
 
+            indent = Curr_indent;
+            if( indent < 0 )
+                indent = 0;
             // find out the maximum allowed length for hyper-link text:
-            ctr = Right_Margin - max( Curr_indent, 0 ) -
-                                ( ( Hyper_Brace_L == '<' ) ? 2 : 0 );
+            ctr = Right_Margin - indent - ( ( Hyper_Brace_L == '<' ) ? 2 : 0 );
 
             // if the link name is too long then we warn & truncate it
             if( strlen( ctx_text ) > ctr ) {

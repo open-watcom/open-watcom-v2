@@ -45,6 +45,7 @@
 #include "ovltab.h"
 #include "msg.h"
 #include "memutil.h"
+#include "clibext.h"
 
 
 extern void ErrorMsg(char *msg,... );
