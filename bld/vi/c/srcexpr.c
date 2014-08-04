@@ -34,6 +34,7 @@
 #include <setjmp.h>
 #include "source.h"
 #include "expr.h"
+#include "clibext.h"
 
 /*
  * SrcExpr - add a value to a variable

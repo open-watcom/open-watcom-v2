@@ -32,7 +32,7 @@
 
 #include "vi.h"
 
-char __near * __near InternalCommands[] = {
+char _NEAR * _NEAR InternalCommands[] = {
     "BREAK",
     "CALL",
     "CD",
@@ -65,7 +65,7 @@ char __near * __near InternalCommands[] = {
     "VERIFY",
     "VOL"
 };
-int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char __near * );
+int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char _NEAR * );
 
-char __near * __near ExeExtensions[] = {".bat", ".com",".exe" };
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char __near * );
+char _NEAR * _NEAR ExeExtensions[] = {".bat", ".com",".exe" };
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );

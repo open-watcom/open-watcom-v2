@@ -37,6 +37,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "helpio.h"
+#include "clibext.h"
 
 #if defined(__NETWARE__)
     /* Symbolic constants for the access() function */

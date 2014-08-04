@@ -39,6 +39,7 @@
 #include "trpcore.h"
 #include "mad.h"
 #include "dui.h"
+#include "clibext.h"
 
 
 extern void             GetSysConfig( void );

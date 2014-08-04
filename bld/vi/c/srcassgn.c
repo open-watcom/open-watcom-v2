@@ -36,6 +36,7 @@
 #include "source.h"
 #include "expr.h"
 #include "rxsupp.h"
+#include "clibext.h"
 
 /*
  * SrcAssign - assign a value to a variable

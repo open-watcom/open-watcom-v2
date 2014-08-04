@@ -41,6 +41,7 @@
 #include "uidialog.h"
 #include "helpio.h"
 #include "search.h"
+#include "clibext.h"
 
 
 extern bool GetListBoxItem( void *, unsigned, char *, unsigned );

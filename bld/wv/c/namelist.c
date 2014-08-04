@@ -40,6 +40,7 @@
 #include "dbgerr.h"
 #include "namelist.h"
 #include "sortlist.h"
+#include "clibext.h"
 
 extern char             *TxtBuff;
 extern address          NilAddr;

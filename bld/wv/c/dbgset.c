@@ -42,6 +42,7 @@
 #include "dbgio.h"
 #include "mad.h"
 #include "madcli.h"
+#include "clibext.h"
 
 
 extern unsigned int     ScanCmd( char * );

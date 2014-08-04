@@ -39,6 +39,7 @@
     #include "utils.h"
 #endif
 #include <assert.h>
+#include "clibext.h"
 
 typedef struct input_win_info {
     window_id       id;

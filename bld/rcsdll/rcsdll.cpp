@@ -45,7 +45,9 @@
 #endif
 #include "rcsdll.hpp"
 #include "inifile.hpp"
+extern "C" {
 #include "clibext.h"
+}
 
 extern "C" {
 
@@ -185,8 +187,8 @@ int RCSAPI RCSQuerySystem( rcsdata data )
     MyGetProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
     for( i=1; i <= MAX_RCS_TYPE; i++ ) {
         if( strnicmp( buffer, rcs_type_strings[i], strlen( rcs_type_strings[i] ) ) == 0 ) {
-	    return( i );
-	}
+            return( i );
+        }
     }
     return( 0 );
 }

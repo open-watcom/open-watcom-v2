@@ -39,6 +39,7 @@
 #include "win.h"
 #include "menu.h"
 #include "source.h"
+#include "clibext.h"
 
 #ifndef VICOMP
 

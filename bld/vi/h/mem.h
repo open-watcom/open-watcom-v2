@@ -40,18 +40,18 @@
 typedef struct overlay {
     unsigned char       active  : 1;
     unsigned char       exp     : 5;
-    struct overlay __near *next, __near *prev;
+    struct overlay _NEAR *next, _NEAR *prev;
 } overlay;
 
-#define NIL     (overlay __near *)1
-#define NON_NIL (overlay __near *)0
+#define NIL     (overlay _NEAR *)1
+#define NON_NIL (overlay _NEAR *)0
 
 #define OVERHEAD sizeof( overlay )
 
 typedef struct heap {
     unsigned        segment;
     unsigned        maxx;
-    overlay __near  *free[MAX_X + 2];
+    overlay _NEAR  *free[MAX_X + 2];
 } heap;
 
 void    *MemAlloc( unsigned );

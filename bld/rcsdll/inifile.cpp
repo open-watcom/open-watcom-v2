@@ -68,6 +68,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "watcom.h"
+#include "clibext.h"
 
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len )
@@ -134,6 +135,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "clibext.h"
 
     int MyGetProfileString( const char *dir, const char *filename, const char *section,
                             const char *key, const char *def, char *buffer, int len )

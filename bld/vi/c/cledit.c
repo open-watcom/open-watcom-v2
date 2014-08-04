@@ -36,6 +36,7 @@
 #ifdef __WIN__
     #include "utils.h"
 #endif
+#include "clibext.h"
 
 #ifdef __WIN__
 #ifndef __NT__

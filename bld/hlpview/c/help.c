@@ -48,6 +48,7 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+#include "clibext.h"
 
 
 extern  EVENT   uivget( VSCREEN * );

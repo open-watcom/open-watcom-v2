@@ -43,6 +43,7 @@
 #ifdef __WIN__
   #include "winrtns.h"
 #endif
+#include "clibext.h"
 
 
 /*

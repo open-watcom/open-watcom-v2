@@ -33,6 +33,7 @@
 #include <dirent.h>
 #include <time.h>
 #include "wio.h"
+#include "clibext.h"
 
 
 /*

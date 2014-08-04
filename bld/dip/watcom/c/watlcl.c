@@ -31,6 +31,7 @@
 
 #include "dipwat.h"
 #include "watlcl.h"
+#include "clibext.h"
 
 extern void             *InfoLoad(imp_image_handle *, imp_mod_handle, unsigned, unsigned, void (*)() );
 extern void             InfoSpecUnlock( void * );

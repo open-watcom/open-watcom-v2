@@ -128,7 +128,7 @@ void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
 int     HasShare( void );
 #ifdef __WINDOWS__
-int     MyGetInstanceData( unsigned short p1, char __near *p2, short p3 );
+int     MyGetInstanceData( unsigned short p1, char _NEAR *p2, short p3 );
 #endif
 int     PickATag( int clist, char **list, char *tagname );
 

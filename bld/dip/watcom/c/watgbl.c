@@ -33,6 +33,7 @@
 #include "dipwat.h"
 #include <ctype.h>
 #include "demangle.h"
+#include "clibext.h"
 
 extern void             AddressMap( imp_image_handle *, addr_ptr * );
 extern section_info     *FindInfo( imp_image_handle *, imp_mod_handle );

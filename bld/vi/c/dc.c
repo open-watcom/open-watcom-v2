@@ -38,6 +38,7 @@
     #include "color.h"
 #endif
 #include <assert.h>
+#include "clibext.h"
 
 static void initDCLine( dc dc )
 {

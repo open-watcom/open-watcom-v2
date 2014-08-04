@@ -41,6 +41,7 @@
 #include "dfhash.h"
 #include "demangle.h"
 #include "dfsym.h"
+#include "clibext.h"
 
 
 imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )

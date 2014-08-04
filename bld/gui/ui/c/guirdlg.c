@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include <string.h>
 #include <stdlib.h>
-
 #include "guiutil.h"
 #include "guixscal.h"
 #include "guildstr.h"
@@ -41,6 +40,7 @@
 #include "wressetr.h"
 #include "resdiag.h"
 #include "wresdefn.h"
+#include "clibext.h"
 
 #define DLG_X_MULT      4
 #define DLG_Y_MULT      14
@@ -153,11 +153,9 @@ static ResNameOrOrdinal *Data2NameOrOrdinal( uint_8 **data )
 
     data8 = (uint_8 *)(*data);
 
-    if( *data8 == 0xff ) {
-        len = sizeof(ResNameOrOrdinal);
-    } else {
+    len = sizeof(ResNameOrOrdinal);
+    if( *data8 != 0xff ) {
         stringlen = strlen( (char *)data8 ) + 1;
-        len = sizeof( ResNameOrOrdinal );
         if( len < stringlen ) {
             len = stringlen;
         }

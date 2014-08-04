@@ -69,7 +69,7 @@ extern char _NEAR   SpinData[];
 extern char         VideoPage;
 extern char         *BndMemory, *EXEName;
 extern int          FcbBlocksInUse;
-extern char * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
+extern char       * _NEAR MatchData[MAX_SEARCH_STRINGS * 2];
 extern int          MatchCount;
 extern mark         *MarkList;
 extern fcb          *FcbThreadHead, *FcbThreadTail;

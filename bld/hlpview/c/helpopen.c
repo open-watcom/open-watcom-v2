@@ -41,6 +41,7 @@
 #include "help.h"
 #include "helpmem.h"
 #include "iopath.h"
+#include "clibext.h"
 
 
 help_file HelpFiles[MAX_HELP_FILES] = {

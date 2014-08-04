@@ -39,6 +39,7 @@
 #include "dbginfo.h"
 #include "dui.h"
 #include "srcmgt.h"
+#include "clibext.h"
 
 
 extern cue_fileid       CueFileId( cue_handle * );

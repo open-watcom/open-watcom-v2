@@ -46,6 +46,7 @@
 #include "sstyle.h"
 #include "fts.h"
 #include "rcs.h"
+#include "clibext.h"
 
 static window_info  *wInfo = NULL;
 static char         strLoad[] = "loaded";

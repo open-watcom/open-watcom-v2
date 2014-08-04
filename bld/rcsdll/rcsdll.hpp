@@ -163,8 +163,7 @@ extern p4System Perforce;
 class userData {
 public:
     userData( long win, rcsstring cfg ) :
-        batcher(NULL),msgBox(NULL), pause(0),
-        cfgDir(cfg),window(win),currentSystem(NULL) {};
+        window(win),batcher(NULL),msgBox(NULL),currentSystem(NULL),cfgDir(cfg),pause(0) {};
     int regBatcher( BatchCallback *fp, void *c )
         { batcher = fp; batch_cookie=c; return( 1 ); };
     int regMessager( MessageBoxCallback *fp, void *c )
@@ -174,7 +173,8 @@ public:
     rcsSystem *getSystem() { return( currentSystem ); };
     void setPause( int on ) { if( on ) { pause=1; } else { pause = 1; } };
     int getPause() { return( pause ); };
-    long window;
+
+    long                        window;
     BatchCallback               *batcher;
     MessageBoxCallback          *msgBox;
     void                        *batch_cookie;

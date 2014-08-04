@@ -36,6 +36,7 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
+#include "clibext.h"
 
 char *copy_char_to_buff( char *ptr, char c, char **end )
 {

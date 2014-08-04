@@ -34,6 +34,7 @@
 #ifdef __WIN__
   #include "wwinhelp.h"
 #endif
+#include "clibext.h"
 
 
 #ifndef __WIN__

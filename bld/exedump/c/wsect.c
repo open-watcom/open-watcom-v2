@@ -34,9 +34,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
-
 #include "wdglb.h"
 #include "wdfunc.h"
+#include "clibext.h"
 
 static readable_name readableTAGs[] = {
     #define DWTAGI( __n, __v  )   table( DW_TAG_##__n ),

@@ -34,6 +34,7 @@
 #include "posix.h"
 #include <fcntl.h>
 #include <errno.h>
+#include "clibext.h"
 
 static int closeAFile( void );
 

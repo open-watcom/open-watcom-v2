@@ -49,6 +49,7 @@
 #include "srcmgt.h"
 #include "tistrail.h"
 #include <limits.h>
+#include "clibext.h"
 
 
 search_result           LineCue( mod_handle, cue_fileid,

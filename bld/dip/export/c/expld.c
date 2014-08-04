@@ -137,7 +137,8 @@ static void *HunkAlloc( imp_image_handle *ii, size_t size )
         if( alloc < size )
             alloc = size;
         hunk = DCAlloc( (sizeof( *hunk ) - HUNK_SIZE) + alloc );
-        if( hunk == NULL ) return( NULL );
+        if( hunk == NULL )
+            return( NULL );
         hunk->next = ii->hunks;
         ii->hunks = hunk;
         hunk->left = alloc;
@@ -633,9 +634,9 @@ static dip_status TryPE( dig_fhandle h, imp_image_handle *ii,
     exp->name_ptr_base = RVAToPos( dir.name_ptr_table_rva, head, obj );
     exp->ord_base      = RVAToPos( dir.ordinal_table_rva, head, obj );
     for( ; dir.num_name_ptrs != 0; ) {
-        chunk = MAX_EXPORTS_PER;
-        if( chunk > dir.num_name_ptrs )
-            chunk = dir.num_name_ptrs;
+        chunk = dir.num_name_ptrs;
+        if( chunk > MAX_EXPORTS_PER )
+            chunk = MAX_EXPORTS_PER;
         ds = PEExportBlock( ii, exp, chunk );
         if( ds != DS_OK ) {
             DCFree( exp );

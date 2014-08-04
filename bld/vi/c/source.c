@@ -37,6 +37,7 @@
 #include "menu.h"
 #include "ex.h"
 #include "fts.h"
+#include "clibext.h"
 
 static void     finiSource( labels *, vlist *, sfile *, undo_stack * );
 static vi_rc    initSource( vlist *, char *);

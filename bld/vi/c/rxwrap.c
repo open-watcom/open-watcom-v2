@@ -39,4 +39,5 @@
 #define WANT_EXCLAMATION
 
 #include "rxsupp.h"
+#include "clibext.h"
 #include "../../posix/misc/regexp.c"

@@ -38,6 +38,8 @@
 #include "trpqimp.h"
 #include "trpld.h"
 #include "digio.h"
+#include "clibext.h"
+
 
 #if defined( BUILTIN_TRAP_FILE )
 extern const trap_requests *TrapLoad( const trap_callbacks *client );
