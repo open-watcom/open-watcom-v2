@@ -45,6 +45,7 @@
 #include "cfeinfo.h"
 #include "pathlist.h"
 #include "clibext.h"
+#include "clibint.h"
 
 #if defined(__UNIX__)
  #define C_PATH         "../c/"
@@ -131,9 +132,6 @@ void ClearGlobals( void )
     InitErrLoc();
 }
 
-
-unsigned char _8087;
-unsigned char _real87;
 
 int FrontEnd( char **cmdline )
 {

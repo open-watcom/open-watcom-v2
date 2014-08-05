@@ -10,14 +10,13 @@ drv_objs = &
 # stand-alone executable
 #
 exe_objs = &
-    cintmain.obj
+    idedrv.obj &
+    maindrv.obj
 
 #
 # DLL stuff
 #
-dll_objs = &
-    $(dll_subdir)/ideentry.obj &
-    $(dll_subdir)/idemsgpr.obj
+dll_objs =
 
 #
 # common files
@@ -67,11 +66,14 @@ common_objs = &
     $(_subdir_)asmalloc.obj &
     $(_subdir_)asmmsg.obj &
     $(_subdir_)jis2unic.obj &
-    $(_subdir_)pchdr.obj  &
-    $(_subdir_)dwarf.obj  &
-    $(_subdir_)browsio.obj  &
-    $(_subdir_)intlload.obj  &
-    $(_subdir_)autodept.obj  &
+    $(_subdir_)pchdr.obj &
+    $(_subdir_)dwarf.obj &
+    $(_subdir_)browsio.obj &
+    $(_subdir_)ideentry.obj &
+    $(_subdir_)idemsgfm.obj &
+    $(_subdir_)idemsgpr.obj &
+    $(_subdir_)intlload.obj &
+    $(_subdir_)autodept.obj &
     $(_subdir_)cexpr.obj &
     $(_subdir_)cfold.obj &
     $(_subdir_)cmath.obj &
