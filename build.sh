@@ -7,6 +7,7 @@
 
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWUSENATIVETOOLS" -eq "1" ]; then
