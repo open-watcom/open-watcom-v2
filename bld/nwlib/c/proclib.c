@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "ar.h"
 #include "clibext.h"
 
 static void SkipObject( libfile io )
@@ -55,8 +56,8 @@ static void ExtractObj( libfile io, char *name, arch_header *arch, char *newname
     char        *obj_name;
 
     obj_name = MakeObjOutputName( name, newname );
-    unlink( obj_name );
-    out = LibOpen( obj_name, LIBOPEN_BINARY_WRITE );
+    remove( obj_name );
+    out = LibOpen( obj_name, LIBOPEN_WRITE );
     pos = LibTell( io );
     CopyObj( io, out, arch );
     LibSeek( io, pos, SEEK_SET );
@@ -135,7 +136,7 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
     arch_header arch;
 
     NewArchHeader( &arch, name );
-    io = LibOpen( name, LIBOPEN_BINARY_READ );
+    io = LibOpen( name, LIBOPEN_READ );
     if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
         FatalError( ERR_CANT_READ, name, strerror( errno ) );
     }

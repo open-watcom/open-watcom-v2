@@ -198,6 +198,7 @@ static bool Wait_for_return( void )
 }
 
 void Usage( void )
+/****************/
 {
     char                buff[ MAX_ERROR_SIZE ];
     int                 str;

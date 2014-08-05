@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "wio.h"
 #include "clibext.h"
 #ifndef IDE_PGM
 #include "clibint.h"

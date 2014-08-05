@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "wio.h"
 #include "clibext.h"
 
 #if defined( INCL_MSGTEXT )

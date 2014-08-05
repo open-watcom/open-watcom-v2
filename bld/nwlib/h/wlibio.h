@@ -39,27 +39,28 @@ struct io_struct {
     char            *name;
     libfile         next;
     libfile         prev;
-    int             io;
-    unsigned_16     access;
+    FILE            *io;
+    long            endpos;
+    bool            write_to;
     unsigned_16     buf_size;
     unsigned_16     buf_pos;
     char            buffer[ 1 ];
 };
 
-#define LIBOPEN_BINARY_READ     ( O_BINARY | O_RDONLY )
-#define LIBOPEN_BINARY_WRITE    ( O_BINARY | O_WRONLY | O_CREAT )
+#define LIBOPEN_READ    false
+#define LIBOPEN_WRITE   true
 
-extern void InitLibIo( void  );
-extern void ResetLibIo( void );
-extern libfile LibOpen( char *name, int access );
-extern file_offset LibRead( libfile io, void *buff, file_offset len );
-extern void LibWrite( libfile io, void *buff, file_offset len );
-extern void LibClose( libfile io );
-extern void LibSeek( libfile io, long where, int whence );
-extern file_offset LibTell( libfile io );
-extern void LibReadError( libfile io );
-extern void LibWriteError( libfile io );
-extern void BadLibrary( char *name );
+extern void         InitLibIo( void  );
+extern void         ResetLibIo( void );
+extern libfile      LibOpen( char *name, bool write_to );
+extern file_offset  LibRead( libfile io, void *buff, file_offset len );
+extern void         LibWrite( libfile io, void *buff, file_offset len );
+extern void         LibClose( libfile io );
+extern void         LibSeek( libfile io, long where, int whence );
+extern file_offset  LibTell( libfile io );
+extern void         LibReadError( libfile io );
+extern void         LibWriteError( libfile io );
+extern void         BadLibrary( char *name );
 
 #ifdef __UNIX__
 #define FNCMP strcmp

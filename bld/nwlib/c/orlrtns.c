@@ -139,7 +139,7 @@ obj_file *OpenObjFile( char *name )
 {
     libfile     hdl;
 
-    hdl = LibOpen( name, LIBOPEN_BINARY_READ );
+    hdl = LibOpen( name, LIBOPEN_READ );
     return( DoOpenObjFile( name, hdl, 0 ) );
 }
 

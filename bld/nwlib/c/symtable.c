@@ -30,6 +30,8 @@
 
 
 #include "wlib.h"
+#include "ar.h"
+#include "convert.h"
 #include "clibext.h"
 
 static sym_table        FileTable;
@@ -343,7 +345,7 @@ void WriteFileBody( sym_file *sfile )
 
     if( sfile->import == NULL ) {
         if( sfile->inlib_offset == 0 ) {
-            io = LibOpen( sfile->full_name, LIBOPEN_BINARY_READ );
+            io = LibOpen( sfile->full_name, LIBOPEN_READ );
         } else {
             io = InLibHandle( sfile->inlib );
             LibSeek( io, sfile->inlib_offset, SEEK_SET );

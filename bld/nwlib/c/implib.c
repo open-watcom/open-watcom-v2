@@ -30,6 +30,7 @@
 
 
 #include "wlib.h"
+#include "ar.h"
 #include "coff.h"
 #include "clibext.h"
 

@@ -38,6 +38,5 @@ typedef struct input_lib {
 extern void AddInputLib( libfile io, char *name );
 extern void ResetInputLibs( void );
 extern void InitInputLibs( void );
-extern void CloseOneInputLib( void );
 extern libfile InLibHandle( input_lib * );
 extern input_lib *FindInLib( libfile io );

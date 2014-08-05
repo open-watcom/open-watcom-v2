@@ -46,19 +46,6 @@ void AddInputLib( libfile io, char *name )
     strcpy( new->name, name );
 }
 
-void CloseOneInputLib()
-{
-    input_lib   *curr;
-
-    for( curr = InputLibs; curr != NULL; curr = curr->next ) {
-        if( curr->io != NULL ) {
-            LibClose( curr->io );
-            curr->io = NULL;
-            return;
-        }
-    }
-}
-
 void InitInputLibs()
 {
     InputLibs = NULL;
@@ -93,7 +80,7 @@ input_lib *FindInLib( libfile io )
 libfile InLibHandle( input_lib *curr )
 {
     if( curr->io == NULL ) {
-        curr->io = LibOpen( curr->name, LIBOPEN_BINARY_READ );
+        curr->io = LibOpen( curr->name, LIBOPEN_READ );
     }
     return( curr->io );
 }

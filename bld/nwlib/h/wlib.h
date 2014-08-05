@@ -41,10 +41,8 @@
 #include <process.h>
 #include <conio.h>
 #endif
-#include "wio.h"
 #include "bool.h"
 #include "orl.h"
-#include "ar.h"
 #include "lib.h"
 #include "demangle.h"
 
@@ -57,7 +55,6 @@
 #include "inlib.h"
 
 #include "exeelf.h"
-#include "convert.h"
 #include "wlibutil.h"
 #include "libwalk.h"
 #include "liblist.h"

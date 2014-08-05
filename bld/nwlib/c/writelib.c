@@ -31,6 +31,7 @@
 
 
 #include "wlib.h"
+#include "wio.h"
 #include "clibext.h"
 
 libfile ExportListFile;
@@ -55,11 +56,11 @@ void WriteNewLib( void )
         out = MakeTmpName( tmp );
     }
     if( Options.export_list_file ) {
-        ExportListFile = LibOpen( Options.export_list_file, LIBOPEN_BINARY_WRITE | O_CREAT);
+        ExportListFile = LibOpen( Options.export_list_file, LIBOPEN_WRITE );
     } else {
         ExportListFile = NULL;
     }
-    NewLibrary = LibOpen( out, LIBOPEN_BINARY_WRITE );
+    NewLibrary = LibOpen( out, LIBOPEN_WRITE );
     if( NewLibrary == NULL ) {
         if( out == tmp ) {
             FatalError( ERR_CANT_OPEN, out, "Cannot create temporary file" );
