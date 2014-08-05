@@ -44,6 +44,7 @@
 #include "dbginfo.h"
 #include "mad.h"
 #include "srcmgt.h"
+#include "clibext.h"
 
 search_result           LineCue( mod_handle, cue_fileid,
                           unsigned long line, unsigned column, cue_handle *ch );
