@@ -212,7 +212,7 @@ TOKEN KwLookup( const char *buf, size_t len )
 
     keyword = Tokens[hash];
     if( *keyword == buf[0] ) {
-        if( strcmp( keyword, buf ) == 0 ) {
+        if( memcmp( keyword, buf, len + 1 ) == 0 ) {
             return( hash );
         }
     }

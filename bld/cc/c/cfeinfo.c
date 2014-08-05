@@ -162,7 +162,7 @@ bool VarParm( SYMPTR sym )
 */
 bool VarFunc( SYMPTR sym )
 {
-    int         hash;
+    unsigned    hash;
     size_t      len;
     char        *p;
 
@@ -174,7 +174,7 @@ bool VarFunc( SYMPTR sym )
         len = strlen( p );
         hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( strcmp( p, VarParmFuncs[hash] ) == 0 
+        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0 
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
             return( TRUE );
 

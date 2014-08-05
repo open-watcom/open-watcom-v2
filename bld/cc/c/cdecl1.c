@@ -136,30 +136,33 @@ local void FuncDefn( SYMPTR sym )
     SymReplace( sym, CurFuncHandle );
 }
 
+#define NAMELIT(c) c, sizeof( c )
+
+#define MAIN_NAMES \
+    pick( MAIN_WMAIN,    "wmain" ), \
+    pick( MAIN_MAIN,     "main" ), \
+    pick( MAIN_WWINMAIN, "wWinMain" ), \
+    pick( MAIN_WINMAIN,  "WinMain" ), \
+    pick( MAIN_WLIBMAIN, "wLibMain" ), \
+    pick( MAIN_LIBMAIN,  "LibMain" ), \
+    pick( MAIN_WDLLMAIN, "wDllMain" ), \
+    pick( MAIN_DLLMAIN,  "DllMain" ),
 
 enum main_names {
-    MAIN_WMAIN,
-    MAIN_MAIN,
-    MAIN_WWINMAIN,
-    MAIN_WINMAIN,
-    MAIN_WLIBMAIN,
-    MAIN_LIBMAIN,
-    MAIN_WDLLMAIN,
-    MAIN_DLLMAIN,
+    #define pick(e,n) e
+    MAIN_NAMES
+    #undef pick
     MAIN_NUM,
 };
 
-static char const   *MainNames[MAIN_NUM] = {
-    "wmain",          // MAIN_WMAIN,
-    "main",           // MAIN_MAIN,
-    "wWinMain",       // MAIN_WWINMAIN,
-    "WinMain",        // MAIN_WINMAIN,
-    "wLibMain",       // MAIN_WLIBMAIN,
-    "LibMain",        // MAIN_LIBMAIN,
-    "wDllMain",       // MAIN_WDLLMAIN,
-    "DllMain",        // MAIN_DLLMAIN,
+static struct {
+    char const      *name;
+    unsigned char   len; 
+} MainNames[MAIN_NUM] = {
+    #define pick(e,n) { NAMELIT( n ) }
+    MAIN_NAMES
+    #undef pick
 };
-
 
 local void BeginFunc( void )
 {
@@ -184,7 +187,7 @@ local void BeginFunc( void )
     }
     name = CurFunc->name;
     for( main_entry = MAIN_WMAIN; main_entry < MAIN_NUM; ++main_entry ) {
-       if( strcmp( name, MainNames[main_entry] ) == 0 ) {
+       if( memcmp( name, MainNames[main_entry].name, MainNames[main_entry].len ) == 0 ) {
            break;
        }
     }
@@ -271,6 +274,7 @@ local void ParmDeclList( void )     /* process old style function definitions */
     decl_state          state;
     SYM_ENTRY           sym;
     decl_info           info;
+    size_t              len;
 
     while( CurToken != T_LEFT_BRACE ) {
         FullDeclSpecifier( &info );
@@ -301,9 +305,10 @@ local void ParmDeclList( void )     /* process old style function definitions */
                 if( sym.name == NULL || sym.name[0] == '\0' ) {
                     InvDecl();
                 } else {
+                    len = strlen( sym.name ) + 1;
                     for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
                         if( parm->sym.name != NULL ) {
-                            if( strcmp( parm->sym.name, sym.name ) == 0 ) {
+                            if( memcmp( parm->sym.name, sym.name, len ) == 0 ) {
                                 break;
                             }
                         }

@@ -1252,6 +1252,7 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
     MEPTR           mpch;
     MEPTR           mcur;
     int             macro_compare;
+    size_t          len;
 
     PCHMacroHash = (MEPTR *)CMemAlloc( MACRO_HASH_SIZE * sizeof( MEPTR ) );
     p = FixupMacros( p, macro_count );
@@ -1262,8 +1263,9 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
         prev_mpch = NULL;
         for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
             if( mpch->macro_flags & MFLAG_DEFINED_BEFORE_FIRST_INCLUDE ) {
+                len = strlen( mpch->macro_name ) + 1;
                 for( mcur = MacHash[h]; mcur != NULL; mcur = mcur->next_macro ) {
-                    if( strcmp( mcur->macro_name, mpch->macro_name ) == 0 ) {
+                    if( memcmp( mcur->macro_name, mpch->macro_name, len ) == 0 ) {
                         macro_compare = MacroCompare( mpch, mcur );
                         if( mpch->macro_flags & MFLAG_REFERENCED ) {
                             if( macro_compare == 0 )
@@ -1312,8 +1314,9 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
     // endloop
     for( h = 0; h < MACRO_HASH_SIZE; ++h ) {
         for( mcur = MacHash[h]; mcur != NULL; mcur = mcur->next_macro ) {
+            len = strlen( mcur->macro_name ) + 1;
             for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
-                if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
+                if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
                     break;
                 }
             }
@@ -1321,7 +1324,7 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
             // macro may either have been undef'd (mpch == NULL ) or undef'd and defined
                 if( mcur->macro_flags & MFLAG_USER_DEFINED ) {  //compiler defined macros not saved on undefs
                     for( mpch = PCHUndefMacroList; mpch != NULL; mpch = mpch->next_macro ) {
-                        if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
+                        if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
                             if( MacroCompare( mpch, mcur ) != 0 ) {
                                 return( -1 );
                             } else {
@@ -1342,8 +1345,9 @@ static int VerifyMacros( char *p, unsigned macro_count, unsigned undef_count )
         MEPTR       next_mcur;
 
         for( mcur = MacHash[h]; mcur != NULL; mcur = next_mcur ) {
+            len = strlen( mcur->macro_name ) + 1;
             for( mpch = PCHMacroHash[h]; mpch != NULL; mpch = mpch->next_macro ) {
-                if( strcmp( mpch->macro_name, mcur->macro_name ) == 0 ) {
+                if( memcmp( mpch->macro_name, mcur->macro_name, len ) == 0 ) {
                     break;
                 }
             }

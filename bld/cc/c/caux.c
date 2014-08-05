@@ -38,9 +38,11 @@
 aux_entry *AuxLookup( const char *name )
 {
     aux_entry   *ent;
+    size_t      len;
 
-    for( ent = AuxList; ent; ent = ent->next ) {
-        if( strcmp( ent->name, name ) == 0 ) {
+    len = strlen( name ) + 1;
+    for( ent = AuxList; ent != NULL; ent = ent->next ) {
+        if( memcmp( ent->name, name, len ) == 0 ) {
             break;
         }
     }
