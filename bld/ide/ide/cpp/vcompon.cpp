@@ -325,7 +325,7 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
     if( fn.size() > 0 ) {
         WFileName cwd;
         _component->filename().path( cwd, true );
-        int len = cwd.size();
+        size_t len = cwd.size();
         if( len > 0 ) {
             if( strnicmp( cwd, fn, len ) == 0 ) {
                 fn.chop( len );
@@ -794,8 +794,8 @@ void WEXPORT VComponent::bActionComponent( WWindow* b )
 void VComponent::actionError( MItem* item, const WString& actionName )
 {
     WString t;
-    for( int i=0; i<actionName.size(); i++ ) {
-        if( actionName[i] != '&' ) t.concat( (char)tolower(actionName[i]) );
+    for( size_t i = 0; i < actionName.size(); i++ ) {
+        if( actionName[i] != '&' ) t.concat( (char)tolower( actionName[i] ) );
     }
     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "You cannot %s '%s'", (const char*)t, (const char*)*item );
 }
@@ -836,12 +836,12 @@ void WEXPORT VComponent::removeItem( WFileName &fn )
 
 void VComponent::beginFileList( unsigned owner ) {
     int         cnt;
-    unsigned    i;
+    int         i;
     MItem       *cur;
 
     WPickList &items = _component->items();
     cnt = items.count();
-    for( i=0; i < cnt; i++ ) {
+    for( i = 0; i < cnt; i++ ) {
         cur = (MItem *)items[i];
         if( cur->owner() == owner ) cur->setVisited( false );
     }
@@ -849,41 +849,35 @@ void VComponent::beginFileList( unsigned owner ) {
 
 void VComponent::markFile( WFileName &file, unsigned owner ) {
     int         cnt;
-    unsigned    i;
+    int         i;
     MItem       *cur;
     WFileName   fn;
 
 //    file.toLower(); // since comparison below is actually case sensitive
     WPickList &items = _component->items();
     cnt = items.count();
-    for( i=0; ; i++ ) {
-        if( i >= cnt ) {
-            cur = NULL;
-            break;
-        }
+    for( i = 0; i < cnt; i++ ) {
         cur = (MItem *)items[i];
         cur->absName( fn );
-        if( file == fn ) break;
+        if( file == fn ) {
+            cur->setVisited( true );
+            cur->setOwner( owner );
+            return;
+        }
     }
-    if( cur != NULL ) {
-        cur->setVisited( true );
-        cur->setOwner( owner );
-    } else{
-        fn = file;
-        newItem( file, true, true, owner );
-    }
+    fn = file;
+    newItem( file, true, true, owner );
 }
 
 void VComponent::endFileList( unsigned owner ) {
     int         cnt;
-    unsigned    i;
+    int         i;
     MItem       *cur;
 
     WPickList &items = _component->items();
     cnt = items.count();
-    i=0;
-    while( i < cnt ) {
-        for( i=0; i < cnt ; i++ ) {
+    for( i = 0; i < cnt; ) {
+        for( i = 0; i < cnt ; i++ ) {
             cur = (MItem *)items[i];
             if( cur->owner() == owner && !cur->wasVisited() ) {
                 _component->removeItem( cur );

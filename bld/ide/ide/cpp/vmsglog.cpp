@@ -413,12 +413,13 @@ void VMsgLog::doRun()
         }
     }
 
-    int icount = _command.size();
-    for( int i=0; i<icount; ) {
+    size_t icount = _command.size();
+    for( size_t i = 0; i < icount; ) {
         WString cbuff;
-        for( ;i<icount; ) {
+        for( ; i < icount; ) {
             char ch = _command[i++];
-            if( ch == '\n' ) break;
+            if( ch == '\n' )
+                break;
             cbuff.concat( ch );
         }
         if( cbuff.size() > 0 ) {
@@ -651,7 +652,7 @@ bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* he
                 WString* data = (WString*)_data[index];
                 if( data->match( "cd *" ) ) {
                     WString dir( &(*data)[3] );
-                    int dirLen = dir.size()-1;
+                    size_t dirLen = dir.size() - 1;
                     if( dir[dirLen] != '\\' ) {
                         dir.concat( '\\' );
                     }
@@ -782,7 +783,7 @@ void VMsgLog::addLine( const WString& str, bool newline )
         }
         lastCD = str;
     }
-//drw    int length = str.size();
+//drw    size_t length = str.size();
 //drw    if( length > _maxLength ) {
 //drw   _maxLength = length;
 //drw   _batcher->setExtent( _batcher->getTextExtentX( str ) + WSystemMetrics::vScrollBarWidth() );

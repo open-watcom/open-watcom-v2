@@ -270,7 +270,8 @@ bool VpeMain::executeCommand( const char* c, int location, const char* title )
         WStringList reps;
         if( opts.count() > 0 ) {
             WString dTitle( title );
-            if( dTitle.size() == 0 ) dTitle = "AutoDialog";
+            if( dTitle.size() == 0 )
+                dTitle = "AutoDialog";
             WAutoDialog prompts( this, dTitle, opts );
             if( !prompts.getInput( reps ) ) {
                 setStatus( NULL );
@@ -360,11 +361,11 @@ bool VpeMain::execute( const WString& cmd )
     }
     startWait();
 
-    int icount = strlen( cmd );
-    for( int i=0; i<icount; ) {
+    size_t icount = strlen( cmd );
+    for( size_t i = 0; i < icount; ) {
         WString cbuff;
         while( isspace( cmd[i] ) ) i++;
-        for( ;i<icount; ) {
+        for( ; i < icount; ) {
             char ch = cmd[i];
             i++;
             if( ch == '\n' || ch == '\r' ) break;
@@ -373,7 +374,7 @@ bool VpeMain::execute( const WString& cmd )
         if( cbuff.size() > 0 ) {
             if( strnicmp( cbuff, "!Error ", 7 ) == 0 ) {
                 WString msg;
-                for( int i=7; i<cbuff.size() && cbuff[i] != '$'; i++ ) {
+                for( size_t i = 7; i < cbuff.size() && cbuff[i] != '$'; i++ ) {
                     msg.concat( cbuff[i] );
                 }
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, msg );
@@ -528,9 +529,9 @@ void VpeMain::executeEditor( const WString& cmd )
     } else if( x.stringAt(0) == "EditFileAtPos" ) {
         WString bat( _editor );
         bat.concat( ' ' ); // space after editor name before parms
-        int parmsize = _editorParms.size();
+        size_t parmsize = _editorParms.size();
 
-        for( int i=0; i < parmsize; i++ ) {
+        for( size_t i = 0; i < parmsize; i++ ) {
             switch( _editorParms[i] ) {
             case '%':
                 switch( _editorParms[i+1] ) {

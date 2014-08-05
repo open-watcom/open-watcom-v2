@@ -59,24 +59,28 @@ typedef struct {
     const char  *filter;
 } GetFilesInfo;
 
-static DWORD getMaxItemLen( HWND lb ) {
-    DWORD       cnt;
-    DWORD       len;
-    DWORD       rc;
+static LRESULT getMaxItemLen( HWND lb )
+{
+    WPARAM      cnt;
+    LRESULT     len;
+    LRESULT     rc;
     WPARAM      i;
 
-    cnt = SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    cnt = (WPARAM)SendMessage( lb, LB_GETCOUNT, 0, 0 );
     len = 0;
-    for( i=0; i < cnt; i++ ) {
+    for( i = 0; i < cnt; i++ ) {
         rc = SendMessage( lb, LB_GETTEXTLEN, i, 0 );
-        if( rc > len ) len = rc;
+        if( rc > len ) {
+            len = rc;
+        }
     }
     return( len );
 }
 
-static void checkRemoveButton( HWND hwnd ) {
+static void checkRemoveButton( HWND hwnd )
+{
     HWND        ctl;
-    DWORD       item;
+    LRESULT     item;
 
     ctl = GetDlgItem( hwnd, FOD_FILELIST );
     item = SendMessage( ctl, LB_GETCURSEL, 0, 0 );
@@ -90,7 +94,7 @@ static void checkRemoveButton( HWND hwnd ) {
 }
 
 static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
-    unsigned    len;
+    size_t      len;
     char        buf[_MAX_PATH];
     char        drive[_MAX_DRIVE];
 
@@ -101,7 +105,7 @@ static void getFullFname( HWND hwnd, const char *fname, WString *fullname ) {
         getcwd( buf, _MAX_PATH );
         *fullname = buf;
         len = strlen( buf );
-        if( buf[len-1] != '\\' ) fullname->concat( "\\" );
+        if( buf[len - 1] != '\\' ) fullname->concat( "\\" );
     }
     fullname->concat( fname );
 }
@@ -163,36 +167,36 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname ) {
 }
 
 
-static DWORD findMatchingFile( HWND hwnd, const char *fname ) {
-    DWORD       rc;
+static LRESULT findMatchingFile( HWND hwnd, const char *fname )
+{
+    LRESULT     rc;
     WString     fullname;
     HWND        lb;
 
     getFullFname( hwnd, fname, &fullname );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
 //    fullname.toLower();
-    rc = SendMessage( lb, LB_FINDSTRINGEXACT, -1,
-                      (LPARAM)(LPSTR)fullname.gets() );
+    rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     if( rc == LB_ERR ) {
         getRelFname( hwnd, fname, &fullname );
 //        fullname.toLower();
-        rc = SendMessage( lb, LB_FINDSTRINGEXACT, -1,
-                          (LPARAM)(LPSTR)fullname.gets() );
+        rc = SendMessage( lb, LB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPSTR)fullname.gets() );
     }
     return( rc );
 }
 
-static void addFileToList( HWND hwnd, char *fname ) {
+static void addFileToList( HWND hwnd, char *fname )
+{
     HWND        ctl;
-    DWORD       item;
-    DWORD       match;
+    LRESULT     item;
+    LRESULT     match;
     WFileName   fullname;
     bool        isLong = false;
 
-    int len = strlen( fname )-1;
+    size_t len = strlen( fname ) - 1;
     if( fname[0] == '"' && fname[len] == '"' ) {
         fname++;
-        fname[len-1] = '\0';
+        fname[len - 1] = '\0';
         isLong = true;
     } else {
         WFileName filename( fname );
@@ -240,7 +244,8 @@ static void addCurrentFile( HWND hwnd  ) {
 }
 
 #ifdef __NT__
-static void addCurrentFile95( HWND hwnd ) {
+static void addCurrentFile95( HWND hwnd )
+{
     char        fname[MAX_PATH];
     struct stat buf;
     SendMessage( GetParent( hwnd ), CDM_GETSPEC, MAX_PATH, (LPARAM)fname );
@@ -252,22 +257,23 @@ static void addCurrentFile95( HWND hwnd ) {
 }
 #endif
 
-static void addAllFiles( HWND hwnd ) {
-    HWND         ctl;
-    LRESULT      cnt;
+static void addAllFiles( HWND hwnd )
+{
+    HWND        ctl;
+    WPARAM      cnt;
+    WPARAM      i;
     char        *buf;
-    unsigned     alloced;
-    LRESULT      len;
-    WPARAM       i;
+    LRESULT     alloced;
+    LRESULT     len;
 
     alloced = 512;
     buf = new char [alloced];
 
     ctl = GetDlgItem( hwnd, FOD_FILES );
-    cnt = SendMessage( ctl, LB_GETCOUNT, 0, 0 );
-    for( i=0; i < cnt; i++ ) {
+    cnt = (WPARAM)SendMessage( ctl, LB_GETCOUNT, 0, 0 );
+    for( i = 0; i < cnt; i++ ) {
         len = SendMessage( ctl, LB_GETTEXTLEN, i, 0 );
-        len ++;
+        len++;
         if( len > alloced ) {
             delete buf;
             buf = new char [len];
@@ -321,9 +327,9 @@ static void addAllFiles95( HWND hwnd ) {
 
 void GetResults( HWND hwnd ) {
     char                *buf;
-    DWORD               cnt;
+    WPARAM              cnt;
     WPARAM              i;
-    DWORD               len;
+    LRESULT             len;
     HWND                lb;
     GetFilesInfo        *info;
 
@@ -332,8 +338,8 @@ void GetResults( HWND hwnd ) {
     len = getMaxItemLen( lb );
     buf = (char *)alloca( (size_t)( len + 1 ) );
     *info->result = "";
-    cnt = SendMessage( lb, LB_GETCOUNT, 0, 0 );
-    for( i=0; i < cnt; i++ ) {
+    cnt = (WPARAM)SendMessage( lb, LB_GETCOUNT, 0, 0 );
+    for( i = 0; i < cnt; i++ ) {
         SendMessage( lb, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
         info->result->concat( buf );
         info->result->concat( " " );
@@ -346,7 +352,7 @@ void initFileList( HWND hwnd ) {
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     lb = GetDlgItem( hwnd, FOD_FILELIST );
-    if( *info->result != "" ) {
+    if( (*info->result).size() > 0 ) {
         WStringList names( *info->result );
         for( ; names.count() > 0; ) {
             SendMessage( lb, LB_ADDSTRING, 0,
@@ -368,7 +374,7 @@ UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     WORD        cmd;
     LRESULT     item;
-    DWORD       rc;
+    LRESULT     rc;
     HWND        ctl;
 
     lparam = lparam;
@@ -444,7 +450,7 @@ UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 {
     WORD            cmd;
     LRESULT         item;
-    DWORD           rc;
+    LRESULT         rc;
     HWND            ctl;
     HWND            dlg;
     GetFilesInfo    *info;

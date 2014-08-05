@@ -77,7 +77,7 @@ void VEditDlg::initialize()
     WText               *t7;
 
     const int   rb_hite = 10;  //height of a radio button
-    const int   space = 10;
+//    const int   space = 10;
     const int   button_width = 50;
     const int   button_hite = 14;
 

@@ -95,7 +95,7 @@ void VCompDialog::initialize()
     t2->show();
 
     WRadioButton        *button;
-    WRadioButton        *checkedbutton;
+    WRadioButton        *checkedbutton = NULL;
     int                 icount;
     WStyle              style;
     MTarget             *curtarg;
@@ -350,7 +350,7 @@ void VCompDialog::browseButton( WWindow* )
                                          WFOpenNew );
         if( fn.size() > 0 ) {
             WFileName cwd; cwd.getCWD( true );
-            int len = cwd.size();
+            size_t len = cwd.size();
             if( len > 0 ) {
                 if( strnicmp( cwd, fn, len ) == 0 ) {
                     fn.chop( len );
@@ -373,5 +373,5 @@ bool VCompDialog::process( WFileName& fn, MRule** rulep, WString& mask, MCompone
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "No targets are currently installed" );
         return( false );
     }
-    return( WDialog::process() == true );
+    return( WDialog::process() == (int)true );
 }

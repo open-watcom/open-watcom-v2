@@ -92,7 +92,7 @@ unsigned BatchCollect( void *ptr, unsigned max, unsigned long *status )
     if( len <= 0 ) return( 0 );
     if( *buff == LNK_STATUS ) {
         *status = *(unsigned long *)&buff[1];
-        return( -1 );
+        return( (unsigned)-1 );
     }
     memmove( buff, &buff[1], len );
     return( len );

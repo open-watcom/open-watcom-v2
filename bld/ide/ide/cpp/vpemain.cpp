@@ -432,7 +432,7 @@ void VpeMain::buildMenuBar()
     menuBar->insertPopup( pop6, 6 );
     pop6->insertItem( new WMenuItem( "&Refresh", this, (cbm)&VpeMain::mRefresh, (cbh)&VpeMain::mHint, "Refresh target and file attributes from disk directories." ), 0 );
 
-    unsigned    helpcnt;
+    int         helpcnt;
     MAction     *action;
     WString     mname;
     WMenuItem   *mi;
@@ -543,9 +543,9 @@ MenuData VpeMain::menu0[] = {
 void VpeMain::onPopup0a( WPopupMenu* pop )
 {
     int         systype;
-    unsigned    i;
+    int         i;
 
-    for( i=0; i < popup0a.count; i++ ) {
+    for( i = 0; i < popup0a.count; i++ ) {
         pop->checkItem( false, i );
     }
     systype = _rcsClient.QuerySystem();
@@ -1458,10 +1458,10 @@ bool VpeMain::createDirectory( const WFileName& f )
 char* VpeMain::getFilters()
 {
     WStringList filtList;
-    int maxLen = 0;
+    size_t maxLen = 0;
     WPickList& rules = _config->rules();
     int icount = rules.count();
-    for( int i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MRule* r = (MRule*)rules[i];
         if( r->ismakeable() ) {
             WString* name = new WString();
@@ -1480,7 +1480,7 @@ char* VpeMain::getFilters()
     char* filts = new char[maxLen + 1];
     int off = 0;
     icount = filtList.count();
-    for( i=0; i<icount; i++ ) {
+    for( i = 0; i < icount; i++ ) {
         char* p = filtList.cStringAt( i );
         strcpy( &filts[off], p );
         off += strlen( p ) + 1;
