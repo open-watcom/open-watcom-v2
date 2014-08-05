@@ -62,6 +62,7 @@ extern "C" {
 #include "wprocess.hpp"
 #include "wsystem.hpp"
 #include "wpshbttn.hpp"
+#include "wsyshelp.hpp"
 
 #define LOG_HELP_KEY    GUI_KEY_F1
 #define LOG_ESCAPE_KEY  GUI_KEY_ESCAPE

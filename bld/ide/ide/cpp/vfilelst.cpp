@@ -48,7 +48,6 @@
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
-
 #include "clibext.h"
 
 typedef struct {
@@ -215,8 +214,7 @@ static void addFileToList( HWND hwnd, char *fname )
         if( isLong ) {
             fullname.addQuotes();
         }
-        item = SendMessage( ctl, LB_ADDSTRING, 0,
-                            (LPARAM)(LPSTR)fullname.gets() );
+        item = SendMessage( ctl, LB_ADDSTRING, 0, (LPARAM)(LPSTR)fullname.gets() );
     } else {
         item = match;
     }
@@ -277,6 +275,7 @@ static void addAllFiles( HWND hwnd )
         if( len > alloced ) {
             delete buf;
             buf = new char [len];
+            alloced = len;
         }
         SendMessage( ctl, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
         addFileToList( hwnd, buf );
@@ -355,8 +354,7 @@ void initFileList( HWND hwnd ) {
     if( (*info->result).size() > 0 ) {
         WStringList names( *info->result );
         for( ; names.count() > 0; ) {
-            SendMessage( lb, LB_ADDSTRING, 0,
-                         (LPARAM)(LPSTR)names.cStringAt( 0 ) );
+            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPSTR)names.cStringAt( 0 ) );
             names.removeAt( 0 );
         }
     }
@@ -417,7 +415,7 @@ UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             if( item != LB_ERR ) {
                 rc = SendMessage( ctl, LB_DELETESTRING, (WPARAM)item, 0 );
                 if( item != 0 ) {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)(item-1), 0 );
+                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)( item - 1 ), 0 );
                 } else {
                     SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
                 }
@@ -488,7 +486,7 @@ UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
             if( item != LB_ERR ) {
                 rc = SendMessage( ctl, LB_DELETESTRING, (WPARAM)item, 0 );
                 if( item != 0 ) {
-                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)(item-1), 0 );
+                    SendMessage( ctl, LB_SETCURSEL, (WPARAM)( item - 1 ), 0 );
                 } else {
                     SendMessage( ctl, LB_SETCURSEL, (WPARAM)item, 0 );
                 }

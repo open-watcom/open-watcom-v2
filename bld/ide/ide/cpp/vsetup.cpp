@@ -111,8 +111,8 @@ VSetup::VSetup( WWindow* parent, MTool* tool, WString& tagMask, WVList* states, 
 static unsigned calcControlHite( WVList *list, unsigned index,
                             unsigned editctl_hite, unsigned checkbox_hite,
                             unsigned radiobutton_hite, unsigned text_hite,
-                            unsigned groupbox_hite ) {
-
+                            unsigned groupbox_hite )
+{
     MSwitch*    sw;
     unsigned    ret;
     unsigned    cnt;

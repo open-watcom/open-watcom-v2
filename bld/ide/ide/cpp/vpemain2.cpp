@@ -67,6 +67,7 @@ extern "C" {
 #include "wabout.hpp"
 #include "wmetrics.hpp"
 #include "wsystem.hpp"
+#include "wsyshelp.hpp"
 
 #include "wstatwin.hpp"
 #include "wflashp.hpp"
@@ -530,7 +531,6 @@ void VpeMain::executeEditor( const WString& cmd )
         WString bat( _editor );
         bat.concat( ' ' ); // space after editor name before parms
         size_t parmsize = _editorParms.size();
-
         for( size_t i = 0; i < parmsize; i++ ) {
             switch( _editorParms[i] ) {
             case '%':

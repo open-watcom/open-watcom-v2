@@ -65,7 +65,7 @@ extern "C" {
 
 #include "wabout.hpp"
 #include "wmetrics.hpp"
-#include "wsystem.hpp"
+#include "wsyshelp.hpp"
 
 #include "wstatwin.hpp"
 #include "wflashp.hpp"
@@ -1478,7 +1478,7 @@ char* VpeMain::getFilters()
     filtList.add( new WString( "*.*" ) );
     maxLen += 3 + 1;
     char* filts = new char[maxLen + 1];
-    int off = 0;
+    size_t off = 0;
     icount = filtList.count();
     for( i = 0; i < icount; i++ ) {
         char* p = filtList.cStringAt( i );
