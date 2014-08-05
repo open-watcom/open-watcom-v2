@@ -125,7 +125,7 @@ static char debugging = 0;      /* Tells crash handler to take charge */
 static char being_debugged = 0; /* Another D present? */
 
 static int  first_time = 1;
-static unsigned char saved_byte;
+static unsigned char saved_opcode;
 
 /*
  *  This is the list of exceptions which 4gw hooks when it starts up.
@@ -236,7 +236,7 @@ static void set_hotkey_break( TSF32 FarPtr client )
 {
     client = find_user_code( client );
     D32DebugBreakOp( &hotkey_opcode );
-    D32DebugSetBreak( client->eip, client->cs, 0, &hotkey_opcode, &saved_byte );
+    D32DebugSetBreak( client->eip, client->cs, 0, &hotkey_opcode, &saved_opcode );
     hotkey_hit = 1;
 #ifdef DEBUGHOTKEY
     outs( "hotkey break set\r\n" );
@@ -253,7 +253,7 @@ static void check_hotkey( int eip_mod, TSF32 FarPtr client )
         outi( FP_OFF( client ) ); 
         outi( client->cs ); outi( (int)client->eip ); outs( "\r\n" );
 #endif
-        D32DebugSetBreak( client->eip + eip_mod, client->cs, 0, &saved_byte, &hotkey_opcode );
+        D32DebugSetBreak( client->eip + eip_mod, client->cs, 0, &saved_opcode, &hotkey_opcode );
         client->int_id = hotkey_int; /* Attribute to Hotkey */
     }
 }
