@@ -75,6 +75,8 @@ typedef struct ar_header ar_header;
 
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
 
+#include <sys/stat.h>
+
 #define AR_S_IFREG S_IFREG
 
 #define AR_S_ISUID S_ISUID
