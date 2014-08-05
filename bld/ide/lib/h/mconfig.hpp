@@ -51,9 +51,9 @@
 
 //these are used for indexing by MConfig::zapTargetMasks()
 typedef enum HostType {
-    #undef pick
     #define pick(enum,type,batchserv,editor,DLL,parms,pathsep,descr) enum,
     #include "hosttype.hpp"
+    #undef pick
     HOST_UNDEFINED
 } HostType;
 
