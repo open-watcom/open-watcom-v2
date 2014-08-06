@@ -33,15 +33,17 @@
 #ifndef WRESRTNS_INLCUDED
 #define WRESRTNS_INLCUDED
 
-#define WRESOPEN        WResRtns.open
-#define WRESCLOSE       WResRtns.close
-#define WRESWRITE       WResRtns.write
-#define WRESREAD        WResRtns.read
-#define WRESSEEK        WResRtns.seek
-#define WRESTELL        WResRtns.tell
-#define WRESALLOC       WResRtns.alloc
-#define WRESFREE        WResRtns.free
+#define WRESOPEN(n,m,a)     WResRtns.open(n,m,a)
+#define WRESCLOSE(fh)       WResRtns.close(f)
+#define WRESWRITE(fh,b,s)   WResRtns.write(f,b,s)
+#define WRESREAD(fh,b,s)    WResRtns.read(f,b,s)
+#define WRESSEEK(fh,o,d)    WResRtns.seek(f,o,d)
+#define WRESTELL(fh)        WResRtns.tell(f)
+#define WRESALLOC           WResRtns.alloc
+#define WRESFREE            WResRtns.free
 
-#define WRESHANDLE      hInstance->handle
+#define WRESHANDLE          hInstance->handle
+
+#define WRESIOERR(fh,rc)    (rc == -1)
 
 #endif

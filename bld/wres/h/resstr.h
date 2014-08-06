@@ -46,6 +46,6 @@ typedef struct StringTableBlock {
 extern void ResInitStringTableBlock( StringTableBlock * );
 extern void ResFreeStringTableBlock( StringTableBlock * );
 extern int ResWriteStringTableBlock( StringTableBlock * currblock,
-                            uint_8 use_unicode, int handle );
+                            uint_8 use_unicode, WResFileID handle );
 
 #endif

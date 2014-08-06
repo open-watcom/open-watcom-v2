@@ -67,7 +67,7 @@ extern int ResReadUint32( uint_32 * newint, WResFileID handle );
 extern int ResReadUint16( uint_16 * newint, WResFileID handle );
 extern int ResReadUint8( uint_8 * newint, WResFileID handle );
 extern long ResTell( WResFileID handle );
-extern long ResSeek( WResFileID handle, long offset, int origin );
+extern WResSeekReturn ResSeek( WResFileID handle, long offset, int origin );
 extern int ResPadDWord( WResFileID handle );
 extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle );
 
