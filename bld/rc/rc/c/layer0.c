@@ -103,26 +103,26 @@ static RcBuffer * NewRcBuffer( void )
     return( new_buff );
 } /* NewRcBuffer */
 
-static void RegisterOpenFile( WResFileID fhdl )
+static void RegisterOpenFile( WResFileID handle )
 /*********************************************/
 {
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         if( openFileList[i] == NIL_HANDLE ) {
-            openFileList[i] = fhdl;
+            openFileList[i] = handle;
             break;
         }
     }
 }
 
-static void UnRegisterOpenFile( WResFileID fhdl )
+static void UnRegisterOpenFile( WResFileID handle )
 /***********************************************/
 {
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] == fhdl ) {
+        if( openFileList[i] == handle ) {
             openFileList[i] = NIL_HANDLE;
             break;
         }

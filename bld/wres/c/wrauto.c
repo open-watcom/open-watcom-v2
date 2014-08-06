@@ -37,7 +37,7 @@
 
 DepInfo *WResGetAutoDep( const char *fname ) {
 
-    WResFileID      fhdl;
+    WResFileID      handle;
     WResDir         dir;
     int             dup_discarded;
     WResID          *name;
@@ -47,22 +47,23 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     DepInfo         *ret;
     WResFileSSize   numread;
 
-    fhdl = ResOpenFileRO( fname );
-    if( fhdl == NIL_HANDLE ) return( NULL );
+    handle = ResOpenFileRO( fname );
+    if( handle == NIL_HANDLE )
+        return( NULL );
 
-    if( !WResIsWResFile( fhdl ) ) {
-        ResCloseFile( fhdl );
+    if( !WResIsWResFile( handle ) ) {
+        ResCloseFile( handle );
         return( NULL );
     }
     dir = WResInitDir();
     if( dir == NULL ) {
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
 
-    if( WResReadDir( fhdl, dir, &dup_discarded ) ) {
+    if( WResReadDir( handle, dir, &dup_discarded ) ) {
         WResFreeDir( dir );
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
 
@@ -74,35 +75,35 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     if( WResIsEmptyWindow( window ) ) {
         WRES_ERROR( WRS_RES_NOT_FOUND );
         WResFreeDir( dir );
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
     WResIDFree( name );
     WResIDFree( type );
 
     info = WResGetLangInfo( window );
-    if( ResSeek( fhdl, info->Offset, SEEK_SET ) == -1 ) {
+    if( ResSeek( handle, info->Offset, SEEK_SET ) == -1 ) {
         WRES_ERROR( WRS_SEEK_FAILED );
         WResFreeDir( dir );
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
     ret = WRESALLOC( info->Length );
     if( ret == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
         WResFreeDir( dir );
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
-    numread = WRESREAD( fhdl, ret, info->Length );
+    numread = WRESREAD( handle, ret, info->Length );
     if( numread != info->Length ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         WResFreeDir( dir );
-        ResCloseFile( fhdl );
+        ResCloseFile( handle );
         return( NULL );
     }
     WResFreeDir( dir );
-    ResCloseFile( fhdl );
+    ResCloseFile( handle );
     return( ret );
 }
 
