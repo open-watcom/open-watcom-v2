@@ -47,25 +47,25 @@ WResID *WResReadWResID( WResFileID handle )
 
     /* read in the fixed part of the record */
     error = WResReadFixedWResID( &newid, handle );
-    if (error) {
+    if( error ) {
         return( NULL );
     }
 
-    if (newid.IsName) {
+    if( newid.IsName ) {
         extrabytes = newid.ID.Name.NumChars - 1;
     } else {
         extrabytes = 0;
     }
 
     newidptr = WRESALLOC( sizeof(WResID) + extrabytes );
-    if (newidptr == NULL) {
+    if( newidptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         memcpy( newidptr, &newid, sizeof(WResID) );
-        if (extrabytes != 0) {
+        if( extrabytes != 0 ) {
             numread = WRESREAD( handle, &(newidptr->ID.Name.Name[1]), extrabytes );
-            if (numread != extrabytes) {
-                WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            if( numread != extrabytes ) {
+                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newidptr );
                 newidptr = NULL;
             }

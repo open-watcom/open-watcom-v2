@@ -44,9 +44,8 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     WResID          *type;
     WResDirWindow   window;
     WResLangInfo    *info;
-    long            offset;
     DepInfo         *ret;
-    int             rc;
+    WResFileSSize   numread;
 
     fhdl = ResOpenFileRO( fname );
     if( fhdl == NIL_HANDLE ) return( NULL );
@@ -82,8 +81,7 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     WResIDFree( type );
 
     info = WResGetLangInfo( window );
-    offset = ResSeek( fhdl, info->Offset, SEEK_SET );
-    if( offset != info->Offset ) {
+    if( ResSeek( fhdl, info->Offset, SEEK_SET ) == -1 ) {
         WRES_ERROR( WRS_SEEK_FAILED );
         WResFreeDir( dir );
         ResCloseFile( fhdl );
@@ -96,13 +94,9 @@ DepInfo *WResGetAutoDep( const char *fname ) {
         ResCloseFile( fhdl );
         return( NULL );
     }
-    rc = WRESREAD( fhdl, ret, info->Length );
-    if( rc != info->Length ) {
-        if( rc == -1 ) {
-            WRES_ERROR( WRS_READ_FAILED );
-        } else {
-            WRES_ERROR( WRS_READ_INCOMPLETE );
-        }
+    numread = WRESREAD( fhdl, ret, info->Length );
+    if( numread != info->Length ) {
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         WResFreeDir( dir );
         ResCloseFile( fhdl );
         return( NULL );

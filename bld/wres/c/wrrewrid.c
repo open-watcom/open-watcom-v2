@@ -44,15 +44,12 @@ int WResReadExtraWResID( WResID *name, WResFileID handle )
     int             numread;
     uint_16         extrabytes;
 
-    if (name->IsName) {
+    if( name->IsName ) {
         extrabytes = name->ID.Name.NumChars - 1;
         if (extrabytes > 0) {
             numread = WRESREAD( handle, &(name->ID.Name.Name[1]), extrabytes );
-            if( numread == -1 ) {
-                WRES_ERROR( WRS_READ_FAILED );
-                return( TRUE );
-            } else if( numread != extrabytes ) {
-                WRES_ERROR( WRS_READ_INCOMPLETE );
+            if( numread != extrabytes ) {
+                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 return( TRUE );
             }
         }

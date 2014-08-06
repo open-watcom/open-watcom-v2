@@ -47,14 +47,9 @@ static int GetResource( WResLangInfo    *res,
                         char            *res_buffer )
 /***************************************************/
 {
-    long        prevpos;
-//    int         numread;
-
-    prevpos = WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET );
-    if ( prevpos == -1L ) return( -1 );
-//    numread = WRESREAD( WRESHANDLE, res_buffer, res->Length );
+    if( WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET ) == -1 )
+        return( -1 );
     WRESREAD( WRESHANDLE, res_buffer, res->Length );
-
     return( 0 );
 }
 

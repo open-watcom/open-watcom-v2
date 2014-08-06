@@ -52,7 +52,6 @@ static int GetString(   WResLangInfo    *res,
                         int             nBufferMax )
 /*************************************************/
 {
-    long                prevpos;
     int                 length;
     int                 stringnum;
     int                 stringlen;
@@ -60,8 +59,7 @@ static int GetString(   WResLangInfo    *res,
     int                 ix1, ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    prevpos = WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET );
-    if ( prevpos == -1L )
+    if( WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;
@@ -80,8 +78,8 @@ static int GetString(   WResLangInfo    *res,
                 length = 0;
             }
             numread = WRESREAD( WRESHANDLE, stringbuff, numread );
-            if( numread == 0 ) return( -1 );    // 15-sep-93 AFS
-            if( numread == -1 ) return( -1 );
+            if( WRESIOERR( WRESHANDLE, numread ) ) return( -1 );
+            if( numread == 0 ) return( -1 );
             ix1 = 0;
         }
         if ( ix1 < numread ) {

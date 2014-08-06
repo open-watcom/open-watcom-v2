@@ -45,13 +45,13 @@ WResFileID ResOpenFileRO( const char *filename )
 
 #if defined( __WATCOMC__ ) && defined( __QNX__ )
     /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
-    ret = WRESOPEN( filename, O_RDONLY );
+    ret = WRESOPEN( filename, O_RDONLY, PMODE_RW );
     if( ret == NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
     setmode( ret, O_BINARY );
 #else
-    ret = WRESOPEN( filename, O_RDONLY | O_BINARY );
+    ret = WRESOPEN( filename, O_RDONLY | O_BINARY, PMODE_RW );
     if( ret == NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }

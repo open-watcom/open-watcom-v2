@@ -69,14 +69,15 @@ extern int FindResources( PHANDLE_INFO hInstance )
     notfound = 1;
     FileShift = 0;
     offset = sizeof( dbgheader );
-    if( WRESSEEK( WRESHANDLE, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1L ) {
+    if( WRESSEEK( WRESHANDLE, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
         if( WRESREAD( WRESHANDLE, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
             if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                 offset += sizeof( PATCH_LEVEL );
             }
         }
     }
-    currpos = WRESSEEK( WRESHANDLE, -offset, SEEK_END );
+    WRESSEEK( WRESHANDLE, -offset, SEEK_END );
+    currpos = WRESTELL( WRESHANDLE );
     for( ;; ) {
         WRESREAD( WRESHANDLE, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {

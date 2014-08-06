@@ -96,7 +96,7 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
     int             error;
     char            *convbuf;
     int             len;
-    int             numwrite;
+    int             numwrote;
     uint_16         tmp16;
 
     error = FALSE;
@@ -115,8 +115,8 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
                 len = item->strlen;
                 convbuf = item->Value.String;
             }
-            numwrite = WRESWRITE( handle, convbuf, len );
-            if( numwrite != len ) {
+            numwrote = WRESWRITE( handle, convbuf, len );
+            if( numwrote != len ) {
                 error = TRUE;
                 WRES_ERROR( WRS_WRITE_FAILED );
             }
@@ -149,13 +149,13 @@ extern uint_16 ResSizeVerValueItem( VerValueItem * item, uint_8 use_unicode )
 extern int ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
 /***********************************************************************/
 {
-    int     num_wrote;
+    int     numwrote;
 
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = time( NULL );
-    num_wrote = WRESWRITE( handle, fixed, sizeof(VerFixedInfo) );
-    if( num_wrote != sizeof(VerFixedInfo) ) {
+    numwrote = WRESWRITE( handle, fixed, sizeof(VerFixedInfo) );
+    if( numwrote != sizeof(VerFixedInfo) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

@@ -219,7 +219,7 @@ int ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
 
     numread = WRESREAD( handle, currhead, sizeof(MenuHeader) );
     if( numread != sizeof(MenuHeader) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
     } else {
         return( FALSE );

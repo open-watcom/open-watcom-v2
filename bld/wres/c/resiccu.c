@@ -56,7 +56,7 @@ extern int ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID handle )
 
     numread = WRESREAD( handle, head, sizeof(IconCurDirHeader) );
     if( numread != sizeof(IconCurDirHeader) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
     } else {
         return( FALSE );
@@ -84,7 +84,7 @@ extern int ResReadIconDirEntry( IconDirEntry *entry, WResFileID handle )
 
     numread = WRESREAD( handle, entry, sizeof(IconDirEntry) );
     if( numread != sizeof(IconDirEntry) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
     } else {
         return( FALSE );
@@ -112,7 +112,7 @@ extern int ResReadCurDirEntry( CurDirEntry *entry, WResFileID handle )
 
     numread = WRESREAD( handle, entry, sizeof(CurDirEntry) );
     if( numread != sizeof(CurDirEntry) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( TRUE );
     } else {
         return( FALSE );

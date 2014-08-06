@@ -266,9 +266,9 @@ extern int ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle 
     /* the fixed portion is everything up to, but not including, MenuName */
     fixedbytes = offsetof( DialogBoxHeader32, MenuName );
     numread = WRESREAD( handle, head, fixedbytes );
-    error = (numread != fixedbytes);
+    error = ( numread != fixedbytes );
     if( error ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
 
     if (!error) {
@@ -313,7 +313,7 @@ extern int ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
     numread = WRESREAD( handle, head, fixedbytes );
     error = (numread != fixedbytes);
     if( error ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
 
     if (!error) {
@@ -353,11 +353,11 @@ extern int ResIsDialogEx( WResFileID handle )
     /* read in the signature part of the header and check it */
     numread = WRESREAD( handle, signa, sizeof(signa) );
     if( numread != sizeof(signa) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
-    }
-    else {
-        if (signa[0] == 0x0001 && signa[1] == 0xFFFF)
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+    } else {
+        if (signa[0] == 0x0001 && signa[1] == 0xFFFF) {
             return(TRUE);
+        }
     }
     return( FALSE );
 }
@@ -400,7 +400,7 @@ extern int ResReadDialogExHeader32( DialogBoxHeader32 *head,
         numread = WRESREAD( handle, &(head->Size), sizeof( DialogSizeInfo ) );
         error = ( numread != sizeof( DialogSizeInfo ) );
         if( error ) {
-            WRES_ERROR( WRS_READ_FAILED );
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         }
     }
     if (!error) {
@@ -681,7 +681,7 @@ extern int ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle
     numread = WRESREAD( handle, control, fixedbytes );
     error = (numread != fixedbytes);
     if( error ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
 
     if (!error) {
@@ -717,7 +717,7 @@ extern int ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID ha
         numread = WRESREAD( handle, control, fixedbytes );
         error = (numread != fixedbytes);
         if( error ) {
-            WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         }
     }
 
@@ -753,7 +753,7 @@ extern int ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID h
         numread = WRESREAD( handle, control, fixedbytes );
         error = (numread != fixedbytes);
         if( error ) {
-            WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         }
     }
 

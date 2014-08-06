@@ -44,7 +44,6 @@ int WResFileInit( WResFileID handle )
 {
     WResHeader  head;
     int         error;
-    long        seek_rc;
 
     head.Magic[0] = WRESMAGIC0;
     head.Magic[1] = WRESMAGIC1;
@@ -54,22 +53,20 @@ int WResFileInit( WResFileID handle )
     head.WResVer = WRESVERSION;
 
     /* write the empty record out at the begining of the file */
-    seek_rc = WRESSEEK( handle, 0, SEEK_SET );
-    error = (seek_rc == -1L);
-    if (error) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    } else {
-        error = WResWriteHeaderRecord( &head, handle );
-    }
-
-    /* leave room for the extended header */
+    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
-        seek_rc = WRESSEEK( handle, sizeof(WResExtHeader), SEEK_CUR );
-        error = (seek_rc == -1L);
+        error = WResWriteHeaderRecord( &head, handle );
+        /* leave room for the extended header */
+        if( error ) {
+            WRES_ERROR( WRS_SEEK_FAILED );
+        } else {
+            error = ( WRESSEEK( handle, sizeof( WResExtHeader ), SEEK_CUR ) == -1 );
+            if( error ) {
+                WRES_ERROR( WRS_SEEK_FAILED );
+            }
+        }
     }
-    if( error ) WRES_ERROR( WRS_SEEK_FAILED );
-
     return( error );
 } /* WResFileInit */

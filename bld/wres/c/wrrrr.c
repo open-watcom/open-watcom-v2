@@ -57,14 +57,14 @@ WResResInfo *WResReadResRecord( WResFileID handle )
         numcharsleft = 0;
     }
     newptr = WRESALLOC( sizeof(WResResInfo) + numcharsleft );
-    if (newptr == NULL) {
+    if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         memcpy( newptr, &newres, sizeof(WResResInfo) );
-        if (numcharsleft != 0) {
+        if( numcharsleft != 0 ) {
             numread = WRESREAD( handle, &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
-            if (numread != numcharsleft) {
-                WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            if( numread != numcharsleft ) {
+                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );
                 newptr = NULL;
             }

@@ -38,24 +38,21 @@
 int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
 /***************************************************************/
 {
-    long            currpos;
     int             error;
     int             numread;
 
-    error = TRUE;
-    currpos = WRESSEEK( handle, 0, SEEK_SET );
-    if( currpos == -1L ) {
+    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+    if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
-        numread = WRESREAD( handle, header, sizeof(WResHeader) );
-        if( numread != sizeof(WResHeader) ) {
-            WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        numread = WRESREAD( handle, header, sizeof( WResHeader ) );
+        if( numread != sizeof( WResHeader ) ) {
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+            error = TRUE;
         } else {
-            currpos = WRESSEEK( handle, currpos, SEEK_SET );
-            if( currpos == -1L ) {
+            error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+            if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );
-            } else {
-                error = FALSE;
             }
         }
     }
@@ -69,7 +66,7 @@ int WResReadExtHeader( WResExtHeader *head, WResFileID handle )
 
     numread = WRESREAD( handle, head, sizeof(WResExtHeader) );
     if( numread != sizeof(WResExtHeader) ) {
-        WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( TRUE );
     } else {
         return( FALSE );

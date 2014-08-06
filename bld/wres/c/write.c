@@ -61,10 +61,10 @@ int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
 extern int ResWriteUint8( const uint_8 *newint, WResFileID handle )
 /*****************************************************************/
 {
-    int     numwrite;
+    int     numwrote;
 
-    numwrite = WRESWRITE( handle, newint, sizeof(uint_8) );
-    if( numwrite != sizeof(uint_8) ) {
+    numwrote = WRESWRITE( handle, newint, sizeof(uint_8) );
+    if( numwrote != sizeof(uint_8) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -75,10 +75,10 @@ extern int ResWriteUint8( const uint_8 *newint, WResFileID handle )
 int ResWriteUint16( const uint_16 *newint, WResFileID handle )
 /************************************************************/
 {
-    int     numwrite;
+    int     numwrote;
 
-    numwrite = WRESWRITE( handle, newint, sizeof( uint_16 ) );
-    if( numwrite != sizeof(uint_16) ) {
+    numwrote = WRESWRITE( handle, newint, sizeof( uint_16 ) );
+    if( numwrote != sizeof(uint_16) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -89,10 +89,10 @@ int ResWriteUint16( const uint_16 *newint, WResFileID handle )
 int ResWriteUint32( const uint_32 *newint, WResFileID handle )
 /************************************************************/
 {
-    int     numwrite;
+    int     numwrote;
 
-    numwrite = WRESWRITE( handle, newint, sizeof( uint_32 ) );
-    if( numwrite != sizeof( uint_32 ) ) {
+    numwrote = WRESWRITE( handle, newint, sizeof( uint_32 ) );
+    if( numwrote != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -247,19 +247,17 @@ int WResWriteLangRecord( const WResLangInfo *info, WResFileID handle )
 int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 /**********************************************************************/
 {
-    long            seekpos;
     int             error;
-    int             numwrite;
+    int             numwrote;
 
-    seekpos = WRESSEEK( handle, 0L, SEEK_SET );
-    error = (seekpos == -1L);
+    error = ( WRESSEEK( handle, 0L, SEEK_SET ) == -1 );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     }
 
     if (!error) {
-        numwrite = WRESWRITE( handle, header, sizeof(WResHeader) );
-        if( numwrite != sizeof( WResHeader ) ) {
+        numwrote = WRESWRITE( handle, header, sizeof(WResHeader) );
+        if( numwrote != sizeof( WResHeader ) ) {
             error = TRUE;
             WRES_ERROR( WRS_WRITE_FAILED );
         }

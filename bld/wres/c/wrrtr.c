@@ -47,24 +47,24 @@ WResTypeInfo *WResReadTypeRecord( WResFileID handle )
     int                 error;
 
     error = WResReadFixedTypeRecord( &newtype, handle );
-    if (error) {
+    if( error ) {
         return( NULL );
     }
 
-    if (newtype.TypeName.IsName) {
+    if( newtype.TypeName.IsName ) {
         numcharsleft = newtype.TypeName.ID.Name.NumChars - 1;
     } else {
         numcharsleft = 0;
     }
     newptr = WRESALLOC( sizeof(WResTypeInfo) + numcharsleft );
-    if (newptr == NULL) {
+    if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         memcpy( newptr, &newtype, sizeof(WResTypeInfo) );
-        if (numcharsleft != 0) {
+        if( numcharsleft != 0 ) {
             numread = WRESREAD( handle, &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
-            if (numread != numcharsleft) {
-                WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            if( numread != numcharsleft ) {
+                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );
                 newptr = NULL;
             }

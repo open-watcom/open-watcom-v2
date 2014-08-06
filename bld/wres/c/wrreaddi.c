@@ -44,26 +44,23 @@ static int readLangInfoList( WResFileID handle, WResResNode *res, void *fileinfo
     int                 error;
     int                 numread;
 
-    error = FALSE;
-    for( i=0; i < res->Info.NumResources; i++ ) {
+    for( i = 0; i < res->Info.NumResources; i++ ) {
         langnode = WRESALLOC( sizeof(WResLangNode) );
         if( langnode == NULL ) {
-            error = TRUE;
             WRES_ERROR( WRS_MALLOC_FAILED );
+            return( TRUE );
         }
-        if( error ) break;
         numread = WRESREAD( handle, &(langnode->Info), sizeof( WResLangInfo ) );
         if( numread != sizeof( WResLangInfo ) ) {
-            error = TRUE;
-            WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( langnode );
-            break;
+            return( TRUE );
         }
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
         ResAddLLItemAtEnd( (void **)&(res->Head), (void **)&(res->Tail), langnode );
     }
-    return( error );
+    return( FALSE );
 }
 
 static int readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
@@ -215,7 +212,6 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
     WResHeader      head;
     WResExtHeader   ext_head;
     int             error;
-    long            seekpos;
 
     ext_head.TargetOS = WRES_OS_WIN16;
     /* read the header and check that it is valid */
@@ -237,8 +233,7 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
             /*
              * seek to the extended header and read it
              */
-            seekpos = WRESSEEK( handle, sizeof( head ), SEEK_CUR );
-            error = (seekpos == -1L);
+            error = ( WRESSEEK( handle, sizeof( head ), SEEK_CUR ) == -1 );
             if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );
             } else {
@@ -252,9 +247,8 @@ static int readWResDir( WResFileID handle, WResDir currdir, void *fileinfo )
         currdir->NumResources = head.NumResources;
         currdir->NumTypes = head.NumTypes;
         currdir->TargetOS = ext_head.TargetOS;
-        seekpos = WRESSEEK( handle, head.DirOffset, SEEK_SET );
-        if( seekpos == -1L ) {
-            error = TRUE;
+        error = ( WRESSEEK( handle, head.DirOffset, SEEK_SET ) == -1 );
+        if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
@@ -275,7 +269,6 @@ static int readMResDir( WResFileID handle, WResDir currdir, int *dup_discarded,
     M32ResResourceHeader    *head32 = NULL;
     WResDirWindow           dup;
     int                     error;
-    long                    seek_rc;
     WResID                  *name;
     WResID                  *type;
 
@@ -334,9 +327,8 @@ static int readMResDir( WResFileID handle, WResDir currdir, int *dup_discarded,
         }
 
         if( !error ) {
-            seek_rc = WRESSEEK( handle, head->Size, SEEK_CUR );
-            if( seek_rc == -1L ) {
-                error =  TRUE;
+            error = ( WRESSEEK( handle, head->Size, SEEK_CUR ) == -1 );
+            if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );
             }
         }
@@ -378,14 +370,12 @@ int WResReadDir( WResFileID handle, WResDir currdir,int *dup_discarded )
 int WResReadDir2( WResFileID handle, WResDir currdir, int *dup_discarded, void *fileinfo )
 {
     int             error;
-    long            seekpos;
     ResTypeInfo     restype;
 
     /* var representing whether or not a duplicate dir entry was
      * discarded is set to FALSE.
      * NOTE: duplicates are not discarded by calls to readWResDir.
      */
-    error = FALSE;
     if(  dup_discarded != NULL  ) {
         *dup_discarded = FALSE;
     }
@@ -396,9 +386,8 @@ int WResReadDir2( WResFileID handle, WResDir currdir, int *dup_discarded, void *
     }
 
     /* seek to the start of the file */
-    seekpos = WRESSEEK( handle, 0, SEEK_SET );
-    if( seekpos == -1L ) {
-        error = TRUE;
+    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+    if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     }
 

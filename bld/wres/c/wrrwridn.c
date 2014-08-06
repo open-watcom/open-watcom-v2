@@ -54,13 +54,13 @@ WResIDName *WResReadWResIDName( WResFileID handle )
     }
 
     /* read in the characters */
-    if (newptr == NULL) {
+    if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newptr->NumChars = newname.NumChars;
         numread = WRESREAD( handle, newptr->Name, newptr->NumChars );
-        if (numread != newptr->NumChars) {
-            WRES_ERROR( numread == -1 ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
+        if( numread != newptr->NumChars ) {
+            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( newptr );
             newptr = NULL;
         }

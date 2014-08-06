@@ -36,14 +36,14 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern long ResSeek( WResFileID handle, long offset, int origin )
-/***************************************************************/
+extern WResSeekReturn ResSeek( WResFileID handle, long offset, int origin )
+/*************************************************************************/
 /* cover function for seek */
 {
-    long    posn;
+    WResSeekReturn  posn;
 
     posn = WRESSEEK( handle, offset, origin );
-    if( posn == -1L ) {
+    if( posn == -1 ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     }
     return( posn );
@@ -57,17 +57,15 @@ extern int ResPadDWord( WResFileID handle )
     long        padding;
     int         error;
 
-    error = FALSE;
     curr_pos = WRESTELL( handle );
     if( curr_pos == -1 ) {
         WRES_ERROR( WRS_TELL_FAILED );
         error = TRUE;
     } else {
         padding = RES_PADDING( curr_pos, sizeof(uint_32) );
-        curr_pos = WRESSEEK( handle, padding, SEEK_CUR );
-        if( curr_pos == -1L ) {
+        error = ( WRESSEEK( handle, padding, SEEK_CUR ) == -1 );
+        if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
-            error = TRUE;
         }
     }
     return( error );

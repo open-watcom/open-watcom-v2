@@ -82,7 +82,6 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
     WResExtHeader   ext_head;
     int             error;
     long            diroffset;
-    long            seekpos;
 
     /* get the offset of the start of the directory */
     diroffset = WRESTELL( handle );
@@ -111,9 +110,8 @@ int WResWriteDir( WResFileID handle, WResDir currdir )
 
     /* leave the handle at the start of the file */
     if( !error ) {
-        seekpos = WRESSEEK( handle, 0L, SEEK_SET );
-        if( seekpos == -1L ) {
-            error = TRUE;
+        error = ( WRESSEEK( handle, 0L, SEEK_SET ) == -1 );
+        if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }
     }

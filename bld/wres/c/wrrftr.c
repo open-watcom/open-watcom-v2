@@ -44,10 +44,8 @@ int WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
     numread = WRESREAD( handle, newtype, sizeof(WResTypeInfo) );
     if( numread == sizeof(WResTypeInfo) ) {
         return( FALSE );
-    } else if( numread == -1 ) {
-        WRES_ERROR( WRS_READ_FAILED );
     } else {
-        WRES_ERROR( WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( TRUE );
 } /* WResReadFixedTypeRecord */
@@ -60,7 +58,6 @@ int WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
     WResTypeInfo2   info;
 
     numread = WRESREAD( handle, &info, sizeof( WResTypeInfo2 ) );
-
     if( numread == sizeof( WResTypeInfo2 ) ) {
         newtype->NumResources = info.NumResources;
         newtype->TypeName.IsName = info.TypeName.IsName;
@@ -72,10 +69,8 @@ int WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
             newtype->TypeName.ID.Num = info.TypeName.ID.Num;
         }
         return( FALSE );
-    } else if( numread == -1 ) {
-        WRES_ERROR( WRS_READ_FAILED );
     } else {
-        WRES_ERROR( WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( TRUE );
 } /* WResReadFixedTypeRecord */

@@ -59,7 +59,7 @@ extern void ResFreeStringTableBlock( StringTableBlock * currblock )
 } /* ResFreeStringTableBlock */
 
 extern int ResWriteStringTableBlock( StringTableBlock *currblock,
-                            uint_8 use_unicode, int handle )
+                            uint_8 use_unicode, WResFileID handle )
 /***************************************************************/
 {
     int     stringid;

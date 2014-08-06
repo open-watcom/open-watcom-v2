@@ -39,21 +39,20 @@ extern ResTypeInfo WResFindResType( WResFileID handle )
 /*****************************************************/
 {
     ResTypeInfo     type;
-    long            savepos;
     uint_32         magic[ 2 ];
     int             error;
 
-    savepos = WRESSEEK( handle, 0, SEEK_SET );
-    if( savepos == -1L ) {
+    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+    if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
-    }
-    error = ResReadUint32( magic, handle );
-    if( !error ) {
-        error = ResReadUint32( magic + 1, handle );
-    }
-    savepos = WRESSEEK( handle, savepos, SEEK_SET );
-    if( savepos == -1L ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
+    } else {
+        error = ResReadUint32( magic, handle );
+        if( !error ) {
+            error = ResReadUint32( magic + 1, handle );
+        }
+        if( WRESSEEK( handle, 0, SEEK_SET ) == -1 ) {
+            WRES_ERROR( WRS_SEEK_FAILED );
+        }
     }
 
     type = RT_WIN16; /* what to return if (error) ? */

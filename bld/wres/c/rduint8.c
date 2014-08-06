@@ -43,10 +43,8 @@ extern int ResReadUint8( uint_8 * newint, WResFileID handle )
     numread = WRESREAD( handle, newint, sizeof( uint_8 ) );
     if( numread == sizeof( uint_8 ) ) {
         return( FALSE );
-    } else if( numread == -1 ) {
-        WRES_ERROR( WRS_READ_FAILED );
-    } else if( numread != sizeof( uint_8 ) ) {
-        WRES_ERROR( WRS_READ_INCOMPLETE );
+    } else {
+        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( TRUE );
 }
