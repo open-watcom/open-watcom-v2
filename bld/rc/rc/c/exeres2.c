@@ -249,8 +249,8 @@ extern int CopyOS2Resources( void )
     WResDirWindow       wind;
     OS2ResTable         *restab;
     WResLangInfo        *lang;
-    int                 tmphandle;
-    int                 reshandle;
+    WResFileID          tmphandle;
+    WResFileID          reshandle;
     RcStatus            error;
     int                 err_code;
     int                 shift_count;
@@ -343,10 +343,9 @@ extern int CopyOS2Resources( void )
  * WriteOS2ResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
-/********************************************************************************/
+extern RcStatus WriteOS2ResTable( WResFileID handle, OS2ResTable *restab, int *err_code )
+/***************************************************************************************/
 {
-    int                         num_wrote;
     int                         error;
     uint_16                     res_type;
     uint_16                     res_id;
@@ -356,13 +355,10 @@ extern RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code
     for( i = 0; i < restab->num_res_segs && error == RS_OK; i++ ) {
         res_type = restab->resources[i].res_type;
         res_id   = restab->resources[i].res_id;
-
-        num_wrote = RCWRITE( handle, &res_type, sizeof( uint_16 ) );
-        if( num_wrote != sizeof( uint_16 ) ) {
+        if( RCWRITE( handle, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             error = RS_WRITE_ERROR;
         } else {
-            num_wrote = RCWRITE( handle, &res_id, sizeof( uint_16 ) );
-            if( num_wrote != sizeof( uint_16 ) ) {
+            if( RCWRITE( handle, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
                 error = RS_WRITE_ERROR;
             }
         }

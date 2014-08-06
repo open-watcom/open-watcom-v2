@@ -86,7 +86,7 @@ extern void                 SemAddResource( WResID * name, WResID * type,
                                         ResMemFlags, ResLocation );
 extern void                 SemAddResource2( WResID * name, WResID * type,
                                         ResMemFlags flags, ResLocation loc,
-                                        char *filename );
+                                        const char *filename );
 extern void                 SemSetDefLang( void );
 extern const WResLangType   *SemGetResourceLanguage( void );
 extern void                 SemanticInitStatics( void );

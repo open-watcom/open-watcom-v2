@@ -42,7 +42,7 @@
 int WResReadFixedResRecord( WResResInfo *newres, WResFileID handle )
 /******************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, newres, sizeof(WResResInfo) );
     if( numread != sizeof(WResResInfo) ) {
@@ -60,7 +60,7 @@ int WResReadFixedResRecord( WResResInfo *newres, WResFileID handle )
 int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
 /********************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, newres, sizeof(WResResInfo1) );
     if( numread != sizeof(WResResInfo1) ) {
@@ -78,7 +78,7 @@ int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
 int WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle )
 /*******************************************************************/
 {
-    int             numread;
+    WResFileSSize   numread;
     WResResInfo2    info;
 
     numread = WRESREAD( handle, &info, sizeof(WResResInfo2) );

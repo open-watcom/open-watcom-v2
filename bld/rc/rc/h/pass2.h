@@ -85,7 +85,7 @@ typedef struct LXExeInfo {
 
 typedef struct ExeFileInfo {
     int             IsOpen;
-    int             Handle;
+    WResFileID      Handle;
     char            *name;
     uint_32         WinHeadOffset;      /* wlink doesn't initialize this */
     ExeType         Type;

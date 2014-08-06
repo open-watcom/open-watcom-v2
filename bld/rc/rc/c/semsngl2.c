@@ -42,7 +42,7 @@
 #include "rccore.h"
 
 /**** forward references ****/
-static void AddFontResources( WResID * name, ResMemFlags, char * filename );
+static void AddFontResources( WResID * name, ResMemFlags, const char * filename );
 
 
 void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
@@ -154,26 +154,22 @@ HANDLE_ERROR:
     RCFREE( filename );
 } /* SemOS2AddSingleLineResource */
 
-static RcStatus readFontInfo( int handle, FontInfo *info, int *err_code )
-/***********************************************************************/
+static RcStatus readFontInfo( WResFileID handle, FontInfo *info, int *err_code )
+/******************************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = RCREAD( handle, info, sizeof( FontInfo ) );
     if( numread != sizeof( FontInfo ) ) {
         *err_code = errno;
-        if( numread == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
 #define FONT_BUFFER_SIZE  0x1000
 
-static RcStatus copyFont( FontInfo * info, int handle, WResID * name,
+static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
                                 ResMemFlags flags, int *err_code )
 /************************************************************************/
 {
@@ -214,15 +210,13 @@ typedef struct {
     int         err_code;
 }ReadStrErrInfo;
 
-static void * readString( int handle, long offset, ReadStrErrInfo *err )
-/*************************************************************************/
+static void * readString( WResFileID handle, long offset, ReadStrErrInfo *err )
+/*****************************************************************************/
 {
-    long    seekrc;
     char    *retstr;
 
 
-    seekrc = RCSEEK( handle, offset, SEEK_SET );
-    if( seekrc == -1 ) {
+    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
         err->status = RS_READ_ERROR;
         err->err_code = errno;
         return( NULL );
@@ -304,13 +298,13 @@ static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
 }
 
 static void AddFontResources( WResID * name, ResMemFlags flags,
-                              char * filename )
+                              const char * filename )
 /**************************************************************/
 {
     FontInfo            info;
     char *              devicename;
     char *              facename;
-    int                 handle;
+    WResFileID          handle;
     int                 error;
     int                 err_code;
     ReadStrErrInfo      readstr_err;
@@ -321,7 +315,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     }
 
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if (handle == -1) goto FILE_OPEN_ERROR;
+    if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
 
     error = readFontInfo( handle, &info, &err_code );
     if( error != RS_OK) goto READ_HEADER_ERROR;

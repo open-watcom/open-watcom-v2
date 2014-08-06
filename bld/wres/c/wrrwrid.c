@@ -41,7 +41,7 @@ WResID *WResReadWResID( WResFileID handle )
 {
     WResID          newid;
     WResID          *newidptr;
-    int             numread;
+    WResFileSSize   numread;
     int             extrabytes;     /* chars to be read beyond the fixed size */
     int             error;
 

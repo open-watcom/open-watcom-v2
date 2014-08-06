@@ -42,7 +42,7 @@ WResResInfo *WResReadResRecord( WResFileID handle )
 {
     WResResInfo     newres;
     WResResInfo     *newptr;
-    int             numread;
+    WResFileSSize   numread;
     int             numcharsleft;
     int             error;
 

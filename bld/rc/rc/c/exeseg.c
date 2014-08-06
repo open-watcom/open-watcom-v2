@@ -56,24 +56,18 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
  * readSegTable
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus readSegTable( int handle, uint_32 offset, SegTable * seg )
+static RcStatus readSegTable( WResFileID handle, uint_32 offset, SegTable * seg )
 {
-    int     tablesize;
-    int     numread;
-    long    seek_rc;
+    int             tablesize;
+    WResFileSSize   numread;
 
     tablesize = seg->NumSegs * sizeof(segment_record);
 
-    seek_rc = RCSEEK( handle, offset, SEEK_SET );
-    if( seek_rc == -1 )
+    if( RCSEEK( handle, offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
     numread = RCREAD( handle, seg->Segments, tablesize );
     if( numread != tablesize ) {
-        if( numread == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 
@@ -82,7 +76,7 @@ static RcStatus readSegTable( int handle, uint_32 offset, SegTable * seg )
 extern int AllocAndReadWINSegTables( int *err_code )
 {
     int                 error;
-    int                 oldhandle;
+    WResFileID          oldhandle;
     uint_32             head_offset;
     SegTable            *oldseg;
     SegTable            *tmpseg;
@@ -119,7 +113,7 @@ extern int AllocAndReadWINSegTables( int *err_code )
 extern int AllocAndReadOS2SegTables( int *err_code )
 {
     int                 error;
-    int                 oldhandle;
+    WResFileID          oldhandle;
     int                 oldres;
     int                 newres;
     uint_32             head_offset;
@@ -169,12 +163,12 @@ extern int AllocAndReadOS2SegTables( int *err_code )
 /* in order to get that structure */
 #define OS_RELOC_ITEM_SIZE      8
 
-extern uint_32 ComputeSegmentSize( int handle, SegTable * segs, int shift_count )
+extern uint_32 ComputeSegmentSize( WResFileID handle, SegTable * segs, int shift_count )
 {
     segment_record *    currseg;
     segment_record *    afterlast;
     uint_32             length;
-    long                io_rc;
+    WResFileSSize       numread;
     uint_16             num_relocs;
 
     length = 0;
@@ -182,11 +176,11 @@ extern uint_32 ComputeSegmentSize( int handle, SegTable * segs, int shift_count 
             currseg < afterlast; currseg++) {
         length += currseg->size;
         if (currseg->info & SEG_RELOC) {
-            io_rc = RCSEEK( handle, (((long) currseg->address) << (long) shift_count) +
-                            currseg->size, SEEK_SET );
-            if (io_rc == -1) return( 0 );
-            io_rc = RCREAD( handle, &num_relocs, sizeof(uint_16) );
-            if (io_rc != sizeof(uint_16)) return( 0 );
+            if( RCSEEK( handle, (((long) currseg->address) << (long) shift_count) + currseg->size, SEEK_SET ) == -1 )
+                return( 0 );
+            numread = RCREAD( handle, &num_relocs, sizeof(uint_16) );
+            if( numread != sizeof(uint_16) )
+                return( 0 );
             length += (unsigned_32) num_relocs * (unsigned_32) OS_RELOC_ITEM_SIZE;
         }
     }
@@ -222,14 +216,14 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
             segment_record * outseg, ExeFileInfo *inexe, ExeFileInfo *outexe,
             int old_shift_count, int new_shift_count, bool pad_end )
 {
-    CpSegRc ret;
-    int     error;
-    int     iorc;
-    uint_16 numrelocs;
-    long    out_offset;
-    long    align_amount;
-    uint_32 seg_len = 0L;
-    char    dum;
+    CpSegRc         ret;
+    int             error;
+    WResFileSSize   numread;
+    uint_16         numrelocs;
+    long            out_offset;
+    long            align_amount;
+    uint_32         seg_len = 0L;
+    char            dum;
 
     dum = 0;
     error = FALSE;
@@ -272,17 +266,16 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 
         if (inseg->info & SEG_RELOC && !error) {
             /* read the number of relocation items */
-            iorc = RCREAD( inexe->Handle, &numrelocs, sizeof(uint_16) );
-            if( iorc != sizeof( uint_16 ) ) {
+            numread = RCREAD( inexe->Handle, &numrelocs, sizeof(uint_16) );
+            if( numread != sizeof( uint_16 ) ) {
                 error = TRUE;
-                if( iorc == -1 ) {
+                if( RCIOERR( inexe->Handle, numread ) ) {
                     RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
                 } else {
                     RcError( ERR_UNEXPECTED_EOF, inexe->name );
                 }
             } else {
-                iorc = RCWRITE( outexe->Handle, &numrelocs, sizeof(uint_16) );
-                if( iorc != sizeof( uint_16 ) ) {
+                if( RCWRITE( outexe->Handle, &numrelocs, sizeof(uint_16) ) != sizeof( uint_16 ) ) {
                     error = TRUE;
                     RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
                 }
@@ -310,8 +303,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
                 /* write something out so if we have just seeked past the
                  * end of the file the file's size will be adjusted
                  * appropriately */
-                iorc = RCWRITE( outexe->Handle, &dum, 1 );
-                if( iorc != 1 ) {
+                if( RCWRITE( outexe->Handle, &dum, 1 ) != 1 ) {
                     error = TRUE;
                     RcError( ERR_WRITTING_FILE, outexe->name );
                 }
@@ -457,7 +449,6 @@ extern CpSegRc CopyOS2Segments( void )
         Pass2Info.TmpFile.u.NEInfo.Seg.NumSegs = 0;
     } else if( old_seg_tbl->NumOS2ResSegs ) {
         uint_32     end_offset;
-        long        iorc;
 
         /* Must seek past the last segment in old file */
         oldseg += old_seg_tbl->NumOS2ResSegs - 1;
@@ -467,8 +458,7 @@ extern CpSegRc CopyOS2Segments( void )
         else
             end_offset += oldseg->size;
 
-        iorc = RCSEEK( old_exe_info->Handle, end_offset, SEEK_SET );
-        if( iorc == -1 ) {
+        if( RCSEEK( old_exe_info->Handle, end_offset, SEEK_SET ) == -1 ) {
             ret = CPSEG_ERROR;
             RcError( ERR_READING_EXE, old_exe_info->name, strerror( errno ) );
         }

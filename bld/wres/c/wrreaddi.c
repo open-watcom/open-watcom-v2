@@ -41,7 +41,7 @@ static int readLangInfoList( WResFileID handle, WResResNode *res, void *fileinfo
 {
     unsigned            i;
     WResLangNode        *langnode;
-    int                 numread;
+    WResFileSSize       numread;
 
     for( i = 0; i < res->Info.NumResources; i++ ) {
         langnode = WRESALLOC( sizeof(WResLangNode) );

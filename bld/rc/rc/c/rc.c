@@ -50,7 +50,7 @@
 
 extern HANDLE_INFO  Instance;
 
-WResSetRtns(RCOPEN,RCCLOSE,RCREAD,RCWRITE,RCSEEK,RCTELL,RCALLOC,RCFREE);
+WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
 
 void InitGlobs( void )
 /********************/
@@ -94,7 +94,6 @@ static bool CreatePreprocFile( void )
     bool        error;
     int         ch;
     char        ch1;
-    int         len;
 
     error = FALSE;
     hdl = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
@@ -104,16 +103,16 @@ static bool CreatePreprocFile( void )
     } else {
         ch = RcIoGetChar();
         while( ch != RC_EOF ) {
-            ch1 = (char) ch;
-            len = RcWrite( hdl, &ch1, 1 );
-            if( len != 1 ) {
+            ch1 = (char)ch;
+            if( RcWrite( hdl, &ch1, 1 ) != 1 ) {
                 RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
                 error = TRUE;
             }
             ch = RcIoGetChar();
         }
     }
-    if( hdl != NIL_HANDLE ) RcClose( hdl );
+    if( hdl != NIL_HANDLE )
+        RcClose( hdl );
     return( error );
 }
 

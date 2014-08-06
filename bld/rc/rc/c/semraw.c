@@ -92,23 +92,21 @@ void SemWriteRawDataItem( RawDataItem item )
 
 }
 
-RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
-                int buffsize, int *err_code )
+RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
+                         void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
-    int     error;
-    int     numread;
-    long    seekrc;
+    int             error;
+    WResFileSSize   numread;
 
-    seekrc = RCSEEK( handle, offset, SEEK_SET );
-    if (seekrc == -1) {
+    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
     numread = RCREAD( handle, buff, buffsize );
     while( numread != 0 ) {
-        if (numread == -1) {
+        if( RCIOERR( handle, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
@@ -128,7 +126,7 @@ RcStatus SemCopyDataUntilEOF( long offset, int handle, void *buff,
 ResLocation SemCopyRawFile( const char *filename )
 /************************************************/
 {
-    int         handle;
+    WResFileID  handle;
     RcStatus    error;
     char        *buffer;
     char        full_filename[ _MAX_PATH ];
@@ -146,7 +144,7 @@ ResLocation SemCopyRawFile( const char *filename )
     if( AddDependency( full_filename ) ) goto HANDLE_ERROR;
 
     handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
-    if (handle == -1) {
+    if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }

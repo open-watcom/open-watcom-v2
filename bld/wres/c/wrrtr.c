@@ -42,7 +42,7 @@ WResTypeInfo *WResReadTypeRecord( WResFileID handle )
 {
     WResTypeInfo        newtype;
     WResTypeInfo        *newptr;
-    int                 numread;
+    WResFileSSize       numread;
     int                 numcharsleft;
     int                 error;
 

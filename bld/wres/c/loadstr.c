@@ -55,7 +55,7 @@ static int GetString(   WResLangInfo    *res,
     int                 length;
     int                 stringnum;
     int                 stringlen;
-    int                 numread;
+    WResFileSSize       numread;
     int                 ix1, ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 

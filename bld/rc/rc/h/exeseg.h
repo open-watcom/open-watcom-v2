@@ -52,7 +52,7 @@ typedef enum {
 
 extern int AllocAndReadWINSegTables( int *err_code );
 extern int AllocAndReadOS2SegTables( int *err_code );
-extern uint_32 ComputeSegmentSize( int handle, SegTable *, int shift_count );
+extern uint_32 ComputeSegmentSize( WResFileID handle, SegTable *, int shift_count );
 extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
 extern CpSegRc CopyOS2Segments( void );
 

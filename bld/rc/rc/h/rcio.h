@@ -80,15 +80,15 @@ extern int RcPass2IoInit( void );
 extern void RcPass2IoShutdown( int noerror );
 extern void RcIoTextInputInit( void );
 extern int RcIoTextInputShutdown( void );
-extern int RcIoPushInputFile( char * filename );
+extern int RcIoPushInputFile( const char * filename );
 extern int RcIoPopInputFile( void );
 extern int RcIoGetChar( void );
 extern void RcIoOverrideIsCOrHFlag( void );
 extern void RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo * RcIoGetLogicalFileInfo( void );
 extern int RcIoIsCOrHFile( void );
-extern void RcIoSetLogicalFileInfo( int linenum, char * filename );
-extern WResFileID RcIoOpenInput( char * filename, int flags, ... );
+extern void RcIoSetLogicalFileInfo( int linenum, const char * filename );
+extern WResFileID RcIoOpenInput( const char * filename, int flags, ... );
 extern int RcFindResource( const char *name, char *fullpath );
 extern char *RcGetEnv( const char *name );
 

@@ -42,10 +42,7 @@
 int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )
 /**********************************************************************/
 {
-    int     numwrote;
-
-    numwrote = RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) );
-    if( numwrote != sizeof( AccelTableEntryOS2 ) ) {
+    if( RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     }

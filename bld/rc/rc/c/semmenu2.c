@@ -64,10 +64,7 @@ struct MenuItem {
 int ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
 /*********************************************************************/
 {
-    int     numwrote;
-
-    numwrote = RCWRITE( handle, currhead, sizeof(MenuHeaderOS2) );
-    if( numwrote != sizeof(MenuHeaderOS2) ) {
+    if( RCWRITE( handle, currhead, sizeof(MenuHeaderOS2) ) != sizeof(MenuHeaderOS2) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

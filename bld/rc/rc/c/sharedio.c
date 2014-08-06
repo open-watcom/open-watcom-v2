@@ -65,7 +65,7 @@ static void closeAResFile( ResFileInfo *res )
 }
 
 int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
-                  ExeType type, char *exename )
+                  ExeType type, const char *exename )
 /**************************************************************************/
 {
     unsigned        rescnt;
@@ -220,8 +220,8 @@ extern void SharedIOInitStatics( void )
     memset( &errFromWres, 0, sizeof( ErrFrame ) );
 }
 
-void ReportDupResource( WResID *nameid, WResID *typeid, char *file1,
-                           char *file2, int warn )
+void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
+                           const char *file2, int warn )
 /*******************************************************************/
 {
     char        *type;

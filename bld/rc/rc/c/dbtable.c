@@ -48,17 +48,13 @@ typedef struct {
 
 static DBCharInfo       charInfo;
 
-static RcStatus readDBHeader( WResFileID fp )
+static RcStatus readDBHeader( WResFileID handle )
 {
-    int                 ret;
+    WResFileSSize       numread;
 
-    ret = RCREAD( fp, &charInfo.header, sizeof( DBTableHeader ) );
-    if( ret != sizeof( DBTableHeader ) ) {
-        if( ret == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+    numread = RCREAD( handle, &charInfo.header, sizeof( DBTableHeader ) );
+    if( numread != sizeof( DBTableHeader ) ) {
+        return( RCIOERR( handle, numread  ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     if( charInfo.header.sig[0] != DB_TABLE_SIG_1 ||
         charInfo.header.sig[1] != DB_TABLE_SIG_2 ) {
@@ -70,80 +66,68 @@ static RcStatus readDBHeader( WResFileID fp )
     return( RS_OK );
 }
 
-static RcStatus readDBRanges( WResFileID fp )
+static RcStatus readDBRanges( WResFileID handle )
 {
-    int                 ret;
+    WResFileSSize       numread;
 
-    ret = RCREAD( fp, &charInfo.begchars, 256 );
-    if( ret != 256 ) {
-        if( ret == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+    numread = RCREAD( handle, &charInfo.begchars, 256 );
+    if( numread != 256 ) {
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
-static RcStatus readDBIndex( WResFileID fp )
+static RcStatus readDBIndex( WResFileID handle )
 {
-    int                 ret;
+    WResFileSSize       numread;
     int                 size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
     charInfo.index = RCALLOC( size );
-    ret = RCREAD( fp, charInfo.index, size );
-    if( ret != size ) {
-        if( ret == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+    numread = RCREAD( handle, charInfo.index, size );
+    if( numread != size ) {
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
-static RcStatus readDBTable( WResFileID fp )
+static RcStatus readDBTable( WResFileID handle )
 {
-    int                 ret;
+    WResFileSSize       numread;
     int                 size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
     charInfo.entries = RCALLOC( size );
-    ret = RCREAD( fp, charInfo.entries, size );
-    if( ret != size ) {
-        if( ret == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+    numread = RCREAD( handle, charInfo.entries, size );
+    if( numread != size ) {
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
 RcStatus OpenTable( char *fname, char *path )
 {
-    WResFileID  fp;
+    WResFileID  handle;
     RcStatus    status;
 
     status = RS_OK;
     _searchenv( fname, "PATH", path );
     if( path[0] == '\0' )
         return( RS_FILE_NOT_FOUND );
-    fp = RCOPEN( path, O_RDONLY | O_BINARY );
-    if( fp == NIL_HANDLE ) {
+    handle = RCOPEN( path, O_RDONLY | O_BINARY, PMODE_RW );
+    if( handle == NIL_HANDLE ) {
         status = RS_OPEN_ERROR;
     }
     if( status == RS_OK )
-        status = readDBHeader( fp );
+        status = readDBHeader( handle );
     if( status == RS_OK )
-        status = readDBRanges( fp );
+        status = readDBRanges( handle );
     if( status == RS_OK )
-        status = readDBIndex( fp );
+        status = readDBIndex( handle );
     if( status == RS_OK )
-        status = readDBTable( fp );
+        status = readDBTable( handle );
     if( status != RS_OPEN_ERROR )
-        RCCLOSE( fp );
+        RCCLOSE( handle );
     if( status == RS_OK ) {
         ConvToUnicode = DBStringToUnicode;
     }

@@ -75,14 +75,13 @@ static RcStatus seekPastResTable( int *err_code )
                     tmpexe->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
                     res_tbl_size +
                     tmpexe->u.NEInfo.Res.Str.StringBlockSize;
-    winheadoffset = RCSEEK( tmpexe->Handle, seekamount, SEEK_CUR );
-    if( winheadoffset == -1 ) {
+    if( RCSEEK( tmpexe->Handle, seekamount, SEEK_CUR ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
-    } else {
-        tmpexe->WinHeadOffset = winheadoffset;
-        return( RS_OK );
     }
+    winheadoffset = RCTELL( tmpexe->Handle );
+    tmpexe->WinHeadOffset = winheadoffset;
+    return( RS_OK );
 
 } /* seekPastResTable */
 
@@ -91,18 +90,18 @@ static int copyOtherTables( int *err_code )
     uint_32         tablelen;
     os2_exe_header  *oldhead;
     uint_32         oldoffset;
-    int             oldhdl;
+    WResFileID      oldhandle;
     RcStatus        ret;
 
     oldhead = &(Pass2Info.OldFile.u.NEInfo.WinHead);
     oldoffset = Pass2Info.OldFile.WinHeadOffset;
-    oldhdl = Pass2Info.OldFile.Handle;
+    oldhandle = Pass2Info.OldFile.Handle;
 
     /* the other tables start at the resident names table and end at the end */
     /* of the non-resident names table */
     tablelen = (oldhead->nonres_off + oldhead->nonres_size) - ( oldhead->resident_off + oldoffset );
 
-    if( RCSEEK( oldhdl, oldhead->resident_off + oldoffset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( oldhandle, oldhead->resident_off + oldoffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -471,8 +470,8 @@ static int findEndOfResources( int *err_code )
 {
     NEExeInfo                   *oldneinfo;
     uint_32                     *debugoffset;
-    int                         oldhdl;
-    int                         rcio;
+    WResFileID                  oldhandle;
+    WResFileSSize               numread;
     unsigned                    i;
     long                        oldoffset;
     uint_16                     alignshift;
@@ -484,60 +483,44 @@ static int findEndOfResources( int *err_code )
     end = 0;
     oldoffset = Pass2Info.OldFile.WinHeadOffset;
     oldneinfo = &Pass2Info.OldFile.u.NEInfo;
-    oldhdl = Pass2Info.OldFile.Handle;
+    oldhandle = Pass2Info.OldFile.Handle;
     debugoffset = &Pass2Info.OldFile.DebugOffset;
 
     if( oldneinfo->WinHead.resource_off == oldneinfo->WinHead.resident_off ) {
         return( RS_OK );
     }
 
-    if( RCSEEK( oldhdl, oldneinfo->WinHead.resource_off + oldoffset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( oldhandle, oldneinfo->WinHead.resource_off + oldoffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    rcio = RCREAD( oldhdl, &alignshift, sizeof( uint_16 ) );
-    if( rcio != sizeof( uint_16 ) ) {
+    numread = RCREAD( oldhandle, &alignshift, sizeof( uint_16 ) );
+    if( numread != sizeof( uint_16 ) ) {
         *err_code = errno;
-        if( rcio == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+        return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     alignshift = 1 << alignshift;
 
-    rcio = RCREAD( oldhdl, &typeinfo, sizeof( resource_type_record ) );
-    if( rcio != sizeof( resource_type_record ) )  {
+    numread = RCREAD( oldhandle, &typeinfo, sizeof( resource_type_record ) );
+    if( numread != sizeof( resource_type_record ) )  {
         *err_code = errno;
-        if( rcio == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+        return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     while( typeinfo.type != 0 ) {
         for( i=0; i < typeinfo.num_resources; i++ ) {
-            rcio = RCREAD( oldhdl, &nameinfo, sizeof( resource_record ) );
-            if( rcio != sizeof( resource_record ) ) {
+            numread = RCREAD( oldhandle, &nameinfo, sizeof( resource_record ) );
+            if( numread != sizeof( resource_record ) ) {
                 *err_code = errno;
-                if( rcio == -1 ) {
-                    return( RS_READ_ERROR );
-                } else {
-                    return( RS_READ_INCMPLT );
-                }
+                return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
             if( tmp > end ) end = tmp;
         }
-        rcio = RCREAD( oldhdl, &typeinfo, sizeof( resource_type_record ) );
-        if( rcio != sizeof( resource_type_record ) ) {
+        numread = RCREAD( oldhandle, &typeinfo, sizeof( resource_type_record ) );
+        if( numread != sizeof( resource_type_record ) ) {
             *err_code = errno;
-            if( rcio == -1 ) {
-                return( RS_READ_ERROR );
-            } else {
-                return( RS_READ_INCMPLT );
-            }
+            return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
     }
     end *= alignshift;
@@ -760,7 +743,7 @@ static RcStatus updateDebugDirectory( void )
     unsigned_32         debug_size;
     long                old_offset;
     long                tmp_offset;
-    int                 io_rc;
+    WResFileSSize       numread;
     unsigned            debug_cnt;
     unsigned            read_cnt;
     unsigned            read_size;
@@ -803,11 +786,9 @@ static RcStatus updateDebugDirectory( void )
         if( read_cnt > debug_cnt )
             read_cnt = debug_cnt;
         read_size = read_cnt * sizeof( debug_directory );
-        io_rc = RCREAD( old->Handle, Pass2Info.IoBuffer, read_size );
-        if( io_rc == -1 )
-            return( RS_READ_ERROR );
-        if( io_rc != read_size )
-            return( RS_READ_INCMPLT );
+        numread = RCREAD( old->Handle, Pass2Info.IoBuffer, read_size );
+        if( numread != read_size )
+            return( RCIOERR( old->Handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         entry = Pass2Info.IoBuffer;
         for( i=0; i < read_cnt; i++ ) {
             if( entry[i].data_seek >= old->DebugOffset ) {

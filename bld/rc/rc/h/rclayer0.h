@@ -31,5 +31,5 @@
 
 
 extern void Layer0InitStatics( void );
-extern int  RCOpenResFile( HANDLE_INFO *instance, char *imagename );
+extern int  RCOpenResFile( HANDLE_INFO *instance, const char *imagename );
 extern void RCCloseResFile( HANDLE_INFO *instance );

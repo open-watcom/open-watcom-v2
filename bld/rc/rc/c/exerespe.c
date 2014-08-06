@@ -66,8 +66,6 @@ typedef struct DirEntryQueue {
     QueueNode *     back;
 } DirEntryQueue;
 
-extern int RcPadFile( int, long );
-
 static void QueueInit( DirEntryQueue * queue )
 /********************************************/
 {
@@ -455,7 +453,7 @@ static void CompleteTree( PEResDir * dir )
 } /* CompleteTree */
 
 typedef struct CopyResInfo {
-    int                 to_handle;
+    WResFileID          to_handle;
     ExeFileInfo         *file;  // for setting debugging offset
     ResFileInfo         *curres;
     ResFileInfo         *errres;
@@ -506,7 +504,7 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
  * NB when an error occurs this function MUST return without altering errno
  */
 static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
-                                int to_handle, int writebyfile,
+                                WResFileID to_handle, int writebyfile,
                                 ResFileInfo **errres )
 /****************************************************************/
 {
@@ -566,8 +564,8 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
  * writeDirEntry -
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeDirEntry( PEResDirEntry *entry, int handle )
-/***************************************************************/
+static RcStatus writeDirEntry( PEResDirEntry *entry, WResFileID handle )
+/**********************************************************************/
 {
     int     child_num;
 
@@ -588,8 +586,8 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, int handle )
  * writeDataEntry -
  * NB when an error occurs this function MUST return without altering errno
  */
-static int writeDataEntry( PEResDataEntry * entry, int handle )
-/*************************************************************/
+static int writeDataEntry( PEResDataEntry * entry, WResFileID handle )
+/********************************************************************/
 {
     if( RCWRITE( handle, &entry->Entry, sizeof(resource_entry) ) != sizeof(resource_entry) )
         return( RS_WRITE_ERROR );
@@ -633,7 +631,7 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
 static RcStatus writeEntry( PEResEntry * entry, void * _handle )
 /**************************************************************/
 {
-    int *handle = _handle;
+    WResFileID *handle = _handle;
 
     if( entry->IsDirEntry ) {
         return( writeDirEntry( &entry->u.Dir, *handle ) );
@@ -646,8 +644,8 @@ static RcStatus writeEntry( PEResEntry * entry, void * _handle )
  * writeDirectory
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeDirectory( PEResDir * dir, int handle )
-/********************************************************************/
+static RcStatus writeDirectory( PEResDir * dir, WResFileID handle )
+/*****************************************************************/
 {
     RcStatus    ret;
 
@@ -699,8 +697,8 @@ static void FreePEResDir( PEResDir * dir )
 }
 
 #ifndef INSIDE_WLINK
-extern int RcPadFile( int handle, long pad )
-/******************************************/
+extern int RcPadFile( WResFileID handle, long pad )
+/*************************************************/
 {
     char        zero = 0;
 

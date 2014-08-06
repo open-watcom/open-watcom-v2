@@ -43,8 +43,8 @@
 RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length )
 /*******************************************************************************/
 {
-    uint    numio;      /* number of bytes read or wrote */
-    uint_32 bufflen;
+    WResFileSSize   numread;
+    uint_32         bufflen;
 
     if (length == 0) {
         return( RS_PARAM_ERROR );
@@ -54,13 +54,9 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
         if( length < bufflen ) {
             bufflen = length;
         }
-        numio = RCREAD( inhandle, Pass2Info.IoBuffer, bufflen );
-        if( numio != bufflen ) {
-            if( numio == -1 ) {
-                return( RS_READ_ERROR );
-            } else {
-                return( RS_READ_INCMPLT );
-            }
+        numread = RCREAD( inhandle, Pass2Info.IoBuffer, bufflen );
+        if( numread != bufflen ) {
+            return( RCIOERR( inhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
         if( RCWRITE( outhandle, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
             return( RS_WRITE_ERROR );
@@ -77,22 +73,17 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
 RcStatus CopyExeDataTilEOF( WResFileID inhandle, WResFileID outhandle )
 /*********************************************************************/
 {
-    uint    numread;
+    WResFileSSize   numread;
 
     numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-    if (numread == -1) {
-        return( RS_READ_ERROR );
-    }
-
-    while (numread > 0) {
-        if (RCWRITE( outhandle, Pass2Info.IoBuffer, numread ) != numread) {
-            return( RS_WRITE_ERROR );
-        }
-
-        numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-        if (numread == -1) {
+    while( numread != 0 ) {
+        if( RCIOERR( inhandle, numread ) ) {
             return( RS_READ_ERROR );
         }
+        if( RCWRITE( outhandle, Pass2Info.IoBuffer, numread ) != numread ) {
+            return( RS_WRITE_ERROR );
+        }
+        numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
     }
 
     return( RS_OK );
@@ -229,17 +220,13 @@ RcStatus SeekRead( WResFileID handle, long newpos, void *buff, unsigned size )
 /****************************************************************************/
 /* seek to a specified spot in the file, and read some data */
 {
-    unsigned   bytes_read;
+    WResFileSSize   numread;
 
     if( RCSEEK( handle, newpos, SEEK_SET ) == -1 ) 
         return( RS_READ_ERROR );
-    bytes_read = RCREAD( handle, buff, size );
-    if( bytes_read != size ) {
-        if( bytes_read == -1 ) {
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+    numread = RCREAD( handle, buff, size );
+    if( numread != size ) {
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 

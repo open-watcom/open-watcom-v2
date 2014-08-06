@@ -210,7 +210,7 @@ int ResWriteMenuItem( const MenuItem * curritem, uint_8 use_unicode,
 int ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
 /**************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, currhead, sizeof(MenuHeader) );
     if( numread != sizeof(MenuHeader) ) {
@@ -225,7 +225,7 @@ int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
 /***************************************************************************/
 {
     int             error;
-    int             numread;
+    WResFileSSize   numread;
     int             size;
 
     error = FALSE;

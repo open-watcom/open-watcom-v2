@@ -35,8 +35,8 @@
 #include "clibext.h"
 #include "rccore.h"
 
-void ReportCopyError( RcStatus status, int read_msg, char *filename,
-                             int err_code ) {
+void ReportCopyError( RcStatus status, int read_msg, const char *filename, int err_code )
+{
     switch( status ) {
     case RS_READ_ERROR:
         RcError( read_msg, filename, strerror( err_code ) );
@@ -57,16 +57,14 @@ void ReportCopyError( RcStatus status, int read_msg, char *filename,
 /*
  * CopyData -
  */
-RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
+RcStatus CopyData( uint_32 offset, uint_32 length, WResFileID handle,
                 void *buff, int buffsize, int *err_code )
 /***************************************************************************/
 {
-    int     error;
-    int     numread;
-    long    seekrc;
+    int             error;
+    WResFileSSize   numread;
 
-    seekrc = RCSEEK( handle, offset, SEEK_SET );
-    if (seekrc == -1) {
+    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -74,12 +72,8 @@ RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
     while( length > buffsize ) {
         numread = RCREAD( handle, buff, buffsize );
         if (numread != buffsize) {
-            if( numread == -1 ) {
-                *err_code = errno;
-                return( RS_READ_ERROR );
-            } else {
-                return( RS_READ_INCMPLT );
-            }
+            *err_code = errno;
+            return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
         length -= buffsize;
         error = ResWrite( buff, buffsize, CurrResFile.handle );
@@ -91,12 +85,8 @@ RcStatus CopyData( uint_32 offset, uint_32 length, int handle,
 
     numread = RCREAD( handle, buff, length );
     if( numread != length ) {
-        if( numread == -1 ) {
-            *err_code = errno;
-            return( RS_READ_ERROR );
-        } else {
-            return( RS_READ_INCMPLT );
-        }
+        *err_code = errno;
+        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     error = ResWrite( buff, length, CurrResFile.handle );
     if( error ) {

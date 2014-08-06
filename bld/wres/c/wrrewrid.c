@@ -41,7 +41,7 @@ int WResReadExtraWResID( WResID *name, WResFileID handle )
 /* assumes that the fixed portion has just been read in and is in name and */
 /* that name is big enough to hold the extra bytes */
 {
-    int             numread;
+    WResFileSSize   numread;
     uint_16         extrabytes;
 
     if( name->IsName ) {

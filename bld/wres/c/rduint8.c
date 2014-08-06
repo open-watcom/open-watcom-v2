@@ -38,7 +38,7 @@
 extern int ResReadUint8( uint_8 * newint, WResFileID handle )
 /***********************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, newint, sizeof( uint_8 ) );
     if( numread == sizeof( uint_8 ) ) {

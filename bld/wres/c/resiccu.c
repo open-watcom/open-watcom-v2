@@ -49,7 +49,7 @@ extern int ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID ha
 extern int ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID handle )
 /*****************************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, head, sizeof(IconCurDirHeader) );
     if( numread != sizeof(IconCurDirHeader) ) {
@@ -74,7 +74,7 @@ extern int ResWriteIconDirEntry( const IconDirEntry *entry, WResFileID handle )
 extern int ResReadIconDirEntry( IconDirEntry *entry, WResFileID handle )
 /**********************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, entry, sizeof(IconDirEntry) );
     if( numread != sizeof(IconDirEntry) ) {
@@ -99,7 +99,7 @@ extern int ResWriteCurDirEntry( const CurDirEntry *entry, WResFileID handle )
 extern int ResReadCurDirEntry( CurDirEntry *entry, WResFileID handle )
 /********************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, entry, sizeof(CurDirEntry) );
     if( numread != sizeof(CurDirEntry) ) {

@@ -77,10 +77,7 @@ struct DLGTITEM {
 static int ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID handle )
 /******************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = RCWRITE( handle, tmpldata, size );
-    if( numwrote != size ) {
+    if( RCWRITE( handle, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

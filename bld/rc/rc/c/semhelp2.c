@@ -42,10 +42,7 @@
 int ResOS2WriteHelpEntry( HelpTableEntryOS2 * currentry, WResFileID handle )
 /**********************************************************************/
 {
-    int     numwrote;
-
-    numwrote = RCWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) );
-    if( numwrote != sizeof( HelpTableEntryOS2 ) ) {
+    if( RCWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     }

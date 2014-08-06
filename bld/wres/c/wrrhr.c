@@ -39,7 +39,7 @@ int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
 /***************************************************************/
 {
     int             error;
-    int             numread;
+    WResFileSSize   numread;
 
     error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
     if( error ) {
@@ -62,7 +62,7 @@ int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
 int WResReadExtHeader( WResExtHeader *head, WResFileID handle )
 /*************************************************************/
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, head, sizeof(WResExtHeader) );
     if( numread != sizeof(WResExtHeader) ) {

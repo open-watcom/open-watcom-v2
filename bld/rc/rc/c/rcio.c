@@ -438,7 +438,7 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY );
+    info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY, PMODE_RW );
     if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( FALSE );
@@ -671,11 +671,11 @@ extern void RcPass2IoShutdown( int noerror )
 #define MAX_INCLUDE_DEPTH   16
 
 typedef struct PhysFileInfo {
-    char    Filename[ _MAX_PATH ];
-    int     IsOpen;
-    int     Handle;
-    long    Offset;     /* offset in file to read from next time if this */
-                        /* is not the current file */
+    char        Filename[ _MAX_PATH ];
+    int         IsOpen;
+    WResFileID  Handle;
+    long        Offset;     /* offset in file to read from next time if this */
+                            /* is not the current file */
 } PhysFileInfo;
 
 typedef struct FileStackEntry {
@@ -749,8 +749,8 @@ static int OpenPhysicalFile( PhysFileInfo * phys )
     return( FALSE );
 } /* OpenPhysicalFile */
 
-static int OpenNewPhysicalFile( PhysFileInfo * phys, char * filename )
-/********************************************************************/
+static int OpenNewPhysicalFile( PhysFileInfo * phys, const char * filename )
+/**************************************************************************/
 {
     strncpy( phys->Filename, filename, _MAX_PATH );
     phys->IsOpen = FALSE;
@@ -775,7 +775,7 @@ static int ReadBuffer( FileStack * stack )
 /****************************************/
 {
     PhysFileInfo    *phys;
-    int             numread;
+    WResFileSSize   numread;
     int             error;
     int             inchar;
 
@@ -801,8 +801,8 @@ static int ReadBuffer( FileStack * stack )
     return( FALSE );
 } /* ReadBuffer */
 
-extern int RcIoPushInputFile( char * filename )
-/*********************************************/
+extern int RcIoPushInputFile( const char * filename )
+/***************************************************/
 {
     int                 error;
 
@@ -951,8 +951,8 @@ extern void RcIoSetIsCOrHFlag( void )
     }
 } /* RcIoSetIsCOrHFlag */
 
-extern void RcIoSetLogicalFileInfo( int linenum, char * filename )
-/****************************************************************/
+extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
+/**********************************************************************/
 {
     LogicalFileInfo *   log;
 
@@ -981,8 +981,8 @@ extern int RcIoIsCOrHFile( void )
  * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-WResFileID RcIoOpenInput( char * filename, int flags, ... )
-/*6*******************************************************/
+WResFileID RcIoOpenInput( const char * filename, int flags, ... )
+/*6*************************************************************/
 {
     WResFileID          handle;
     int                 perms;

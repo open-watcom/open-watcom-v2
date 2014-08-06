@@ -39,7 +39,7 @@ int WResReadFixedWResID( WResID *name, WResFileID handle )
 /********************************************************/
 /* reads the fixed part of a WResID */
 {
-    int     numread;
+    WResFileSSize   numread;
 
     numread = WRESREAD( handle, name, sizeof(WResID) );
     if( numread == sizeof(WResID) ) {

@@ -36,14 +36,16 @@
 #include "iortns.h"
 #include "rcmem.h"
 
-#define RCOPEN        RcOpen
-#define RCCLOSE       RcClose
-#define RCWRITE       RcWrite
-#define RCREAD        RcRead
-#define RCSEEK        RcSeek
-#define RCTELL        RcTell
-#define RCALLOC       RcMemMalloc
-#define RCFREE        RcMemFree
-#define RCREALLOC     RcMemRealloc
+#define RCOPEN(n,m,a)       RcOpen(n,m,a)
+#define RCCLOSE(fh)         RcClose(fh)
+#define RCWRITE(fh,b,s)     RcWrite(fh,b,s)
+#define RCREAD(fh,b,s)      RcRead(fh,b,s)
+#define RCSEEK(fh,o,d)      RcSeek(fh,o,d)
+#define RCTELL(fh)          RcTell(fh)
+#define RCALLOC             RcMemMalloc
+#define RCFREE              RcMemFree
+#define RCREALLOC           RcMemRealloc
+
+#define RCIOERR(fh,rc)      (rc == -1)
 
 #endif

@@ -44,8 +44,6 @@
 #include "exereslx.h"
 
 
-extern int RcPadFile( int, long );
-
 static int CompareLXResIdName( const void * _entry1, const void * _entry2 )
 /*************************************************************************/
 {
@@ -182,7 +180,6 @@ static int mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
 extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 /**********************************************************************/
 {
-    long            seek_rc;
     int             copy_rc;
     WResLangInfo    *res_info;
     LXResTable      *dir;
@@ -240,13 +237,11 @@ extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        seek_rc = RCSEEK( exe->Handle, file_offset, SEEK_SET );
-        if( seek_rc == -1 )
+        if( RCSEEK( exe->Handle, file_offset, SEEK_SET ) == -1 )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        seek_rc = RCSEEK( info->Handle, res_info->Offset, SEEK_SET );
-        if( seek_rc == -1 )
+        if( RCSEEK( info->Handle, res_info->Offset, SEEK_SET ) == -1 )
             return( RS_READ_ERROR );
 
         copy_rc = CopyExeData( info->Handle, exe->Handle, res_info->Length );

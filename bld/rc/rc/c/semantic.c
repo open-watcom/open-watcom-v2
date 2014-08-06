@@ -193,7 +193,7 @@ void SemAddResource( WResID * name, WResID * type, ResMemFlags flags, ResLocatio
 }
 
 void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
-                ResLocation loc, char *filename )
+                ResLocation loc, const char *filename )
 /******************************************************************/
 {
     int                 error;

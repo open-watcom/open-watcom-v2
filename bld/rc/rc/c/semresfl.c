@@ -42,8 +42,8 @@
 
 #define BUFFER_SIZE     1024
 
-static int copyAResource( int handle, WResDirWindow *wind, char *buffer,
-                   char *filename )
+static int copyAResource( WResFileID handle, WResDirWindow *wind,
+                            char *buffer, const char *filename )
 /***********************************************************************/
 {
     ResLocation         loc;
@@ -63,10 +63,10 @@ static int copyAResource( int handle, WResDirWindow *wind, char *buffer,
     return( FALSE );
 }
 
-static int copyResourcesFromRes( char *full_filename )
-/****************************************************/
+static int copyResourcesFromRes( const char *full_filename )
+/**********************************************************/
 {
-    int                 handle;
+    WResFileID          handle;
     WResDir             dir;
     int                 dup_discarded;
     WResDirWindow       wind;
@@ -76,7 +76,7 @@ static int copyResourcesFromRes( char *full_filename )
     buffer = NULL;
     dir = WResInitDir();
     handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
-    if (handle == -1) {
+    if (handle == NIL_HANDLE) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
@@ -115,7 +115,7 @@ static int copyResourcesFromRes( char *full_filename )
 HANDLE_ERROR:
     ErrorHasOccured = TRUE;
     WResFreeDir( dir );
-    if( handle != -1 )
+    if( handle != NIL_HANDLE )
         RCCLOSE( handle );
     if( buffer != NULL )
         RCFREE( buffer );

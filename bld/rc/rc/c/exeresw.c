@@ -257,8 +257,8 @@ extern int CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
     FullTypeRecord      *exe_type;
     WResResInfo         *res;
     WResLangInfo        *lang;
-    int                 tmphandle;
-    int                 reshandle;
+    WResFileID          tmphandle;
+    WResFileID          reshandle;
     RcStatus            error;
     int                 err_code;
 
@@ -320,13 +320,10 @@ extern int CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
  * writeTypeRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeTypeRecord( int handle, resource_type_record *res )
-/**********************************************************************/
+static RcStatus writeTypeRecord( WResFileID handle, resource_type_record *res )
+/*****************************************************************************/
 {
-    int     num_wrote;
-
-    num_wrote = RCWRITE( handle, res, sizeof( resource_type_record ) );
-    if( num_wrote != sizeof( resource_type_record ) ) {
+    if( RCWRITE( handle, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -338,13 +335,10 @@ static RcStatus writeTypeRecord( int handle, resource_type_record *res )
  * writeResRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeResRecord( int handle, resource_record *type )
-/*****************************************************************/
+static RcStatus writeResRecord( WResFileID handle, resource_record *type )
+/************************************************************************/
 {
-    int     num_wrote;
-
-    num_wrote = RCWRITE( handle, type, sizeof( resource_record ) );
-    if( num_wrote != sizeof( resource_record ) ) {
+    if( RCWRITE( handle, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -385,14 +379,11 @@ static void freeResTable( ResTable *restab )
  * writeStringBlock
  * NB when an error occurs this function must return without altering errno
  */
-static int writeStringBlock( int handle, StringsBlock *str )
-/**********************************************************/
+static int writeStringBlock( WResFileID handle, StringsBlock *str )
+/*****************************************************************/
 {
-    int     numwrote;
-
     if( str->StringBlockSize > 0 ) {
-        numwrote = RCWRITE( handle, str->StringBlock, str->StringBlockSize );
-        if( numwrote != str->StringBlockSize ) {
+        if( RCWRITE( handle, str->StringBlock, str->StringBlockSize ) != str->StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -403,18 +394,16 @@ static int writeStringBlock( int handle, StringsBlock *str )
  * WriteWINResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteWINResTable( int handle, ResTable *restab, int *err_code )
-/*****************************************************************************/
+extern RcStatus WriteWINResTable( WResFileID handle, ResTable *restab, int *err_code )
+/************************************************************************************/
 {
     FullTypeRecord              *exe_type;
     FullResourceRecord          *exe_res;
-    int                         num_wrote;
     int                         error;
     uint_16                     zero;
 
     error = RS_OK;
-    num_wrote = RCWRITE( handle, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) );
-    if( num_wrote != sizeof( uint_16 ) ) {
+    if( RCWRITE( handle, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         error = RS_WRITE_ERROR;
     }
 
@@ -430,8 +419,7 @@ extern RcStatus WriteWINResTable( int handle, ResTable *restab, int *err_code )
 
     if( error == RS_OK ) {
         zero = 0;
-        num_wrote = RCWRITE( handle, &zero, sizeof( uint_16 ) );
-        if( num_wrote != sizeof( uint_16 ) ) {
+        if( RCWRITE( handle, &zero, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             error = RS_WRITE_ERROR;
         }
     }
