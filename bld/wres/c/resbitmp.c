@@ -38,10 +38,7 @@
 extern int ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID handle )
 /******************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, head, sizeof( BitmapInfoHeader ) );
-    if( numwrote != sizeof( BitmapInfoHeader ) ) {
+    if( WRESWRITE( handle, head, sizeof( BitmapInfoHeader ) ) != sizeof( BitmapInfoHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED )
         return( TRUE );
     }

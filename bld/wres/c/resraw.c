@@ -38,10 +38,7 @@
 extern int ResWrite( void *buffer, int len, WResFileID handle )
 /*************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, buffer, len );
-    if( numwrote != len ) {
+    if( WRESWRITE( handle, buffer, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     }

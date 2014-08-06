@@ -42,10 +42,7 @@
 int ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 /***************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, currhead, sizeof(MenuHeader) );
-    if( numwrote != sizeof(MenuHeader) ) {
+    if( WRESWRITE( handle, currhead, sizeof(MenuHeader) ) != sizeof(MenuHeader) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -56,12 +53,10 @@ int ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 int ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *headerdata )
 /*************************************************************************************/
 {
-    int             numwrote;
     int             error;
     int             i;
 
-    numwrote = WRESWRITE( handle, currhead, sizeof( MenuHeader ) );
-    if( numwrote != sizeof( MenuHeader ) ) {
+    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

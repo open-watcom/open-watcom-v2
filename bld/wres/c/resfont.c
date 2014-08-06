@@ -38,10 +38,7 @@
 extern int ResWriteFontInfo( FontInfo *info, WResFileID handle )
 /**************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, info, sizeof(FontInfo) );
-    if( numwrote != sizeof(FontInfo) ) {
+    if( WRESWRITE( handle, info, sizeof(FontInfo) ) != sizeof(FontInfo) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -52,10 +49,7 @@ extern int ResWriteFontInfo( FontInfo *info, WResFileID handle )
 extern int ResWriteFontDirEntry( FontDirEntry *entry, WResFileID handle )
 /***********************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, &(entry->Info), entry->StructSize );
-    if( numwrote != entry->StructSize ) {
+    if( WRESWRITE( handle, &(entry->Info), entry->StructSize ) != entry->StructSize ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

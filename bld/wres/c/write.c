@@ -61,10 +61,7 @@ int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
 extern int ResWriteUint8( const uint_8 *newint, WResFileID handle )
 /*****************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, newint, sizeof(uint_8) );
-    if( numwrote != sizeof(uint_8) ) {
+    if( WRESWRITE( handle, newint, sizeof(uint_8) ) != sizeof(uint_8) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -75,10 +72,7 @@ extern int ResWriteUint8( const uint_8 *newint, WResFileID handle )
 int ResWriteUint16( const uint_16 *newint, WResFileID handle )
 /************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, newint, sizeof( uint_16 ) );
-    if( numwrote != sizeof(uint_16) ) {
+    if( WRESWRITE( handle, newint, sizeof( uint_16 ) ) != sizeof(uint_16) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -89,10 +83,7 @@ int ResWriteUint16( const uint_16 *newint, WResFileID handle )
 int ResWriteUint32( const uint_32 *newint, WResFileID handle )
 /************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, newint, sizeof( uint_32 ) );
-    if( numwrote != sizeof( uint_32 ) ) {
+    if( WRESWRITE( handle, newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -104,7 +95,6 @@ int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFile
 /*****************************************************************************************/
 {
     int             error;
-    int             numwrote;
     uint_16         numchars;
     uint_8          tmp;
     char            *ptr;
@@ -137,8 +127,7 @@ int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFile
         error = ResWriteUint8( &tmp, handle );
     }
     if( !error && numchars > 0 ) {
-        numwrote = WRESWRITE( handle, ptr, numchars );
-        if( numwrote != numchars ) {
+        if( WRESWRITE( handle, ptr, numchars ) != numchars ) {
             error = TRUE;
             WRES_ERROR( WRS_WRITE_FAILED );
         }
@@ -182,7 +171,6 @@ int WResWriteWResID( const WResID *name, WResFileID handle )
  */
 int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
 {
-    int             numwrote;
     int             size;
 
     if( type->TypeName.IsName ) {
@@ -191,10 +179,7 @@ int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
     } else {
         size = sizeof( WResTypeInfo );
     }
-
-    numwrote = WRESWRITE( handle, type, size );
-
-    if( numwrote != size ) {
+    if( WRESWRITE( handle, type, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -208,7 +193,6 @@ int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
  */
 int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
 {
-    int             numwrote;
     int             size;
 
     if (res->ResName.IsName) {
@@ -217,9 +201,7 @@ int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
     } else {
         size = sizeof(WResResInfo);
     }
-
-    numwrote = WRESWRITE( handle, (uint_8 *)res, size );
-    if( numwrote != size ) {
+    if( WRESWRITE( handle, (uint_8 *)res, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -233,10 +215,7 @@ int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
  */
 int WResWriteLangRecord( const WResLangInfo *info, WResFileID handle )
 {
-    int             numwrote;
-
-    numwrote = WRESWRITE( handle, info, sizeof( WResLangInfo ) );
-    if( numwrote != sizeof( WResLangInfo ) ) {
+    if( WRESWRITE( handle, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -248,7 +227,6 @@ int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 /**********************************************************************/
 {
     int             error;
-    int             numwrote;
 
     error = ( WRESSEEK( handle, 0L, SEEK_SET ) == -1 );
     if( error ) {
@@ -256,8 +234,7 @@ int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
     }
 
     if (!error) {
-        numwrote = WRESWRITE( handle, header, sizeof(WResHeader) );
-        if( numwrote != sizeof( WResHeader ) ) {
+        if( WRESWRITE( handle, header, sizeof(WResHeader) ) != sizeof( WResHeader ) ) {
             error = TRUE;
             WRES_ERROR( WRS_WRITE_FAILED );
         }
@@ -269,10 +246,7 @@ int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 int WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
 /************************************************************************/
 {
-    int             numwrote;
-
-    numwrote = WRESWRITE( handle, ext_head, sizeof(WResExtHeader) );
-    if( numwrote != sizeof( WResExtHeader ) ) {
+    if( WRESWRITE( handle, ext_head, sizeof(WResExtHeader) ) != sizeof( WResExtHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -283,7 +257,6 @@ int WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
 extern int ResWriteStringLen( char *string, uint_8 use_unicode, WResFileID handle, uint_16 len )
 /**********************************************************************************************/
 {
-    int             numwrote;
     char            *buf;
     int             ret;
 
@@ -297,8 +270,7 @@ extern int ResWriteStringLen( char *string, uint_8 use_unicode, WResFileID handl
     } else {
         buf = string;
     }
-    numwrote = WRESWRITE( handle, buf, len );
-    if( numwrote != len ) {
+    if( WRESWRITE( handle, buf, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         ret = TRUE;
     } else {

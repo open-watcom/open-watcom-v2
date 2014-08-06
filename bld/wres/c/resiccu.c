@@ -38,10 +38,7 @@
 extern int ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID handle )
 /************************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, head, sizeof(IconCurDirHeader) );
-    if( numwrote != sizeof(IconCurDirHeader) ) {
+    if( WRESWRITE( handle, head, sizeof(IconCurDirHeader) ) != sizeof(IconCurDirHeader) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -66,10 +63,7 @@ extern int ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID handle )
 extern int ResWriteIconDirEntry( const IconDirEntry *entry, WResFileID handle )
 /*****************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, entry, sizeof(IconDirEntry) );
-    if( numwrote != sizeof(IconDirEntry) ) {
+    if( WRESWRITE( handle, entry, sizeof(IconDirEntry) ) != sizeof(IconDirEntry) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -94,10 +88,7 @@ extern int ResReadIconDirEntry( IconDirEntry *entry, WResFileID handle )
 extern int ResWriteCurDirEntry( const CurDirEntry *entry, WResFileID handle )
 /***************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, entry, sizeof(CurDirEntry) );
-    if( numwrote != sizeof(CurDirEntry) ) {
+    if( WRESWRITE( handle, entry, sizeof(CurDirEntry) ) != sizeof(CurDirEntry) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
@@ -122,10 +113,7 @@ extern int ResReadCurDirEntry( CurDirEntry *entry, WResFileID handle )
 extern int ResWriteCurHotspot( const CurHotspot *hotspot, WResFileID handle )
 /***************************************************************************/
 {
-    int     numwrote;
-
-    numwrote = WRESWRITE( handle, hotspot, sizeof(CurHotspot) );
-    if( numwrote != sizeof(CurHotspot) ) {
+    if( WRESWRITE( handle, hotspot, sizeof(CurHotspot) ) != sizeof(CurHotspot) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {

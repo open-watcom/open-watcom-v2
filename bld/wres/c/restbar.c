@@ -61,12 +61,10 @@ int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint
 int ResWriteToolBarItems( WResFileID handle, uint_16 *items, unsigned cnt )
 /*************************************************************************/
 {
-    int             numwrote;
     unsigned        size;
 
     size = cnt * sizeof( uint_16 );
-    numwrote = WRESWRITE( handle, items, size );
-    if( numwrote != size ) {
+    if( WRESWRITE( handle, items, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( TRUE );
     } else {
