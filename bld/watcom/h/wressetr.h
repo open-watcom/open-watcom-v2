@@ -45,6 +45,7 @@
 #define WResFileSize    unsigned
 #endif
 #define WResFileOffset  long
+#define WResSeekReturn  long
 
 typedef int             WResFileID;
 
@@ -56,7 +57,7 @@ typedef struct WResRoutines {                                           /* defau
     int             (*close)(WResFileID);                               /* close */
     WResFileSSize   (*read)(WResFileID, void *, WResFileSize);          /* read */
     WResFileSSize   (*write)(WResFileID, const void *, WResFileSize);   /* write */
-    WResFileOffset  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
+    WResSeekReturn  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
     WResFileOffset  (*tell)(WResFileID);                                /* tell */
     /* memory routines */
     void            *(*alloc)(size_t);                                  /* malloc */
