@@ -35,8 +35,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-DepInfo *WResGetAutoDep( const char *fname ) {
-
+DepInfo *WResGetAutoDep( const char *fname )
+{
     WResFileID      handle;
     WResDir         dir;
     int             dup_discarded;
@@ -47,66 +47,46 @@ DepInfo *WResGetAutoDep( const char *fname ) {
     DepInfo         *ret;
     WResFileSSize   numread;
 
+    ret = NULL;
     handle = ResOpenFileRO( fname );
-    if( handle == NIL_HANDLE )
-        return( NULL );
-
-    if( !WResIsWResFile( handle ) ) {
+    if( handle != NIL_HANDLE ) {
+        if( WResIsWResFile( handle ) && (dir = WResInitDir()) != NULL ) {
+            if( !WResReadDir( handle, dir, &dup_discarded ) ) {
+                name = WResIDFromStr( DEP_LIST_NAME );
+                type = WResIDFromNum( DEP_LIST_TYPE );
+                if( name != NULL && type != NULL ) {
+                    window = WResFindResource( type, name, dir, NULL );
+                    if( WResIsEmptyWindow( window ) ) {
+                        WRES_ERROR( WRS_RES_NOT_FOUND );
+                    } else {
+                        WResIDFree( name );
+                        WResIDFree( type );
+                        info = WResGetLangInfo( window );
+                        if( ResSeek( handle, info->Offset, SEEK_SET ) == -1 ) {
+                            WRES_ERROR( WRS_SEEK_FAILED );
+                        } else {
+                            ret = WRESALLOC( info->Length );
+                            if( ret == NULL ) {
+                                WRES_ERROR( WRS_MALLOC_FAILED );
+                            } else {
+                                numread = WRESREAD( handle, ret, info->Length );
+                                if( numread != info->Length ) {
+                                    WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                                    ret = NULL;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            WResFreeDir( dir );
+        }
         ResCloseFile( handle );
-        return( NULL );
     }
-    dir = WResInitDir();
-    if( dir == NULL ) {
-        ResCloseFile( handle );
-        return( NULL );
-    }
-
-    if( WResReadDir( handle, dir, &dup_discarded ) ) {
-        WResFreeDir( dir );
-        ResCloseFile( handle );
-        return( NULL );
-    }
-
-    name = WResIDFromStr( DEP_LIST_NAME );
-    type = WResIDFromNum( DEP_LIST_TYPE );
-    if( name == NULL || type == NULL ) return( NULL );
-
-    window = WResFindResource( type, name, dir, NULL );
-    if( WResIsEmptyWindow( window ) ) {
-        WRES_ERROR( WRS_RES_NOT_FOUND );
-        WResFreeDir( dir );
-        ResCloseFile( handle );
-        return( NULL );
-    }
-    WResIDFree( name );
-    WResIDFree( type );
-
-    info = WResGetLangInfo( window );
-    if( ResSeek( handle, info->Offset, SEEK_SET ) == -1 ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-        WResFreeDir( dir );
-        ResCloseFile( handle );
-        return( NULL );
-    }
-    ret = WRESALLOC( info->Length );
-    if( ret == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-        WResFreeDir( dir );
-        ResCloseFile( handle );
-        return( NULL );
-    }
-    numread = WRESREAD( handle, ret, info->Length );
-    if( numread != info->Length ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        WResFreeDir( dir );
-        ResCloseFile( handle );
-        return( NULL );
-    }
-    WResFreeDir( dir );
-    ResCloseFile( handle );
     return( ret );
 }
 
-void WResFreeAutoDep( DepInfo *ptr ) {
+void WResFreeAutoDep( DepInfo *ptr )
+{
     WRESFREE( ptr );
 }
