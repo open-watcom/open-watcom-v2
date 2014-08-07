@@ -138,7 +138,7 @@ int WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
         }
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         rnode = tnode->Head;
-        if( ok && type == (uint_16)RT_STRING ) {
+        if( ok && type == (uint_16)(pointer_int)(pointer_int)RT_STRING ) {
             str = WRAllocRCString( WR_ALLSTRINGS );
             if( str != NULL ) {
                 ok = WRSetLBoxWithStr( lbox, str, NULL );
@@ -179,7 +179,7 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type )
 
     if( rnode != NULL ) {
         id = &rnode->Info.ResName;
-        if( type == (uint_16)RT_STRING ) {
+        if( type == (uint_16)(pointer_int)RT_STRING ) {
             num = id->ID.Num;
             if( num != 0 ) {
                 text = WRAllocRCString( WR_STRINGIDS );

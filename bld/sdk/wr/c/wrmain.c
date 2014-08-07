@@ -494,9 +494,9 @@ int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData
 
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)RT_GROUP_ICON ) {
+        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
             ok = WREDoSaveImageAs( info, idata, TRUE );
-        } else if( type == (long)RT_GROUP_CURSOR ) {
+        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WREDoSaveImageAs( info, idata, FALSE );
         } else {
             ok = WREDoSaveObjectAs( info, idata );
@@ -548,9 +548,9 @@ int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
     // loop thru all of the data
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)RT_GROUP_ICON ) {
+        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
             ok = WREDoSaveImageInto( info, idata, dup, TRUE );
-        } else if( type == (long)RT_GROUP_CURSOR ) {
+        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WREDoSaveImageInto( info, idata, dup, FALSE );
         } else {
             ok = WREDoSaveObjectInto( info, idata, dup );
@@ -880,7 +880,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     type = WResIDToNum( idata->type );
 
-    strings = (type == (long)RT_STRING);
+    strings = (type == (long)(pointer_int)RT_STRING);
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {
@@ -921,7 +921,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         }
     }
 
-    if( type == (long)RT_GROUP_ICON || type == (long)RT_GROUP_CURSOR ) {
+    if( type == (long)(pointer_int)RT_GROUP_ICON || type == (long)(pointer_int)RT_GROUP_CURSOR ) {
         if( !WRDeleteGroupImages( info, lnode, type ) ) {
             return( FALSE );
         }

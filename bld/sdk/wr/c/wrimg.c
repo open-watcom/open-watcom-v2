@@ -78,7 +78,7 @@ int WRLoadBitmapFile( WRInfo *info )
     }
 
     if( ok ) {
-        type = WResIDFromNum( (long)RT_BITMAP );
+        type = WResIDFromNum( (long)(pointer_int)RT_BITMAP );
         ok = (type != NULL);
     }
 
@@ -161,7 +161,7 @@ int WRLoadIconFile( WRInfo *info )
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)RT_GROUP_ICON );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_ICON );
         ok = (tname != NULL);
     }
 
@@ -261,7 +261,7 @@ int WRLoadCursorFile( WRInfo *info )
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)RT_GROUP_CURSOR );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_CURSOR );
         ok = (tname != NULL);
     }
 
@@ -387,7 +387,7 @@ int WRSaveBitmapResource( WRInfo *info, int backup )
     ok = (info != NULL && info->dir != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)RT_BITMAP, NULL );
+        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_BITMAP, NULL );
         ok = (tnode != NULL);
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOBMP );
@@ -475,7 +475,7 @@ int WRSaveCursorResource( WRInfo *info, int backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)RT_GROUP_CURSOR, NULL );
+        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_CURSOR, NULL );
         ok = (tnode != NULL);
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOCUR );
@@ -533,7 +533,7 @@ int WRSaveIconResource( WRInfo *info, int backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)RT_GROUP_ICON, NULL );
+        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_ICON, NULL );
         ok = (tnode != NULL);
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOICON );

@@ -293,7 +293,7 @@ int WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, i
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)RT_CURSOR );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_CURSOR );
         ok = (tname != NULL);
     }
 
@@ -351,7 +351,7 @@ int WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int o
 
     if( ok ) {
         memcpy( icon, data + id->dwImageOffset, id->dwBytesInRes );
-        tname = WResIDFromNum( (uint_16)RT_ICON );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_ICON );
         ok = (tname != NULL);
     }
 
@@ -396,7 +396,7 @@ int WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode,
     int                 ok;
 
     ok = (info != NULL && lnode != NULL &&
-          (type == (uint_16)RT_ICON || type == (uint_16)RT_CURSOR));
+          (type == (uint_16)(pointer_int)RT_ICON || type == (uint_16)(pointer_int)RT_CURSOR));
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, type, NULL );
@@ -546,7 +546,7 @@ int WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
         for( i = 0; ok && i < rch->cwCount; i++ ) {
             ord = (uint_16)rch->cdEntries[i].wNameOrdinal;
             lt = lnode->Info.lang;
-            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)RT_CURSOR, ord, &lt );
+            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)(pointer_int)RT_CURSOR, ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WRAddCursorImageToData( info, ilnode, data, size, &hotspot );
@@ -613,7 +613,7 @@ int WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode,
         for( i = 0; ok && i < rih->cwCount; i++ ) {
             ord = (uint_16)rih->idEntries[i].wNameOrdinal;
             lt = lnode->Info.lang;
-            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)RT_ICON, ord, &lt );
+            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)(pointer_int)RT_ICON, ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WRAddIconImageToData( info, ilnode, data, size );
@@ -669,9 +669,9 @@ uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
                 break;
             }
         }
-        if( !WRFindImageId( info, NULL, NULL, &lnode, (uint_16)RT_ICON, start, NULL ) ) {
+        if( !WRFindImageId( info, NULL, NULL, &lnode, (uint_16)(pointer_int)RT_ICON, start, NULL ) ) {
             if( !WRFindImageId( info, NULL, NULL, &lnode,
-                                (uint_16)RT_CURSOR, start, NULL ) ) {
+                                (uint_16)(pointer_int)RT_CURSOR, start, NULL ) ) {
                 found = TRUE;
                 break;
             }
@@ -778,7 +778,7 @@ int WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type )
     int                 ok;
 
     ok = (info != NULL && lnode != NULL &&
-          (type == (uint_16)RT_GROUP_ICON || type == (uint_16)RT_GROUP_CURSOR));
+          (type == (uint_16)(pointer_int)RT_GROUP_ICON || type == (uint_16)(pointer_int)RT_GROUP_CURSOR));
 
     if( ok ) {
         data = WRCopyResData( info, lnode );
@@ -786,13 +786,13 @@ int WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type )
     }
 
     if( ok ) {
-        if( type == (uint_16)RT_GROUP_ICON ) {
+        if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ih = (RESICONHEADER *)data;
             for( i = 0; ok && i < ih->cwCount; i++ ) {
                 ord = (uint_16)ih->idEntries[i].wNameOrdinal;
                 lt = lnode->Info.lang;
                 if( WRFindImageId( info, &itnode, &irnode, &ilnode,
-                                   (uint_16)RT_ICON, ord, &lt ) ) {
+                                   (uint_16)(pointer_int)RT_ICON, ord, &lt ) ) {
                     if( ilnode->data != NULL ) {
                         MemFree( ilnode->data );
                         ilnode->data = NULL;
@@ -806,7 +806,7 @@ int WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type )
                 ord = (uint_16)ch->cdEntries[i].wNameOrdinal;
                 lt = lnode->Info.lang;
                 if( WRFindImageId( info, &itnode, &irnode, &ilnode,
-                                   (uint_16)RT_CURSOR, ord, &lt ) ) {
+                                   (uint_16)(pointer_int)RT_CURSOR, ord, &lt ) ) {
                     if( ilnode->data != NULL ) {
                         MemFree( ilnode->data );
                         ilnode->data = NULL;
