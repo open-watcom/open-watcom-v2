@@ -44,12 +44,12 @@
 #include "exeos2.h"
 #include "exepe.h"
 #include "madregs.h"
-
 #include "x86cpu.h"
 #include "miscx87.h"
 #include "dosredir.h"
 #include "doserr.h"
 #include "doscomm.h"
+#include "clibint.h"
 
 extern bool     GrabVects( void );
 extern void     ReleVects( void );
@@ -105,8 +105,6 @@ static char *DBErrors[] = {
 };
 
 extern  long            _STACKTOP;
-extern  unsigned char   _8087;
-
 
 #pragma aux (metaware)  _dil_global;
 #pragma aux (metaware)  _dx_config_inf;
