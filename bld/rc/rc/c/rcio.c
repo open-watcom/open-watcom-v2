@@ -765,7 +765,7 @@ static void SetPhysFileOffset( FileStack * stack )
     PhysFileInfo *  phys;
     uint_16         charsinbuff;
 
-    if( !IsEmptyFileStack( stack ) ) {
+    if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - (stack->NextChar - stack->Buffer);
         phys->Offset = RCTELL( phys->Handle ) - charsinbuff;
