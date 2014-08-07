@@ -148,7 +148,7 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
     if( ok ) {
         is_rc = WdeIsFileAnRCFile( fname );
-        ok = ((idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL);
+        ok = ((idata.type = WResIDFromNum( (long)(pointer_int)RT_DIALOG )) != NULL);
     }
 
     if( ok ) {
@@ -230,7 +230,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     if( ok ) {
         is_rc = WdeIsFileAnRCFile( fname );
         if( !is_rc ) {
-            ok = ((idata.type = WResIDFromNum( (long)RT_DIALOG )) != NULL);
+            ok = ((idata.type = WResIDFromNum( (long)(pointer_int)RT_DIALOG )) != NULL);
         }
     }
 
