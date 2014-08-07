@@ -195,7 +195,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
         memset( &idata2, 0, sizeof( idata2 ) );
         if( einfo->info->symbol_file != NULL ) {
             idata2.next = NULL;
-            idata2.type = WResIDFromNum( (long)RT_RCDATA );
+            idata2.type = WResIDFromNum( (long)(pointer_int)RT_RCDATA );
             idata2.name = WResIDFromStr( "DLGINCLUDE" );
             idata2.data = einfo->info->symbol_file;
             idata2.lang = einfo->info->lang;
@@ -209,7 +209,7 @@ bool WSaveObjectAs( bool get_name, WMenuEditInfo *einfo )
         if( einfo->info->symbol_file != NULL ) {
             idata.next = &idata2;
         }
-        idata.type = WResIDFromNum( (long)RT_MENU );
+        idata.type = WResIDFromNum( (long)(pointer_int)RT_MENU );
         ok = (idata.type != NULL);
     }
 
@@ -316,7 +316,7 @@ bool WSaveObjectInto( WMenuEditInfo *einfo )
 
     if( ok ) {
         idata.next = NULL;
-        idata.type = WResIDFromNum( (long)RT_MENU );
+        idata.type = WResIDFromNum( (long)(pointer_int)RT_MENU );
         ok = (idata.type != NULL);
     }
 

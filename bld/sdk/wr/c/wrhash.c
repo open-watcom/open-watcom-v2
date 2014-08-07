@@ -198,7 +198,7 @@ BOOL WRAPI WRDeleteDLGInclude( WResDir dir )
     ok = (dir != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( dir, (uint_16)RT_RCDATA, NULL );
+        tnode = WRFindTypeNode( dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
         ok = (tnode != NULL);
     }
 
@@ -244,7 +244,7 @@ BOOL WRAPI WRCreateDLGInclude( WResDir *dir, char *include )
 
     if( ok ) {
         WRDeleteDLGInclude( *dir );
-        type = WResIDFromNum( (uint_16)RT_RCDATA );
+        type = WResIDFromNum( (uint_16)(pointer_int)RT_RCDATA );
         ok = (type != NULL);
     }
 
