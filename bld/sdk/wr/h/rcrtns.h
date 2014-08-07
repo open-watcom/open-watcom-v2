@@ -36,14 +36,16 @@
 #include "wio.h"
 #include "wrmemi.h"
 
-#define RCOPEN        open
-#define RCCLOSE       close
-#define RCWRITE       write
-#define RCREAD        read
-#define RCSEEK        lseek
-#define RCTELL        tell
-#define RCALLOC       MemAlloc
-#define RCFREE        MemFree
-#define RCREALLOC     MemRealloc
+#define RCOPEN          open
+#define RCCLOSE         close
+#define RCWRITE         write
+#define RCREAD          read
+#define RCSEEK          lseek
+#define RCTELL          tell
+#define RCALLOC         MemAlloc
+#define RCFREE          MemFree
+#define RCREALLOC       MemRealloc
+
+#define RCIOERR(fh,rc)  (rc == -1)
 
 #endif
