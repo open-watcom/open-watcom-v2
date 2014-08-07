@@ -92,7 +92,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT bool CALLBACK WRESplash( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT BOOL    CALLBACK WRESplash( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -203,11 +203,11 @@ static void startEditors( void )
         ret = FALSE;
         type = 0;
         if( ftype == WR_WIN_RC_STR ) {
-            type = (uint_16)RT_STRING;
+            type = (uint_16)(pointer_int)RT_STRING;
         } else if( ftype == WR_WIN_RC_MENU ) {
-            type = (uint_16)RT_MENU;
+            type = (uint_16)(pointer_int)RT_MENU;
         } else if( ftype == WR_WIN_RC_ACCEL ) {
-            type = (uint_16)RT_ACCELERATOR;
+            type = (uint_16)(pointer_int)RT_ACCELERATOR;
         }
         if( type != 0 && WREFindTypeNode( res_info->info->dir, type, NULL ) ) {
             ret = WRESetResNamesFromType( res_info, type, FALSE, NULL, 0 );
@@ -722,15 +722,15 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_NEW_CURSOR:
-            WRENewImageResource( CursorService, (uint_16)RT_GROUP_CURSOR );
+            WRENewImageResource( CursorService, (uint_16)(pointer_int)RT_GROUP_CURSOR );
             break;
 
         case IDM_NEW_BITMAP:
-            WRENewImageResource( BitmapService, (uint_16)RT_BITMAP );
+            WRENewImageResource( BitmapService, (uint_16)(pointer_int)RT_BITMAP );
             break;
 
         case IDM_NEW_ICON:
-            WRENewImageResource( IconService, (uint_16)RT_GROUP_ICON );
+            WRENewImageResource( IconService, (uint_16)(pointer_int)RT_GROUP_ICON );
             break;
 
         case IDM_NEW_DIALOG:
@@ -760,7 +760,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         case IDM_RES_SAVEAS:
         case IDM_RES_SAVE_INTO:
             if( res_info != NULL ) {
-                if( res_info->current_type == (uint_16)RT_STRING ) {
+                if( res_info->current_type == (uint_16)(pointer_int)RT_STRING ) {
                     SaveMultObjects( wp == IDM_RES_SAVE_INTO );
                 } else {
                     SaveObject( wp == IDM_RES_SAVE_INTO );
@@ -897,24 +897,24 @@ bool WREHandleResEdit( void )
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
         ok = (curr.info != NULL && curr.type != NULL &&
-              curr.info->current_type == (uint_16)RT_STRING);
+              curr.info->current_type == (uint_16)(pointer_int)RT_STRING);
     }
 
     if( ok ) {
         ok = FALSE;
-        if( curr.info->current_type == (uint_16)RT_ACCELERATOR ) {
+        if( curr.info->current_type == (uint_16)(pointer_int)RT_ACCELERATOR ) {
             ok = WREEditAccelResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_MENU ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_MENU ) {
             ok = WREEditMenuResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_STRING ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             ok = WREEditStringResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_DIALOG ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_DIALOG ) {
             ok =  WREEditDialogResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_GROUP_CURSOR ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
             ok =  WREEditImageResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_GROUP_ICON ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ok =  WREEditImageResource( &curr );
-        } else if( curr.info->current_type == (uint_16)RT_BITMAP ) {
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
             ok =  WREEditImageResource( &curr );
         }
     }
@@ -1057,7 +1057,7 @@ void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
     FreeProcInstance( lpProcAbout );
 }
 
-bool CALLBACK WRESplash( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
+BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, timer, start;
     HDC         dc, tdc;

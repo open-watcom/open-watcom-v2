@@ -282,7 +282,7 @@ int WRESetOption( WREOptReq req, int val )
     switch( req ) {
     case WREOptScreenMax:
         old = WRECurrentState.screen_maxed;
-        WRECurrentState.screen_maxed = val != 0;
+        WRECurrentState.screen_maxed = ( val != 0 );
         break;
 
     default:

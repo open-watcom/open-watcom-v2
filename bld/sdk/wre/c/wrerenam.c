@@ -86,7 +86,7 @@ bool WRERenameResource( void )
     ok = WREGetCurrentResource( &curr );
 
     if( ok ) {
-        if( curr.info->current_type == (uint_16)RT_STRING ) {
+        if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             WREDisplayErrorMsg( WRE_NORENAMESTRINGS );
             ok = FALSE;
         }

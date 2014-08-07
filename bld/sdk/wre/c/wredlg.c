@@ -168,10 +168,10 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( curr->info->current_type == (uint_16)RT_DIALOG ) {
+        if( curr->info->current_type == (uint_16)(pointer_int)RT_DIALOG ) {
             tname = &curr->type->Info.TypeName;
         } else {
-            tname = WResIDFromNum( (uint_16)RT_DIALOG );
+            tname = WResIDFromNum( (uint_16)(pointer_int)RT_DIALOG );
             tname_alloc = TRUE;
         }
         lang.lang = DEF_LANG;
@@ -187,7 +187,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
             ok = (rname != NULL);
             if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, (uint_16)RT_DIALOG, tname_alloc );
+                                     &lang, &dup, (uint_16)(pointer_int)RT_DIALOG, tname_alloc );
                 if( !ok && dup ) {
                     ok = TRUE;
                 }
@@ -410,7 +410,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
 
     if( ok ) {
         session->rinfo->modified = TRUE;
-        WRESetResNamesFromType( session->rinfo, (uint_16)RT_DIALOG, TRUE, name, 0 );
+        WRESetResNamesFromType( session->rinfo, (uint_16)(pointer_int)RT_DIALOG, TRUE, name, 0 );
     }
 
     if( data != NULL ) {

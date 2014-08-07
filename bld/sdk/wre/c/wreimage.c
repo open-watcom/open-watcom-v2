@@ -103,8 +103,8 @@ uint_16 WREFindUnusedImageId( WREResInfo *info, uint_16 start )
                 break;
             }
         }
-        if( !WREFindImageId( &image, (uint_16)RT_ICON, start, NULL ) ) {
-            if( !WREFindImageId( &image, (uint_16)RT_CURSOR, start, NULL ) ) {
+        if( !WREFindImageId( &image, (uint_16)(pointer_int)RT_ICON, start, NULL ) ) {
+            if( !WREFindImageId( &image, (uint_16)(pointer_int)RT_CURSOR, start, NULL ) ) {
                 found = TRUE;
                 break;
             }
@@ -128,7 +128,7 @@ bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id 
 
     ok = (group != NULL && group->info != NULL && group->info->info != NULL &&
           group->lang != NULL &&
-          (type == (uint_16)RT_GROUP_ICON || type == (uint_16)RT_GROUP_CURSOR));
+          (type == (uint_16)(pointer_int)RT_GROUP_ICON || type == (uint_16)(pointer_int)RT_GROUP_CURSOR));
 
     if( ok ) {
         if( group->lang->data == NULL ) {
@@ -139,7 +139,7 @@ bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id 
 
     if( ok ) {
         ok = FALSE;
-        if( type == (uint_16)RT_GROUP_ICON ) {
+        if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ih = (RESICONHEADER *)group->lang->data;
             for( i = 0; !ok && i < ih->cwCount; i++ ) {
                 ok = (id == (uint_16)ih->idEntries[i].wNameOrdinal);
@@ -294,7 +294,7 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_3
         for( i = 0; ok && i < rch->cwCount; i++ ) {
             ord = (uint_16)rch->cdEntries[i].wNameOrdinal;
             lt = group->lang->Info.lang;
-            ok = WREFindImageId( &image, (uint_16)RT_CURSOR, ord, &lt );
+            ok = WREFindImageId( &image, (uint_16)(pointer_int)RT_CURSOR, ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WREAddCursorImageToData( &image, data, size, &hotspot );
@@ -363,7 +363,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 
         for( i = 0; ok && i < rih->cwCount; i++ ) {
             ord = (uint_16)rih->idEntries[i].wNameOrdinal;
             lt = group->lang->Info.lang;
-            ok = WREFindImageId( &image, (uint_16)RT_ICON, ord, &lt );
+            ok = WREFindImageId( &image, (uint_16)(pointer_int)RT_ICON, ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WREAddIconImageToData( &image, data, size );
@@ -428,7 +428,7 @@ bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)RT_CURSOR );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_CURSOR );
         ok = (tname != NULL);
     }
 
@@ -487,7 +487,7 @@ bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
 
     if( ok ) {
         memcpy( icon, data + id->dwImageOffset, id->dwBytesInRes );
-        tname = WResIDFromNum( (uint_16)RT_ICON );
+        tname = WResIDFromNum( (uint_16)(pointer_int)RT_ICON );
         ok = (tname != NULL);
     }
 

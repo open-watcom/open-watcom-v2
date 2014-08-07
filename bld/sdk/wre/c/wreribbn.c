@@ -252,7 +252,7 @@ void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
 
 BOOL WRERibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    bool         ret;
+    BOOL         ret;
 
     _wre_touch( hwnd );
     _wre_touch( wParam );

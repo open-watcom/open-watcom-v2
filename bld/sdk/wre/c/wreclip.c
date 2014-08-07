@@ -107,17 +107,17 @@ static bool         WREQueryPasteReplace( WResID *name, uint_16 type, bool *repl
 /* static variables                                                         */
 /****************************************************************************/
 static WREClipFormat WREClipFormats[] = {
-    { 0,            WR_CLIPBD_ACCEL,    (uint_16)RT_ACCELERATOR     },
-    { 0,            WR_CLIPBD_MENU,     (uint_16)RT_MENU            },
-    { 0,            WR_CLIPBD_STRING,   (uint_16)RT_STRING          },
-    { 0,            WR_CLIPBD_CURSOR,   (uint_16)RT_GROUP_CURSOR    },
-    { 0,            WR_CLIPBD_ICON,     (uint_16)RT_GROUP_ICON      },
-    { 0,            WR_CLIPBD_DIALOG,   (uint_16)RT_DIALOG          },
-    { 0,            WR_CLIPBD_FONT,     (uint_16)RT_FONT            },
-    { 0,            WR_CLIPBD_RCDATA,   (uint_16)RT_RCDATA          },
-    { 0,            WR_CLIPBD_BITMAP,   (uint_16)RT_BITMAP          },
-    { CF_BITMAP,    NULL,               (uint_16)RT_BITMAP          },
-    { CF_DIB,       NULL,               (uint_16)RT_BITMAP          },
+    { 0,            WR_CLIPBD_ACCEL,    (uint_16)(pointer_int)RT_ACCELERATOR     },
+    { 0,            WR_CLIPBD_MENU,     (uint_16)(pointer_int)RT_MENU            },
+    { 0,            WR_CLIPBD_STRING,   (uint_16)(pointer_int)RT_STRING          },
+    { 0,            WR_CLIPBD_CURSOR,   (uint_16)(pointer_int)RT_GROUP_CURSOR    },
+    { 0,            WR_CLIPBD_ICON,     (uint_16)(pointer_int)RT_GROUP_ICON      },
+    { 0,            WR_CLIPBD_DIALOG,   (uint_16)(pointer_int)RT_DIALOG          },
+    { 0,            WR_CLIPBD_FONT,     (uint_16)(pointer_int)RT_FONT            },
+    { 0,            WR_CLIPBD_RCDATA,   (uint_16)(pointer_int)RT_RCDATA          },
+    { 0,            WR_CLIPBD_BITMAP,   (uint_16)(pointer_int)RT_BITMAP          },
+    { CF_BITMAP,    NULL,               (uint_16)(pointer_int)RT_BITMAP          },
+    { CF_DIB,       NULL,               (uint_16)(pointer_int)RT_BITMAP          },
     { 0,            NULL,               0                           }
     // last entry is a sentinel
 };
@@ -456,9 +456,9 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     }
 
     if( ok ) {
-        if( fmt->type == (uint_16)RT_GROUP_ICON ) {
+        if( fmt->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ok = WRECreateIconEntries( &curr, data, dsize );
-        } else if( fmt->type == (uint_16)RT_GROUP_CURSOR ) {
+        } else if( fmt->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WRECreateCursorEntries( &curr, data, dsize );
         } else {
             ok = FALSE;
@@ -521,7 +521,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     if( ok ) {
         cname = WRRecallBitmapName();
         if( cname == NULL ) {
-            cname = WRECreateImageTitle( (uint_16)RT_BITMAP );
+            cname = WRECreateImageTitle( (uint_16)(pointer_int)RT_BITMAP );
         }
         ok = (cname != NULL);
     }
@@ -546,7 +546,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
             }
         }
         ok = WRENewResource( &curr, ctype, cname, DEF_MEMFLAGS, 0,
-                             dsize, &lang, &dup, (uint_16)RT_BITMAP,
+                             dsize, &lang, &dup, (uint_16)(pointer_int)RT_BITMAP,
                              new_type ) && !dup;
     }
 
@@ -664,7 +664,7 @@ void WRESetCopyMenuItem( HWND main )
     WREGetCurrentResource( &curr );
     enable = MF_GRAYED;
     if( curr.info != NULL ) {
-        if( curr.info->current_type != 0 && curr.info->current_type != (uint_16)RT_STRING ) {
+        if( curr.info->current_type != 0 && curr.info->current_type != (uint_16)(pointer_int)RT_STRING ) {
             enable = MF_ENABLED;
         }
     }
@@ -725,9 +725,9 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( type == (long)RT_GROUP_ICON ) {
+        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
             ok = WRECreateIconDataFromGroup( curr, &rdata, &rdata_size );
-        } else if( type == (long)RT_GROUP_CURSOR ) {
+        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WRECreateCursorDataFromGroup( curr, &rdata, &rdata_size );
         } else {
             rdata = WREGetCurrentResData( curr );
@@ -900,9 +900,9 @@ bool WREClipCurrentResource( HWND main, bool cut )
     }
 
     if( ok ) {
-        if( curr.info->current_type == (uint_16)RT_BITMAP ) {
+        if( curr.info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
             ok = WREClipBitmap( &curr, main );
-        } else if( curr.info->current_type == (uint_16)RT_STRING ||
+        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ||
                    curr.info->current_type == 0 ) {
             ok = FALSE;
         } else {
@@ -941,9 +941,9 @@ bool WREPasteResource( HWND main )
             ok = WREGetAndPasteHBITMAP( fmt );
         } else if( fmt->fmt == CF_DIB ) {
             ok = WREGetAndPasteDIB( fmt );
-        } else if( fmt->type == (long)RT_GROUP_ICON ) {
+        } else if( fmt->type == (long)(pointer_int)RT_GROUP_ICON ) {
             ok = WREGetAndPasteIconOrCursor( fmt );
-        } else if( fmt->type == (long)RT_GROUP_CURSOR ) {
+        } else if( fmt->type == (long)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WREGetAndPasteIconOrCursor( fmt );
         } else {
             ok = WREGetAndPasteResource( fmt );

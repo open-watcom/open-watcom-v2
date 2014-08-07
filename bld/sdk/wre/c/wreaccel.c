@@ -165,10 +165,10 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( curr->info->current_type == (uint_16)RT_ACCELERATOR ) {
+        if( curr->info->current_type == (uint_16)(pointer_int)RT_ACCELERATOR ) {
             tname = &curr->type->Info.TypeName;
         } else {
-            tname = WResIDFromNum( (uint_16)RT_ACCELERATOR );
+            tname = WResIDFromNum( (uint_16)(pointer_int)RT_ACCELERATOR );
             tname_alloc = TRUE;
         }
         lang.lang = DEF_LANG;
@@ -184,7 +184,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
             ok = (rname != NULL);
             if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, (uint_16)RT_ACCELERATOR,
+                                     &lang, &dup, (uint_16)(pointer_int)RT_ACCELERATOR,
                                      tname_alloc );
                 if( !ok && dup ) {
                     ok = TRUE;
@@ -368,7 +368,7 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
     if( ok && session->info->modified ) {
         ok = WRERenameWResResNode( session->tnode, &session->rnode,
                                    session->info->res_name );
-        WRESetResNamesFromType( session->rinfo, (uint_16)RT_ACCELERATOR, TRUE,
+        WRESetResNamesFromType( session->rinfo, (uint_16)(pointer_int)RT_ACCELERATOR, TRUE,
                                 session->info->res_name, 0 );
     }
 

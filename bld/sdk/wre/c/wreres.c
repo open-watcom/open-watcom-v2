@@ -426,15 +426,15 @@ bool pleaseOpenFile( UINT msg )
     if( msg == ACCEL_PLEASE_OPENME ) {
         filter = WREAccelFilter;
         title = AllocRCString( WRE_OPENACCEL );
-        type = (uint_16)RT_ACCELERATOR;
+        type = (uint_16)(pointer_int)RT_ACCELERATOR;
     } else if( msg == MENU_PLEASE_OPENME ) {
         filter = WREMenuFilter;
         title = AllocRCString( WRE_OPENMENU );
-        type = (uint_16)RT_MENU;
+        type = (uint_16)(pointer_int)RT_MENU;
     } else if( msg == STRING_PLEASE_OPENME ) {
         filter = WREStringFilter;
         title = AllocRCString( WRE_OPENSTRING );
-        type = (uint_16)RT_STRING;
+        type = (uint_16)(pointer_int)RT_STRING;
     }
 
     ok = (filter != NULL && title != NULL);

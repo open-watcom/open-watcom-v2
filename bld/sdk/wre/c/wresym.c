@@ -115,7 +115,7 @@ static char *WREFindDLGInclude( WRInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)RT_RCDATA, NULL );
+        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
         ok = (tnode != NULL);
     }
 
