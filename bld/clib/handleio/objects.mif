@@ -90,7 +90,17 @@
 
 !include ../../../../objlist.mif
 
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==================================================================================================================
+!inject binmode.obj  d16 d32             nt nta ntp nvc nvl         o16 o32         w16 w32 osi             rdu rdk
+
+objsuffix=files
+!include ../../../../objlist.mif
+objsuffix=
+
 qread_opts   =-I"$(clib_dir)/streamio/h"
 qreadunx_opts=-I"$(clib_dir)/streamio/h"
 qwrit_opts   =-I"$(clib_dir)/streamio/h"
 qwritunx_opts=-I"$(clib_dir)/streamio/h"
+
+binmode_postopts  =-zld

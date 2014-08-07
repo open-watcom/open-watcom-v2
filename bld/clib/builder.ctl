@@ -28,9 +28,9 @@ set PROJNAME=clib
     <CCCMD> doslfn/library/msdos.086/mm/doslfnm.lib         <OWRELROOT>/lib286/dos/doslfnm.lib
     <CCCMD> doslfn/library/msdos.086/mm_ov/doslfnm.lib      <OWRELROOT>/lib286/dos/doslfnom.lib
     <CCCMD> doslfn/library/msdos.086/ms/doslfns.lib         <OWRELROOT>/lib286/dos/doslfns.lib
+    <CCCMD> handleio/library/msdos.086/ms/binmode.obj       <OWRELROOT>/lib286/dos/binmode.obj
     <CCCMD> startup/library/msdos.086/ml/d16msels.obj       <OWRELROOT>/lib286/dos/d16msels.obj
     <CCCMD> startup/library/msdos.086/ml/dos16m.obj         <OWRELROOT>/lib286/dos/dos16m.obj
-    <CCCMD> startup/library/msdos.086/ms/binmode.obj        <OWRELROOT>/lib286/dos/binmode.obj
     <CCCMD> startup/library/msdos.086/ms/commode.obj        <OWRELROOT>/lib286/dos/commode.obj
     <CCCMD> startup/library/msdos.086/ms/cstrtiny.obj       <OWRELROOT>/lib286/dos/cstart_t.obj
 
@@ -38,7 +38,7 @@ set PROJNAME=clib
     <CCCMD> library/msdos.386/ms_s/clib3s.lib               <OWRELROOT>/lib386/dos/clib3s.lib
     <CCCMD> doslfn/library/msdos.386/ms_r/doslfn3r.lib      <OWRELROOT>/lib386/dos/doslfn3r.lib
     <CCCMD> doslfn/library/msdos.386/ms_s/doslfn3s.lib      <OWRELROOT>/lib386/dos/doslfn3s.lib
-    <CCCMD> startup/library/msdos.386/ms_r/binmode.obj      <OWRELROOT>/lib386/dos/binmode.obj
+    <CCCMD> handleio/library/msdos.386/ms_r/binmode.obj     <OWRELROOT>/lib386/dos/binmode.obj
     <CCCMD> startup/library/msdos.386/ms_r/commode.obj      <OWRELROOT>/lib386/dos/commode.obj
     <CCCMD> startup/library/msdos.386/ms_r/cstrtx32.obj     <OWRELROOT>/lib386/dos/cstrtx3r.obj
     <CCCMD> startup/library/msdos.386/ms_r/dllstart.obj     <OWRELROOT>/lib386/dos/dllstrtr.obj
@@ -61,13 +61,13 @@ set PROJNAME=clib
     <CCCMD> library/os2.286/ml_mt/clibmtl.lib               <OWRELROOT>/lib286/os2/clibmtl.lib
     <CCCMD> library/os2.286/mm/clibm.lib                    <OWRELROOT>/lib286/os2/clibm.lib
     <CCCMD> library/os2.286/ms/clibs.lib                    <OWRELROOT>/lib286/os2/clibs.lib
-    <CCCMD> startup/library/os2.286/ms/binmode.obj          <OWRELROOT>/lib286/os2/binmode.obj
+    <CCCMD> handleio/library/os2.286/ms/binmode.obj         <OWRELROOT>/lib286/os2/binmode.obj
     <CCCMD> startup/library/os2.286/ms/commode.obj          <OWRELROOT>/lib286/os2/commode.obj
 
     <CCCMD> library/os2.386/mf_r/clib3r.lib                 <OWRELROOT>/lib386/os2/clib3r.lib
     <CCCMD> library/os2.386/mf_s/clib3s.lib                 <OWRELROOT>/lib386/os2/clib3s.lib
     <CCCMD> library/os2.386/mf_rd/clib3r.lib                <OWRELROOT>/lib386/os2/clib3rd.lib
-    <CCCMD> startup/library/os2.386/mf_r/binmode.obj        <OWRELROOT>/lib386/os2/binmode.obj
+    <CCCMD> handleio/library/os2.386/mf_r/binmode.obj       <OWRELROOT>/lib386/os2/binmode.obj
     <CCCMD> startup/library/os2.386/mf_r/commode.obj        <OWRELROOT>/lib386/os2/commode.obj
 
     # run-time DLL version
@@ -84,20 +84,20 @@ set PROJNAME=clib
     <CCCMD> library/windows.086/ml/clibl.lib                <OWRELROOT>/lib286/win/clibl.lib
     <CCCMD> library/windows.086/mm/clibm.lib                <OWRELROOT>/lib286/win/clibm.lib
     <CCCMD> library/windows.086/ms/clibs.lib                <OWRELROOT>/lib286/win/clibs.lib
+    <CCCMD> handleio/library/windows.086/ms/binmode.obj     <OWRELROOT>/lib286/win/binmode.obj
     <CCCMD> startup/library/windows.086/ml/libentry.obj     <OWRELROOT>/lib286/win/libentry.obj
-    <CCCMD> startup/library/windows.086/ms/binmode.obj      <OWRELROOT>/lib286/win/binmode.obj
     <CCCMD> startup/library/windows.086/ms/commode.obj      <OWRELROOT>/lib286/win/commode.obj
 
     <CCCMD> library/windows.386/mf_r/clib3r.lib             <OWRELROOT>/lib386/win/clib3r.lib
     <CCCMD> library/windows.386/mf_s/clib3s.lib             <OWRELROOT>/lib386/win/clib3s.lib
-    <CCCMD> startup/library/windows.386/mf_r/binmode.obj    <OWRELROOT>/lib386/win/binmode.obj
+    <CCCMD> handleio/library/windows.386/mf_r/binmode.obj   <OWRELROOT>/lib386/win/binmode.obj
     <CCCMD> startup/library/windows.386/mf_r/commode.obj    <OWRELROOT>/lib386/win/commode.obj
 
     <CCCMD> library/winnt.386/mf_r/clib3r.lib               <OWRELROOT>/lib386/nt/clib3r.lib
     <CCCMD> library/winnt.386/mf_s/clib3s.lib               <OWRELROOT>/lib386/nt/clib3s.lib
     <CCCMD> library/winnt.386/mf_rd/clib3r.lib              <OWRELROOT>/lib386/nt/clib3rd.lib
 
-    <CCCMD> startup/library/winnt.386/mf_r/binmode.obj      <OWRELROOT>/lib386/nt/binmode.obj
+    <CCCMD> handleio/library/winnt.386/mf_r/binmode.obj     <OWRELROOT>/lib386/nt/binmode.obj
     <CCCMD> startup/library/winnt.386/mf_r/commode.obj      <OWRELROOT>/lib386/nt/commode.obj
 
     # run-time DLL version
@@ -130,8 +130,8 @@ set PROJNAME=clib
 # Note binmode applies to both LIBC and CLIB libraries but only needs to be built once from the
 # fat CLIB source code.
 #
-    <CCCMD> startup/library/nw_clib.386/ms_s/binmode.obj    <OWRELROOT>/lib386/netware/binmode.obj
-    <CCCMD> startup/library/nw_clib.386/ms_sd/binmode.obj   <OWRELROOT>/lib386/netware/binmoded.obj
+    <CCCMD> handleio/library/nw_clib.386/ms_s/binmode.obj   <OWRELROOT>/lib386/netware/binmode.obj
+    <CCCMD> handleio/library/nw_clib.386/ms_sd/binmode.obj  <OWRELROOT>/lib386/netware/binmoded.obj
 
     <CCCMD> library/qnx.286/mc/clibc.lib                    <OWRELROOT>/lib286/qnx/clibc.lib
     <CCCMD> library/qnx.286/mh/clibh.lib                    <OWRELROOT>/lib286/qnx/clibh.lib
@@ -149,14 +149,14 @@ set PROJNAME=clib
     <CCCMD> library/rdos.386/mf_s/clib3s.lib                <OWRELROOT>/lib386/rdos/clib3s.lib
     <CCCMD> library/rdosdev.386/mc_r/clib3r.lib             <OWRELROOT>/lib386/rdosdev/clib3r.lib
 
-    <CCCMD> startup/library/rdos.386/mf_r/binmode.obj       <OWRELROOT>/lib386/rdos/binmode.obj
+    <CCCMD> handleio/library/rdos.386/mf_r/binmode.obj      <OWRELROOT>/lib386/rdos/binmode.obj
     <CCCMD> startup/library/rdos.386/mf_r/commode.obj       <OWRELROOT>/lib386/rdos/commode.obj
     <CCCMD> startup/library/rdos.386/mf_r/resstub.obj       <OWRELROOT>/lib386/rdos/resstub.obj
 
 # Libraries not built by default
 
     <CCCMD> library/winnt.axp/_s/clib.lib                   <OWRELROOT>/libaxp/nt/clib.lib
-    <CCCMD> startup/library/winnt.axp/_s/binmode.obj        <OWRELROOT>/libaxp/nt/binmode.obj
+    <CCCMD> handleio/library/winnt.axp/_s/binmode.obj       <OWRELROOT>/libaxp/nt/binmode.obj
     <CCCMD> startup/library/winnt.axp/_s/commode.obj        <OWRELROOT>/libaxp/nt/commode.obj
 
     <CCCMD> library/osi.386/ms_r/clib3r.lib                 <OWRELROOT>/lib386/osi/clib3r.lib

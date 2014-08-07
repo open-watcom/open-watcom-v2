@@ -192,12 +192,11 @@
 
 !include ../../../../objlist.mif
 
-#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
-#==============================================================================================================
+#                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
+#==================================================================================================================
 !inject adiestrt.obj     d32
 !inject adifstrt.obj     d32
 !inject adsstart.obj     d32
-!inject binmode.obj  d16 d32             nt nta ntp nvc nvl         o16 o32         w16 w32 osi             rdu rdk
 !inject clibdo32.obj                                                    o32
 !inject clibdwnt.obj                     nt nta ntp
 !inject commode.obj  d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32     l32 lpc lmp rdu rdk
@@ -272,7 +271,6 @@ abort_postopts    =-os
 adifstrt_postopts =$($(processor)_fpi87_postopts)
 adsstart_postopts =$($(processor)_fpi87_postopts)
 atexit_postopts   =-os
-binmode_postopts  =-zld
 chk8087_postopts  =$($(processor)_fpi87_postopts)
 commode_postopts  =-zld
 cstrtiny_postopts =-zld-mt

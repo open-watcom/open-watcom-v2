@@ -42,7 +42,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "fileacc.h"
-#include "fmode.h"
 #include "openmode.h"
 #include "rtdata.h"
 // #include "seterrno.h"
