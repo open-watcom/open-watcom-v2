@@ -101,23 +101,22 @@ int FindResources( PHANDLE_INFO hInstance )
     offset = sizeof( dbgheader );
 
     /* Look for a PKZIP header and skip archive if present */
-    if( WRESSEEK( WRESHANDLE, -(long)sizeof( eocd ), SEEK_END ) != -1L ) {
-        if( WRESREAD( WRESHANDLE, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
+    if( WRESSEEK( hInstance->handle, -(long)sizeof( eocd ), SEEK_END ) != -1 ) {
+        if( WRESREAD( hInstance->handle, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
             if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                if( WRESSEEK( WRESHANDLE, eocd.cd_offset, SEEK_SET ) != -1L ) {
-                    if( WRESREAD( WRESHANDLE, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
+                if( WRESSEEK( hInstance->handle, eocd.cd_offset, SEEK_SET ) != -1 ) {
+                    if( WRESREAD( hInstance->handle, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
                         if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
-                            offset += eocd.cd_offset + eocd.cd_size - cdfh.offset +
-                                      sizeof( eocd );
+                            offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
                         }
                     }
                 }
             }
         }
     }
-    currpos = WRESSEEK( WRESHANDLE, -offset, SEEK_END );
+    currpos = WRESSEEK( hInstance->handle, -offset, SEEK_END );
     for( ;; ) {
-        WRESREAD( WRESHANDLE, &header, sizeof( dbgheader ) );
+        WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = 0;
             FileShift = currpos - header.debug_size + sizeof( dbgheader );
@@ -126,7 +125,7 @@ int FindResources( PHANDLE_INFO hInstance )
                    header.signature == FOX_SIGNATURE1 ||
                    header.signature == FOX_SIGNATURE2 ) {
             currpos -= header.debug_size;
-            WRESSEEK( WRESHANDLE, currpos, SEEK_SET );
+            WRESSEEK( hInstance->handle, currpos, SEEK_SET );
         } else {        /* did not find the resource information */
             break;
         }
