@@ -30,7 +30,7 @@
 
 
 #include "variety.h"
-#include <stdio.h>
+#include <stdlib.h>
 #include "rtdata.h"
 
 _WCRTLINK int (*__get_fmode_ptr( void ))

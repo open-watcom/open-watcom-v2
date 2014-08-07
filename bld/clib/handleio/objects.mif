@@ -35,6 +35,7 @@
 !inject fileno.obj   d16 d32             nt nta ntp nvc ncl nvl nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 !inject filerdk.obj                                                                                             rdk
 !inject filerdu.obj                                                                                         rdu
+!inject fmdptr.obj   d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
 !inject fstat.obj    d16 d32                                                        w16 w32 osi
 !inject fstatos2.obj                                                o16 o32
 !inject fstatwnt.obj                     nt nta ntp
@@ -68,9 +69,10 @@
 !inject setmdunx.obj                                                        q16 q32             l32 lpc lmp
 !inject stiomode.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             
 !inject tell.obj     d16 d32             nt nta ntp                 o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
+!inject textmode.obj d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
 !inject ucreat.obj   d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
-!inject umask.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                  rdu rdk
-!inject umaskval.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi              rdu rdk
+!inject umask.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32                 rdu rdk
+!inject umaskval.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject umkfilst.obj                     nt nta ntp
 !inject unlck.obj    d16 d32                                        o16 o32         w16 w32
 !inject unlckqnx.obj                                                        q16 q32
@@ -92,7 +94,7 @@
 
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 #==================================================================================================================
-!inject binmode.obj  d16 d32             nt nta ntp nvc nvl         o16 o32         w16 w32 osi             rdu rdk
+!inject binmode.obj  d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi             rdu rdk
 
 objsuffix=files
 !include ../../../../objlist.mif

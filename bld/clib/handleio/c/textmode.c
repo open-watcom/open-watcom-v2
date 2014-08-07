@@ -24,35 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Definition of __iob array.
+* Description:  Definition of default file translation mode.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include "rtdata.h"
-#include "rtinit.h"
-#include "tmpfname.h"
 
-
-_WCRTDATA FILE _WCDATA __iob[_NFILES] = {
-    { NULL, 0, NULL, _READ,         0, 0, 0  }  /* stdin */
-   ,{ NULL, 0, NULL, _WRITE,        1, 0, 0  }  /* stdout */
-   ,{ NULL, 0, NULL, _WRITE,        2, 0, 0  }  /* stderr */
-#if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
-   ,{ NULL, 0, NULL, _READ|_WRITE,  3, 0, 0  }  /* stdaux */
-   ,{ NULL, 0, NULL, _WRITE,        4, 0, 0  }  /* stdprn */
-#endif
-};
-
-__stream_link *__ClosedStreams;
-__stream_link *__OpenStreams;
-
-extern void __InitFiles( void );
-extern void __full_io_exit( void );
-
-AXI(__InitFiles,INIT_PRIORITY_LIBRARY);
-AYI(__full_io_exit,INIT_PRIORITY_LIBRARY);
+_WCRTDATA int _WCDATA _fmode = O_TEXT;    /* default text file translation mode */
