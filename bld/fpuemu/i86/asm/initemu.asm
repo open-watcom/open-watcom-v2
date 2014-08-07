@@ -64,7 +64,7 @@ DGROUP  group   _DATA
 _DATA   segment word public 'DATA'
         extrn   __8087          : byte
         extrn   __real87        : byte
-        extrn   __no87          : word
+        extrn   __no87          : byte
         extrn   __dos87emucall  : word
         extrn   __dos87real     : byte
 
@@ -148,15 +148,15 @@ __init_87_emulator proc
         mov     __dos87real,al          ; set installed 80x87
         mov     __real87,al             ; set real 80x87 used
         mov     __8087,al               ; set 80x87
-        mov     bx,__no87               ; get state of NO87 environment var
-        cmp     al,0                    ; coprocessor is present
+        mov     bl,__no87               ; get state of NO87 environment var
+        test    al,al                   ; coprocessor is present
         _if     e                       ; if no coprocessor
-          inc   bx                      ; - pretend NO87 was set
+          inc   bl                      ; - pretend NO87 was set
         _endif                          ; endif
-        test    bx,bx                   ; if no 80x87 or no87 set
+        test    bl,bl                   ; if no 80x87 or no87 set
         _if     ne                      ; then
           mov   __dos87emucall, ___dos87emucall ; set pointer for DOS EMU control
-          mov   __real87,ah             ; - no real 80x87
+          mov   __real87,0              ; - no real 80x87
           mov   __8087,3                ; - set 80387
           mov   ax,offset __int34       ; - emulate instructions
           mov   i3coff,offset __int3c   ; - ...
