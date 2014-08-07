@@ -41,6 +41,7 @@
 #include "cgmisc.h"
 #include "cgcli.h"
 #include "feprotos.h"
+#include "clibext.h"
 
 static   IDECBHdl      Hdl;          // - handle for this instantiation
 static   IDECallBacks* Cbs;          // - call backs into IDE

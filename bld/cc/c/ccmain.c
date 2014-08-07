@@ -135,9 +135,11 @@ void ClearGlobals( void )
 
 int FrontEnd( char **cmdline )
 {
+#ifdef __WATCOMC__
     /* set to 0 in case 8087 is present */
     _real87 = 0;
     _8087 = 0;
+#endif
 
     InitGlobalVars();
     CMemInit();
