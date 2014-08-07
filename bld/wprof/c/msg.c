@@ -71,7 +71,7 @@ STATIC void doErr( char * msg, va_list args )
                     str_len = strlen( str_arg );
                     msg_len += str_len;
                 } else if( *msg == 'd' ) {
-                    itoa( va_arg( args, int ), num_buff, 10 );
+                    sprintf( num_buff, "%d", va_arg( args, int ) );
                     str_arg = num_buff;
                     str_len = strlen( str_arg );
                 }

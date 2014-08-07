@@ -228,7 +228,7 @@ extern void WPAsmClose( wp_asmfile * wpasm_file )
         if( wpasm_file->asm_buff != NULL ) {
             ProfFree( wpasm_file->asm_buff );
         }
-        if( wpasm_file->fh != NULL ) {
+        if( wpasm_file->fh != 0 ) {
             ExeClose( wpasm_file->fh );
         }
         ProfFree( wpasm_file );

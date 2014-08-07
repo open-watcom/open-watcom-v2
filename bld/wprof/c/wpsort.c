@@ -37,6 +37,7 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
+#include "clibext.h"
 
 
 extern void SortImage( sio_data * );

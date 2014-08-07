@@ -44,6 +44,7 @@
 #include "aui.h"
 #include "sampinfo.h"
 #include "memutil.h"
+#include "clibext.h"
 
 extern void WPFiniHelp(void);
 extern void WPDipInit(void);
