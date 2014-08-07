@@ -59,7 +59,7 @@ static int GetString(   WResLangInfo    *res,
     int                 ix1, ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    if( WRESSEEK( WRESHANDLE, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hInstance->handle, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;
@@ -77,8 +77,8 @@ static int GetString(   WResLangInfo    *res,
                 numread = length;
                 length = 0;
             }
-            numread = WRESREAD( WRESHANDLE, stringbuff, numread );
-            if( WRESIOERR( WRESHANDLE, numread ) ) return( -1 );
+            numread = WRESREAD( hInstance->handle, stringbuff, numread );
+            if( WRESIOERR( hInstance->handle, numread ) ) return( -1 );
             if( numread == 0 ) return( -1 );
             ix1 = 0;
         }
@@ -153,8 +153,8 @@ extern int WResLoadString(   PHANDLE_INFO        hInstance,
 extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
 /********************************************************************/
 {
-    WRESHANDLE = ResOpenFileRO( filename );
-    return( WRESHANDLE == NIL_HANDLE );
+    hInstance->handle = ResOpenFileRO( filename );
+    return( hInstance->handle == NIL_HANDLE );
 }
 
 extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
@@ -162,7 +162,7 @@ extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 {
     *dir = WResInitDir();
     if( *dir == NULL ) return( -1 );
-    return( WResReadDir( WRESHANDLE, *dir, NULL ) );
+    return( WResReadDir( hInstance->handle, *dir, NULL ) );
 }
 
 extern int InitResources( PHANDLE_INFO hInstance )
@@ -175,7 +175,7 @@ extern int CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
 /**************************************************************/
 {
     WResFreeDir( dir );
-    return( ResCloseFile( WRESHANDLE ) );
+    return( ResCloseFile( hInstance->handle ) );
 }
 
 extern int CloseResFile( PHANDLE_INFO hInstance )

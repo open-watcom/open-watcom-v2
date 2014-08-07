@@ -69,17 +69,17 @@ extern int FindResources( PHANDLE_INFO hInstance )
     notfound = 1;
     FileShift = 0;
     offset = sizeof( dbgheader );
-    if( WRESSEEK( WRESHANDLE, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
-        if( WRESREAD( WRESHANDLE, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+    if( WRESSEEK( hInstance->handle, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
+        if( WRESREAD( hInstance->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
             if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                 offset += sizeof( PATCH_LEVEL );
             }
         }
     }
-    WRESSEEK( WRESHANDLE, -offset, SEEK_END );
-    currpos = WRESTELL( WRESHANDLE );
+    WRESSEEK( hInstance->handle, -offset, SEEK_END );
+    currpos = WRESTELL( hInstance->handle );
     for( ;; ) {
-        WRESREAD( WRESHANDLE, &header, sizeof( dbgheader ) );
+        WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = 0;
             FileShift = currpos - header.debug_size + sizeof( dbgheader );
@@ -88,7 +88,7 @@ extern int FindResources( PHANDLE_INFO hInstance )
                    header.signature == FOX_SIGNATURE1 ||
                    header.signature == FOX_SIGNATURE2 ) {
             currpos -= header.debug_size;
-            WRESSEEK( WRESHANDLE, currpos, SEEK_SET );
+            WRESSEEK( hInstance->handle, currpos, SEEK_SET );
         } else {        /* did not find the resource information */
             break;
         }

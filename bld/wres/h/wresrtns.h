@@ -42,8 +42,6 @@
 #define WRESALLOC           WResRtns.alloc
 #define WRESFREE            WResRtns.free
 
-#define WRESHANDLE          hInstance->handle
-
 #define WRESIOERR(fh,rc)    (rc == -1)
 
 #endif
