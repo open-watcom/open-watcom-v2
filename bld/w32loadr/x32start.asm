@@ -179,7 +179,7 @@ __ASTACKPTR     dd      0
 __cbyte         dd      0
 __cbyte2        dd      0
 __child         dd      0
-__no87          dw      0
+__no87          db      0
 _Extender       db      3               ;pretend we are Pharlap version 3
                 db      0
 __Envptr        df      0
@@ -308,8 +308,8 @@ L3:     cmp     byte ptr [esi],0        ; end of pgm name ?
         push    es
         pop     ds
         pop     esi                     ; restore address of pgm name
-
-        mov     __no87,bp               ; set state of "no87" enironment var
+        mov     eax,ebp
+        mov     __no87,al               ; set state of "no87" enironment var
 
         mov     ecx,offset DGROUP:_end  ; end of _BSS segment (start of STACK)
         mov     __dynend,ecx            ; top of dynamic memory allocation
@@ -383,7 +383,7 @@ __exit_with_msg_:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -484,7 +484,7 @@ FindFirst:
         int     21h                     ; ...
         ret                             ; return
 FindNext:
-        cmp     AL,0                    ; if not FIND NEXT
+        test    AL,AL                   ; if not FIND NEXT
         jne     short findret           ; then return
         push    EDX                     ; save EDX
         mov     AH,1Ah                  ; set DTA address
