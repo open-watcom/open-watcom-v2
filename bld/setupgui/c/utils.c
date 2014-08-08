@@ -1669,7 +1669,8 @@ int UnPackHook( int filenum, int subfilenum, char *name )
 static bool DoCopyFiles( void )
 /*****************************/
 {
-    int                 filenum, disk_num;
+    int                 filenum;
+//    int                 disk_num;
     int                 subfilenum, max_subfiles;
     COPYFILE_ERROR      copy_error;
     char                dst_path[_MAX_PATH];
@@ -1795,7 +1796,8 @@ static bool DoCopyFiles( void )
         SimFileDir( filenum, dir );
         SimGetFileDesc( filenum, file_desc );
         SimGetFileName( filenum, file_name );
-        disk_num = SimFileDisk( filenum, disk_desc );
+//        disk_num = SimFileDisk( filenum, disk_desc );
+        SimFileDisk( filenum, disk_desc );
 
 //      _splitpath( file_desc, NULL, NULL, NULL, file_ext );
         _makepath( dst_path, NULL, dir, file_desc, NULL );

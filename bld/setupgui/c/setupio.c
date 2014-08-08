@@ -122,6 +122,7 @@ extern int FileStat( const char *path, struct stat *buf )
     int                 rc;
     struct zip_stat     zs;
 
+    rc = -1;
     if( srcType == DS_ZIP ) {
         char        *alt_path;
 

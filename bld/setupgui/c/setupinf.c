@@ -65,6 +65,7 @@
 #ifdef PATCH
     #include "bdiff.h"
 #endif
+#include "clibext.h"
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
