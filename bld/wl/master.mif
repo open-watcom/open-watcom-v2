@@ -77,13 +77,12 @@ extra_c_flags_mem        = $(trmem_cover_cflags)
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags     = op map
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 
 #####################
 # linker .DLL options
 
-extra_l_flags_dll     = option implib, map
+extra_l_flags_dll     = option implib
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69c00000
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 

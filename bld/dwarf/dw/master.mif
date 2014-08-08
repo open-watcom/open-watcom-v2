@@ -37,8 +37,6 @@ dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
 
 extra_c_flags = -s
 
-extra_l_flags = op map
-
 ./dwmakeab.exe : dwmakeab.c
         $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
 

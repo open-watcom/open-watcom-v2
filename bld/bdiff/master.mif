@@ -15,8 +15,6 @@ bdiff_autodepend = .AUTODEPENDS
 
 inc_dirs = -I"../h"
 
-extra_l_flags = op map
-
 .ERASE
 
 all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.exe

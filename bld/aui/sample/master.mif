@@ -46,7 +46,7 @@ resfile = appui.res
 libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
 app.exe : $(objs) $(libs) $(resfile)
-        $(linker) name $^@ $(lflags) op map,un file { $(objs) } lib { $(libs) }
+        $(linker) name $^@ $(lflags) op un file { $(objs) } lib { $(libs) }
 !ifeq sys_windowed 1
         $(rc) -k $(resfile) $^@
 !else

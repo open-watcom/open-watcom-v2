@@ -79,7 +79,6 @@ inc_dirs += $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) $(wpi_inc_dirs)
 
 rc_inc_dirs = -I"../res" -I"$(fmedit_dir)/dev" $(commonui_inc_dirs)
 
-extra_l_flags = op map
 extra_l_flags_nt = op stack=100k, heap=16k commit heap=8k
 extra_l_flags_win  = op stack=32k, rwr
 extra_l_flags_win += library commdlg, ddeml

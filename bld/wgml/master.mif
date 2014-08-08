@@ -45,7 +45,7 @@ wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) op map file { $(objs) } lib { $(libs) }
+        $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
         $(wstrip) -q -a -r $@ . wgml.res
 

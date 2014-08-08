@@ -24,7 +24,6 @@ objs = ctags.obj scanc.obj file.obj globals.obj taglist.obj scanfor.obj scanasm.
 
 lflags_dos_386 = system dos4g
 
-extra_l_flags = op map
 extra_l_flags_dos = op stack=20k
 
 $(name).exe : $(objs)

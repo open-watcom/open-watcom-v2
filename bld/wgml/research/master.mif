@@ -77,21 +77,21 @@ cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(cfc_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map file { $(cfc_objs) }
+    $(linker) name $^@ $(lflags) file { $(cfc_objs) }
 !endif
 
 cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(cfp_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map file { $(cfp_objs) }
+    $(linker) name $^@ $(lflags) file { $(cfp_objs) }
 !endif
 
 copparse.exe : $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(copp_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(copp_objs) }
+    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(copp_objs) }
 !endif
     $(wstrip) -q -a -r $@ . wgml.res
 
@@ -99,7 +99,7 @@ devldchk.exe : $(devld_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(devld_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(devld_objs) }
+    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(devld_objs) }
 !endif
     $(wstrip) -q -a -r $@ . wgml.res
 
@@ -107,14 +107,14 @@ findfunc.exe : $(ff_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(ff_objs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map file { $(ff_objs) }
+    $(linker) name $^@ $(lflags) file { $(ff_objs) }
 !endif
 
 outcheck.exe : wgml.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
 !ifndef __WATCOM__
     $(cl) $(clflags) $(outc_objs) $(wgml_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) op map lib { $(wgml_libs) } file { $(outc_objs) }
+    $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(outc_objs) }
 !endif
     $(wstrip) -q -a -r $@ . wgml.res
 

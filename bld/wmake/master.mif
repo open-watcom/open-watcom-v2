@@ -67,7 +67,7 @@ extra_c_flags_memory = $(trmem_cover_cflags)
 
 # LINKER FLAGS
 
-extra_l_flags = opt map,statics sort
+extra_l_flags = opt statics sort
 
 # large stacks are necessary for !loaddll support
 # os2 seems to crash with 128k stack and wccd386 - mjc

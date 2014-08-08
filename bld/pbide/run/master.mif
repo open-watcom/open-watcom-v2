@@ -8,7 +8,5 @@ run_autodepends = .AUTODEPEND
 
 .c: ..
 
-extra_l_flags = op map
-
 run.exe : run.obj
         $(linker) name $@ $(lflags) file {$[@}

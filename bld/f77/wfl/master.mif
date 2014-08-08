@@ -19,8 +19,6 @@ inc_dirs = -I. -I.. -I"../../h" -I"../../../wfc/h" -I"../../../h" -I"$(comp_cfg_
 
 extra_cpp_flags = -D__WFL__
 
-extra_l_flags = op map
-
 .c: ../../c;../../../wfc/c;../../../c
 
 files = &

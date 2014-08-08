@@ -159,11 +159,10 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 # lflags stuff
 ###############
-extra_l_flags = option map
 
 # DLL lflags stuff
 ##################
-extra_l_flags_dll     = option implib, map
+extra_l_flags_dll     = option implib
 
 extra_l_flags_dll_nt  += option modname='$(dllname).dll', offset=0x69800000
 extra_l_flags_dll_os2 += option modname='$(dllname)'

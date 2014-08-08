@@ -27,8 +27,6 @@ objs += wildargv.obj
 !endif
 !endif
 
-extra_l_flags = op map
-
 $(proj_name).exe : $(objs)
         $(linker) name $^@ $(lflags) file { $< }
 

@@ -68,7 +68,7 @@ extra_c_flags_trmemcpp = -I"$(trmem_dir)" -DTRACKER $(mem_flags)
 extra_c_flags_dmem     = $(mem_flags) -I"$(trmem_dir)"
 
 # linker
-extra_l_flags        = op stack=16k, map
+extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
 
 $(name).exe : $(OBJECTS)

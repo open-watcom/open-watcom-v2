@@ -123,7 +123,6 @@ extra_c_flags_i86 = -zc
 
 # lflags
 #########
-extra_l_flags = op map
 
 # rc flags
 ###########
@@ -216,7 +215,7 @@ setup.exe: $(gendeps) setupui.res
 setup.lnk : ../setup.mif $(__MAKEFILES__)
     %create setup.lnk
     @%append setup.lnk $(lflags)
-    @%append setup.lnk option map, verbose
+    @%append setup.lnk option verbose
 !ifeq host_os win
 !ifeq host_cpu 386
     @%append setup.lnk option stack=24K

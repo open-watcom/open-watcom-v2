@@ -47,8 +47,6 @@ extra_c_flags_spydll += -mc
 !endif
 !endif
 
-extra_l_flags     = option map
-
 extra_l_flags_win = option stack=9k, heapsize=2k lib $(dllname).lib, commdlg.lib
 extra_l_flags_nt  = option stack=100k option heapsize=2k lib $(dllname).lib
 !ifeq host_cpu  386
@@ -56,7 +54,7 @@ extra_l_flags_nt  = option stack=100k option heapsize=2k lib $(dllname).lib
 extra_l_flags_nt  += alias '_WinMain'='_WinMain@16'
 !endif
 
-extra_l_flags_dll = option implib, map
+extra_l_flags_dll = option implib
 
 extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED export WEP RESIDENT
 extra_l_flags_dll_nt  = initglobal

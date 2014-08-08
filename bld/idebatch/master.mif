@@ -6,8 +6,6 @@ idebatch_autodepend = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-extra_l_flags = op map
-
 !ifeq host_os os2
 
 .c: ../os2;../c
@@ -26,8 +24,6 @@ tst.exe : tst.c batcli.obj
 !else ifeq host_os nt
 
 .c: ../nt;../c
-
-extra_l_flags = op map
 
 all: batserv.exe tst.exe .symbolic
 
@@ -53,8 +49,6 @@ tst.exe : tst.obj batcli.obj batpipe.obj
 .asm: ../dos
 
 name = int
-
-extra_l_flags = op map
 
 objs = $(name).obj link.obj int21.obj
 

@@ -10,8 +10,6 @@ pbide_autodepends = .AUTODEPEND
 
 extra_c_flags_win =-zW
 
-extra_l_flags = op map
-
 dlldbg.exe : dlldbg.obj dlldbg.res
         $(linker) name $^@ $(lflags) file {dlldbg.obj}
         $(rc) -k dlldbg.res $^@

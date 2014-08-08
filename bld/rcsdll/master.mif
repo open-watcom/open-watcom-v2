@@ -32,7 +32,7 @@ extra_cpp_flags = -D_RCSDLL_
 
 extra_c_flags_win = -zw-zu
 
-extra_l_flags_dll = op implib, map
+extra_l_flags_dll = op implib
 extra_l_flags_dll_win = op rwr
 extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
 

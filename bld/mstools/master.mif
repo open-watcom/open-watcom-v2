@@ -28,8 +28,6 @@ extra_cpp_flags = -D__TARGET_386__
 #!error undrecognized CPU
 !endif
 
-extra_l_flags = op map
-
 #
 # Include standard .mif files to do the work.
 #

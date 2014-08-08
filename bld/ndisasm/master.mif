@@ -32,7 +32,6 @@ extra_c_flags_trmem    = $(trmem_cflags)
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags = option map
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
 
 inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" 

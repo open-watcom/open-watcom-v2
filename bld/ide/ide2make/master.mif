@@ -17,8 +17,6 @@ inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 
 .cpp: ../cpp
 
-extra_l_flags = opt map
-
 libs = $(idelib_lib) $(wclass_lib)
 
 $(proj_name).exe : $(objs) $(libs)

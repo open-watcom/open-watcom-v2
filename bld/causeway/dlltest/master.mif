@@ -17,9 +17,6 @@ inc_dirs = -I"../../inc"
 lflags_dos_386     = sys causeway
 lflags_dll_dos_386 = sys causeway dll opt stub=$(causeway_dir)/cw32/dosi86/cwdstub.exe
 
-extra_l_flags     = op map
-extra_l_flags_dll = op map
-
 all: dlltst1s.exe dlltst1r.exe
 
 dlltst1s.exe : dlltst1s.obj dlls.dll ../../cw32/dosi86/cwstub.exe

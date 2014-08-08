@@ -97,14 +97,12 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 ###################
 # linker flags .EXE
 
-extra_l_flags = op map
-
 extra_l_flags_qnx = op offset=64k, stack=60k
 
 ###################
 # linker flags .DLL
 
-extra_l_flags_dll     = option implib, map
+extra_l_flags_dll     = option implib
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x6A000000
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(dllname)'
 

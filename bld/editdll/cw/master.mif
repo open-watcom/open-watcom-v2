@@ -18,7 +18,7 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zw -zu
 
-extra_l_flags_dll = op map, elim
+extra_l_flags_dll = op elim
 extra_l_flags_dll_win = library ddeml
 extra_l_flags_dll_win += op stack=8k, rwr
 extra_l_flags_dll_win += segment _TEXT PRELOAD FIXED

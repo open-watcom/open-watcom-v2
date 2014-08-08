@@ -11,8 +11,6 @@ cwc_autodepends = .AUTODEPEND
 
 inc_dirs = -I.
 
-extra_l_flags = op map
-
 objs = cwc.obj
 
 !ifneq bootstrap 1

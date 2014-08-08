@@ -65,7 +65,7 @@ libs = $(wres_lib) $(wpi_lib) $(commonui_lib)
 libs += $(wr_lib)
 !endif
 
-extra_l_flags     = option map lib { $(libs) }
+extra_l_flags     = lib { $(libs) }
 
 extra_l_flags_win = option rwr, stack=16k, heapsize=2k lib ddeml.lib
 extra_l_flags_nt  = option stack=100k

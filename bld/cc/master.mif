@@ -85,7 +85,7 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags     = option map
+extra_l_flags     =
 
 # NOTE: "op off=?" must be 8K bigger than the stack size in wlink_sys_qnx_f
 extra_l_flags_qnx = option stack=16k,offset=24k, res=$(extra_link_res_qnx), priv=3
@@ -95,7 +95,7 @@ extra_l_flags_dos = option stack=32k
 #
 # WLINK .DLL options
 #
-extra_l_flags_dll     = option implib, map
+extra_l_flags_dll     = option implib
 extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(dllname)'
 

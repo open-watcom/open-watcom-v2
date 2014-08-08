@@ -51,8 +51,6 @@ fobjs += trmem.obj trmemcvr.obj
 extra_c_flags_trmem = -DTRMEM -of+
 extra_c_flags_trmemcvr = -DTRMEM -of+
 
-extra_l_flags += op map
-
 # Need lots of stack for NT because code gen turns off safe recurse.
 extra_l_flags_nt = op stack=1024k commit stack=32k
 

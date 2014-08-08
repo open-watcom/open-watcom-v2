@@ -65,8 +65,6 @@ lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86     = sys windows op rwr
 
-extra_l_flags_dll = op map
-
 extra_l_flags_dll_nt_386_javavm   = op offset=0x6e800000
 extra_l_flags_dll_nt_386_export   = op offset=0x6ec00000
 extra_l_flags_dll_nt_386_codeview = op offset=0x6ed00000

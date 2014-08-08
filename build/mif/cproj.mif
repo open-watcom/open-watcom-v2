@@ -137,6 +137,17 @@ debugfmt = codeview
 debugfmt = dwarf
 !endif
 
+!ifdef $(proj_name)_nomapfile
+!ifeq $(proj_name)_nomapfile 1
+nomapfile       = 1
+!else
+nomapfile       = 0
+!endif
+!endif
+!ifndef nomapfile
+nomapfile       = 0
+!endif
+
 !ifeq debugfmt codeview
 cdebug_fmt  = -hc
 ldebug_fmt  = debug codeview
@@ -185,6 +196,15 @@ mode_lflags    += op symfile
 mode_clflags   += -\"op symf\"
 !else
 mode_clflags   += -"op symf"
+!endif
+!endif
+
+!ifeq nomapfile 1
+mode_lflags    += op map
+!ifdef __UNIX__
+mode_clflags   += -\"op map\"
+!else
+mode_clflags   += -"op map"
 !endif
 !endif
 

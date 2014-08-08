@@ -27,8 +27,6 @@ extra_cpp_flags = -DBUILD_RFX
 
 extra_c_flags = -s
 
-extra_l_flags = op map
-
 objs = rfx.obj        &
        rfxacc.obj     &
        stubs.obj      &

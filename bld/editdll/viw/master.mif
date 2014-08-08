@@ -17,7 +17,7 @@ extra_cpp_flags = -DWEDITDLL
 
 extra_c_flags_win = -zc -zw -zu
 
-extra_l_flags_dll = op map, elim, heapsize=8k
+extra_l_flags_dll = op elim, heapsize=8k
 extra_l_flags_dll_win = initinstance memory op stack=20k, rwr lib ddeml export WEP RESIDENT
 extra_l_flags_dll_nt = initinstance terminstance op stack=40k
 

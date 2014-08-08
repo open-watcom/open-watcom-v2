@@ -5,7 +5,7 @@ cvpack_autodepends = .autodepend
 inc_dirs = -I"../hpp"
 
 extra_cxx_flags = -xs
-extra_l_flags   = name cvpack.exe op map #option eliminate
+extra_l_flags   = #op eliminate
 
 !include cproj.mif
 !include defrule.mif

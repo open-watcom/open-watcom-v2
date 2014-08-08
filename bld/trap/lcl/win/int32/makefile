@@ -18,7 +18,6 @@ extra_c_flags = -s -fpc -zu -zw -I"$(trap_dir)/h"
 
 lflags_dll_win_i86 += initinstance memory
 
-extra_l_flags_dll = option map
 extra_l_flags_dll_win = op heapsize=1k, rwr
 extra_l_flags_dll_win += export WEP.1 RESIDENT
 extra_l_flags_dll_win += segment CLASS 'CODE' PRELOAD FIXED

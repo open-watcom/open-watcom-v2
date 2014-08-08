@@ -40,8 +40,6 @@ extra_c_flags=-xs
 
 extra_c_flags_mempool = -I"$(browse_dir)/h"
 
-extra_l_flags=op map
-
 inc_dirs = -I. -I"../h"
 
 dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs)

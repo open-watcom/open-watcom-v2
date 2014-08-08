@@ -14,7 +14,6 @@ memory_model_i86 = c
 
 extra_c_flags =-s
 
-extra_l_flags = op map
 extra_l_flags_nt = op stack=12k
 extra_l_flags_dos = op stack=8k
 extra_l_flags_os2 = op stack=12k,heap=8k,newfile

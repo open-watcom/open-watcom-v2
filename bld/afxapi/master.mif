@@ -342,7 +342,6 @@ $(dllname).dll: $(intname).lib owf.res $(version_res_dll_$(host_os)_$(host_cpu))
 !else
     %create $^&.lnk
     @%append $^&.lnk $(lflags_dll)
-    @%append $^&.lnk op map
     @%append $^&.lnk file $(intname).lib
     @%append $^&.lnk export @export.def
     $(linker) name $(dllname).dll @$^&.lnk

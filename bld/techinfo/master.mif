@@ -19,8 +19,6 @@ extra_a_flags = -fpc
 
 extra_a_flags_ndptype = -fpi87
 
-extra_l_flags = op map
-
 extra_l_flags_os2 = op newfile
 
 .c: ..

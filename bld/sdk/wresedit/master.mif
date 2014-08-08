@@ -55,7 +55,7 @@ inc_dirs += $(wpi_inc_dirs) $(commonui_inc_dirs)
 
 rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
 
-extra_l_flags_dll = op implib, map
+extra_l_flags_dll = op implib
 extra_l_flags_dll_nt = op stack=16k,heap=16k commit heap=8k
 extra_l_flags_dll_win = library commdlg op stack=8k,rwr export WEP RESIDENT
 

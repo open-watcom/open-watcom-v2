@@ -58,8 +58,6 @@ extra_c_flags_wpdriver = -DTRMEM
 
 extra_link_res_qnx = usage.u
 
-extra_l_flags = op map
-
 extra_l_flags_nt        = op stack=100k
 extra_l_flags_os2       = op stack=32k
 extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=$(extra_link_res_qnx)

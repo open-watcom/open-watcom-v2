@@ -110,7 +110,7 @@ libs     = $(gui_lib) $(libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
 lflags_win_i86  = sys windows font mem op stack=16k
 lflags_dos_386  = sys pharlap
 
-extra_l_flags   = op map, eliminate
+extra_l_flags   = op eliminate
 !ifndef quick_link
 extra_l_flags   += op show,art,static
 !endif

@@ -34,8 +34,6 @@ extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 
-extra_l_flags = op map
-
 inc_dirs = -I. -I.. -I"../../h"
 
 .c: ../../c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)

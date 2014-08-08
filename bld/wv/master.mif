@@ -131,7 +131,6 @@ extra_link_res_qnx = wvqnx.u
 
 lflags_win_i86 += memory font
 
-extra_l_flags += op map
 !ifeq sys_windowed 1
 extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESURRECTION GDI.122
 !else
@@ -222,7 +221,7 @@ $(exe_name) : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
         $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
         %create $^&.lnk
-        @%append $^&.lnk option map,verbose,nocache
+        @%append $^&.lnk option verbose,nocache
         @for %i in ($(libs))    do @%append $^&.lnk library %i
         @for %i in ($(sysobjs)) do @%append $^&.lnk file %i
         @%append $^&.lnk file fingmsg.obj

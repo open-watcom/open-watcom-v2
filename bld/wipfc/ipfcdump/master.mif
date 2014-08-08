@@ -6,7 +6,7 @@ ipfcdump_autodepends = .autodepend
 !include defrule.mif
 !include deftarg.mif
 
-extra_l_flags = op eliminate, map
+extra_l_flags = op eliminate
 
 inc_dirs = -I..
 

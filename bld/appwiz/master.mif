@@ -28,7 +28,7 @@ appwiz.exe: $(gendeps)
 appwiz.lnk : makefile ../master.mif
     %create appwiz.lnk
     @%append appwiz.lnk $(lflags)
-    @%append appwiz.lnk option map, verbose
+    @%append appwiz.lnk option verbose
     @for %i in ( $(objs) ) do @%append appwiz.lnk file %i
     @for %i in ( $(libs) ) do @%append appwiz.lnk lib %i
 

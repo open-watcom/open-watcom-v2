@@ -14,7 +14,5 @@ fscopy_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-extra_l_flags = op map
-
 wfscopy.exe : fscopy.obj
         $(linker) name $^@ $(lflags) file $[@

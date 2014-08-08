@@ -46,7 +46,7 @@ extra_c_flags_mem = -DWANT_MSGS -DNO_WPI
 # lflags stuff
 ###############
 
-extra_l_flags = option map,quiet name $(exc_name)
+extra_l_flags = option quiet name $(exc_name)
 
 extra_l_flags_nt = op stack=100k
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup

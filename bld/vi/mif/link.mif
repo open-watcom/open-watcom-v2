@@ -1,5 +1,3 @@
-extra_l_flags = option map
-
 libs = $(commonui_lib) $(wpi_lib) $(ui_lib) $(rcsdll_lib)
 
 extra_l_flags_os2_386 = op newfiles,stack=20k
