@@ -35,9 +35,9 @@
 /*
  * IECtl3dInit
  */
-BOOL IECtl3dInit( HINSTANCE inst )
+bool IECtl3dInit( HINSTANCE inst )
 {
-    BOOL ok;
+    bool ok;
 
     ok = WRCtl3dRegister( inst );
     if( ok ) {

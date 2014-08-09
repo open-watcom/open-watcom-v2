@@ -501,7 +501,7 @@ void        MySetPixel( bitmap_bits *bits, int x, int y, COLORREF color );
 void        FreeTheBits( bitmap_bits *bits, HBITMAP bitmap, BOOL setbits );
 
 /* iectl3d.c */
-BOOL    IECtl3dInit( HINSTANCE );
+bool    IECtl3dInit( HINSTANCE );
 void    IECtl3dFini( HINSTANCE );
 void    IECtl3dColorChange( void );
 void    IECtl3dSubclassDlg( HWND, WORD );

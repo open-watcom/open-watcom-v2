@@ -49,18 +49,18 @@
 WRDLLENTRY extern int      WRAPI WRCtl3DInit( HINSTANCE );
 WRDLLENTRY extern void     WRAPI WRCtl3DFini( HINSTANCE );
 
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassDlg( HWND, WORD );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassDlgEx( HWND, DWORD );
+WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlg( HWND, WORD );
+WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlgEx( HWND, DWORD );
 WRDLLENTRY extern WORD     WRAPI WRCtl3dGetVer( void );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dEnabled( void );
+WRDLLENTRY extern bool     WRAPI WRCtl3dEnabled( void );
 WRDLLENTRY extern HBRUSH   WRAPI WRCtl3dCtlColor( HDC, LONG );
 WRDLLENTRY extern HBRUSH   WRAPI WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dColorChange( void );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dSubclassCtl( HWND );
+WRDLLENTRY extern bool     WRAPI WRCtl3dColorChange( void );
+WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassCtl( HWND );
 WRDLLENTRY extern LONG     WRAPI WRCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dAutoSubclass( HANDLE );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dRegister( HANDLE );
-WRDLLENTRY extern BOOL     WRAPI WRCtl3dUnregister( HANDLE );
+WRDLLENTRY extern bool     WRAPI WRCtl3dAutoSubclass( HANDLE );
+WRDLLENTRY extern bool     WRAPI WRCtl3dRegister( HANDLE );
+WRDLLENTRY extern bool     WRAPI WRCtl3dUnregister( HANDLE );
 WRDLLENTRY extern VOID     WRAPI WRCtl3dWinIniChange( void );
 
 #endif

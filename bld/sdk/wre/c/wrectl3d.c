@@ -60,13 +60,13 @@ bool WRECtl3DInit ( HINSTANCE inst )
 {
 #if !defined( WRE_USE_3D )
     _wre_touch( inst );
-    return( TRUE );
+    return( true );
 #else
     bool ok;
 
-    ok = WRCtl3dRegister( inst );
+    ok = ( WRCtl3dRegister( inst ) != 0 );
     if( ok ) {
-        ok = WRCtl3dAutoSubclass( inst );
+        ok = ( WRCtl3dAutoSubclass( inst ) != 0 );
     }
 
     return( ok );

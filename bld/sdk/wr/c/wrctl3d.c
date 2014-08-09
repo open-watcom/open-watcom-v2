@@ -40,18 +40,18 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassDlg)( HWND, WORD );
-typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassDlgEx)( HWND, DWORD );
+typedef bool    (WINAPI *LPFN_Ctl3dSubclassDlg)( HWND, WORD );
+typedef bool    (WINAPI *LPFN_Ctl3dSubclassDlgEx)( HWND, DWORD );
 typedef WORD    (WINAPI *LPFN_Ctl3dGetVer)( void );
-typedef BOOL    (WINAPI *LPFN_Ctl3dEnabled)( void );
+typedef bool    (WINAPI *LPFN_Ctl3dEnabled)( void );
 typedef HBRUSH  (WINAPI *LPFN_Ctl3dCtlColor)( HDC, LONG );
 typedef HBRUSH  (WINAPI *LPFN_Ctl3dCtlColorEx)( UINT wm, WPARAM wParam, LPARAM lParam );
-typedef BOOL    (WINAPI *LPFN_Ctl3dColorChange)( void );
-typedef BOOL    (WINAPI *LPFN_Ctl3dSubclassCtl)( HWND );
+typedef bool    (WINAPI *LPFN_Ctl3dColorChange)( void );
+typedef bool    (WINAPI *LPFN_Ctl3dSubclassCtl)( HWND );
 typedef LONG    (WINAPI *LPFN_Ctl3dDlgFramePaint)( HWND, UINT, WPARAM, LPARAM );
-typedef BOOL    (WINAPI *LPFN_Ctl3dAutoSubclass)( HANDLE );
-typedef BOOL    (WINAPI *LPFN_Ctl3dRegister)( HANDLE );
-typedef BOOL    (WINAPI *LPFN_Ctl3dUnregister)( HANDLE );
+typedef bool    (WINAPI *LPFN_Ctl3dAutoSubclass)( HANDLE );
+typedef bool    (WINAPI *LPFN_Ctl3dRegister)( HANDLE );
+typedef bool    (WINAPI *LPFN_Ctl3dUnregister)( HANDLE );
 typedef VOID    (WINAPI *LPFN_Ctl3dWinIniChange)( void );
 
 /****************************************************************************/
@@ -118,19 +118,19 @@ static int WRCtl3DDLLInit( void )
         return( FALSE );
     }
 
-    wrCtl3dSubclassDlg = (LPFN_Ctl3dSubclassDlg)GetProcAddress( wrDLLLib, (LPCSTR)2 );
-    wrCtl3dSubclassDlgEx = (LPFN_Ctl3dSubclassDlgEx)GetProcAddress( wrDLLLib, (LPCSTR)21 );
-    wrCtl3dGetVer = (LPFN_Ctl3dGetVer)GetProcAddress( wrDLLLib, (LPCSTR)1 );
-    wrCtl3dEnabled = (LPFN_Ctl3dEnabled)GetProcAddress( wrDLLLib, (LPCSTR)5 );
-    wrCtl3dCtlColor = (LPFN_Ctl3dCtlColor)GetProcAddress( wrDLLLib, (LPCSTR)4 );
-    wrCtl3dCtlColorEx = (LPFN_Ctl3dCtlColorEx)GetProcAddress( wrDLLLib, (LPCSTR)18 );
-    wrCtl3dColorChange = (LPFN_Ctl3dColorChange)GetProcAddress( wrDLLLib, (LPCSTR)6 );
-    wrCtl3dSubclassCtl = (LPFN_Ctl3dSubclassCtl)GetProcAddress( wrDLLLib, (LPCSTR)3 );
-    wrCtl3dDlgFramePaint = (LPFN_Ctl3dDlgFramePaint)GetProcAddress( wrDLLLib, (LPCSTR)20 );
-    wrCtl3dAutoSubclass = (LPFN_Ctl3dAutoSubclass)GetProcAddress( wrDLLLib, (LPCSTR)16 );
-    wrCtl3dRegister = (LPFN_Ctl3dRegister)GetProcAddress( wrDLLLib, (LPCSTR)12 );
-    wrCtl3dUnregister = (LPFN_Ctl3dUnregister)GetProcAddress( wrDLLLib, (LPCSTR)13 );
-    wrCtl3dWinIniChange = (LPFN_Ctl3dWinIniChange)GetProcAddress( wrDLLLib, (LPCSTR)22 );
+    wrCtl3dSubclassDlg = (LPFN_Ctl3dSubclassDlg)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)2 );
+    wrCtl3dSubclassDlgEx = (LPFN_Ctl3dSubclassDlgEx)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)21 );
+    wrCtl3dGetVer = (LPFN_Ctl3dGetVer)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)1 );
+    wrCtl3dEnabled = (LPFN_Ctl3dEnabled)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)5 );
+    wrCtl3dCtlColor = (LPFN_Ctl3dCtlColor)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)4 );
+    wrCtl3dCtlColorEx = (LPFN_Ctl3dCtlColorEx)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)18 );
+    wrCtl3dColorChange = (LPFN_Ctl3dColorChange)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)6 );
+    wrCtl3dSubclassCtl = (LPFN_Ctl3dSubclassCtl)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)3 );
+    wrCtl3dDlgFramePaint = (LPFN_Ctl3dDlgFramePaint)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)20 );
+    wrCtl3dAutoSubclass = (LPFN_Ctl3dAutoSubclass)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)16 );
+    wrCtl3dRegister = (LPFN_Ctl3dRegister)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)12 );
+    wrCtl3dUnregister = (LPFN_Ctl3dUnregister)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)13 );
+    wrCtl3dWinIniChange = (LPFN_Ctl3dWinIniChange)GetProcAddress( wrDLLLib, (LPCSTR)(pointer_int)22 );
 
     if( wrCtl3dSubclassDlg == NULL || wrCtl3dSubclassDlgEx == NULL ||
         wrCtl3dGetVer == NULL || wrCtl3dEnabled == NULL || wrCtl3dCtlColor == NULL ||
@@ -182,20 +182,20 @@ void WRAPI WRCtl3DFini( HINSTANCE inst )
     WRCtl3DDLLFini();
 }
 
-BOOL WRAPI WRCtl3dSubclassDlg( HWND hwnd, WORD w )
+bool WRAPI WRCtl3dSubclassDlg( HWND hwnd, WORD w )
 {
     if( wrCtl3dSubclassDlg != NULL ) {
         return( wrCtl3dSubclassDlg( hwnd, w ) );
     }
-    return( FALSE );
+    return( false );
 }
 
-BOOL WRAPI WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
+bool WRAPI WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 {
     if( wrCtl3dSubclassDlgEx != NULL ) {
         return( wrCtl3dSubclassDlgEx( hwnd, dw ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 WORD WRAPI WRCtl3dGetVer( void )
@@ -206,12 +206,12 @@ WORD WRAPI WRCtl3dGetVer( void )
     return( 0 );
 }
 
-BOOL WRAPI WRCtl3dEnabled( void )
+bool WRAPI WRCtl3dEnabled( void )
 {
     if( wrCtl3dEnabled != NULL ) {
         return( wrCtl3dEnabled() );
     }
-    return( FALSE );
+    return( false );
 }
 
 HBRUSH WRAPI WRCtl3dCtlColor( HDC dc, LONG l )
@@ -230,20 +230,20 @@ HBRUSH WRAPI WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
     return( (HBRUSH)NULL );
 }
 
-BOOL WRAPI WRCtl3dColorChange( void )
+bool WRAPI WRCtl3dColorChange( void )
 {
     if( wrCtl3dColorChange != NULL ) {
         return( wrCtl3dColorChange() );
     }
-    return( FALSE );
+    return( false );
 }
 
-BOOL WRAPI WRCtl3dSubclassCtl( HWND hwnd )
+bool WRAPI WRCtl3dSubclassCtl( HWND hwnd )
 {
     if( wrCtl3dSubclassCtl != NULL ) {
         return( wrCtl3dSubclassCtl( hwnd ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 LONG WRAPI WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
@@ -254,28 +254,28 @@ LONG WRAPI WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
     return( 0L );
 }
 
-BOOL WRAPI WRCtl3dAutoSubclass(HANDLE hndl )
+bool WRAPI WRCtl3dAutoSubclass(HANDLE hndl )
 {
     if( wrCtl3dAutoSubclass != NULL ) {
         return( wrCtl3dAutoSubclass( hndl ) );
     }
-    return( FALSE );
+    return( false );
 }
 
-BOOL WRAPI WRCtl3dRegister( HANDLE hndl )
+bool WRAPI WRCtl3dRegister( HANDLE hndl )
 {
     if( wrCtl3dRegister != NULL ) {
         return( wrCtl3dRegister( hndl ) );
     }
-    return( FALSE );
+    return( false );
 }
 
-BOOL WRAPI WRCtl3dUnregister( HANDLE inst )
+bool WRAPI WRCtl3dUnregister( HANDLE inst )
 {
     if( wrCtl3dUnregister != NULL ) {
         return( wrCtl3dUnregister( inst ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 void WRAPI WRCtl3dWinIniChange( void )
