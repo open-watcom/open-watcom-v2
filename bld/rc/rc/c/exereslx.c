@@ -43,18 +43,16 @@
 #include "exeutil.h"
 #include "exereslx.h"
 
-
-static int CompareLXResIdName( const void * _entry1, const void * _entry2 )
-/*************************************************************************/
+static int CompareLXResIdName( const void *e1, const void *e2 )
+/*************************************************************/
 {
-    const LXResEntry *entry1 = _entry1;
-    const LXResEntry *entry2 = _entry2;
-
-    if( entry1->resource.type_id == entry2->resource.type_id ) {
-        return( entry1->resource.name_id - entry2->resource.name_id );
+#define LXE(x) ((const LXResEntry *)(x))
+    if( LXE( e1 )->resource.type_id == LXE( e2 )->resource.type_id ) {
+        return( LXE( e1 )->resource.name_id - LXE( e2 )->resource.name_id );
     } else {
-        return( entry1->resource.type_id - entry2->resource.type_id );
+        return( LXE( e1 )->resource.type_id - LXE( e2 )->resource.type_id );
     }
+#undef LXE
 } /* CompareLXResIdName */
 
 

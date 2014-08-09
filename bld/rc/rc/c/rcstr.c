@@ -38,7 +38,7 @@
 #include "clibext.h"
 
 static int RemoveRedundantStrings( void ** strlist, unsigned int num,
-                    int (* compare) (const void **, const void **) )
+                    int (*compare)(const void *, const void *) )
 /********************************************************************/
 /* strlist is a SORTED array of char *'s of size num */
 {
@@ -52,7 +52,7 @@ static int RemoveRedundantStrings( void ** strlist, unsigned int num,
         last++;
         *last = *curr;      /* this works on the first iteration */
         while( curr < strlist + num
-               && compare( (const void **)curr, (const void **)last ) == 0 ) {
+               && compare( (const void *)curr, (const void *)last ) == 0 ) {
             curr++;
         }
     }
@@ -62,12 +62,11 @@ static int RemoveRedundantStrings( void ** strlist, unsigned int num,
 
 
 static int SortAndRemoveRedundantStrings( void ** strlist, unsigned int num,
-                            int (* compare) (const void **, const void **) )
+                            int (*compare)(const void *, const void *) )
 /***************************************************************************/
 /* strlist is an array of char *'s of size num */
 {
-    qsort( (void *)strlist, (size_t)num, sizeof(void *),
-           (int(*)(const void *, const void *))compare );
+    qsort( (void *)strlist, (size_t)num, sizeof(void *), compare );
     return( RemoveRedundantStrings( strlist, num, compare ) );
 } /* SortAndRemoveRedundantStrings */
 
@@ -217,11 +216,11 @@ static void ConstructStringBlock( StringsBlock * str )
 #endif
 } /* ConstructStringBlock */
 
-static int CompareWResIDNames( const void ** name1, const void ** name2 )
-/*************************************************************************/
+static int CompareWResIDNames( const void *n1, const void *n2 )
+/*************************************************************/
 {
-    return( WResIDNameCmp( *name1, *name2 ) );
-} /* CompareWResIDNames */
+    return( WResIDNameCmp( *(const WResIDName **)(n1), *(const WResIDName **)(n2) ) );
+}
 
 extern void StringBlockBuild( StringsBlock *str, WResDir dir, int use_unicode )
 /*****************************************************************************/

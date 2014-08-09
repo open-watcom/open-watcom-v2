@@ -383,18 +383,15 @@ static RcStatus AdjustNameEntry( PEResEntry * entry, void * _dir_size )
     return( RS_OK );
 } /* AdjustNameEntry */
 
-static int ComparePEResIdName( const void * _entry1,
-                               const void * _entry2 )
-/***********************************************************************/
+static int ComparePEResIdName( const void *e1, const void *e2 )
+/*************************************************************/
 {
-    const PEResEntry * entry1 = _entry1;
-    const PEResEntry * entry2 = _entry2;
-
-    if( entry1->Name == NULL ) {
-        if( entry2->Name == NULL ) {
-            if( entry1->Entry.id_name > entry2->Entry.id_name ) {
+#define PEE(x) ((const PEResEntry *)(x))
+    if( PEE( e1 )->Name == NULL ) {
+        if( PEE( e2 )->Name == NULL ) {
+            if( PEE( e1 )->Entry.id_name > PEE( e2 )->Entry.id_name ) {
                 return( 1 );
-            } else if( entry1->Entry.id_name < entry2->Entry.id_name ) {
+            } else if( PEE( e1 )->Entry.id_name < PEE( e2 )->Entry.id_name ) {
                 return( -1 );
             } else {
                 return( 0 );
@@ -403,12 +400,13 @@ static int ComparePEResIdName( const void * _entry1,
             return( 1 );
         }
     } else {
-        if( entry2->Name == NULL ) {
+        if( PEE( e2 )->Name == NULL ) {
             return( -1 );
         } else {
-            return( CompareStringItems32( entry1->Name, entry2->Name ) );
+            return( CompareStringItems32( PEE( e1 )->Name, PEE( e2 )->Name ) );
         }
     }
+#undef PEE
 } /* ComparePEResIdName */
 
 static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )

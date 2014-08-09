@@ -53,7 +53,7 @@ int AddDependency( char *fname )
     char                *name;
     DepNode             *new;
     DepNode             **cur;
-    int                 len;
+    size_t              len;
     int                 cmp;
 
     if( CmdLineParms.GenAutoDep ) {
