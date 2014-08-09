@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <wwindows.h>
 #include "global.h"
 #include "fmedit.def"

@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "fmedit.def"
 #include "object.def"
 #include "state.def"

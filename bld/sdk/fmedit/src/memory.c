@@ -37,8 +37,8 @@
 
 int     FilePtr;
 
-extern void * EdAlloc( int size )
-/*******************************/
+extern void *EdAlloc( size_t size )
+/*********************************/
 {
     /* prints out amount of memory being allocated using LocalAlloc, then
      * calls LocalAlloc to allocate the memory

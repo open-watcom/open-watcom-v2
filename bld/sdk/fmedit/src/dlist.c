@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <windows.h>
 #include "fmedit.def"
 #include "memory.def"
