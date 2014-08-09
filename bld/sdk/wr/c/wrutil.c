@@ -295,8 +295,8 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
     }
 
     if( src != NULL ) {
-        len1 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1,
-                                    NULL, 0, NULL, NULL );
+        len1 = WideCharToMultiByte( CP_OEMCP, 0L,
+                    (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
             return( FALSE );
         }
@@ -310,8 +310,8 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
     }
 
     if( src != NULL ) {
-        len2 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1,
-                                    dest, len1, NULL, NULL );
+        len2 = WideCharToMultiByte( CP_OEMCP, 0L,
+                    (LPCWSTR)src, -1, dest, len1, NULL, NULL );
         if( len2 != len1 ) {
             return( FALSE );
         }
@@ -347,7 +347,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         return( TRUE );
     }
 
-    new = MemAlloc( *len );
+    new = MemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -378,8 +378,8 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
     }
 
     if( src != NULL ) {
-        len1 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1,
-                                    NULL, 0, NULL, NULL );
+        len1 = WideCharToMultiByte( CP_OEMCP, 0L,
+                    (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
             return( FALSE );
         }
@@ -399,8 +399,8 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
     }
 
     if( src != NULL ) {
-        len2 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1,
-                                    new, len1, NULL, NULL );
+        len2 = WideCharToMultiByte( CP_OEMCP, 0L,
+                    (LPCWSTR)src, -1, new, len1, NULL, NULL );
         if( len2 != len1 ) {
             MemFree( new );
             return( FALSE );
@@ -419,7 +419,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
 {
     uint_16     *new;
-    int         len1, len2;
+    int         len1;
 
     if( dest == NULL ) {
         return( FALSE );
@@ -430,18 +430,16 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
         len1 += strlen( src );
     }
 
-    len1 *= 2;
-
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && len1 > len ) {
+    if( len != -1 && ( len1 * 2 ) > len ) {
         return( FALSE );
     }
 
     new = (uint_16 *)dest;
 
     if( src != NULL ) {
-        for( len2 = len1 / 2; len2 >= 0; len2-- ) {
-            new[len2] = (uint_16)src[len2];
+        while( len1-- > 0 ) {
+            new[len1] = (uint_16)(uint_8)src[len1];
         }
     } else {
         new[0] = 0;
@@ -453,17 +451,15 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
 int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
 {
     uint_16     *uni_str;
-    int         len1, len2;
+    int         len1;
 
     if( dest == NULL ) {
         return( FALSE );
     }
 
+    len1 = 1;
     if( src != NULL ) {
-        len1 = WRStrlen32( src );
-        len1 = len1 / 2;
-    } else {
-        len1 = 1;
+        len1 += WRStrlen32( src ) / 2;
     }
 
     // if len is -1 then dont bother checking the buffer length
@@ -473,8 +469,8 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
 
     if( src != NULL ) {
         uni_str = (uint_16 *)src;
-        for( len2 = 0; len2 <= len1; len2++ ) {
-            dest[len2] = (char)uni_str[len2];
+        while( len1-- > 0 ) {
+            dest[len1] = (char)uni_str[len1];
         }
     } else {
         dest[0] = '\0';
@@ -492,24 +488,25 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         return( FALSE );
     }
 
-    *len = 1;
+    len1 = 1;
     if( src != NULL ) {
-        *len += strlen( src );
+        len1 += strlen( src );
     }
-    *len *= 2;
+
+    *len = 2 * len1;
 
     if( dest == NULL ) {
         return( TRUE );
     }
 
-    new = MemAlloc( *len );
+    new = MemAlloc( 2 * len1 );
     if( new == NULL ) {
         return( FALSE );
     }
 
     if( src != NULL ) {
-        for( len1 = *len / 2; len1 >= 0; len1-- ) {
-            new[len1] = (uint_16)src[len1];
+        for( len1-- > 0 ) {
+            new[len1] = (uint_16)(uint_8)src[len1];
         }
     } else {
         new[0] = 0;
@@ -524,17 +521,15 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 {
     char        *new;
     uint_16     *uni_str;
-    int         len1, len2;
+    int         len1;
 
     if( len == NULL ) {
         return( FALSE );
     }
 
+    len1 = 1;
     if( src != NULL ) {
-        len1 = WRStrlen32( src );
-        len1 = len1 / 2;
-    } else {
-        len1 = 1;
+        len1 = WRStrlen32( src ) / 2;
     }
 
     *len = len1;
@@ -550,8 +545,8 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 
     if( src != NULL ) {
         uni_str = (uint_16 *)src;
-        for( len2 = 0; len2 <= len1; len2++ ) {
-            new[len2] = (char)uni_str[len2];
+        while( len1-- > 0 ) {
+            new[len1] = (char)uni_str[len1];
         }
     } else {
         new[0] = '\0';
@@ -588,15 +583,11 @@ int WRAPI WRStrlen32( char *str )
     int         len;
     uint_16     *word;
 
-    if( str == NULL ) {
-        return( 0 );
-    }
-
     len = 0;
-    word = (uint_16 *)str;
-    while( *word != 0 ) {
-        len += 2;
-        word++;
+    if( str != NULL ) {
+        for( word = (uint_16 *)str; *word != 0; ++word ) {
+            len += 2;
+        }
     }
 
     return( len );
