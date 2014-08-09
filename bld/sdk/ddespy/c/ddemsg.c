@@ -418,7 +418,7 @@ static void setHorzExtent( DDEWndInfo *info, char *text )
     dc = GetDC( info->list.box );
     font = GetMonoFont();
     font = SelectObject( dc, font );
-    GetTextExtentPoint( dc, text, strlen( text ), &sz );
+    GetTextExtentPoint( dc, text, (int)strlen( text ), &sz );
     if( sz.cx > info->horz_extent ) {
         SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, sz.cx, 0L );
         info->horz_extent = sz.cx;

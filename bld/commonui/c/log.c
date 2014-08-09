@@ -51,15 +51,6 @@ static LogInfo          LogCurInfo;
 static char             *BufLines[NO_BUF_LINES];
 static WORD             LinesUsed;
 
-/*
- * writeCRLF - write carriage return/line feed to a file
- */
-static void writeCRLF( int f )
-{
-    write( f, "\r\n", 2 );
-
-} /* writeCRLF */
-
 #ifndef NOUSE3D
 
 /*
@@ -90,7 +81,7 @@ WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPA
 /*
  * getLogName - get a filename for the log and check if the file already exists
  */
-static BOOL getLogName( char *buf, HWND hwnd )
+static bool getLogName( char *buf, HWND hwnd )
 {
     OPENFILENAME        of;
     int                 rc;
@@ -121,30 +112,30 @@ static BOOL getLogName( char *buf, HWND hwnd )
 #endif
     FreeRCString( (char *)of.lpstrTitle );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
     strcpy( buf, fname );
-    return( TRUE );
+    return( true );
 
 } /* getLogName */
 
 /*
  * flushLog - write out everything in the log buffer
  */
-static void flushLog( BOOL free )
+static void flushLog( bool free )
 {
     WORD        i;
-    int         f;
+    FILE        *f;
 
-    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | O_APPEND, S_IREAD | S_IWRITE );
-    if( f < 0 ) {
+    f = fopen( LogCurInfo.config.curname, "wt+" );
+    if( f == NULL ) {
         return;
     }
     for( i = 0; i < LinesUsed; i++ ) {
-        write( f, BufLines[i], (unsigned)strlen( BufLines[i] ) );
-        writeCRLF( f );
+        fwrite( BufLines[i], 1, strlen( BufLines[i] ), f );
+        fwrite( "\r\n", 1, 2, f );
     }
-    close( f );
+    fclose( f );
     if( free ) {
         for( i = 0; i < LinesUsed; i++ ) {
             MemFree( BufLines[i] );
@@ -225,9 +216,9 @@ WINEXPORT INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         case LOG_CFG_OK:
             if( IsDlgButtonChecked( hwnd, LOG_CFG_QUERY_NAME ) ) {
-                LogCurInfo.config.query_for_name = TRUE;
+                LogCurInfo.config.query_for_name = true;
             } else if( IsDlgButtonChecked( hwnd, LOG_CFG_USE_NAME ) ) {
-                LogCurInfo.config.query_for_name = FALSE;
+                LogCurInfo.config.query_for_name = false;
             }
             if( IsDlgButtonChecked( hwnd, LOG_CFG_PERIODIC ) ) {
                 LogCurInfo.config.type = LOG_TYPE_BUFFER;
@@ -270,7 +261,7 @@ void LogConfigure( void )
         SetLogDef();
     }
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
-        flushLog( TRUE );
+        flushLog( true );
     }
     fp = MakeDlgProcInstance( ConfigLogDlgProc, LogCurInfo.instance );
     DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, (DLGPROC)fp );
@@ -286,8 +277,8 @@ void SetLogDef( void )
     strcpy( LogCurInfo.config.name, "dflt.log" );
     LogCurInfo.config.type = LOG_TYPE_CONTINUOUS;
     LogCurInfo.config.def_action = LOG_ACTION_QUERY;
-    LogCurInfo.config.query_for_name = TRUE;
-    LogCurInfo.init = TRUE;
+    LogCurInfo.config.query_for_name = true;
+    LogCurInfo.init = true;
 
 } /* SetLogDef */
 
@@ -309,7 +300,7 @@ void GetLogConfig( LogConfig *config )
 void SetLogConfig( LogConfig *config )
 {
     LogCurInfo.config = *config;
-    LogCurInfo.init = TRUE;
+    LogCurInfo.init = true;
 
 } /* SetLogConfig */
 
@@ -374,14 +365,14 @@ void SpyLogOut( char *res )
     if( LogCurInfo.config.type == LOG_TYPE_CONTINUOUS ) {
         BufLines[LinesUsed] = res;
         LinesUsed++;
-        flushLog( FALSE );
+        flushLog( false );
     } else {
         len = strlen( res ) + 1;
         BufLines[LinesUsed] = MemAlloc( len );
         strcpy( BufLines[LinesUsed], res );
         LinesUsed++;
         if( LinesUsed == NO_BUF_LINES ) {
-            flushLog( TRUE );
+            flushLog( true );
         }
     }
 
@@ -390,30 +381,28 @@ void SpyLogOut( char *res )
 /*
  * SpyLogOpen - open the log file
  */
-BOOL SpyLogOpen( void )
+bool SpyLogOpen( void )
 {
-    int         f;
-    WORD        flags;
+    FILE        *f;
     FARPROC     fp;
     INT_PTR     ret;
     char        *msgtitle;
+    char        *fmode = "wt";
 
-    flags = 0;
     if( !LogCurInfo.init ) {
         SetLogDef();
     }
     if( LogCurInfo.config.query_for_name ) {
         if( !getLogName( LogCurInfo.config.name, LogCurInfo.hwnd ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     strcpy( LogCurInfo.config.curname, LogCurInfo.config.name );
     switch( LogCurInfo.config.def_action ) {
     case LOG_ACTION_TRUNC:
-        flags = O_TRUNC;
         break;
     case LOG_ACTION_APPEND:
-        flags = O_APPEND;
+        fmode = "wt+";
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
@@ -422,32 +411,31 @@ BOOL SpyLogOpen( void )
             FreeProcInstance( fp );
             switch( ret ) {
             case LOG_APPEND:
-                flags = O_APPEND;
+                fmode = "wt+";
                 break;
             case LOG_REPLACE:
-                flags = O_TRUNC;
                 break;
             case LOG_CANCEL:
-                return( FALSE );
+                return( false );
             }
         }
         break;
     }
-    f = open( LogCurInfo.config.curname, O_TEXT | O_WRONLY | O_CREAT | flags, S_IREAD | S_IWRITE );
-    if( f < 0 ) {
+    f = fopen( LogCurInfo.config.curname, fmode );
+    if( f == NULL ) {
         msgtitle = AllocRCString( LOG_LOG_ERROR );
         RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle,
                       MB_OK | MB_ICONEXCLAMATION );
         FreeRCString( msgtitle );
-        return( FALSE );
+        return( false );
     }
     if( LogCurInfo.writefn != NULL ) {
         LogCurInfo.writefn( f );
     }
-    close( f );
-    LogCurInfo.config.logging = TRUE;
-    LogCurInfo.config.paused = FALSE;
-    return( TRUE );
+    fclose( f );
+    LogCurInfo.config.logging = true;
+    LogCurInfo.config.paused = true;
+    return( true );
 
 } /* SpyLogOpen */
 
@@ -456,20 +444,20 @@ BOOL SpyLogOpen( void )
  */
 void SpyLogClose( void )
 {
-    flushLog( TRUE );
-    LogCurInfo.config.logging = FALSE;
-    LogCurInfo.config.paused = FALSE;
+    flushLog( true );
+    LogCurInfo.config.logging = false;
+    LogCurInfo.config.paused = false;
 
 } /* SpyLogClose */
 
 /*
  * SpyLogPauseToggle - switch between paused/unpaused state
  */
-BOOL SpyLogPauseToggle( void )
+bool SpyLogPauseToggle( void )
 {
     if( LogCurInfo.config.logging ) {
         if( !LogCurInfo.config.paused ) {
-            flushLog( TRUE );
+            flushLog( true );
         }
         LogCurInfo.config.paused = !LogCurInfo.config.paused;
     }
@@ -480,7 +468,7 @@ BOOL SpyLogPauseToggle( void )
 /*
  * LogToggle - toggle between logging and not logging modes
  */
-BOOL LogToggle( void )
+bool LogToggle( void )
 {
     if( !LogCurInfo.init ) {
         SetLogDef();
@@ -503,7 +491,7 @@ BOOL LogToggle( void )
  *      writefn - function that creates the log header or NULL if no
  *                header is desired
  */
-void LogInit( HWND hwnd, HANDLE inst, void (*writefn)( int ) )
+void LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) )
 {
     LogCurInfo.hwnd = hwnd;
     LogCurInfo.instance = inst;

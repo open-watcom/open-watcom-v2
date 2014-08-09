@@ -32,7 +32,8 @@
 #ifndef _LOG_H_INCLUDED
 #define _LOG_H_INCLUDED
 
-#include <stdlib.h>
+#include <stdio.h>
+#include "bool.h"
 
 #define LOG_ACTION_TRUNC                1
 #define LOG_ACTION_APPEND               2
@@ -49,17 +50,17 @@
 typedef struct logconfig {
     char                name[LOG_MAX_FNAME];
     char                curname[LOG_MAX_FNAME];
-    BOOL                logging;
-    BOOL                paused;
-    UINT                type;
-    UINT                def_action;
-    BOOL                query_for_name;
+    bool                logging;
+    bool                paused;
+    int                 type;
+    int                 def_action;
+    bool                query_for_name;
 } LogConfig;
 
 typedef struct loginfo {
     LogConfig           config;
-    BOOL                init;
-    void                (*writefn)( int );
+    bool                init;
+    void                (*writefn)( FILE * );
     HANDLE              instance;
     HWND                hwnd;
 } LogInfo;
@@ -90,15 +91,15 @@ typedef struct loginfo {
 #define LOG_CFG_NAME_EDIT           215
 #define LOG_CFG_BROWSE              216
 
-void    LogInit( HWND hwnd, HANDLE inst, void (*writefn)( int ) );
-BOOL    SpyLogOpen( void );
+void    LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) );
+bool    SpyLogOpen( void );
 void    SpyLogOut( char *res );
 void    SetLogDef( void );
 void    GetLogConfig( LogConfig *config );
 void    SetLogConfig( LogConfig *config );
 void    SpyLogClose( void );
-BOOL    SpyLogPauseToggle( void );
-BOOL    LogToggle( void );
+bool    SpyLogPauseToggle( void );
+bool    LogToggle( void );
 void    LogConfigure( void );
 void    LoadLogConfig( char *fname, char *section );
 void    SaveLogConfig( char *fname, char *section );

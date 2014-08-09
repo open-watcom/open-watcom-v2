@@ -41,6 +41,8 @@
 #define LNK_HDR_CNT     7
 #define SRV_HDR_CNT     2
 
+typedef int (*comp_fn)( const void *, const void * );
+
 static TrackHeaderInfo StrHdr[STR_HDR_CNT] = {
     STR_HANDLE,         PUSH_STR_HDL,   9,
     STR_COUNT,          PUSH_STR_CNT,   7,
@@ -176,10 +178,8 @@ void SetTrackFont( void )
         info = (DDETrackInfo *)GET_WNDINFO( Tracking[i].hwnd );
         makePushWin( info, Tracking[i].hwnd, info->hdrinfo, info->hdrcnt );
         GetClientRect( Tracking[i].hwnd, &area );
-        ResizeListBox( area.right - area.left, area.bottom - area.top,
-                       &info->list );
-        SendMessage( info->list.box, WM_SETFONT, (WPARAM)font,
-                     MAKELONG( TRUE, 0 ) );
+        ResizeListBox( area.right - area.left, area.bottom - area.top, &info->list );
+        SendMessage( info->list.box, WM_SETFONT, (WPARAM)font, MAKELONG( TRUE, 0 ) );
     }
 
 } /* SetTrackFont */
@@ -206,39 +206,35 @@ static void *getNextPos( DDETrackInfo *listinfo )
 
 } /* getNextPos */
 
+#define SRV(x) (*(const ServerInfo * const *)(x))
 /*
  * sortServerByServer
  */
-static int sortServerByServer( const void *_str1, const void *_str2 )
+static int sortServerByServer( const void *srv1, const void *srv2 )
 {
-    ServerInfo * const *str1 = _str1;
-    ServerInfo * const *str2 = _str2;
-
-    if( *str1 == NULL ) {
+    if( SRV( srv1 ) == NULL ) {
         return( 1 );
     }
-    if( *str2 == NULL ) {
+    if( SRV( srv2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*str1)->server, (*str2)->server ) );
+    return( stricmp( SRV( srv1 )->server, SRV( srv2 )->server ) );
 }
 
 /*
  * sortServerByInst
  */
-static int sortServerByInst( const void *_str1, const void *_str2 )
+static int sortServerByInst( const void *srv1, const void *srv2 )
 {
-    ServerInfo * const *str1 = _str1;
-    ServerInfo * const *str2 = _str2;
-
-    if( *str1 == NULL ) {
+    if( SRV( srv1 ) == NULL ) {
         return( 1 );
     }
-    if( *str2 == NULL ) {
+    if( SRV( srv2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*str1)->instname, (*str2)->instname ) );
+    return( stricmp( SRV( srv1 )->instname, SRV( srv2 )->instname ) );
 }
+#undef SRV
 
 /*
  * displayServers - refresh the information in the servers tracking window
@@ -246,21 +242,20 @@ static int sortServerByInst( const void *_str1, const void *_str2 )
 static void displayServers( DDETrackInfo *info )
 {
     unsigned    i;
-    unsigned    len;
+    size_t      len;
     char        buf[80];
     ServerInfo  **servers;
     ServerInfo  *cur;
-    int         (*fn)( const void *, const void * );
+    comp_fn     fn;
 
     switch( info->sorttype ) {
+    default:
     case PUSH_SERVER:
         fn = sortServerByServer;
         break;
     case PUSH_INST:
         fn = sortServerByInst;
         break;
-    default:
-        return;
     }
     qsort( info->data, info->cnt, sizeof( ServerInfo * ), fn );
     SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
@@ -412,72 +407,66 @@ static StringInfo **getStringInfo( HSZ hsz, DDETrackInfo *info )
 
 } /* getStringInfo */
 
+#define STR(x) (*(const StringInfo * const *)(x))
 /*
  * sortStrByText
  */
-static int sortStrByText( const void *_str1, const void *_str2 )
+static int sortStrByText( const void *str1, const void *str2 )
 {
-    StringInfo * const *str1 = _str1;
-    StringInfo * const *str2 = _str2;
-
-    if( *str1 == NULL ) {
+    if( STR( str1 ) == NULL ) {
         return( 1 );
     }
-    if( *str2 == NULL ) {
+    if( STR( str2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*str1)->str, (*str2)->str ) );
+    return( stricmp( STR( str1 )->str, STR( str2 )->str ) );
 
 } /* sortStrByText */
 
 /*
  * sortStrByCnt
  */
-static int sortStrByCnt( const void *_str1, const void *_str2 )
+static int sortStrByCnt( const void *str1, const void *str2 )
 {
-    StringInfo * const *str1 = _str1;
-    StringInfo * const *str2 = _str2;
-
-    if( *str1 == NULL ) {
+    if( STR( str1 ) == NULL ) {
         return( 1 );
     }
-    if( *str2 == NULL ) {
+    if( STR( str2 ) == NULL ) {
         return( -1 );
     }
-    return( (*str1)->cnt - (*str2)->cnt );
+    return( STR( str1 )->cnt - STR( str2 )->cnt );
 
 } /* sortStrByCnt */
 
 /*
  * sortStrByHSZ
  */
-static int sortStrByHSZ( const void *_str1, const void *_str2 )
+static int sortStrByHSZ( const void *str1, const void *str2 )
 {
-    StringInfo * const *str1 = _str1;
-    StringInfo * const *str2 = _str2;
-
-    if( *str1 == NULL ) {
+    if( STR( str1 ) == NULL ) {
         return( 1 );
     }
-    if( *str2 == NULL ) {
+    if( STR( str2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)(*str1)->hsz - (char *)(*str2)->hsz );
+    return( (char *)STR( str1 )->hsz - (char *)STR( str2 )->hsz );
 
 } /* sortStrByHSZ */
+#undef STR
 
 /*
  * redispStrTrk - sort then redisplay information in the string tracking window
  */
 static void redispStrTrk( DDETrackInfo *info )
 {
-    int         (*fn)( const void *, const void * );
+    comp_fn     fn;
     StringInfo  **items;
     unsigned    i;
     char        buf[80];
 
     SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
     switch( info->sorttype ) {
+    default:
     case PUSH_STR_TEXT:
         fn = sortStrByText;
         break;
@@ -572,110 +561,112 @@ static BOOL doStrSort( WORD type, DDETrackInfo *info )
 
 } /* doStrSort */
 
+#define LNK(x) (*(const LinkInfo * const *)(x))
 /*
  * sortLinkByClient
  */
-static int sortLinkByClient( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByClient( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)(*lnk1)->client - (char *)(*lnk2)->client );
+    return( (char *)LNK( lnk1 )->client - (char *)LNK( lnk2 )->client );
 
 } /* sortLinkByClient */
 
 /*
  * sortLinkByServer
  */
-static int sortLinkByServer( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByServer( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)(*lnk1)->server - (char *)(*lnk2)->server );
+    return( (char *)LNK( lnk1 )->server - (char *)LNK( lnk2 )->server );
 
 } /* sortLinkByServer */
 
 /*
  * sortLinkByServer
  */
-static int sortLinkByService( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByService( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*lnk1)->service, (*lnk2)->service ) );
+    return( stricmp( LNK( lnk1 )->service, LNK( lnk2 )->service ) );
 
 } /* sortLinkByServer */
 
 /*
  * sortLinkByTopic
  */
-static int sortLinkByTopic( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByTopic( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*lnk1)->topic, (*lnk2)->topic ) );
+    return( stricmp( LNK( lnk1 )->topic, LNK( lnk2 )->topic ) );
 
 } /* sortLinkByTopic */
 
 /*
  * sortLinkByItem
  */
-static int sortLinkByItem( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByItem( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*lnk1)->item, (*lnk2)->item ) );
+    return( stricmp( LNK( lnk1 )->item, LNK( lnk2 )->item ) );
 
 } /* sortLinkByItem */
 
 /*
  * sortLinkByType
  */
-static int sortLinkByType( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByType( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*lnk1)->type, (*lnk2)->type ) );
+    return( stricmp( LNK( lnk1 )->type, LNK( lnk2 )->type ) );
 
 } /* sortLinkByType */
 
 /*
  * sortLinkByFormat
  */
-static int sortLinkByFormat( LinkInfo **lnk1, LinkInfo **lnk2 )
+static int sortLinkByFormat( const void *lnk1, const void *lnk2 )
 {
-    if( *lnk1 == NULL ) {
+    if( LNK( lnk1 ) == NULL ) {
         return( 1 );
     }
-    if( *lnk2 == NULL ) {
+    if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( stricmp( (*lnk1)->format, (*lnk2)->format ) );
+    return( stricmp( LNK( lnk1 )->format, LNK( lnk2 )->format ) );
 
 } /* sortLinkByFormat */
+#undef LNK
 
 /*
  * redispLinkTrk - sort then redisplay information in the link tracking
@@ -684,13 +675,14 @@ static int sortLinkByFormat( LinkInfo **lnk1, LinkInfo **lnk2 )
  */
 static void redispLinkTrk( DDETrackInfo *info, BOOL islink )
 {
-    void        *fn;
+    comp_fn     fn;
     unsigned    i;
     char        buf[100];
     LinkInfo    **items;
 
     SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
     switch( info->sorttype ) {
+    default:
     case PUSH_CLIENT:
          fn = sortLinkByClient;
          break;

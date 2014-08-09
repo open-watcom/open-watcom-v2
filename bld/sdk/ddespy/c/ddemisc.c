@@ -42,7 +42,7 @@ extern msglist DDEMsgs[1];
 /*
  * LogHeader
  */
-void LogHeader( int f )
+void LogHeader( FILE *f )
 {
     char        buf[100];
     unsigned    i;
@@ -53,17 +53,17 @@ void LogHeader( int f )
         buf[i] = '-';
     }
     buf[i] = '\0';
-    write( f, buf, strlen( buf ) );
-    write( f, "\r\n", 2 );
+    fwrite( buf, 1, strlen( buf ), f );
+    fwrite( "\r\n", 1, 2, f );
     RCsprintf( buf, STR_LOG_HEADER, asctime( localtime( &tm ) ) );
-    write( f, buf, strlen( buf ) );
-    write( f, "\r\n", 2 );
+    fwrite( buf, 1, strlen( buf ), f );
+    fwrite( "\r\n", 1, 2, f );
     for( i = 0; i < 80; i++ ) {
         buf[i] = '-';
     }
     buf[i] = '\0';
-    write( f, buf, strlen( buf ) );
-    write( f, "\r\n", 2 );
+    fwrite( buf, 1, strlen( buf ), f );
+    fwrite( "\r\n", 1, 2, f );
 
 } /* LogHeader */
 

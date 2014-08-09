@@ -301,7 +301,7 @@ void    ReadConfig( void );
 void    SaveConfigFile( void );
 
 /* ddemisc.c */
-void    LogHeader( int f );
+void    LogHeader( FILE *f );
 void    DumpHeader( FILE *fptr );
 BOOL    InitGblStrings( void );
 void    FiniRCStrings( void );
