@@ -37,7 +37,7 @@ char            *SpyName;
 char            _NEAR SpyPickClass[] = "WatSpyPickClass";
 char            *TitleBar;
 char            *TitleBarULine;
-int             TitleBarLen;
+size_t          TitleBarLen;
 HWND            SpyListBox;
 HWND            SpyListBoxTitle;
 HWND            SpyMainWindow;

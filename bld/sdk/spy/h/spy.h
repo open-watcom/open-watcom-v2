@@ -185,7 +185,6 @@ typedef struct {
 extern char             *SpyName;
 extern char             *TitleBar;
 extern char             *TitleBarULine;
-extern int              TitleBarLen;
 extern spystate         SpyState;
 extern char             _NEAR SpyPickClass[];
 extern HWND             SpyListBox;
@@ -239,7 +238,7 @@ extern void DoMessageDialog( HWND hwnd, WORD wparam );
 extern void DoMessageSelDialog( HWND hwnd );
 
 /* spymisc.c */
-extern void GetHexStr( LPSTR res, DWORD num, int padlen );
+extern void GetHexStr( LPSTR res, DWORD num, size_t padlen );
 extern BOOL IsMyWindow( HWND hwnd );
 extern void GetWindowName( HWND hwnd, char *str );
 extern void GetClassStyleString( HWND hwnd, char *str, char *sstr );
@@ -288,7 +287,7 @@ extern void ShowSpyTool( BOOL show );
 extern void GetSpyToolRect( RECT *prect );
 
 /* spylog.c */
-extern void SpyLogTitle( int f );
+extern void SpyLogTitle( FILE *f );
 
 /* spy.c */
 extern void SpyFini( void );

@@ -550,11 +550,11 @@ static WORD ClassStyleArraySize = sizeof( ClassStyleArray ) / sizeof( style_info
 /*
  * GetHexStr - convert a number to a hex string, padded out with 0's
  */
-void GetHexStr( LPSTR res, DWORD num, int padlen )
+void GetHexStr( LPSTR res, DWORD num, size_t padlen )
 {
     char        tmp[10];
-    int         i;
-    int         j,k;
+    size_t      i;
+    size_t      j,k;
 
     ultoa( num, tmp, 16 );
     i = strlen( tmp );
@@ -836,11 +836,9 @@ BOOL InitGblStrings( void ) {
     heading_uline = STR_HEADING_UNDERLINE_WIN;
 #endif
     TitleBar = AllocRCString( heading );
-    TitleBarLen = strlen( TitleBar + 1 );
     if( TitleBar == NULL ) {
         return( FALSE );
     }
-
     TitleBarULine = AllocRCString( heading_uline );
     if( TitleBarULine == NULL ) {
         return( FALSE );

@@ -63,6 +63,8 @@ column_info columns[NUM_COLUMNS] = {
 };
 #endif
 
+static int          SpyListBoxXSize;
+
 /*
  * setCharSize - set the character size variables
  */
@@ -215,13 +217,14 @@ void CreateSpyBox( HWND parent )
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
+        SpyListBoxXSize = (int)strlen( TitleBar + 1 ) * xChar;
         SpyListBoxTitle = CreateWindow(
             "STATIC",                   /* Window class name */
             TitleBar,                   /* Window caption */
             SS_LEFT | WS_CHILD,         /* Window style */
             LISTBOX_X + 4,              /* Initial X position */
             LISTBOX_Y,                  /* Initial Y position */
-            (1 + TitleBarLen) * xChar,  /* Initial X size */
+            SpyListBoxXSize,            /* Initial X size */
             yChar,                      /* Initial Y size */
             parent,                     /* Parent window handle */
             (HMENU)NULL,                /* Window menu handle */
@@ -335,8 +338,7 @@ void ResetSpyListBox( void )
     GetClientRect( SpyMainWindow, &r );
     ResizeSpyBox( r.right - r.left, r.bottom - r.top );
 
-    MoveWindow( SpyListBoxTitle, LISTBOX_X + 4, LISTBOX_Y,
-                (1 + TitleBarLen) * xChar, yChar, TRUE );
+    MoveWindow( SpyListBoxTitle, LISTBOX_X + 4, LISTBOX_Y, SpyListBoxXSize, yChar, TRUE );
 
     InvalidateRect( SpyListBox, NULL, FALSE );
     InvalidateRect( SpyListBoxTitle, NULL, FALSE );

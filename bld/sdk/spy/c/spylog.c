@@ -38,20 +38,11 @@
 #include <time.h>
 
 /*
- * writeCRLF - write carriage return/line feed to a file
- */
-static void writeCRLF( int f )
-{
-    write( f, "\r\n", 2 );
-
-} /* writeCRLF */
-
-/*
  * SpyLogTitle - write out spy log title
  */
-void SpyLogTitle( int f )
+void SpyLogTitle( FILE *f )
 {
-    int         len;
+    size_t      len;
     char        buff[128];
     time_t      tod;
 
@@ -59,15 +50,15 @@ void SpyLogTitle( int f )
     strcpy( buff, ctime( &tod ) );
     buff[strlen( buff ) - 1] = 0;
 
-    write( f, SpyName, strlen( SpyName ) );
-    writeCRLF( f );
-    write( f, buff, strlen( buff ) );
-    writeCRLF( f );
-    writeCRLF( f );
+    fwrite( SpyName, 1, strlen( SpyName ), f );
+    fwrite( "\r\n", 1, 2, f );
+    fwrite( buff, 1, strlen( buff ), f );
+    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\r\n", 1, 2, f );
     len = strlen( TitleBar );
-    write( f, TitleBar, len );
-    writeCRLF( f );
-    write( f, TitleBarULine, len );
-    writeCRLF( f );
+    fwrite( TitleBar, 1, len, f );
+    fwrite( "\r\n", 1, 2, f );
+    fwrite( TitleBarULine, 1, len, f );
+    fwrite( "\r\n", 1, 2, f );
 
 } /* SpyLogTitle */
