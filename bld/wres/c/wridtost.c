@@ -46,10 +46,10 @@ char * WResIDToStr( const WResID * name )
 {
     char *      string;
 
-    if ( name != NULL && name->IsName) {
+    if( name->IsName ) {
         /* alloc space for the string and a \0 char at the end */
         string = WRESALLOC( name->ID.Name.NumChars + 1 );
-        if (string == NULL) {
+        if( string == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             /* copy the string */
@@ -75,10 +75,10 @@ char * WResHelpIDToStr( const WResHelpID * name )
 {
     char *string;
 
-    if ( name != NULL && name->IsName) {
+    if( name->IsName ) {
         /* alloc space for the string and a \0 char at the end */
         string = WRESALLOC( name->ID.Name.NumChars + 1 );
-        if (string == NULL) {
+        if( string == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             /* copy the string */

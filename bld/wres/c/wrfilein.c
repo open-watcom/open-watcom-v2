@@ -58,10 +58,10 @@ int WResFileInit( WResFileID handle )
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
         error = WResWriteHeaderRecord( &head, handle );
-        /* leave room for the extended header */
         if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         } else {
+            /* leave room for the extended header */
             error = ( WRESSEEK( handle, sizeof( WResExtHeader ), SEEK_CUR ) == -1 );
             if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );

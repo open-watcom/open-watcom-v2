@@ -44,7 +44,8 @@
 
 static char     ConvBuffer[ CONV_BUF_SIZE ];
 
-static int DefaultConversion( int len, const char *str, char *buf ) {
+static int DefaultConversion( int len, const char *str, char *buf )
+{
     int         i;
 
     if( buf != NULL ) {

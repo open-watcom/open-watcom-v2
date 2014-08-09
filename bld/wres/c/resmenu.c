@@ -230,14 +230,14 @@ int ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
 
     error = FALSE;
     numread = 0;
-    size = header->HeaderSize;
+    size = header->HeaderSize * sizeof( uint_8 );
     if( buf != NULL ) {
-        numread = WRESREAD( handle, buf, size * sizeof( uint_8 ) );
+        numread = WRESREAD( handle, buf, size );
         if( numread != size ) {
             error = TRUE;
         }
     } else {
-        WRESSEEK( handle, size * sizeof( uint_8 ), SEEK_CUR );
+        WRESSEEK( handle, size, SEEK_CUR );
     }
 
     return( error );
