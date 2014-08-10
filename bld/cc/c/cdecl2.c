@@ -950,20 +950,20 @@ local TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                     sym.sym_type = GetType( TYPE_INT );
                     sym_handle = SymAdd( HashValue, &sym );
                 } else {
-                    TYPEPTR     ptr_typ;
+                    TYPEPTR     sym_typ;
 
                     SymGet( &sym, sym_handle );
-                    ptr_typ = sym.sym_type;
-                    SKIP_TYPEDEFS( ptr_typ );
+                    sym_typ = sym.sym_type;
+                    SKIP_TYPEDEFS( sym_typ );
                     if( use_seg ) {
                         info->based_kind = BASED_VARSEG;
-                        if( ptr_typ->decl_type != TYPE_POINTER ) {
+                        if( sym_typ->decl_type != TYPE_POINTER ) {
                            CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
                            info->based_kind = BASED_NONE;
                         }
-                    } else if( ptr_typ->decl_type == TYPE_POINTER ) {
+                    } else if( sym_typ->decl_type == TYPE_POINTER ) {
                         info->based_kind = BASED_VAR;
-                    } else if( sym.mods & FLAG_SEGMENT ) {
+                    } else if( sym_typ->decl_type < TYPE_FLOAT ) {
                         info->based_kind = BASED_SEGVAR;
                     } else {
                         CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
