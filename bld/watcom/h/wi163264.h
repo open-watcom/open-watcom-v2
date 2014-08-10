@@ -80,7 +80,7 @@
 #define GET_WM_ACTIVATE_FACTIVE(wp, lp)         LOWORD(wp)
 #define GET_WM_ACTIVATE_FMINIMIZED(wp, lp)      (BOOL)HIWORD(wp)
 #define GET_WM_ACTIVATE_HWND(wp, lp)            (HWND)(lp)
-#define GET_WM_MDIACTIVATE_FACTIVATE(hwnd, wp, lp) (lp == (LONG)hwnd)
+#define GET_WM_MDIACTIVATE_FACTIVATE(hwnd, wp, lp) ((HWND)lp == hwnd)
 #define GET_WM_MDIACTIVATE_HWNDACTIVATE(wp, lp) (HWND)(wp)
 #define GET_WM_MDIACTIVATE_HWNDDEACTIVATE(wp, lp) (HWND)(lp)
 #define GET_WM_VSCROLL_POS( wp, lp )            HIWORD(wp)
