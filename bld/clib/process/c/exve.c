@@ -72,28 +72,27 @@ typedef struct a_memblk {
     char                unknown[11];    /* rest of header */
     char                data[1];        /* size paragraphs of data */
 } a_memblk;
+
+typedef struct a_blk {
+    unsigned            next;
+} a_blk;
 #pragma pack( __pop )
 
-#define _memblk( block )((a_memblk _WCFAR *) (((block) - 1)*0x10000))
-#define _flag( block )  (_memblk( block )->flag)
-#define _owner( block ) (_memblk( block )->owner)
-#define _size( block )  (_memblk( block )->size)
-
-#define _next( block )  (* (unsigned _WCFAR *) ((block)*0x10000))
-
-#define _pspptr( seg )  ((a_psp _WCFAR *) ((seg)*0x10000))
+#define _blkptr( seg )  ((a_blk    _WCFAR *)((long)(seg)<<16))
+#define _mcbptr( seg )  ((a_memblk _WCFAR *)((long)((seg)-1)<<16))
+#define _pspptr( seg )  ((a_psp    _WCFAR *)((long)(seg)<<16))
 
 #define DOS2SIZE        0x281   /* paragraphs to reserve for DOS 2.X */
 
-static unsigned doslowblock( void )
-{
-    union REGS          regs;
-    struct SREGS        sregs;
-
-    regs.h.ah = 0x52;
-    int86x( DOS, &regs, &regs, &sregs );
-    return( * (unsigned _WCFAR *) (sregs.es*0x10000 + (regs.x.bx - 2)) + 1 );
-}
+extern unsigned doslowblock( void );
+#pragma aux doslowblock =\
+    "mov ah, 52h"       \
+    "int 21h"           \
+    "dec bx"            \
+    "dec bx"            \
+    "mov ax, es:[bx]"   \
+    "inc ax"            \
+    modify [bx es] nomemory;
 
 static void dosexpand( unsigned block )
 {
@@ -123,7 +122,7 @@ static unsigned doscalve( block, size )
 {
     unsigned            have;
 
-    if( (have = _size( block )) < size + 1 ) {
+    if( (have = _mcbptr( block )->size) < size + 1 ) {
         return( 0 );
     } else {
         TinySetBlock( have - ( size + 1 ), block );
@@ -146,21 +145,21 @@ static int doalloc( size, envdata, envsize )
 
     dosseg = envseg = 0;
     for( free = 0; (p = dosalloc( 1 )) != 0; free = p ) {
-        _next( p ) = free;
+        _blkptr( p )->next = free;
     };
     if( _RWD_osmajor == 2 ) {
         if( free == 0 || (dosseg = doscalve( free, DOS2SIZE )) == 0 )
             goto error;
     };
-    for( p = free; p != 0; p = _next( p ) ) {
+    for( p = free; p != 0; p = _blkptr( p )->next ) {
         if( (envseg = doscalve( p, envsize )) != 0 )
             break;
     };
     if( envseg == 0 )
         goto error;
-    for( p = _RWD_psp; p < envseg && _owner( p ) == _RWD_psp; p = q + 1 ) {
-        q = p + _size( p );
-        if( _flag( p ) != 'M' ) {
+    for( p = _RWD_psp; p < envseg && _mcbptr( p )->owner == _RWD_psp; p = q + 1 ) {
+        q = p + _mcbptr( p )->size;
+        if( _mcbptr( p )->flag != 'M' ) {
             if( q - _RWD_psp < size )
                 goto error;
             break;
@@ -170,15 +169,15 @@ static int doalloc( size, envdata, envsize )
     movedata( envdata, 0, envseg, 0, envsize*16 );
     resetints();
     for( ;; ) {
-        for( p = doslowblock();; p = p + _size( p ) + 1 ) {
-            if( _owner( p ) == _RWD_psp && p != _RWD_psp && p != envseg ) {
+        for( p = doslowblock(); ; p = p + _mcbptr( p )->size + 1 ) {
+            if( _mcbptr( p )->owner == _RWD_psp && p != _RWD_psp && p != envseg ) {
                 TinyFreeBlock( p );
                 break;
             };
-            if( _flag( p ) != 'M' ) {
+            if( _mcbptr( p )->flag != 'M' ) {
                 dosexpand( _RWD_psp );
-                _pspptr( _RWD_psp )->maxpara = _RWD_psp + _size( _RWD_psp );
-                if( _size( _RWD_psp ) < size ) {
+                _pspptr( _RWD_psp )->maxpara = _RWD_psp + _mcbptr( _RWD_psp )->size;
+                if( _mcbptr( _RWD_psp )->size < size ) {
                     puts( "Not enough memory on exec\r\n" );
                     TinyTerminateProcess( 0xff );
                 };
@@ -192,7 +191,7 @@ static int doalloc( size, envdata, envsize )
     if( envseg != 0 )
         TinyFreeBlock( envseg );
     for( p = free; p != 0; p = q ) {
-        q = _next( p );
+        q = _blkptr( p )->next;
         TinyFreeBlock( p );
     };
     return( FALSE );
