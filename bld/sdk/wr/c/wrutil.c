@@ -505,7 +505,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
     }
 
     if( src != NULL ) {
-        for( len1-- > 0 ) {
+        while( len1-- > 0 ) {
             new[len1] = (uint_16)(uint_8)src[len1];
         }
     } else {
