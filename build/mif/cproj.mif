@@ -139,7 +139,7 @@ debugfmt = dwarf
 
 !ifdef $(proj_name)_nomapfile
 !ifeq $(proj_name)_nomapfile 1
-momapfile   = 1
+nomapfile   = 1
 !else
 nomapfile   = 0
 !endif
