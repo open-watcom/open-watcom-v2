@@ -37,22 +37,22 @@
 
 extern int (*ConvToUnicode)( int, const char *, char *);
 
-extern int ResWriteUint8( const uint_8 * newint, WResFileID handle );
-extern int ResWriteUint16( const uint_16 * newint, WResFileID handle );
-extern int ResWriteUint32( const uint_32 * newint, WResFileID handle );
-extern int WResWriteLangRecord( const WResLangInfo *info, WResFileID handle );
-extern int WResWriteResRecord( const WResResInfo * res, WResFileID fp );
-extern int WResWriteTypeRecord( const WResTypeInfo * type, WResFileID fp );
-extern int WResWriteWResID( const WResID * name, WResFileID fp );
-extern int WResWriteWResIDName( const WResIDName * name, WResFileID fp );
-extern int WResWriteWResIDNameUni( const WResIDName * name, uint_8 use_unicode, WResFileID handle );
-extern int WResWriteHeaderRecord( const WResHeader * header, WResFileID handle );
-extern int WResWriteExtHeader( const WResExtHeader * ext_head, WResFileID handle );
+extern bool ResWriteUint8( const uint_8 * newint, WResFileID handle );
+extern bool ResWriteUint16( const uint_16 * newint, WResFileID handle );
+extern bool ResWriteUint32( const uint_32 * newint, WResFileID handle );
+extern bool WResWriteLangRecord( const WResLangInfo *info, WResFileID handle );
+extern bool WResWriteResRecord( const WResResInfo * res, WResFileID fp );
+extern bool WResWriteTypeRecord( const WResTypeInfo * type, WResFileID fp );
+extern bool WResWriteWResID( const WResID * name, WResFileID fp );
+extern bool WResWriteWResIDName( const WResIDName * name, WResFileID fp );
+extern bool WResWriteWResIDNameUni( const WResIDName * name, bool use_unicode, WResFileID handle );
+extern bool WResWriteHeaderRecord( const WResHeader * header, WResFileID handle );
+extern bool WResWriteExtHeader( const WResExtHeader * ext_head, WResFileID handle );
 extern void MResFreeResourceHeader( MResResourceHeader * oldheader );
-extern int ResWriteNameOrOrdinal( ResNameOrOrdinal * name, uint_8 use_unicode, WResFileID handle );
-extern int ResWriteString( char * string, uint_8 use_unicode, WResFileID handle);
-extern int ResWriteStringLen( char * string, uint_8 use_unicode, WResFileID handle, uint_16 len );
+extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal * name, bool use_unicode, WResFileID handle );
+extern bool ResWriteString( char * string, bool use_unicode, WResFileID handle);
+extern bool ResWriteStringLen( char * string, bool use_unicode, WResFileID handle, uint_16 len );
 extern void WriteInitStatics( void );
-extern int MResWriteResourceHeader( MResResourceHeader * currhead, WResFileID handle, char iswin32 );
+extern bool MResWriteResourceHeader( MResResourceHeader * currhead, WResFileID handle, char iswin32 );
 
 #endif

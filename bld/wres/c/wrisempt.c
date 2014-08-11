@@ -33,7 +33,7 @@
 #include "layer0.h"
 #include "wres.h"
 
-int WResIsEmpty( WResDir currdir )
+bool WResIsEmpty( WResDir currdir )
 /********************************/
 {
     return( currdir->Head == NULL && currdir->Tail == NULL );

@@ -35,22 +35,23 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
-/************************************************************************/
+M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
+/*****************************************************************/
 {
     M32ResResourceHeader     *newhead;
-    int                       error = FALSE;
+    bool                      error;
     uint_16                   tmp16;
     uint_32                   tmp32;
 
+    error = false;
     newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
     if( newhead == NULL ) {
-        error = TRUE;
+        error = true;
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
     newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
     if( newhead->head16 == NULL ) {
-        error = TRUE;
+        error = true;
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
     if( !error ) {
@@ -107,16 +108,16 @@ MResResourceHeader *MResReadResourceHeader( WResFileID handle )
 /*************************************************************/
 {
     MResResourceHeader     *newhead;
-    int                     error;
+    bool                    error;
     uint_16                 tmp16;
     uint_32                 tmp32;
 
     newhead = WRESALLOC( sizeof(MResResourceHeader) );
     if( newhead == NULL ) {
-        error = TRUE;
+        error = true;
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        error = FALSE;
+        error = false;
     }
 
     if (!error) {

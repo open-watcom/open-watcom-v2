@@ -33,17 +33,13 @@
 #include <string.h>
 #include "wresall.h"
 #include "reserr.h"
+#include "wrmergdi.h"
 #include "wresrtns.h"
 
-typedef struct WResMergeError {
-    struct WResMergeError       *next;
-    WResDirWindow               dstres;
-    WResDirWindow               srcres;
-} WResMergeError;
 
-int WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs ) {
-/****************************************************************************/
-
+bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
+/*************************************************************************/
+{
     WResDirWindow       wind;
     WResDirWindow       dup;
     WResLangInfo        *langinfo;
@@ -72,11 +68,12 @@ int WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs ) {
         }
         wind = WResNextResource( wind, srcdir );
     }
-    return( FALSE );
+    return( false );
 }
 
-void WResFreeMergeErrors( WResMergeError *errs ) {
-/***********************************************/
+void WResFreeMergeErrors( WResMergeError *errs )
+/**********************************************/
+{
     WResMergeError      *tmp;
 
     while( errs != NULL ) {

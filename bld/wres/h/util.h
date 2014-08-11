@@ -36,28 +36,28 @@
 #include "filefmt.h"
 #include "resnamor.h"
 
-WResIDName *        WResIDNameFromStr( char * string );
-WResID *            WResIDFromNum( long );
-void                WResInitIDFromNum( long newnum, WResID * newid );
-WResID *            WResIDFromStr( const char * );
-char *              WResIDToStr( const WResID * );
-long                WResIDToNum( const WResID * );
-void                WResIDFree( WResID * );
-int                 WResIDExtraBytes( const WResID * );
-int                 WResIDNameCmp( const WResIDName *, const WResIDName * );
-int                 WResIDCmp( const WResID *, const WResID * );
-ResNameOrOrdinal *  WResIDToNameOrOrd ( WResID * id );
-extern WResID *     WResIDFromNameOrOrd( ResNameOrOrdinal * name );
+extern WResIDName          *WResIDNameFromStr( char * string );
+extern WResID              *WResIDFromNum( long );
+extern void                WResInitIDFromNum( long newnum, WResID * newid );
+extern WResID              *WResIDFromStr( const char * );
+extern char                *WResIDToStr( const WResID * );
+extern long                WResIDToNum( const WResID * );
+extern void                WResIDFree( WResID * );
+extern int                 WResIDExtraBytes( const WResID * );
+extern int                 WResIDNameCmp( const WResIDName *, const WResIDName * );
+extern int                 WResIDCmp( const WResID *, const WResID * );
+extern ResNameOrOrdinal    *WResIDToNameOrOrd ( WResID * id );
+extern WResID              *WResIDFromNameOrOrd( ResNameOrOrdinal * name );
 
-WResHelpID *        WResHelpIDFromNum( long );
-void                WResInitHelpIDFromNum( long newnum, WResHelpID * newid );
-WResHelpID *        WResHelpIDFromStr( const char * );
-char *              WResHelpIDToStr( const WResHelpID * );
-long                WResHelpIDToNum( const WResHelpID * );
-void                WResHelpIDFree( WResHelpID * );
-int                 WResHelpIDExtraBytes( const WResHelpID * );
-int                 WResHelpIDCmp( const WResHelpID *, const WResHelpID * );
-ResNameOrOrdinal *  WResHelpIDToNameOrOrd ( WResHelpID * id );
-extern WResHelpID * WResHelpIDFromNameOrOrd( ResNameOrOrdinal * name );
+extern WResHelpID          *WResHelpIDFromNum( long );
+extern void                WResInitHelpIDFromNum( long newnum, WResHelpID * newid );
+extern WResHelpID          *WResHelpIDFromStr( const char * );
+extern char                *WResHelpIDToStr( const WResHelpID * );
+extern long                WResHelpIDToNum( const WResHelpID * );
+extern void                WResHelpIDFree( WResHelpID * );
+extern int                 WResHelpIDExtraBytes( const WResHelpID * );
+extern int                 WResHelpIDCmp( const WResHelpID *, const WResHelpID * );
+extern ResNameOrOrdinal    *WResHelpIDToNameOrOrd ( WResHelpID * id );
+extern WResHelpID          *WResHelpIDFromNameOrOrd( ResNameOrOrdinal * name );
 
 #endif

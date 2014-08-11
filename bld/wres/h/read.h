@@ -41,34 +41,34 @@ typedef enum ResTypeInfo {
     RT_WIN32
 } ResTypeInfo;
 
-int WResReadFixedResRecord( WResResInfo *newres, WResFileID handle );
-int WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle );
-int WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle );
+extern bool WResReadFixedResRecord( WResResInfo *newres, WResFileID handle );
+extern bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle );
+extern bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle );
 
-int WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle );
-int WResReadFixedTypeRecord2( WResTypeInfo * newtype, WResFileID handle );
+extern bool WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle );
+extern bool WResReadFixedTypeRecord2( WResTypeInfo * newtype, WResFileID handle );
 
-WResResInfo * WResReadResRecord( WResFileID handle );
-WResTypeInfo * WResReadTypeRecord( WResFileID handle );
-WResID * WResReadWResID( WResFileID handle );
-int WResReadFixedWResID( WResID * name, WResFileID handle );
-int WResReadExtraWResID( WResID * name, WResFileID handle );
-WResIDName * WResReadWResIDName( WResFileID handle );
-int WResReadHeaderRecord( WResHeader * header, WResFileID handle );
-int WResReadExtHeader( WResExtHeader * head, WResFileID handle );
-int WResIsWResFile( WResFileID handle );
-extern ResTypeInfo WResFindResType( WResFileID handle );
-MResResourceHeader * MResReadResourceHeader( WResFileID handle );
-ResNameOrOrdinal * ResReadNameOrOrdinal( WResFileID handle );
-ResNameOrOrdinal * ResRead32NameOrOrdinal( WResFileID handle );
-extern char * ResReadString( WResFileID handle, int * strlen );
-extern char * ResRead32String( WResFileID handle, int * strlen );
-extern int ResReadUint32( uint_32 * newint, WResFileID handle );
-extern int ResReadUint16( uint_16 * newint, WResFileID handle );
-extern int ResReadUint8( uint_8 * newint, WResFileID handle );
-extern long ResTell( WResFileID handle );
-extern WResSeekReturn ResSeek( WResFileID handle, long offset, int origin );
-extern int ResPadDWord( WResFileID handle );
+extern WResResInfo      *WResReadResRecord( WResFileID handle );
+extern WResTypeInfo     *WResReadTypeRecord( WResFileID handle );
+extern WResID           *WResReadWResID( WResFileID handle );
+extern bool             WResReadFixedWResID( WResID * name, WResFileID handle );
+extern bool             WResReadExtraWResID( WResID * name, WResFileID handle );
+extern WResIDName       *WResReadWResIDName( WResFileID handle );
+extern bool             WResReadHeaderRecord( WResHeader * header, WResFileID handle );
+extern bool             WResReadExtHeader( WResExtHeader * head, WResFileID handle );
+extern bool             WResIsWResFile( WResFileID handle );
+extern ResTypeInfo      WResFindResType( WResFileID handle );
+extern MResResourceHeader *MResReadResourceHeader( WResFileID handle );
+extern ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle );
+extern ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID handle );
+extern char             *ResReadString( WResFileID handle, int * strlen );
+extern char             *ResRead32String( WResFileID handle, int * strlen );
+extern bool             ResReadUint32( uint_32 * newint, WResFileID handle );
+extern bool             ResReadUint16( uint_16 * newint, WResFileID handle );
+extern bool             ResReadUint8( uint_8 * newint, WResFileID handle );
+extern long             ResTell( WResFileID handle );
+extern WResSeekReturn   ResSeek( WResFileID handle, long offset, int origin );
+extern bool             ResPadDWord( WResFileID handle );
 extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle );
 
 #endif

@@ -105,12 +105,9 @@ static int GetString(   WResLangInfo    *res,
     return( 0 );
 }
 
-extern int WResLoadString2(  WResDir             dir,
-                             PHANDLE_INFO        hInstance,
-                             UINT                idResource,
-                             LPSTR               lpszBuffer,
-                             int                 nBufferMax )
-/******************************************************************/
+int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
+                             LPSTR lpszBuffer, int nBufferMax )
+/************************************************************************/
 {
     int                 retcode;
     int                 block_num;
@@ -141,51 +138,49 @@ extern int WResLoadString2(  WResDir             dir,
     return( retcode );
 }
 
-extern int WResLoadString(   PHANDLE_INFO        hInstance,
-                             UINT                idResource,
-                             LPSTR               lpszBuffer,
-                             int                 nBufferMax )
-/******************************************************************/
+int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax )
+/*********************************************************************************************/
 {
     return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );
 }
 
-extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
-/********************************************************************/
+int OpenResFile( PHANDLE_INFO hInstance, const char *filename )
+/*************************************************************/
 {
     hInstance->handle = ResOpenFileRO( filename );
     return( hInstance->handle == NIL_HANDLE );
 }
 
-extern int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
-/***************************************************************/
+int InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
+/********************************************************/
 {
     *dir = WResInitDir();
-    if( *dir == NULL ) return( -1 );
+    if( *dir == NULL )
+        return( -1 );
     return( WResReadDir( hInstance->handle, *dir, NULL ) );
 }
 
-extern int InitResources( PHANDLE_INFO hInstance )
-/************************************************/
+int InitResources( PHANDLE_INFO hInstance )
+/*****************************************/
 {
     return( InitResources2( &MainDir, hInstance ) );
 }
 
-extern int CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
-/**************************************************************/
+int CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
+/******************************************************/
 {
     WResFreeDir( dir );
     return( ResCloseFile( hInstance->handle ) );
 }
 
-extern int CloseResFile( PHANDLE_INFO hInstance )
-/********************************************/
+int CloseResFile( PHANDLE_INFO hInstance )
+/****************************************/
 {
     return( CloseResFile2( MainDir, hInstance ) );
 }
 
-extern void LoadstrInitStatics( void )
-/************************************/
+void LoadstrInitStatics( void )
+/*****************************/
 {
     MainDir = NULL;
 }

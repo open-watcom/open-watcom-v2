@@ -41,16 +41,13 @@
 #include "wresrtns.h"
 #include "clibext.h"
 
-static int ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head,
-                                 WResFileID handle, char add_quotes );
-static int ResWriteDialogControlCommon32( ControlClass *class_id,
-                        ResNameOrOrdinal *text, uint_16 extra_bytes,
-                        WResFileID handle );
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, char add_quotes );
+static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text, uint_16 extra_bytes, WResFileID handle );
 
-extern int ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
-/****************************************************************************/
+bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
+/**********************************************************************/
 {
-    int             error;
+    bool            error;
     uint_16         tmp16;
 
     /* write out the fixed size portion of the structure */
@@ -60,29 +57,29 @@ extern int ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
         WRES_ERROR( WRS_WRITE_FAILED );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->MenuName, FALSE, handle );
+        error = ResWriteNameOrOrdinal( head->MenuName, false, handle );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, FALSE, handle );
+        error = ResWriteNameOrOrdinal( head->ClassName, false, handle );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, FALSE, handle );
+        error = ResWriteString( head->Caption, false, handle );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
         tmp16 = head->PointSize;
         error = ResWriteUint16( &tmp16, handle );
         if( !error ) {
-            error = ResWriteString( head->FontName, FALSE, handle );
+            error = ResWriteString( head->FontName, false, handle );
         }
     }
     return( error );
 }
 
-extern int ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
-/********************************************************************************/
+bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
+/**************************************************************************/
 {
-    int             error;
+    bool            error;
     uint_16         tmp16;
 
     /* write out the fixed size portion of the structure */
@@ -99,18 +96,18 @@ extern int ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle
         tmp16 = head->PointSize;
         error = ResWriteUint16( &tmp16, handle );
         if( !error ) {
-            error = ResWriteString( head->FontName, TRUE, handle );
+            error = ResWriteString( head->FontName, true, handle );
         }
     }
     return( error );
 }
 
 
-extern int ResWriteDialogExHeader32( DialogBoxHeader32 *head,
-                             DialogExHeader32 *exhead, WResFileID handle )
-/*************************************************************************/
+bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
+                                                              WResFileID handle )
+/*******************************************************************************/
 {
-    int             error;
+    bool            error;
     uint_16         miscbytes[2] = { 0x0001, 0xFFFF };
     uint_16         tmp16;
     uint_32         tmp32;
@@ -162,7 +159,7 @@ extern int ResWriteDialogExHeader32( DialogBoxHeader32 *head,
             error = ResWriteUint8( &(exhead->FontExtra), handle );
         }
         if( !error ) {
-            error = ResWriteString( head->FontName, TRUE, handle );
+            error = ResWriteString( head->FontName, true, handle );
         }
         if( !error ) {
             error = ResPadDWord( handle );
@@ -171,11 +168,11 @@ extern int ResWriteDialogExHeader32( DialogBoxHeader32 *head,
     return( error );
 }
 
-static int ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head,
-                                         WResFileID handle, char add_quotes )
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle,
+                                                                     char add_quotes )
 /************************************************************************************/
 {
-    int     error;
+    bool    error;
     size_t  len;
     char    *newname;
 
@@ -197,14 +194,14 @@ static int ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head,
         error = ResWriteNameOrOrdinal( head->ClassName, TRUE, handle );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, TRUE, handle );
+        error = ResWriteString( head->Caption, true, handle );
     }
 
     return( error );
 }
 
-extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )
-/**************************************************************/
+void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )
+/*******************************************************/
 {
     if( head->MenuName != NULL ) {
         WRESFREE( head->MenuName );
@@ -220,8 +217,8 @@ extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )
     }
 }
 
-extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head )
-/******************************************************************/
+void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head )
+/***********************************************************/
 {
     if( head->MenuName != NULL ) {
         WRESFREE( head->MenuName );
@@ -237,10 +234,10 @@ extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head )
     }
 }
 
-extern int ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
-/*******************************************************************************/
+bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
+/*************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
     uint_16         tmp16;
 
@@ -280,10 +277,10 @@ extern int ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle 
     return( error );
 }
 
-extern int ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
-/***************************************************************************/
+bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
+/*********************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
     uint_16         tmp16;
 
@@ -323,8 +320,8 @@ extern int ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
     return( error );
 }
 
-extern int ResIsDialogEx( WResFileID handle )
-/*******************************************/
+bool ResIsDialogEx( WResFileID handle )
+/*************************************/
 {
     WResFileSSize   numread;
     uint_16         signa[2];
@@ -335,17 +332,17 @@ extern int ResIsDialogEx( WResFileID handle )
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     } else {
         if( signa[0] == 0x0001 && signa[1] == 0xFFFF) {
-            return(TRUE);
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-extern int ResReadDialogExHeader32( DialogBoxHeader32 *head,
-                      DialogExHeader32 *exhead, WResFileID handle )
-/*****************************************************************/
+bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
+                                                             WResFileID handle )
+/******************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
     uint_16         miscbytes[2] = { 0x0000, 0x0000 };
     uint_16         tmp16;
@@ -426,10 +423,10 @@ extern int ResReadDialogExHeader32( DialogBoxHeader32 *head,
     return( error );
 }
 
-extern int ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
-/*********************************************************************************/
+bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
+/***************************************************************************/
 {
-    int             error;
+    bool            error;
     uint_8          tmp8;
 
     /* write the fixed part of the structure */
@@ -445,7 +442,7 @@ extern int ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handl
         if( control->ClassID->Class & 0x80 ) {
             error = ResWriteUint8( &(control->ClassID->Class), handle );
         } else {
-            error = ResWriteString( control->ClassID->ClassName, FALSE, handle);
+            error = ResWriteString( control->ClassID->ClassName, false, handle);
         }
     }
 
@@ -460,10 +457,10 @@ extern int ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handl
     return( error );
 }
 
-extern int ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
-/*************************************************************************************/
+bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
+/*******************************************************************************/
 {
-    int             error;
+    bool            error;
 
     /* write the fixed part of the structure */
     /* the structure is fixed up to, but not including, ClassID */
@@ -479,10 +476,10 @@ extern int ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID h
     return( error );
 }
 
-extern int ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
-/**************************************************************************************/
+bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
+/********************************************************************************/
 {
-    int             error;
+    bool            error;
 
     /* write the fixed part of the structure */
     /* the structure is fixed up to, but not including, ClassID */
@@ -497,12 +494,11 @@ extern int ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID 
     return( error );
 }
 
-static int ResWriteDialogControlCommon32( ControlClass *class_id,
-                        ResNameOrOrdinal *text, uint_16 extra_bytes,
-                        WResFileID handle )
-/**********************************************************************/
+static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text,
+                                                  uint_16 extra_bytes, WResFileID handle )
+/****************************************************************************************/
 {
-    int       error;
+    bool      error;
     uint_16   class_num;
 
     /* if the ClassID is one of the predefined ones write it out as a byte */
@@ -517,7 +513,7 @@ static int ResWriteDialogControlCommon32( ControlClass *class_id,
             error = ResWriteUint16( &class_num, handle );
         }
     } else {
-        error = ResWriteString( class_id->ClassName, TRUE, handle );
+        error = ResWriteString( class_id->ClassName, true, handle );
     }
     if( !error ) {
         error = ResWriteNameOrOrdinal( text, TRUE, handle );
@@ -535,7 +531,7 @@ static ControlClass *ReadControlClass( WResFileID handle )
 {
     ControlClass *  newclass;
     uint_8          class;
-    int             error;
+    bool            error;
     int             stringlen;
     char *          restofstring;
 
@@ -558,7 +554,7 @@ static ControlClass *ReadControlClass( WResFileID handle )
     } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
-            error = TRUE;
+            error = true;
             WRES_ERROR( WRS_MALLOC_FAILED );
         }
     }
@@ -584,7 +580,7 @@ static ControlClass *Read32ControlClass( WResFileID handle )
     ControlClass *  newclass;
     uint_16         flags;
     uint_16         class;
-    int             error;
+    bool            error;
     int             stringlen;
     char *          restofstring;
 
@@ -610,7 +606,7 @@ static ControlClass *Read32ControlClass( WResFileID handle )
     } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
-            error = TRUE;
+            error = true;
             WRES_ERROR( WRS_MALLOC_FAILED );
         }
     }
@@ -632,10 +628,10 @@ static ControlClass *Read32ControlClass( WResFileID handle )
     return( newclass );
 }
 
-extern int ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle )
-/********************************************************************************/
+bool ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle )
+/**************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
     uint_8          tmp8;
 
@@ -663,10 +659,10 @@ extern int ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle
     return( error );
 }
 
-extern int ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
-/************************************************************************************/
+bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
+/******************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
     uint_16         tmp16;
 
@@ -698,10 +694,10 @@ extern int ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID ha
     return( error );
 }
 
-extern int ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
-/*************************************************************************************/
+bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
+/*******************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
 
     error = ResPadDWord( handle );
@@ -731,8 +727,8 @@ extern int ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID h
     return( error );
 }
 
-extern ControlClass * ResNameOrOrdToControlClass( const ResNameOrOrdinal * name)
-/******************************************************************************/
+ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *name )
+/**********************************************************************/
 {
     size_t          stringlen;
     ControlClass    *class;
@@ -767,8 +763,8 @@ extern ControlClass * ResNameOrOrdToControlClass( const ResNameOrOrdinal * name)
     return( class );
 }
 
-extern ControlClass * ResNumToControlClass( uint_16 classnum )
-/************************************************************/
+ControlClass *ResNumToControlClass( uint_16 classnum )
+/****************************************************/
 {
     ControlClass *  class;
 
@@ -790,4 +786,3 @@ extern ControlClass * ResNumToControlClass( uint_16 classnum )
     }
     return( class );
 }
-

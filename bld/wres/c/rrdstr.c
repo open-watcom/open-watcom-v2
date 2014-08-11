@@ -39,7 +39,7 @@ char *ResReadString( WResFileID handle, int *strlen )
 /***************************************************/
 {
     VarString *         newstring;
-    int                 error;
+    bool                error;
     uint_8              nextchar;
     char *              retstring;
 
@@ -64,7 +64,7 @@ char *ResRead32String( WResFileID handle, int *strlen )
 /*****************************************************/
 {
     VarString *         newstring;
-    int                 error;
+    bool                error;
     uint_16             nextchar;
     char *              retstring;
 

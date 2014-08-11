@@ -57,7 +57,7 @@ typedef uint_8  AccelFlags;
 #define ACCEL_ALT       0x10
 #define ACCEL_LAST      0x80
 
-int ResWriteAccelEntry( AccelTableEntry * currentry, WResFileID handle );
-int ResWriteAccelEntry32( AccelTableEntry32 *, WResFileID handle );
+extern bool ResWriteAccelEntry( AccelTableEntry * currentry, WResFileID handle );
+extern bool ResWriteAccelEntry32( AccelTableEntry32 *, WResFileID handle );
 
 #endif

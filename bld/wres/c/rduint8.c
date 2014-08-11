@@ -35,16 +35,16 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern int ResReadUint8( uint_8 * newint, WResFileID handle )
-/***********************************************************/
+bool ResReadUint8( uint_8 *newint, WResFileID handle )
+/****************************************************/
 {
     WResFileSSize   numread;
 
     numread = WRESREAD( handle, newint, sizeof( uint_8 ) );
     if( numread == sizeof( uint_8 ) ) {
-        return( FALSE );
+        return( false );
     } else {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
-    return( TRUE );
+    return( true );
 }

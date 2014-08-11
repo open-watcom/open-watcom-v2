@@ -34,16 +34,16 @@
 #include "read.h"
 #include "opcl.h"
 
-int WResCheckWResFile( const char * filename )
+bool WResCheckWResFile( const char *filename )
 /********************************************/
 {
-    int         iswresfile;
+    bool        iswresfile;
     WResFileID  handle;
 
     handle = ResOpenFileRO( filename );
 
     if( handle == NIL_HANDLE ) {
-        return( FALSE );        /* assume it's not a WRES file */
+        return( false );        /* assume it's not a WRES file */
     }
 
     iswresfile = WResIsWResFile( handle );

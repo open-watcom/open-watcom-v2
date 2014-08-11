@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern WResSeekReturn ResSeek( WResFileID handle, long offset, int origin )
-/*************************************************************************/
+WResSeekReturn ResSeek( WResFileID handle, long offset, int origin )
+/******************************************************************/
 /* cover function for seek */
 {
     WResSeekReturn  posn;
@@ -49,18 +49,18 @@ extern WResSeekReturn ResSeek( WResFileID handle, long offset, int origin )
     return( posn );
 }
 
-extern int ResPadDWord( WResFileID handle )
-/*****************************************/
+bool ResPadDWord( WResFileID handle )
+/***********************************/
 /* advances in the file to the next DWORD boundry */
 {
     long        curr_pos;
     long        padding;
-    int         error;
+    bool        error;
 
     curr_pos = WRESTELL( handle );
     if( curr_pos == -1 ) {
         WRES_ERROR( WRS_TELL_FAILED );
-        error = TRUE;
+        error = true;
     } else {
         padding = RES_PADDING( curr_pos, sizeof(uint_32) );
         error = ( WRESSEEK( handle, padding, SEEK_CUR ) == -1 );

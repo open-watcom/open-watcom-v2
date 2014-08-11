@@ -36,8 +36,8 @@
 #include "resstr.h"
 #include "wresrtns.h"
 
-extern void ResInitStringTableBlock( StringTableBlock * currblock )
-/*****************************************************************/
+void ResInitStringTableBlock( StringTableBlock * currblock )
+/**********************************************************/
 {
     int     stringid;
 
@@ -46,8 +46,8 @@ extern void ResInitStringTableBlock( StringTableBlock * currblock )
     }
 } /* ResInitStringTableBlock */
 
-extern void ResFreeStringTableBlock( StringTableBlock * currblock )
-/*****************************************************************/
+void ResFreeStringTableBlock( StringTableBlock * currblock )
+/**********************************************************/
 {
     int     stringid;
 
@@ -58,15 +58,15 @@ extern void ResFreeStringTableBlock( StringTableBlock * currblock )
     }
 } /* ResFreeStringTableBlock */
 
-extern int ResWriteStringTableBlock( StringTableBlock *currblock,
-                            uint_8 use_unicode, WResFileID handle )
+bool ResWriteStringTableBlock( StringTableBlock *currblock,
+                            bool use_unicode, WResFileID handle )
 /***************************************************************/
 {
     int     stringid;
-    int     error;
+    bool    error;
 
-    for (stringid = 0, error = FALSE; stringid < STRTABLE_STRS_PER_BLOCK
-                        && !error; stringid++) {
+    error = false;
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
         error = WResWriteWResIDNameUni( currblock->String[ stringid ],
                                     use_unicode, handle );
     }

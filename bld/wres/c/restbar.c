@@ -36,11 +36,11 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint_16 cnt )
-/***************************************************************************************/
+bool ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint_16 cnt )
+/****************************************************************************************/
 {
     uint_16     tmp;
-    int         ret;
+    bool        ret;
 
     // don't know why but MS RC puts out a 1 at the start of the resourece
     // perhaps this is a version ????
@@ -58,16 +58,16 @@ int ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint
     return( ret );
 }
 
-int ResWriteToolBarItems( WResFileID handle, uint_16 *items, unsigned cnt )
-/*************************************************************************/
+bool ResWriteToolBarItems( WResFileID handle, uint_16 *items, unsigned cnt )
+/**************************************************************************/
 {
-    unsigned        size;
+    int         size;
 
     size = cnt * sizeof( uint_16 );
     if( WRESWRITE( handle, items, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

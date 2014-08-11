@@ -37,21 +37,23 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-static int writeLangList( WResFileID handle, WResLangNode *curlang )
+static bool writeLangList( WResFileID handle, WResLangNode *curlang )
 {
-    int         error;
+    bool        error;
 
-    for( error = FALSE; curlang != NULL && !error; curlang = curlang->Next ) {
+    error = false;
+    for( ; curlang != NULL && !error; curlang = curlang->Next ) {
         error = WResWriteLangRecord( &(curlang->Info), handle );
     }
     return( error );
 }
 
-static int writeResList( WResFileID handle, WResResNode *currres )
+static bool writeResList( WResFileID handle, WResResNode *currres )
 {
-    int         error;
+    bool        error;
 
-    for( error = FALSE; currres != NULL && !error; currres = currres->Next ) {
+    error = false;
+    for( ; currres != NULL && !error; currres = currres->Next ) {
         error = WResWriteResRecord( &(currres->Info), handle );
         if( !error ) {
             error = writeLangList( handle, currres->Head );
@@ -61,11 +63,12 @@ static int writeResList( WResFileID handle, WResResNode *currres )
     return( error );
 }
 
-static int writeTypeList( WResFileID handle, WResTypeNode *currtype )
+static bool writeTypeList( WResFileID handle, WResTypeNode *currtype )
 {
-    int         error;
+    bool        error;
 
-    for( error = FALSE; currtype != NULL && !error; currtype = currtype->Next ) {
+    error = false;
+    for( ; currtype != NULL && !error; currtype = currtype->Next ) {
         error = WResWriteTypeRecord( &(currtype->Info), handle );
         if( !error ) {
             error = writeResList( handle, currtype->Head );
@@ -75,12 +78,12 @@ static int writeTypeList( WResFileID handle, WResTypeNode *currtype )
     return( error );
 }
 
-int WResWriteDir( WResFileID handle, WResDir currdir )
+bool WResWriteDir( WResFileID handle, WResDir currdir )
 /****************************************************/
 {
     WResHeader      head;
     WResExtHeader   ext_head;
-    int             error;
+    bool            error;
     long            diroffset;
 
     /* get the offset of the start of the directory */

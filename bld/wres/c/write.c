@@ -59,50 +59,50 @@ static int DefaultConversion( int len, const char *str, char *buf )
 
 int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
 
-extern int ResWriteUint8( const uint_8 *newint, WResFileID handle )
-/*****************************************************************/
+bool ResWriteUint8( const uint_8 *newint, WResFileID handle )
+/***********************************************************/
 {
     if( WRESWRITE( handle, newint, sizeof(uint_8) ) != sizeof(uint_8) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-int ResWriteUint16( const uint_16 *newint, WResFileID handle )
-/************************************************************/
+bool ResWriteUint16( const uint_16 *newint, WResFileID handle )
+/*************************************************************/
 {
     if( WRESWRITE( handle, newint, sizeof( uint_16 ) ) != sizeof(uint_16) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-int ResWriteUint32( const uint_32 *newint, WResFileID handle )
-/************************************************************/
+bool ResWriteUint32( const uint_32 *newint, WResFileID handle )
+/*************************************************************/
 {
     if( WRESWRITE( handle, newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFileID handle )
-/*****************************************************************************************/
+bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileID handle )
+/******************************************************************************************/
 {
-    int             error;
+    bool            error;
     uint_16         numchars;
     uint_8          tmp;
     char            *ptr;
-    int             freebuf;
+    bool            freebuf;
 
-    freebuf = FALSE;
-    error = FALSE;
+    freebuf = false;
+    error = false;
     if (name == NULL) {
         /* a NULL name means write 0 length name */
         numchars = 0;
@@ -114,7 +114,7 @@ int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFile
         if( numchars <= CONV_BUF_SIZE / 2 ) {
             ptr = ConvBuffer;
         } else {
-            freebuf = TRUE;
+            freebuf = true;
             ptr = WRESALLOC( 2 * numchars );
         }
         numchars = (ConvToUnicode)( numchars, name->Name, ptr ) / 2;
@@ -129,7 +129,7 @@ int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFile
     }
     if( !error && numchars > 0 ) {
         if( WRESWRITE( handle, ptr, numchars ) != numchars ) {
-            error = TRUE;
+            error = true;
             WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
@@ -139,16 +139,16 @@ int WResWriteWResIDNameUni( const WResIDName *name, uint_8 use_unicode, WResFile
     return( error );
 } /* WResWriteWResIDNameUni */
 
-int WResWriteWResIDName( const WResIDName *name, WResFileID handle )
-/******************************************************************/
+bool WResWriteWResIDName( const WResIDName *name, WResFileID handle )
+/*******************************************************************/
 {
-    return( WResWriteWResIDNameUni( name, FALSE, handle ) );
+    return( WResWriteWResIDNameUni( name, false, handle ) );
 }
 
-int WResWriteWResID( const WResID *name, WResFileID handle )
-/**********************************************************/
+bool WResWriteWResID( const WResID *name, WResFileID handle )
+/***********************************************************/
 {
-    int         error;
+    bool        error;
     uint_16     tmp16;
     uint_8      tmp8;
 
@@ -170,7 +170,7 @@ int WResWriteWResID( const WResID *name, WResFileID handle )
  * WResWriteTypeRecord - write the type record to the current postion
  *                       in the file identified by fp
  */
-int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
+bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
 {
     int             size;
 
@@ -182,9 +182,9 @@ int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
     }
     if( WRESWRITE( handle, type, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 } /* WResWriteTypeRecord */
 
@@ -192,7 +192,7 @@ int WResWriteTypeRecord( const WResTypeInfo *type, WResFileID handle )
  * WResWriteResRecord - write the resource record to the current position
  *                      in the file identified by  fp
  */
-int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
+bool WResWriteResRecord( const WResResInfo *res, WResFileID handle )
 {
     int             size;
 
@@ -204,9 +204,9 @@ int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
     }
     if( WRESWRITE( handle, (uint_8 *)res, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 } /* WResWriteResRecord */
 
@@ -214,20 +214,20 @@ int WResWriteResRecord( const WResResInfo *res, WResFileID handle )
  * WResWriteLangRecord - write out a language record at the current file
  *                       position
  */
-int WResWriteLangRecord( const WResLangInfo *info, WResFileID handle )
+bool WResWriteLangRecord( const WResLangInfo *info, WResFileID handle )
 {
     if( WRESWRITE( handle, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
+bool WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 /**********************************************************************/
 {
-    int             error;
+    bool            error;
 
     error = ( WRESSEEK( handle, 0L, SEEK_SET ) == -1 );
     if( error ) {
@@ -236,7 +236,7 @@ int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 
     if (!error) {
         if( WRESWRITE( handle, header, sizeof(WResHeader) ) != sizeof( WResHeader ) ) {
-            error = TRUE;
+            error = true;
             WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
@@ -244,22 +244,22 @@ int WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
     return( error );
 } /* WResWriteHeaderRecord */
 
-int WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
-/************************************************************************/
+bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
+/*************************************************************************/
 {
     if( WRESWRITE( handle, ext_head, sizeof(WResExtHeader) ) != sizeof( WResExtHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-extern int ResWriteStringLen( char *string, uint_8 use_unicode, WResFileID handle, uint_16 len )
-/**********************************************************************************************/
+bool ResWriteStringLen( char *string, bool use_unicode, WResFileID handle, uint_16 len )
+/****************************************************************************************/
 {
     char            *buf;
-    int             ret;
+    bool            ret;
 
     if( use_unicode ) {
         if( len * 2 > CONV_BUF_SIZE ) {
@@ -273,9 +273,9 @@ extern int ResWriteStringLen( char *string, uint_8 use_unicode, WResFileID handl
     }
     if( WRESWRITE( handle, buf, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     if( buf != ConvBuffer && buf != string ) {
         WRESFREE( buf );
@@ -283,11 +283,11 @@ extern int ResWriteStringLen( char *string, uint_8 use_unicode, WResFileID handl
     return( ret );
 }
 
-extern int ResWriteString( char *string, uint_8 use_unicode, WResFileID handle )
-/******************************************************************************/
+bool ResWriteString( char *string, bool use_unicode, WResFileID handle )
+/************************************************************************/
 {
     size_t  stringlen;
-    int     ret;
+    bool    ret;
 
     /* if string is NULL output the null string */
     if (string == NULL) {
@@ -300,10 +300,10 @@ extern int ResWriteString( char *string, uint_8 use_unicode, WResFileID handle )
     return( ret );
 }
 
-int ResWriteNameOrOrdinal( ResNameOrOrdinal *name, uint_8 use_unicode, WResFileID handle )
-/****************************************************************************************/
+bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID handle )
+/*****************************************************************************************/
 {
-    int         error;
+    bool        error;
     uint_16     flag;
     uint_16     tmp16;
     uint_8      tmp8;
@@ -367,10 +367,10 @@ static int MResFindHeaderSize( MResResourceHeader *header, char use_unicode )
     return( headersize + padding );
 }
 
-int MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, char iswin32 )
-/******************************************************************************************/
+bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, char iswin32 )
+/*******************************************************************************************/
 {
-    int         error;
+    bool        error;
     uint_32     headersize;
     uint_16     tmp16;
     uint_32     tmp32;
@@ -429,8 +429,8 @@ int MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, ch
     return( error );
 } /* MResWriteResourceHeader */
 
-extern void WriteInitStatics( void )
-/**********************************/
+void WriteInitStatics( void )
+/***************************/
 {
     memset( ConvBuffer, 0, CONV_BUF_SIZE * sizeof( char ) );
 }

@@ -40,12 +40,12 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode,
+bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode,
                                         uint_8 os, WResFileID handle )
 /***************************************************************************/
 /* Writes the header, correcting it for 32 bit alligning */
 {
-    int         error;
+    bool        error;
     uint_16     tmp16;
 
     tmp16 = head->Size;
@@ -68,9 +68,8 @@ extern int ResWriteVerBlockHeader( VerBlockHeader * head, uint_8 use_unicode,
     return( error );
 }
 
-extern uint_16 ResSizeVerBlockHeader( VerBlockHeader * head,
-                                 uint_8 use_unicode, uint_8 os )
-/**************************************************************/
+uint_16 ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os )
+/********************************************************************************/
 {
     uint_16     key_size;
     uint_16     padding;
@@ -89,16 +88,15 @@ extern uint_16 ResSizeVerBlockHeader( VerBlockHeader * head,
     return( fixed_size + key_size + padding );
 }
 
-extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
-                                            WResFileID handle )
-/***********************************************************************/
+bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID handle )
+/************************************************************************************/
 {
-    int             error;
+    bool            error;
     char            *convbuf;
     int             len;
     uint_16         tmp16;
 
-    error = FALSE;
+    error = false;
     if( item->IsNum ) {
         tmp16 = item->Value.Num;
         error = ResWriteUint16( &tmp16, handle );
@@ -115,7 +113,7 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
                 convbuf = item->Value.String;
             }
             if( WRESWRITE( handle, convbuf, len ) != len ) {
-                error = TRUE;
+                error = true;
                 WRES_ERROR( WRS_WRITE_FAILED );
             }
             if( use_unicode ) WRESFREE( convbuf );
@@ -124,8 +122,8 @@ extern int ResWriteVerValueItem( VerValueItem * item, uint_8 use_unicode,
     return( error );
 }
 
-extern uint_16 ResSizeVerValueItem( VerValueItem * item, uint_8 use_unicode )
-/***************************************************************************/
+uint_16 ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
+/******************************************************************/
 {
     uint_16     size;
 
@@ -144,16 +142,16 @@ extern uint_16 ResSizeVerValueItem( VerValueItem * item, uint_8 use_unicode )
     return( size );
 }
 
-extern int ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
-/***********************************************************************/
+bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
+/*****************************************************************/
 {
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = time( NULL );
     if( WRESWRITE( handle, fixed, sizeof(VerFixedInfo) ) != sizeof(VerFixedInfo) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

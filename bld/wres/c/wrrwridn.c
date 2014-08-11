@@ -40,7 +40,7 @@ WResIDName *WResReadWResIDName( WResFileID handle )
     WResIDName      newname;
     WResIDName      *newptr;
     WResFileSSize   numread;
-    int             error;
+    bool            error;
 
     /* read the size of the name in */
     error = ResReadUint8( &(newname.NumChars), handle );

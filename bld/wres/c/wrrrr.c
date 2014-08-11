@@ -44,7 +44,7 @@ WResResInfo *WResReadResRecord( WResFileID handle )
     WResResInfo     *newptr;
     WResFileSSize   numread;
     int             numcharsleft;
-    int             error;
+    bool            error;
 
     error = WResReadFixedResRecord( &newres, handle );
     if (error) {

@@ -37,13 +37,13 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-int WResFileInit( WResFileID handle )
-/***********************************/
+bool WResFileInit( WResFileID handle )
+/************************************/
 /* Writes the initial file header out to the file. Later, when WResWriteDir */
 /* is called the real header will be written out */
 {
     WResHeader  head;
-    int         error;
+    bool        error;
 
     head.Magic[0] = WRESMAGIC0;
     head.Magic[1] = WRESMAGIC1;

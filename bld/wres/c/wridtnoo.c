@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern ResNameOrOrdinal * WResIDToNameOrOrd( WResID * id )
-/********************************************************/
+ResNameOrOrdinal *WResIDToNameOrOrd( WResID *id )
+/***********************************************/
 {
     ResNameOrOrdinal *  newname;
 
@@ -64,8 +64,8 @@ extern ResNameOrOrdinal * WResIDToNameOrOrd( WResID * id )
 }
 
 
-extern ResNameOrOrdinal * WResHelpIDToNameOrOrd( WResHelpID * id )
-/********************************************************/
+ResNameOrOrdinal *WResHelpIDToNameOrOrd( WResHelpID *id )
+/*******************************************************/
 {
     ResNameOrOrdinal *  newname;
 

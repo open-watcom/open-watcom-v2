@@ -78,8 +78,8 @@ typedef struct FontDirEntry {
 /* DevAndFaceName to be output. It should be set to size of the FonDirEntry */
 /* including the char in DevAndFaceName but not StrucSize */
 
-extern int ResWriteFontInfo( FontInfo * info, WResFileID handle );
-extern int ResWriteFontDirEntry( FontDirEntry * entry, WResFileID handle );
+extern bool ResWriteFontInfo( FontInfo * info, WResFileID handle );
+extern bool ResWriteFontDirEntry( FontDirEntry * entry, WResFileID handle );
 /* this funtion expects the StructSize field to be set */
 
 #endif

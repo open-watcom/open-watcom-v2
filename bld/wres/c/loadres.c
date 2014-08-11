@@ -42,10 +42,8 @@
 
 extern WResDir    MainDir;
 
-static int GetResource( WResLangInfo    *res,
-                        PHANDLE_INFO    hInstance,
-                        char            *res_buffer )
-/***************************************************/
+static int GetResource( WResLangInfo *res, PHANDLE_INFO hInstance, char *res_buffer )
+/***********************************************************************************/
 {
     if( WRESSEEK( hInstance->handle, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
@@ -53,13 +51,9 @@ static int GetResource( WResLangInfo    *res,
     return( 0 );
 }
 
-extern int WResLoadResource2( WResDir            dir,
-                                     PHANDLE_INFO       hInstance,
-                                     UINT               idType,
-                                     UINT               idResource,
-                                     LPSTR              *lpszBuffer,
-                                     int                *bufferSize )
-/******************************************************************/
+int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, UINT idType,
+                       UINT idResource, LPSTR *lpszBuffer, int *bufferSize )
+/**************************************************************************/
 {
     int                 retcode;
     WResID              resource_type;
@@ -100,12 +94,9 @@ extern int WResLoadResource2( WResDir            dir,
     return( retcode );
 }
 
-extern int WResLoadResource( PHANDLE_INFO       hInstance,
-                                    UINT               idType,
-                                    UINT               idResource,
-                                    LPSTR              *lpszBuffer,
-                                    int                *bufferSize )
-/******************************************************************/
+int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
+                                    LPSTR *lpszBuffer, int *bufferSize )
+/*************************************************************************/
 {
     return( WResLoadResource2( MainDir, hInstance, idType, idResource, lpszBuffer, bufferSize ) );
 }

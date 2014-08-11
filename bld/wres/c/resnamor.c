@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
-/**********************************************************/
+ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
+/***************************************************/
 {
     ResNameOrOrdinal    *newname;
     size_t              stringlen;
@@ -62,8 +62,8 @@ extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
     return( newname );
 }
 
-extern ResNameOrOrdinal * ResNumToNameOrOrd( uint_16 num )
-/********************************************************/
+ResNameOrOrdinal * ResNumToNameOrOrd( uint_16 num )
+/*************************************************/
 {
     ResNameOrOrdinal *  newname;
 

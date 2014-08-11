@@ -41,7 +41,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle )
 {
     ResNameOrOrdinal    newname;
     ResNameOrOrdinal *  newptr;
-    int                 error;
+    bool                error;
     int                 stringlen;
     char *              restofstr;
     uint_8              tmp8;
@@ -98,7 +98,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID handle )
     uint_16             flags;
     uint_16             ord;
     ResNameOrOrdinal *  newptr;
-    int                 error;
+    bool                error;
     int                 stringlen;
     char *              restofstr;
 

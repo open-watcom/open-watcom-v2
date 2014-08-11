@@ -36,7 +36,7 @@
 /*
  * WResIsLastResource
  */
-int WResIsLastResource( WResDirWindow currwind, WResDir currdir )
+bool WResIsLastResource( WResDirWindow currwind, WResDir currdir )
 {
     return( currwind.CurrType == currdir->Tail &&
                 currwind.CurrRes == currdir->Tail->Tail );
@@ -45,11 +45,11 @@ int WResIsLastResource( WResDirWindow currwind, WResDir currdir )
 /*
  * WResIsLastLangRes
  */
-int WResIsLastLangRes( WResDirWindow currwind, WResDir currdir ) {
+bool WResIsLastLangRes( WResDirWindow currwind, WResDir currdir ) {
 
     if( WResIsLastResource( currwind, currdir ) ) {
         return( currwind.CurrLang == currwind.CurrRes->Tail );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

@@ -111,13 +111,13 @@ static WResResNode *newResNode( const WResID *name )
  *                   and return an error. Return is TRUE if any error has
  *                   occured (including duplicate entry)
  */
-int WResAddResource( const WResID *type, const WResID *name,
+bool WResAddResource( const WResID *type, const WResID *name,
                     uint_16 memflags, long offset, uint_32 length,
                     WResDir currdir, const WResLangType *lang,
-                    int *duplicate )
+                    bool *duplicate )
 /************************************************************/
 {
-    int                 rc;
+    bool                rc;
     WResDirWindow       dup;
 
     rc = WResAddResource2( type, name, memflags, offset, length, currdir,
@@ -128,7 +128,7 @@ int WResAddResource( const WResID *type, const WResID *name,
     return( rc );
 }
 
-int WResAddResource2( const WResID *type, const WResID *name,
+bool WResAddResource2( const WResID *type, const WResID *name,
                     uint_16 memflags, long offset, uint_32 length,
                     WResDir currdir, const WResLangType *lang,
                     WResDirWindow *duplicate, void *fileinfo )
@@ -156,7 +156,7 @@ int WResAddResource2( const WResID *type, const WResID *name,
                     WResMakeWindow( duplicate, currtype, currres, currlang );
                 }
                 WRES_ERROR( WRS_DUP_ENTRY )
-                return( TRUE );
+                return( true );
             }
         }
     }
@@ -164,7 +164,7 @@ int WResAddResource2( const WResID *type, const WResID *name,
         /* otherwise add the type to the list */
         currtype = newTypeNode( type );
         if (currtype == NULL) {
-            return( TRUE );
+            return( true );
         }
         ResAddLLItemAtEnd( (void**)&(currdir->Head), (void**)&(currdir->Tail), currtype );
         /* adjust the count of the number of types */
@@ -175,7 +175,7 @@ int WResAddResource2( const WResID *type, const WResID *name,
         /* add the resource to the current type */
         currres = newResNode( name );
         if( currres == NULL ) {
-            return( TRUE );
+            return( true );
         }
         ResAddLLItemAtEnd( (void**)&(currtype->Head), (void**)&(currtype->Tail), currres );
         /* adjust the counts of the number of resources */
@@ -184,11 +184,11 @@ int WResAddResource2( const WResID *type, const WResID *name,
     }
     currlang = newLangNode( memflags, offset, length, lang, fileinfo );
     if( currlang == NULL ) {
-        return( TRUE );
+        return( true );
     }
     ResAddLLItemAtEnd( (void**)&(currres->Head), (void**)&(currres->Tail), currlang );
     currres->Info.NumResources ++;
 
     /* no error has occured */
-    return( FALSE );
+    return( false );
 }

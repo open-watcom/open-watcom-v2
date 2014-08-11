@@ -39,7 +39,7 @@ DepInfo *WResGetAutoDep( const char *fname )
 {
     WResFileID      handle;
     WResDir         dir;
-    int             dup_discarded;
+    bool            dup_discarded;
     WResID          *name;
     WResID          *type;
     WResDirWindow   window;
@@ -70,7 +70,7 @@ DepInfo *WResGetAutoDep( const char *fname )
                                 WRES_ERROR( WRS_MALLOC_FAILED );
                             } else {
                                 numread = WRESREAD( handle, ret, info->Length );
-                                if( numread != info->Length ) {
+                                if( numread != (WResFileSSize)info->Length ) {
                                     WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                                     ret = NULL;
                                 }

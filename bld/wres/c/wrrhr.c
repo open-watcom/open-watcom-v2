@@ -35,10 +35,10 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
-/***************************************************************/
+bool WResReadHeaderRecord( WResHeader *header, WResFileID handle )
+/****************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
 
     error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
@@ -48,7 +48,7 @@ int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
         numread = WRESREAD( handle, header, sizeof( WResHeader ) );
         if( numread != sizeof( WResHeader ) ) {
             WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-            error = TRUE;
+            error = true;
         } else {
             error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
             if( error ) {
@@ -59,16 +59,16 @@ int WResReadHeaderRecord( WResHeader *header, WResFileID handle )
     return( error );
 }
 
-int WResReadExtHeader( WResExtHeader *head, WResFileID handle )
-/*************************************************************/
+bool WResReadExtHeader( WResExtHeader *head, WResFileID handle )
+/**************************************************************/
 {
     WResFileSSize   numread;
 
     numread = WRESREAD( handle, head, sizeof(WResExtHeader) );
     if( numread != sizeof(WResExtHeader) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

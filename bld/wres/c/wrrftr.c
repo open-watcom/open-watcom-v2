@@ -35,23 +35,23 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-int WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
-/*********************************************************************/
+bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
+/**********************************************************************/
 /* read the fixed part of a Type info record */
 {
     WResFileSSize   numread;
 
     numread = WRESREAD( handle, newtype, sizeof(WResTypeInfo) );
     if( numread == sizeof(WResTypeInfo) ) {
-        return( FALSE );
+        return( false );
     } else {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
-    return( TRUE );
+    return( true );
 } /* WResReadFixedTypeRecord */
 
-int WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
-/**********************************************************************/
+bool WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
+/***********************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
     WResFileSSize   numread;
@@ -68,9 +68,9 @@ int WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
         } else {
             newtype->TypeName.ID.Num = info.TypeName.ID.Num;
         }
-        return( FALSE );
+        return( false );
     } else {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
-    return( TRUE );
+    return( true );
 } /* WResReadFixedTypeRecord */

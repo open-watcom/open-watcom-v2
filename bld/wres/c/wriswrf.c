@@ -35,12 +35,12 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-extern ResTypeInfo WResFindResType( WResFileID handle )
-/*****************************************************/
+ResTypeInfo WResFindResType( WResFileID handle )
+/**********************************************/
 {
     ResTypeInfo     type;
     uint_32         magic[ 2 ];
-    int             error;
+    bool            error;
 
     error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
     if( error ) {
@@ -68,7 +68,7 @@ extern ResTypeInfo WResFindResType( WResFileID handle )
     return( type );
 }
 
-int WResIsWResFile( WResFileID handle )
+bool WResIsWResFile( WResFileID handle )
 /*************************************/
 /* Checks the start of the file identified by fp for the Magic number then */
 /* resets the postion in the file. Returns true is this is a WRes file */

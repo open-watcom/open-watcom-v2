@@ -43,7 +43,7 @@ WResID *WResReadWResID( WResFileID handle )
     WResID          *newidptr;
     WResFileSSize   numread;
     int             extrabytes;     /* chars to be read beyond the fixed size */
-    int             error;
+    bool            error;
 
     /* read in the fixed part of the record */
     error = WResReadFixedWResID( &newid, handle );

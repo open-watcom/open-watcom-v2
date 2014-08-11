@@ -33,10 +33,10 @@
 #ifndef MEM2_INCLUDED
 #define MEM2_INCLUDED
 
-void ResAddLLItemAtEnd( void **head, void **tail, void *item );
-void ResInsertLLItemAfter( void **head, void **tail, void *who, void *item );
-void ResInsertLLItemBefore( void **head, void **tail, void *who, void *item );
-void *ResDeleteLLItem( void **head, void **tail, void *item );
-void ResReplaceLLItem( void **head, void **tail, void *item, void *new );
+extern void ResAddLLItemAtEnd( void **head, void **tail, void *item );
+extern void ResInsertLLItemAfter( void **head, void **tail, void *who, void *item );
+extern void ResInsertLLItemBefore( void **head, void **tail, void *who, void *item );
+extern void *ResDeleteLLItem( void **head, void **tail, void *item );
+extern void ResReplaceLLItem( void **head, void **tail, void *item, void *new );
 
 #endif

@@ -36,6 +36,5 @@ typedef struct WResMergeError {
     WResDirWindow               srcres;
 } WResMergeError;
 
-int             WResMergeDirs( WResDir dstdir, WResDir srcdir,
-                               WResMergeError **errs );
-void            WResFreeMergeErrors( WResMergeError * );
+extern bool     WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs );
+extern void     WResFreeMergeErrors( WResMergeError * );

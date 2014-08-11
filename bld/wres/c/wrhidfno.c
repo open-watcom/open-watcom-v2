@@ -33,8 +33,8 @@
 #include "layer0.h"
 #include "util.h"
 
-extern WResHelpID * WResHelpIDFromNameOrOrd( ResNameOrOrdinal * name )
-/************************************************************/
+WResHelpID * WResHelpIDFromNameOrOrd( ResNameOrOrdinal * name )
+/*************************************************************/
 {
     if (name->ord.fFlag == 0xff) {
         return( WResHelpIDFromNum( name->ord.wOrdinalID ) );
