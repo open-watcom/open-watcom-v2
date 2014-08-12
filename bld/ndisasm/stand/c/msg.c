@@ -58,36 +58,29 @@ static long res_seek( WResFileID handle, long position, int where )
 
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-extern int MsgInit( void )
+int MsgInit( void )
 {
-    bool        error;
-    char        name[_MAX_PATH];
+    char            name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) == NULL ) {
-        error = true;
-    } else {
-        error = OpenResFile( &hInstance, name );
-        if( !error ) {
-            error = FindResources( &hInstance );
-            if( !error ) {
-                error = InitResources( &hInstance );
+    if( _cmdname( name ) != NULL ) {
+        if( !OpenResFile( &hInstance, name ) ) {
+            if( !FindResources( &hInstance ) ) {
+                if( !InitResources( &hInstance ) ) {
+                    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+                    if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
+                        return( 1 );
+                    }
+                }
             }
         }
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !error && !MsgGet( WDIS_LITERAL_BASE, name ) ) {
-        error = true;
-    }
-    if( error ) {
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-        MsgFini();
-        return 0;
-    }
-    return 1;
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    MsgFini();
+    return( 0 );
 }
 
-extern int MsgGet( int resourceid, char *buffer )
+int MsgGet( int resourceid, char *buffer )
 {
     if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
@@ -96,7 +89,7 @@ extern int MsgGet( int resourceid, char *buffer )
     return( 1 );
 }
 
-extern void MsgFini( void )
+void MsgFini( void )
 {
     if( hInstance.handle != NIL_HANDLE ) {
         CloseResFile( &hInstance );
