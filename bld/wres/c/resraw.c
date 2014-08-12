@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "filefmt.h"
 #include "reserr.h"
+#include "resraw.h"
 #include "wresrtns.h"
 
 bool ResWrite( void *buffer, int len, WResFileID handle )
