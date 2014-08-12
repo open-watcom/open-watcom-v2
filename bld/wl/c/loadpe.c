@@ -866,7 +866,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
-    status = BuildResourceObject( &einfo, rinfo, object, object->rva, NullAlign( file_align ), !allopen );
+    status = BuildPEResourceObject( &einfo, rinfo, object, object->rva, NullAlign( file_align ), !allopen );
     CloseResFiles( rinfo );
     return( object->physical_size );
 }
