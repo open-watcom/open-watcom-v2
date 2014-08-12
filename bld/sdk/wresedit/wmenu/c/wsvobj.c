@@ -304,7 +304,7 @@ bool WSaveObjectInto( WMenuEditInfo *einfo )
 {
     char                *fname;
     WGetFileStruct      gf;
-    int                 dup;
+    bool                dup;
     WRSaveIntoData      idata;
     WRFileType          ftype;
     bool                ok;

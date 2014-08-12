@@ -80,7 +80,7 @@ static int WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     WResLangType    lt;
     WResLangNode    *lnode;
     uint_32         offset;
-    int             dup;
+    bool            dup;
 
     if( is32bit ) {
         if( ResPadDWord( dest ) ) {

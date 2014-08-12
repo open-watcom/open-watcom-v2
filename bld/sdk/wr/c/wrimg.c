@@ -126,7 +126,7 @@ int WRLoadIconFile( WRInfo *info )
     WResID              *rname;
     WResLangType        lang;
     char                fn[_MAX_FNAME];
-    int                 dup;
+    bool                dup;
     int                 i;
     int                 ok;
 
@@ -226,7 +226,7 @@ int WRLoadCursorFile( WRInfo *info )
     WResID              *rname;
     WResLangType        lang;
     char                fn[_MAX_FNAME];
-    int                 dup;
+    bool                dup;
     int                 i;
     int                 ok;
 

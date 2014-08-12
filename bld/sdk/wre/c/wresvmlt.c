@@ -147,7 +147,7 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
     bool                ok;
     char                *fname;
     WREGetFileStruct    gf;
-    int                 dup;
+    bool                dup;
 
     fname = NULL;
     dup = FALSE;

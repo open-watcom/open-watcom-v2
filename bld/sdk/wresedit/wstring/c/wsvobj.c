@@ -283,7 +283,7 @@ bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
 {
     char                *fname;
     WGetFileStruct      gf;
-    int                 dup;
+    bool                dup;
     WRFileType          ftype;
     bool                ok;
 

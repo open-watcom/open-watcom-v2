@@ -163,7 +163,7 @@ bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     char                *fname;
     WREGetFileStruct    gf;
     WRSaveIntoData      idata;
-    int                 dup;
+    bool                dup;
     uint_32             size;
 
     fname = NULL;

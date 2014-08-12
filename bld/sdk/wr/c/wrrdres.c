@@ -51,7 +51,7 @@
 static int loadResDirFromRES( WRInfo *info, char *filename, int *is_wres )
 {
     WResFileID  file_handle;
-    int         dup_discarded;
+    bool        dup_discarded;
     int         ok;
 
     ok = ((file_handle = ResOpenFileRO( filename )) != -1);

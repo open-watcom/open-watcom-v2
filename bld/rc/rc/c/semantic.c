@@ -196,9 +196,9 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
                 ResLocation loc, const char *filename )
 /******************************************************************/
 {
-    int                 error;
-    int                 duplicate;
-    char *              namestr;
+    bool                error;
+    bool                duplicate;
+    char                *namestr;
     const WResLangType  *lang;
 
     lang = SemGetResourceLanguage();

@@ -72,8 +72,8 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
     ResFileInfo     *resfile;
     WResID          *res_name;
     WResID          *res_type;
-    int             error;
-    int             dup_discarded;
+    bool            error;
+    bool            dup_discarded;
     WResTargetOS    target;
 
     *allopen = TRUE;

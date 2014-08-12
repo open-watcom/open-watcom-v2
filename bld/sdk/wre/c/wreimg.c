@@ -170,7 +170,8 @@ WResID *WRECreateImageTitle( uint_16 type )
 bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
 {
     WResLangType        lang;
-    int                 dup, num_retries;
+    bool                dup;
+    int                 num_retries;
     WResID              *rname, *tname;
     bool                ok, tname_alloc;
 

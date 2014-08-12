@@ -207,7 +207,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 {
     char                *fname;
     WdeGetFileStruct    gf;
-    int                 dup;
+    bool                dup;
     WRSaveIntoData      idata;
     WdeResDlgItem       ditem;
     bool                is_rc;

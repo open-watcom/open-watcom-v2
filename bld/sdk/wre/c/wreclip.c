@@ -287,7 +287,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
     WResID              *cname;
     void                *data;
     uint_32             dsize;
-    int                 dup;
+    bool                dup;
     bool                new_type;
     bool                replace;
     bool                ok;
@@ -391,7 +391,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     WResID              *cname;
     void                *data;
     uint_32             dsize;
-    int                 dup;
+    bool                dup;
     bool                new_type;
     bool                replace;
     bool                ok;
@@ -500,7 +500,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
     WResLangType        lang;
     WResID              *ctype;
     WResID              *cname;
-    int                 dup;
+    bool                dup;
     bool                new_type;
     bool                replace;
     bool                ok;

@@ -739,8 +739,8 @@ static WResDir InitNEResources(int *resHandle, ResTable *outRes)
 /**************************************************************/
 {
     WResDir     inRes;
-    int         dup_discarded;
-    int         error;
+    bool        dup_discarded;
+    bool        error;
 
     if( FmtData.resource ) {
         *resHandle = QOpenR( FmtData.resource );

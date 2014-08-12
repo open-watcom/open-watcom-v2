@@ -263,7 +263,7 @@ int WRAPI WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
 int WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
 {
     BYTE                *cursor;
-    int                 dup;
+    bool                dup;
     uint_32             size;
     WResID              *tname;
     WResID              *rname;
@@ -330,7 +330,7 @@ int WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, i
 int WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
 {
     BYTE                *icon;
-    int                 dup;
+    bool                dup;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;

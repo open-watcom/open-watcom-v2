@@ -398,7 +398,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 
 bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
 {
     BYTE                *cursor;
-    int                 dup;
+    bool                dup;
     uint_32             size;
     WResID              *tname;
     WResID              *rname;
@@ -466,7 +466,7 @@ bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
 bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
 {
     BYTE                *icon;
-    int                 dup;
+    bool                dup;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;

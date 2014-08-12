@@ -56,7 +56,7 @@ WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileTyp
 WRDLLENTRY extern int              WRAPI WRUpdateTmp( WRInfo *info );
 WRDLLENTRY extern int              WRAPI WRSaveResource( WRInfo *, int );
 WRDLLENTRY extern int              WRAPI WRSaveObjectAs( const char *, WRFileType, WRSaveIntoData * );
-WRDLLENTRY extern int              WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, int * );
+WRDLLENTRY extern int              WRAPI WRSaveObjectInto( const char *, WRSaveIntoData *, bool * );
 WRDLLENTRY extern int              WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name, WResLangType *lang, void *data );
 WRDLLENTRY extern WResLangNode *   WRAPI WRFindLangNode( WResDir dir, WResID *type, WResID *name, WResLangType *lang );
 

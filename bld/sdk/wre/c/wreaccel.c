@@ -150,7 +150,8 @@ WResID *WRECreateAccTitle( void )
 bool WREAddAccelToDir( WRECurrentResInfo *curr )
 {
     WResLangType    lang;
-    int             dup, num_retries;
+    bool            dup;
+    int             num_retries;
     WResID          *rname, *tname;
     bool            ok, tname_alloc;
 

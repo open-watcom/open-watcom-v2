@@ -67,10 +67,10 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int  WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, int * );
+static int  WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
 static int  WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
 static int  WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon );
-static int  WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_icon );
+static int  WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, int is_icon );
 static int  WRTestReplace( WRInfo *, WRSaveIntoData * );
 static int  WQueryMergeStrings( WResID * );
 static int  WQueryReplaceObject( void );
@@ -517,7 +517,7 @@ int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData
     return( ok );
 }
 
-int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, int *dup )
+int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
 {
     WRInfo      *info;
     char        *tmp_file;
@@ -702,7 +702,7 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     return( ok );
 }
 
-int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, int *dup )
+int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
 {
     int ok;
     int replace_nixed;
@@ -735,7 +735,7 @@ int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, int *dup )
     return( ok );
 }
 
-int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, int *dup, int is_icon )
+int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, int is_icon )
 {
     BYTE                *data;
     uint_32             size;

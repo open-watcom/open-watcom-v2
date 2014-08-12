@@ -61,7 +61,7 @@
 
 bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
                      uint_16 memflags, uint_32 offset, uint_32 length,
-                     WResLangType *lang, int *dup, uint_16 type,
+                     WResLangType *lang, bool *dup, uint_16 type,
                      bool new_type )
 {
     bool   ok;

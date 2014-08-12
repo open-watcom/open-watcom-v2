@@ -850,7 +850,7 @@ static BOOL createNewImageLNODE( img_node *node, uint_16 type )
     WResID              *tname = NULL;
     WResID              *rname = NULL;
     WResLangType        lang;
-    int                 dup;
+    bool                dup;
     BOOL                ok;
 
     lang.lang = DEF_LANG;

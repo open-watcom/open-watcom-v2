@@ -68,10 +68,10 @@ static int copyResourcesFromRes( const char *full_filename )
 {
     WResFileID          handle;
     WResDir             dir;
-    int                 dup_discarded;
+    bool                dup_discarded;
     WResDirWindow       wind;
     char                *buffer;
-    int                 error;
+    bool                error;
 
     buffer = NULL;
     dir = WResInitDir();
