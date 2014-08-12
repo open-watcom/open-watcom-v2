@@ -43,6 +43,8 @@
 #include "wio.h"
 #include "watcom.h"
 #include "pmake.h"
+#include "clibext.h"
+#include "clibint.h"
 
 #if defined( __OS2__ )
 #define TMPBAT "tmp.cmd"
