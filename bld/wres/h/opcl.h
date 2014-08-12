@@ -38,7 +38,7 @@ extern WResFileID   MResOpenNewFile( const char *filename );
 extern WResFileID   ResOpenFileRO( const char *filename );
 extern WResFileID   ResOpenFileRW( const char *filename );
 extern bool         WResFileInit( WResFileID );
-extern int          ResCloseFile( WResFileID );
+extern bool         ResCloseFile( WResFileID );
 extern bool         WResCheckWResFile( const char *filename );
 
 #endif
