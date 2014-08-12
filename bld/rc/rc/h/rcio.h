@@ -68,25 +68,25 @@ typedef struct RcResFileID {
 typedef struct LogicalFileInfo {
     char        Filename[ _MAX_PATH ];
     int         LineNum;
-    int         IsCOrHFile;
+    bool        IsCOrHFile;
 } LogicalFileInfo;
 
 #define RC_EOF (-1)
 
 extern void RcTmpFileName( char * tmpfilename );
-extern int RcPass1IoInit( void );
+extern bool RcPass1IoInit( void );
 extern void RcPass1IoShutdown( void );
-extern int RcPass2IoInit( void );
-extern void RcPass2IoShutdown( int noerror );
+extern bool RcPass2IoInit( void );
+extern void RcPass2IoShutdown( bool noerror );
 extern void RcIoTextInputInit( void );
-extern int RcIoTextInputShutdown( void );
-extern int RcIoPushInputFile( const char * filename );
-extern int RcIoPopInputFile( void );
+extern bool RcIoTextInputShutdown( void );
+extern bool RcIoPushInputFile( const char * filename );
+extern bool RcIoPopInputFile( void );
 extern int RcIoGetChar( void );
 extern void RcIoOverrideIsCOrHFlag( void );
 extern void RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo * RcIoGetLogicalFileInfo( void );
-extern int RcIoIsCOrHFile( void );
+extern bool RcIoIsCOrHFile( void );
 extern void RcIoSetLogicalFileInfo( int linenum, const char * filename );
 extern WResFileID RcIoOpenInput( const char * filename, int flags, ... );
 extern int RcFindResource( const char *name, char *fullpath );

@@ -44,12 +44,12 @@ typedef struct FullDialogOptions {
             uint_16         PointSize;
             char *          FontName;
             uint_16         FontWeight;
-            uint_8          FontItalic;
+            bool            FontItalic;
             uint_8          FontExtra;  /* don't know what this is but
                                          * MS rc accepts it and it appears in
                                          * some samples */
-            char            FontWeightDefined;
-            char            FontItalicDefined;
+            bool            FontWeightDefined;
+            bool            FontItalicDefined;
         } Font;
     } Opt;
 } FullDialogOptions;
@@ -67,7 +67,7 @@ extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, Di
                                 FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
                                 YYTOKENTYPE );
 extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
-extern FullDialogBoxControl *SemWINSetControlData( IntMask, unsigned long, DialogSizeInfo,
+extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo,
                                 WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
 
 #endif

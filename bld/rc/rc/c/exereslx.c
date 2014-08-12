@@ -56,8 +56,8 @@ static int CompareLXResIdName( const void *e1, const void *e2 )
 } /* CompareLXResIdName */
 
 
-static int addRes( LXResTable *res, WResDirWindow wind )
-/******************************************************/
+static bool addRes( LXResTable *res, WResDirWindow wind )
+/*******************************************************/
 {
     LXResEntry      *new_entry;
     WResResInfo     *resinfo;
@@ -68,7 +68,7 @@ static int addRes( LXResTable *res, WResDirWindow wind )
 
     // RT_DEFAULTICON is not written into the executable, ignore
     if( res_type->TypeName.ID.Num == OS2_RT_DEFAULTICON )
-        return( FALSE );
+        return( false );
 
     /* realloc resource table if necessary (with 32 entries per increment
      * we won't need to realloc too often)
@@ -78,11 +78,10 @@ static int addRes( LXResTable *res, WResDirWindow wind )
         LXResEntry      *curr_table;
 
         curr_table = res->resources;
-        res->resources = RCREALLOC( res->resources,
-                            (res->res_count + 32) * sizeof( LXResEntry ) );
+        res->resources = RCREALLOC( res->resources, (res->res_count + 32) * sizeof( LXResEntry ) );
         if( res->resources == NULL ) {
             res->resources = curr_table;
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -105,12 +104,12 @@ static int addRes( LXResTable *res, WResDirWindow wind )
     new_entry->resource.object = 0;
     new_entry->resource.offset = res_lang->Offset;
 
-    return( FALSE );
+    return( false );
 }
 
 
-static int LXResTableBuild( LXResTable *res, WResDir dir )
-/********************************************************/
+static bool LXResTableBuild( LXResTable *res, WResDir dir )
+/*********************************************************/
 {
     WResDirWindow   wind;
 
@@ -124,11 +123,11 @@ static int LXResTableBuild( LXResTable *res, WResDir dir )
         wind = WResFirstResource( dir );
         while( !WResIsEmptyWindow( wind ) ) {
             if( addRes( res, wind ) )
-                return( TRUE );
+                return( true );
             wind = WResNextResource( wind, dir );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -156,29 +155,29 @@ static void reportDuplicateResources( WResMergeError *errs )
 
 // merge the directories of all the res files into one large directory
 // stored on the first resfileinfo node
-static int mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
-/***********************************************************************/
+static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
+/************************************************************************/
 {
     ResFileInfo         *cur;
 
     if( errs != NULL )
         *errs = NULL;
     if( resfiles == NULL )
-        return( FALSE );
+        return( false );
     cur = resfiles->next;
     while( cur != NULL ) {
         if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) )
-            return( TRUE );
+            return( true );
         cur = cur->next;
     }
-    return( FALSE );
+    return( false );
 }
 
 
-extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
-/**********************************************************************/
+RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
+/********************************************************************/
 {
-    int             copy_rc;
+    RcStatus        ret;
     WResLangInfo    *res_info;
     LXResTable      *dir;
     LXResEntry      *entry;
@@ -242,9 +241,9 @@ extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         if( RCSEEK( info->Handle, res_info->Offset, SEEK_SET ) == -1 )
             return( RS_READ_ERROR );
 
-        copy_rc = CopyExeData( info->Handle, exe->Handle, res_info->Length );
-        if( copy_rc != RS_OK ) {
-            return( copy_rc );
+        ret = CopyExeData( info->Handle, exe->Handle, res_info->Length );
+        if( ret != RS_OK ) {
+            return( ret );
         }
 
         padded_res_size = ALIGN_VALUE( entry->resource.res_size, sizeof( uint_32 ) );
@@ -278,7 +277,7 @@ extern int WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 }
 
 
-extern int BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
+bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
                                    object_record *res_obj, unsigned_32 rva,
                                    unsigned_32 offset, int writebyfile )
 /**************************************************************************/
@@ -299,16 +298,15 @@ extern int BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );
-        return( TRUE );
+        return( true );
     }
     if( LXResTableBuild( dir, resinfo->Dir ) ) {
         RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
-        return( TRUE );
+        return( true );
     }
 
     /* OS/2 2.x requires resources to be sorted */
-    qsort( dir->resources, dir->res_count, sizeof( LXResEntry ),
-            CompareLXResIdName );
+    qsort( dir->resources, dir->res_count, sizeof( LXResEntry ), CompareLXResIdName );
 
     /* Assign resources to objects/pages and figure out exactly
      * how many we'll need, in order to determine the exact size
@@ -351,48 +349,47 @@ extern int BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
     printf( "total size: %d bytes in %d page(s)\n", total, dir->num_pages );
 #endif
 
-    return( FALSE );
+    return( false );
 } /* BuildLXResourceObjects */
 
 
 #ifndef INSIDE_WLINK
-int RcBuildLXResourceObjects( void )
-/**********************************/
+bool RcBuildLXResourceObjects( void )
+/***************************************/
 {
     object_record       *res_objects;
-    RcStatus            error;
+    bool                ret;
     ExeFileInfo         *exeinfo;
 
     exeinfo = &Pass2Info.TmpFile;
     if( CmdLineParms.NoResFile ) {
         exeinfo->u.LXInfo.OS2Head.num_rsrcs = 0;
-        error = RS_OK;
+        ret = false;
     } else {
         res_objects = exeinfo->u.LXInfo.Objects;
-        error = BuildLXResourceObjects( exeinfo, Pass2Info.ResFiles,
+        ret = BuildLXResourceObjects( exeinfo, Pass2Info.ResFiles,
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }
     if( CmdLineParms.WritableRes ) {
         // Not sure if setting the resource objects writable would work?
     }
-    return( error );
+    return( ret );
 }
 
-
-int RcWriteLXResourceObjects( void )
-/**********************************/
+RcStatus RcWriteLXResourceObjects( void )
+/***************************************/
 {
-    RcStatus            error;
+    RcStatus            ret;
     ExeFileInfo         *exeinfo;
 
     exeinfo = &Pass2Info.TmpFile;
     if( CmdLineParms.NoResFile ) {
         // Nothing to do
-        error = RS_OK;
+        ret = RS_OK;
     } else {
-        error = WriteLXResourceObjects( exeinfo, Pass2Info.ResFiles );
+        ret = WriteLXResourceObjects( exeinfo, Pass2Info.ResFiles );
     }
-    return( error );
+    return( ret );
 }
 #endif

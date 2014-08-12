@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-RcStatus WriteDependencyRes( void );
-int AddDependency( char *name );
-void AutoDepInitStatics( void );
+extern bool     WriteDependencyRes( void );
+extern bool     AddDependency( char *name );
+extern void     AutoDepInitStatics( void );

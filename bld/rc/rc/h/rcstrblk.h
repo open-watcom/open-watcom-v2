@@ -44,7 +44,7 @@ typedef struct StringItem16 {
 } StringItem16;
 
 typedef struct StringsBlock {
-    int         UseUnicode;
+    bool        UseUnicode;
     uint_16     StringBlockSize;
     void *      StringBlock;
     uint_16     StringListLen;  /* number of entries in the string list */

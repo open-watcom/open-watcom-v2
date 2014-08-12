@@ -582,17 +582,17 @@ static void SemFreeDialogHeader( FullDialogBoxHeader *head )
     RCFREE( head );
 } /* SemFreeDialogHeader */
 
-static int SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
+static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
                                  YYTOKENTYPE tokentype )
 /*********************************************************************/
 {
-    int                         error;
+    bool                        error;
     FullDialogBoxControl        *ctrl;
     DialogBoxExControl32        controlex;
     DialogBoxControl32          control;
 
-    for( ctrl = list->head, error = FALSE; ctrl != NULL && !error;
-                ctrl = ctrl->next ) {
+    error = FALSE;
+    for( ctrl = list->head; ctrl != NULL && !error; ctrl = ctrl->next ) {
         if( ctrl->Win32 ) {
             if( tokentype == Y_DIALOG ) {
                 control.Style = ctrl->u.ctrl32.Style;
@@ -688,9 +688,10 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 {
     ResLocation              loc;
     int                      err_code = 0;
-    int                      error = 0;
+    bool                     error;
     FullDialogBoxControl     *travptr;
 
+    error = false;
     if( head == NULL ) {
         head = NewDialogBoxHeader();
     }
@@ -736,8 +737,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             if( tokentype == Y_DIALOG ) {
                 error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head),
                                                     CurrResFile.handle );
-            }
-            else if( tokentype == Y_DIALOG_EX ) {
+            } else if( tokentype == Y_DIALOG_EX ) {
                 error = ResWriteDialogExHeader32( &(head->u.Head32.Head),
                                  &(head->u.Head32.ExHead), CurrResFile.handle );
             }
@@ -754,7 +754,9 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         }
 
         if( ctrls->head == NULL ) {
-            if( head->Win32 ) error = ResPadDWord( CurrResFile.handle );
+            if( head->Win32 ) {
+                error = ResPadDWord( CurrResFile.handle );
+            }
         } else {
             error = SemWriteDiagCtrlList( ctrls, &err_code, tokentype );
         }
@@ -775,7 +777,7 @@ OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                 strerror( err_code )  );
 CustomError:
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     SemFreeDialogHeader( head );
     SemFreeDiagCtrlList( ctrls );
     return;
@@ -783,7 +785,7 @@ CustomError:
 
 
 FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
-         unsigned long cntlid, DialogSizeInfo sizeinfo, WResID *cntltext,
+         uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
 /*************************************************************************/
 {

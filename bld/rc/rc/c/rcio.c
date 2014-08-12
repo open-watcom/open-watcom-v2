@@ -73,7 +73,7 @@ static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
     _makepath( outfile, drive, dir, fname, ext );
 } /* MakeTmpInSameDir */
 
-static int Pass1InitRes( void )
+static bool Pass1InitRes( void )
 /*****************************/
 {
     WResID        null_id;
@@ -93,7 +93,7 @@ static int Pass1InitRes( void )
     if( CurrResFile.dir == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
         CurrResFile.IsOpen = false;
-        return( TRUE );
+        return( true );
     }
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
@@ -126,7 +126,7 @@ static int Pass1InitRes( void )
     if( CurrResFile.handle == NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
-        return( TRUE );
+        return( true );
     }
     RegisterTmpFile( CurrResFile.filename );
 
@@ -135,7 +135,7 @@ static int Pass1InitRes( void )
     CurrResFile.ErrorTable = NULL;
     CurrResFile.FontDir = NULL;
     CurrResFile.NextCurOrIcon = 1;
-    return( FALSE );
+    return( false );
 } /* Pass1InitRes */
 
 int RcFindResource( const char *name, char *fullpath )
@@ -162,8 +162,8 @@ extern void RcTmpFileName( char *tmpfilename )
     tmpnam( nextchar );
 }
 
-static int PreprocessInputFile( void )
-/************************************/
+static bool PreprocessInputFile( void )
+/*************************************/
 {
     unsigned    flags;
     char        rcdefine[13];
@@ -178,7 +178,7 @@ static int PreprocessInputFile( void )
     rc = PP_Init2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
-        return( TRUE );
+        return( true );
     }
     strcpy( rcdefine, "RC_INVOKED 1" );
     PP_Define( rcdefine );
@@ -213,16 +213,16 @@ static int PreprocessInputFile( void )
             ++cppargs;
         }
     }
-    return( FALSE );                    // indicate no error
+    return( false );                    // indicate no error
 }
 
-extern int RcPass1IoInit( void )
-/******************************/
+extern bool RcPass1IoInit( void )
+/*******************************/
 /* Open the two files for input and output. The input stream starts at the */
 /* top   infilename   and continues as the directives in the file indicate */
 /* Returns false if there is a problem opening one of the files. */
 {
-    int         error;
+    bool        error;
     char       *includepath = NULL;
 
     if( !CmdLineParms.IgnoreINCLUDE ) {
@@ -243,13 +243,13 @@ extern int RcPass1IoInit( void )
     }
     if( !CmdLineParms.NoPreprocess ) {
         if( PreprocessInputFile() ) {
-            return( FALSE );
+            return( false );
         }
     }
     RcIoTextInputInit();
     error = RcIoPushInputFile( CmdLineParms.InFileName );
     if( error )
-        return( FALSE );
+        return( false );
 
     if( !CmdLineParms.PreprocessOnly ) {
         error = Pass1InitRes();
@@ -257,13 +257,13 @@ extern int RcPass1IoInit( void )
     if( error )  {
         PP_Fini();
         RcIoTextInputShutdown();
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-static int ChangeTmpToOutFile( const char * tmpfile, const char * outfile )
+static bool ChangeTmpToOutFile( const char * tmpfile, const char * outfile )
 /**************************************************************************/
 {
     int     fileerror;      /* error while deleting or renaming */
@@ -275,27 +275,25 @@ static int ChangeTmpToOutFile( const char * tmpfile, const char * outfile )
             /* ignore the error if it says that the file doesn't exist */
             errno = 0;
         } else {
-            RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile,
-                        strerror( errno ) );
+            RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
             remove( tmpfile );
             UnregisterTmpFile( tmpfile );
-            return( TRUE );
+            return( true );
         }
     }
     /* rename the temp file to the output file */
     fileerror = rename( tmpfile, outfile );
     if( fileerror ) {
-        RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile,
-                        strerror( errno ) );
+        RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
         remove( tmpfile );
         UnregisterTmpFile( tmpfile );
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 } /* ChangeTmpToOutFile */
 
-static int RemoveCurrResFile( void )
+static bool RemoveCurrResFile( void )
 /**********************************/
 {
     int     fileerror;
@@ -303,9 +301,9 @@ static int RemoveCurrResFile( void )
     fileerror = remove( CurrResFile.filename );
     UnregisterTmpFile( CurrResFile.filename );
     if( fileerror ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -344,9 +342,9 @@ static void WriteOS2Tables( void )
 static void Pass1ResFileShutdown( void )
 /**************************************/
 {
-    int         error;
+    bool        error;
 
-    error = FALSE;
+    error = false;
     if( CurrResFile.IsOpen ) {
         if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 )
             WriteOS2Tables();
@@ -360,19 +358,16 @@ static void Pass1ResFileShutdown( void )
             if (CurrResFile.IsWatcomRes) {
                 error = WResWriteDir( CurrResFile.handle, CurrResFile.dir );
                 if( error ) {
-                    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                                LastWresErrStr() );
+                    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 }
             }
-            if( ResCloseFile( CurrResFile.handle ) == -1 ) {
-                RcError( ERR_CLOSING_TMP, CurrResFile.filename,
-                         LastWresErrStr() );
+            if( ResCloseFile( CurrResFile.handle ) ) {
+                RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
                 remove( CurrResFile.filename );
                 UnregisterTmpFile( CurrResFile.filename );
             } else if( !error ) {
 #ifdef USE_TEMPFILE
-                ChangeTmpToOutFile( CurrResFile.filename,
-                                CmdLineParms.OutResFileName );
+                ChangeTmpToOutFile( CurrResFile.filename, CmdLineParms.OutResFileName );
 #endif
             }
             CurrResFile.IsOpen = false;
@@ -391,26 +386,26 @@ extern void RcPass1IoShutdown( void )
     }
 } /* RcPass1IoShutdown */
 
-static int OpenResFileInfo( ExeType type )
-/****************************************/
+static bool OpenResFileInfo( ExeType type )
+/*****************************************/
 {
-    int             rc;
+    bool            error;
     ExtraRes        *curfile;
 
 
     if( (type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2)
         && CmdLineParms.ExtraResFiles != NULL ) {
         RcError( ERR_FR_NOT_VALID_FOR_WIN );
-        return( FALSE );
+        return( false );
     }
     Pass2Info.AllResFilesOpen = TRUE;
     if( CmdLineParms.NoResFile ) {
         Pass2Info.ResFiles = RCALLOC( sizeof( ResFileInfo ) );
         Pass2Info.ResFiles->name = NULL;
-        Pass2Info.ResFiles->IsOpen = FALSE;
+        Pass2Info.ResFiles->IsOpen = false;
         Pass2Info.ResFiles->Handle = NIL_HANDLE;
         Pass2Info.ResFiles->Dir = NULL;
-        return( TRUE );
+        return( true );
     }
 
     curfile = RCALLOC( sizeof( ExtraRes ) );
@@ -423,16 +418,16 @@ static int OpenResFileInfo( ExeType type )
         strcpy( curfile->name, CmdLineParms.OutResFileName );
     }
 
-    rc = OpenResFiles( CmdLineParms.ExtraResFiles, &Pass2Info.ResFiles,
+    error = OpenResFiles( CmdLineParms.ExtraResFiles, &Pass2Info.ResFiles,
                   &Pass2Info.AllResFilesOpen, type,
                   CmdLineParms.InExeFileName );
 
-    return( rc );
+    return( error );
 
 } /* OpenResFileInfo */
 
 
-static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
+static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
 /***************************************************************/
 {
     RcStatus        status;
@@ -441,7 +436,7 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
     info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY, PMODE_RW );
     if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
-        return( FALSE );
+        return( false );
     }
     info->IsOpen = TRUE;
     info->Type = FindNEPELXHeader( info->Handle, &info->WinHeadOffset );
@@ -452,7 +447,7 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
         status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
-            return( FALSE );
+            return( false );
         } else {
             info->DebugOffset = info->WinHeadOffset + sizeof( os2_exe_header );
         }
@@ -463,13 +458,13 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
         status = SeekRead( info->Handle, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
-            return( FALSE );
+            return( false );
         }
         if( IS_PE64( *pehdr ) ) {
             status = SeekRead( info->Handle, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
             if( status != RS_OK ) {
                 RcError( ERR_NOT_VALID_EXE, filename );
-                return( FALSE );
+                return( false );
             }
             info->DebugOffset = info->WinHeadOffset + sizeof( pe_header64 );
         } else {
@@ -480,35 +475,35 @@ static int openExeFileInfoRO( char *filename, ExeFileInfo *info )
         status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
-            return( FALSE );
+            return( false );
         } else {
             info->DebugOffset = info->WinHeadOffset + sizeof( os2_flat_header );
         }
         break;
     default:
         RcError( ERR_NOT_VALID_EXE, filename );
-        return( FALSE );
+        return( false );
         break;
     }
 
     RCSEEK( info->Handle, 0, SEEK_SET );
-    return( TRUE );
+    return( true );
 } /* openExeFileInfoRO */
 
-static int openNewExeFileInfo( char *filename, ExeFileInfo *info )
+static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
     info->Handle = RCOPEN( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
     if( info->Handle == NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
-        return( FALSE );
+        return( false );
     }
     RegisterTmpFile( filename );
     info->IsOpen = TRUE;
     info->DebugOffset = 0;
     info->name = filename;
 
-    return( TRUE );
+    return( true );
 } /* openNewExeFileInfo */
 
 static void FreeNEFileInfoPtrs( NEExeInfo * info )
@@ -601,11 +596,11 @@ extern void ClosePass2FilesAndFreeMem( void )
     CloseResFiles( Pass2Info.ResFiles );
 } /* ClosePass2FilesAndFreeMem */
 
-extern int RcPass2IoInit( void )
+extern bool RcPass2IoInit( void )
 /******************************/
 {
-    int     noerror;
-    int     tmpexe_exists;
+    bool    noerror;
+    bool    tmpexe_exists;
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RCALLOC( IO_BUFFER_SIZE );
@@ -645,7 +640,7 @@ extern int RcPass2IoInit( void )
     return( noerror );
 } /* RcPass2IoInit */
 
-extern void RcPass2IoShutdown( int noerror )
+extern void RcPass2IoShutdown( bool noerror )
 /******************************************/
 {
     ClosePass2FilesAndFreeMem();
@@ -672,7 +667,7 @@ extern void RcPass2IoShutdown( int noerror )
 
 typedef struct PhysFileInfo {
     char        Filename[ _MAX_PATH ];
-    int         IsOpen;
+    bool        IsOpen;
     WResFileID  Handle;
     long        Offset;     /* offset in file to read from next time if this */
                             /* is not the current file */
@@ -711,46 +706,46 @@ extern void RcIoTextInputInit( void )
     InStack.Current = InStack.Stack;
 } /* RcIoTextInputInit */
 
-extern int RcIoTextInputShutdown( void )
-/**************************************/
+extern bool RcIoTextInputShutdown( void )
+/***************************************/
 {
     if( InStack.Buffer != NULL ) {
         RCFREE( InStack.Buffer );
         InStack.Buffer = NULL;
         InStack.BufferSize = 0;
         if( IsEmptyFileStack( InStack ) ) {
-            return( FALSE );
+            return( false );
         } else {
             while( !IsEmptyFileStack( InStack ) ) {
                 RcIoPopInputFile();
             }
-            // return( TRUE );
+            // return( true );
         }
     }
-    return( TRUE );
+    return( true );
 } /* RcIoTextInputShutdown */
 
-static int OpenPhysicalFile( PhysFileInfo * phys )
+static bool OpenPhysicalFile( PhysFileInfo *phys )
 /************************************************/
 {
     if( !phys->IsOpen ) {
         phys->Handle = RcIoOpenInput( phys->Filename, O_RDONLY | O_TEXT );
         if( phys->Handle == NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
-            return( TRUE );
+            return( true );
         }
-        phys->IsOpen = TRUE;
+        phys->IsOpen = true;
         if( RCSEEK( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 } /* OpenPhysicalFile */
 
-static int OpenNewPhysicalFile( PhysFileInfo * phys, const char * filename )
-/**************************************************************************/
+static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
+/*************************************************************************/
 {
     strncpy( phys->Filename, filename, _MAX_PATH );
     phys->IsOpen = FALSE;
@@ -767,23 +762,25 @@ static void SetPhysFileOffset( FileStack * stack )
 
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
-        charsinbuff = stack->BufferSize - (stack->NextChar - stack->Buffer);
+        charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
         phys->Offset = RCTELL( phys->Handle ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
-static int ReadBuffer( FileStack * stack )
-/****************************************/
+static bool ReadBuffer( FileStack * stack )
+/*****************************************/
 {
     PhysFileInfo    *phys;
-    WResFileSSize   numread;
-    int             error;
+    WResFileSize    numread;
+    bool            error;
     int             inchar;
 
     phys = &(stack->Current->Physical);
     if( !phys->IsOpen ) {
         error = OpenPhysicalFile( phys );
-        if( error ) return( TRUE );
+        if( error ) {
+            return( true );
+        }
     }
     if( CmdLineParms.NoPreprocess ) {
         numread = RCREAD( phys->Handle, stack->Buffer, stack->BufferSize );
@@ -799,13 +796,13 @@ static int ReadBuffer( FileStack * stack )
     stack->NextChar = stack->Buffer;
     stack->EofChar = stack->Buffer + numread;   /* may be past end of buffer */
 
-    return( FALSE );
+    return( false );
 } /* ReadBuffer */
 
-extern int RcIoPushInputFile( const char * filename )
-/***************************************************/
+extern bool RcIoPushInputFile( const char * filename )
+/****************************************************/
 {
-    int                 error;
+    bool                error;
 
     if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
         RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
@@ -839,8 +836,8 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
     }
 } /* ClosePhysicalFile */
 
-extern int RcIoPopInputFile( void )
-/*********************************/
+extern bool RcIoPopInputFile( void )
+/**********************************/
 {
     PhysFileInfo *  phys;
 
@@ -848,10 +845,10 @@ extern int RcIoPopInputFile( void )
     ClosePhysicalFile( phys );
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
-        return( TRUE );
+        return( true );
     } else {
         ReadBuffer( &(InStack) );
-        return( FALSE );
+        return( false );
     }
 } /* RcIoPopInputFile */
 
@@ -873,8 +870,8 @@ static int GetLogChar( FileStack * stack )
 extern int RcIoGetChar( void )
 /****************************/
 {
-    int     isempty;
-    int     error;
+    bool    isempty;
+    bool    error;
 
     if( IsEmptyFileStack( InStack ) ) {
         return( RC_EOF );
@@ -928,7 +925,7 @@ extern void RcIoOverrideIsCOrHFlag( void )
 
     if( !IsEmptyFileStack( InStack ) ) {
         log = &(InStack.Current->Logical);
-        log->IsCOrHFile = FALSE;
+        log->IsCOrHFile = false;
     }
 } /* RcIoOverrideIsCOrHFlag */
 
@@ -945,9 +942,9 @@ extern void RcIoSetIsCOrHFlag( void )
         if( (ext[1] == 'c' || ext[1] == 'h' || ext[1] == 'C'
             || ext[1] == 'H' ) && ext[2] == '\0' ) {
             /* if the logical file is a c or h file */
-            log->IsCOrHFile = TRUE;
+            log->IsCOrHFile = true;
         } else {
-            log->IsCOrHFile = FALSE;
+            log->IsCOrHFile = false;
         }
     }
 } /* RcIoSetIsCOrHFlag */
@@ -967,12 +964,12 @@ extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
     }
 } /* RcIoSetLogicalFileInfo */
 
-extern int RcIoIsCOrHFile( void )
-/*******************************/
+extern bool RcIoIsCOrHFile( void )
+/********************************/
 /* returns true if the current file is a .c or .h file, false otherwise */
 {
     if( IsEmptyFileStack( InStack ) ) {
-        return( FALSE );
+        return( false );
     } else {
         return( InStack.Current->Logical.IsCOrHFile );
     }

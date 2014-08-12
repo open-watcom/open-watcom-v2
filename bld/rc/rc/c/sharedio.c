@@ -64,7 +64,7 @@ static void closeAResFile( ResFileInfo *res )
     RCFREE( res );
 }
 
-int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
+bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
                   ExeType type, const char *exename )
 /**************************************************************************/
 {
@@ -158,12 +158,12 @@ int OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
         resnames = resnames->next;
         rescnt++;
     }
-    return( TRUE );
+    return( true );
 
 HANDLE_ERROR:
     CloseResFiles( *resinfo );
     *resinfo = NULL;
-    return( FALSE );
+    return( false );
 }
 
 void CloseResFiles( ResFileInfo *resfiles )

@@ -38,26 +38,26 @@
 #include "exelxobj.h"
 #include "exeutil.h"
 
-static int readObjectAndPageTable( ExeFileInfo *exe )
-/***************************************************/
+static bool readObjectAndPageTable( ExeFileInfo *exe )
+/****************************************************/
 {
-    RcStatus    error;
+    RcStatus    ret;
     size_t      table_size;
 
     table_size = exe->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
     exe->u.LXInfo.Objects = RCALLOC( table_size );
-    error = SeekRead( exe->Handle,
+    ret = SeekRead( exe->Handle,
                 exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objtab_off,
                 exe->u.LXInfo.Objects, table_size );
 
-    if( error == RS_OK ) {
+    if( ret == RS_OK ) {
         table_size = exe->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
         exe->u.LXInfo.Pages = RCALLOC( table_size );
-        error = SeekRead( exe->Handle,
+        ret = SeekRead( exe->Handle,
                     exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objmap_off,
                     exe->u.LXInfo.Pages, table_size );
     }
-    switch( error ) {
+    switch( ret ) {
     case RS_OK:
         break;
     case RS_READ_ERROR:
@@ -71,7 +71,7 @@ static int readObjectAndPageTable( ExeFileInfo *exe )
         break;
     }
     CheckDebugOffset( exe );
-    return( error != RS_OK );
+    return( ret != RS_OK );
 }
 
 static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
@@ -169,7 +169,7 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
                                ExeFileInfo *new, object_record *new_obj )
 /***********************************************************************/
 {
-    int             copy_rc;
+    RcStatus        ret;
     lx_map_entry    *old_map;
     lx_map_entry    *new_map;
     uint_32         old_offset;
@@ -190,9 +190,9 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
         if( RCSEEK( new->Handle, new_offset, SEEK_SET ) == -1 )
             return( RS_WRITE_ERROR );
 
-        copy_rc = CopyExeData( old->Handle, new->Handle, old_map->data_size );
-        if( copy_rc != RS_OK )
-            return( copy_rc );
+        ret = CopyExeData( old->Handle, new->Handle, old_map->data_size );
+        if( ret != RS_OK )
+            return( ret );
     }
     return( RS_OK );
 }
@@ -202,11 +202,11 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
  * copyHeaderSections
  * if an error occurs this function MUST return without altering errno
  */
-static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
+static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
 /*****************************************************************/
 /* Copies parts of header and loader/fixup sections that won't be changing */
 {
-    int                 ret;
+    RcStatus            ret;
     uint_32             old_pages;
     uint_32             offset;
     uint_32             length;
@@ -365,49 +365,49 @@ static int copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
 }
 
 
-extern int CopyLXExeObjects( void )
-/*********************************/
+bool CopyLXExeObjects( void )
+/***************************/
 {
     ExeFileInfo     *old;
     ExeFileInfo     *tmp;
     object_record   *old_obj;
     object_record   *tmp_obj;
     int             num_objs;
-    RcStatus        status;
+    RcStatus        ret;
 
     old = &Pass2Info.OldFile;
     tmp = &Pass2Info.TmpFile;
 
     if( readObjectAndPageTable( old ) ) {
-        return( TRUE );
+        return( true );
     }
     num_objs = copyObjectAndPageTable( old, tmp );
     if( num_objs == -1 ) {
-        return( TRUE );
+        return( true );
     }
 
     /* At this point we finally know how big all the tables in executable
      * header will be and can start copying data to the new executable;
      * resources will be written and the headers finalized later.
      */
-    if( copyHeaderSections( old, tmp ) ) {
-        return( TRUE );
+    if( copyHeaderSections( old, tmp ) != RS_OK ) {
+        return( true );
     }
 
     old_obj = old->u.LXInfo.Objects;
     tmp_obj = tmp->u.LXInfo.Objects;
     for( ; num_objs > 0; num_objs--, old_obj++, tmp_obj++ ) {
-        status = copyOneObject( old, old_obj, tmp, tmp_obj );
-        switch( status ) {
+        ret = copyOneObject( old, old_obj, tmp, tmp_obj );
+        switch( ret ) {
         case RS_WRITE_ERROR:
             RcError( ERR_WRITTING_FILE, tmp->name, strerror( errno ) );
-            return( TRUE );
+            return( true );
         case RS_READ_ERROR:
             RcError( ERR_READING_EXE, old->name, strerror( errno ) );
-            return( TRUE );
+            return( true );
         case RS_READ_INCMPLT:
             RcError( ERR_UNEXPECTED_EOF, old->name );
-            return( TRUE );
+            return( true );
         default:
             break;
         }
@@ -415,5 +415,5 @@ extern int CopyLXExeObjects( void )
         CheckDebugOffset( tmp );
     }
 
-    return( FALSE );
+    return( false );
 } /* CopyLXExeObjects */

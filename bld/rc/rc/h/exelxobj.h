@@ -32,6 +32,6 @@
 #ifndef EXELXOBJ_H_INCLUDED
 #define EXELXOBJ_H_INCLUDED
 
-extern int CopyLXExeObjects( void );
+extern bool CopyLXExeObjects( void );
 
 #endif

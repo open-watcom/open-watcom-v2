@@ -116,10 +116,10 @@ static bool CreatePreprocFile( void )
     return( error );
 }
 
-static int Pass1( void )
-/**********************/
+static bool Pass1( void )
+/***********************/
 {
-    int     noerror;
+    bool    noerror;
 
     noerror = RcPass1IoInit();
     if( noerror ) {
@@ -146,10 +146,10 @@ static int Pass1( void )
  * any changes made to Pass2 should cause the notification of the
  * resource editor dude.
  */
-static int Pass2( void )
+static bool Pass2( void )
 /**********************/
 {
-    int     noerror;
+    bool     noerror;
 
     noerror = RcPass2IoInit();
     if( noerror ) {
@@ -179,7 +179,7 @@ static int Pass2( void )
 void RCmain( void )
 /*****************/
 {
-    int     noerror = TRUE;
+    bool    noerror = true;
 
 #if defined( __WATCOMC__ )
 #if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL 

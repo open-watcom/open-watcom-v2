@@ -37,9 +37,9 @@
 /* This variable is set to true if any error occurs. No further file I/O will */
 /* then take place. */
 #ifndef RCEXTERN
-extern int                  ErrorHasOccured;
+extern bool                 ErrorHasOccured;
 #else
-RCEXTERN int                ErrorHasOccured = false;
+RCEXTERN bool               ErrorHasOccured = false;
 #endif
 
 #ifndef RCEXTERN

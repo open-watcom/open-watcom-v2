@@ -40,10 +40,10 @@
 #include "exeobj.h"
 
 
-static int readObjectTable( ExeFileInfo *exe )
-/********************************************/
+static RcStatus readObjectTable( ExeFileInfo *exe )
+/*************************************************/
 {
-    RcStatus        error;
+    RcStatus        ret;
     unsigned        objects_size;
     long            file_offset;
     exe_pe_header   *pehdr;
@@ -57,8 +57,8 @@ static int readObjectTable( ExeFileInfo *exe )
         file_offset = exe->WinHeadOffset + sizeof( pe_header );
     }
     exe->u.PEInfo.Objects = RCALLOC( objects_size );
-    error = SeekRead( exe->Handle, file_offset, exe->u.PEInfo.Objects, objects_size );
-    switch( error ) {
+    ret = SeekRead( exe->Handle, file_offset, exe->u.PEInfo.Objects, objects_size );
+    switch( ret ) {
     case RS_OK:
         break;
     case RS_READ_ERROR:
@@ -72,7 +72,7 @@ static int readObjectTable( ExeFileInfo *exe )
         break;
     }
     CheckDebugOffset( exe );
-    return( error != RS_OK );
+    return( ret );
 }
 
 static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
@@ -202,41 +202,41 @@ static RcStatus copyOneObject( WResFileID old_handle, pe_object * old_obj,
     return( CopyExeData( old_handle, new_handle, old_obj->physical_size ) );
 }
 
-extern int CopyExeObjects( void )
-/*******************************/
+bool CopyExeObjects( void )
+/*************************/
 {
     ExeFileInfo *   old;
     ExeFileInfo *   tmp;
     pe_object *     old_obj;
     pe_object *     tmp_obj;
     int             num_objs;
-    RcStatus        status;
+    RcStatus        ret;
 
     old = &Pass2Info.OldFile;
     tmp = &Pass2Info.TmpFile;
 
-    if( readObjectTable( old ) ) {
-        return( TRUE );
+    if( readObjectTable( old ) != RS_OK ) {
+        return( true );
     }
     num_objs = copyObjectTable( old, tmp );
     if( num_objs == -1 ) {
-        return( TRUE );
+        return( true );
     }
 
     old_obj = old->u.PEInfo.Objects;
     tmp_obj = tmp->u.PEInfo.Objects;
     for( ; num_objs > 0; num_objs--, old_obj++, tmp_obj++ ) {
-        status = copyOneObject( old->Handle, old_obj, tmp->Handle, tmp_obj );
-        switch( status ) {
+        ret = copyOneObject( old->Handle, old_obj, tmp->Handle, tmp_obj );
+        switch( ret ) {
         case RS_WRITE_ERROR:
             RcError( ERR_WRITTING_FILE, tmp->name, strerror( errno ) );
-            return( TRUE );
+            return( true );
         case RS_READ_ERROR:
             RcError( ERR_READING_EXE, old->name, strerror( errno ) );
-            return( TRUE );
+            return( true );
         case RS_READ_INCMPLT:
             RcError( ERR_UNEXPECTED_EOF, old->name );
-            return( TRUE );
+            return( true );
         default:
             break;
         }
@@ -244,7 +244,7 @@ extern int CopyExeObjects( void )
         CheckDebugOffset( tmp );
     }
 
-    return( FALSE );
+    return( false );
 } /* CopyExeObjects */
 
 extern uint_32 GetNextObjPhysOffset( PEExeInfo *peinfo )

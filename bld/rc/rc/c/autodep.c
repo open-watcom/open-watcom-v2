@@ -48,7 +48,7 @@ typedef struct DepNode {
 
 static DepNode          *depList;
 
-int AddDependency( char *fname )
+bool AddDependency( char *fname )
 {
     char                *name;
     DepNode             *new;
@@ -67,7 +67,7 @@ int AddDependency( char *fname )
                 cmp = strcmp( name, (*cur)->info.name );
                 if( cmp == 0 ) {
                     RCFREE( name );
-                    return( FALSE );
+                    return( false );
                 } else if( cmp > 0 ) {
                     break;
                 } else {
@@ -83,7 +83,7 @@ int AddDependency( char *fname )
         *cur = new;
         RCFREE( name );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void writeOneNode( DepInfo *cur )
@@ -108,7 +108,7 @@ static void writeOneNode( DepInfo *cur )
     SemWriteRawDataItem( item );
 
     /* write out file name */
-    item.IsString = TRUE;
+    item.IsString = true;
     item.Item.String = cur->name;
     item.StrLen = strlen( cur->name ) + 1;
     SemWriteRawDataItem( item );
@@ -135,7 +135,7 @@ static void freeDepList( void )
     }
 }
 
-RcStatus WriteDependencyRes( void )
+bool WriteDependencyRes( void )
 {
     DepNode             *cur;
     ResLocation         loc;
@@ -148,9 +148,8 @@ RcStatus WriteDependencyRes( void )
         loc.start = SemStartResource();
         while( cur != NULL ) {
             if( stat( cur->info.name, &file_info ) == -1 ) {
-                RcError( ERR_READING_FILE, cur->info.name,
-                         strerror( errno ) );
-                ErrorHasOccured = TRUE;
+                RcError( ERR_READING_FILE, cur->info.name, strerror( errno ) );
+                ErrorHasOccured = true;
             }
             cur->info.time = file_info.st_mtime;
             writeOneNode( &cur->info );
@@ -160,11 +159,10 @@ RcStatus WriteDependencyRes( void )
         loc.len = SemEndResource( loc.start );
         nameid = WResIDFromStr( DEP_LIST_NAME );
         typeid = WResIDFromNum( DEP_LIST_TYPE );
-        SemAddResourceFree( nameid, typeid,
-                            MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, loc );
+        SemAddResourceFree( nameid, typeid, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, loc );
     }
     freeDepList();
-    return( FALSE );
+    return( false );
 }
 
 extern void AutoDepInitStatics( void )

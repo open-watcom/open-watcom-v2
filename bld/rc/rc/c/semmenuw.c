@@ -126,7 +126,7 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
 
     if (newmenu == NULL || newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -149,7 +149,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
 
     if (newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -192,12 +192,13 @@ static void SemCheckMenuItemNormal( FullMenuItem *item, YYTOKENTYPE tokentype )
     }
 }
 
-static int SemWriteMenuItem( FullMenuItem *item, int islastitem,
+static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
                           int *err_code, YYTOKENTYPE tokentype )
 /**************************************************************/
 {
-    int     error = 0;
+    bool    error;
 
+    error = false;
     if( item->IsPopup ) {
         SemCheckMenuItemPopup( item, tokentype );
         if( islastitem ) {
@@ -229,31 +230,31 @@ static int SemWriteMenuItem( FullMenuItem *item, int islastitem,
     return( error );
 }
 
-static int SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE tokentype )
-/***********************************************************************************/
+static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, YYTOKENTYPE tokentype )
+/************************************************************************************/
 {
-    int             error;
+    bool            error;
     int             islastitem;
-    FullMenuItem   *curritem;
+    FullMenuItem    *curritem;
+
+    error = false;
 
     if (ErrorHasOccured) {
         return( FALSE );
     }
 
-    for (curritem = submenu->head, error = FALSE; curritem != NULL && !error;
-                curritem = curritem->next) {
+    for (curritem = submenu->head; curritem != NULL && !error; curritem = curritem->next) {
         islastitem = (curritem == submenu->tail);
         if (!ErrorHasOccured) {
             error = SemWriteMenuItem( curritem, islastitem, err_code, tokentype );
             if (!error && curritem->IsPopup) {
-                error = SemWriteSubMenu( curritem->item.popup.submenu,
-                                         err_code, tokentype );
+                error = SemWriteSubMenu( curritem->item.popup.submenu, err_code, tokentype );
             }
         }
     }
 
     if (error) {
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
     }
     return( error );
 }
@@ -296,11 +297,11 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
 {
     MenuHeader      head;
     ResLocation     loc;
-    int             error = 0;
+    bool            error;
     int             err_code;
     uint_8          headerdata[ RES_HEADER_SIZE ];
 
-
+    error = false;
     if(!ErrorHasOccured) {
         if( tokentype == Y_MENU ) {
             head.Version = 0;    /* currently these fields are both 0 */
@@ -340,7 +341,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
              strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     SemFreeSubMenu( menu );
     return;
 }

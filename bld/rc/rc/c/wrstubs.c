@@ -42,24 +42,24 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
 {
 }
 
-int RcBuildLXResourceObjects( void )
+bool RcBuildLXResourceObjects( void )
 {
-    return( TRUE );
+    return( true );
 }
 
-int CopyLXExeObjects( void )
+bool CopyLXExeObjects( void )
 {
-    return( TRUE );
+    return( true );
 }
 
-int RcWriteLXResourceObjects( void )
+RcStatus RcWriteLXResourceObjects( void )
 {
-    return( TRUE );
+    return( RS_WRITE_ERROR );
 }
 
-int CopyOS2Resources( void )
+RcStatus CopyOS2Resources( void )
 {
-    return( FALSE );
+    return( RS_READ_ERROR );
 }
 
 RcStatus InitOS2ResTable( int *err_code )

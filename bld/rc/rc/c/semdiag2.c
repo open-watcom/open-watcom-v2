@@ -74,14 +74,14 @@ struct DLGTITEM {
 #include "rccore.h"
 
 
-static int ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID handle )
-/******************************************************************************/
+static bool ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID handle )
+/*******************************************************************************/
 {
     if( RCWRITE( handle, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -672,7 +672,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
 {
     ResLocation              loc;
     int                      err_code;
-    int                      error;
+    bool                     error;
     int                      size;
     DialogHeaderOS2          *head = NULL;
     char                     *tmpl;
@@ -715,16 +715,15 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                strerror( err_code )  );
-    ErrorHasOccured = TRUE;
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+    ErrorHasOccured = true;
     SemOS2FreeDiagCtrlList( ctrls );
     return;
 } /* SemOS2WriteDialogTemplate */
 
 
 FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
-                    uint_32 id, DialogSizeInfo size, ResNameOrOrdinal *ctlclassname,
+                    uint_16 id, DialogSizeInfo size, ResNameOrOrdinal *ctlclassname,
                     IntMask style, FullDiagCtrlListOS2 *childctls,
                     PresParamListOS2 *presparams )
 /**********************************************************************************/
@@ -790,7 +789,8 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
 /**********************************************************/
 {
     ResLocation loc;
-    int         error, err_code;
+    bool        error;
+    int         err_code;
 
     loc.start = SemStartResource();
     error = ResWriteString( filename, FALSE, CurrResFile.handle );
@@ -806,9 +806,8 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+    ErrorHasOccured = true;
     RCFREE( filename );
     return;
 }

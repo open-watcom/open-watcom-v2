@@ -39,14 +39,14 @@
 #include "rccore.h"
 
 
-int ResOS2WriteHelpEntry( HelpTableEntryOS2 * currentry, WResFileID handle )
-/**********************************************************************/
+bool ResOS2WriteHelpEntry( HelpTableEntryOS2 *currentry, WResFileID handle )
+/**************************************************************************/
 {
     if( RCWRITE( handle, currentry, sizeof( HelpTableEntryOS2 ) ) != sizeof( HelpTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 FullHelpEntryOS2 SemOS2MakeHelpItem( unsigned long winId, unsigned long subId,
@@ -75,7 +75,7 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -98,7 +98,7 @@ FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -126,14 +126,15 @@ static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
     }
 }
 
-static int SemOS2WriteHelpTableEntries( FullHelpTableOS2 * helptable,
+static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 * helptable,
                                         WResFileID handle )
 /*********************************************************************/
 {
     FullHelpEntryOS2    *currentry;
-    int                 error = 0;
+    bool                error;
     uint_16             tmp = 0;
 
+    error = false;
     if( helptable != NULL ) {
         currentry = helptable->head;
         while( currentry != NULL && !error ) {
@@ -152,7 +153,7 @@ void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
 /***********************************************************/
 {
     ResLocation     loc;
-    int             error;
+    bool            error;
     int             err_code;
 
     if( !ErrorHasOccured ) {
@@ -172,9 +173,8 @@ void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+    ErrorHasOccured = true;
     SemOS2FreeHelpTable( helptable );
     return;
 
@@ -192,7 +192,7 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * data )
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -215,7 +215,7 @@ FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList * data,
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -244,18 +244,17 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
     }
 }
 
-static int SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int count )
+static bool SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int count )
 /************************************************************************************/
 {
     uint_16           data;
-    int               error;
+    bool              error;
     int               i;
 
-    error = FALSE;
+    error = false;
     if( list->count > count ) {
         //TODO: output warning
-    }
-    else if( list->count < count ) {
+    } else if( list->count < count ) {
         // error
         return( TRUE );
     }
@@ -266,12 +265,12 @@ static int SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int count
     return( error );
 }
 
-static int SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable,
+static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable,
                                            WResFileID handle )
 /************************************************************************/
 {
     FullHelpSubEntryOS2     *currentry = NULL;
-    int                     error = 0;
+    bool                    error;
     uint_16                 tmp = 2;
 
     if( helptable != NULL ) {
@@ -298,7 +297,7 @@ void SemOS2WriteHelpSubTable( WResID * name, int numWords,
 /********************************************************************/
 {
     ResLocation     loc;
-    int             error;
+    bool            error;
     int             err_code;
 
     if( !ErrorHasOccured ) {
@@ -321,9 +320,8 @@ void SemOS2WriteHelpSubTable( WResID * name, int numWords,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-             strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+    ErrorHasOccured = true;
     SemOS2FreeHelpSubTable( helptable );
     return;
 

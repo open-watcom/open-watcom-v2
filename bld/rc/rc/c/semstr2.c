@@ -39,12 +39,12 @@
 #include "rccore.h"
 
 
-int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
+bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
                                         WResFileID handle, uint_32 codepage )
 /***************************************************************************/
 {
     int         stringid;
-    int         error;
+    bool        error;
     WResIDName  *name;
     uint_16     tmp16;
     uint_8      tmp8;
@@ -58,8 +58,8 @@ int ResOS2WriteStringTableBlock( StringTableBlock *currblock,
 
     tmp16 = 1;
 
-    for( stringid = 0, error = FALSE; stringid < STRTABLE_STRS_PER_BLOCK
-                        && !error; stringid++ ) {
+    error = false;
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
         name = currblock->String[ stringid ];
         if( name == NULL ) {
             // Write an empty string
@@ -165,7 +165,7 @@ void SemOS2AddStrToStringTable( FullStringTable *currtable,
         if( currblock->Block.String[ stringnum ] != NULL ) {
             /* duplicate stringid */
             RcError( ERR_DUPLICATE_STRING_CONST, stringid );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     } else {
         currblock = newStringTableBlock();
@@ -191,7 +191,7 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
             if( oldblock->Block.String[ stringid ] != NULL ) {
                 RcError( ERR_DUPLICATE_STRING_CONST,
                             ( currblock->BlockNum << 4 ) + stringid );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
         }
     }
@@ -296,7 +296,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
     FullStringTableBlock    *currblock;
     FullStringTable         *tofree;
     WResID                  *name;
-    int                     error;
+    bool                    error;
     ResLocation             loc;
 
     while( currtable != NULL ) {
@@ -310,7 +310,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             if( error) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                          LastWresErrStr() );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
                 SemOS2FreeStringTable( currtable );
                 return;
             }

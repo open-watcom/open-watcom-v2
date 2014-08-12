@@ -32,6 +32,7 @@
 #ifndef EXERESLX_H_INCLUDED
 #define EXERESLX_H_INCLUDED
 
+#include "rctypes.h"
 #include "exeflat.h"
 #include "wresall.h"
 #include "rcstrblk.h"
@@ -54,13 +55,14 @@ typedef struct LXResTable {
 struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
-int BuildLXResourceObjects( struct ExeFileInfo *exeinfo,
+bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo,
                             struct ResFileInfo *resinfo,
                             object_record *res_obj, unsigned_32 rva,
                             unsigned_32 offset, int writebyfile );
-int WriteLXResourceObjects( struct ExeFileInfo *exe,
+bool RcBuildLXResourceObjects( void );
+
+RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe,
                             struct ResFileInfo *info );
-int RcBuildLXResourceObjects( void );
-int RcWriteLXResourceObjects( void );
+RcStatus RcWriteLXResourceObjects( void );
 
 #endif

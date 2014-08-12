@@ -175,10 +175,10 @@
 %type <menuitem>        menu-entry-defn
 %type <menufull>        submenu-entry-stmt
 %type <string>          menu-text
-%type <integral>        size-x
-%type <integral>        size-y
-%type <integral>        size-w
-%type <integral>        size-h
+%type <ressizenum>      size-x
+%type <ressizenum>      size-y
+%type <ressizenum>      size-w
+%type <ressizenum>      size-h
 %type <sizeinfo>        size-info
 %type <string>          string-constant
 %type <string>          string-group
@@ -221,11 +221,11 @@
 %type <diagctrl>        control-stmt
 %type <nameorord>       control-name
 %type <nameorord>       presparam-name
-%type <integral>        cntl-id
+%type <residnum>        cntl-id
 %type <nameorord>       cntl-text
 %type <maskint>         cntl-style
 %type <maskint>         frame-style
-%type <integral>        string-id
+%type <residnum>        string-id
 %type <stritem>         string-item
 %type <strtable>        string-items
 %type <strtable>        string-section
@@ -241,9 +241,9 @@
 %type <dataelem>        raw-numeric-data-items
 %type <dataelem>        rc-data-items
 %type <dataelem>        rc-data-section
-%type <integral>        menu-id
-%type <integral>        menuitem-style
-%type <integral>        menuitem-attrib
+%type <residnum>        menu-id
+%type <resword>         menuitem-style
+%type <resword>         menuitem-attrib
 
 %start goal-symbol
 
@@ -285,14 +285,14 @@ name-id
         {
             $$ = WResIDFromNum( 0 );
             RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     | string-constant
         /* OS/2 accepts quoted strings and numbers only, not bare names */
         {
             $$ = WResIDFromNum( 0 );
             RcError( ERR_SYNTAX_STR, $1.string );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     | constant-expression
         {
@@ -300,7 +300,7 @@ name-id
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
                 RcError( ERR_BAD_RES_ID, $1.Value );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
         }
     | keyword-name
@@ -598,15 +598,15 @@ raw-data-items
 raw-data-item
     : string-constant
         {
-            $$.IsString    = TRUE;
+            $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = $1.length;
-            $$.TmpStr      = TRUE;
-            $$.WriteNull   = FALSE;
+            $$.StrLen      = (uint_16)$1.length;
+            $$.TmpStr      = true;
+            $$.WriteNull   = false;
             $$.Item.String = $1.string;
         }
     | constant-expression
-        { $$.IsString = FALSE; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
     ;
 
 raw-numeric-data-items
@@ -620,7 +620,7 @@ raw-numeric-data-items
 
 raw-numeric-data-item
     : constant-expression
-        { $$.IsString = FALSE; $$.Item.Num = $1.Value; $$.LongItem = FALSE; }
+        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = false; }
     ;
 
 rc-data-items
@@ -635,15 +635,15 @@ rc-data-items
 rc-data-item
     : string-constant
         {
-            $$.IsString    = TRUE;
+            $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = $1.length;
-            $$.TmpStr      = TRUE;
-            $$.WriteNull   = TRUE;
+            $$.StrLen      = (uint_16)$1.length;
+            $$.TmpStr      = true;
+            $$.WriteNull   = true;
             $$.Item.String = $1.string;
         }
     | constant-expression
-        { $$.IsString = FALSE; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
     ;
 
 rc-data-section
@@ -753,7 +753,7 @@ string-item
 
 string-id
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 id-value
@@ -941,17 +941,17 @@ menu-items
 
 menu-id
     : constant-expression
-      { $$ = $1.Value; }
+      { $$ = (uint_16)$1.Value; }
     ;
 
 menuitem-style
     : constant-expression
-      { $$ = $1.Value; }
+      { $$ = (uint_16)$1.Value; }
     ;
 
 menuitem-attrib
     : constant-expression
-      { $$ = $1.Value; }
+      { $$ = (uint_16)$1.Value; }
     ;
 
 menu-item
@@ -1011,7 +1011,7 @@ menu-entry-defn
         {
             $$.ItemStyle = OS2_MIS_SEPARATOR;
             $$.ItemAttrs = OS2_MIA_DISABLED;
-            $$.ItemCmd   = -1;
+            $$.ItemCmd   = (uint_16)-1;
             $$.ItemText  = NULL;
         }
     | menu-text Y_COMMA menu-id
@@ -1092,22 +1092,22 @@ size-info
 
 size-x
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-y
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-w
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-h
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 diag-options-stmt
@@ -1136,7 +1136,7 @@ ctl-class-name
     | Y_LISTBOX
         { $$ = ResStrToNameOrOrd( "LISTBOX" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( $1.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value | 0x80 ); }
     /* A little hack - OS/2 standard window classes are defined like this:
        #define WC_BUTTON ((PSZ)0xffff0003L)
        Since PSZ doesn't mean anything to wrc, it won't recognize the
@@ -1144,7 +1144,7 @@ ctl-class-name
        clean but does the job.
      */
     | Y_LPAREN Y_LPAREN Y_PSZ Y_RPAREN constant-expression Y_RPAREN
-        { $$ = ResNumToNameOrOrd( $5.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrd( (uint_16)$5.Value | 0x80 ); }
     ;
 
 font-stmt
@@ -1241,7 +1241,7 @@ frame-style
 
 cntl-id
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 autocheckbox-stmt
@@ -1390,12 +1390,12 @@ cntl-text
     : string-constant
         { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( $1.Value ); }
+        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
     | Y_NAME
         {
             $$ = ResNumToNameOrOrd( 0 );
             RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     ;
 

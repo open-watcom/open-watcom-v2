@@ -60,7 +60,7 @@ static void PutScanString( const char *string )
 
 static int      _next;
 static int      LookAhead;
-static int      longString;
+static bool     longString;
 static int      newLineInString = 0;
 
 static YYTOKENTYPE  ScanDFA( ScanValue *value );
@@ -141,7 +141,7 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
         if( token == Y_STRING ) {
             RcIoSetLogicalFileInfo( linenum, value->string.string );
             if( AddDependency( value->string.string ) ) {
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
             RCFREE( value->string.string );
             token = ScanDFA( value );
@@ -190,7 +190,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
 
     value->intinfo.type  = SCAN_INT_TYPE_DEFAULT;
     value->string.string = NULL;
-    longString = FALSE;
+    longString = false;
 
     state( S_START ):
         if( isspace( LookAhead ) ) {
@@ -257,14 +257,14 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         }
     state( S_L_STRING ):
         if( LookAhead =='"' ) {
-            longString = TRUE;
+            longString = true;
             RCFREE( VarStringEnd( newstring, NULL ) );
             change_state( S_START );
         } else {
             change_state( S_NAME );
         }
     state( S_ERROR ):
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( Y_SCAN_ERROR );
 
     state( S_COMMENT ):
@@ -580,7 +580,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             value->string.lstring = longString;
             if( longString && CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
                 RcWarning( ERR_LSTRING_IGNORED_FOR_WINDOWS );
-                value->string.lstring = FALSE;
+                value->string.lstring = false;
             }
             DEBUGPUTS( value->string.string )
             return( Y_STRING );
@@ -771,5 +771,5 @@ void ScanInitStaticsWIN( void )
 {
     _next = 0;
     LookAhead = 0;
-    longString = 0;
+    longString = false;
 }

@@ -113,7 +113,7 @@ FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval,
 
 //    } else {
 //        RcError( ERR_ACCEL_NO_TYPE, idval );
-//        ErrorHasOccured = TRUE;
+//        ErrorHasOccured = true;
 //        entry.entry.Ascii = 0;
 //        entry.entry.Flags = 0;
 //        entry.entry.Id = 0;
@@ -133,7 +133,7 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -156,7 +156,7 @@ extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry,
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -196,12 +196,12 @@ static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
     return( count );
 }
 
-static int writeAccelTableEntries( FullAccelTableOS2 *acctable,
+static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
                                    WResFileID handle, uint_32 codepage )
 /**********************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    int                 error;
+    bool                error;
     uint_16             tmp;
 
     tmp = SemOS2CountAccelTableEntries( acctable );
@@ -224,7 +224,7 @@ extern void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags,
 /*****************************************************************/
 {
     ResLocation     loc;
-    int             error;
+    bool            error;
     int             err_code;
 
     if( !ErrorHasOccured ) {
@@ -246,7 +246,7 @@ extern void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags,
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
              strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     SemOS2FreeAccelTable( acctable );
     return;
 }

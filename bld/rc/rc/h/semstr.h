@@ -37,7 +37,7 @@ typedef struct FullStringTableBlock {
     struct FullStringTableBlock     *Next;
     struct FullStringTableBlock     *Prev;
     uint_16                         BlockNum;
-    int                             UseUnicode;
+    bool                            UseUnicode;
     ResMemFlags                     Flags;
     uint_32                         codePage;   // for OS/2
     StringTableBlock                Block;

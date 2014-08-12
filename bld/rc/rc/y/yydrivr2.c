@@ -86,6 +86,10 @@ typedef union {
     YYTOKENTYPE                 token;
     DataElemList                *dataelem;
     IntOpt                      optint;
+    uint_16                     resword;
+    uint_16                     residnum;
+    uint_16                     ressizenum;
+    bool                        boolean;
 } YYSTYPE;
 
 #ifdef _I86FAR
@@ -108,7 +112,7 @@ typedef struct {
 } parse_stack;
 
 static YYSTYPE yylval;
-static uint_8  yysyntaxerror;   /* boolean variable */
+static bool    yysyntaxerror;   /* boolean variable */
 #define YYERRORTHRESHOLD    5   /* no. of tokens to accept before restarting */
 
 typedef enum {
@@ -347,7 +351,7 @@ static void deleteStack( parse_stack *stack )
     }
 }
 
-static void handleError( YYTOKENTYPE token, parse_stack *state, int error_state )
+static void handleError( YYTOKENTYPE token, parse_stack *state, bool error_state )
 {
     if( !error_state ) {
         switch( token ) {
@@ -375,18 +379,18 @@ static void handleError( YYTOKENTYPE token, parse_stack *state, int error_state 
 static p_action doParse( parse_stack *resource_state )
 {
     p_action    what;
-    int         error_state;
+    bool        error_state;
     YYTOKENTYPE token;
     int         token_count = 0;
 
-    error_state = FALSE;
+    error_state = false;
 
     do {
         token = yylexOS2();
         if( error_state ) {
             token_count++;
             if( token_count >= YYERRORTHRESHOLD ) {
-                error_state = FALSE;
+                error_state = false;
             }
         }
 
@@ -394,9 +398,9 @@ static p_action doParse( parse_stack *resource_state )
 
         if( what == P_SYNTAX ) {
             handleError( token, resource_state, error_state );
-            error_state = TRUE;
-            yysyntaxerror = TRUE;
-            ErrorHasOccured = TRUE;
+            error_state = true;
+            yysyntaxerror = true;
+            ErrorHasOccured = true;
             token_count = 0;
         } else if( token == Y_INTEGER && yylval.intinfo.str != NULL ) {
             RcMemFree( yylval.intinfo.str );
@@ -417,7 +421,7 @@ bool ParseOS2( void )
     what = doParse( &resource_state );
     if( what == P_ERROR ) {
         RcError( ERR_PARSER_INTERNAL );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
     }
     deleteStack( &resource_state );
     return( what != P_ACCEPT );
@@ -427,5 +431,5 @@ void ParseInitStaticsOS2( void )
 /******************************/
 {
     memset( &yylval, 0, sizeof( YYSTYPE ) );
-    yysyntaxerror = FALSE;
+    yysyntaxerror = false;
 }

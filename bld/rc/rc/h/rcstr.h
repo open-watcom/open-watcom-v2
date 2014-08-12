@@ -30,6 +30,6 @@
 ****************************************************************************/
 
 
-extern void     StringBlockBuild( StringsBlock *, WResDir, int use_unicode );
+extern void     StringBlockBuild( StringsBlock *, WResDir, bool use_unicode );
 extern int_32   StringBlockFind( StringsBlock *, WResIDName *name );
 extern int      CompareStringItems32( const StringItem32 *item1, const StringItem32 *item2 );

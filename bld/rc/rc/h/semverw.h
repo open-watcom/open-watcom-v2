@@ -63,7 +63,7 @@ typedef struct FullVerBlockNest {
 typedef struct FullVerBlock {
     struct FullVerBlock *   Next;
     struct FullVerBlock *   Prev;
-    int                     UseUnicode;
+    bool                    UseUnicode;
     VerBlockHeader          Head;
     FullVerValueList *      Value;
     FullVerBlockNest *      Nest;

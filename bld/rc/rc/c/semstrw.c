@@ -124,7 +124,7 @@ void SemWINAddStrToStringTable( FullStringTable * currtable,
         if( currblock->Block.String[ stringnum ] != NULL ) {
             /* duplicate stringid */
             RcError( ERR_DUPLICATE_STRING_CONST, stringid );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     } else {
         currblock = newStringTableBlock();
@@ -150,7 +150,7 @@ static void mergeStringTableBlocks( FullStringTableBlock * currblock,
             if( oldblock->Block.String[ stringid ] != NULL ) {
                 RcError( ERR_DUPLICATE_STRING_CONST,
                             ( currblock->BlockNum << 4 ) + stringid );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
         }
     }
@@ -265,7 +265,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
     FullStringTableBlock *  currblock;
     FullStringTable         *tofree;
     WResID *                name;
-    int                     error;
+    bool                    error;
     ResLocation             loc;
 
     while( currtable != NULL ) {
@@ -282,7 +282,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
             if( error) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                          LastWresErrStr() );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
                 semFreeStringTable( currtable );
                 return;
             }

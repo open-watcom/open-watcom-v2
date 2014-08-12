@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1, const char *file2, int warn );
-int OpenResFiles( struct ExtraRes *resnames, struct ResFileInfo **resinfo, int *allopen, ExeType type, const char *exename );
-void CloseResFiles( struct ResFileInfo *resfiles );
-void SharedIOInitStatics( void );
-extern char *LastWresErrStr( void );
-int LastWresStatus( void );
-int LastWresErr( void );
+extern void     ReportDupResource( WResID *nameid, WResID *typeid, const char *file1, const char *file2, int warn );
+extern bool     OpenResFiles( struct ExtraRes *resnames, struct ResFileInfo **resinfo, int *allopen, ExeType type, const char *exename );
+extern void     CloseResFiles( struct ResFileInfo *resfiles );
+extern void     SharedIOInitStatics( void );
+extern char     *LastWresErrStr( void );
+extern int      LastWresStatus( void );
+extern int      LastWresErr( void );

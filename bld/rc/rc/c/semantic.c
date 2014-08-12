@@ -87,9 +87,9 @@ SemLength SemEndResource( SemOffset start )
         /* the length of the resource */
         len = ResTell( CurrResFile.handle ) - start;
 
-        if( ResCloseFile( CurrResFile.handle ) == -1 ) {
+        if( ResCloseFile( CurrResFile.handle ) ) {
             RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
         CurrResFile.handle = MSFormatHandle;
         CurrResFile.filename = CurrResFile.namebuf;
@@ -115,7 +115,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     long                cur_byte_num;
     uint_8              cur_byte;
     long                seek_rc;
-    int                 error;
+    bool                error;
     WResFileID          tmp_handle;
 
     /* fill in and output a MS format resource header */
@@ -136,18 +136,17 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, TRUE );
     }
     if (error) {
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                 LastWresErrStr() );
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
         RCFREE( ms_head.Type );
         RCFREE( ms_head.Name );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
     } else {
         RCFREE( ms_head.Type );
         RCFREE( ms_head.Name );
         tmp_handle = ResOpenFileRO( MSFormatTmpFile );
         if( tmp_handle == NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
             return;
         }
 
@@ -156,7 +155,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         if (seek_rc == -1) {
             RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ResCloseFile( tmp_handle );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
             return;
         }
 
@@ -167,21 +166,21 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
             if( error ) {
                 RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
                 ResCloseFile( tmp_handle );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
                 return;
             } else {
                 error = ResWriteUint8( &cur_byte, CurrResFile.handle );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                     ResCloseFile( tmp_handle );
-                    ErrorHasOccured = TRUE;
+                    ErrorHasOccured = true;
                     return;
                 }
             }
         }
-        if( ResCloseFile( tmp_handle ) == -1 ) {
+        if( ResCloseFile( tmp_handle ) ) {
             RcError( ERR_WRITTING_RES_FILE, MSFormatTmpFile, LastWresErrStr() );
-            ErrorHasOccured = TRUE;
+            ErrorHasOccured = true;
         }
     }
 }
@@ -232,7 +231,7 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
         /* the directory. */
     } else if (error) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
     }
 
     if (!CurrResFile.IsWatcomRes) {

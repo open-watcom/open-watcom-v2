@@ -96,7 +96,7 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
         }
     } else {
         RcError( ERR_ACCEL_NO_TYPE, idval );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         entry.Win32 = FALSE;
         entry.u.entry.Ascii = 0;
         entry.u.entry.Flags = 0;
@@ -109,7 +109,7 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
 void SemWINWriteAccelEntry( FullAccelEntry entry )
 /************************************************/
 {
-    int     error;
+    bool    error;
 
     if (!ErrorHasOccured) {
         if( entry.Win32 ) {
@@ -118,9 +118,8 @@ void SemWINWriteAccelEntry( FullAccelEntry entry )
             error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.handle );
         }
         if (error) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                     LastWresErrStr() );
-            ErrorHasOccured = TRUE;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+            ErrorHasOccured = true;
         }
     }
 }

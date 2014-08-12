@@ -106,9 +106,9 @@ typedef struct RcPass2Info {
     void *          IoBuffer;
 } RcPass2Info;
 
-extern int MergeResExePE( void );
-extern int MergeResExeLX( void );
-extern int MergeResExeWINNE( void );
-extern int MergeResExeOS2NE( void );
+extern bool MergeResExePE( void );
+extern bool MergeResExeLX( void );
+extern bool MergeResExeWINNE( void );
+extern bool MergeResExeOS2NE( void );
 
 #endif

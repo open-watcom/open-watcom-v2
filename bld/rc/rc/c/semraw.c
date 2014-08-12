@@ -45,7 +45,7 @@ void SemWriteRawDataItem( RawDataItem item )
 {
     uint_16     num16;
     uint_32     num32;
-    int         rc;
+    bool        error;
 
     if( item.IsString ) {
         int     len = item.StrLen;
@@ -53,11 +53,9 @@ void SemWriteRawDataItem( RawDataItem item )
         if( item.WriteNull ) {
             ++len;
         }
-        if( ResWriteStringLen( item.Item.String, item.LongItem,
-                               CurrResFile.handle, len ) ) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                     LastWresErrStr() );
-            ErrorHasOccured = TRUE;
+        if( ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.handle, len ) ) {
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+            ErrorHasOccured = true;
         }
         if( item.TmpStr ) {
             RCFREE( item.Item.String );
@@ -77,26 +75,24 @@ void SemWriteRawDataItem( RawDataItem item )
         if( !ErrorHasOccured ) {
             if( !item.LongItem ) {
                 num16 = item.Item.Num;
-                rc = ResWriteUint16( &(num16), CurrResFile.handle );
+                error = ResWriteUint16( &(num16), CurrResFile.handle );
             } else {
                 num32 = item.Item.Num;
-                rc = ResWriteUint32( &(num32), CurrResFile.handle );
+                error = ResWriteUint32( &(num32), CurrResFile.handle );
             }
-            if( rc ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                         LastWresErrStr() );
-                ErrorHasOccured = TRUE;
+            if( error ) {
+                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                ErrorHasOccured = true;
             }
         }
     }
-
 }
 
 RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
                          void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
 
     if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
@@ -118,7 +114,7 @@ RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
         numread = RCREAD( handle, buff, buffsize );
     }
 
-    return( FALSE );
+    return( RS_OK );
 }
 
 #define BUFFER_SIZE   0x200
@@ -127,7 +123,7 @@ ResLocation SemCopyRawFile( const char *filename )
 /************************************************/
 {
     WResFileID  handle;
-    RcStatus    error;
+    RcStatus    ret;
     char        *buffer;
     char        full_filename[ _MAX_PATH ];
     ResLocation loc;
@@ -157,11 +153,9 @@ ResLocation SemCopyRawFile( const char *filename )
         RCCLOSE( handle );
         goto HANDLE_ERROR;
     } else {
-        error = SemCopyDataUntilEOF( pos, handle, buffer, BUFFER_SIZE,
-                                     &err_code );
-        if( error != RS_OK ) {
-            ReportCopyError( error, ERR_READING_DATA, full_filename,
-                             err_code );
+        ret = SemCopyDataUntilEOF( pos, handle, buffer, BUFFER_SIZE, &err_code );
+        if( ret != RS_OK ) {
+            ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
             RCCLOSE( handle );
             goto HANDLE_ERROR;
         }
@@ -177,7 +171,7 @@ ResLocation SemCopyRawFile( const char *filename )
 
 
 HANDLE_ERROR:
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     loc.start = 0;
     loc.len = 0;
     RCFREE( buffer );
@@ -264,7 +258,7 @@ void SemFreeDataElemList( DataElemList *head )
     while( nextnode != NULL ) {
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
-            if( curnode->data[i].IsString == TRUE ) {
+            if( curnode->data[i].IsString ) {
                 RCFREE( curnode->data[i].Item.String );
             }
         }

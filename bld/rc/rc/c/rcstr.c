@@ -133,7 +133,7 @@ static void * MemUprCpyUni( void * dst, const void * src, size_t length )
     return( dst );
 } /* MemUprCpy */
 
-static void CopyString( void **nextstr, WResIDName **name, int use_unicode )
+static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
 /****************************************************************************/
 {
     WResIDName          *currname;
@@ -222,8 +222,8 @@ static int CompareWResIDNames( const void *n1, const void *n2 )
     return( WResIDNameCmp( *(const WResIDName **)(n1), *(const WResIDName **)(n2) ) );
 }
 
-extern void StringBlockBuild( StringsBlock *str, WResDir dir, int use_unicode )
-/*****************************************************************************/
+void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
+/***********************************************************************/
 {
     int     list_len;
     void ** new_list;
@@ -258,8 +258,9 @@ extern void StringBlockBuild( StringsBlock *str, WResDir dir, int use_unicode )
 } /* StringBlockBuild */
 
 static int genericCompare( const char *name1, uint_16 len1,
-                           const char *name2, uint_16 len2, int use_unicode ) {
-/**************************************************************************/
+                           const char *name2, uint_16 len2, bool use_unicode )
+/****************************************************************************/
+{
     int                 char_num;
     uint_16             ch1;
     uint_16             ch2;

@@ -32,10 +32,11 @@
 #ifndef SCAN_H_INCLUDED
 #define SCAN_H_INCLUDED
 
+#include "bool.h"
 #include "varstr.h"
 
 typedef struct ScanString {
-    int         lstring;        /* was string prefixed by L like this L"bob" */
+    bool        lstring;        /* was string prefixed by L like this L"bob" */
     int         length;
     char        *string;
 } ScanString;

@@ -50,16 +50,16 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-int InitRcMsgs( void )
+bool InitRcMsgs( void )
 {
-    return( 1 );
+    return( true );
 }
 
-int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+bool GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
 {
     buff_len = buff_len;
     strcpy( buff, StringTable[resid] );
-    return( 1 );
+    return( true );
 }
 
 void FiniRcMsgs( void ) {}
@@ -71,9 +71,9 @@ void FiniRcMsgs( void ) {}
 
 static unsigned MsgShift;
 
-int InitRcMsgs( void )
+bool InitRcMsgs( void )
 {
-    int         error;
+    bool        error;
     char        testbuf[1];
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
@@ -96,21 +96,21 @@ int InitRcMsgs( void )
     error = RCOpenResFile( &Instance, imageName );
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !GetRcMsg( USAGE_MSG_FIRST, testbuf, sizeof( testbuf ) ) ) {
-        error = TRUE;
+        error = true;
     }
     if( error ) {
         RcFatalError( ERR_RCSTR_NOT_FOUND );
     }
-    return( 1 );
+    return( true );
 }
 
-int GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
+bool GetRcMsg( unsigned resid, char *buff, unsigned buff_len )
 {
     if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) != 0 ) {
         buff[0] = '\0';
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 }
 
 void FiniRcMsgs( void )

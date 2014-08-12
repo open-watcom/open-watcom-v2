@@ -43,8 +43,7 @@
 
 /*** Forward References ***/
 static uint_16 CalcNestSize( FullVerBlockNest * nest );
-static int SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle,
-                                 int *err_code );
+static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle, int *err_code );
 static void FreeVerBlockNest( FullVerBlockNest * nest );
 
 FullVerValueList * SemWINNewVerValueList( VerValueItem item )
@@ -80,7 +79,7 @@ FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
     return( list );
 }
 
-static uint_16 CalcValListSize( FullVerValueList * list, int use_unicode )
+static uint_16 CalcValListSize( FullVerValueList *list, bool use_unicode )
 /************************************************************************/
 {
     uint_16     size;
@@ -114,14 +113,14 @@ static void FreeValList( FullVerValueList * list )
     RCFREE( list );
 }
 
-static int semWriteVerValueList( FullVerValueList * list, uint_8 use_unicode,
+static bool semWriteVerValueList( FullVerValueList * list, bool use_unicode,
                                      WResFileID handle, int *err_code )
 /***************************************************************************/
 {
-    int     error;
+    bool    error;
     int     curr_val;
 
-    error = FALSE;
+    error = false;
     for( curr_val = 0; !error && curr_val < list->NumItems; curr_val++ ) {
         error = ResWriteVerValueItem( list->Item + curr_val, use_unicode,
                                                 handle );
@@ -211,11 +210,10 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     return( block->Head.Size );
 }
 
-static int SemWriteVerBlock( FullVerBlock * block, WResFileID handle,
-                             int *err_code )
-/********************************************************************/
+static bool SemWriteVerBlock( FullVerBlock * block, WResFileID handle, int *err_code )
+/************************************************************************************/
 {
-    int     error;
+    bool        error;
     uint_8      os;
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
@@ -223,12 +221,10 @@ static int SemWriteVerBlock( FullVerBlock * block, WResFileID handle,
     } else {
         os = WRES_OS_WIN16;
     }
-    error = ResWriteVerBlockHeader( &block->Head, block->UseUnicode, os,
-                                    handle );
+    error = ResWriteVerBlockHeader( &block->Head, block->UseUnicode, os, handle );
     *err_code = LastWresErr();
     if( !error && block->Value != NULL ) {
-        error = semWriteVerValueList( block->Value, block->UseUnicode,
-                                      handle, err_code );
+        error = semWriteVerValueList( block->Value, block->UseUnicode, handle, err_code );
         if( !error ) {
             error = ResPadDWord( handle );
             *err_code = LastWresErr();
@@ -321,14 +317,13 @@ static void FreeVerBlockNest( FullVerBlockNest * nest )
     RCFREE( nest );
 }
 
-static int SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle,
-                                 int *err_code )
-/***************************************************************************/
+static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle, int *err_code )
+/******************************************************************************************/
 {
-    int             error;
-    FullVerBlock *  block;
+    bool            error;
+    FullVerBlock    *block;
 
-    error = FALSE;
+    error = false;
     for( block = nest->Head; block != NULL && !error; block = block->Next ) {
         error = SemWriteVerBlock( block, handle, err_code );
     }
@@ -393,17 +388,17 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     VerBlockHeader  root;
     ResLocation     loc;
     int             padding;
-    int             error;
+    bool            error;
     long            seek_rc;
-    int             use_unicode;
+    bool            use_unicode;
     uint_8          os;
     int             err_code;
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        use_unicode = TRUE;
+        use_unicode = true;
         os = WRES_OS_WIN32;
     } else {
-        use_unicode = FALSE;
+        use_unicode = false;
         os = WRES_OS_WIN16;
     }
     root.Key = "VS_VERSION_INFO";
@@ -465,7 +460,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                 strerror( err_code )  );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     RCFREE( info );
     FreeVerBlockNest( nest );
     return;

@@ -70,10 +70,10 @@ typedef struct PEResDir {
 struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
-int BuildResourceObject( struct ExeFileInfo *exeinfo,
+bool BuildPEResourceObject( struct ExeFileInfo *exeinfo,
                          struct ResFileInfo *resinfo,
                          pe_object *res_obj, unsigned_32 rva,
                          unsigned_32 offset, int writebyfile );
-int RcBuildResourceObject( void );
+bool RcBuildPEResourceObject( void );
 
 #endif

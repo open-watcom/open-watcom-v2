@@ -187,8 +187,8 @@
 %type <fullmemflags>    resource-options
 %type <token>           resource-option
 %type <string>          file-name
-%type <integral>        fontitalic
-%type <integral>        fontweight
+%type <boolean>         fontitalic
+%type <ressizenum>      fontweight
 %type <integral>        fontextra
 %type <menuflags>       menu-item-options
 %type <token>           menu-item-option
@@ -199,12 +199,12 @@
 %type <normalmenuitem>  menu-entry-stmt
 %type <normalmenuitem>  menu-entry-defn
 %type <string>          menu-text
-%type <integral>        menu-result
+%type <residnum>        menu-result
 %type <langinfo>        language-stmt
-%type <integral>        size-x
-%type <integral>        size-y
-%type <integral>        size-w
-%type <integral>        size-h
+%type <ressizenum>      size-x
+%type <ressizenum>      size-y
+%type <ressizenum>      size-w
+%type <ressizenum>      size-h
 %type <sizeinfo>        size-info
 %type <string>          string-constant
 %type <string>          string-group
@@ -225,7 +225,7 @@
 %type <dataelem>        diag-data-elements
 %type <nameorord>       class-name
 %type <nameorord>       ctl-class-name
-%type <integral>        point-size
+%type <ressizenum>      point-size
 %type <string>          typeface
 %type <diaghead>        diag-options-section
 %type <diagctrllist>    diag-control-section
@@ -253,9 +253,9 @@
 %type <diagctrl>        state3-stmt
 %type <nameorord>       icon-name
 %type <diagctrlopts>    icon-parms
-%type <integral>        cntl-id
+%type <residnum>        cntl-id
 %type <resid>           cntl-text
-%type <integral>        string-id
+%type <residnum>        string-id
 %type <stritem>         string-item
 %type <strtable>        string-items
 %type <strtable>        string-section
@@ -287,13 +287,13 @@
 %type <dataelem>        raw-data-section
 %type <dataelem>        raw-data-items
 %type <dlghelpid>       helpId-opt
-%type <integral>        menuId
+%type <residnum>        menuId
 %type <integral>        menuType
 %type <integral>        menuState
 %type <integral>        helpId
 %type <toolbar>         toolbar-block
 %type <toolbar>         toolbar-items
-%type <integral>        toolbar-item
+%type <residnum>        toolbar-item
 
 %start goal-symbol
 
@@ -344,7 +344,7 @@ name-id
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
                 RcError( ERR_BAD_RES_ID, $1.Value );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
         }
     | keyword-name
@@ -362,7 +362,7 @@ type-id
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
                 RcError( ERR_BAD_RES_TYPE, $1.Value );
-                ErrorHasOccured = TRUE;
+                ErrorHasOccured = true;
             }
         }
     ;
@@ -614,7 +614,7 @@ user-defined-data
     : file-name
         { $$ = SemCopyRawFile( $1.string ); RcMemFree( $1.string ); }
     | raw-data-section
-        { $$ = SemFlushDataElemList( $1, TRUE ); }
+        { $$ = SemFlushDataElemList( $1, true ); }
     ;
 
 raw-data-section
@@ -636,14 +636,14 @@ raw-data-items
 raw-data-item
     : string-constant
         {
-            $$.IsString = TRUE;
-            $$.TmpStr = TRUE;
-            $$.StrLen = $1.length;
+            $$.IsString = true;
+            $$.TmpStr = true;
+            $$.StrLen = (uint_16)$1.length;
             $$.Item.String = $1.string;
             $$.LongItem = $1.lstring;
         }
     | constant-expression
-        { $$.IsString = FALSE; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
+        { $$.IsString = false; $$.Item.Num = $1.Value; $$.LongItem = $1.longVal; }
     ;
 
 rcdata-resource
@@ -716,7 +716,7 @@ toolbar-items
 toolbar-item
     : Y_BUTTON constant-expression
         {
-            $$ = $2.Value;
+            $$ = (uint_16)$2.Value;
         }
     | Y_SEPARATOR
         {
@@ -775,7 +775,7 @@ string-item
 
 string-id
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 accelerators-resource
@@ -829,13 +829,13 @@ event
     : string-constant
         {
             $$.event = SemWINStrToAccelEvent( $1.string );
-            $$.strevent = TRUE;
+            $$.strevent = true;
             RcMemFree( $1.string );
         }
     | constant-expression
         {
             $$.event = $1.Value;
-            $$.strevent = FALSE;
+            $$.strevent = false;
         }
     ;
 
@@ -859,17 +859,17 @@ acc-item-options
 
 acc-item-option
     : Y_NOINVERT
-        { $$.flags = ACCEL_NOINVERT; $$.typegiven = FALSE; }
+        { $$.flags = ACCEL_NOINVERT; $$.typegiven = false; }
     | Y_ALT
-        { $$.flags = ACCEL_ALT; $$.typegiven = FALSE; }
+        { $$.flags = ACCEL_ALT; $$.typegiven = false; }
     | Y_SHIFT
-        { $$.flags = ACCEL_SHIFT; $$.typegiven = FALSE; }
+        { $$.flags = ACCEL_SHIFT; $$.typegiven = false; }
     | Y_CONTROL
-        { $$.flags = ACCEL_CONTROL; $$.typegiven = FALSE; }
+        { $$.flags = ACCEL_CONTROL; $$.typegiven = false; }
     | Y_ASCII
-        { $$.flags = ACCEL_ASCII; $$.typegiven = TRUE; }
+        { $$.flags = ACCEL_ASCII; $$.typegiven = true; }
     | Y_VIRTKEY
-        { $$.flags = ACCEL_VIRTKEY; $$.typegiven = TRUE; }
+        { $$.flags = ACCEL_VIRTKEY; $$.typegiven = true; }
     ;
 
 menuex-resource
@@ -912,7 +912,7 @@ menu-items
 
 menuId
     : constant-expression
-      { $$ = $1.Value; }
+      { $$ = (uint_16)$1.Value; }
     ;
 
 menuType
@@ -936,7 +936,7 @@ menu-item
             $$.next = NULL;
             $$.prev = NULL;
             $$.UseUnicode = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
-            $$.IsPopup = FALSE;
+            $$.IsPopup = false;
             $$.item.normal = $1;
         }
     | menu-popup-stmt
@@ -944,7 +944,7 @@ menu-item
             $$.next = NULL;
             $$.prev = NULL;
             $$.UseUnicode = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
-            $$.IsPopup = TRUE;
+            $$.IsPopup = true;
             $$.item.popup = $1;
         }
     ;
@@ -956,7 +956,7 @@ menu-popup-stmt
             $$.item.menuData.ItemFlags = MENU_POPUP;
             $$.item.menuData.ItemText = $2.string;
             $$.submenu = $4;
-            $$.item.menuExData.ItemId = 0L;
+            $$.item.menuExData.ItemId = 0;
             $$.item.menuExData.ItemType = 0L;
             $$.item.menuExData.ItemState = 0L;
             $$.item.menuExData.HelpId = 0L;
@@ -1089,7 +1089,7 @@ menu-text
 
 menu-result
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 /* Note: The way we accept menu options differs from what is specified */
@@ -1149,7 +1149,7 @@ resource-info-stmts
 resource-info-stmt
     : language-stmt
         {
-            SemWINSetResourceLanguage( &$1, TRUE );
+            SemWINSetResourceLanguage( &$1, true );
         }
     | characteristics-stmt
     | version-stmt
@@ -1157,7 +1157,7 @@ resource-info-stmt
 
 language-stmt
     : Y_LANGUAGE constant-expression Y_COMMA constant-expression
-        { $$.lang = $2.Value; $$.sublang = $4.Value; }
+        { $$.lang = (uint_16)$2.Value; $$.sublang = (uint_8)$4.Value; }
     ;
 
 characteristics-stmt
@@ -1179,9 +1179,9 @@ dialog-or-dialogEx
 
 helpId-opt
     : comma-opt constant-expression
-       { $$.HelpId = $2.Value; $$.HelpIdDefined = TRUE; }
+       { $$.HelpId = $2.Value; $$.HelpIdDefined = true; }
     | /* nothing */
-       { $$.HelpId = 0; $$.HelpIdDefined = FALSE; }
+       { $$.HelpId = 0; $$.HelpIdDefined = false; }
     ;
 
 dlg-resource
@@ -1251,22 +1251,22 @@ size-info
 
 size-x
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-y
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-w
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 size-h
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 diag-options-section
@@ -1352,7 +1352,7 @@ class-name
     : string-constant
         { $$ = ResStrToNameOrOrd( $1.string ); RcMemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( $1.Value ); }
+        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
     ;
 
 ctl-class-name
@@ -1371,7 +1371,7 @@ ctl-class-name
     | Y_STATIC
         { $$ = ResStrToNameOrOrd( "STATIC" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrd( $1.Value ); }
+        { $$ = ResNumToNameOrOrd( (uint_16)$1.Value ); }
     ;
 
 font-stmt
@@ -1381,10 +1381,10 @@ font-stmt
             $$.Opt.Font.PointSize = $2;
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = 0;
-            $$.Opt.Font.FontItalic = 0;
+            $$.Opt.Font.FontItalic = false;
             $$.Opt.Font.FontExtra = 1;
-            $$.Opt.Font.FontWeightDefined = FALSE;
-            $$.Opt.Font.FontItalicDefined = FALSE;
+            $$.Opt.Font.FontWeightDefined = false;
+            $$.Opt.Font.FontItalicDefined = false;
         }
     | Y_FONT point-size comma-opt typeface comma-opt fontweight
         {
@@ -1392,13 +1392,12 @@ font-stmt
             $$.Opt.Font.PointSize = $2;
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
-            $$.Opt.Font.FontItalic = 0;
+            $$.Opt.Font.FontItalic = false;
             $$.Opt.Font.FontExtra = 1;
-            $$.Opt.Font.FontWeightDefined = TRUE;
-            $$.Opt.Font.FontItalicDefined = FALSE;
+            $$.Opt.Font.FontWeightDefined = true;
+            $$.Opt.Font.FontItalicDefined = false;
         }
-    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt
-             fontitalic
+    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt fontitalic
         {
             $$.token = Y_FONT;
             $$.Opt.Font.PointSize = $2;
@@ -1406,8 +1405,8 @@ font-stmt
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
             $$.Opt.Font.FontExtra = 1;
-            $$.Opt.Font.FontWeightDefined = TRUE;
-            $$.Opt.Font.FontItalicDefined = TRUE;
+            $$.Opt.Font.FontWeightDefined = true;
+            $$.Opt.Font.FontItalicDefined = true;
         }
     | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt
              fontitalic comma-opt fontextra
@@ -1417,9 +1416,9 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontExtra = $10;
-            $$.Opt.Font.FontWeightDefined = TRUE;
-            $$.Opt.Font.FontItalicDefined = TRUE;
+            $$.Opt.Font.FontExtra = (uint_8)$10;
+            $$.Opt.Font.FontWeightDefined = true;
+            $$.Opt.Font.FontItalicDefined = true;
         }
     ;
 
@@ -1430,7 +1429,7 @@ fontextra
 
 fontweight
     : constant-expression
-      { $$ = $1.Value; }
+      { $$ = (uint_16)$1.Value; }
     ;
 
 fontitalic
@@ -1443,7 +1442,7 @@ fontitalic
 
 point-size
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 typeface
@@ -1515,7 +1514,7 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = 0L;
             $$.HelpId = 0L;
-            $$.HelpIdDefined = FALSE;
+            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style
         {
@@ -1525,7 +1524,7 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = 0L;
             $$.HelpId = 0L;
-            $$.HelpIdDefined = FALSE;
+            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
         {
@@ -1535,7 +1534,7 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = 0L;
-            $$.HelpIdDefined = FALSE;
+            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
            exstyle comma-opt helpId
@@ -1546,13 +1545,13 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = $10;
-            $$.HelpIdDefined = TRUE;
+            $$.HelpIdDefined = true;
         }
     ;
 
 cntl-id
     : constant-expression
-        { $$ = $1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 ltext-stmt
@@ -1789,14 +1788,14 @@ version
     | version-pair comma-opt constant-expression
         {
             $$.u.Version.High = $1;
-            $$.u.Version.Low.HighWord = $3.Value;
+            $$.u.Version.Low.HighWord = (uint_16)$3.Value;
             $$.u.Version.Low.LowWord = 0;
         }
     ;
 
 version-pair
     : constant-expression comma-opt constant-expression
-        { $$.HighWord = $1.Value; $$.LowWord = $3.Value; }
+        { $$.HighWord = (uint_16)$1.Value; $$.LowWord = (uint_16)$3.Value; }
     ;
 
 variable-ver-section
@@ -1862,21 +1861,21 @@ value-list
 
 value-item
     : constant-expression
-        { $$.IsNum = TRUE; $$.Value.Num = $1.Value; }
+        { $$.IsNum = true; $$.Value.Num = (uint_16)$1.Value; }
     | value-string-list
     ;
 
 value-string-list
     :string-constant
         {
-            $$.IsNum = FALSE;
+            $$.IsNum = false;
             $$.Value.String = $1.string;
-            $$.strlen = $1.length;
+            $$.strlen = (uint_16)$1.length;
         }
     | value-string-list string-constant
         {
-            $$.IsNum = FALSE;
-            $$.strlen = strlen( $1.Value.String ) + strlen( $2.string );
+            $$.IsNum = false;
+            $$.strlen = (uint_16)( strlen( $1.Value.String ) + strlen( $2.string ) );
             $$.Value.String = RcMemMalloc( $$.strlen + 1 );
             strcpy( $$.Value.String, $1.Value.String );
             strcat( $$.Value.String, $2.string );

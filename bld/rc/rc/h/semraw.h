@@ -37,15 +37,15 @@
 #define MAX_DATA_NODES     100
 
 typedef struct RawDataItem {
-    uint_8      IsString;
-    uint_8      LongItem;
-    uint_16     StrLen;
-    uint_8      TmpStr;
-    uint_8      WriteNull;
     union {
         char    *String;
         uint_32  Num;
     } Item;
+    uint_16     StrLen;
+    bool        IsString;
+    bool        LongItem;
+    bool        TmpStr;
+    bool        WriteNull;
 } RawDataItem;
 
 typedef struct DataElemList {

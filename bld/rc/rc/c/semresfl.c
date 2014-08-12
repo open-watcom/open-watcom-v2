@@ -113,7 +113,7 @@ static int copyResourcesFromRes( const char *full_filename )
     return( FALSE );
 
 HANDLE_ERROR:
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     WResFreeDir( dir );
     if( handle != NIL_HANDLE )
         RCCLOSE( handle );
@@ -137,6 +137,6 @@ void SemWINAddResFile( char *filename )
     return;
 
 HANDLE_ERROR:
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     RCFREE( filename );
 }

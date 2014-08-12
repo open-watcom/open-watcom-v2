@@ -61,7 +61,7 @@ RcStatus CopyData( uint_32 offset, uint_32 length, WResFileID handle,
                 void *buff, int buffsize, int *err_code )
 /***************************************************************************/
 {
-    int             error;
+    bool            error;
     WResFileSSize   numread;
 
     if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {

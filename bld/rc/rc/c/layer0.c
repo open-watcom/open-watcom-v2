@@ -188,13 +188,13 @@ WResFileID RcOpen( const char * file_name, int access, ... )
 
 } /* RcOpen */
 
-static int FlushRcBuffer( WResFileID handle, RcBuffer * buff )
+static bool FlushRcBuffer( WResFileID handle, RcBuffer *buff )
 /************************************************************/
 {
     int     num_wrote;
-    int     error;
+    bool    error;
 
-    error = FALSE;
+    error = false;
     if (buff->IsDirty) {
         num_wrote = write( handle, buff->Buffer, buff->Count );
         error = (num_wrote != buff->Count);
@@ -213,8 +213,8 @@ int RcClose( WResFileID handle )
 /******************************/
 {
     RcBuffer    *buff;
-    int         error,
-                i;
+    bool        error;
+    int         i;
 
     i = RcFindIndex( handle );
     if ( i < RC_MAX_FILES ) {
@@ -241,7 +241,7 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
     RcBuffer    *buff;
     int         copy_bytes;
     int         total_wrote;
-    int         error;
+    bool        error;
     int         i;
 
     i = RcFindIndex( handle );
@@ -304,7 +304,7 @@ WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
     RcBuffer    *buff;
     int         copy_bytes;
     int         total_read;
-    int         error;
+    bool        error;
     int         i;
     int         bytes_added;        /* return value of FillRcBuffer */
 
@@ -357,8 +357,8 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
     long        currpos;
     long        seek_rc;
     int         diff;
-    int         error,
-                i;
+    bool        error;
+    int         i;
 
     i = RcFindIndex( handle );
     if ( i >= RC_MAX_FILES ) {
@@ -477,10 +477,10 @@ void Layer0InitStatics( void )
     }
 }
 
-int RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
-/***************************************************************/
+bool RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
+/****************************************************************/
 {
-    int         error;
+    bool        error;
 
     instance->handle = open( imagename, O_RDONLY | O_BINARY );
     error = ( instance->handle == NIL_HANDLE );

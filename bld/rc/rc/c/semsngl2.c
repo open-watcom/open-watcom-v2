@@ -149,7 +149,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
     return;
 
 HANDLE_ERROR:
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     RCFREE( name );
     RCFREE( filename );
 } /* SemOS2AddSingleLineResource */
@@ -173,7 +173,7 @@ static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
                                 ResMemFlags flags, int *err_code )
 /************************************************************************/
 {
-    RcStatus            error;
+    RcStatus            ret;
     char *              buffer;
     ResLocation         loc;
     long                pos;
@@ -183,15 +183,15 @@ static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
     loc.start = SemStartResource();
 
     if( ResWriteFontInfo( info, CurrResFile.handle ) ) {
-        error = RS_WRITE_ERROR;
+        ret = RS_WRITE_ERROR;
         *err_code = LastWresErr();
     } else {
         pos = RCTELL( handle );
         if( pos == -1 ) {
-            error = RS_READ_ERROR;
+            ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            error = SemCopyDataUntilEOF( pos, handle, buffer,
+            ret = SemCopyDataUntilEOF( pos, handle, buffer,
                                          FONT_BUFFER_SIZE, err_code );
         }
     }
@@ -202,7 +202,7 @@ static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
 
     RCFREE( buffer );
 
-    return( error );
+    return( ret );
 } /* copyFont */
 
 typedef struct {
@@ -305,7 +305,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     char *              devicename;
     char *              facename;
     WResFileID          handle;
-    int                 error;
+    RcStatus            ret;
     int                 err_code;
     ReadStrErrInfo      readstr_err;
 
@@ -317,22 +317,22 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
     if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
 
-    error = readFontInfo( handle, &info, &err_code );
-    if( error != RS_OK) goto READ_HEADER_ERROR;
+    ret = readFontInfo( handle, &info, &err_code );
+    if( ret != RS_OK) goto READ_HEADER_ERROR;
 
-    error = copyFont( &info, handle, name, flags, &err_code );
-    if( error != RS_OK ) goto COPY_FONT_ERROR;
+    ret = copyFont( &info, handle, name, flags, &err_code );
+    if( ret != RS_OK ) goto COPY_FONT_ERROR;
 
     devicename = readString( handle, info.dfDevice, &readstr_err );
     if( devicename == NULL ) {
-        error = readstr_err.status;
+        ret = readstr_err.status;
         err_code = readstr_err.err_code;
         goto READ_HEADER_ERROR;
     }
 
     facename = readString( handle, info.dfFace, &readstr_err );
     if (facename == NULL) {
-        error = readstr_err.status;
+        ret = readstr_err.status;
         err_code = readstr_err.err_code;
         RCFREE( devicename );
         goto READ_HEADER_ERROR;
@@ -350,20 +350,20 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
 
 FILE_OPEN_ERROR:
     RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     RCFREE( name );
     return;
 
 READ_HEADER_ERROR:
-    ReportCopyError( error, ERR_READING_FONT, filename, err_code );
-    ErrorHasOccured = TRUE;
+    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ErrorHasOccured = true;
     RCFREE( name );
     RCCLOSE( handle );
     return;
 
 COPY_FONT_ERROR:
-    ReportCopyError( error, ERR_READING_FONT, filename, err_code );
-    ErrorHasOccured = TRUE;
+    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ErrorHasOccured = true;
     RCCLOSE( handle );
     return;
 }
@@ -394,7 +394,7 @@ void SemOS2WriteFontDir( void )
 {
     FullFontDirEntry *  currentry;
     ResLocation         loc;
-    int                 error;
+    bool                error;
 
     if (CurrResFile.FontDir == NULL) {
         return;
@@ -425,7 +425,7 @@ void SemOS2WriteFontDir( void )
 
 OUTPUT_WRITE_ERROR:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     FreeFontDir( CurrResFile.FontDir );
     CurrResFile.FontDir = NULL;
     return;

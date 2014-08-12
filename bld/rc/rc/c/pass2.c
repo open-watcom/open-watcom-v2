@@ -48,13 +48,13 @@
  * copyStubFile - copy from the begining of the file to the start of
  *                the win exe header
  */
-static int copyStubFile( int *err_code )
+static RcStatus copyStubFile( int *err_code )
 {
-    RcStatus    error;
+    RcStatus    ret;
 
-    error = CopyExeData( Pass2Info.OldFile.Handle, Pass2Info.TmpFile.Handle, Pass2Info.OldFile.WinHeadOffset );
+    ret = CopyExeData( Pass2Info.OldFile.Handle, Pass2Info.TmpFile.Handle, Pass2Info.OldFile.WinHeadOffset );
     *err_code = errno;
-    return( error );
+    return( ret );
 } /* copyStubFile */
 
 static RcStatus seekPastResTable( int *err_code )
@@ -157,7 +157,7 @@ static void checkShiftCount( void )
                                 Pass2Info.TmpFile.u.NEInfo.WinHead.align;
 } /* checkShiftCount */
 
-static int copyBody( void )
+static bool copyWINBody( void )
 {
     NEExeInfo *         tmp;
     uint_16             sect2mask = 0;
@@ -167,7 +167,6 @@ static int copyBody( void )
     long                gangloadlen;
     CpSegRc             copy_segs_ret;
     bool                use_gangload = FALSE;
-    int                 error;
 
     tmp = &Pass2Info.TmpFile.u.NEInfo;
 
@@ -219,25 +218,27 @@ static int copyBody( void )
         }
         break;
     case CPSEG_ERROR:
-        return( TRUE );
+        return( true );
     case CPSEG_OK:
     default:
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        error = CopyWINResources( sect2mask, sect2bits, FALSE );
-        if( error) return( TRUE  );
+        if( CopyWINResources( sect2mask, sect2bits, FALSE ) != RS_OK ) {
+            return( true );
+        }
     }
     gangloadlen = RCTELL( Pass2Info.TmpFile.Handle ) - gangloadstart;
 
     /* third arg to Copy???? is TRUE  --> copy section two */
     copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, TRUE );
     if( copy_segs_ret == CPSEG_ERROR) {
-        return( TRUE  );
+        return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        error = CopyWINResources( sect2mask, sect2bits, TRUE );
-        if( error) return( TRUE  );
+        if( CopyWINResources( sect2mask, sect2bits, TRUE ) != RS_OK ) {
+            return( true );
+        }
     }
 
     if( use_gangload ) {
@@ -251,15 +252,14 @@ static int copyBody( void )
         tmp->WinHead.otherflags &= ~WIN_GANGLOAD_PRESENT;
     }
 
-    return( FALSE );
+    return( false );
 
 } /* copyBody */
 
-static int copyOS2Body( void )
+static bool copyOS2Body( void )
 {
     NEExeInfo           *tmp;
     CpSegRc             copy_segs_ret;
-    int                 error;
     unsigned_16         align;
 
     tmp = &Pass2Info.TmpFile.u.NEInfo;
@@ -271,15 +271,15 @@ static int copyOS2Body( void )
 
     copy_segs_ret = CopyOS2Segments();
     if( copy_segs_ret == CPSEG_ERROR ) {
-        return( TRUE );
+        return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        error = CopyOS2Resources();
-        if( error )
-            return( TRUE );
+        if( CopyOS2Resources() != RS_OK ) {
+            return( true );
+        }
     }
 
-    return( FALSE );
+    return( false );
 } /* copyOS2Body */
 
 /*
@@ -302,7 +302,7 @@ static RcStatus copyDebugInfo( void )
 
 } /* copyDebugInfo */
 
-static int writeHeadAndTables( int *err_code )
+static RcStatus writeHeadAndTables( int *err_code )
 {
     ExeFileInfo *   oldfile;
     ExeFileInfo *   tmpfile;
@@ -311,7 +311,7 @@ static int writeHeadAndTables( int *err_code )
     uint_16         tableshift;     /* amount the tables are shifted in the */
                                     /* tmp file */
     uint_16         info;           /* os2_exe_header.info */
-    int             error;
+    RcStatus        ret;
 
     oldfile = &(Pass2Info.OldFile);
     oldne = &oldfile->u.NEInfo;
@@ -386,8 +386,8 @@ static int writeHeadAndTables( int *err_code )
     }
 
     /* write the resource table */
-    error = WriteWINResTable( tmpfile->Handle, &(tmpne->Res), err_code );
-    return( error );
+    ret = WriteWINResTable( tmpfile->Handle, &(tmpne->Res), err_code );
+    return( ret );
 
 } /* writeHeadAndTables */
 
@@ -396,7 +396,7 @@ static int writeHeadAndTables( int *err_code )
  * but there are enough differences in detail to warrant separate
  * implementation to keep the two cleaner.
  */
-static int writeOS2HeadAndTables( int *err_code )
+static RcStatus writeOS2HeadAndTables( int *err_code )
 {
     ExeFileInfo *   oldfile;
     ExeFileInfo *   tmpfile;
@@ -404,7 +404,7 @@ static int writeOS2HeadAndTables( int *err_code )
     NEExeInfo *     tmpne;
     uint_16         tableshift;     /* amount the tables are shifted in the */
                                     /* tmp file */
-    int             error;
+    RcStatus        ret;
 
     oldfile = &(Pass2Info.OldFile);
     oldne = &oldfile->u.NEInfo;
@@ -458,12 +458,12 @@ static int writeOS2HeadAndTables( int *err_code )
     }
 
     /* write the resource table */
-    error = WriteOS2ResTable( tmpfile->Handle, &(tmpne->OS2Res), err_code );
-    return( error );
+    ret = WriteOS2ResTable( tmpfile->Handle, &(tmpne->OS2Res), err_code );
+    return( ret );
 
 } /* writeOS2HeadAndTables */
 
-static int findEndOfResources( int *err_code )
+static RcStatus findEndOfResources( int *err_code )
 /* if this exe already contains resources find the end of them so we don't
    copy them with debug information.  Otherwise the file will grow whenever
    a resource file is added */
@@ -593,143 +593,145 @@ static RcStatus writePEHeadAndObjTable( void )
  * segment(s). The OS/2 resource table is completely different as well and
  * only contains resource types/IDs.
  */
-int MergeResExeWINNE( void )
+bool MergeResExeWINNE( void )
 {
-    RcStatus        error;
+    RcStatus        ret;
+    bool            error;
     int             err_code;
 
-    error = copyStubFile( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = copyStubFile( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = AllocAndReadWINSegTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = AllocAndReadWINSegTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
     InitWINResTable();
 
-    error = seekPastResTable( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = seekPastResTable( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = findEndOfResources( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = findEndOfResources( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyOtherTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = copyOtherTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyBody();
-    if( error ) return( FALSE );
+    error = copyWINBody();
+    if( error ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyDebugInfo();
-    if( error != RS_OK ) {
+    ret = copyDebugInfo();
+    if( ret != RS_OK ) {
         err_code = errno;
-        goto HANDLE_ERROR;
+        goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = writeHeadAndTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = writeHeadAndTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    return( TRUE );
+    return( true );
 
-HANDLE_ERROR:
-    switch( error ) {
+REPORT_ERROR:
+    switch( ret ) {
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, Pass2Info.OldFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_READING_EXE, Pass2Info.OldFile.name, strerror( err_code ) );
         break;
     case RS_READ_INCMPLT:
         RcError( ERR_UNEXPECTED_EOF, Pass2Info.OldFile.name );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name, strerror( err_code ) );
         break;
     case RS_NO_MEM:
         break;
     default:
        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
-    return( FALSE );
+    /* fall through */
+HANDLE_ERROR:
+    return( false );
 
 STOP_ERROR:
     RcFatalError( ERR_STOP_REQUESTED );
 #if !defined( __WATCOMC__ )
-    return( FALSE );
+    return( false );
 #endif
 } /* MergeResExeWINNE */
 
 
-int MergeResExeOS2NE( void )
+bool MergeResExeOS2NE( void )
 {
-    RcStatus        error;
+    RcStatus        ret;
+    bool            error;
     int             err_code;
 
-    error = copyStubFile( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = copyStubFile( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = InitOS2ResTable( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = InitOS2ResTable( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = AllocAndReadOS2SegTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = AllocAndReadOS2SegTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = seekPastResTable( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = seekPastResTable( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyOtherTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = copyOtherTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
     error = copyOS2Body();
-    if( error ) return( FALSE );
+    if( error ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyDebugInfo();
-    if( error != RS_OK ) {
+    ret = copyDebugInfo();
+    if( ret != RS_OK ) {
         err_code = errno;
-        goto HANDLE_ERROR;
+        goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = writeOS2HeadAndTables( &err_code );
-    if( error != RS_OK ) goto HANDLE_ERROR;
+    ret = writeOS2HeadAndTables( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
-    return( TRUE );
+    return( true );
 
-HANDLE_ERROR:
-    switch( error ) {
+REPORT_ERROR:
+    switch( ret ) {
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, Pass2Info.OldFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_READING_EXE, Pass2Info.OldFile.name, strerror( err_code ) );
         break;
     case RS_READ_INCMPLT:
         RcError( ERR_UNEXPECTED_EOF, Pass2Info.OldFile.name );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name, strerror( err_code ) );
         break;
     case RS_NO_MEM:
         break;
     default:
        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
-    return( FALSE );
+    /* fall through */
+HANDLE_ERROR:
+    return( false );
 
 STOP_ERROR:
     RcFatalError( ERR_STOP_REQUESTED );
 #if !defined( __WATCOMC__ )
-    return( FALSE );
+    return( false );
 #endif
 } /* MergeResExeOS2NE */
 
@@ -803,58 +805,57 @@ static RcStatus updateDebugDirectory( void )
 } /* updateDebugDirectory */
 
 
-int MergeResExePE( void )
+bool MergeResExePE( void )
 {
-    RcStatus    error;
+    RcStatus    ret;
+    bool        error;
     int         err_code;
 
-    error = copyStubFile( &err_code );
-    if( error != RS_OK ) goto REPORT_ERROR;
+    ret = copyStubFile( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
     error = CopyExeObjects();
     if( error ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = RcBuildResourceObject();
+    error = RcBuildPEResourceObject();
     if( error ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = copyDebugInfo();
-    if( error != RS_OK ) {
+    ret = copyDebugInfo();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = writePEHeadAndObjTable();
-    if( error != RS_OK ) {
+    ret = writePEHeadAndObjTable();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = updateDebugDirectory();
-    if( error != RS_OK ) {
+    ret = updateDebugDirectory();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    return( TRUE );
+    return( true );
 
 REPORT_ERROR:
-    switch( error ) {
+    switch( ret ) {
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, Pass2Info.OldFile.name,
-                 strerror( err_code )  );
+        RcError( ERR_READING_EXE, Pass2Info.OldFile.name, strerror( err_code )  );
         break;
     case RS_READ_INCMPLT:
         RcError( ERR_UNEXPECTED_EOF, Pass2Info.OldFile.name );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name, strerror( err_code ) );
         break;
     case RS_BAD_FILE_FMT:
         RcError( ERR_NOT_VALID_EXE, Pass2Info.OldFile.name );
@@ -862,16 +863,16 @@ REPORT_ERROR:
     case RS_NO_MEM:
         break;
     default:
-       RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
-   /* fall through */
+    /* fall through */
 HANDLE_ERROR:
-    return( FALSE );
+    return( false );
 
 STOP_ERROR:
     RcFatalError( ERR_STOP_REQUESTED );
 #if !defined( __WATCOMC__ )
-    return( FALSE );
+    return( false );
 #endif
 } /* MergeResExePE */
 
@@ -998,13 +999,14 @@ static RcStatus copyLXDebugInfo( void )
 } /* copyLXDebugInfo */
 
 
-int MergeResExeLX( void )
+bool MergeResExeLX( void )
 {
-    RcStatus    error;
+    RcStatus    ret;
+    bool        error;
     int         err_code;
 
-    error = copyStubFile( &err_code );
-    if( error != RS_OK ) goto REPORT_ERROR;
+    ret = copyStubFile( &err_code );
+    if( ret != RS_OK ) goto REPORT_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
     error = RcBuildLXResourceObjects();
@@ -1015,47 +1017,45 @@ int MergeResExeLX( void )
     if( error ) goto HANDLE_ERROR;
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = RcWriteLXResourceObjects();
-    if( error != RS_OK ) {
+    ret = RcWriteLXResourceObjects();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
 
-    error = copyLXNonresData();
-    if( error != RS_OK ) {
-        err_code = errno;
-        goto REPORT_ERROR;
-    }
-    if( StopInvoked ) goto STOP_ERROR;
-
-    error = copyLXDebugInfo();
-    if( error != RS_OK ) {
+    ret = copyLXNonresData();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    error = writeLXHeadAndTables();
-    if( error != RS_OK ) {
+    ret = copyLXDebugInfo();
+    if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
     if( StopInvoked ) goto STOP_ERROR;
 
-    return( TRUE );
+    ret = writeLXHeadAndTables();
+    if( ret != RS_OK ) {
+        err_code = errno;
+        goto REPORT_ERROR;
+    }
+    if( StopInvoked ) goto STOP_ERROR;
+
+    return( true );
 
 REPORT_ERROR:
-    switch( error ) {
+    switch( ret ) {
     case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, Pass2Info.OldFile.name,
-                 strerror( err_code )  );
+        RcError( ERR_READING_EXE, Pass2Info.OldFile.name, strerror( err_code )  );
         break;
     case RS_READ_INCMPLT:
         RcError( ERR_UNEXPECTED_EOF, Pass2Info.OldFile.name );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name,
-                 strerror( err_code ) );
+        RcError( ERR_WRITTING_TMP, Pass2Info.TmpFile.name, strerror( err_code ) );
         break;
     case RS_BAD_FILE_FMT:
         RcError( ERR_NOT_VALID_EXE, Pass2Info.OldFile.name );
@@ -1065,13 +1065,13 @@ REPORT_ERROR:
     default:
        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
-   /* fall through */
+    /* fall through */
 HANDLE_ERROR:
-    return( FALSE );
+    return( false );
 
 STOP_ERROR:
     RcFatalError( ERR_STOP_REQUESTED );
 #if !defined( __WATCOMC__ )
-    return( FALSE );
+    return( false );
 #endif
 } /* MergeResExeLX */

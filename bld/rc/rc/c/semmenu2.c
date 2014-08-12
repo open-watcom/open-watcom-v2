@@ -61,21 +61,21 @@ struct MenuItem {
 #include "rccore.h"
 
 
-int ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
+bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, WResFileID handle )
 /*********************************************************************/
 {
     if( RCWRITE( handle, currhead, sizeof(MenuHeaderOS2) ) != sizeof(MenuHeaderOS2) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-int ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
+bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID handle )
 /*****************************************************************************/
 {
-    int         error;
+    bool        error;
     uint_16     tmp16;
 
     tmp16 = curritem->ItemStyle;
@@ -127,7 +127,7 @@ FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
 
     if( newmenu == NULL || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -149,7 +149,7 @@ FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem 
 
     if (newitem == NULL) {
         RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( NULL );
     }
 
@@ -160,10 +160,10 @@ FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem 
     return( currmenu );
 }
 
-static int SemOS2WriteMenuItem( FullMenuItemOS2 *item, int *err_code )
-/********************************************************************/
+static bool SemOS2WriteMenuItem( FullMenuItemOS2 *item, int *err_code )
+/*********************************************************************/
 {
-    int     error;
+    bool    error;
 
     error = ResOS2WriteMenuItemNormal( &(item->item), CurrResFile.handle );
     *err_code = LastWresErr();
@@ -196,16 +196,17 @@ static int SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, int *count )
 }
 
 
-static int SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code,
+static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code,
                                uint_32 codepage )
 /******************************************************************/
 {
-    int             error, count = 0;
+    int             count = 0;
+    bool            error;
     FullMenuItemOS2 *curritem;
     MenuHeaderOS2   head;
 
     if( ErrorHasOccured ) {
-        return( FALSE );
+        return( false );
     }
 
     head.Size     = SemOS2CalcSubMenuSize( submenu, &count );
@@ -215,7 +216,7 @@ static int SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code,
 
     error = ResOS2WriteMenuHeader( &head, CurrResFile.handle );
     if( error ) {
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
         return( error );
     }
 
@@ -234,7 +235,7 @@ static int SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code,
     }
 
     if( error ) {
-        ErrorHasOccured = TRUE;
+        ErrorHasOccured = true;
     }
     return( error );
 }
@@ -278,7 +279,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
 /***********************************************************************/
 {
     ResLocation     loc;
-    int             error;
+    bool            error;
     int             err_code;
 
     tokentype = tokentype;
@@ -301,7 +302,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
 
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = TRUE;
+    ErrorHasOccured = true;
     SemOS2FreeSubMenu( menu );
     return;
 }

@@ -33,8 +33,8 @@
 #ifndef EXEOBJ_H_INCLUDED
 #define EXEOBJ_H_INCLUDED
 
-extern int CopyExeObjects( void );
-extern uint_32 GetNextObjPhysOffset( PEExeInfo * info );
-extern pe_va GetNextObjRVA( PEExeInfo * info );
+extern bool     CopyExeObjects( void );
+extern uint_32  GetNextObjPhysOffset( PEExeInfo * info );
+extern pe_va    GetNextObjRVA( PEExeInfo * info );
 
 #endif
