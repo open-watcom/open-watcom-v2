@@ -50,30 +50,22 @@ typedef struct handle_info {
 } HANDLE_INFO, *PHANDLE_INFO;
 
 #ifndef WIN_GUI
-#define LoadString( hInstance, idResource, lpszBuffer, nBufferMax ) \
-            WResLoadString( hInstance, idResource, lpszBuffer, nBufferMax )
-typedef PHANDLE_INFO HINSTANCE;
-typedef unsigned int UINT;
-typedef char _WCI86FAR *LPSTR;
+#define LoadString      WResLoadString
+typedef PHANDLE_INFO    HINSTANCE;
+typedef unsigned int    UINT;
+typedef char            _WCI86FAR *LPSTR;
 #endif
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-extern int OpenResFile( PHANDLE_INFO hInstance, const char *filename );
-extern int FindResources( PHANDLE_INFO hInstance );
-extern int InitResources( PHANDLE_INFO hInstance );
-extern int WResLoadString( PHANDLE_INFO hInstance,
-                           UINT idResource,
-                           LPSTR lpszBuffer,
-                           int nBufferMax );
-extern int WResLoadResource( PHANDLE_INFO       hInstance,
-                             UINT               idType,
-                             UINT               idResource,
-                             LPSTR              *lpszBuffer,
-                             int                *bufferSize );
-extern int CloseResFile( PHANDLE_INFO hInstance );
+extern bool OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern bool CloseResFile( PHANDLE_INFO hInstance );
+extern bool FindResources( PHANDLE_INFO hInstance );
+extern bool InitResources( PHANDLE_INFO hInstance );
+extern int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
+extern int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
 
 #if defined( __cplusplus )
 }
