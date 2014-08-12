@@ -75,12 +75,12 @@ WResSetRtns( open, close, read, write, res_seeek, tell, mem_alloc, mem_free );
 
 int init_msgs( void )
 {
-    int         error;
+    bool        error;
     char        fname[_MAX_PATH];
 
-    error = FALSE;
+    error = false;
     if( _cmdname( fname ) == NULL ) {
-        error = TRUE;
+        error = true;
     } else {
         error = OpenResFile( &Instance, fname );
         WGMLItself = Instance.handle;
@@ -92,7 +92,7 @@ int init_msgs( void )
         }
         MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( !error && !get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
-            error = TRUE;
+            error = true;
         }
     }
     if( error ) {

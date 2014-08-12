@@ -105,11 +105,11 @@ static int Msg_Get( int resourceid, char *buffer )
 
 int Msg_Init( void )
 {
-    int         initerror;
+    bool        initerror;
     char        name[_MAX_PATH];
 
     if( _cmdname( name ) == NULL ) {
-        initerror = 1;
+        initerror = true;
     } else {
         initerror = OpenResFile( &hInstance, name );
         if( !initerror ) {
@@ -139,9 +139,8 @@ int Msg_Fini( void )
     int     retcode = EXIT_SUCCESS;
 
     if( Res_Flag == EXIT_SUCCESS ) {
-        if ( CloseResFile( &hInstance ) != -1 ) {
+        if ( CloseResFile( &hInstance ) ) {
             Res_Flag = EXIT_FAILURE;
-        } else {
             retcode = EXIT_FAILURE;
         }
     }

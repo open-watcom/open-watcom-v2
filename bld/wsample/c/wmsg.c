@@ -94,7 +94,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 int MsgInit( void )
 {
-    int         initerror;
+    bool        initerror;
     int         i;
     unsigned    msg_shift;
     char        buffer[_MAX_PATH];
@@ -104,7 +104,7 @@ int MsgInit( void )
 #endif
 
     if( _cmdname( buffer ) == NULL ) {
-        initerror = 1;
+        initerror = true;
     } else {
         initerror = OpenResFile( &hInstance, buffer );
 #if defined(_PLS)
@@ -128,7 +128,7 @@ int MsgInit( void )
             for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
                 if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
                     if( i == ERR_FIRST_MESSAGE ) {
-                        initerror = 1;
+                        initerror = true;
                         break;
                     }
                     buffer[0] = '\0';

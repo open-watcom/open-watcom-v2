@@ -187,12 +187,12 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 bool MsgInit( void )
 {
 #if !defined( USE_TEXT_MSGS )
-    int         initerror;
+    bool        initerror;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
-        initerror = 1;
+        initerror = true;
     } else {
         initerror = OpenResFile( &hInstance, name );
         if( !initerror ) {
@@ -204,15 +204,15 @@ bool MsgInit( void )
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !MsgGet( MSG_USAGE_BASE, name ) ) {
-        initerror = 1;
+        initerror = true;
     }
     if( initerror ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
         MsgFini();
-        return( FALSE );
+        return( false );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 void MsgFini( void )

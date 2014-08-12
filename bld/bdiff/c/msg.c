@@ -80,12 +80,12 @@ int GetMsg( char *buffer, int resourceid )
 
 int MsgInit( void )
 {
-    int         initerror;
+    bool        initerror;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
-        initerror = 1;
+        initerror = true;
     } else {
         initerror = OpenResFile( &hInstance, name );
         if( !initerror ) {
@@ -97,7 +97,7 @@ int MsgInit( void )
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !GetMsg( name, MSG_USAGE_FIRST ) ) {
-        initerror = 1;
+        initerror = true;
     }
     if( initerror ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );

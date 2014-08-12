@@ -77,7 +77,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGl
 
 void InitMsg( void )
 {
-    int     initerror;
+    bool    initerror;
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char    imageName[_MAX_PATH];
 #else
@@ -120,9 +120,8 @@ void MsgGet( int resourceid, char *buffer )
 void FiniMsg( void )
 {
     if( Res_Flag == EXIT_SUCCESS ) {
-        if( CloseResFile( &hInstance ) != -1 ) {
+        if( CloseResFile( &hInstance ) ) {
             Res_Flag = EXIT_FAILURE;
-        } else {
             longjmp( Env, 1 );
         }
     }

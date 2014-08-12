@@ -70,7 +70,7 @@ WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 extern int MsgInit( char *fname )
 /*******************************/
 {
-    int initerror;
+    bool initerror;
 
     initerror = OpenResFile( &hInstance, fname );
     if( !initerror ) {
@@ -104,9 +104,8 @@ extern int MsgFini()
     int     retcode = EXIT_SUCCESS;
 
     if( Res_Flag == EXIT_SUCCESS ) {
-        if ( CloseResFile( &hInstance ) != -1 ) {
+        if ( CloseResFile( &hInstance ) ) {
             Res_Flag = EXIT_FAILURE;
-        } else {
             retcode = EXIT_FAILURE;
         }
     }

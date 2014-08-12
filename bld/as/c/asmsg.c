@@ -91,12 +91,12 @@ extern int AsMsgInit( void ) {
 //****************************
 
 #ifdef _STANDALONE_
-    int         error;
+    bool        error;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
-        error = 1;
+        error = true;
     } else {
         error = OpenResFile( &hInstance, name );
         if( !error ) {
@@ -108,7 +108,7 @@ extern int AsMsgInit( void ) {
     }
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !AsMsgGet( USAGE_1, name ) ) {
-        error = 1;
+        error = true;
     }
     if( error ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );

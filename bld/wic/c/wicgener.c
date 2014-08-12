@@ -85,11 +85,12 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 void initWicResources( char * fname )
 {
-    int initerror;
+    bool    initerror;
+
     hInstance.filename = fname;
     hInstance.handle = open( hInstance.filename, O_RDONLY | O_BINARY );
     if( hInstance.handle == NIL_HANDLE ) {
-        initerror = 1;
+        initerror = true;
     } else {
         initerror = FindResources( &hInstance );
     }

@@ -113,7 +113,7 @@ bool GUILoadStrInit( const char *fname )
 bool GUILoadStrFini( void )
 {
     if( GUIMsgInitFlag ) {
-        if( CloseResFile( &hInstance ) != -1 ) {
+        if( !CloseResFile( &hInstance ) ) {
             GUIMsgInitFlag = FALSE;
         } else {
             return( FALSE );

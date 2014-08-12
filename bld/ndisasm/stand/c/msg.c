@@ -60,12 +60,12 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 extern int MsgInit( void )
 {
-    int         error;
+    bool        error;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {
-        error = 1;
+        error = true;
     } else {
         error = OpenResFile( &hInstance, name );
         if( !error ) {
@@ -77,7 +77,7 @@ extern int MsgInit( void )
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !MsgGet( WDIS_LITERAL_BASE, name ) ) {
-        error = 1;
+        error = true;
     }
     if( error ) {
         write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );

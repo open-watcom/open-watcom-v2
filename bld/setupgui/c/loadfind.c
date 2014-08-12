@@ -87,16 +87,16 @@ typedef struct {
 long                    FileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
-int FindResources( PHANDLE_INFO hInstance )
+bool FindResources( PHANDLE_INFO hInstance )
 {
     long        currpos;
     long        offset;
     dbgheader   header;
     zip_eocd    eocd;
     zip_cdfh    cdfh;
-    int         notfound;
+    bool        notfound;
 
-    notfound = 1;
+    notfound = true;
     FileShift = 0;
     offset = sizeof( dbgheader );
 
@@ -118,7 +118,7 @@ int FindResources( PHANDLE_INFO hInstance )
     for( ;; ) {
         WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
-            notfound = 0;
+            notfound = false;
             FileShift = currpos - header.debug_size + sizeof( dbgheader );
             break;
         } else if( header.signature == VALID_SIGNATURE ||

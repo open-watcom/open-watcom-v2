@@ -75,7 +75,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 int InitMsg( void )
 {
     char        buff[_MAX_PATH];
-    int         initerror;
+    bool        initerror;
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
 #else
@@ -100,7 +100,7 @@ int InitMsg( void )
     }
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !initerror && !Msg_Get( MSG_PRODUCT, buff ) ) {
-        initerror = TRUE;
+        initerror = true;
     }
     if( initerror ) {
         Res_Flag = EXIT_FAILURE;
@@ -208,9 +208,8 @@ int FiniMsg( void )
     int     retcode = EXIT_SUCCESS;
 
     if( Res_Flag == EXIT_SUCCESS ) {
-        if( CloseResFile( &hInstance ) != -1 ) {
+        if( CloseResFile( &hInstance ) ) {
             Res_Flag = EXIT_FAILURE;
-        } else {
             retcode = EXIT_FAILURE;
         }
     }
