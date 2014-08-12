@@ -112,8 +112,8 @@ int MsgInit( void )
 /************************/
 {
 #ifndef BOOTSTRAP
-    bool        initerror;
-    static char name[_MAX_PATH]; // static because address passed outside.
+    unsigned char   initerror;
+    static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) == NULL ) {

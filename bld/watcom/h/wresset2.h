@@ -60,10 +60,10 @@ typedef char            _WCI86FAR *LPSTR;
 extern "C" {
 #endif
 
-extern bool OpenResFile( PHANDLE_INFO hInstance, const char *filename );
-extern bool CloseResFile( PHANDLE_INFO hInstance );
-extern bool FindResources( PHANDLE_INFO hInstance );
-extern bool InitResources( PHANDLE_INFO hInstance );
+extern unsigned char OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern unsigned char CloseResFile( PHANDLE_INFO hInstance );
+extern unsigned char FindResources( PHANDLE_INFO hInstance );
+extern unsigned char InitResources( PHANDLE_INFO hInstance );
 extern int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
 extern int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
 
