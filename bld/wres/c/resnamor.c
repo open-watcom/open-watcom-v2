@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
-/***************************************************/
+ResNameOrOrdinal *ResStrToNameOrOrd( const char *string )
+/*******************************************************/
 {
     ResNameOrOrdinal    *newname;
     size_t              stringlen;
@@ -51,10 +51,10 @@ ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
 
     stringlen = strlen( string );
 
-    newname = WRESALLOC( sizeof(ResNameOrOrdinal) + stringlen );
-    if (newname != NULL) {
+    newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
+    if( newname != NULL ) {
         /* +1 so we get the '\0' as well */
-        memcpy( &(newname->name), string, stringlen + 1 );
+        memcpy( newname->name, string, stringlen + 1 );
     } else {
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
@@ -62,13 +62,13 @@ ResNameOrOrdinal * ResStrToNameOrOrd( char * string )
     return( newname );
 }
 
-ResNameOrOrdinal * ResNumToNameOrOrd( uint_16 num )
+ResNameOrOrdinal *ResNumToNameOrOrd( uint_16 num )
 /*************************************************/
 {
-    ResNameOrOrdinal *  newname;
+    ResNameOrOrdinal    *newname;
 
-    newname = WRESALLOC( sizeof(ResNameOrOrdinal) );
-    if (newname != NULL) {
+    newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+    if( newname != NULL ) {
         newname->ord.fFlag = 0xff;
         newname->ord.wOrdinalID = num;
     }

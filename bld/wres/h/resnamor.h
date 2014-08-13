@@ -39,11 +39,11 @@ typedef union ResNameOrOrdinal {
         uint_8  fFlag;
         uint_16 wOrdinalID;
     } ord;
-    char        name[ 1 ];          /* '\0' terminated */
+    char        name[1];        /* '\0' terminated */
 } _WCUNALIGNED ResNameOrOrdinal;
 #include "poppck.h"
 
-extern ResNameOrOrdinal * ResNumToNameOrOrd( uint_16 num );
-extern ResNameOrOrdinal * ResStrToNameOrOrd( char * string );
+extern ResNameOrOrdinal *ResNumToNameOrOrd( uint_16 num );
+extern ResNameOrOrdinal *ResStrToNameOrOrd( const char *string );
 
 #endif

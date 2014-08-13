@@ -64,7 +64,7 @@ typedef struct WResIDName {             /* this is a "Pascal style" string */
 } _WCUNALIGNED WResIDName;              /* NOTE: there is no trailing '\0' */
 
 typedef struct WResID {
-    uint_8      IsName; /* if TRUE then ID is a Name otherwise Num */
+    uint_8      IsName; /* if true then ID is a Name otherwise Num */
     union {
         uint_16     Num;        /* number of the ID */
         WResIDName  Name;       /* name of the ID */
@@ -72,7 +72,7 @@ typedef struct WResID {
 } _WCUNALIGNED WResID;
 
 typedef struct WResHelpID {
-    uint_8      IsName; /* if TRUE then ID is a Name otherwise Num */
+    uint_8      IsName; /* if true then ID is a Name otherwise Num */
     union {
         uint_32     Num;        /* number of the Help ID */
         WResIDName  Name;       /* name of the Help ID */
@@ -94,7 +94,7 @@ typedef struct WResIDName2 {            /* this is a "Pascal style" string */
 } WResIDName2;                          /* NOTE: there is no trailing '\0' */
 
 typedef struct WResID2 {
-    uint_8      IsName; /* if TRUE then ID is a Name otherwise Num */
+    uint_8      IsName; /* if true then ID is a Name otherwise Num */
     union {
         uint_16     Num;        /* number of the ID */
         WResIDName2 Name;       /* name of the ID */

@@ -255,8 +255,8 @@ bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
     }
 }
 
-bool ResWriteStringLen( char *string, bool use_unicode, WResFileID handle, uint_16 len )
-/****************************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle, uint_16 len )
+/********************************************************************************************/
 {
     char            *buf;
     bool            ret;
@@ -268,23 +268,22 @@ bool ResWriteStringLen( char *string, bool use_unicode, WResFileID handle, uint_
             buf = ConvBuffer;
         }
         len = (ConvToUnicode)( len, string, buf );
-    } else {
-        buf = string;
+        string = buf;
     }
-    if( WRESWRITE( handle, buf, len ) != len ) {
+    if( WRESWRITE( handle, string, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         ret = true;
     } else {
         ret = false;
     }
-    if( buf != ConvBuffer && buf != string ) {
+    if( use_unicode && buf != ConvBuffer ) {
         WRESFREE( buf );
     }
     return( ret );
 }
 
-bool ResWriteString( char *string, bool use_unicode, WResFileID handle )
-/************************************************************************/
+bool ResWriteString( const char *string, bool use_unicode, WResFileID handle )
+/****************************************************************************/
 {
     size_t  stringlen;
     bool    ret;
@@ -331,7 +330,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
     return( error );
 } /* ResWriteNameOrOrdinal */
 
-static long MResFindNameOrOrdSize( ResNameOrOrdinal *data, char use_unicode )
+static long MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
 /***************************************************************************/
 {
     long       size;
@@ -349,7 +348,7 @@ static long MResFindNameOrOrdSize( ResNameOrOrdinal *data, char use_unicode )
     return( size );
 }
 
-static int MResFindHeaderSize( MResResourceHeader *header, char use_unicode )
+static int MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
 /***************************************************************************/
 {
     int     headersize;
@@ -357,8 +356,7 @@ static int MResFindHeaderSize( MResResourceHeader *header, char use_unicode )
     long    typesize;
     long    padding;
 
-    headersize = sizeof( MResResourceHeader ) - 2 * sizeof( ResNameOrOrdinal * )
-                 + sizeof( uint_32 );
+    headersize = sizeof( MResResourceHeader ) - 2 * sizeof( ResNameOrOrdinal * ) + sizeof( uint_32 );
     namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
     typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
     headersize += ( namesize + typesize );
@@ -367,7 +365,7 @@ static int MResFindHeaderSize( MResResourceHeader *header, char use_unicode )
     return( headersize + padding );
 }
 
-bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, char iswin32 )
+bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, bool iswin32 )
 /*******************************************************************************************/
 {
     bool        error;
@@ -376,9 +374,9 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, c
     uint_32     tmp32;
 
     if( !iswin32 ) {
-        error = ResWriteNameOrOrdinal( currhead->Type, FALSE, handle );
+        error = ResWriteNameOrOrdinal( currhead->Type, false, handle );
         if (!error) {
-            error = ResWriteNameOrOrdinal( currhead->Name, FALSE, handle );
+            error = ResWriteNameOrOrdinal( currhead->Name, false, handle );
         }
         if (!error) {
             tmp16 = currhead->MemoryFlags;
@@ -392,14 +390,14 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, c
         tmp32 = currhead->Size;
         error = ResWriteUint32( &tmp32, handle );
         if( !error ) {
-            headersize = MResFindHeaderSize( currhead, TRUE );
+            headersize = MResFindHeaderSize( currhead, true );
             error = ResWriteUint32( &headersize, handle  );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Type, TRUE, handle );
+            error = ResWriteNameOrOrdinal( currhead->Type, true, handle );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Name, TRUE, handle );
+            error = ResWriteNameOrOrdinal( currhead->Name, true, handle );
         }
         if( !error ) {
             error = ResPadDWord( handle );

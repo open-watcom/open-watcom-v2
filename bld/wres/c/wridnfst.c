@@ -37,8 +37,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResIDName * WResIDNameFromStr( char * string )
-/*********************************************/
+WResIDName *WResIDNameFromStr( const char *string )
+/*************************************************/
 {
     WResIDName  *newstring;
     size_t      stringlen;
@@ -49,8 +49,8 @@ WResIDName * WResIDNameFromStr( char * string )
         stringlen = USHRT_MAX;
     }
 
-    newstring = WRESALLOC( sizeof(WResIDName) + stringlen - 1 );
-    if (newstring == NULL) {
+    newstring = WRESALLOC( sizeof( WResIDName ) + stringlen - 1 );
+    if( newstring == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newstring->NumChars = stringlen;

@@ -75,7 +75,7 @@ static bool readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver,
     int             extrabytes;
 
     extrabytes = 0;
-    error = FALSE;
+    error = false;
     /* loop through the list of resources of this type */
     for (resnum = 0; resnum < currtype->Info.NumResources && !error; resnum++) {
 
@@ -373,7 +373,7 @@ bool WResReadDir2( WResFileID handle, WResDir currdir, bool *dup_discarded, void
     ResTypeInfo     restype;
 
     /* var representing whether or not a duplicate dir entry was
-     * discarded is set to FALSE.
+     * discarded is set to false.
      * NOTE: duplicates are not discarded by calls to readWResDir.
      */
     if( dup_discarded != NULL  ) {

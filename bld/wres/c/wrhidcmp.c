@@ -35,9 +35,9 @@
 
 
 int WResHelpIDCmp( const WResHelpID * name1, const WResHelpID * name2 )
-/*********************************************************/
+/*********************************************************************/
 {
-    int     same;
+    bool    same;
 
     if (name1->IsName && name2->IsName) {
         /* they are both names */
@@ -46,7 +46,7 @@ int WResHelpIDCmp( const WResHelpID * name1, const WResHelpID * name2 )
         same = (name1->ID.Num == name2->ID.Num);
     } else {
         /* one is a name, the other is a number:  they are not the same */
-        same = FALSE;
+        same = false;
     }
 
     return( same );

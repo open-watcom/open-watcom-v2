@@ -36,16 +36,16 @@
 int WResIDCmp( const WResID * name1, const WResID * name2 )
 /*********************************************************/
 {
-    int     same;
+    bool    same;
 
-    if (name1->IsName && name2->IsName) {
+    if( name1->IsName && name2->IsName ) {
         /* they are both names */
         same = ( WResIDNameCmp( &(name1->ID.Name), &(name2->ID.Name) ) == 0 );
-    } else if (!(name1->IsName) && !(name2->IsName)) {
-        same = (name1->ID.Num == name2->ID.Num);
+    } else if( !(name1->IsName) && !(name2->IsName) ) {
+        same = ( name1->ID.Num == name2->ID.Num );
     } else {
         /* one is a name, the other is a number:  they are not the same */
-        same = FALSE;
+        same = false;
     }
 
     return( same );

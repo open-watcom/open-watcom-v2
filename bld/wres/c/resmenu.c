@@ -331,11 +331,11 @@ bool ResReadMenuItem( MenuItem *curritem, WResFileID handle )
     curritem->Item.Popup.ItemFlags = tmp16;
     if (!error) {
         if (curritem->Item.Popup.ItemFlags & MENU_POPUP) {
-            curritem->IsPopup = TRUE;
+            curritem->IsPopup = true;
             curritem->Item.Popup.ItemText = ResReadString( handle, NULL );
             error = (curritem->Item.Popup.ItemText == NULL);
         } else {
-            curritem->IsPopup = FALSE;
+            curritem->IsPopup = false;
             error = ResReadUint16( &tmp16, handle );
             curritem->Item.Normal.ItemID = tmp16;
             if (!error) {

@@ -107,8 +107,8 @@ static WResResNode *newResNode( const WResID *name )
 /*
  * WResAddResource - Add the new entry to the directory. If type is NULL the
  *                   default is used.  If the entry is already in the
- *                   directory don't add anything, set duplicate TRUE
- *                   and return an error. Return is TRUE if any error has
+ *                   directory don't add anything, set duplicate true
+ *                   and return an error. Return is true if any error has
  *                   occured (including duplicate entry)
  */
 bool WResAddResource( const WResID *type, const WResID *name,
@@ -139,7 +139,7 @@ bool WResAddResource2( const WResID *type, const WResID *name,
     WResResNode         *currres;
     WResLangNode        *currlang;
 
-    /* set duplicate FALSE so other errors will have it set correctly */
+    /* set duplicate false so other errors will have it set correctly */
     if( duplicate != NULL ) {
         WResSetEmptyWindow( duplicate );
     }

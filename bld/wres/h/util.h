@@ -36,7 +36,7 @@
 #include "filefmt.h"
 #include "resnamor.h"
 
-extern WResIDName          *WResIDNameFromStr( char * string );
+extern WResIDName          *WResIDNameFromStr( const char * string );
 extern WResID              *WResIDFromNum( long );
 extern void                WResInitIDFromNum( long newnum, WResID * newid );
 extern WResID              *WResIDFromStr( const char * );

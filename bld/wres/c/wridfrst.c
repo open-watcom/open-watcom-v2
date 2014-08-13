@@ -54,7 +54,7 @@ WResID * WResIDFromStr( const char * newstr )
     if (newid == NULL) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newid->IsName = TRUE;
+        newid->IsName = true;
         newid->ID.Name.NumChars = strsize;
         memcpy( newid->ID.Name.Name, newstr, strsize );
     }
@@ -68,7 +68,7 @@ WResID * WResIDFromStr( const char * newstr )
         if (newid == NULL) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            newid->IsName = TRUE;
+            newid->IsName = true;
             newid->ID.Name.NumChars = strsize;
             memcpy( newid->ID.Name.Name, newstr, strsize );
         }

@@ -37,7 +37,7 @@
 #include "wresrtns.h"
 
 WResHelpID * WResHelpIDFromStr( const char * newstr )
-/*******************************************/
+/***************************************************/
 /* allocate a Help ID and fill it in */
 {
     WResHelpID *newid;
@@ -54,7 +54,7 @@ WResHelpID * WResHelpIDFromStr( const char * newstr )
         if (newid == NULL) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            newid->IsName = TRUE;
+            newid->IsName = true;
             newid->ID.Name.NumChars = strsize;
             memcpy( newid->ID.Name.Name, newstr, strsize );
         }

@@ -41,7 +41,7 @@
 #include "wresrtns.h"
 #include "clibext.h"
 
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, char add_quotes );
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes );
 static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text, uint_16 extra_bytes, WResFileID handle );
 
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
@@ -89,7 +89,7 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
         WRES_ERROR( WRS_WRITE_FAILED );
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, FALSE );
+        error = ResWriteDialogHeaderCommon32( head, handle, false );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
@@ -140,7 +140,7 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
         }
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, TRUE );
+        error = ResWriteDialogHeaderCommon32( head, handle, true );
     }
 //    if( !error ) {                    //DRW - commented Sep 25/95
 //        error = ResPadDWord( handle );
@@ -168,9 +168,8 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
     return( error );
 }
 
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle,
-                                                                     char add_quotes )
-/************************************************************************************/
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes )
+/*****************************************************************************************************/
 {
     bool    error;
     size_t  len;
@@ -189,9 +188,9 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
         }
     }
 
-    error = ResWriteNameOrOrdinal( head->MenuName, TRUE, handle );
+    error = ResWriteNameOrOrdinal( head->MenuName, true, handle );
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, TRUE, handle );
+        error = ResWriteNameOrOrdinal( head->ClassName, true, handle );
     }
     if( !error ) {
         error = ResWriteString( head->Caption, true, handle );
@@ -447,7 +446,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
     }
 
     if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, FALSE, handle );
+        error = ResWriteNameOrOrdinal( control->Text, false, handle );
     }
     if( !error ) {
         tmp8 = control->ExtraBytes;
@@ -516,7 +515,7 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
         error = ResWriteString( class_id->ClassName, true, handle );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( text, TRUE, handle );
+        error = ResWriteNameOrOrdinal( text, true, handle );
     }
 
     if( !error ) {

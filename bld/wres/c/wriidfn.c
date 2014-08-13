@@ -33,10 +33,10 @@
 #include "layer0.h"
 #include "util.h"
 
-void WResInitIDFromNum( long newnum, WResID * newid )
-/***************************************************/
+void WResInitIDFromNum( long newnum, WResID *newid )
+/**************************************************/
 /* fill in a WResID */
 {
-    newid->IsName = FALSE;
+    newid->IsName = false;
     newid->ID.Num = newnum;
-} /* WResInitIDFromNum */
+}
