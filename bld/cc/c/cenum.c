@@ -349,7 +349,7 @@ void DumpEnumTable( void )
     for( h = 0; h < ID_HASH_SIZE; h++ ) {
         for( esym = EnumTable[h]; esym != NULL; esym = esym->next_enum ) {
             if( ChkEqSymLevel( esym->parent ) ) {
-                printf( "%s = %lld\n", esym->name, esym->value._64[0] );
+                printf( "%s = %lld\n", esym->name, esym->value.u._64[0] );
             }
         }
         printf( "---------%d----------\n", h );
