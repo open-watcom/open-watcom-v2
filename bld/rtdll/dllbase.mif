@@ -1,7 +1,0 @@
-dllbase_os2_clib     =
-dllbase_os2_mathlib  =
-dllbase_os2_cpplib   =
-dllbase_winnt_clib   =option offset=0x6FE00000
-dllbase_winnt_mathlib=option offset=0x6FF00000
-dllbase_winnt_cpplib =option offset=0x6FD00000
-dllbase=$(dllbase_$(system)_$(component))

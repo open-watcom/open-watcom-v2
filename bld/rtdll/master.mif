@@ -27,9 +27,9 @@ host_os=$(rtdll_host_os_$(system))
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include dllbase.mif
 
 !include $(rtdll_dir)/dllname.mif
-!include $(rtdll_dir)/dllbase.mif
 
 !include ../objs.mif
 
@@ -63,7 +63,7 @@ br_suffix=0
 patch_level=0
 !endif
 
-extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121
+extra_l_flags_dll = option impfile=$(dllname).ilb reference __DLLstart_ disable 121 $($(proj_name)_dllbase_$(system)_$(host_cpu)_$(component))
 !ifeq release 0
 extra_l_flags_dll += option mangle,artificial,verbose
 !endif
