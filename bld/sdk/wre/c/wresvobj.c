@@ -167,7 +167,7 @@ bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     uint_32             size;
 
     fname = NULL;
-    dup = FALSE;
+    dup = false;
 
     ok = (curr != NULL && rdata != NULL);
 

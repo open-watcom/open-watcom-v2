@@ -98,7 +98,7 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
     ok = (einfo != NULL && einfo->tbl != NULL && einfo->win != NULL && replace != NULL);
 
     if( ok ) {
-        *replace = FALSE;
+        *replace = false;
         block = WGetOrMakeStringBlock( einfo->tbl, id );
         ok = (block != NULL);
     }
@@ -107,19 +107,19 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
         if( block->block.String[id & 0xf] == NULL ) {
             block->block.String[id & 0xf] = WResIDNameFromStr( text );
             block->symbol[id & 0xf] = WStrDup( symbol );
-            einfo->info->modified = TRUE;
+            einfo->info->modified = true;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
                 WRMemFree( block->block.String[id & 0xf] );
                 block->block.String[id & 0xf] = WResIDNameFromStr( text );
                 block->symbol[id & 0xf] = WStrDup( symbol );
-                einfo->info->modified = TRUE;
-                *replace = TRUE;
+                einfo->info->modified = true;
+                *replace = true;
             } else {
                 if( WIsBlockEmpty( block ) ) {
                     WRemoveStringBlock( einfo->tbl, block );
                 }
-                ok = FALSE;
+                ok = false;
             }
         }
     }
@@ -144,7 +144,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
 
     text = NULL;
     symbol = NULL;
-    replace = FALSE;
+    replace = false;
 
     ok = (einfo != NULL && einfo->tbl != NULL && einfo->edit_dlg != NULL);
 
@@ -225,7 +225,7 @@ bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos 
             if( block->block.String[i] != NULL ) {
                 if( !WAddEditWinLBoxEntry( einfo, block,
                                            (block->blocknum & 0xfff0) + i, pos ) ) {
-                    return( FALSE );
+                    return( false );
                 }
                 if( pos != -1 ) {
                     pos++;
@@ -234,7 +234,7 @@ bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos 
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,

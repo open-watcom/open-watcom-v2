@@ -138,7 +138,7 @@ bool WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id 
     }
 
     if( ok ) {
-        ok = FALSE;
+        ok = false;
         if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             ih = (RESICONHEADER *)group->lang->data;
             for( i = 0; !ok && i < ih->cwCount; i++ ) {
@@ -209,7 +209,7 @@ bool WREAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size )
 bool WREAddCursorImageToData( WRECurrentResInfo *image, BYTE **data,
                               uint_32 *size, CURSORHOTSPOT *hotspot )
 {
-    int         hs_size; // size of hotspot info
+    size_t      hs_size; // size of hotspot info
     bool        ok;
 
     ok = (image != NULL && image->info != NULL && image->info->info != NULL &&
@@ -226,7 +226,7 @@ bool WREAddCursorImageToData( WRECurrentResInfo *image, BYTE **data,
         hs_size = sizeof( CURSORHOTSPOT );
         memcpy( hotspot, image->lang->data, hs_size );
         ok = WREAppendDataToData( data, size, (BYTE *)image->lang->data + hs_size,
-                                  image->lang->Info.Length - hs_size );
+                                  image->lang->Info.Length - (uint_32)hs_size );
     }
 
     return( ok );
@@ -406,7 +406,7 @@ bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
     CURSORHOTSPOT       hotspot;
     bool                ok;
 
-    dup = FALSE;
+    dup = false;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
@@ -472,7 +472,7 @@ bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
     WResLangType        lang;
     bool                ok;
 
-    dup = FALSE;
+    dup = false;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
@@ -651,12 +651,12 @@ bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type )
     uint_32     ihsize;
 
     if( !WRCreateIconHeader( *data, *size, type, &ih, &ihsize ) ) {
-        return( FALSE );
+        return( false );
     }
 
     *data = WRMemRealloc( *data, *size + ihsize );
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
     memmove( *data + ihsize, *data, *size );
     memcpy( *data, ih, ihsize );
@@ -664,7 +664,7 @@ bool WRECalcAndAddIconDirectory( BYTE **data, uint_32 *size, WORD type )
 
     WRMemFree( ih );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREStripIconDirectory( BYTE **icon, uint_32 *size )

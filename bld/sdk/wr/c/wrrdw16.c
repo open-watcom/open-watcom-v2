@@ -73,9 +73,9 @@ typedef struct WRNameTableEntry {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int          WRLoadWResDirFromWin16EXE( WResFileID, WResDir * );
-static int          WRIsHeaderValidWIN16( os2_exe_header * );
-static int          WRWin16HeaderHasResourceTable( os2_exe_header * );
+static bool         WRLoadWResDirFromWin16EXE( WResFileID, WResDir * );
+static bool         WRIsHeaderValidWIN16( os2_exe_header * );
+static bool         WRWin16HeaderHasResourceTable( os2_exe_header * );
 static WResTypeNode *WRReadWResTypeNodeFromExe( WResFileID, uint_16 );
 static WResResNode  *WRReadWResResNodeFromExe( WResFileID, uint_16 );
 static int          WRReadResourceNames( WResDir, WResFileID, uint_32 );
@@ -90,10 +90,10 @@ static int          WRSetResNameFromNameTable( WResDir, WRNameTableEntry * );
 /* static variables                                                         */
 /****************************************************************************/
 
-int WRLoadResourceFromWin16EXE( WRInfo *info )
+bool WRLoadResourceFromWin16EXE( WRInfo *info )
 {
     WResFileID  file_handle;
-    int         ok;
+    bool        ok;
 
     ok = ((file_handle = ResOpenFileRO( info->file_name )) != -1);
 
@@ -112,7 +112,7 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
 {
     long int    old_pos;
     uint_16     offset;
-    int         ok;
+    bool        ok;
 
     old_pos = -1;
 
@@ -163,25 +163,25 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
     }
 }
 
-int WRIsHeaderValidWIN16( os2_exe_header *header )
+bool WRIsHeaderValidWIN16( os2_exe_header *header )
 {
     if( header->signature == OS2_SIGNATURE_WORD && header->expver >= 0x300 ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-int WRWin16HeaderHasResourceTable( os2_exe_header *header )
+bool WRWin16HeaderHasResourceTable( os2_exe_header *header )
 {
     if( header->resource_off != header->resident_off ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-int WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
+bool WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
 {
     os2_exe_header  win_header;
     long int        offset;
@@ -192,7 +192,7 @@ int WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
     uint_8          *leftover;
     uint_32         name_table_len;
     uint_32         num_leftover;
-    int             ok;
+    bool            ok;
 
     ok = (file_handle != -1);
 

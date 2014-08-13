@@ -47,30 +47,30 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-int WRCopyFileToTemp( WRInfo *info, char *filename )
+bool WRCopyFileToTemp( WRInfo *info, char *filename )
 {
     if( filename == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WRFileExists( filename ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( info->tmp_file == NULL ) {
         info->tmp_file = WRGetTempFileName( NULL );
         if( info->tmp_file == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !WRCopyFile( info->tmp_file, filename ) ) {
         WRPrintErrorMsg( WR_BACKUPFAILED, filename, info->tmp_file,
                          strerror( WRGetLastError() ) );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 WRInfo * WRAPI WRAllocWRInfo( void )
@@ -229,11 +229,11 @@ int WRRelinkDir( WResDir dest, WResDir src )
 
 // We really should not reread the file but, alas, time demands
 // something a little less pristine.
-int WRRelinkInfo( WRInfo *info )
+bool WRRelinkInfo( WRInfo *info )
 {
     char        fn_path[_MAX_PATH];
     WRInfo      *tinfo;
-    int         ok;
+    bool        ok;
 
     tinfo = NULL;
 

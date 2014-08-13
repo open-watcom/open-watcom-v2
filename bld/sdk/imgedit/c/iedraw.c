@@ -621,7 +621,7 @@ void DrawLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutto
  * OutlineLine - outline the line before it is drawn
  */
 void OutlineLine( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                  WPI_POINT *prev_pt, BOOL firsttime )
+                  WPI_POINT *prev_pt, bool firsttime )
 {
     WPI_POINT   startpt;
     WPI_POINT   endpt;
@@ -765,7 +765,7 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
  * OutlineClip - display the potential region to be clipped to the clipboard
  */
 void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                  WPI_POINT *prev_pt, BOOL firsttime )
+                  WPI_POINT *prev_pt, bool firsttime )
 {
     WPI_RECT    newpos;
     WPI_RECT    oldpos;
@@ -831,7 +831,7 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
  * OutlineRegion - display the potential region (rectangle or ellipse) on the draw area
  */
 void OutlineRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
-                    WPI_POINT *prev_pt, BOOL firsttime )
+                    WPI_POINT *prev_pt, bool firsttime )
 {
     WPI_POINT   topleft;
     WPI_POINT   bottomright;
@@ -1059,7 +1059,7 @@ void ResetDrawArea( img_node *node )
         new_width = (short)( pointSize.x * node->width + 1 );
         new_height = (short)( pointSize.y * node->height + 1 );
         lparam = WPI_MAKEP2( new_width, new_height );
-        ResizeChild( lparam, node->hwnd, TRUE );
+        ResizeChild( lparam, node->hwnd, true );
     }
     BlowupImage( node->hwnd, NULL );
 
@@ -1144,7 +1144,7 @@ WPI_POINT GetPointSize( HWND hwnd )
 /*
  * ResizeChild - resize the draw area of the child window
  */
-void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, BOOL firsttime )
+void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, bool firsttime )
 {
     short       min_width;
     short       width;

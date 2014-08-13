@@ -150,7 +150,7 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
     bool                dup;
 
     fname = NULL;
-    dup = FALSE;
+    dup = false;
 
     ok = (curr != NULL && idata != NULL);
 

@@ -1304,7 +1304,7 @@ bool WdeProcessArgs( char **argv, int argc )
     int     i;
     bool    ok;
 
-    ok = TRUE;
+    ok = true;
 
     for( i = 1; i < argc; i++ ) {
         if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
@@ -1315,7 +1315,7 @@ bool WdeProcessArgs( char **argv, int argc )
             } else if( WdeCreateNewFiles ) {
                 ok = (WdeCreateNewResource( argv[i] ) != NULL && ok);
             } else {
-                ok = FALSE;
+                ok = false;
             }
         }
     }

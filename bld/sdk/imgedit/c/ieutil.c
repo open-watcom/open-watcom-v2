@@ -399,7 +399,7 @@ void SetIsSaved( HWND hwnd, BOOL fissaved )
 /*
  * OutlineRectangle - outline a rectangle with the XOR pen
  */
-void OutlineRectangle( BOOL firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc )
+void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc )
 {
     int         prevrop2;
     HBRUSH      holdbrush;

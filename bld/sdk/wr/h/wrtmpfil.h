@@ -40,14 +40,14 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern int      WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
+WRDLLENTRY extern bool     WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
 WRDLLENTRY extern int      WRAPI WRDeleteFile( const char * );
 WRDLLENTRY extern int      WRAPI WRFileExists( const char * );
 WRDLLENTRY extern int      WRAPI WRRenameFile( const char *, const char * );
-WRDLLENTRY extern int      WRAPI WRBackupFile( const char *, int  );
+WRDLLENTRY extern bool     WRAPI WRBackupFile( const char *, bool  );
 WRDLLENTRY extern void     WRAPI WRFreeTempFileName( char * );
 WRDLLENTRY extern char *   WRAPI WRGetTempFileName( const char * );
-WRDLLENTRY extern int      WRAPI WRCopyFile( const char *, const char *);
+WRDLLENTRY extern bool     WRAPI WRCopyFile( const char *, const char *);
 WRDLLENTRY extern int      WRAPI WRGetLastError( void );
 
 #endif

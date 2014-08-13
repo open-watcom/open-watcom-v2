@@ -124,7 +124,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
     }
 
     if( ok ) {
-        ok = WRSaveResource( res_info->info, TRUE );
+        ok = WRSaveResource( res_info->info, true );
     }
 
     if( ok ) {

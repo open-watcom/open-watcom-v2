@@ -133,7 +133,7 @@ static void convertToPMCoords( void )
  * initPaletteBoxes - assign the values of the colors in the palette and
  *                    initialize the palette boxes
  */
-static void initPaletteBoxes( BOOL firsttime )
+static void initPaletteBoxes( bool firsttime )
 {
     SetBoxColors( &screenColor, &inverseColor, numberOfColors, paletteBox );
     if( firsttime ) {

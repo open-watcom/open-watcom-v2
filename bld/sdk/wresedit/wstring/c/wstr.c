@@ -59,14 +59,12 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static  void            WMakeDataFromStringBlock( WStringBlock *block, void **data, int *size );
-static  int             WInitDataFromStringBlock( WStringBlock *block, void *data, int size );
-static  int             WInitStringTable( WStringInfo *info, WStringTable *tbl );
-static  int             WMakeStringBlockFromData( void *data, int size, WStringBlock *block );
-static  int             WCalcStringBlockSize( WStringBlock *block );
+static  void            WMakeDataFromStringBlock( WStringBlock *block, void **data, size_t *size );
+static  bool            WInitStringTable( WStringInfo *info, WStringTable *tbl );
+static  bool            WMakeStringBlockFromData( void *data, size_t size, WStringBlock *block );
 static  WStringBlock    *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum );
 static  WStringBlock    *WAllocStringBlock( void );
-static  WStringTable    *WAllocStringTable( int is32bit );
+static  WStringTable    *WAllocStringTable( bool is32bit );
 static  void            WFreeStringTable( WStringTable *tbl );
 static  void            WFreeStringTableBlock( WStringBlock *block );
 static  WStringNode     *WMakeStringNodeFromStringBlock( WStringBlock * );
@@ -189,19 +187,19 @@ WStringBlock *WFindStringTableBlock( WStringTable *tbl, uint_16 blocknum )
     return( last );
 }
 
-void WMakeDataFromStringBlock( WStringBlock *block, void **data, int *size )
+void WMakeDataFromStringBlock( WStringBlock *block, void **data, size_t *size )
 {
     if( block != NULL ) {
         WRMakeDataFromStringBlock( &block->block, data, size, block->is32bit );
     }
 }
 
-int WMakeStringBlockFromData( void *data, int size, WStringBlock *block )
+bool WMakeStringBlockFromData( void *data, size_t size, WStringBlock *block )
 {
-    int ret;
+    bool ret;
 
     if( data == NULL || size == 0 || block == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     ret = WRMakeStringBlockFromData( &block->block, data, size, block->is32bit );
@@ -390,7 +388,7 @@ WStringNode *WMakeStringNodes( WStringTable *tbl )
     return( node );
 }
 
-WStringTable *WAllocStringTable( int is32bit )
+WStringTable *WAllocStringTable( bool is32bit )
 {
     WStringTable        *tbl;
 
@@ -406,14 +404,14 @@ WStringTable *WAllocStringTable( int is32bit )
     return( tbl );
 }
 
-int WInitStringTable( WStringInfo *info, WStringTable *tbl )
+bool WInitStringTable( WStringInfo *info, WStringTable *tbl )
 {
     WStringBlock        *block;
     WStringNode         *node;
     uint_16             blocknum;
 
     if( info == NULL || tbl == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     node = info->tables;
@@ -422,25 +420,25 @@ int WInitStringTable( WStringInfo *info, WStringTable *tbl )
         blocknum = (uint_16)WResIDToNum( node->block_name );
         blocknum = (blocknum - 1) * 16;
         if( WFindStringBlock( tbl, blocknum ) ) {
-            return( FALSE );
+            return( false );
         }
         block = WGetOrMakeStringBlock( tbl, blocknum );
         if( block == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( !WMakeStringBlockFromData( node->data, node->data_size, block ) ) {
-            return( FALSE );
+            return( false );
         }
         node = node->next;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 WStringTable *WMakeStringTableFromInfo( WStringInfo *info )
 {
     WStringTable        *tbl;
-    int                 ok;
+    bool                ok;
 
     tbl = NULL;
 

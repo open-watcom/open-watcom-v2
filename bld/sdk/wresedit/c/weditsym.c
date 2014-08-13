@@ -80,13 +80,13 @@ static void addSymbols( WRHashTable *table )
     PREPROC_VALUE       val;
     WRHashValue         value;
     WRHashEntry         *entry;
-    BOOL                dup;
+    bool                dup;
 
     if( table == NULL ) {
         return;
     }
 
-    dup = TRUE;
+    dup = true;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
         for( me = PPHashTable[hash]; me != NULL; me = me->next ) {
@@ -98,7 +98,7 @@ static void addSymbols( WRHashTable *table )
                         } else {
                             value = (WRHashValue)val.val.uvalue;
                         }
-                        entry = WRAddHashEntry( table, me->name, value, &dup, FALSE, FALSE );
+                        entry = WRAddHashEntry( table, me->name, value, &dup, false, false );
                     }
                 }
             }
@@ -148,7 +148,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
         if( ret ) {
             PP_Fini();
             WDisplayErrorMsg( W_SYMOUTOFMEM );
-            ok = FALSE;
+            ok = false;
         }
     }
 

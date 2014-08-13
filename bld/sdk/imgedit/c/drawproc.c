@@ -151,7 +151,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     static BOOL         flbuttondown = FALSE;
     static BOOL         frbuttondown = FALSE;
     static BOOL         fdraw_shape = FALSE;
-    static BOOL         firsttime;
+    static bool         firsttime;
     static BOOL         wasicon;
     int                 mousebutton;
     WPI_POINT           pointsize;
@@ -179,7 +179,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         setTheCursor( -1, hwnd );
         wasicon = FALSE;
 #endif
-        firsttime = TRUE;
+        firsttime = true;
         i = i;
         return( 0 );
 
@@ -216,7 +216,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     case WM_SIZE:
         if ( _imgwpi_issizerestored( wparam ) ) {
             ResizeChild( lparam, hwnd, firsttime );
-            firsttime = FALSE;
+            firsttime = false;
             if( wasicon ) {
                 FocusOnImage( hwnd );
                 wasicon = FALSE;
@@ -259,12 +259,12 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                     flbuttondown = FALSE;
                     frbuttondown = FALSE;
                     if( toolType == IMGED_LINE ) {
-                        OutlineLine( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
+                        OutlineLine( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     } else if( toolType == IMGED_CLIP ) {
-                        OutlineClip( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
+                        OutlineClip( hwnd, &start_pt, &prev_pt, &new_pt, true );
                         SetRectExists( FALSE );
                     } else {
-                        OutlineRegion( hwnd, &start_pt, &prev_pt, &new_pt, TRUE );
+                        OutlineRegion( hwnd, &start_pt, &prev_pt, &new_pt, true );
                     }
                     break;
                 default:
@@ -320,11 +320,11 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
                 if( new_pt.x / pointsize.x != end_pt.x / pointsize.x ||
                     new_pt.y / pointsize.y != end_pt.y / pointsize.y ) {
                     if( toolType == IMGED_LINE ) {
-                        OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
+                        OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, false );
                     } else if( toolType == IMGED_CLIP ) {
-                        OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
+                        OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, false );
                     } else {
-                        OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, FALSE );
+                        OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, false );
                     }
                     end_pt = new_pt;
                     SetSizeInStatus( hwnd, &start_pt, &new_pt, &pointsize );
@@ -394,7 +394,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 
         case IMGED_LINE:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
-            OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
+            OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
 
         case IMGED_RECTO:
@@ -402,13 +402,13 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         case IMGED_CIRCLEO:
         case IMGED_CIRCLEF:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
-            OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
+            OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
 
         case IMGED_CLIP:
             IMGED_MAKEPOINT( wparam, lparam, end_pt );
             RedrawPrevClip( hwnd );
-            OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, TRUE );
+            OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
 
         case IMGED_FILL:

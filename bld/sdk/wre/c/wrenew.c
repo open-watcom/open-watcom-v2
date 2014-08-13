@@ -69,7 +69,7 @@ bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
     ok = (curr != NULL && curr->info != NULL && tname != NULL && rname != NULL &&
           lang != NULL);
 
-    if( ok && !curr->info->info->dir != NULL ) {
+    if( ok && ( curr->info->info->dir == NULL ) ) {
         ok = ((curr->info->info->dir = WResInitDir()) != NULL);
     }
 

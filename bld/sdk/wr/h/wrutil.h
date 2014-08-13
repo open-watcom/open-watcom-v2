@@ -37,13 +37,13 @@ WRDLLENTRY extern char *   WRAPI WRConvertStringTo( char *str, char *to, char *f
 
 WRDLLENTRY extern void     WRAPI WRMassageFilter( char *filter );
 
-WRDLLENTRY extern int      WRAPI WRmbcs2unicode( char *src, char **dest, int *len );
-WRDLLENTRY extern int      WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len );
-WRDLLENTRY extern int      WRAPI WRunicode2mbcs( char *src, char **dest, int *len );
-WRDLLENTRY extern int      WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len );
+WRDLLENTRY extern int      WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len );
+WRDLLENTRY extern int      WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len );
+WRDLLENTRY extern int      WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len );
+WRDLLENTRY extern int      WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len );
 
-WRDLLENTRY extern int      WRAPI WRStrlen( char *str, int is32Bit );
-WRDLLENTRY extern int      WRAPI WRStrlen32( char *str );
+WRDLLENTRY extern size_t   WRAPI WRStrlen( char *str, bool is32Bit );
+WRDLLENTRY extern size_t   WRAPI WRStrlen32( char *str );
 
 WRDLLENTRY extern char *   WRAPI WRWResIDNameToStr( WResIDName *name );
 

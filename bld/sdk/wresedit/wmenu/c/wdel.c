@@ -115,12 +115,12 @@ bool WDeleteEditWinLBoxEntry( WMenuEditInfo *einfo, int pos, bool free_it )
                 }
             }
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         if( free_it ) {
             ret = WInitEditWindowListBox( einfo );
         } else {

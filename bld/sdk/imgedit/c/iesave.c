@@ -844,14 +844,14 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
 /*
  * createNewImageLNODE
  */
-static BOOL createNewImageLNODE( img_node *node, uint_16 type )
+static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
     char                fn[_MAX_FNAME];
     WResID              *tname = NULL;
     WResID              *rname = NULL;
     WResLangType        lang;
     bool                dup;
-    BOOL                ok;
+    bool                ok;
 
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
@@ -900,16 +900,16 @@ static BOOL createNewImageLNODE( img_node *node, uint_16 type )
 /*
  * saveResourceFile
  */
-static BOOL saveResourceFile( img_node *node )
+static bool saveResourceFile( img_node *node )
 {
     BYTE        *data;
     uint_32     size = 0;
     uint_16     type;
     WRFileType  save_type = 0;
     BOOL        info_created;
-    BOOL        was32bit;
-    BOOL        is32bit;
-    BOOL        ok;
+    bool        was32bit;
+    bool        is32bit;
+    bool        ok;
     WPI_PROC    cb;
 
     info_created = FALSE;
@@ -929,7 +929,7 @@ static BOOL saveResourceFile( img_node *node )
             type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
             break;
         default:
-            ok = FALSE;
+            ok = false;
             break;
         }
     }
@@ -998,7 +998,7 @@ static BOOL saveResourceFile( img_node *node )
             ok = SaveImgToData( node, &data, &size );
             break;
         default:
-            ok = FALSE;
+            ok = false;
             break;
         }
     }
@@ -1020,7 +1020,7 @@ static BOOL saveResourceFile( img_node *node )
             ok = WRCreateCursorEntries( node->wrinfo, node->lnode, data, size );
             break;
         default:
-            ok = FALSE;
+            ok = false;
             break;
         }
     }
@@ -1028,7 +1028,7 @@ static BOOL saveResourceFile( img_node *node )
     if( ok ) {
         node->wrinfo->save_type = save_type;
         node->wrinfo->save_name = node->fname;
-        ok = WRSaveResource( node->wrinfo, TRUE );
+        ok = WRSaveResource( node->wrinfo, true );
         node->wrinfo->save_name = NULL;
     }
 

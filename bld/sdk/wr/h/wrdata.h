@@ -46,6 +46,6 @@
 /****************************************************************************/
 WRDLLENTRY extern void *   WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode );
 WRDLLENTRY extern void *   WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length );
-WRDLLENTRY extern int      WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length );
+WRDLLENTRY extern bool     WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length );
 
 #endif

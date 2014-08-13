@@ -65,10 +65,10 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-int WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
+bool WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
 {
     uint_32     size;
-    int         ok;
+    bool        ok;
 
     size = 0;
     ok = (data != NULL && length != 0);
@@ -83,10 +83,10 @@ int WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
     return( ok );
 }
 
-int WRWriteResData( WResFileID handle, BYTE *data, uint_32 length )
+bool WRWriteResData( WResFileID handle, BYTE *data, uint_32 length )
 {
     uint_32     size;
-    int         ok;
+    bool        ok;
 
     size = 0;
     ok = (data != NULL && length != 0);
@@ -120,7 +120,7 @@ void *WRCopyExistingData( WResLangNode *lnode )
 void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 {
     void        *rdata;
-    int         ok;
+    bool        ok;
 
     rdata = NULL;
 
@@ -156,7 +156,7 @@ void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
 {
     void        *data;
     WResFileID  handle;
-    int         ok;
+    bool        ok;
 
     data = NULL;
     handle = -1;
@@ -193,10 +193,10 @@ void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
     return( data );
 }
 
-int WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
+bool WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
 {
     WResFileID  file;
-    int         ok;
+    bool        ok;
 
     file = -1;
 

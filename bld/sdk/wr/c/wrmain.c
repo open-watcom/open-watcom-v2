@@ -67,10 +67,10 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int  WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
-static int  WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
-static int  WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon );
-static int  WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, int is_icon );
+static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
+static bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
+static bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon );
+static bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon );
 static int  WRTestReplace( WRInfo *, WRSaveIntoData * );
 static int  WQueryMergeStrings( WResID * );
 static int  WQueryReplaceObject( void );
@@ -172,7 +172,7 @@ void WRAPI WRFini( void )
 WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 {
     WRInfo  *info;
-    int     ret;
+    bool    ret;
 
     info = WRAllocWRInfo();
 
@@ -263,21 +263,21 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
     return( info );
 }
 
-int WRAPI WRSaveResource( WRInfo *info, int backup )
+bool WRAPI WRSaveResource( WRInfo *info, bool backup )
 {
-    int     ret;
+    bool    ret;
     char    *tmp;
     char    *name;
     char    ext[_MAX_EXT];
 
     if( info->save_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
 #ifndef __NT__
     if( WRIs32Bit( info->save_type ) ) {
         WRDisplayErrorMsg( WR_NOSAVE32IN16 );
-        return( FALSE );
+        return( false );
     }
 #endif
 
@@ -294,7 +294,7 @@ int WRAPI WRSaveResource( WRInfo *info, int backup )
         info->save_name = WRGetTempFileName( ext );
         if( info->save_name == NULL ) {
             info->save_name = tmp;
-            return( FALSE );
+            return( false );
         }
     } else {
         tmp = NULL;
@@ -342,7 +342,7 @@ int WRAPI WRSaveResource( WRInfo *info, int backup )
     case WR_INVALID_FILE:
     default:
         WRDisplayErrorMsg( WR_BADSAVETYPE );
-        ret = FALSE;
+        ret = false;
         break;
     }
 
@@ -359,15 +359,15 @@ int WRAPI WRSaveResource( WRInfo *info, int backup )
     return( ret );
 }
 
-int WRAPI WRUpdateTmp( WRInfo *info )
+bool WRAPI WRUpdateTmp( WRInfo *info )
 {
-    int         ret;
+    bool        ret;
     char        *tsave;
     WRFileType  ttype;
     char        ext[_MAX_EXT];
 
     if( info == NULL || info->file_name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( info->internal_filename != NULL ) {
@@ -379,7 +379,7 @@ int WRAPI WRUpdateTmp( WRInfo *info )
     if( info->tmp_file == NULL ) {
         info->tmp_file = WRGetTempFileName( ext );
         if( info->tmp_file == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -394,12 +394,12 @@ int WRAPI WRUpdateTmp( WRInfo *info )
     if( info->save_name == NULL ) {
         info->save_name = tsave;
         info->save_type = ttype;
-        return( FALSE );
+        return( false );
     }
 
     switch( info->save_type ) {
     case WR_WIN_BITMAP:
-        ret = WRSaveBitmapResource( info, FALSE );
+        ret = WRSaveBitmapResource( info, false );
         break;
 
     case WR_WIN_ICON:
@@ -414,17 +414,17 @@ int WRAPI WRUpdateTmp( WRInfo *info )
     case WR_WIN16W_RES:
     case WR_WINNTM_RES:
     case WR_WINNTW_RES:
-        ret = WRSaveResourceToRES( info, FALSE );
+        ret = WRSaveResourceToRES( info, false );
         break;
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRSaveResourceToWin16EXE( info, FALSE );
+        ret = WRSaveResourceToWin16EXE( info, false );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRSaveResourceToWinNTEXE( info, FALSE );
+        ret = WRSaveResourceToWinNTEXE( info, false );
         break;
 
     case WR_WIN_RC:
@@ -461,11 +461,11 @@ int WRAPI WRUpdateTmp( WRInfo *info )
     return( ret );
 }
 
-int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
+bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
 {
     WRInfo      *info;
     long        type;
-    int         ok;
+    bool        ok;
 
     info = NULL;
 
@@ -495,9 +495,9 @@ int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
         if( type == (long)(pointer_int)RT_GROUP_ICON ) {
-            ok = WREDoSaveImageAs( info, idata, TRUE );
+            ok = WREDoSaveImageAs( info, idata, true );
         } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
-            ok = WREDoSaveImageAs( info, idata, FALSE );
+            ok = WREDoSaveImageAs( info, idata, false );
         } else {
             ok = WREDoSaveObjectAs( info, idata );
         }
@@ -505,7 +505,7 @@ int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData
     }
 
     if( ok ) {
-        ok = WRSaveResource( info, TRUE );
+        ok = WRSaveResource( info, true );
     }
 
     if( info != NULL ) {
@@ -517,13 +517,13 @@ int WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData
     return( ok );
 }
 
-int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
+bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
 {
     WRInfo      *info;
     char        *tmp_file;
     char        ext[_MAX_EXT];
     long        type;
-    int         ok;
+    bool        ok;
 
     info = NULL;
     tmp_file = NULL;
@@ -549,9 +549,9 @@ int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
         if( type == (long)(pointer_int)RT_GROUP_ICON ) {
-            ok = WREDoSaveImageInto( info, idata, dup, TRUE );
+            ok = WREDoSaveImageInto( info, idata, dup, true );
         } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
-            ok = WREDoSaveImageInto( info, idata, dup, FALSE );
+            ok = WREDoSaveImageInto( info, idata, dup, false );
         } else {
             ok = WREDoSaveObjectInto( info, idata, dup );
         }
@@ -559,7 +559,7 @@ int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
     }
 
     if( ok ) {
-        ok = WRSaveResource( info, TRUE );
+        ok = WRSaveResource( info, true );
     }
 
     if( ok ) {
@@ -579,11 +579,11 @@ int WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup )
     return( ok );
 }
 
-int WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
+bool WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
                                 WResLangType *lang, void *data )
 {
     WResLangNode    *lnode;
-    int             ok;
+    bool            ok;
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL && data != NULL);
 
@@ -606,7 +606,7 @@ WResLangNode *WRAPI WRFindLangNode( WResDir dir, WResID *type,
     WResTypeNode    *tnode;
     WResResNode     *rnode;
     WResLangNode    *lnode;
-    int             ok;
+    bool            ok;
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL);
 
@@ -631,9 +631,9 @@ WResLangNode *WRAPI WRFindLangNode( WResDir dir, WResID *type,
     return( lnode );
 }
 
-int WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
+bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
 {
-    int           ok;
+    bool          ok;
 
     ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
           idata->name != NULL && idata->data != NULL);
@@ -651,9 +651,9 @@ int WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
     return( ok );
 }
 
-int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
+bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
 {
-    int                 ok;
+    bool                ok;
     BYTE                *data;
     uint_32             size;
     WResLangNode        *lnode;
@@ -702,9 +702,9 @@ int WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, int is_icon )
     return( ok );
 }
 
-int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
+bool WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
 {
-    int ok;
+    bool ok;
     int replace_nixed;
 
     replace_nixed = FALSE;
@@ -729,21 +729,21 @@ int WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
     }
 
     if( replace_nixed ) {
-        return( TRUE );
+        return( true );
     }
 
     return( ok );
 }
 
-int WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, int is_icon )
+bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon )
 {
     BYTE                *data;
     uint_32             size;
     WResLangNode        *lnode;
-    int                 replace_nixed;
-    int                 ok;
+    bool                replace_nixed;
+    bool                ok;
 
-    replace_nixed = FALSE;
+    replace_nixed = false;
     data = NULL;
     ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
           idata->name != NULL && idata->data != NULL && idata->info != NULL && dup != NULL);
@@ -870,7 +870,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
     WResLangNode    *lnode;
     long            type;
     void            *data;
-    int             size;
+    uint_32         size;
     int             strings;
 
     if( info == NULL || info->dir == NULL || idata == NULL || idata->type == NULL ||
@@ -904,7 +904,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
         if( !WRMergeStringData( &data, &size, idata->data, idata->size,
-                                WRIs32Bit( info->save_type ), TRUE ) ) {
+                                WRIs32Bit( info->save_type ), true ) ) {
             if( data != NULL ) {
                 MemFree( data );
             }

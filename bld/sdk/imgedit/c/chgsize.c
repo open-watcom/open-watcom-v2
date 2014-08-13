@@ -253,7 +253,7 @@ void ChangeImageSize( void )
     new_height = (short)_wpi_getheightrect( rc );
     lparam = WPI_MAKEP2( new_width, new_height );
 
-    ResizeChild( lparam, node->hwnd, FALSE );
+    ResizeChild( lparam, node->hwnd, false );
     DisplayImageText( node );
     WriteSetSizeText( WIE_NEWIMAGESIZE, imgWidth, imgHeight );
 

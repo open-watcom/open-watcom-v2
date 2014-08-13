@@ -84,7 +84,7 @@ static bool WSaveObjectToRC( WStringEditInfo *einfo, char *filename,
     char        fn_ext[_MAX_EXT + 1];
 
     if( einfo == NULL || filename == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( shadow ) {
@@ -96,14 +96,14 @@ static bool WSaveObjectToRC( WStringEditInfo *einfo, char *filename,
     }
 
     if( WRFileExists( fn_path ) ) {
-        WRBackupFile( fn_path, TRUE );
+        WRBackupFile( fn_path, true );
     }
 
     if( !WWriteStringToRC( einfo, fn_path, append ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
@@ -151,7 +151,7 @@ bool WSaveObject( WStringEditInfo *einfo, bool get_name, bool save_into )
     }
 
     if( ok && einfo->info->stand_alone ) {
-        einfo->info->modified = FALSE;
+        einfo->info->modified = false;
     }
 
     if( idata != NULL ) {
@@ -191,7 +191,7 @@ bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
             idata2.name = WResIDFromStr( "DLGINCLUDE" );
             idata2.data = einfo->info->symbol_file;
             idata2.lang = lang;
-            idata2.size = strlen( einfo->info->symbol_file ) + 1;
+            idata2.size = (uint_32)( strlen( einfo->info->symbol_file ) + 1 );
             idata2.MemFlags = MEMFLAG_DISCARDABLE;
         }
     }
@@ -288,7 +288,7 @@ bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
     bool                ok;
 
     fname = NULL;
-    dup = FALSE;
+    dup = false;
 
     ok = (einfo != NULL);
 
@@ -372,7 +372,7 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
 
 WRSaveIntoData *WInitSaveData( WStringBlock *block, WResID *type, WResLangType *lang )
 {
-    int                 size;
+    size_t              size;
     WRSaveIntoData      *new;
 
     new = WAllocSaveIntoData();
@@ -392,7 +392,7 @@ WRSaveIntoData *WInitSaveData( WStringBlock *block, WResID *type, WResLangType *
         return( NULL );
     }
 
-    new->size = size;
+    new->size = (uint_32)size;
     new->type = type;
     new->lang = *lang;
     new->MemFlags = block->MemFlags;
@@ -450,7 +450,7 @@ bool WSaveSymbols( WStringEditInfo *einfo, WRHashTable *table, char **file_name,
         return( TRUE );
     }
 
-    ok = TRUE;
+    ok = true;
 
     WSetWaitCursor( einfo->win, TRUE );
 

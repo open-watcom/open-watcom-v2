@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* static functions                                                         */
 /****************************************************************************/
-static int  WRCopyBinFile( int, int );
+static bool  WRCopyBinFile( int, int );
 
 static int  LastError = 0;
 
@@ -62,10 +62,10 @@ int WRAPI WRGetLastError( void )
     return( LastError );
 }
 
-int WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
+bool WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
 {
     long int    s;
-    int         ok;
+    bool        ok;
 
     ok = (file != -1 && data != NULL && size != NULL);
 
@@ -139,7 +139,7 @@ int WRAPI WRRenameFile( const char *new, const char *old )
     }
 }
 
-int WRAPI WRBackupFile( const char *name, int use_rename )
+bool WRAPI WRBackupFile( const char *name, bool use_rename )
 {
     char     fn_path[_MAX_PATH];
     char     fn_drive[_MAX_DRIVE];
@@ -147,10 +147,10 @@ int WRAPI WRBackupFile( const char *name, int use_rename )
     char     fn_name[_MAX_FNAME];
     char     fn_ext[_MAX_EXT + 1];
     size_t   len;
-    int      ret;
+    bool     ret;
 
     if( name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     _splitpath( name, fn_drive, fn_dir, fn_name, fn_ext );
@@ -245,9 +245,9 @@ char * WRAPI WRGetTempFileName( const char *ext )
     return( buf );
 }
 
-int WRAPI WRCopyFile( const char *dest, const char *src )
+bool WRAPI WRCopyFile( const char *dest, const char *src )
 {
-    uint_8     ret;
+    bool       ret;
     int        dest_handle;
     int        src_handle;
 
@@ -279,18 +279,18 @@ int WRAPI WRCopyFile( const char *dest, const char *src )
     return( ret );
 }
 
-int WRCopyBinFile( int dest, int src )
+bool WRCopyBinFile( int dest, int src )
 {
     char        *buf;
     uint_32     file_size;
     uint_32     num_to_copy;
     long int    src_pos;
     long int    dest_pos;
-    int         ok;
+    bool        ok;
 
     buf = (char *)MemAlloc( WR_COPY_BUFFER_SIZE );
     if( buf == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     src_pos = lseek( src,  0, SEEK_SET );
@@ -307,11 +307,11 @@ int WRCopyBinFile( int dest, int src )
 
         if( ok && num_to_copy != 0 ) {
             if( read( src, buf, num_to_copy ) != (int)num_to_copy ) {
-                ok = FALSE;
+                ok = false;
             }
 
             if( ok && write( dest, buf, num_to_copy ) != (int)num_to_copy ) {
-                ok = FALSE;
+                ok = false;
             }
         }
         if( !ok ) {

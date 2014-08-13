@@ -1475,7 +1475,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
         offset.y = off->y;
     }
 
-    ok = TRUE;
+    ok = true;
 
     old_parent = obj->parent;
 
@@ -1493,7 +1493,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
         if( obj->parent != obj->base_obj ) {
             if( !Forward( obj->parent, GET_NC_SIZE, &nc_size, NULL ) ) {
                 WdeWriteTrail( "WdeDialogAddSubObject: Couldn't get nc size!" );
-                ok = FALSE;
+                ok = false;
             }
             if( ok ) {
                 parent_rect.left += nc_size.left;
@@ -1505,7 +1505,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
                 if( pnt.x < parent_rect.left || pnt.y < parent_rect.top ) {
                     WdeWriteTrail( "WdeControlMove: control "
                                    "not contained by dialog top left!" );
-                    ok = FALSE;
+                    ok = false;
                 }
             }
         }
@@ -1519,7 +1519,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
         } else {
             if( !Forward( obj->parent, GET_RESIZER, &resizer, NULL ) ) {
                 WdeWriteTrail( "WdeDialogResize: GET_RESIZER failed!" );
-                ok = FALSE;
+                ok = false;
             }
             if( ok ) {
                 if( obj->parent != obj->base_obj ) {
@@ -1541,7 +1541,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
 
         if( ok && !WdeChangeControlSize( obj, FALSE, TRUE ) ) {
             WdeWriteTrail( "WdeControlMove: WdeChangeControlSize failed!" );
-            ok = FALSE;
+            ok = false;
         }
 
         if( ok ) {
@@ -1561,7 +1561,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
 
         if( !SetWindowPos( obj->window_handle, (HWND)NULL, pnt.x, pnt.y, 0, 0,
                            SWP_NOZORDER | SWP_NOSIZE ) ) {
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -1797,7 +1797,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
     obj->symbol = in->symbol;
 
     if( in->symbol != NULL ) {
-        dup = FALSE;
+        dup = false;
         entry = WdeDefAddHashEntry( obj->res_info->hash_table, obj->symbol, &dup );
         if( entry != NULL ) {
             SETCTL_ID( obj->control_info, entry->value );
@@ -1898,7 +1898,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     _wde_touch( p1 );
     _wde_touch( p2 );
 
-    ok = TRUE;
+    ok = true;
 
     if( obj->parent_handle == (HWND)NULL ) {
         ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) &&
@@ -1915,7 +1915,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
 
     if( ok ) {
         width = 0;
-        ok = FALSE;
+        ok = false;
         switch( id ) {
         case PBUTTON_OBJ:
             SetRectEmpty( &pos );
@@ -1923,7 +1923,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
             width = size.cx + (WDE_SIZE_TO_TEXT_PAD * 2);
             if( width < pos.right )
                 width = pos.right;
-            ok = TRUE;
+            ok = true;
             break;
 
         case RBUTTON_OBJ:
@@ -1935,14 +1935,14 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
         case TEXT_OBJ:
         case EDIT_OBJ:
             width += size.cx + (WDE_SIZE_TO_TEXT_PAD * 2);
-            ok = TRUE;
+            ok = true;
             break;
         }
     }
 
     if( ok ) {
         height = 0;
-        ok = FALSE;
+        ok = false;
         switch( id ) {
         case RBUTTON_OBJ:
         case CBUTTON_OBJ:
@@ -1953,7 +1953,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
             /* fall through */
         case PBUTTON_OBJ:
             height = pos.bottom;
-            ok = TRUE;
+            ok = true;
             break;
         }
     }

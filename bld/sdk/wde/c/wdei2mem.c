@@ -65,7 +65,7 @@ static char                *WdeMem2String( uint_8 **data, bool );
 
 static int WdeStringToMem( char *string, uint_8 use_unicode, uint_8 *mem )
 {
-    int         len;
+    size_t      len;
     uint_16     *data16;
 
     if( string == NULL ) {
@@ -321,7 +321,7 @@ static int WdeDialogBoxControlToMem( WdeDialogBoxControl *control,
 bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
 {
     bool                ok;
-    uint_32             pos, memsize, sz, pad;
+    size_t              pos, memsize, sz, pad;
     LIST                *l;
     WdeDialogBoxControl *ci;
     bool                is32bit;
@@ -334,7 +334,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
 
     if( ok ) {
         *mem = NULL;
-        memsize = (int)WdeCalcSizeOfWdeDialogBoxInfo( info );
+        memsize = WdeCalcSizeOfWdeDialogBoxInfo( info );
         ok = (memsize != 0);
     }
 
@@ -356,7 +356,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
         for( l = info->control_list; l != NULL; l = ListNext( l ) ) {
             ci = ListElement( l );
             if( ci == NULL ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
             if( is32bit ) {
@@ -366,7 +366,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
             }
             sz = WdeDialogBoxControlToMem( ci, *mem + pos, is32bit, is32bitEx );
             if( sz == 0 ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
             pos += sz;
@@ -382,7 +382,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
     if( ok ) {
         ok = (pos == memsize);
         if( ok ) {
-            *size = memsize;
+            *size = (uint_32)memsize;
         }
     } else {
         if( mem != NULL && *mem != NULL ) {
@@ -440,7 +440,7 @@ WdeDialogBoxInfo *WdeMem2DBI( uint_8 *data, uint_32 size, bool is32bit )
             }
             control = WdeMem2DialogBoxControl( &data, is32bit, is32bitEx );
             if( control == NULL ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
             if( prev_control == NULL ) {
@@ -693,7 +693,7 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool 
 ResNameOrOrdinal *WdeMem2NameOrOrdinal( uint_8 **data, bool is32bit )
 {
     ResNameOrOrdinal    *new;
-    int                 size;
+    size_t              size;
 
     if( data == NULL || *data == NULL ) {
         return( NULL );
@@ -719,8 +719,8 @@ ControlClass *WdeMem2ControlClass( uint_8 **_data, bool is32bit )
     ControlClass        *new;
     uint_8              *data8;
     uint_16             *data16;
-    int                 stringlen;
-    int                 len;
+    size_t              stringlen;
+    size_t              len;
     char                *data;
 
     if( _data == NULL || *_data == NULL ) {
@@ -772,7 +772,7 @@ ControlClass *WdeMem2ControlClass( uint_8 **_data, bool is32bit )
 char *WdeMem2String( uint_8 **_data, bool is32bit )
 {
     char        *new;
-    int         len;
+    size_t      len;
     char        *data;
 
     if( _data == NULL || *_data == NULL ) {

@@ -133,7 +133,7 @@ char *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
 ControlClass *WdeStrToControlClass( char *str )
 {
     ControlClass    *c;
-    uint_32         slen;
+    size_t          slen;
 
     slen = strlen( str );
 

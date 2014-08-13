@@ -369,7 +369,7 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     bool            ok;
 
     if( r == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     inst = WdeGetAppInstance();
@@ -388,9 +388,9 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
         r->xmap = rect.left;
         r->ymap = rect.top;
         DestroyWindow( hDlg );
-        ok = TRUE;
+        ok = true;
     } else {
-        ok = FALSE;
+        ok = false;
     }
 
     FreeProcInstance( (FARPROC)proc );

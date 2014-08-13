@@ -318,7 +318,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                     if( flags & MENU_POPUP ) {
                         ok = strcmp( entry->item->Item.Popup.ItemText, text );
                     } else if( flags & MENU_SEPARATOR ) {
-                        ok = FALSE;
+                        ok = false;
                     } else {
                         ok = (entry->item->Item.Normal.ItemID != id ||
                               strcmp( entry->item->Item.Normal.ItemText, text ));
@@ -489,10 +489,10 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     char        *ep;
     WRHashValue hv;
     WRHashEntry *new_entry;
-    BOOL        dup;
+    bool        dup;
 
     if( dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( combo_change ) {
@@ -502,7 +502,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( **symbol == '\0' ) {
@@ -510,7 +510,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     strupr( *symbol );
@@ -523,7 +523,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         if( WRLookupName( symbol_table, *symbol, &hv ) ) {
             *id = (uint_16)hv;
         } else {
-            dup = FALSE;
+            dup = false;
             new_entry = WRAddDefHashEntry( symbol_table, *symbol, &dup );
             if( new_entry != NULL ) {
                 *id = (uint_16)new_entry->value;
@@ -537,7 +537,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = 0;
                 WRMemFree( *symbol );
                 *symbol = NULL;
-                return( FALSE );
+                return( false );
             }
         }
     } else {
@@ -547,7 +547,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         *symbol = NULL;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, bool reset )
@@ -841,7 +841,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
         if( mod && einfo->current_pos != -1 ) {
             if( change || WQueryChangeEntry( einfo ) ) {
                 WGetEditWindowMenuEntry( einfo, einfo->current_entry, FALSE, &reinit );
-                einfo->info->modified = TRUE;
+                einfo->info->modified = true;
                 if( reinit ) {
                     WInitEditWindowListBox( einfo );
                 } else {
@@ -942,7 +942,7 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         einfo->current_entry = NULL;
         einfo->current_pos = -1;
         ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)ret, 0 );

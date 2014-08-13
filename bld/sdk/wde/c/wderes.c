@@ -1040,7 +1040,7 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
         return( FALSE );
     }
 
-    res_info->modified = TRUE;
+    res_info->modified = true;
 
     rnode = ditem->rnode;
     lnode = ditem->lnode;
@@ -1149,7 +1149,7 @@ bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **di, WResID *
     if( ok ) {
         item->object = dlg;
         item->dialog_name = name;
-        item->modified = TRUE;
+        item->modified = true;
         item->is32bit = res_info->is32bit;
         WdeAddResDlgItemToResInfo( res_info, item );
         *ri = res_info;

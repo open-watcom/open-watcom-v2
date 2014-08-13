@@ -40,7 +40,7 @@
 #include "wrmemi.h"
 
 /* forward declarations */
-int WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry );
+bool WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry );
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -62,14 +62,14 @@ static int      WRIsHeaderValidWINNT( exe_pe_header * );
 static int      WRWinNTHeaderHasResourceTable( exe_pe_header * );
 static int      WRCalcObjTableOffset( WResFileID, exe_pe_header * );
 static int      WRReadNTObjectTable( WResFileID, exe_pe_header *, pe_object ** );
-static int      WRLoadWResDirFromWinNTEXE( WResFileID, WResDir * );
-static int      WRHandleWinNTTypeDir( WResFileID, WResDir *, uint_32 );
-static int      WRHandleWinNTTypeEntry( WResFileID, WResDir *, resource_dir_entry *, int );
-static int      WRHandleWinNTNameDir( WResFileID, WResDir *, WResID *, uint_32 );
-static int      WRHandleWinNTNameEntry( WResFileID, WResDir *, WResID *, resource_dir_entry *, int );
-static int      WRHandleWinNTLangIDDir( WResFileID, WResDir *, WResID *, WResID *, uint_32 );
-static int      WRHandleWinNTLangIDEntry( WResFileID, WResDir *, WResID *, WResID *, resource_dir_entry * );
-static int      WRReadResourceHeader( WResFileID, uint_32, resource_dir_header *, resource_dir_entry ** );
+static bool     WRLoadWResDirFromWinNTEXE( WResFileID, WResDir * );
+static bool     WRHandleWinNTTypeDir( WResFileID, WResDir *, uint_32 );
+static bool     WRHandleWinNTTypeEntry( WResFileID, WResDir *, resource_dir_entry *, int );
+static bool     WRHandleWinNTNameDir( WResFileID, WResDir *, WResID *, uint_32 );
+static bool     WRHandleWinNTNameEntry( WResFileID, WResDir *, WResID *, resource_dir_entry *, bool );
+static bool     WRHandleWinNTLangIDDir( WResFileID, WResDir *, WResID *, WResID *, uint_32 );
+static bool     WRHandleWinNTLangIDEntry( WResFileID, WResDir *, WResID *, WResID *, resource_dir_entry * );
+static bool     WRReadResourceHeader( WResFileID, uint_32, resource_dir_header *, resource_dir_entry ** );
 static WResID   *WRGetUniCodeWResID( WResFileID, uint_32 );
 
 /****************************************************************************/
@@ -81,10 +81,10 @@ static uint_32 res_rva    = 0;
 #define WR_MAP_DATA_RVA( rva )  (uint_32)((rva - res_rva) + res_offset)
 #define WR_MAP_RES_RVA( rva )   (uint_32)(rva + res_offset)
 
-int WRLoadResourceFromWinNTEXE( WRInfo *info )
+bool WRLoadResourceFromWinNTEXE( WRInfo *info )
 {
     WResFileID  file_handle;
-    int         ok;
+    bool        ok;
 
     ok = ((file_handle = ResOpenFileRO( info->file_name )) != -1);
 
@@ -103,7 +103,7 @@ long int WRReadWinNTExeHeader( WResFileID file_handle, exe_pe_header *header )
 {
     long int    old_pos;
     uint_16     offset;
-    int         ok;
+    bool        ok;
 
     old_pos = -1;
 
@@ -164,7 +164,7 @@ int WRCalcObjTableOffset( WResFileID file, exe_pe_header *hdr )
 {
     uint_16  pe_offset;
     int      offset;
-    int      ok;
+    bool     ok;
 
     ok = (ResSeek( file, PE_OFFSET, SEEK_SET ) != -1);
 
@@ -236,14 +236,14 @@ int WRWinNTHeaderHasResourceTable( exe_pe_header *header )
     return( num_tables > PE_TBL_RESOURCE && table[PE_TBL_RESOURCE].rva != 0 && table[PE_TBL_RESOURCE].size != 0 );
 }
 
-int WRLoadWResDirFromWinNTEXE( WResFileID file_handle, WResDir *dir )
+bool WRLoadWResDirFromWinNTEXE( WResFileID file_handle, WResDir *dir )
 {
     exe_pe_header       nt_header;
     pe_object           *otable;
     uint_32             physical_size;
     uint_32             physical_offset;
     int                 i;
-    int                 ok;
+    bool                ok;
     unsigned_32         resource_rva;
 
     ok = (file_handle != -1);
@@ -312,12 +312,12 @@ int WRLoadWResDirFromWinNTEXE( WResFileID file_handle, WResDir *dir )
     return( ok );
 }
 
-int WRHandleWinNTTypeDir( WResFileID file, WResDir *dir, uint_32 offset )
+bool WRHandleWinNTTypeDir( WResFileID file, WResDir *dir, uint_32 offset )
 {
     resource_dir_header rd_hdr;
     resource_dir_entry  *rd_entry;
     int                 i;
-    int                 ok;
+    bool                ok;
 
     ok = WRReadResourceHeader( file, offset, &rd_hdr, &rd_entry );
 
@@ -335,11 +335,11 @@ int WRHandleWinNTTypeDir( WResFileID file, WResDir *dir, uint_32 offset )
     return( ok );
 }
 
-int WRHandleWinNTTypeEntry( WResFileID file, WResDir *dir,
+bool WRHandleWinNTTypeEntry( WResFileID file, WResDir *dir,
                             resource_dir_entry *rd_entry, int is_name )
 {
     WResID  *type;
-    int     ok;
+    bool    ok;
 
     /* verify the id_name */
     if( ((rd_entry->id_name & PE_RESOURCE_MASK_ON) && !is_name) ||
@@ -375,12 +375,13 @@ int WRHandleWinNTTypeEntry( WResFileID file, WResDir *dir,
     return( ok );
 }
 
-int WRHandleWinNTNameDir( WResFileID file, WResDir *dir, WResID *type, uint_32 rva )
+bool WRHandleWinNTNameDir( WResFileID file, WResDir *dir, WResID *type, uint_32 rva )
 {
     resource_dir_header rd_hdr;
     resource_dir_entry  *rd_entry;
     uint_32             offset;
-    int                 ok, i;
+    int                 i;
+    bool                ok;
 
     offset = WR_MAP_RES_RVA( rva );
 
@@ -388,11 +389,11 @@ int WRHandleWinNTNameDir( WResFileID file, WResDir *dir, WResID *type, uint_32 r
 
     if( ok ) {
         for( i = 0; i < rd_hdr.num_name_entries; i++ ) {
-            WRHandleWinNTNameEntry( file, dir, type, &rd_entry[i], TRUE );
+            WRHandleWinNTNameEntry( file, dir, type, &rd_entry[i], true );
         }
         for( i = rd_hdr.num_name_entries;
              i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
-            WRHandleWinNTNameEntry( file, dir, type, &rd_entry[i], FALSE );
+            WRHandleWinNTNameEntry( file, dir, type, &rd_entry[i], false );
         }
         MemFree( rd_entry );
     }
@@ -400,15 +401,15 @@ int WRHandleWinNTNameDir( WResFileID file, WResDir *dir, WResID *type, uint_32 r
     return( ok );
 }
 
-int WRHandleWinNTNameEntry( WResFileID file, WResDir *dir, WResID *type,
-                            resource_dir_entry *rd_entry, int is_name )
+bool WRHandleWinNTNameEntry( WResFileID file, WResDir *dir, WResID *type,
+                            resource_dir_entry *rd_entry, bool is_name )
 {
     WResLangType    def_lang;
     resource_entry  res_entry;
     uint_32         offset;
     WResID          *name;
-    int             add_now;
-    int             ok;
+    bool            add_now;
+    bool            ok;
 
     def_lang.lang = DEF_LANG;
     def_lang.sublang = DEF_SUBLANG;
@@ -431,12 +432,12 @@ int WRHandleWinNTNameEntry( WResFileID file, WResDir *dir, WResID *type,
     if( ok ) {
         /* is the entry_rva is a subdir */
         if( rd_entry->entry_rva & PE_RESOURCE_MASK_ON ) {
-            add_now = FALSE;
+            add_now = false;
             ok = WRHandleWinNTLangIDDir( file, dir, type, name,
                                          rd_entry->entry_rva & PE_RESOURCE_MASK );
         } else {
             /* will this to happen often ???? */
-            add_now = TRUE;
+            add_now = true;
             offset = WR_MAP_RES_RVA( rd_entry->entry_rva );
             ok = WRReadResourceEntry( file, offset, &res_entry );
         }
@@ -457,13 +458,13 @@ int WRHandleWinNTNameEntry( WResFileID file, WResDir *dir, WResID *type,
     return( ok );
 }
 
-int WRHandleWinNTLangIDDir( WResFileID file, WResDir *dir,
+bool WRHandleWinNTLangIDDir( WResFileID file, WResDir *dir,
                             WResID *type, WResID *name, uint_32 rva )
 {
     resource_dir_header rd_hdr;
     resource_dir_entry  *rd_entry;
     uint_32             offset;
-    int                 ok;
+    bool                ok;
     int                 i;
 
     offset = WR_MAP_RES_RVA( rva );
@@ -485,13 +486,13 @@ int WRHandleWinNTLangIDDir( WResFileID file, WResDir *dir,
     return( ok );
 }
 
-int WRHandleWinNTLangIDEntry( WResFileID file, WResDir *dir, WResID *type,
+bool WRHandleWinNTLangIDEntry( WResFileID file, WResDir *dir, WResID *type,
                               WResID *name, resource_dir_entry *rd_entry )
 {
     WResLangType    lang;
     resource_entry  res_entry;
     uint_32         offset;
-    int             ok;
+    bool            ok;
 
     ok = (name != NULL);
 
@@ -499,7 +500,7 @@ int WRHandleWinNTLangIDEntry( WResFileID file, WResDir *dir, WResID *type,
         /* is the entry_rva is a subdir */
         if( rd_entry->entry_rva & PE_RESOURCE_MASK_ON ) {
             WRDisplayErrorMsg( WR_BADLANGDISCARDNAME );
-            ok = FALSE;
+            ok = false;
         } else {
             offset = WR_MAP_RES_RVA( rd_entry->entry_rva );
             ok = WRReadResourceEntry( file, offset, &res_entry );
@@ -516,11 +517,11 @@ int WRHandleWinNTLangIDEntry( WResFileID file, WResDir *dir, WResID *type,
     return( ok );
 }
 
-int WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
+bool WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
                           resource_dir_header *rd_hdr,
                           resource_dir_entry **rd_entry )
 {
-    int ok;
+    bool ok;
     int rde_size;
 
     *rd_entry = NULL;
@@ -557,7 +558,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
     uint_32 old_pos;
     uint_32 offset;
     uint_16 len;
-    int     ok;
+    bool    ok;
     char    *unistr;
     WResID  *id;
     int     i;
@@ -607,9 +608,9 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
     }
 }
 
-int WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry )
+bool WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry )
 {
-    int ok;
+    bool ok;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
     ok = (offset == 0 || ResSeek( file, offset, SEEK_SET ) != -1);

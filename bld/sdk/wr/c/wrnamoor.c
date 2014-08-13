@@ -62,7 +62,7 @@ ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
     ResNameOrOrdinal    *new;
     uint_16             *data16;
     char                *str;
-    int                 stringlen;
+    size_t              stringlen;
 
     if( data == NULL ) {
         return( NULL );
@@ -125,7 +125,7 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
     return( new );
 }
 
-int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, int *size )
+int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     int         len;
     int         stringlen;
@@ -158,7 +158,7 @@ int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, int *size )
     return( TRUE );
 }
 
-int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, int *size )
+int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     uint_16     *data16;
     char        *uni_str;
@@ -188,7 +188,7 @@ int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, int *size )
     return( TRUE );
 }
 
-ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( void *data, int is32bit )
+ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( void *data, bool is32bit )
 {
     ResNameOrOrdinal    *n;
 
@@ -201,7 +201,7 @@ ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( void *data, int is32bit )
     return( n );
 }
 
-int WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, int is32bit, void **data, int *size )
+int WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size )
 {
     if( is32bit ) {
         return( WRNameOrOrd2Mem32( name, data, size ) );

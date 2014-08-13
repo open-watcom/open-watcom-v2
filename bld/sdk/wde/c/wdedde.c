@@ -486,7 +486,7 @@ bool WdeStartDDEEditSession( void )
                 ok = (ditem->dialog_info != NULL);
                 WRMemFree( data );
             } else {
-                ok = FALSE;
+                ok = false;
             }
         }
     }

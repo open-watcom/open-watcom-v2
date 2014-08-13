@@ -67,7 +67,7 @@ static void displayColors( HWND hwnd )
  */
 static void showColors( HWND hwnd )
 {
-    InitFromColorPalette( &screenColor, &inverseColor, &availColor );
+    InitFromColorPalette( &screenColor, &inverseColor, availColor );
     displayColors( hwnd );
 
 } /* showColors */

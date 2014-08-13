@@ -62,10 +62,10 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 static void *WInitDataFromMenu( WMenuEntry *, void * );
-static int  WCalcMenuSize( WMenuEntry * );
-static int  WMakeMenuEntryFromData( void **, int *, WMenuEntry *, WMenuEntry **, bool );
-static int  WAllocMenuEntryFromData( void **, int *, WMenuEntry **, bool );
-static int  WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool );
+static size_t WCalcMenuSize( WMenuEntry * );
+static bool WMakeMenuEntryFromData( void **, size_t *, WMenuEntry *, WMenuEntry **, bool );
+static bool WAllocMenuEntryFromData( void **, size_t *, WMenuEntry **, bool );
+static bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool );
 static bool WInsertEntryIntoPreview( WMenuEditInfo *, WMenuEntry * );
 
 /****************************************************************************/
@@ -136,7 +136,7 @@ void WFreeMenuEInfo( WMenuEditInfo *einfo )
     }
 }
 
-void WMakeDataFromMenu( WMenu *menu, void **data, int *size )
+void WMakeDataFromMenu( WMenu *menu, void **data, size_t *size )
 {
     char *tdata;
 
@@ -156,22 +156,22 @@ void WMakeDataFromMenu( WMenu *menu, void **data, int *size )
     }
 }
 
-int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool is32bit )
+bool WMakeMenuItemFromData( void **data, size_t *size, MenuItem **new, bool is32bit )
 {
     MenuItemNormal      *normal;
     char                *text;
     char                *itext;
-    int                 msize;
-    int                 tlen;
-    int                 itlen;
+    size_t              msize;
+    size_t              tlen;
+    size_t              itlen;
 
     if( data == NULL || *data == NULL || size == NULL || *size == 0 || new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *new = ResNewMenuItem();
     if( *new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     normal = (MenuItemNormal *)*data;
@@ -207,7 +207,7 @@ int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool is32bit 
 
     if( itext == NULL ) {
         *size = 0;
-        return( FALSE );
+        return( false );
     }
 
     if( (*new)->IsPopup ) {
@@ -223,15 +223,15 @@ int WMakeMenuItemFromData( void **data, int *size, MenuItem **new, bool is32bit 
         *size = *size - msize;
     } else {
         *size = 0;
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, bool is32bit )
+bool WAllocMenuEntryFromData( void **data, size_t *size, WMenuEntry **entry, bool is32bit )
 {
-    int         ok;
+    bool        ok;
 
     ok = (data != NULL && *data != NULL && size != NULL && *size != 0 && entry != NULL);
 
@@ -256,10 +256,10 @@ int WAllocMenuEntryFromData( void **data, int *size, WMenuEntry **entry, bool is
     return( ok );
 }
 
-int WMakeMenuEntryFromData( void **data, int *size, WMenuEntry *parent,
+bool WMakeMenuEntryFromData( void **data, size_t *size, WMenuEntry *parent,
                             WMenuEntry **entry, bool is32bit )
 {
-    int         ok;
+    bool        ok;
     WMenuEntry  **current;
     WMenuEntry  *prev;
 
@@ -268,7 +268,7 @@ int WMakeMenuEntryFromData( void **data, int *size, WMenuEntry *parent,
     }
 
     *entry = NULL;
-    ok = TRUE;
+    ok = true;
 
     if( *data == NULL || *size == 0 ) {
         return( TRUE );
@@ -307,9 +307,9 @@ int WMakeMenuEntryFromData( void **data, int *size, WMenuEntry *parent,
 WMenu *WMakeMenuFromInfo( WMenuInfo *info )
 {
     WMenu       *menu;
-    int         ok;
+    bool        ok;
     void        *data;
-    int         size;
+    size_t      size;
 
     menu = NULL;
 
@@ -356,7 +356,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
 void *WInitDataFromMenu( WMenuEntry *entry, void *tdata )
 {
     uint_16             *word;
-    int                 tlen;
+    size_t              tlen;
     char                *item_text;
     char                *text;
 
@@ -432,10 +432,10 @@ void *WInitDataFromMenu( WMenuEntry *entry, void *tdata )
     return( tdata );
 }
 
-int WCalcMenuSize( WMenuEntry *entry )
+size_t WCalcMenuSize( WMenuEntry *entry )
 {
-    int         size;
-    int         tlen;
+    size_t      size;
+    size_t      tlen;
     char        *text;
 
     if( entry == NULL ) {
@@ -620,7 +620,7 @@ bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
 {
     bool    ok;
 
-    ok = TRUE;
+    ok = true;
 
     while( ok && entry != NULL ) {
         entry->preview_id = einfo->first_preview_id;
@@ -905,7 +905,7 @@ bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize 
 {
     WMenu       menu;
     WMenuEntry  save;
-    int         size;
+    size_t      size;
     bool        ok;
 
     ok = (entry != NULL && data != NULL && dsize != NULL);
@@ -918,7 +918,7 @@ bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize 
         entry->prev = NULL;
         entry->parent = NULL;
         WMakeDataFromMenu( &menu, data, &size );
-        *dsize = size;
+        *dsize = (uint_32)size;
         ok = (*data != NULL && *dsize != 0);
         if( ok ) {
             ((BYTE *)(*data))[0] = entry->is32bit;
@@ -932,7 +932,7 @@ bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize 
 WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
 {
     WMenuEntry  *entry;
-    int         size;
+    size_t      size;
     bool        is32bit;
     bool        ok;
 

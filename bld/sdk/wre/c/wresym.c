@@ -146,7 +146,7 @@ static void WREAddSymbols( WRHashTable *table )
     PREPROC_VALUE       val;
     WRHashValue         value;
     WRHashEntry         *entry;
-    BOOL                dup;
+    bool                dup;
     unsigned            add_count;
     unsigned            busy_count;
     char                busy_str[2];
@@ -155,7 +155,7 @@ static void WREAddSymbols( WRHashTable *table )
         return;
     }
 
-    dup = TRUE;
+    dup = true;
     add_count = 0;
     busy_count = 0;
     busy_str[1] = '\0';
@@ -170,7 +170,7 @@ static void WREAddSymbols( WRHashTable *table )
                         } else {
                             value = (WRHashValue)val.val.uvalue;
                         }
-                        entry = WRAddHashEntry( table, me->name, value, &dup, FALSE, FALSE );
+                        entry = WRAddHashEntry( table, me->name, value, &dup, false, false );
                         add_count++;
                         if( add_count == MAX_SYM_ADDS ) {
                             busy_count++;
@@ -229,7 +229,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
         if( ret ) {
             PP_Fini();
             WREDisplayErrorMsg( WRE_SYMOUTOFMEM );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -291,7 +291,7 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
         return( TRUE );
     }
 
-    ok = TRUE;
+    ok = true;
     WRESetStatusText( NULL, "", FALSE );
     WRESetStatusByID( WRE_SAVEINGSYMBOLS, -1 );
 

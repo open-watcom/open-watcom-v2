@@ -138,7 +138,7 @@ bool WHandleGetKeyValue( WAccelEditInfo *einfo, bool ignore_first )
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         SetFocus( einfo->win );
         SetCapture( einfo->win );
         einfo->key_info.ignore_first_key = ignore_first;

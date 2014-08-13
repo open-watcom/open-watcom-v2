@@ -117,8 +117,8 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
     WResID          *rname, *tname;
     bool            ok, tname_alloc;
 
-    ok = TRUE;
-    tname_alloc = FALSE;
+    ok = true;
+    tname_alloc = false;
 
     WREGetCurrentResource( curr );
 
@@ -131,7 +131,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
     if( ok ) {
         if( WREFindTypeNode( curr->info->info->dir, (uint_16)(pointer_int)RT_STRING, NULL ) ) {
             WREDisplayErrorMsg( WRE_STRINGTABLEEXISTS );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -140,14 +140,14 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
             tname = &curr->type->Info.TypeName;
         } else {
             tname = WResIDFromNum( (uint_16)(pointer_int)RT_STRING );
-            tname_alloc = TRUE;
+            tname_alloc = true;
         }
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
     }
 
     if( ok ) {
-        dup = TRUE;
+        dup = true;
         num_retries = 0;
         rname = NULL;
         while( ok && dup && num_retries <= MAX_RETRIES ) {
@@ -157,7 +157,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
                                      &lang, &dup, (uint_16)(pointer_int)RT_STRING, tname_alloc );
                 if( !ok && dup ) {
-                    ok = TRUE;
+                    ok = true;
                 }
                 num_retries++;
             }
@@ -171,7 +171,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( tname_alloc ) {
@@ -296,7 +296,7 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
 
     session->hndl = WRStringStartEdit( session->info );
 
-    if( session->hndl != NULL ) {
+    if( session->hndl != 0 ) {
         WREInsertObject( &WREStringSessions, session );
         if( nodes != NULL ) {
             WREFreeStringNode( nodes );
@@ -317,7 +317,7 @@ bool WREGetStringSessionData( WREStringSession *session, bool close )
     uint_16             type;
     bool                ok;
 
-    ok = (session != NULL && session->info != NULL && session->hndl != NULL);
+    ok = (session != NULL && session->info != NULL && session->hndl != 0);
 
     if( ok ) {
         if( close ) {
@@ -348,8 +348,8 @@ bool WREGetStringSessionData( WREStringSession *session, bool close )
         session->tnode = tnode;
         WREFreeStringNode( session->info->tables );
         session->info->tables = NULL;
-        session->info->modified = FALSE;
-        session->rinfo->modified = TRUE;
+        session->info->modified = false;
+        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -361,7 +361,7 @@ bool WREEndAllStringSessions( bool fatal_exit )
     LIST                *slist;
     bool                ok;
 
-    ok = TRUE;
+    ok = true;
 
     if( WREStringSessions != NULL ) {
         for( slist = WREStringSessions; slist != NULL; slist = ListNext( slist ) ) {
@@ -538,7 +538,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 
     while( ok && node != NULL ) {
         ok = !WResAddResource( tname, node->block_name, node->MemFlags, 0,
-                               node->data_size, dir, &node->lang, NULL );
+                               (uint_32)node->data_size, dir, &node->lang, NULL );
         if( ok ) {
             ok = WRFindAndSetData( dir, tname, node->block_name,
                                    &node->lang, node->data );

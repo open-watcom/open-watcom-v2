@@ -155,8 +155,8 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
     WResID          *rname, *tname;
     bool            ok, tname_alloc;
 
-    ok = TRUE;
-    tname_alloc = FALSE;
+    ok = true;
+    tname_alloc = false;
 
     WREGetCurrentResource( curr );
 
@@ -170,14 +170,14 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
             tname = &curr->type->Info.TypeName;
         } else {
             tname = WResIDFromNum( (uint_16)(pointer_int)RT_ACCELERATOR );
-            tname_alloc = TRUE;
+            tname_alloc = true;
         }
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
     }
 
     if( ok ) {
-        dup = TRUE;
+        dup = true;
         num_retries = 0;
         rname = NULL;
         while( ok && dup && num_retries <= MAX_RETRIES ) {
@@ -188,7 +188,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
                                      &lang, &dup, (uint_16)(pointer_int)RT_ACCELERATOR,
                                      tname_alloc );
                 if( !ok && dup ) {
-                    ok = TRUE;
+                    ok = true;
                 }
                 num_retries++;
             }
@@ -202,7 +202,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( tname_alloc ) {
@@ -384,8 +384,8 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
         session->lnode->Info.Offset = 0;
         session->info->data = NULL;
         session->info->data_size = 0;
-        session->info->modified = FALSE;
-        session->rinfo->modified = TRUE;
+        session->info->modified = false;
+        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -397,7 +397,7 @@ bool WREEndAllAccelSessions( bool fatal_exit )
     LIST                *slist;
     bool                ok;
 
-    ok = TRUE;
+    ok = true;
 
     if( WREAccSessions != NULL ) {
         for( slist = WREAccSessions; ok && slist != NULL; slist = ListNext( slist ) ) {

@@ -103,9 +103,9 @@ static WResID *WR32Mem2WResID( void *data )
     WResID      *tmpName;
     char        *uni_str;
     char        *str;
-    int         str_len;
-    int         stringlen;
-    int         len;
+    size_t      str_len;
+    size_t      stringlen;
+    size_t      len;
 
     if( data == NULL ) {
         return( NULL );
@@ -194,8 +194,8 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
     WResID      *tmpName;
     char        *str;
     char        *uni_str;
-    int         uni_len;
-    int         len;
+    size_t      uni_len;
+    size_t      len;
 
     if( name == NULL || data == NULL || size == NULL ) {
         return( FALSE );
@@ -228,7 +228,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    *size = len;
+    *size = (uint_32)len;
 
     if( name->IsName ) {
         tmpName = (WResID *)*data;
@@ -244,7 +244,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
     return( TRUE );
 }
 
-int WRAPI WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit )
+int WRAPI WRWResID2Mem( WResID *name, void **data, uint_32 *size, bool is32bit )
 {
     if( is32bit ) {
         return( WRWResID2Mem32( name, data, size ) );
@@ -253,7 +253,7 @@ int WRAPI WRWResID2Mem( WResID *name, void **data, uint_32 *size, int is32bit )
     }
 }
 
-WResID * WRAPI WRMem2WResID( void *data, int is32bit )
+WResID * WRAPI WRMem2WResID( void *data, bool is32bit )
 {
     WResID      *r_id;
 

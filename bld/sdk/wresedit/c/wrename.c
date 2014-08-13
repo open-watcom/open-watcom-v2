@@ -87,7 +87,7 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
     ok = (name != NULL);
 
     if( ok )  {
-        ok = FALSE;
+        ok = false;
         info.hcb = hcb;
         info.old_name = *name;
         if( WGetNewName( parent, &info ) && info.new_name != NULL ) {
@@ -95,7 +95,7 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
                 WRMemFree( *name );
             }
             *name = info.new_name;
-            ok = TRUE;
+            ok = true;
         }
     }
 

@@ -80,7 +80,7 @@ typedef struct WREClipFormat {
 
 typedef struct WREClipData {
     uint_32     clip_size;
-    uint_32     data_size;
+    size_t      data_size;
     uint_32     data_offset;
     uint_16     type;
     uint_16     memflags;
@@ -152,7 +152,7 @@ bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
     if( ok ) {
         if( *dsize >= INT_MAX ) {
             WREDisplayErrorMsg( WRE_RESTOOLARGETOPASTE );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -268,7 +268,7 @@ static bool WREHandleClipDataNames( WREResInfo *info, WResID *type,
             }
             exists = WRDoesNameExist( info->info->dir, type, *name );
             if( exists && *replace ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
         }
@@ -352,7 +352,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
             }
         }
         ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
-                             cdata->data_size, &lang, &dup, tn->type,
+                             (uint_32)cdata->data_size, &lang, &dup, tn->type,
                              new_type ) && !dup;
     }
 
@@ -451,7 +451,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
             }
         }
         ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
-                             cdata->data_size, &lang, &dup, fmt->type,
+                             (uint_32)cdata->data_size, &lang, &dup, fmt->type,
                              new_type ) && !dup;
     }
 
@@ -461,7 +461,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
         } else if( fmt->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
             ok = WRECreateCursorEntries( &curr, data, dsize );
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -682,7 +682,7 @@ void WRESetPasteMenuItem( HWND main )
     enable = MF_GRAYED;
 
     if( OpenClipboard( main ) ) {
-        for( i = 0; WREClipFormats[i].type != NULL; i++ ) {
+        for( i = 0; WREClipFormats[i].type != 0; i++ ) {
             if( IsClipboardFormatAvailable( WREClipFormats[i].fmt ) ) {
                 enable = MF_ENABLED;
                 break;
@@ -904,7 +904,7 @@ bool WREClipCurrentResource( HWND main, bool cut )
             ok = WREClipBitmap( &curr, main );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ||
                    curr.info->current_type == 0 ) {
-            ok = FALSE;
+            ok = false;
         } else {
             ok = WREClipResource( &curr, main, fmt->fmt );
         }

@@ -47,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int      WRLoadResourceFromWinNTEXE( WRInfo * );
+extern bool     WRLoadResourceFromWinNTEXE( WRInfo * );
 extern long int WRReadWinNTExeHeader( WResFileID, exe_pe_header * );
 
 #endif

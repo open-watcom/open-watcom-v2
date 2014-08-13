@@ -193,7 +193,7 @@ static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
         return( TRUE );
     }
 
-    ok = TRUE;
+    ok = true;
     count = 0;
     for( tnode = dir->Head; tnode != NULL && ok; tnode = tnode->Next ) {
         if( !tnode->Info.TypeName.IsName ) {

@@ -45,9 +45,9 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WRDLLENTRY extern int  WRAPI WRIsBlockEmpty( StringTableBlock *block );
-WRDLLENTRY extern int  WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data, int *size, int is32bit );
-WRDLLENTRY extern int  WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, int size, int is32bit );
-WRDLLENTRY extern int  WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace );
-WRDLLENTRY extern int  WRAPI WRMergeStringData( void **s1, int *sz1, void *s2, int sz2, int is32bit, int replace );
+WRDLLENTRY extern bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data, size_t *size, bool is32bit );
+WRDLLENTRY extern bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_t size, bool is32bit );
+WRDLLENTRY extern bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool replace );
+WRDLLENTRY extern bool WRAPI WRMergeStringData( void **s1, uint_32 *sz1, void *s2, uint_32 sz2, bool is32bit, bool replace );
 
 #endif

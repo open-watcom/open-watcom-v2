@@ -47,7 +47,7 @@
 /* data types                                                               */
 /****************************************************************************/
 typedef struct WStringBlock {
-    int                 is32bit;
+    bool                is32bit;
     uint_16             blocknum;
     uint_16             MemFlags;
     StringTableBlock    block;
@@ -57,7 +57,7 @@ typedef struct WStringBlock {
 } WStringBlock;
 
 typedef struct WStringTable {
-    int                 is32bit;
+    bool                is32bit;
     WStringBlock        *first_block;
 } WStringTable;
 

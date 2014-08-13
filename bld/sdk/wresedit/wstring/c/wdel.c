@@ -144,7 +144,7 @@ bool WDeleteEditWinLBoxEntry( WStringEditInfo *einfo, int pos, bool free_it )
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
         ok = (ret != LB_ERR);
     }

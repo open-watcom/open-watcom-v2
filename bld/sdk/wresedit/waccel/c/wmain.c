@@ -210,7 +210,7 @@ void WRESEAPI WAccelFini( void )
 
 WAccelHandle WRESEAPI WAccelStartEdit( WAccelInfo *info )
 {
-    int             ok;
+    bool            ok;
     WAccelEditInfo  *einfo;
 
     einfo = NULL;
@@ -325,7 +325,7 @@ WAccelInfo *WAccelGetEInfo( WAccelHandle hndl, bool keep )
 {
     WAccelEditInfo  *einfo;
     WAccelInfo      *info;
-    int             ok;
+    bool            ok;
 
     info = NULL;
 
@@ -668,7 +668,7 @@ static void handleLoadSymbols( WAccelEditInfo *einfo )
     WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
                             IDM_ACCEDCMDID, WR_HASHENTRY_ALL );
 
-    einfo->info->modified = TRUE;
+    einfo->info->modified = true;
 
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
@@ -1138,7 +1138,7 @@ void WHandleClear( WAccelEditInfo *einfo )
                     einfo->info->symbol_table = WRInitHashTable();
                 }
             }
-            einfo->info->modified = TRUE;
+            einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
             WSetStatusByID( einfo->wsb, W_ACCELCLEARMSG, -1 );
         }

@@ -44,9 +44,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WRSaveResourceTo_RC( WRInfo *info, int backup );
-extern int  WRSaveResourceToRES( WRInfo *, int );
-extern int  WRCopyResFromFileToFile( WResFileID, uint_32, uint_32, WResFileID );
-extern int  WRCopyResFromDataToFile( void *, uint_32, WResFileID );
+extern bool WRSaveResourceTo_RC( WRInfo *info, bool backup );
+extern bool WRSaveResourceToRES( WRInfo *, bool );
+extern bool WRCopyResFromFileToFile( WResFileID, uint_32, uint_32, WResFileID );
+extern bool WRCopyResFromDataToFile( void *, uint_32, WResFileID );
 
 #endif

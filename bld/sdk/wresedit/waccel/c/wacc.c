@@ -110,7 +110,7 @@ void WFreeAccelEInfo( WAccelEditInfo *einfo )
     }
 }
 
-void WMakeDataFromAccelTable( WAccelTable *tbl, void **data, int *size )
+void WMakeDataFromAccelTable( WAccelTable *tbl, void **data, size_t *size )
 {
     if( data != NULL && size != NULL ) {
         *size = WCalcAccelTableSize( tbl );
@@ -130,7 +130,8 @@ void WMakeDataFromAccelTable( WAccelTable *tbl, void **data, int *size )
 WAccelTable *WMakeAccelTableFromInfo( WAccelInfo *info )
 {
     WAccelTable *tbl;
-    int          num, ok;
+    int         num;
+    bool        ok;
 
     tbl = NULL;
 

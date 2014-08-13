@@ -297,7 +297,7 @@ bool WdeCleanOrderedList( LIST **l )
 
     for( olist = tlist; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
-        if( oentry->present == NULL ) {
+        if( !oentry->present ) {
             ListRemoveElt( l, oentry );
             WRMemFree( oentry );
         }

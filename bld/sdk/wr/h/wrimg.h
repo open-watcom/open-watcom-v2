@@ -40,11 +40,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WRLoadBitmapFile( WRInfo *info );
-extern int  WRLoadIconFile( WRInfo *info );
-extern int  WRLoadCursorFile( WRInfo *info );
-extern int  WRSaveBitmapResource( WRInfo *info, int backup );
-extern int  WRSaveIconResource( WRInfo *info, int backup );
-extern int  WRSaveCursorResource( WRInfo *info, int backup );
+extern bool WRLoadBitmapFile( WRInfo *info );
+extern bool WRLoadIconFile( WRInfo *info );
+extern bool WRLoadCursorFile( WRInfo *info );
+extern bool WRSaveBitmapResource( WRInfo *info, bool backup );
+extern bool WRSaveIconResource( WRInfo *info, bool backup );
+extern bool WRSaveCursorResource( WRInfo *info, bool backup );
 
 #endif

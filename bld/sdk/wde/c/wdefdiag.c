@@ -309,7 +309,7 @@ void WdeDialogModified( void *_obj )
     WdeDialogObject *obj = _obj;
 
     if( obj != NULL && obj->dlg_item != NULL ) {
-        obj->dlg_item->modified = TRUE;
+        obj->dlg_item->modified = true;
     }
 }
 
@@ -1031,7 +1031,7 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
     old_symbol = obj->symbol;
 
     if( in->symbol != NULL ) {
-        dup = FALSE;
+        dup = false;
         obj->symbol = in->symbol;
         entry = WdeDefAddHashEntry( obj->res_info->hash_table, obj->symbol, &dup );
         if( entry != NULL ) {
@@ -2232,7 +2232,7 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
         WdeOffsetDialogUnits( obj, NULL, &obj->nc_size );
         if( !WdeKludgeDialogSize( obj, TRUE, TRUE ) ) {
             WdeWriteTrail( "WdeDialogMove: Couldn't kludge size!" );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -2250,7 +2250,7 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
                          new_location.bottom - new_location.top,
                          TRUE ) ) {
             WdeWriteTrail( "WdeDialogMove: MoveWindow failed!" );
-            ok = FALSE;
+            ok = false;
         }
 #endif
     }
@@ -2671,7 +2671,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
             WdeSetStatusByID( -1, WDE_UNDEFINEDCLASS );
             WRMemFree( ClassName );
             ClassName = NULL;
-            ok = TRUE;
+            ok = true;
         }
     }
 

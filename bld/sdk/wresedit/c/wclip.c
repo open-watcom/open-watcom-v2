@@ -98,7 +98,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     if( ok ) {
         if( *dsize >= INT_MAX ) {
             WDisplayErrorMsg( W_RESTOOBIGTOPASTE );
-            ok = FALSE;
+            ok = false;
         }
     }
 

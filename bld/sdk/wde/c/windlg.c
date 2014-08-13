@@ -295,7 +295,7 @@ GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily,
      */
 
 #if defined( __NT__ ) && !defined( __DEC__ )
-    if( textClass != NULL ) {
+    if( textClass ) {
         ditstr = copyMBString( ditstr, class, classlen );
     } else {
         _FARmemcpy( ditstr, &cclass, classlen );

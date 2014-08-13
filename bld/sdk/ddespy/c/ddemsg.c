@@ -151,7 +151,7 @@ static char *fmtAlias( DWORD id, char *alias, unsigned type, size_t *prefixlen )
     char        *prefix;
     char        *ret;
     size_t      len;
-    size_t      fmt_len;
+    int         fmt_len;
     char        buf[10];
 
     switch( type ) {
@@ -180,9 +180,10 @@ static char *fmtAlias( DWORD id, char *alias, unsigned type, size_t *prefixlen )
         alias = buf;
         sprintf( alias, "0x%0*lX", fmt_len, id );
     }
-    fmt_len = strlen( prefix );
-    len = strlen( alias ) + fmt_len + 1;
-    if( prefixlen != NULL ) *prefixlen = fmt_len;
+    len = strlen( prefix );
+    if( prefixlen != NULL )
+        *prefixlen = len;
+    len += strlen( alias ) + 1;
     ret = MemAlloc( len );
     sprintf( ret, "%s%s", prefix, alias );
     return( ret );

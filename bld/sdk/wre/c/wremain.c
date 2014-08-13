@@ -130,7 +130,7 @@ static bool      WREFatalExit        = FALSE;
 static char      WREMainClass[]      = "WREMainClass";
 
 bool WRECreateNewFiles  = FALSE;
-bool WRENoInterface     = FALSE;
+bool WRENoInterface     = false;
 
 bool WRERemoveResource( WREResInfo * );
 bool pleaseOpenFile( UINT msg );
@@ -157,7 +157,7 @@ static void peekArgs( char **argv, int argc )
         if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
             //WRECreateNewFiles = TRUE;
         } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
-            WRENoInterface = TRUE;
+            WRENoInterface = true;
         }
     }
 }
@@ -901,7 +901,7 @@ bool WREHandleResEdit( void )
     }
 
     if( ok ) {
-        ok = FALSE;
+        ok = false;
         if( curr.info->current_type == (uint_16)(pointer_int)RT_ACCELERATOR ) {
             ok = WREEditAccelResource( &curr );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_MENU ) {
@@ -1021,20 +1021,20 @@ bool WREProcessArgs( char **argv, int argc )
     int     i;
     bool    ok;
 
-    ok = TRUE;
+    ok = true;
 
     for( i = 1; i < argc; i++ ) {
         if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
             WRECreateNewFiles = TRUE;
         } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
-            WRENoInterface = TRUE;
+            WRENoInterface = true;
         } else {
             if( WRFileExists( argv[i] ) ) {
                 ok = WREOpenResource( argv[i] ) && ok;
             } else if( WRECreateNewFiles ) {
                 ok = (WRECreateNewResource( argv[i] ) != NULL && ok);
             } else {
-                ok = FALSE;
+                ok = false;
             }
         }
     }

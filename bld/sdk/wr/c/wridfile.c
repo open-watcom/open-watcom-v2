@@ -57,13 +57,13 @@ static WRFileType WRIdentifyWinICOFile( const char * );
 static WRFileType IDIconOrCursor( FILE * );
 static WRFileType WRIdentifyWinRCFile( const char * );
 
-int WRAPI WRIs32Bit( WRFileType ftype )
+bool WRAPI WRIs32Bit( WRFileType ftype )
 {
     if( ftype == WR_WINNTM_RES || ftype == WR_WINNTW_RES ||
         ftype == WR_WINNT_EXE || ftype == WR_WINNT_DLL ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 WRFileType WRAPI WRIdentifyFile( const char *file )
@@ -71,7 +71,7 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
     WRFileType  ftype;
     char        ext[_MAX_EXT];
     WResFileID  fh;
-    int         ok;
+    bool        ok;
 
     fh = -1;
 
@@ -109,7 +109,7 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
                 ftype = WRIdentifyEXEFile( fh, TRUE );
             }
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -128,8 +128,8 @@ WRFileType WRIdentifyRESFile( const char *file )
 {
     WRFileType  ftype;
     WRInfo      info;
-    int         is_wres;
-    int         ok;
+    bool        is_wres;
+    bool        ok;
 
     memset( &info, 0, sizeof( WRInfo ) );
 

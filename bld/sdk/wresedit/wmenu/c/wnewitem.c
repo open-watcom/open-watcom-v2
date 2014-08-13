@@ -175,7 +175,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         if( reset_lbox ) {
             ok = WInitEditWindowListBox( einfo );
         } else {

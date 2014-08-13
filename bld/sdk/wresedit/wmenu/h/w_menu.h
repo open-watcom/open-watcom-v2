@@ -57,7 +57,7 @@
 /* data types                                                               */
 /****************************************************************************/
 typedef struct WMenuEntry {
-    int                 is32bit;
+    bool                is32bit;
     WORD                preview_id;
     HMENU               preview_popup;
     MenuItem            *item;
@@ -69,7 +69,7 @@ typedef struct WMenuEntry {
 } WMenuEntry;
 
 typedef struct WMenu {
-    int         is32bit;
+    bool        is32bit;
     WMenuEntry  *first_entry;
 } WMenu;
 
@@ -100,7 +100,7 @@ extern void             WInitDummyMenuEntry( void );
 extern void             WFiniDummyMenuEntry( void );
 extern WMenuEditInfo    *WAllocMenuEInfo( void );
 extern void             WFreeMenuEInfo( WMenuEditInfo * );
-extern void             WMakeDataFromMenu( WMenu *, void **, int * );
+extern void             WMakeDataFromMenu( WMenu *, void **, size_t * );
 extern void             WFreeMenu( WMenu *menu );
 extern void             WFreeMenuEntries( WMenuEntry *entry );
 extern void             WFreeMenuEntry( WMenuEntry *entry );

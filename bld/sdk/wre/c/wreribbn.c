@@ -191,7 +191,7 @@ bool WRECreateRibbon( HWND parent )
 
 bool WREResizeRibbon( RECT *prect )
 {
-    if( WRERibbon == NULL || WRERibbonHeight == NULL ||
+    if( WRERibbon == NULL || WRERibbonHeight == 0 ||
         WRERibbon->win == (HWND)NULL || prect == NULL ) {
         return( FALSE );
     }

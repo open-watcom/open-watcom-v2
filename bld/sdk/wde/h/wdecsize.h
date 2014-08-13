@@ -45,7 +45,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo * );
-extern uint_32 WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *, bool );
+extern size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo * );
+extern size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *, bool );
 
 #endif

@@ -189,7 +189,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         for( index = 0; index < GETHDR_NUMITEMS( dlg_info->dialog_header ); index++ ) {
             control = WdeAllocDialogBoxControl();
             if( control == NULL ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
             if( is32bit ) {
@@ -199,7 +199,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
                     if( ResReadDialogExControl32( &c32ex, file ) ) {
-                        ok = FALSE;
+                        ok = false;
                         break;
                     }
                     control->HelpId = c32ex.HelpId;
@@ -212,7 +212,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                     control->ExtraBytes = c32ex.ExtraBytes;
                 } else {
                     if( ResReadDialogBoxControl32( &c32, file ) ) {
-                        ok = FALSE;
+                        ok = false;
                         break;
                     }
                     control->Style = c32.Style;
@@ -225,7 +225,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                 }
             } else {
                 if( ResReadDialogBoxControl( &c16, file ) ) {
-                    ok = FALSE;
+                    ok = false;
                     break;
                 }
                 control->Size = c16.Size;

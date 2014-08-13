@@ -40,8 +40,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern int      WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data );
-WRDLLENTRY extern int      WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode );
+WRDLLENTRY extern bool     WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data );
+WRDLLENTRY extern bool     WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode );
 WRDLLENTRY extern char *   WRAPI WRGetResName( WResResNode *rnode, uint_16 type );
 
 #endif

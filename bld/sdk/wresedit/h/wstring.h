@@ -53,7 +53,7 @@ typedef int WStringHandle;
 typedef struct WStringNode {
     WResID              *block_name;
     WResLangType        lang;
-    int                 data_size;
+    size_t              data_size;
     void                *data;
     uint_16             MemFlags;
     struct WStringNode  *next;
@@ -65,10 +65,10 @@ typedef struct WStringInfo {
     char                *file_name;
     WRHashTable         *symbol_table;
     char                *symbol_file;
-    int                 is32bit;
-    int                 edit_active;
-    int                 modified;
-    int                 stand_alone;
+    bool                is32bit;
+    bool                edit_active;
+    bool                modified;
+    bool                stand_alone;
     WStringNode         *tables;
 } WStringInfo;
 

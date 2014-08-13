@@ -325,7 +325,7 @@ WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wPara
     case WM_CTLCOLORBTN:
     case WM_CTLCOLORSCROLLBAR:
         result = (LRESULT)WdeCtl3dCtlColorEx( message, wParam, lParam );
-        if( result == (HBRUSH)NULL ) {
+        if( result == (LRESULT)NULL ) {
             SetTextColor( (HDC)wParam, 0 );
             SetBkColor( (HDC)wParam, RGB( 255, 255, 255 ) );
             result = (LRESULT)WdeEditBrush;

@@ -231,7 +231,7 @@ void WRESEAPI WMenuFini( void )
 
 WMenuHandle WRESEAPI WRMenuStartEdit( WMenuInfo *info )
 {
-    int             ok;
+    bool            ok;
     WMenuEditInfo   *einfo;
 
     einfo = NULL;
@@ -355,7 +355,7 @@ WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, bool keep )
 {
     WMenuEditInfo   *einfo;
     WMenuInfo       *info;
-    int             ok;
+    bool            ok;
 
     info = NULL;
 
@@ -720,7 +720,7 @@ static void handleLoadSymbols( WMenuEditInfo *einfo )
     WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg,
                             IDM_MENUEDID, WR_HASHENTRY_ALL );
 
-    einfo->info->modified = TRUE;
+    einfo->info->modified = true;
 
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
@@ -1267,7 +1267,7 @@ void WHandleClear( WMenuEditInfo *einfo )
                     einfo->info->symbol_table = WRInitHashTable();
                 }
             }
-            einfo->info->modified = TRUE;
+            einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
             WSetStatusByID( einfo->wsb, W_MENUCLEARMSG, -1 );
         }

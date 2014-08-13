@@ -658,14 +658,14 @@ static BOOL getOpenFName( char *fname )
 /*
  * readInResourceFile
  */
-static BOOL readInResourceFile( char *fullname )
+static bool readInResourceFile( char *fullname )
 {
     BYTE                *data;
     uint_32             dsize;
     WRInfo              *info;
     WRSelectImageInfo   *sii;
     WPI_PROC            cb;
-    BOOL                ok;
+    bool                ok;
 
     info = NULL;
     sii = NULL;
@@ -701,7 +701,7 @@ static BOOL readInResourceFile( char *fullname )
             ok = WRCreateIconData( info, sii->lnode, &data, &dsize );
         } else {
             imgType = UNDEF_IMG;
-            ok = FALSE;
+            ok = false;
         }
     }
 

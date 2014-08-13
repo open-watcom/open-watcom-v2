@@ -737,7 +737,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         } else if( str_is_ordinal ) {
             o_info->info.d.name = WResIDFromNum( ord );
         } else {
-            dup = FALSE;
+            dup = false;
             o_info->symbol = WdeStrDup( str );
             strupr( o_info->symbol );
             entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
@@ -749,7 +749,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         if( str_is_ordinal ) {
             SETCTL_ID( o_info->info.c.info, ord );
         } else {
-            dup = FALSE;
+            dup = false;
             o_info->symbol = WdeStrDup( str );
             strupr( o_info->symbol );
             entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
@@ -821,7 +821,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         if( str_is_ordinal ) {
             SETHDR_HELPID( o_info->info.d.header, ord );
         } else {
-            dup = TRUE;
+            dup = true;
             o_info->helpsymbol = WdeStrDup( str );
             o_info->info.d.header->helpsymbol = WdeStrDup( str );
             strupr( o_info->helpsymbol );
@@ -841,7 +841,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         if( str_is_ordinal ) {
             SETCTL_HELPID( o_info->info.c.info, ord );
         } else {
-            dup = FALSE;
+            dup = false;
             o_info->helpsymbol = WdeStrDup( str );
             o_info->info.c.info->helpsymbol = WdeStrDup( str );
             strupr( o_info->helpsymbol );

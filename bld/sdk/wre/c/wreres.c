@@ -626,7 +626,7 @@ bool WREOpenResource( char *fn )
         if( WRFileExists( fn ) ) {
             ok = ((name = WREStrDup( fn )) != NULL);
         } else {
-            ok = FALSE;
+            ok = false;
         }
     } else {
         gf.file_name = NULL;
@@ -975,7 +975,7 @@ bool WRESaveResourceToFile( WREResInfo *res_info )
     ok = (res_info != NULL && res_info->info != NULL);
 
     if( ok ) {
-        ok = WRSaveResource( res_info->info, TRUE );
+        ok = WRSaveResource( res_info->info, true );
     }
 
     if( ok ) {
@@ -1100,7 +1100,7 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
         mdics.lParam = (LPARAM)(LPVOID)res_info;
 
         ret = SendMessage( WREGetMDIWindowHandle(), WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdics );
-        ok = (ret != NULL);
+        ok = (ret != 0);
     }
 
     if( ok ) {

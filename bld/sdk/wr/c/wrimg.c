@@ -52,9 +52,9 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-int WRLoadBitmapFile( WRInfo *info )
+bool WRLoadBitmapFile( WRInfo *info )
 {
-    int                 ok;
+    bool                ok;
     WResFileID          file_handle;
     long int            file_length;
     char                fn[_MAX_FNAME];
@@ -113,7 +113,7 @@ int WRLoadBitmapFile( WRInfo *info )
     return( ok );
 }
 
-int WRLoadIconFile( WRInfo *info )
+bool WRLoadIconFile( WRInfo *info )
 {
     BYTE                *data;
     uint_32             data_size;
@@ -128,11 +128,11 @@ int WRLoadIconFile( WRInfo *info )
     char                fn[_MAX_FNAME];
     bool                dup;
     int                 i;
-    int                 ok;
+    bool                ok;
 
     data = NULL;
     rih = NULL;
-    dup = FALSE;
+    dup = false;
     file = -1;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
@@ -213,7 +213,7 @@ int WRLoadIconFile( WRInfo *info )
     return( ok );
 }
 
-int WRLoadCursorFile( WRInfo *info )
+bool WRLoadCursorFile( WRInfo *info )
 {
     BYTE                *data;
     uint_32             data_size;
@@ -228,12 +228,12 @@ int WRLoadCursorFile( WRInfo *info )
     char                fn[_MAX_FNAME];
     bool                dup;
     int                 i;
-    int                 ok;
+    bool                ok;
 
     data = NULL;
     rch = NULL;
-    dup = FALSE;
-    file = -1;
+    dup = false;
+    file = NIL_HANDLE;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
@@ -242,7 +242,7 @@ int WRLoadCursorFile( WRInfo *info )
     ok = (info != NULL && info->file_name != NULL);
 
     if( ok ) {
-        ok = ((file = ResOpenFileRO( info->file_name )) != -1);
+        ok = ((file = ResOpenFileRO( info->file_name )) != NIL_HANDLE);
     }
 
     if( ok ) {
@@ -309,12 +309,12 @@ int WRLoadCursorFile( WRInfo *info )
     return( ok );
 }
 
-static int WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, int backup )
+static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 {
     WResFileID          src;
     WResFileID          dest;
-    int                 ok;
-    int                 use_rename;
+    bool                ok;
+    bool                use_rename;
     WResLangNode        *lnode;
 
     src = -1;
@@ -376,9 +376,9 @@ static int WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, int backup )
     return( ok );
 }
 
-int WRSaveBitmapResource( WRInfo *info, int backup )
+bool WRSaveBitmapResource( WRInfo *info, bool backup )
 {
-    int                 ok;
+    bool                ok;
     WResTypeNode        *tnode;
     WResLangNode        *lnode;
     BYTE                *data;
@@ -443,7 +443,7 @@ int WRSaveBitmapResource( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveCursorResource( WRInfo *info, int backup )
+bool WRSaveCursorResource( WRInfo *info, bool backup )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;
@@ -451,8 +451,8 @@ int WRSaveCursorResource( WRInfo *info, int backup )
     WResLangType        lang;
     BYTE                *data;
     uint_32             size;
-    int                 use_rename;
-    int                 ok;
+    bool                use_rename;
+    bool                ok;
 
     data = NULL;
     lang.lang = DEF_LANG;
@@ -507,7 +507,7 @@ int WRSaveCursorResource( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveIconResource( WRInfo *info, int backup )
+bool WRSaveIconResource( WRInfo *info, bool backup )
 {
     WResTypeNode        *tnode;
     WResResNode         *rnode;
@@ -515,8 +515,8 @@ int WRSaveIconResource( WRInfo *info, int backup )
     WResLangType        lang;
     BYTE                *data;
     uint_32             size;
-    int                 use_rename;
-    int                 ok;
+    bool                use_rename;
+    bool                ok;
 
     data = NULL;
     lang.lang = DEF_LANG;

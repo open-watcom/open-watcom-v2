@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 
 /* imports */
 
@@ -66,7 +67,7 @@ extern void DrawTempRect( LPRECT rect )
 }
 
 
-static void OutlineRect( LPRECT rect, BOOL dbl, HDC hdc )
+static void OutlineRect( LPRECT rect, bool dbl, HDC hdc )
 /*******************************************************/
 {
     /* draws a rectangle at the indicated location */
@@ -77,7 +78,7 @@ static void OutlineRect( LPRECT rect, BOOL dbl, HDC hdc )
     if( dbl ) {
         temprect = *rect;
         InflateRect( &temprect, -1, -1 );
-        FrameRect( hdc, &temprect, (HBRUSH) GetStockObject( BLACK_BRUSH ) );
+        FrameRect( hdc, &temprect, (HBRUSH)GetStockObject( BLACK_BRUSH ) );
     }
 }
 
@@ -86,7 +87,7 @@ void FMEDITAPI OutlineDoubleRect( LPRECT rect, HDC hdc )
 /******************************************************/
 {
     /* draw a double outline around the passed rect */
-    OutlineRect( rect, TRUE, hdc );
+    OutlineRect( rect, true, hdc );
 }
 
 
@@ -94,7 +95,7 @@ void FMEDITAPI OutlineSingleRect( LPRECT rect, HDC hdc )
 /******************************************************/
 {
     /* draw a double outline around the passed rect */
-    OutlineRect( rect, FALSE, hdc );
+    OutlineRect( rect, false, hdc );
 }
 
 void FMEDITAPI DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
@@ -109,7 +110,7 @@ void FMEDITAPI DarkGreyRect( LPRECT rect, LPSTR label, HDC hdc )
         DrawText( hdc, label, -1, rect, DT_WORDBREAK );
     }
     SetBkColor( hdc, savebg );
-    OutlineRect( rect, FALSE, hdc );
+    OutlineRect( rect, false, hdc );
 }
 
 

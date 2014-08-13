@@ -49,8 +49,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, int, WResLangType *, bool );
-static bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, int, WResLangType * );
+static bool WdeSaveObjectAs ( WdeResInfo *, WdeDialogBoxInfo *, char **, WResID *, void *, uint_32, WResLangType *, bool );
+static bool WdeSaveObjectInto( WdeResInfo *, WdeDialogBoxInfo *, WResID *, void *, uint_32, WResLangType * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -109,7 +109,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 }
 
 bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
-                      char **file_name, WResID *name, void *rdata, int size,
+                      char **file_name, WResID *name, void *rdata, uint_32 size,
                       WResLangType *lang, bool get_name )
 {
     char                *fname;
@@ -202,7 +202,7 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 }
 
 bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
-                        WResID *name, void *data, int size,
+                        WResID *name, void *data, uint_32 size,
                         WResLangType *lang )
 {
     char                *fname;
@@ -215,7 +215,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
 
     idata.type = NULL;
     fname = NULL;
-    dup = FALSE;
+    dup = false;
 
     ok = (rinfo != NULL && dbi != NULL && name != NULL && data != NULL);
 

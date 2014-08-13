@@ -244,7 +244,7 @@ void WRAPI WRMassageFilter( char *_filter )
 
 #if defined( __NT__ )
 
-int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
+int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
 {
     uint_16     *new;
     int         len1, len2;
@@ -263,10 +263,8 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
         len1 = 1;
     }
 
-    len1 *= sizeof( WCHAR );
-
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && len1 > len ) {
+    if( len != -1 && ( len1 * sizeof( WCHAR ) ) > len ) {
         return( FALSE );
     }
 
@@ -286,9 +284,9 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
+int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
 {
-    int         len1, len2;
+    size_t      len1, len2;
 
     if( dest == NULL ) {
         return( FALSE );
@@ -322,10 +320,10 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
+int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
 {
     uint_16     *new;
-    int         len1, len2;
+    size_t      len1, len2;
 
     if( len == NULL ) {
         return( FALSE );
@@ -368,10 +366,10 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
     return( TRUE );
 }
 
-int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
+int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
 {
     char        *new;
-    int         len1, len2;
+    size_t      len1, len2;
 
     if( len == NULL ) {
         return( FALSE );
@@ -416,10 +414,10 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 
 #else
 
-int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
+int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
 {
     uint_16     *new;
-    int         len1;
+    size_t      len1;
 
     if( dest == NULL ) {
         return( FALSE );
@@ -431,7 +429,7 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && ( len1 * 2 ) > len ) {
+    if( len != -1 && ( len1 * sizeof( uint_16 ) ) > len ) {
         return( FALSE );
     }
 
@@ -448,10 +446,10 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
+int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
 {
     uint_16     *uni_str;
-    int         len1;
+    size_t      len1;
 
     if( dest == NULL ) {
         return( FALSE );
@@ -479,10 +477,10 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, int len )
     return( TRUE );
 }
 
-int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
+int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
 {
     uint_16     *new;
-    int         len1;
+    size_t      len1;
 
     if( len == NULL ) {
         return( FALSE );
@@ -493,13 +491,13 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
         len1 += strlen( src );
     }
 
-    *len = 2 * len1;
+    *len = len1 * sizeof( uint_16 );
 
     if( dest == NULL ) {
         return( TRUE );
     }
 
-    new = MemAlloc( 2 * len1 );
+    new = MemAlloc( len1 * sizeof( uint_16 ) );
     if( new == NULL ) {
         return( FALSE );
     }
@@ -517,11 +515,11 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, int *len )
     return( TRUE );
 }
 
-int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
+int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
 {
     char        *new;
     uint_16     *uni_str;
-    int         len1;
+    size_t      len1;
 
     if( len == NULL ) {
         return( FALSE );
@@ -529,7 +527,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, int *len )
 
     len1 = 1;
     if( src != NULL ) {
-        len1 = WRStrlen32( src ) / 2;
+        len1 += WRStrlen32( src ) / 2;
     }
 
     *len = len1;
@@ -578,9 +576,9 @@ char * WRAPI WRWResIDNameToStr( WResIDName *name )
     return( string );
 }
 
-int WRAPI WRStrlen32( char *str )
+size_t WRAPI WRStrlen32( char *str )
 {
-    int         len;
+    size_t      len;
     uint_16     *word;
 
     len = 0;
@@ -593,9 +591,9 @@ int WRAPI WRStrlen32( char *str )
     return( len );
 }
 
-int WRAPI WRStrlen( char *str, int is32bit )
+size_t WRAPI WRStrlen( char *str, bool is32bit )
 {
-    int         len;
+    size_t      len;
 
     if( is32bit ) {
         len = WRStrlen32( str );

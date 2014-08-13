@@ -659,7 +659,7 @@ bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text )
 
     *text = NULL;
 
-    ok = TRUE;
+    ok = true;
 
     switch( class ) {
     case CLASS_BUTTON:
@@ -729,7 +729,7 @@ bool WdeSetCommControlFlagText( char *control_class, unsigned long flags, char *
         return( FALSE );
     }
     *text = NULL;
-    ok = TRUE;
+    ok = true;
 
     if( stricmp( control_class, STATUSCLASSNAME ) == 0 ) {
         ok = WdeSetFlagText( StatusBarMap, ControlStyle, flags, text );

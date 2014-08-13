@@ -43,13 +43,13 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     int                 i;
     int                 ltype;
     int                 stype;
-    int                 backup;
+    bool                backup;
     WRInfo              *info;
     WRFileType          ftype;
     uint_16             mflags;
     WRSelectImageInfo   *sii;
 #if 0
-    int                 dup;
+    bool                dup;
     char                *data;
     WResID              type;
     WResID              name;

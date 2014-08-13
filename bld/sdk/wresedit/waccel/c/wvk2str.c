@@ -341,7 +341,7 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
             if( tkey >= '@' && tkey <= '_' ) {
                 tkey -= '@';
             } else {
-                ok = FALSE;
+                ok = false;
             }
         } else {
             if( !isalnum( tkey ) ) {

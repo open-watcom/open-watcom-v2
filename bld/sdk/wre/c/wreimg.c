@@ -74,8 +74,8 @@ typedef struct WREImageInfo {
     WResID          *res_name;
     WResLangType    lang;
     uint_16         MemFlags;
-    int             is32bit;
-    uint_32         data_size;
+    bool            is32bit;
+    size_t          data_size;
     void            *data;
 } WREImageInfo;
 
@@ -175,8 +175,8 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     WResID              *rname, *tname;
     bool                ok, tname_alloc;
 
-    ok = TRUE;
-    tname_alloc = FALSE;
+    ok = true;
+    tname_alloc = false;
 
     WREGetCurrentResource( curr );
 
@@ -198,7 +198,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     if( ok ) {
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        dup = TRUE;
+        dup = true;
         num_retries = 0;
         rname = NULL;
         while( ok && dup && num_retries <= MAX_RETRIES ) {
@@ -208,7 +208,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
                                      &lang, &dup, type, tname_alloc );
                 if( !ok && dup ) {
-                    ok = TRUE;
+                    ok = true;
                 }
                 num_retries++;
             }
@@ -222,7 +222,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     }
 
     if( ok ) {
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( tname_alloc ) {
@@ -316,7 +316,7 @@ bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
 
     *data = WREStrDup( session->info.file_name );
     if( *data != NULL ) {
-        *size = strlen( *data ) + 1;
+        *size = (uint_32)( strlen( *data ) + 1 );
     }
 
     return( TRUE );
@@ -346,6 +346,7 @@ bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
 bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
 {
     WREImageSession     *session;
+    size_t              tsize;
 
     if( data == NULL || size == NULL ) {
         return( FALSE );
@@ -362,12 +363,13 @@ bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
         return( TRUE );
     }
 
-    *size = session->info.data_size;
-    *data = WRMemAlloc( *size );
+    tsize = session->info.data_size;
+    *size = tsize;
+    *data = WRMemAlloc( tsize );
     if( *data == NULL ) {
         return( FALSE );
     }
-    memcpy( *data, session->info.data, *size );
+    memcpy( *data, session->info.data, tsize );
 
     if( session->type == (uint_16)(pointer_int)RT_BITMAP ) {
         if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
@@ -437,7 +439,7 @@ bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 s
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
-        session->rinfo->modified = TRUE;
+        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -461,7 +463,7 @@ bool WRESetCursorSessionResData( WREImageSession *session, void *data, uint_32 s
     }
 
     if( ok ) {
-        session->rinfo->modified = TRUE;
+        session->rinfo->modified = true;
         ok = WRECreateCursorEntries( &curr, data, size );
     }
 
@@ -486,7 +488,7 @@ bool WRESetIconSessionResData( WREImageSession *session, void *data, uint_32 siz
     }
 
     if( ok ) {
-        session->rinfo->modified = TRUE;
+        session->rinfo->modified = true;
         ok = WRECreateIconEntries( &curr, data, size );
     }
 
@@ -621,7 +623,7 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
         } else if( curr->info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
             service = IconService;
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -647,7 +649,7 @@ bool WREEndAllImageSessions( bool fatal_exit )
 
     _wre_touch( fatal_exit );
 
-    ok = TRUE;
+    ok = true;
 
     if( WREImageSessions != NULL ) {
         for( slist = WREImageSessions; ok && slist != NULL; slist = ListNext( slist ) ) {

@@ -273,7 +273,7 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
 
     /* check if anything was actually modified */
     if( ok ) {
-        ok = TRUE;
+        ok = true;
         if( block == new_block && id == string_id ) {
             oldtext = WResIDNameToStr( block->block.String[string_id & 0xf] );
             if( text != NULL && oldtext != NULL ) {
@@ -381,10 +381,10 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     char        *ep;
     WRHashValue hv;
     WRHashEntry *new_entry;
-    BOOL        dup;
+    bool        dup;
 
     if( dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( combo_change ) {
@@ -394,7 +394,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( **symbol == '\0' ) {
@@ -402,7 +402,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( *symbol == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     strupr( *symbol );
@@ -415,7 +415,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         if( WRLookupName( symbol_table, *symbol, &hv ) ) {
             *id = (uint_16)hv;
         } else {
-            dup = FALSE;
+            dup = false;
             new_entry = WRAddDefHashEntry( symbol_table, *symbol, &dup );
             if( new_entry != NULL ) {
                 *id = (uint_16)new_entry->value;
@@ -429,7 +429,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = 0;
                 WRMemFree( *symbol );
                 *symbol = NULL;
-                return( FALSE );
+                return( false );
             }
         }
     } else {
@@ -439,7 +439,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         *symbol = NULL;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WInitEditWindowListBox( WStringEditInfo *einfo )
@@ -597,7 +597,7 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
     WStringBlock        *block;
     uint_16             id;
     char                *text;
-    uint_32             len;
+    size_t              len;
     bool                ok;
 
     block = NULL;
@@ -707,7 +707,7 @@ void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
         }
         if( mod && einfo->current_pos != -1 ) {
             if( change || WQueryChangeEntry( einfo ) ) {
-                einfo->info->modified = TRUE;
+                einfo->info->modified = true;
                 pos = einfo->current_pos;
                 SendMessage( lbox, LB_DELETESTRING, pos, 0 );
                 if( WDeleteStringData( einfo, einfo->current_block,

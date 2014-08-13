@@ -158,7 +158,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     if( ok ) {
         ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->type,
                                       &curr->res, &curr->lang );
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( ok ) {
@@ -193,7 +193,7 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
     char                *text;
     bool                ok;
 
-    ok = TRUE;
+    ok = true;
 
     if( !removing ) {
         text = AllocRCString( WRE_ALLSTRINGS );
@@ -209,7 +209,7 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
             tnode = WRFindTypeNode( curr->info->info->dir, (uint_16)(pointer_int)RT_STRING, NULL );
         }
         if( tnode != NULL ) {
-            curr->info->modified = TRUE;
+            curr->info->modified = true;
             ok = WRRemoveTypeNodeFromDir( curr->info->info->dir, tnode );
         }
     }
@@ -236,7 +236,7 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     HWND                res_lbox;
 
     name = NULL;
-    ok = TRUE;
+    ok = true;
 
     if( ok )  {
         if( curr->type->Info.TypeName.IsName ) {
@@ -251,7 +251,7 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     if( ok ) {
         ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->type,
                                       &curr->res, &curr->lang );
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( ok ) {

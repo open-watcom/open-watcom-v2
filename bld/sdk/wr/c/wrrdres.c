@@ -48,11 +48,11 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-static int loadResDirFromRES( WRInfo *info, char *filename, int *is_wres )
+static bool loadResDirFromRES( WRInfo *info, char *filename, bool *is_wres )
 {
     WResFileID  file_handle;
     bool        dup_discarded;
-    int         ok;
+    bool        ok;
 
     ok = ((file_handle = ResOpenFileRO( filename )) != -1);
 
@@ -78,17 +78,17 @@ static int loadResDirFromRES( WRInfo *info, char *filename, int *is_wres )
     return( ok );
 }
 
-int WRLoadResDirFromRES( WRInfo *info, int *is_wres )
+bool WRLoadResDirFromRES( WRInfo *info, bool *is_wres )
 {
     return( loadResDirFromRES( info, info->file_name, is_wres ) );
 }
 
-int WRLoadResourceFromRES( WRInfo *info )
+bool WRLoadResourceFromRES( WRInfo *info )
 {
     WResTargetOS        target_os;
     WRFileType          target;
-    int                 is_wres;
-    int                 ok;
+    bool                is_wres;
+    bool                ok;
 
     ok = WRLoadResDirFromRES( info, &is_wres );
 
@@ -111,7 +111,7 @@ int WRLoadResourceFromRES( WRInfo *info )
         }
         if( target == WR_INVALID_FILE ) {
             WRDisplayErrorMsg( WR_INVALIDFILE );
-            ok = FALSE;
+            ok = false;
         } else if( target != info->file_type ) {
             if( target == WR_WIN16W_RES ) {
                 WRDisplayErrorMsg( WR_BADFILEWWIN16 );
@@ -122,20 +122,20 @@ int WRLoadResourceFromRES( WRInfo *info )
             } else if( target == WR_WINNTM_RES ) {
                 WRDisplayErrorMsg( WR_BADFILEMWINNT );
             }
-            ok = FALSE;
+            ok = false;
         }
     }
 
     return( ok );
 }
 
-int WRLoadResourceFrom_RC( WRInfo *info )
+bool WRLoadResourceFrom_RC( WRInfo *info )
 {
     WResTargetOS        target_os;
     WRFileType          target;
     char                fn_path[_MAX_PATH];
-    int                 is_wres;
-    int                 ok;
+    bool                is_wres;
+    bool                ok;
 
     ok = (info != NULL && info->file_name != NULL);
 
@@ -177,7 +177,7 @@ int WRLoadResourceFrom_RC( WRInfo *info )
         info->internal_type = target;
         if( target == WR_INVALID_FILE ) {
             WRDisplayErrorMsg( WR_INVALIDFILE );
-            ok = FALSE;
+            ok = false;
         }
     }
 

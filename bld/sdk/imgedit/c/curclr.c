@@ -38,7 +38,7 @@ static selected_colour  rButton;
 static HWND             hCurrentWnd;
 static int              currentHeight;
 static int              numberOfColors;
-static BOOL             firstTime = TRUE;
+static bool             firstTime = true;
 
 /*
  * paintCurrent - paint the current window (process WM_PAINT)
@@ -361,7 +361,7 @@ void SetCurrentNumColors( int color_count )
             _wpi_patblt( mempres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, WHITENESS );
             _wpi_selectobject( mempres, oldbitmap );
             _wpi_deletecompatiblepres( mempres, memdc );
-            firstTime = FALSE;
+            firstTime = false;
         }
     }
     _wpi_releasepres( HWND_DESKTOP, pres );

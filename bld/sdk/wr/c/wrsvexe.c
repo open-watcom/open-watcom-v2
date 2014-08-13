@@ -67,7 +67,7 @@
 /****************************************************************************/
 static int  WRExecRCPass2( void );
 static int  WRPass2( void );
-static int  WRSaveResourceToEXE( WRInfo *, int, WRFileType );
+static bool WRSaveResourceToEXE( WRInfo *, bool, WRFileType );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -106,7 +106,7 @@ int WRExecRCPass2( void )
     ret = setjmp( jmpbuf_RCFatalError );
 
     if( ret ) {
-        ok = FALSE;
+        ok = false;
     } else {
         ok = WRPass2();
     }
@@ -114,9 +114,9 @@ int WRExecRCPass2( void )
     return( ok );
 }
 
-int WRSaveResourceToWin16EXE( WRInfo *info, int backup )
+bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup )
 {
-    int ok;
+    bool ok;
 
     ok = (info->file_type != WR_WINNT_EXE && info->file_type != WR_WINNT_DLL);
 
@@ -138,9 +138,9 @@ int WRSaveResourceToWin16EXE( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveResourceToWinNTEXE( WRInfo *info, int backup )
+bool WRSaveResourceToWinNTEXE( WRInfo *info, bool backup )
 {
-    int ok;
+    bool ok;
 
     ok = (info->file_type != WR_WIN16_EXE && info->file_type != WR_WIN16_DLL);
 
@@ -162,9 +162,9 @@ int WRSaveResourceToWinNTEXE( WRInfo *info, int backup )
     return( ok );
 }
 
-int WRSaveResourceToEXE( WRInfo *info, int backup, WRFileType ttype )
+bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
 {
-    int         ok;
+    bool        ok;
     char        *tmp_res;
     char        *sname;
     WRFileType  stype;
@@ -180,12 +180,12 @@ int WRSaveResourceToEXE( WRInfo *info, int backup, WRFileType ttype )
         stype = info->save_type;
         info->save_name = tmp_res;
         info->save_type = ttype;
-        ok = WRSaveResource( info, FALSE );
+        ok = WRSaveResource( info, false );
     }
 
     if( ok ) {
         if( backup && WRFileExists( sname ) ) {
-            ok = WRBackupFile( sname, FALSE );
+            ok = WRBackupFile( sname, false );
         }
     }
 

@@ -45,7 +45,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void WRInitRcGlobal( HINSTANCE );
-extern int  WRSaveResourceToWin16EXE( WRInfo *, int );
-extern int  WRSaveResourceToWinNTEXE( WRInfo *, int );
+extern bool WRSaveResourceToWin16EXE( WRInfo *, bool );
+extern bool WRSaveResourceToWinNTEXE( WRInfo *, bool );
 
 #endif

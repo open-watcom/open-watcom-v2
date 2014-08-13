@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern int          WRAPI WRIs32Bit( WRFileType );
+WRDLLENTRY extern bool         WRAPI WRIs32Bit( WRFileType );
 WRDLLENTRY extern WRFileType   WRAPI WRIdentifyFile( const char * );
 
 #endif

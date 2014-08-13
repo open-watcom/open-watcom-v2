@@ -28,7 +28,7 @@ typedef void                *OBJPTR;
 typedef union object_defn   *OBJHANDLE;
 typedef union object_defn   OBJECT_DEFN;
 typedef OBJPTR (CALLBACK *CREATE_RTN)( OBJPTR, RECT *, OBJPTR );
-typedef CREATE_RTN          CREATE_TABLE[];
+typedef CREATE_RTN          *CREATE_TABLE;
 typedef unsigned            STATE_HDL;
 typedef BOOL (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
 

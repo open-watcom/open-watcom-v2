@@ -210,7 +210,7 @@ void WRESEAPI WStringFini( void )
 
 WStringHandle WRESEAPI WRStringStartEdit( WStringInfo *info )
 {
-    int             ok;
+    bool            ok;
     WStringEditInfo *einfo;
 
     einfo = NULL;
@@ -334,7 +334,7 @@ WStringInfo *WStringGetEInfo( WStringHandle hndl, bool keep )
 {
     WStringEditInfo     *einfo;
     WStringInfo         *info;
-    int                 ok;
+    bool                ok;
 
     info = NULL;
 
@@ -668,7 +668,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST,
                         LB_SETCURSEL, pos, 0 );
 
-    einfo->info->modified = TRUE;
+    einfo->info->modified = true;
 
     WDoHandleSelChange( einfo, FALSE, TRUE );
 }
@@ -1102,7 +1102,7 @@ void WHandleClear( WStringEditInfo *einfo )
                     einfo->info->symbol_table = WRInitHashTable();
                 }
             }
-            einfo->info->modified = TRUE;
+            einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
             WSetStatusByID( einfo->wsb, W_STRINGCLEARMSG, -1 );
         }

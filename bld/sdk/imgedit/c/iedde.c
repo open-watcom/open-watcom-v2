@@ -397,7 +397,7 @@ HDDEDATA IECreateResData( img_node *node )
             ok = SaveImgToData( node, &data, &size );
             break;
         default:
-            ok = FALSE;
+            ok = false;
             break;
         }
     }
@@ -538,7 +538,7 @@ BOOL IEStartDDEEditSession( void )
             }
             break;
         default:
-            ok = FALSE;
+            ok = false;
             break;
         }
     }

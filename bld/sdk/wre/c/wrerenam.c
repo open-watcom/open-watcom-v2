@@ -88,7 +88,7 @@ bool WRERenameResource( void )
     if( ok ) {
         if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             WREDisplayErrorMsg( WRE_NORENAMESTRINGS );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -96,7 +96,7 @@ bool WRERenameResource( void )
         info.old_name = &curr.res->Info.ResName;
         if( WREGetNewName( &info ) && info.new_name != NULL ) {
             ok = WRERenameWResResNode( curr.type, &curr.res, info.new_name );
-            curr.info->modified = TRUE;
+            curr.info->modified = true;
             if( ok ) {
                 WRESetResNamesFromType( curr.info, curr.info->current_type,
                                         TRUE, info.new_name, 0 );

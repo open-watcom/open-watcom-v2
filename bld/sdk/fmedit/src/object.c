@@ -181,13 +181,13 @@ OBJPTR FMEDITAPI Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
     /*  Create an object of the desired type at the passed location.  If
      *  there is a parent, remember it
      */
-    CREATE_TABLE    *appobjs;
+    CREATE_TABLE    appobjs;
 
     appobjs = GetObjects();
     if( id < USER_OBJ ) {
         return( InternalCreate[id]( parent, rect, handle ) );
     } else {
-        return( (*appobjs)[id - USER_OBJ]( parent, rect, handle ) );
+        return( appobjs[id - USER_OBJ]( parent, rect, handle ) );
     }
 }
 

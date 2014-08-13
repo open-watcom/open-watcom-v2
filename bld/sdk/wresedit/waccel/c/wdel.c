@@ -111,12 +111,12 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
                 ok = WFreeAccelTableEntry( einfo->tbl, entry );
             }
         } else {
-            ok = FALSE;
+            ok = false;
         }
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
         ok = (ret != LB_ERR);
     }

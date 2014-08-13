@@ -69,7 +69,7 @@ typedef struct {
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static CREATE_TABLE *WdeCreateTable = NULL;
+static CREATE_TABLE WdeCreateTable = NULL;
 
 static WdeObjectRoutinesType WdeObjectRoutines[] = {
     { WdeBaseInit,    WdeBaseFini,    WdeBaseCreate      },
@@ -103,7 +103,7 @@ static WdeObjectRoutinesType WdeObjectRoutines[] = {
     { NULL,           NULL,           NULL               }
 };
 
-CREATE_TABLE *WdeGetCreateTable( void )
+CREATE_TABLE WdeGetCreateTable( void )
 {
     return( WdeCreateTable );
 }
@@ -117,14 +117,14 @@ bool WdeInitCreateTable( void )
     first_inst = WdeIsFirstInst();
     if( WdeCreateTable == NULL ) {
         inst = WdeGetAppInstance();
-        WdeCreateTable = (CREATE_TABLE *)WRMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
+        WdeCreateTable = (CREATE_TABLE)WRMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {
                     return( FALSE );
                 }
             }
-            (*WdeCreateTable)[i] = (CREATE_RTN)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
+            WdeCreateTable[i] = (CREATE_RTN)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
         }
     }
 
@@ -141,7 +141,7 @@ void WdeFiniCreateTable( void )
                 WdeObjectRoutines[i].fini();
             }
 #ifndef __NT__
-            FreeProcInstance( (FARPROC)(*WdeCreateTable)[i] );
+            FreeProcInstance( (FARPROC)WdeCreateTable[i] );
 #endif
         }
         WRMemFree( WdeCreateTable );

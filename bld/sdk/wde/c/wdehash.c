@@ -163,9 +163,9 @@ void WdeAddSymbolsToComboBox( WdeHashTable *table, HWND hDlg, int id )
 WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup )
 {
     WdeHashEntry        *entry;
-    BOOL                d;
+    bool                d;
 
-    d = FALSE;
+    d = false;
     if( dup != NULL ) {
         d = *dup;
     }
@@ -185,16 +185,16 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
                                WdeHashValue value, bool *dup )
 {
     WdeHashEntry        *entry;
-    BOOL                d;
+    bool                d;
 
-    d = FALSE;
+    d = false;
     if( dup != NULL ) {
         d = *dup;
     }
 
     WdeTouchHashTable( table );
 
-    entry = WRAddHashEntry( table, name, value, &d, FALSE, FALSE );
+    entry = WRAddHashEntry( table, name, value, &d, false, false );
 
     if( dup != NULL ) {
         d = *dup;
@@ -225,7 +225,7 @@ WdeHashValue WdeLookupName( WdeHashTable *table, char *name, bool *found )
 bool WdeModifyName( WdeHashTable *table, char *name, WdeHashValue value )
 {
     WdeTouchHashTable( table );
-    return( WRModifyName( table, name, value, FALSE ) != 0 );
+    return( WRModifyName( table, name, value, false ) != 0 );
 }
 
 char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )

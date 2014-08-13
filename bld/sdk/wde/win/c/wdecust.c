@@ -1206,7 +1206,7 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
     char    *flags;
     bool    ok;
 
-    ok = TRUE;
+    ok = true;
 
     if( !IsDlgButtonChecked( hDlg, IDB_CUST_NONSTANDARD ) ) {
         lib->info_name = (char *)(uint_32)CCINFOORD;
@@ -1218,7 +1218,7 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
         lib->flags_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_FLAGS, NULL );
         if( lib->info_name == NULL || lib->style_name == NULL || lib->flags_name == NULL ) {
             WdeDisplayErrorMsg( WDE_BADPROCEDUREORDINAL );
-            ok = FALSE;
+            ok = false;
         }
     } else {
         info = WdeGetStrFromEdit( hDlg, IDB_CUST_INFO, NULL );
@@ -1226,15 +1226,15 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
         flags = WdeGetStrFromEdit( hDlg, IDB_CUST_FLAGS, NULL );
         if( GetProcAddress( lib->inst, info ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDINFOPROC );
-            ok = FALSE;
+            ok = false;
         }
         if( ok && GetProcAddress( lib->inst, style ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDSTYLEPROC );
-            ok = FALSE;
+            ok = false;
         }
         if( ok && GetProcAddress( lib->inst, flags ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDFLAGSPROC );
-            ok = FALSE;
+            ok = false;
         }
         if( !ok ) {
             WRMemFree( info );

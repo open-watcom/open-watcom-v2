@@ -159,7 +159,7 @@ BOOL InitStatusLine( HWND parent )
     sbd[3].width_is_percent = 0;
     sbd[3].width_is_pixels = 1;
 
-    StatusWndSetSeparators( statusBar, 4, &sbd );
+    StatusWndSetSeparators( statusBar, 4, sbd );
 
     strcpy( imgSizePosition, next_block );
     strcat( imgSizePosition, next_block );

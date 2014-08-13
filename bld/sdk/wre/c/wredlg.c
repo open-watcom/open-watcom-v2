@@ -73,8 +73,8 @@ typedef struct WREDialogInfo {
     WResID          *res_name;
     WResLangType    lang;
     uint_16         MemFlags;
-    int             is32bit;
-    uint_32         data_size;
+    bool            is32bit;
+    size_t          data_size;
     void            *data;
 } WREDialogInfo;
 
@@ -158,8 +158,8 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
     WResID          *rname, *tname;
     bool            ok, tname_alloc;
 
-    ok = TRUE;
-    tname_alloc = FALSE;
+    ok = true;
+    tname_alloc = false;
 
     WREGetCurrentResource( curr );
 
@@ -173,14 +173,14 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
             tname = &curr->type->Info.TypeName;
         } else {
             tname = WResIDFromNum( (uint_16)(pointer_int)RT_DIALOG );
-            tname_alloc = TRUE;
+            tname_alloc = true;
         }
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
     }
 
     if( ok ) {
-        dup = TRUE;
+        dup = true;
         num_retries = 0;
         rname = NULL;
         while( ok && dup && num_retries <= MAX_RETRIES ) {
@@ -190,7 +190,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
                                      &lang, &dup, (uint_16)(pointer_int)RT_DIALOG, tname_alloc );
                 if( !ok && dup ) {
-                    ok = TRUE;
+                    ok = true;
                 }
                 num_retries++;
             }
@@ -204,7 +204,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        curr->info->modified = TRUE;
+        curr->info->modified = true;
     }
 
     if( tname_alloc ) {
@@ -298,7 +298,7 @@ bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size )
 
     *data = WREStrDup( session->info.file_name );
     if( *data != NULL ) {
-        *size = strlen( *data ) + 1;
+        *size = (uint_32)( strlen( *data ) + 1 );
     }
 
     return( TRUE );
@@ -354,6 +354,8 @@ bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
 
 bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
 {
+    size_t  tsize;
+
     WREDialogSession *session;
 
     if( data == NULL || size == NULL ) {
@@ -371,12 +373,13 @@ bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
         return( TRUE );
     }
 
-    *size = session->info.data_size;
-    *data = WRMemAlloc( *size );
+    tsize = session->info.data_size;
+    *size = (uint_32)tsize;
+    *data = WRMemAlloc( tsize );
     if( *data == NULL ) {
         return( FALSE );
     }
-    memcpy( *data, session->info.data, *size );
+    memcpy( *data, session->info.data, tsize );
 
     return( TRUE );
 }
@@ -410,7 +413,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        session->rinfo->modified = TRUE;
+        session->rinfo->modified = true;
         WRESetResNamesFromType( session->rinfo, (uint_16)(pointer_int)RT_DIALOG, TRUE, name, 0 );
     }
 
@@ -449,7 +452,7 @@ bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
-        session->rinfo->modified = TRUE;
+        session->rinfo->modified = true;
     }
 
     return( ok );
@@ -458,7 +461,7 @@ bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
 WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
 {
     WREDialogSession    *session;
-    int                 is32bit;
+    bool                is32bit;
 
     if( curr == NULL ) {
         return( NULL );
@@ -535,7 +538,7 @@ bool WREEndAllDialogSessions( bool fatal_exit )
 
     _wre_touch( fatal_exit );
 
-    ok = TRUE;
+    ok = true;
 
     if( WREDlgSessions != NULL ) {
         for( slist = WREDlgSessions; ok && slist != NULL; slist = ListNext( slist ) ) {

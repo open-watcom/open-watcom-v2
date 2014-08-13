@@ -210,7 +210,7 @@ static void checkIfSaved( img_node *node )
     if( node->issaved ) {
         SetIsSaved( node->hwnd, FALSE );
         while( stack != NULL ) {
-            stack->modified = TRUE;
+            stack->modified = true;
             stack = stack->nexticon;
         }
         return;
@@ -489,7 +489,7 @@ void CreateUndoStack( img_node *node )
     new_stack->top_undo = NULL;
     new_stack->bottom_undo = NULL;
     new_stack->top_redo = NULL;
-    new_stack->modified = FALSE;
+    new_stack->modified = false;
     new_stack->nexticon = NULL;
     new_stack->next = NULL;
     new_stack->previous = NULL;
@@ -787,7 +787,7 @@ void AddIconUndoStack( img_node *node )
     new_stack->top_undo = NULL;
     new_stack->bottom_undo = NULL;
     new_stack->top_redo = NULL;
-    new_stack->modified = FALSE;
+    new_stack->modified = false;
     new_stack->nexticon = NULL;
     new_stack->original_xor = NULL;
     new_stack->original_and = NULL;
@@ -803,7 +803,7 @@ void AddIconUndoStack( img_node *node )
     SetIsSaved( node->hwnd, FALSE );
     stack = getTopStack( node->hwnd );
     while( stack != NULL ) {
-        stack->modified = TRUE;
+        stack->modified = true;
         stack = stack->nexticon;
     }
 
@@ -879,7 +879,7 @@ void DelIconUndoStack( img_node *node, int index )
     SetIsSaved( node->hwnd, FALSE );
     stack = getTopStack( node->hwnd );
     while( stack != NULL ) {
-        stack->modified = TRUE;
+        stack->modified = true;
         stack = stack->nexticon;
     }
 

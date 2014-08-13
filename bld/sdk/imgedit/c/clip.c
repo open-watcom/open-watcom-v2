@@ -54,7 +54,7 @@ static int              prevToolType;
 static HCURSOR          prevCursor;
 static HCURSOR          pointCursor;
 static WPI_POINT        prevPoint;
-static BOOL             firstTime;
+static bool             firstTime;
 
 /*
  * copyImageToClipboard - copies the image to the clipboard
@@ -335,7 +335,7 @@ void PlaceAndPaste( void )
     pt.x = pt.x / pointsize.x;
     pt.y = pt.y / pointsize.y;
     _wpi_setcapture( node->hwnd );
-    firstTime = TRUE;
+    firstTime = true;
     DragClipBitmap( node->hwnd, &pt, pointsize );
 
 } /* PlaceAndPaste */
@@ -672,7 +672,7 @@ void DragClipBitmap( HWND hwnd, WPI_POINT *newpt, WPI_POINT pointsize )
     _wpi_setrop2( pres, prevROP2 );
     _wpi_releasepres( hwnd, pres );
     memcpy( &prevPoint, newpt, sizeof( WPI_POINT ) );
-    firstTime = FALSE;
+    firstTime = false;
 
 } /* DragClipBitmap */
 
@@ -723,7 +723,7 @@ void CleanupClipboard( void )
  */
 void DontPaste( HWND hwnd, WPI_POINT *topleft, WPI_POINT pointsize )
 {
-    firstTime = TRUE;
+    firstTime = true;
     DragClipBitmap( hwnd, topleft, pointsize );
     _wpi_setcursor( prevCursor );
     _wpi_destroycursor( pointCursor );

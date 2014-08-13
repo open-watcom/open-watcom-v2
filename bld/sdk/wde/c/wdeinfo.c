@@ -376,7 +376,8 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
         char    *str1, *str2;
         int     len;
         bool    ok;
-        ok = FALSE;
+
+        ok = false;
         str1 = WResIDToStr( name );
         if( str1 != NULL ) {
             len = strlen( str1 ) + 3;
@@ -388,7 +389,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
                 str2[len - 1] = '\0';
                 WdeSetComboWithStr( str2, WdeInfoWindow, IDB_INFO_IDSTR );
                 WRMemFree( str2 );
-                ok = TRUE;
+                ok = true;
             }
             WRMemFree( str1 );
         }

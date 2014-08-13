@@ -59,12 +59,12 @@ typedef struct WAccelInfo {
     WResID              *res_name;
     WResLangType        lang;
     uint_16             MemFlags;
-    int                 is32bit;
-    int                 data_size;
+    size_t              data_size;
     void                *data;
-    int                 edit_active;
-    int                 modified;
-    int                 stand_alone;
+    bool                is32bit;
+    bool                edit_active;
+    bool                modified;
+    bool                stand_alone;
 } WAccelInfo;
 
 /****************************************************************************/

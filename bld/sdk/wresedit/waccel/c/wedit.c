@@ -402,7 +402,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     char        *ep;
     WRHashValue hv;
     WRHashEntry *new_entry;
-    BOOL        dup;
+    bool        dup;
 
     if( dlg == (HWND)NULL ) {
         return( FALSE );
@@ -436,7 +436,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
         if( WRLookupName( symbol_table, *symbol, &hv ) ) {
             *id = (uint_16)hv;
         } else {
-            dup = FALSE;
+            dup = false;
             new_entry = WRAddDefHashEntry( symbol_table, *symbol, &dup );
             if( new_entry != NULL ) {
                 *id = (uint_16)new_entry->value;
@@ -758,7 +758,7 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
         if( mod && einfo->current_pos != -1 ) {
             if( change || WQueryChangeEntry( einfo ) ) {
                 WGetEditWindowKeyEntry( einfo, einfo->current_entry, FALSE );
-                einfo->info->modified = TRUE;
+                einfo->info->modified = true;
                 SendMessage( lbox, LB_DELETESTRING, einfo->current_pos, 0 );
                 WAddEditWinLBoxEntry( einfo, einfo->current_entry, einfo->current_pos );
             }

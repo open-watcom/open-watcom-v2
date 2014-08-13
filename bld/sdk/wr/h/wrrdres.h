@@ -40,8 +40,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern int  WRLoadResourceFrom_RC( WRInfo *info );
-extern int  WRLoadResourceFromRES( WRInfo * );
-extern int  WRLoadResDirFromRES( WRInfo *, int * );
+extern bool WRLoadResourceFrom_RC( WRInfo *info );
+extern bool WRLoadResourceFromRES( WRInfo * );
+extern bool WRLoadResDirFromRES( WRInfo *, bool * );
 
 #endif

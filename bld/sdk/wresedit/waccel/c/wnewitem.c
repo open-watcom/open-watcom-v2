@@ -101,7 +101,7 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        einfo->info->modified = TRUE;
+        einfo->info->modified = true;
         ok = WAddEditWinLBoxEntry( einfo, new, (int)ret + 1 );
     }
 

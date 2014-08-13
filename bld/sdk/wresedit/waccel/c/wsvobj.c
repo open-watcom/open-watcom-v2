@@ -81,7 +81,7 @@ static bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
     char        fn_ext[_MAX_EXT + 1];
 
     if( einfo == NULL || filename == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( shadow ) {
@@ -93,14 +93,14 @@ static bool WSaveObjectToRC( WAccelEditInfo *einfo, char *filename,
     }
 
     if( WRFileExists( fn_path ) ) {
-        WRBackupFile( fn_path, TRUE );
+        WRBackupFile( fn_path, true );
     }
 
     if( !WWriteAccToRC( einfo, fn_path, append ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
@@ -118,7 +118,7 @@ bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
     if( ok ) {
         if( einfo->info->res_name == NULL ) {
             WDisplayErrorMsg( W_RESHASNONAME );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -164,7 +164,7 @@ bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
     }
 
     if( ok && einfo->info->stand_alone ) {
-        einfo->info->modified = FALSE;
+        einfo->info->modified = false;
     }
 
     if( data_saved ) {
@@ -202,7 +202,7 @@ bool WSaveObjectAs( bool get_name, WAccelEditInfo *einfo )
             idata2.name = WResIDFromStr( "DLGINCLUDE" );
             idata2.data = einfo->info->symbol_file;
             idata2.lang = einfo->info->lang;
-            idata2.size = strlen( einfo->info->symbol_file ) + 1;
+            idata2.size = (uint_32)( strlen( einfo->info->symbol_file ) + 1 );
             idata2.MemFlags = MEMFLAG_DISCARDABLE;
         }
     }
@@ -313,7 +313,7 @@ bool WSaveObjectInto( WAccelEditInfo *einfo )
     bool                ok;
 
     fname = NULL;
-    dup = FALSE;
+    dup = false;
 
     ok = (einfo != NULL);
 
@@ -383,7 +383,7 @@ bool WSaveSymbols( WAccelEditInfo *einfo, WRHashTable *table, char **file_name,
         return( TRUE );
     }
 
-    ok = TRUE;
+    ok = true;
 
     WSetWaitCursor( einfo->win, TRUE );
 

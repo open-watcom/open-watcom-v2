@@ -57,10 +57,10 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-static int getUniStringLength( WResIDName *id, int is32bit )
+static size_t getUniStringLength( WResIDName *id, bool is32bit )
 {
     char        *str;
-    int         len;
+    size_t      len;
 
     if( is32bit ) {
         str = WRWResIDNameToStr( id );
@@ -81,7 +81,7 @@ static int getUniStringLength( WResIDName *id, int is32bit )
     return( len );
 }
 
-static int WRCalcStringBlockSize( StringTableBlock *block, int is32bit )
+static int WRCalcStringBlockSize( StringTableBlock *block, bool is32bit )
 {
     int         size;
     int         i;
@@ -97,7 +97,7 @@ static int WRCalcStringBlockSize( StringTableBlock *block, int is32bit )
     return( size );
 }
 
-static char *copyNULLWResIDNameToData( char *data, int is32bit )
+static char *copyNULLWResIDNameToData( char *data, bool is32bit )
 {
     if( is32bit ) {
         *(uint_16 *)data = (uint_16)0;
@@ -110,11 +110,11 @@ static char *copyNULLWResIDNameToData( char *data, int is32bit )
     return( data );
 }
 
-static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
+static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
 {
     char        *str;
     char        *new_str;
-    int         len;
+    size_t      len;
 
     if( name == NULL ) {
         return( copyNULLWResIDNameToData( data, is32bit ) );
@@ -152,7 +152,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, int is32bit )
     return( data );
 }
 
-static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, int is32bit )
+static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, bool is32bit )
 {
     int         i;
     int         dsize;
@@ -184,8 +184,8 @@ int WRAPI WRIsBlockEmpty( StringTableBlock *block )
     return( TRUE );
 }
 
-int WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
-                                         int *size, int is32bit )
+bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
+                                         size_t *size, bool is32bit )
 {
     if( data != NULL && size != NULL ) {
         *size = WRCalcStringBlockSize( block, is32bit );
@@ -193,7 +193,7 @@ int WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
             *data = MemAlloc( *size );
             if( *data != NULL ) {
                 if( WRInitDataFromBlock( block, *data, *size, is32bit ) ) {
-                    return( TRUE );
+                    return( true );
                 } else {
                     MemFree( *data );
                     *data = NULL;
@@ -207,22 +207,21 @@ int WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
-int WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data,
-                                         int size, int is32bit )
+bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_t size, bool is32bit )
 {
     char        *text;
     char        *uni_str;
     char        *str;
-    int         str_len;
-    int         dsize;
+    size_t      str_len;
+    size_t      dsize;
     int         i;
-    int         tlen;
+    size_t      tlen;
 
     if( data == NULL || size == 0 || block == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     i = 0;
@@ -260,12 +259,12 @@ int WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data,
             }
 
             if( str == NULL ) {
-                return( FALSE );
+                return( false );
             }
 
             block->String[i] = WResIDNameFromStr( str );
             if( block->String[i] == NULL ) {
-                return( FALSE );
+                return( false );
             }
 
             text += tlen;
@@ -276,17 +275,17 @@ int WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data,
         i++;
     }
 
-    return( dsize >= 0 );
+    return( true );
 }
 
 // copy strings in b2 into b1
-int WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int replace )
+bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool replace )
 {
     int         i;
     int         size;
 
     if( b1 == NULL || b2 == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
@@ -303,23 +302,23 @@ int WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, int re
         size = b2->String[i]->NumChars;
         b1->String[i] = MemAlloc( size + sizeof( uint_8 ) );
         if( b1->String[i] == NULL ) {
-            return( FALSE );
+            return( false );
         }
         memcpy( b1->String[i]->Name, b2->String[i]->Name, size );
         b1->String[i]->NumChars = size;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRMergeStringData( void **s1, int *sz1, void *s2, int sz2,
-                                 int is32bit, int replace )
+bool WRAPI WRMergeStringData( void **s1, uint_32 *sz1, void *s2, uint_32 sz2,
+                                 bool is32bit, bool replace )
 {
     StringTableBlock    b1;
     StringTableBlock    b2;
     void                *new_data;
-    int                 new_size;
-    int                 ok;
+    size_t              new_size;
+    bool                ok;
 
     ok = (s1 != NULL && *s1 != NULL && s2 != NULL && sz1 != NULL && *sz1 != 0 && sz2 != 0);
 

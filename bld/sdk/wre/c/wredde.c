@@ -390,7 +390,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     case XTYP_REQUEST:
         data = NULL;
         size = 0;
-        ok = FALSE;
+        ok = false;
         if( hsz1 == Topics[DialogService].htopic ) {
             if( hsz2 == hFileItem ) {
                 ok = WREGetDlgSessionFileName( hConv, &data, &size );
@@ -423,7 +423,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     case XTYP_POKE:
         data = NULL;
         size = 0;
-        ok = FALSE;
+        ok = false;
         ret = (HDDEDATA)DDE_FNOTPROCESSED;
         if( hsz1 == Topics[DialogService].htopic ) {
             if( hsz2 == hDataItem ) {

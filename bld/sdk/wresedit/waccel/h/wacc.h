@@ -47,7 +47,7 @@
 /* data types                                                               */
 /****************************************************************************/
 typedef struct WAccelEntry {
-    int   is32bit;
+    bool  is32bit;
     union {
         AccelTableEntry     entry;
         AccelTableEntry32   entry32;
@@ -58,7 +58,7 @@ typedef struct WAccelEntry {
 } WAccelEntry;
 
 typedef struct WAccelTable {
-    int         is32bit;
+    bool        is32bit;
     int         num;
     WAccelEntry *first_entry;
 } WAccelTable;
@@ -95,7 +95,7 @@ typedef struct WAccelEditInfo {
 /****************************************************************************/
 extern WAccelEditInfo   *WAllocAccelEInfo( void );
 extern void             WFreeAccelEInfo( WAccelEditInfo * );
-extern void             WMakeDataFromAccelTable( WAccelTable *, void **, int * );
+extern void             WMakeDataFromAccelTable( WAccelTable *, void **, size_t * );
 extern WAccelTable      *WMakeAccelTableFromInfo( WAccelInfo * );
 extern bool             WInsertAccelTableEntry( WAccelTable *, WAccelEntry *, WAccelEntry * );
 extern bool             WFreeAccelTableEntry( WAccelTable *, WAccelEntry * );

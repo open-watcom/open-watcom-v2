@@ -200,7 +200,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     static POINT        topleft;
     static POINT        bottomright;
     static RECT         prevpos;
-    static BOOL         firsttime = TRUE;
+    static bool         firsttime = true;
     static BOOL         buttondown;
     static HCURSOR      prevcursor;
     static HCURSOR      crosshairs;
@@ -211,7 +211,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         crosshairs = LoadCursor( Instance, CROSSHAIRSCUR );
         prevcursor = SetCursor( crosshairs );
         SetCapture( hwnd );
-        firsttime = TRUE;
+        firsttime = true;
         SetRect( &prevpos, 0, 0, 0, 0 );
         break;
 
@@ -225,7 +225,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         SetRect( &bmpRegion, topleft.x, topleft.y, bottomright.x, bottomright.y );
         checkRectBounds( &bmpRegion );
         hdc = GetDC( NULL );
-        OutlineRectangle( TRUE, hdc, &prevpos, &bmpRegion );
+        OutlineRectangle( true, hdc, &prevpos, &bmpRegion );
         ReleaseDC( NULL, hdc );
         buttondown = FALSE;
         ReleaseCapture();
@@ -240,7 +240,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             hdc = GetDC( NULL );
             OutlineRectangle( firsttime, hdc, &prevpos, &bmpRegion );
             ReleaseDC( NULL, hdc );
-            firsttime = FALSE;
+            firsttime = false;
             prevpos = bmpRegion;
         }
         break;

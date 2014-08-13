@@ -36,9 +36,9 @@
 #include "wrdll.h"
 #include "wresall.h"
 
-static uint_32 WdeCalcStrlen( char *str, bool is32bit )
+static size_t WdeCalcStrlen( char *str, bool is32bit )
 {
-    int         len;
+    size_t      len;
 
     if( is32bit ) {
         if( str == NULL || !WRmbcs2unicode( str, NULL, &len ) ) {
@@ -46,17 +46,17 @@ static uint_32 WdeCalcStrlen( char *str, bool is32bit )
         }
     } else {
         len = 1;
-        if( str ) {
-            len = strlen( str ) + 1;
+        if( str != NULL ) {
+            len += strlen( str );
         }
     }
 
     return( len );
 }
 
-static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
+static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
 {
-    uint_32 size;
+    size_t size;
 
     if( name == NULL ) {
         if( is32bit ) {
@@ -83,10 +83,10 @@ static uint_32 WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
     return( size );
 }
 
-static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
+static size_t WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
                                               bool is32bit, bool is32bitEx )
 {
-    uint_32 size;
+    size_t size;
 
     if( is32bit ) {
         /* JPK - Added for extended dialog support */
@@ -109,9 +109,9 @@ static uint_32 WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
     return( size );
 }
 
-static uint_32 WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
+static size_t WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
 {
-    uint_32 size;
+    size_t size;
 
     if( header->is32bit ) {
         size = offsetof( DialogBoxHeader32, MenuName );
@@ -143,10 +143,10 @@ static uint_32 WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
     return( size );
 }
 
-uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
+size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
 {
-    uint_32             size;
-    uint_32             csize;
+    size_t              size;
+    size_t              csize;
     LIST                *clist;
     WdeDialogBoxControl *control;
     bool                is32bit;
@@ -180,9 +180,9 @@ uint_32 WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     return( size );
 }
 
-uint_32 WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
+size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
 {
-    uint_32 size;
+    size_t size;
 
     if( name == NULL ) {
         if( is32bit ) {

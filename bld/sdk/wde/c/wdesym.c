@@ -459,7 +459,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 
         ret = setjmp( SymEnv );
         if( ret ) {
-            ok = FALSE;
+            ok = false;
             PP_Fini();
         } else {
             ok = (pop_env = WdePushEnv( &SymEnv ));
@@ -574,7 +574,7 @@ void WdeAddSymbols( WdeHashTable *table )
         return;
     }
 
-    dup = TRUE;
+    dup = true;
     add_count = 0;
     busy_count = 0;
     busy_str[1] = '\0';

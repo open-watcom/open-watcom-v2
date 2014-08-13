@@ -103,7 +103,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
     }
 
     selection = WdeSelectDialogs( res_info, FALSE );
-    ok = TRUE;
+    ok = true;
     WdeSetWaitCursor( TRUE );
 
     for( slist = selection; slist != NULL; slist = ListConsume( slist ) ) {
@@ -111,7 +111,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
         last = (ListNext(slist) == NULL);
         if( !WdeOpenSelectedDialog( res_info, ditem, last ) ) {
             WdeWriteTrail( "WdeSelectDialog: open failed!" );
-            ok = FALSE;
+            ok = false;
         }
     }
 
@@ -128,7 +128,7 @@ bool WdeRemoveDialog( WdeResInfo *res_info )
     bool            ok;
 
     selection = WdeSelectDialogs( res_info, TRUE );
-    ok = TRUE;
+    ok = true;
 
     for( slist = selection; slist != NULL; slist = ListConsume( slist ) ) {
         ditem = (WdeResDlgItem *)ListElement ( slist );
@@ -240,13 +240,13 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
         WdeWriteTrail( "WdeGetSelectInfo: Inconsistency detected!" );
     }
 
-    ok = TRUE;
+    ok = true;
     for( ; count > 0; count-- ) {
         ret = SendMessage( win, LB_GETITEMDATA, sel[count - 1], 0 );
         if( ret != LB_ERR ) {
             ditem = WdeFindDialogInResInfo( si->res_info, (int)ret );
             if( ditem == NULL ) {
-                ok = FALSE;
+                ok = false;
                 break;
             }
             ListAddElt( &si->selection, ditem );
@@ -357,7 +357,7 @@ bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool mak
 
     if( ditem->dialog_info == NULL ) {
         ditem->dialog_info = WdeLoadDialogFromRes( res_info, ditem->lnode, ditem->is32bit );
-        ditem->modified = FALSE;
+        ditem->modified = false;
     }
 
     if( ditem->dialog_name == NULL ) {

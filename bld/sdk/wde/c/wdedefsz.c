@@ -94,7 +94,7 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
 {
     int i;
 
-    for( i = 0; WdeDefaultSizes[i].obj_id != NULL; i++ ) {
+    for( i = 0; WdeDefaultSizes[i].obj_id != 0; i++ ) {
         if( WdeDefaultSizes[i].obj_id == id ) {
             return( &WdeDefaultSizes[i].def_size );
         }

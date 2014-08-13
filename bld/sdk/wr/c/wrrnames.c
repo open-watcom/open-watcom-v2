@@ -58,9 +58,9 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-int WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data )
+bool WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data )
 {
-    int         ok;
+    bool        ok;
     LRESULT     index;
 
     ok = (lbox != (HWND)NULL && str != NULL);
@@ -78,10 +78,10 @@ int WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data )
     return( ok );
 }
 
-static int WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
+static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
                                   WResLangNode *lnode, uint_16 type )
 {
-    int         ok;
+    bool        ok;
     char        *cp;
 
     cp = NULL;
@@ -99,10 +99,10 @@ static int WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
     return( ok );
 }
 
-static int WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
+static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
 {
     WResLangNode        *lnode;
-    int                 ok;
+    bool                ok;
 
     ok = (lbox != (HWND)NULL && rnode != NULL);
 
@@ -121,11 +121,11 @@ static int WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
     return( ok );
 }
 
-int WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
 {
     WResResNode *rnode;
     char        *str;
-    int         ok;
+    bool        ok;
     int         type;
 
     ok = (lbox != (HWND)NULL && tnode != NULL);
@@ -144,7 +144,7 @@ int WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
                 ok = WRSetLBoxWithStr( lbox, str, NULL );
                 WRFreeRCString( str );
             } else {
-                ok = FALSE;
+                ok = false;
             }
         } else {
             while( ok && rnode != NULL ) {
