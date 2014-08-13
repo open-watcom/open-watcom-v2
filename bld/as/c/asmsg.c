@@ -87,34 +87,24 @@ static off_t resSeek( int handle, off_t position, int where )
 WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
-extern int AsMsgInit( void ) {
-//****************************
-
+int AsMsgInit( void )
+//*******************
+{
 #ifdef _STANDALONE_
-    bool        error;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) == NULL ) {
-        error = true;
-    } else {
-        error = OpenResFile( &hInstance, name );
-        if( !error ) {
-            error = FindResources( &hInstance );
-            if( !error ) {
-                error = InitResources( &hInstance );
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            msgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( AsMsgGet( USAGE_1, name ) ) {
+                return( 1 );
             }
         }
     }
-    msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !error && !AsMsgGet( USAGE_1, name ) ) {
-        error = true;
-    }
-    if( error ) {
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-        AsMsgFini();
-        return 0;
-    }
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    AsMsgFini();
+    return( 0 );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
     if( msgShift >= TXT_MSG_SIZE )
@@ -122,26 +112,24 @@ extern int AsMsgInit( void ) {
     msgShift -= AS_MSG_BASE;
     return( 1 );
 #endif
-    return 1;
 }
 
-extern int AsMsgGet( int resourceid, char *buffer ) {
-//***************************************************
+int AsMsgGet( int resourceid, char *buffer ) {
+//********************************************
 
 #ifdef _STANDALONE_
     if( LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
         buffer[0] = '\0';
         return( 0 );
     }
-    return( 1 );
 #else
     strcpy( buffer, asMessages[resourceid + msgShift] );
-    return( 1 );
 #endif
+    return( 1 );
 }
 
-extern void AsMsgFini( void ) {
-//*****************************
+void AsMsgFini( void ) {
+//**********************
 
 #ifdef _STANDALONE_
     if( hInstance.handle != NIL_HANDLE ) {

@@ -77,13 +77,13 @@ WResSetRtns( open, close, read, write, res_seek, tell, MemAllocGlobal, MemFreeGl
 
 void InitMsg( void )
 {
-    bool    initerror;
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char    imageName[_MAX_PATH];
 #else
     char    *imageName;
 #endif
 
+    hInstance.handle = NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -91,23 +91,16 @@ void InitMsg( void )
 #else
     imageName = _LpDllName;
 #endif
-    initerror = OpenResFile( &hInstance, imageName );
-    if( !initerror ) {
-        initerror = FindResources( &hInstance );
-        if( !initerror ) {
-            initerror = InitResources( &hInstance );
+    if( !OpenResFile( &hInstance, imageName ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            Res_Flag = EXIT_SUCCESS;
+            return;
         }
-        if( initerror ) {
-            CloseResFile( &hInstance );
-        }
+        CloseResFile( &hInstance );
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( initerror ) {
-        Res_Flag = EXIT_FAILURE;
-        FatalResError();
-    } else {
-        Res_Flag = EXIT_SUCCESS;
-    }
+    Res_Flag = EXIT_FAILURE;
+    FatalResError();
 }
 
 void MsgGet( int resourceid, char *buffer )

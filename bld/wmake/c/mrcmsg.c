@@ -109,35 +109,26 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 #endif
 
 int MsgInit( void )
-/************************/
+/*****************/
 {
 #ifndef BOOTSTRAP
-    unsigned char   initerror;
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) == NULL ) {
-        initerror = true;
-    } else {
-        initerror = OpenResFile( &hInstance, name );
-        if( !initerror ) {
-            initerror = FindResources( &hInstance );
-            if( !initerror ) {
-                initerror = InitResources( &hInstance );
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( MsgGet( MSG_USAGE_BASE, name ) ) {
+                return( 1 );
             }
         }
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !MsgGet( MSG_USAGE_BASE, name ) ) {
-        initerror = true;
-    }
-    if( initerror ) {
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-        MsgFini();
-        return( 0 );
-    }
-#endif
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    MsgFini();
+    return( 0 );
+#else    
     return( 1 );
+#endif
 }
 
 

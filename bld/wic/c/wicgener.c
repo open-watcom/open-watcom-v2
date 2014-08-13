@@ -85,23 +85,18 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 void initWicResources( char * fname )
 {
-    bool    initerror;
-
     hInstance.filename = fname;
     hInstance.handle = open( hInstance.filename, O_RDONLY | O_BINARY );
-    if( hInstance.handle == NIL_HANDLE ) {
-        initerror = true;
-    } else {
-        initerror = FindResources( &hInstance );
+    if( hInstance.handle != NIL_HANDLE ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            return;
+        }
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
     }
-    if( !initerror ) {
-        initerror = InitResources( &hInstance );
-    }
-    if( initerror ) {
-        fprintf(stderr, "Internal error: Cannot open resources");
-        wicExit(-1);
-    }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+    fprintf( stderr, "Internal error: Cannot open resources" );
+    wicExit(-1);
 }
 
 int getResStr( int resourceid, char *buffer )
@@ -116,7 +111,9 @@ int getResStr( int resourceid, char *buffer )
 
 void zapWicResources(void)
 {
-    CloseResFile( &hInstance );
+    if( hInstance.handle != NIL_HANDLE ) {
+        CloseResFile( &hInstance );
+    }
 }
 
 /*--------------------- Error reporting --------------------------*/

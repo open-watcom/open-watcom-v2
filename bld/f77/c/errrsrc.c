@@ -79,11 +79,14 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
 
 static  void    ErrorInit( const char *pgm_name )
 {
+    hInstance.handle = NIL_HANDLE;
     if( OpenResFile( &hInstance, pgm_name ) )
         return;
     ResFlags |= RF_OPENED;
-    if( FindResources( &hInstance ) ) return;
-    if( InitResources( &hInstance ) ) return;
+    if( FindResources( &hInstance ) )
+        return;
+    if( InitResources( &hInstance ) )
+        return;
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     ResFlags |= RF_INITIALIZED;
 }

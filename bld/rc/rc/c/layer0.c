@@ -480,27 +480,25 @@ void Layer0InitStatics( void )
 bool RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
 /****************************************************************/
 {
-    bool        error;
-
     instance->handle = open( imagename, O_RDONLY | O_BINARY );
-    error = ( instance->handle == NIL_HANDLE );
-    if( !error ) {
+    if( instance->handle != NIL_HANDLE ) {
         RegisterOpenFile( instance->handle );
-        error = FindResources( instance );
-        if( !error ) {
-            error = InitResources( instance );
+        if( !FindResources( instance ) && !InitResources( instance ) ) {
+            return( false );
         }
-        if( error ) {
-            CloseResFile( instance );
-            UnRegisterOpenFile( instance->handle );
-        }
+        CloseResFile( instance );
+        UnRegisterOpenFile( instance->handle );
+        instance->handle = NIL_HANDLE;
     }
-    return( error );
+    return( true );
 }
 
 void RCCloseResFile( HANDLE_INFO *instance )
 /******************************************/
 {
-    CloseResFile( instance );
-    UnRegisterOpenFile( instance->handle );
+    if( instance->handle != NIL_HANDLE ) {
+        CloseResFile( instance );
+        UnRegisterOpenFile( instance->handle );
+        instance->handle = NIL_HANDLE;
+    }
 }

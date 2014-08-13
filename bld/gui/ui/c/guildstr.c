@@ -61,7 +61,7 @@
 #endif
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  bool            GUIMsgInitFlag = FALSE;
+static  bool            GUIMsgInitFlag = false;
 
 static long res_seek( WResFileID handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -83,58 +83,49 @@ bool GUIIsLoadStrInitialized( void )
 
 bool GUILoadStrInit( const char *fname )
 {
-    bool        error;
-
-    error = OpenResFile( &hInstance, fname );
-    if( !error ) {
-        if( GUIGetExtName() != NULL ) {
-            // we are using an external resource file so we don't have to
-            // search
-            FileShift = 0;
-        } else {
-            error = FindResources( &hInstance );
+    hInstance.handle = NIL_HANDLE;
+    if( !OpenResFile( &hInstance, fname ) ) {
+        // if we are using an external resource file then we don't have to search
+        FileShift = 0;
+        if( GUIGetExtName() != NULL || !FindResources( &hInstance ) ) {
+            if( !InitResources( &hInstance ) ) {
+                GUIMsgInitFlag = true;
+                return( true );
+            }
         }
+        CloseResFile( &hInstance );
     }
-    if( !error ) {
-        error = InitResources( &hInstance );
-    }
-    if( error ) {
-        GUIMsgInitFlag = FALSE;
-        write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
-        write( fileno(stdout), fname,                 strlen( fname ) );
-        write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
-    } else {
-        GUIMsgInitFlag = TRUE;
-    }
-
-    return( GUIMsgInitFlag );
+    write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
+    write( fileno(stdout), fname,                 strlen( fname ) );
+    write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    GUIMsgInitFlag = false;
+    return( false );
 }
 
 bool GUILoadStrFini( void )
 {
     if( GUIMsgInitFlag ) {
         if( !CloseResFile( &hInstance ) ) {
-            GUIMsgInitFlag = FALSE;
+            GUIMsgInitFlag = false;
         } else {
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUILoadString( int string_id, char *buffer, int buffer_length )
 {
     if( GUIMsgInitFlag && buffer && buffer_length ) {
-        if( LoadString( &hInstance, string_id,
-                        (LPSTR) buffer, buffer_length ) == 0 ) {
-            return( TRUE );
+        if( LoadString( &hInstance, string_id, (LPSTR)buffer, buffer_length ) == 0 ) {
+            return( true );
         } else {
             buffer[0] = '\0';
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool GUILoadDialogTemplate( int id, char **template, int *length )

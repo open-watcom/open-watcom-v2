@@ -75,13 +75,13 @@ WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 int InitMsg( void )
 {
     char        buff[_MAX_PATH];
-    bool        initerror;
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
 #else
     char        *imageName;
 #endif
 
+    hInstance.handle = NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -89,25 +89,20 @@ int InitMsg( void )
 #else
     imageName = _LpDllName;;
 #endif
-    Res_Flag = EXIT_SUCCESS;
     BannerPrinted = FALSE;
-    initerror = OpenResFile( &hInstance, imageName );
-    if( !initerror ) {
-        initerror = FindResources( &hInstance );
-        if( !initerror ) {
-            initerror = InitResources( &hInstance );
+    if( !OpenResFile( &hInstance, imageName ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( Msg_Get( MSG_PRODUCT, buff ) ) {
+                Res_Flag = EXIT_SUCCESS;
+                return( Res_Flag );
+            }
         }
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !Msg_Get( MSG_PRODUCT, buff ) ) {
-        initerror = true;
-    }
-    if( initerror ) {
-        Res_Flag = EXIT_FAILURE;
-        WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
-    } else {
-        Res_Flag = EXIT_SUCCESS;
-    }
+    WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
+    Res_Flag = EXIT_FAILURE;
     return( Res_Flag );
 }
 

@@ -67,29 +67,25 @@ static long resSeek( int handle, long position, int where )
 
 WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 
-extern int MsgInit( char *fname )
-/*******************************/
+int MsgInit( char *fname )
+/************************/
 {
-    bool initerror;
-
-    initerror = OpenResFile( &hInstance, fname );
-    if( !initerror ) {
-        initerror = FindResources( &hInstance );
-        if( !initerror ) {
-            initerror = InitResources( &hInstance );
+    hInstance.handle = NIL_HANDLE;
+    if( !OpenResFile( &hInstance, fname ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            Res_Flag = EXIT_SUCCESS;
+            return( Res_Flag );
         }
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
     }
-    if( initerror ) {
-        Res_Flag = EXIT_FAILURE;
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    } else {
-        Res_Flag = EXIT_SUCCESS;
-    }
-    return Res_Flag;
+    Res_Flag = EXIT_FAILURE;
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    return( Res_Flag );
 }
 
-extern void MsgGet( int resourceid, char *buffer )
-/************************************************/
+void MsgGet( int resourceid, char *buffer )
+/*****************************************/
 {
     if( LoadString( &hInstance, resourceid,
         (LPSTR) buffer, MAX_RESOURCE_SIZE ) == 0 ) {
@@ -98,8 +94,8 @@ extern void MsgGet( int resourceid, char *buffer )
     }
 }
 
-extern int MsgFini()
-/******************/
+int MsgFini( void )
+/*****************/
 {
     int     retcode = EXIT_SUCCESS;
 

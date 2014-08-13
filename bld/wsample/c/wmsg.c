@@ -79,6 +79,7 @@ char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
 extern void             Output( char FAR_PTR * );
 
 #if !defined(__WINDOWS__)
+
 static long res_seek( int handle, long position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
@@ -94,7 +95,6 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 int MsgInit( void )
 {
-    bool        initerror;
     int         i;
     unsigned    msg_shift;
     char        buffer[_MAX_PATH];
@@ -103,53 +103,46 @@ int MsgInit( void )
     char        fullpath[_MAX_PATH];
 #endif
 
-    if( _cmdname( buffer ) == NULL ) {
-        initerror = true;
-    } else {
-        initerror = OpenResFile( &hInstance, buffer );
+    hInstance.handle = NIL_HANDLE;
+    if( _cmdname( buffer ) != NULL ) {
 #if defined(_PLS)
-        if( initerror ) {
+        if( OpenResFile( &hInstance, buffer ) ) {
             _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
             _makepath( buffer, NULL, NULL, fname, ".exp" );
             _searchenv( buffer, "PATH", fullpath );
             if( fullpath[0] != '\0' ) {
-                initerror = OpenResFile( &hInstance, fullpath );
+                OpenResFile( &hInstance, fullpath );
             }
         }
 #endif
-        if( !initerror ) {
-            initerror = FindResources( &hInstance );
-            if( !initerror ) {
-                initerror = InitResources( &hInstance );
-            }
-        }
-        if( !initerror ) {
-            msg_shift = _WResLanguage() * MSG_LANG_SPACING;
-            for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-                if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
-                    if( i == ERR_FIRST_MESSAGE ) {
-                        initerror = true;
-                        break;
+        if( hInstance.handle != NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
+            if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+                msg_shift = _WResLanguage() * MSG_LANG_SPACING;
+                for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
+                    if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
+                        if( i == ERR_FIRST_MESSAGE ) {
+                            break;
+                        }
+                        buffer[0] = '\0';
                     }
-                    buffer[0] = '\0';
-                }
-                MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-
-                if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL ) break;
+                    MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
+    
+                    if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL )
+                        break;
 #if defined( __I86__ )
-                _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+                    _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
 #else
-                strcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+                    strcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
 #endif
+                }
+                CloseResFile( &hInstance );
+                return( 1 );
             }
             CloseResFile( &hInstance );
         }
     }
-    if( initerror ) {
-        write( STDOUT_HANDLE, NO_RES_MESSAGE, NO_RES_SIZE );
-        return( 0 );
-    }
-    return( 1 );
+    write( STDOUT_HANDLE, NO_RES_MESSAGE, NO_RES_SIZE );
+    return( 0 );
 }
 #else
 
@@ -163,15 +156,14 @@ int MsgInit( HANDLE inst )
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
         if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
-            if( i == ERR_FIRST_MESSAGE ) {
+            if( i == ERR_FIRST_MESSAGE )
                 return( 0 );
-                break;
-            }
             buffer[0] = '\0';
         }
-        MsgArray[i-ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-        if( MsgArray[i-ERR_FIRST_MESSAGE] == NULL ) return( 0 );
-        _fstrcpy( MsgArray[i-ERR_FIRST_MESSAGE], buffer );
+        MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
+        if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
+            return( 0 );
+        _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
     }
     return( 1 );
 }
@@ -182,7 +174,7 @@ void MsgFini( void )
     int          i;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        my_free( MsgArray[i-ERR_FIRST_MESSAGE] );
+        my_free( MsgArray[i - ERR_FIRST_MESSAGE] );
     }
 }
 

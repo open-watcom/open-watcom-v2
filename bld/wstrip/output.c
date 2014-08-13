@@ -105,31 +105,22 @@ static int Msg_Get( int resourceid, char *buffer )
 
 int Msg_Init( void )
 {
-    bool        initerror;
     char        name[_MAX_PATH];
 
-    if( _cmdname( name ) == NULL ) {
-        initerror = true;
-    } else {
-        initerror = OpenResFile( &hInstance, name );
-        if( !initerror ) {
-            initerror = FindResources( &hInstance );
-            if( !initerror ) {
-                initerror = InitResources( &hInstance );
+    hInstance.handle = NIL_HANDLE;
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
+                Res_Flag = EXIT_SUCCESS;
+                return( Res_Flag );
             }
         }
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
     }
-    if( initerror ) {
-        Res_Flag = EXIT_FAILURE;
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    } else {
-        Res_Flag = EXIT_SUCCESS;
-    }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !Msg_Get( MSG_USAGE_FIRST, name ) ) {
-        Res_Flag = EXIT_FAILURE;
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    }
+    Res_Flag = EXIT_FAILURE;
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return Res_Flag;
 }
 
@@ -143,8 +134,9 @@ int Msg_Fini( void )
             Res_Flag = EXIT_FAILURE;
             retcode = EXIT_FAILURE;
         }
+        hInstance.handle = NIL_HANDLE;
     }
-    return retcode;
+    return( retcode );
 }
 
 #endif

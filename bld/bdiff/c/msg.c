@@ -80,31 +80,20 @@ int GetMsg( char *buffer, int resourceid )
 
 int MsgInit( void )
 {
-    bool        initerror;
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) == NULL ) {
-        initerror = true;
-    } else {
-        initerror = OpenResFile( &hInstance, name );
-        if( !initerror ) {
-            initerror = FindResources( &hInstance );
-            if( !initerror ) {
-                initerror = InitResources( &hInstance );
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( GetMsg( name, MSG_USAGE_FIRST ) ) {
+                return( 1 );
             }
         }
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !GetMsg( name, MSG_USAGE_FIRST ) ) {
-        initerror = true;
-    }
-    if( initerror ) {
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-        MsgFini();
-        return( 0 );
-    }
-    return( 1 );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    MsgFini();
+    return( 0 );
 }
 
 static void OrderMsg ( int order[], int num_arg, char *msg_ptr )

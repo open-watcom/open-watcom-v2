@@ -48,7 +48,6 @@
 
 HANDLE_INFO Instance;
 
-static int WGMLItself;
 static unsigned MsgShift;               // 0 = english, 1000 for japanese
 
 
@@ -60,7 +59,7 @@ static unsigned MsgShift;               // 0 = english, 1000 for japanese
 static long res_seeek( WResFileID handle, long position, int where )
 /******************************************************************/
 {
-    if( ( where == SEEK_SET ) && ( handle == WGMLItself ) ) {
+    if( where == SEEK_SET ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
@@ -75,33 +74,21 @@ WResSetRtns( open, close, read, write, res_seeek, tell, mem_alloc, mem_free );
 
 int init_msgs( void )
 {
-    bool        error;
     char        fname[_MAX_PATH];
 
-    error = false;
-    if( _cmdname( fname ) == NULL ) {
-        error = true;
-    } else {
-        error = OpenResFile( &Instance, fname );
-        WGMLItself = Instance.handle;
-        if( !error ) {
-            error = FindResources( &Instance );
-            if( !error ) {
-                error = InitResources( &Instance );
+    Instance.handle = NIL_HANDLE;
+    if( _cmdname( fname ) != NULL && !OpenResFile( &Instance, fname ) ) {
+        if( !FindResources( &Instance ) && !InitResources( &Instance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
+                return( 1 );
             }
         }
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( !error && !get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
-            error = true;
-        }
     }
-    if( error ) {
-        if( Instance.handle != NIL_HANDLE )
-            CloseResFile( &Instance );
-        out_msg( "Resources not found\n" );
-        g_suicide();
-    }
-    return( 1 );
+    out_msg( "Resources not found\n" );
+    fini_msgs();
+    g_suicide();
+    return( 0 );
 }
 
 
@@ -124,5 +111,8 @@ int get_msg( msg_ids resid, char *buff, size_t buff_len )
 
 void fini_msgs( void )
 {
-    CloseResFile( &Instance );
+    if( Instance.handle != NIL_HANDLE ) {
+        CloseResFile( &Instance );
+        Instance.handle = NIL_HANDLE;
+    }
 }

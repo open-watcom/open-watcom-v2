@@ -70,32 +70,21 @@ WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 int MsgInit( void )
 /******************/
 {
-    bool        initerror;
     char        name[_MAX_PATH];
     char        dummy[MAX_RESOURCE_SIZE];
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) == NULL ) {
-        initerror = true;
-    } else {
-        initerror = OpenResFile( &hInstance, name );
-        if( !initerror ) {
-            initerror = FindResources( &hInstance );
-            if( !initerror ) {
-                initerror = InitResources( &hInstance );
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( MsgGet( MSG_USAGE_BASE, dummy ) ) {
+                return( true );
             }
         }
     }
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    if( !initerror && !MsgGet( MSG_USAGE_BASE, dummy ) ) {
-        initerror = true;
-    }
-    if( initerror ) {
-        write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-        MsgFini();
-        return( FALSE );
-    }
-    return( TRUE );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    MsgFini();
+    return( false );
 }
 
 int MsgGet( int resourceid, char *buffer )

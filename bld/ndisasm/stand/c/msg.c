@@ -63,15 +63,11 @@ int MsgInit( void )
     char            name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL ) {
-        if( !OpenResFile( &hInstance, name ) ) {
-            if( !FindResources( &hInstance ) ) {
-                if( !InitResources( &hInstance ) ) {
-                    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-                    if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
-                        return( 1 );
-                    }
-                }
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
+                return( 1 );
             }
         }
     }
