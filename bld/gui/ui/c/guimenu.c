@@ -59,7 +59,7 @@ static void SetChecked( MENUITEM *menu, bool check )
 static bool IsChecked( MENUITEM *menu )
 {
     if( menu != NULL ) {
-        return( menu->flags & ITEM_CHECKED );
+        return( (menu->flags & ITEM_CHECKED) != 0 );
     }
     return( FALSE );
 }

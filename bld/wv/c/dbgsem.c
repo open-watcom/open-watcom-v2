@@ -43,6 +43,7 @@
 #include "dipwv.h"
 #include "dip.h"
 #include "i64.h"
+#include "clibext.h"
 
 
 #define         SSL_VERSION_MAJOR_CURR  0x0100
@@ -1230,8 +1231,10 @@ static unsigned MechGet( unsigned select, unsigned parm )
         break;
     case 9: /* get line number >>bool */
         if( CurrToken == T_LEFT_BRACE ) {
+            size_t  len;
             /* Get a specfic file name for the module */
-            ScanQuote( &CurrGet.li.source.start, &CurrGet.li.source.len );
+            ScanQuote( &CurrGet.li.source.start, &len );
+            CurrGet.li.source.len = len;
         }
         if( CurrToken == T_INT_NUM ) {
             unsigned_64         tmp;

@@ -32,6 +32,7 @@
 #include "dbgdefn.h"
 #include "dlglist.h"
 #include <string.h>
+#include "clibext.h"
 
 char_ring               *DLLList;
 

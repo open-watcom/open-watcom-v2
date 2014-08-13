@@ -43,6 +43,7 @@
 #include "madcli.h"
 #include "dui.h"
 #include "i64.h"
+#include "clibext.h"
 
 
 typedef struct rad_str {

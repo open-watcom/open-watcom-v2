@@ -35,6 +35,7 @@
 #include "x86.h"
 #include "x86types.h"
 #include "madregs.h"
+#include "clibext.h"
 
 #define OP_1 0
 

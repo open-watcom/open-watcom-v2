@@ -229,7 +229,7 @@ void *CMemAlloc( size_t size )
         }
     }
     /* make sure pointer is properly aligned */
-    assert( ((unsigned)p & (MEM_ALIGN - 1)) == 0 );
+    assert( ((unsigned)(pointer_int)p & (MEM_ALIGN - 1)) == 0 );
 
     return( memset( p, 0, size ) );
 }

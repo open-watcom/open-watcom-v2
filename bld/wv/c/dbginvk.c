@@ -39,6 +39,7 @@
 #include "dbgio.h"
 #include "dbginp.h"
 #include <string.h>
+#include "clibext.h"
 
 
 

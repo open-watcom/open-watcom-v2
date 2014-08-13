@@ -48,6 +48,9 @@
 #ifndef _I32_MAX
 #define _I32_MAX 2147483647L
 #endif
+#ifndef _UI32_MAX
+#define _UI32_MAX 4294967295UL
+#endif
 
 #elif defined( _MSC_VER )
 

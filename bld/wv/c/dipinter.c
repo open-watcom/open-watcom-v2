@@ -46,6 +46,7 @@
 #include "mad.h"
 #include <string.h>
 #include <stddef.h>
+#include "clibext.h"
 
 
 extern unsigned         CueFile( cue_handle *ch, char *file, unsigned max );

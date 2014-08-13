@@ -70,5 +70,5 @@ extern  bool            WndIDChar( a_window *wnd, char ch )
 
 extern  bool            WndKeyChar( char ch )
 {
-    return( isprint( ch ) );
+    return( isprint( ch ) != 0 );
 }

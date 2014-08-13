@@ -36,6 +36,7 @@
 #include "ms2wlink.h"
 #include "command.h"
 #include "watcom.h"
+#include "clibext.h"
 
 static void             (*MultiLine)( void ) = NULL;
 static char *           OptionBuffer;
@@ -344,7 +345,7 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
                 value <<= 10;        // value = value * 1024;
             }
         } else {
-            isdig = isdigit( ch );
+            isdig = isdigit( ch ) != 0;
             if( radix == 10 ) {
                 isvalid = isdig;
             } else if( radix == 8 ) {
@@ -354,7 +355,7 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
                     isvalid = TRUE;
                 }
             } else {
-                isvalid = isxdigit( ch );
+                isvalid = isxdigit( ch ) != 0;
             }
             if( !isvalid ) {
                 return( FALSE );

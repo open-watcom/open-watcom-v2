@@ -34,6 +34,7 @@
 #include <string.h>
 #include "wio.h"
 #include "fcenable.h"
+#include "clibext.h"
 
 #define VARIABLE_SIZE 1
 #define MAJOR_OBJ_VERSION 1

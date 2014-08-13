@@ -32,12 +32,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <watcom.h>
-#include <dwarf.h>
+#include "watcom.h"
+#include "dwarf.h"
 #include "drpriv.h"
 #include "drutils.h"
 #include "drscope.h"
 #include "drdecnam.h"
+#include "clibext.h"
 
 /*----------------*
  * type definitions

@@ -33,6 +33,7 @@
 #include "walloca.h"
 #include "watcom.h"
 #include "demangle.h"
+#include "clibext.h"
 
 
 #define SCOPE_CLASS_FLAG        0x80000000UL

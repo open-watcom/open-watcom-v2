@@ -43,6 +43,7 @@
 #include "madcli.h"
 #include "dui.h"
 #include "mad.h"
+#include "clibext.h"
 
 
 extern void             AddrSection( address *, unsigned );

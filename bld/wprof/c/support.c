@@ -565,9 +565,9 @@ STATIC void searchQNX( uint_16 seg, uint_32 off )
     cacheSegment = seg;
     seg_idx = seg >> 3;
     cacheLo = 0;
-    cacheHi = ULONG_MAX;
+    cacheHi = _UI32_MAX;
     hole_lo = 0;
-    hole_hi = ULONG_MAX;
+    hole_hi = _UI32_MAX;
     isHole = P_FALSE;
     lseek( exeFH, 0, SEEK_SET );
     for( ;; ) {

@@ -41,6 +41,7 @@
 #include "dfhash.h"
 #include "exeelf.h"
 #include "tistrail.h"
+#include "clibext.h"
 
 
 typedef struct imp_image_handle *imp_image;

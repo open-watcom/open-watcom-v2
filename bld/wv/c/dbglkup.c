@@ -39,6 +39,7 @@
 #include "dbgmem.h"
 #include "dbgtoggl.h"
 #include "dbgio.h"
+#include "clibext.h"
 
 
 extern void             Scan( void );
