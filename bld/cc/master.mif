@@ -25,6 +25,7 @@ additional_cleanup = *.int *.u
 !include dllrule.mif
 !include deftarg.mif
 !include osi.mif
+!include dllbase.mif
 
 # CODEGEN stuff
 !include $(cg_dir)/mif/fe.mif
@@ -95,9 +96,9 @@ extra_l_flags_dos = option stack=32k
 #
 # WLINK .DLL options
 #
-extra_l_flags_dll     = option implib
-extra_l_flags_dll_nt  = initinstance terminstance option offset=0x69400000, modname='$(dllname).dll'
-extra_l_flags_dll_os2 = initinstance terminstance option manyautodata, modname='$(dllname)'
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
+extra_l_flags_dll_os2 = initinstance terminstance op manyautodata, modname='$(dllname)'
 
 #
 # external libraries

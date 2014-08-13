@@ -140,9 +140,9 @@ extra_l_flags_nt  = OPTION stack=0x10000k COMMIT stack=32k
 #
 # wlink .DLL options
 #
-extra_l_flags_dll     = option implib
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69000000
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)', manyautodata
  
 # source search path

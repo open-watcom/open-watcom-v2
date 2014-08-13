@@ -31,6 +31,7 @@ suppress_zc = 1
 !include defrule.mif
 !include dllrule.mif
 !include deftarg.mif
+!include dllbase.mif
 
 !include $(orl_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
@@ -82,8 +83,8 @@ extra_l_flags_qnx = op res=$(extra_link_res_qnx), st=24k, off=32k
 #####################
 # linker .DLL options
 
-extra_l_flags_dll     = option implib
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x69c00000
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 
 !ifdef no_orl

@@ -162,9 +162,9 @@ extra_c_flags_maindrv  = -DDLL_NAME=$(dllname)
 
 # DLL lflags stuff
 ##################
-extra_l_flags_dll     = option implib
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 
-extra_l_flags_dll_nt  += option modname='$(dllname).dll', offset=0x69800000
+extra_l_flags_dll_nt  += option modname='$(dllname).dll'
 extra_l_flags_dll_os2 += option modname='$(dllname)'
 
 # systems where version resources must be added to .DLL

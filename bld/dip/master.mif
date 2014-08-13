@@ -40,6 +40,7 @@ objs = dipimp.obj $(imp_objs)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include dllbase.mif
 
 !ifeq name dwarf
 !include $(dwarfr_dir)/client.mif
@@ -65,20 +66,7 @@ lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86     = sys windows op rwr
 
-extra_l_flags_dll_nt_386_javavm   = op offset=0x6e800000
-extra_l_flags_dll_nt_386_export   = op offset=0x6ec00000
-extra_l_flags_dll_nt_386_codeview = op offset=0x6ed00000
-extra_l_flags_dll_nt_386_watcom   = op offset=0x6ee00000
-extra_l_flags_dll_nt_386_dwarf    = op offset=0x6ef00000
-
-extra_l_flags_dll_rdos_386_watcom = op offset=0xda000000
-extra_l_flags_dll_rdos_386_dwarf  = op offset=0xda100000
-extra_l_flags_dll_rdos_386_mapsym = op offset=0xda200000
-
-extra_l_flags_dll_nt      = $(lflags_nt_$(host_cpu)_$(name))
-extra_l_flags_dll_os2     = 
-extra_l_flags_dll_rdos    = $(lflags_rdos_386_$(name))
-extra_l_flags_dll_win     =
+extra_l_flags_dll      = $($(proj_name)_dllbase_$(host_os)_$(host_cpu)_$(name))
 
 # systems where version resources must be added to .DLL
 version_res_dll_nt_386 = version.res

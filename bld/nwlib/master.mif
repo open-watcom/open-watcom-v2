@@ -24,6 +24,7 @@ wlib_trmem = 1
 !include dllrule.mif
 !include deftarg.mif
 !include osi.mif
+!include dllbase.mif
 
 !ifeq bootstrap 1
 !include $(orl_dir)/orlobjs.mif
@@ -102,8 +103,8 @@ extra_l_flags_qnx = op offset=64k, stack=60k
 ###################
 # linker flags .DLL
 
-extra_l_flags_dll     = option implib
-extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll', offset=0x6A000000
+extra_l_flags_dll     = option implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op modname='$(dllname)'
 
 ###################

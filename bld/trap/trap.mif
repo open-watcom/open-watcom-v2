@@ -5,6 +5,7 @@
 description = 'Open Watcom Debugger Trap File'
 
 !ifdef test
+
 sys_x86_os2   = sys os2
 sys_x86_os2v2 = sys os2v2
 sys_x86_win   = sys windows
@@ -72,7 +73,7 @@ sys_x86_nt   = sys nt_dll initinstance opt dosseg &
             op modname=$^& &
             option description $(description) &
 !ifneq release 0
-            op offset=0x6e900000
+            $($(proj_name)_dllbase_nt_$(host_cpu)_$(name))
 !endif
 
 sys_x86_dos  = sys dos
@@ -81,7 +82,7 @@ sys_x86_rdos = sys rdos_dll &
                export TrapInit_ &
                export TrapFini_ &
                export TrapRequest_ &
-               op offset=0xdb000000
+               $($(proj_name)_dllbase_rdos_386_$(name))
 
 sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 

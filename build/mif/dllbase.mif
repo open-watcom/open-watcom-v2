@@ -1,0 +1,25 @@
+rtdll_dllbase_winnt_mathlib = op offset=0x6ff00000	# mtxxxx.dll    (run-time DLL math library)
+rtdll_dllbase_winnt_clib    = op offset=0x6fe00000	# clbxxxx.dll   (run-time DLL C library)
+rtdll_dllbase_winnt_cpplib  = op offset=0x6fd00000	# plbxxxx.dll   (run-time DLL C++ library)
+wrtdll_dllbase_winnt_cpplib = op offset=0x6fa00000	# wrtxxxx.dll   (run-time DLL combined C, math and C++ library)
+dip_dllbase_nt_386_dwarf    = op offset=0x6ef00000	# dwarf.dll     (Debugger DIP)
+dip_dllbase_nt_386_watcom   = op offset=0x6ee00000	# watcom.dll    (Debugger DIP)
+dip_dllbase_nt_386_codeview = op offset=0x6ed00000	# codeview.dll  (Debugger DIP)
+dip_dllbase_nt_386_export   = op offset=0x6ec00000	# export.dll    (Debugger DIP)
+dip_dllbase_nt_386_hllcv    = op offset=0x6eb00000	# hllcv.dll     (Debugger DIP)
+dip_dllbase_nt_386_mapsym   = op offset=0x6ea00000	# mapsym.dll    (Debugger DIP)
+dip_dllbase_nt_386_javavm   = op offset=0x6e900000	# javavm.dll    (Debugger DIP)
+mad_dllbase_nt_386          = op offset=0x6e800000	# madx86.dll    (Debugger MAD)
+trap_dllbase_nt_386         = op offset=0x6e700000	# all trap dlls (Debugger TRAP)
+wlib_dllbase_nt_386         = op offset=0x6a000000      # wlibd.dll     (Librarian)
+wlink_dllbase_nt_386        = op offset=0x69c00000	# wlinkd.dll    (Linker)
+wr_dllbase_nt_386           = op offset=0x69900000	# wr.dll        (Resource library)
+wrc_dllbase_nt_386          = op offset=0x69800000	# wrc.dll       (Resource compiler)
+cc_dllbase_nt_386           = op offset=0x69400000	# wccdxxxx.dll  (C compiler)
+plusplus_dllbase_nt_386     = op offset=0x69000000	# wppdxxxx.dll  (C++ compiler)
+
+trap_dllbase_rdos_386       = op offset=0xdb000000
+dip_dllbase_rdos_386_mapsym = op offset=0xda200000
+dip_dllbase_rdos_386_dwarf  = op offset=0xda100000
+dip_dllbase_rdos_386_watcom = op offset=0xda000000
+mad_dllbase_rdos_386        = op offset=0xd9000000
