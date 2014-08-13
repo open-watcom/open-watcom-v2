@@ -46,7 +46,7 @@ void    CnvD2S( double *val, char *buff ) {
 
 void    CnvX2S( extended *val, char *buff ) {
 // Convert floating point number to string.
-    sprintf( buff, CONVERSION_FMT, *val );
+    sprintf( buff, CONVERSION_LD_FMT, *val );
 }
 
 void    CnvS2S( float *val, char *buff ) {

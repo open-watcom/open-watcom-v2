@@ -44,6 +44,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern  char    *SkipBlanks( char * );
 extern  void    SrcOption( void );
@@ -225,11 +226,7 @@ static void PrintLineInfo( char *buffer )
 
 void FmtInteger( char *buff, int num, int width )
 {
-    char        nbuf[MAX_INT_SIZE];
-
-    ltoa( num, nbuf, 10 );
-    memset( buff, ' ', width );
-    strcpy( &buff[ width - strlen( nbuf ) ], nbuf );
+    sprintf( buff, "%*d", width, num );
 }
 
 void ComPrint( void )

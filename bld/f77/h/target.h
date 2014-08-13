@@ -48,6 +48,7 @@
 // to its binary representation
 #define CONVERSION_DIGITS 20
 #define CONVERSION_FMT    "%.20g"
+#define CONVERSION_LD_FMT "%.20Lg"
 
 //                         s   0   .  <CONVERSION_DIGITS> E   s  <EXP_LEN>
 //

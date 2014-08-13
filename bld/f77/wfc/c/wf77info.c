@@ -69,6 +69,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "clibext.h"
 
 
 extern  int             MakeName(char *,char *,char *);
@@ -367,13 +369,13 @@ static  void    DefineCommonSegs( void ) {
             BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
         }
         seg_count = 0;
-        cb_name[ cb_len ] = '@';
+        cb_name[cb_len] = '@';
         com_size = GetComBlkSize( sym );
         for(;;) {
             if( com_size <= MaxSegSize ) break;
             com_size -= MaxSegSize;
             seg_count++;
-            itoa( seg_count, &cb_name[ cb_len + 1 ], 10 );
+            sprintf( &cb_name[cb_len + 1], "%d", seg_count );
             if( CGOpts & CGOPT_ALIGN ) {
                 BEDefSeg( AllocSegId(), COMMON | private , cb_name, ALIGN_SEGMENT );
             } else {

@@ -43,10 +43,10 @@
 #include "inout.h"
 #include "iopath.h"
 #include "pathlist.h"
-
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 extern  char            *SkipBlanks( char * );
 extern  void            MacroDEFINE( char *,uint );
@@ -731,9 +731,7 @@ void    PrtOptions( void ) {
                 buffer[ 0 ] = ',';
                 continue;
             }
-            ltoa( number, buff, 10 );
-            buff += strlen( buff );
-            *buff = NULLCHAR;
+            buff += sprintf( buff, "%lu", (unsigned long)number );
             PrtLst( buffer );
             buffer[ 0 ] = ',';
         } else {

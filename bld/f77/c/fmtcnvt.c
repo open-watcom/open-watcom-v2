@@ -36,6 +36,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 #include <float.h>
 
@@ -237,8 +238,7 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
         *_CanonSign( &canon ) = ' ';
     }
     *_CanonDecimal( &canon ) = '.';
-    *_CanonExponent( &canon ) = 'E';
-    itoa( canon.exp, &_CanonExponent( &canon )[1], 10 );
+    sprintf( _CanonExponent( &canon ), "E%d", canon.exp );
     errno = 0;
     *result = strtod( _CanonNumber( &canon ), NULL );
     if( errno != 0 ) return( FLT_RANGE_EXCEEDED );
