@@ -656,25 +656,27 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
 {
     FullDialogBoxControl    *travptr;
 
-    if( tokentype == Y_DIALOG && dlghelp.HelpIdDefined == TRUE ) {
-        RcError( ERR_DIALOG_HELPID );
-    } else if( tokentype == Y_DIALOG_EX && dlghelp.HelpIdDefined == TRUE ) {
-        head->u.Head32.ExHead.HelpId = dlghelp.HelpId;
-    }
-    if( tokentype == Y_DIALOG ) {
-        if( head->u.Head32.ExHead.FontItalicDefined == TRUE ) {
-            RcError( ERR_FONT_ITALIC );
+    if( head->Win32 ) {
+        if( tokentype == Y_DIALOG && dlghelp.HelpIdDefined == TRUE ) {
+            RcError( ERR_DIALOG_HELPID );
+        } else if( tokentype == Y_DIALOG_EX && dlghelp.HelpIdDefined == TRUE ) {
+            head->u.Head32.ExHead.HelpId = dlghelp.HelpId;
         }
-        if( head->u.Head32.ExHead.FontWeightDefined == TRUE ) {
-            RcError( ERR_FONT_WEIGHT );
-        }
-        for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
-            if( travptr->u.ctrl32.HelpIdDefined == TRUE ) {
-                    RcError( ERR_DIALOG_CONTROL_HELPID );
+        if( tokentype == Y_DIALOG ) {
+            if( head->u.Head32.ExHead.FontItalicDefined == TRUE ) {
+                RcError( ERR_FONT_ITALIC );
             }
-            if( travptr->dataListHead != NULL ) {
-                SemFreeDataElemList( travptr->dataListHead );
-                RcError( ERR_DATA_ELEMENTS );
+            if( head->u.Head32.ExHead.FontWeightDefined == TRUE ) {
+                RcError( ERR_FONT_WEIGHT );
+            }
+            for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
+                if( travptr->u.ctrl32.HelpIdDefined == TRUE ) {
+                    RcError( ERR_DIALOG_CONTROL_HELPID );
+                }
+                if( travptr->dataListHead != NULL ) {
+                    SemFreeDataElemList( travptr->dataListHead );
+                    RcError( ERR_DATA_ELEMENTS );
+                }
             }
         }
     }
@@ -696,14 +698,14 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         head = NewDialogBoxHeader();
     }
     SemCheckDialogBox( head, tokentype, dlghelp, ctrls );
-    if( tokentype != Y_DIALOG ) {
-        for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
-            if( travptr->dataListHead != NULL ) {
-                travptr->u.ctrl32.ExtraBytes = SemCountBytes( travptr->dataListHead );
+    if( head->Win32 ) {
+        if( tokentype != Y_DIALOG ) {
+            for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
+                if( travptr->dataListHead != NULL ) {
+                    travptr->u.ctrl32.ExtraBytes = SemCountBytes( travptr->dataListHead );
+                }
             }
         }
-    }
-    if( head->Win32 ) {
         if( !head->StyleGiven ) {
             head->u.Head32.Head.Style |= (WS_POPUP | WS_BORDER | WS_SYSMENU);
         }
