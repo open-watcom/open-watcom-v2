@@ -900,9 +900,9 @@ static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
 /****************************************************************************/
 {
     FullFontDirEntry *      entry;
-    int                     structextra;
-    int                     devicelen;
-    int                     facelen;
+    size_t                  structextra;
+    size_t                  devicelen;
+    size_t                  facelen;
 
     devicelen = strlen( devicename ) + 1;
     facelen = strlen( facename ) + 1;
