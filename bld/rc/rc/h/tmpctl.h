@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-void RegisterTmpFile( char *name );
-void UnregisterTmpFile( const char *name );
-int IsTmpFile( char *name );
+extern void RegisterTmpFile( const char *name );
+extern void UnregisterTmpFile( const char *name );
+extern bool IsTmpFile( const char *name );
 extern void TmpCtlInitStatics( void );

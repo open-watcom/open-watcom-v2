@@ -44,7 +44,7 @@ typedef struct FullDialogOptions {
             uint_16         PointSize;
             char *          FontName;
             uint_16         FontWeight;
-            bool            FontItalic;
+            uint_8          FontItalic;
             uint_8          FontExtra;  /* don't know what this is but
                                          * MS rc accepts it and it appears in
                                          * some samples */

@@ -77,7 +77,7 @@ typedef struct FullMenuItem {
     struct FullMenuItem *       next;
     struct FullMenuItem *       prev;
     bool                        UseUnicode;
-    int                         IsPopup;
+    bool                        IsPopup;
     union {
         FullMenuItemPopup       popup;
         MenuItemNormalData      normal;

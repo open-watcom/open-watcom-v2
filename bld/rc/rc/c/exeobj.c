@@ -168,8 +168,8 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
     new->u.PEInfo.Objects = RCALLOC( new_obj_size );
 
     for( obj_num = 0; obj_num < new_num_objects; obj_num++ ) {
-        new->u.PEInfo.Objects[ obj_num ] = old->u.PEInfo.Objects[ obj_num ];
-        new->u.PEInfo.Objects[ obj_num ].physical_offset += delta_offset;
+        new->u.PEInfo.Objects[obj_num] = old->u.PEInfo.Objects[obj_num];
+        new->u.PEInfo.Objects[obj_num].physical_offset += delta_offset;
     }
 
     if( new_num_objects == -1 ) {

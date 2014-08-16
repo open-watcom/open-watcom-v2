@@ -44,7 +44,7 @@ typedef struct IcoFileDirEntry {
 typedef struct FullIconDirEntry {
     struct FullIconDirEntry *   Next;
     struct FullIconDirEntry *   Prev;
-    uint_8                      IsIcoFileEntry;
+    bool                        IsIcoFileEntry;
     union {
         IcoFileDirEntry         Ico;
         IconDirEntry            Res;
@@ -73,7 +73,7 @@ typedef struct CurFileDirEntry {
 typedef struct FullCurDirEntry {
     struct FullCurDirEntry *    Next;
     struct FullCurDirEntry *    Prev;
-    uint_8                      IsCurFileEntry;
+    bool                        IsCurFileEntry;
     union {
         CurFileDirEntry         Cur;        /* cursor file */
         CurDirEntry             Res;        /* resource file (and .EXE) */

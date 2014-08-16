@@ -99,7 +99,7 @@ extern RcStatus AllocAndReadWINSegTables( int *err_code )
         return( ret );
 
     ret = readSegTable( oldhandle, head_offset + head->segment_off, oldseg );
-    if( ret != RS_OK ){
+    if( ret != RS_OK ) {
         *err_code = errno;
         return( ret );
     }
@@ -172,10 +172,10 @@ extern uint_32 ComputeSegmentSize( WResFileID handle, SegTable * segs, int shift
     uint_16             num_relocs;
 
     length = 0;
-    for (currseg = segs->Segments, afterlast = segs->Segments + segs->NumSegs;
-            currseg < afterlast; currseg++) {
+    for( currseg = segs->Segments, afterlast = segs->Segments + segs->NumSegs;
+            currseg < afterlast; currseg++ ) {
         length += currseg->size;
-        if (currseg->info & SEG_RELOC) {
+        if( currseg->info & SEG_RELOC ) {
             if( RCSEEK( handle, (((long)currseg->address) << (long)shift_count) + currseg->size, SEEK_SET ) == -1 )
                 return( 0 );
             numread = RCREAD( handle, &num_relocs, sizeof(uint_16) );
@@ -223,21 +223,21 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
     long            out_offset;
     long            align_amount;
     uint_32         seg_len = 0L;
-    char            dum;
+    char            zero;
 
-    dum = 0;
+    zero = 0;
     error = false;
     ret = CPSEG_OK;
 
     /* check if this is a segment that has no image in the exe file */
-    if (inseg->address != 0) {
+    if( inseg->address != 0 ) {
         /* align in the out file so that shift_count will be valid */
         out_offset = RCTELL( outexe->Handle );
         if( out_offset == -1 ) {
             error = true;
             RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
         }
-        if (!error) {
+        if( !error ) {
             align_amount = AlignAmount( out_offset, new_shift_count );
             if( RCSEEK( outexe->Handle, align_amount, SEEK_CUR ) == -1 ) {
                 error = true;
@@ -247,7 +247,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
         }
 
         /* move in the in file to the start of the segment */
-        if (!error) {
+        if( !error ) {
             /* convert the address to a long before shifting it */
             if( RCSEEK( inexe->Handle, (long)inseg->address << old_shift_count, SEEK_SET ) == -1 ) {
                 error = true;
@@ -255,8 +255,8 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
             }
         }
 
-        if (!error) {
-            if (inseg->size == 0) {
+        if( !error ) {
+            if( inseg->size == 0 ) {
                 seg_len = 0x10000L;
             } else {
                 seg_len = inseg->size;
@@ -264,7 +264,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
             error = myCopyExeData( inexe, outexe, seg_len );
         }
 
-        if (inseg->info & SEG_RELOC && !error) {
+        if( (inseg->info & SEG_RELOC) && !error ) {
             /* read the number of relocation items */
             numread = RCREAD( inexe->Handle, &numrelocs, sizeof(uint_16) );
             if( numread != sizeof( uint_16 ) ) {
@@ -281,19 +281,18 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
                 }
             }
             /* copy the relocation information */
-            if (!error) {
+            if( !error ) {
                 error = myCopyExeData( inexe, outexe, numrelocs * OS_RELOC_ITEM_SIZE );
             }
-            if (numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L) {
+            if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
                 ret = CPSEG_SEG_TOO_BIG;
             }
         }
 
-        if (pad_end && ret != CPSEG_SEG_TOO_BIG && !error) {
-            align_amount = AlignAmount( RCTELL( outexe->Handle ),
-                                        new_shift_count );
+        if( pad_end && ret != CPSEG_SEG_TOO_BIG && !error ) {
+            align_amount = AlignAmount( RCTELL( outexe->Handle ), new_shift_count );
             /* make sure there is room for the memory arena header */
-            if (align_amount < 16) {
+            if( align_amount < 16 ) {
                 align_amount += 16;
             }
             if( RCSEEK( outexe->Handle, align_amount - 1, SEEK_CUR ) == -1 ) {
@@ -303,7 +302,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
                 /* write something out so if we have just seeked past the
                  * end of the file the file's size will be adjusted
                  * appropriately */
-                if( RCWRITE( outexe->Handle, &dum, 1 ) != 1 ) {
+                if( RCWRITE( outexe->Handle, &zero, 1 ) != 1 ) {
                     error = true;
                     RcError( ERR_WRITTING_FILE, outexe->name );
                 }
@@ -314,14 +313,14 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
     }
 
     /* copy the segment record to outseg */
-    if (!error) {
+    if( !error ) {
         outseg->size = inseg->size;
         outseg->info = inseg->info;
         outseg->min = inseg->min;
         outseg->address = out_offset >> new_shift_count;
     }
 
-    if (error) {
+    if( error ) {
         ret = CPSEG_ERROR;
     }
 
@@ -369,8 +368,8 @@ extern CpSegRc CopyWINSegments( uint_16 sect2mask, uint_16 sect2bits, bool sect2
             cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
                                         tmp_exe_info, old_shift_count,
                                         new_shift_count, padend );
-            if (cponeret == CPSEG_SEG_TOO_BIG) {
-                padend = FALSE;
+            if( cponeret == CPSEG_SEG_TOO_BIG ) {
+                padend = false;
                 ret = CPSEG_SEG_TOO_BIG;
             }
             CheckDebugOffset( &(Pass2Info.OldFile) );
@@ -431,7 +430,7 @@ extern CpSegRc CopyOS2Segments( void )
     for( currseg = 0; currseg < num_segs; ++currseg ) {
         cponeret = copyOneSegment( oldseg, tmpseg, old_exe_info,
                                     tmp_exe_info, old_shift_count,
-                                    new_shift_count, FALSE );
+                                    new_shift_count, false );
         if( cponeret == CPSEG_SEG_TOO_BIG ) {
             ret = CPSEG_SEG_TOO_BIG;
         }

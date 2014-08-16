@@ -42,9 +42,9 @@
 
 #define BUFFER_SIZE     1024
 
-static int copyAResource( WResFileID handle, WResDirWindow *wind,
+static bool copyAResource( WResFileID handle, WResDirWindow *wind,
                             char *buffer, const char *filename )
-/***********************************************************************/
+/****************************************************************/
 {
     ResLocation         loc;
     WResLangInfo        *langinfo;
@@ -60,11 +60,11 @@ static int copyAResource( WResFileID handle, WResDirWindow *wind,
     /* rc = */ CopyData( langinfo->Offset, langinfo->Length, handle, buffer, BUFFER_SIZE, &err_code );
     loc.len = SemEndResource( loc.start );
     SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->MemoryFlags, loc, filename );
-    return( FALSE );
+    return( false );
 }
 
-static int copyResourcesFromRes( const char *full_filename )
-/**********************************************************/
+static bool copyResourcesFromRes( const char *full_filename )
+/***********************************************************/
 {
     WResFileID          handle;
     WResDir             dir;
@@ -76,7 +76,7 @@ static int copyResourcesFromRes( const char *full_filename )
     buffer = NULL;
     dir = WResInitDir();
     handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
-    if (handle == NIL_HANDLE) {
+    if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
@@ -110,7 +110,7 @@ static int copyResourcesFromRes( const char *full_filename )
     RCFREE( buffer );
     WResFreeDir( dir );
     RCCLOSE( handle );
-    return( FALSE );
+    return( false );
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
@@ -119,20 +119,22 @@ HANDLE_ERROR:
         RCCLOSE( handle );
     if( buffer != NULL )
         RCFREE( buffer );
-    return( TRUE );
+    return( true );
 }
 
 void SemWINAddResFile( char *filename )
 /*************************************/
 {
-    char                full_filename[ _MAX_PATH ];
+    char                full_filename[_MAX_PATH];
 
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }
-    if( AddDependency( full_filename ) ) goto HANDLE_ERROR;
-    if( copyResourcesFromRes( full_filename ) ) goto HANDLE_ERROR;
+    if( AddDependency( full_filename ) )
+        goto HANDLE_ERROR;
+    if( copyResourcesFromRes( full_filename ) )
+        goto HANDLE_ERROR;
     RCFREE( filename );
     return;
 

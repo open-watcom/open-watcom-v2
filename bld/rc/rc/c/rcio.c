@@ -59,12 +59,12 @@
 static void MakeTmpInSameDir( const char * dirfile, char * outfile, char * ext )
 /******************************************************************************/
 {
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
+    char    drive[_MAX_DRIVE];
+    char    dir[_MAX_DIR];
 #ifdef __DOS__
     char    *fname = "__TMP__";
 #else
-    char    fname[ 32 ];
+    char    fname[32];
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
@@ -106,7 +106,7 @@ static bool Pass1InitRes( void )
 
     /* open the temporary file */
     if( CmdLineParms.MSResFormat ) {
-        CurrResFile.IsWatcomRes = FALSE;
+        CurrResFile.IsWatcomRes = false;
         CurrResFile.handle = MResOpenNewFile( CurrResFile.filename );
 
     /* write null header here if it is win32 */
@@ -114,13 +114,13 @@ static bool Pass1InitRes( void )
                                      CmdLineParms.MSResFormat ) {
             null_loc.start = SemStartResource();
             null_loc.len = SemEndResource( null_loc.start );
-            null_id.IsName = FALSE;
+            null_id.IsName = false;
             null_id.ID.Num = 0;
             null_memflags = 0;
             SemAddResource( &null_id, &null_id, null_memflags, null_loc );
         }
     } else {
-        CurrResFile.IsWatcomRes = TRUE;
+        CurrResFile.IsWatcomRes = true;
         CurrResFile.handle = WResOpenNewFile( CurrResFile.filename );
     }
     if( CurrResFile.handle == NIL_HANDLE ) {
@@ -197,11 +197,8 @@ static bool PreprocessInputFile( void )
     cppargs = CmdLineParms.CPPArgs;
     if( cppargs != NULL ) {
         ++cppargs;
-        for(;;) {
-            p = *cppargs;
-            if( p == NULL ) break;
-            for(;;) {
-                if( *p == '\0' ) break;
+        while( (p = *cppargs) != NULL ) {
+            while( *p != '\0' ) {
                 if( *p == '=' ) {
                     *p = ' ';
                     break;
@@ -355,7 +352,7 @@ static void Pass1ResFileShutdown( void )
             CurrResFile.IsOpen = false;
             RemoveCurrResFile();
         } else {
-            if (CurrResFile.IsWatcomRes) {
+            if( CurrResFile.IsWatcomRes ) {
                 error = WResWriteDir( CurrResFile.handle, CurrResFile.dir );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
@@ -393,12 +390,12 @@ static bool OpenResFileInfo( ExeType type )
     ExtraRes        *curfile;
 
 
-    if( (type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2)
+    if( ( type == EXE_TYPE_NE_WIN || type == EXE_TYPE_NE_OS2 )
         && CmdLineParms.ExtraResFiles != NULL ) {
         RcError( ERR_FR_NOT_VALID_FOR_WIN );
         return( false );
     }
-    Pass2Info.AllResFilesOpen = TRUE;
+    Pass2Info.AllResFilesOpen = true;
     if( CmdLineParms.NoResFile ) {
         Pass2Info.ResFiles = RCALLOC( sizeof( ResFileInfo ) );
         Pass2Info.ResFiles->name = NULL;
@@ -438,7 +435,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
-    info->IsOpen = TRUE;
+    info->IsOpen = true;
     info->Type = FindNEPELXHeader( info->Handle, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
@@ -499,7 +496,7 @@ static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
         return( false );
     }
     RegisterTmpFile( filename );
-    info->IsOpen = TRUE;
+    info->IsOpen = true;
     info->DebugOffset = 0;
     info->name = filename;
 
@@ -558,7 +555,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 
     if( old->IsOpen ) {
         RCCLOSE( old->Handle );
-        old->IsOpen = FALSE;
+        old->IsOpen = false;
     }
     switch( old->Type ) {
     case EXE_TYPE_NE_WIN:
@@ -577,7 +574,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 
     if( tmp->IsOpen ) {
         RCCLOSE( tmp->Handle );
-        tmp->IsOpen = FALSE;
+        tmp->IsOpen = false;
     }
     switch( tmp->Type ) {
     case EXE_TYPE_NE_WIN:
@@ -618,10 +615,10 @@ extern bool RcPass2IoInit( void )
             Pass2Info.TmpFile.u.PEInfo.WinHead = &Pass2Info.TmpFile.u.PEInfo.WinHeadData;
             *Pass2Info.TmpFile.u.PEInfo.WinHead = *Pass2Info.OldFile.u.PEInfo.WinHead;
         }
-        if( (Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2)
+        if( ( Pass2Info.OldFile.Type == EXE_TYPE_NE_WIN || Pass2Info.OldFile.Type == EXE_TYPE_NE_OS2 )
             && CmdLineParms.ExtraResFiles != NULL ) {
             RcError( ERR_FR_NOT_VALID_FOR_WIN );
-            noerror = FALSE;
+            noerror = false;
         } else {
             noerror = OpenResFileInfo( Pass2Info.OldFile.Type );
         }
@@ -666,7 +663,7 @@ extern void RcPass2IoShutdown( bool noerror )
 #define MAX_INCLUDE_DEPTH   16
 
 typedef struct PhysFileInfo {
-    char        Filename[ _MAX_PATH ];
+    char        Filename[_MAX_PATH];
     bool        IsOpen;
     WResFileID  Handle;
     long        Offset;     /* offset in file to read from next time if this */
@@ -684,7 +681,7 @@ typedef struct FileStack {
     unsigned char       *NextChar;
     unsigned char       *EofChar;       /* DON'T dereference, see below */
     /* + 1 for the before first entry */
-    FileStackEntry      Stack[ MAX_INCLUDE_DEPTH + 1 ];
+    FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
     FileStackEntry      *Current;
 } FileStack;
 /* EofChar points to the memory location after the last character currently */
@@ -748,7 +745,7 @@ static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
 /*************************************************************************/
 {
     strncpy( phys->Filename, filename, _MAX_PATH );
-    phys->IsOpen = FALSE;
+    phys->IsOpen = false;
     phys->Offset = 0;
 
     return( OpenPhysicalFile( phys ) );
@@ -806,7 +803,7 @@ extern bool RcIoPushInputFile( const char * filename )
 
     if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
         RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
-        return( TRUE );
+        return( true );
     }
 
     SetPhysFileOffset( &(InStack) );
@@ -832,7 +829,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 {
     if( phys->IsOpen ) {
         RCCLOSE( phys->Handle );
-        phys->IsOpen = FALSE;
+        phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
 
@@ -933,14 +930,13 @@ extern void RcIoSetIsCOrHFlag( void )
 /***********************************/
 {
     LogicalFileInfo *   log;
-    char                ext[ _MAX_EXT ];
+    char                ext[_MAX_EXT];
 
     if( !IsEmptyFileStack( InStack ) ) {
         log = &(InStack.Current->Logical);
         _splitpath( log->Filename, NULL, NULL, NULL, ext );
         /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-        if( (ext[1] == 'c' || ext[1] == 'h' || ext[1] == 'C'
-            || ext[1] == 'H' ) && ext[2] == '\0' ) {
+        if( ( ext[1] == 'c' || ext[1] == 'h' || ext[1] == 'C' || ext[1] == 'H' ) && ext[2] == '\0' ) {
             /* if the logical file is a c or h file */
             log->IsCOrHFile = true;
         } else {

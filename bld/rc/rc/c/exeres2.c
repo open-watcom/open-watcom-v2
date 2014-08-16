@@ -63,8 +63,7 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
     entry = res_tbl->resources;
 
     /* Walk through the WRes directory */
-    wind = WResFirstResource( dir );
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         lang = WResGetLangInfo( wind );
         res_type = WResGetTypeInfo( wind );
         resinfo  = WResGetResInfo( wind );
@@ -85,29 +84,24 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
         else
             id = resinfo->ResName.ID.Num;
 
-        length = lang->Length;
-
         /* Fill in resource entries */
         entry->res_type   = type;
         entry->res_id     = id;
         entry->wind       = wind;
         entry->mem_flags  = lang->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
-        entry->first_part = TRUE;
+        entry->first_part = true;
 
-        while( length > 0x10000 ) {
-            length -= 0x10000;
+        for( length = lang->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
             entry->res_type   = type;
             entry->res_id     = id;
             entry->wind       = wind;
             entry->mem_flags  = lang->MemoryFlags;
             entry->seg_length = 0;
-            entry->first_part = FALSE;
+            entry->first_part = false;
         }
         entry->seg_length = lang->Length % 0x10000;
-
-        wind = WResNextResource( wind, dir );
         entry++;
     }
 }
@@ -175,21 +169,17 @@ extern uint_32 ComputeOS2ResSegCount( WResDir dir )
     uint_32         num_res_segs;
 
     num_res_segs = 0;
-    wind = WResFirstResource( dir );
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         res = WResGetLangInfo( wind );
         res_type = WResGetTypeInfo( wind );
 
         // RT_DEFAULTICON is not written into the executable, ignore
         if( res_type->TypeName.ID.Num != OS2_RT_DEFAULTICON ) {
             ++num_res_segs;
-            length = res->Length;
-            while( length > 0x10000 ) {
-                length -= 0x10000;
+            for( length = res->Length; length > 0x10000; length -= 0x10000 ) {
                 ++num_res_segs;
             }
         }
-        wind = WResNextResource( wind, dir );
     }
     return( num_res_segs );
 } /* ComputeOS2ResSegCount */

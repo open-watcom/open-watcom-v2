@@ -37,7 +37,7 @@
 
 /**** Semantic structures ****/
 typedef struct FullAccelEntry {
-    uint_8              Win32;
+    bool                Win32;
     union {
         AccelTableEntry     entry;
         AccelTableEntry32   entry32;
@@ -47,7 +47,7 @@ typedef struct FullAccelEntry {
 
 typedef struct FullAccelFlags {
     AccelFlags          flags;
-    uint_8              typegiven;
+    bool                typegiven;
 } FullAccelFlags;
 
 typedef struct AccelEvent {
@@ -57,7 +57,7 @@ typedef struct AccelEvent {
 
 typedef struct FullAccelFlagsOS2 {
     uint_16             flags;
-    uint_8              typegiven;
+    bool                typegiven;
 } FullAccelFlagsOS2;
 
 typedef struct FullAccelEntryOS2 {

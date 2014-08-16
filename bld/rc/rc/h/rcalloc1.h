@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#define BIGLIST_ID         0x3F  /* Some sentinel < 0xFF */
-
 extern void RCMemLayer1Init( void );
 extern void *RCMemLayer1Malloc( size_t size );
 extern void RCMemLayer1Free( void *mem );

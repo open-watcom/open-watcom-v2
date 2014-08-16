@@ -564,7 +564,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
 #if 0
             //DRW - this code truncates trailing null chars in resources
             //          like user data.  It is commented until I fix it.
-            if( CmdLineParms.FindAndReplace == TRUE ) {
+            if( CmdLineParms.FindAndReplace ) {
                 char            *temp;
                 temp = FindAndReplace( stringFromFile,
                                        CmdLineParms.FindReplaceStrings );
@@ -573,7 +573,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 // once and the string might have been changed by find and
                 // replace, this is needed here
                 prependToString( value, temp );
-            } else if( CmdLineParms.Prepend == TRUE ) {
+            } else if( CmdLineParms.Prepend ) {
                 prependToString( value, stringFromFile );
             }
 #endif

@@ -87,7 +87,7 @@ void *RcMemMalloc( size_t size )
     ptr = RCMemLayer1Malloc( size );
 #endif
 
-    if (ptr == NULL) {
+    if( ptr == NULL ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
     }
 
@@ -115,7 +115,7 @@ void * RcMemRealloc( void * old_ptr, size_t newsize )
     ptr = RCMemLayer1Realloc( old_ptr, newsize );
 #endif
 
-    if (ptr == NULL && newsize != 0) {
+    if( ptr == NULL && newsize != 0 ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
     }
 
@@ -126,7 +126,7 @@ void * RcMemRealloc( void * old_ptr, size_t newsize )
 void RcPrintUsage( void )
 /***********************/
 {
-    if (RcMemHandle != NULL) {
+    if( RcMemHandle != NULL ) {
         _trmem_prt_usage( RcMemHandle );
     }
 }
@@ -134,7 +134,7 @@ void RcPrintUsage( void )
 void RcPrintList( void )
 /**********************/
 {
-    if (RcMemHandle != NULL) {
+    if( RcMemHandle != NULL ) {
         _trmem_prt_list( RcMemHandle );
     }
 }
@@ -142,7 +142,7 @@ void RcPrintList( void )
 int RcMemValidate( void * ptr )
 /*****************************/
 {
-    if (RcMemHandle != NULL) {
+    if( RcMemHandle != NULL ) {
         return( _trmem_validate( ptr, _trmem_guess_who(), RcMemHandle ) );
     } else {
         return( false );
@@ -152,7 +152,7 @@ int RcMemValidate( void * ptr )
 int RcMemChkRange( void * start, size_t len )
 /*******************************************/
 {
-    if (RcMemHandle != NULL) {
+    if( RcMemHandle != NULL ) {
         return( _trmem_chk_range( start, len,
                         _trmem_guess_who(), RcMemHandle ) );
     } else {

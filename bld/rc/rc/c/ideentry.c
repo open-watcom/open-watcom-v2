@@ -72,7 +72,7 @@ static IDEMsgSeverity SeverityMap[] = {
     IDEMSGSEV_ERROR         // SEV_FATAL_ERR
 };
 
-static char     formatBuffer[ PRINTF_BUF_SIZE ];
+static char     formatBuffer[PRINTF_BUF_SIZE];
 static char     *curBufPos;
 
 static void flushPrintf( void ) {
@@ -125,7 +125,7 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
 
     fp = fp;
     va_start( args, format );
-    err = vsnprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer), format, args );
+    err = vsnprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer ), format, args );
     va_end( args );
     start = formatBuffer;
     end = curBufPos;
@@ -151,8 +151,8 @@ char *RcGetEnv( const char *name )
 {
     char        *val;
 
-    if( ideCb != NULL && initInfo->ignore_env == FALSE  ) {
-        if( ideCb->GetInfo( cbHandle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) == FALSE ) {
+    if( ideCb != NULL && !initInfo->ignore_env ) {
+        if( !ideCb->GetInfo( cbHandle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
     }
@@ -185,7 +185,7 @@ static void RcIoPrintBanner( void )
 static void RcIoPrintHelp( void )
 /*******************************/
 {
-    char        progfname[ _MAX_FNAME ];
+    char        progfname[_MAX_FNAME];
     int         index;
     char        buf[256];
     OutPutInfo  errinfo;
@@ -217,8 +217,8 @@ static int RCMainLine( const char *opts, int argc, char **argv )
 {
     char        *cmdbuf = NULL;
     const char  *str;
-    char        infile[ _MAX_PATH + 2 ];  // +2 for quotes
-    char        outfile[ _MAX_PATH + 6 ]; // +6 for -fo="" or -fe=""
+    char        infile[_MAX_PATH + 2];  // +2 for quotes
+    char        outfile[_MAX_PATH + 6]; // +6 for -fo="" or -fe=""
     bool        pass1;
     int         i;
     int         rc;
@@ -235,10 +235,10 @@ static int RCMainLine( const char *opts, int argc, char **argv )
             argv = RcMemMalloc( ( argc + 4 ) * sizeof( char * ) );
             cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
             ParseEnvVar( str, argv, cmdbuf );
-            pass1 = FALSE;
+            pass1 = false;
             for( i = 0; i < argc; i++ ) {
                 if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
-                    pass1 = TRUE;
+                    pass1 = true;
                     break;
                 }
             }
@@ -263,10 +263,10 @@ static int RCMainLine( const char *opts, int argc, char **argv )
         if( !ScanParams( argc, argv ) ) {
             rc = 1;
         }
-        if (!CmdLineParms.Quiet) {
+        if( !CmdLineParms.Quiet ) {
             RcIoPrintBanner();
         }
-        if (CmdLineParms.PrintHelp) {
+        if( CmdLineParms.PrintHelp ) {
             RcIoPrintHelp();
         }
         if( rc == 0 ) {
@@ -297,9 +297,9 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
     *info = 0;
     initInfo = NULL;
     // init wrc
-    IgnoreINCLUDE = FALSE;
-    IgnoreCWD = FALSE;
-    return( FALSE );
+    IgnoreINCLUDE = false;
+    IgnoreCWD = false;
+    return( false );
 }
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
@@ -307,33 +307,33 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     if( info == NULL || info->ver < 2 ) {
-        return( TRUE );
+        return( true );
     }
     if( info->ignore_env ) {
-        IgnoreINCLUDE = TRUE;
-        IgnoreCWD = TRUE;
+        IgnoreINCLUDE = true;
+        IgnoreCWD = true;
     }
     if( info->cmd_line_has_files ) {
-//        CompFlags.ide_cmd_line = TRUE;
+//        CompFlags.ide_cmd_line = true;
     }
     if( info->ver >= 3 ) {
         if( info->console_output ) {
-//            CompFlags.ide_console_output = TRUE;
+//            CompFlags.ide_console_output = true;
         }
         if( info->ver >= 4 ) {
             if( info->progress_messages ) {
-//                CompFlags.progress_messages = TRUE;
+//                CompFlags.progress_messages = true;
             }
         }
     }
     initInfo = info;
-    return( FALSE );
+    return( false );
 }
 
 void IDEAPI IDEStopRunning( void )
 /********************************/
 {
-    StopInvoked = TRUE;
+    StopInvoked = true;
 }
 
 IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
@@ -342,12 +342,12 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
     int         rc;
 
     hdl = hdl;
-    StopInvoked = FALSE;
+    StopInvoked = false;
     if( fatalerr != NULL )
-        *fatalerr = FALSE;
+        *fatalerr = false;
     rc = RCMainLine( opts, 0, NULL );
     if( rc == -1 && fatalerr != NULL )
-        *fatalerr = TRUE;
+        *fatalerr = true;
     return( rc != 0 );
 }
 
@@ -361,12 +361,12 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
     _argv = argv;
 #endif
     hdl = hdl;
-    StopInvoked = FALSE;
+    StopInvoked = false;
     if( fatalerr != NULL )
-        *fatalerr = FALSE;
+        *fatalerr = false;
     rc = RCMainLine( NULL, argc, argv );
     if( rc == -1 && fatalerr != NULL )
-        *fatalerr = TRUE;
+        *fatalerr = true;
     return( rc != 0 );
 }
 

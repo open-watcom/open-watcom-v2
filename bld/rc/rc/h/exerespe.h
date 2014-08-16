@@ -51,7 +51,7 @@ typedef struct PEResDataEntry {
 typedef struct PEResEntry {
     resource_dir_entry  Entry;
     void *              Name;
-    char                IsDirEntry;
+    bool                IsDirEntry;
     union {
         PEResDataEntry  Data;
         PEResDirEntry   Dir;
@@ -70,10 +70,10 @@ typedef struct PEResDir {
 struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
-bool BuildPEResourceObject( struct ExeFileInfo *exeinfo,
+extern bool BuildPEResourceObject( struct ExeFileInfo *exeinfo,
                          struct ResFileInfo *resinfo,
                          pe_object *res_obj, unsigned_32 rva,
-                         unsigned_32 offset, int writebyfile );
-bool RcBuildPEResourceObject( void );
+                         unsigned_32 offset, bool writebyfile );
+extern bool RcBuildPEResourceObject( void );
 
 #endif

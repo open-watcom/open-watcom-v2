@@ -571,7 +571,7 @@ user-defined-data
     : file-name
         { $$ = SemCopyRawFile( $1.string ); RcMemFree( $1.string ); }
     | raw-data-section
-        { $$ = SemFlushDataElemList( $1, TRUE ); }
+        { $$ = SemFlushDataElemList( $1, true ); }
     ;
 
 raw-data-section
@@ -655,7 +655,7 @@ rc-data-section
 
 rc-data
     : rc-data-section
-        { $$ = SemFlushDataElemList( $1, TRUE ); }
+        { $$ = SemFlushDataElemList( $1, true ); }
     ;
 
 rcdata-resource
@@ -862,13 +862,13 @@ acc-event
     : string-constant
         {
             $$.event = SemOS2StrToAccelEvent( $1.string );
-            $$.strevent = TRUE;
+            $$.strevent = true;
             RcMemFree( $1.string );
         }
     | constant-expression
         {
             $$.event = $1.Value;
-            $$.strevent = FALSE;
+            $$.strevent = false;
         }
     ;
 
@@ -892,23 +892,23 @@ acc-item-options
 
 acc-item-option
     : Y_ALT
-        { $$.flags = OS2_ACCEL_ALT;  $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_ALT;  $$.typegiven = false; }
     | Y_CHAR
-        { $$.flags = OS2_ACCEL_CHAR; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_CHAR; $$.typegiven = false; }
     | Y_CONTROL
-        { $$.flags = OS2_ACCEL_CTRL; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_CTRL; $$.typegiven = false; }
     | Y_HELP
-        { $$.flags = OS2_ACCEL_HELP; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_HELP; $$.typegiven = false; }
     | Y_LONEKEY
-        { $$.flags = OS2_ACCEL_LONEKEY; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_LONEKEY; $$.typegiven = false; }
     | Y_SCANCODE
-        { $$.flags = OS2_ACCEL_SCANCODE; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_SCANCODE; $$.typegiven = false; }
     | Y_SHIFT
-        { $$.flags = OS2_ACCEL_SHIFT; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_SHIFT; $$.typegiven = false; }
     | Y_SYSCOMMAND
-        { $$.flags = OS2_ACCEL_SYSCOMMAND; $$.typegiven = FALSE; }
+        { $$.flags = OS2_ACCEL_SYSCOMMAND; $$.typegiven = false; }
     | Y_VIRTUALKEY
-        { $$.flags = OS2_ACCEL_VIRTUALKEY; $$.typegiven = TRUE; }
+        { $$.flags = OS2_ACCEL_VIRTUALKEY; $$.typegiven = true; }
     ;
 
 menu-resource

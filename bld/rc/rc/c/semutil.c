@@ -45,8 +45,7 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
         RcError( ERR_UNEXPECTED_EOF, filename );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                 strerror( err_code ) );
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
@@ -71,7 +70,7 @@ RcStatus CopyData( uint_32 offset, uint_32 length, WResFileID handle,
 
     while( length > buffsize ) {
         numread = RCREAD( handle, buff, buffsize );
-        if (numread != buffsize) {
+        if( numread != buffsize ) {
             *err_code = errno;
             return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }

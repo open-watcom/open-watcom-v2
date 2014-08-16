@@ -125,13 +125,11 @@ static void writeDepListEOF( void )
 static void freeDepList( void )
 {
     DepNode     *cur;
-    DepNode     *todel;
+    DepNode     *next;
 
-    cur = depList;
-    while( cur != NULL ) {
-        todel = cur;
-        cur = cur->next;
-        RCFREE( todel );
+    for( cur = depList; cur != NULL; cur = next ) {
+        next = cur->next;
+        RCFREE( cur );
     }
 }
 
@@ -144,16 +142,14 @@ bool WriteDependencyRes( void )
     struct stat         file_info;
 
     if( CmdLineParms.GenAutoDep ) {
-        cur = depList;
         loc.start = SemStartResource();
-        while( cur != NULL ) {
+        for( cur = depList; cur != NULL; cur = cur->next ) {
             if( stat( cur->info.name, &file_info ) == -1 ) {
                 RcError( ERR_READING_FILE, cur->info.name, strerror( errno ) );
                 ErrorHasOccured = true;
             }
             cur->info.time = file_info.st_mtime;
             writeOneNode( &cur->info );
-            cur = cur->next;
         }
         writeDepListEOF();
         loc.len = SemEndResource( loc.start );

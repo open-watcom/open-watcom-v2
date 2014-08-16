@@ -31,18 +31,18 @@
 
 
 typedef struct FreeListInfo {
-    char       *next;
+    char            *next;
 } FreeListInfo;
 
 typedef struct HeapList {
-    struct HeapList    *next;
+    struct HeapList *next;
 } HeapList;
 
 typedef struct HeapHandle {
-    HeapList             *list;
-    int                   heapsize;
-    int                   blocksize;
-    char                 *freeList;
+    HeapList        *list;
+    size_t          heapsize;
+    size_t          blocksize;
+    char            *freeList;
 } HeapHandle;
 
 #ifdef RCMEM_DEBUG
@@ -50,17 +50,17 @@ typedef struct HeapHandle {
 #define RCMEM_ENDBYTE        0xA1
 #define RCMEM_GARBAGEBYTE    0xE2
 typedef struct DebugMemInfo {
-    unsigned long       size;
-    unsigned char       startbyte;
+    size_t          size;
+    unsigned char   startbyte;
 } DebugMemInfo;
 #endif
 
-extern void RCMemLayer0Free( void *mem, HeapHandle *heap );
-extern HeapHandle *RCMemLayer0NewHeap( int heapsize, int blocks_per_heap );
-extern void RCMemLayer0ShutDown( HeapHandle *heap );
+extern void         RCMemLayer0Free( void *mem, HeapHandle *heap );
+extern HeapHandle   *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap );
+extern void         RCMemLayer0ShutDown( HeapHandle *heap );
 
 #ifdef RCMEM_DEBUG
-extern void *RCMemLayer0Malloc( HeapHandle *heap, size_t size );
+extern void         *RCMemLayer0Malloc( HeapHandle *heap, size_t size );
 #else
-extern void *RCMemLayer0Malloc( HeapHandle *heap );
+extern void         *RCMemLayer0Malloc( HeapHandle *heap );
 #endif

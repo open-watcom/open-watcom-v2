@@ -38,7 +38,7 @@
 typedef struct ToolBarItems {
     struct ToolBarItems         *next;
     unsigned                    cnt;
-    uint_16                     items[ TB_ITEM_CNT ];
+    uint_16                     items[TB_ITEM_CNT];
 }ToolBarItems;
 
 typedef struct ToolBar {

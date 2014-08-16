@@ -66,7 +66,7 @@ static int SortAndRemoveRedundantStrings( void ** strlist, unsigned int num,
 /***************************************************************************/
 /* strlist is an array of char *'s of size num */
 {
-    qsort( (void *)strlist, (size_t)num, sizeof(void *), compare );
+    qsort( (void *)strlist, (size_t)num, sizeof( void * ), compare );
     return( RemoveRedundantStrings( strlist, num, compare ) );
 } /* SortAndRemoveRedundantStrings */
 
@@ -82,11 +82,12 @@ static int InitStringList( WResDir dir, void ** list, int len )
     wind = WResFirstResource( dir );
     element = list;
 
-    while (!WResIsEmptyWindow( wind )) {
-        if (WResIsFirstResOfType( wind )) {
+    while( !WResIsEmptyWindow( wind ) ) {
+        if( WResIsFirstResOfType( wind ) ) {
             type = WResGetTypeInfo( wind );
-            if (type->TypeName.IsName) {
-                if (len <= 0) return( 0 );      /* should never occur */
+            if( type->TypeName.IsName ) {
+                if( len <= 0 )
+                    return( 0 );      /* should never occur */
                 *element = &(type->TypeName.ID.Name);
                 element++;
                 len--;
@@ -94,8 +95,9 @@ static int InitStringList( WResDir dir, void ** list, int len )
         }
         if( WResIsFirstLangOfRes( wind ) ) {
             res = WResGetResInfo( wind );
-            if (res->ResName.IsName) {
-                if (len <= 0) return( 0 );      /* should never occur */
+            if( res->ResName.IsName ) {
+                if( len <= 0 )
+                    return( 0 );      /* should never occur */
                 *element = &(res->ResName.ID.Name);
                 element++;
                 len--;
@@ -113,7 +115,7 @@ static void * MemUprCpy( void * dst, const void * src, size_t length )
     char *          c_dst;
     const char *    c_src;
 
-    for (c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length--) {
+    for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
         *c_dst = toupper( *c_src );
     }
 
@@ -126,7 +128,7 @@ static void * MemUprCpyUni( void * dst, const void * src, size_t length )
     uint_16 *       c_dst;
     const char *    c_src;
 
-    for (c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length--) {
+    for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
         *c_dst = toupper( *c_src );
     }
 
@@ -170,10 +172,10 @@ static void ConstructStringBlock( StringsBlock * str )
 
     /* calculate the size of the block needed */
     str->StringBlockSize = 0;
-#if(0) //may 24 1996 DRW
-    for (currname = str->StringList;
+#if( 0 ) //may 24 1996 DRW
+    for( currname = str->StringList;
                 currname < str->StringList + str->StringListLen;
-                currname++) {
+                currname++ ) {
         if( str->UseUnicode ) {
             str->StringBlockSize += sizeof( StringItem32 )
                                     + 2 * ((**currname).NumChars - 1);
@@ -201,9 +203,9 @@ static void ConstructStringBlock( StringsBlock * str )
 
     /* copy the strings into the block */
     nextstring = str->StringBlock;
-#if(0) //may 24 1996 DRW
-    for (currname = str->StringList; currname < str->StringList
-                + str->StringListLen; currname++) {
+#if( 0 ) //may 24 1996 DRW
+    for( currname = str->StringList; currname < str->StringList
+                + str->StringListLen; currname++ ) {
         CopyString( &nextstring, currname, str->UseUnicode );
     }
 #else
@@ -228,14 +230,14 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
     int     list_len;
     void ** new_list;
 
-    if (WResIsEmpty( dir )) {
+    if( WResIsEmpty( dir ) ) {
         /* Empty directories are allowed since windows exe's may contain */
         /* no resources */
     } else {
         /* set the initial list_len to be the max possible */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RCALLOC( list_len * sizeof(void *) );
+        str->StringList = RCALLOC( list_len * sizeof( void * ) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList,
@@ -248,7 +250,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            new_list = RCREALLOC( str->StringList, list_len * sizeof(void *) );
+            new_list = RCREALLOC( str->StringList, list_len * sizeof( void * ) );
             if( new_list != NULL ) {
                 str->StringList = new_list;
             }
@@ -321,14 +323,14 @@ static int compareStrings16( const WResIDName *key,
 /********************************************************************/
 
     return( genericCompare( key->Name, key->NumChars,
-                            (*item)->Name, (*item)->NumChars, FALSE ) );
+                            (*item)->Name, (*item)->NumChars, false ) );
 }
 
 static int compareStrings32( const WResIDName *key,
                              const StringItem32 **item ) {
 /**********************************************************************/
     return( genericCompare( key->Name, key->NumChars,
-                            (*item)->Name, (*item)->NumChars, TRUE ) );
+                            (*item)->Name, (*item)->NumChars, true ) );
 }
 
 int CompareStringItems32( const StringItem32 *item1,
@@ -378,11 +380,11 @@ extern int_32 StringBlockFind( StringsBlock *str, WResIDName * name )
 
     if( str->UseUnicode ) {
         location = bsearch( name, str->StringList, str->StringListLen,
-                    sizeof(void *),
+                    sizeof( void * ),
                     ( int (*)(const void *, const void *) )compareStrings32 );
     } else {
         location = bsearch( name, str->StringList, str->StringListLen,
-                    sizeof(void *),
+                    sizeof( void * ),
                     ( int (*)(const void *, const void *) )compareStrings16 );
     }
 

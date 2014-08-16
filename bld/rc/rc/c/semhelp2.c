@@ -159,7 +159,7 @@ void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
         error = SemOS2WriteHelpTableEntries( helptable, CurrResFile.handle );
-        if(error) {
+        if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
@@ -256,7 +256,7 @@ static bool SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int coun
         //TODO: output warning
     } else if( list->count < count ) {
         // error
-        return( TRUE );
+        return( true );
     }
     for( i = 0; i < count; i++ ) {
         data = (uint_16)list->data[i].Item.Num;

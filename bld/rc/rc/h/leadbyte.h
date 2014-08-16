@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-void SetNativeLeadBytes( void );
-int NativeDBStringToUnicode( int len, const char *str, char *buf );
+extern void SetNativeLeadBytes( void );
+extern int  NativeDBStringToUnicode( int len, const char *str, char *buf );

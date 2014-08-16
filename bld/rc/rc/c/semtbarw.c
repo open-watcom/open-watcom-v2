@@ -67,7 +67,7 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
         toolbar->nodecnt++;
     }
     node = toolbar->last;
-    node->items[ node->cnt ] = item;
+    node->items[node->cnt] = item;
     node->cnt++;
 }
 
@@ -93,7 +93,7 @@ void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
     unsigned                 cnt;
     ToolBarItems            *cur;
 
-    if(!ErrorHasOccured) {
+    if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
         cnt = ( toolbar->nodecnt - 1 ) * TB_ITEM_CNT;
         cnt += toolbar->last->cnt;

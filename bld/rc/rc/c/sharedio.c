@@ -43,10 +43,10 @@
 #define MAX_OPEN_RESFILES       6
 
 typedef struct {
-    int         used;
+    bool        used;
     WResStatus  status;
     int         errnum;
-}ErrFrame;
+} ErrFrame;
 
 static ErrFrame         errFromWres;
 
@@ -55,7 +55,7 @@ static void closeAResFile( ResFileInfo *res )
 {
     if( res->IsOpen ) {
         ResCloseFile( res->Handle );
-        res->IsOpen = FALSE;
+        res->IsOpen = false;
     }
     if( res->Dir != NULL ) {
         WResFreeDir( res->Dir );
@@ -64,7 +64,7 @@ static void closeAResFile( ResFileInfo *res )
     RCFREE( res );
 }
 
-bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
+bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
                   ExeType type, const char *exename )
 /**************************************************************************/
 {
@@ -76,7 +76,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
     bool            dup_discarded;
     WResTargetOS    target;
 
-    *allopen = TRUE;
+    *allopen = true;
     rescnt = 0;
     *resinfo = NULL;
 
@@ -89,10 +89,10 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
         resfile->Handle = ResOpenFileRO( resfile->name );
         if( resfile->Handle == NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
-            resfile->IsOpen = FALSE;
+            resfile->IsOpen = false;
             goto HANDLE_ERROR;
         } else {
-            resfile->IsOpen = TRUE;
+            resfile->IsOpen = true;
         }
         error = WResReadDir2( resfile->Handle, resfile->Dir, &dup_discarded, resfile );
         if( error ) {
@@ -110,10 +110,10 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, int *allopen,
             goto HANDLE_ERROR;
         }
         if( rescnt >= MAX_OPEN_RESFILES ) {
-            resfile->IsOpen = FALSE;
+            resfile->IsOpen = false;
             ResCloseFile( resfile->Handle );
             resfile->Handle = NIL_HANDLE;
-            *allopen = FALSE;
+            *allopen = false;
         }
 
         // remove the autodepend resource
@@ -179,14 +179,14 @@ void CloseResFiles( ResFileInfo *resfiles )
 }
 
 void WresRecordError( WResStatus status ) {
-    errFromWres.used = TRUE;
+    errFromWres.used = true;
     errFromWres.status = status;
     errFromWres.errnum = errno;
 }
 
 char *LastWresErrStr( void )
 {
-    if( errFromWres.used == TRUE ) {
+    if( errFromWres.used ) {
         switch( errFromWres.status ) {
         case WRS_READ_INCOMPLETE:
             return( "Unexpected end of file" );
@@ -200,7 +200,7 @@ char *LastWresErrStr( void )
 
 int LastWresErr( void )
 {
-    if( errFromWres.used == TRUE ) {
+    if( errFromWres.used ) {
         return( errFromWres.errnum );
     }
     return( 0 );
@@ -208,7 +208,7 @@ int LastWresErr( void )
 
 int LastWresStatus( void )
 {
-    if( errFromWres.used == TRUE ) {
+    if( errFromWres.used ) {
         return( errFromWres.status );
     }
     return( 0 );
@@ -221,7 +221,7 @@ extern void SharedIOInitStatics( void )
 }
 
 void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
-                           const char *file2, int warn )
+                           const char *file2, bool warn )
 /*******************************************************************/
 {
     char        *type;

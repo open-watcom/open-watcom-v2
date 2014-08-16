@@ -142,7 +142,7 @@ static uint_16 lookUpDBChar( uint_16 ch ) {
     for( i=0; i < charInfo.header.num_indices; i++ ) {
         if( ch >= charInfo.index[i].min && ch <= charInfo.index[i].max ) {
             index = charInfo.index[i].base + ch - charInfo.index[i].min;
-            return( charInfo.entries[ index ] );
+            return( charInfo.entries[index] );
         }
     }
     return( -1 );
@@ -155,15 +155,16 @@ const char *GetLeadBytes( void ) {
 int DBStringToUnicode( int len, const char *str, char *buf ) {
 
     const uint_8    *ptr;
+    const uint_8    *end;
     uint_16         *ubuf;
     uint_16         dbchar;
     int             ret;
 
-    ptr = (uint_8 *)str;
     ret = 0;
     ubuf = (uint_16 *)buf;
-    while( (char *)ptr < str + len ) {
-        if( charInfo.begchars[ *ptr ] == DB_BEG_CHAR ) {
+    end = (uint_8 *)str + len;
+    for( ptr = (uint_8 *)str; ptr < end; ptr++ ) {
+        if( charInfo.begchars[*ptr] == DB_BEG_CHAR ) {
             dbchar = *ptr << 8;
             ptr++;
             dbchar |= *ptr;
@@ -174,7 +175,6 @@ int DBStringToUnicode( int len, const char *str, char *buf ) {
             *ubuf = lookUpDBChar( dbchar );
             ubuf++;
         }
-        ptr ++;
         ret +=2;
     }
     return( ret );

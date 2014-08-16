@@ -93,7 +93,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
 
     new_entry->wind = wind;
     new_entry->mem_flags = res_lang->MemoryFlags;
-    new_entry->assigned  = FALSE;
+    new_entry->assigned = false;
     new_entry->resource.res_size = res_lang->Length;
 
     assert( !resinfo->ResName.IsName );
@@ -120,11 +120,10 @@ static bool LXResTableBuild( LXResTable *res, WResDir dir )
         res->table_size = 0;
         res->res_count  = 0;
     } else {
-        wind = WResFirstResource( dir );
-        while( !WResIsEmptyWindow( wind ) ) {
-            if( addRes( res, wind ) )
+        for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
+            if( addRes( res, wind ) ) {
                 return( true );
-            wind = WResNextResource( wind, dir );
+            }
         }
     }
     return( false );
@@ -140,15 +139,12 @@ static void reportDuplicateResources( WResMergeError *errs )
     WResResInfo     *resinfo;
     WResTypeInfo    *typeinfo;
 
-    curerr = errs;
-    while( curerr != NULL ) {
+    for( curerr = errs; curerr != NULL; curerr = curerr->next ) {
         resinfo = WResGetResInfo( curerr->dstres );
         typeinfo = WResGetTypeInfo( curerr->dstres );
         file1 = WResGetFileInfo( curerr->dstres );
         file2 = WResGetFileInfo( curerr->srcres );
-        ReportDupResource( &resinfo->ResName, &typeinfo->TypeName,
-                           file1->name, file2->name, FALSE );
-        curerr = curerr->next;
+        ReportDupResource( &resinfo->ResName, &typeinfo->TypeName, file1->name, file2->name, false );
     }
 }
 
@@ -164,11 +160,10 @@ static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
         *errs = NULL;
     if( resfiles == NULL )
         return( false );
-    cur = resfiles->next;
-    while( cur != NULL ) {
-        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) )
+    for( cur = resfiles->next; cur != NULL; cur = cur->next ) {
+        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) ) {
             return( true );
-        cur = cur->next;
+        }
     }
     return( false );
 }
@@ -217,7 +212,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
                 file_offset = ((file_offset >> page_shift) + 1) << page_shift;
             }
             obj_index = entry->resource.object;
-            object = &exe->u.LXInfo.Objects[ exe->u.LXInfo.FirstResObj + obj_index ];
+            object = &exe->u.LXInfo.Objects[exe->u.LXInfo.FirstResObj + obj_index];
             object->size     = 0;
             object->addr     = 0;
             object->flags    = OBJ_READABLE | OBJ_RESOURCE | OBJ_DISCARDABLE
@@ -227,7 +222,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
             object->reserved = 0;
 
             // Point to associated page table entry
-            map = &exe->u.LXInfo.Pages[ page_index ];
+            map = &exe->u.LXInfo.Pages[page_index];
             padded_size = 0;
             page_offset = file_offset;
         }
@@ -279,7 +274,7 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 
 bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
                                    object_record *res_obj, unsigned_32 rva,
-                                   unsigned_32 offset, int writebyfile )
+                                   unsigned_32 offset, bool writebyfile )
 /**************************************************************************/
 {
     LXResTable      *dir;
@@ -338,7 +333,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
         /* Maybe that's not a problem though. */
         entry->resource.object = 0;
         entry->resource.offset = curr_offset;
-        entry->assigned = TRUE;
+        entry->assigned = true;
 
         curr_offset += res_size;
     }

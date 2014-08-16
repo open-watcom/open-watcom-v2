@@ -55,14 +55,11 @@ typedef struct LXResTable {
 struct ResFileInfo;     // ANSI/gcc
 struct ExeFileInfo;
 
-bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo,
-                            struct ResFileInfo *resinfo,
-                            object_record *res_obj, unsigned_32 rva,
-                            unsigned_32 offset, int writebyfile );
-bool RcBuildLXResourceObjects( void );
+extern bool BuildLXResourceObjects( struct ExeFileInfo *exeinfo, struct ResFileInfo *resinfo,
+                            object_record *res_obj, unsigned_32 rva, unsigned_32 offset, bool writebyfile );
+extern bool RcBuildLXResourceObjects( void );
 
-RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe,
-                            struct ResFileInfo *info );
-RcStatus RcWriteLXResourceObjects( void );
+extern RcStatus WriteLXResourceObjects( struct ExeFileInfo *exe, struct ResFileInfo *info );
+extern RcStatus RcWriteLXResourceObjects( void );
 
 #endif

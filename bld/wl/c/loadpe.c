@@ -849,8 +849,8 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
 {
     ExeFileInfo einfo;
     ResFileInfo *rinfo;
-    int         allopen;
-    int         status;
+    bool        allopen;
+    bool        status;
 
     memset( &einfo, 0, sizeof( einfo ) );
 
@@ -861,7 +861,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     status = OpenResFiles( (ExtraRes *)FmtData.u.pe.resources, &rinfo, &allopen, RC_TARGET_OS_WIN32, Root->outfile->fname );
     if( !status )               // we had a problem opening
         return( 0 );
-    einfo.IsOpen = TRUE;
+    einfo.IsOpen = true;
     einfo.Handle = Root->outfile->handle;
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;

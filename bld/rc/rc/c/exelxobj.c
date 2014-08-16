@@ -101,9 +101,9 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
     /* Figure out number of old objects/pages */
     for( obj_index = 0; obj_index < old->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
         /* Simply skip any existing resource objects */
-        if( !(old_obj[ obj_index ].flags & OBJ_RESOURCE) ) {
+        if( !(old_obj[obj_index].flags & OBJ_RESOURCE) ) {
             ++old_num_objects;
-            old_num_pages += old_obj[ obj_index ].mapsize;
+            old_num_pages += old_obj[obj_index].mapsize;
         }
     }
     if( CmdLineParms.NoResFile ) {
@@ -142,11 +142,11 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
 
     /* Copy object and page records from old executable to new */
     for( obj_index = 0; obj_index < old->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
-        if( !(old_obj[ obj_index ].flags & OBJ_RESOURCE) ) {
-            new_obj[ obj_index ] = old_obj[ old_obj_index ];
-            new_obj[ obj_index ].mapidx = page_index + 1;
-            for( i = 0; i < old_obj[ old_obj_index ].mapsize; ++i ) {
-                new_page[ page_index ] = old_page[ old_obj[ old_obj_index ].mapidx + i - 1 ];
+        if( !(old_obj[obj_index].flags & OBJ_RESOURCE) ) {
+            new_obj[obj_index] = old_obj[old_obj_index];
+            new_obj[obj_index].mapidx = page_index + 1;
+            for( i = 0; i < old_obj[old_obj_index].mapsize; ++i ) {
+                new_page[page_index] = old_page[old_obj[old_obj_index].mapidx + i - 1];
                 ++page_index;
             }
             ++old_obj_index;
@@ -177,8 +177,8 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
     int             i;
 
     for( i = 0; i < old_obj->mapsize; ++i ) {
-        old_map = &old->u.LXInfo.Pages[ old_obj->mapidx + i - 1 ];
-        new_map = &new->u.LXInfo.Pages[ new_obj->mapidx + i - 1 ];
+        old_map = &old->u.LXInfo.Pages[old_obj->mapidx + i - 1];
+        new_map = &new->u.LXInfo.Pages[new_obj->mapidx + i - 1];
 
         // NB - page_offset is relative to start of executable, not to LX header!
         old_offset = (old_map->page_offset << old->u.LXInfo.OS2Head.l.page_shift)

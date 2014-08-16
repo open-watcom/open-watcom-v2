@@ -61,12 +61,12 @@ typedef struct RcResFileID {
     WResDir             dir;                    /* don't write this if !IsWatcomRes */
     WResFileID          handle;                 /* posix level I/O handle */
     FullFontDir         *FontDir;
-    char                namebuf[ _MAX_PATH ];   /* filename usually points here */
+    char                namebuf[_MAX_PATH];   /* filename usually points here */
 } RcResFileID;
 
 /**** Text file input ****/
 typedef struct LogicalFileInfo {
-    char        Filename[ _MAX_PATH ];
+    char        Filename[_MAX_PATH];
     int         LineNum;
     bool        IsCOrHFile;
 } LogicalFileInfo;

@@ -37,15 +37,15 @@
 
 #define MAX_NAMES       10
 
-static int   numTmpNames;
-static char *tmpFileNames[ MAX_NAMES ];
+static int          numTmpNames;
+static const char   *tmpFileNames[MAX_NAMES];
 
-void RegisterTmpFile( char *name )
-/********************************/
+void RegisterTmpFile( const char *name )
+/**************************************/
 {
-    int         i;
+    int     i;
 
-    for( i=0; i < numTmpNames; i++ ) {
+    for( i = 0; i < numTmpNames; i++ ) {
         if( tmpFileNames[i] == NULL ) {
             tmpFileNames[i] = name;
             return;
@@ -60,9 +60,9 @@ void RegisterTmpFile( char *name )
 void UnregisterTmpFile( const char *name )
 /****************************************/
 {
-    int         i;
+    int     i;
 
-    for( i=0; i < numTmpNames; i++ ) {
+    for( i = 0; i < numTmpNames; i++ ) {
         if( tmpFileNames[i] != NULL ) {
             if( !strcmp( tmpFileNames[i], name ) ) {
                 tmpFileNames[i] = NULL;
@@ -72,12 +72,12 @@ void UnregisterTmpFile( const char *name )
     }
 }
 
-int IsTmpFile( char *name )
-/*************************/
+bool IsTmpFile( const char *name )
+/********************************/
 {
-    int         i;
+    int     i;
 
-    for( i=0; i < numTmpNames; i++ ) {
+    for( i = 0; i < numTmpNames; i++ ) {
         if( tmpFileNames[i] != NULL ) {
             if( !strcmp( tmpFileNames[i], name ) ) {
                 return( true );
@@ -93,4 +93,3 @@ extern void TmpCtlInitStatics( void )
     numTmpNames = 0;
     memset( tmpFileNames, 0, sizeof( tmpFileNames ) );
 }
-

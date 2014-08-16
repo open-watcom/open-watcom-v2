@@ -95,18 +95,18 @@ static bool CreatePreprocFile( void )
     int         ch;
     char        ch1;
 
-    error = FALSE;
+    error = false;
     handle = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
     if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
-        error = TRUE;
+        error = true;
     } else {
         ch = RcIoGetChar();
         while( ch != RC_EOF ) {
             ch1 = (char)ch;
             if( RcWrite( handle, &ch1, 1 ) != 1 ) {
                 RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
-                error = TRUE;
+                error = true;
             }
             ch = RcIoGetChar();
         }
@@ -168,7 +168,7 @@ static bool Pass2( void )
             break;
         default: //EXE_TYPE_UNKNOWN
             RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
-            noerror = FALSE;
+            noerror = false;
             break;
         }
         RcPass2IoShutdown( noerror );
@@ -183,12 +183,12 @@ void RCmain( void )
 
 #if defined( __WATCOMC__ )
 #if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL 
-#if !defined(__OSI__) /* _grow_handles doesn't work yet */
-    _grow_handles(100);
+#if !defined( __OSI__ ) /* _grow_handles doesn't work yet */
+    _grow_handles( 100 );
 #endif
 #endif
 #endif
-    if ( !CmdLineParms.Pass2Only) {
+    if( !CmdLineParms.Pass2Only ) {
         noerror = Pass1();
     }
     if( noerror && !CmdLineParms.Pass1Only && !CmdLineParms.PreprocessOnly ) {

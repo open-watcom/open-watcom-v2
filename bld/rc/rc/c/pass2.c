@@ -85,7 +85,7 @@ static RcStatus seekPastResTable( int *err_code )
 
 } /* seekPastResTable */
 
-static int copyOtherTables( int *err_code )
+static RcStatus copyOtherTables( int *err_code )
 {
     uint_32         tablelen;
     os2_exe_header  *oldhead;
@@ -166,22 +166,22 @@ static bool copyWINBody( void )
     long                gangloadstart;
     long                gangloadlen;
     CpSegRc             copy_segs_ret;
-    bool                use_gangload = FALSE;
+    bool                use_gangload = false;
 
     tmp = &Pass2Info.TmpFile.u.NEInfo;
 
-    switch (CmdLineParms.SegmentSorting) {
+    switch( CmdLineParms.SegmentSorting ) {
     case SEG_SORT_NONE:     /* all segments in section 2 */
         sect2mask = 0;
         sect2bits = 0;
-        use_gangload = FALSE;
+        use_gangload = false;
         Pass2Info.TmpFile.u.NEInfo.WinHead.align = Pass2Info.OldFile.u.NEInfo.WinHead.align;
         tmp->Res.Dir.ResShiftCount = computeShiftCount();
         break;
     case SEG_SORT_PRELOAD_ONLY:  /* all load on call segments in section 2 */
         sect2mask = SEG_PRELOAD;
         sect2bits = 0;
-        use_gangload = TRUE;
+        use_gangload = true;
         checkShiftCount();
         break;
     case SEG_SORT_MANY:     /* only load on call, discardable, code segments */
@@ -196,25 +196,25 @@ static bool copyWINBody( void )
                                             /* is hard to read */
             seg = Pass2Info.OldFile.u.NEInfo.Seg.Segments;
             entry_seg = Pass2Info.OldFile.u.NEInfo.WinHead.entrynum;
-            seg[ entry_seg ].info |= SEG_PRELOAD;
+            seg[entry_seg].info |= SEG_PRELOAD;
         }
 
-        use_gangload = TRUE;
+        use_gangload = true;
         checkShiftCount();
         break;
     default:
         break;
     }
 
-    /* third arg to Copy???? is FALSE --> copy section one */
+    /* third arg to Copy???? is false --> copy section one */
     gangloadstart = RCTELL( Pass2Info.TmpFile.Handle );
     gangloadstart += AlignAmount( gangloadstart, tmp->Res.Dir.ResShiftCount );
-    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, FALSE );
-    switch (copy_segs_ret) {
+    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, false );
+    switch( copy_segs_ret ) {
     case CPSEG_SEG_TOO_BIG:
         if( use_gangload ) {
             RcWarning( ERR_NO_GANGLOAD );
-            use_gangload = FALSE;
+            use_gangload = false;
         }
         break;
     case CPSEG_ERROR:
@@ -224,19 +224,19 @@ static bool copyWINBody( void )
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        if( CopyWINResources( sect2mask, sect2bits, FALSE ) != RS_OK ) {
+        if( CopyWINResources( sect2mask, sect2bits, false ) != RS_OK ) {
             return( true );
         }
     }
     gangloadlen = RCTELL( Pass2Info.TmpFile.Handle ) - gangloadstart;
 
-    /* third arg to Copy???? is TRUE  --> copy section two */
-    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, TRUE );
-    if( copy_segs_ret == CPSEG_ERROR) {
+    /* third arg to Copy???? is true  --> copy section two */
+    copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, true );
+    if( copy_segs_ret == CPSEG_ERROR ) {
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyWINResources( sect2mask, sect2bits, TRUE ) != RS_OK ) {
+        if( CopyWINResources( sect2mask, sect2bits, true ) != RS_OK ) {
             return( true );
         }
     }
@@ -360,7 +360,11 @@ static RcStatus writeHeadAndTables( int *err_code )
     /* |= the next one since the WIN_GANGLOAD_PRESENT flag may be set */
     tmpne->WinHead.otherflags |= oldne->WinHead.otherflags;
     tmpne->WinHead.swaparea =   0;      /* What is this field for? */
-    tmpne->WinHead.expver = CmdLineParms.VersionStamp;
+    if( CmdLineParms.VersionStamp30 ) {
+        tmpne->WinHead.expver = VERSION_30_STAMP;
+    } else {
+        tmpne->WinHead.expver = VERSION_31_STAMP;
+    }
 
     /* seek to the start of the os2_exe_header in tmpfile */
     if( RCSEEK( tmpfile->Handle, tmpfile->WinHeadOffset, SEEK_SET ) == -1 ) {
@@ -515,7 +519,9 @@ static RcStatus findEndOfResources( int *err_code )
                 return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
-            if( tmp > end ) end = tmp;
+            if( tmp > end ) {
+                end = tmp;
+            }
         }
         numread = RCREAD( oldhandle, &typeinfo, sizeof( resource_type_record ) );
         if( numread != sizeof( resource_type_record ) ) {
@@ -600,41 +606,56 @@ bool MergeResExeWINNE( void )
     int             err_code;
 
     ret = copyStubFile( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = AllocAndReadWINSegTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     InitWINResTable();
 
     ret = seekPastResTable( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = findEndOfResources( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyOtherTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = copyWINBody();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyDebugInfo();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = writeHeadAndTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     return( true );
 
@@ -673,39 +694,55 @@ bool MergeResExeOS2NE( void )
     int             err_code;
 
     ret = copyStubFile( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = InitOS2ResTable( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = AllocAndReadOS2SegTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = seekPastResTable( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyOtherTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = copyOS2Body();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyDebugInfo();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = writeOS2HeadAndTables( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
+
     return( true );
 
 REPORT_ERROR:
@@ -772,7 +809,8 @@ static RcStatus updateDebugDirectory( void )
     debug_size = old_table[PE_TBL_DEBUG].size;
     old_rva = old_table[PE_TBL_DEBUG].rva;
 
-    if( old_rva == 0 ) return( RS_OK );
+    if( old_rva == 0 )
+        return( RS_OK );
     old_offset = OffsetFromRVA( old, old_rva );
     tmp_offset = OffsetFromRVA( tmp, tmp_rva );
     if( old_offset == 0xFFFFFFFF || tmp_offset == 0xFFFFFFFF ) {
@@ -812,37 +850,46 @@ bool MergeResExePE( void )
     int         err_code;
 
     ret = copyStubFile( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = CopyExeObjects();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = RcBuildPEResourceObject();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyDebugInfo();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = writePEHeadAndObjTable();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = updateDebugDirectory();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     return( true );
 
@@ -936,7 +983,7 @@ static RcStatus copyLXNonresData( void )
     ExeFileInfo         *tmp;
     os2_flat_header     *old_head;
     os2_flat_header     *new_head;
-    RcStatus            error;
+    RcStatus            ret;
 
     old = &(Pass2Info.OldFile);
     tmp = &(Pass2Info.TmpFile);
@@ -959,11 +1006,11 @@ static RcStatus copyLXNonresData( void )
     if( RCSEEK( tmp->Handle, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
-    error = CopyExeData( Pass2Info.OldFile.Handle, Pass2Info.TmpFile.Handle, old_head->nonres_size );
+    ret = CopyExeData( Pass2Info.OldFile.Handle, Pass2Info.TmpFile.Handle, old_head->nonres_size );
 
     // Make DebugOffset point to new EOF
     CheckDebugOffset( tmp );
-    return( error );
+    return( ret );
 } /* copyLXNonresData */
 
 
@@ -1006,16 +1053,22 @@ bool MergeResExeLX( void )
     int         err_code;
 
     ret = copyStubFile( &err_code );
-    if( ret != RS_OK ) goto REPORT_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( ret != RS_OK )
+        goto REPORT_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = RcBuildLXResourceObjects();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     error = CopyLXExeObjects();
-    if( error ) goto HANDLE_ERROR;
-    if( StopInvoked ) goto STOP_ERROR;
+    if( error )
+        goto HANDLE_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = RcWriteLXResourceObjects();
     if( ret != RS_OK ) {
@@ -1028,21 +1081,24 @@ bool MergeResExeLX( void )
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = copyLXDebugInfo();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     ret = writeLXHeadAndTables();
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked ) goto STOP_ERROR;
+    if( StopInvoked )
+        goto STOP_ERROR;
 
     return( true );
 

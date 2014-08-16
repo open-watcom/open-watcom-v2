@@ -84,15 +84,14 @@ void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
     ResMemFlags flags;
     ResMemFlags group_flags;
     ResMemFlags purity_option;      /* used for icon and cursor resoures */
-    char        full_filename[ _MAX_PATH ];
+    char        full_filename[_MAX_PATH];
 
-    if (ErrorHasOccured) {
+    if( ErrorHasOccured ) {
         RCFREE( name );
         RCFREE( filename );
         return;
     }
-
-    if (CmdLineParms.VersionStamp == VERSION_30_STAMP) {
+    if( CmdLineParms.VersionStamp30 ) {
         purity_option = CUR_ICON_PURITY_30;
     } else {
         purity_option = CUR_ICON_PURITY_31;
@@ -103,11 +102,12 @@ void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
         goto HANDLE_ERROR;
     }
 
-    if( AddDependency( full_filename ) ) goto HANDLE_ERROR;
+    if( AddDependency( full_filename ) )
+        goto HANDLE_ERROR;
 
-    switch (type) {
+    switch( type ) {
     case Y_ICON:
-        if (fullflags != NULL) {
+        if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 purity_option );
@@ -123,7 +123,7 @@ void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
         AddIconResource( name, flags, group_flags, full_filename );
         break;
     case Y_CURSOR:
-        if (fullflags != NULL) {
+        if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 purity_option );
@@ -139,7 +139,7 @@ void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
         AddCursorResource( name, flags, group_flags, full_filename );
         break;
     case Y_BITMAP:
-        if (fullflags != NULL) {
+        if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
@@ -148,7 +148,7 @@ void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
         AddBitmapResource( name, flags, full_filename );
         break;
     case Y_FONT:
-        if (fullflags != NULL) {
+        if( fullflags != NULL ) {
             SemWINCheckMemFlags( fullflags, 0,
                                 MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
                                 MEMFLAG_PURE );
@@ -183,7 +183,8 @@ static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID handle
     WResFileSSize   numread;
 
     numread = RCREAD( handle, head, sizeof(BitmapInfoHeader) );
-    if( numread == sizeof( BitmapInfoHeader ) ) return( RS_OK );
+    if( numread == sizeof( BitmapInfoHeader ) )
+        return( RS_OK );
     return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
 }
 
@@ -229,12 +230,12 @@ static RcStatus readIcoFileDir( WResFileID handle, FullIconDir *dir, int *err_co
         return( RS_INVALID_RESOURCE );
     }
 
-    for (currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
-                            currentry++) {
+    for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
+                            currentry++ ) {
         entry = RCALLOC( sizeof(FullIconDirEntry) );
         entry->Next = NULL;
         entry->Prev = NULL;
-        entry->IsIcoFileEntry = TRUE;
+        entry->IsIcoFileEntry = true;
         ret = readIcoFileDirEntry( &(entry->Entry.Ico), handle, err_code );
         if( ret != RS_OK ) {
             RCFREE( entry );
@@ -300,21 +301,21 @@ static RcStatus copyIcons( FullIconDir * dir, WResFileID handle,
     ret = RS_OK;
     buffer = RCALLOC( BUFFER_SIZE );
 
-    for (entry = dir->Head; entry != NULL; entry = entry->Next) {
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /* copy the icon */
         loc.start = SemStartResource();
 
         /* NOTE: the dibhead structure is filled in as a result of this call */
-        ret = copyOneIcon( &(entry->Entry.Ico), handle, buffer, BUFFER_SIZE,
-                            &(dibhead), err_code );
-        if( ret != RS_OK ) break;
+        ret = copyOneIcon( &(entry->Entry.Ico), handle, buffer, BUFFER_SIZE, &(dibhead), err_code );
+        if( ret != RS_OK )
+            break;
 
         loc.len = SemEndResource( loc.start );
         /* add the icon to the RES file directory */
         SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
                 WResIDFromNum( (long)(pointer_int)RT_ICON ), flags, loc );
         /* change the reference in the ICON directory */
-        entry->IsIcoFileEntry = FALSE;
+        entry->IsIcoFileEntry = false;
         entry->Entry.Res.IconID = CurrResFile.NextCurOrIcon;
         entry->Entry.Res.Info.Planes = dibhead.Planes;
         entry->Entry.Res.Info.BitCount = dibhead.BitCount;
@@ -333,7 +334,7 @@ static void FreeIconDir( FullIconDir * dir )
     FullIconDirEntry * oldentry;
 
     currentry = dir->Head;
-    while (currentry != NULL) {
+    while( currentry != NULL ) {
         oldentry = currentry;
         currentry = currentry->Next;
 
@@ -352,11 +353,11 @@ static bool writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.handle );
 
-    for (entry = dir->Head; !error && entry != NULL; entry = entry->Next) {
+    for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
         error = ResWriteIconDirEntry( &(entry->Entry.Res), CurrResFile.handle );
     }
 
-    if (!error) {
+    if( !error ) {
         loc.len = SemEndResource( loc.start );
 #ifdef PREPROC_BUG
         SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_ICON ),
@@ -383,19 +384,23 @@ static void AddIconResource( WResID * name, ResMemFlags flags,
     int             err_code;
 
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
+    if( handle == NIL_HANDLE)
+        goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
     dir.Tail = NULL;
 
     ret = readIcoFileDir( handle, &dir, &err_code );
-    if( ret != RS_OK ) goto READ_DIR_ERROR;
+    if( ret != RS_OK )
+        goto READ_DIR_ERROR;
 
     ret = copyIcons( &dir, handle, flags, &err_code );
-    if( ret != RS_OK ) goto COPY_ICONS_ERROR;
+    if( ret != RS_OK )
+        goto COPY_ICONS_ERROR;
 
     error = writeIconDir( &dir, name, group_flags, &err_code );
-    if (error) goto WRITE_DIR_ERROR;
+    if( error)
+        goto WRITE_DIR_ERROR;
 
     FreeIconDir( &dir );
     RCCLOSE( handle );
@@ -448,11 +453,11 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.handle );
 
-    for (entry = dir->Head; !error && entry != NULL; entry = entry->Next) {
+    for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
         error = ResWriteCurDirEntry( &(entry->Entry.Res), CurrResFile.handle );
     }
 
-    if (!error) {
+    if( !error ) {
         loc.len = SemEndResource( loc.start );
 #ifdef PREPROC_BUG
         SemAddResourceFree( name, WResIDFromNum( (long)(pointer_int)RT_GROUP_CURSOR ),
@@ -524,7 +529,7 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
 
     buffer = RCALLOC( BUFFER_SIZE );
 
-    for (entry = dir->Head; entry != NULL; entry = entry->Next) {
+    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /* copy the cursor */
         loc.start = SemStartResource();
 
@@ -539,7 +544,8 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
         /* NOTE: the dibhead structure is filled in as a result of this call */
         ret = copyOneCursor( &(entry->Entry.Cur), handle, buffer,
                         BUFFER_SIZE, &(dibhead), err_code );
-        if( ret != RS_OK ) break;
+        if( ret != RS_OK )
+            break;
 
         loc.len = SemEndResource( loc.start );
         /* add the cursor to the RES file directory */
@@ -547,7 +553,7 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
                 WResIDFromNum( (long)(pointer_int)RT_CURSOR ), flags, loc );
         /* change the reference in the cursor directory */
         fileentry = entry->Entry.Cur;
-        entry->IsCurFileEntry = FALSE;
+        entry->IsCurFileEntry = false;
         entry->Entry.Res.Width = dibhead.Width;
         entry->Entry.Res.Height = dibhead.Height;
         entry->Entry.Res.Planes = dibhead.Planes;
@@ -591,12 +597,12 @@ static RcStatus readCurFileDir( WResFileID handle, FullCurDir *dir, int *err_cod
         return( RS_INVALID_RESOURCE );
     }
 
-    for (currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
-                            currentry++) {
+    for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
+                            currentry++ ) {
         entry = RCALLOC( sizeof(FullCurDirEntry) );
         entry->Next = NULL;
         entry->Prev = NULL;
-        entry->IsCurFileEntry = TRUE;
+        entry->IsCurFileEntry = true;
         ret = readCurFileDirEntry( &(entry->Entry.Cur), handle, err_code );
         if( ret != RS_OK ) {
             RCFREE( entry );
@@ -615,7 +621,7 @@ static void FreeCurDir( FullCurDir * dir )
     FullCurDirEntry * oldentry;
 
     currentry = dir->Head;
-    while (currentry != NULL) {
+    while( currentry != NULL ) {
         oldentry = currentry;
         currentry = currentry->Next;
 
@@ -634,19 +640,23 @@ static void AddCursorResource( WResID * name, ResMemFlags flags,
     int             err_code;
 
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
+    if( handle == NIL_HANDLE)
+        goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
     dir.Tail = NULL;
 
     ret = readCurFileDir( handle, &dir, &err_code );
-    if( ret != RS_OK) goto READ_DIR_ERROR;
+    if( ret != RS_OK)
+        goto READ_DIR_ERROR;
 
     ret = copyCursors( &dir, handle, flags, &err_code );
-    if( ret != RS_OK ) goto COPY_CURSORS_ERROR;
+    if( ret != RS_OK )
+        goto COPY_CURSORS_ERROR;
 
     error = writeCurDir( &dir, name, group_flags, &err_code );
-    if (error) goto WRITE_DIR_ERROR;
+    if( error)
+        goto WRITE_DIR_ERROR;
 
     FreeCurDir( &dir );
     RCCLOSE( handle );
@@ -745,15 +755,19 @@ static void AddBitmapResource( WResID * name, ResMemFlags flags,
     int                 err_code;
 
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
+    if( handle == NIL_HANDLE)
+        goto FILE_OPEN_ERROR;
 
     ret = readBitmapFileHeader( handle, &head, &err_code );
-    if( ret != RS_OK ) goto READ_HEADER_ERROR;
+    if( ret != RS_OK )
+        goto READ_HEADER_ERROR;
 
-    if( head.Type != BITMAP_MAGIC ) goto NOT_BITMAP_ERROR;
+    if( head.Type != BITMAP_MAGIC )
+        goto NOT_BITMAP_ERROR;
 
     ret = copyBitmap( &head, handle, name, flags, &err_code );
-    if( ret != RS_OK ) goto COPY_BITMAP_ERROR;
+    if( ret != RS_OK )
+        goto COPY_BITMAP_ERROR;
 
     RCCLOSE( handle );
 
@@ -839,7 +853,7 @@ static RcStatus copyFont( FontInfo * info, WResFileID handle, WResID * name,
 } /* copyFont */
 
 typedef struct {
-    int         status;
+    RcStatus    status;
     int         err_code;
 }ReadStrErrInfo;
 
@@ -902,8 +916,8 @@ static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
     entry->Entry.StructSize = sizeof(FontDirEntry) + structextra - 1;
     entry->Entry.FontID = fontid->ID.Num;
     entry->Entry.Info = *info;
-    memcpy( &(entry->Entry.DevAndFaceName[ 0 ]), devicename, devicelen );
-    memcpy( &(entry->Entry.DevAndFaceName[ devicelen ]), facename, facelen );
+    memcpy( &(entry->Entry.DevAndFaceName[0]), devicename, devicelen );
+    memcpy( &(entry->Entry.DevAndFaceName[devicelen]), facename, facelen );
     /* set dfDevice and dfFace to be the offset of the strings from the start */
     /* of the FontInfo structure (entry->Entry.Info) */
     entry->Entry.Info.dfDevice = sizeof(FontInfo);
@@ -920,7 +934,7 @@ static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
 
     entry = NewFontDirEntry( info, devicename, facename, fontid );
 
-    if (CurrResFile.FontDir == NULL) {
+    if( CurrResFile.FontDir == NULL ) {
         CurrResFile.FontDir = NewFontDir();
     }
 
@@ -941,19 +955,22 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     int                 err_code;
     ReadStrErrInfo      readstr_err;
 
-    if (name->IsName) {
+    if( name->IsName ) {
         RcError( ERR_FONT_NAME );
         return;
     }
 
     handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if (handle == NIL_HANDLE) goto FILE_OPEN_ERROR;
+    if( handle == NIL_HANDLE)
+        goto FILE_OPEN_ERROR;
 
     ret = readFontInfo( handle, &info, &err_code );
-    if( ret != RS_OK) goto READ_HEADER_ERROR;
+    if( ret != RS_OK)
+        goto READ_HEADER_ERROR;
 
     ret = copyFont( &info, handle, name, flags, &err_code );
-    if( ret != RS_OK ) goto COPY_FONT_ERROR;
+    if( ret != RS_OK )
+        goto COPY_FONT_ERROR;
 
     devicename = readString( handle, info.dfDevice, &readstr_err );
     if( devicename == NULL ) {
@@ -963,7 +980,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     }
 
     facename = readString( handle, info.dfFace, &readstr_err );
-    if (facename == NULL) {
+    if( facename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
         RCFREE( devicename );
@@ -1007,7 +1024,7 @@ static void FreeFontDir( FullFontDir * olddir )
     FullFontDirEntry *  oldentry;
 
     currentry = olddir->Head;
-    while (currentry != NULL) {
+    while( currentry != NULL ) {
         oldentry = currentry;
         currentry = currentry->Next;
 
@@ -1028,7 +1045,7 @@ void SemWINWriteFontDir( void )
     ResLocation         loc;
     bool                error;
 
-    if (CurrResFile.FontDir == NULL) {
+    if( CurrResFile.FontDir == NULL ) {
         return;
     }
 
@@ -1036,12 +1053,15 @@ void SemWINWriteFontDir( void )
 
     error = ResWriteUint16( &(CurrResFile.FontDir->NumOfFonts),
                         CurrResFile.handle );
-    if (error) goto OUTPUT_WRITE_ERROR;
+    if( error)
+        goto OUTPUT_WRITE_ERROR;
 
-    for (currentry = CurrResFile.FontDir->Head; currentry != NULL;
-                currentry = currentry->Next) {
+    for( currentry = CurrResFile.FontDir->Head; currentry != NULL;
+                currentry = currentry->Next ) {
         error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.handle );
-        if (error) goto OUTPUT_WRITE_ERROR;
+        if( error ) {
+            goto OUTPUT_WRITE_ERROR;
+        }
     }
 
     loc.len = SemEndResource( loc.start );

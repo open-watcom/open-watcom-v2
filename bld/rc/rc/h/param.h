@@ -77,22 +77,22 @@ struct RCParams {
     unsigned    ProtModeOnly    : 1;
     unsigned    PreprocessOnly  : 1;
     unsigned    WritableRes     : 1;
+    unsigned    VersionStamp30  : 1;
     unsigned    NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     unsigned    NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     unsigned    GenAutoDep      : 1;    /* generate autodependency info for wmake */
-    unsigned    FindAndReplace;         /* a check to see whether for this option */
-    unsigned    Prepend;
+    unsigned    FindAndReplace  : 1;    /* a check to see whether for this option */
+    unsigned    Prepend         : 1;
     unsigned    MBCharSupport   : 3;    /* which of the zk switches is set */
-    unsigned    SegmentSorting;         /* which segment sorting method to use */
-    int         TargetOS;
-    char        InFileName[ _MAX_PATH ];
-    char        InExeFileName[ _MAX_PATH ];
-    char        OutResFileName[ _MAX_PATH ];
-    char        OutExeFileName[ _MAX_PATH ];
-    char        CodePageFile[ _MAX_PATH ];
-    char        PrependString[ _MAX_PATH ];
+    unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
+    unsigned    TargetOS        : 2;
+    char        InFileName[_MAX_PATH];
+    char        InExeFileName[_MAX_PATH];
+    char        OutResFileName[_MAX_PATH];
+    char        OutExeFileName[_MAX_PATH];
+    char        CodePageFile[_MAX_PATH];
+    char        PrependString[_MAX_PATH];
     char        **CPPArgs;    /* temporary until preprocessing done inline */
-    int         VersionStamp;
     ExtraRes    *ExtraResFiles;
     FRStrings   *FindReplaceStrings;
 };
@@ -115,7 +115,7 @@ enum RCTargetOS {
 extern bool ScanParams( int argc, char * argv[] );
 extern void RcAddCPPArg( char * newarg );
 extern void ScanParamShutdown( void );
-extern unsigned ParseEnvVar( const char *env, char **argv, char *buf );
+extern int  ParseEnvVar( const char *env, char **argv, char *buf );
 extern void SetMBRange( unsigned from, unsigned to, char data );
 extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings );
 

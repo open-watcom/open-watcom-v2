@@ -55,10 +55,10 @@ extern void RcAddCPPArg( char * newarg )
 
     cppargs = CmdLineParms.CPPArgs;
 
-    if (CmdLineParms.CPPArgs == NULL) {
+    if( CmdLineParms.CPPArgs == NULL ) {
         /* 3 is 1 for the command, 1 for newarg, 1 for NULL */
         numargs = 3;
-        cppargs = RcMemMalloc( numargs * sizeof(char *) );
+        cppargs = RcMemMalloc( numargs * sizeof( char * ) );
         /* cppargs[0] is reserved for the name of the command so set it */
         /* to the null string for now */
         cppargs[0] = "";
@@ -69,11 +69,11 @@ extern void RcAddCPPArg( char * newarg )
         }
         /* + 2 for the NULL arg and the new arg */
         numargs = ( arg - CmdLineParms.CPPArgs ) + 2;
-        cppargs = RcMemRealloc( cppargs, numargs * sizeof(char *) );
+        cppargs = RcMemRealloc( cppargs, numargs * sizeof( char * ) );
     }
 
-    cppargs[ numargs - 2 ] = newarg;
-    cppargs[ numargs - 1 ] = NULL;
+    cppargs[numargs - 2] = newarg;
+    cppargs[numargs - 1] = NULL;
 
     CmdLineParms.CPPArgs = cppargs;
 } /* RcAddCPPArg */
@@ -107,7 +107,7 @@ static bool scanString( char *buf, const char *str, unsigned len )
     bool        have_quote;
     char        c;
 
-    have_quote = FALSE;
+    have_quote = false;
     while( isspace( *str ) )
         ++str;
     while( (c = *str++) != '\0' && len > 0 ) {
@@ -132,41 +132,41 @@ static bool ScanMultiOptArg( const char * arg )
     for( ; *arg != '\0' && contok; arg++ ) {
         switch( tolower( *arg ) ) {
         case 'e':
-            CmdLineParms.GlobalMemEMS = TRUE;
+            CmdLineParms.GlobalMemEMS = true;
             break;
         case 'k':
             CmdLineParms.SegmentSorting = SEG_SORT_NONE;
             break;
         case 'l':
-            CmdLineParms.EMSDirect = TRUE;
+            CmdLineParms.EMSDirect = true;
             break;
         case 'm':
-            CmdLineParms.EMSInstance = TRUE;
+            CmdLineParms.EMSInstance = true;
             break;
 #if 0
         case 'n':
-            CmdLineParms.NoProtectCC = TRUE;
+            CmdLineParms.NoProtectCC = true;
             break;
 #endif
         case 'p':
-            CmdLineParms.PrivateDLL = TRUE;
+            CmdLineParms.PrivateDLL = true;
             break;
         case 'q':
-            CmdLineParms.Quiet = TRUE;
+            CmdLineParms.Quiet = true;
             break;
         case 'r':
-            CmdLineParms.Pass1Only = TRUE;
+            CmdLineParms.Pass1Only = true;
             break;
         case 't':
-            CmdLineParms.ProtModeOnly = TRUE;
+            CmdLineParms.ProtModeOnly = true;
             break;
         case '?':
-            CmdLineParms.PrintHelp = TRUE;
-            contok = FALSE;
+            CmdLineParms.PrintHelp = true;
+            contok = false;
             break;
         default:
             RcError( ERR_UNKNOWN_OPTION, *arg );
-            contok = FALSE;
+            contok = false;
             break;
         }
     }
@@ -195,32 +195,33 @@ static bool ScanOptionsArg( const char * arg )
     case 'a':
         arg++;
         if( tolower( *arg ) == 'd' ) {
-            CmdLineParms.GenAutoDep = TRUE;
+            CmdLineParms.GenAutoDep = true;
         } else if( tolower( *arg ) == 'p' ) {
             arg++;
-            if( *arg == '=' ) arg++;
+            if( *arg == '=' )
+                arg++;
             if( scanString( CmdLineParms.PrependString, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.Prepend = TRUE;
+            CmdLineParms.Prepend = true;
             break;
         } else {
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
-            contok = FALSE;
+            contok = false;
         }
         break;
     case '3':
         arg++;
         switch( tolower( *arg ) ) {
         case '0':
-            CmdLineParms.VersionStamp = VERSION_30_STAMP;
+            CmdLineParms.VersionStamp30 = true;
             break;
         case '1':
-            CmdLineParms.VersionStamp = VERSION_31_STAMP;
+            CmdLineParms.VersionStamp30 = false;
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
-            contok = FALSE;
+            contok = false;
             break;
         }
         break;
@@ -228,7 +229,8 @@ static bool ScanOptionsArg( const char * arg )
         arg++;
         if( tolower( *arg ) == 't' ) {
             arg++;
-            if( *arg == '=' ) arg++;
+            if( *arg == '=' )
+                arg++;
             if( stricmp( arg, "windows" ) == 0 || stricmp( arg, "win" ) == 0 ) {
                 CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
             } else if( stricmp( arg, "nt" ) == 0 ) {
@@ -237,16 +239,17 @@ static bool ScanOptionsArg( const char * arg )
                 CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
             } else {
                 RcError( ERR_UNKNOWN_TARGET_OS, arg );
-                contok = FALSE;
+                contok = false;
             }
         } else {
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
-            contok = FALSE;
+            contok = false;
         }
         break;
     case 'c':
         arg++;
-        if( *arg == '=' ) arg++;
+        if( *arg == '=' )
+            arg++;
         if( scanString( CmdLineParms.CodePageFile, arg, _MAX_PATH  ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
@@ -262,14 +265,16 @@ static bool ScanOptionsArg( const char * arg )
         switch( tolower( *arg ) ) {
         case 'o':
             arg++;
-            if( *arg == '=' ) arg++;
+            if( *arg == '=' )
+                arg++;
             if( scanString( CmdLineParms.OutResFileName, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
             break;
         case 'r':
             arg++;
-            if( *arg == '=' ) arg++;
+            if( *arg == '=' )
+                arg++;
             resfile = RcMemMalloc( sizeof( ExtraRes ) );
             if( scanString( resfile->name, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
@@ -281,20 +286,22 @@ static bool ScanOptionsArg( const char * arg )
             break;
         case 'e':
             arg++;
-            if( *arg == '=' ) arg++;
+            if( *arg == '=' )
+                arg++;
             if( scanString( CmdLineParms.OutExeFileName, arg, _MAX_PATH  ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
-            contok = FALSE;
+            contok = false;
             break;
         }
         break;
     case 'g':
         arg++;
-        if( *arg == '=' ) arg++;
+        if( *arg == '=' )
+            arg++;
         temp = RcMemMalloc( strlen( arg ) + 1 );
         if( scanString( temp, arg, _MAX_PATH  ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
@@ -307,7 +314,7 @@ static bool ScanOptionsArg( const char * arg )
             frStrings->findString = frStrings->buf;
         } else {
             RcError( ERR_SYNTAX_STR, "/g=" );
-            contok = FALSE;
+            contok = false;
         }
         p = strtok( NULL, delims );
         if( p != NULL ) {
@@ -316,11 +323,11 @@ static bool ScanOptionsArg( const char * arg )
             frStrings->replaceString = &frStrings->buf[findlen+1];
         } else {
             RcError( ERR_SYNTAX_STR, frStrings->findString  );
-            contok = FALSE;
+            contok = false;
         }
         frStrings->next = CmdLineParms.FindReplaceStrings;
         CmdLineParms.FindReplaceStrings = frStrings;
-        CmdLineParms.FindAndReplace = TRUE;
+        CmdLineParms.FindAndReplace = true;
         RcMemFree( temp );
         break;
     case 'i':
@@ -335,7 +342,7 @@ static bool ScanOptionsArg( const char * arg )
         RcMemFree( temp );
         break;
     case 'o':
-        CmdLineParms.PreprocessOnly = TRUE;
+        CmdLineParms.PreprocessOnly = true;
         break;
     case 's':
         arg++;
@@ -354,19 +361,19 @@ static bool ScanOptionsArg( const char * arg )
     case 'w':
         arg++;
         if( *arg == 'r' ) {
-//          CmdLineParms.WritableRes = TRUE;
+//          CmdLineParms.WritableRes = true;
         }
         break;
-#if defined(YYDEBUG) || defined(SCANDEBUG)
+#if defined( YYDEBUG ) || defined( SCANDEBUG )
     case 'v':
         arg++;
         switch( tolower( *arg ) ) {
-    #if defined(YYDEBUG)
+    #if defined( YYDEBUG )
         case '1':
             CmdLineParms.DebugParser = 1;
             break;
     #endif
-    #if defined(YYDEBUG) && defined(SCANDEBUG)
+    #if defined( YYDEBUG ) && defined( SCANDEBUG )
         case '2':
             CmdLineParms.DebugParser = 1;
             CmdLineParms.DebugScanner = 1;
@@ -375,7 +382,7 @@ static bool ScanOptionsArg( const char * arg )
             CmdLineParms.DebugScanner = 1;
             break;
     #endif
-    #if defined(SCANDEBUG)
+    #if defined( SCANDEBUG )
         default:
             CmdLineParms.DebugScanner = 1;
             break;
@@ -386,21 +393,21 @@ static bool ScanOptionsArg( const char * arg )
     case 'x':
         arg++;
         if( tolower( *arg ) == 'b' ) {
-            CmdLineParms.NoTargetDefine = TRUE;
+            CmdLineParms.NoTargetDefine = true;
         } else if( tolower( *arg ) == 'c' ) {
-            CmdLineParms.IgnoreCWD = TRUE;
+            CmdLineParms.IgnoreCWD = true;
         } else {
-            CmdLineParms.IgnoreINCLUDE = TRUE;
+            CmdLineParms.IgnoreINCLUDE = true;
         }
         break;
     case 'z':
         arg++;
         switch( tolower( *arg ) ) {
         case 'm':
-            CmdLineParms.MSResFormat = TRUE;
+            CmdLineParms.MSResFormat = true;
             break;
         case 'n':
-            CmdLineParms.NoPreprocess = TRUE;
+            CmdLineParms.NoPreprocess = true;
             break;
         /*
             Lead-byte and trail-byte ranges for code pages used in Far East
@@ -469,13 +476,13 @@ static bool ScanOptionsArg( const char * arg )
                 // fall down
             default:
                 RcError( ERR_UNKNOWN_MULT_OPTION, arg - 2 );
-                contok = FALSE;
+                contok = false;
                 break;
             }
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
-            contok = FALSE;
+            contok = false;
             break;
         }
         break;
@@ -489,9 +496,9 @@ static bool ScanOptionsArg( const char * arg )
 static void MakeFileName( char * infilename, char * outfilename, char * ext )
 /***************************************************************************/
 {
-    char    name[ _MAX_FNAME ];
-    char    dir[ _MAX_DIR ];
-    char    drive[ _MAX_DRIVE ];
+    char    name[_MAX_FNAME];
+    char    dir[_MAX_DIR];
+    char    drive[_MAX_DRIVE];
 
     _splitpath( infilename, drive, dir, name, NULL );
     _makepath( outfilename, drive, dir, name, ext );
@@ -500,10 +507,10 @@ static void MakeFileName( char * infilename, char * outfilename, char * ext )
 static void CheckExtension( char * filename, char * defext )
 /**********************************************************/
 {
-    char    name[ _MAX_FNAME ];
-    char    drive[ _MAX_DRIVE ];
-    char    dir[ _MAX_DIR ];
-    char    ext[ _MAX_EXT ];
+    char    name[_MAX_FNAME];
+    char    drive[_MAX_DRIVE];
+    char    dir[_MAX_DIR];
+    char    ext[_MAX_EXT];
 
     _splitpath( filename, drive, dir, name, ext );
     if( *ext == '\0' ) {
@@ -524,19 +531,19 @@ static const char *ExeExt[] =   {
 static void CheckPass2Only( void )
 /********************************/
 {
-    char    ext[ _MAX_EXT ];
+    char    ext[_MAX_EXT];
     char    **check_ext;
 
     _splitpath( CmdLineParms.InFileName, NULL, NULL, NULL, ext );
     if( stricmp( ext, ".RES" ) == 0 ) {
-        CmdLineParms.Pass2Only = TRUE;
+        CmdLineParms.Pass2Only = true;
     } else {
         /* if the extension is in the ExeExt list then we want pass2 only */
         /* and there is no resource file to merge */
-        for (check_ext = (char**)ExeExt; *check_ext != NULL; check_ext++) {
-            if (stricmp( ext, *check_ext ) == 0) {
-                CmdLineParms.Pass2Only = TRUE;
-                CmdLineParms.NoResFile = TRUE;
+        for( check_ext = (char **)ExeExt; *check_ext != NULL; check_ext++ ) {
+            if( stricmp( ext, *check_ext ) == 0 ) {
+                CmdLineParms.Pass2Only = true;
+                CmdLineParms.NoResFile = true;
             }
         }
     }
@@ -552,7 +559,7 @@ static void CheckParms( void )
 
     /* was an EXE file name given */
     if( CmdLineParms.InExeFileName[0] == '\0' ) {
-        if (CmdLineParms.NoResFile) {
+        if( CmdLineParms.NoResFile ) {
             strncpy( CmdLineParms.InExeFileName, CmdLineParms.InFileName, _MAX_PATH );
         } else {
             MakeFileName( CmdLineParms.InFileName,
@@ -583,7 +590,7 @@ static void CheckParms( void )
     }
 
     /* check for the existance of the input files */
-    if (! (CmdLineParms.Pass2Only && CmdLineParms.NoResFile) ) {
+    if( !( CmdLineParms.Pass2Only && CmdLineParms.NoResFile ) ) {
         if( access( CmdLineParms.InFileName, F_OK ) != 0 ) {
             RcFatalError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
         }
@@ -623,30 +630,30 @@ static void CheckParms( void )
 static void defaultParms( void )
 /******************************/
 {
-    #ifdef SCANDEBUG
-        CmdLineParms.DebugScanner = FALSE;
-    #endif
-    #ifdef YYDEBUG
-        CmdLineParms.DebugParser = FALSE;
-    #endif
+#ifdef SCANDEBUG
+    CmdLineParms.DebugScanner = false;
+#endif
+#ifdef YYDEBUG
+    CmdLineParms.DebugParser = false;
+#endif
     CmdLineParms.MBCharSupport = MB_NONE;
-    CmdLineParms.PrintHelp = FALSE;
-    CmdLineParms.Quiet = FALSE;
-    CmdLineParms.Pass1Only = FALSE;
-    CmdLineParms.Pass2Only = FALSE;
-    CmdLineParms.NoResFile = FALSE;
+    CmdLineParms.PrintHelp = false;
+    CmdLineParms.Quiet = false;
+    CmdLineParms.Pass1Only = false;
+    CmdLineParms.Pass2Only = false;
+    CmdLineParms.NoResFile = false;
     CmdLineParms.IgnoreCWD = IgnoreCWD;
     CmdLineParms.IgnoreINCLUDE = IgnoreINCLUDE;
-    CmdLineParms.NoTargetDefine = FALSE;
-    CmdLineParms.PrivateDLL = FALSE;
-    CmdLineParms.GlobalMemEMS = FALSE;
-    CmdLineParms.EMSInstance = FALSE;
-    CmdLineParms.EMSDirect = FALSE;
-    CmdLineParms.ProtModeOnly = FALSE;
+    CmdLineParms.NoTargetDefine = false;
+    CmdLineParms.PrivateDLL = false;
+    CmdLineParms.GlobalMemEMS = false;
+    CmdLineParms.EMSInstance = false;
+    CmdLineParms.EMSDirect = false;
+    CmdLineParms.ProtModeOnly = false;
     CmdLineParms.SegmentSorting = SEG_SORT_MANY;
-    CmdLineParms.FindAndReplace = FALSE;
-    CmdLineParms.Prepend = FALSE;
-//    CmdLineParms.WritableRes = FALSE;
+    CmdLineParms.FindAndReplace = false;
+    CmdLineParms.Prepend = false;
+//    CmdLineParms.WritableRes = false;
     CmdLineParms.InFileName[0] = '\0';
     CmdLineParms.InExeFileName[0] = '\0';
     CmdLineParms.OutResFileName[0] = '\0';
@@ -654,11 +661,11 @@ static void defaultParms( void )
     CmdLineParms.CodePageFile[0] = '\0';
     CmdLineParms.PrependString[0] = '\0';
     CmdLineParms.CPPArgs = NULL;
-    CmdLineParms.VersionStamp = VERSION_31_STAMP;
-    CmdLineParms.NoProtectCC = FALSE;
-    CmdLineParms.NoPreprocess = FALSE;
-    CmdLineParms.GenAutoDep = FALSE;
-    CmdLineParms.PreprocessOnly = FALSE;
+    CmdLineParms.VersionStamp30 = false;
+    CmdLineParms.NoProtectCC = false;
+    CmdLineParms.NoPreprocess = false;
+    CmdLineParms.GenAutoDep = false;
+    CmdLineParms.PreprocessOnly = false;
     CmdLineParms.ExtraResFiles = NULL;
     CmdLineParms.FindReplaceStrings = NULL;
 #ifdef __OSI__
@@ -667,9 +674,9 @@ static void defaultParms( void )
     } else {
         CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
     }
-#elif defined(__NT__)
+#elif defined( __NT__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
-#elif defined(__OS2__)
+#elif defined( __OS2__ )
     CmdLineParms.TargetOS = RC_TARGET_OS_OS2;
 #else
     CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
@@ -739,7 +746,7 @@ static void getCodePage( void ) {
 /********************************/
 
     RcStatus            ret;
-    char                path[ _MAX_PATH ];
+    char                path[_MAX_PATH];
 
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         ConvToUnicode = UTF8StringToUnicode;
@@ -768,7 +775,7 @@ static void getCodePage( void ) {
         }
 #ifdef __NT__
     } else {
-        if(MB_NONE == CmdLineParms.MBCharSupport){
+        if( MB_NONE == CmdLineParms.MBCharSupport ) {
             SetNativeLeadBytes();
             ConvToUnicode = NativeDBStringToUnicode;
         }
@@ -786,8 +793,8 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
 
     contok = true;
     switchchar = _dos_switch_char();
-    for( currarg = 1; currarg < argc && contok; currarg++) {
-        arg = argv[ currarg ];
+    for( currarg = 1; currarg < argc && contok; currarg++ ) {
+        arg = argv[currarg];
         if( *arg == switchchar || *arg == '-' ) {
             contok = ScanOptionsArg( arg + 1 ) && contok;
         } else if( *arg == '@' ) {
@@ -813,8 +820,8 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
     return( contok );
 }
 
-extern unsigned ParseEnvVar( const char *env, char **argv, char *buf )
-/********************************************************************/
+extern int ParseEnvVar( const char *env, char **argv, char *buf )
+/***************************************************************/
 {
     /*
      * Returns a count of the "command line" parameters in *env.
@@ -826,20 +833,21 @@ extern unsigned ParseEnvVar( const char *env, char **argv, char *buf )
 
     const char  *start;
     int         switchchar;
-    unsigned    argc;
+    int         argc;
     char        *bufend;
     bool        got_quote;
 
     switchchar = _dos_switch_char();
     bufend = buf;
     argc = 1;
-    if( argv != NULL ) argv[0] = ""; //fill in the program name
+    if( argv != NULL )
+        argv[0] = ""; //fill in the program name
     for( ;; ) {
-        got_quote = FALSE;
+        got_quote = false;
         while( isspace( *env ) && *env != '\0' ) env++;
         start = env;
         if( buf != NULL ) {
-            argv[ argc ] = bufend;
+            argv[argc] = bufend;
         }
         if( *env == switchchar || *env == '-' ) {
             if( buf != NULL ) {
@@ -865,7 +873,9 @@ extern unsigned ParseEnvVar( const char *env, char **argv, char *buf )
                 bufend++;
             }
         }
-        if( *env == '\0' ) break;
+        if( *env == '\0' ) {
+            break;
+        }
     }
     return( argc );
 }
@@ -875,7 +885,7 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
 {
     /*
      * Pass nofilenames and analysis of getenv(varname) into argc and argv
-     * to doScanParams. Return view on usability of data. (TRUE is usable.)
+     * to doScanParams. Return view on usability of data. (true is usable.)
      *
      * Recursion is supported but circularity is rejected.
      *
@@ -890,7 +900,7 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
         char                    buf[1]; /* dynamic array */
     } EnvVarInfo;
 
-    unsigned            argc;
+    int                 argc;
     EnvVarInfo          *info;
     static EnvVarInfo   *stack = 0; // Needed to detect recursion.
     size_t              argvsize;
@@ -902,11 +912,11 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     env = RcGetEnv( varname );
     if( env == NULL ) {
         RcWarning( ERR_ENV_VAR_NOT_FOUND, varname );
-        return( TRUE );
+        return( true );
     }
     // This used to cause stack overflow: set foo=@foo && wrc @foo.
     for( info = stack; info != NULL; info = info->next ) {
-#if !defined(__UNIX__)
+#if !defined( __UNIX__ )
         if( stricmp( varname, info->varname ) == 0 ) // Case-insensitive
 #else
         if( strcmp( varname, info->varname ) == 0 )  // Case-sensitive
@@ -972,7 +982,7 @@ extern void ScanParamShutdown( void )
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
         RcMemFree( tmpres );
     }
-    while( CmdLineParms.FindReplaceStrings != NULL) {
+    while( CmdLineParms.FindReplaceStrings != NULL ) {
         strings = CmdLineParms.FindReplaceStrings;
         CmdLineParms.FindReplaceStrings = CmdLineParms.FindReplaceStrings->next;
         RcMemFree( strings );
@@ -1009,7 +1019,7 @@ extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         if( strstr( stringFromFile, frStrings->findString ) != NULL ) {
             //checking if a replacement is to be done, then allocating memory
             replacedString = RcMemMalloc( lenOfStringFromFile+1 );
-            for( k=0; k < lenOfStringFromFile; k++) {
+            for( k=0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
             }
             while( i <= lenOfStringFromFile ) {

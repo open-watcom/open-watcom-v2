@@ -74,7 +74,7 @@ extern void InitWINResTable( void )
         res->Head = NULL;
         res->Tail = NULL;
 
-        StringBlockBuild( str, dir, FALSE );
+        StringBlockBuild( str, dir, false );
     }
 } /* InitWINResTable */
 
@@ -87,11 +87,9 @@ extern uint_32 ComputeWINResourceSize( WResDir dir )
     WResLangInfo    *res;
 
     length = 0;
-    wind = WResFirstResource( dir );
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         res = WResGetLangInfo( wind );
         length += res->Length;
-        wind = WResNextResource( wind, dir );
     }
     return( length );
 } /* ComputeWINResourceSize */
@@ -270,9 +268,8 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
     err_code = 0;
 
     /* walk through the WRes directory */
-    wind = WResFirstResource( dir );
     exe_type = NULL;
-    while( !WResIsEmptyWindow( wind ) ) {
+    for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
         if( WResIsFirstResOfType( wind ) ) {
             exe_type = findExeTypeRecord( restab, WResGetTypeInfo( wind ) );
         }
@@ -290,11 +287,10 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
                                     &err_code );
         }
 
-        if( ret != RS_OK ) break;
+        if( ret != RS_OK )
+            break;
 
         CheckDebugOffset( &(Pass2Info.TmpFile) );
-
-        wind = WResNextResource( wind, dir );
     }
 
     switch( ret ) {
@@ -348,24 +344,17 @@ static void freeResTable( ResTable *restab )
 /******************************************/
 {
     FullTypeRecord              *exe_type;
-    FullTypeRecord              *old_type;
+    FullTypeRecord              *next_type;
     FullResourceRecord          *exe_res;
-    FullResourceRecord          *old_res;
+    FullResourceRecord          *next_res;
 
-    exe_type = restab->Dir.Head;
-    while( exe_type != NULL ) {
-        exe_res = exe_type->Head;
-        while (exe_res != NULL) {
-            old_res = exe_res;
-            exe_res = exe_res->Next;
-
-            RCFREE( old_res );
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = next_type ) {
+        next_type = exe_type->Next;
+        for( exe_res = exe_type->Head; exe_res != NULL; exe_res = next_res ) {
+            next_res = exe_res->Next;
+            RCFREE( exe_res );
         }
-
-        old_type = exe_type;
-        exe_type = exe_type->Next;
-
-        RCFREE( old_type );
+        RCFREE( exe_type );
     }
 
     restab->Dir.Head = NULL;

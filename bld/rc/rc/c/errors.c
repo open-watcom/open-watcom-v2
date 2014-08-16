@@ -87,7 +87,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     errinfo.severity = sev;
     errinfo.flags |= OUTFLAG_ERRID;
     errinfo.errid = errornum;
-    switch (errornum) {
+    switch( errornum ) {
     case ERR_CANT_OPEN_FILE:
     case ERR_READING_TMP:
     case ERR_WRITTING_TMP:
@@ -140,7 +140,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );
         currfile = RcIoGetLogicalFileInfo();
-        if (currfile != NULL) {
+        if( currfile != NULL ) {
             errinfo.flags |= OUTFLAG_FILE | OUTFLAG_LINE;
             errinfo.file = currfile->Filename;
             errinfo.lineno = currfile->LineNum;

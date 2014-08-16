@@ -54,7 +54,7 @@ SemOffset SemStartResource( void )
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
     }
-    if (CurrResFile.IsWatcomRes) {
+    if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.handle ) );
     } else {
         /* open a temporary file and trade handles with the RES file */
@@ -80,7 +80,7 @@ SemLength SemEndResource( SemOffset start )
 {
     SemLength   len;
 
-    if (CurrResFile.IsWatcomRes) {
+    if( CurrResFile.IsWatcomRes ) {
         return( ResTell( CurrResFile.handle ) - start );
     } else {
         /* Close the temperary file, reset the RES file handle and return */
@@ -114,7 +114,6 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     MResResourceHeader  ms_head;
     long                cur_byte_num;
     uint_8              cur_byte;
-    long                seek_rc;
     bool                error;
     WResFileID          tmp_handle;
 
@@ -131,11 +130,11 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     /* OS/2 resource header happens to be identical to Win16 */
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ||
         CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, FALSE );
+        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, false );
     } else {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, TRUE );
+        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, true );
     }
-    if (error) {
+    if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
         RCFREE( ms_head.Type );
         RCFREE( ms_head.Name );
@@ -151,8 +150,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         }
 
         /* copy the data from the temperary file to the RES file */
-        seek_rc = ResSeek( tmp_handle, loc.start, SEEK_SET );
-        if (seek_rc == -1) {
+        if( ResSeek( tmp_handle, loc.start, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ResCloseFile( tmp_handle );
             ErrorHasOccured = true;
@@ -161,7 +159,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
 
         /* this is very inefficient but hopefully the buffering in layer0.c */
         /* will make it tolerable */
-        for (cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++) {
+        for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
             error = ResReadUint8( &cur_byte, tmp_handle );
             if( error ) {
                 RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
@@ -219,23 +217,23 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
     }
     error = WResAddResource( type, name, flags, loc.start, loc.len, CurrResFile.dir, lang, &duplicate );
 
-    if (duplicate) {
+    if( duplicate ) {
         if( filename == NULL ) {
-            ReportDupResource( name, type, NULL, NULL, TRUE );
+            ReportDupResource( name, type, NULL, NULL, true );
         } else {
-            ReportDupResource( name, type, filename, CmdLineParms.InFileName, TRUE );
+            ReportDupResource( name, type, filename, CmdLineParms.InFileName, true );
         }
         /* The resource has already been written but we can't add it to */
         /* directory. This will make the .RES file larger but will otherwise */
         /* not affect it since there will be no references to the resource in */
         /* the directory. */
-    } else if (error) {
+    } else if( error ) {
         RcError( ERR_OUT_OF_MEMORY );
         ErrorHasOccured = true;
     }
 
-    if (!CurrResFile.IsWatcomRes) {
-        if (!duplicate) {
+    if( !CurrResFile.IsWatcomRes ) {
+        if( !duplicate ) {
             copyMSFormatRes( name, type, flags, loc, lang );
         }
         /* erase the temporary file */

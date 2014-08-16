@@ -60,7 +60,7 @@ bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
 
     error = false;
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
-        name = currblock->String[ stringid ];
+        name = currblock->String[stringid];
         if( name == NULL ) {
             // Write an empty string
             error = ResWriteUint16( &tmp16, handle );
@@ -69,7 +69,7 @@ bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
             tmp8  = (name->NumChars + 1) & 0xFF;
             error = ResWriteUint8( &tmp8, handle );
             if( !error )
-                error = ResWriteStringLen( name->Name, FALSE, handle, tmp8 - 1 );
+                error = ResWriteStringLen( name->Name, false, handle, tmp8 - 1 );
             // The terminating NULL is not stored in the table, need to add it now
             if( !error )
                 error = ResWriteUint8( &tmpzero, handle );
@@ -162,7 +162,7 @@ void SemOS2AddStrToStringTable( FullStringTable *currtable,
 
     currblock = findStringTableBlock( currtable, blocknum );
     if( currblock != NULL ) {
-        if( currblock->Block.String[ stringnum ] != NULL ) {
+        if( currblock->Block.String[stringnum] != NULL ) {
             /* duplicate stringid */
             RcError( ERR_DUPLICATE_STRING_CONST, stringid );
             ErrorHasOccured = true;
@@ -173,7 +173,7 @@ void SemOS2AddStrToStringTable( FullStringTable *currtable,
         ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), currblock );
     }
 
-    currblock->Block.String[ stringnum ] = WResIDNameFromStr( string );
+    currblock->Block.String[stringnum] = WResIDNameFromStr( string );
 } /* SemOS2AddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock *currblock,
@@ -183,12 +183,12 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
     int     stringid;
 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
-        if( currblock->Block.String[ stringid ] == NULL ) {
-            currblock->Block.String[ stringid ] =
-                                oldblock->Block.String[ stringid ];
-            oldblock->Block.String[ stringid ] = NULL;
+        if( currblock->Block.String[stringid] == NULL ) {
+            currblock->Block.String[stringid] =
+                                oldblock->Block.String[stringid];
+            oldblock->Block.String[stringid] = NULL;
         } else {
-            if( oldblock->Block.String[ stringid ] != NULL ) {
+            if( oldblock->Block.String[stringid] != NULL ) {
                 RcError( ERR_DUPLICATE_STRING_CONST,
                             ( currblock->BlockNum << 4 ) + stringid );
                 ErrorHasOccured = true;
@@ -307,7 +307,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             error = ResOS2WriteStringTableBlock( &(currblock->Block),
                                                  CurrResFile.handle,
                                                  currblock->codePage );
-            if( error) {
+            if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
                          LastWresErrStr() );
                 ErrorHasOccured = true;

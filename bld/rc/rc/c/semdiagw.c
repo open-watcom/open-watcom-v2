@@ -89,7 +89,7 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
     newheader = RCALLOC( sizeof( FullDialogBoxHeader ) );
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-        newheader->Win32 = FALSE;
+        newheader->Win32 = false;
         newheader->u.Head.Style = 0L;
         newheader->u.Head.NumOfItems = 0;
         newheader->u.Head.Size.x = 0;
@@ -102,7 +102,7 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head.PointSize = 0;
         newheader->u.Head.FontName = NULL;
     } else {
-        newheader->Win32 = TRUE;
+        newheader->Win32 = true;
         newheader->u.Head32.Head.Style = 0L;
         newheader->u.Head32.Head.ExtendedStyle = 0L;
         newheader->u.Head32.Head.NumOfItems = 0;
@@ -120,11 +120,11 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head32.ExHead.FontItalic = 0;
         newheader->u.Head32.ExHead.FontExtra = 1;
         newheader->u.Head32.ExHead.HelpId = 0L;
-        newheader->u.Head32.ExHead.FontWeightDefined = FALSE;
-        newheader->u.Head32.ExHead.FontItalicDefined = FALSE;
+        newheader->u.Head32.ExHead.FontWeightDefined = false;
+        newheader->u.Head32.ExHead.FontItalicDefined = false;
     }
 
-    newheader->StyleGiven = FALSE;
+    newheader->StyleGiven = false;
 
     return( newheader );
 } /* NewDialogBoxHeader */
@@ -223,7 +223,7 @@ static void AddDiagOption32( DlgHeader32 *head,
         head->Head.Caption = opt->Opt.Str;
         break;
     case Y_LANGUAGE:
-        SemWINSetResourceLanguage( &opt->Opt.lang, TRUE );
+        SemWINSetResourceLanguage( &opt->Opt.lang, true );
         break;
     }
 } /* AddDiagOptions32 */
@@ -238,7 +238,7 @@ FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
         AddDiagOption( &head->u.Head, opt );
     }
     if( opt->token == Y_STYLE ) {
-        head->StyleGiven = TRUE;
+        head->StyleGiven = true;
     }
 
     return( head );
@@ -591,7 +591,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
     DialogBoxExControl32        controlex;
     DialogBoxControl32          control;
 
-    error = FALSE;
+    error = false;
     for( ctrl = list->head; ctrl != NULL && !error; ctrl = ctrl->next ) {
         if( ctrl->Win32 ) {
             if( tokentype == Y_DIALOG ) {
@@ -612,18 +612,16 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
                 controlex.ClassID = ctrl->u.ctrl32.ClassID;
                 controlex.Text = ctrl->u.ctrl32.Text;
                 controlex.ExtraBytes = ctrl->u.ctrl32.ExtraBytes;
-                error = ResWriteDialogExControl32( &controlex,
-                                                   CurrResFile.handle);
+                error = ResWriteDialogExControl32( &controlex, CurrResFile.handle);
                 if( ctrl->dataListHead != NULL ) {
-                    SemFlushDataElemList( ctrl->dataListHead, FALSE );
+                    SemFlushDataElemList( ctrl->dataListHead, false );
                 }
             }
             if( !error ) {
                 error = ResPadDWord( CurrResFile.handle );
             }
         } else {
-            error = ResWriteDialogBoxControl( &(ctrl->u.ctrl),
-                                            CurrResFile.handle );
+            error = ResWriteDialogBoxControl( &(ctrl->u.ctrl), CurrResFile.handle );
         }
     }
     *err_code = LastWresErr();
@@ -657,20 +655,20 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
     FullDialogBoxControl    *travptr;
 
     if( head->Win32 ) {
-        if( tokentype == Y_DIALOG && dlghelp.HelpIdDefined == TRUE ) {
+        if( tokentype == Y_DIALOG && dlghelp.HelpIdDefined ) {
             RcError( ERR_DIALOG_HELPID );
-        } else if( tokentype == Y_DIALOG_EX && dlghelp.HelpIdDefined == TRUE ) {
+        } else if( tokentype == Y_DIALOG_EX && dlghelp.HelpIdDefined ) {
             head->u.Head32.ExHead.HelpId = dlghelp.HelpId;
         }
         if( tokentype == Y_DIALOG ) {
-            if( head->u.Head32.ExHead.FontItalicDefined == TRUE ) {
+            if( head->u.Head32.ExHead.FontItalicDefined ) {
                 RcError( ERR_FONT_ITALIC );
             }
-            if( head->u.Head32.ExHead.FontWeightDefined == TRUE ) {
+            if( head->u.Head32.ExHead.FontWeightDefined ) {
                 RcError( ERR_FONT_WEIGHT );
             }
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
-                if( travptr->u.ctrl32.HelpIdDefined == TRUE ) {
+                if( travptr->u.ctrl32.HelpIdDefined ) {
                     RcError( ERR_DIALOG_CONTROL_HELPID );
                 }
                 if( travptr->dataListHead != NULL ) {
@@ -737,18 +735,15 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 
         if( head->Win32 ) {
             if( tokentype == Y_DIALOG ) {
-                error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head),
-                                                    CurrResFile.handle );
+                error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.handle );
             } else if( tokentype == Y_DIALOG_EX ) {
-                error = ResWriteDialogExHeader32( &(head->u.Head32.Head),
-                                 &(head->u.Head32.ExHead), CurrResFile.handle );
+                error = ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.handle );
             }
             if( !error ) {
                 error = ResPadDWord( CurrResFile.handle );
             }
         } else {
-            error = ResWriteDialogBoxHeader( &(head->u.Head),
-                                                CurrResFile.handle );
+            error = ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.handle );
         }
         if( error ) {
             err_code = LastWresErr();
@@ -762,7 +757,8 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         } else {
             error = SemWriteDiagCtrlList( ctrls, &err_code, tokentype );
         }
-        if( error ) goto OutputWriteError;
+        if( error )
+            goto OutputWriteError;
 
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( (long)RT_DIALOG ), flags, loc );
@@ -776,8 +772,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename,
-                strerror( err_code )  );
+    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
 CustomError:
     ErrorHasOccured = true;
     SemFreeDialogHeader( head );
@@ -820,7 +815,7 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
             control->u.ctrl32.HelpIdDefined = help->HelpIdDefined;
         } else {
             control->u.ctrl32.HelpId = 0;
-            control->u.ctrl32.HelpIdDefined = FALSE;
+            control->u.ctrl32.HelpIdDefined = false;
         }
         RCFREE( ctlclassname );
     } else {

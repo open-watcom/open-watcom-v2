@@ -54,7 +54,7 @@ typedef enum {
 typedef struct ResFileInfo {
     struct ResFileInfo  *next;
     char                *name;
-    int                 IsOpen;
+    bool                IsOpen;
     WResFileID          Handle;
     WResDir             Dir;
 } ResFileInfo;
@@ -84,7 +84,7 @@ typedef struct LXExeInfo {
 } LXExeInfo;
 
 typedef struct ExeFileInfo {
-    int             IsOpen;
+    bool            IsOpen;
     WResFileID      Handle;
     char            *name;
     uint_32         WinHeadOffset;      /* wlink doesn't initialize this */
@@ -98,12 +98,12 @@ typedef struct ExeFileInfo {
 } ExeFileInfo;
 
 typedef struct RcPass2Info {
-    char            TmpFileName[ _MAX_PATH ];
+    char            TmpFileName[_MAX_PATH];
     ExeFileInfo     TmpFile;
     ExeFileInfo     OldFile;
     ResFileInfo     *ResFiles;
-    int             AllResFilesOpen;
-    void *          IoBuffer;
+    bool            AllResFilesOpen;
+    void            *IoBuffer;
 } RcPass2Info;
 
 extern bool MergeResExePE( void );

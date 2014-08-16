@@ -38,12 +38,12 @@ typedef struct DlgHeader32 {
 } DlgHeader32;
 
 typedef struct FullDialogBoxHeader {
-    uint_8              Win32;
+    bool                Win32;
     union {
         DialogBoxHeader     Head;
         DlgHeader32         Head32;
     } u;
-    uint_8              StyleGiven;
+    bool                StyleGiven;
 } FullDialogBoxHeader;
 
 typedef struct DlgControl32 {
@@ -55,18 +55,18 @@ typedef struct DlgControl32 {
     ResNameOrOrdinal     *Text;
     uint_16               ExtraBytes;       /* should be 0 */
     uint_32               HelpId;           /* only used for Dialogex */
-    char                  HelpIdDefined;    /* only used for Dialogex */
+    bool                  HelpIdDefined;    /* only used for Dialogex */
 }DlgControl32;
 
 typedef struct FullDialogBoxControl {
-    struct FullDialogBoxControl *   next;
-    struct FullDialogBoxControl *   prev;
-    uint_8                          Win32;
+    struct FullDialogBoxControl     *next;
+    struct FullDialogBoxControl     *prev;
+    bool                            Win32;
     union {
         DialogBoxControl            ctrl;
         DlgControl32                ctrl32;
     } u;
-    DataElemList                *   dataListHead;
+    DataElemList                    *dataListHead;
 } FullDialogBoxControl;
 
 typedef struct FullDiagCtrlList {
@@ -82,12 +82,12 @@ typedef struct FullDiagCtrlOptions {
     ResNameOrOrdinal *      Text;
     uint_32                 ExtendedStyle;
     uint_32                 HelpId;
-    int                     HelpIdDefined;
+    bool                    HelpIdDefined;
 } FullDiagCtrlOptions;
 
 typedef struct DlgHelpId {
     uint_32     HelpId;
-    char        HelpIdDefined;
+    bool        HelpIdDefined;
 } DlgHelpId;
 
 typedef struct PresParamsOS2 {

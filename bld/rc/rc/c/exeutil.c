@@ -46,11 +46,10 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
     WResFileSSize   numread;
     uint_32         bufflen;
 
-    if (length == 0) {
+    if( length == 0 ) {
         return( RS_PARAM_ERROR );
     }
-    bufflen = IO_BUFFER_SIZE;
-    while( length > 0 ) {
+    for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
         if( length < bufflen ) {
             bufflen = length;
         }
@@ -61,7 +60,6 @@ RcStatus CopyExeData( WResFileID inhandle, WResFileID outhandle, uint_32 length 
         if( RCWRITE( outhandle, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
             return( RS_WRITE_ERROR );
         }
-        length -= bufflen;
     }
     return( RS_OK );
 } /* CopyExeData */
@@ -75,15 +73,13 @@ RcStatus CopyExeDataTilEOF( WResFileID inhandle, WResFileID outhandle )
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
-    while( numread != 0 ) {
+    while( (numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
         if( RCIOERR( inhandle, numread ) ) {
             return( RS_READ_ERROR );
         }
         if( RCWRITE( outhandle, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
-        numread = RCREAD( inhandle, Pass2Info.IoBuffer, IO_BUFFER_SIZE );
     }
 
     return( RS_OK );
@@ -95,7 +91,7 @@ long AlignAmount( long offset, uint_16 shift_count )
     uint_32     low_bits;       /* low shift_count bits of offset */
 
     low_bits = offset & (0xffffffffUL >> (32 - shift_count));
-    if (low_bits == 0) {
+    if( low_bits == 0 ) {
         return( 0 );
     } else {
         return( (0x1UL << shift_count) - low_bits );
@@ -113,10 +109,7 @@ static uint_32 FloorLog2( uint_32 value )
         return( 0 );
     }
     log = 31;
-    for(;;) {
-        if( value & 0x80000000ul ) {  /* done if high bit on */
-            break;
-        }
+    while( (value & 0x80000000UL) == 0 ) {  /* done if high bit on */
         value <<= 1;            /* shift left and decrease possible log. */
         log--;
     }
@@ -131,14 +124,14 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
     uint_16     shift_old;
     uint_16     shift;
 
-    if (filelen < 0x10000L) {
+    if( filelen < 0x10000L ) {
         return( 0 );
     }
 
     shift_old = 16;
     shift = FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15;
     /* It is possible for the algorithm to blow up so don't check for != use <*/
-    while (shift < shift_old) {
+    while( shift < shift_old ) {
         shift_old = shift;
         shift = FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15;
     }
@@ -158,20 +151,20 @@ RcStatus PadExeData( WResFileID handle, long length )
 {
     memset( Pass2Info.IoBuffer, 0, IO_BUFFER_SIZE );
 
-    while (length > IO_BUFFER_SIZE) {
+    while( length > IO_BUFFER_SIZE ) {
         length -= IO_BUFFER_SIZE;
-        if (RCWRITE( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE) {
+        if( RCWRITE( handle, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE ) {
             return( RS_WRITE_ERROR );
         }
     }
 
-    if (length > 0) {
-        if (RCWRITE( handle, Pass2Info.IoBuffer, length ) != length) {
+    if( length > 0 ) {
+        if( RCWRITE( handle, Pass2Info.IoBuffer, length ) != length ) {
             return( RS_WRITE_ERROR );
         }
     }
 
-    return( FALSE );
+    return( RS_OK );
 } /* PadExeData */
 
 extern void CheckDebugOffset( ExeFileInfo * exe )
@@ -180,7 +173,7 @@ extern void CheckDebugOffset( ExeFileInfo * exe )
     uint_32     curroffset;
 
     curroffset = RCTELL( exe->Handle );
-    if (curroffset > exe->DebugOffset) {
+    if( curroffset > exe->DebugOffset ) {
         exe->DebugOffset = curroffset;
     }
 } /* CheckDebugOffset */
@@ -201,14 +194,18 @@ extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
     }
     objects = exe->u.PEInfo.Objects;
     for( i = 0; i < obj_cnt; i++ ) {
-        if( objects[i].rva == rva ) break;
+        if( objects[i].rva == rva )
+            break;
         if( objects[i].rva > rva ) {
-            if( i != 0 ) i--;
+            if( i != 0 )
+                i--;
             break;
         }
     }
-    if( i == obj_cnt ) i--;
-    if( objects[i].rva > rva ) return( 0xFFFFFFFF );
+    if( i == obj_cnt )
+        i--;
+    if( objects[i].rva > rva )
+        return( 0xFFFFFFFF );
     return( objects[i].physical_offset + rva - objects[i].rva );
 }
 
@@ -251,21 +248,26 @@ ExeType FindNEPELXHeader( WResFileID handle, unsigned_32 *nh_offset )
     RcStatus        rc;
 
     rc = SeekRead( handle, 0, &data, sizeof( data ) );
-    if( rc != RS_OK ) return( FALSE );
-    if( data != DOS_EXE_SIGNATURE ) return( EXE_TYPE_UNKNOWN );
+    if( rc != RS_OK )
+        return( EXE_TYPE_UNKNOWN );
+    if( data != DOS_EXE_SIGNATURE )
+        return( EXE_TYPE_UNKNOWN );
 
     rc = SeekRead( handle, DOS_RELOCATION_OFFSET, &data, sizeof( data ) );
-    if( rc != RS_OK ) return( EXE_TYPE_UNKNOWN );
+    if( rc != RS_OK )
+        return( EXE_TYPE_UNKNOWN );
 
     if( data < WIN_EXE_HEADER_OFFSET + sizeof(uint_32) ) {
         return( EXE_TYPE_UNKNOWN );
     }
 
     rc = SeekRead( handle, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof(uint_32) );
-    if( rc != RS_OK ) return( EXE_TYPE_UNKNOWN );
+    if( rc != RS_OK )
+        return( EXE_TYPE_UNKNOWN );
 
     rc = SeekRead( handle, *nh_offset, &data, sizeof( unsigned_16 ) );
-    if( rc != RS_OK ) return( EXE_TYPE_UNKNOWN );
+    if( rc != RS_OK )
+        return( EXE_TYPE_UNKNOWN );
 
     switch( data ) {
     case OS2_SIGNATURE_WORD:

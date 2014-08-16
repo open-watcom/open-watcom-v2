@@ -793,7 +793,7 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     int         err_code;
 
     loc.start = SemStartResource();
-    error = ResWriteString( filename, FALSE, CurrResFile.handle );
+    error = ResWriteString( filename, false, CurrResFile.handle );
     if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;

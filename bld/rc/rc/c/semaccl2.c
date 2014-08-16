@@ -39,19 +39,19 @@
 #include "rccore.h"
 
 
-int ResOS2WriteAccelEntry( AccelTableEntryOS2 * currentry, WResFileID handle )
-/**********************************************************************/
+bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID handle )
+/****************************************************************************/
 {
     if( RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 #define CTRL_EVENT  0x8000
 
-const FullAccelFlagsOS2 DefaultAccelFlagsOS2 = { 0, FALSE };
+const FullAccelFlagsOS2 DefaultAccelFlagsOS2 = { 0, false };
 
 int SemOS2StrToAccelEvent( char * string )
 /*************************************/
@@ -146,9 +146,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     return( newtable );
 }
 
-extern FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry,
-                                               FullAccelTableOS2 * currtable )
-/******************************************************************/
+FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTableOS2 * currtable )
+/**************************************************************************************************/
 {
     FullAccelEntryOS2     *newentry;
 
@@ -218,10 +217,9 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
     return( error );
 }
 
-extern void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags,
-                                   uint_32 codepage,
-                                   FullAccelTableOS2 *acctable )
-/*****************************************************************/
+void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
+                                                FullAccelTableOS2 *acctable )
+/****************************************************************************/
 {
     ResLocation     loc;
     bool            error;

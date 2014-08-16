@@ -58,7 +58,7 @@ FullVerValueList * SemWINNewVerValueList( VerValueItem item )
     list = RCALLOC( sizeof(FullVerValueList) );
     list->NumItems = 1;
     list->Item = RCALLOC( sizeof(VerValueItem) );
-    list->Item[ 0 ] = item;
+    list->Item[0] = item;
 
     return( list );
 }
@@ -74,7 +74,7 @@ FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
     list->NumItems++;
     list->Item = RCREALLOC( list->Item,
                             list->NumItems * sizeof(VerValueItem) );
-    list->Item[ list->NumItems - 1 ] = item;
+    list->Item[list->NumItems - 1] = item;
 
     return( list );
 }
@@ -140,9 +140,9 @@ FullVerBlock * SemWINNewBlockVal( char * name, FullVerValueList * list )
     block->Prev = NULL;
     block->Head.Key = name;
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = TRUE;
+        block->UseUnicode = true;
     } else {
-        block->UseUnicode = FALSE;
+        block->UseUnicode = false;
     }
     block->Value = list;
     block->Nest = NULL;
@@ -160,9 +160,9 @@ FullVerBlock * SemWINNameVerBlock( char * name, FullVerBlockNest * nest )
     block->Prev = NULL;
     block->Head.Key = name;
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        block->UseUnicode = TRUE;
+        block->UseUnicode = true;
     } else {
-        block->UseUnicode = FALSE;
+        block->UseUnicode = false;
     }
     block->Value = NULL;
     block->Nest = nest;
@@ -202,7 +202,8 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     if( !stricmp( block->Head.Key, "Translation" ) ) {
         block->Head.Type = 0;
     } else {
-        if( block->UseUnicode ) block->Head.ValSize /= 2;
+        if( block->UseUnicode )
+            block->Head.ValSize /= 2;
         block->Head.Type = 1;
     }
     block->Head.Size = head_size + val_size + padding + nest_size;
@@ -389,7 +390,6 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     ResLocation     loc;
     int             padding;
     bool            error;
-    long            seek_rc;
     bool            use_unicode;
     uint_8          os;
     int             err_code;
@@ -410,35 +410,35 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     /* pad the start of the resource so that padding within the resource */
     /* is easier */
     error = ResPadDWord( CurrResFile.handle );
-    if (error) {
+    if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;
     }
 
-    if (!ErrorHasOccured) {
+    if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
         error = ResWriteVerBlockHeader( &root, use_unicode, os,
                                         CurrResFile.handle);
-        if (error) {
+        if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
         error = ResWriteVerFixedInfo( info, CurrResFile.handle );
-        if (error) {
+        if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
-        seek_rc = ResSeek( CurrResFile.handle, padding, SEEK_CUR );
-        if( seek_rc == -1 )  {
+        if( ResSeek( CurrResFile.handle, padding, SEEK_CUR ) == -1 )  {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
         error = SemWriteVerBlockNest( nest, CurrResFile.handle, &err_code );
-        if (error) goto OutputWriteError;
+        if( error)
+            goto OutputWriteError;
 
         loc.len = SemEndResource( loc.start );
 
@@ -446,7 +446,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
 
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        SemWINSetResourceLanguage( &lang, FALSE );
+        SemWINSetResourceLanguage( &lang, false );
         SemAddResourceFree( name, WResIDFromNum( RT_VERSIONINFO ), flags, loc );
     } else {
         RCFREE( name );

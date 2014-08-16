@@ -58,10 +58,10 @@ FullOptFlagsOS2 SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
 
     newflags.flags = 0;
     newflags.codePage = curCodepage;
-    newflags.loadOptGiven   = FALSE;
-    newflags.memOptGiven    = FALSE;
-    newflags.purityOptGiven = FALSE;
-    newflags.cpOptGiven     = FALSE;
+    newflags.loadOptGiven   = false;
+    newflags.memOptGiven    = false;
+    newflags.purityOptGiven = false;
+    newflags.cpOptGiven     = false;
 
     return( SemOS2AddResOption( newflags, token, value ) );
 }
@@ -76,40 +76,40 @@ FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token
     switch( token ) {
     case Y_PRELOAD:
         currflags.flags |= MEMFLAG_PRELOAD | MEMFLAG_PURE;
-        currflags.loadOptGiven = TRUE;
+        currflags.loadOptGiven = true;
         break;
     case Y_LOADONCALL:
         currflags.flags &= ~MEMFLAG_PRELOAD;
         currflags.flags |= MEMFLAG_PURE;
-        currflags.loadOptGiven = TRUE;
+        currflags.loadOptGiven = true;
         break;
     case Y_FIXED:
         currflags.flags &= ~MEMFLAG_MOVEABLE;
         currflags.flags |= MEMFLAG_PURE;
-        currflags.memOptGiven = TRUE;
+        currflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
         currflags.flags |= MEMFLAG_MOVEABLE | MEMFLAG_PURE;
-        currflags.memOptGiven = TRUE;
+        currflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
         currflags.flags |= MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE;
-        currflags.memOptGiven = TRUE;
+        currflags.memOptGiven = true;
         break;
     case Y_PURE:
         currflags.flags |= MEMFLAG_PURE;
-        currflags.purityOptGiven = TRUE;
+        currflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
         currflags.flags &= ~MEMFLAG_PURE;
-        currflags.purityOptGiven = TRUE;
+        currflags.purityOptGiven = true;
         break;
     case Y_SEGALIGN:    // This one is OS/2 2.x specific
         currflags.flags |= MEMFLAG_SEGALIGN;
         break;
     case Y_INTEGER:    // Is this OS/2 2.x specific too?
         currflags.codePage = value;
-        currflags.cpOptGiven = TRUE;
+        currflags.cpOptGiven = true;
         break;
     }
 

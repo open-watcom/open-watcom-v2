@@ -107,7 +107,7 @@ RcStatus SemCopyDataUntilEOF( long offset, WResFileID handle,
             return( RS_READ_ERROR );
         }
         error = ResWrite( buff, numread, CurrResFile.handle );
-        if (error) {
+        if( error ) {
             *err_code = LastWresErr();
             return( RS_WRITE_ERROR );
         }
@@ -125,7 +125,7 @@ ResLocation SemCopyRawFile( const char *filename )
     WResFileID  handle;
     RcStatus    ret;
     char        *buffer;
-    char        full_filename[ _MAX_PATH ];
+    char        full_filename[_MAX_PATH];
     ResLocation loc;
     int         err_code;
     long        pos;
@@ -137,7 +137,8 @@ ResLocation SemCopyRawFile( const char *filename )
         goto HANDLE_ERROR;
     }
 
-    if( AddDependency( full_filename ) ) goto HANDLE_ERROR;
+    if( AddDependency( full_filename ) )
+        goto HANDLE_ERROR;
 
     handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
     if( handle == NIL_HANDLE ) {
@@ -184,7 +185,7 @@ DataElemList *SemNewDataElemList( RawDataItem node )
     DataElemList    *head;
 
     head = RCALLOC( sizeof( DataElemList ) );
-    head->data[ 0 ] = node;
+    head->data[0] = node;
     head->count = 1;
     head->next = NULL;
 
@@ -204,14 +205,14 @@ DataElemList *SemAppendDataElem( DataElemList *head, RawDataItem node )
         newnode = SemNewDataElemList( node );
         travptr->next = newnode;
     } else {
-        travptr->data[ travptr->count ] = node;
+        travptr->data[travptr->count] = node;
         (travptr->count)++;
     }
 
     return( head );
 }
 
-ResLocation SemFlushDataElemList( DataElemList *head, char call_startend )
+ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
 /************************************************************************/
 {
     DataElemList    *curnode;
@@ -237,10 +238,10 @@ ResLocation SemFlushDataElemList( DataElemList *head, char call_startend )
     }
     if( call_startend ) {
         if( CmdLineParms.MSResFormat
-         && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             ResPadDWord( CurrResFile.handle );
         }
-       resLoc.len = SemEndResource( resLoc.start );
+        resLoc.len = SemEndResource( resLoc.start );
     }
 
     return( resLoc );

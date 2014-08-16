@@ -45,7 +45,7 @@ extern FullMemFlags     SemWINAddFirstMemOption( YYTOKENTYPE token );
 extern FullMemFlags     SemWINAddMemOption( FullMemFlags, YYTOKENTYPE token );
 extern char             *SemWINTokenToString( YYTOKENTYPE token );
 extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
-extern void             SemWINSetResourceLanguage( const WResLangType *newlang, int from_parser );
+extern void             SemWINSetResourceLanguage( const WResLangType *newlang, bool from_parser );
 extern void             SemWINUnsupported( YYTOKENTYPE token );
 extern void             SemWINCheckMemFlags( FullMemFlags * currflags,
                                 ResMemFlags loadopts, ResMemFlags memopts,

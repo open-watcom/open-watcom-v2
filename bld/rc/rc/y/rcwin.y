@@ -187,9 +187,9 @@
 %type <fullmemflags>    resource-options
 %type <token>           resource-option
 %type <string>          file-name
-%type <boolean>         fontitalic
+%type <resbyte>         fontitalic
 %type <ressizenum>      fontweight
-%type <integral>        fontextra
+%type <resbyte>         fontextra
 %type <menuflags>       menu-item-options
 %type <token>           menu-item-option
 %type <menuptr>         menu-section
@@ -1381,7 +1381,7 @@ font-stmt
             $$.Opt.Font.PointSize = $2;
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = 0;
-            $$.Opt.Font.FontItalic = false;
+            $$.Opt.Font.FontItalic = 0;
             $$.Opt.Font.FontExtra = 1;
             $$.Opt.Font.FontWeightDefined = false;
             $$.Opt.Font.FontItalicDefined = false;
@@ -1392,7 +1392,7 @@ font-stmt
             $$.Opt.Font.PointSize = $2;
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
-            $$.Opt.Font.FontItalic = false;
+            $$.Opt.Font.FontItalic = 0;
             $$.Opt.Font.FontExtra = 1;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = false;
@@ -1436,7 +1436,7 @@ fontitalic
     : constant-expression
       {
           /* the value stored is boolean and must be 1 or 0 */
-          $$ = ( $1.Value != 0 );
+          $$ = (uint_8)( $1.Value != 0 );
       }
     ;
 

@@ -87,7 +87,7 @@ typedef union {
     ToolBar                     *toolbar;
     uint_16                     residnum;
     uint_16                     ressizenum;
-    bool                        boolean;
+    uint_8                      resbyte;
 } YYSTYPE;
 
 #ifdef _I86FAR

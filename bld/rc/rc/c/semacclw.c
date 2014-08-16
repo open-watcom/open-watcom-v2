@@ -36,22 +36,22 @@
 #include "clibext.h"
 #include "rccore.h"
 
-const FullAccelFlags DefaultAccelFlags = { 0, FALSE };
+const FullAccelFlags DefaultAccelFlags = { 0, false };
 
 int SemWINStrToAccelEvent( char * string )
 /****************************************/
 {
-    if (*string == '^') {
+    if( *string == '^' ) {
         /* control character requested */
         string++;
-        if (isalpha( *string )) {
+        if( isalpha( *string ) ) {
             /* assume we are using the ASCII charater set to get the */
             /* corresponding code for control-letter */
             return( toupper( *string ) - 0x40 );
         } else {
             return( 0 );
         }
-    } else if (isprint( *string )) {
+    } else if( isprint( *string ) ) {
         /* only accept printable characters in this position */
         return( *string );
     } else {
@@ -62,12 +62,12 @@ int SemWINStrToAccelEvent( char * string )
 static void CheckAccelFlags( AccelFlags * flags, unsigned long idval )
 /********************************************************************/
 {
-    if ( !( *flags & ACCEL_VIRTKEY ) ) {
-        if (*flags & ACCEL_SHIFT) {
+    if( !( *flags & ACCEL_VIRTKEY ) ) {
+        if( *flags & ACCEL_SHIFT ) {
             *flags &= ~ACCEL_SHIFT;
             RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
         }
-        if (*flags & ACCEL_CONTROL) {
+        if( *flags & ACCEL_CONTROL ) {
             *flags &= ~ACCEL_CONTROL;
             RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "CONTROL", idval );
         }
@@ -80,15 +80,15 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
 {
     FullAccelEntry      entry;
 
-    if (event.strevent || flags.typegiven) {
+    if( event.strevent || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            entry.Win32 = FALSE;
+            entry.Win32 = false;
             entry.u.entry.Ascii = event.event;
             entry.u.entry.Flags = flags.flags;
             entry.u.entry.Id = idval;
         } else {
-            entry.Win32 = TRUE;
+            entry.Win32 = true;
             entry.u.entry32.Ascii = event.event;
             entry.u.entry32.Flags = flags.flags;
             entry.u.entry32.Id = idval;
@@ -97,7 +97,7 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
     } else {
         RcError( ERR_ACCEL_NO_TYPE, idval );
         ErrorHasOccured = true;
-        entry.Win32 = FALSE;
+        entry.Win32 = false;
         entry.u.entry.Ascii = 0;
         entry.u.entry.Flags = 0;
         entry.u.entry.Id = 0;
@@ -111,13 +111,13 @@ void SemWINWriteAccelEntry( FullAccelEntry entry )
 {
     bool    error;
 
-    if (!ErrorHasOccured) {
+    if( !ErrorHasOccured ) {
         if( entry.Win32 ) {
             error = ResWriteAccelEntry32( &entry.u.entry32, CurrResFile.handle );
         } else {
             error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.handle );
         }
-        if (error) {
+        if( error ) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         }
