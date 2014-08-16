@@ -69,8 +69,8 @@ static int GetString(   WResLangInfo    *res,
     ix2 = 0;
     ix1 = 0;
     do {
-        if ( numread == 0 ) {
-            if ( length > GET_STR_BUF_LEN ) {
+        if( numread == 0 ) {
+            if( length > GET_STR_BUF_LEN ) {
                 numread = GET_STR_BUF_LEN;
                 length -= GET_STR_BUF_LEN;
             } else {
@@ -82,16 +82,16 @@ static int GetString(   WResLangInfo    *res,
             if( numread == 0 ) return( -1 );
             ix1 = 0;
         }
-        if ( ix1 < numread ) {
-            if ( stringlen == 0 ) {
-                stringlen = ((unsigned char *)stringbuff)[ ix1++ ];
+        if( ix1 < numread ) {
+            if( stringlen == 0 ) {
+                stringlen = ((unsigned char *)stringbuff)[ix1++];
                 stringnum--;
             }
             for( ; stringlen > 0; --stringlen ) {
-                if ( ix1 >= numread ) break;
-                if ( stringnum < 0 ) {
+                if( ix1 >= numread ) break;
+                if( stringnum < 0 ) {
                     if( ix2 < nBufferMax - 1 ) {
-                        lpszBuffer[ ix2++ ] = stringbuff[ ix1 ];
+                        lpszBuffer[ix2++] = stringbuff[ix1];
                     }
                 }
                 ix1++;
@@ -100,7 +100,7 @@ static int GetString(   WResLangInfo    *res,
             numread = 0;
         }
     } while( !( (stringlen == 0) && (stringnum < 0) ) );
-    lpszBuffer[ ix2 ] = '\0';
+    lpszBuffer[ix2] = '\0';
 
     return( 0 );
 }
@@ -129,7 +129,7 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
     }
     wind = WResFindResource( &string_type, &block_id, dir, &lang );
 
-    if ( WResIsEmptyWindow( wind ) ) {
+    if( WResIsEmptyWindow( wind ) ) {
         retcode = -1;
     } else {
         res = WResGetLangInfo( wind );

@@ -37,7 +37,7 @@ long WResIDToNum( const WResID * num )
 /************************************/
 /* return the value in a string if it is a number, -1 otherwise */
 {
-    if (num != NULL && !num->IsName) {
+    if( num != NULL && !num->IsName ) {
         return( num->ID.Num );
     } else {
         return( -1 );
@@ -49,7 +49,7 @@ long WResHelpIDToNum( const WResHelpID * num )
 /************************************/
 /* return the value in a string if it is a number, -1 otherwise */
 {
-    if (num != NULL && !num->IsName) {
+    if( num != NULL && !num->IsName ) {
         return( num->ID.Num );
     } else {
         return( -1 );

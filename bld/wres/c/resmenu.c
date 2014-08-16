@@ -42,7 +42,7 @@
 bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 /****************************************************************/
 {
-    if( WRESWRITE( handle, currhead, sizeof(MenuHeader) ) != sizeof(MenuHeader) ) {
+    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -79,10 +79,10 @@ bool ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WRe
     bool        error;
     uint_16     tmp16;
 
-    if ( curritem->ItemFlags & MENU_POPUP ) {
+    if( curritem->ItemFlags & MENU_POPUP ) {
         tmp16 = curritem->ItemFlags;
         error = ResWriteUint16( &tmp16, handle );
-        if (!error) {
+        if( !error ) {
             error = ResWriteString( curritem->ItemText, use_unicode, handle );
         }
     } else {
@@ -137,17 +137,17 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode,
     bool        error;
     uint_16     tmp16;
 
-    if ( curritem->ItemFlags & MENU_POPUP ) {
+    if( curritem->ItemFlags & MENU_POPUP ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         error = true;
     } else {
         tmp16 = curritem->ItemFlags;
         error = ResWriteUint16( &tmp16, handle );
-        if (!error) {
+        if( !error ) {
             tmp16 = curritem->ItemID;
             error = ResWriteUint16( &tmp16, handle );
         }
-        if (!error) {
+        if( !error ) {
             error = ResWriteString( curritem->ItemText, use_unicode, handle );
         }
     }
@@ -196,7 +196,7 @@ bool ResWriteMenuItem( const MenuItem *curritem, bool use_unicode,
 {
     bool    error;
 
-    if (curritem->IsPopup) {
+    if( curritem->IsPopup ) {
         error = ResWriteMenuItemPopup( &(curritem->Item.Popup), use_unicode, handle );
     } else {
         error = ResWriteMenuItemNormal( &(curritem->Item.Normal), use_unicode, handle );
@@ -210,8 +210,8 @@ bool ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, currhead, sizeof(MenuHeader) );
-    if( numread != sizeof(MenuHeader) ) {
+    numread = WRESREAD( handle, currhead, sizeof( MenuHeader ) );
+    if( numread != sizeof( MenuHeader ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
         return( true );
     } else {
@@ -329,8 +329,8 @@ bool ResReadMenuItem( MenuItem *curritem, WResFileID handle )
 
     error = ResReadUint16( &tmp16, handle );
     curritem->Item.Popup.ItemFlags = tmp16;
-    if (!error) {
-        if (curritem->Item.Popup.ItemFlags & MENU_POPUP) {
+    if( !error ) {
+        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
             curritem->IsPopup = true;
             curritem->Item.Popup.ItemText = ResReadString( handle, NULL );
             error = (curritem->Item.Popup.ItemText == NULL);
@@ -338,7 +338,7 @@ bool ResReadMenuItem( MenuItem *curritem, WResFileID handle )
             curritem->IsPopup = false;
             error = ResReadUint16( &tmp16, handle );
             curritem->Item.Normal.ItemID = tmp16;
-            if (!error) {
+            if( !error ) {
                 curritem->Item.Normal.ItemText = ResReadString( handle, NULL );
                 error = (curritem->Item.Normal.ItemText == NULL);
             }
@@ -356,8 +356,8 @@ bool ResReadMenuItem32( MenuItem *curritem, WResFileID handle )
 
     error = ResReadUint16( &tmp16, handle );
     curritem->Item.Popup.ItemFlags = tmp16;
-    if (!error) {
-        if (curritem->Item.Popup.ItemFlags & MENU_POPUP) {
+    if( !error ) {
+        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
             curritem->IsPopup = true;
             curritem->Item.Popup.ItemText = ResRead32String( handle, NULL );
             error = (curritem->Item.Popup.ItemText == NULL);
@@ -365,7 +365,7 @@ bool ResReadMenuItem32( MenuItem *curritem, WResFileID handle )
             curritem->IsPopup = false;
             error = ResReadUint16( &tmp16, handle );
             curritem->Item.Normal.ItemID = tmp16;
-            if (!error) {
+            if( !error ) {
                 curritem->Item.Normal.ItemText = ResRead32String( handle, NULL );
                 error = (curritem->Item.Normal.ItemText == NULL);
             }
@@ -380,8 +380,8 @@ MenuItem * ResNewMenuItem( void )
 {
     MenuItem *  newitem;
 
-    newitem = WRESALLOC( sizeof(MenuItem) );
-    if (newitem == NULL) {
+    newitem = WRESALLOC( sizeof( MenuItem ) );
+    if( newitem == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newitem->IsPopup = false;
@@ -396,12 +396,12 @@ MenuItem * ResNewMenuItem( void )
 void ResFreeMenuItem( MenuItem * olditem )
 /****************************************/
 {
-    if (olditem->IsPopup) {
-        if (olditem->Item.Popup.ItemText != NULL) {
+    if( olditem->IsPopup ) {
+        if( olditem->Item.Popup.ItemText != NULL ) {
             WRESFREE( olditem->Item.Popup.ItemText );
         }
     } else {
-        if (olditem->Item.Normal.ItemText != NULL) {
+        if( olditem->Item.Normal.ItemText != NULL ) {
             WRESFREE( olditem->Item.Normal.ItemText );
         }
     }

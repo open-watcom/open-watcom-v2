@@ -35,7 +35,7 @@
 
 #define VAR_STR_PART_SIZE 64
 typedef struct VarString {
-    char                partString[ VAR_STR_PART_SIZE ];
+    char                partString[VAR_STR_PART_SIZE];
     int                 lastLoc;
     struct VarString    *next;
 } VarString;

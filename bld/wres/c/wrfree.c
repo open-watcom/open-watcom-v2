@@ -44,10 +44,10 @@
 void MResFreeResourceHeader( MResResourceHeader * oldheader )
 /***********************************************************/
 {
-    if (oldheader->Type != NULL) {
+    if( oldheader->Type != NULL ) {
         WRESFREE( oldheader->Type );
     }
-    if (oldheader->Name != NULL) {
+    if( oldheader->Name != NULL ) {
         WRESFREE( oldheader->Name );
     }
     WRESFREE( oldheader );

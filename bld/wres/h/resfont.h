@@ -37,7 +37,7 @@
 typedef struct FontInfo {
     uint_16         dfVersion;
     uint_32         dfSize;
-    char            dfCopyright[ 60 ];
+    char            dfCopyright[60];
     uint_16         dfType;     // 0 == bitmap, 1 == vector
     uint_16         dfPoints;
     uint_16         dfVertRes;
@@ -69,7 +69,7 @@ typedef struct FontDirEntry {
     uint_16         StructSize;     /* See note below */
     uint_16         FontID;
     FontInfo        Info;
-    char            DevAndFaceName[ 1 ];
+    char            DevAndFaceName[1];
 } FontDirEntry;
 #include "poppck.h"
 

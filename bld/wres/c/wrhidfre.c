@@ -39,7 +39,7 @@ void WResHelpIDFree( WResHelpID * oldid )
 /*******************************/
 /* release the space occupied by a Help ID */
 {
-    if (oldid != NULL) {
+    if( oldid != NULL ) {
         WRESFREE( oldid );
     }
 } /* WResHelpIDFree */

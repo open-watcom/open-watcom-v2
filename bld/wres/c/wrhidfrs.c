@@ -45,13 +45,13 @@ WResHelpID * WResHelpIDFromStr( const char * newstr )
 
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in one byte? */
-    if (strsize <= 0xff) {
+    if( strsize <= 0xff ) {
         /* allocate the new Help ID */
         // if strsize is non-zero then the memory allocated is larger
         // than required by 1 byte
-        newid = WRESALLOC( sizeof(WResHelpID) + strsize );
+        newid = WRESALLOC( sizeof( WResHelpID ) + strsize );
 
-        if (newid == NULL) {
+        if( newid == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             newid->IsName = true;

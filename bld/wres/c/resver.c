@@ -79,10 +79,10 @@ uint_16 ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os
     if( use_unicode ) key_size *= 2;
     if( os == WRES_OS_WIN32 ) {
         /* the NT key field begins 2 bytes from a 32 bit boundary */
-        padding = RES_PADDING( key_size + 2, sizeof(uint_32) );
+        padding = RES_PADDING( key_size + 2, sizeof( uint_32 ) );
         fixed_size = 3 * sizeof( uint_16 );
     } else {
-        padding = RES_PADDING( key_size, sizeof(uint_32) );
+        padding = RES_PADDING( key_size, sizeof( uint_32 ) );
         fixed_size = 2 * sizeof( uint_16 );
     }
     return( fixed_size + key_size + padding );
@@ -128,7 +128,7 @@ uint_16 ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
     uint_16     size;
 
     if( item->IsNum ) {
-        size = sizeof(uint_16);
+        size = sizeof( uint_16 );
     } else {
         if( item->strlen == VER_CALC_SIZE ) {
             size = strlen( item->Value.String ) + 1;
@@ -148,7 +148,7 @@ bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = time( NULL );
-    if( WRESWRITE( handle, fixed, sizeof(VerFixedInfo) ) != sizeof(VerFixedInfo) ) {
+    if( WRESWRITE( handle, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {

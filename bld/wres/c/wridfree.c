@@ -38,7 +38,7 @@ void WResIDFree( WResID * oldid )
 /*******************************/
 /* release the space occupied by an ID */
 {
-    if (oldid != NULL) {
+    if( oldid != NULL ) {
         WRESFREE( oldid );
     }
 } /* WResIDFree */

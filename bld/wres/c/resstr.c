@@ -41,8 +41,8 @@ void ResInitStringTableBlock( StringTableBlock * currblock )
 {
     int     stringid;
 
-    for (stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++) {
-        currblock->String[ stringid ] = NULL;
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
+        currblock->String[stringid] = NULL;
     }
 } /* ResInitStringTableBlock */
 
@@ -51,9 +51,9 @@ void ResFreeStringTableBlock( StringTableBlock * currblock )
 {
     int     stringid;
 
-    for (stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++) {
-        if (currblock->String[ stringid ] != NULL) {
-            WRESFREE( currblock->String[ stringid ] );
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
+        if( currblock->String[stringid] != NULL ) {
+            WRESFREE( currblock->String[stringid] );
         }
     }
 } /* ResFreeStringTableBlock */
@@ -67,7 +67,7 @@ bool ResWriteStringTableBlock( StringTableBlock *currblock,
 
     error = false;
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
-        error = WResWriteWResIDNameUni( currblock->String[ stringid ],
+        error = WResWriteWResIDNameUni( currblock->String[stringid],
                                     use_unicode, handle );
     }
 

@@ -42,7 +42,7 @@
 
 #define CONV_BUF_SIZE           512
 
-static char     ConvBuffer[ CONV_BUF_SIZE ];
+static char     ConvBuffer[CONV_BUF_SIZE];
 
 static int DefaultConversion( int len, const char *str, char *buf )
 {
@@ -50,8 +50,8 @@ static int DefaultConversion( int len, const char *str, char *buf )
 
     if( buf != NULL ) {
         for( i=0; i < len; i++ ) {
-            buf[ 2 * i ] = str[i];
-            buf[ 2 * i + 1 ] = 0;
+            buf[2 * i] = str[i];
+            buf[2 * i + 1] = 0;
         }
     }
     return( len * 2 );
@@ -62,7 +62,7 @@ int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
 bool ResWriteUint8( const uint_8 *newint, WResFileID handle )
 /***********************************************************/
 {
-    if( WRESWRITE( handle, newint, sizeof(uint_8) ) != sizeof(uint_8) ) {
+    if( WRESWRITE( handle, newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -73,7 +73,7 @@ bool ResWriteUint8( const uint_8 *newint, WResFileID handle )
 bool ResWriteUint16( const uint_16 *newint, WResFileID handle )
 /*************************************************************/
 {
-    if( WRESWRITE( handle, newint, sizeof( uint_16 ) ) != sizeof(uint_16) ) {
+    if( WRESWRITE( handle, newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -103,7 +103,7 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
 
     freebuf = false;
     error = false;
-    if (name == NULL) {
+    if( name == NULL ) {
         /* a NULL name means write 0 length name */
         numchars = 0;
     } else {
@@ -196,11 +196,11 @@ bool WResWriteResRecord( const WResResInfo *res, WResFileID handle )
 {
     int             size;
 
-    if (res->ResName.IsName) {
+    if( res->ResName.IsName ) {
         /* -1 because one of the chars in the name is declared in the struct */
-        size = sizeof(WResResInfo) + res->ResName.ID.Name.NumChars - 1;
+        size = sizeof( WResResInfo ) + res->ResName.ID.Name.NumChars - 1;
     } else {
-        size = sizeof(WResResInfo);
+        size = sizeof( WResResInfo );
     }
     if( WRESWRITE( handle, (uint_8 *)res, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
@@ -234,8 +234,8 @@ bool WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
         WRES_ERROR( WRS_SEEK_FAILED );
     }
 
-    if (!error) {
-        if( WRESWRITE( handle, header, sizeof(WResHeader) ) != sizeof( WResHeader ) ) {
+    if( !error ) {
+        if( WRESWRITE( handle, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) ) {
             error = true;
             WRES_ERROR( WRS_WRITE_FAILED );
         }
@@ -247,7 +247,7 @@ bool WResWriteHeaderRecord( const WResHeader *header, WResFileID handle )
 bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
 /*************************************************************************/
 {
-    if( WRESWRITE( handle, ext_head, sizeof(WResExtHeader) ) != sizeof( WResExtHeader ) ) {
+    if( WRESWRITE( handle, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -289,7 +289,7 @@ bool ResWriteString( const char *string, bool use_unicode, WResFileID handle )
     bool    ret;
 
     /* if string is NULL output the null string */
-    if (string == NULL) {
+    if( string == NULL ) {
         string = "";
     }
 
@@ -310,7 +310,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
     if( name == NULL ) {
         error = ResWriteString( "", use_unicode, handle );
     } else {
-        if (name->ord.fFlag == 0xff) {
+        if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
                 flag = 0xffff;
                 error = ResWriteUint16( &flag, handle );
@@ -318,7 +318,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
                 tmp8 = name->ord.fFlag;
                 error = ResWriteUint8( &tmp8, handle );
             }
-            if (!error) {
+            if( !error ) {
                 tmp16 = name->ord.wOrdinalID;
                 ResWriteUint16( &tmp16, handle );
             }
@@ -360,7 +360,7 @@ static int MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
     typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
     headersize += ( namesize + typesize );
-    padding = RES_PADDING( typesize + namesize, sizeof(uint_32) );
+    padding = RES_PADDING( typesize + namesize, sizeof( uint_32 ) );
 
     return( headersize + padding );
 }
@@ -375,14 +375,14 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, b
 
     if( !iswin32 ) {
         error = ResWriteNameOrOrdinal( currhead->Type, false, handle );
-        if (!error) {
+        if( !error ) {
             error = ResWriteNameOrOrdinal( currhead->Name, false, handle );
         }
-        if (!error) {
+        if( !error ) {
             tmp16 = currhead->MemoryFlags;
             error = ResWriteUint16( &tmp16, handle );
         }
-        if (!error) {
+        if( !error ) {
             tmp32 = currhead->Size;
             error = ResWriteUint32( &tmp32, handle );
         }

@@ -49,9 +49,9 @@ WResID * WResIDFromStr( const char * newstr )
     /* allocate the new ID */
     // if strsize is non-zero then the memory allocated is larger
     // than required by 1 byte
-    newid = WRESALLOC( sizeof(WResID) + strsize );
+    newid = WRESALLOC( sizeof( WResID ) + strsize );
 
-    if (newid == NULL) {
+    if( newid == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newid->IsName = true;
@@ -63,9 +63,9 @@ WResID * WResIDFromStr( const char * newstr )
         /* allocate the new ID */
         // if strsize is non-zero then the memory allocated is larger
         // than required by 1 byte
-        newid = WRESALLOC( sizeof(WResID) + strsize );
+        newid = WRESALLOC( sizeof( WResID ) + strsize );
 
-        if (newid == NULL) {
+        if( newid == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             newid->IsName = true;

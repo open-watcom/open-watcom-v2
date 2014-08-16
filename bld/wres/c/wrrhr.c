@@ -64,8 +64,8 @@ bool WResReadExtHeader( WResExtHeader *head, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, head, sizeof(WResExtHeader) );
-    if( numread != sizeof(WResExtHeader) ) {
+    numread = WRESREAD( handle, head, sizeof( WResExtHeader ) );
+    if( numread != sizeof( WResExtHeader ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
     } else {

@@ -45,14 +45,14 @@ char *ResReadString( WResFileID handle, int *strlen )
 
     newstring = VarStringStart();
     error = ResReadUint8( &nextchar, handle );
-    while (!error && nextchar != '\0') {
+    while( !error && nextchar != '\0' ) {
         VarStringAddChar( newstring, nextchar );
         error = ResReadUint8( &nextchar, handle );
     }
 
     retstring = VarStringEnd( newstring, strlen );
 
-    if (error && retstring != NULL ) {
+    if( error && retstring != NULL ) {
         WRESFREE(retstring);
         retstring = NULL;
     }

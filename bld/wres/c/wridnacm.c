@@ -72,10 +72,10 @@ int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
     if( len > name2->NumChars )
         len = name2->NumChars;
     cmp_rc = wresMemicmp( name1->Name, name2->Name, len );
-    if (cmp_rc == 0) {
-        if (name1->NumChars == name2->NumChars) {
+    if( cmp_rc == 0 ) {
+        if( name1->NumChars == name2->NumChars ) {
             return( 0 );
-        } else if (name1->NumChars > name2->NumChars) {
+        } else if( name1->NumChars > name2->NumChars ) {
             /* longer names with the same prefix are greater */
             return( 1 );
         } else {

@@ -35,7 +35,7 @@
 WResLangInfo * WResGetLangInfo( WResDirWindow currwind )
 /****************************************************/
 {
-    if (currwind.CurrLang == NULL) {
+    if( currwind.CurrLang == NULL ) {
         return( NULL );
     } else {
         return( &(currwind.CurrLang->Info) );

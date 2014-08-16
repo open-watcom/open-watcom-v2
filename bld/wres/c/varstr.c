@@ -42,7 +42,7 @@ VarString * VarStringStart( void )
     VarString *    newlist;
 
     newlist = WRESALLOC( sizeof( VarString ) );
-    if (newlist == NULL) {
+    if( newlist == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newlist->lastLoc = -1;
@@ -55,15 +55,15 @@ VarString * VarStringStart( void )
 void VarStringAddChar( VarString * list, int newchar )
 /****************************************************/
 {
-    if (list != NULL) {
+    if( list != NULL ) {
         /* skip the parts that are already full */
-        while (list->next != NULL) {
+        while( list->next != NULL ) {
             list = list->next;
         }
         /* if the current part is full */
-        if (list->lastLoc == VAR_STR_PART_SIZE - 1) {
+        if( list->lastLoc == VAR_STR_PART_SIZE - 1 ) {
             list->next = VarStringStart();
-            if (list->next == NULL) {
+            if( list->next == NULL ) {
                 return;
             }
             list = list->next;
@@ -79,7 +79,7 @@ static int ComputeVarStringLen( VarString * string )
     int     length;
 
     length = 0;
-    while (string != NULL) {
+    while( string != NULL ) {
         length += string->lastLoc + 1;
         string = string->next;
     }
@@ -102,11 +102,11 @@ char * VarStringEnd( VarString * list, int * retlength )
     /* +1 is for the '\0' */
     newstring = WRESALLOC( length + 1 );
 
-    if (newstring == NULL) {
+    if( newstring == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED )
     } else {
         stringpart = newstring;
-        while ( list != NULL ) {
+        while( list != NULL ) {
             /* copy the current string part */
             memcpy( stringpart, list->partString, list->lastLoc + 1 );
             stringpart += list->lastLoc + 1;
@@ -118,9 +118,9 @@ char * VarStringEnd( VarString * list, int * retlength )
         }
 
         /* write the '\0' character */
-        newstring[ length ] = '\0';
+        newstring[length] = '\0';
 
-        if (retlength != NULL) {
+        if( retlength != NULL ) {
             *retlength = length;
         }
     }

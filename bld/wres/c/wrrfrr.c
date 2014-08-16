@@ -44,8 +44,8 @@ bool WResReadFixedResRecord( WResResInfo *newres, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, newres, sizeof(WResResInfo) );
-    if( numread != sizeof(WResResInfo) ) {
+    numread = WRESREAD( handle, newres, sizeof( WResResInfo ) );
+    if( numread != sizeof( WResResInfo ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
     } else {
@@ -62,8 +62,8 @@ bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, newres, sizeof(WResResInfo1) );
-    if( numread != sizeof(WResResInfo1) ) {
+    numread = WRESREAD( handle, newres, sizeof( WResResInfo1 ) );
+    if( numread != sizeof( WResResInfo1 ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
     } else {
@@ -81,7 +81,7 @@ bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle )
     WResFileSSize   numread;
     WResResInfo2    info;
 
-    numread = WRESREAD( handle, &info, sizeof(WResResInfo2) );
+    numread = WRESREAD( handle, &info, sizeof( WResResInfo2 ) );
     if( numread != sizeof( WResResInfo2 ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );

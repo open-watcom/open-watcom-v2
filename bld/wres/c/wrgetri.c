@@ -36,7 +36,7 @@
 WResResInfo * WResGetResInfo( WResDirWindow currwind )
 /****************************************************/
 {
-    if (currwind.CurrRes == NULL) {
+    if( currwind.CurrRes == NULL ) {
         return( NULL );
     } else {
         return( &(currwind.CurrRes->Info) );

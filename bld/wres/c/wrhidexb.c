@@ -37,7 +37,7 @@ int WResHelpIDExtraBytes( const WResHelpID * name )
 {
     int     extrabytes;
 
-    if (name->IsName) {
+    if( name->IsName ) {
         extrabytes = name->ID.Name.NumChars - 1;
     } else {
         extrabytes = 0;

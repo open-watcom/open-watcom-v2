@@ -46,8 +46,8 @@ WResID * WResIDFromNum( long newnum )
         newid = NULL;
         WRES_ERROR( WRS_BAD_PARAMETER );
     } else {
-        newid = WRESALLOC( sizeof(WResID) );
-        if (newid == NULL) {
+        newid = WRESALLOC( sizeof( WResID ) );
+        if( newid == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             WResInitIDFromNum( newnum, newid );

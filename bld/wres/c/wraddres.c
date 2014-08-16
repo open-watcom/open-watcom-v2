@@ -43,13 +43,13 @@ static WResTypeNode *newTypeNode( const WResID *type )
 
     extrabytes = WResIDExtraBytes( type );
     newnode = WRESALLOC( sizeof( WResTypeNode ) + extrabytes );
-    if (newnode != NULL) {
+    if( newnode != NULL ) {
         newnode->Next = NULL;
         newnode->Prev = NULL;
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.TypeName), type, sizeof(WResID) + extrabytes );
+        memcpy( &(newnode->Info.TypeName), type, sizeof( WResID ) + extrabytes );
     } else {
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
@@ -98,7 +98,7 @@ static WResResNode *newResNode( const WResID *name )
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.ResName), name, sizeof(WResID) + extrabytes );
+        memcpy( &(newnode->Info.ResName), name, sizeof( WResID ) + extrabytes );
     }
 
     return( newnode );
@@ -146,10 +146,10 @@ bool WResAddResource2( const WResID *type, const WResID *name,
     currres = NULL;
 
     currtype = __FindType( type, currdir );
-    if (currtype != NULL) {
+    if( currtype != NULL ) {
         /* if the type is in there already check for a duplicate resource */
         currres = __FindRes( name, currtype );
-        if (currres != NULL) {
+        if( currres != NULL ) {
             currlang = __FindLang( lang, currres );
             if( currlang != NULL ) {
                 if( duplicate != NULL ) {
@@ -163,7 +163,7 @@ bool WResAddResource2( const WResID *type, const WResID *name,
     if( currtype == NULL ) {
         /* otherwise add the type to the list */
         currtype = newTypeNode( type );
-        if (currtype == NULL) {
+        if( currtype == NULL ) {
             return( true );
         }
         ResAddLLItemAtEnd( (void**)&(currdir->Head), (void**)&(currdir->Tail), currtype );

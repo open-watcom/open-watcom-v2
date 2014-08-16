@@ -47,20 +47,20 @@ WResResInfo *WResReadResRecord( WResFileID handle )
     bool            error;
 
     error = WResReadFixedResRecord( &newres, handle );
-    if (error) {
+    if( error ) {
         return( NULL );
     }
 
-    if (newres.ResName.IsName) {
+    if( newres.ResName.IsName ) {
         numcharsleft = newres.ResName.ID.Name.NumChars - 1;
     } else {
         numcharsleft = 0;
     }
-    newptr = WRESALLOC( sizeof(WResResInfo) + numcharsleft );
+    newptr = WRESALLOC( sizeof( WResResInfo ) + numcharsleft );
     if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        memcpy( newptr, &newres, sizeof(WResResInfo) );
+        memcpy( newptr, &newres, sizeof( WResResInfo ) );
         if( numcharsleft != 0 ) {
             numread = WRESREAD( handle, &(newptr->ResName.ID.Name.Name[1]), numcharsleft );
             if( numread != numcharsleft ) {

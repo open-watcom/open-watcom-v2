@@ -41,18 +41,18 @@ ResNameOrOrdinal *WResIDToNameOrOrd( WResID *id )
 {
     ResNameOrOrdinal *  newname;
 
-    if (id->IsName) {
+    if( id->IsName ) {
         /* the one char in the ResNameOrOrdinal gives room for the '\0' */
-        newname = WRESALLOC( sizeof(ResNameOrOrdinal) + id->ID.Name.NumChars );
-        if (newname == NULL) {
+        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + id->ID.Name.NumChars );
+        if( newname == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             memcpy( newname->name, id->ID.Name.Name, id->ID.Name.NumChars );
-            newname->name[ id->ID.Name.NumChars ] = '\0';
+            newname->name[id->ID.Name.NumChars] = '\0';
         }
     } else {
-        newname = WRESALLOC( sizeof(ResNameOrOrdinal) );
-        if (newname == NULL) {
+        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+        if( newname == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             newname->ord.fFlag = 0xff;
@@ -69,18 +69,18 @@ ResNameOrOrdinal *WResHelpIDToNameOrOrd( WResHelpID *id )
 {
     ResNameOrOrdinal *  newname;
 
-    if (id->IsName) {
+    if( id->IsName ) {
         /* the one char in the ResNameOrOrdinal gives room for the '\0' */
-        newname = WRESALLOC( sizeof(ResNameOrOrdinal) + id->ID.Name.NumChars );
-        if (newname == NULL) {
+        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + id->ID.Name.NumChars );
+        if( newname == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             memcpy( newname->name, id->ID.Name.Name, id->ID.Name.NumChars );
-            newname->name[ id->ID.Name.NumChars ] = '\0';
+            newname->name[id->ID.Name.NumChars] = '\0';
         }
     } else {
-        newname = WRESALLOC( sizeof(ResNameOrOrdinal) );
-        if (newname == NULL) {
+        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+        if( newname == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             newname->ord.fFlag = 0xff;

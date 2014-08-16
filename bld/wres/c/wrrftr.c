@@ -41,8 +41,8 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, newtype, sizeof(WResTypeInfo) );
-    if( numread == sizeof(WResTypeInfo) ) {
+    numread = WRESREAD( handle, newtype, sizeof( WResTypeInfo ) );
+    if( numread == sizeof( WResTypeInfo ) ) {
         return( false );
     } else {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );

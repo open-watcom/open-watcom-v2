@@ -39,7 +39,7 @@ ResTypeInfo WResFindResType( WResFileID handle )
 /**********************************************/
 {
     ResTypeInfo     type;
-    uint_32         magic[ 2 ];
+    uint_32         magic[2];
     bool            error;
 
     error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
@@ -55,7 +55,7 @@ ResTypeInfo WResFindResType( WResFileID handle )
         }
     }
 
-    type = RT_WIN16; /* what to return if (error) ? */
+    type = RT_WIN16; /* what to return if( error) ? */
     if( !error ) {
         if( magic[0] == WRESMAGIC0 && magic[1] == WRESMAGIC1 ) {
             type = RT_WATCOM;

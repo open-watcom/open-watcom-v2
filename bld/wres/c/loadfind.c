@@ -64,7 +64,7 @@ unsigned char FindResources( PHANDLE_INFO hInstance )
     long        offset;
     dbgheader   header;
     bool        notfound;
-    char        buffer[ sizeof( PATCH_LEVEL ) ];
+    char        buffer[sizeof( PATCH_LEVEL )];
 
     notfound = true;
     FileShift = 0;

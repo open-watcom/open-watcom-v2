@@ -36,7 +36,7 @@
 WResTypeInfo * WResGetTypeInfo( WResDirWindow currwind )
 /******************************************************/
 {
-    if (currwind.CurrType == NULL) {
+    if( currwind.CurrType == NULL ) {
         return( NULL );
     } else {
         return( &(currwind.CurrType->Info) );

@@ -54,7 +54,7 @@ char * WResIDToStr( const WResID * name )
         } else {
             /* copy the string */
             memcpy( string, name->ID.Name.Name, name->ID.Name.NumChars );
-            string[ name->ID.Name.NumChars ] = '\0';
+            string[name->ID.Name.NumChars] = '\0';
         }
     } else {
         string = WRESALLOC( UINT16_MAXDIGITS + 1 );
@@ -83,7 +83,7 @@ char * WResHelpIDToStr( const WResHelpID * name )
         } else {
             /* copy the string */
             memcpy( string, name->ID.Name.Name, name->ID.Name.NumChars );
-            string[ name->ID.Name.NumChars ] = '\0';
+            string[name->ID.Name.NumChars] = '\0';
         }
     } else {
         string = WRESALLOC( UINT32_MAXDIGITS + 1 );

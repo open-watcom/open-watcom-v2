@@ -40,8 +40,8 @@ WResDir WResInitDir( void )
 {
     WResDirHead *   newdir;
 
-    newdir = WRESALLOC( sizeof(WResDirHead) );
-    if (newdir == NULL) {
+    newdir = WRESALLOC( sizeof( WResDirHead ) );
+    if( newdir == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newdir->NumResources = 0;

@@ -112,7 +112,7 @@ MResResourceHeader *MResReadResourceHeader( WResFileID handle )
     uint_16                 tmp16;
     uint_32                 tmp32;
 
-    newhead = WRESALLOC( sizeof(MResResourceHeader) );
+    newhead = WRESALLOC( sizeof( MResResourceHeader ) );
     if( newhead == NULL ) {
         error = true;
         WRES_ERROR( WRS_MALLOC_FAILED );
@@ -120,24 +120,24 @@ MResResourceHeader *MResReadResourceHeader( WResFileID handle )
         error = false;
     }
 
-    if (!error) {
+    if( !error ) {
         newhead->Type = ResReadNameOrOrdinal( handle );
         error = (newhead->Type == NULL);
     }
-    if (!error) {
+    if( !error ) {
         newhead->Name = ResReadNameOrOrdinal( handle );
         error = (newhead->Name == NULL);
     }
-    if (!error) {
+    if( !error ) {
         error = ResReadUint16( &tmp16, handle);
         newhead->MemoryFlags = tmp16;
     }
-    if (!error) {
+    if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         newhead->Size = tmp32;
     }
 
-    if (error && newhead != NULL) {
+    if( error && newhead != NULL ) {
         WRESFREE( newhead );
         newhead = NULL;
     }

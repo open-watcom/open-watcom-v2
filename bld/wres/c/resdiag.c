@@ -181,8 +181,8 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
             newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
             newname[0] = '"';
             strcpy( newname + 1, head->MenuName->name );
-            newname[ len + 1 ] = '"';
-            newname[ len + 2 ] = '\0';
+            newname[len + 1] = '"';
+            newname[len + 2] = '\0';
             head->MenuName = ResStrToNameOrOrd( newname );
             WRESFREE( newname );
         }
@@ -330,7 +330,7 @@ bool ResIsDialogEx( WResFileID handle )
     if( numread != sizeof( signa ) ) {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     } else {
-        if( signa[0] == 0x0001 && signa[1] == 0xFFFF) {
+        if( signa[0] == 0x0001 && signa[1] == 0xFFFF ) {
             return( true );
         }
     }
@@ -540,7 +540,7 @@ static ControlClass *ReadControlClass( WResFileID handle )
     /* read in the first byte */
     error = ResReadUint8( &class, handle );
     if( !error ) {
-        if( (class & 0x80) == 0 && class != '\0') {
+        if( (class & 0x80) == 0 && class != '\0' ) {
             restofstring = ResReadString( handle, &stringlen );
             stringlen++;    /* for the '\0' */
             error = (restofstring == NULL);

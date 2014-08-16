@@ -104,7 +104,7 @@ void WResDelResource( WResDir currdir, const WResID *type,
     doDelResource( currdir, cur_res, cur_type );
 }
 
-#if(0)
+#if( 0 )
 //
 // Not currently needed
 //

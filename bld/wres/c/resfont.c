@@ -38,7 +38,7 @@
 bool ResWriteFontInfo( FontInfo *info, WResFileID handle )
 /********************************************************/
 {
-    if( WRESWRITE( handle, info, sizeof(FontInfo) ) != sizeof(FontInfo) ) {
+    if( WRESWRITE( handle, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {

@@ -36,7 +36,7 @@
 WResID *WResIDFromNameOrOrd( ResNameOrOrdinal *name )
 /***************************************************/
 {
-    if (name->ord.fFlag == 0xff) {
+    if( name->ord.fFlag == 0xff ) {
         return( WResIDFromNum( name->ord.wOrdinalID ) );
     } else {
         return( WResIDFromStr( name->name ) );

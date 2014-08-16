@@ -56,11 +56,11 @@ WResTypeInfo *WResReadTypeRecord( WResFileID handle )
     } else {
         numcharsleft = 0;
     }
-    newptr = WRESALLOC( sizeof(WResTypeInfo) + numcharsleft );
+    newptr = WRESALLOC( sizeof( WResTypeInfo ) + numcharsleft );
     if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        memcpy( newptr, &newtype, sizeof(WResTypeInfo) );
+        memcpy( newptr, &newtype, sizeof( WResTypeInfo ) );
         if( numcharsleft != 0 ) {
             numread = WRESREAD( handle, &(newptr->TypeName.ID.Name.Name[1]), numcharsleft );
             if( numread != numcharsleft ) {

@@ -106,7 +106,7 @@ bool WResWriteDir( WResFileID handle, WResDir currdir )
         error = WResWriteHeaderRecord( &head, handle );
     }
     if( !error ) {
-        memset( &ext_head, 0, sizeof(WResExtHeader) );
+        memset( &ext_head, 0, sizeof( WResExtHeader ) );
         ext_head.TargetOS = currdir->TargetOS;
         error = WResWriteExtHeader( &ext_head, handle );
     }

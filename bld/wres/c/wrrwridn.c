@@ -46,11 +46,11 @@ WResIDName *WResReadWResIDName( WResFileID handle )
     error = ResReadUint8( &(newname.NumChars), handle );
 
     /* alloc the space for the new record */
-    if (error) {
+    if( error ) {
         return( NULL );
     } else {
         /* -1 because one of the chars in the name is declared in the struct */
-        newptr = WRESALLOC( sizeof(WResIDName) + newname.NumChars - 1 );
+        newptr = WRESALLOC( sizeof( WResIDName ) + newname.NumChars - 1 );
     }
 
     /* read in the characters */

@@ -41,8 +41,8 @@ bool WResReadFixedWResID( WResID *name, WResFileID handle )
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, name, sizeof(WResID) );
-    if( numread == sizeof(WResID) ) {
+    numread = WRESREAD( handle, name, sizeof( WResID ) );
+    if( numread == sizeof( WResID ) ) {
         return( false );
     } else {
         WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );

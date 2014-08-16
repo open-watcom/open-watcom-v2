@@ -57,11 +57,11 @@ WResID *WResReadWResID( WResFileID handle )
         extrabytes = 0;
     }
 
-    newidptr = WRESALLOC( sizeof(WResID) + extrabytes );
+    newidptr = WRESALLOC( sizeof( WResID ) + extrabytes );
     if( newidptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        memcpy( newidptr, &newid, sizeof(WResID) );
+        memcpy( newidptr, &newid, sizeof( WResID ) );
         if( extrabytes != 0 ) {
             numread = WRESREAD( handle, &(newidptr->ID.Name.Name[1]), extrabytes );
             if( numread != extrabytes ) {

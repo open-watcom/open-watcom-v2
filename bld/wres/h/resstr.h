@@ -39,7 +39,7 @@
 
 #include "pushpck1.h"
 typedef struct StringTableBlock {
-    WResIDName *                String[ STRTABLE_STRS_PER_BLOCK ];
+    WResIDName *                String[STRTABLE_STRS_PER_BLOCK];
 } StringTableBlock;
 #include "poppck.h"
 

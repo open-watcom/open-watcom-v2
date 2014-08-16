@@ -39,7 +39,7 @@ WResTypeNode *__FindType( const WResID *type, WResDir currdir )
 {
     WResTypeNode        *currtype;
 
-    for( currtype = currdir->Head; currtype != NULL; currtype = currtype->Next ){
+    for( currtype = currdir->Head; currtype != NULL; currtype = currtype->Next ) {
         if( WResIDCmp( type, &(currtype->Info.TypeName) ) ) {
             break;
         }
@@ -52,7 +52,7 @@ WResResNode *__FindRes( const WResID *name, WResTypeNode *currtype )
 {
     WResResNode         *currres;
 
-    for( currres = currtype->Head; currres != NULL; currres = currres->Next) {
+    for( currres = currtype->Head; currres != NULL; currres = currres->Next ) {
         if( WResIDCmp( name, &( currres->Info.ResName ) ) ) {
             break;
         }
