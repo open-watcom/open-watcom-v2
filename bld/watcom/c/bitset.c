@@ -101,7 +101,7 @@ static void emitSet( FILE *fp, int size, char *prefix, char *type_name )
         fprintf( fp, "%c%s", c++, ( i == ( _NLONGS( size ) - 1 ) ) ? " ) { \\\n" : ", " );
     }
     for( c = 'a', i = 0; i < _NLONGS( size ); i++, c++ ) {
-        fprintf( fp, "\t\t\t(dst)._%d = %c; \\\n", i, c );
+        fprintf( fp, "\t\t\t(dst)._%d = (a_bit_set)%c; \\\n", i, c );
     }
     fprintf( fp, "\t\t}\n\n" );
     fprintf( fp, "#define %sFirst( set ) %sSet( set, 1", prefix, prefix );
