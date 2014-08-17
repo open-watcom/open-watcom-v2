@@ -425,7 +425,7 @@ static void DoStackCheck( void ) {
         return;
 #if _TARGET & _TARG_80386
     if( CurrProc->prolog_state & GENERATE_GROW_STACK ) {
-        if( BlockByBlock || CurrProc->locals.size >= 4*1024 ) {
+        if( BlockByBlock || CurrProc->locals.size >= 4 * 1024 ) {
             GenUnkPush( &CurrProc->targ.stack_check );
             RTCall( RT_GROW, ATTR_POP );
         }
@@ -450,9 +450,9 @@ static void DoStackCheck( void ) {
 }
 
 
-static  void    EmitNameInCode( void ) {
-/********************************/
-
+static  void    EmitNameInCode( void )
+/************************************/
+{
     cg_sym_handle   sym;
     char            *name;
     label_handle    lbl;
@@ -472,16 +472,14 @@ static  void    EmitNameInCode( void ) {
 
 
 static  int ProEpiDataSize( void )
-/***************************
-*/
+/********************************/
 {
     return( _RoundUp( (int)(pointer_int)FEAuxInfo( NULL, PROEPI_DATA_SIZE ), WORD_SIZE ) );
 }
 
 
 static  void    PrologHook( void )
-/***************************
-*/
+/********************************/
 {
     int      size;
 
@@ -502,8 +500,7 @@ static  void    PrologHook( void )
 
 
 static  void    EpilogHook( void )
-/***************************
-*/
+/********************************/
 {
     int      size;
 
@@ -537,7 +534,7 @@ static  void    DoLoadDS( void )
 
 
 static  int LoadDS( void )
-/**********************/
+/************************/
 {
     int     size;
 
@@ -553,9 +550,9 @@ static  int LoadDS( void )
 }
 
 
-static  void    UnloadDS( void ) {
-/**************************/
-
+static  void    UnloadDS( void )
+/******************************/
+{
     if( CurrProc->state.attr & ROUTINE_LOADS_DS ) {
         if( HW_COvlap( CurrProc->state.unalterable, HW_DS ) ) {
             QuickSave( HW_DS, OP_POP );
@@ -563,9 +560,9 @@ static  void    UnloadDS( void ) {
     }
 }
 
-extern  void    GenProlog( void ) {
-/***************************/
-
+extern  void    GenProlog( void )
+/*******************************/
+{
     segment_id  old;
     hw_reg_set  to_push;
     unsigned    ret_size;
@@ -721,14 +718,14 @@ extern  void    GenProlog( void ) {
     SetOP( old );
 
     if( CurrProc->prolog_state & GENERATE_EXPORT ) {
-        OutDLLExport( ( CurrProc->parms.size+WORD_SIZE-1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );
+        OutDLLExport( ( CurrProc->parms.size + WORD_SIZE - 1 ) / WORD_SIZE, AskForLblSym( CurrProc->label ) );
     }
 }
 
 
-static  void    MoveParms( void ) {
-/***************************/
-
+static  void    MoveParms( void )
+/*******************************/
+{
     int     i;
 
     for( i = 0; Parm8087[i] != NULL; ++i ) {
@@ -749,9 +746,9 @@ extern  void    InitStackDepth( block *blk ) {
 }
 
 
-extern  void        AdjustStackDepth( instruction *ins ) {
-/************************************************************/
-
+extern  void        AdjustStackDepth( instruction *ins )
+/******************************************************/
+{
     name    *op;
     type_length adjust;
 

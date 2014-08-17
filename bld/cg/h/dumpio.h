@@ -29,11 +29,14 @@
 ****************************************************************************/
 
 
+#if 0
 #define DumpLiteral( x )        { \
                                     static char __x[] = x; \
                                     DumpString( __x );\
                                 }
-
+#else
+#define DumpLiteral     DumpString
+#endif
 
 extern  void    DumpPadString( const char *, int );
 extern  void    DumpString( const char * );

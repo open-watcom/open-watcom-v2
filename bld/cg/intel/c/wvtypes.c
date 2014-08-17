@@ -52,7 +52,7 @@ extern  void            DataBytes(unsigned_32,const void *);
 extern  void            BuffIndex(uint);
 extern  void            BuffForward(dbg_patch *);
 extern  void            BuffBack(back_handle, offset);
-extern  void            BuffString(uint,char *);
+extern  void            BuffString(uint,const char*);
 extern  void            BuffValue(unsigned_32,uint);
 extern  void            BuffWord(uint);
 extern  void            BuffDWord(unsigned_32);
@@ -615,18 +615,14 @@ static void DmpFileInfo( void ){
     fname_lst *lst;
     unsigned_16 index;
 
-    lst = DBFiles.lst;
     DataShort( DBFiles.count );
     index = 0;
-    while( lst != NULL ){
+    for( lst = DBFiles.lst; lst != NULL; lst = lst->next ){
         DataShort( index );
         index += lst->len;
-        lst = lst->next;
     }
-    lst = DBFiles.lst;
-    while( lst != NULL ){
+    for( lst = DBFiles.lst; lst != NULL; lst = lst->next ) {
         DataBytes( lst->len, lst->fname );
-        lst = lst->next;
     }
 }
 

@@ -58,8 +58,8 @@
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
 
-static uint_32 objNameHash( uint_32 h, char *s )
-/**********************************************/
+static uint_32 objNameHash( uint_32 h, const char *s )
+/****************************************************/
 {
     uint_32 c;
     uint_32 g;
@@ -78,8 +78,8 @@ static uint_32 objNameHash( uint_32 h, char *s )
     return( h );
 }
 
-static char *createFourCharHash( char *mangle, char *buff, int ucase )
-/********************************************************************/
+static char *createFourCharHash( const char *mangle, char *buff, int ucase )
+/**************************************************************************/
 {
     uint_32 mangle_hash;
     int     i;
@@ -101,13 +101,13 @@ static char *createFourCharHash( char *mangle, char *buff, int ucase )
     return( buff );
 }
 
-static int copyBaseName( char fce, char *dst, int dst_len, char *src, int src_len )
-/*********************************************************************************/
+static int copyBaseName( char fce, char *dst, int dst_len, const char *src, int src_len )
+/***************************************************************************************/
 {
-    int     len;
-    int     i;
-    char    *p;
-    char    c;
+    int         len;
+    int         i;
+    const char  *p;
+    char        c;
 
     p = NULL;
     len = 0;
@@ -167,20 +167,22 @@ char *xtoa( char *p, unsigned x )
 static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
 /*******************************************************************/
 {
-    char                 *src;
+    const char           *src;
     char                 *dst;
-    char                 *p;
-    char                 *prefix;
-    char                 *sufix;
+    const char           *p;
+    const char           *prefix;
+    const char           *sufix;
+    char                 *dst_basename;
+    char                 *tmp_suffix;
     char                 c;
     int                  base_len;
     int                  dst_len;
-    char                 *pattern;
+    const char           *pattern;
 
     pattern = FEExtName( sym, EXTN_PATTERN );
-    c = 0;
+    c = '\0';
     base_len = 0;
-    prefix = NULL;
+    prefix = pattern;
     for( p = pattern; *p != '\0'; p++ ) {
         if(( *p == '*' ) || ( *p == '!' ) || ( *p == '^' )) {
             if( c == '\0' ) {
@@ -198,32 +200,32 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
     sufix = p;
     // add prefix to output buffer
     dst = buffer;
-    for( src = pattern; src < prefix; ++src ) {
+    for( src = pattern; src != prefix; ++src ) {
         if( *src != '\\' ) {
             *(dst++) = *src;
         }
     }
     *dst = '\0';
     // add sufix to output buffer
-    p = dst;
+    dst_basename = dst;
     for( src = sufix; *src != '\0'; ++src ) {
         if( *src == '#' ) {
             unsigned    size;
 
             size = (unsigned)(pointer_int)FEExtName( sym, EXTN_PRMSIZE );
             if( size != (unsigned)-1 ) {
-                *(p++) = '@';
-                p = xtoa( p, size );
+                *(dst++) = '@';
+                dst = xtoa( dst, size );
             }
         } else {
             if( *src == '\\' )
                 ++src;
-            *(p++) = *src;
+            *(dst++) = *src;
         }
     }
-    *p = '\0';
+    *dst = '\0';
     // max base name length
-    dst_len = max_len - ( p - buffer );
+    dst_len = max_len - ( dst - buffer );
     if( dst_len > 0 ) {
         int     sufix_len;
         int     len;
@@ -236,16 +238,16 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
             base_len = strlen( src );
         }
         // shift sufix to the end of buffer
-        sufix_len = p - dst;
-        sufix = buffer + max_len - sufix_len;
-        memmove( sufix, dst, sufix_len + 1 );
+        sufix_len = dst - dst_basename;
+        tmp_suffix = buffer + max_len - sufix_len;
+        memmove( tmp_suffix, dst_basename, sufix_len + 1 );
         // copy + truncate base symbol name
-        len = copyBaseName( c, dst, dst_len, src, base_len );
+        len = copyBaseName( c, dst_basename, dst_len, src, base_len );
         if( len < 0 ) {
             FEMessage( MSG_SYMBOL_TOO_LONG, sym );
         } else {
             // shift sufix to the end of symbol name
-            memcpy( dst + len, sufix, sufix_len + 1 );
+            memcpy( dst_basename + len, tmp_suffix, sufix_len + 1 );
         }
     } else {
        // TODO: error prefix + sufix >= max_len

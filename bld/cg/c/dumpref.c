@@ -34,7 +34,7 @@
 #include "opcodes.h"
 #include "dumpio.h"
 
-static char * OpcodeList[LAST_OP - FIRST_OP + 1] = {
+static const char *OpcodeList[LAST_OP - FIRST_OP + 1] = {
     #define PICK(e,i,d1,d2,ot,pnum,attr)  ot,
     #define ONLY_INTERNAL_CGOPS
     #include "cgops.h"

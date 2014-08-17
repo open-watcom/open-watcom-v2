@@ -236,16 +236,15 @@ extern  void    DoCall( label_handle lbl, bool imported, bool big, oc_class pop_
 }
 
 
-static  void    CodeSequence( byte *p, byte_seq_len len ) {
-/**********************************************************
+static  void    CodeSequence( const byte *p, byte_seq_len len )
+/**************************************************************
     Dump an inline sequence, taking into account the floating fixups and
     the "seg foo", "offset foo" sequences.
 */
-
-
+{
     bool        first;
-    byte        *endp;
-    byte        *startp;
+    const byte  *endp;
+    const byte  *startp;
     byte        type;
     cg_sym_handle sym = 0;
     offset      off = 0;

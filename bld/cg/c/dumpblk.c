@@ -361,7 +361,7 @@ extern  void    DumpFlowGraph( block *blk )
 {
     interval_def        *head;
     interval_def        *curr;
-    int                 i;
+    interval_depth      i;
 
     DumpLiteral( "Interval graph" );
     DumpNL();

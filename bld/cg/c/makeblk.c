@@ -376,7 +376,8 @@ static void *LinkReturns( void *arg )
     } else {
         blk->class |= BLOCK_VISITED;
         if( blk->class & CALL_LABEL ) {
-            if( blk->next_block == NULL ) return( (pointer)FALSE );
+            if( blk->next_block == NULL )
+                return( (void *)(pointer_int)FALSE );
             LinkReturnsParms[ 0 ] = link_to;
             LinkReturnsParms[ 1 ] = blk->next_block->label;
             if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {

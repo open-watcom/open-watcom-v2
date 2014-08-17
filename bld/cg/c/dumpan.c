@@ -37,7 +37,7 @@
 extern  void            DumpOperand(name*);
 extern  void            DumpIns(instruction*);
 
-static char *Classes[] = {
+static const char *Classes[] = {
     "CL_ADDR_GLOBAL",
     "CL_ADDR_TEMP",
     "CL_POINTER",
@@ -52,7 +52,7 @@ static char *Classes[] = {
 };
 
 
-static char * Formats[] = {
+static const char * Formats[] = {
     "NF_ADDR",
     "NF_NAME",
     "NF_CONS",

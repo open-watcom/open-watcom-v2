@@ -45,7 +45,7 @@ extern  type_class_def  TypeClass(type_def*);
 
 static  void            DumpSubTree( tn node, int indent );
 
-static char * Ops[] = {
+static const char *Ops[] = {
     #define STR(x) #x
     #define PICK(e,i,d1,d2,ot,pnum,attr)  STR(<O_##e>),
     #include "cgops.h"
@@ -53,12 +53,12 @@ static char * Ops[] = {
     #undef STR
 };
 
-static char * Null = { "" };
-static char * LvEq = { "=(lv)" };
-static char * Eq = { "=" };
-static char * PostEq = { "=(post)" };
-static char * Question = { "?" };
-static char * Colon = { ":" };
+static const char * Null = { "" };
+static const char * LvEq = { "=(lv)" };
+static const char * Eq = { "=" };
+static const char * PostEq = { "=(post)" };
+static const char * Question = { "?" };
+static const char * Colon = { ":" };
 
 static  void    DumpIndent( int i ) {
 /***********************************/

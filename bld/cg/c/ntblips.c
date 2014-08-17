@@ -65,8 +65,8 @@ bool                    BlipsOn;
 extern  void            FatalError( const char * );
 extern  bool            TBreak();
 
-extern  void    InitBlip() {
-/**************************/
+void    InitBlip() {
+/******************/
 
 #if 0
     char        *src_name;
@@ -88,8 +88,8 @@ extern  void    InitBlip() {
 #endif
 }
 
-extern  void    FiniBlip() {
-/**************************/
+void    FiniBlip() {
+/******************/
 
 #if 0
     if( fileMapping != NULL ) {
@@ -101,70 +101,70 @@ extern  void    FiniBlip() {
 #endif
 }
 
-extern  bool    WantZoiks2() {
-/****************************/
+bool    WantZoiks2() {
+/********************/
 
     return( FALSE );
 }
 
 
-extern  void    LNBlip( unsigned num ) {
-/**************************************/
+void    LNBlip( unsigned num ) {
+/******************************/
 
     num = num;
 }
 
 
-extern  void    PGBlip( const char *name ) {
-/******************************************/
-
+void    PGBlip( const char *name )
+/********************************/
+{
     name = name;
     // strncpy( &fileMapping->rtn_name[ 0 ], name, MAX_RTN );
 }
 
 
-extern  void    TGBlip() {
-/************************/
+void    TGBlip() {
+/****************/
 }
 
-extern  void    LPBlip() {
-/************************/
+void    LPBlip() {
+/****************/
 }
 
-extern  void    URBlip() {
-/************************/
+void    URBlip() {
+/****************/
 }
 
-extern  void    SXBlip() {
-/************************/
+void    SXBlip() {
+/****************/
 }
 
-extern  void    EXBlip() {
-/************************/
+void    EXBlip() {
+/****************/
 }
 
-extern  void    GRBlip() {
-/************************/
+void    GRBlip() {
+/****************/
 }
 
-extern  void    IMBlip() {
-/************************/
+void    IMBlip() {
+/****************/
 }
 
-extern  void    SCBlip() {
-/************************/
+void    SCBlip() {
+/****************/
 }
 
-extern  void    PSBlip() {
-/************************/
+void    PSBlip() {
+/****************/
 }
 
-extern  void    PLBlip() {
-/************************/
+void    PLBlip() {
+/****************/
 }
 
-extern  void    DGBlip() {
-/************************/
+void    DGBlip() {
+/****************/
 }
 
 #if 0

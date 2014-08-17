@@ -83,13 +83,11 @@ static  void    DBSrcFileFini( void )
 /***********************************/
 {
     fname_lst   *curr;
-    fname_lst   *next;
 
-    for( curr = DBFiles.lst; curr != NULL; curr = next ) {
-        next = curr->next;
+    while( (curr = DBFiles.lst) != NULL ) {
+        DBFiles.lst = curr->next;
         CGFree( curr );
     }
-    DBFiles.lst = NULL;
 }
 
 extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
@@ -103,23 +101,23 @@ extern  uint    _CGAPI DBSrcFile( cchar_ptr fname )
 #ifndef NDEBUG
     EchoAPI( "DBSrcFile( %c )", fname );
 #endif
-    lnk  = &DBFiles.lst;
     len = strlen( fname ) + 1;
     index = 0;
-    for( curr = *lnk; (curr = *lnk) != NULL; lnk = &curr->next ) {
-       if( memcmp( fname, curr->fname, len ) == 0 ) {
-            break;
-       }
-       ++index;
+    for( lnk = &DBFiles.lst; (curr = *lnk) != NULL; lnk = &curr->next ) {
+        if( memcmp( fname, curr->fname, len ) == 0 ) {
+#ifndef NDEBUG
+            EchoAPI( " -> %i\n", index );
+#endif
+            return( index );
+        }
+        ++index;
     }
-    if( curr == NULL ) {
-        curr = CGAlloc( sizeof( *curr ) - 1 + len );
-        curr->len = len;
-        curr->next = NULL;
-        memcpy( curr->fname, fname, len );
-        ++DBFiles.count;
-        *lnk = curr;
-    }
+    curr = CGAlloc( sizeof( *curr ) - 1 + len );
+    curr->len = len;
+    curr->next = NULL;
+    memcpy( curr->fname, fname, len );
+    ++DBFiles.count;
+    *lnk = curr;
 #ifndef NDEBUG
     EchoAPI( " -> %i\n", index );
 #endif
@@ -154,7 +152,7 @@ static void  AddCueBlk( cue_ctl *ctl )
     ctl->curr = new;
     ctl->lnk = &new->next;
     ctl->next = &new->info[0];
-    ctl->end  = &new->info[CUES_PER_BLK];
+    ctl->end = &new->info[CUES_PER_BLK];
 }
 
 
@@ -327,12 +325,12 @@ static cue_idx  CueFMap( cue_ctl *ctl, int fno, cue_idx map )
 }
 
 extern void CueMap( cue_ctl *ctl, cue_state *base )
-/***************************/
+/*************************************************/
 //Add a map number so cues from the same file
 //can be re-written on a continueum
 {
-    cue_ctl    *ctl;
-    cue_blk    *blk;
+    cue_ctl     *ctl;
+    cue_blk     *blk;
     cue_state   *base, *curr, *last;
     int         fno;
     cue_idx     curr_idx;
@@ -565,9 +563,9 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
     CurrProc->targ.debug->obj_type = tipe;
     CurrProc->targ.debug->obj_loc = LocDupl( loc );
     if( _IsModel( DBG_DF ) ) {
-       //
+        //
     } else if( _IsModel( DBG_CV ) ) {
-      //
+        //
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     } else {
         WVObjectPtr( ptr_type );
@@ -710,7 +708,7 @@ extern  void    DbgSetBase( void )
 /********************************/
 {
     if( _IsModel( DBG_DF ) ) {
-    /* nothing */
+        /* nothing */
     } else if( _IsModel( DBG_CV ) ) {
         CVSetBase();
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )

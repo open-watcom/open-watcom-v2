@@ -41,7 +41,7 @@
 extern  bool    GetEnvVar( const char *what, char *buff, int len ) {
 /******************************************************************/
 
-    char        *envvar;
+    const char      *envvar;
 
     len = len;
     envvar = FEGetEnv( what );

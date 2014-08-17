@@ -135,7 +135,7 @@ static  void    TellTempLocs( void )
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->v.symbol != NULL && !(temp->t.temp_flags & ALIAS) ) {
-            ans = (pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
+            ans = (int)(pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
             if( ans == TEMP_LOC_QUIT ) break;
             if( temp->t.location == NO_LOCATION ) continue;
             if( ans == TEMP_LOC_YES ) {

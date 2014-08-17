@@ -1719,8 +1719,8 @@ extern  void _CGAPI     DGCFloat( pointer cf, cg_type tipe )
     DGBytes( TypeLength( tipe ), &buff );
 }
 
-extern  char    *AskName( pointer hdl, cg_class class )
-/*****************************************************/
+extern  const char  *AskName( pointer hdl, cg_class class )
+/*********************************************************/
 {
     switch( class ) {
     case CG_FE:

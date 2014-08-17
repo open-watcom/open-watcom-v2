@@ -46,67 +46,68 @@ void CauseTBreak() {
     /* cause TBreak to return TRUE */
 }
 
-extern  void    InitBlip() {
-/**************************/
+void    InitBlip() {
+/******************/
 }
 
-extern  void    FiniBlip() {
-/**************************/
+void    FiniBlip() {
+/******************/
 }
 
-extern  bool    WantZoiks2() {
-/****************************/
+bool    WantZoiks2() {
+/********************/
 
     return( FALSE );
 }
 
-extern  void    URBlip() {
-/************************/
+void    URBlip() {
+/****************/
 }
 
-extern  void    PGBlip( const char *name ) {
-/******************************************/
+void    PGBlip( const char *name )
+/********************************/
+{
 }
 
 
-extern  void    TGBlip() {
-/************************/
+void    TGBlip() {
+/****************/
 }
 
-extern  void    LPBlip() {
-/************************/
+void    LPBlip() {
+/****************/
 }
 
-extern  void    SXBlip() {
-/************************/
+void    SXBlip() {
+/****************/
 }
 
-extern  void    EXBlip() {
-/************************/
+void    EXBlip() {
+/****************/
 }
 
-extern  void    GRBlip() {
-/************************/
+void    GRBlip() {
+/****************/
 }
 
-extern  void    IMBlip() {
-/************************/
+void    IMBlip() {
+/****************/
 }
 
-extern  void    SCBlip() {
-/************************/
+void    SCBlip() {
+/****************/
 }
 
-extern  void    PSBlip() {
-/************************/
+void    PSBlip() {
+/****************/
 }
 
-extern  void    PLBlip() {
-/************************/
+void    PLBlip() {
+/****************/
 }
 
-extern  void    DGBlip() {
-/************************/
+void    DGBlip() {
+/****************/
 }
 
 void FatalError( const char * str ) {

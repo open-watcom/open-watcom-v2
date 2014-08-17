@@ -41,7 +41,7 @@ extern  instruction_id  Renumber( void );
 extern  block           *NewBlock(label_handle,bool);
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
-static  void            NewInterval( block *blk, int level );
+static  void            NewInterval( block *blk, interval_depth level );
 
 static    interval_def  *Intervals;
 
@@ -212,13 +212,13 @@ static  void    FixLinks( void )
 }
 
 
-static  interval_def    *IntervalNo( block *blk, int level )
-/**********************************************************/
+static  interval_def    *IntervalNo( block *blk, interval_depth level )
+/*********************************************************************/
 {
     interval_def        *curr;
 
     curr = blk->u.interval;
-    while( -- level >= 0 ) {
+    while( level-- > 0 ) {
         curr = curr->parent;
     }
     return( curr );
@@ -233,7 +233,7 @@ static  bool    FindIntervals( void )
     interval_def        *curr;
     interval_def        *prev_int;
     interval_def        *test;
-    int                 level;
+    interval_depth      level;
     int                 num;
     int                 prev_num;
     bool                add;
@@ -365,8 +365,8 @@ static  void    EdgeLevels( void )
 }
 
 
-static  void    NewInterval( block *blk, int level )
-/**************************************************/
+static  void    NewInterval( block *blk, interval_depth level )
+/*************************************************************/
 {
     interval_def        *prev;
     interval_def        *new;
@@ -389,7 +389,7 @@ static  void    NestingDepth( void )
 /**********************************/
 {
     block               *blk;
-    int                 level;
+    interval_depth      level;
     interval_def        *interval;
     block_edge          *edge;
     block               *target;

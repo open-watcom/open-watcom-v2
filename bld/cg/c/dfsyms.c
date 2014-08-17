@@ -742,7 +742,7 @@ extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc ) {
 /*******************************************************************/
     uint            flags;
     fe_attr         attr;
-    char           *name;
+    const char      *name;
     dw_loc_handle   dw_loc;
     dw_loc_handle   dw_segloc;
     dw_handle       obj;
@@ -763,7 +763,7 @@ extern  void    DFGenStatic( cg_sym_handle sym, dbg_loc loc ) {
             dw_segloc = SegLoc( sym );
         }
 #else
-       dw_segloc = NULL;
+        dw_segloc = NULL;
 #endif
     }else{
         dw_segloc = NULL;
@@ -805,7 +805,7 @@ static void    SymParm( cg_sym_handle sym, dw_loc_handle loc,
                                         dw_loc_handle entry ) {
 /*******************************************************************/
 //    fe_attr         attr;
-    char           *name;
+    const char      *name;
 //    dw_handle       obj;
     dbg_type        dbtype;
 
@@ -923,7 +923,7 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     cg_sym_handle       sym;
     dbg_type            tipe;
     fe_attr             attr;
-    char               *name;
+    const char          *name;
     uint                flags;
     dw_loc_handle       dw_retloc;
     dw_loc_handle       dw_frameloc;

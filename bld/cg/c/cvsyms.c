@@ -377,7 +377,7 @@ extern  void    CVOutSym( cv_out *out, cg_sym_handle sym )
 {
     dbg_type    tipe;
     fe_attr     attr;
-    char        *nm;
+    const char  *nm;
 
     attr = FEAttr( sym );
     tipe = FEDbgType( sym );
@@ -408,9 +408,9 @@ extern  void    CVGenStatic( cg_sym_handle sym, dbg_loc loc, bool mem )
     dbg_type    tipe;
     cv_out      out[1];
     fe_attr     attr;
-    cs_gdata     *ptr;
-    sg_index     kind;
-    char        *name;
+    cs_gdata    *ptr;
+    sg_index    kind;
+    const char  *name;
 
     attr = FEAttr( sym );
     tipe = FEDbgType( sym );
@@ -599,8 +599,8 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     cg_sym_handle       sym;
     dbg_type            tipe;
     fe_attr             attr;
-    char               *name;
-    cs_gproc           *ptr;
+    const char          *name;
+    cs_gproc            *ptr;
     sg_index            kind;
     cv_out              out[1];
 

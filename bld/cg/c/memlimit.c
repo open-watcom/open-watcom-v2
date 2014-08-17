@@ -83,16 +83,19 @@ static  bool    FlushSomeOpt( pointer_int size )
 static  bool    ChkMemLimit( pointer_int limit )
 /**********************************************/
 {
-    if( _IsModel( MEMORY_LOW_FAILS ) ) return( FALSE );
-    if( MemInUse() - FrlSize <= limit ) return( FALSE );
+    if( _IsModel( MEMORY_LOW_FAILS ) )
+        return( FALSE );
+    if( MemInUse() - FrlSize <= limit )
+        return( FALSE );
     FlushSomeOpt( MemInUse() - limit - FrlSize );
-    if( MemInUse() - FrlSize <= limit ) return( FALSE );
+    if( MemInUse() - FrlSize <= limit )
+        return( FALSE );
     return( TRUE );
 }
 
 
-extern  void    CalcMemLimit( void )
-/**********************************/
+void    CalcMemLimit( void )
+/**************************/
 {
     pointer_int size;
     size = MemSize();
@@ -101,29 +104,29 @@ extern  void    CalcMemLimit( void )
 }
 
 
-extern  void    FlushOpt( void )
-/******************************/
+void    FlushOpt( void )
+/**********************/
 {
-    FlushSomeOpt( -1 );
+    FlushSomeOpt( (pointer_int)-1 );
 }
 
 
-extern  bool    MemCritical( void )
-/*********************************/
+bool    MemCritical( void )
+/*************************/
 {
     return( ChkMemLimit( MemLimit - MemLimit/4 ) );
 }
 
 
-extern  bool    MemLow( void )
-/****************************/
+bool    MemLow( void )
+/********************/
 {
     return( ChkMemLimit( MemLimit ) );
 }
 
 
-extern  void    BlowAwayFreeLists( void )
-/***************************************/
+void    BlowAwayFreeLists( void )
+/*******************************/
 {
     AddrFrlFree();
     ScoreFrlFree();
@@ -138,21 +141,34 @@ extern  void    BlowAwayFreeLists( void )
 }
 
 
-extern  bool    MemCheck( size_t size )
-/*************************************/
+bool    MemCheck( size_t size )
+/*****************************/
 {
-    if( FEMoreMem( size ) ) return( TRUE );
-    if( FreeObjCache() ) return( TRUE );
-    if( ScoreFrlFree() ) return( TRUE );
-    if( AddrFrlFree() ) return( TRUE );
-    if( RegTreeFrlFree() ) return( TRUE );
-    if( CFFrlFree() ) return( TRUE );
-    if( InsFrlFree() ) return( TRUE );
-    if( TreeFrlFree() ) return( TRUE );
-    if( ConfFrlFree() ) return( TRUE );
-    if( NameFrlFree() ) return( TRUE );
-    if( InstrFrlFree() ) return( TRUE );
-    if( SchedFrlFree() ) return( TRUE );
-    if( FlushSomeOpt( size ) ) return( TRUE );
+    if( FEMoreMem( size ) )
+        return( TRUE );
+    if( FreeObjCache() )
+        return( TRUE );
+    if( ScoreFrlFree() )
+        return( TRUE );
+    if( AddrFrlFree() )
+        return( TRUE );
+    if( RegTreeFrlFree() )
+        return( TRUE );
+    if( CFFrlFree() )
+        return( TRUE );
+    if( InsFrlFree() )
+        return( TRUE );
+    if( TreeFrlFree() )
+        return( TRUE );
+    if( ConfFrlFree() )
+        return( TRUE );
+    if( NameFrlFree() )
+        return( TRUE );
+    if( InstrFrlFree() )
+        return( TRUE );
+    if( SchedFrlFree() )
+        return( TRUE );
+    if( FlushSomeOpt( size ) )
+        return( TRUE );
     return( FALSE );
 }

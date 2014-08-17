@@ -237,8 +237,8 @@ extern  void    BuffWSLString( const char *str ) {
 }
 
 
-extern  void    BuffString( uint len, char *str ) {
-/*************************************************/
+extern  void    BuffString( uint len, const char *str ) {
+/*******************************************************/
 
     while( len > 0 ) {
         BuffByte( *str );

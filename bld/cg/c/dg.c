@@ -456,16 +456,15 @@ static  void    SrcFileNoInit( void ){
     SrcFiles = NULL;
 }
 
-static  void    DBSrcFileFini( void ){
-/*****************************/
-    fname_lst   *curr, *old;
-    curr = SrcFiles;
-    while( curr != NULL ){
-        old = curr;
-        curr = curr->next;
-        CGFree( old );
+static  void    DBSrcFileFini( void )
+/***********************************/
+{
+    fname_lst   *curr;
+
+    while( (curr = SrcFiles) != NULL ){
+        SrcFiles = curr->next;
+        CGFree( curr );
     }
-    SrcFiles = NULL;
 }
 
 extern  uint    DBSrcFile( cchar_ptr fname )
@@ -475,22 +474,18 @@ extern  uint    DBSrcFile( cchar_ptr fname )
     size_t      len;
     fname_lst   *curr, **lnk;
 
-    lnk  = &SrcFiles;
-    curr = *lnk;
     index = 0;
     len = strlen( fname ) + 1;
-    while( (curr = *lnk) != NULL ){
+    for( lnk = &SrcFiles; (curr = *lnk) != NULL; lnk = &curr->next ){
         if( memcmp( fname, curr->fname, len ) == 0 ){
-            goto found;
+            return( index );
         }
         ++index;
-        lnk = &curr->next;
     }
     curr = CGAlloc( sizeof( *curr ) - 1 + len );
     curr->next = NULL;
     memcpy( curr->fname, fname, len );
     *lnk = curr;
-found:
     return( index );
 }
 

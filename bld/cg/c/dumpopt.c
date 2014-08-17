@@ -41,7 +41,7 @@ static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
 static  void            DoRef( oc_handle *instr );
 
-static char * CNames[] = {
+static const char *CNames[] = {
     #define pick_class(x) #x ,
     #include "occlasss.h"
     #undef pick_class
@@ -49,7 +49,8 @@ static char * CNames[] = {
 };
 
 #if _TARGET & _TARG_INTEL
-static char * Conds[] = {
+
+static const char *Conds[] = {
     "jo   ",
     "jno  ",
     "jb   ",
@@ -70,13 +71,15 @@ static char * Conds[] = {
     ""
 };
 
-static  char    *CondName( oc_jcond *oc ) {
-/*****************************************/
+static  const char  *CondName( oc_jcond *oc ) {
+/*********************************************/
 
     return( Conds[ oc->cond ] );
 }
+
 #else
-static char * Conds[] = {
+
+static const char *Conds[] = {
     "je   ",
     "jne  ",
     "je   ",
@@ -88,11 +91,12 @@ static char * Conds[] = {
     ""
 };
 
-static  char    *CondName( oc_jcond *oc ) {
-/*****************************************/
+static  const char  *CondName( oc_jcond *oc ) {
+/*********************************************/
 
     return( Conds[ oc->cond - FIRST_CONDITION ] );
 }
+
 #endif
 
 static  bool    LblName( label_handle lbl ) {
