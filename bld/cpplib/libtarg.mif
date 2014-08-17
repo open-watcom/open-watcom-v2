@@ -1,4 +1,5 @@
 cflags_generic = -bt=generic
+aflags_generic = -bt=generic
 
 cpplib_host_cpu_086 = i86
 cpplib_host_cpu_087 = i86
