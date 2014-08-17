@@ -41,9 +41,9 @@
 #define DOS_EOF_CHAR    0x1A
 
 #if defined( __UNIX__ )
-#define H_DIR	"../h/"
+#define H_DIR   "../h/"
 #else
-#define H_DIR	"..\\h\\"
+#define H_DIR   "..\\h\\"
 #endif
 
 typedef struct cpp_info {
@@ -101,19 +101,19 @@ static char *doStrDup( const char *str )
     return( ptr );
 }
 
-int PP_Open( const char *filename )
+FILE *PP_Open( const char *filename )
 {
-    int         handle;
+    FILE        *handle;
     FILELIST    *prev_file;
 
-    handle = open( filename, O_RDONLY | O_BINARY );
-    if( handle != -1 ) {
+    handle = fopen( filename, "rb" );
+    if( handle != NULL ) {
         prev_file = PP_File;
         PP_File = (FILELIST *)PP_Malloc( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
             PP_OutOfMemory();
-            close( handle );
-            handle = -1;
+            fclose( handle );
+            handle = NULL;
             PP_File = prev_file;
         } else {
             PP_File->prev_file = prev_file;
@@ -265,7 +265,7 @@ int PP_FindInclude( const char *filename, char *fullfilename, int incl_type )
 }
 
 
-int PP_OpenInclude( const char *filename, int incl_type )
+FILE *PP_OpenInclude( const char *filename, int incl_type )
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
@@ -276,7 +276,7 @@ int PP_OpenInclude( const char *filename, int incl_type )
     } else if( rc == 0 ) {
         return( PP_Open( fullfilename ) );
     }
-    return( -1 );
+    return( NULL );
 }
 
 static void PP_GenLine( void )
@@ -352,7 +352,7 @@ int PP_Init( const char *filename, unsigned flags, const char *include_path )
 
 int PP_Init2( const char *filename, unsigned flags, const char *include_path, const char *leadbytes )
 {
-    int         handle;
+    FILE        *handle;
     int         hash;
 
     for( hash = 0; hash < HASH_SIZE; hash++ ) {
@@ -391,7 +391,7 @@ int PP_Init2( const char *filename, unsigned flags, const char *include_path, co
         SetRange( 0xfc, 0xfd, 5 );
     }
     handle = PP_Open( filename );
-    if( handle == -1 )
+    if( handle == NULL )
         return( -1 );
     PP_GenLine();
     PPSavedChar = '\0';
@@ -415,7 +415,7 @@ static void PP_CloseAllFiles( void )
     while( PP_File != NULL ) {
         tmp = PP_File;
         PP_File = PP_File->prev_file;
-        close( tmp->handle );
+        fclose( tmp->handle );
         PP_Free( tmp->filename );
         PP_Free( tmp );
     }
@@ -446,7 +446,7 @@ int PP_ReadBuf( void )
     FILELIST    *this_file;
 
     this_file = PP_File;
-    len = read( this_file->handle, this_file->buffer, PPBUFSIZE );
+    len = fread( this_file->buffer, 1, PPBUFSIZE, this_file->handle );
     this_file->buffer[len] = '\0';
     PPBufPtr = this_file->buffer;
     return( len );
@@ -486,7 +486,7 @@ size_t PP_ReadLine( char *line_generated )
                         break;
                     }
                     this_file = PP_File;
-                    close( this_file->handle );
+                    fclose( this_file->handle );
                     PP_File = this_file->prev_file;
                     PPBufPtr = this_file->prev_bufptr;
                     PP_Free( this_file->filename );
@@ -570,7 +570,7 @@ void PP_Include( char *ptr )
     while( *ptr != delim  &&  *ptr != '\0' )
         ++ptr;
     *ptr = '\0';
-    if( PP_OpenInclude( filename, incl_type ) == -1 ) {
+    if( PP_OpenInclude( filename, incl_type ) == NULL ) {
         filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
         sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );
@@ -609,7 +609,7 @@ void PP_RCInclude( char *ptr )
         }
     }
     *ptr = '\0';
-    if( PP_OpenInclude( filename, PPINCLUDE_USR ) == -1 ) {
+    if( PP_OpenInclude( filename, PPINCLUDE_USR ) == NULL ) {
         filename = doStrDup( filename );        // want to reuse buffer
         PPCharPtr = &PPLineBuf[1];
         sprintf( PPCharPtr, "%cerror Unable to open '%s'\n", PreProcChar, filename );

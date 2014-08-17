@@ -100,7 +100,7 @@ typedef struct  file_list {
     struct file_list *prev_file;
     char             *prev_bufptr;
     char             *filename;
-    int              handle;
+    FILE             *handle;
     unsigned         linenum;
     char             buffer[PPBUFSIZE+2];
 } FILELIST;
