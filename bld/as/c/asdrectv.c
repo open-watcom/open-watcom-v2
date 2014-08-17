@@ -636,7 +636,7 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
     uint_8              prev_alignment = 0;
     int                 opnum;
     void                *target = NULL;
-    owl_reloc_type      rtype;
+    owl_reloc_type      rtype = 0;
     struct { int size; void *ptr; uint_8 alignment; } data_table[] =
     {
         { 1, &byte,     0 },    // DT_VAL_INT8
@@ -750,28 +750,27 @@ static bool dirFuncValues( directive_t *dir, dir_table_enum parm )
         if( target != NULL ) {
             assert( (parm == DT_VAL_INT32 || parm == DT_VAL_INT16) && rep == 1 );
 #ifdef _STANDALONE_
-            ObjEmitReloc( CurrentSection, target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL) ); // align with data
+            // align with data
+            ObjEmitReloc( CurrentSection, target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL) );
 #else
-            ObjEmitReloc( target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL ) ); // align with data
+            // align with data
+            ObjEmitReloc( target, rtype, ( opnum == 0 ), (dirop->type == DIROP_SYMBOL ) );
 #endif
             target = NULL;
         }
 #ifdef _STANDALONE_
-        ObjEmitData( CurrentSection,
+        // only align for the first data operand
+        ObjEmitData( CurrentSection, data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size, ( opnum == 0 ) );
 #else
-        ObjEmitData(
+        // only align for the first data operand
+        ObjEmitData( data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size, ( opnum == 0 ) );
 #endif
-                     data_table[TABLE_IDX(parm)].ptr,
-                     data_table[TABLE_IDX(parm)].size,
-                     ( opnum == 0 ) );  // only align for the first data operand
         for( rep--; rep > 0; rep-- ) {
 #ifdef _STANDALONE_
-            OWLEmitData( CurrentSection,
+            OWLEmitData( CurrentSection, data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size );
 #else
-            ObjDirectEmitData(
+            ObjDirectEmitData( data_table[TABLE_IDX(parm)].ptr, data_table[TABLE_IDX(parm)].size );
 #endif
-                         data_table[TABLE_IDX(parm)].ptr,
-                         data_table[TABLE_IDX(parm)].size );
 #if 0
             printf( "Size=%d\n", data_table[TABLE_IDX(parm)].size );
             switch( parm ) {

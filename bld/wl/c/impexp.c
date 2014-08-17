@@ -340,11 +340,12 @@ void AssignOrdinals( void )
         }
         prev = FmtData.u.os2.exports;
         place = prev->next;
+        isspace = false;
         for( exp = FmtData.u.os2.exports; exp->ordinal == 0; exp = FmtData.u.os2.exports ) {
             // while still unassigned values
             for(;;) {                 // search for an unassigned value
                 if( place != NULL ) {
-                    isspace = (place->ordinal - prev->ordinal > 1);
+                    isspace = ( place->ordinal - prev->ordinal > 1 );
                 }
                 if( place == NULL || isspace ) {
                     if( FmtData.u.os2.exports != prev ) {

@@ -65,8 +65,12 @@ static bool readLangInfoList( WResFileID handle, WResResNode *res, void *fileinf
 static bool readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
 {
     WResResNode     *newnode = NULL;
-    WResResInfo     newres;
-    WResResInfo1    newres1 = { 0 };
+    struct {
+        union {
+            WResResInfo     v2;
+            WResResInfo1    v1;
+        } u;
+    } newres = { 0 };
     WResLangNode    *langnode;
     WResID          *resid;
     WResID          tmpresid;
@@ -81,21 +85,21 @@ static bool readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver,
 
         /* read a resource record from disk */
         if( ver < 2 ) {
-            error = WResReadFixedResRecord1( &newres1, handle );
+            error = WResReadFixedResRecord1( &newres.u.v1, handle );
             resid = &tmpresid;
-            tmpresid.IsName = newres1.ResName.IsName;
+            tmpresid.IsName = newres.u.v1.ResName.IsName;
             if( tmpresid.IsName ) {
-                tmpresid.ID.Name.Name[0] = newres1.ResName.ID.Name.Name[0];
-                tmpresid.ID.Name.NumChars = newres1.ResName.ID.Name.NumChars;
+                tmpresid.ID.Name.Name[0] = newres.u.v1.ResName.ID.Name.Name[0];
+                tmpresid.ID.Name.NumChars = newres.u.v1.ResName.ID.Name.NumChars;
             } else {
-                tmpresid.ID.Num = newres1.ResName.ID.Num;
+                tmpresid.ID.Num = newres.u.v1.ResName.ID.Num;
             }
         } else if( ver == 2 ) {
-            error = WResReadFixedResRecord2( &newres, handle );
-            resid = &( newres.ResName );
+            error = WResReadFixedResRecord2( &newres.u.v2, handle );
+            resid = &( newres.u.v2.ResName );
         } else {
-            error = WResReadFixedResRecord( &newres, handle );
-            resid = &( newres.ResName );
+            error = WResReadFixedResRecord( &newres.u.v2, handle );
+            resid = &( newres.u.v2.ResName );
         }
 
         if( !error ) {
@@ -113,10 +117,9 @@ static bool readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver,
             /* copy the new resource info into the new node */
             if( ver < 2 ) {
                 newnode->Info.NumResources = 1;
-                memcpy( &(newnode->Info.ResName), &( newres1.ResName ),
-                        sizeof( WResID ) );
+                memcpy( &(newnode->Info.ResName), &( newres.u.v1.ResName ), sizeof( WResID ) );
             } else {
-                memcpy( &(newnode->Info), &newres, sizeof( WResResInfo ) );
+                memcpy( &(newnode->Info), &newres.u.v2, sizeof( WResResInfo ) );
             }
 
             /* read the extra bytes (if any) */
@@ -133,13 +136,12 @@ static bool readResList( WResFileID handle, WResTypeNode *currtype, uint_16 ver,
                 if( !error ) {
                     langnode->data = NULL;
                     langnode->fileInfo = fileinfo;
-                    langnode->Info.MemoryFlags = newres1.MemoryFlags;
-                    langnode->Info.Offset = newres1.Offset;
-                    langnode->Info.Length = newres1.Length;
+                    langnode->Info.MemoryFlags = newres.u.v1.MemoryFlags;
+                    langnode->Info.Offset = newres.u.v1.Offset;
+                    langnode->Info.Length = newres.u.v1.Length;
                     langnode->Info.lang.lang = DEF_LANG;
                     langnode->Info.lang.sublang = DEF_SUBLANG;
-                    ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail),
-                                       langnode );
+                    ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail), langnode );
                 }
             } else {
                 error = readLangInfoList( handle, newnode, fileinfo );

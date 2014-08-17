@@ -395,7 +395,7 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
 //*********************************************************************************
 
     ins_operand     *op0, *op1;
-    uint_32         extra;
+    uint_32         extra = 0;
     uint_32         abs_val;
     bool            ready = TRUE;
 
@@ -418,13 +418,13 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
         ready = FALSE;
     }
     if( ready ) {
-        doOpcodeFcRaRc( buffer, OPCODE_BIS, FUNCCODE_BIS,
-                        ZERO_REG_IDX, RegIndex( op1->reg ), extra );
+        doOpcodeFcRaRc( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
         return;
     }
     // Otherwise it's OP_IMMED with a greater than 8-bit literal.
     // We'll then use multiple LDA, LDAH instructions to load the literal.
-    if( !ensureOpAbsolute( op0, 0 ) ) return;
+    if( !ensureOpAbsolute( op0, 0 ) )
+        return;
     numExtendedIns += load32BitLiteral( buffer, op0, op1, m_opt ) - 1;
 }
 
@@ -581,9 +581,9 @@ static void opError( instruction *ins, op_type actual, op_type wanted, int i ) {
     }
 }
 
-static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, unsigned num_var ) {
-//**************************************************************************************************
-
+static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, int num_var )
+//*******************************************************************************************
+{
     int             ctr, var;
     int             lasterr;
     op_type         actual = 0;
@@ -623,7 +623,7 @@ static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op ) {
     static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
     ot_array        *verify_table[3] = { (ot_array *)&verify1, &verify2, (ot_array *)&verify3 };
-    unsigned        num_var;
+    int             num_var;
 
     if( num_op == 0 ) return( TRUE );
     assert( num_op <= 3 );
@@ -733,7 +733,7 @@ static bool retOperandsValidate( instruction *ins, ins_opcount num_op ) {
     static op_type  verify3[][3] = { { OP_GPR, OP_REG_INDIRECT, OP_IMMED } };
     ot_array        *verify;
     ot_array        *verify_table[3] = { (ot_array *)&verify1, (ot_array *)&verify2, (ot_array *)&verify3 };
-    unsigned        num_var;
+    int             num_var;
 
     if( num_op == 0 ) return( TRUE );
     assert( num_op <= 3 );
@@ -1145,11 +1145,11 @@ void AlphaEmit( instruction *ins ) {
 // relocs to the appropriate places), and emit the code
 // to the given section.
 
-    int             ctr;
+    unsigned        ctr;
     ins_table       *table;
     asm_reloc       reloc = { NULL, NULL };
     reloc_list      curr_reloc;
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     uint_8          old_alignment;
 
     if( OWLTellSectionType( hdl ) & OWL_SEC_ATTR_BSS ) {
@@ -1160,7 +1160,7 @@ void AlphaEmit( instruction *ins ) {
     if( CurrAlignment < 2 ) { // Instructions should at least be dword aligned
         CurrAlignment = 2;
     }
-    #endif
+#endif
     table = ins->format->table_entry;
     AlphaFormatTable[ table->template ].func( table, ins, result, &reloc );
     for( ctr = 0; ctr <= numExtendedIns; ctr++ ) {
@@ -1169,21 +1169,15 @@ void AlphaEmit( instruction *ins ) {
             if( curr_reloc->loc == ctr * sizeof( *result ) ) {
                 reloc.first = curr_reloc->next;
                 if( curr_reloc->is_named ) {
-                    #ifdef _STANDALONE_
-                    ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ),
-                                  curr_reloc->type, TRUE, TRUE );
-                    #else
-                    ObjEmitReloc( SymName( curr_reloc->target.ptr ),
-                                  curr_reloc->type, TRUE, TRUE );
-                    #endif
+#ifdef _STANDALONE_
+                    ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ), curr_reloc->type, TRUE, TRUE );
                 } else {
-                    #ifdef _STANDALONE_
-                    ObjEmitReloc( hdl, &curr_reloc->target.label,
-                                  curr_reloc->type, TRUE, FALSE );
-                    #else
-                    ObjEmitReloc( &curr_reloc->target.label,
-                                  curr_reloc->type, TRUE, FALSE );
-                    #endif
+                    ObjEmitReloc( hdl, &curr_reloc->target.label, curr_reloc->type, TRUE, FALSE );
+#else
+                    ObjEmitReloc( SymName( curr_reloc->target.ptr ), curr_reloc->type, TRUE, TRUE );
+                } else {
+                    ObjEmitReloc( &curr_reloc->target.label, curr_reloc->type, TRUE, FALSE );
+#endif
                 }
 #ifdef AS_DEBUG_DUMP
                 switch( curr_reloc->type ) {
@@ -1205,17 +1199,17 @@ void AlphaEmit( instruction *ins ) {
                 MemFree( curr_reloc );
             }
         }
-        #ifdef _STANDALONE_
+#ifdef _STANDALONE_
         emitIns( hdl, (char *)&result[ctr], sizeof( uint_32 ) );
-        #else
+#else
         emitIns( (char *)&result[ctr], sizeof( uint_32 ) );
-        #endif
-#ifdef AS_DEBUG_DUMP
-        #ifdef _STANDALONE_
+#endif
+#ifdef _STANDALONE_
+  #ifdef AS_DEBUG_DUMP
         if( _IsOption( DUMP_INSTRUCTIONS ) ) {
             printf( " [%#010x]\n", result[ctr] );
         }
-        #endif
+  #endif
 #endif
     }
     assert( reloc.first == NULL ); // Should all be emitted already!
@@ -1226,7 +1220,7 @@ void AlphaEmit( instruction *ins ) {
         }
         numExtendedIns = 0;
     }
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     CurrAlignment = old_alignment;
-    #endif
+#endif
 }

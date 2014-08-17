@@ -418,12 +418,13 @@ static void emitSectionData( owl_file_handle file ) {
             }
         } else {
             reloc_buffer = NULL;
+            relocs_size = 0;
         }
         if( !_OwlSectionBSS( curr ) ) {
             OWLBufferEmit( curr->buffer );
             emitSectionPadding( curr );
         }
-        if( reloc_buffer ) {
+        if( reloc_buffer != NULL ) {
             // Now write out the prepared reloc_buffer
             _ClientWrite( file, (const char *)reloc_buffer, relocs_size );
             _ClientFree( file, reloc_buffer );

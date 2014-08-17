@@ -559,6 +559,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
 
     name = NULL;
     *size = 0;
+    ar_loc = 0;
     if( list->status & STAT_AR_LIB ) {
         ar_loc = MAKE_EVEN( *loc );     /* AR headers are word aligned. */
         ar_hdr = CacheRead( list, ar_loc, sizeof( ar_header ) );
