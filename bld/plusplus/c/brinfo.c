@@ -662,26 +662,23 @@ static void usageIoErr          // SIGNAL FATAL I/O ERROR: USAGE FILE
 
 
 static int brinfWrite           // WRITE CALLBACK FUNCTION
-    ( int cookie
+    ( void *cookie
     , void const *buf           // - write buffer
     , unsigned len )            // - write length
 {
-    FILE *fp = (FILE *) cookie;
     int result;
 
-    result = fwrite(buf, 1, len, fp);
+    result = fwrite(buf, 1, len, (FILE *)cookie);
     return result;
 }
 
 
 static long brinfLSeek          // LSEEK CALLBACK FUNCTION
-    ( int cookie
+    ( void *cookie
     , long offset               // - seek offset
     , int whence )              // - seek direction, see b_write.h
 {
-    FILE *fp = (FILE *) cookie;
-
-    fseek(fp, offset, whence);
+    fseek((FILE *)cookie), offset, whence);
     return ftell(fp);
 }
 
@@ -695,7 +692,7 @@ static BRI_Routines const rtns =// CALL-BACK FOR BROWSE WRITER
 
 
 static int brinfWritePch        // PCH WRITE CALLBACK FUNCTION
-    ( int cookie
+    ( void *cookie
     , void const *buf           // - write buffer
     , unsigned len )            // - write length
 {
@@ -706,7 +703,7 @@ static int brinfWritePch        // PCH WRITE CALLBACK FUNCTION
 
 
 static long brinfLSeekPch       // PCH LSEEK CALLBACK FUNCTION
-    ( int cookie
+    ( void *cookie
     , long offset               // - seek offset
     , int whence )              // - seek direction, see b_write.h
 {
@@ -1144,10 +1141,7 @@ unsigned long BrinfPch          // WRITE OUT PCH IF REQ'D
         completeInputPhase();   // - note: this destroys a carver in brinfsrc
         brinfo_state = BRS_WRITING;
         CgioOpenInput( virtual_file );
-        bri_handle = BrinfWritePchFile( virtual_file
-                                      , &rtns_pch
-                                      , (void*)handle
-                                      , retn );
+        bri_handle = BrinfWritePchFile( virtual_file, &rtns_pch, (void*)handle, retn );
         CgioCloseInputFile( virtual_file );
         CgioFreeFile( virtual_file );
         BrinfSrcInit();         // - to restart the carver in brinfsrc

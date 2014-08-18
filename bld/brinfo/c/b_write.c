@@ -87,7 +87,7 @@ struct BRI_Handle {
     BRI_Header *        hdr;
 
     /* file io information */
-    int                 io_cookie;
+    void                *io_cookie;
     unsigned long       start;
 
     /* other data */
@@ -333,7 +333,7 @@ static void insertTypeID( BRI_HANDLE handle, BRI_TypeID type_id )
 /*  BRIBeginWrite       -- Create a browse handle, ready for use.
 */
 
-BRI_HANDLE BRIBeginWrite( BRI_Routines const *rtns, int io_cookie,
+BRI_HANDLE BRIBeginWrite( BRI_Routines const *rtns, void *io_cookie,
                           unsigned long start )
 /*****************************************************************/
 {
@@ -448,7 +448,7 @@ BRI_HANDLE BRICreate( BRI_Routines const *rtns )
 */
 
 BRI_HANDLE BRIOpen( BRI_HANDLE handle, BRI_Routines const *rtns,
-                    int io_cookie, unsigned long start )
+                    void *io_cookie, unsigned long start )
 /*****************************************************************/
 {
     BRI_Header *        hdr;
@@ -1031,7 +1031,7 @@ void BRIAddPCHInclude( BRI_HANDLE handle, BRI_StringID filename_id )
 */
 
 BRI_HANDLE BRIBuildHandle( BRI_HANDLE handle, BRI_PCHRtns const *rtns,
-                     void * io_cookie )
+                     void *io_cookie )
 /***************************************************************/
 {
     BRI_Header          header;

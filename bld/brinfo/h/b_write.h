@@ -53,8 +53,8 @@
 
 typedef struct BRI_Routines {
     // I/O Routines
-    int  (* write)( int cookie, void const *, unsigned len );
-    long (* lseek)( int cookie, long offset, int whence );
+    int  (* write)( void *cookie, void const *, unsigned len );
+    long (* lseek)( void *cookie, long offset, int whence );
 
     // Memory Routines
     void * (* malloc)( size_t );
@@ -86,7 +86,7 @@ typedef struct BRI_Handle       BRI_Handle, *BRI_HANDLE;
 
 BRI_HANDLE      BRIBeginWrite(          // Begin writing browse info
     BRI_Routines const  *rtns,          //  -- callback routines
-    int                 io_cookie,      //  -- cookie for io routines
+    void                *io_cookie,     //  -- cookie for io routines
     unsigned long       start );        //  -- start position for browse info
 
 void            BRIEndWrite(            // Finish writing browse info
@@ -98,7 +98,7 @@ BRI_HANDLE      BRICreate(              // Create a browse handle, but
 BRI_HANDLE      BRIOpen(                // Re-open a previously closed handle
     BRI_HANDLE          handle,         //  -- browse handle
     BRI_Routines const  *rtns,          //  -- callback routines
-    int                 io_cookie,      //  -- io_cookie
+    void                *io_cookie,     //  -- io_cookie
     unsigned long       start );        //  -- start position for browse info
 
 BRI_HANDLE      BRIClose(               // Finish writing browse info,

@@ -865,9 +865,9 @@ void BrinfWriteFile                 // WRITE OUT BROWSE INFORMATION TO FILE
     , BRI_HANDLE b_handle )
 {
     if( NULL == b_handle ) {
-        bri_handle = BRIBeginWrite( rtns, (int) file_handle, 0 );
+        bri_handle = BRIBeginWrite( rtns, file_handle, 0 );
     } else {
-        bri_handle = BRIOpen( b_handle, rtns, (int) file_handle, 0 );
+        bri_handle = BRIOpen( b_handle, rtns, file_handle, 0 );
     }
     brinfWriteFileContents( virtual_file );
     BRIEndWrite( bri_handle );
@@ -889,7 +889,7 @@ void* BrinfWritePchFile             // WRITE OUT BROWSE INFORMATION TO PCH
     , void * file_handle
     , unsigned long start )
 {
-    bri_handle = BRIBeginWrite( rtns, (int) file_handle, start );
+    bri_handle = BRIBeginWrite( rtns, file_handle, start );
     brinfWriteFileContents( virtual_file );
     BRIClose( bri_handle );
     return bri_handle;

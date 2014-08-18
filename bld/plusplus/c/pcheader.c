@@ -364,9 +364,9 @@ void PCHFlushBuffer( void )
 
 
 #ifndef NDEBUG
-void PCHVerifyFile( int handle )    // DEBUG -- verify handle ok
+void PCHVerifyFile( void *handle )    // DEBUG -- verify handle ok
 {
-    DbgVerify( handle == pchFile, "PCH handle is bad" );
+    DbgVerify( (int)(pointer_int)handle == pchFile, "PCH handle is bad" );
 }
 #endif
 
