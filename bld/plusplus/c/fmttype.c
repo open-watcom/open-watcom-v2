@@ -91,24 +91,24 @@ typedef struct {
 #define ENTRY_MEMBER_POINTER    "::* ",
 #define ENTRY_GENERIC           "? ",
 
-static char *typeName[] = {
+static const char *typeName[] = {
     #include "type_arr.h"
 };
 
-static char *errFormats[] = {
+static const char *errFormats[] = {
     #define TFMT_DEF(a,b) b,
     SPECIAL_TYPE_FMTS
     #undef TFMT_DEF
 };
 
-static FMT_FLAG_INFO functionFlags[] = {
+static const FMT_FLAG_INFO functionFlags[] = {
     { "__loadds ",      TF1_LOADDS },
     { "__saveregs ",    TF1_SAVEREGS },
     { "__interrupt ",   TF1_INTERRUPT },
     { NULL,             TF1_NULL }
 };
 
-static FMT_FLAG_INFO modifierFlags[] = {
+static const FMT_FLAG_INFO modifierFlags[] = {
     { "mutable ",   TF1_MUTABLE },
     { "const ",     TF1_CONST },
     { "volatile ",  TF1_VOLATILE },
@@ -122,41 +122,41 @@ static FMT_FLAG_INFO modifierFlags[] = {
     { NULL,         TF1_NULL }
 };
 
-static FMT_FLAG_INFO ushortFlags[] = {
+static const FMT_FLAG_INFO ushortFlags[] = {
     { "__segment ", TF1_SEGMENT },
     { NULL,         TF1_NULL }
 };
 
-static FMT_FLAG_INFO pointerFlags[] = {
+static const FMT_FLAG_INFO pointerFlags[] = {
     { "& ", TF1_REFERENCE },
     { NULL, TF1_NULL }
 };
 
-static FMT_FLAG_INFO classFlags[] = {
+static const FMT_FLAG_INFO classFlags[] = {
     { "<union> ",   TF1_UNION },
     { "<struct> ",  TF1_STRUCT },
     { NULL,         TF1_NULL }
 };
 
-static char basedVoid[]         = "void ";
-static char basedSelf[]         = "__self ";
-static char openBased[]         = "__based( ";
-static char closeBased[]        = ") ";
-static char openSegname[]       = "__segname( \"";
-static char closeSegname[]      = "\" )";
-static char openPragma[]        = "__pragma(\"";
-static char closePragma[]       = "\") ";
-static char openFunction[]      = "( ";
-static char closeFunction[]     = ") ";
-static char openSquareParen[]   = "[";
-static char closeSquareParen[]  = "]";
-static char openParen[]         = "(";
-static char closeParen[]        = ")";
-static char bitfieldSep[]       = " : ";
-static char parameterSep[]      = ", ";
-static char whiteSpace[]        = " ";
-static char nullType[]          = "<null type pointer>";
-static char memberPointer[]     = "<member pointer>";
+static const char basedVoid[]         = "void ";
+static const char basedSelf[]         = "__self ";
+static const char openBased[]         = "__based( ";
+static const char closeBased[]        = ") ";
+static const char openSegname[]       = "__segname( \"";
+static const char closeSegname[]      = "\" )";
+static const char openPragma[]        = "__pragma(\"";
+static const char closePragma[]       = "\") ";
+static const char openFunction[]      = "( ";
+static const char closeFunction[]     = ") ";
+static const char openSquareParen[]   = "[";
+static const char closeSquareParen[]  = "]";
+static const char openParen[]         = "(";
+static const char closeParen[]        = ")";
+static const char bitfieldSep[]       = " : ";
+static const char parameterSep[]      = ", ";
+static const char whiteSpace[]        = " ";
+static const char nullType[]          = "<null type pointer>";
+static const char memberPointer[]     = "<member pointer>";
 
 #define BLOCK_FMT       16
 static carve_t carveFMT;
@@ -324,9 +324,8 @@ static void fmtTypeArgument( TYPE arg_type, unsigned arg_index, VBUF *pvbuf, FMT
     VbufFree( &arg_suffix );
 }
 
-static void fmtTypeFlag( type_flag flag, VBUF *pvbuf,
-/***************************************************/
-    FMT_FLAG_INFO *flag_info )
+static void fmtTypeFlag( type_flag flag, VBUF *pvbuf, const FMT_FLAG_INFO *flag_info )
+/************************************************************************************/
 {
     unsigned    i;
     type_flag   mask;
@@ -486,8 +485,8 @@ static void fmtTypePush( FMT_INFO **pStackFMT, TYPE type, FMT_CONTROL control )
     }
 }
 
-char *FormatErrorType( TYPE err_type )
-/************************************/
+const char *FormatErrorType( TYPE err_type )
+/******************************************/
 {
     DbgAssert( err_type != NULL && err_type->id == TYP_ERROR );
     if( err_type->flag & TF1_SPECIAL_FMT ) {

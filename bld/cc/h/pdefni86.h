@@ -309,7 +309,7 @@ static hw_reg_set P_8087[] = {
 };
 
 
-inline_funcs SInline_Functions[] = {
+const inline_funcs SInline_Functions[] = {
     { "strcpy", (byte_seq *)&S_strcpy, S_strcpy_parms, S_strcpy_ret, S_strcpy_saves },
     { "strcmp", (byte_seq *)&S_strcmp, S_strcmp_parms, S_strcmp_ret, S_strcmp_saves },
     { "strcat", (byte_seq *)&S_strcat, S_strcat_parms, S_strcat_ret, S_strcat_saves },
@@ -319,7 +319,7 @@ inline_funcs SInline_Functions[] = {
     { NULL }
 };
 
-inline_funcs Inline_Functions[] = {
+const inline_funcs Inline_Functions[] = {
     { "strlen", (byte_seq *)&C_strlen, C_strlen_parms, C_strlen_ret, C_strlen_saves },
     { "strcpy", (byte_seq *)&C_strcpy, C_strcpy_parms, C_strcpy_ret, C_strcpy_saves },
     { "strcmp", (byte_seq *)&C_strcmp, C_strcmp_parms, C_strcmp_ret, C_strcmp_saves },
@@ -335,7 +335,7 @@ inline_funcs Inline_Functions[] = {
     { NULL }
 };
 
-inline_funcs ZF_Data_Functions[] = {
+const inline_funcs ZF_Data_Functions[] = {
     { "strcpy", (byte_seq *)&ZF_strcpy, ZF_strcpy_parms, ZF_strcpy_ret, ZF_strcpy_saves },
     { "strcmp", (byte_seq *)&ZF_strcmp, ZF_strcmp_parms, ZF_strcmp_ret, ZF_strcmp_saves },
     { "strcat", (byte_seq *)&ZF_strcat, ZF_strcat_parms, ZF_strcat_ret, ZF_strcat_saves },
@@ -345,7 +345,7 @@ inline_funcs ZF_Data_Functions[] = {
 };
 
 
-inline_funcs ZP_Data_Functions[] = {
+const inline_funcs ZP_Data_Functions[] = {
     { "strcpy", (byte_seq *)&ZP_strcpy, ZP_strcpy_parms, ZP_strcpy_ret, ZP_strcpy_saves },
     { "strcmp", (byte_seq *)&ZP_strcmp, ZP_strcmp_parms, ZP_strcmp_ret, ZP_strcmp_saves },
     { "strcat", (byte_seq *)&ZP_strcat, ZP_strcat_parms, ZP_strcat_ret, ZP_strcat_saves },
@@ -355,7 +355,7 @@ inline_funcs ZP_Data_Functions[] = {
     { NULL }
 };
 
-inline_funcs DF_Data_Functions[] = {
+const inline_funcs DF_Data_Functions[] = {
     { "strlen", (byte_seq *)&DF_strlen, DF_strlen_parms, DF_strlen_ret, DF_strlen_saves },
     { "strcpy", (byte_seq *)&DF_strcpy, DF_strcpy_parms, DF_strcpy_ret, DF_strcpy_saves },
     { "strcmp", (byte_seq *)&DF_strcmp, DF_strcmp_parms, DF_strcmp_ret, DF_strcmp_saves },
@@ -370,7 +370,7 @@ inline_funcs DF_Data_Functions[] = {
     { NULL }
  };
 
-inline_funcs DP_Data_Functions[] = {
+const inline_funcs DP_Data_Functions[] = {
     { "strlen", (byte_seq *)&DP_strlen, DP_strlen_parms, DP_strlen_ret, DP_strlen_saves },
     { "strcpy", (byte_seq *)&DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves },
     { "strcmp", (byte_seq *)&DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves },
@@ -385,7 +385,7 @@ inline_funcs DP_Data_Functions[] = {
     { NULL }
  };
 
-inline_funcs _8087_Functions[] = {
+const inline_funcs _8087_Functions[] = {
     { "fabs", (byte_seq *)&_8087_fabs, C_8087_fabs_parms, C_8087_fabs_ret, C_8087_fabs_saves  },
     { NULL }
 };
@@ -393,7 +393,7 @@ inline_funcs _8087_Functions[] = {
 
 /* memory model independent functions */
 
-inline_funcs Common_Functions[] = {
+const inline_funcs Common_Functions[] = {
     { "abs",     (byte_seq *)&C_abs,     C_abs_parms,     C_abs_ret,     C_abs_saves     },
     { "labs",    (byte_seq *)&C_labs,    C_labs_parms,    C_labs_ret,    C_labs_saves    },
     { "fabs",    (byte_seq *)&C_fabs,    C_fabs_parms,    C_fabs_ret,    C_fabs_saves    },

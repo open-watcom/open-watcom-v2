@@ -83,11 +83,11 @@ typedef struct {
     void        (*skiplevel)( void );
 } PPCTRL;
 
-static unsigned char preprocWeights[] = {
+static const unsigned char preprocWeights[] = {
 //a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
   2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
 };
-static PPCTRL controlTable[] = {
+static const PPCTRL controlTable[] = {
     { "",       NULL,           NULL },  // 0
     { "line",   CLine,          CSkip }, // 4 +12 + 1 = 17 mod 16 = 1
     { "define", CDefine,        CSkip }, // 6 +11 + 1 = 18 mod 16 = 2
@@ -707,8 +707,8 @@ static void CIdent( void )
 
 static void preProcStmt( void )
 {
-    PPCTRL      *pp;
-    int         hash;
+    const PPCTRL    *pp;
+    int             hash;
 
     NextChar();
     NextToken();

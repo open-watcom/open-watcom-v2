@@ -87,7 +87,7 @@ enum {                          // GUARD STATE
 };
 
 #ifndef NDEBUG
-static char *guardStateNames[] = {    // - names of guard states
+static const char *guardStateNames[] = {    // - names of guard states
     #define GDEF( id )  #id ,
     GUARD_DEFS
     #undef GDEF
@@ -141,7 +141,7 @@ struct tri_graph {
     unsigned char   new;
 };
 
-static struct tri_graph triGraphs[] = {
+static const struct tri_graph triGraphs[] = {
     { '=', '#' },
     { '(', '[' },
     { '/', '\\'},
@@ -877,7 +877,7 @@ static void outputTrigraphWarning( char c ) {
 
 static int translateTriGraph( int c )
 {
-    struct tri_graph *p;
+    const struct tri_graph *p;
 
     for( p = triGraphs; p->tri != '\0'; ++p ) {
         if( c == p->tri ) {
@@ -1888,8 +1888,8 @@ static bool recursiveIncludeDetected( char *name )
 FILE *SrcFileFOpen( char *name, src_file_open kind )
 {
     FILE *fp;
-    char *mode;
-    static char *file_kind[] = { "rb", "r", "rb", "w", "wb" };
+    const char *mode;
+    static const char *file_kind[] = { "rb", "r", "rb", "w", "wb" };
 
     mode = file_kind[ kind ];
     for(;;) {

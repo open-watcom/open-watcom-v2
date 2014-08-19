@@ -54,6 +54,11 @@ typedef struct inline_funcs {
     hw_reg_set      save;       /* registers not modified */
 } inline_funcs;
 
+typedef struct alt_inline_funcs {
+    byte_seq        *byteseq;
+    inline_funcs    alt_ifunc;
+} alt_inline_funcs;
+
 global AUX_ENTRY        *AuxList;
 global AUX_ENTRY        *CurrEntry;
 global AUX_INFO         *CurrAlias;

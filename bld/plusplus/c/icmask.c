@@ -41,19 +41,19 @@
 #include "wcpp.h"
 #include "icodes.h"
 
-static char *ic_names[] = {
+static const char *ic_names[] = {
     #define IC( code, type, mask ) __STR( code )
     #include "ic.h"
     #undef IC
 };
 
-static char *ic_masks[] = {
+static const char *ic_masks[] = {
     #define IC( code, type, mask ) mask
     #include "ic.h"
     #undef IC
 };
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "icmask <ic-h> <use-ic-source> <use-ic-source> ...",
     "where:",
     "    <ic-h> is ic.h",
@@ -112,9 +112,9 @@ static void fail( char *msg, ... )
 
 static void dumpUsage( void )
 {
-    char **p;
+    const char **p;
 
-    for( p = usageMsg; *p; ++p ) {
+    for( p = usageMsg; *p != '\0'; ++p ) {
         fprintf( stderr, "%s\n", *p );
     }
 }

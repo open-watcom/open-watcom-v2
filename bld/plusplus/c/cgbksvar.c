@@ -63,7 +63,7 @@ static carve_t carveSTAB_CTL;       // allocations for STAB_CTL
 // internal support
 //**********************************************************************
 
-static carve_t *seCarvers[] = {
+static const carve_t *seCarvers[] = {
     #define pick(a,p) &carveSE_ ## p,
     #include "_dtcdefs.h"
     #undef pick
@@ -432,7 +432,7 @@ void DbgDumpTypeSigEnt(         // DUMP TYPE_SIG_ENT entries
 char const * DbgSeName          // DUMP DTC_... name
     ( DTC_KIND se_type )        // - type of state entry
 {
-    static char* dtc_names[] = {// - names
+    static const char *dtc_names[] = {  // - names
         #define strx(s) #s
         #define pick(a,p) strx( DTC_ ## a ),
         #include "_dtcdefs.h"

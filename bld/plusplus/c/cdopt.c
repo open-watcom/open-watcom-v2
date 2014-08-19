@@ -208,28 +208,28 @@ ExtraRptCtr( ctr_caches    );   // # caches
 #include "toggle.h"
 
 
-static char* tob_names[] = {
+static const char *tob_names[] = {
     #define TOB_DEF(a) # a
     TOB_DEFS
     #undef TOB_DEF
 };
 
 
-static char* cdopt_names[] = {
+static const char *cdopt_names[] = {
     #define CDO_DEF(a) # a
     CDOPT_DEFS
     #undef CDO_DEF
 };
 
 
-static char* tis_names[] = {
+static const char *tis_names[] = {
     #define TIS_DEF(a) # a
     TIS_DEFS
     #undef TIS_DEF
 };
 
 
-static char* titer_names[] = {
+static const char *titer_names[] = {
     #define TITER_DEF(a) # a
     TITER_DEFS
     #undef TITER_DEF
@@ -494,8 +494,7 @@ static void cdoptChkAccFunGen(  // CHECK ACCESS FOR CLASS FUNCTION
 //--------------------------------------------------------------------
 
 
-static
-CL_ELEM* activeElement          // GET ACTIVE ELEMENT
+static CL_ELEM *activeElement   // GET ACTIVE ELEMENT
     ( CDOPT_ITER *iter )        // - iterator
 {
     CL_ITER* exp;               // - expansion information

@@ -76,42 +76,42 @@ static char workFile[] = "__wrk0__.tmp";
 
 #if defined(__OS2__) || defined(__DOS__) || defined(__NT__)
 
-static char* pathSrc[] =        // paths for source file
+static const char* pathSrc[] =        // paths for source file
     {   "..\\cpp"
     ,   "..\\c"
     ,   NULL
     };
 
-static char* pathHdr[] =        // paths for header files
+static const char* pathHdr[] =        // paths for header files
     {   "..\\h"
     ,   "..\\include"
     ,   NULL
     };
 
-static char* pathCmd[] =        // paths for command files
+static const char* pathCmd[] =        // paths for command files
     {   "..\\occ"
     ,   NULL
     };
 
-static char* extsHdr[] =        // extensions for header files
+static const char* extsHdr[] =        // extensions for header files
     {   ".hpp"
     ,   ".h"
     ,   NULL
     };
 
-static char* extsSrc[] =        // extensions for source files
+static const char* extsSrc[] =        // extensions for source files
     {   ".cpp"
     ,   ".cc"
-    ,    ".c"
+    ,   ".c"
     ,   NULL
     };
 
-static char* extsCmd[] =        // extensions for command files
+static const char* extsCmd[] =        // extensions for command files
     {   ".occ"
     ,   NULL
     };
 
-static char* extsOut[] =        // extensions for output files
+static const char* extsOut[] =        // extensions for output files
     {   ".obj"
     ,   ".i"
     ,   ".err"
@@ -126,32 +126,32 @@ static char* extsOut[] =        // extensions for output files
 
 #elif defined(__UNIX__)
 
-static char* pathSrc[] =        // paths for source file
+static const char* pathSrc[] =        // paths for source file
     {   "../C"
     ,   "../cpp"
     ,   "../c"
     ,   NULL
     };
 
-static char* pathHdr[] =        // paths for header files
+static const char* pathHdr[] =        // paths for header files
     {   "../H"
     ,   "../h"
     ,   NULL
     };
 
-static char* pathCmd[] =        // paths for command files
+static const char* pathCmd[] =        // paths for command files
     {   "../occ"
     ,   NULL
     };
 
-static char* extsHdr[] =        // extensions for header files
+static const char* extsHdr[] =        // extensions for header files
     {   ".H"
     ,   ".hpp"
     ,   ".h"
     ,   NULL
     };
 
-static char* extsSrc[] =        // extensions for source files
+static const char* extsSrc[] =        // extensions for source files
     {   ".C"
     ,   ".cpp"
     ,   ".cc"
@@ -159,12 +159,12 @@ static char* extsSrc[] =        // extensions for source files
     ,   NULL
     };
 
-static char* extsCmd[] =        // extensions for command files
+static const char* extsCmd[] =        // extensions for command files
     {   ".occ"
     ,   NULL
     };
 
-static char* extsOut[] =        // extensions for output files
+static const char* extsOut[] =        // extensions for output files
     {   ".o"
     ,   ".i"
     ,   ".err"
@@ -191,76 +191,72 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     char *drive;
     char *dir;
     char *fname;
-    char *ext;
-    char *extsrc;
-    char *path;
+    const char *ext;
+    char       *path;
     bool use_defaults;
     unsigned mask;
     FILE *try_create;
-    auto char buff[ _MAX_PATH2 ];
+    auto char buff[_MAX_PATH2];
+    auto char extsrc[_MAX_EXT];
+    char *extf;
 
-    use_defaults = FALSE;
+    path = WholeFName;
+    use_defaults = TRUE;
     switch( typ ) {
-      case OFT_DEF:
+    case OFT_DEF:
 #ifdef OPT_BR
-      case OFT_BRI:
+    case OFT_BRI:
 #endif
-        path = WholeFName;
-        use_defaults = TRUE;
         break;
-      case OFT_DEP:
-        path = DependFileName;
-        if( path == NULL ) {
-            use_defaults = TRUE;
-            path = WholeFName;
+    case OFT_DEP:
+        if( DependFileName != NULL ) {
+            path = DependFileName;
+            use_defaults = FALSE;
         }
         break;
-      case OFT_ERR:
+    case OFT_ERR:
         if( ErrorFileName == NULL )
             return( NULL );
         outFileChecked |= 1 << typ; // don't create a file. it's just a name.
         path = ErrorFileName;
+        use_defaults = FALSE;
         break;
-      case OFT_SRCDEP:
+    case OFT_SRCDEP:
         outFileChecked |= 1 << typ;
-        if( (path = SrcDepFileName ) == NULL ) {
-            path = WholeFName;
-        } else {
-            auto char buff[ _MAX_PATH2 ];
-            char *drive;
-            char *dir;
-            char *fname;
-            _splitpath2( WholeFName, buff, &drive, &dir, &fname, &extsrc );
+        if( SrcDepFileName != NULL ) {
+            path = SrcDepFileName;
         }
         break;
-      case OFT_TRG:
+    case OFT_TRG:
         outFileChecked |= 1 << typ; // don't create a file. it's just a name.
-        if( (path = TargetFileName) != NULL ) {
+        if( TargetFileName != NULL ) {
+            path = TargetFileName;
+            use_defaults = FALSE;
             break;
         }
         // fall down
-      case OFT_PPO:
-      case OFT_OBJ:
-      case OFT_MBR:
-        path = ObjectFileName;
-        if( path == NULL ) {
-            use_defaults = TRUE;
-            path = WholeFName;
+    case OFT_PPO:
+    case OFT_OBJ:
+    case OFT_MBR:
+        if( ObjectFileName != NULL ) {
+            path = ObjectFileName;
+            if( typ != OFT_MBR ) {
+                use_defaults = FALSE;
+            }
         }
         break;
     }
-    _splitpath2( path, buff, &drive, &dir, &fname, &ext );
-    switch( typ ) {
-      case OFT_MBR:
-        ext = "";       // don't override extension
-        break;
-      case OFT_SRCDEP:
-        if( !ext || !ext[0] )
-            ext = extsrc;
-        break;
-    }
-    if( use_defaults || ext[0] == '\0' ) {
-        ext = extsOut[ typ ];
+    _splitpath2( path, buff, &drive, &dir, &fname, &extf );
+    ext = extf;
+    if( typ == OFT_SRCDEP ) {
+        if( ext == NULL || ext[0] == '\0' ) {
+            if( SrcDepFileName != NULL ) {
+                _splitpath2( WholeFName, extsrc, NULL, NULL, NULL, &extf );
+                ext = extf;
+            }
+        }
+    } else if( use_defaults || ext[0] == '\0' ) {
+        ext = extsOut[typ];
     }
     if( fname[0] == '\0' || fname[0] == '*' ) {
         fname = ModuleName;
@@ -271,7 +267,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     }
     _makepath( FNameBuf, drive, dir, fname, ext );
     mask = 1 << typ;
-    if(( outFileChecked & mask ) == 0 ) {
+    if( (outFileChecked & mask) == 0 ) {
         outFileChecked |= mask;
         try_create = fopen( FNameBuf, "w" );
         if( try_create != NULL ) {
@@ -345,7 +341,7 @@ bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
 
 
 struct path_descr               // path description
-{   char buffer[ _MAX_PATH2 ];  // - buffer
+{   char buffer[_MAX_PATH2];    // - buffer
     char *drv;                  // - drive
     char *dir;                  // - directory
     char *fnm;                  // - file name
@@ -430,13 +426,13 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 }
 
 
-static char *openExt(           // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
-    char *ext,                  // - extension
+static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
+    const char *ext,            // - extension
     struct path_descr *nd,      // - name descriptor
     enum file_type typ )        // - type of file being opened
 {
-    char        *ret;           // - ret
-    char name[ _MAX_PATH ];     // - buffer for file name
+    const char  *ret;           // - ret
+    char name[_MAX_PATH];       // - buffer for file name
 
     _makepath( name, nd->drv, nd->dir, nd->fnm, ext );
     /* so we can tell if the open worked */
@@ -444,16 +440,16 @@ static char *openExt(           // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     if( ! openSrc( name, typ ) ) {
         ret = NULL;
     }
-    return ret;
+    return( ret );
 }
 
 
-static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
-    char **exts,                // - extensions
+static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
+    const char **exts,          // - extensions
     struct path_descr *nd,      // - name descriptor
     enum file_type typ )        // - type of file being opened
 {
-    char *ext;                  // - current extension
+    const char *ext;            // - current extension
 
     if( nd->ext[0] == '\0' ) {
         bool doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
@@ -465,29 +461,32 @@ static char *openSrcExts(       // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
         if(( ext == NULL ) && (doExt)) {
             for( ; ; ) {
                 ext = *exts++;
-                if( ext == NULL ) break;
+                if( ext == NULL ) 
+                    break;
                 ext = openExt( ext, nd, typ );
-                if( ext != NULL ) break;
+                if( ext != NULL ) {
+                    break;
+                }
             }
         }
     } else {
         ext = openExt( nd->ext, nd, typ );
     }
-    return ext;
+    return( ext );
 }
 
 
 static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
-    char *path,                 // - path
-    char **exts,                // - file extensions
+    const char *path,           // - path
+    const char **exts,          // - file extensions
     struct path_descr *fd,      // - file descriptor
     enum file_type typ )        // - type of file being opened
 {
     bool retn = FALSE;          // - return: TRUE ==> opened
     struct path_descr pd;       // - path descriptor
-    char dir[ _MAX_PATH*2 ];    // - new path
+    char dir[_MAX_PATH*2];      // - new path
     char *pp;                   // - pointer into path
-    char *ext;                  // - extension opened
+    const char *ext;            // - extension opened
 
     dir[0] = '\0';
     splitFileName( path, &pd );
@@ -522,16 +521,16 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
     enum file_type typ )        // - type of search path to use
 {
-    char **paths;               // - optional paths to prepend
-    char **exts;                // - optional extensions to append
+    const char  **paths;        // - optional paths to prepend
+    const char  **exts;         // - optional extensions to append
     bool retn;                  // - return: TRUE ==> opened
-    char *path;                 // - next path
-    char bufpth[ _MAX_PATH ];   // - buffer for next path
+    const char  *path;          // - next path
+    char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
     SRCFILE stdin_srcfile;      // - srcfile for stdin
     struct path_descr idescr;   // - descriptor for included file
     LINE_NO dummy;              // - dummy line number holder
-    char prevpth[ _MAX_PATH ];  // - buffer for previous path
+    char prevpth[_MAX_PATH];    // - buffer for previous path
 
     retn = FALSE;
     paths = NULL;
@@ -583,7 +582,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     }
                 }
                 /* check directories of currently included files */
-                prevpth[0] = '\xff'; /* to make it not compare with anything else */
+                prevpth[0] = '\xff';  /* to make it not compare with anything else */
                 prevpth[1] = '\0';
                 curr = SrcFileCurrent();
                 for( ; curr != NULL; ) {
@@ -704,7 +703,7 @@ static void tempFname( char *fname )
         env = "";
 
     strncpy( fname, env, MAX_TMP_PATH );
-    fname[ MAX_TMP_PATH ] = '\0';
+    fname[MAX_TMP_PATH] = '\0';
     len = strlen( fname );
     fname += len;
     if( len > 0 && !IS_PATH_SEP( fname[-1] ) ) {
@@ -750,7 +749,7 @@ static void ioSuppWriteError(     // SIGNAL ERROR ON WRITE
 static void ioSuppTempOpen(             // OPEN TEMPORARY FILE
     void )
 {
-    auto char   fname[ _MAX_PATH ];
+    auto char   fname[_MAX_PATH];
 
     for(;;) {
         tempFname( fname );
@@ -865,7 +864,7 @@ void IoSuppTempRead(            // READ FROM TEMPORARY FILE
 
 
 static bool pathExists(         // TEST IF A PATH EXISTS
-    char *path )                // - path to be tested
+    const char *path )          // - path to be tested
 {
     DIR *dir;                   // - control for directory
     bool retn;                  // - return: TRUE ==> directory exists
@@ -880,11 +879,11 @@ static bool pathExists(         // TEST IF A PATH EXISTS
 }
 
 static void setPaths(           // SET PATHS (IF THEY EXIST)
-    char **vect )                // - the vector of potential paths
+    const char **vect )         // - the vector of potential paths
 {
-    char **dest;                // - place to store
-    char **test;                // - path to test
-    char *path;                 // - current path
+    const char  **dest;         // - place to store
+    const char  **test;         // - path to test
+    const char  *path;          // - current path
 
     dest = vect;
     test = vect;

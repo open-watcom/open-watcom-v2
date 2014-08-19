@@ -357,21 +357,20 @@ static hw_reg_set P_8087[] = {
     HW_D( HW_EMPTY )
 };
 
-
-const byte_seq *FlatAlternates[] = {
-    (byte_seq *)&S_memset,    (byte_seq *)&FS_memset,
-    (byte_seq *)&C_memset,    (byte_seq *)&FC_memset,
-    (byte_seq *)&S_memcpy,    (byte_seq *)&FS_memcpy,
-    (byte_seq *)&C_memcpy,    (byte_seq *)&FC_memcpy,
-    (byte_seq *)&C_memcmp,    (byte_seq *)&FC_memcmp,
-    (byte_seq *)&C_memchr,    (byte_seq *)&FC_memchr,
-    (byte_seq *)&C_strlen,    (byte_seq *)&FC_strlen,
-    (byte_seq *)&C_strcat,    (byte_seq *)&FC_strcat,
-    NULL,                     NULL
+const alt_inline_funcs FlatAlternates[] = {
+    (byte_seq *)&S_memset,    { "memset", (byte_seq *)&FS_memset, FS_memset_parms, FS_memset_ret, FS_memset_saves },
+    (byte_seq *)&C_memset,    { "memset", (byte_seq *)&FC_memset, FC_memset_parms, FC_memset_ret, FC_memset_saves },
+    (byte_seq *)&S_memcpy,    { "memcpy", (byte_seq *)&FS_memcpy, FS_memcpy_parms, FS_memcpy_ret, FS_memcpy_saves },
+    (byte_seq *)&C_memcpy,    { "memcpy", (byte_seq *)&FC_memcpy, FC_memcpy_parms, FC_memcpy_ret, FC_memcpy_saves },
+    (byte_seq *)&C_memcmp,    { "memcmp", (byte_seq *)&FC_memcmp, FC_memcmp_parms, FC_memcmp_ret, FC_memcmp_saves },
+    (byte_seq *)&C_memchr,    { "memchr", (byte_seq *)&FC_memchr, FC_memchr_parms, FC_memchr_ret, FC_memchr_saves },
+    (byte_seq *)&C_strlen,    { "strlen", (byte_seq *)&FC_strlen, FC_strlen_parms, FC_strlen_ret, FC_strlen_saves },
+    (byte_seq *)&C_strcat,    { "strcat", (byte_seq *)&FC_strcat, FC_strcat_parms, FC_strcat_ret, FC_strcat_saves },
+    NULL,                     { NULL }
 };
 
 /* these must also work in FLAT model */
-inline_funcs SInline_Functions[] = {
+const inline_funcs SInline_Functions[] = {
     { "strcpy", (byte_seq *)&S_strcpy, S_strcpy_parms, S_strcpy_ret, S_strcpy_saves },
     { "strcmp", (byte_seq *)&S_strcmp, S_strcmp_parms, S_strcmp_ret, S_strcmp_saves },
     { "strcat", (byte_seq *)&S_strcat, S_strcat_parms, S_strcat_ret, S_strcat_saves },
@@ -382,7 +381,7 @@ inline_funcs SInline_Functions[] = {
 };
 
 /* these must also work in FLAT model */
-inline_funcs Inline_Functions[] = {
+const inline_funcs Inline_Functions[] = {
     { "strlen", (byte_seq *)&C_strlen, C_strlen_parms, C_strlen_ret, C_strlen_saves },
     { "strcpy", (byte_seq *)&C_strcpy, C_strcpy_parms, C_strcpy_ret, C_strcpy_saves },
     { "strcmp", (byte_seq *)&C_strcmp, C_strcmp_parms, C_strcmp_ret, C_strcmp_saves },
@@ -398,7 +397,7 @@ inline_funcs Inline_Functions[] = {
     { NULL }
 };
 
-inline_funcs SBigData_Functions[] = {
+const inline_funcs SBigData_Functions[] = {
     { "strcpy", (byte_seq *)&Z_strcpy, Z_strcpy_parms, Z_strcpy_ret, Z_strcpy_saves },
     { "strcmp", (byte_seq *)&Z_strcmp, Z_strcmp_parms, Z_strcmp_ret, Z_strcmp_saves },
     { "strcat", (byte_seq *)&Z_strcat, Z_strcat_parms, Z_strcat_ret, Z_strcat_saves },
@@ -407,7 +406,7 @@ inline_funcs SBigData_Functions[] = {
     { NULL }
 };
 
-inline_funcs SBigDataNoDs_Functions[] = {
+const inline_funcs SBigDataNoDs_Functions[] = {
     { "strcpy", (byte_seq *)&DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves },
     { "strcmp", (byte_seq *)&DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves },
     { "strcat", (byte_seq *)&DP_strcat, DP_strcat_parms, DP_strcat_ret, DP_strcat_saves },
@@ -416,7 +415,7 @@ inline_funcs SBigDataNoDs_Functions[] = {
     { NULL }
 };
 
-inline_funcs Flat_Functions[] = {
+const inline_funcs Flat_Functions[] = {
     { "strcmp", (byte_seq *)&F_strcmp, F_strcmp_parms, F_strcmp_ret, F_strcmp_saves },
     { ".stosd", (byte_seq *)&F_stosd,  F_stosd_parms,  F_stosd_ret,  F_stosd_saves  },
     { ".stosw", (byte_seq *)&F_stosw,  F_stosw_parms,  F_stosw_ret,  F_stosw_saves  },
@@ -424,7 +423,7 @@ inline_funcs Flat_Functions[] = {
     { NULL }
 };
 
-inline_funcs BigData_Functions[] = {
+const inline_funcs BigData_Functions[] = {
     { "strlen", (byte_seq *)&BD_strlen, BD_strlen_parms, BD_strlen_ret, BD_strlen_saves },
     { "strcpy", (byte_seq *)&BD_strcpy, BD_strcpy_parms, BD_strcpy_ret, BD_strcpy_saves },
     { "strcmp", (byte_seq *)&BD_strcmp, BD_strcmp_parms, BD_strcmp_ret, BD_strcmp_saves },
@@ -440,7 +439,7 @@ inline_funcs BigData_Functions[] = {
     { NULL }
  };
 
-struct  inline_funcs BigDataNoDs_Functions[] = {
+const struct  inline_funcs BigDataNoDs_Functions[] = {
     { "strlen", (byte_seq *)&DP_strlen, DP_strlen_parms, DP_strlen_ret, DP_strlen_saves },
     { "strcpy", (byte_seq *)&DP_strcpy, DP_strcpy_parms, DP_strcpy_ret, DP_strcpy_saves },
     { "strcmp", (byte_seq *)&DP_strcmp, DP_strcmp_parms, DP_strcmp_ret, DP_strcmp_saves },
@@ -457,7 +456,7 @@ struct  inline_funcs BigDataNoDs_Functions[] = {
  };
 
 /* these must also work in FLAT model */
-struct  inline_funcs _8087_Functions[] = {
+const struct  inline_funcs _8087_Functions[] = {
     { "fabs",  (byte_seq *)&_8087_fabs, C_8087_fabs_parms, C_8087_fabs_ret, C_8087_fabs_saves  },
     { NULL }
 };
@@ -466,7 +465,7 @@ struct  inline_funcs _8087_Functions[] = {
 /* memory model independent functions */
 
 /* these must also work in FLAT model except _fmem & _fstr functions */
-struct  inline_funcs Common_Functions[] = {
+const struct  inline_funcs Common_Functions[] = {
   { "abs",     (byte_seq *)&C_abs,     C_abs_parms,     C_abs_ret,     C_abs_saves      },
   { "labs",    (byte_seq *)&C_labs,    C_labs_parms,    C_labs_ret,    C_labs_saves     },
   { "fabs",    (byte_seq *)&C_fabs,    C_fabs_parms,    C_fabs_ret,    C_fabs_saves     },

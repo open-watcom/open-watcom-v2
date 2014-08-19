@@ -40,28 +40,28 @@
 #include "clibext.h"
 
 
-static char scopeError[]        = "***SCOPE ERROR***";
-static char scopeSep[]          = "::";
-static char dtorPrefix[]        = "~";
-static char functionDelim[]     = "' in '";
-static char constructorName[]   = "constructor";
-static char destructorName[]    = "destructor";
-static char operatorSuffix[]    = "()";
-static char operatorPrefix[]    = "operator ";
-static char operatorUnknown[]   = "conversion operator";
-static char nullSymbol[]        = "***NULL SYMBOL POINTER***";
-static char nullSymname[]       = "<null name>";
-static char templateParmStart[] = "<";
-static char templateParmNext[]  = ",";
-static char templateParmStop[]  = ">";
-static char templateParmUnknown[] = "?";
+static const char scopeError[]        = "***SCOPE ERROR***";
+static const char scopeSep[]          = "::";
+static const char dtorPrefix[]        = "~";
+static const char functionDelim[]     = "' in '";
+static const char constructorName[]   = "constructor";
+static const char destructorName[]    = "destructor";
+static const char operatorSuffix[]    = "()";
+static const char operatorPrefix[]    = "operator ";
+static const char operatorUnknown[]   = "conversion operator";
+static const char nullSymbol[]        = "***NULL SYMBOL POINTER***";
+static const char nullSymname[]       = "<null name>";
+static const char templateParmStart[] = "<";
+static const char templateParmNext[]  = ",";
+static const char templateParmStop[]  = ">";
+static const char templateParmUnknown[] = "?";
 
-static char *fmtSymCgop( CGOP number )
-/************************************/
+static const char *fmtSymCgop( CGOP number )
+/******************************************/
 {
-    char *name;                 // - name
+    const char *name;                 // - name
 
-    static char *opNames[] ={   // - opcode names (binary,unary)
+    static const char *opNames[] = {  // - opcode names (binary,unary)
     #include "ppopssym.h"
     };
 
@@ -252,7 +252,7 @@ void FormatTemplateParmScope( VBUF *parms, SCOPE parm_scope )
     SYMBOL stop;
     SYMBOL curr;
     SYMBOL sym;
-    char *delim;
+    const char *delim;
     TYPE type;
     auto VBUF sym_parm;
     auto VBUF type_parm_prefix;

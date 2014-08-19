@@ -72,7 +72,7 @@ typedef enum {                  // type mangling control
     TM_NULL             = 0x00
 } tm_control;
 
-static char *operatorNamesStr[] = {
+static const char *operatorNamesStr[] = {
     #include "ppopfstr.h"
 };
 #define MAX_OP_NAMES ARRAY_SIZE( operatorNamesStr )
@@ -82,7 +82,7 @@ static CGOP const operatorSameAs[] = {
     #include "ppopsdef.h"
 };
 
-static char *specialNamesStr[] = {
+static const char *specialNamesStr[] = {
     #define SPECNAME_DEFINE
     #include "specname.h"
 };
@@ -200,7 +200,7 @@ static void prependStr(         // PREPEND A STRING
 }
 
 
-static char __Alphabet36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static const char __Alphabet36[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 static char *utoa_zz( unsigned value, char *buffer )
 {
@@ -1109,12 +1109,12 @@ NAME CppNameThrowRo(            // NAME OF THROW R/O BLOCK
     return( mangledNameType( type, IN_NAME_THROW_RO ) );
 }
 
-static char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
+static const char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
     CGOP oper )                 // - operator
 {
-    char *name;                 // - name
+    const char *name;                 // - name
 
-    static char *opNames[] ={   // - opcode long names
+    static const char *opNames[] = {   // - opcode long names
         #include "ppopslnm.h"
     };
 
@@ -1315,12 +1315,12 @@ NAME CppPCHDebugInfoName(       // MANGLED NAME FOR PCH DEBUG INFO
 static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
     INITFINI* defn )            // - definition
 {
-    CGOP const *ap;
-    NAME *op;
-    char **cp;
-    NAME *tp;
-    NAME op_name;
-    NAME place_holder;
+    CGOP const  *ap;
+    NAME        *op;
+    const char  **cp;
+    NAME        *tp;
+    NAME        op_name;
+    NAME        place_holder;
 
     defn = defn;
     DbgStmt( { unsigned n = MAX_OP_NAMES; DbgAssert( n == ARRAY_SIZE( operatorSameAs )); } );
@@ -1341,7 +1341,7 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
             } else {
 #ifndef NDEBUG
                 {
-                    char **t;
+                    const char  **t;
                     for( t = operatorNamesStr; t < cp; ++t ) {
                         DbgAssert( strcmp( *t, *cp ) != 0 );
                     }

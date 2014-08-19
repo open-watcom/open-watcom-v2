@@ -40,7 +40,7 @@
 #include "dbg.h"
 #endif
 
-static char *ctx_names[] = {
+static const char *ctx_names[] = {
     #define CT( code, text ) text
     #include "_context.h"
     #undef CT

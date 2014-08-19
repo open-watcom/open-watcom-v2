@@ -98,7 +98,7 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
     bool many_tokes )           // - TRUE ==> scan multiple tokens
 ;
 void PreDefineStringMacro(      // PREDEFINE A MACRO
-    char *str );                // - name to define
+    const char *str );          // - name to define
 
 void SetDBChar(                 // SET ASIAN CHARACTERS
     int character_set );        // - character set

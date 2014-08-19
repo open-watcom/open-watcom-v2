@@ -213,12 +213,12 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
 }
 
 
-char *DbgOperator(              // GET CGOP NAME
+const char *DbgOperator(        // GET CGOP NAME
     CGOP number )               // - index for name
 {
-    char *name;                 // - name
+    const char  *name;          // - name
 
-    static char *opnames[] ={   // - opcode names (binary,unary)
+    static const char *opnames[] = {    // - opcode names (binary,unary)
     #include "ppopsnam.h"
     };
 
@@ -233,10 +233,10 @@ char *DbgOperator(              // GET CGOP NAME
 }
 
 
-char *DbgIcOpcode(              // GET IC OPCODE
+const char *DbgIcOpcode(        // GET IC OPCODE
     CGINTEROP opcode )          // - opcode
 {
-    static char *ic_names[] = {
+    static const char *ic_names[] = {
         #define IC( code, type, mask ) # code
         #include "ic.h"
         #undef IC
@@ -260,7 +260,7 @@ enum                            // types of opcodes
 ,   DBG_OPCODE_SRC              // - source file
 };
 
-static uint_8 optypes[] = {
+static const uint_8 optypes[] = {
     #define IC( code, type, mask ) DBG_OPCODE_##type
     #include "ic.h"
     #undef IC
@@ -531,11 +531,11 @@ void DumpSymbol(                // DUMP SYMBOL ENTRY
 #define ENTRY_MEMBER_POINTER    "TYP_MEMBER_POINTER",
 #define ENTRY_GENERIC           "TYP_GENERIC",
 
-static char *id_names[] = {
+static const char *id_names[] = {
     #include "type_arr.h"
 };
 
-static char unknown_type[] = "***UNKNOWN**=xx";
+static const char unknown_type[] = "***UNKNOWN**=xx";
 
 void DumpType(                  // DUMP TYPE ENTRY
     TYPE tp )                   // - type pointer
@@ -878,13 +878,13 @@ static void dumpSymbolNameInfo( // DUMP SYMBOL_NAME ENTRY
 void DumpScope(                 // DUMP SCOPE INFO FOR SYMBOL
     SCOPE scope )               // - scope
 {
-    static char *scope_names[] = {
+    static const char *scope_names[] = {
         #define SCOPE_DEF(a,b) # a
         SCOPE_DEFS
         #undef SCOPE_DEF
     };
 
-    char *id;
+    const char *id;
 
     print_delimit_line();
     if( scope->id >= SCOPE_MAX ) {
@@ -1374,7 +1374,7 @@ void DumpInitInfo( void *v_info )
 // dump stack entry containing info about data initialization
 {
     INITIALIZE_INFO *info = (INITIALIZE_INFO *)v_info;
-    static char *entryName[3] = { "DE_ROOT_TYPE", "DE_BRACE", "DE_TYPE" };
+    static const char *entryName[3] = { "DE_ROOT_TYPE", "DE_BRACE", "DE_TYPE" };
 
     printf( "Stack Entry"       F_BADDR
             " stack"            F_ADDR

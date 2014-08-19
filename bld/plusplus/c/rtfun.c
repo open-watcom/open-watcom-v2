@@ -55,7 +55,7 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 
 // function name array
 
-static char *runTimeCodeString[] = {
+static const char *runTimeCodeString[] = {
     #define QSTRING( name ) __STR( name )
     #define RTFUN( code, name ) QSTRING(CPPLIB(name))
     #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
@@ -255,7 +255,7 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
 }
 
 
-char *RunTimeCodeString(        // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
+const char *RunTimeCodeString(  // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM RTF CODE
     RTF code )                  // - code for function
 {
     return( runTimeCodeString[code] );

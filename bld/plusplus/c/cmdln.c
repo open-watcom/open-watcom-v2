@@ -90,7 +90,7 @@ void CmdLnSwNotImplemented(     // ISSUE WARNING FOR UN-IMPLEMENTED SWITCH
 }
 
 static MEPTR defineStringMacro( // DEFINE A MACRO NAME
-    char *name )                // - name of macro
+    const char *name )          // - name of macro
 {
     MEPTR mptr;
     char const *save = CmdScanAddr();
@@ -130,11 +130,11 @@ MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
 
 
 void PreDefineStringMacro(      // PREDEFINE A MACRO
-    char *str )                 // - macro definition
+    const char *str )           // - macro definition
 {
     char buffer[32];            // - buffer for name
     char *bptr;                 // - points into buffer
-    char *sptr;                 // - points into string
+    const char *sptr;           // - points into string
     MEPTR mptr;                 // - macro entry
 
     if( ! CompFlags.undefine_all_macros ) {
@@ -181,8 +181,8 @@ void AddUndefName()             // SAVE A #UNDEF NAME
 static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     void )
 {
-    static char *mac_table[] =  // - predefined macros
-    { "near=__near"
+    static const char *mac_table[] = { // - predefined macros
+      "near=__near"
     , "far=__far"
     , "huge=__huge"
     , "cdecl=__cdecl"
@@ -213,7 +213,7 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
     , NULL
     };
 
-    char **mac;                 // - current macro
+    const char  **mac;                  // - current macro
 
     for( mac = mac_table; *mac != NULL; ++ mac ) {
         PreDefineStringMacro( *mac );
@@ -222,11 +222,11 @@ static void defineKeywordMacros(   // PREDEFINE KEYWORD MACROS
 
 static void defineFeatureMacros( void )
 {
-    char *end_watcom;
-    char *end_feature;
-    char **p;
-    auto char buff[128];
-    static char *feature[] = {
+    char        *end_watcom;
+    char        *end_feature;
+    const char  **p;
+    auto char   buff[128];
+    static const char *feature[] = {
         "BOOL",
         "MUTABLE",
         "RTTI",
@@ -239,7 +239,7 @@ static void defineFeatureMacros( void )
     };
 
     end_watcom = stpcpy( buff, "__WATCOM_" );
-    for( p = feature; *p; ++p ) {
+    for( p = feature; *p != '\0'; ++p ) {
         end_feature = stpcpy( end_watcom, *p );
         strcpy( end_feature, "__" );
         PreDefineStringMacro( buff );

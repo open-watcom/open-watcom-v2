@@ -68,8 +68,8 @@
 #include "feprotos.h"
 
 #if _INTEL_CPU && ( _CPU != 8086 )
-    extern inline_funcs Fs_Functions[];   // FS PRAGMAS
-    extern byte_seq *FlatAlternates[];
+    extern const inline_funcs Fs_Functions[];   // FS PRAGMAS
+    extern const alt_inline_funcs FlatAlternates[];
 #endif
 
 static SYMBOL lastFunctionOutOfMem;
@@ -452,15 +452,15 @@ int FEStackChk(                 // STACK CHECKING ?
 
 
 #if _INTEL_CPU
-static inline_funcs *Flat( inline_funcs *ifunc )
+static const inline_funcs *Flat( const inline_funcs *ifunc )
 {
   #if _CPU != 8086
-    byte_seq **p;
-    if( IsFlat() ) {
-        for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
-            if( p[0] == ifunc->code ) {
-                ifunc->code = p[1];
-                return( ifunc );
+    const alt_inline_funcs  *p;
+
+    if( TargetSwitches & FLAT_MODEL ) {
+        for( p = FlatAlternates; p->byteseq != NULL; p++ ) {
+            if( p->byteseq == ifunc->code ) {
+                return( &(p->alt_ifunc) );
             }
         }
     }
@@ -470,14 +470,15 @@ static inline_funcs *Flat( inline_funcs *ifunc )
 #endif
 
 #if _INTEL_CPU
-static inline_funcs *InlineLookup( NAME name )
+static const inline_funcs *InlineLookup( NAME name )
 {
-    inline_funcs    *ifunc;
+    const inline_funcs  *ifunc;
 
     if( GET_FPU( CpuSwitches ) > FPU_NONE ) {
         ifunc = _8087_Functions;
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+                return( Flat( ifunc ) );
             ++ifunc;
         }
     }
@@ -495,20 +496,23 @@ static inline_funcs *InlineLookup( NAME name )
   #endif
         }
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+                return( Flat( ifunc ) );
             ++ifunc;
         }
     }
   #if _CPU != 8086
     ifunc = Fs_Functions;
     while( ifunc->name ) {
-        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+            return( ifunc );
         ++ifunc;
     }
     if( IsFlat() ) {
         ifunc = Flat_Functions;
         while( ifunc->name ) {
-            if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( ifunc );
+            if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+                return( ifunc );
             ++ifunc;
         }
     }
@@ -526,12 +530,14 @@ static inline_funcs *InlineLookup( NAME name )
   #endif
     }
     while( ifunc->name ) {
-        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+            return( Flat( ifunc ) );
         ++ifunc;
     }
     ifunc = Common_Functions;
     while( ifunc->name ) {
-        if( strcmp( ifunc->name, NameStr( name ) ) == 0 ) return( Flat( ifunc ) );
+        if( strcmp( ifunc->name, NameStr( name ) ) == 0 )
+            return( Flat( ifunc ) );
         ++ifunc;
     }
     return( NULL );
@@ -542,7 +548,7 @@ static AUX_INFO *IntrinsicAuxLookup(
     SYMBOL sym )
 {
 #if _INTEL_CPU
-    inline_funcs *ifunc;
+    const inline_funcs *ifunc;
     AUX_INFO *inf;
 
     ifunc = InlineLookup( sym->name->name );

@@ -112,7 +112,7 @@ static const char *VarParmFuncs[] = {
 
 #if _CPU == 386
 
-extern byte_seq     *FlatAlternates[];
+extern const alt_inline_funcs FlatAlternates[];
 
 static struct STRUCT_byte_seq( 1 ) FinallyCode = { 
     1, FALSE, { 0xc3 }   /* ret */
@@ -185,16 +185,15 @@ bool VarFunc( SYMPTR sym )
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
 
-static inline_funcs *Flat( inline_funcs *ifunc )
+static const inline_funcs *Flat( const inline_funcs *ifunc )
 {
   #if _CPU == 386
-    byte_seq            **p;
+    const alt_inline_funcs  *p;
 
     if( TargetSwitches & FLAT_MODEL ) {
-        for( p = FlatAlternates; p[0] != NULL; p += 2 ) {
-            if( p[0] == ifunc->code ) {
-                ifunc->code = p[1];
-                return( ifunc );
+        for( p = FlatAlternates; p->byteseq != NULL; p++ ) {
+            if( p->byteseq == ifunc->code ) {
+                return( &(p->alt_ifunc) );
             }
         }
     }
@@ -202,10 +201,10 @@ static inline_funcs *Flat( inline_funcs *ifunc )
     return( ifunc );
 }
 
-static inline_funcs *IF_Lookup( const char *name )
+static const inline_funcs *IF_Lookup( const char *name )
 {
-    inline_funcs     *ifunc;
-    size_t           len;
+    const inline_funcs  *ifunc;
+    size_t              len;
 
     len = strlen( name ) + 1;
     if( GET_FPU( ProcRevision ) > FPU_NONE ) {
@@ -351,7 +350,7 @@ aux_info *InfoLookup( SYMPTR sym )
         }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
         {
-            inline_funcs     *ifunc;
+            const inline_funcs  *ifunc;
 
             ifunc = IF_Lookup( name );
             if( ifunc == NULL )

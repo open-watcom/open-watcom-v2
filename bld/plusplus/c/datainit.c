@@ -1572,8 +1572,8 @@ static void dataInitPadOutHuge( INITIALIZE_INFO *top )
     position = top->base + top->offset;
     while( diff != 0 ) {
         dataInitCheckHugeSegment( position );
-        position %= (TARGET_UINT_MAX+1);
-        increment = TARGET_UINT_MAX+1 - position;
+        position %= (TARGET_UINT_MAX + 1);
+        increment = TARGET_UINT_MAX + 1 - position;
         if( increment > diff ) {
             increment = diff;
         }

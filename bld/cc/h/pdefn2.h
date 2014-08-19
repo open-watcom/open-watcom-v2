@@ -44,21 +44,22 @@ global  hw_reg_set      RegBits[];
 global  char            Registers[];
 global  unsigned char   RegMap[];
 global  aux_info        InlineInfo;
-global  inline_funcs    SInline_Functions[];
-global  inline_funcs    Inline_Functions[];
+
+global  const inline_funcs    SInline_Functions[];
+global  const inline_funcs    Inline_Functions[];
 #if _CPU == 8086
-global  inline_funcs    ZF_Data_Functions[];
-global  inline_funcs    ZP_Data_Functions[];
-global  inline_funcs    DF_Data_Functions[];
-global  inline_funcs    DP_Data_Functions[];
+global  const inline_funcs    ZF_Data_Functions[];
+global  const inline_funcs    ZP_Data_Functions[];
+global  const inline_funcs    DF_Data_Functions[];
+global  const inline_funcs    DP_Data_Functions[];
 #else
-global  inline_funcs    Flat_Functions[];
-global  inline_funcs    BigData_Functions[];
-global  inline_funcs    BigDataNoDs_Functions[];
-global  inline_funcs    SBigData_Functions[];
-global  inline_funcs    SBigDataNoDs_Functions[];
+global  const inline_funcs    Flat_Functions[];
+global  const inline_funcs    BigData_Functions[];
+global  const inline_funcs    BigDataNoDs_Functions[];
+global  const inline_funcs    SBigData_Functions[];
+global  const inline_funcs    SBigDataNoDs_Functions[];
 #endif
-global  inline_funcs    Common_Functions[];
-global  inline_funcs    _8087_Functions[];
+global  const inline_funcs    Common_Functions[];
+global  const inline_funcs    _8087_Functions[];
 
 #endif
