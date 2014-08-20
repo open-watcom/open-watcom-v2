@@ -32,9 +32,9 @@
 
 #ifndef __STANDARD_H
 #define __STANDARD_H
-#define NULLCHAR        0
-#define TRUE            1
-#define FALSE           0
 
-typedef char            bool;
+#include "bool.h"
+
+#define NULLCHAR        0
+
 #endif
