@@ -633,6 +633,10 @@
     /* text out modes */
     #define WPI_CLIPPED                 CHS_CLIP
 
+    /* button status */
+    #define BST_UNCHECKED               0
+    #define BST_CHECKED                 1
+
 typedef struct {
     DWORD       lStructSize;        /* */
     HWND        hwndOwner;          /* caller's window handle   */

@@ -160,6 +160,9 @@
 #define GET_DLGRESULT(hwnd)                     GetWindowLong( hwnd, DWL_MSGRESULT )
 #define SET_DLGRESULT(hwnd, data)               SetWindowLong( hwnd, DWL_MSGRESULT, (LONG)data )
 
+#define BST_UNCHECKED   0
+#define BST_CHECKED     1
+
 #endif
 
 #if defined( _M_I86 )
