@@ -1801,7 +1801,7 @@ This interrupt is always reflected back to the protected mode handler to
 ensure the CauseWay application can handle it correctly. The default
 handler behaves in the same way as the DOS handler and it aborts your
 application, if appropriate. If you install your own handler, all memory
-accessed by this interrupt as code or data must be locker.
+accessed by this interrupt as code or data must be locked.
 .np
 The register values normally placed on the stack by DOS before entry to
 the interrupt handler are not present in protected mode. Only the
