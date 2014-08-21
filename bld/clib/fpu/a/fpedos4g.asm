@@ -97,7 +97,7 @@ include extender.inc
 
         extrn   "C",__PMAddr    : dword
         extrn   "C",__PMSeg     : word
-        extrn   "C",__FPE_int   : byte  ; defined in \clib\math\c\fpeint.c
+        extrn   "C",__FPE_int   : byte  ; defined in \clib\fpu\c\fpeint.c
 
         enddata
 

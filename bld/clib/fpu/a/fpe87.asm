@@ -59,7 +59,7 @@ else
 endif
         extrn   "C",__FPE_handler: dword
 ifndef  __OS2__
-        extrn   "C",__FPE_int   : byte  ; defined in \clib\math\c\fpeint.c
+        extrn   "C",__FPE_int   : byte  ; defined in \clib\fpu\c\fpeint.c
 endif
 
 TInf    db 00h,00h,00h,00h,00h,00h,00h,80h,0ffh,7fh

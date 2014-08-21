@@ -99,8 +99,8 @@ include extender.inc
         extrn   "C",__RMAddr    : dword
         extrn   "C",__PMAddr    : dword
         extrn   "C",__PMSeg     : word
-        extrn   "C",__IRQ_num   : byte  ; defined in \clib\math\c\fpeint.c
-        extrn   "C",__MST_pic   : byte  ; defined in \clib\math\c\fpeint.c
+        extrn   "C",__IRQ_num   : byte  ; defined in \clib\fpu\c\fpeint.c
+        extrn   "C",__MST_pic   : byte  ; defined in \clib\fpu\c\fpeint.c
 
         enddata
 
