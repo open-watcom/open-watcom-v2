@@ -556,7 +556,7 @@ control to the real mode code.
 .endnote
 .*
 .mbox begin
-:api.GetCallBack:eapi. :dsc.Allocate real mode call back address.:edsc.
+:api.GetCallBack:eapi. :dsc.Allocate real mode callback address.:edsc.
 .mbox end
 .begnote
 .note Inputs:
@@ -570,10 +570,10 @@ Carry set on error, else
 .br
 CX:DX= Real mode address to trigger mode switch.
 .note Errors:
-Call-backs are a limited resource. Normally only 16
+Callbacks are a limited resource. Normally only 16
 are available per virtual machine.  Use them carefully and release them
 as soon as they are no longer required.
-.note Call-Back:
+.note Callback:
 Interrupts disabled.
 .br
 DS:[E]SI = Selector:Offset of real mode SS:SP.
@@ -584,13 +584,13 @@ SS:[E]SP = Locked protected mode stack.
 .br
 All other registers undefined.
 .br
-To return from call-back procedure, execute an
+To return from callback procedure, execute an
 IRET to return.
 .br
 ES:[E]DI =  Selector:Offset of real mode call
 structure to restore.
 .note Notes:
-Real mode call-backs provide a means of switching from
+Real mode callbacks provide a means of switching from
 real mode to protected mode. This function returns a unique real mode
 address that when given control in real mode, switches to protected mode
 and passes control to the protected mode routine supplied at entry to
@@ -1057,7 +1057,7 @@ specified region is not aligned to a page boundary.
 .endnote
 .*
 .mbox begin
-:api.RelCallBack:eapi. :dsc.Release a real mode call back entry.:edsc.
+:api.RelCallBack:eapi. :dsc.Release a real mode callback entry.:edsc.
 .mbox end
 .begnote
 .note Inputs:
@@ -1069,7 +1069,7 @@ None.
 .note Errors:
 None.
 .note Notes:
-Uspe this function to release call-back addresses once
+Uspe this function to release callback addresses once
 they are no longer needed.
 .endnote
 .*
@@ -1832,7 +1832,7 @@ when signaled during real mode operations. This ensures that protected
 mode applications always retain control without requiring you to patch
 real mode interrupt vectors. The remaining interrupts are serviced via
 the vector table appropriate to the mode. Use the real to protected mode
-call-back services to provide real mode code with access to protected
+callback services to provide real mode code with access to protected
 mode code, and allow any interrupt to be re-signaled in protected mode.
 .np
 If you add your own hardware interrupt handlers, suchas the timer tick

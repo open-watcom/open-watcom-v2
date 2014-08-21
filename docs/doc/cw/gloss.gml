@@ -34,10 +34,10 @@ with the appropriate register setup.
 
 
 
-*Call-back*
+*Callback*
 
 A mechanism which allows real mode code to switch the CPU to
-protected mode operation and continue execution.  Call-backs are used by
+protected mode operation and continue execution.  Callbacks are used by
 CauseWay to re-signal real mode hardware interrupts in protected mode.
 
 

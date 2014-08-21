@@ -588,7 +588,5 @@ interrupts although the selector values are real mode segment values.
 Only those interrupt and exception vectors altered by the program will
 be listed.
 .np
-Lastly, Call-Backs are listed in the CW.ERR file.  They list all active
-Call-Backs for the active application at the time of its termination.
-
-
+Lastly, Callbacks are listed in the CW.ERR file.  They list all active
+Callbacks for the active application at the time of its termination.
