@@ -83,7 +83,7 @@ int SwapToExtendedMemory( fcb *fb )
      * finish up
      */
     fb->xmemaddr = addr;
-    fb->in_extended_memory = TRUE;
+    fb->in_extended_memory = true;
     return( ERR_NO_ERR );
 
 } /* SwapToExtendedMemory */
@@ -115,7 +115,7 @@ void XMemInit( void )
     /*
      * init
      */
-    XMemCtrl.inuse = FALSE;
+    XMemCtrl.inuse = false;
     if( !EditFlags.ExtendedMemory ) {
         return;
     }
@@ -141,7 +141,7 @@ void XMemInit( void )
 
     XMemCtrl.xtd_vector = DosGetVect( XMEM_INTERRUPT );
     DosSetVect( XMEM_INTERRUPT, XMemIntHandler );
-    XMemCtrl.inuse = TRUE;
+    XMemCtrl.inuse = true;
 
     /*
      * build allocation blocks
@@ -191,7 +191,7 @@ void XMemFini( void )
         }
     }
     DosSetVect( XMEM_INTERRUPT, XMemCtrl.xtd_vector );
-    XMemCtrl.inuse = FALSE;
+    XMemCtrl.inuse = false;
 
 } /* XMemFini */
 
@@ -249,12 +249,12 @@ static bool checkVDISK( flat_address *start )
     name = MK_FP( FP_SEG( value ), VDISK_NAME_OFFSET );
     for( i = 0; i <= 7; i++ ) {
         if( name[i] != _vdisk[i] ) {
-            return( FALSE );
+            return( false );
         }
     }
     avail = MK_FP( FP_SEG( value ), VDISK_AVAIL_OFFSET );
     *start = *avail & GDT_ADDR;
-    return( TRUE );
+    return( true );
 
 } /* checkVDISK */
 

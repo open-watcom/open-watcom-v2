@@ -53,7 +53,7 @@ vi_rc ResizeWindow( window_id wn, int x1, int y1, int x2, int y2, bool scrflag )
     }
     RestoreOverlap( wn, scrflag );
 
-    AllocWindow( wn, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, TRUE,
+    AllocWindow( wn, x1, y1, x2, y2, oldw->has_border, oldw->has_gadgets, true,
             oldw->border_color1, oldw->border_color2, oldw->text_color, oldw->background_color );
     MarkOverlap( wn );
 

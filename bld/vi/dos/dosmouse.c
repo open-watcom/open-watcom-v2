@@ -93,7 +93,7 @@ void InitMouse( void )
     intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
 #endif
     if( !((intrtn != NULL) && (*intrtn != 0xcf)) ) {
-        EditFlags.UseMouse = FALSE;
+        EditFlags.UseMouse = false;
         return;
     }
 

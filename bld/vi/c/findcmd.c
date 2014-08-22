@@ -79,7 +79,7 @@ void HilightSearchString( i_mark *pos, int slen )
         HiliteAColumnRange( pos->line, pos->column, pos->column + slen - 1 );
 #endif
     }
-    EditFlags.ResetDisplayLine = TRUE;
+    EditFlags.ResetDisplayLine = true;
 
 } /* HilightSearchString */
 
@@ -170,7 +170,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             }
         } else {
             st[0] = 0;
-            EditFlags.NoReplaceSearchString = TRUE;
+            EditFlags.NoReplaceSearchString = true;
         }
         is_forward = ff.search_forward;
         EditFlags.CaseIgnore = ff.case_ignore;
@@ -179,7 +179,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
             /* we need to add the string without any changes */
             if( !EditFlags.NoReplaceSearchString ) {
                 AddString2( &lastFindStr, st );
-                lastFindWasRegExp = FALSE;
+                lastFindWasRegExp = false;
             }
             MakeExpressionNonRegular( st );
         }
@@ -231,7 +231,7 @@ vi_rc DoFindForward( range *r, long count )
     vi_rc   rc;
 
     count = count;
-    rc = getFindString( r, TRUE, FALSE, FALSE );
+    rc = getFindString( r, true, false, false );
     return( rc );
 
 } /* DoFindForward */
@@ -244,7 +244,7 @@ vi_rc DoFindBackwards( range *r, long count )
     vi_rc   rc;
 
     count = count;
-    rc = getFindString( r, FALSE, FALSE, FALSE );
+    rc = getFindString( r, false, false, false );
     return( rc );
 
 } /* DoFindBackwards */
@@ -253,9 +253,9 @@ static void defaultRange( range *r )
 {
     r->start = CurrentPos;
     r->end = CurrentPos;
-    r->line_based = FALSE;
-    r->highlight = FALSE;
-    r->fix_range = FALSE;
+    r->line_based = false;
+    r->highlight = false;
+    r->fix_range = false;
 }
 
 void JumpTo( i_mark *pos )
@@ -302,7 +302,7 @@ vi_rc FancyDoFind( range *r, long count )
         // you cant search if theres no file!
         return( ERR_NO_FILE );
     }
-    rc = getFindString( r, TRUE, TRUE, FALSE );
+    rc = getFindString( r, true, true, false );
     return( rc );
 
 } /* FancyDoFind */
@@ -353,7 +353,7 @@ vi_rc DoNextFindForwardMisc( void )
         return( ERR_NO_FILE );
     }
     defaultRange( &r );
-    rc = getFindString( &r, TRUE, TRUE, TRUE );
+    rc = getFindString( &r, true, true, true );
     JumpTo( &r.start );
 
     return( rc );
@@ -373,7 +373,7 @@ vi_rc DoNextFindBackwardsMisc( void )
         return( ERR_NO_FILE );
     }
     defaultRange( &r );
-    rc = getFindString( &r, FALSE, TRUE, TRUE );
+    rc = getFindString( &r, false, true, true );
     JumpTo( &r.start );
 
     return( rc );
@@ -394,25 +394,25 @@ static vi_rc processFind( range *r, char *st, vi_rc (*rtn)( char *, i_mark *, in
         if( EditFlags.Modeless ) {
             /* select region
             */
-            r->line_based = FALSE;
+            r->line_based = false;
             r->start = pos;
             r->end = pos;
             r->end.column += len - 1;
             SetSelectedRegionFromLine( r, pos.line );
         } else {
-            r->line_based = FALSE;
+            r->line_based = false;
 
             r->start = pos;
 
             if( rtn == &GetFindBackwards ) {
                 r->end.column -= 2;
             } else {
-                r->fix_range = TRUE;    /* fix off by 1 error */
+                r->fix_range = true;    /* fix off by 1 error */
             }
 
             /* highlight region hack
             */
-            r->highlight = TRUE;
+            r->highlight = true;
             r->hi_start = pos;
             r->hi_end = pos;
             r->hi_end.column += len - 1;
@@ -544,19 +544,19 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
      * wrap if needed
      */
     if( flags & FINDFL_NEXTLINE ) {
-        wrapped = FALSE;
+        wrapped = false;
         if( flags & FINDFL_FORWARD ) {
             pos->column = 0;
             pos->line += 1;
             if( IsPastLastLine( pos->line ) ) {
                 pos->line = 1;
-                wrapped = TRUE;
+                wrapped = true;
             }
         } else {
             pos->line -= 1;
             if( pos->line == 0 ) {
                 CFindLastLine( &pos->line );
-                wrapped = TRUE;
+                wrapped = true;
             }
             CGimmeLinePtr( pos->line, &cfcb, &cline );
             pos->column = cline->len - 1;
@@ -617,7 +617,7 @@ vi_rc ColorFind( char *data, find_type findfl )
         // Windows selects instead
         HiliteAColumnRange( pos.line, pos.column, pos.column + len - 1 );
 #endif
-        EditFlags.ResetDisplayLine = TRUE;
+        EditFlags.ResetDisplayLine = true;
     }
     StaticFree( buff );
     return( rc );
@@ -643,7 +643,7 @@ vi_rc FancyDoReplace( void )
     vi_rc       rc;
     char        find[MAX_INPUT_LINE + 1], replace[MAX_INPUT_LINE + 1];
     fancy_find  ff;
-    bool        is_forward = TRUE;
+    bool        is_forward = true;
     bool        old_ci;
     bool        old_sw;
 

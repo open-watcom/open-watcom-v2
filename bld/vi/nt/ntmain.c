@@ -47,7 +47,7 @@ void main( int argc, char *argv[] )
     InitMem();
     argc = argc;
     EXEName = _cmdname( buffer );
-    EditFlags.HasSystemMouse = TRUE;
+    EditFlags.HasSystemMouse = true;
     VarAddGlobalStr( "OS", "nt" );
     Comspec = getenv( "ComSpec" );
     InitializeEditor();

@@ -48,7 +48,7 @@ void AddNewLineAroundCurrent( char *data, int copylen, insert_dir dir )
     if( wasnull ) {
         MemFree( CurrentFcb->lines.head );
         CurrentFcb->lines.head = CurrentFcb->lines.tail = NULL;
-        CurrentFcb->nullfcb = FALSE;
+        CurrentFcb->nullfcb = false;
         CurrentFcb->byte_cnt = 0;
         CurrentFcb->end_line = 0;
     }
@@ -131,6 +131,6 @@ void CreateNullLine( fcb *cfcb )
     AddLLItemAtEnd( (ss **)&(cfcb->lines.head), (ss **)&(cfcb->lines.tail), (ss *)cline );
     cfcb->byte_cnt = 1;
     cfcb->start_line = cfcb->end_line = 1;
-    cfcb->nullfcb = TRUE;
+    cfcb->nullfcb = true;
 
 } /* CreateNullLine */

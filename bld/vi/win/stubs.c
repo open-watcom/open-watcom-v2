@@ -38,7 +38,7 @@
 #endif
 
 void RedrawMouse( int p1, int p2 ) { p1=p1;p2=p2;}
-bool DisplayMouse( bool p1 ) { p1=p1; return( FALSE ); }
+bool DisplayMouse( bool p1 ) { p1=p1; return( false ); }
 void TurnOffCapsLock( void ) {}
 vi_rc HandleMouseEvent( void ) { return( ERR_NO_ERR ); }
 void SwapAllWindows( void ) {}
@@ -67,7 +67,7 @@ vi_rc MoveCurrentWindowWithKeys( void ) { return( ERR_NO_ERR ); }
 drive_type DoGetDriveType( int i ) { i=i; return( DRIVE_NONE ); }
 void ClearScreen( void ) {}
 vi_rc ResetWindow( window_id *id ) { id=id; return( ERR_NO_ERR ); }
-bool WindowIsVisible( window_id id ) { id=id; return( TRUE ); }
+bool WindowIsVisible( window_id id ) { id=id; return( true ); }
 void ScreenInit( void ) {}
 void SetInterrupts( void ) {}
 void ChkExtendedKbd( void ) {}

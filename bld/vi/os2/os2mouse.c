@@ -34,7 +34,7 @@
 #define INCL_BASE
 #include <os2.h>
 
-static bool mouseHasTwoButtons = FALSE;
+static bool mouseHasTwoButtons = false;
 static HMOU mouseHandle;
 static int  lastStatus;
 static int  lastRow;
@@ -111,14 +111,14 @@ void InitMouse( void )
     }
 
     if( MouOpen( 0L, &mouseHandle ) != 0 ) {
-        EditFlags.UseMouse = FALSE;
+        EditFlags.UseMouse = false;
         return;
     }
     events = 0x007f;
     if( MouSetEventMask( &events, mouseHandle ) != 0 ){
         events = 0x001f;
         if( MouSetEventMask( &events, mouseHandle ) == 0 ){
-            mouseHasTwoButtons = TRUE;
+            mouseHasTwoButtons = true;
         }
     }
 

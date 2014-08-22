@@ -44,7 +44,7 @@ static void BrkHandler( int sig_num )
     signal( SIGINT, BrkHandler );
     signal( SIGBREAK, BrkHandler );
     if( EditFlags.WatchForBreak ) {
-        EditFlags.BreakPressed = TRUE;
+        EditFlags.BreakPressed = true;
     }
     KeyAdd( 3 );
 }
@@ -93,7 +93,7 @@ void TimerThread( void )
             MyVioShowBuf( ClockStart - Scrn, nchars );
         }
     }
-    exitThread = FALSE;
+    exitThread = false;
     DosExit( EXIT_THREAD, 0 );
 }
 
@@ -103,7 +103,7 @@ void SetInterrupts( void )
 {
     signal( SIGINT, BrkHandler );
     signal( SIGBREAK, BrkHandler );
-    exitThread = FALSE;
+    exitThread = false;
 #ifdef __OS2V2__
     DosCreateThread( &timerTID, (PFNTHREAD)TimerThread, 0, FALSE, TSTACK_SIZE );
 #else
@@ -113,7 +113,7 @@ void SetInterrupts( void )
 
 void RestoreInterrupts( void )
 {
-    exitThread = TRUE;
+    exitThread = true;
 #ifdef __OS2V2__
     DosWaitThread( &timerTID, DCWW_WAIT );
 #else

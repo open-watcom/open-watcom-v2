@@ -45,27 +45,27 @@ HINSTANCE       InstanceHandle;
 char            _NEAR EditorName[] = "Open Watcom Text Editor";
 static int      showHow;
 
-extern BOOL RegisterMainWindow( HANDLE );
+extern bool RegisterMainWindow( HANDLE );
 extern int  (*_main_entry_)( char *, char * );
 
 extern HWND     hColorbar, hFontbar, hSSbar;
 
-static BOOL initApplication( void )
+static bool initApplication( void )
 {
     RegisterMainWindow( InstanceHandle );
     // RegisterContainerWindow( InstanceHandle );
 
     // Init ldstr.c
     SetInstance( InstanceHandle );
-    return( TRUE );
+    return( true );
 }
 
-static BOOL initInstance( void )
+static bool initInstance( void )
 {
     // OLE2Init();
     InitFonts();
     InitColors();
-    return( TRUE );
+    return( true );
 }
 
 void StartWindows( void )

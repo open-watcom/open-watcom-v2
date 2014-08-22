@@ -61,26 +61,24 @@ bool IsDirectory( char *name )
     unsigned            rc;
 
     if( strpbrk( name, "?*" ) != NULL ) {
-        return( FALSE );
+        return( false );
     }
     rc = access( name, F_OK );
-    if( rc != 0 ) return( FALSE ); /* not valid */
+    if( rc != 0 )
+        return( false ); /* not valid */
 
     if( name[1] == ':' && name[2] == '\\' && name[3] == 0 ) {
         /* this is a root dir -- this is OK */
-        return( TRUE );
+        return( true );
     }
 
     /* check if it is actually a sub-directory */
     rc = _dos_findfirst( name, _A_NORMAL | _A_RDONLY | _A_HIDDEN |
             _A_SYSTEM | _A_SUBDIR | _A_ARCH, &dta );
     if( rc != 0 ) {
-        return( FALSE );
+        return( false );
     }
-    if( dta.attrib & _A_SUBDIR ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( (dta.attrib & _A_SUBDIR) != 0 );
 
 } /* IsDirectory */
 

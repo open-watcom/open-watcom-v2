@@ -100,7 +100,7 @@ static vi_rc doCompressExpand( bool compress )
     StaticFree( tmp );
     RestoreCurrentFilePos();
 
-    Modified( TRUE );
+    Modified( true );
     DCDisplayAllLines();
     Message1( "%l lines processed in \"%s\"", linecnt, CurrentFile->name );
     if( compress ) {
@@ -117,7 +117,7 @@ static vi_rc doCompressExpand( bool compress )
  */
 vi_rc ExpandWhiteSpace( void )
 {
-    return( doCompressExpand( FALSE ) );
+    return( doCompressExpand( false ) );
 
 } /* ExpandWhiteSpace */
 
@@ -126,6 +126,6 @@ vi_rc ExpandWhiteSpace( void )
  */
 vi_rc CompressWhiteSpace( void )
 {
-    return( doCompressExpand( TRUE ) );
+    return( doCompressExpand( true ) );
 
 } /* CompressWhiteSpace */

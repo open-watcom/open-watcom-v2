@@ -43,10 +43,10 @@ static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
                       HDC hdc, int max_width, type_style *ts, HBRUSH thisBrush );
 
 void MyTabbedTextOut( HDC hdc, char **display, int len,
-                      int funny_italic, POINT *p, type_style *ts, RECT *rect,
+                      bool funny_italic, POINT *p, type_style *ts, RECT *rect,
                       window_id id, char *otmp, int y );
 
-BOOL                AllowDisplay = TRUE;
+bool                AllowDisplay = true;
 static int          pageCnt;
 static font_type    lastFont, thisFont;
 static vi_color     lastFore, thisFore;
@@ -57,7 +57,7 @@ static HBRUSH       thisBrush;
 void ScreenPage( int page )
 {
     pageCnt += page;
-    AllowDisplay = !pageCnt;
+    AllowDisplay = ( pageCnt == 0 );
 }
 
 void WindowTitleAOI( window_id id, char *title, bool active )
@@ -70,7 +70,7 @@ void WindowTitleAOI( window_id id, char *title, bool active )
 
 void WindowTitle( window_id id, char *title )
 {
-    WindowTitleAOI( id, title, FALSE );
+    WindowTitleAOI( id, title, false );
 }
 
 void ClearWindow( window_id id )
@@ -133,9 +133,9 @@ void ShiftWindowUpDown( window_id id, int lines )
 
 } /* ShiftWindowUpDown */
 
-int SetDrawingObjects( HDC hdc, type_style *ts )
+bool SetDrawingObjects( HDC hdc, type_style *ts )
 {
-    static int funny_italic = 0;
+    static bool funny_italic = false;
 
     // setup font and colours for next string.
     thisFore = ts->foreground;
@@ -156,9 +156,9 @@ int SetDrawingObjects( HDC hdc, type_style *ts )
         SelectObject( hdc, FontHandle( thisFont ) );
         lastFont = thisFont;
         if( FontIsFunnyItalic( thisFont ) ) {
-            funny_italic = TRUE;
+            funny_italic = true;
         } else {
-            funny_italic = FALSE;
+            funny_italic = false;
         }
     }
     return( funny_italic );
@@ -197,7 +197,7 @@ static void funnyFix( RECT *rect, int x, window_id id, char *display, int len,
 void MyTabbedTextOut( HDC hdc,
                       char **display,        // a reference to a string
                       int len,               // number of chars to display
-                      int funny_italic,      // fix up begin and end ?
+                      bool funny_italic,     // fix up begin and end ?
                       POINT *p,              // reference to current position
                       type_style *ts,        // current style
                       RECT *rect,
@@ -277,7 +277,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     RECT        rect;
     int         height, len;
     int         x, y, indent;
-    BOOL        changed;
+    bool        changed;
     int         ssDifIndex;
     ss_block    *ss_cache, *ss_step;
     int         lastPos;
@@ -285,7 +285,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
 
     type_style  *ts;
     POINT       p;
-    BOOL        funny_italic = FALSE;
+    bool        funny_italic = false;
     int         prev_col;
 
     if( !AllowDisplay || BAD_ID( id ) ) {
@@ -334,7 +334,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     SSGetLanguageFlags( &(c_line->flags) );
     ss_cache = c_line->ss;
     indent = 0;
-    changed = TRUE;
+    changed = true;
     ss_step = NULL;
     if( c_line->valid && c_line->start_col == start_col ) {
         /* do not redraw whatever is in common */
@@ -351,7 +351,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             indent++;
         }
         if( *old == *display && indent < ssDifIndex ) {
-            changed = FALSE;
+            changed = false;
         } else {
             // jump ss_step to first block we are actually going to use
             ss_step = ss_cache;
@@ -377,7 +377,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     // and updates the position variables. The function
     // SetDrawingObjects updates the font colors and brush for the
     // current ss_block if they have changed.
-    if( changed == TRUE ) {
+    if( changed ) {
 
         lastPos = indent - 1;
         MoveToEx( hdc, x, y, NULL );
@@ -473,7 +473,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     RECT        rect;
     int         width, height, len;
     int         x, y, indent;
-    BOOL        changed;
+    bool        changed;
     int         ssDifIndex;
     ss_block    *ss_cache, *ss_step;
     int         lastPos;
@@ -513,7 +513,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
     SSGetLanguageFlags( &(c_line->flags) );
     ss_cache = c_line->ss;
     indent = 0;
-    changed = TRUE;
+    changed = true;
     if( c_line->valid && c_line->start_col == start_col ) {
         // do not redraw whatever is in common
         old = c_line->text;
@@ -527,7 +527,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
             indent++;
         }
         if( *old == *display && indent < ssDifIndex ) {
-            changed = FALSE;
+            changed = false;
         } else {
             // jump ss_step to first block we are actually going to use
             ss_step = ss_cache;
@@ -546,7 +546,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id id, int c_line_no,
         ss_step = ss_cache;
         x = 0;
     }
-    if( changed == TRUE ) {
+    if( changed ) {
 
         PatBlt( hdc_mem, 0, 0, 10000, 10000, PATCOPY );
 

@@ -63,7 +63,7 @@ vi_rc HandleMouseEvent( void )
 
     if( dragThumb ) {
         if( LastMouseEvent == MOUSE_RELEASE ) {
-            dragThumb = FALSE;
+            dragThumb = false;
         }
         if( wn != CurrentWindow ) {
             return( ERR_NO_ERR );
@@ -79,7 +79,7 @@ vi_rc HandleMouseEvent( void )
             UpdateDrag( wn, win_x, win_y );
         } else {
             if( LastMouseEvent == MOUSE_PRESS_R || LastMouseEvent == MOUSE_PRESS ) {
-                EditFlags.Dragging = FALSE;
+                EditFlags.Dragging = false;
                 if( LastMouseEvent == MOUSE_PRESS_R ) {
                     LastMouseEvent = MOUSE_RELEASE_R;
                 }
@@ -99,7 +99,7 @@ vi_rc HandleMouseEvent( void )
             if( diff_word ) {
                 InitWordSearch( EditVars.WordAltDefn );
             }
-            rc = DoSelectSelection( TRUE );
+            rc = DoSelectSelection( true );
             if( diff_word ) {
                 InitWordSearch( EditVars.WordDefn );
             }
@@ -117,7 +117,7 @@ vi_rc HandleMouseEvent( void )
              */
             for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
                 if( wn == cinfo->CurrentWindow ) {
-                    BringUpFile( cinfo, TRUE );
+                    BringUpFile( cinfo, true );
                     break;
                 }
             }
@@ -154,7 +154,7 @@ vi_rc HandleMouseEvent( void )
              */
             if( InsideWindow( wn, win_x, win_y ) ) {
                 if( ShiftDown() ) {
-                    EditFlags.Dragging = TRUE;
+                    EditFlags.Dragging = true;
                 }
                 if( GoToLineRelCurs( LeftTopPos.line + win_y - 1 ) ) {
                     return( ERR_NO_ERR );
@@ -163,7 +163,7 @@ vi_rc HandleMouseEvent( void )
                 win_x = RealColumnOnCurrentLine( win_x );
                 GoToColumnOnCurrentLine( win_x );
                 if( ShiftDown() ) {
-                    EditFlags.Dragging = FALSE;
+                    EditFlags.Dragging = false;
                 } else {
                     InitSelectedRegion();
                 }
@@ -206,7 +206,7 @@ vi_rc HandleMouseEvent( void )
          */
         if( w->has_gadgets ) {
             if( win_y == w->vert_scroll_pos ) {
-                dragThumb = TRUE;
+                dragThumb = true;
                 return( ERR_NO_ERR );
             } else if( win_y < w->vert_scroll_pos ) {
                 return( MovePageUp() );
@@ -228,7 +228,7 @@ vi_rc HandleMouseEvent( void )
     if( wn == CurrentWindow && (LastMouseEvent == MOUSE_DRAG ||
                                 LastMouseEvent == MOUSE_DRAG_R ) &&
         InsideWindow( wn, win_x, win_y ) ) {
-        EditFlags.Dragging = TRUE;
+        EditFlags.Dragging = true;
         UpdateDrag( wn, win_x, win_y );
     }
 

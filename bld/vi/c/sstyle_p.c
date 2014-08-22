@@ -113,13 +113,13 @@ static void getHex( ss_block *ss_new, char *start )
 {
     int     lastc;
     char    *text = start + 2;
-    bool    nodigits = TRUE;
+    bool    nodigits = true;
 
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     ss_new->type = SE_HEX;
     while( *text && isxdigit( *text ) ) {
         text++;
-        nodigits = FALSE;
+        nodigits = false;
     }
     if( nodigits ) {
         ss_new->type = SE_INVALIDTEXT;
@@ -151,7 +151,7 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     char    lastc;
 
     ss_new->type = SE_FLOAT;
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     if( command == AFTER_ZERO ) {
         while( isdigit( *text ) ) {
             text++;
@@ -229,7 +229,7 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     int     lastc;
     char    *text = start + 1;
 
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     while( (*text >= '0') && (*text <= top) ) {
         text++;
     }
@@ -292,16 +292,16 @@ static void getText( ss_block *ss_new, char *start )
     }
     save_char = *text;
     *text = '\0';
-    isKeyword = IsKeyword( start, FALSE );
+    isKeyword = IsKeyword( start, false );
     *text = save_char;
 
     // Expect a double regular expression after s, tr, and y.
     if( text - start == 1 && (*start == 's' || *start == 'y') ) {
-        flags.doubleRegExp = TRUE;
+        flags.doubleRegExp = true;
     } else if( text - start == 2 && *start == 't' && *(start + 1) == 'r' ) {
-        flags.doubleRegExp = TRUE;
+        flags.doubleRegExp = true;
     } else {
-        flags.doubleRegExp = FALSE;
+        flags.doubleRegExp = false;
     }
     flags.beforeRegExp = isKeyword;
     ss_new->type = SE_IDENTIFIER;
@@ -329,7 +329,7 @@ static void getVariable( ss_block *ss_new, char *start )
             text += 2;
         }
     }
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     ss_new->type = SE_VARIABLE;
     ss_new->len = text - start;
 }
@@ -345,7 +345,7 @@ static void getSpecialVariable( ss_block *ss_new, char *start )
     } else {
         text++;
     }
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     ss_new->type = SE_VARIABLE;
     ss_new->len = text - start;
 }
@@ -353,8 +353,8 @@ static void getSpecialVariable( ss_block *ss_new, char *start )
 static void getSymbol( ss_block *ss_new, char *start )
 {
     start = start;
-    flags.beforeRegExp = TRUE;
-    flags.doubleRegExp = FALSE;
+    flags.beforeRegExp = true;
+    flags.doubleRegExp = false;
     ss_new->type = SE_SYMBOL;
     ss_new->len = 1;
 }
@@ -362,7 +362,7 @@ static void getSymbol( ss_block *ss_new, char *start )
 static void getChar( ss_block *ss_new, char *start, int skip )
 {
     char    *text = start + skip;
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     ss_new->type = SE_CHAR;
 embedded:
     while( (*text) && (*text != '\'') ) {
@@ -396,8 +396,8 @@ static void getBeyondText( ss_block *ss_new )
 
 static void getInvalidChar( ss_block *ss_new )
 {
-    flags.beforeRegExp = TRUE;
-    flags.doubleRegExp = FALSE;
+    flags.beforeRegExp = true;
+    flags.doubleRegExp = false;
     ss_new->type = SE_INVALIDTEXT;
     ss_new->len = 1;
 }
@@ -408,8 +408,8 @@ static void getPerlComment( ss_block *ss_new, char *start )
     while( *text ) {
         text++;
     }
-    flags.beforeRegExp = TRUE;
-    flags.doubleRegExp = FALSE;
+    flags.beforeRegExp = true;
+    flags.doubleRegExp = false;
     ss_new->type = SE_COMMENT;
     ss_new->len = text - start;
 }
@@ -419,7 +419,7 @@ static void getString( ss_block *ss_new, char *start, int skip )
     char    *nstart = start + skip;
     char    *text = nstart;
 
-    flags.beforeRegExp = FALSE;
+    flags.beforeRegExp = false;
     ss_new->type = SE_STRING;
     while( *text && *text != '"' ) {
         if( *text == '\\' && (*(text + 1) == '\\' || *(text + 1) == '"') ) {
@@ -434,15 +434,15 @@ static void getString( ss_block *ss_new, char *start, int skip )
             ss_new->type = SE_INVALIDTEXT;
 
             // don't try to trash rest of file
-            flags.inString = FALSE;
+            flags.inString = false;
         } else {
             // string continued on next line
-            flags.inString = TRUE;
+            flags.inString = true;
         }
     } else {
         text++;
         // definitely finished string
-        flags.inString = FALSE;
+        flags.inString = false;
     }
     ss_new->len = text - start;
 }
@@ -462,7 +462,7 @@ start:
     }
     text++;
     if( flags.doubleRegExp ) {
-        flags.doubleRegExp = FALSE;
+        flags.doubleRegExp = false;
         goto start;
     }
     while( isalpha( *text ) ) {
@@ -488,13 +488,13 @@ void InitPerlFlags( linenum line_no )
     line    *thisline;
 //    line    *topline;
     vi_rc   rc;
-    int     withinQuotes = 0;
+    bool    withinQuotes = false;
     line    *line;
-    bool    inBlock = FALSE;
+    bool    inBlock = false;
 
-    flags.inString = FALSE;
-    flags.beforeRegExp = TRUE;
-    flags.doubleRegExp = FALSE;
+    flags.inString = false;
+    flags.beforeRegExp = true;
+    flags.doubleRegExp = false;
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
@@ -503,7 +503,7 @@ void InitPerlFlags( linenum line_no )
         if( line->data[line->len - 1] != '\\' ) {
             break;
         }
-        inBlock = TRUE;
+        inBlock = true;
         rc = GimmePrevLinePtr( &fcb, &line );
     }
 
@@ -528,9 +528,9 @@ void InitPerlFlags( linenum line_no )
             while( *text ) {
                 if( *text == '"' ) {
                     if( !withinQuotes ) {
-                        withinQuotes = TRUE;
+                        withinQuotes = true;
                     } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
-                        withinQuotes = FALSE;
+                        withinQuotes = false;
                     }
                 }
                 text++;
@@ -539,7 +539,7 @@ void InitPerlFlags( linenum line_no )
         }
 
         if( withinQuotes ) {
-            flags.inString = TRUE;
+            flags.inString = true;
         }
     }
 }
@@ -554,7 +554,7 @@ void GetPerlBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated " or # or // from previous line
-            flags.inString = FALSE;
+            flags.inString = false;
         }
         getBeyondText( ss_new );
         return;

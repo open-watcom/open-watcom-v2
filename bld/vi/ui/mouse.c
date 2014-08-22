@@ -134,7 +134,7 @@ vi_mouse_event GetMouseEvent( void )
             me = MOUSE_DRAG;
         } else {
             me = MOUSE_MOVE;
-            mouseOn = TRUE;
+            mouseOn = true;
         }
     } else if( diff & MOUSE_ANY_BUTTON_DOWN ) {
         if( (diff & status) == diff ) {
@@ -150,15 +150,15 @@ vi_mouse_event GetMouseEvent( void )
         }
         button = getButton( diff );
         MouseStatus = status;
-        mouseRepeat = FALSE;
+        mouseRepeat = false;
         mouseTime = ClockTicks;
-        mouseOn = TRUE;
+        mouseOn = true;
     } else if( status & MOUSE_ANY_BUTTON_DOWN ) {
         button = getButton( status );
         if( !mouseRepeat ){
             if( ClockTicks - mouseTime > EditVars.MouseRepeatStartDelay ) {
                 me = MOUSE_REPEAT;
-                mouseRepeat = TRUE;
+                mouseRepeat = true;
                 mouseTime = ClockTicks;
             }
         } else if( ClockTicks - mouseTime > EditVars.MouseRepeatDelay ) {
@@ -241,11 +241,11 @@ bool DisplayMouse( bool flag )
     }
     if( flag ) {
         if( oldRow == -1 ) {
-            mouseOn = TRUE;
+            mouseOn = true;
             drawMouseCursor( MouseRow, MouseCol );
         } else {
             if( !mouseOn ) {
-                mouseOn = TRUE;
+                mouseOn = true;
                 drawMouseCursor( oldRow, oldCol );
             }
         }
@@ -253,7 +253,7 @@ bool DisplayMouse( bool flag )
         eraseMouseCursor();
         oldRow = -1;
         oldCol = -1;
-        mouseOn = FALSE;
+        mouseOn = false;
     }
     return( lastmouse );
 

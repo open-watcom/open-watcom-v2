@@ -70,14 +70,14 @@ static void eatComment( void )
 {
     int         ch;
     int         nesting_level;
-    bool        done = FALSE;
+    bool        done = false;
 
     nesting_level = 1;
     while( !done ) {
         ch = GetChar();
         switch( ch ) {
         case EOF:
-            done = TRUE;
+            done = true;
             break;
         case '*':
             ch = GetChar();
@@ -112,10 +112,10 @@ static void eatComment( void )
  */
 static void eatUntilChar( int match )
 {
-    char        escape;
+    bool        escape;
     int         ch;
 
-    escape = FALSE;
+    escape = false;
 
     for( ;; ) {
         ch = GetChar();
@@ -123,7 +123,7 @@ static void eatUntilChar( int match )
             break;
         }
         if( escape ) {
-            escape = FALSE;
+            escape = false;
             continue;
         }
         if( ch == '\n' ) {
@@ -132,7 +132,7 @@ static void eatUntilChar( int match )
                 return;
             }
         } else if( ch == '\\' ) {
-            escape = TRUE;
+            escape = true;
         } else if( ch == match ) {
             return;
         }
@@ -181,7 +181,7 @@ static void doPreProcessorDirective( void )
     /*
      * swallow #else and #elif shit
      */
-    if( !acceptOnlyEndif ) {
+    if( acceptOnlyEndif == 0 ) {
         if( !stricmp( buff, "else" ) || !stricmp( buff, "elif" ) ) {
             acceptOnlyEndif = 1;
         }
@@ -197,7 +197,7 @@ static void doPreProcessorDirective( void )
      * if it is a #define, and we want macros, then get macro
      */
     if( !stricmp( buff, "define" ) && (WantMacros || WantAllDefines) &&
-        !acceptOnlyEndif ) {
+        acceptOnlyEndif == 0 ) {
         ch = eatWhiteSpace();
         buffptr = buff;
         for( ;; ) {
@@ -239,11 +239,11 @@ static void doPreProcessorDirective( void )
  */
 static void eatUntilClosingBracket( void )
 {
-    char        escape;
+    bool        escape;
     int         ch;
     int         brace_level = 1;
 
-    escape = FALSE;
+    escape = false;
 
     for( ;; ) {
         ch = GetChar();
@@ -251,7 +251,7 @@ static void eatUntilClosingBracket( void )
             break;
         }
         if( escape ) {
-            escape = FALSE;
+            escape = false;
             continue;
         }
         switch( ch ) {
@@ -259,7 +259,7 @@ static void eatUntilClosingBracket( void )
             NewFileLine();
             break;
         case '\\':
-            escape = TRUE;
+            escape = true;
             break;
         case '(':
             brace_level++;
@@ -283,25 +283,25 @@ bool eatStuffBeforeOpenBrace( int ch )
 {
     if( ch == '#' ) {
         doPreProcessorDirective();
-        return( TRUE );
+        return( true );
     }
     if( ch == '\\' ) {
         eatUntilChar( '\n' );
-        return( TRUE );
+        return( true );
     }
     if( ch == '/' ) {
         ch = GetChar();
         if( ch == '*' ) {
             eatComment();
-            return( TRUE );
+            return( true );
         } else if( ch == '/' ) {
             eatUntilChar( '\n' );
-            return( TRUE );
+            return( true );
         } else {
             UnGetChar( ch );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* eatStuffBeforeOpenBrace */
 
@@ -354,14 +354,14 @@ static bool doCUSE( int ch )
     while( isspace( ch ) ) {
         ch = GetChar();
         if( ch == EOF ) {
-            return( FALSE );
+            return( false );
         }
     }
     /*
      * check for a '{'.  If we have one, this is a defn with no name.
      */
     if( ch == '{' ) {
-        return( TRUE );
+        return( true );
     }
 
     /*
@@ -372,7 +372,7 @@ static bool doCUSE( int ch )
         *buffptr++ = ch;
         ch = GetChar();
         if( ch == EOF ) {
-            return( FALSE );
+            return( false );
         }
         if( ch == '\n' ) {
             NewFileLine();
@@ -402,7 +402,7 @@ static bool doCUSE( int ch )
                     continue;
                 }
                 UnGetChar( ch );
-                return( FALSE );
+                return( false );
             } else {
                 break;
             }
@@ -410,7 +410,7 @@ static bool doCUSE( int ch )
     }
     *buffptr = 0;
     AddTag( buff );
-    return( TRUE );
+    return( true );
 
 } /* doCUSE */
 
@@ -440,10 +440,10 @@ void ScanC( void )
     brace_level = 0;
     paren_level = 0;
     typedef_level = -1;
-    have_token = FALSE;
-    have_typedef = FALSE;
-    have_enum = FALSE;
-    acceptOnlyEndif = FALSE;
+    have_token = false;
+    have_typedef = false;
+    have_enum = false;
+    acceptOnlyEndif = 0;
     structStackDepth = 0;
 
     for( ;; ) {
@@ -453,13 +453,13 @@ void ScanC( void )
         }
         switch( ch ) {
         case '{':
-            if( !acceptOnlyEndif ) {
+            if( acceptOnlyEndif == 0 ) {
                 brace_level++;
             }
             CHANGE_STATE( end_token );
 
         case '}':
-            if( !acceptOnlyEndif ) {
+            if( acceptOnlyEndif == 0 ) {
                 if( structStackDepth > 1 ) {
                     if( structStack[structStackDepth - 1] == brace_level ) {
                         structStackDepth--;
@@ -469,7 +469,7 @@ void ScanC( void )
                 if( brace_level < 0 ) {
                     brace_level = 0;
                 }
-                have_enum = FALSE;
+                have_enum = false;
             }
             CHANGE_STATE( end_token );
 
@@ -478,9 +478,9 @@ void ScanC( void )
             CHANGE_STATE( end_token );
 
         STATE( end_token );
-            have_token = FALSE;
+            have_token = false;
             if( buffptr > buff ) {
-                have_token = TRUE;
+                have_token = true;
                 *buffptr = 0;
                 buffptr = buff;
             }
@@ -505,16 +505,16 @@ void ScanC( void )
             CHANGE_STATE( save_char );
 
         case '(':
-            if( !acceptOnlyEndif ) {
+            if( acceptOnlyEndif == 0 ) {
                 if( have_typedef && brace_level == typedef_level ) {
                     paren_level++;
                 } else if( have_token ) {
-                    doit = FALSE;
+                    doit = false;
                     if( brace_level == 0 ) {
-                        doit = TRUE;
+                        doit = true;
                     } else if( structStackDepth > 1 ) {
                         if( structStack[structStackDepth - 1] == brace_level ) {
-                            doit = TRUE;
+                            doit = true;
                         }
                     }
                     if( doit ) {
@@ -558,12 +558,12 @@ void ScanC( void )
             CHANGE_STATE( save_char );
 
         case ')':
-            if( !acceptOnlyEndif ) {
+            if( acceptOnlyEndif == 0 ) {
                 if( have_typedef && brace_level == typedef_level ) {
                     paren_level--;
                     if( paren_level == 0 ) {
                         typedef_level = -1;
-                        have_typedef = FALSE;
+                        have_typedef = false;
                         if( buffptr != buff ) {
                             *buffptr = 0;
                         }
@@ -584,7 +584,7 @@ void ScanC( void )
             CHANGE_STATE( save_char );
 
         case ',':
-            if( !acceptOnlyEndif ) {
+            if( acceptOnlyEndif == 0 ) {
                 if( (have_typedef && brace_level == typedef_level) ||
                     (WantEnums && have_token && have_enum) ) {
                     RecordCurrentLineData();
@@ -598,8 +598,8 @@ void ScanC( void )
             CHANGE_STATE( save_char );
 
         case ';':
-            if( !acceptOnlyEndif && have_typedef && brace_level == typedef_level ) {
-                have_typedef = FALSE;
+            if( acceptOnlyEndif == 0 && have_typedef && brace_level == typedef_level ) {
+                have_typedef = false;
                 typedef_level = -1;
                 RecordCurrentLineData();
                 if( buffptr != buff ) {
@@ -617,9 +617,9 @@ void ScanC( void )
                     break;
                 }
                 *buffptr = 0;
-                if( !acceptOnlyEndif ) {
+                if( acceptOnlyEndif == 0 ) {
                     if( WantTypedefs && !have_typedef && !stricmp( buff, "typedef" ) ) {
-                        have_typedef = TRUE;
+                        have_typedef = true;
                         typedef_level = brace_level;
                         paren_level = 0;
                         break;
@@ -631,20 +631,20 @@ void ScanC( void )
                     }
                     if( WantUSE || WantClasses ) {
                         if( !have_typedef ) {
-                            have_struct = FALSE;
-                            have_cuse = FALSE;
+                            have_struct = false;
+                            have_cuse = false;
                             if( WantClasses && !stricmp( buff, "class" ) ) {
-                                have_struct = TRUE;
-                                have_cuse = TRUE;
+                                have_struct = true;
+                                have_cuse = true;
                             } else if( WantUSE ) {
                                 if( !stricmp( buff, "struct" ) ) {
-                                    have_struct = TRUE;
-                                    have_cuse = TRUE;
+                                    have_struct = true;
+                                    have_cuse = true;
                                 } else if( !stricmp( buff, "union" ) ){
-                                    have_cuse = TRUE;
+                                    have_cuse = true;
                                 } else if( !stricmp( buff, "enum" ) ) {
-                                    have_cuse = TRUE;
-                                    have_enum = TRUE;
+                                    have_cuse = true;
+                                    have_enum = true;
                                 }
                             }
                             if( have_cuse ) {
@@ -661,7 +661,7 @@ void ScanC( void )
                             }
                         } else {
                             if( !strcmp( buff, "enum" ) ) {
-                                have_enum = TRUE;
+                                have_enum = true;
                             }
                         }
                     }
@@ -669,12 +669,12 @@ void ScanC( void )
                 buffptr = buff;
             } else if( buffptr != buff || (isalpha( ch ) || ch == '_') ) {
                 *buffptr++ = ch;
-                have_token = TRUE;
+                have_token = true;
             }
             continue;
         }
         buffptr = buff;
-        have_token = FALSE;
+        have_token = false;
     }
 
 } /* ScanC */

@@ -72,7 +72,7 @@ void Die( const char *str, ... )
 } /* Die */
 
 static char strBuff[25];
-static char readMsgData = FALSE;
+static bool readMsgData = false;
 static int  errCnt;
 static char *errorList;
 
@@ -89,8 +89,8 @@ char *GetErrorMsg( vi_rc err )
     LastError = err;
     if( EditFlags.InputKeyMapMode ) {
         DoneInputKeyMap();
-        EditFlags.NoInputWindow = FALSE;
-        EditFlags.Dotable = FALSE;
+        EditFlags.NoInputWindow = false;
+        EditFlags.Dotable = false;
     }
     if( err < 0 || err > errCnt ) {
         MySprintf( strBuff, "Err no. %d (no msg)", err );
@@ -180,13 +180,13 @@ void ErrorBox( char *str, ... )
 static bool errmsg_alloc( int cnt )
 {
     errCnt = cnt;
-    return( FALSE );
+    return( false );
 }
 
 static bool errmsg_save( int i, char *buff )
 {
     i = i; buff = buff;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -197,11 +197,11 @@ static void readErrorMsgData( void )
 {
     vi_rc       rc;
 
-    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, TRUE );
+    rc = ReadDataFile( "errmsg.dat", &errorList, errmsg_alloc, errmsg_save, true );
     if( rc != ERR_NO_ERR ) {
         return;
     }
-    readMsgData = TRUE;
+    readMsgData = true;
 
 } /* readErrorMsgData */
 

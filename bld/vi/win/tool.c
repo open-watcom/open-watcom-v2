@@ -41,9 +41,9 @@ typedef struct tool_item {
     ss                  tool_head;
     UINT                id;
     HBITMAP             bmp;
-    unsigned char       is_blank    : 1;
-    unsigned char       dont_save   : 1;
-    unsigned char       spare       : 6;
+    bool                is_blank    : 1;
+    bool                dont_save   : 1;
+//    bool                spare       : 6;
     char                *name;
     char                *help;
     char                cmd[1];
@@ -74,9 +74,9 @@ static const tool_tip tips[] = {
 static void             *toolBar = NULL;
 static ss               *toolBarHead = NULL;
 static ss               *toolBarTail = NULL;
-static BOOL             fixedToolBar;
+static bool             fixedToolBar;
 // static RECT          fixedRect;
-static bool             userClose = TRUE;
+static bool             userClose = true;
 static HBITMAP          buttonPattern;
 
 RECT                    ToolBarFloatRect;
@@ -124,8 +124,8 @@ static void nukeButtons( void )
     toolBarTail = NULL;
 }
 
-BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
-void ToolBarHelp( HWND hwnd, UINT id, BOOL isdown );
+bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l );
+void ToolBarHelp( HWND hwnd, UINT id, bool isdown );
 
 #if 0
 static void newToolBarWindow( void )
@@ -135,7 +135,7 @@ static void newToolBarWindow( void )
     int                 height, width;
     TOOLDISPLAYINFO     dinfo;
 
-    userClose = FALSE;
+    userClose = false;
 
     GetWindowRect( EditContainer, &rect );
     width = rect.right - rect.left;
@@ -151,7 +151,7 @@ static void newToolBarWindow( void )
         height += (fixedRect.bottom - fixedRect.top) + 1;
         dinfo.area = ToolBarFloatRect;
         dinfo.style = TOOLBAR_FLOAT_STYLE;
-        dinfo.is_fixed = FALSE;
+        dinfo.is_fixed = false;
     } else {
 //      tl.y = fixedRect.bottom + 1;
 //      height -= (fixedRect.bottom - fixedRect.top) + 1;
@@ -159,7 +159,7 @@ static void newToolBarWindow( void )
         height -= (fixedRect.bottom - fixedRect.top);
         dinfo.area = fixedRect;
         dinfo.style = TOOLBAR_FIXED_STYLE;
-        dinfo.is_fixed = TRUE;
+        dinfo.is_fixed = true;
     }
     dinfo.button_size.x = ToolBarButtonWidth;
     dinfo.button_size.y = ToolBarButtonHeight;
@@ -176,7 +176,7 @@ static void newToolBarWindow( void )
     UpdateWindow( ToolBarWindow( toolBar ) );
     fixedToolBar = !fixedToolBar;
 
-    userClose = TRUE;
+    userClose = true;
 
 } /* newToolBarWindow */
 #endif
@@ -184,7 +184,7 @@ static void newToolBarWindow( void )
 /*
  * ToolBarHelp - update tool bar hint text
  */
-void ToolBarHelp( HWND hwnd, UINT id, BOOL isdown )
+void ToolBarHelp( HWND hwnd, UINT id, bool isdown )
 {
     ss                 *p;
 
@@ -208,7 +208,7 @@ void ToolBarHelp( HWND hwnd, UINT id, BOOL isdown )
 /*
  * MyToolBarProc - called by toolbar window proc
  */
-BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     switch( msg ) {
     case WM_KILLFOCUS:
@@ -217,7 +217,7 @@ BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
     case WM_LBUTTONDBLCLK:
         // flip the current state of the toolbar - if we are fixed then start to float or vice versa
 //      newToolBarWindow();
-//      return( TRUE );
+//      return( true );
         break;
     case WM_MOVE:
     case WM_SIZE:
@@ -227,15 +227,15 @@ BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
             DefWindowProc( hwnd, msg, w, l );
             GetWindowRect( hwnd, &ToolBarFloatRect );
         }
-        return( FALSE );
+        return( false );
     case WM_DESTROY:
         if( userClose ) {
             // the user closed the toolbar so remember this
-            EditFlags.Toolbar = FALSE;
+            EditFlags.Toolbar = false;
         }
         break;
     }
-    return( FALSE );
+    return( false );
 
 } /* MyToolBarProc */
 
@@ -247,13 +247,13 @@ static void createToolBar( RECT *rect )
     int                 toolbar_height;
     TOOLDISPLAYINFO     dinfo;
 
-    fixedToolBar = TRUE;
+    fixedToolBar = true;
     dinfo.button_size.x = EditVars.ToolBarButtonWidth;
     dinfo.button_size.y = EditVars.ToolBarButtonHeight;
     dinfo.border_size.x = BORDER_X( EditVars.ToolBarButtonWidth );
     dinfo.border_size.y = BORDER_Y( EditVars.ToolBarButtonHeight );
     dinfo.style = TOOLBAR_FIXED_STYLE;
-    dinfo.is_fixed = TRUE;
+    dinfo.is_fixed = true;
     toolbar_height = TOOLBAR_HEIGHT( EditVars.ToolBarButtonHeight );
     dinfo.area = *rect;
     dinfo.area.bottom = ((dinfo.area.top + toolbar_height + 1) & ~1) - 1;
@@ -325,7 +325,7 @@ static void addToolBarItem( tool_item *item )
     } else {
         info.tip[0] = '\0';
     }
-    info.depressed = FALSE;
+    info.depressed = false;
     ToolBarAddItem( toolBar, &info );
     InvalidateRect( ToolBarWindow( toolBar ), NULL, FALSE );
 
@@ -340,9 +340,9 @@ void NewToolBar( RECT *rect )
     RECT        covered;
 
     if( toolBar ) {
-        userClose = FALSE;
+        userClose = false;
         CloseToolBar();
-        userClose = TRUE;
+        userClose = true;
     }
     if( !EditFlags.Toolbar ) {
         return;
@@ -392,13 +392,9 @@ vi_rc AddBitmapToToolBar( char *data )
     if( name_len != 0 ) {
         item->id = NextMenuId();
     } else {
-        item->is_blank = TRUE;
+        item->is_blank = true;
     }
-    if( strlen( dont_save ) != 0 ) {
-        item->dont_save = TRUE;
-    } else {
-        item->dont_save = FALSE;
-    }
+    item->dont_save = ( strlen( dont_save ) != 0 );
 
     if( file[0] && item->cmd[0] ) {
         item->bmp = LoadBitmap( InstanceHandle, file );

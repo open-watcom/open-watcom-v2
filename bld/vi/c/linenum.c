@@ -58,14 +58,14 @@ vi_rc LineNumbersSetup( void )
         wi.y1 = WindowAuxInfo( CurrentWindow, WIND_INFO_Y1 );
         wi.y2 = WindowAuxInfo( CurrentWindow, WIND_INFO_Y2 );
         if( !EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindowRelative( CurrentWindow, EditVars.LineNumWinWidth, 0, 0, 0, FALSE );
+            rc = ResizeWindowRelative( CurrentWindow, EditVars.LineNumWinWidth, 0, 0, 0, false );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
             wi.x1 = x1;
             wi.x2 = x1 + EditVars.LineNumWinWidth - 1 - j;
         } else {
-            rc = ResizeWindowRelative( CurrentWindow, 0, 0, -EditVars.LineNumWinWidth, 0, FALSE );
+            rc = ResizeWindowRelative( CurrentWindow, 0, 0, -EditVars.LineNumWinWidth, 0, false );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
@@ -78,7 +78,7 @@ vi_rc LineNumbersSetup( void )
         }
     } else {
         CloseAWindow( CurrNumWindow );
-        rc = ResizeWindow( CurrentWindow, editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2, FALSE );
+        rc = ResizeWindow( CurrentWindow, editw_info.x1, editw_info.y1, editw_info.x2, editw_info.y2, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }

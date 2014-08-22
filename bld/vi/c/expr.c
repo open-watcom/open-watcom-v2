@@ -380,15 +380,15 @@ static token nextToken( void )
             } else if( !strncmp( tokenBuff, "emptybuf", 8 ) ) {
                 j = tokenBuff[8];
                 constantVal = IsEmptySavebuf( j );
-            } else if( (j = Tokenize( colorTokens, tokenBuff, TRUE )) != TOK_INVALID ) {
+            } else if( (j = Tokenize( colorTokens, tokenBuff, true )) != TOK_INVALID ) {
                 constantVal = j;
 #ifdef __WIN__
-            } else if( (j = Tokenize( ddeTokens, tokenBuff, TRUE )) != TOK_INVALID ) {
+            } else if( (j = Tokenize( ddeTokens, tokenBuff, true )) != TOK_INVALID ) {
                 constantVal = ddeNums[j];
 #endif
             } else {
                 ReadErrorTokens();
-                j = Tokenize( ErrorTokens, tokenBuff, TRUE );
+                j = Tokenize( ErrorTokens, tokenBuff, true );
                 if( j != TOK_INVALID ) {
                     constantVal = ErrorValues[j];
                 } else {

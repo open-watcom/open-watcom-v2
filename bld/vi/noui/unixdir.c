@@ -87,12 +87,12 @@ bool IsDirectory( char *name )
     struct stat sb;
 
     if( stat( name, &sb ) < 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( S_ISDIR( sb.st_mode ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* IsDirectory */
 

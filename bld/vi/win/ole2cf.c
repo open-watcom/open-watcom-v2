@@ -162,9 +162,9 @@ bool OLE2ClassFactoryInit( void )
                                      CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE, &cfID );
     pcf->lpVtbl->Release( pcf );
     if( hresult != NOERROR ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* OLE2ClassFactoryInit */
 

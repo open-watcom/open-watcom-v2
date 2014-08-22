@@ -56,7 +56,7 @@ void StartWindows( void )
 {
     allocImage();
     ClearScreen();
-    EditFlags.WindowsStarted = TRUE;
+    EditFlags.WindowsStarted = true;
 
 } /* StartWindows */
 

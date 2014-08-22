@@ -46,7 +46,7 @@ static char oldDrive;
 
 int FileSysNeedsCR( int handle )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -125,8 +125,8 @@ void ScreenInit( void )
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info );
     Scrn = malloc( size );
 
-    // EditFlags.Monocolor = TRUE;
-    EditFlags.HasSystemMouse = FALSE;
+    // EditFlags.Monocolor = true;
+    EditFlags.HasSystemMouse = false;
     curson();
 
 } /* ScreenInit */
@@ -146,7 +146,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0;
+    EditVars.ExtendedKeyboard = 0;
 
 } /* ChkExtendedKbd */
 
@@ -210,9 +210,9 @@ bool ShiftDown( void )
 
     kptr = KEY_PTR;
     if( kptr[0] & KEY_SHIFT ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -228,10 +228,10 @@ void TurnOffCapsLock( void )
     kptr = KEY_PTR;
 
     if( kptr[0] & KEY_CAPS_LOCK ) {
-        hadCapsLock = TRUE;
+        hadCapsLock = true;
         kptr[0] &= ~KEY_CAPS_LOCK;
     } else {
-        hadCapsLock = FALSE;
+        hadCapsLock = false;
     }
 
 } /* TurnOffCapsLock */

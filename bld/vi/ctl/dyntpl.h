@@ -55,7 +55,7 @@ typedef enum {
 
 typedef struct {
     dyn_tpl_type        type;           // type of dynamic template
-    BOOL                use;            // dyn tpls can be turned off
+    bool                use;            // dyn tpls can be turned off
     int                 (*which_tpl)( HWND );// rtn to see which template to use
 } dyn_static_def;
 
@@ -75,10 +75,10 @@ typedef enum {
 
 typedef struct {
     dyn_tpl_type        type;           // type of dynamic template
-    BOOL                use;            // dyn tpls can be turned off
+    bool                use;            // dyn tpls can be turned off
     dyn_dim_type        state;          // current state of dyn tpl
-    dyn_dim_type        (*tpl_state)( HWND, BOOL );// rtn to see the next state
-    BOOL                (*tpl_check)( WPI_PARAM1, WPI_PARAM2, HWND ); // check if tpl changed
+    dyn_dim_type        (*tpl_state)( HWND, bool );// rtn to see the next state
+    bool                (*tpl_check)( WPI_PARAM1, WPI_PARAM2, HWND ); // check if tpl changed
 } dyn_dim_def;
 
 typedef struct {
@@ -102,7 +102,7 @@ typedef struct {
 // Routines to use a dynamic template with a dialog
 
 // MISSING!!! (???)
-BOOL dyn_tpl_button_check( int ctl, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
+bool dyn_tpl_button_check( int ctl, WPI_PARAM1 wParam, WPI_PARAM2 lParam );
 
 // process changes
 void dyn_tpl_process( void *dyn, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 parm2 );
@@ -120,4 +120,3 @@ void dyn_tpl_free( void *dyn );
 void *dyn_tpl_copy( void *dyn );
 
 #endif
-

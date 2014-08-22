@@ -50,7 +50,7 @@ int LineLength( linenum l )
 
 vi_rc GetLineRange( range *result, long count, linenum line )
 {
-    result->line_based = TRUE;
+    result->line_based = true;
     result->start.line = line;
     line += count - 1;
     CFindLastLine( &result->end.line );
@@ -70,12 +70,11 @@ vi_rc Delete( range *r )
         DCDisplayAllLines();
         LineDeleteMessage( r->start.line, r->end.line );
     } else if( r->start.line != r->end.line ) {
-        rc = Cut( r->start.line, r->start.column,
-                  r->end.line, r->end.column, TRUE );
+        rc = Cut( r->start.line, r->start.column, r->end.line, r->end.column, true );
         DCDisplayAllLines();
     } else {
         GoToLineNoRelCurs( r->start.line );
-        rc = DeleteRangeOnCurrentLine( r->start.column, r->end.column, TRUE );
+        rc = DeleteRangeOnCurrentLine( r->start.column, r->end.column, true );
     }
     // move cursor to tl corner of region
     if( rc == ERR_NO_ERR ) {
@@ -89,7 +88,7 @@ vi_rc Delete( range *r )
             }
         }
         GoToColumnOnCurrentLine( r->start.column );
-        EditFlags.Dotable = TRUE;
+        EditFlags.Dotable = true;
     } else {
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
     }
@@ -129,8 +128,7 @@ vi_rc Yank( range *r )
 #endif
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
     } else {
-        rc = Cut( r->start.line, r->start.column,
-                  r->end.line, r->end.column, FALSE );
+        rc = Cut( r->start.line, r->start.column, r->end.line, r->end.column, false );
     }
     if( rc != ERR_NO_ERR ) {
         rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
@@ -164,8 +162,7 @@ vi_rc Change( range *r )
     if( r->start.line != r->end.line ) {
         StartUndoGroup( UndoStack );
         if( !r->line_based ) {
-            rc = Cut( r->start.line, r->start.column,
-                      r->end.line, r->end.column, TRUE );
+            rc = Cut( r->start.line, r->start.column, r->end.line, r->end.column, true );
             r->end.column = -1;
             scol = -1;
             ecol = -1;
@@ -214,10 +211,10 @@ vi_rc Change( range *r )
     if( WorkLine->len == 0 ) {
         WorkLine->data[1] = 0;
     }
-    EditFlags.InsertModeActive = TRUE;
+    EditFlags.InsertModeActive = true;
     GoToColumn( scol + 1, CurrentLine->len );
-    EditFlags.InsertModeActive = FALSE;
-    DisplayWorkLine( TRUE );
+    EditFlags.InsertModeActive = false;
+    DisplayWorkLine( true );
     UnselectRegion();
     DCUpdate();
 #ifndef __WIN__
@@ -227,13 +224,13 @@ vi_rc Change( range *r )
     /*
      * now, get ready to do change
      */
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
 #ifdef __WIN__
     WorkLine->data[ecol] = tmp;
 #else
     WorkLine->data[vecol] = tmp;
 #endif
-    DisplayWorkLine( TRUE );
+    DisplayWorkLine( true );
     if( key == VI_KEY( ESC ) && !EditFlags.ChangeLikeVI ) {
         WorkLine->len = -1;
         GoToColumn( scol + 1, CurrentLine->len );
@@ -258,13 +255,13 @@ static vi_rc doPush( range *r, bool shove )
     if( r->start.line == r->end.line && !r->line_based ) {
         rc = ERR_INVALID_LINE_RANGE;
     } else {
-        rc = Shift( r->start.line, r->end.line, shove ? '>' : '<', TRUE );
+        rc = Shift( r->start.line, r->end.line, shove ? '>' : '<', true );
         if( rc <= ERR_NO_ERR ) {
 #if 0
             GoToLineNoRelCurs( r->start.line );
 #endif
             GoToColumnOnCurrentLine( FindStartOfCurrentLine() );
-            EditFlags.Dotable = TRUE;
+            EditFlags.Dotable = true;
         }
     }
     return( rc );
@@ -274,14 +271,14 @@ static vi_rc doPush( range *r, bool shove )
 vi_rc StartShove( range *r )
 {
     UpdateCurrentStatus( CSTATUS_SHIFT_RIGHT );
-    return( doPush( r, TRUE ) );
+    return( doPush( r, true ) );
 
 } /* StartShove */
 
 vi_rc StartSuck( range *r )
 {
     UpdateCurrentStatus( CSTATUS_SHIFT_LEFT );
-    return( doPush( r, FALSE ) );
+    return( doPush( r, false ) );
 
 } /* StartSuck */
 
@@ -355,10 +352,10 @@ vi_rc ChangeCase( range *r )
         msg = MSG_LINES;
         total = r->end.line - r->start.line + 1;
     }
-    EditFlags.Dotable = TRUE;
+    EditFlags.Dotable = true;
     DCDisplayAllLines();
     Message1( "case toggled for %l %s", total, msg );
-    Modified( TRUE );
+    Modified( true );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* ChangeCase */

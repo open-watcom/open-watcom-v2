@@ -62,7 +62,7 @@ typedef enum NewColourOps {
 
 static int              cursx = 0, cursy = 0;
 static COLORREF         RGBValues[NUM_COLOURS];
-static bool             haveCapture = FALSE;
+static bool             haveCapture = false;
 static HWND             mod_hwnd;
 static POINT            m_pt;
 
@@ -165,7 +165,7 @@ static void sendNewColour( NewColourOps op )
     }
 }
 
-void drawFocus( HDC hdc, RECT *rect, BOOL set )
+void drawFocus( HDC hdc, RECT *rect, bool set )
 {
     HPEN        hDkGreyPen;
     HPEN        hWhitePen;
@@ -218,7 +218,7 @@ static void drawUnselected( HDC hdc, int x, int y )
     nearest = GetNearestColor( hdc, RGBValues[y * NUM_ACROSS + x] );
     hColourBrush = CreateSolidBrush( nearest );
     FillRect( hdc, &rect, hColourBrush );
-    drawFocus( hdc, &rect, FALSE );
+    drawFocus( hdc, &rect, false );
 
     DeleteObject( hColourBrush );
 }
@@ -232,7 +232,7 @@ static void drawSelected( HDC hdc, int x, int y )
     rect.right = (x + 1) * Width - SPC;
     rect.bottom = (y + 1) * Height - SPC;
 
-    drawFocus( hdc, &rect, TRUE );
+    drawFocus( hdc, &rect, true );
 }
 
 static void paintBlocks( HWND hwnd )
@@ -286,7 +286,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 
     CursorOp( COP_DROPCLR );
     SetCapture( hwnd );
-    haveCapture = TRUE;
+    haveCapture = true;
     mod_hwnd = (HWND)NULLHANDLE;
 
     return( 0 );
@@ -309,7 +309,7 @@ static LRESULT selectedNewColour( HWND hwnd, NewColourOps op, WPARAM wparam )
 
     CursorOp( COP_ARROW );
     ReleaseCapture();
-    haveCapture = FALSE;
+    haveCapture = false;
     if( !eitherButtonDown( wparam ) ) {
         sendNewColour( op );
     }
@@ -322,7 +322,7 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     RECT    rect;
 
-    if( haveCapture == FALSE ) {
+    if( !haveCapture ) {
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
 

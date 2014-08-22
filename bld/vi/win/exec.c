@@ -35,7 +35,7 @@
 #include "wprocmap.h"
 #endif
 
-static BOOL     doneExec;
+static bool     doneExec;
 static HMODULE  moduleHandle;
 static HMODULE  instanceHandle;
 
@@ -60,13 +60,13 @@ WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data )
 
     if( id == NFY_DELMODULE ) {
         if( (HMODULE)LOWORD( data ) == moduleHandle ) {
-            doneExec = TRUE;
+            doneExec = true;
         }
     } else if( id == NFY_EXITTASK ) {
         task = (UINT)GetCurrentTask();
         if( MODULE_FROM_TASK( task ) == (WORD)moduleHandle &&
             INSTANCE_FROM_TASK( task ) == (WORD)instanceHandle ) {
-            doneExec  = TRUE;
+            doneExec = true;
         }
     }
     return( FALSE );
@@ -99,7 +99,7 @@ long MySpawn( const char *cmd )
     if( inst > (HANDLE)32 ) {
         union REGS in_regs, out_regs;
 
-        doneExec = FALSE;
+        doneExec = false;
 #ifdef __WINDOWS_386__
         moduleHandle = GetModuleHandle( PASS_WORD_AS_POINTER( inst ) );
 #else
@@ -112,16 +112,16 @@ long MySpawn( const char *cmd )
         in_regs.h.al = 0x0;
         intdos( &in_regs, &out_regs );
         if( out_regs.h.al == 20 ) {
-            doneExec = TRUE;
+            doneExec = true;
         }
 
         instanceHandle = inst;
-        EditFlags.HoldEverything = TRUE;
+        EditFlags.HoldEverything = true;
         while( !doneExec ) {
-            MessageLoop( TRUE );
+            MessageLoop( true );
             Yield();
         }
-        EditFlags.HoldEverything = FALSE;
+        EditFlags.HoldEverything = false;
         rc = 0;
     } else {
         rc = -1L;

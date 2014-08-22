@@ -41,8 +41,8 @@ static int              cursorWidth;
 static cursor_type      cursorType;
 static UINT             oldBlinkTime;
 static bool             haveOldBlinkTime;
-static bool             caretDisplayed = FALSE;
-static bool             caretKilled = FALSE;
+static bool             caretDisplayed = false;
+static bool             caretKilled = false;
 
 extern int WinVirtualCursorPosition( char *, int );
 
@@ -92,7 +92,7 @@ void NewCursor( window_id id, cursor_type ct )
     cursorWidth = width;
     if( !haveOldBlinkTime ) {
         oldBlinkTime = GetCaretBlinkTime();
-        haveOldBlinkTime = TRUE;
+        haveOldBlinkTime = true;
     }
     CreateCaret( id, (HBITMAP)NULLHANDLE, cursorWidth, cursorHeight );
     SetCursorBlinkRate( EditVars.CursorBlinkRate );
@@ -158,8 +158,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
 
             // kludge! - Real Cursor position refuses to say cursor is to right
             //           of last character like it ought to when Modeless
-            if( CursorPositionOffRight( old_col + 1 ) &&
-                (EditFlags.Modeless == FALSE) ) {
+            if( CursorPositionOffRight( old_col + 1 ) && !EditFlags.Modeless ) {
                  col++;
             }
 
@@ -201,7 +200,7 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
     // Magic Tabs positioning
     if( EditFlags.RealTabs ) {
         type_style      *this_style = &SEType[ss->type];
-        int             no_tab = FALSE;
+        bool            no_tab = false;
         int             avg_width = FontAverageWidth( SEType[ss->type].font );
         int             left, extent, end_tab;
         char            *cur_pos;
@@ -221,13 +220,13 @@ static int getCursorInfo( HWND hwnd, int row, int col, int *x, int *width )
             end_str = cur_pos = str + len;
             while( *(--cur_pos) != '\t' ){
                 if(cur_pos == str){
-                    no_tab = TRUE;
+                    no_tab = true;
                     break;
                 }
             }
 
             // if so, figure out where the last tab stop is.
-            if( no_tab == FALSE ) {
+            if( !no_tab ) {
 
                 // dist is the virtual curpos - the number of chars before
                 // the first tab. this should be the tab boundry.
@@ -396,7 +395,7 @@ void MyShowCaret( window_id id )
 {
     if( !caretDisplayed && !caretKilled ) {
         ShowCaret( id );
-        caretDisplayed = TRUE;
+        caretDisplayed = true;
     }
 
 } /* MyShowCaret */
@@ -408,7 +407,7 @@ void MyHideCaret( window_id id )
 {
     if( caretDisplayed ) {
         HideCaret( id );
-        caretDisplayed = FALSE;
+        caretDisplayed = false;
     }
 
 } /* MyHideCaret */
@@ -418,7 +417,7 @@ void MyKillCaret( window_id id )
     if( !caretKilled ) {
         MyHideCaret( id );
         HideCaret( id );
-        caretKilled = TRUE;
+        caretKilled = true;
     }
 }
 
@@ -426,7 +425,7 @@ void MyRaiseCaret( window_id id )
 {
     if( caretKilled ) {
         ShowCaret( id );
-        caretKilled = FALSE;
+        caretKilled = false;
         MyShowCaret( id );
     }
 }

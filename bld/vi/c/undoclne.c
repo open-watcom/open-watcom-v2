@@ -86,7 +86,7 @@ void CurrentLineReplaceUndoCancel( void )
 /*
  * CurrentLineReplaceUndoEnd - actually add the undo
  */
-void CurrentLineReplaceUndoEnd( int endgrp )
+void CurrentLineReplaceUndoEnd( bool endgrp )
 {
     fcb         *cfcb, *nfcb;
     undo        *top, *delrec;
@@ -137,10 +137,10 @@ void CurrentLineReplaceUndoEnd( int endgrp )
                                 nfcb->start_line = nfcb->end_line = cfcb->end_line + 1;
                                 InsertLLItemAfter( (ss **)&(top->data.fcbs.tail),
                                     (ss *)cfcb, (ss *)nfcb );
-                                nfcb->non_swappable = FALSE;
+                                nfcb->non_swappable = false;
                             }
                             delrec->data.del_range.end++;
-                            Modified( TRUE );
+                            Modified( true );
                             return;
 
                         }
@@ -166,8 +166,8 @@ void CurrentLineReplaceUndoEnd( int endgrp )
     if( endgrp ) {
         EndUndoGroup( UndoStack );
     }
-    Modified( TRUE );
-    cfcb->non_swappable = FALSE;
+    Modified( true );
+    cfcb->non_swappable = false;
 
 } /* CurrentLineReplaceUndoEnd */
 
@@ -182,6 +182,6 @@ void ConditionalCurrentLineReplaceUndoEnd( void )
             return;
         }
     }
-    CurrentLineReplaceUndoEnd( TRUE );
+    CurrentLineReplaceUndoEnd( true );
 
 } /* ConditionalCurrentLineReplaceUndoEnd */

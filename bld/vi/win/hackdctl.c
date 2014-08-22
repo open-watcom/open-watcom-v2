@@ -53,15 +53,15 @@
 //   third parameter: the dialog's window handle
 //   fourth parameter: pointer to dialog data struct
 //   fifth parameter: boolean (no idea what it is for) (MISSING!!!)
-static BOOL ctl_check_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_radio_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_text_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_combo_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_dcombo_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_int_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_float_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_rint_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
-static BOOL ctl_rfloat_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
+static bool ctl_check_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_radio_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_text_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_combo_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_dcombo_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_int_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_float_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_rint_start( ctl_elt *, WPI_INST, HWND, void *, bool );
+static bool ctl_rfloat_start( ctl_elt *, WPI_INST, HWND, void *, bool );
 
 // The *_finish functions will be called to retain the control element
 // data into the dialog data struct.
@@ -70,25 +70,25 @@ static BOOL ctl_rfloat_start( ctl_elt *, WPI_INST, HWND, void *, BOOL );
 //   third parameter: the dialog's window handle
 //   fourth parameter: pointer to dialog data struct
 //   fifth parameter: finish_type (no idea what it is for) (MISSING!!!)
-static BOOL ctl_check_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_radio_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_text_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_combo_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_dcombo_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_int_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_float_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_rint_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
-static BOOL ctl_rfloat_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_check_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_radio_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_text_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_combo_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_dcombo_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_int_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_float_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_rint_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
+static bool ctl_rfloat_finish( ctl_elt *, WPI_INST, HWND, void *, finish_type );
 
 // The *_modified functions will be called to query if the control element
 // was modified.
 //   first parameter: pointer to the control element data
 //   second parameter: the wParam of the message
 //   third parameter: the lParam of the message
-static BOOL ctl_check_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
-static BOOL ctl_text_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
-static BOOL ctl_combo_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
-static BOOL ctl_radio_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static bool ctl_check_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static bool ctl_text_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static bool ctl_combo_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
+static bool ctl_radio_modified( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 
 // The control table: Contains the
 ctl_action Ctl_int_actions[] =
@@ -110,10 +110,10 @@ ctl_action Ctl_int_actions[] =
 ///////////////////////////////////////////////////////////////////////////////
 // The ctl_dlg_ functions
 
-BOOL ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
+bool ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 /*******************************************************************/
-/* initialize a data control. Returns TRUE if it gets up OK. Could return
-   FALSE if a data error occurs */
+/* initialize a data control. Returns true if it gets up OK. Could return
+   false if a data error occurs */
 {
     int                 num;
     ctl_elt             *elt;
@@ -122,20 +122,20 @@ BOOL ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
         // Initialize control element.
-        if( !(Ctl_int_actions[elt->type].setup)( elt, inst, dlg, ptr, TRUE ) ) {
-            return( FALSE );
+        if( !(Ctl_int_actions[elt->type].setup)( elt, inst, dlg, ptr, true ) ) {
+            return( false );
         }
-        // Set modified marker to FALSE (i.e. not modified).
-        elt->modified = FALSE;
+        // Set modified marker to false (i.e. not modified).
+        elt->modified = false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
+bool ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
 /*******************************************************************/
-/* finalize a data control. Returns TRUE if all field verification is ok,
-   FALSE otherwise */
+/* finalize a data control. Returns true if all field verification is ok,
+   false otherwise */
 {
     int                 num;
     ctl_elt             *elt;
@@ -148,12 +148,12 @@ BOOL ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
             // yes: query new state
             if( !(Ctl_int_actions[elt->type].finish)( elt, inst, dlg, ptr, FINISH_DONE ) ) {
                 // some error occured: terminate with error
-                return( FALSE );
+                return( false );
             }
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
@@ -164,7 +164,7 @@ void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     clt_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
     ctl_elt             *elt;
     int                 num;
-    BOOL                mod;
+    bool                mod;
 
     // enumerate all control elements.
     for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
@@ -180,13 +180,13 @@ void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     }
 }
 
-BOOL ctl_dlg_reset( WPI_INST ___a, HWND dlg, void *ptr, void *ctl_ptr, BOOL ___b )
+bool ctl_dlg_reset( WPI_INST ___a, HWND dlg, void *ptr, void *ctl_ptr, bool ___b )
 /********************************************************************************/
 /* this routine must be called to reset the dialog to the given state */
 {
     ___b=___b;
     // simply call the ctl_dlg_init routine
-    return ctl_dlg_init( ___a, dlg, ptr, ctl_ptr );
+    return( ctl_dlg_init( ___a, dlg, ptr, ctl_ptr ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +216,7 @@ void dyn_tpl_init( void *dyn_def, HWND dlg_hld )
         // Is the current object in use?
         if( dim->info.use ) {
             // Yes: query the new state
-            dyn_dim_type state = dim->info.tpl_state( dlg_hld, TRUE );
+            dyn_dim_type state = dim->info.tpl_state( dlg_hld, true );
             dim->info.state = state;
             // first, there comes a list in form "begin,end" which is zero terminated
             for( i = 0; dim->dyn_tpl[i] != 0; i += 2 ) {
@@ -273,7 +273,7 @@ void dyn_tpl_process( void *dyn_def, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 
             // check if the state has changed
             if( dim->info.tpl_check( parm1, parm2, dlg_hld ) ) {
                 // query the new state
-                dyn_dim_type state = dim->info.tpl_state( dlg_hld, TRUE );
+                dyn_dim_type state = dim->info.tpl_state( dlg_hld, true );
                 if( dim->info.state != state ) {
                     // the state has really changed:
                     dim->info.state = state;
@@ -315,20 +315,20 @@ void dyn_tpl_process( void *dyn_def, HWND dlg_hld, WPI_PARAM1 parm1, WPI_PARAM2 
 ////////////////////////////////////////////////////////////////////////////
 // Check field implementation
 
-static BOOL ctl_check_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
-                             void *ptr, BOOL ___b )
+static bool ctl_check_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
+                             void *ptr, bool ___b )
 /*****************************************************************/
 /* start check field */
 {
     ___b=___b;
     inst = inst;
 
-    CheckDlgButton( dlg, elt->control, _value_bool( ptr, elt ) );
+    CheckDlgButton( dlg, elt->control, ( _value_bool( ptr, elt ) ) ? BST_CHECKED : BST_UNCHECKED );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                               void *ptr, finish_type ___f )
 /******************************************************************/
 /* end check field */
@@ -336,12 +336,12 @@ static BOOL ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    _value_bool( ptr, elt ) = IsDlgButtonChecked( dlg, elt->control );
+    _value_bool( ptr, elt ) = IsDlgButtonChecked( dlg, elt->control ) != 0;
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /**********************************************************************************/
 {
     WORD        cmd;
@@ -350,12 +350,11 @@ static BOOL ctl_check_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     lparam = lparam;
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
-    if( id == elt->control &&
-        (cmd == BN_CLICKED || cmd == BN_DOUBLECLICKED) ) {
-        return( TRUE );
+    if( id == elt->control && (cmd == BN_CLICKED || cmd == BN_DOUBLECLICKED) ) {
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -366,8 +365,8 @@ static WORD ctl_combo_sel_msg( HWND, int );
 static WORD ctl_combo_get_msg( HWND, int );
 static WORD ctl_combo_clr_msg( HWND, int );
 
-static BOOL ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
-                             void *ptr, BOOL ___b )
+static bool ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
+                             void *ptr, bool ___b )
 /*****************************************************************/
 /* start a combo list box */
 {
@@ -398,10 +397,10 @@ static BOOL ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     }
     SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), choose, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                               void *ptr, finish_type ___f )
 /******************************************************************/
 /* finish a combo list box */
@@ -411,10 +410,10 @@ static BOOL ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     _value_int( ptr, elt ) = elt->info.combo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /**************************************************************************/
 {
     WORD        id;
@@ -423,25 +422,24 @@ static BOOL ctl_combo_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     lparam = lparam;
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
-    if( id == elt->control &&
-        (cmd == CBN_SELCHANGE || cmd == LBN_SELCHANGE) ) {
-        return( TRUE );
+    if( id == elt->control && (cmd == CBN_SELCHANGE || cmd == LBN_SELCHANGE) ) {
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-static BOOL is_listbox( HWND dlg, int ctl )
+static bool is_listbox( HWND dlg, int ctl )
 /*****************************************/
 {
     char                buf[100];
 
     GetClassName( GetDlgItem( dlg, ctl ), buf, 100 );
     if( 0 == stricmp( buf, "listbox" ) ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static WORD ctl_combo_add_msg( HWND dlg, int ctl )
@@ -488,8 +486,8 @@ static WORD ctl_combo_add_msg( HWND, int );
 static WORD ctl_combo_sel_msg( HWND, int );
 static WORD ctl_combo_get_msg( HWND, int );
 
-static BOOL ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
-                              void *ptr, BOOL ___b )
+static bool ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
+                              void *ptr, bool ___b )
 /******************************************************************/
 /* start a dynamic combo list box */
 {
@@ -517,10 +515,10 @@ static BOOL ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), value, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                                void *ptr, finish_type ___f )
 /*******************************************************************/
 /* finish a dynamic combo list box */
@@ -530,14 +528,14 @@ static BOOL ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     _value_int( ptr, elt ) = elt->info.dcombo.origin + SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Float field implementation
 
-static BOOL ctl_float_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
-                             void *ptr, BOOL ___b )
+static bool ctl_float_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
+                             void *ptr, bool ___b )
 /*****************************************************************/
 /* start a float field */
 {
@@ -561,10 +559,10 @@ static BOOL ctl_float_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     SetDlgItemText( dlg, elt->control, buf );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                               void *ptr, finish_type ___f )
 /******************************************************************/
 /* end a float field */
@@ -584,31 +582,31 @@ static BOOL ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
         SetFocus( GetDlgItem( dlg, elt->control ) );
         MessageBox( dlg, "Invalid value: please re-enter it", NULL,
                     MB_APPLMODAL | MB_ICONHAND | MB_OK );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Ranged float field implementation
 
-static BOOL ctl_rfloat_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_rfloat_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                                void *ptr, finish_type ___f )
 /****************************** ************************************/
 /* end an float field */
 {
     float               value;
     char                str[100];
-    BOOL                any_max;
+    bool                any_max;
 
     if( !ctl_float_finish( elt, inst, dlg, ptr, ___f ) ) {
-        return( FALSE );
+        return( false );
     }
 
     value = _value_float( ptr, elt );
 
-    any_max = elt->info.rfloat.max >= elt->info.rfloat.min;
+    any_max = ( elt->info.rfloat.max >= elt->info.rfloat.min );
     if( value < elt->info.rfloat.min || (any_max && value > elt->info.rfloat.max) ) {
         SetFocus( GetDlgItem( dlg, elt->control ) );
         if( any_max ) {
@@ -621,16 +619,16 @@ static BOOL ctl_rfloat_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
         MessageBox( dlg, str, NULL, MB_APPLMODAL | MB_ICONHAND | MB_OK );
 
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Integer field implementation
 
-static BOOL ctl_int_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BOOL ___b )
+static bool ctl_int_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, bool ___b )
 /**************************************************************************************/
 /* start an integer field */
 {
@@ -639,10 +637,10 @@ static BOOL ctl_int_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BOO
 
     SetDlgItemInt( dlg, elt->control, _value_int( ptr, elt ), TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_int_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_int_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                             void *ptr, finish_type ___f )
 /****************************************************************/
 /* end an int field */
@@ -658,31 +656,31 @@ static BOOL ctl_int_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
         SetFocus( GetDlgItem( dlg, elt->control ) );
         MessageBox( dlg, "Invalid integer: please re-enter it", NULL,
                     MB_APPLMODAL | MB_ICONHAND | MB_OK );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Ranged int field implementation
 
-static BOOL ctl_rint_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_rint_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                              void *ptr, finish_type ___f )
 /*****************************************************************/
 /* end an int field */
 {
     int                 value;
     char                str[100];
-    BOOL                any_max;
+    bool                any_max;
 
     if( !ctl_int_finish( elt, inst, dlg, ptr, ___f ) ) {
-        return( FALSE );
+        return( false );
     }
 
     value = _value_int( ptr, elt );
 
-    any_max = elt->info.rint.max >= elt->info.rint.min;
+    any_max = ( elt->info.rint.max >= elt->info.rint.min );
     if( value < elt->info.rint.min || (any_max && value > elt->info.rint.max) ) {
         SetFocus( GetDlgItem( dlg, elt->control ) );
         if( any_max ) {
@@ -695,17 +693,17 @@ static BOOL ctl_rint_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
         MessageBox( dlg, str, NULL, MB_APPLMODAL | MB_ICONHAND | MB_OK );
 
-        return( FALSE );
+        return( false);
     }
 
-    return( TRUE );
+    return( true );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Radio button implementation
 
-static BOOL ctl_radio_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
-                             void *ptr, BOOL ___b )
+static bool ctl_radio_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
+                             void *ptr, bool ___b )
 /*****************************************************************/
 /* start a radio button */
 {
@@ -721,10 +719,10 @@ static BOOL ctl_radio_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
                           elt->control + _value_int( ptr, elt ) - 1 );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                               void *ptr, finish_type ___f )
 /******************************************************************/
 /* finish a radio button */
@@ -742,10 +740,10 @@ static BOOL ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 /**********************************************************************/
 {
     WORD        id;
@@ -756,16 +754,16 @@ static BOOL ctl_radio_modified( ctl_elt *elt, WPI_PARAM1 wparam, WPI_PARAM2 lpar
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
     if( id >= elt->control && id <= elt->info.radio.end_control &&
         (cmd == BN_CLICKED || cmd == BN_DOUBLECLICKED) ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 ////////////////////////////////////////////////////////////////////////////
 // Text field implementation
 
-static BOOL ctl_text_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BOOL ___b )
+static bool ctl_text_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, bool ___b )
 /***************************************************************************************/
 /* start a text field */
 {
@@ -774,10 +772,10 @@ static BOOL ctl_text_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, BO
 
     SetDlgItemText( dlg, elt->control, _str_ptr( ptr, elt ) );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
+static bool ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
                              void *ptr, finish_type ___f )
 /*****************************************************************/
 /* end a text field */
@@ -793,10 +791,10 @@ static BOOL ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     str[elt->info.text.text_size - 1]= '\0'; // in case of overflow
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lparam )
+static bool ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lparam )
 /**********************************************************************/
 {
     WORD        id;
@@ -806,8 +804,8 @@ static BOOL ctl_text_modified( ctl_elt *elt, WPI_PARAM1 wparam , WPI_PARAM2 lpar
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
 
     if( id == elt->control && cmd == EN_CHANGE ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }

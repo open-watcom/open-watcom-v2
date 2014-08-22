@@ -120,7 +120,7 @@ bool ViRCSInit( void )
     SetErrorMode( uErrMode );
     if( LibHandle < (HINSTANCE)32 ) {
         LibHandle = (HINSTANCE)0;
-        return( FALSE );
+        return( false );
     }
 #if defined( __WINDOWS_386__ )
     _16RCSGetVersion = (FARPROC)GetProcAddress( LibHandle, GETVER_FN_NAME );
@@ -149,14 +149,14 @@ bool ViRCSInit( void )
     RCSSetPause = (RCSSetPauseFn *)GetProcAddress( LibHandle, SET_PAUSE_FN_NAME );
     RCSFini = (RCSFiniFn *)GetProcAddress( LibHandle, FINI_FN_NAME );
 #endif
-    return( TRUE );
+    return( true );
 }
 
 bool ViRCSFini( void )
 {
     if( LibHandle != (HINSTANCE)0 )
         FreeLibrary( LibHandle );
-    return( TRUE );
+    return( true );
 }
 
 #elif defined( __NT__ )
@@ -172,7 +172,7 @@ bool ViRCSInit( void )
     LibHandle = LoadLibrary( RCS_DLLNAME );
     SetErrorMode( uErrMode );
     if( LibHandle == NULL ) {
-        return( FALSE );
+        return( false );
     }
     RCSGetVersion = (RCSGetVersionFn *)GetProcAddress( LibHandle, GETVER_FN_NAME );
     RCSInit = (RCSInitFn *)GetProcAddress( LibHandle, INIT_FN_NAME );
@@ -186,14 +186,14 @@ bool ViRCSInit( void )
     RCSRegisterMessageBoxCallback = (RCSRegMsgBoxCbFn *)GetProcAddress( LibHandle, REG_MSGBOX_CB_FN_NAME );
     RCSSetPause = (RCSSetPauseFn *)GetProcAddress( LibHandle, SET_PAUSE_FN_NAME );
     RCSFini = (RCSFiniFn *)GetProcAddress( LibHandle, FINI_FN_NAME );
-    return( TRUE );
+    return( true );
 }
 
 bool ViRCSFini( void )
 {
     if( LibHandle != NULL )
         FreeLibrary( LibHandle );
-    return( TRUE );
+    return( true );
 }
 
 #elif defined( __OS2__ )
@@ -212,7 +212,7 @@ bool ViRCSInit( void )
 
     rc = DosLoadModule( fail_name, BUFF_LEN, RCS_DLLNAME, &LibHandle );
     if( rc != 0 || LibHandle == 0 ) {
-        return( FALSE );
+        return( false );
     }
     DosQueryProcAddr( LibHandle, 0, GETVER_FN_NAME,        (PFN *)( &RCSGetVersion ) );
     DosQueryProcAddr( LibHandle, 0, INIT_FN_NAME,          (PFN *)( &RCSInit ) );
@@ -226,25 +226,25 @@ bool ViRCSInit( void )
     DosQueryProcAddr( LibHandle, 0, REG_MSGBOX_CB_FN_NAME, (PFN *)( &RCSRegisterMessageBoxCallback ) );
     DosQueryProcAddr( LibHandle, 0, SET_PAUSE_FN_NAME,     (PFN *)( &RCSSetPause ) );
     DosQueryProcAddr( LibHandle, 0, FINI_FN_NAME,          (PFN *)( &RCSFini ) );
-    return( TRUE );
+    return( true );
 }
 
 bool ViRCSFini( void )
 {
     DosFreeModule( LibHandle );
-    return( TRUE );
+    return( true );
 }
 
 #else
 
 bool ViRCSInit( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 bool ViRCSFini( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 #endif
@@ -317,7 +317,7 @@ vi_rc ViRCSCheckout( vi_rc rc )
                 char full1[FILENAME_MAX];
 
                 _fullpath( full1, CurrentFile->name, FILENAME_MAX );
-                _RCSSetPause( r, TRUE );
+                _RCSSetPause( r, true );
                 if( _RCSCheckout( r, full1, NULL, NULL ) ) {
                     rc = ERR_NO_ERR;
                     EditRCSCurrentFile();
@@ -360,7 +360,7 @@ vi_rc ViRCSCheckin( vi_rc rc )
         r = _RCSInit( 0, getenv( "WATCOM" ) );
         RCSRegisterBatchCallback( r, Batcher, NULL );
 #endif
-        _RCSSetPause( r, TRUE );
+        _RCSSetPause( r, true );
         if( CurrentFile->modified ) {
             FilePromptForSaveChanges( CurrentFile );
         }

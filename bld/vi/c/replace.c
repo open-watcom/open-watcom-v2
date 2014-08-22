@@ -48,7 +48,7 @@ vi_rc ReplaceChar( void )
         return( rc );
     }
     UpdateCurrentStatus( CSTATUS_REPLACECHAR );
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }
@@ -61,7 +61,7 @@ vi_rc ReplaceChar( void )
     if( key == VI_KEY( ENTER ) ) {
 
         buff = StaticAlloc();
-        GetAutoIndentAmount( buff, 0, FALSE );
+        GetAutoIndentAmount( buff, 0, false );
         CurrentLine->data[CurrentPos.column - 1] = (char) 1;
         SaveCurrentFilePos();
         SplitUpLine( CurrentPos.line );
@@ -101,10 +101,10 @@ vi_rc ReplaceChar( void )
         if( end > WorkLine->len ) {
             end = WorkLine->len;
         }
-        redrawAll = FALSE;
+        redrawAll = false;
         for( i = start; i < end; i++ ) {
             if( !redrawAll && SSKillsFlags( WorkLine->data[i] ) ) {
-                redrawAll = TRUE;
+                redrawAll = true;
             }
             WorkLine->data[i] = (char) key;
         }
@@ -115,7 +115,7 @@ vi_rc ReplaceChar( void )
 
     }
 
-    EditFlags.Dotable = TRUE;
+    EditFlags.Dotable = true;
     return( ERR_NO_ERR );
 
 } /* ReplaceChar */

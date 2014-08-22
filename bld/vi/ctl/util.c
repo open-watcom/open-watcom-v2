@@ -34,7 +34,7 @@
 #include "util.h"
 #include "source.h"
 
-vi_rc UtilUpdateBoolean( BOOL old, BOOL val, char *name )
+vi_rc UtilUpdateBoolean( bool old, bool val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
 

@@ -57,7 +57,7 @@ vi_rc WindowTile( int maxx, int maxy )
     cwinfo = CurrentInfo;
     if( maxx == 1 && maxy == 1 ) {
         for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-            BringUpFile( cinfo, FALSE );
+            BringUpFile( cinfo, false );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_TEXT_COLOR,
                              editw_info.text.foreground );
             WindowAuxUpdate( CurrentWindow, WIND_INFO_BACKGROUND_COLOR,
@@ -69,7 +69,7 @@ vi_rc WindowTile( int maxx, int maxy )
             CurrentWindowResize( editw_info.x1, editw_info.y1, editw_info.x2,
                                  editw_info.y2 );
         }
-        BringUpFile( cwinfo, FALSE );
+        BringUpFile( cwinfo, false );
         return( ERR_NO_ERR );
     }
 
@@ -130,7 +130,7 @@ vi_rc WindowTile( int maxx, int maxy )
             /*
              * resize the window and display it
              */
-            BringUpFile( cinfo, FALSE );
+            BringUpFile( cinfo, false );
             if( EditVars.TileColors != NULL ) {
                 for( i = 0; i < EditVars.MaxTileColors; i++, tc++ ) {
                     if( tc > EditVars.MaxTileColors )
@@ -172,7 +172,7 @@ vi_rc WindowTile( int maxx, int maxy )
         ystart += ystep + yy;
 
     }
-    BringUpFile( cwinfo, FALSE );
+    BringUpFile( cwinfo, false );
 
     return( ERR_NO_ERR );
 
@@ -221,7 +221,7 @@ vi_rc WindowCascade( void )
      */
     for( i = 0; i < cnt; i++ ) {
 
-        BringUpFile( cinfo, FALSE );
+        BringUpFile( cinfo, false );
         rc = CurrentWindowResize( xstart, ystart, xend, yend );
         if( rc != ERR_NO_ERR ) {
             return( rc );

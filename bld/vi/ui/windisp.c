@@ -80,7 +80,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     }
     w = Windows[wn];
     otmp = NULL;
-    write_eol = FALSE;
+    write_eol = false;
     if( EditFlags.RealTabs ) {
         a = strlen( text );
         otmp = tmp = StaticAlloc();
@@ -107,7 +107,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
         if( a < end - 1 ) {
             end = a + 1;
         } else if( a >= end ) {
-            write_eol = TRUE;
+            write_eol = true;
         }
     } else {
         if( c_line_no < 1 || c_line_no > w->height ) {
@@ -122,7 +122,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
         if( a < end ) {
             end = a;
         } else if( a > end ) {
-            write_eol = TRUE;
+            write_eol = true;
         }
     }
     startc = start;
@@ -148,7 +148,7 @@ vi_rc displayLineInWindowGeneric( window_id wn, int c_line_no,
     what.cinfo_attr = MAKE_ATTR( w, SEType[ss->type].foreground, SEType[ss->type].background );
     blank.cinfo_char = ' ';
 
-    has_mouse = DisplayMouse( FALSE );
+    has_mouse = DisplayMouse( false );
 
     /*
      * display line
@@ -264,7 +264,7 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wn, int c_line_no, line *lin
 
     // prevent displayLineInWindowGeneric from expanding tabs - blech
     saveRealTabs = EditFlags.RealTabs;
-    EditFlags.RealTabs = FALSE;
+    EditFlags.RealTabs = false;
 
     // display the thing
     rc = displayLineInWindowGeneric( wn, c_line_no, tmp, start_col, ss );
@@ -555,7 +555,7 @@ vi_rc SetCharInWindowWithColor( window_id wn, int line, int col, char text, type
     /*
      * display char
      */
-    has_mouse = DisplayMouse( FALSE );
+    has_mouse = DisplayMouse( false );
     WRITE_SCREEN_DATA( w->text[addr], tmp );
     if( w->overlap[addr] == NO_WINDOW ) {
         WRITE_SCREEN( Scrn[oscr], tmp );

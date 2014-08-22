@@ -167,7 +167,7 @@ int main( int argc, char *argv[] )
         fputs( "    struct {\n", out );
         fputs( "        ctl_type      type;\n", out );
         fputs( "        int           control;\n", out );
-        fputs( "        BOOL          modified;\n", out );
+        fputs( "        bool          modified;\n", out );
         fputs( "        unsigned int  data_offset;\n", out );
         fputs( "        union {\n", out );
         line = get_line( buf, in );     // skip over data
@@ -200,10 +200,10 @@ int main( int argc, char *argv[] )
         *end = '\0';
         ++end;
 
-        fprintf( out, "{ %s, %s, FALSE,", my_strupr( line ), end );
+        fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
 
         line = get_line( buf, in );
-        fprintf( out, "%s ", line );
+        fprintf( out, " %s", line );
 
         line = get_line( buf, in );
         if( !empty_data( line ) ) {

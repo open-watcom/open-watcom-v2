@@ -41,12 +41,12 @@
 #define FILEENDSTRINGWIDTH      200
 
 typedef struct {
-    BOOL        JumpyScroll;
-    BOOL        LineBased;
+    bool        JumpyScroll;
+    bool        LineBased;
     int         PageLinesExposed;
     char        FileEndString[FILEENDSTRINGWIDTH];
-    BOOL        SavePosition;
-    BOOL        AutoMessageClear;
+    bool        SavePosition;
+    bool        AutoMessageClear;
 } dlg_data;
 
 static  dlg_data    dlgData;
@@ -68,8 +68,7 @@ static void dlgDataToGlobal( void )
     UtilUpdateBoolean( EditFlags.JumpyScroll, dlgData.JumpyScroll, "jumpyscroll" );
     UtilUpdateBoolean( EditFlags.LineBased, dlgData.LineBased, "linebased" );
     UtilUpdateBoolean( EditFlags.SavePosition, dlgData.SavePosition, "saveposition" );
-    UtilUpdateBoolean( EditFlags.AutoMessageClear, dlgData.AutoMessageClear,
-                       "automessageclear" );
+    UtilUpdateBoolean( EditFlags.AutoMessageClear, dlgData.AutoMessageClear, "automessageclear" );
     UtilUpdateInt( EditVars.PageLinesExposed, dlgData.PageLinesExposed, "pagelinesexposed" );
     UtilUpdateStr( EditVars.FileEndString, dlgData.FileEndString, "fileendstring" );
 }
@@ -77,12 +76,12 @@ static void dlgDataToGlobal( void )
 static void setdlgDataDefaults( void )
 {
     // this sort of suck ssince the default values aren't isolated in 1 place
-    dlgData.JumpyScroll = TRUE;
-    dlgData.LineBased = FALSE;
+    dlgData.JumpyScroll = true;
+    dlgData.LineBased = false;
     dlgData.PageLinesExposed = 1;
     dlgData.FileEndString[0] = '\0';
-    dlgData.SavePosition = TRUE;
-    dlgData.AutoMessageClear = TRUE;
+    dlgData.SavePosition = true;
+    dlgData.AutoMessageClear = true;
 }
 
 /*
@@ -136,7 +135,7 @@ bool GetSetScrDialog( void )
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
-    ReDisplayBuffers( FALSE );
+    ReDisplayBuffers( false );
     return( rc );
 
 } /* GetSetScrDialog */

@@ -35,7 +35,7 @@
 #include "wprocmap.h"
 
 static fancy_find findData =
-    { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0 };
+    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0 };
 
 /*
  * FindDlgProc - callback routine for find dialog
@@ -61,10 +61,10 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, FIND_EDIT, &EditVars.FindHist );
-        CheckDlgButton( hwnd, FIND_IGNORE_CASE, findData.case_ignore );
-        CheckDlgButton( hwnd, FIND_REGULAR_EXPRESSIONS, findData.use_regexp );
-        CheckDlgButton( hwnd, FIND_SEARCH_BACKWARDS, !findData.search_forward );
-        CheckDlgButton( hwnd, FIND_SEARCH_WRAP, findData.search_wrap );
+        CheckDlgButton( hwnd, FIND_IGNORE_CASE, ( findData.case_ignore ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, FIND_REGULAR_EXPRESSIONS, ( findData.use_regexp ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, FIND_SEARCH_BACKWARDS, ( !findData.search_forward ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, FIND_SEARCH_WRAP, ( findData.search_wrap ) ? BST_CHECKED : BST_UNCHECKED );
         SetDlgItemText( hwnd, FIND_EDIT, findData.find );
         curr = EditVars.FindHist.curr + EditVars.FindHist.max - 1;
         for( i = 0; i < EditVars.FindHist.max; i++ ) {

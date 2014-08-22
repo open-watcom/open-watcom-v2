@@ -54,7 +54,7 @@ vi_rc DoDotMode( void )
      * check if memorizing; '.' causes memorizing to end
      */
     if( EditFlags.MemorizeMode ) {
-        EditFlags.MemorizeMode = FALSE;
+        EditFlags.MemorizeMode = false;
         Message1( "%sended", MEMORIZE_MODE );
         DotDigits--;
         SaveDotCmd();
@@ -81,11 +81,11 @@ vi_rc DoDotMode( void )
     cnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
     while( cnt > 0 ) {
-        EditFlags.DotMode = TRUE;
+        EditFlags.DotMode = true;
         DotCount = 0;
         LastError = ERR_NO_ERR;
         for( ;; ) {
-            LastEvent = GetNextEvent( FALSE );
+            LastEvent = GetNextEvent( false );
             if( DotCount > DotCmdCount ) {
                 break;
             }
@@ -93,7 +93,7 @@ vi_rc DoDotMode( void )
             if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
                 break;
             }
-            DoneLastEvent( rc, TRUE );
+            DoneLastEvent( rc, true );
         }
         cnt--;
     }
@@ -112,7 +112,7 @@ vi_rc DoAltDotMode( void )
     int     cnt;
 
     if( EditFlags.AltMemorizeMode ) {
-        EditFlags.AltMemorizeMode = FALSE;
+        EditFlags.AltMemorizeMode = false;
         Message1( "Alternate %sended", MEMORIZE_MODE );
         AltDotDigits--;
         return( ERR_NO_ERR );
@@ -138,11 +138,11 @@ vi_rc DoAltDotMode( void )
     cnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
     while( cnt > 0 ) {
-        EditFlags.AltDotMode = TRUE;
+        EditFlags.AltDotMode = true;
         AltDotCount = 0;
         LastError = ERR_NO_ERR;
         for( ;; ) {
-            LastEvent = GetNextEvent( FALSE );
+            LastEvent = GetNextEvent( false );
             if( AltDotCount > AltDotDigits ) {
                 break;
             }
@@ -150,10 +150,10 @@ vi_rc DoAltDotMode( void )
             if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
                 break;
             }
-            DoneLastEvent( rc, FALSE );
+            DoneLastEvent( rc, false );
         }
         cnt--;
-        EditFlags.AltDotMode = FALSE;
+        EditFlags.AltDotMode = false;
     }
     EndUndoGroup( UndoStack );
     DCDisplayAllLines();

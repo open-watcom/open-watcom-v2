@@ -36,8 +36,8 @@
 #include "myprtf.h"
 #include "wprocmap.h"
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
 window MessageBar = {
     &messagew_info,
@@ -53,7 +53,7 @@ static char msgString1[MAX_STR];
 static char msgString2[MAX_STR];
 static void msgString( int, char * );
 
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -73,14 +73,14 @@ static BOOL Init( window *w, void *parm )
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
-    return( FALSE );
+    return( true );
 }
 
 WINEXPORT LRESULT CALLBACK MessageWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )

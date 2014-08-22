@@ -247,15 +247,15 @@ vi_rc StartMenu( char *data )
 
     GetStringWithPossibleQuote( data, str );
     RemoveLeadingSpaces( data );
-    need_hook = FALSE;
+    need_hook = false;
     if( data[0] != 0 ) {
-        need_hook = TRUE;
+        need_hook = true;
     }
 
     if( currMenu != NULL ) {
         return( ERR_INVALID_MENU );
     }
-    new = FALSE;
+    new = false;
 
     ch = extractMenuStr( str, &hioff );
     len = strlen( str );
@@ -267,7 +267,7 @@ vi_rc StartMenu( char *data )
 
     if( tmp == NULL ) {
         tmp = MemAlloc( offsetof( menu, str ) + len + 1 );
-        new = TRUE;
+        new = true;
     }
     if( predef_menu == NULL ) {
         if( new ) {
@@ -331,9 +331,9 @@ vi_rc ViEndMenu( void )
     if( ch >= 'A' && ch <='Z' ) {
         key = ch - 'A' + VI_KEY( ALT_A );
         EventList[key].rtn.old = DoMenu;
-        EventList[key].b.keep_selection = TRUE;
+        EventList[key].b.keep_selection = true;
         EventList[key].alt_rtn.old = DoMenu;
-        EventList[key].alt_b.keep_selection = TRUE;
+        EventList[key].alt_b.keep_selection = true;
     }
 
     initMenuList( currMenu );
@@ -574,7 +574,7 @@ vi_rc InitMenu( void )
     menubarw_info.x2 = EditVars.WindMaxWidth - 1;
     rc = NewWindow2( &MenuWindow, &menubarw_info );
     if( rc != ERR_NO_ERR ) {
-        EditFlags.Menus = FALSE;
+        EditFlags.Menus = false;
         return( rc );
     }
 
@@ -623,7 +623,7 @@ void FiniMenu( void )
 /*
  * lightMenu - light up control name
  */
-static void lightMenu( int sel, int ws, int on )
+static void lightMenu( int sel, int ws, bool on )
 {
     char        ch;
     int         i;
@@ -767,7 +767,7 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
          */
         memset( &si, 0, sizeof( si ) );
         allowrl = 0;
-        si.is_menu = TRUE;
+        si.is_menu = true;
         si.wi = &menuw_info;
         si.list = cmenu->list;
         si.maxlist = (int) cmenu->itemcnt;
@@ -778,12 +778,12 @@ static vi_rc processMenu( int sel, menu *cmenu, int xpos, int ypos, int rxwid )
         si.eiw = NO_WINDOW;
 
         if( xpos < 0 ) {
-            lightMenu( sel, ws, TRUE );
+            lightMenu( sel, ws, true );
         }
         CurrentMenuNumber = sel + 1;
         rc = SelectItem( &si );
         if( xpos < 0 ) {
-            lightMenu( sel, ws, FALSE );
+            lightMenu( sel, ws, false );
         }
         if( rc != ERR_NO_ERR ) {
             if( cmenu->has_file_list ) {
@@ -986,10 +986,10 @@ bool IsMenuHotKey( vi_key key )
     ch = key - VI_KEY(ALT_A ) + 'A';
     for( curr = menuHead; curr != NULL; curr = curr->next ) {
         if( curr->hi._char == ch ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* IsMenuHotKey */
 
@@ -1001,7 +1001,7 @@ vi_rc MenuItemFileList( void )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    currMenu->has_file_list = TRUE;
+    currMenu->has_file_list = true;
     return( ERR_NO_ERR );
 
 } /* MenuItemFileList */
@@ -1014,7 +1014,7 @@ vi_rc MenuItemLastFiles( void )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    currMenu->has_last_files = TRUE;
+    currMenu->has_last_files = true;
     return( ERR_NO_ERR );
 
 } /* MenuItemLastFiles */

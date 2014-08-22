@@ -56,21 +56,21 @@ static bool hasMouseHandler;
 bool FileCompleteMouseHandler( window_id id, int win_x, int win_y )
 {
     if( id != dirWin ) {
-        return( FALSE );
+        return( false );
     }
     if( LastMouseEvent != MOUSE_PRESS && LastMouseEvent != MOUSE_DCLICK ) {
-        return( FALSE );
+        return( false );
     }
     if( LastMouseEvent == MOUSE_DCLICK ) {
-        isDone = TRUE;
+        isDone = true;
     }
     if( !InsideWindow( id, win_x, win_y ) ) {
-        return( FALSE );
+        return( false );
     }
 
     mouseFilec = cPage + (win_x - 1) / NAMEWIDTH + (win_y - 1) * maxJ;
 
-    return( TRUE );
+    return( true );
 
 } /* FileCompleteMouseHandler */
 
@@ -128,7 +128,7 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
         lastFilec = -1;
         buff[k++] = '*';
         buff[k] = 0;
-        rc = GetSortDir( buff, FALSE );
+        rc = GetSortDir( buff, false );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
@@ -186,11 +186,11 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew,
     }
     while( lastFilec >= DirFileCount ) {
         lastFilec -= DirFileCount;
-        hasWrapped = TRUE;
+        hasWrapped = true;
     }
     while( lastFilec < 0 ) {
         lastFilec += DirFileCount;
-        hasWrapped = TRUE;
+        hasWrapped = true;
     }
 
     appendExtra( data, newstart, max, DirFiles[lastFilec],
@@ -215,7 +215,7 @@ static int calcColumns( HWND hwnd )
     return( columns );
 }
 
-void FileCompleteMouseClick( HWND hwnd, int x, int y, BOOL dclick )
+void FileCompleteMouseClick( HWND hwnd, int x, int y, bool dclick )
 {
     int         file, column_width, column_height, c;
     int         left_margin, columns;
@@ -237,7 +237,7 @@ void FileCompleteMouseClick( HWND hwnd, int x, int y, BOOL dclick )
     file = (y / column_height) * columns + c;
     file += cPage * perPage;
     if( dclick ) {
-        isDone = TRUE;
+        isDone = true;
     }
     mouseFilec = file;
     KeyAdd( VI_KEY( FAKEMOUSE ) );
@@ -294,7 +294,7 @@ void displayFiles( void )
 
     if( hasWrapped ) {
         ClearWindow( dirWin );
-        hasWrapped = FALSE;
+        hasWrapped = false;
     }
 
     font_height = FontHeight( WIN_FONT( w ) );
@@ -369,7 +369,7 @@ static void displayFiles( void )
     }
     if( hasWrapped ) {
         ClearWindow( dirWin );
-        hasWrapped = FALSE;
+        hasWrapped = false;
     }
 
     for( i = st; i < end; i++ ) {
@@ -427,8 +427,8 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
     vi_rc   rc;
     int     maxl;
 
-    isDone = FALSE;
-    rc = doFileComplete( data, start, max, TRUE, what );
+    isDone = false;
+    rc = doFileComplete( data, start, max, true, what );
     if( rc > ERR_NO_ERR || rc == FILE_COMPLETE ) {
         return( rc );
     }
@@ -456,7 +456,7 @@ vi_rc StartFileComplete( char *data, int start, int max, int what )
     maxPage = (DirFileCount + perPage - 1) / perPage;
     displayFiles();
     PushMouseEventHandler( FileCompleteMouseHandler );
-    hasMouseHandler = TRUE;
+    hasMouseHandler = true;
     return( ERR_NO_ERR );
 
 } /* StartFileComplete */
@@ -468,7 +468,7 @@ vi_rc ContinueFileComplete( char *data, int start, int max, int what )
 {
     vi_rc   rc;
 
-    rc = doFileComplete( data, start, max, FALSE, what );
+    rc = doFileComplete( data, start, max, false, what );
     if( rc > ERR_NO_ERR || rc == FILE_COMPLETE ) {
         return( rc );
     }
@@ -492,7 +492,7 @@ void FinishFileComplete( void )
     dirWin = NO_WINDOW;
     if( hasMouseHandler ) {
         PopMouseEventHandler();
-        hasMouseHandler = FALSE;
+        hasMouseHandler = false;
     }
 
 } /* FinishFileComplete */
@@ -505,7 +505,7 @@ void PauseFileComplete( void )
     WindowTitle( dirWin, NULL );
     if( hasMouseHandler ) {
         PopMouseEventHandler();
-        hasMouseHandler = FALSE;
+        hasMouseHandler = false;
     }
 
 } /* PauseFileComplete */

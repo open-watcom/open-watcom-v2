@@ -141,46 +141,46 @@ static void doOption( int ch )
 {
     switch( ch ) {
     case 'a':
-        appendFlag = TRUE;
+        appendFlag = true;
         break;
     case 'c':
-        WantClasses = TRUE;
+        WantClasses = true;
         break;
     case 'd':
-        WantAllDefines = TRUE;
+        WantAllDefines = true;
         break;
     case 'e':
-        WantEnums = TRUE;
+        WantEnums = true;
         break;
     case 'f':
         fileName = optarg;
         break;
     case 'm':
-        WantMacros = TRUE;
+        WantMacros = true;
         break;
     case 'p':
-        WantProtos = TRUE;
+        WantProtos = true;
         break;
     case 's':
-        WantUSE = TRUE;
+        WantUSE = true;
         break;
     case 't':
-        WantTypedefs = TRUE;
+        WantTypedefs = true;
         break;
     case 'q':
-        quietFlag = TRUE;
+        quietFlag = true;
         break;
     case 'x':
-        WantClasses = TRUE;
+        WantClasses = true;
         /* fall through */
     case 'y':
-        WantAllDefines = TRUE;
-        WantMacros = TRUE;
-        WantUSE = TRUE;
-        WantTypedefs = TRUE;
+        WantAllDefines = true;
+        WantMacros = true;
+        WantUSE = true;
+        WantTypedefs = true;
         break;
     case 'v':
-        VerboseFlag = TRUE;
+        VerboseFlag = true;
         break;
     case 'z':
         switch( optarg[0] ) {
@@ -267,7 +267,7 @@ static void processFileList( char *ptr )
     DIR                 *dirp;
     struct dirent       *dirent;
     char                *tmp;
-    bool                has_wild = FALSE;
+    bool                has_wild = false;
     char                buff1[_MAX_PATH2];
     char                buff2[_MAX_PATH2];
     char                *drive;
@@ -279,7 +279,7 @@ static void processFileList( char *ptr )
     tmp = ptr;
     while( *tmp != 0 ) {
         if( *tmp == '*' || *tmp == '?' ) {
-            has_wild = TRUE;
+            has_wild = true;
             break;
         }
         tmp++;
@@ -378,10 +378,10 @@ static void processOptionFile( char *fname )
                 }
             }
         } else if( !stricmp( cmd, "option" ) ) {
-            WantTypedefs = FALSE;
-            WantMacros = FALSE;
-            WantAllDefines = FALSE;
-            WantUSE = FALSE;
+            WantTypedefs = false;
+            WantMacros = false;
+            WantAllDefines = false;
+            WantUSE = false;
             while( *ptr != 0 ) {
                 if( *ptr == 'f' ) {
                     ptr++;
@@ -429,7 +429,7 @@ int main( int argc, char *argv[] )
     }
 
     if( quietFlag ) {
-        VerboseFlag = FALSE;
+        VerboseFlag = false;
     }
 
     for( i = 1; i < argc; i++ ) {
@@ -456,12 +456,12 @@ int main( int argc, char *argv[] )
 bool IsTokenChar( char ch )
 {
     if( isalnum( ch ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ch == '_' ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* IsTokenChar */
 

@@ -47,19 +47,19 @@ bool OLE2Init( void )
     HRESULT     hresult;
 
     if( UseOLE2 ) {
-        return( TRUE );
+        return( true );
     }
     hresult = OleInitialize( NULL );
     if( hresult != NOERROR ) {
-        return( FALSE );
+        return( false );
     }
     if( !OLE2ClassFactoryInit() ) {
         OleUninitialize();
-        return( FALSE );
+        return( false );
     }
 
-    UseOLE2 = TRUE;
-    return( TRUE );
+    UseOLE2 = true;
+    return( true );
 
 } /* OLE2Init */
 
@@ -73,10 +73,10 @@ void OLE2Fini( void )
     }
     OLE2ClassFactoryFini();
     OleUninitialize();
-    UseOLE2 = FALSE;
+    UseOLE2 = false;
 
 } /* OLE2Fini */
 #else
-bool OLE2Init( void ) { return( FALSE ); }
+bool OLE2Init( void ) { return( false ); }
 void OLE2Fini( void ) {}
 #endif

@@ -37,10 +37,10 @@
 #include "wstatus.h"
 #include <assert.h>
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
-static BOOL     capIndex = -1;
+static int      capIndex = -1;
 static short    *sections;
 static void     *sw = NULL;
 
@@ -61,17 +61,17 @@ void StatusWndSetSeparatorsWithArray( short *source, int num )
     for( i = 0; i < num; i++ ) {
         list[i].separator_width = SEPERATOR_WIDTH;
         list[i].width = source[i];
-        list[i].width_is_pixels = TRUE;
+        list[i].width_is_pixels = true;
     }
     StatusWndSetSeparators( sw, num, list );
     MemFree( list );
 }
 
-BOOL StatusHookProc( HWND, UINT, WPARAM, LPARAM );
+bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
-    BOOL    rc;
+    bool    rc;
 
     parm = parm;
     w = w;
@@ -90,13 +90,13 @@ static BOOL Init( window *w, void *parm )
     return( rc );
 }
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
     StatusWndDestroy( sw );
     StatusWndFini();
-    return( FALSE );
+    return( true );
 }
 
 int setCursor( short x )
@@ -202,7 +202,7 @@ void processLButtonUp( void )
 /*
  * StatusHookProc - handle messages for the status window
  */
-BOOL StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+bool StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     w = w;
     l = l;
@@ -212,18 +212,18 @@ BOOL StatusHookProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
         break;
     case WM_SETFOCUS:
         SetFocus( Root );
-        return( TRUE );
+        return( true );
     case WM_MOUSEMOVE:
         processMouseMove( w, l );
-        return( TRUE );
+        return( true );
     case WM_LBUTTONDOWN:
         processLButtonDown( hwnd, w, l );
-        return( TRUE );
+        return( true );
     case WM_LBUTTONUP:
         processLButtonUp();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* StatusHookProc */
 

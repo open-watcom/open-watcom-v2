@@ -45,11 +45,14 @@ extern void Lead( char c, int num, char *buff );
 /*
  * RegSub - perform substitutions after a regexp match
  */
-int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
+bool RegSub( regexp *prog, char *source, char *dest, linenum lineno )
 {
     char        *src, *dst, c;
-    int         no, len, splitit = FALSE;
-    bool        upper_flag = FALSE, lower_flag = FALSE, perm_flag = FALSE;
+    int         no, len;
+    bool        splitit = false;
+    bool        upper_flag = false;
+    bool        lower_flag = false;
+    bool        perm_flag = false;
     char        *tmp;
     char        buff[MAX_STR];
     int         i, j;
@@ -119,7 +122,7 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                     src++;
                     if( EditFlags.AllowRegSubNewline ) {
                         *dst++ = SPLIT_CHAR;
-                        splitit = TRUE;
+                        splitit = true;
                     } else {
                         *dst++ = 'n';
                     }
@@ -131,28 +134,28 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                     break;
                 case 'u':
                     src++;
-                    upper_flag = TRUE;
-                    perm_flag = FALSE;
+                    upper_flag = true;
+                    perm_flag = false;
                     break;
                 case 'l':
                     src++;
-                    lower_flag = TRUE;
-                    perm_flag = FALSE;
+                    lower_flag = true;
+                    perm_flag = false;
                     break;
                 case 'L':
                     src++;
-                    lower_flag = TRUE;
-                    perm_flag = TRUE;
+                    lower_flag = true;
+                    perm_flag = true;
                     break;
                 case 'U':
                     src++;
-                    upper_flag = TRUE;
-                    perm_flag = TRUE;
+                    upper_flag = true;
+                    perm_flag = true;
                     break;
                 case 'e':
                 case 'E':
                     src++;
-                    upper_flag = lower_flag = perm_flag = FALSE;
+                    upper_flag = lower_flag = perm_flag = false;
                     break;
                 default:
                     *dst++ = '\\';
@@ -165,12 +168,12 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                 if( upper_flag ) {
                     c = toupper( c );
                     if( !perm_flag ) {
-                        upper_flag = FALSE;
+                        upper_flag = false;
                     }
                 } else if( lower_flag ) {
                     c = tolower( c );
                     if( !perm_flag ) {
-                        lower_flag = FALSE;
+                        lower_flag = false;
                     }
                 }
                 *dst++ = c;
@@ -184,13 +187,13 @@ int RegSub( regexp *prog, char *source, char *dest, linenum lineno )
                 strcpy( tmp, prog->startp[no] );
                 strncpy( dst, strupr( tmp ), len );
                 if( !perm_flag ) {
-                    upper_flag = FALSE;
+                    upper_flag = false;
                 }
             } else if( lower_flag ) {
                 strcpy( tmp, prog->startp[no] );
                 strncpy( dst, strlwr( tmp ), len );
                 if( !perm_flag ) {
-                    lower_flag = FALSE;
+                    lower_flag = false;
                 }
             } else {
                 strncpy( dst, prog->startp[no], len );

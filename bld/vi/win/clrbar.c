@@ -62,7 +62,7 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         DestroyWindow( hwnd );
         hColorbar = (HWND)NULLHANDLE;
         // update editflags (may have closed from system menu)
-        EditFlags.Colorbar = FALSE;
+        EditFlags.Colorbar = false;
         break;
     }
     return( FALSE );

@@ -105,10 +105,10 @@ void VarAddStr( char *name, char *val, vlist *vl )
      */
     if( isupper( name[0] ) || vl == NULL ) {
         head = VarHead;
-        glob = TRUE;
+        glob = true;
     } else {
         head = vl->head;
-        glob = FALSE;
+        glob = false;
     }
 
     /*
@@ -122,7 +122,7 @@ void VarAddStr( char *name, char *val, vlist *vl )
             curr->len = len;
 #ifndef VICOMP
             if( glob && !EditFlags.CompileAssignmentsDammit ) {
-                EditFlags.CompileAssignments = FALSE;
+                EditFlags.CompileAssignments = false;
             }
 #endif
             return;
@@ -142,7 +142,7 @@ void VarAddStr( char *name, char *val, vlist *vl )
     if( glob ) {
         AddLLItemAtEnd( (ss **)&VarHead, (ss **)&VarTail, (ss *)new );
 #ifndef VICOMP
-        EditFlags.CompileAssignments = FALSE;
+        EditFlags.CompileAssignments = false;
 #endif
     } else {
         AddLLItemAtEnd( (ss **)&vl->head, (ss **)&vl->tail, (ss *)new );
@@ -174,7 +174,7 @@ void VarListDelete( vlist *vl )
 bool VarName( char *name, vlist *vl )
 {
     if( name[0] != '%' || name[1] == 0 ) {
-        return( FALSE );
+        return( false );
     }
     EliminateFirstN( name, 1 );
     if( name[0] == '(' ) {
@@ -184,7 +184,7 @@ bool VarName( char *name, vlist *vl )
     if( strchr( name, '%' ) != NULL ) {
         Expand( name, vl );
     }
-    return( TRUE );
+    return( true );
 
 } /* VarName */
 

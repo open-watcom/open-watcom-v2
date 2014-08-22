@@ -35,7 +35,7 @@
 #include "source.h"
 #include "myprtf.h"
 
-static  bool    cursorNeedsDisplay = FALSE;
+static  bool    cursorNeedsDisplay = false;
 
 /*
  * NewMessageWindow - create a new Message window
@@ -165,7 +165,7 @@ vi_rc WPrintfLine( window_id w, int line, char *str, ... )
  */
 void SetWindowCursor( void )
 {
-    cursorNeedsDisplay = TRUE;
+    cursorNeedsDisplay = true;
 #ifndef __WIN__
     SetWindowCursorForReal();
 #endif
@@ -199,7 +199,7 @@ void SetWindowCursorForReal( void )
     }
 #endif
 
-    cursorNeedsDisplay = FALSE;
+    cursorNeedsDisplay = false;
 
 } /* SetWindowCursorForReal */
 
@@ -235,14 +235,14 @@ bool ColumnInWindow( int col, int *diff )
 
     if( col < 1 ) {
         *diff = col - 1;
-        return( FALSE );
+        return( false );
     }
     text_cols = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_COLS );
     if( col > text_cols ) {
         *diff = col - text_cols;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* ColumnInWindow */
 
@@ -301,12 +301,12 @@ vi_rc CurrentWindowResize( int x1, int y1, int x2, int y2 )
 
     if( EditFlags.LineNumbers ) {
         if( EditFlags.LineNumsOnRight ) {
-            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + EditVars.LineNumWinWidth, y2, TRUE );
+            rc = ResizeWindow( CurrentWindow, x1, y1, x2 + EditVars.LineNumWinWidth, y2, true );
         } else {
-            rc = ResizeWindow( CurrentWindow, x1 - EditVars.LineNumWinWidth, y1, x2, y2, TRUE );
+            rc = ResizeWindow( CurrentWindow, x1 - EditVars.LineNumWinWidth, y1, x2, y2, true );
         }
     } else {
-        rc = ResizeWindow( CurrentWindow, x1, y1, x2, y2, TRUE );
+        rc = ResizeWindow( CurrentWindow, x1, y1, x2, y2, true );
     }
     if( rc != ERR_NO_ERR ) {
         return( rc );
@@ -366,13 +366,13 @@ void ResetAllWindows( void )
     oldcurr = CurrentInfo;
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         SaveCurrentInfo();
-        BringUpFile( cinfo, FALSE );
+        BringUpFile( cinfo, false );
         ResetWindow( &CurrentWindow );
     }
 
     if( oldcurr != NULL ) {
         SaveCurrentInfo();
-        BringUpFile( oldcurr, TRUE );
+        BringUpFile( oldcurr, true );
     }
 
 } /* ResetAllWindows */

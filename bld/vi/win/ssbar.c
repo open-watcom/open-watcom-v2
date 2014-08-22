@@ -50,7 +50,7 @@ enum buttonType {
 };
 
 HWND            hSSbar;
-static bool     haveCapture = FALSE;
+static bool     haveCapture = false;
 static int      curItemID = -1;
 static HWND     mod_hwnd;
 
@@ -273,7 +273,7 @@ static long processLButtonUp( HWND hwnd, LPARAM lparam )
         CursorOp( COP_ARROW );
         DrawRectangleUpDown( hwnd, DRAW_UP );
         ReleaseCapture();
-        haveCapture = FALSE;
+        haveCapture = false;
         curItemID = -1;
     }
     return( 0L );
@@ -284,7 +284,7 @@ static long processLButtonDown( HWND hwnd )
     DrawRectangleUpDown( hwnd, DRAW_DOWN );
     CursorOp( COP_DROPSS );
     SetCapture( hwnd );
-    haveCapture = TRUE;
+    haveCapture = true;
     curItemID = GetDlgCtrlID( hwnd );
     mod_hwnd = (HWND)NULLHANDLE;
     return( 0L );
@@ -298,7 +298,7 @@ static long processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     msg = msg;
     wparam = wparam;
 
-    if( haveCapture == FALSE ) {
+    if( !haveCapture ) {
         return( 0L );
     }
 
@@ -385,7 +385,7 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         removeSubclasses( hwnd );
         hSSbar = (HWND)NULLHANDLE;
         // update editflags (may have closed from system menu)
-        EditFlags.SSbar = FALSE;
+        EditFlags.SSbar = false;
         DestroyWindow( hwnd );
         break;
     }

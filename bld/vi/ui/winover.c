@@ -113,7 +113,7 @@ void RestoreOverlap( window_id wn, bool scrflag )
     unsigned            oscr;
 
     if( EditFlags.Quiet ) {
-        scrflag = FALSE;
+        scrflag = false;
     }
     w = AccessWindow( wn );
     whoover = w->whooverlapping;
@@ -209,11 +209,11 @@ bool TestOverlap( window_id wn )
     w = Windows[wn];
     for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 
 } /* TestOverlap */
 
@@ -226,11 +226,11 @@ bool TestVisible( wind *w )
 
     for( i = 0; i < w->height; i++ ) {
         if( w->overcnt[i] != w->width ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 
 } /* TestVisible */
 

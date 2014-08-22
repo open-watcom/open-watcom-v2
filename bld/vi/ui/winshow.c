@@ -84,7 +84,7 @@ void MoveWindowToFront( window_id wn )
     if( !TestOverlap( wn ) ) {
         return;
     }
-    MoveWindowToFrontDammit( wn, TRUE );
+    MoveWindowToFrontDammit( wn, true );
 
 } /* MoveWindowToFront */
 
@@ -169,7 +169,7 @@ void WindowTitleAOI( window_id wn, char *title, bool active )
  */
 void WindowTitle( window_id id, char *name )
 {
-    WindowTitleAOI( id, name, TRUE );
+    WindowTitleAOI( id, name, true );
 
 } /* WindowTitle */
 
@@ -178,7 +178,7 @@ void WindowTitle( window_id id, char *name )
  */
 void WindowTitleInactive( window_id id, char *name )
 {
-    WindowTitleAOI( id, name, FALSE );
+    WindowTitleAOI( id, name, false );
 
 } /* WindowTitleInactive */
 
@@ -242,17 +242,17 @@ bool InsideWindow( window_id id, int x, int y )
 
     w = Windows[id];
     if( !w->has_border ) {
-        return( TRUE );
+        return( true );
     }
     if( x == 0 || y == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( x == w->width - 1 ) {
-        return( FALSE );
+        return( false );
     }
     if( y == w->height - 1 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* InsideWindow */

@@ -79,15 +79,15 @@ bool ValidDimension( int x1, int y1, int x2, int y2, bool has_border )
     }
 
     if( x2 - x1 < lb || x2 >= EditVars.WindMaxWidth ) {
-        return( FALSE );
+        return( false );
     }
     if( y2 - y1 < lb || y2 >= EditVars.WindMaxHeight ) {
-        return( FALSE );
+        return( false );
     }
     if( x1 < 0 || y1 < 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* ValidDimension */
 
@@ -174,9 +174,9 @@ vi_rc NewWindow( window_id *wn, int x1, int y1, int x2, int y2, bool has_border,
         return( ERR_WIND_NO_MORE_WINDOWS );
     }
 
-    has_mouse = DisplayMouse( FALSE );
+    has_mouse = DisplayMouse( false );
 
-    AllocWindow( new_wn, x1, y1, x2, y2, has_border, FALSE, FALSE, bc1, bc2, s->foreground, s->background );
+    AllocWindow( new_wn, x1, y1, x2, y2, has_border, false, false, bc1, bc2, s->foreground, s->background );
 
     MarkOverlap( new_wn );
 
@@ -212,7 +212,7 @@ void CloseAWindow( window_id wn )
 
     w = Windows[wn];
 
-    RestoreOverlap( wn, TRUE );
+    RestoreOverlap( wn, true );
     if( w->min_slot ) {
         MinSlots[w->min_slot - 1] = 0;
     }

@@ -233,18 +233,18 @@ bool IsPastLastLine( linenum l )
     linenum     ll;
 
     if( CurrentFile == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     ll = CurrentFile->fcbs.tail->end_line;
     if( l <= ll ) {
-        return( FALSE );
+        return( false );
     }
     CFindLastLine( &ll );
     if( l > ll ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* IsPastLastLine */
 

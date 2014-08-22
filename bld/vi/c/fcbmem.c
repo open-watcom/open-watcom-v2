@@ -60,22 +60,22 @@ fcb *FcbAlloc( file *f )
      * initialize the data
      */
     cfcb->f = f;
-    cfcb->non_swappable = TRUE;
-    cfcb->in_memory = TRUE;
-    cfcb->swapped = FALSE;
-    cfcb->on_display = FALSE;
-    cfcb->was_on_display = FALSE;
+    cfcb->non_swappable = true;
+    cfcb->in_memory = true;
+    cfcb->swapped = false;
+    cfcb->on_display = false;
+    cfcb->was_on_display = false;
 #ifndef NOXTD
-    cfcb->in_extended_memory = FALSE;
+    cfcb->in_extended_memory = false;
 #endif
 #ifndef NOXMS
-    cfcb->in_xms_memory = FALSE;
+    cfcb->in_xms_memory = false;
 #endif
 #ifndef NOEMS
-    cfcb->in_ems_memory = FALSE;
+    cfcb->in_ems_memory = false;
 #endif
-    cfcb->nullfcb = FALSE;
-    cfcb->dead = FALSE;
+    cfcb->nullfcb = false;
+    cfcb->dead = false;
     cfcb->offset = -1L;
     FcbBlocksInUse++;
 

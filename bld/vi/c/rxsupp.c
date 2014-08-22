@@ -42,10 +42,10 @@ bool IsMagicCharRegular( char ch )
 {
     if( !EditFlags.Magic && EditVars.Majick != NULL ) {
         if( strchr( EditVars.Majick, ch ) != NULL ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* IsMagicCharRegular */
 
@@ -112,8 +112,8 @@ void MakeExpressionNonRegular( char *str )
 } /* MakeExpressionNonRegular */
 
 
-static bool old_CaseIgnore = FALSE;
-static bool old_Magic      = TRUE;
+static bool old_CaseIgnore = false;
+static bool old_Magic      = true;
 static char *old_Majick    = NULL;
 
 void RegExpAttrSave( int caseignore, char *majick )
@@ -123,12 +123,12 @@ void RegExpAttrSave( int caseignore, char *majick )
     old_Majick      = EditVars.Majick;
 
     if( caseignore != -1 ) {
-        EditFlags.CaseIgnore = ( caseignore ) ? TRUE : FALSE;
+        EditFlags.CaseIgnore = ( caseignore ) ? true : false;
     }
     if( majick == NULL ) {
-        EditFlags.Magic      = TRUE;
+        EditFlags.Magic      = true;
     } else {
-        EditFlags.Magic      = FALSE;
+        EditFlags.Magic      = false;
         EditVars.Majick      = majick;
     }
 }

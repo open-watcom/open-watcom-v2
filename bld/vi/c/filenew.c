@@ -93,16 +93,16 @@ static vi_rc createNewFile( char *name, bool same_file )
     if( same_file ) {
         CurrentFile = tmp->CurrentFile;
         CurrentFile->dup_count++;
-        SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
+        SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
 
         rc = ERR_NO_ERR;
     } else {
-        int crlf_reached;
+        bool crlf_reached;
 
-        crlf_reached = FALSE;
+        crlf_reached = false;
         tmp = CurrentInfo;
         CurrentInfo = MemAlloc( sizeof( *CurrentInfo ) );
         FTSRunCmds( name );
@@ -129,7 +129,7 @@ static vi_rc createNewFile( char *name, bool same_file )
         }
         if( rc == ERR_FILE_NOT_FOUND ) {
             rc = NEW_FILE;
-            EditFlags.NewFile = TRUE;
+            EditFlags.NewFile = true;
             CurrentFile->write_crlf = FileSysNeedsCR( CurrentFile->handle );
 #ifdef __UNIX__
             CurrentFile->attr = PMODE_RW;
@@ -137,7 +137,7 @@ static vi_rc createNewFile( char *name, bool same_file )
         } else {
             rc = ERR_NO_ERR;
             CurrentFile->write_crlf = crlf_reached;
-            EditFlags.NewFile = FALSE;
+            EditFlags.NewFile = false;
 #ifdef __UNIX__
             {
                 struct stat     sb;
@@ -146,7 +146,7 @@ static vi_rc createNewFile( char *name, bool same_file )
             }
 #endif
         }
-        CurrentFile->check_readonly = TRUE;
+        CurrentFile->check_readonly = true;
     }
 
     /*
@@ -173,7 +173,7 @@ static vi_rc createNewFile( char *name, bool same_file )
     }
 #endif
     DCCreate();
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
+    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
 
     /*
      * set current file info
@@ -207,19 +207,19 @@ vi_rc NewFile( char *name, bool same_file )
     status_type oldstatus;
 
     dup = EditFlags.DuplicateFile;
-    EditFlags.DuplicateFile = FALSE;
+    EditFlags.DuplicateFile = false;
     oldstatus = UpdateCurrentStatus( CSTATUS_READING );
 
     ScreenPage( 1 );
 #ifdef __WIN__
-    EditFlags.ResizeableWindow = TRUE;
+    EditFlags.ResizeableWindow = true;
 #endif
     rc = createNewFile( name, same_file );
     if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
         ScreenPage( -1 );
         if( !EditFlags.Starting ) {
-            MoveWindowToFrontDammit( MessageWindow, TRUE );
-            MoveWindowToFrontDammit( CurrentWindow, TRUE );
+            MoveWindowToFrontDammit( MessageWindow, true );
+            MoveWindowToFrontDammit( CurrentWindow, true );
         }
         UpdateCurrentStatus( oldstatus );
         return( rc );
@@ -247,7 +247,7 @@ vi_rc NewFile( char *name, bool same_file )
      * reset the screen to the display page, display everything
      */
     ScreenPage( -1 );
-    MoveWindowToFrontDammit( CurrentWindow, TRUE );
+    MoveWindowToFrontDammit( CurrentWindow, true );
     UpdateStatusWindow();
     SetWindowCursor();
     DCDisplayAllLines();
@@ -256,7 +256,7 @@ vi_rc NewFile( char *name, bool same_file )
     SaveCurrentInfo();
     ActiveWindow( CurrentWindow );
     VarAddRandC();
-    SetModifiedVar( FALSE );
+    SetModifiedVar( false );
     UpdateCurrentStatus( oldstatus );
     if( !same_file && !inReadHook ) {
         UpdateLastFileList( CurrentFile->name );
@@ -293,12 +293,12 @@ file *FileAlloc( char *name )
     }
     cfile->handle = -1;
     if( EditFlags.ViewOnly ) {
-        cfile->viewonly = TRUE;
-        EditFlags.ViewOnly = FALSE;
+        cfile->viewonly = true;
+        EditFlags.ViewOnly = false;
     }
     if( EditFlags.StdIOMode ) {
-        cfile->is_stdio = TRUE;
-        EditFlags.StdIOMode = FALSE;
+        cfile->is_stdio = true;
+        EditFlags.StdIOMode = false;
     }
     return( cfile );
 

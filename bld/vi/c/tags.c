@@ -47,7 +47,7 @@ vi_rc GetCurrentTag( void )
     vi_rc       rc;
     char        tag[MAX_STR];
 
-    rc = GimmeCurrentWord( tag, sizeof( tag ) - 1, FALSE );
+    rc = GimmeCurrentWord( tag, sizeof( tag ) - 1, false );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -69,7 +69,7 @@ vi_rc TagHunt( char *str )
     if( rc == ERR_NO_ERR ) {
 
         PushFileStack();
-        rc = EditFile( file, FALSE );
+        rc = EditFile( file, false );
         if( rc == ERR_NO_ERR ) {
             if( buff[0] != '/' ) {
                 num = atoi( buff );
@@ -133,11 +133,7 @@ int PickATag( int clist, char **list, char *tagname )
     if( clist < i ) {
         tw.y2 -= i - clist;
     }
-    if( clist > i ) {
-        show_lineno = TRUE;
-    } else {
-        show_lineno = FALSE;
-    }
+    show_lineno = ( clist > i );
     MySprintf( title, "Pick A File For Tag \"%s\"", tagname );
 
     memset( &si, 0, sizeof( si ) );

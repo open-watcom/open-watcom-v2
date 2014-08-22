@@ -156,15 +156,15 @@ void ScreenInit( void )
     case _MONITOR_PS30_COLOR:
     case _MONITOR_EGA_COLOR:
     case _MONITOR_VGA_COLOR:
-        EditFlags.Color = TRUE;
+        EditFlags.Color = true;
         break;
     case _MONITOR_EGA_MONO:
     case _MONITOR_VGA_MONO:
     case _MONITOR_PS30_MONO:
-        EditFlags.BlackAndWhite = TRUE;
+        EditFlags.BlackAndWhite = true;
         break;
     default:
-        EditFlags.Monocolor = TRUE;
+        EditFlags.Monocolor = true;
         break;
     }
     size = cols * rows * sizeof( char_info );
@@ -191,7 +191,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0x10;
+    EditVars.ExtendedKeyboard = 0x10;
 
 } /* ChkExtendedKbd */
 
@@ -227,7 +227,7 @@ int ChangeDrive( int drive )
  */
 bool ShiftDown( void )
 {
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -238,7 +238,7 @@ static bool hadCapsLock;
  */
 void TurnOffCapsLock( void )
 {
-    hadCapsLock = FALSE;
+    hadCapsLock = false;
 
 } /* TurnOffCapsLock */
 

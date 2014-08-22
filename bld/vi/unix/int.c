@@ -142,7 +142,7 @@ static void __interrupt handleInt1c()
 static void __interrupt handleInt1b_23()
 {
     if( EditFlags.WatchForBreak ) {
-        EditFlags.BreakPressed = TRUE;
+        EditFlags.BreakPressed = true;
     }
 
 } /* handleInt1b_23 */
@@ -260,7 +260,7 @@ extern void LockMemory( void __far *, long size );
 static void setStupid1c( void )
 {
     if( IsWindows() || _osmajor >= 20 ) {
-        noTimer = TRUE;
+        noTimer = true;
         return;
     }
     newIntVect( 0x1c, handleInt1c );

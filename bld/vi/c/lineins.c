@@ -83,18 +83,18 @@ vi_rc InsertLinesAtCursor( fcb_list *fcblist, undo_stack *us )
 
     // replace current line
     ReplaceCurrentLine();
-    CurrentLineReplaceUndoEnd( TRUE );
+    CurrentLineReplaceUndoEnd( true );
 
     // remove first line of buffer
     FetchFcb( fcblist->head );
-    fcblist->head->non_swappable = TRUE;
+    fcblist->head->non_swappable = true;
     fcblist->head->start_line++;
     fcblist->head->byte_cnt -= fcblist->head->lines.head->len + 1;
     tLine = fcblist->head->lines.head;
     fcblist->head->lines.head = fcblist->head->lines.head->next;
     fcblist->head->lines.head->prev = NULL;
     MemFree( tLine );
-    fcblist->head->non_swappable = FALSE;
+    fcblist->head->non_swappable = false;
 
     // add rest of lines of buffer & done
     if( fcblist->head->lines.head) {
@@ -237,7 +237,7 @@ vi_rc InsertLines( linenum s, fcb_list *fcblist, undo_stack *us )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    Modified( TRUE );
+    Modified( true );
     UndoInsert( s + 1, e, us );
     EndUndoGroup( us );
 

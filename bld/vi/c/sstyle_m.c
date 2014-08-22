@@ -98,9 +98,9 @@ static void getPreproc( ss_block *ss_new, char *start )
     // see if symbol is a keyword
     save_char = *text;
     *text = '\0';
-    if( IsKeyword( keyword, TRUE ) ) {
+    if( IsKeyword( keyword, true ) ) {
         ss_new->type = SE_PREPROCESSOR;
-        flags.inPreproc = FALSE;
+        flags.inPreproc = false;
     }
     *text = save_char;
 
@@ -121,7 +121,7 @@ static void getDirective( ss_block *ss_new, char *start )
     // see if symbol is a keyword
     save_char = *text;
     *text = '\0';
-    if( IsKeyword( start + 1, TRUE ) ) {
+    if( IsKeyword( start + 1, true ) ) {
         ss_new->type = SE_KEYWORD;
     }
     *text = save_char;
@@ -188,7 +188,7 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
             ++text;
         }
     } else {
-        bool    quit = FALSE;
+        bool    quit = false;
 
         // let's try a special macro
         while( *text && !quit ) {
@@ -207,17 +207,17 @@ static void getMacro( ss_block *ss_new, char *start, int skip )
             case '#':
             case '<':
             case '?':
-                quit = TRUE;
+                quit = true;
                 ++text;
                 break;
             default:
-                quit = TRUE;
+                quit = true;
                 break;
             }
         }
     }
 
-    flags.inMacro = FALSE;
+    flags.inMacro = false;
     ss_new->len = text - start;
 }
 
@@ -234,9 +234,9 @@ void GetMkFlags( ss_flags_m *storeFlags )
 void InitMkFlags( linenum line_no )
 {
     line_no = line_no;
-    flags.inPreproc = FALSE;
-    flags.inInlineFile = FALSE;
-    flags.inMacro = FALSE;
+    flags.inPreproc = false;
+    flags.inInlineFile = false;
+    flags.inMacro = false;
 }
 
 void GetMkBlock( ss_block *ss_new, char *start, int line )
@@ -248,7 +248,7 @@ void GetMkBlock( ss_block *ss_new, char *start, int line )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated macro
-            flags.inMacro = FALSE;
+            flags.inMacro = false;
         }
         getBeyondText( ss_new );
         return;

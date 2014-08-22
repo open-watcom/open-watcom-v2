@@ -55,7 +55,7 @@ static vi_rc checkLine( linenum *ln )
             rc = ERR_NO_SUCH_LINE;
         }
     }
-    if( (EditFlags.Modeless == TRUE) && (rc == ERR_NO_SUCH_LINE) ) {
+    if( EditFlags.Modeless && (rc == ERR_NO_SUCH_LINE) ) {
         rc = ERR_NO_ERR;
     }
     return( rc );
@@ -70,7 +70,7 @@ static int checkLeftMove( linenum line, int *col, range *r )
         if( EditFlags.Modeless ) {
             if( line > 1 ) {
                 r->start.line = line - 1;
-                r->line_based = TRUE;
+                r->line_based = true;
                 *col = LineLength( line - 1 ) + 1;
             } else {
                 *col = 1;
@@ -98,7 +98,7 @@ static int checkRightMove( linenum line, int *col, range *r )
         if( EditFlags.Modeless ) {
             if( !IsPastLastLine( line + 1 ) ) {
                 r->start.line = line + 1;
-                r->line_based = TRUE;
+                r->line_based = true;
                 *col = 1;
             } else {
                 *col = len;
@@ -129,7 +129,7 @@ static vi_rc verifyMoveFromPageTop( range *r, linenum ln )
     if( IsPastLastLine( ln ) ) {
         CFindLastLine( &ln );
     }
-    r->line_based = TRUE;
+    r->line_based = true;
     r->start.line = ln;
     return( ERR_NO_ERR );
 
@@ -193,7 +193,7 @@ static vi_rc doVerticalMove( range *r, linenum new )
     rc = checkLine( &new );
     r->start.line = new;
     r->start.column = CurrentPos.column;
-    r->line_based = TRUE;
+    r->line_based = true;
     return( rc );
 }
 
@@ -217,7 +217,7 @@ static vi_rc newColumnOnCurrentLine( range *r, int new_col )
     }
     rc = ERR_NO_ERR;
     r->start.line = CurrentPos.line;
-    r->line_based = FALSE;
+    r->line_based = false;
     if( new_col < CurrentPos.column ) {
         rc = checkLeftMove( CurrentPos.line, &new_col, r );
     } else {
@@ -247,7 +247,7 @@ vi_rc LineEndRange( range *r, long count )
     }
     count = count;
     r->start.line = CurrentPos.line;
-    r->line_based = FALSE;
+    r->line_based = false;
     r->end = r->start;
     r->end.column = CurrentLine->len + 1;
     return( ERR_NO_ERR );
@@ -302,7 +302,7 @@ vi_rc MoveTab( range *r, long count )
     }
 
     r->start.line = CurrentPos.line;
-    r->line_based = FALSE;
+    r->line_based = false;
     len = VirtualLineLen( CurrentLine->data );
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     while( count ) {
@@ -330,7 +330,7 @@ vi_rc MoveShiftTab( range *r, long count )
         return( ERR_NO_FILE );
     }
     r->start.line = CurrentPos.line;
-    r->line_based = FALSE;
+    r->line_based = false;
     vc = VirtualColumnOnCurrentLine( CurrentPos.column );
     while( count ) {
         i = ShiftTab( vc, EditVars.TabAmount );
@@ -362,7 +362,7 @@ static vi_rc doMoveToStartEndOfLine( range *r, long count, bool start )
     if( rc == ERR_NO_ERR ) {
         rc = CGimmeLinePtr( new, &fcb, &line );
         if( rc == ERR_NO_ERR ) {
-            if( start == TRUE ) {
+            if( start ) {
                 r->start.column = FindStartOfALine( line );
             } else {
                 r->start.column = line->len + 1;
@@ -371,7 +371,7 @@ static vi_rc doMoveToStartEndOfLine( range *r, long count, bool start )
              * Not sure if we should be line-based or not; for now
              * I'm just cloning MKS.
              */
-            r->line_based = TRUE;
+            r->line_based = true;
         }
     }
     return( rc );
@@ -379,12 +379,12 @@ static vi_rc doMoveToStartEndOfLine( range *r, long count, bool start )
 
 vi_rc MoveStartNextLine( range *r, long count )
 {
-    return( doMoveToStartEndOfLine( r, count, TRUE ) );
+    return( doMoveToStartEndOfLine( r, count, true ) );
 }
 
 vi_rc MoveStartPrevLine( range *r, long count )
 {
-    return( doMoveToStartEndOfLine( r, -count, TRUE ) );
+    return( doMoveToStartEndOfLine( r, -count, true ) );
 }
 
 /*
@@ -413,29 +413,29 @@ static vi_rc moveForwardAWord( range *r, bool end, bool bigword, int count )
         }
         curr = r->start;
     }
-    r->line_based = FALSE;
+    r->line_based = false;
     return( rc );
 
 } /* MoveForwardWord */
 
 vi_rc MoveForwardWord( range *r, long count )
 {
-    return( moveForwardAWord( r, FALSE, FALSE, count ) );
+    return( moveForwardAWord( r, false, false, count ) );
 }
 
 vi_rc MoveForwardBigWord( range *r, long count )
 {
-    return( moveForwardAWord( r, FALSE, TRUE, count ) );
+    return( moveForwardAWord( r, false, true, count ) );
 }
 
 vi_rc MoveForwardWordEnd( range *r, long count )
 {
-    return( moveForwardAWord( r, TRUE, FALSE, count ) );
+    return( moveForwardAWord( r, true, false, count ) );
 }
 
 vi_rc MoveForwardBigWordEnd( range *r, long count )
 {
-    return( moveForwardAWord( r, TRUE, TRUE, count ) );
+    return( moveForwardAWord( r, true, true, count ) );
 }
 
 /*
@@ -459,19 +459,19 @@ static vi_rc moveBackwardsAWord( range *r, bool bigword, int count )
         }
         curr = r->start;
     }
-    r->line_based = FALSE;
+    r->line_based = false;
     return( ERR_NO_ERR );
 
 } /* moveBackwardsAWord */
 
 vi_rc MoveBackwardsWord( range *r, long count )
 {
-    return( moveBackwardsAWord( r, FALSE, count ) );
+    return( moveBackwardsAWord( r, false, count ) );
 }
 
 vi_rc MoveBackwardsBigWord( range *r, long count )
 {
-    return( moveBackwardsAWord( r, TRUE, count ) );
+    return( moveBackwardsAWord( r, true, count ) );
 }
 
 /*
@@ -486,7 +486,7 @@ static vi_rc doACharFind( range *r, bool forward, int num, long count )
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    r->line_based = FALSE;
+    r->line_based = false;
     lc = LastEvent;
     rc = FindCharOnCurrentLine( forward, num, &c, count );
     if( rc == ERR_NO_ERR && c >= 0 ) {
@@ -501,22 +501,22 @@ static vi_rc doACharFind( range *r, bool forward, int num, long count )
 
 vi_rc MoveUpToChar( range *r, long count )
 {
-    return( doACharFind( r, TRUE, 0, count ) );
+    return( doACharFind( r, true, 0, count ) );
 }
 
 vi_rc MoveUpToBeforeChar( range *r, long count )
 {
-    return( doACharFind( r, TRUE, -1, count ) );
+    return( doACharFind( r, true, -1, count ) );
 }
 
 vi_rc MoveBackToChar( range *r, long count )
 {
-    return( doACharFind( r, FALSE, 0, count ) );
+    return( doACharFind( r, false, 0, count ) );
 }
 
 vi_rc MoveBackToAfterChar( range *r, long count )
 {
-    return( doACharFind( r, FALSE, 1, count ) );
+    return( doACharFind( r, false, 1, count ) );
 }
 
 /*
@@ -544,7 +544,7 @@ vi_rc DoGo( range *r, long count )
     }
     // change column - is this correct? MKS Vi does it...
     r->start.column = 1;
-    r->line_based = TRUE;
+    r->line_based = true;
     return( ERR_NO_ERR );
 
 } /* DoGo */
@@ -584,12 +584,12 @@ static vi_rc moveToLastCFind( range *r, bool reverse, long count )
 
 vi_rc MoveToLastCharFind( range *r, long count )
 {
-    return( moveToLastCFind( r, FALSE, count ) );
+    return( moveToLastCFind( r, false, count ) );
 }
 
 vi_rc MoveToLastCharFindRev( range *r, long count )
 {
-    return( moveToLastCFind( r, TRUE, count ) );
+    return( moveToLastCFind( r, true, count ) );
 }
 
 /*
@@ -603,7 +603,7 @@ vi_rc MoveStartOfFile( range *r, long count )
     count = count;      // not needed here
     r->start.line = 1;
     r->start.column = 1;
-    r->line_based = FALSE;
+    r->line_based = false;
     return( ERR_NO_ERR );
 
 } /* MoveStartOfFile */
@@ -626,7 +626,7 @@ vi_rc MoveEndOfFile( range *r, long count )
     } else {
         r->start.column = LineLength( ln );
     }
-    r->line_based = FALSE;
+    r->line_based = false;
     return( ERR_NO_ERR );
 
 } /* MoveEndOfFile */
@@ -634,7 +634,7 @@ vi_rc MoveEndOfFile( range *r, long count )
 vi_rc MoveTopOfPage( range *r, long count )
 {
     count = count;
-    return( doMoveToStartEndOfLine( r, LeftTopPos.line-CurrentPos.line, TRUE ) );
+    return( doMoveToStartEndOfLine( r, LeftTopPos.line-CurrentPos.line, true ) );
 }
 
 vi_rc MoveBottomOfPage( range *r, long count )
@@ -642,6 +642,6 @@ vi_rc MoveBottomOfPage( range *r, long count )
     int bottom = LeftTopPos.line +
                  WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES ) - 1;
     count = count;
-    return( doMoveToStartEndOfLine( r, bottom - CurrentPos.line, FALSE ) );
+    return( doMoveToStartEndOfLine( r, bottom - CurrentPos.line, false ) );
 }
 

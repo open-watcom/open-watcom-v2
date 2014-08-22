@@ -41,14 +41,14 @@ static void     *extraData = NULL;
 /*
  * ReadFcbData - read fcb data
  */
-vi_rc ReadFcbData( file *f, int *crlf_reached )
+vi_rc ReadFcbData( file *f, bool *crlf_reached )
 {
     int         cnt, used, linecnt;
     bool        eofflag;
     fcb         *cfcb;
     vi_rc       rc;
 
-    f->bytes_pending = FALSE;
+    f->bytes_pending = false;
     /*
      * go to appropriate location in file
      */
@@ -94,7 +94,7 @@ vi_rc ReadFcbData( file *f, int *crlf_reached )
 
     if( used == 0 ) {
         CreateNullLine( cfcb );
-        eofflag = TRUE;
+        eofflag = true;
     } else {
 
         /*
@@ -107,7 +107,7 @@ vi_rc ReadFcbData( file *f, int *crlf_reached )
             cfcb->start_line = f->fcbs.tail->prev->end_line + 1;
         }
         if( f->is_stdio && feof( stdin ) && used >= cnt || !f->is_stdio && f->curr_pos >= f->size ) {
-            eofflag = TRUE;
+            eofflag = true;
             if( !EditFlags.LastEOL && ReadBuffer[used - 1] == LF ) {
                 ++linecnt;
                 AddLLItemAtEnd( (ss **)&(cfcb->lines.head), (ss **)&(cfcb->lines.tail), (ss *)LineAlloc( NULL, 0 ) );
@@ -117,7 +117,7 @@ vi_rc ReadFcbData( file *f, int *crlf_reached )
          * update line numbers
          */
         cfcb->end_line = cfcb->start_line + linecnt - 1;
-        cfcb->non_swappable = FALSE;
+        cfcb->non_swappable = false;
     }
 
     if( eofflag ) {
@@ -128,7 +128,7 @@ vi_rc ReadFcbData( file *f, int *crlf_reached )
         return( END_OF_FILE );
     }
 
-    f->bytes_pending = TRUE;
+    f->bytes_pending = true;
     if( f->is_stdio ) {
         extraDataSize = cnt - used;
         extraData = MemAlloc( extraDataSize );
@@ -143,7 +143,7 @@ vi_rc ReadFcbData( file *f, int *crlf_reached )
  */
 vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
 {
-    int     lastflag = FALSE;
+    bool    lastflag = false;
     fcb     *tfcb, *ofcb;
     vi_rc   rc;
 
@@ -151,7 +151,7 @@ vi_rc FindFcbWithLine( linenum lineno, file *cfile, fcb **fb )
      * are we looking for the last line?
      */
     if( lineno < 0 ) {
-        lastflag = TRUE;
+        lastflag = true;
         lineno = MAX_LONG;
     }
     if( lineno < 1 ) {
@@ -227,7 +227,7 @@ void CreateFcbData( file *f, int cnt )
         cfcb->start_line = f->fcbs.tail->prev->end_line + 1;
     }
     cfcb->end_line = cfcb->start_line + linecnt - 1;
-    cfcb->non_swappable = FALSE;
+    cfcb->non_swappable = false;
 
 } /* CreateFcbData */
 
@@ -244,7 +244,7 @@ vi_rc OpenFcbData( file *f )
     if( !f->is_stdio ) {
         handle = -1;
         ConditionalChangeDirectory( f->home );
-        rc = FileOpen( f->name, FALSE, O_BINARY | O_RDONLY, 0, &handle );
+        rc = FileOpen( f->name, false, O_BINARY | O_RDONLY, 0, &handle );
         if( rc != ERR_NO_ERR ) {
             return( ERR_FILE_OPEN );
         }

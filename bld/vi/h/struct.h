@@ -46,13 +46,13 @@ typedef struct {
 } cursor_type;
 
 typedef struct {
-    unsigned char   case_ignore     : 1;
-    unsigned char   use_regexp      : 1;
-    unsigned char   search_forward  : 1;
-    unsigned char   search_wrap     : 1;
-    unsigned char   prompt          : 1;
-    unsigned char   selection       : 1;
-    unsigned char   spare           : 2;
+    bool            case_ignore     : 1;
+    bool            use_regexp      : 1;
+    bool            search_forward  : 1;
+    bool            search_wrap     : 1;
+    bool            prompt          : 1;
+    bool            selection       : 1;
+    bool            spare           : 2;
     int             posx;
     int             posy;
     char            *find;

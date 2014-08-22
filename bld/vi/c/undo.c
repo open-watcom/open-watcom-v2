@@ -165,7 +165,7 @@ void UndoDeleteFcbs( linenum sline, fcb_list *fcblist, undo_stack *stack )
 void UndoInsert( linenum sline, linenum eline, undo_stack *stack )
 {
     undo        *top, *cundo;
-    bool        neednew = FALSE;
+    bool        neednew = false;
 
     if( stack == NULL || stack->current < 0 || !EditFlags.Undo ) {
         return;
@@ -177,9 +177,9 @@ void UndoInsert( linenum sline, linenum eline, undo_stack *stack )
      */
     top = stack->stack[stack->current];
     if( top->type != UNDO_INSERT_LINES ) {
-        neednew = TRUE;
+        neednew = true;
     } else if( top->data.del_range.end != sline - 1 ) {
-        neednew = TRUE;
+        neednew = true;
     } else if( top->data.del_range.end == sline ) {
         return;
     }
@@ -245,9 +245,9 @@ void PatchDeleteUndo( undo_stack *stack )
      * if two starts are the same, then these are back-to-back deletes
      * and we can merge them.
      */
-    merge = FALSE;
+    merge = false;
     if( del->data.fcbs.head->start_line == topdel->data.fcbs.head->start_line ) {
-        merge = TRUE;
+        merge = true;
     }
 
     /*
@@ -304,7 +304,7 @@ void StartUndoGroup( undo_stack *us  )
 void EndUndoGroup( undo_stack *stack )
 {
     undo        *cundo;
-    int         done;
+    bool        done;
 
     if( stack == NULL || !EditFlags.Undo ) {
         return;
@@ -313,7 +313,7 @@ void EndUndoGroup( undo_stack *stack )
         if( EditFlags.UndoLost ) {
             stack->OpenUndo--;
             if( stack->OpenUndo == 0 ) {
-                EditFlags.UndoLost = FALSE;
+                EditFlags.UndoLost = false;
             }
         }
         return;
@@ -326,7 +326,7 @@ void EndUndoGroup( undo_stack *stack )
     stack->OpenUndo--;
     if( cundo == NULL ) {
         if( stack->OpenUndo == 0 ) {
-            EditFlags.UndoLost = FALSE;
+            EditFlags.UndoLost = false;
         }
         return;
     }
@@ -339,16 +339,16 @@ void EndUndoGroup( undo_stack *stack )
      * the file
      */
     if( stack->OpenUndo == 0 ) {
-        done = FALSE;
+        done = false;
         for( ; cundo != NULL; cundo = cundo->next ) {
             if( cundo->type != START_UNDO_GROUP && cundo->type != END_UNDO_GROUP ) {
-                done = TRUE;
+                done = true;
                 break;
             }
         }
         if( !done ) {
             cundo = PopUndoStack( stack );
-            UndoFree( cundo, FALSE );
+            UndoFree( cundo, false );
         }
     }
 

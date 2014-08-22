@@ -39,7 +39,8 @@
 #include "wprocmap.h"
 
 static fancy_find       snoopData =
-    { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
+    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0, NULL, 0 };
+
 #ifdef __NT__
 static HINSTANCE        hInstShell = NULL;
 
@@ -89,8 +90,8 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
 
-        CheckDlgButton( hwnd, SNOOP_IGNORE_CASE, snoopData.case_ignore );
-        CheckDlgButton( hwnd, SNOOP_REGULAR_EXPRESSIONS, snoopData.use_regexp );
+        CheckDlgButton( hwnd, SNOOP_IGNORE_CASE, ( snoopData.case_ignore ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, SNOOP_REGULAR_EXPRESSIONS, ( snoopData.use_regexp ) ? BST_CHECKED : BST_UNCHECKED );
         SetDlgItemText( hwnd, SNOOP_STRING, snoopData.find );
         SetDlgItemText( hwnd, SNOOP_PATH, snoopData.path );
 

@@ -336,7 +336,7 @@ int BIOSKeyboardInit( void )
         FatalError( ERR_WIND_NO_MORE_WINDOWS );
     }
     if( strcmp( getenv( "TERM" ), "qnxw" ) == 0 ) {
-//      EditFlags.IsWindowedConsole = TRUE;
+//      EditFlags.IsWindowedConsole = true;
     }
 
     if( qnx_psinfo( PROC_PID, _my_pid, &psinfo, 0, 0 ) != _my_pid ) {

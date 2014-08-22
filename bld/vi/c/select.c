@@ -58,7 +58,7 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
         k = strlen( dd );
         if( k + 2 + indent + boff > MAX_IO_BUFFER ) {
             CreateFcbData( *cfile, boff );
-            (*cfile)->fcbs.tail->non_swappable = TRUE;
+            (*cfile)->fcbs.tail->non_swappable = true;
             boff = 0;
         }
         if( indent ) {
@@ -74,7 +74,7 @@ static void tempFileSetup( file **cfile, char *list[], int maxlist, int indent,
     }
 
     CreateFcbData( *cfile, boff );
-    (*cfile)->fcbs.tail->non_swappable = TRUE;
+    (*cfile)->fcbs.tail->non_swappable = true;
 
 } /* tempFileSetup */
 
@@ -88,7 +88,7 @@ vi_rc SelectItem( selectitem *si )
     selflinedata        sfd;
     vi_rc               rc;
 
-    tempFileSetup( &cfile, si->list, si->maxlist, 0, FALSE );
+    tempFileSetup( &cfile, si->list, si->maxlist, 0, false );
 
     /*
      * get selected line
@@ -145,7 +145,7 @@ vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
     selflinedata        sfd;
     vi_rc               rc;
 
-    tempFileSetup( &cfile, list, maxlist, indent, TRUE );
+    tempFileSetup( &cfile, list, maxlist, indent, true );
 
     for( ;; ) {
 

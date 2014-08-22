@@ -35,7 +35,7 @@
 #include "wprocmap.h"
 
 static fancy_find findData =
-    { TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, 0, -1, -1, NULL, 0, NULL, 0 };
+    { true, false, true, true, false, false, 0, -1, -1, NULL, 0, NULL, 0 };
 
 /*
  * RepDlgProc - callback routine for find & replace dialog
@@ -61,12 +61,12 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER );
         }
         EditSubClass( hwnd, REP_FIND, &EditVars.FindHist );
-        CheckDlgButton( hwnd, REP_IGNORE_CASE, findData.case_ignore );
-        CheckDlgButton( hwnd, REP_REGULAR_EXPRESSIONS, findData.use_regexp );
-        // CheckDlgButton( hwnd, REP_SEARCH_BACKWARDS, !findData.search_forward );
-        CheckDlgButton( hwnd, REP_SEARCH_WRAP, findData.search_wrap );
-        CheckDlgButton( hwnd, REP_PROMPT_ON_REPLACE, findData.prompt );
-        // CheckDlgButton( hwnd, REP_SELECTION_ONLY, findData.selection );
+        CheckDlgButton( hwnd, REP_IGNORE_CASE, ( findData.case_ignore ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, REP_REGULAR_EXPRESSIONS, ( findData.use_regexp ) ? BST_CHECKED : BST_UNCHECKED );
+        // CheckDlgButton( hwnd, REP_SEARCH_BACKWARDS, ( !findData.search_forward ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, REP_SEARCH_WRAP, ( findData.search_wrap ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( hwnd, REP_PROMPT_ON_REPLACE, ( findData.prompt ) ? BST_CHECKED : BST_UNCHECKED );
+        // CheckDlgButton( hwnd, REP_SELECTION_ONLY, ( findData.selection ) ? BST_CHECKED : BST_UNCHECKED );
         SetDlgItemText( hwnd, REP_FIND, findData.find );
         SetDlgItemText( hwnd, REP_REPLACE, findData.replace );
         curr = EditVars.FindHist.curr + EditVars.FindHist.max - 1;
@@ -156,13 +156,13 @@ bool GetReplaceStringDialog( fancy_find *ff )
     findData.replace = ff->replace;
     findData.replacelen = ff->replacelen;
     proc = MakeDlgProcInstance( RepDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "REPDLG", Root, (DLGPROC)proc );
+    rc = DialogBox( InstanceHandle, "REPDLG", Root, (DLGPROC)proc ) != 0;
     FreeProcInstance( proc );
     SetWindowCursor();
 
     if( strlen( findData.find ) == 0 ) {
         // no find string so pretend user cancelled
-        rc = FALSE;
+        rc = false;
     }
 
     if( rc ) {

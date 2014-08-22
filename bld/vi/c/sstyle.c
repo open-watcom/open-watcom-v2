@@ -155,17 +155,17 @@ void addSelection( ss_block *ss_start, linenum line_no )
         sel_start_col = SelRgn.start.column - 1;
     }
 #endif
-    swap_cols = FALSE;
+    swap_cols = false;
     if( SelRgn.start.line > SelRgn.end.line ) {
         sel_start_line = SelRgn.end.line;
         sel_end_line = SelRgn.start.line;
-        swap_cols = TRUE;
+        swap_cols = true;
     } else {
         sel_start_line = SelRgn.start.line;
         sel_end_line = SelRgn.end.line;
     }
     if( SelRgn.start.line == SelRgn.end.line && sel_start_col > sel_end_col ) {
-        swap_cols = TRUE;
+        swap_cols = true;
     }
     if( swap_cols ) {
         tmp = sel_start_col;
@@ -314,13 +314,13 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
 {
     ss_block    ss_new, *ss_inc;
     int         index;
-    int         changed;
-    int         anychange;
+    bool        changed;
+    bool        anychange;
     int         text_col;
 
     *dif = 0;
     index = 0;
-    anychange = FALSE;
+    anychange = false;
     switch( CurrentInfo->fsi.Language ) {
     case LANG_C:
     case LANG_CPP:
@@ -368,7 +368,7 @@ void SSDifBlock( ss_block *ss_old, char *text, int start_col,
             text_col = ss_new.end + 1;
         } while( ss_new.end < start_col );
 
-        changed = memcmp( ss_inc, &ss_new, sizeof( ss_block ) );
+        changed = memcmp( ss_inc, &ss_new, sizeof( ss_block ) ) != 0;
         if( changed ) {
             memcpy( ss_inc, &ss_new, sizeof( ss_block ) );
         }
@@ -419,33 +419,33 @@ bool SSKillsFlags( char ch )
         case LANG_AWK:
         case LANG_USER:
             if( ch == '#' || ch == '"' || ch == '/' || ch == '*' ) {
-                return( TRUE );
+                return( true );
             }
             break;
         case LANG_FORTRAN:
             if( ch == '\'' ) {
-                return( TRUE );
+                return( true );
             }
             break;
         case LANG_HTML:
         case LANG_WML:
             if( ch == '<' || ch == '>' ) {
-                return( TRUE );
+                return( true );
             }
             break;
         case LANG_GML:
             if( ch == ':' || ch == '.' ) {
-                return( TRUE );
+                return( true );
             }
             break;
         case LANG_MAKEFILE:
             if( ch == '#' ) {
-                return( TRUE );
+                return( true );
             }
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void SSInitLanguageFlags( linenum line_no )

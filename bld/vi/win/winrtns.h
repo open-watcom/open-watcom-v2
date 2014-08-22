@@ -74,7 +74,6 @@ void        ExecWait( char * );
 void        NewToolBar( RECT * );
 void        DestroyToolBar( void );
 void        CloseToolBar( void );
-BOOL        AddIconToToolBar( char * );
 vi_rc       AddBitmapToToolBar( char * );
 vi_rc       DeleteFromToolBar( char * );
 UINT        NextMenuId( void );

@@ -115,10 +115,10 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
         if( DirFileCount >= MAX_FILES ) {
             break;
         }
-        is_subdir = FALSE;
+        is_subdir = false;
 #if defined( __QNX__ )
         if( S_ISDIR( nd->d_stat.st_mode ) {
-            is_subdir = TRUE;
+            is_subdir = true;
         }
 #elif defined( __UNIX__ )
         {
@@ -126,12 +126,12 @@ static vi_rc getDir( char *dname, bool want_all_dirs )
 
             stat( nd->d_name, &st );
             if( S_ISDIR( st.st_mode ) ) {
-                is_subdir = TRUE;
+                is_subdir = true;
             }
         }
 #else
         if( nd->d_attr & _A_SUBDIR ) {
-            is_subdir = TRUE;
+            is_subdir = true;
         }
 #endif
         if( !(want_all_dirs && is_subdir) ) {

@@ -48,17 +48,17 @@ bool SameFile( char *f1, char *f2 )
     char        full2[FILENAME_MAX];
 
     if( !file_cmp( f1, f2 ) ) {
-        return( TRUE );
+        return( true );
     }
     _fullpath( full1, f1, FILENAME_MAX );
     _fullpath( full2, f2, FILENAME_MAX );
     if( !file_cmp( full1, full2 ) ) {
         if( EditFlags.SameFileCheck ) {
-            return( TRUE );
+            return( true );
         }
-        EditFlags.DuplicateFile = TRUE;
+        EditFlags.DuplicateFile = true;
     }
-    return( FALSE );
+    return( false );
 
 } /* SameFile */
 

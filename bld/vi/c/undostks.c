@@ -42,11 +42,11 @@ static void dropUndoStackTop( undo_stack *stack )
     if( stack->current < 0 ) {
         return;
     }
-    UndoFree( stack->stack[0], TRUE );
+    UndoFree( stack->stack[0], true );
     for( i = 1; i <= stack->current; i++ ) {
         stack->stack[i - 1] = stack->stack[i];
     }
-    stack->rolled = TRUE;
+    stack->rolled = true;
 
 } /* dropUndoStackTop */
 
@@ -104,7 +104,7 @@ undo *UndoAlloc( undo_stack *stack, int type )
             if( stack->current == 0 ) {
                 dropUndoStackTop( stack );
                 shrinkUndoStack( stack );
-                EditFlags.UndoLost = TRUE;
+                EditFlags.UndoLost = true;
             }
             return( NULL );
         }
@@ -118,7 +118,7 @@ undo *UndoAlloc( undo_stack *stack, int type )
 /*
  * UndoFree - release an undo entry
  */
-void UndoFree( undo *cundo, int freefcbs )
+void UndoFree( undo *cundo, bool freefcbs )
 {
     undo    *tundo;
 
@@ -184,7 +184,7 @@ void PurgeUndoStack( undo_stack *stack )
     }
 
     for( i = stack->current; i >= 0; i-- ) {
-        UndoFree( stack->stack[i], TRUE );
+        UndoFree( stack->stack[i], true );
     }
     MemFreePtr( (void **)&(stack->stack) );
     stack->current = -1;
@@ -239,14 +239,14 @@ static bool doTossUndo( undo_stack *stack )
     if( stack->current >= 0 ) {
         if( stack->current == 0 ) {
             if( stack->OpenUndo ) {
-                EditFlags.UndoLost = TRUE;
+                EditFlags.UndoLost = true;
             }
         }
         dropUndoStackTop( stack );
         shrinkUndoStack( stack );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* doTossUndo */
 
@@ -286,11 +286,11 @@ bool TossUndos( void )
     }
     if( least != NULL ) {
         if( doTossUndo( least->UndoUndoStack ) ) {
-            return( TRUE );
+            return( true );
         }
         return( doTossUndo( least->UndoStack ) );
     }
-    return( FALSE );
+    return( false );
 
 } /* TossUndos */
 

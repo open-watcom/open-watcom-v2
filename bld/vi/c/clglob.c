@@ -40,7 +40,7 @@
 vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
 {
     char        *sstr, *cmd, *linedata;
-    int         i;
+    bool        match;
     vi_rc       rc;
     vi_rc       rc1;
     long        changecnt = 0;
@@ -94,7 +94,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     }
     SaveCurrentFilePos();
     StartUndoGroup( UndoStack );
-    EditFlags.DisplayHold = TRUE;
+    EditFlags.DisplayHold = true;
     strcpy( sstr, data );
 
     /*
@@ -113,7 +113,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
                 break;
             }
             RestoreCurrentFilePos();
-            EditFlags.DisplayHold = FALSE;
+            EditFlags.DisplayHold = false;
             return( rc );
         }
         if( pos.line > n2 ) {
@@ -126,15 +126,15 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         rc = GoToLineNoRelCurs( pos.line );
         if( rc != ERR_NO_ERR ) {
             RestoreCurrentFilePos();
-            EditFlags.DisplayHold = FALSE;
+            EditFlags.DisplayHold = false;
             return( rc );
         }
 
         /*
          * mark fcb and line for a match
          */
-        CurrentFcb->globalmatch = TRUE;
-        CurrentLine->u.ld.globmatch = TRUE;
+        CurrentFcb->globalmatch = true;
+        CurrentLine->u.ld.globmatch = true;
         if( EditFlags.Verbose && EditFlags.EchoOn ) {
             // WPrintfLine( MessageWindow,1,"Match on line %l",clineno );
             Message1( "Match on line %l", pos.line );
@@ -150,21 +150,21 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
          * run through each line, flipping globmatch flag on lines
          */
         CGimmeLinePtr( n1, &CurrentFcb, &CurrentLine );
-        i = FALSE;
+        match = false;
         for( CurrentPos.line = n1; CurrentPos.line <= n2; CurrentPos.line++ ) {
             if( CurrentLine->u.ld.globmatch ) {
-                CurrentLine->u.ld.globmatch = FALSE;
+                CurrentLine->u.ld.globmatch = false;
             } else {
-                i = TRUE;
-                CurrentLine->u.ld.globmatch = TRUE;
+                match = true;
+                CurrentLine->u.ld.globmatch = true;
             }
             CurrentLine = CurrentLine->next;
             if( CurrentLine == NULL ) {
-                CurrentFcb->globalmatch = i;
+                CurrentFcb->globalmatch = match;
                 CurrentFcb = CurrentFcb->next;
                 FetchFcb( CurrentFcb );
                 CurrentLine = CurrentFcb->lines.head;
-                i = FALSE;
+                match = false;
             }
         }
     }
@@ -173,7 +173,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
      * Pass 2: do all changes
      */
     rc = ERR_NO_ERR;
-    EditFlags.GlobalInProgress = TRUE;
+    EditFlags.GlobalInProgress = true;
     memcpy( &crx, CurrentRegularExpression, sizeof( crx ) );
 
     for( CurrentFcb = CurrentFile->fcbs.head; CurrentFcb != NULL; CurrentFcb = CurrentFcb->next ) {
@@ -184,7 +184,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         for( CurrentLine = CurrentFcb->lines.head; CurrentLine != NULL; CurrentLine = CurrentLine->next, CurrentPos.line++ ) {
             if( !CurrentLine->u.ld.globmatch )
                 continue;
-            CurrentLine->u.ld.globmatch = FALSE;
+            CurrentLine->u.ld.globmatch = false;
             changecnt++;
 
             CurrentPos.column = 1;
@@ -201,7 +201,7 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
         if( rc > ERR_NO_ERR ) {
             break;
         }
-        CurrentFcb->globalmatch = FALSE;
+        CurrentFcb->globalmatch = false;
     }
 
     /*
@@ -210,10 +210,10 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     if( rc > ERR_NO_ERR ) {
         for( cfcb = CurrentFile->fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
             if( cfcb->globalmatch ) {
-                cfcb->globalmatch = FALSE;
-                cfcb->non_swappable = FALSE;
+                cfcb->globalmatch = false;
+                cfcb->non_swappable = false;
                 for( cline = cfcb->lines.head; cline != NULL; cline = cline->next ) {
-                    cline->u.ld.globmatch = FALSE;
+                    cline->u.ld.globmatch = false;
                 }
             }
         }
@@ -222,8 +222,8 @@ vi_rc Global( linenum n1, linenum n2, char *data, int dmt )
     /*
      * display results
      */
-    EditFlags.GlobalInProgress = FALSE;
-    EditFlags.DisplayHold = FALSE;
+    EditFlags.GlobalInProgress = false;
+    EditFlags.DisplayHold = false;
     EndUndoGroup( UndoStack );
     RestoreCurrentFilePos();
     rc1 = SetCurrentLine( CurrentPos.line );

@@ -118,7 +118,7 @@ static change_resp ChangePrompt( void )
 
     Message1( "Change? (y)es/(n)o/(a)ll/(q)uit" );
     for( ;; ) {
-        key = GetNextEvent( FALSE );
+        key = GetNextEvent( false );
         if( key == VI_KEY( y ) ) {
             return( CHANGE_OK );
         } else if( key == VI_KEY( n ) ) {
@@ -147,7 +147,7 @@ vi_rc TwoPartSubstitute( char *find, char *replace, int prompt, int wrap )
     StartUndoGroup( UndoStack );
 
     // search from current position forward to end of doc
-    sprintf( cmd, "/%s/%s/g%c", find, replace, ( prompt == TRUE ) ? 'i' : '\0' );
+    sprintf( cmd, "/%s/%s/g%c", find, replace, ( prompt ) ? 'i' : '\0' );
 
     end_line = CurrentFile->fcbs.tail->end_line;
     rc = Substitute( CurrentPos.line, end_line, cmd );
@@ -156,7 +156,7 @@ vi_rc TwoPartSubstitute( char *find, char *replace, int prompt, int wrap )
     if( wrap && !LastSubstituteCancelled && CurrentPos.line != 1 &&
         rc == ERR_NO_ERR ) {
         // search from beginning of do to here
-        sprintf( cmd, "/%s/%s/g%c", find, replace, (prompt == TRUE) ? 'i' : '\0' );
+        sprintf( cmd, "/%s/%s/g%c", find, replace, ( prompt ) ? 'i' : '\0' );
         rc = Substitute( 1, CurrentPos.line - 1, cmd );
         linecnt += LastLineCount;
         changecnt += LastChangeCount;
@@ -187,10 +187,14 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
 {
     char        *sstr, *rstr, *newr;
     char        flag[20], *linedata;
-    bool        iflag = FALSE, gflag = FALSE, undoflag = FALSE, restline = FALSE;
-    bool        splitpending = FALSE, undoline = FALSE;
+    bool        iflag = false;
+    bool        gflag = false;
+    bool        undoflag = false;
+    bool        restline = false;
+    bool        splitpending = false;
+    bool        undoline = false;
     int         i, rlen, slen;
-    int         splitme;
+    bool        splitme;
     long        changecnt = 0, linecnt = 0;
     linenum     llineno, ll, lastline = 0, extra;
     i_mark      pos;
@@ -224,11 +228,11 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
     for( i = 0; i < slen; i++ ) {
         switch( flag[i] ) {
         case 'g':
-            gflag = TRUE;
+            gflag = true;
             break;
         case 'i':
         case 'c':
-            iflag = TRUE;
+            iflag = true;
             break;
         }
     }
@@ -259,7 +263,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
     SaveCurrentFilePos();
     llineno = n1 - 1;
 
-    EditFlags.AllowRegSubNewline = TRUE;
+    EditFlags.AllowRegSubNewline = true;
     newr = StaticAlloc();
     for( pos.column = 0, pos.line = n1;
         pos.line <= n2;
@@ -285,7 +289,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
          */
         if( gflag ) {
             if( lastline != pos.line ) {
-                undoline = FALSE;
+                undoline = false;
             }
         }
 
@@ -298,12 +302,12 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
             if( !restline ) {
                 ClearWindow( MessageWindow );
             }
-            restline = TRUE;
+            restline = true;
             GoToLineNoRelCurs( pos.line );
             if( EditFlags.GlobalInProgress ) {
-                EditFlags.DisplayHold = FALSE;
+                EditFlags.DisplayHold = false;
                 DCDisplayAllLines();
-                EditFlags.DisplayHold = TRUE;
+                EditFlags.DisplayHold = true;
             }
             HilightSearchString( &pos, slen );
             rsp = ChangePrompt();
@@ -317,7 +321,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
                 break;
             } else if( rsp == CHANGE_ALL ) {
                 ResetDisplayLine();
-                iflag = FALSE;
+                iflag = false;
             }
         }
 
@@ -326,7 +330,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
          */
         if( !undoflag ) {
             StartUndoGroup( UndoStack );
-            undoflag = TRUE;
+            undoflag = true;
         }
 
         /*
@@ -335,7 +339,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
         changecnt++;
         if( llineno != pos.line ) {
             if( splitpending ) {
-                splitpending = FALSE;
+                splitpending = false;
                 extra = SplitUpLine( llineno );
                 n2 += extra;
                 pos.line += extra;
@@ -360,12 +364,12 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
         /*
          * now build the individual undo
          */
-        CurrentFcb->non_swappable = TRUE;
+        CurrentFcb->non_swappable = true;
         if( !undoline ) {
             CurrentLineReplaceUndoStart();
-            CurrentLineReplaceUndoEnd( TRUE );
+            CurrentLineReplaceUndoEnd( true );
             if( gflag ) {
-                undoline = TRUE;
+                undoline = true;
                 lastline = pos.line;
             }
         }
@@ -377,7 +381,7 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
         WorkLine->len = ReplaceSubString( WorkLine->data, WorkLine->len,
                                           pos.column, pos.column + slen - 1, newr, rlen );
         if( iflag ) {
-            DisplayWorkLine( TRUE );
+            DisplayWorkLine( true );
         }
         ReplaceCurrentLine();
 
@@ -385,12 +389,12 @@ vi_rc Substitute( linenum n1, linenum n2, char *data )
          * if not global, only do this change on this line
          */
         if( splitme ) {
-            splitpending = TRUE;
+            splitpending = true;
         }
-        CurrentFcb->non_swappable = FALSE;
+        CurrentFcb->non_swappable = false;
     }
     StaticFree( newr );
-    EditFlags.AllowRegSubNewline = FALSE;
+    EditFlags.AllowRegSubNewline = false;
     /*
     * is there still a split line pending?
     */

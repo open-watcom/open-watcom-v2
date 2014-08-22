@@ -43,7 +43,7 @@ static void duplicateFcb( fcb *cfcb, fcb **dfcb )
      * get fcb and create a new one
      */
     FetchFcb( cfcb );
-    cfcb->non_swappable = TRUE;
+    cfcb->non_swappable = true;
     *dfcb = FcbAlloc( NULL );
     (*dfcb)->start_line = cfcb->start_line;
     (*dfcb)->end_line = cfcb->end_line;
@@ -59,8 +59,8 @@ static void duplicateFcb( fcb *cfcb, fcb **dfcb )
             (ss *)nline );
     }
 
-    cfcb->non_swappable = FALSE;
-    (*dfcb)->non_swappable = FALSE;
+    cfcb->non_swappable = false;
+    (*dfcb)->non_swappable = false;
 
 } /* duplicateFcb */
 

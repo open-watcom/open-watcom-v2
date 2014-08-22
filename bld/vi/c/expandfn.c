@@ -47,7 +47,7 @@ int ExpandFileNames( char *p, char ***argv )
     vi_rc       rc;
 
     argc = 0;
-    wildcard = FALSE;
+    wildcard = false;
     start = p;
     *argv = NULL;
 
@@ -60,7 +60,7 @@ int ExpandFileNames( char *p, char ***argv )
         }
         if( *p == '?'  ||  *p == '*' || *p == '|' || *p == '(' ||
                 *p == '[' ) {
-            wildcard = TRUE;
+            wildcard = true;
             break;
         }
         p++;
@@ -75,7 +75,7 @@ int ExpandFileNames( char *p, char ***argv )
     /*
      * get all matches
      */
-    rc = GetSortDir( start, FALSE );
+    rc = GetSortDir( start, false );
     if( rc != ERR_NO_ERR ) {
         return( 0 );
     }

@@ -109,12 +109,12 @@ void PollMouse( int *status, int *row, int *col )
     if( !EditFlags.UseMouse ) {
         return;
     }
-    rc = FALSE;
+    rc = false;
     if( EditFlags.IsWindowedConsole ) {
     } else {
         if( mouseCtrl == NULL ) return;
         if( mouse_read( mouseCtrl, &event, 1, Proxy, 0 ) > 0 ) {
-            rc = TRUE;
+            rc = true;
             lastRow -= event.dy;
             if( lastRow < 0 ) {
                 lastRow = 0;
@@ -173,7 +173,7 @@ void InitMouse( void )
         return;
     }
 
-    EditFlags.UseMouse = FALSE;
+    EditFlags.UseMouse = false;
 
     if( EditFlags.IsWindowedConsole ) {
 //      write( QNXConHandle, QW_INIT, sizeof( QW_INIT ) - 1 );
@@ -189,7 +189,7 @@ void InitMouse( void )
             return;
         }
     }
-    EditFlags.UseMouse = TRUE;
+    EditFlags.UseMouse = true;
 
     qnx_osinfo( 0, &osinfo );
     sysTime = MK_FP( osinfo.timesel, 0 );

@@ -72,7 +72,7 @@ vi_rc GetErrorTokenValue( int *value, char *str )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    i = Tokenize( ErrorTokens, str, TRUE );
+    i = Tokenize( ErrorTokens, str, true );
     if( i != TOK_INVALID ) {
         *value = ErrorValues[i];
     } else {
@@ -86,16 +86,16 @@ vi_rc GetErrorTokenValue( int *value, char *str )
 static bool err_alloc( int cnt )
 {
     ErrorValues = MemAlloc( cnt * sizeof( int ) );
-    return( TRUE );
+    return( true );
 }
 
 static bool err_save( int i, char *buff )
 {
     ErrorValues[i] = atoi( buff );
-    return( TRUE );
+    return( true );
 }
 
-static bool errorRead = FALSE;
+static bool errorRead = false;
 /*
  * ReadErrorTokens - do just that
  */
@@ -107,14 +107,14 @@ vi_rc ReadErrorTokens( void )
         return( ERR_NO_ERR );
     }
 
-    rc = ReadDataFile( "error.dat", &ErrorTokens, err_alloc, err_save, TRUE );
+    rc = ReadDataFile( "error.dat", &ErrorTokens, err_alloc, err_save, true );
     if( rc != ERR_NO_ERR ) {
         if( rc == ERR_FILE_NOT_FOUND ) {
             return( ERR_SRC_NO_ERROR_DATA );
         }
         return( rc );
     }
-    errorRead = TRUE;
+    errorRead = true;
 
     return( ERR_NO_ERR );
 

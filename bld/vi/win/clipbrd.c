@@ -97,11 +97,11 @@ static bool openClipboardForRead( void )
     if( OpenClipboard( Root ) ) {
         if( IsClipboardFormatAvailable( CF_TEXT ) ||
             IsClipboardFormatAvailable( CF_OEMTEXT )) {
-                return( TRUE );
+                return( true );
         }
         CloseClipboard();
     }
-    return( FALSE );
+    return( false );
 
 } /* openClipboardForRead */
 
@@ -112,11 +112,11 @@ static bool openClipboardForWrite( void )
 {
     if( OpenClipboard( Root ) ) {
         if( EmptyClipboard() ) {
-            return( TRUE );
+            return( true );
         }
         CloseClipboard();
     }
-    return( FALSE );
+    return( false );
 
 } /* openClipboardForWrite */
 
@@ -179,7 +179,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
     long                size;
     int                 i;
     GLOBALHANDLE        hglob;
-    BOOL                crlf_left_to_write = 0;
+    bool                crlf_left_to_write = false;
 
     if( !openClipboardForWrite() ) {
         return( ERR_CLIPBOARD );
@@ -221,7 +221,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
             // one CR,LF left to write?
             if( crlf_left_to_write ) {
                 // yes: write it
-                crlf_left_to_write = 0;
+                crlf_left_to_write = false;
                 *ptr = CR;
                 INC_POINTER( ptr );
                 *ptr = LF;
@@ -232,7 +232,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
                 INC_POINTER( ptr );
             }
             // remember to write one CR,LF next time
-            crlf_left_to_write = 1;
+            crlf_left_to_write = true;
         }
         if( cfcb == fcblist->tail ) {
             break;
@@ -297,11 +297,11 @@ int GetClipboardSavebuf( savebuf *clip )
     ptr = GetPtrGlobalLock( hglob );
     cpos = ptr;
     i = 0;
-    is_flushed = FALSE;
-    has_lf = FALSE;
+    is_flushed = false;
+    has_lf = false;
     fcblist.head = NULL;
     fcblist.tail = NULL;
-    record_done = FALSE;
+    record_done = false;
 
     /*
      * add all characters to ReadBuffer.  Each time this fills,
@@ -311,10 +311,10 @@ int GetClipboardSavebuf( savebuf *clip )
         INC_POINTER( ptr );
         ReadBuffer[i++] = ch;
         if( ch == LF ) {
-            has_lf = TRUE;
+            has_lf = true;
         }
         if( i >= MAX_IO_BUFFER ) {
-            is_flushed = TRUE;
+            is_flushed = true;
             used = addAnFcb( &fcblist, i );
             ptr = GET_POINTER( cpos, used );
             cpos = ptr;
@@ -334,7 +334,7 @@ int GetClipboardSavebuf( savebuf *clip )
             ReadBuffer[i] = 0;
             clip->u.data = MemAlloc( i + 1 );
             strcpy( clip->u.data, ReadBuffer );
-            record_done = TRUE;
+            record_done = true;
         } else {
             // add LF to end of buffer
             if( i >= MAX_IO_BUFFER - 2 ) {
@@ -347,7 +347,7 @@ int GetClipboardSavebuf( savebuf *clip )
         }
     } else if( !is_flushed ) {
         clip->type = SAVEBUF_NOP;
-        record_done = TRUE;
+        record_done = true;
     }
 
     if( !record_done ) {
@@ -369,9 +369,9 @@ int GetClipboardSavebuf( savebuf *clip )
 bool IsClipboardEmpty( void )
 {
     if( !openClipboardForRead() ) {
-        return( TRUE );
+        return( true );
     }
     CloseClipboard();
-    return( FALSE );
+    return( false );
 
 } /* IsClipboardEmpty */

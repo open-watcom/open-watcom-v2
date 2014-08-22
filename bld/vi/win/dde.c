@@ -115,10 +115,10 @@ bool CreateStringHandle( char *name, HSZ *hdl )
 
     *hdl = DdeCreateStringHandle( DDEInstId, name, 0 );
     if( *hdl == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( !DdeKeepStringHandle( DDEInstId, *hdl ) ) {
-        return( FALSE );
+        return( false );
     }
     len = strlen( name );
     hlptr = MemAlloc( offsetof( hsz_list, string ) + len + 1 );
@@ -126,7 +126,7 @@ bool CreateStringHandle( char *name, HSZ *hdl )
     hlptr->hsz = *hdl;
     memcpy( hlptr->string, name, len + 1 );
     AddLLItemAtEnd( (ss **)&hszHead, (ss **)&hszTail, (ss *)hlptr );
-    return( TRUE );
+    return( true );
 
 } /* CreateStringHandle */
 
@@ -183,7 +183,7 @@ bool DDEInit( void )
     FARPROC fp;
 
     if( UseDDE ) {
-        return( TRUE );
+        return( true );
     }
 
     fp = MakeFnCallbackProcInstance( DDECallback, InstanceHandle );
@@ -191,11 +191,11 @@ bool DDEInit( void )
     if( DdeInitialize( &DDEInstId, (PFNCALLBACK)fp, CBF_FAIL_EXECUTES |
                        CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
                        CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    UseDDE = TRUE;
-    return( TRUE );
+    UseDDE = true;
+    return( true );
 
 } /* DDEInit */
 
@@ -212,6 +212,6 @@ void DDEFini( void )
     }
     freeAllStringHandles();
     DdeUninitialize( DDEInstId );
-    UseDDE = FALSE;
+    UseDDE = false;
 
 } /* DDEFini */

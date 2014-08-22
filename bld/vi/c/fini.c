@@ -228,7 +228,7 @@ void QuitEditor( vi_rc rc )
 {
 #ifndef __WIN__
     ScreenPage( -1000 );
-    EditFlags.NoSetCursor = FALSE;
+    EditFlags.NoSetCursor = false;
     SetPosToMessageLine();
 #endif
     ExitEditor( ( rc == ERR_NO_ERR ) ? 0 : -1 );

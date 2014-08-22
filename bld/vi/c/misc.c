@@ -57,14 +57,14 @@ static void setPrompt( void )
         } else {
             oldPrompt = NULL;
         }
-        setenv( PROMPT_ENVIRONMENT_VARIABLE, EditVars.SpawnPrompt, TRUE );
+        setenv( PROMPT_ENVIRONMENT_VARIABLE, EditVars.SpawnPrompt, 1 );
     }
 }
 
 static void restorePrompt( void )
 {
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != 0 ) {
-        setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, TRUE );
+        setenv( PROMPT_ENVIRONMENT_VARIABLE, oldPrompt, 1 );
         if( oldPrompt != NULL ) {
             MemFree( oldPrompt );
             oldPrompt = NULL;
@@ -79,7 +79,7 @@ static void preSpawn( void )
     info        *cinfo;
 
     clockActive = EditFlags.ClockActive;
-    EditFlags.ClockActive = FALSE;
+    EditFlags.ClockActive = false;
 #ifndef __WIN__
     FiniColors();
     if( !EditFlags.LineDisplay ) {
@@ -92,7 +92,7 @@ static void preSpawn( void )
      * read/write attributes changed
      */
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
-        cinfo->CurrentFile->check_readonly = TRUE;
+        cinfo->CurrentFile->check_readonly = true;
     }
     setPrompt();
 }
@@ -109,7 +109,7 @@ static void postSpawn( long rc )
     //          !EditFlags.SourceScriptActive ) {
     if( EditFlags.PauseOnSpawnErr && rc != 0 ) {
         MyPrintf( "[%s]\n", MSG_PRESSANYKEY );
-        GetNextEvent( FALSE );
+        GetNextEvent( false );
     }
     ResetSpawnScreen();
     if( !EditFlags.LineDisplay ) {
@@ -383,14 +383,14 @@ bool PromptFilesForSave( void )
     HWND        hwnd_old = 0;
 
     if( !EditFlags.SaveOnBuild ) {
-        return( TRUE );
+        return( true );
     }
 
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         num++;
     }
 
-    BringUpFile( InfoHead, TRUE );
+    BringUpFile( InfoHead, true );
     for( i = 0; i < num; i++ ) {
         if( CurrentFile != NULL && CurrentFile->dup_count == 0 &&
             CurrentFile->modified ) {
@@ -409,7 +409,7 @@ bool PromptFilesForSave( void )
         SetFocus( hwnd_old );
     }
 #endif
-    return( TRUE );
+    return( true );
 
 } /* PromptFilesForSave */
 
@@ -432,7 +432,7 @@ bool PromptThisFileForSave( const char *filename )
             if( cinfo->CurrentFile != NULL && cinfo->CurrentFile->dup_count == 0 &&
                 cinfo->CurrentFile->modified ) {
 
-                BringUpFile( cinfo, TRUE );
+                BringUpFile( cinfo, true );
 
                 /* we have a modified file, so bring to the front */
                 BringWindowToTop( Root );
@@ -448,7 +448,7 @@ bool PromptThisFileForSave( const char *filename )
         SetFocus( hwnd_old );
     }
 #endif
-    return( TRUE );
+    return( true );
 
 } /* PromptThisFileForSave */
 
@@ -464,10 +464,10 @@ bool QueryFile( const char *filename )
     }
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         if( SameFile( cinfo->CurrentFile->name, (char *)filename ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* QueryFile */
 
@@ -480,7 +480,7 @@ bool ExitWithPrompt( bool do_quit, bool push_pop )
     info        *cinfo;
     int         i;
     int         num = 0;
-    bool        rc = TRUE;
+    bool        rc = true;
 
     if( push_pop ) {
         PushMode();
@@ -488,13 +488,13 @@ bool ExitWithPrompt( bool do_quit, bool push_pop )
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         num++;
     }
-    BringUpFile( InfoHead, TRUE );
+    BringUpFile( InfoHead, true );
     for( i = 0; i < num; i++ ){
         if( NextFile() > ERR_NO_ERR ) {
             // file modified ask
             if( FileExitOptionSaveChanges( CurrentFile ) ) {
                 /* user hit cancel - always allow this! */
-                rc = FALSE;
+                rc = false;
                 break;
             }
         }
@@ -515,7 +515,7 @@ bool ExitWithPrompt( bool do_quit, bool push_pop )
 void ExitWithVerify( void )
 {
     int         num = 0;
-    static bool entered = FALSE;
+    static bool entered = false;
     info        *cinfo;
     bool        modified;
 #ifndef __WIN__
@@ -525,8 +525,8 @@ void ExitWithVerify( void )
     if( entered ) {
         return;
     }
-    entered = TRUE;
-    modified = FALSE;
+    entered = true;
+    modified = false;
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         modified |= cinfo->CurrentFile->modified;
         num++;
@@ -535,8 +535,8 @@ void ExitWithVerify( void )
 #ifdef __WIN__
         if( MessageBox( Root, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
-            BringUpFile( InfoHead, TRUE );
-            EditFlags.QuitAtLastFileExit = TRUE;
+            BringUpFile( InfoHead, true );
+            EditFlags.QuitAtLastFileExit = true;
             for( ;; ) {
                 NextFileDammit();
             }
@@ -544,21 +544,21 @@ void ExitWithVerify( void )
 #else
         if( GetResponse( "Files are modified, really exit?", st )
                                     == GOT_RESPONSE && st[0] == 'y' ) {
-            BringUpFile( InfoHead, TRUE );
-            EditFlags.QuitAtLastFileExit = TRUE;
+            BringUpFile( InfoHead, true );
+            EditFlags.QuitAtLastFileExit = true;
             for( ;; ) {
                 NextFileDammit();
             }
         }
 #endif
     } else {
-        BringUpFile( InfoHead, TRUE );
-        EditFlags.QuitAtLastFileExit = TRUE;
+        BringUpFile( InfoHead, true );
+        EditFlags.QuitAtLastFileExit = true;
         for( ;; ) {
             NextFileDammit();
         }
     }
-    entered = FALSE;
+    entered = false;
 
 } /* ExitWithVerify */
 
@@ -572,21 +572,21 @@ bool ExitWithPrompt( bool do_quit )
 
     for( cinfo = InfoHead; cinfo != NULL; cinfo = next ) {
         next = cinfo->next;
-        if( cinfo->CurrentFile->modified == TRUE ) {
+        if( cinfo->CurrentFile->modified ) {
             /* have to bring up the file first */
-            BringUpFile( cinfo, TRUE );
+            BringUpFile( cinfo, true );
             rc = FileExitOptionSaveChanges( cinfo->CurrentFile );
-            if( rc == TRUE ) {
+            if( rc ) {
                 /* user hit cancel - always allow this!
                 */
-                return( FALSE );
+                return( false );
             }
         }
     }
     if( do_quit ) {
         QuitEditor( ERR_NO_ERR );
     }
-    return( TRUE );
+    return( true );
 
 } /* ExitWithPrompt */
 
@@ -596,7 +596,7 @@ bool ExitWithPrompt( bool do_quit )
 void ExitWithVerify( void )
 {
     int         i;
-    static bool entered = FALSE;
+    static bool entered = false;
     info        *cinfo;
     bool        modified;
 #ifndef __WIN__
@@ -606,8 +606,8 @@ void ExitWithVerify( void )
     if( entered ) {
         return;
     }
-    entered = TRUE;
-    modified = FALSE;
+    entered = true;
+    modified = false;
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         modified |= cinfo->CurrentFile->modified;
     }
@@ -627,7 +627,7 @@ void ExitWithVerify( void )
     } else {
         QuitEditor( ERR_NO_ERR );
     }
-    entered = FALSE;
+    entered = false;
 
 } /* ExitWithVerify */
 #endif
@@ -692,7 +692,7 @@ vi_rc EnterHexKey( void )
      */
     StartUndoGroup( UndoStack );
     CurrentLineReplaceUndoStart();
-    CurrentLineReplaceUndoEnd( TRUE );
+    CurrentLineReplaceUndoEnd( true );
     EndUndoGroup( UndoStack );
 
     /*
@@ -704,12 +704,12 @@ vi_rc EnterHexKey( void )
     }
     WorkLine->data[CurrentPos.column - 1] = val;
     WorkLine->len++;
-    DisplayWorkLine( TRUE );
+    DisplayWorkLine( true );
     if( CurrentPos.column < WorkLine->len ) {
         GoToColumn( CurrentPos.column + 1, WorkLine->len + 1 );
     }
     ReplaceCurrentLine();
-    EditFlags.Dotable = TRUE;
+    EditFlags.Dotable = true;
     return( ERR_NO_ERR );
 
 } /* EnterHexKey */
@@ -764,12 +764,12 @@ vi_rc ModificationTest( void )
     }
     if( !CurrentFile->modified ) {
         olddm = EditFlags.DotMode;
-        EditFlags.DotMode = FALSE;
-        EditFlags.NoAddToDotBuffer = TRUE;
+        EditFlags.DotMode = false;
+        EditFlags.NoAddToDotBuffer = true;
         olddotdigits = DotDigits;
         rc = SourceHook( SRC_HOOK_MODIFIED, ERR_NO_ERR );
         DotDigits = olddotdigits;
-        EditFlags.NoAddToDotBuffer = FALSE;
+        EditFlags.NoAddToDotBuffer = false;
         EditFlags.DotMode = olddm;
         return( rc );
     }

@@ -49,20 +49,20 @@ vi_rc Append( linenum n1, bool startundo )
         return( rc );
     }
     if( n1 == 0 || CurrentFcb->nullfcb ) {
-        beforeFlag = TRUE;
+        beforeFlag = true;
         n1 = 1;
     } else {
-        beforeFlag = FALSE;
+        beforeFlag = false;
     }
     rc = SetCurrentLine( n1 );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    Modified( TRUE );
+    Modified( true );
     if( startundo ) {
         StartUndoGroup( UndoStack );
     }
-    EditFlags.Appending = TRUE;
+    EditFlags.Appending = true;
     return( ERR_NO_ERR );
 
 } /* Append */
@@ -72,7 +72,7 @@ vi_rc Append( linenum n1, bool startundo )
  */
 vi_rc AppendAnother( char *data )
 {
-    bool        dontmove = FALSE;
+    bool        dontmove = false;
     int         i;
     vi_rc       rc;
     linenum     cln;
@@ -80,12 +80,12 @@ vi_rc AppendAnother( char *data )
     i = strlen( data );
     if( i == 1 && data[0] == '.' )  {
         EndUndoGroup( UndoStack );
-        EditFlags.Appending = FALSE;
+        EditFlags.Appending = false;
         return( ERR_NO_ERR );
     }
 
     if( CurrentFcb->nullfcb ) {
-        dontmove = TRUE;
+        dontmove = true;
     }
 
     cln = CurrentPos.line;
@@ -98,7 +98,7 @@ vi_rc AppendAnother( char *data )
     if( !beforeFlag ) {
         AddNewLineAroundCurrent( data, i, INSERT_AFTER );
     } else {
-        beforeFlag = FALSE;
+        beforeFlag = false;
         AddNewLineAroundCurrent( data, i, INSERT_BEFORE );
     }
 

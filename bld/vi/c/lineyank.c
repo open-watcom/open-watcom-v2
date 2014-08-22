@@ -44,7 +44,7 @@ vi_rc YankLineRange( linenum s, linenum e )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    AddFcbsToSavebuf( &fcblist, FALSE );
+    AddFcbsToSavebuf( &fcblist, false );
     LineYankMessage( s, e );
     return( ERR_NO_ERR );
 
@@ -65,7 +65,7 @@ vi_rc GetCopyOfLineRange( linenum s, linenum e, fcb_list *fcblist )
     /*
      * check line range
      */
-    if( EditFlags.Modeless == FALSE ) {
+    if( !EditFlags.Modeless ) {
         UnselectRegion();
     }
     if( s < 1 ) {

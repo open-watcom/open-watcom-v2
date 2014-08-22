@@ -143,11 +143,11 @@ static void swapTmp( char_info _FAR *src, char_info _FAR *dest, int x1, int y1,
 /*
  * dickWithAWindow - resize window based on keys/mouse
  */
-static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
+static void dickWithAWindow( int wn, bool topcorner, bool move, bool *doresize,
                              windim *wd, bool mouse )
 {
     vi_key      key;
-    bool        done = FALSE;
+    bool        done = false;
     int         x1, x2, y1, y2, nx1, nx2, ny1, ny2;
     int         mrow = 0;
     int         mcol = 0;
@@ -161,9 +161,9 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
         return;
     }
     if( mouse ) {
-        DisplayMouse( FALSE );
+        DisplayMouse( false );
     }
-    *doresize = FALSE;
+    *doresize = false;
     cwd = Windows[wn];
     tmpImage = MemAlloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     x1 = cwd->x1;
@@ -189,47 +189,47 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
         if( mouse ) {
             mrow = MouseRow;
             mcol = MouseCol;
-            DisplayMouse( TRUE );
+            DisplayMouse( true );
         }
         for( ;; ) {
-            key = GetNextEvent( TRUE );
+            key = GetNextEvent( true );
             dy = dx = 0;
             if( key == VI_KEY( ESC ) ) {
-                done = TRUE;
+                done = true;
             } else {
                 if( !mouse ) {
                     switch( key ) {
                     case VI_KEY( UP ):
                         dy = -1;
-                        topcorner = FALSE;
+                        topcorner = false;
                         break;
                     case VI_KEY( DOWN ):
                         dy = +1;
-                        topcorner = FALSE;
+                        topcorner = false;
                         break;
                     case VI_KEY( LEFT ):
                         dx = -1;
-                        topcorner = FALSE;
+                        topcorner = false;
                         break;
                     case VI_KEY( RIGHT ):
                         dx = +1;
-                        topcorner = FALSE;
+                        topcorner = false;
                         break;
                     case VI_KEY( SHIFT_UP ):
                         dy = -1;
-                        topcorner = TRUE;
+                        topcorner = true;
                         break;
                     case VI_KEY( SHIFT_DOWN ):
                         dy = +1;
-                        topcorner = TRUE;
+                        topcorner = true;
                         break;
                     case VI_KEY( SHIFT_LEFT ):
                         dx = -1;
-                        topcorner = TRUE;
+                        topcorner = true;
                         break;
                     case VI_KEY( SHIFT_RIGHT ):
                         dx = +1;
-                        topcorner = TRUE;
+                        topcorner = true;
                         break;
                     }
                 } else {
@@ -237,7 +237,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
                         if( LastMouseEvent == MOUSE_DRAG ) {
                             break;
                         } else if( LastMouseEvent == MOUSE_RELEASE ) {
-                            done = TRUE;
+                            done = true;
                         }
                     }
                 }
@@ -247,7 +247,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
             }
         }
         if( mouse ) {
-            DisplayMouse( FALSE );
+            DisplayMouse( false );
         }
 
         /*
@@ -307,7 +307,7 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
             x1 = nx1; x2 = nx2; y1 = ny1; y2 = ny2;
             swapTmp( Scrn, tmpImage, x1, y1, x2, y2 );
             drawTmpBorder( bclr, x1, y1, x2, y2 );
-            *doresize = TRUE;
+            *doresize = true;
         }
 
     }
@@ -319,11 +319,11 @@ static void dickWithAWindow( int wn, bool topcorner, bool move, int *doresize,
  */
 static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 {
-    int         resize;
+    bool        resize;
     windim      w;
     vi_rc       rc;
 
-    resize = 0;
+    resize = false;
     w.x1 = 0;
     w.y1 = 0;
     w.x2 = 0;
@@ -332,7 +332,7 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
     if( resize ) {
         rc = CurrentWindowResize( w.x1, w.y1, w.x2, w.y2 );
         if( mouse ) {
-            DisplayMouse( TRUE );
+            DisplayMouse( true );
         }
         return( rc );
     }
@@ -343,7 +343,7 @@ static vi_rc dickWithCurrentWindow( bool topcorner, bool move, bool mouse )
 /*
  * routines to resize/move current window
  */
-vi_rc ResizeCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, FALSE, FALSE ) ); }
-vi_rc MoveCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( FALSE, TRUE, FALSE ) ); }
-vi_rc ResizeCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, FALSE, TRUE ) ); }
-vi_rc MoveCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( FALSE, TRUE, TRUE ) ); }
+vi_rc ResizeCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( false, false, false ) ); }
+vi_rc MoveCurrentWindowWithKeys( void ) { return( dickWithCurrentWindow( false, true, false ) ); }
+vi_rc ResizeCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( false, false, true ) ); }
+vi_rc MoveCurrentWindowWithMouse( void ) { return( dickWithCurrentWindow( false, true, true ) ); }

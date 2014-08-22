@@ -152,8 +152,7 @@ void DoAutoSave( void )
     if( CurrentFile == NULL ) {
         return;
     }
-    if( CurrentFile->is_stdio || CurrentFile->viewonly ||
-                !CurrentFile->need_autosave ) {
+    if( CurrentFile->is_stdio || CurrentFile->viewonly || !CurrentFile->need_autosave ) {
         SetNextAutoSaveTime();
         return;
     }
@@ -165,9 +164,9 @@ void DoAutoSave( void )
     strcat( path, CurrentFile->as_name );
 
     quiet = EditFlags.Quiet;
-    EditFlags.Quiet = TRUE;
+    EditFlags.Quiet = true;
     lastst = UpdateCurrentStatus( CSTATUS_AUTOSAVE );
-    rc = SaveFile( path, -1, -1, TRUE );
+    rc = SaveFile( path, -1, -1, true );
     EditFlags.Quiet = quiet;
     UpdateCurrentStatus( lastst );
     if( rc != ERR_NO_ERR ) {
@@ -178,10 +177,10 @@ void DoAutoSave( void )
     /*
      * update history file
      */
-    CurrentFile->need_autosave = FALSE;
+    CurrentFile->need_autosave = false;
     if( !CurrentFile->been_autosaved ) {
         GetCurrentFilePath( path2 );
-        CurrentFile->been_autosaved = TRUE;
+        CurrentFile->been_autosaved = true;
         MakeTmpPath( tmp, checkFileName );
         f = fopen( tmp, "a" );
         if( f != NULL ) {
@@ -200,17 +199,17 @@ void DoAutoSave( void )
 static bool handleKey( vi_key key )
 {
     if( key == 'i' ) {
-        EditFlags.IgnoreLostFiles = TRUE;
+        EditFlags.IgnoreLostFiles = true;
     } else if( key == 'r' ) {
-        EditFlags.RecoverLostFiles = TRUE;
-        EditFlags.NoInitialFileLoad = TRUE;
+        EditFlags.RecoverLostFiles = true;
+        EditFlags.NoInitialFileLoad = true;
     } else if( key == 'q' ) {
-        noEraseFileList = TRUE;
+        noEraseFileList = true;
         ExitEditor( -1 );
     } else {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* handleKey */
 
@@ -253,7 +252,7 @@ bool LostFileCheck( void )
                 key = GetAutosaveResponse();
                 handleKey( key );
                 ShowStartupDialog();
-                return( TRUE );
+                return( true );
 #else
                 SetPosToMessageLine();
                 MyPrintf( "Files have been lost since your last session, do you wish to:\n" );
@@ -261,22 +260,22 @@ bool LostFileCheck( void )
                 for( ;; ) {
                     key = GetKeyboard();
                     if( handleKey( key ) ) {
-                        return( TRUE );
+                        return( true );
                     }
                 }
 #endif
             } else {
                 remove( path );
-                return( FALSE );
+                return( false );
             }
         }
     } else {
         if( EditFlags.RecoverLostFiles ) {
-            EditFlags.RecoverLostFiles = FALSE;
-            EditFlags.NoInitialFileLoad = FALSE;
+            EditFlags.RecoverLostFiles = false;
+            EditFlags.NoInitialFileLoad = false;
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* LostFileCheck */
 
@@ -354,12 +353,12 @@ void AutoSaveInit( void )
                     }
                     NextWord1( path2, path );
                     RemoveLeadingSpaces( path2 );
-                    NewFile( path, FALSE );
+                    NewFile( path, false );
                     AddString2( &(CurrentFile->name), path2 );
-                    SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
+                    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
                     FileSPVAR();
-                    CurrentFile->modified = TRUE;
-                    CurrentFile->check_readonly = TRUE;
+                    CurrentFile->modified = true;
+                    CurrentFile->check_readonly = true;
                     FTSRunCmds( path2 );
                     cnt++;
                 }
@@ -468,7 +467,7 @@ void RemoveFromAutoSaveList( void )
 
     GetCurrentFilePath( path );
 
-//    found = FALSE;
+//    found = false;
     f = fopen( as_path, "r" );
     if( f == NULL ) {
         return;
@@ -487,7 +486,7 @@ void RemoveFromAutoSaveList( void )
         if( !strcmp( path, path2 ) ) {
             MakeTmpPath( path2, CurrentFile->as_name );
             if( !strcmp( data, path2 ) ) {
-//                found = TRUE;
+//                found = true;
                 remove( path2 );
                 while( fgets( data, FILENAME_MAX, f ) != NULL ) {
                     for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {

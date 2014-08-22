@@ -217,10 +217,10 @@ bool TestIfCharInRange( char c, char *clist )
     
     for( lst = clist; *lst != 0; lst += 2 ) {
         if( c >= *lst && c <= *(lst + 1)  ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* TestIfCharInRange */
 
@@ -233,10 +233,10 @@ static bool testIfCharNotInRange( char c, char *clist )
 
     for( lst = clist; *lst != 0; lst += 2 ) {
         if( c >= *lst && c <= *(lst + 1) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 
 } /* testIfCharNotInRange */
 
@@ -250,7 +250,7 @@ vi_rc FindCharOnCurrentLine( bool fwdflag, int mod, int *col, int cnt )
 
     c = CurrentPos.column - 1;
     *col = -1;
-    LastEvent = GetNextEvent( FALSE );
+    LastEvent = GetNextEvent( false );
     if( LastEvent == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }

@@ -67,7 +67,7 @@ bool TestMouseEvent( bool usemouse )
 
     rc = hookHead->cb( id, win_x, win_y );
     if( !usemouse ) {
-        return( FALSE );
+        return( false );
     }
     return( rc );
 

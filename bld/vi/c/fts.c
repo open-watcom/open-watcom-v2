@@ -64,7 +64,7 @@ vi_rc FTSStart( char *data )
     }
     AddLLItemAtEnd( (ss **)&ftsHead, (ss **)&ftsTail, (ss *)fts );
 
-    EditFlags.FileTypeSource = TRUE;
+    EditFlags.FileTypeSource = true;
 
     return( ERR_NO_ERR );
 
@@ -158,7 +158,7 @@ vi_rc FTSAddStr( char *val, char *name )
  */
 vi_rc FTSEnd( void )
 {
-    EditFlags.FileTypeSource = FALSE;
+    EditFlags.FileTypeSource = false;
     return( ERR_NO_ERR );
 
 } /* FTSEnd */
@@ -217,9 +217,9 @@ static vi_rc runCmds( ft_src *fts )
     oldQuiet = EditFlags.Quiet;
     oldHold = EditFlags.DisplayHold;
 
-    EditFlags.ScriptIsCompiled = FALSE;
-    EditFlags.Quiet = TRUE;
-    EditFlags.DisplayHold = TRUE;
+    EditFlags.ScriptIsCompiled = false;
+    EditFlags.Quiet = true;
+    EditFlags.DisplayHold = true;
 
     for( cmd = fts->cmd_head; cmd != NULL; cmd = cmd->next ) {
         strcpy( cmd_data, cmd->data );

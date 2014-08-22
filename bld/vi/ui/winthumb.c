@@ -128,9 +128,9 @@ vi_rc PositionToNewThumbPosition( wind *w, int win_y )
     if( clne == 0L ) {
         clne = 1L;
     }
-    DisplayMouse( FALSE );
+    DisplayMouse( false );
     rc = GoToLineNoRelCurs( clne );
-    DisplayMouse( TRUE );
+    DisplayMouse( true );
 
     return( rc );
 

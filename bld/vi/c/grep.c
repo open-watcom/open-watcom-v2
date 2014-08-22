@@ -74,7 +74,7 @@ vi_rc DoFGREP( char *dirlist, char *string, bool ci )
 
     origString = string;
     AddString( &sString, string );
-    isFgrep = TRUE;
+    isFgrep = true;
     caseIgn = ci;
     for( i = 0; i < sizeof( table ); i++ ) {
         table[i] = i;
@@ -105,7 +105,7 @@ vi_rc DoEGREP( char *dirlist, char *string )
     }
     sString = string;
     origString = string;
-    isFgrep = FALSE;
+    isFgrep = false;
     rc = doGREP( dirlist );
     MemFree( cRx );
     return( rc );
@@ -119,7 +119,7 @@ static vi_rc getFile( char *fname )
     vi_rc       rc;
 
     NextWord1( fname, dir );
-    rc = EditFile( dir, FALSE );
+    rc = EditFile( dir, false );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -162,7 +162,7 @@ static int initList( window_id w, char *dirlist, char **list )
      * go after each directory given on the command line
      */
     clist = 0;
-    EditFlags.WatchForBreak = TRUE;
+    EditFlags.WatchForBreak = true;
     if( NextWord1( dirlist, dir ) <= 0 ) {
         fileGrep( EditVars.GrepDefault, list, &clist, w );
     } else {
@@ -179,12 +179,12 @@ static int initList( window_id w, char *dirlist, char **list )
     }
     if( EditFlags.BreakPressed ) {
 #ifdef __WIN__
-        EditFlags.BreakPressed = FALSE;
+        EditFlags.BreakPressed = false;
 #else
         ClearBreak();
 #endif
     }
-    EditFlags.WatchForBreak = FALSE;
+    EditFlags.WatchForBreak = false;
 #ifdef __WIN__
     FiniGrepDialog();
 #endif
@@ -287,7 +287,7 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
         switch( cmd ) {
         case ID_FILE_LIST:
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_DBLCLK ) {
-                getOneFile( dlg, fileList, &fileCount, TRUE );
+                getOneFile( dlg, fileList, &fileCount, true );
             }
             break;
         case ID_EDIT:
@@ -370,7 +370,7 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
         break;
     case WM_NOTIFY:
         if( ((NMHDR *)lparam)->code == NM_DBLCLK ) {
-            getOneFile( dlg, fileList, &fileCount, TRUE );
+            getOneFile( dlg, fileList, &fileCount, true );
         }
         break;
     case WM_DESTROY:
@@ -456,11 +456,7 @@ static vi_rc doGREP( char *dirlist )
         if( clist < i ) {
             tw.y2 -= ( i - clist );
         }
-        if( clist > i ) {
-            show_lineno = TRUE;
-        } else {
-            show_lineno = FALSE;
-        }
+        show_lineno = ( clist > i );
 
         /*
          * build options window
@@ -523,7 +519,7 @@ static vi_rc doGREP( char *dirlist )
             if( clist == 0 ) {
                 break;
             }
-            MoveWindowToFrontDammit( optwin, FALSE );
+            MoveWindowToFrontDammit( optwin, false );
         }
         CloseAWindow( optwin );
 
@@ -567,7 +563,7 @@ static void fileGrep( char *dir, char **list, int *clist, window_id wn )
     /*
      * run through each entry and search it; building a list of matches
      */
-    rc = GetSortDir( dir, FALSE );
+    rc = GetSortDir( dir, false );
     if( rc != ERR_NO_ERR ) {
         return;
     }
@@ -654,7 +650,7 @@ static vi_rc eSearch( char *fn, char *res )
         for( i = strlen( buff ); i && isEOL( buff[i - 1] ); --i ) {
             buff[i - 1] = 0;
         }
-        i = RegExec( cRx, buff, TRUE );
+        i = RegExec( cRx, buff, true );
         if( RegExpError != ERR_NO_ERR ) {
             StaticFree( buff );
             return( RegExpError );
@@ -690,7 +686,7 @@ static vi_rc fSearch( char *fn, char *r )
     /*
      * init for file i/o
      */
-    rc = FileOpen( fn, FALSE, O_BINARY | O_RDONLY, 0, &handle );
+    rc = FileOpen( fn, false, O_BINARY | O_RDONLY, 0, &handle );
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }

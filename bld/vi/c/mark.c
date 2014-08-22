@@ -63,7 +63,7 @@ vi_rc SetMark( void )
     /*
      * get mark to set
      */
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key == VI_KEY( ESC ) ) {
         return( MARK_REQUEST_CANCELLED );
     }
@@ -73,7 +73,7 @@ vi_rc SetMark( void )
         } else {
             Message1( "%sstarted", MEMORIZE_MODE );
             DotDigits = 0;
-            EditFlags.MemorizeMode = TRUE;
+            EditFlags.MemorizeMode = true;
             return( ERR_NO_ERR );
         }
     }
@@ -83,7 +83,7 @@ vi_rc SetMark( void )
         } else {
             Message1( "Alternate %sstarted", MEMORIZE_MODE );
             AltDotDigits = 0;
-            EditFlags.AltMemorizeMode = TRUE;
+            EditFlags.AltMemorizeMode = true;
             return( ERR_NO_ERR );
         }
     }
@@ -92,7 +92,7 @@ vi_rc SetMark( void )
 } /* SetMark */
 
 /*
- * MarkOnLine - this function returns TRUE if the given mark is one the
+ * MarkOnLine - this function returns true if the given mark is one the
  *              given line. It simply follows the trail through the mark
  *              list until it finds a NO_MARK or the mark it is searching for.
  */
@@ -101,16 +101,16 @@ bool MarkOnLine( line *line, unsigned no )
     mark        *m;
 
     if( line->u.ld.mark == no ) {
-        return( TRUE );
+        return( true );
     }
     m = MARK_PTR( line->u.ld.mark );
     while( m->next != NO_MARK ) {
         if( m->next == no ) {
-            return( TRUE );
+            return( true );
         }
         m = MARK_PTR( m->next );
     }
-    return( FALSE );
+    return( false );
 
 } /* MarkOnLine */
 
@@ -156,7 +156,7 @@ vi_rc RemoveMarkFromLine( unsigned no )
             /* remove it from the linked list */
             curr->next = mark->next;
         }
-        mark->inuse = FALSE;
+        mark->inuse = false;
         return( ERR_NO_ERR );
     }
     return( ERR_MARK_NOT_SET );
@@ -217,7 +217,7 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
     mline->u.ld.mark = no;
     cmark->p.line = num;
     cmark->p.column = col;
-    cmark->inuse = TRUE;
+    cmark->inuse = true;
 
     Message1( "Mark '%c' set", mlet );
 
@@ -228,25 +228,25 @@ vi_rc SetGenericMark( linenum num, int col, char mlet )
 vi_rc GoMark( range *r, long count )
 {
     count = count;
-    r->line_based = FALSE;
+    r->line_based = false;
     return( goToMark( r ) );
 }
 
 vi_rc GoMarkLine( range *r, long count )
 {
     count = count;
-    r->line_based = TRUE;
+    r->line_based = true;
     return( goToMark( r ) );
 }
 
 vi_rc GetMarkLine( linenum *ln )
 {
-    return( getAMark( TRUE, ln, NULL ) );
+    return( getAMark( true, ln, NULL ) );
 }
 
 vi_rc GetMark( linenum *ln, int *cl )
 {
-    return( getAMark( FALSE, ln, cl ) );
+    return( getAMark( false, ln, cl ) );
 }
 
 /*
@@ -262,7 +262,7 @@ static vi_rc getAMark( bool lineonly, linenum *ln, int *cl )
     /*
      * get mark to go to
      */
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key == VI_KEY( ESC ) ) {
         return( MARK_REQUEST_CANCELLED );
     }
@@ -300,7 +300,7 @@ static vi_rc goToMark( range *r )
     /*
      * get mark to go to
      */
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key == VI_KEY( ESC ) ) {
         return( MARK_REQUEST_CANCELLED );
     }
@@ -308,7 +308,7 @@ static vi_rc goToMark( range *r )
     /*
      * NOTE: the line_based flag was set by whoever called this routine.
      * Both the column and line are filled in and it is up to the operator
-     * to ignore the column if r->line_based is TRUE.
+     * to ignore the column if r->line_based is true.
      */
     no = KEY_TO_NO( key );
     m = MARK_PTR( no );
@@ -321,7 +321,7 @@ static vi_rc goToMark( range *r )
 /*
  * VerifyMark - check that a mark is okay
  */
-vi_rc VerifyMark( unsigned no, int lineonly )
+vi_rc VerifyMark( unsigned no, bool lineonly )
 {
     fcb         *cfcb;
     line        *cline;
@@ -383,7 +383,7 @@ static unsigned unMark( mark *cmark )
 {
     unsigned next;
 
-    cmark->inuse = FALSE;
+    cmark->inuse = false;
     next = cmark->next;
     cmark->next = NO_MARK;
     return( next );
@@ -419,7 +419,7 @@ void AllocateMarkList( void )
 {
     MarkList = MemAlloc( MARK_SIZE * (MAX_MARKS + 1) );
     SetMarkContext();
-    currContext->inuse = TRUE;
+    currContext->inuse = true;
     currContext->p.line = 1;
     currContext->p.column = 1;
 

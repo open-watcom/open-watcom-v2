@@ -58,7 +58,7 @@ static char windowBordersG[] =  {
 int FileSysNeedsCR( int handle )
 {
     handle = handle;
-    return( TRUE );
+    return( true );
 }
 
 void SetGadgetString( char *str )

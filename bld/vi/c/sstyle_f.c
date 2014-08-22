@@ -106,13 +106,13 @@ static bool isInitialLine( line *line )
 {
     char    *data;
     if( line->len < 6 ) {
-        return( TRUE );
+        return( true );
     }
     data = (line->u.ld.nolinedata) ? WorkLine->data : line->data;
     if( isspace( data[5] ) || data[5] == '0' ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -251,7 +251,7 @@ static void getText( ss_block *ss_new, char *start )
     keyword[index] = '\0';
 
     // test if string is keyword
-    if( IsKeyword( keyword, TRUE ) ) {
+    if( IsKeyword( keyword, true ) ) {
         char *end = text;
 
         ss_new->type = SE_KEYWORD;
@@ -283,7 +283,7 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
 {
     char    *text = start + skip;
     char    lastchar = '\0';
-    bool    empty = TRUE;
+    bool    empty = true;
     bool    multiLine = flags.inString;
     line    *line;
     fcb     *fcb;
@@ -291,10 +291,10 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
     vi_rc   rc;
 squashed:
     while( *text && *text != '\'' ) {
-        empty = FALSE;
+        empty = false;
         text++;
     }
-    flags.inString = FALSE;
+    flags.inString = false;
     if( *text == '\0' ) {
         // if next line a continuation line, then flag flags.inString, else
         // flag unterminated string
@@ -312,7 +312,7 @@ squashed:
         ss_new->type = SE_INVALIDTEXT;
         if( rc == ERR_NO_ERR && !isInitialLine( line ) ) {
             ss_new->type = SE_STRING;
-            flags.inString = TRUE;
+            flags.inString = true;
         }
     } else {
         text++;
@@ -320,7 +320,7 @@ squashed:
         switch( lastchar ) {
         case '\'':
             text++;
-            empty = FALSE;
+            empty = false;
             goto squashed;
         case 'c':
             text++;
@@ -346,7 +346,7 @@ squashed:
         }
     }
     ss_new->len = text - start;
-    if( empty == TRUE && multiLine == FALSE ) {
+    if( empty && !multiLine ) {
         ss_new->type = SE_INVALIDTEXT;
     }
 }
@@ -429,7 +429,7 @@ void InitFORTRANFlags( linenum line_no )
     vi_rc   rc;
     int     numQuotes = 0;
 
-    flags.inString = 0;
+    flags.inString = false;
 
     rc = CGimmeLinePtr( line_no, &fcb, &line );
     if( rc != ERR_NO_ERR ) {
@@ -466,7 +466,7 @@ void InitFORTRANFlags( linenum line_no )
     }
 
     if( numQuotes == 1 ) {
-        flags.inString = TRUE;
+        flags.inString = true;
     }
 }
 
@@ -478,7 +478,7 @@ void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated string from previous line
-            flags.inString = FALSE;
+            flags.inString = false;
         }
         getBeyondText( ss_new );
         return;

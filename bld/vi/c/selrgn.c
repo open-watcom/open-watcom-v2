@@ -87,18 +87,18 @@ void GetFixedSelectedRegion( select_rgn *rgn )
 {
     bool        swap_cols;
 
-    swap_cols = FALSE;
+    swap_cols = false;
     if( SelRgn.start.line > SelRgn.end.line ) {
         rgn->start.line = SelRgn.end.line;
         rgn->end.line = SelRgn.start.line;
-        swap_cols = TRUE;
+        swap_cols = true;
     } else {
         rgn->start.line = SelRgn.start.line;
         rgn->end.line = SelRgn.end.line;
     }
     if( SelRgn.start.line == SelRgn.end.line &&
         SelRgn.start.column > SelRgn.end.column ) {
-        swap_cols = TRUE;
+        swap_cols = true;
     }
     if( swap_cols ) {
         rgn->start.column = SelRgn.end.column;
@@ -117,7 +117,7 @@ void GetFixedSelectedRegion( select_rgn *rgn )
  */
 void InitSelectedRegion( void )
 {
-    SelRgn.lines = FALSE;
+    SelRgn.lines = false;
     SelRgn.start = CurrentPos;
     SelRgn.end = CurrentPos;
     SelRgn.start_col_v = VirtualColumnOnCurrentLine( CurrentPos.column );
@@ -148,7 +148,7 @@ void SelRgnFini( void )
 static void updateRegion( void )
 {
 #ifdef __WIN__
-    if( SelRgn.selected == FALSE ) {
+    if( !SelRgn.selected ) {
         int min_line, max_line;
         min_line = last_start_line;
         if( min_line > last_start_line )
@@ -180,7 +180,7 @@ static void updateRegion( void )
     last_start_line = SelRgn.start.line;
     last_end_line = SelRgn.end.line;
 #else
-    markRegion( TRUE );
+    markRegion( true );
     DCDisplayAllLines();
 #endif
 
@@ -194,12 +194,12 @@ void UnselectRegion( void )
     if( !SelRgn.selected ) {
         return;
     }
-    SelRgn.selected = FALSE;
-    EditFlags.Dragging = FALSE;
+    SelRgn.selected = false;
+    EditFlags.Dragging = false;
 #ifdef __WIN__
     updateRegion();
 #else
-    markRegion( FALSE );
+    markRegion( false );
     DCDisplayAllLines();
 #endif
 
@@ -213,7 +213,7 @@ void UpdateDrag( window_id id, int win_x, int win_y )
     int         nx, ny, height;
     int         moveCursor;
 
-    SelRgn.selected = TRUE;
+    SelRgn.selected = true;
     moveCursor = 0;
     height = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
 #ifdef __WIN__
@@ -298,17 +298,17 @@ void UpdateCursorDrag( void )
         return;
     }
 #ifndef __WIN__
-    markRegion( FALSE );
+    markRegion( false );
 #endif
     SelRgn.end = CurrentPos;
-    if( EditFlags.LineBased == FALSE ) {
-        SelRgn.lines = FALSE;
+    if( !EditFlags.LineBased ) {
+        SelRgn.lines = false;
     } else if( SelRgn.start.line != SelRgn.end.line ) {
-        SelRgn.lines = TRUE;
+        SelRgn.lines = true;
     } else if( SelRgn.start.column == SelRgn.end.column ) {
-        SelRgn.lines = TRUE;
+        SelRgn.lines = true;
     } else {
-        SelRgn.lines = FALSE;
+        SelRgn.lines = false;
     }
     updateRegion();
 
@@ -324,8 +324,8 @@ void SetSelRegionCols( linenum sl, int sc, int ec )
     fcb     *fcb;
     char    *data;
 
-    SelRgn.lines = FALSE;
-    SelRgn.selected = TRUE;
+    SelRgn.lines = false;
+    SelRgn.selected = true;
     SelRgn.start.line = SelRgn.end.line = sl;
     SelRgn.start.column = sc;
     SelRgn.end.column = ec + 1;
@@ -347,8 +347,8 @@ void SetSelRegionCols( linenum sl, int sc, int ec )
 vi_rc ReselectRegion( void )
 {
     if( SelRgn.start.line != 0 && SelRgn.end.line != 0 ) {
-        SelRgn.selected = TRUE;
-        EditFlags.Dragging = TRUE;
+        SelRgn.selected = true;
+        EditFlags.Dragging = true;
         updateRegion();
         return( ERR_NO_ERR );
     }
@@ -359,20 +359,20 @@ vi_rc ReselectRegion( void )
 /*
  * startSelectedRegion - start selection region area from keyboard
  */
-int startSelectedRegion( bool line_based )
+vi_rc startSelectedRegion( bool line_based )
 {
     if( ShiftDown() && SelRgn.selected ) {
-        EditFlags.Dragging = TRUE;
+        EditFlags.Dragging = true;
         UpdateCursorDrag();
     } else {
         if( SelRgn.selected ) {
             UnselectRegion();
             return( ERR_NO_ERR );
         }
-        EditFlags.Dragging = TRUE;
+        EditFlags.Dragging = true;
         InitSelectedRegion();
         SelRgn.lines = line_based;
-        SelRgn.selected = TRUE;
+        SelRgn.selected = true;
         updateRegion();
     }
     return( ERR_NO_ERR );
@@ -385,7 +385,7 @@ int startSelectedRegion( bool line_based )
 vi_rc SelectLeft( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return MoveLeft( r, count );
 
@@ -397,7 +397,7 @@ vi_rc SelectLeft( range *r, long count )
 vi_rc SelectRight( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return MoveRight( r, count );
 
@@ -439,7 +439,7 @@ vi_rc SelectDown( void )
 vi_rc SelectHome( void )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( GoToColumnOnCurrentLine( 1 ) );
 
@@ -451,7 +451,7 @@ vi_rc SelectHome( void )
 vi_rc SelectEnd( void )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     CurrentPos.column = MAX_INPUT_LINE;
     ValidateCurrentColumn();
@@ -470,7 +470,7 @@ vi_rc SelectPageUp( void )
             return ERR_NO_ERR;
         }
     }
-    return( MovePage( -1, 1, TRUE ) );
+    return( MovePage( -1, 1, true ) );
 
 } /* SelectPageUp */
 
@@ -485,14 +485,14 @@ vi_rc SelectPageDown( void )
             return ERR_NO_ERR;
         }
     }
-    return( MovePage( 1, 1, TRUE ) );
+    return( MovePage( 1, 1, true ) );
 
 } /* SelectPageDown */
 
 vi_rc SelectBackwardsWord( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveBackwardsWord( r, count ) );
 }
@@ -500,7 +500,7 @@ vi_rc SelectBackwardsWord( range *r, long count )
 vi_rc SelectForwardWord( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveForwardWord( r, count ) );
 }
@@ -508,7 +508,7 @@ vi_rc SelectForwardWord( range *r, long count )
 vi_rc SelectStartOfFile( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveStartOfFile( r, count ) );
 }
@@ -516,7 +516,7 @@ vi_rc SelectStartOfFile( range *r, long count )
 vi_rc SelectEndOfFile( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveEndOfFile( r, count ) );
 }
@@ -524,7 +524,7 @@ vi_rc SelectEndOfFile( range *r, long count )
 vi_rc SelectTopOfPage( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveTopOfPage( r, count ) );
 }
@@ -532,7 +532,7 @@ vi_rc SelectTopOfPage( range *r, long count )
 vi_rc SelectBottomOfPage( range *r, long count )
 {
     if( !EditFlags.Dragging ) {
-        startSelectedRegion( FALSE );
+        startSelectedRegion( false );
     }
     return( MoveBottomOfPage( r, count ) );
 }
@@ -586,7 +586,7 @@ vi_rc DoSelectSelection( bool doMenu )
             rc = InvokeLineSelHook( CurrentPos.line, CurrentPos.line );
         }
     } else {
-        rc = GimmeCurrentEntireWordDim( &sc, &ec, FALSE );
+        rc = GimmeCurrentEntireWordDim( &sc, &ec, false );
         if( rc != ERR_NO_ERR ) {
             return( ERR_NO_ERR );
         }
@@ -607,7 +607,7 @@ vi_rc DoSelectSelection( bool doMenu )
  */
 vi_rc DoSelectSelectionPopMenu( void )
 {
-    return( DoSelectSelection( TRUE ) );
+    return( DoSelectSelection( true ) );
 }
 
 /*
@@ -633,7 +633,7 @@ vi_rc GetSelectedRegion( range *r )
             r->end.column = SelRgn.end.column - 1;
             r->start.column = SelRgn.start.column;
         }
-        r->fix_range = FALSE;
+        r->fix_range = false;
         rc = ERR_NO_ERR;
     }
     return( rc );
@@ -655,11 +655,11 @@ vi_rc SetSelectedRegion( range *r )
 
     SelRgn.start_col_v = 1;
     if( r->line_based ) {
-        SelRgn.lines = TRUE;
+        SelRgn.lines = true;
         SelRgn.start.column = 1;
         SelRgn.end.column = LineLength( r->end.line );
     } else {
-        SelRgn.lines = FALSE;
+        SelRgn.lines = false;
         if( r->start.column < r->end.column ) {
             SelRgn.start.column = r->start.column + 1;
             SelRgn.end.column = r->end.column + 2;
@@ -673,7 +673,7 @@ vi_rc SetSelectedRegion( range *r )
                                                            SelRgn.start.column );
         }
     }
-    SelRgn.selected = TRUE;
+    SelRgn.selected = true;
     updateRegion();
     return( ERR_NO_ERR );
 
@@ -749,7 +749,7 @@ vi_rc SelectAll( void )
 {
     range   r;
     vi_rc   rc;
-    r.line_based = TRUE;
+    r.line_based = true;
     r.start.line = 1;
     CFindLastLine( &r.end.line );
     rc = SetSelectedRegion( &r );

@@ -144,7 +144,7 @@ vi_rc MovePage( int dir, long repcnt, bool keepselect )
     linenum     x, top, ll;
     linenum     tmp;
 
-    if( EditFlags.Modeless && (keepselect == FALSE) ) {
+    if( EditFlags.Modeless && !keepselect ) {
         UnselectRegion();
     }
 
@@ -205,12 +205,12 @@ vi_rc MovePage( int dir, long repcnt, bool keepselect )
 
 vi_rc MovePageDown( void )
 {
-    return( MovePage( 1, GetRepeatCount(), FALSE ) );
+    return( MovePage( 1, GetRepeatCount(), false ) );
 }
 
 vi_rc MovePageUp( void )
 {
-    return( MovePage( -1, GetRepeatCount(), FALSE ) );
+    return( MovePage( -1, GetRepeatCount(), false ) );
 }
 
 
@@ -232,7 +232,7 @@ vi_rc MovePosition( void )
         }
     }
     lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     switch( key ) {
     case '.':
         LeftTopPos.line = lne - lines / 2;
@@ -283,7 +283,7 @@ static vi_rc moveHalfPage( int dir )
     }
 
     EditVars.PageLinesExposed = HalfPageLines;
-    rc = MovePage( dir, 1, FALSE );
+    rc = MovePage( dir, 1, false );
     EditVars.PageLinesExposed = ople;
     return( rc );
 

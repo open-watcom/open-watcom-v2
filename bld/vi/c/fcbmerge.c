@@ -55,9 +55,9 @@ static vi_rc JoinFcbs( fcb *fcb1, fcb *fcb2 )
      * get fcb's if swapped
      */
     FetchFcb( fcb1 );
-    fcb1->non_swappable = TRUE;
+    fcb1->non_swappable = true;
     FetchFcb( fcb2 );
-    fcb1->non_swappable = FALSE;
+    fcb1->non_swappable = false;
 
     /*
      * update byte count and line numbers
@@ -88,7 +88,7 @@ vi_rc MergeFcbs( fcb_list *fcblist, fcb *fcb1, fcb *fcb2 )
     }
     DeleteLLItem( (ss **)&(fcblist->head), (ss **)&(fcblist->tail), (ss *)fcb2 );
     if( fcb2->globalmatch ) {
-        fcb1->globalmatch = TRUE;
+        fcb1->globalmatch = true;
     }
     FcbFree( fcb2 );
     return( ERR_NO_ERR );

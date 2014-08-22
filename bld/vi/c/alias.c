@@ -187,20 +187,20 @@ bool CheckAbbrev( char *data, int *ccnt )
     int         i, j, owl, col;
     alias_list  *curr;
 
-    if( EditFlags.Modeless == TRUE ) {
-        return( FALSE );
+    if( EditFlags.Modeless ) {
+        return( false );
     }
 
     /*
      * get the current string, and matching alias
      */
     if( *ccnt == 0 ) {
-        return( FALSE );
+        return( false );
     }
     data[*ccnt] = 0;
     curr = checkGenericAlias( data, abHead );
     if( curr == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     i = CurrentPos.column - 1 - (*ccnt);
@@ -215,6 +215,6 @@ bool CheckAbbrev( char *data, int *ccnt )
                       i, j, curr->expand, strlen( curr->expand ) );
     col = CurrentPos.column + WorkLine->len - owl;
     GoToColumn( col, WorkLine->len + 1 );
-    return( TRUE );
+    return( true );
 
 } /* CheckAbbrev */

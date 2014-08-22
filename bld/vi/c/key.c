@@ -73,7 +73,7 @@ static void clearSpin( void )
 #ifdef __VIO__
         MyVioShowBuf( SpinLoc - Scrn, 1 );
 #endif
-        EditFlags.SpinningOurWheels = FALSE;
+        EditFlags.SpinningOurWheels = false;
     }
 
 } /* clearSpin */
@@ -84,7 +84,7 @@ static void clearSpin( void )
 static vi_key getOverrideKey( void )
 {
     int         c;
-    bool        mouse = FALSE;
+    bool        mouse = false;
     int         mcnt = 0;
 
     for( ;; ) {
@@ -95,10 +95,10 @@ static vi_key getOverrideKey( void )
             overrideKeyPos++;
         }
         if( overrideKeyPos == overrideKeyEnd ) {
-            EditFlags.KeyOverride = FALSE;
+            EditFlags.KeyOverride = false;
         }
         if( c == VI_KEY( MOUSEEVENT ) && !mouse ) {
-            mouse = TRUE;
+            mouse = true;
             mcnt = 0;
         } else {
             if( mouse ) {
@@ -114,10 +114,10 @@ static vi_key getOverrideKey( void )
                     break;
                 case 3:
                     MouseStatus = c;
-                    mouse = FALSE;
+                    mouse = false;
                     c = VI_KEY( MOUSEEVENT );
                     RedrawMouse( MouseRow, MouseCol );
-                    DisplayMouse( TRUE );
+                    DisplayMouse( true );
                     break;
                 }
                 mcnt++;
@@ -297,7 +297,7 @@ vi_key GetKey( bool usemouse )
         LastMouseEvent = GetMouseEvent();
         if( LastMouseEvent != MOUSE_NONE ) {
             RedrawMouse( MouseRow, MouseCol );
-            DisplayMouse( TRUE );
+            DisplayMouse( true );
             if( TestMouseEvent( usemouse ) ) {
                 return( VI_KEY( MOUSEEVENT ) );
             }
@@ -338,7 +338,7 @@ vi_key GetKey( bool usemouse )
                 continue;
             }
 #endif
-            DisplayMouse( FALSE );
+            DisplayMouse( false );
 #ifdef __WIN__
             if( key == 0 ) {
                 GetKeyboard();
@@ -366,7 +366,7 @@ vi_key GetKey( bool usemouse )
     }
 
     if( EditFlags.Spinning ) {
-        EditFlags.SpinningOurWheels = TRUE;
+        EditFlags.SpinningOurWheels = true;
     }
     return( key );
 
@@ -378,15 +378,15 @@ vi_key GetKey( bool usemouse )
 bool NonKeyboardEventsPending( void )
 {
     if( EditFlags.KeyOverride ) {
-        return( TRUE );
+        return( true );
     }
     if( EditFlags.InputKeyMapMode || EditFlags.KeyMapMode ) {
-        return( TRUE );
+        return( true );
     }
     if( EditFlags.DotMode || EditFlags.AltDotMode ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* NonKeyboardEventsPending */
 
@@ -411,11 +411,11 @@ vi_key GetNextEvent( bool usemouse )
         key = CurrentKeyMap[CurrentKeyMapCount++];
 
         if( key == 0 ) {
-            EditFlags.NoInputWindow = FALSE;
+            EditFlags.NoInputWindow = false;
             if( EditFlags.InputKeyMapMode ) {
                 DoneInputKeyMap();
             } else {
-                EditFlags.KeyMapMode = FALSE;
+                EditFlags.KeyMapMode = false;
             }
         } else {
             LastEvent = key;
@@ -466,7 +466,7 @@ void ClearBreak( void )
     while( KeyboardHit() ) {
         GetKeyboard();
     }
-    EditFlags.BreakPressed = FALSE;
+    EditFlags.BreakPressed = false;
 
 } /* ClearBreak */
 
@@ -481,7 +481,7 @@ void KeyAdd( vi_key key )
     } else {
         overrideKeyEnd++;
     }
-    EditFlags.KeyOverride = TRUE;
+    EditFlags.KeyOverride = true;
 
 } /* KeyAdd */
 

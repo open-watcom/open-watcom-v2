@@ -52,7 +52,7 @@ WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDCANCEL:
-            cancelPressed = TRUE;
+            cancelPressed = true;
             break;
         default:
             return( FALSE );
@@ -69,7 +69,7 @@ WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 void InitGrepDialog( void )
 {
     grepProc = MakeDlgProcInstance( GrepDlgProc, InstanceHandle );
-    cancelPressed = FALSE;
+    cancelPressed = false;
     grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", Root, (DLGPROC)grepProc );
 
 } /* InitGrepDialog */
@@ -97,7 +97,7 @@ bool SetGrepDialogFile( char *str )
 {
     if( grepHwnd != NULL ) {
         SetDlgItemText( grepHwnd, GREP_CURRENT_FILE, str );
-        MessageLoop( FALSE );
+        MessageLoop( false );
     }
     return( cancelPressed );
 

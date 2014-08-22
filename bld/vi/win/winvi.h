@@ -66,8 +66,8 @@ typedef struct colour {
 typedef struct window {
     window_info *info;
     RECT        area;
-    BOOL        (*init)( struct window *, void * );
-    BOOL        (*fini)( struct window *, void * );
+    bool        (*init)( struct window *, void * );
+    bool        (*fini)( struct window *, void * );
 } window;
 
 typedef struct window_data {
@@ -105,7 +105,7 @@ typedef enum window_extra {
 extern window_id        EditContainer;
 extern window_id        Root;
 extern HINSTANCE        InstanceHandle;
-extern BOOL             AllowDisplay;
+extern bool             AllowDisplay;
 extern window           StatusBar;
 extern window           EditWindow;
 extern window           CommandWindow;

@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "win.h"
 
-static bool     keysRead = FALSE;
+static bool     keysRead = false;
 static char     *charTokens;
 static vi_key   *keyVals;
 
@@ -41,13 +41,13 @@ static vi_key   *keyVals;
 static bool key_alloc( int cnt )
 {
     keyVals = MemAlloc( cnt * sizeof( vi_key ) );
-    return( TRUE );
+    return( true );
 }
 
 static bool key_save( int i, char *buff )
 {
     keyVals[i] = atoi( buff );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -63,12 +63,12 @@ static vi_rc readKeyData( void )
 #ifdef VICOMP
     rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save );
 #else
-    rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save, TRUE );
+    rc = ReadDataFile( "keys.dat", &charTokens, key_alloc, key_save, true );
 #endif
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    keysRead = TRUE;
+    keysRead = true;
     return( ERR_NO_ERR );
 
 } /* readKeyData */
@@ -117,7 +117,7 @@ vi_rc MapKey( int flag, char *data )
 #ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled || (flag & MAPFLAG_UNMAP) ) {
 #endif
-        j = Tokenize( charTokens, keystr, TRUE );
+        j = Tokenize( charTokens, keystr, true );
         if( j == TOK_INVALID ) {
             key = (unsigned char)keystr[0];
         } else {
@@ -162,13 +162,13 @@ vi_rc MapKey( int flag, char *data )
 #ifndef VICOMP
     }
 
-    maps[key].inuse = FALSE;
-    maps[key].is_base = FALSE;
+    maps[key].inuse = false;
+    maps[key].is_base = false;
     MemFree( maps[key].data );
     maps[key].data = NULL;
     if( !(flag & MAPFLAG_UNMAP ) ) {
         if( flag & MAPFLAG_BASE ) {
-            maps[key].is_base = TRUE;
+            maps[key].is_base = true;
         }
         return( AddKeyMap( &maps[key], data ) );
     }
@@ -186,14 +186,14 @@ vi_rc DoKeyMap( vi_key key )
     vi_rc       rc;
     long        total;
     int         i;
-    bool        was_base = FALSE;
+    bool        was_base = false;
 
-    KeyMaps[key].inuse = TRUE;
+    KeyMaps[key].inuse = true;
     if( KeyMaps[key].is_base ) {
-        was_base = TRUE;
+        was_base = true;
         for( i = 0; i < MAX_EVENTS; i++ ) {
             KeyMaps[i].was_inuse = KeyMaps[i].inuse;
-            KeyMaps[i].inuse = TRUE;
+            KeyMaps[i].inuse = true;
         }
     }
     total = GetRepeatCount();
@@ -205,7 +205,7 @@ vi_rc DoKeyMap( vi_key key )
             KeyMaps[i].inuse = KeyMaps[i].was_inuse;
         }
     }
-    KeyMaps[key].inuse = FALSE;
+    KeyMaps[key].inuse = false;
 
     return( rc );
 
@@ -231,30 +231,30 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
          */
         CurrentKeyMap = scr->data;
         if( scr->no_input_window ) {
-            EditFlags.NoInputWindow = TRUE;
+            EditFlags.NoInputWindow = true;
         }
         // max = strlen( CurrentKeyMap );
         for( max = 0; CurrentKeyMap[max] != 0; max++ );
 
-        EditFlags.KeyMapInProgress = TRUE;
-        EditFlags.KeyMapMode = TRUE;
+        EditFlags.KeyMapInProgress = true;
+        EditFlags.KeyMapMode = true;
         LastError = ERR_NO_ERR;
 
         /*
          * run until done
          */
         for( CurrentKeyMapCount = 0; CurrentKeyMapCount < max; ) {
-            LastEvent = GetNextEvent( FALSE );
+            LastEvent = GetNextEvent( false );
             rc = DoLastEvent();
             if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
                 break;
             }
-            DoneLastEvent( rc, TRUE );
+            DoneLastEvent( rc, true );
         }
 
-        EditFlags.KeyMapMode = FALSE;
-        EditFlags.NoInputWindow = FALSE;
-        EditFlags.KeyMapInProgress = FALSE;
+        EditFlags.KeyMapMode = false;
+        EditFlags.NoInputWindow = false;
+        EditFlags.KeyMapInProgress = false;
         if( rc > ERR_NO_ERR || LastError != ERR_NO_ERR ) {
             break;
         }
@@ -262,7 +262,7 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
     }
 
     TryEndUndoGroup( cstack );
-    EditFlags.Dotable = FALSE;
+    EditFlags.Dotable = false;
     return( rc );
 
 } /* doRunKeyMap */
@@ -273,7 +273,7 @@ static vi_rc doRunKeyMap( key_map *scr, long total )
 vi_rc RunKeyMap( key_map *scr, long total )
 {
     int         oldcount = 0;
-    bool        restore = FALSE;
+    bool        restore = false;
     vi_key      *oldmap = NULL;
     vi_rc       rc;
 
@@ -281,7 +281,7 @@ vi_rc RunKeyMap( key_map *scr, long total )
      * check if we are already running a key mapping; if so, save it
      */
     if( EditFlags.KeyMapInProgress ) {
-        restore = TRUE;
+        restore = true;
         oldmap = CurrentKeyMap;
         oldcount = CurrentKeyMapCount;
     }
@@ -294,8 +294,8 @@ vi_rc RunKeyMap( key_map *scr, long total )
     if( restore ) {
         CurrentKeyMap = oldmap;
         CurrentKeyMapCount = oldcount;
-        EditFlags.KeyMapInProgress = TRUE;
-        EditFlags.KeyMapMode = TRUE;
+        EditFlags.KeyMapInProgress = true;
+        EditFlags.KeyMapMode = true;
     }
     return( rc );
 
@@ -313,11 +313,11 @@ vi_rc StartInputKeyMap( vi_key key )
     }
     CurrentKeyMap = InputKeyMaps[key].data;
     CurrentKeyMapCount = 0;
-    EditFlags.InputKeyMapMode = TRUE;
+    EditFlags.InputKeyMapMode = true;
     currUndoStack = UndoStack;
     StartUndoGroup( currUndoStack );
     if( InputKeyMaps[key].no_input_window ) {
-        EditFlags.NoInputWindow = TRUE;
+        EditFlags.NoInputWindow = true;
     }
     return( ERR_NO_ERR );
 
@@ -328,7 +328,7 @@ vi_rc StartInputKeyMap( vi_key key )
  */
 void DoneInputKeyMap( void )
 {
-    EditFlags.InputKeyMapMode = FALSE;
+    EditFlags.InputKeyMapMode = false;
     TryEndUndoGroup( currUndoStack );
 
 } /* DoneInputKeyMap */
@@ -357,7 +357,7 @@ vi_key extractViKeyToken( unsigned char **p )
     if( rc != ERR_NO_ERR ) {
         return( VI_KEY( ESC ) );
     }
-    j = Tokenize( charTokens, str, TRUE );
+    j = Tokenize( charTokens, str, true );
     if( j == TOK_INVALID ) {
         return( (unsigned char)str[0] );
     } else {
@@ -382,7 +382,7 @@ vi_rc AddKeyMap( key_map *scr, char *data )
      */
     len = strlen( data );
     scr->data = MemAlloc( (len + 1) * sizeof( vi_key ) );
-    scr->inuse = FALSE;
+    scr->inuse = false;
 
     /*
      * copy in key map data
@@ -402,7 +402,7 @@ vi_rc AddKeyMap( key_map *scr, char *data )
                 *sdata = NO_ADD_TO_HISTORY_KEY;
                 break;
             case 'x':
-                scr->no_input_window = TRUE;
+                scr->no_input_window = true;
                 sdata--;
                 break;
             case 'e':

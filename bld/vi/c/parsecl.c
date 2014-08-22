@@ -57,7 +57,8 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
     if( tmp == NULL || tres == NULL ) {
         return( ERR_NO_STACK );
     }
-    *n1flag = *n2flag = FALSE;
+    *n1flag = false;
+    *n2flag = false;
     data[0] = 0;
 
     /*
@@ -73,7 +74,8 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
      * check for magic '%' - all lines
      */
     if( buff[0] == '%' ) {
-        *n1flag = *n2flag = TRUE;
+        *n1flag = true;
+        *n2flag = true;
         *n1 = 1;
         rc = CFindLastLine( n2 );
         if( rc != ERR_NO_ERR ) {
@@ -91,10 +93,11 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
             } else {
                 // use @ in scripts (eg mcsel.vi) when
                 // we KNOW something was just selected
-                SelRgn.selected = TRUE;
+                SelRgn.selected = true;
             }
         }
-        *n1flag = *n2flag = TRUE;
+        *n1flag = true;
+        *n2flag = true;
         if( SelRgn.start.line > SelRgn.end.line ) {
             *n1 = SelRgn.end.line;
             *n2 = SelRgn.start.line;
@@ -113,7 +116,7 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
             return( rc );
         }
         if( rc == ERR_NO_ERR ) {
-            *n1flag = TRUE;
+            *n1flag = true;
             *n1 = l;
             RemoveLeadingSpaces( buff );
             if( buff[0] == ',' ) {
@@ -126,7 +129,7 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
                 if( rc != ERR_NO_ERR ) {
                     return( ERR_INVALID_COMMAND );
                 }
-                *n2flag = TRUE;
+                *n2flag = true;
                 /*
                  * swap order (if start > end)
                  */
@@ -169,9 +172,9 @@ vi_rc ParseCommandLine( char *buff, linenum *n1, bool *n1flag, linenum *n2, bool
         }
     }
 
-    j = Tokenize( TokensCmdLine, tres, FALSE );
+    j = Tokenize( TokensCmdLine, tres, false );
     if( j == TOK_INVALID ) {
-        j = Tokenize( TokensEx, tres, FALSE );
+        j = Tokenize( TokensEx, tres, false );
         if( j != TOK_INVALID ) {
             j += 1000;
         }
@@ -217,13 +220,13 @@ vi_rc GetAddress( char *buff, linenum *num  )
     }
     numptr = k = nument = 0;
     csign = numsign = 1;
-    numinprog = stopnum = endparse = FALSE;
+    numinprog = stopnum = endparse = false;
 
     while( !endparse ) {
         c = buff[k];
         if( c >= '0' && c <= '9' ) {
             currnum[numptr++] = c;
-            numinprog = TRUE;
+            numinprog = true;
         } else {
             switch( c ) {
             case '/':
@@ -243,7 +246,7 @@ vi_rc GetAddress( char *buff, linenum *num  )
                     }
                     rc = GetFind( tmp, &pos, &len, fl );
                     numstack[nument] = pos.line;
-                    stopnum = TRUE;
+                    stopnum = true;
                     StaticFree( tmp );
                     if( rc != ERR_NO_ERR ) {
                         return( rc );
@@ -259,25 +262,25 @@ vi_rc GetAddress( char *buff, linenum *num  )
                     return( NO_NUMBER );
                 }
                 j = buff[k + 1] - 'a';
-                rc = VerifyMark( j + 1, TRUE );
+                rc = VerifyMark( j + 1, true );
                 if( rc != ERR_NO_ERR ) {
                     return( rc );
                 }
                 numstack[nument] = MarkList[j].p.line;
-                stopnum = TRUE;
+                stopnum = true;
                 k++;
                 break;
             case '+':
                 csign = 1;
                 if( numinprog ) {
-                    stopnum = TRUE;
+                    stopnum = true;
                 } else {
                     numsign = 1;
                 }
                 break;
             case '-':
                 if( numinprog ) {
-                    stopnum = TRUE;
+                    stopnum = true;
                     csign = -1;
                 } else {
                     numsign = -1;
@@ -289,7 +292,7 @@ vi_rc GetAddress( char *buff, linenum *num  )
                     return( NO_NUMBER );
                 }
                 numstack[nument] = CurrentPos.line;
-                stopnum = TRUE;
+                stopnum = true;
                 break;
             case '$':
                 if( numinprog ) {
@@ -299,12 +302,12 @@ vi_rc GetAddress( char *buff, linenum *num  )
                 if( rc != ERR_NO_ERR ) {
                     return( rc );
                 }
-                stopnum = TRUE;
+                stopnum = true;
                 break;
             default:
-                endparse = TRUE;
+                endparse = true;
                 if( numinprog ) {
-                    stopnum = TRUE;
+                    stopnum = true;
                 }
                 break;
             }
@@ -320,14 +323,14 @@ vi_rc GetAddress( char *buff, linenum *num  )
             currnum[numptr] = 0;
             numptr = 0;
             numstack[nument] = atol( currnum );
-            numinprog = FALSE;
+            numinprog = false;
         }
         if( stopnum ) {
             numstack[nument] *= numsign;
             nument++;
             numsign = csign;
             csign = 1;
-            stopnum = FALSE;
+            stopnum = false;
         }
     }
     EliminateFirstN( buff, k );

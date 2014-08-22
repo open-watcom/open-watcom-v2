@@ -176,9 +176,9 @@ int main( int argc, char *argv[] )
         strcpy( type, line );
 
         if( !strcmp( type, "DYN_TPL_DIM" ) ) {
-            fputs( "DYN_TPL_DIM, TRUE, 0, ", out );
+            fputs( "DYN_TPL_DIM, true, 0, ", out );
         } else {
-            fputs( "DYN_TPL_STATIC, TRUE, 0, ", out );
+            fputs( "DYN_TPL_STATIC, true, 0, ", out );
         }
 
         do {

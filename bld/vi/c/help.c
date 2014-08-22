@@ -118,7 +118,7 @@ vi_rc DoHelp( char *data )
     int         i;
 
     RemoveLeadingSpaces( data );
-    token = Tokenize( helpCmds, data, FALSE );
+    token = Tokenize( helpCmds, data, false );
     if( token == TOK_INVALID ) {
         if( data[0] == 0 ) {
             strcpy( tmp, "Topics: " );
@@ -140,9 +140,9 @@ vi_rc DoHelp( char *data )
         Error( "Help file %s not found", hfile );
         return( DO_NOT_CLEAR_MESSAGE_WINDOW );
     }
-    EditFlags.ViewOnly = TRUE;
-    rc = EditFile( path, FALSE );
-    EditFlags.ViewOnly = FALSE;
+    EditFlags.ViewOnly = true;
+    rc = EditFile( path, false );
+    EditFlags.ViewOnly = false;
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
@@ -151,9 +151,9 @@ vi_rc DoHelp( char *data )
     strlwr( tmp );
     strcat( tmp, " Help" );
     tmp[0] = toupper( tmp[0] );
-    CurrentFile->read_only = FALSE;
+    CurrentFile->read_only = false;
     AddString2( &(CurrentFile->name), tmp );
-    SetFileWindowTitle( CurrentWindow, CurrentInfo, TRUE );
+    SetFileWindowTitle( CurrentWindow, CurrentInfo, true );
     DisplayFileStatus();
     return( ERR_NO_ERR );
 

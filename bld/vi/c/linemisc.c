@@ -81,7 +81,7 @@ vi_rc GenericJoinCurrentLineToNext( bool remsp )
      */
     StartUndoGroup( UndoStack );
     CurrentLineReplaceUndoStart();
-    CurrentLineReplaceUndoEnd( TRUE );
+    CurrentLineReplaceUndoEnd( true );
     GetCurrentLine();
 
     if( remsp ) {
@@ -146,7 +146,7 @@ vi_rc JoinCurrentLineToNext( void )
     i = (int) GetRepeatCount();
     StartUndoGroup( UndoStack );
     for( j = 0; j < i; j++ ) {
-        rc = GenericJoinCurrentLineToNext( TRUE );
+        rc = GenericJoinCurrentLineToNext( true );
         if( rc != ERR_NO_ERR ) {
             break;
         }

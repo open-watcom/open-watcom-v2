@@ -50,9 +50,9 @@ static bool addChar( char ch )
     bPos++;
     if( bPos >= MAX_SRC_LINE - 1 ) {
         bPtr[bPos] = 0;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* addChar */
 
@@ -94,7 +94,7 @@ void Expand( char *data, vlist *vl )
                 data++;
                 continue;
             }
-            has_var = FALSE;
+            has_var = false;
             if( *data != '(' ) {
                 varname[0] = *data++;
                 varname[1] = 0;
@@ -108,7 +108,7 @@ void Expand( char *data, vlist *vl )
                         break;
                     }
                     if( ch == '%' ) {
-                        has_var = TRUE;
+                        has_var = true;
                     } else if( ch == '(' ) {
                         paren_level++;
                     } else if( ch == ')' ) {
@@ -136,16 +136,16 @@ void Expand( char *data, vlist *vl )
             } else {
                 ptr = varname;
             }
-            done = FALSE;
-            need_closebracket = FALSE;
+            done = false;
+            need_closebracket = false;
             if( ptr == varname ) {
                 if( !addChar( '%' ) ) {
-                    done = TRUE;
+                    done = true;
                 } else if( varname[1] != 0 ) {
                     if( !addChar( '(' ) ) {
-                        done = TRUE;
+                        done = true;
                     } else {
-                        need_closebracket = TRUE;
+                        need_closebracket = true;
                     }
                 }
             }
@@ -155,7 +155,7 @@ void Expand( char *data, vlist *vl )
                     break;
                 }
                 if( !addChar( *ptr ) ) {
-                    done = TRUE;
+                    done = true;
                     break;
                 }
                 ptr++;
@@ -165,7 +165,7 @@ void Expand( char *data, vlist *vl )
             }
             if( need_closebracket ) {
                 if( !addChar( ')' ) ) {
-                    done = TRUE;
+                    done = true;
                     break;
                 }
             }

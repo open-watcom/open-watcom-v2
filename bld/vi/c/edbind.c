@@ -36,6 +36,7 @@
 #include <ctype.h>
 #include "wio.h"
 #include "watcom.h"
+#include "bool.h"
 #include "banner.h"
 #include "bnddata.h"
 #include "clibext.h"
@@ -43,16 +44,14 @@
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 #define MAX_LINE_LEN    1024
-#define FALSE           0
-#define TRUE            1
 #define COPY_SIZE       0x8000 - 512
 #define MAX_DATA_FILES  255
 
 char    *dats[MAX_DATA_FILES];
 
 short   FileCount;
-short   sflag = FALSE;
-short   qflag = FALSE;
+bool    sflag = false;
+bool    qflag = false;
 char    _bf[] = "edbind.dat";
 char    *bindfile = _bf;
 
@@ -336,8 +335,8 @@ int main( int argc, char *argv[] )
             sl = strlen( argv[j] );
             for( i = 1; i < sl; i++ ) {
                 switch( argv[j][i] ) {
-                case 's': sflag = TRUE; break;
-                case 'q': qflag = TRUE; break;
+                case 's': sflag = true; break;
+                case 'q': qflag = true; break;
                 case 'd':
                     bindfile = &argv[j][i + 1];
                     i = sl;

@@ -113,8 +113,8 @@ vi_rc FcbDump( void )
     WPrintfLine( fw, 1, "File name: %s", CurrentFile->name );
     WPrintfLine( fw, 2, "File home: %s", CurrentFile->home );
     WPrintfLine( fw, 3, "File handle: %d,  current position: %l", CurrentFile->handle, CurrentFile->curr_pos );
-    WPrintfLine( fw, 4, "Bytes_pending: %d", (int) CurrentFile->bytes_pending );
-    WPrintfLine( fw, 5, "Modified: %d", (int) CurrentFile->modified );
+    WPrintfLine( fw, 4, "Bytes_pending: %d", (int)CurrentFile->bytes_pending );
+    WPrintfLine( fw, 5, "Modified: %d", (int)CurrentFile->modified );
     lc = 7;
     for( cfcb = CurrentFile->fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
         fcbcnt++;
@@ -197,7 +197,7 @@ vi_rc SanityCheck( void )
     linenum     cl, lcnt;
     vi_rc       rc;
 
-    EditFlags.WatchForBreak = TRUE;
+    EditFlags.WatchForBreak = true;
     if( (rc = NewWindow( &fw, 0, 0, 79, 24, 1, LIGHT_GREEN, BLACK, &errStyle )) ) {
         return( rc );
     }
@@ -258,7 +258,8 @@ vi_rc SanityCheck( void )
             break;
         }
     }
-    EditFlags.WatchForBreak = EditFlags.BreakPressed = FALSE;
+    EditFlags.WatchForBreak = false;
+    EditFlags.BreakPressed = false;
 
     CloseAWindow( fw );
 #endif
@@ -468,7 +469,7 @@ vi_rc DumpMemory( void )
 
     WPrintfLine( wn, ln + 1, MSG_PRESSANYKEY );
 
-    GetNextEvent( FALSE );
+    GetNextEvent( false );
     CloseAWindow( wn );
     return( ERR_NO_ERR );
 

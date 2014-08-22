@@ -115,7 +115,7 @@ void RecordCurrentLineData( void )
     long        curr_pos;
     char        *ptr;
     int         cnt;
-    bool        done = FALSE;
+    bool        done = false;
     int         ch;
 
     curr_pos = ftell( inputFile );
@@ -128,11 +128,11 @@ void RecordCurrentLineData( void )
         ch = GetChar();
         switch( ch ) {
         case EOF:
-            done = TRUE;
+            done = true;
             break;
         case '/':
             if( cnt == MAX_LINE - 2 ) {
-                done = TRUE;
+                done = true;
                 break;
             }
             *ptr++ = '\\';
@@ -141,7 +141,7 @@ void RecordCurrentLineData( void )
             break;
         case '\\':
             if( cnt == MAX_LINE - 2 ) {
-                done = TRUE;
+                done = true;
                 break;
             }
             *ptr++ = '\\';
@@ -150,14 +150,14 @@ void RecordCurrentLineData( void )
             break;
         case '\n':
             *ptr++ = '$';
-            done = TRUE;
+            done = true;
             break;
         default:
             *ptr++ = ch;
         }
         cnt++;
         if( cnt >= MAX_LINE - 1 ) {
-            done = TRUE;
+            done = true;
         }
     }
     *ptr = 0;
@@ -191,8 +191,8 @@ bool GetString( char *buff, int maxbuff )
     currentLineNumber++;
     currentLinePos = ftell( inputFile );
     if( fgets( buff, maxbuff, inputFile ) == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* GetString */

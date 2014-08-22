@@ -37,7 +37,7 @@ static char *buffPtr;
 /*
  * create a line from a string of chars
  */
-static int createLine( char *res, int *crlf_reached )
+static int createLine( char *res, bool *crlf_reached )
 {
     char        c;
     char        *buff;
@@ -69,7 +69,7 @@ static int createLine( char *res, int *crlf_reached )
             } else {
                 if( c == CR ) {
                     if( crlf_reached != NULL ) {
-                        *crlf_reached = TRUE;
+                        *crlf_reached = true;
                     }
                     buff++;
                     continue;
@@ -103,7 +103,7 @@ static int createLine( char *res, int *crlf_reached )
  * createLinesFromBuffer - create a set of lines from specified buffer
  */
 static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
-                            int *lcnt, short *bytecnt, int *crlf_reached )
+                            int *lcnt, short *bytecnt, bool *crlf_reached )
 {
     int         curr, copylen, total, tmpmio;
     short       bcnt, llcnt;
@@ -115,7 +115,7 @@ static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
     tmpmio = MAX_IO_BUFFER - 2;
     tmpbuff = StaticAlloc();
 
-    rc = FALSE;
+    rc = false;
     /*
      * this zero makes sure that the file will always have a termination
      */
@@ -129,7 +129,7 @@ static bool createLinesFromBuffer( int cnt, line_list *linelist, int *used,
         buffPtr = &ReadBuffer[curr];
         if( crlf_reached != NULL ) {
             if( *buffPtr == CTRLZ && !EditFlags.IgnoreCtrlZ ) {
-                rc = TRUE;
+                rc = true;
                 break;
             }
         }
@@ -164,7 +164,7 @@ bool CreateLinesFromBuffer( int cnt, line_list *linelist, int *used, int *lcnt, 
     return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, NULL ) );
 }
 
-bool CreateLinesFromFileBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt, int *crlf_reached )
+bool CreateLinesFromFileBuffer( int cnt, line_list *linelist, int *used, int *lcnt, short *bytecnt, bool *crlf_reached )
 {
     return( createLinesFromBuffer( cnt, linelist, used, lcnt, bytecnt, crlf_reached ) );
 }

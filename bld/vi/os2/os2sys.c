@@ -49,7 +49,7 @@ static char     oldDisk;
 
 int FileSysNeedsCR( int handle )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -131,12 +131,12 @@ void ScreenInit( void )
         FatalError( ERR_WIND_INVALID );
     }
     if( config.display == 3 ) {
-        EditFlags.BlackAndWhite = TRUE;
+        EditFlags.BlackAndWhite = true;
     } else {
         if( config.adapter == 0 ) {
-            EditFlags.Monocolor = TRUE;
+            EditFlags.Monocolor = true;
         } else {
-            EditFlags.Color = TRUE;
+            EditFlags.Color = true;
         }
     }
 
@@ -158,7 +158,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0x10;
+    EditVars.ExtendedKeyboard = 0x10;
 
 } /* ChkExtendedKbd */
 
@@ -206,9 +206,9 @@ bool ShiftDown( void )
     ki.cb = sizeof( KBDINFO );
     KbdGetStatus( &ki, 0 );
     if( ki.fsState & KEY_SHIFT ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -224,12 +224,12 @@ void TurnOffCapsLock( void )
     ki.cb = sizeof( KBDINFO );
     KbdGetStatus( &ki, 0 );
     if( ki.fsState & KEY_CAPS_LOCK ) {
-        hadCapsLock = TRUE;
+        hadCapsLock = true;
         ki.fsMask |= 0x10;
         ki.fsState &= ~KEY_CAPS_LOCK;
         KbdSetStatus( &ki, 0 );  /* OS/2 2.0 FUCKS UP IF YOU DO THIS */
     } else {
-        hadCapsLock = FALSE;
+        hadCapsLock = false;
     }
 
 } /* TurnOffCapsLock */

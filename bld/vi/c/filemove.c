@@ -74,9 +74,9 @@ vi_rc NextFileDammit( void )
                 if( tinfo->CurrentFile == CurrentFile ) {
                     if( tinfo->DuplicateID > lastid ) {
                         tinfo->DuplicateID--;
-                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, FALSE );
+                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, false );
                     } else if( CurrentFile->dup_count == 0 ) {
-                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, FALSE );
+                        SetFileWindowTitle( tinfo->CurrentWindow, tinfo, false );
                     }
                 }
             }
@@ -105,7 +105,7 @@ vi_rc NextFileDammit( void )
     if( cinfo == NULL ) {
         if( EditFlags.QuitAtLastFileExit || !dont_exit_this_time ) {
             CurrentWindow = NO_WINDOW;
-            // EditFlags.Quiet = TRUE;
+            // EditFlags.Quiet = true;
             if( CommandBuffer ) {
                 MemFree( CommandBuffer );
             }
@@ -122,7 +122,7 @@ vi_rc NextFileDammit( void )
      * now, set up with next file
      */
     if( cinfo ) {
-        BringUpFile( cinfo, TRUE );
+        BringUpFile( cinfo, true );
     } else {
         CurrentFile = NULL;
     }
@@ -154,7 +154,7 @@ vi_rc NextFile( void )
 static vi_rc nextFile( info *cinfo )
 {
     SaveCurrentInfo();
-    BringUpFile( cinfo, FALSE );
+    BringUpFile( cinfo, false );
     if( cinfo ) {
         // FTSRunCmds( cinfo->CurrentFile->name );
     }
@@ -225,7 +225,7 @@ vi_rc GotoFile( window_id id )
 void BringUpFile( info *ci, bool runCmds )
 {
     window_id   wn;
-    static bool recursive = FALSE;
+    static bool recursive = false;
 
     if( recursive ) {
         return;
@@ -236,10 +236,10 @@ void BringUpFile( info *ci, bool runCmds )
     if( RestoreInfo( ci ) ) {
         LineNumbersSetup();
     }
-    EditFlags.Dragging = FALSE;
-    MoveWindowToFrontDammit( CurrentWindow, FALSE );
+    EditFlags.Dragging = false;
+    MoveWindowToFrontDammit( CurrentWindow, false );
     if( EditFlags.LineNumbers ) {
-        MoveWindowToFrontDammit( CurrNumWindow, FALSE );
+        MoveWindowToFrontDammit( CurrNumWindow, false );
     }
     DisplayFileStatus();
     UpdateStatusWindow();
@@ -256,11 +256,11 @@ void BringUpFile( info *ci, bool runCmds )
     SourceHook( SRC_HOOK_BUFFIN, ERR_NO_ERR );
 
     // be careful when runCmds true!  Some commands redraw the screen,
-    // which calls BringUpFile, which (if runCmds = TRUE) will run cmds...
+    // which calls BringUpFile, which (if runCmds = true) will run cmds...
     if( runCmds && ci != NULL ) {
-        recursive = TRUE;
+        recursive = true;
         FTSRunCmds( ci->CurrentFile->name );
-        recursive = FALSE;
+        recursive = false;
     }
 
 #ifdef __WIN__

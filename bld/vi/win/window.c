@@ -168,7 +168,7 @@ void InitWindows( void )
         w = Windows[i];
         (*w->init)( w, NULL );
     }
-    EditFlags.WindowsStarted = TRUE;
+    EditFlags.WindowsStarted = true;
 }
 
 void FiniWindows( void )
@@ -232,7 +232,7 @@ int WindowAuxInfo( window_id id, int type )
         break;
     case WIND_INFO_HAS_SCROLL_GADGETS:
     case WIND_INFO_HAS_BORDER:
-        value = FALSE;
+        value = false;
         break;
     case WIND_INFO_TEXT_FONT:
         value = WIN_FONT( win );

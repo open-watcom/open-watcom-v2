@@ -248,9 +248,9 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf )
     gf->gf.a.currline = 0;
     gf->data.f = GetFromEnvAndOpen( fn );
     if( gf->data.f == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* SpecialOpen */
 

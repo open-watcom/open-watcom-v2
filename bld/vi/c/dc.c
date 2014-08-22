@@ -42,8 +42,8 @@
 
 static void initDCLine( dc dc )
 {
-    dc->display = TRUE;
-    dc->valid = FALSE;
+    dc->display = true;
+    dc->valid = false;
     dc->text = NULL;
     dc->textlen = 0;
     dc->ss = SSNewBlock();
@@ -141,7 +141,7 @@ void DCScroll( int nlines )
 
     a = abs( nlines );
     for( i = 0; i < a; i++ ) {
-        dc_i->valid = FALSE;
+        dc_i->valid = false;
         dc_i++;
     }
 }
@@ -207,7 +207,7 @@ vi_rc DCUpdate( void )
     SelectObject( hdc_mem, ColorBrush( ws->background ) );
 #endif
 #else
-    hasMouse = DisplayMouse( FALSE );
+    hasMouse = DisplayMouse( false );
 #endif
 
     rc = CGimmeLinePtr( LeftTopPos.line, &fcb, &line );
@@ -217,8 +217,8 @@ vi_rc DCUpdate( void )
 
     nlines = CurrentInfo->dc_size;
     dc = CurrentInfo->dc;
-    firstLine = TRUE;
-    firstTilde = TRUE;
+    firstLine = true;
+    firstTilde = true;
     for( i = 0, line_no = LeftTopPos.line; i < nlines; i++, line_no++ ) {
         if( dc->display ) {
             if( line ) {
@@ -229,7 +229,7 @@ vi_rc DCUpdate( void )
                     } else {
                         SSInitLanguageFlags( line_no );
                     }
-                    firstLine = FALSE;
+                    firstLine = false;
                 }
 
                 displayText = line->data;
@@ -251,7 +251,7 @@ vi_rc DCUpdate( void )
                     displayText = "";
                     if( firstTilde ) {
                         displayText = EditVars.FileEndString;
-                        firstTilde = FALSE;
+                        firstTilde = false;
                     }
                 }
                 displayOffset = 0;
@@ -266,10 +266,10 @@ vi_rc DCUpdate( void )
                                 line, line_no, displayText, displayOffset,
                                 hdc_wnd );
 #endif
-            dc->display = FALSE;
+            dc->display = false;
         } else {
             // just in case displaying 2+ blocks in one update
-            firstLine = TRUE;
+            firstLine = true;
         }
         if( line ) {
             rc = CGimmeNextLinePtr( &fcb, &line );
@@ -301,17 +301,17 @@ void DCUpdateAll( void )
         return;
     }
 
-    saved_cinfo = FALSE;
+    saved_cinfo = false;
     info = CurrentInfo;
     for( curr = info; curr != NULL; curr = curr->next ) {
         if( curr->CurrentFile->needs_display ) {
             if( !saved_cinfo ) {
                 SaveCurrentInfo();
-                saved_cinfo = TRUE;
+                saved_cinfo = true;
             }
             RestoreInfo( curr );
             DCUpdate();
-            curr->CurrentFile->needs_display = FALSE;
+            curr->CurrentFile->needs_display = false;
         }
     }
     if( saved_cinfo ) {
@@ -361,7 +361,7 @@ void DCDisplaySomeLines( int start, int end )
     if( CurrentInfo->dc_size == 0 ) {
         return;
     }
-    CurrentFile->needs_display = TRUE;
+    CurrentFile->needs_display = true;
     shaveRange( &start, &end );
 
     cfcb = CurrentFcb;
@@ -371,12 +371,12 @@ void DCDisplaySomeLines( int start, int end )
         return;
     }
     CTurnOffFileDisplayBits();
-    cfcb->on_display = TRUE;
+    cfcb->on_display = true;
 
     dc = CurrentInfo->dc;
     dc += start;
     for( i = start; i <= end; i++ ) {
-        dc->display = TRUE;
+        dc->display = true;
         dc++;
     }
 }
@@ -405,7 +405,7 @@ void DCInvalidateSomeLines( int start, int end )
     dc = CurrentInfo->dc;
     dc += start;
     for( i = start; i <= end; i++ ) {
-        dc->valid = FALSE;
+        dc->valid = false;
         dc++;
     }
 }
@@ -459,5 +459,5 @@ void DCValidateLine( dc dc_line, int start_col, char *text )
     }
     memcpy( dc_line->text, text, nlen );
     dc_line->textlen = nlen;
-    dc_line->valid = TRUE;
+    dc_line->valid = true;
 }

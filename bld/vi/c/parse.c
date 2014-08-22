@@ -102,7 +102,7 @@ vi_rc GetStringWithPossibleQuote2( char *data, char *st, bool allow_slash )
 
 vi_rc GetStringWithPossibleQuote( char *data, char *st )
 {
-    return( GetStringWithPossibleQuote2( data, st, TRUE ) );
+    return( GetStringWithPossibleQuote2( data, st, true ) );
 
 } /* GetStringWithPossibleQuote */
 
@@ -211,15 +211,15 @@ static bool isIgnorable( char c, char *ign )
     while( *ign != 0 ) {
         if( *ign == ' ' ) {
             if( isspace( c ) ) {
-                return( TRUE );
+                return( true );
             }
         } else if( c == *ign ) {
-            return( TRUE );
+            return( true );
         }
         ign++;
     }
 
-    return( FALSE );
+    return( false );
 
 } /* isIgnorable */
 

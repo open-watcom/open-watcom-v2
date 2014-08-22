@@ -110,7 +110,7 @@ int SwapToXMSMemory( fcb *fb )
      * finish up
      */
     fb->xmemaddr = found;
-    fb->in_xms_memory = TRUE;
+    fb->in_xms_memory = true;
     return( ERR_NO_ERR );
 
 } /* SwapToXMSMemory */
@@ -167,10 +167,10 @@ static unsigned long xmsAlloc( int size )
                 break;
             }
 
-            XMSCtrl.small_block = TRUE;
+            XMSCtrl.small_block = true;
             page_request -= XMS_BLOCK_ADJUST_SIZE_IN_K;
             if( page_request == 0 ) {
-                XMSCtrl.exhausted = TRUE;
+                XMSCtrl.exhausted = true;
                 return( NULL );
             }
 
@@ -203,13 +203,13 @@ void XMSInit( void )
     int         i;
     xms_addr    h;
 
-    XMSCtrl.inuse = FALSE;
+    XMSCtrl.inuse = false;
     if( !EditFlags.ExtendedMemory ) {
         return;
     }
-    XMSCtrl.exhausted = FALSE;
+    XMSCtrl.exhausted = false;
     XMSCtrl.next_handle = 0;
-    XMSCtrl.small_block = FALSE;
+    XMSCtrl.small_block = false;
     if( _XMSInstalled() != XMS_INSTALLED ) {
         return;
     }
@@ -252,7 +252,7 @@ void XMSInit( void )
         return;
     }
 
-    XMSCtrl.inuse = TRUE;
+    XMSCtrl.inuse = true;
 
 } /* XMSInit */
 
@@ -279,7 +279,7 @@ void XMSFini( void )
         }
         XMSCtrl.next_handle--;
     }
-    XMSCtrl.inuse = FALSE;
+    XMSCtrl.inuse = false;
 
 } /* XMSFini */
 

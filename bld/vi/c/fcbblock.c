@@ -89,7 +89,7 @@ bool GetNewBlock( long *p, unsigned char *blocks, int size )
                 if( j & k ) {
                     blocks[i] &= (0xff - j);
                     *p = (long) l * (long) MAX_IO_BUFFER;
-                    return( TRUE );
+                    return( true );
                 }
                 j >>= 1;
                 l++;
@@ -97,7 +97,7 @@ bool GetNewBlock( long *p, unsigned char *blocks, int size )
         }
     }
 
-    return( FALSE );
+    return( false );
 
 } /* GetNewBlock */
 

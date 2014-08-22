@@ -101,7 +101,7 @@ void SwapFcb( fcb *fb )
 #endif
     if( rc == ERR_NO_ERR ) {
         fb->lines.head = fb->lines.tail = NULL;
-        fb->in_memory = FALSE;
+        fb->in_memory = false;
     }
 
     if( rc != ERR_NO_ERR ) {
@@ -146,16 +146,16 @@ vi_rc RestoreToNormalMemory( fcb *fb, int len )
      */
     fb->xmemaddr = 0L;
 #ifndef NOXTD
-    fb->in_extended_memory = FALSE;
+    fb->in_extended_memory = false;
 #endif
 #ifndef NOEMS
-    fb->in_ems_memory = FALSE;
+    fb->in_ems_memory = false;
 #endif
 #ifndef NOXMS
-    fb->in_xms_memory = FALSE;
+    fb->in_xms_memory = false;
 #endif
-    fb->swapped = FALSE;
-    fb->in_memory = TRUE;
+    fb->swapped = false;
+    fb->in_memory = true;
     fb->last_swap = ClockTicks;
 
     return( ERR_NO_ERR );

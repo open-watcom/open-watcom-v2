@@ -103,15 +103,15 @@ WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
 {
     OPENFILENAME        of;
-    BOOL                rc;
+    bool                rc;
     static long         filemask = 1;
-    bool                is_chicago = FALSE;
+    bool                is_chicago = false;
 
 #ifdef __NT__
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
-        is_chicago = TRUE;
+        is_chicago = true;
     }
     /* -------------------------------------------------------- */
 #endif
@@ -135,12 +135,12 @@ vi_rc SelectFileOpen( char *dir, char **result, char *mask, bool want_all_dirs )
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
         of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
     }
-    rc = GetOpenFileName( &of );
+    rc = GetOpenFileName( &of ) != 0;
     filemask = of.nFilterIndex;
     if( !is_chicago ) {
         (void)FreeProcInstance( (FARPROC)of.lpfnHook );
     }
-    if( rc == FALSE && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
+    if( !rc && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
         if( !is_chicago ) {
             MemFree( (char*)(of.lpstrFile) );
             *result = FileNameList;
@@ -162,7 +162,7 @@ vi_rc SelectFileSave( char *result )
 {
     OPENFILENAME        of;
     int                 doit;
-    bool                is_chicago = FALSE;
+    bool                is_chicago = false;
 
     assert( CurrentFile != NULL );
 
@@ -179,7 +179,7 @@ vi_rc SelectFileSave( char *result )
     of.lpstrInitialDir = CurrentFile->home;
 #ifdef __NT__
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 )
-        is_chicago = TRUE;
+        is_chicago = true;
 #endif
     if( is_chicago ) {
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
@@ -211,7 +211,7 @@ char *GetInitialFileName( void )
 
     CloseStartupDialog();
     path[0] = 0;
-    rc = SelectFileOpen( "", &path, NULL, FALSE );
+    rc = SelectFileOpen( "", &path, NULL, false );
     ShowStartupDialog();
     if( rc == ERR_NO_ERR && path[0] != 0 ) {
         AddString( &ptr, path );

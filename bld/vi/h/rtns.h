@@ -64,7 +64,7 @@ vi_rc   DoLineSubstitute( event **, event ** );
 vi_rc   DoChangeLineEnd( event **, event ** );
 
 /* cledit.c */
-vi_rc   EditFile( char *, int );
+vi_rc   EditFile( char *, bool );
 vi_rc   EditFileFromList( void );
 vi_rc   OpenWindowOnFile( char *data );
 
@@ -100,7 +100,7 @@ void    GetModeString( char * );
 status_type UpdateCurrentStatus( status_type st );
 
 /* cut.c */
-vi_rc   Cut( linenum, int, linenum, int, int );
+vi_rc   Cut( linenum, int, linenum, int, bool );
 
 /* dat.c */
 #ifdef VICOMP
@@ -158,8 +158,8 @@ vi_rc   DoAltDotMode( void );
 void    SaveDotCmd( void );
 
 /* editdc.c */
-vi_rc   DeleteBlockFromCurrentLine( int, int, int );
-vi_rc   DeleteRangeOnCurrentLine( int, int, int );
+vi_rc   DeleteBlockFromCurrentLine( int, int, bool );
+vi_rc   DeleteRangeOnCurrentLine( int, int, bool );
 
 /* editins.c */
 vi_rc   InsertTextAtCursor( void );
@@ -274,7 +274,7 @@ int ExpandFileNames( char *, char *** );
 
 /* fcb.c */
 vi_rc   OpenFcbData( file * );
-vi_rc   ReadFcbData( file *, int * );
+vi_rc   ReadFcbData( file *, bool * );
 void    CreateFcbData( file *, int );
 int     FcbSize( fcb * );
 
@@ -347,7 +347,7 @@ void    FreeEntireFile( file * );
 #ifdef __WIN__
 vi_rc   SaveFileAs( void );
 #endif
-vi_rc   SaveFile( char *, linenum, linenum, int );
+vi_rc   SaveFile( char *, linenum, linenum, bool );
 vi_rc   StartSaveExit( void );
 vi_rc   SaveAndExit( char *fname );
 bool    FileExitOptionSaveChanges( file * );
@@ -458,7 +458,7 @@ void    FiniCFName( void );
 
 /* io.c */
 vi_rc   FileExists( char * );
-vi_rc   FileOpen( char *, int, int, int, int * );
+vi_rc   FileOpen( char *, bool, int, int, int * );
 vi_rc   FileSeek( int, long );
 FILE    *GetFromEnvAndOpen( const char * );
 void    GetFromEnv( const char *, char * );
@@ -482,7 +482,7 @@ void    AddCurrentMouseEvent( void );
 
 /* linecfb.c */
 bool    CreateLinesFromBuffer( int, line_list *, int *, int *, short * );
-bool    CreateLinesFromFileBuffer( int, line_list *, int *, int *, short *, int * );
+bool    CreateLinesFromFileBuffer( int, line_list *, int *, int *, short *, bool * );
 
 /* linedel.c */
 void    UpdateLineNumbers( linenum amt, fcb *cfcb  );
@@ -579,7 +579,7 @@ vi_rc   GoMark( range *, long );
 vi_rc   GoMarkLine( range *, long );
 vi_rc   GetMark( linenum *, int * );
 vi_rc   GetMarkLine( linenum * );
-vi_rc   VerifyMark( unsigned, int );
+vi_rc   VerifyMark( unsigned, bool );
 void    AllocateMarkList( void );
 void    FreeMarkList( void );
 void    MemorizeCurrentContext( void );
@@ -700,7 +700,7 @@ void    InitSavebufs( void );
 void    AddLineToSavebuf( char *, int, int );
 vi_rc   AddSelRgnToSavebuf( void );
 vi_rc   AddSelRgnToSavebufAndDelete( void );
-void    AddFcbsToSavebuf( fcb_list *, int );
+void    AddFcbsToSavebuf( fcb_list *, bool );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
 vi_rc   SetSavebufNumber( char * );
@@ -807,7 +807,7 @@ void    TryEndUndoGroup( undo_stack *cstack );
 void    CurrentLineReplaceUndoStart( void );
 void    CurrentLineReplaceUndoCancel( void );
 void    ConditionalCurrentLineReplaceUndoEnd( void );
-void    CurrentLineReplaceUndoEnd( int );
+void    CurrentLineReplaceUndoEnd( bool );
 
 /* undo_do.c */
 vi_rc DoUndo( void );
@@ -815,7 +815,7 @@ vi_rc DoUndoUndo( void );
 
 /* undostks.c */
 undo    *UndoAlloc( undo_stack *stack, int type );
-void    UndoFree( undo *cundo, int freefcbs );
+void    UndoFree( undo *cundo, bool freefcbs );
 void    AddUndoToCurrent( undo *item, undo_stack *stack );
 void    PurgeUndoStack( undo_stack *stack );
 bool    TossUndos( void );

@@ -382,7 +382,7 @@ void *StaticAlloc( void )
 
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         if( !staticUse[i] ) {
-            staticUse[i] = TRUE;
+            staticUse[i] = true;
             {
                 int j, k = 0;
                 for( j = 0; j < MAX_STATIC_BUFFERS; j++ ) {
@@ -410,7 +410,7 @@ void StaticFree( char *item )
 
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         if( item == staticBuffs[i] ) {
-            staticUse[i] = FALSE;
+            staticUse[i] = false;
             return;
         }
     }
@@ -428,7 +428,7 @@ void StaticStart( void )
     bs = EditVars.MaxLine + 2;
     StaticBuffer = MemAlloc( MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
-        staticUse[i] = FALSE;
+        staticUse[i] = false;
         staticBuffs[i] = &StaticBuffer[i * bs];
     }
 

@@ -90,10 +90,10 @@ static int compareName( char *dst, char *src )
             dst++;
         }
         if( tolower( *dst ) != tolower( *src++ ) ) {
-            return( FALSE );
+            return( false );
         }
     } while( *dst++ );
-    return( TRUE );
+    return( true );
 
 } /* compareName */
 
@@ -199,10 +199,10 @@ static bool isSpecialMenuPtr( menu *cmenu )
 
     for( i = 0; i < sizeof( specialMenus ) / sizeof( special_menu ); i++ ) {
         if( cmenu == specialMenus[i].m ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* isSpecialMenuPtr */
 
@@ -308,9 +308,9 @@ static item *addItemToMenu( menu *m, char *name, char *help, char *cmd, bool app
              AppendMenu( m->menu_handle, MF_ENABLED | MF_STRING, new->id, name );
         }
     }
-    new->in_menu = FALSE;
-    new->is_checked = FALSE;
-    new->is_active = TRUE;
+    new->in_menu = false;
+    new->is_checked = false;
+    new->is_active = true;
     m->num_items += 1;
     AddLLItemAtEnd( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)new );
     return( new );
@@ -363,7 +363,7 @@ static menu *findMenu( menu *parent, char *name )
 /*
  * freeItem - free an item in a menu
  */
-static int freeItem( menu *m, int offset )
+static bool freeItem( menu *m, int offset )
 {
     item    *citem;
 
@@ -379,9 +379,9 @@ static int freeItem( menu *m, int offset )
         m->num_items -= 1;
         DeleteLLItem( (ss **)&m->item_head, (ss **)&m->item_tail, (ss *)citem );
         MemFree( citem );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* freeItem */
 
@@ -412,7 +412,7 @@ static void burnItem( menu *parent, int offset )
     if( citem != NULL ) {
         assert( parent->menu_handle != NULL );
         DeleteMenu( parent->menu_handle, offset, MF_BYPOSITION );
-        citem->in_menu = FALSE;
+        citem->in_menu = false;
     }
 
 } /* burnItem */
@@ -476,7 +476,7 @@ static void makeItem( menu *m, item *citem )
         } else {
             AppendMenu( m->menu_handle, MF_SEPARATOR, 0, NULL );
         }
-        citem->in_menu = TRUE;
+        citem->in_menu = true;
     }
 
 } /* makeItem */
@@ -493,7 +493,7 @@ static void makeMenu( menu *parent, menu *m )
     AppendMenu( parent->menu_handle, MF_ENABLED | MF_POPUP,
                 (UINT) m->menu_handle, &m->name[0] );
     for( i = m->item_head; i != NULL; i = i->next ) {
-        i->in_menu = FALSE;
+        i->in_menu = false;
         makeItem( m, i );
     }
 
@@ -520,9 +520,9 @@ int StartMenu( char *data )
     GetStringWithPossibleQuote( data, name );
     GetStringWithPossibleQuote( data, help );
     RemoveLeadingSpaces( data );
-    need_hook = FALSE;
+    need_hook = false;
     if( data[0] != 0 ) {
-        need_hook = TRUE;
+        need_hook = true;
     }
     /* check for an existing menu with the same name */
     currMenu = findMenu( rootMenu, name );
@@ -551,7 +551,7 @@ int MenuItem( char *data )
     GetStringWithPossibleQuote( data, help );
     RemoveLeadingSpaces( data );
     TranslateTabs( name );
-    addItemToMenu( currMenu, name, help, data, FALSE );
+    addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
 
 } /* MenuItem */
@@ -572,7 +572,7 @@ int AddMenuItem( char *data )
     RemoveLeadingSpaces( data );
     m = findMenu( rootMenu, menu_name );
     if( m != NULL ) {
-        addItemToMenu( m, name, help, data, FALSE );
+        addItemToMenu( m, name, help, data, false );
         InitMenu();
         return( ERR_NO_ERR );
     }
@@ -594,7 +594,7 @@ vi_rc DoMenuChar( void )
     key = LastEvent;
     for( m = rootMenu->item_head; m != NULL; m = m->next ) {
         if( getHotKey( m->name ) == key ) {
-            key = GetNextEvent( TRUE );
+            key = GetNextEvent( true );
             for( citem = m->item_head; citem != NULL; citem = citem->next ) {
                 if( getHotKey( citem->name ) == key ) {
                     len = strlen( citem->cmd ) + 1;
@@ -624,7 +624,7 @@ int ViEndMenu( void )
         EventList[key].rtn.old = DoMenuChar;
         EventList[key].alt_rtn.old = DoMenuChar;
         EventList[key].ins = IMMenuKey;
-        EventList[key].b.keep_selection = TRUE;
+        EventList[key].b.keep_selection = true;
     }
     if( !isSpecialMenuPtr( currMenu ) ) {
         InitMenu();
@@ -743,10 +743,10 @@ bool IsMenuHotKey( vi_key key )
 
     for( m = rootMenu->item_head; m != NULL; m = m->next ) {
         if( getHotKey( m->name ) == key ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* IsMenuHotKey */
 
@@ -812,7 +812,7 @@ int ActivateFloatMenu( char *data )
 } /* ActivateFloatMenu */
 
 /*
- * MenuCommand: returns TRUE if it handles the command and
+ * MenuCommand: returns true if it handles the command and
  * FALSE otherwise. Looks for a menu item with id identical to
  * the one passed in.
  */
@@ -968,7 +968,7 @@ static void initMenuBottom( menu *cmenu, bool add_line )
     cmenu->orig_num_items = cmenu->num_items;
     if( add_line ) {
         help[0] = name[0] = data[0] = 0;
-        addItemToMenu( cmenu, name, help, data, TRUE );
+        addItemToMenu( cmenu, name, help, data, true );
     }
     thisCount = 1;
     thisMenu = cmenu;
@@ -988,7 +988,7 @@ static bool addToMenuBottom( char *fname, bool checkit )
     MySprintf( name, "&%d %s", thisCount, fname );
     MySprintf( data, "edit \"%s\"", fname );
     MySprintf( help, "Switches to the window containing %s", fname );
-    citem = addItemToMenu( thisMenu, name, help, data, TRUE );
+    citem = addItemToMenu( thisMenu, name, help, data, true );
     if( checkit ) {
         CheckMenuItem( thisMenu->menu_handle, citem->id, MF_BYCOMMAND | MF_CHECKED );
     }
@@ -997,10 +997,10 @@ static bool addToMenuBottom( char *fname, bool checkit )
         strcpy( name, "&More Windows ..." );
         strcpy( data, "files" );
         strcpy( help, "Displays a list of all files being edited" );
-        addItemToMenu( thisMenu, name, help, data, TRUE );
-        return( TRUE );
+        addItemToMenu( thisMenu, name, help, data, true );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* addToMenuBottom */
 
@@ -1042,7 +1042,7 @@ static void addLastFiles( menu *cmenu )
     }
     old_avail = nextAvail;
     nextAvail = LAST_FILES_ID;
-    initMenuBottom( cmenu, TRUE );
+    initMenuBottom( cmenu, true );
 
     // make sure j will never be negative
     j = h->curr + h->max - 1;
@@ -1050,7 +1050,7 @@ static void addLastFiles( menu *cmenu )
     for( i = 0; i < h->max; i++ ) {
         menu_text = h->data[j % h->max];
         if( menu_text != NULL ) {
-            addToMenuBottom( menu_text, FALSE );
+            addToMenuBottom( menu_text, false );
         }
         j--;
     }
@@ -1082,19 +1082,19 @@ void HandleInitMenu( HMENU hmenu )
                 if( need_gray ) {
                     if( citem->is_active ) {
                         EnableMenuItem( hmenu, citem->id, MF_GRAYED );
-                        citem->is_active = FALSE;
+                        citem->is_active = false;
                     }
                 } else if( !need_gray ) {
                     if( !citem->is_active ) {
                         EnableMenuItem( hmenu, citem->id, MF_ENABLED );
-                        citem->is_active = TRUE;
+                        citem->is_active = true;
                     }
                     if( need_check && !citem->is_checked ) {
                         CheckMenuItem( hmenu, citem->id, MF_BYCOMMAND | MF_CHECKED );
-                        citem->is_checked = TRUE;
+                        citem->is_checked = true;
                     } else if( !need_check && citem->is_checked ) {
                         CheckMenuItem( hmenu, citem->id, MF_BYCOMMAND | MF_UNCHECKED );
-                        citem->is_checked = FALSE;
+                        citem->is_checked = false;
                     }
                 }
                 j++;
@@ -1122,8 +1122,8 @@ void ResetMenuBits( void )
         if( cmenu->menu_handle != NULL ) {
             citem = cmenu->item_head;
             while( citem != NULL ) {
-                citem->is_active = TRUE;
-                citem->is_checked = FALSE;
+                citem->is_active = true;
+                citem->is_checked = false;
                 citem = citem->next;
             }
         }
@@ -1139,7 +1139,7 @@ int MenuItemFileList( void )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    currMenu->has_file_list = TRUE;
+    currMenu->has_file_list = true;
     return( ERR_NO_ERR );
 
 } /* MenuItemFileList */
@@ -1152,7 +1152,7 @@ int MenuItemLastFiles( void )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    currMenu->has_last_files = TRUE;
+    currMenu->has_last_files = true;
     return( ERR_NO_ERR );
 
 } /* MenuItemLastFiles */
@@ -1177,18 +1177,18 @@ void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
     flags = GET_WM_MENUSELECT_FLAGS( wparam, lparam );
     currMenuHelpString = NULL;
     if( flags != -1 || hmenu != 0 ) {
-        found = FALSE;
+        found = false;
         for( cmenu = rootMenu->item_head; cmenu != NULL; cmenu = cmenu->next ) {
             if( (flags & MF_POPUP) ) {
                 if( cmenu->menu_handle == (HMENU) id ) {
                     currMenuHelpString = cmenu->help;
-                    found = TRUE;
+                    found = true;
                 }
             } else {
                 for( citem = cmenu->item_head; citem != NULL; citem = citem->next ) {
                     if( id == citem->id ) {
                         currMenuHelpString = citem->help;
-                        found = TRUE;
+                        found = true;
                         break;
                     }
                 }
@@ -1202,7 +1202,7 @@ void HandleMenuSelect( WPARAM wparam, LPARAM lparam )
                 for( citem = specialMenus[i].m->item_head; citem != NULL; citem = citem->next ) {
                     if( id == citem->id ) {
                         currMenuHelpString = citem->help;
-                        found = TRUE;
+                        found = true;
                         break;
                     }
                 }

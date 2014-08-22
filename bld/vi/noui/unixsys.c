@@ -38,7 +38,7 @@ static char oldPath[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -82,8 +82,8 @@ void ScreenInit( void )
 {
     EditVars.WindMaxHeight = 80;
     EditVars.WindMaxWidth = 24;
-    EditFlags.Color = FALSE;
-    EditFlags.HasSystemMouse = FALSE;
+    EditFlags.Color = false;
+    EditFlags.HasSystemMouse = false;
 
 } /* ScreenInit */
 
@@ -97,7 +97,7 @@ void ScreenFini( void ) {}
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0;
+    EditVars.ExtendedKeyboard = 0;
 
 } /* ChkExtendedKbd */
 
@@ -134,7 +134,7 @@ vi_rc ChangeDrive( int drive )
  */
 bool ShiftDown( void )
 {
-    return( (bool)FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -145,7 +145,7 @@ static bool hadCapsLock;
  */
 void TurnOffCapsLock( void )
 {
-    hadCapsLock = FALSE;
+    hadCapsLock = false;
 
 } /* TurnOffCapsLock */
 

@@ -313,7 +313,7 @@ vi_rc SetAColor( char *data )
     if( !EditFlags.Quiet ) {
         if( !colorChanged[clr] ) {
             getColorRegister( clr, &oldColors[clr] );
-            colorChanged[clr] = TRUE;
+            colorChanged[clr] = true;
         }
         setColorRegister( clr, &c );
         newColors[clr] = c;
@@ -336,9 +336,9 @@ int GetNumColors( void )
 bool GetColorSetting( vi_color clr, rgb *c )
 {
     if( !colorChanged[clr] ) {
-        return( FALSE );
+        return( false );
     }
     *c = newColors[clr];
-    return( TRUE );
+    return( true );
 
 } /* GetColorSetting */

@@ -163,7 +163,7 @@ short BIOSGetCursor( char page )
  * eventWeWant - test an input record and see if it is one
  *               we want to handle
  */
-static BOOL eventWeWant( INPUT_RECORD *ir )
+static bool eventWeWant( INPUT_RECORD *ir )
 {
     WORD            vk;
     DWORD           st;
@@ -182,10 +182,10 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         if( st & RIGHTMOST_BUTTON_PRESSED ) {
             CurrMouseStatus |= MOUSE_RIGHT_BUTTON_DOWN;
         }
-        return( TRUE );
+        return( true );
     }
     if( ir->EventType != KEY_EVENT ) {
-        return( FALSE );
+        return( false );
     }
 
     if( alt_numpad_number >= 0 &&
@@ -198,15 +198,15 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
             ir->Event.KeyEvent.uChar.AsciiChar = 0;
         }
         alt_numpad_number = -1;
-        return( TRUE );
+        return( true );
     }
 
     if( !ir->Event.KeyEvent.bKeyDown ) {
-        return( FALSE );
+        return( false );
     }
     vk = ir->Event.KeyEvent.wVirtualKeyCode;
     if( vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU || vk == VK_CAPITAL ) {
-        return( FALSE );
+        return( false );
     }
     ss = ir->Event.KeyEvent.dwControlKeyState;
     if( (ss & (RIGHT_ALT_PRESSED  | LEFT_ALT_PRESSED)) && !(ss &(ENHANCED_KEY)) ) {
@@ -228,11 +228,11 @@ static BOOL eventWeWant( INPUT_RECORD *ir )
         default:
             /* not an alt-numpad */
             alt_numpad_number = -1;
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* eventWeWant */
 
@@ -244,7 +244,7 @@ vi_key BIOSGetKeyboard( int *scan )
     INPUT_RECORD        ir;
     DWORD               rd, ss;
     WORD                vk;
-    BOOL                has_alt, has_shift, has_ctrl, has_capsl;
+    bool                has_alt, has_shift, has_ctrl, has_capsl;
     map                 *ev, what;
     vi_key              key;
 
@@ -258,10 +258,10 @@ vi_key BIOSGetKeyboard( int *scan )
     key = (unsigned char)ir.Event.KeyEvent.uChar.AsciiChar;
     ss = ir.Event.KeyEvent.dwControlKeyState;
 
-    has_shift = ((ss & SHIFT_PRESSED) ? TRUE : FALSE);
-    has_ctrl = ((ss & (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)) ? TRUE : FALSE);
-    has_alt = ((ss & (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)) ? TRUE : FALSE);
-    has_capsl = ((ss & CAPSLOCK_ON) ? TRUE : FALSE);
+    has_shift = (ss & SHIFT_PRESSED) != 0;
+    has_ctrl = (ss & (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)) != 0;
+    has_alt = (ss & (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)) != 0;
+    has_capsl = (ss & CAPSLOCK_ON) != 0;
     what.vk = vk;
 
     ev = bsearch( &what, events, sizeof( events ) / sizeof( events[0] ), sizeof( what ), CompareEvents );
@@ -307,11 +307,11 @@ bool BIOSKeyboardHit( void )
     for( ;; ) {
         PeekConsoleInput( InputHandle, &ir, 1, &rd );
         if( rd == 0 ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
         if( eventWeWant( &ir ) ) {
-            rc = TRUE;
+            rc = true;
             break;
         }
         ReadConsoleInput( InputHandle, &ir, 1, &rd );

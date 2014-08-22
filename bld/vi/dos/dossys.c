@@ -46,7 +46,7 @@ static char oldDrive;
 
 int FileSysNeedsCR( int handle )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -196,11 +196,11 @@ void ScreenInit( void )
      * mode _ get apropos screen ptr
      */
     if( y == 0x07 ) {
-        EditFlags.Monocolor = TRUE;
+        EditFlags.Monocolor = true;
     } else if( y == 0x00 || y == 0x02 ) {
-        EditFlags.BlackAndWhite = TRUE;
+        EditFlags.BlackAndWhite = true;
     } else {
-        EditFlags.Color = TRUE;
+        EditFlags.Color = true;
     }
     ScreenPage( 0 );
     EditVars.WindMaxHeight = BIOSGetRowCount() + 1;
@@ -231,7 +231,7 @@ void ChkExtendedKbd( void )
 
     unsigned    x;
 
-    EditFlags.ExtendedKeyboard = 0;
+    EditVars.ExtendedKeyboard = 0;
 
     x = BIOSTestKeyboard();
     if( (x & 0xff) == 0xff ) {
@@ -244,7 +244,7 @@ void ChkExtendedKbd( void )
     if( CT( x ) != (RCT( x ) || LCT( x )) ) {
         return;
     }
-    EditFlags.ExtendedKeyboard = 0x10;
+    EditVars.ExtendedKeyboard = 0x10;
 
 } /* ChkExtendedKbd */
 
@@ -286,9 +286,9 @@ void ScreenPage( int page )
         if( a + b < 0x8000L / sizeof( char_info ) ) {
             Scrn += b;
         }
-        EditFlags.NoSetCursor = TRUE;
+        EditFlags.NoSetCursor = true;
     } else {
-        EditFlags.NoSetCursor = FALSE;
+        EditFlags.NoSetCursor = false;
     }
 #elif defined( __4G__ )
     unsigned long       a;
@@ -307,9 +307,9 @@ void ScreenPage( int page )
         if( a + b < 0x8000L / sizeof( char_info ) ) {
             Scrn += b;
         }
-        EditFlags.NoSetCursor = TRUE;
+        EditFlags.NoSetCursor = true;
     } else {
-        EditFlags.NoSetCursor = FALSE;
+        EditFlags.NoSetCursor = false;
     }
 #else
     unsigned long       a;
@@ -329,9 +329,9 @@ void ScreenPage( int page )
         if( a + b < 0x8000L ) {
             c += b;
         }
-        EditFlags.NoSetCursor = TRUE;
+        EditFlags.NoSetCursor = true;
     } else {
-        EditFlags.NoSetCursor = FALSE;
+        EditFlags.NoSetCursor = false;
     } /* if */
     Scrn = MK_FP( PHAR_SCRN_SEL, c );
 #endif
@@ -373,9 +373,9 @@ bool ShiftDown( void )
 
     kptr = KEY_PTR;
     if( kptr[0] & KEY_SHIFT ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -391,10 +391,10 @@ void TurnOffCapsLock( void )
     kptr = KEY_PTR;
 
     if( kptr[0] & KEY_CAPS_LOCK ) {
-        hadCapsLock = TRUE;
+        hadCapsLock = true;
         kptr[0] &= ~KEY_CAPS_LOCK;
     } else {
-        hadCapsLock = FALSE;
+        hadCapsLock = false;
     }
 
 } /* TurnOffCapsLock */
@@ -448,7 +448,7 @@ bool KeyboardHit( void )
 {
     bool        rc;
 
-    rc = _BIOSKeyboardHit( EditFlags.ExtendedKeyboard + 1 );
+    rc = _BIOSKeyboardHit( EditVars.ExtendedKeyboard + 1 );
     if( !rc ) {
 #if !( defined( _M_I86 ) || defined( __4G__ ) )
         UpdateDOSClock();
@@ -468,7 +468,7 @@ vi_key GetKeyboard( void )
     int             scan;
     bool            shift;
 
-    key = _BIOSGetKeyboard( EditFlags.ExtendedKeyboard );
+    key = _BIOSGetKeyboard( EditVars.ExtendedKeyboard );
     shift = ShiftDown();
     scan = key >> 8;
     key &= 0xff;

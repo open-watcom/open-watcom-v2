@@ -45,8 +45,8 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 extern HWND hColorbar, hFontbar, hSSbar;
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
 window EditWindow = {
     &editw_info,
@@ -61,7 +61,7 @@ int             HScrollBarScale = MAX_INPUT_LINE;
 /*
  * Init - initialization routine for edit windows
  */
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
     WNDCLASS    wc;
 
@@ -78,7 +78,7 @@ static BOOL Init( window *w, void *parm )
     wc.hbrBackground = (HBRUSH)NULLHANDLE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = EditWindowClassName;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* Init */
 
@@ -135,7 +135,7 @@ window_id NewEditWindow( void )
     if( BAD_ID( EditContainer ) ) {
         return( NO_WINDOW );
     }
-    style = GetEditStyle( FALSE );
+    style = GetEditStyle( false );
     ResizeRoot();
     GetClientRect( EditContainer, &rect );
 
@@ -208,7 +208,7 @@ static void activateWindow( HWND hwnd )
     wd = DATA_FROM_ID( hwnd );
     cinfo = wd->info;
     if( cinfo != NULL ) {
-        BringUpFile( cinfo, TRUE );
+        BringUpFile( cinfo, true );
     }
 
 } /* activateWindow */
@@ -258,11 +258,11 @@ static void stopDragTimer( void )
 static void cancelDrag( void )
 {
     stopDragTimer();
-    EditFlags.Dragging = FALSE;
-    buttonDown = FALSE;
-    dragPending = FALSE;
+    EditFlags.Dragging = false;
+    buttonDown = false;
+    dragPending = false;
     if( hasCapture ) {
-        hasCapture = FALSE;
+        hasCapture = false;
         ReleaseCapture();
     }
 
@@ -274,12 +274,12 @@ static void cancelDrag( void )
 static bool isMouseButtonDown( void )
 {
     if( (GetKeyState( VK_LBUTTON ) & ~0x01) != 0 ) {
-        return( TRUE );
+        return( true );
     }
     if( (GetKeyState( VK_RBUTTON ) & ~0x01) != 0 ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* isMouseButtonDown */
 
@@ -291,14 +291,14 @@ static bool jumpToCoord( int row, int col )
     GoToLineRelCurs( LeftTopPos.line + row - 1 );
     col = RealColumnOnCurrentLine( col + LeftTopPos.column );
     GoToColumnOnCurrentLine( col );
-    return( TRUE );
+    return( true );
 
 } /* jumpToCoord */
 
 /*
  * regionSelected - handle selection with a mouse
  */
-static void regionSelected( HWND id, int x, int y, BOOL dclick, bool popMenu )
+static void regionSelected( HWND id, int x, int y, bool dclick, bool popMenu )
 {
     int         row, col;
     vi_key      tmp;
@@ -336,7 +336,7 @@ static void regionSelected( HWND id, int x, int y, BOOL dclick, bool popMenu )
 /*
  * mouseButtonDown - handle a mouse down event in an edit window
  */
-static void mouseButtonDown( HWND id, int x, int y, BOOL shift )
+static void mouseButtonDown( HWND id, int x, int y, bool shift )
 {
     int         row, col;
 
@@ -355,22 +355,22 @@ static void mouseButtonDown( HWND id, int x, int y, BOOL shift )
 
     MouseX = x;
     MouseY = y;
-    buttonDown = TRUE;
+    buttonDown = true;
     if( SelRgn.selected && shift ) {
         if( EditFlags.WasOverstrike ) {
             /*  if already dragging, always divide in middle of chars
             */
             ClientToRowCol( id, x, y, &row, &col, DIVIDE_MIDDLE );
         }
-        EditFlags.Dragging = TRUE;
+        EditFlags.Dragging = true;
         UpdateDrag( id, col, row );
     } else {
         jumpToCoord( row, col );
         UnselectRegion();
-        dragPending = TRUE;
+        dragPending = true;
         if( !hasCapture ) {
             SetCapture( id );
-            hasCapture = TRUE;
+            hasCapture = true;
         }
         if( EditFlags.WasOverstrike ) {
             /*  dragging always based on middle of chars
@@ -386,10 +386,10 @@ static void mouseButtonDown( HWND id, int x, int y, BOOL shift )
 /*
  * rightButtonDown - handle the right mouse button being pressed
  */
-static void rightButtonDown( HWND id, int x, int y, BOOL shift )
+static void rightButtonDown( HWND id, int x, int y, bool shift )
 {
     if( SelRgn.selected ) {
-        regionSelected( id, x, y, FALSE, TRUE );
+        regionSelected( id, x, y, false, true );
     } else {
         mouseButtonDown( id, x, y, shift );
     }
@@ -399,7 +399,7 @@ static void rightButtonDown( HWND id, int x, int y, BOOL shift )
 /*
  * leftButtonDown - handle the right mouse button being pressed
  */
-static void leftButtonDown( HWND id, int x, int y, BOOL shift )
+static void leftButtonDown( HWND id, int x, int y, bool shift )
 {
     mouseButtonDown( id, x, y, shift );
 
@@ -408,9 +408,10 @@ static void leftButtonDown( HWND id, int x, int y, BOOL shift )
 /*
  * mouseMove - handle a mouse move event in an edit window
  */
-static void mouseMove( HWND id, int x, int y, BOOL not_used )
+static void mouseMove( HWND id, int x, int y, bool not_used )
 {
     int     row, col;
+
     not_used = not_used;
 
     if( dragPending ) {
@@ -419,8 +420,8 @@ static void mouseMove( HWND id, int x, int y, BOOL not_used )
             return;
         }
         InitSelectedRegion();
-        EditFlags.Dragging = TRUE;
-        dragPending = FALSE;
+        EditFlags.Dragging = true;
+        dragPending = false;
         startDragTimer( id );
 
         MyKillCaret( id );
@@ -440,7 +441,7 @@ static void mouseMove( HWND id, int x, int y, BOOL not_used )
 /*
  * leftButtonUp - handle a mouse up event in an edit window
  */
-static void leftButtonUp( HWND id, int x, int y, BOOL shift )
+static void leftButtonUp( HWND id, int x, int y, bool shift )
 {
     id = id;
     x = x;
@@ -457,29 +458,29 @@ static void leftButtonUp( HWND id, int x, int y, BOOL shift )
 /*
  * rightButtonUp - handle right mouse button coming up
  */
-static void rightButtonUp( HWND id, int x, int y, BOOL dclick )
+static void rightButtonUp( HWND id, int x, int y, bool dclick )
 {
     cancelDrag();
-    regionSelected( id, x, y, dclick, TRUE );
+    regionSelected( id, x, y, dclick, true );
 
 } /* rightButtonUp */
 
 /*
  * leftButtonDoubleClick - handle double click of left button (word selectn)
  */
-static void leftButtonDoubleClick( HWND id, int x, int y, BOOL dclick )
+static void leftButtonDoubleClick( HWND id, int x, int y, bool dclick )
 {
     cancelDrag();
-    regionSelected( id, x, y, dclick, FALSE );
+    regionSelected( id, x, y, dclick, false );
 
 } /* leftButtonDoubleClick */
 
-typedef void (*func)( HWND, int, int, BOOL );
+typedef void (*func)( HWND, int, int, bool );
 
 /*
  * mouseEvent - handle all mouse events in an edit window
  */
-static void mouseEvent( HWND hwnd, LPARAM l, BOOL flag, func f )
+static void mouseEvent( HWND hwnd, LPARAM l, bool flag, func f )
 {
     if( EditFlags.HoldEverything ) {
         return;
@@ -613,7 +614,7 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     wd = DATA_FROM_ID( hwnd );
 
     oldTopOfPage = LeftTopPos.line;
-    EditFlags.ScrollCommand = TRUE;
+    EditFlags.ScrollCommand = true;
     switch( GET_WM_VSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
         newTopOfPage = LeftTopPos.line - 1;
@@ -640,7 +641,7 @@ static void doVScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
         MoveScreenML( GET_WM_VSCROLL_POS( wparam, lparam ) * VScrollBarScale );
         break;
     }
-    EditFlags.ScrollCommand = FALSE;
+    EditFlags.ScrollCommand = false;
 
     text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
     diff = LeftTopPos.line - oldTopOfPage;
@@ -674,7 +675,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
     int newLeftColumn;
 
     lparam = lparam;
-    EditFlags.ScrollCommand = TRUE;
+    EditFlags.ScrollCommand = true;
     switch( GET_WM_HSCROLL_CODE( wparam, lparam ) ) {
     case SB_LINEUP:
         newLeftColumn = LeftTopPos.column - 1;
@@ -700,7 +701,7 @@ static void doHScroll( HWND hwnd, WPARAM wparam, LPARAM lparam )
         MoveScreenLeftRightML( GET_WM_HSCROLL_POS( lparam, wparam ) - 1 );
         break;
     }
-    EditFlags.ScrollCommand = FALSE;
+    EditFlags.ScrollCommand = false;
 
     DCInvalidateAllLines();
     DCDisplayAllLines();
@@ -758,10 +759,10 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         return( MA_ACTIVATE );
 
     case WM_MDIACTIVATE:
-        if( wparam == FALSE ) {
+        if( !wparam ) {
             // losing focus
             cancelDrag();
-            killsel = TRUE;
+            killsel = true;
             win = (HWND) wparam;
             if( win != NULL ) {
                 tbwin = GetToolbarWindow();
@@ -769,7 +770,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     (hColorbar && IsChild( hColorbar, win )) ||
                     (hFontbar && IsChild( hFontbar, win )) ||
                     (hSSbar && IsChild( hSSbar, win )) ) {
-                    killsel = FALSE;
+                    killsel = false;
                 }
             }
             if( killsel ) {
@@ -790,28 +791,28 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_LBUTTONDBLCLK:
-        doubleClickPending = TRUE;
+        doubleClickPending = true;
         return( 0 );
     case WM_RBUTTONUP:
-        mouseEvent( hwnd, lparam, FALSE, rightButtonUp );
+        mouseEvent( hwnd, lparam, false, rightButtonUp );
         return( 0 );
     case WM_RBUTTONDOWN:
-        mouseEvent( hwnd, lparam, wparam & MK_SHIFT, rightButtonDown );
+        mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, rightButtonDown );
         return( 0 );
     case WM_LBUTTONDOWN:
-        mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonDown );
+        mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonDown );
         return( 0 );
     case WM_LBUTTONUP:
         if( doubleClickPending ) {
-            mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonUp );
-            mouseEvent( hwnd, lparam, TRUE, leftButtonDoubleClick );
-            doubleClickPending = FALSE;
+            mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
+            mouseEvent( hwnd, lparam, true, leftButtonDoubleClick );
+            doubleClickPending = false;
         } else {
-            mouseEvent( hwnd, lparam, wparam & MK_SHIFT, leftButtonUp );
+            mouseEvent( hwnd, lparam, (wparam & MK_SHIFT) != 0, leftButtonUp );
         }
         return( 0 );
     case WM_MOUSEMOVE:
-        mouseMove( hwnd, (int)(short)LOWORD( lparam ), (int)(short)HIWORD( lparam ), FALSE );
+        mouseMove( hwnd, (int)(short)LOWORD( lparam ), (int)(short)HIWORD( lparam ), false );
         return( 0 );
     case WM_ERASEBKGND:
         return( TRUE );
@@ -839,7 +840,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
             PushMode();
             data = DATA_FROM_ID( hwnd );
             SendMessage( EditContainer, WM_MDIRESTORE, (UINT)hwnd, 0L );
-            BringUpFile( data->info, TRUE );
+            BringUpFile( data->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );
             }
@@ -854,7 +855,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         MemFree( data );
         return( 0 );
     case WM_KILLFOCUS:
-        DoneCurrentInsert( TRUE );
+        DoneCurrentInsert( true );
         break;
     case WM_SIZE:
         data = DATA_FROM_ID( hwnd );
@@ -874,7 +875,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     cinfo = cinfo->next;
                 } else {
                     SaveInfo( sinfo );
-                    BringUpFile( cinfo, FALSE );
+                    BringUpFile( cinfo, false );
                     return( 0 );
                 }
             }
@@ -932,10 +933,10 @@ void ResetExtraRects( void )
 
 } /* ResetExtraRects */
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
-    return( TRUE );
+    return( true );
 
 } /* Fini */

@@ -249,7 +249,7 @@ void  BIOSUpdateScreen( unsigned offset, unsigned nchars )
 
     if ( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
         _physupdate( NULL );
-        UserForcedTermRefresh = TRUE;
+        UserForcedTermRefresh = true;
         return;
     }
 

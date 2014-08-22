@@ -64,25 +64,25 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool doGoto( info *i )
 {
-    BringUpFile( i, TRUE );
-    return( TRUE );
+    BringUpFile( i, true );
+    return( true );
 }
 
 static bool doClose( info *i )
 {
     vi_rc   rc;
 
-    BringUpFile( i, TRUE );
+    BringUpFile( i, true );
     rc = CurFileExitOptionSaveChanges();
     if( rc > ERR_NO_ERR || InfoHead == NULL ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static int fillBox( HWND list_box )

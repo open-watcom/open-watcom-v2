@@ -45,8 +45,12 @@ vi_rc SrcAssign( char *data, vlist *vl )
 {
     int         i, j, k, l;
     long        val;
-    bool        rxflag = FALSE, envflag = FALSE, setflag = FALSE, expflag = FALSE;
-    bool        timeflag = FALSE, lnumflag = FALSE;
+    bool        rxflag = false;
+    bool        envflag = false;
+    bool        setflag = false;
+    bool        expflag = false;
+    bool        timeflag = false;
+    bool        lnumflag = false;
     char        tmp[MAX_SRC_LINE], v1[MAX_SRC_LINE], name[MAX_SRC_LINE];
     char        *t;
     vars        *v;
@@ -77,16 +81,16 @@ vi_rc SrcAssign( char *data, vlist *vl )
     RemoveLeadingSpaces( data );
 
     if( data[0] == '/' || data[0] == '"' ) {
-        check_end = FALSE;
+        check_end = false;
         if( data[0] == '"' ) {
             NextWord( data, v1, "\"" );
             if( data[0] == '"' ) {
-                check_end = TRUE;
+                check_end = true;
             }
         } else {
             NextWordSlash( data, v1 );
             if( data[0] == '/' ) {
-                check_end = TRUE;
+                check_end = true;
             }
         }
         if( check_end ) {
@@ -94,22 +98,22 @@ vi_rc SrcAssign( char *data, vlist *vl )
             while( data[0] != 0 ) {
                 switch( data[0] ) {
                 case 't':
-                    timeflag = TRUE;
+                    timeflag = true;
                     break;
                 case 'r':
-                    rxflag = TRUE;
+                    rxflag = true;
                     break;
                 case '$':
-                    envflag = TRUE;
+                    envflag = true;
                     break;
                 case '@':
-                    setflag = TRUE;
+                    setflag = true;
                     break;
                 case 'x':
-                    expflag = TRUE;
+                    expflag = true;
                     break;
                 case 'l':
-                    lnumflag = TRUE;
+                    lnumflag = true;
                     break;
                 }
                 EliminateFirstN( data, 1 );
@@ -120,7 +124,7 @@ vi_rc SrcAssign( char *data, vlist *vl )
         if( NextWord1( data, v1 ) <= 0 ) {
             return( ERR_SRC_INVALID_ASSIGN );
         }
-        j = Tokenize( StrTokens, v1, FALSE );
+        j = Tokenize( StrTokens, v1, false );
         if( j != TOK_INVALID ) {
             if( NextWord1( data, v1 ) <= 0 ) {
                 return( ERR_SRC_INVALID_ASSIGN );

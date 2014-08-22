@@ -40,7 +40,7 @@ static char     uusName[] = "undo-undo stack";
  */
 static vi_rc validateUndo( undo *cundo )
 {
-    bool        done = FALSE;
+    bool        done = false;
     int         depth = 0;
 
     /*
@@ -54,7 +54,7 @@ static vi_rc validateUndo( undo *cundo )
         case START_UNDO_GROUP:
             depth--;
             if( depth == 0 ) {
-                done = TRUE;
+                done = true;
             }
             break;
 
@@ -81,7 +81,7 @@ static vi_rc validateUndo( undo *cundo )
 static vi_rc realUndo( undo_stack *stack, undo_stack *us )
 {
     undo                *cundo, *tundo;
-    bool                done = FALSE;
+    bool                done = false;
     vi_rc               rc = ERR_NO_ERR;
     int                 col, depth = 0;
     linenum             lne, top;
@@ -112,7 +112,7 @@ static vi_rc realUndo( undo_stack *stack, undo_stack *us )
     }
     tundo = cundo;
     StartUndoGroup( us );
-    EditFlags.DisplayHold = TRUE;
+    EditFlags.DisplayHold = true;
 
     ldf = 0;
     if( us == UndoUndoStack ) {
@@ -130,7 +130,7 @@ static vi_rc realUndo( undo_stack *stack, undo_stack *us )
         case START_UNDO_GROUP:
             depth--;
             if( depth == 0 ) {
-                done = TRUE;
+                done = true;
             }
             if( cundo->data.sdata.depth == 1 ) {
                 lne = cundo->data.sdata.p.line;
@@ -169,10 +169,10 @@ static vi_rc realUndo( undo_stack *stack, undo_stack *us )
      * finish up
      */
     EndUndoGroup( us );
-    UndoFree( tundo, FALSE );
+    UndoFree( tundo, false );
 
     MergeAllFcbs( &CurrentFile->fcbs );
-    EditFlags.DisplayHold = FALSE;
+    EditFlags.DisplayHold = false;
     LeftTopPos.line = top;
     SetCurrentLineNumber( lne );
     CurrentPos.column = 1;
@@ -190,7 +190,7 @@ static vi_rc realUndo( undo_stack *stack, undo_stack *us )
             Message1( "%s is empty",name );
             if( stack == UndoStack ) {
                 if( !stack->rolled ) {
-                    Modified( FALSE );
+                    Modified( false );
                 }
             }
         } else {
@@ -218,9 +218,9 @@ vi_rc DoUndoUndo( void )
 {
     vi_rc   rc;
 
-    EditFlags.UndoInProg = TRUE;
+    EditFlags.UndoInProg = true;
     rc = realUndo( UndoUndoStack, UndoStack );
-    EditFlags.UndoInProg = FALSE;
+    EditFlags.UndoInProg = false;
     return( rc );
 
 } /* DoUndoUndo */

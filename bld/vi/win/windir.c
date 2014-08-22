@@ -35,8 +35,8 @@
 #include "utils.h"
 #include "wprocmap.h"
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
 window FileCompleteWindow = {
     &filecw_info,
@@ -45,12 +45,12 @@ window FileCompleteWindow = {
     Fini
 };
 
-void FileCompleteMouseClick( HWND, int, int, BOOL );
+void FileCompleteMouseClick( HWND, int, int, bool );
 WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *ClassName = "FileCompleteWindow";
 
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -66,14 +66,14 @@ static BOOL Init( window *w, void *parm )
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = ClassName;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
@@ -94,12 +94,12 @@ WINEXPORT LRESULT CALLBACK FileCompleteWindowProc( HWND hwnd, UINT msg, WPARAM w
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), TRUE );
+        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), true );
         break;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP:
-        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), FALSE );
+        FileCompleteMouseClick( hwnd, (int)(short)LOWORD( l ), (int)(short)HIWORD( l ), false );
         break;
     }
     return( DefWindowProc( hwnd, msg, w, l ) );

@@ -56,10 +56,10 @@ vi_rc WindowTile( int maxx, int maxy )
             if( IsIconic( cinfo->CurrentWindow ) ) {
                 ShowWindow( cinfo->CurrentWindow, SW_RESTORE );
             }
-            BringUpFile( cinfo, FALSE );
+            BringUpFile( cinfo, false );
             MoveWindow( cinfo->CurrentWindow, 0, 0, width, height, TRUE );
         }
-        BringUpFile( cwinfo, FALSE );
+        BringUpFile( cwinfo, false );
         return( ERR_NO_ERR );
     }
     // else

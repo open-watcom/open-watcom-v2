@@ -45,7 +45,7 @@ void ResetSpawnScreen( void )
 {
     extern bool UserForcedTermRefresh;
     _physupdate( NULL );
-    UserForcedTermRefresh = TRUE;
+    UserForcedTermRefresh = true;
     return;
 }
 

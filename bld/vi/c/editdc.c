@@ -35,7 +35,7 @@
 /*
  * DeleteRangeOnCurrentLine - perform the deletion
  */
-vi_rc DeleteRangeOnCurrentLine( int scol, int ecol, int savebuf_flag )
+vi_rc DeleteRangeOnCurrentLine( int scol, int ecol, bool savebuf_flag )
 {
     int     i;
     vi_rc   rc;
@@ -58,10 +58,10 @@ vi_rc DeleteRangeOnCurrentLine( int scol, int ecol, int savebuf_flag )
         CurrentLineReplaceUndoCancel();
         return( rc );
     }
-    DisplayWorkLine( TRUE );
+    DisplayWorkLine( true );
     ReplaceCurrentLine();
-    CurrentLineReplaceUndoEnd( TRUE );
-    EditFlags.Dotable = TRUE;
+    CurrentLineReplaceUndoEnd( true );
+    EditFlags.Dotable = true;
     if( savebuf_flag ) {
 #ifdef __WIN__
         if( LastSavebuf == 0 ) {
@@ -81,7 +81,7 @@ vi_rc DeleteRangeOnCurrentLine( int scol, int ecol, int savebuf_flag )
 /*
  * DeleteBlockFromCurrentLine - remove chars from line, leave result in work line
  */
-vi_rc DeleteBlockFromCurrentLine( int scol, int ecol, int saveb_flag )
+vi_rc DeleteBlockFromCurrentLine( int scol, int ecol, bool saveb_flag )
 {
     int i;
 

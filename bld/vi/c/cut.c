@@ -35,7 +35,7 @@
 /*
  * Cut - cut out a block of text
  */
-vi_rc Cut( linenum s, int scol, linenum e, int ecol, int delflag )
+vi_rc Cut( linenum s, int scol, linenum e, int ecol, bool delflag )
 {
     fcb_list    fcblist;
     line        *cline;
@@ -88,7 +88,7 @@ vi_rc Cut( linenum s, int scol, linenum e, int ecol, int delflag )
     cline->len = strlen( cline->data );
     fcblist.tail->byte_cnt += cline->len;
 
-    AddFcbsToSavebuf( &fcblist, FALSE );
+    AddFcbsToSavebuf( &fcblist, false );
 
     /*
      * check if just yanking; if so, then go back
@@ -113,7 +113,7 @@ vi_rc Cut( linenum s, int scol, linenum e, int ecol, int delflag )
      */
     CurrentLineReplaceUndoStart();
     ReplaceCurrentLine();
-    CurrentLineReplaceUndoEnd( TRUE );
+    CurrentLineReplaceUndoEnd( true );
     WorkLine->len = -1;
     RestoreCurrentFilePos();
 

@@ -257,7 +257,7 @@ int             RepeatDigits;
 bool            NoRepeatInfo;
 char            _NEAR RepeatString[MAX_REPEAT_STRING];
 int             SourceErrCount;
-bool            BoundData = FALSE;
+bool            BoundData = false;
 
 #define INITVARS
 /*

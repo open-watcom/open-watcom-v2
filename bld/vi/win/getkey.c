@@ -189,7 +189,7 @@ static vi_key ConvertWierdCharacter( WORD vk, WORD data )
 #endif
 
     GetKeyboardState( keyboard_state );
-    if( ToAscii( vk, scancode, keyboard_state, &newkey, FALSE ) == 0 ) {
+    if( ToAscii( vk, scancode, keyboard_state, &newkey, 0 ) == 0 ) {
         return( 0 );
     }
 
@@ -267,15 +267,15 @@ bool WindowsKeyPush( WORD vk, WORD data )
 
     // if we're holding everything just eat the key quietly
     if( EditFlags.HoldEverything ) {
-        return( TRUE );
+        return( true );
     }
     key = MapVirtualKeyToVIKey( vk, data );
     if( key != VI_KEY( DUMMY ) ) {
-        keyBuffer[bufferTop] = GetVIKey( key, 0, FALSE );
+        keyBuffer[bufferTop] = GetVIKey( key, 0, false );
         bufferTop = (bufferTop + 1) % KEY_BUFFER_SIZE;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* WindowsKeyPush */
 
@@ -285,13 +285,13 @@ bool WindowsKeyPush( WORD vk, WORD data )
 bool KeyboardHit( void )
 {
     if( bufferTop != bufferBottom ) {
-        return( TRUE );
+        return( true );
     }
-    MessageLoop( TRUE );
+    MessageLoop( true );
     if( bufferTop != bufferBottom ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* KeyboardHit */
 
@@ -316,5 +316,5 @@ vi_mouse_event GetMouseEvent( void )
 bool TestMouseEvent( bool mouse )
 {
     mouse = mouse;
-    return( FALSE );
+    return( false );
 }

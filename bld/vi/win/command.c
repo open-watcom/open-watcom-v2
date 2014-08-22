@@ -40,8 +40,8 @@
 
 extern bool ReadingAString;
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
 window CommandWindow = {
     &cmdlinew_info,
@@ -56,7 +56,7 @@ WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND, UINT, WPARAM, LPARAM );
 
 static char *className = "CommandWindow";
 
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -72,14 +72,14 @@ static BOOL Init( window *w, void *parm )
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT LRESULT CALLBACK CommandWindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )

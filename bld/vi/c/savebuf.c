@@ -83,7 +83,7 @@ static void rotateSavebufs( int start )
 /*
  * insertGenericSavebuf - insert contents of a savebuf before/after current pos
  */
-static vi_rc insertGenericSavebuf( int buf, int afterflag )
+static vi_rc insertGenericSavebuf( int buf, bool afterflag )
 {
 #ifdef __WIN__
     savebuf     clip;
@@ -102,7 +102,7 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
 
     if( EditFlags.Modeless ) {
         DeleteSelectedRegion();
-        SelRgn.selected = FALSE;
+        SelRgn.selected = false;
     }
 
 #ifdef __WIN__
@@ -153,9 +153,9 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
             WorkLine->data[i + scol] = tmp->u.data[i];
         }
         WorkLine->len += len;
-        DisplayWorkLine( TRUE );
+        DisplayWorkLine( true );
         ReplaceCurrentLine();
-        CurrentLineReplaceUndoEnd( TRUE );
+        CurrentLineReplaceUndoEnd( true );
         scol += len + 1;
 
         maxCursor = CurrentLine->len;
@@ -193,7 +193,7 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
     }
 #endif
 
-    EditFlags.Dotable = TRUE;
+    EditFlags.Dotable = true;
 
     return( rc );
 
@@ -205,9 +205,9 @@ static vi_rc insertGenericSavebuf( int buf, int afterflag )
 vi_rc InsertSavebufBefore( void )
 {
     if( SavebufNumber == NO_SAVEBUF ) {
-        return( insertGenericSavebuf( CurrentSavebuf, FALSE ) );
+        return( insertGenericSavebuf( CurrentSavebuf, false ) );
     } else {
-        return( insertGenericSavebuf( SavebufNumber, FALSE ) );
+        return( insertGenericSavebuf( SavebufNumber, false ) );
     }
 
 } /* InsertSavebufBefore */
@@ -219,12 +219,12 @@ vi_rc InsertSavebufBefore2( void )
 {
     if( SavebufNumber == NO_SAVEBUF ) {
 #ifdef __WIN__
-        return( insertGenericSavebuf( CLIPBOARD_SAVEBUF, FALSE ) );
+        return( insertGenericSavebuf( CLIPBOARD_SAVEBUF, false ) );
 #else
-        return( insertGenericSavebuf( CurrentSavebuf, FALSE ) );
+        return( insertGenericSavebuf( CurrentSavebuf, false ) );
 #endif
     } else {
-        return( insertGenericSavebuf( SavebufNumber, FALSE ) );
+        return( insertGenericSavebuf( SavebufNumber, false ) );
     }
 
 } /* InsertSavebufBefore2 */
@@ -235,9 +235,9 @@ vi_rc InsertSavebufBefore2( void )
 vi_rc InsertSavebufAfter( void )
 {
     if( SavebufNumber == NO_SAVEBUF ) {
-        return( insertGenericSavebuf( CurrentSavebuf, TRUE  ) );
+        return( insertGenericSavebuf( CurrentSavebuf, true  ) );
     } else {
-        return( insertGenericSavebuf( SavebufNumber, TRUE  ) );
+        return( insertGenericSavebuf( SavebufNumber, true  ) );
     }
 
 } /* InsertSavebufAfter */
@@ -249,12 +249,12 @@ vi_rc InsertSavebufAfter2( void )
 {
     if( SavebufNumber == NO_SAVEBUF ) {
 #ifdef __WIN__
-        return( insertGenericSavebuf( CLIPBOARD_SAVEBUF, TRUE ) );
+        return( insertGenericSavebuf( CLIPBOARD_SAVEBUF, true ) );
 #else
-        return( insertGenericSavebuf( CurrentSavebuf, TRUE ) );
+        return( insertGenericSavebuf( CurrentSavebuf, true ) );
 #endif
     } else {
-        return( insertGenericSavebuf( SavebufNumber, TRUE ) );
+        return( insertGenericSavebuf( SavebufNumber, true ) );
     }
 
 } /* InsertSavebufAfter2 */
@@ -458,7 +458,7 @@ vi_rc AddSelRgnToSavebufAndDelete( void )
 /*
  * AddFcbsToSavebuf - add fcb block to save buffer
  */
-void AddFcbsToSavebuf( fcb_list *fcblist, int duplflag )
+void AddFcbsToSavebuf( fcb_list *fcblist, bool duplflag )
 {
     int         j;
     savebuf     *tmp;
@@ -570,7 +570,7 @@ vi_rc DoSavebufNumber( void )
     /*
      * get savebuf to use
      */
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key == VI_KEY( ESC ) ) {
         return( ERR_NO_ERR );
     }
@@ -635,19 +635,19 @@ bool IsEmptySavebuf( char ch )
         if( ch >= '1' && ch <= '9' ) {
             bufnum = ch - '1';
             if( Savebufs[bufnum].type == SAVEBUF_NOP ) {
-                return( TRUE );
+                return( true );
             }
-            return( FALSE );
+            return( false );
         } else if( ch >= 'a' && ch <= 'z' ) {
             bufnum = ch - 'a';
             if( SpecialSavebufs[bufnum].type == SAVEBUF_NOP ) {
-                return( TRUE );
+                return( true );
             }
         }
 #ifdef __WIN__
     }
 #endif
 
-    return( FALSE );
+    return( false );
 
 } /* IsEmptySavebuf */

@@ -43,4 +43,4 @@ extern void     InitFonts( void );
 extern void     FiniFonts( void );
 extern void     PickFont( font_type, HWND );
 extern void     SetUpFont( LOGFONT *, font_type );
-extern void     EnsureUniformFonts( font_type, font_type, LOGFONT *, BOOL );
+extern void     EnsureUniformFonts( font_type, font_type, LOGFONT *, bool );

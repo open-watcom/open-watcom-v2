@@ -39,18 +39,18 @@
 vi_rc ReDisplayScreen( void )
 {
     if( EditFlags.Menus ) {
-        MoveWindowToFrontDammit( MenuWindow, TRUE );
+        MoveWindowToFrontDammit( MenuWindow, true );
     }
 
-    ReDisplayBuffers( FALSE );
+    ReDisplayBuffers( false );
 
-    MoveWindowToFrontDammit( MessageWindow, TRUE );
+    MoveWindowToFrontDammit( MessageWindow, true );
 #ifdef __WIN__
     InvalidateRect( MessageWindow, NULL, TRUE );
     UpdateWindow( MessageWindow );
 #endif
     if( EditFlags.StatusInfo ) {
-        MoveWindowToFrontDammit( StatusWindow, TRUE );
+        MoveWindowToFrontDammit( StatusWindow, true );
     }
 #ifdef __WIN__
     DCInvalidateAllLines();

@@ -101,7 +101,7 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
     sicmp = EditFlags.ScriptIsCompiled;
     SourceErrCount = 0;
     if( EditFlags.CompileScript || res == NULL ) {
-        EditFlags.ScriptIsCompiled = FALSE;
+        EditFlags.ScriptIsCompiled = false;
         rc = PreProcess( fn, &sf, lab );
         finiSourceErrFile( fn );
         if( rc != ERR_NO_ERR || SourceErrCount > 0 ) {
@@ -139,9 +139,9 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
     exm = EditFlags.ExMode;
     wfb = EditFlags.WatchForBreak;
     ssa = EditFlags.SourceScriptActive;
-    EditFlags.SourceScriptActive = TRUE;
-    EditFlags.WatchForBreak = TRUE;
-    EditFlags.ExMode = TRUE;
+    EditFlags.SourceScriptActive = true;
+    EditFlags.WatchForBreak = true;
+    EditFlags.ExMode = true;
     rc = ERR_NO_ERR;
     for( curr = sf->next;  rc == ERR_NO_ERR && curr != NULL; curr = curr->next ) {
 
@@ -182,7 +182,7 @@ vi_rc Source( char *fn, char *data, unsigned *ln )
             if( curr->hasvar) {
                 Expand( tmp, &vl );
             }
-            rc = TryCompileableToken( cTokenID, tmp, FALSE );
+            rc = TryCompileableToken( cTokenID, tmp, false );
             if( rc == NOT_COMPILEABLE_TOKEN ) {
                 rc = ProcessWindow( cTokenID, tmp );
             }
@@ -521,7 +521,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
                 }
                 if( !EditFlags.CompileAssignments ) {
                     strcpy( tmp, curr->data );
-                    EditFlags.CompileAssignments = TRUE;
+                    EditFlags.CompileAssignments = true;
                 } else {
                     continue;
                 }
@@ -529,11 +529,11 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
                 if( curr->token != SRC_T_IF ) {
                     if( curr->hasvar ) {
                         Expand( tmp, vl );
-                        curr->hasvar = FALSE;
+                        curr->hasvar = false;
                         k = strlen( curr->data );
                         for( i = 0; i < k; i++ ) {
                             if( curr->data[i] == '%' ) {
-                                curr->hasvar = TRUE;
+                                curr->hasvar = true;
                                 break;
                             }
                         }
@@ -567,7 +567,7 @@ static vi_rc barfScript( char *fn, sfile *sf, vlist *vl, unsigned *ln, char *vn 
         /*
          * spew out line
          */
-        MyFprintf( foo, "%c%d %s", (char)((char)curr->hasvar + '0'), curr->token, tmp );
+        MyFprintf( foo, "%c%d %s", ( curr->hasvar ) ? '1' : '0', curr->token, tmp );
         if( curr->token == SRC_T_GOTO ) {
             MyFprintf( foo, " %d", curr->branchcond );
         }

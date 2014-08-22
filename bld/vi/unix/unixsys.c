@@ -41,7 +41,7 @@ static char oldPath[FILENAME_MAX];
 
 int FileSysNeedsCR( int handle )
 {
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -100,8 +100,8 @@ void ScreenInit( void )
     EditVars.WindMaxWidth = COLS;
     Scrn = (void *)(UIData->screen.origin);
 
-    EditFlags.Color = TRUE;
-    EditFlags.HasSystemMouse = TRUE;
+    EditFlags.Color = true;
+    EditFlags.HasSystemMouse = true;
 
 } /* ScreenInit */
 
@@ -119,7 +119,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0;
+    EditVars.ExtendedKeyboard = 0;
 
 } /* ChkExtendedKbd */
 
@@ -156,7 +156,7 @@ vi_rc ChangeDrive( int drive )
  */
 bool ShiftDown( void )
 {
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -167,7 +167,7 @@ static bool hadCapsLock;
  */
 void TurnOffCapsLock( void )
 {
-    hadCapsLock = FALSE;
+    hadCapsLock = false;
 
 } /* TurnOffCapsLock */
 
@@ -201,7 +201,7 @@ void SetCursorBlinkRate( int cbr )
 
 vi_key GetKeyboard( void )
 {
-    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, FALSE ) );
+    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, false ) );
 }
 
 bool KeyboardHit( void )

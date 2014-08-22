@@ -76,13 +76,13 @@ bool IsKeyword( char *keyword, bool case_ignore )
     assert( langInfo[CurrentInfo->fsi.Language].ref_count > 0 );
 
     if( langInfo[CurrentInfo->fsi.Language].keyword_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     entry = langInfo[CurrentInfo->fsi.Language].keyword_table +
         hashpjw( keyword, langInfo[CurrentInfo->fsi.Language].table_entries );
     if( !entry->real ) {
-        return( FALSE );
+        return( false );
     }
     if( case_ignore ) {
         while( entry != NULL && stricmp( entry->keyword, keyword ) != 0 ) {
@@ -107,12 +107,12 @@ bool IsPragma( char *pragma )
     hash_entry  *entry;
 
     if( pragma_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     entry = pragma_table + hashpjw( pragma, pragma_table_entries );
     if( !entry->real ) {
-        return( FALSE );
+        return( false );
     }
     while( entry != NULL && strcmp( entry->keyword, pragma ) != 0 ) {
         entry = entry->next;
@@ -128,12 +128,12 @@ bool IsDeclspec( char *keyword )
     hash_entry  *entry;
 
     if( declspec_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     entry = declspec_table + hashpjw( keyword, declspec_table_entries );
     if( !entry->real ) {
-        return( FALSE );
+        return( false );
     }
     while( entry != NULL && strcmp( entry->keyword, keyword ) != 0 ) {
         entry = entry->next;
@@ -178,7 +178,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     for( i = 0; i < NumKeyword; i++ ) {
         tmpIndex->hashValue = hashpjw( keyword, entries );
         tmpIndex->keyword = keyword;
-        table[tmpIndex->hashValue].real = TRUE;
+        table[tmpIndex->hashValue].real = true;
         keyword = nextKeyword( keyword );
         tmpIndex++;
     }
@@ -186,14 +186,14 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     empty = table;
     tmpIndex = tmpValue;
     for( i = 0; i < NumKeyword; i++ ) {
-        assert( table[tmpIndex->hashValue].real == TRUE );
+        assert( table[tmpIndex->hashValue].real );
 
         entry = table + tmpIndex->hashValue;
         if( entry->keyword != NULL ) {
             while( entry->next != NULL ) {
                 entry = entry->next;
             }
-            while( empty->real == TRUE ) {
+            while( empty->real ) {
                 empty++;
             }
             entry->next = empty;
@@ -213,13 +213,13 @@ static int nkeywords = 0;
 static bool lang_alloc( int cnt )
 {
     nkeywords = cnt;
-    return( FALSE );
+    return( false );
 }
 
 static bool lang_save( int i, char *buff )
 {
     i = i; buff = buff;
-    return( TRUE );
+    return( true );
 }
 
 /*

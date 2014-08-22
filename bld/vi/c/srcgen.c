@@ -82,7 +82,7 @@ void GenJmpIf( branch_cond when, label where )
 #endif
         genItem( SRC_T_GOTO, where );
         tmpTail->branchcond = when;
-        tmpTail->hasvar = FALSE;
+        tmpTail->hasvar = false;
 #ifndef VICOMP
     }
 #endif
@@ -96,7 +96,7 @@ void GenJmp( label where )
 {
     genItem( SRC_T_GOTO, where );
     tmpTail->branchcond = COND_JMP;
-    tmpTail->hasvar = FALSE;
+    tmpTail->hasvar = false;
 
 } /* GenJmp */
 
@@ -111,7 +111,7 @@ void GenLabel( label where )
     if( (rc = AddLabel( tmpTail, cLab, where )) != ERR_NO_ERR ) {
         AbortGen( rc );
     }
-    tmpTail->hasvar = FALSE;
+    tmpTail->hasvar = false;
     strcpy( where, cLab->name[cLab->cnt - 1] );
 
 } /* GenLabel */
@@ -240,7 +240,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     char                tmp3[MAX_SRC_LINE];
     bool                ret;
 #ifdef VICOMP
-    bool                AppendingFlag = FALSE;
+    bool                AppendingFlag = false;
 #else
     #define             AppendingFlag   EditFlags.Appending
 #endif
@@ -252,9 +252,9 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     ret = SpecialOpen( fn, &gf );
 #else
     if( EditFlags.CompileScript ) {
-        EditFlags.OpeningFileToCompile = TRUE;
-        ret = SpecialOpen( fn, &gf, FALSE );
-        EditFlags.OpeningFileToCompile = FALSE;
+        EditFlags.OpeningFileToCompile = true;
+        ret = SpecialOpen( fn, &gf, false );
+        EditFlags.OpeningFileToCompile = false;
     } else {
         ret = SpecialOpen( fn, &gf, EditFlags.BoundData );
     }
@@ -309,10 +309,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             if( tmp2[0] == '#' ) {
                 continue;
             }
-            hasVar = FALSE;
+            hasVar = false;
             for( i = 0; i < k; i++ ){
                 if( tmp3[i] == '%' ) {
-                    hasVar = TRUE;
+                    hasVar = true;
                     break;
                 }
             }
@@ -322,10 +322,10 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
              * before, stop tokenizing
              */
             if( !AppendingFlag ) {
-                token = Tokenize( SourceTokens, tmp2, TRUE );
+                token = Tokenize( SourceTokens, tmp2, true );
 #ifndef VICOMP
                 if( token == SRC_T_VBJ__ ) {
-                    EditFlags.ScriptIsCompiled = TRUE;
+                    EditFlags.ScriptIsCompiled = true;
                     continue;
                 }
 #endif
@@ -335,7 +335,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 #ifndef VICOMP
         } else {
             len = NextWord1( tmp, tmp2 );
-            hasVar = (bool) tmp2[0] - '0';
+            hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
         }
 #endif
@@ -354,7 +354,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
              * get parm
              */
             AddString( &CurrentSrcData, tmp );
-            freeSrcData = TRUE;
+            freeSrcData = true;
 
             /*
              * process token
@@ -416,7 +416,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 #endif
                 }
                 tmpTail->data = CurrentSrcData;
-                freeSrcData = FALSE;
+                freeSrcData = false;
                 break;
             }
             if( freeSrcData ) {
@@ -434,7 +434,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #endif
             if( !AppendingFlag ) {
-                token = Tokenize( TokensCmdLine, tmp2, TRUE );
+                token = Tokenize( TokensCmdLine, tmp2, true );
             } else {
                 token = TOK_INVALID;
             }
@@ -525,7 +525,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             default:
                 if( AppendingFlag ) {
                     if( tmp3[0] == '.' && tmp3[1] == 0 ) {
-                        AppendingFlag = FALSE;
+                        AppendingFlag = false;
                     }
                 } else if( token == TOK_INVALID ) {
                     /*
@@ -533,12 +533,12 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
                      * it isn't, then see if the next one is
                      * (i.e., look for <n> append)
                      */
-                    token = Tokenize( TokensEx, tmp2, FALSE );
+                    token = Tokenize( TokensEx, tmp2, false );
                     if( token == TOK_INVALID ) {
                         if( NextWord1( tmp, tmp2 ) >= 0 ) {
-                            token = Tokenize( TokensEx, tmp2, FALSE );
+                            token = Tokenize( TokensEx, tmp2, false );
                             if( token == EX_T_APPEND ) {
-                                AppendingFlag = TRUE;
+                                AppendingFlag = true;
                             }
                         }
                     }
@@ -554,7 +554,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     }
 
     SpecialFclose( &gf );
-    AppendingFlag = FALSE;
+    AppendingFlag = false;
     return( CSFini() );
 
 } /* PreProcess */

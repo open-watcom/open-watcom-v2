@@ -52,9 +52,9 @@ static void startNewLineUndo( void )
 {
     if( needNewUndoForLine ) {
         CurrentLineReplaceUndoStart();
-        currLineRepUndo = TRUE;
+        currLineRepUndo = true;
         GetCurrentLine();
-        needNewUndoForLine = FALSE;
+        needNewUndoForLine = false;
     }
 
 } /* startNewLineUndo */
@@ -68,7 +68,7 @@ static void doneWithCurrentLine( void )
     ReplaceCurrentLine();
     if( currLineRepUndo ) {
         ConditionalCurrentLineReplaceUndoEnd();
-        currLineRepUndo = FALSE;
+        currLineRepUndo = false;
     } else {
         EndUndoGroup( UndoStack );
     }
@@ -106,7 +106,7 @@ static int trimWorkLine( void )
 void DoneCurrentInsert( bool trim )
 {
     if( EditFlags.InsertModeActive ) {
-        EditFlags.InsertModeActive = FALSE;
+        EditFlags.InsertModeActive = false;
         if( trim ) {
             trimWorkLine();
         }
@@ -123,8 +123,8 @@ void DoneCurrentInsert( bool trim )
             NewCursor( CurrentWindow, EditVars.NormalCursorType );
             SetWindowCursor();
         }
-        EditFlags.EscapedInsertChar = FALSE;
-        EditFlags.NoReplaceSearchString = FALSE;
+        EditFlags.EscapedInsertChar = false;
+        EditFlags.NoReplaceSearchString = false;
     }
 
 } /* DoneCurrentInsert */
@@ -136,11 +136,11 @@ void UpdateEditStatus( void )
 {
     if( overStrike ) {
         UpdateCurrentStatus( CSTATUS_OVERSTRIKE );
-        EditFlags.WasOverstrike = TRUE;
+        EditFlags.WasOverstrike = true;
         NewCursor( CurrentWindow, EditVars.OverstrikeCursorType );
     } else {
         UpdateCurrentStatus( CSTATUS_INSERT );
-        EditFlags.WasOverstrike = FALSE;
+        EditFlags.WasOverstrike = false;
         NewCursor( CurrentWindow, EditVars.InsertCursorType );
     }
     SetWindowCursor();
@@ -204,7 +204,7 @@ static void checkWrapMargin( void )
                     pos = CurrentPos.column - 1 - i;
                     CurrentPos.column = i + 2;
                     old_ai = EditFlags.AutoIndent;
-                    EditFlags.AutoIndent = FALSE;
+                    EditFlags.AutoIndent = false;
                     IMEnter();
                     EditFlags.AutoIndent = old_ai;
                     GoToColumnOK( pos );
@@ -244,7 +244,7 @@ vi_rc IMChar( void )
     if( CurrentFile == NULL ) {
         return( ERR_NO_ERR );
     }
-    CurrentFile->need_autosave = TRUE;
+    CurrentFile->need_autosave = true;
 
     startNewLineUndo();
     if( EditFlags.EscapedInsertChar ) {
@@ -252,11 +252,11 @@ vi_rc IMChar( void )
                          SSKillsFlags( WorkLine->data[CurrentPos.column - 1] ) );
         WorkLine->data[CurrentPos.column - 1] = LastEvent;
         GoToColumn( CurrentPos.column + 1, WorkLine->len + 1 );
-        EditFlags.EscapedInsertChar = FALSE;
+        EditFlags.EscapedInsertChar = false;
         return( ERR_NO_ERR );
     }
 
-    return( insertChar( TRUE, TRUE ) );
+    return( insertChar( true, true ) );
 
 } /* IMChar */
 
@@ -265,7 +265,7 @@ vi_rc IMChar( void )
  */
 vi_rc IMEsc( void )
 {
-    DoneCurrentInsert( TRUE );
+    DoneCurrentInsert( true );
     return( ERR_NO_ERR );
 
 } /* IMEsc */
@@ -281,7 +281,7 @@ vi_rc IMEnter( void )
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
     }
-    CurrentFile->need_autosave = TRUE;
+    CurrentFile->need_autosave = true;
 
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
@@ -309,8 +309,8 @@ vi_rc IMEnter( void )
      */
     ReplaceCurrentLine();
     if( currLineRepUndo ) {
-        CurrentLineReplaceUndoEnd( FALSE );
-        currLineRepUndo = FALSE;
+        CurrentLineReplaceUndoEnd( false );
+        currLineRepUndo = false;
     }
 
     /*
@@ -318,7 +318,7 @@ vi_rc IMEnter( void )
      * and copy in the truncation
      */
     if( EditFlags.AutoIndent ) {
-        len = GetAutoIndentAmount( buffx, len, FALSE );
+        len = GetAutoIndentAmount( buffx, len, false );
         el += len;
         strcat( buffx, buff );
         AddNewLineAroundCurrent( buffx, el, INSERT_AFTER );
@@ -368,19 +368,13 @@ vi_rc IMBackSpace( void )
         if( CurrentPos.line ==1 ) {
             return( ERR_NO_ERR );
         }
-        stay_at_end = FALSE;
-        if( WorkLine->len == 0 ) {
-            stay_at_end = TRUE;
-        }
+        stay_at_end = ( WorkLine->len == 0 );
         doneWithCurrentLine();
         abbrevCnt = 0;
         GoToLineRelCurs( CurrentPos.line - 1 );
         GoToColumnOnCurrentLine( CurrentLine->len );
-        mv_right = TRUE;
-        if( CurrentLine->len == 0 ) {
-            mv_right = FALSE;
-        }
-        GenericJoinCurrentLineToNext( FALSE );
+        mv_right = ( CurrentLine->len != 0 );
+        GenericJoinCurrentLineToNext( false );
         if( mv_right && !stay_at_end ) {
             GoToColumnOnCurrentLine( CurrentPos.column + 1 );
         }
@@ -388,7 +382,7 @@ vi_rc IMBackSpace( void )
             GoToColumnOK( CurrentLine->len + 1 );
         }
         CurrentLineReplaceUndoStart();
-        currLineRepUndo = TRUE;
+        currLineRepUndo = true;
         GetCurrentLine();
         return( ERR_NO_ERR );
     }
@@ -471,8 +465,8 @@ vi_rc IMMouseEvent( void )
         || LastMouseEvent == MOUSE_RELEASE_R ) {
         return( ERR_NO_ERR );
     }
-    EditFlags.ReturnToInsertMode = TRUE;
-    DoneCurrentInsert( TRUE );
+    EditFlags.ReturnToInsertMode = true;
+    DoneCurrentInsert( true );
     AddCurrentMouseEvent();
     return( ERR_NO_ERR );
 
@@ -549,7 +543,7 @@ vi_rc IMCursorKey( void )
             ev->rtn.old();
         }
     }
-    needNewUndoForLine = TRUE;
+    needNewUndoForLine = true;
     abbrevCnt = 0;
     return( ERR_NO_ERR );
 
@@ -561,9 +555,9 @@ vi_rc IMCursorKey( void )
 vi_rc IMMenuKey( void )
 {
     if( IsMenuHotKey( LastEvent ) ) {
-        DoneCurrentInsert( TRUE );
+        DoneCurrentInsert( true );
         KeyAdd( LastEvent );
-        EditFlags.ReturnToInsertMode = TRUE;
+        EditFlags.ReturnToInsertMode = true;
     }
     return( ERR_NO_ERR );
 
@@ -577,7 +571,7 @@ vi_rc IMSpace( void )
     startNewLineUndo();
     CheckAbbrev( abbrevBuff, &abbrevCnt );
     abbrevCnt = 0;
-    return( insertChar( FALSE, TRUE ) );
+    return( insertChar( false, true ) );
 
 } /* IMSpace */
 
@@ -620,15 +614,15 @@ vi_rc IMTabs( void )
             add = 0;
         }
         j = 0;
-        back = FALSE;
+        back = false;
         switch( LastEvent ) {
         case VI_KEY( SHIFT_TAB ):
             j = ShiftTab( vc, EditVars.TabAmount );
-            back = TRUE;
+            back = true;
             break;
         case VI_KEY( CTRL_D ):
             j = ShiftTab( vc, EditVars.ShiftWidth );
-            back = TRUE;
+            back = true;
             break;
         case VI_KEY( TAB ):
             j = Tab( vc, EditVars.TabAmount );
@@ -686,7 +680,7 @@ vi_rc IMTabs( void )
         StaticFree( buff );
         cp = RealColumnOnCurrentLine( cp ) + add;
         GoToColumn( cp, WorkLine->len + 1 );
-        DisplayWorkLine( FALSE );
+        DisplayWorkLine( false );
         break;
     }
     return( ERR_NO_ERR );
@@ -702,8 +696,8 @@ vi_rc IMEscapeNextChar( void )
 
     startNewLineUndo();
     LastEvent = '^';
-    rc = insertChar( FALSE, FALSE );
-    EditFlags.EscapedInsertChar = TRUE;
+    rc = insertChar( false, false );
+    EditFlags.EscapedInsertChar = true;
     return( rc );
 
 } /* IMEscapeNextChar */
@@ -713,11 +707,7 @@ vi_rc IMEscapeNextChar( void )
  */
 vi_rc IMInsert( void )
 {
-    if( overStrike ) {
-        overStrike = FALSE;
-    } else {
-        overStrike = TRUE;
-    }
+    overStrike = !overStrike;
     UpdateEditStatus();
     return( ERR_NO_ERR );
 
@@ -758,7 +748,7 @@ vi_rc IMCloseBracket( void )
     i_mark      pos;
 
     startNewLineUndo();
-    insertChar( TRUE, FALSE );
+    insertChar( true, false );
     if( EditFlags.ShowMatch ) {
 
         ReplaceCurrentLine();
@@ -847,7 +837,7 @@ vi_rc IMCloseBrace( void )
     i_mark      pos;
 
     startNewLineUndo();
-    insertChar( TRUE, FALSE );
+    insertChar( true, false );
     newcol = CurrentPos.column + 1;
     if( EditFlags.ShowMatch ) {
         ReplaceCurrentLine();
@@ -882,10 +872,10 @@ vi_rc IMCloseBrace( void )
                 ts = EditVars.ShiftWidth;
                 if( j > 0 ) {
                     EditVars.ShiftWidth = j;
-                    Shift( CurrentPos.line, CurrentPos.line, '>', FALSE );
+                    Shift( CurrentPos.line, CurrentPos.line, '>', false );
                 } else if( j < 0 ) {
                     EditVars.ShiftWidth = -j;
-                    Shift( CurrentPos.line, CurrentPos.line, '<', FALSE );
+                    Shift( CurrentPos.line, CurrentPos.line, '<', false );
                 }
                 EditVars.ShiftWidth = ts;
                 newcol = 1 + RealColumnOnCurrentLine( j + newcol );
@@ -908,9 +898,9 @@ static void continueInsertText( int col, bool overstrike )
     if( !EditFlags.Modeless ) {
         UpdateEditStatus();
     }
-    EditFlags.Dotable = TRUE;
-    EditFlags.NoReplaceSearchString = TRUE;
-    EditFlags.InsertModeActive = TRUE;
+    EditFlags.Dotable = true;
+    EditFlags.NoReplaceSearchString = true;
+    EditFlags.InsertModeActive = true;
     if( col > 1 && CurrentLine->len == 0 ) {
         col = 1;
     }
@@ -930,7 +920,7 @@ static vi_rc stdInsert( int col, bool overstrike )
     if( rc == ERR_NO_ERR ) {
         StartUndoGroup( UndoStack );
         CurrentLineReplaceUndoStart();
-        currLineRepUndo = TRUE;
+        currLineRepUndo = true;
         continueInsertText( col, overstrike );
     }
     return( rc );
@@ -947,10 +937,10 @@ vi_rc DeleteAndInsertText( int scol, int ecol )
 
     StartUndoGroup( UndoStack );
     CurrentLineReplaceUndoStart();
-    currLineRepUndo = TRUE;
+    currLineRepUndo = true;
     if( ecol >= 0 ) {
         if( CurrentLine->len > 0 ) {
-            rc = DeleteBlockFromCurrentLine( scol, ecol, FALSE );
+            rc = DeleteBlockFromCurrentLine( scol, ecol, false );
             if( rc == ERR_NO_ERR ) {
                 startcol = CurrentPos.column;
                 if( scol > ecol ) {
@@ -959,7 +949,7 @@ vi_rc DeleteAndInsertText( int scol, int ecol )
                 if( startcol > WorkLine->len ) {
                     startcol = WorkLine->len + 1;
                 }
-                DisplayWorkLine( TRUE );
+                DisplayWorkLine( true );
                 ReplaceCurrentLine();
                 rc = GoToColumnOK( startcol );
             }
@@ -972,7 +962,7 @@ vi_rc DeleteAndInsertText( int scol, int ecol )
             ReplaceCurrentLine();
         }
     }
-    continueInsertText( CurrentPos.column, FALSE );
+    continueInsertText( CurrentPos.column, false );
     return( ERR_NO_ERR );
 
 } /* DeleteAndInsertText */
@@ -985,7 +975,7 @@ static vi_rc insertTextOnOtherLine( insert_dir type )
     char        *buffx;
     int         i, j;
     linenum     a, b;
-    bool        above_line = FALSE;
+    bool        above_line = false;
     vi_rc       rc;
 
     rc = ModificationTest();
@@ -1006,17 +996,17 @@ static vi_rc insertTextOnOtherLine( insert_dir type )
     if( type == INSERT_BEFORE ) {
         a--;
         b--;
-        above_line = TRUE;
+        above_line = true;
     }
 
     /*
      * set up for undo
      */
     StartUndoGroup( UndoStack );
-    Modified( TRUE );
+    Modified( true );
     StartUndoGroup( UndoStack );
     UndoInsert( a, a, UndoStack );
-    currLineRepUndo = FALSE;
+    currLineRepUndo = false;
 
     /*
      * add extra line, and spaces if needed.
@@ -1034,7 +1024,7 @@ static vi_rc insertTextOnOtherLine( insert_dir type )
     GoToLineRelCurs( b );
     GoToColumn( j, CurrentLine->len + 1 );
     DCDisplayAllLines();
-    continueInsertText( CurrentPos.column, FALSE );
+    continueInsertText( CurrentPos.column, false );
     return( ERR_NO_ERR );
 
 } /* insertTextOnOtherLine */
@@ -1051,18 +1041,18 @@ vi_rc InsertTextOnPreviousLine( void )
 
 vi_rc InsertTextAtCursor( void )
 {
-    return( stdInsert( CurrentPos.column, FALSE ) );
+    return( stdInsert( CurrentPos.column, false ) );
 }
 
 vi_rc InsertTextAfterCursor( void )
 {
-    return( stdInsert( CurrentPos.column + 1, FALSE ) );
+    return( stdInsert( CurrentPos.column + 1, false ) );
 }
 
 vi_rc InsertTextAtLineStart( void )
 {
     if( CurrentFile != NULL ) {
-        return( stdInsert( FindStartOfCurrentLine(), FALSE ) );
+        return( stdInsert( FindStartOfCurrentLine(), false ) );
     }
     return( ERR_NO_ERR );
 }
@@ -1070,7 +1060,7 @@ vi_rc InsertTextAtLineStart( void )
 vi_rc InsertTextAtLineEnd( void )
 {
     if( CurrentFile != NULL ) {
-        return( stdInsert( CurrentLine->len + 1, FALSE ) );
+        return( stdInsert( CurrentLine->len + 1, false ) );
     }
     return( ERR_NO_ERR );
 }
@@ -1082,7 +1072,7 @@ vi_rc DoReplaceText( void )
 {
     vi_rc       rc;
 
-    rc = stdInsert( CurrentPos.column, TRUE );
+    rc = stdInsert( CurrentPos.column, true );
     return( rc );
 
 } /* DoReplaceText */
@@ -1092,15 +1082,9 @@ vi_rc DoReplaceText( void )
  */
 vi_rc InsertLikeLast( void )
 {
-    bool        overstrike;
     vi_rc       rc;
 
-    if( EditFlags.WasOverstrike ) {
-        overstrike = TRUE;
-    } else {
-        overstrike = FALSE;
-    }
-    rc = stdInsert( CurrentPos.column, overstrike );
+    rc = stdInsert( CurrentPos.column, EditFlags.WasOverstrike );
     return( rc );
 
 } /* InsertLikeLast */
@@ -1126,7 +1110,7 @@ void PushMode( void )
 
     cmode->wasinsert = EditFlags.InsertModeActive;
     cmode->wasoverstrike = EditFlags.WasOverstrike;
-    DoneCurrentInsert( TRUE );
+    DoneCurrentInsert( true );
 
 } /* PushMode */
 
@@ -1145,7 +1129,7 @@ vi_rc PopMode( void )
     cmode = modeTail;
     modeTail = cmode->prev;
 
-    DoneCurrentInsert( TRUE );
+    DoneCurrentInsert( true );
     if( cmode->wasinsert ) {
         rc = stdInsert( CurrentPos.column, cmode->wasoverstrike );
     }

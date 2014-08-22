@@ -216,7 +216,7 @@ static void customFont( font *f, LOGFONT *lf )
             DeleteObject( f->handle );
         }
     }
-    f->used = TRUE;
+    f->used = true;
     f->fixed = lf->lfPitchAndFamily & FIXED_PITCH;
     f->handle = CreateFontIndirect( lf );
     hdc = GetDC( Root );
@@ -234,7 +234,7 @@ static void customFont( font *f, LOGFONT *lf )
 /*
  * EnsureUniformFonts - fonts between start & end get similar characteristics
  */
-void EnsureUniformFonts( font_type start, font_type end, LOGFONT *givenLF, BOOL totally )
+void EnsureUniformFonts( font_type start, font_type end, LOGFONT *givenLF, bool totally )
 {
     LOGFONT     newLF;
     font        *f;
@@ -261,7 +261,7 @@ void InitFonts( void )
 
     f = &Fonts[0];
     for( i = 0; i < MAX_FONTS; i++, f++ ) {
-        f->used = FALSE;
+        f->used = false;
         f->handle = (HFONT)NULLHANDLE;
     }
     customFont( &Fonts[FONT_HELV], &Helvetica6 );
@@ -278,10 +278,10 @@ static bool getInt( STUPIDNTINT *dest, char *data )
     char        tmp[MAX_STR];
 
     if( NextWord1( data, tmp ) <= 0 ) {
-        return( FALSE );
+        return( false );
     }
     *dest = atoi( tmp );
-    return( TRUE );
+    return( true );
 }
 
 static bool getByte( BYTE *dest, char *data )
@@ -289,10 +289,10 @@ static bool getByte( BYTE *dest, char *data )
     char        tmp[MAX_STR];
 
     if( NextWord1( data, tmp ) <= 0 ) {
-        return( FALSE );
+        return( false );
     }
     *dest = (BYTE)atoi( tmp );
-    return( TRUE );
+    return( true );
 }
 
 static bool getLogFont( LOGFONT *l, char *data )

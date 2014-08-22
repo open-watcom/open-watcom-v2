@@ -142,8 +142,8 @@ extern void     WindowTitle( window_id id, char *title );
 extern void     ClearWindow( window_id id );
 extern vi_rc    DisplayLineInWindow( window_id id, int line, char *text );
 extern void     ShiftWindowUpDown( window_id id, int lines );
-extern int      SetDrawingObjects( HDC hdc, type_style *ts );
-extern void     MyTabbedTextOut( HDC, char **, int, int, POINT *, type_style *, RECT *, window_id, char *, int );
+extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
+extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *, RECT *, window_id, char *, int );
 extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
 
 /* win/stubs.c */

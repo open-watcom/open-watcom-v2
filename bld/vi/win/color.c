@@ -93,7 +93,7 @@ void InitColors( void )
     for( i = 0; i < MAX_COLORS; i++, p++ ) {
         NewColor( i, RGB( p->peRed, p->peGreen, p->peBlue ) );
     }
-    EditFlags.Color = TRUE;
+    EditFlags.Color = true;
 }
 
 int GetNumColors( void )
@@ -110,9 +110,9 @@ bool GetColorSetting( vi_color index, rgb *value )
         value->red = GetRValue( c->rgb );
         value->blue = GetBValue( c->rgb );
         value->green = GetGValue( c->rgb );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 COLORREF GetRGB( vi_color index )
@@ -128,7 +128,7 @@ COLORREF GetRGB( vi_color index )
     return( RGB( 0, 0, 0 ) );
 }
 
-static BOOL chooseColor( vi_color index, COLORREF *rgb, HWND parent )
+static bool chooseColor( vi_color index, COLORREF *rgb, HWND parent )
 {
     CHOOSECOLOR cc;
     COLORREF    color_table[MAX_COLORS];
@@ -149,9 +149,9 @@ static BOOL chooseColor( vi_color index, COLORREF *rgb, HWND parent )
             colorData[i].rgb = color_table[i];
         }
         *rgb = cc.rgbResult;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

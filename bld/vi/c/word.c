@@ -66,7 +66,7 @@ static char *ptrFromMark( i_mark *curr )
             } else {
                 ptr = &(line->data[line->len - 1]);
             }
-            noWrap = TRUE;
+            noWrap = true;
         }
     }
     return( ptr );
@@ -84,7 +84,7 @@ typedef enum {
 static btype charType( char c, bool big )
 {
     if( noWrap ) {
-        noWrap = FALSE;
+        noWrap = false;
         return( BLOCK_THEENDDAMMIT );
     } else if( TestIfCharInRange( c, wordList ) ) {
         return( BLOCK_WORD );
@@ -149,7 +149,7 @@ static char *eatSpace( i_mark *mark, bool reverse )
     if( s == NULL ) {
         return( NULL );
     }
-    while( charType( *s, TRUE ) == BLOCK_WHITESPACE ) {
+    while( charType( *s, true ) == BLOCK_WHITESPACE ) {
         if( reverse ) {
             s = decrementMark( mark );
         } else {
@@ -184,7 +184,7 @@ vi_rc MarkStartOfNextWordForward( i_mark *result, i_mark *curr, bool big )
     char        *s;
     btype       block_type;
 
-    noWrap = FALSE;
+    noWrap = false;
     *result = *curr;
 
     s = ptrFromMark( result );
@@ -212,7 +212,7 @@ vi_rc MarkStartOfNextWordForward( i_mark *result, i_mark *curr, bool big )
             break;
         }
     }
-    eatSpace( result, FALSE );
+    eatSpace( result, false );
     return( ERR_NO_ERR );
 
 } /* MarkStartOfNextWordForward */
@@ -227,10 +227,10 @@ vi_rc MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
     btype       block_type;
     btype       block_type2;
 
-    noWrap = FALSE;
+    noWrap = false;
     *result = *curr;
     if( EditFlags.IsChangeWord ) {
-        EditFlags.IsChangeWord = FALSE;
+        EditFlags.IsChangeWord = false;
         s = ptrFromMark( result );
         if( s == NULL ) {
             return( ERR_NO_ERR );
@@ -253,7 +253,7 @@ vi_rc MarkEndOfNextWordForward( i_mark *result, i_mark *curr, bool big )
             return( ERR_NOT_THAT_MANY_WORDS );
         }
     }
-    s = eatSpace( result, FALSE );
+    s = eatSpace( result, false );
     if( s == NULL ) {
         return( ERR_NOT_THAT_MANY_WORDS );
     }
@@ -277,7 +277,7 @@ vi_rc MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
     char        *s;
     btype       block_type;
 
-    noWrap = FALSE;
+    noWrap = false;
     *result = *curr;
     s = decrementMark( result );
     if( s == NULL ) {
@@ -290,7 +290,7 @@ vi_rc MarkStartOfNextWordBackward( i_mark *result, i_mark *curr, bool big )
             return ERR_NO_ERR;
         }
     }
-    s = eatSpace( result, TRUE );
+    s = eatSpace( result, true );
     if( s == NULL ) {
         return( ERR_NOT_THAT_MANY_WORDS );
     }
@@ -353,7 +353,7 @@ vi_rc GimmeCurrentEntireWordDim( int *sc, int *ec, bool big )
     btype       block_type;
     vi_rc       rc;
 
-    noWrap = FALSE;
+    noWrap = false;
     rc = ERR_NO_WORD_TO_FIND;
     curr = CurrentPos;
     s = ptrFromMark( &curr );

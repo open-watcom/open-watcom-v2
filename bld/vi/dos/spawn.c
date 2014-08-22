@@ -107,15 +107,15 @@ static void memBlockWrite( void (*rtn)( long, void*, unsigned ),
 
 } /* memBlockWrite */
 
-static int memBlockRead( void (*rtn)( long, void*, unsigned ), void **buff )
+static bool memBlockRead( void (*rtn)( long, void*, unsigned ), void **buff )
 {
     rtn( xHandle[currMem], *buff, xSize[currMem] );
     *buff = MK_FP( FP_SEG( *buff ) + 0x200, 0 );
     if( xSize[currMem] < MAX_IO_BUFFER ) {
-        return( FALSE );
+        return( false );
     }
     currMem++;
-    return( TRUE );
+    return( true );
 
 } /* memBlockRead */
 
@@ -154,21 +154,21 @@ static bool chkWrite( void *buff, unsigned *size )
         }
         bytes = *size << 4;
         if( TinyWrite( fileHandle, buff, bytes) != bytes ) {
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
 #ifndef NOEMS
     case IN_EMS:
         memBlockWrite( &EMSBlockWrite, buff, size );
-        return( TRUE );
+        return( true );
 #endif
 #ifndef NOXMS
     case IN_XMS:
         memBlockWrite( &XMSBlockWrite, buff, size );
-        return( TRUE );
+        return( true );
 #endif
     }
-    return( FALSE ); // to quiet the compiler
+    return( false ); // to quiet the compiler
 
 } /* chkWrite */
 
@@ -183,9 +183,9 @@ static bool chkRead( void *buf )
     case ON_DISK:
         if( TinyRead( fileHandle, *buff, 0x8000 ) == 0x8000 ) {
             *buff = MK_FP( FP_SEG( *buff ) + 0x800, 0 );
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
 #ifndef NOEMS
     case IN_EMS:
         return( memBlockRead( EMSBlockRead, buff ) );
@@ -195,7 +195,7 @@ static bool chkRead( void *buf )
         return( memBlockRead( XMSBlockRead, buff ) );
 #endif
     }
-    return( FALSE ); // to quiet the compiler
+    return( false ); // to quiet the compiler
 
 } /* chkRead */
 
@@ -210,7 +210,7 @@ static bool chkOpen( void )
     case ON_DISK:
         ret = TinyOpen( fullName, TIO_READ );
         if( ret < 0 ) {
-            return( FALSE );
+            return( false );
         }
         fileHandle = ret;
         break;
@@ -225,7 +225,7 @@ static bool chkOpen( void )
         break;
 #endif
     }
-    return( TRUE );
+    return( true );
 
 } /* chkOpen */
 
@@ -251,18 +251,18 @@ static bool checkPointMem( unsigned max )
     unsigned            size, psp;
 
     if( max == 0 ) {
-        return( FALSE );
+        return( false );
     }
     psp = TinyGetPSP();
     start = MK_FP( psp - 1, 0 );
     if( start->chain == END_OF_CHAIN ) {
-        return( FALSE );
+        return( false );
     }
     start = NEXT_BLOCK( start );
     mem = start;
     for( ;; ) {
         if( mem->owner == 0 && mem->size >= max ) {
-            return( FALSE );
+            return( false );
         }
         if( mem->chain == END_OF_CHAIN ) {
             break;
@@ -272,7 +272,7 @@ static bool checkPointMem( unsigned max )
     end = NEXT_BLOCK( mem );
     size = FP_SEG( end ) - FP_SEG( start );
     if( size < 0x100 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( size > max ) {
@@ -297,7 +297,7 @@ static bool checkPointMem( unsigned max )
         size = FP_SEG( end ) - FP_SEG( next );
         if( !chkWrite( next, &size ) ) {
             cleanUp();
-            return( FALSE );
+            return( false );
         }
         next = MK_FP( FP_SEG( next ) + size, 0 );
     }
@@ -307,7 +307,7 @@ static bool checkPointMem( unsigned max )
     chk->size = FP_SEG( end ) - FP_SEG( chk ) - 1;
     chk->chain = END_OF_CHAIN;
     chk->owner = 0;
-    return( TRUE );
+    return( true );
 }
 
 static void CheckPointRestore( void )

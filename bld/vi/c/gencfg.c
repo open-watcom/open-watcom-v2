@@ -67,7 +67,7 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( maps[i].data != NULL ) {
             MyFprintf( f, "map%s ", extra_str );
-            map = LookUpCharToken( i, FALSE );
+            map = LookUpCharToken( i, false );
             if( map == NULL ) {
                 MyFprintf( f, "%c ", i );
             } else {
@@ -82,7 +82,7 @@ static void doMaps( FILE *f, key_map *maps, char *extra_str )
             len--;
 
             for( j = 0; j < len; j++ ) {
-                map = LookUpCharToken( str[j], TRUE );
+                map = LookUpCharToken( str[j], true );
                 if( map == NULL ) {
                     MyFprintf( f, "%c", str[j] );
                 } else {
@@ -106,7 +106,7 @@ static void doWindow( FILE *f, int id, window_info *wi, bool colour_only )
 {
     char        token[64];
 
-    MyFprintf( f, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, TRUE ) );
+    MyFprintf( f, "%s\n", GetTokenStringCVT( TokensCmdLine, id, token, true ) );
     if( !colour_only ) {
         MyFprintf( f, "    dimension %d %d %d %d\n", wi->x1, wi->y1,
                    wi->x2, wi->y2 );
@@ -251,7 +251,7 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
         if( i == SETVAR_T_TILECOLOR || i == SETVAR_T_FIGNORE || i == SETVAR_T_FILENAME ) {
             continue;
         }
-        res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, TRUE ) );
+        res = GetASetVal( GetTokenStringCVT( TokensSetVar, i, token, true ) );
         if( i == SETVAR_T_STATUSSTRING || i == SETVAR_T_FILEENDSTRING ||
             i == SETVAR_T_HISTORYFILE || i == SETVAR_T_TMPDIR ) {    /* strings with possible spaces */
             fmt = "set %s = \"%s\"\n";
@@ -264,7 +264,7 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
     writeTitle( f, "Boolean Settings" );
     num = GetNumberOfTokens( TokensSetFlag );
     for( i = 0; i < num; i++ ) {
-        str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, TRUE ) );
+        str = GetASetVal( GetTokenStringCVT( TokensSetFlag, i, token, true ) );
         boolstr[0] = 0;
         if( str[0] == '0' ) {
             boolstr[0] = 'n';
@@ -299,24 +299,24 @@ vi_rc GenerateConfiguration( char *fname, bool is_cmdline )
 #endif
 
     writeTitle( f, "Window Configuration" );
-    doWindow( f, PCL_T_COMMANDWINDOW, &cmdlinew_info, FALSE );
-    doWindow( f, PCL_T_STATUSWINDOW, &statusw_info, FALSE );
-    doWindow( f, PCL_T_COUNTWINDOW, &repcntw_info, FALSE );
-    doWindow( f, PCL_T_EDITWINDOW, &editw_info, FALSE );
-    doWindow( f, PCL_T_FILECWINDOW, &filecw_info, FALSE );
-    doWindow( f, PCL_T_DIRWINDOW, &dirw_info, FALSE );
-    doWindow( f, PCL_T_FILEWINDOW, &filelistw_info, FALSE );
-    doWindow( f, PCL_T_MESSAGEWINDOW, &messagew_info, FALSE );
+    doWindow( f, PCL_T_COMMANDWINDOW, &cmdlinew_info, false );
+    doWindow( f, PCL_T_STATUSWINDOW, &statusw_info, false );
+    doWindow( f, PCL_T_COUNTWINDOW, &repcntw_info, false );
+    doWindow( f, PCL_T_EDITWINDOW, &editw_info, false );
+    doWindow( f, PCL_T_FILECWINDOW, &filecw_info, false );
+    doWindow( f, PCL_T_DIRWINDOW, &dirw_info, false );
+    doWindow( f, PCL_T_FILEWINDOW, &filelistw_info, false );
+    doWindow( f, PCL_T_MESSAGEWINDOW, &messagew_info, false );
 #ifndef __WIN__
-    doWindow( f, PCL_T_SETWINDOW, &setw_info, FALSE );
-    doWindow( f, PCL_T_LINENUMBERWINDOW, &linenumw_info, FALSE );
-    doWindow( f, PCL_T_EXTRAINFOWINDOW, &extraw_info, FALSE );
-    doWindow( f, PCL_T_SETVALWINDOW, &setvalw_info, FALSE );
-    doWindow( f, PCL_T_MENUWINDOW, &menuw_info, FALSE );
-    doWindow( f, PCL_T_MENUBARWINDOW, &menubarw_info, TRUE );
-    doWindow( f, PCL_T_ACTIVEMENUWINDOW, &activemenu_info, TRUE );
-    doWindow( f, PCL_T_GREYEDMENUWINDOW, &greyedmenu_info, TRUE );
-    doWindow( f, PCL_T_ACTIVEGREYEDMENUWINDOW, &activegreyedmenu_info, TRUE );
+    doWindow( f, PCL_T_SETWINDOW, &setw_info, false );
+    doWindow( f, PCL_T_LINENUMBERWINDOW, &linenumw_info, false );
+    doWindow( f, PCL_T_EXTRAINFOWINDOW, &extraw_info, false );
+    doWindow( f, PCL_T_SETVALWINDOW, &setvalw_info, false );
+    doWindow( f, PCL_T_MENUWINDOW, &menuw_info, false );
+    doWindow( f, PCL_T_MENUBARWINDOW, &menubarw_info, true );
+    doWindow( f, PCL_T_ACTIVEMENUWINDOW, &activemenu_info, true );
+    doWindow( f, PCL_T_GREYEDMENUWINDOW, &greyedmenu_info, true );
+    doWindow( f, PCL_T_ACTIVEGREYEDMENUWINDOW, &activegreyedmenu_info, true );
 #endif
 
     writeTitle( f, "Menu Configuration" );

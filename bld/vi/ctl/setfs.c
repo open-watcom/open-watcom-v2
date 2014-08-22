@@ -50,30 +50,30 @@
 
 typedef struct {
     int         Language;
-    BOOL        PPKeywordOnly;
-    BOOL        CMode;
-    BOOL        ReadEntireFile;
-    BOOL        ReadOnlyCheck;
-    BOOL        IgnoreCtrlZ;
-    BOOL        CRLFAutoDetect;
-    BOOL        WriteCRLF;
-    BOOL        EightBits;
+    bool        PPKeywordOnly;
+    bool        CMode;
+    bool        ReadEntireFile;
+    bool        ReadOnlyCheck;
+    bool        IgnoreCtrlZ;
+    bool        CRLFAutoDetect;
+    bool        WriteCRLF;
+    bool        EightBits;
     int         TabAmount;
-    BOOL        RealTabs;
+    bool        RealTabs;
     int         HardTab;
-    BOOL        AutoIndent;
+    bool        AutoIndent;
     int         ShiftWidth;
     char        TagFileName[TAGFILENAMEWIDTH];
-    BOOL        IgnoreTagCase;
-    BOOL        TagPrompt;
+    bool        IgnoreTagCase;
+    bool        TagPrompt;
     char        GrepDefault[GREPDEFAULTWIDTH];
-    BOOL        ShowMatch;
+    bool        ShowMatch;
 } dlg_data;
 
 static dlg_data     *dlgDataArray = NULL;
 static int          dlgDataArray_size = 0;
 
-static dyn_dim_type dynGetLanguage( HWND hwndDlg, BOOL initial )
+static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
 {
     int sel;
     
@@ -87,7 +87,7 @@ static dyn_dim_type dynGetLanguage( HWND hwndDlg, BOOL initial )
     return( DYN_VISIBLE );
 }
 
-static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, BOOL initial )
+static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, bool initial )
 {
     initial = initial;
     if( IsDlgButtonChecked( hwndDlg, SETFS_CRLFAUTODETECT ) ) {
@@ -96,7 +96,7 @@ static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, BOOL initial )
     return( DYN_VISIBLE );
 }
 
-static BOOL dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -106,12 +106,12 @@ static BOOL dynIsLanguage( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
     id = LOWORD( wParam );
     cmd = GET_WM_COMMAND_CMD( wParam, lParam );
     if( id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -121,9 +121,9 @@ static BOOL dynIsCRLFAutoDetect( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
     id = LOWORD( wParam );
     cmd = GET_WM_COMMAND_CMD( wParam, lParam );
     if( id == SETFS_CRLFAUTODETECT && cmd == BN_CLICKED ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 #include "setfs.dh"
@@ -159,24 +159,24 @@ static void globalTodlgData( dlg_data *data, info *envInfo )
 static void dlgDataDefault( dlg_data *data )
 {
     data->Language       = LANG_NONE;
-    data->PPKeywordOnly  = FALSE;
-    data->CMode          = FALSE;
-    data->ReadEntireFile = FALSE;
-    data->ReadOnlyCheck  = TRUE;
-    data->IgnoreCtrlZ    = TRUE;
-    data->CRLFAutoDetect = TRUE;
-    data->WriteCRLF      = TRUE;
-    data->EightBits      = TRUE;
+    data->PPKeywordOnly  = false;
+    data->CMode          = false;
+    data->ReadEntireFile = false;
+    data->ReadOnlyCheck  = true;
+    data->IgnoreCtrlZ    = true;
+    data->CRLFAutoDetect = true;
+    data->WriteCRLF      = true;
+    data->EightBits      = true;
     data->TabAmount      = 8;
-    data->RealTabs       = FALSE;
+    data->RealTabs       = false;
     data->HardTab        = 8;
-    data->AutoIndent     = FALSE;
+    data->AutoIndent     = false;
     data->ShiftWidth     = 4;
     data->TagFileName[0] = '\0';
-    data->IgnoreTagCase  = TRUE;
-    data->TagPrompt      = TRUE;
+    data->IgnoreTagCase  = true;
+    data->TagPrompt      = true;
     data->GrepDefault[0] = '\0';
-    data->ShowMatch      = FALSE;
+    data->ShowMatch      = false;
 }
 
 static void dlgDataToGlobal( dlg_data *data )
@@ -291,7 +291,7 @@ static void fillFileType( HWND hwndDlg )
     }
 }
 
-static void updateDialogSettings( HWND hwndDlg, BOOL title )
+static void updateDialogSettings( HWND hwndDlg, bool title )
 {
     HWND    hwndCB;
     int     index;
@@ -411,7 +411,7 @@ static long deleteSelectedFT( HWND hwndDlg )
         }
         SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
         // update other dialog settings
-        updateDialogSettings( GetParent( hwndCB ), TRUE );
+        updateDialogSettings( GetParent( hwndCB ), true );
     }
     MemFree( template );
     return( 1L );
@@ -449,7 +449,7 @@ static long insertFT( HWND hwndDlg )
     dlgDataDefault( dlgDataArray + index );
     SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)text );
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
-    updateDialogSettings( hwndDlg, TRUE );
+    updateDialogSettings( hwndDlg, true );
 
     return( 1L );
 }
@@ -468,7 +468,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
         CenterWindowInRoot( hwndDlg );
         dlgDataInit();
         fillFileType( hwndDlg );
-        updateDialogSettings( hwndDlg, TRUE );
+        updateDialogSettings( hwndDlg, true );
         return( TRUE );
 
     case WM_COMMAND:
@@ -478,7 +478,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
             if( cmd == CBN_SELCHANGE ) {
 //                rc = ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, &oldData, &Ctl_setfs );
 //                assert( rc != 0 );
-                updateDialogSettings( hwndDlg, TRUE );
+                updateDialogSettings( hwndDlg, true );
             } else if( cmd == CBN_SETFOCUS ) {
                 // if we are getting the focus, something probably changed
                 ctlhwnd = GET_WM_COMMAND_HWND( wParam, lParam );
@@ -486,7 +486,7 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wParam, LPARAM
 
                 // this may bump focus back to a bad field
                 if( ctl_dlg_done( GET_HINSTANCE( hwndDlg ), hwndDlg, dlgDataArray + index, &Ctl_setfs ) ) {
-                    updateDialogSettings( hwndDlg, FALSE );
+                    updateDialogSettings( hwndDlg, false );
                 }
             }
             break;
@@ -528,7 +528,7 @@ bool GetSetFSDialog( void )
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
-    ReDisplayBuffers( TRUE );
+    ReDisplayBuffers( true );
     return( rc );
 
 } /* GetSetFSDialog */

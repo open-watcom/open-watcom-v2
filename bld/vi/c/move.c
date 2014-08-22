@@ -38,7 +38,7 @@
 /*
  * goToLine - go to a specified line number
  */
-static vi_rc goToLine( linenum lineno, int relcurs )
+static vi_rc goToLine( linenum lineno, bool relcurs )
 {
     int         text_lines, tl;
     linenum     diff, cwl, nwl;
@@ -90,8 +90,8 @@ static vi_rc goToLine( linenum lineno, int relcurs )
     /*
      * if we go off the window, relocate
      */
-    pageshift = FALSE;
-    dispall = FALSE;
+    pageshift = false;
+    dispall = false;
 
     text_lines = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
     if( nwl < 1 || nwl > text_lines ) {
@@ -100,7 +100,7 @@ static vi_rc goToLine( linenum lineno, int relcurs )
             LeftTopPos.line = lineno - tl;
         } else {
             LeftTopPos.line = lineno + 1 - cwl;
-            pad = ( EditFlags.JumpyScroll == TRUE ) ? 1 : 0;
+            pad = ( EditFlags.JumpyScroll ) ? 1 : 0;
             if( diff > 0 ) {
                 LeftTopPos.line += pad;
                 diff += pad;
@@ -109,7 +109,7 @@ static vi_rc goToLine( linenum lineno, int relcurs )
                 diff -= pad;
             }
             if( diff > -tl && diff < tl && !dispall ) {
-                pageshift = TRUE;
+                pageshift = true;
             }
         }
         if( LeftTopPos.line < 1 ) {
@@ -123,13 +123,13 @@ static vi_rc goToLine( linenum lineno, int relcurs )
             diff = LeftTopPos.line - lineno;
             LeftTopPos.line = lineno;
         }
-        dispall = TRUE;
+        dispall = true;
     }
 #if 0
     hiddcnt = GetHiddenLineCount( LeftTopPos.line, lineno );
     if( hiddcnt > 0 ) {
-        pageshift = FALSE;
-        dispall = TRUE;
+        pageshift = false;
+        dispall = true;
     }
 #endif
 
@@ -137,8 +137,8 @@ static vi_rc goToLine( linenum lineno, int relcurs )
         // pageshift wont help if we also have to column shift
         // and not really useful if dragging
 
-        dispall = TRUE;
-        pageshift = FALSE;
+        dispall = true;
+        pageshift = false;
     }
 
 
@@ -147,7 +147,7 @@ static vi_rc goToLine( linenum lineno, int relcurs )
     SetCurrentLineNumber( lineno );
 
     if( pageshift ) {
-        dispall = FALSE;
+        dispall = false;
         ShiftWindowUpDown( CurrentWindow, diff );
         if( EditFlags.LineNumbers ) {
             ShiftWindowUpDown( CurrNumWindow, diff );
@@ -170,12 +170,12 @@ static vi_rc goToLine( linenum lineno, int relcurs )
 
 vi_rc GoToLineRelCurs( linenum lineno )
 {
-    return( goToLine( lineno, TRUE ) );
+    return( goToLine( lineno, true ) );
 }
 
 vi_rc GoToLineNoRelCurs( linenum lineno )
 {
-    return( goToLine( lineno, FALSE ) );
+    return( goToLine( lineno, false ) );
 }
 
 void SetCurrentLineNumber( linenum l )
@@ -319,7 +319,7 @@ bool CheckLeftColumn( void )
     rc = ColumnInWindow( wc, &diff );
     if( !rc ) {
         // |diff| is already at least 1
-        pad = ( EditFlags.JumpyScroll == TRUE ) ? SCROLL_HLINE - 1 : 0;
+        pad = ( EditFlags.JumpyScroll ) ? SCROLL_HLINE - 1 : 0;
         if( diff < 0 ) {
             LeftTopPos.column += diff - pad;
         } else {
@@ -364,13 +364,13 @@ void ValidateCurrentColumn( void )
 } /* ValidateCurrentColumn */
 
 /*
- * CheckCurrentColumn - check state of current column, return TRUE if need to
+ * CheckCurrentColumn - check state of current column, return true if need to
  *                      redisplay page
  */
 bool CheckCurrentColumn( void )
 {
     int     clen, vcp;
-    bool    dispall = FALSE;
+    bool    dispall = false;
 
     clen = VirtualLineLen( CurrentLine->data );
     if( clen == 0 ) {

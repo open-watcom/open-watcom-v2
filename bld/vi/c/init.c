@@ -62,7 +62,7 @@ static char     *keysToPush = NULL;
     static int  lineToGoTo = 0;
 #endif
 static char     goCmd[10] = {0};
-static bool     wantNoReadEntireFile = FALSE;
+static bool     wantNoReadEntireFile = false;
 char            *WordDefnDefault = "::..\\\\__09AZaz";
 
 #ifdef __WIN__
@@ -135,35 +135,35 @@ static void checkFlags( int *argc, char *argv[], char *start[],
 #ifdef __IDE__
         case 'X':
             IDEInit();
-            EditFlags.UseIDE = TRUE;
+            EditFlags.UseIDE = true;
             break;
 #endif
         case '-':
-            EditFlags.StdIOMode = TRUE;
-            EditFlags.NoInitialFileLoad = TRUE;
+            EditFlags.StdIOMode = true;
+            EditFlags.NoInitialFileLoad = true;
             break;
         case 'r':
-            EditFlags.RecoverLostFiles = TRUE;
-            EditFlags.NoInitialFileLoad = TRUE;
+            EditFlags.RecoverLostFiles = true;
+            EditFlags.NoInitialFileLoad = true;
             break;
         case 'i':
-            EditFlags.IgnoreLostFiles = TRUE;
+            EditFlags.IgnoreLostFiles = true;
             break;
         case 'z':
-            EditFlags.IgnoreCtrlZ = TRUE;
+            EditFlags.IgnoreCtrlZ = true;
             break;
         case 'q':
-            EditFlags.Quiet = TRUE;
+            EditFlags.Quiet = true;
             break;
         case 'v':
-            EditFlags.ViewOnly = TRUE;
+            EditFlags.ViewOnly = true;
             break;
         case 'c':
-            EditFlags.BoundData = FALSE;
+            EditFlags.BoundData = false;
             AddString2( &cfgFN, OptArg );
             break;
         case 'd':
-            EditFlags.BoundData = FALSE;
+            EditFlags.BoundData = false;
             AddString2( &cfgFN, "" );
             break;
         case 'k':
@@ -188,7 +188,7 @@ static void checkFlags( int *argc, char *argv[], char *start[],
             cTag = OptArg;
             break;
         case 'n':
-            wantNoReadEntireFile = TRUE;
+            wantNoReadEntireFile = true;
             break;
         }
     }
@@ -256,7 +256,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     StaticStart();
     FTSInit();
     BoundDataInit();
-    EditFlags.Starting = TRUE;
+    EditFlags.Starting = true;
     InitCommandLine();
     ChkExtendedKbd();
     SSInitBeforeConfig();
@@ -271,7 +271,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     checkFlags( &argc, argv, startup, startup_parms, &startcnt );
     ScreenInit();
     SetWindowSizes();
-    EditFlags.ClockActive = FALSE;
+    EditFlags.ClockActive = false;
     SetInterrupts();
 #ifndef __WIN__
     InitColors();
@@ -312,14 +312,15 @@ static void doInitializeEditor( int argc, char *argv[] )
         rc = ERR_NO_ERR;
     }
     if( wantNoReadEntireFile ) {
-        EditFlags.ReadEntireFile = FALSE;
+        EditFlags.ReadEntireFile = false;
     }
     VerifyTmpDir();
     while( LostFileCheck() );
     HookScriptCheck();
 
     if( EditFlags.Quiet ) {
-        EditFlags.Spinning = EditFlags.Clock = FALSE;
+        EditFlags.Spinning = false;
+        EditFlags.Clock = false;
     }
     ExtendedMemoryInit();
 
@@ -368,14 +369,14 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( rc1 != ERR_NO_ERR ) {
         FatalError( rc1 );
     }
-    EditFlags.SpinningOurWheels = TRUE;
-    EditFlags.ClockActive = TRUE;
-    EditFlags.DisplayHold = TRUE;
+    EditFlags.SpinningOurWheels = true;
+    EditFlags.ClockActive = true;
+    EditFlags.DisplayHold = true;
     rc1 = NewStatusWindow();
     if( rc1 != ERR_NO_ERR ) {
         FatalError( rc1 );
     }
-    EditFlags.DisplayHold = FALSE;
+    EditFlags.DisplayHold = false;
     MaxMemFreeAfterInit = MemSize();
 
     /*
@@ -385,7 +386,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     k = 1;
     cmd[0] = 'e';
     cmd[1] = 0;
-    EditFlags.WatchForBreak = TRUE;
+    EditFlags.WatchForBreak = true;
 
     /*
      * look for a tag: if there is one, set it up as the file to start
@@ -442,7 +443,7 @@ static void doInitializeEditor( int argc, char *argv[] )
                 strcat( path, " " );
             }
             if( found ) {
-                rc1 = NewFile( path, FALSE );
+                rc1 = NewFile( path, false );
                 if( rc1 != ERR_NO_ERR ) {
                     FatalError( rc1 );
                 }
@@ -468,7 +469,7 @@ static void doInitializeEditor( int argc, char *argv[] )
 
         for( j = 0; j < cnt; j++ ) {
 
-            rc1 = NewFile( cFN, FALSE );
+            rc1 = NewFile( cFN, false );
             if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
                 FatalError( rc1 );
             }
@@ -494,12 +495,13 @@ static void doInitializeEditor( int argc, char *argv[] )
         cFN = argv[k];
     }
     if( EditFlags.StdIOMode ) {
-        rc1 = NewFile( "stdio", FALSE );
+        rc1 = NewFile( "stdio", false );
         if( rc1 != ERR_NO_ERR ) {
             FatalError( rc1 );
         }
     }
-    EditFlags.WatchForBreak = EditFlags.Starting = FALSE;
+    EditFlags.WatchForBreak = false;
+    EditFlags.Starting = false;
 
     /*
      * if there was a tag, do the appropriate search

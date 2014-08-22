@@ -73,12 +73,12 @@ static void getText( ss_block *ss_new, char *start )
     if( flags.inHTMLKeyword ) {
         save_char = *text;
         *text = '\0';
-        if( IsKeyword( start, TRUE ) ) {
+        if( IsKeyword( start, true ) ) {
             ss_new->type = SE_KEYWORD;
         }
         *text = save_char;
         // only check first word after a "<" (change this to check all tokens)
-        flags.inHTMLKeyword = FALSE;
+        flags.inHTMLKeyword = false;
     }
 
     ss_new->len = text - start;
@@ -120,7 +120,7 @@ extern void getHTMLComment( ss_block *ss_new, char *start, int skip )
         }
 
         if( comment1 == '-' && comment2 == '-' && comment3 == '>' ) {
-            flags.inHTMLComment = FALSE;
+            flags.inHTMLComment = false;
             text += 3;
             break;
         }
@@ -141,11 +141,11 @@ static void getString( ss_block *ss_new, char *start, int skip )
     }
     if( *text == '\0' ) {
         // string continued on next line
-        flags.inString = TRUE;
+        flags.inString = true;
     } else {
         text++;
         // definitely finished string
-        flags.inString = FALSE;
+        flags.inString = false;
     }
     ss_new->len = text - start;
 }
@@ -163,9 +163,9 @@ void GetHTMLFlags( ss_flags_h *storeFlags )
 void InitHTMLFlags( linenum line_no )
 {
     line_no = line_no;
-    flags.inHTMLComment = FALSE;
-    flags.inHTMLKeyword = FALSE;
-    flags.inString = FALSE;
+    flags.inHTMLComment = false;
+    flags.inHTMLKeyword = false;
+    flags.inString = false;
 }
 
 
@@ -178,7 +178,7 @@ void GetHTMLBlock( ss_block *ss_new, char *start, int line )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated "
-            flags.inString = FALSE;
+            flags.inString = false;
         }
         getBeyondText( ss_new );
         return;
@@ -204,15 +204,15 @@ void GetHTMLBlock( ss_block *ss_new, char *start, int line )
         return;
     case '<':
         if( start[1] == '!' && start[2] == '-' && start[3] == '-' ) {
-            flags.inHTMLComment = TRUE;
+            flags.inHTMLComment = true;
             getHTMLComment( ss_new, start, 4 );
             return;
         } else {
-            flags.inHTMLKeyword = TRUE;
+            flags.inHTMLKeyword = true;
         }
         break;
     case '>':
-        flags.inHTMLKeyword = FALSE;
+        flags.inHTMLKeyword = false;
         break;
     }
 

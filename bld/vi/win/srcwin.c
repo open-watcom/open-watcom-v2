@@ -85,10 +85,10 @@ bool GetDWORD( char *str, LPVOID res )
     char        hdlstr[MAX_STR];
 
     if( NextWord1( str, hdlstr ) <= 0  ) {
-        return( FALSE );
+        return( false );
     }
     *((DWORD *)res) = strtoul( hdlstr, NULL, 10 );
-    return( TRUE );
+    return( true );
 
 } /* GetDWORD */
 
@@ -106,16 +106,16 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
     DWORD       left, top, width, height;
 
     if( tmp == NULL || str == NULL ) {
-        return( FALSE );
+        return( false );
     }
     strcpy( str, cmd );
     RemoveLeadingSpaces( str );
     if( NextWord1( str, tmp ) <= 0 ) {
-        return( FALSE );
+        return( false );
     }
-    token = Tokenize( winTokens, tmp, FALSE );
+    token = Tokenize( winTokens, tmp, false );
     if( token == -1 ) {
-        return( FALSE );
+        return( false );
     }
     switch( token ) {
     case T_SETMAINSIZE:
@@ -124,21 +124,21 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         }
         *result = ERR_INVALID_COMMAND;
         if( !GetDWORD( str, &left ) ){
-            return( TRUE );
+            return( true );
         }
         if( !GetDWORD( str, &top ) ){
-            return( TRUE );
+            return( true );
         }
         if( !GetDWORD( str, &width ) ){
-            return( TRUE );
+            return( true );
         }
         if( !GetDWORD( str, &height ) ){
-            return( TRUE );
+            return( true );
         }
         ShowWindow( Root, SW_SHOWNORMAL );
         MoveWindow( Root, left, top, width, height, TRUE );
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
 
     case T_TAKEFOCUS:
 #ifdef __NT__
@@ -148,12 +148,12 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
 #endif
         SetFocus( Root );
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
 
     case T_MINIMIZE:
         ShowWindow( Root, SW_SHOWMINNOACTIVE );
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
 
     case T_RESTORE:
         SetFocus( Root );
@@ -161,24 +161,24 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         BringWindowToTop( Root );
         ShowWindow( Root, SW_RESTORE );
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
 
     case T_EXIT:
-        if( ExitWithPrompt( TRUE, FALSE ) ) {
+        if( ExitWithPrompt( true, false ) ) {
             *result = ERR_NO_ERR;
-            return( TRUE );
+            return( true );
         } else {
             *result = ERR_FILE_MODIFIED;
-            return( FALSE );
+            return( false );
         }
     case T_PROMPT_FOR_SAVE:
         {
             if( PromptFilesForSave() ) {
                 *result = ERR_NO_ERR;
-                return( TRUE );
+                return( true );
             } else {
                 *result = ERR_FILE_MODIFIED;
-                return( FALSE );
+                return( false );
             }
         }
     case T_PROMPT_THIS_FILE_FOR_SAVE:
@@ -188,10 +188,10 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
             }
             if( PromptThisFileForSave( str ) ) {
                 *result = ERR_NO_ERR;
-                return( TRUE );
+                return( true );
             } else {
                 *result = ERR_FILE_MODIFIED;
-                return( FALSE );
+                return( false );
             }
         }
     case T_INPUT_BOOL:
@@ -203,26 +203,26 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
             *result = ERR_NO_ERR;
             SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-            return( TRUE );
+            return( true );
         }
         SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         SetWindowPos( Root, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         *result = ERR_FILE_MODIFIED;
-        return( TRUE );
+        return( true );
     case T_QUERY_FILE:
         if( QueryFile( str ) ) {
             *result = 1;
         } else {
             *result = 0;
         }
-        return( TRUE );
+        return( true );
     case T_UPDATEWINDOWS:
         DCUpdateAll();
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
     case T_EDITFILE:
         *result = 1;
-        rc = EditFile( str, FALSE ) == ERR_NO_ERR;
+        rc = EditFile( str, false ) == ERR_NO_ERR;
 #ifdef __NT__
         SetForegroundWindow( Root );
 #else
@@ -246,14 +246,14 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         }
         *result = ERR_INVALID_COMMAND;
         if( NextWord1( str, tmp ) <= 0 ) {
-            return( TRUE );
+            return( true );
         }
-        token = Tokenize( helpTokens, tmp, FALSE );
+        token = Tokenize( helpTokens, tmp, false );
         if( token == -1 ) {
-            return( TRUE );
+            return( true );
         }
         if( NextWord1( str, tmp ) <= 0 ) {
-            return( TRUE );
+            return( true );
         }
         RemoveLeadingSpaces( str );
         strcpy( tmp2, tmp );
@@ -264,7 +264,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
         switch( token ) {
         case WINHELP_KEY:
             if( str[0] == 0 ) {
-                return( TRUE );
+                return( true );
             }
             if( !WHtmlHelp( Root, tmp2, HELP_KEY, (HELP_DATA)str ) ) {
                 WWinHelp( Root, tmp, HELP_KEY, (HELP_DATA)str );
@@ -272,7 +272,7 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
             break;
         case WINHELP_PARTIALKEY:
             if( str[0] == 0 ) {
-                return( TRUE );
+                return( true );
             }
             if( !WHtmlHelp( Root, tmp2, HELP_PARTIALKEY, (HELP_DATA)str ) ) {
                 WWinHelp( Root, tmp, HELP_PARTIALKEY, (HELP_DATA)str );
@@ -280,13 +280,13 @@ bool RunWindowsCommand( char *cmd, vi_rc *result, vlist *vl )
             break;
         }
         *result = ERR_NO_ERR;
-        return( TRUE );
+        return( true );
     }
     if( vl != NULL ) {
         if( RunDDECommand( token, str, tmp, result, vl ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* RunWindowsCommand */

@@ -47,19 +47,19 @@
 typedef struct {
     char        Word[WORDWIDTH];
     char        WordAlt[WORDWIDTH];
-    BOOL        Undo;
-    BOOL        AutoSave;
+    bool        Undo;
+    bool        AutoSave;
     int         AutoSaveInterval;
-    BOOL        LastEOL;
+    bool        LastEOL;
     // int         MaxLineLen;
-    BOOL        SaveConfig;
-    BOOL        SaveOnBuild;
-    BOOL        BeepFlag;
-    BOOL        QuitMovesForward;
-    BOOL        SameFileCheck;
-    BOOL        Modal;
-    BOOL        CaseIgnore;
-    BOOL        SearchWrap;
+    bool        SaveConfig;
+    bool        SaveOnBuild;
+    bool        BeepFlag;
+    bool        QuitMovesForward;
+    bool        SameFileCheck;
+    bool        Modal;
+    bool        CaseIgnore;
+    bool        SearchWrap;
     char        TmpDir[TMPDIRWIDTH];
     char        HistoryFile[HISTORYFILEWIDTH];
 } dlg_data;
@@ -67,7 +67,7 @@ typedef struct {
 static  dlg_data    dlgData;
 extern  char        *WordDefnDefault;
 
-static dyn_dim_type dynGetAutoSave( HWND hwndDlg, BOOL initial )
+static dyn_dim_type dynGetAutoSave( HWND hwndDlg, bool initial )
 {
     initial = initial;
     if( IsDlgButtonChecked( hwndDlg, SETGEN_AUTOSAVE ) ) {
@@ -76,7 +76,7 @@ static dyn_dim_type dynGetAutoSave( HWND hwndDlg, BOOL initial )
     return( DYN_DIM );
 }
 
-static BOOL dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
+static bool dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
 {
     WORD        id;
     WORD        cmd;
@@ -86,9 +86,9 @@ static BOOL dynIsAutoSave( WPARAM wParam, LPARAM lParam, HWND hwndDlg )
     id = LOWORD( wParam );
     cmd = GET_WM_COMMAND_CMD( wParam, lParam );
     if( id == SETGEN_AUTOSAVE && cmd == BN_CLICKED ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 #include "setgen.dh"
@@ -100,9 +100,9 @@ static void globalTodlgData( void )
     strncpy( dlgData.WordAlt, EditVars.WordAltDefn, WORDWIDTH - 1 );
     dlgData.Undo = EditFlags.Undo;
     dlgData.AutoSaveInterval = EditVars.AutoSaveInterval;
-    dlgData.AutoSave = FALSE;
+    dlgData.AutoSave = false;
     if( EditVars.AutoSaveInterval > 0 ) {
-        dlgData.AutoSave = TRUE;
+        dlgData.AutoSave = true;
     }
     dlgData.LastEOL = EditFlags.LastEOL;
     // dlgData.MaxLineLen = MaxLine;
@@ -147,19 +147,19 @@ static void setdlgDataDefaults( void )
     // this sort of sucks since the default values aren't isolated in 1 place
     strncpy( dlgData.Word, WordDefnDefault + 6, WORDWIDTH - 1 );
     strncpy( dlgData.WordAlt, WordDefnDefault, WORDWIDTH - 1 );
-    dlgData.Undo = TRUE;
+    dlgData.Undo = true;
     dlgData.AutoSaveInterval = 30;
-    dlgData.AutoSave = TRUE;
-    dlgData.LastEOL = FALSE;
+    dlgData.AutoSave = true;
+    dlgData.LastEOL = false;
     // dlgData.MaxLineLen = 512;
-    dlgData.SaveConfig = FALSE;
-    dlgData.SaveOnBuild = TRUE;
-    dlgData.BeepFlag = FALSE;
-    dlgData.QuitMovesForward = FALSE;
-    dlgData.SameFileCheck = TRUE;
-    dlgData.Modal = FALSE;
-    dlgData.CaseIgnore = TRUE;
-    dlgData.SearchWrap = TRUE;
+    dlgData.SaveConfig = false;
+    dlgData.SaveOnBuild = true;
+    dlgData.BeepFlag = false;
+    dlgData.QuitMovesForward = false;
+    dlgData.SameFileCheck = true;
+    dlgData.Modal = false;
+    dlgData.CaseIgnore = true;
+    dlgData.SearchWrap = true;
     strcpy( dlgData.TmpDir, "\\tmp" );
     strcpy( dlgData.HistoryFile, "\\vi.his" );
 }
@@ -218,7 +218,7 @@ bool GetSetGenDialog( void )
     FreeProcInstance( proc );
 
     // redisplay all files to ensure screen completely correct
-    ReDisplayBuffers( FALSE );
+    ReDisplayBuffers( false );
     return( rc );
 
 } /* GetSetGenDialog */

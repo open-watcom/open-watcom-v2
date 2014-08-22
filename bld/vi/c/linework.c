@@ -40,7 +40,7 @@ void GetCurrentLine( void )
 {
     memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len + 1 );
     WorkLine->len = CurrentLine->len;
-    CurrentLine->u.ld.nolinedata = TRUE;
+    CurrentLine->u.ld.nolinedata = true;
 
 } /* GetCurrentLine */
 
@@ -58,7 +58,7 @@ vi_rc ReplaceCurrentLine( void )
     FetchFcb( CurrentFcb );
     extra = WorkLine->len - CurrentLine->len;
     CurrentFcb->byte_cnt += extra;
-    CurrentFcb->nullfcb = FALSE;
+    CurrentFcb->nullfcb = false;
 
     /*
      * copy new data in

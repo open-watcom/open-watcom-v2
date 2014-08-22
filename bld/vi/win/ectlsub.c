@@ -81,7 +81,7 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
     case VI_KEY( CTRL_R ):
         if( !SelRgn.selected ||
             (SelRgn.lines && (SelRgn.start.line != SelRgn.end.line)) ) {
-            return( FALSE );
+            return( false );
         }
     case VI_KEY( CTRL_W ):
     case VI_KEY( CTRL_E ):
@@ -125,9 +125,9 @@ static bool handleKey( HWND hwnd, vi_key key, bool process )
         }
         break;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* handleKey */
 
@@ -141,12 +141,12 @@ WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam,
     switch( msg ) {
     case WM_KEYDOWN:
         key = MapVirtualKeyToVIKey( wparam, HIWORD( lparam ) );
-        if( handleKey( hwnd, key, TRUE ) ) {
+        if( handleKey( hwnd, key, true ) ) {
             return( 0L );
         }
         break;
     case WM_CHAR:
-        if( handleKey( hwnd, wparam, FALSE ) ) {
+        if( handleKey( hwnd, wparam, false ) ) {
             return( 0L );
         }
         break;

@@ -69,7 +69,7 @@ vi_rc SwapToDisk( fcb *fb )
     /*
      * finish up
      */
-    fb->swapped = TRUE;
+    fb->swapped = true;
     return( ERR_NO_ERR );
 
 } /* SwapToDisk */

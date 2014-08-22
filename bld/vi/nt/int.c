@@ -85,7 +85,7 @@ BOOL WINAPI BreakHandler( DWORD type )
     case CTRL_C_EVENT:
     case CTRL_BREAK_EVENT:
         if( EditFlags.WatchForBreak ) {
-            EditFlags.BreakPressed = TRUE;
+            EditFlags.BreakPressed = true;
         }
         return( TRUE );
     default:
@@ -97,13 +97,13 @@ void SetInterrupts( void )
 {
     DWORD       tid;
 
-    exit_thread = FALSE;
+    exit_thread = false;
     CreateThread( NULL, 1024, (DWORD (WINAPI *)( LPVOID param ))TimerThread, NULL, 0, &tid );
     SetConsoleCtrlHandler( BreakHandler, TRUE );
 }
 
 void RestoreInterrupts( void )
 {
-    exit_thread = TRUE;
+    exit_thread = true;
     SetConsoleCtrlHandler( BreakHandler, FALSE );
 }

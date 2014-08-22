@@ -45,7 +45,7 @@ static char oldDir[_MAX_PATH];
 
 int FileSysNeedsCR( int handle )
 {
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -125,7 +125,7 @@ void ScreenInit( void )
     BSize.X = EditVars.WindMaxWidth;
     BSize.Y = EditVars.WindMaxHeight;
 
-    EditFlags.Color = TRUE;
+    EditFlags.Color = true;
 
     Scrn = malloc( EditVars.WindMaxWidth * EditVars.WindMaxHeight * sizeof( char_info ) );
     ScreenPage( 0 );
@@ -155,7 +155,7 @@ void ScreenFini( void )
  */
 void ChkExtendedKbd( void )
 {
-    EditFlags.ExtendedKeyboard = 0x10;
+    EditVars.ExtendedKeyboard = 0x10;
 
 } /* ChkExtendedKbd */
 
@@ -209,7 +209,7 @@ bool ShiftDown( void )
     // GetKeyboardState( &kbstate );
     // return( kbstate[VK_SHIFT] & 0x80 );
 
-    return( FALSE );
+    return( false );
 
 } /* ShiftDown */
 
@@ -220,7 +220,7 @@ static bool hadCapsLock;
  */
 void TurnOffCapsLock( void )
 {
-    hadCapsLock = FALSE;
+    hadCapsLock = false;
 
 } /* TurnOffCapsLock */
 
@@ -267,7 +267,7 @@ void SetCursorBlinkRate( int cbr )
 
 vi_key GetKeyboard( void )
 {
-    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, FALSE ) );
+    return( GetVIKey( BIOSGetKeyboard( NULL ), 0, false ) );
 }
 
 bool KeyboardHit( void )

@@ -35,8 +35,8 @@
 #include "utils.h"
 #include "wprocmap.h"
 
-static BOOL Init( window *, void * );
-static BOOL Fini( window *, void * );
+static bool Init( window *, void * );
+static bool Fini( window *, void * );
 
 window RepeatCountWindow = {
     &repcntw_info,
@@ -51,7 +51,7 @@ static char     *className = "RepeatWindow";
 static char     repString[MAX_STR];
 static HWND     repeatWindow;
 
-static BOOL Init( window *w, void *parm )
+static bool Init( window *w, void *parm )
 {
     WNDCLASS        wc;
 
@@ -70,15 +70,15 @@ static BOOL Init( window *w, void *parm )
     wc.hbrBackground = (HBRUSH) COLOR_APPWORKSPACE;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = className;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* Init */
 
-static BOOL Fini( window *w, void *parm )
+static bool Fini( window *w, void *parm )
 {
     w = w;
     parm = parm;
-    return( FALSE );
+    return( true );
 
 } /* Fini */
 

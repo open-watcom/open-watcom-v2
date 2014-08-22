@@ -52,7 +52,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     strcpy( cmd, cmdl );
     strcpy( orgcmd, cmd );
     NextWord1( cmd, full );
-    is_internal = FALSE;
+    is_internal = false;
 
     strcpy( path, full );
     _splitpath( full, drive, directory, name, ext );
@@ -64,7 +64,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
         if( drive[0] == 0 && directory[0] == 0 ) {
             for( i = 0; i < InternalCommandCount; i++ ) {
                 if( !stricmp( full, InternalCommands[i] ) ) {
-                    is_internal = TRUE;
+                    is_internal = true;
                     break;
                 }
             }

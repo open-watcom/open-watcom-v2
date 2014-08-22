@@ -65,7 +65,7 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
      * we use it
      */
     FetchFcb( fb );
-    fb->non_swappable = TRUE;
+    fb->non_swappable = true;
 
     /*
      * get position
@@ -108,10 +108,10 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
         /*
          * make sure original one should stay locked
          */
-        fb->globalmatch = FALSE;
+        fb->globalmatch = false;
         for( cl = fb->lines.head; cl != NULL; cl = cl->next ) {
             if( cl->u.ld.globmatch ) {
-                fb->globalmatch = TRUE;
+                fb->globalmatch = true;
                 break;
             }
         }
@@ -120,7 +120,7 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
          */
         for( cl = cfcb->lines.head; cl != NULL; cl = cl->next ) {
             if( cl->u.ld.globmatch ) {
-                cfcb->globalmatch = TRUE;
+                cfcb->globalmatch = true;
                 break;
             }
         }
@@ -129,8 +129,8 @@ vi_rc SplitFcbAtLine( linenum lne, file *f, fcb *fb )
     /*
      * release fcbs
      */
-    fb->non_swappable = FALSE;
-    cfcb->non_swappable = FALSE;
+    fb->non_swappable = false;
+    cfcb->non_swappable = false;
     return( ERR_NO_ERR );
 
 } /* SplitFcbAtLine */

@@ -40,7 +40,7 @@ static regexp  *cRx;
  */
 bool FileMatch( char *name )
 {
-    return( RegExec( cRx, name, TRUE ) == TRUE );
+    return( RegExec( cRx, name, true ) );
 
 } /* FileMatch */
 
@@ -52,7 +52,7 @@ vi_rc FileMatchInit( char *wild )
     char        *tomatch;
     int         i, j, len;
 
-    RegExpAttrSave( TRUE, "." );
+    RegExpAttrSave( 1, "." );
 
     /*
      * compute required size

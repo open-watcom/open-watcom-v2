@@ -38,7 +38,7 @@
 
 extern  LOGFONT     CurLogfont;
 
-static  bool        haveCapture = FALSE;
+static  bool        haveCapture = false;
 static  HWND        mod_hwnd;
 static  POINT       m_pt;
 
@@ -46,7 +46,7 @@ static void sendNewFontCurrentWindow( void )
 {
     int             row, col;
     syntax_element  style;
-    BOOL            totally;
+    bool            totally;
     linenum         line_num;
 
     ScreenToClient( mod_hwnd, &m_pt );
@@ -72,9 +72,9 @@ static void sendNewFontCurrentWindow( void )
         /*
          * ASSUMPTION: font #s in win.cfg match SE_XXX enum values!
          */
-        totally = FALSE;
+        totally = false;
         if( CtrlDown() ) {
-            totally = TRUE;
+            totally = true;
         }
         EnsureUniformFonts( 0, SE_NUMTYPES - 1, &CurLogfont, totally );
         SetUpFont( &CurLogfont, SEType[style].font );
@@ -105,7 +105,7 @@ static LRESULT doDrop( HWND hwnd, WPARAM wparam )
     DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_UP );
     CursorOp( COP_ARROW );
     ReleaseCapture();
-    haveCapture = FALSE;
+    haveCapture = false;
     if( !(wparam & MK_RBUTTON) ) {
         RECT r;
         sendNewFont();
@@ -120,7 +120,7 @@ static LRESULT processMouseMove( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     RECT    rect;
 
-    if( haveCapture == FALSE ) {
+    if( !haveCapture ) {
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
     }
 
@@ -197,7 +197,7 @@ static LRESULT setupForDrop( HWND hwnd )
     DrawRectangleUpDown( GetDlgItem( GetParent( hwnd ), FT_RECTANGLE ), DRAW_DOWN );
     CursorOp( COP_DROPFT );
     SetCapture( hwnd );
-    haveCapture = TRUE;
+    haveCapture = true;
     mod_hwnd = (HWND)NULLHANDLE;
 
     return( 0 );

@@ -73,9 +73,9 @@ static bool isOS2( void )
     } v;
     v.dVersion = GetVersion();
     if( v.v.dosMajor >= 20 ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -148,7 +148,7 @@ static vi_rc doProcessCommandLine( bool is_fancy )
  */
 vi_rc ProcessCommandLine( void )
 {
-    return( doProcessCommandLine( FALSE ) );
+    return( doProcessCommandLine( false ) );
 
 } /* ProcessCommandLine */
 
@@ -157,7 +157,7 @@ vi_rc ProcessCommandLine( void )
  */
 vi_rc FancyProcessCommandLine( void )
 {
-    return( doProcessCommandLine( TRUE ) );
+    return( doProcessCommandLine( true ) );
 
 } /* FancyProcessCommandLine */
 
@@ -333,14 +333,14 @@ vi_rc RunCommandLine( char *cl )
         rc = MinimizeCurrentWindow();
         break;
     case PCL_T_EXITFILESONLY:
-        if( ExitWithPrompt( FALSE, FALSE ) == FALSE ) {
+        if( !ExitWithPrompt( false, false ) ) {
             rc = ERR_EXIT_ABORTED;
         } else {
             rc = ERR_NO_ERR;
         }
         break;
     case PCL_T_EXITALL:
-        if( ExitWithPrompt( TRUE, FALSE ) == FALSE ) {
+        if( !ExitWithPrompt( true, false ) ) {
             rc = ERR_EXIT_ABORTED;
         } else {
             rc = ERR_NO_ERR;
@@ -400,12 +400,12 @@ vi_rc RunCommandLine( char *cl )
             }
 
             if( tkn == PCL_T_COMPILE ) {
-                EditFlags.CompileScript = TRUE;
+                EditFlags.CompileScript = true;
                 if( st[0] == '-' ) {
                     if( st[1] == 'a' || st[1] == 'A' ) {
-                        EditFlags.CompileAssignments = TRUE;
+                        EditFlags.CompileAssignments = true;
                         if( st[1] == 'A' ) {
-                            EditFlags.CompileAssignmentsDammit = TRUE;
+                            EditFlags.CompileAssignmentsDammit = true;
                         }
                         if( NextWord1( dataBuff, st) <= 0 ) {
                             rc = ERR_NO_FILE_SPECIFIED;
@@ -415,15 +415,15 @@ vi_rc RunCommandLine( char *cl )
                 }
             }
             if( tkn == PCL_T_LOAD ) {
-                EditFlags.LoadResidentScript = TRUE;
+                EditFlags.LoadResidentScript = true;
             }
             ln = 0;
             rc = Source( st, dataBuff, &ln );
 
-            EditFlags.LoadResidentScript = FALSE;
-            EditFlags.CompileScript = FALSE;
-            EditFlags.CompileAssignments = FALSE;
-            EditFlags.CompileAssignmentsDammit = FALSE;
+            EditFlags.LoadResidentScript = false;
+            EditFlags.CompileScript = false;
+            EditFlags.CompileAssignments = false;
+            EditFlags.CompileAssignmentsDammit = false;
             if( EditFlags.SourceScriptActive ) {
                 LastError = rc;
             }
@@ -449,14 +449,14 @@ vi_rc RunCommandLine( char *cl )
     case PCL_T_GENCONFIG:
 #ifndef __WIN__
         if( NextWord1( dataBuff,st ) >= 0 ) {
-            rc = GenerateConfiguration( st, TRUE );
+            rc = GenerateConfiguration( st, true );
         } else {
-            rc = GenerateConfiguration( NULL, TRUE );
+            rc = GenerateConfiguration( NULL, true );
         }
 #else
         {
-            int temp = EditFlags.SaveConfig;
-            EditFlags.SaveConfig = TRUE;
+            bool temp = EditFlags.SaveConfig;
+            EditFlags.SaveConfig = true;
             WriteProfile();
             EditFlags.SaveConfig = temp;
             rc = ERR_NO_ERR;
@@ -473,11 +473,11 @@ vi_rc RunCommandLine( char *cl )
         break;
 
     case PCL_T_SHOVE:
-        rc = Shift( n1, n2, '>', TRUE );
+        rc = Shift( n1, n2, '>', true );
         break;
 
     case PCL_T_SUCK:
-        rc = Shift( n1, n2, '<', TRUE );
+        rc = Shift( n1, n2, '<', true );
         break;
 
     case PCL_T_FILES:
@@ -502,11 +502,11 @@ vi_rc RunCommandLine( char *cl )
 
     case PCL_T_VIEW:
     case PCL_T_VIEW_DMT:
-        EditFlags.ViewOnly = TRUE;
+        EditFlags.ViewOnly = true;
     case PCL_T_EDIT:
     case PCL_T_EDIT_DMT:
         rc = EditFile( dataBuff, ( tkn == PCL_T_VIEW_DMT || tkn == PCL_T_EDIT_DMT ) );
-        EditFlags.ViewOnly = FALSE;
+        EditFlags.ViewOnly = false;
         break;
 
     case PCL_T_OPEN:
@@ -527,7 +527,7 @@ vi_rc RunCommandLine( char *cl )
             AddSelRgnToSavebufAndDelete();
             rc = ERR_NO_ERR;
             // @ may have turned this on - it is now definitely off
-            SelRgn.selected = FALSE;
+            SelRgn.selected = false;
         } else {
             rc = DeleteLineRange( n1, n2, SAVEBUF_FLAG );
         }
@@ -570,7 +570,7 @@ vi_rc RunCommandLine( char *cl )
         if( SelRgn.selected && !EditFlags.LineBased ) {
             rc = YankSelectedRegion();
             // @ may have turned this on - it is now definitely off
-            SelRgn.selected = FALSE;
+            SelRgn.selected = false;
         } else {
             rc = YankLineRange( n1, n2 );
         }
@@ -597,7 +597,7 @@ vi_rc RunCommandLine( char *cl )
         if( CurrentFile == NULL ) {
             rc = NextFile();
         } else {
-            CurrentFile->modified = TRUE;
+            CurrentFile->modified = true;
             if( NextWord1( dataBuff, st ) >= 0 ) {
                 rc = SaveAndExit( st );
             } else {
@@ -629,7 +629,7 @@ vi_rc RunCommandLine( char *cl )
             } else {
                 rc = SaveFile( NULL, -1, -1, ( tkn == PCL_T_WRITE_DMT ) );
                 if( rc == ERR_NO_ERR ) {
-                    Modified( FALSE );
+                    Modified( false );
                 }
             }
         }
@@ -751,12 +751,12 @@ vi_rc RunCommandLine( char *cl )
             ci = EditFlags.CaseIgnore;
             if( dataBuff[0] == '-' ) {
                 if( dataBuff[1] == 'c' ) {
-                    ci = FALSE;
+                    ci = false;
                     EliminateFirstN( dataBuff, 2 );
                     RemoveLeadingSpaces( dataBuff );
                     rc = GetStringWithPossibleQuote( dataBuff, st );
                 } else if( dataBuff[1] == 'i' ) {
-                    ci = TRUE;
+                    ci = true;
                     EliminateFirstN( dataBuff, 2 );
                     RemoveLeadingSpaces( dataBuff );
                     rc = GetStringWithPossibleQuote( dataBuff, st );
@@ -836,10 +836,10 @@ vi_rc RunCommandLine( char *cl )
         }
         rc = ERR_NO_ERR;
         if( !stricmp( st, "on" ) ) {
-            EditFlags.EchoOn = TRUE;
+            EditFlags.EchoOn = true;
             break;
         } else if( !stricmp( st, "off" ) ) {
-            EditFlags.EchoOn = FALSE;
+            EditFlags.EchoOn = false;
             break;
         }
         x = atoi( st );
@@ -893,7 +893,7 @@ vi_rc RunCommandLine( char *cl )
             rc = ProcessEx( n1, n2, n2f, tkn - 1000, dataBuff );
             break;
         }
-        rc = TryCompileableToken( tkn, dataBuff, TRUE );
+        rc = TryCompileableToken( tkn, dataBuff, true );
         if( rc != NOT_COMPILEABLE_TOKEN ) {
             break;
         }
@@ -1088,14 +1088,10 @@ static vi_rc setWBorder( char *data )
         return( ERR_INVALID_WINDOW_SETUP );
     }
     btype = atoi( token );
-    if( btype < 0 ) {
-        has_border = FALSE;
-    } else {
-        has_border = TRUE;
-    }
+    has_border = ( btype >= 0 );
     if( NextWord1( data, token ) <= 0 ) {
         if( !has_border ) {
-            wInfo->has_border = FALSE;
+            wInfo->has_border = false;
             return( ERR_NO_ERR );
         }
         return( ERR_INVALID_WINDOW_SETUP );
@@ -1271,7 +1267,7 @@ void EditRCSCurrentFile( void )
     strcpy( dataBuff, CurrentFile->name );
     row = CurrentPos.line;
     col = CurrentPos.column;
-    EditFile( dataBuff, TRUE );
+    EditFile( dataBuff, true );
     GoToLineNoRelCurs( row );
     GoToColumnOnCurrentLine( col );
 }

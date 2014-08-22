@@ -35,7 +35,7 @@
 #include "rxsupp.h"
 
 static char wrapMsg[] = "Wrapped past %s of file";
-static bool wrapMsgPrinted = FALSE;
+static bool wrapMsgPrinted = false;
 
 /*
  * FindRegularExpression - do a forward search for a regular expression
@@ -46,7 +46,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
     vi_rc       rc;
     int         found;
     linenum     ilineno = 0;
-    bool        wrapped = FALSE;
+    bool        wrapped = false;
     char        *data;
     line        *cline;
     fcb         *cfcb;
@@ -57,7 +57,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      * initialize for search
      */
     if( wrapMsgPrinted ) {
-        wrapMsgPrinted = FALSE;
+        wrapMsgPrinted = false;
         ClearWindow( MessageWindow );
     }
     sline = pos1->line;
@@ -80,7 +80,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
      * loop until string found
      */
     data = &cline->data[scol];
-    while( (found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) == FALSE ) {
+    while( !(found = RegExec( CurrentRegularExpression, data, (data == cline->data) )) ) {
         if( RegExpError != ERR_NO_ERR ) {
             return( RegExpError );
         }
@@ -96,7 +96,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
             } else {
                 Message1( wrapMsg, "bottom" );
                 MyBeep();
-                wrapMsgPrinted = TRUE;
+                wrapMsgPrinted = true;
             }
             if( wrapped ) {
                 return( ERR_FIND_NOT_FOUND );
@@ -106,7 +106,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            wrapped = TRUE;
+            wrapped = true;
         } else {
             return( rc );
         }
@@ -136,7 +136,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
 {
     vi_rc       rc;
     char        *data;
-    bool        wrapped = FALSE;
+    bool        wrapped = false;
     bool        found;
     linenum     ilineno = 0;
     line        *cline;
@@ -149,7 +149,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
      * initialize for search
      */
     if( wrapMsgPrinted ) {
-        wrapMsgPrinted = FALSE;
+        wrapMsgPrinted = false;
         ClearWindow( MessageWindow );
     }
     sline = pos1->line;
@@ -174,13 +174,13 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
      */
     for( ;; ) {
         data = cline->data;
-        found = FALSE;
+        found = false;
         /*
          * run through all possible matches on the line, accepting
          * only the last one
          */
         if( scol >= 0 ) {
-            while( *data != '\0' && RegExec( CurrentRegularExpression, data, (data == cline->data) ) == TRUE ) {
+            while( *data != '\0' && RegExec( CurrentRegularExpression, data, (data == cline->data) ) ) {
                 int     col, len;
 
                 if( RegExpError != ERR_NO_ERR ) {
@@ -191,7 +191,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
                 if( col + len > scol ) {
                     break;
                 }
-                found = TRUE;
+                found = true;
                 memcpy( &rcpy, CurrentRegularExpression, sizeof( regexp ) );
                 data = &(cline->data[col + 1]);
             }
@@ -212,7 +212,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
             } else {
                 Message1( wrapMsg, "top" );
                 MyBeep();
-                wrapMsgPrinted = TRUE;
+                wrapMsgPrinted = true;
             }
             if( wrapped ) {
                 return( ERR_FIND_NOT_FOUND );
@@ -225,7 +225,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            wrapped = TRUE;
+            wrapped = true;
         } else {
             return( rc );
         }

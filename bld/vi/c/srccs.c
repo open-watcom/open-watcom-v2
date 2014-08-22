@@ -114,13 +114,13 @@ void CSInit( void )
  */
 vi_rc CSFini( void )
 {
-    bool        iserr = FALSE;
+    bool        iserr = false;
 
 #ifndef VICOMP
     if( !EditFlags.ScriptIsCompiled ) {
 #endif
         while( TOS->type != CS_EOS ) {
-            iserr = TRUE;
+            iserr = true;
             MyError( "unfinished c.s. at line %u", TOS->srcline );
             Pop();
         }

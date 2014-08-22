@@ -156,7 +156,7 @@ vi_rc DeleteLineRange( linenum s, linenum e, linedel_flags flags )
     if( sfcb == NULL && efcb == NULL ) {
         cfcb = FcbAlloc( CurrentFile );
         CreateNullLine( cfcb );
-        cfcb->non_swappable = FALSE;
+        cfcb->non_swappable = false;
         CurrentFile->fcbs.head = CurrentFile->fcbs.tail = cfcb;
     /*
      * when this happens, we have lost the head elements, so
@@ -188,7 +188,7 @@ vi_rc DeleteLineRange( linenum s, linenum e, linedel_flags flags )
      * check if we need to duplicate these fcbs to a save buffer
      */
     if( (flags & SAVEBUF_FLAG) && !EditFlags.GlobalInProgress ) {
-        AddFcbsToSavebuf( &fcblist, TRUE );
+        AddFcbsToSavebuf( &fcblist, true );
     }
 
     /*
@@ -218,11 +218,11 @@ vi_rc DeleteLineRange( linenum s, linenum e, linedel_flags flags )
             }
         }
     }
-    Modified( TRUE );
+    Modified( true );
     fcblist.head->prev = fcblist.tail->next = NULL;
     if( EditFlags.GlobalInProgress ) {
         for( cfcb = fcblist.head; cfcb != NULL; cfcb = cfcb->next ) {
-            cfcb->globalmatch = FALSE;
+            cfcb->globalmatch = false;
         }
     }
     UndoDeleteFcbs( s - 1, &fcblist, us );

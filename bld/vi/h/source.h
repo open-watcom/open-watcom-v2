@@ -149,7 +149,7 @@ typedef struct sfile {
         branch_cond branchres;
         expr_oper   oper;
     } u;
-    char            hasvar;
+    bool            hasvar;
     unsigned        line;
     char            *data;
 } sfile;

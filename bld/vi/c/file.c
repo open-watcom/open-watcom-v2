@@ -220,22 +220,22 @@ bool RestoreInfo( info *ci  )
 
     VarAddRandC();
     if( CurrentFile == NULL ) {
-        SetModifiedVar( FALSE );
+        SetModifiedVar( false );
     } else{
         SetModifiedVar( CurrentFile->modified );
         if( (unsigned) ci->linenumflag != EditFlags.LineNumbers ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 
 } /* RestoreInfo */
 
-static int getFileInfoString( char *st, int is_small )
+static int getFileInfoString( char *st, bool is_small )
 {
     long        pc;
-    int         write_crlf;
+    bool        write_crlf;
 
     if( EditFlags.CRLFAutoDetect ) {
         write_crlf = CurrentFile->write_crlf;
@@ -246,12 +246,12 @@ static int getFileInfoString( char *st, int is_small )
     if( !is_small ) {
         if( EditFlags.NewFile ) {
             strcat( st, " [new file]" );
-            EditFlags.NewFile = FALSE;
+            EditFlags.NewFile = false;
         }
         if( EditFlags.DuplicateFile ) {
             MyBeep();
             strcat( st, " [duplicate file]" );
-            EditFlags.DuplicateFile = FALSE;
+            EditFlags.DuplicateFile = false;
         }
         if( CurrentFile->viewonly ) {
             strcat( st, " [view only]" );
@@ -280,12 +280,12 @@ static int getFileInfoString( char *st, int is_small )
     } else {
         if( EditFlags.NewFile ) {
             strcat( st, "[N]" );
-            EditFlags.NewFile = FALSE;
+            EditFlags.NewFile = false;
         }
         if( EditFlags.DuplicateFile ) {
             MyBeep();
             strcat( st, "[D]" );
-            EditFlags.DuplicateFile = FALSE;
+            EditFlags.DuplicateFile = false;
         }
         if( CurrentFile->viewonly ) {
             strcat( st, "[V]" );
@@ -357,7 +357,7 @@ vi_rc DisplayFileStatus( void )
         free_len = MAX_STR;
     }
 
-    free_len -= (getFileInfoString( st, FALSE ) + 3); /* for 2 quotes + NULL */
+    free_len -= (getFileInfoString( st, false ) + 3); /* for 2 quotes + NULL */
 
     /* file name */
     if( strlen( CurrentFile->name ) < free_len ) {
@@ -369,7 +369,7 @@ vi_rc DisplayFileStatus( void )
         if( free_len > MAX_STR ) {
             free_len = MAX_STR;
         }
-        free_len -= (getFileInfoString( st, TRUE ) + 3); /* for 2 quotes + NULL */
+        free_len -= (getFileInfoString( st, true ) + 3); /* for 2 quotes + NULL */
         if( strlen( CurrentFile->name ) < free_len ) {
             MySprintf( data, "\"%s\"", CurrentFile->name );
             strcat( data, st );
@@ -400,7 +400,7 @@ void CTurnOffFileDisplayBits( void )
     if( CurrentFile != NULL ) {
         for( tfcb = CurrentFile->fcbs.head; tfcb != NULL; tfcb = tfcb->next ) {
             tfcb->was_on_display = tfcb->on_display;
-            tfcb->on_display = FALSE;
+            tfcb->on_display = false;
         }
     }
 
@@ -414,9 +414,9 @@ bool CFileReadOnly( void )
     int attr;
 
     if( CurrentFile->check_readonly ) {
-        CurrentFile->check_readonly = FALSE;
+        CurrentFile->check_readonly = false;
         if( CurrentFile->is_stdio ) {
-            CurrentFile->read_only = FALSE;
+            CurrentFile->read_only = false;
         } else {
             ConditionalChangeDirectory( CurrentFile->home );
             attr = access( CurrentFile->name, W_OK );
@@ -425,9 +425,9 @@ bool CFileReadOnly( void )
             }
 
             if( attr == -1 && errno != ENOENT ) {
-                CurrentFile->read_only = TRUE;
+                CurrentFile->read_only = true;
             } else {
-                CurrentFile->read_only = FALSE;
+                CurrentFile->read_only = false;
             }
         }
     }
@@ -459,11 +459,11 @@ bool IsTextFile( char *file )
     fign = EditVars.FIgnore;
     for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
          if( !strcmp( fend - strlen( fign ), fign ) ) {
-             return( FALSE );
+             return( false );
          }
          fign += EXTENSION_LENGTH;
     }
-    return( TRUE );
+    return( true );
 
 } /* IsTextFile */
 

@@ -38,7 +38,7 @@
  */
 int DoHideCmd( void )
 {
-    int         wasline = TRUE;
+    int         wasline = true;
     vi_rc       rc;
     int         scol, ecol;
     linenum     s, e;
@@ -59,7 +59,7 @@ int DoHideCmd( void )
         e = s = CurrentLineNumber;
     }
 
-    return( HideLineRange( s, e, FALSE ) );
+    return( HideLineRange( s, e, false ) );
 
 } /* DoHideCmd */
 #endif
@@ -70,23 +70,17 @@ int DoHideCmd( void )
 vi_rc HideLineRange( linenum s, linenum e, bool unhide )
 {
     vi_rc       rc;
-    bool        hideval;
     fcb         *cfcb;
     line        *cline;
     char        *st;
     linenum     c;
-
-    hideval = TRUE;
-    if( unhide ) {
-        hideval = FALSE;
-    }
 
     for( c = s; c <= e; c++ ) {
         rc = CGimmeLinePtr( c, &cfcb, &cline );
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
-        cline->u.ld.hidden = hideval;
+        cline->u.ld.hidden = !unhide;
     }
 
     DCDisplayAllLines();
@@ -96,7 +90,7 @@ vi_rc HideLineRange( linenum s, linenum e, bool unhide )
         st = "hidden";
     }
     Message1( "%l lines %s", e - s + 1, st );
-    EditFlags.Dotable = TRUE;
+    EditFlags.Dotable = true;
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* HideLineRange */

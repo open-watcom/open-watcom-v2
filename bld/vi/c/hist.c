@@ -69,7 +69,7 @@ void LoadHistory( char *cmd )
     read_state  rs;
     int         i;
 
-    historyLoaded = TRUE;
+    historyLoaded = true;
 
     while( EditVars.HistoryFile != NULL ) {
         f = fopen( EditVars.HistoryFile, "rt" );

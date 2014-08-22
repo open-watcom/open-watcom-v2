@@ -95,12 +95,12 @@ static void getHex( ss_block *ss_new, char *start )
 {
     int     lastc;
     char    *text = start + 2;
-    bool    nodigits = TRUE;
+    bool    nodigits = true;
 
     ss_new->type = SE_HEX;
     while( *text && isxdigit( *text ) ) {
         text++;
-        nodigits = FALSE;
+        nodigits = false;
     }
     if( nodigits ) {
         ss_new->type = SE_INVALIDTEXT;
@@ -124,7 +124,7 @@ static void getHex( ss_block *ss_new, char *start )
         }
     }
     ss_new->len = text - start;
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getFloat( ss_block *ss_new, char *start, int skip, int command )
@@ -204,7 +204,7 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
         text++;
     }
     ss_new->len = text - start;
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getNumber( ss_block *ss_new, char *start, char top )
@@ -252,7 +252,7 @@ static void getNumber( ss_block *ss_new, char *start, char top )
             ss_new->len++;
         }
     }
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getWhiteSpace( ss_block *ss_new, char *start )
@@ -277,19 +277,19 @@ static void getText( ss_block *ss_new, char *start )
     }
     save_char = *text;
     *text = '\0';
-    isKeyword = IsKeyword( start, FALSE );
+    isKeyword = IsKeyword( start, false );
     isPragma = flags.inPragmaDir && IsPragma( start );
     isDeclspec = flags.inDeclspec2 && IsDeclspec( start );
     *text = save_char;
 
     ss_new->type = SE_IDENTIFIER;
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
     if( isPragma ) {
         ss_new->type = SE_PREPROCESSOR;
     } else if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
         if( isdirective( start, KEYWORD_DECLSPEC ) ) {
-            flags.inDeclspec = TRUE;
+            flags.inDeclspec = true;
         }
     } else if( isDeclspec ) {
         ss_new->type = SE_KEYWORD;
@@ -307,7 +307,7 @@ static void getText( ss_block *ss_new, char *start )
 static void getSymbol( ss_block *ss_new, char *start )
 {
     flags.inDeclspec2 = flags.inDeclspec && *start == '(';
-    flags.inDeclspec = FALSE;
+    flags.inDeclspec = false;
     ss_new->type = SE_SYMBOL;
     ss_new->len = 1;
 }
@@ -315,7 +315,7 @@ static void getSymbol( ss_block *ss_new, char *start )
 static void getPreprocessor( ss_block *ss_new, char *start )
 {
     char    *text = start;
-    int     withinQuotes = (int)flags.inString;
+    bool    withinQuotes = flags.inString;
 
     ss_new->type = SE_PREPROCESSOR;
 
@@ -336,49 +336,49 @@ static void getPreprocessor( ss_block *ss_new, char *start )
             text++;
         }
         if( isdirective( directive, DIRECTIVE_ERROR ) ) {
-            flags.inErrorDir = TRUE;
+            flags.inErrorDir = true;
         } else if( isdirective( directive, DIRECTIVE_IF ) ) {
-            flags.inIfDir = TRUE;
+            flags.inIfDir = true;
         } else if( isdirective( directive, DIRECTIVE_ELIF ) ) {
-            flags.inIfDir = TRUE;
+            flags.inIfDir = true;
         } else if( isdirective( directive, DIRECTIVE_PRAGMA ) ) {
-            flags.inPragmaDir = TRUE;
+            flags.inPragmaDir = true;
         }
         ss_new->len = text - start;
-        flags.inPreprocessor = FALSE;
+        flags.inPreprocessor = false;
         return;
     }
 
-    flags.inPreprocessor = TRUE;
+    flags.inPreprocessor = true;
     while( *text ) {
         if( *text == '"' ) {
             if( !withinQuotes ) {
-                withinQuotes = TRUE;
+                withinQuotes = true;
             } else if( *( text - 1 ) != '\\' || *( text - 2 ) == '\\' ) {
-                withinQuotes = FALSE;
+                withinQuotes = false;
             }
         }
         if( *text == '/' ) {
             if( *(text + 1) == '*' && !withinQuotes ) {
-                flags.inCComment = TRUE;
+                flags.inCComment = true;
                 lenCComment = 0;
                 break;
             } else if( *(text + 1) == '/' && !withinQuotes ) {
-                flags.inCPPComment = TRUE;
-                flags.inPreprocessor = FALSE;
+                flags.inCPPComment = true;
+                flags.inPreprocessor = false;
                 break;
             }
         }
         text++;
     }
-    flags.inString = (bool)withinQuotes;
+    flags.inString = withinQuotes;
 
     if( *text == '\0' ) {
         if( *(text - 1) != '\\' ) {
-            flags.inPreprocessor = FALSE;
+            flags.inPreprocessor = false;
             if( flags.inString ) {
                 ss_new->type = SE_INVALIDTEXT;
-                flags.inString = FALSE;
+                flags.inString = false;
             }
         }
     }
@@ -411,7 +411,7 @@ embedded:
         // 0 length char constants not allowed
         ss_new->type = SE_INVALIDTEXT;
     }
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getBeyondText( ss_block *ss_new )
@@ -424,7 +424,7 @@ static void getInvalidChar( ss_block *ss_new )
 {
     ss_new->type = SE_INVALIDTEXT;
     ss_new->len = 1;
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getCComment( ss_block *ss_new, char *start, int skip )
@@ -438,7 +438,7 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
         }
         if( *text == '\0' ) {
             // comment extends to next line
-            flags.inCComment = TRUE;
+            flags.inCComment = true;
             break;
         }
         text++;
@@ -446,7 +446,7 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
         if( *( text ) == '/' && lenCComment > 2 ) {
             text++;
             // comment definitely done
-            flags.inCComment = FALSE;
+            flags.inCComment = false;
             break;
         }
     }
@@ -460,9 +460,9 @@ static void getCPPComment( ss_block *ss_new, char *start )
     while( *text ) {
         text++;
     }
-    flags.inCPPComment = TRUE;
+    flags.inCPPComment = true;
     if( *start == '\0' || *( text - 1 ) != '\\' ) {
-        flags.inCPPComment = FALSE;
+        flags.inCPPComment = false;
     }
     ss_new->type = SE_COMMENT;
     ss_new->len = text - start;
@@ -487,18 +487,18 @@ static void getString( ss_block *ss_new, char *start, int skip )
             ss_new->type = SE_INVALIDTEXT;
 
             // don't try to trash rest of file
-            flags.inString = FALSE;
+            flags.inString = false;
         } else {
             // string continued on next line
-            flags.inString = TRUE;
+            flags.inString = true;
         }
     } else {
         text++;
         // definitely finished string
-        flags.inString = FALSE;
+        flags.inString = false;
     }
     ss_new->len = text - start;
-    flags.inDeclspec = flags.inDeclspec2 = FALSE;
+    flags.inDeclspec = flags.inDeclspec2 = false;
 }
 
 static void getErrorMsg( ss_block *ss_new, char *start )
@@ -510,7 +510,7 @@ static void getErrorMsg( ss_block *ss_new, char *start )
         text++;
     }
     ss_new->len = text - start;
-    flags.inErrorDir = FALSE;
+    flags.inErrorDir = false;
 }
 
 void InitCFlagsGivenValues( ss_flags_c *newFlags )
@@ -534,19 +534,19 @@ void InitCFlags( linenum line_no )
     line    *topline;
     char    topChar;
     vi_rc   rc;
-    int     withinQuotes = 0;
+    bool    withinQuotes = false;
     line    *line;
-    bool    inBlock = FALSE;
+    bool    inBlock = false;
 
-    flags.inCComment = FALSE;
-    flags.inCPPComment = FALSE;
-    flags.inString = FALSE;
-    flags.inPreprocessor = FALSE;
-    flags.inErrorDir = FALSE;
-    flags.inIfDir = FALSE;
-    flags.inPragmaDir = FALSE;
-    flags.inDeclspec = FALSE;
-    flags.inDeclspec2 = FALSE;
+    flags.inCComment = false;
+    flags.inCPPComment = false;
+    flags.inString = false;
+    flags.inPreprocessor = false;
+    flags.inErrorDir = false;
+    flags.inIfDir = false;
+    flags.inPragmaDir = false;
+    flags.inDeclspec = false;
+    flags.inDeclspec2 = false;
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
@@ -555,7 +555,7 @@ void InitCFlags( linenum line_no )
         if( line->data[line->len - 1] != '\\' ) {
             break;
         }
-        inBlock = TRUE;
+        inBlock = true;
         rc = GimmePrevLinePtr( &fcb, &line );
     }
 
@@ -588,9 +588,9 @@ void InitCFlags( linenum line_no )
                 while( *text && *text != '/' ) {
                     if( *text == '"' ) {
                         if( !withinQuotes ) {
-                            withinQuotes = TRUE;
+                            withinQuotes = true;
                         } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
-                            withinQuotes = FALSE;
+                            withinQuotes = false;
                         }
                     }
                     text++;
@@ -600,14 +600,14 @@ void InitCFlags( linenum line_no )
                 }
                 if( !withinQuotes ) {
                     if( *(text - 1) == '/' ) {
-                        flags.inCPPComment = TRUE;
+                        flags.inCPPComment = true;
                     } else if( *(text + 1) == '*' ) {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                     }
                 }
                 if( *(text - 1) == '*' && !withinQuotes ) {
-                    flags.inCComment = FALSE;
+                    flags.inCComment = false;
                 }
                 text++;
             }
@@ -617,10 +617,10 @@ void InitCFlags( linenum line_no )
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
             if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
-                flags.inPreprocessor = TRUE;
+                flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
-                flags.inString = TRUE;
+                flags.inString = true;
             }
         }
     }
@@ -641,31 +641,31 @@ void InitCFlags( linenum line_no )
                 }
                 if( *(text + 1) == '*' && *text == '/' && *(text - 1) != '/' ) {
                     if( text == starttext ) {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                         return;
                     }
-                    withinQuotes = 0;
+                    withinQuotes = false;
                     do {
                         text--;
                         if( *text == '"' ) {
                             if( !withinQuotes ) {
-                                withinQuotes = TRUE;
+                                withinQuotes = true;
                             } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
-                                withinQuotes = FALSE;
+                                withinQuotes = false;
                             }
                         } else if( *text == '/' && *(text - 1) == '/' &&
                                    !withinQuotes ) {
-                            flags.inCPPComment = TRUE;
+                            flags.inCPPComment = true;
                         }
                     } while( text != starttext );
                     if( withinQuotes ) {
-                        flags.inString = TRUE;
+                        flags.inString = true;
                     } else if( !flags.inCPPComment ) {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                     } else {
-                        flags.inCPPComment = FALSE;
+                        flags.inCPPComment = false;
                     }
                     return;
                 }
@@ -691,12 +691,12 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
     line_no = line_no;
 
     if( start[0] == '\0' ) {
-        flags.inIfDir = flags.inPragmaDir = FALSE;
+        flags.inIfDir = flags.inPragmaDir = false;
         if( firstNonWS == start ) {
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated " or # or // from previous line
-            flags.inString = flags.inPreprocessor = flags.inCPPComment = FALSE;
+            flags.inString = flags.inPreprocessor = flags.inCPPComment = false;
         }
         getBeyondText( ss_new );
         return;

@@ -83,12 +83,12 @@ static void getHex( ss_block *ss_new, char *start )
 {
     int     lastc;
     char    *text = start + 2;
-    bool    nodigits = TRUE;
+    bool    nodigits = true;
 
     ss_new->type = SE_HEX;
     while( *text && isxdigit( *text ) ) {
         text++;
-        nodigits = FALSE;
+        nodigits = false;
     }
     if( nodigits ) {
         ss_new->type = SE_INVALIDTEXT;
@@ -243,7 +243,7 @@ static void getText( ss_block *ss_new, char *start )
     }
     save_char = *text;
     *text = '\0';
-    isKeyword = IsKeyword( start, FALSE );
+    isKeyword = IsKeyword( start, false );
     *text = save_char;
 
     ss_new->type = SE_IDENTIFIER;
@@ -268,7 +268,7 @@ static void getSymbol( ss_block *ss_new )
 static void getPreprocessor( ss_block *ss_new, char *start )
 {
     char    *text = start;
-    int     withinQuotes = (int)flags.inString;
+    bool    withinQuotes = flags.inString;
 
     ss_new->type = SE_PREPROCESSOR;
 
@@ -286,40 +286,40 @@ static void getPreprocessor( ss_block *ss_new, char *start )
             text++;
         }
         ss_new->len = text - start;
-        flags.inPreprocessor = FALSE;
+        flags.inPreprocessor = false;
         return;
     }
 
-    flags.inPreprocessor = TRUE;
+    flags.inPreprocessor = true;
     while( *text ) {
         if( *text == '"' ) {
             if( !withinQuotes ) {
-                withinQuotes = TRUE;
+                withinQuotes = true;
             } else if( *(text - 1) != '\\' || *(text - 2) == '\\' ) {
-                withinQuotes = FALSE;
+                withinQuotes = false;
             }
         }
         if( *text == '/' ) {
             if( *(text + 1) == '*' && !withinQuotes ) {
-                flags.inCComment = TRUE;
+                flags.inCComment = true;
                 lenCComment = 0;
                 break;
             } else if( *(text + 1) == '/' && !withinQuotes ) {
-                flags.inCPPComment = TRUE;
-                flags.inPreprocessor = FALSE;
+                flags.inCPPComment = true;
+                flags.inPreprocessor = false;
                 break;
             }
         }
         text++;
     }
-    flags.inString = (bool)withinQuotes;
+    flags.inString = withinQuotes;
 
     if( *text == '\0' ) {
         if( *(text - 1) != '\\' ) {
-            flags.inPreprocessor = FALSE;
+            flags.inPreprocessor = false;
             if( flags.inString ) {
                 ss_new->type = SE_INVALIDTEXT;
-                flags.inString = FALSE;
+                flags.inString = false;
             }
         }
     }
@@ -368,7 +368,7 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
         }
         if( *text == '\0' ) {
             // comment extends to next line
-            flags.inCComment = TRUE;
+            flags.inCComment = true;
             break;
         }
         text++;
@@ -376,7 +376,7 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
         if( *text == '/' && lenCComment > 2 ) {
             text++;
             // comment definitely done
-            flags.inCComment = FALSE;
+            flags.inCComment = false;
             break;
         }
     }
@@ -390,9 +390,9 @@ static void getCPPComment( ss_block *ss_new, char *start )
     while( *text ) {
         text++;
     }
-    flags.inCPPComment = TRUE;
+    flags.inCPPComment = true;
     if( *start == '\0' || *(text - 1) != '\\' ) {
-        flags.inCPPComment = FALSE;
+        flags.inCPPComment = false;
     }
     ss_new->type = SE_COMMENT;
     ss_new->len = text - start;
@@ -414,15 +414,15 @@ again:
             ss_new->type = SE_INVALIDTEXT;
 
             // don't try to trash rest of file
-            flags.inString = FALSE;
+            flags.inString = false;
         } else {
             // string continued on next line
-            flags.inString = TRUE;
+            flags.inString = true;
         }
     } else {
         text++;
         // definitely finished string
-        flags.inString = FALSE;
+        flags.inString = false;
     }
     ss_new->len = text - start;
 }
@@ -448,14 +448,14 @@ void InitRexxFlags( linenum line_no )
     line    *topline;
     char    topChar;
     vi_rc   rc;
-    int     withinQuotes = 0;
+    bool    withinQuotes = false;
     line    *line;
-    bool    inBlock = FALSE;
+    bool    inBlock = false;
 
-    flags.inCComment = 0;
-    flags.inCPPComment = 0;
-    flags.inString = 0;
-    flags.inPreprocessor = 0;
+    flags.inCComment = false;
+    flags.inCPPComment = false;
+    flags.inString = false;
+    flags.inPreprocessor = false;
 
     CGimmeLinePtr( line_no, &fcb, &thisline );
     line = thisline;
@@ -464,7 +464,7 @@ void InitRexxFlags( linenum line_no )
         if( line->data[line->len - 1] != '\\' ) {
             break;
         }
-        inBlock = TRUE;
+        inBlock = true;
         rc = GimmePrevLinePtr( &fcb, &line );
     }
 
@@ -497,10 +497,10 @@ void InitRexxFlags( linenum line_no )
                 while( *text && *text != '/' ) {
                     if( *text == '"' ) {
                         if( !withinQuotes ) {
-                            withinQuotes = TRUE;
+                            withinQuotes = true;
                         } else if( *(text - 1) != '\\' ||
                                    *(text - 2) == '\\' ) {
-                            withinQuotes = FALSE;
+                            withinQuotes = false;
                         }
                     }
                     text++;
@@ -510,14 +510,14 @@ void InitRexxFlags( linenum line_no )
                 }
                 if( !withinQuotes ) {
                     if( *(text - 1) == '/' ) {
-                        flags.inCPPComment = TRUE;
+                        flags.inCPPComment = true;
                     } else if( *(text + 1) == '*' ) {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                     }
                 }
                 if( *(text - 1) == '*' && !withinQuotes ) {
-                    flags.inCComment = FALSE;
+                    flags.inCComment = false;
                 }
                 text++;
             }
@@ -527,10 +527,10 @@ void InitRexxFlags( linenum line_no )
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
             if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
-                flags.inPreprocessor = TRUE;
+                flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
-                flags.inString = TRUE;
+                flags.inString = true;
             }
         }
     }
@@ -552,26 +552,26 @@ void InitRexxFlags( linenum line_no )
                 if( *(text + 1) == '*' && *text == '/' &&
                     *(text - 1) != '/' ) {
                     if( text == starttext ) {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                         return;
                     }
-                    withinQuotes = 0;
+                    withinQuotes = false;
                     do {
                         text--;
                         if( *text == '"' ) {
                             if( !withinQuotes ) {
-                                withinQuotes = TRUE;
+                                withinQuotes = true;
                             } else if( *(text - 1) != '\\' ||
                                        *(text - 2) == '\\' ) {
-                                withinQuotes = FALSE;
+                                withinQuotes = false;
                             }
                         }
                     } while( text != starttext );
                     if( withinQuotes ) {
-                        flags.inString = TRUE;
+                        flags.inString = true;
                     } else {
-                        flags.inCComment = TRUE;
+                        flags.inCComment = true;
                         lenCComment = 100;
                     }
                     return;
@@ -602,7 +602,7 @@ void GetRexxBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated " or # or // from previous line
-            flags.inString = flags.inPreprocessor = flags.inCPPComment = FALSE;
+            flags.inString = flags.inPreprocessor = flags.inCPPComment = false;
         }
         getBeyondText( ss_new );
         return;

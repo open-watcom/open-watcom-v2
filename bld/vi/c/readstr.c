@@ -70,7 +70,7 @@ typedef struct input_buffer {
  * This is half of a kluge connected with the window proc for the
  * command window under the __WIN__ environs. Puke...
  */
-bool    ReadingAString = FALSE;
+bool    ReadingAString = false;
 
 /*
  * General utility funtions:
@@ -91,7 +91,7 @@ static bool insertChar( input_buffer *input, int ch )
     int             len;
 
     if( input->curr_pos >= input->buffer_length - 1 ) {
-        return( FALSE );
+        return( false );
     }
 
     /* if we are in overstrike more or at the end of the line... */
@@ -103,7 +103,7 @@ static bool insertChar( input_buffer *input, int ch )
         }
     } else {
         if( strlen( input->buffer ) >= input->buffer_length - 1 ) {
-            return( FALSE );
+            return( false );
         }
         ptr = &input->buffer[input->curr_pos++];
         memmove( ptr + 1, ptr, strlen( ptr ) + 1 );
@@ -112,7 +112,7 @@ static bool insertChar( input_buffer *input, int ch )
     if( input->curr_pos >= input->left_column + input->window.width - 1 ) {
         input->left_column += 1;
     }
-    return( TRUE );
+    return( true );
 
 } /* insertChar */
 
@@ -122,7 +122,7 @@ static bool deleteChar( input_buffer *input, bool backwards )
 
     if( backwards ) {
         if( input->curr_pos == 0 ) {
-            return( FALSE );
+            return( false );
         }
         input->curr_pos -= 1;
         if( input->curr_pos < input->left_column ) {
@@ -131,7 +131,7 @@ static bool deleteChar( input_buffer *input, bool backwards )
     }
     ptr = &input->buffer[input->curr_pos];
     memmove( ptr, ptr + 1, strlen( ptr + 1 ) + 1 );
-    return( TRUE );
+    return( true );
 
 } /* deleteChar */
 
@@ -206,14 +206,14 @@ static bool endColumn( input_buffer *input )
     }
     input->curr_pos = column;
     input->left_column = left;
-    return( TRUE );
+    return( true );
 
 } /* endColumn */
 
 static bool saveStr( input_buffer *input )
 {
     strcpy( input->last_str, input->buffer );
-    return( TRUE );
+    return( true );
 
 } /* saveStr */
 
@@ -226,7 +226,7 @@ static bool swapString( input_buffer *input )
     strcpy( input->last_str, input->buffer );
     strcpy( input->buffer, tmp );
     endColumn( input );
-    return( TRUE );
+    return( true );
 
 } /* swapString */
 
@@ -302,9 +302,9 @@ static bool getHistory( input_buffer *input )
         saveStr( input );
         strcpy( input->buffer, cmd );
         endColumn( input );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* getHistory */
 
@@ -316,9 +316,9 @@ static bool addHistory( input_buffer *input )
     if( h != NULL && input->buffer[0] != 0 ) {
         AddString2( &(h->data[h->curr % h->max]), input->buffer );
         h->curr += 1;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* addHistory */
 
@@ -361,7 +361,7 @@ static void doHistorySearch( input_buffer *input )
             saveStr( input );
             curr = searchHistory( input, str, curr );
             displayLine( input );
-            event = GetNextEvent( TRUE );
+            event = GetNextEvent( true );
             continue;
         }
         KeyAdd( event );
@@ -419,10 +419,10 @@ static bool insertString( input_buffer *input, char *str )
 {
     while( *str ) {
         if( !insertChar( input, *str++ ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 
 } /* insertString */
 
@@ -475,9 +475,9 @@ bool GetTextForSpecialKey( int str_max, vi_key event, char *tmp )
         ExpandTabsInABuffer( &CurrentLine->data[i - 1], l, tmp, str_max );
         tmp[l] = 0;
     default:
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* GetTextForSpecialKey */
 
@@ -499,7 +499,7 @@ void InsertTextForSpecialKey( vi_key event, char *buff )
         type = INSERT_AFTER;
         line += 1;
     }
-    Modified( TRUE );
+    Modified( true );
     StartUndoGroup( UndoStack );
     UndoInsert( line, line, UndoStack );
     AddNewLineAroundCurrent( buff, strlen( buff ), type );
@@ -552,7 +552,7 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
  * File Completion:
  *      fileComplete( input_buffer ) - performs the actual file complete
  *          by spinning in a loop getting characters until the user
- *          selects a file or cancels. Returns TRUE if the getString
+ *          selects a file or cancels. Returns true if the getString
  *          routine should exit with the current string.
  */
 
@@ -563,7 +563,7 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
     vi_key      event;
     int         old_len;
 
-    exit = FALSE;
+    exit = false;
     if( input->curr_pos != strlen( input->buffer ) ) {
         MyBeep();
     } else {
@@ -575,11 +575,11 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
             MyBeep();
         } else {
             if( rc != FILE_COMPLETE ) {
-                done = FALSE;
+                done = false;
                 do {
                     endColumn( input );
                     displayLine( input );
-                    event = GetNextEvent( TRUE );
+                    event = GetNextEvent( true );
                     switch( event ) {
                     case VI_KEY( FAKEMOUSE ):
                     case VI_KEY( MOUSEEVENT ):
@@ -597,16 +597,16 @@ static bool fileComplete( input_buffer *input, vi_key first_event )
                         if( rc != ERR_NO_ERR ) {
                             FinishFileComplete();
                             if( rc == FILE_COMPLETE_ENTER ) {
-                                exit = TRUE;
+                                exit = true;
                             }
-                            done = TRUE;
+                            done = true;
                         }
                         old_len = strlen( input->buffer );
                         break;
                     default:
                         KeyAdd( event );
                         PauseFileComplete();
-                        done = TRUE;
+                        done = true;
                     }
                 } while( !done );
             }
@@ -637,7 +637,7 @@ static bool mouseHandler( window_id id, int x, int y )
             AddCurrentMouseEvent();
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* mouseHandler */
 
@@ -652,7 +652,7 @@ static void initInput( input_buffer *input )
         input->curr_hist = input->history->curr;
     }
     input->left_column = 0;
-    input->overstrike = TRUE;
+    input->overstrike = true;
     s = &input->window.style;
     id = input->window.id;
     thisWindow = id;
@@ -683,9 +683,9 @@ static void finiInput( input_buffer *input )
 static bool getStringInWindow( input_buffer *input )
 {
     vi_key      event;
-    int         old_mode;
+    bool        old_mode;
 
-    ReadingAString = TRUE;
+    ReadingAString = true;
     initInput( input );
     input->last_str = alloca( input->buffer_length );
     memset( input->last_str, 0, input->buffer_length );
@@ -693,7 +693,7 @@ static bool getStringInWindow( input_buffer *input )
         input->curr_hist = input->history->curr;
     }
     for( ;; ) {
-        event = GetNextEvent( FALSE );
+        event = GetNextEvent( false );
         event = cursorKeyFilter( input, event );
         event = historyFilter( input, event );
         event = specialKeyFilter( input, event );
@@ -722,7 +722,7 @@ static bool getStringInWindow( input_buffer *input )
              * if called when not needed - so we leave it here.
              */
             FinishFileComplete();
-            ReadingAString = FALSE;
+            ReadingAString = false;
             return( event != VI_KEY( ESC ) );
         case VI_KEY( INS ):
             input->overstrike = !input->overstrike;
@@ -749,10 +749,10 @@ static bool getStringInWindow( input_buffer *input )
             displayLine( input );
             // here we have a bit of a kluge
             input->curr_pos -= 1;
-            event = GetNextEvent( FALSE );
+            event = GetNextEvent( false );
             saveStr( input );
             old_mode = input->overstrike;
-            input->overstrike = TRUE;
+            input->overstrike = true;
             insertChar( input, event );
             input->overstrike = old_mode;
             break;
@@ -827,7 +827,7 @@ vi_rc PromptForString( char *prompt, char *buffer,
         CloseAWindow( id );
         SetWindowCursor();
     } else {
-        EditFlags.NoInputWindow = FALSE;
+        EditFlags.NoInputWindow = false;
     }
     return( rc );
 

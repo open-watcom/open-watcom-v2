@@ -108,7 +108,7 @@ void BoundDataInit( void )
     tmp += i;
     memcpy( entryCounts, tmp , dataFcnt * sizeof( bind_size ) );
 
-    BoundData = TRUE;
+    BoundData = true;
 
 } /* BoundDataInit */
 
@@ -142,18 +142,18 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
         if( !strcmp( fn, CONFIG_FILE ) ) {
             i = 0;
         } else {
-            i = Tokenize( dataFnames, fn, TRUE );
+            i = Tokenize( dataFnames, fn, true );
         }
         if( i != TOK_INVALID && bounddata ) {
 
             shift = dataStart + dataOffsets[i];
             gf->type = GF_BOUND;
-            EditFlags.BndMemoryLocked = TRUE;
+            EditFlags.BndMemoryLocked = true;
 
             if( BndMemory == NULL ) {
                 h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
                 if( h == -1 ) {
-                    return( FALSE );
+                    return( false );
                 }
 
                 lseek( h, shift, SEEK_END );
@@ -168,7 +168,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
             gf->gf.a.currline = 0;
             gf->gf.a.maxlines = entryCounts[i];
             gf->gf.a.length = (int)a;
-            return( TRUE );
+            return( true );
 
         }
 
@@ -181,10 +181,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
         gf->type = GF_BUFFER;
         gf->data.cfile = CurrentFile;
         rc = GimmeLinePtr( 1, CurrentFile, &(gf->gf.b.cfcb), &(gf->gf.b.cline));
-        if( rc != ERR_NO_ERR ) {
-            return( FALSE );
-        }
-        return( TRUE );
+        return( rc == ERR_NO_ERR );
     }
 
     /*
@@ -192,10 +189,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
      */
     gf->type = GF_FILE;
     gf->data.f = GetFromEnvAndOpen( fn );
-    if( gf->data.f == NULL ) {
-        return( FALSE );
-    }
-    return( TRUE );
+    return( gf->data.f != NULL );
 
 } /* SpecialOpen */
 
@@ -209,7 +203,7 @@ void SpecialFclose( GENERIC_FILE *gf )
         fclose( gf->data.f );
         break;
     case GF_BOUND:
-        EditFlags.BndMemoryLocked = FALSE;
+        EditFlags.BndMemoryLocked = false;
         if( BndMemory == NULL ) {
             close( gf->data.handle );
         }

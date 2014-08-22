@@ -47,12 +47,12 @@ static bool getVarName( char *str, char *tmp1, vlist *vl )
 {
 
     if( NextWord1( str, tmp1 ) <= 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( !VarName( tmp1, vl ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* getVarName */
 
@@ -75,7 +75,7 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
 
     tmp2 = alloca( MAX_INPUT_LINE );
     if( tmp2 == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( token == T_DDEINIT ) {
@@ -84,12 +84,12 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
         } else {
             *result = ERR_NO_ERR;
         }
-        return( TRUE );
+        return( true );
     }
 
     if( !UseDDE ) {
         *result = ERR_INVALID_DDE;
-        return( TRUE );
+        return( true );
     }
 
     rc = ERR_NO_ERR;
@@ -323,6 +323,6 @@ bool RunDDECommand( int token, char *str, char *tmp1, vi_rc *result, vlist *vl )
     }
 
     *result = rc;
-    return( TRUE );
+    return( true );
 
 } /* RunDDECommand */

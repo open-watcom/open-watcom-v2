@@ -115,7 +115,7 @@ vi_rc PopFileStack( void )
     fs = fStack[fDepth];
     fStack[fDepth] = NULL;
 
-    rc = EditFile( fs->fname, FALSE );
+    rc = EditFile( fs->fname, false );
     if( rc != ERR_NO_ERR ) {
         MemFree( fs );
         return( rc );

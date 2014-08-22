@@ -103,7 +103,7 @@ vi_rc FileExists( char *name )
 /*
  * FileOpen - open a file, conditional on exist flag
  */
-vi_rc FileOpen( char *name, int existflag, int stat, int attr, int *_handle )
+vi_rc FileOpen( char *name, bool existflag, int stat, int attr, int *_handle )
 {
     int         handle, en;
     vi_rc       rc;
@@ -291,7 +291,7 @@ vi_rc TmpFileOpen( char *inname, int *_handle )
 
     tmpnam( inname );
     MakeTmpPath( file, inname );
-    return( FileOpen( file, FALSE, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, _handle ) );
+    return( FileOpen( file, false, O_TRUNC | O_RDWR | O_BINARY | O_CREAT, PMODE_RW, _handle ) );
 
 } /* TmpFileOpen */
 
@@ -329,24 +329,24 @@ void FileLower( char *str )
  */
 bool FileTemplateMatch( const char *name, const char *template )
 {
-    bool    inExtension = FALSE;
+    bool    inExtension = false;
 
     for( ;; ) {
         if( *template == '*' ) {
-            if( inExtension == FALSE ) {
+            if( !inExtension ) {
                 while( *(name + 1) && *(name + 1) != '.' ) {
                     name++;
                 }
-                inExtension = TRUE;
+                inExtension = true;
             } else {
-                return( TRUE );
+                return( true );
             }
 #ifndef __UNIX__
         } else if( *template != '?' && tolower( *template ) != tolower( *name ) ) {
 #else
         } else if( *template != '?' && *template != *name ) {
 #endif
-            return( FALSE );
+            return( false );
         }
         name++;
         template++;
@@ -360,9 +360,9 @@ bool FileTemplateMatch( const char *name, const char *template )
 #else
     if( *template == *name ) {
 #endif
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* FileTemplateMatch */
 

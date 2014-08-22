@@ -411,7 +411,7 @@ static int setCurLogfont( int overrideSize )
 WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static int  inSELCHANGE = 0;
-    static bool dontQuit = FALSE;
+    static bool dontQuit = false;
     char        str[10];
     LRESULT     len;
     int         i;
@@ -440,14 +440,14 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         DestroyWindow( hwnd );
         hFontbar = (HWND)NULLHANDLE;
         // update editflags (may have closed from system menu)
-        EditFlags.Fontbar = FALSE;
+        EditFlags.Fontbar = false;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
-            if( dontQuit == TRUE ) {
-                dontQuit = FALSE;
+            if( dontQuit ) {
+                dontQuit = false;
                 break;
             }
             // fall through
@@ -457,7 +457,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         case FT_SIZE:
         case FT_STYLE:
         case FT_TYPEFACE:
-            dontQuit = FALSE;
+            dontQuit = false;
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == CBN_SELCHANGE ||
                 GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
                 inSELCHANGE++;
@@ -491,7 +491,7 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             InvalidateRect( hwndPick, NULL, TRUE );
             UpdateWindow( hwndPick );
         }
-        dontQuit = TRUE;
+        dontQuit = true;
         return( TRUE );
     }
     return( FALSE );

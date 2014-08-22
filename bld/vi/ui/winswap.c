@@ -96,7 +96,7 @@ void static windowSwap( wind *w )
     MemFreePtr( (void **)&w->text );
     MemFreePtr( (void **)&w->whooverlapping );
     MemFreePtr( (void **)&w->overlap );
-    w->isswapped = TRUE;
+    w->isswapped = true;
 
 } /* windowSwap */
 
@@ -142,7 +142,7 @@ static void fetchWindow( wind *w )
     read( swapHandle, w->overlap, size * sizeof( window_id ) );
     read( swapHandle, w->whooverlapping, size * sizeof( window_id ) );
     read( swapHandle, w->text, size * sizeof( char_info ) );
-    w->isswapped = FALSE;
+    w->isswapped = false;
 
 } /* fetchWindow */
 

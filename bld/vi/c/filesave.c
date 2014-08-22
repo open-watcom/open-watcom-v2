@@ -44,7 +44,7 @@ static int fileHandle;
 /*
  * writeRange - write a range of lines in an fcb to current file
  */
-static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, int write_crlf, bool last_eol )
+static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool write_crlf, bool last_eol )
 {
     line        *cline;
     int         i, len = 0;
@@ -151,7 +151,7 @@ vi_rc SaveFileAs( void )
     UpdateLastFileList( fn );
 
     // flag dammit as user must have already said overwrite ok
-    return( SaveFile( fn, -1L, -1L, TRUE ) );
+    return( SaveFile( fn, -1, -1, true ) );
 
 } /* SaveFileAs */
 #endif
@@ -159,17 +159,19 @@ vi_rc SaveFileAs( void )
 /*
  * SaveFile - save data from current file
  */
-vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
+vi_rc SaveFile( char *name, linenum start, linenum end, bool dammit )
 {
     int         i;
-    bool        existflag = FALSE, restpath = FALSE, makerw = FALSE;
+    bool        existflag = false;
+    bool        restpath = false;
+    bool        makerw = false;
     char        *fn;
     fcb         *cfcb, *sfcb, *efcb;
     linenum     s, e, lc;
     long        bc = 0;
     status_type lastst;
     vi_rc       rc;
-    int         write_crlf;
+    bool        write_crlf;
 
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
@@ -187,12 +189,12 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
             if( rc != ERR_NO_ERR ) {
                 return( ERR_READ_ONLY_FILE );
             }
-            makerw = TRUE;
+            makerw = true;
         }
         fn = CurrentFile->name;
-        restpath = TRUE;
+        restpath = true;
     } else {
-        existflag = TRUE;
+        existflag = true;
         fn = name;
     }
     if( fn[0] == 0 ) {
@@ -204,7 +206,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
         }
     }
     if( dammit ) {
-        existflag = FALSE;
+        existflag = false;
     }
 
     /*
@@ -256,7 +258,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
      * start writing fcbs
      */
 #ifdef __WIN__
-    ToggleHourglass( TRUE );
+    ToggleHourglass( true );
 #endif
     if( EditFlags.CRLFAutoDetect ) {
         write_crlf = CurrentFile->write_crlf;
@@ -265,10 +267,10 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
     }
     lastst = UpdateCurrentStatus( CSTATUS_WRITING );
     for( cfcb = sfcb; cfcb != efcb; cfcb = cfcb->next ) {
-        rc = writeRange( s, cfcb->end_line, cfcb, &bc, write_crlf, TRUE );
+        rc = writeRange( s, cfcb->end_line, cfcb, &bc, write_crlf, true );
         if( rc != ERR_NO_ERR ) {
 #ifdef __WIN__
-            ToggleHourglass( FALSE );
+            ToggleHourglass( false );
 #endif
             UpdateCurrentStatus( lastst );
             return( rc );
@@ -281,7 +283,7 @@ vi_rc SaveFile( char *name, linenum start, linenum end, int dammit )
      */
     rc = writeRange( s, e, efcb, &bc, write_crlf, EditFlags.LastEOL );
 #ifdef __WIN__
-    ToggleHourglass( FALSE );
+    ToggleHourglass( false );
 #endif
     UpdateCurrentStatus( lastst );
     if( rc != ERR_NO_ERR ) {
@@ -321,7 +323,7 @@ vi_rc StartSaveExit( void )
      * get the next key
      */
     levent = LastEvent;
-    key = GetNextEvent( FALSE );
+    key = GetNextEvent( false );
     if( key != levent ) {
         if( key == VI_KEY( ESC ) ) {
             return( ERR_NO_ERR );
@@ -348,11 +350,11 @@ vi_rc SaveAndExit( char *fname )
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            rc = SaveFile( fname, -1, -1, FALSE );
+            rc = SaveFile( fname, -1, -1, false );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            Modified( FALSE );
+            Modified( false );
         }
     }
     return( NextFile() );
@@ -373,12 +375,12 @@ bool FilePromptForSaveChanges( file *f )
     BringWindowToTop( Root );
     SetWindowPos( Root, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
     if( MessageBox( Root, buffer, EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
-        rc = SaveFile( NULL, -1, -1, FALSE );
+        rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
             MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
         } else {
-            Modified( FALSE );
+            Modified( false );
         }
     }
     SetWindowPos( Root, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
@@ -396,20 +398,20 @@ bool FilePromptForSaveChanges( file *f )
             // a string of 0 chars so act as if y had been hit
         case 'y':
         case 'Y':
-            rc = SaveFile( NULL, -1, -1, FALSE );
+            rc = SaveFile( NULL, -1, -1, false );
             if( rc != ERR_NO_ERR ) {
                 MySprintf( buffer, "Error saving \"%s\"", f->name );
                 Message1( buffer );
             } else {
-                Modified( FALSE );
+                Modified( false );
             }
             break;
         }
     }
 #endif
-    /* would return TRUE if we supported a CANCEL option
+    /* would return true if we supported a CANCEL option
      * the same as the FileExitOptionSaveChanges function below */
-    return( FALSE );
+    return( false );
 
 } /* FilePromptForSaveChanges */
 
@@ -418,7 +420,7 @@ bool FilePromptForSaveChanges( file *f )
  */
 bool FileExitOptionSaveChanges( file *f )
 {
-    bool        aborted = FALSE;
+    bool        aborted = false;
     char        buffer[MAX_STR];
 #ifdef __WIN__
     int         resp;
@@ -427,16 +429,16 @@ bool FileExitOptionSaveChanges( file *f )
     MySprintf( buffer, "\"%s\" has been modified - save changes?", f->name );
     resp = MessageBox( Root, buffer, EditorName, MB_YESNOCANCEL | MB_TASKMODAL );
     if( resp == IDYES ) {
-        rc = SaveFile( NULL, -1, -1, FALSE );
+        rc = SaveFile( NULL, -1, -1, false );
         if( rc != ERR_NO_ERR ) {
             MySprintf( buffer, "Error saving \"%s\"", f->name );
             MessageBox( Root, buffer, EditorName, MB_OK | MB_TASKMODAL );
-            aborted = TRUE;
+            aborted = true;
         } else {
             NextFileDammit();
         }
     } else if( resp == IDCANCEL ) {
-        aborted = TRUE;
+        aborted = true;
     } else {
         NextFileDammit();
     }
@@ -461,15 +463,15 @@ bool FileExitOptionSaveChanges( file *f )
         case 'c':
         case 'C':
         default:
-            aborted = TRUE;
-            // return( FALSE );
+            aborted = true;
+            // return( false );
         }
     } else {
-        aborted = TRUE;
+        aborted = true;
     }
 #endif
 
-    return aborted;
+    return( aborted );
 
 } /* FileOptionExitSaveChanges */
 
@@ -483,9 +485,9 @@ vi_rc FancyFileSave( void )
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
     }
-    rc = SaveFile( CurrentFile->name, -1, -1, TRUE );
+    rc = SaveFile( CurrentFile->name, -1, -1, true );
     if( rc == ERR_NO_ERR ) {
-        CurrentFile->modified = FALSE;
+        CurrentFile->modified = false;
         UpdateLastFileList( CurrentFile->name );
     }
     return( rc );

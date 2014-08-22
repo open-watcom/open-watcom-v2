@@ -41,7 +41,7 @@
 
 static event *nextEvent( void )
 {
-    LastEvent = GetNextEvent( TRUE );
+    LastEvent = GetNextEvent( true );
     return( &EventList[LastEvent] );
 }
 
@@ -49,9 +49,9 @@ static void defaultRange( range *range )
 {
     range->start = CurrentPos;
     range->end = CurrentPos;
-    range->line_based = FALSE;
-    range->highlight = FALSE;
-    range->fix_range = FALSE;
+    range->line_based = false;
+    range->highlight = false;
+    range->fix_range = false;
 }
 
 /*
@@ -96,7 +96,7 @@ static vi_rc doOperator( event *ev )
         range.fix_range = next->b.fix_range;
         next_type = next->b.type;
     }
-    EditFlags.OperatorWantsMove = TRUE; // was: if( count==1 )
+    EditFlags.OperatorWantsMove = true; // was: if( count==1 )
     if( next_type == EVENT_OP ) {
         // op/op only valid when ops are equal
         if( next == ev ) {
@@ -113,11 +113,11 @@ static vi_rc doOperator( event *ev )
              */
             if( ( ev == &EventList['c'] || ev == &EventList[VI_KEY( ALT_F1 )] ) &&
                         LastEvent == 'w' ) {
-                EditFlags.IsChangeWord = TRUE;
+                EditFlags.IsChangeWord = true;
                 if( CurrentLine != NULL ) {
                     if( !isspace( CurrentLine->data[CurrentPos.column - 1] ) ) {
                         next = &EventList['e'];
-                        range.fix_range = FALSE;
+                        range.fix_range = false;
                     }
                 }
             }
@@ -126,7 +126,7 @@ static vi_rc doOperator( event *ev )
             } else {
                 rc = next->rtn.move( &range, count );
             }
-            EditFlags.IsChangeWord = FALSE;
+            EditFlags.IsChangeWord = false;
         } else {
             /*
              * Kluge! treat 'r' as a movement command.
@@ -140,7 +140,7 @@ static vi_rc doOperator( event *ev )
             }
         }
     }
-    EditFlags.OperatorWantsMove = FALSE;
+    EditFlags.OperatorWantsMove = false;
     if( rc == ERR_NO_ERR ) {
         if( ev->b.modifies ) {
             rc = ModificationTest();
@@ -194,7 +194,7 @@ vi_rc DoMove( event *ev )
         if( range.highlight ) {
             // don't handle multi-line highlights yet
             assert( range.hi_start.line == range.hi_end.line );
-            EditFlags.ResetDisplayLine = TRUE;
+            EditFlags.ResetDisplayLine = true;
             DCUpdate();
             HiliteAColumnRange( range.hi_start.line,
                 range.hi_start.column, range.hi_end.column );
@@ -208,7 +208,7 @@ static void ensureCursorDisplayed( void )
 {
     int         len, wc, diff;
 
-    if( ( EditFlags.Modeless == TRUE ) && ( CurrentFile != NULL ) ) {
+    if( EditFlags.Modeless && ( CurrentFile != NULL ) ) {
         len = WindowAuxInfo( CurrentWindow, WIND_INFO_TEXT_LINES );
         if( CurrentPos.line < LeftTopPos.line ||
             CurrentPos.line > LeftTopPos.line + len - 1 ) {
@@ -249,13 +249,13 @@ vi_rc DoLastEvent( void )
         keep_sel = event->b.keep_selection;
         if( event->b.keep_selection_maybe ) {
             if( SelRgn.selected ) {
-                keep_sel = TRUE;
+                keep_sel = true;
             }
         }
         if( !keep_sel && !EditFlags.ScrollCommand ) {
             UnselectRegion();
         }
-        if( EditFlags.ScrollCommand == FALSE ) {
+        if( !EditFlags.ScrollCommand ) {
             ensureCursorDisplayed();
         }
         rc = ERR_NO_ERR;
@@ -269,8 +269,8 @@ vi_rc DoLastEvent( void )
                 SelRgn.selected = keep_sel;
                 InsertLikeLast();
                 rc = event->rtn.ins();
-                DoneCurrentInsert( FALSE );
-                SelRgn.selected = FALSE;
+                DoneCurrentInsert( false );
+                SelRgn.selected = false;
             } else {
                 if( !EditFlags.InsertModeActive ) {
                     InsertLikeLast();
@@ -279,16 +279,16 @@ vi_rc DoLastEvent( void )
             }
             break;
         case EVENT_OP:
-            DoneCurrentInsert( TRUE );
+            DoneCurrentInsert( true );
             rc = doOperator( event );
             break;
         case EVENT_REL_MOVE:
         case EVENT_ABS_MOVE:
-            DoneCurrentInsert( TRUE );
+            DoneCurrentInsert( true );
             rc = DoMove( event );
             break;
         case EVENT_MISC:
-            DoneCurrentInsert( TRUE );
+            DoneCurrentInsert( true );
             rc = event->rtn.old();
             break;
         }
@@ -308,7 +308,7 @@ void DoneLastEvent( vi_rc rc, bool is_dotmode )
          */
         if( !is_dotmode ) {
             if( EditFlags.DotMode ) {
-                EditFlags.DotMode = FALSE;
+                EditFlags.DotMode = false;
             } else if( EditFlags.Dotable && !EditFlags.MemorizeMode ) {
                 SaveDotCmd();
             }
@@ -326,7 +326,7 @@ void DoneLastEvent( vi_rc rc, bool is_dotmode )
         }
 
         if( !is_dotmode ) {
-            EditFlags.Dotable = FALSE;
+            EditFlags.Dotable = false;
         }
     }
 
@@ -356,15 +356,15 @@ void EditMain( void )
         if( !EditFlags.InsertModeActive || EditFlags.Modeless ) {
             if( EditFlags.Modeless ) {
                 UpdateEditStatus();
-                EditFlags.NoCapsLock = FALSE;
+                EditFlags.NoCapsLock = false;
             } else {
                 UpdateCurrentStatus( CSTATUS_COMMAND );
-                EditFlags.NoCapsLock = TRUE;
+                EditFlags.NoCapsLock = true;
             }
 
             if( !EditFlags.Modeless && EditFlags.ReturnToInsertMode &&
                                 !NonKeyboardEventsPending() ) {
-                EditFlags.ReturnToInsertMode = FALSE;
+                EditFlags.ReturnToInsertMode = false;
                 if( EditFlags.WasOverstrike ) {
                     LastEvent = 'R';
                 } else {
@@ -375,13 +375,13 @@ void EditMain( void )
 #ifdef __WIN__
                 SetWindowCursorForReal();
 #endif
-                LastEvent = GetNextEvent( TRUE );
+                LastEvent = GetNextEvent( true );
             }
-            EditFlags.NoCapsLock = FALSE;
-            doclear = TRUE;
+            EditFlags.NoCapsLock = false;
+            doclear = true;
             if( LastEvent == VI_KEY( MOUSEEVENT ) ) {
                 if( LastMouseEvent == MOUSE_MOVE ) {
-                    doclear = FALSE;
+                    doclear = false;
                 }
             }
             if( doclear ) {
@@ -401,20 +401,20 @@ void EditMain( void )
 #ifdef __WIN__
             SetWindowCursorForReal();
 #endif
-            LastEvent = GetNextEvent( TRUE );
+            LastEvent = GetNextEvent( true );
         }
 
         rc = DoLastEvent();
 
         if( EditFlags.ReadOnlyError && rc <= ERR_NO_ERR ) {
-            EditFlags.ReadOnlyError = FALSE;
+            EditFlags.ReadOnlyError = false;
             rc = ERR_READ_ONLY_FILE_MODIFIED;
         }
         if( rc > ERR_NO_ERR ) {
             msg = GetErrorMsg( rc );
         }
 
-        DoneLastEvent( rc, FALSE );
+        DoneLastEvent( rc, false );
 
         if( rc > ERR_NO_ERR ) {
             Error( msg );
@@ -491,12 +491,12 @@ long GetRepeatCount( void )
     long        i;
 
     if( RepeatDigits == 0 ) {
-        NoRepeatInfo = TRUE;
+        NoRepeatInfo = true;
         return( 1L );
     }
     i = atol( RepeatString );
     RepeatDigits = 0;
-    NoRepeatInfo = FALSE;
+    NoRepeatInfo = false;
     return( i );
 
 } /* GetRepeatCount */
@@ -560,10 +560,10 @@ vi_rc InvalidKey( void )
 void Modified( bool f )
 {
     if( f ) {
-        CurrentFile->need_autosave = TRUE;
+        CurrentFile->need_autosave = true;
         if( EditFlags.ReadOnlyCheck ) {
             if( CFileReadOnly() ) {
-                EditFlags.ReadOnlyError = TRUE;
+                EditFlags.ReadOnlyError = true;
             }
         }
     }
@@ -583,10 +583,10 @@ void ResetDisplayLine( void )
     if( EditFlags.ResetDisplayLine ) {
         memcpy( WorkLine->data, CurrentLine->data, CurrentLine->len + 1 );
         WorkLine->len = CurrentLine->len;
-        DisplayWorkLine( FALSE );
+        DisplayWorkLine( false );
         DCUpdate();
         WorkLine->len = -1;
-        EditFlags.ResetDisplayLine = FALSE;
+        EditFlags.ResetDisplayLine = false;
     }
 
 } /* ResetDisplayLine */

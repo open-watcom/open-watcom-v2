@@ -56,9 +56,9 @@ vi_rc EnterExMode( void )
     exwInfo.y1 = exwInfo.y2 = i;
     exwInfo.x2 = EditVars.WindMaxWidth - 1;
     SetPosToMessageLine();
-    EditFlags.ExMode = TRUE;
-    EditFlags.LineDisplay = TRUE;
-    EditFlags.ClockActive = FALSE;
+    EditFlags.ExMode = true;
+    EditFlags.LineDisplay = true;
+    EditFlags.ClockActive = false;
     MyPrintf( "\nEntering EX mode (type vi to return)\n" );
     rc = NewWindow2( &clw, &exwInfo );
     if( rc != ERR_NO_ERR ) {
@@ -123,7 +123,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
             return( ERR_ONLY_VALID_IN_EX_MODE );
         }
         if( !n2f ) {
-            rc = Append( n1, TRUE );
+            rc = Append( n1, true );
         }
         break;
     case EX_T_CHANGE:
@@ -136,7 +136,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
             EndUndoGroup( UndoStack );
             break;
         }
-        rc = Append( n1 - 1, FALSE );
+        rc = Append( n1 - 1, false );
         if( rc != ERR_NO_ERR ) {
             EndUndoGroup( UndoStack );
             break;
@@ -161,7 +161,7 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
             return( ERR_ONLY_VALID_IN_EX_MODE );
         }
         if( !n2f ) {
-            rc = Append( n1 - 1, TRUE );
+            rc = Append( n1 - 1, true );
         }
         break;
     case EX_T_JOIN:
@@ -251,9 +251,9 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, char *data )
     case EX_T_VISUAL_DMT:
         if( EditFlags.LineDisplay ) {
             ScreenPage( -1 );
-            EditFlags.ExMode = FALSE;
-            EditFlags.LineDisplay = FALSE;
-            EditFlags.ClockActive = TRUE;
+            EditFlags.ExMode = false;
+            EditFlags.LineDisplay = false;
+            EditFlags.ClockActive = true;
             ReDisplayScreen();
             DoVersion();
         }

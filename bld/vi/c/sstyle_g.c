@@ -86,12 +86,12 @@ static void getText( ss_block *ss_new, char *start )
     if( flags.inGMLKeyword ) {
         save_char = *text;
         *text = '\0';
-        if( IsKeyword( start, TRUE ) ) {
+        if( IsKeyword( start, true ) ) {
             ss_new->type = SE_KEYWORD;
         }
         *text = save_char;
         // only check first word after a ":" (should check all tokens?)
-        flags.inGMLKeyword = FALSE;
+        flags.inGMLKeyword = false;
     }
 
     ss_new->len = text - start;
@@ -133,7 +133,7 @@ static void getGMLComment( ss_block *ss_new, char *start, int skip )
         }
 
         if( comment1 == '-' && comment2 == '-' && comment3 == '>' ) {
-            flags.inGMLComment = FALSE;
+            flags.inGMLComment = false;
             text += 3;
             break;
         }
@@ -154,11 +154,11 @@ static void getString( ss_block *ss_new, char *start, int skip )
     }
     if( *text == '\0' ) {
         // string continued on next line
-        flags.inString = TRUE;
+        flags.inString = true;
     } else {
         text++;
         // definitely finished string
-        flags.inString = FALSE;
+        flags.inString = false;
     }
     ss_new->len = text - start;
 }
@@ -176,9 +176,9 @@ void GetGMLFlags( ss_flags_g *storeFlags )
 void InitGMLFlags( linenum line_no )
 {
     line_no = line_no;
-    flags.inGMLComment = FALSE;
-    flags.inGMLKeyword = FALSE;
-    flags.inString = FALSE;
+    flags.inGMLComment = false;
+    flags.inGMLKeyword = false;
+    flags.inString = false;
 }
 
 void GetGMLBlock( ss_block *ss_new, char *start, int line )
@@ -190,7 +190,7 @@ void GetGMLBlock( ss_block *ss_new, char *start, int line )
             // line is empty -
             // do not flag following line as having anything to do
             // with an unterminated "
-            flags.inString = FALSE;
+            flags.inString = false;
         }
         getBeyondText( ss_new );
         return;
@@ -219,10 +219,10 @@ void GetGMLBlock( ss_block *ss_new, char *start, int line )
         getString( ss_new, start, 1 );
         return;
     case ':':
-        flags.inGMLKeyword = TRUE;
+        flags.inGMLKeyword = true;
         break;
     case '.':
-        flags.inGMLKeyword = FALSE;
+        flags.inGMLKeyword = false;
         break;
     }
 

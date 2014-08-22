@@ -105,7 +105,7 @@ vi_rc Shift( linenum s, linenum e, char dir, bool msgflag )
     }
     DCDisplayAllLines();
     SetWindowCursor();
-    Modified( TRUE );
+    Modified( true );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* Shift */

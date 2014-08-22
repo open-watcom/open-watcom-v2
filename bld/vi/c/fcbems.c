@@ -111,7 +111,7 @@ int SwapToEMSMemory( fcb *fb )
      * finish up
      */
     fb->xmemaddr = found;
-    fb->in_ems_memory = TRUE;
+    fb->in_ems_memory = true;
     return( ERR_NO_ERR );
 
 } /* SwapToEMSMemory */
@@ -152,7 +152,7 @@ static long eMSAlloc( U_INT size )
                 }
                 --EMSCtrl.max_logical;
                 if( EMSCtrl.max_logical == 0 ) {
-                    EMSCtrl.exhausted = TRUE;
+                    EMSCtrl.exhausted = true;
                     return( 0 );
                 }
             }
@@ -185,12 +185,12 @@ void EMSInit( void )
     unsigned char       handle;
     ems_addr            h;
 
-    EMSCtrl.inuse = FALSE;
+    EMSCtrl.inuse = false;
     if( !EditFlags.ExtendedMemory ) {
         return;
     }
 
-    EMSCtrl.exhausted = FALSE;
+    EMSCtrl.exhausted = false;
     vect = DosGetVect( EMS_INTERRUPT );
     check = MK_FP( FP_SEG( vect ), EMS_INTERRUPT_OFFSET );
     for( i = 0; i <= 7; i++ ) {
@@ -215,7 +215,7 @@ void EMSInit( void )
     EMSCtrl.offset = 0;
     EMSCtrl.allocated = 1;
     for( i = 0; i < EMS_MAX_PHYSICAL_PAGES; i++ ) {
-        EMSCtrl.physical[i].used = FALSE;
+        EMSCtrl.physical[i].used = false;
     }
 
     emsPtrs = MemAlloc( sizeof( long ) * EditVars.MaxEMSBlocks );
@@ -230,7 +230,7 @@ void EMSInit( void )
     }
     emsPtrs = MemReAlloc( emsPtrs, TotalEMSBlocks * sizeof( long ) );
 
-    EMSCtrl.inuse = TRUE;
+    EMSCtrl.inuse = true;
 
 
 } /* EMSInit */
@@ -251,7 +251,7 @@ void EMSFini( void )
         _EMSReleaseMemory( EMSCtrl.handles[curr] );
     }
     EMSCtrl.allocated = 0;
-    EMSCtrl.inuse = FALSE;
+    EMSCtrl.inuse = false;
 
 } /* EMSFini */
 
@@ -264,7 +264,7 @@ static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char 
 
     free = EMS_MAX_PHYSICAL_PAGES;
     for( i = 0; i < EMS_MAX_PHYSICAL_PAGES; ++i ) {
-        if( EMSCtrl.physical[i].used == 0 ) {
+        if( !EMSCtrl.physical[i].used ) {
             free = i;
             continue;
         } /* if */
@@ -273,14 +273,14 @@ static bool locatePhysicalPage( unsigned char h, unsigned char l, unsigned char 
         }
         if( EMSCtrl.physical[i].logical == l ) {
             *p = i;
-            return( TRUE );
+            return( true );
         }
     }
     if( free == EMS_MAX_PHYSICAL_PAGES ) {
-        return( FALSE );
+        return( false );
     }
     *p = free;
-    return( FALSE );
+    return( false );
 
 } /* locatePhysicalPage */
 
@@ -303,7 +303,7 @@ static void *emsAccess( ems_addr x )
         }
         EMSCtrl.physical[physical].handle = handle;
         EMSCtrl.physical[physical].logical = logical;
-        EMSCtrl.physical[physical].used = TRUE;
+        EMSCtrl.physical[physical].used = true;
     }
     offset = x.internal.offset;
     offset += physical * EMS_MAX_PAGE_SIZE;
@@ -326,7 +326,7 @@ static void emsRelease( ems_addr x )
     if( locatePhysicalPage( handle, logical, &physical ) == 0 ) {
         return;
     }
-    EMSCtrl.physical[physical].used = FALSE;
+    EMSCtrl.physical[physical].used = false;
 
 } /* emsRelease */
 

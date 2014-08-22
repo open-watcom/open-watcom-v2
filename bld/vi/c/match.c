@@ -43,7 +43,7 @@ vi_rc DoMatching( range *r, long count )
 
     count = count;
     rc = FindMatch( &pos );
-    r->line_based = FALSE;
+    r->line_based = false;
     r->start = pos;
     return( rc );
 

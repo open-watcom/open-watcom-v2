@@ -62,7 +62,7 @@ static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
         resp = GetResponse( str, tmp );
     } else {
         resp = GOT_RESPONSE;
-        tmp[0] = GetKey( FALSE );
+        tmp[0] = GetKey( false );
         tmp[1] = 0;
     }
     if( resp == GOT_RESPONSE ) {
@@ -75,12 +75,12 @@ static vi_rc srcGenericInput( char *data, vlist *vl, bool input )
 
 vi_rc SrcInput( char *tmp, vlist *vl )
 {
-    return( srcGenericInput( tmp, vl, TRUE ) );
+    return( srcGenericInput( tmp, vl, true ) );
 
 } /* SrcInput */
 
 void SrcGet( char *tmp, vlist *vl )
 {
-    srcGenericInput( tmp, vl, FALSE );
+    srcGenericInput( tmp, vl, false );
 
 } /* SrcGet */

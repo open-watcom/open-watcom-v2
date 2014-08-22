@@ -291,7 +291,7 @@ static void writeConfigFile( void )
         return;
     }
     writeProfileLong( keyChildrenMaximized, 0 );
-    GenerateConfiguration( cfgFile, FALSE );    /* never write over %watcom%\eddat\weditor.ini */
+    GenerateConfiguration( cfgFile, false );    /* never write over %watcom%\eddat\weditor.ini */
     stat( cfgFile, &cfg );
     writeProfileLong( keyCfgTime, cfg.st_mtime );
 

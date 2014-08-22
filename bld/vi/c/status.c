@@ -134,7 +134,7 @@ void UpdateStatusWindow( void )
     res = result;
     line = 1;
     format = FMT_LEFT;
-    EditFlags.ModeInStatusLine = FALSE;
+    EditFlags.ModeInStatusLine = false;
     while( *str ) {
         if( *str == '$' ) {
             str++;
@@ -147,7 +147,7 @@ void UpdateStatusWindow( void )
             } else {
                 digits = 0;
             }
-            use_num = FALSE;
+            use_num = false;
             num = 0;
             switch( *str++ ) {
             case '$':
@@ -164,11 +164,11 @@ void UpdateStatusWindow( void )
                 break;
             case 'L':
                 num = CurrentPos.line;
-                use_num = TRUE;
+                use_num = true;
                 break;
             case 'C':
                 num = VirtualColumnOnCurrentLine( CurrentPos.column );
-                use_num = TRUE;
+                use_num = true;
                 break;
             case 'D':
 #ifdef __WIN__
@@ -184,7 +184,7 @@ void UpdateStatusWindow( void )
                 break;
             case 'M':
                 /* print the desired mode */
-                EditFlags.ModeInStatusLine = TRUE;
+                EditFlags.ModeInStatusLine = true;
                 GetModeString( res );
                 res += strlen( res );
                 break;

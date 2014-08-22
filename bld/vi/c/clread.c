@@ -66,7 +66,7 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
         if( EditFlags.ExMode ) {
             return( ERR_INVALID_IN_EX_MODE );
         }
-        rc = SelectFileOpen( dir, &fn, "*", FALSE );
+        rc = SelectFileOpen( dir, &fn, "*", false );
         if( rc != ERR_NO_ERR ) {
             MemFree( fn );
             return( rc );
@@ -85,9 +85,9 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
             fn[1] = '*';
             fn[2] = 0;
         }
-        GetSortDir( &fn[1], FALSE );
+        GetSortDir( &fn[1], false );
         cfile = FileAlloc( NULL );
-        FormatDirToFile( cfile, FALSE );
+        FormatDirToFile( cfile, false );
     } else {
         cfile = FileAlloc( fn );
         /*
@@ -95,7 +95,7 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
          */
         lastst = UpdateCurrentStatus( CSTATUS_READING );
 #ifdef __WIN__
-        ToggleHourglass( TRUE );
+        ToggleHourglass( true );
 #endif
         rc = OpenFcbData( cfile );
         for( ; rc == ERR_NO_ERR; ) {
@@ -104,7 +104,7 @@ vi_rc ReadAFile( linenum afterwhich, char *name )
             bytecnt += (long) cfile->fcbs.tail->byte_cnt;
         }
 #ifdef __WIN__
-        ToggleHourglass( FALSE );
+        ToggleHourglass( false );
 #endif
         UpdateCurrentStatus( lastst );
         if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {

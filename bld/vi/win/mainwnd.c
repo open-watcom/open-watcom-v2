@@ -48,7 +48,7 @@ int     RootState;
 /*
  * RegisterMainWindow - register the main (root) window class
  */
-BOOL RegisterMainWindow( HANDLE inst )
+bool RegisterMainWindow( HANDLE inst )
 {
     WNDCLASS    wc;
 
@@ -62,7 +62,7 @@ BOOL RegisterMainWindow( HANDLE inst )
     wc.hbrBackground = 0;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = EditorName;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* RegisterMainWindow */
 
@@ -245,7 +245,7 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     break;
                 }
                 strcat( buff, "\"" );
-                rc = EditFile( buff, FALSE );
+                rc = EditFile( buff, false );
                 if( rc > ERR_NO_ERR ) {
                     Error( GetErrorMsg( rc ) );
                 }
@@ -346,9 +346,9 @@ WINEXPORT LRESULT CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         return( 0 );
     case WM_QUERYENDSESSION:
-        return( ExitWithPrompt( FALSE, TRUE ) );
+        return( ExitWithPrompt( false, true ) );
     case WM_CLOSE:
-        ExitWithPrompt( TRUE, TRUE );
+        ExitWithPrompt( true, true );
         return( 0 );
 #ifdef __NT__        
     case WM_MOUSEWHEEL:
