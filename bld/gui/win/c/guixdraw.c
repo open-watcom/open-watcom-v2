@@ -216,7 +216,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
     GUIDrawTextBitmapAttr( wnd, text, length, 0, pos, attr, extentx, draw_extent, 0 );
 }
 
-void GUIXDrawTextRGB( gui_window *wnd, char *text, size_t length, gui_coord *pos,
+void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
                       gui_rgb fore, gui_rgb back, gui_ord extentx,
                       bool draw_extent )
 {

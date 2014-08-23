@@ -180,7 +180,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
     }
 }
 
-void GUIXDrawTextRGB( gui_window *wnd, char *text, size_t length, gui_coord *pos,
+void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
                       gui_rgb fore, gui_rgb back, gui_ord extentx,
                       bool draw_extent )
 {

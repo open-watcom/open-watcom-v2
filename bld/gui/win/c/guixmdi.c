@@ -65,7 +65,7 @@ static void StartMaxRestore( HWND hwnd )
     DoingMaxRestore = true;
 }
 
-static void SetStyle( HWND hwnd, int max )
+static void SetStyle( HWND hwnd, bool max )
 {
 #ifndef __OS2_PM__
     DWORD       style;

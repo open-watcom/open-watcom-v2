@@ -77,7 +77,7 @@ void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
     GUIXDrawText( wnd, text, length, pos, attr, extent, true );
 }
 
-extern void GUIDrawTextRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
                             gui_ord row, gui_ord indent,
                             gui_rgb fore, gui_rgb back )
 {
@@ -90,7 +90,7 @@ extern void GUIDrawTextRGB( gui_window *wnd, char *text, size_t length,
     GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, GUI_NO_COLUMN, false );
 }
 
-extern void GUIDrawTextPosRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
                                gui_coord *pos, gui_rgb fore, gui_rgb back )
 {
     GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_COLUMN, false );
@@ -100,7 +100,7 @@ extern void GUIDrawTextPosRGB( gui_window *wnd, char *text, size_t length,
  * GUIDrawTextExtent
  */
 
-void GUIDrawTextExtentRGB( gui_window *wnd, char *text, size_t length,
+void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
                            gui_ord row, gui_ord indent,
                            gui_rgb fore, gui_rgb back,
                            gui_ord extent )
@@ -114,7 +114,7 @@ void GUIDrawTextExtentRGB( gui_window *wnd, char *text, size_t length,
     GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, extent, true );
 }
 
-void GUIDrawTextExtentPosRGB( gui_window *wnd, char *text, size_t length,
+void GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
                               gui_coord *pos, gui_rgb fore, gui_rgb back,
                               gui_ord extent )
 {

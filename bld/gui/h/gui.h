@@ -715,16 +715,16 @@ extern void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
                                gui_ord extentx );
 extern void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
                                gui_coord *pos, gui_attr attr, gui_ord extentx );
-extern void GUIDrawTextRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
                             gui_ord row, gui_ord indent,
                             gui_rgb fore, gui_rgb back );
-extern void GUIDrawTextPosRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
                                gui_coord *pos, gui_rgb fore, gui_rgb back );
-extern void GUIDrawTextExtentRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
                                   gui_ord row, gui_ord indent,
                                   gui_rgb fore, gui_rgb back,
                                   gui_ord extentx );
-extern void GUIDrawTextExtentPosRGB( gui_window *wnd, char *text, size_t length,
+extern void GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
                                      gui_coord *pos,
                                      gui_rgb fore, gui_rgb back,
                                      gui_ord extentx );
