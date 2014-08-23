@@ -32,7 +32,7 @@
 #ifndef _FONTSTR_H_INCLUDED
 #define _FONTSTR_H_INCLUDED
 
-int     GetLogFontFromString( LOGFONT *l, char *data );
+bool    GetLogFontFromString( LOGFONT *l, char *data );
 void    GetFontFormatString( LOGFONT *lf, char *str );
 
 #endif /* _FONTSTR_H_INCLUDED */

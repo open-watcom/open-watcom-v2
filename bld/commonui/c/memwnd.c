@@ -39,14 +39,15 @@
 #include <fcntl.h>
 #include <io.h>
 #include <time.h>
+#include "bool.h"
 #include "font.h"
 #include "segmem.h"
 #include "mem.h"
 #include "dlgmod.h"
 #include "descript.h"
+#include "standard.h"
 #include "savelbox.h"
 #include "memwnd.h"
-#include "standard.h"
 #include "deasm.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
@@ -97,7 +98,7 @@ WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND, UINT, WPARAM, LPARAM );
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
-static BOOL genLine( char digits, DWORD limit, WORD type, WORD sel, char *buf, DWORD offset );
+static bool genLine( unsigned char digits, DWORD limit, WORD type, WORD sel, char *buf, DWORD offset );
 
 typedef enum {
     MT_FREE,
@@ -252,7 +253,7 @@ static void memDumpHeader( int hdl, MemWndInfo *info )
 /*
  * MemSave - save the contents of a memory display box
  */
-static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
+static void MemSave( MemWndInfo *info, HWND hwnd, bool gen_name )
 {
     char        fname[_MAX_PATH];
 //  OFSTRUCT    finfo;
@@ -260,7 +261,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
     DWORD       limit;
     int         hdl;
     size_t      len;
-    BOOL        ret;
+    bool        ret;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
 
@@ -276,7 +277,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
 //      hdl = OpenFile( fname, &finfo, OF_CREATE | OF_WRITE );
         hdl = open( fname, O_WRONLY | O_CREAT, S_IREAD | S_IWRITE );
         if( hdl == -1 ) {
-            ret = FALSE;
+            ret = false;
         } else {
             hourglass = LoadCursor( NULLHANDLE, IDC_WAIT );
             SetCapture( hwnd );
@@ -308,7 +309,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, BOOL gen_name )
  * RegMemWndClass - must be called by the first instance of a using
  *                  program to register window classes
  */
-BOOL RegMemWndClass( HANDLE instance )
+bool RegMemWndClass( HANDLE instance )
 {
     WNDCLASS    wc;
 
@@ -322,7 +323,7 @@ BOOL RegMemWndClass( HANDLE instance )
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = "MEMINFOMENU";
     wc.lpszClassName = MEM_DISPLAY_CLASS;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* RegMemWndClass */
 
@@ -332,7 +333,7 @@ BOOL RegMemWndClass( HANDLE instance )
 void SetMemWndConfig( MemWndConfig *cfg )
 {
    MemConfigInfo = *cfg;
-   MemConfigInfo.init = TRUE;
+   MemConfigInfo.init = true;
 
 } /* SetMemWndConfig */
 
@@ -350,18 +351,18 @@ void GetMemWndConfig( MemWndConfig *cfg )
  */
 void GetMemWndDefault( MemWndConfig *info )
 {
-    info->init = TRUE;
+    info->init = true;
     info->xpos = 0;
     info->ypos = 0;
     info->ysize = GetSystemMetrics( SM_CYSCREEN ) / 5;
     info->xsize = GetSystemMetrics( SM_CXSCREEN );
-    info->disp_info = TRUE;
-    info->maximized = FALSE;
+    info->disp_info = true;
+    info->maximized = false;
     info->allowmult = WND_MULTI;
     strcpy( info->fname, "mem.txt" );
     info->appname = "";
-    info->autopos_info = TRUE;
-    info->forget_pos = FALSE;
+    info->autopos_info = true;
+    info->forget_pos = false;
     info->disp_type = MEMINFO_BYTE;
     info->code_disp_type = MEMINFO_CODE_16;
 
@@ -405,7 +406,7 @@ static char *genByte( char ch, char *ptr )
  * genLine - create a line for output of the form:
 XXXXXXXX  dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd  cccccccccccccccc
  */
-static BOOL genLine( char digits, DWORD limit, WORD type,
+static bool genLine( unsigned char digits, DWORD limit, WORD type,
                      WORD sel, char *buf, DWORD offset )
 {
     char        *ptr;
@@ -418,7 +419,7 @@ static BOOL genLine( char digits, DWORD limit, WORD type,
 
     bytesread = ReadMem( sel, offset, data, digits );
     if( bytesread == 0 ) {
-        return( FALSE );
+        return( false );
     }
     pad_char = ' ';
 #else
@@ -517,7 +518,7 @@ static BOOL genLine( char digits, DWORD limit, WORD type,
         ptr++;
     }
     *ptr = '\0';
-    return( TRUE );
+    return( true );
 
 } /* genLine */
 
@@ -558,7 +559,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
     HBRUSH      wbrush;
     HFONT       old_font;
     SIZE        txtsize;
-    BOOL        rc;
+    bool        rc;
 
     if( CurFont != GetMonoFont() ) {
         calcTextDimensions( hwnd, dc, info );
@@ -646,21 +647,21 @@ static unsigned bytesToDisplay( unsigned width, WORD type )
  */
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
 {
-    BOOL        owndc;
+    bool        owndc;
     RECT        rect;
     WORD        width;
     WORD        height;
     HFONT       old_font;
     unsigned    lines;
-    BOOL        need_scrlbar;
+    bool        need_scrlbar;
     unsigned    scrl_width;
     SIZE        fontsize;
 
     if( dc == NULL ) {
         dc = GetDC( hwnd );
-        owndc = TRUE;
+        owndc = true;
     } else {
-        owndc = FALSE;
+        owndc = false;
     }
 
     CurFont = GetMonoFont();
@@ -905,7 +906,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
     RECT                area;
     HANDLE              inst;
     HMENU               menu;
-    BOOL                state;
+    DWORD               state;
     DWORD               size;
     HBRUSH              wbrush;
     FARPROC             fp;
@@ -944,11 +945,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
         }
         break;
     case WM_SIZE:
-        if( wparam == SIZE_MAXIMIZED ) {
-            info->maximized = TRUE;
-        } else {
-            info->maximized = FALSE;
-        }
+        info->maximized = ( wparam == SIZE_MAXIMIZED );
         resizeMemBox( hwnd, (DWORD)lparam, info );
     case WM_MOVE:
         if( info->autopos && IsWindow( info->dialog ) ) {
@@ -1014,10 +1011,10 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case MEMINFO_SAVE:
-            MemSave( info, hwnd, TRUE );
+            MemSave( info, hwnd, true );
             break;
         case MEMINFO_SAVE_TO:
-            MemSave( info, hwnd, FALSE );
+            MemSave( info, hwnd, false );
             break;
         case MEMINFO_SHOW:
             inst = GET_HINSTANCE( hwnd );
@@ -1028,9 +1025,9 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
             state = CheckMenuItem( menu, MEMINFO_AUTO_POS, MF_CHECKED );
             if( state == MF_CHECKED ) {
                 CheckMenuItem( menu, MEMINFO_AUTO_POS, MF_UNCHECKED );
-                info->autopos = FALSE;
+                info->autopos = false;
             } else {
-                info->autopos = TRUE;
+                info->autopos = true;
                 positionSegInfo( info->dialog );
             }
             break;
@@ -1291,12 +1288,12 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
 /*
  * DispMem
  */
-HWND DispMem( HANDLE instance, HWND parent, WORD seg, BOOL isdpmi )
+HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
 {
     HWND                hdl;
     char                buf[50];
     MemWndInfo          *info;
-    BOOL                maximize;
+    bool                maximize;
 
 #ifndef __NT__
     descriptor          desc;
@@ -1363,10 +1360,10 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, BOOL isdpmi )
     info->offset = info->base;
     info->asm = NULL;
     if( MemConfigInfo.allowmult != WND_MULTI ) {
-        info->curwnd = TRUE;
+        info->curwnd = true;
         CurWindow = hdl;
     } else {
-        info->curwnd = FALSE;
+        info->curwnd = false;
     }
 
     hdl = CreateWindow(
@@ -1415,7 +1412,7 @@ HWND DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset,
     ProcessHdl = prochdl;
     CurLimit = limit;
     CurBase = offset;
-    ret = DispMem( instance, parent, 0, FALSE );
+    ret = DispMem( instance, parent, 0, false );
     SetWindowText( ret, title );
     return( ret );
 

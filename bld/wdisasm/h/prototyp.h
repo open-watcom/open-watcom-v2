@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-extern char * DBstring( void );
+extern char *DBstring( void );
 extern void ToUnixInsName( char *, instruction * );
-extern void DoCode( instruction *,char );
+extern void DoCode( instruction *, bool );
 extern void DoControl( int );
 extern void DoOTModRM( void );
 extern void DoWtk( void );
-extern int  HaveWtk( void );
+extern bool HaveWtk( void );
 extern void ModRMRegOp( int );
-extern void ModRMOp( int, char );
-extern void FormatLine( fixup *, char *, char, char );
+extern void ModRMOp( int, bool );
+extern void FormatLine( fixup *, char *, bool, char );
 extern void FormatIns( char *, instruction *, form_option );
 #ifndef O2A
 static void ZapUpper( char * );
@@ -48,7 +48,7 @@ extern void ZapUpper( char * );
 #endif
 extern ins_name GetFppCode( void );
 extern void GetFppOp( void );
-extern char * GetWtkInsName( uint_16 );
+extern char *GetWtkInsName( uint_16 );
 extern void Obj2Asm( segment * );
 extern void FlipToSeg( segment * );
 extern void DisAssemble( void );
@@ -76,7 +76,7 @@ extern void EmitLoc( void );
 extern void EmitBytes( void );
 extern void EmitSrc( void );
 extern void InitAsm( void );
-extern int  IsWtk( instruction * );
+extern bool IsWtk( instruction * );
 extern void FiniAsm( void );
 extern void EmitDups( void );
 extern char *SegName( void );
@@ -180,7 +180,7 @@ extern bool IsData( segment * );
 extern void *AllocMem( size_t );
 extern void *AllocNull( size_t );
 extern void FreeMem( void * );
-extern void SysError( int, int );
+extern void SysError( int, bool );
 extern bool LabelInInstr( void );
 extern bool LabelOnInstr( void );
 extern char *GetLabel( void );

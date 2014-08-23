@@ -423,13 +423,13 @@ void WdeSBarSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the status bar options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ff00;
     if( mask & SBT_OWNERDRAW ) {
-        CheckDlgButton( hDlg, IDB_SBT_OWNERDRAW, 1 );
+        CheckDlgButton( hDlg, IDB_SBT_OWNERDRAW, BST_CHECKED );
     }
     if( mask & SBT_NOBORDERS ) {
-        CheckDlgButton( hDlg, IDB_SBT_NOBORDERS, 1 );
+        CheckDlgButton( hDlg, IDB_SBT_NOBORDERS, BST_CHECKED );
     }
     if( mask & SBT_POPOUT ) {
-        CheckDlgButton( hDlg, IDB_SBT_POPOUT, 1 );
+        CheckDlgButton( hDlg, IDB_SBT_POPOUT, BST_CHECKED );
     }
 
     // set the extended style controls only

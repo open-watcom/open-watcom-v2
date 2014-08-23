@@ -20,7 +20,7 @@
 *    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
 *    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
 *    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    governing rights and limitations under the License.137
 *
 *  ========================================================================
 *
@@ -36,7 +36,7 @@
 #include "wrglbl.h"
 
 /* forward declaration */
-int WRIsCorrectNode( WResID *node, uint_16 id, char *name );
+static bool WRIsCorrectNode( WResID *node, uint_16 id, const char *name );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -123,7 +123,7 @@ WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType
     return( NULL );
 }
 
-WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, char *type_name )
+WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, const char *type_name )
 {
     WResTypeNode *type_node;
 
@@ -149,7 +149,7 @@ WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, char *type_name 
 
 }
 
-WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, char *res_name )
+WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, const char *res_name )
 {
     WResResNode *res_node;
 
@@ -175,22 +175,22 @@ WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, char *res_na
 
 }
 
-int WRIsCorrectNode( WResID *node, uint_16 id, char *name )
+static bool WRIsCorrectNode( WResID *node, uint_16 id, const char *name )
 {
     char *type_name;
-    int  ret;
+    bool ret;
 
-    ret = FALSE;
+    ret = false;
 
     if( !node->IsName ) {
         if( node->ID.Num == id ) {
-            ret = TRUE;
+            ret = true;
         }
     } else if( name != NULL ) {
         type_name = WResIDToStr( node );
         if( type_name != NULL ) {
             if( !stricmp( type_name, name ) ) {
-                ret = TRUE;
+                ret = true;
             }
             MemFree( type_name );
         }

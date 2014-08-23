@@ -112,8 +112,7 @@ bool WGetNewName( HWND parent, WResRenameInfo *info )
 
     proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WResRenameProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WRenameResource", parent,
-                                proc_inst, (LPARAM)info );
+    modified = JDialogBoxParam( app_inst, "WRenameResource", parent, proc_inst, (LPARAM)info );
 
     FreeProcInstance( (FARPROC)proc_inst );
 

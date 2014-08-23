@@ -68,13 +68,13 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     fillerLength = strlen( filler );
     new = allocate( fillerLength + 1 );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
     strcpy( new, filler );
     dealloc( edit_control->buffer );
     edit_control->buffer = new;
     edit_control->length = fillerLength;
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -92,7 +92,7 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
 
     field = GUIGetField( wnd, id );
     if( field == NULL ) {
-        return( FALSE );
+        return( false );
     }
     dialog = GUIGetDialog( wnd );
     edit = NULL;
@@ -113,11 +113,11 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
             case FLD_TEXT: fldtext = (char **)&field->ptr; break;
             }
             if( !GUIStrDup( text, &new ) ) {
-                return( FALSE );
+                return( false );
             } else {
                 GUIMemFree( *fldtext );
                 *fldtext = new;
-                ret = TRUE;
+                ret = true;
             }
         }
         break;
@@ -131,7 +131,7 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
         edit = &combo_box->edit;
         break;
     default :
-        return( FALSE );   /* without redrawing field */
+        return( false );   /* without redrawing field */
         break;
     }
     if( ( edit != NULL ) && ( dialog != NULL ) ) {
@@ -162,6 +162,6 @@ bool GUISelectAll( gui_window *wnd, unsigned id, bool select )
     wnd = wnd;
     id = id;
     select = select;
-    return( FALSE );
+    return( false );
 }
 

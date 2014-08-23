@@ -76,7 +76,7 @@
 #define STATUS_FORMAT_LEFT      '<'
 #define STATUS_NEXT_BLOCK       '['
 
-typedef BOOL (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 typedef struct {
     WORD            separator_width;            /* in pixels */
@@ -88,7 +88,7 @@ typedef struct {
 
 typedef struct statwnd statwnd;
 
-int     StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR );
+bool    StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR );
 statwnd *StatusWndStart( void );
 void    StatusWndChangeSysColors( COLORREF btnFace, COLORREF btnText, COLORREF btnHighlight, COLORREF btnShadow );
 HWND    StatusWndCreate( statwnd *sw, HWND parent, WPI_RECT *size, WPI_INST hinstance, LPVOID lpvParam );

@@ -150,7 +150,7 @@ static gui_control_info dlgControls[] =
 #endif
 };
 
-static bool     ControlsInitialized = FALSE;
+static bool     ControlsInitialized = false;
 
 #define FILE_LIST_INDEX         4
 #define DIR_LIST_INDEX          5
@@ -370,11 +370,11 @@ static bool hasWild( char *txt )
     size_t      i;
     size_t      len;
 
-    has_wild = FALSE;
+    has_wild = false;
     len = strlen( txt );
     for( i = 0; i < len; i++ ) {
         if( txt[i] == '?' || txt[i] == '*' ) {
-            has_wild = TRUE;
+            has_wild = true;
             break;
         }
     }
@@ -389,15 +389,15 @@ static bool addToList( char ***list, int num, char *data, size_t len )
 {
     *list = GUIMemRealloc( *list, ( num + 2 ) * sizeof( char * ) );
     if( *list == NULL ) {
-        return( FALSE );
+        return( false );
     }
     (*list)[num] = GUIMemAlloc( len + 1 );
     if( (*list)[num] == NULL ) {
-        return( FALSE );
+        return( false );
     }
     (*list)[num + 1] = NULL;
     strcpy( (*list)[num], data );
-    return( TRUE );
+    return( true );
 
 } /* addToList */
 
@@ -507,20 +507,20 @@ static bool goToDir( gui_window *gui, char *dir )
 
     gui = gui;
     if( dir == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( dir[0] == 0 ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !(dir[1] == ':' && dir[2] == 0) ) {
         len = strlen( dir );
-        removed_end = FALSE;
+        removed_end = false;
         if( dir[len - 1] == FILE_SEP_CHAR ) {
             if( len > 1 && dir[len - 2] != ':' ) {
                 dir[len - 1] = 0;
-                removed_end = TRUE;
+                removed_end = true;
             }
         }
 
@@ -537,7 +537,7 @@ static bool goToDir( gui_window *gui, char *dir )
             dir[len - 1] = FILE_SEP_CHAR;
         }
         if( rc ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -549,7 +549,7 @@ static bool goToDir( gui_window *gui, char *dir )
         _dos_setdrive( toupper( drive[0] ) - 'A' + 1, &total );
 #endif
     }
-    return( TRUE );
+    return( true );
 
 } /* goToDir */
 
@@ -603,7 +603,7 @@ static bool isrdonly( struct dirent *dent, char *path )
     user = geteuid();
     if( user == 0 ) {
         /* we're root - we can alway write the file */
-        return( FALSE );
+        return( false );
     }
     getstatus( dent, path );
     if( dent->d_stat.st_uid == user ) {
@@ -635,7 +635,7 @@ static bool isrdonly( struct dirent *dent, char *path )
     user = geteuid();
     if( user == 0 ) {
         /* we're root - we can alway write the file */
-        return( FALSE );
+        return( false );
     }
     // FIXME: implement a "_stat2()" equivalent.
     //_stat2( path, dent->d_name, &stats );
@@ -710,7 +710,7 @@ static bool setFileList( gui_window *gui, char *ext )
                     if( !addToList( &list, cnt, dent->d_name, strlen( dent->d_name ) ) ) {
                         freeStringList( &list );
                         closedir( directory );
-                        return( FALSE );
+                        return( false );
                     }
                     cnt++;
                 }
@@ -727,7 +727,7 @@ static bool setFileList( gui_window *gui, char *ext )
         }
         freeStringList( &list );
     }
-    return( TRUE );
+    return( true );
 
 } /* setFileList */
 
@@ -755,7 +755,7 @@ static bool setDirList( gui_window *gui )
     list = NULL;
 
     if( getcwd( path, sizeof( path ) ) == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( path[strlen( path ) - 1] == FILE_SEP_CHAR ) {
@@ -773,7 +773,7 @@ static bool setDirList( gui_window *gui )
 
     directory = opendir( path );
     if( directory == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     drive[0] = OPENED_DIR_CHAR;
@@ -798,7 +798,7 @@ static bool setDirList( gui_window *gui )
 #endif
     if( !addToList( &list, cnt, drive, strlen( drive ) ) ) {
         freeStringList( &list );
-        return( FALSE );
+        return( false );
     }
     cnt++;
     strcpy( indent, INDENT_STR );
@@ -815,7 +815,7 @@ static bool setDirList( gui_window *gui )
             strcat( tmp, start );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
-                return( FALSE );
+                return( false );
             }
             cnt++;
             start = ptr + 1;
@@ -838,7 +838,7 @@ static bool setDirList( gui_window *gui )
             strcat( tmp, dent->d_name );
             if( !addToList( &list, cnt, tmp, strlen( tmp ) ) ) {
                 freeStringList( &list );
-                return( FALSE );
+                return( false );
             }
             cnt++;
         }
@@ -852,7 +852,7 @@ static bool setDirList( gui_window *gui )
     GUISetCurrSelect( gui, CTL_DIR_LIST, curr - 1 );
     freeStringList( &list );
 
-    return( TRUE );
+    return( true );
 
 } /* setDirList */
 
@@ -869,16 +869,16 @@ static bool initDialog( gui_window *gui, char *ext, char *name )
             GUIMemFree( dlg->currExt );
             dlg->currExt = GUIMemAlloc( strlen( ext ) +1 );
             if( dlg->currExt == NULL ) {
-                return( FALSE );
+                return( false );
             }
             strcpy( dlg->currExt, ext );
         }
     }
     if( !setFileList( gui, dlg->currExt ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !setDirList( gui ) ) {
-        return( FALSE );
+        return( false );
     }
     getcwd( path, sizeof( path ) );
     GUISetText( gui, CTL_DIR_NAME, path );
@@ -887,7 +887,7 @@ static bool initDialog( gui_window *gui, char *ext, char *name )
     } else if( ext != NULL ) {
         GUISetText( gui, CTL_EDIT, ext );
     }
-    return( TRUE );
+    return( true );
 
 } /* initDialog */
 
@@ -1110,18 +1110,18 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
 
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        dlg->initted = FALSE;
+        dlg->initted = false;
         InitList( gui, CTL_FILE_TYPES, FILE_TYPES_INDEX );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
         InitList( gui, CTL_DRIVES, DRIVE_LIST_INDEX );
 #endif
         if( !initDialog( gui, dlg->fileExtensions[dlg->currExtIndex], dlg->currOFN->file_name ) ) {
             dlg->dialogRC = OFN_RC_FAILED_TO_INITIALIZE;
-            return( FALSE );
+            return( false );
         }
-        dlg->initted = TRUE;
+        dlg->initted = true;
         GUISetFocus( gui, CTL_EDIT );
-        return( TRUE );
+        return( true );
         break;
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
@@ -1165,11 +1165,11 @@ extern bool GetFileNameEvent( gui_window *gui, gui_event gui_ev, void *param )
             }
             break;
         }
-        return( TRUE );
+        return( true );
     default:
         break;  // makes GCC happy.
     }
-    return( FALSE );
+    return( false );
 
 } /* GetFileNameEvent */
 
@@ -1183,7 +1183,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
 
     if( !ControlsInitialized ) {
         InitDlgControls();
-        ControlsInitialized = TRUE;
+        ControlsInitialized = true;
     }
 
     dlg.currOFN = ofn;

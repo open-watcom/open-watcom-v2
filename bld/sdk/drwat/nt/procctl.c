@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include <process.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "menu.h"
 

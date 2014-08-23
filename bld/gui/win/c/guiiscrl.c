@@ -54,7 +54,7 @@ void static InitScroll( gui_window *wnd, int bar, int pos )
                 pos = 0;
             }
             if( old != pos ) {
-                GUISetScrollPos( wnd, bar, pos, TRUE );
+                GUISetScrollPos( wnd, bar, pos, true );
             }
         }
     }

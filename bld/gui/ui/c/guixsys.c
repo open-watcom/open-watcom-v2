@@ -141,7 +141,7 @@ void GUICleanup( void )
     uiswap();
     uirestorebackground();      /* must be after uiswap */
     GUICleanupHotSpots();
-    GUICleanupInit( TRUE, TRUE );
+    GUICleanupInit( true, true );
     GUISysFini();
 }
 
@@ -155,7 +155,7 @@ static bool LoadStrings( void )
         return( GUILoadStrInit( resource_name ) );
     } else {
         _cmdname( fname );
-        if( fname == NULL ) return( FALSE );
+        if( fname == NULL ) return( false );
         return( GUILoadStrInit( fname ) );
     }
 }
@@ -184,8 +184,8 @@ static void MainLoop( void )
 
             MessageLoop();
             GUICleanup();
-            loadstrings_ok    = FALSE;
-            intstringtable_ok = FALSE;
+            loadstrings_ok    = false;
+            intstringtable_ok = false;
         }
     }
     GUICleanupInit( intstringtable_ok, loadstrings_ok );
@@ -198,7 +198,7 @@ static void MainLoop( void )
 
 int GUIXMain( int argc, char * argv[] )
 {
-    GUIMainTouched = TRUE;
+    GUIMainTouched = true;
     GUIMemOpen();
     if( GUIFirstCrack() ) {
         GUIStoreArgs( argv, argc );
@@ -224,7 +224,7 @@ void GUIXSetupWnd( gui_window *wnd )
 bool GUISetBackgroundChar( gui_window *wnd, char background )
 {
     wnd->background = background;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -237,31 +237,31 @@ bool GUISetupStruct1( gui_window *wnd, gui_create_info *info, bool dialog )
     wnd->style = info->style;
     if( !dialog ) {
         if( !GUICreateMenus( wnd, info ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUISetupStruct2( gui_window *wnd, gui_create_info *info, bool dialog )
 {
     if( !GUIJustSetWindowText( wnd, info->text ) ) {
-        return( FALSE );
+        return( false );
     }
-    if( !GUISetArea( &wnd->screen.area, &info->rect, info->parent, TRUE, dialog ) ) {
-        return( FALSE );
+    if( !GUISetArea( &wnd->screen.area, &info->rect, info->parent, true, dialog ) ) {
+        return( false );
     }
     GUISetUseWnd( wnd );
     if( info->scroll & GUI_VSCROLL ) {
         if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
                            wnd->use.height, &wnd->vgadget, info->scroll ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( info->scroll & GUI_HSCROLL ) {
         if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
                            wnd->use.width, &wnd->hgadget, info->scroll ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( wnd->style & GUI_CURSOR ) {
@@ -269,9 +269,9 @@ bool GUISetupStruct2( gui_window *wnd, gui_create_info *info, bool dialog )
         GUISetCursor( wnd );
     }
     if( !GUISetColours( wnd, info->num_attrs, info->colours ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUISetupStruct( gui_window *wnd, gui_create_info *info, bool dialog )
@@ -279,7 +279,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *info, bool dialog )
     if( GUISetupStruct1( wnd, info, dialog ) ) {
         return( GUISetupStruct2( wnd, info, dialog ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -298,15 +298,15 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
             wnd->flags |= IS_ROOT;
         }
     }
-    if( !GUISetupStruct1( wnd, info, FALSE ) ) {
-        return( FALSE );
+    if( !GUISetupStruct1( wnd, info, false ) ) {
+        return( false );
     }
     if( wnd->vbarmenu != NULL ) {
         uimenubar( wnd->vbarmenu );
         GUISetScreen( XMIN, YMIN, XMAX-XMIN, YMAX-YMIN );
     }
-    if( !GUISetupStruct2( wnd, info, FALSE ) ) {
-        return( FALSE );
+    if( !GUISetupStruct2( wnd, info, false ) ) {
+        return( false );
     }
     GUIFrontOfList( wnd );
     GUISetIcon( wnd, info->icon );
@@ -326,13 +326,13 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
             uiinitgadget( wnd->hgadget );
         }
         if( !GUIEVENTWND( wnd, GUI_INIT_WINDOW, NULL ) ) {
-            return( FALSE );
+            return( false );
         }
         GUIBringToFront( wnd );
         GUIWholeWndDirty( wnd );
         uisetmouse( wnd->screen.area.row, wnd->screen.area.col );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

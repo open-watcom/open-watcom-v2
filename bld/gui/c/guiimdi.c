@@ -51,7 +51,7 @@ void EnableMDIActions( bool enable );
 
 void GUIMDIInit( void )
 {
-    GUIMDI = TRUE;
+    GUIMDI = true;
     GUISetXInitMDI( &XInitMDI );
     GUISetInitMDI( &InitMDI );
     GUISetMDIChangeTitle( &ChangeTitle );

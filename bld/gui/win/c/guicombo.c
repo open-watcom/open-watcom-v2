@@ -54,14 +54,14 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( info == NULL ) {
         return( FALSE );
     }
-    if( info->success == TRUE ) {
+    if( info->success == true ) {
         return( TRUE );
     }
     GetClassName( hwnd, buff, 5 );
 #ifndef __OS2_PM__
     //if( !strcmp( buff, "#6" ) ) {
     if( !strcmp( buff, GUIControls[GUI_EDIT].classname ) ) {
-        info->success = TRUE;
+        info->success = true;
         info->old = GUIDoSubClass( hwnd, GUI_EDIT );
         //GUICtl3dSubclassCtl( hwnd );
     }
@@ -74,7 +74,7 @@ WPI_PROC GUISubClassEditCombobox( HWND hwnd )
     enum_info           e_info;
     WPI_ENUMPROC        fp;
 
-    e_info.success = FALSE;
+    e_info.success = false;
     fp = _wpi_makeenumprocinstance( GUISubClassEditComboboxEnumFunc, GUIMainHInst );
     _wpi_enumchildwindows( hwnd, fp, (LPARAM)&e_info );
     if( e_info.success ) {

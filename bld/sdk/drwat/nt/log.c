@@ -39,6 +39,7 @@
 #include <io.h>
 #include <ctype.h>
 #include <sys/stat.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "intdlg.h"
@@ -611,8 +612,7 @@ static void logMemDmp( ExceptDlgInfo *info ) {
         FormatMemListEntry( buf, selinfo.list.data[i] );
         logStrPrintf( "%s\n", buf );
     }
-    JDialogBoxParam( Instance, "SEL_MEM_TO_DMP", NULL, MemDmpDlgProc,
-                    (DWORD)&selinfo );
+    JDialogBoxParam( Instance, "SEL_MEM_TO_DMP", NULL, MemDmpDlgProc, (LPARAM)&selinfo );
     FreeMemList( &selinfo.list );
 }
 
@@ -796,25 +796,25 @@ static void fillLogOptions( HWND hwnd ) {
     char        buf[50];
 
     if( LogData.log_process ) {
-        CheckDlgButton( hwnd, LOG_TASKS, TRUE );
+        CheckDlgButton( hwnd, LOG_TASKS, BST_CHECKED );
     }
     if( LogData.log_stacktrace ) {
-        CheckDlgButton( hwnd, LOG_STACK_TRACE, TRUE );
+        CheckDlgButton( hwnd, LOG_STACK_TRACE, BST_CHECKED );
     }
     if( LogData.log_mem_manager ) {
-        CheckDlgButton( hwnd, LOG_MEM, TRUE );
+        CheckDlgButton( hwnd, LOG_MEM, BST_CHECKED );
     }
     if( LogData.log_mem_dmp ) {
-        CheckDlgButton( hwnd, LOG_MEM_DMP, TRUE );
+        CheckDlgButton( hwnd, LOG_MEM_DMP, BST_CHECKED );
     }
     if( LogData.query_notes ) {
-        CheckDlgButton( hwnd, LOG_QUERY_NOTES, TRUE );
+        CheckDlgButton( hwnd, LOG_QUERY_NOTES, BST_CHECKED );
     }
     if( LogData.autolog ) {
-        CheckDlgButton( hwnd, LOG_AUTOLOG, TRUE );
+        CheckDlgButton( hwnd, LOG_AUTOLOG, BST_CHECKED );
     }
     if( LogData.log_modules ) {
-        CheckDlgButton( hwnd, LOG_LOADED_MODULES, TRUE );
+        CheckDlgButton( hwnd, LOG_LOADED_MODULES, BST_CHECKED );
     }
     sprintf( buf, "%ld", LogData.max_flen );
     SetDlgItemText( hwnd, LOG_MAXFL, buf );

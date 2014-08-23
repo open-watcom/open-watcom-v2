@@ -67,8 +67,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+bool WdeControlsHook( HWND, UINT, WPARAM, LPARAM );
+void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -142,7 +142,7 @@ WORD WdeGetCToolID( void )
     int         i;
 
     if( WdeControls == NULL ) {
-        return( FALSE );
+        return( 0 );
     }
 
     menu = WdeGetResMenuHandle();
@@ -167,7 +167,7 @@ bool WdeInitControls( HINSTANCE inst )
     WdeControlsInfo = WdeAllocToolBarInfo( NUM_TOOLS );
 
     if( WdeControlsInfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     usingCommonControls = IsCommCtrlLoaded();
@@ -195,7 +195,7 @@ bool WdeInitControls( HINSTANCE inst )
     WdeControlsInfo->dinfo.background = LoadBitmap( inst, "WdeToolBk" );
     WdeControlsInfo->dinfo.is_fixed = FALSE;
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeShutdownControls( void )
@@ -253,7 +253,7 @@ bool WdeSetStickyMode( bool mode )
     bool    old_mode;
 
     if( !WdeGetNumRes() ) {
-        return( FALSE );
+        return( false );
     }
 
     menu = WdeGetResMenuHandle();
@@ -341,7 +341,7 @@ bool WdeCreateControlsToolBar( void )
     char        *text;
 
     if( WdeControls != NULL ) {
-        return ( TRUE );
+        return ( true );
     }
 
     WdeSetStatusText( NULL, "", FALSE );
@@ -390,7 +390,7 @@ bool WdeCreateControlsToolBar( void )
     WdeControls = WdeCreateToolBar( WdeControlsInfo, parent );
 
     if( WdeControls == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     text = WdeAllocRCString( WDE_TOOLBOXCAPTION );
@@ -418,7 +418,7 @@ bool WdeCreateControlsToolBar( void )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeHandleShowToolsMenu( void )
@@ -432,13 +432,13 @@ void WdeHandleShowToolsMenu( void )
     }
 }
 
-void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
+void WdeCToolHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
 {
     _wde_touch( hwnd );
     WdeHandleToolHint( wParam, pressed );
 }
 
-BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO          *minmax;
     WdeToolBar          *tbar;
@@ -472,7 +472,7 @@ BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         case WM_LBUTTONDBLCLK:
         case WM_RBUTTONUP:
         case WM_LBUTTONUP:
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -481,10 +481,10 @@ BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
             minmax = (MINMAXINFO *)lParam;
             minmax->ptMinTrackSize.x = 8;
         }
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_USER:
@@ -535,14 +535,14 @@ BOOL WdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
                 GetSystemMetrics(SM_CYCAPTION) +
                 tbar->info->dinfo.border_size.y +
                 tbar->info->dinfo.button_size.y - 1;
-            ret = TRUE;
+            ret = true;
         }
         break;
 
     case WM_CLOSE:
         WdeDestroyControls();
         WdeSetOption ( WdeOptIsCntlsTBarVisible, FALSE );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DESTROY:

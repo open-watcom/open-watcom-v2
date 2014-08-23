@@ -33,7 +33,6 @@
 #define _LOG_H_INCLUDED
 
 #include <stdio.h>
-#include "bool.h"
 
 #define LOG_ACTION_TRUNC                1
 #define LOG_ACTION_APPEND               2

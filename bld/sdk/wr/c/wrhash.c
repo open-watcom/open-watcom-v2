@@ -105,7 +105,7 @@ static SymInitStruct SymInit[] = {
 
 #define NUM_INIT_ENTRIES (sizeof( SymInit ) / sizeof( SymInitStruct ) - 1)
 
-static unsigned int WRGetNameHash( char *name )
+static unsigned int WRGetNameHash( const char *name )
 {
     unsigned int        hash;
 
@@ -124,7 +124,7 @@ static unsigned int WRGetValueHash( WRHashValue value )
     return( (unsigned int)value % VALUE_SIZE );
 }
 
-static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, char *name )
+static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, const char *name )
 {
     WRHashEntry         *entry;
     unsigned int        hash;
@@ -221,7 +221,7 @@ bool WRAPI WRDeleteDLGInclude( WResDir dir )
     return( ok );
 }
 
-bool WRAPI WRCreateDLGInclude( WResDir *dir, char *include )
+bool WRAPI WRCreateDLGInclude( WResDir *dir, const char *include )
 {
     WResID              *type;
     WResID              *res;
@@ -476,7 +476,7 @@ unsigned WRAPI WRAddSymbolsToComboBox( WRHashTable *table, HWND hDlg,
                                    CB_RESETCONTENT, CB_ERR, CB_ERRSPACE ) );
 }
 
-bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, char *filename )
+bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, const char *filename )
 {
     WRHashEntry         *entry;
     WRHashEntry         **tbl;
@@ -628,7 +628,7 @@ bool WRAPI WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value,
     return( found );
 }
 
-WRHashEntry *WRAPI WRAddDefHashEntry( WRHashTable *table, char *name, bool *dup )
+WRHashEntry *WRAPI WRAddDefHashEntry( WRHashTable *table, const char *name, bool *dup )
 {
     WRHashEntry *entry;
     WRHashValue value;
@@ -657,7 +657,7 @@ WRHashEntry *WRAPI WRAddDefHashEntry( WRHashTable *table, char *name, bool *dup 
     return( entry );
 }
 
-WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue value,
+WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHashValue value,
                                         bool *dup, bool check_unique, bool query_force )
 {
     WRHashEntry         *entry;
@@ -741,7 +741,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, char *name, WRHashValue 
     return( entry );
 }
 
-bool WRAPI WRRemoveName( WRHashTable *table, char *name )
+bool WRAPI WRRemoveName( WRHashTable *table, const char *name )
 {
     WRHashEntry         *entry;
     unsigned int        nhash;
@@ -808,7 +808,7 @@ void WRAPI WRHashDecRefCount( WRHashEntry *entry )
     }
 }
 
-bool WRAPI WRLookupName( WRHashTable *table, char *name, WRHashValue *value )
+bool WRAPI WRLookupName( WRHashTable *table, const char *name, WRHashValue *value )
 {
     WRHashEntry *entry;
 
@@ -824,7 +824,7 @@ bool WRAPI WRLookupName( WRHashTable *table, char *name, WRHashValue *value )
     return( false );
 }
 
-bool WRAPI WRModifyName( WRHashTable *table, char *name, WRHashValue value,
+bool WRAPI WRModifyName( WRHashTable *table, const char *name, WRHashValue value,
                             bool check_unique )
 {
     WRHashEntry *entry;
@@ -940,7 +940,7 @@ void WRAPI WRStripSymbol( char *symbol )
     WRStripStr( symbol );
 }
 
-bool WRAPI WRIsValidSymbol( char *symbol )
+bool WRAPI WRIsValidSymbol( const char *symbol )
 {
     if( symbol == NULL ) {
         return( false );
@@ -969,7 +969,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
     WRHashTable         *tmp;
     HINSTANCE           inst;
     FARPROC             proc;
-    int                 ret;
+    INT_PTR             ret;
     bool                ok;
 
     tmp = NULL;
@@ -1132,7 +1132,7 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
     WRHashEntry         *entry;
     DLGPROC             proc_inst;
     HINSTANCE           inst;
-    bool                modified;
+    INT_PTR             modified;
     bool                ret;
 
     if( table == NULL ) {
@@ -1333,8 +1333,8 @@ static void WRSetupEditSymDialog( HWND hDlg, WREditSymInfo *info, bool first )
     SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, 0, 0 );
     WRShowSelectedSymbol( hDlg, info->table );
     if( first ) {
-        CheckDlgButton( hDlg, IDB_SYM_SHOW_STANDARD, info->flags & WR_HASHENTRY_STANDARD );
-//      CheckDlgButton( hDlg, IDB_SYM_SHOW_UNUSED, info->flags & WR_HASHENTRY_UNUSED );
+        CheckDlgButton( hDlg, IDB_SYM_SHOW_STANDARD, ( info->flags & WR_HASHENTRY_STANDARD ) ? BST_CHECKED : BST_UNCHECKED );
+//      CheckDlgButton( hDlg, IDB_SYM_SHOW_UNUSED, ( info->flags & WR_HASHENTRY_UNUSED ) ? BST_CHECKED : BST_UNCHECKED );
     }
 }
 

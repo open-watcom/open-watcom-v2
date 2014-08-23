@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "notelog.h"
 #include "jdlg.h"
@@ -89,6 +90,6 @@ void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  ) {
     FARPROC     fp;
 
     fp = MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
-    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, (DLGPROC)fp, (DWORD)fn );
+    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, (DLGPROC)fp, (LPARAM)fn );
     FreeProcInstance( fp );
 }

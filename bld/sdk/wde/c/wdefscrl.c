@@ -456,9 +456,9 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 
         if( mask & SBS_TOPALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_TOPALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_TOPALIGN, BST_CHECKED );
         } else if( mask & SBS_BOTTOMALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_BOTTOMALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_BOTTOMALIGN, BST_CHECKED );
         }
     } else if( id == VSCROLL_OBJ ) {
         if ( !(mask & SBS_VERT) ) {
@@ -466,9 +466,9 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 
         if( mask & SBS_LEFTALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_LEFTALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_LEFTALIGN, BST_CHECKED );
         } else if( mask & SBS_RIGHTALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_RIGHTALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_RIGHTALIGN, BST_CHECKED );
         }
     } else if ( id == SIZEBOX_OBJ ) {
         if( !(mask & SBS_SIZEBOX) ) {
@@ -476,15 +476,15 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 
         if( mask & SBS_SIZEBOXTOPLEFTALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_SIZEBOXTOPLEFTALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_SIZEBOXTOPLEFTALIGN, BST_CHECKED );
         } else if( mask & SBS_SIZEBOXBOTTOMRIGHTALIGN ) {
-            CheckDlgButton( hDlg, IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN, BST_CHECKED );
         }
 
 #if __NT__XX
         EnableWindow( GetDlgItem( hDlg, IDB_SBS_SIZEGRIP ), TRUE );
         if( mask & SBS_SIZEGRIP ) {
-            CheckDlgButton( hDlg, IDB_SBS_SIZEGRIP, 1 );
+            CheckDlgButton( hDlg, IDB_SBS_SIZEGRIP, BST_CHECKED );
         }
 #else
         EnableWindow( GetDlgItem( hDlg, IDB_SBS_SIZEGRIP ), FALSE );
@@ -502,13 +502,13 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_EXSTYLE( o_info->info.c.info );
     if( mask & WS_EX_CLIENTEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
 #else
     // disable the extended styles
@@ -598,42 +598,42 @@ BOOL WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
         switch( wp ) {
         case IDB_SBS_TOPALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_BOTTOMALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_BOTTOMALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_SBS_LEFTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_RIGHTALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_RIGHTALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_SBS_BOTTOMALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_TOPALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_TOPALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_SIZEBOXTOPLEFTALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_SIZEBOXTOPLEFTALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_SBS_SIZEBOXTOPLEFTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_SBS_RIGHTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDB_SBS_LEFTALIGN, 0 );
+                CheckDlgButton( hDlg, IDB_SBS_LEFTALIGN, BST_UNCHECKED );
             }
             processed = TRUE;
             break;

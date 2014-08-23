@@ -110,21 +110,21 @@ static void WRESetPropName( HWND hDlg, WREProperyInfo *info )
 static void WRESetPropMemoryFlags( HWND hDlg, uint_16 mflags )
 {
     if( mflags & MEMFLAG_MOVEABLE ) {
-        CheckDlgButton( hDlg, IDM_PROP_MV, 1 );
+        CheckDlgButton( hDlg, IDM_PROP_MV, BST_CHECKED );
     }
 
     if( mflags & MEMFLAG_DISCARDABLE ) {
-        CheckDlgButton( hDlg, IDM_PROP_DSC, 1 );
+        CheckDlgButton( hDlg, IDM_PROP_DSC, BST_CHECKED );
     }
 
     if( mflags & MEMFLAG_PURE ) {
-        CheckDlgButton( hDlg, IDM_PROP_PUR, 1 );
+        CheckDlgButton( hDlg, IDM_PROP_PUR, BST_CHECKED );
     }
 
     if( mflags & MEMFLAG_PRELOAD ) {
-        CheckDlgButton( hDlg, IDM_PROP_PRE, 1 );
+        CheckDlgButton( hDlg, IDM_PROP_PRE, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDM_PROP_LOC, 1 );
+        CheckDlgButton( hDlg, IDM_PROP_LOC, BST_CHECKED );
     }
 }
 

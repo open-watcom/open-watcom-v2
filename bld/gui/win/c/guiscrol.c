@@ -97,7 +97,7 @@ void GUIScroll( gui_window *wnd, int bar, int change )
         }
     }
     if( old != new ) {
-        GUISetScrollPos( wnd, bar, new, TRUE );
+        GUISetScrollPos( wnd, bar, new, true );
         if( ( change > 0 ) && ( change >= screen_size )  ||
             ( change < 0 ) && ( -change >= screen_size ) ) {
             /* scrolled a page or more */
@@ -273,7 +273,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam,
             }
             break;
         case SB_ENDSCROLL :
-            GUIRedrawScroll( wnd, bar, FALSE );
+            GUIRedrawScroll( wnd, bar, false );
             break;
         }
         break;
@@ -318,7 +318,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam,
             }
             break;
         case SB_ENDSCROLL :
-            GUIRedrawScroll( wnd, bar, FALSE );
+            GUIRedrawScroll( wnd, bar, false );
             break;
         }
     }
@@ -350,11 +350,11 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
         if( !chars ) {
             *p_range = range + screen_size;
         }
-        GUISetScrollRange( wnd, bar, 0, range, TRUE );
+        GUISetScrollRange( wnd, bar, 0, range, true );
     } else {
         range = screen_size + GUIGetScrollPos( wnd, bar );
         *p_range = range + screen_size;
-        GUISetScrollRange( wnd, bar, 0, range, TRUE );
+        GUISetScrollRange( wnd, bar, 0, range, true );
     }
 }
 

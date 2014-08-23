@@ -57,7 +57,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WStatusWndProc( HWND, UINT, WPARAM, LPARAM );
+bool WStatusWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -291,7 +291,7 @@ bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
     return( TRUE );
 }
 
-BOOL WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wtouch( hWnd );
@@ -299,7 +299,7 @@ BOOL WStatusWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
     _wtouch( lParam );
     _wtouch( msg );
 
-    return( FALSE );
+    return( false );
 }
 
 bool WDisplayStatusText( WStatBar *wsb )

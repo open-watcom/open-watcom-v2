@@ -53,7 +53,7 @@ static void StartMoveResize( gui_window *wnd, resize_dir dir )
     area = wnd->screen.area;
     area.width--;
     area.height--;
-    uimenudisable( TRUE );
+    uimenudisable( true );
     uibandinit( area, wnd->colours[GUI_FRAME_RESIZE] );
     Direction = dir;
 }
@@ -67,7 +67,7 @@ bool GUIStartMoveResize( gui_window *wnd, ORD row, ORD col, resize_dir dir )
     MoveResizeAnchor.x = col;
     MoveResizeAnchor.y = row;
     StartMoveResize( wnd, dir );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -171,7 +171,7 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
     new.width ++;
     new.height ++;
     if( finish ) {
-        uimenudisable( FALSE );
+        uimenudisable( false );
         uibandfini();
         if( GUI_WND_MAXIMIZED( wnd ) ) {
             flags = MAXIMIZED;
@@ -188,7 +188,7 @@ static void DoMoveResize( gui_window *wnd, int delta_x, int delta_y,
 
 void MoveResizeCancel( void )
 {
-    uimenudisable( FALSE );
+    uimenudisable( false );
     uibandfini();
 }
 
@@ -203,10 +203,10 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     gui_point   adjust;
 
     if( MoveSizeWnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    finish = FALSE;
-    cancel = FALSE;
+    finish = false;
+    cancel = false;
     switch( ev ) {
     case EV_CURSOR_UP :
         MoveSizeChange.y--;
@@ -222,12 +222,12 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
         break;
     case EV_ESCAPE :
         MoveResizeCancel();
-        cancel = TRUE;
+        cancel = true;
     case EV_ENTER :
-        finish = TRUE;
+        finish = true;
         break;
     default :
-        return( TRUE );
+        return( true );
     }
     if( !cancel ) {
         DoMoveResize( MoveSizeWnd, MoveSizeChange.x, MoveSizeChange.y, finish,
@@ -238,7 +238,7 @@ bool GUIDoKeyboardMoveResize( EVENT ev )
     if( finish ) {
         MoveSizeWnd = NULL;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -257,7 +257,7 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, EVENT ev,
     finish = ( ev == EV_MOUSE_RELEASE ) || ( ev == EV_MOUSE_RELEASE_R ) ||
              ( ev == EV_ENTER );
     DoMoveResize( wnd, delta_x, delta_y, finish, adjust );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -274,7 +274,7 @@ bool GUIDoMoveResizeCheck( gui_window * wnd, EVENT ev, ORD row, ORD col )
         MoveResizeCancel();
         break;
     default :
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

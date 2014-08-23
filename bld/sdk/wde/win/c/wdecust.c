@@ -163,7 +163,7 @@ bool WdeCustControlsLoaded( void )
 
 bool WdeSetCurrentCustControl( int which )
 {
-    int       ret;
+    INT_PTR   ret;
     HINSTANCE inst;
     FARPROC   proc;
 
@@ -273,7 +273,7 @@ BOOL WdeLoadMSCustomControls( WdeCustLib *lib )
     HWND             dialog_owner;
     FARPROC          proc_inst;
     HINSTANCE        app_inst;
-    BOOL             ok;
+    INT_PTR          ok;
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();

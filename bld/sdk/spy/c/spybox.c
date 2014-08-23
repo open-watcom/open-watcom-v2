@@ -350,7 +350,7 @@ void ResetSpyListBox( void )
 /*
  * GetSpyBoxSelection - get the currently selected message
  */
-BOOL GetSpyBoxSelection( char *str )
+bool GetSpyBoxSelection( char *str )
 {
     LRESULT sel;
 #ifdef __NT__
@@ -358,10 +358,10 @@ BOOL GetSpyBoxSelection( char *str )
 #endif
         sel = SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
         if( sel == (WORD)LB_ERR ) {
-            return( FALSE );
+            return( false );
         }
         SendMessage( SpyListBox, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
-        return( TRUE );
+        return( true );
 #ifdef __NT__
     } else {
         LVITEM  lvi;
@@ -370,7 +370,7 @@ BOOL GetSpyBoxSelection( char *str )
         str[SPYOUT_LENGTH - 1] = '\0';
         sel = SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
         if( sel == (LRESULT)-1 ) {
-            return( FALSE );
+            return( false );
         }
         lvi.mask = LVIF_TEXT;
         lvi.iItem = (int)sel;
@@ -388,7 +388,7 @@ BOOL GetSpyBoxSelection( char *str )
         SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
         strncpy( &str[SPYOUT_MSG], buf, SPYOUT_MSG_LEN );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = ' ';
-        return( TRUE );
+        return( true );
     }
 #endif
 

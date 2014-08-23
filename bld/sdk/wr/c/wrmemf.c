@@ -71,7 +71,7 @@ int WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hc
     WRMFInfo    info;
     DLGPROC     proc;
     HINSTANCE   inst;
-    BOOL        modified;
+    INT_PTR     modified;
 
     if( mflags == NULL ) {
         return( FALSE );
@@ -101,21 +101,21 @@ void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
         SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)info->name );
 
         if( info->mflags & MEMFLAG_MOVEABLE ) {
-            CheckDlgButton( hDlg, IDM_MFMV, 1 );
+            CheckDlgButton( hDlg, IDM_MFMV, BST_CHECKED );
         }
 
         if( info->mflags & MEMFLAG_DISCARDABLE ) {
-            CheckDlgButton( hDlg, IDM_MFDSC, 1 );
+            CheckDlgButton( hDlg, IDM_MFDSC, BST_CHECKED );
         }
 
         if( info->mflags & MEMFLAG_PURE ) {
-            CheckDlgButton( hDlg, IDM_MFPUR, 1 );
+            CheckDlgButton( hDlg, IDM_MFPUR, BST_CHECKED );
         }
 
         if( info->mflags & MEMFLAG_PRELOAD ) {
-            CheckDlgButton( hDlg, IDM_MFPRE, 1 );
+            CheckDlgButton( hDlg, IDM_MFPRE, BST_CHECKED );
         } else {
-            CheckDlgButton( hDlg, IDM_MFLOC, 1 );
+            CheckDlgButton( hDlg, IDM_MFLOC, BST_CHECKED );
         }
     }
 }

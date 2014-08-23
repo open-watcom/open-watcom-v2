@@ -53,7 +53,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WdeStatusHookProc( HWND, UINT, WPARAM, LPARAM );
+bool WdeStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -141,7 +141,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     rect.top = rect.bottom - WdeStatusDepth;
 
     if( !StatusWndInit( inst, WdeStatusHookProc, 0, (HCURSOR)NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     WdeStatusBar = StatusWndStart();
 
@@ -156,7 +156,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
     if( WdeStatusWindow == NULL ) {
         WdeDisplayErrorMsg( WDE_NOCREATESTATUS );
-        return( FALSE );
+        return( false );
     }
 
     /* set the text in the status window */
@@ -165,7 +165,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     GetWindowRect( WdeStatusWindow, &rect );
     WdeStatusDepth = rect.bottom - rect.top;
 
-    return( TRUE );
+    return( true );
 }
 
 
@@ -193,7 +193,7 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
     char        *str2;
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     str1 = NULL;
     str2 = NULL;
 
@@ -227,7 +227,7 @@ bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
     _wde_touch( redisplay );
 
     if( WdeStatusWindow == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( status1 != NULL ) {
@@ -266,7 +266,7 @@ bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
         return( WdeDisplayStatusText( WdeStatusText ) );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeDisplayStatusText( char *str )
@@ -286,10 +286,10 @@ bool WdeDisplayStatusText( char *str )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WdeStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hWnd );
@@ -300,5 +300,5 @@ BOOL WdeStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         WdeStatusWindow = NULL;
     }
 
-    return( FALSE );
+    return( false );
 }

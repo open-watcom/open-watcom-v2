@@ -49,9 +49,9 @@
 static  char            *rootName;
 static  char            *objName;
 static  char            *lstName;
-static  char            lstReqd;
+static  bool            lstReqd;
 static  char            objExt[] = { _OBJ };
-static  char            srcReqd;
+static  bool            srcReqd;
 
 
 /*
@@ -121,11 +121,11 @@ static  void  initOptions()
 /*************************/
 
 {
-    UnMangle = TRUE;
-    ImpDump = FALSE;
-    ExpDump = FALSE;
-    lstReqd = FALSE;
-    srcReqd = FALSE;
+    UnMangle = true;
+    ImpDump = false;
+    ExpDump = false;
+    lstReqd = false;
+    srcReqd = false;
     Options = 0;
     Source = NULL;
     objName = NULL;
@@ -159,7 +159,7 @@ static  void  parseOptions( char *cmd )
                     ptr = skipFName( cmd );
                     objName = ParseName( cmd, ptr );
                 } else {
-                    SysError( ERR_INV_CMMD_OPTION, FALSE );
+                    SysError( ERR_INV_CMMD_OPTION, false );
                 }
             } else {
                 opt = tolower( *(++cmd) );
@@ -175,10 +175,10 @@ static  void  parseOptions( char *cmd )
                     Options |= FORM_INDEX_IN;
                     break;
                 case 'e':
-                    ImpDump = TRUE;
+                    ImpDump = true;
                     break;
                 case 'p':
-                    ExpDump = TRUE;
+                    ExpDump = true;
                     break;
                 case 'r':
                     Options |= FORM_REG_UPPER;
@@ -187,7 +187,7 @@ static  void  parseOptions( char *cmd )
                     Options |= FORM_NAME_UPPER;
                     break;
                 case 'l':
-                    lstReqd = TRUE;
+                    lstReqd = true;
                     ++cmd;
                     if( *cmd == '=' || *cmd == '@' || *cmd == '#' ) {
                         ++cmd;
@@ -196,7 +196,7 @@ static  void  parseOptions( char *cmd )
                     }
                     break;
                 case 's':
-                    srcReqd = TRUE;
+                    srcReqd = true;
                     ++cmd;
                     if( *cmd == '=' || *cmd == '@' || *cmd == '#' ) {
                         ++cmd;
@@ -223,16 +223,16 @@ static  void  parseOptions( char *cmd )
                     Options |= FORM_DO_WTK;
                     break;
                 case 'm':
-                    UnMangle = FALSE;
+                    UnMangle = false;
                     break;
                 default:
-                    SysError( ERR_INV_CMMD_OPTION, FALSE );
+                    SysError( ERR_INV_CMMD_OPTION, false );
                 }
             }
             cmd = skipBlanks( ptr );
         }
         if( objName == NULL ) {
-            SysError( ERR_NO_OBJ_SPEC, FALSE );
+            SysError( ERR_NO_OBJ_SPEC, false );
         }
     }
 }
@@ -265,7 +265,7 @@ static  void  openFiles( void )
     if( ObjFile == NULL ) {
 //        ObjFile = OpenBinRead( MakeFileName( objName, objExt ) );
 //        if( ObjFile == NULL ) {
-            SysError( ERR_NOT_OPEN_OBJ, TRUE );
+            SysError( ERR_NOT_OPEN_OBJ, true );
 //        }
     }
     if( lstReqd ) {
@@ -276,7 +276,7 @@ static  void  openFiles( void )
         }
         if( Output == NULL ) {
             CloseBin( ObjFile );
-            SysError( ERR_NOT_OPEN_LIST, TRUE );
+            SysError( ERR_NOT_OPEN_LIST, true );
         }
     }
 }

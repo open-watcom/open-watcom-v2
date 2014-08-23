@@ -33,7 +33,7 @@
 #ifndef WDECTL3D_INCLUDED
 #define WDECTL3D_INCLUDED
 
-#include "ctl3d.h"
+#include <ctl3d.h>
 
 /****************************************************************************/
 /* macro definitions                                                        */

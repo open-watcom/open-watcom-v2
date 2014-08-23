@@ -31,6 +31,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "bool.h"
 #include "segmem.h"
 #include "ismod32.h"
 
@@ -51,7 +52,7 @@ typedef struct {
 /*
  * CheckIsModuleWin32App - check if a given module handle is a win32 app
  */
-BOOL CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs,
+bool CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs,
                             DWORD *win32initialeip )
 {
     GLOBALENTRY ge;
@@ -61,7 +62,7 @@ BOOL CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs,
     *win32cs = *win32ds = 0;
     ge.dwSize = sizeof( GLOBALENTRY );
     if( !GlobalEntryModule( &ge, hmod, 1 ) ) {
-        return( 0 );
+        return( false );
     }
     ReadMem( (WORD)ge.hBlock, 0, (LPVOID) &wedata, sizeof( wedata ) );
     if( memcmp( wedata.sig, win386Sig, sizeof( win386Sig) ) == 0 ||
@@ -72,16 +73,16 @@ BOOL CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs,
             segnum = 3;
         }
         if( !GlobalEntryModule( &ge, hmod, segnum ) ) {
-            return( 0 );
+            return( false );
         }
         ReadMem( (WORD)ge.hBlock, wedata.dataseg_off, (LPVOID)win32ds, sizeof( WORD ) );
         ReadMem( (WORD)ge.hBlock, wedata.stacksize_off, (LPVOID)win32initialeip,
                  sizeof( DWORD ) );
         ReadMem( (WORD)ge.hBlock, wedata.codeinfo_off + 4, (LPVOID)win32cs,
                  sizeof( WORD ) );
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 
 } /* CheckIsModuleWin32App */
 

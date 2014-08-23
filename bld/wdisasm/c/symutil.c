@@ -58,20 +58,20 @@ void  DumpImpList()
         BuildFixList();
         list = FixList;
         prev_targ = NULL;
-        head = FALSE;
+        head = false;
         count = 0;
         while( list != NULL ) {
             fix = list->fix;
             switch( _Class( fix->target ) ) {
             case TYPE_IMPORT:
-                if( head == FALSE ) {
+                if( !head ) {
                     DoEmit( MSG_LIST_EXTERN_SYM );
                     EmitNL();
                     EmitNL();
                     DoEmit( MSG_SYMBOL_ELIST );
                     EmitNL();
                     EmitDashes( LABEL_LEN );
-                    head = TRUE;
+                    head = true;
                 }
                 if( prev_targ != fix->target ) {
                     prev_targ = fix->target;
@@ -175,7 +175,7 @@ export_sym *AddLabel( uint_32 addr, char *name, segment *seg, bool pub, bool hid
     while( exp != NULL ) {
         expaddr = exp->address;
         if( expaddr > addr ) break;
-        if( expaddr == addr && pub == FALSE ) {
+        if( expaddr == addr && !pub ) {
             seg->exports_rover = prev_exp;
             return( exp );
         }
@@ -218,7 +218,7 @@ char  *NewName( fixup *fix )
     if( _Class( fix->target ) == TYPE_GROUP ) {
         name = _Name( fix->target );
     } else {
-        AddLabel( fix->imp_address, NULL, fix->target, FALSE, FALSE );
+        AddLabel( fix->imp_address, NULL, fix->target, false, false );
         name = FindExpName( fix->imp_address, fix->target );
     }
     if( name != NULL ) {

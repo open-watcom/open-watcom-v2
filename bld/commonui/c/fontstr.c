@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "fontstr.h"
 
 static char     *outFmtString = "%d %d %d %d %d %d %d %d %d %d %d %d %d \"%s\"";
@@ -40,7 +41,7 @@ static char     *inFmtString = "%d %d %d %d %d %d %d %d %d %d %d %d %d %[^\0]";
 /*
  * GetLogFontFromString - get a logical font from a string
  */
-int GetLogFontFromString( LOGFONT *l, char *data )
+bool GetLogFontFromString( LOGFONT *l, char *data )
 {
     int num;
     size_t i;
@@ -59,7 +60,7 @@ int GetLogFontFromString( LOGFONT *l, char *data )
                   &lfCharSet, &lfOutPrecision, &lfClipPrecision, &lfQuality,
                   &lfPitchAndFamily, &l->lfFaceName );
     if( num != 14 ) {
-        return( FALSE );
+        return( false );
     }
     l->lfItalic = lfItalic;
     l->lfUnderline = lfUnderline;
@@ -76,7 +77,7 @@ int GetLogFontFromString( LOGFONT *l, char *data )
         }
         l->lfFaceName[len - 2] = 0;
     }
-    return( TRUE );
+    return( true );
 
 } /* GetLogFontFromString */
 

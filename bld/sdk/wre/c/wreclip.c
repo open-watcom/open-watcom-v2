@@ -963,7 +963,7 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type, bool *replace )
     HWND                dialog_owner;
     DLGPROC             proc_inst;
     HINSTANCE           inst;
-    int                 ret;
+    INT_PTR             ret;
 
     if( name == NULL || type == 0 || replace == NULL ) {
         return( FALSE );

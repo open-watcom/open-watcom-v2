@@ -66,7 +66,7 @@
     #define     _wpi_loadicon( hinst, icon ) \
         (WPI_HICON) ( _wpi_loadcursor( (hinst), (ULONG)(icon) ) )
     #define     _wpi_getsysicon( hinst, icon ) \
-        (WPI_HICON) WinQuerySysPointer( HWND_DESKTOP, icon, TRUE)
+        (WPI_HICON) WinQuerySysPointer( HWND_DESKTOP, icon, true)
     #define     _wpi_destroyicon( icon ) WinDestroyPointer( (HPOINTER)icon )
     #define     _wpi_help( hwnd, file, key, top ) \
         WinCreateHelpInstance( wnd, file, key, topic ) // ???

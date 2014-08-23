@@ -131,23 +131,23 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end,
 
 void GUIDoVScroll( gui_window *wnd, int rows )
 {
-    DoScroll( wnd, rows, 0, -1, -1, TRUE );
+    DoScroll( wnd, rows, 0, -1, -1, true );
 }
 
 void GUIDoHScroll( gui_window *wnd, int cols )
 {
-    DoScroll( wnd, 0, cols, -1, -1, TRUE );
+    DoScroll( wnd, 0, cols, -1, -1, true );
 }
 
 
 void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
 {
-    DoScroll( wnd, rows, 0, start, end, TRUE );
+    DoScroll( wnd, rows, 0, start, end, true );
 }
 
 void GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
 {
-    DoScroll( wnd, 0, cols, start, end, TRUE );
+    DoScroll( wnd, 0, cols, start, end, true );
 }
 
 void GUIDoScroll( gui_window *wnd, int row_col, int bar )
@@ -162,5 +162,5 @@ void GUIDoScroll( gui_window *wnd, int row_col, int bar )
     } else {
         rows = row_col;
     }
-    DoScroll( wnd, rows, cols, -1, -1, FALSE );
+    DoScroll( wnd, rows, cols, -1, -1, false );
 }

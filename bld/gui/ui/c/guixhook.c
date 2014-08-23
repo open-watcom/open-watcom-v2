@@ -45,6 +45,6 @@ bool GUIMDIProcessEvent( EVENT ev )
     if( ProcessEvent != NULL ) {
         return( (*ProcessEvent)(ev) );
     }
-    return( FALSE );
+    return( false );
 }
 

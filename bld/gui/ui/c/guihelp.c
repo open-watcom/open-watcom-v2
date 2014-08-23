@@ -44,7 +44,7 @@ gui_help_instance GUIHelpInit( gui_window *wnd, char *file, char *title )
     wnd=wnd;
     file=file;
     title=title;
-    return( (gui_help_instance)TRUE );
+    return( (gui_help_instance)true );
 }
 
 void GUIHelpFini( gui_help_instance inst, gui_window *wnd, char *file )
@@ -59,7 +59,7 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     bool        ret;
 
     inst = inst;
-    ret = FALSE;
+    ret = false;
 
     switch( act ) {
         case GUI_HELP_CONTENTS:
@@ -84,7 +84,7 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
                       char *file, char *topic )
 {
     inst=inst;wnd=wnd;act=act;file=file;topic=topic;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
@@ -100,11 +100,11 @@ bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
     helpfini();
     uipushlist( GUIAllEvents );
     GUIResetDialColours();
-    return( TRUE );
+    return( true );
 }
 
 bool GUIDisplayHelpId( gui_window *wnd, char *file, int id )
 {
     wnd=wnd;file=file;id=id;
-    return( FALSE );
+    return( false );
 }

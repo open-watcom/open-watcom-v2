@@ -53,20 +53,20 @@ bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
     GUINumHotSpots = num_hot_spots;
     if( num_hot_spots == 0 ) {
         GUIHotSpots = NULL;
-        return( TRUE );
+        return( true );
     }
     GUIHotSpots = (hotspot_info *)GUIMemAlloc( sizeof( hotspot_info ) * num_hot_spots );
     if( GUIHotSpots == NULL ) {
         GUINumHotSpots = 0;
-        return( FALSE );
+        return( false );
     }
     GUISetHotSpotCleanup( &Cleanup );
     if( !GUIXInitHotSpots( num_hot_spots, hot ) ) {
         Cleanup();
-        return( FALSE );
+        return( false );
     } else {
         GUISetHotSpotCleanup( &Cleanup );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -79,10 +79,10 @@ bool GUIGetHotSpotSize( int hot_spot, gui_coord *size )
 {
     if( ( size == NULL ) || ( hot_spot > GUINumHotSpots ) ||
         ( hot_spot < 1 ) ) {
-        return( FALSE );
+        return( false );
     }
     size->x = GUIHotSpots[hot_spot-1].size.x;
     size->y = GUIHotSpots[hot_spot-1].size.y;
     GUIScreenToScaleR( size );
-    return( TRUE );
+    return( true );
 }

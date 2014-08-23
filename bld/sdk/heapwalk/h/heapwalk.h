@@ -33,6 +33,7 @@
 #include <windows.h>
 #include <toolhelp.h>
 #include <stdio.h>
+#include "bool.h"
 #include "heapwlk.h"
 #include "hwbiglb.h"
 #include "segmem.h"
@@ -264,7 +265,7 @@ extern WORD             HeapType;
 extern HWND             ListBox,TitleLine;
 extern int              HeapListSize;
 extern heap_list        **HeapList;
-extern BOOL             WDebug386;
+extern bool             WDebug386;
 extern BOOL             RefreshMainWindow;
 extern char             *HeapTitles;
 extern char             *HeapDPMITitles;

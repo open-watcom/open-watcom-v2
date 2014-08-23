@@ -43,7 +43,7 @@ static void SetScrollRange( p_gadget gadget, gui_ord range )
     if( gadget != NULL ) {
         if( gadget->total_size != range ) {
             gadget->total_size = range;
-            GUISetShowGadget( gadget, TRUE, TRUE, gadget->pos );
+            GUISetShowGadget( gadget, true, true, gadget->pos );
         }
     }
 }

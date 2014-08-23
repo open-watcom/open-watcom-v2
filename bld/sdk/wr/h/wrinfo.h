@@ -79,6 +79,6 @@ WRDLLENTRY extern WRInfo * WRAPI WRAllocWRInfo( void );
 WRDLLENTRY extern void     WRAPI WRFreeWRInfo( WRInfo * );
 WRDLLENTRY extern void     WRAPI WRFreeWResDirData( WResDir );
 WRDLLENTRY extern int      WRAPI WRCountZeroLengthResources( WResDir dir );
-WRDLLENTRY extern int      WRAPI WRGetInternalRESName( char *filename, char *newname );
+WRDLLENTRY extern bool     WRAPI WRGetInternalRESName( const char *filename, char *newname );
 
 #endif

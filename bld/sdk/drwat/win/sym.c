@@ -39,6 +39,7 @@
 #include <dos.h>
 #include <malloc.h>
 #include <io.h>
+#include "bool.h"
 #include "sopen.h"
 #include "drwatcom.h"
 #include "dip.h"

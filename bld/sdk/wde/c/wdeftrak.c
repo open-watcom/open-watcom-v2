@@ -375,24 +375,24 @@ void WdeTrakSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the style controls
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x000000ff;
     if( mask & TBS_AUTOTICKS ) {
-        CheckDlgButton( hDlg, IDB_TBS_AUTOTICKS, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_AUTOTICKS, BST_CHECKED );
     }
     if( mask & TBS_BOTH ) {
-        CheckDlgButton( hDlg, IDB_TBS_BOTH, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_BOTH, BST_CHECKED );
     } else if( mask & TBS_NOTICKS ) {
-        CheckDlgButton( hDlg, IDB_TBS_NOTICKS, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_NOTICKS, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_TBS_ONESIDE, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_ONESIDE, BST_CHECKED );
     }
 
     if( mask & TBS_VERT ) {
-        CheckDlgButton( hDlg, IDB_TBS_VERT, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_VERT, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_RIGHT ), TRUE);
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_LEFT ), TRUE);
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), FALSE);
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), FALSE);
     } else {
-        CheckDlgButton( hDlg, IDB_TBS_HORZ, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_HORZ, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_RIGHT ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_LEFT ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), TRUE );
@@ -400,21 +400,21 @@ void WdeTrakSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( mask & TBS_TOP ) {
-        CheckDlgButton( hDlg, IDB_TBS_TOP, 1 );
-        CheckDlgButton( hDlg, IDB_TBS_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_TOP, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_TBS_LEFT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_TBS_BOTTOM, 1 );
-        CheckDlgButton( hDlg, IDB_TBS_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_BOTTOM, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_TBS_RIGHT, BST_CHECKED );
     }
 
     if( mask & TBS_ENABLESELRANGE ) {
-        CheckDlgButton( hDlg, IDB_TBS_ENABLESELRANGE, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_ENABLESELRANGE, BST_CHECKED );
     }
     if( mask & TBS_FIXEDLENGTH ) {
-        CheckDlgButton( hDlg, IDB_TBS_FIXEDLENGTH, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_FIXEDLENGTH, BST_CHECKED );
     }
     if( mask & TBS_NOTHUMB ) {
-        CheckDlgButton( hDlg, IDB_TBS_NOTHUMB, 1 );
+        CheckDlgButton( hDlg, IDB_TBS_NOTHUMB, BST_CHECKED );
     }
 
     // set the extended style controls only

@@ -48,6 +48,6 @@ bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
 
     COPYAREA( wnd->dirty, area );
     GUIScreenToScaleRect( &area, paint );
-    return( TRUE );
+    return( true );
 }
 

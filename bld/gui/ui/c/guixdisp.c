@@ -114,7 +114,7 @@ static message_types ControlsNeeded[] = {
 };
 #define NUM_STYLES ( sizeof( ControlsNeeded ) / sizeof( message_types ) )
 
-static bool MessagesInitialized = FALSE;
+static bool MessagesInitialized = false;
 
 static void InitMessageControls( void )
 {
@@ -175,7 +175,7 @@ bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
         case GUI_RET_YES :
             *ret = id;
             GUICloseDialog( gui );
-            return( TRUE );
+            return( true );
             break;
         default :
             break;
@@ -183,7 +183,7 @@ bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
     default :
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -196,7 +196,7 @@ bool GUIStrnDup( char * text, char ** new, int length )
 
     if( text == NULL ) {
         *new = NULL;
-        return( TRUE );
+        return( true );
     } else {
         str_len = strlen( text );
         if( str_len < length ) {
@@ -204,12 +204,12 @@ bool GUIStrnDup( char * text, char ** new, int length )
         }
         *new = (char *)GUIMemAlloc( length + 1 );
         if( *new == NULL ) {
-            return( FALSE );
+            return( false );
         }
         strncpy( *new, text, length );
         (*new)[length] = '\0';
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -263,7 +263,7 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
 
     if( message == NULL ) {
         *num_controls = 0;
-        return( FALSE );
+        return( false );
     }
     GUIGetScale( &scale );
     GUIGetDlgTextMetrics( &metrics );
@@ -303,15 +303,15 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
         (*num_controls)+=1;
         *info = ( string_info * )GUIMemRealloc( *info, sizeof( string_info ) *
                                             (*num_controls) );
-        if( *info == NULL ) return( FALSE );
+        if( *info == NULL ) return( false );
         (*info)[*num_controls - 1].length = len;
         if( !GUIStrnDup( start, &((*info)[*num_controls - 1].text), len ) ) {
-            return( FALSE );
+            return( false );
         }
     } /* for */
 
     GUIMemFree( new_message );     /* allocated in TabFilter routine */
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -341,7 +341,7 @@ int AdjustVert( int *cols, control_types controls_to_use,
 
     if( !MessagesInitialized ) {
         InitMessageControls();
-        MessagesInitialized = TRUE;
+        MessagesInitialized = true;
     }
 
     i = num_string_controls;

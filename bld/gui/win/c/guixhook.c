@@ -39,7 +39,7 @@ static  bool    (*IsMaximized)( gui_window * )          = NULL;
 static  bool    (*UpdatedMenu)( void )                  = NULL;
 static  void    (*ResizeStatus)( gui_window * )         = NULL;
 static  void    (*FreeStatus)( void )                   = NULL;
-static  int     (*NewWindow)( HWND )                    = NULL;
+static  bool    (*NewWindow)( HWND )                    = NULL;
 static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
 static  void    (*SetMDIRestoredSize)(HWND, WPI_RECT *) = NULL;
@@ -65,7 +65,7 @@ bool GUIMDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg,
     if( ProcessMsg != NULL ) {
         return( (*ProcessMsg)( wnd, hwnd, msg, wparam, lparam, ret ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIMDIMaximized( gui_window *wnd )
@@ -86,7 +86,7 @@ bool GUIMDIUpdatedMenu( void )
     if( UpdatedMenu != NULL ) {
         return( (*UpdatedMenu)() );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUISetMDIUpdatedMenu( bool (*func)( void ) )
@@ -104,7 +104,7 @@ bool GUIIsMDIChildWindow( gui_window *wnd )
     if( IsMDIChildWindow != NULL ) {
         return( (*IsMDIChildWindow)(wnd) );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIResizeStatus( gui_window *wnd )
@@ -131,17 +131,17 @@ void GUISetFreeStatus( void (*func)( void ) )
     FreeStatus = func;
 }
 
-void GUISetMDINewWindow( int (*func)(HWND) )
+void GUISetMDINewWindow( bool (*func)(HWND) )
 {
     NewWindow = func;
 }
 
-int GUIMDINewWindow( HWND hwnd )
+bool GUIMDINewWindow( HWND hwnd )
 {
     if( NewWindow != NULL ) {
         return( (*NewWindow)( hwnd ) );
     } else {
-        return( 0 );
+        return( false );
     }
 }
 
@@ -175,12 +175,12 @@ void GUISetCtl3dUnregister( BOOL (_DLLFAR PASCAL *func)(HANDLE) )
     Ctl3dUnregister = func;
 }
 
-BOOL GUICtl3dUnregister( void )
+bool GUICtl3dUnregister( void )
 {
     if( Ctl3dUnregister != NULL ) {
-        return( (*Ctl3dUnregister)( GUIMainHInst ) );
+        return( (*Ctl3dUnregister)( GUIMainHInst ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND, WORD ) )
@@ -188,12 +188,12 @@ void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND, WORD ) )
     Ctl3dSubclassDlg = func;
 }
 
-BOOL GUICtl3dSubclassDlg( HWND hwnd, WORD word )
+bool GUICtl3dSubclassDlg( HWND hwnd, WORD word )
 {
     if( Ctl3dSubclassDlg != NULL ) {
-        return( (*Ctl3dSubclassDlg)( hwnd, word ) );
+        return( (*Ctl3dSubclassDlg)( hwnd, word ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void) )
@@ -213,31 +213,31 @@ void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) 
 
 #endif
 
-BOOL GUICtl3dSubclassCtl( HWND hwnd )
+bool GUICtl3dSubclassCtl( HWND hwnd )
 {
-#if !defined( __OS2_PM__ ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ )
     if( Ctl3dSubclassCtl != NULL ) {
-        return( (*Ctl3dSubclassCtl)( hwnd ) );
+        return( (*Ctl3dSubclassCtl)( hwnd ) != 0 );
     }
 #else
     hwnd = hwnd;
 #endif
-    return( FALSE );
+    return( false );
 }
 
-BOOL GUICtl3dColorChange( void )
+bool GUICtl3dColorChange( void )
 {
-#if !defined( __OS2_PM__ ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ )
     if( Ctl3dColorChange != NULL ) {
-        return( (*Ctl3dColorChange)() );
+        return( (*Ctl3dColorChange)() != 0 );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp )
 {
-#if !defined( __OS2_PM__ ) && !defined(__QNX__)
+#if !defined( __OS2_PM__ )
     if( Ctl3dCtlColorEx != NULL ) {
         return( (*Ctl3dCtlColorEx)( wm, wp, lp ) );
     }
@@ -248,4 +248,3 @@ HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp )
 #endif
     return( (HBRUSH)NULL );
 }
-

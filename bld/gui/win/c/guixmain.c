@@ -39,7 +39,7 @@
 #endif
 
 // This makes sure that the main routine is actially linked in
-bool    GUIMainTouched = FALSE;
+bool    GUIMainTouched = false;
 
 #if defined( __OS2_PM__ )
 

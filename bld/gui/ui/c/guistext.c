@@ -44,9 +44,9 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
     if( GUIJustSetWindowText( wnd, data ) ) {
         GUIRedrawTitle( wnd );
         GUIChangeMDITitle( wnd );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 
 } /* GUISetWindowText */

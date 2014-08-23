@@ -33,7 +33,7 @@
 #ifndef WRSELFT_INCLUDED
 #define WRSELFT_INCLUDED
 
-WRDLLENTRY extern WRFileType   WRAPI WRGuessFileType ( char * );
-WRDLLENTRY extern WRFileType   WRAPI WRSelectFileType( HWND parent, char *name, BOOL is32bit, BOOL use_wres, FARPROC hcb );
+WRDLLENTRY extern WRFileType   WRAPI WRGuessFileType ( const char * );
+WRDLLENTRY extern WRFileType   WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit, bool use_wres, FARPROC hcb );
 
 #endif

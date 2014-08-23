@@ -374,13 +374,13 @@ void WdeAniCSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the animate control options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
     if( mask & ACS_CENTER ) {
-        CheckDlgButton( hDlg, IDB_ACS_CENTER, 1 );
+        CheckDlgButton( hDlg, IDB_ACS_CENTER, BST_CHECKED );
     }
     if( mask & ACS_TRANSPARENT ) {
-        CheckDlgButton( hDlg, IDB_ACS_TRANSPARENT, 1 );
+        CheckDlgButton( hDlg, IDB_ACS_TRANSPARENT, BST_CHECKED );
     }
     if( mask & ACS_AUTOPLAY ) {
-        CheckDlgButton( hDlg, IDB_ACS_AUTOPLAY, 1 );
+        CheckDlgButton( hDlg, IDB_ACS_AUTOPLAY, BST_CHECKED );
     }
 
     // set the extended style controls only

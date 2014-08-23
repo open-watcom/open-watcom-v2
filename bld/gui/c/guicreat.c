@@ -35,7 +35,7 @@
 #include "guix.h"
 #include "guihook.h"
 
-        bool            GUIMDI  = FALSE;
+        bool            GUIMDI  = false;
 
 /*
  *  GUICreateWindow -- Create a window with given attributes.  The window
@@ -59,7 +59,7 @@ gui_window *GUICreateWindow( gui_create_info * info )
         return( wnd );
     }
     if( GUIIsValidWindow( wnd ) ) {
-        GUIFreeWindowMemory( wnd, FALSE, FALSE );
+        GUIFreeWindowMemory( wnd, false, false );
     }
     return( NULL );
 }

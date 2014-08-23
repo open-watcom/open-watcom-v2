@@ -34,8 +34,9 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <process.h>
-#include "drwatcom.h"
 #include <ctype.h>
+#include "bool.h"
+#include "drwatcom.h"
 #include "mem.h"
 
 #define INIT_ALLOCSIZE  20

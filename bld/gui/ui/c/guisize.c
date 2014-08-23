@@ -53,7 +53,7 @@ static void UnMinimize( gui_window *wnd )
     }
     for( child = wnd->child; child != NULL; child = child->sibling ) {
         uivshow( &child->screen );
-        child->screen.open = TRUE;
+        child->screen.open = true;
         uivsetactive( &child->screen );
     }
 }
@@ -210,7 +210,7 @@ static void ResizeGadget( p_gadget gadget, ORD length, ORD anchor,
     if( !set_range ) {
         gadget->total_size = length - 1 + gadget->pos;
     }
-    GUISetShowGadget( gadget, TRUE, TRUE, gadget->pos );
+    GUISetShowGadget( gadget, true, true, gadget->pos );
 }
 
 /*
@@ -238,7 +238,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     row_diff = new.row - wnd->screen.area.row;
     col_diff = new.col - wnd->screen.area.col;
     if( uivresize( &wnd->screen, new ) == NULL ) {
-        return( FALSE );
+        return( false );
     }
     GUISetUseWnd( wnd );
     GUIResizeControls( wnd, row_diff, col_diff );
@@ -283,7 +283,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
         if( flag == MINIMIZED ) {
             for( child = wnd->child; child != NULL; child = child->sibling ) {
                 uivhide( &child->screen );
-                child->screen.open = FALSE;
+                child->screen.open = false;
             }
         }
         RedrawResize( wnd, &save );
@@ -291,7 +291,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     wnd->flags &= ~NEEDS_RESIZE_REDRAW;
     GUISetCursor( wnd );
     GUIDrawStatus( wnd );
-    return( TRUE );
+    return( true );
 }
 
 void GUICheckMove( gui_window *wnd, int *row_diff, int *col_diff )
@@ -438,7 +438,7 @@ bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag,
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void CalcIconsDim( gui_window *parent, int *icons_per_row,
@@ -506,7 +506,7 @@ static void GetIconPos( gui_window *parent, SAREA *new )
     num = 1;
     if( parent != NULL ) {
         num_mod = 0;
-        found = FALSE;
+        found = false;
         max_icons = GetMaxIcons( parent );
         while( !found ) {
             if( num - num_mod * max_icons > max_icons ) {
@@ -526,7 +526,7 @@ static void GetIconPos( gui_window *parent, SAREA *new )
             if( times_used > num_mod ) {
                 num++;
             } else {
-                found = TRUE;
+                found = true;
             }
         }
     }
@@ -616,8 +616,8 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     bool        hidden;
     gui_coord   newsize;
 
-    if( !GUISetArea( &area, rect, wnd->parent, TRUE, GUI_IS_DIALOG( wnd ) ) ) {
-        return( FALSE );
+    if( !GUISetArea( &area, rect, wnd->parent, true, GUI_IS_DIALOG( wnd ) ) ) {
+        return( false );
     }
     if( GUI_IS_DIALOG( wnd ) ) {
         ret = GUIResizeDialog( wnd, &area );
@@ -646,7 +646,7 @@ void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
     SAREA       area;
 
     if( GUI_WND_MAXIMIZED( wnd ) || GUI_WND_MINIMIZED( wnd ) ) {
-        if( GUISetArea( &area, rect, wnd->parent, TRUE, FALSE ) ) {
+        if( GUISetArea( &area, rect, wnd->parent, true, false ) ) {
             SetPrevArea( &area, wnd );
         }
     } else {

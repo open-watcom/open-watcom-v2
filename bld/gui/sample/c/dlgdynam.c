@@ -113,7 +113,7 @@ static void InitDialog( gui_window *parent )
         }
         GUIAddControl( &Controls[i], &ToolPlain, &ToolStandout );
     }
-    ControlsScaled = TRUE;
+    ControlsScaled = true;
 }
 
 /*
@@ -133,7 +133,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_rect    rect;
     int         extent, top, start, end;
 
-    ret = TRUE;
+    ret = true;
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         GUIGetRect( gui, &rect );
@@ -143,14 +143,14 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, TRUE );
+                GUISetChecked( gui, i, true );
             }
         }
         num = CHECKBOX_CONTROL2;
         for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, TRUE );
+                GUISetChecked( gui, i, true );
             }
         }
 
@@ -158,10 +158,10 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIInsertText( gui, LISTBOX_CONTROL, 0, ListBoxData[i] );
         }
 
-        GUISetChecked( gui, RADIOBUTTON_CONTROL1, FALSE );
+        GUISetChecked( gui, RADIOBUTTON_CONTROL1, false );
 
         GUISetText( gui, EDIT_CONTROL, "default" );
-        GUISelectAll( gui, EDIT_CONTROL, TRUE );
+        GUISelectAll( gui, EDIT_CONTROL, true );
 
         GUIClearText( gui, STATIC_CONTROL );
         GUISetText( gui, STATIC_CONTROL, "default" );
@@ -175,8 +175,8 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 //      GUISetFocus( gui, LISTBOX_CONTROL );
 
         GUISetText( gui, LISTBOX_CONTROL, "default" );
-        GUIDropDown( gui, LISTBOX_CONTROL, TRUE );
-//      GUISelectAll( gui, LISTBOX_CONTROL, TRUE );
+        GUIDropDown( gui, LISTBOX_CONTROL, true );
+//      GUISelectAll( gui, LISTBOX_CONTROL, true );
 //      GUISetFocus( gui, CHECKBOX_CONTROL1 );
 //      GUISetCurrSelect( gui, LISTBOX_CONTROL, 1 );
         break;
@@ -292,7 +292,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIEnableControl( gui, RADIOBUTTON_CONTROL2,
                               !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
             GUIDisplayMessage( gui, "Clearing", "Sample Application", GUI_OK_CANCEL );
-            GUISetChecked( gui, RADIOBUTTON_CONTROL2, TRUE );
+            GUISetChecked( gui, RADIOBUTTON_CONTROL2, true );
             GUIClearText( gui, STATIC_CONTROL );
             GUIClearText( gui, EDIT_CONTROL );
             size = GUIGetListSize( gui, LISTBOX_CONTROL );
@@ -308,7 +308,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 rect.width += rect.width / 2;
                 GUIResizeControl( gui, LISTBOX_CONTROL, &rect );
             }
-            GUIDropDown( gui, LISTBOX_CONTROL, FALSE );
+            GUIDropDown( gui, LISTBOX_CONTROL, false );
             GUIDeleteControl( gui, CANCELBUTTON_CONTROL );
             GUIGetEditSelect( gui, LISTBOX_CONTROL, &start, &end );
             GUISetEditSelect( gui, LISTBOX_CONTROL, 1, 3 );
@@ -326,7 +326,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     default :
-        ret = FALSE;
+        ret = false;
         break;
     }
     return( ret );
@@ -342,7 +342,7 @@ void DynamicDialogCreate( gui_window *parent )
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );
-        DialogScaled = TRUE;
+        DialogScaled = true;
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
@@ -352,15 +352,15 @@ void DynamicDialogCreate( gui_window *parent )
                 Controls[i].rect.height *= 2;
             }
         }
-        ButtonsScaled = TRUE;
+        ButtonsScaled = true;
     }
 
     if( !ControlsScaled ) {
         for( i = 0; i < NUM_CONTROLS; i ++ ) {
             Controls[i].parent = NULL;
-            SetWidthHeight( &Controls[i].rect, TRUE );
+            SetWidthHeight( &Controls[i].rect, true );
         }
-        ControlsScaled = TRUE;
+        ControlsScaled = true;
     }
 
     DialogControl.extra = NULL;

@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 #include "srchmsg.h"
 #include "madrtn.h"
 #include "madx86.h"

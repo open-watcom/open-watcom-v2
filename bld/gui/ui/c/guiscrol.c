@@ -74,7 +74,7 @@ void GUIScroll( int change, p_gadget gadget )
             } else {
                 gadget->total_size = gadget->page_size + pos;
             }
-            GUISetShowGadget( gadget, TRUE, TRUE, pos );
+            GUISetShowGadget( gadget, true, true, pos );
             if( gadget->dir == VERTICAL ) {
                 GUIDoVScroll( wnd, change );
             } else {
@@ -95,7 +95,7 @@ static void InitScroll( p_gadget gadget, int pos )
     if( pos < 0 ) {
         pos = 0;
     }
-    GUISetShowGadget( gadget, TRUE, TRUE, pos );
+    GUISetShowGadget( gadget, true, true, pos );
 }
 
 
@@ -138,7 +138,7 @@ void SetScroll( p_gadget gadget, gui_ord pos )
 
 void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, TRUE, &InitScroll );
+    Scrl( wnd->hgadget, hscroll_pos, true, &InitScroll );
 }
 
 /*
@@ -147,7 +147,7 @@ void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
 
 void GUIInitHScrollCol( gui_window * wnd, int hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, FALSE, &InitScroll );
+    Scrl( wnd->hgadget, hscroll_pos, false, &InitScroll );
 }
 
 /*
@@ -156,7 +156,7 @@ void GUIInitHScrollCol( gui_window * wnd, int hscroll_pos )
 
 void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, TRUE, &InitScroll );
+    Scrl( wnd->vgadget, vscroll_pos, true, &InitScroll );
 }
 
 /*
@@ -165,7 +165,7 @@ void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
 
 void GUIInitVScrollRow( gui_window * wnd, int vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, FALSE, &InitScroll );
+    Scrl( wnd->vgadget, vscroll_pos, false, &InitScroll );
 }
 
 /*
@@ -174,7 +174,7 @@ void GUIInitVScrollRow( gui_window * wnd, int vscroll_pos )
 
 void GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, TRUE, &SetScroll );
+    Scrl( wnd->hgadget, hscroll_pos, true, &SetScroll );
 }
 
 /*
@@ -183,7 +183,7 @@ void GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
 
 void GUISetHScrollCol( gui_window * wnd, int hscroll_pos )
 {
-    Scrl( wnd->hgadget, hscroll_pos, FALSE, &SetScroll );
+    Scrl( wnd->hgadget, hscroll_pos, false, &SetScroll );
 }
 
 /*
@@ -192,7 +192,7 @@ void GUISetHScrollCol( gui_window * wnd, int hscroll_pos )
 
 void GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, TRUE, &SetScroll );
+    Scrl( wnd->vgadget, vscroll_pos, true, &SetScroll );
 }
 
 /*
@@ -201,5 +201,5 @@ void GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
 
 void GUISetVScrollRow( gui_window * wnd, int vscroll_pos )
 {
-    Scrl( wnd->vgadget, vscroll_pos, FALSE, &SetScroll );
+    Scrl( wnd->vgadget, vscroll_pos, false, &SetScroll );
 }

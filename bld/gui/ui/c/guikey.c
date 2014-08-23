@@ -63,8 +63,8 @@ bool GUIProcessAltMenuEvent( EVENT ev )
             point.x = wnd->screen.area.col;
             point.y = wnd->screen.area.row;
             GUICreatePopup( wnd, &point );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

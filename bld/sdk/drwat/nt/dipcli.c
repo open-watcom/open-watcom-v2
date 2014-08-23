@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <windows.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipcli.h"
 #include "mem.h"

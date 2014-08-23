@@ -32,7 +32,7 @@
 #ifndef _JDLG_H_INCLUDED
 #define _JDLG_H_INCLUDED
 
-extern BOOL JDialogInit( void );
+extern bool JDialogInit( void );
 extern void JDialogFini( void );
 extern INT_PTR JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc );
 extern INT_PTR JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp, HWND hwndOwner, DLGPROC dlgproc );
@@ -44,6 +44,6 @@ extern HWND JCreateDialogIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp, H
 extern HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc );
 extern HWND JCreateDialogParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc, LPARAM lParamInit );
 
-extern BOOL JDialogGetJFont( char **typeface, short *pointsize );
+extern bool JDialogGetJFont( char **typeface, short *pointsize );
 
 #endif /* _JDLG_H_INCLUDED */

@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "wio.h"
+#include "bool.h"
 #include "watcom.h"
 #include "log.h"
 #include "mem.h"
@@ -181,21 +182,21 @@ WINEXPORT INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
     switch( msg ) {
     case WM_INITDIALOG:
         if( LogCurInfo.config.query_for_name ) {
-            CheckDlgButton( hwnd, LOG_CFG_QUERY_NAME, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_QUERY_NAME, BST_CHECKED );
         } else {
-            CheckDlgButton( hwnd, LOG_CFG_USE_NAME, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_USE_NAME, BST_CHECKED );
         }
         if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
-            CheckDlgButton( hwnd, LOG_CFG_PERIODIC, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_PERIODIC, BST_CHECKED );
         } else {
-            CheckDlgButton( hwnd, LOG_CFG_CONT, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_CONT, BST_CHECKED );
         }
         if( LogCurInfo.config.def_action == LOG_ACTION_APPEND ) {
-            CheckDlgButton( hwnd, LOG_CFG_APPEND, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_APPEND, BST_CHECKED );
         } else if( LogCurInfo.config.def_action == LOG_ACTION_TRUNC ) {
-            CheckDlgButton( hwnd, LOG_CFG_REPLACE, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_REPLACE, BST_CHECKED );
         } else if( LogCurInfo.config.def_action == LOG_ACTION_QUERY ) {
-            CheckDlgButton( hwnd, LOG_CFG_QUERY, TRUE );
+            CheckDlgButton( hwnd, LOG_CFG_QUERY, BST_CHECKED );
         }
         SetDlgItemText( hwnd, LOG_CFG_NAME_EDIT, LogCurInfo.config.name );
         break;

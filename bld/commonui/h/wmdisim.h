@@ -50,18 +50,18 @@ typedef struct {
 
 void    MDIInit( mdi_info * );
 void    MDIInitMenu( void );
-int     MDINewWindow( HWND hwnd );
+bool    MDINewWindow( HWND hwnd );
 void    MDISetMainWindowTitle( char *fname );
 void    MDIClearMaximizedMenuConfig( void );
-int     MDIIsMaximized( void );
-int     MDIIsWndMaximized( HWND );
-int     MDIUpdatedMenu( void );
-void    MDISetMaximized( int setting );
-void    MDITile( int is_horz );
+bool    MDIIsMaximized( void );
+bool    MDIIsWndMaximized( HWND );
+bool    MDIUpdatedMenu( void );
+void    MDISetMaximized( bool setting );
+void    MDITile( bool is_horz );
 void    MDICascade( void );
-int     MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *lrc );
-int     MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-int     MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool    MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *lrc );
+bool    MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool    MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void    MDIResizeContainer( void );
 void    MDIContainerResized( void );
 void    MDISetOrigSize( HWND hwnd, WPI_RECT *rect );

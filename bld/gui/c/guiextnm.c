@@ -57,7 +57,7 @@ extern bool GUISetExtName( char *fname )
 {
     if( strlen( fname ) < _MAX_PATH ) {
         strcpy( GUIExtName, fname );
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }

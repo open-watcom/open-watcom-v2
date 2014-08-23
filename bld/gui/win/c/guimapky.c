@@ -41,8 +41,8 @@ extern  gui_window      *GUICurrWnd;
 extern  bool            EditControlHasFocus;
 extern  gui_keystate    KeyState;
 #ifndef __OS2_PM__
-static  bool            RetTrue = FALSE; /* set to TRUE of app returned
-                                            TRUE to last WM_SYSKEYDOWN or
+static  bool            RetTrue = false; /* set to true of app returned
+                                            true to last WM_SYSKEYDOWN or
                                             WM_SYSKEYUP message */
 #endif
 
@@ -124,31 +124,31 @@ static bool convert_shiftkeys( WORD vk, gui_key *key,
     char        *str;
 
     str = strchr( regular, vk );
-    if( SHIFT ) {
+    if( CHK_KS_SHIFT ) {
         if( str != NULL ) {
             *key = *(shifted+(str-regular));
-            return( TRUE );
+            return( true );
         } else {
             str = strchr( shifted, vk );
             if( str != NULL ) {
                 *key = *str;
-                return( TRUE );
+                return( true );
             }
         }
-    } else if( !(CTRL) && !(ALT) ) {
+    } else if( !CHK_KS_CTRL && !CHK_KS_ALT ) {
         if( str != NULL ) {
             *key = *str;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool discard_this_vk( WORD vk )
 {
     bool        discard;
 
-    discard = FALSE;
+    discard = false;
 
     switch( vk ) {
     case VK_SHIFT:
@@ -173,7 +173,7 @@ static bool discard_this_vk( WORD vk )
     case VK_HELP :
     case VK_SEPARATOR :
 #endif
-        discard = TRUE;
+        discard = true;
         break;
     }
 
@@ -185,32 +185,32 @@ static bool convert_numeric( WORD ch, gui_key *key )
     int         t;
 
     if( isdigit( ch ) ) {
-        if( SHIFT ) {
-            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) ) return( TRUE );
+        if( CHK_KS_SHIFT ) {
+            if( convert_shiftkeys( ch, key, num_regular, num_shifted ) ) return( true );
             *key = ch;
-            return( TRUE );
-        } else if( ALT ) {
+            return( true );
+        } else if( CHK_KS_ALT ) {
             t = ch - '1';
             if( t == -1 ) {
                 t = 9;
             }
             *key = EV_ALT_NUMS( t );
-            return( TRUE );
-        } else if( CTRL ) {
+            return( true );
+        } else if( CHK_KS_CTRL ) {
             if( ch == '2' ) {
                 *key = GUI_KEY_CTRL_2;
-                return( TRUE );
+                return( true );
             } else if( ch == '6' ) {
                 *key = GUI_KEY_CTRL_6;
-                return( TRUE );
+                return( true );
             }
         } else {
             *key = ch;
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static bool convert_alpha( WORD ch, gui_key *key )
@@ -219,19 +219,19 @@ static bool convert_alpha( WORD ch, gui_key *key )
 
     if( isalpha( ch ) ) {
         t = toupper(ch) - 'A';
-        if( ALT ) {
+        if( CHK_KS_ALT ) {
             *key = AltFunc[t];
-        } else if( CTRL ) {
+        } else if( CHK_KS_CTRL ) {
             *key = EV_CTRL( t );
-        } else if ( SHIFT ) {
+        } else if ( CHK_KS_SHIFT ) {
             *key = 'A'+ t;
         } else {
             *key = 'a' + t;
         }
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static bool convert_otherkeys( WORD vk, gui_key *key )
@@ -241,10 +241,10 @@ static bool convert_otherkeys( WORD vk, gui_key *key )
 
 static bool convert_ascii( WORD ch, gui_key *key )
 {
-    if( convert_alpha( ch, key ) ) return( TRUE );
-    if( convert_numeric( ch, key ) ) return( TRUE );
-    if( convert_otherkeys( ch, key ) ) return( TRUE );
-    return( FALSE );
+    if( convert_alpha( ch, key ) ) return( true );
+    if( convert_numeric( ch, key ) ) return( true );
+    if( convert_otherkeys( ch, key ) ) return( true );
+    return( false );
 }
 
 static bool convert_keytable( WORD vk, gui_key *key )
@@ -253,19 +253,19 @@ static bool convert_keytable( WORD vk, gui_key *key )
 
     for( i=0; i < ( sizeof(vk_table) / sizeof(vk_table[0]) ); i++ ) {
         if( vk == vk_table[i].value ) {
-            if( SHIFT ) {
+            if( CHK_KS_SHIFT ) {
                 *key = vk_table[i].shifted;
-            } else if ( ALT ) {
+            } else if( CHK_KS_ALT ) {
                 *key = vk_table[i].alt;
-            } else if ( CTRL ) {
+            } else if( CHK_KS_CTRL ) {
                 *key = vk_table[i].ctrl;
             } else {
                 *key = vk_table[i].regular;
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 #ifndef __OS2_PM__
@@ -273,9 +273,9 @@ static bool convert_numpad( WORD vk, gui_key *key )
 {
     if( ( vk >= VK_NUMPAD0 ) && ( vk <= VK_NUMPAD9 ) ) {
         *key = EV_KEYPAD_FUNC( vk - VK_NUMPAD0 );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -284,20 +284,20 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
     int         t;
 
     if( key == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *key = 0;
 
     if( discard_this_vk( vk ) ) {
-        return( FALSE );
+        return( false );
     } else if( vk >= VK_F1 && vk <= VK_F10 ) {
         t = vk - VK_F1 + 1;
-        if( ALT ) {
+        if( CHK_KS_ALT ) {
             *key = EV_ALT_FUNC( t );
-        } else if( CTRL ) {
+        } else if( CHK_KS_CTRL ) {
             *key = EV_CTRL_FUNC( t );
-        } else if( SHIFT ) {
+        } else if( CHK_KS_SHIFT ) {
             *key = EV_SHIFT_FUNC( t );
         } else {
             *key = EV_FUNC( t );
@@ -389,12 +389,12 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
             }
             // the rest of this case assumes that vk is ascii
             if( convert_ascii( vk, key ) ) break;
-            return( FALSE );
+            return( false );
             break;
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -418,27 +418,25 @@ void GUISetKeyState( void )
     caplock = ( ( vk_cap & 0x8000 ) && !( vk_cap & 0x0001 ) ) ||
               ( ( vk_cap & 0x0001 ) && !( vk_cap & 0x8000 ) );
     if( ( shift && !caplock ) || ( caplock && !shift ) ) {
-        KeyState |= GUI_KS_SHIFT;
+        SET_KS_SHIFT;
     }
     if( _wpi_getkeystate( VK_CONTROL ) < 0 ) {
-        KeyState |= GUI_KS_CTRL;
+        SET_KS_CTRL;
     }
 #ifndef __OS2_PM__
     if( _wpi_getkeystate( VK_MENU ) < 0 ) {
-        KeyState |= GUI_KS_ALT;
-    }
 #else
     if( _wpi_getkeystate( VK_ALT ) < 0 ) {
-        KeyState |= GUI_KS_ALT;
-    }
 #endif
+        SET_KS_ALT;
+    }
 }
 
 #ifndef __OS2_PM__
 bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
 {
     if( scan == NULL ) {
-        return( FALSE );
+        return( false );
     }
     GUISetKeyState();
     *scan = HIWORD( LOBYTE( data ) );
@@ -558,10 +556,10 @@ static bool convert_table( WORD vk, gui_key *key, ctrlkey *table, int size )
     for( i=0; i < size; i++ ) {
         if( vk == table[i].scan ) {
             *key = table[i].key;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
@@ -579,7 +577,7 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
     pm_scan     = CHAR4FROMMP( p1 );
 
     if( flags & ( KC_DEADKEY | KC_COMPOSITE ) ) {
-        return( FALSE );
+        return( false );
     } else if( flags & KC_VIRTUALKEY ) {
         return( GUIConvertVirtKeyToGUIKey( vk, key ) );
     } else if( ( flags & KC_CHAR ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
@@ -587,23 +585,23 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
     } else if( ( flags & KC_LONEKEY ) && ( ch != 0 ) && ( ch != 0xe0 ) ) {
         return( convert_ascii( ch, key ) );
     } else if( flags & KC_SCANCODE ) {
-        if( CTRL ) {
+        if( CHK_KS_CTRL ) {
             if( convert_table( pm_scan, key, ctrl_table,
                                sizeof(ctrl_table) / sizeof(ctrl_table[0]) ) ) {
-                return( TRUE );
+                return( true );
             }
-            if( convert_alpha( ch, key ) ) return( TRUE );
-            return( FALSE );
+            if( convert_alpha( ch, key ) ) return( true );
+            return( false );
         } else {
             if( convert_table( ch, key, alt_table,
                                sizeof(alt_table) / sizeof(alt_table[0]) ) ) {
-                return( TRUE );
+                return( true );
             }
             *key = (gui_key ) ( pm_scan + GUI_SCAN_OFFSET ) ;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
@@ -625,7 +623,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         USHORT  vkey  = SHORT2FROMMP(pqmsg->mp2);
 
         if( (flags & KC_VIRTUALKEY) && (vkey == VK_F10) )
-            return( (WPI_MRESULT)FALSE );
+            return( (WPI_MRESULT)false );
 
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
     }
@@ -642,6 +640,6 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             }
         }
     }
-    return( (WPI_MRESULT)FALSE );
+    return( (WPI_MRESULT)false );
 }
 #endif

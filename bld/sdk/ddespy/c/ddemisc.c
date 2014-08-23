@@ -88,11 +88,11 @@ void DumpHeader( FILE *fptr )
 /*
  * InitGblStrings
  */
-BOOL InitGblStrings( void )
+bool InitGblStrings( void )
 {
-    BOOL        ret;
+    bool        ret;
 
-    ret = TRUE;
+    ret = true;
     AppName = AllocRCString( STR_APP_NAME );
     if( ret ) {
         ret = InitSrchTable( Instance, DDEMsgs );

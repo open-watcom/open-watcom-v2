@@ -447,8 +447,7 @@ bool WdeDisplayOptions( void )
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
     proc_inst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeOptionsProc, app_inst );
-    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner,
-                                proc_inst, (LPARAM)NULL );
+    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, proc_inst, (LPARAM)NULL );
     FreeProcInstance( (FARPROC)proc_inst );
 
     if( modified == -1 ) {
@@ -468,27 +467,27 @@ static void WdeSetOptInfo( HWND hDlg, WdeOptState *state )
     }
 
     if( state->is_wres_fmt ) {
-        CheckDlgButton( hDlg, IDB_OPT_WRES, 1 );
-        CheckDlgButton( hDlg, IDB_OPT_MRES, 0 );
+        CheckDlgButton( hDlg, IDB_OPT_WRES, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_OPT_MRES, BST_UNCHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_OPT_WRES, 0 );
-        CheckDlgButton( hDlg, IDB_OPT_MRES, 1 );
+        CheckDlgButton( hDlg, IDB_OPT_WRES, BST_UNCHECKED );
+        CheckDlgButton( hDlg, IDB_OPT_MRES, BST_CHECKED );
     }
 
 #if 0
     if( state->use_def_dlg ) {
-        CheckDlgButton( hDlg, IDB_OPT_DEFDEF, 1 );
-        CheckDlgButton( hDlg, IDB_OPT_GENDEF, 0 );
+        CheckDlgButton( hDlg, IDB_OPT_DEFDEF, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_OPT_GENDEF, BST_UNCHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_OPT_DEFDEF, 0 );
-        CheckDlgButton( hDlg, IDB_OPT_GENDEF, 1 );
+        CheckDlgButton( hDlg, IDB_OPT_DEFDEF, BST_UNCHECKED );
+        CheckDlgButton( hDlg, IDB_OPT_GENDEF, BST_CHECKED );
     }
 #endif
 
     WdeSetEditWithSINT32( (int_32)state->grid_x, 10, hDlg, IDB_OPT_HINC );
     WdeSetEditWithSINT32( (int_32)state->grid_y, 10, hDlg, IDB_OPT_VINC );
 
-    CheckDlgButton( hDlg, IDB_OPT_IGNOREINC, state->ignore_inc );
+    CheckDlgButton( hDlg, IDB_OPT_IGNOREINC, ( state->ignore_inc ) ? BST_CHECKED : BST_UNCHECKED );
 
     if( WdeCurrentState.inc_path != NULL ) {
         WdeSetEditWithStr( state->inc_path, hDlg, IDB_OPT_INCPATH );

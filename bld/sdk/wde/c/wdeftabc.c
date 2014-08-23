@@ -374,60 +374,60 @@ void WdeTabCSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the tab control options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
     if( mask & TCS_FORCEICONLEFT ) {
-        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, BST_CHECKED );
     }
     if( mask & TCS_FORCELABELLEFT ) {
-        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, BST_CHECKED );
         // insist on FORCEICONLEFT and FIXEDWIDTH and disable FORCEICONLEFT
-        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
-        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
     }
     if( mask & TCS_BUTTONS ) {
-        CheckDlgButton( hDlg, IDB_TCS_BUTTONS, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_BUTTONS, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_TCS_TABS, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_TABS, BST_CHECKED );
     }
     if( mask & TCS_RAGGEDRIGHT ) {
-        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, BST_CHECKED );
     }
     if( mask & TCS_MULTILINE ) {
-        CheckDlgButton( hDlg, IDB_TCS_MULTILINE, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_MULTILINE, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_TCS_SINGLELINE, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_SINGLELINE, BST_CHECKED );
         // force raggedright on and disable both it and right justify
-        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
-        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, BST_UNCHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
     }
     if( mask & TCS_FIXEDWIDTH ) {
-        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FIXEDWIDTH, BST_CHECKED );
         // force raggedright on and disable both it and right justify
-        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
-        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+        CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, BST_CHECKED );
+        CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, BST_UNCHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
     } else {
         // turn off FORCE ... LEFT controls and disable them
-        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 0 );
-        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 0 );
+        CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, BST_UNCHECKED );
+        CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, BST_UNCHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), FALSE );
     }
     if( mask & TCS_FOCUSONBUTTONDOWN ) {
-        CheckDlgButton( hDlg, IDB_TCS_FOCUSONBUTTONDOWN, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FOCUSONBUTTONDOWN, BST_CHECKED );
     }
     if( mask & TCS_OWNERDRAWFIXED ) {
-        CheckDlgButton( hDlg, IDB_TCS_OWNERDRAWFIXED, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_OWNERDRAWFIXED, BST_CHECKED );
     }
     if( mask & TCS_TOOLTIPS ) {
-        CheckDlgButton( hDlg, IDB_TCS_TOOLTIPS, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_TOOLTIPS, BST_CHECKED );
     }
     if( mask & TCS_FOCUSNEVER ) {
-        CheckDlgButton( hDlg, IDB_TCS_FOCUSNEVER, 1 );
+        CheckDlgButton( hDlg, IDB_TCS_FOCUSNEVER, BST_CHECKED );
     }
 
     // set the extended style controls only
@@ -504,8 +504,8 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
         case IDB_TCS_FIXEDWIDTH:
             if( IsDlgButtonChecked( hDlg, IDB_TCS_FIXEDWIDTH ) ) {
                 // force raggedright on and disable both controls
-                CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
-                CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+                CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, BST_UNCHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
                 // enable the FORCE...LEFT controls
@@ -516,8 +516,8 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), TRUE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), TRUE );
                 // disable the FORCE...LEFT controls
-                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 0 );
-                CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, 0 );
+                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_TCS_FORCELABELLEFT, BST_UNCHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), FALSE );
             }
@@ -527,7 +527,7 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
        case IDB_TCS_FORCELABELLEFT:
             if( IsDlgButtonChecked( hDlg, IDB_TCS_FORCELABELLEFT ) ) {
                 // turn on FORCEICONLEFT as well, and disable it
-                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, 1 );
+                CheckDlgButton( hDlg, IDB_TCS_FORCEICONLEFT, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
             } else {
                 // enable the FORCEICONLEFT control
@@ -545,8 +545,8 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                     EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), TRUE );
                 } else {
                     // force RAGGEDRIGHT and disable it and RIGHTJUSTIFY
-                    CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, 1 );
-                    CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, 0 );
+                    CheckDlgButton( hDlg, IDB_TCS_RAGGEDRIGHT, BST_CHECKED );
+                    CheckDlgButton( hDlg, IDB_TCS_RIGHTJUSTIFY, BST_UNCHECKED );
                     EnableWindow( GetDlgItem( hDlg, IDB_TCS_RAGGEDRIGHT ), FALSE );
                     EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
                 }

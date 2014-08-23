@@ -41,35 +41,35 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
     wnd = wnd;
     point = point;
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetCursorPos( gui_window *wnd, gui_point *point )
 {
     wnd = wnd;
     point = point;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
 {
     wnd = wnd;
     cursor = cursor;
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
 {
     wnd = wnd;
     cursor = cursor;
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetBackgroundChar( gui_window *wnd, char background )
 {
     wnd = wnd;
     background = background;
-    return( FALSE );
+    return( false );
 }
 
 void GUIGMouseOn( void )

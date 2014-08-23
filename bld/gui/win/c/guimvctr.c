@@ -45,9 +45,9 @@ bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
     if( control != NULLHANDLE ) {
         GUICalcLocation( rect, &pos, &size, wnd->hwnd );
         _wpi_movewindow( control, pos.x, pos.y, size.x, size.y, TRUE );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
@@ -56,8 +56,8 @@ bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
 
     control = _wpi_getdlgitem( wnd->hwnd, id );
     if( control != NULLHANDLE ) {
-        GUIGetRelRect( control, rect, FALSE );
-        return( TRUE );
+        GUIGetRelRect( control, rect, false );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

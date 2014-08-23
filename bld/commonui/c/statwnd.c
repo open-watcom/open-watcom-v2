@@ -33,6 +33,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "statwnd.h"
 #include "mem.h"
 #include "loadcc.h"
@@ -64,8 +65,8 @@ static COLORREF                 colorButtonFace;
 static COLORREF                 colorTextFace;
 static statushook               statusWndHookFunc;
 static int                      classWinExtra;
-static BOOL                     hasGDIObjects = FALSE;
-static BOOL                     classRegistered;
+static bool                     hasGDIObjects = true;
+static bool                     classRegistered;
 static WPI_INST                 classHandle;
 static statwnd                  *currentStatWnd;
 
@@ -118,10 +119,10 @@ static COLORREF oldTextColor;
 /*
  * initPRES - initialize our presentation space for drawing text
  */
-static char initPRES( statwnd *sw, WPI_PRES pres )
+static bool initPRES( statwnd *sw, WPI_PRES pres )
 {
     if( sw->sectionDataFont == NULL ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
     oldFont = _wpi_selectfont( pres, systemDataFont );
@@ -137,7 +138,7 @@ static char initPRES( statwnd *sw, WPI_PRES pres )
     oldTextColor = GetTextColor( pres );
     SetTextColor( pres, colorTextFace );
 #endif
-    return( TRUE );
+    return( true );
 
 } /* initPRES */
 
@@ -267,7 +268,7 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
             brushButtonFace = CreateSolidBrush( colorButtonFace );
             penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
             penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
-            hasGDIObjects = TRUE;
+            hasGDIObjects = true;
             GetClientRect( hwnd, &rs );
             FillRect( pres, &rs, brushButtonFace );
         }
@@ -291,14 +292,14 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
             DeleteObject( penLight );
             DeleteObject( penShade );
             DeleteObject( brushButtonFace );
-            hasGDIObjects = FALSE;
+            hasGDIObjects = false;
         }
         colorButtonFace = GetSysColor( COLOR_BTNFACE );
         colorTextFace = GetSysColor( COLOR_BTNTEXT );
         brushButtonFace = CreateSolidBrush( colorButtonFace );
         penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
         penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
-        hasGDIObjects = TRUE;
+        hasGDIObjects = true;
         break;
 #endif
     case WM_ERASEBKGND:
@@ -325,9 +326,9 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
 /*
  * StatusWndInit - initialize for using the status window
  */
-int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor )
+bool StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefaultCursor )
 {
-    int         rc;
+    bool        rc;
 #ifdef __OS2_PM__
     /* OS/2 PM version of the initialization */
 
@@ -337,19 +338,19 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefa
         brushButtonFace = _wpi_createsolidbrush( colorButtonFace );
         penLight = _wpi_createpen( PS_SOLID, 1, CLR_WHITE );
         penShade = _wpi_createpen( PS_SOLID, 1, CLR_DARKGRAY );
-        hasGDIObjects = TRUE;
+        hasGDIObjects = true;
     }
 
     statusWndHookFunc = hook;
 
-    rc = TRUE;
+    rc = true;
     if( !classRegistered ) {
         memcpy( &classHandle, &hinstance, sizeof( WPI_INST ) );
         rc = WinRegisterClass( hinstance.hab, className, (PFNWP)StatusWndCallback,
                                CS_SIZEREDRAW | CS_CLIPSIBLINGS,
                                extra + sizeof( statwnd * ) );
         classWinExtra = extra;
-        classRegistered = TRUE;
+        classRegistered = true;
     }
 #else
     /* Win16 and Win32 version of the initialization */
@@ -357,7 +358,7 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefa
 
 #ifdef __NT__
     if( LoadCommCtrl() ) {
-        rc = TRUE;
+        rc = true;
     } else {
 #endif
         if( !hasGDIObjects ) {
@@ -366,12 +367,12 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefa
             brushButtonFace = CreateSolidBrush( colorButtonFace );
             penLight = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNHIGHLIGHT ) );
             penShade = CreatePen( PS_SOLID, 1, GetSysColor( COLOR_BTNSHADOW ) );
-            hasGDIObjects = TRUE;
+            hasGDIObjects = true;
         }
 
         statusWndHookFunc = hook;
 
-        rc = TRUE;
+        rc = true;
         if( !GetClassInfo( hinstance, className, &wc ) ) {
             classHandle = hinstance;
             classWinExtra = extra;
@@ -388,8 +389,8 @@ int StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDefa
             wc.hbrBackground = (HBRUSH) 0;
             wc.lpszMenuName = NULL;
             wc.lpszClassName = className;
-            rc = RegisterClass( &wc );
-            classRegistered = TRUE;
+            rc = ( RegisterClass( &wc ) != 0 );
+            classRegistered = true;
         }
 #ifdef __NT__
     }
@@ -435,7 +436,7 @@ void StatusWndChangeSysColors( COLORREF btnFace, COLORREF btnText,
         brushButtonFace = _wpi_createsolidbrush( btnFace );
         penLight = _wpi_createpen( PS_SOLID, 1, btnHighlight );
         penShade = _wpi_createpen( PS_SOLID, 1, btnShadow );
-        hasGDIObjects = TRUE;
+        hasGDIObjects = true;
 #ifdef __NT__
     }
 #endif
@@ -820,11 +821,11 @@ void StatusWndFini( void )
         _wpi_deleteobject( penLight );
         _wpi_deleteobject( penShade );
         _wpi_deleteobject( brushButtonFace );
-        hasGDIObjects = FALSE;
+        hasGDIObjects = false;
     }
     if( classRegistered ) {
         _wpi_unregisterclass( className, classHandle );
-        classRegistered = FALSE;
+        classRegistered = false;
     }
 
 } /* StatusWndFini */

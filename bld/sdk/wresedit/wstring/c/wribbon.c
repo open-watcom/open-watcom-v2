@@ -56,8 +56,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WRibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+extern bool WRibbonHook( HWND, UINT, WPARAM, LPARAM );
+extern void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -121,7 +121,7 @@ bool WInitRibbons( HINSTANCE inst )
     WSORibbonInfo = WAllocToolBarInfo( NUM_SOTOOLS );
 
     if( WRibbonInfo == NULL || WSORibbonInfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
@@ -198,7 +198,7 @@ bool WInitRibbons( HINSTANCE inst )
     WRibbonInfo->dinfo.area.bottom = WRibbonHeight;
     WSORibbonInfo->dinfo.area.bottom = WRibbonHeight;
 
-    return( TRUE );
+    return( true );
 }
 
 void WShutdownRibbons( void )
@@ -248,7 +248,7 @@ bool WCreateRibbon( WStringEditInfo *einfo )
     WToolBarInfo        *rinfo;
 
     if( einfo == NULL || einfo->win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     rinfo = WRibbonInfo;
@@ -257,7 +257,7 @@ bool WCreateRibbon( WStringEditInfo *einfo )
     }
 
     if( rinfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( einfo->win, &r );
@@ -268,9 +268,9 @@ bool WCreateRibbon( WStringEditInfo *einfo )
 
     if( einfo->ribbon != NULL ) {
         einfo->show_ribbon = TRUE;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -278,13 +278,13 @@ bool WResizeRibbon( WStringEditInfo *einfo, RECT *prect )
 {
     if( einfo == NULL || einfo->ribbon == NULL || !einfo->show_ribbon || prect == NULL ||
         einfo->ribbon->win == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     MoveWindow( einfo->ribbon->win, 0, 0, prect->right - prect->left,
                 WRibbonHeight, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 void WShowRibbon( WStringEditInfo *einfo, HMENU menu )
@@ -326,7 +326,7 @@ void WDestroyRibbon( WStringEditInfo *einfo )
     }
 }
 
-void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
+void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
 {
     _wtouch( hwnd );
     if( !pressed ) {
@@ -336,9 +336,9 @@ void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
     }
 }
 
-BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    BOOL            ret;
+    bool            ret;
     WStringEditInfo *einfo;
 
     _wtouch( hwnd );
@@ -348,10 +348,10 @@ BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     einfo = WGetCurrentEditInfo();
 
     if( einfo == NULL || einfo->ribbon == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_DESTROY:

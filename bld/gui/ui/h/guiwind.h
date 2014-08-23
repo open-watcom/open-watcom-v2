@@ -44,7 +44,7 @@
 #include "guimin.h"
 #include "guihint.h"
 
-#define GUI_IS_GUI      FALSE
+#define GUI_IS_GUI      false
 
 #define GUI_WINDOW      0x1000
 
@@ -102,13 +102,13 @@ typedef enum {
 typedef struct gui_control gui_control;
 
 typedef struct toolbarinfo {
-    bool                fixed;          // TRUE if toolbar is fixed, FALSE if floating)
+    bool                fixed;          // true if toolbar is fixed, false if floating)
     int                 num_items;      // number of items in toolb bar
     gui_window          *floattoolbar;  // NULL if fixed
     gui_toolbar_struct  *info;          // initialization information
     bool                switching;      // set if between fixed and floating
-    bool                excl;           // TRUE if exclamation marks used for fixed
-    bool                has_colours;    // TRUE if plain and standout colour
+    bool                excl;           // true if exclamation marks used for fixed
+    bool                has_colours;    // true if plain and standout colour
     gui_colour_set      plain;          // given, FLASE if defaults are to
     gui_colour_set      standout;       // be used.
 } toolbarinfo;

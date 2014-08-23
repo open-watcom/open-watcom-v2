@@ -39,7 +39,7 @@
 #include "wresall.h"
 #include "clibext.h"
 
-static int WRCountChars( unsigned char *str, char c )
+static int WRCountChars( const unsigned char *str, char c )
 {
     int     count;
 
@@ -56,7 +56,7 @@ static int WRCountChars( unsigned char *str, char c )
     return( count );
 }
 
-static int WRCountCharsString( unsigned char *str, unsigned char *s )
+static int WRCountCharsString( const unsigned char *str, const unsigned char *s )
 {
     int     count;
 
@@ -75,14 +75,14 @@ static int WRCountCharsString( unsigned char *str, unsigned char *s )
 }
 
 // changes all occurrences of chars in 'from' to '\to' in str
-char *WRAPI WRConvertStringFrom( char *_str, char *_from, char *to )
+char *WRAPI WRConvertStringFrom( const char *_str, const char *_from, const char *to )
 {
-    char            *new;
-    unsigned char   *s;
-    int             len;
-    int             pos;
-    unsigned char   *str = (unsigned char *)_str;
-    unsigned char   *from = (unsigned char *)_from;
+    char                *new;
+    unsigned char       *s;
+    size_t              len;
+    int                 pos;
+    const unsigned char *str = (const unsigned char *)_str;
+    const unsigned char *from = (const unsigned char *)_from;
 
     if( str == NULL || from == NULL || to == NULL ) {
         return( NULL );
@@ -112,12 +112,12 @@ char *WRAPI WRConvertStringFrom( char *_str, char *_from, char *to )
 }
 
 // changes all occurrences of 'from' to '\to' in str
-char *WRAPI WRConvertFrom( char *_str, char from, char to )
+char *WRAPI WRConvertFrom( const char *_str, char from, char to )
 {
-    char            *new;
-    int             len;
-    int             pos;
-    unsigned char   *str = (unsigned char *)_str;
+    char                *new;
+    size_t              len;
+    int                 pos;
+    const unsigned char *str = (const unsigned char *)_str;
 
     if( str == NULL ) {
         return( NULL );
@@ -147,12 +147,12 @@ char *WRAPI WRConvertFrom( char *_str, char from, char to )
 }
 
 // changes all occurrences of '\from' to 'to' in str
-char *WRAPI WRConvertTo( char *_str, char to, char from )
+char *WRAPI WRConvertTo( const char *_str, char to, char from )
 {
-    char            *new;
-    int             len;
-    int             pos;
-    unsigned char   *str = (unsigned char *)_str;
+    char                *new;
+    size_t              len;
+    int                 pos;
+    const unsigned char *str = (const unsigned char *)_str;
 
     if( str == NULL ) {
         return( NULL );
@@ -183,14 +183,14 @@ char *WRAPI WRConvertTo( char *_str, char to, char from )
 }
 
 // changes all occurrences of the \chars in 'from' to 'to' in str
-char * WRAPI WRConvertStringTo( char *_str, char *to, char *_from )
+char * WRAPI WRConvertStringTo( const char *_str, const char *to, const char *_from )
 {
     char            *new;
     unsigned char   *s;
-    int             len;
+    size_t          len;
     int             pos;
-    unsigned char   *str = (unsigned char *)_str;
-    unsigned char   *from = (unsigned char *)_from;
+    const unsigned char *str = (const unsigned char *)_str;
+    const unsigned char *from = (const unsigned char *)_from;
 
     if( str == NULL || to == NULL || from == NULL ) {
         return( NULL );
@@ -244,28 +244,28 @@ void WRAPI WRMassageFilter( char *_filter )
 
 #if defined( __NT__ )
 
-int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
+bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *new;
-    int         len1, len2;
+    size_t      len1, len2;
 
     if( dest == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
         len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
                                     src, -1, NULL, 0 );
         if( len1 == 0 || len1 == ERROR_NO_UNICODE_TRANSLATION ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         len1 = 1;
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && ( len1 * sizeof( WCHAR ) ) > len ) {
-        return( FALSE );
+    if( len != WRLEN_AUTO && ( len1 * sizeof( WCHAR ) ) > len ) {
+        return( false );
     }
 
     new = (uint_16 *)dest;
@@ -275,65 +275,65 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
                                     src, -1, (LPWSTR)new, len1 );
         len2 *= sizeof( WCHAR );
         if( len2 != len1 ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         new[0] = '\0';
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
+bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
 {
     size_t      len1, len2;
 
     if( dest == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
         len1 = WideCharToMultiByte( CP_OEMCP, 0L,
                     (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         len1 = 1;
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && len1 > len ) {
-        return( FALSE );
+    if( len != WRLEN_AUTO && len1 > len ) {
+        return( false );
     }
 
     if( src != NULL ) {
         len2 = WideCharToMultiByte( CP_OEMCP, 0L,
                     (LPCWSTR)src, -1, dest, len1, NULL, NULL );
         if( len2 != len1 ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         dest[0] = '\0';
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
+bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
 {
     uint_16     *new;
     size_t      len1, len2;
 
     if( len == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
         len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
                                     src, -1, NULL, 0 );
         if( len1 == 0 || len1 == ERROR_NO_UNICODE_TRANSLATION ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         len1 = 1;
@@ -342,12 +342,12 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
     *len = len1 * sizeof( WCHAR );
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     new = MemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
@@ -355,7 +355,7 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
                                     src, -1, (LPWSTR)new, len1 );
         if( len2 != len1 ) {
             MemFree( new );
-            return( FALSE );
+            return( false );
         }
     } else {
         new[0] = '\0';
@@ -363,23 +363,23 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
 
     *dest = (char *)new;
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
+bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
 {
     char        *new;
     size_t      len1, len2;
 
     if( len == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
         len1 = WideCharToMultiByte( CP_OEMCP, 0L,
                     (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         len1 = 1;
@@ -388,12 +388,12 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
     *len = len1;
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     new = MemAlloc( len1 );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
@@ -401,7 +401,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
                     (LPCWSTR)src, -1, new, len1, NULL, NULL );
         if( len2 != len1 ) {
             MemFree( new );
-            return( FALSE );
+            return( false );
         }
     } else {
         new[0] = '\0';
@@ -409,18 +409,18 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
 
     *dest = new;
 
-    return( TRUE );
+    return( true );
 }
 
 #else
 
-int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
+bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *new;
     size_t      len1;
 
     if( dest == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     len1 = 1;
@@ -429,8 +429,8 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && ( len1 * sizeof( uint_16 ) ) > len ) {
-        return( FALSE );
+    if( len != WRLEN_AUTO && ( len1 * sizeof( uint_16 ) ) > len ) {
+        return( false );
     }
 
     new = (uint_16 *)dest;
@@ -443,16 +443,16 @@ int WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len )
         new[0] = 0;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
+bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
 {
     uint_16     *uni_str;
     size_t      len1;
 
     if( dest == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     len1 = 1;
@@ -461,8 +461,8 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
     }
 
     // if len is -1 then dont bother checking the buffer length
-    if( len != -1 && len1 > len ) {
-        return( FALSE );
+    if( len != WRLEN_AUTO && len1 > len ) {
+        return( false );
     }
 
     if( src != NULL ) {
@@ -474,16 +474,16 @@ int WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len )
         dest[0] = '\0';
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
+bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
 {
     uint_16     *new;
     size_t      len1;
 
     if( len == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     len1 = 1;
@@ -494,12 +494,12 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
     *len = len1 * sizeof( uint_16 );
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     new = MemAlloc( len1 * sizeof( uint_16 ) );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
@@ -512,17 +512,17 @@ int WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len )
 
     *dest = (char *)new;
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
+bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
 {
     char        *new;
     uint_16     *uni_str;
     size_t      len1;
 
     if( len == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     len1 = 1;
@@ -533,12 +533,12 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
     *len = len1;
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     new = MemAlloc( len1 );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( src != NULL ) {
@@ -552,7 +552,7 @@ int WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len )
 
     *dest = new;
 
-    return( TRUE );
+    return( true );
 }
 
 #endif
@@ -576,7 +576,7 @@ char * WRAPI WRWResIDNameToStr( WResIDName *name )
     return( string );
 }
 
-size_t WRAPI WRStrlen32( char *str )
+size_t WRAPI WRStrlen32( const char *str )
 {
     size_t      len;
     uint_16     *word;
@@ -591,7 +591,7 @@ size_t WRAPI WRStrlen32( char *str )
     return( len );
 }
 
-size_t WRAPI WRStrlen( char *str, bool is32bit )
+size_t WRAPI WRStrlen( const char *str, bool is32bit )
 {
     size_t      len;
 
@@ -607,7 +607,7 @@ size_t WRAPI WRStrlen( char *str, bool is32bit )
     return( len );
 }
 
-int WRAPI WRFindFnOffset( char *_name )
+int WRAPI WRFindFnOffset( const char *_name )
 {
     int             offset;
     unsigned char   *cp;

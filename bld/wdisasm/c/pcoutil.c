@@ -140,7 +140,7 @@ void  DoError( char *msg_buff, bool fatal )
 
 
 void  Error( int msg_num, bool fatal )
-/**********************************/
+/************************************/
 {
     char                msg_buff[MAX_RESOURCE_SIZE];
 
@@ -170,7 +170,7 @@ char  *GetName( int max )
 
     length = GetByte();
     if( length > max ) {
-        Error( ERR_NAME_LONG, FALSE );
+        Error( ERR_NAME_LONG, false );
     } else {
         max = length;
     }
@@ -376,5 +376,5 @@ void  InitTables()
     PutTab( 0, GrpTab, NULL );
     PutTab( 0, SegTab, NULL );
     LastNum = 0;
-    RetFarUsed = FALSE;
+    RetFarUsed = false;
 }

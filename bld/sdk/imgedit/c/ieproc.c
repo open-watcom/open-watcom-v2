@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "ieprofil.h"

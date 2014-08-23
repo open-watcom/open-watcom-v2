@@ -61,7 +61,7 @@ static bool IsChecked( MENUITEM *menu )
     if( menu != NULL ) {
         return( (menu->flags & ITEM_CHECKED) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -87,7 +87,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new,
     }
     if( text == NULL ) {
         *new = NULL;
-        return( TRUE );
+        return( true );
     }
     end = strchr( text, '&' );
     length = strlen( text );
@@ -106,7 +106,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new,
     new_str = (char * )GUIMemAlloc( length );
     *new = new_str;
     if( new_str == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( length == end_length ) {
         end++; /* & at start */
@@ -119,7 +119,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new,
         }
         new_str[length - 1] = NULLCHAR;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -185,7 +185,7 @@ static bool GetMenu( int *depth, int num_menus, MENUITEM *menu, unsigned id,
             if( index != NULL ) {
                 *index = i;
             }
-            return( TRUE );
+            return( true );
         }
         if( depth ) {
             (*depth)++;
@@ -197,7 +197,7 @@ static bool GetMenu( int *depth, int num_menus, MENUITEM *menu, unsigned id,
                 if( ( to_replace != NULL ) && ( *to_replace == NULL ) ) {
                     *to_replace = &menu[i].popup;
                 }
-                return( TRUE );
+                return( true );
             }
         }
         if( depth ) {
@@ -206,11 +206,11 @@ static bool GetMenu( int *depth, int num_menus, MENUITEM *menu, unsigned id,
     }
 
 
-    return( FALSE );
+    return( false );
 }
 
 /*
- * GUIGetMenu -- get the MENUITEM * for the given id.  Return TRUE if it
+ * GUIGetMenu -- get the MENUITEM * for the given id.  Return true if it
  *               was found in the vbarmenu.
  */
 
@@ -229,11 +229,11 @@ static bool GUIGetMenu( gui_window *wnd, int id, MENUITEM **menu, int *index,
         *index = 0;
     }
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     } else {
         *menu = NULL;
     }
-    vbar = FALSE;
+    vbar = false;
     if( floating ) {
         the_menu = &GUIPopupMenu;
     } else {
@@ -241,10 +241,10 @@ static bool GUIGetMenu( gui_window *wnd, int id, MENUITEM **menu, int *index,
             the_menu = &wnd->menu;
         } else {
             if( wnd->vbarmenu == NULL ) {
-                return( FALSE );
+                return( false );
             }
             the_menu = &wnd->vbarmenu->titles;
-            vbar = TRUE;
+            vbar = true;
         }
     }
     num_menus = GetNumItems( *the_menu );
@@ -254,18 +254,18 @@ static bool GUIGetMenu( gui_window *wnd, int id, MENUITEM **menu, int *index,
             *to_replace = the_menu;
         }
         if ( vbar && depth ) {
-            vbar = FALSE;
+            vbar = false;
         }
         return( vbar );
     }
-    return( FALSE );
+    return( false );
 }
 
 int GUIGetMenuPopupCount( gui_window *wnd, int id )
 {
     MENUITEM    *menu;
 
-    GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, FALSE );
+    GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, false );
     if( menu && menu->popup ) {
         return( GetNumItems( menu->popup ) );
     } else {
@@ -280,7 +280,7 @@ bool GUIEnableMenuItem( gui_window *wnd, int id, bool enable, bool floating )
 
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, floating );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( enable ) {
         GUIChangeMenu( menu, GUI_ENABLED );
@@ -297,7 +297,7 @@ bool GUIEnableMenuItem( gui_window *wnd, int id, bool enable, bool floating )
         uisetmenudesc();
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating )
@@ -309,11 +309,11 @@ bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating )
 
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, floating );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     checked = IsChecked( menu );
     if( !MenuConvert( text, &menu->flags, &new, checked ) ) {
-        return( FALSE );
+        return( false );
     }
     GUIMemFree( menu->name );
     menu->name = new;
@@ -325,7 +325,7 @@ bool GUISetMenuText( gui_window *wnd, int id, const char *text, bool floating )
     } else {
         uisetmenudesc();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUICheckMenuItem( gui_window *wnd, int id, bool check, bool floating )
@@ -335,7 +335,7 @@ bool GUICheckMenuItem( gui_window *wnd, int id, bool check, bool floating )
 
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, floating );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     SetChecked( menu, check );
     if( vbar ) {
@@ -346,7 +346,7 @@ bool GUICheckMenuItem( gui_window *wnd, int id, bool check, bool floating )
     } else {
         uisetmenudesc();
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUIChangeMenu( MENUITEM *menu, gui_menu_styles style )
@@ -373,7 +373,7 @@ static bool GUISetMenuItems( int num_menus, MENUITEM *menu,
             } else {
                 if( !MenuConvert( info[i].label, &menu[j].flags, &menu[j].name,
                                   info[i].style & GUI_MENU_CHECKED ) ) {
-                    return( FALSE );
+                    return( false );
                 }
                 GUIChangeMenu( &menu[j], info[i].style );
             }
@@ -381,7 +381,7 @@ static bool GUISetMenuItems( int num_menus, MENUITEM *menu,
             j++;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 int GUIGetNumIgnore( gui_menu_struct *info, int num_menus )
@@ -412,20 +412,20 @@ bool GUICreateMenuItems( int num_menus, gui_menu_struct *info,
 
     if( num_menus <= 0 ) {
         *pmenu = NULL;
-        return( TRUE );
+        return( true );
     }
     num_ignore = GUIGetNumIgnore( info, num_menus );
     if( num_ignore >= num_menus ) {
         *pmenu = NULL;
-        return( TRUE );
+        return( true );
     }
     *pmenu = GUIAllocMenuItems( num_menus - num_ignore );
     menu = *pmenu;
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( !GUISetMenuItems( num_menus, menu, info ) ) {
-        return( FALSE );
+        return( false );
     }
     j = 0;
     for( i = 0; i < num_menus; i++ ) {
@@ -434,13 +434,13 @@ bool GUICreateMenuItems( int num_menus, gui_menu_struct *info,
             if( info[i].num_child_menus > 0 ) {
                 if( !GUICreateMenuItems( info[i].num_child_menus,
                                          info[i].child, &menu[j].popup ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             j++;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIAllocVBarMenu( VBARMENU **pmenu )
@@ -448,16 +448,16 @@ bool GUIAllocVBarMenu( VBARMENU **pmenu )
     VBARMENU    *menu;
 
     if( pmenu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     menu = (VBARMENU *)GUIMemAlloc( sizeof( VBARMENU ) );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     menu->titles = NULL;
     menu->menu = 1;
     *pmenu = menu;
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -471,20 +471,20 @@ static bool CreateVBarMenu( gui_window *wnd, int num_menus,
 
     if( num_menus == 0 ) {
         *pmenu = NULL;
-        return( TRUE );
+        return( true );
     }
     if( !GUIAllocVBarMenu( pmenu ) ) {
         *pmenu = NULL;
-        return( FALSE );
+        return( false );
     }
     vbarmenu = *pmenu;
     if( !GUICreateMenuItems( num_menus, main_menu, &vbarmenu->titles ) ) {
         GUIFreeVBarMenu( vbarmenu );
         *pmenu = NULL;
-        return( FALSE );
+        return( false );
     }
     GUIInitHint( wnd, num_menus, main_menu, MENU_HINT );
-    return( TRUE );
+    return( true );
 }
 
 static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
@@ -501,7 +501,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
     }
     new_menu = (MENUITEM *)GUIMemAlloc( sizeof( MENUITEM ) * ( num_menus + 2 ) );
     if( new_menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( menu != NULL ) {
         memcpy( new_menu, menu, sizeof( MENUITEM ) * offset );
@@ -513,11 +513,11 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
     memset( &new_menu[offset], 0, sizeof( MENUITEM ) );
     if( !GUISetMenuItems( 1, &new_menu[offset], info ) ) {
         GUIMemFree( new_menu );
-        return( FALSE );
+        return( false );
     }
     if( !GUICreateMenuItems( info->num_child_menus, info->child,
                              &new_menu[offset].popup ) ) {
-        return( FALSE );
+        return( false );
     }
     GUIMemFree( menu );
     *pmenu = new_menu;
@@ -525,7 +525,7 @@ static bool InsertMenu( gui_window *wnd, gui_menu_struct *info, int offset,
     if( append_hint ) {
         GUIAppendHintText( wnd, info, type );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -540,16 +540,16 @@ static bool CreateMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu,
 
     if( parent == NULL ) {
         if( !CreateVBarMenu( wnd, num_menus, menu, &wnd->vbarmenu ) ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         if( style & GUI_SYSTEM_MENU ) {
             wnd->menu = GUIAllocMenuItems( NUM_SYSTEM_MENUS );
             if( wnd->menu == NULL ) {
-                return( FALSE );
+                return( false );
             }
             if( !GUISetSystemMenu( wnd->menu, style ) ) {
-                return( FALSE );
+                return( false );
             }
         }
         num_ignore = 0;
@@ -558,23 +558,23 @@ static bool CreateMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu,
         }
         if( num_menus > num_ignore ) {
             if( style & GUI_SYSTEM_MENU ) {
-                if( !InsertMenu( wnd, &GUISeparator, -1, &wnd->menu, TRUE,
+                if( !InsertMenu( wnd, &GUISeparator, -1, &wnd->menu, true,
                                  MENU_HINT ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
             for( i = 0; i < num_menus; i ++ ) {
                 uiyield();
                 if( !( menu[i].style & GUI_IGNORE ) ) {
-                    if( !InsertMenu( wnd, &menu[i], -1, &wnd->menu, TRUE,
+                    if( !InsertMenu( wnd, &menu[i], -1, &wnd->menu, true,
                                      MENU_HINT ) ) {
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUICreateMenus( gui_window *wnd,  gui_create_info *info )
@@ -637,13 +637,13 @@ bool GUIAppendMenuByOffset( gui_window *wnd, int offset, gui_menu_struct *menu )
     if( wnd->vbarmenu != NULL ) {
         num_menus = GetNumItems( wnd->vbarmenu->titles );
         if( num_menus < ( offset + 1 ) ) {
-            return( FALSE );
+            return( false );
         }
         return( InsertMenu( wnd, menu, -1,
                             &wnd->vbarmenu->titles[offset].popup,
-                            TRUE, MENU_HINT ) );
+                            true, MENU_HINT ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool DeleteMenu( gui_window *wnd, unsigned id, MENUITEM **pmenu,
@@ -660,7 +660,7 @@ static bool DeleteMenu( gui_window *wnd, unsigned id, MENUITEM **pmenu,
     } else {
         new_menu = (MENUITEM *)GUIMemAlloc( sizeof( MENUITEM ) * prev_num );
         if( new_menu == NULL ) {
-            return( FALSE );
+            return( false );
         }
         memcpy( new_menu, sub, sizeof( MENUITEM ) * index );
         memcpy( &new_menu[index], &sub[index+1], sizeof( MENUITEM ) *
@@ -674,7 +674,7 @@ static bool DeleteMenu( gui_window *wnd, unsigned id, MENUITEM **pmenu,
     *pmenu = new_menu;
     GUIDeleteHintText( wnd, id );
     GUIMDIDeleteMenuItem( id );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -691,17 +691,17 @@ bool GUIDeleteMenuItem( gui_window *wnd, int id, bool floating )
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, &index,
                        &to_replace, floating );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( !DeleteMenu( wnd, id, to_replace, index ) ) {
-        return( FALSE );
+        return( false );
     }
     if( vbar ) {
         uimenubar( wnd->vbarmenu );
     } else if( !floating ) {
         uisetmenudesc();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIDeleteToolbarMenuItem( gui_window *wnd, unsigned id )
@@ -717,14 +717,14 @@ bool GUIDeleteToolbarMenuItem( gui_window *wnd, unsigned id )
         for( i = 0; i < num_menus; i++ ) {
             if( menu[i].event == id ) {
                 if( !DeleteMenu( wnd, id, &wnd->vbarmenu->titles, i ) ) {
-                    return( FALSE );
+                    return( false );
                 }
                 uimenubar( wnd->vbarmenu );
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
@@ -751,9 +751,9 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
             wnd->toolbar = bar;
             GUIXCreateFixedToolbar( wnd );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIEnableMenus( gui_window *wnd, bool enable )
@@ -763,7 +763,7 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
     SAREA               screen;
 
     if( wnd->vbarmenu == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( enable ) {
         style = GUI_ENABLED;
@@ -778,30 +778,30 @@ bool GUIEnableMenus( gui_window *wnd, bool enable )
     screen.height = YMIN;
     screen.width = XMAX;
     uidirty( screen );
-    return( TRUE );
+    return( true );
 }
 
 bool GUIInsertMenu( gui_window *wnd, int offset, gui_menu_struct *menu, bool floating )
 {
     if( floating ) {
-        return( InsertMenu( wnd, menu, offset, &GUIPopupMenu, TRUE, FLOAT_HINT ) );
+        return( InsertMenu( wnd, menu, offset, &GUIPopupMenu, true, FLOAT_HINT ) );
     } else {
         if( wnd->parent != NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( wnd->vbarmenu == NULL ) {
             if( !CreateVBarMenu( wnd, 1, menu, &wnd->vbarmenu ) ) {
-                return( FALSE );
+                return( false );
             }
         } else {
-            if( !InsertMenu( wnd, menu, offset, &wnd->vbarmenu->titles, TRUE, MENU_HINT ) ) {
-                return( FALSE );
+            if( !InsertMenu( wnd, menu, offset, &wnd->vbarmenu->titles, true, MENU_HINT ) ) {
+                return( false );
             }
         }
         uimenubar( wnd->vbarmenu );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -817,19 +817,19 @@ bool GUIInsertMenuByID( gui_window *wnd, unsigned id, gui_menu_struct *info )
     MENUITEM    **to_replace;
 
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, &index,
-                       &to_replace, FALSE );
+                       &to_replace, false );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    if( !InsertMenu( wnd, info, index, to_replace, TRUE, MENU_HINT ) ) {
-        return( FALSE );
+    if( !InsertMenu( wnd, info, index, to_replace, true, MENU_HINT ) ) {
+        return( false );
     }
     if( vbar ) {
         uimenubar( wnd->vbarmenu );
     } else {
         uisetmenudesc();
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -840,12 +840,12 @@ bool GUIInsertMenuByID( gui_window *wnd, unsigned id, gui_menu_struct *info )
 bool GUIAppendMenu( gui_window *wnd, gui_menu_struct *menu, bool floating )
 {
     if( floating ) {
-        return( InsertMenu( wnd, menu, -1, &GUIPopupMenu, TRUE, FLOAT_HINT ) );
+        return( InsertMenu( wnd, menu, -1, &GUIPopupMenu, true, FLOAT_HINT ) );
     } else {
         if( wnd->parent == NULL ) {
             return( GUIInsertMenu( wnd, -1, menu, floating ) );
         } else {
-            return( InsertMenu( wnd, menu, -1, &wnd->menu, TRUE, MENU_HINT ) );
+            return( InsertMenu( wnd, menu, -1, &wnd->menu, true, MENU_HINT ) );
         }
     }
 }
@@ -854,7 +854,7 @@ bool GUIAppendToolbarMenu( gui_window *wnd, gui_menu_struct *menu, bool redraw )
 {
     bool ok;
 
-    ok = InsertMenu( wnd, menu, -1, &wnd->vbarmenu->titles, FALSE, MENU_HINT );
+    ok = InsertMenu( wnd, menu, -1, &wnd->vbarmenu->titles, false, MENU_HINT );
     if ( ok && redraw ) {
         uimenubar( wnd->vbarmenu );
     }
@@ -869,17 +869,17 @@ bool AddMenuItemToPopup( gui_window *wnd, unsigned id, int offset,
 
     vbar = GUIGetMenu( wnd, id + GUI_FIRST_USER_EVENT, &menu, NULL, NULL, floating );
     if( menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    if( !InsertMenu( wnd, info, offset, &menu->popup, FALSE, MENU_HINT ) ) {
-        return( FALSE );
+    if( !InsertMenu( wnd, info, offset, &menu->popup, false, MENU_HINT ) ) {
+        return( false );
     }
     if( vbar ) {
         uimenubar( wnd->vbarmenu );
     } else if( !floating ) {
         uisetmenudesc();
     }
-    return( TRUE );
+    return( true );
 }
 
 /*

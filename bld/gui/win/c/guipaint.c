@@ -99,7 +99,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     if( isdlg ) {
         flags = DB_AREAATTRS | DB_DLGBORDER;
   #ifdef _M_I86
-        if( WinQueryActiveWindow( HWND_DESKTOP, FALSE ) != hwnd ) {
+        if( WinQueryActiveWindow( HWND_DESKTOP, false ) != hwnd ) {
   #else
         if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
   #endif
@@ -144,7 +144,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
         pinfo = &wnd->hwnd_pinfo;
     }
     pinfo->in_use++;
-    compat_created = FALSE;
+    compat_created = false;
 
     /* save old state */
     prev_hdc = wnd->hdc;
@@ -161,7 +161,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     //hps = _wpi_beginpaint( hwnd, pinfo->normal_pres, wnd->ps );
     hps = _wpi_beginpaint( hwnd, NULL, wnd->ps );
     if( pinfo->compatible_pres == (WPI_PRES)NULL ) {
-        compat_created = TRUE;
+        compat_created = true;
         pinfo->compatible_pres = _wpi_createcompatiblepres( hps, GUIMainHInst, &pinfo->compatible_hdc );
         pinfo->draw_bmp = _wpi_createcompatiblebitmap( hps, width, height );
         pinfo->old_bmp = _wpi_selectbitmap( pinfo->compatible_pres, pinfo->draw_bmp );
@@ -213,14 +213,14 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
                      ps.xLeft, ps.yBottom,
                      SRCCOPY );
         if( pinfo->delete_when_done ) {
-            GUIFreePaintHandles( pinfo, TRUE );
+            GUIFreePaintHandles( pinfo, true );
         }
     }
 
     if( isdlg ) {
         flags = DB_AREAATTRS | DB_DLGBORDER;
   #ifdef _M_I86
-        if( WinQueryActiveWindow( HWND_DESKTOP, FALSE ) != hwnd ) {
+        if( WinQueryActiveWindow( HWND_DESKTOP, false ) != hwnd ) {
   #else
         if( WinQueryActiveWindow( HWND_DESKTOP ) != hwnd ) {
   #endif
@@ -246,7 +246,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 
 void GUIInvalidatePaintHandles( gui_window *wnd )
 {
-    GUIFreeWndPaintHandles( wnd, FALSE );
+    GUIFreeWndPaintHandles( wnd, false );
 }
 
 void GUIFreeWndPaintHandles( gui_window *wnd, int force )
@@ -268,7 +268,7 @@ void GUIFreePaintHandles( gui_paint_info *pinfo, int force )
     }
 
     if( !force && pinfo->in_use ) {
-        pinfo->delete_when_done = TRUE;
+        pinfo->delete_when_done = true;
         return;
     }
 
@@ -287,7 +287,7 @@ void GUIFreePaintHandles( gui_paint_info *pinfo, int force )
         pinfo->compatible_hdc = (HDC)NULL;
     }
     pinfo->in_use = 0;
-    pinfo->delete_when_done = FALSE;
+    pinfo->delete_when_done = false;
 #endif
 }
 

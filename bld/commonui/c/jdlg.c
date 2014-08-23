@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "wpi.h"
 #include "jdlg.h"
 #include "mem.h"
@@ -85,7 +86,7 @@ static int      JFontInfoLen = 0;
 /*
  * mbcs2unicode - convert a multibyte character string to Unicode
  */
-static BOOL mbcs2unicode( char *src, LPWSTR *dest, int *len )
+static bool mbcs2unicode( char *src, LPWSTR *dest, int *len )
 {
     LPWSTR      new;
     int         len1, len2;
@@ -94,25 +95,25 @@ static BOOL mbcs2unicode( char *src, LPWSTR *dest, int *len )
                                 src, -1, NULL, 0 );
 
     if( len1 == 0 || len1 == ERROR_NO_UNICODE_TRANSLATION ) {
-        return( FALSE );
+        return( false );
     }
 
     new = MemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
                                 src, -1, new, len1 );
     if( len2 != len1 ) {
         MemFree( new );
-        return( FALSE );
+        return( false );
     }
 
     *dest = new;
     *len = len1;
 
-    return( TRUE );
+    return( true );
 
 } /* mbcs2unicode */
 
@@ -121,7 +122,7 @@ static BOOL mbcs2unicode( char *src, LPWSTR *dest, int *len )
 /*
  * createFontInfoData - allocate and fill the font information data
  */
-static BOOL createFontInfoData( char *typeface, short pointsize,
+static bool createFontInfoData( char *typeface, short pointsize,
                                 BYTE **fidata, int *size )
 {
     BYTE        *data;
@@ -148,13 +149,13 @@ static BOOL createFontInfoData( char *typeface, short pointsize,
 #endif
 
     if( data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *fidata = data;
     *size = slen + sizeof( short );
 
-    return( TRUE );
+    return( true );
 
 } /* createFontInfoData */
 
@@ -180,7 +181,7 @@ static BYTE *skipString( BYTE *template )
 /*
  * hasFontInfo - check whether a dialog template has the DS_SETFONT style
  */
-static BOOL hasFontInfo( BYTE *template )
+static bool hasFontInfo( BYTE *template )
 {
     _DLGTEMPLATE        *dt;
 
@@ -227,33 +228,33 @@ static int getFontInfoSize( BYTE *fontinfo )
 /*
  * getSystemFontTypeface - get the system font face name and size
  */
-static BOOL getSystemFontTypeface( char **typeface, short *pointsize )
+static bool getSystemFontTypeface( char **typeface, short *pointsize )
 {
 #ifndef USE_SYSTEM_FONT
     *typeface = "‚l‚r –¾’©";
     *pointsize = 10;
 
-    return( TRUE );
+    return( true );
 #else
     HDC         hDC;
     HFONT       systemFont;
     LOGFONT     lf;
     int         logpixelsy;
     int         point;
-    BOOL        roundup;
+    bool        roundup;
 
     systemFont = (HFONT)GetStockObject( SYSTEM_FONT );
     if( systemFont == (HFONT)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !GetObject( systemFont, sizeof( LOGFONT ), &lf ) ) {
-        return( FALSE );
+        return( false );
     }
 
     *typeface = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
     if( *typeface == NULL ) {
-        return( FALSE );
+        return( false );
     }
     strcpy( *typeface, lf.lfFaceName );
 
@@ -268,7 +269,7 @@ static BOOL getSystemFontTypeface( char **typeface, short *pointsize )
     }
     *pointsize = point;
 
-    return( TRUE );
+    return( true );
 #endif
 
 } /* getSystemFontTypeface */
@@ -387,17 +388,17 @@ static HGLOBAL createJTemplate( HGLOBAL htemplate, DWORD size )
 /*
  * JDialogInit - initialize Japenese dialogs
  */
-BOOL JDialogInit( void )
+bool JDialogInit( void )
 {
     char        *typeface;
     short       pointsize;
 
     if( !GetSystemMetrics( SM_DBCSENABLED ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !getSystemFontTypeface( &typeface, &pointsize ) ) {
-        return( FALSE );
+        return( false );
     }
 
     return( createFontInfoData( typeface, pointsize, &JFontInfo, &JFontInfoLen ) );
@@ -722,7 +723,7 @@ JCDP_DEFAULT_ACTION:
 /*
  * JDialogGetJFont - get the font used for Japanese dialogs
  */
-BOOL JDialogGetJFont( char **typeface, short *pointsize )
+bool JDialogGetJFont( char **typeface, short *pointsize )
 {
     return( getSystemFontTypeface( typeface, pointsize ) );
 

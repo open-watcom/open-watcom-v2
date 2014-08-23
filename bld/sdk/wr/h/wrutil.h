@@ -30,21 +30,23 @@
 ****************************************************************************/
 
 
-WRDLLENTRY extern char *   WRAPI WRConvertStringFrom( char *str, char *from, char *to );
-WRDLLENTRY extern char *   WRAPI WRConvertFrom( char *str, char from, char to );
-WRDLLENTRY extern char *   WRAPI WRConvertTo( char *str, char to, char from );
-WRDLLENTRY extern char *   WRAPI WRConvertStringTo( char *str, char *to, char *from );
+#define WRLEN_AUTO  ((size_t)-1)
 
-WRDLLENTRY extern void     WRAPI WRMassageFilter( char *filter );
+WRDLLENTRY extern char      *WRAPI WRConvertStringFrom( const char *str, const char *from, const char *to );
+WRDLLENTRY extern char      *WRAPI WRConvertFrom( const char *str, char from, char to );
+WRDLLENTRY extern char      *WRAPI WRConvertTo( const char *str, char to, char from );
+WRDLLENTRY extern char      *WRAPI WRConvertStringTo( const char *str, const char *to, const char *from );
 
-WRDLLENTRY extern int      WRAPI WRmbcs2unicode( char *src, char **dest, size_t *len );
-WRDLLENTRY extern int      WRAPI WRmbcs2unicodeBuf( char *src, char *dest, size_t len );
-WRDLLENTRY extern int      WRAPI WRunicode2mbcs( char *src, char **dest, size_t *len );
-WRDLLENTRY extern int      WRAPI WRunicode2mbcsBuf( char *src, char *dest, size_t len );
+WRDLLENTRY extern void      WRAPI WRMassageFilter( char *filter );
 
-WRDLLENTRY extern size_t   WRAPI WRStrlen( char *str, bool is32Bit );
-WRDLLENTRY extern size_t   WRAPI WRStrlen32( char *str );
+WRDLLENTRY extern bool      WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len );
+WRDLLENTRY extern bool      WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len );
+WRDLLENTRY extern bool      WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len );
+WRDLLENTRY extern bool      WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len );
 
-WRDLLENTRY extern char *   WRAPI WRWResIDNameToStr( WResIDName *name );
+WRDLLENTRY extern size_t    WRAPI WRStrlen( const char *str, bool is32Bit );
+WRDLLENTRY extern size_t    WRAPI WRStrlen32( const char *str );
 
-WRDLLENTRY extern int      WRAPI WRFindFnOffset( char *name );
+WRDLLENTRY extern char      *WRAPI WRWResIDNameToStr( WResIDName *name );
+
+WRDLLENTRY extern int       WRAPI WRFindFnOffset( const char *name );

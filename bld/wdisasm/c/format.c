@@ -78,7 +78,7 @@ static void DoByteSpacing()
     if( !(Options & FORM_ASSEMBLER) ) EmitBlanks( DataLen*3 );
 }
 
-void  FormatLine( fixup *fix, char *label, char is_data, char in_pcode )
+void  FormatLine( fixup *fix, char *label, bool is_data, char in_pcode )
 /**********************************************************************/
 {
     char                *name;
@@ -87,9 +87,9 @@ void  FormatLine( fixup *fix, char *label, char is_data, char in_pcode )
     char                *grp_name;
     char                *p;
     uint_32             to_add;
-    char                is_ins;
+    bool                is_ins;
 
-    is_ins = FALSE;
+    is_ins = false;
     if( fix != NULL ) {
         name = FindLabel( BAD_OFFSET, fix->imp_address, fix->target );
         if( name == NULL ) {
@@ -151,7 +151,7 @@ void  FormatLine( fixup *fix, char *label, char is_data, char in_pcode )
                 EmitLine( ":" );
             }
             FormatIns( TxtBuff, &CurrIns, Options );
-            is_ins = TRUE;
+            is_ins = true;
         }
     }
     EmitLoc();

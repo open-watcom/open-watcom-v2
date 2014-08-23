@@ -58,10 +58,10 @@ static void MaxChild( gui_window *wnd, void *param )
 {
     param = param;
     if( _wpi_iszoomed( wnd->hwnd_frame ) ) {
-        GUISetRedraw( wnd, FALSE );
+        GUISetRedraw( wnd, false );
         GUIRestoreWindow( wnd );
         GUIMaximizeWindow( wnd );
-        GUISetRedraw( wnd, TRUE );
+        GUISetRedraw( wnd, true );
         GUIShowWindowNA( wnd );
     }
 }
@@ -78,9 +78,9 @@ void GUIMaximizeZoomedChildren( gui_window *wnd )
 bool GUIIsOpen( gui_window *wnd )
 {
     if( _wpi_iswindow( GUIMainHInst, wnd->hwnd ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIIsParentADialog( gui_window *wnd )
@@ -88,11 +88,11 @@ bool GUIIsParentADialog( gui_window *wnd )
     wnd = GUIGetParentWindow( wnd );
     while( wnd ) {
         if( wnd->flags & IS_DIALOG ) {
-            return( TRUE );
+            return( true );
         }
         wnd = GUIGetParentWindow( wnd );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
@@ -101,7 +101,7 @@ bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
     WPI_RECT    intersect;
 
     if( !wnd || !wnd->ps || !rect ) {
-        return( TRUE );
+        return( true );
     }
 
 #ifdef __OS2_PM__
@@ -112,10 +112,10 @@ bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
     _wpi_intersectrect( GUIMainHInst, &intersect, &update_rect, rect );
 
     if( _wpi_isrectempty( GUIMainHInst, &intersect ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void GUICalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size,
@@ -161,7 +161,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *info,
             wnd->scroll = info->scroll;
         }
         if( !GUISetColours( wnd, info->num_attrs, info->colours ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -175,7 +175,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *info,
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -215,11 +215,11 @@ bool GUIIsGUIChild( HWND hwnd )
     if( root ) {
         hwnd = GUIGetTopParentHWND( hwnd );
         if( root->root_frame == hwnd ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -227,8 +227,8 @@ bool GUIIsGUIChild( HWND hwnd )
  */
 bool GUISetRedraw( gui_window *wnd, bool redraw )
 {
-    _wpi_setredraw( wnd->hwnd, redraw );
-    return( TRUE );
+    _wpi_setredraw( wnd->hwnd, ( redraw ) ? TRUE : FALSE );
+    return( true );
 }
 
 /*
@@ -245,10 +245,10 @@ bool GUIBringNewToFront( gui_window *prev )
         if( ( curr != prev ) && !_wpi_ischild( prev->hwnd, curr->hwnd ) &&
             !(curr->flags & DOING_DESTROY) ) {
             GUIBringToFront( curr );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_window *GUIXGetRootWindow( void )
@@ -384,7 +384,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
         wnd->hdc = NULLHANDLE;
     }
 #ifdef __OS2_PM__
-    GUIFreeWndPaintHandles( wnd, TRUE );
+    GUIFreeWndPaintHandles( wnd, true );
     if( wnd->root_pinfo.normal_pres != (WPI_PRES)NULL ) {
         _wpi_deleteos2normpres( wnd->root_pinfo.normal_pres );
         wnd->root_pinfo.normal_pres = (WPI_PRES)NULL;
@@ -400,12 +400,12 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
 bool GUIScrollOn( gui_window *wnd, int bar )
 {
     if( ( bar == SB_VERT ) && GUI_VSCROLL_ON( wnd ) ) {
-        return( TRUE );
+        return( true );
     }
     if( ( bar == SB_HORZ ) && GUI_HSCROLL_ON( wnd ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUISetRowCol( gui_window *wnd, gui_coord *size )
@@ -520,7 +520,7 @@ void GUISetScrollPos( gui_window *wnd, int bar, int new, bool redraw )
     }
     if( *pos != new ) {
         *pos = new;
-        _wpi_setscrollpos( GUIGetParentFrameHWND( wnd ), bar, new, redraw );
+        _wpi_setscrollpos( GUIGetParentFrameHWND( wnd ), bar, new, ( redraw ) ? TRUE : FALSE );
     }
 }
 
@@ -533,8 +533,7 @@ int GUIGetScrollPos( gui_window *wnd, int bar )
     }
 }
 
-void GUISetScrollRange( gui_window *wnd, int bar, int min, int max,
-                        bool redraw )
+void GUISetScrollRange( gui_window *wnd, int bar, int min, int max, bool redraw )
 {
     int *old_range;
 
@@ -545,7 +544,7 @@ void GUISetScrollRange( gui_window *wnd, int bar, int min, int max,
     }
     if( ( max - min ) != *old_range ) {
         *old_range = max - min;
-        _wpi_setscrollrange( GUIGetParentFrameHWND( wnd ), bar, min, max, redraw );
+        _wpi_setscrollrange( GUIGetParentFrameHWND( wnd ), bar, min, max, ( redraw ) ? TRUE : FALSE );
         if( bar == SB_HORZ ) {
             GUIRedrawScroll( wnd, SB_HORZ, redraw );
         } else {
@@ -672,12 +671,12 @@ bool GUIParentHasFlags( gui_window *wnd, gui_flags flags )
 {
     while( wnd ) {
         if( wnd->flags & flags ) {
-            return( TRUE );
+            return( true );
         }
         wnd = GUIGetParentWindow( wnd );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 gui_window *GUIGetFirstSibling( gui_window *wnd )

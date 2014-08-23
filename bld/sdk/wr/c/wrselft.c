@@ -49,9 +49,9 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    char                *file_name;
-    BOOL                is32bit;
-    BOOL                use_wres;
+    const char          *file_name;
+    bool                is32bit;
+    bool                use_wres;
     WRFileType          file_type;
     FARPROC             hcb;
 } WRSFT;
@@ -65,7 +65,7 @@ WINEXPORT extern BOOL CALLBACK WRSelectFileTypeProc( HWND, UINT, WPARAM, LPARAM 
 /* static function prototypes                                               */
 /*****************************************************************************/
 static void WRSetWinInfo( HWND, WRSFT * );
-static BOOL WRGetWinInfo( HWND, WRSFT * );
+static bool WRGetWinInfo( HWND, WRSFT * );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -80,7 +80,7 @@ static WRFileType WRFTARRAY[3][2][2] = {
     { { WR_WIN16_DLL,  WR_WIN16_DLL  }, { WR_WINNT_DLL,  WR_WINNT_DLL  } }
 };
 
-static WRFileType educatedGuess( char *name, BOOL is32bit, BOOL use_wres )
+static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 {
     char        ext[_MAX_EXT];
     WRFileType  guess;
@@ -120,12 +120,12 @@ static WRFileType educatedGuess( char *name, BOOL is32bit, BOOL use_wres )
     return( guess );
 }
 
-WRFileType WRAPI WRSelectFileType( HWND parent, char *name, BOOL is32bit,
-                                       BOOL use_wres, FARPROC hcb )
+WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
+                                       bool use_wres, FARPROC hcb )
 {
     DLGPROC     proc;
     HINSTANCE   inst;
-    BOOL        modified;
+    INT_PTR     modified;
     WRSFT       sft;
     WRFileType  guess;
 
@@ -159,7 +159,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, char *name, BOOL is32bit,
     return( sft.file_type );
 }
 
-WRFileType WRAPI WRGuessFileType( char *name )
+WRFileType WRAPI WRGuessFileType( const char *name )
 {
     char        ext[_MAX_EXT];
     WRFileType  guess;
@@ -196,7 +196,7 @@ WRFileType WRAPI WRGuessFileType( char *name )
 void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 {
     char        ext[_MAX_EXT];
-    BOOL        no_exe;
+    bool        no_exe;
 
     if( sft == NULL ) {
         return;
@@ -209,24 +209,24 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
                             (LPARAM)(LPSTR)sft->file_name );
         _splitpath( sft->file_name, NULL, NULL, NULL, ext );
         if( !stricmp( ext, ".res" ) ) {
-            CheckDlgButton( hDlg, IDM_FTRES, 1 );
+            CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
             no_exe = TRUE;
         } else if( !stricmp( ext, ".exe" ) ) {
-            CheckDlgButton( hDlg, IDM_FTEXE, 1 );
+            CheckDlgButton( hDlg, IDM_FTEXE, BST_CHECKED );
         } else if( !stricmp( ext, ".dll" ) ) {
-            CheckDlgButton( hDlg, IDM_FTDLL, 1 );
+            CheckDlgButton( hDlg, IDM_FTDLL, BST_CHECKED );
         }
     }
 
 #ifdef __NT__
     if( sft->is32bit ) {
-        CheckDlgButton( hDlg, IDM_TSWINNT, 1 );
+        CheckDlgButton( hDlg, IDM_TSWINNT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDM_TSWIN, 1 );
+        CheckDlgButton( hDlg, IDM_TSWIN, BST_CHECKED );
     }
 #else
     EnableWindow( GetDlgItem( hDlg, IDM_TSWINNT ), FALSE );
-    CheckDlgButton( hDlg, IDM_TSWIN, 1 );
+    CheckDlgButton( hDlg, IDM_TSWIN, BST_CHECKED );
 #endif
 
     if( no_exe ) {
@@ -236,9 +236,9 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
             EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), FALSE );
         }
         if( sft->use_wres || sft->is32bit ) {
-            CheckDlgButton( hDlg, IDM_RFWAT, 1 );
+            CheckDlgButton( hDlg, IDM_RFWAT, BST_CHECKED );
         } else {
-            CheckDlgButton( hDlg, IDM_RFMS, 1 );
+            CheckDlgButton( hDlg, IDM_RFMS, BST_CHECKED );
         }
     } else {
         EnableWindow( GetDlgItem( hDlg, IDM_RFWAT ), FALSE );
@@ -246,12 +246,12 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
     }
 }
 
-BOOL WRGetWinInfo( HWND hDlg, WRSFT *sft )
+bool WRGetWinInfo( HWND hDlg, WRSFT *sft )
 {
     int ft, ts, rf;
 
     if( sft == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_FTRES ) ) {
@@ -288,9 +288,9 @@ BOOL WRGetWinInfo( HWND hDlg, WRSFT *sft )
         sft->file_type = WRFTARRAY[ft][ts][rf];
     } else {
         sft->file_type = WR_DONT_KNOW;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
@@ -353,8 +353,8 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
             }
             if( IsDlgButtonChecked( hDlg, LOWORD( wParam ) ) ) {
                 EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), FALSE );
-                CheckDlgButton( hDlg, IDM_RFMS, 0 );
-                CheckDlgButton( hDlg, IDM_RFWAT, 1 );
+                CheckDlgButton( hDlg, IDM_RFMS, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDM_RFWAT, BST_CHECKED );
             } else {
                 EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), TRUE );
             }
@@ -380,8 +380,8 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
             if( IsDlgButtonChecked( hDlg, LOWORD( wParam ) ) ) {
                 EnableWindow( GetDlgItem( hDlg, IDM_RFWAT ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), FALSE );
-                CheckDlgButton( hDlg, IDM_RFWAT, 0 );
-                CheckDlgButton( hDlg, IDM_RFMS, 0 );
+                CheckDlgButton( hDlg, IDM_RFWAT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDM_RFMS, BST_UNCHECKED );
             }
             break;
 
@@ -393,12 +393,12 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
                 EnableWindow( GetDlgItem( hDlg, IDM_RFWAT ), TRUE );
                 if( IsDlgButtonChecked( hDlg, IDM_TSWINNT ) ) {
                     EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), FALSE );
-                    CheckDlgButton( hDlg, IDM_RFMS, 0 );
-                    CheckDlgButton( hDlg, IDM_RFWAT, 1 );
+                    CheckDlgButton( hDlg, IDM_RFMS, BST_UNCHECKED );
+                    CheckDlgButton( hDlg, IDM_RFWAT, BST_CHECKED );
                 } else {
                     EnableWindow( GetDlgItem( hDlg, IDM_RFMS ), TRUE );
-                    CheckDlgButton( hDlg, IDM_RFMS, 0 );
-                    CheckDlgButton( hDlg, IDM_RFWAT, 1 );
+                    CheckDlgButton( hDlg, IDM_RFMS, BST_UNCHECKED );
+                    CheckDlgButton( hDlg, IDM_RFWAT, BST_CHECKED );
                 }
             }
             break;

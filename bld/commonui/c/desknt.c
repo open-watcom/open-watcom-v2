@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "desknt.h"
 #include "wprocmap.h"
 
@@ -59,7 +60,7 @@ WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
     HDC                 hdc;
     HDC                 memdc;
 
-    if( deskTopHook ) {
+    if( deskTopHook != NULL ) {
         if( deskTopHook( hwnd, msg, wparam, lparam ) ) {
             return( 0 );
         }
@@ -99,7 +100,7 @@ WINEXPORT LRESULT CALLBACK DesktopProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /*
  * RegisterSnapClass - register the window class used to display the desktop
  */
-BOOL RegisterSnapClass( HANDLE instance )
+bool RegisterSnapClass( HANDLE instance )
 {
     WNDCLASS    wc;
 
@@ -114,10 +115,7 @@ BOOL RegisterSnapClass( HANDLE instance )
     wc.hbrBackground = (HBRUSH)NULL;
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "SnapClass";
-    if( !RegisterClass( &wc ) ) {
-        return( FALSE );
-    }
-    return( TRUE );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* RegisterSnapClass */
 

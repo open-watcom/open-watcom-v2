@@ -152,7 +152,7 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
     return( rdata );
 }
 
-void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
+void * WRAPI WRLoadResData( const char *file, uint_32 offset, uint_32 length )
 {
     void        *data;
     WResFileID  handle;
@@ -193,7 +193,7 @@ void * WRAPI WRLoadResData( char *file, uint_32 offset, uint_32 length )
     return( data );
 }
 
-bool WRAPI WRSaveDataToFile( char *file_name, BYTE *data, uint_32 length )
+bool WRAPI WRSaveDataToFile( const char *file_name, BYTE *data, uint_32 length )
 {
     WResFileID  file;
     bool        ok;

@@ -46,8 +46,8 @@ bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
     } else {
         coord.x = 0;
         coord.y = 0;
-        return( FALSE );
+        return( false );
     }
     GUIMakeRelative( wnd, &coord, point );
-    return( TRUE );
+    return( true );
 }

@@ -35,9 +35,9 @@
 #include "descript.h"
 
 DWORD       GetASelectorLimit( WORD );
-WORD        IsValidSelector( WORD );
+bool        IsValidSelector( WORD );
 void        GetADescriptor( WORD seg, descriptor *desc );
-int         IsSeg32( WORD seg );
+bool        IsSeg32( WORD seg );
 DWORD       ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 DWORD       WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 

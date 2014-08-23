@@ -142,7 +142,7 @@ bool WdeRemoveDialog( WdeResInfo *res_info )
 
 LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
-    int                 ret;
+    INT_PTR             ret;
     HINSTANCE           inst;
     FARPROC             proc;
     WdeDialogSelectInfo si;

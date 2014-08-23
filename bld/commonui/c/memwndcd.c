@@ -33,6 +33,7 @@
 #include <string.h>
 #include <io.h>
 #include <ctype.h>
+#include "bool.h"
 #include "memwnd.h"
 #include "segmem.h"
 #include "sdkasm.h"
@@ -48,10 +49,10 @@ extern WORD             FontHeight;
 static DWORD            _Offset;    // conflicts with extern in wdisasm/h/global.h
 static WORD             Sel;
 static DWORD            Limit;
-static char             Is32Bit;
+static bool             Is32Bit;
 static char             StatBuf[50];
 static DisAsmRtns       DisasmInfo;
-static BOOL             DisasmRegistered;
+static bool             DisasmRegistered;
 
 static void gotoIns( MemWndInfo *info, DWORD ins_cnt );
 
@@ -60,7 +61,7 @@ static void gotoIns( MemWndInfo *info, DWORD ins_cnt );
  */
 int_16 MemWndGetDataByte( void )
 {
-    char        buf;
+    char            buf;
 
     ReadMem( Sel, _Offset, &buf, 1 );
     _Offset++;
@@ -86,7 +87,7 @@ int_16 MemWndGetDataWord( void )
  */
 int_16 MemWndGetNextByte( void )
 {
-    char        buf;
+    char            buf;
 
     ReadMem( Sel, _Offset, &buf, 1 );
     return( buf );
@@ -257,11 +258,11 @@ void DumpMemAsm( MemWndInfo *info, int hdl )
 /*
  * NeedScrollBar
  */
-BOOL NeedScrollBar( MemWndInfo *info )
+bool NeedScrollBar( MemWndInfo *info )
 {
     WORD                line;
     instruction         ins;
-    char                is_32;
+    bool                is_32;
 
     _Offset = 0;
     Limit = info->limit;
@@ -686,6 +687,6 @@ void RegDisasmRtns()
         DisasmInfo.GetWtkInsName = MemWndGetWtkInsName;
         RegisterRtns( &DisasmInfo );
     }
-    DisasmRegistered = TRUE;
+    DisasmRegistered = true;
 
 } /* RegDisasmRtns */

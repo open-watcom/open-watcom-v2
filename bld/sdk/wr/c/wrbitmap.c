@@ -514,7 +514,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     BITMAPINFO          *bmi;
     BITMAPCOREINFO      *bmci;
     int                 hsize;
-    int                 is_core;
+    bool                is_core;
 
     if( data == NULL || size == NULL ) {
         return( FALSE );

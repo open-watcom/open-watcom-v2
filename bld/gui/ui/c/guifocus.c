@@ -44,8 +44,8 @@ bool GUISetFocus( gui_window * wnd, unsigned id )
         node = GUIGetDlgByWnd( wnd );
         if( node != NULL ) {
             uidialogsetcurr( node->dialog, field );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

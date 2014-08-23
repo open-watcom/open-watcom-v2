@@ -73,7 +73,7 @@ void  SkipPcoRec()
 /****************/
 
 {
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         GetByte();
     }
 }
@@ -86,17 +86,17 @@ void  GetObjRec()
     GetHeader();
     ++RecNumber;
     if( feof( ObjFile ) ) {
-        Is32Record = 0;
+        Is32Record = false;
         RecType = NULL;
     } else if( RecLen > MAX_RECLEN ) {
-        Error( ERR_REC_TOO_LONG, TRUE );
+        Error( ERR_REC_TOO_LONG, true );
     } else {
         FGetObj( Buff, RecLen );
         ByteNo = 0;
         if( RecLen - sizeof( char ) == 0 ) {
-            EndOfRecord = TRUE;
+            EndOfRecord = true;
         } else {
-            EndOfRecord = FALSE;
+            EndOfRecord = false;
         }
     }
 }
@@ -110,9 +110,9 @@ static  void  GetHeader()
 
     FGetObj( header, HEADER_LEN );
     RecType = header[ 0 ] & ~1;
-    Is32Record = header[ 0 ] & 1;
+    Is32Record = (header[ 0 ] & 1) != 0;
     if( Is32Record ) {
-        Is32BitObj = TRUE;
+        Is32BitObj = true;
     }
     RecLen = header[ 2 ];
     RecLen = ( RecLen << 8 ) | header[ 1 ];
@@ -168,7 +168,7 @@ char  GetByte()
     value = Buff[ ByteNo++ ];
     CheckSum += value;
     if( ByteNo == RecLen - sizeof( char ) ) {
-        EndOfRecord = TRUE;
+        EndOfRecord = true;
         CheckSum += Buff[ ByteNo ];
     }
     return( value );

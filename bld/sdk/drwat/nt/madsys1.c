@@ -38,6 +38,7 @@
 #define MD_axp
 #endif
 
+#include "bool.h"
 #include "mad.h"
 #include "drwatcom.h"
 #include <windows.h>

@@ -111,12 +111,12 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
         switch( menu[i].event ) {
         case GUI_MENU_MOVE :
             if( !GUIStrDup( LIT( Move ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             break;
         case GUI_MENU_SIZE :
             if( !GUIStrDup( LIT( Size ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             if( !( style & GUI_RESIZEABLE ) ) {
                 GUIChangeMenu( &menu[i], GUI_GRAYED );
@@ -124,13 +124,13 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             break;
         case GUI_MENU_RESTORE :
             if( !GUIStrDup( LIT( Restore ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             GUIChangeMenu( &menu[i], GUI_GRAYED );
             break;
         case GUI_MENU_MINIMIZE :
             if( !GUIStrDup( LIT( Minimize ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             if( !( style & GUI_MINIMIZE ) ) {
                 GUIChangeMenu( &menu[i], GUI_GRAYED );
@@ -138,7 +138,7 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             break;
         case GUI_MENU_MAXIMIZE :
             if( !GUIStrDup( LIT( Maximize ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             if( !( style & GUI_MAXIMIZE ) ) {
                 GUIChangeMenu( &menu[i], GUI_GRAYED );
@@ -146,7 +146,7 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             break;
         case GUI_MENU_CLOSE :
             if( !GUIStrDup( LIT( Close ), &menu[i].name ) ) {
-                return( FALSE );
+                return( false );
             }
             if( !( style & GUI_CLOSEABLE ) ) {
                 GUIChangeMenu( &menu[i], GUI_GRAYED );
@@ -154,7 +154,7 @@ bool GUISetSystemMenu( MENUITEM *menu, gui_create_styles style )
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUIProcessSysMenuEvent( EVENT ev, gui_window *wnd )
@@ -164,10 +164,10 @@ void GUIProcessSysMenuEvent( EVENT ev, gui_window *wnd )
         GUIZoomWnd( wnd, NONE );
         break;
     case GUI_MENU_MOVE :
-        GUIStartKeyboardMoveResize( wnd, TRUE );
+        GUIStartKeyboardMoveResize( wnd, true );
         break;
     case GUI_MENU_SIZE :
-        GUIStartKeyboardMoveResize( wnd, FALSE );
+        GUIStartKeyboardMoveResize( wnd, false );
         break;
     case GUI_MENU_MINIMIZE :
         GUIZoomWnd( wnd, GUI_MINIMIZE );

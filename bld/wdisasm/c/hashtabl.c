@@ -73,19 +73,19 @@ bool HashTableInsert( hash_table hash_tbl, hash_value key, hash_data data )
     while( hash_ptr != NULL ) {
         if( !( hash_tbl->compare( hash_ptr->key, key ) ) ) {
             hash_ptr->data = data;
-            return( TRUE );
+            return( true );
         }
         hash_ptr = hash_ptr->next;
     }
     new_element = (hash_struct *) malloc( sizeof( hash_struct ) );
     if( !new_element ) {
-        return( FALSE );
+        return( false );
     }
     new_element->key = key;
     new_element->data = data;
     new_element->next = hash_tbl->table[hash_val];
     hash_tbl->table[hash_val] = new_element;
-    return( TRUE );
+    return( true );
 }
 
 hash_data *HashTableQuery( hash_table hash_tbl, hash_value key )

@@ -36,7 +36,7 @@
 bool GUIChangeFont( gui_window *wnd )
 {
     wnd = wnd;
-    return( FALSE );
+    return( false );
 }
 
 char *GUIGetFontInfo( gui_window *wnd )
@@ -49,19 +49,19 @@ bool GUISetFontInfo( gui_window *wnd, char *info )
 {
     wnd = wnd;
     info = info;
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetSystemFont( gui_window *wnd, bool fixed )
 {
     wnd = wnd;
     fixed = fixed;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIFontsSupported( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 char *GUIGetFontFromUser( char *fontinfo )
@@ -83,7 +83,7 @@ void GUIResetMouseCursor( void *old )
 
 bool GUI3DDialogInit( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
@@ -91,7 +91,7 @@ bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
     wnd = wnd;
     id = id;
     extent = extent;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
@@ -99,14 +99,14 @@ bool GUIEnableControl( gui_window *wnd, unsigned id, bool enable )
     wnd = wnd;
     id = id;
     enable = enable;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIIsControlEnabled( gui_window *wnd, unsigned id )
 {
     wnd = wnd;
     id = id;
-    return( FALSE );
+    return( false );
 }
 
 void GUIHideControl( gui_window *wnd, unsigned id )
@@ -127,7 +127,7 @@ bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end )
     id = id;
     start = start;
     end = end;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
@@ -136,7 +136,7 @@ bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
     id = id;
     start = start;
     end = end;
-    return( FALSE );
+    return( false );
 }
 
 void GUIScrollCaret( gui_window *wnd, unsigned id )

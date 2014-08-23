@@ -39,14 +39,14 @@ extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed,
                                    gui_colour_set *standout, gui_rect *rect )
 {
     if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolbar, excl,
                            plain, standout, rect ) ) {
         GUIInitToolbarHint( wnd, num_items, toolbar );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
@@ -55,14 +55,14 @@ extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                               gui_colour_set *standout )
 {
     if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     if( GUIXCreateToolBar( wnd, fixed, height, num_items, toolbar, excl,
                            plain, standout, NULL ) ) {
         GUIInitToolbarHint( wnd, num_items, toolbar );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
@@ -71,21 +71,21 @@ extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord heigh
                                       gui_colour_set *standout )
 {
     if( ( num_items == 0 ) || ( toolbar == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     if( GUIXCreateToolBarWithTips( wnd, fixed, height, num_items, toolbar, excl,
-                                   plain, standout, NULL, TRUE ) ) {
+                                   plain, standout, NULL, true ) ) {
         GUIInitToolbarHint( wnd, num_items, toolbar );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUICloseToolBar( gui_window *wnd )
 {
     if( GUIXCloseToolBar( wnd ) ) {
         GUIInitToolbarHint( wnd, 0, NULL );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <assert.h>
+#include "bool.h"
 #include "mem.h"
 #include "toolbr.h"
 #include "loadcc.h"
@@ -104,10 +105,10 @@ static char     *className = "WTool";
 static char     *containerClassName = "WToolContainer";
 #endif
 #ifdef __OS2_PM__
-static char     toolBarClassRegistered = FALSE;
+static bool     toolBarClassRegistered = false;
 #endif
 
-static char         gdiObjectsCreated;
+static bool         gdiObjectsCreated;
 static HPEN         blackPen;
 static HPEN         btnShadowPen;
 static HPEN         btnHighlightPen;
@@ -121,15 +122,15 @@ static WPI_PROC     oldFrameProc;
 #endif
 
 static tool     *currTool;
-static char     currIsDown;
+static bool     currIsDown;
 static CMDID    lastID = NO_ID;
-static BOOL     mouse_captured = FALSE;
-static BOOL     ignore_mousemove = FALSE;   /* ReleaseCapture() generates
+static bool     mouse_captured = false;
+static bool     ignore_mousemove = false;   /* ReleaseCapture() generates
                                            a WM_MOUSEMOVE message */
 #ifndef __OS2_PM__
-static BOOL round_corners = TRUE;       /* Platform has rounded buttons? */
+static bool round_corners = true;       /* Platform has rounded buttons? */
 #else
-static BOOL round_corners = FALSE;      /* Platform has rounded buttons? */
+static bool round_corners = false;      /* Platform has rounded buttons? */
 #endif
 
 /*
@@ -186,7 +187,7 @@ static void deleteTool( tool **list, tool *t )
 /*
  * buttonPosition - get position of a button on the toolbar
  */
-static BOOL buttonPosition( HWND hwnd, toolbar *bar, tool *top, WPI_POINT *p )
+static bool buttonPosition( HWND hwnd, toolbar *bar, tool *top, WPI_POINT *p )
 {
     WPI_RECT    rect;
     int         width;
@@ -222,7 +223,7 @@ static BOOL buttonPosition( HWND hwnd, toolbar *bar, tool *top, WPI_POINT *p )
                 p->y = _wpi_cvth_y( pos.y, wndheight ) - bar->button_size.y -
                     bar->border.y + 1;
 #endif
-                return( TRUE );
+                return( true );
             }
             if( curr->flags & ITEM_BLANK ) {
                 pos.x += curr->u.blank_space;
@@ -233,7 +234,7 @@ static BOOL buttonPosition( HWND hwnd, toolbar *bar, tool *top, WPI_POINT *p )
         }
         pos.y += bar->button_size.y - 1;
     }
-    return( FALSE );
+    return( false );
 
 } /* buttonPosition */
 
@@ -401,7 +402,7 @@ toolbar *ToolBarInit( HWND parent )
         rc = WinRegisterClass( hab, className, GetWndProc( ToolBarWndProc ),
                                CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPSIBLINGS,
                                sizeof( PVOID ) );
-        toolBarClassRegistered = TRUE;
+        toolBarClassRegistered = true;
     }
     clr_btnshadow = CLR_DARKGRAY;
     clr_btnhighlight = CLR_WHITE;
@@ -427,7 +428,7 @@ toolbar *ToolBarInit( HWND parent )
             btnFacePen = _wpi_createpen( PS_SOLID, BORDER_WIDTH( bar ), clr_btnface );
             blackBrush = _wpi_createsolidbrush( clr_black );
             btnFaceBrush = _wpi_createsolidbrush( clr_btnface );
-            gdiObjectsCreated = TRUE;
+            gdiObjectsCreated = true;
         }
 #ifdef __NT__
     }
@@ -462,7 +463,7 @@ void ToolBarChangeSysColors( COLORREF tbFace, COLORREF tbHighlight, COLORREF tbS
         btnFacePen = CreatePen( PS_SOLID, BORDER_WIDTH( bar ), GetSysColor( COLOR_BTNFACE ) );
         btnColor = GetSysColor( COLOR_BTNFACE );
         btnFaceBrush = CreateSolidBrush( btnColor );
-        gdiObjectsCreated = TRUE;
+        gdiObjectsCreated = true;
   #ifdef __NT__
     }
   #endif
@@ -516,7 +517,7 @@ void ToolBarFini( toolbar *bar )
         _wpi_deleteobject( btnFacePen );
         _wpi_deleteobject( blackBrush );
         _wpi_deleteobject( btnFaceBrush );
-        gdiObjectsCreated = FALSE;
+        gdiObjectsCreated = false;
     }
 
 } /* ToolBarFini */
@@ -642,7 +643,7 @@ WORD ToolBarGetState( toolbar *bar, CMDID id )
 /*
  * ToolBarDeleteItem - delete an item from the tool bar
  */
-BOOL ToolBarDeleteItem( toolbar *bar, CMDID id )
+bool ToolBarDeleteItem( toolbar *bar, CMDID id )
 {
     tool    *t;
     tool    *next;
@@ -660,17 +661,17 @@ BOOL ToolBarDeleteItem( toolbar *bar, CMDID id )
             next = t->next;
             deleteTool( &bar->tool_list, t );
             createButtonList( bar->hwnd, bar, next );
-            return( TRUE );
+            return( true );
         }
 #ifdef __NT__
     } else {
         n = (int)SendMessage( bar->hwnd, TB_COMMANDTOINDEX, (WPARAM)id, 0L );
         SendMessage( bar->hwnd, TB_DELETEBUTTON, (WPARAM)n, 0L );
-        return( TRUE );
+        return( true );
     }
 #endif
 
-    return( FALSE );
+    return( false );
 
 } /* ToolBarDeleteItem */
 
@@ -727,9 +728,9 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
 #endif
 
     currTool = NULL;
-    currIsDown = FALSE;
+    currIsDown = false;
     lastID = NO_ID;
-    mouse_captured = FALSE;
+    mouse_captured = false;
 
     if( bar->bgbrush != NULLHANDLE ) {
         _wpi_deleteobject( bar->bgbrush );
@@ -1118,7 +1119,7 @@ static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_
 /*
  * drawButton - draw a button on the toolbar
  */
-static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
+static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
                         WPI_PRES mempres, HDC mem )
 {
     toolbar     *bar;
@@ -1126,7 +1127,7 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
     HBITMAP     bitmap;
     HBITMAP     oldbmp;
     int         shift;
-    BOOL        selected;
+    bool        selected;
     WPI_POINT   dst_size;
     WPI_POINT   dst_org;
     HBITMAP     used_bmp;
@@ -1134,8 +1135,8 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
     WPI_RECTDIM right;
     WPI_RECTDIM top;
     WPI_RECTDIM bottom;
-    BOOL        delete_pres;
-    BOOL        delete_mempres;
+    bool        delete_pres;
+    bool        delete_mempres;
 #if defined( __NT__ ) || defined( __WINDOWS__ )
     HBITMAP     bitmap2;
     HBITMAP     oldbmp2;
@@ -1153,7 +1154,7 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
     bar = WPI_GET_WNDINFO( hwnd );
 
     if( tool->flags & ITEM_STICKY ) {
-        selected = (tool->state == BUTTON_DOWN);
+        selected = ( tool->state == BUTTON_DOWN );
     } else {
         selected = down;
     }
@@ -1162,17 +1163,17 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
         shift = 2 * BORDER_WIDTH( bar );
     }
 
-    delete_pres = FALSE;
-    delete_mempres = FALSE;
+    delete_pres = false;
+    delete_mempres = false;
     if( pres == NULLHANDLE ) {
         pres = _wpi_getpres( hwnd );
         mempres = NULLHANDLE;
-        delete_pres = TRUE;
+        delete_pres = true;
     }
 
     if( mempres == NULLHANDLE || mem == NULLHANDLE ) {
         mempres = _wpi_createcompatiblepres( pres, appInst, &mem );
-        delete_mempres = TRUE;
+        delete_mempres = true;
     }
     bitmap = _wpi_createcompatiblebitmap( pres, bar->button_size.x, bar->button_size.y );
     oldbmp = _wpi_selectbitmap( mempres, bitmap );
@@ -1233,7 +1234,7 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
     }
     /* Switch new bitmap into variables expected by code below. */
     mempres = mem2;
-    delete_mempres = TRUE;
+    delete_mempres = true;
     bitmap = bitmap2;
     oldbmp = oldbmp2;
 #endif
@@ -1272,7 +1273,7 @@ static void drawButton( HWND hwnd, tool *tool, BOOL down, WPI_PRES pres,
 /*
  * isPointInToolbar - check if the point in the WM_MOUSEMOVE message is in the toolbar
  */
-static BOOL isPointInToolbar( HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool isPointInToolbar( HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_POINT   p;
     WPI_RECT    r;
@@ -1282,10 +1283,7 @@ static BOOL isPointInToolbar( HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 
     WPI_MAKEPOINT( wparam, lparam, p );
     _wpi_getclientrect( hwnd, &r );
-    if( _wpi_ptinrect( &r, p ) ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( _wpi_ptinrect( &r, p ) != 0 );
 
 } /* isPointInToolbar */
 
@@ -1345,7 +1343,7 @@ static int customHitTest( toolbar *bar, POINT *pt )
 /*
  * HasToolAtPoint - return TRUE if a tool exists at a given point
  */
-BOOL HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifdef __NT__
     POINT   pt;
@@ -1367,7 +1365,7 @@ BOOL HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
  * FindToolIDAtPoint - Find the tool ID at a given point, if any.  Returns
  *                     TRUE if tool exists at a given point.
  */
-BOOL FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id )
+bool FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id )
 {
     tool    *ctool;
 #ifdef __NT__
@@ -1379,9 +1377,9 @@ BOOL FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         ctool = findToolAtPoint( bar, wparam, lparam );
         if( ctool != NULL ) {
             *id = ctool->id;
-            return TRUE;
+            return( true );
         } else {
-            return FALSE;
+            return( false );
         }
 #ifdef __NT__
     } else {
@@ -1390,9 +1388,9 @@ BOOL FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         ret = customHitTest( bar, &pt );
         if( ret >= 0 ) {
             *id = ret;
-            return( TRUE );
+            return( true );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
 #endif
@@ -1411,7 +1409,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
     WPI_PRES        mempres;
     HDC             memdc;
     PAINTSTRUCT     ps;
-    BOOL            posted;
+    bool            posted;
 
     bar = WPI_GET_WNDINFO( hwnd );
     if( msg == WM_CREATE ) {
@@ -1451,12 +1449,12 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                     bar->hook( hwnd, WM_USER, MPFROMSHORT( tool->id ), (WPI_PARAM2)0 );
                 }
                 currTool = tool;
-                drawButton( hwnd, tool, TRUE, NULLHANDLE, NULLHANDLE, NULLHANDLE );
-                mouse_captured = TRUE;
+                drawButton( hwnd, tool, true, NULLHANDLE, NULLHANDLE, NULLHANDLE );
+                mouse_captured = true;
                 _wpi_setcapture( hwnd );
-                currIsDown = TRUE;
+                currIsDown = true;
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), TRUE );
+                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
                 }
             }
         }
@@ -1465,12 +1463,12 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
     case WM_RBUTTONUP:
         if( bar && bar->tool_list ) {
             tool = findToolAtPoint( bar, wparam, lparam );
-            posted = FALSE;
+            posted = false;
             if( tool != NULL ) {
                 if( tool == currTool ) {
                     _wpi_postmessage( bar->owner, WM_COMMAND, tool->id, CMDSRC_MENU );
-                    posted = TRUE;
-                    drawButton( hwnd, tool, FALSE, NULLHANDLE, NULLHANDLE, NULLHANDLE );
+                    posted = true;
+                    drawButton( hwnd, tool, false, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                 }
             }
             if( !posted && bar->hook != NULL ) {
@@ -1479,12 +1477,12 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
                 }
             }
             if( currTool != NULL ) {
-                mouse_captured = FALSE;
-                ignore_mousemove = TRUE; /* ReleaseCapture() generates a
+                mouse_captured = false;
+                ignore_mousemove = true; /* ReleaseCapture() generates a
                                             WM_MOUSEMOVE message */
                 _wpi_releasecapture();
                 if( bar->helphook != NULL ) {
-                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), FALSE );
+                    bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
                 }
                 currTool = NULL;
             }
@@ -1492,35 +1490,35 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
         break;
     case WM_MOUSEMOVE:
         if( ignore_mousemove ) {
-            ignore_mousemove = FALSE;
+            ignore_mousemove = false;
             break;
         }
         tool = findToolAtPoint( bar, wparam, lparam );
         if( currTool ) {
             if( tool == currTool ) {
                 if( !currIsDown ) {
-                    currIsDown = TRUE;
-                    drawButton( hwnd, currTool, TRUE, NULLHANDLE, NULLHANDLE, NULLHANDLE );
+                    currIsDown = true;
+                    drawButton( hwnd, currTool, true, NULLHANDLE, NULLHANDLE, NULLHANDLE );
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), TRUE );
+                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), true );
                     }
                 }
             } else {
                 if( currIsDown ) {
-                    drawButton( hwnd, currTool, FALSE, NULLHANDLE, NULLHANDLE, NULLHANDLE );
-                    currIsDown = FALSE;
+                    drawButton( hwnd, currTool, false, NULLHANDLE, NULLHANDLE, NULLHANDLE );
+                    currIsDown = false;
                     if( bar->helphook != NULL ) {
-                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), FALSE );
+                        bar->helphook( hwnd, MPFROMSHORT( currTool->id ), false );
                     }
                 }
             }
         } else {
             if( bar->helphook != NULL ) {
                 if( tool ) {
-                    bar->helphook( hwnd, MPFROMSHORT( tool->id ), TRUE );
+                    bar->helphook( hwnd, MPFROMSHORT( tool->id ), true );
                     lastID = tool->id;
                 } else if( lastID != NO_ID ) {
-                    bar->helphook( hwnd, MPFROMSHORT( lastID ), FALSE );
+                    bar->helphook( hwnd, MPFROMSHORT( lastID ), false );
                     lastID = NO_ID;
                 }
             }
@@ -1552,7 +1550,7 @@ WINEXPORT WPI_MRESULT CALLBACK ToolBarWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM
         for( tool = bar->tool_list; tool != NULL; tool = tool->next ) {
             if( _wpi_intersectrect( appInst, &inter, &ps.rcPaint, &tool->area ) ) {
 #endif
-                drawButton( hwnd, tool, FALSE, pres, mempres, memdc );
+                drawButton( hwnd, tool, false, pres, mempres, memdc );
             }
         }
         _wpi_deletecompatiblepres( mempres, memdc );
@@ -1588,16 +1586,16 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
             n = (int)SendMessage( hwnd, TB_COMMANDTOINDEX, id, 0L );
             SendMessage( hwnd, TB_GETBUTTON, n, (LPARAM)&tbb );
             if( (tbb.fsState & TBSTATE_PRESSED) || !(wparam & MK_LBUTTON) ) {
-                bar->helphook( hwnd, id, TRUE );
+                bar->helphook( hwnd, id, true );
                 lastID = id;
                 SetTimer( hwnd, 1, 50, NULL );
             } else if( lastID != NO_ID ) {
-                bar->helphook( hwnd, lastID, FALSE );
+                bar->helphook( hwnd, lastID, false );
                 lastID = NO_ID;
                 KillTimer( hwnd, 1 );
             }
         } else if( lastID != NO_ID ) {
-            bar->helphook( hwnd, lastID, FALSE );
+            bar->helphook( hwnd, lastID, false );
             lastID = NO_ID;
             KillTimer( hwnd, 1 );
         }
@@ -1610,7 +1608,7 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
             ScreenToClient( hwnd, &pt );
             GetClientRect( hwnd, &rc );
             if( !PtInRect( &rc, pt ) ) {
-                bar->helphook( hwnd, lastID, FALSE );
+                bar->helphook( hwnd, lastID, false );
                 lastID = NO_ID;
                 KillTimer( hwnd, 1 );
             }
@@ -1618,7 +1616,7 @@ WINEXPORT LRESULT CALLBACK WinToolWndProc( HWND hwnd, UINT msg, WPARAM wparam, L
         break;
     case WM_LBUTTONUP:
         if( lastID != NO_ID ) {
-            bar->helphook( hwnd, lastID, FALSE );
+            bar->helphook( hwnd, lastID, false );
             lastID = NO_ID;
             KillTimer( hwnd, 1 );
         }

@@ -51,7 +51,7 @@ bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     int         win_height;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( GUI_DO_VSCROLL( wnd ) ) {
@@ -104,7 +104,7 @@ bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     _wpi_deletebrush( interior_brush );
     _wpi_deletebrush( frame_brush );
 
-    return( TRUE );
+    return( true );
 }
 
 bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
@@ -122,7 +122,7 @@ bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     int         win_height;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( GUI_DO_VSCROLL( wnd ) ) {
@@ -192,7 +192,7 @@ bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     _wpi_fillrect( wnd->hdc, &bar_rect, colour, interior_brush );
     _wpi_deletebrush( interior_brush );
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
@@ -205,10 +205,10 @@ bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
     WPI_COLOUR          colour;
 
     if( (wnd == NULL) || (wnd->hdc == NULLHANDLE) || (wnd->ps == NULL) ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = TRUE;
+    ret = true;
 
     GUIGetTextMetrics( wnd, &metrics );
     coord.x     = start;
@@ -229,18 +229,18 @@ bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
 
     switch( bstyle ) {
     case GUI_BAR_SIMPLE:
-        ret = DrawSimpleBar( wnd, &rect, colour, selected, FALSE );
+        ret = DrawSimpleBar( wnd, &rect, colour, selected, false );
         break;
     case GUI_BAR_SHADOW:
         ret = DrawShadowBar( wnd, &rect, colour, selected );
         break;
     case GUI_FULL_BAR:
-        ret = DrawSimpleBar( wnd, &rect, colour, selected, TRUE );
+        ret = DrawSimpleBar( wnd, &rect, colour, selected, true );
         break;
     case GUI_BAR_3DRECT1:
     case GUI_BAR_3DRECT2:
     default:
-        ret = FALSE;
+        ret = false;
     }
 
     return( ret );
@@ -256,7 +256,7 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
     bool        ret;
 
     if( width1 == 0 ) {
-        ret = TRUE;
+        ret = true;
     } else {
         stretch_width = width1;
         if( bstyle == GUI_BAR_SHADOW ) {

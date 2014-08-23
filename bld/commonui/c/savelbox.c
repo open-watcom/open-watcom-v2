@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include "wio.h"
 #include "watcom.h"
+#include "bool.h"
 #include "savelbox.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
@@ -50,7 +51,7 @@
 /*
  * writeListBoxContents
  */
-static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
+static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
 {
     int         i;
     int         count;
@@ -59,7 +60,7 @@ static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
 
     f = fopen( fname, "w" );
     if( f == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( writefn != NULL ) {
         writefn( f );
@@ -67,14 +68,14 @@ static BOOL writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
     count = SendMessage( listbox, LB_GETCOUNT, 0, 0L );
     if( count == LB_ERR ) {
         fclose( f );
-        return( FALSE );
+        return( false );
     }
     for( i = 0; i < count; i++ ) {
         SendMessage( listbox, LB_GETTEXT, i, (LPARAM)str );
         fprintf( f, "%s\n", str );
     }
     fclose( f );
-    return( TRUE );
+    return( true );
 
 } /* writeListBoxContents */
 
@@ -107,7 +108,7 @@ WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPAR
  * GetSaveFName - let the user select a file name for a save operation
  *                fname must point to a buffer of length at least _MAX_PATH
  */
-BOOL GetSaveFName( HWND mainhwnd, char *fname )
+bool GetSaveFName( HWND mainhwnd, char *fname )
 {
     static char         filterList[] = "File (*.*)" \
                                        "\0" \
@@ -135,14 +136,14 @@ BOOL GetSaveFName( HWND mainhwnd, char *fname )
 #ifndef NOUSE3D
     FreeProcInstance( (FARPROC)of.lpfnHook );
 #endif
-    return( rc );
+    return( rc != 0 );
 
 } /* GetSaveFName */
 
 /*
  * GenTmpFileName - generate a unique file name based on tmpname
  */
-BOOL GenTmpFileName( char *tmpname, char *buf )
+bool GenTmpFileName( char *tmpname, char *buf )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -178,10 +179,10 @@ BOOL GenTmpFileName( char *tmpname, char *buf )
         }
         i++;
         if( i > 999 ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 
 } /* GenTmpFileName */
 
@@ -243,7 +244,7 @@ static void relToAbs( char *path, char *out )
 /*
  * ReportSave
  */
-void ReportSave( HWND parent, char *fname, char *appname, BOOL save_ok )
+void ReportSave( HWND parent, char *fname, char *appname, bool save_ok )
 {
     char        ful_fname[_MAX_PATH];
     char        buf[_MAX_PATH + 20];
@@ -266,7 +267,7 @@ void SaveListBox( int how, void (*writefn)( FILE * ), char *tmpname,
                   char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
-    BOOL        ret;
+    bool        ret;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
 

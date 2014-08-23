@@ -258,10 +258,10 @@ static  gui_window      *Child4_1Wnd    = NULL;
 static  gui_window      *Child4_2Wnd    = NULL;
 static  gui_window      *Child4_3Wnd    = NULL;
 static  int             Percent         = 50;
-static  bool            Highlight       = FALSE;
+static  bool            Highlight       = false;
 static  int             PrevRow;
-static  bool            KeyDown         = FALSE;
-static  bool            WndScaled       = FALSE;
+static  bool            KeyDown         = false;
+static  bool            WndScaled       = false;
 static  char            *FloatHelp      = "Float Toolbar";
 static  char            *FixHelp        = "Fix Toolbar";
 static  int             Child1HScrollRange      = 0;
@@ -282,9 +282,9 @@ static void HandlePopup( gui_window *gui, gui_rect *rect, unsigned id )
 {
     switch( id ) {
     case MENU_CHANGE :
-        GUISetMenuText( MainWnd, MENU_REDRAW, "&New", FALSE );
-        GUISetMenuText( MainWnd, MENU_RESTORE, "&Restore\talso tabbed", FALSE );
-        GUISetMenuText( MainWnd, MENU_RESIZE, "&Newer and very very very very very very very very very very very very very long\ttabbed", FALSE );
+        GUISetMenuText( MainWnd, MENU_REDRAW, "&New", false );
+        GUISetMenuText( MainWnd, MENU_RESTORE, "&Restore\talso tabbed", false );
+        GUISetMenuText( MainWnd, MENU_RESIZE, "&Newer and very very very very very very very very very very very very very long\ttabbed", false );
         break;
     case MENU_RESIZE :
         GUIResizeWindow( gui, rect );
@@ -310,14 +310,14 @@ static void SetFixedFloat( gui_window *gui )
 {
     if( GUIHasToolBar( gui ) ) {
         if( GUIToolBarFixed( gui) ) {
-            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", FALSE);
+            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false);
             GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FloatHelp );
         } else {
-            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Fix Toolbar", FALSE );
+            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Fix Toolbar", false );
             GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FixHelp );
         }
     } else {
-        GUIEnableMenuItem( gui, MENU_CHANGE_TOOLBAR, FALSE, FALSE );
+        GUIEnableMenuItem( gui, MENU_CHANGE_TOOLBAR, false, false );
     }
 }
 
@@ -326,10 +326,10 @@ static void SetToolbarCreate( gui_window *gui )
     bool        has;
 
     has = GUIHasToolBar( gui );
-    GUIEnableMenuItem( gui, MENU_FIXED_TOOLBAR, has == FALSE, FALSE );
-    GUIEnableMenuItem( gui, MENU_FLOATING_TOOLBAR, has == FALSE, FALSE );
-    GUIEnableMenuItem( gui, MENU_CHANGE_TOOLBAR, has, FALSE );
-    GUIEnableMenuItem( gui, MENU_CLOSE_TOOLBAR, has, FALSE );
+    GUIEnableMenuItem( gui, MENU_FIXED_TOOLBAR, has == false, false );
+    GUIEnableMenuItem( gui, MENU_FLOATING_TOOLBAR, has == false, false );
+    GUIEnableMenuItem( gui, MENU_CHANGE_TOOLBAR, has, false );
+    GUIEnableMenuItem( gui, MENU_CLOSE_TOOLBAR, has, false );
 }
 
 #if keys
@@ -337,7 +337,7 @@ static bool DisplayKey( gui_key key, char *Buffer )
 {
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     switch( key ) {
     case GUI_KEY_PAGEUP :
         strcpy( Buffer, "Got key down and up page up" );
@@ -479,13 +479,13 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 #endif
 
 
-    ret = FALSE;
+    ret = false;
     i = i;
     gui = gui;
     switch( gui_ev ) {
     case GUI_CLOSE :
         GUIHelpFini( help_inst, HelpWindow, help_file );
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_PAINT :
         GUIGetPaintRect( gui, &client );
@@ -502,20 +502,20 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         if( MainWnd == NULL ) {
 #if dynamic_menus
             for( i = 0; i < NUM_MAIN_MENUS; i++ ) {
-                GUIAppendMenu( gui, &MainMenu[i], FALSE );
+                GUIAppendMenu( gui, &MainMenu[i], false );
             }
 #endif
-//          GUIEnableMenuItem( gui, MENU_REDRAW, FALSE, FALSE );
-            GUIEnableMenuItem( gui, MENU_RESIZE, TRUE, FALSE );
-            GUICheckMenuItem( gui, MENU_RESIZE, TRUE, FALSE );
-            GUICheckMenuItem( gui, MENU_STATIC_DIALOG, FALSE, FALSE );
+//          GUIEnableMenuItem( gui, MENU_REDRAW, false, false );
+            GUIEnableMenuItem( gui, MENU_RESIZE, true, false );
+            GUICheckMenuItem( gui, MENU_RESIZE, true, false );
+            GUICheckMenuItem( gui, MENU_STATIC_DIALOG, false, false );
             back = '\xb0';
             GUISetBackgroundChar( gui, back );
 #if dynamic_menus
             GUIAppendMenuByOffset( gui, 5, &ModifyColour );
-            GUIAppendMenuToPopup( gui, MENU_MODIFY_COLOUR, &PopupMenu[0], FALSE );
-            //GUIAppendMenu( gui, &ChildMenu, FALSE );
-            GUIInsertMenu( gui, 0, ChildMenu, FALSE );
+            GUIAppendMenuToPopup( gui, MENU_MODIFY_COLOUR, &PopupMenu[0], false );
+            //GUIAppendMenu( gui, &ChildMenu, false );
+            GUIInsertMenu( gui, 0, ChildMenu, false );
             GUIInsertMenuByID( gui, MENU_SEP_QUIT, &ModifyColour );
 #endif
         }
@@ -530,7 +530,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         scroll.x = GUIGetHScrollCol( gui );
         scroll.y = GUIGetVScrollRow( gui );
         numrows = GUIGetNumRows( gui );
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_FONT_CHANGED :
         GUIResizeStatusWindow( gui, 0, 0 );
@@ -628,7 +628,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 GUICreateMenuStructFromRes( 100, &menu, &num );
                 if( menu && num ) {
                     for( i = 0; i < num; i++ ) {
-                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[i], FALSE );
+                        GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[i], false );
                     }
                     GUIFreeGUIMenuStruct( menu, num );
                 }
@@ -683,7 +683,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         case MENU_FIXED_TOOLBAR :
         case MENU_FLOATING_TOOLBAR :
             if( GUICreateToolBar( gui, id == MENU_FIXED_TOOLBAR, 0,
-                                  NUM_TOOLBAR_BUTTONS, ToolBar, TRUE,
+                                  NUM_TOOLBAR_BUTTONS, ToolBar, true,
                                   &ToolPlain, &ToolStandout ) ) {
                 SetFixedFloat( gui );
                 SetToolbarCreate( gui );
@@ -699,13 +699,13 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         case MENU_STATUS_WND :
             if( GUIHasStatus( gui ) ) {
                 GUICloseStatusWindow( gui );
-                GUICheckMenuItem( gui, MENU_STATUS_WND, FALSE, FALSE );
-                GUIEnableMenuItem( gui, MENU_RESIZE_STATUS, FALSE, FALSE );
+                GUICheckMenuItem( gui, MENU_STATUS_WND, false, false );
+                GUIEnableMenuItem( gui, MENU_RESIZE_STATUS, false, false );
             } else {
                 if( GUICreateStatusWindow( gui, 0, 0, &StatusColour ) ) {
                     GUIDrawStatusText( gui, "Hi Lisa" );
-                    GUICheckMenuItem( gui, MENU_STATUS_WND, TRUE, FALSE );
-                    GUIEnableMenuItem( gui, MENU_RESIZE_STATUS, TRUE, FALSE );
+                    GUICheckMenuItem( gui, MENU_STATUS_WND, true, false );
+                    GUIEnableMenuItem( gui, MENU_RESIZE_STATUS, true, false );
                 }
             }
             break;
@@ -798,7 +798,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     case GUI_KEYDOWN :
-        KeyDown = TRUE;
+        KeyDown = true;
 #if parent_keys
         GUI_GET_KEY( param, KeyDownKey );
 #endif
@@ -806,12 +806,12 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_KEYUP :
 #if parent_keys
         GUI_GET_KEY( param, key );
-        if( ( KeyDown == TRUE ) && ( KeyDownKey == key ) ) {
+        if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
             ret = DisplayKey( key, Buffer );
-            KeyDown = FALSE;
+            KeyDown = false;
         }
 #endif
-        ret = FALSE;
+        ret = false;
         break;
     default :
         break;
@@ -877,7 +877,7 @@ bool ControlEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         gui_ev = GUI_INIT_DIALOG;
         break;
     case GUI_CLOSE :
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         change = GUIGetExtra( gui );
         GUIMemFree( change );
@@ -889,7 +889,7 @@ bool ControlEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case CANCELBUTTON_CONTROL :
            DoCancel( gui );
-           return( TRUE );
+           return( true );
            break;
         case OKBUTTON_CONTROL :
            DoOkay( gui );
@@ -908,7 +908,7 @@ static void GetNewVal( char *str, int length, gui_window *gui )
     DialogWndControl.parent = MainWnd;
     if( !WndScaled ) {
         SetWidthHeight( &DialogWndControl.rect, DialogWndControl.parent != NULL );
-        WndScaled = TRUE;
+        WndScaled = true;
     }
     DialogWndControl.extra = MakeChangeStruct( str, length, gui );
     GUICreateWindow( &DialogWndControl );
@@ -1113,7 +1113,7 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_char_cursor     cursor;
     char                Buffer[80];
 
-    ret = FALSE;
+    ret = false;
     switch( gui_ev ) {
     case GUI_INIT_WINDOW :
         GUIGetClientRect( gui, &client );
@@ -1124,8 +1124,8 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUISetHScrollRangeCols( gui, Child1HScrollRange );
         GUIInitHScroll( gui, 0 );
         InitIndent( gui, NUM_CHILD1_ROWS, GUIGetExtra( gui ) );
-        GUIAppendMenuToPopup( gui, MENU_MORE, &MenuMore, FALSE );
-        ret = TRUE;
+        GUIAppendMenuToPopup( gui, MENU_MORE, &MenuMore, false );
+        ret = true;
         break;
     case GUI_PAINT :
         GUI_GET_ROWS( param, row, num );
@@ -1218,7 +1218,7 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GET_KEY( param, key );
         ret = DisplayKey( key, Buffer );
 #endif
-        ret = FALSE;
+        ret = false;
      case GUI_CLICKED :
         GUI_GETID( param, id );
         switch( id ) {
@@ -1272,23 +1272,23 @@ bool Child3EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUIDrawLineRGB( gui, &StartPoint, &EndPoint, GUI_PEN_SOLID, 6,
                         rgb );
         GUIFillRect( gui, &SFillRect, GUI_BLUE );
-        GUIDrawBar( gui,  6, 1, 20, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, FALSE );
+        GUIDrawBar( gui,  6, 1, 20, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, false );
         GUIDrawTextRGB( gui, "Simple Bars", 11, 6, 75, rgb, green );
-        GUIDrawBar( gui,  7, 1, 30, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, TRUE );
-        GUIDrawBar( gui,  8, 1, 70, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, FALSE );
-        GUIDrawBar( gui,  9, 1, 20, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, FALSE );
+        GUIDrawBar( gui,  7, 1, 30, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, true );
+        GUIDrawBar( gui,  8, 1, 70, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, false );
+        GUIDrawBar( gui,  9, 1, 20, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, false );
         GUIDrawTextRGB( gui, "Shadow Bars", 11, 9, 75, rgb, green );
-        GUIDrawBar( gui, 10, 1, 30, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, TRUE );
-        GUIDrawBar( gui, 11, 1, 50, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, FALSE );
+        GUIDrawBar( gui, 10, 1, 30, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, true );
+        GUIDrawBar( gui, 11, 1, 50, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, false );
         break;
     default :
         return( MainEventWnd( gui, gui_ev, param ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 #if swap_enable
-static bool Enabled = TRUE;
+static bool Enabled = true;
 #endif
 
 static void CreatePopup( gui_window *gui, int num_menus,
@@ -1300,19 +1300,19 @@ static void CreatePopup( gui_window *gui, int num_menus,
 
     for( i = 0; i < num_menus; i++ ) {
         if( sub ) {
-            GUIAppendMenuToPopup( gui, popup_id, &menu[i], TRUE );
+            GUIAppendMenuToPopup( gui, popup_id, &menu[i], true );
         } else {
             sub_menu = menu[i].child;
             num_sub = menu[i].num_child_menus;
             menu[i].num_child_menus = 0;
             menu[i].child = NULL;
-            GUIAppendMenu( gui, &menu[i], TRUE );
+            GUIAppendMenu( gui, &menu[i], true );
             menu[i].num_child_menus = num_sub;
             menu[i].child = sub_menu;
         }
         if( menu[i].child != NULL ) {
             CreatePopup( gui, menu[i].num_child_menus, menu[i].child,
-                         menu[i].id, TRUE );
+                         menu[i].id, true );
         }
     }
 }
@@ -1349,10 +1349,10 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui_create_styles   style;
     int                 vscroll;
 
-    ret = FALSE;
+    ret = false;
     switch( gui_ev ) {
     case GUI_CLOSE :
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_INIT_WINDOW :
         GUIGetClientRect( gui, &client );
@@ -1360,7 +1360,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         GUISetHScrollRangeCols( gui, client.width / metrics.avg.x );
         GUISetVScrollRangeRows( gui, NUM_CHILD2_ROWS );
         InitIndent( gui, NUM_CHILD2_ROWS, GUIGetExtra( gui ) );
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_LBUTTONDOWN :
         if( gui == Child2Wnd ) {
@@ -1433,21 +1433,21 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     case GUI_RBUTTONUP :
-        Highlight = FALSE;
+        Highlight = false;
         GUI_GET_POINT( param, point );
         GUIGetMousePosn( gui, &point );
 #if dynamic_menus
-        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, GUI_NO_EVENT, FALSE );
-//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], GUI_NO_EVENT, FALSE );
+        CreatePopup( gui, NUM_POPUP_MENUS, PopupMenu, GUI_NO_EVENT, false );
+//      CreatePopup( gui, 1, &PopupMenu[NUM_POPUP_MENUS-1], GUI_NO_EVENT, false );
         GUITrackFloatingPopup( gui, &point, GUI_TRACK_RIGHT, NULL); //&CurrPopupItem );
 #else
-        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, TRUE,
+        GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, &PopupMenu, true,
                                 &CurrPopupItem );
 #endif
         break;
     case GUI_RBUTTONDOWN :
         GUI_GET_POINT( param, point );
-        Highlight = TRUE;
+        Highlight = true;
         row = GUIGetRow( gui, &point );
         style = GUIGetCreateStyle( gui );
         if( ( style & GUI_VSCROLL_EVENTS ) != 0 ) {
@@ -1554,7 +1554,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     case GUI_KEYDOWN :
-        KeyDown = TRUE;
+        KeyDown = true;
 #if keys
         GUI_GET_KEY( param, KeyDownKey );
         if( KeyDownKey == GUI_KEY_a  ) {
@@ -1562,22 +1562,22 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         if( KeyDownKey == GUI_KEY_s  ) {
             GUIGetMousePosn( gui, &point );
-            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, PopupMenu, TRUE,
+            GUICreateFloatingPopup( gui, &point, NUM_POPUP_MENUS, PopupMenu, true,
                                     &CurrPopupItem );
 
         }
 #endif
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_KEYUP :
 #if keys
         GUI_GET_KEY( param, key );
-        if( ( KeyDown == TRUE ) && ( KeyDownKey == key ) ) {
+        if( ( KeyDown == true ) && ( KeyDownKey == key ) ) {
             ret = DisplayKey( key, Buffer );
-            KeyDown = FALSE;
+            KeyDown = false;
         }
 #endif
-        ret = FALSE;
+        ret = false;
         break;
     default :
         break;
@@ -1639,9 +1639,9 @@ void GUImain( void )
 #endif
     GUIGetRoundScale( &Scale );
     if( !GUIIsGUI() ) {
-        WndScaled = TRUE;
-        DialogScaled = TRUE;
-        ControlsScaled = TRUE;
+        WndScaled = true;
+        DialogScaled = true;
+        ControlsScaled = true;
     }
 
     StaticDialogInit();
@@ -1690,7 +1690,7 @@ void GUImain( void )
             act_num++;
         }
     }
-    ControlsScaled = TRUE;
+    ControlsScaled = true;
     GUISetExtra( MainWnd, &act_num );
     StaticDialogEventWnd( MainWnd, GUI_INIT_DIALOG, NULL );
 #endif
@@ -1765,7 +1765,7 @@ void GUImain( void )
         i = GUIGetControlExtentX( Child3Wnd, COMBOBOX_CONTROL, "default", 7 );
         i = GUIGetControlExtentY( Child3Wnd, COMBOBOX_CONTROL, "default" );
         //GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
-        //GUISelectAll( Child3Wnd, COMBOBOX_CONTROL, TRUE );
+        //GUISelectAll( Child3Wnd, COMBOBOX_CONTROL, true );
         //for( i = 0; i < NUM_LIST_BOX_DATA; i++ ) {
             //GUIAddText( Child3Wnd, COMBOBOX_CONTROL, ListBoxData[i] );
         //}
@@ -1784,13 +1784,13 @@ void GUImain( void )
                                &colour_set.back, &colour_set.back );
     GUICreateStatusWindow( MainWnd, 0, 0, &colour_set );
 #endif
-    GUISetMenuText( MainWnd, MENU_DIALOGS, "Wes' &Dialogs", FALSE );
-    GUIEnableMenuItem( MainWnd, MENU_QUIT, FALSE, FALSE );
-    GUIEnableMenuItem( MainWnd, MENU_CASCADE, FALSE, FALSE );
-    GUICheckMenuItem( MainWnd, MENU_CASCADE, TRUE, FALSE );
-    GUISetMenuText( MainWnd, MENU_CASCADE, "Wes' Cascade", FALSE );
-    GUIDeleteMenuItem( MainWnd, MENU_CASCADE, FALSE );
-    //GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, FALSE );
+    GUISetMenuText( MainWnd, MENU_DIALOGS, "Wes' &Dialogs", false );
+    GUIEnableMenuItem( MainWnd, MENU_QUIT, false, false );
+    GUIEnableMenuItem( MainWnd, MENU_CASCADE, false, false );
+    GUICheckMenuItem( MainWnd, MENU_CASCADE, true, false );
+    GUISetMenuText( MainWnd, MENU_CASCADE, "Wes' Cascade", false );
+    GUIDeleteMenuItem( MainWnd, MENU_CASCADE, false );
+    //GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, false );
 }
 
 bool GUIDeath ( void )

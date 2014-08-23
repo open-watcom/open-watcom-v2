@@ -45,15 +45,15 @@ char                    *CodeName;
 form_option             Options;
 char                    DataBytes;
 char                    DataLen;
-char                    ExpDump;
-char                    ImpDump;
+bool                    ExpDump;
+bool                    ImpDump;
 char                    Pass;
-char                    RetFarUsed;
+bool                    RetFarUsed;
 char                    DataString[ MAX_INSTR_LEN ];
 char                    PrevString[ MAX_INSTR_LEN ];
-char                    IsPharLap;
-char                    Is32Record;
-char                    Is32BitObj;     /* true if any 32-bit records found
+bool                    IsPharLap;
+bool                    Is32Record;
+bool                    Is32BitObj;     /* true if any 32-bit records found
                                            or if it is a pharlap obj file */
 char                    IntLblStart = 'L';
-char                    UnMangle;
+bool                    UnMangle;

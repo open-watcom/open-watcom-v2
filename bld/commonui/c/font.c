@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "font.h"
 #include "wprocmap.h"
 
@@ -40,7 +41,7 @@
 static LOGFONT  logFont;
 static HFONT    fixedFont = (HFONT)0;
 static HFONT    courierFont = (HFONT)0;
-static BOOL     variableAllowed = FALSE;
+static bool     variableAllowed = false;
 
 static char     *fontKey = "Font";
 
@@ -164,15 +165,15 @@ void SetCourierFont( HWND hwnd )
 void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst )
 {
     char        str[MAX_STR];
-    BOOL        need_stock;
+    bool        need_stock;
 
-    need_stock = TRUE;
+    need_stock = true;
     GetPrivateProfileString( app, fontKey, "", str, sizeof( str ), inifile );
     if( str[0] != 0 ) {
         if( GetLogFontFromString( &logFont, str )  ) {
             fixedFont = CreateFontIndirect( &logFont );
             if( fixedFont != NULL ) {
-                need_stock = FALSE;
+                need_stock = false;
             }
         }
     }
@@ -210,7 +211,7 @@ void SaveMonoFont( char *app, char *inifile )
 /*
  * ChooseMonoFont - allow the picking of a mono font
  */
-BOOL ChooseMonoFont( HWND hwnd )
+bool ChooseMonoFont( HWND hwnd )
 {
     CHOOSEFONT  cf;
     LOGFONT     lf;
@@ -230,16 +231,16 @@ BOOL ChooseMonoFont( HWND hwnd )
     cf.rgbColors = RGB( 0, 0, 0 );
 
     if( !ChooseFont( &cf ) ) {
-        return( FALSE );
+        return( false );
     }
     font = CreateFontIndirect( &lf );
     if( font == NULL ) {
-        return( FALSE );
+        return( false );
     }
     DeleteObject( fixedFont );
     logFont = lf;
     fixedFont = font;
-    return( TRUE );
+    return( true );
 
 } /* ChooseMonoFont */
 
@@ -267,6 +268,6 @@ HFONT GetMonoFont( void )
  */
 void AllowVariableFonts( void )
 {
-    variableAllowed = TRUE;
+    variableAllowed = true;
 
 } /* AllowVariableFonts */

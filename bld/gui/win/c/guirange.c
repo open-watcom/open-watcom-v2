@@ -64,7 +64,7 @@ static void SetRange( gui_window *wnd, int bar, unsigned int range, bool text )
     if( new_range < 0 ) {
         new_range = 0;
     }
-    GUISetScrollRange( wnd, bar, 0, new_range, TRUE );
+    GUISetScrollRange( wnd, bar, 0, new_range, true );
 }
 
 /*
@@ -74,7 +74,7 @@ static void SetRange( gui_window *wnd, int bar, unsigned int range, bool text )
 void GUISetHScrollRangeCols( gui_window *wnd, gui_ord range )
 {
     wnd->flags |= HRANGE_COL;
-    SetRange( wnd, SB_HORZ, range, TRUE );
+    SetRange( wnd, SB_HORZ, range, true );
 }
 
 /*
@@ -84,7 +84,7 @@ void GUISetHScrollRangeCols( gui_window *wnd, gui_ord range )
 void GUISetVScrollRangeRows( gui_window *wnd, gui_ord range )
 {
     wnd->flags |= VRANGE_ROW;
-    SetRange( wnd, SB_VERT, range, TRUE );
+    SetRange( wnd, SB_VERT, range, true );
 }
 
 /*
@@ -98,7 +98,7 @@ void GUISetHScrollRange( gui_window *wnd, gui_ord range )
     wnd->flags &= ~HRANGE_COL;
     coord.x = range;
     GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_HORZ, coord.x, FALSE );
+    SetRange( wnd, SB_HORZ, coord.x, false );
 }
 
 /*
@@ -112,7 +112,7 @@ void GUISetVScrollRange( gui_window *wnd, gui_ord range )
     wnd->flags &= ~VRANGE_ROW;
     coord.y = range;
     GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_VERT, coord.y, FALSE );
+    SetRange( wnd, SB_VERT, coord.y, false );
 }
 
 /*

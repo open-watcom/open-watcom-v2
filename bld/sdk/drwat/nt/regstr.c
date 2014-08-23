@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>
@@ -373,7 +374,7 @@ static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
     DLGPROC         fp;
-    int             reg_modified;
+    INT_PTR         reg_modified;
     RegModifyData   modify_data;
     char            *discript;
     unsigned        max_d;

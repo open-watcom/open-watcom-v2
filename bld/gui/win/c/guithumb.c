@@ -62,10 +62,10 @@ static void SetScrollThumb( gui_window * wnd, int percent, int bar )
                          (long)percent / (long)100 );
         } else {
             new = percent;
-            GUISetScrollRange( wnd, bar, 0, 100, TRUE );
+            GUISetScrollRange( wnd, bar, 0, 100, true );
         }
         if( old != new ) {
-            GUISetScrollPos( wnd, bar, new, TRUE );
+            GUISetScrollPos( wnd, bar, new, true );
         }
     }
 }

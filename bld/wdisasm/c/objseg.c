@@ -37,12 +37,12 @@
 char  *SegName()
 /**************/
 {
-    char                seg_override;
+    bool                seg_override;
 
     if( CurrIns.pref & PREF_xS ) {
-        seg_override = TRUE;
+        seg_override = true;
     } else {
-        seg_override = FALSE;
+        seg_override = false;
     }
     NameBuff[ 0 ] = '\0';
     return( NameBuff );

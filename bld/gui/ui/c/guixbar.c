@@ -44,7 +44,7 @@ bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
     bstyle = bstyle;
 
     if( wnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GUIGetTextMetrics( wnd, &metrics );
@@ -74,7 +74,7 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
     bool        ret;
 
     if( width1 == 0 ) {
-        ret = TRUE;
+        ret = true;
     } else {
         ret = GUIDrawBar( wnd, row, start, width1, bstyle, attr1, selected );
     }

@@ -108,9 +108,9 @@ bool GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     if( colour <= GUI_LAST_COLOUR  ) {
         GUIColours[colour] = GETRGB( rgb );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void FillInRGB( WPI_COLOUR colour, gui_rgb *rgb )
@@ -129,22 +129,22 @@ bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     if( ( colour <= GUI_LAST_COLOUR  )  && ( rgb != NULL ) ) {
         FillInRGB( GUIColours[colour], rgb );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( attr < wnd->num_attrs ) {
         colour_set->fore = wnd->colours[attr].fore;
         colour_set->back = wnd->colours[attr].back;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void SetBKBrush( gui_window *wnd )
@@ -191,7 +191,7 @@ void GUICheckBKBrush( gui_window *wnd )
 bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( attr < wnd->num_attrs ) {
         wnd->colours[attr].fore = colour_set->fore;
@@ -199,9 +199,9 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
         if( attr == GUI_BACKGROUND ) {
             ChangeBKBrush( wnd );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
@@ -209,23 +209,21 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 #ifdef __OS2_PM__
     init_rgb = init_rgb;
     new_rgb = new_rgb;
-    return( FALSE );
+    return( false );
 #else
     CHOOSECOLOR     choose;
     bool            ret;
  #if defined(__WINDOWS__)
     HINSTANCE       h;
+    FARPROC         func;
   #ifdef __WINDOWS_386__
     HINDIR          hIndir;
     DWORD           guiColoursAlias;
-    FARPROC         func;
-  #else
-    BOOL (WINAPI *func)( LPCHOOSECOLOR );
   #endif
  #endif
 
     if( new_rgb == NULL ) {
-        return( FALSE );
+        return( false );
     }
     memset( &choose, 0, sizeof( CHOOSECOLOR ) );
     choose.Flags = CC_PREVENTFULLOPEN;
@@ -237,33 +235,34 @@ bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
  #endif
     choose.lStructSize = sizeof( CHOOSECOLOR );
 
- #if defined(__WINDOWS__)
+ #if defined(__NT__)
+    ret = ( ChooseColor( &choose ) != 0 );
+ #else
     h = LoadLibrary( "COMMDLG.DLL" );
     if( (UINT)h < 32 ) {
-        return( FALSE );
+        return( false );
+    }
+    func = GetProcAddress( h, "ChooseColor" );
+    if( func == NULL ) {
+        return( false );
     }
   #ifdef __WINDOWS_386__
-    func = GetProcAddress( h, "ChooseColor" );
     hIndir = GetIndirectFunctionHandle( func, INDIR_PTR, INDIR_ENDLIST );
     if( hIndir == NULL ) {
         FreeLibrary( h );
-        return( FALSE );
+        return( false );
     }
     guiColoursAlias = AllocAlias16( (void *)GUIColours );
     choose.lpCustColors = (void *)guiColoursAlias;
-    ret = (bool)InvokeIndirectFunction( hIndir, &choose );
+    ret = (short)InvokeIndirectFunction( hIndir, &choose ) != 0;
     if( guiColoursAlias != NULL ) {
         FreeAlias16( guiColoursAlias );
     }
   #else
-    func = (BOOL(WINAPI*)(LPCHOOSECOLOR))GetProcAddress( h, "ChooseColor" );
-    ret = ( func( &choose ) != 0 );
+    ret = ((BOOL(WINAPI *)(LPCHOOSECOLOR))func)( &choose ) != 0;
   #endif
     FreeLibrary( h );
- #else
-    ret = ( ChooseColor( &choose ) != 0 );
  #endif
-
     if( ret ) {
         FillInRGB( choose.rgbResult, new_rgb );
     }
@@ -283,13 +282,13 @@ bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
         size = sizeof( gui_colour_set ) * wnd->num_attrs;
         wnd->colours = ( gui_colour_set * )GUIMemAlloc( size );
         if( wnd->colours == NULL ) {
-            return( FALSE );
+            return( false );
         }
         memcpy( wnd->colours, colours, size );
         SetBKBrush( wnd );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )

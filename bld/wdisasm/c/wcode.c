@@ -40,9 +40,9 @@
 uint_32         WtkAddr;
 char            WTLBASEStr[] = "WTLBASE";
 char            WTLSEGStr[] = "WTLSEG";
-char            WtlsegPresent = FALSE;
-static int      WcodeErr;
-static char     didAnyWtk = FALSE;
+bool            WtlsegPresent = false;
+static bool     WcodeErr;
+static bool     didAnyWtk = false;
 static operand  LocalOp[ 3 ];
 
 /*
@@ -55,12 +55,12 @@ static operand  LocalOp[ 3 ];
  *          one step further in finding the offset.
  */
 #if defined( O2A )
-int IsWtk( instruction * curr_ins )
+bool IsWtk( instruction * curr_ins )
 //=================================
 {
     operand *   op  = &curr_ins->op[ curr_ins->mem_ref_op ];
     char *      sym = FindSymbol( InsAddr + op->offset );
-    int         retn = FALSE;
+    bool        retn = false;
 
     if( /* Pass == 2  &&   so that didAnyWtk can be set */
         ( Options & FORM_DO_WTK ) ) {
@@ -68,21 +68,21 @@ int IsWtk( instruction * curr_ins )
             fixup *     fix = FindFixup( InsAddr + op->offset, Segment );
             if( fix != NULL ) {
                 WtkAddr = fix->imp_address + ( fix->seg_address << 4 );
-                retn = TRUE;
+                retn = true;
             }
         } else if( WtlsegPresent  &&  ( curr_ins->pref & PREF_FS )  &&
                    curr_ins->seg_used == FS_REG  &&  sym == NULL ) {
             WtkAddr = op->disp;
-            retn = TRUE;
+            retn = true;
         }
     }
-    if( retn == TRUE ) {
-        didAnyWtk = TRUE;
+    if( retn ) {
+        didAnyWtk = true;
     }
     if( Pass == 2 ) {
         return( retn );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 #endif
@@ -99,12 +99,12 @@ static void setoperand( int set_num, wop_type op_type, int src_num )
         where = ( ( WtkAddr & 0x380 ) >> 5 ) | ( WtkAddr & 0x3 );
     }
     if( ( where & 1 )  && ( op_type != ANY_SINGLE  &&  op_type != WST ) ) {
-        WcodeErr = TRUE;
+        WcodeErr = true;
         return;
     }
     if( where != 0 ) {  /* 0 means to/from data bus */
         if( op_type == EREG  ||  op_type >= REAL_ANY ) {
-            WcodeErr = TRUE;
+            WcodeErr = true;
         } else {
             operand * op;
             memcpy( &LocalOp[ set_num ], &CurrIns.op[ src_num ], sizeof( operand ) );
@@ -121,12 +121,12 @@ static void setoperand( int set_num, wop_type op_type, int src_num )
         int         tmp_src = op_type >> 7;
         if( tmp_typ == WST  ||  tmp_typ == WDT  ||
             ( tmp_typ == EREG  && CurrIns.op[ tmp_src ].mode != ADDR_REG ) ) {
-            WcodeErr = TRUE;
+            WcodeErr = true;
         } else {
             LocalOp[ set_num ] = CurrIns.op[ tmp_src ];
         }
     } else {
-        WcodeErr = TRUE;
+        WcodeErr = true;
     }
 }
 
@@ -156,7 +156,7 @@ void DoWtk( void )
     char        instr_type;
     int         numop = 2;
 
-    WcodeErr = FALSE;
+    WcodeErr = false;
     instr = WtkAddr >> 10;
     instr_type = ( instr >> 5 );
     instr &= 0x1F;          /* throw away bit 5 */
@@ -188,11 +188,11 @@ void DoWtk( void )
                 memcpy( DoubleWcode[ WFLDD & 0xf ] + 2,
                         WcodeErr ? "ld" : "st", 2 );
                 if( WcodeErr ) {    /* it's a WFLDD */
-                    WcodeErr = FALSE;
+                    WcodeErr = false;
                     setoperand( 0, WDT, 0 );
                     setoperand( 1, WDT, 1 );
-                    if( WcodeErr == TRUE ) {
-                        WcodeErr = FALSE;
+                    if( WcodeErr ) {
+                        WcodeErr = false;
                         setoperand( 1, ( EREG + REAL_ANY ) | 0x80, 1 );
                     }
                 } else {
@@ -261,10 +261,10 @@ void DoWtk( void )
             if( !WcodeErr ) {
                 setoperand( 1, WST, 0 );
                 if( WcodeErr ) {
-                    WcodeErr = FALSE;
+                    WcodeErr = false;
                     numop = 1;
                 } else if( LocalOp[ 1 ].disp != 1 ) {   /* error if not ws1 */
-                    WcodeErr = TRUE;
+                    WcodeErr = true;
                 }
             }
             break;
@@ -288,8 +288,8 @@ void DoWtk( void )
     }
 }
 
-int HaveWtk( void )
-/*****************/
+bool HaveWtk( void )
+/******************/
 {
     return( didAnyWtk );
 }

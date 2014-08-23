@@ -114,23 +114,23 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
 
     colour = colour;
     if( wnd->root == NULLHANDLE ) {
-        return( FALSE );
+        return( false );
     }
     GUISetResizeStatus( &ResizeStatus );
     GUISetFreeStatus( &FreeStatus );
     if( !StatusWndInit( GUIMainHInst, NULL, 0, NULLHANDLE ) ) {
-        return( FALSE );
+        return( false );
     }
     GUIStatusWnd = StatusWndStart();
     CalcStatusRect( wnd, x, height, &status_rect );
     wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &status_rect,
                                    GUIMainHInst, NULL );
     if( wnd->status == NULLHANDLE ) {
-        return( FALSE );
+        return( false );
     }
     ResizeStatus( wnd );
-    GUIResizeBackground( wnd, TRUE );
-    return( TRUE );
+    GUIResizeBackground( wnd, true );
+    return( true );
 }
 
 bool GUIDrawStatusText( gui_window *wnd, const char *text )
@@ -139,7 +139,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     const char  *out_text;
 
     if( !GUIHasStatus( wnd) ) {
-        return( FALSE );
+        return( false );
     }
     pres = _wpi_getpres( wnd->status );
     if( ( text == NULL ) || ( *text == '\0' ) ) {
@@ -153,7 +153,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     if( ( text == NULL ) || ( *text == '\0' ) ) {
         GUIEVENTWND( wnd, GUI_STATUS_CLEARED, NULL );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIHasStatus( gui_window *wnd )
@@ -166,13 +166,13 @@ bool GUICloseStatusWindow( gui_window *wnd )
 {
     HWND        status;
     if( !GUIHasStatus( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
     status = wnd->status;
     wnd->status = NULLHANDLE;
     DestroyWindow( status );
-    GUIResizeBackground( wnd, TRUE );
-    return( TRUE );
+    GUIResizeBackground( wnd, true );
+    return( true );
 }
 
 bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
@@ -181,11 +181,11 @@ bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
     GUI_RECTDIM left, top, right, bottom;
 
     if( !GUIHasStatus( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
     CalcStatusRect( wnd, x, height, &status );
     _wpi_getrectvalues( status, &left, &top, &right, &bottom );
     _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
-    GUIResizeBackground( wnd, TRUE );
-    return( TRUE );
+    GUIResizeBackground( wnd, true );
+    return( true );
 }

@@ -38,10 +38,10 @@ int GUISysInit( int param )
 {
     int init;
 
-    #ifdef __WINDOWS__
-        InitSwapper( FALSE );
-        ToCharacter();
-    #endif
+#ifdef __WINDOWS__
+    InitSwapper( false );
+    ToCharacter();
+#endif
 
     init = uistart();
 

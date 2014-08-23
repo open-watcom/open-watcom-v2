@@ -54,15 +54,15 @@ typedef struct {
 
 static  mdi_info        MDIInfo;
 static  char            Buffer[MAX_LENGTH];
-static  bool            DoneMDIInit             = FALSE;
-static  bool            DoingMaxRestore         = FALSE;
-static  bool            ArrangeIcons            = FALSE;
+static  bool            DoneMDIInit             = false;
+static  bool            DoingMaxRestore         = false;
+static  bool            ArrangeIcons            = false;
 extern  WPI_INST        GUIMainHInst;
 
 static void StartMaxRestore( HWND hwnd )
 {
     hwnd = hwnd;
-    DoingMaxRestore = TRUE;
+    DoingMaxRestore = true;
 }
 
 static void SetStyle( HWND hwnd, int max )
@@ -111,7 +111,7 @@ static void EndMaxRestore( HWND hwnd )
     if( GUI_VSCROLL_ON( wnd ) ) {
         GUISetRangePos( wnd, SB_VERT );
     }
-    DoingMaxRestore = FALSE;
+    DoingMaxRestore = false;
     _wpi_getwindowrect( hwnd, &rect );
     size.x = _wpi_getwidthrect( rect );
     size.y = _wpi_getheightrect( rect );
@@ -148,7 +148,7 @@ static bool IsMaximized( gui_window *wnd )
             return( _wpi_iszoomed( hwnd ) );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -197,11 +197,11 @@ bool XInitMDI( gui_window *wnd )
         MDIInfo.set_style = &SetStyle;
         MDIInfo.hinstance = GUIMainHInst;
         MDIInit( &MDIInfo );
-        DoneMDIInit = TRUE;
-        return( FALSE );
+        DoneMDIInit = true;
+        return( false );
     } else {
         /* child window */
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -209,7 +209,7 @@ void GUIMDIBringToFront( gui_window *wnd )
 {
     if( wnd != NULL ) {
         if( MDIIsMaximized() && GUIIsMinimized( wnd ) ) {
-            GUIMDIMaximize( TRUE, wnd );
+            GUIMDIMaximize( true, wnd );
         }
         if( GUIIsMinimized( wnd ) ) {
             GUIRestoreWindow( wnd );
@@ -236,14 +236,14 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
         case WM_NCLBUTTONDBLCLK:
             if( MDIHitClose( hwnd, msg, wparam, lparam ) ) {
                 *ret = 0;
-                return( TRUE );
+                return( true );
             }
             break;
 #endif
         case WM_COMMAND :
             if( DoneMDIInit && MDIIsSysCommand( hwnd, msg, wparam, lparam ) ) {
                 *ret = 0;
-                return( TRUE );
+                return( true );
             }
             param = _wpi_getid( wparam );
             if( _wpi_ismenucommand( wparam, lparam ) &&
@@ -254,15 +254,15 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                     MDICascade();
                     break;
                 case GUI_MDI_TILE_HORZ :
-                    MDITile( TRUE );
+                    MDITile( true );
                     break;
                 case GUI_MDI_TILE_VERT :
-                    MDITile( FALSE );
+                    MDITile( false );
                     break;
                 case GUI_MDI_ARRANGE_ICONS :
-                    ArrangeIcons = TRUE;
+                    ArrangeIcons = true;
                     MDICascade();
-                    ArrangeIcons = FALSE;
+                    ArrangeIcons = false;
                     break;
                 case GUI_MDI_MORE_WINDOWS :
                     GUIMDIMoreWindows();
@@ -274,7 +274,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                         GUIMDIBringToFront( GUIMDIGetWindow( param ) );
                     }
                 }
-                return( TRUE );
+                return( true );
             }
         }
     } else if( wnd->root == NULLHANDLE ) {
@@ -289,7 +289,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
                     pos = (WINDOWPOS *)lparam;
                     pos->flags |= SWP_NOMOVE | SWP_NOSIZE;
                     *ret = 0;
-                    return( TRUE );
+                    return( true );
                 }
             }
             break;
@@ -297,32 +297,32 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
         case WM_SYSKEYDOWN :
         case WM_SYSKEYUP :
             *ret = GUISendMessage( GUIGetTopParentHWND( hwnd ), msg, wparam, lparam );
-            return( TRUE );
+            return( true );
             break;
 #endif
         case WM_MOVE :
         case WM_SIZE :
             if( DoingMaxRestore ) {
                 *ret = 0;
-                return( TRUE );
+                return( true );
             }
             break;
 #ifndef __OS2_PM__
         case WM_MOUSEACTIVATE :
             SetFocus( hwnd );
             *ret = MA_ACTIVATE;
-            return( TRUE );
+            return( true );
 #else
         case WM_ACTIVATE :
             if( wparam ) {
                 SetFocus( hwnd );
-                return( TRUE );
+                return( true );
             }
 #endif
         case WM_GETMINMAXINFO :
             /* don't want app to fool with this */
             *ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-            return( TRUE );
+            return( true );
         }
         if( DoneMDIInit ) {
             return( MDIChildHandleMessage( hwnd, msg, wparam, lparam, ret ) );
@@ -335,7 +335,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIXMDIInit( void )
@@ -362,9 +362,9 @@ static void GUIInternalCascadeWindows( gui_window *wnd, void *param )
     rect.height = info->height;
     rect.x = info->num * info->bump.x;
     rect.y = info->num * info->bump.y;
-    GUISetRedraw( wnd, FALSE );
+    GUISetRedraw( wnd, false );
     GUIResizeWindow( wnd, &rect );
-    GUISetRedraw( wnd, TRUE );
+    GUISetRedraw( wnd, true );
     GUIBringToFront( wnd );
 
     info->num++;
@@ -414,12 +414,12 @@ bool GUICascadeWindows( void )
     total_icons = GUIGetNumIconicWindows();
     num_windows = GUIGetNumChildWindows() - total_icons;
     if( ( root == NULL ) || ( num_windows <= 1 ) ) {
-        return( FALSE );
+        return( false );
     }
     GUIGetClientRect( root, &rect );
     GUIGetMinSize( &min_size );
     Cascade( root, num_windows, &rect, &min_size );
     GUIWndDirty( root );
-    return( TRUE );
+    return( true );
 }
 

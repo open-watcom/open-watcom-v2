@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "heapwalk.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"

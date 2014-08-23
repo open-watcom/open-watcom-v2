@@ -177,7 +177,7 @@ void GetFppOp()
         break;
     case FT_MOD_RM:     /* fadd +3[SI] */
         CurrIns.num_oper = 1;
-        ModRMOp( OP_1, FALSE );
+        ModRMOp( OP_1, false );
         if( Opcode == 0xdb ) {
             CurrIns.modifier = MOD_TREAL;
         } else if( Opcode == 0xdf ) {
@@ -190,7 +190,7 @@ void GetFppOp()
         break;
     case FT_MF_MOD_RM:
         CurrIns.num_oper = 1;
-        ModRMOp( OP_1, FALSE );
+        ModRMOp( OP_1, false );
         CurrIns.modifier = ( Opcode & 0x06 ) >> 1;
         break;
     case FT_STACK:

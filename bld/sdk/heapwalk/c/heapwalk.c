@@ -62,7 +62,7 @@ static BOOL heapWalkInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     MemStart();
     JDialogInit();
     if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = TRUE;
+        WDebug386 = true;
     }
     SetDefMemConfig();
     ReadConfig();

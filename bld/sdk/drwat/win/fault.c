@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
+#include "bool.h"
 #include "wdebug.h"
 #include "drwatcom.h"
 #include "intdata.h"
@@ -53,7 +54,7 @@ BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam,
     switch( msg ) {
     case WM_INITDIALOG:
         doLog = FALSE;
-        CheckDlgButton( hwnd, ExceptionAction, TRUE );
+        CheckDlgButton( hwnd, ExceptionAction, BST_CHECKED );
         CopyRCString( STR_TERMINATE_TASK, buff, sizeof( buff ) );
         SetDlgItemText( hwnd, INT_TERMINATE, buff );
         SetDlgCourierFont( hwnd, INT_TASK_NAME );
@@ -99,7 +100,7 @@ BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam,
         return( TRUE );
     case WM_CLOSE:
         tmp = ExceptionAction;
-        CheckDlgButton( hwnd, INT_TERMINATE, TRUE );
+        CheckDlgButton( hwnd, INT_TERMINATE, BST_CHECKED );
         SendMessage( hwnd, WM_COMMAND, INT_ACT, 0L );
         ExceptionAction = tmp;
         return( TRUE );
@@ -141,7 +142,7 @@ BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam,
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
     FARPROC     fp;
-    WORD        rc;
+    INT_PTR     rc;
     char        *fault_str;
     DWORD       faultid;
 

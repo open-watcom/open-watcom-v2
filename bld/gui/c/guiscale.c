@@ -92,7 +92,7 @@ bool GUIConvert( gui_systems from, gui_systems to, gui_coord *coord,
         coord->x += scale_data[to].x;
         coord->y += scale_data[to].y;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -103,9 +103,9 @@ bool GUIConvertRect( gui_systems from, gui_systems to, gui_rect * rect,
                      bool rel )
 {
     if( !GUIConvert( from, to, (gui_coord *)rect, rel ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( GUIConvert( from, to, (gui_coord *)(&(rect->width)), TRUE ) );
+    return( GUIConvert( from, to, (gui_coord *)(&(rect->width)), true ) );
 }
 
 /*
@@ -122,22 +122,22 @@ void GUIConvertPoint( gui_systems from, gui_systems to, gui_point * point )
 
 bool GUIScaleToScreen( gui_coord *coord )
 {
-    return( GUIConvert( SCALE, SCREEN, coord, FALSE ) );
+    return( GUIConvert( SCALE, SCREEN, coord, false ) );
 }
 
 bool GUIScaleToScreenR( gui_coord *coord )
 {
-    return( GUIConvert( SCALE, SCREEN, coord, TRUE ) );
+    return( GUIConvert( SCALE, SCREEN, coord, true ) );
 }
 
 bool GUIScreenToScale( gui_coord *coord )
 {
-    return( GUIConvert( SCREEN, SCALE, coord, FALSE ) );
+    return( GUIConvert( SCREEN, SCALE, coord, false ) );
 }
 
 bool GUIScreenToScaleR( gui_coord *coord )
 {
-    return( GUIConvert( SCREEN, SCALE, coord, TRUE ) );
+    return( GUIConvert( SCREEN, SCALE, coord, true ) );
 }
 
 void GUIScaleToScreenRPt( gui_point *point )

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "spy.h"
 #include <stdio.h>
 #include <string.h>

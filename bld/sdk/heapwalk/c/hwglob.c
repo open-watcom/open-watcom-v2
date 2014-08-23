@@ -40,7 +40,7 @@ BOOL            ListingDPMI;
 WORD            HeapType;
 int             HeapListSize;
 heap_list       **HeapList;
-BOOL            WDebug386;
+bool            WDebug386;
 int             GSortType;
 int             LSortType;
 HWND            ResHwnd[MAX_RES];

@@ -58,7 +58,7 @@
 extern int GUIXMain( int argc, char * argv[] );
 
 // This makes sure that the main routine is actually linked in
-bool GUIMainTouched = FALSE;
+bool GUIMainTouched = false;
 
 #ifdef __WINDOWS__
 
@@ -80,7 +80,7 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #else
 
 #ifdef __UNIX__
-    bool                In_raw_mode = FALSE;
+    bool                In_raw_mode = false;
     struct termios      Saved_terminal_configuration;
 #endif
 

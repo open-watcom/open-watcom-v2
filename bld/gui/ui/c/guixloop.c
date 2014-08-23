@@ -83,7 +83,7 @@ static EVENT GUIInternalEvents[] = {
 };
 
 static  EVENT           PrevMouseEvent  = EV_NO_EVENT;
-static  bool            MinimizedMoved  = FALSE;
+static  bool            MinimizedMoved  = false;
 static  gui_window      *ButtonDownSent = NULL;
 
 /*
@@ -217,12 +217,12 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
     OldCol = col;
     OldRow = row;
     if( wnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
     point.x = (gui_ord)col;
     point.y = (gui_ord)row;
     SendPointEvent( wnd, gui_ev, &point );
-    return( TRUE );
+    return( true );
 }
 
 EVENT GUICreatePopup( gui_window *wnd, gui_coord *point )
@@ -250,10 +250,10 @@ static void ProcessMinimizedMouseEvent( EVENT ev, ORD row, ORD col )
         if( GUIStartMoveResize( GUIMouseWnd, row, col, RESIZE_NONE ) ) {
             MouseState = MOUSE_MOVE;
         }
-        MinimizedMoved = FALSE;
+        MinimizedMoved = false;
         break;
    case EV_MOUSE_DRAG :
-        MinimizedMoved = TRUE;
+        MinimizedMoved = true;
         GUIDoMoveResize( GUIMouseWnd, row, col, ev, NULL );
         break;
     case EV_MOUSE_RELEASE :
@@ -460,11 +460,11 @@ static bool SetCurrWnd( EVENT ev, gui_window *curr )
     case EV_SCROLL_HORIZONTAL :
         if( ( curr != GUICurrWnd ) && ( curr != NULL ) ) {
             GUIBringToFront( curr );
-            return( TRUE );
+            return( true );
         }
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_window *GUIGetMenuWindow( void )
@@ -581,7 +581,7 @@ bool GUIProcessEvent( EVENT ev )
     // GUI UI windows ( unconditional )
     if( ev == EV_KILL_UI ) {
         GUIDestroyWnd( NULL );
-        return( FALSE );
+        return( false );
     }
 
     ev = MapMiddleToRight( ev );
@@ -598,12 +598,12 @@ bool GUIProcessEvent( EVENT ev )
         wnd = NULL;
     }
     if( GUIDoKeyboardMoveResize( ev ) ) {
-        return( TRUE );
+        return( true );
     }
     if( MouseState == MOUSE_MOVE || MouseState == MOUSE_SIZE ) {
         if( GUIDoMoveResizeCheck( GUIMouseWnd, ev, row, col ) ) {
             MouseState = MOUSE_FREE;
-            return( TRUE );
+            return( true );
         }
         if( GUI_WND_MINIMIZED( GUIMouseWnd ) ) {
             switch( ev ) {
@@ -620,11 +620,11 @@ bool GUIProcessEvent( EVENT ev )
                 ProcessMouseReleaseDrag( ev, GUI_LBUTTONUP, row, col );
             }
         }
-        return( TRUE );
+        return( true );
     }
     new_curr_wnd = SetCurrWnd( ev, wnd );
     if( GUIProcessAltMenuEvent( ev ) ) {
-        return( TRUE );
+        return( true );
     }
     /* Only deal with press and dclick events for minimized windows.
      * All other non-menu events are ingored.
@@ -642,7 +642,7 @@ bool GUIProcessEvent( EVENT ev )
                 break;
             }
         }
-        return( TRUE );
+        return( true );
     }
     if( ( GUICurrWnd != NULL ) && GUIIsOpen( GUICurrWnd ) && ( ev < GUI_FIRST_USER_EVENT ) ) {
         /* see if any of the controls in the window consume the event */
@@ -654,7 +654,7 @@ bool GUIProcessEvent( EVENT ev )
             ev = GUIGadgetFilter( GUICurrWnd, ev, &prev, &diff );
         }
         if( ev == EV_NO_EVENT ) {
-            return( TRUE );
+            return( true );
         }
     }
     gui_ev = GUI_NO_EVENT;
@@ -662,11 +662,11 @@ bool GUIProcessEvent( EVENT ev )
     switch( ev ) {
     case EV_MOUSE_DCLICK_R :
         ProcessMousePos( GUI_RBUTTONDBLCLK, row, col, wnd );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_RELEASE_R :
         ProcessMouseReleaseDrag( ev, GUI_RBUTTONUP, row, col );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_DRAG_R :
         if( GUICurrWnd != GUIMouseWnd ) {
@@ -676,11 +676,11 @@ bool GUIProcessEvent( EVENT ev )
         }
     case EV_MOUSE_MOVE :
         ProcessMousePos( GUI_MOUSEMOVE, row, col, wnd );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_RELEASE :
         ProcessMouseReleaseDrag( ev, GUI_LBUTTONUP, row, col );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_DRAG :
         if( GUICurrWnd != GUIMouseWnd ) {
@@ -689,19 +689,19 @@ bool GUIProcessEvent( EVENT ev )
                                new_curr_wnd );
         }
         ProcessMouseReleaseDrag( ev, GUI_MOUSEMOVE, row, col );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_PRESS_R :
         ProcessMousePress( ev, GUI_RBUTTONDOWN, row, col, new_curr_wnd );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_PRESS :
         ProcessMousePress( ev, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
-        return( TRUE );
+        return( true );
         break;
     case EV_MOUSE_DCLICK :
         ProcessMousePress( ev, GUI_LBUTTONDBLCLK, row, col, new_curr_wnd );
-        return( TRUE );
+        return( true );
         break;
     case EV_NO_EVENT :
         gui_ev = GUI_NO_EVENT;
@@ -716,7 +716,7 @@ bool GUIProcessEvent( EVENT ev )
     case EV_SCROLL_RIGHT_PAGE :
         if( GUICurrWnd != NULL ) {
             ProcessScrollEvent( ev );
-            return( TRUE );
+            return( true );
         }
         break;
     case EV_SCROLL_VERTICAL :
@@ -725,7 +725,7 @@ bool GUIProcessEvent( EVENT ev )
         } else {
             GUIWholeWndDirty( GUICurrWnd );
         }
-        return( TRUE );
+        return( true );
         break;
     case EV_SCROLL_HORIZONTAL :
         if( GUI_HSCROLL_EVENTS_SET( GUICurrWnd ) ) {
@@ -733,11 +733,11 @@ bool GUIProcessEvent( EVENT ev )
         } else {
             GUIWholeWndDirty( GUICurrWnd );
         }
-        return( TRUE );
+        return( true );
         break;
     case EV_MENU_INITPOPUP :
         ProcessInitPopupEvent();
-        return( TRUE );
+        return( true );
         break;
     #if 0
     case EV_BACKGROUND_RESIZE :
@@ -748,7 +748,7 @@ bool GUIProcessEvent( EVENT ev )
                 GUIZoomWnd( root, GUI_NONE );
             }
         }
-        return( TRUE );
+        return( true );
         break;
     #endif
     default :
@@ -760,12 +760,12 @@ bool GUIProcessEvent( EVENT ev )
                     GUIEVENTWND( menu_window, GUI_CLICKED, &id );
                 }
             }
-            return( TRUE );
+            return( true );
         }
         break;
     }
     if( ( GUICurrWnd != NULL ) && (gui_ev != GUI_NO_EVENT ) ) {
         GUIEVENTWND( GUICurrWnd, gui_ev, NULL );
     }
-    return( TRUE );
+    return( true );
 }

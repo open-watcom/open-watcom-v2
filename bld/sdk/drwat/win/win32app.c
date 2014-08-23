@@ -34,21 +34,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
+#include "bool.h"
 #include "drwatcom.h"
 
 /*
  * CheckIsWin32App - check if task is a win 32 app
  */
-BOOL CheckIsWin32App( HANDLE htask )
+bool CheckIsWin32App( HANDLE htask )
 {
     TASKENTRY   te;
 
     Win32CS = Win32DS = 0;
     if( !MyTaskFindHandle( &te, htask ) ) {
-        return( 0 );
+        return( false );
     }
-    return( CheckIsModuleWin32App( te.hModule, &Win32DS, &Win32CS,
-                                &Win32InitialEIP ) );
+    return( CheckIsModuleWin32App( te.hModule, &Win32DS, &Win32CS, &Win32InitialEIP ) );
 
 } /* CheckIsWin32App */
 

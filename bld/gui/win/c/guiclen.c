@@ -45,7 +45,7 @@ static bool IsDBCS;
 static void MBInit( void )
 /************************/
 {
-#if defined( __NT__ ) && !defined( __UNIX__ )
+#if defined( __NT__ )
     int                 countRange, countVal;
     CPINFO              cpInfo;
     BOOL                rc;
@@ -58,23 +58,24 @@ static void MBInit( void )
   #else
         APIRET          rc;
   #endif
-#elif defined( __WINDOWS__ ) || defined( __UNIX__ )
+#elif defined( __WINDOWS__ )
     int                 countVal;
     DWORD               version;
 #endif
 
     memset( __CharLenTable, 1, sizeof( __CharLenTable ) );              /* zero table to start */
 
-    #if defined( __NT__) && !defined( __UNIX__ )
+    #if defined( __NT__)
         /*** Initialize the __CharLenTable values ***/
         rc = GetCPInfo( CP_OEMCP, &cpInfo );    /* get code page info */
-        if( rc == FALSE )  return;
+        if( rc == 0 )
+            return;
         for( countRange=0; !(cpInfo.LeadByte[countRange]==0x00 &&
              cpInfo.LeadByte[countRange+1]==0x00); countRange+=2 ) {
             for( countVal=cpInfo.LeadByte[countRange];
                  countVal<=cpInfo.LeadByte[countRange+1]; countVal++) {
                 __CharLenTable[countVal] = 2;
-                IsDBCS = TRUE;
+                IsDBCS = true;
             }
         }
     #elif defined __OS2__ || defined __OS2_PM__
@@ -92,17 +93,17 @@ static void MBInit( void )
             for( countVal=leadBytes[countRange];
                  countVal<=leadBytes[countRange+1]; countVal++) {
                 __CharLenTable[countVal] = 2;
-                IsDBCS = TRUE;
+                IsDBCS = true;
             }
         }
-    #elif defined( __WINDOWS__ ) || defined( __UNIX__ )
+    #elif defined( __WINDOWS__ )
         /*** Initialize the __CharLenTable values ***/
         version = GetVersion();
         if( LOWORD(version) < ((10<<8)+3) )  return;   /* 3.1+ needed */
         for( countVal=0; countVal<256; countVal++ ) {
             if( IsDBCSLeadByte( (BYTE)countVal ) ) {
                 __CharLenTable[countVal] = 2;
-                IsDBCS = TRUE;
+                IsDBCS = true;
             }
         }
     #endif
@@ -113,7 +114,7 @@ int GUICharLen( int ch )
 {
     if( !Init ) {
         MBInit();
-        Init = TRUE;
+        Init = true;
     }
     return( __CharLenTable[ch] );
 }
@@ -122,7 +123,7 @@ bool GUIIsDBCS( void )
 {
     if( !Init ) {
         MBInit();
-        Init = TRUE;
+        Init = true;
     }
     return( IsDBCS );
 }

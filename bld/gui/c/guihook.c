@@ -79,7 +79,7 @@ bool GUIXInitMDI( gui_window *wnd )
     if( fXInitMDI != NULL ) {
         return( (*fXInitMDI)(wnd) );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUISetInitMDI( void (*func)(gui_window*, gui_create_info *) )

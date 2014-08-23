@@ -30,6 +30,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 #include "font.h"
 #include "drwatcom.h"
 #include "intdlg.h"

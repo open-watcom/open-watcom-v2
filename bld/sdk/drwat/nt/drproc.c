@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "drwatcom.h"
 #include "menu.h"
 #include "aboutdlg.h"
@@ -113,7 +114,7 @@ BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
  */
 BOOL QueryEnd( HWND owner ) {
 
-    DWORD       rc;
+    INT_PTR     rc;
 
     if( GetNextOwnedProc( NULL ) == NULL ) {
         return( TRUE );

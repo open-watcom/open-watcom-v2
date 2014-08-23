@@ -70,10 +70,10 @@ bool GUIXCloseToolBar( gui_window *wnd )
         }
         GUIMemFree( toolbar->bitmaps );
         GUIMemFree( toolbar );
-        GUIResizeBackground( wnd, TRUE );
+        GUIResizeBackground( wnd, true );
         GUIEVENTWND( wnd, GUI_TOOLBAR_DESTROYED, NULL );
     }
-    return( TRUE );
+    return( true );
 }
 
 static gui_window *GetToolWnd( HWND hwnd )
@@ -97,14 +97,14 @@ static gui_window *GetToolWnd( HWND hwnd )
     return( NULL );
 }
 
-void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, BOOL down )
+void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, bool down )
 {
     gui_window          *wnd;
     gui_menu_styles     style;
 
     wnd = GetToolWnd( hwnd );
     if( wnd != NULL ) {
-        style = ( down ? GUI_ENABLED : GUI_IGNORE );
+        style = ( down ) ? GUI_ENABLED : GUI_IGNORE;
         GUIDisplayHintText( wnd, wnd, (int)id, TOOL_HINT, style );
     }
 }
@@ -113,7 +113,7 @@ void GUIToolBarHelp( HWND hwnd, WPI_PARAM1 id, BOOL down )
  * GUIToolBarProc - hook message handler for the tool bar.
  */
 
-BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window              *wnd;
     toolbarinfo             *toolbar;
@@ -122,11 +122,11 @@ BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
 
     wnd = GetToolWnd( hwnd );
     if( wnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
     toolbar = wnd->toolbar;
     if( toolbar == NULL ) {
-        return( FALSE );
+        return( false );
     }
     switch( msg ) {
     case WM_CREATE :
@@ -150,11 +150,10 @@ BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
     case WM_KEYUP :
     case WM_KEYDOWN :
 #endif
-        return( (BOOL)GUIProcesskey( hwnd, msg, wparam, lparam ) );
+        return( GUIProcesskey( hwnd, msg, wparam, lparam ) != 0 );
     case WM_MENUSELECT :
         GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam );
-        return( TRUE );
-        break;
+        return( true );
     case WM_SYSCOMMAND :
         param = _wpi_getid( wparam );
         switch( param ) {
@@ -180,7 +179,7 @@ BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
 #else
             GUIChangeToolBar( wnd );
 #endif
-            return( TRUE );
+            return( true );
         }
         break;
     case WM_MOVE:
@@ -206,10 +205,10 @@ BOOL GUIToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
         break;
     case WM_CLOSE :
         GUICloseToolBar( wnd );
-        return( TRUE );
+        return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -246,14 +245,14 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     fixed_width = 0;
     if( ( wnd == NULL ) || ( num_toolbar_items < 1 ) || ( toolinfo == NULL ) ||
         ( wnd->hwnd == NULLHANDLE ) || ( wnd->root == NULLHANDLE ) ) {
-        return( FALSE );
+        return( false );
     }
     if( wnd->toolbar != NULL ) {
         GUICloseToolBar( wnd );
     }
     wnd->toolbar = ( toolbarinfo * )GUIMemAlloc( sizeof( toolbarinfo ) );
     if( wnd->toolbar == NULL ) {
-        return( FALSE );
+        return( false );
     }
     toolbar = wnd->toolbar;
     memset( toolbar, 0, sizeof( toolbarinfo ) );
@@ -263,7 +262,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( toolbar->bitmaps == NULL ) {
         GUIMemFree( wnd->toolbar );
         wnd->toolbar = NULL;
-        return( FALSE );
+        return( false );
     }
     for( i = 0; i < num_toolbar_items; i++ ) {
         toolbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst,
@@ -347,7 +346,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 
     ToolBarDisplay( toolbar->hdl, &toolbar->info );
 
-    GUIResizeBackground( wnd, TRUE );
+    GUIResizeBackground( wnd, true );
 
     for( i = 0; i < num_toolbar_items; i++ ) {
         info.u.bmp = toolbar->bitmaps[i];
@@ -363,7 +362,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     toolhwnd = ToolBarWindow( toolbar->hdl );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
     _wpi_updatewindow( toolhwnd );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -376,7 +375,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                         gui_colour_set *standout, gui_rect *float_pos )
 {
     return( GUIXCreateToolBarWithTips( wnd, fixed, height, num_toolbar_items, toolinfo,
-                                       excl, plain, standout, float_pos, FALSE ) );
+                                       excl, plain, standout, float_pos, false ) );
 }
 
 /*
@@ -426,12 +425,12 @@ bool GUIChangeToolBar( gui_window *wnd )
 
     toolbar = wnd->toolbar;
     if( !toolbar->info.is_fixed ) {
-        toolbar->info.is_fixed = TRUE;
+        toolbar->info.is_fixed = true;
         toolbar->info.style = TOOLBAR_FIXED_STYLE;
         toolbar->info.area = toolbar->fixedrect;
         gui_ev = GUI_TOOLBAR_FIXED;
     } else {
-        toolbar->info.is_fixed = FALSE;
+        toolbar->info.is_fixed = false;
         toolbar->info.style = TOOLBAR_FLOAT_STYLE;
         toolbar->info.area = toolbar->floatrect;
         _wpi_cvtc_rect_plus1( wnd->root, &toolbar->info.area );
@@ -449,11 +448,11 @@ bool GUIChangeToolBar( gui_window *wnd )
         t = _wpi_cvtc_y_plus1( wnd->root, t );
         _wpi_movewindow( toolhwnd, left, t, right-left, bottom-top, TRUE );
     }
-    GUIResizeBackground( wnd, TRUE );
+    GUIResizeBackground( wnd, true );
     _wpi_showwindow( toolhwnd, SW_SHOWNORMAL );
     _wpi_updatewindow( toolhwnd );
     GUIEVENTWND( wnd, gui_ev, NULL );
-    return( TRUE );
+    return( true );
 }
 
 bool GUIToolBarFixed( gui_window *wnd )
@@ -461,5 +460,5 @@ bool GUIToolBarFixed( gui_window *wnd )
     if( GUIHasToolBar( wnd ) ) {
         return( wnd->toolbar->info.is_fixed );
     }
-    return( FALSE );
+    return( false );
 }

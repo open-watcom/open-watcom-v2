@@ -48,7 +48,7 @@ void RegisterRtns( DisAsmRtns *rtns )
 /*
  * MiscDoCode - cover function for the DoCode function of the disassembler
  */
-void MiscDoCode( instruction *ins, char is32, DisAsmRtns *rtns )
+void MiscDoCode( instruction *ins, bool is32, DisAsmRtns *rtns )
 {
     if( CurRtns != NULL ) {
         MessageBox( NULL, "Disassembly Error!!", "", MB_OK );

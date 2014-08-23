@@ -30,6 +30,7 @@
 
 
 #include "precomp.h"
+#include "bool.h"
 #include "hint.h"
 #include "uistr.gh"
 #include "mem.h"
@@ -103,7 +104,7 @@ static void updateHintText( statwnd *wnd, MSGID msgid )
 /*
  * HintToolbar - handle the selection or deselection of a menu item
  */
-void HintToolBar( statwnd *wnd, WORD menuid, BOOL select )
+void HintToolBar( statwnd *wnd, WORD menuid, bool select )
 {
     MSGID   msgid;
 
@@ -240,7 +241,7 @@ void HintWndDestroy( statwnd *wnd )
 /*
  * HintWndInit - initialize the hint status bar
  */
-int HintWndInit( HINSTANCE hinstance, statushook hook, int extra )
+bool HintWndInit( HINSTANCE hinstance, statushook hook, int extra )
 {
     return( StatusWndInit( hinstance, hook, extra, NULL ) );
 

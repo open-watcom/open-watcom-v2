@@ -45,7 +45,7 @@
     (sizeof( BITMAPCOREINFO ) + sizeof( RGBTRIPLE ) * ((1 << (bc)) - 1))
 
 typedef struct {
-    BOOL                is_core;
+    bool                is_core;
     union {
         BITMAPCOREINFO  *bm_core;
         BITMAPINFO      *bm_info;

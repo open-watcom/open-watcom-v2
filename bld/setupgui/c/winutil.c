@@ -37,9 +37,6 @@
   #if defined( __NT__ )
     #include <commdlg.h>
   #endif
-  #if !defined( _UI )
-    #include "fontstr.h"
-  #endif
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -48,6 +45,10 @@
 #include <sys/types.h>
 #include "wio.h"
 #include "watcom.h"
+#include "bool.h"
+#if !defined( _UI ) && ( defined( __NT__ ) || defined( __WINDOWS__ ) )
+    #include "fontstr.h"
+#endif
 #define INCL_WINSHELLDATA
 #include "gui.h"
 #include "setup.h"

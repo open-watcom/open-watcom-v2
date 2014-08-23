@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "mem.h"
@@ -143,7 +144,7 @@ static void fillExceptionDlg( HWND hwnd, ExceptDlgInfo *info ) {
         ctl = GetDlgItem( hwnd, INT_CHAIN_TO_NEXT );
         EnableWindow( ctl, FALSE );
     }
-    CheckDlgButton( hwnd, ConfigData.exception_action, TRUE );
+    CheckDlgButton( hwnd, ConfigData.exception_action, BST_CHECKED );
     CopyRCString( STR_PROCESS_ID, buf, BUF_SIZE );
     SetDlgItemText( hwnd, INT_TASK_PATH_TEXT, buf );
 
@@ -242,7 +243,7 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         if( LogData.autolog ) {         //Just create the log and exit
             tmp = ConfigData.exception_action;
-            CheckDlgButton( hwnd, INT_TERMINATE, TRUE );
+            CheckDlgButton( hwnd, INT_TERMINATE, BST_CHECKED );
             SendMessage( hwnd, WM_COMMAND,
                         MAKELONG( INT_ACT_AND_LOG, BN_CLICKED ),
                         (LONG)GetDlgItem( hwnd, INT_ACT_AND_LOG ) );
@@ -327,10 +328,9 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
  */
 int HandleException( DEBUG_EVENT *dbinfo ) {
 
-    int         ret;
+    INT_PTR     ret;
 
     RefreshCostlyInfo();
-    ret = JDialogBoxParam( Instance, "INTERRUPT", MainHwnd, ExceptionProc,
-                    (DWORD)dbinfo );
+    ret = JDialogBoxParam( Instance, "INTERRUPT", MainHwnd, ExceptionProc, (LPARAM)dbinfo );
     return( ret );
 }

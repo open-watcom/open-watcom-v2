@@ -57,21 +57,21 @@ extern void WdeHashSaveRejected( WdeHashTable *table );
 extern bool WdeIsHashTableTouched( WdeHashTable *table );
 extern void WdeUntouchHashTable( WdeHashTable *table );
 extern void WdeTouchHashTable( WdeHashTable *table );
-extern bool WdeIsValidSymbol( char *symbol );
+extern bool WdeIsValidSymbol( const char *symbol );
 
 extern uint_32      WdeNumInHashTable( WdeHashTable * );
 extern void         WdeMakeHashTableClean( WdeHashTable * );
 extern bool         WdeIsHashTableDirty( WdeHashTable * );
 extern WdeHashTable *WdeInitHashTable( void );
 extern void         WdeFreeHashTable( WdeHashTable * );
-extern bool         WdeRemoveName( WdeHashTable *, char * );
-extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup );
-extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, char *, WdeHashValue, bool * );
-extern WdeHashValue WdeLookupName( WdeHashTable *, char *, bool * );
+extern bool         WdeRemoveName( WdeHashTable *, const char * );
+extern WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, const char *name, bool *dup );
+extern WdeHashEntry *WdeAddHashEntry( WdeHashTable *, const char *, WdeHashValue, bool * );
+extern WdeHashValue WdeLookupName( WdeHashTable *, const char *, bool * );
 extern char         *WdeResolveValue( WdeHashTable *, WdeHashValue );
 extern void         WdeAddSymbolsToListBox( WdeHashTable *, HWND, int );
 extern void         WdeAddSymbolsToComboBox( WdeHashTable *, HWND, int );
-extern bool         WdeWriteSymbolsToFile( WdeHashTable *, char * );
+extern bool         WdeWriteSymbolsToFile( WdeHashTable *, const char * );
 extern bool         WdeMergeHashTable( WdeHashTable **, WdeHashTable * );
 extern bool         WdeCopyHashTable( WdeHashTable **, WdeHashTable * );
 

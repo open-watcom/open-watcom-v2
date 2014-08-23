@@ -83,7 +83,7 @@ uint_8 GetSegByte( uint_32 off )
 {
     uint_8      *p;
 
-    p = Access( off, FALSE );
+    p = Access( off, false );
     if( p == NULL ) return( 0 );
     return( *p );
 }
@@ -137,29 +137,29 @@ void PutSegDWord( uint_32 off, uint_32 data )
 }
 
 
-void InitSegAccess()
-/******************/
+void InitSegAccess( void )
+/************************/
 {
     Segment->curr = Segment->start;
 }
 
 
-uint_32 GetOffset()
-/*****************/
+uint_32 GetOffset( void )
+/***********************/
 {
     return( Segment->curr );
 }
 
 
-int_16  PeekDataByte()
-/********************/
+int_16  PeekDataByte( void )
+/**************************/
 {
     return( GetSegByte( Segment->curr ) );
 }
 
 
-int_16  GetDataByte()
-/*******************/
+int_16  GetDataByte( void )
+/*************************/
 {
     uint_16 value;
 
@@ -173,8 +173,8 @@ int_16  GetDataByte()
 }
 
 
-int_16  GetDataWord()
-/*******************/
+int_16  GetDataWord( void )
+/*************************/
 {
     uint_16 byte1;
     uint_16 byte2;
@@ -185,8 +185,8 @@ int_16  GetDataWord()
 }
 
 
-int_32 GetDataLong()
-/******************/
+int_32 GetDataLong( void )
+/************************/
 {
     uint_32 word1;
     uint_32 word2;
@@ -197,8 +197,8 @@ int_32 GetDataLong()
 }
 
 
-int_16  GetNextByte()
-/*******************/
+int_16  GetNextByte( void )
+/*************************/
 {
     int                 value;
 
@@ -210,8 +210,8 @@ int_16  GetNextByte()
 }
 
 
-char  EndOfSegment()
-/******************/
+char  EndOfSegment( void )
+/************************/
 {
     return( Segment->curr == Segment->size );
 }

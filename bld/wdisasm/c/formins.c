@@ -74,9 +74,9 @@ static  bool    IsJumpIns( uint_16 opcode )
     case I_JNS:
     case I_JP:
     case I_JPO:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -247,7 +247,7 @@ void  FormatIns( char *buf, instruction *curr_ins, form_option format )
     operand             *op;
     int                 i;
     int                 seg_override;
-    char                prefix;
+    bool                prefix;
     char                tmp_buff[ 80 ];
     char                *ptr;
 
@@ -256,7 +256,7 @@ void  FormatIns( char *buf, instruction *curr_ins, form_option format )
         return;
     }
     CurrIns = *curr_ins;
-    prefix = FALSE;
+    prefix = false;
     for( i = 0; i <= 3; ++i ) {
         if( CurrIns.pref & PrefixTab[ i ] ) {
             strcpy( tmp_buff, InsName[ PrefixName[ i ] ] );
@@ -265,7 +265,7 @@ void  FormatIns( char *buf, instruction *curr_ins, form_option format )
                 ZapUpper( tmp_buff );
             }
             strcat( buf, tmp_buff );
-            prefix = TRUE;
+            prefix = true;
         }
     }
     seg_override = NULL_REG;

@@ -298,7 +298,7 @@ static void initializeImage( img_node *node, char *filename )
 int NewImage( int img_type, char *filename )
 {
     WPI_PROC            fp;
-    int                 button_type;
+    INT_PTR             button_type;
     short               width;
     short               height;
     short               bcount;

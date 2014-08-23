@@ -43,7 +43,7 @@
 #define VALIDWINDOW( area, check_min )          \
         ( check_min ?                           \
         ( area->width >= MIN_WIDTH ) &&         \
-        ( area->height >= MIN_HEIGHT ) : TRUE )
+        ( area->height >= MIN_HEIGHT ) : true )
 
 /*
  * GUISetRedraw -- set the redraw flag for a given window
@@ -52,7 +52,7 @@ bool GUISetRedraw( gui_window *wnd, bool redraw )
 {
     wnd    = wnd;
     redraw = redraw;
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -98,25 +98,25 @@ bool GUIPtInRect( SAREA *area, ORD row, ORD col )
 static bool CheckOverlap( SAREA *one, SAREA *two )
 {
     if( GUIPtInRect( two, one->row, one->col ) ) {
-        return( TRUE );
+        return( true );
     }
     if( GUIPtInRect( two, one->row, one->col + one->width - 1 ) ) {
-        return( TRUE );
+        return( true );
     }
     if( GUIPtInRect( two, one->row + one->height - 1, one->col ) ) {
-        return( TRUE );
+        return( true );
     }
     if( GUIPtInRect( two, one->row + one->height - 1,
                           one->col + one->width - 1 ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIOverlap( SAREA *one, SAREA *two )
 {
     if( CheckOverlap( one, two ) ) {
-        return( TRUE );
+        return( true );
     } else {
         return( CheckOverlap( two, one ) );
     }
@@ -167,7 +167,7 @@ void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea )
 /*
  *  GUISetArea -- set area to screen coordinates that match rect.
  *                If parent is not NULL, rect will be relative.
- *                If dialog is TRUE, the screen bounds not the parent.
+ *                If dialog is true, the screen bounds not the parent.
  */
 
 bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
@@ -198,7 +198,7 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
         act_rect.y += parent_rect.y;
     }
     if( !GUIScaleToScreenRect( &act_rect, area ) ) {
-        return( FALSE );
+        return( false );
     }
 
     valid = VALIDWINDOW( area, check_min );
@@ -220,7 +220,7 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
             } else {
                 new = bounding.col + bounding.width - area->col - 1;
                 if( new < 0 ) {
-                    return( FALSE );
+                    return( false );
                 } else {
                     area->width = new;
                 }
@@ -239,7 +239,7 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
             } else {
                 new = bounding.row + bounding.height - area->row - 1;
                 if( new < 0 ) {
-                    return( FALSE );
+                    return( false );
                 } else {
                     area->height = new;
                 }
@@ -303,11 +303,11 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *data )
     char        *name;
 
     if( !GUIStrDup( data, &name ) ) {
-        return( FALSE );
+        return( false );
     } else {
         GUIMemFree( wnd->screen.name );
         wnd->screen.name = name;
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -372,10 +372,10 @@ bool GUISetCursor( gui_window *wnd )
         } else {
             uicursor( &wnd->screen, wnd->screen.row, wnd->screen.col,
                       wnd->screen.cursor );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /* Hooking the F1 key */

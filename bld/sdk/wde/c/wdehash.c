@@ -150,7 +150,7 @@ void WdeAddSymbolsToListBox( WdeHashTable *table, HWND hDlg, int id )
     WRAddSymbolsToListBox( table, hDlg, id, WR_HASHENTRY_ALL );
 }
 
-bool WdeWriteSymbolsToFile( WdeHashTable *table, char *name )
+bool WdeWriteSymbolsToFile( WdeHashTable *table, const char *name )
 {
     return( WRWriteSymbolsToFile( table, name ) != 0 );
 }
@@ -160,7 +160,7 @@ void WdeAddSymbolsToComboBox( WdeHashTable *table, HWND hDlg, int id )
     WRAddSymbolsToComboBox( table, hDlg, id, WR_HASHENTRY_ALL );
 }
 
-WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup )
+WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, const char *name, bool *dup )
 {
     WdeHashEntry        *entry;
     bool                d;
@@ -181,7 +181,7 @@ WdeHashEntry *WdeDefAddHashEntry( WdeHashTable *table, char *name, bool *dup )
     return( entry );
 }
 
-WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
+WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, const char *name,
                                WdeHashValue value, bool *dup )
 {
     WdeHashEntry        *entry;
@@ -203,13 +203,13 @@ WdeHashEntry *WdeAddHashEntry( WdeHashTable *table, char *name,
     return( entry );
 }
 
-bool WdeRemoveName( WdeHashTable *table, char *name )
+bool WdeRemoveName( WdeHashTable *table, const char *name )
 {
     WdeTouchHashTable( table );
     return( WRRemoveName( table, name ) != 0 );
 }
 
-WdeHashValue WdeLookupName( WdeHashTable *table, char *name, bool *found )
+WdeHashValue WdeLookupName( WdeHashTable *table, const char *name, bool *found )
 {
     WdeHashValue        val;
 
@@ -222,7 +222,7 @@ WdeHashValue WdeLookupName( WdeHashTable *table, char *name, bool *found )
     return( val );
 }
 
-bool WdeModifyName( WdeHashTable *table, char *name, WdeHashValue value )
+bool WdeModifyName( WdeHashTable *table, const char *name, WdeHashValue value )
 {
     WdeTouchHashTable( table );
     return( WRModifyName( table, name, value, false ) != 0 );
@@ -233,7 +233,7 @@ char *WdeResolveValue( WdeHashTable *table, WdeHashValue value )
     return( WRResolveValue( table, value ) );
 }
 
-bool WdeIsValidSymbol( char *symbol )
+bool WdeIsValidSymbol( const char *symbol )
 {
     return( WRIsValidSymbol( symbol ) );
 }

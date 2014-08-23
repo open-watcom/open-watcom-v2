@@ -36,30 +36,30 @@
 #include "guix.h"
 
 
-        gui_keystate    KeyState                = GUI_KS_NONE;
+gui_keystate    KeyState = GUI_KS_NONE;
 
-#define ALT_CTRL( in, key ) {                           \
-        if( ALT ) key = GUI_KEY_ALT_##in;               \
-        else if( CTRL ) key = GUI_KEY_CTRL_##in;        \
-        else key = GUI_KEY_##in;                        \
+#define ALT_CTRL( in, key ) {                               \
+        if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
+        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+        else key = GUI_KEY_##in;                            \
 }
 
-#define ALT_CTRL_SHIFT( in, key ) {                     \
-        if( ALT ) key = GUI_KEY_ALT_##in;               \
-        else if( CTRL ) key = GUI_KEY_CTRL_##in;        \
-        else if( SHIFT ) key = GUI_KEY_SHIFT_##in;      \
-        else key = GUI_KEY_##in;                        \
+#define ALT_CTRL_SHIFT( in, key ) {                         \
+        if( CHK_KS_ALT ) key = GUI_KEY_ALT_##in;            \
+        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+        else if( CHK_KS_SHIFT ) key = GUI_KEY_SHIFT_##in;   \
+        else key = GUI_KEY_##in;                            \
 }
 
-#define EXTALT_CTRL( in, key ) {                        \
-        if( ALT ) key = GUI_KEY_ALT_EXT_##in;           \
-        else if( CTRL ) key = GUI_KEY_CTRL_##in;        \
-        else key = GUI_KEY_##in;                        \
+#define EXTALT_CTRL( in, key ) {                            \
+        if( CHK_KS_ALT ) key = GUI_KEY_ALT_EXT_##in;        \
+        else if( CHK_KS_CTRL ) key = GUI_KEY_CTRL_##in;     \
+        else key = GUI_KEY_##in;                            \
 }
 
-#define ALTorCTRL( in, key ) {                          \
-    if( ALT || CTRL ) key = GUI_KEY_ALT_##in;           \
-    else key = GUI_KEY_##in;                            \
+#define ALTorCTRL( in, key ) {                              \
+    if( CHK_KS_ALT || CHK_KS_CTRL ) key = GUI_KEY_ALT_##in; \
+    else key = GUI_KEY_##in;                                \
 }
 
 gui_key GUIMapKey( gui_key key )

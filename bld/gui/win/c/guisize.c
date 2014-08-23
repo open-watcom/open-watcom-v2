@@ -83,7 +83,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
                                //SWP_NOREDRAW | SWP_NOACTIVATE | SWP_NOZORDER | SWP_SIZE | SWP_MOVE );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
@@ -129,10 +129,10 @@ bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
         _wpi_getrestoredrect( top_hwnd, &new_rect );
         _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&new_rect, 2 );
         DoGetRelRect( top_hwnd, &new_rect, rect, ( wnd->style & GUI_POPUP ) );
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void GUIMinimizeWindow( gui_window *wnd )
@@ -146,7 +146,7 @@ extern void GUIMaximizeWindow( gui_window *wnd )
 {
     if( wnd->style & GUI_MAXIMIZE ) {
         if( GUIIsMDIChildWindow( wnd ) ) {
-            GUIMDIMaximize( TRUE, GUIGetFront() );
+            GUIMDIMaximize( true, GUIGetFront() );
         } else {
             _wpi_maximizewindow( GUIGetParentFrameHWND( wnd ) );
         }
@@ -165,16 +165,16 @@ bool GUIIsWindowVisible( gui_window *wnd )
     hwnd = GUIGetParentFrameHWND( wnd );
     if( hwnd != NULLHANDLE ) {
         if( IsWindowVisible( hwnd ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIRestoreWindow( gui_window *wnd )
 {
     if( GUIIsMDIChildWindow( wnd ) && GUIMDIMaximized( wnd ) ) {
-        GUIMDIMaximize( FALSE, GUIGetFront() );
+        GUIMDIMaximize( false, GUIGetFront() );
     } else {
         _wpi_restorewindow( GUIGetParentFrameHWND( wnd ) );
     }

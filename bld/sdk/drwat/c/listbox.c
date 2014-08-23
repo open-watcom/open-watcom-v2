@@ -33,6 +33,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include "bool.h"
 #include "drwatcom.h"
 
 #define MAX_LB_LINES            500

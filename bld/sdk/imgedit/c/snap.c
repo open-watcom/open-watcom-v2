@@ -58,7 +58,7 @@ void AbortSnap( HWND hwnd );
 /*
  * deskTopWindowHook
  */
-static BOOL deskTopWindowHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+static bool deskTopWindowHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     hwnd = hwnd;
     lparam = lparam;
@@ -68,7 +68,7 @@ static BOOL deskTopWindowHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             AbortSnap( snapWindow );
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* deskTopWindowHook */
 

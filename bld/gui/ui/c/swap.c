@@ -36,8 +36,8 @@
 #define __WANTALL__
 #include "swap.h"
 
-static BOOL             isGraphical;
-static BOOL             isFast;
+static bool             isGraphical;
+static bool             isFast;
 
 static DWORD            dosMem;
 static WORD             pageSize;
@@ -284,10 +284,10 @@ static void saveCursor( void )
     int cnt;
 
     GetCursorPos( &oldCursorPos );
-    cnt = ShowCursor( FALSE );
+    cnt = ShowCursor( false );
     oldCursorCount = cnt + 1;
     while( cnt >= 0 ) {
-        ShowCursor( FALSE );
+        ShowCursor( false );
         cnt--;
     }
 
@@ -295,19 +295,20 @@ static void saveCursor( void )
 
 static void restoreCursor( void )
 {
-    while( ShowCursor( TRUE ) != oldCursorCount );
+    while( ShowCursor( true ) != oldCursorCount );
     SetCursorPos( oldCursorPos.x, oldCursorPos.y );
 }
 
 void ToGraphical( void )
 {
-    if( isGraphical ) return;
+    if( isGraphical )
+        return;
     if( isFast ) {
         toGraphicalFast();
     } else {
         toGraphicalW();
     }
-    isGraphical = TRUE;
+    isGraphical = true;
     restoreCursor();
 }
 
@@ -325,14 +326,15 @@ static void SetCharSet( unsigned char c )
 void ToCharacter( void )
 {
 
-    if( !isGraphical ) return;
+    if( !isGraphical )
+        return;
     saveCursor();
     if( isFast ) {
         toCharacterFast();
     } else {
         toCharacterW();
     }
-    isGraphical = FALSE;
+    isGraphical = false;
     if( SwapScrnLines() >=43 ) {
         SetCharSet( DOUBLE_DOT_CHR_SET );
     } else if( SwapScrnLines() >= 28 ) {
@@ -340,7 +342,7 @@ void ToCharacter( void )
     }
 }
 
-void InitSwapper( BOOL wantfast )
+void InitSwapper( bool wantfast )
 {
     isFast = wantfast;
     if( isFast ) {
@@ -348,7 +350,7 @@ void InitSwapper( BOOL wantfast )
     } else {
         initSwapperW();
     }
-    isGraphical = TRUE;
+    isGraphical = true;
 }
 
 void FiniSwapper( void )

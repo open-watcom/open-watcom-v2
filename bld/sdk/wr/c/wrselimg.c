@@ -58,8 +58,8 @@ WINEXPORT extern BOOL CALLBACK WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static void WRSetEntries( HWND, WRSelectImageInfo * );
-static BOOL WRSetWinInfo( HWND, WRSelectImageInfo * );
-static BOOL WRGetWinInfo( HWND, WRSelectImageInfo * );
+static bool WRSetWinInfo( HWND, WRSelectImageInfo * );
+static bool WRGetWinInfo( HWND, WRSelectImageInfo * );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -76,7 +76,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
 {
     DLGPROC             proc;
     HINSTANCE           inst;
-    BOOL                modified;
+    INT_PTR             modified;
     WRSelectImageInfo   *info;
 
     if( rinfo == NULL ) {
@@ -138,23 +138,23 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *info )
     SendMessage( lbox, LB_SETCURSEL, 0, 0 );
 }
 
-BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
+static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 {
     WResTypeNode        *tnode;
-    BOOL                lbox_set;
+    bool                lbox_set;
 
     if( info == NULL || hdlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    lbox_set = FALSE;
+    lbox_set = false;
 
     tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_BITMAP, NULL );
     if( tnode != NULL ) {
-        CheckDlgButton( hdlg, IDM_SELIMGBMP, 1 );
+        CheckDlgButton( hdlg, IDM_SELIMGBMP, BST_CHECKED );
         info->type = (uint_16)(pointer_int)RT_BITMAP;
         WRSetEntries( hdlg, info );
-        lbox_set = TRUE;
+        lbox_set = true;
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGBMP ), FALSE );
     }
@@ -162,10 +162,10 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_GROUP_CURSOR, NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
-            CheckDlgButton( hdlg, IDM_SELIMGCUR, 1 );
+            CheckDlgButton( hdlg, IDM_SELIMGCUR, BST_CHECKED );
             info->type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
             WRSetEntries( hdlg, info );
-            lbox_set = TRUE;
+            lbox_set = true;
         }
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGCUR ), FALSE );
@@ -174,10 +174,10 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_GROUP_ICON, NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
-            CheckDlgButton( hdlg, IDM_SELIMGICO, 1 );
+            CheckDlgButton( hdlg, IDM_SELIMGICO, BST_CHECKED );
             info->type = (uint_16)(pointer_int)RT_GROUP_ICON;
             WRSetEntries( hdlg, info );
-            lbox_set = TRUE;
+            lbox_set = true;
         }
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGICO ), FALSE );
@@ -190,31 +190,31 @@ BOOL WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( lbox_set );
 }
 
-BOOL WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
+static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 {
     HWND        lbox;
     LRESULT     index;
 
     if( info == NULL || info->info == NULL || hdlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     lbox = GetDlgItem( hdlg, IDM_SELIMGLBOX );
     if( lbox == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
-        return( FALSE );
+        return( false );
     }
 
     info->lnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
     if( info->lnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )

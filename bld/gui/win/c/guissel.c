@@ -41,7 +41,7 @@ static bool GUISelect( gui_window *wnd, unsigned id, bool set,
     WPI_PARAM2          wparam;
 
     if( !GUIGetControlClass( wnd, id, &control_class ) ) {
-        return( FALSE );
+        return( false );
     }
     switch( control_class ) {
     case GUI_EDIT_MLE:
@@ -66,7 +66,7 @@ static bool GUISelect( gui_window *wnd, unsigned id, bool set,
         }
         break;
     default :
-        return( FALSE );
+        return( false );
     }
     #ifdef __OS2_PM__
         wparam = lparam;
@@ -97,12 +97,12 @@ bool GUISelectAll( gui_window *wnd, unsigned id, bool select )
         lparam = (WPI_PARAM2)MAKELONG( -1, -1 );
     }
 #endif
-    return( GUISelect( wnd, id, TRUE, lparam, NULL ) );
+    return( GUISelect( wnd, id, true, lparam, NULL ) );
 }
 
 bool GUISetEditSelect( gui_window *wnd, unsigned id, int start, int end )
 {
-    return( GUISelect( wnd, id, TRUE, (WPI_PARAM2)MAKELONG( start, end ), NULL ) );
+    return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( start, end ), NULL ) );
 }
 
 bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
@@ -110,7 +110,7 @@ bool GUIGetEditSelect( gui_window *wnd, unsigned id, int *start, int *end )
     bool        ret;
     WPI_MRESULT result;
 
-    ret = GUISelect( wnd, id, FALSE, 0, &result );
+    ret = GUISelect( wnd, id, false, 0, &result );
     if( start != NULL ) {
         *start = LOWORD( result );
     }

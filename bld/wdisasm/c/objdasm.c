@@ -56,7 +56,7 @@ void  DisAssemble()
         if( !UseORL ) seg->data_seg = IsData( seg );
         if( seg->size != 0 || Options & FORM_ASSEMBLER ) {
             Obj2Asm( seg );
-            seg->dumped = FALSE;
+            seg->dumped = false;
             seg->last_export = NULL;
             seg->last_fix    = NULL;
         }

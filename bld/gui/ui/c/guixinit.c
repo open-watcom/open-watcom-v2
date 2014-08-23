@@ -41,7 +41,7 @@
 #include "guidraw.h"
 
 static gui_window_styles        GUIStyle =      GUI_PLAIN;
-static bool                     GUIInitialized = FALSE;
+static bool                     GUIInitialized = false;
 
 gui_window_styles GUIGetWindowStyles( void )
 {
@@ -60,10 +60,10 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
     GUIStyle = style;
     GUIInitGraphicsMouse( style );
     if( !GUISysInit( 2 ) ) {
-        return( FALSE );
+        return( false );
     }
     uiattrs();
-    UIData->f10menus = FALSE;
+    UIData->f10menus = false;
     UIData->mouse_clk_delay = uiclockdelay( DClickInterval );
     UIData->tick_delay = uiclockdelay( TICK_DELAY );
     UIData->mouse_rpt_delay = 0;
@@ -81,8 +81,8 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
         UiGChar[UI_BOX_BOTTOM_LINE] = ' ';
         UiGChar[UI_BOX_LEFT_LINE] = DRAW( RIGHT_HALF );
     }
-    GUIInitialized = TRUE;
-    return( TRUE );
+    GUIInitialized = true;
+    return( true );
 }
 
 void GUISetF10Menus( bool setting )

@@ -48,16 +48,16 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
     a_hot_spot  *hot_spot;
 
     if( hot_spot_field == NULL ) {
-        return( FALSE );
+        return( false );
     }
     hot_spot = (a_hot_spot *)GUIMemAlloc( sizeof( a_hot_spot ) );
     hot_spot_field->ptr = hot_spot;
     if( hot_spot == NULL ) {
-        return( FALSE );
+        return( false );
     }
     hot_spot_field->typ = FLD_HOT;
     if( !GUIStrDup( info->text, &hot_spot->str ) ) {
-        return( FALSE );
+        return( false );
     }
     hot_spot->event = info->id + GUI_FIRST_USER_EVENT;
     hot_spot->row = hot_spot_field->area.row;
@@ -68,7 +68,7 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
     } else {
         hot_spot->flags = (unsigned short)NULL;
    }
-   return( TRUE );
+   return( true );
 }
 
 /*
@@ -89,14 +89,14 @@ bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 
     if( text == NULL ) {
         if( !GUIStrDup( "", &new ) ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         if( !GUIStrDup( text, &new) ) {
-            return( FALSE );
+            return( false );
         }
     }
     GUIMemFree( hot_spot->str );
     hot_spot->str = new;
-    return( TRUE );
+    return( true );
 }

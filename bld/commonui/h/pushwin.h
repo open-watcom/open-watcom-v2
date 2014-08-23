@@ -39,7 +39,7 @@ typedef struct {
     char                str[1];         /* dynamic array */
 } PushWinInfo;
 
-BOOL    RegPushWin( HANDLE instance );
+bool    RegPushWin( HANDLE instance );
 HWND    CreatePushWin( HWND parent, char *txt, WORD id, HFONT font, HANDLE inst );
 
 #endif /* _PUSHWIN_H_INCLUDED */

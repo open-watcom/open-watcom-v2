@@ -44,6 +44,6 @@ bool GUICreateMenuStructFromRes( int id, gui_menu_struct **menu, int *num )
     menu=menu;
     num=num;
 
-    return( FALSE );
+    return( false );
 }
 

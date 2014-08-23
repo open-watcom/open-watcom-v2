@@ -297,9 +297,9 @@ void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod ) {
     curModule = mod;
 }
 
-static BOOL IsSeg32( WORD seg ) {
+static bool IsSeg32( WORD seg ) {
     seg = seg;
-    return( TRUE );
+    return( true );
 }
 
 static BOOL FindSymbol( ADDRESS *addr, syminfo *si ) {

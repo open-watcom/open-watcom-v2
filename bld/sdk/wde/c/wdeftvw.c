@@ -374,22 +374,22 @@ void WdeTViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the tree view options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x000000ff;
     if( mask & TVS_HASBUTTONS ) {
-        CheckDlgButton( hDlg, IDB_TVS_HASBUTTONS, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_HASBUTTONS, BST_CHECKED );
     }
     if( mask & TVS_HASLINES ) {
-        CheckDlgButton( hDlg, IDB_TVS_HASLINES, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_HASLINES, BST_CHECKED );
     }
     if( mask & TVS_LINESATROOT ) {
-        CheckDlgButton( hDlg, IDB_TVS_LINESATROOT, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_LINESATROOT, BST_CHECKED );
     }
     if( mask & TVS_EDITLABELS ) {
-        CheckDlgButton( hDlg, IDB_TVS_EDITLABELS, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_EDITLABELS, BST_CHECKED );
     }
     if( mask & TVS_DISABLEDRAGDROP ) {
-        CheckDlgButton( hDlg, IDB_TVS_DISABLEDRAGDROP, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_DISABLEDRAGDROP, BST_CHECKED );
     }
     if( mask & TVS_SHOWSELALWAYS ) {
-        CheckDlgButton( hDlg, IDB_TVS_SHOWSELALWAYS, 1 );
+        CheckDlgButton( hDlg, IDB_TVS_SHOWSELALWAYS, BST_CHECKED );
     }
 
     // set the extended style controls only

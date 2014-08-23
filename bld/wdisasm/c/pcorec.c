@@ -75,14 +75,14 @@ void  GrpDef()
     grp = NewGroup();
     PutTab( ++GrpIndex, GrpTab, grp );
     grp->id = GrpIndex;
-    grp->name = GetTab( GetIndex(), NameTab, FALSE );
-    while( EndOfRecord == FALSE ) {
+    grp->name = GetTab( GetIndex(), NameTab, false );
+    while( !EndOfRecord ) {
         grp_type = GetByte();
         if( grp_type == GRP_SEGIDX ) {
-            seg = GetTab( GetIndex(), SegTab, TRUE );
+            seg = GetTab( GetIndex(), SegTab, true );
             seg->grouped = grp;
         } else {
-            Error( ERR_UNIMPLE_GROUP, TRUE );
+            Error( ERR_UNIMPLE_GROUP, true );
         }
         hndl = NewHandle( seg );
         Add2List( &grp->list, hndl );
@@ -105,8 +105,8 @@ void  PubDef( bool public )
         SkipPcoRec(); /* absolute PUBDEF */
         return;
     }
-    Segment = GetTab( seg_id, SegTab, TRUE );
-    while( EndOfRecord == FALSE ) {
+    Segment = GetTab( seg_id, SegTab, true );
+    while( !EndOfRecord ) {
         name = GetName( MAX_NAME_LEN );
         if( IsPharLap || Is32Record ) {
             addr = GetLong();
@@ -114,7 +114,7 @@ void  PubDef( bool public )
             addr = GetWord();
         }
         GetIndex();
-        exp = AddLabel( addr, name, Segment, public, FALSE );
+        exp = AddLabel( addr, name, Segment, public, false );
         if( Options & FORM_ASSEMBLER ) {
             import_sym  *imp;
             hash_data   *ptr;
@@ -123,16 +123,16 @@ void  PubDef( bool public )
                 Segment->exp_lookup = HashTableCreate( EXPORT_LOOKUP_TABLE_SIZE, HASH_STRING,
                     (hash_table_comparison_func)stricmp );
                 if( !Segment->exp_lookup ) {
-                    SysError( ERR_OUT_OF_MEM, FALSE );
+                    SysError( ERR_OUT_OF_MEM, false );
                 }
             }
             if( !HashTableInsert( Segment->exp_lookup, (hash_value)name, (hash_data)exp ) ) {
-                SysError( ERR_OUT_OF_MEM, FALSE );
+                SysError( ERR_OUT_OF_MEM, false );
             }
             ptr = HashTableQuery( Mod->imp_lookup, (hash_value)name );
             if( ptr ) {
                 imp = (import_sym *)*ptr;
-                imp->exported = TRUE;
+                imp->exported = true;
                 imp->u.also_exp = exp;
             }
         }
@@ -153,13 +153,13 @@ static void  DoExtDef( char *name, unsigned type, bool public )
     imp->name = name;
     imp->type_id = type;
     imp->next_imp = Mod->imports;
-    imp->far_common = FALSE;
-    imp->exported = FALSE;
+    imp->far_common = false;
+    imp->exported = false;
     imp->public = public;
     Mod->imports = imp;
     if( Options & FORM_ASSEMBLER ) {
         if( !HashTableInsert( Mod->imp_lookup, (hash_value)name, (hash_data)imp ) ) {
-            SysError( ERR_OUT_OF_MEM, FALSE );
+            SysError( ERR_OUT_OF_MEM, false );
         }
         save_seg = Segment;
         Segment = Mod->segments;
@@ -169,7 +169,7 @@ static void  DoExtDef( char *name, unsigned type, bool public )
 
                 ptr = HashTableQuery( Segment->exp_lookup, (hash_value)imp->name );
                 if( ptr ) {
-                    imp->exported = TRUE;
+                    imp->exported = true;
                     imp->u.also_exp = (export_sym *)*ptr;
                 }
             }
@@ -185,7 +185,7 @@ void ExtDef( bool public )
     char        *name;
     unsigned    type;
 
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         name = GetName( MAX_NAME_LEN );
         type = GetIndex();
         DoExtDef( name, type, public );
@@ -199,11 +199,11 @@ void CExtDef()
     char        *name;
     unsigned    type;
 
-    while( EndOfRecord == FALSE ) {
-        name = GetTab( GetIndex(), NameTab, FALSE );
+    while( !EndOfRecord ) {
+        name = GetTab( GetIndex(), NameTab, false );
         name = NameAlloc( name, strlen( name ) );
         type = GetIndex();
-        DoExtDef( name, type, TRUE );
+        DoExtDef( name, type, true );
     }
 }
 
@@ -216,7 +216,7 @@ void  ComDef( bool public )
     import_sym          *imp;
     char                data_seg_type;
 
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         imp = AllocMem( sizeof( import_sym ) );
         PutTab( ++ExtIndex, ExtTab, imp );
         imp->class = TYPE_COMDEF;
@@ -227,15 +227,15 @@ void  ComDef( bool public )
         imp->u.size = GetVarSize();
         if( data_seg_type == COMDEF_FAR ) {   /* FAR */
             imp->u.size *= GetVarSize();
-            imp->far_common = TRUE;
+            imp->far_common = true;
         } else {
-            imp->far_common = FALSE;
+            imp->far_common = false;
         }
         imp->next_imp = Mod->imports;
         Mod->imports = imp;
         if( ( Options & FORM_ASSEMBLER ) &&
             !HashTableInsert( Mod->imp_lookup, (hash_value)imp->name, (hash_data)imp ) ) {
-            SysError( ERR_OUT_OF_MEM, FALSE );
+            SysError( ERR_OUT_OF_MEM, false );
         }
     }
 }
@@ -252,7 +252,7 @@ static void  DoLinNum( segment *seg )
 
     owner = (line_num **)Mod->src_rover;
     if( owner == NULL ) owner = &Mod->src;
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         num = GetWord();
         if( IsPharLap || Is32Record ) {
             addr = GetLong();
@@ -298,7 +298,7 @@ void LinNum()
     if( grp_id == 0 && seg_id == 0 ) {
         GetWord();
     }
-    DoLinNum( GetTab( seg_id, SegTab, TRUE ) );
+    DoLinNum( GetTab( seg_id, SegTab, true ) );
 }
 
 
@@ -315,7 +315,7 @@ void  FixUpp()
 {
     uint_16             info;
 
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         info = GetByte();
         if( info & FIXUPP_FIXUP ) {
             FixupFix( info );
@@ -337,7 +337,7 @@ static  void  ThreadFix( uint_16 trd_dat )
     D = ( trd_dat & 0x40 ) >> 4;
     thred = ( trd_dat & 0x03 ) | D;
     method = ( trd_dat & 0x1c ) >> 2;
-    trd = GetTab( thred, ThrdTab, FALSE );
+    trd = GetTab( thred, ThrdTab, false );
     if( D == 0 ) {
         method &= 3;
     }
@@ -356,7 +356,7 @@ static  void  FixupFix( uint_16 locat )
     /* we take 4-bits as if every record is a Microsoft Fixup rec */
     LOC = ( locat >> 2 ) & 0x0f;
     if( IsPharLap && LOC > LOC_BASE_OFFSET_32 ) {
-        Error( ERR_INV_FIXUP_LOC, FALSE );
+        Error( ERR_INV_FIXUP_LOC, false );
         return;
     }
     DataOffset = ( ( locat & 3 ) << 8 ) | GetByte();
@@ -397,7 +397,7 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
     FRAME = ( fix_dat & 0x70 ) >> 4;
     F = fix_dat & 0x80;
     if( F ) {
-        trd = GetTab( FRAME | 4, ThrdTab, TRUE );
+        trd = GetTab( FRAME | 4, ThrdTab, true );
         fix->frame = trd->datum;
         fix->seg_address = trd->address;
     } else {
@@ -406,7 +406,7 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
     TARGT = fix_dat & 0x03;
     T = fix_dat & 0x08;
     if( T ) {
-        trd = GetTab( TARGT, ThrdTab, TRUE );
+        trd = GetTab( TARGT, ThrdTab, true );
         fix->target = trd->datum;
         fix->imp_address = trd->address;
     } else {
@@ -459,11 +459,11 @@ static  void  FindTarget( char method, thread *trd )
     trd->address = NULL;
     if( method <= 3 ) {
         if( method == T_SEGWD ) {
-            trd->datum = GetTab( GetIndex(), SegTab, TRUE );
+            trd->datum = GetTab( GetIndex(), SegTab, true );
         } else if( method == T_GRPWD ) {
-            trd->datum = GetTab( GetIndex(), GrpTab, TRUE );
+            trd->datum = GetTab( GetIndex(), GrpTab, true );
         } else if( method == T_EXTWD ) {
-            trd->datum = GetTab( GetIndex(), ExtTab, TRUE );
+            trd->datum = GetTab( GetIndex(), ExtTab, true );
         } else {    /* method == T_ABSWD */
             trd->address = GetWord();
         }
@@ -481,7 +481,7 @@ void  THeadr()
         Mod->imp_lookup = HashTableCreate( IMPORT_LOOKUP_TABLE_SIZE,
             HASH_STRING, (hash_table_comparison_func)stricmp );
         if( !Mod->imp_lookup ) {
-            SysError( ERR_OUT_OF_MEM, FALSE );
+            SysError( ERR_OUT_OF_MEM, false );
         }
     }
 }
@@ -491,7 +491,7 @@ void  LName()
 /***********/
 
 {
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         PutTab( ++NameIndex, NameTab, GetName( MAX_NAME_LEN ) );
     }
 }
@@ -529,11 +529,11 @@ void  SegDef()
             /* FIXME if Is32Record then should be 2 ** 32 */
         seg_len = 0x10000;  /* exactly 64K */
     }
-    seg->name = GetTab( GetIndex(), NameTab, FALSE );
+    seg->name = GetTab( GetIndex(), NameTab, false );
     if( strstr( seg->name, WTLSEGStr ) != NULL ) {
-        WtlsegPresent = TRUE;
+        WtlsegPresent = true;
     }
-    seg->u.seg.class_name = GetTab( GetIndex(), NameTab, FALSE );
+    seg->u.seg.class_name = GetTab( GetIndex(), NameTab, false );
     seg->u.seg.overlay_id = GetIndex();
     seg->size = seg_len;
     seg->start = seg_len;
@@ -543,10 +543,10 @@ void  SegDef()
         attr = GetByte();
         seg->use_32 = ( attr & EASY_USE32_FIELD ) != 0;
         seg->access_attr = attr & EASY_PROTECT_FIELD;
-        seg->access_valid = TRUE;
+        seg->access_valid = true;
     } else {
-        seg->use_32 = TRUE;
-        seg->access_valid = FALSE;
+        seg->use_32 = true;
+        seg->access_valid = false;
     }
 }
 
@@ -586,27 +586,29 @@ void ComDat()
         seg = FindComdat( lname );
     } else {
         seg = NewSegment();
-        seg->name = GetTab( lname, NameTab, FALSE );
+        seg->name = GetTab( lname, NameTab, false );
         seg->class = TYPE_COMDAT;
         seg->id = lname;
         seg->attr = attr;
         seg->u.com.align = align;
-        if( seg_id != 0 ) seg->u.com.seg = GetTab( seg_id, SegTab, TRUE );
-        if( grp_id != 0 ) seg->u.com.grp = GetTab( grp_id, GrpTab, TRUE );
+        if( seg_id != 0 ) seg->u.com.seg = GetTab( seg_id, SegTab, true );
+        if( grp_id != 0 ) seg->u.com.grp = GetTab( grp_id, GrpTab, true );
         switch( attr & COMDAT_ALLOC_MASK ) {
         case COMDAT_EXPLICIT:
             seg->use_32 = seg->u.com.seg->use_32;
             break;
         case COMDAT_FAR_CODE:
         case COMDAT_FAR_DATA:
-            seg->use_32 = FALSE;
+            seg->use_32 = false;
             break;
         case COMDAT_CODE32:
         case COMDAT_DATA32:
-            seg->use_32 = TRUE;
+            seg->use_32 = true;
             break;
         }
-        if( !(flags & COMDAT_LOCAL) ) seg->public = TRUE;
+        if( !(flags & COMDAT_LOCAL) ) {
+            seg->public = true;
+        }
     }
     Segment = seg;
     if( flags & COMDAT_ITERATED ) {
@@ -624,7 +626,7 @@ static void DoBackPatch( unsigned loc_type )
     uint_32     offset;
     uint_32     value;
 
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         if( IsPharLap || Is32Record ) {
             offset = GetLong();
             value  = GetLong();
@@ -652,7 +654,7 @@ void BackPatch()
     unsigned    seg_id;
 
     seg_id = GetIndex();
-    Segment = GetTab( seg_id, SegTab, TRUE );
+    Segment = GetTab( seg_id, SegTab, true );
     DoBackPatch( GetByte() );
 }
 
@@ -675,7 +677,7 @@ static void DoLEData()
     if( DataOffset < Segment->start ) {
         Segment->start = DataOffset;
     }
-    while( EndOfRecord == FALSE ) {
+    while( !EndOfRecord ) {
         PutSegByte( DataOffset++, GetByte() );
     }
 }
@@ -692,10 +694,10 @@ void  LEData()
     } else {
         Offset = GetWord();
     }
-    Segment = GetTab( seg_id, SegTab, TRUE );
+    Segment = GetTab( seg_id, SegTab, true );
     DoLEData();
     if( DataOffset > Segment->size ) {
-        Error( ERR_TOO_MUCH_LEDATA, TRUE );
+        Error( ERR_TOO_MUCH_LEDATA, true );
     }
 }
 
@@ -722,7 +724,7 @@ void  LIData()
     uint_16             seg_id;
 
     seg_id = GetIndex();
-    Segment = GetTab( seg_id, SegTab, TRUE );
+    Segment = GetTab( seg_id, SegTab, true );
     if( IsPharLap || Is32Record ) {
         Offset = GetLong();
     } else {
@@ -730,7 +732,7 @@ void  LIData()
     }
     DoLIData();
     if( DataOffset > Segment->size ) {
-        Error( ERR_TOO_MUCH_LIDATA, TRUE );
+        Error( ERR_TOO_MUCH_LIDATA, true );
     }
 }
 
@@ -816,9 +818,9 @@ void  ModEnd()
         Mod->start = fix;
     }
     if( mattr > 1 ) {
-        Mod->main = TRUE;
+        Mod->main = true;
     } else {
-        Mod->main = FALSE;
+        Mod->main = false;
     }
 }
 
@@ -868,7 +870,7 @@ void Coment()
                 /* select table in a COMDAT record */
                 seg = FindComdat( GetIndex() );
             } else {
-                seg = GetTab( sidx, SegTab, TRUE );
+                seg = GetTab( sidx, SegTab, true );
             }
             scan_tab = AllocMem( sizeof( scan_table ) );
             if( class == DDIR_SCAN_TABLE_32 ) {
@@ -889,8 +891,8 @@ void Coment()
             name[ i ] = GetByte();
         }
         if( memcmp( name, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
-            IsPharLap = TRUE;
-            Is32BitObj = TRUE;
+            IsPharLap = true;
+            Is32BitObj = true;
         }
     } else {
         SkipPcoRec();

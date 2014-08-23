@@ -39,7 +39,7 @@ static bool GUIIntersectRect( SAREA *area, SAREA *bound )
 {
     if( ( ( area->row + area->height ) < bound->row ) ||
         ( area->row > ( bound->row + bound->height ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( area->row < bound->row ) {
         area->height -= ( bound->row - area->row );
@@ -54,7 +54,7 @@ static bool GUIIntersectRect( SAREA *area, SAREA *bound )
     }
     if( ( ( area->col + area->width ) < bound->col ) ||
         ( area->col > ( bound->col + bound->width ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( area->col < bound->col ) {
         area->width -= ( bound->col - area->col );
@@ -67,14 +67,14 @@ static bool GUIIntersectRect( SAREA *area, SAREA *bound )
             area->width = bound->width;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool AdjustRect( gui_window *wnd, SAREA *area )
 {
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
         if( ( area->col + area->width ) < wnd->hgadget->pos ) {
-            return( FALSE );
+            return( false );
         } else {
             if( area->col < wnd->hgadget->pos ) {
                 area->width -= ( wnd->hgadget->pos - area->col );
@@ -86,7 +86,7 @@ static bool AdjustRect( gui_window *wnd, SAREA *area )
     }
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
         if( ( area->row + area->height ) < wnd->vgadget->pos ) {
-            return( FALSE );
+            return( false );
         } else {
             if( area->row < wnd->vgadget->pos ) {
                 area->height -= ( wnd->vgadget->pos - area->row );
@@ -109,7 +109,7 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ||
         ( ( wnd->flags & CONTENTS_INVALID ) == 0 ) ) {
-        return( FALSE );
+        return( false );
     }
     coord.x = rect->x;
     coord.y = rect->y;
@@ -129,22 +129,22 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
             uidrawbox( &wnd->screen, &area, wnd->colours[attr], NULL );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, FALSE, TRUE, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, false, true, DRAW( BLOCK ) ) );
 }
 
 bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, TRUE, FALSE, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAW( BLOCK ) ) );
 }
 
 bool GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, TRUE, FALSE, DRAW( TOP_HALF ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAW( TOP_HALF ) ) );
 }
 
 bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
@@ -173,13 +173,13 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         if( my_start.y == my_end.y ) {
             to_use = DRAW( HOR_FRAME );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
     if( AdjustRect( wnd, &area ) ) {
         uivfill( &wnd->screen, area, wnd->colours[attr], to_use );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
@@ -187,7 +187,7 @@ bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
     wnd = wnd;
     rect = rect;
     rgb = rgb;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
@@ -195,7 +195,7 @@ bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
     wnd = wnd;
     rect = rect;
     rgb = rgb;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
@@ -207,5 +207,5 @@ bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
      style = style;
      thickness = thickness;
      rgb = rgb;
-     return( FALSE );
+     return( false );
 }

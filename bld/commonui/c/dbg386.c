@@ -30,6 +30,7 @@
 
 
 #include "precomp.h"
+#include "bool.h"
 #include "wdebug.h"
 #include "di386.h"
 
@@ -40,7 +41,7 @@ int             (FAR PASCAL *SetDebugInterrupts32)( void );
 int             (FAR PASCAL *IsDebuggerExecuting)( void );
 int             (FAR PASCAL *DebuggerIsExecuting)( int );
 static HANDLE   wint32DLL;
-extern BOOL     WDebug386;
+extern bool     WDebug386;
 
 /*
  * Start386Debug - initialize for 32-bit debugging
@@ -48,12 +49,12 @@ extern BOOL     WDebug386;
 void Start386Debug( void )
 {
     if( CheckWin386Debug() == WGOD_VERSION ) {
-        WDebug386 = TRUE;
+        WDebug386 = true;
     }
     if( WDebug386 ) {
         wint32DLL = LoadLibrary( "wint32.dll" );
         if( (UINT)wint32DLL < 32 ) {
-            WDebug386 = FALSE;
+            WDebug386 = false;
         } else {
             DoneWithInterrupt = (LPVOID)GetProcAddress( wint32DLL, "DoneWithInterrupt" );
             GetDebugInterruptData = (LPVOID)GetProcAddress( wint32DLL, "GetDebugInterruptData" );
@@ -63,7 +64,7 @@ void Start386Debug( void )
             DebuggerIsExecuting = (LPVOID)GetProcAddress( wint32DLL, "DebuggerIsExecuting" );
 
             if( !SetDebugInterrupts32() ) {
-                WDebug386 = FALSE;
+                WDebug386 = false;
                 FreeLibrary( wint32DLL );
             }
         }
@@ -80,7 +81,7 @@ void Done386Debug( void )
     if( WDebug386 ) {
         ResetDebugInterrupts32();
         FreeLibrary( wint32DLL );
-        WDebug386 = FALSE;
+        WDebug386 = false;
     }
 
 } /* Done386Debug */

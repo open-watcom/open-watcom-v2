@@ -65,38 +65,38 @@ char *WRStrDup( const char *src )
     return( dest );
 }
 
-char *WRCopyString( char *mem, char *str, int len )
+char *WRCopyString( char *mem, const char *str, int len )
 {
     memcpy( mem, str, len );
     return( mem + len );
 }
 
-BOOL WRIsStrSpace( char *_s )
+bool WRIsStrSpace( const char *_s )
 {
-    unsigned char   *s = (unsigned char *)_s;
+    const unsigned char *s = (const unsigned char *)_s;
 
     if( s != NULL ) {
         for( ; *s != '\0'; s = _mbsinc( s ) ) {
             if( _mbclen( s ) != 1 || (_mbclen( s ) == 1 && !isspace( *s )) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
-BOOL WRStrHasSpace( char *_s )
+bool WRStrHasSpace( const char *_s )
 {
-    unsigned char   *s = (unsigned char *)_s;
+    const unsigned char *s = (const unsigned char *)_s;
 
     if( s != NULL ) {
         for( ; *s != '\0'; s = _mbsinc( s ) ) {
             if( _mbclen( s ) == 1 && isspace( *s ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void WRStripStr( char *_s )

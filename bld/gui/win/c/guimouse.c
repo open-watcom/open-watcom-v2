@@ -38,7 +38,7 @@ extern bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
     WPI_POINT   pt;
 
     if( !_wpi_getsystemmetrics( SM_MOUSEPRESENT ) ) {
-        return( FALSE );
+        return( false );
     }
     _wpi_getcursorpos( &pt );
 #ifdef __OS2_PM__ // close your eyes!!! gross hack coming up
@@ -47,6 +47,6 @@ extern bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
     _wpi_clienttoscreen( wnd->hwnd, &pt );
 #endif
     GUIMakeRelative( wnd, &pt, point );
-    return( TRUE );
+    return( true );
 }
 

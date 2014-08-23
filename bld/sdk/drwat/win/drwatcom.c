@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <i86.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "wdebug.h"
 #include "jdlg.h"

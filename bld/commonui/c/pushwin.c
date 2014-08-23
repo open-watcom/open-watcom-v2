@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <string.h>
 #include "wpi.h"
+#include "bool.h"
 #include "mem.h"
 #include "pushwin.h"
 #include "wprocmap.h"
@@ -83,7 +84,7 @@ WINEXPORT LRESULT CALLBACK PushWinProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 /*
  * RegPushWin - register the push window class
  */
-BOOL RegPushWin( HANDLE instance )
+bool RegPushWin( HANDLE instance )
 {
     WNDCLASS    wc;
 
@@ -97,10 +98,7 @@ BOOL RegPushWin( HANDLE instance )
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "PushWin";
-    if( !RegisterClass( &wc ) ) {
-        return( FALSE );
-    }
-    return( TRUE );
+    return( RegisterClass( &wc ) != 0 );
 
 } /* RegPushWin */
 

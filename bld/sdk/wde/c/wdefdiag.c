@@ -1335,7 +1335,7 @@ BOOL WdeDialogIdentify( WdeDialogObject *obj, OBJ_ID *id, void *p2 )
 BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
-    bool                 redraw;
+    INT_PTR              redraw;
     bool                 quick;
     bool                 destroy_children;
 
@@ -1371,7 +1371,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
                                   (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info );
 
-        if( redraw ) {
+        if( redraw != 0 ) {
             quick = TRUE;
             destroy_children = TRUE;
             HideSelectBoxes();
@@ -1392,7 +1392,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         }
     }
 
-    if( redraw ) {
+    if( redraw != 0 ) {
         obj->symbol = o_info.symbol;
         obj->helpsymbol = o_info.helpsymbol;
         obj->name = o_info.info.d.name;
@@ -2882,10 +2882,10 @@ void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( GETHDR_STYLE( obj->dialog_info ) & 0xffff0000 ) {
         WdeSetWinStyles( hDlg, GETHDR_STYLE( obj->dialog_info ), mask );
         if( (GETHDR_STYLE( obj->dialog_info ) & WS_CAPTION) == WS_CAPTION ) {
-            CheckDlgButton( hDlg, IDB_WS_CAPTION, 1 );
+            CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_CHECKED );
         }
     } else {
-        CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, 1 );
+        CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, BST_CHECKED );
     }
 
     /* set the dialog styles */
@@ -3083,23 +3083,23 @@ void WdeDialogGetDialogStyles( HWND hDlg, DialogStyle *style )
 void WdeDialogSetDialogStyles( HWND hDlg, DialogStyle style )
 {
     if( style & DS_ABSALIGN ) {
-        CheckDlgButton( hDlg, IDB_DS_ABSALIGN, 1 );
+        CheckDlgButton( hDlg, IDB_DS_ABSALIGN, BST_CHECKED );
     }
 
     if( style & DS_SYSMODAL ) {
-        CheckDlgButton( hDlg, IDB_DS_SYSMODAL, 1 );
+        CheckDlgButton( hDlg, IDB_DS_SYSMODAL, BST_CHECKED );
     }
 
     if( style & DS_LOCALEDIT ) {
-        CheckDlgButton( hDlg, IDB_DS_LOCALEDIT, 1 );
+        CheckDlgButton( hDlg, IDB_DS_LOCALEDIT, BST_CHECKED );
     }
 
     if( style & DS_MODALFRAME ) {
-        CheckDlgButton( hDlg, IDB_DS_MODALFRAME, 1 );
+        CheckDlgButton( hDlg, IDB_DS_MODALFRAME, BST_CHECKED );
     }
 
     if( style & DS_NOIDLEMSG ) {
-        CheckDlgButton( hDlg, IDB_DS_NOIDLEMSG, 1 );
+        CheckDlgButton( hDlg, IDB_DS_NOIDLEMSG, BST_CHECKED );
     }
 
 #if __NT__XX
@@ -3113,28 +3113,28 @@ void WdeDialogSetDialogStyles( HWND hDlg, DialogStyle style )
     EnableWindow( GetDlgItem( hDlg, IDB_DS_SETFOREGROUND ), TRUE );
 
     if( style & DS_3DLOOK ) {
-        CheckDlgButton( hDlg, IDB_DS_3DLOOK, 1 );
+        CheckDlgButton( hDlg, IDB_DS_3DLOOK, BST_CHECKED );
     }
     if( style & DS_CENTER ) {
-        CheckDlgButton( hDlg, IDB_DS_CENTER, 1 );
+        CheckDlgButton( hDlg, IDB_DS_CENTER, BST_CHECKED );
     }
     if( style & DS_CENTERMOUSE ) {
-        CheckDlgButton( hDlg, IDB_DS_CENTERMOUSE, 1 );
+        CheckDlgButton( hDlg, IDB_DS_CENTERMOUSE, BST_CHECKED );
     }
     if( style & DS_CONTEXTHELP ) {
-        CheckDlgButton( hDlg, IDB_DS_CONTEXTHELP, 1 );
+        CheckDlgButton( hDlg, IDB_DS_CONTEXTHELP, BST_CHECKED );
     }
     if( style & DS_CONTROL ) {
-        CheckDlgButton( hDlg, IDB_DS_CONTROL, 1 );
+        CheckDlgButton( hDlg, IDB_DS_CONTROL, BST_CHECKED );
     }
     if( style & DS_FIXEDSYS ) {
-        CheckDlgButton( hDlg, IDB_DS_FIXEDSYS, 1 );
+        CheckDlgButton( hDlg, IDB_DS_FIXEDSYS, BST_CHECKED );
     }
     if( style & DS_NOFAILCREATE ) {
-        CheckDlgButton( hDlg, IDB_DS_NOFAILCREATE, 1 );
+        CheckDlgButton( hDlg, IDB_DS_NOFAILCREATE, BST_CHECKED );
     }
     if( style & DS_SETFOREGROUND ) {
-        CheckDlgButton( hDlg, IDB_DS_SETFOREGROUND, 1 );
+        CheckDlgButton( hDlg, IDB_DS_SETFOREGROUND, BST_CHECKED );
     }
 #else
     EnableWindow( GetDlgItem( hDlg, IDB_DS_3DLOOK ), FALSE );
@@ -3152,58 +3152,58 @@ void WdeDialogSetDialogStyles( HWND hDlg, DialogStyle style )
 void WdeDialogSetDialogEXStyles( HWND hDlg, uint_32 ExStyle )
 {
     if( ExStyle & WS_EX_CLIENTEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
     }
     if( ExStyle & WS_EX_WINDOWEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, BST_CHECKED );
     }
     if( ExStyle & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( (ExStyle & WS_EX_OVERLAPPEDWINDOW) == WS_EX_OVERLAPPEDWINDOW ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_CHECKED );
     }
     if( (ExStyle & WS_EX_PALETTEWINDOW) == WS_EX_PALETTEWINDOW ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_CHECKED );
     }
     if( ExStyle & WS_EX_TOOLWINDOW ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, BST_CHECKED );
     }
     if( ExStyle & WS_EX_MDICHILD ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_MDICHILD, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_MDICHILD, BST_CHECKED );
     }
     if( ExStyle & WS_EX_TOPMOST ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, BST_CHECKED );
     }
     if( ExStyle & WS_EX_ACCEPTFILES ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_ACCEPTFILES, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_ACCEPTFILES, BST_CHECKED );
     }
     if( ExStyle & WS_EX_CONTEXTHELP ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_CONTEXTHELP, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_CONTEXTHELP, BST_CHECKED );
     }
     if( ExStyle & WS_EX_TRANSPARENT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_TRANSPARENT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_TRANSPARENT, BST_CHECKED );
     }
     if( ExStyle & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
 
     if( ExStyle & WS_EX_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, BST_CHECKED );
     }
 
     if( ExStyle & WS_EX_LEFTSCROLLBAR ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFTSCROLLBAR, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFTSCROLLBAR, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHTSCROLLBAR, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHTSCROLLBAR, BST_CHECKED );
     }
 
     if( ExStyle & WS_EX_RTLREADING ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, BST_CHECKED );
     }
 }
 
@@ -3288,19 +3288,19 @@ void WdeDialogGetDialogMemFlags( HWND hDlg, uint_16 *flags )
 void WdeDialogSetDialogMemFlags( HWND hDlg, uint_16 flags )
 {
     if( flags & MEMFLAG_MOVEABLE ) {
-        CheckDlgButton( hDlg, IDB_MEM_MOVEABLE, 1 );
+        CheckDlgButton( hDlg, IDB_MEM_MOVEABLE, BST_CHECKED );
     }
 
     if( flags & MEMFLAG_DISCARDABLE ) {
-        CheckDlgButton( hDlg, IDB_MEM_DISCARDABLE, 1 );
+        CheckDlgButton( hDlg, IDB_MEM_DISCARDABLE, BST_CHECKED );
     }
 
     if( flags & MEMFLAG_PURE ) {
-        CheckDlgButton( hDlg, IDB_MEM_PURE, 1 );
+        CheckDlgButton( hDlg, IDB_MEM_PURE, BST_CHECKED );
     }
 
     if( flags & MEMFLAG_PRELOAD ) {
-        CheckDlgButton( hDlg, IDB_LOAD_PRELOAD, 1 );
+        CheckDlgButton( hDlg, IDB_LOAD_PRELOAD, BST_CHECKED );
     }
 }
 

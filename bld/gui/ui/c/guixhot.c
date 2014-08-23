@@ -47,7 +47,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
     for( i = 0; i < num; i++ ) {
         if( hot[i].chars != NULL ) {
             if( !GUIStrDup( hot[i].chars, &GUIHotSpots[i].text ) ) {
-                return( FALSE );
+                return( false );
             }
             GUIHotSpots[i].size.x = strlen( GUIHotSpots[i].text );
             GUIHotSpots[i].size.y = 1;
@@ -57,7 +57,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
             GUIHotSpots[i].size.y = 0;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 

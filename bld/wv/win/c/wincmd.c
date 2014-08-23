@@ -135,7 +135,7 @@ bool ProcSysOption( char *start, unsigned len, int pass )
         GetLines();
         break;
     case OPT_FASTSWAP:
-        WantFast = 1;
+        WantFast = true;
         break;
     case OPT_EGA43:
         SetEGA43();

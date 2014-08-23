@@ -58,7 +58,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WREStatusHookProc( HWND, UINT, WPARAM, LPARAM );
+bool WREStatusHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -159,7 +159,7 @@ bool WRECreateStatusLine( HWND main, HINSTANCE inst )
 
     if( WREStatusWindow == NULL ) {
         WREDisplayErrorMsg( WRE_NOCREATESTATUS );
-        return( FALSE );
+        return( false );
     }
 
     /* set the text in the status window */
@@ -168,7 +168,7 @@ bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     GetWindowRect( WREStatusWindow, &rect );
     WREStatusDepth = rect.bottom - rect.top;
 
-    return( TRUE );
+    return( true );
 }
 
 void WREResizeStatusWindows( RECT *rect )
@@ -195,7 +195,7 @@ bool WRESetStatusByID( DWORD id1, DWORD id2 )
     char        *str2;
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     str1 = NULL;
     str2 = NULL;
 
@@ -229,7 +229,7 @@ bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
     _wre_touch( redisplay );
 
     if( WREStatusWindow == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( status1 != NULL ) {
@@ -268,7 +268,7 @@ bool WRESetStatusText( const char *status1, const char *status2, int redisplay )
         return( WREDisplayStatusText( WREStatusText ) );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREDisplayStatusText( char *str )
@@ -288,10 +288,10 @@ bool WREDisplayStatusText( char *str )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WREStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WREStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wre_touch( hWnd );
@@ -302,5 +302,5 @@ BOOL WREStatusHookProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
         WREStatusWindow = NULL;
     }
 
-    return( FALSE );
+    return( false );
 }

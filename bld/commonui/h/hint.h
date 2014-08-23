@@ -40,13 +40,13 @@ typedef struct {
     MSGID       msgid;
 } MenuItemHint;
 
-void            HintToolBar( statwnd *wnd, WORD menuid, BOOL select );
+void            HintToolBar( statwnd *wnd, WORD menuid, bool select );
 WORD            SizeHintBar( statwnd *wnd );
 void            HintMenuSelect( statwnd *wnd, HWND hwnd, WPARAM wparam, LPARAM lparam );
 MenuItemHint    *SetHintText( statwnd *wnd, MenuItemHint *hints, WORD cnt );
 statwnd         *HintWndCreate( HWND parent, RECT *size, HINSTANCE hinstance, LPVOID lpvParam );
 void            HintWndDestroy( statwnd *wnd );
-int             HintWndInit( HINSTANCE hinstance, statushook hook, int extra );
+bool            HintWndInit( HINSTANCE hinstance, statushook hook, int extra );
 void            HintFini( void );
 HWND            GetHintHwnd( statwnd *wnd );
 

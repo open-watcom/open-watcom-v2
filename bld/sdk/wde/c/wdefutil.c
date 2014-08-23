@@ -942,7 +942,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     char                *symbol;
     char                *helpsymbol;
     char                *dlg_template;
-    BOOL                redraw;
+    INT_PTR             redraw;
     FARPROC             def_proc;
     HINSTANCE           app_inst;
     WdeOrderMode        mode;
@@ -1137,25 +1137,25 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
         switch( LOWORD( wParam ) ) {
         case IDB_WS_CHILD:
             if( IsDlgButtonChecked( hDlg, IDB_WS_CHILD ) ) {
-                CheckDlgButton( hDlg, IDB_WS_POPUP, 0 );
+                CheckDlgButton( hDlg, IDB_WS_POPUP, BST_UNCHECKED );
             }
             ret = TRUE;
             break;
 
         case IDB_WS_POPUP:
             if( IsDlgButtonChecked( hDlg, IDB_WS_POPUP ) ) {
-                CheckDlgButton( hDlg, IDB_WS_CHILD, 0 );
+                CheckDlgButton( hDlg, IDB_WS_CHILD, BST_UNCHECKED );
             }
             ret = TRUE;
             break;
 
         case IDB_WS_CAPTION:
             if( IsDlgButtonChecked( hDlg, IDB_WS_CAPTION ) ) {
-                CheckDlgButton( hDlg, IDB_WS_BORDER, 1 );
-                CheckDlgButton( hDlg, IDB_WS_DLGFRAME, 1 );
+                CheckDlgButton( hDlg, IDB_WS_BORDER, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_DLGFRAME, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_WS_BORDER, 0 );
-                CheckDlgButton( hDlg, IDB_WS_DLGFRAME, 0 );
+                CheckDlgButton( hDlg, IDB_WS_BORDER, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_DLGFRAME, BST_UNCHECKED );
             }
             ret = TRUE;
             break;
@@ -1164,12 +1164,12 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
         case IDB_WS_BORDER:
             if( IsDlgButtonChecked( hDlg, IDB_WS_BORDER ) ) {
                 if( IsDlgButtonChecked( hDlg, IDB_WS_DLGFRAME ) ) {
-                    CheckDlgButton( hDlg, IDB_WS_CAPTION, 1 );
+                    CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_CHECKED );
                 } else {
-                    CheckDlgButton( hDlg, IDB_WS_CAPTION, 0 );
+                    CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_UNCHECKED );
                 }
             } else {
-                CheckDlgButton( hDlg, IDB_WS_CAPTION, 0 );
+                CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_UNCHECKED );
             }
             ret = TRUE;
             break;
@@ -1178,9 +1178,9 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
         case IDB_WS_EX_CLIENTEDGE:
             if( IsDlgButtonChecked( hDlg, IDB_WS_EX_CLIENTEDGE ) &&
                 IsDlgButtonChecked( hDlg, IDB_WS_EX_WINDOWEDGE ) ) {
-                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 1 );
+                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 0 );
+                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_UNCHECKED );
             }
             break;
 
@@ -1188,20 +1188,20 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
         check_WINDOWEDGE:
             if( IsDlgButtonChecked( hDlg, IDB_WS_EX_WINDOWEDGE ) ) {
                 if( IsDlgButtonChecked( hDlg, IDB_WS_EX_CLIENTEDGE ) ) {
-                    CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 1 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_CHECKED );
                 } else {
-                    CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 0 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_UNCHECKED );
                 }
 
                 if( IsDlgButtonChecked( hDlg, IDB_WS_EX_TOOLWINDOW ) &&
                     IsDlgButtonChecked( hDlg, IDB_WS_EX_TOPMOST ) ) {
-                    CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 1 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_CHECKED );
                 } else {
-                    CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 0 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_UNCHECKED );
                 }
             } else {
-                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, 0 );
-                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 0 );
+                CheckDlgButton( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_UNCHECKED );
             }
             break;
 
@@ -1210,39 +1210,39 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
             if( IsDlgButtonChecked( hDlg, IDB_WS_EX_TOOLWINDOW ) &&
                 IsDlgButtonChecked( hDlg, IDB_WS_EX_WINDOWEDGE ) &&
                 IsDlgButtonChecked( hDlg, IDB_WS_EX_TOPMOST ) ) {
-                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 1 );
+                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, 0 );
+                CheckDlgButton( hDlg, IDB_WS_EX_PALETTEWINDOW, BST_UNCHECKED );
             }
             break;
 
         case IDB_WS_EX_OVERLAPPEDWINDOW:
             if( IsDlgButtonChecked( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW ) ) {
-                CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, 1 );
-                CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, 1 );
+                CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, BST_CHECKED );
                 // force it to recheck WINDOWEDGE
                 goto check_WINDOWEDGE;
             } else {
                 if( !IsDlgButtonChecked( hDlg, IDB_WS_EX_PALETTEWINDOW ) ) {
-                    CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, 0 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, BST_UNCHECKED );
                 }
-                CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, 0 );
+                CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_UNCHECKED );
             }
             break;
 
         case IDB_WS_EX_PALETTEWINDOW:
             if( IsDlgButtonChecked( hDlg, IDB_WS_EX_PALETTEWINDOW ) ) {
-                CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, 1 );
-                CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, 1 );
-                CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, 1 );
+                CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, BST_CHECKED );
                 // force it to recheck WINDOWEDGE
                 goto check_WINDOWEDGE;
             } else {
                 if( !IsDlgButtonChecked( hDlg, IDB_WS_EX_OVERLAPPEDWINDOW ) ) {
-                    CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, 0 );
+                    CheckDlgButton( hDlg, IDB_WS_EX_WINDOWEDGE, BST_UNCHECKED );
                 }
-                CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, 0 );
-                CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, 0 );
+                CheckDlgButton( hDlg, IDB_WS_EX_TOOLWINDOW, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_EX_TOPMOST, BST_UNCHECKED );
             }
             break;
 #endif
@@ -1252,11 +1252,11 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
         overlapped = IsDlgButtonChecked( hDlg, IDB_WS_OVERLAPPED );
         if( !(tstyle & 0xffff0000) ) {
             if( !overlapped ) {
-                CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, 1 );
+                CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, BST_CHECKED );
             }
         } else {
             if( overlapped ) {
-                CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, 0 );
+                CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, BST_UNCHECKED );
             }
         }
     }
@@ -1441,23 +1441,23 @@ void WdeEXSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_EXSTYLE( o_info->info.c.info );
     if( mask & WS_EX_CLIENTEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
     if( mask & WS_EX_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, BST_CHECKED );
     }
     if( mask & WS_EX_RTLREADING ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, BST_CHECKED );
     }
 #else
     // disable the extended styles

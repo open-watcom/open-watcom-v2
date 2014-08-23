@@ -49,14 +49,14 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-void WRSetEditWithStr( char *cp, HWND hDlg, int id )
+void WRSetEditWithStr( const char *cp, HWND hDlg, int id )
 {
     if( cp != NULL ) {
         SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPSTR)cp );
     }
 }
 
-char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
+char *WRGetStrFromEdit( HWND hDlg, int id, bool *mod )
 {
     char        *cp;
     int         text_length;
@@ -64,12 +64,12 @@ char *WRGetStrFromEdit( HWND hDlg, int id, BOOL *mod )
 
     text_copied = 0;
 
-    if( mod ) {
+    if( mod != NULL ) {
         /* find out if the edit field has changed */
         if( SendDlgItemMessage( hDlg, id, EM_GETMODIFY, 0, 0 ) ) {
-            *mod = TRUE;
+            *mod = true;
         } else {
-            *mod = FALSE;
+            *mod = false;
         }
     }
 
@@ -146,30 +146,30 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
     return( cp );
 }
 
-BOOL WRGetSLONGFromEdit( HWND hDlg, int id, BOOL *mod, signed long *value )
+bool WRGetSLONGFromEdit( HWND hDlg, int id, bool *mod, signed long *value )
 {
     signed long val;
     char        *cp;
     char        *ep;
-    BOOL        ret;
+    bool        ret;
 
     val = 0;
-    ret = TRUE;
+    ret = true;
 
     cp = WRGetStrFromEdit( hDlg, id, mod );
 
     /* find out if the edit field has changed */
     if( mod == NULL || *mod ) {
         if( cp == NULL ) {
-            return( FALSE );
+            return( false );
         }
         val = (signed long)strtol( cp, &ep, 0 );
         if( *ep != '\0' ) {
             if( mod != NULL ) {
-                *mod = FALSE;
+                *mod = false;
             }
             val = 0;
-            ret = FALSE;
+            ret = false;
         }
     }
 

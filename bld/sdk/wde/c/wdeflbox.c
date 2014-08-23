@@ -377,72 +377,72 @@ void WdeLBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
 
     if( mask & LBS_NOTIFY ) {
-        CheckDlgButton( hDlg, IDB_LBS_NOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_NOTIFY, BST_CHECKED );
     }
 
     if( mask & LBS_SORT ) {
-        CheckDlgButton( hDlg, IDB_LBS_SORT, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_SORT, BST_CHECKED );
     }
 
     if( mask & LBS_NOREDRAW ) {
-        CheckDlgButton( hDlg, IDB_LBS_NOREDRAW, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_NOREDRAW, BST_CHECKED );
     }
 
     if( mask & LBS_MULTIPLESEL ) {
-        CheckDlgButton( hDlg, IDB_LBS_MULTIPLESEL, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_MULTIPLESEL, BST_CHECKED );
     }
 
     if( mask & LBS_USETABSTOPS ) {
-        CheckDlgButton( hDlg, IDB_LBS_USETABSTOPS, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_USETABSTOPS, BST_CHECKED );
     }
 
     if( mask & LBS_NOINTEGRALHEIGHT ) {
-        CheckDlgButton( hDlg, IDB_LBS_NOINTEGRALHEIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_NOINTEGRALHEIGHT, BST_CHECKED );
     }
 
     if( mask & LBS_MULTICOLUMN ) {
-        CheckDlgButton( hDlg, IDB_LBS_MULTICOLUMN, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_MULTICOLUMN, BST_CHECKED );
     }
 
     if( mask & LBS_WANTKEYBOARDINPUT ) {
-        CheckDlgButton( hDlg, IDB_LBS_WANTKEYBOARDINPUT, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_WANTKEYBOARDINPUT, BST_CHECKED );
     }
 
     if( mask & LBS_EXTENDEDSEL ) {
-        CheckDlgButton( hDlg, IDB_LBS_EXTENDEDSEL, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_EXTENDEDSEL, BST_CHECKED );
     }
 
     if( mask & LBS_DISABLENOSCROLL ) {
-        CheckDlgButton( hDlg, IDB_LBS_DISABLENOSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_DISABLENOSCROLL, BST_CHECKED );
     }
 
     if( mask & LBS_STANDARD ) {
-        CheckDlgButton( hDlg, IDB_LBS_STANDARD, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_STANDARD, BST_CHECKED );
     }
 
-    CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, 1 );
+    CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, BST_CHECKED );
     EnableWindow( GetDlgItem( hDlg, IDB_LBS_HASSTRINGS ), FALSE );
 
     if( mask & LBS_OWNERDRAWFIXED ) {
-        CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWFIXED, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWFIXED, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_LBS_HASSTRINGS ), TRUE );
         if( !(mask & LBS_HASSTRINGS) ) {
-            CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, 0 );
+            CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, BST_UNCHECKED );
         }
     }
 
     if( mask & LBS_OWNERDRAWVARIABLE ) {
-        CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWVARIABLE, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWVARIABLE, BST_CHECKED );
         EnableWindow ( GetDlgItem(hDlg, IDB_LBS_HASSTRINGS), TRUE );
         if ( !(mask & LBS_HASSTRINGS) ) {
-            CheckDlgButton ( hDlg, IDB_LBS_HASSTRINGS, 0 );
+            CheckDlgButton ( hDlg, IDB_LBS_HASSTRINGS, BST_UNCHECKED );
         }
     }
 
 #if __NT__XX
     EnableWindow( GetDlgItem( hDlg, IDB_LBS_NOSEL ), TRUE );
     if( mask & LBS_NOSEL ) {
-        CheckDlgButton( hDlg, IDB_LBS_NOSEL, 1 );
+        CheckDlgButton( hDlg, IDB_LBS_NOSEL, BST_CHECKED );
     }
 #else
     EnableWindow( GetDlgItem( hDlg, IDB_LBS_NOSEL ), FALSE );
@@ -459,20 +459,20 @@ void WdeLBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_EXSTYLE( o_info->info.c.info );
     if( mask & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
     if( mask & WS_EX_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, BST_CHECKED );
     }
     if( mask & WS_EX_RTLREADING ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, BST_CHECKED );
     }
 #else
     // disable the extended styles
@@ -594,24 +594,24 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
                 IsDlgButtonChecked( hDlg, IDB_LBS_SORT ) &&
                 IsDlgButtonChecked( hDlg, IDB_WS_VSCROLL ) &&
                 IsDlgButtonChecked( hDlg, IDB_WS_BORDER ) ) {
-                CheckDlgButton( hDlg, IDB_LBS_STANDARD, 1 );
+                CheckDlgButton( hDlg, IDB_LBS_STANDARD, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_LBS_STANDARD, 0 );
+                CheckDlgButton( hDlg, IDB_LBS_STANDARD, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_LBS_STANDARD:
             if( IsDlgButtonChecked( hDlg, IDB_LBS_STANDARD ) ) {
-                CheckDlgButton( hDlg, IDB_LBS_NOTIFY, 1 );
-                CheckDlgButton( hDlg, IDB_LBS_SORT, 1 );
-                CheckDlgButton( hDlg, IDB_WS_VSCROLL, 1 );
-                CheckDlgButton( hDlg, IDB_WS_BORDER, 1 );
+                CheckDlgButton( hDlg, IDB_LBS_NOTIFY, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_LBS_SORT, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_VSCROLL, BST_CHECKED );
+                CheckDlgButton( hDlg, IDB_WS_BORDER, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_LBS_NOTIFY, 0 );
-                CheckDlgButton( hDlg, IDB_LBS_SORT, 0 );
-                CheckDlgButton( hDlg, IDB_WS_VSCROLL, 0 );
-                CheckDlgButton( hDlg, IDB_WS_BORDER, 0 );
+                CheckDlgButton( hDlg, IDB_LBS_NOTIFY, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_LBS_SORT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_VSCROLL, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_BORDER, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
@@ -621,11 +621,11 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
             if( IsDlgButtonChecked( hDlg, IDB_LBS_OWNERDRAWFIXED ) ||
                 IsDlgButtonChecked( hDlg, IDB_LBS_OWNERDRAWVARIABLE ) ) {
                 EnableWindow( GetDlgItem( hDlg, IDB_LBS_HASSTRINGS ), TRUE );
-                CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWFIXED, 0 );
-                CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWVARIABLE, 0 );
-                CheckDlgButton( hDlg, LOWORD( wParam ), 1 );
+                CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWFIXED, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_LBS_OWNERDRAWVARIABLE, BST_UNCHECKED );
+                CheckDlgButton( hDlg, LOWORD( wParam ), BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, 1 );
+                CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_LBS_HASSTRINGS ), FALSE );
             }
             processed = TRUE;

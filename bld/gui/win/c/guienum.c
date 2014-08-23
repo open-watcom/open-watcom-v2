@@ -33,10 +33,6 @@
 #include "guiwind.h"
 #include <string.h>
 #include "guixutil.h"
-#if defined( __UNIX__ )
-    // WindU stuff
-    #include <windef.h>
-#endif
 #include "wprocmap.h"
 
 #define CLASS_LENGTH    8

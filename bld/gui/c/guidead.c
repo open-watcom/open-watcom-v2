@@ -35,6 +35,6 @@
 
 int GUIDead ( void )
 {
-    return ( TRUE );
+    return ( true );
 }
 

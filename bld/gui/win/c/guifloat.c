@@ -42,7 +42,7 @@
 extern  HMENU           GUIHFloatingPopup;
 extern  int             CurrItem        = NO_SELECT;
 extern  WPI_INST        GUIMainHInst;
-static  bool            InitComplete    = FALSE;
+static  bool            InitComplete    = false;
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
                             gui_mouse_track track, int *curr_item )
@@ -53,7 +53,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     HMENU       popup;
 
     if( ( popup = GUIHFloatingPopup ) == (HMENU)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GUIScaleToScreenRPt( location );
@@ -86,7 +86,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     if( track & GUI_TRACK_RIGHT ) {
         flags |= TPM_RIGHTBUTTON;
     }
-    InitComplete = FALSE;
+    InitComplete = false;
 
     GUIFlushKeys();
 
@@ -101,7 +101,7 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     }
     CurrItem = NO_SELECT;
     GUIDeleteFloatingPopups( wnd );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -120,7 +120,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
     GUIHFloatingPopup = GUICreateSubMenu( wnd, num, menu, FLOAT_HINT );
     if( GUIHFloatingPopup == NULLHANDLE ) {
         GUIError( LIT( Open_Failed ) );
-        return( FALSE );
+        return( false );
     }
 
     return( GUITrackFloatingPopup( wnd, location, track, curr_item ) );
@@ -145,7 +145,7 @@ void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 #else
     hmenu = (HMENU) lparam;
     if( !menu_closed &&
-        !WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, TRUE),
+        !WinSendMsg( hmenu, MM_QUERYITEM, MPFROM2SHORT(id, true),
                      MPFROMP(&mstate) ) ) {
         return;
     }
@@ -156,7 +156,7 @@ void GUIPopupMenuSelect( WPI_PARAM1 wparam, WPI_PARAM2 lparam )
         CurrItem = NO_SELECT;
     } else {
         if( !InitComplete ) {
-            InitComplete = TRUE;
+            InitComplete = true;
         } else {
             if( is_hilite ) {
                 CurrItem = id;

@@ -223,11 +223,11 @@ void  EmitGroup( group *grp )
 
     if( grp->name != NULL ) {
         entry = grp->list;
-        found = FALSE;
+        found = false;
         while( entry != NULL ) {
             seg = (segment *)entry->data;
             if( !found ) {
-                found = TRUE;
+                found = true;
                 if( Options & FORM_ASSEMBLER ) {
                     EmitSpaced( grp->name, LABEL_LEN );
                     EmitSpaced( "GROUP", OPCODE_LEN );

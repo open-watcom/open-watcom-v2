@@ -45,13 +45,13 @@ extern void GUIDrawText( gui_window *wnd, const char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawText( wnd, text, length, &pos, attr, GUI_NO_COLUMN, FALSE );
+    GUIXDrawText( wnd, text, length, &pos, attr, GUI_NO_COLUMN, false );
 }
 
 extern void GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
                             gui_coord *pos, gui_attr attr )
 {
-    GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_COLUMN, FALSE );
+    GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_COLUMN, false );
 }
 
 /*
@@ -68,13 +68,13 @@ void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawText( wnd, text, length, &pos, attr, extent, TRUE );
+    GUIXDrawText( wnd, text, length, &pos, attr, extent, true );
 }
 
 void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
                            gui_coord *pos, gui_attr attr, gui_ord extent )
 {
-    GUIXDrawText( wnd, text, length, pos, attr, extent, TRUE );
+    GUIXDrawText( wnd, text, length, pos, attr, extent, true );
 }
 
 extern void GUIDrawTextRGB( gui_window *wnd, char *text, size_t length,
@@ -87,13 +87,13 @@ extern void GUIDrawTextRGB( gui_window *wnd, char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, GUI_NO_COLUMN, FALSE );
+    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, GUI_NO_COLUMN, false );
 }
 
 extern void GUIDrawTextPosRGB( gui_window *wnd, char *text, size_t length,
                                gui_coord *pos, gui_rgb fore, gui_rgb back )
 {
-    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_COLUMN, FALSE );
+    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_COLUMN, false );
 }
 
 /*
@@ -111,12 +111,12 @@ void GUIDrawTextExtentRGB( gui_window *wnd, char *text, size_t length,
     GUIGetTextMetrics( wnd, &metrics );
     pos.x = indent;
     pos.y = row * metrics.avg.y;
-    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, extent, TRUE );
+    GUIXDrawTextRGB( wnd, text, length, &pos, fore, back, extent, true );
 }
 
 void GUIDrawTextExtentPosRGB( gui_window *wnd, char *text, size_t length,
                               gui_coord *pos, gui_rgb fore, gui_rgb back,
                               gui_ord extent )
 {
-    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, extent, TRUE );
+    GUIXDrawTextRGB( wnd, text, length, pos, fore, back, extent, true );
 }

@@ -65,7 +65,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     char        *text;
     int         num;
 
-    ret = TRUE;
+    ret = true;
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         break;
@@ -143,7 +143,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     default :
-        ret = FALSE;
+        ret = false;
         break;
     }
     return( ret );
@@ -152,8 +152,8 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 void TestDialogInit( void )
 {
     if( !GUIIsGUI() ) {
-        DialogScaled = TRUE;
-        ControlsScaled = TRUE;
+        DialogScaled = true;
+        ControlsScaled = true;
     }
 }
 
@@ -167,7 +167,7 @@ void TestDialogCreate( gui_window *parent )
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );
-        DialogScaled = TRUE;
+        DialogScaled = true;
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
@@ -177,15 +177,15 @@ void TestDialogCreate( gui_window *parent )
                 Controls[i].rect.height *= 2;
             }
         }
-        ButtonsScaled = TRUE;
+        ButtonsScaled = true;
     }
 
     if( !ControlsScaled ) {
         for( i = 0; i < NUM_CONTROLS; i ++ ) {
             Controls[i].parent = NULL;
-            SetWidthHeight( &Controls[i].rect, TRUE );
+            SetWidthHeight( &Controls[i].rect, true );
         }
-        ControlsScaled = TRUE;
+        ControlsScaled = true;
     }
 
     i = -1;
@@ -212,7 +212,7 @@ bool DummyEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui = gui;
     gui_ev = gui_ev;
     param = param;
-    return( FALSE );
+    return( false );
 }
 
 static gui_create_info ResDialog = {

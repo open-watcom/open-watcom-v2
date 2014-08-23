@@ -44,26 +44,26 @@ bool GUISetFocus( gui_window *wnd, unsigned id )
     HWND                hwnd;
 
     if( !GUIGetControlClass( wnd, id, &control_class ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( control_class != GUI_EDIT_MLE ) {
-        GUISelectAll( wnd, id, TRUE );
+        GUISelectAll( wnd, id, true );
     }
 
     hwnd = _wpi_getdlgitem( wnd->hwnd, id );
     if( hwnd != NULLHANDLE ) { /* in dialog box */
         SetFocus( hwnd );
-        return( TRUE );
+        return( true );
     } else {
         info = GUIGetControlByID( wnd, id );
         if( info != NULL ) { /* in a window */
             SetFocus( info->hwnd );
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetFocus( gui_window *wnd, unsigned *id )
@@ -84,15 +84,15 @@ bool GUIGetFocus( gui_window *wnd, unsigned *id )
             if( ( parent == wnd->hwnd ) ) {
                 *id = _wpi_getdlgctrlid( hwnd );
                 if( *id != 0 ) {
-                    return( TRUE );
+                    return( true );
                 }
                 info = GUIGetControlByHwnd( wnd, hwnd );
                 if( info != NULL ) { /* in a window */
                     *id = info->id;
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }

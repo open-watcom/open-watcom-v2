@@ -139,15 +139,15 @@ static void createHashTables( void )
 {
     SymbolToTargetTable = HashTableCreate( SYMBOL_TO_TARGET_TABLE_SIZE, HASH_NUMBER, numberCmp );
     if( !SymbolToTargetTable ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
     SymbolToExportTable = HashTableCreate( SYMBOL_TO_EXPORT_TABLE_SIZE, HASH_NUMBER, numberCmp );
     if( !SymbolToExportTable ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
     SectionToSegmentTable = HashTableCreate( SECTION_TO_SEGMENT_TABLE_SIZE, HASH_NUMBER, numberCmp );
     if( !SectionToSegmentTable ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
 }
 
@@ -161,7 +161,7 @@ static void destroyHashTables( void )
 
 bool InitORL( void )
 //******************
-// Try and see if we will use ORL. Returns TRUE if we'll use it.
+// Try and see if we will use ORL. Returns true if we'll use it.
 {
     orl_file_flags      o_flags;
     orl_file_format     o_format;
@@ -174,7 +174,7 @@ bool InitORL( void )
     oFuncs.seek = (long int (*) ( void *, long int, int ))buffSeek;
     ORLHnd = ORLInit( &oFuncs );
     if( !ORLHnd ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
 
     initBuffer( &fileBuff, ObjFile );
@@ -183,30 +183,30 @@ bool InitORL( void )
         ORLFini( ORLHnd );
         finiBuffer( &fileBuff );
         ORLHnd = NULL;
-        return( FALSE );        // Will use ParseObjectOMF
+        return( false );        // Will use ParseObjectOMF
     }
 
     ORLFileHnd = ORLFileInit( ORLHnd, &fileBuff, o_format );
     if( !ORLFileHnd ) {
         ORLFini( ORLHnd );
         finiBuffer( &fileBuff );
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
     o_machine_type = ORLFileGetMachineType( ORLFileHnd );
     if( o_machine_type != ORL_MACHINE_TYPE_I386 ) {
         FiniORL();
-        Error( ERR_ORL_INV_MACHINE_TYPE, TRUE );
+        Error( ERR_ORL_INV_MACHINE_TYPE, true );
         exit( 1 );
     }
     o_flags = ORLFileGetFlags( ORLFileHnd );
     if( !(o_flags & ORL_FILE_FLAG_LITTLE_ENDIAN) ) {
         FiniORL();
-        Error( ERR_ORL_INV_BYTE_ORDER, TRUE );
+        Error( ERR_ORL_INV_BYTE_ORDER, true );
         exit( 1 );
     }
-    UseORL = TRUE;
+    UseORL = true;
     createHashTables();
-    return( TRUE );     // Success: will use ORL
+    return( true );     // Success: will use ORL
 }
 
 void FiniORL( void )
@@ -237,9 +237,9 @@ static bool addRelocSection( orl_sec_handle shnd )
             relocSections.last = sec;
         }
     } else {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void registerSegment( orl_sec_handle o_shnd )
@@ -280,7 +280,7 @@ static void registerSegment( orl_sec_handle o_shnd )
     }
     sec_flags = ORLSecGetFlags( o_shnd );
     if( !( sec_flags & ORL_SEC_FLAG_EXEC ) ) {
-        seg->data_seg = TRUE;
+        seg->data_seg = true;
     }
     if( seg->size > 0 && ORLSecGetContents( o_shnd, &content ) == ORL_OKAY ) {
         Segment = seg;
@@ -290,12 +290,12 @@ static void registerSegment( orl_sec_handle o_shnd )
         }
     }
     if( !HashTableInsert( SectionToSegmentTable, (hash_value)o_shnd, (hash_data)seg ) ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
     reloc_section = ORLSecGetRelocTable( o_shnd );
     if( reloc_section ) {
         if( !addRelocSection( reloc_section ) ) {
-            SysError( ERR_OUT_OF_MEM, FALSE );
+            SysError( ERR_OUT_OF_MEM, false );
         }
     }
 }

@@ -54,9 +54,9 @@ bool GetExtent( gui_window * wnd, const char * text, size_t length, gui_coord *c
             GUIReleaseTheDC( wnd );
         }
         GUIScreenToScaleR( coord );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
@@ -88,7 +88,7 @@ bool GetControlInfo( gui_window * wnd, unsigned id, HWND *hwnd, WPI_PRES *dc )
             return( *dc != NULLHANDLE );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GetControlExtent( gui_window * wnd, unsigned id, const char *text, size_t length, gui_coord *coord )
@@ -117,9 +117,9 @@ bool GetControlExtent( gui_window * wnd, unsigned id, const char *text, size_t l
         }
         _wpi_releasepres( hwnd, dc );
         GUIScreenToScaleR( coord );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_ord GUIGetControlExtentX( gui_window * wnd, unsigned id, const char * text, size_t length )

@@ -50,7 +50,7 @@ static gui_menu_struct MDIFirstSepMenu[] = {
     {    NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_SEPARATOR,    NULL    }
 };
 
-static bool MDIMenuStructInitialized = FALSE;
+static bool MDIMenuStructInitialized = false;
 
 static void InitMDIMenuStruct( void )
 {
@@ -66,10 +66,10 @@ static void InitMDIMenuStruct( void )
 
 void EnableMDIActions( bool enable )
 {
-    GUIEnableMenuItem( Root, GUI_MDI_CASCADE, enable, FALSE );
-    GUIEnableMenuItem( Root, GUI_MDI_TILE_HORZ, enable, FALSE );
-    GUIEnableMenuItem( Root, GUI_MDI_TILE_VERT, enable, FALSE );
-    GUIEnableMenuItem( Root, GUI_MDI_ARRANGE_ICONS, enable, FALSE );
+    GUIEnableMenuItem( Root, GUI_MDI_CASCADE, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_TILE_HORZ, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_TILE_VERT, enable, false );
+    GUIEnableMenuItem( Root, GUI_MDI_ARRANGE_ICONS, enable, false );
 }
 
 void AddMDIActions( bool has_items, gui_window *wnd )
@@ -78,14 +78,14 @@ void AddMDIActions( bool has_items, gui_window *wnd )
 
     if( !MDIMenuStructInitialized ) {
         InitMDIMenuStruct();
-        MDIMenuStructInitialized = TRUE;
+        MDIMenuStructInitialized = true;
     }
 
     if( has_items ) {
-        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, MDIFirstSepMenu, FALSE );
+        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, MDIFirstSepMenu, false );
     }
 
     for( i = 0; i < NUM_MDI_MENUS; i++ ) {
-        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], FALSE );
+        GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], false );
     }
 }

@@ -374,27 +374,27 @@ void WdeUpDnSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the up down control options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x000000ff;
     if( mask & UDS_WRAP ) {
-        CheckDlgButton( hDlg, IDB_UDS_WRAP, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_WRAP, BST_CHECKED );
     }
     if( mask & UDS_SETBUDDYINT ) {
-        CheckDlgButton( hDlg, IDB_UDS_SETBUDDYINT, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_SETBUDDYINT, BST_CHECKED );
     }
     if( mask & UDS_AUTOBUDDY ) {
-        CheckDlgButton( hDlg, IDB_UDS_AUTOBUDDY, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_AUTOBUDDY, BST_CHECKED );
     }
     if( mask & UDS_ARROWKEYS ) {
-        CheckDlgButton( hDlg, IDB_UDS_ARROWKEYS, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_ARROWKEYS, BST_CHECKED );
     }
     if( mask & UDS_HORZ ) {
-        CheckDlgButton( hDlg, IDB_UDS_HORZ, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_HORZ, BST_CHECKED );
     }
     if( mask & UDS_NOTHOUSANDS ) {
-        CheckDlgButton( hDlg, IDB_UDS_NOTHOUSANDS, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_NOTHOUSANDS, BST_CHECKED );
     }
     if( mask & UDS_ALIGNRIGHT ) {
-        CheckDlgButton( hDlg, IDB_UDS_ALIGNRIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_ALIGNRIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_UDS_ALIGNLEFT, 1 );
+        CheckDlgButton( hDlg, IDB_UDS_ALIGNLEFT, BST_CHECKED );
     }
 
     // set the extended style controls only

@@ -36,7 +36,7 @@ void GUIRefresh( void )
 {
 #if 0
     if( GUIMainHwnd != NULL ) {
-        InvalidateRect( GUIMainHwnd, NULL, TRUE );
+        InvalidateRect( GUIMainHwnd, NULL, true );
         UpdateWindow( GUIMainHwnd );
     }
 #endif

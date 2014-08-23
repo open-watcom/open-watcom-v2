@@ -58,7 +58,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRAPI WRSetLBoxWithStr( HWND lbox, char *str, void *data )
+bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
 {
     bool        ok;
     LRESULT     index;

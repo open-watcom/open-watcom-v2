@@ -34,6 +34,6 @@
 
 bool GUIFirstCrack( void )
 {
-    return( TRUE );
+    return( true );
 }
 

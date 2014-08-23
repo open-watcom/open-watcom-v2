@@ -34,7 +34,7 @@
 #include "guidlg.h"
 #include <string.h>
 
-#if !defined( __NT__ ) || (GUI_IS_GUI == FALSE)
+#if !defined( __NT__ ) || (GUI_IS_GUI == false)
 static gui_colour_set DlgColours[GUI_NUM_ATTRS+1] = {
   /* Fore              Back        */
   { GUI_BRIGHT_BLUE,  GUI_BRIGHT_WHITE },   /* GUI_MENU_PLAIN     */
@@ -56,7 +56,7 @@ static gui_create_info DlgControl = {
     NULL,
     0,
     NULL,
-#if !defined( __NT__ ) || (GUI_IS_GUI == FALSE)
+#if !defined( __NT__ ) || (GUI_IS_GUI == false)
     GUI_NUM_ATTRS + 1,
     DlgColours,
 #else
@@ -67,7 +67,7 @@ static gui_create_info DlgControl = {
     NULL
 };
 
-static bool DlgModal = FALSE;
+static bool DlgModal = false;
 
 extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,
                              char *buff, unsigned max_len )
@@ -100,10 +100,10 @@ static bool DlgRelocNum( gui_ord *pnum, int adjust, gui_coord *charuse )
         num += adjust;
         num *= charuse->x;
     } else {
-        return( FALSE );
+        return( false );
     }
     *pnum = num;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -136,12 +136,12 @@ static void DlgSetCtlSizes( gui_control_info *control,
         if( DlgRelocNum( &control->rect.y, 0, charuse ) ) {
             control->rect.y += half.y + char_ui_adjust;
         }
-        reloc = FALSE;
+        reloc = false;
         if( DlgRelocNum( &control->rect.width, 0, charuse ) ) {
-            reloc = TRUE;
+            reloc = true;
         }
         if( DlgRelocNum( &control->rect.height, 0, charuse ) ) {
-            reloc = TRUE;
+            reloc = true;
         }
         if( reloc ) {
             switch( control->control_class ) {
@@ -235,19 +235,19 @@ void GUISetModalDlgs( bool modal )
 void GUIDlgOpen( char *name, int rows, int cols, gui_control_info *ctl,
                  int num_controls, GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, FALSE );
+    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, false );
 }
 
 void GUIModalDlgOpen( gui_window *parent, char *name, int rows, int cols,
                       gui_control_info *ctl, int num_controls,
                       GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( parent, name, rows, cols, ctl, num_controls, rtn, extra, FALSE );
+    DlgOpen( parent, name, rows, cols, ctl, num_controls, rtn, extra, false );
 }
 
 void GUISysModalDlgOpen( char *name, int rows, int cols,
                          gui_control_info *ctl, int num_controls,
                          GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, TRUE );
+    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, true );
 }

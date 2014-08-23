@@ -376,7 +376,7 @@ void WdeHdrSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the header control options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
     if( mask & HDS_BUTTONS ) {
-        CheckDlgButton( hDlg, IDB_HDS_BUTTONS, 1 );
+        CheckDlgButton( hDlg, IDB_HDS_BUTTONS, BST_CHECKED );
     }
 
     // set the extended style controls only

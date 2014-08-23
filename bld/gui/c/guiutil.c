@@ -44,7 +44,7 @@ bool GUIStripTrailingBlanks( char *label, char **new )
 
     if( label == NULL ) {
         *new = NULL;
-        return( TRUE );
+        return( true );
     }
     length = strlen( label ) - 1;
     for( ; length >=0;  length-- ) {
@@ -58,13 +58,13 @@ bool GUIStripTrailingBlanks( char *label, char **new )
     } else {
         *new = (char *)GUIMemAlloc( length + 1 );
         if( *new == NULL ) {
-            return( FALSE );
+            return( false );
         } else {
             strncpy( *new, label, length );
             (*new)[length] = NULLCHAR;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIStrDup( char *text, char **new )
@@ -74,29 +74,29 @@ bool GUIStrDup( char *text, char **new )
             new = GUIMemAlloc( sizeof( char * ) );
         }
         *new = NULL;
-        return( TRUE );
+        return( true );
     } else {
         if( new == NULL ) {
             new = GUIMemAlloc( sizeof( char * ) );
         }
         *new = (char *)GUIMemAlloc( strlen( text ) + 1 );
         if( *new == NULL ) {
-            return( FALSE );
+            return( false );
         }
         strcpy( *new, text );
     }
-    return( TRUE );
+    return( true );
 }
 
 static char     **GUI_argv      = NULL;
 static int      GUI_argc        = 0;
-static int      ArgsSet         = FALSE;
+static int      ArgsSet         = false;
 
 void GUIStoreArgs( char **argv, int argc )
 {
     GUI_argv = argv;
     GUI_argc = argc;
-    ArgsSet  = TRUE;
+    ArgsSet  = true;
 }
 
 bool GUIGetArgs( char ***argv, int *argc )
@@ -104,9 +104,9 @@ bool GUIGetArgs( char ***argv, int *argc )
     if( ArgsSet && argv && argc ) {
         *argv = GUI_argv;
         *argc = GUI_argc;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIIsRootWindow( gui_window *wnd )
@@ -114,7 +114,7 @@ bool GUIIsRootWindow( gui_window *wnd )
     if( wnd != NULL ) {
         return( (bool)(GUIGetParentWindow( wnd ) == NULL)  );
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_window *GUIGetRootWindow( void )

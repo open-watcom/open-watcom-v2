@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "segmap.h"
 #include "jdlg.h"
@@ -232,7 +233,7 @@ static void InitStatDialog( HWND hwnd )
     if( FindWatSymbol( &( statdata->curr_addr ), &si, TRUE ) == FOUND ) {
         RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
         StatShowSymbols = TRUE;
-        CheckDlgButton( hwnd, STAT_SYMBOLS, StatShowSymbols );
+        CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
     } else {
         RCsprintf( buff, STR_N_A );
         StatShowSymbols = FALSE;
@@ -474,10 +475,10 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
 int DoStatDialog( HWND hwnd )
 {
     DLGPROC     fp;
-    int ret;
+    INT_PTR     ret;
 
     fp = (DLGPROC)MakeProcInstance( StatDialog, Instance );
-    ret=JDialogBox( Instance, "TASKSTATUS", hwnd, fp );
+    ret = JDialogBox( Instance, "TASKSTATUS", hwnd, fp );
     FreeProcInstance( fp );
     return( ret );
 } /* DoStatDialog */

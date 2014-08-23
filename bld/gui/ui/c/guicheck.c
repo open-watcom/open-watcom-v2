@@ -79,7 +79,7 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
     prev_radio = 0;
     field = GUIGetField( wnd, id );
     if( field == NULL ) {
-        return( FALSE );
+        return( false );
     }
     // UI does not support 3 state checkboxes
     if( checked == GUI_INDETERMINANT ) {
@@ -103,8 +103,8 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
         check->val = checked;
         break;
     default :
-        return( FALSE );
+        return( false );
     }
     GUIRefreshControl( wnd, id );
-    return( TRUE );
+    return( true );
 }

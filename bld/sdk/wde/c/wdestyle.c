@@ -88,9 +88,9 @@ static void WdeSetWinStyle( HWND hDlg, DialogStyle style, DialogStyle styles )
         if( (style & styles) == style ) {
             control = GetDlgItem( hDlg, ws->id );
             if( control != (HWND)NULL ) {
-                CheckDlgButton( hDlg, ws->id, 1 );
+                CheckDlgButton( hDlg, ws->id, BST_CHECKED );
             } else if( ws->id2 != 0 ) {
-                CheckDlgButton( hDlg, ws->id2, 1 );
+                CheckDlgButton( hDlg, ws->id2, BST_CHECKED );
             }
         }
     }

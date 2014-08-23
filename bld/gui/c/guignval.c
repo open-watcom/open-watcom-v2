@@ -103,7 +103,7 @@ static bool GetNewFunction( gui_window *gui, gui_event gui_ev, void *param )
     default :
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*

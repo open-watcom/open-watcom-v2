@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "spy.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,7 +99,7 @@ WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lp
                 ++j;
             }
             SetDlgItemText( hwnd, DLGMSG1 + i, ClassMessages[j].message_array[k + i].str );
-            CheckDlgButton( hwnd, DLGMSG1 + i, savedBits[firstmsg + i] );
+            CheckDlgButton( hwnd, DLGMSG1 + i, ( savedBits[firstmsg + i] ) ? BST_CHECKED : BST_UNCHECKED );
         }
         break;
 #ifndef NOUSE3D
@@ -111,7 +112,7 @@ WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lp
         if( cmdid >= DLGMSG1 && cmdid < DLGMSG1 + NUM_DLGMSGS ) {
             fl = (savedBits[cmdid - DLGMSG1 + firstmsg]) ? FALSE : TRUE;
             savedBits[cmdid - DLGMSG1 + firstmsg] = fl;
-            CheckDlgButton( hwnd, cmdid, fl );
+            CheckDlgButton( hwnd, cmdid, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             break;
         }
         switch( cmdid ) {
@@ -125,7 +126,7 @@ WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lp
             }
             for( i = 0; i < max; i++ ) {
                 savedBits[firstmsg + i] = fl;
-                CheckDlgButton( hwnd, DLGMSG1 + i, fl );
+                CheckDlgButton( hwnd, DLGMSG1 + i, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             }
             break;
         case DLGMSG_NEXT:
@@ -159,12 +160,13 @@ void DoSpyMsgDialog( HWND hwnd, int which )
 {
     FARPROC     fp;
     bool        *savewatch;
+    INT_PTR     rc;
 
     savewatch = CloneBitState( savedBits );
     fp = MakeProcInstance( (FARPROC)SpyMsgDialog, Instance );
-    which = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (DLGPROC)fp, which );
+    rc = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (DLGPROC)fp, which );
     FreeProcInstance( fp );
-    if( which == -1 ) {
+    if( rc == -1 ) {
         CopyBitState( savedBits, savewatch );
     }
     FreeBitState( savewatch );
@@ -189,7 +191,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lp
         for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
             i = id - SPYMSG_CLIPBOARD;
             fl = Filters[i].flag[currBit];
-            CheckDlgButton( hwnd, id, fl );
+            CheckDlgButton( hwnd, id, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
         }
         if( currBit == M_WATCH ) {
             rcstr = GetRCString( STR_MSGS_TO_WATCH );
@@ -208,7 +210,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lp
         if( cmdid >= SPYMSG_CLIPBOARD && cmdid <= SPYMSG_CONTROLS ) {
             i = cmdid - SPYMSG_CLIPBOARD;
             fl = (Filters[i].flag[currBit]) ? FALSE : TRUE;
-            CheckDlgButton( hwnd, cmdid, fl );
+            CheckDlgButton( hwnd, cmdid, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             Filters[i].flag[currBit] = fl;
             SetFilterSaveBitsMsgs( i, fl, savedBits );
             break;
@@ -220,7 +222,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lp
             for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
                 i = id - SPYMSG_CLIPBOARD;
                 Filters[i].flag[currBit] = fl;
-                CheckDlgButton( hwnd, id, fl );
+                CheckDlgButton( hwnd, id, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
                 SetFilterSaveBitsMsgs( i, fl, savedBits );
             }
             break;
@@ -254,7 +256,7 @@ WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lp
 void DoMessageDialog( HWND hwnd, WORD cmdid )
 {
     FARPROC     fp;
-    int         rc;
+    INT_PTR     rc;
     bool        filts[SPYMSG_CONTROLS - SPYMSG_CLIPBOARD + 1];
     int         i;
     int         id;
@@ -378,10 +380,10 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DW
         oldBits[M_STOPON] = msgPtr->bits[M_STOPON];
         oldCount = msgPtr->count;
         if( oldBits[M_WATCH] ) {
-            CheckDlgButton( hwnd, MSGSEL_WATCH, 1 );
+            CheckDlgButton( hwnd, MSGSEL_WATCH, BST_CHECKED );
         }
         if( oldBits[M_STOPON] ) {
-            CheckDlgButton( hwnd, MSGSEL_STOPON, 1 );
+            CheckDlgButton( hwnd, MSGSEL_STOPON, BST_CHECKED );
         }
         ltoa( msgPtr->count, tmp, 10 );
         SetDlgItemText( hwnd, MSGSEL_COUNT, tmp );
@@ -437,7 +439,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DW
             }
             fl = ( msgPtr->bits[i] ) ? FALSE : TRUE;
             msgPtr->bits[i] = fl;
-            CheckDlgButton( hwnd, wparam, fl );
+            CheckDlgButton( hwnd, wparam, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             break;
         case IDOK:
             PostMessage( hwnd, WM_CLOSE, 0, 0L );

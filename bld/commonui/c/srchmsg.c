@@ -31,6 +31,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "bool.h"
 #include "mem.h"
 #include "srchmsg.h"
 #include "ldstr.h"
@@ -61,7 +62,7 @@ char *SrchMsg( DWORD value, msglist *tbl, char *dflt )
  *                 than once for each table
  *               - buf must be large enough to hold any message in the table
  */
-BOOL InitSrchTable( HANDLE inst, msglist *tbl )
+bool InitSrchTable( HANDLE inst, msglist *tbl )
 {
     msglist     *curmsg;
 
@@ -69,10 +70,10 @@ BOOL InitSrchTable( HANDLE inst, msglist *tbl )
     for( curmsg = tbl; curmsg->msg != (char *)(pointer_int)-1L; curmsg++ ) {
         curmsg->msg = AllocRCString( (MSGID)(pointer_int)curmsg->msg );
         if( curmsg->msg == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
     curmsg->msg = NULL;
-    return( TRUE );
+    return( true );
 
 } /* InitSrchTable */

@@ -55,8 +55,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
-void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+bool WRERibbonHook( HWND, UINT, WPARAM, LPARAM );
+void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -102,7 +102,7 @@ bool WREInitRibbon( HINSTANCE inst )
     WRERibbonInfo = WREAllocToolBarInfo( NUM_TOOLS );
 
     if( WRERibbonInfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
@@ -139,7 +139,7 @@ bool WREInitRibbon( HINSTANCE inst )
     WRERibbonInfo->dinfo.is_fixed = TRUE;
     WRERibbonInfo->dinfo.use_tips = TRUE;
 
-    return( TRUE );
+    return( true );
 }
 
 void WREShutdownRibbon( void )
@@ -172,7 +172,7 @@ void WREShutdownRibbon( void )
 bool WRECreateRibbon( HWND parent )
 {
     if( WRERibbon != NULL || WRERibbonInfo == NULL || parent == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( parent, &WRERibbonInfo->dinfo.area );
@@ -193,13 +193,13 @@ bool WREResizeRibbon( RECT *prect )
 {
     if( WRERibbon == NULL || WRERibbonHeight == 0 ||
         WRERibbon->win == (HWND)NULL || prect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     MoveWindow( WRERibbon->win, 0, 0, prect->right - prect->left,
                 WRERibbonHeight, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 void WREShowRibbon( HMENU menu )
@@ -239,7 +239,7 @@ void WREDestroyRibbon( void )
     WREResizeWindows();
 }
 
-void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
+void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
 {
     _wre_touch( hwnd );
 
@@ -250,19 +250,19 @@ void WRERibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
     }
 }
 
-BOOL WRERibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WRERibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    BOOL         ret;
+    bool         ret;
 
     _wre_touch( hwnd );
     _wre_touch( wParam );
     _wre_touch( lParam );
 
     if( WRERibbon == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_DESTROY:

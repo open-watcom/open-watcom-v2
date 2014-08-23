@@ -41,8 +41,8 @@
 WRDLLENTRY extern int              WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res );
 WRDLLENTRY extern WResTypeNode *   WRAPI WRFindTypeNodeFromWResID( WResDir, WResID * );
 WRDLLENTRY extern WResResNode *    WRAPI WRFindResNodeFromWResID( WResTypeNode *, WResID * );
-WRDLLENTRY extern WResTypeNode *   WRAPI WRFindTypeNode( WResDir, uint_16, char * );
-WRDLLENTRY extern WResResNode *    WRAPI WRFindResNode( WResTypeNode *, uint_16, char * );
+WRDLLENTRY extern WResTypeNode *   WRAPI WRFindTypeNode( WResDir, uint_16, const char * );
+WRDLLENTRY extern WResResNode *    WRAPI WRFindResNode( WResTypeNode *, uint_16, const char * );
 WRDLLENTRY extern WResLangNode *   WRAPI WRFindLangNodeFromLangType( WResResNode *, WResLangType * );
 
 #endif

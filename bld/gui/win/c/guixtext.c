@@ -45,9 +45,9 @@ bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
     HWND        hwnd;
 
     hwnd = _wpi_getdlgitem( wnd->hwnd, control );
-    _wpi_setredraw( hwnd, redraw );
+    _wpi_setredraw( hwnd, ( redraw ) ? TRUE : FALSE );
 
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -73,9 +73,9 @@ bool GUIAddText( gui_window *wnd, unsigned id, char *text )
 #endif
         GUIToComboList( wnd, id, LB_ADDSTRING, CB_ADDSTRING, (WPI_PARAM1)pos,
                         (WPI_PARAM2)(LPSTR)text, (WPI_MRESULT)NULL );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
@@ -83,13 +83,13 @@ bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
 {
     unsigned    i;
 
-    GUIControlSetRedraw( wnd, id, FALSE );
+    GUIControlSetRedraw( wnd, id, false );
     for( i = 0; i < items; i++ ) {
         GUIAddText( wnd, id, (*getstring)( handle, i ) );
     }
-    GUIControlSetRedraw( wnd, id, TRUE );
+    GUIControlSetRedraw( wnd, id, true );
     GUIControlDirty( wnd, id );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -102,9 +102,9 @@ bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text )
     if( text != NULL ) {
         GUIToComboList( wnd, id, LB_INSERTSTRING, CB_INSERTSTRING,
                         (WPI_PARAM1) choice, (WPI_PARAM2)(LPSTR)text, (WPI_MRESULT)NULL );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -115,7 +115,7 @@ bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice )
 {
     GUIToComboList( wnd, id, LB_SETTOPINDEX, LB_SETTOPINDEX,
                     (WPI_PARAM1)choice, (WPI_PARAM2)NULL, (WPI_MRESULT)NULL );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -143,12 +143,12 @@ bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
     GUIScaleToScreenR( &coord );
     GUIToComboList( wnd, id, LB_SETHORIZONTALEXTENT, LB_SETHORIZONTALEXTENT,
                     coord.x, (WPI_PARAM2)NULL, (WPI_MRESULT)NULL );
-    return( TRUE );
+    return( true );
 #else
     wnd = wnd;
     id = id;
     extent = extent;
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -169,9 +169,9 @@ bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice )
         GUIToComboList( wnd, id, LB_DELETESTRING, CB_DELETESTRING,
                         (WPI_PARAM1)choice, (WPI_PARAM2)NULL,
                         (WPI_MRESULT)NULL );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -183,7 +183,7 @@ bool GUIClearList( gui_window *wnd, unsigned id )
     GUIToComboList( wnd, id, LB_RESETCONTENT, CB_RESETCONTENT,
                     (WPI_PARAM1)NULL, (WPI_PARAM2)NULL,
                     (WPI_MRESULT)NULL );
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -196,7 +196,7 @@ bool GUISetText( gui_window *wnd, unsigned control, const char *text )
     gui_control_class   control_class;
 
     if( !GUIGetControlClass( wnd, control, &control_class ) ) {
-        return( FALSE );
+        return( false );
     }
     if( control_class != GUI_EDIT ) {
         new_text = _wpi_menutext2pm( text );
@@ -207,7 +207,7 @@ bool GUISetText( gui_window *wnd, unsigned control, const char *text )
     } else {
         _wpi_setdlgitemtext( wnd->hwnd, control, text );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -287,12 +287,12 @@ bool GUISetCurrSelect( gui_window * wnd, unsigned id, int choice )
     GUIToComboList( wnd, id, LB_SETCURSEL, CB_SETCURSEL,
                     (WPI_PARAM1)choice,
 #ifndef __OS2_PM__
-                    (WPI_PARAM2)FALSE,
+                    (WPI_PARAM2)false,
 #else
-                    (WPI_PARAM2)TRUE,
+                    (WPI_PARAM2)true,
 #endif
                     (WPI_MRESULT)NO_SELECT );
-    return( TRUE );
+    return( true );
 }
 
 char *GUIGetListItem( gui_window *wnd, unsigned id, int choice )
@@ -326,12 +326,12 @@ bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *da
     WPI_MRESULT ret;
 
     ret = GUIToComboList( wnd, id, LB_SETITEMDATA, CB_SETITEMDATA, (WPI_PARAM1)choice,
-                          (WPI_PARAM2)data, (WPI_MRESULT)FALSE );
+                          (WPI_PARAM2)data, (WPI_MRESULT)false );
 #ifndef __OS2_PM__
     if( ( ret == LB_ERR ) || ( ret == CB_ERR ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 #else
     return( (bool)ret );
 #endif

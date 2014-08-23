@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include "bool.h"
 #include "wdebug.h"
 #include "drwatcom.h"
 
@@ -47,10 +48,10 @@ loginfo                 LogInfo;
 dumpany                 DumpAny;
 HANDLE                  ProgramTask;
 int                     MinAddrSpaces;
-BOOL                    WDebug386 = FALSE;
+bool                    WDebug386 = false;
 HWND                    DumpDialogHwnd;
 BOOL                    WasFault;
-BOOL                    IsWin32App;
+bool                    IsWin32App;
 WORD                    Win32CS;
 DWORD                   Win32InitialEIP;
 WORD                    Win32DS;

@@ -285,7 +285,7 @@ BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam,
 void DoNBytes( HWND parent, WORD type ) {
 
     FARPROC             fp;
-    int                 ret;
+    INT_PTR             ret;
 
     DialMode = type;
     fp = MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );

@@ -55,7 +55,7 @@ bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
     GUI_RECTDIM left, top, right, bottom;
 
     if( ( wnd->hdc == (WPI_PRES)NULL ) || ( wnd->ps == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
 
     _wpi_getpaintrect( wnd->ps, &rect );
@@ -67,6 +67,6 @@ bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
     paint->height = _wpi_getheightrect( rect );
     GUIClientToScaleRect( paint );
 
-    return( TRUE );
+    return( true );
 }
 

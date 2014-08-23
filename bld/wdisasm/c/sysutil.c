@@ -81,51 +81,51 @@ bool  IsData( segment *seg )
             break;
         case COMDAT_FAR_CODE:
         case COMDAT_CODE32:
-            return( FALSE );
+            return( false );
         case COMDAT_FAR_DATA:
         case COMDAT_DATA32:
-            return( TRUE );
+            return( true );
         }
     }
     name = seg->u.seg.class_name;
     if( name == NULL ) {
-        return( FALSE );
+        return( false );
     }
     name_len = strlen( name );
     if( name_len == 4 ) {
         if( memicmp( name, "CODE", 4 ) == 0 ) {
-            return( FALSE );
+            return( false );
         }
     }
 
 /* for hysterical raisins */
     name = seg->name;
     if( name == NULL ) {
-        return( FALSE );
+        return( false );
     }
     name_len = strlen( name );
     if( memicmp( &name[ name_len - 4 ], "CODE", 4 ) == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( memicmp( &name[ name_len - 4 ], "TEXT", 4 )  == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( CodeName != NULL ) {            /* alternate code name supplied */
         code_len = strlen( CodeName );
         if( memicmp( name, CodeName, name_len ) == 0 ) {      /* exact match */
-            return( FALSE );
+            return( false );
         }
         if( CodeName[ 0 ] == '*' ) {
             if( memicmp( CodeName+1, &name[ name_len-(code_len-1) ], code_len - 1 ) == 0 ) {
-                return( FALSE );
+                return( false );
             }
         } else if( CodeName[ code_len - 1 ] == '*' ) {
             if( memicmp( CodeName, name, code_len - 1 ) == 0 ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -136,7 +136,7 @@ void  *AllocMem( size_t size )
 
     ptr = malloc( size );
     if( ptr == NULL && size != 0 ) {
-        SysError( ERR_OUT_OF_MEM, FALSE );
+        SysError( ERR_OUT_OF_MEM, false );
     }
     return( ptr );
 }
@@ -160,8 +160,8 @@ void  FreeMem( void *ptr )
 }
 
 
-void  SysError( int msg_num, int io_error )
-/***************************************/
+void  SysError( int msg_num, bool io_error )
+/******************************************/
 {
 
     DirectPuts( msg_num, stderr );
@@ -191,12 +191,13 @@ void DumpMem()
     int                 status;
     bool                unfreed;
 
-    unfreed = FALSE;
+    unfreed = false;
     h_info._pentry = NULL;
     for(;;) {
         status = _heapwalk( &h_info );
         if( status != _HEAPOK ) break;
-        if( h_info._useflag == _USEDENTRY ) unfreed = TRUE;
+        if( h_info._useflag == _USEDENTRY )
+            unfreed = true;
         if( unfreed ) {
             printf( Str_Out,
                 h_info._useflag == _USEDENTRY ? Str_Used : Str_Free,

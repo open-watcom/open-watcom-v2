@@ -31,6 +31,7 @@
 
 
 #include <windows.h>
+#include "bool.h"
 #include "regstr.h"
 #include "reglist.h"
 #include "drwatcom.h"

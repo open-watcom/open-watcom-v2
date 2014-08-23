@@ -37,6 +37,7 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
+#include "bool.h"
 #include "tinyio.h"
 #include "wdebug.h"
 #include "drwatcom.h"
@@ -95,8 +96,7 @@ BOOL __export FAR PASCAL LogDialog( HWND hwnd, WORD msg, WORD wparam,
 
         logInfo = LogInfo;
         for( i=0;i<LOGFL_MAX;i++ ) {
-            CheckDlgButton( hwnd, LOG_STACK_TRACE+i,
-                                logInfo.flags[i] == '1' );
+            CheckDlgButton( hwnd, LOG_STACK_TRACE+i, ( logInfo.flags[i] == '1' ) ? BST_CHECKED : BST_UNCHECKED );
         }
         #if 0
             SetCourierFont( hwnd, LOG_FILE_NAME );
@@ -124,17 +124,15 @@ BOOL __export FAR PASCAL LogDialog( HWND hwnd, WORD msg, WORD wparam,
             } else {
                 logInfo.flags[i] = '1';
             }
-            CheckDlgButton( hwnd, wparam, logInfo.flags[i] == '1' );
-            if( i == LOGFL_MOD_SEGMENTS
-               && logInfo.flags[ LOGFL_MOD_SEGMENTS ] == '1' ) {
+            CheckDlgButton( hwnd, wparam, ( logInfo.flags[i] == '1' ) ? BST_CHECKED : BST_UNCHECKED );
+            if( i == LOGFL_MOD_SEGMENTS && logInfo.flags[ LOGFL_MOD_SEGMENTS ] == '1' ) {
                 logInfo.flags[ LOGFL_MODULES ] = '1';
-                CheckDlgButton( hwnd, LOG_STACK_TRACE + LOGFL_MODULES, TRUE );
+                CheckDlgButton( hwnd, LOG_STACK_TRACE + LOGFL_MODULES, BST_CHECKED );
             }
             if( i == LOGFL_MODULES && logInfo.flags[ LOGFL_MODULES ] == '0' )
             {
                 logInfo.flags[ LOGFL_MOD_SEGMENTS ] = '0';
-                CheckDlgButton( hwnd, LOG_STACK_TRACE + LOGFL_MOD_SEGMENTS,
-                                FALSE );
+                CheckDlgButton( hwnd, LOG_STACK_TRACE + LOGFL_MOD_SEGMENTS, BST_UNCHECKED );
             }
             return( TRUE );
         }

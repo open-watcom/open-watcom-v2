@@ -65,7 +65,7 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
     HWND        frame;
 
     GUIInitHint( wnd, 0, NULL, MENU_HINT );
-    success = FALSE;
+    success = false;
     frame = GUIGetParentFrameHWND( wnd );
     parent = _wpi_getparent( frame );
     if( ( parent == HWND_DESKTOP ) || ( wnd->style & GUI_POPUP ) ) {
@@ -76,7 +76,7 @@ bool GUIResetMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu )
             if( GUICreateMenus( wnd, num_menus, menu, &hmenu ) ) {
                 GUISetMenu( wnd, hmenu );
                 _wpi_drawmenubar( frame );
-                success = TRUE;
+                success = true;
             }
         }
     } else {

@@ -47,11 +47,11 @@ void ActivateNC( gui_window *wnd, bool activate )
         return;
     }
 
-    found = FALSE;
+    found = false;
     current = wnd;
     while( current ) {
         if( current->flags & HAS_CAPTION ) {
-            found = TRUE;
+            found = true;
             break;
         }
         current = GUIGetParentWindow( current );
@@ -73,17 +73,17 @@ void GUIBringToFront( gui_window *wnd )
     }
 
     same_window = ( GUICurrWnd == wnd );
-    parent_is_dlg = FALSE;
+    parent_is_dlg = false;
     if( wnd->parent ) {
         if( wnd->parent->flags & IS_DIALOG ) {
-            parent_is_dlg = TRUE;
+            parent_is_dlg = true;
         }
     }
 
     if( !same_window || parent_is_dlg ) {
         if( !same_window && ( GUICurrWnd != NULL ) ) {
             if( _wpi_getparent( GUICurrWnd->hwnd_frame ) != HWND_DESKTOP ) {
-                ActivateNC( GUICurrWnd, FALSE );
+                ActivateNC( GUICurrWnd, false );
             }
             GUIEVENTWND( GUICurrWnd, GUI_NOT_ACTIVE, NULL );
         }
@@ -92,7 +92,7 @@ void GUIBringToFront( gui_window *wnd )
         if( !GUIEVENTWND( wnd, GUI_NOW_ACTIVE, NULL ) ) {
             GUICurrWnd = wnd;
             GUIFrontOfList( wnd );
-            ActivateNC( wnd, TRUE );
+            ActivateNC( wnd, true );
             GUIMDIBroughtToFront( wnd );
             _wpi_bringwindowtotop( wnd->hwnd_frame );
             _wpi_setfocus( wnd->hwnd_frame );
@@ -100,11 +100,11 @@ void GUIBringToFront( gui_window *wnd )
     }
 
     if( same_window && !parent_is_dlg ) {
-        ActivateNC( wnd, TRUE );
+        ActivateNC( wnd, true );
     }
 
     if( parent_is_dlg ) {
-        ActivateNC( wnd->parent, TRUE );
+        ActivateNC( wnd->parent, true );
     }
 }
 

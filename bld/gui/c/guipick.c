@@ -62,14 +62,14 @@ extern bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
         func = dlg->func;
         (*func)( gui, CTL_PICK_LIST );
         GUISetFocus( gui, CTL_PICK_LIST );
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
             dlg->chosen = GUIGetCurrSelect( gui, CTL_PICK_LIST );
             GUICloseDialog( gui );
         }
-        return( TRUE );
+        return( true );
     case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
@@ -80,9 +80,9 @@ extern bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
             GUICloseDialog( gui );
             break;
         }
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 

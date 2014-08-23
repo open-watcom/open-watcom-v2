@@ -56,8 +56,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WRibbonHook( HWND, UINT, WPARAM, LPARAM );
-extern void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+extern bool WRibbonHook( HWND, UINT, WPARAM, LPARAM );
+extern void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -330,7 +330,7 @@ void WDestroyRibbon( WAccelEditInfo *einfo )
     }
 }
 
-void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
+void WRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
 {
     _wtouch( hwnd );
     if( !pressed ) {
@@ -340,9 +340,9 @@ void WRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
     }
 }
 
-BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
-    BOOL            ret;
+    bool            ret;
     WAccelEditInfo  *einfo;
 
     _wtouch( hwnd );
@@ -352,10 +352,10 @@ BOOL WRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     einfo = WGetCurrentEditInfo();
 
     if( einfo == NULL || einfo->ribbon == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_DESTROY:

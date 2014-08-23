@@ -64,7 +64,7 @@ static void SetScrollThumb( p_gadget gadget, int percent, bool range_set )
         if( ( pos == gadget->total_size ) && ( percent != 100 ) ) {
             pos--;
         }
-        GUISetShowGadget( gadget, TRUE, TRUE, pos );
+        GUISetShowGadget( gadget, true, true, pos );
    }
 }
 

@@ -37,6 +37,7 @@
  *========================================================================*/
 
 #include <windows.h>
+#include "bool.h"
 #include "memwnd.h"
 
 void DumpMemAsm( MemWndInfo *info, int hdl ) {
@@ -52,7 +53,7 @@ void RedrawAsCode( HDC dc, MemWndInfo *info ) {
     info = info;
 }
 
-BOOL NeedScrollBar( MemWndInfo *info ) {
+bool NeedScrollBar( MemWndInfo *info ) {
     info = info;
     return( FALSE );
 }

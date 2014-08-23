@@ -571,19 +571,19 @@ void GetHexStr( LPSTR res, DWORD num, size_t padlen )
 /*
  * IsMyWindow - check if a specific window belongs to our task
  */
-BOOL IsMyWindow( HWND hwnd )
+bool IsMyWindow( HWND hwnd )
 {
 
     if( hwnd == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( GetWindowTask( hwnd ) == MyTask ) {
         if( hwnd == GetDesktopWindow() ) {
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* IsMyWindow */
 
@@ -793,7 +793,7 @@ static char filterList[] = "File (*.*)" \
 /*
  * GetFileName - get a file name using common dialog stuff
  */
-BOOL GetFileName( char *ext, int type, char *fname )
+bool GetFileName( char *ext, int type, char *fname )
 {
     OPENFILENAME        of;
     BOOL                rc;
@@ -814,18 +814,18 @@ BOOL GetFileName( char *ext, int type, char *fname )
     } else {
         rc = GetSaveFileName( &of );
     }
-    return( rc );
+    return( rc != 0 );
 
 } /* GetFileName */
 
-BOOL InitGblStrings( void ) {
+bool InitGblStrings( void ) {
 
     DWORD       heading;
     DWORD       heading_uline;
 
     SpyName = AllocRCString( STR_APP_NAME );
     if( SpyName == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
 #ifdef __NT__
@@ -837,13 +837,13 @@ BOOL InitGblStrings( void ) {
 #endif
     TitleBar = AllocRCString( heading );
     if( TitleBar == NULL ) {
-        return( FALSE );
+        return( false );
     }
     TitleBarULine = AllocRCString( heading_uline );
     if( TitleBarULine == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* InitGblStrings */
 

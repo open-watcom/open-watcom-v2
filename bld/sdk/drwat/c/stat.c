@@ -171,16 +171,16 @@ static void InitStatDialog( HWND hwnd )
     SetWORDEditField( hwnd, STAT_SS, IntData.SS );
     SetDWORDEditField( hwnd, STAT_SP, IntData.ESP );
 
-    CheckDlgButton( hwnd, STAT_FLAG_A, IntData.EFlags & FLAG_A_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_C, IntData.EFlags & FLAG_C_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_D, IntData.EFlags & FLAG_D_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_I, IntData.EFlags & FLAG_I_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_Z, IntData.EFlags & FLAG_Z_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_S, IntData.EFlags & FLAG_S_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_P, IntData.EFlags & FLAG_P_MASK );
-    CheckDlgButton( hwnd, STAT_FLAG_O, IntData.EFlags & FLAG_O_MASK );
+    CheckDlgButton( hwnd, STAT_FLAG_A, ( IntData.EFlags & FLAG_A_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_C, ( IntData.EFlags & FLAG_C_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_D, ( IntData.EFlags & FLAG_D_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_I, ( IntData.EFlags & FLAG_I_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_Z, ( IntData.EFlags & FLAG_Z_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_S, ( IntData.EFlags & FLAG_S_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_P, ( IntData.EFlags & FLAG_P_MASK ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hwnd, STAT_FLAG_O, ( IntData.EFlags & FLAG_O_MASK ) ? BST_CHECKED : BST_UNCHECKED );
 
-    CheckDlgButton( hwnd, STAT_SYMBOLS, StatShowSymbols );
+    CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
 
     /*
      * fill in source information
@@ -397,7 +397,7 @@ BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg, UINT wparam,
             } else {
                 StatShowSymbols = TRUE;
             }
-            CheckDlgButton( hwnd, STAT_SYMBOLS, StatShowSymbols );
+            CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
             DisplayAsmLines( hwnd, &currAddr, &firstAddr, STAT_DISASM_1,
                         STAT_DISASM_8, STAT_SCROLL );
             break;

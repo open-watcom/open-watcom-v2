@@ -277,7 +277,7 @@ void            FindOrigin( WPI_POINT *new_origin );
 void            SetMenus( img_node *node );
 
 /* ietoolbr.c */
-BOOL    ToolBarProc(HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool    ToolBarProc(HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void    InitTools( HWND hparent );
 void    CheckToolbarItem( HMENU hmenu );
 void    CloseToolBar( void );

@@ -98,10 +98,10 @@ static char *GetText( gui_window *wnd, unsigned id, int choice, bool get_curr )
 
 char *GUIGetText( gui_window *wnd, unsigned id )
 {
-    return( GetText( wnd, id, 0, TRUE ) );
+    return( GetText( wnd, id, 0, true ) );
 }
 
 char *GUIGetListItem( gui_window *wnd, unsigned id, int choice )
 {
-    return( GetText( wnd, id, choice, FALSE ) );
+    return( GetText( wnd, id, choice, false ) );
 }

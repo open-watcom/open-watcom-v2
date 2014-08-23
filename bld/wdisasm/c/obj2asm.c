@@ -69,7 +69,7 @@ void  Obj2Asm( segment *seg )
         if( EndOfSegment() ) {
             ForceLabels();
             FiniAsm();
-            Segment->dumped = TRUE;
+            Segment->dumped = true;
         }
         EmitEndSeg();
     }
@@ -115,7 +115,7 @@ static void ForceLabels()
                 if( !Segment->data_seg ) {
                     MsgGet( MSG_ORG_MAY_NOT_ASSEM, rc_buff );
                     MsgSubStr( rc_buff, curr->name, 's' );
-        /*  The following simulates a call to Error( RecNumber, FALSE ) */
+        /*  The following simulates a call to Error( RecNumber, false ) */
                     PutText( MSG_ASTERISK_1 );
                     PutText( MSG_WARNING );
                     PutString( rc_buff );
@@ -160,19 +160,22 @@ static char *MagicFixNames[] = {
 };
 
 
-static  int  Is87Fix( fixup *fix )
+static  bool Is87Fix( fixup *fix )
 /********************************/
 
 {
     char        *fix_name;
     char        **table;
 
-    if( _Class( fix->target ) != TYPE_IMPORT ) return( FALSE );
+    if( _Class( fix->target ) != TYPE_IMPORT )
+        return( false );
     fix_name = _Name( fix->target );
     for( table = MagicFixNames; *table != NULL; ++table ) {
-        if( strcmp( fix_name, *table ) == 0 ) return( TRUE );
+        if( strcmp( fix_name, *table ) == 0 ) {
+            return( true );
+        }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -238,7 +241,7 @@ static  void  DecodeCode()
 
 {
     fixup               *fix;
-    char                is_data;
+    bool                is_data;
     char                in_pcode;
     scan_table          *table;
     instruction         curr_ins;           /* not used */
@@ -249,7 +252,7 @@ static  void  DecodeCode()
         if( EndOfSegment() ) break;
         InsAddr = GetOffset();
         DataBytes = 0;
-        is_data = FALSE;
+        is_data = false;
         fix = FindFixup( InsAddr, Segment );
         if( fix != NULL && Is87Fix( fix ) ) {
             fix = NULL;
@@ -287,7 +290,7 @@ static  void  DecodeCode()
 #else
                 SizeDataInCode( table->ends - InsAddr );
 #endif
-                is_data = TRUE;
+                is_data = true;
             } else {
 #ifdef __PCODE__
                 in_pcode = 0;
@@ -343,7 +346,7 @@ static  void  DecodeData()
         label = NULL;
         if( next_label == InsAddr ) {
             label = FormSym( Segment->last_export->name );
-            Segment->last_export->dumped = TRUE;
+            Segment->last_export->dumped = true;
             Segment->last_export = Segment->last_export->next_exp;
             next_label = GetNextLabel();
         }
@@ -391,7 +394,7 @@ static  void  EmitData( char *label, fixup *fix )
             EmitRepeats();
         }
     }
-    FormatLine( fix, label, TRUE, 0 );
+    FormatLine( fix, label, true, 0 );
     if( DataBytes == MAX_DATA_LEN ) {     /* may repeat */
         memcpy( PrevString, DataString, MAX_DATA_LEN );
         Repeats = 1;
@@ -415,7 +418,7 @@ static  void  EmitRepeats()
         Repeats = 0;
         curr_bytes = DataBytes;
         DataBytes = MAX_DATA_LEN;
-        FormatLine( NULL, NULL, TRUE, 0 );
+        FormatLine( NULL, NULL, true, 0 );
         DataBytes = curr_bytes;
         InsAddr += MAX_DATA_LEN;
         memcpy( DataString, temp_bytes, MAX_DATA_LEN );
@@ -444,7 +447,7 @@ static  int  EmitWait()
         CurrIns.num_oper = 0;
         CurrIns.opcode = I_WAIT;
         DataBytes = 1;
-        FormatLine( NULL, GetLabel(), FALSE, 0 );
+        FormatLine( NULL, GetLabel(), false, 0 );
         ++InsAddr;
         CurrIns.pref &= ~PREF_FWAIT;
         CurrIns.ins_size = old_size - 1;
@@ -501,7 +504,7 @@ static  void  SkipHiddenLabels()
     while( Segment->last_export != NULL ) {
         exp = Segment->last_export;
         if( !exp->hidden ) return;
-        exp->dumped = TRUE;     //  pretend that it's dumped
+        exp->dumped = true;     //  pretend that it's dumped
         Segment->last_export = exp->next_exp;
     }
 }
@@ -530,9 +533,12 @@ static  bool    LabelIn( bool exact )
     while( exp != NULL && exp->dumped ) {
         exp = exp->next_exp;
     }
-    if( exp == NULL ) return( FALSE );
-    if( exp->address >= InsAddr+DataBytes ) return( FALSE );
-    if( exact ) return( exp->address == InsAddr );
+    if( exp == NULL )
+        return( false );
+    if( exp->address >= InsAddr+DataBytes )
+        return( false );
+    if( exact )
+        return( exp->address == InsAddr );
     return( exp->address > InsAddr );
 }
 
@@ -540,14 +546,14 @@ static  bool    LabelIn( bool exact )
 extern  bool    LabelInInstr()
 /****************************/
 {
-    return( LabelIn( FALSE ) );
+    return( LabelIn( false ) );
 }
 
 
 extern  bool    LabelOnInstr()
 /****************************/
 {
-    return( LabelIn( TRUE ) );
+    return( LabelIn( true ) );
 }
 
 
@@ -566,7 +572,7 @@ extern char  *GetLabel( void )
         Segment->last_export = sym->next_exp;
         if( UseORL ) SkipHiddenLabels();
         if( sym->address == InsAddr ) {
-            sym->dumped = TRUE;     /* label has been used */
+            sym->dumped = true;     /* label has been used */
             return( FormSym( sym->name ) );
         }
     }

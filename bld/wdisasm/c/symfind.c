@@ -85,12 +85,12 @@ char  *FindLabel( uint_32 ref, uint_32 addr, segment *seg )
         if( fix == NULL ) {
             name = FindExpName( addr, seg );
             if( name == NULL ) {
-                AddLabel( addr, NULL, seg, FALSE, FALSE );
+                AddLabel( addr, NULL, seg, false, false );
             }
         } else {
             name = GetFixName( fix );
             if( name == NULL ) {
-                AddLabel( fix->imp_address, NULL, seg, FALSE, FALSE );
+                AddLabel( fix->imp_address, NULL, seg, false, false );
                 name = FindExpName( fix->imp_address, seg );
             }
         }
@@ -156,12 +156,13 @@ void  FindSrcLine( uint_32 addr )
     line = Mod->src_rover;
     if( line == NULL ) return;
     if( line->seg != Segment ) {
-        if( Segment->src_done ) return;
+        if( Segment->src_done )
+            return;
         check = line;
         for( ;; ) {
            check = check->next_num;
            if( check == NULL ) {
-               Segment->src_done = TRUE;
+               Segment->src_done = true;
                return;
            }
            if( check->seg == Segment ) break;

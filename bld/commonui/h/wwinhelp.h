@@ -38,7 +38,7 @@ typedef DWORD       HELP_DATA;
 typedef ULONG_PTR   HELP_DATA;
 #endif
 
-BOOL    WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );
-BOOL    WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );
+bool    WWinHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );
+bool    WHtmlHelp( HWND hwnd, LPCSTR helpFile, UINT fuCommand, HELP_DATA data );
 
 #endif /* _WWINHELP_H_INCLUDED */

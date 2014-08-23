@@ -130,7 +130,7 @@ static gui_help_instance InitHelp( HWND hwnd, WPI_INST inst, char *title, char *
     inst = inst;
     title = title;
     help_file = help_file;
-    return( (gui_help_instance)TRUE );
+    return( (gui_help_instance)true );
 }
 
 static void FiniHelp( gui_help_instance inst, HWND hwnd, char *file )
@@ -217,7 +217,7 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
 {
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( act ) {
     case GUI_HELP_CONTENTS:
@@ -244,7 +244,7 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
 {
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
 #ifdef __OS2_PM__
 #elif defined( __NT__ )
@@ -272,7 +272,7 @@ bool GUIDisplayHelp( gui_window *wnd, char *file, char *topic )
     wnd = wnd;
     file = file;
     topic = topic;
-    return( FALSE );
+    return( false );
 #else
     if( topic == NULL ) {
         return( WWinHelp( wnd->hwnd, file, (UINT)HELP_INDEX, 0 ) );
@@ -288,7 +288,7 @@ bool GUIDisplayHelpWin4( gui_window *wnd, char *file, char *topic )
     wnd = wnd;
     file = file;
     topic = topic;
-    return( FALSE );
+    return( false );
 #else
     if( topic == NULL ) {
   #if defined( __NT__ )
@@ -314,7 +314,7 @@ bool GUIDisplayHelpId( gui_window *wnd, char *file, int id )
     wnd = wnd;
     file = file;
     id = id;
-    return( FALSE );
+    return( false );
 #else
     return( WWinHelp( wnd->hwnd, file, (UINT)HELP_CONTEXT, (HELP_DATA)id ) );
 #endif

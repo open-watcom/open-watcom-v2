@@ -83,9 +83,9 @@ bool GUIInsertCtrlWnd( gui_window *wnd )
         node->wnd = wnd;
         node->next = DialogHead;
         DialogHead = node;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_window *GUIGetCtrlWnd( HWND hwnd )
@@ -305,13 +305,13 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     switch( message ) {
 #ifndef __OS2_PM__
     case WM_SETFOCUS :
-        EditControlHasFocus = TRUE;
+        EditControlHasFocus = true;
         break;
     case WM_KILLFOCUS :
-        EditControlHasFocus = FALSE;
+        EditControlHasFocus = false;
         break;
     case WM_MOUSEACTIVATE :
-        return( TRUE );
+        return( true );
         break;
     case WM_CHAR :
         if( EditControlHasFocus ) {
@@ -667,16 +667,16 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
     GUICalcLocation( &info->rect, &pos, &size, parent->hwnd );
     hwnd = CreateControl( info, parent, pos, size );
     if( hwnd == NULLHANDLE ) {
-        return( FALSE );
+        return( false );
     }
     item = GUIControlInsert( parent, info->control_class, hwnd, info, NULL );
     if( item == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( GUIGetCtrlWnd( parent->hwnd ) == NULL ) {
         if( !GUIInsertCtrlWnd( parent ) ) {
             GUIControlDelete( parent, info->id );
-            return( FALSE );
+            return( false );
         }
     }
     GUIInitControl( item, parent, NULL );
@@ -688,7 +688,7 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
     if( !( info->style & GUI_CONTROL_INIT_INVISIBLE ) ) {
         _wpi_showwindow( hwnd, SW_SHOW );
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param )
@@ -711,12 +711,12 @@ bool GUICheckRadioButton( gui_window *wnd, unsigned id )
 
     first = id;
     last = id;
-    in_group = FALSE;
-    found_id = FALSE;
-    done = FALSE;
+    in_group = false;
+    found_id = false;
+    done = false;
     for( curr = wnd->controls; !done && ( curr != NULL ); curr = curr->next ) {
         if( curr->id == id ) {
-            found_id = TRUE;
+            found_id = true;
         }
         if( curr->style & GUI_GROUP ) {
             in_group = !in_group;
@@ -725,31 +725,31 @@ bool GUICheckRadioButton( gui_window *wnd, unsigned id )
             } else {
                 last = curr->id;
                 if( found_id ) {
-                    done = TRUE;
+                    done = true;
                 }
             }
         }
     }
     if( !done ) {
-        return( FALSE );
+        return( false );
     }
-    in_group = FALSE;
+    in_group = false;
     for( curr = wnd->controls; curr != NULL; curr = curr->next ) {
         if( curr->id == first ) {
-            in_group = TRUE;
+            in_group = true;
         }
         if( in_group ) {
             if( curr->id == id ) {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)TRUE, 0 );
+                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, 0 );
             } else {
-                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)FALSE, 0 );
+                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, 0 );
             }
         }
         if( curr->id == last ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIDeleteControl( gui_window *wnd, unsigned id )
@@ -760,9 +760,9 @@ bool GUIDeleteControl( gui_window *wnd, unsigned id )
     if( control != NULL ) {
         _wpi_destroywindow( control->hwnd );
         GUIControlDelete( wnd, id );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
@@ -780,10 +780,10 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
             _wpi_sendmessage( hwnd, MLM_SETTEXTLIMIT, len, 0 );
 #endif
         }
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static void ShowControl( gui_window *wnd, unsigned id, int show_flag )
@@ -813,8 +813,8 @@ bool GUIIsControlVisible( gui_window *wnd, unsigned id )
     control = GUIGetControlByID( wnd, id );
     if( control != NULL ) {
         if( _wpi_iswindowvisible( control->hwnd ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

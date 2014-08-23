@@ -88,13 +88,13 @@ extern  WPI_INST        GUIMainHInst;
 bool GUI3DDialogInit( void )
 {
 #ifdef __WINDOWS_386__
-    static bool dll32Ctl3dOpen = FALSE;
+    static bool dll32Ctl3dOpen = false;
 
     if( !dll32Ctl3dOpen ) {
         if( Init32Ctl3d() ) {
-            dll32Ctl3dOpen = TRUE;
+            dll32Ctl3dOpen = true;
         } else {
-            return( FALSE );
+            return( false );
         }
     }
 #endif
@@ -126,7 +126,7 @@ bool GUI3DDialogInit( void )
 
         /* If CTL3D DLL couldn't be loaded, just fail this function. */
         if( ctlDLLLib == (HINSTANCE)NULL ) {
-            return( FALSE );
+            return( false );
         }
 
         /* Get the addresses of the CTL3D functions we need. */
@@ -148,7 +148,7 @@ bool GUI3DDialogInit( void )
 
             FreeLibrary( ctlDLLLib );
             ctlDLLLib = (HINSTANCE)NULL;
-            return( FALSE );
+            return( false );
         }
 
         pfnCtl3dRegister( GUIMainHInst );
@@ -161,8 +161,8 @@ bool GUI3DDialogInit( void )
         GUISetCtl3dCtlColorEx( pfnCtl3dCtlColorEx );
     #endif
     }
-    return( TRUE );
+    return( true );
 #else
-    return( FALSE );
+    return( false );
 #endif
 }

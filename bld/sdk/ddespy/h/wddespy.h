@@ -32,6 +32,7 @@
 #define DDEMLDB
 #include <ddeml.h>
 #include <dde.h>
+#include "bool.h"
 #include "mem.h"
 #include "font.h"
 #include "srchmsg.h"
@@ -303,7 +304,7 @@ void    SaveConfigFile( void );
 /* ddemisc.c */
 void    LogHeader( FILE *f );
 void    DumpHeader( FILE *fptr );
-BOOL    InitGblStrings( void );
+bool    InitGblStrings( void );
 void    FiniRCStrings( void );
 
 /* ddetool.c */
@@ -311,5 +312,5 @@ void    GetFixedTBRect( HWND hwnd, RECT *rect );
 void    MakeDDEToolBar( HWND hwnd );
 void    DDEToolBarFini( void );
 void    ResizeTB( HWND owner );
-BOOL    ToggleTB( HWND parent );
+bool    ToggleTB( HWND parent );
 void    DDESetStickyState( UINT itemid, BOOL isdown );

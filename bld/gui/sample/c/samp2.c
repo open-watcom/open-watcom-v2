@@ -33,9 +33,6 @@
 #include <string.h>
 #include "gui.h"
 
-#define TRUE 1
-#define FALSE 0
-
 #define HEIGHT 5
 #define WIDTH 8
 
@@ -163,7 +160,7 @@ static bool GetNewFunction( gui_window * gui, gui_event gui_ev, void * param )
             }
         break;
     }
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -218,7 +215,7 @@ static bool StatusFunction( gui_window * gui, gui_event gui_ev, void * param )
             }
             break;
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUImain( void )

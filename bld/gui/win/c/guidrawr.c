@@ -49,7 +49,7 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     int         win_height;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( GUI_DO_VSCROLL( wnd ) ) {
@@ -98,27 +98,27 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
         }
         _wpi_deletebrush( brush );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), TRUE, FALSE ) );
+    return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), true, false ) );
 }
 
 bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), FALSE, TRUE ) );
+    return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), false, true ) );
 }
 
 bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
 {
-    return( DrawRect( wnd, rect, GETRGB( rgb ), TRUE, FALSE ) );
+    return( DrawRect( wnd, rect, GETRGB( rgb ), true, false ) );
 }
 
 bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
 {
-    return( DrawRect( wnd, rect, GETRGB( rgb ), FALSE, TRUE ) );
+    return( DrawRect( wnd, rect, GETRGB( rgb ), false, true ) );
 }
 
 static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
@@ -195,7 +195,7 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
 
     _wpi_deletepen( pen );
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,

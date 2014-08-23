@@ -35,6 +35,7 @@
 #include <string.h>
 #include <dos.h>
 #include <sys/stat.h>
+#include "bool.h"
 #include "wdebug.h"
 #include "drwatcom.h"
 #include "dump.h"
@@ -340,7 +341,7 @@ BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
         SetDlgItemText( hwnd, DUMP_MODULE_NAME, DTModuleEntry.szModule );
         SetDlgItemText( hwnd, DUMP_EXE_NAME, DTModuleEntry.szExePath );
         invokeDebugger = FALSE;
-        CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, invokeDebugger );
+        CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, BST_UNCHECKED );
         CheckRadioButton( hwnd, DUMP_ALL, DUMP_ALL_MEMORY, DumpHow );
         return( TRUE );
     case WM_CLOSE:
@@ -350,12 +351,12 @@ BOOL __export FAR PASCAL DumpDialog( HWND hwnd, WORD msg, WORD wparam,
         switch( wparam ) {
         case DUMP_INVOKE_DEBUGGER:
             if( HIWORD( lparam ) == BN_CLICKED ) {
-                if( !invokeDebugger ) {
-                    invokeDebugger = TRUE;
+                invokeDebugger = !invokeDebugger;
+                if( invokeDebugger ) {
+                    CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, BST_CHECKED );
                 } else {
-                    invokeDebugger = FALSE;
+                    CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, BST_UNCHECKED );
                 }
-                CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, invokeDebugger );
             }
             break;
         case DUMP_ALL_MEMORY:

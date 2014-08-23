@@ -496,12 +496,12 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), TRUE );
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
         if( mask == BS_OWNERDRAW ) {
-            CheckDlgButton( hDlg, IDB_BS_OWNERDRAW, 1 );
+            CheckDlgButton( hDlg, IDB_BS_OWNERDRAW, BST_CHECKED );
         } else {
             if( mask == BS_PUSHBUTTON ) {
-                CheckDlgButton( hDlg, IDB_BS_PUSHBUTTON, 1 );
+                CheckDlgButton( hDlg, IDB_BS_PUSHBUTTON, BST_CHECKED );
             } else if( mask == BS_DEFPUSHBUTTON ) {
-                CheckDlgButton( hDlg, IDB_BS_DEFPUSHBUTTON, 1 );
+                CheckDlgButton( hDlg, IDB_BS_DEFPUSHBUTTON, BST_CHECKED );
             } else {
                 WdeWriteTrail( "WdeButtonSetDefineInfo: Bad Push mask!" );
             }
@@ -509,39 +509,39 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             // set any new styles
             mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
             if( (mask & BS_CENTER) == BS_CENTER ) {
-                CheckDlgButton( hDlg, IDB_BS_CENTER, 1 );
+                CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
             } else if( mask & BS_RIGHT ) {
-                CheckDlgButton( hDlg, IDB_BS_RIGHT, 1 );
+                CheckDlgButton( hDlg, IDB_BS_RIGHT, BST_CHECKED );
             } else if( mask & BS_LEFT ) {
-                CheckDlgButton( hDlg, IDB_BS_LEFT, 1 );
+                CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_BS_CENTER, 1 );
+                CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
             }
 
             if( (mask & BS_VCENTER) == BS_VCENTER ) {
-                CheckDlgButton( hDlg, IDB_BS_VCENTER, 1 );
+                CheckDlgButton( hDlg, IDB_BS_VCENTER, BST_CHECKED );
             } else if( mask & BS_TOP ) {
-                CheckDlgButton( hDlg, IDB_BS_TOP, 1 );
+                CheckDlgButton( hDlg, IDB_BS_TOP, BST_CHECKED );
             } else if( mask & BS_BOTTOM ) {
-                CheckDlgButton( hDlg, IDB_BS_BOTTOM, 1 );
+                CheckDlgButton( hDlg, IDB_BS_BOTTOM, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_BS_VCENTER, 1 );
+                CheckDlgButton( hDlg, IDB_BS_VCENTER, BST_CHECKED );
             }
 
             if( GETCTL_STYLE( o_info->info.c.info ) & BS_BITMAP ) {
-                CheckDlgButton( hDlg, IDB_BS_BITMAP, 1 );
+                CheckDlgButton( hDlg, IDB_BS_BITMAP, BST_CHECKED );
             }
             if( GETCTL_STYLE( o_info->info.c.info ) & BS_ICON ) {
-                CheckDlgButton( hDlg, IDB_BS_ICON, 1 );
+                CheckDlgButton( hDlg, IDB_BS_ICON, BST_CHECKED );
             }
             if( GETCTL_STYLE( o_info->info.c.info ) & BS_TEXT ) {
-                CheckDlgButton( hDlg, IDB_BS_TEXT, 1 );
+                CheckDlgButton( hDlg, IDB_BS_TEXT, BST_CHECKED );
             }
             if( GETCTL_STYLE( o_info->info.c.info ) & BS_MULTILINE ) {
-                CheckDlgButton( hDlg, IDB_BS_MULTILINE, 1 );
+                CheckDlgButton( hDlg, IDB_BS_MULTILINE, BST_CHECKED );
             }
             if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
-                CheckDlgButton( hDlg, IDB_BS_NOTIFY, 1 );
+                CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
             }
         }
 #else
@@ -557,11 +557,11 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_MULTILINE ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), FALSE );
         if( mask == BS_PUSHBUTTON ) {
-            CheckDlgButton( hDlg, IDB_BS_PUSHBUTTON, 1 );
+            CheckDlgButton( hDlg, IDB_BS_PUSHBUTTON, BST_CHECKED );
         } else if( mask == BS_DEFPUSHBUTTON ) {
-            CheckDlgButton( hDlg, IDB_BS_DEFPUSHBUTTON, 1 );
+            CheckDlgButton( hDlg, IDB_BS_DEFPUSHBUTTON, BST_CHECKED );
         } else if( mask == BS_OWNERDRAW ) {
-            CheckDlgButton( hDlg, IDB_BS_OWNERDRAW, 1 );
+            CheckDlgButton( hDlg, IDB_BS_OWNERDRAW, BST_CHECKED );
         } else {
             WdeWriteTrail( "WdeButtonSetDefineInfo: Bad Push mask!" );
         }
@@ -579,32 +579,32 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
         if( mask == BS_3STATE ) {
-            CheckDlgButton( hDlg, IDB_BS_3STATE, 1 );
+            CheckDlgButton( hDlg, IDB_BS_3STATE, BST_CHECKED );
         } else if( mask == BS_AUTOCHECKBOX ) {
-            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, 1 );
+            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, BST_CHECKED );
         } else if( mask == BS_AUTO3STATE ) {
-            CheckDlgButton( hDlg, IDB_BS_3STATE, 1 );
-            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, 1 );
+            CheckDlgButton( hDlg, IDB_BS_3STATE, BST_CHECKED );
+            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, BST_CHECKED );
         }
 
         // set the new styles
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
-            CheckDlgButton( hDlg, IDB_BS_CENTER, 1 );
+            CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
-            CheckDlgButton( hDlg, IDB_BS_RIGHT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_RIGHT, BST_CHECKED );
         } else {
-            CheckDlgButton( hDlg, IDB_BS_LEFT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
         }
 
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
-            CheckDlgButton( hDlg, IDB_BS_NOTIFY, 1 );
+            CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_PUSHLIKE ) {
-            CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, 1 );
+            CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
-            CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
         }
 #else
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), FALSE );
@@ -615,12 +615,12 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), FALSE );
 
         if( mask == BS_3STATE ) {
-            CheckDlgButton( hDlg, IDB_BS_3STATE, 1 );
+            CheckDlgButton( hDlg, IDB_BS_3STATE, BST_CHECKED );
         } else if( mask == BS_AUTOCHECKBOX ) {
-            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, 1 );
+            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, BST_CHECKED );
         } else if( mask == BS_AUTO3STATE ) {
-            CheckDlgButton( hDlg, IDB_BS_3STATE, 1 );
-            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, 1 );
+            CheckDlgButton( hDlg, IDB_BS_3STATE, BST_CHECKED );
+            CheckDlgButton( hDlg, IDB_BS_AUTOCHECKBOX, BST_CHECKED );
         }
 #endif
     } else if( id  == RBUTTON_OBJ ) {
@@ -637,27 +637,27 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
         if( mask == BS_AUTORADIOBUTTON ) {
-            CheckDlgButton( hDlg, IDB_BS_AUTORADIOBUTTON, 1 );
+            CheckDlgButton( hDlg, IDB_BS_AUTORADIOBUTTON, BST_CHECKED );
         }
 
         // set new styles
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
-            CheckDlgButton( hDlg, IDB_BS_CENTER, 1 );
+            CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
-            CheckDlgButton( hDlg, IDB_BS_RIGHT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_RIGHT, BST_CHECKED );
         } else {
-            CheckDlgButton( hDlg, IDB_BS_LEFT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
         }
 
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
-            CheckDlgButton( hDlg, IDB_BS_NOTIFY, 1 );
+            CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
-            CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & BS_PUSHLIKE ) {
-            CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, 1 );
+            CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, BST_CHECKED );
         }
 #else
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), FALSE );
@@ -669,7 +669,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), FALSE );
 
         if( mask == BS_AUTORADIOBUTTON ) {
-            CheckDlgButton( hDlg, IDB_BS_AUTORADIOBUTTON, 1 );
+            CheckDlgButton( hDlg, IDB_BS_AUTORADIOBUTTON, BST_CHECKED );
         }
 #endif
     } else if( id == GBUTTON_OBJ ) {
@@ -679,11 +679,11 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), TRUE );
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
-            CheckDlgButton( hDlg, IDB_BS_CENTER, 1 );
+            CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
-            CheckDlgButton( hDlg, IDB_BS_RIGHT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_RIGHT, BST_CHECKED );
         } else {
-            CheckDlgButton( hDlg, IDB_BS_LEFT, 1 );
+            CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
         }
 #else
         EnableWindow( GetDlgItem( hDlg, IDB_BS_LEFT ), FALSE );
@@ -699,7 +699,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     if( check_lefttext ) {
        if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
-           CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, 1 );
+           CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
        }
     }
 

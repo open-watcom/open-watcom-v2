@@ -124,7 +124,7 @@ bool WdeCustControlsLoaded( void )
 
 bool WdeSetCurrentCustControl( int which )
 {
-    int       ret;
+    INT_PTR   ret;
     HINSTANCE inst;
     FARPROC   proc;
 

@@ -34,6 +34,6 @@
 
 #include "machtype.h"
 
-BOOL    GetStartAddress( char *path, addr48_ptr *res );
+bool    GetStartAddress( char *path, addr48_ptr *res );
 
 #endif /* _GETSADDR_H_INCLUDED */

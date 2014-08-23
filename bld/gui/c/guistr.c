@@ -62,7 +62,7 @@ bool GUIInitInternalStringTable( void )
 #define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
 #include "gui.msg"
 #undef pick
-    return( TRUE );
+    return( true );
 }
 
 bool GUIFiniInternalStringTable( void )
@@ -70,5 +70,5 @@ bool GUIFiniInternalStringTable( void )
 #define pick( a, b, c ) GUIMemFree( LIT( a ) );
 #include "gui.msg"
 #undef pick
-    return( TRUE );
+    return( true );
 }

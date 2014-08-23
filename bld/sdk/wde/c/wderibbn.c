@@ -56,8 +56,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
-void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed );
+bool WdeRibbonHook( HWND, UINT, WPARAM, LPARAM );
+void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -147,7 +147,7 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     WdeNumRibbonTools = num_tools;
     WdeRibbonInfo = WdeAllocToolBarInfo( num_tools );
     if( WdeRibbonInfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < num_tools; i++ ) {
@@ -184,7 +184,7 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
     WdeRibbonInfo->dinfo.is_fixed = TRUE;
     WdeRibbonInfo->dinfo.use_tips = TRUE;
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeShutdownRibbon( void )
@@ -217,7 +217,7 @@ void WdeShutdownRibbon( void )
 bool WdeCreateRibbon( HWND parent )
 {
     if( WdeRibbon != NULL || WdeRibbonInfo == NULL || parent == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( parent, &WdeRibbonInfo->dinfo.area );
@@ -238,12 +238,12 @@ bool WdeResizeRibbon( RECT *prect )
 {
     if( WdeRibbon == NULL || WdeRibbonHeight == 0 ||
         WdeRibbon->win == (HWND)NULL || prect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     MoveWindow( WdeRibbon->win, 0, 0, prect->right - prect->left, WdeRibbonHeight, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeShowRibbon( void )
@@ -303,14 +303,14 @@ void WdeSetRibbonItemState( WORD item, int state )
     }
 }
 
-void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, BOOL pressed )
+void WdeRibbonHelpHook( HWND hwnd, WPARAM wParam, bool pressed )
 {
     _wde_touch( hwnd );
 
     WdeHandleToolHint( wParam, pressed );
 }
 
-BOOL WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     bool         ret;
 
@@ -319,10 +319,10 @@ BOOL WdeRibbonHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     _wde_touch( lParam );
 
     if( WdeRibbon == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_DESTROY:

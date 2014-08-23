@@ -101,7 +101,7 @@ static void resizeForTB( RECT *area, HWND hwnd )
 /*
  * MyToolBarProc - hook message handler for the toolbar
  */
-BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MINMAXINFO  *minmax;
 //  HWND        toolhwnd;
@@ -139,7 +139,7 @@ BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         toolhwnd = ToolBarWindow( ToolBar.hdl );
         ShowWindow( toolhwnd, SW_NORMAL );
         UpdateWindow( toolhwnd );
-        return( TRUE );
+        return( true );
 #endif
     case WM_MOVE:
     case WM_SIZE:
@@ -164,7 +164,7 @@ BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         ConfigInfo.show_tb = FALSE;
         break;
     }
-    return( FALSE );
+    return( false );
 
 } /* MyToolBarProc */
 
@@ -189,7 +189,7 @@ void GetFixedTBRect( HWND hwnd, RECT *rect )
 /*
  * showTBHint
  */
-static void showTBHint( HWND hwnd, WPARAM menuid, BOOL select )
+static void showTBHint( HWND hwnd, WPARAM menuid, bool select )
 {
     DDEWndInfo          *info;
 
@@ -304,14 +304,14 @@ void ResizeTB( HWND owner )
 /*
  * ToggleTB - toggle the tool bar between shown and destroyed states
  */
-BOOL ToggleTB( HWND parent )
+bool ToggleTB( HWND parent )
 {
     HWND        hwnd;
 
     hwnd = ToolBarWindow( ToolBar.hdl );
     if( IsWindow( hwnd ) ) {
         DestroyWindow( hwnd );
-        return( TRUE );
+        return( true );
     } else {
         if( ToolBar.fixed ) {
             ToolBar.info.style = TOOLBAR_FIXED_STYLE;
@@ -330,7 +330,7 @@ BOOL ToggleTB( HWND parent )
                     ToolBar.info.area.bottom - ToolBar.info.area.top, TRUE );
         ShowWindow( hwnd, SW_NORMAL );
         UpdateWindow( hwnd );
-        return( FALSE );
+        return( false );
     }
 
 } /* ToggleTB */

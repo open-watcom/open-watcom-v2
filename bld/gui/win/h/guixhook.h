@@ -46,8 +46,8 @@ extern void GUISetMDIMaximized( bool (*func)( gui_window *) );
 extern bool GUIMDIMaximized( gui_window *wnd );
 extern void GUISetMDIUpdatedMenu( bool (*func)( void ) );
 extern bool GUIMDIUpdatedMenu( void );
-extern void GUISetMDINewWindow( int (*func)(HWND) );
-extern int GUIMDINewWindow( HWND );
+extern void GUISetMDINewWindow( bool (*func)(HWND) );
+extern bool GUIMDINewWindow( HWND );
 extern void GUISetMDIMaximize( void (*func)(bool, gui_window *) );
 extern void GUIMDIMaximize( bool max, gui_window *wnd );
 extern void GUISetSetMDIRestoredSize( void (*func)(HWND, WPI_RECT *) );
@@ -67,9 +67,9 @@ extern void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void));
 extern void GUISetCtl3dSubclassCtl( BOOL (_DLLFAR PASCAL *func)(HWND) );
 extern void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) );
 #endif
-extern BOOL GUICtl3dUnregister( void );
-extern BOOL GUICtl3dSubclassDlg( HWND hwnd, WORD word );
-extern BOOL GUICtl3dSubclassCtl( HWND hwnd );
-extern BOOL GUICtl3dColorChange( void );
+extern bool GUICtl3dUnregister( void );
+extern bool GUICtl3dSubclassDlg( HWND hwnd, WORD word );
+extern bool GUICtl3dSubclassCtl( HWND hwnd );
+extern bool GUICtl3dColorChange( void );
 extern HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp );
 #endif // _GUIXHOOK_H_

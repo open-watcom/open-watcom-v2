@@ -235,9 +235,9 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
     WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDKEY ), str );
     WSetVirtKey( einfo->edit_dlg, is_virt );
     if( is_virt ) {
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDALT, alt );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDCNTL, cntl );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDSHFT, shift );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDALT, ( alt ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDCNTL, ( cntl ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDSHFT, ( shift ) ? BST_CHECKED : BST_UNCHECKED );
     }
 }
 

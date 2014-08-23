@@ -32,6 +32,7 @@
 #include "precomp.h"
 #include <string.h>
 #include <dos.h>
+#include "bool.h"
 #include "wdebug.h"
 #include "descript.h"
 #include "segmem.h"
@@ -51,27 +52,27 @@ extern DWORD _GetASelectorLimit( WORD );
         "shr   edx,16" \
         parm [ax] value [dx ax];
 
-extern WORD _IsValidSelector( WORD );
+extern bool _IsValidSelector( WORD );
 #pragma aux _IsValidSelector = \
         ".386" \
         "verr ax" \
-        "mov  ax,0" \
+        "mov  al,0" \
         "jnz  L1" \
         "mov  al,1" \
     "L1:" \
-        parm [ax] value [ax];
+        parm [ax] value [al];
 
 /*
  * WDebug386 must be defined in a program using these procedures
  */
-extern BOOL             WDebug386;
+extern bool             WDebug386;
 
 DWORD GetASelectorLimit( WORD sel )
 {
     return( _GetASelectorLimit( sel ) );
 }
 
-WORD IsValidSelector( WORD sel )
+bool IsValidSelector( WORD sel )
 {
     return( _IsValidSelector( sel ) );
 }
@@ -100,15 +101,12 @@ void GetADescriptor( WORD seg, descriptor *desc )
 /*
  * IsSeg32 - given a segment, check if it is a BIG one.
  */
-int IsSeg32( WORD seg )
+bool IsSeg32( WORD seg )
 {
     descriptor  desc;
 
     GetADescriptor( seg, &desc );
-    if( desc.big_or_default ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( desc.big_or_default != 0 );
 
 } /* IsSeg32 */
 

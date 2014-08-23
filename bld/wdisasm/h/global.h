@@ -70,16 +70,16 @@ extern form_option      Options;
 extern char             DataBytes;
 extern char             DataLen;
 extern char             Pass;
-extern char             ExpDump;
-extern char             ImpDump;
-extern char             RetFarUsed;
+extern bool             ExpDump;
+extern bool             ImpDump;
+extern bool             RetFarUsed;
 extern char             DataString[ MAX_INSTR_LEN ];
 extern char             PrevString[ MAX_INSTR_LEN ];
-extern char             IsPharLap;
-extern char             Is32Record;
-extern char             Is32BitObj;
+extern bool             IsPharLap;
+extern bool             Is32Record;
+extern bool             Is32BitObj;
 extern char             IntLblStart;
-extern char             UnMangle;
+extern bool             UnMangle;
 
 /* objdasm.c */
 extern struct segment   *Segment;
@@ -138,7 +138,7 @@ extern uint_8           SecondByte;
 extern uint_32          WtkAddr;
 extern char             WTLBASEStr[];
 extern char             WTLSEGStr[];
-extern char             WtlsegPresent;
+extern bool             WtlsegPresent;
 
 /* objorl.c */
 extern bool             UseORL;

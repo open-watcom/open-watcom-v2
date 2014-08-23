@@ -77,7 +77,7 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
         _wpi_getbitmapdim( GUIHotSpots[i].bitmap, &GUIHotSpots[i].size.x,
                            &GUIHotSpots[i].size.y );
     }
-    return( TRUE );
+    return( true );
 }
 
 void GUIXCleanupHotSpots( void )
@@ -105,7 +105,7 @@ void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
         pos.y = row * metrics.avg.y;
         GUIDrawTextBitmapAttr( wnd, NULL, GUIHotSpots[hot_spot - 1].size.x,
                                GUIHotSpots[hot_spot - 1].size.y,
-                               &pos, attr, GUI_NO_COLUMN, FALSE,
+                               &pos, attr, GUI_NO_COLUMN, false,
                                hot_spot );
     }
 }

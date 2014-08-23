@@ -560,20 +560,18 @@ bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, bool reset )
 #if 0
         EnableWindow( GetDlgItem( dlg, IDM_MENUEDPOPUP ), (flags & MENU_POPUP) != 0 );
         EnableWindow( GetDlgItem( dlg, IDM_MENUEDSEP ), (flags & MENU_SEPARATOR) != 0 );
-        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ),
-                      !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
+        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ), !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
 #endif
 
-        CheckDlgButton( dlg, IDM_MENUEDPOPUP, reset || (flags & MENU_POPUP) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDSEP, !reset && (flags & MENU_SEPARATOR) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDNORMAL,
-                        !reset && !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
-        CheckDlgButton( dlg, IDM_MENUEDCHECKED, !reset && (flags & MENU_CHECKED) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDGRAYED, !reset && (flags & MENU_GRAYED) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDINACTIVE, !reset && (flags & MENU_INACTIVE) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDHELP, !reset && (flags & MENU_HELP) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDMENU, !reset && (flags & MENU_MENUBREAK) != 0 );
-        CheckDlgButton( dlg, IDM_MENUEDMENUBAR, !reset && (flags & MENU_MENUBARBREAK) != 0 );
+        CheckDlgButton( dlg, IDM_MENUEDPOPUP, ( reset || (flags & MENU_POPUP) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDSEP, ( !reset && (flags & MENU_SEPARATOR) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDNORMAL, ( !reset && !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDCHECKED, ( !reset && (flags & MENU_CHECKED) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDGRAYED, ( !reset && (flags & MENU_GRAYED) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDINACTIVE, ( !reset && (flags & MENU_INACTIVE) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDHELP, ( !reset && (flags & MENU_HELP) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDMENU, ( !reset && (flags & MENU_MENUBREAK) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDMENUBAR, ( !reset && (flags & MENU_MENUBARBREAK) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
     }
 
     return( ok );
@@ -694,7 +692,7 @@ static bool WInitEditWindow( WMenuEditInfo *einfo )
                 einfo->current_pos = 0;
             }
         } else {
-            CheckDlgButton( einfo->edit_dlg, IDM_MENUEDPOPUP, TRUE );
+            CheckDlgButton( einfo->edit_dlg, IDM_MENUEDPOPUP, BST_CHECKED );
         }
     }
 
@@ -1048,12 +1046,12 @@ WINEXPORT BOOL CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, L
         switch( wp ) {
         case IDM_MENUEDGRAYED:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDM_MENUEDINACTIVE, 0 );
+                CheckDlgButton( hDlg, IDM_MENUEDINACTIVE, BST_UNCHECKED );
             }
             break;
         case IDM_MENUEDINACTIVE:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
-                CheckDlgButton( hDlg, IDM_MENUEDGRAYED, 0 );
+                CheckDlgButton( hDlg, IDM_MENUEDGRAYED, BST_UNCHECKED );
             }
             break;
 #if 0

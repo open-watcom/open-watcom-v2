@@ -90,7 +90,7 @@ typedef enum {
     GUI_DIALOG_ESCAPE,          /* escape was pressed in a dialog */
     GUI_STATUS_CLEARED,         /* the text in the status line was cleared */
     GUI_QUERYENDSESSION,        /* the windowing system is asking if we can close */
-                                /* if you return FALSE your session indicating
+                                /* if you return false your session indicating
                                    that it is OK by it to shutdown the
                                    windowing subsystem */
     GUI_ENDSESSION,             /* the windowing system is telling us we must close */

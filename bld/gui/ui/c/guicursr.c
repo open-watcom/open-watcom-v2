@@ -58,13 +58,13 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
             return( GUISetCursor( wnd ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
     if( ( point == NULL ) || !( wnd->style & GUI_CURSOR ) ) {
-        return( FALSE );
+        return( false );
     }
     point->x = wnd->screen.col - wnd->use.col;
     point->y = wnd->screen.row - wnd->use.col;
@@ -75,13 +75,13 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
         point->y += wnd->vgadget->pos;
     }
     GUIScreenToScaleRPt( point );
-    return( TRUE );
+    return( true );
 }
 
 bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
 {
     if( !( wnd->style & GUI_CURSOR ) | ( cursor == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     switch( wnd->screen.cursor ) {
     case C_OFF :
@@ -94,9 +94,9 @@ bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
         *cursor = GUI_INSERT_CURSOR;
         break;
     default :
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
@@ -114,7 +114,7 @@ bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
         type = C_INSERT;
         break;
     default :
-        return( FALSE );
+        return( false );
     }
     wnd->screen.cursor = type;
     return( GUISetCursor( wnd ) );

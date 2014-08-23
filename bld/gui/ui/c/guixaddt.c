@@ -44,7 +44,7 @@ bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
     wnd     = wnd;
     control = control;
     redraw  = redraw;
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -62,26 +62,26 @@ static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, unsigned id )
     case FLD_PULLDOWN :
         dialog = GUIGetDialog( wnd );
         if( dialog == NULL ) {
-            return( FALSE );
+            return( false );
         }
         GUIRefreshControl( wnd, id );
-        return( TRUE );
+        return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool GetList( gui_window *wnd, unsigned id, VFIELD **field, a_list **list )
 {
     *field = GUIGetField( wnd, id );
     if( *field == NULL ) {
-        return( FALSE );
+        return( false );
     }
     *list = GUIGetList( *field );
     if( *list == NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GUIAddText( gui_window *wnd, unsigned id, char *text )
@@ -92,7 +92,7 @@ bool GUIAddText( gui_window *wnd, unsigned id, char *text )
     if( GetList( wnd, id, &field, &list ) ) {
         return( GUIListBoxAddText( list, text, -1 ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
@@ -104,7 +104,7 @@ bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
     if( GetList( wnd, id, &field, &list ) ) {
         return( GUIListBoxAddTextList( list, items, handle, getstring ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice )
@@ -115,7 +115,7 @@ bool GUIDeleteItem( gui_window *wnd, unsigned id, int choice )
     if( GetList( wnd, id, &field, &list ) ) {
         return( GUIListBoxDeleteItem( list, choice ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIClearList( gui_window *wnd, unsigned id )
@@ -125,14 +125,14 @@ bool GUIClearList( gui_window *wnd, unsigned id )
 
     if( GetList( wnd, id, &field, &list ) ) {
         if( !GUIClearListBox( list ) ) {
-            return( FALSE );
+            return( false );
         }
         if( !GUISetText( wnd, id, NULL ) ) { /* temporary */
-            return( FALSE );
+            return( false );
         }
         return( RefreshListCombobox( field, wnd, id ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 int GUIGetCurrSelect( gui_window *wnd, unsigned id )
@@ -142,8 +142,8 @@ int GUIGetCurrSelect( gui_window *wnd, unsigned id )
     int         ret;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, 0, FALSE, &ret ) ) {
-            return( FALSE );
+        if( !GUIListCurr( list, 0, false, &ret ) ) {
+            return( false );
         }
         return( ret );
     }
@@ -156,12 +156,12 @@ bool GUISetCurrSelect( gui_window *wnd, unsigned id, int choice )
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( !GUIListCurr( list, choice, TRUE, NULL ) ) {
-            return( FALSE );
+        if( !GUIListCurr( list, choice, true, NULL ) ) {
+            return( false );
         }
         return( RefreshListCombobox( field, wnd, id ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 int GUIGetListSize( gui_window *wnd, unsigned id )
@@ -183,7 +183,7 @@ bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text )
     if( GetList( wnd, id, &field, &list ) ) {
         return( GUIListBoxAddText( list, text, choice ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice )
@@ -193,10 +193,10 @@ bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice )
 
     choice = choice;
     if( GetList( wnd, id, &field, &list ) ) {
-        GUIListBoxTopIndex( list, choice, TRUE, NULL );
+        GUIListBoxTopIndex( list, choice, true, NULL );
         return( RefreshListCombobox( field, wnd, id ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 int GUIGetTopIndex( gui_window *wnd, unsigned id )
@@ -206,7 +206,7 @@ int GUIGetTopIndex( gui_window *wnd, unsigned id )
     int         ret;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        if( GUIListBoxTopIndex( list, 0, FALSE, &ret ) ) {
+        if( GUIListBoxTopIndex( list, 0, false, &ret ) ) {
             return( ret );
         }
     }

@@ -152,7 +152,7 @@ static void addItems( void )
 /*
  * FunctionBarHelpProc
  */
-void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, BOOL pressed )
+void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -166,7 +166,7 @@ void FunctionBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, BOOL pressed )
 /*
  * FunctionBarProc - hook function which intercepts messages to the toolbar
  */
-BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     short               i;
     static BOOL         gridButtonDown = FALSE;
@@ -185,7 +185,7 @@ BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
         if( LOWORD( wparam ) == IMGED_GRID ) {
             ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_DOWN );
         } else {
-            return( 1 );
+            return( true );
         }
         break;
 
@@ -200,7 +200,7 @@ BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
                 break;
             }
             CheckGridItem( _wpi_getmenu( _wpi_getframe( HMainWindow ) ) );
-            return( 1 );
+            return( true );
         }
 
         ToolBarSetState( functionBar, LOWORD( wparam ), BUTTON_UP );
@@ -228,7 +228,7 @@ BOOL FunctionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpar
         }
         break;
     }
-    return( 0 );
+    return( false );
 
 } /* FunctionBarProc */
 

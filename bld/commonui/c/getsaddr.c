@@ -30,6 +30,7 @@
 
 
 #include "precomp.h"
+#include "bool.h"
 #include "tinyio.h"
 #include "getsaddr.h"
 
@@ -39,57 +40,57 @@
 /*
  * SeekRead - seek to a specified spot in the file, and read some data
  */
-static BOOL SeekRead( int handle, DWORD newpos, void *buff, WORD size )
+static bool SeekRead( int handle, DWORD newpos, void *buff, WORD size )
 {
     tiny_ret_t  rc;
 
     if( TINY_ERROR( TinySeek( handle, newpos, TIO_SEEK_SET ) ) ) {
-        return( FALSE );
+        return( false );
     }
     rc = TinyRead( handle, buff, size );
     if( TINY_ERROR( rc ) ) {
-        return( FALSE );
+        return( false );
     }
     if( TINY_INFO( rc ) != size ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* SeekRead */
 
 /*
  * FindNewHeader - get a pointer to the new executable header
  */
-static BOOL FindNewHeader( int handle, DWORD *nh_offset )
+static bool FindNewHeader( int handle, DWORD *nh_offset )
 {
     WORD        data;
 
     if( !SeekRead( handle, 0x00, &data, sizeof( data ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( data != EXE_MZ ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !SeekRead( handle, 0x18, &data, sizeof( data ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( data < 0x40 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !SeekRead( handle, 0x3c, nh_offset, sizeof( DWORD ) ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !SeekRead( handle, *nh_offset, &data, sizeof( WORD ) ) ) {
-        return( FALSE );
+        return( false );
     }
     if( data != EXE_NE ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 
 } /* FindNewHeader */
 
@@ -97,7 +98,7 @@ static BOOL FindNewHeader( int handle, DWORD *nh_offset )
  * GetStartAddress - find the segment/offset of the first
  *                   instruction in a given executable
  */
-BOOL GetStartAddress( char *path, addr48_ptr *res )
+bool GetStartAddress( char *path, addr48_ptr *res )
 {
     tiny_ret_t  rc;
     int         handle;
@@ -107,26 +108,26 @@ BOOL GetStartAddress( char *path, addr48_ptr *res )
 
     rc = TinyOpen( path, TIO_READ );
     if( TINY_ERROR( rc ) ) {
-        return( FALSE );
+        return( false );
     }
     handle = TINY_INFO( rc );
 
     if( !FindNewHeader( handle, &nh_offset ) ) {
         TinyClose( handle );
-        return( FALSE );
+        return( false );
     }
     if( !SeekRead( handle, nh_offset + 0x14, &ip, sizeof( ip ) ) ) {
         TinyClose( handle );
-        return( FALSE );
+        return( false );
     }
     if( !SeekRead( handle, nh_offset + 0x16, &object, sizeof( object ) ) ) {
         TinyClose( handle );
-        return( FALSE );
+        return( false );
     }
     res->offset = (DWORD)ip;
     res->segment = object;
 
     TinyClose( handle );
-    return( TRUE );
+    return( true );
 
 } /* GetStartAddress */

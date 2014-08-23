@@ -38,7 +38,7 @@ extern  gui_window      *GUICurrWnd;
 static  int             ScrollOffset    =       1;
 
 /*
- * GUIUseGadget -- return TRUE if the gadget should be drawn.  To draw,
+ * GUIUseGadget -- return true if the gadget should be drawn.  To draw,
  *                 the window must be visible, not minimized and it
  *                 must be large enough to draw the gadget.  Also, the
  *                 window must be the current one, this must be a top
@@ -49,7 +49,7 @@ static  int             ScrollOffset    =       1;
 bool GUIUseGadget( gui_window *wnd, p_gadget gadget )
 {
     if( gadget == NULL ) {
-        return( FALSE );
+        return( false );
     }
     return( !GUI_WND_MINIMIZED( wnd ) && ( wnd->style & GUI_VISIBLE ) &&
         ( ( gadget->end - gadget->start + 1 ) >= MIN_GADGET_SIZE ) &&
@@ -63,7 +63,7 @@ bool GUIDrawGadgetLine( p_gadget gadget )
     if( GUIGetScrollOffset() > 0 ) {
         return( ( gadget->end - gadget->start + 1 ) >= MIN_GADGET_SIZE );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar,
@@ -140,9 +140,9 @@ EVENT GUIGadgetFilter( gui_window *wnd, EVENT ev, int *prev, int *diff )
     ATTR        scroll_icon;
     bool        set;
 
-    set = FALSE;
+    set = false;
     if( GUIUseGadget( wnd, wnd->hgadget ) ) {
-        set = TRUE;
+        set = true;
         SetScrollAttrs( wnd, &scroll_bar, &scroll_icon );
         ev = CheckGadget( wnd->hgadget, ev, EV_SCROLL_HORIZONTAL, prev, diff );
     }
@@ -150,7 +150,7 @@ EVENT GUIGadgetFilter( gui_window *wnd, EVENT ev, int *prev, int *diff )
         if( GUIUseGadget( wnd, wnd->vgadget ) ) {
             if( !set ) {
                 SetScrollAttrs( wnd, &scroll_bar, &scroll_icon );
-                set = TRUE;
+                set = true;
             }
             ev = CheckGadget( wnd->vgadget, ev, EV_SCROLL_VERTICAL, prev, diff );
         }
@@ -182,13 +182,13 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
 
     if( !( wnd->style & GUI_VISIBLE ) ) {
         *gadget_ptr = NULL;
-        return( TRUE );
+        return( true );
     }
 
     gadget = ( p_gadget )GUIMemAlloc( sizeof( a_gadget ) );
     if( gadget == NULL ) {
         *gadget_ptr = NULL;
-        return( FALSE );
+        return( false );
     }
     *gadget_ptr = gadget;
     gadget->win = &wnd->screen;
@@ -227,7 +227,7 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         }
     }
     uisetgadgetnodraw( gadget, 0 );
-    return( TRUE );
+    return( true );
 }
 
 int GUIGetScrollOffset( void )

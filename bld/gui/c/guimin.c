@@ -37,10 +37,10 @@
 bool GUIGetMinSize( gui_coord *size )
 {
     if( size == NULL ) {
-        return( FALSE );
+        return( false );
     }
     size->x = MIN_WIDTH;
     size->y = MIN_HEIGHT;
     GUIScreenToScaleR( size );
-    return( TRUE );
+    return( true );
 }

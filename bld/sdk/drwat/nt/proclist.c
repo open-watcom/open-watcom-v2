@@ -32,6 +32,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "priority.h"
@@ -597,16 +598,16 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         }
         switch( priority ) {
         case IDLE_PRIORITY_CLASS:
-            CheckDlgButton( hwnd, PRIORITY_IDLE, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_IDLE, BST_CHECKED );
             break;
         case NORMAL_PRIORITY_CLASS:
-            CheckDlgButton( hwnd, PRIORITY_NORMAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_NORMAL, BST_CHECKED );
             break;
         case HIGH_PRIORITY_CLASS:
-            CheckDlgButton( hwnd, PRIORITY_HIGHEST, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_HIGHEST, BST_CHECKED );
             break;
         case REALTIME_PRIORITY_CLASS:
-            CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, BST_CHECKED );
             break;
         }
         break;
@@ -733,8 +734,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 ProcPriorityInfo        prinfo;
 
                 prinfo.procid = procid;
-                JDialogBoxParam( Instance, "PROC_PRIORITY", hwnd,
-                                ProcPriorityDlg, (DWORD)&prinfo );
+                JDialogBoxParam( Instance, "PROC_PRIORITY", hwnd, ProcPriorityDlg, (LPARAM)&prinfo );
                 fillProcInfo( hwnd, buf );
             }
             break;
@@ -752,8 +752,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             }
             break;
         case PROCCTL_THREAD:
-            JDialogBoxParam( Instance, "THREAD_CTL", hwnd, ThreadCtlProc,
-                            procid );
+            JDialogBoxParam( Instance, "THREAD_CTL", hwnd, ThreadCtlProc, procid );
             break;
         case PROCCTL_KILL:
             procinfo = FindProcess( procid );

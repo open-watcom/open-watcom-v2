@@ -36,8 +36,8 @@
 
 typedef int     CMDID;
 
-typedef BOOL (*toolhook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
-typedef void (*helphook)( HWND, WPI_PARAM1, BOOL );
+typedef bool (*toolhook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+typedef void (*helphook)( HWND, WPI_PARAM1, bool );
 
 typedef struct TOOLDISPLAYINFO {
     WPI_POINT   button_size;        /* size, in pixels, of one tool item */
@@ -48,9 +48,8 @@ typedef struct TOOLDISPLAYINFO {
     helphook    helphook;           /* function called when help text is needed */
     HBITMAP     background;         /* background of depressed button (0 == default) */
     HBRUSH      foreground;         /* color of mono bitmap when depressed (0 == default) */
-    char        is_fixed    : 1;    /* is toolbar fixed or floating? */
-    char        use_tips    : 1;    /* use tool tips? */
-    char        spare       : 6;    /* spare bits */
+    bool        is_fixed    : 1;    /* is toolbar fixed or floating? */
+    bool        use_tips    : 1;    /* use tool tips? */
 } TOOLDISPLAYINFO;
 
 /* Button states for use with ITEM_STICKY flag below */
@@ -79,7 +78,7 @@ typedef struct TOOLITEMINFO {
 struct toolbar  *ToolBarInit( HWND );
 void    ToolBarDisplay( struct toolbar *, TOOLDISPLAYINFO * );
 void    ToolBarAddItem( struct toolbar *, TOOLITEMINFO * );
-BOOL    ToolBarDeleteItem( struct toolbar *, CMDID id );
+bool    ToolBarDeleteItem( struct toolbar *, CMDID id );
 HWND    ToolBarWindow( struct toolbar * );
 void    ToolBarSetState( struct toolbar *, CMDID id, WORD state );
 WORD    ToolBarGetState( struct toolbar *bar, CMDID id );
@@ -88,8 +87,8 @@ void    ToolBarFini( struct toolbar * );
 void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, HBITMAP bitmap );
 void    UpdateToolBar( struct toolbar *bar );
 void    ChangeToolButtonBitmap( struct toolbar *bar, CMDID id, HBITMAP newbmp );
-BOOL    HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-BOOL    FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
+bool    HasToolAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+bool    FindToolIDAtPoint( struct toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, CMDID *id );
 #ifndef __OS2_PM__
 void    ToolBarChangeSysColors( COLORREF, COLORREF, COLORREF );
 #endif

@@ -179,7 +179,7 @@ EVENT GUICreateMenuPopup( gui_window *wnd, gui_point *location,
         return( EV_NO_EVENT );
     }
     ev = uicreatepopupinarea( menu, &desc, track & GUI_TRACK_LEFT,
-                              track & GUI_TRACK_RIGHT, curr, &area, FALSE );
+                              track & GUI_TRACK_RIGHT, curr, &area, false );
 
     if( ev == EV_KILL_UI ) {
         uiforceevadd( EV_KILL_UI );
@@ -241,10 +241,10 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
     MENUITEM    *new_menu;
 
     if( !GUICreateMenuItems( num_menu_items, menu, &new_menu ) ) {
-        return( FALSE );
+        return( false );
     }
     TrackPopup( wnd, location, new_menu, track, curr_item );
-    return( TRUE );
+    return( true );
 }
 
 bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
@@ -253,8 +253,8 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     if( GUIPopupMenu != NULL ) {
         TrackPopup( wnd, location, GUIPopupMenu, track, curr_item );
         GUIPopupMenu = NULL;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 

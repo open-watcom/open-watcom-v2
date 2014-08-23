@@ -101,15 +101,15 @@ WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
         ShowWindow( ctl, SW_HIDE );
 #else
         if( ConfigInfo.stickymagnifier ) {
-            CheckDlgButton( hwnd, CFG_STICKY, TRUE );
+            CheckDlgButton( hwnd, CFG_STICKY, BST_CHECKED );
         }
 #endif
         if( ConfigInfo.topmost ) {
-            CheckDlgButton( hwnd, CFG_TOP, TRUE );
+            CheckDlgButton( hwnd, CFG_TOP, BST_CHECKED );
         }
         sprintf( info->interval, "%u", ConfigInfo.refresh_interval );
         if( ConfigInfo.autorefresh ) {
-            CheckDlgButton( hwnd, CFG_AUTOREFRESH, TRUE );
+            CheckDlgButton( hwnd, CFG_AUTOREFRESH, BST_CHECKED );
             SetDlgItemText( hwnd, CFG_REFRESH_INTERVAL, info->interval );
         } else {
             ctl = GetDlgItem( hwnd, CFG_REFRESH_INTERVAL );

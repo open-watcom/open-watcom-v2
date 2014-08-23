@@ -55,7 +55,7 @@ WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         SendDlgItemMessage( hwnd, MARK_BOXED, BM_SETCHECK, 1, 0L );
         hdl = GetDlgItem( hwnd, MARK_EDIT );
         SetFocus( hdl );
-        return( 0 );
+        return( FALSE );
 //      strcpy( buf, "---------" );
 //      SendDlgItemMessage( hwnd, MARK_EDIT, WM_SETTEXT, 0, (LPARAM)buf );
         break;

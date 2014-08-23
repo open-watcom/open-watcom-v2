@@ -57,7 +57,7 @@ static button_bitmaps   bitmaps[NUMBER_OF_TOOLS] = {
 /*
  * ToolBarHelpProc
  */
-void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, BOOL pressed )
+void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, bool pressed )
 {
     hwnd = hwnd;
     if( pressed ) {
@@ -71,7 +71,7 @@ void ToolBarHelpProc( HWND hwnd, WPI_PARAM1 wparam, BOOL pressed )
 /*
  * ToolBarProc - hook function that intercepts messages to the toolbar
  */
-BOOL ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HMENU               hmenu;
     static HMENU        hsysmenu;
@@ -123,7 +123,7 @@ BOOL ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     case WM_CLOSE:
         hmenu = _wpi_getmenu( _wpi_getframe( HMainWindow ) );
         CheckToolbarItem( hmenu );
-        return( 1 );
+        return( true );
 
     case WM_MOVE:
         _wpi_getwindowrect( _wpi_getframe( hwnd ), &rctool );
@@ -140,9 +140,9 @@ BOOL ToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
         break;
 
     default:
-        return( 0 );
+        return( false );
     }
-    return( 0 );
+    return( false );
 
 } /* ToolBarProc */
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
+#include "bool.h"
 #include "font.h"
 
 /*

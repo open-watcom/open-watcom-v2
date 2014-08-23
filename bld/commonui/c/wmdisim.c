@@ -69,9 +69,9 @@ extern int WINAPI CascadeChildWindows( HWND parent, WORD action );
 #endif
 
 static mdi_info mdiInfo;
-static char     childrenMaximized;
-static char     updatedMenu;
-static char     insertedItems;
+static bool     childrenMaximized;
+static bool     updatedMenu;
+static bool     insertedItems;
 static HBITMAP  closeBitmap;
 static HBITMAP  restoreBitmap;
 static HBITMAP  restoredBitmap;
@@ -250,7 +250,7 @@ static void doRestoreAll( void )
         return;
     }
     _wpi_setwindowtext( mdiInfo.root, mdiInfo.main_name );
-    childrenMaximized = FALSE;
+    childrenMaximized = false;
     md = mdiHead;
     while( md != NULL ) {
         doRestore( md->hwnd );
@@ -273,7 +273,7 @@ static void doMaximizeAll( HWND first )
 
     was_max = childrenMaximized;
 
-    childrenMaximized = TRUE;
+    childrenMaximized = true;
 
     doMaximize( first );
 
@@ -323,7 +323,7 @@ static void getMenuBitmaps( void )
         closeBitmap = LoadBitmap( mdiInfo.hinstance, "CLOSEBMP" );
 #endif
     }
-    updatedMenu = TRUE;
+    updatedMenu = true;
 
 } /* getMenuBitmaps */
 
@@ -464,7 +464,7 @@ static bool hitSysMenu( HWND hwnd, WPI_PARAM2 lparam )
     right  = left + CLOSE_BITMAP_X;
     _wpi_setrectvalues( &r, left, top, right, bottom );
     WPI_MAKEPOINT(lparam, lparam, pt);
-    return( _wpi_ptinrect( &r, pt ) );
+    return( _wpi_ptinrect( &r, pt ) != 0 );
 
 } /* hitSysMenu */
 
@@ -493,7 +493,7 @@ bool HitRestoreButton( HWND hwnd, WPI_PARAM2 lparam )
     left   = right - CLOSE_BITMAP_X;
     _wpi_setrectvalues( &r, left, top, right, bottom );
     WPI_MAKEPOINT(lparam, lparam, pt);
-    return( _wpi_ptinrect( &r, pt ) );
+    return( _wpi_ptinrect( &r, pt ) != 0 );
 
 } /* HitRestoreButton */
 
@@ -532,7 +532,7 @@ static void setMaximizedMenuConfig( HWND hwnd )
     } else {
         getMenuBitmaps();
         menu = _wpi_getmenu( mdiInfo.root );
-        insertedItems = TRUE;
+        insertedItems = true;
         sys_menu = generateSystemMenu( hwnd );
         if( sys_menu != NULL ) {
             InsertMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP,
@@ -555,7 +555,7 @@ static void setMaximizedMenuConfig( HWND hwnd )
  */
 void MDIClearMaximizedMenuConfig( void )
 {
-    updatedMenu = FALSE;
+    updatedMenu = false;
     if( closeBitmap != NULLHANDLE ) {
         _wpi_deletebitmap( closeBitmap );
         closeBitmap = NULLHANDLE;
@@ -582,7 +582,7 @@ static void deleteMaximizedMenuConfig( void )
     if( !insertedItems ) {
         return;
     }
-    insertedItems = FALSE;
+    insertedItems = false;
     root_menu = _wpi_getmenu( mdiInfo.root );
     _wpi_deletemenu( root_menu, 0, TRUE );
     count = (int)_wpi_getmenuitemcount( root_menu );
@@ -608,7 +608,7 @@ void MDISetMainWindowTitle( char *fname )
 /*
  * MDIIsMaximized - test if we are currently maximized
  */
-int MDIIsMaximized( void )
+bool MDIIsMaximized( void )
 {
     return( childrenMaximized );
 
@@ -617,7 +617,7 @@ int MDIIsMaximized( void )
 /*
  * MDIIsWndMaximized - test is given window is currently maximized
  */
-int MDIIsWndMaximized( HWND hwnd )
+bool MDIIsWndMaximized( HWND hwnd )
 {
     mdi_data    *md;
 
@@ -629,7 +629,7 @@ int MDIIsWndMaximized( HWND hwnd )
 /*
  * MDIUpdatedMenu - test if we have updated (added to) the menus
  */
-int MDIUpdatedMenu( void )
+bool MDIUpdatedMenu( void )
 {
     return( updatedMenu );
 
@@ -638,7 +638,7 @@ int MDIUpdatedMenu( void )
 /*
  * MDISetMaximized - set the current maximized state
  */
-void MDISetMaximized( int setting )
+void MDISetMaximized( bool setting )
 {
     childrenMaximized = setting;
 
@@ -647,7 +647,7 @@ void MDISetMaximized( int setting )
 /*
  * MDITile - do a tile
  */
-void MDITile( int is_horz )
+void MDITile( bool is_horz )
 {
 #ifndef __OS2_PM__
     WORD            tile_how;
@@ -738,13 +738,13 @@ void MDICascade( void )
 /*
  * MDINewWindow - a new MDI window has been created
  */
-int MDINewWindow( HWND hwnd )
+bool MDINewWindow( HWND hwnd )
 {
     mdi_data    *md;
 
     md = (mdi_data *)MemAlloc( sizeof( mdi_data ) );
     if( md == NULL ) {
-        return( FALSE );
+        return( false );
     }
     md->hwnd = hwnd;
     SET_WND_MDI_DATA( hwnd, (LONG_PTR)md );
@@ -759,7 +759,7 @@ int MDINewWindow( HWND hwnd )
         doMaximize( hwnd );
         mdiInfo.set_window_title( hwnd );
     }
-    return( TRUE );
+    return( true );
 
 } /* MDINewWindow */
 
@@ -801,7 +801,7 @@ static void finiWindow( HWND hwnd )
 /*
  * processSysCommand - process a WM_SYSCOMMAND message for an MDI child
  */
-static int processSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
+static bool processSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                               WPI_PARAM2 lparam, WPI_MRESULT *lrc )
 {
     mdi_data    *md;
@@ -816,22 +816,22 @@ static int processSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         } else {
             doRestoreAll();
         }
-        return( TRUE );
+        return( true );
     case SC_MAXIMIZE:
         doMaximizeAll( hwnd );
         mdiInfo.set_window_title( hwnd );
         *lrc = 0;
-        return( TRUE );
+        return( true );
     case SC_CLOSE:
         *lrc = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-        return( TRUE );
+        return( true );
     case SC_MINIMIZE:
         if( md->curr_state == STATE_MAX ) {
             doRestoreAll();
             md->orig_state = STATE_MAX;
         }
         *lrc = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
-        return( TRUE );
+        return( true );
     case SC_NEXTWINDOW:
         if( md->next == NULL ) {
             md = mdiHead;
@@ -842,9 +842,9 @@ static int processSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
          *        better (WM_CHILDACTIVATE maybe?)
          */
         _wpi_sendmessage( md->hwnd, WM_SETFOCUS, 0, 0L );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* processSysCommand */
 
@@ -895,7 +895,7 @@ static void newChildPositions( void )
         _wpi_getwindowrect( curr->hwnd, &r );
         orig = minChildRect;
         UnionRect( &minChildRect, &orig, &r );
-        haveMinChildRect = TRUE;
+        haveMinChildRect = true;
         curr = curr->next;
     }
     tryContainerScrollBars();
@@ -918,14 +918,14 @@ void MDIResizeContainer( void )
 /*
  * MDIHitClose - check if close bitmap was hit on menu of main window
  */
-int MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifndef __OS2_PM__
     msg = msg;
     if( childrenMaximized && wparam == HTMENU ) {
         if( hitSysMenu( hwnd, lparam ) ) {
             _wpi_postmessage( currentWindow, WM_SYSCOMMAND, SC_CLOSE, 0L );
-            return( TRUE );
+            return( true );
         }
     }
 #else
@@ -934,7 +934,7 @@ int MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     wparam = wparam;
     lparam = lparam;
 #endif
-    return( FALSE );
+    return( false );
 
 } /* MDIHitClose */
 
@@ -959,18 +959,18 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
             if( flags & MF_POPUP ) {
                 if( CheckForMessage( GetSubMenu( menu, i ), currentWindow,
                                      wparam, lparam ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 id = GetMenuItemID( menu, i );
                 if( id == wparam ) {
                     _wpi_sendmessage( currentWindow, WM_COMMAND, wparam, lparam );
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* CheckForMessage */
 
@@ -979,7 +979,7 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
 /*
  * MDIIsSysCommand - see if WM_COMMAND is really a WM_SYSCOMMAND
  */
-int MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+bool MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
 #ifndef __OS2_PM__
     HMENU       sys_menu;
@@ -989,7 +989,7 @@ int MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
     if( childrenMaximized ) {
         if( LOWORD( wparam ) >= 0xF000 ) {
             _wpi_sendmessage( currentWindow, WM_SYSCOMMAND, wparam, lparam );
-            return( TRUE );
+            return( true );
         } else {
             sys_menu = GetSystemMenu( currentWindow, FALSE );
             CheckForMessage( sys_menu, currentWindow, wparam, lparam );
@@ -1001,7 +1001,7 @@ int MDIIsSysCommand( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lpara
     wparam = wparam;
     lparam = lparam;
 #endif
-    return( FALSE );
+    return( false );
 
 } /* MDIIsSysCommand */
 
@@ -1017,7 +1017,7 @@ static void fixSystemMenu( HWND hwnd )
 /*
  * MDIChildHandleMessage - handle messages for MDI child windows
  */
-int MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
+bool MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                            WPI_PARAM2 lparam, WPI_MRESULT *lrc )
 {
 #ifndef __OS2_PM__
@@ -1044,7 +1044,7 @@ int MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         finiWindow( hwnd );
         if( childrenMaximized && mdiHead == NULL ) {
             doRestoreAll();
-            childrenMaximized = TRUE;
+            childrenMaximized = true;
         }
         if( currentWindow == hwnd ) {
             currentWindow = NULLHANDLE;
@@ -1061,7 +1061,7 @@ int MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     case WM_COMMAND:
         if( childrenMaximized && LOWORD( wparam ) >= 0xF000 ) {
             _wpi_sendmessage( currentWindow, WM_SYSCOMMAND, wparam, lparam );
-            return( TRUE );
+            return( true );
         }
         break;
     case WM_NCLBUTTONDBLCLK:
@@ -1069,12 +1069,12 @@ int MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         if( !childrenMaximized && (wparam == HTCAPTION) && iconic ) {
             _wpi_sendmessage( currentWindow, WM_SYSCOMMAND, SC_MAXIMIZE, 0L );
             *lrc = 0;
-            return( TRUE );
+            return( true );
         }
         break;
 #endif
     }
-    return( FALSE );
+    return( false );
 
 } /* MDIChildHandleMessage */
 

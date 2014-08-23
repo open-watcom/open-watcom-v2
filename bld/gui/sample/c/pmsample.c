@@ -40,7 +40,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     gui = gui;
     gui_ev = gui_ev;
     param = param;
-    return( TRUE );
+    return( true );
 }
 
 static gui_create_info Parent = {

@@ -83,7 +83,7 @@ void  FPutEnd( FILE *io_file )
     FPutTxtRec( io_file, buffer, bufPos );
     bufPos = 0;
     if( ferror( io_file ) ) {
-        SysError( ERR_WRITE_FILE, TRUE );
+        SysError( ERR_WRITE_FILE, true );
     }
 }
 

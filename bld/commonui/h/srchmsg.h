@@ -60,7 +60,7 @@ typedef struct {
      char       *msg;
 } msglist;
 
-char    *SrchMsg( DWORD value, msglist *tbl, char *dflt );
-BOOL    InitSrchTable( HANDLE inst, msglist *tbl );
+extern char     *SrchMsg( DWORD value, msglist *tbl, char *dflt );
+extern bool     InitSrchTable( HANDLE inst, msglist *tbl );
 
 #endif /* _SRCHMSG_H_INCLUDED */

@@ -42,7 +42,7 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
 {
      _wpi_setwindowtext( GUIGetParentFrameHWND( wnd ), data );
      GUIChangeMDITitle( wnd );
-     return( TRUE );
+     return( true );
 }
 
 /*

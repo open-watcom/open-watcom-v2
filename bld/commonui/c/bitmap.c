@@ -34,6 +34,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <dos.h>
+#include "bool.h"
 #include "palette.h"
 #include "bitmap.h"
 #include "mem.h"
@@ -171,8 +172,7 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
 /*
  * readBitmap - read a bitmap from a file
  */
-static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, BOOL core,
-                           bitmap_info *info )
+static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_info *info )
 {
     DWORD               size;           /* generic size - used repeatedly */
     BYTE _WCI86HUGE     *mask_ptr;      /* pointer to bit array in memory */
@@ -266,7 +266,7 @@ HBITMAP ReadBitmapFile( HWND hwnd, char *file_name, bitmap_info *info )
     FILE                *fp;
     HBITMAP             bitmap_handle;
     BITMAPFILEHEADER    file_header;
-    BOOL                core;
+    bool                core;
     DWORD               size;
 
     bitmap_handle = (HBITMAP)0;

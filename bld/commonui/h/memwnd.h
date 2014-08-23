@@ -64,31 +64,31 @@
 #define MEMWND_MAX_FNAME        _MAX_PATH
 
 typedef struct asminfo{
-    BOOL        big;
+    bool        big;
     DWORD       increment;
     WORD        usage_cnt;
     DWORD       data[1];        /* dynamic array */
 } AsmInfo;
 
 typedef struct memdata {
-    WORD        sel;                    /* selector being displayed */
-    DWORD       limit;                  /* limit of this selector */
-    DWORD       base;                   /* base offset */
-    unsigned    lastline;
-    WORD        disp_type;              /* BYTE, WORD, DWORD or CODE */
-    char        bytesdisp;
-    DWORD       ins_cnt;
-    AsmInfo     *asm;
-    DWORD       offset;
-    HWND        scrlbar;                /* handle of scroll bar */
-    HWND        parent;                 /* parent of this window */
-    HWND        dialog;                 /* handle of mem info wnd */
-    WORD        width;
-    BOOL        isdpmi      : 1;        /* is this a dpmi item */
-    BOOL        maximized   : 1;        /* is window maximized */
-    BOOL        autopos     : 1;        /* is memory info window auto positioned */
-    BOOL        curwnd      : 1;        /* was the single window flag set
-                                           when this window was created */
+    WORD            sel;                    /* selector being displayed */
+    DWORD           limit;                  /* limit of this selector */
+    DWORD           base;                   /* base offset */
+    unsigned        lastline;
+    WORD            disp_type;              /* BYTE, WORD, DWORD or CODE */
+    unsigned char   bytesdisp;
+    DWORD           ins_cnt;
+    AsmInfo         *asm;
+    DWORD           offset;
+    HWND            scrlbar;                /* handle of scroll bar */
+    HWND            parent;                 /* parent of this window */
+    HWND            dialog;                 /* handle of mem info wnd */
+    WORD            width;
+    bool            isdpmi      : 1;        /* is this a dpmi item */
+    bool            maximized   : 1;        /* is window maximized */
+    bool            autopos     : 1;        /* is memory info window auto positioned */
+    bool            curwnd      : 1;        /* was the single window flag set
+                                               when this window was created */
 } MemWndInfo;
 
 typedef enum {
@@ -109,13 +109,13 @@ typedef struct memconfig {
                                            to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
     char        *appname;               /* name of calling application */
-    BOOL        init            : 1;    /* for internal use only */
-    BOOL        maximized       : 1;    /* is mem window maximized */
-    BOOL        disp_info       : 1;    /* display memory info by default */
-    BOOL        autopos_info    : 1;    /* keep the memory info window
+    bool        init            : 1;    /* for internal use only */
+    bool        maximized       : 1;    /* is mem window maximized */
+    bool        disp_info       : 1;    /* display memory info by default */
+    bool        autopos_info    : 1;    /* keep the memory info window
                                          * adjacent to the memory display
                                          * window */
-    BOOL        forget_pos      : 1;    /* don't update the position and
+    bool        forget_pos      : 1;    /* don't update the position and
                                          * size of the memory display
                                          * window */
 } MemWndConfig;
@@ -137,12 +137,12 @@ typedef struct memconfig {
  *                      3. Call SetMemWndConfig
  */
 
-BOOL    RegMemWndClass( HANDLE instance );
+bool    RegMemWndClass( HANDLE instance );
 void    SetDefMemConfig( void );
 void    SetMemWndConfig( MemWndConfig *cfg );
 void    GetMemWndConfig( MemWndConfig *cfg );
 void    GetMemWndDefault( MemWndConfig *info );
-HWND    DispMem( HANDLE instance, HWND parent, WORD seg, BOOL isdpmi );
+HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi );
 #ifdef __NT__
 HWND    DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title );
 #endif
@@ -156,7 +156,7 @@ char    MkHexDigit( char ch );
 /* memwndcd.c */
 void    RedrawAsCode( HDC dc, MemWndInfo *info );
 void    ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info );
-BOOL    NeedScrollBar( MemWndInfo *info );
+bool    NeedScrollBar( MemWndInfo *info );
 void    SetFuzzyOffset( MemWndInfo *info, DWORD offset );
 void    DumpMemAsm( MemWndInfo *info, int hdl );
 void    RegDisasmRtns( void );

@@ -106,7 +106,7 @@ bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
     wnd->colours = ( ATTR * )GUIMemAlloc( size );
     if( wnd->colours == NULL ) {
         wnd->num_attrs = 0;
-        return( FALSE );
+        return( false );
     }
     for( i = 0; i < wnd->num_attrs; i++ ) {
         wnd->colours[i] = MakeAttr( colours[i].fore, colours[i].back );
@@ -124,7 +124,7 @@ bool GUIXSetColours( gui_window *wnd, gui_colour_set *colours )
 #endif
         uimenutitlebar();
     }
-    return( TRUE );
+    return( true );
 }
 
 gui_colour GUIGetBack( ATTR attr )
@@ -155,14 +155,14 @@ void GUISetWindowColours( gui_window *wnd, int num_attrs,
     GUIWholeWndDirty( wnd );
 }
 
-static bool ColoursSet = FALSE;
+static bool ColoursSet = false;
 
 bool GUISetDialColours( void )
 {
     if( ColoursSet )  {
-        return( FALSE );
+        return( false );
     }
-    ColoursSet = TRUE;
+    ColoursSet = true;
     UIData->attrs[ATTR_NORMAL] = MAKEDLGATTR( GUI_DLG_NORMAL );
 #if !defined( ISQL_COLOURS )
     UIData->attrs[ATTR_DIAL_FRAME] = MAKEDLGATTR( GUI_DLG_FRAME );
@@ -177,13 +177,13 @@ bool GUISetDialColours( void )
     SliderChar[0] = GUIGetCharacter( GUI_DIAL_SCROLL_SLIDER );
     UpPoint[0] = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
     DownPoint[0] =  GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
-    return( TRUE );
+    return( true );
 }
 
 void GUIResetDialColours( void )
 {
     UIData->attrs[ATTR_NORMAL] = MakeAttr( Normal.fore, Normal.back );
-    ColoursSet = FALSE;
+    ColoursSet = false;
 }
 
 void GUISetBackgroundColour( gui_colour_set *colour )
@@ -229,44 +229,44 @@ bool GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     colour = colour;
     rgb = rgb;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     colour = colour;
     rgb = rgb;
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( attr < wnd->num_attrs ) {
         colour_set->fore = GUIGetFore( wnd->colours[attr] );
         colour_set->back = GUIGetBack( wnd->colours[attr] );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( attr < wnd->num_attrs ) {
         wnd->colours[attr] = MakeAttr( colour_set->fore, colour_set->back );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
 {
     rgb = rgb;
     new_rgb = new_rgb;
-    return( FALSE );
+    return( false );
 }

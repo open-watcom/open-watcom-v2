@@ -55,6 +55,6 @@ bool GUISetChecked( gui_window *wnd, unsigned control, unsigned check )
         GUISendDlgItemMessage( wnd->hwnd, control, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)NULL );
     }
 
-    return( TRUE );
+    return( true );
 }
 

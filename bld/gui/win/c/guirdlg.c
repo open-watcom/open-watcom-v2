@@ -197,7 +197,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
     _wpi_enumchildwindows( wnd->hwnd, enum_func, (LPARAM)wnd );
     _wpi_freeprocinstance( (WPI_PROC)enum_func );
 
-    return( TRUE );
+    return( true );
 }
 
 #ifdef __OS2_PM__
@@ -211,15 +211,15 @@ bool GUIDoCreateResDialog( long dlg_id, HWND parent, void *data )
 
     fp = _wpi_makeprocinstance( (WPI_PROC)GUIDialogFunc, GUIMainHInst );
     if( !fp ) {
-        return( FALSE );
+        return( false );
     }
     if( _wpi_dialogbox( parent, (LPVOID)fp, GUIResHInst, DLG_RESOURCE(dlg_id), data ) == -1 ) {
         _wpi_freeprocinstance( fp );
-        return( FALSE );
+        return( false );
     }
     _wpi_freeprocinstance( fp );
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
@@ -229,6 +229,6 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
     parent=parent;
     cb=cb;
     extra=extra;
-    return( FALSE );
+    return( false );
 }
 

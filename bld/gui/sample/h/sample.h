@@ -43,8 +43,6 @@
 #define controls_on_child3      1
 #define dynamic_menus           1
 
-#define FALSE           0
-#define TRUE            1
 #ifndef NULL
 #define NULL            0
 #endif

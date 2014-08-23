@@ -47,7 +47,7 @@
 #include "wridfile.h"
 #include "wrtmpfil.h"
 #include "wrstrdup.h"
-#include "wrfindti.h"
+//#include "wrfindti.h"
 #include "wrmsg.h"
 #include "wrclean.h"
 #include "wrinfoi.h"

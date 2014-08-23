@@ -31,7 +31,7 @@
 
 
 #define _WINDOWS_16_
-#include <windows.h>
+#include <wwindows.h>
 #include <toolhelp.h>
 #include "pmdbg.h"
 #include "const.h"
@@ -117,7 +117,7 @@ extern MODULEENTRY              DTModuleEntry;
 extern HWND                     MainWindow;
 extern WORD                     CharSizeX,CharSizeY;
 extern char                     *AppName;
-extern BOOL                     WDebug386;
+extern bool                     WDebug386;
 extern DWORD                    WindowsFlags;
 extern loginfo                  LogInfo;
 extern dumpany                  DumpAny;
@@ -125,7 +125,7 @@ extern HANDLE                   ProgramTask;
 extern int                      MinAddrSpaces;
 extern HWND                     DumpDialogHwnd;
 extern BOOL                     WasFault;
-extern BOOL                     IsWin32App;
+extern bool                     IsWin32App;
 extern WORD                     Win32CS;
 extern DWORD                    Win32InitialEIP;
 extern WORD                     Win32DS;
@@ -194,7 +194,7 @@ void FiniSymbols( void );
 BOOL LoadDbgInfo( void );
 
 /* win32app.c */
-BOOL CheckIsWin32App( HANDLE );
+bool CheckIsWin32App( HANDLE );
 BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
 BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 

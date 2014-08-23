@@ -37,7 +37,7 @@
 
 static gui_colour_set Default[GUI_NUM_ATTRS] =
 {
-#if defined (__NT__) && (GUI_IS_GUI == TRUE)
+#if defined (__NT__) && (GUI_IS_GUI == true)
     /* GUIEX_DLG_BKGRND will be GetSysColor(COLOR_BTNFACE)       */
     /* and so on and so forth. See InitSystemRGB() in guicolor.c */
     { GUI_BRIGHT_GREEN,     GUI_BRIGHT_BLUE   }, // GUI_MENU_PLAIN

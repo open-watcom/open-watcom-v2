@@ -89,30 +89,30 @@ typedef struct {
 WRDLLENTRY extern WRHashTable *        WRAPI WRInitHashTable( void );
 WRDLLENTRY extern void                 WRAPI WRFreeHashTable( WRHashTable *);
 WRDLLENTRY extern bool                 WRAPI WRFindUnusedHashValue( WRHashTable *table, WRHashValue *value, WRHashValue start );
-WRDLLENTRY extern WRHashEntry *        WRAPI WRAddDefHashEntry( WRHashTable *table, char *name, bool *dup );
-WRDLLENTRY extern WRHashEntry *        WRAPI WRAddHashEntry( WRHashTable *, char *, WRHashValue, bool *, bool, bool );
-WRDLLENTRY extern bool                 WRAPI WRModifyName( WRHashTable *table, char *name, WRHashValue value, bool check_unique );
-WRDLLENTRY extern bool                 WRAPI WRLookupName( WRHashTable *table, char *name, WRHashValue *value );
-WRDLLENTRY extern bool                 WRAPI WRRemoveName( WRHashTable *, char *);
+WRDLLENTRY extern WRHashEntry *        WRAPI WRAddDefHashEntry( WRHashTable *table, const char *name, bool *dup );
+WRDLLENTRY extern WRHashEntry *        WRAPI WRAddHashEntry( WRHashTable *, const char *, WRHashValue, bool *, bool, bool );
+WRDLLENTRY extern bool                 WRAPI WRModifyName( WRHashTable *table, const char *name, WRHashValue value, bool check_unique );
+WRDLLENTRY extern bool                 WRAPI WRLookupName( WRHashTable *table, const char *name, WRHashValue *value );
+WRDLLENTRY extern bool                 WRAPI WRRemoveName( WRHashTable *, const char *);
 WRDLLENTRY extern unsigned long        WRAPI WRNumInHashTable( WRHashTable * );
 WRDLLENTRY extern bool                 WRAPI WRIsDefaultHashTable( WRHashTable *table );
 WRDLLENTRY extern void                 WRAPI WRMakeHashTableClean( WRHashTable * );
 WRDLLENTRY extern bool                 WRAPI WRIsHashTableDirty( WRHashTable * );
 WRDLLENTRY extern unsigned             WRAPI WRAddSymbolsToListBox( WRHashTable *, HWND, int, WRHashEntryFlags );
 WRDLLENTRY extern unsigned             WRAPI WRAddSymbolsToComboBox( WRHashTable *, HWND, int, WRHashEntryFlags );
-WRDLLENTRY extern bool                 WRAPI WRWriteSymbolsToFile( WRHashTable *, char * );
+WRDLLENTRY extern bool                 WRAPI WRWriteSymbolsToFile( WRHashTable *, const char * );
 WRDLLENTRY extern bool                 WRAPI WRMergeHashTable( WRHashTable **, WRHashTable * );
 WRDLLENTRY extern bool                 WRAPI WRCopyHashTable( WRHashTable **, WRHashTable * );
 WRDLLENTRY extern void                 WRAPI WRHashIncRefCount( WRHashEntry * );
 WRDLLENTRY extern void                 WRAPI WRHashDecRefCount( WRHashEntry * );
 WRDLLENTRY extern void                 WRAPI WRStripSymbol( char *symbol );
-WRDLLENTRY extern bool                 WRAPI WRIsValidSymbol( char *symbol );
+WRDLLENTRY extern bool                 WRAPI WRIsValidSymbol( const char *symbol );
 WRDLLENTRY extern void                 WRAPI WRValueListFree( WRHashValueList *list );
 WRDLLENTRY extern WRHashValueList *    WRAPI WRLookupValue( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern int                  WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern char *               WRAPI WRResolveValue( WRHashTable *, WRHashValue );
 WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, FARPROC help_callback );
 WRDLLENTRY extern bool                 WRAPI WRDeleteDLGInclude( WResDir dir );
-WRDLLENTRY extern bool                 WRAPI WRCreateDLGInclude( WResDir *dir, char *include );
+WRDLLENTRY extern bool                 WRAPI WRCreateDLGInclude( WResDir *dir, const char *include );
 
 #endif

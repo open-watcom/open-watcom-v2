@@ -46,7 +46,7 @@ static  HHOOK           F1HookHandle = (HHOOK)NULL;
 static bool scroll_catch_check( WPI_QMSG *qmsg )
 {
     qmsg=qmsg;
-    return( FALSE );
+    return( false );
 }
 
 static gui_window *getFirstGUIParent( HWND hwnd )
@@ -106,11 +106,11 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
                    _wpi_getvk( parm1, parm2 ) == VK_F1 ) {
             curr = getFirstGUIParent( qmsg->hwnd );
             if( curr != NULL ) {
-                b = TRUE;
+                b = true;
                 GUIEVENTWND( curr, GUI_CONTEXTHELP, &b );
                 root = GUIGetRootWindow();
                 if( root != NULL ) {
-                    b = FALSE;
+                    b = false;
                     GUIEVENTWND( root, GUI_CONTEXTHELP, &b );
                 }
             }
@@ -118,7 +118,7 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
     }
 
 #ifdef __OS2_PM__
-    return( FALSE );            // No, we didn't gobble this msg
+    return( false );            // No, we didn't gobble this msg
 #else
     return( CallNextHookEx( F1HookHandle, code, dummy, msg_param ) );
 #endif

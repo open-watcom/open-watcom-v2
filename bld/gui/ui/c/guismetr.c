@@ -44,7 +44,7 @@ void GUIGetSystemMetrics( gui_system_metrics *metrics )
         if( UIData != NULL ) {
             metrics->colour = ( UIData->colour != M_MONO );
         } else {
-            metrics->colour = FALSE;
+            metrics->colour = false;
         }
         metrics->top_left.x = tm.max.x;
         metrics->top_left.y = tm.max.y;

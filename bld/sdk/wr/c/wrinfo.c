@@ -47,7 +47,7 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-bool WRCopyFileToTemp( WRInfo *info, char *filename )
+bool WRCopyFileToTemp( WRInfo *info, const char *filename )
 {
     if( filename == NULL ) {
         return( false );
@@ -264,7 +264,7 @@ bool WRRelinkInfo( WRInfo *info )
     return( ok );
 }
 
-int WRAPI WRGetInternalRESName( char *filename, char *newname )
+bool WRAPI WRGetInternalRESName( const char *filename, char *newname )
 {
     char                fn_drive[_MAX_DRIVE];
     char                fn_dir[_MAX_DIR];
@@ -275,8 +275,8 @@ int WRAPI WRGetInternalRESName( char *filename, char *newname )
         _splitpath( filename, fn_drive, fn_dir, fn_name, fn_ext );
         strcpy( fn_ext, ".res" );
         _makepath( newname, fn_drive, fn_dir, fn_name, fn_ext );
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }

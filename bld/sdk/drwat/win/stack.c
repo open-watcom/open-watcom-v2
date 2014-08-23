@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <dos.h>
+#include "bool.h"
 #include "wdebug.h"
 #include "drwatcom.h"
 #include "jdlg.h"
@@ -130,11 +131,13 @@ void StartStackTraceDialog( HWND hwnd )
 {
     FARPROC     fp;
     BOOL        first_try;
-    WORD        rc=ST_NEXT;
+    INT_PTR     rc;
     int         currframe=0;
     int         oldcurrframe=0;
     int         i;
 
+//    rc = (INT_PTR)ST_NEXT;
+    rc = ST_NEXT;
     first_try = TRUE;
     while( 1 ) {
         std.ste.hTask = DeadTask;

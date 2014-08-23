@@ -213,7 +213,7 @@ BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
             if( FilterDlgInfo.filter[i - FilterDlgInfo.first] ) {
-                CheckDlgButton( hwnd, i, TRUE );
+                CheckDlgButton( hwnd, i, BST_CHECKED );
             }
         }
         break;
@@ -241,13 +241,13 @@ BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         case CFILTER_ALL:
         case MFILTER_ALL:
             for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
-                CheckDlgButton( hwnd, i, TRUE );
+                CheckDlgButton( hwnd, i, BST_CHECKED );
             }
             break;
         case CFILTER_NONE:
         case MFILTER_NONE:
             for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
-                CheckDlgButton( hwnd, i, FALSE );
+                CheckDlgButton( hwnd, i, BST_UNCHECKED );
             }
             break;
         default:

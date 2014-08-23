@@ -83,13 +83,13 @@ static void addToolButton( button *tb )
 /*
  * MyToolBarProc - called by toolbar window proc
  */
-BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
+bool MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
     hwnd = hwnd;
     msg = msg;
     w = w;
     l = l;
-    return( FALSE );
+    return( false );
 
 } /* MyToolBarProc */
 
@@ -97,7 +97,7 @@ BOOL MyToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 /*
  * spyToolBarHint
  */
-static void spyToolBarHint( HWND hwnd, WPARAM menuid, BOOL select ) {
+static void spyToolBarHint( HWND hwnd, WPARAM menuid, bool select ) {
 
     hwnd = hwnd;
     HintToolBar( StatusHdl, (UINT)menuid, select );

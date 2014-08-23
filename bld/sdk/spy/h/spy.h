@@ -171,12 +171,12 @@ typedef struct {
     WORD                ysize;
     int                 xpos;
     int                 ypos;
-    BOOL                minimized;
+    bool                minimized;
     int                 last_xpos;
     int                 last_ypos;
-    BOOL                on_top;
-    BOOL                show_hints;
-    BOOL                show_toolbar;
+    bool                on_top;
+    bool                show_hints;
+    bool                show_toolbar;
 } WndConfigInfo;
 
 /*
@@ -222,7 +222,7 @@ extern void SpyMessagePauseToggle( void );
 extern void ResizeSpyBox( WORD width, WORD height );
 extern void SaveSpyBox( void );
 extern void ResetSpyListBox( void );
-extern BOOL GetSpyBoxSelection( char *str );
+extern bool GetSpyBoxSelection( char *str );
 
 /* spycfg.c */
 extern void LoadSpyConfig( char *fname );
@@ -239,15 +239,15 @@ extern void DoMessageSelDialog( HWND hwnd );
 
 /* spymisc.c */
 extern void GetHexStr( LPSTR res, DWORD num, size_t padlen );
-extern BOOL IsMyWindow( HWND hwnd );
+extern bool IsMyWindow( HWND hwnd );
 extern void GetWindowName( HWND hwnd, char *str );
 extern void GetClassStyleString( HWND hwnd, char *str, char *sstr );
 extern void GetWindowStyleString( HWND hwnd, char *str, char *sstr );
 extern void DumpToComboBox( char *str, HWND cb );
 extern void FormatSpyMessage( char *msg, LPMSG pmsg, char *res );
 extern void SetSpyState( spystate ss );
-extern BOOL GetFileName( char *ext, int type, char *fname );
-extern BOOL InitGblStrings( void );
+extern bool GetFileName( char *ext, int type, char *fname );
+extern bool InitGblStrings( void );
 
 /* spymsgs.c */
 extern message *GetMessageDataFromID( int msgid, char *class_name );
@@ -265,7 +265,7 @@ extern void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits );
 
 /* spypick.c */
 extern void FrameAWindow( HWND hwnd );
-extern void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  );
+extern void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  );
 extern HWND DoPickDialog( WORD );
 
 /* spyproc.c */

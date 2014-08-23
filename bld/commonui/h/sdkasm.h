@@ -53,7 +53,7 @@ typedef struct disasmrtns {
 } DisAsmRtns;
 
 void    RegisterRtns( DisAsmRtns *rtns );
-void    MiscDoCode( instruction *, char, DisAsmRtns * );
+void    MiscDoCode( instruction *, bool, DisAsmRtns * );
 void    MiscFormatIns( char *, instruction *, form_option, DisAsmRtns * );
 
 #endif /* _SDKASM_H_INCLUDED */

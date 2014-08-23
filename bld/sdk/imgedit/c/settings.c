@@ -131,17 +131,16 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg,
             } else {
                 _wpi_checkradiobutton( hwnd, SHOW_ONE, SHOW_ALL, SHOW_ALL );
             }
-            _wpi_checkdlgbutton( hwnd, LEAVE_AREA, fKeepSelectedArea );
-            _wpi_checkdlgbutton( hwnd, SAVE_SETTINGS, fSaveSettings );
-            _wpi_checkdlgbutton( hwnd, SAVE_POSITION, fSavePosition );
+            _wpi_checkdlgbutton( hwnd, LEAVE_AREA, ( fKeepSelectedArea ) ? BST_CHECKED : BST_UNCHECKED );
+            _wpi_checkdlgbutton( hwnd, SAVE_SETTINGS, ( fSaveSettings ) ? BST_CHECKED : BST_UNCHECKED );
+            _wpi_checkdlgbutton( hwnd, SAVE_POSITION, ( fSavePosition ) ? BST_CHECKED : BST_UNCHECKED );
 
             if( ImgedConfigInfo.square_grid ) {
-                _wpi_checkdlgbutton( hwnd, KEEP_SQUARE, TRUE );
                 keepsquare = TRUE;
             } else {
-                _wpi_checkdlgbutton( hwnd, KEEP_SQUARE, FALSE );
                 keepsquare = FALSE;
             }
+            _wpi_checkdlgbutton( hwnd, KEEP_SQUARE, ( keepsquare ) ? BST_CHECKED : BST_UNCHECKED );
             _wpi_setdlgitemshort( hwnd, SHIFT_AMOUNT, ImgedConfigInfo.shift, FALSE );
 
             if( fWrapShift ) {

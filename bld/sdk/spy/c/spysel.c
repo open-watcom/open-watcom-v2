@@ -188,7 +188,7 @@ BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
-        UpdateFramedInfo( hwnd, (HWND)lparam, TRUE );
+        UpdateFramedInfo( hwnd, (HWND)lparam, true );
         return( TRUE );
         break;
 #ifndef NOUSE3D
@@ -246,7 +246,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         hWndDialog = hwnd;
         setUpWindows();
         if( tmpSpyAll ) {
-            CheckDlgButton( hwnd, SELWIN_SPYALL, TRUE );
+            CheckDlgButton( hwnd, SELWIN_SPYALL, BST_CHECKED );
             ctl = GetDlgItem( hwnd, SELWIN_ADD );
             EnableWindow( ctl, FALSE );
             ctl = GetDlgItem( hwnd, SELWIN_DELETE );
@@ -267,7 +267,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         switch( parm ) {
         case SELWIN_SPYALL:
             tmpSpyAll = !tmpSpyAll;
-            CheckDlgButton( hwnd, SELWIN_SPYALL, tmpSpyAll );
+            CheckDlgButton( hwnd, SELWIN_SPYALL, ( tmpSpyAll ) ? BST_CHECKED : BST_UNCHECKED );
             ctl = GetDlgItem( hwnd, SELWIN_ADD );
             EnableWindow( ctl, !tmpSpyAll );
             ctl = GetDlgItem( hwnd, SELWIN_DELETE );
@@ -365,7 +365,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
 {
     FARPROC     fp;
-    int         rc;
+    INT_PTR     rc;
 
     tmpWndCnt = WindowCount;
     tmpSpyAll = *spyall;

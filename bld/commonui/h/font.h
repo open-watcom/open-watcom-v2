@@ -40,7 +40,7 @@ void    SetDlgCourierFont( HWND hwnd, int id );
 void    SetCourierFont( HWND hwnd );
 void    InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst );
 void    SaveMonoFont( char *app, char *inifile );
-BOOL    ChooseMonoFont( HWND hwnd );
+bool    ChooseMonoFont( HWND hwnd );
 void    DestroyMonoFonts( void );
 HFONT   GetMonoFont( void );
 void    AllowVariableFonts( void );

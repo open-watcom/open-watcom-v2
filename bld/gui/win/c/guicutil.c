@@ -54,9 +54,9 @@ bool GUIToControl( gui_window *wnd, unsigned id, WPI_MSG msg,
         if( ret != NULL ) {
             *ret = ret_val;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool GUIToComboListControl( gui_window *wnd, unsigned id, WPI_MSG msg,
@@ -97,12 +97,12 @@ bool GUIGetControlClass( gui_window *wnd, unsigned id,
     control_item        *item;
 
     if( control_class == NULL ) {
-        return( FALSE );
+        return( false );
     }
     item = GUIGetControlByID( wnd, id );
     if( item == NULL ) {
-        return( FALSE );
+        return( false );
     }
     *control_class = item->control_class;
-    return( TRUE );
+    return( true );
 }

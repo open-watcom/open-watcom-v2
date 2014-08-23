@@ -59,17 +59,17 @@ static bool FakeMDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_
             if( _wpi_ismenucommand( wparam, lparam ) ) {
                 if( param == GUI_MDI_MORE_WINDOWS ) {
                     GUIMDIMoreWindows();
-                    return( TRUE );
+                    return( true );
                 }
                 if( ( param >= GUI_MDI_FIRST_WINDOW ) &&
                         ( param <= GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS ) ) {
                     BringWindowToFront( GUIMDIGetWindow( param ) );
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool XFakeInitMDI( gui_window *wnd )

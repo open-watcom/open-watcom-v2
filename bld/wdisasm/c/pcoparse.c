@@ -55,7 +55,7 @@ void  ParseObjectOMF()
         return;
     }
     if( RecType != CMD_THEADR ) {
-        Error( ERR_THEADR_NOT_1ST, TRUE );
+        Error( ERR_THEADR_NOT_1ST, true );
     }
     THeadr();
     do {
@@ -80,18 +80,18 @@ void  ParseObjectOMF()
             break;
         case CMD_PUBDEF:
         case CMD_PUBD32:
-            PubDef( TRUE );
+            PubDef( true );
             break;
         case CMD_STATIC_PUBDEF:
         case CMD_STATIC_PUBD32:
-            PubDef( FALSE );
+            PubDef( false );
             break;
         case CMD_EXTDEF:
-            ExtDef( TRUE );
+            ExtDef( true );
             break;
         case CMD_STATIC_EXTDEF:
         case CMD_STATIC_EXTD32:
-            ExtDef( FALSE );
+            ExtDef( false );
             break;
         case CMD_CEXTDF:
             CExtDef();
@@ -115,10 +115,10 @@ void  ParseObjectOMF()
             LinSym();
             break;
         case CMD_COMDEF:
-            ComDef( TRUE );
+            ComDef( true );
             break;
         case CMD_STATIC_COMDEF:
-            ComDef( FALSE );
+            ComDef( false );
             break;
         case CMD_COMDAT:
             ComDat();
@@ -146,7 +146,7 @@ void  ParseObjectOMF()
             SkipPcoRec();
             break;
         case 0:
-            Error( ERR_UNEXPECTED_EOF, FALSE );
+            Error( ERR_UNEXPECTED_EOF, false );
             break;
         default:
             res = div( RecType, CHAR_BIT );
@@ -160,7 +160,7 @@ void  ParseObjectOMF()
                 Options = 0;    // force Intel style hex output
                 FmtIToHS( tmpstr, RecType, 2 );
                 Options = tmp_options;
-                DoError( tmpstr, FALSE );
+                DoError( tmpstr, false );
             }
             SkipPcoRec();
         }

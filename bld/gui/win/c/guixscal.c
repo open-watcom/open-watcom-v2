@@ -39,12 +39,12 @@ WPI_TEXTMETRIC GUItm;
 
 void GUIScaleToScreenRect( gui_rect * rect )
 {
-    GUIConvertRect( SCALE, SCREEN, rect, FALSE );
+    GUIConvertRect( SCALE, SCREEN, rect, false );
 }
 
 void GUIScreenToScaleRect( gui_rect * rect )
 {
-    GUIConvertRect( SCREEN, SCALE, rect, FALSE );
+    GUIConvertRect( SCREEN, SCALE, rect, false );
 }
 
 void GUIClientToScaleRect( gui_rect * rect )
@@ -119,9 +119,9 @@ bool GUIGetTheDC( gui_window *wnd )
         } else {
             wnd->prev_font = NULL;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIReleaseTheDC( gui_window * wnd )

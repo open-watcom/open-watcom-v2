@@ -32,7 +32,7 @@
 
 void ToGraphical( void );
 void ToCharacter( void );
-void InitSwapper( int );
+void InitSwapper( bool );
 void FiniSwapper( void );
 
 #ifdef __WANTALL__

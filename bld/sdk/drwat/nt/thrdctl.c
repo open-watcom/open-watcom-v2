@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "bool.h"
 #include "drwatcom.h"
 #include "mem.h"
 #include "thrdctl.h"
@@ -192,8 +193,7 @@ BOOL GetRetCode( HWND parent, RetCodeTypes type, DWORD id, DWORD *rc ) {
     info.type = type;
     info.id = id;
     info.rc = 0;
-    JDialogBoxParam( Instance, "RET_CODE_DLG", parent, RetCodeDlgProc,
-               (DWORD)&info );
+    JDialogBoxParam( Instance, "RET_CODE_DLG", parent, RetCodeDlgProc, (LPARAM)&info );
     *rc = info.rc;
     return( info.really_kill );
 }
@@ -235,25 +235,25 @@ BOOL CALLBACK ThreadPriorityProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         SetDlgItemText( hwnd, PRIORITY_PATH, buf );
         switch( info->priority ) {
         case THREAD_PRIORITY_IDLE:
-            CheckDlgButton( hwnd, PRIORITY_IDLE, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_IDLE, BST_CHECKED );
             break;
         case THREAD_PRIORITY_LOWEST:
-            CheckDlgButton( hwnd, PRIORITY_LOWEST, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_LOWEST, BST_CHECKED );
             break;
         case THREAD_PRIORITY_BELOW_NORMAL:
-            CheckDlgButton( hwnd, PRIORITY_BELOW_NORMAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_BELOW_NORMAL, BST_CHECKED );
             break;
         case THREAD_PRIORITY_NORMAL:
-            CheckDlgButton( hwnd, PRIORITY_NORMAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_NORMAL, BST_CHECKED );
             break;
         case THREAD_PRIORITY_ABOVE_NORMAL:
-            CheckDlgButton( hwnd, PRIORITY_ABOVE_NORMAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_ABOVE_NORMAL, BST_CHECKED );
             break;
         case THREAD_PRIORITY_HIGHEST:
-            CheckDlgButton( hwnd, PRIORITY_HIGHEST, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_HIGHEST, BST_CHECKED );
             break;
         case THREAD_PRIORITY_TIME_CRITICAL:
-            CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, TRUE );
+            CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, BST_CHECKED );
             break;
         }
         SetWindowLong( hwnd, DWL_USER, lparam );

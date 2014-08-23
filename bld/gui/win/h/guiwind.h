@@ -45,10 +45,6 @@
     #define NOCOMM
     #define WIN32_LEAN_AND_MEAN
     #include <wwindows.h>
-    #if defined( __UNIX__ )
-        #include <wtypes.h>
-        #include <windef.h>
-    #endif
     #include <commdlg.h>
 #endif
 
@@ -61,7 +57,7 @@
 #include "toolbr.h"
 #include "guihint.h"
 
-#define GUI_IS_GUI      TRUE
+#define GUI_IS_GUI      true
 
 /* use 0-9 for os-specific menu constants */
 

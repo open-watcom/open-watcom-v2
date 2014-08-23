@@ -82,12 +82,12 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
     MenuFlags           normal_flags;
 
     if( !data || !*data || !size || !*size || !new ) {
-        return( FALSE );
+        return( false );
     }
 
     *new = ResNewMenuItem();
     if( *new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     // Data may not be aligned -- need memcpy on UNIX platforms
@@ -115,7 +115,7 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
     itext = (char *)GUIMemAlloc( tlen );
     if( !itext ) {
         *size = 0;
-        return( FALSE );
+        return( false );
     }
     memcpy( itext, text, tlen );
     if( (*new)->IsPopup ) {
@@ -131,10 +131,10 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
         *size = *size - msize;
     } else {
         *size = 0;
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
@@ -171,14 +171,14 @@ static int WMakeMenuEntry( uint_8 **data, int *size,
     int                 ok;
 
     if( !entry || !data || !size ) {
-        return( FALSE );
+        return( false );
     }
 
     *entry = NULL;
-    ok = TRUE;
+    ok = true;
 
     if( !*data || !*size ) {
-        return( TRUE );
+        return( true );
     }
 
     current = entry;

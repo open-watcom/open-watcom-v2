@@ -30,19 +30,20 @@
 
 
 #include "precomp.h"
+#include "bool.h"
 #include "loadcc.h"
 
 #ifdef __NT__
 typedef VOID (WINAPI *PFNICC)( VOID );
 #endif
 
-static int  checked = 0;
-static int  loaded = 0;
+static bool checked = false;
+static bool loaded = false;
 
 /*
  * LoadCommCtrl - attempt to load COMCTL32.DLL
  */
-int LoadCommCtrl( void )
+bool LoadCommCtrl( void )
 {
     if( !checked ) {
 #ifdef __NT__
@@ -51,11 +52,11 @@ int LoadCommCtrl( void )
             PFNICC pfn = (PFNICC)GetProcAddress( hinst, "InitCommonControls" );
             if( pfn != NULL ) {
                 pfn();
-                loaded = 1;
+                loaded = true;
             }
         }
 #endif
-        checked = 1;
+        checked = true;
     }
     return( loaded );
 
@@ -64,7 +65,7 @@ int LoadCommCtrl( void )
 /*
  * IsCommCtrlLoaded - indicate whether COMCTL32.DLL has been loaded
  */
-int IsCommCtrlLoaded( void )
+bool IsCommCtrlLoaded( void )
 {
     return( loaded );
 

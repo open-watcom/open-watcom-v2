@@ -84,7 +84,7 @@ static bool ConvertRectArea( SAREA *area, gui_rect *rect, gui_systems from,
     }
 
     if( !GUIConvertRect( from, to, convert, rel ) ) {
-        return( FALSE );
+        return( false );
     }
 
     /* put my_rect into info to return */
@@ -92,27 +92,27 @@ static bool ConvertRectArea( SAREA *area, gui_rect *rect, gui_systems from,
         /* copy convert to area */
         COPYRECTTOAREA( *convert, *area );
     }
-    return( TRUE );
+    return( true );
 }
 
 /* User Routines */
 
 bool GUIScreenToScaleRect( SAREA *area, gui_rect *rect )
 {
-    return( ConvertRectArea( area, rect, SCREEN, SCALE, FALSE ) );
+    return( ConvertRectArea( area, rect, SCREEN, SCALE, false ) );
 }
 
 bool GUIScreenToScaleRectR( SAREA *area, gui_rect *rect )
 {
-    return( ConvertRectArea( area, rect, SCREEN, SCALE, TRUE ) );
+    return( ConvertRectArea( area, rect, SCREEN, SCALE, true ) );
 }
 
 bool GUIScaleToScreenRect( gui_rect *rect, SAREA *area )
 {
-    return( ConvertRectArea( area, rect, SCALE, SCREEN, FALSE ) );
+    return( ConvertRectArea( area, rect, SCALE, SCREEN, false ) );
 }
 
 bool GUIScaleToScreenRectR( gui_rect *rect, SAREA *area )
 {
-    return( ConvertRectArea( area, rect, SCALE, SCREEN, TRUE ) );
+    return( ConvertRectArea( area, rect, SCALE, SCREEN, true ) );
 }

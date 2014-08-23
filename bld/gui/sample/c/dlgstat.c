@@ -34,9 +34,9 @@
 #include "dlgstat.h"
 #include "samprc.h"
 
-bool            DialogScaled    = FALSE;
-bool            ButtonsScaled   = FALSE;
-bool            ControlsScaled  = FALSE;
+bool            DialogScaled    = false;
+bool            ButtonsScaled   = false;
+bool            ControlsScaled  = false;
 char * ListBoxData[] = { "one", "two", "three" };
 int    NUM_LIST_BOX_DATA = ( sizeof( ListBoxData ) / sizeof( char * ) );
 extern out_info Child1_Out;
@@ -242,15 +242,15 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     int         extent, top, start, end;
     gui_rgb     rgb, green;
 
-    ret = TRUE;
+    ret = true;
     switch( gui_ev ) {
     case GUI_PAINT :
         GUIGetRGB( GUI_BRIGHT_YELLOW, &rgb );
         GUIGetRGB( GUI_GREEN, &green );
         GUIDrawTextRGB( gui, "Line Draw!", 10, 0, 1, green, rgb );
         GUIDrawTextRGB( gui, "Line Draw!", 10, 1, 1, rgb, green );
-        GUIDrawBar( gui,  7, 1, 30, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, TRUE );
-        GUIDrawBar( gui,  8, 1, 70, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, FALSE );
+        GUIDrawBar( gui,  7, 1, 30, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, true );
+        GUIDrawBar( gui,  8, 1, 70, GUI_BAR_SIMPLE, GUI_FRAME_ACTIVE, false );
         break;
     case GUI_RESIZE :
         break;
@@ -262,14 +262,14 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         for( i = RADIOBUTTON_CONTROL1; i <= RADIOBUTTON_CONTROL2; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, TRUE );
+                GUISetChecked( gui, i, true );
             }
         }
         num = CHECKBOX_CONTROL2;
         for( i = CHECKBOX_CONTROL1; i <= num; i++ ) {
             if( ( Controls[i].style & GUI_CHECKED ) &&
                 !( Controls[i].style & GUI_AUTOMATIC ) ) {
-                GUISetChecked( gui, i, TRUE );
+                GUISetChecked( gui, i, true );
             }
         }
 
@@ -277,7 +277,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIInsertText( gui, LISTBOX_CONTROL, 0, ListBoxData[i] );
         }
 
-        GUISetChecked( gui, RADIOBUTTON_CONTROL1, FALSE );
+        GUISetChecked( gui, RADIOBUTTON_CONTROL1, false );
 
 
         GUIClearText( gui, STATIC_CONTROL );
@@ -292,12 +292,12 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 //      GUISetFocus( gui, LISTBOX_CONTROL );
 
         GUISetText( gui, LISTBOX_CONTROL, "default" );
-        GUIDropDown( gui, LISTBOX_CONTROL, TRUE );
-//      GUISelectAll( gui, LISTBOX_CONTROL, TRUE );
+        GUIDropDown( gui, LISTBOX_CONTROL, true );
+//      GUISelectAll( gui, LISTBOX_CONTROL, true );
 //      GUISetFocus( gui, CHECKBOX_CONTROL1 );
 //      GUISetCurrSelect( gui, LISTBOX_CONTROL, 1 );
         GUISetText( gui, EDIT_CONTROL, "default" );
-        //GUISelectAll( gui, EDIT_CONTROL, TRUE );
+        //GUISelectAll( gui, EDIT_CONTROL, true );
         GUISetFocus( gui, EDIT_CONTROL );
         DlgWin.parent = gui;
         SetWidthHeight( &DlgWin.rect, DlgWin.parent != NULL );
@@ -408,7 +408,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
             GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA,
                             ListBoxData, &ListBoxFunc );
-            GUISelectAll( gui, EDIT_CONTROL, TRUE );
+            GUISelectAll( gui, EDIT_CONTROL, true );
             break;
         case CLEARBUTTON_CONTROL :
             if( !GUIIsControlVisible( gui, RADIOBUTTON_CONTROL1 ) ) {
@@ -419,7 +419,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUIEnableControl( gui, RADIOBUTTON_CONTROL2,
                               !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
             GUIDisplayMessage( gui, "Clearing", "Sample Application", GUI_OK_CANCEL );
-            GUISetChecked( gui, RADIOBUTTON_CONTROL2, TRUE );
+            GUISetChecked( gui, RADIOBUTTON_CONTROL2, true );
             GUIClearText( gui, STATIC_CONTROL );
             GUIClearText( gui, EDIT_CONTROL );
             size = GUIGetListSize( gui, LISTBOX_CONTROL );
@@ -435,7 +435,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 rect.width += rect.width / 2;
                 GUIResizeControl( gui, LISTBOX_CONTROL, &rect );
             }
-            GUIDropDown( gui, LISTBOX_CONTROL, FALSE );
+            GUIDropDown( gui, LISTBOX_CONTROL, false );
             GUIDeleteControl( gui, CANCELBUTTON_CONTROL );
             GUIGetEditSelect( gui, LISTBOX_CONTROL, &start, &end );
             GUISetEditSelect( gui, LISTBOX_CONTROL, 1, 3 );
@@ -453,7 +453,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
         }
         break;
     default :
-        ret = FALSE;
+        ret = false;
         break;
     }
     return( ret );
@@ -462,8 +462,8 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 void StaticDialogInit( void )
 {
     if( !GUIIsGUI() ) {
-        DialogScaled = TRUE;
-        ControlsScaled = TRUE;
+        DialogScaled = true;
+        ControlsScaled = true;
     }
 }
 
@@ -477,7 +477,7 @@ void StaticDialogCreate( gui_window *parent )
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );
-        DialogScaled = TRUE;
+        DialogScaled = true;
     }
 
     if( !GUIIsGUI() && !ButtonsScaled ) {
@@ -487,15 +487,15 @@ void StaticDialogCreate( gui_window *parent )
                 Controls[i].rect.height *= 2;
             }
         }
-        ButtonsScaled = TRUE;
+        ButtonsScaled = true;
     }
 
     if( !ControlsScaled ) {
         for( i = 0; i < NUM_CONTROLS; i ++ ) {
             Controls[i].parent = NULL;
-            SetWidthHeight( &Controls[i].rect, TRUE );
+            SetWidthHeight( &Controls[i].rect, true );
         }
-        ControlsScaled = TRUE;
+        ControlsScaled = true;
     }
 
     DialogControl.extra = NULL;

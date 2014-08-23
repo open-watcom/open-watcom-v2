@@ -460,7 +460,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
 static void DrawGadget( gui_window *wnd, p_gadget gadget, gui_flags flag )
 {
     if( ( wnd->flags & flag ) && ( gadget != NULL ) ) {
-        GUISetShowGadget( gadget, TRUE, FALSE, 0 );
+        GUISetShowGadget( gadget, true, false, 0 );
         wnd->flags &= ~flag;
     }
 }

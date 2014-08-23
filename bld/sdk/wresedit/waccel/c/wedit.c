@@ -199,12 +199,12 @@ void WResetEditWindow( WAccelEditInfo *einfo )
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDKEY ), "" );
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDID ), "" );
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_ACCEDCMDNUM ), "" );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDVIRT, FALSE );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDASCII, TRUE );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDCNTL, FALSE );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDSHFT, FALSE );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDALT, FALSE );
-        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDFLASH, FALSE );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDVIRT, BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDASCII, BST_CHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDCNTL, BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDSHFT, BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDALT, BST_UNCHECKED );
+        CheckDlgButton( einfo->edit_dlg, IDM_ACCEDFLASH, BST_UNCHECKED );
     }
 }
 
@@ -474,28 +474,28 @@ bool WSetEditWindowFlags( HWND dlg, uint_16 flags )
         WSetVirtKey( dlg, is_virt );
         if( is_virt ) {
             if( flags & ACCEL_CONTROL ) {
-                CheckDlgButton( dlg, IDM_ACCEDCNTL, 1 );
+                CheckDlgButton( dlg, IDM_ACCEDCNTL, BST_CHECKED );
             } else {
-                CheckDlgButton( dlg, IDM_ACCEDCNTL, 0 );
+                CheckDlgButton( dlg, IDM_ACCEDCNTL, BST_UNCHECKED );
             }
 
             if( flags & ACCEL_SHIFT ) {
-                CheckDlgButton( dlg, IDM_ACCEDSHFT, 1 );
+                CheckDlgButton( dlg, IDM_ACCEDSHFT, BST_CHECKED );
             } else {
-                CheckDlgButton( dlg, IDM_ACCEDSHFT, 0 );
+                CheckDlgButton( dlg, IDM_ACCEDSHFT, BST_UNCHECKED );
             }
         }
 
         if( flags & ACCEL_ALT ) {
-            CheckDlgButton( dlg, IDM_ACCEDALT, 1 );
+            CheckDlgButton( dlg, IDM_ACCEDALT, BST_CHECKED );
         } else {
-            CheckDlgButton( dlg, IDM_ACCEDALT, 0 );
+            CheckDlgButton( dlg, IDM_ACCEDALT, BST_UNCHECKED );
         }
 
         if( flags & ACCEL_NOINVERT ) {
-            CheckDlgButton( dlg, IDM_ACCEDFLASH, 0 );
+            CheckDlgButton( dlg, IDM_ACCEDFLASH, BST_UNCHECKED );
         } else {
-            CheckDlgButton( dlg, IDM_ACCEDFLASH, 1 );
+            CheckDlgButton( dlg, IDM_ACCEDFLASH, BST_CHECKED );
         }
     }
 
@@ -548,17 +548,17 @@ bool WSetEditWinResName( WAccelEditInfo *einfo )
 
 void WSetVirtKey( HWND hDlg, bool is_virt )
 {
-    CheckDlgButton( hDlg, IDM_ACCEDVIRT, is_virt );
-    CheckDlgButton( hDlg, IDM_ACCEDASCII, !is_virt );
+    CheckDlgButton( hDlg, IDM_ACCEDVIRT, ( is_virt ) ? BST_CHECKED : BST_UNCHECKED );
+    CheckDlgButton( hDlg, IDM_ACCEDASCII, ( !is_virt ) ? BST_CHECKED : BST_UNCHECKED );
 
     EnableWindow( GetDlgItem( hDlg, IDM_ACCEDSHFT ), is_virt );
     EnableWindow( GetDlgItem( hDlg, IDM_ACCEDCNTL ), is_virt );
     EnableWindow( GetDlgItem( hDlg, IDM_ACCEDALT ), is_virt );
 
     if( !is_virt ) {
-        CheckDlgButton( hDlg, IDM_ACCEDSHFT, FALSE );
-        CheckDlgButton( hDlg, IDM_ACCEDCNTL, FALSE );
-        CheckDlgButton( hDlg, IDM_ACCEDALT, FALSE );
+        CheckDlgButton( hDlg, IDM_ACCEDSHFT, BST_UNCHECKED );
+        CheckDlgButton( hDlg, IDM_ACCEDCNTL, BST_UNCHECKED );
+        CheckDlgButton( hDlg, IDM_ACCEDALT, BST_UNCHECKED );
     }
 }
 

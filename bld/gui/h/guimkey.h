@@ -32,18 +32,19 @@
 
 #ifndef _GUIMKEY_H_
 #define _GUIMKEY_H_
-extern gui_key GUIMapKey( gui_key key );
 
-#define SHIFT   ( GUI_SHIFT( KeyState ) )
-#define ALT     ( GUI_ALT( KeyState ) )
-#define CTRL    ( GUI_CTRL( KeyState ) )
+#define CHK_KS_SHIFT    ( (KeyState & GUI_KS_CTRL) != 0 )
+#define CHK_KS_ALT      ( (KeyState & GUI_KS_SHIFT) != 0 )
+#define CHK_KS_CTRL     ( (KeyState & GUI_KS_ALT) != 0 )
 
-#define SET_CTRL        ( KeyState |= GUI_KS_CTRL )
-#define SET_SHIFT       ( KeyState |= GUI_KS_SHIFT )
-#define SET_ALT         ( KeyState |= GUI_KS_ALT )
+#define SET_KS_CTRL     ( KeyState |= GUI_KS_CTRL )
+#define SET_KS_SHIFT    ( KeyState |= GUI_KS_SHIFT )
+#define SET_KS_ALT      ( KeyState |= GUI_KS_ALT )
 
-#define CLR_CTRL        ( KeyState &= ~GUI_KS_CTRL )
-#define CLR_SHIFT       ( KeyState &= ~GUI_KS_SHIFT )
-#define CLR_ALT         ( KeyState &= ~GUI_KS_ALT )
+#define CLR_KS_CTRL     ( KeyState &= ~GUI_KS_CTRL )
+#define CLR_KS_SHIFT    ( KeyState &= ~GUI_KS_SHIFT )
+#define CLR_KS_ALT      ( KeyState &= ~GUI_KS_ALT )
+
+extern gui_key          GUIMapKey( gui_key key );
 
 #endif // _GUIMKEY_H_

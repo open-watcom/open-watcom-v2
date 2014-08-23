@@ -400,24 +400,24 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask &= ~SS_SUNKEN;
 #endif
         if( mask == SS_BLACKRECT ) {
-            CheckDlgButton( hDlg, IDB_SS_BLACKRECT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_BLACKRECT, BST_CHECKED );
         } else if( mask == SS_GRAYRECT ) {
-            CheckDlgButton( hDlg, IDB_SS_GRAYRECT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_GRAYRECT, BST_CHECKED );
         } else if( mask == SS_WHITERECT ) {
-            CheckDlgButton( hDlg, IDB_SS_WHITERECT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_WHITERECT, BST_CHECKED );
         } else if( mask == SS_BLACKFRAME ) {
-            CheckDlgButton( hDlg, IDB_SS_BLACKFRAME, 1 );
+            CheckDlgButton( hDlg, IDB_SS_BLACKFRAME, BST_CHECKED );
         } else if( mask == SS_GRAYFRAME ) {
-            CheckDlgButton( hDlg, IDB_SS_GRAYFRAME, 1 );
+            CheckDlgButton( hDlg, IDB_SS_GRAYFRAME, BST_CHECKED );
         } else if( mask == SS_WHITEFRAME ) {
-            CheckDlgButton( hDlg, IDB_SS_WHITEFRAME, 1 );
+            CheckDlgButton( hDlg, IDB_SS_WHITEFRAME, BST_CHECKED );
 #if __NT__XX
         } else if( mask == SS_ETCHEDFRAME ) {
-            CheckDlgButton( hDlg, IDB_SS_ETCHEDFRAME, 1 );
+            CheckDlgButton( hDlg, IDB_SS_ETCHEDFRAME, BST_CHECKED );
         } else if( mask == SS_ETCHEDHORZ ) {
-            CheckDlgButton( hDlg, IDB_SS_ETCHEDHORZ, 1 );
+            CheckDlgButton( hDlg, IDB_SS_ETCHEDHORZ, BST_CHECKED );
         } else if( mask == SS_ETCHEDVERT ) {
-            CheckDlgButton( hDlg, IDB_SS_ETCHEDVERT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_ETCHEDVERT, BST_CHECKED );
 #endif
         } else {
             WdeWriteTrail( "WdeStaticSetDefineInfo: Bad Frame mask!" );
@@ -425,7 +425,7 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
 #if __NT__XX
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
-            CheckDlgButton( hDlg, IDB_SS_SUNKEN, 1 );
+            CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
 #endif
 
@@ -437,30 +437,30 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 
         if( mask == SS_LEFT ) {
-            CheckDlgButton( hDlg, IDB_SS_LEFT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_LEFT, BST_CHECKED );
         } else if( mask == SS_CENTER ) {
-            CheckDlgButton( hDlg, IDB_SS_CENTER, 1 );
+            CheckDlgButton( hDlg, IDB_SS_CENTER, BST_CHECKED );
         } else if( mask == SS_RIGHT ) {
-            CheckDlgButton( hDlg, IDB_SS_RIGHT, 1 );
+            CheckDlgButton( hDlg, IDB_SS_RIGHT, BST_CHECKED );
         } else if( mask == SS_SIMPLE ) {
-            CheckDlgButton( hDlg, IDB_SS_SIMPLE, 1 );
+            CheckDlgButton( hDlg, IDB_SS_SIMPLE, BST_CHECKED );
         } else if( mask == SS_LEFTNOWORDWRAP ) {
-            CheckDlgButton( hDlg, IDB_SS_LEFTNOWORDWRAP, 1 );
+            CheckDlgButton( hDlg, IDB_SS_LEFTNOWORDWRAP, BST_CHECKED );
         } else {
             WdeWriteTrail( "WdeStaticSetDefineInfo: Bad Text mask!" );
         }
 
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOPREFIX ) {
-            CheckDlgButton( hDlg, IDB_SS_NOPREFIX, 1 );
+            CheckDlgButton( hDlg, IDB_SS_NOPREFIX, BST_CHECKED );
         }
 #if __NT__XX
         EnableWindow( GetDlgItem( hDlg, IDB_SS_NOTIFY ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_SS_SUNKEN ), TRUE );
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOTIFY ) {
-            CheckDlgButton( hDlg, IDB_SS_NOTIFY, 1 );
+            CheckDlgButton( hDlg, IDB_SS_NOTIFY, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
-            CheckDlgButton( hDlg, IDB_SS_SUNKEN, 1 );
+            CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
 #else
         EnableWindow( GetDlgItem( hDlg, IDB_SS_NOTIFY ), FALSE );
@@ -481,28 +481,28 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
         if( mask == SS_ICON ) {
-            CheckDlgButton( hDlg, IDB_SS_ICON, 1 );
+            CheckDlgButton( hDlg, IDB_SS_ICON, BST_CHECKED );
         } else if( mask == SS_BITMAP ) {
-            CheckDlgButton( hDlg, IDB_SS_BITMAP, 1 );
+            CheckDlgButton( hDlg, IDB_SS_BITMAP, BST_CHECKED );
         } else if( mask == SS_ENHMETAFILE ) {
-            CheckDlgButton( hDlg, IDB_SS_ENHMETAFILE, 1 );
+            CheckDlgButton( hDlg, IDB_SS_ENHMETAFILE, BST_CHECKED );
         } else {
             WdeWriteTrail( "WdeStaticSetDefineInfo: Bad Image mask!" );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_CENTERIMAGE ) {
-            CheckDlgButton( hDlg, IDB_SS_CENTERIMAGE, 1 );
+            CheckDlgButton( hDlg, IDB_SS_CENTERIMAGE, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_RIGHTJUST ) {
-            CheckDlgButton( hDlg, IDB_SS_RIGHTJUST, 1 );
+            CheckDlgButton( hDlg, IDB_SS_RIGHTJUST, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_REALSIZEIMAGE ) {
-            CheckDlgButton( hDlg, IDB_SS_REALSIZEIMAGE, 1 );
+            CheckDlgButton( hDlg, IDB_SS_REALSIZEIMAGE, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
-            CheckDlgButton( hDlg, IDB_SS_SUNKEN, 1 );
+            CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
         if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOTIFY ) {
-            CheckDlgButton( hDlg, IDB_SS_NOTIFY, 1 );
+            CheckDlgButton( hDlg, IDB_SS_NOTIFY, BST_CHECKED );
         }
 #else
         // only leave the ICON radio button on

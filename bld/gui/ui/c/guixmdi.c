@@ -148,7 +148,7 @@ static void Tile( gui_window *root, int num_windows, gui_rect *rect,
     while( ( info.num_per_row + 1 ) * ( info.num_per_row + 1 ) <= num_windows ) {
         info.num_per_row++;
     }
-    done = FALSE;
+    done = false;
     while( !done ) {
         info.num_per_col = num_windows / info.num_per_row;
         if( horz ) {
@@ -157,7 +157,7 @@ static void Tile( gui_window *root, int num_windows, gui_rect *rect,
             if( info.height < min_size->y ) {
                 info.num_per_row++;
             } else {
-                done = TRUE;
+                done = true;
             }
         } else {
             info.height = rect->height / info.num_per_row;
@@ -165,7 +165,7 @@ static void Tile( gui_window *root, int num_windows, gui_rect *rect,
             if( info.width < min_size->x ) {
                 info.num_per_row++;
             } else {
-                done = TRUE;
+                done = true;
             }
         }
     }
@@ -275,10 +275,10 @@ static void Arrange( EVENT ev )
         Cascade( root, num_windows, &rect, &min_size );
         break;
     case GUI_MDI_TILE_HORZ :
-        Tile( root, num_windows, &rect, &min_size, TRUE );
+        Tile( root, num_windows, &rect, &min_size, true );
         break;
     case GUI_MDI_TILE_VERT :
-        Tile( root, num_windows, &rect, &min_size, FALSE );
+        Tile( root, num_windows, &rect, &min_size, false );
         break;
     }
 }
@@ -336,10 +336,10 @@ static bool ProcessEvent( EVENT ev )
                 GUIBringToFront( wnd );
             }
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool XInitMDI( gui_window *wnd )

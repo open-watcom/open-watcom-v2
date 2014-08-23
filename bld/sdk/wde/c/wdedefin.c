@@ -103,7 +103,7 @@ bool WdeDefineCurrentObject( WORD w )
 
 bool WdeGenericDefine( WdeDefineObjectInfo *info )
 {
-    BOOL                 redraw;
+    INT_PTR              redraw;
     BOOL                 quick;
     BOOL                 destroy_children;
     FARPROC              proc_inst;
@@ -211,10 +211,10 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
     if( style & 0xffff0000 ) {
         WdeSetWinStyles( hDlg, style, WdeGenericMask );
         if( (style & WS_CAPTION) == WS_CAPTION ) {
-            CheckDlgButton( hDlg, IDB_WS_CAPTION, 1 );
+            CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_CHECKED );
         }
     } else {
-        CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, 1 );
+        CheckDlgButton( hDlg, IDB_WS_OVERLAPPED, BST_CHECKED );
     }
 
     WdeSetObjectStyle( hDlg, style & 0x0000ffff );

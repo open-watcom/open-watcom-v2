@@ -36,7 +36,7 @@
 
 static char *ColourNames[GUI_NUM_COLOURS];
 
-static bool ColourNamesInitialized = FALSE;
+static bool ColourNamesInitialized = false;
 
 static void InitColourNames( void )
 {
@@ -81,7 +81,7 @@ bool GUIGetColourFromUser( char *title, gui_colour *init, gui_colour *new_colour
     int result;
 
     if( new_colour == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( init != NULL ) {
         InitColour = *init;
@@ -91,7 +91,7 @@ bool GUIGetColourFromUser( char *title, gui_colour *init, gui_colour *new_colour
     result = GUIDlgPick( title, &PickColour );
     if( result != -1 ) {
         *new_colour = (gui_colour)result;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

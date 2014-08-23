@@ -44,18 +44,10 @@
 #include <ctype.h>
 #include <sys/stat.h>
 
-#if defined( __UNIX__ ) || defined( __QNX__ )
-#undef HAVE_DRIVES
-#else
 #define HAVE_DRIVES
-#endif
 
-#if !defined( __UNIX__ )
 #include <direct.h>
 #include <dos.h>
-#else
-#include <dirent.h>
-#endif
 
 #include "guidlg.h"
 #include "guifdlg.h"
@@ -73,9 +65,9 @@ static  char    *LastPath; // this is set in NT for the sake of viper
 
 #if defined (__NT__)
 /* Changed default from hook to not */
-static  bool    hookFileDlg = FALSE;
+static  bool    hookFileDlg = false;
 #else
-static  bool    hookFileDlg = TRUE;
+static  bool    hookFileDlg = true;
 #endif
 
 void GUIHookFileDlg( bool hook )
@@ -268,7 +260,7 @@ UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     wparam = wparam;
     lparam = lparam;
     hwnd = hwnd;
-    ret = FALSE;
+    ret = false;
     switch( msg ) {
   #if defined(__NT__)
     case WM_DESTROY:
@@ -279,7 +271,7 @@ UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
         GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
-        ret = TRUE;
+        ret = true;
         break;
     }
     return( ret );
@@ -307,9 +299,9 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     memset( &wofn, 0 , sizeof( wofn ) );
 
     if( ofn->flags & OFN_ISSAVE ) {
-        issave = TRUE;
+        issave = true;
     } else {
-        issave = FALSE;
+        issave = false;
     }
 
     wofn.Flags = 0;

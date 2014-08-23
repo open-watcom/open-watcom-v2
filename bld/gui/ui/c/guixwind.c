@@ -97,7 +97,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
         next_child = curr_child->sibling;
         if( curr_child != NULL ) {
             GUIEVENTWND( curr_child, GUI_DESTROY, NULL );
-            GUIFreeWindowMemory( curr_child, TRUE, dialog );
+            GUIFreeWindowMemory( curr_child, true, dialog );
         }
     }
     if( wnd->hgadget != NULL ) {
@@ -113,7 +113,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIMemFree( wnd->icon_name );
     if( !dialog ) {
         uivshow( &wnd->screen );
-        wnd->screen.open = TRUE;
+        wnd->screen.open = true;
         uivclose( &wnd->screen );
     }
     if( GUICurrWnd == wnd ) {
@@ -128,7 +128,7 @@ static void DoDestroy( gui_window * wnd, bool dialog )
 {
     if( wnd != NULL ) {
         GUIEVENTWND( wnd, GUI_DESTROY, NULL );
-        GUIFreeWindowMemory( wnd, FALSE, dialog );
+        GUIFreeWindowMemory( wnd, false, dialog );
     } else {
         wnd = GUIGetFront();
         while( wnd != NULL ) {
@@ -140,7 +140,7 @@ static void DoDestroy( gui_window * wnd, bool dialog )
 
 void GUIDestroyDialog( gui_window * wnd )
 {
-    DoDestroy( wnd, TRUE );
+    DoDestroy( wnd, true );
 }
 
 bool GUICloseWnd( gui_window *wnd )
@@ -148,10 +148,10 @@ bool GUICloseWnd( gui_window *wnd )
     if( wnd != NULL ) {
         if( GUIEVENTWND( wnd, GUI_CLOSE, NULL ) ) {
             GUIDestroyWnd( wnd );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -160,7 +160,7 @@ bool GUICloseWnd( gui_window *wnd )
 
 void GUIDestroyWnd( gui_window * wnd )
 {
-    DoDestroy( wnd, FALSE );
+    DoDestroy( wnd, false );
 }
 
 /*
@@ -222,5 +222,5 @@ bool GUIIsWindowVisible( gui_window *wnd )
 
 bool GUIIsFirstInstance( void )
 {
-    return( TRUE );
+    return( true );
 }

@@ -32,7 +32,7 @@
 #ifndef _ISMOD32_H_INCLUDED
 #define _ISMOD32_H_INCLUDED
 
-BOOL    CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs, DWORD *win32initialeip );
+bool    CheckIsModuleWin32App( HMODULE hmod, WORD *win32ds, WORD *win32cs, DWORD *win32initialeip );
 void    FlagWin32AppAsDebugged( HMODULE hmod );
 
 #endif /* _ISMOD32_H_INCLUDED */

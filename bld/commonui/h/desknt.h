@@ -32,9 +32,9 @@
 #ifndef _DESKNT_H_INCLUDED
 #define _DESKNT_H_INCLUDED
 
-typedef BOOL (*deskNThook)( HWND, UINT, WPARAM, LPARAM );
+typedef bool (*deskNThook)( HWND, UINT, WPARAM, LPARAM );
 
-BOOL    RegisterSnapClass( HANDLE instance );
+bool    RegisterSnapClass( HANDLE instance );
 HWND    DisplayDesktop( HWND hparent );
 void    SetDeskTopHook( deskNThook );
 

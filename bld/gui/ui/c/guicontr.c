@@ -59,19 +59,19 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
     standout = standout;
 
     if( ( info == NULL ) || ( info->parent == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     first_control = ( GUIGetDlgByWnd( info->parent ) == NULL );
     if( first_control ) {
         if( !GUIInsertDialog( info->parent ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     control = GUIAddAControl( info, info->parent );
     if( control != NULL ) {
         dialog = GUIGetDialog( info->parent );
         uireinitdialog( dialog, dialog->fields );
-        return( TRUE );
+        return( true );
     }
     if( first_control ) {
         node = GUIGetDlgByWnd( info->parent );
@@ -81,7 +81,7 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
     }
     GUIDeleteField( info->parent, info->id );
     GUIMemFree( control );
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -130,11 +130,11 @@ static bool DeleteControl( gui_window *wnd, unsigned id )
                 wnd->controls = control->sibling;
             }
             GUIMemFree( control );
-            return( TRUE );
+            return( true );
         }
         prev = control;
     }
-    return( FALSE );
+    return( false );
 }
 
 gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *info,
@@ -178,7 +178,7 @@ bool GUIDeleteControl( gui_window *wnd, unsigned id )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void GUIFreeAllControls( gui_window *wnd )
@@ -210,7 +210,7 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
     wnd=wnd;
     id=id;
     len=len;
-    return( TRUE );
+    return( true );
 }
 
 void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff )
@@ -272,14 +272,14 @@ bool GUIGetControlClass( gui_window *wnd, unsigned id,
     gui_control *control;
 
     if( control_class == NULL ) {
-        return( FALSE );
+        return( false );
     }
     control = GUIGetControl( wnd, id );
     if( control != NULL ) {
         *control_class = control->control_class;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
@@ -295,9 +295,9 @@ bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
             area.col--;
         }
         GUIScreenToScaleRectR( &area, rect );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
@@ -316,7 +316,7 @@ extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
             GUIGetControlRect( wnd, id, &old_rect );
         }
         if( !GUISetDialogArea( wnd, &new_area, rect, &area ) ) {
-            return( FALSE );
+            return( false );
         }
         COPYAREA( new_area, field->area );
         if( !GUI_IS_DIALOG( wnd ) ) {
@@ -326,7 +326,7 @@ extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
             uiredrawdialog( ui_dialog );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool GUIIsControlVisible( gui_window *wnd, unsigned id )

@@ -36,9 +36,9 @@
 extern  WPI_INST        GUIMainHInst;
 extern  WPI_INST        GUIResHInst;
 
-static  bool            GUIMsgInitFlag = FALSE;
+static  bool            GUIMsgInitFlag = false;
 
-static  bool            external = FALSE;
+static  bool            external = false;
 
 bool GUIIsLoadStrInitialized( void )
 {
@@ -63,14 +63,14 @@ bool GUILoadStrInit( const char * fname )
             if( library != NULL ) {
                 memcpy( &GUIResHInst, &library, sizeof( WPI_INST ) ) ;
             } else {
-                return( FALSE );
+                return( false );
             }
         }
 #endif
-        GUIMsgInitFlag = TRUE;
-        return( TRUE );
+        GUIMsgInitFlag = true;
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -82,10 +82,10 @@ bool GUILoadStrFini( void )
             _wpi_freelibrary( GUIMainHInst, GUIResHInst );
         }
 #endif
-        GUIMsgInitFlag = FALSE;
+        GUIMsgInitFlag = false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUILoadString( int string_id, char *buffer, int buffer_length )
@@ -93,12 +93,12 @@ bool GUILoadString( int string_id, char *buffer, int buffer_length )
     if( buffer && buffer_length ) {
         if( _wpi_loadstring( GUIResHInst, string_id,
                              (LPSTR) buffer, buffer_length ) != 0 ) {
-            return( TRUE );
+            return( true );
         } else {
             buffer[0] = '\0';
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 

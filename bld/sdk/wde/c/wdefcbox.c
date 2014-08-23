@@ -376,11 +376,11 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     /* set the type of combo box */
     if( mask == CBS_SIMPLE ) {
-        CheckDlgButton( hDlg, IDB_CBS_SIMPLE, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_SIMPLE, BST_CHECKED );
     } else if( mask == CBS_DROPDOWN ) {
-        CheckDlgButton( hDlg, IDB_CBS_DROPDOWN, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_DROPDOWN, BST_CHECKED );
     } else if( mask == CBS_DROPDOWNLIST ) {
-        CheckDlgButton( hDlg, IDB_CBS_DROPDOWNLIST, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_DROPDOWNLIST, BST_CHECKED );
     } else {
         WdeWriteTrail( "WdeCBoxSetDefineInfo: Bad Combo mask!" );
     }
@@ -389,41 +389,41 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     /* set the combo box options */
     if( mask & CBS_AUTOHSCROLL ) {
-        CheckDlgButton( hDlg, IDB_CBS_AUTOHSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_AUTOHSCROLL, BST_CHECKED );
     }
 
     if( mask & CBS_OEMCONVERT ) {
-        CheckDlgButton( hDlg, IDB_CBS_OEMCONVERT, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_OEMCONVERT, BST_CHECKED );
     }
 
     if( mask & CBS_SORT ) {
-        CheckDlgButton( hDlg, IDB_CBS_SORT, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_SORT, BST_CHECKED );
     }
 
     if( mask & CBS_NOINTEGRALHEIGHT ) {
-        CheckDlgButton( hDlg, IDB_CBS_NOINTEGRALHEIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_NOINTEGRALHEIGHT, BST_CHECKED );
     }
 
     if( mask & CBS_DISABLENOSCROLL ) {
-        CheckDlgButton( hDlg, IDB_CBS_DISABLENOSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_DISABLENOSCROLL, BST_CHECKED );
     }
 
-    CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, 1 );
+    CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, BST_CHECKED );
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), FALSE );
 
     if( mask & CBS_OWNERDRAWFIXED ) {
-        CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWFIXED, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWFIXED, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), TRUE );
         if( !(mask & CBS_HASSTRINGS) ) {
-            CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, 0 );
+            CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, BST_UNCHECKED );
         }
     }
 
     if( mask & CBS_OWNERDRAWVARIABLE ) {
-        CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWVARIABLE, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWVARIABLE, BST_CHECKED );
         EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), TRUE );
         if( !(mask & CBS_HASSTRINGS) ) {
-            CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, 0 );
+            CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, BST_UNCHECKED );
         }
     }
 
@@ -432,11 +432,11 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_UPPERCASE ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_BOTHCASE ), TRUE );
     if( GETCTL_STYLE( o_info->info.c.info ) & CBS_LOWERCASE ) {
-        CheckDlgButton( hDlg, IDB_CBS_LOWERCASE, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_LOWERCASE, BST_CHECKED );
     } else if( GETCTL_STYLE( o_info->info.c.info ) & CBS_UPPERCASE ) {
-        CheckDlgButton( hDlg, IDB_CBS_UPPERCASE, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_UPPERCASE, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_CBS_BOTHCASE, 1 );
+        CheckDlgButton( hDlg, IDB_CBS_BOTHCASE, BST_CHECKED );
     }
 #else
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_LOWERCASE ), FALSE );
@@ -455,20 +455,20 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_EXSTYLE( o_info->info.c.info );
     if( mask & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
     if( mask & WS_EX_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, BST_CHECKED );
     }
     if( mask & WS_EX_RTLREADING ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, BST_CHECKED );
     }
 #else
     // Disable the extended styles.
@@ -582,11 +582,11 @@ BOOL WdeCBoxDefineHook ( HWND hDlg, UINT message,
             if( IsDlgButtonChecked( hDlg, IDB_CBS_OWNERDRAWFIXED ) ||
                 IsDlgButtonChecked( hDlg, IDB_CBS_OWNERDRAWVARIABLE ) ) {
                 EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), TRUE );
-                CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWFIXED, 0 );
-                CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWVARIABLE, 0 );
-                CheckDlgButton( hDlg, wp, 1 );
+                CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWFIXED, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_CBS_OWNERDRAWVARIABLE, BST_UNCHECKED );
+                CheckDlgButton( hDlg, wp, BST_CHECKED );
             } else {
-                CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, 1 );
+                CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), FALSE );
             }
             processed = TRUE;

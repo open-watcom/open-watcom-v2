@@ -215,7 +215,7 @@ void  DoIToHS( char *ptr, int_32 value, int len )
     if( DO_UNIX ) {
         ptr += 2;
     } else {
-        if( isdigit( *ptr ) == FALSE ) {
+        if( !isdigit( *ptr ) ) {
             memmove( ptr + 1, ptr, ++len );
             *ptr = '0';
         }
@@ -250,7 +250,7 @@ void  MyIToHS( char *ptr, int_32 value )
         memmove( numbuff + 2, str, strlen( str )  + 1 );
         str = numbuff;
     } else {
-        if( isdigit( *str ) == FALSE ) {
+        if( !isdigit( *str ) ) {
             --str;
         }
     }

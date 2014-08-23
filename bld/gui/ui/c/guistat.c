@@ -58,7 +58,7 @@ static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height,
     area->height = dim.y;
     area->width = sarea.width - dim.x;
 
-    return( TRUE );
+    return( true );
 }
 
 bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
@@ -67,22 +67,22 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     statusinfo  *stat_info;
 
     if( ( wnd->parent != NULL ) || ( wnd->status != NULL ) || ( colour == NULL ) ) {
-        return( FALSE );
+        return( false );
     }
     stat_info = (statusinfo *)GUIMemAlloc( sizeof( statusinfo ) );
     if( stat_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
     stat_info->text = NULL;
     stat_info->attr = GUIMakeColour( colour->fore, colour->back );
     if( !SetStatusArea( wnd, x, height, &stat_info->area ) ) {
         GUIMemFree( stat_info );
-        return( FALSE );
+        return( false );
     }
     wnd->status = stat_info;
     GUISetUseWnd( wnd );
     GUIDrawStatus( wnd );
-    return( TRUE );
+    return( true );
 }
 
 bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
@@ -90,17 +90,17 @@ bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
     SAREA       area;
 
     if( !GUIHasStatus( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !SetStatusArea( wnd, x, height, &area ) ) {
-        return( FALSE );
+        return( false );
     } else {
         area.row += wnd->status->area.height;
         COPYAREA( area, wnd->status->area );
     }
     GUISetUseWnd( wnd );
     GUIDrawStatus( wnd );
-    return( TRUE );
+    return( true );
 }
 
 void GUIDrawStatus( gui_window *wnd )
@@ -126,7 +126,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     bool        ret;
 
     if( !GUIHasStatus( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
     if( wnd->status->text != NULL ) {
         GUIMemFree( wnd->status->text );
@@ -172,7 +172,7 @@ bool GUICloseStatusWindow( gui_window *wnd )
         GUIFreeStatus( wnd );
         GUISetUseWnd( wnd );
         GUIDirtyArea( wnd, &area );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

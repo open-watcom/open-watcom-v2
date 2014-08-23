@@ -55,17 +55,22 @@ static void SetFont( gui_window *wnd, HFONT font )
 
 bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
 {
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+    hwnd = hwnd;
+    lf = lf;
+    font = font;
+    return( false );
+#else
     CHOOSEFONT  cf;
     bool        ret;
-    WPI_PROC    func;
-#if !defined(__NT__)
+ #if defined(__WINDOWS__)
     HINSTANCE   h;
-#endif
-#ifdef __WINDOWS_386__
+    FARPROC     func;
+  #ifdef __WINDOWS_386__
     HINDIR      hIndir;
     DWORD       lfAlias;
-#endif
+  #endif
+ #endif
 
     memset( &cf, 0, sizeof( CHOOSEFONT ) );
 
@@ -75,49 +80,41 @@ bool GUIChooseFont( HFONT font, LOGFONT *lf, HWND hwnd )
         cf.Flags |= CF_INITTOLOGFONTSTRUCT;
     }
 
-#ifndef __WINDOWS_386__
+ #ifndef __WINDOWS_386__
     cf.lpLogFont = lf;
-#endif
-    cf.lStructSize = sizeof(CHOOSEFONT);
+ #endif
+    cf.lStructSize = sizeof( CHOOSEFONT );
     cf.hwndOwner = hwnd;
 
-#if defined(__NT__)
-    func = ChooseFont;
-#else
+ #if defined(__NT__)
+    ret = ChooseFont( &cf ) != 0;
+ #else
     h = LoadLibrary( "COMMDLG.DLL" );
     if( (UINT)h < 32 ) {
-        return( FALSE );
+        return( false );
     }
     func = GetProcAddress( h, "ChooseFont" );
     if( func == NULL ) {
-        return( FALSE );
+        return( false );
     }
-#endif
-#ifdef __WINDOWS_386__
+  #ifdef __WINDOWS_386__
     hIndir = GetIndirectFunctionHandle( func, INDIR_PTR, INDIR_ENDLIST );
     if( hIndir == NULL ) {
         FreeLibrary( h );
-        return( FALSE );
+        return( false );
     }
     lfAlias = AllocAlias16( (void *)lf );
     cf.lpLogFont = (LOGFONT *) lfAlias;
-    ret = (bool)InvokeIndirectFunction( hIndir, &cf );
+    ret = (short)InvokeIndirectFunction( hIndir, &cf ) != 0;
     if( lfAlias != NULL ) {
         FreeAlias16( lfAlias );
     }
-#else
-    ret = ((BOOL(WINAPI *)(LPCHOOSEFONT))func)( &cf );
-#endif
-#if !defined(__NT__)
+  #else
+    ret = ((BOOL(WINAPI *)(LPCHOOSEFONT))func)( &cf ) != 0;
+  #endif
     FreeLibrary( h );
-#endif
-
+ #endif
     return( ret );
-#else
-    hwnd = hwnd;
-    lf = lf;
-    font = font;
-    return( FALSE );
 #endif
 }
 
@@ -128,19 +125,19 @@ bool GUIChangeFont( gui_window *wnd )
     HFONT       font;
 
     if( !GUIChooseFont( wnd->font, &lf, wnd->hwnd ) ) {
-        return( FALSE );
+        return( false );
     }
     font = CreateFontIndirect( &lf );
     if( font == NULL ) {
-        return( FALSE );
+        return( false );
     }
     DeleteObject( wnd->font );
     SetFont( wnd, font );
     GUIWndDirty( wnd );
-    return( TRUE );
+    return( true );
 #else
     wnd = wnd;
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -211,31 +208,31 @@ bool GUISetFontInfo( gui_window *wnd, char *fontinfo )
     LOGFONT     lf;
 
     if( fontinfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
     GetLogFontFromString( &lf, fontinfo );
     font = CreateFontIndirect( &lf );
     if( font == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( wnd->font != NULL ) {
         DeleteObject( wnd->font );
     }
     SetFont( wnd, font );
-    return( TRUE );
+    return( true );
 #else
     wnd = wnd;
     fontinfo = fontinfo;
-    return( FALSE );
+    return( false );
 #endif
 }
 
 bool GUIFontsSupported( void )
 {
 #ifndef __OS2_PM__
-    return( TRUE );
+    return( true );
 #else
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -263,10 +260,10 @@ bool GUISetSystemFont( gui_window *wnd, bool fixed )
         DeleteObject( wnd->font );
     }
     SetFont( wnd, font );
-    return( TRUE );
+    return( true );
 #else
     wnd = wnd;
     fixed = fixed;
-    return( FALSE );
+    return( false );
 #endif
 }

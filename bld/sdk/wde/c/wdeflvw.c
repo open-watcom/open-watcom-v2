@@ -376,57 +376,57 @@ void WdeLViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     // set the list view options
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000003;
     if( mask == LVS_REPORT ) {
-        CheckDlgButton( hDlg, IDB_LVS_REPORT, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_REPORT, BST_CHECKED );
     } else if( mask == LVS_SMALLICON ) {
-        CheckDlgButton( hDlg, IDB_LVS_SMALLICON, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SMALLICON, BST_CHECKED );
     } else if( mask == LVS_LIST ) {
-        CheckDlgButton( hDlg, IDB_LVS_LIST, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_LIST, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_LVS_ICON, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_ICON, BST_CHECKED );
     }
 
     mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
 
     if( mask & LVS_SINGLESEL ) {
-        CheckDlgButton( hDlg, IDB_LVS_SINGLESEL, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SINGLESEL, BST_CHECKED );
     }
     if( mask & LVS_SHOWSELALWAYS ) {
-        CheckDlgButton( hDlg, IDB_LVS_SHOWSELALWAYS, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SHOWSELALWAYS, BST_CHECKED );
     }
     if( mask & LVS_SHAREIMAGELISTS ) {
-        CheckDlgButton( hDlg, IDB_LVS_SHAREIMAGELISTS, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SHAREIMAGELISTS, BST_CHECKED );
     }
     if( mask & LVS_NOLABELWRAP ) {
-        CheckDlgButton( hDlg, IDB_LVS_NOLABELWRAP, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_NOLABELWRAP, BST_CHECKED );
     }
     if( mask & LVS_AUTOARRANGE ) {
-        CheckDlgButton( hDlg, IDB_LVS_AUTOARRANGE, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_AUTOARRANGE, BST_CHECKED );
     }
     if( mask & LVS_EDITLABELS ) {
-        CheckDlgButton( hDlg, IDB_LVS_EDITLABELS, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_EDITLABELS, BST_CHECKED );
     }
     if( mask & LVS_ALIGNLEFT ) {
-        CheckDlgButton( hDlg, IDB_LVS_ALIGNLEFT, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_ALIGNLEFT, BST_CHECKED );
     }
     if( mask & LVS_OWNERDRAWFIXED ) {
-        CheckDlgButton( hDlg, IDB_LVS_OWNERDRAWFIXED, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_OWNERDRAWFIXED, BST_CHECKED );
     }
     if( mask & LVS_NOSCROLL ) {
-        CheckDlgButton( hDlg, IDB_LVS_NOSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_NOSCROLL, BST_CHECKED );
     }
     if( mask & LVS_NOCOLUMNHEADER ) {
-        CheckDlgButton( hDlg, IDB_LVS_NOCOLUMNHEADER, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_NOCOLUMNHEADER, BST_CHECKED );
     }
     if( mask & LVS_NOSORTHEADER ) {
-        CheckDlgButton( hDlg, IDB_LVS_NOSORTHEADER, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_NOSORTHEADER, BST_CHECKED );
     }
 
     if( mask & LVS_SORTDESCENDING ) {
-        CheckDlgButton( hDlg, IDB_LVS_SORTDESCENDING, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SORTDESCENDING, BST_CHECKED );
     } else if( mask & LVS_SORTASCENDING ) {
-        CheckDlgButton( hDlg, IDB_LVS_SORTASCENDING, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_SORTASCENDING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_LVS_NOSORTING, 1 );
+        CheckDlgButton( hDlg, IDB_LVS_NOSORTING, BST_CHECKED );
     }
 
     // set the extended style controls only

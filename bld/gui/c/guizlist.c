@@ -41,10 +41,10 @@ static bool InList( gui_window *wnd )
 
     for( curr = GUIHead; curr != NULL; curr = curr->next ) {
         if( curr == wnd ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -107,8 +107,8 @@ bool GUIIsValidWindow( gui_window *wnd )
 
     for( curr = GUIGetFront(); curr != NULL; curr = GUIGetNextWindow( curr ) ) {
         if( curr == wnd ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

@@ -43,7 +43,7 @@ static bool ProcessEvent( EVENT ev )
     ev -= GUI_FIRST_USER_EVENT;
     if( ev == GUI_MDI_MORE_WINDOWS ) {
         GUIMDIMoreWindows();
-        return( TRUE );
+        return( true );
     }
     if( ( ev >= GUI_MDI_FIRST_WINDOW ) &&
         ( ev <= ( GUI_MDI_FIRST_WINDOW + MAX_NUM_MDI_WINDOWS - 1 ) ) ) {
@@ -54,9 +54,9 @@ static bool ProcessEvent( EVENT ev )
             }
             GUIBringToFront( wnd );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool XFakeInitMDI( gui_window *wnd )

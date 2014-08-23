@@ -380,44 +380,44 @@ void WdeEditSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     /* set the type of combo box */
     if( !(mask & 0x00000003) ) {
-        CheckDlgButton( hDlg, IDB_ES_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_ES_LEFT, BST_CHECKED );
     } else if( mask & ES_CENTER ) {
-        CheckDlgButton( hDlg, IDB_ES_CENTER, 1 );
+        CheckDlgButton( hDlg, IDB_ES_CENTER, BST_CHECKED );
     } else if( mask & ES_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_ES_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_CHECKED );
     } else {
         WdeWriteTrail( "WdeEditSetDefineInfo: Bad Edit mask!" );
     }
 
     if( mask & ES_UPPERCASE ) {
-        CheckDlgButton( hDlg, IDB_ES_UPPERCASE, 1 );
+        CheckDlgButton( hDlg, IDB_ES_UPPERCASE, BST_CHECKED );
     }
     if( mask & ES_LOWERCASE ) {
-        CheckDlgButton( hDlg, IDB_ES_LOWERCASE, 1 );
+        CheckDlgButton( hDlg, IDB_ES_LOWERCASE, BST_CHECKED );
     }
     if( mask & ES_PASSWORD ) {
-        CheckDlgButton( hDlg, IDB_ES_PASSWORD, 1 );
+        CheckDlgButton( hDlg, IDB_ES_PASSWORD, BST_CHECKED );
     }
     if( mask & ES_AUTOVSCROLL ) {
-        CheckDlgButton( hDlg, IDB_ES_AUTOVSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_ES_AUTOVSCROLL, BST_CHECKED );
     }
     if( mask & ES_AUTOHSCROLL ) {
-        CheckDlgButton( hDlg, IDB_ES_AUTOHSCROLL, 1 );
+        CheckDlgButton( hDlg, IDB_ES_AUTOHSCROLL, BST_CHECKED );
     }
     if( mask & ES_NOHIDESEL ) {
-        CheckDlgButton( hDlg, IDB_ES_NOHIDESEL, 1 );
+        CheckDlgButton( hDlg, IDB_ES_NOHIDESEL, BST_CHECKED );
     }
     if( mask & ES_OEMCONVERT ) {
-        CheckDlgButton( hDlg, IDB_ES_OEMCONVERT, 1 );
+        CheckDlgButton( hDlg, IDB_ES_OEMCONVERT, BST_CHECKED );
     }
     if( mask & ES_READONLY ) {
-        CheckDlgButton( hDlg, IDB_ES_READONLY, 1 );
+        CheckDlgButton( hDlg, IDB_ES_READONLY, BST_CHECKED );
     }
     if( mask & ES_WANTRETURN ) {
-        CheckDlgButton( hDlg, IDB_ES_WANTRETURN, 1 );
+        CheckDlgButton( hDlg, IDB_ES_WANTRETURN, BST_CHECKED );
     }
     if( mask & ES_MULTILINE ) {
-        CheckDlgButton( hDlg, IDB_ES_MULTILINE, 1 );
+        CheckDlgButton( hDlg, IDB_ES_MULTILINE, BST_CHECKED );
     } else {
         EnableWindow( GetDlgItem( hDlg, IDB_ES_AUTOVSCROLL ), FALSE );
         EnableWindow( GetDlgItem( hDlg, IDB_WS_HSCROLL ), FALSE );
@@ -429,7 +429,7 @@ void WdeEditSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #if __NT__XX
     EnableWindow( GetDlgItem( hDlg, IDB_ES_NUMBER ), TRUE );
     if( mask & ES_NUMBER ) {
-        CheckDlgButton( hDlg, IDB_ES_NUMBER, 1 );
+        CheckDlgButton( hDlg, IDB_ES_NUMBER, BST_CHECKED );
     }
 #else
     EnableWindow( GetDlgItem( hDlg, IDB_ES_NUMBER ), FALSE );
@@ -446,20 +446,20 @@ void WdeEditSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_EXSTYLE( o_info->info.c.info );
     if( mask & WS_EX_STATICEDGE ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
     if( mask & WS_EX_NOPARENTNOTIFY ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_NOPARENTNOTIFY, BST_CHECKED );
     }
     if( mask & WS_EX_RIGHT ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RIGHT, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LEFT, BST_CHECKED );
     }
     if( mask & WS_EX_RTLREADING ) {
-        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_RTLREADING, BST_CHECKED );
     } else {
-        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, 1 );
+        CheckDlgButton( hDlg, IDB_WS_EX_LTRREADING, BST_CHECKED );
     }
 #else
     // disable the extended styles
@@ -561,38 +561,38 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
         switch( LOWORD( wParam ) ) {
         case IDB_ES_LEFT:
             if( IsDlgButtonChecked( hDlg, IDB_ES_LEFT ) ) {
-                CheckDlgButton( hDlg, IDB_ES_RIGHT, 0 );
-                CheckDlgButton( hDlg, IDB_ES_CENTER, 0 );
+                CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_ES_CENTER:
             if( IsDlgButtonChecked( hDlg, IDB_ES_CENTER ) ) {
-                CheckDlgButton( hDlg, IDB_ES_LEFT, 0 );
-                CheckDlgButton( hDlg, IDB_ES_RIGHT, 0 );
+                CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_ES_UPPERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_UPPERCASE ) ) {
-                CheckDlgButton( hDlg, IDB_ES_LOWERCASE, 0 );
+                CheckDlgButton( hDlg, IDB_ES_LOWERCASE, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_ES_LOWERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_LOWERCASE ) ) {
-                CheckDlgButton( hDlg, IDB_ES_UPPERCASE, 0 );
+                CheckDlgButton( hDlg, IDB_ES_UPPERCASE, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
 
         case IDB_ES_RIGHT:
             if( IsDlgButtonChecked( hDlg, IDB_ES_RIGHT ) ) {
-                CheckDlgButton( hDlg, IDB_ES_LEFT, 0 );
-                CheckDlgButton( hDlg, IDB_ES_CENTER, 0 );
+                CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
             processed = TRUE;
             break;
@@ -605,12 +605,12 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_WS_HSCROLL ), TRUE );
                 EnableWindow( GetDlgItem( hDlg, IDB_WS_VSCROLL ), TRUE );
             } else {
-                CheckDlgButton( hDlg, IDB_ES_AUTOVSCROLL, 0 );
-                CheckDlgButton( hDlg, IDB_WS_VSCROLL, 0 );
-                CheckDlgButton( hDlg, IDB_WS_HSCROLL, 0 );
-                CheckDlgButton( hDlg, IDB_ES_CENTER, 0 );
-                CheckDlgButton( hDlg, IDB_ES_RIGHT, 0 );
-                CheckDlgButton( hDlg, IDB_ES_LEFT, 1 );
+                CheckDlgButton( hDlg, IDB_ES_AUTOVSCROLL, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_VSCROLL, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_WS_HSCROLL, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
+                CheckDlgButton( hDlg, IDB_ES_LEFT, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_ES_AUTOVSCROLL ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_WS_HSCROLL ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_WS_VSCROLL ), FALSE );

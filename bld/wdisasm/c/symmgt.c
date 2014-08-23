@@ -155,14 +155,14 @@ static  void  FixExpList()
                     seg_exp->name = seg_label;
                     seg_exp->address = 0;
                     seg_exp->type_id = 0;
-                    seg_exp->public = FALSE;
-                    seg_exp->dumped = FALSE;
+                    seg_exp->public = false;
+                    seg_exp->dumped = false;
                     seg_exp->segment = Segment;
                     seg_exp->next_exp = Segment->exports;
                     Segment->exports = seg_exp;
                 }
             }
-            exp->dumped = TRUE; /* don't want these to come out */
+            exp->dumped = true; /* don't want these to come out */
             /* if 16-bit segment, sign extend address to look nice */
             if( !Segment->use_32 ) addr = (signed short)addr;
             buff[0]=OUT_RANGE_IND;
@@ -173,7 +173,7 @@ static  void  FixExpList()
             exp->name = (char *) AllocMem( strlen( buff ) + 1 );
             strcpy( exp->name, buff );
         } else {
-            exp->dumped = FALSE;    /* label has not been dumped to file */
+            exp->dumped = false;    /* label has not been dumped to file */
             if( exp->name == NULL ) {
                 itoa( ++Count, &NameBuff[ 1 ], 10 );
                 exp->name = (char *) AllocMem( strlen( NameBuff ) + 1 );
@@ -289,7 +289,7 @@ char *FormSym( char *sym )
 {
     char        *p;
     char        ch;
-    int         quote;
+    bool        quote;
     translation *sym_trans;
     char        *range;
     unsigned    range_len;
@@ -315,14 +315,14 @@ char *FormSym( char *sym )
     p = sym;
     if( Options & FORM_ASSEMBLER ) {
         /* put backquotes around symbol if it has strange characters */
-        quote = FALSE;
+        quote = false;
         for( ;; ) {
             ch = *p;
             if( ch == '\0' ) break;
             if( p == sym && isdigit( ch ) ) {
-                quote = TRUE;
+                quote = true;
             } else if( !(isalnum( ch ) || ch == '_' || ch == '?') ) {
-                quote = TRUE;
+                quote = true;
             }
             ++p;
         }

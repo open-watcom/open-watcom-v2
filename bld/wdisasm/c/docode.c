@@ -108,7 +108,7 @@ static const processor_reg RM32Seg[] = {
 /*
  * Static function prototypes
  */
-static  void            GetOperands( operand_type, char );
+static  void            GetOperands( operand_type, bool );
 static  ins_name        GetInsName( ins_name );
 
 
@@ -192,7 +192,7 @@ static  void    SetOperands( char opcode )
 }
 
 
-void  DoCode( instruction *curr, char use_32 )
+void  DoCode( instruction *curr, bool use_32 )
 /*******************************************/
 
 {
@@ -276,7 +276,7 @@ void  DoCode( instruction *curr, char use_32 )
             }
 #if defined( O2A )
             if( CurrIns.opcode == I_RET_FAR ) {
-                RetFarUsed = TRUE;
+                RetFarUsed = true;
             }
             for( i = 0; i < CurrIns.num_oper; ++i ) {     /* locate labels */
                 op = &CurrIns.op[ i ];
@@ -391,7 +391,7 @@ void DoOTModRM( void )
         op2 = OP_2;
     }
     CurrIns.num_oper = 2;
-    ModRMOp( op1, FALSE );
+    ModRMOp( op1, false );
     CurrIns.op[ op2 ].mode = ADDR_REG;
     reg = _RegField( SecondByte );
     if( W_Bit ) {
@@ -439,7 +439,7 @@ static void MMModRM( int direction )
 }
 
 
-static  void    Opcode0F( char use_32 ) {
+static  void    Opcode0F( bool use_32 ) {
 /***************************************/
 
     int                 index;
@@ -558,7 +558,7 @@ static  void    Opcode0F( char use_32 ) {
             if( (SecondByte & 0x38) == 0x08 ) {
                 CurrIns.opcode = I_CMPXCHG8B;
                 CurrIns.num_oper = 1;
-                ModRMOp( OP_1, FALSE );
+                ModRMOp( OP_1, false );
             } else {
                 CurrIns.opcode = I_INVALID;
             }
@@ -694,9 +694,9 @@ static  void  AccumOp( int op )
     }
 }
 
-
-static  void  GetOperands( operand_type op_type, char use_32 )
 #define _FixDisp( x ) ( use_32 ? (x) : (x) & 0xFFFF )
+
+static  void  GetOperands( operand_type op_type, bool use_32 )
 /************************************************************/
 {
     int                 op1;
@@ -841,7 +841,7 @@ static  void  GetOperands( operand_type op_type, char use_32 )
             CurrIns.mem_ref_size = 2;
         }
         CurrIns.num_oper = 2;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         if( CurrIns.mem_ref_size == 1 ) {
             ConstByteOp( OP_2 );
         } else {
@@ -876,7 +876,7 @@ static  void  GetOperands( operand_type op_type, char use_32 )
     case OT_MOD_REG:            /* lea AX,3[SI] */
         CurrIns.num_oper = 2;
         ModRMRegOp( OP_1 );
-        ModRMOp( OP_2, FALSE );
+        ModRMOp( OP_2, false );
         if( Opcode == 0x8d ) {      /* lea */
             CurrIns.mem_ref_op = NULL_OP;
         } else {                    /* lds or les */
@@ -904,9 +904,9 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         CurrIns.num_oper = 1;
         reg = _RegField( SecondByte );
         if( reg <= 1 && Opcode != 0x8f ) {      /* INC or DEC (not POP) */
-            ModRMOp( OP_1, TRUE );
+            ModRMOp( OP_1, true );
         } else {
-            ModRMOp( OP_1, FALSE );
+            ModRMOp( OP_1, false );
             if( reg == 3 || reg == 5 ) {        /* call/jmp dword ptr x */
                 SetPWord();
             } else if( reg == 2 || reg == 4 ) { /* call/jmp word ptr x */
@@ -920,18 +920,18 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         break;
     case OT_RM_1:               /* shl AX,1 */
         CurrIns.num_oper = 2;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         CurrIns.op[ OP_2 ].mode = ADDR_CONST;
         CurrIns.op[ OP_2 ].disp = 1;
         break;
     case OT_RM_CL:              /* shl AX,CL */
         CurrIns.num_oper = 2;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         CurrIns.op[ OP_2 ].mode = ADDR_REG;
         CurrIns.op[ OP_2 ].base = CL_REG;
         break;
     case OT_RM_TEST:            /* test -9[BP],10 */
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         reg = _RegField( SecondByte );
         if( reg != 0 ) {        /* TEST has 2 opnds, else only 1 opnd */
             CurrIns.num_oper = 1;
@@ -946,7 +946,7 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         break;
     case OT_RM_IMMED:           /* add 4[DI],8 */
         CurrIns.num_oper = 2;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         if( W_Bit == 0 ) {          /* byte operation */
             ConstByteOp( OP_2 );
         } else if( D_Bit == 0 ) {   /* word operation, with full constant */
@@ -982,7 +982,7 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         CurrIns.mem_ref_size = 2;
         save_pref = CurrIns.pref;
         CurrIns.pref &= ~OPND_LONG;
-        ModRMOp( op1, FALSE );
+        ModRMOp( op1, false );
         CurrIns.pref = save_pref;
         CurrIns.op[ op2 ].mode = ADDR_REG;
         CurrIns.op[ op2 ].base = FIRST_SEG_REG + _SegReg3Field( SecondByte );
@@ -1004,7 +1004,7 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         } else {
             CurrIns.num_oper = 2;
         }
-        ModRMOp( op1, FALSE );
+        ModRMOp( op1, false );
         if( op_type == OT_REG_MEM_IMMED8 ) {
             ConstByteOp( op2 );
         } else {
@@ -1020,12 +1020,12 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         W_Bit = 1;
         save_pref = CurrIns.pref;
         CurrIns.pref &= ~OPND_LONG;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         CurrIns.pref = save_pref;
         break;
     case OT_M: /* SGDT etc */
         CurrIns.num_oper = 1;
-        ModRMOp( OP_1, FALSE );
+        ModRMOp( OP_1, false );
         CurrIns.modifier = MOD_PWORD;
         CurrIns.mem_ref_size = 6;
         break;
@@ -1035,14 +1035,14 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         W_Bit = 1;
         save_pref = CurrIns.pref;
         CurrIns.pref &= ~OPND_LONG;
-        ModRMOp( OP_2, TRUE );
+        ModRMOp( OP_2, true );
         CurrIns.pref = save_pref;
         break;
     case OT_RV_RMB: /* MOVSX  eAX,byte ptr foo*/
         CurrIns.mem_ref_size = 1;
         CurrIns.num_oper = 2;
         ModRMRegOp( OP_1 );
-        ModRMOp( OP_2, TRUE );
+        ModRMOp( OP_2, true );
         break;
     case OT_RD_RMW: /* MOVZX  EAX,word ptr foo*/
         CurrIns.mem_ref_size = 2;
@@ -1051,14 +1051,14 @@ static  void  GetOperands( operand_type op_type, char use_32 )
         CurrIns.op[ OP_1 ].base = FIRST_DWORD_REG + _RegField( SecondByte );
         save_pref = CurrIns.pref;
         CurrIns.pref &= ~OPND_LONG;
-        ModRMOp( OP_2, TRUE );
+        ModRMOp( OP_2, true );
         CurrIns.pref = save_pref;
         break;
     case OT_RMB: /* SETBE etc */
         CurrIns.num_oper = 1;
         CurrIns.mem_ref_size = 1;
         W_Bit = 0;
-        ModRMOp( OP_1, TRUE );
+        ModRMOp( OP_1, true );
         break;
     case OT_FS:
         CurrIns.op[ OP_1 ].base = FS_REG;
@@ -1111,7 +1111,7 @@ void  ModRMRegOp( int op )
 }
 
 
-void  ModRMOp( int op, char byte_ptr )
+void  ModRMOp( int op, bool byte_ptr )
 /************************************/
 {
     uint_8              mod;
@@ -1121,7 +1121,7 @@ void  ModRMOp( int op, char byte_ptr )
 
 #if defined( O2A )
     if( Options & FORM_ASSEMBLER ) {        /* fully qualify everything */
-        byte_ptr = TRUE;
+        byte_ptr = true;
     }
 #endif
     CurrIns.mem_ref_op = op;
@@ -1137,7 +1137,7 @@ void  ModRMOp( int op, char byte_ptr )
         } else {
             opnd->base = FIRST_BYTE_REG + rm;
         }
-        byte_ptr = FALSE;
+        byte_ptr = false;
     } else if( CurrIns.pref & ADDR_LONG ) {
         if( rm == 4 ) { /* s-i-b byte follows */
             rm = GetDataByte();

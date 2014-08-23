@@ -77,7 +77,7 @@ void FrameAWindow( HWND hwnd )
 /*
  * UpdateFramedInfo
  */
-void UpdateFramedInfo( HWND dlg, HWND framedhwnd, BOOL ispick  )
+void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 {
     char        name[64];
     char        id[10];

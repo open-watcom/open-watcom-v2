@@ -38,17 +38,17 @@ bool GUIDropDown( gui_window *wnd, unsigned id, bool drop )
     gui_control_class control_class;
 
     if( !GUIGetControlClass( wnd, id, &control_class ) ) {
-        return( FALSE );
+        return( false );
     }
     switch( control_class ) {
     case GUI_COMBOBOX :
     case GUI_EDIT_COMBOBOX :
         if( !GUISetFocus( wnd, id ) ) {
-            return( FALSE );
+            return( false );
         }
         return( GUIToControl( wnd, id, CB_SHOWDROPDOWN, (WPI_PARAM1)drop, 0L, NULL ) );
         break;
     default :
-        return( FALSE );
+        return( false );
     }
 }
