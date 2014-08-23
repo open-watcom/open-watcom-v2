@@ -161,7 +161,7 @@ static void doMaximize( HWND hwnd )
     md->curr_state = STATE_MAX;
 
     if( mdiInfo.set_style != NULL ) {
-        (mdiInfo.set_style)( hwnd, TRUE );
+        (mdiInfo.set_style)( hwnd, true );
     } else {
         style = _wpi_getwindowlong( hwnd, GWL_STYLE );
         style &= ~mdiInfo.reg_style;
@@ -220,7 +220,7 @@ static void doRestore( HWND hwnd )
     md->curr_state = md->orig_state = STATE_NORMAL;
 
     if( mdiInfo.set_style != NULL ) {
-        (mdiInfo.set_style)( hwnd, FALSE );
+        (mdiInfo.set_style)( hwnd, false );
     } else {
         style = _wpi_getwindowlong( hwnd, GWL_STYLE );
         style &= ~mdiInfo.max_style;

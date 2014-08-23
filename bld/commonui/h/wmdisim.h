@@ -44,7 +44,7 @@ typedef struct {
     void        (*start_max_restore)( HWND );
     void        (*end_max_restore)( HWND );
     void        (*set_window_title)( HWND );
-    void        (*set_style)( HWND, int );
+    void        (*set_style)( HWND, bool );
     WPI_INST    hinstance;
 } mdi_info;
 
