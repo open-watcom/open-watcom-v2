@@ -31,16 +31,17 @@
 
 #include "guiwind.h"
 #include "guixhook.h"
-#undef __NT__ // for now to disable 3d dialogs
-#ifdef __WINDOWS_386__
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     #include "ctl3d.h"
-#endif
-#ifdef __NT__
-    #include "ctl3d.h"
+  #if defined( __NT__ )
     #pragma library( "ctl3d32.lib" )
+  #endif
 #endif
 
-#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
+
+#if !defined( __WINDOWS_386__ )
+
 typedef BOOL    ( WINAPI *LPFN_Ctl3dRegister )( HANDLE );
 typedef BOOL    ( WINAPI *LPFN_Ctl3dUnregister )( HANDLE );
 typedef BOOL    ( WINAPI *LPFN_Ctl3dAutoSubclass )( HANDLE );
@@ -50,9 +51,9 @@ typedef BOOL    ( WINAPI *LPFN_Ctl3dColorChange )( void );
 typedef HBRUSH  ( WINAPI *LPFN_Ctl3dCtlColorEx )( UINT, WPARAM, LPARAM );
 
 static HINSTANCE    ctlDLLLib = NULL;
-#endif
 
-#ifdef __WINDOWS_386__
+#else
+
 BOOL _DLLFAR PASCAL _CB_Ctl3dUnregister( HANDLE h )
 {
     return( Ctl3dUnregister( h ) );
@@ -75,19 +76,33 @@ BOOL _DLLFAR PASCAL _CB_Ctl3dSubclassCtl( HWND h )
 
 HBRUSH _DLLFAR PASCAL _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
 {
-#if 0
+  #if 0
     return( Ctl3dCtlColorEx( wm, wp, lp ) );
-#else
+  #else
     return( NULL );
-#endif
+  #endif
 }
+
+#endif
+
 #endif
 
 extern  WPI_INST        GUIMainHInst;
 
+#if defined( __WINDOWS__ )
+WORD ctl3dsubclassdlg_allflags = CTL3D_ALL;
+#elif defined( __NT__ ) && !defined( _WIN64 )
+WORD ctl3dsubclassdlg_allflags = CTL3D_ALL;
+#else
+WORD ctl3dsubclassdlg_allflags = 0;
+#endif
+
 bool GUI3DDialogInit( void )
 {
-#ifdef __WINDOWS_386__
+
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
+
+  #if defined( __WINDOWS_386__ )
     static bool dll32Ctl3dOpen = false;
 
     if( !dll32Ctl3dOpen ) {
@@ -97,19 +112,17 @@ bool GUI3DDialogInit( void )
             return( false );
         }
     }
-#endif
-
-#if defined( __WINDOWS__ ) || defined( __NT__ )
+  #endif
 
     /* Only use CTL3D on old versions of Windows. */
     if( LOBYTE(LOWORD(GetVersion())) < 4 ) {
-    #ifdef __WINDOWS_386__
+  #ifdef __WINDOWS_386__
         GUISetCtl3dUnregister( &_CB_Ctl3dUnregister );
         GUISetCtl3dSubclassDlg( &_CB_Ctl3dSubclassDlg );
         GUISetCtl3dSubclassCtl( &_CB_Ctl3dSubclassCtl );
         GUISetCtl3dColorChange( &_CB_Ctl3dColorChange );
         GUISetCtl3dCtlColorEx( &_CB_Ctl3dCtlColorEx );
-    #else
+  #else
         LPFN_Ctl3dRegister          pfnCtl3dRegister;
         LPFN_Ctl3dUnregister        pfnCtl3dUnregister;
         LPFN_Ctl3dAutoSubclass      pfnCtl3dAutoSubclass;
@@ -159,7 +172,7 @@ bool GUI3DDialogInit( void )
         GUISetCtl3dSubclassCtl( pfnCtl3dSubclassCtl );
         GUISetCtl3dColorChange( pfnCtl3dColorChange );
         GUISetCtl3dCtlColorEx( pfnCtl3dCtlColorEx );
-    #endif
+  #endif
     }
     return( true );
 #else

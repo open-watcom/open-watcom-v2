@@ -31,11 +31,8 @@
 
 
 #include "guiwind.h"
-#ifndef __OS2_PM__
-    #if !defined( __NT__ ) && !defined( __WINDOWS_386__ )
-        #pragma library( "commdlg.lib" );
-    #endif
-    #include <ctl3d.h>
+#if defined( __WINDOWS__ ) && !defined( __WINDOWS_386__ )
+    #pragma library( "commdlg.lib" );
 #endif
 
 #include <string.h>
@@ -270,7 +267,7 @@ UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        GUICtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        GUICtl3dSubclassDlgAll( hwnd );
         ret = true;
         break;
     }

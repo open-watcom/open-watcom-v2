@@ -251,9 +251,7 @@ void GUICleanup( void )
     GUILoadStrFini();
     GUISysFini();
     GUIFiniDialog();
-#if defined( __WINDOWS__ ) || defined( __NT__ )
     GUICtl3dUnregister();
-#endif
 }
 
 #ifdef __OS2_PM__

@@ -43,7 +43,8 @@ static  bool    (*NewWindow)( HWND )                    = NULL;
 static  void    (*MDIMaximize)(bool, gui_window *)      = NULL;
 static  bool    (*IsMDIChildWindow)(gui_window *)       = NULL;
 static  void    (*SetMDIRestoredSize)(HWND, WPI_RECT *) = NULL;
-#if defined( __WINDOWS__ ) || defined( __NT__ )
+
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 static  BOOL (_DLLFAR PASCAL *Ctl3dUnregister)(HANDLE)  = NULL;
 static  BOOL (_DLLFAR PASCAL *Ctl3dSubclassDlg)(HWND, WORD) = NULL;
 static  BOOL (_DLLFAR PASCAL *Ctl3dColorChange)(void)   = NULL;
@@ -52,6 +53,7 @@ static  HBRUSH (_DLLFAR PASCAL *Ctl3dCtlColorEx)(UINT, WPARAM, LPARAM)  = NULL;
 #endif
 
 extern  WPI_INST        GUIMainHInst;
+extern  WORD            ctl3dsubclassdlg_allflags;
 
 void GUISetMDIProcessMessage( bool (*func)(gui_window *, HWND, WPI_MSG, WPI_PARAM1,
                               WPI_PARAM2, WPI_MRESULT *) )
@@ -169,31 +171,15 @@ void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
     }
 }
 
-#if defined( __WINDOWS__ ) || defined( __NT__ )
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 void GUISetCtl3dUnregister( BOOL (_DLLFAR PASCAL *func)(HANDLE) )
 {
     Ctl3dUnregister = func;
 }
 
-bool GUICtl3dUnregister( void )
-{
-    if( Ctl3dUnregister != NULL ) {
-        return( (*Ctl3dUnregister)( GUIMainHInst ) != 0 );
-    }
-    return( false );
-}
-
 void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND, WORD ) )
 {
     Ctl3dSubclassDlg = func;
-}
-
-bool GUICtl3dSubclassDlg( HWND hwnd, WORD word )
-{
-    if( Ctl3dSubclassDlg != NULL ) {
-        return( (*Ctl3dSubclassDlg)( hwnd, word ) != 0 );
-    }
-    return( false );
 }
 
 void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void) )
@@ -213,9 +199,43 @@ void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) 
 
 #endif
 
+bool GUICtl3dUnregister( void )
+{
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
+    if( Ctl3dUnregister != NULL ) {
+        return( (*Ctl3dUnregister)( GUIMainHInst ) != 0 );
+    }
+#endif
+    return( false );
+}
+
+bool GUICtl3dSubclassDlg( HWND hwnd, WORD word )
+{
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
+    if( Ctl3dSubclassDlg != NULL ) {
+        return( (*Ctl3dSubclassDlg)( hwnd, word ) != 0 );
+    }
+#else
+    hwnd = hwnd; word = word;
+#endif
+    return( false );
+}
+
+bool GUICtl3dSubclassDlgAll( HWND hwnd )
+{
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
+    if( Ctl3dSubclassDlg != NULL ) {
+        return( (*Ctl3dSubclassDlg)( hwnd, ctl3dsubclassdlg_allflags ) != 0 );
+    }
+#else
+    hwnd = hwnd;
+#endif
+    return( false );
+}
+
 bool GUICtl3dSubclassCtl( HWND hwnd )
 {
-#if !defined( __OS2_PM__ )
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
     if( Ctl3dSubclassCtl != NULL ) {
         return( (*Ctl3dSubclassCtl)( hwnd ) != 0 );
     }
@@ -227,7 +247,7 @@ bool GUICtl3dSubclassCtl( HWND hwnd )
 
 bool GUICtl3dColorChange( void )
 {
-#if !defined( __OS2_PM__ )
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
     if( Ctl3dColorChange != NULL ) {
         return( (*Ctl3dColorChange)() != 0 );
     }
@@ -237,7 +257,7 @@ bool GUICtl3dColorChange( void )
 
 HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp )
 {
-#if !defined( __OS2_PM__ )
+#if !defined( __OS2_PM__ ) && !defined( _WIN64 )
     if( Ctl3dCtlColorEx != NULL ) {
         return( (*Ctl3dCtlColorEx)( wm, wp, lp ) );
     }
