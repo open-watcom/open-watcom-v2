@@ -31,8 +31,8 @@ msgfiles = &
 !inject about.obj     nt win
 !inject alias.obj     nt win
 !inject bitmap.obj    nt win
-!inject ctl3d32.obj   nt win
-!inject ctl3dcvr.obj  nt win
+!inject ctl3d32.obj              win386
+!inject ctl3dcvr.obj  nt win os2
 !inject dbg386.obj               windbg
 !inject desknt.obj    nt win
 !inject dlgmod.obj    nt win

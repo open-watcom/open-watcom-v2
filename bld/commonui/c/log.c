@@ -38,6 +38,7 @@
 #include "wio.h"
 #include "bool.h"
 #include "watcom.h"
+#include "wpi.h"
 #include "log.h"
 #include "mem.h"
 #ifndef NOUSE3D

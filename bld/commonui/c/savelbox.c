@@ -39,6 +39,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "bool.h"
+#include "wpi.h"
 #include "savelbox.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

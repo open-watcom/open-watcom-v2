@@ -33,10 +33,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "bool.h"
+#include "wpi.h"
 #include "about.h"
 #include "aboutdlg.h"
 #ifndef NOUSE3D
-  #include "ctl3dcvr.h"
+#include "ctl3dcvr.h"
 #endif
 #include "ldstr.h"
 #include "uistr.gh"

@@ -36,22 +36,28 @@
 #include <ctl3d.h>
 #endif
 
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 #define C3D_EXPORT  WINAPI
+#else
+#define C3D_EXPORT
+#endif
 
-extern int C3D_EXPORT       CvrCtl3DInit( HINSTANCE );
-extern void C3D_EXPORT      CvrCtl3DFini( HINSTANCE );
-extern BOOL C3D_EXPORT      CvrCtl3dSubclassDlg( HWND, WORD );
-extern BOOL C3D_EXPORT      CvrCtl3dSubclassDlgEx( HWND, DWORD );
+extern int C3D_EXPORT       CvrCtl3DInit( WPI_INST );
+extern void C3D_EXPORT      CvrCtl3DFini( WPI_INST );
+extern bool C3D_EXPORT      CvrCtl3dSubclassDlg( HWND, WORD );
+extern bool C3D_EXPORT      CvrCtl3dSubclassDlgAll( HWND );
+extern bool C3D_EXPORT      CvrCtl3dSubclassDlgEx( HWND, DWORD );
+extern bool C3D_EXPORT      CvrCtl3dSubclassDlgExAll( HWND );
 extern WORD C3D_EXPORT      CvrCtl3dGetVer( void );
-extern BOOL C3D_EXPORT      CvrCtl3dEnabled( void );
+extern bool C3D_EXPORT      CvrCtl3dEnabled( void );
 extern HBRUSH C3D_EXPORT    CvrCtl3dCtlColor( HDC, LONG );
 extern HBRUSH C3D_EXPORT    CvrCtl3dCtlColorEx( UINT, WPARAM, LPARAM );
-extern BOOL C3D_EXPORT      CvrCtl3dColorChange( void );
-extern BOOL C3D_EXPORT      CvrCtl3dSubclassCtl( HWND );
+extern bool C3D_EXPORT      CvrCtl3dColorChange( void );
+extern bool C3D_EXPORT      CvrCtl3dSubclassCtl( HWND );
 extern LONG C3D_EXPORT      CvrCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
-extern BOOL C3D_EXPORT      CvrCtl3dAutoSubclass( HANDLE );
-extern BOOL C3D_EXPORT      CvrCtl3dRegister( HANDLE );
-extern BOOL C3D_EXPORT      CvrCtl3dUnregister( HANDLE );
+extern bool C3D_EXPORT      CvrCtl3dAutoSubclass( WPI_INST );
+extern bool C3D_EXPORT      CvrCtl3dRegister( WPI_INST );
+extern bool C3D_EXPORT      CvrCtl3dUnregister( WPI_INST );
 extern VOID C3D_EXPORT      CvrCtl3dWinIniChange( void );
 
 #endif /* _CTL3DCVR_H_INCLUDED */

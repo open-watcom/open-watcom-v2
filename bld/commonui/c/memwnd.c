@@ -40,6 +40,7 @@
 #include <io.h>
 #include <time.h>
 #include "bool.h"
+#include "wpi.h"
 #include "font.h"
 #include "segmem.h"
 #include "mem.h"
