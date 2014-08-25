@@ -41,7 +41,8 @@
 #include "guicombo.h"
 #include "guimapky.h"
 #include "guixdlg.h"
-#include "guixhook.h"
+//#include "guixhook.h"
+#include "ctl3dcvr.h"
 #include "guirdlg.h"
 
 extern  WPI_INST        GUIMainHInst;
@@ -420,7 +421,7 @@ WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
     WPI_PROC old;
     WPI_PROC new;
 
-    //GUICtl3dSubclassCtl( hwnd );
+    //CvrCtl3dSubclassCtl( hwnd );
 
     switch( control_class ) {
     case GUI_EDIT_COMBOBOX :

@@ -1,4 +1,4 @@
-#pmake: cpu_mps os_linux
+#pmake: nobuild cpu_mps os_linux
 
 host_os  = linux
 host_cpu = mps

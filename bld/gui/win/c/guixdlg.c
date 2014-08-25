@@ -44,7 +44,8 @@
 #include "guiscale.h"
 #include "guistr.h"
 #include "guixwind.h"
-#include "guixhook.h"
+//#include "guixhook.h"
+#include "ctl3dcvr.h"
 #include "guipaint.h"
 #include "guimapky.h"
 #include "guirdlg.h"
@@ -104,7 +105,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id )
     }
     /* will subclass if required */
     item->call_back = GUIDoSubClass( ctrl, item->control_class );
-    GUICtl3dSubclassCtl( ctrl );
+    CvrCtl3dSubclassCtl( ctrl );
     switch( item->control_class ) {
     case GUI_CHECK_BOX :
     case GUI_RADIO_BUTTON :
@@ -351,7 +352,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         break;
 #endif
     case WM_SYSCOLORCHANGE:
-        GUICtl3dColorChange();
+        CvrCtl3dColorChange();
         break;
     case WM_INITDIALOG:
         /* must return false or Windows will set input focus to the

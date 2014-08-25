@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include "wio.h"
+#include "wresdefn.h"
 #include "clibext.h"
 
 #include "wressetr.h"
@@ -52,13 +53,6 @@
 
 #define NO_RES_MESSAGE_PREFIX "Error: could not open message resource file ("
 #define NO_RES_MESSAGE_SUFFIX ")." _newline
-
-#ifndef RT_DIALOG
-#define RT_DIALOG       5
-#endif
-#ifndef RT_MENU
-#define RT_MENU         4
-#endif
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  bool            GUIMsgInitFlag = false;

@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "wresdefn.h"
 #include "samprc.h"
 #include "gui.rc"
 
@@ -10,6 +10,8 @@ END
 #include "../sample.dlg"
 
 #include "../sample.men"
+
+#ifdef WINRC
 
 CLOSEBMP        BITMAP "closebmp.bmp"
 
@@ -31,3 +33,4 @@ WIN3            ICON "../res/win/win3.ico"
 MAIN            ICON "../res/win/main.ico"
 DLG             ICON "../res/win/dlg.ico"
 
+#endif

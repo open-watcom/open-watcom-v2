@@ -33,12 +33,6 @@
 #ifndef _GUIXHOOK_H_
 #define _GUIXHOOK_H_
 
-#ifdef __WINDOWS_386__
-    #define _DLLFAR
-#else
-    #define _DLLFAR     FAR
-#endif
-
 extern void GUISetMDIProcessMessage( bool (*func)(gui_window *, HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2, WPI_MRESULT *) );
 extern bool GUIMDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg,
                                   WPI_PARAM1 wparam, WPI_PARAM2 lparam, WPI_MRESULT *ret );
@@ -59,18 +53,4 @@ extern void GUISetResizeStatus( void (*func)( gui_window * ) );
 extern void GUIFreeStatus( void );
 extern void GUISetFreeStatus( void (*func)( void ) );
 
-/* 3D control functions */
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
-extern void GUISetCtl3dUnregister( BOOL (_DLLFAR PASCAL *func)(HANDLE) );
-extern void GUISetCtl3dSubclassDlg( BOOL (_DLLFAR PASCAL *func)( HWND ,WORD ) );
-extern void GUISetCtl3dColorChange( BOOL (_DLLFAR PASCAL *func)(void));
-extern void GUISetCtl3dSubclassCtl( BOOL (_DLLFAR PASCAL *func)(HWND) );
-extern void GUISetCtl3dCtlColorEx( HBRUSH (_DLLFAR PASCAL *func)(UINT, WPARAM, LPARAM) );
-#endif
-extern bool GUICtl3dUnregister( void );
-extern bool GUICtl3dSubclassDlg( HWND hwnd, WORD word );
-extern bool GUICtl3dSubclassDlgAll( HWND hwnd );
-extern bool GUICtl3dSubclassCtl( HWND hwnd );
-extern bool GUICtl3dColorChange( void );
-extern HBRUSH GUICtl3dCtlColorEx( UINT wm, WPARAM wp, LPARAM lp );
 #endif // _GUIXHOOK_H_

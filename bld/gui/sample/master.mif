@@ -1,53 +1,53 @@
 proj_name = sample
 name = sample
 
-!include cproj.mif
-!include defrule.mif
-!include deftarg.mif
-
-LNK=sample.lnk
-
 !ifeq type win
-rcopt += -I"$(gui_dir)/$(type)" -I"$(gui_dir)/h" $(inc_dirs_sys)
-!else
-rcopt += -I"$(gui_dir)/$(type)" -I"$(gui_dir)/win" -I"$(gui_dir)/h" -I"$(lang_root)/h/win"
+sys_windowed = 1
 !endif
 
-inc_dirs = -I"$(gui_dir)/h" -I"$(gui_dir)/$(type)/h"
-
-objs =                  &
-        dlgstat.obj     &
-        dlgdynam.obj    &
-        dlgtest.obj     &
-        sampdef.obj     &
-        sample.obj
-
-!ifndef ext
-ext = exe
+!ifndef sample_autodepends
+sample_autodepends = .AUTODEPEND
 !endif
 
-!ifeq type win
-uilib =
-guilib = $(gui_dir)/win/$(host_os)$(host_cpu)/gui.lib
-!else
-uilib = $(ui_dir)/$(os)/$(host_os)$(host_cpu)/ui.lib
-guilib = $(gui_dir)/ui/$(host_os)$(host_cpu)/gui.lib
-!endif
-
-
-!ifeq type win
 !ifeq os pm
 rcname=$(name)pm
 !else
 rcname=$(name)
 !endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include $(commonui_dir)/client.mif
+!include $(gui_dir)/client.mif
+!include $(ui_dir)/client.mif
+
+!include wres.mif
+
+LNK=sample.lnk
+
+!ifeq sys_windowed 1
+gui_type_inc_dirs = -I"$(gui_dir)/win/h"
 !else
-rcname=$(name)
+gui_type_inc_dirs = -I"$(gui_dir)/ui/h"
 !endif
 
-!ifeq sys nlm
+inc_dirs = -I. -I"../h" $(gui_inc_dirs) $(gui_type_inc_dirs)
+rcopt = $(inc_dirs) $(commonui_inc_dirs) $(inc_dirs_sys) -I"../res/$(type)" -I"../res" -I"$(watcom_dir)/h"
 
-$(LNK): $(__makefiles__)
+objs =  dlgstat.obj     &
+        dlgdynam.obj    &
+        dlgtest.obj     &
+        sampdef.obj     &
+        sample.obj
+
+###############
+sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res
+!ifndef __WATCOM__
+        $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
+!else
+!ifeq sys nlm
         @%append $(LNK) debug novell
         @%append $(LNK) name sample
         @%append $(LNK) module clib
@@ -56,11 +56,7 @@ $(LNK): $(__makefiles__)
         @%append $(LNK) libpath %WATCOM%\lib386\netware
         @%append $(LNK) import @%WATCOM%\novi\clib.imp
         @%append $(LNK) import @$(ui_dir)\$(os)\uinlm.imp
-        set lib=$(watcomlib);$(%lib)
-
 !else
-
-$(LNK): $(__makefiles__)
         @%write $(LNK) sys $(sys)
 !ifndef axp
         @%append $(LNK) debug all
@@ -68,40 +64,22 @@ $(LNK): $(__makefiles__)
         @%append $(LNK) debug codeview
 !endif
         @%append $(LNK) option map $(extra_option)
-        @%append $(LNK) name sample
-!ifeq type win
+        @%append $(LNK) name $@
         @%append $(LNK) option symfile=$(name).sym
-!endif
-!ifdef watcomlib
-        @%append $(LNK) libpath $(watcomlib)
-!endif
-        @%append $(LNK) library $(guilib)
-!ifneq type win
-        @%append $(LNK) library $(uilib)
-!endif
-!ifdef extra_lib
-        @%append $(LNK) library $(extra_lib)
-!endif
-!ifdef wreslib
-        @%append $(LNK) library $(wreslib)
-!endif
+        @%append $(LNK) library {$(gui_lib) $(ui_lib) $(wres_lib)}
         @for %i in ($(objs)) do @%append $(LNK) file %i
 !ifneq type win
 !ifeq sys windows
         @%append $(LNK) import DEATH GDI.121 import RESURRECTION GDI.122
 !endif
 !endif
-
 !endif
-
-###############
-sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
         $(wbind) $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
 !else
-        $(rc) $(rcname).res $@
+        $(rc) -k $(rcname).res $@
 !endif
 !else
 !ifeq sys pharlap
@@ -109,14 +87,15 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(rcname).res $(LNK)
 !endif
         $(wstrip) -q -a -r $@ . $(rcname).res
 !endif
+!endif
 
 ################
-pmsample.$(ext) : pmsample.obj $(guilib) $(uilib) $(LNK)
+pmsample.exe : pmsample.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK)
         @%append $(LNK) file pmsample.obj
         $(linker) @$(LNK)
 
 ################
-samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
+samp2.exe : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK)
         @%append $(LNK) file samp2.obj
         $(linker) @$(LNK)
 
@@ -125,7 +104,7 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
 
 $(rcname).res : ../$(rcname).rc ../$(rcname).dlg
 !ifeq type win
-        $(rc) $(rc_flags) $(rcopt) $[@ -fo=$^@
+        $(rc) $(rc_flags) -DWINRC $(rcopt) $[@ -fo=$^@
 !else
         $(rc_aui) $(rcopt) $[@ -fo=$^@
 !endif

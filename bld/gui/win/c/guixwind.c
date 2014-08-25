@@ -49,6 +49,7 @@
 #include "guifont.h"
 #include "guistr.h"
 #include "guixhook.h"
+#include "ctl3dcvr.h"
 #include "guihook.h"
 #include "guicolor.h"
 #include "guicontr.h"
@@ -251,7 +252,7 @@ void GUICleanup( void )
     GUILoadStrFini();
     GUISysFini();
     GUIFiniDialog();
-    GUICtl3dUnregister();
+    CvrCtl3dUnregister( GUIMainHInst );
 }
 
 #ifdef __OS2_PM__
@@ -993,7 +994,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
     //case WM_CTLCOLORLISTBOX :
     case WM_CTLCOLORSTATIC :
     //case WM_CTLCOLOREDIT :
-        ret = (WPI_MRESULT)GUICtl3dCtlColorEx( msg, wparam, lparam );
+        ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
         if( ret == (WPI_MRESULT)NULL ) {
             SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
                         GUIGetBack( wnd, GUI_BACKGROUND ) ) );
@@ -1009,7 +1010,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         case CTLCOLOR_LISTBOX :
         case CTLCOLOR_MSGBOX :
         case CTLCOLOR_STATIC :
-            ret = (WPI_MRESULT)GUICtl3dCtlColorEx( msg, wparam, lparam );
+            ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
             if( ret == (HBRUSH)NULL ) {
                 SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam,
                             GUIGetBack( wnd, GUI_BACKGROUND ) ) );

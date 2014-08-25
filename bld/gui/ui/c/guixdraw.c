@@ -141,18 +141,18 @@ extern gui_window *GUICurrWnd;
 void GUIInitDrawingChars( bool dbcs )
 {
 #ifdef __LINUX__
-    #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
-    #include "guidraw.h"
-    #undef draw_pick
+    #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = e;
+    #include "_guidraw.h"
+    #undef pick
 #else
     if( dbcs ) {
-        #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = c;
-        #include "guidraw.h"
-        #undef draw_pick
+        #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = c;
+        #include "_guidraw.h"
+        #undef pick
     } else {
-        #define draw_pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = b;
-        #include "guidraw.h"
-        #undef draw_pick
+        #define pick( a,b,c,d,e ) DrawingChars[DRAW_##a] = b;
+        #include "_guidraw.h"
+        #undef pick
     }
 #endif
 }

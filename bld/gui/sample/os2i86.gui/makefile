@@ -1,10 +1,9 @@
-host_os  = os2
+#pmake/150: nobuild cpu_i86 os_os2
 host_cpu = i86
+host_os  = os2
 
 type = win
 os   = pm
 sys  = os2_pm
-
-all : sample.exe
 
 !include ../master.mif

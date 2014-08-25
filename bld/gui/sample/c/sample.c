@@ -1629,7 +1629,7 @@ void GUImain( void )
 
     GUIWndInit( 300, GUI_GMOUSE );
     GUI3DDialogInit();
-    #if mdi
+#if mdi
     GUIMDIInitMenuOnly();
     //GUIMDIInit();
 #endif

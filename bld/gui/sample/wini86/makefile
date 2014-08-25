@@ -2,7 +2,7 @@
 host_cpu = i86
 host_os  = win
 
-type = win
+type = ui
 os   = win
 sys  = windows
 

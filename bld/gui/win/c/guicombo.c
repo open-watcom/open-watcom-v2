@@ -34,7 +34,8 @@
 #include <string.h>
 #include "guicombo.h"
 #include "guicontr.h"
-#include "guixhook.h"
+//#include "guixhook.h"
+#include "ctl3dcvr.h"
 #include "wprocmap.h"
 
 extern  controls_struct GUIControls[];
@@ -63,7 +64,7 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( !strcmp( buff, GUIControls[GUI_EDIT].classname ) ) {
         info->success = true;
         info->old = GUIDoSubClass( hwnd, GUI_EDIT );
-        //GUICtl3dSubclassCtl( hwnd );
+        //CvrCtl3dSubclassCtl( hwnd );
     }
 #endif
     return( TRUE );
