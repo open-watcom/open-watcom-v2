@@ -60,8 +60,7 @@ BOOL Init32Ctl3d( void )
         FreeLibrary( dllCtl3d );
         return( FALSE );
     }
-    DLL32Ctl3dSubclassDlg = GetIndirectFunctionHandle( ptr, INDIR_WORD, INDIR_WORD,
-                                                       INDIR_ENDLIST );
+    DLL32Ctl3dSubclassDlg = GetIndirectFunctionHandle( ptr, INDIR_WORD, INDIR_WORD, INDIR_ENDLIST );
 
     ptr = GetProcAddress( dllCtl3d, "Ctl3dAutoSubclass" );
     if( ptr == NULL ) {

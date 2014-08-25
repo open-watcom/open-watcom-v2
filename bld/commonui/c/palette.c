@@ -38,8 +38,8 @@
  */
 HPALETTE CreateDIBPalette( BITMAPINFO *info )
 {
-    unsigned            num_colours;
-    unsigned            i;
+    DWORD               num_colours;
+    DWORD               i;
     LOGPALETTE          *palette;
     HPALETTE            palette_handle;
     RGBQUAD             *quads;
@@ -56,7 +56,7 @@ HPALETTE CreateDIBPalette( BITMAPINFO *info )
         if( palette == NULL ) {
             return( (HPALETTE)0 );
         }
-        palette->palNumEntries = num_colours;
+        palette->palNumEntries = (WORD)num_colours;
         palette->palVersion = 0x300;
 
         quads = &info->bmiColors[0];

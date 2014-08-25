@@ -83,7 +83,7 @@ typedef struct memdata {
     HWND            scrlbar;                /* handle of scroll bar */
     HWND            parent;                 /* parent of this window */
     HWND            dialog;                 /* handle of mem info wnd */
-    WORD            width;
+    int             width;
     bool            isdpmi      : 1;        /* is this a dpmi item */
     bool            maximized   : 1;        /* is window maximized */
     bool            autopos     : 1;        /* is memory info window auto positioned */
@@ -101,8 +101,8 @@ typedef enum {
 typedef struct memconfig {
     int         xpos;                   /* x coordinate of mem window */
     int         ypos;                   /* y coordinate of mem window */
-    WORD        xsize;                  /* width of mem window */
-    WORD        ysize;                  /* height of mem window */
+    int         xsize;                  /* width of mem window */
+    int         ysize;                  /* height of mem window */
     WORD        disp_type;              /* display bytes, words, dwords */
     WORD        code_disp_type;         /* display 16 or 32 bit code */
     MultWnd     allowmult;              /* what to do when the user tries

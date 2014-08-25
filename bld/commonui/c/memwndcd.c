@@ -248,7 +248,7 @@ void DumpMemAsm( MemWndInfo *info, int hdl )
         sprintf( buf, "%08lX  ", _Offset );
         MiscDoCode( &ins, Is32Bit, &DisasmInfo );
         MiscFormatIns( buf + 10 , &ins, 0, &DisasmInfo );
-        len = strlen( buf );
+        len = (unsigned)strlen( buf );
         write( hdl, buf, len );
         write( hdl, "\n", 1 );
     }
@@ -314,7 +314,7 @@ static void genBackup( AsmInfo *asm )
             cnt--;
         }
         asm->usage_cnt++;
-        wptr[asm->usage_cnt] = _Offset;
+        wptr[asm->usage_cnt] = (WORD)_Offset;
     }
 
 } /* genBackup */

@@ -53,8 +53,8 @@
  */
 static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
 {
-    int         i;
-    int         count;
+    LRESULT     i;
+    LRESULT     count;
     FILE        *f;
     char        str[256];
 

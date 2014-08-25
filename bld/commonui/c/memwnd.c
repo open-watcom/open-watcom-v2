@@ -71,8 +71,8 @@
  */
 #define NO_DATA_SPACE   12
 
-WORD                    FontWidth = 8;
-WORD                    FontHeight = 15;
+int                     FontWidth = 8;
+int                     FontHeight = 15;
 
 static  HFONT           CurFont;
 static  HWND            CurWindow;
@@ -136,7 +136,7 @@ DWORD ReadMem( WORD sel, DWORD off, void *buff, DWORD size )
     size++;
     while( bytesread != size && size != 0 ) {
         size--;
-        ReadProcessMemory( ProcessHdl, (LPCSTR)off, buff, size, &bytesread );
+        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_int)off, buff, size, &bytesread );
     }
     return( bytesread );
 
@@ -260,7 +260,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, bool gen_name )
     DWORD       offset;
     DWORD       limit;
     int         hdl;
-    size_t      len;
+    unsigned    len;
     bool        ret;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
@@ -290,7 +290,7 @@ static void MemSave( MemWndInfo *info, HWND hwnd, bool gen_name )
                 limit = info->limit;
                 while( offset < limit ) {
                     genLine( 16, limit, info->disp_type, info->sel, Buffer, offset );
-                    len = strlen( Buffer );
+                    len = (unsigned)strlen( Buffer );
                     write( hdl, Buffer, len );
                     write( hdl, "\n", 1 );
                     offset += 16;
@@ -320,7 +320,7 @@ bool RegMemWndClass( HANDLE instance )
     wc.hInstance = instance;
     wc.hIcon = NULLHANDLE;
     wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
+    wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_WINDOW + 1);
     wc.lpszMenuName = "MEMINFOMENU";
     wc.lpszClassName = MEM_DISPLAY_CLASS;
     return( RegisterClass( &wc ) != 0 );
@@ -584,7 +584,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
         DrawText( dc, Buffer, -1, &area, DT_LEFT | DT_NOCLIP );
         fill.top = area.top;
         fill.bottom = area.bottom;
-        GetTextExtentPoint( dc, Buffer, strlen( Buffer ), &txtsize );
+        GetTextExtentPoint( dc, Buffer, (int)strlen( Buffer ), &txtsize );
         fill.left = area.left + txtsize.cx;
         FillRect( dc, &fill, wbrush );
         area.top += FontHeight;
@@ -595,7 +595,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
             break;
         }
     }
-    if( area.top < (info->lastline + 1) * FontHeight ) {
+    if( area.top < ((long)info->lastline + 1) * FontHeight ) {
         area.bottom = (info->lastline + 1) * FontHeight;
         FillRect( dc, &area, wbrush );
     }
@@ -607,9 +607,9 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
 /*
  * bytesToDisplay
  */
-static unsigned bytesToDisplay( unsigned width, WORD type )
+static unsigned char bytesToDisplay( int width, WORD type )
 {
-    unsigned    bytes;
+    int     bytes;
 
     bytes = width / FontWidth;
     if( bytes < NO_DATA_SPACE ) {
@@ -635,7 +635,7 @@ static unsigned bytesToDisplay( unsigned width, WORD type )
     if( bytes > MAX_BYTES ) {
         bytes = MAX_BYTES;
     }
-    return( bytes );
+    return( (unsigned char)bytes );
 
 } /* bytesToDisplay */
 
@@ -649,12 +649,12 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
 {
     bool        owndc;
     RECT        rect;
-    WORD        width;
-    WORD        height;
+    int         width;
+    int         height;
     HFONT       old_font;
     unsigned    lines;
     bool        need_scrlbar;
-    unsigned    scrl_width;
+    int         scrl_width;
     SIZE        fontsize;
 
     if( dc == NULL ) {
@@ -667,8 +667,8 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
     CurFont = GetMonoFont();
     old_font = SelectObject( dc, GetMonoFont() );
     GetTextExtentPoint( dc, "0000000000", 10, &fontsize );
-    FontWidth = fontsize.cx / 10;
-    FontHeight = fontsize.cy;
+    FontWidth = (int)( fontsize.cx / 10 );
+    FontHeight = (int)fontsize.cy;
 
     GetClientRect( hwnd, &rect );
     width = rect.right - rect.left;
@@ -681,7 +681,7 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
      */
     info->bytesdisp = bytesToDisplay( width, info->disp_type );
     lines = info->limit / info->bytesdisp;
-    if( (info->limit - info->base) % info->bytesdisp != 0 ) {
+    if( ( ( info->limit - info->base ) % info->bytesdisp ) != 0 ) {
         lines++;
     }
     if( ISCODE( info ) ) {
@@ -702,7 +702,7 @@ static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info )
     } else {
         ShowWindow( info->scrlbar, SW_HIDE );
     }
-    info->offset -= (info->offset - info->base) % info->bytesdisp;
+    info->offset -= ( info->offset - info->base ) % info->bytesdisp;
     info->width = width;
     SelectObject( dc, old_font );
     if( owndc ) {
@@ -873,7 +873,7 @@ WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             if( ISCODE( info ) ) {
                 info->ins_cnt = GetInsCnt( info, offset );
             } else {
-                offset -= (offset - info->base) % info->bytesdisp;
+                offset -= ( offset - info->base ) % info->bytesdisp;
                 info->offset = offset;
             }
             dc = GetDC( parent );
@@ -1048,7 +1048,7 @@ WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, L
             menu = GetMenu( hwnd );
             CheckMenuItem( menu, info->disp_type, MF_UNCHECKED );
             CheckMenuItem( menu, cmd, MF_CHECKED );
-            info->disp_type = wparam;
+            info->disp_type = cmd;
             GetClientRect( hwnd, &area );
             size = MAKELONG( area.right - area.left, area.bottom - area.top );
             wbrush = GetStockObject( WHITE_BRUSH );
@@ -1311,7 +1311,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
         SetDefMemConfig();
     }
     maximize = MemConfigInfo.maximized;
-    if( CurWindow != NULL ) {
+    if( CurWindow != NULLHANDLE ) {
         if( MemConfigInfo.allowmult == WND_REPLACE ) {
             SendMessage( CurWindow, WM_CLOSE, 0, 0L );
         } else if( MemConfigInfo.allowmult == WND_SINGLE ) {
@@ -1320,8 +1320,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     }
     info = MemAlloc( sizeof( MemWndInfo ) );
     if( info == NULL ) {
-        RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname,
-                      MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
+        RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         return( NULLHANDLE );
     }
     info->sel = seg;
@@ -1361,7 +1360,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     info->asm = NULL;
     if( MemConfigInfo.allowmult != WND_MULTI ) {
         info->curwnd = true;
-        CurWindow = hdl;
+        CurWindow = NULLHANDLE;
     } else {
         info->curwnd = false;
     }
@@ -1369,9 +1368,8 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     hdl = CreateWindow(
         MEM_DISPLAY_CLASS,      /* Window class name */
         buf,                    /* Window caption */
-        WS_OVERLAPPED | WS_CAPTION |
-        WS_SYSMENU | WS_THICKFRAME |
-        WS_MAXIMIZEBOX,         /* Window style */
+                                /* Window style */
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX,
         0,                      /* Initial X position */
         0,                      /* Initial Y position */
         0,                      /* Initial X size */
@@ -1380,9 +1378,8 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
         NULLHANDLE,             /* Window menu handle */
         instance,               /* Program instance handle */
         info );                 /* Create parameters */
-    if( hdl == NULL || info->scrlbar == NULL ) {
-        RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname,
-                      MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
+    if( hdl == NULLHANDLE || info->scrlbar == NULL ) {
+        RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         DestroyWindow( hdl );
         MemFree( info );
         return( NULLHANDLE );
@@ -1404,8 +1401,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
 /*
  * DispNTMem
  */
-HWND DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset,
-                DWORD limit, char *title )
+HWND DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title )
 {
     HWND        ret;
 

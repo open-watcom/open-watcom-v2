@@ -32,7 +32,9 @@
 #ifndef _CTL3DCVR_H_INCLUDED
 #define _CTL3DCVR_H_INCLUDED
 
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 #include <ctl3d.h>
+#endif
 
 #define C3D_EXPORT  WINAPI
 

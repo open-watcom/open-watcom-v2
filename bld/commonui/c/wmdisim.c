@@ -150,8 +150,7 @@ static void doMaximize( HWND hwnd )
     if( mdiInfo.start_max_restore != NULL ) {
         mdiInfo.start_max_restore( hwnd );
     }
-
-    iconic = _wpi_isiconic( hwnd );
+    iconic = ( _wpi_isiconic( hwnd ) != 0 );
     if( iconic ) {
         _wpi_getrestoredrect( hwnd, &md->orig_size );
     } else {
@@ -425,10 +424,9 @@ void SetSystemMenu( HWND hwnd )
     getMenuBitmaps();
 #ifndef __OS2_PM__
     if( sys_menu != NULL ) {
-        ModifyMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP,
-                    (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
+        ModifyMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
     } else {
-        ModifyMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, -1, (LPVOID)closeBitmap );
+        ModifyMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
     }
 #else
     if( sys_menu != NULLHANDLE ) {
@@ -535,13 +533,11 @@ static void setMaximizedMenuConfig( HWND hwnd )
         insertedItems = true;
         sys_menu = generateSystemMenu( hwnd );
         if( sys_menu != NULL ) {
-            InsertMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP,
-                        (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
+            InsertMenu( menu, 0, MF_POPUP | MF_BYPOSITION | MF_BITMAP, (UINT_PTR)sys_menu, (LPVOID)closeBitmap );
         } else {
-            InsertMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, -1, (LPVOID)closeBitmap );
+            InsertMenu( menu, 0, MF_BYPOSITION | MF_BITMAP, (UINT_PTR)-1, (LPVOID)closeBitmap );
         }
-        InsertMenu( menu, -1, MF_HELP | MF_BYPOSITION | MF_BITMAP, SC_RESTORE,
-                    (LPVOID)restoreBitmap );
+        InsertMenu( menu, (UINT)-1, MF_HELP | MF_BYPOSITION | MF_BITMAP, SC_RESTORE, (LPVOID)restoreBitmap );
         _wpi_drawmenubar( mdiInfo.root );
     }
 #else
@@ -1065,7 +1061,7 @@ bool MDIChildHandleMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         }
         break;
     case WM_NCLBUTTONDBLCLK:
-        iconic = _wpi_isiconic( currentWindow );
+        iconic = ( _wpi_isiconic( currentWindow ) != 0 );
         if( !childrenMaximized && (wparam == HTCAPTION) && iconic ) {
             _wpi_sendmessage( currentWindow, WM_SYSCOMMAND, SC_MAXIMIZE, 0L );
             *lrc = 0;
@@ -1097,8 +1093,7 @@ void MDIContainerResized( void )
         md = mdiHead;
         while( md != NULL ) {
             if( _wpi_isiconic( md->hwnd ) ) {
-                _wpi_movewindow( md->hwnd, 0, 0, right - left + 1,
-                                 bottom - top + 1, TRUE );
+                _wpi_movewindow( md->hwnd, 0, 0, right - left + 1, bottom - top + 1, TRUE );
             }
             md = md->next;
         }

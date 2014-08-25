@@ -75,8 +75,7 @@ static statwnd                  *currentStatWnd;
  */
 static void getRect( statwnd *sw, WPI_RECT *r, int i )
 {
-    WORD        pos;
-    WORD        width;
+    WPI_RECTDIM pos;
     WPI_RECTDIM left;
     WPI_RECTDIM right;
     WPI_RECTDIM top;
@@ -87,12 +86,15 @@ static void getRect( statwnd *sw, WPI_RECT *r, int i )
     WPI_RECTDIM r_bottom;
 
     *r = sw->statusRect;
-    width = _wpi_getwidthrect( sw->statusRect );
     _wpi_getrectvalues( sw->statusRect, &left, &top, &right, &bottom );
     _wpi_getrectvalues( *r, &r_left, &r_top, &r_right, &r_bottom );
     if( i > 0 ) {
         if( sw->sectionDesc[i - 1].width_is_percent ) {
-            pos = (WORD) (((DWORD) width * (DWORD) sw->sectionDesc[i].width) / 100L);
+            if( r_right > r_left ) {
+                pos = (WORD)( ( ( r_right - r_left ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+            } else {
+                pos = (WORD)( ( ( r_left - r_right ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+            }
         } else {
             pos = sw->sectionDesc[i - 1].width;
         }
@@ -101,7 +103,11 @@ static void getRect( statwnd *sw, WPI_RECT *r, int i )
     if( i == sw->numSections ) {
         pos = right;
     } else if( sw->sectionDesc[i].width_is_percent ) {
-        pos = (WORD) (((DWORD) width * (DWORD) sw->sectionDesc[i].width) / 100L);
+        if( r_right > r_left ) {
+            pos = (WORD)( ( ( r_right - r_left ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+        } else {
+            pos = (WORD)( ( ( r_left - r_right ) * (DWORD) sw->sectionDesc[i].width ) / 100L );
+        }
     } else {
         pos = sw->sectionDesc[i].width;
     }
@@ -612,9 +618,9 @@ void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UINT flags
     sw->sectionDataFlags[curr_block] = flags | DT_TEXTATTRS;
 
 #ifndef __NT__
-    _wpi_gettextextent( pres, buff, len, &ext, &height );
+    _wpi_gettextextent( pres, buff, (int)len, &ext, &height );
 #else
-    GetTextExtentPoint( pres, buff, len, &sz );
+    GetTextExtentPoint( pres, buff, (int)len, &sz );
     ext = sz.cx;
 #endif
     ir = *r;

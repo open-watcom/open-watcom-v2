@@ -33,6 +33,7 @@
 #include <string.h>
 #include <assert.h>
 #include "bool.h"
+#include "watcom.h"
 #include "mem.h"
 #include "toolbr.h"
 #include "loadcc.h"
@@ -108,7 +109,7 @@ static char     *containerClassName = "WToolContainer";
 static bool     toolBarClassRegistered = false;
 #endif
 
-static bool         gdiObjectsCreated;
+static bool         gdiObjectsCreated = false;
 static HPEN         blackPen;
 static HPEN         btnShadowPen;
 static HPEN         btnHighlightPen;
@@ -333,10 +334,10 @@ void ToolBarRedrawButtons( struct toolbar *bar )
  */
 toolbar *ToolBarInit( HWND parent )
 {
-    COLORREF    clr_btnface;
-    COLORREF    clr_btnshadow;
-    COLORREF    clr_btnhighlight;
-    COLORREF    clr_black;
+    COLORREF    clr_btnface = 0;
+    COLORREF    clr_btnshadow = 0;
+    COLORREF    clr_btnhighlight = 0;
+    COLORREF    clr_black = 0;
     toolbar     *bar;
 #ifndef __OS2_PM__
     /* Win16 and Win32 version of the initialization */
@@ -356,7 +357,7 @@ toolbar *ToolBarInit( HWND parent )
             wc.hInstance = instance;
             wc.hIcon = NULL;
             wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-            wc.hbrBackground = (HBRUSH)(COLOR_3DFACE + 1);
+            wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_3DFACE + 1);
             wc.lpszMenuName = NULL;
             wc.lpszClassName = containerClassName;
             RegisterClass( &wc );
@@ -372,7 +373,7 @@ toolbar *ToolBarInit( HWND parent )
             wc.hInstance = instance;
             wc.hIcon = HNULL;
             wc.hCursor = LoadCursor( (HANDLE) HNULL, IDC_ARROW );
-            wc.hbrBackground = (HBRUSH) 0;
+            wc.hbrBackground = (HBRUSH)0;
             wc.lpszMenuName = NULL;
             wc.lpszClassName = className;
             RegisterClass( &wc );
@@ -809,8 +810,7 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
                                           WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
                                           0, 0, 0, 0, bar->hwnd, NULL,
                                           GET_HINSTANCE( bar->owner ), NULL );
-            SetWindowPos( bar->tooltips, HWND_TOPMOST, 0, 0, 0, 0,
-                          SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE );
+            SetWindowPos( bar->tooltips, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE );
             SendMessage( bar->hwnd, TB_SETTOOLTIPS, (WPARAM)bar->tooltips, 0L );
         } else {
             bar->tooltips = NULL;

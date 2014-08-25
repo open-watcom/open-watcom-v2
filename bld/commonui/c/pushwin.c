@@ -31,6 +31,7 @@
 
 #include "precomp.h"
 #include <string.h>
+#include "watcom.h"
 #include "wpi.h"
 #include "bool.h"
 #include "mem.h"
@@ -95,7 +96,7 @@ bool RegPushWin( HANDLE instance )
     wc.hInstance = instance;
     wc.hIcon = NULL;
     wc.hCursor = LoadCursor( NULL, IDC_ARROW );
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hbrBackground = (HBRUSH)(pointer_int)(COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "PushWin";
     return( RegisterClass( &wc ) != 0 );

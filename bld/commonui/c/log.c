@@ -327,11 +327,9 @@ void SaveLogConfig( char *fname, char *section )
     itoa( LogCurInfo.config.def_action, buf, 10 );
     WritePrivateProfileString( section, LOG_ACTION, buf, fname );
 
-    itoa( LogCurInfo.config.query_for_name, buf, 10 );
-    WritePrivateProfileString( section, LOG_QUERY, buf, fname );
+    WritePrivateProfileString( section, LOG_QUERY, ( LogCurInfo.config.query_for_name ) ? "1" : "0", fname );
 
-    WritePrivateProfileString( section, LOG_NAME,
-                               LogCurInfo.config.name, fname );
+    WritePrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, fname );
 
 } /* SaveLogConfig */
 
@@ -342,14 +340,10 @@ void SaveLogConfig( char *fname, char *section )
 void LoadLogConfig( char *fname, char *section )
 {
     SetLogDef();
-    LogCurInfo.config.type = GetPrivateProfileInt( section,
-        LOG_TYPE, LogCurInfo.config.type, fname );
-    LogCurInfo.config.def_action = GetPrivateProfileInt( section,
-        LOG_ACTION, LogCurInfo.config.def_action, fname );
-    LogCurInfo.config.query_for_name = GetPrivateProfileInt( section,
-        LOG_QUERY, LogCurInfo.config.query_for_name, fname );
-    GetPrivateProfileString( section, LOG_NAME, LogCurInfo.config.name,
-                             LogCurInfo.config.name, LOG_MAX_FNAME, fname );
+    LogCurInfo.config.type = GetPrivateProfileInt( section, LOG_TYPE, LogCurInfo.config.type, fname );
+    LogCurInfo.config.def_action = GetPrivateProfileInt( section, LOG_ACTION, LogCurInfo.config.def_action, fname );
+    LogCurInfo.config.query_for_name = GetPrivateProfileInt( section, LOG_QUERY, LogCurInfo.config.query_for_name, fname ) != 0;
+    GetPrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, LogCurInfo.config.name, LOG_MAX_FNAME, fname );
 
 } /* LoadLogConfig */
 
