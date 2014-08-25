@@ -32,8 +32,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "pcobj.h"
 #include "watcom.h"
+#include "pcobj.h"
 #include "womp.h"
 #include "objprs.h"
 #include "memutil.h"

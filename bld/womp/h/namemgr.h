@@ -32,7 +32,7 @@
 
 #ifndef NAMEMGR_H
 #include <stddef.h>
-#include <watcom.h>
+#include "watcom.h"
 
 typedef uint_16     name_handle;
 #define NAME_NULL   0xffff

@@ -33,7 +33,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "womp.h"
 #include "genutil.h"
 #include "myassert.h"

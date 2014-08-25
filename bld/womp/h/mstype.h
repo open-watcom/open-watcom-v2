@@ -31,7 +31,7 @@
 
 
 #ifndef MSTYPE_H
-#include <watcom.h>
+#include "watcom.h"
 
 extern void MSTnewMap( void );
 extern void MSTstartType( uint_16 watidx );

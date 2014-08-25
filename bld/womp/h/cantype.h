@@ -41,7 +41,7 @@ typedef struct struct_field struct_field;
 typedef struct proc_parm    proc_parm;
 
 #include <stddef.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "canaddr.h"
 #include "namemgr.h"
 

@@ -31,7 +31,7 @@
 
 #ifndef WOMP_H
 #define WOMP_H    1
-#include <watcom.h>
+#include "watcom.h"
 
 #define _WOMP_READ              1       /* code to handle reading objs */
 #define _WOMP_WRITE             2       /* code to handle writing objs */

@@ -32,7 +32,7 @@
 
 #ifndef MEMUTIL_H
 #include <stddef.h>
-#include <watcom.h>
+#include "watcom.h"
 
 extern void MemInit( void );
 extern void MemFini( void );

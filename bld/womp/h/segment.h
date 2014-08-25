@@ -34,7 +34,7 @@
 #define SEGMENT_H   1
 typedef struct seghdr seghdr;
 
-#include <watcom.h>
+#include "watcom.h"
 #include "fixup.h"
 #include "objrec.h"
 

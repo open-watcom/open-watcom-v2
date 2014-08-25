@@ -35,7 +35,7 @@
 typedef struct addr_info    *addr_handle;
 
 #include <stddef.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "segment.h"
 #include "fixup.h"
 

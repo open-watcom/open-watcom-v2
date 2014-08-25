@@ -27,8 +27,8 @@ BEGIN
     #undef pick
 
   #if defined( JAPANESE )
-    #include "usagej.rc"
+    #include "usagej.grc"
   #else
-    #include "usage.rc"
+    #include "usage.grc"
   #endif
 END

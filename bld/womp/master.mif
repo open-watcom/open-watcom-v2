@@ -10,7 +10,7 @@ womp_autodepends = .autodepend
 
 !include wres.mif
 
-inc_dirs = -I"$(womp_dir)/h"
+inc_dirs = -I. -I"$(womp_dir)/h"
 
 .c: ../c;$(trmem_dir)
 
@@ -68,13 +68,13 @@ $(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs)
 wmpmsg.gh : $(womp_dir)/womp.msg
         awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk $[@ > $^@
 
-$(proj_name).res :  usage.rc ../h/$(proj_name).rc
+$(proj_name).res :  usage.grc ../h/$(proj_name).rc
         $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
-usage.rc : ../usage.sp
+usage.grc : ../usage.sp
     @%write usage.tmp -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
     wsplice @usage.tmp
 
-usagej.rc : ../usage.sp
+usagej.grc : ../usage.sp
     @%write usage.tmp -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
     wsplice @usage.tmp

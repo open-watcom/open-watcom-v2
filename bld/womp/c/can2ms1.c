@@ -31,7 +31,7 @@
 
 
 #include <string.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "womp.h"
 #include "msdbg.h"
 #include "canaddr.h"

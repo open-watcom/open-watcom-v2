@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include "watcom.h"
 #include "womp.h"
 #include "genutil.h"
 #include "memutil.h"

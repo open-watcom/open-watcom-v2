@@ -80,7 +80,7 @@ typedef enum cans_register_classes {
 typedef struct cansymb  *symb_handle;
 #define CANS_NULL       ((symb_handle)0)
 
-#include <watcom.h>
+#include "watcom.h"
 #include "canaddr.h"
 #include "cantype.h"
 #include "namemgr.h"

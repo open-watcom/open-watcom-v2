@@ -31,7 +31,7 @@
 
 
 #ifndef CANMISC_H
-#include <watcom.h>
+#include "watcom.h"
 
 /*
     The order of this enum is depended on in several places

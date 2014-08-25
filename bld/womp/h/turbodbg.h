@@ -32,7 +32,7 @@
 
 #ifndef TURBODBG_H
 #define TURBODBG_H  1
-#include <watcom.h>
+#include "watcom.h"
 #include "cansymb.h"
 #include "objrec.h"
 

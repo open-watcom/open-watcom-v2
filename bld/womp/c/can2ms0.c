@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <watcom.h>
+#include "watcom.h"
 #include "womp.h"
 #include "genutil.h"
 #include "msdbg.h"

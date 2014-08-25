@@ -33,7 +33,7 @@
 #ifndef OBJIO_H
 #define OBJIO_H 1
 #include <stddef.h>
-#include <watcom.h>
+#include "watcom.h"
 #include "objrec.h"
 
 typedef struct objread_buf objread_buf;

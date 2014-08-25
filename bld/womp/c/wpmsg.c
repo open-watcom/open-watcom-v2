@@ -41,10 +41,10 @@
 #include "watcom.h"
 #include "wpmsg.h"
 #include "wressetr.h"
+#include "wresset2.h"
 
 
 #define STDOUT_FILENO   1
-#define NIL_HANDLE      ((int)-1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  int             Res_Flag;
