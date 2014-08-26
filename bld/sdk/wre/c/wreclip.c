@@ -797,7 +797,7 @@ bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
     }
 
     if( ok ) {
-        ok = OpenClipboard( main );
+        ok = OpenClipboard( main ) != 0;
     }
 
     if( ok ) {
@@ -850,7 +850,7 @@ bool WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt )
         memcpy( mem, cdata, cdata->clip_size );
         GlobalUnlock( hmem );
         mem = NULL;
-        ok = OpenClipboard( main );
+        ok = OpenClipboard( main ) != 0;
     }
 
     if( ok ) {
@@ -928,7 +928,7 @@ bool WREPasteResource( HWND main )
 
     type = 0;
     clipbd_open = FALSE;
-    ok = OpenClipboard( main );
+    ok = OpenClipboard( main ) != 0;
 
     if( ok ) {
         clipbd_open = TRUE;

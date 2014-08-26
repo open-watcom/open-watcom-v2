@@ -66,7 +66,7 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-int WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
+bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
 {
     WRMFInfo    info;
     DLGPROC     proc;
@@ -74,7 +74,7 @@ int WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hc
     INT_PTR     modified;
 
     if( mflags == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     info.hcb = hcb;

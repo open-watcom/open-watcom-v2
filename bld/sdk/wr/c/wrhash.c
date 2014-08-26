@@ -143,20 +143,19 @@ static WRHashEntry *WRFindHashEntryFromName( WRHashTable *table, const char *nam
     return( NULL );
 }
 
-static int WRCompareHashEntry( void const *_e1, void const *_e2 )
+static int WRCompareHashEntry( void const *he1, void const *he2 )
 {
-    WRHashEntry * const *e1 = _e1;
-    WRHashEntry * const *e2 = _e2;
-
-    if( e1 != NULL && e2 != NULL && *e1 != NULL && *e2 != NULL ) {
-        if( (*e1)->value < (*e2)->value ) {
+#define HE(x)   (*(const WRHashEntry * const *)(x))
+    if( HE( he1 ) != NULL && HE( he2 ) != NULL ) {
+        if( HE( he1 )->value < HE( he2 )->value ) {
             return( -1 );
-        } else if( (*e1)->value > (*e2)->value ) {
+        } else if( HE( he1 )->value > HE( he2 )->value ) {
             return( 1 );
         }
     }
 
     return( 0 );
+#undef HE
 }
 
 bool WRAPI WRIsDefaultHashTable( WRHashTable *table )
@@ -227,7 +226,7 @@ bool WRAPI WRCreateDLGInclude( WResDir *dir, const char *include )
     WResID              *res;
     WResLangType        lang;
     char                *str;
-    int                 len;
+    size_t              len;
     bool                ok;
 
     type = NULL;
@@ -484,8 +483,8 @@ bool WRAPI WRWriteSymbolsToFile( WRHashTable *table, const char *filename )
     unsigned int        nhash;
     unsigned int        i;
     unsigned int        count;
-    int                 max_len;
-    int                 len;
+    size_t              max_len;
+    size_t              len;
 
     if( table == NULL || table->count == 0 || filename == NULL ) {
         return( false );
@@ -663,7 +662,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
     WRHashEntry         *entry;
     unsigned int        nhash;
     unsigned int        vhash;
-    unsigned int        size;
+    size_t              size;
     char                *symbol;
 
     if( table == NULL || name == NULL ) {
@@ -1542,7 +1541,7 @@ static void WRSetAddSymOK( HWND hDlg )
     }
 
     if( enable ) {
-        enable = WRGetSLONGFromEdit( hDlg, IDB_ADDSYM_VAL, NULL, &val );
+        enable = WRGetSLONGFromEdit( hDlg, IDB_ADDSYM_VAL, NULL, &val ) != 0;
     }
 
     EnableWindow( GetDlgItem( hDlg, IDOK ), enable );

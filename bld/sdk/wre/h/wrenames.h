@@ -50,7 +50,7 @@ typedef struct {
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool         WREInitResourceWindow( WREResInfo *, uint_16 );
-extern bool         WRESetResNamesFromType( WREResInfo *, uint_16, bool, WResID *, int );
+extern bool         WRESetResNamesFromType( WREResInfo *, uint_16, bool, WResID *, LRESULT );
 extern WRETypeName  *WREGetTypeNameFromRT( uint_16 );
 extern char         *WREGetResName( WResResNode *, uint_16 );
 

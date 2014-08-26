@@ -58,6 +58,6 @@ extern char     *WGetStrFromEdit( HWND, bool * );
 extern WResID   *WGetWResIDFromEdit( HWND, bool * );
 extern int_32   WGetSINT32FromEdit( HWND, bool * );
 
-extern char     *WGetStrFromComboLBox( HWND combo, int index );
+extern char     *WGetStrFromComboLBox( HWND combo, box_pos pos );
 
 #endif

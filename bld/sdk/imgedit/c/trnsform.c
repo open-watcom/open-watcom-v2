@@ -347,7 +347,7 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     HBITMAP     oldandrot;
     short       width;
     short       height;
-    WPI_RECT    new_rect;
+    WPI_RECT    new_rect = { 0 };
     IMGED_DIM   left;
     IMGED_DIM   top;
     IMGED_DIM   right;
@@ -410,7 +410,6 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
         }
     } else {
         rectexists = rectexists;
-        new_rect = new_rect;
         SetRectExists( FALSE );
     }
 

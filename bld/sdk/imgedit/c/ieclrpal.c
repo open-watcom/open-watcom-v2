@@ -145,16 +145,15 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
         hbrush = _wpi_createsolidbrush( GetSysColor( COLOR_BTNFACE ) );
         SetBkColor( (HDC)mp1, GetSysColor( COLOR_BTNFACE ) );
         SetTextColor( (HDC)mp1, GetSysColor( COLOR_BTNTEXT ) );
-        return( (DWORD)hbrush );
+        return( (WPI_MRESULT)hbrush );
 #else
     case WM_CTLCOLOR:
         if( HIWORD( mp2 ) == CTLCOLOR_STATIC || HIWORD( mp2 ) == CTLCOLOR_BTN ) {
             SetBkColor( (HDC)LOWORD( mp1 ), LTGRAY );
             SetTextColor( (HDC)LOWORD( mp1 ), BLACK );
-            return( (DWORD)hbrush );
-        } else {
-            return( (LRESULT)NULL );
+            return( (WPI_MRESULT)hbrush );
         }
+        break;
 #endif
 #endif
 

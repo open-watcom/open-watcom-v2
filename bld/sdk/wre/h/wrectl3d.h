@@ -33,8 +33,6 @@
 #ifndef WRECTL3D_INCLUDED
 #define WRECTL3D_INCLUDED
 
-#include <ctl3d.h>
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -50,5 +48,6 @@ extern bool WRECtl3DInit( HINSTANCE );
 extern void WRECtl3DFini( HINSTANCE );
 extern void WRECtl3dColorChange( void );
 extern void WRECtl3dSubclassDlg( HWND, WORD );
+extern void WRECtl3dSubclassDlgAll( HWND );
 
 #endif

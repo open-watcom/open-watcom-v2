@@ -292,7 +292,7 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
     }
 
     if( info != NULL ) {
-        info->is_core = core;
+        info->is_core = ( core != 0 );
     }
 
     return( bitmap_handle );

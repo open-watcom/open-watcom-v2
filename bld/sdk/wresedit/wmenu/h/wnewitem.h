@@ -50,7 +50,7 @@
 extern bool WInsertNew( WMenuEditInfo *einfo );
 extern bool WInsertNewMenuEntry( WMenuEditInfo *, bool, bool );
 extern bool WInsertMenuEntry( WMenuEditInfo *, WMenuEntry *, bool );
-extern bool WAddEditWinLBoxEntry( HWND, WMenuEntry *, int );
-extern bool WAddMenuEntriesToLBox( HWND, WMenuEntry *, int * );
+extern bool WAddEditWinLBoxEntry( HWND, WMenuEntry *, box_pos );
+extern bool WAddMenuEntriesToLBox( HWND, WMenuEntry *, box_pos * );
 
 #endif

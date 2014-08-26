@@ -601,7 +601,7 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     if( o_info->obj_id == DIALOG_OBJ ) {        /* dialog object */
 
-        if( o_info->info.d.name && o_info->info.d.name->IsName ) {
+        if( o_info->info.d.name != NULL && o_info->info.d.name->IsName ) {
             char *str1, *str2;
             int len;
             str1 = WResIDToStr( o_info->info.d.name );

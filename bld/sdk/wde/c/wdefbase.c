@@ -710,7 +710,7 @@ static BOOL enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL e
     SCR_CONFIG  scroll_config;
 
     state_handle = GetCurrFormID();
-    if( state_handle == (STATE_HDL)NULL ) {
+    if( state_handle == 0 ) {
         return( FALSE );
     }
 
@@ -788,8 +788,8 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
 
     UpdateScroll();
 
-    base_obj->has_hscroll = enablex;
-    base_obj->has_vscroll = enabley;
+    base_obj->has_hscroll = ( enablex != 0 );
+    base_obj->has_vscroll = ( enabley != 0 );
 
     return( TRUE );
 }

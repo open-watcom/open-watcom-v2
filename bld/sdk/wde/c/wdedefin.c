@@ -86,7 +86,7 @@ bool WdeDefineCurrentObject( WORD w )
         if( w != IDM_DEFINEOBJECT ) {
             old_option = WdeSetOption( WdeOptUseDefDlg, FALSE );
         }
-        ret = Define( obj, &pnt, NULL );
+        ret = Define( obj, &pnt, NULL ) != 0;
         if( w != IDM_DEFINEOBJECT ) {
             WdeSetOption( WdeOptUseDefDlg, old_option );
         }

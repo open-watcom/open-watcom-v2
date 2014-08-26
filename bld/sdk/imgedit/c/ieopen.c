@@ -545,7 +545,7 @@ BOOL ReadCursorFromData( void *data, char *fname, WRInfo *info,
 /*
  * OpenHook - hook used called by common dialog for 3D controls
  */
-BOOL CALLBACK OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
+BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -558,7 +558,7 @@ BOOL CALLBACK OpenHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
         // Only do it if NOT new shell.
         if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
 #endif
-            IECtl3dSubclassDlg( hwnd, CTL3D_ALL );
+            IECtl3dSubclassDlgAll( hwnd );
 #if defined( __NT__ )
         }
 #endif

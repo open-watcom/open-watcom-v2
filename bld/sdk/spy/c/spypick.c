@@ -119,7 +119,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
     } else {
 
 #ifdef __NT__
-        GetHexStr( id, (DWORD)framedhwnd, SPYOUT_HWND_LEN );
+        GetHexStr( id, (DWORD)(pointer_int)framedhwnd, SPYOUT_HWND_LEN );
 #else
         GetHexStr( id, (DWORD)(WORD)framedhwnd, SPYOUT_HWND_LEN );
 #endif
@@ -156,7 +156,7 @@ void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
 /*
  * PickDialog - select a window
  */
-BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
     RECT    client_rect;

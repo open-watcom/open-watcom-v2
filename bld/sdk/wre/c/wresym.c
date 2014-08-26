@@ -391,7 +391,7 @@ bool WREDeleteDLGInclude( WResDir dir )
     return( WRDeleteDLGInclude( dir ) );
 }
 
-bool WRECreateDLGInclude( WResDir *dir, char *include )
+bool WRECreateDLGInclude( WResDir *dir, const char *include )
 {
     return( WRCreateDLGInclude( dir, include ) );
 }

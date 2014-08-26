@@ -34,6 +34,7 @@
 #include <string.h>
 #include "watcom.h"
 #include "wglbl.h"
+#include "ldstr.h"
 #include "wstat.h"
 #include "wsetedit.h"
 #include "wedit.h"
@@ -73,10 +74,9 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     bool            ok;
     WAccelEntry     *entry;
     WAccelEntry     *new;
-    LRESULT         ret;
+    box_pos         pos;
 
-    new = NULL;
-
+    lbox = NULLHANDLE;
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
     if( ok ) {
@@ -84,13 +84,15 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
         ok = (lbox != NULL);
     }
 
+    new = NULL;
+    entry = NULL;
+    pos = -1;
     if( ok ) {
-        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        if( ret != LB_ERR ) {
-            entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)ret, 0 );
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        if( pos != LB_ERR ) {
+            entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
         } else {
-            entry = NULL;
-            ret = -1;
+            pos = -1;
         }
         new = WCreateNewAccelEntry( einfo );
         ok = (new != NULL);
@@ -102,11 +104,11 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
 
     if( ok ) {
         einfo->info->modified = true;
-        ok = WAddEditWinLBoxEntry( einfo, new, (int)ret + 1 );
+        ok = WAddEditWinLBoxEntry( einfo, new, pos + 1 );
     }
 
     if( ok ) {
-        ok = (SendMessage( lbox, LB_SETCURSEL, (int)ret + 1, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, pos + 1, 0 ) != LB_ERR);
         if( ok ) {
             einfo->current_entry = NULL;
             einfo->current_pos = -1;
@@ -129,18 +131,17 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     return( ok );
 }
 
-bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
+bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, box_pos pos )
 {
     bool    ok;
     char    *lbtext;
     char    *keytext;
     char    idtext[35];
     uint_16 key, flags, id;
-    int     klen, ilen;
+    size_t  klen, ilen;
     HWND    lbox;
 
-    lbtext = NULL;
-
+    lbox = NULL;
     ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
     if( ok ) {
@@ -148,6 +149,8 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
         ok = (lbox != NULL);
     }
 
+    id = 0;
+    keytext = NULL;
     if( ok ) {
         if( entry->is32bit ) {
             key = entry->entry32.Ascii;
@@ -171,6 +174,9 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, int pos )
         }
     }
 
+    lbtext = NULL;
+    ilen = 0;
+    klen = 0;
     if( ok ) {
         if( entry->symbol != NULL ) {
             strncpy( idtext, entry->symbol, MAX_ID_CHARS );

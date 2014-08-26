@@ -159,7 +159,7 @@ static void addFormattedWindow( HWND hwnd )
             }
         }
     }
-    sprintf( res, "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)hwnd, tmp, name );
+    sprintf( res, "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)(pointer_int)hwnd, tmp, name );
     SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
 
 } /* addFormattedWindow */
@@ -297,8 +297,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
                 break;
             }
             top = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTOPINDEX, 0, 0L );
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, sel,
-                                (LONG)(LPSTR)resdata );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, sel, (LPARAM)(LPSTR)resdata );
             res = resdata;
             while( isspace( *res ) ) {
                 res++;

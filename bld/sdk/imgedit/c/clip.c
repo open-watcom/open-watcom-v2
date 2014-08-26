@@ -298,7 +298,7 @@ void PlaceAndPaste( void )
     int             bm_width;
     int             bm_height;
 
-    format = format;
+    format = 0;
     node = GetCurrentNode();
     if( node == NULL ) {
         return;

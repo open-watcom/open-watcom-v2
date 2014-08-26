@@ -214,7 +214,7 @@ static void checkForPalExt( char *filename )
 /*
  * SaveHook - hook used called by common dialog for 3D controls
  */
-BOOL CALLBACK SaveHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
+BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -227,7 +227,7 @@ BOOL CALLBACK SaveHook( HWND hwnd, int msg, UINT wparam, LONG lparam )
         // Only do it if NOT new shell.
         if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
 #endif
-           IECtl3dSubclassDlg( hwnd, CTL3D_ALL );
+           IECtl3dSubclassDlgAll( hwnd );
 #if defined( __NT__ )
         }
 #endif

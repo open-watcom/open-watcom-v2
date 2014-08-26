@@ -63,7 +63,7 @@ static char                *WdeMem2String( uint_8 **data, bool );
 /* static variables                                                         */
 /****************************************************************************/
 
-static int WdeStringToMem( char *string, uint_8 use_unicode, uint_8 *mem )
+static size_t WdeStringToMem( char *string, uint_8 use_unicode, uint_8 *mem )
 {
     size_t      len;
     uint_16     *data16;

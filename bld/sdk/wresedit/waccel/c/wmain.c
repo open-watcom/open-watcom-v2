@@ -68,7 +68,6 @@
 #include "watini.h"
 #include "inipath.h"
 #include "aboutdlg.h"
-#include "ldstr.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -428,7 +427,7 @@ bool WRegisterMainClass( HINSTANCE inst )
     wc.lpszMenuName = WMainMenuName;
     wc.lpszClassName = WMainClass;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 char *WCreateEditTitle( WAccelEditInfo *einfo )
@@ -436,7 +435,8 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     char        *title;
     char        *fname;
     char        *text;
-    int         offset, len;
+    int         offset;
+    size_t      len;
 
     title = NULL;
     fname = NULL;
@@ -729,8 +729,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     case WM_INITMENU:
         if( wParam == (WPARAM)GetMenu( hWnd ) ) {
             // set the cut and copy menu items
-            ret = SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_GETCURSEL, 0, 0 );
-            if( ret != LB_ERR ) {
+            if( SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_GETCURSEL, 0, 0 ) != LB_ERR ) {
                 EnableMenuItem( (HMENU)wParam, IDM_ACC_CUT, MF_ENABLED );
                 EnableMenuItem( (HMENU)wParam, IDM_ACC_COPY, MF_ENABLED );
             } else {
@@ -747,7 +746,6 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                 }
                 CloseClipboard();
             }
-            ret = FALSE;
         }
         break;
 

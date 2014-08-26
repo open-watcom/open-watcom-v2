@@ -96,11 +96,11 @@ static void WREResetListbox( HWND lbox )
     }
 }
 
-static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNode )
+static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNode )
 {
     WResTypeNode        *tnode;
     LRESULT             count;
-    int                 i;
+    LRESULT             i;
     bool                ok;
 
     ok = (lbox != (HWND)NULL);
@@ -112,7 +112,7 @@ static int WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNod
 
     if( ok ) {
         for( i = 0; i < count; i++ ) {
-            tnode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)i, 0 );
+            tnode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, i, 0 );
             if( tnode != NULL ) {
                 if( (uint_16)tnode->Info.TypeName.ID.Num == type ) {
                     if( typeNode != NULL ) {
@@ -225,11 +225,11 @@ bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
 }
 
 bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
-                             WResID *name, int index )
+                             WResID *name, LRESULT index )
 {
     HWND                resLbox;
     HWND                typeLbox;
-    int                 typeIndex;
+    LRESULT             typeIndex;
     WResTypeNode        *tnode;
     LRESULT             max_index;
     char                *str;
@@ -258,15 +258,14 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
             LRESULT count;
             count = SendMessage( typeLbox, LB_GETCOUNT, 0, 0 );
             if( count != 0 && count != LB_ERR ) {
-                tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA,
-                                                     (WPARAM)typeIndex, 0 );
+                tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, typeIndex, 0 );
             }
         }
         if( typeIndex == -1 ) {
             return( TRUE );
         }
         info->current_type = type;
-        SendMessage( typeLbox, LB_SETCURSEL, (WPARAM)typeIndex, 0 );
+        SendMessage( typeLbox, LB_SETCURSEL, typeIndex, 0 );
     }
 
     if( ok ) {
@@ -283,7 +282,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
             index = LB_ERR;
             str = WResIDToStr( name );
             if( str != NULL ) {
-                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
+                index = SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
                 WRMemFree( str );
             }
             if( index == LB_ERR ) {
@@ -296,7 +295,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
         }
         if( index > max_index - 1 )
             index = max_index - 1;
-        SendMessage( resLbox, LB_SETCURSEL, (WPARAM)index, 0 );
+        SendMessage( resLbox, LB_SETCURSEL, index, 0 );
         WRESetTotalText( info );
         if( GetActiveWindow() == WREGetMainWindowHandle() ) {
             SetFocus( resLbox );
@@ -315,7 +314,7 @@ bool WREAddResNames( WREResInfo *info )
     LRESULT             index;
     bool                ok;
 
-    redrawOff = FALSE;
+    redrawOff = false;
 
     ok = (info != NULL);
 
@@ -327,14 +326,14 @@ bool WREAddResNames( WREResInfo *info )
 
     if( ok ) {
         SendMessage( resLbox, WM_SETREDRAW, FALSE, 0 );
-        redrawOff = TRUE;
+        redrawOff = true;
         WREResetListbox( resLbox );
         index = SendMessage( typeLbox, LB_GETCURSEL, 0, 0 );
         ok = (index != LB_ERR);
     }
 
     if( ok ) {
-        tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+        tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, index, 0 );
         ok = (tnode != NULL);
     }
 

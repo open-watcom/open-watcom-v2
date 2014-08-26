@@ -79,9 +79,9 @@ static bool         WRWin16HeaderHasResourceTable( os2_exe_header * );
 static WResTypeNode *WRReadWResTypeNodeFromExe( WResFileID, uint_16 );
 static WResResNode  *WRReadWResResNodeFromExe( WResFileID, uint_16 );
 static int          WRReadResourceNames( WResDir, WResFileID, uint_32 );
-static int          WRSetResName( WResDir, uint_32, char * );
-static WResTypeNode *WRRenameWResTypeNode( WResDir, WResTypeNode *, char * );
-static WResResNode  *WRRenameWResResNode( WResTypeNode *, WResResNode *, char * );
+static int          WRSetResName( WResDir, uint_32, const char * );
+static WResTypeNode *WRRenameWResTypeNode( WResDir, WResTypeNode *, const char * );
+static WResResNode  *WRRenameWResResNode( WResTypeNode *, WResResNode *, const char * );
 static uint_32      WRReadNameTable( WResDir, WResFileID, uint_8 **, uint_32, uint_8 * );
 static uint_32      WRUseNameTable( WResDir, uint_8 *, uint_32, uint_8 ** );
 static int          WRSetResNameFromNameTable( WResDir, WRNameTableEntry * );
@@ -402,7 +402,7 @@ int WRReadResourceNames( WResDir dir, WResFileID file_handle, uint_32 name_offse
     return( TRUE );
 }
 
-int WRSetResName( WResDir dir, uint_32 offset, char *name )
+int WRSetResName( WResDir dir, uint_32 offset, const char *name )
 {
     WResTypeNode *type_node;
     WResResNode  *res_node;
@@ -443,10 +443,10 @@ int WRSetResName( WResDir dir, uint_32 offset, char *name )
     return( found_one );
 }
 
-WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *type_node, char *name )
+WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *type_node, const char *name )
 {
     WResTypeNode    *new_type_node;
-    int             len;
+    size_t          len;
 
     len = strlen( name );
     new_type_node = (WResTypeNode *)MemAlloc( sizeof( WResTypeNode ) + len - 1 );
@@ -478,15 +478,15 @@ WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *type_node, char *
 }
 
 WResResNode *WRRenameWResResNode( WResTypeNode *type_node,
-                                  WResResNode *res_node, char *name )
+                                  WResResNode *res_node, const char *name )
 {
     WResResNode *new_res_node;
-    int         len;
-    int         len1;
+    size_t      len;
+    size_t      len1;
 
     len = strlen( name );
     len1 = len - 1;
-    if( len1 < 0 )
+    if( len == 0 )
         len1 = 0;
     new_res_node = (WResResNode *)MemAlloc( sizeof( WResResNode ) + len1 );
     if( new_res_node == NULL ) {

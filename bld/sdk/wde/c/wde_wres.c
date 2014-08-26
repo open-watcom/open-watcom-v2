@@ -227,7 +227,7 @@ WdeDialogBoxHeader *WdeCopyDialogBoxHeader( WdeDialogBoxHeader *src )
 WResID *WdeCopyWResID( WResID *src )
 {
     WResID  *dest;
-    int     len;
+    size_t  len;
 
     if( src == NULL ) {
         return ( NULL );
@@ -251,7 +251,7 @@ WResID *WdeCopyWResID( WResID *src )
 WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
 {
     WResHelpID  *dest;
-    int         len;
+    size_t      len;
 
     if( src == NULL ) {
         return( NULL );

@@ -433,7 +433,7 @@ bool WRegisterMainClass( HINSTANCE inst )
     wc.lpszMenuName = WMainMenuName;
     wc.lpszClassName = WMainClass;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 char *WCreateEditTitle( WStringEditInfo *einfo )
@@ -441,7 +441,8 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
     char        *title;
     char        *fname;
     char        *text;
-    int         offset, len;
+    int         offset;
+    size_t      len;
 
     title = NULL;
     fname = NULL;
@@ -635,7 +636,7 @@ static void handleSymbols( WStringEditInfo *einfo )
 static void handleLoadSymbols( WStringEditInfo *einfo )
 {
     char        *file;
-    int         pos;
+    box_pos     pos;
 
     file = WLoadSymbols( &einfo->info->symbol_table,
                          einfo->info->symbol_file,
@@ -704,8 +705,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     case WM_INITMENU:
         if( wParam == (WPARAM)GetMenu( hWnd ) ) {
             // set the cut and copy menu items
-            ret = SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST, LB_GETCURSEL, 0, 0 );
-            if( ret != LB_ERR ) {
+            if( SendDlgItemMessage( einfo->edit_dlg, IDM_STREDLIST, LB_GETCURSEL, 0, 0 ) != LB_ERR ) {
                 EnableMenuItem( (HMENU)wParam, IDM_STR_CUT, MF_ENABLED );
                 EnableMenuItem( (HMENU)wParam, IDM_STR_COPY, MF_ENABLED );
                 EnableMenuItem( (HMENU)wParam, IDM_STR_MEM_FLAGS, MF_ENABLED );
@@ -724,7 +724,6 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                 }
                 CloseClipboard();
             }
-            ret = FALSE;
         }
         break;
 
@@ -917,12 +916,12 @@ bool WQuerySave( WStringEditInfo *einfo, bool force_exit )
 bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
 {
     int         msg_ret;
-    int         ret;
+    bool        ret;
     UINT        style;
     char        *title;
     char        *text;
 
-    ret = TRUE;
+    ret = true;
 
     if( einfo != NULL && einfo->info->modified ) {
         msg_ret = IDYES;
@@ -950,7 +949,7 @@ bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
                              (LPARAM)einfo->hndl );
             }
         } else if( msg_ret == IDCANCEL ) {
-            ret = FALSE;
+            ret = false;
         }
     }
 

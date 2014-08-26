@@ -336,7 +336,7 @@ WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        // WdeCtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        // WdeCtl3dSubclassDlgAll( hwnd );
         title = WdeAllocRCString( WDE_GETFNCOMBOTITLE );
         if( title != NULL ) {
             SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );

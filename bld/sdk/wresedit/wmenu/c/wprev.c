@@ -75,7 +75,7 @@ bool WRegisterPrevClass( HINSTANCE inst )
     wc.lpszMenuName = NULL;
     wc.lpszClassName = WPrevClass;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 void WUnRegisterPrevClass( HINSTANCE inst )
@@ -105,7 +105,7 @@ bool WResetPrevWindowMenu( WMenuEditInfo *einfo )
         if( omenu != (HMENU)NULL ) {
             DestroyMenu( omenu );
         }
-        ok = SetMenu( einfo->preview_window, menu );
+        ok = SetMenu( einfo->preview_window, menu ) != 0;
     }
 
     return( ok );
@@ -182,7 +182,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     HMENU       popup;
     WORD        flags;
     WORD        id;
-    int         pos;
+    box_pos     pos;
 
     if( einfo == NULL || einfo->menu == NULL || einfo->menu->first_entry == NULL ) {
         return;
@@ -204,9 +204,9 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     } else if( flags & MF_SEPARATOR ) {
         // we ignore WM_MENUSELECT for separators, for now...
     } else if( flags & MF_POPUP ) {
-        popup = (HMENU)GET_WM_MENUSELECT_ITEM( wParam, lParam );
+        popup = (HMENU)(pointer_int)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #ifdef __NT__
-        popup = GetSubMenu( (HMENU)lParam, (int)popup );
+        popup = GetSubMenu( (HMENU)lParam, (int)(pointer_int)popup );
 #endif
         entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, popup );
     } else {
@@ -224,7 +224,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
         pos--;
         einfo->current_entry = NULL;
         einfo->current_pos = -1;
-        if( SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR ) {
+        if( SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR ) {
             WHandleSelChange( einfo );
         }
     }

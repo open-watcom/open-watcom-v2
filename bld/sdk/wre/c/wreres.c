@@ -348,7 +348,7 @@ static void WResizeInfoWindow( WREResInfo *info )
     dheight = InfoPad.dlg_min_size.y;
     if( dheight < rect.bottom - rect.top )
         dheight = rect.bottom - rect.top;
-    ok = SetWindowPos( info->info_win, (HWND)NULL, 0, 0, dwidth, dheight, SWP_NOZORDER );
+    ok = SetWindowPos( info->info_win, (HWND)NULL, 0, 0, dwidth, dheight, SWP_NOZORDER ) != 0;
 
     if( ok ) {
         // resize the type list box
@@ -360,8 +360,7 @@ static void WResizeInfoWindow( WREResInfo *info )
         width = dwidth - InfoPad.dlg_border.x * 3 - InfoPad.dlg_nc_size.x;
         height = dheight - InfoPad.dlg_border.y * 2 - InfoPad.type.y -
                  InfoPad.total.y - InfoPad.text_y * 2 - InfoPad.dlg_nc_size.y;
-        ok = SetWindowPos( win, (HWND)NULL, 0, 0, (width * 2) / 5, height,
-                           SWP_NOMOVE | SWP_NOZORDER );
+        ok = SetWindowPos( win, (HWND)NULL, 0, 0, (width * 2) / 5, height, SWP_NOMOVE | SWP_NOZORDER ) != 0;
     }
 
     if( ok ) {
@@ -375,7 +374,7 @@ static void WResizeInfoWindow( WREResInfo *info )
         MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
         x = InfoPad.dlg_border.x * 2 + (width * 2) / 5;
         y = rect.top;
-        ok = SetWindowPos( win, (HWND)NULL, x, y, (width * 3) / 5, height, SWP_NOZORDER );
+        ok = SetWindowPos( win, (HWND)NULL, x, y, (width * 3) / 5, height, SWP_NOZORDER ) != 0;
     }
 
     if( ok ) {
@@ -388,7 +387,7 @@ static void WResizeInfoWindow( WREResInfo *info )
         GetWindowRect( win, &rect );
         MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
         y = rect.top;
-        ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER );
+        ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER ) != 0;
     }
 
     if( ok ) {
@@ -402,7 +401,7 @@ static void WResizeInfoWindow( WREResInfo *info )
         MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
         x = x + (width * 3) / 5 - InfoPad.total.x;
         y = InfoPad.dlg_border.y + InfoPad.type.y + InfoPad.text_y * 2 + height;
-        ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER );
+        ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER ) != 0;
     }
 }
 
@@ -511,9 +510,9 @@ bool WREIsCurrentMDIWindowZoomed( void )
     info = WREGetCurrentRes();
 
     if( info != NULL && info->res_win != NULL ) {
-        return( IsZoomed( info->res_win ) );
+        return( IsZoomed( info->res_win ) != 0 );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -535,7 +534,7 @@ bool WRERegisterResClass( HINSTANCE app_inst )
     wc.lpszClassName = WREResClass;
 
     /* register the resource window class */
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 int WREIncNumRes( void )
@@ -755,7 +754,7 @@ void WREActivateResourceWindow( WREResInfo *res_info, WPARAM wParam, LPARAM lPar
     _wre_touch( wParam );
 
     if( res_info != NULL ) {
-        fActivate = GET_WM_MDIACTIVATE_FACTIVATE( res_info->res_win, wParam, lParam );
+        fActivate = GET_WM_MDIACTIVATE_FACTIVATE( res_info->res_win, wParam, lParam ) != 0;
         hwndDeact = GET_WM_MDIACTIVATE_HWNDDEACTIVATE( wParam, lParam );
         res_info->active = fActivate;
         if( fActivate ) {
@@ -1060,11 +1059,8 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
     HWND                win;
     bool                ok;
     DWORD               style;
-    int                 fn_offset;
     char                *win_title;
     int                 win_title_len;
-
-    _wre_touch( fn_offset );
 
     win_title = NULL;
 
@@ -1073,6 +1069,7 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
     if( ok ) {
         WREIncNumRes();
         if( res_info->info->file_name != NULL ) {
+            //int     fn_offset;
             //perhaps I should make this an option
             //fn_offset = WRFindFnOffset( res_info->info->file_name );
             //title = &res_info->info->file_name[fn_offset];

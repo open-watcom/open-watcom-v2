@@ -48,7 +48,7 @@
 /****************************************************************************/
 extern WStringBlock     *WInsertStringData( WStringEditInfo *einfo, uint_16 id, char *text, char *symbol, bool *replace );
 extern bool             WInsertStringEntry( WStringEditInfo * );
-extern bool             WAddEditWinLBoxBlock( WStringEditInfo *, WStringBlock *, int );
-extern bool             WAddEditWinLBoxEntry( WStringEditInfo *, WStringBlock *, uint_16, int );
+extern bool             WAddEditWinLBoxBlock( WStringEditInfo *, WStringBlock *, box_pos );
+extern bool             WAddEditWinLBoxEntry( WStringEditInfo *, WStringBlock *, uint_16, box_pos );
 
 #endif

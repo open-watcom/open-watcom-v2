@@ -140,7 +140,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
     uint_16             id;
     char                *text;
     char                *symbol;
-    int                 pos;
+    box_pos             pos;
 
     text = NULL;
     symbol = NULL;
@@ -216,7 +216,7 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
     return( ok );
 }
 
-bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos )
+bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, box_pos pos )
 {
     int         i;
 
@@ -238,14 +238,14 @@ bool WAddEditWinLBoxBlock( WStringEditInfo *einfo, WStringBlock *block, int pos 
 }
 
 bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block,
-                           uint_16 string_id, int pos )
+                           uint_16 string_id, box_pos pos )
 {
     bool    ok;
     char    *n;
     char    *lbtext;
     char    *text;
     char    idtext[35];
-    int     tlen, idlen;
+    size_t  tlen, idlen;
     HWND    lbox;
 
     text = NULL;

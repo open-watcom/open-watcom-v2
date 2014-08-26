@@ -270,7 +270,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 
     if( ok ) {
-        ok = Forward( new->parent, GET_WINDOW_HANDLE, &new->parent_handle, NULL );
+        ok = Forward( new->parent, GET_WINDOW_HANDLE, &new->parent_handle, NULL ) != 0;
     }
 
     if( !ok ) {
@@ -278,7 +278,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 
     if( ok ) {
-        ok = Forward( new->parent, GET_FONT, &new->font, NULL );
+        ok = Forward( new->parent, GET_FONT, &new->font, NULL ) != 0;
     }
 
     if( !ok ) {
@@ -295,7 +295,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 
     if( ok ) {
-        ok = Forward( new->object_handle, GET_WINDOW_CLASS, &new->window_class, NULL );
+        ok = Forward( new->object_handle, GET_WINDOW_CLASS, &new->window_class, NULL ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeControlCreate: Couldn't get window class!" );
         }
@@ -693,7 +693,7 @@ BOOL WdeControlSetClearInt( WdeControlObject *obj, BOOL *b, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    obj->clear_interior = *b;
+    obj->clear_interior = ( *b != 0 );
 
     return( TRUE );
 }
@@ -987,32 +987,32 @@ BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
 
     if( ok ) {
         if( pnt != NULL ) {
-            ok = PasteObject( obj->o_item, parent, *pnt );
+            ok = PasteObject( obj->o_item, parent, *pnt ) != 0;
             if( !ok ) {
                 WdeWriteTrail( "WdeControlPasteObject: OITEM PASTE failed!" );
             }
         } else {
             obj->parent = NULL;
-            ok = Notify( obj->object_handle, NEW_PARENT, parent );
+            ok = Notify( obj->object_handle, NEW_PARENT, parent ) != 0;
         }
     }
 
     if( ok && pnt != NULL ) {
-        ok = WdeOffsetDialogUnits( obj, NULL );
+        ok = WdeOffsetDialogUnits( obj, NULL ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeControlPasteObject: WdeOffsetDialogUnits failed!" );
         }
     }
 
     if( ok ) {
-        ok = WdeChangeControlSize( obj, FALSE, TRUE );
+        ok = WdeChangeControlSize( obj, FALSE, TRUE ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeControlPasteObject: WdeChangeControlSize failed!" );
         }
     }
 
     if( ok ) {
-        ok = Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL );
+        ok = Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeControlPasteObject: create window falied!" );
         }

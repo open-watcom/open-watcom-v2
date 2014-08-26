@@ -34,6 +34,7 @@
 #define WACC_INCLUDED
 
 #include "waccel.h"
+#include "ldstr.h"
 #include "winfo.h"
 #include "wstat.h"
 #include "wtoolbar.h"
@@ -59,7 +60,7 @@ typedef struct WAccelEntry {
 
 typedef struct WAccelTable {
     bool        is32bit;
-    int         num;
+    size_t      num;
     WAccelEntry *first_entry;
 } WAccelTable;
 

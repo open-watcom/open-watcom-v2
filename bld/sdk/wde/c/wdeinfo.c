@@ -706,21 +706,20 @@ WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, 
     case WM_CTLCOLORSTATIC:
         dc = (HDC)wParam;
         SetBkColor( dc, WdeInfoColor );
-        return( (BOOL)WdeInfoBrush );
+        return( WdeInfoBrush != NULL );
 
     case WM_CTLCOLORMSGBOX:
     case WM_CTLCOLOREDIT:
-        return( (BOOL)NULL );
+        break;
 #else
     case WM_CTLCOLOR:
         w = HIWORD( lParam );
         if( w != CTLCOLOR_MSGBOX && w != CTLCOLOR_EDIT ) {
             dc = (HDC)wParam;
             SetBkColor( dc, WdeInfoColor );
-            return( (BOOL)WdeInfoBrush );
-        } else {
-            return( (BOOL)NULL );
+            return( WdeInfoBrush != NULL );
         }
+        break;
 #endif
 
     case WM_ERASEBKGND:

@@ -404,7 +404,7 @@ WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
 WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
 {
     WResResNode *new_rnode;
-    int         len;
+    size_t      len;
 
     if( name == NULL ) {
         return( NULL );
@@ -417,19 +417,13 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
         }
     }
     new_rnode = (WResResNode *)WRMemAlloc( len );
-
     if( new_rnode != NULL ) {
         new_rnode->Head = NULL;
         new_rnode->Tail = NULL;
         new_rnode->Next = NULL;
         new_rnode->Prev = NULL;
         new_rnode->Info.NumResources = num_resources;
-        len = sizeof( WResID );
-        if( name->IsName ) {
-            if( name->ID.Name.NumChars != 0 ) {
-                len += name->ID.Name.NumChars - 1;
-            }
-        }
+        len -= sizeof( WResResNode ) - sizeof( WResID );
         memcpy( &new_rnode->Info.ResName, name, len );
     }
 

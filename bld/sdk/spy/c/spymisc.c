@@ -602,10 +602,10 @@ void GetWindowName( HWND hwnd, char *str )
     len = GetWindowText( hwnd, name, sizeof( name ) );
     name[len] = 0;
     if( len == 0 ) {
-        GetHexStr( str, (UINT)hwnd, 4 );
+        GetHexStr( str, (UINT)(pointer_int)hwnd, 4 );
         str[4] = 0;
     } else {
-        sprintf( str, "%0*x: %s", UINT_STR_LEN, (UINT)hwnd, name );
+        sprintf( str, "%0*x: %s", UINT_STR_LEN, (UINT)(pointer_int)hwnd, name );
     }
 
 } /* GetWindowName */
@@ -716,7 +716,7 @@ void DumpToComboBox( char *str, HWND cb )
         tmp[i] = 0;
         if( i != 0 ) {
             str++;
-            SendMessage( cb, CB_ADDSTRING, 0, (LONG) (LPSTR) tmp );
+            SendMessage( cb, CB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
         }
     }
     SendMessage( cb, CB_SETCURSEL, 0, 0L );
@@ -731,7 +731,7 @@ void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
     memset( res,' ', SPYOUT_LENGTH );
     strcpy( res, msg );
     res[strlen( msg )] = ' ';
-    GetHexStr( &res[SPYOUT_HWND], (DWORD) pmsg->hwnd, SPYOUT_HWND_LEN );
+    GetHexStr( &res[SPYOUT_HWND], (DWORD)(pointer_int)pmsg->hwnd, SPYOUT_HWND_LEN );
     GetHexStr( &res[SPYOUT_MSG], pmsg->message, SPYOUT_MSG_LEN );
     GetHexStr( &res[SPYOUT_WPARAM], pmsg->wParam, SPYOUT_WPARAM_LEN );
     GetHexStr( &res[SPYOUT_LPARAM], pmsg->lParam, SPYOUT_LPARAM_LEN );

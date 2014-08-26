@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern int  WRAPI WRIsBlockEmpty( StringTableBlock *block );
+WRDLLENTRY extern bool WRAPI WRIsBlockEmpty( StringTableBlock *block );
 WRDLLENTRY extern bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data, size_t *size, bool is32bit );
 WRDLLENTRY extern bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_t size, bool is32bit );
 WRDLLENTRY extern bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool replace );

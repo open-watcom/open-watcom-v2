@@ -101,7 +101,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         if( brush != NULL ) {
             dc = (HDC)wparam;
             SetBkColor( dc, color );
-            return( (LRESULT)brush );
+            return( brush != NULL );
         }
         break;
 #else
@@ -111,7 +111,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
             if( HIWORD( lparam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            return( (LRESULT)brush );
+            return( brush != NULL );
         }
         break;
 #endif

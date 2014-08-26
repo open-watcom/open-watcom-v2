@@ -76,7 +76,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     ok = (fmt != 0 && data != NULL && dsize != NULL);
 
     if( ok ) {
-        ok = OpenClipboard( main );
+        ok = OpenClipboard( main ) != 0;
     }
 
     if( ok ) {
@@ -153,7 +153,7 @@ bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
     }
 
     if( ok ) {
-        ok = OpenClipboard( main );
+        ok = OpenClipboard( main ) != 0;
     }
 
     if( ok ) {

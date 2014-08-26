@@ -62,7 +62,7 @@ static FlagItem FlagItems[] =
 static bool WSetFlagsText( uint_16 flags, char **text )
 {
     int         i;
-    int         tlen;
+    size_t      tlen;
 
     if( text == NULL ) {
         return( FALSE );

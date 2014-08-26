@@ -144,7 +144,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
     if( ok ) {
         flags = PPFLAG_IGNORE_INCLUDE | PPFLAG_EMIT_LINE;
         inc_path = NULL;
-        ret = setjmp( SymEnv );
+        ret = setjmp( SymEnv ) != 0;
         if( ret ) {
             PP_Fini();
             WDisplayErrorMsg( W_SYMOUTOFMEM );

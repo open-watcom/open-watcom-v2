@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <windows.h>
+#include "watcom.h"
 #include "fmedit.def"
 #include "state.def"
 #include "object.h"
@@ -84,7 +85,7 @@ void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )
         if( (bitmap & EDIT_MENU_FLAGS) != MENU_ALIGN ) {
             AppendMenu( submenu, MF_SEPARATOR, 0, NULL );
         }
-        AppendMenu( submenu, MF_POPUP, (UINT)alignmenu, "Group &Align" );
+        AppendMenu( submenu, MF_POPUP, (UINT)(pointer_int)alignmenu, "Group &Align" );
         hbitmap = LoadBitmap( GetInst(), "LEFT" );
         AppendMenu( alignmenu, MF_BITMAP, IDM_FMLEFT, (LPSTR) hbitmap );
         AppendMenu( alignmenu, MF_SEPARATOR, 0, NULL );
@@ -152,14 +153,14 @@ extern void InitEditMenu( HWND wnd, int bitmap )
                 submenu = CreatePopupMenu();
                 AddFMEditMenus( submenu, bitmap );
                 InsertMenu( mainmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP,
-                            (UINT) submenu, "&Edit" );
+                            (UINT)(pointer_int)submenu, "&Edit" );
                 ++nummenus;
             }
         }
         if( bitmap & MENU_SETUP ) {
             submenu = LoadMenu( GetInst(), "SetupMenu" );
             InsertMenu( mainmenu, nummenus - 1, MF_BYPOSITION | MF_POPUP,
-                        (UINT) submenu, "&Setup" );
+                        (UINT)(pointer_int)submenu, "&Setup" );
             DrawMenuBar( GetAppWnd() );
         }
     }

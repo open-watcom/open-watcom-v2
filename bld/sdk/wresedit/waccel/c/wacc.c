@@ -57,9 +57,9 @@
 /****************************************************************************/
 static void         WInitDataFromAccelTable( WAccelTable *, void * );
 static void         WInitAccelTable( WAccelInfo *, WAccelTable * );
-static int          WCalcAccelTableSize( WAccelTable * );
-static int          WCalcNumAccelEntries( WAccelInfo * );
-static WAccelTable  *WAllocAccelTable( int );
+static size_t       WCalcAccelTableSize( WAccelTable * );
+static size_t       WCalcNumAccelEntries( WAccelInfo * );
+static WAccelTable  *WAllocAccelTable( size_t );
 static void         WFreeAccelTable( WAccelTable * );
 
 /****************************************************************************/
@@ -110,30 +110,36 @@ void WFreeAccelEInfo( WAccelEditInfo *einfo )
     }
 }
 
-void WMakeDataFromAccelTable( WAccelTable *tbl, void **data, size_t *size )
+void WMakeDataFromAccelTable( WAccelTable *tbl, void **pdata, size_t *psize )
 {
-    if( data != NULL && size != NULL ) {
-        *size = WCalcAccelTableSize( tbl );
-        if( *size != 0 ) {
-            *data = WRMemAlloc( *size );
-            if( *data != NULL ) {
-                WInitDataFromAccelTable( tbl, *data );
+    size_t  size;
+    void    *data;
+
+    if( pdata != NULL && psize != NULL ) {
+        size = WCalcAccelTableSize( tbl );
+        if( size != 0 ) {
+            data = WRMemAlloc( size );
+            if( data != NULL ) {
+                WInitDataFromAccelTable( tbl, data );
             } else {
-                *size = 0;
+                size = 0;
             }
         } else {
-            *data = NULL;
+            data = NULL;
         }
+        *pdata = data;
+        *psize = size;
     }
 }
 
 WAccelTable *WMakeAccelTableFromInfo( WAccelInfo *info )
 {
     WAccelTable *tbl;
-    int         num;
+    size_t      num;
     bool        ok;
 
     tbl = NULL;
+    num = 0;
 
     ok = (info != NULL);
 
@@ -210,7 +216,7 @@ void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
         data32 = (AccelTableEntry32 *)info->data;
         do {
             i++;
-            entry->is32bit = TRUE;
+            entry->is32bit = true;
             entry->entry32 = data32[i];
             entry->entry32.Flags &= ~ACCEL_LAST;
             entry = entry->next;
@@ -219,7 +225,7 @@ void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
         data = (AccelTableEntry *)info->data;
         do {
             i++;
-            entry->is32bit = FALSE;
+            entry->is32bit = false;
             entry->entry = data[i];
             entry->entry.Flags &= ~ACCEL_LAST;
             entry = entry->next;
@@ -234,9 +240,9 @@ void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
     tbl->num = i + 1;
 }
 
-int WCalcAccelTableSize( WAccelTable *tbl )
+size_t WCalcAccelTableSize( WAccelTable *tbl )
 {
-    int size;
+    size_t size;
 
     if( tbl == NULL ) {
         return( 0 );
@@ -253,9 +259,9 @@ int WCalcAccelTableSize( WAccelTable *tbl )
     return( size );
 }
 
-int WCalcNumAccelEntries( WAccelInfo *info )
+size_t WCalcNumAccelEntries( WAccelInfo *info )
 {
-    int num, size;
+    size_t  num, size;
 
     if( info == NULL ) {
         return( 0 );
@@ -327,11 +333,11 @@ bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
     return( ok );
 }
 
-WAccelTable *WAllocAccelTable( int num )
+WAccelTable *WAllocAccelTable( size_t num )
 {
     WAccelTable *tbl;
     WAccelEntry *entry;
-    int         i;
+    size_t      i;
 
     tbl = (WAccelTable *)WRMemAlloc( sizeof( WAccelTable ) );
 
@@ -340,7 +346,7 @@ WAccelTable *WAllocAccelTable( int num )
     }
 
     tbl->num = num;
-    tbl->is32bit = FALSE;
+    tbl->is32bit = false;
     if( num != 0 ) {
         entry = NULL;
         for( i = 0; i < num; i++ ) {
@@ -422,9 +428,10 @@ bool WMakeEntryClipData( WAccelEntry *entry, void **data, uint_32 *dsize )
 
 bool WMakeEntryFromClipData( WAccelEntry *entry, void *data, uint_32 dsize )
 {
-    int         len;
+    size_t      len;
     bool        ok;
 
+    len = 0;
     ok = (entry != NULL && data != NULL && dsize != 0);
 
     if( ok ) {
@@ -500,6 +507,7 @@ bool WResolveEntrySymIDs( WAccelEntry *entry, WRHashTable *symbol_table )
     WRHashValue         hv;
     bool                ok;
 
+    hv = 0;
     ok = (entry != NULL && symbol_table != NULL);
 
     if( ok ) {

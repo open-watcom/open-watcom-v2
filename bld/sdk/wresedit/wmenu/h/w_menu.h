@@ -35,6 +35,7 @@
 
 #include "wmenu.h"
 #include "winfo.h"
+#include "ldstr.h"
 #include "wstat.h"
 #include "wtoolbar.h"
 #include "wrdll.h"
@@ -113,7 +114,7 @@ extern bool             WResetPreviewIDs( WMenuEditInfo *einfo );
 extern HMENU            WCreatePreviewMenu( WMenuEditInfo *einfo );
 extern WMenuEntry       *WFindEntryFromPreviewID( WMenuEntry *, WORD );
 extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
-extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, int * );
+extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, box_pos * );
 extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
 extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );

@@ -480,7 +480,7 @@ bool WRegisterMainClass( HINSTANCE inst )
     wc.lpszMenuName = WMainMenuName;
     wc.lpszClassName = WMainClass;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 char *WCreateEditTitle( WMenuEditInfo *einfo )
@@ -488,7 +488,8 @@ char *WCreateEditTitle( WMenuEditInfo *einfo )
     char        *title;
     char        *fname;
     char        *text;
-    int         offset, len;
+    int         offset;
+    size_t      len;
 
     title = NULL;
     fname = NULL;
@@ -756,8 +757,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     case WM_INITMENU:
         if( wParam == (WPARAM)GetMenu( hWnd ) ) {
             // set the cut and copy menu items
-            ret = SendDlgItemMessage( einfo->edit_dlg, IDM_MENUEDLIST, LB_GETCURSEL, 0, 0 );
-            if( ret != LB_ERR ) {
+            if( SendDlgItemMessage( einfo->edit_dlg, IDM_MENUEDLIST, LB_GETCURSEL, 0, 0 ) != LB_ERR ) {
                 EnableMenuItem( (HMENU)wParam, IDM_MENU_CUT, MF_ENABLED );
                 EnableMenuItem( (HMENU)wParam, IDM_MENU_COPY, MF_ENABLED );
             } else {
@@ -774,7 +774,6 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                 }
                 CloseClipboard();
             }
-            ret = FALSE;
         }
         break;
 

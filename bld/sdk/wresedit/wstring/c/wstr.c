@@ -139,10 +139,10 @@ WStringBlock *WFindStringBlock( WStringTable *tbl, uint_16 blocknum )
     return( NULL );
 }
 
-int WFindStringPos( WStringTable *tbl, uint_16 string_id )
+box_pos WFindStringPos( WStringTable *tbl, uint_16 string_id )
 {
     WStringBlock        *block;
-    int                 pos;
+    box_pos             pos;
     int                 i;
 
     pos = 0;
@@ -604,7 +604,7 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     WStringTable        *new_tbl;
     WStringTable        *old_tbl;
     WStringBlock        *block;
-    LRESULT             pos;
+    box_pos             pos;
     HWND                lbox;
 
     if( einfo == NULL || einfo->tbl == NULL ) {
@@ -635,7 +635,7 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
 
     lbox = GetDlgItem( einfo->edit_dlg, IDM_STREDLIST );
 
-    pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( pos == LB_ERR ) {
         pos = 0;
     }
@@ -653,7 +653,7 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     einfo->current_string = 0;
     einfo->current_pos = -1;
 
-    SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
+    SendMessage( lbox, LB_SETCURSEL, pos, 0 );
 
     return( TRUE );
 }

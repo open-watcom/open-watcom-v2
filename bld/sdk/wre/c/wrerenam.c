@@ -166,7 +166,7 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
 WResResNode *WREAllocResNodeFromWResID( WResID *id )
 {
     WResResNode *rnode;
-    int         len, id_len;
+    size_t      len, id_len;
 
     if( id == NULL ) {
         return( NULL );

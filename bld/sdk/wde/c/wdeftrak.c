@@ -558,7 +558,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( wParam );
     _wde_touch( lParam );
     _wde_touch( mask );
-    return( FALSE );
+    return( false );
 #endif
 }
 

@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern int  WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb );
+WRDLLENTRY extern bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb );
 
 #endif

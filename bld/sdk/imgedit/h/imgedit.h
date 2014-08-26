@@ -36,15 +36,12 @@
 
 #include "precomp.h"
 #include "watcom.h"
-
 #include "macros.h"
-
 #ifdef __OS2_PM__
     #include "img_os2.h"
 #else
     #include "img_win.h"
     #include "palette.h"
-    #include <ctl3d.h>
 #endif
 #include "wrdll.h"
 
@@ -505,6 +502,7 @@ bool    IECtl3dInit( HINSTANCE );
 void    IECtl3dFini( HINSTANCE );
 void    IECtl3dColorChange( void );
 void    IECtl3dSubclassDlg( HWND, WORD );
+void    IECtl3dSubclassDlgAll( HWND );
 
 /* errors.c */
 void    WImgEditError( UINT error, char *fname );

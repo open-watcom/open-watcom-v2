@@ -114,9 +114,7 @@ static bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp
     bool        ok;
 
     flagtext = NULL;
-
     ok = (einfo != NULL && entry != NULL);
-
     if( ok ) {
         if( entry->is32bit ) {
             key = entry->entry32.Ascii;
@@ -129,26 +127,23 @@ static bool WWriteEntryToRC( WAccelEditInfo *einfo, WAccelEntry *entry, FILE *fp
         }
         keytext = WGetKeyText( key, flags );
         ok = (keytext != NULL);
-    }
-
-    if( ok ) {
-        ok = WSetFlagsText( flags, &flagtext );
-    }
-
-    if( ok ) {
-        fprintf( fp, "    %s,\t", keytext );
-        if( entry->symbol ) {
-            fprintf( fp, "%s", entry->symbol );
-        } else {
-            fprintf( fp, "%d", (int)id );
-        }
-        if( flagtext != NULL ) {
-            fprintf( fp, "%s\n", flagtext );
-        } else {
-            fwrite( "\n", sizeof( char ), 1, fp );
+        if( ok ) {
+            ok = WSetFlagsText( flags, &flagtext );
+            if( ok ) {
+                fprintf( fp, "    %s,\t", keytext );
+                if( entry->symbol ) {
+                    fprintf( fp, "%s", entry->symbol );
+                } else {
+                    fprintf( fp, "%d", (int)id );
+                }
+                if( flagtext != NULL ) {
+                    fprintf( fp, "%s\n", flagtext );
+                } else {
+                    fwrite( "\n", sizeof( char ), 1, fp );
+                }
+            }
         }
     }
-
     if( flagtext != NULL ) {
         WRMemFree( flagtext );
     }

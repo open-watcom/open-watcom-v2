@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include "bool.h"
 #include "wzoom.h"
 #ifndef NOUSE3D
 #include "ctl3dcvr.h"

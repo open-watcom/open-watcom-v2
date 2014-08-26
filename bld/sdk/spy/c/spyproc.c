@@ -132,10 +132,10 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
     tmp[len] = 0;
     if( len == 0 ) {
         fmtstr = GetRCString( STR_1_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT) selwin );
+        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(pointer_int)selwin );
     } else {
         fmtstr = GetRCString( STR_1_NAMED_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT) selwin, tmp );
+        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(pointer_int)selwin, tmp );
     }
     SetWindowText( hwnd, str );
 
@@ -225,7 +225,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     int         check;
     HWND        selwin;
     HWND        hinthwnd;
-    WORD        cmdid;
+    WORD        cmdid = 0;
     RECT        area;
     BOOL        pausestate;
     BOOL        spyallstate;

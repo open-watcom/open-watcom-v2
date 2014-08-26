@@ -159,7 +159,7 @@ bool WREWriteIntOpt( char *entry, int i )
 
     ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString( WRESectionName, entry, str, WREProfileName );
+    ret = ( WritePrivateProfileString( WRESectionName, entry, str, WREProfileName ) != 0 );
 
     return( ret );
 }
@@ -197,10 +197,10 @@ bool WREWriteRectOpt( char *entry, RECT *r )
     char    *str;
     bool    ret;
 
-    ret = FALSE;
+    ret = false;
     str = WRERectToStr( r );
     if( str != NULL ) {
-        ret = WritePrivateProfileString( WRESectionName, entry, str, WREProfileName );
+        ret = ( WritePrivateProfileString( WRESectionName, entry, str, WREProfileName ) != 0 );
         WRMemFree( str );
     }
 
@@ -212,13 +212,12 @@ bool WREGetRectOpt( char *entry, RECT *r )
     char    str[41];
     bool    ret;
 
-    ret = GetPrivateProfileString( WRESectionName, entry, "0, 0, 0, 0",
-                                   str, 40, WREProfileName );
+    ret = ( GetPrivateProfileString( WRESectionName, entry, "0, 0, 0, 0", str, 40, WREProfileName ) != 0 );
     if( ret && strcmp( "0, 0, 0, 0", str ) ) {
         WREStrToRect( str, r );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

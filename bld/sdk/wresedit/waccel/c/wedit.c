@@ -658,7 +658,7 @@ bool WPasteAccelItem( WAccelEditInfo *einfo )
 bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
 {
     HWND        lbox;
-    LRESULT     index;
+    box_pos     pos;
     WAccelEntry *entry;
     void        *data;
     uint_32     dsize;
@@ -673,12 +673,12 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (index != LB_ERR);
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = (pos != LB_ERR);
     }
 
     if( ok ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
         ok = (entry != NULL);
     }
 
@@ -733,7 +733,7 @@ static bool WQueryChangeEntry( WAccelEditInfo *einfo )
 void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
 {
     HWND        lbox;
-    LRESULT     index;
+    box_pos     pos;
     WAccelEntry *entry;
     bool        mod;
 
@@ -746,9 +746,9 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
         return;
     }
 
-    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-    if( index != LB_ERR ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+    pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    if( pos != LB_ERR ) {
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
     } else {
         entry = NULL;
     }
@@ -780,9 +780,9 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
     }
 
     einfo->current_entry = entry;
-    einfo->current_pos = (index == LB_ERR) ? -1 : index;
-    if ( index != LB_ERR ) {
-        SendMessage ( lbox, LB_SETCURSEL, (WPARAM)index, 0 );
+    einfo->current_pos = (pos == LB_ERR) ? -1 : pos;
+    if ( pos != LB_ERR ) {
+        SendMessage ( lbox, LB_SETCURSEL, pos, 0 );
     }
 }
 
@@ -802,7 +802,7 @@ WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam,
     HWND                win;
     RECT                r;
     POINT               p;
-    LRESULT             ret;
+    BOOL                ret;
     WORD                wp;
     WORD                cmd;
 
@@ -835,7 +835,7 @@ WINEXPORT BOOL CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam,
 #else
     case WM_CTLCOLOR:
 #endif
-        return( (LRESULT)WCtl3dCtlColorEx( message, wParam, lParam ) );
+        return( WCtl3dCtlColorEx( message, wParam, lParam ) );
 #endif
 
     case WM_LBUTTONDBLCLK:

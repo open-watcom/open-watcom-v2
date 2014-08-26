@@ -137,27 +137,25 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
     if( !lnode->Info.lang.lang && !lnode->Info.lang.sublang ) {
         name = WResIDToNameOrOrd( &rnode->Info.ResName );
     } else {
-         if( rnode->Info.ResName.IsName ) {
-             len = rnode->Info.ResName.ID.Name.NumChars;
-         } else {
-             len = UINT16STRLEN;
-         }
-         len += 2 * UINT16STRLEN + 2 + 1;
-         str = (char *)MemAlloc( len );
-         if( str == NULL ) {
-             return( NULL );
-         }
-         if( rnode->Info.ResName.IsName ) {
-             memcpy( str, rnode->Info.ResName.ID.Name.Name,
-                     rnode->Info.ResName.ID.Name.NumChars );
-             sprintf( str + rnode->Info.ResName.ID.Name.NumChars, "_%u_%u",
-                      lnode->Info.lang.lang, lnode->Info.lang.sublang );
-         } else {
-             sprintf( str, "%u_%u_%u", rnode->Info.ResName.ID.Num,
-                      lnode->Info.lang.lang, lnode->Info.lang.sublang );
-         }
-         name = ResStrToNameOrOrd( str );
-         MemFree( str );
+        if( rnode->Info.ResName.IsName ) {
+            len = rnode->Info.ResName.ID.Name.NumChars;
+            str = (char *)MemAlloc( len + ( 1 + UINT16STRLEN ) * 2 + 1 );
+            if( str == NULL ) {
+                return( NULL );
+            }
+            memcpy( str, rnode->Info.ResName.ID.Name.Name, len );
+            sprintf( str + len, "_%u_%u",
+                        lnode->Info.lang.lang, lnode->Info.lang.sublang );
+        } else {
+            str = (char *)MemAlloc( UINT16STRLEN + ( 1 + UINT16STRLEN ) * 2 + 1 );
+            if( str == NULL ) {
+                return( NULL );
+            }
+            sprintf( str, "%u_%u_%u", rnode->Info.ResName.ID.Num,
+                        lnode->Info.lang.lang, lnode->Info.lang.sublang );
+        }
+        name = ResStrToNameOrOrd( str );
+        MemFree( str );
     }
 
     return( name );
@@ -318,7 +316,7 @@ static bool WRSaveResourceToMRES( WRInfo *info, WResFileID src, WResFileID dest 
     return( WRWriteResourcesToMRES( info, src, dest ) );
 }
 
-static bool saveResourceToRES( WRInfo *info, bool backup, char *save_name, char *file_name )
+static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name, const char *file_name )
 {
     WResFileID  src;
     WResFileID  dest;

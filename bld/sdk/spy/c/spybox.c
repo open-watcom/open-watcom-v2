@@ -116,7 +116,7 @@ void SpyOut( char *msg, LPMSG pmsg )
         lvi.pszText = msg;
         SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
         if( pmsg != NULL ) {
-            GetHexStr( hwnd_str, (DWORD)pmsg->hwnd, SPYOUT_HWND_LEN );
+            GetHexStr( hwnd_str, (DWORD)(pointer_int)pmsg->hwnd, SPYOUT_HWND_LEN );
             hwnd_str[SPYOUT_HWND_LEN] = '\0';
             GetHexStr( msg_str, pmsg->message, SPYOUT_MSG_LEN );
             msg_str[SPYOUT_MSG_LEN] = '\0';
@@ -142,7 +142,7 @@ void SpyOut( char *msg, LPMSG pmsg )
         }
     } else {
 #endif
-        i = SendMessage( SpyListBox, LB_ADDSTRING, 0, (LONG)(LPSTR)res );
+        i = SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
         if( SpyMessagesAutoScroll ) {
             SendMessage( SpyListBox, LB_SETCURSEL, i, 0L );
         }
@@ -170,7 +170,7 @@ void CreateSpyBox( HWND parent )
         SpyListBox = CreateWindowEx( WS_EX_CLIENTEDGE, WC_LISTVIEW, NULL,
                                      WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_SINGLESEL,
                                      LISTBOX_X, LISTBOX_Y, 0, 0, parent,
-                                     (HANDLE)SPY_LIST_BOX, Instance, NULL );
+                                     (HANDLE)(pointer_int)SPY_LIST_BOX, Instance, NULL );
         lvc.mask = LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
         for( i = 0; i < NUM_COLUMNS; i++ ) {
             lvc.cx = columns[i].width;
@@ -191,7 +191,7 @@ void CreateSpyBox( HWND parent )
             0,                      /* Initial X size */
             0,                      /* Initial Y size */
             parent,                 /* Parent window handle */
-            (HANDLE)SPY_LIST_BOX,   /* Window menu handle */
+            (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
             Instance,               /* Program instance handle */
             NULL );                 /* Create parameters */
     } else
@@ -206,7 +206,7 @@ void CreateSpyBox( HWND parent )
             0,                      /* Initial X size */
             0,                      /* Initial Y size */
             parent,                 /* Parent window handle */
-            (HANDLE)SPY_LIST_BOX,   /* Window menu handle */
+            (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
             Instance,               /* Program instance handle */
             NULL );                 /* Create parameters */
 

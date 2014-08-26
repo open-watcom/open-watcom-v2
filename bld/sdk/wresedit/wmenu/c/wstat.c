@@ -199,7 +199,7 @@ bool WSetStatusReadyText( WStatBar *wsb )
     return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
 }
 
-bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
+bool WSetStatusByID( WStatBar *wsb, MSGID id1, MSGID id2 )
 {
     char        *str1;
     char        *str2;
@@ -232,8 +232,8 @@ bool WSetStatusByID( WStatBar *wsb, DWORD id1, DWORD id2 )
 
 bool WSetStatusText( WStatBar *wsb, const char *s1, const char *s2 )
 {
-    int             len;
-    int             pos;
+    size_t          len;
+    size_t          pos;
     WMenuEditInfo   *einfo;
 
     if( wsb == NULL ) {

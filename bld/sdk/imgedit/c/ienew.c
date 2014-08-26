@@ -199,7 +199,7 @@ WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
 /*
  * SelCursorProc - select the target device to use the cursor on
  */
-BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
+BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HWND hlistbox;
     char        *mono32x32;

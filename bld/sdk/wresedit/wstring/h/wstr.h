@@ -35,6 +35,7 @@
 
 #include "wstring.h"
 #include "winfo.h"
+#include "ldstr.h"
 #include "wstat.h"
 #include "wtoolbar.h"
 #include "wrdll.h"
@@ -91,7 +92,7 @@ extern WStringBlock     *WGetOrMakeStringBlock( WStringTable *tbl, uint_16 block
 extern WStringBlock     *WFindStringBlock( WStringTable *tbl, uint_16 blocknum );
 extern bool             WIsBlockEmpty( WStringBlock *block );
 extern bool             WRemoveStringBlock( WStringTable *tbl, WStringBlock *block );
-extern int              WFindStringPos( WStringTable *tbl, uint_16 string_id );
+extern box_pos          WFindStringPos( WStringTable *tbl, uint_16 string_id );
 extern void             WFreeStringTableBlocks( WStringBlock *block );
 extern uint_16          WFindLargestStringID( WStringTable *tbl );
 

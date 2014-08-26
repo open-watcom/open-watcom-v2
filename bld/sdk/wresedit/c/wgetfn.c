@@ -114,7 +114,7 @@ char *WGetInitialDir( void )
 
 void WSetInitialDir( char *dir )
 {
-    int len;
+    size_t len;
 
     if( dir != NULL && *dir != '\0' ) {
         len = strlen( dir );
@@ -140,9 +140,9 @@ char *WGetSaveFileName( HWND parent, WGetFileStruct *gf )
 char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction action )
 {
     OPENFILENAME    wofn;
-    bool            ret;
+    BOOL            ret;
     DWORD           error;
-    int             len;
+    size_t          len;
     char            fn_drive[_MAX_DRIVE];
     char            fn_dir[_MAX_DIR];
     char            fn_name[_MAX_FNAME];
@@ -279,7 +279,7 @@ WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        //WCtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        //WCtl3dSubclassDlgAll( hwnd );
 
         title = AllocRCString( W_GETFNCOMBOTITLE );
         if( title != NULL ) {

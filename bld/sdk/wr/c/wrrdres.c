@@ -48,7 +48,7 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 
-static bool loadResDirFromRES( WRInfo *info, char *filename, bool *is_wres )
+static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres )
 {
     WResFileID  file_handle;
     bool        dup_discarded;

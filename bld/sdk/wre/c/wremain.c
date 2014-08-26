@@ -909,13 +909,13 @@ bool WREHandleResEdit( void )
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             ok = WREEditStringResource( &curr );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_DIALOG ) {
-            ok =  WREEditDialogResource( &curr );
+            ok = WREEditDialogResource( &curr );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
-            ok =  WREEditImageResource( &curr );
+            ok = WREEditImageResource( &curr );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
-            ok =  WREEditImageResource( &curr );
+            ok = WREEditImageResource( &curr );
         } else if( curr.info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
-            ok =  WREEditImageResource( &curr );
+            ok = WREEditImageResource( &curr );
         }
     }
 

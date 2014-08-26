@@ -63,7 +63,7 @@ bool WDeleteAccelEntry( WAccelEditInfo *einfo )
 {
     HWND         lbox;
     bool         ok;
-    LRESULT      ret;
+    box_pos      pos;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -73,23 +73,23 @@ bool WDeleteAccelEntry( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (ret != LB_ERR);
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = (pos != LB_ERR);
     }
 
     if( ok ) {
-        ok = WDeleteEditWinLBoxEntry( einfo, (int)ret, TRUE );
+        ok = WDeleteEditWinLBoxEntry( einfo, pos, TRUE );
     }
 
     return( ok );
 }
 
-bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
+bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, box_pos pos, bool free_it )
 {
     HWND        lbox;
     bool        ok;
     WAccelEntry *entry;
-    LRESULT     ret, max;
+    box_pos     max;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -99,13 +99,12 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
     }
 
     if( ok ) {
-        ret = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-        max = ret;
-        ok = (ret != 0 && ret != LB_ERR && pos < (int)ret);
+        max = (box_pos)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+        ok = (max != 0 && max != LB_ERR && pos < max);
     }
 
     if( ok ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
         if( entry != NULL ) {
             if( free_it ) {
                 ok = WFreeAccelTableEntry( einfo->tbl, entry );
@@ -117,8 +116,7 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
 
     if( ok ) {
         einfo->info->modified = true;
-        ret = SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 );
-        ok = (ret != LB_ERR);
+        ok = (SendMessage( lbox, LB_DELETESTRING, pos, 0 ) != LB_ERR);
     }
 
     if( ok ) {
@@ -126,8 +124,7 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, int pos, bool free_it )
         einfo->current_pos = -1;
         if( pos > max - 2 )
             pos = max - 2;
-        ret = SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
-        ok = (ret != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
         if( ok ) {
             WHandleSelChange( einfo );
         }

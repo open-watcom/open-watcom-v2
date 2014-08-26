@@ -45,7 +45,7 @@ static bool     *savedBits;
 /*
  * SpyMsgDialog - process message range dialogs
  */
-WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i, j, k, max;
     static int  which, firstmsg, pages;
@@ -176,7 +176,7 @@ void DoSpyMsgDialog( HWND hwnd, int which )
 /*
  * MessageDialog - process messages required dialog
  */
-WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     bool        fl;
@@ -292,14 +292,14 @@ HWND            currHwnd;
 BOOL            doHilite;
 
 #ifdef _M_IX86
-extern LPSTR GetPointer( DWORD );
+extern LPSTR GetPointer( LPARAM );
 #ifdef __NT__
 #pragma aux GetPointer = parm[eax] value[eax];
 #else
 #pragma aux GetPointer = parm[dx ax] value[dx ax];
 #endif
 #else
-#define GetPointer( dword ) ((LPSTR)dword)
+#define GetPointer( lparam ) ((LPSTR)lparam)
 #endif
 
 /*
@@ -331,7 +331,7 @@ static void setMessageName( HWND hwnd, char *str ) {
 /*
  * MessageSelectDialog - a single message item selected
  */
-WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DWORD lparam )
+WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     WORD        id;
@@ -365,7 +365,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DW
             EndDialog( hwnd, 0 );
             break;
         }
-        currHwnd = (HWND) strtol( &str[SPYOUT_HWND], &endptr, 16 );
+        currHwnd = (HWND)(pointer_int)strtol( &str[SPYOUT_HWND], &endptr, 16 );
         if( endptr != str + SPYOUT_MSG - 1 ) {
             EndDialog( hwnd, 0 );
             break;
@@ -387,7 +387,7 @@ WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, int msg, UINT wparam, DW
         }
         ltoa( msgPtr->count, tmp, 10 );
         SetDlgItemText( hwnd, MSGSEL_COUNT, tmp );
-        sprintf( tmp, "%0*lX", SPYOUT_HWND_LEN, (DWORD)currHwnd );
+        sprintf( tmp, "%0*lX", SPYOUT_HWND_LEN, (DWORD)(pointer_int)currHwnd );
         SetDlgItemText( hwnd, MSGSEL_WINDOWID, tmp );
         /* make sure windows hasn't reallocated the handle to us */
         if( !IsWindow( currHwnd ) || currHwnd == hwnd ) {

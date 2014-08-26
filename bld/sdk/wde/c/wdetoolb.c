@@ -138,7 +138,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     return( tbar );
 }
 
-BOOL WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WdeToolBar  *tbar;
@@ -149,10 +149,10 @@ BOOL WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
             minmax = (MINMAXINFO *)lParam;
             minmax->ptMinTrackSize.x = 8;
         }
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_USER:
@@ -179,7 +179,7 @@ BOOL WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
         minmax->ptMinTrackSize.y = 2 * GetSystemMetrics( SM_CYFRAME ) +
             tbar->info->dinfo.border_size.y + GetSystemMetrics( SM_CYCAPTION ) +
             tbar->info->dinfo.button_size.y;
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DESTROY:

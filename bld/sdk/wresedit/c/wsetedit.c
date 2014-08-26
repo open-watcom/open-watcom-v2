@@ -127,38 +127,38 @@ bool WSetEditWithStr( HWND edit, char *str )
 bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
 {
     bool      ok;
-    LRESULT   index;
+    box_pos   pos = 0;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
-        ok = ( index != LB_ERR && index != LB_ERRSPACE );
+        pos = (box_pos)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        ok = ( pos != LB_ERR && pos != LB_ERRSPACE );
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
-        ok = (index != LB_ERR);
+        SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data );
+        ok = (pos != LB_ERR);
     }
 
     return( ok );
 }
 
-bool WInsertLBoxWithStr( HWND lbox, int pos, char *str, void *data )
+bool WInsertLBoxWithStr( HWND lbox, box_pos pos, char *str, void *data )
 {
     bool      ok;
-    LRESULT   index;
+    box_pos   new_pos = 0;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        index = SendMessage( lbox, LB_INSERTSTRING, (WPARAM)pos, (LPARAM)(LPSTR)str );
-        ok = ( index != LB_ERR && index != LB_ERRSPACE );
+        new_pos = (box_pos)SendMessage( lbox, LB_INSERTSTRING, pos, (LPARAM)(LPSTR)str );
+        ok = ( new_pos != LB_ERR && new_pos != LB_ERRSPACE );
     }
 
     if( ok ) {
-        SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data );
-        ok = ( index != LB_ERR );
+        SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data );
+        ok = ( new_pos != LB_ERR );
     }
 
     return( ok );
@@ -282,35 +282,35 @@ int_32 WGetSINT32FromEdit( HWND edit, bool *mod )
     return( val );
 }
 
-char *WGetStrFromComboLBox( HWND combo, int index )
+char *WGetStrFromComboLBox( HWND combo, box_pos pos )
 {
     char        *cp;
-    unsigned    text_length;
-    unsigned    text_copied;
-    int         count;
+    LRESULT     text_length;
+    LRESULT     text_copied;
+    box_pos     count;
 
-    if( index == -1 ) {
-        index = (int)SendMessage( combo, CB_GETCURSEL, 0, 0 );
-        if( index == CB_ERR ) {
+    if( pos == -1 ) {
+        pos = (box_pos)SendMessage( combo, CB_GETCURSEL, 0, 0 );
+        if( pos == CB_ERR ) {
             return( NULL );
         }
     }
 
-    count = SendMessage( combo, CB_GETCOUNT, 0, 0 );
-    if( count == 0 || count == CB_ERR || count < index ) {
+    count = (box_pos)SendMessage( combo, CB_GETCOUNT, 0, 0 );
+    if( count == 0 || count == CB_ERR || count < pos ) {
         return( NULL );
     }
 
     text_copied = 0;
 
-    text_length = SendMessage( combo, CB_GETLBTEXTLEN, index, 0 );
+    text_length = SendMessage( combo, CB_GETLBTEXTLEN, pos, 0 );
 
     cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
 
-    text_copied = SendMessage( combo, CB_GETLBTEXT, index, (LPARAM)(LPSTR)cp );
+    text_copied = SendMessage( combo, CB_GETLBTEXT, pos, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WRMemFree( cp );

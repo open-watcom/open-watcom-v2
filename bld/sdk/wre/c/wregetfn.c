@@ -259,9 +259,9 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
 #endif
 
     if( action == OPENFILE ) {
-        ret = GetOpenFileName( (LPOPENFILENAME)&wreofn );
+        ret = GetOpenFileName( (LPOPENFILENAME)&wreofn ) != 0;
     } else if( action == SAVEFILE ) {
-        ret = GetSaveFileName( (LPOPENFILENAME)&wreofn );
+        ret = GetSaveFileName( (LPOPENFILENAME)&wreofn ) != 0;
     } else {
         return( NULL );
     }
@@ -317,7 +317,7 @@ UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug)
-        //WRECtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        //WRECtl3dSubclassDlgAll( hwnd );
 
         title = AllocRCString( WRE_GETFNCOMBOTITLE );
         if( title != NULL ) {

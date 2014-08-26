@@ -456,9 +456,9 @@ BOOL IEUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = (BOOL)DdeClientTransaction( (LPBYTE)hdata, -1, IEClientConv, hDataItem,
+        ok = DdeClientTransaction( (LPBYTE)hdata, -1, IEClientConv, hDataItem,
                                          IEClipFormats[EditFormat].format,
-                                         XTYP_POKE, TIME_OUT, NULL );
+                                         XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
 
     if( hdata != (HDDEDATA)NULL ) {

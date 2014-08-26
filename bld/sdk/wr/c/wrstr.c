@@ -81,9 +81,9 @@ static size_t getUniStringLength( WResIDName *id, bool is32bit )
     return( len );
 }
 
-static int WRCalcStringBlockSize( StringTableBlock *block, bool is32bit )
+static size_t WRCalcStringBlockSize( StringTableBlock *block, bool is32bit )
 {
-    int         size;
+    size_t      size;
     int         i;
 
     size = 0;
@@ -101,10 +101,10 @@ static char *copyNULLWResIDNameToData( char *data, bool is32bit )
 {
     if( is32bit ) {
         *(uint_16 *)data = (uint_16)0;
-        data = (char *)data + sizeof( uint_16 );
+        data += sizeof( uint_16 );
     } else {
         *(uint_8 *)data = (uint_8)0;
-        data = (char *)data + sizeof( uint_8 );
+        data += sizeof( uint_8 );
     }
 
     return( data );
@@ -122,6 +122,7 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
 
     if( is32bit ) {
         new_str = NULL;
+        len = 0;
         str = WRWResIDNameToStr( name );
         if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
@@ -152,12 +153,13 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
     return( data );
 }
 
-static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, bool is32bit )
+static bool WRInitDataFromBlock( StringTableBlock *block, void *data, size_t size, bool is32bit )
 {
     int         i;
-    int         dsize;
+    size_t      dsize;
     void        *orig_data;
 
+    dsize = 0;
     if( block != NULL ) {
         orig_data = data;
         for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
@@ -169,42 +171,47 @@ static int WRInitDataFromBlock( StringTableBlock *block, void *data, int size, b
     return( dsize == size );
 }
 
-int WRAPI WRIsBlockEmpty( StringTableBlock *block )
+bool WRAPI WRIsBlockEmpty( StringTableBlock *block )
 {
     int         i;
 
     if( block != NULL ) {
         for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->String[i] != NULL ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **data,
-                                         size_t *size, bool is32bit )
+bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **pdata,
+                                         size_t *psize, bool is32bit )
 {
-    if( data != NULL && size != NULL ) {
-        *size = WRCalcStringBlockSize( block, is32bit );
-        if( *size != 0 ) {
-            *data = MemAlloc( *size );
-            if( *data != NULL ) {
-                if( WRInitDataFromBlock( block, *data, *size, is32bit ) ) {
+    size_t  size;
+    void    *data;
+
+    if( pdata != NULL && psize != NULL ) {
+        size = WRCalcStringBlockSize( block, is32bit );
+        if( size != 0 ) {
+            data = MemAlloc( size );
+            if( data != NULL ) {
+                if( WRInitDataFromBlock( block, data, size, is32bit ) ) {
                     return( true );
                 } else {
-                    MemFree( *data );
-                    *data = NULL;
-                    *size = 0;
+                    MemFree( data );
+                    data = NULL;
+                    size = 0;
                 }
             } else {
-                *size = 0;
+                size = 0;
             }
         } else {
-            *data = NULL;
+            data = NULL;
         }
+        *pdata = data;
+        *psize = size;
     }
 
     return( false );
@@ -230,12 +237,12 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_
     while( i < STRTABLE_STRS_PER_BLOCK && dsize > 0 ) {
         text = (char *)data;
         if( is32bit ) {
-            tlen = (int)*(uint_16 *)text;
+            tlen = *(uint_16 *)text;
             tlen *= 2;
             text += sizeof( uint_16 );
             dsize -= tlen + sizeof( uint_16 );
         } else {
-            tlen = (int)*(uint_8 *)text;
+            tlen = *(uint_8 *)text;
             text += sizeof( uint_8 );
             dsize -= tlen + sizeof( uint_8 );
         }
@@ -282,7 +289,7 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, void *data, size_
 bool WRAPI WRMergeStringBlock( StringTableBlock *b1, StringTableBlock *b2, bool replace )
 {
     int         i;
-    int         size;
+    uint_16     size;
 
     if( b1 == NULL || b2 == NULL ) {
         return( false );
@@ -345,7 +352,7 @@ bool WRAPI WRMergeStringData( void **s1, uint_32 *sz1, void *s2, uint_32 sz2,
     if( ok )  {
         MemFree( *s1 );
         *s1 = new_data;
-        *sz1 = new_size;
+        *sz1 = (uint_32)new_size;
     }
 
     ResFreeStringTableBlock( &b1 );

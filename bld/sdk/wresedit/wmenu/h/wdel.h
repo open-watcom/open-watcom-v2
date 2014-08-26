@@ -47,6 +47,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool WDeleteMenuEntry( WMenuEditInfo * );
-extern bool WDeleteEditWinLBoxEntry( WMenuEditInfo *, int, bool );
+extern bool WDeleteEditWinLBoxEntry( WMenuEditInfo *, box_pos, bool );
 
 #endif

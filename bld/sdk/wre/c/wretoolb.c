@@ -55,7 +55,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-BOOL WREToolBarHook( HWND, UINT, WPARAM, LPARAM );
+bool WREToolBarHook( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -134,7 +134,7 @@ WREToolBar *WRECreateToolBar( WREToolBarInfo *info, HWND parent )
     return( tbar );
 }
 
-BOOL WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WREToolBar  *tbar;
@@ -142,10 +142,10 @@ BOOL WREToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     bool        ret;
 
     if( (tbar = WREFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_USER:

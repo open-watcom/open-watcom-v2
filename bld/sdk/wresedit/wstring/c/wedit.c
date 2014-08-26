@@ -593,7 +593,7 @@ bool WPasteStringItem( WStringEditInfo *einfo )
 bool WClipStringItem( WStringEditInfo *einfo, bool cut )
 {
     HWND                lbox;
-    LRESULT             pos;
+    box_pos             pos;
     WStringBlock        *block;
     uint_16             id;
     char                *text;
@@ -612,12 +612,12 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         ok = (pos != LB_ERR);
     }
 
     if( ok ) {
-        id = (uint_16 )SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        id = (uint_16 )SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
         block = WFindStringBlock( einfo->tbl, id );
         ok = (block != NULL);
     }
@@ -629,7 +629,7 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
 
     if( ok ) {
         len = strlen( text ) + 1;
-        ok = WCopyClipData( einfo->win, CF_TEXT, text, len );
+        ok = WCopyClipData( einfo->win, CF_TEXT, text, (uint_32)len );
     }
 
     if( ok ) {
@@ -675,7 +675,7 @@ static bool WQueryChangeEntry( WStringEditInfo *einfo )
 void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
 {
     HWND                lbox;
-    int                 pos;
+    box_pos             pos;
     char                *text;
     char                *symbol;
     uint_16             id;
@@ -725,9 +725,9 @@ void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
     }
 
     if( block == NULL || id == (uint_16)-1 || pos == -1 ) {
-        pos = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         if( pos != LB_ERR ) {
-            id = (uint_16)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+            id = (uint_16)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
             block = WFindStringBlock( einfo->tbl, id );
             if( block == NULL ) {
                 return;
@@ -752,7 +752,7 @@ void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
         einfo->current_string = id;
         einfo->current_pos = (pos == LB_ERR ? -1 : pos);
         if( pos != LB_ERR ) {
-            SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
+            SendMessage( lbox, LB_SETCURSEL, pos, 0 );
         }
     }
 

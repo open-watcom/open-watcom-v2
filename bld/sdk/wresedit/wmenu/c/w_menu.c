@@ -664,15 +664,15 @@ bool WAddItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
                 return( FALSE );
             }
             ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
-                             (UINT)entry->preview_popup,
-                             entry->item->Item.Popup.ItemText );
+                             (UINT)(pointer_int)entry->preview_popup,
+                             entry->item->Item.Popup.ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
-                             entry->preview_id, NULL );
+                             entry->preview_id, NULL ) != 0;
         } else {
             ok = InsertMenu( parent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
-                             entry->item->Item.Normal.ItemText );
+                             entry->item->Item.Normal.ItemText ) != 0;
         }
     }
 
@@ -691,14 +691,14 @@ bool WModifyItemAtPos( HMENU parent, int pos, WMenuEntry *entry )
         flags &= ~MENU_ENDMENU;
         if( flags & MENU_POPUP ) {
             ok = ModifyMenu( parent, pos, MF_BYPOSITION | flags,
-                             (UINT)entry->preview_popup,
-                             entry->item->Item.Popup.ItemText );
+                             (UINT_PTR)entry->preview_popup,
+                             entry->item->Item.Popup.ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             // do nothing
         } else {
             ok = ModifyMenu( parent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
-                             entry->item->Item.Normal.ItemText );
+                             entry->item->Item.Normal.ItemText ) != 0;
         }
     }
 
@@ -785,15 +785,15 @@ WMenuEntry *WFindEntryFromPreviewPopup( WMenuEntry *entry, HMENU popup )
     return( NULL );
 }
 
-bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, int *count )
+bool WFindEntryLBPos( WMenuEntry *start, WMenuEntry *entry, box_pos *pos )
 {
     while( start != NULL ) {
-        *count = *count + 1;
+        *pos = *pos + 1;
         if( start == entry ) {
             return( TRUE );
         }
         if( start->child != NULL ) {
-            if ( WFindEntryLBPos( start->child, entry, count ) ) {
+            if ( WFindEntryLBPos( start->child, entry, pos ) ) {
                 return( TRUE );
             }
         }

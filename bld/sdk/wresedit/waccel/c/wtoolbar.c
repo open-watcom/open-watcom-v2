@@ -35,13 +35,13 @@
 #include <limits.h>
 #include "watcom.h"
 #include "wglbl.h"
+#include "ldstr.h"
 #include "wstat.h"
 #include "wmain.h"
 #include "wmsg.h"
 #include "whints.h"
 #include "wlist.h"
 #include "wtoolbar.h"
-#include "ldstr.h"
 #include "rcstr.gh"
 
 /****************************************************************************/
@@ -54,7 +54,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern BOOL WToolBarHook( HWND, UINT, WPARAM, LPARAM );
+extern bool WToolBarHook( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -133,18 +133,18 @@ WToolBar *WCreateToolBar( WToolBarInfo *info, HWND parent )
     return( tbar );
 }
 
-BOOL WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
+bool WToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     MINMAXINFO  *minmax;
     WToolBar    *tbar;
     int         bstate;
-    BOOL        ret;
+    bool        ret;
 
     if( (tbar = WFindToolBar( hwnd )) == NULL || tbar->win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( msg ) {
     case WM_USER:

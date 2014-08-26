@@ -47,6 +47,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool WInsertAccelEntry( WAccelEditInfo * );
-extern bool WAddEditWinLBoxEntry( WAccelEditInfo *, WAccelEntry *, int );
+extern bool WAddEditWinLBoxEntry( WAccelEditInfo *, WAccelEntry *, box_pos );
 
 #endif

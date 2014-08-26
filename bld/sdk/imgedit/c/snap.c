@@ -152,7 +152,9 @@ void SnapPicture( void )
 {
     img_node    *node;
     POINT       pt;
+#ifndef __NT__
     HWND        hwnd;
+#endif
     RECT        cliprect;
 
     node = GetCurrentNode();
@@ -186,8 +188,6 @@ void SnapPicture( void )
 
     snapWindow = node->hwnd;
 #ifdef __NT__
-    hwnd = hwnd;
-
     RegisterSnapClass( Instance );
     ShowWindow( HMainWindow, SW_SHOWMINIMIZED );
     ShowWindow( HMainWindow, SW_HIDE );

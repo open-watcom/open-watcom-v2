@@ -90,8 +90,8 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
 {
     ResNameOrOrdinal    *new;
     uint_8              *data8;
-    int                 stringlen;
-    int                 len;
+    size_t              stringlen;
+    size_t              len;
     size_t              len1;
 
     if( data == NULL ) {
@@ -127,8 +127,8 @@ ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
 
 int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
 {
-    int         len;
-    int         stringlen;
+    size_t      len;
+    size_t      stringlen;
 
     if( name == NULL || data == NULL || size == NULL ) {
         return( FALSE );

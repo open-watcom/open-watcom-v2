@@ -98,3 +98,12 @@ void WRECtl3dSubclassDlg( HWND win, WORD w )
     WRCtl3dSubclassDlg( win, w );
 #endif
 }
+
+void WRECtl3dSubclassDlgAll( HWND win )
+{
+#if !defined( WRE_USE_3D)
+    _wre_touch( win );
+#else
+    WRCtl3dSubclassDlgAll( win );
+#endif
+}

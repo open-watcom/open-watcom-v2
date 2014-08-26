@@ -117,7 +117,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     HWND        lbox;
     WMenuEntry  *parent;
     WMenuEntry  *entry;
-    LRESULT     ret;
+    box_pos     pos;
     int         new_kids;
     bool        ok;
     bool        is_popup;
@@ -142,34 +142,34 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     }
 
     if( ok ) {
-        ret = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         if( insert_before ) {
-            if( ret == 0 ) {
-                ret = LB_ERR;
-            } else if( ret != LB_ERR ) {
-                ret = ret - 1;
+            if( pos == 0 ) {
+                pos = LB_ERR;
+            } else if( pos != LB_ERR ) {
+                pos = pos - 1;
             }
         }
-        if( ret != LB_ERR ) {
-            entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)ret, 0 );
+        if( pos != LB_ERR ) {
+            entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
         } else {
-            ret = -1;
+            pos = -1;
         }
     }
 
     if( ok ) {
         if( entry != NULL ) {
-            ret += 1;
+            pos += 1;
             if( entry->item->IsPopup ) {
                 insert_subitems = TRUE;
             }
             if( !insert_subitems ) {
-                ret += WCountMenuChildren( entry->child );
+                pos += WCountMenuChildren( entry->child );
             }
             parent = entry->parent;
             is_popup = (entry->item->IsPopup && insert_subitems);
         } else {
-            ret = ret + 1;
+            pos = pos + 1;
         }
         ok = WInsertEntryIntoMenu( einfo, entry, parent, new, is_popup );
     }
@@ -179,12 +179,12 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
         if( reset_lbox ) {
             ok = WInitEditWindowListBox( einfo );
         } else {
-            ok = WAddEditWinLBoxEntry( lbox, new, (int)ret );
+            ok = WAddEditWinLBoxEntry( lbox, new, pos );
         }
     }
 
     if( ok ) {
-        ok = (SendMessage( lbox, LB_SETCURSEL, (int)ret, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
         if( ok ) {
             einfo->current_entry = NULL;
             einfo->current_pos = -1;
@@ -201,7 +201,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     return( ok );
 }
 
-bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, int *pos )
+bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, box_pos *pos )
 {
     bool        ok;
 
@@ -219,14 +219,14 @@ bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, int *pos )
     return( ok );
 }
 
-bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, int pos )
+bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, box_pos pos )
 {
     bool        ok;
     char        *text;
     char        *lbtext;
     char        *lbtext1;
     int         depth;
-    int         tlen;
+    size_t      tlen;
 
     lbtext = NULL;
 

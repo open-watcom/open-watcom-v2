@@ -106,7 +106,7 @@ bool WSaveObject( WMenuEditInfo *einfo, bool get_name, bool save_into )
 {
     bool    ok, data_saved;
     void    *old_data;
-    int     old_size;
+    size_t  old_size;
 
     data_saved = FALSE;
 

@@ -609,10 +609,10 @@ size_t WRAPI WRStrlen( const char *str, bool is32bit )
 
 int WRAPI WRFindFnOffset( const char *_name )
 {
-    int             offset;
-    unsigned char   *cp;
-    unsigned char   *last;
-    unsigned char   *name = (unsigned char *)_name;
+    int                 offset;
+    const unsigned char *cp;
+    const unsigned char *last;
+    const unsigned char *name = (const unsigned char *)_name;
 
     if( name == NULL ) {
         return( -1 );

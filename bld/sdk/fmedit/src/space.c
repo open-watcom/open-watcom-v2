@@ -59,6 +59,7 @@ extern void Space( WPARAM wparam )
         return;
     }
     currobj = GetECurrObject();
+    atleasttwo = FALSE;
     while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
             atleasttwo = TRUE;

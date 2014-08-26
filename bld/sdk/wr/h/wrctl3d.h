@@ -33,7 +33,9 @@
 #ifndef WRCTL3D_INCLUDED
 #define WRCTL3D_INCLUDED
 
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 #include <ctl3d.h>
+#endif
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -50,7 +52,9 @@ WRDLLENTRY extern int      WRAPI WRCtl3DInit( HINSTANCE );
 WRDLLENTRY extern void     WRAPI WRCtl3DFini( HINSTANCE );
 
 WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlg( HWND, WORD );
+WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlgAll( HWND );
 WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlgEx( HWND, DWORD );
+WRDLLENTRY extern bool     WRAPI WRCtl3dSubclassDlgExAll( HWND );
 WRDLLENTRY extern WORD     WRAPI WRCtl3dGetVer( void );
 WRDLLENTRY extern bool     WRAPI WRCtl3dEnabled( void );
 WRDLLENTRY extern HBRUSH   WRAPI WRCtl3dCtlColor( HDC, LONG );

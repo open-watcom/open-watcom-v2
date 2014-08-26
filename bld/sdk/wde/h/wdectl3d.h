@@ -33,8 +33,6 @@
 #ifndef WDECTL3D_INCLUDED
 #define WDECTL3D_INCLUDED
 
-#include <ctl3d.h>
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -50,6 +48,7 @@ extern bool     WdeCtl3DInit( HINSTANCE );
 extern void     WdeCtl3DFini( HINSTANCE );
 extern void     WdeCtl3dColorChange( void );
 extern void     WdeCtl3dSubclassDlg( HWND, WORD );
+extern void     WdeCtl3dSubclassDlgAll( HWND );
 extern void     WdeCtl3dSubclassCtl( HWND );
 extern LONG     WdeCtl3dDlgFramePaint( HWND win, UINT msg, WPARAM wp, LPARAM lp );
 extern HBRUSH   WdeCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp );

@@ -125,7 +125,7 @@ bool WReadOpts( WOptState *s )
 
     if( ret ) {
         ret = GetPrivateProfileString( WSectionName, "LastDir", "",
-                                       str, _MAX_PATH - 1, WProfileName );
+                                       str, _MAX_PATH - 1, WProfileName ) != 0;
     }
 
     if( ret ) {
@@ -142,7 +142,7 @@ bool WWriteIntOpt( char *entry, int i )
 
     ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName );
+    ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName ) != 0;
 
     return( ret );
 }
@@ -181,7 +181,7 @@ bool WWriteRectOpt( char *entry, RECT *r )
     ret = FALSE;
     str = WRectToStr( r );
     if( str != NULL ) {
-        ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName );
+        ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName ) != 0;
         WRMemFree( str );
     }
 
@@ -194,7 +194,7 @@ bool WGetRectOpt( char *entry, RECT *r )
     bool    ret;
 
     ret = GetPrivateProfileString( WSectionName, entry, "0, 0, 0, 0",
-                                   str, 40, WProfileName );
+                                   str, 40, WProfileName ) != 0;
     if( ret && strcmp( "0, 0, 0, 0", str ) ) {
         WStrToRect( str, r );
         return( TRUE );

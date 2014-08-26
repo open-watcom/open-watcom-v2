@@ -244,14 +244,14 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
 bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
-    BOOL    ret;
+    bool    ret;
     BYTE    scan_code;
 
     if( einfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSKEYUP:
@@ -266,7 +266,7 @@ bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARA
             einfo->key_info.extended = ((lParam & EXTENDED_MASK) != 0);
             scan_code = (uint_16)((uint_32)lParam >> 16) & 0x00ff;
             WSetKey( einfo, scan_code );
-            ret = TRUE;
+            ret = true;
         }
         break;
     case WM_LBUTTONDOWN:
@@ -276,7 +276,7 @@ bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARA
     case WM_NCRBUTTONDOWN:
     case WM_NCMBUTTONDOWN:
         /* abort if the user clicks the mouse */
-        ret = TRUE;
+        ret = true;
         break;
     }
 

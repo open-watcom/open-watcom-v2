@@ -107,7 +107,7 @@ bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
 {
     bool    ok, data_saved;
     void    *old_data;
-    int     old_size;
+    size_t  old_size;
 
     data_saved = FALSE;
 
@@ -119,47 +119,42 @@ bool WSaveObject( WAccelEditInfo *einfo, bool get_name, bool save_into )
         if( einfo->info->res_name == NULL ) {
             WDisplayErrorMsg( W_RESHASNONAME );
             ok = false;
-        }
-    }
-
-    if( ok ) {
-        if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
-            (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
-            if( einfo->info->symbol_file == NULL ) {
-                char    *fname;
-                if( einfo->file_name == NULL ) {
-                    fname = einfo->info->file_name;
-                } else {
-                    fname = einfo->file_name;
-                }
-                einfo->info->symbol_file = WCreateSymName( fname );
-            }
-            ok = WSaveSymbols( einfo, einfo->info->symbol_table,
-                               &einfo->info->symbol_file, get_name );
-        }
-    }
-
-    if( ok ) {
-        old_data = einfo->info->data;
-        old_size = einfo->info->data_size;
-        data_saved = TRUE;
-        WMakeDataFromAccelTable( einfo->tbl, &einfo->info->data, &einfo->info->data_size );
-        ok = (einfo->info->data != NULL && einfo->info->data_size != 0);
-        if( !ok ) {
-            WDisplayErrorMsg( W_ACCELISEMPTY );
-        }
-    }
-
-    if( ok ) {
-        if( save_into ) {
-            ok = WSaveObjectInto( einfo );
         } else {
-            ok = WSaveObjectAs( get_name, einfo );
-        }
-        if( einfo->info->data != NULL ) {
-            WRMemFree( einfo->info->data );
-            einfo->info->data = NULL;
-            einfo->info->data_size = 0;
+            if( !WRIsDefaultHashTable( einfo->info->symbol_table ) &&
+                (get_name || WRIsHashTableDirty( einfo->info->symbol_table )) ) {
+                if( einfo->info->symbol_file == NULL ) {
+                    char    *fname;
+                    if( einfo->file_name == NULL ) {
+                        fname = einfo->info->file_name;
+                    } else {
+                        fname = einfo->file_name;
+                    }
+                    einfo->info->symbol_file = WCreateSymName( fname );
+                }
+                ok = WSaveSymbols( einfo, einfo->info->symbol_table,
+                               &einfo->info->symbol_file, get_name );
+            }
+            if( ok ) {
+                old_data = einfo->info->data;
+                old_size = einfo->info->data_size;
+                data_saved = TRUE;
+                WMakeDataFromAccelTable( einfo->tbl, &einfo->info->data, &einfo->info->data_size );
+                ok = (einfo->info->data != NULL && einfo->info->data_size != 0);
+                if( !ok ) {
+                    WDisplayErrorMsg( W_ACCELISEMPTY );
+                } else {
+                    if( save_into ) {
+                        ok = WSaveObjectInto( einfo );
+                    } else {
+                        ok = WSaveObjectAs( get_name, einfo );
+                    }
+                    if( einfo->info->data != NULL ) {
+                        WRMemFree( einfo->info->data );
+                        einfo->info->data = NULL;
+                        einfo->info->data_size = 0;
+                    }
+                }
+            }
         }
     }
 
@@ -269,7 +264,7 @@ bool WSaveObjectAs( bool get_name, WAccelEditInfo *einfo )
         idata.name = einfo->info->res_name;
         idata.data = einfo->info->data;
         idata.lang = einfo->info->lang;
-        idata.size = einfo->info->data_size;
+        idata.size = (uint_32)einfo->info->data_size;
         idata.MemFlags = einfo->info->MemFlags;
         ok = WRSaveObjectAs( resfile, rtype, &idata );
     }
@@ -347,7 +342,7 @@ bool WSaveObjectInto( WAccelEditInfo *einfo )
             idata.name = einfo->info->res_name;
             idata.data = einfo->info->data;
             idata.lang = einfo->info->lang;
-            idata.size = einfo->info->data_size;
+            idata.size = (uint_32)einfo->info->data_size;
             idata.MemFlags = einfo->info->MemFlags;
             ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
         }

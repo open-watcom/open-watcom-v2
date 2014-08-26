@@ -48,6 +48,6 @@
 /****************************************************************************/
 extern bool WDeleteStringData( WStringEditInfo *, WStringBlock *, uint_16 , bool *bdel );
 extern bool WDeleteStringEntry( WStringEditInfo * );
-extern bool WDeleteEditWinLBoxEntry( WStringEditInfo *, int, bool );
+extern bool WDeleteEditWinLBoxEntry( WStringEditInfo *, box_pos, bool );
 
 #endif

@@ -95,9 +95,9 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
     WPI_PRES    pres;
     WPI_PRES    mempres;
     HBITMAP     oldbitmap;
-    HDC         anddc;
+//    HDC         anddc;
 
-    anddc = anddc;
+//    anddc = anddc;
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
@@ -131,7 +131,7 @@ void LineXorAnd( COLORREF xorcolor, COLORREF andcolor,
     _wpi_selectobject( mempres, oldpen );
     _wpi_deleteobject( hpen );
     _wpi_selectobject( mempres, oldbitmap );
-    _wpi_deletecompatiblepres( mempres, anddc );
+//    _wpi_deletecompatiblepres( mempres, anddc );
 
 } /* LineXorAnd */
 

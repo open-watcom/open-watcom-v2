@@ -99,6 +99,15 @@ void WCtl3dSubclassDlg( HWND win, WORD w )
 #endif
 }
 
+void WCtl3dSubclassDlgAll( HWND win )
+{
+#if !defined( W_USE_3D )
+    _wtouch( win );
+#else
+    WRCtl3dSubclassDlgAll( win );
+#endif
+}
+
 HBRUSH WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
 #if !defined( W_USE_3D )

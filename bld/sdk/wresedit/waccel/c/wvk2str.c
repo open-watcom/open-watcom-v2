@@ -68,27 +68,27 @@ static char *WGetVKText( uint_16, uint_16 );
 /* static variables                                                         */
 /****************************************************************************/
 static WShiftMapKeys WShiftMap[] = {
-    { '\`', '\~' },
-    { '1',  '\!' },
-    { '2',  '\@' },
-    { '3',  '\#' },
-    { '4',  '\$' },
-    { '5',  '\%' },
-    { '6',  '\^' },
-    { '7',  '\&' },
-    { '8',  '\*' },
-    { '9',  '\(' },
-    { '0',  '\)' },
-    { '\-', '\_' },
-    { '\=', '\+' },
-    { '\[', '\{' },
-    { '\]', '\}' },
-    { '\\', '\|' },
-    { '\;', '\:' },
-    { '\'', '\"' },
-    { '\,', '\<' },
-    { '\.', '\>' },
-    { '\/', '\?' },
+    { '`',  '~' },
+    { '1',  '!' },
+    { '2',  '@' },
+    { '3',  '#' },
+    { '4',  '$' },
+    { '5',  '%' },
+    { '6',  '^' },
+    { '7',  '&' },
+    { '8',  '*' },
+    { '9',  '(' },
+    { '0',  ')' },
+    { '-',  '_' },
+    { '=',  '+' },
+    { '[',  '{' },
+    { ']',  '}' },
+    { '\\', '|' },
+    { ';',  ':' },
+    { '\'', '"' },
+    { ',',  '<' },
+    { '.',  '>' },
+    { '/',  '?' },
     { 0,    0 }
 };
 
@@ -273,9 +273,9 @@ char *WGetASCIIVKText( uint_16 key )
     }
 
     i = 0;
-    t[i++] = '\"';
+    t[i++] = '"';
     t[i++] = toupper( key );
-    t[i++] = '\"';
+    t[i++] = '"';
     t[i++] = 0;
 
     return( t );
@@ -287,8 +287,8 @@ char *WGetASCIIKeyText( uint_16 key )
     bool        is_cntl;
 
     i = 0;
-    t[i++] = '\"';
-    is_cntl = iscntrl( key );
+    t[i++] = '"';
+    is_cntl = iscntrl( key ) != 0;
     if( is_cntl ) {
         t[i++] = '^';
         key += '@';
@@ -297,7 +297,7 @@ char *WGetASCIIKeyText( uint_16 key )
         }
     }
     t[i++] = key;
-    t[i++] = '\"';
+    t[i++] = '"';
     t[i++] = 0;
 
     return( t );
@@ -326,11 +326,11 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
 
     if( ok ) {
         i = 0;
-        if( text[i] == '\"' ) {
+        if( text[i] == '"' ) {
             i++;
         }
         is_cntl = FALSE;
-        if( text[i] == '\^' ) {
+        if( text[i] == '^' ) {
             i++;
             is_cntl = TRUE;
         }
@@ -351,7 +351,7 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
                     tkey = toupper( tkey );
                 }
             }
-            ok = isprint( tkey );
+            ok = isprint( tkey ) != 0;
         }
     }
 

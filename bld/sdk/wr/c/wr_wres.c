@@ -52,7 +52,7 @@
 WResID *WRCopyWResID( WResID *src )
 {
     WResID  *dest;
-    int     len;
+    size_t  len;
 
     if( src == NULL ) {
         return( NULL );

@@ -44,11 +44,7 @@ extern WORD _STACKLOW;
 static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 {
     WNDCLASS    wc;
-    HANDLE      memhdl;
-    WORD        i;
 
-    i=i;
-    memhdl = memhdl;    /* shut up the compiler for non-NT version */
     JDialogInit();
     Instance = currinst;
     ResInstance = currinst;
@@ -153,11 +149,12 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
                           int cmdshow )
 {
     MSG         msg;
+#ifdef __NT__
     HWND        prev_hwnd;
     char        *errstr;
+#endif
 
     cmdline = cmdline;
-    errstr = errstr;
     SetInstance( currinst );
 #ifdef __NT__
 
@@ -176,8 +173,6 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
         SetWindowPos( prev_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         exit( 0 );
     }
-#else
-    prev_hwnd = prev_hwnd;
 #endif
     if( !spyInit( currinst, previnst, cmdshow ) ) {
         exit( 0 );

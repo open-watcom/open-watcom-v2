@@ -74,3 +74,12 @@ void IECtl3dSubclassDlg( HWND win, WORD w )
     WRCtl3dSubclassDlg( win, w );
 
 } /* IECtl3dSubclassDlg */
+
+/*
+ * IECtl3dSubclassDlgAll
+ */
+void IECtl3dSubclassDlgAll( HWND win )
+{
+    WRCtl3dSubclassDlgAll( win );
+
+} /* IECtl3dSubclassDlg */

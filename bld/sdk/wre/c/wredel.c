@@ -100,7 +100,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     char                *name;
     int                 type;
     bool                ok;
-    int                 index;
+    LRESULT             index;
     HWND                res_lbox;
     WResLangNode        *lnode;
 
@@ -167,7 +167,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = (int)SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
+            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
             if( index == LB_ERR ) {
                 index = 0;
             }
@@ -232,7 +232,7 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     char                *name;
     int                 type;
     bool                ok;
-    int                 index;
+    LRESULT             index;
     HWND                res_lbox;
 
     name = NULL;
@@ -260,7 +260,7 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = (int)SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
+            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
             if( index == LB_ERR ) {
                 index = 0;
             }

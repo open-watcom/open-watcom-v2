@@ -33,8 +33,6 @@
 #ifndef WCTL3D_INCLUDED
 #define WCTL3D_INCLUDED
 
-#include <ctl3d.h>
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -50,6 +48,7 @@ extern bool     WCtl3DInit( HINSTANCE );
 extern void     WCtl3DFini( HINSTANCE );
 extern void     WCtl3dColorChange( void );
 extern void     WCtl3dSubclassDlg( HWND, WORD );
+extern void     WCtl3dSubclassDlgAll( HWND );
 extern HBRUSH   WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp );
 
 #endif

@@ -114,6 +114,19 @@ void WdeCtl3dSubclassDlg( HWND win, WORD w )
 #endif
 }
 
+void WdeCtl3dSubclassDlgAll( HWND win )
+{
+#if !defined( WDE_USE_3D )
+    _wde_touch( win );
+#else
+    if( CorrectVersion ) {
+        WRCtl3dSubclassDlgExAll( win );
+    } else {
+        WRCtl3dSubclassDlgAll( win );
+    }
+#endif
+}
+
 void WdeCtl3dSubclassCtl( HWND win )
 {
 #if !defined( WDE_USE_3D )
