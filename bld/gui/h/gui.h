@@ -598,6 +598,7 @@ extern void GUIGMouseOff( void );
 extern void GUIMDIInit( void );
 extern void GUIMDIInitMenuOnly( void );
 extern bool GUI3DDialogInit( void );
+extern void GUI3DDialogFini( void );
 extern void GUISetBetweenTitles( int between_titles );
 extern void GUIGetRoundScale( gui_coord *scale );
 extern void GUISetScale( gui_rect *screen );

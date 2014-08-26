@@ -38,3 +38,8 @@ bool GUI3DDialogInit( void )
 {
     return( CvrCtl3DInit( GUIMainHInst ) );
 }
+
+void GUI3DDialogFini( void )
+{
+    (void)CvrCtl3dUnregister( GUIMainHInst );
+}

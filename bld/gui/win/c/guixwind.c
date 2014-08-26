@@ -252,7 +252,7 @@ void GUICleanup( void )
     GUILoadStrFini();
     GUISysFini();
     GUIFiniDialog();
-    CvrCtl3dUnregister( GUIMainHInst );
+    GUI3DDialogFini();
 }
 
 #ifdef __OS2_PM__

@@ -459,7 +459,6 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 {
     bool                ret;
     unsigned            id;
-    int                 i;
     char                *new;
     int                 numrows;
     gui_text_metrics    text_metrics;
@@ -480,7 +479,6 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
 
 
     ret = false;
-    i = i;
     gui = gui;
     switch( gui_ev ) {
     case GUI_CLOSE :
@@ -501,6 +499,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     case GUI_INIT_WINDOW :
         if( MainWnd == NULL ) {
 #if dynamic_menus
+            int     i;
             for( i = 0; i < NUM_MAIN_MENUS; i++ ) {
                 GUIAppendMenu( gui, &MainMenu[i], false );
             }
@@ -627,6 +626,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
                 int             num;
                 GUICreateMenuStructFromRes( 100, &menu, &num );
                 if( menu && num ) {
+                    int     i;
                     for( i = 0; i < num; i++ ) {
                         GUIAppendMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, &menu[i], false );
                     }
@@ -1350,6 +1350,7 @@ bool ChildEventWnd( gui_window *gui, gui_event gui_ev, void *param )
     int                 vscroll;
 
     ret = false;
+    vscroll = 0;
     switch( gui_ev ) {
     case GUI_CLOSE :
         ret = true;

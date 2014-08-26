@@ -53,6 +53,7 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "wprocmap.h"
+#include "clibext.h"
 
 extern  WPI_INST        GUIMainHInst;
 

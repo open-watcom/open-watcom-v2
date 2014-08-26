@@ -86,6 +86,10 @@ bool GUI3DDialogInit( void )
     return( false );
 }
 
+void GUI3DDialogFini( void )
+{
+}
+
 bool GUISetHorizontalExtent( gui_window *wnd, unsigned id, int extent )
 {
     wnd = wnd;

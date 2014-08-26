@@ -105,7 +105,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, unsigned *focus_id )
     }
     /* will subclass if required */
     item->call_back = GUIDoSubClass( ctrl, item->control_class );
-    CvrCtl3dSubclassCtl( ctrl );
+    (void)CvrCtl3dSubclassCtl( ctrl );
     switch( item->control_class ) {
     case GUI_CHECK_BOX :
     case GUI_RADIO_BUTTON :
@@ -352,7 +352,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         break;
 #endif
     case WM_SYSCOLORCHANGE:
-        CvrCtl3dColorChange();
+        (void)CvrCtl3dColorChange();
         break;
     case WM_INITDIALOG:
         /* must return false or Windows will set input focus to the
