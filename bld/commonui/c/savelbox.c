@@ -39,7 +39,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "bool.h"
-#include "wpi.h"
 #include "savelbox.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
@@ -96,7 +95,7 @@ WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPAR
          * We must call this to subclass the directory listbox even
          * if the app calls Ctl3dAutoSubclass (commdlg bug).
          */
-        CvrCtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        CvrCtl3dSubclassDlgAll( hwnd );
         return( TRUE );
     }
     return( FALSE );

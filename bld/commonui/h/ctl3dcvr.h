@@ -33,17 +33,13 @@
 #define _CTL3DCVR_H_INCLUDED
 
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
+
 #include <ctl3d.h>
-#endif
 
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
 #define C3D_EXPORT  WINAPI
-#else
-#define C3D_EXPORT
-#endif
 
-extern int C3D_EXPORT       CvrCtl3DInit( WPI_INST );
-extern void C3D_EXPORT      CvrCtl3DFini( WPI_INST );
+extern int C3D_EXPORT       CvrCtl3DInit( HINSTANCE );
+extern void C3D_EXPORT      CvrCtl3DFini( HINSTANCE );
 extern bool C3D_EXPORT      CvrCtl3dSubclassDlg( HWND, WORD );
 extern bool C3D_EXPORT      CvrCtl3dSubclassDlgAll( HWND );
 extern bool C3D_EXPORT      CvrCtl3dSubclassDlgEx( HWND, DWORD );
@@ -55,9 +51,31 @@ extern HBRUSH C3D_EXPORT    CvrCtl3dCtlColorEx( UINT, WPARAM, LPARAM );
 extern bool C3D_EXPORT      CvrCtl3dColorChange( void );
 extern bool C3D_EXPORT      CvrCtl3dSubclassCtl( HWND );
 extern LONG C3D_EXPORT      CvrCtl3dDlgFramePaint( HWND, UINT, WPARAM, LPARAM );
-extern bool C3D_EXPORT      CvrCtl3dAutoSubclass( WPI_INST );
-extern bool C3D_EXPORT      CvrCtl3dRegister( WPI_INST );
-extern bool C3D_EXPORT      CvrCtl3dUnregister( WPI_INST );
+extern bool C3D_EXPORT      CvrCtl3dAutoSubclass( HINSTANCE );
+extern bool C3D_EXPORT      CvrCtl3dRegister( HINSTANCE );
+extern bool C3D_EXPORT      CvrCtl3dUnregister( HINSTANCE );
 extern VOID C3D_EXPORT      CvrCtl3dWinIniChange( void );
+
+#else
+
+#define CvrCtl3DInit(i)                     false
+#define CvrCtl3DFini(i)
+#define CvrCtl3dSubclassDlg(hw,w)           false
+#define CvrCtl3dSubclassDlgAll(hw)          false
+#define CvrCtl3dSubclassDlgEx(hw,dw)        false
+#define CvrCtl3dSubclassDlgExAll(hw)        false
+#define CvrCtl3dGetVer()                    0
+#define CvrCtl3dEnabled()                   false
+#define CvrCtl3dCtlColor(dc,l)              ((HBRUSH)NULL)
+#define CvrCtl3dCtlColorEx(u,wp,lp)         ((HBRUSH)NULL)
+#define CvrCtl3dColorChange()               false
+#define CvrCtl3dSubclassCtl(hw)             false
+#define CvrCtl3dDlgFramePaint(hw,u,wp,lp)   0
+#define CvrCtl3dAutoSubclass(i)             false
+#define CvrCtl3dRegister(i)                 false
+#define CvrCtl3dUnregister(i)               false
+#define CvrCtl3dWinIniChange()
+
+#endif
 
 #endif /* _CTL3DCVR_H_INCLUDED */

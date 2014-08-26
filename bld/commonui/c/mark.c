@@ -32,7 +32,6 @@
 #include "precomp.h"
 #include <string.h>
 #include "bool.h"
-#include "wpi.h"
 #include "mark.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"

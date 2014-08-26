@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "bool.h"
-#include "wpi.h"
 #include "mem.h"
 #include "alias.h"
 #ifndef NOUSE3D

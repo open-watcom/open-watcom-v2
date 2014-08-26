@@ -32,7 +32,6 @@
 #include "precomp.h"
 #include "bool.h"
 #include "watcom.h"
-#include "wpi.h"
 #include "ctl3dcvr.h"
 
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
@@ -52,9 +51,9 @@ typedef HBRUSH  (_DLLFAR *LPFN_Ctl3dCtlColorEx)( UINT, WPARAM, LPARAM );
 typedef BOOL    (_DLLFAR *LPFN_Ctl3dColorChange)( void );
 typedef BOOL    (_DLLFAR *LPFN_Ctl3dSubclassCtl)( HWND );
 typedef LONG    (_DLLFAR *LPFN_Ctl3dDlgFramePaint)( HWND, UINT, WPARAM, LPARAM );
-typedef BOOL    (_DLLFAR *LPFN_Ctl3dAutoSubclass)( WPI_INST );
-typedef BOOL    (_DLLFAR *LPFN_Ctl3dRegister)( WPI_INST );
-typedef BOOL    (_DLLFAR *LPFN_Ctl3dUnregister)( WPI_INST );
+typedef BOOL    (_DLLFAR *LPFN_Ctl3dAutoSubclass)( HINSTANCE );
+typedef BOOL    (_DLLFAR *LPFN_Ctl3dRegister)( HINSTANCE );
+typedef BOOL    (_DLLFAR *LPFN_Ctl3dUnregister)( HINSTANCE );
 typedef VOID    (_DLLFAR *LPFN_Ctl3dWinIniChange)( void );
 
 static LPFN_Ctl3dSubclassDlg    cvrCtl3dSubclassDlg     = NULL;
@@ -135,7 +134,7 @@ static void CvrCtl3DDLLFini( void )
  */
 static int CvrCtl3DDLLInit( void )
 {
- #ifdef __WINDOWS_386__
+ #if defined( __WINDOWS_386__ )
     cvrCtl3dUnregister  = &_CB_Ctl3dUnregister;
     cvrCtl3dSubclassDlg = &_CB_Ctl3dSubclassDlg;
     cvrCtl3dSubclassCtl = &_CB_Ctl3dSubclassCtl;
@@ -186,18 +185,14 @@ static int CvrCtl3DDLLInit( void )
 
 } /* CvrCtl3DDLLInit */
 
-#endif
-
 /*
  * CvrCtl3dSubclassDlg
  */
 bool C3D_EXPORT CvrCtl3dSubclassDlg( HWND hwnd, WORD w )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dSubclassDlg != NULL ) {
         return( cvrCtl3dSubclassDlg( hwnd, w ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dSubclassDlg */
@@ -207,11 +202,9 @@ bool C3D_EXPORT CvrCtl3dSubclassDlg( HWND hwnd, WORD w )
  */
 bool C3D_EXPORT CvrCtl3dSubclassDlgAll( HWND hwnd )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dSubclassDlg != NULL ) {
         return( cvrCtl3dSubclassDlg( hwnd, CTL3D_ALL ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dSubclassDlgAll */
@@ -221,11 +214,9 @@ bool C3D_EXPORT CvrCtl3dSubclassDlgAll( HWND hwnd )
  */
 bool C3D_EXPORT CvrCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dSubclassDlgEx != NULL ) {
         return( cvrCtl3dSubclassDlgEx( hwnd, dw ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dSubclassDlgEx */
@@ -235,11 +226,9 @@ bool C3D_EXPORT CvrCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
  */
 bool C3D_EXPORT CvrCtl3dSubclassDlgExAll( HWND hwnd )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dSubclassDlgEx != NULL ) {
         return( cvrCtl3dSubclassDlgEx( hwnd, CTL3D_ALL ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dSubclassDlgExAll */
@@ -249,11 +238,9 @@ bool C3D_EXPORT CvrCtl3dSubclassDlgExAll( HWND hwnd )
  */
 WORD C3D_EXPORT CvrCtl3dGetVer( void )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dGetVer != NULL ) {
         return( cvrCtl3dGetVer() );
     }
-#endif
     return( 0 );
 
 } /* CvrCtl3dGetVer */
@@ -263,11 +250,9 @@ WORD C3D_EXPORT CvrCtl3dGetVer( void )
  */
 bool C3D_EXPORT CvrCtl3dEnabled( void )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dEnabled != NULL ) {
         return( cvrCtl3dEnabled() != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dEnabled */
@@ -277,11 +262,9 @@ bool C3D_EXPORT CvrCtl3dEnabled( void )
  */
 HBRUSH C3D_EXPORT CvrCtl3dCtlColor( HDC dc, LONG l )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dCtlColor != NULL ) {
         return( cvrCtl3dCtlColor( dc, l ) );
     }
-#endif
     return( (HBRUSH)NULL );
 
 } /* CvrCtl3dCtlColor */
@@ -291,11 +274,9 @@ HBRUSH C3D_EXPORT CvrCtl3dCtlColor( HDC dc, LONG l )
  */
 HBRUSH C3D_EXPORT CvrCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dCtlColorEx != NULL ) {
         return( cvrCtl3dCtlColorEx( wm, wParam, lParam ) );
     }
-#endif
     return( (HBRUSH)NULL );
 
 } /* CvrCtl3dCtlColorEx */
@@ -305,11 +286,9 @@ HBRUSH C3D_EXPORT CvrCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
  */
 bool C3D_EXPORT CvrCtl3dColorChange( void )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dColorChange != NULL ) {
         return( cvrCtl3dColorChange() != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dColorChange */
@@ -319,11 +298,9 @@ bool C3D_EXPORT CvrCtl3dColorChange( void )
  */
 bool C3D_EXPORT CvrCtl3dSubclassCtl( HWND hwnd )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dSubclassCtl != NULL ) {
         return( cvrCtl3dSubclassCtl( hwnd ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dSubclassCtl */
@@ -333,11 +310,9 @@ bool C3D_EXPORT CvrCtl3dSubclassCtl( HWND hwnd )
  */
 LONG C3D_EXPORT CvrCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dDlgFramePaint != NULL ) {
         return( cvrCtl3dDlgFramePaint( hwnd, msg, wp, lp ) );
     }
-#endif
     return( 0L );
 
 } /* CvrCtl3dDlgFramePaint */
@@ -345,13 +320,11 @@ LONG C3D_EXPORT CvrCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp
 /*
  * CvrCtl3dAutoSubclass
  */
-bool C3D_EXPORT CvrCtl3dAutoSubclass( WPI_INST hndl )
+bool C3D_EXPORT CvrCtl3dAutoSubclass( HINSTANCE hndl )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dAutoSubclass != NULL ) {
         return( cvrCtl3dAutoSubclass( hndl ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dAutoSubclass */
@@ -359,13 +332,11 @@ bool C3D_EXPORT CvrCtl3dAutoSubclass( WPI_INST hndl )
 /*
  * CvrCtl3dRegister
  */
-bool C3D_EXPORT CvrCtl3dRegister( WPI_INST hndl )
+bool C3D_EXPORT CvrCtl3dRegister( HINSTANCE hndl )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dRegister != NULL ) {
         return( cvrCtl3dRegister( hndl ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dRegister */
@@ -373,13 +344,11 @@ bool C3D_EXPORT CvrCtl3dRegister( WPI_INST hndl )
 /*
  * CvrCtl3dUnregister
  */
-bool C3D_EXPORT CvrCtl3dUnregister( WPI_INST inst )
+bool C3D_EXPORT CvrCtl3dUnregister( HINSTANCE inst )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dUnregister != NULL ) {
         return( cvrCtl3dUnregister( inst ) != 0 );
     }
-#endif
     return( false );
 
 } /* CvrCtl3dUnregister */
@@ -389,21 +358,17 @@ bool C3D_EXPORT CvrCtl3dUnregister( WPI_INST inst )
  */
 void C3D_EXPORT CvrCtl3dWinIniChange( void )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     if( cvrCtl3dWinIniChange != NULL ) {
         cvrCtl3dWinIniChange();
     }
-#endif
 
 } /* CvrCtl3dWinIniChange */
 
 /*
  * CvrCtl3DInit
  */
-int C3D_EXPORT CvrCtl3DInit( WPI_INST inst )
+int C3D_EXPORT CvrCtl3DInit( HINSTANCE inst )
 {
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
-
  #if defined( __WINDOWS_386__ )
     static bool dll32Ctl3dOpen = false;
 
@@ -424,9 +389,8 @@ int C3D_EXPORT CvrCtl3DInit( WPI_INST inst )
         return( TRUE );
     }
  #endif
-    CvrCtl3DDLLInit();
-#endif
     inst = inst;
+    CvrCtl3DDLLInit();
     return( TRUE );
 
 } /* CvrCtl3DInit */
@@ -434,11 +398,11 @@ int C3D_EXPORT CvrCtl3DInit( WPI_INST inst )
 /*
  * CvrCtl3DFini
  */
-void C3D_EXPORT CvrCtl3DFini( WPI_INST inst )
+void C3D_EXPORT CvrCtl3DFini( HINSTANCE inst )
 {
     inst = inst;
-#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     CvrCtl3DDLLFini();
-#endif
 
 } /* CvrCtl3DFini */
+
+#endif

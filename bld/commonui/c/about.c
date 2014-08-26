@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bool.h"
-#include "wpi.h"
 #include "about.h"
 #include "aboutdlg.h"
 #ifndef NOUSE3D

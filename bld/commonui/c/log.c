@@ -38,7 +38,6 @@
 #include "wio.h"
 #include "bool.h"
 #include "watcom.h"
-#include "wpi.h"
 #include "log.h"
 #include "mem.h"
 #ifndef NOUSE3D
@@ -70,7 +69,7 @@ WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPA
          * We must call this to subclass the directory listbox even
          * if the app calls Ctl3dAutoSubclass (commdlg bug).
          */
-        CvrCtl3dSubclassDlg( hwnd, CTL3D_ALL );
+        CvrCtl3dSubclassDlgAll( hwnd );
 #endif
         return( TRUE );
     }
