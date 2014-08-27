@@ -155,7 +155,7 @@ DWORD doLBPrintf( LBoxHdl *lb, char *str, va_list al )
     HFONT       oldfont, newfont;
 
     vsprintf( tmp, str, al );
-    item = SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LONG)(LPSTR)tmp );
+    item = SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
     lb->line_cnt++;
     SendMessage( lb->hwnd, LB_SETCURSEL, item, 0L );
     dc = GetDC( lb->hwnd );

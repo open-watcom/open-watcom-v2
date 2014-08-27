@@ -305,7 +305,7 @@ char    *GetInitSaveDir( void );
 WINEXPORT extern WPI_DLGRESULT CALLBACK  SelImgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 WINEXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 #ifndef __OS2_PM__
-WINEXPORT extern BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam );
+WINEXPORT extern BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
 int                     NewImage( int img_type, char *filename );
 

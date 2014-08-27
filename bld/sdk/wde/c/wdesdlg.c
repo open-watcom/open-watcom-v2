@@ -205,7 +205,8 @@ bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 
 bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 {
-    LRESULT         count;
+    int             count;
+    LRESULT         selitms;
     int             *sel;
     bool            ok;
     LRESULT         ret;
@@ -217,7 +218,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     }
 
     win = GetDlgItem( hDlg, IDB_SELECT_LISTBOX );
-    count = SendMessage( win, LB_GETSELCOUNT, 0, 0 );
+    count = (int)SendMessage( win, LB_GETSELCOUNT, 0, 0 );
     if( count == 0 ) {
         return( TRUE );
     }
@@ -229,14 +230,14 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     }
     memset( sel, 0, count * sizeof( int ) );
 
-    ret = SendMessage( win, LB_GETSELITEMS, count, (LPARAM)sel );
+    selitms = SendMessage( win, LB_GETSELITEMS, count, (LPARAM)sel );
 
-    if( !ret || ret == LB_ERR ) {
+    if( selitms == 0 || selitms == LB_ERR ) {
         WdeWriteTrail( "WdeGetSelectInfo: LB_GETSELITEMS failed!" );
         return( FALSE );
     }
 
-    if( ret != count ) {
+    if( selitms != count ) {
         WdeWriteTrail( "WdeGetSelectInfo: Inconsistency detected!" );
     }
 

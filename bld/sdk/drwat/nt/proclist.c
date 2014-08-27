@@ -515,7 +515,7 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
         } else {
             sprintf( buf, "  Pid %08lX (%s)", info.pid, info.name );
         }
-        index = SendMessage( lb, LB_ADDSTRING, 0, (DWORD)buf );
+        index = SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
         SendMessage( lb, LB_SETITEMDATA, index, info.pid );
         if( info.pid == curproc ) {
             select = index;
@@ -533,7 +533,7 @@ static void fillTaskListBox( HWND hwnd, char *buf ) {
     /* if the old top item no longer exists choose the one before it */
     if( topindex == -1 && topproc != -1 ) {
         itemcnt = SendMessage( lb, LB_GETCOUNT, 0, 0L );
-        for( topindex = 0;; topindex++ ) {
+        for( topindex = 0; topindex < itemcnt; topindex++ ) {
             tmp = SendMessage( lb, LB_GETITEMDATA, topindex, 0 );
             if( tmp > topproc ) {
                 topproc--;

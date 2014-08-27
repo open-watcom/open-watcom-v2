@@ -357,7 +357,7 @@ BOOL __export FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam,
             WWinHelp( hwnd, "heapwalk.hlp", HELP_CONTENTS, 0 );
             break;
         case HEAPMENU_HELP_SRCH:
-            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (DWORD)"" );
+            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
             break;
         case HEAPMENU_HELP_ON_HELP:
             WWinHelp( hwnd, "winhelp.hlp", HELP_HELPONHELP, 0 );

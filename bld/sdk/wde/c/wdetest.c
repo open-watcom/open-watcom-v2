@@ -227,6 +227,7 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
     msg_processed = FALSE;
 
     switch( message ) {
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     case WM_DLGBORDER:
         if( lParam ) {
             *((int *)lParam) = CTL3D_BORDER;
@@ -245,9 +246,10 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
         }
         msg_processed = TRUE;
         break;
+#endif
     case WM_INITDIALOG:
         if( WdeGetOption( WdeOptUse3DEffects ) ) {
-            WdeCtl3dSubclassDlg( hWnd, CTL3D_ALL );
+            WdeCtl3dSubclassDlgAll( hWnd );
         }
         WdeTestDialogHandle = hWnd;
         msg_processed = FALSE;

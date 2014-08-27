@@ -146,7 +146,7 @@ typedef struct {
 /****************************************************************************/
 WINEXPORT BOOL       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
 WINEXPORT BOOL       CALLBACK WdeDialogProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, WORD, WPARAM, LPARAM );
+WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -279,7 +279,7 @@ static DISPATCH_ITEM WdeDialogActions[] = {
 bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
 {
     WdeResDlgItem   *ditem;
-    signed int      pos;
+    int             pos;
 
     if( res_info == NULL ) {
         return( FALSE );
@@ -571,14 +571,14 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     }
 
     if( ok ) {
-        ok = WdeDialogCreateWindow( new, NULL, NULL );
+        ok = WdeDialogCreateWindow( new, NULL, NULL ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeDialogCreate: CREATE_WINDOW failed!" );
         }
     }
 
     if( ok ) {
-        ok = Register( (OBJPTR)new );
+        ok = Register( (OBJPTR)new ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeCreateNewDialog: Register failed!" );
         }
@@ -634,11 +634,11 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
 
     if( ok ) {
         show = FALSE;
-        ok = WdeDialogCreateWindow( new, &show, NULL );
+        ok = WdeDialogCreateWindow( new, &show, NULL ) != 0;
     }
 
     if( ok ) {
-        ok = Register( (OBJPTR)new );
+        ok = Register( (OBJPTR)new ) != 0;
     }
 
     if( !ok ) {
@@ -1369,7 +1369,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         WdeSetStatusByID( WDE_DEFININGDIALOG, -1 );
 
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
-                                  (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info );
+                                  (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info ) != 0;
 
         if( redraw != 0 ) {
             quick = TRUE;
@@ -2226,7 +2226,7 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
     Location( (OBJPTR)obj, &old_location );
 
     /* update the location of the object */
-    ok = Move( obj->o_item, &offset, *forms_called );
+    ok = Move( obj->o_item, &offset, *forms_called ) != 0;
 
     if( ok && *forms_called ) {
         WdeOffsetDialogUnits( obj, NULL, &obj->nc_size );
@@ -2394,7 +2394,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     }
 
     if( ok ) {
-        ok = PasteObject( obj->o_item, parent, *pnt );
+        ok = PasteObject( obj->o_item, parent, *pnt ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeDialogPasteObject: Paste of OITEM failed!" );
         }
@@ -2402,7 +2402,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
 
     if( ok ) {
         WdeOffsetDialogUnits( obj, NULL, &obj->nc_size );
-        ok = WdeDialogCreateWindow( obj, NULL, NULL );
+        ok = WdeDialogCreateWindow( obj, NULL, NULL ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeDialogPasteObject: create window falied!" );
         }
@@ -2735,6 +2735,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
                        WdeCtl3dDlgFramePaint( hWnd, message, wParam, lParam ) );
         return( TRUE );
 #endif
+#if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     case WM_DLGBORDER:
         if( lParam ) {
             *((int *)lParam) = CTL3D_BORDER;
@@ -2753,9 +2754,10 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
         }
         msg_processed = TRUE;
         break;
+#endif
     case WM_INITDIALOG:
         if( WdeGetOption( WdeOptUse3DEffects ) ) {
-            WdeCtl3dSubclassDlg( hWnd, CTL3D_ALL );
+            WdeCtl3dSubclassDlgAll( hWnd );
         }
         break;
 
@@ -2780,7 +2782,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
     return( msg_processed );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, WORD message, WPARAM wParam, LPARAM lParam )
+WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo *o_info;
     static uint_8              init_done;

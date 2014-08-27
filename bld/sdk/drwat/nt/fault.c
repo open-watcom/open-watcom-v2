@@ -246,7 +246,7 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             CheckDlgButton( hwnd, INT_TERMINATE, BST_CHECKED );
             SendMessage( hwnd, WM_COMMAND,
                         MAKELONG( INT_ACT_AND_LOG, BN_CLICKED ),
-                        (LONG)GetDlgItem( hwnd, INT_ACT_AND_LOG ) );
+                        (LPARAM)GetDlgItem( hwnd, INT_ACT_AND_LOG ) );
             ConfigData.exception_action = tmp;
         } else {
             fillExceptionDlg( hwnd, info );

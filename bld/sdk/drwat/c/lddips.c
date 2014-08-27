@@ -79,7 +79,7 @@ BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             SetDlgMonoFont( hwnd, DIPLD_LIST );
             SetDlgMonoFont( hwnd, DIPLD_HEADER );
             SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0,
-                                (DWORD)(LPSTR)theLoadInfo[i].loadmsg );
+                                (LPARAM)(LPSTR)theLoadInfo[i].loadmsg );
         }
         break;
     case WM_COMMAND:

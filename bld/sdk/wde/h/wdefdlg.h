@@ -45,6 +45,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern WdeResDlgItem    *WdeFindDialogInResInfo( WdeResInfo *, int );
-extern signed int       WdeFindObjectPosInDialogList( WdeResInfo *, OBJPTR );
+extern int              WdeFindObjectPosInDialogList( WdeResInfo *, OBJPTR );
 
 #endif

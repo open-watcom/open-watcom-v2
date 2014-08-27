@@ -38,11 +38,11 @@
 #include "jdlg.h"
 #define BUF_SIZE        100
 
-BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
+BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
-    LRESULT     linecnt;
-    WORD        i;
+    int         linecnt;
+    int         i;
     HWND        edithwnd;
     char        buf[BUF_SIZE];
     LRESULT     len;
@@ -59,11 +59,11 @@ BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD l
         case IDOK:
             fn = (void *)GetWindowLong( hwnd, DWL_USER );
             edithwnd = GetDlgItem( hwnd, LOG_TEXT );
-            linecnt = SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0L );
-            for( i=0; i < linecnt; i++ ) {
+            linecnt = (int)SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0L );
+            for( i = 0; i < linecnt; i++ ) {
                 wptr = (WORD *) buf;
                 *wptr = BUF_SIZE - 1;
-                len = SendMessage( edithwnd, EM_GETLINE, i, (DWORD)buf );
+                len = SendMessage( edithwnd, EM_GETLINE, i, (LPARAM)buf );
                 buf[ len ] = '\0';
                 if( len > 0 ) {
                     fn( buf );

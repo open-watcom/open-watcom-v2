@@ -90,7 +90,7 @@ BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             } else {
                 RCsprintf( buf, STR_PROCESS_X, procinfo->procid );
             }
-            SendMessage( lb, LB_ADDSTRING, 0, (DWORD)buf );
+            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
             procinfo = GetNextOwnedProc( procinfo );
         }
         break;
@@ -254,8 +254,8 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             }
             break;
         case MENU_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_PARTIALKEY, (DWORD)"" ) ) {
-                WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
+                WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
             }
             break;
         case MENU_HELP_ON_HELP:

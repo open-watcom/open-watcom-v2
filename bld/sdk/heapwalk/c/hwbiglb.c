@@ -276,8 +276,7 @@ void RedrawBox( TextBoxHdl hdl, int index ) {
     if( index == -1 ) {
         InvalidateRect( info->boxhwnd, NULL, TRUE );
     } else {
-        ret = SendMessage( info->boxhwnd, LB_GETITEMRECT, index,
-                            (DWORD)&area );
+        ret = SendMessage( info->boxhwnd, LB_GETITEMRECT, index, (LPARAM)&area );
         if( ret != LB_ERR ) {
             InvalidateRect( info->boxhwnd, &area, TRUE );
         }

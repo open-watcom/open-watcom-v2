@@ -57,8 +57,7 @@ static void fillImageInfo( HWND hwnd, DWORD procid ) {
     DWORD       id;
 
     id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0 );
-    SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id,
-                        (DWORD)imagename );
+    SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
     if( !strcmp( imagename, TOTAL_MEM_STR ) ) {
         ok = GetMemInfo( procid, &procinfo );
         info = &procinfo.image;
@@ -157,8 +156,7 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
         if( !first_time ) {
             id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0 );
             if( id != CB_ERR ) {
-                SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id,
-                                    (DWORD)imagename );
+                SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
             }
         } else {
             id = CB_ERR;
@@ -166,17 +164,17 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
         SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_RESETCONTENT, 0, 0 );
         for( i=0; i < data.modcnt; i++ ) {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING,
-                                0, (DWORD)data.modlist[i] );
+                                0, (LPARAM)data.modlist[i] );
         }
         SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING,
-                            0, (DWORD)TOTAL_MEM_STR );
+                            0, (LPARAM)TOTAL_MEM_STR );
         if( id != CB_ERR ) {
             id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME,
                                 CB_FINDSTRINGEXACT, -1, (LPARAM)imagename );
         }
         if( id == CB_ERR ) {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SELECTSTRING,
-                                -1, (DWORD)TOTAL_MEM_STR );
+                                -1, (LPARAM)TOTAL_MEM_STR );
         } else {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SETCURSEL,
                                     id, 0 );

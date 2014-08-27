@@ -107,7 +107,7 @@ BOOL __export FAR PASCAL NotifyHandler( WORD id, DWORD data )
         MyModuleFindHandle( &ptr->me, ptr->te.hModule );
         break;
     }
-    PostMessage( MainWindow, WM_USER, id, (DWORD) ptr );
+    PostMessage( MainWindow, WM_USER, id, (LPARAM)ptr );
     rc = 0;
     if( id == NFY_INCHAR ) {
         rc = 'i';

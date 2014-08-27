@@ -439,13 +439,11 @@ static void FillTaskList( HWND hwnd )
             csip = GetRealCSIP( te.hTask, NULL );
             RCsprintf( str, STR_TASK_LB_FMT_STR, te.szModule,
                        HIWORD( csip ), LOWORD( csip ), (WORD)te.hTask );
-            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0,
-                (DWORD) (LPSTR) str );
+            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
         }
     } while( MyTaskNext( &te ) );
     SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_SETCURSEL, 0, 0L );
-    SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, 0,
-                        (DWORD) (LPSTR) str );
+    SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, 0, (LPARAM)(LPSTR)str );
 
 } /* FillTaskList */
 
@@ -513,8 +511,7 @@ BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, WORD msg, WORD wparam,
             break;
         case TASKCTL_TASKLIST:
             i = SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
-            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, i,
-                                (DWORD) (LPSTR) str );
+            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
             SetDlgItemText( hwnd, TASKCTL_TASKNAME, str );
             j = strlen( str )-1;
             currTask = 0;

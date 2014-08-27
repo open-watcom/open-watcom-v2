@@ -78,7 +78,7 @@ void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
  * sendDebugEvent
  */
 static void sendDebugEvent( CommunicationBuffer *data ) {
-    SendMessage( MainHwnd, DR_DEBUG_EVENT, 0, (DWORD)data );
+    SendMessage( MainHwnd, DR_DEBUG_EVENT, 0, (LPARAM)data );
 }
 
 /*

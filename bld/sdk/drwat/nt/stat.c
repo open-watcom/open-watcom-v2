@@ -303,7 +303,7 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             if( seg != 0 ) {
                 sprintf( buff,"%04d->%04x", i, seg );
                 SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0,
-                                (LONG)(LPSTR)buff );
+                                (LPARAM)(LPSTR)buff );
             }
         }
         break;
@@ -319,10 +319,8 @@ BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
                 char            str[100];
                 int             sel;
 
-                sel = SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL,
-                                          0, 0L );
-                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel,
-                            (DWORD) (LPSTR) str );
+                sel = SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETCURSEL, 0, 0L );
+                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)str );
                 str[4] = 0;
                 seg = atoi( str );
                 if( DoGlobalEntryModule( &ge, DTTaskEntry.hModule, seg ) ) {

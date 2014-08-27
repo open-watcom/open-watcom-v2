@@ -249,7 +249,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     int         *items;
     LRESULT     cnt;
     DWORD       total;
-    DWORD       i;
+    LRESULT     i;
     char        buf[100];
 
     total = 0;
@@ -261,8 +261,8 @@ void RefreshAdd( HWND dialog, HWND lbhwnd ) {
                       MB_OK | MB_ICONINFORMATION );
             return;
         }
-        SendMessage( lbhwnd, LB_GETSELITEMS, cnt, (DWORD)items );
-        for( i=0; i < cnt; i++ ) {
+        SendMessage( lbhwnd, LB_GETSELITEMS, cnt, (LPARAM)items );
+        for( i = 0; i < cnt; i++ ) {
             total += HeapList[ items[i] ]->info.ge.dwBlockSize;
         }
     }

@@ -190,7 +190,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             WWinHelp( hwnd, DR_HELP_FILE, HELP_CONTENTS, 0 );
             break;
         case MENU_HELP_SRCH:
-            WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (DWORD)"" );
+            WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
             break;
         case MENU_HELP_ON_HELP:
             WWinHelp( hwnd, HELP_HELP_FILE, HELP_HELPONHELP, 0 );

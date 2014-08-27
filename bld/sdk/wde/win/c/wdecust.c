@@ -847,7 +847,7 @@ void WdeFreeSelectWinCBox( HWND win )
 {
     HWND                cbox;
     LRESULT             count;
-    uint_32             i;
+    LRESULT             i;
     WdeCurrCustControl  *current;
 
     cbox = GetDlgItem( win, IDB_CUST_DESC );
@@ -855,7 +855,7 @@ void WdeFreeSelectWinCBox( HWND win )
     count = SendMessage( cbox, CB_GETCOUNT, 0, 0 );
 
     for( i = 0; i < count; i++ ) {
-        current = (WdeCurrCustControl *)SendMessage( cbox, CB_GETITEMDATA, (WPARAM)i, 0 );
+        current = (WdeCurrCustControl *)SendMessage( cbox, CB_GETITEMDATA, i, 0 );
         if( current != NULL ) {
             WRMemFree( current );
             SendMessage( cbox, CB_SETITEMDATA, i, (LPARAM)NULL );
@@ -945,7 +945,7 @@ bool WdeSetCurrentControl( HWND win, int which )
     index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0 );
 
     current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA,
-                                                        (WPARAM)index, 0 );
+                                                        index, 0 );
 
     if( current == NULL ) {
         WdeWriteTrail( "WdeSetCurrentControl: CB_GETITEMDATA failed!" );
@@ -1029,7 +1029,7 @@ bool WdePreviewSelected( HWND win )
     index = SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0 );
 
     current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA,
-                                                        (WPARAM)index, 0 );
+                                                        index, 0 );
 
     if( current == NULL ) {
         WdeWriteTrail( "WdePreviewSelected: CB_GETITEMDATA failed!" );

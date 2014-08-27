@@ -521,52 +521,60 @@ static void logDumpMemItem( HANDLE prochdl, MEMORY_BASIC_INFORMATION *mbi ) {
 
 BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    char                        buf[150];
     SelMemDlgInfo               *info;
-    LRESULT                     selcnt;
-    int                         *selitems;
-    DWORD                       i;
-    LRESULT                     index;
     HWND                        lb;
-    MEMORY_BASIC_INFORMATION    *mbi;
 
     info = (SelMemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
     switch( msg ) {
     case WM_INITDIALOG:
-        info = (SelMemDlgInfo *)lparam;
-        SetWindowLong( hwnd, DWL_USER, lparam );
-        lb = GetDlgItem( hwnd, DMP_BOX );
-        SetDlgMonoFont( hwnd, DMP_BOX );
-        SetDlgMonoFont( hwnd, DMP_LABEL );
-        SetDlgItemText( hwnd, DMP_LABEL, MEM_WALKER_HEADER );
-        for( i=0; i < info->list.used; i++ ) {
-            if( info->list.data[i]->mbi.State == MEM_COMMIT ) {
-                FormatMemListEntry( buf, info->list.data[i] );
-                index = SendMessage( lb, LB_ADDSTRING, 0, (DWORD)buf );
-                SendMessage( lb, LB_SETITEMDATA, index, i );
+        {
+            char    buf[150];
+            LRESULT i, j;
+
+            info = (SelMemDlgInfo *)lparam;
+            SetWindowLong( hwnd, DWL_USER, lparam );
+            lb = GetDlgItem( hwnd, DMP_BOX );
+            SetDlgMonoFont( hwnd, DMP_BOX );
+            SetDlgMonoFont( hwnd, DMP_LABEL );
+            SetDlgItemText( hwnd, DMP_LABEL, MEM_WALKER_HEADER );
+            for( i = 0; i < info->list.used; i++ ) {
+                if( info->list.data[i]->mbi.State == MEM_COMMIT ) {
+                    FormatMemListEntry( buf, info->list.data[i] );
+                    j = SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+                    SendMessage( lb, LB_SETITEMDATA, j, i );
+                }
             }
         }
         break;
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            lb = GetDlgItem( hwnd, DMP_BOX );
-            selcnt = SendMessage( lb, LB_GETSELCOUNT, 0, 0 );
-            if( selcnt > 0 ) {
-                logStrPrintf( "\n" );
-                selitems = MemAlloc( selcnt * sizeof( int ) );
-                SendMessage( lb, LB_GETSELITEMS, selcnt, (DWORD)selitems );
-                for( i=0; i < selcnt; i++ ) {
-                    index = SendMessage( lb, LB_GETITEMDATA, selitems[i], 0 );
-                    mbi = &info->list.data[ index ]->mbi;
-                    logPrintf( STR_MEM_DMP_X_TO_Y,
+            {
+                int     selcnt;
+
+                lb = GetDlgItem( hwnd, DMP_BOX );
+                selcnt = (int)SendMessage( lb, LB_GETSELCOUNT, 0, 0 );
+                if( selcnt > 0 ) {
+                    int     i, j;
+                    int     *selitems;
+
+                    logStrPrintf( "\n" );
+                    selitems = MemAlloc( selcnt * sizeof( int ) );
+                    SendMessage( lb, LB_GETSELITEMS, selcnt, (LPARAM)selitems );
+                    for( i = 0; i < selcnt; i++ ) {
+                        MEMORY_BASIC_INFORMATION    *mbi;
+
+                        j = (int)SendMessage( lb, LB_GETITEMDATA, selitems[i], 0 );
+                        mbi = &info->list.data[j]->mbi;
+                        logPrintf( STR_MEM_DMP_X_TO_Y,
                            mbi->BaseAddress,
                            (DWORD)mbi->BaseAddress + mbi->RegionSize );
-                    logDumpMemItem( info->prochdl, mbi );
+                        logDumpMemItem( info->prochdl, mbi );
+                    }
+                    MemFree( selitems );
                 }
-                MemFree( selitems );
+                SendMessage( hwnd, WM_CLOSE, 0, 0L );
             }
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         case IDCANCEL:
             SendMessage( hwnd, WM_CLOSE, 0, 0L );

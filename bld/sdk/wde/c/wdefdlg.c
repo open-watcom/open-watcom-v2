@@ -51,34 +51,34 @@ WdeResDlgItem *WdeFindDialogInResInfo( WdeResInfo *res_info, int dlg )
 {
     LIST            *dlist;
 
-    dlist = res_info->dlg_item_list;
-
-    for( ; dlist != NULL && dlg != -1; dlist = ListNext( dlist ), dlg-- ) {
-        if( dlg == 0 ) {
-            return( ListElement( dlist ) );
+    if( dlg != -1 ) {
+        for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+            if( dlg-- == 0 ) {
+                return( ListElement( dlist ) );
+            }
         }
     }
 
     return( NULL );
 }
 
-signed int WdeFindObjectPosInDialogList( WdeResInfo *res_info, OBJPTR obj )
+int WdeFindObjectPosInDialogList( WdeResInfo *res_info, OBJPTR obj )
 {
     LIST            *dlist;
     WdeResDlgItem   *ditem;
-    signed int      count;
+    int             count;
 
     if( res_info == NULL || obj == NULL ) {
         return( -1 );
     }
 
     count = 0;
-    dlist = res_info->dlg_item_list;
-    for( ; dlist != NULL; dlist = ListNext( dlist ), count++ ) {
+    for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         if( ditem->object == obj ) {
             return( count );
         }
+        count++;
     }
 
     return( -1 );
