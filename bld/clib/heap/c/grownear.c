@@ -46,13 +46,18 @@
 #endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
  #include <windows.h>
-#endif
-#if defined(__OS2__)
+#elif defined(__OS2__)
  #include <wos2.h>
-#endif
-#if defined(__RDOS__)
+#elif defined(__RDOS__)
  #include <rdos.h>
 #endif
+
+#if defined(__WARP__)
+#define BLKSIZE_ALIGN_MASK      0xFFFF  // 64kB
+#else
+#define BLKSIZE_ALIGN_MASK      0x0FFF  // 4kB
+#endif
+
 #if defined(__WINDOWS_386__)
  extern void * __pascal DPMIAlloc( unsigned long );
 #endif
@@ -90,8 +95,11 @@ static void __unlink( mheapptr miniheapptr )
     }
     prev_link = miniheapptr->prev;
     next_link = miniheapptr->next;
-    if( prev_link != NULL )  prev_link->next = next_link;
-    if( next_link != NULL )  next_link->prev = prev_link;
+    if( prev_link != NULL )
+        prev_link->next = next_link;
+    if( next_link != NULL ) {
+        next_link->prev = prev_link;
+    }
 }
 
 void __FreeDPMIBlocks( void )
@@ -104,8 +112,7 @@ void __FreeDPMIBlocks( void )
         // see if the last free entry has the full size of
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.
-        if( (mhp->freehead.prev)->len + sizeof(struct miniheapblkp) ==
-            mhp->len ) {
+        if( (mhp->freehead.prev)->len + sizeof(struct miniheapblkp) == mhp->len ) {
             mheapptr    pnext;
 
             dpmi = ((struct dpmi_hdr *)mhp) - 1;
@@ -131,7 +138,8 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
     unsigned            size;
     frlptr              flp, flp2;
 
-    if( !__heap_enabled ) return( 0 );
+    if( !__heap_enabled )
+        return( 0 );
     __FreeDPMIBlocks();
     prev_dpmi = NULL;
     for( mhp = __nheapbeg; mhp; mhp = mhp->next ) {
@@ -140,11 +148,12 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             // The mini-heap contains only this memblk
             __unlink( mhp );
             dpmi = ((struct dpmi_hdr *)mhp) - 1;
-            if( dpmi->dos_seg_value != 0 ) return( NULL );
+            if( dpmi->dos_seg_value != 0 )
+                return( NULL );
             size = mhp->len + sizeof(struct dpmi_hdr) + TAG_SIZE;
             size += ( req_size - (p1->len-TAG_SIZE) );
-            size += 0x0fff;
-            size &= ~0x0fff;
+            size += BLKSIZE_ALIGN_MASK;
+            size &= ~BLKSIZE_ALIGN_MASK;
             prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -190,7 +199,8 @@ static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
     /* (09-nov-93 Fred) */
     p2_prev = NULL;
     for( p2 = __nheapbeg; p2 != NULL; p2 = p2->next ) {
-        if( p1 < p2 ) break;
+        if( p1 < p2 )
+            break;
         p2_prev = p2;
     }
     /* ascending order should be: p2_prev < p1 < p2  */
@@ -236,20 +246,20 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     if( __nheapbeg == NULL ) {      /* no heap? can't have free blocks */
         return( 0 );
     }
-    p1 = __nheapbeg->freehead.prev;        /* point to last free block */
+    p1 = __nheapbeg->freehead.prev; /* point to last free block */
     brk_value = (unsigned)((PTR)p1 + p1->len + TAG_SIZE );
-    #if defined(__DOS_EXT__)
-        if( _IsPharLap() && !__X32VM) _curbrk = SegmentLimit(); /*19-feb-94*/
-    #endif
-    if( brk_value == _curbrk ) {   /* if last free block is at the end */
+  #if defined(__DOS_EXT__)
+    if( _IsPharLap() && !__X32VM)
+        _curbrk = SegmentLimit();
+  #endif
+    if( brk_value == _curbrk ) {    /* if last free block is at the end */
         return( p1->len );
     }
     return( 0 );
 }
 #endif
 
-#if ! defined(__CALL21__)
-#if defined(__DOS_EXT__)
+#if !defined(__CALL21__) && defined(__DOS_EXT__)
 static void *RationalAlloc( size_t size )
 {
     struct dpmi_hdr     *dpmi;
@@ -289,46 +299,50 @@ static void *RationalAlloc( size_t size )
     return( NULL );
 }
 #endif
-#endif
+
+/**
+ * Adjust block to match platform minimums and maximums
+ * @return 1 if adjust OK, 0 if adjustment fails
+ */
 
 static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount = *amount;
     unsigned amt;
-    #if ! ( defined(__WINDOWS_286__) || \
-            defined(__WINDOWS_386__) || \
-            defined(__WARP__)        || \
-            defined(__NT__)             \
-        )
-        unsigned last_free_amt;
-    #endif
+#if ! ( defined(__WINDOWS_286__) || \
+        defined(__WINDOWS_386__) || \
+        defined(__WARP__)        || \
+        defined(__NT__)             \
+    )
+    unsigned last_free_amt;
+#endif
 
     amt = old_amount;
     amt = ( amt + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
     if( amt < old_amount ) {
         return( 0 );
     }
-    #if ! ( defined(__WINDOWS_286__) || \
-            defined(__WINDOWS_386__) || \
-            defined(__WARP__)        || \
-            defined(__NT__)             \
-        )
-        #if defined(__DOS_EXT__)
-            if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
-                // Allocating extra to identify the dpmi block
-                amt += sizeof(struct dpmi_hdr);
-            } else {
-        #else
-            {
-        #endif
-                last_free_amt = __LastFree();   /* adjust for last free block */
-                if( last_free_amt >= amt ) {
-                    amt = 0;
-                } else {
-                    amt -= last_free_amt;
-                }
-            }
-    #endif
+#if ! ( defined(__WINDOWS_286__) || \
+        defined(__WINDOWS_386__) || \
+        defined(__WARP__)        || \
+        defined(__NT__)             \
+    )
+  #if defined(__DOS_EXT__)
+    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+        // Allocating extra to identify the dpmi block
+        amt += sizeof(struct dpmi_hdr);
+    } else {
+  #endif
+        last_free_amt = __LastFree();   /* adjust for last free block */
+        if( last_free_amt >= amt ) {
+            amt = 0;
+        } else {
+            amt -= last_free_amt;
+        }
+  #if defined(__DOS_EXT__)
+    }
+  #endif
+#endif
     /* amount is even here */
     /*
       extra amounts        (22-feb-91 AFS)
@@ -344,7 +358,8 @@ static int __AdjustAmount( unsigned *amount )
     */
     *amount = amt;
     amt += ( (TAG_SIZE) + sizeof(frl) + sizeof(struct miniheapblkp) );
-    if( amt < *amount ) return( 0 );
+    if( amt < *amount )
+        return( 0 );            // Report request too large
     if( amt < _amblksiz ) {
         /*
           _amblksiz may not be even so round down to an even number
@@ -353,18 +368,19 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = _amblksiz & ~1u;
     }
-    #if defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)          || \
-        defined(__CALL21__)      || \
-        defined(__DOS_EXT__)     || \
-        defined(__RDOS__)
-        /* make sure amount is a multiple of 4k */
-        *amount = amt;
-        amt += 0x0fff;
-        if( amt < *amount ) return( 0 );
-        amt &= ~0x0fff;
-    #endif
+#if defined(__WINDOWS_386__) || \
+    defined(__WARP__)        || \
+    defined(__NT__)          || \
+    defined(__CALL21__)      || \
+    defined(__DOS_EXT__)     || \
+    defined(__RDOS__)
+    /* make sure amount is a multiple of 4k/64k */
+    *amount = amt;
+    amt += BLKSIZE_ALIGN_MASK;
+    if( amt < *amount )
+        return( 0 );
+    amt &= ~BLKSIZE_ALIGN_MASK;
+#endif
     *amount = amt;
     return( *amount != 0 );
 }
@@ -381,37 +397,49 @@ static int __CreateNewNHeap( unsigned amount )
     mheapptr        p1;
     frlptr          flp;
     unsigned        brk_value;
+  #if defined(__WARP__)
+    ULONG           os2_alloc_flags;
+  #endif
 
-    if( !__heap_enabled ) return( 0 );
-    if( _curbrk == ~1u ) return( 0 );
-    if( __AdjustAmount( &amount ) == 0 ) return( 0 );
-#if defined(__WINDOWS_286__)
+    if( !__heap_enabled )
+        return( 0 );
+    if( _curbrk == ~1u )
+        return( 0 );
+    if( __AdjustAmount( &amount ) == 0 )
+        return( 0 );
+  #if defined(__WINDOWS_286__)
     brk_value = (unsigned) LocalAlloc( LMEM_FIXED, amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
-#elif defined(__WINDOWS_386__)
+  #elif defined(__WINDOWS_386__)
     brk_value = (unsigned) DPMIAlloc( amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
-#elif defined(__WARP__)
+  #elif defined(__WARP__)
     {
         PBYTE           p;
+        APIRET          apiret;
 
-        if( DosAllocMem( (PPVOID)&p, amount, PAG_COMMIT|PAG_READ|PAG_WRITE ) ) {
-            return( 0 );
+        os2_alloc_flags = PAG_COMMIT | PAG_READ | PAG_WRITE;
+        if( _os2_obj_any_supported && _os2_use_obj_any ) {
+            os2_alloc_flags |= OBJ_ANY;
         }
+        apiret = DosAllocMem( (PPVOID)&p, amount, os2_alloc_flags );
+        if( apiret )
+            return( 0 );
+
         brk_value = (unsigned)p;
     }
-#elif defined(__NT__)
+  #elif defined(__NT__)
     brk_value = (unsigned) VirtualAlloc( NULL, amount, MEM_COMMIT,
                                         PAGE_EXECUTE_READWRITE );
     //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
-#elif defined(__CALL21__)
+  #elif defined(__CALL21__)
     {
         tag _WCNEAR *tmp_tag;
 
@@ -424,14 +452,16 @@ static int __CreateNewNHeap( unsigned amount )
         brk_value = (unsigned) &tmp_tag[2];
         amount -= 2 * TAG_SIZE; // 11-jun-95, subtract extra tag
     }
-#elif defined(__DOS_EXT__)
+  #elif defined(__DOS_EXT__)
     // if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
     {
         tag         *tmp_tag;
 
         if( _IsRational() ) {
             tmp_tag = RationalAlloc( amount );
-            if( tmp_tag ) amount = *tmp_tag;
+            if( tmp_tag ) {
+                amount = *tmp_tag;
+            }
         } else {    /* CodeBuilder */
             tmp_tag = TinyCBAlloc( amount );
             amount -= TAG_SIZE;
@@ -442,12 +472,12 @@ static int __CreateNewNHeap( unsigned amount )
         brk_value = (unsigned) tmp_tag;
     }
     // Pharlap, RSI/non-zero can never call this function
-#elif defined(__RDOS__)
+  #elif defined(__RDOS__)
     brk_value = (unsigned) RdosAllocateMem( amount );
     if( brk_value == 0 ) {
         return( 0 );
     }
-#endif
+  #endif
     if( amount - TAG_SIZE > amount ) {
         return( 0 );
     } else {
@@ -461,6 +491,10 @@ static int __CreateNewNHeap( unsigned amount )
     /* we've got a new heap block */
     p1 = (mheapptr) brk_value;
     p1->len = amount;
+  #if defined(__WARP__)
+    // Remeber if block was allocated with OBJ_ANY - may be in high memory
+    p1->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
+  #endif
     // Now link it up
     flp = __LinkUpNewMHeap( p1 );
     amount = flp->len;
@@ -475,93 +509,115 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-    #if defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)          || \
-        defined(__CALL21__)      || \
-        defined(__RDOS__)
-        // first try to free any available storage
-        _nheapshrink();
-        return( __CreateNewNHeap( amount ) );
-    #else
-        mheapptr        p1;
-        frlptr          flp;
-        unsigned brk_value;
-        tag     *last_tag;
-        unsigned new_brk_value;
-        void _WCNEAR *brk_ret;
+#if defined(__WINDOWS_286__) || \
+    defined(__WINDOWS_386__) || \
+    defined(__WARP__)        || \
+    defined(__NT__)          || \
+    defined(__CALL21__)      || \
+    defined(__RDOS__)
+    // first try to free any available storage
+    _nheapshrink();
+    return( __CreateNewNHeap( amount ) );
+#else
+    mheapptr        p1;
+    frlptr          flp;
+    unsigned brk_value;
+    tag     *last_tag;
+    unsigned new_brk_value;
+    void _WCNEAR *brk_ret;
 
-        #if defined(__DOS_EXT__)
-            if( ( _IsRationalZeroBase() || _IsCodeBuilder() ) ) {
-                return( __CreateNewNHeap( amount ) );   // Won't slice either
-            }
-            // Rational non-zero based system should go through.
-        #endif
-        if( !__heap_enabled ) return( 0 );
-        if( _curbrk == ~1u ) return( 0 );
-        if( __AdjustAmount( &amount ) == 0 ) return( 0 );
-        #if defined(__DOS_EXT__)
-            if( _IsPharLap() && !__X32VM ) {        /* 19-feb-94 */
-                _curbrk = SegmentLimit();
-            }
-        #endif
-        new_brk_value = amount + _curbrk;
-        if( new_brk_value < _curbrk ) {
-            new_brk_value = ~1u;
+  #if defined(__DOS_EXT__)
+    if( ( _IsRationalZeroBase() || _IsCodeBuilder() ) ) {
+        return( __CreateNewNHeap( amount ) );   // Won't slice either
+    }
+    // Rational non-zero based system should go through.
+  #endif
+    if( !__heap_enabled )
+        return( 0 );
+    if( _curbrk == ~1u )
+        return( 0 );
+    if( __AdjustAmount( &amount ) == 0 )
+        return( 0 );
+  #if defined(__DOS_EXT__)
+    if( _IsPharLap() && !__X32VM ) {
+        _curbrk = SegmentLimit();
+    }
+  #endif
+    new_brk_value = amount + _curbrk;
+    if( new_brk_value < _curbrk ) {
+        new_brk_value = ~1u;
+    }
+    brk_ret = __brk( new_brk_value );
+    if( brk_ret == (void _WCNEAR *) -1 ) {
+        return( 0 );
+    }
+    brk_value = (unsigned) brk_ret;
+    if( brk_value >  /*0xfff8*/ ~7u ) {
+        return( 0 );
+    }
+    if( new_brk_value <= brk_value ) {
+        return( 0 );
+    }
+    amount = new_brk_value - brk_value;
+    if( amount - TAG_SIZE > amount ) {
+        return( 0 );
+    } else {
+        amount -= TAG_SIZE;
+    }
+    for( p1 = __nheapbeg; p1 != NULL; p1 = p1->next ) {
+        if( p1->next == NULL )
+            break;
+        if( (unsigned)p1 <= brk_value && ((unsigned)p1)+p1->len+TAG_SIZE >= brk_value ) {
+            break;
         }
-        brk_ret = __brk( new_brk_value );
-        if( brk_ret == (void _WCNEAR *) -1 ) {
+    }
+    if( (p1 != NULL) && ((brk_value - TAG_SIZE) == (unsigned)( (PTR)p1 + p1->len) ) ) {
+        /* we are extending the previous heap block (slicing) */
+        /* nb. account for the end-of-heap tag */
+        brk_value -= TAG_SIZE;
+        amount += TAG_SIZE;
+        flp = (frlptr) brk_value;
+        /* adjust current entry in heap list */
+        p1->len += amount;
+        /* fix up end of heap links */
+        last_tag = (tag *) ( (PTR)flp + amount );
+        last_tag[0] = END_TAG;
+    } else {
+        if( amount < sizeof( struct miniheapblkp ) + sizeof( frl ) ) {
+        /*  there isn't enough for a heap block (struct miniheapblkp) and
+            one free block (frl) */
             return( 0 );
         }
-        brk_value = (unsigned) brk_ret;
-        if( brk_value >  /*0xfff8*/ ~7u ) {
-            return( 0 );
-        }
-        if( new_brk_value <= brk_value ) {
-            return( 0 );
-        }
-        amount = new_brk_value - brk_value;
-        if( amount - TAG_SIZE > amount ) {
-            return( 0 );
-        } else {
-            amount -= TAG_SIZE;
-        }
-        for( p1 = __nheapbeg; p1 != NULL; p1 = p1->next ) {
-            if( p1->next == NULL ) break;
-            if( (unsigned)p1 <= brk_value &&
-                ((unsigned)p1)+p1->len+TAG_SIZE >= brk_value ) break;
-        }
-        if( (p1 != NULL) &&
-        ((brk_value - TAG_SIZE) == (unsigned)( (PTR)p1 + p1->len) ) ) {
-                /* we are extending the previous heap block (slicing) */
-                /* nb. account for the end-of-heap tag */
-                brk_value -= TAG_SIZE;
-                amount += TAG_SIZE;
-                flp = (frlptr) brk_value;
-                /* adjust current entry in heap list */
-                p1->len += amount;
-                /* fix up end of heap links */
-                last_tag = (tag *) ( (PTR)flp + amount );
-                last_tag[0] = END_TAG;
-        } else {
-            if( amount < sizeof( struct miniheapblkp ) + sizeof( frl ) ) {
-            /*  there isn't enough for a heap block (struct miniheapblkp) and
-                one free block (frl) */
-                return( 0 );
-            }
-            // Initializing the near heap if __nheapbeg == NULL,
-            // otherwise, a new mini-heap is getting linked up
-            p1 = (mheapptr) brk_value;
-            p1->len = amount;
-            flp = __LinkUpNewMHeap( p1 );
-            amount = flp->len;
-        }
-        /* build a block for _nfree() */
-        flp->len = amount | 1;
-        ++p1->numalloc;                         /* 28-dec-90 */
-        p1->largest_blk = ~0;    /* set to largest value to be safe */
-        _nfree( (PTR)flp + TAG_SIZE );
-        return( 1 );
-    #endif
+        // Initializing the near heap if __nheapbeg == NULL,
+        // otherwise, a new mini-heap is getting linked up
+        p1 = (mheapptr) brk_value;
+        p1->len = amount;
+        flp = __LinkUpNewMHeap( p1 );
+        amount = flp->len;
+    }
+    /* build a block for _nfree() */
+    flp->len = amount | 1;
+    ++p1->numalloc;                         /* 28-dec-90 */
+    p1->largest_blk = ~0;    /* set to largest value to be safe */
+    _nfree( (PTR)flp + TAG_SIZE );
+    return( 1 );
+#endif
 }
+
+#if defined(__WARP__)
+unsigned bool _os2_obj_any_supported = FALSE;
+
+static void _check_os2_obj_any_support( void )
+{
+    PBYTE           p;
+    APIRET          apiret;
+
+    _os2_obj_any_supported = TRUE;
+    apiret = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
+    if( apiret == ERROR_INVALID_PARAMETER ) {
+        _os2_obj_any_supported = FALSE;
+    }
+}
+
+AXI( _check_os2_obj_any_support, INIT_PRIORITY_PROGRAM - 8 )
+#endif

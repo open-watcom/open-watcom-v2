@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Ensure that important structure sizes stay in sync
 *
 ****************************************************************************/
 
@@ -38,7 +37,12 @@
 // The following sizes are important to maintaining the alignment of the heap
 #define SIZEOF_FREELIST     (TAG_SIZE*3)
 #define SIZEOF_FREELISTP    SIZEOF_FREELIST
+#if defined(__WARP__)
+// 32-bit OS/2 has one more for high memory flags - was 8
+#define SIZEOF_HEAPBLK      (TAG_SIZE*9+SIZEOF_FREELIST)
+#else
 #define SIZEOF_HEAPBLK      (TAG_SIZE*8+SIZEOF_FREELIST)
+#endif
 #define SIZEOF_HEAPBLKP     SIZEOF_HEAPBLK
 #define SIZEOF_MINIHEAPBLKP SIZEOF_HEAPBLK
 #define SIZEOF_HEAPSTART    (SIZEOF_HEAPBLK + SIZEOF_FREELIST)

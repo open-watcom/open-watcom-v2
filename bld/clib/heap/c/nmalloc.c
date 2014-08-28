@@ -47,7 +47,61 @@ mheapptr _WCNEAR __nheapbeg = NULL;
 struct miniheapblkp _WCNEAR *__MiniHeapRover = NULL;
 unsigned int   __LargestSizeB4MiniHeapRover = 0;
 
+#if defined(__WARP__)
 
+/* OS/2 high memory heap support
+ * malloc allocates from current heap
+ * _os2halloc allocates from high memory if possible
+ * falls back to lower memory if high memory not available
+ * _os2lalloc always allocates from lower memory
+ */
+
+bool _os2_use_obj_any;
+
+_WCRTLINK int _use_os2_high_mem( int fUseHighMem )
+{
+  int prior;
+  _AccessNHeap();
+  prior = _os2_use_obj_any;
+  _os2_use_obj_any = ( fUseHighMem != 0 );
+  _ReleaseNHeap();
+  return( prior );
+}
+
+/**
+ * Allocate from lower heap
+ */
+
+_WCRTLINK void *_os2lmalloc( size_t amount )
+{
+  int prior;
+  void _WCNEAR *ptr;
+  _AccessNHeap();
+  prior = _use_os2_high_mem( 0 );
+  ptr = _nmalloc( amount );
+  _use_os2_high_mem( prior );
+  _ReleaseNHeap();
+  return( ptr );
+
+}
+
+/**
+ * Allocate from upper memory heap if possible
+ */
+
+_WCRTLINK void *_os2hmalloc( size_t amount )
+{
+  int prior;
+  void _WCNEAR *ptr;
+  _AccessNHeap();
+  prior = _use_os2_high_mem( 1 );
+  ptr = _nmalloc( amount );
+  _use_os2_high_mem( prior );
+  _ReleaseNHeap();
+  return( ptr );
+}
+
+#endif /* __WARP__ */
 
 #if defined(__SMALL_DATA__)
 
@@ -72,9 +126,9 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     void *ptr;
 
     ptr = RdosAllocateDebugMem( amt );
-    
+
     return( (void _WCNEAR *)ptr );
-}    
+}
 
 #else
 
@@ -85,6 +139,10 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     unsigned        ptr;
     unsigned char   expanded;
     mheapptr        miniheap_ptr;
+
+#if defined(__WARP__)
+    bool            use_obj_any;
+#endif // __WARP__
 
     if( (amt == 0) || (amt > -sizeof(struct heapblk)) ) {
         return( (void _WCNEAR *)NULL );
@@ -101,42 +159,56 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     ptr = 0;
     expanded = 0;
     for(;;) {
+#if defined(__WARP__)
+        // Need to update each pass in case 1st DosAllocMem determines OBJ_ANY not supported
+        use_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
+#endif
+        // Figure out where to start looking for free blocks
         if( size > __LargestSizeB4MiniHeapRover ) {
             miniheap_ptr = __MiniHeapRover;
             if( miniheap_ptr == NULL ) {
-                __LargestSizeB4MiniHeapRover = 0;
+                __LargestSizeB4MiniHeapRover = 0;   // force to be updated
                 miniheap_ptr = __nheapbeg;
             }
         } else {
-            __LargestSizeB4MiniHeapRover = 0;   // force value to be updated
+            __LargestSizeB4MiniHeapRover = 0;   // force to be updated
             miniheap_ptr = __nheapbeg;
         }
+        // Search for free block
         for(;;) {
             if( miniheap_ptr == NULL ) {
-                break;
+                break;                  // Expand heap and retry maybe
             }
             __MiniHeapRover = miniheap_ptr;
             largest = miniheap_ptr->largest_blk;
-            if( largest >= amt ) {
-                ptr = __MemAllocator( amt, _DGroup(), (unsigned)miniheap_ptr );
-                if( ptr != 0 ) {
-                    goto lbl_release_heap;
-                }
+#if defined(__WARP__)
+            if( use_obj_any == ( miniheap_ptr->used_obj_any != 0 ) ) {
+#endif // __WARP__
+              if( largest >= amt ) {
+                  ptr = __MemAllocator( amt, _DGroup(), (unsigned)miniheap_ptr );
+                  if( ptr != 0 ) {
+                      goto lbl_release_heap;
+                  }
+              }
+#if defined(__WARP__)
             }
+#endif // __WARP__
             if( largest > __LargestSizeB4MiniHeapRover ) {
                 __LargestSizeB4MiniHeapRover = largest;
             }
             miniheap_ptr = miniheap_ptr->next;
-        }
+        } /* forever */
+        // OS/2 only - if not block of requested type, will allocate one and find in 2nd pass
+        // Try to expand heap and retry
         if( expanded || !__ExpandDGROUP( amt ) ) {
             if( !__nmemneed( amt ) ) {
-                break;
+                break;                  // give up
             }
             expanded = 0;
         } else {
             expanded = 1;
         }
-    }
+    } /* forever */
 lbl_release_heap:
     _ReleaseNHeap();
     return( (void _WCNEAR *)ptr );
