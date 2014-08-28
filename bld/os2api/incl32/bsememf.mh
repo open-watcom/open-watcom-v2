@@ -1,0 +1,61 @@
+/*
+ *  bsememf.h   OS/2 memory flags include file for 32-bit development.
+ *
+:include crwatcnt.sp
+ */
+
+#ifndef __BSEMEMF_H__
+#define __BSEMEMF_H__
+
+:include readonly.sp
+
+:include cpluspro.sp
+
+#define PAG_READ      0x00000001
+#define PAG_WRITE     0x00000002
+#define PAG_EXECUTE   0x00000004
+#define PAG_GUARD     0x00000008
+#define PAG_COMMIT    0x00000010
+#define PAG_DECOMMIT  0x00000020
+#define PAG_DEFAULT   0x00000400
+#define PAG_SHARED    0x00002000
+#define PAG_FREE      0x00004000
+#define PAG_BASE      0x00010000
+
+#define OBJ_TILE      0x00000040
+#define OBJ_PROTECTED 0x00000080
+#define OBJ_GETTABLE  0x00000100
+#define OBJ_GIVEABLE  0x00000200
+#define OBJ_ANY       0x00000400
+#define OBJ_SELMAPALL 0x00000800
+
+#define DOSSUB_INIT       1
+#define DOSSUB_GROW       2
+#define DOSSUB_SPARSE_OBJ 4
+#define DOSSUB_SERIALIZE  8
+
+#define SEL_CODE        1
+#define SEL_USE32       2
+
+#define PAG_NPOUT       0x00000000
+#define PAG_PRESENT     0x00000001
+#define PAG_NPIN        0x00000002
+#define PAG_PRESMASK    0x00000003
+#define PAG_INVALID     0x00000000
+#define PAG_RESIDENT    0x00000010
+#define PAG_SWAPPABLE   0x00000020
+#define PAG_DISCARDABLE 0x00000030
+#define PAG_TYPEMASK    0x00000030
+
+#define fPERM         (PAG_EXECUTE | PAG_READ | PAG_WRITE)
+#define fSHARE        (OBJ_GETTABLE | OBJ_GIVEABLE)
+#define fALLOC        (OBJ_TILE | PAG_COMMIT | fPERM)
+#define fALLOCSHR     (OBJ_TILE | PAG_COMMIT | fSHARE | fPERM)
+#define fGETNMSHR     (fPERM)
+#define fGETSHR       (fPERM)
+#define fGIVESHR      (fPERM)
+#define fSET          (PAG_COMMIT + PAG_DECOMMIT + PAG_DEFAULT + fPERM)
+
+:include cplusepi.sp
+
+#endif

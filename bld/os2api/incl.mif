@@ -43,6 +43,7 @@ headers386 =                 &
         bsedev.h             &
         bsedos.h             &
         bseerr.h             &
+        bsememf.h            &
         bseord.h             &
         bsesub.h             &
         bsexcpt.h            &
