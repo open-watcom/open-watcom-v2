@@ -176,7 +176,7 @@ static  void    FindPath( char *name, char *buf );
 static  int     CompLink( void );
 static  void    MakeName( char *name, char *ext );
 static  void    Fputnl( char *text, FILE *fptr );
-static  int     IsOption( char *cmd, int cmd_len, char *opt );
+static  int     IsOption( char *cmd, size_t cmd_len, char *opt );
 static  void    AddName( char *name, FILE *link_fp );
 
 
@@ -225,7 +225,7 @@ static  char    *SkipSpaces( char *ptr ) {
 }
 
 
-static  void    *MemAlloc( int size ) {
+static  void    *MemAlloc( size_t size ) {
 //=====================================
 
     void            *ptr;
@@ -292,7 +292,7 @@ void    main( int argc, char *argv[] ) {
         p = cmd;
     }
     p = SkipSpaces( p );
-    if( ( *p == '\0' ) || ( strncmp( p, "? ", 2 ) == NULL ) ) {
+    if( ( *p == '\0' ) || ( strncmp( p, "? ", 2 ) == 0 ) ) {
         Usage();
         rc = 1;
     } else {
@@ -327,7 +327,7 @@ void    main( int argc, char *argv[] ) {
 }
 
 
-static  char    *ScanFName( char *end, int len ) {
+static  char    *ScanFName( char *end, size_t len ) {
 //================================================
 
     for(;;) {
@@ -353,7 +353,7 @@ static  int     Parse( char *cmd ) {
 
     char        opt;
     char        *end;
-    int         len;
+    size_t      len;
     int         cmp_option;
     char        in_quotes;
 
@@ -527,7 +527,7 @@ static  int     Parse( char *cmd ) {
 #endif
 
                 case 'q':
-                    if( IsOption( cmd, len + sizeof(char), "Quiet" ) ) {
+                    if( IsOption( cmd, len + sizeof( char ), "Quiet" ) ) {
                         Flags.quiet = 1;
                     }
                     break;
@@ -583,10 +583,10 @@ static  int     Parse( char *cmd ) {
 }
 
 
-static int     IsOption( char *cmd, int cmd_len, char *opt ) {
+static int     IsOption( char *cmd, size_t cmd_len, char *opt ) {
 //============================================================
 
-    int         len;
+    size_t      len;
 
     len = 0;
     for(;;) {
@@ -722,9 +722,9 @@ static int tool_exec( tool_type utl, char *p1, char *p2 )
     }
     fflush( NULL );
     if( p2 == NULL ) {
-        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
+        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
     } else {
-        rc = spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
     }
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
@@ -907,6 +907,7 @@ static  void    AddName( char *name, FILE *link_fp ) {
     PGROUP      pg1;
     PGROUP      pg2;
 
+    last_name = NULL;
     for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {
         if( stricmp( name, curr_name->filename ) == 0 )
             return;

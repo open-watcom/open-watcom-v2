@@ -55,8 +55,8 @@ void    ShowOptions( char *buff ) {
 
     opt_entry   *opt;
     char        pad[COLUMN_TAB];
-    int         len;
-    int         desc_len;
+    size_t      len;
+    size_t      desc_len;
     int         column;
 
     column = 1;
