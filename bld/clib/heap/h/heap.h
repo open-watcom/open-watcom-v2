@@ -216,6 +216,6 @@ extern  void     __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
 #define __HM_TRYGROW    2
 
 #if defined(__WARP__)
-extern unsigned bool _os2_use_obj_any;           // Prefer high memory heap block
-extern unsigned bool _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+extern unsigned char _os2_use_obj_any;           // Prefer high memory heap block
+extern unsigned char _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif

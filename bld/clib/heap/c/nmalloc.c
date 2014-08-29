@@ -56,7 +56,7 @@ unsigned int   __LargestSizeB4MiniHeapRover = 0;
  * _os2lalloc always allocates from lower memory
  */
 
-bool _os2_use_obj_any;
+unsigned char _os2_use_obj_any;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
@@ -141,7 +141,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     mheapptr        miniheap_ptr;
 
 #if defined(__WARP__)
-    bool            use_obj_any;
+    unsigned char   use_obj_any;
 #endif // __WARP__
 
     if( (amt == 0) || (amt > -sizeof(struct heapblk)) ) {

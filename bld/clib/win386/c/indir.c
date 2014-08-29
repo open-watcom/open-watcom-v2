@@ -41,22 +41,20 @@ extern DWORD Invoke16BitFunction( void );
 
 extern void Push( DWORD );
 #pragma aux Push = \
-        0x50    /* push eax */ \
-        parm [eax] modify[esp];
+    0x50    /* push eax */ \
+    parm [eax] modify[esp];
 
 extern void PopStack( DWORD );
 #pragma aux PopStack = \
-        0x03 0xE0 /* add esp, eax */ \
-        parm [eax] modify[esp];
-
-typedef unsigned char bool;
+    0x03 0xE0 /* add esp, eax */ \
+    parm [eax] modify[esp];
 
 typedef struct indir {
-    FARPROC proc;
-    short num;
-    bool msc;
-    char filler;
-    short lens[1];
+    FARPROC         proc;
+    short           num;
+    unsigned char   msc;
+    char            filler;
+    short           lens[1];
 } indir;
 
 /*
@@ -64,11 +62,11 @@ typedef struct indir {
  */
 HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
 {
-    va_list     al;
-    indir       *curr;
-    short       i,len;
-    short       num=0;
-    bool        msc = 0;
+    va_list         al;
+    indir           *curr;
+    short           i, len;
+    short           num = 0;
+    unsigned char   msc = 0;
 
     /*
      * get count and validate list

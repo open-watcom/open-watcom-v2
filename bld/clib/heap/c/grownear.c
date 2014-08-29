@@ -38,18 +38,21 @@
 #include "heap.h"
 #include <errno.h>
 #if defined(__DOS_EXT__)
- #include "extender.h"
- #include "tinyio.h"
+  #include "extender.h"
+  #include "tinyio.h"
 #endif
 #if defined(__CALL21__)
- #include "tinyio.h"
+  #include "tinyio.h"
 #endif
 #if defined(__WINDOWS_286__) || defined(__NT__)
- #include <windows.h>
+  #include <windows.h>
 #elif defined(__OS2__)
- #include <wos2.h>
+  #include <wos2.h>
+ #if defined(__WARP__)
+  #include "rtinit.h"
+ #endif
 #elif defined(__RDOS__)
- #include <rdos.h>
+  #include <rdos.h>
 #endif
 
 #if defined(__WARP__)
@@ -59,7 +62,7 @@
 #endif
 
 #if defined(__WINDOWS_386__)
- extern void * __pascal DPMIAlloc( unsigned long );
+extern void * __pascal DPMIAlloc( unsigned long );
 #endif
 
 static frlptr __LinkUpNewMHeap( mheapptr );
@@ -605,7 +608,7 @@ int __ExpandDGROUP( unsigned amount )
 }
 
 #if defined(__WARP__)
-unsigned bool _os2_obj_any_supported = FALSE;
+unsigned char _os2_obj_any_supported = FALSE;
 
 static void _check_os2_obj_any_support( void )
 {
