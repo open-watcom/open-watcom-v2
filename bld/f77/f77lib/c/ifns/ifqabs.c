@@ -42,7 +42,7 @@
 
 #if !defined( __alternate_if__ ) || defined( __extended_not_implemented__ )
 
-extended QABS( double arg ) {
+extended QABS( extended arg ) {
 //==============================
 
 // Return the absolute value of arg.
