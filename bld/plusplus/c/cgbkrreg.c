@@ -44,16 +44,20 @@
 
 typedef struct {                // OPT_DEFN -- optimization definition
     SYMBOL sym;                 // - symbol for definition
-    char name[];                // - name
+    char name[1];               // - name
 } OPT_DEFN;
 
 
-static OPT_DEFN optFuncReg      // OPT_DEFN for function registration
-    = { NULL, "_wint_thread_data" };
+static struct {
+    SYMBOL sym; 
+    char name[];
+} optFuncReg = {   // OPT_DEFN for function registration
+     NULL, "_wint_thread_data"
+};
 
 
 static NAME optName(            // NAME OF OPTIMIZATION SYMBOL
-    OPT_DEFN *odef )            // - optimization definition
+    const OPT_DEFN *odef )      // - optimization definition
 {
     return( NameCreateNoLen( odef->name ) );
 }
@@ -155,7 +159,7 @@ void CgFunDeregister(           // DE-REGISTER A FUNCTION
         CgRtParam( expr, &def, TY_POINTER );
         CgRtCallExecDone( &def );
     } else {
-        opt_thr = pointOptSym( &optFuncReg );
+        opt_thr = pointOptSym( (OPT_DEFN *)&optFuncReg );
         if( opt_thr == NULL ) {
             CgRtCallExecNoArgs( RTF_DEREGISTER );
         } else {
@@ -189,7 +193,7 @@ void CgFunRegister(             // REGISTER A FUNCTION
         CgRtCallExecDone( &def );
         rw = registerHandler( rw, RTF_FS_HANDLER );
     } else {
-        opt_thr = pointOptSym( &optFuncReg );
+        opt_thr = pointOptSym( (OPT_DEFN *)&optFuncReg );
         if( opt_thr == NULL ) {
             rtRegister( rw, ro );
         } else {

@@ -36,7 +36,7 @@
 extern "C" {
 #endif
 
-#define EXIT_BEG(name) extern EXIT_POINT EXIT_POINT_NAME( name );
+#define EXIT_BEG(name) extern struct EXIT_POINT_NAME( name ) EXIT_POINT_NAME( name );
 #define EXIT_REG(name) extern INITFINI   INIT_FINI_NAME( name );
 #define EXIT_END
 #define SPLIT_INIT( name, fini ) EXIT_BEG( fini ) EXIT_REG( name )

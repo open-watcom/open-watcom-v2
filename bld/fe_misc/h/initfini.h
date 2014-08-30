@@ -49,7 +49,7 @@ struct initfini {                   // INITFINI -- register init/fini
 struct exit_point {                 // EXIT_POINT -- registration point
     EXIT_POINT  *previous;          // - previous exit point
     unsigned    subsequent : 1;     // - TRUE ==> not first time
-    INITFINI    *registered[];      // - registrations
+    INITFINI    *registered[1];     // - registrations
 };
 
 
@@ -59,10 +59,10 @@ struct exit_point {                 // EXIT_POINT -- registration point
 #define INIT_FINI_NAME(name)     InitFini_ ## name
 
 #define ExitPointAcquire( name ) \
-    ExitPointAcquireRtn( &EXIT_POINT_NAME( name ) )
+    ExitPointAcquireRtn( (EXIT_POINT *)&EXIT_POINT_NAME( name ) )
 
 #define ExitPointRelease( name ) \
-    ExitPointReleaseRtn( &EXIT_POINT_NAME( name ) )
+    ExitPointReleaseRtn( (EXIT_POINT *)&EXIT_POINT_NAME( name ) )
 
 #ifdef __cplusplus
 #define INITDEFN( defn, init, fini )                        \

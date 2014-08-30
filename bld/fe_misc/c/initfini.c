@@ -100,7 +100,7 @@ static void splitFini( INITFINI *d );
       , { NULL                                      \
         , &INIT_FINI_NAME( name )                   \
         , NULL                                      \
-        , &EXIT_POINT_NAME( fini )                  \
+        , (EXIT_POINT *)&EXIT_POINT_NAME( fini )    \
       }                                             \
     };
 
@@ -117,17 +117,38 @@ static void splitFini( INITFINI *d );
 
 #endif // SPLIT_REQD
 
+// The following sets up the standard tables prototypes
+
+#define EXIT_BEG( name )                    \
+struct EXIT_POINT_NAME( name ) {            \
+    EXIT_POINT      *previous;              \
+    unsigned        subsequent :1;          \
+    INITFINI        *registered[ 0
+#define EXIT_REG( name )          +1
+#define SPLIT_INIT( name, fini )  +1
+#define EXIT_END                  +1 ];     \
+};
+
+#include "initspec.h"           // supplied by front-end
+
+#undef EXIT_BEG
+#undef EXIT_REG
+#undef EXIT_END
+#undef SPLIT_INIT
+
 // The following sets up the standard tables
 
 #define EXIT_BEG( name )                    \
-    EXIT_POINT EXIT_POINT_NAME( name ) =    \
-    {   NULL, 0, {
+struct EXIT_POINT_NAME( name ) EXIT_POINT_NAME( name ) = { \
+    NULL, 0, {
 
-#define EXIT_REG( name )            &INIT_FINI_NAME( name ),
+#define EXIT_REG( name )                    \
+        &INIT_FINI_NAME( name ),
 
 #define EXIT_END                            \
-        NULL }                              \
-    };
+        NULL                                \
+    }                                       \
+};
 
 #define SPLIT_INIT( name, fini )    (INITFINI *)&SPLIT_NAME( name, fini ),
 
