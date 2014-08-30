@@ -2088,7 +2088,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
             my_ret = mySystem( cmdname, cmd );
             retcode = (UINT8)lastErrorLevel;
 #else
-            retcode = spawnvp( P_WAIT, cmdname, argv );
+            retcode = (int)spawnvp( P_WAIT, cmdname, argv );
 #endif
             if( retcode < 0 ) {
                 PrtMsg( ERR | UNABLE_TO_EXEC, cmdname );

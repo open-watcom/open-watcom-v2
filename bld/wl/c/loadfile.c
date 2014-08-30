@@ -209,7 +209,7 @@ static void DoCVPack( void )
         } else {
             name = Root->outfile->fname;
         }
-        retval = spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
+        retval = (int)spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
                           name, NULL );
         if( retval == -1 ) {
             PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
@@ -791,7 +791,7 @@ static void ExecWlib( void )
     } else {
         libtype = "-ii";
     }
-    retval = spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q", "-pa",
+    retval = (int)spawnlp( P_WAIT, WLIB_EXE, WLIB_EXE, "-c", "-b", "-n", "-q", "-pa",
                   libtype, FmtData.implibname, atfname, NULL );
     if( retval == -1 ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );

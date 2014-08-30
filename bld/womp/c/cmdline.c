@@ -837,7 +837,7 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
             _fheapshrink();
 #endif
             _nheapshrink();
-            rc = spawnlp(P_WAIT,"wlib","wlib",buf,"/b/n/p=",pbuf,"+",out,NULL);
+            rc = (int)spawnlp(P_WAIT,"wlib","wlib",buf,"/b/n/p=",pbuf,"+",out,NULL);
             if( rc < 0 ) {
                 Fatal( MSG_DISK_ERROR, "spawnlp( , \"wlib\", ... )" );
             } else if( rc > 0 ) {

@@ -414,7 +414,7 @@ int main( int argc, char *argv[] )
         arglist[pcnt] = NULL;
 
         myPrintf( "%s\n",rc );
-        i = spawnvp( P_WAIT, RC_STR, arglist );
+        i = (int)spawnvp( P_WAIT, RC_STR, arglist );
         if( i == -1 ) {
             remove( exe );
             switch( errno ) {
