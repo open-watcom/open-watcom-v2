@@ -68,7 +68,7 @@ int UnquoteFName( char *dst, size_t maxlen, const char *src )
 {
     char    string_open = 0;
     size_t  pos = 0;
-    int     t;
+    char    t;
     int     un_quoted = 0;
 
     assert( maxlen );
@@ -105,8 +105,7 @@ int UnquoteFName( char *dst, size_t maxlen, const char *src )
                 if( string_open ) {
                     *dst++ = t;
                     pos++;
-                } else
-                if( t == ' ' || t == '\t' ) {
+                } else if( t == ' ' || t == '\t' ) {
                     break;
                 } else {
                     *dst++ = t;

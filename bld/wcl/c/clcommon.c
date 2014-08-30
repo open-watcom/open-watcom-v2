@@ -168,12 +168,6 @@ void BuildLinkFile( void )
     Fp = NULL;
 }
 
-void print_line( void *handle, const char *buff, size_t len )
-/***********************************************************/
-{
-    write( *(int *)handle, buff, len );
-}
-
 void  MemInit( void )
 /*******************/
 {
