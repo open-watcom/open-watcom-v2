@@ -941,8 +941,13 @@ static bool WriteSegData( void *_sdata, void *_info )
             DbgAssert( newpos >= oldpos );
             PadLoad( newpos - oldpos );
         }
-        WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
-        sdata->u1.vm_offs = newpos;   // for incremental linking
+        if( sdata->vm_data == 0 ) {
+            WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
+            sdata->vm_data = sdata->u1.vm_ptr;
+            sdata->u1.vm_offs = newpos;   // for incremental linking
+        } else {
+            WriteInfoLoad( sdata->vm_data, sdata->length );
+        }
     }
     return( FALSE );
 }
@@ -1012,19 +1017,20 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
 {
     grpwriteinfo     info;
     class_entry      *class;
+    unsigned_32      grp_start;
 
-    class = group->leaders->class;
-
+    grp_start = PosLoad();
     info.repos = repos;
-    info.grp_start = PosLoad();
+    info.grp_start = grp_start;
     // If group is a copy group, substitute source group(s) here
+    class = group->leaders->class;
     if( class->flags & CLASS_COPY ) {
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteCopyGroups, &info );
     } else {
         Ring2Lookup( group->leaders, DoGroupLeader, &info );
     }
-    return( PosLoad() - info.grp_start );
+    return( PosLoad() - grp_start );
 }
 
 offset  WriteGroupLoad( group_entry *group )

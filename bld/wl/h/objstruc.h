@@ -441,6 +441,7 @@ typedef struct segdata {
     SEGDATA         *mod_next;      // next segdata in module list.
     offset          length;         // length of segment in current module.
     virt_mem_ptr    u1;             // virtual memory pointer to data for this segment
+    virt_mem        vm_data;        // virtual memory pointer to data for class copy data
     union {
         char        *name;          // name of the segment
         seg_leader  *leader;        // leader for the segment.
