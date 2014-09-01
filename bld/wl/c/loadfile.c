@@ -90,7 +90,8 @@ typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
     group_entry *lastgrp;  // used only for copy classes
-    bool        repos;
+    unsigned    repos : 1;
+    unsigned    copy  : 1;
 } grpwriteinfo;
 
 static implibinfo       ImpLib;
@@ -942,12 +943,12 @@ static bool WriteSegData( void *_sdata, void *_info )
             PadLoad( newpos - oldpos );
         }
         if( sdata->vm_data == 0 ) {
-            WriteInfoLoad( sdata->u1.vm_ptr, sdata->length );
             sdata->vm_data = sdata->u1.vm_ptr;
-            sdata->u1.vm_offs = newpos;   // for incremental linking
-        } else {
-            WriteInfoLoad( sdata->vm_data, sdata->length );
         }
+        if( !info->copy ) {
+            sdata->u1.vm_offs = newpos;   // for incremental linking
+        }
+        WriteInfoLoad( sdata->vm_data, sdata->length );
     }
     return( FALSE );
 }
@@ -964,6 +965,7 @@ void WriteLeaderLoad( void *seg )
     grpwriteinfo    info;
 
     info.repos = FALSE;
+    info.copy = FALSE;
     info.seg_start = PosLoad();
     DoWriteLeader( seg, &info );
 }
@@ -1025,9 +1027,11 @@ offset  WriteDOSGroupLoad( group_entry *group, bool repos )
     // If group is a copy group, substitute source group(s) here
     class = group->leaders->class;
     if( class->flags & CLASS_COPY ) {
+        info.copy = TRUE;
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteCopyGroups, &info );
     } else {
+        info.copy = FALSE;
         Ring2Lookup( group->leaders, DoGroupLeader, &info );
     }
     return( PosLoad() - grp_start );

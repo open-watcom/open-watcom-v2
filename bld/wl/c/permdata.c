@@ -262,6 +262,7 @@ static void PrepSegData( void *_sdata, void *info )
     sdata->mod_next = CarveGetIndex( CarveSegData, sdata->mod_next );
     sdata->o.clname = sdata->u.leader->class->name;
     sdata->u.name = sdata->u.leader->segname;
+    sdata->vm_data = 0;
 }
 
 static void PrepSymbol( void *_sym, void *info )
