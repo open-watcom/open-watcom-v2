@@ -72,10 +72,9 @@ MEM_PHYS        equ     32      ;physical mapping.
 ;
 MEM_FILL        equ     (MEM_LOCK_MASK shl MEM_LOCK_SHIFT)+MEM_START
 
-
-;; MED 02/16/96
-MaxCallBacks            equ     32+3            ;maximum number of call back table entries.
-;MaxCallBacks           equ     32+4            ;maximum number of call back table entries.
+AutoCallBacks   equ     16+3    ;automatic callbacks (mostly hardware IRQs).
+UserCallBacks   equ     16      ;user callbacks allocated via DPMI
+MaxCallBacks    equ     (AutoCallBacks+UserCallBacks) ;number of call back table entries.
 
 ;; MED increased 512 to 1024, 12/05/95
 IFDEF BIGSTACK

@@ -658,13 +658,9 @@ RAWGetCallBack  proc near
         assume ds:_cwRaw
         pop     ax
         ;
-;;MED 02/16/96
-        mov     ebx,offset CallBackTable+((size CallBackStruc)*(16+3))
-        mov     ecx,MaxCallBacks-(16+3)
-        mov     edx,16+3
-;       mov     ebx,offset CallBackTable+((size CallBackStruc)*(16+4))
-;       mov     ecx,MaxCallBacks-(16+4)
-;       mov     edx,16+4
+        mov     ebx,offset CallBackTable+((size CallBackStruc)*AutoCallBacks)
+        mov     ecx,MaxCallBacks-AutoCallBacks
+        mov     edx,AutoCallBacks
 
 inter12_0:
         test    CallBackStruc.CallBackFlags[ebx],1              ;this one in use?

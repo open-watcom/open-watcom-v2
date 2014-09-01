@@ -161,12 +161,10 @@ ALLCallBack     dw ?
 ALLICallBack    dw ?
 CallBackList    label byte
 ICallBackList   label byte
-;; MED 02/16/96
-;;      rept 16+4
-        rept 16+3
+        rept AutoCallBacks
         call    RawICallBack
         endm
-        rept 16 ;MaxCallBacks
+        rept UserCallBacks
         call    RawCallBack
         endm
 CallBackSize    equ     ($-CallBackList)/MaxCallBacks
@@ -230,9 +228,7 @@ RawVCPIRealMode proc far
         pop     d[rv1_RetAdd]
         ;
         mov     bx,offset CallBackTable ;list of call backs.
-;; MED 02/16/96
-;       mov     cx,16+4         ;number of entries to scan.
-        mov     cx,16+3         ;number of entries to scan.
+        mov     cx,AutoCallBacks        ;number of entries to scan.
 
 rv1_6:  test    CallBackStruc.CallBackFlags[bx],1       ;in use?
         jz      rv1_7
