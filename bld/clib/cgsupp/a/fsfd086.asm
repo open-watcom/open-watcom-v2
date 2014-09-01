@@ -45,52 +45,52 @@ include struct.inc
         xdefp   __FSFD
 
         defpe   __FSFD
-        _guess  xx1             ; guess: number is 0.0 or infinity
-          mov   bx,ax           ; - move rest of mantissa to correct reg.
-          mov   ax,dx           ; - get high word to ax
-          sub   cx,cx           ; - ...
-          or    bx,bx           ; -
-          _quif ne              ; - quit if low word not 0
-          and   dx,7fffh        ; - get rid of sign bit and check high word for 0
-          _quif e,xx1           ; - quit if 0.0
-          cmp   dx,7f80h        ; - check if infinity
-          _quif ne              ; - quit if not infinity
-          or    al,0f0h         ; - set result +/- infinity
-        _admit                  ; admit: number is not 0
-          and   dh,7fh          ; - get sign to dx
-          xor   dx,ax           ; - ...
-          xor   ah,dh           ; - reset sign in ax
-          shr   ax,1            ; - now shift everything three bits
-          rcr   bx,1            ; - ...
-          rcr   cx,1            ; - ...
-          shr   ax,1            ; - ...
-          rcr   bx,1            ; - ...
-          rcr   cx,1            ; - ...
-          shr   ax,1            ; - ...
-          rcr   bx,1            ; - ...
-          rcr   cx,1            ; - ...
-          cmp   ax,0ffh shl 4   ; - if exponent is NaN
-          _if   ae              ; - then
+        _guess  xx1                 ; guess: number is 0.0 or infinity
+          mov   bx,ax               ; - move rest of mantissa to correct reg.
+          mov   ax,dx               ; - get high word to ax
+          sub   cx,cx               ; - ...
+          or    bx,bx               ; -
+          _quif ne                  ; - quit if low word not 0
+          and   dx,7fffh            ; - get rid of sign bit and check high word for 0
+          _quif e,xx1               ; - quit if 0.0
+          cmp   dx,7f80h            ; - check if infinity
+          _quif ne                  ; - quit if not infinity
+          or    al,0f0h             ; - set result +/- infinity
+        _admit                      ; admit: number is not 0
+          and   dh,7fh              ; - get sign to dx
+          xor   dx,ax               ; - ...
+          xor   ah,dh               ; - reset sign in ax
+          shr   ax,1                ; - now shift everything three bits
+          rcr   bx,1                ; - ...
+          rcr   cx,1                ; - ...
+          shr   ax,1                ; - ...
+          rcr   bx,1                ; - ...
+          rcr   cx,1                ; - ...
+          shr   ax,1                ; - ...
+          rcr   bx,1                ; - ...
+          rcr   cx,1                ; - ...
+          cmp   ax,0ffh shl 4       ; - if exponent is NaN
+          _if   ae                  ; - then
             or  dx,(7ffh - 0ffh) shl 4 ; - - set result exponent adjustment for NaN
-          _else                 ; - else
+          _else                     ; - else
             or  dx,(3ffh - 7fh) shl 4;- - set result exponent adjustment
-            test  ax,0ff0h      ; - - if exponent is 0 (denormal number)
-            _if   e             ; - - then do normalization
-              add  dx,1 shl 4   ; - - - add 1 to result exponent adjustment
-              _loop             ; - - - loop (normalize the fraction)
-                sub  dx,1 shl 4 ; - - - - subtract 1 from result exponent adjustment
-                _shl cx,1       ; - - - - shift fraction left
-                _rcl bx,1       ; - - - - . . .
-                _rcl al,1       ; - - - - . . .
-                test al,1 shl 4 ; - - - - check to see if result fraction is normalized
-              _until ne         ; - - - until not normalized
-              and al,(1 shl 4)-1; - - - mask result fraction after normalization
-            _endif              ; - - endif
-          _endif                ; - endif
-          add   ax,dx           ; - adjust result exponent and set result sign
-        _endguess               ; endguess
-        sub     dx,dx           ; clear result bottom bits of mantissa
-        ret                     ; and return
+            test  ax,0ffh shl 4     ; - - if exponent is 0 (denormal number)
+            _if   e                 ; - - then do normalization
+              add  dx,1 shl 4       ; - - - add 1 to result exponent adjustment
+              _loop                 ; - - - loop (normalize the fraction)
+                sub  dx,1 shl 4     ; - - - - subtract 1 from result exponent adjustment
+                _shl cx,1           ; - - - - shift fraction left
+                _rcl bx,1           ; - - - - . . .
+                _rcl al,1           ; - - - - . . .
+                test al,1 shl 4     ; - - - - check to see if result fraction is normalized
+              _until ne             ; - - - until not normalized
+              and al,not (1 shl 4)  ; - - - reset implied bit after normalization
+            _endif                  ; - - endif
+          _endif                    ; - endif
+          add   ax,dx               ; - adjust result exponent and set result sign
+        _endguess                   ; endguess
+        sub     dx,dx               ; clear result bottom bits of mantissa
+        ret                         ; and return
         endproc __FSFD
 
         endmod

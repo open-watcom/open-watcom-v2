@@ -76,7 +76,7 @@ include struct.inc
                 _rcl EDX,1              ; - - - - ...
                 test EDX,1 shl 20       ; - - - - check to see if fraction is normalized
               _until ne                 ; - - - until normalized
-              and EDX,(1 shl 20) - 1    ; - - - mask fraction after normalization
+              and EDX,not (1 shl 20)    ; - - - reset implied bit after normalization
             _endif                      ; - - endif
           _endif                        ; - endif
           add   EDX,ECX                 ; - adjust result exponent and set result sign
