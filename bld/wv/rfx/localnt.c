@@ -45,6 +45,7 @@
 #include "trprfx.h"
 
 #include "local.h"
+#include "clibext.h"
 
 #include <windows.h>
 
