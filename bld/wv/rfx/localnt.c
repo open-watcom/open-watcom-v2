@@ -46,6 +46,11 @@
 
 #include "local.h"
 
+#include <windows.h>
+
+/* Not thread safe; not expected to be an issue. */
+struct find_t   Findbuf;
+
 void LocalTime( int *hour, int *min, int *sec, int *hundredths )
 /**************************************************************/
 {
@@ -83,7 +88,22 @@ int LocalInteractive( sys_handle fh )
 void LocalGetBuff( char *buff, unsigned size )
 /********************************************/
 {
-    read( STDIN_FILENO, buff, size );
+    DWORD   cRead;
+    HANDLE  hStdin;
+
+    hStdin = GetStdHandle( STD_INPUT_HANDLE );
+    if( !ReadFile( hStdin, buff, size, &cRead, NULL ) ) {
+        buff[0] = '\r';
+        buff[1] = '\0';
+        return;
+    }
+    /* Kill the trailing \r\n. */
+    if( cRead > 2)
+        buff[cRead - 2] = '\0';
+    else {
+        buff[0] = '\r';
+        buff[1] = '\0';
+    }
 }
 
 unsigned LocalRename( char *from, char *to )
@@ -220,49 +240,27 @@ unsigned LocalFindFirst( char *pattern, void *info, unsigned info_len, int attri
 /*********************************************************************************/
 {
     unsigned        rc;
-    struct find_t   findbuf;
 
-    rc = _dos_findfirst( pattern, attrib, &findbuf );
+    rc = _dos_findfirst( pattern, attrib, &Findbuf );
     if( rc )
         return( StashErrCode( rc , OP_LOCAL ) );
-    makeDOSDTA( &findbuf, info );
+    makeDOSDTA( &Findbuf, info );
     return( 0 );
-#if 0
-    FILEFINDBUF3  dta;
-    HDIR   handle = 1;
-    ULONG  count = 1;
-    APIRET err;
-
-    info_len = info_len;
-    err = DosFindFirst( pattern, &handle, attrib, &dta, sizeof( dta ),
-        &count, FIL_STANDARD );
-    if( err != 0 ) return( StashErrCode( err, OP_LOCAL ) );
-    makeDOSDTA( &dta, info );
-    return( 0 );
-#endif
 }
 
 unsigned LocalFindNext( void *info, unsigned info_len )
 /*****************************************************/
 {
-    return( -1 );
-#if 0
-    unsigned    rc;
-    find_t      findbuf;
-    FILEFINDBUF3  dta;
-    ULONG         count = 1;
-    APIRET        rc;
+    unsigned        rc;
 
-    info_len = info_len;
-    rc = DosFindNext( 1, &dta, sizeof( dta ), &count );
-    if( rc != 0 ) return( StashErrCode( rc, OP_LOCAL ) );
-    if( count == 0 ) {
-        DosFindClose( 1 );
+    rc = _dos_findnext( &Findbuf );
+    if( !rc ) {
+        makeDOSDTA( &Findbuf, info );
+        return( 0 );
+    } else {
+        _dos_findclose( &Findbuf );
         return( -1 );
     }
-    makeDOSDTA( &dta, info );
-    return( 0 );
-#endif
 }
 
 /*

@@ -33,7 +33,13 @@ set PROJNAME=wd
     <CCCMD> dbg/ntx64/*.dbg         <OWRELROOT>/binnt64/
     <CCCMD> ssl/ntx64/*.prs         <OWRELROOT>/binnt64/
 
-    <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/rfx.exe
+    <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/
+    <CCCMD> rfx/dosi86/rfx.sym      <OWRELROOT>/binw/
+    <CCCMD> rfx/os2386/rfx.exe      <OWRELROOT>/binp/
+    <CCCMD> rfx/os2386/rfx.sym      <OWRELROOT>/binp/
+    <CCCMD> rfx/nt386/rfx.exe       <OWRELROOT>/binnt/
+    <CCCMD> rfx/nt386/rfx.sym       <OWRELROOT>/binnt/
+
     <CCCMD> dsx/dos386/wv.exe       <OWRELROOT>/binw/wd.exe
     <CCCMD> dsx/dos386/wv.sym       <OWRELROOT>/binw/wd.sym
     <CCCMD> win/wini86/wv.exe       <OWRELROOT>/binw/wdc.exe
@@ -42,7 +48,6 @@ set PROJNAME=wd
     <CCCMD> win/wini86.gui/wv.sym   <OWRELROOT>/binw/wdw.sym
     <CCCMD> rdos/rdos386/wv.exe     <OWRELROOT>/rdos/wd.exe
     <CCCMD> rdos/rdos386/wv.sym     <OWRELROOT>/rdos/wd.sym
-    <CCCMD> rfx/os2386/rfx.exe      <OWRELROOT>/binp/rfx.exe
     <CCCMD> os2/os2386/wv.exe       <OWRELROOT>/binp/wd.exe
     <CCCMD> os2/os2386/wv.sym       <OWRELROOT>/binp/wd.sym
     <CCCMD> os2/os2386.gui/wv.exe   <OWRELROOT>/binp/wdw.exe
