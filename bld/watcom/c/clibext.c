@@ -2296,6 +2296,23 @@ unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
     return( 0 );
 }
 
+unsigned _dos_findnext( struct find_t *buf )
+{
+    WIN32_FIND_DATA     ffd;
+
+    if( !FindNextFile( FIND_HANDLE_OF( buf ), &ffd ) ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    if( !__NTFindNextFileWithAttr( FIND_HANDLE_OF( buf ), FIND_ATTR_OF( buf ), &ffd ) ) {
+        __set_errno( ENOENT );
+        return( (unsigned)-1 );
+    }
+    __GetNTDirInfo( (struct dirent *) buf, &ffd );
+
+    return( 0 );
+}
+
 unsigned _dos_findclose( struct find_t *buf )
 {
     if( FIND_HANDLE_OF( buf ) != INVALID_HANDLE_VALUE ) {

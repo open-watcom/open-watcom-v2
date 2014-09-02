@@ -168,6 +168,7 @@ extern unsigned _dos_setftime( void *h, unsigned date, unsigned time );
 extern unsigned _dos_read( void *h, void *buffer, unsigned count, unsigned *bytes );
 extern unsigned _dos_write( void *h, void const *buffer, unsigned count, unsigned *bytes );
 extern unsigned _dos_findfirst( const char *__path, unsigned __attr, find_t *__buf );
+extern unsigned _dos_findnext( struct find_t *__buf );
 extern unsigned _dos_findclose( struct find_t *__buf );
 extern unsigned sleep( unsigned );
 extern void __GetNTAccessAttr( int rwmode, unsigned long *desired_access, unsigned long *attr );
