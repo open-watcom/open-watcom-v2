@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Extended memory (INT 15h) routines for DOS.
 *
 ****************************************************************************/
 
@@ -38,6 +37,7 @@
 #include "dosx.h"
 #include "xmem.h"
 #include "fcbmem.h"
+#include "pragmas.h"
 
 extern void __interrupt XMemIntHandler( void );
 

@@ -71,7 +71,7 @@ void XMSBlockWrite( long addr, void *buff, unsigned len )
 int XMSGetBlock( long *addr )
 {
     int         i;
-    long        found = NULL;
+    long        found = 0;
 
     i = XMSBlockTest( 1 );
     if( i ) {
@@ -79,9 +79,9 @@ int XMSGetBlock( long *addr )
     }
     XMSBlocksInUse++;
     for( i = 0; i < TotalXMSBlocks; i++ ) {
-        if( xmsPtrs[i] != NULL ) {
+        if( xmsPtrs[i] != 0 ) {
             found = xmsPtrs[i];
-            xmsPtrs[i] = NULL;
+            xmsPtrs[i] = 0;
             break;
         }
     }
@@ -96,7 +96,7 @@ int XMSGetBlock( long *addr )
 int SwapToXMSMemory( fcb *fb )
 {
     int         i, len;
-    long        found = NULL;
+    long        found = 0;
 
     i = XMSGetBlock( &found );
     if( i ) {
@@ -141,12 +141,12 @@ static unsigned long xmsAlloc( int size )
 
     size = (size + 0x03) & ~0x03;
     if( XMSCtrl.exhausted ) {
-        return( NULL );
+        return( 0 );
     }
 
     if( XMSCtrl.offset + size > XMSCtrl.size ) {
         if( XMSCtrl.small_block ) {
-            return( NULL );
+            return( 0 );
         }
 
         /* align offset to 1k boundary */
@@ -170,7 +170,7 @@ static unsigned long xmsAlloc( int size )
             page_request -= XMS_BLOCK_ADJUST_SIZE_IN_K;
             if( page_request == 0 ) {
                 XMSCtrl.exhausted = true;
-                return( NULL );
+                return( 0 );
             }
 
         }
@@ -179,7 +179,7 @@ static unsigned long xmsAlloc( int size )
         XMSCtrl.size = page_request * 0x0400L;
         XMSCtrl.handles[XMSCtrl.next_handle++] = handle;
         if( XMSCtrl.offset + size > XMSCtrl.size ) {
-            return( NULL );
+            return( 0 );
         }
 
     }
@@ -240,7 +240,7 @@ void XMSInit( void )
 
     for( i = 0; i < MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
-        if( xmsPtrs[i] == NULL ) {
+        if( xmsPtrs[i] == 0 ) {
             break;
         }
         h.external = xmsPtrs[i];
@@ -378,7 +378,7 @@ void GiveBackXMSBlock( long addr )
     int i;
 
     for( i = 0; i < TotalXMSBlocks; i++ ) {
-        if( xmsPtrs[i] == NULL ) {
+        if( xmsPtrs[i] == 0 ) {
             xmsPtrs[i] = addr;
             break;
         }
