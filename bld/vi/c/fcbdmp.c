@@ -24,23 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  Dump File Control Blocks.
+* Description:  Dump File Control Blocks and memory usage.
 *
 ****************************************************************************/
 
 
 #include "vi.h"
-#ifdef _M_I86
-    #include <i86.h>
-#endif
 #include "win.h"
 
-#if defined( DBG )
+#ifndef NDEBUG
 #include <malloc.h>
 static type_style errStyle = { 7, 0, 0 };
 #endif
 
-#if defined( __WATCOMC__ ) && defined( DBG )
+#if defined( __WATCOMC__ ) && !defined( NDEBUG )
 void HeapMsg( int msg )
 {
     switch( msg ) {
@@ -68,7 +65,7 @@ void HeapMsg( int msg )
 
 vi_rc HeapCheck( void )
 {
-#if defined( __WATCOMC__ ) && defined( DBG )
+#if defined( __WATCOMC__ ) && !defined( NDEBUG )
     int                 i;
     struct _heapinfo    hinfo;
 
@@ -100,7 +97,7 @@ vi_rc HeapCheck( void )
 
 vi_rc FcbDump( void )
 {
-#if defined( DBG )
+#ifndef NDEBUG
     int         lc, fcbcnt = 0;
     window_id   fw;
     fcb         *cfcb;
@@ -143,7 +140,7 @@ vi_rc FcbDump( void )
 
 vi_rc FcbThreadDump( void )
 {
-#if defined( DBG )
+#ifndef NDEBUG
     int         lc, fcbcnt = 0;
     window_id   fw;
     char        msg[80];
@@ -189,7 +186,7 @@ vi_rc FcbThreadDump( void )
 
 vi_rc SanityCheck( void )
 {
-#if defined( DBG )
+#ifndef NDEBUG
     int         lc, tfcbcnt = 0, fcbcnt, sum;
     window_id   fw;
     fcb         *cfcb;
@@ -268,7 +265,7 @@ vi_rc SanityCheck( void )
 
 vi_rc LineInfo( void )
 {
-#if defined( DBG )
+#ifndef NDEBUG
     fcb         *cfcb;
     int         fcbcnt = 1;
     int         bcnt;
@@ -291,7 +288,7 @@ vi_rc LineInfo( void )
  */
 vi_rc WalkUndo( void )
 {
-#if defined( DBG )
+#ifndef NDEBUG
     int         ln = 1, i, col, fcbcnt, depth = 0;
     window_id   fw;
     linenum     lne, lcnt;
@@ -312,8 +309,8 @@ vi_rc WalkUndo( void )
         case START_UNDO_GROUP:
             depth--;
             if( cundo->data.sdata.depth == 1 ) {
-                lne = cundo->data.sdata.line;
-                col = cundo->data.sdata.col;
+                lne = cundo->data.sdata.p.line;
+                col = cundo->data.sdata.p.column;
                 WPrintfLine( fw, ln++, "START_UNDO_GROUP(%d): lne=%l, col= %d", depth,
                     lne, col );
             } else {
@@ -360,7 +357,7 @@ vi_rc WalkUndo( void )
 
 } /* WalkUndo */
 
-#if defined( DBG )
+#ifndef NDEBUG
 void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
 {
     line        *cline;
@@ -373,7 +370,6 @@ void CheckFcb( fcb *cfcb, int *bcnt, linenum *lnecnt )
     }
 
 } /* CheckFcb */
-
 #endif
 
 #ifdef __DOS__

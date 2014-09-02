@@ -88,7 +88,7 @@ void FiniInstance( void )
     // OLE2Fini();
 }
 
-#if defined( __WATCOMC__ ) && defined( DBG )
+#if defined( __WATCOMC__ ) && !defined( NDEBUG )
 void *HeapWalker( void )
 {
     struct _heapinfo    info;

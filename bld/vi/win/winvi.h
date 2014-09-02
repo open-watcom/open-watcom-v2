@@ -82,7 +82,7 @@ typedef enum window_extra {
     WIN_LAST                    // so we can tell how big this is
 } window_extra;
 
-#ifdef DBG
+#ifndef NDEBUG
     #define BAD_ID( id )    ((id) == NULL || (id) == NO_WINDOW || !IsWindow( id ))
 #else
     #define BAD_ID( id )    ((id) == NO_WINDOW)

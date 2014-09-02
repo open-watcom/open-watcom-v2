@@ -106,7 +106,7 @@ static void basePrintf( const char *in, va_list al )
             case 's':
                 tmp = va_arg( al, char * );
                 goto copyloop2;
-#ifdef DBG
+#ifndef NDEBUG
             case 'W':
 #ifdef _M_I86
                 i = va_arg( al, int );
