@@ -49,9 +49,8 @@ void StartupError( vi_rc err )
     }
     MyPrintf( "%s (fatal)\n", str );
 
-#ifdef TRMEM
-    DumpTRMEM();
-#endif
+    FiniMem();
+
     /* Do not call ExitEditor() because almost nothing is initialized yet. */
     exit( -1 );
 } /* StartupError */
