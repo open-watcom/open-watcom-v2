@@ -52,15 +52,15 @@ bool global uistart( void )
         uiattrs();
         openbackground();
         forceevinit();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool global uiinit( int mouse )
 /*****************************/
 {
-    register int initialized;
+    bool    initialized;
 
     initialized = uistart();
 
