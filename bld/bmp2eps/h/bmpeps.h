@@ -2,6 +2,7 @@
 #define __BMPEPS_H__
 
 #include <stdio.h>
+#include "watcom.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,24 +11,24 @@ extern "C" {
 #include "pushpck1.h"
 typedef struct bmp_file_header {
     unsigned short  type;
-    unsigned long   size;
+    uint_32         size;
     unsigned short  reserved1;
     unsigned short  reserved2;
-    unsigned long   off_bits;
+    uint_32         off_bits;
 } bmp_file_header;
 
 typedef struct bmp_info_header {
-    unsigned long   size;
-    long            width;
-    long            height;
+    uint_32         size;
+    int_32          width;
+    int_32          height;
     unsigned short  planes;
     unsigned short  bit_count;
-    unsigned long   compression;
-    unsigned long   size_image;
-    long            x_ppm;
-    long            y_ppm;
-    unsigned long   clr_used;
-    unsigned long   clr_important;
+    uint_32         compression;
+    uint_32         size_image;
+    int_32          x_ppm;
+    int_32          y_ppm;
+    uint_32         clr_used;
+    uint_32         clr_important;
 } bmp_info_header;
 #include "poppck.h"
 
