@@ -174,7 +174,7 @@ typedef struct global_options {
     char        *module_name;
 
   #ifdef DEBUG_OUT
-    bool        debug;
+    bool        int_debug;
   #endif
     char        *default_name_mangler;
     bool        allow_c_octals;
