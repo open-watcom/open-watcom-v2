@@ -418,10 +418,14 @@ extern  char    *Fill( void *d, int len, char filler ) {
     return( dst );
 }
 
-extern char *CopyStr( char *src, char *dst ) {
+extern char *CopyStr( char *src, char *dst )
+{
+    char    c;
 
-    while( *dst++ = *src++ );
-    return( dst - 1 );
+    while( (c = *src++) != '\0' )
+        *dst++ = c;
+    *dst = '\0';
+    return( dst );
 }
 
 extern  void    DItoD( long s, char *d ) {
@@ -1453,7 +1457,7 @@ extern  void    Format( char *buff, trap_dta *dir, bool wide )
     ItoD( ( time >> 5 ) & 0x003F, buff + 36 );
 }
 
-extern  int     GetFreeSpace( dir_handle *h, int loc )
+int     GetFreeSpace( dir_handle *h, int loc )
 {
     char                *path;
     char                drive;

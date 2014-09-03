@@ -1,4 +1,4 @@
-.chap *refid=vidrfx Remote File Operations (DOS, OS/2 Only)
+.chap *refid=vidrfx Remote File Operations (DOS, NT, OS/2 Only)
 .*
 .np
 .ix 'RFX utility program'
@@ -47,7 +47,7 @@ You are now ready to copy files back and forth between machines.
 .section RFX Commands
 .*
 .np
-When RFX is run without specifying a command, the DOS or OS/2 prompt
+When RFX is run without specifying a command, the DOS, NT or OS/2 prompt
 will change as illustrated in the following example.
 .exam begin
 Mon  11-06-1989 15:17:05.84 E:\DOC\UG
@@ -61,7 +61,7 @@ to "@LE" indicating that the current drive is the local "E" drive.
 .np
 Any command can be typed in response to the prompt.
 RFX recognizes a special set of commands and passes all others on to
-DOS or OS/2 for processing.
+DOS, NT or OS/2 for processing.
 The following sections describe RFX commands.
 .*
 .section Set Current Drive - drive:
@@ -173,7 +173,7 @@ If your default drive is set to one of the disks on the local
 machine then the locale is local (e.g., @LC:, @LD:, @LE:, etc.).
 If your default drive is set to one of the disks on the remote
 machine then the locale is remote (e.g., @RC:, @RD:, @RE:, etc.).
-If your DOS or OS/2 prompt contains the current drive and directory
+If your DOS, NT or OS/2 prompt contains the current drive and directory
 then it will be easy to identify which locale is current.
 .eremark
 .exam begin
@@ -208,7 +208,7 @@ The "COPY" command is most effectively used when copying files from
 one machine to the other.
 Copying of large amounts of files from one place on the remote machine
 to another place on the remote machine could be done more effectively
-using the remote machine's DOS or OS/2.
+using the remote machine's DOS, NT or OS/2.
 This would eliminate the transfer of data from the remote machine to
 the local machine and back to the remote machine.
 .eremark
@@ -221,7 +221,7 @@ dir [/w] dir_spec [/w]
 .np
 This command may be used to list the directories of any disk on the
 local or remote machine.
-Any of the DOS or OS/2 "wild card" characters ("?" and "*") may be
+Any of the DOS, NT or OS/2 "wild card" characters ("?" and "*") may be
 used.
 If
 .sy /w
@@ -274,7 +274,7 @@ disk on the local or remote machine.
 .sy DEL
 is a short form for
 .sy ERASE.
-Any of the DOS or OS/2 "wild card" characters ("?" and "*") may be
+Any of the DOS, NT or OS/2 "wild card" characters ("?" and "*") may be
 used.
 If
 .sy /s
@@ -459,7 +459,7 @@ This command may be used to list the contents of a file on any disk on
 the local or remote machine.
 The "@L" or "@R" prefix may be used to specify the locale (local or
 remote).
-Unlike the DOS "TYPE" command, DOS or OS/2 "wild card" characters ("?"
+Unlike the DOS "TYPE" command, DOS, NT or OS/2 "wild card" characters ("?"
 or "*") may be used.
 .exam begin
 type \tmp\test.dat

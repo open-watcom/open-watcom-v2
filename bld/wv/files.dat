@@ -5,6 +5,8 @@
 usr="wd.exe"            cond="doshost"   descr="Character mode debugger"    old="bin"
 usr="wdc.exe"           cond="winhost"   descr="Character-mode debugger"
 usr="wdw.exe"           cond="winhost"   descr="GUI debugger"
+[ DEFAULT type="e" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" old="binb" ]
+usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 [ DEFAULT type="s" dir="binw" cond="doshost winhost |" where="c jc f77 jf77" old="binb" ]
 usr="animate.dbg"       descr="Debugger command file"
 usr="bcnt.dbg"          descr="Debugger command file"
@@ -43,6 +45,7 @@ usr="c.prs"             descr="Debugger parser file for C"
 [ DEFAULT dir="binp" cond="os2host" where="c jc f77 jf77" ]
 type="e" usr="wd.exe"            descr="Character-mode debugger"
 type="e" usr="wdw.exe"           descr="GUI debugger"
+type="e" usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
 type="s" usr="bif.dbg"           descr="Debugger command file"
@@ -80,6 +83,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 [ DEFAULT dir="binnt" cond="wnthost wnt64host |" where="c jc f77 jf77" ]
 type="e" usr="wd.exe"            descr="Character mode debugger"
 type="e" usr="wdw.exe"           descr="GUI debugger"
+type="e" usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
 type="s" usr="bif.dbg"           descr="Debugger command file"
@@ -154,6 +158,7 @@ type="s" usr="c.prs"             descr="Debugger parser file for C"
 [ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
 type="e" usr="wd.exe"            descr="Character mode debugger"
 type="e" usr="wdw.exe"           descr="GUI debugger"
+type="e" usr="rfx.exe"           descr="Remote File Exchange utility (RFX)"
 type="s" usr="animate.dbg"       descr="Debugger command file"
 type="s" usr="bcnt.dbg"          descr="Debugger command file"
 type="s" usr="bif.dbg"           descr="Debugger command file"
