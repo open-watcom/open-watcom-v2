@@ -7,13 +7,24 @@ set PROJNAME=docs
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/defrule.ctl ]
+cdsay <PROJDIR>
 
-[ BLOCK <1> rel ]
+[ BLOCK <1> docs build rel ]
+#===========================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+
+[ BLOCK <1> docsclean clean ]
+#============================
+    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+    
+[ BLOCK . . ]
+#============
+
+[ BLOCK <1> docs rel ]
     cdsay <PROJDIR>
 
-[ BLOCK <1> rel cprel ]
-#======================
+[ BLOCK <1> docs rel cprel ]
+#=================================
     <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
     <CPCMD> win/*.hlp       <OWRELROOT>/binw/
     <CPCMD> os2/*.inf       <OWRELROOT>/binp/help/

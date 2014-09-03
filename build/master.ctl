@@ -28,14 +28,6 @@ set CCCMD=accopy
     # default rule
     set 1=build
 
-[ BLOCK <1> cprel ]
-#==================
-    set LOGFNAME=cprel
-    echo **** CPREL rule
-    # with 'cprel', we want to force the copy to occur
-    set CPCMD=copy
-    set CCCMD=ccopy
-
 [ BLOCK <1> build ]
 #==================
     set LOGFNAME=build
@@ -51,7 +43,14 @@ set CCCMD=accopy
 #==================
     set LOGFNAME=<1>
     echo **** CLEAN rule
-    set 1=clean
+
+[ BLOCK <1> cprel ]
+#==================
+    set LOGFNAME=cprel
+    echo **** CPREL rule
+    # with 'cprel', we want to force the copy to occur
+    set CPCMD=copy
+    set CCCMD=ccopy
 
 [ BLOCK <1> install missing ]
 #============================
@@ -61,19 +60,16 @@ set CCCMD=accopy
 #=================
     set LOGFNAME=<1>
     echo **** Building the <PROJNAME> bootstrap
-    set 1=boot
 
 [ BLOCK <1> bootclean ]
 #======================
     set LOGFNAME=btclean
     echo **** BOOTCLEAN rule
-    set 1=bootclean
 
 [ BLOCK <1> test ]
 #=================
     set LOGFNAME=<1>
     echo **** TEST rule
-    set 1=test
 
 [ BLOCK <1> buildtest ]
 #======================
@@ -86,19 +82,16 @@ set CCCMD=accopy
 #======================
     set LOGFNAME=tstclean
     echo **** TESTCLEAN rule
-    set 1=testclean
 
 [ BLOCK <1> docs ]
 #=================
     set LOGFNAME=doc
     echo **** DOC rule
-    set 1=rel
 
 [ BLOCK <1> docsclean ]
 #======================
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule
-    set 1=clean
 
 # Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
 
