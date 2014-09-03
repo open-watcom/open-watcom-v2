@@ -20,7 +20,7 @@ WGMLCMD = $(docs_dir)\gml\os2\wgml $(wgml_cmdl_params)
 !else ifeq bld_os nt
 
 !ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 !else
 WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
@@ -37,7 +37,7 @@ wgml_sysfile_03=sysusr03.gml
 
 !else ifeq bld_os bsd
 
-WGMLCMD = dosbox -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+WGMLCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
 use_dosemu = dosbox
 
 !else

@@ -26,7 +26,7 @@ GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
 !else ifeq bld_os nt
 
 !ifdef %OWDOSBOX
-GENDEVCMD = $(%OWDOSBOX) -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 !else
 GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
@@ -39,7 +39,7 @@ use_dosemu = dosemu
 
 !else ifeq bld_os bsd
 
-GENDEVCMD = dosbox -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+GENDEVCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 
 !else
