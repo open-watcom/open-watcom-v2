@@ -46,7 +46,7 @@
 
 #if defined( _STANDALONE_ )
 
-extern int              in_prologue;
+extern bool             in_prologue;
 
 typedef struct line_list {
     struct line_list    *next;
@@ -71,16 +71,16 @@ typedef struct file_list {
     } u;
     const FNAME         *srcfile;   /* name of include file */
     unsigned long       line_num;   /* current line in parent file */
-    char                is_a_file;
+    bool                is_a_file;
     bool                hidden;
 } file_list;
 
 extern void             heap( char * );
 extern void             FreeForceInclude( void );
 
-extern char             write_to_file;
+extern bool             write_to_file;
 extern bool             CheckSeg;
-extern bool             DefineProc;             // TRUE if the definition of procedure
+extern bool             DefineProc;             // true if the definition of procedure
                                                 // has not ended
 extern unsigned long    PassTotal;
 
@@ -113,8 +113,8 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
     /* blow away any comments -- look for ;'s */
     /* note that ;'s are ok in quoted strings */
 
-    skip = FALSE;
-    got_something = FALSE;
+    skip = false;
+    got_something = false;
     for( ;; ) {
         c = getc( fp );
         /* copy the line until we hit a NULL, newline, or ; not in a quote */
@@ -122,8 +122,8 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
         case '\t':
         case ' ':
             if( (Options.mode & MODE_TASM) && ( quote == '\0' )
-                && ( got_something == TRUE ) && ( *(ptr - 1) == '\\' ) ) {
-                skip = TRUE;
+                && got_something && ( *(ptr - 1) == '\\' ) ) {
+                skip = true;
             }
             break;
         case '\'':
@@ -149,33 +149,33 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
             if( quote != '\0' ) {
                 break;
             }
-            skip = TRUE;
+            skip = true;
             break;
         case '\r':
             continue; /* don't store character in string */
         case '\n':
             /* if continuation character found, pass over newline */
-            if( ( got_something == TRUE ) && ( *(ptr - 1) == '\\' ) ) {
+            if( got_something && ( *(ptr - 1) == '\\' ) ) {
                 ptr--;
                 max++;
                 LineNumber++;
-                skip = FALSE;
+                skip = false;
                 continue; /* don't store character in string */
             }
             *ptr = '\0';
             // fall through
         case '\0':
             /* we have found the end of the line */
-            return( TRUE );
+            return( true );
         case EOF:
             *ptr = '\0';
             return( got_something );
         }
-        if( skip == FALSE ) {
+        if( !skip ) {
             *ptr++ = (char)c;
             if( --max <= 1 )
-                skip = TRUE;
-            got_something = TRUE;
+                skip = true;
+            got_something = true;
         }
     }
 }
@@ -201,12 +201,12 @@ bool PopLineQueue( void )
 
     /* pop the line_queue stack */
     tmp = line_queue;
-    in_prologue = FALSE;
+    in_prologue = false;
     if( tmp == NULL )
-        return( FALSE );
+        return( false );
     line_queue = line_queue->next;
     AsmFree( tmp );
-    return( TRUE );
+    return( true );
 }
 
 bool GetQueueMacroHidden( void )
@@ -215,7 +215,7 @@ bool GetQueueMacroHidden( void )
     if(( file_stack != NULL ) && !file_stack->is_a_file ) {
         return( file_stack->hidden );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -255,7 +255,7 @@ static file_list *push_flist( const char *name, bool is_a_file )
     file_stack = new;
     new->line_num = LineNumber;
     new->is_a_file = is_a_file;
-    new->hidden = 0;
+    new->hidden = false;
     if( !is_a_file ) {
         dir_node *dir;
 
@@ -272,7 +272,7 @@ static file_list *push_flist( const char *name, bool is_a_file )
 const FNAME *get_curr_srcfile( void )
 /***********************************/
 {
-    return( file_stack == NULL ? ModuleInfo.srcfile : file_stack->srcfile );
+    return( ( file_stack == NULL ) ? ModuleInfo.srcfile : file_stack->srcfile );
 }
 
 void print_include_file_nesting_structure( void )
@@ -375,9 +375,9 @@ bool InputQueueFile( const char *path )
             AsmErr( CANNOT_OPEN_INCLUDE_FILE, fullpath );
             return( RC_ERROR );
         }
-        new = push_flist( pg.buffer, TRUE );
+        new = push_flist( pg.buffer, true );
     } else {
-        new = push_flist( path, TRUE );
+        new = push_flist( path, true );
     }
     new->u.file = file;
     return( RC_OK );
@@ -429,7 +429,7 @@ static char *input_get( char *string )
                 AsmFree( inputline );
                 return( string );
             }
-            MacroEnd( FALSE );
+            MacroEnd( false );
 
             file_stack = inputfile->next;
             AsmFree( inputfile->u.lines );
@@ -515,14 +515,14 @@ void AsmCodeByte( unsigned char byte )
             CurrSeg->seg->e.seginfo->iscode = SEGTYPE_ISCODE;
         }
     }
-    OutSelect( FALSE );
+    OutSelect( false );
     AsmByte( byte );
 }
 
 void AsmDataByte( unsigned char byte )
 /************************************/
 {
-    OutSelect( TRUE );
+    OutSelect( true );
     AsmByte( byte );
 }
 
@@ -530,14 +530,14 @@ static bool CheckHaveSeg( void )
 /******************************/
 {
     if( CurrSeg != NULL )
-        return( TRUE );
+        return( true );
 
     if( CheckSeg ) {
         AsmError( DATA_EMITTED_WITH_NO_SEGMENT );
-        write_to_file = FALSE;
-        CheckSeg = FALSE;
+        write_to_file = false;
+        CheckSeg = false;
     }
-    return( FALSE );
+    return( false );
 }
 
 void AddItemToIncludePath( const char *path_list, const char *end )
@@ -587,7 +587,7 @@ void PushMacro( const char *name, bool hidden )
     file_list *new;
 
     DebugMsg(( "PUSH_MACRO\n" ));
-    new = push_flist( name, FALSE );
+    new = push_flist( name, false );
     new->u.lines = line_queue;
     new->hidden = hidden;
     line_queue = line_queue->next;
@@ -599,7 +599,7 @@ static void dbg_output( void )
 /* For debugging use only; print out a simplied version of the source line
    after it is parsed and the expression is evaluated */
 {
-    if( Options.debug ) {
+    if( Options.int_debug ) {
         token_idx   i;
 
         DebugMsg(("Line: %lu ", LineNumber ));
@@ -671,7 +671,7 @@ static void dbg_output( void )
             }
         }
         DebugMsg(("\n"));
-    } /* if Options.debug */
+    } /* if Options.int_debug */
 }
 #endif
 #endif
@@ -713,8 +713,8 @@ void AsmLine( const char *string )
     Token_Count = AsmScan( string );
     Token_Count = ExpandMacro( Token_Count );
 
-    if( ExpandTheWorld( 1, TRUE, TRUE ) ) {
-        write_to_file = FALSE;
+    if( ExpandTheWorld( 1, true, true ) ) {
+        write_to_file = false;
         return;
     }
 
@@ -722,7 +722,7 @@ void AsmLine( const char *string )
         for( count = 0; count < Token_Count; count++ ) {
             bool expanded;
             if( ExpandProcString( count, &expanded ) ) {
-                write_to_file = FALSE;
+                write_to_file = false;
                 return;
             }
             if( expanded ) {
@@ -733,11 +733,11 @@ void AsmLine( const char *string )
 
     if( Token_Count > 0 ) {
         if( AsmParse( string ) ) {
-            write_to_file = FALSE;
+            write_to_file = false;
         }
     } else if( Token_Count == INVALID_IDX ) {
         // syntax error
-        write_to_file = FALSE;
+        write_to_file = false;
     }
   #ifdef DEBUG_OUT
     dbg_output();               // for debuggin only

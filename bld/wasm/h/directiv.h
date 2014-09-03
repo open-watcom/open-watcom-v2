@@ -164,7 +164,7 @@ typedef struct {
 typedef struct {
     bool                predef      :1; // whether it is predefined symbol
     bool                redefine    :1; // whether it is redefinable or not
-    bool                expand_early:1; // if TRUE expand before parsing
+    bool                expand_early:1; // if true expand before parsing
     token_idx           count;          // number of tokens
     asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
@@ -181,7 +181,7 @@ typedef struct label_list {
     struct asm_sym      *sym;           // structure definition or local label symbol
     int                 size;           // size of parameter
     int                 factor;         // for local var only
-    int                 is_register;    // for arguments only
+    bool                is_register;    // for arguments only
     union {
         bool            is_vararg   :1; // if it is a vararg
         token_idx       count;          // number of element in this label
@@ -226,7 +226,7 @@ typedef struct {
     parm_list           *parmlist;  // list of parameters
     asmlines            *data;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
-    char                hidden;     // if TRUE don't print error messages
+    bool                hidden;     // if true don't print error messages
 } macro_info;
 
 typedef struct {
@@ -306,10 +306,10 @@ typedef struct {
     lang_type           langtype;        // language;
 #endif
     os_type             ostype;          // operating system;
-    bool                use32       :1;  // If 32-bit segment is used
-    bool                cmdline     :1;
-    bool                defUse32    :1;  // default segment size 32-bit
-    bool                mseg        :1;  // mixed segments (16/32-bit)
+    bool                use32;           // If 32-bit segment is used
+    bool                cmdline;
+    bool                defUse32;        // default segment size 32-bit
+    bool                mseg;            // mixed segments (16/32-bit)
     struct asm_sym      *flat_grp;       // FLAT group symbol
     char                *name;           // name of module
     const FNAME         *srcfile;

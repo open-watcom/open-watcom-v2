@@ -85,8 +85,8 @@ typedef struct asm_sym {
         uint_32         total_length;   /* total number of elements (lengthof) */
         uint_32         count;
         char            *(*mangler)( struct asm_sym *sym, char *buffer );
-        bool            public      :1;
-        bool            referenced  :1;
+        bool            public;
+        bool            referenced;
         lang_type       langtype;
 #else
         long            addr;
@@ -105,7 +105,7 @@ extern  void            AsmTakeOut( const char *name );
 extern  bool            AsmChangeName( const char *old, const char *new );
 extern  void            WriteListing( void );
 
-extern  struct asm_sym  *AllocDSym( const char *, int );
+extern  struct asm_sym  *AllocDSym( const char *, bool );
 
 #define IS_SYM_COUNTER( x ) ( ( x[0] == '$' ) && ( x[1] == 0 ) )
 

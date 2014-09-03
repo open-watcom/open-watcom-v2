@@ -88,14 +88,13 @@ bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
     dir_node            *dir;
     token_idx           j;
 
-    *expanded = FALSE;
+    *expanded = false;
     /* expand constant */
     dir = (dir_node *)AsmGetSymbol( AsmBuffer[i].string_ptr );
     if( dir != NULL ) {
         switch( dir->sym.state ) {
         case SYM_CONST:
-            if(( dir->e.constinfo->expand_early == FALSE )
-              && ( early_only == TRUE ))
+            if( !dir->e.constinfo->expand_early && early_only )
                 break;
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
             /* insert the pre-scanned data for this constant */
@@ -118,7 +117,7 @@ bool ExpandSymbol( token_idx i, bool early_only, bool *expanded )
                 AsmError( NESTING_LEVEL_TOO_DEEP );
                 return( RC_ERROR );
             }
-            *expanded = TRUE;
+            *expanded = true;
             break;
         }
     }
@@ -143,7 +142,7 @@ bool ExpandProcString( token_idx index, bool *expanded )
     size_t              len;
     char                *p;
 
-    *expanded = FALSE;
+    *expanded = false;
     strcpy( buffer, AsmBuffer[index].string_ptr );
     wipe_space( buffer );
     for( word = strtok( buffer, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
@@ -179,7 +178,7 @@ bool ExpandProcString( token_idx index, bool *expanded )
                     }
                 }
             }
-            if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
+            if( label->is_register && !info->is_vararg ) {
                 left_bracket = right_bracket = 0;   /* reset bracket indexes */
                 for( i = 0; i < index; i++ ) {
                     if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
@@ -242,7 +241,7 @@ bool ExpandProcString( token_idx index, bool *expanded )
     for( i = 0; i < Token_Count; i++ ) {
         if( i != index ) {
             /* register parameter ? */
-            if( ( label->is_register ) && ( info->is_vararg == FALSE ) ) {
+            if( label->is_register && !info->is_vararg ) {
                 /* token within brackets ? */
                 if( ( i >= left_bracket ) && ( i <= right_bracket ) ) {
                     continue;   /*yes, skip it */
@@ -290,13 +289,13 @@ bool ExpandProcString( token_idx index, bool *expanded )
     AsmBuffer[0].class = 0;
     AsmBuffer[0].string_ptr = NULL;
     AsmBuffer[0].u.value = 0;
-    *expanded = TRUE;
+    *expanded = true;
     return( RC_OK );
 }
 
 bool DefineConstant( token_idx i, bool redefine, bool expand_early )
 /******************************************************************/
-/* if expand_early is TRUE, expand before doing any parsing */
+/* if expand_early is true, expand before doing any parsing */
 {
 
     char                *name;
@@ -310,14 +309,14 @@ bool DefineConstant( token_idx i, bool redefine, bool expand_early )
     name = AsmBuffer[i++].string_ptr;
     i++;
 
-    return( createconstant( name, FALSE, i, redefine, expand_early ) );
+    return( createconstant( name, false, i, redefine, expand_early ) );
 }
 
 bool StoreConstant( const char *name, const char *value, bool redefine )
 /**********************************************************************/
 {
     AsmScan( value );
-    return( createconstant( name, FALSE, 0, redefine, FALSE ) );
+    return( createconstant( name, false, 0, redefine, false ) );
 }
 
 void MakeConstantUnderscored( const char *name )
@@ -329,7 +328,7 @@ void MakeConstantUnderscored( const char *name )
     strcpy( buffer, "__" );
     strcpy( buffer + 2, name );
     strcat( buffer, "__" );
-    createconstant( buffer, TRUE, 0, TRUE, FALSE );
+    createconstant( buffer, true, 0, true, false );
 }
 
 static void FreeConstData( const_info *constinfo )
@@ -368,16 +367,16 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
             return( RC_ERROR );
         }
         dir->e.constinfo->redefine = redefine;
-        dir->e.constinfo->expand_early = FALSE;
+        dir->e.constinfo->expand_early = false;
     } else {
         /* check if it can be redefined */
         dir = (dir_node *)sym;
         if( sym->state == SYM_UNDEFINED ) {
             dir_change( dir, TAB_CONST );
             dir->e.constinfo->redefine = redefine;
-            dir->e.constinfo->expand_early = FALSE;
+            dir->e.constinfo->expand_early = false;
         } else if( ( sym->state != SYM_CONST ) ||
-                   ( ( dir->e.constinfo->redefine == FALSE ) &&
+                   ( !dir->e.constinfo->redefine &&
                    ( Parse_Pass == PASS_1 ) ) ) {
             /* error */
             AsmError( LABEL_ALREADY_DEFINED );
@@ -407,12 +406,12 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     bool                new_constant;
     size_t              len;
 
-    new_constant = FALSE;
+    new_constant = false;
     dir = (dir_node *)AsmGetSymbol( name );
 
     /* if we've never seen it before, put it in */
     if( dir == NULL ) {
-        new_constant = TRUE;
+        new_constant = true;
         dir = dir_insert( name, TAB_CONST );
         if( dir == NULL ) {
             return( RC_ERROR );
@@ -424,7 +423,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         dir->e.constinfo->redefine = redefine;
         dir->e.constinfo->expand_early = expand_early;
     } else if(( dir->sym.state != SYM_CONST )
-        || (( dir->e.constinfo->redefine == FALSE ) && ( Parse_Pass == PASS_1 ))) {
+        || ( !dir->e.constinfo->redefine && ( Parse_Pass == PASS_1 ))) {
         /* error */
         AsmError( LABEL_ALREADY_DEFINED );
         return( RC_ERROR );
@@ -448,7 +447,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     }
 
     /* expand any constants */
-    if( ExpandTheWorld( start, FALSE, TRUE ) )
+    if( ExpandTheWorld( start, false, true ) )
         return( RC_ERROR );
 
     for( counta = 0, i = start; AsmBuffer[i].class != TC_FINAL; i++ ) {
@@ -461,10 +460,10 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
     if( counta == 0 ) {
         new = NULL;
         count = 0;
-        can_be_redefine = TRUE;
+        can_be_redefine = true;
     } else {
         new = AsmAlloc( counta * sizeof( asm_tok ) );
-        can_be_redefine = ( counta > 1 ) ? TRUE : FALSE;
+        can_be_redefine = ( counta > 1 );
     }
     for( i = 0; i < count; i++ ) {
         switch( AsmBuffer[start + i].class ) {
@@ -475,7 +474,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
                 start++;
                 continue;
             }
-            can_be_redefine = TRUE;
+            can_be_redefine = true;
             break;
         case TC_NUM:
             break;
@@ -489,13 +488,13 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
                 sprintf( buff, ".$%p/%lx", GetCurrSeg(), (unsigned long)GetCurrAddr() );
                 AsmBuffer[start + i].string_ptr = buff;
                 if( AsmGetSymbol( buff ) == NULL ) {
-                    new_constant = TRUE;
+                    new_constant = true;
                     MakeLabel( buff, MT_NEAR );
                 }
                 break;
             }
         default:
-            can_be_redefine = TRUE;
+            can_be_redefine = true;
             break;
         }
         new[i].class = AsmBuffer[start + i].class;
@@ -509,7 +508,7 @@ static bool createconstant( const char *name, bool value, token_idx start, bool 
         }
     }
     if( new_constant && can_be_redefine )
-        dir->e.constinfo->redefine = TRUE;
+        dir->e.constinfo->redefine = true;
     FreeConstData( dir->e.constinfo );
     dir->e.constinfo->count = count;
     dir->e.constinfo->data = new;
@@ -551,7 +550,7 @@ bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
 
     if( ExpandAllConsts( start_pos, early_only ) )
         return( RC_ERROR );
-    if( early_only == FALSE ) {
+    if( !early_only ) {
         val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
         if( val == INVALID_IDX )
             return( RC_ERROR );
@@ -567,7 +566,7 @@ bool ExpandTheConstant( token_idx start_pos, bool early_only, bool flag_msg )
 
     if( ExpandAllConsts( start_pos, early_only ) )
         return( RC_ERROR );
-    if( early_only == FALSE ) {
+    if( !early_only ) {
         val = EvalConstant( Token_Count, start_pos + 2, Token_Count, flag_msg );
         if( val == INVALID_IDX )
             return( RC_ERROR );

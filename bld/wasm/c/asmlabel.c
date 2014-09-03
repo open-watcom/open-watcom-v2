@@ -158,7 +158,7 @@ bool MakeLabel( char *symbol_name, memtype mem_type )
     }
     sym->mem_type = mem_type;  // fixme ??
     if( Parse_Pass != PASS_1 && sym->offset != addr ) {
-        PhaseError = TRUE;
+        PhaseError = true;
     }
 #else
     sym = AsmLookup( symbol_name );

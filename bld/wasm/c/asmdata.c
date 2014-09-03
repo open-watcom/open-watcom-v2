@@ -55,7 +55,7 @@ static bool             first;
 
 static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_pos, unsigned no_of_bytes );
 
-static bool             More_Array_Element = FALSE;
+static bool             More_Array_Element = false;
 static unsigned         Last_Element_Size;
 
 /* data initialization stuff */
@@ -132,7 +132,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
     token_idx           cur_pos = start_pos;
     unsigned            count;
     char                *char_ptr = NULL;
-    bool                negative = FALSE;
+    bool                negative = false;
 
 #if defined( _STANDALONE_ )
     asm_sym             *the_struct;
@@ -169,7 +169,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
 #if defined( _STANDALONE_ )
             if( !struct_field ) {
-                ChangeCurrentLocation( TRUE, no_of_bytes,
+                ChangeCurrentLocation( true, no_of_bytes,
                       ( ( CurrSeg != NULL ) && SEGISCODE( CurrSeg ) ) );
             } else {
                 Definition.curr_struct->e.structinfo->size += no_of_bytes;
@@ -195,7 +195,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 AsmBuffer[cur_pos].class = TC_PLUS;
                 break;
             case TC_FLOAT:
-                negative = TRUE;
+                negative = true;
                 break;
             default:
                 AsmError( EXPECTING_NUMBER );
@@ -232,7 +232,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             }
             if( AsmBuffer[cur_pos].class == TC_FLOAT ) {
                 output_float( cur_pos, no_of_bytes, negative );
-                negative = FALSE;
+                negative = false;
                 break;
             }
             char_ptr = (char *)AsmBuffer[cur_pos].u.bytes;
@@ -256,7 +256,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             break;
         case TC_COMMA:
 #if defined( _STANDALONE_ )
-            first = FALSE;
+            first = false;
 #endif
             if( cur_pos != start_pos ) {
                 if( AsmBuffer[cur_pos - 1].class == TC_COMMA ) {
@@ -273,7 +273,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
                 return( INVALID_IDX );
             }
             if( cur_pos == ( Token_Count - 1 ) ) {
-                More_Array_Element = TRUE;
+                More_Array_Element = true;
                 Last_Element_Size = no_of_bytes;
             }
             break;
@@ -340,7 +340,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_idx sta
             i--;
             cur_pos = i;
 
-            if( ExpandSymbol( i, FALSE, &expanded ) )
+            if( ExpandSymbol( i, false, &expanded ) )
                 return( INVALID_IDX );
             if( expanded ) {
                 continue;
@@ -653,7 +653,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
     bool                was_first;
 #endif
 
-    ExpandTheWorld( start_pos, FALSE, TRUE );
+    ExpandTheWorld( start_pos, false, true );
     for( cur_pos = start_pos; cur_pos + 2 < Token_Count; ) {
         if(( AsmBuffer[cur_pos + 1].class == TC_RES_ID )
             && ( AsmBuffer[cur_pos + 1].u.token == T_DUP )) {
@@ -713,7 +713,7 @@ static token_idx dup_array( asm_sym *sym, asm_sym *struct_sym, token_idx start_p
         }
         cur_pos = returned_pos + 2;
 #if defined( _STANDALONE_ )
-        first = FALSE;
+        first = false;
 #endif
     }
     return( array_element( sym, struct_sym, cur_pos, no_of_bytes ) );
@@ -731,10 +731,10 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     struct asm_sym      *struct_sym = NULL;
 #if defined( _STANDALONE_ )
     uint                old_offset = 0;
-    char                label_dir = FALSE;
+    bool                label_dir = false;
 
-    struct_field = FALSE;
-    first = TRUE;
+    struct_field = false;
+    first = true;
 #endif
 
     if( sym_loc != INVALID_IDX ) {
@@ -813,7 +813,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
 
 #if defined( _STANDALONE_ )
     if( sym_loc != INVALID_IDX && AsmBuffer[ sym_loc ].u.token == T_LABEL ) {
-        label_dir = TRUE;
+        label_dir = true;
         if( sym_loc > 0 ) {
             sym_loc--;
         } else {
@@ -824,7 +824,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
                 AddFieldToStruct( sym, initializer_loc );
-                struct_field = TRUE;
+                struct_field = true;
             } else {
                 return( RC_OK );
             }
@@ -832,15 +832,15 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
     }
 #endif
 
-    if( More_Array_Element == TRUE ) {
-        More_Array_Element = FALSE;
+    if( More_Array_Element ) {
+        More_Array_Element = false;
     } else if( sym_loc != INVALID_IDX ) {
 #if defined( _STANDALONE_ )
         /* defining a field in a structure */
         if( Definition.struct_depth != 0 ) {
             if( Parse_Pass == PASS_1 ) {
                 sym->offset = AddFieldToStruct( sym, initializer_loc );
-                struct_field = TRUE;
+                struct_field = true;
                 sym->state = SYM_STRUCT_FIELD;
                 sym->mem_type = mem_type;
                 if( dup_array( sym, NULL, initializer_loc + 1, no_of_bytes ) == INVALID_IDX ) {
@@ -869,7 +869,7 @@ bool data_init( token_idx sym_loc, token_idx initializer_loc )
         }
         GetSymInfo( sym );
         if( Parse_Pass != PASS_1 && sym->offset != old_offset ) {
-            PhaseError = TRUE;
+            PhaseError = true;
         }
 #else
         if( sym->state != SYM_UNDEFINED ) {
@@ -896,13 +896,13 @@ bool NextArrayElement( bool *next )
 {
     token_idx   rc;
 
-    *next = FALSE;
+    *next = false;
     if( More_Array_Element ) {
-        More_Array_Element = FALSE;
+        More_Array_Element = false;
         rc = dup_array( NULL, NULL, 0, Last_Element_Size );
         if( rc == INVALID_IDX )
             return( RC_ERROR );
-        *next = TRUE;
+        *next = true;
     }
     return( RC_OK );
 }

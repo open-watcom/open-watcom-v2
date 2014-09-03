@@ -42,7 +42,7 @@
 typedef enum if_state {
     ACTIVE,                 /* current IF cond is true */
     LOOKING_FOR_TRUE_COND,  /* current IF cond is false, looking for elseif */
-    DONE                    /* done TRUE section of current if, just nuke
+    DONE                    /* done true section of current if, just nuke
                                everything until we see an endif */
 } if_state;
 
@@ -202,7 +202,7 @@ bool conditional_error_directive( token_idx i )
     case T_ERRIFDIFI:
     case T_ERRIFIDN:
     case T_ERRIFIDNI:
-        ExpandTheWorld( i+1, FALSE, TRUE );
+        ExpandTheWorld( i + 1, false, true );
     }
 
     switch( direct ) {
@@ -255,28 +255,28 @@ bool conditional_error_directive( token_idx i )
         break;
     case T_DOT_ERRDIF:
     case T_ERRIFDIF:
-        if( check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+        if( check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
             AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRDIFI:
     case T_ERRIFDIFI:
-        if( check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+        if( check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
             AsmErr( FORCED_DIF, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDN:
     case T_ERRIFIDN:
-        if( !check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+        if( !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
             AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
         break;
     case T_DOT_ERRIDNI:
     case T_ERRIFIDNI:
-        if( !check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
+        if( !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ) {
             AsmErr( FORCED_IDN, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr );
             return( RC_ERROR );
         }
@@ -306,7 +306,7 @@ static if_state get_cond_state( token_idx i )
     case T_ELSEIFE:
     case T_ELSEIFIDN:
     case T_ELSEIFIDNI:
-        ExpandTheWorld( i+1, FALSE, TRUE );
+        ExpandTheWorld( i + 1, false, true );
     }
 
     switch( direct ) {
@@ -338,19 +338,19 @@ static if_state get_cond_state( token_idx i )
         break;
     case T_IFDIF:
     case T_ELSEIFDIF:
-        cond_state = check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFDIFI:
     case T_ELSEIFDIFI:
-        cond_state = check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDN:
     case T_ELSEIFIDN:
-        cond_state = !check_dif( TRUE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_dif( true, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFIDNI:
     case T_ELSEIFIDNI:
-        cond_state = !check_dif( FALSE, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
+        cond_state = !check_dif( false, AsmBuffer[i+1].string_ptr, AsmBuffer[i+3].string_ptr ) ? ACTIVE : LOOKING_FOR_TRUE_COND;
         break;
     case T_IFNB:
     case T_ELSEIFNB:

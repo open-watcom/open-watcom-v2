@@ -126,7 +126,7 @@ bool directive( token_idx i, asm_token direct )
             return( RC_ERROR );
         }
     case T_DOSSEG:
-        Globals.dosseg = TRUE;
+        Globals.dosseg = true;
         return( RC_OK );
     case T_PUBLIC:
         /* special case - expanded inside iff it is an EQU to a symbol */
@@ -198,7 +198,7 @@ bool directive( token_idx i, asm_token direct )
             return( GrpDef(i) );
         return( RC_OK );
     case T_PROC:
-        return( ProcDef( i, TRUE ) );
+        return( ProcDef( i, true ) );
     case T_ENDP:
         return( ProcEnd(i) );
     case T_ENUM:
@@ -295,7 +295,7 @@ bool directive( token_idx i, asm_token direct )
         AsmError( NOT_SUPPORTED );
         return( RC_ERROR );
     case T_ORG:
-        ExpandTheWorld( 0, FALSE, TRUE );
+        ExpandTheWorld( 0, false, true );
         break;
     case T_TEXTEQU:     /* TEXTEQU */
         if( Options.mode & MODE_IDEAL ) {
@@ -305,7 +305,7 @@ bool directive( token_idx i, asm_token direct )
     case T_EQU2:        /* = */
     case T_EQU:         /* EQU */
         /* expand any constants and simplify any expressions */
-        ExpandTheConstant( 0, FALSE, TRUE );
+        ExpandTheConstant( 0, false, true );
         break;
     case T_NAME:        /* no expand parameters */
         break;
@@ -319,7 +319,7 @@ bool directive( token_idx i, asm_token direct )
     case T_EXITCODE:
     default:
         /* expand any constants in all other directives */
-        ExpandAllConsts( 0, FALSE );
+        ExpandAllConsts( 0, false );
         break;
     }
 
@@ -334,7 +334,7 @@ bool directive( token_idx i, asm_token direct )
         }
     case T_EXTRN:
         if( Parse_Pass == PASS_1 )
-            return( ExtDef( i + 1, FALSE ) );
+            return( ExtDef( i + 1, false ) );
         return( RC_OK );
     case T_COMM:
         if( Parse_Pass == PASS_1 )
@@ -346,7 +346,7 @@ bool directive( token_idx i, asm_token direct )
         }
     case T_GLOBAL:
         if( Parse_Pass == PASS_1 )
-            return( ExtDef( i + 1, TRUE ) );
+            return( ExtDef( i + 1, true ) );
         return( RC_OK );
     case T_DOT_MODEL:
         if( Options.mode & MODE_IDEAL ) {
@@ -365,17 +365,17 @@ bool directive( token_idx i, asm_token direct )
     case T_END:
         return( ModuleEnd(Token_Count) );
     case T_EQU:
-        return( DefineConstant( i-1, FALSE, FALSE ) );
+        return( DefineConstant( i-1, false, false ) );
     case T_EQU2:
-        return( DefineConstant( i-1, TRUE, FALSE ) );
+        return( DefineConstant( i-1, true, false ) );
     case T_TEXTEQU:
-        return( DefineConstant( i-1, TRUE, TRUE ) );
+        return( DefineConstant( i-1, true, true ) );
     case T_MACRO:
-        return( MacroDef(i, FALSE ) );
+        return( MacroDef( i, false ) );
     case T_ENDM:
-        return( MacroEnd( FALSE ) );
+        return( MacroEnd( false ) );
     case T_EXITM:
-        return( MacroEnd( TRUE ) );
+        return( MacroEnd( true ) );
     case T_ARG:
         if( Parse_Pass == PASS_1 )
             return( ArgDef(i) );

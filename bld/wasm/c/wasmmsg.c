@@ -147,7 +147,7 @@ void MsgPrintf( int resourceid )
     char        msgbuf[MAX_MESSAGE_SIZE];
 
     if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
+        Options.banner_printed = true;
         trademark();
     }
     MsgGet( resourceid, msgbuf );
@@ -159,7 +159,7 @@ void MsgPrintf1( int resourceid, char *token )
     char        msgbuf[MAX_MESSAGE_SIZE];
 
     if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
+        Options.banner_printed = true;
         trademark();
     }
     MsgGet( resourceid, msgbuf );
@@ -235,15 +235,15 @@ bool MsgGet( int id, char *buffer )
         index = id - MSG_USAGE_BASE + TXT_USAGE_BASE;
     } else {
         buffer[0] = '\0';
-        return( FALSE );
+        return( false );
     }
     strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #else
     if( LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) != 0 ) {
         buffer[0] = '\0';
-        return( FALSE );
+        return( false );
     }
 #endif
-    return( TRUE );
+    return( true );
 }

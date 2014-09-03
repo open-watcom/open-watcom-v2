@@ -151,12 +151,12 @@ typedef enum smode {
 } smode;
 
 typedef struct global_options {
-    bool        sign_value;     /* TRUE -> WORD & DWORD are only unsigned
+    bool        sign_value;     /* true -> WORD & DWORD are only unsigned
                                    signed #'s are SWORD & SDWORD instead. */
     bool        stop_at_end;
     bool        quiet;
     bool        banner_printed;
-    bool        debug_flag;
+    bool        debug_info;
     bool        output_comment_data_in_code_records;
 
     /* error handling stuff */
@@ -164,7 +164,7 @@ typedef struct global_options {
     int         warning_count;
     int         error_limit;
     char        warning_level;
-    char        warning_error;
+    bool        warning_error;
 
     char        *build_target;
 
@@ -174,7 +174,7 @@ typedef struct global_options {
     char        *module_name;
 
   #ifdef DEBUG_OUT
-    char        debug;
+    bool        debug;
   #endif
     char        *default_name_mangler;
     bool        allow_c_octals;
@@ -193,8 +193,8 @@ extern global_options Options;
 
 typedef struct global_vars{
     uint    code_seg;
-    bool    data_in_code:1;     /* have we just written data to a code seg */
-    bool    dosseg:1;           /* have we seen a .dosseg directive */
+    bool    data_in_code;       /* have we just written data to a code seg */
+    bool    dosseg;             /* have we seen a .dosseg directive */
     uint_16 sel_idx;
     uint_32 sel_start;
     uint    expand_count;

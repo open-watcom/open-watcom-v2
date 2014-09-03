@@ -75,7 +75,7 @@ static bool output( const asm_ins ASMFAR *ins )
     /*
      * Output debug info - line numbers
      */
-    if( Options.debug_flag && !PhaseError && ( Parse_Pass != PASS_1 ) ) {
+    if( Options.debug_info && !PhaseError && ( Parse_Pass != PASS_1 ) ) {
         AddLinnumDataRef();
     }
 
@@ -415,7 +415,7 @@ static bool match_phase_2( bool *found, const asm_ins ASMFAR **pins )
             return( output_data( Code->info.opnd_type[OPND1], OPND1 ) );
         } else {
             // still cannot find match
-            *found = FALSE;
+            *found = false;
             return( RC_ERROR );
         }
     }
@@ -430,10 +430,10 @@ bool match_phase_1( void )
 */
 {
     bool            rc;
-    bool            temp_opsiz = FALSE;
+    bool            temp_opsiz = false;
     OPNDTYPE        cur_opnd;
     OPNDTYPE        asm_op1;
-    bool            found = TRUE;
+    bool            found = true;
     const asm_ins   ASMFAR *ins;
 
     // if nothing inside, no need to output anything
@@ -530,7 +530,7 @@ bool match_phase_1( void )
                 rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
-                found = TRUE;
+                found = true;
                 Code->prefix.opsiz = temp_opsiz;
             }
             break;
@@ -540,7 +540,7 @@ bool match_phase_1( void )
                 rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
-                found = TRUE;
+                found = true;
                 Code->prefix.opsiz = temp_opsiz;
             }
             break;
@@ -551,7 +551,7 @@ bool match_phase_1( void )
                 rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
-                found = TRUE;
+                found = true;
             }
             break;
         case OP_I8_U:
@@ -562,7 +562,7 @@ bool match_phase_1( void )
                     rc = match_phase_2( &found, &ins );
                     if( found )
                         return( rc );
-                    found = TRUE;
+                    found = true;
                     Code->prefix.opsiz = temp_opsiz;
                 }
             }
@@ -589,7 +589,7 @@ bool match_phase_1( void )
                 rc = match_phase_2( &found, &ins );
                 if( found )
                     return( rc );
-                found = TRUE;
+                found = true;
             }
             break;
         }
@@ -867,6 +867,6 @@ static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE de
     }
     ins--;
     *pins = ins;
-    *found = FALSE;
+    *found = false;
     return( RC_ERROR );
 }

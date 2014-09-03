@@ -72,7 +72,7 @@ extern symbol_queue     Tables[];       // tables of definitions
 extern unsigned         BufSize;
 
 extern int              MacroExitState;
-extern int              in_prologue;
+extern bool             in_prologue;
 
 extern bool             EndDirectiveFound;
 extern bool             EndDirectiveProc;
@@ -82,7 +82,7 @@ char                    Parse_Pass;     // phase of parsing
 bool                    write_to_file;  // write if there is no error
 unsigned long           LineNumber;
 bool                    Modend;         // end of module is reached
-bool                    DefineProc;     // TRUE if the definition of procedure
+bool                    DefineProc;     // true if the definition of procedure
                                         // has not ended
 dir_node                *CurrProc;      // current procedure
 bool                    Use32;          // if 32-bit code is use
@@ -159,9 +159,9 @@ static void write_init( void )
     FixupListHead = NULL;
     FixupListTail = NULL;
     CurrProc      = NULL;
-    DefineProc    = FALSE;
-    Use32         = FALSE;
-    write_to_file = TRUE;
+    DefineProc    = false;
+    Use32         = false;
+    write_to_file = true;
 
     AddLnameData( dir_insert( "", TAB_CLASS_LNAME ) );
     ModuleInit();
@@ -187,12 +187,12 @@ void OutSelect( bool starts )
             || !Globals.code_seg )
             return;
         Globals.sel_start = GetCurrAddr();
-        Globals.data_in_code = TRUE;
+        Globals.data_in_code = true;
     } else {
         if( !Options.output_comment_data_in_code_records || !Globals.data_in_code )
             return;
         Globals.sel_idx = CurrSeg->seg->e.seginfo->idx;
-        Globals.data_in_code = FALSE;
+        Globals.data_in_code = false;
 
         if( (Parse_Pass > PASS_1) && !PhaseError ) {
             objr = ObjNewRec( CMD_COMENT );
@@ -214,7 +214,7 @@ void OutSelect( bool starts )
                 ObjPut16( objr, (uint_16)GetCurrAddr() );
             }
             ObjTruncRec( objr );
-            write_record( objr, TRUE );
+            write_record( objr, true );
         }
         Globals.sel_idx = 0;
         Globals.sel_start = 0;
@@ -230,7 +230,7 @@ static void write_end_of_pass1( void )
     objr->d.coment.attr = 0x00;
     objr->d.coment.class = CMT_MS_END_PASS_1;
     ObjAttachData( objr, (uint_8 *)"\x001", 1 );
-    write_record( objr, TRUE );
+    write_record( objr, true );
 }
 
 static void write_dosseg( void )
@@ -242,7 +242,7 @@ static void write_dosseg( void )
     objr->d.coment.attr = 0x80;
     objr->d.coment.class = CMT_DOSSEG;
     ObjAttachData( objr, (uint_8 *)"", 0 );
-    write_record( objr, TRUE );
+    write_record( objr, true );
 }
 
 static void write_lib( void )
@@ -262,7 +262,7 @@ static void write_lib( void )
         objr->d.coment.attr = 0x80;
         objr->d.coment.class = CMT_DEFAULT_LIBRARY;
         ObjAttachData( objr, (uint_8 *)name, (uint_16)len );
-        write_record( objr, TRUE );
+        write_record( objr, true );
     }
 }
 
@@ -290,7 +290,7 @@ static void write_one_export( dir_node *dir )
         ObjPut8( objr, 0 );             // temporary
         ObjPutName( objr, name, (uint_8)len );
         ObjPut8( objr, 0 );
-        write_record( objr, TRUE );
+        write_record( objr, true );
 
         AsmFree( name );
     }
@@ -333,7 +333,7 @@ static void write_grp( void )
             if( segminfo->sym.segment == NULL ) {
                 LineNumber = grp->line_num;
                 AsmErr( SEG_NOT_DEFINED, segminfo->sym.name );
-                write_to_file = FALSE;
+                write_to_file = false;
                 LineNumber = line_num;
             } else {
                 ObjPut8( objr, GRP_SEGIDX );
@@ -343,7 +343,7 @@ static void write_grp( void )
         grp->e.grpinfo->idx = grp_idx;
         if( write_to_file ) {
             ObjTruncRec( objr );
-            write_record( objr, TRUE );
+            write_record( objr, true );
         } else {
             ObjKillRec( objr );
         }
@@ -365,7 +365,7 @@ static void write_seg( void )
         }
         seg_idx++;
         objr = ObjNewRec( CMD_SEGDEF );
-        objr->is_32 = TRUE;
+        objr->is_32 = 1;
         objr->d.segdef.ovl_name_idx = 1;
         objr->d.segdef.seg_name_idx = dir->e.seginfo->idx;
         objr->d.segdef.class_name_idx = ((dir_node *)dir->e.seginfo->class_name)->e.lnameinfo->idx;
@@ -373,11 +373,11 @@ static void write_seg( void )
         objr->d.segdef.align = dir->e.seginfo->align;
         objr->d.segdef.combine = dir->e.seginfo->combine;
         objr->d.segdef.use_32 = dir->e.seginfo->use_32;
-        objr->d.segdef.access_valid = FALSE;
+        objr->d.segdef.access_valid = 0;
         objr->d.segdef.abs.frame = dir->e.seginfo->abs_frame;
         objr->d.segdef.abs.offset = 0;
         objr->d.segdef.idx = seg_idx;
-        write_record( objr, FALSE );
+        write_record( objr, false );
 
         if( dir->e.seginfo->iscode == SEGTYPE_ISCODE ) {
             objr = ObjNewRec( CMD_COMENT );
@@ -387,7 +387,7 @@ static void write_seg( void )
             ObjPut8( objr, LDIR_OPT_FAR_CALLS );
             ObjPutIndex( objr, seg_idx );
             ObjTruncRec( objr );
-            write_record( objr, TRUE );
+            write_record( objr, true );
         }
         dir->e.seginfo->idx = seg_idx;
     }
@@ -402,7 +402,7 @@ static void write_lnames( void )
     objr->d.lnames.first_idx = 1;
     objr->d.lnames.num_names = 0;
     if( GetLnameData( objr ) ) {
-        write_record( objr, TRUE );
+        write_record( objr, true );
     } else {
         ObjKillRec( objr );
     }
@@ -562,7 +562,7 @@ static void write_external( void )
             }
         }
         if( objr->d.extdef.num_names ) {
-            write_record( objr, TRUE );
+            write_record( objr, true );
         } else {
             ObjKillRec( objr );
         }
@@ -581,7 +581,7 @@ static void write_header( char *name )
         len = 255;
     ObjAllocData( objr, (uint_16)( len + 1 ) );
     ObjPutName( objr, name, (uint_8)len );
-    write_record( objr, TRUE );
+    write_record( objr, true );
 }
 
 void get_frame( fixup *fixnode, struct asmfixup *fixup )
@@ -619,10 +619,10 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
 
     fixnode = FixNew();
     fixnode->next = NULL;
-    fixnode->self_relative = FALSE;
-    fixnode->lr.is_secondary = FALSE;
+    fixnode->self_relative = 0;
+    fixnode->lr.is_secondary = 0;
     fixnode->lr.target_offset = fixup->u_offset;
-    fixnode->loader_resolved = FALSE;
+    fixnode->loader_resolved = 0;
     fixnode->loc_offset = 0;
 
     /*------------------------------------*/
@@ -666,19 +666,19 @@ static bool write_modend( void )
 
     objr = ObjNewRec( CMD_MODEND );
     if( ModendFixup == NULL ) {
-        objr->d.modend.start_addrs = FALSE;
-        objr->d.modend.is_logical = FALSE;
-        objr->d.modend.main_module = FALSE;
+        objr->d.modend.start_addrs = 0;
+        objr->d.modend.is_logical = 0;
+        objr->d.modend.main_module = 0;
     } else {
-        objr->d.modend.start_addrs = TRUE;
-        objr->d.modend.is_logical = TRUE;
-        objr->d.modend.main_module = TRUE;
+        objr->d.modend.start_addrs = 1;
+        objr->d.modend.is_logical = 1;
+        objr->d.modend.main_module = 1;
         fix = CreateFixupRecModend( ModendFixup );
         if( fix != NULL ) {
             objr->d.modend.ref.log = fix->lr;
         }
     }
-    write_record( objr, TRUE );
+    write_record( objr, true );
     return( RC_OK );
 }
 
@@ -704,14 +704,14 @@ static bool write_autodep( void )
         buff[4] = (unsigned char)len;
         memcpy( buff + 4 + 1, curr->fullname, len );
         ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );
-        write_record( objr, TRUE );
+        write_record( objr, true );
     }
     // one NULL dependency record must be on the end
     objr = ObjNewRec( CMD_COMENT );
     objr->d.coment.attr = 0x80;
     objr->d.coment.class = CMT_DEPENDENCY;
     ObjAttachData( objr, (uint_8 *)"", 0 );
-    write_record( objr, TRUE );
+    write_record( objr, true );
     return( RC_OK );
 }
 
@@ -764,7 +764,7 @@ static void write_linnum( void )
             }
             objr->d.linnum.d.base.frame = 0; // fixme ?
     
-            write_record( objr, TRUE );
+            write_record( objr, true );
         }
     }
 }
@@ -778,26 +778,26 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
 
     fixnode = FixNew();
     fixnode->next = NULL;
-    fixnode->self_relative = FALSE;
+    fixnode->self_relative = 0;
     fixnode->lr.target_offset = 0;
-    fixnode->lr.is_secondary = TRUE;
-    fixnode->loader_resolved = FALSE;
+    fixnode->lr.is_secondary = 1;
+    fixnode->loader_resolved = 0;
     fixnode->loc_offset = fixup->fixup_loc - offset;
 
     switch( fixup->fixup_type ) {
     case FIX_RELOFF8:
-        fixnode->self_relative = TRUE;
+        fixnode->self_relative = 1;
     case FIX_LOBYTE:
         fixnode->loc_method = FIX_LO_BYTE;
         break;
     case FIX_RELOFF16:
-        fixnode->self_relative = TRUE;
+        fixnode->self_relative = 1;
     case FIX_FPPATCH:
     case FIX_OFF16:
         fixnode->loc_method = FIX_OFFSET;
         break;
     case FIX_RELOFF32:
-        fixnode->self_relative = TRUE;
+        fixnode->self_relative = 1;
     case FIX_OFF32:
         fixnode->loc_method = FIX_OFFSET386;
         break;
@@ -974,8 +974,8 @@ static void write_ledata( void )
         objr->d.ledata.idx = CurrSeg->seg->e.seginfo->idx;
         objr->d.ledata.offset = CurrSeg->seg->e.seginfo->start_loc;
         if( objr->d.ledata.offset > 0xffffUL )
-            objr->is_32 = TRUE;
-        write_record( objr, TRUE );
+            objr->is_32 = 1;
+        write_record( objr, true );
 
         /* Process Fixup, if any */
         if( FixupListHead != NULL ) {
@@ -984,27 +984,27 @@ static void write_ledata( void )
             /* Process Fixup, if any */
             if( fl16 != NULL ) {
                 objr = ObjNewRec( CMD_FIXUP );
-                objr->is_32 = FALSE;
+                objr->is_32 = 0;
                 objr->d.fixup.fixup = fl16;
-                write_record( objr, TRUE );
+                write_record( objr, true );
             }
             if( fl32 != NULL ) {
                 objr = ObjNewRec( CMD_FIXUP );
-                objr->is_32 = TRUE;
+                objr->is_32 = 1;
                 objr->d.fixup.fixup = fl32;
-                write_record( objr, TRUE );
+                write_record( objr, true );
             }
 #else
             get_fixup_list( CurrSeg->seg->e.seginfo->start_loc, &fl );
             objr = ObjNewRec( CMD_FIXUP );
             objr->d.fixup.fixup = FixupListHead;
             check_need_32bit( objr );
-            write_record( objr, TRUE );
+            write_record( objr, true );
 #endif
             FixupListHead = FixupListTail = NULL;
         }
         /* add line numbers if debugging info is desired */
-        if( Options.debug_flag ) {
+        if( Options.debug_info ) {
             write_linnum();
         }
         CurrSeg->seg->e.seginfo->start_loc = CurrSeg->seg->e.seginfo->current_loc;
@@ -1035,7 +1035,7 @@ static void write_alias( void )
     size_t              len2;
     bool                first;
 
-    first = TRUE;
+    first = true;
     while( ( alias = GetAliasData( first ) ) != NULL ) {
         /* output an alias record for this alias */
         len1 = strlen( alias );
@@ -1051,8 +1051,8 @@ static void write_alias( void )
         memcpy( new + 1 + len1 + 1, subst, len2 );
         objr = ObjNewRec( CMD_ALIAS );
         ObjAttachData( objr, (uint_8 *)new, (uint_16)( 1 + len1 + 1 + len2 ) );
-        write_record( objr, TRUE );
-        first = FALSE;
+        write_record( objr, true );
+        first = false;
     }
 }
 
@@ -1108,7 +1108,7 @@ void FlushCurrSeg( void )
 
     write_ledata();
     BufSize = 0;
-    OutSelect( FALSE );
+    OutSelect( false );
 }
 
 static void reset_seg_len( void )
@@ -1161,10 +1161,10 @@ static void OnePassInit( void )
     Options.locals_prefix[1] = '@';
     Options.locals_len = 0;
 
-    EndDirectiveFound = FALSE;
-    EndDirectiveProc = FALSE;
-    PhaseError = FALSE;
-    Modend = FALSE;
+    EndDirectiveFound = false;
+    EndDirectiveProc = false;
+    PhaseError = false;
+    Modend = false;
     PassTotal = 0;
     LineNumber = 0;
     lastLineNumber = 0;
@@ -1209,7 +1209,7 @@ void WriteObjModule( void )
 
     Parse_Pass = PASS_1;
 #ifdef DEBUG_OUT
-    if( Options.debug )
+    if( Options.int_debug )
         printf( "*************\npass %u\n*************\n", Parse_Pass + 1 );
 #endif
     prev_total = OnePass( string );
@@ -1235,7 +1235,7 @@ void WriteObjModule( void )
 #ifdef PRIVATE_PROC_INFO
     put_private_proc_in_public_table();
 #else
-    if( Options.debug_flag ) {
+    if( Options.debug_info ) {
         put_private_proc_in_public_table();
     }
 #endif
@@ -1253,11 +1253,11 @@ void WriteObjModule( void )
         reset_seg_len();
         BufSize = 0;
         MacroLocalVarCounter = 0;
-        Globals.data_in_code = FALSE;
+        Globals.data_in_code = false;
         PrepAnonLabels();
 
 #ifdef DEBUG_OUT
-        if( Options.debug )
+        if( Options.int_debug )
             printf( "*************\npass %u\n*************\n", Parse_Pass + 1 );
 #endif
         curr_total = OnePass( string );

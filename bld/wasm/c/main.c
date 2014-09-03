@@ -74,7 +74,7 @@ static struct SWData {
     int     cpu;
     int     fpu;
 } SWData = {
-    FALSE, // real mode CPU instructions set
+    false, // real mode CPU instructions set
     0,     // default CPU 8086
     -1     // unspecified FPU
 };
@@ -90,18 +90,18 @@ static char             *OptParm;
 static char             *ForceInclude = NULL;
 
 global_options Options = {
-    FALSE,              // sign_value
-    FALSE,              // stop_at_end
-    FALSE,              // quiet
-    FALSE,              // banner_printed
-    FALSE,              // debug_flag
-    TRUE,               // output_comment_data_in_code_records
+    false,              // sign_value
+    false,              // stop_at_end
+    false,              // quiet
+    false,              // banner_printed
+    false,              // debug_info
+    true,               // output_comment_data_in_code_records
 
     0,                  // error_count
     0,                  // warning_count
     20,                 // error_limit
     2,                  // warning_level
-    FALSE,              // warning_error
+    false,              // warning_error
     NULL,               // build_target
 
     NULL,               // code_class
@@ -110,15 +110,15 @@ global_options Options = {
     NULL,               // module_name
 
 #ifdef DEBUG_OUT
-    FALSE,              // debug
+    false,              // debug
 #endif
     NULL,               // default_name_mangler
-    FALSE,              // allow_c_octals
-    TRUE,               // emit_dependencies
-    TRUE,               // stdcall at number
-    TRUE,               // mangle stdcall
-    FALSE,              // write listing
-    TRUE,               // parameters passed by registers
+    false,              // allow_c_octals
+    true,               // emit_dependencies
+    true,               // stdcall at number
+    true,               // mangle stdcall
+    false,              // write listing
+    true,               // parameters passed by registers
     MODE_WATCOM,        // assembler mode
     0,                  // locals prefix len
     {'\0','\0','\0'},   // locals prefix
@@ -194,19 +194,19 @@ static void SetCPUPMC( void )
     for( tmp=OptParm; tmp < OptScanPtr; tmp++ ) {
         if( *tmp == 'p' ) {
             if( SWData.cpu >= 2 ) { // set protected mode
-                SWData.protect_mode = TRUE;
+                SWData.protect_mode = true;
             } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
             }
         } else if( *tmp == 'r' ) {
             if( SWData.cpu >= 3 ) { // set register based calling convention
-                Options.watcom_parms_passed_by_regs = TRUE;
+                Options.watcom_parms_passed_by_regs = true;
             } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
             }
         } else if( *tmp == 's' ) {
             if( SWData.cpu >= 3 ) { // set stack based calling convention
-                Options.watcom_parms_passed_by_regs = FALSE;
+                Options.watcom_parms_passed_by_regs = false;
             } else {
                 MsgPrintf1( MSG_CPU_OPTION_INVALID, CopyOfParm() );
             }
@@ -230,9 +230,9 @@ static void SetCPUPMC( void )
         }
     }
     if( SWData.cpu < 3 ) {
-        Options.watcom_parms_passed_by_regs = TRUE;
+        Options.watcom_parms_passed_by_regs = true;
         if( SWData.cpu < 2 ) {
-            SWData.protect_mode = FALSE;
+            SWData.protect_mode = false;
         }
     }
 }
@@ -345,17 +345,17 @@ static bool isvalidident( char *id )
     int     lwr_char;
 
     if( isdigit( *id ) )
-        return( TRUE ); /* can't start with a number */
+        return( true ); /* can't start with a number */
     for( s = id; *s != '\0'; s++ ) {
         lwr_char = tolower( *s );
         if( !( lwr_char == '_' || lwr_char == '.' || lwr_char == '$'
                 || lwr_char == '@' || lwr_char == '?'
                 || isdigit( lwr_char )
                 || islower( lwr_char ) ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void add_constant( const char *string, bool underscored )
@@ -387,7 +387,7 @@ static void add_constant( const char *string, bool underscored )
         return;
     }
 
-    StoreConstant( name, string, FALSE ); // don't allow it to be redef'd
+    StoreConstant( name, string, false ); // don't allow it to be redef'd
 }
 
 static void AddStringToIncludePath( char *str, const char *end )
@@ -398,7 +398,7 @@ static void AddStringToIncludePath( char *str, const char *end )
     bool        have_quote;
     char        c;
 
-    have_quote = FALSE;
+    have_quote = false;
     src = str;
     while( isspace( *src ) && src < end )
         src++;
@@ -559,35 +559,35 @@ static void Ignore( void ) {}
 
 static void Set_BT( void ) { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
-static void Set_C( void ) { Options.output_comment_data_in_code_records = FALSE; }
+static void Set_C( void ) { Options.output_comment_data_in_code_records = false; }
 
-static void Set_D( void ) { Options.debug_flag = (OptValue != 0); }
+static void Set_D( void ) { Options.debug_info = (OptValue != 0); }
 
-static void DefineMacro( void ) { add_constant( CopyOfParm(), FALSE ); }
+static void DefineMacro( void ) { add_constant( CopyOfParm(), false ); }
 
 static void SetErrorLimit( void ) { Options.error_limit = OptValue; }
 
-static void SetStopEnd( void ) { Options.stop_at_end = TRUE; }
+static void SetStopEnd( void ) { Options.stop_at_end = true; }
 
 static void Set_FR( void ) { get_fname( GetAFileName(), ERR ); }
 
 static void Set_FI( void ) { ForceInclude = AsmStrDup( GetAFileName() ); }
 
-static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_listing = TRUE; }
+static void Set_FL( void ) { get_fname( GetAFileName(), LST ); Options.write_listing = true; }
 
 static void Set_FO( void ) { get_fname( GetAFileName(), OBJ ); }
 
 static void SetInclude( void ) { AddStringToIncludePath( OptParm, OptScanPtr ); }
 
-static void Set_S( void ) { Options.sign_value = TRUE; }
+static void Set_S( void ) { Options.sign_value = true; }
 
 static void Set_N( void ) { set_some_kinda_name( (char)OptValue, CopyOfParm() ); }
 
-static void Set_O( void ) { Options.allow_c_octals = TRUE; }
+static void Set_O( void ) { Options.allow_c_octals = true; }
 
 static void Set_OF( void ) { Options.trace_stack = (char)OptValue; }
 
-static void Set_WE( void ) { Options.warning_error = TRUE; }
+static void Set_WE( void ) { Options.warning_error = true; }
 
 static void Set_WX( void ) { Options.warning_level = 4; }
 
@@ -606,20 +606,20 @@ static void Set_ZCM( void )
     }
 }
 
-static void Set_ZLD( void ) { Options.emit_dependencies = FALSE; }
+static void Set_ZLD( void ) { Options.emit_dependencies = false; }
 
-static void Set_ZQ( void ) { Options.quiet = TRUE; }
+static void Set_ZQ( void ) { Options.quiet = true; }
 
-static void Set_ZZ( void ) { Options.use_stdcall_at_number = FALSE; }
+static void Set_ZZ( void ) { Options.use_stdcall_at_number = false; }
 
-static void Set_ZZO( void ) { Options.mangle_stdcall = FALSE; }
+static void Set_ZZO( void ) { Options.mangle_stdcall = false; }
 
 static void HelpUsage( void ) { usage_msg();}
 
 #ifdef DEBUG_OUT
 static void Set_D6( void )
 {
-    Options.debug = TRUE;
+    Options.int_debug = true;
     DebugMsg(( "debugging output on \n" ));
 }
 #endif
@@ -1102,22 +1102,22 @@ static bool set_build_target( void )
 #endif
     }
 
-    add_constant( Options.build_target, TRUE ); // always define something
+    add_constant( Options.build_target, true ); // always define something
 
     if( stricmp( Options.build_target, "DOS" ) == 0 ) {
-        add_constant( "MSDOS", TRUE );
+        add_constant( "MSDOS", true );
     } else if( stricmp( Options.build_target, "NETWARE" ) == 0 ) {
         if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-            add_constant( "NETWARE_386", TRUE );
+            add_constant( "NETWARE_386", true );
         }
     } else if( stricmp( Options.build_target, "WINDOWS" ) == 0 ) {
         if( (Code->info.cpu&P_CPU_MASK) >= P_386 ) {
-            add_constant( "WINDOWS_386", TRUE );
+            add_constant( "WINDOWS_386", true );
         }
     } else if( stricmp( Options.build_target, "QNX" ) == 0
       || stricmp( Options.build_target, "LINUX" ) == 0
       || stricmp( Options.build_target, "BSD" ) == 0 ) {
-        add_constant( "UNIX", TRUE );
+        add_constant( "UNIX", true );
     }
     return( RC_OK );
 }
@@ -1128,9 +1128,9 @@ static void set_cpu_mode( void )
     // set parameters passing convention macro
     if( SWData.cpu >= 3 ) {
         if( Options.watcom_parms_passed_by_regs ) {
-            add_constant( "REGISTER", TRUE );
+            add_constant( "REGISTER", true );
         } else {
-            add_constant( "STACK", TRUE );
+            add_constant( "STACK", true );
         }
     }
 }
@@ -1140,13 +1140,13 @@ static void set_fpu_mode( void )
 {
     switch( floating_point ) {
     case DO_FP_EMULATION:
-        add_constant( "FPI", TRUE );
+        add_constant( "FPI", true );
         break;
     case NO_FP_EMULATION:
-        add_constant( "FPI87", TRUE );
+        add_constant( "FPI87", true );
         break;
     case NO_FP_ALLOWED:
-        add_constant( "FPC", TRUE );
+        add_constant( "FPC", true );
         break;
     }
 }
@@ -1178,7 +1178,7 @@ static void do_init_stuff( char **cmdline )
         exit(1);
 
     AsmBufferInit();
-    add_constant( "WASM=" BANSTR( _BANVER ), TRUE );
+    add_constant( "WASM=" BANSTR( _BANVER ), true );
     ForceInclude = AsmStrDup( getenv( "FORCE" ) );
     do_envvar_cmdline( "WASM" );
     parse_cmdline( cmdline );
@@ -1190,7 +1190,7 @@ static void do_init_stuff( char **cmdline )
     if( env != NULL )
         AddItemToIncludePath( env, NULL );
     if( !Options.quiet && !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
+        Options.banner_printed = true;
         trademark();
     }
     open_files();
@@ -1330,7 +1330,7 @@ void set_fpu_parameters( void )
 void CmdlParamsInit( void )
 /*************************/
 {
-    Code->use32 = FALSE;            // default is 16-bit segment
+    Code->use32 = false;            // default is 16-bit segment
     Code->info.cpu = P_86 | P_87;   // default is 8086 CPU and 8087 FPU
 
     if( ForceInclude != NULL )

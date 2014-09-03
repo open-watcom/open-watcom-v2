@@ -73,7 +73,7 @@ static bool             segm_override_jumps( expr_list *opndx );
 extern bool             directive( token_idx, asm_token );
 extern bool             SymIs32( struct asm_sym *sym );
 
-extern bool             DefineProc;     // TRUE if the definition of procedure
+extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 
 static void             check_assume( struct asm_sym *, prefix_reg );
@@ -90,7 +90,7 @@ struct asm_sym          *SegOverride;
 
 extern void             make_inst_hash_table( void );
 
-static char             ConstantOnly;
+static bool             ConstantOnly;
 
 static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym * );
 
@@ -456,11 +456,11 @@ bool InRange( unsigned long val, unsigned bytes )
 
     max = ( 1UL << ( bytes * 8 ) ) - 1;
     if( val <= max ) /* absolute value fits */
-        return( TRUE );
+        return( true );
     mask = ~(max >> 1);
     if( ( val & mask ) == mask ) /* just a sign extension */
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 
 }
 
@@ -838,7 +838,7 @@ bool cpu_directive( asm_token token )
     case T_P386P:
     case T_DOT_386:
     case T_P386:
-        SetUse32Def( TRUE );
+        SetUse32Def( true );
         break;
     case T_DOT_286P:
     case T_P286P:
@@ -850,7 +850,7 @@ bool cpu_directive( asm_token token )
     case T_P186:
     case T_DOT_8086:
     case T_P8086:
-        SetUse32Def( FALSE );
+        SetUse32Def( false );
         break;
     default:
         // set FPU
@@ -939,7 +939,7 @@ static bool proc_check( const char *curline, bool *prolog )
    current line is the first instruction line following the procedure
    declaration */
 {
-    *prolog = FALSE;
+    *prolog = false;
     if( ( CurrProc == NULL ) || ( Token_Count == 0 ) || !DefineProc )
         return( RC_OK );
 
@@ -955,8 +955,8 @@ static bool proc_check( const char *curline, bool *prolog )
 
     if( WritePrologue( curline ) )
         return( RC_ERROR );
-    DefineProc = FALSE;
-    *prolog = TRUE;
+    DefineProc = false;
+    *prolog = true;
     return( RC_OK );
 }
 
@@ -971,7 +971,7 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
     i = index;
     j = *register_count;
     if( j > 3 ) {
-        *on_stack = TRUE;
+        *on_stack = true;
     } else {
         if( Use32 ) {
             size = 4;
@@ -1024,7 +1024,7 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
                     break;
                 case 6:
                     if( j > 2 ) {
-                        *on_stack = TRUE;
+                        *on_stack = true;
                         return( RC_OK );
                     } else {
                         sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
@@ -1036,7 +1036,7 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
                     break;
                 case 8:
                     if( j > 2 ) {
-                        *on_stack = TRUE;
+                        *on_stack = true;
                         return( RC_OK );
                     } else {
                         sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
@@ -1063,7 +1063,7 @@ bool get_register_argument( token_idx index, char *buffer, int *register_count, 
                     break;
                 case 4:
                     if( j > 2 ) {
-                        *on_stack = TRUE;
+                        *on_stack = true;
                         return( RC_OK );
                     } else {
                         sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
@@ -1277,7 +1277,7 @@ bool expand_call( token_idx index, int lang_type )
     char        buffer[MAX_LINE_LEN];
 
     argcount = cleanup = reversed = register_count = register_arguments = 0;
-    parameter_on_stack = TRUE;
+    parameter_on_stack = true;
     switch( lang_type ) {
     case LANG_C:
     case LANG_SYSCALL:
@@ -1286,7 +1286,7 @@ bool expand_call( token_idx index, int lang_type )
         break;
     case LANG_WATCOM_C:
         if( Options.watcom_parms_passed_by_regs || !Use32 ) {
-            parameter_on_stack = FALSE;
+            parameter_on_stack = false;
         } else {
             cleanup++;
         }
@@ -1375,21 +1375,17 @@ static bool process_jumps( expr_list *opndx, int *jmp_flags )
   parse the jumps instructions operands
 */
 {
-    bool        flag;
-
     segm_override_jumps( opndx );
 
-    flag = ( opndx->explicit != 0 );
-    if( ptr_operator( opndx->mem_type, flag ) )
+    if( ptr_operator( opndx->mem_type, opndx->explicit ) )
         return( RC_ERROR );
-    if( ptr_operator( MT_PTR, flag ) ) {
+    if( ptr_operator( MT_PTR, opndx->explicit ) ) {
         return( RC_ERROR );
     }
     if( opndx->mbr != NULL ) {
-        flag = FALSE;
-        if( ptr_operator( opndx->mbr->mem_type, flag ) )
+        if( ptr_operator( opndx->mbr->mem_type, false ) )
             return( RC_ERROR );
-        if( ptr_operator( MT_PTR, flag ) ) {
+        if( ptr_operator( MT_PTR, false ) ) {
             return( RC_ERROR );
         }
     }
@@ -1682,9 +1678,9 @@ static bool idata_fixup( expr_list *opndx )
     if( ( opndx->sym->state == SYM_SEG )
         || ( opndx->sym->state == SYM_GRP )
         || ( opndx->instr == T_SEG ) ) {
-        sym32 = FALSE;
+        sym32 = false;
     } else if( opndx->abs ) {
-        sym32 = FALSE;
+        sym32 = false;
     } else {
         sym32 = SymIs32( opndx->sym );
     }
@@ -1744,11 +1740,11 @@ static bool idata_fixup( expr_list *opndx )
                 if( IS_OPSIZ_32( Code ) ) {
                     Code->mem_type = MT_DWORD;
                     Code->info.opnd_type[Opnd_Count] = OP_I32;
-                    sym32 = TRUE;
+                    sym32 = true;
                     break;
                 }
             } else if( opndx->mem_type == MT_DWORD ) {
-                sym32 = TRUE;
+                sym32 = true;
             }
         }
         if( ( Code->info.token == T_PUSHD ) || sym32 ) {
@@ -1792,7 +1788,7 @@ static bool idata_fixup( expr_list *opndx )
             fixup_type = FIX_OFF16;
         }
     }
-    ConstantOnly = TRUE;
+    ConstantOnly = true;
     Code->info.opcode |= W_BIT;
 
 #if defined( _STANDALONE_ )
@@ -1824,9 +1820,8 @@ static bool memory_operand( expr_list *opndx )
     asm_token           index = T_NULL;
     asm_token           base = T_NULL;
     struct asm_sym      *sym;
-    bool                base_lock = FALSE;
+    bool                base_lock = false;
     enum fixup_types    fixup_type;
-    bool                flag;
 #if defined( _STANDALONE_ )
     bool                sym32;
 #endif
@@ -1836,17 +1831,15 @@ static bool memory_operand( expr_list *opndx )
 
     segm_override_memory( opndx );
 
-    flag = ( opndx->explicit != 0 );
-    if( ptr_operator( opndx->mem_type, flag ) )
+    if( ptr_operator( opndx->mem_type, opndx->explicit ) )
         return( RC_ERROR );
-    if( ptr_operator( MT_PTR, flag ) ) {
+    if( ptr_operator( MT_PTR, opndx->explicit ) ) {
         return( RC_ERROR );
     }
     if( opndx->mbr != NULL ) {
-        flag = FALSE;
-        if( ptr_operator( opndx->mbr->mem_type, flag ) )
+        if( ptr_operator( opndx->mbr->mem_type, false ) )
             return( RC_ERROR );
-        if( ptr_operator( MT_PTR, flag ) ) {
+        if( ptr_operator( MT_PTR, false ) ) {
             return( RC_ERROR );
         }
     }
@@ -1987,13 +1980,13 @@ static bool memory_operand( expr_list *opndx )
             } else {
                 base = T_BP;
             }
-            base_lock = TRUE;   // add lock
+            base_lock = true;   // add lock
             /* fall through */
         default:
             if( Code->mem_type == MT_EMPTY ) {
-                if( ptr_operator( sym->mem_type, FALSE ) )
+                if( ptr_operator( sym->mem_type, false ) )
                     return( RC_ERROR );
-                if( ptr_operator( MT_PTR, FALSE ) ) {
+                if( ptr_operator( MT_PTR, false ) ) {
                     return( RC_ERROR );
                 }
             }
@@ -2319,8 +2312,8 @@ bool AsmParse( const char *curline )
 */
 {
     token_idx           i;
-    bool                cur_opnd_label = FALSE;
-    bool                last_opnd_label = FALSE;
+    bool                cur_opnd_label = false;
+    bool                last_opnd_label = false;
     struct asm_code     *rCode = Code;
     expr_list           opndx;
     token_idx           n;
@@ -2329,7 +2322,7 @@ bool AsmParse( const char *curline )
     bool                flag;
 #if defined( _STANDALONE_ )
     int                 temp;
-    static bool         in_epilogue = FALSE;
+    static bool         in_epilogue = false;
 #endif
 
 #if defined( _STANDALONE_ )
@@ -2351,10 +2344,10 @@ bool AsmParse( const char *curline )
     SET_ADRSIZ_OFF( rCode );
     SET_OPSIZ_OFF( rCode );
     rCode->mem_type       = MT_EMPTY;
-    rCode->mem_type_fixed = FALSE;
+    rCode->mem_type_fixed = false;
     rCode->extended_ins   = EMPTY;
     rCode->sib            = 0;            // assume ss is *1
-    rCode->indirect       = FALSE;
+    rCode->indirect       = false;
     for( j = 0; j < OPND_MAX; j++ ) {
         rCode->info.opnd_type[j] = OP_NONE;
         rCode->data[j] = 0;
@@ -2369,7 +2362,7 @@ bool AsmParse( const char *curline )
         return( RC_OK );
 
 #if defined( _STANDALONE_ )
-    CheckSeg = TRUE;
+    CheckSeg = true;
     Frame = NULL;
     SegOverride = NULL;
 #endif
@@ -2377,9 +2370,9 @@ bool AsmParse( const char *curline )
     for( i = 0; i < Token_Count; i++ ) {
         switch( AsmBuffer[i].class ) {
         case TC_INSTR:
-//            ExpandTheWorld( i, FALSE, TRUE );
+//            ExpandTheWorld( i, false, true );
 #if defined( _STANDALONE_ )
-            if( ExpandAllConsts( i, FALSE ) )
+            if( ExpandAllConsts( i, false ) )
                 return( RC_ERROR );
 #endif
             if( last_opnd_label ) {
@@ -2387,7 +2380,7 @@ bool AsmParse( const char *curline )
                 AsmError( SYNTAX_ERROR );
                 return( RC_ERROR );
             }
-            cur_opnd_label = FALSE;
+            cur_opnd_label = false;
 #if defined( _STANDALONE_ )
             if( ( AsmBuffer[i+1].class == TC_DIRECTIVE )
                 || ( AsmBuffer[i+1].class == TC_COLON ) ) {
@@ -2415,23 +2408,23 @@ bool AsmParse( const char *curline )
 #if defined( _STANDALONE_ )
             case T_RET:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
-                    in_epilogue = TRUE;
-                    return( Ret( i, Token_Count, FALSE ) );
+                    in_epilogue = true;
+                    return( Ret( i, Token_Count, false ) );
                 }
             case T_RETN:
             case T_RETF:
-                in_epilogue = FALSE;
+                in_epilogue = false;
                 rCode->info.token = AsmBuffer[i].u.token;
                 break;
             case T_IRET:
             case T_IRETD:
                 if( ( CurrProc != NULL ) && !in_epilogue ) {
-                    in_epilogue = TRUE;
-                    return( Ret( i, Token_Count, TRUE ) );
+                    in_epilogue = true;
+                    return( Ret( i, Token_Count, true ) );
                 }
             case T_IRETF:
             case T_IRETDF:
-                in_epilogue = FALSE;
+                in_epilogue = false;
                 rCode->info.token = AsmBuffer[i].u.token;
                 break;
             case T_CALL:
@@ -2449,7 +2442,7 @@ bool AsmParse( const char *curline )
                 break;
             }
             i++;
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) ) {
+            if( EvalOperand( &i, Token_Count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             if( opndx.empty )
@@ -2488,9 +2481,9 @@ bool AsmParse( const char *curline )
 #if defined( _STANDALONE_ )
         case TC_DIRECT_EXPR:
             if( Parse_Pass != PASS_1 ) {
-                Modend = TRUE;
+                Modend = true;
                 n = i + 1;
-                if( EvalOperand( &n, Token_Count, &opndx, TRUE ) ) {
+                if( EvalOperand( &n, Token_Count, &opndx, true ) ) {
                     return( RC_ERROR );
                 }
                 if( !opndx.empty && ( opndx.type == EXPR_ADDR ) ) {
@@ -2507,7 +2500,7 @@ bool AsmParse( const char *curline )
                 || ( AsmBuffer[i+1].u.token == T_EQU2 )
                 || ( AsmBuffer[i+1].u.token == T_TEXTEQU ) ) ) ) {
                 bool expanded;
-                if( ExpandSymbol( i, FALSE, &expanded ) )
+                if( ExpandSymbol( i, false, &expanded ) )
                     return( RC_ERROR );
                 if( expanded ) {
                     // restart token processing
@@ -2536,7 +2529,7 @@ bool AsmParse( const char *curline )
 
                 switch( AsmBuffer[i+1].class ) {
                 case TC_COLON:
-                    cur_opnd_label = TRUE;
+                    cur_opnd_label = true;
                     break;
 #if ALLOW_STRUCT_INIT
 #if defined( _STANDALONE_ )
@@ -2572,12 +2565,12 @@ bool AsmParse( const char *curline )
                 return( RC_ERROR );
             }
             i++;
-            cur_opnd_label = FALSE;
+            cur_opnd_label = false;
 #if defined( _STANDALONE_ )
             Frame = NULL;
             SegOverride = NULL;
 #endif
-            if( EvalOperand( &i, Token_Count, &opndx, TRUE ) ) {
+            if( EvalOperand( &i, Token_Count, &opndx, true ) ) {
                 return( RC_ERROR );
             }
             Opnd_Count++;
@@ -2633,7 +2626,7 @@ bool AsmParse( const char *curline )
                          return( RC_ERROR );
                     }
                 }
-                cur_opnd_label = FALSE;
+                cur_opnd_label = false;
             } else {
                 AsmError( SYNTAX_ERROR_UNEXPECTED_COLON );
                 return( RC_ERROR );

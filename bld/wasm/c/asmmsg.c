@@ -53,7 +53,7 @@ void                    print_include_file_nesting_structure( void );
 #define WngCount Options.warning_count
 #define WngLevel Options.warning_level
 
-static bool             Errfile_Written = FALSE;
+static bool             Errfile_Written = false;
 static FILE             *ErrFile = NULL;
 
 static void             AsmSuicide( void );
@@ -71,7 +71,7 @@ void DoDebugMsg( const char *format, ... )
 /****************************************/
 {
     va_list args;
-    if( !Options.debug ) return;
+    if( !Options.int_debug ) return;
 
     va_start( args, format );
     vprintf( format, args );
@@ -145,14 +145,14 @@ static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
 // print standard WASM messages, no WOMP
 {
     if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
+        Options.banner_printed = true;
         trademark();
     }
     if( ErrFile == NULL ) OpenErrFile();
     PutMsg( errout, prefix, msgnum, args1 );
     fflush( errout );                       /* 27-feb-90 */
     if( ErrFile ) {
-        Errfile_Written = TRUE;
+        Errfile_Written = true;
         PutMsg( ErrFile, prefix, msgnum, args2 );
     }
 }
@@ -164,7 +164,7 @@ void PrtMsg( int msgnum, ... )
     va_list args1;
 
     if( !Options.banner_printed ) {
-        Options.banner_printed = TRUE;
+        Options.banner_printed = true;
         trademark();
     }
     if( ErrFile == NULL )

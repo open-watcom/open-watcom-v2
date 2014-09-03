@@ -175,7 +175,7 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
     if( Parse_Pass == PASS_1 ) {
         if( sym->mem_type == MT_FAR && fixup->fixup_option == OPTJ_CALL ) {
             // convert far call to near, only at first pass
-            PhaseError = TRUE;
+            PhaseError = true;
             sym->offset++;
             AsmByte( 0 );
             AsmFree( fixup );
@@ -211,7 +211,7 @@ static bool DoPatch( struct asm_sym *sym, struct asmfixup *fixup )
         max_disp = (1UL << ((size * 8)-1)) - 1;
         if( disp > max_disp || disp < -(max_disp + 1) ) {
 #if defined( _STANDALONE_ )
-            PhaseError = TRUE;
+            PhaseError = true;
             switch( size ) {
             case 1:
                 switch( fixup->fixup_option ) {
@@ -378,7 +378,7 @@ static bool MakeFpFixup( char *patch_name )
         if( dir != NULL ) {
             GetSymInfo( &dir->sym );
             dir->sym.offset = 0;
-            dir->sym.referenced = TRUE;
+            dir->sym.referenced = true;
             dir->sym.mem_type = MT_FAR;
             SetMangler( &dir->sym, "N", LANG_NONE );
         }

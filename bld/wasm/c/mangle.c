@@ -136,7 +136,7 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
     size_t              len;
     char                *p;
 
-    if( Options.watcom_parms_passed_by_regs == FALSE && SymIs32( sym ) ) {
+    if( !Options.watcom_parms_passed_by_regs && SymIs32( sym ) ) {
         changes = USCORE_NONE;
     } else if( sym->state == SYM_PROC ) {
         changes = USCORE_AFTER;

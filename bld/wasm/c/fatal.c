@@ -55,7 +55,7 @@ static const Msg_Struct Fatal_Msg[] = {
 extern void             ObjRecFini( void );
 extern void             MsgPrintf( int resourceid );
 
-extern char             write_to_file;  // write if there is no error
+extern bool             write_to_file;  // write if there is no error
 
 void AsmShutDown( void )
 /**********************/

@@ -100,8 +100,8 @@ static char *InitAsmSym( struct asm_sym *sym, const char *name )
 #if defined( _STANDALONE_ )
         sym->segment = NULL;
         sym->offset = 0;
-        sym->public = FALSE;
-        sym->referenced = FALSE;
+        sym->public = false;
+        sym->referenced = false;
         sym->langtype = LANG_NONE;
         sym->first_size = 0;
         sym->first_length = 0;
@@ -219,7 +219,7 @@ static bool AddLocalLabel( asm_sym *sym )
     label->factor = 0;
     label->next = NULL;
     label->sym = sym;
-    label->is_register = 0;
+    label->is_register = false;
     if( info->labellist == NULL ) {
         info->labellist = label;
     } else {
@@ -344,12 +344,12 @@ bool AsmChangeName( const char *old, const char *new )
         sym->name = AsmStrDup( new );
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )
-            return( TRUE );
+            return( true );
 
         sym->next = *sym_ptr;
         *sym_ptr = sym;
     }
-    return( FALSE );
+    return( false );
 }
 
 void AsmTakeOut( const char *name )
@@ -388,8 +388,8 @@ static struct asm_sym *AsmSymAdd( struct asm_sym *sym )
     return( sym );
 }
 
-struct asm_sym *AllocDSym( const char *name, int add_symbol )
-/***********************************************************/
+struct asm_sym *AllocDSym( const char *name, bool add_symbol )
+/************************************************************/
 /* Create directive symbol and insert it into the symbol table */
 {
     struct asm_sym      *new;

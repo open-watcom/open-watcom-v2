@@ -43,7 +43,7 @@
 
 extern bool             GetQueueMacroHidden( void );
 
-extern bool             DefineProc;     // TRUE if the definition of procedure
+extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 extern int              MacroLocalVarCounter;
 
@@ -135,7 +135,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
     char *line;
     char *tmp;
     char *start;
-    char quote = FALSE;
+    bool quote = false;
     size_t len;
 
     /* handle the substitution operator ( & ) */
@@ -154,7 +154,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
                 break;
             } else if( *tmp == '"' ) {
                 /* toggle the quote flag */
-                quote = ( quote + 1 ) %2;
+                quote = !quote;
                 tmp++;
                 break;
             } else {
@@ -172,7 +172,7 @@ static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parm
                 break;
             } else if( *tmp == '"' ) {
                 /* toggle the quote flag */
-                quote = ( quote + 1 ) %2;
+                quote = !quote;
                 break;
             } else {
                 break;
@@ -197,12 +197,12 @@ static bool lineis( char *str, char *substr )
     len = strlen( substr );
     wipe_space( str );
     if( strnicmp( str, substr, len ) ) {
-        return( FALSE );
+        return( false );
     }
     if( str[len] != '\0' && !isspace( str[len] ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool macro_local( void )
@@ -277,7 +277,7 @@ static bool macro_exam( token_idx i )
             paranode = AsmAlloc( sizeof( parm_list ) );
             paranode->def = NULL;
             paranode->replace = NULL;
-            paranode->required = FALSE;
+            paranode->required = false;
 
             /* first get the parm. name */
             paranode->label = AsmStrDup( AsmBuffer[i].string_ptr );
@@ -296,7 +296,7 @@ static bool macro_exam( token_idx i )
                     i++;
                 } else if( CMPLIT( AsmBuffer[i].string_ptr, "REQ" ) == 0 ) {
                     /* required parameter */
-                    paranode->required = TRUE;
+                    paranode->required = true;
                     i++;
                 }
             }
@@ -456,7 +456,7 @@ token_idx ExpandMacro( token_idx tok_count )
     char        *line;
     token_idx   i;
     token_idx   macro_name_loc;
-    char        expansion_flag = FALSE;
+    bool        expansion_flag = false;
     token_idx   exp_start = 0;
     int         nesting_depth;
     char        *p;
@@ -544,7 +544,7 @@ token_idx ExpandMacro( token_idx tok_count )
                         break;
                     if( *(AsmBuffer[i].string_ptr) == '%' ) {
                         *(AsmBuffer[i].string_ptr) = ' ';
-                        expansion_flag = TRUE;
+                        expansion_flag = true;
                         exp_start = i;
                     }
 
@@ -577,7 +577,7 @@ token_idx ExpandMacro( token_idx tok_count )
                         }
                     } else {
                         bool expanded;
-                        if( ExpandSymbol( i, FALSE, &expanded ) ) {
+                        if( ExpandSymbol( i, false, &expanded ) ) {
                             free_parmlist( info->parmlist );
                             return( INVALID_IDX );
                         }
@@ -591,8 +591,8 @@ token_idx ExpandMacro( token_idx tok_count )
                             AsmBuffer[i + 1].class == TC_FINAL ) {
                             if( AsmBuffer[i + 1].class == TC_FINAL )
                                 i++;
-                            tok_count = EvalExpr( tok_count, exp_start, i - 1, TRUE );
-                            expansion_flag = FALSE;
+                            tok_count = EvalExpr( tok_count, exp_start, i - 1, true );
+                            expansion_flag = false;
                             Token_Count = tok_count;
                             i = exp_start;
                         }

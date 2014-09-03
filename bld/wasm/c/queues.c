@@ -91,7 +91,7 @@ const char *NameGet( uint_16 hdl )
 void AddPublicData( dir_node *dir )
 /*********************************/
 {
-    dir->sym.public = TRUE;
+    dir->sym.public = true;
     QAddItem( &PubQueue, dir );
 }
 
@@ -115,14 +115,14 @@ bool GetPublicData( void )
     name_handle         i;
 
     if( PubQueue == NULL )
-        return( FALSE );
+        return( false );
 
     for( start = PubQueue->head; start != NULL; start = last ) {
         dir = (dir_node *)start->data;
         cmd = ( dir->sym.public ) ? CMD_PUBDEF : CMD_STATIC_PUBDEF;
         objr = ObjNewRec( cmd );
-        objr->is_32 = FALSE;
-        objr->d.pubdef.free_pubs = TRUE;
+        objr->is_32 = 0;
+        objr->d.pubdef.free_pubs = 1;
         objr->d.pubdef.num_pubs = 0;
         objr->d.pubdef.base.frame = 0;
         objr->d.pubdef.base.grp_idx = 0;
@@ -156,7 +156,7 @@ bool GetPublicData( void )
                 }
             }
             if( dir->sym.offset > 0xffffUL ) {
-                objr->is_32 = TRUE;
+                objr->is_32 = 1;
             }
             objr->d.pubdef.num_pubs++;
         }
@@ -183,13 +183,13 @@ bool GetPublicData( void )
             ++d;
         }
         d = objr->d.pubdef.pubs;
-        write_record( objr, TRUE );
+        write_record( objr, true );
         for( i = 0; i < objr->d.pubdef.num_pubs; i++ ) {
             AsmFree( NameArray[i] );
         }
         AsmFree( NameArray );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void FreePubQueue( void )
@@ -255,7 +255,7 @@ bool GetLnameData( obj_rec *objr )
     size_t          len;
 
     if( LnameQueue == NULL )
-        return( FALSE );
+        return( false );
 
     len = 0;
     for( curr = LnameQueue->head; curr != NULL ; curr = curr->next ) {
@@ -280,7 +280,7 @@ bool GetLnameData( obj_rec *objr )
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void FreeLnameQueue( void )
@@ -323,7 +323,7 @@ int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
         return( 0 );
     if( count < limit )
         limit = (unsigned)count;
-    *need32 = FALSE;
+    *need32 = false;
     *ldata = AsmAlloc( limit * sizeof( struct linnum_data ) );
     for( i = 0; i < limit; i++ ) {
         node = QDequeue( LinnumQueue );
@@ -332,7 +332,7 @@ int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
             (*ldata)[i].number = node_data->number;
             (*ldata)[i].offset = node_data->offset;
             if( node_data->offset > 0xffffUL ) {
-                *need32 = TRUE;
+                *need32 = true;
             }
         }
         AsmFree( node_data );

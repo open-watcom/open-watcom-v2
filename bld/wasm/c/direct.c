@@ -115,20 +115,20 @@ static char             *Check4Mangler( token_idx *i );
 static int              token_cmp( char **token, int start, int end );
 static void             ModelAssumeInit( void );
 
-extern char             write_to_file;  // write if there is no error
+extern bool             write_to_file;  // write if there is no error
 extern unsigned         BufSize;
-extern bool             DefineProc;     // TRUE if the definition of procedure
+extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 extern struct asm_sym   *SegOverride;
 extern void             FreeASym( struct asm_sym *sym );
 extern struct asmfixup  *ModendFixup;   // start address fixup
 
-bool                    EndDirectiveFound = FALSE;
-bool                    EndDirectiveProc = FALSE;
+bool                    EndDirectiveFound = false;
+bool                    EndDirectiveProc = false;
 
 seg_list                *CurrSeg;       // points to stack of opened segments
 
-int                     in_prologue;
+bool                    in_prologue;
 
 static assume_info      AssumeTable[ASSUME_LAST];
 
@@ -172,7 +172,7 @@ static char *ExitDos[] = { /* mov al, retval  followed by: */
 static char *RetVal = " mov    al,";
 
 static char *StartAddr = "`symbol_reserved_for_start_address`";
-static char StartupDirectiveFound = FALSE;
+static bool StartupDirectiveFound = false;
 
 #define SIM_NAME_CODE           "_TEXT"     // .CODE or CODESEG
 #define SIM_NAME_STACK          "STACK"     // .STACK or STACK
@@ -301,12 +301,12 @@ static asm_tok      const_Interface = { TC_NUM, NULL, 0 };
 static asm_tok      const_data = { TC_ID, NULL, 0 };
 static asm_tok      const_code = { TC_ID, code_segment_name, 0 };
 
-static const_info   info_CodeSize = { TRUE, 0, 0, TRUE, &const_CodeSize };
-static const_info   info_DataSize = { TRUE, 0, 0, TRUE, &const_DataSize };
-static const_info   info_Model = { TRUE, 0, 0, TRUE, &const_Model };
-static const_info   info_Interface = { TRUE, 0, 0, TRUE, &const_Interface };
-static const_info   info_data = { TRUE, 0, 0, TRUE, &const_data };
-static const_info   info_code = { TRUE, 0, 0, TRUE, &const_code };
+static const_info   info_CodeSize = { true, 0, 0, true, &const_CodeSize };
+static const_info   info_DataSize = { true, 0, 0, true, &const_DataSize };
+static const_info   info_Model = { true, 0, 0, true, &const_Model };
+static const_info   info_Interface = { true, 0, 0, true, &const_Interface };
+static const_info   info_data = { true, 0, 0, true, &const_data };
+static const_info   info_code = { true, 0, 0, true, &const_code };
 
 #define ROUND_UP( i, r ) (((i)+((r)-1)) & ~((r)-1))
 
@@ -341,7 +341,7 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
     int parm = *parm_number;
 
     if( parm > 3 ) {
-        *on_stack = TRUE;
+        *on_stack = true;
     } else {
         switch( size ) {
         case 1:
@@ -350,7 +350,7 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
         case 4:
             if( !Use32 ) {
                 if( parm > 2 ) {
-                    *on_stack = TRUE;
+                    *on_stack = true;
                     break;
                 }
                 *parm_number = ++parm;
@@ -363,7 +363,7 @@ static bool get_watcom_argument( int size, int *parm_number, bool *on_stack )
         case 8:
             if( Use32 ) {
                 if( parm > 2 ) {
-                    *on_stack = TRUE;
+                    *on_stack = true;
                     break;
                 }
                 *parm_number = ++parm;
@@ -386,7 +386,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     int parm = *parm_number;
 
     if( parm > 3 ) {
-        *on_stack = TRUE;
+        *on_stack = true;
     } else {
         switch( size ) {
         case 1:
@@ -400,7 +400,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
                 sprintf( buffer, parm_reg[A_DWORD][parm] );
             } else {
                 if( parm > 2 ) {
-                    *on_stack = TRUE;
+                    *on_stack = true;
                     break;
                 }
                 sprintf( buffer, " %s %s", parm_reg[A_WORD][parm], parm_reg[A_WORD][parm + 1] );
@@ -414,7 +414,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
         case 8:
             if( Use32 ) {
                 if( parm > 2 ) {
-                    *on_stack = TRUE;
+                    *on_stack = true;
                     break;
                 }
                 if( size == 6 ) {
@@ -460,15 +460,15 @@ static bool SetAssumeCSCurrSeg( void )
     info = &(AssumeTable[ASSUME_CS]);
     if( CurrSeg == NULL ) {
         info->symbol = NULL;
-        info->flat = FALSE;
-        info->error = TRUE;
+        info->flat = false;
+        info->error = true;
     } else {
         if( CurrSeg->seg->e.seginfo->group != NULL )
             info->symbol = GetGrp( &CurrSeg->seg->sym );
         else
             info->symbol = &CurrSeg->seg->sym;
-        info->flat = FALSE;
-        info->error = FALSE;
+        info->flat = false;
+        info->error = false;
     }
     return( RC_OK );
 }
@@ -590,7 +590,7 @@ void dir_init( dir_node *dir, int tab )
         break;
     case TAB_COMM:
         dir->sym.state = SYM_EXTERNAL;
-        dir->sym.referenced = TRUE;
+        dir->sym.referenced = true;
         dir->e.comminfo = AsmAlloc( sizeof( comm_info ) );
         dir->e.comminfo->idx = 0;
         dir->e.comminfo->use32 = Use32;
@@ -604,7 +604,7 @@ void dir_init( dir_node *dir, int tab )
         dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
         dir->e.constinfo->data = NULL;
         dir->e.constinfo->count = 0;
-        dir->e.constinfo->predef = FALSE;
+        dir->e.constinfo->predef = false;
         return;
     case TAB_PROC:
         dir->sym.state = SYM_PROC;
@@ -1004,14 +1004,14 @@ static bool checkword( char **token )
         *ptrend++ = '\0';
         while( *ptrend != '\0' ) {
             if( ( *ptrend != ' ' ) && ( *ptrend != '\t' ) && ( *ptrend != '\n' ) ) {
-                return( TRUE );
+                return( true );
             }
             ptrend++;
         }
     }
 
     *token = ptrhead;
-    return( FALSE );
+    return( false );
 }
 
 uint_32 GetCurrAddr( void )
@@ -1163,9 +1163,9 @@ bool ExtDef( token_idx i, bool glob_def )
         }
 
         if( glob_def ) {
-            dir->e.extinfo->global = TRUE;
+            dir->e.extinfo->global = true;
         } else {
-            dir->sym.referenced = TRUE;
+            dir->sym.referenced = true;
         }
         GetSymInfo( &dir->sym );
         dir->sym.offset = 0;
@@ -1218,13 +1218,13 @@ bool PubDef( token_idx i )
 
         dir = (dir_node *)AsmGetSymbol( token );
         if( dir == NULL ) {
-            dir = (dir_node *)AllocDSym( token, TRUE );
+            dir = (dir_node *)AllocDSym( token, true );
             AddPublicData( dir );
         } else if( dir->sym.state == SYM_CONST ) {
             /* check if the symbol expands to another symbol,
              * and if so, expand it */
             if( dir->e.constinfo->data[0].class == TC_ID ) {
-                ExpandTheWorld( i, FALSE, TRUE );
+                ExpandTheWorld( i, false, true );
                 return( PubDef( i ) );
             }
         }
@@ -1351,7 +1351,7 @@ bool SetUse32Def( bool flag )
 /***************************/
 {
     if( ( CurrSeg == NULL )               // outside any segments
-        && ( ModuleInfo.model == MOD_NONE             // model not defined
+        && ( ModuleInfo.model == MOD_NONE // model not defined
             || ModuleInfo.cmdline ) ) {   // model defined on cmdline by -m?
         ModuleInfo.defUse32 = flag;
     }
@@ -1542,7 +1542,7 @@ bool SegDef( token_idx i )
             new->combine = COMB_INVALID;
             new->use_32 = ModuleInfo.defUse32;
             new->class_name = InsertClassLname( "" );
-            new->readonly = FALSE;
+            new->readonly = false;
             new->iscode = SEGTYPE_UNDEF;
         } else {
             new->readonly = old->readonly;
@@ -1556,7 +1556,7 @@ bool SegDef( token_idx i )
             }
             new->class_name = old->class_name;
         }
-        new->ignore = FALSE; // always false unless set explicitly
+        new->ignore = false; // always false unless set explicitly
         new->length = 0;
 
         if( lastseg.stack_size > 0 ) {
@@ -1603,7 +1603,7 @@ bool SegDef( token_idx i )
             }
             switch( type ) {
             case TOK_READONLY:
-                new->readonly = TRUE;
+                new->readonly = true;
                 break;
             case TOK_BYTE:
             case TOK_WORD:
@@ -1624,11 +1624,11 @@ bool SegDef( token_idx i )
                 new->use_32 = ( TypeInfo[type].value != 0 );
                 break;
             case TOK_IGNORE:
-                new->ignore = TRUE;
+                new->ignore = true;
                 break;
             case TOK_AT:
                 new->align = SEGDEF_ALIGN_ABS;
-                ExpandTheWorld( i + 1, FALSE, TRUE);
+                ExpandTheWorld( i + 1, false, true );
                 if( AsmBuffer[i + 1].class == TC_NUM ) {
                     i++;
                     new->abs_frame = (uint_16)AsmBuffer[i].u.value;
@@ -1695,10 +1695,10 @@ bool SegDef( token_idx i )
             new->class_name = old->class_name;
         }
         if( !ModuleInfo.mseg && ( seg->e.seginfo->use_32 != ModuleInfo.use32 ) ) {
-            ModuleInfo.mseg = TRUE;
+            ModuleInfo.mseg = true;
         }
         if( seg->e.seginfo->use_32 ) {
-            ModuleInfo.use32 = TRUE;
+            ModuleInfo.use32 = true;
         }
         if( new != old )
             AsmFree( new );
@@ -1842,7 +1842,7 @@ bool Startup( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = FALSE;
+    ModuleInfo.cmdline = false;
 
     switch( AsmBuffer[i].u.token ) {
     case T_DOT_STARTUP:
@@ -1864,7 +1864,7 @@ bool Startup( token_idx i )
                 }
             }
         }
-        StartupDirectiveFound = TRUE;
+        StartupDirectiveFound = true;
         break;
     case T_DOT_EXIT:
     case T_EXITCODE:
@@ -1901,7 +1901,7 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg )
     unsigned    bit;
     unsigned    ideal;
 
-    bit = ModuleInfo.defUse32 != 0 ? 1 : 0;
+    bit = ( ModuleInfo.defUse32 != 0 ) ? 1 : 0;
     ideal = (Options.mode & MODE_IDEAL) != 0 ? 1 : 0;
     skip = 0;
     *buffer = '\0';
@@ -1973,7 +1973,7 @@ bool SimSeg( token_idx i )
         AsmError( MODEL_IS_NOT_DECLARED );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = FALSE;
+    ModuleInfo.cmdline = false;
     close_lastseg();
     type = AsmBuffer[i].u.token;
     i++; /* get past the directive token */
@@ -2146,10 +2146,10 @@ void ModuleInit( void )
     ModuleInfo.distance = STACK_NONE;
     ModuleInfo.langtype = LANG_NONE;
     ModuleInfo.ostype = OPSYS_DOS;
-    ModuleInfo.use32 = FALSE;
-    ModuleInfo.defUse32 = FALSE;
-    ModuleInfo.cmdline = FALSE;
-    ModuleInfo.mseg = FALSE;
+    ModuleInfo.use32 = false;
+    ModuleInfo.defUse32 = false;
+    ModuleInfo.cmdline = false;
+    ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
     ModuleInfo.name = NULL;
     // add source file to autodependency list
@@ -2232,7 +2232,7 @@ bool Model( token_idx i )
         AsmError( MODEL_DECLARED_ALREADY );
         return( RC_ERROR );
     }
-    ModuleInfo.cmdline = FALSE;
+    ModuleInfo.cmdline = false;
 
     get_module_name();
 
@@ -2279,7 +2279,7 @@ bool Model( token_idx i )
         switch( type ) {
         case TOK_FLAT:
             DefFlatGroup();
-            SetUse32Def( TRUE );
+            SetUse32Def( true );
             // fall through
         case TOK_TINY:
         case TOK_SMALL:
@@ -2326,7 +2326,7 @@ bool Model( token_idx i )
     module_prologue();
     lastseg.seg = SIM_NONE;
     lastseg.stack_size = 0;
-    ModuleInfo.cmdline = (LineNumber == 0);
+    ModuleInfo.cmdline = ( LineNumber == 0 );
     return( RC_OK );
 }
 
@@ -2337,8 +2337,8 @@ void AssumeInit( void )
 
     for( reg = ASSUME_FIRST; reg < ASSUME_LAST; reg++ ) {
         AssumeTable[reg].symbol = NULL;
-        AssumeTable[reg].error = FALSE;
-        AssumeTable[reg].flat = FALSE;
+        AssumeTable[reg].error = false;
+        AssumeTable[reg].flat = false;
     }
 }
 
@@ -2428,17 +2428,17 @@ bool SetAssume( token_idx i )
         info = &(AssumeTable[TypeInfo[reg].value]);
 
         if( token_cmp( &segloc, TOK_ERROR, TOK_ERROR ) != ERROR ) {
-            info->error = TRUE;
-            info->flat = FALSE;
+            info->error = true;
+            info->flat = false;
             info->symbol = NULL;
         } else if( token_cmp( &segloc, TOK_FLAT, TOK_FLAT ) != ERROR ) {
             DefFlatGroup();
-            info->flat = TRUE;
-            info->error = FALSE;
+            info->flat = true;
+            info->error = false;
             info->symbol = NULL;
         } else if( token_cmp( &segloc, TOK_NOTHING, TOK_NOTHING ) != ERROR ) {
-            info->flat = FALSE;
-            info->error = FALSE;
+            info->flat = false;
+            info->error = false;
             info->symbol = NULL;
         } else {
             sym = AsmLookup( segloc );
@@ -2449,8 +2449,8 @@ bool SetAssume( token_idx i )
                 return( RC_ERROR );
             }
             info->symbol = sym;
-            info->flat = FALSE;
-            info->error = FALSE;
+            info->flat = false;
+            info->error = false;
         }
 
         /* go past comma */
@@ -2665,10 +2665,10 @@ bool ModuleEnd( token_idx count )
     }
 
     if( !EndDirectiveProc ) {
-        EndDirectiveProc = TRUE;
+        EndDirectiveProc = true;
         p = CATLIT( buffer, "END" );
         if( StartupDirectiveFound ) {
-            StartupDirectiveFound = FALSE;
+            StartupDirectiveFound = false;
             if( count > 1 ) {
                 AsmError( SYNTAX_ERROR );
             }
@@ -2687,7 +2687,7 @@ bool ModuleEnd( token_idx count )
         return( RC_OK );
     }
 
-    EndDirectiveFound = TRUE;
+    EndDirectiveFound = true;
 
     if( count == 1 ) {
         return( RC_OK );
@@ -2830,7 +2830,7 @@ bool LocalDef( token_idx i )
 
     */
 
-    if( DefineProc == FALSE ) {
+    if( !DefineProc ) {
         AsmError( LOCAL_VAR_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
@@ -2864,7 +2864,7 @@ bool LocalDef( token_idx i )
         local->sym = NULL;
         local->factor = 1;
         local->next = NULL;
-        local->is_register = 0;
+        local->is_register = false;
 
         if( i < Token_Count ) {
             if( AsmBuffer[i].class == TC_OP_SQ_BRACKET ) {
@@ -2931,7 +2931,7 @@ bool LocalDef( token_idx i )
                 ( AsmBuffer[i + 1].class == TC_ID ) &&
                 ( AsmBuffer[i + 2].class == TC_FINAL ) ) {
                 i++;
-                StoreConstantNumber( AsmBuffer[i++].string_ptr, info->localsize, TRUE );
+                StoreConstantNumber( AsmBuffer[i++].string_ptr, info->localsize, true );
             }
             break;
         case TC_COMMA:
@@ -2958,7 +2958,7 @@ bool ArgDef( token_idx i )
     label_list      *paranode;
     label_list      *paracurr;
     int             type, register_count, parameter_size, unused_stack_space;
-    bool            parameter_on_stack = TRUE;
+    bool            parameter_on_stack = true;
 
     struct asm_sym  *param;
     struct asm_sym  *tmp = NULL;
@@ -2976,7 +2976,7 @@ bool ArgDef( token_idx i )
 
     */
 
-    if( DefineProc == FALSE ) {
+    if( !DefineProc ) {
         AsmError( ARG_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
@@ -2990,7 +2990,7 @@ bool ArgDef( token_idx i )
 
     if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
         ( Options.watcom_parms_passed_by_regs || !Use32 ) ) {
-        parameter_on_stack = FALSE;
+        parameter_on_stack = false;
     }
     for( i++; i < Token_Count; i++ ) {
         if( AsmBuffer[i].class != TC_ID ) {
@@ -3036,7 +3036,7 @@ bool ArgDef( token_idx i )
                     return( RC_ERROR );
                 case LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
-                    parameter_on_stack = TRUE;
+                    parameter_on_stack = true;
                     break;
                 default:
                     break;
@@ -3056,7 +3056,7 @@ bool ArgDef( token_idx i )
         }
         if( type == MT_STRUCT ) {
             parameter_size = ( ( dir_node *)tmp)->e.structinfo->size;
-            parameter_on_stack = TRUE;
+            parameter_on_stack = true;
         } else {
             parameter_size = find_size( type );
             tmp = NULL;
@@ -3067,20 +3067,20 @@ bool ArgDef( token_idx i )
             }
         }
         paranode = AsmAlloc( sizeof( label_list ) );
-        paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
+        paranode->u.is_vararg = ( type == TOK_PROC_VARARG );
         paranode->size = parameter_size;
         paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
         paranode->sym = tmp;
         if( parameter_on_stack ) {
-            paranode->is_register = FALSE;
+            paranode->is_register = false;
             if( Use32 ) {
                 info->parasize += ROUND_UP( parameter_size, 4 );
             } else {
                 info->parasize += ROUND_UP( parameter_size, 2 );
             }
         } else {
-            paranode->is_register = TRUE;
+            paranode->is_register = true;
             register_count++;
             if( Use32 ) {
                 unused_stack_space += ROUND_UP( parameter_size, 4 );
@@ -3119,7 +3119,7 @@ bool ArgDef( token_idx i )
                 ( AsmBuffer[i + 1].class == TC_ID ) &&
                 ( AsmBuffer[i + 2].class == TC_FINAL ) ) {
                 i++;
-                StoreConstantNumber( AsmBuffer[i++].string_ptr, info->parasize, TRUE );
+                StoreConstantNumber( AsmBuffer[i++].string_ptr, info->parasize, true );
             }
             break;
         case TC_COMMA:
@@ -3144,7 +3144,7 @@ bool UsesDef( token_idx i )
     regs_list   *regist;
     regs_list   *temp_regist;
 
-    if( DefineProc == FALSE ) {
+    if( !DefineProc ) {
         AsmError( USES_MUST_FOLLOW_PROC );
         return( RC_ERROR );
     }
@@ -3215,7 +3215,7 @@ bool EnumDef( token_idx i )
     }
     count = enums = in_braces = 0;
     name = AsmBuffer[n].string_ptr;
-    if( StoreConstantNumber( name, count, TRUE ) )
+    if( StoreConstantNumber( name, count, true ) )
         return( RC_ERROR );
     n = 2;
     do {
@@ -3259,7 +3259,7 @@ bool EnumDef( token_idx i )
                         return( RC_ERROR );
                     }
                 }
-                if( StoreConstantNumber( name, count++, TRUE ) )
+                if( StoreConstantNumber( name, count++, true ) )
                     return( RC_ERROR );
                 enums++;
                 if( AsmBuffer[i + 1].class == TC_COMMA )
@@ -3297,13 +3297,13 @@ static bool proc_exam( dir_node *proc, token_idx i )
     label_list      *paranode;
     label_list      *paracurr;
     int             type, register_count, parameter_size, unused_stack_space;
-    bool            parameter_on_stack = TRUE;
+    bool            parameter_on_stack = true;
     struct asm_sym  *param;
 
     info = proc->e.procinfo;
 
     minimum = TOK_PROC_FAR;
-//    finish = FALSE;
+//    finish = false;
     proc->sym.langtype = ModuleInfo.langtype;
 
     // fixme ... we need error checking here --- for nested procs
@@ -3313,8 +3313,8 @@ static bool proc_exam( dir_node *proc, token_idx i )
     info->mem_type = IS_PROC_FAR() ? MT_FAR : MT_NEAR;
     info->parasize = 0;
     info->localsize = 0;
-    info->export = FALSE;
-    info->is_vararg = FALSE;
+    info->export = false;
+    info->is_vararg = false;
     info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
     SetMangler( &proc->sym, NULL, LANG_NONE );
 
@@ -3346,7 +3346,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
             break;
         case TOK_LANG_WATCOM_C:
             if( Options.watcom_parms_passed_by_regs || !Use32 ) {
-                parameter_on_stack = FALSE;
+                parameter_on_stack = false;
             }
             // fall through
         case TOK_LANG_BASIC:
@@ -3360,7 +3360,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
             minimum = TOK_PROC_PRIVATE;
             break;
         case TOK_PROC_EXPORT:
-            info->export = TRUE;
+            info->export = true;
             // fall through
         case TOK_PROC_PUBLIC:
             if( !proc->sym.public ) {
@@ -3398,7 +3398,7 @@ static bool proc_exam( dir_node *proc, token_idx i )
 
 parms:
     CurrProc = proc;
-    DefineProc = TRUE;
+    DefineProc = true;
     proc->sym.mem_type = info->mem_type;
 
     if( i >= Token_Count ) {
@@ -3447,7 +3447,7 @@ parms:
                     return( RC_ERROR );
                 case LANG_WATCOM_C:
                     info->parasize += unused_stack_space;
-                    parameter_on_stack = TRUE;
+                    parameter_on_stack = true;
                     break;
                 default:
                     break;
@@ -3474,19 +3474,19 @@ parms:
             }
         }
         paranode = AsmAlloc( sizeof( label_list ) );
-        paranode->u.is_vararg = type == TOK_PROC_VARARG ? TRUE : FALSE;
+        paranode->u.is_vararg = ( type == TOK_PROC_VARARG );
         paranode->size = parameter_size;
         paranode->label = AsmStrDup( token );
         paranode->replace = NULL;
         if( parameter_on_stack ) {
-            paranode->is_register = FALSE;
+            paranode->is_register = false;
             if( Use32 ) {
                 info->parasize += ROUND_UP( parameter_size, 4 );
             } else {
                 info->parasize += ROUND_UP( parameter_size, 2 );
             }
         } else {
-            paranode->is_register = TRUE;
+            paranode->is_register = true;
             register_count++;
             if( Use32 ) {
                 unused_stack_space += ROUND_UP( parameter_size, 4 );
@@ -3585,7 +3585,7 @@ bool ProcDef( token_idx i, bool proc_def )
         /**/myassert( dir != NULL );
         CurrProc = dir;
         GetSymInfo( &dir->sym );
-        DefineProc = TRUE;
+        DefineProc = true;
     }
     BackPatch( &dir->sym );
     return( RC_OK );
@@ -3700,7 +3700,7 @@ bool WritePrologue( const char *curline )
     unsigned long       offset;
     unsigned long       size;
     int                 register_count = 0;
-    bool                parameter_on_stack = TRUE;
+    bool                parameter_on_stack = true;
     int                 align = Use32 ? 4 : 2;
     char                *p;
 
@@ -3744,8 +3744,8 @@ bool WritePrologue( const char *curline )
             offset *= 2;
         if( ( CurrProc->sym.langtype == LANG_WATCOM_C ) &&
             ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
-            ( info->is_vararg == FALSE ) ) {
-            parameter_on_stack = FALSE;
+            !info->is_vararg ) {
+            parameter_on_stack = false;
         }
         for( curr = info->paralist; curr; curr = curr->next ) {
             if( !parameter_on_stack ) {
@@ -3799,7 +3799,7 @@ bool WritePrologue( const char *curline )
     }
     if( (Options.mode & MODE_IDEAL) && ( CurrProc->sym.langtype == LANG_NONE ) )
         return( RC_OK );
-    in_prologue = TRUE;
+    in_prologue = true;
     PushLineQueue();
     if( ( info->localsize != 0 ) || ( info->parasize != 0 ) ||
         ( info->is_vararg ) || Options.trace_stack == 2 ) {
@@ -4019,7 +4019,7 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
                 break;
             case LANG_WATCOM_C:
                 if( ( Options.watcom_parms_passed_by_regs || !Use32 ) &&
-                    ( info->is_vararg == FALSE ) &&
+                    !info->is_vararg &&
                     ( info->parasize != 0 ) ) {
                     sprintf( p, "%lu", info->parasize );
                 }
@@ -4029,7 +4029,7 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
             }
         } else {
             ++i;
-            if( EvalOperand( &i, count, &opndx, TRUE ) || (opndx.type != EXPR_CONST) ) {
+            if( EvalOperand( &i, count, &opndx, true ) || (opndx.type != EXPR_CONST) ) {
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
             }
@@ -4050,7 +4050,7 @@ extern void GetSymInfo( struct asm_sym *sym )
 bool Comment( int what_to_do, token_idx i, const char *line )
 /***********************************************************/
 {
-    static bool in_comment = FALSE;
+    static bool in_comment = false;
     static char delim_char = '\0';
 
     switch( what_to_do ) {
@@ -4075,11 +4075,11 @@ bool Comment( int what_to_do, token_idx i, const char *line )
             != strrchr( AsmBuffer[i].string_ptr, delim_char ) ) {
             /* we have COMMENT delim. ..... delim. -- only 1 line */
         } else {
-            in_comment = TRUE;
+            in_comment = true;
         }
         return( RC_OK );
     case END_COMMENT:
-        in_comment = FALSE;
+        in_comment = false;
         return( RC_OK );
     }
     return( RC_ERROR );

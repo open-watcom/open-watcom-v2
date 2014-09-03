@@ -65,7 +65,7 @@ bool ChangeCurrentLocation( bool relative, int_32 value, bool select_data )
     }
     FlushCurrSeg( );
     if( select_data )
-        OutSelect( TRUE );
+        OutSelect( true );
     CurrSeg->seg->e.seginfo->current_loc = value;
     CurrSeg->seg->e.seginfo->start_loc = value;
 
@@ -83,14 +83,14 @@ bool OrgDirective( token_idx i )
     int_32          value = 0;
 
     if( AsmBuffer[i+1].class == TC_NUM ) {
-        return( ChangeCurrentLocation( FALSE, AsmBuffer[i+1].u.value, FALSE ) );
+        return( ChangeCurrentLocation( false, AsmBuffer[i+1].u.value, false ) );
     } else if( AsmBuffer[i+1].class == TC_ID ) {
         sym = AsmLookup( AsmBuffer[i+1].string_ptr );
         if( AsmBuffer[i+2].class == TC_OP_SQ_BRACKET &&
             AsmBuffer[i+3].class == TC_NUM ) {
             value = AsmBuffer[i+3].u.value;
         }
-        return( ChangeCurrentLocation( FALSE, sym->offset + value, FALSE ) );
+        return( ChangeCurrentLocation( false, sym->offset + value, false ) );
     }
     AsmError( EXPECTING_NUMBER );
     return( RC_ERROR );

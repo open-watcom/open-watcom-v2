@@ -49,7 +49,7 @@ bool ForDirective( token_idx i, enum irp_type type )
     size_t len;
 
     if( type == IRP_REPEAT ) {
-        ExpandTheWorld( i, FALSE, TRUE );
+        ExpandTheWorld( i, false, true );
         /* make a temporary macro, then call it */
         if( AsmBuffer[i].class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
@@ -100,7 +100,7 @@ bool ForDirective( token_idx i, enum irp_type type )
     AsmBuffer[i].class = TC_DIRECTIVE;
     AsmBuffer[i].u.token = T_MACRO;
 
-    if( MacroDef( i, TRUE ) )
+    if( MacroDef( i, true ) )
         return( RC_ERROR );
 
     /* now call the above macro with each of the given parms */
@@ -134,6 +134,6 @@ bool ForDirective( token_idx i, enum irp_type type )
         sprintf( buffer, "%s%d", macroname, Globals.for_counter );
     }
     Globals.for_counter++;
-    PushMacro( buffer, TRUE );
+    PushMacro( buffer, true );
     return( RC_OK );
 }

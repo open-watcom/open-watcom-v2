@@ -414,7 +414,7 @@ bool jmp( expr_list *opndx, int *flags )
                 break;
 #endif
             case MT_FWORD:
-                if( ptr_operator( MT_FWORD, TRUE ) )
+                if( ptr_operator( MT_FWORD, true ) )
                     return( RC_ERROR );
                 break;
             default:
@@ -744,13 +744,13 @@ bool ptr_operator( memtype mem_type, bool fix_mem_type )
             }
         }
     } else {
-        if( ( mem_type != MT_EMPTY ) && ( Code->mem_type_fixed == FALSE ) ) {
+        if( ( mem_type != MT_EMPTY ) && !Code->mem_type_fixed ) {
 #if defined( _STANDALONE_ )
             if( mem_type != MT_STRUCT ) {
 #endif
                 Code->mem_type = mem_type;
                 if( fix_mem_type ) {
-                    Code->mem_type_fixed = TRUE;
+                    Code->mem_type_fixed = true;
                     if( mem_type == MT_FAR ) {
                         if( Code->info.token == T_CALL ) {
                             Code->info.token = T_CALLF;

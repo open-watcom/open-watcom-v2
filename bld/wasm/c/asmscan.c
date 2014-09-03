@@ -66,8 +66,8 @@ static bool get_float( token_idx idx, const char **input, char **output )
     unsigned char   extra;
 
     extra = 0;
-    got_e = FALSE;
-    got_decimal = FALSE;
+    got_e = false;
+    got_decimal = false;
     for( ptr = *input; (c = *ptr) != '\0'; ptr++ ) {
         if( isdigit( c ) )
             continue;
@@ -76,7 +76,7 @@ static bool get_float( token_idx idx, const char **input, char **output )
         if( c == '.' ) {
             if( got_decimal || got_e )
                 break;
-            got_decimal = TRUE;
+            got_decimal = true;
             continue;
         }
         c = tolower( c );
@@ -87,7 +87,7 @@ static bool get_float( token_idx idx, const char **input, char **output )
         if( c != 'e' || got_e )
             break;
         // c == 'e'
-        got_e = TRUE;
+        got_e = true;
         /* accept e+2 / e-4 /etc. */
         c = *(ptr + 1);
         if( c == '+' || c == '-' ) {
@@ -206,7 +206,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
 #define OK_NUM( t )     ((digits_seen & ~VALID_##t) == 0)
 
     digits_seen = 0;
-    first_char_0 = FALSE;
+    first_char_0 = false;
     extra = 0;
     ptr = *input;
     if( *ptr == '0' ) {
@@ -215,7 +215,7 @@ static bool get_number( token_idx idx, const char **input, char **output )
             ++ptr;
             base = 16;
         } else {
-            first_char_0 = TRUE;
+            first_char_0 = true;
         }
     }
     dig_start = ptr;
@@ -278,12 +278,12 @@ static bool get_number( token_idx idx, const char **input, char **output )
             return( get_string( idx, input, output ) );
         }
         digits_seen |= 1;
-        first_char_0 = FALSE;
+        first_char_0 = false;
         dig_start = *input;
     }
 #if defined( _STANDALONE_ )
     if( !Options.allow_c_octals ) {
-        first_char_0 = FALSE;
+        first_char_0 = false;
     }
 #endif
     AsmBuffer[idx].class = TC_NUM;
@@ -498,7 +498,7 @@ static bool get_id( token_idx idx, const char **input, char **output )
                 AsmBuffer[idx].class = TC_DIRECTIVE;
 #if defined( _STANDALONE_ )
                 if( ins->token == T_ENUM ) {
-                    EnumDirective = TRUE;
+                    EnumDirective = true;
                 }
             } else if( ins->rm_byte == OP_DIRECT_EXPR ) {
                 AsmBuffer[idx].class = TC_DIRECT_EXPR;
@@ -666,7 +666,7 @@ token_idx AsmScan( const char *string )
 #endif
     output_ptr = stringbuf;
 #if defined( _STANDALONE_ )
-    EnumDirective = FALSE;
+    EnumDirective = false;
 #endif
 
     ptr = string;
