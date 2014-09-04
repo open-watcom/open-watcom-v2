@@ -1,6 +1,6 @@
 libs = $(commonui_lib) $(wpi_lib) $(ui_lib) $(rcsdll_lib)
 
-extra_l_flags_os2_386 = op newfiles,stack=64k
+extra_l_flags_os2_386 = op stack=64k
 extra_l_flags_os2_i86 = op newfiles,stack=2k
 extra_l_flags_os2 = $(extra_l_flags_os2_$(host_cpu))
 
