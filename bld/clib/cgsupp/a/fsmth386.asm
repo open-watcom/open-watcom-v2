@@ -197,7 +197,7 @@ __FSAemu:
 
         ; normalize the fraction
         add     EAX,00000080h   ; round up fraction if required
-        xor     AL,AL           ; zero bottom 8 bits    10-jul-89
+        mov     AL,0            ; zero bottom 8 bits    10-jul-89
         _guess  underflow       ; guess
           _quif nc              ; - quit if round up didn't overflow frac
           inc   CH              ; - adjust exponent
