@@ -30,7 +30,7 @@ theloop:                                ; loop : theloop
         je      found                   ; - - - goto found:
                                         ; - - endif
                                         ; - endif
-lukmore:mov     al,0                    ; - scan to next nullchar
+lukmore:xor     al,al                   ; - scan to next nullchar
         mov     ecx,-1                  ; - ...
         repne   scasb                   ; - ...
         jmp     theloop                 ; endloop

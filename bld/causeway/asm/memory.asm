@@ -1648,7 +1648,7 @@ mem10_v4:
         pop     edi
         mov     ah,40h
         mov     bx,VMMHandle            ;get swap file handle.
-        mov     cx,0
+        xor     cx,cx
         push    edi
         mov     edi,offset PageInt
         mov     RealRegsStruc.Real_EAX[edi],eax
@@ -2545,7 +2545,7 @@ mem19_2:
         movzx   ecx,cx
         shl     ecx,4
         dec     ecx
-        mov     al,0
+        xor     al,al
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    EMUMakeDesc
         pop     ebx
@@ -2729,7 +2729,7 @@ mem20_2:
         movzx   ecx,cx
         shl     ecx,4
         dec     ecx
-        mov     al,0
+        xor     al,al
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    EMUMakeDesc
         pop     ebx

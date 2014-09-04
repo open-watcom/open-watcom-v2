@@ -353,7 +353,7 @@ not64k:                                 ; endif
 ;
         mov     di,81H                  ; DOS command buffer ds:si
         mov     cl,-1[di]               ; get length of command
-        mov     ch,0
+        xor     ch,ch
         cld                             ; set direction forward
         mov     al,' '
         repe    scasb

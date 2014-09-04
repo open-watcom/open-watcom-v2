@@ -280,7 +280,7 @@ rv1_NoGDTMove:
         mov     eax,Page1stLinear+4
         mov     Page1stLinear,eax
         mov     esi,PageDIRLinear
-        mov     eax,0
+        xor     eax,eax
         mov     ebx,Page1stLinear+8
         and     ebx,not 4095
         or      ebx,111b
@@ -1506,8 +1506,8 @@ Int2FPatch      endp
 RAWSimulateInt proc     near
         push    cx
         push    bx
-        mov     bh,0
-        mov     cx,0
+        xor     bh,bh
+        xor     cx,cx
         jmp     RAWSimulate
 RAWSimulateInt  endp
 
@@ -1530,7 +1530,7 @@ RAWSimulateInt  endp
 RAWSimulateInt2 proc    near
         push    cx
         push    bx
-        mov     bh,0
+        xor     bh,bh
         jmp     RAWSimulate
 RAWSimulateInt2 endp
 
@@ -1551,7 +1551,7 @@ RAWSimulateFCALL proc near
         push    cx
         push    bx
         mov     bh,1
-        mov     cx,0
+        xor     cx,cx
         jmp     RawSimulate
 RAWSimulateFCALL endp
 
@@ -3381,7 +3381,7 @@ rv46_DPMI_0305:
         cmp     al,05h          ;get state save restore address?
         jnz     rv46_DPMI_0306
         mov     ax,4
-        mov     bx,0
+        xor     bx,bx
         mov     cx,bx
         mov     si,cs
         mov     edi,offset StateSaveCode
@@ -3397,8 +3397,7 @@ rv46_DPMI_0306:
 rv46_DPMI_0400:
         cmp     al,00h          ;get DPMI version?
         jnz     rv46_NotOurs
-        mov     ah,0
-        mov     al,90                                   ; changed from 90h to 90 decimal, MED 01/24/96
+        mov     ax,90                                   ; changed from 90h to 90 decimal, MED 01/24/96
 
 ; MED 01/25/96
 ;       mov     bx,00000111b

@@ -266,7 +266,7 @@ rat10:                                  ; - endif
         and     dl,0F0H
         sub     ecx,ecx
 ;        mov     cl,es:[edi-1]          ; get length of command
-        mov     cl,0
+        xor     cl,cl
         cld                             ; set direction forward
         mov     al,' '
         repe    scasb

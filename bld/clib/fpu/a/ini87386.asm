@@ -42,7 +42,7 @@ __x87id proc
         fstcw   word ptr [ESP]          ; save control word
         fwait
         pop     EAX
-        mov     AL,0
+        xor     AL,AL
         cmp     AH,3
         jnz     nox87
         push    EAX                     ; allocate space for status word
@@ -60,7 +60,7 @@ __x87id proc
         jz      not387                  ; it's 287 if infinities equal
         mov     AL,3                    ; indicate 80387
 not387: finit                           ; re-initialize the 8087
-nox87:  mov     AH,0
+nox87:  xor     AH,AH
         ret                             ; return
 __x87id endp
 

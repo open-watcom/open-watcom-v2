@@ -515,8 +515,8 @@ load1_exp1:
         add     edx,2
         mov     edi,edx                 ;point to object number incase we need it.
         xor     eax,eax
-        mov     al,0
-        cmp     bl,0
+        xor     al,al
+        test    bl,bl
         jz      load1_exp2
         add     edx,2                   ;skip object number.
         mov     al,3

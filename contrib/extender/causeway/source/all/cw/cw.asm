@@ -214,7 +214,7 @@ Entry	proc	far
 
 medexe2:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -375,7 +375,7 @@ EXEDualMode	proc	near
 
 medexe10:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -468,7 +468,7 @@ FastLoad3P	proc	near
 
 medexe3:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -785,7 +785,7 @@ Write3PFile	proc	near
 
 medexe4:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -1887,7 +1887,7 @@ ENDIF
 
 medexe5:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -1993,7 +1993,7 @@ ENDIF
 
 medexe6:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -2015,7 +2015,7 @@ medexe6:
 	sub	ax,cx
 	sbb	bx,dx		;get remaining length.
 	pushm	ax,bx
-	mov	al,0
+	xor	al,al
 	mov	bx,EXEHandle
 	call	SetFilePointer	;point to the 3P header again.
 	popm	ax,bx
@@ -2315,7 +2315,7 @@ NewExeInfo	proc	near
 
 medexe7:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -2853,7 +2853,7 @@ ProcessFile	proc	near
 
 medexe8:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -2952,7 +2952,7 @@ medexe8:
 
 medexe9:
 	add	ax,ax		;mult by 2
-	mov	dh,0
+	xor	dh,dh
 	mov	dl,ah
 	mov	ah,al
 	mov	al,dh		;mult by 256=*512
@@ -3053,7 +3053,7 @@ medexe9:
 	mov	RelocSegment,esi	;stow the memory address.
 	;
 	mov	dx,ExeRelocFirst
-	mov	cx,0
+	xor	cx,cx
 	mov	bx,EXEHandle
 	mov	ax,4200h
 	int	21h		;move to relocation table.
@@ -3108,8 +3108,8 @@ medexe9:
 	call	StringPrint
 	;
 	mov	bx,TEMPHandle
-	mov	cx,0
-	mov	dx,0
+	xor	cx,cx
+	xor	dx,dx
 	mov	ax,4201h
 	int	21h
 	shl	edx,16
@@ -3209,8 +3209,8 @@ medexe9:
 	;Calculate file size.
 	;
 	mov	bx,TEMPHandle
-	mov	cx,0
-	mov	dx,0
+	xor	cx,cx
+	xor	dx,dx
 	mov	ax,4201h
 	int	21h
 	shl	edx,16

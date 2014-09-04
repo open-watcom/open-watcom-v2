@@ -102,8 +102,7 @@ extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
         "push es"    \
         "push ds"    \
         "pop es"     \
-        "mov ah,05h" \
-        "mov al,00h" \
+        "mov ax,0500h" \
         "int 31h"    \
         "pop es"     \
         "sbb ax,ax"  \

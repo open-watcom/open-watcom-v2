@@ -60,7 +60,7 @@ include struct.inc
         _endif                  ; endif
         mov     EBP,ECX         ; save op2 exponent
         xor     EBP,EDX         ; see about signs of the operands
-        mov     EBP,0           ; clear result
+        xor     EBP,EBP         ; clear result
         js      short cmpdone   ; quif arg1 & arg2 have diff signs
         _guess                  ; guess
           cmp   EDX,ECX         ; - compare high words of arg1, arg2

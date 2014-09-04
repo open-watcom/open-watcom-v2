@@ -5,7 +5,7 @@
 
 Start PROC
 
-mov eax, 0
+xor eax, eax
 mov hwndMain, eax
 
 ret

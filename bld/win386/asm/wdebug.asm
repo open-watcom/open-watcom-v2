@@ -460,7 +460,7 @@ EndProc Fault06Handler
 BeginProc Fault07Handler
         pushad
         movzx   edx,[ebp.Client_CS]
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again102:
         cmp     word ptr [edi.E_CS],dx
@@ -628,7 +628,7 @@ BeginProc WGod_Device_Init
 ;*
 ;*** hook div by 0 fault
 ;*
-        mov     eax,0
+        xor     eax,eax
         mov     esi,OFFSET Fault00Handler
         VxDcall Hook_PM_Fault
         cmp     esi,0
@@ -668,7 +668,7 @@ aret6:
         ShiftState <SS_Either_Ctrl + SS_Either_Alt + SS_Toggle_mask>, <SS_Ctrl + SS_Alt>
         mov     cl,CallOnPress
         mov     esi,OFFSET HotKeyPressed
-        mov     edi,0
+        xor     edi,edi
         VxDcall VKD_Define_Hot_Key
 
         clc
@@ -799,7 +799,7 @@ GetFlatAddr_ES_BX ENDP
 FindServerPtrFromName PROC near
         push    edi
         push    esi
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,eax                         ; save string ptr
         mov     ebx,OFFSET Convs              ; first conv
 again9:
@@ -849,7 +849,7 @@ FindServerPtrFromName ENDP
 ;****************************************
 FindAnyPtr PROC near
         mov     edx,OFFSET Convs
-        mov     ecx,0
+        xor     ecx,ecx
         mov     bl,InUse
         mov     bh,IsServer
 again13:
@@ -1755,7 +1755,7 @@ BeginProc SVC_LookForConv
         ret
 oklfc:
         mov     ebx,VMHandle                    ; server id
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edx,OFFSET Convs
 again20:
         cmp     [edx.C_InUse],1                 ; in use?
@@ -2250,7 +2250,7 @@ TaskSwitched PROC NEAR
         jne     short try               ; yep
         ret                             ; no, leave NOW
 try:
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again_ts:
         cmp     [edi.E_ID],ebx          ; current VM?
@@ -2364,7 +2364,7 @@ BeginProc SVC_EMURegister
 ;*
 ;*** find an empty list element
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again100:
         cmp     word ptr [edi.E_CS],0
@@ -2409,7 +2409,7 @@ BeginProc SVC_EMUUnRegister
 ;*
 ;*** find the specified CS
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     eax,OFFSET EMUList
         mov     bx,[ebp.Client_DX]
 again101:
@@ -2468,7 +2468,7 @@ BeginProc SVC_EMUSaveRestore
 ;*
 ;*** find an empty list element
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
         mov     ax,[ebp.Client_DX]
 again103:
@@ -2572,7 +2572,7 @@ BeginProc SVC_VGARead
         out     dx,al
         inc     dx
         in      al,dx
-        mov     ah,0
+        xor     ah,ah
         mov     [ebp.Client_AX],ax
         ret
 EndProc SVC_VGARead
@@ -2592,7 +2592,7 @@ fooxx:
         mov dx,03c0h
         mov al,011h
         out dx,al
-        mov al,0
+        xor al,al
         out dx,al
         ret
 EndProc SVC_DisableVideo

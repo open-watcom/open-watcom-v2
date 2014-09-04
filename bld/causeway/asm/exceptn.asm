@@ -204,7 +204,7 @@ ExcepOpen       proc    near
         mov     ExcepSystemFlags,eax
         assume es:nothing
         ;
-        mov     bl,0
+        xor     bl,bl
         mov     ecx,1
         mov     edi,offset OldExc00
         mov     esi,offset DPMIExc00Patch
@@ -264,7 +264,7 @@ exc1_0:
         dec     ecx
         jnz     exc1_0
         ;
-        mov     bl,0
+        xor     bl,bl
         sys     GetVect
         test    BYTE PTR ExcepSystemFlags,1
         jz      exc1_i00Use32
@@ -277,7 +277,7 @@ exc1_i00Use32:
 exc1_i00Done3216:
         mov     edx,offset Int00Handler
         mov     cx,cs
-        mov     bl,00
+        xor     bl,bl
         sys     SetVect
         ;
         clc
@@ -317,7 +317,7 @@ ExcepClose      proc    near
         mov     ds,cs:ExcepDDSeg
         assume ds:_Excep
         ;
-        mov     bl,0
+        xor     bl,bl
         mov     ecx,1
         mov     edi,offset OldExc00
 exc2_2:
@@ -2422,7 +2422,7 @@ exc22_dm1:
         ;
         mov     ecx,256
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
-        mov     ebx,0
+        xor     ebx,ebx
 exc22_pv0:
         push    ebx
         push    ecx
@@ -2481,7 +2481,7 @@ exc22_pv1:
         mov     ecx,32
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         add     esi,256*6
-        mov     ebx,0
+        xor     ebx,ebx
 exc22_pe0:
         push    ebx
         push    ecx
@@ -2540,7 +2540,7 @@ exc22_pe1:
         mov     ecx,256
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         add     esi,(256*6)+(32*6)
-        mov     ebx,0
+        xor     ebx,ebx
 exc22_ri0:
         push    ebx
         push    ecx

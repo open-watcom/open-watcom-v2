@@ -760,7 +760,7 @@ EMU_INT     equ 39H
 public          Null87Emu_
 Null87Emu_      proc    near
                 push    es
-                mov     ax,0
+                xor     ax,ax
                 mov     es,ax
                 mov     es:[EMU_INT*4+0],ax  ; null out emulator interrupt
                 mov     es:[EMU_INT*4+2],ax  ; ...

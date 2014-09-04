@@ -78,7 +78,7 @@ include struct.inc
         _endif                  ; endif
         mov     BP,DI           ; save op2 exponent
         xor     BP,AX           ; see about signs of the operands
-        mov     BP,0            ; clear result
+        xor     BP,BP           ; clear result
         js      cmpdone         ; quif arg1 & arg2 have diff signs
         _guess                  ; guess
           cmp   AX,DI           ; - compare high words of arg1, arg2

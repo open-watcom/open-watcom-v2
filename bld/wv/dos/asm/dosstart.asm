@@ -246,7 +246,7 @@ Startup         equ     $
 assume  CS:_TEXT, DS:DGROUP, DS:DGROUP, SS:DGROUP
 
                 mov     di,offset dgroup:_edata
-                mov     al,0
+                xor     al,al
                 mov     cx, offset dgroup:_end
                 sub     cx,di
                 rep     stosb           ; zero _BSS segment variables

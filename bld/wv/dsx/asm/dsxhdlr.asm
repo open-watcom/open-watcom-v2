@@ -295,7 +295,7 @@ RMTrapAccess_   PROC NEAR
                 cmp     word ptr cs:parmarea.out_ptr, 0
                 jne     have_ret
                 push    word ptr 0
-                mov     dx,0
+                xor     dx,dx
                 push    word ptr 0
                 jmp     short remainder
 have_ret:

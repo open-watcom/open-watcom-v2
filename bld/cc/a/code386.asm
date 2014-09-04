@@ -81,7 +81,7 @@ beginb  C_strcat
         push    edi                     ; save destination address
         sub     ecx,ecx                 ; set length to -1
         dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
@@ -114,7 +114,7 @@ beginb  FC_strcat
         push    edi                     ; save destination address
         sub     ecx,ecx                 ; set length to -1
         dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
@@ -173,7 +173,7 @@ beginb  Z_strcat
         push    ecx                     ; save ecx
         sub     ecx,ecx                 ; set length to -1
         dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     ecx                     ; restore ecx
         dec     edi                     ; point to null character
@@ -199,7 +199,7 @@ beginb  BD_strcat
         push    edi                     ; save destination address
         sub     ecx,ecx                 ; set length to -1
         dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
@@ -236,7 +236,7 @@ beginb  DP_strcat
         mov     edi,eax                 ; get destination offset
         sub     ecx,ecx                 ; set length to -1
         dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop

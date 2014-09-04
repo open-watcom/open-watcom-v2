@@ -134,7 +134,7 @@ __STKOVERFLOW:
         call    _putw
         pop     ebx             ; get offset
         call    _putw           ; print low word
-        mov     al,0
+        xor     al,al
         stosb
         push    ss
         pop     ds

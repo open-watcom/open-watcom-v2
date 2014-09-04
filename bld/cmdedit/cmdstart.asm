@@ -142,7 +142,7 @@ not0:   mov     ax,18[bp]
 theend: push    index
         push    want_alias
         call    StringIn_
-    mov ax,0
+    xor ax,ax
 epi:    pop     cx
         pop     bx
         pop     dx

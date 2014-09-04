@@ -742,7 +742,7 @@ lrem1_chk       ENDP
         sub     esp, STACK_SIZE
         fstp    tbyte ptr [NUMER+esp]
         fstp    tbyte ptr [DENOM+esp]
-        mov     edx, 0
+        xor     edx, edx
 ; prem1_main_routine begin
         mov     eax,[DENOM+6+esp]       ; exponent and high 16 bits of mantissa
         test    eax,07fff0000h          ; check for denormal
