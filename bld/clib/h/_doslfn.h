@@ -186,7 +186,7 @@ extern unsigned __dos_getfileattr_lfn( const char *path, unsigned *attr );
         "push ds"       \
         "xchg ax,dx"    \
         "mov  ds,ax"    \
-        "mov  bl,0"     \
+        "xor  bl,bl"    \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
@@ -198,7 +198,7 @@ extern unsigned __dos_getfileattr_lfn( const char *path, unsigned *attr );
         modify exact    [ax bl cx dx];
   #else
     #pragma aux __dos_getfileattr_lfn = \
-        "mov  bl,0"     \
+        "xor  bl,bl"    \
         "mov  ax,7143h" \
         "stc"           \
         "int  21h"      \
@@ -382,7 +382,7 @@ extern unsigned __unlink_lfn( const char *filename );
         "push ds"       \
         "xchg ax,dx"    \
         "mov  ds,ax"    \
-        "mov  si,0"     \
+        "xor  si,si"    \
         "mov  ax,7141h" \
         "stc"           \
         "int  21h"      \
@@ -392,7 +392,7 @@ extern unsigned __unlink_lfn( const char *filename );
         modify exact    [ax dx si];
   #else
     #pragma aux __unlink_lfn = \
-        "mov  si,0"     \
+        "xor  si,si"    \
         "mov  ax,7141h" \
         "stc"           \
         "int  21h"      \

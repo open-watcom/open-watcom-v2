@@ -334,7 +334,7 @@ frem_chk        PROC    NEAR
         fstp    tbyte ptr [NUMER+esp]
         fld     dword ptr [STACK_SIZE+12+esp]
         fstp    tbyte ptr [DENOM+esp]
-        mov     edx, 0                  ; dx = 1 if denormal extended divisor
+        mov     edx, edx                ; dx = 1 if denormal extended divisor
         call    fprem_common
         fxch
         fstp    st
@@ -355,7 +355,7 @@ drem_chk        PROC    NEAR
         fstp    tbyte ptr [NUMER+esp]
         fld     qword ptr [STACK_SIZE+16+esp]
         fstp    tbyte ptr [DENOM+esp]
-        mov     edx, 0                  ; dx = 1 if denormal extended divisor
+        mov     edx, edx                ; dx = 1 if denormal extended divisor
         call    fprem_common
         fxch
         fstp    st
@@ -684,7 +684,7 @@ frem1_chk       PROC    NEAR
         fstp    tbyte ptr [NUMER+esp]
         fld     dword ptr [STACK_SIZE+12+esp]
         fstp    tbyte ptr [DENOM+esp]
-        mov     edx, 0                  ; dx = 1 if denormal extended divisor
+        mov     edx, edx                ; dx = 1 if denormal extended divisor
         call    fprem1_common
         fxch
         fstp    st
@@ -705,7 +705,7 @@ drem1_chk       PROC    NEAR
         fstp    tbyte ptr [NUMER+esp]
         fld     qword ptr [STACK_SIZE+16+esp]
         fstp    tbyte ptr [DENOM+esp]
-        mov     edx, 0                  ; dx = 1 if denormal extended divisor
+        mov     edx, edx                ; dx = 1 if denormal extended divisor
         call    fprem1_common
         fxch
         fstp    st

@@ -55,7 +55,7 @@ init_fixtrap proc "C" public
         ; check for Windows 95 (version 4)
         ;
         cmp     al, 4
-        xor     ax, ax
+        mov     ax, 0
         jne short not_windows_95
         push    es
         push    ebx

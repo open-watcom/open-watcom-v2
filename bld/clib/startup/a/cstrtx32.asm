@@ -415,7 +415,7 @@ __exit   proc near
 ifndef __STACK__
         push    eax                     ; save return code
 endif
-        mov     eax,00H                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
         pop     eax                     ; restore return code

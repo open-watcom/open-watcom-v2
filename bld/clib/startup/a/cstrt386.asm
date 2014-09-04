@@ -310,7 +310,7 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        mov     bl,0                    ; assume 'no87=' env. var. not present
+        xor     bl,bl                   ; assume 'no87=' env. var. not present
         mov     bh,FLG_LFN              ; assume 'lfn=n' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
@@ -417,7 +417,7 @@ L6:     lodsb                           ; get char
         pop     eax                     ; restore return code
 ok:
         push    eax                     ; save return code
-        mov     eax,00H                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
         pop     eax                     ; restore return code

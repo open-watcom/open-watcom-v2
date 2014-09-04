@@ -309,7 +309,7 @@ begin:  push    DI              ; save DI
             mov   CH,BL         ; - - . . .
             mov   BL,BH         ; - - . . .
             mov   BH,AL         ; - - . . .
-            xor   AL,AL         ; - - . . .
+            mov   AL,0          ; - - . . .
           _until  e             ; - until done
           _if   ne              ; - if still more to shift
             _loop               ; - - loop

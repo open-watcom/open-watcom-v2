@@ -51,7 +51,7 @@ endif
         mov     AH,19h          ; get current drive
         int     21h             ; ...
         inc     AX              ; increment drive #
-        mov     AH,0            ; zero high part
+        xor     AH,AH           ; zero high part
         mov     [BX],AX         ; store drive #
         sub     AX,AX           ; set return code
 if _MODEL and (_BIG_DATA or _HUGE_DATA)
@@ -78,7 +78,7 @@ endif
         dec     DX              ; ...
         mov     AH,0Eh          ; set current drive
         int     21h             ; ...
-        mov     AH,0            ; zero high part of return
+        xor     AH,AH           ; zero high part of return
         mov     [BX],AX         ; store total # of drives
         sub     AX,AX           ; set return code
 if _MODEL and (_BIG_DATA or _HUGE_DATA)

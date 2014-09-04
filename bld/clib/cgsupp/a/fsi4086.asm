@@ -160,7 +160,7 @@ __FSAbs proc near
 m_left:
         _if     ne              ; done if exponent exactly 23
           mov     cl,dh         ; - get shift count
-          mov     dh,00         ; - clear high byte
+          xor     dh,dh         ; - clear high byte
           _loop                 ; - loop to put mantissa in proper spot
             _shl  ax,1          ; - - multiply number by 2
             _rcl  dx,1          ; - - ...

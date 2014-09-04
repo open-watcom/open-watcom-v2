@@ -257,7 +257,7 @@ __exit_  proc far
 public __exit_
         push    eax                     ; save return value
         push    edx                     ; save edx
-        mov     eax,00h                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     edx                     ; restore edx
