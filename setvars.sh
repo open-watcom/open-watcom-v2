@@ -56,6 +56,10 @@ export OWDOCBUILD=0
 
 # export OWDOSBOX=dosbox
 
+#if WINE cmd.exe should be used as a "windows shell" alternative to the DOS emulators
+#uncomment the line below
+# export WINE_CMD=1
+
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh
 
