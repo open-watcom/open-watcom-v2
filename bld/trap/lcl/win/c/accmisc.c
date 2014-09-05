@@ -91,7 +91,7 @@ trap_retval ReqGet_sys_config( void )
 
     ret = GetOutPtr( 0 );
 
-    ret->sys.os = OS_WINDOWS;
+    ret->sys.os = MAD_OS_WINDOWS;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
 
