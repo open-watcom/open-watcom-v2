@@ -209,7 +209,7 @@ _cstart_ proc  far
           push  esi                     ; - push ptr to next string
           _loop                         ; - loop (find end of string)
             lodsb                       ; - - get character
-            cmp   al,0                  ; - - check for null char
+            test  al,al                 ; - - check for null char
           _until  e                     ; - until end of string
           cmp   byte ptr [esi],0        ; - check for double null char
         _until  e                       ; until end of environment strings

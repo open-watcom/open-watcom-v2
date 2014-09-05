@@ -227,18 +227,17 @@ init_DLL:
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      error_exit              ; - quit if not Rational DOS/4G
         mov     ax,gs                   ; - get segment address of kernel
-        cmp     ax,0                    ; - if not zero
+        test    ax,ax                   ; - if not zero
         je      short rat9              ; - then
         mov     __D16Infoseg,ax         ; - - remember it
 rat9:                                   ; - endif
         mov     ax,DPMIGetSegmentBaseAddress ; - check data segment base
         mov     bx,ds                   ; - set up data segment
         int     31h                     ; - DPMI call
-        mov     al,X_RATIONAL           ; - asssume Rational 32-bit Extender
-        mov     ah,XS_RATIONAL_ZEROBASE ; - extender subtype
+        mov     ax,XS_RATIONAL_ZEROBASE*256+X_RATIONAL ; - asssume Rational 32-bit Extender / extender subtype
         or      dx,cx                   ; - if base is non-zero
         jz      rat10                   ; - then
         mov     ah,XS_RATIONAL_NONZEROBASE; - Rational non-zero based data
@@ -384,7 +383,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 nextc:  lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     nextc                   ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .

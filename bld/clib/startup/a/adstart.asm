@@ -331,7 +331,7 @@ not_pharlap:                            ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
         mov     bx,17h                  ; - get writeable code segment for Ergo
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
         mov     al,1                    ; - indicate Rational 32-bit Extender
         xor     ah,ah                   ; - assume zero base subtype
@@ -575,7 +575,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .

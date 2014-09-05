@@ -264,8 +264,7 @@ rat9:                                   ; - endif
         mov     ax,6                    ; - check data segment base
         mov     bx,ds                   ; - set up data segment
         int     31h                     ; - DPMI call
-        mov     al,X_RATIONAL           ; - asssume Rational 32-bit Extender
-        mov     ah,XS_RATIONAL_ZEROBASE ; - extender subtype
+        mov     ax,XS_RATIONAL_ZEROBASE*256+X_RATIONAL ; - asssume Rational 32-bit Extender / extender subtype
         or      dx,cx                   ; - if base is non-zero
         jz      rat10                   ; - then
         mov     ah,XS_RATIONAL_NONZEROBASE; - DOS/4G non-zero based data
@@ -310,8 +309,7 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        xor     bl,bl                   ; assume 'no87=' env. var. not present
-        mov     bh,FLG_LFN              ; assume 'lfn=n' env. var. not present
+        mov     bx,FLG*256              ; assume 'lfn=n' env. var. not present / assume 'no87=' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
         cmp     eax,37386f6eh           ; check for 'no87'
