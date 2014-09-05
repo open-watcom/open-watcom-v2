@@ -65,7 +65,7 @@ endif
 
         defp    __I8LD
         push    ECX             ; save ECX
-        mov     CL,0            ; signed value
+        xor     CL,CL           ; signed value
 cont1:
 ifdef _BUILDING_MATHLIB
         push    EBX

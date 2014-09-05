@@ -56,7 +56,7 @@ include math87.inc
         push    EDX             ; push argument
         push    EAX             ; . . .
         fld     qword ptr -8[EBP]; load argument
-        mov     DL,0            ; init 'negate' flag
+        xor     DL,DL           ; init 'negate' flag
 
         ftst                    ; get sign of argument
         fstsw   AX              ; . . .

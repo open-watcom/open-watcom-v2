@@ -312,8 +312,7 @@ _EGAPixCopyEO_:
         _until  e
 done_pixcopy:
         mov     _edx,SEQADDR     ; set map mask register to all planes
-        mov     ah,0Fh
-        mov     al,MAPMASK
+        mov     ax,0Fh*256+MAPMASK
         out     dx,ax
         pop     ds
         pop     _ebp
@@ -348,8 +347,7 @@ pcopy_common:
         mov     cl,dh           ; move dest bit offset
         mov     ch,dl           ; move src bit offset
         mov     _edx,GRADDR      ; get graphics address
-        mov     al,MODEREG      ; set write mode
-        mov     ah,READ_MODE_0+WRITE_MODE_0
+        mov     ax,(READ_MODE_0+WRITE_MODE_0)*256+MODEREG    ; set write mode
         out     dx,ax
         mov     al,EGAMASK
         out     dx,al           ; select mask register
@@ -524,7 +522,7 @@ _EGAReadRowMono_:
         docall  get_common
         mov     al,2            ; get bit plane 2
         docall  get_bitplane
-        mov     al,0            ; and bit plane 0
+        xor     al,al           ; and bit plane 0
         docall  get_bitplane
         pop     ds
         pop     _ebp
@@ -631,8 +629,7 @@ bitlup:                         ; - loop
         shr     _ecx,1
         shr     _ecx,1
         _if     ne              ; not 0 byte?
-          mov     al,EGAMASK
-          mov     ah,0ffh       ; unmask all bytes
+          mov     ax,0ff00h+EGAMASK  ; unmask all bytes
           out     dx,ax
           cmp     word ptr ss:__PlotAct,0
           _if     e             ; if replace
@@ -650,8 +647,7 @@ zap_bytes:
 
         and     bl,0111B        ; convert to bit count
         _if     ne              ; more bits to do
-          mov     al,EGAMASK
-          mov     ah,0ffh
+          mov     ax,0ff00h+EGAMASK
           mov     cl,bl
           shr     ah,cl
           not     ah            ; ah now contains last byte mask
@@ -803,8 +799,7 @@ endif
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
-        mov     ah,EVEN_ODD_MODE+READ_MODE_1+WRITE_MODE_2
-        mov     al,MODEREG
+        mov     ax,(EVEN_ODD_MODE+READ_MODE_1+WRITE_MODE_2)*256+MODEREG
         out     dx,ax           ; select read mode
         mov     al,DONTCARE
         out     dx,al           ; set colour don't care reg
@@ -868,8 +863,7 @@ endif
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
-        mov     ah,READ_MODE_1+WRITE_MODE_2
-        mov     al,MODEREG
+        mov     ax,(READ_MODE_1+WRITE_MODE_2)*256+MODEREG
         out     dx,ax           ; select read mode
         mov     ah,cl           ; set d_esired planes
         mov     al,DONTCARE
@@ -916,8 +910,7 @@ endif
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
-        mov     ah,EVEN_ODD_MODE+READ_MODE_1+WRITE_MODE_2
-        mov     al,MODEREG
+        mov     ax,(EVEN_ODD_MODE+READ_MODE_1+WRITE_MODE_2)*256+MODEREG
         out     dx,ax           ; select read mode
         mov     al,DONTCARE
         out     dx,al           ; set colour don't care reg
@@ -992,8 +985,7 @@ endif
         mov     ah,al
         mov     al,CMPREG
         out     dx,ax           ; set colour compare register
-        mov     ah,READ_MODE_1+WRITE_MODE_2
-        mov     al,MODEREG
+        mov     ax,(READ_MODE_1+WRITE_MODE_2)*256+MODEREG
         out     dx,ax           ; select read mode
         mov     ah,cl           ; set d_esired planes
         mov     al,DONTCARE

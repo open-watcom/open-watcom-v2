@@ -254,10 +254,10 @@ not_pharlap:                            ; - assume DOS/4G or compatible
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
         mov     ax,gs                   ; - get segment address of kernel
-        cmp     ax,0                    ; - if not zero
+        test    ax,ax                   ; - if not zero
         je      short rat9              ; - then
         mov     __D16Infoseg,ax         ; - - remember it
 rat9:                                   ; - endif
@@ -403,7 +403,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L6:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L6                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .

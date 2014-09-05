@@ -96,8 +96,7 @@ endif
           _quif a               ; - quit if not pharlap
           push  ECX             ; - save ECX
           mov   CL,24H          ; - critical error interrupt number
-          mov   AL,06H          ; - set interrupt to always gain control
-          mov   AH,25H          ; - ... in protected mode
+          mov   AX,2506H        ; - set interrupt to always gain control in protected mode
           int   21H             ; - ...
           pop   ECX             ; - restore ECX
         _admit                  ; assume: DOS/4GW or Ergo OS386

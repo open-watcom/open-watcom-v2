@@ -65,7 +65,7 @@ endif
 
         defp    __I8LD
         push    DI              ; save DI
-        mov     DI,0            ; signed value
+        xor     DI,DI           ; signed value
 cont1:
 ifdef _BUILDING_MATHLIB
         push    BP

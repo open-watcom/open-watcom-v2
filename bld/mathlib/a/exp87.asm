@@ -178,7 +178,7 @@ ifndef __FPI87__
 endif                                   ; __FPI87__
         _endguess                       ; - endguess
         fstp  st(1)                     ; - copy answer up
-        mov   AL,0                      ; - indicate no error
+        xor   AL,AL                     ; - indicate no error
         ret                             ; return
         endproc __@DEXP
         endproc IF@EXP
