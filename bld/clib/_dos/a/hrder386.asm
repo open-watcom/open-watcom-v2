@@ -100,8 +100,7 @@ endif
           int   21H             ; - ...
           pop   ECX             ; - restore ECX
         _admit                  ; assume: DOS/4GW or Ergo OS386
-          mov   AL,24h          ; - critical error interrupt number
-          mov   AH,25H          ; - set interrupt vector
+          mov   AX,2524h        ; - set interrupt vector / critical error interrupt number
           int   21h             ; - ...
         _endguess               ; endguess
         sub     EAX,EAX         ; set success
