@@ -116,7 +116,7 @@ RedirectInOut_  PROC NEAR
                 mov     ah, 3eh                 ;close duplicate console
                 int     21h
                 jc      redir_done
-                mov     ax, 0                   ;return 0 to indicate success
+                xor     ax, ax                  ;return 0 to indicate success
 
 redir_done:     cwde                            ;ret code now in eax
                 clc                             ;flag was set if there was err
@@ -154,7 +154,7 @@ RestoreInOut_   PROC NEAR
                 mov     ah, 3eh                 ;close duplicate stdout
                 int     21h
                 jc      restore_done
-                mov     ax, 0                   ;return 0 to indicate success
+                xor     ax, ax                  ;return 0 to indicate success
 
 restore_done:   cwde                            ;ret code now in eax
                 clc                             ;flag was set if there was err
@@ -223,7 +223,7 @@ make_parmbloc:  mov     edi, esp                ;save addr of PSP cmdtail
                 mov     ax, 4b00h               ;load/exec command shell
                 int     21h
                 jc      loadexec_done
-                mov     ax, 0                   ;return 0 to indicate success
+                xor     ax, ax                  ;return 0 to indicate success
 
 loadexec_done:  cwde                            ;now eax has ret code
                 clc                             ;flag was set if there was err

@@ -232,7 +232,7 @@ save_state      PROC NEAR
                 push    es
 
                 mov     es, ds:saveseg
-                mov     al, 0                   ;al=0 means save state
+                xor     al, al                  ;al=0 means save state
                 call    ds:saveaddr
 
                 pop     es

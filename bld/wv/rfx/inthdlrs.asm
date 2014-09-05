@@ -105,7 +105,7 @@ CErrHdlr proc far
         add     sp,6            ; remove ip,cs,flags from int $24
         pop     ax              ; restore ax
         mov     ax,di           ; get error code
-        mov     ah,0            ; zero high byte
+        xor     ah,ah           ; zero high byte
         add     al,23           ; adjust error number
         pop     bx              ; restore bx
         pop     cx              ; restore cx

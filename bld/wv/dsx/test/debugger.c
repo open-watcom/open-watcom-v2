@@ -126,8 +126,7 @@ extern void DoInt66( unsigned, unsigned );
 
 extern void DPMIFini( void );
 #pragma aux DPMIFini aborts = \
-    "mov  ah, 0x4c"     \
-    "mov  al, 0   "     \
+    "mov  ax, 0x4c00"   \
     "int  0x21    "     \
     modify exact [ax];
 
