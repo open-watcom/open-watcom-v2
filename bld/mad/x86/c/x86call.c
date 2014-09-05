@@ -588,7 +588,7 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
     *out = NULL;
     Is32BitSegment = BIG_SEG( *execution );
     start = *startp;
-    if( MCSystemConfig()->os == OS_WINDOWS && !Is32BitSegment ) {
+    if( MCSystemConfig()->os == MAD_OS_WINDOWS && !Is32BitSegment ) {
         memset( &start, 0, sizeof( start ) );
     }
     prev_sp_value = *stack;
