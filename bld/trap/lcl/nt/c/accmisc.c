@@ -180,7 +180,7 @@ trap_retval ReqGet_sys_config( void )
     SYSTEM_INFO         info;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = OS_NT;
+    ret->sys.os = MAD_OS_NT;
 #if defined( __WATCOMC__ )
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
@@ -193,7 +193,7 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.cpu = X86CPUType();
     ret->sys.fpu = ret->sys.cpu & X86_CPU_MASK;
     if( IsWOW ) {
-        ret->sys.os = OS_WINDOWS;
+        ret->sys.os = MAD_OS_WINDOWS;
     }
     ret->sys.mad = MAD_X86;
 #elif defined( MD_x64 )
@@ -202,7 +202,7 @@ trap_retval ReqGet_sys_config( void )
 //    ret->sys.cpu = X64_CPU1;
 //    ret->sys.fpu = X64_FPU1;
     if( !IsWOW ) {
-//        ret->sys.os = OS_NT64;
+//        ret->sys.os = MAD_OS_NT64;
     }
 //    ret->sys.mad = MAD_X64;
     ret->sys.mad = MAD_X86;
