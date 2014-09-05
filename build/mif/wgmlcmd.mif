@@ -28,8 +28,17 @@ WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
 
 !else ifeq bld_os linux
 
+!ifdef %WINE_CMD
+WGMLCMD = wine cmd $(docs_dir)/gml/dos/wgml $(wgml_cmdl_params)
+!else
+!ifdef %OWDOSBOX
+WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_wgml_batch) $(wgml_cmdl_params)" -noconsole
+use_dosemu = dosbox
+!else
 WGMLCMD = dosemu -dumb $(dosemu_wgml_batch) $(wgml_cmdl_params)
 use_dosemu = dosemu
+!endif
+!endif
 wgml_tmpfile=tmp.ptf
 wgml_sysfile_01=sysusr01.gml
 wgml_sysfile_02=sysusr02.gml
