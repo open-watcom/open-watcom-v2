@@ -225,7 +225,7 @@ CPUExceptionHandler:
 	push Erec.ExceptionCode
 	call RaiseException
 ;
-    mov eax,-1
+    or eax,-1
     UserGate unload_exe_nr
 
 ueSs    EQU 36

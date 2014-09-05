@@ -479,7 +479,7 @@ brk_b:  ;insufficient memory
         pop     ecx                     ;pop and discard original eax
         pop     ecx                     ;restore original ecx
 brk_c:
-        mov     eax,-1
+        or      eax,-1
         stc                             ; indicate allocation failure
         ret
 
