@@ -251,19 +251,19 @@ static walk_result TouchesScreenBuff( address a, mad_type_handle th, mad_memref_
     if( mk & MMK_IMPLICIT )
         return( WR_CONTINUE );
     switch( MCSystemConfig()->os ) {
-    case OS_DOS:
+    case MAD_OS_DOS:
         if( a.mach.segment < 0xa000 || a.mach.segment >= 0xc000 )
             return( WR_CONTINUE );
         break;
-    case OS_RATIONAL:
+    case MAD_OS_RATIONAL:
         if( a.mach.segment != mr->x86.cpu.cs && a.mach.segment != mr->x86.cpu.ds )
             return( WR_CONTINUE );
         if( a.mach.offset < 0xa0000UL || a.mach.offset >= 0xc0000UL )
             return( WR_CONTINUE );
         break;
-    case OS_AUTOCAD:
-    case OS_PHARLAP:
-    case OS_ECLIPSE:
+    case MAD_OS_AUTOCAD:
+    case MAD_OS_PHARLAP:
+    case MAD_OS_ECLIPSE:
         if( a.mach.segment == mr->x86.cpu.cs
             || a.mach.segment == mr->x86.cpu.ds )
             return( WR_CONTINUE );
@@ -280,11 +280,11 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
     th = DoTraceOne( td, dd, tk, mr );
     th = CheckSpecial( td, dd, mr, th );
     switch( MCSystemConfig()->os ) {
-    case OS_OS2:
-    case OS_NW386:
-    case OS_QNX:
-    case OS_WINDOWS:
-    case OS_NT:
+    case MAD_OS_OS2:
+    case MAD_OS_NW386:
+    case MAD_OS_QNX:
+    case MAD_OS_WINDOWS:
+    case MAD_OS_NT:
         break;
     default:
         DoDisasmMemRefWalk( dd, TouchesScreenBuff, mr, (void *)mr );
