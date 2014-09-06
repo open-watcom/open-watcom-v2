@@ -118,6 +118,8 @@ gui_resource WndGadgetArray[] = {
     #undef pick
     { BITMAP_SPLASH, "splash" },
 };
+
+int WndGadgetHintSize = ArraySize( WndGadgetHint );
 int WndGadgetArraySize = ArraySize( WndGadgetArray );
 int WndGadgetSecondary = GADGET_FIRST_SECONDARY;
 wnd_attr WndGadgetAttr = WND_HOTSPOT;
@@ -486,7 +488,7 @@ void FiniGadget( void )
 {
     int                 i;
 
-    for( i = 0; i < WndGadgetArraySize; ++i ) {
+    for( i = 0; i < WndGadgetHintSize; ++i ) {
         WndFree( WndGadgetHint[ i ] );
         WndGadgetHint[ i ] = NULL;
     }
@@ -499,7 +501,7 @@ void InitGadget( void )
 
     WndGadgetInit();
     MaxGadgetLength = 0;
-    for( i = 0; i < WndGadgetArraySize; ++i ) {
+    for( i = 0; i < WndGadgetHintSize; ++i ) {
         WndGadgetHint[ i ] = WndLoadString( (int)(pointer_int)WndGadgetHint[ i ] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
