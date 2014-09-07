@@ -6129,7 +6129,7 @@ api84_imp6_0:
         mov     ds,si
         mov     es,si
         test    eax,00400000h
-        mov     eax,0
+        xor     eax,eax
         jnz     api84_imp6
         db 66h
 api84_imp6:
