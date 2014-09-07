@@ -709,7 +709,7 @@ static void ToggleWindowSwitches( window_toggle *toggle, int len,
                 }
             }
         }
-        if( i == len || settings == NULL ) {
+        if( settings == NULL || i == len ) {
             if( wt >= MWT_LAST || !OneToggle( wt ) ) {
                 Error( ERR_LOC, LIT( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_SET ) );
             }
