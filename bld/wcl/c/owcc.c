@@ -110,6 +110,16 @@
 #define PATH_SEPS_STR   SYS_DIR_SEP_STR "/"
 #endif
 
+typedef enum {
+    TARGET_CPU_DEFAULT,
+    TARGET_CPU_I86,
+    TARGET_CPU_X86,
+    TARGET_CPU_AXP,
+    TARGET_CPU_MPS,
+    TARGET_CPU_PPC,
+    TARGET_CPU_COUNT
+} owcc_target_cpu;
+
 char *OptEnvVar = WCLENV;           /* Data interface for GetOpt()        */
 
 static  char    *Word;              /* one parameter                      */
@@ -568,8 +578,9 @@ static  int  ParseArgs( int argc, char **argv )
     initialize_Flags();
     DebugFlag          = 1;
     StackSize = NULL;
-    Conventions[0]     = 'r';
+    Conventions[0]     = '\0';
     Conventions[1]     = '\0';
+    CPU_Class          = -1;
     preprocess_only    = 0;
     cpp_want_lines     = 1; /* NB: wcc and wcl default to 0 here */
     cpp_keep_comments  = 0;
@@ -731,7 +742,7 @@ static  int  ParseArgs( int argc, char **argv )
             }
             if( !strncmp( "regparm=", Word, 8 ) ) {
                 if( !strcmp( Word + 8, "0" ) ) {
-                    Conventions[0] =  's';
+                    Conventions[0] = 's';
                 } else {
                     Conventions[0] = 'r';
                 }
@@ -743,9 +754,6 @@ static  int  ParseArgs( int argc, char **argv )
                 case '0':
                 case '1':
                 case '2':
-                    CPU_Class = Word[6];
-                    Conventions[0] = '\0';
-                    break;
                 case '3':
                 case '4':
                 case '5':
@@ -755,7 +763,7 @@ static  int  ParseArgs( int argc, char **argv )
                 default:
                     /* Unknown CPU type --- disable generation of this
                      * option */
-                    CPU_Class = '\0';
+                    CPU_Class = -1;
                 }
                 wcc_option = 0;
                 break;
@@ -983,8 +991,29 @@ static  int  ParseArgs( int argc, char **argv )
             strcat( CC_Opts, cpp_linewrap );
         }
     }
-    if( CPU_Class )
+    if( CPU_Class != -1 || *Conventions != '\0' ) {
+        switch( CPU_Class ) {
+        case -1:
+            CPU_Class = '3';
+            break;
+        case '0':
+        case '1':
+        case '2':
+            *Conventions = '\0';
+            break;
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+            if( *Conventions == '\0' ) {
+                *Conventions = 'r';
+            }
+            break;
+        default:
+            break;
+        }
         addccopt( CPU_Class, Conventions );
+    }
     if( Flags.be_quiet )
         addccopt( 'z', "q" );
     if( O_Name != NULL ) {
