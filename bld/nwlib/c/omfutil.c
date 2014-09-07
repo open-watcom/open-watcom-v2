@@ -96,10 +96,10 @@ static int isPrime( unsigned num )
         if( ( p * p ) > num )
             break;
         if( ( num % p ) == 0 ) {
-            return( FALSE );
+            return( 0 );
         }
     }
-    return( TRUE );
+    return( 1 );
 }
 
 
@@ -151,7 +151,7 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
                 memcpy( &(lib_block[h.block].name[loc]), sym, len );
                 loc += len;
                 *( (unsigned_16 *)&(lib_block[h.block].name[loc]) ) = offset;
-                return( TRUE );
+                return( true );
             }
             h.bucket += h.bucketd;
             if( h.bucket >= NUM_BUCKETS ) {
@@ -163,13 +163,13 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
             h.block -= num_blocks;
         }
    }
-   return( FALSE );
+   return( false );
 }
 
 
 static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_file *sfile )
 {
-    bool        ret = TRUE;
+    bool        ret = true;
     sym_entry   *sym;
     unsigned    str_len;
     char        *fname;
@@ -189,13 +189,13 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
         ret = InsertOmfDict( lib_block, num_blocks, fname,
             str_len + 1, sfile->new_offset );
         fname[ str_len ] = 0;
-        if( ret == FALSE ) {
+        if( !ret ) {
             return( ret );
         }
         for( sym = sfile->first; sym != NULL; sym = sym->next ) {
             ret = InsertOmfDict( lib_block, num_blocks, sym->name,
                 sym->len, sfile->new_offset );
-            if( ret == FALSE ) {
+            if( !ret ) {
                 return( ret );
             }
         }
@@ -232,7 +232,7 @@ unsigned WriteOmfDict( sym_file *first_sfile )
             lib_block[ i ].fflag = ( NUM_BUCKETS + 1 ) / 2;
         }
         done = HashOmfSymbols( lib_block, num_blocks, first_sfile );
-    } while( done == FALSE );
+    } while( !done );
     for( i = 0; i < num_blocks; i++ ) {
         for( j = 0; j < NUM_BUCKETS; j++ ) {
            if( lib_block[ i ].htab[ j ] == 0 ) {
@@ -268,7 +268,7 @@ void WriteOmfFile( sym_file *sfile )
 #endif
     }
     WriteFileBody( sfile );
-    PadOmf( FALSE );
+    PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
         charCount += sym->len | 1;

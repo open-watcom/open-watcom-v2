@@ -33,7 +33,7 @@
 
 struct lname {
     struct lname        *next;
-    char                local;
+    bool                local;
     unsigned char       len;
     char                name[ 1 ];
 };
@@ -122,18 +122,18 @@ static void GetIdx( void )
     }
 }
 
-static int IsCommonRef( void )      /* dedicated routine for FORTRAN 77 common block */
-/****************************/
+static bool IsCommonRef( void )      /* dedicated routine for FORTRAN 77 common block */
+/*****************************/
 {
     common_blk          *tmpblk = CurrCommonBlk;
 
     while( tmpblk != NULL  &&  tmpblk->segindex <= CurrSegRef ) {
         if( tmpblk->segindex == CurrSegRef ) {
-            return( TRUE );
+            return( true );
         }
         tmpblk = tmpblk->next;
     }
-    return( FALSE );
+    return( false );
 }
 
 static void FreeCommonBlk( void )   /* dedicated routine for FORTRAN 77 common block */
@@ -286,8 +286,8 @@ static void getcomdat( void )
 /*
  * process a LNAMES record
  */
-static void getlname( int local )
-/*******************************/
+static void getlname( bool local )
+/********************************/
 {
     unsigned            len;
     struct lname        *ln;
@@ -372,15 +372,15 @@ static bool ReadOmfRecord( libfile io )
     int     len;
 
     if( LibRead( io, omfRec, 3 ) != 3 )
-        return( FALSE );
+        return( false );
     len = GET_LE_16( omfRec->basic.len );
     SetOmfBuffer( len );
     if( LibRead( io, omfRec->basic.contents, len ) != len ) {
-        return( FALSE );
+        return( false );
     }
     RecPtr = omfRec->basic.contents;
     RecEnd = RecPtr + len - 1;
-    return( TRUE );
+    return( true );
 }
 
 static void trimOmfHeader( void )
@@ -426,10 +426,10 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
     file_offset size;
     bool        EasyOMF;
 
-    EasyOMF = FALSE;
-    time_stamp = FALSE;
+    EasyOMF = false;
+    time_stamp = false;
     size = 0;
-    first = TRUE;
+    first = true;
     do {
         if( !ReadOmfRecord( io ) ) {
             FatalError( ERR_BAD_OBJECT, io->name );
@@ -442,11 +442,11 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 /* Only need to check the first comment record */
                 if( ( omfRec->basic.type & ~1 ) == CMD_COMENT ) {
                     if( GET_LE_16( omfRec->basic.len ) == 8 && memcmp( omfRec->basic.contents, "\x80\xAA" "80386", 7 ) == 0 ) {
-                        EasyOMF = TRUE;
+                        EasyOMF = true;
                     }
                 }
                 if( omfRec->basic.type & 1 ) {
-                    Rec32Bit = TRUE;
+                    Rec32Bit = true;
                 } else {
                     Rec32Bit = EasyOMF;
                 }
@@ -467,10 +467,10 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                     getcomdat();
                     break;
                 case CMD_LNAMES:
-                    getlname( FALSE );
+                    getlname( false );
                     break;
                 case CMD_LLNAME:
-                    getlname( TRUE );
+                    getlname( true );
                     break;
                 case CMD_ALIAS:
                     getalias();
@@ -483,7 +483,7 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                     continue;
                 if( Options.trim_path )
                     trimOmfHeader();
-                first = FALSE;
+                first = false;
                 break;
             case CMD_LINSYM:
             case CMD_LINS32:
@@ -497,7 +497,7 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 switch( omfRec->basic.contents[ 1 ] ) {
                 case CMT_LINKER_DIRECTIVE:
                     if( omfRec->time.subclass == LDIR_OBJ_TIMESTAMP ) {
-                        time_stamp = TRUE;
+                        time_stamp = true;
                         if( oper == OMF_SYMS ) {
                             sfile->arch.date = GET_LE_32( omfRec->time.stamp );
                         }
@@ -533,7 +533,7 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 break;
             case CMD_MODEND:
             case CMD_MODE32:
-                first = TRUE;
+                first = true;
                 if( !time_stamp ) {
                     size += sizeof( OmfTimeStamp );
                     if( oper == OMF_COPY ) {

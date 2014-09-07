@@ -189,7 +189,7 @@ void Message( char *buff, ... )
 
 static bool Wait_for_return( void )
 /*********************************/
-// return TRUE if we should stop printing
+// return true if we should stop printing
 {
     int   c;
 

@@ -121,17 +121,17 @@ static bool elfAddImport( arch_header *arch, libfile io )
 
     LibSeek( io, 0x00, SEEK_SET );
     if( !LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) == sizeof( ElfMagic ) ) {
-        return( FALSE );
+        return( false );
     }
     if( !memcmp( &ElfMagic, ELF_SIGNATURE, sizeof( SEEK_CUR ) ) == 0 ) {
-        return( FALSE );
+        return( false );
     }
     LibSeek( io, 0x10 - sizeof( ElfMagic) , SEEK_CUR );
     if( LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) != sizeof( ElfMagic ) ) {
-        return( FALSE );
+        return( false );
     }
     if( (ElfMagic & 0xff) != ET_DYN ) {
-        return( FALSE );
+        return( false );
     }
     LibSeek( io, 0x00, SEEK_SET );
     ofile = OpenObjFile( io->name );
@@ -168,7 +168,7 @@ static bool elfAddImport( arch_header *arch, libfile io )
     MemFree( DLLname );
     arch->name = oldname;
     CloseObjFile( ofile );
-    return( TRUE );
+    return( true );
 }
 
 static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsigned *len )
@@ -176,10 +176,10 @@ static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsign
     unsigned_8  name_len;
 
     if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
-        return( FALSE );
+        return( false );
     }
     if( name_len == 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( LibRead( io, symbol, name_len ) != name_len ) {
         FatalError( ERR_BAD_DLL, io->name );
@@ -189,7 +189,7 @@ static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsign
         FatalError( ERR_BAD_DLL, io->name );
     }
     *len = 1 + name_len + 2;
-    return( TRUE );
+    return( true );
 }
 
 static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool coff_obj, importType type, unsigned length )
@@ -199,7 +199,7 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
     unsigned    bytes_read;
     unsigned    total_read = 0;
 
-    while( getOs2Symbol( io, symbol, &ordinal, &bytes_read ) == TRUE ) {
+    while( getOs2Symbol( io, symbol, &ordinal, &bytes_read ) ) {
         /* Make sure we're not reading past the end of name table */
         total_read += bytes_read;
         if( total_read > length ) {
@@ -211,7 +211,7 @@ static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool 
            an export but more exports could follow */
         if( ordinal == 0 )
             continue;
-        if( coff_obj == TRUE ) {
+        if( coff_obj ) {
             CoffMKImport( arch, ORDINAL, ordinal, dll_name, symbol, NULL, WL_PROC_X86 );
         } else {
             OmfMKImport( arch, type, ordinal, dll_name, symbol, NULL, WL_PROC_X86 );
@@ -236,13 +236,13 @@ static void os2AddImport( arch_header *arch, libfile io )
     LibSeek( io, os2_header.resident_off - sizeof( os2_header ), SEEK_CUR );
     getOs2Symbol( io, dll_name, &ordinal, &bytes_read );
     type = Options.r_ordinal ? ORDINAL : NAMED;
-    importOs2Table( io, arch, dll_name, FALSE, type, UINT_MAX );
+    importOs2Table( io, arch, dll_name, false, type, UINT_MAX );
     if( os2_header.nonres_off ) {
         type = Options.nr_ordinal ? ORDINAL : NAMED;
         LibSeek( io, os2_header.nonres_off, SEEK_SET );
         // The first entry is the module description and should be ignored
         getOs2Symbol( io, junk, &ordinal, &bytes_read );
-        importOs2Table( io, arch, dll_name, FALSE, type, os2_header.nonres_size - bytes_read );
+        importOs2Table( io, arch, dll_name, false, type, os2_header.nonres_size - bytes_read );
     }
 }
 
@@ -256,18 +256,14 @@ static void os2FlatAddImport( arch_header *arch, libfile io )
     importType      type;
     unsigned        bytes_read;
 
-    if( Options.coff_found || (Options.libtype == WL_LTYPE_AR && !Options.omf_found) ) {
-        coff_obj = TRUE;
-    } else {
-        coff_obj = FALSE;
-    }
+    coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
     LibSeek( io, OS2_NE_OFFSET, SEEK_SET );
     LibRead( io, &ne_offset, sizeof( ne_offset ) );
     LibSeek( io, ne_offset, SEEK_SET );
     LibRead( io, &os2_header, sizeof( os2_header ) );
     LibSeek( io, os2_header.resname_off - sizeof( os2_header ), SEEK_CUR );
     getOs2Symbol( io, dll_name, &ordinal, &bytes_read );
-    if( coff_obj == TRUE ) {
+    if( coff_obj ) {
         coffAddImportOverhead( arch, dll_name, WL_PROC_X86 );
     }
     type = Options.r_ordinal ? ORDINAL : NAMED;
@@ -290,7 +286,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
     LibSeek( io, 0x00, SEEK_SET );
     LibRead( io, &nlm, sizeof( nlm ) );
     if( memcmp( nlm.signature, NLM_SIGNATURE, sizeof( nlm.signature ) ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     LibSeek( io, offsetof( nlm_header, moduleName ) , SEEK_SET );
     if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
@@ -318,7 +314,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
         }
         OmfMKImport( arch, NAMED, 0, dll_name, symbol, NULL, WL_PROC_X86 );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void peAddImport( arch_header *arch, libfile io )
@@ -346,11 +342,7 @@ static void peAddImport( arch_header *arch, libfile io )
     if( Options.libtype == WL_LTYPE_MLIB ) {
         FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
     }
-    if( Options.coff_found || (Options.libtype == WL_LTYPE_AR && !Options.omf_found) ) {
-        coff_obj = TRUE;
-    } else {
-        coff_obj = FALSE;
-    }
+    coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
 
     ofile = OpenObjFile( io->name );
     if( ofile->orl == NULL ) {
@@ -360,17 +352,17 @@ static void peAddImport( arch_header *arch, libfile io )
     switch( ORLFileGetMachineType( ofile->orl ) ) {
     case ORL_MACHINE_TYPE_ALPHA:
         processor = WL_PROC_AXP;
-        coff_obj = TRUE;
-        Options.coff_found = TRUE;
+        coff_obj = true;
+        Options.coff_found = true;
         break;
     case ORL_MACHINE_TYPE_PPC601:
         processor = WL_PROC_PPC;
-        Options.coff_found = TRUE;
-        coff_obj = TRUE;
+        Options.coff_found = true;
+        coff_obj = true;
         break;
     case ORL_MACHINE_TYPE_AMD64:
         processor = WL_PROC_X64;
-        coff_obj = TRUE;
+        coff_obj = true;
         break;
     case ORL_MACHINE_TYPE_I386:
         processor = WL_PROC_X86;
@@ -401,7 +393,7 @@ static void peAddImport( arch_header *arch, libfile io )
     arch->name = DLLName;
     arch->ffname = NULL;
     DLLName = DupStr( DLLName );
-    if( coff_obj == TRUE ) {
+    if( coff_obj ) {
         coffAddImportOverhead( arch, DLLName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
@@ -410,7 +402,7 @@ static void peAddImport( arch_header *arch, libfile io )
         // add enough room for the following strcpy/strcat pairs.
         sym_len = strlen( currname ) + 1;
         buffer = MemAlloc( sym_len + 6 );
-        if( coff_obj == TRUE ) {
+        if( coff_obj ) {
             CoffMKImport( arch, ORDINAL, ord_table[ i ] + ordinal_base, DLLName, currname, NULL, processor );
             memcpy( buffer, "__imp_", 6 );
             memcpy( buffer + 6, currname, sym_len );
@@ -438,12 +430,12 @@ static void peAddImport( arch_header *arch, libfile io )
 
 static char *GetImportString( char **rawpntr, char *original )
 {
-    int     quote = FALSE;
+    bool    quote = false;
     char    *raw  = *rawpntr;
     char    *result;
 
     if( *raw == '\'' ) {
-        quote = TRUE;
+        quote = true;
         ++raw;
     }
 
@@ -451,7 +443,7 @@ static char *GetImportString( char **rawpntr, char *original )
 
     while( *raw && (quote || (*raw != '.')) ) {
         if( quote && (*raw == '\'') ) {
-            quote  = FALSE;
+            quote  = false;
             *raw++ = 0x00;
             break;
         }
@@ -1013,24 +1005,24 @@ bool AddImport( arch_header *arch, libfile io )
                     case OSF_FLAT_SIGNATURE:
                     case OSF_FLAT_LX_SIGNATURE:
                         os2FlatAddImport( arch, io );
-                        return( TRUE );
+                        return( true );
                     case OS2_SIGNATURE_WORD:
                         os2AddImport( arch, io );
-                        return( TRUE );
+                        return( true );
                     case PE_SIGNATURE:
                         peAddImport( arch, io );
-                        return( TRUE );
+                        return( true );
                     default:
-                        return( FALSE );
+                        return( false );
                     }
                 }
             }
         } else if( elfAddImport( arch, io ) ) {
-            return( TRUE );
+            return( true );
         } else {
             return( nlmAddImport( arch, io ) );
         }
     }
     LibSeek( io, 0x00, SEEK_SET );
-    return( FALSE );
+    return( false );
 }
