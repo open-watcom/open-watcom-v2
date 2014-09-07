@@ -241,7 +241,7 @@ notalready:
                 mov     cx,offset DGROUP:_end
                 mov     di,offset DGROUP:_edata
                 sub     cx,di
-                xor     al,al
+                mov     al,0
                 rep     stosb
                 pop     es
                 pop     ax

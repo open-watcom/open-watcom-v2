@@ -180,7 +180,7 @@ L$15:
     cmp         al,9
     jne         L$16
     mov         eax,0e02H
-    xor         ebx,ebx
+    mov         ebx,0
     mov         ecx,dword ptr DGROUP:__GDAptr
     call        dword ptr 30H[ecx]
     jmp         L$19

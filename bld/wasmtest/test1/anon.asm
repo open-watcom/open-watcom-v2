@@ -3,7 +3,7 @@
     nop
     jmp @F
     nop
-    @@: xor ax, ax
+    @@: mov ax, 0
     nop
     jmp @B
     nop

@@ -6,7 +6,7 @@ _TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
     jmp       L$1
     nop       
 L$1:
-    xor       ax,ax
+    mov       ax,0
     nop       
     jmp       L$1
     nop       

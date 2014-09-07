@@ -27,7 +27,7 @@ _FlagReset:
     mov         bp,sp
     push        di
     push        si
-    xor         ax,ax
+    mov         ax,0
     int         33H
     les         di,dword ptr 6[bp]
     mov         word ptr es:[di],ax
