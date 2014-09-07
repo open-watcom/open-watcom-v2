@@ -862,7 +862,7 @@ int2121_Ef4:
         rep     movsb
         mov al,0dh
         stosb
-        mov al,0
+        xor al,al
         stosb
         ;
         ;Copy the FCB's

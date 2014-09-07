@@ -63,7 +63,7 @@ LoadLibrary    proc C USES ,fname:DWORD
         mov     ax,es:word ptr[edi+4]
         lar     eax,eax
         test    eax,00400000h
-        mov     eax,0
+        xor     eax,eax
         jnz     @@6
         db 66h
 @@6:    call    fs:fword ptr[edi]

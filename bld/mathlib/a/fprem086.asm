@@ -76,7 +76,7 @@ endif
         or      AX,1010h        ; set implied one bit of mant.
         sub     SI,DI           ; calculate difference in exponents
         _if     ge              ; if operand >= modulus
-          mov   DI,0            ; - set quotient to 0
+          xor   DI,DI           ; - set quotient to 0
           _loop                 ; - loop
             _guess              ; - - guess
               cmp  AH,AL        ; - - - The purpose of this guess is to

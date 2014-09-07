@@ -56,7 +56,7 @@ endif
           int   1Ah             ; - get current time
           mov   [BX],DX         ; - store time
           mov   2[BX],CX        ; - ...
-          mov   AH,0            ; - zero high part of overflow
+          xor   AH,AH           ; - zero high part of overflow
         _admit                  ; guess: _TIME_SETCLOCK
           dec   AX              ; - quit if not _TIME_SETCLOCK
           mov   AX,0FFFFh       ; - set error code

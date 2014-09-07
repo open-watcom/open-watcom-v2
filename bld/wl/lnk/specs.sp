@@ -758,6 +758,32 @@ system begin pmodew
     format os2 le
 :endsegment
 end
+system begin pmodewi
+:segment Pspecs
+    CC  wcc386 -bt=dos
+    CPP wpp386 -bt=dos
+    AS  wasm
+:elsesegment Pwlsystem
+    option osname='PMODE/WI'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub=pmodewi.exe
+    format os2 le
+:endsegment
+end
+system begin wdosx
+:segment Pspecs
+    CC  wcc386 -bt=dos
+    CPP wpp386 -bt=dos
+    AS  wasm
+:elsesegment Pwlsystem
+    option osname='WDOSX'
+    libpath %WATCOM%/lib386
+    libpath %WATCOM%/lib386/dos
+    op stub=wdosxle.exe
+    format os2 le
+:endsegment
+end
 system begin zrdx
 :segment Pspecs
     CC  wcc386 -bt=dos

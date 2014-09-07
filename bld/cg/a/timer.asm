@@ -49,7 +49,7 @@ GetTickCnt_ proc near
         ret
 pharlap:
         mov     ax,meg1
-        cmp     ax,0
+        test    ax,ax
         jne     havesel
         push    ecx
         push    ebx

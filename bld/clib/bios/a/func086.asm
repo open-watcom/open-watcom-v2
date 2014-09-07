@@ -83,7 +83,7 @@ include struct.inc
         mov     AL,BL           ; get data
         int     17h             ; access printer services
         mov     AL,AH           ; get status
-        mov     AH,0            ; zero top byte
+        xor     AH,AH           ; zero top byte
         ret                     ; return
         endproc __ibm_bios_printer
 

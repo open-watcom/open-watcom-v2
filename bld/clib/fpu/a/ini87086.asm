@@ -57,7 +57,7 @@ __x87id proc near
         finit                           ; use default infinity mode
         fstcw   word ptr [BP-2]         ; save control word
         fwait
-        mov     AL,0                    ; assume no coprocessor present
+        xor     AL,AL                   ; assume no coprocessor present
         mov     AH,[BP-1]               ; upper byte is 03h if
         cmp     AH,3                    ;   coprocessor is present
         jnz     nox87                   ; exit if no coprocessor present

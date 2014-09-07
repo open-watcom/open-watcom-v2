@@ -2369,7 +2369,7 @@ cwAPI_Exec      proc    near
         mov     es,[ebp+Int_ES]
         mov     esi,[ebp+Int_ESI]
         mov     cx,[ebp+Int_CX]
-        mov     ebx,0
+        xor     ebx,ebx
         push    ebp
         call    _Exec
         pop     ebp
@@ -2942,7 +2942,7 @@ _SizeSelector   proc near
         pop     bx
         ;
         push    bx
-        mov     al,0
+        xor     al,al
         mov     ecx,d[api63_SelectorSize]
         mov     esi,d[api63_SelectorBase]
         cmp     ecx,0fffffh                     ; see if we need to set g bit
@@ -5292,7 +5292,7 @@ api80_GetRVect:
         mov     WORD PTR es:[EPSP_Struc.EPSP_DPMIMem],bx
         mov     es,bx
         xor     edi,edi
-        mov     al,0
+        xor     al,al
         test    BYTE PTR SystemFlags,1
         jz      api80_DPMISave32
         db 66h
@@ -6129,7 +6129,7 @@ api84_imp6_0:
         mov     ds,si
         mov     es,si
         test    eax,00400000h
-        mov     eax,0
+        xor     eax,eax
         jnz     api84_imp6
         db 66h
 api84_imp6:
@@ -6451,7 +6451,7 @@ api86_MZ:
 
 medexe4:
         add     ax,ax                   ;mult by 2
-        mov     dh,0
+        xor     dh,dh
         mov     dl,ah
         mov     ah,al
         mov     al,dh                   ;mult by 256=*512
@@ -7145,7 +7145,7 @@ api88_MZ2:
 
 medexe5:
         add     ax,ax                   ;mult by 2
-        mov     dh,0
+        xor     dh,dh
         mov     dl,ah
         mov     ah,al
         mov     al,dh                   ;mult by 256=*512

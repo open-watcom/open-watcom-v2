@@ -319,7 +319,7 @@ __DPMI_start proc near
           mov   AH,1Ah                  ; - set DTA to real-mode buffer
           int   21h                     ; - ...
           pop   DS                      ; - restore DS
-          mov   AX,0                    ; - switch to 16-bit protect mode
+          xor   AX,AX                   ; - switch to 16-bit protect mode
           call  modesw                  ; - ...
           _quif c                       ; - quit if switch to protect failed
         _admit                          ; admit: No DPMI available

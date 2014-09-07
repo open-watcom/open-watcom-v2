@@ -260,7 +260,7 @@ extern display_configuration BIOSDevCombCode( void );
         _INT_10                                         \
         " cmp    al, 1ah        "                       \
         " jz     end            "                       \
-        " mov    bx, 0          "                       \
+        " xor    bx, bx         "                       \
         " end:                  "                       \
         " pop    ebp            "                       \
         modify exact [ ax bx ]                          \

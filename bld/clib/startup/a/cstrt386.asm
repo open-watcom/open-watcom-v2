@@ -254,18 +254,17 @@ not_pharlap:                            ; - assume DOS/4G or compatible
         mov     dx,78h                  ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
         mov     ax,gs                   ; - get segment address of kernel
-        cmp     ax,0                    ; - if not zero
+        test    ax,ax                   ; - if not zero
         je      short rat9              ; - then
         mov     __D16Infoseg,ax         ; - - remember it
 rat9:                                   ; - endif
         mov     ax,6                    ; - check data segment base
         mov     bx,ds                   ; - set up data segment
         int     31h                     ; - DPMI call
-        mov     al,X_RATIONAL           ; - asssume Rational 32-bit Extender
-        mov     ah,XS_RATIONAL_ZEROBASE ; - extender subtype
+        mov     ax,XS_RATIONAL_ZEROBASE*256+X_RATIONAL ; - asssume Rational 32-bit Extender / extender subtype
         or      dx,cx                   ; - if base is non-zero
         jz      rat10                   ; - then
         mov     ah,XS_RATIONAL_NONZEROBASE; - DOS/4G non-zero based data
@@ -310,8 +309,7 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        mov     bl,0                    ; assume 'no87=' env. var. not present
-        mov     bh,FLG_LFN              ; assume 'lfn=n' env. var. not present
+        mov     bx,FLG_LFN*256          ; assume 'lfn=n' env. var. not present / assume 'no87=' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
         cmp     eax,37386f6eh           ; check for 'no87'
@@ -403,7 +401,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L6:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L6                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -417,7 +415,7 @@ L6:     lodsb                           ; get char
         pop     eax                     ; restore return code
 ok:
         push    eax                     ; save return code
-        mov     eax,00H                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
         pop     eax                     ; restore return code

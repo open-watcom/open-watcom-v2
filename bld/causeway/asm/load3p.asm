@@ -142,7 +142,7 @@ api89_Look3P:
         dec     ax                                  ;lose 1 cos its rounded up
 medexe3:
         add     ax,ax                               ;mult by 2
-        mov     dh,0
+        xor     dh,dh
         mov     dl,ah
         mov     ah,al
         mov     al,dh                               ;mult by 256=*512

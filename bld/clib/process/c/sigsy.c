@@ -56,8 +56,7 @@ typedef void (_WCINTERRUPT _WCFAR *pfun)( void );
   #pragma aux  pharlap_setvect =  0x1e   /* push ds    */\
                                0x8e 0xd9 /* mov ds,cx  */\
                                0x88 0xc1 /* mov cl,al  */\
-                               0xb0 0x06 /* mov al,06  */\
-                               0xb4 0x25 /* mov ah,25h */\
+                               0x66 0xb8 0x06 0x25 /* mov ax,2506h */\
                                0xcd 0x21 /* int 21h    */\
                                0x1f      /* pop ds     */\
                         parm caller [al] [cx edx];

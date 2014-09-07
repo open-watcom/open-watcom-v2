@@ -395,7 +395,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -415,7 +415,7 @@ __exit   proc near
 ifndef __STACK__
         push    eax                     ; save return code
 endif
-        mov     eax,00H                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finializer routines
         pop     eax                     ; restore return code
@@ -479,7 +479,7 @@ brk_b:  ;insufficient memory
         pop     ecx                     ;pop and discard original eax
         pop     ecx                     ;restore original ecx
 brk_c:
-        mov     eax,-1
+        or      eax,-1
         stc                             ; indicate allocation failure
         ret
 
@@ -519,7 +519,7 @@ FindFirst:
         int     21h                     ; ...
         ret                             ; return
 FindNext:
-        cmp     AL,0                    ; if not FIND NEXT
+        test    AL,AL                   ; if not FIND NEXT
         jne     short findret           ; then return
         push    EDX                     ; save EDX
         mov     AH,1Ah                  ; set DTA address

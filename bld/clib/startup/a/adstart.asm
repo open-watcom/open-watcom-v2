@@ -323,7 +323,7 @@ endif   ; ACAD
         jne     not_pharlap             ; if its pharlap
         sub     bl,'0'                  ; - save major version number
         mov     al,bl                   ; - (was in ascii)
-        mov     ah,0                    ; - subtype
+        xor     ah,ah                   ; - subtype
         mov     bx,14h                  ; - get value of Phar Lap data segment
         jmp     short know_extender     ; else
 not_pharlap:                            ; - see if Rational DOS/4G
@@ -331,10 +331,10 @@ not_pharlap:                            ; - see if Rational DOS/4G
         mov     ax,0FF00h               ; - ...
         int     21h                     ; - ...
         mov     bx,17h                  ; - get writeable code segment for Ergo
-        cmp     al,0                    ; - ...
+        test    al,al                   ; - ...
         je      short know_extender     ; - quit if not Rational DOS/4G
         mov     al,1                    ; - indicate Rational 32-bit Extender
-        mov     ah,0                    ; - assume zero base subtype
+        xor     ah,ah                   ; - assume zero base subtype
         mov     bx,ds                   ; - just use ds (FLAT model)
         mov      _psp,es                ; - save segment address of PSP
 ;
@@ -368,7 +368,7 @@ know_extender:                          ; endif
         rep     movsb
 noparm: sub     al,al
         stosb                           ; store NULLCHAR
-        mov     al,0                    ; assume no pgm name
+        xor     al,al                   ; assume no pgm name
         stosb                           ; . . .
         dec     edi                     ; back up pointer 1
         push    edi                     ; save pointer to pgm name
@@ -575,7 +575,7 @@ __do_exit_with_msg__:
         mov     esi,edx                 ; get address of msg
         cld                             ; make sure direction forward
 L4:     lodsb                           ; get char
-        cmp     al,0                    ; end of string?
+        test    al,al                   ; end of string?
         jne     L4                      ; no
         mov     ecx,esi                 ; calc length of string
         sub     ecx,edx                 ; . . .
@@ -590,7 +590,7 @@ L4:     lodsb                           ; get char
 ok:
 
         push    eax                     ; save return code
-        mov     eax,00h                 ; run finalizers
+        xor     eax,eax                 ; run finalizers
         mov     edx,FINI_PRIORITY_EXIT-1; less than exit
         call    __FiniRtns              ; call finalizer routines
         pop     eax                     ; restore return code

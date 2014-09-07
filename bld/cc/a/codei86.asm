@@ -65,7 +65,7 @@ module_start:
 
 strcat_body     macro
         mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     di                      ; point to null character
         _loop                           ; loop
@@ -83,7 +83,7 @@ strcat_body     macro
 
 BD_strcat_body  macro
         mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     di                      ; point to null character
         _loop                           ; loop
@@ -157,7 +157,7 @@ beginb  ZF_strcat
         push    di                      ; save destination address
         push    cx                      ; save cx
         mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     cx                      ; restore cx
         dec     di                      ; point to null character
@@ -186,7 +186,7 @@ beginb  ZP_strcat
         mov     ds,ax                   ; load segment
         push    cx                      ; save cx
         mov     cx,-1                   ; set length to -1
-        mov     al,0                    ; scan for null character
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     cx                      ; restore cx
         dec     di                      ; point to null character

@@ -50,7 +50,7 @@ include struct.inc
         _shl    cx,1            ; shift number over
         _rcl    bx,1            ; ...
         _rcl    ax,1            ; shift out sign bit
-        mov     dh,0            ; put 0 in dh
+        xor     dh,dh           ; put 0 in dh
         rcr     dh,1            ; save sign bit in dh
         add     ch,20h          ; round floating point number
         adc     bx,0            ; ...

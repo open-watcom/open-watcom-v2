@@ -143,7 +143,7 @@ _cstart_ proc near
         push    ebx
         push    edx
         mov     al,08
-        mov     edx,0
+        xor     edx,edx
         mov     ebx,29
         int     0f2h
         pop     edx

@@ -39,10 +39,10 @@ extern  int     _DOS_Switch_Char( void );
 #pragma aux     _DOS_Switch_Char = \
                         0x52            /* push dx */\
                         0xb4 0x37       /* mov ah,37h    */\
-                        0xb0 0x00       /* mov al,00h    */\
+                        0x30 0xc0       /* xor al,al     */\
                         0xcd 0x21       /* int 21h       */\
                         0x88 0xd0       /* mov al,dl     */\
-                        0xb4 0x00       /* mov ah,0      */\
+                        0x30 0xe4       /* xor ah,ah     */\
                         0x5a            /* pop dx        */;
 #endif
 

@@ -123,7 +123,7 @@ IntHandler	proc	far
 ;
 ;Wait for the key press.
 ;
-	mov	ah,0
+	xor	ah,ah
 	int	16h
 ;
 ;Restore the registers.

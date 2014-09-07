@@ -73,7 +73,7 @@ extern unsigned char BIOSGetPage(void);
     "mov    ah,0fh"             \
     _INT_10                     \
     "mov    al,bh"              \
-    "mov    ah,0"               \
+    "xor    ah,ah"              \
     "pop    bp"                 \
     parm caller [ ax ]          \
     value [bh]                  \
@@ -82,7 +82,7 @@ extern unsigned char BIOSGetPage(void);
 extern void BIOSSetMode(unsigned);
 #pragma aux BIOSSetMode =                                       \
 0X55            /* push   bp                            */      \
-0XB4 0X00       /* mov    ah,0                          */      \
+0X30 0XE4       /* xor    ah,ah                         */      \
 _INT_10                                                         \
 0X5D            /* pop    bp                            */      \
         parm caller [ ax ];
@@ -111,7 +111,7 @@ extern unsigned char BIOSGetRows(void);
 0X06            /* push   es                            */      \
 0X55            /* push   bp                            */      \
 0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
+0X30 0Xff       /* xor    bh,bh                         */      \
 _INT_10                                                         \
 0XFE 0XC2       /* inc    dl                            */      \
 0X5D            /* pop    bp                            */      \
@@ -133,8 +133,7 @@ extern struct ega_info BIOSEGAInfo( void );
 #pragma aux BIOSEGAInfo =                       \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12h                        */      \
-0XB3 0X10       /* mov    bl,10h                        */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
+0X66 0XBB 0X10 0XFF       /* mov    bx,0ff10h           */      \
 _INT_10                                                         \
     "xor    eax, eax"                                           \
     "mov    ax,cx"                                              \
@@ -146,8 +145,7 @@ _INT_10                                                         \
 #pragma aux BIOSEGAInfo =                                       \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12h                        */      \
-0XB3 0X10       /* mov    bl,10h                        */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
+0X66 0XBB 0X10 0XFF       /* mov    bx,0ff10h           */      \
 _INT_10                                                         \
 0X89 0XD8       /* mov    ax,bx                         */      \
 0X89 0XCA       /* mov    dx,cx                         */      \
@@ -177,7 +175,7 @@ _INT_16                                 \
  0x74 0x06              /* jz      foo1 */ \
  0x66 0xB8 0x01 0x00    /* mov     ax,1 */ \
  0xEB 0x04              /* jmp     short foo2 */ \
- 0x66 0xB8 0x00 0x00    /* foo1:   mov     ax,0 */ \
+ 0x66 0x31 0xC0    /* foo1:   xor     ax,ax */ \
  parm[ah] value[ax];
 #else
 #pragma aux BIOSKeyboardHit = \
@@ -185,7 +183,7 @@ _INT_16                                 \
  0x74 0x05              /* jz      foo1 */ \
  0xB8 0x01 0x00         /* mov     ax,1 */ \
  0xEB 0x03              /* jmp     short foo2 */ \
- 0xB8 0x00 0x00         /* foo1:   mov     ax,0 */ \
+ 0x66 0x31 0xC0         /* foo1:   xor     ax,ax */ \
  parm[ah] value[ax];
 #endif
 

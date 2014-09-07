@@ -67,7 +67,7 @@ extern pid_t __vfork( void );
     "mov    edx,eax" \
     "call   __get_errno_ptr" \
     "mov    dword ptr [eax],edx" \
-    "mov    eax, -1" \
+    "or     eax, -1" \
 "funcret:" \
     "ret" \
     value [eax] \

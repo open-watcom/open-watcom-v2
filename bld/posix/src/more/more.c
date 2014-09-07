@@ -89,7 +89,7 @@ static long     FileSize;
 #if defined( __DOS__ ) || defined( __OS2__ ) && defined( _M_I86 )
 char GetRawChar( void );
 #pragma aux GetRawChar = \
-        "mov    ah,00h" \
+        "xor    ah,ah" \
         "int    16h" \
         value [al];
 #endif

@@ -286,7 +286,7 @@ ret_op:
             ret                 ; - - return
           _endif                ; - endif
         _endif                  ; endif
-        mov     CH,0            ; zero extend op2
+        xor     CH,CH           ; zero extend op2
         or      ECX,ECX         ; get bit 0 of sign word - value is 0 if
                                 ; both operands have same sign, 1 if not
         _if     s               ; if signs are different
@@ -340,7 +340,7 @@ ret_op:
           neg   EDX             ; - negate the fraction
           neg   EAX             ; - ...
           sbb   EDX,0           ; - ...
-          mov   CH,0            ; - zero top bits
+          xor   CH,CH           ; - zero top bits
           xor   EBP,80000000h   ; - flip the sign
         _endif                  ; endif
         mov     EBX,EAX         ; get result

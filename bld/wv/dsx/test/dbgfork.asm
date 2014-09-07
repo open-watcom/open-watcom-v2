@@ -114,7 +114,7 @@ make_parmbloc:  mov     di, sp                  ;save addr of PSP cmdtail
                 sub     sp, SIZE PARMBLOC
                 mov     bx, sp                  ;now ebx points to parm block
                 mov     ax, word ptr _Envptr+4
-                ;mov    ax, 0
+                ;xor    ax, ax
                 mov     ss:[bx].envseg, ax
                 mov     word ptr ss:[bx].cmdptr+2, ss
                 mov     word ptr ss:[bx].cmdptr, di

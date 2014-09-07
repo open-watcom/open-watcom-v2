@@ -53,7 +53,7 @@ Start	proc	near
 ;
 	push	ds
 	mov	es,dx
-	mov	edi,0
+	xor	edi,edi
 	mov	esi,edi
 	mov	ax,_REAL
 	mov	ds,ax

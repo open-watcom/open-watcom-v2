@@ -107,7 +107,7 @@ InvokeWin32 proc near
         mov     ds,ax                   ; get 32 bit data selector
         assume  ds:nothing
         mov     es,ax                   ; give it to es
-        mov     bl,0                    ; indicate not a DLL
+        xor     bl,bl                   ; indicate not a DLL
         cmp     gs:_InDebugger,1        ; debugging?
         jne     short docall            ; no, skip breakpoint
         mov     ax,word ptr gs:_CodeEntry+4     ; load CS for sampler

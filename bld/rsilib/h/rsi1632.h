@@ -126,7 +126,7 @@ extern int is_validselector( SELECTOR sel );
 extern int rsi_mem_strategy( int );
 #pragma aux rsi_mem_strategy = \
     "mov    ax,0ffffh" \
-    "mov    dh,0" \
+    "xor    dh,dh" \
     "int 21h" \
     parm [dl] \
     value [ax] \

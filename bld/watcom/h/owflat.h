@@ -74,7 +74,7 @@
 #pragma aux RdosGetAcpiStatus = \
     CallGate_get_acpi_status  \
     "jnc AcpiDone" \
-    "mov eax,-1" \
+    "or eax,-1" \
     "AcpiDone: " \
     value [eax];
 
@@ -110,7 +110,7 @@
     "movzx eax,al" \
     "jmp IrqDone" \
     "IrqFail:" \
-    "mov eax,-1" \
+    "or eax,-1" \
     "IrqDone:" \
     "pop edx" \
     "pop ecx" \
@@ -235,7 +235,7 @@
     "movzx eax,al" \
     "jmp Done" \
     "Fail:" \
-    "mov eax,-1" \
+    "or eax,-1" \
     "Done:" \
     parm [eax] \
     value [eax];

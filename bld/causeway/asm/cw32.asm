@@ -1012,7 +1012,7 @@ chk386:
 
 ; MED, 09/10/99, support extended XMS API to calculate XMS available to CauseWay
 ;  (maximum of 2G-32K, i.e. 32 handles/entries of 64K-1)
-        mov     ah,0
+        xor     ah,ah
         call    d[XMSControl]           ; get info
         cmp     ah,3
         jb      xms2
@@ -1576,7 +1576,7 @@ END COMMENT !
         pop     ds
         shl     esi,4
         mov     ecx,256
-        mov     al,0
+        xor     al,al
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainPSP
         call    MakeDesc
@@ -2082,7 +2082,7 @@ cw5_1:  jnz     InitError
         cld
         rep     stos d[edi]             ;copy old to new.
         mov     esi,PageDETLinear
-        mov     eax,0
+        xor     eax,eax
         mov     edx,LinearEntry+8       ;get physical address again.
         or      edx,111b
         mov     es:[esi+eax*4],edx      ;put new page into the map.
@@ -2209,7 +2209,7 @@ COMMENT !
         or      edx,111b
         ;
         mov     esi,PageDIRLinear
-        mov     eax,0
+        xor     eax,eax
         mov     ecx,es:[esi+eax*4]      ;get original value.
         mov     Page1stLinear+8,ecx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
@@ -2218,7 +2218,7 @@ COMMENT !
         ;Set new address in page dir alias.
         ;
         mov     esi,PageALIASLinear
-        mov     eax,0
+        xor     eax,eax
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2295,7 +2295,7 @@ END COMMENT !
         mov     bp,256                  ;number of vectors.
         mov     ecx,offset InterruptHandler ;code address.
         mov     esi,DpmiEmuCS0          ;gate to use.
-        mov     al,0
+        xor     al,al
         mov     ah,DescPresent+DescPL3+Desc386Int
         mov     edi,d[IDTVal+2]
 cw5_3:  call    MakeDesc2
@@ -4532,7 +4532,7 @@ GetSystemFlags  proc    near
 
 medexe2:
         add     ax,ax                   ;mult by 2
-        mov     dh,0
+        xor     dh,dh
         mov     dl,ah
         mov     ah,al
         mov     al,dh                   ;mult by 256=*512
