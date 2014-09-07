@@ -350,7 +350,7 @@ extern void _DPMIResetWatch( short handle );
 
 #if defined(__386__)
 #pragma aux _DPMIAllocateLDTDescriptors = \
-      /*0xb8 0x00 0x00*/        " mov ax,0 "  \
+      /*0x66 0x31 0xC0*/        " xor ax,ax " \
       /*0xcd 0x31*/             _INT_31 \
                                 " mov dx,ax " \
                                 " sbb ax,ax "  \
@@ -359,7 +359,7 @@ extern void _DPMIResetWatch( short handle );
         parm [cx] value[eax] modify[dx];
 #else
 #pragma aux _DPMIAllocateLDTDescriptors = \
-      /*0xb8 0x00 0x00*/        " mov ax,0 "  \
+      /*0x66 0x31 0xC0*/        " xor ax,ax "  \
       /*0xcd 0x31*/             _INT_31 \
       /*0x1b 0xd2*/             " sbb dx,dx "  \
         parm [cx] value[ax dx];
@@ -383,8 +383,7 @@ extern void _DPMIResetWatch( short handle );
 #if defined(__386__)
 
 #pragma aux _DPMIGetSegmentBaseAddress = \
-        "mov ah,0"      \
-        "mov al,6"      \
+        "mov ax,0006h"  \
         _INT_31 \
         "mov eax,ecx"   \
         "shl eax,16"    \
@@ -739,8 +738,7 @@ extern void _DPMIResetWatch( short handle );
 
 #if defined(__386__)
 #pragma aux             _DPMIRawPMtoRMAddr = \
-        "mov ah,3"      \
-        "mov al,6"      \
+        "mov ax,0306h"  \
         "xor edi,edi"   \
         "stc"           \
         _INT_31 \
@@ -753,8 +751,7 @@ extern void _DPMIResetWatch( short handle );
         modify exact    [eax cx si edi];
 
 #pragma aux             _DPMIRawRMtoPMAddr = \
-        "mov ah,3"      \
-        "mov al,6"      \
+        "mov ax,0306h"  \
         "stc"           \
         _INT_31 \
         "jnc L1"        \
@@ -768,8 +765,7 @@ extern void _DPMIResetWatch( short handle );
         modify exact    [eax cx si edi];
 
 #pragma aux             _DPMISaveRMStateAddr = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         "stc"           \
         _INT_31 \
         "mov cx,si"     \
@@ -781,8 +777,7 @@ extern void _DPMIResetWatch( short handle );
         modify exact    [ax bx cx si edi];
 
 #pragma aux             _DPMISavePMStateAddr = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         _INT_31 \
         "jnc L1"        \
         "xor cx,cx"     \
@@ -796,8 +791,7 @@ extern void _DPMIResetWatch( short handle );
         modify exact    [ax bx cx si edi];
 
 #pragma aux             _DPMISaveStateSize = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         _INT_31 \
         "jnc L1"        \
         "xor eax,eax"   \
@@ -812,8 +806,7 @@ extern void _DPMIResetWatch( short handle );
         "push gs"               \
         "push ebp"              \
         "mov  ds,cx"            \
-        "mov ah,0x0a"           \
-        "mov al,0"              \
+        "mov ax,0x0a00"         \
         _INT_31                 \
         "mov cx,es"             \
         "jnc L1"                \

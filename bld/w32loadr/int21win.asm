@@ -263,7 +263,7 @@ __Int21 proc    near
         cmp     ah,68h                  ; if valid func code
         _if     be                      ; then
           mov   bl,ah                   ; - get func code
-          mov   bh,0                    ; - zero high byte
+          xor   bh,bh                   ; - zero high byte
           mov   bl,Int21Class[bx]       ; - determine class of func
           mov   bx,ClassTable[bx]       ; - get addr of func
           jmp   bx                      ; - jump to func
@@ -278,7 +278,7 @@ C_NONE:                                 ; no translation required
         ret                             ; return
 
 C_ASCIZ:                                ; ASCII string passed in EDX
-        mov     cl,0                    ; assume null terminated string
+        xor     cl,cl                   ; assume null terminated string
         cmp     ah,9                    ; if func = write string
         _if     e                       ; then
           mov   cl,'$'                  ; - it is '$' terminated string
@@ -695,7 +695,7 @@ loadregs endp
 DOSint21 proc   near                    ; use DPMI to invoke DOS int 21h
         push    es                      ; save es
         mov     bl,21h                  ; interrupt 21h
-        mov     bh,0                    ; flags must be 0
+        xor     bh,bh                   ; flags must be 0
         sub     cx,cx                   ; 0 words to copy to real mode stack
         push    ds                      ; set es:di = addr of regs struct
         pop     es                      ; ...

@@ -46,7 +46,7 @@ endif
 ;
         fninit                          ; initialize math coprocessor
         fnstcw  [esp]                   ; store control word in memory
-        mov     al,0                    ; assume no coprocessor present
+        xor     al,al                   ; assume no coprocessor present
         mov     ah,[esp + 1]            ; upper byte is 03h if
         cmp     ah,03h                  ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present

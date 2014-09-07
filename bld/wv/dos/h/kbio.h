@@ -59,7 +59,7 @@
 
 
 #pragma aux GtKey =                                             \
-0XB4 0X00       /* mov    ah,0                          */      \
+0x30 0xE4       /* xor    ah,ah                         */      \
 0XCD 0X16       /* int    16                            */      \
         parm caller [ ax ];
 

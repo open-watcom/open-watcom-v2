@@ -512,7 +512,7 @@ extern  int     __FLDC( ld_arg, ld_arg );
                 "push  2[bp]"\
                 "push  [bp]"\
                 "push  6[bp]"\
-                "mov   bp,0"\
+                "xor   bp,bp"\
                 "push  bp"\
                 "push  bp"\
                 "push  bp"\

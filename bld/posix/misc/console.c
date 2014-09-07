@@ -92,7 +92,7 @@ unsigned char getRowCount( void );
                 "push   es" \
                 "push   bp" \
                 "mov    ax, 01130h" \
-                "mov    bh, 0" \
+                "xor    bh, bh" \
                 "mov    dl, 018h" \
                 "int    010h" \
                 "pop    bp" \

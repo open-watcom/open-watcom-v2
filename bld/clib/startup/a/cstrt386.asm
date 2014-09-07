@@ -309,7 +309,7 @@ noparm: sub     al,al
         push    edi                     ; save pointer to pgm name
         push    edx                     ; save ds(stored in dx)
         mov     ds,es:word ptr _Envptr+4 ; get segment addr of environment area
-        mov     bx,FLG*256              ; assume 'lfn=n' env. var. not present / assume 'no87=' env. var. not present
+        mov     bx,FLG_LFN*256          ; assume 'lfn=n' env. var. not present / assume 'no87=' env. var. not present
 L1:     mov     eax,[esi]               ; get first 4 characters
         or      eax,20202020h           ; map to lower case
         cmp     eax,37386f6eh           ; check for 'no87'

@@ -65,7 +65,7 @@ extern unsigned DosMaxAlloc( void );
         "jz   L1" \
         "mov  ax, 1" \
         "jmp  short L2" \
-        "L1: mov ax, 0" \
+        "L1: xor ax, ax"\
         "L2:" \
     parm [ah] value [ax];
 
@@ -123,7 +123,7 @@ extern unsigned DosMaxAlloc( void );
 
 #pragma aux BIOSSetNoBlinkAttr = \
         0xB8 0x03 0x10    /* mov    ax, 01003h */ \
-        0xB3 0x00         /* mov    bl, 0 */ \
+        0x30 0xDB         /* xor    bl, bl */ \
         0xCD 0x10         /* int    010h */ \
     modify [ax bx];
 
@@ -134,7 +134,7 @@ extern unsigned DosMaxAlloc( void );
 
 #pragma aux BIOSGetRowCount = \
         0xB8 0x30 0x11     /* mov     ax, 01130h */ \
-        0xB7 0x00          /* mov     bh, 0 */ \
+        0x30 0xFF          /* xor     bh, bh */ \
         0xB2 0x18          /* mov     dl, 24 */ \
         0x55               /* push    bp - Bloodly BIOS scrams bp */ \
         0xCD 0x10          /* int     010h */ \
@@ -208,7 +208,7 @@ extern unsigned DosMaxAlloc( void );
 
 #pragma aux BIOSGetRowCount = \
         0x66 0xB8 0x30 0x11     /* mov  ax, 01130h */ \
-        0xB7 0x00               /* mov  bh, 0 */ \
+        0x30 0xFF               /* xor  bh, bh */ \
         0xB2 0x18               /* mov  dl, 24 */ \
         0x55                    /* push bp - Bloodly BIOS scrams bp */ \
         0x06                    /* push es - Bloodly BIOS scrams es */ \

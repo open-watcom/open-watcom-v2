@@ -923,12 +923,12 @@ FindClientPtr ENDP
 ;***                                         ***
 ;***********************************************
 FindEmptySlot PROC near
-        mov     eax,0                           ; look for a null slot
+        xor     eax,eax                         ; look for a null slot
         mov     IsServer,2                      ; no server test
         mov     InUse,0                         ; can't be in use
         mov     ServerID,0                      ; no server id test
         call    FindAnyPtr
-        cmp     eax,0                           ; found a slot?
+        test    eax,eax                         ; found a slot?
         jne     short zeroit                    ; yep
         ret
 zeroit:

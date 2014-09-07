@@ -43,7 +43,7 @@
 0XB4 0X0F       /* mov    ah,f                          */      \
 0XCD 0X10       /* int    10                            */      \
 0X8A 0XC7       /* mov    al,bh                         */      \
-0XB4 0X00       /* mov    ah,0                          */      \
+0X30 0XE4       /* xor    ah,ah                         */      \
 0X5D            /* pop    bp                            */      \
         parm caller [ ax ]                                      \
         modify [ bx ];
@@ -60,7 +60,7 @@
 
 #pragma aux BIOSSetMode =                                       \
 0X55            /* push   bp                            */      \
-0XB4 0X00       /* mov    ah,0                          */      \
+0X30 0XE4       /* xor    ah,ah                         */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
         parm caller [ ax ];
@@ -218,8 +218,7 @@
 #pragma aux BIOSEGAInfo =                                       \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12                         */      \
-0XB3 0X10       /* mov    bl,10                         */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
+0X66 0XBB 0X0A 0XFF       /* mov    bx,0ff0a                      */      \
 0XCD 0X10       /* int    10                            */      \
 0X89 0XD8       /* mov    ax,bx                         */      \
 0X89 0XCA       /* mov    dx,cx                         */      \
@@ -231,7 +230,7 @@
 0X06            /* push   es                            */      \
 0X55            /* push   bp                            */      \
 0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
+0X30 0XFF       /* xor    bh,bh                         */      \
 0XCD 0X10       /* int    10                            */      \
 0XFE 0XC2       /* inc    dl                            */      \
 0X5D            /* pop    bp                            */      \
@@ -243,7 +242,7 @@
 0X06            /* push   es                            */      \
 0X55            /* push   bp                            */      \
 0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
+0X30 0XFF       /* xor    bh,bh                         */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
 0X07            /* pop    es                            */      \
@@ -253,7 +252,7 @@
 #pragma aux BIOSEGAChrSet =                                     \
 0X55            /* push   bp                            */      \
 0XB4 0X11       /* mov    ah,11                         */      \
-0XB3 0X00       /* mov    bl,0                          */      \
+0X30 0XDB       /* xor    bl,bl                         */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
         parm [ al ] modify [ ax bx ];
@@ -262,7 +261,7 @@
 #pragma aux BIOSCharSet =                                       \
 0X87 0XF5       /* xchg   bp,si                         */      \
 0XB4 0X11       /* mov    ah,11                         */      \
-0XB3 0X00       /* mov    bl,0                          */      \
+0X30 0XDB       /* xor    bl,bl                         */      \
 0XCD 0X10       /* int    10                            */      \
 0X87 0XF5       /* xchg   bp,si                         */      \
         parm [ al ] [ bh ] [ cx ] [ dx ] [ es ] [ si ] modify [ ax bx cx dx ];
@@ -388,7 +387,7 @@ enum ega_graphics_controller {
                     0xba 0xc0 0x03      /* mov dx,03c0  */      \
                     0xb0 0x11           /* mov al,11    */      \
                     0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
+                    0x30 0xc0           /* xor al,al    */      \
                     0xee                /* out dx,al    */      \
                     parm [dx]                                   \
                     modify [ax dx];
@@ -401,7 +400,7 @@ enum ega_graphics_controller {
                     0xba 0xc0 0x03      /* mov dx,03c0  */      \
                     0xb0 0x31           /* mov al,31    */      \
                     0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
+                    0x30 0xc0           /* xor al,al    */      \
                     0xee                /* out dx,al    */      \
                     parm [dx]                                   \
                     modify [ax dx];

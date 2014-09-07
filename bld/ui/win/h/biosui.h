@@ -44,7 +44,7 @@
 0XB4 0X0F       /* mov    ah,f                          */      \
 0XCD 0X10       /* int    10                            */      \
 0X8A 0XC7       /* mov    al,bh                         */      \
-0XB4 0X00       /* mov    ah,0                          */      \
+0x30 0xE4       /* xor    ah,ah                         */      \
 0X5D            /* pop    bp                            */      \
         parm caller [ ax ]                                      \
         modify [ bx ];
@@ -53,7 +53,7 @@ extern unsigned BIOSGetPage(void);
 
 #pragma aux BIOSSetMode =                                       \
 0X55            /* push   bp                            */      \
-0XB4 0X00       /* mov    ah,0                          */      \
+0x30 0xE4       /* xor    ah,ah                         */      \
 0XCD 0X10       /* int    10                            */      \
 0X5D            /* pop    bp                            */      \
         parm caller [ ax ];
@@ -88,7 +88,7 @@ extern char        BIOSGetColumns(void);
 0X06            /* push   es                            */      \
 0X55            /* push   bp                            */      \
 0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0XB7 0X00       /* mov    bh,0                          */      \
+0x30 0xFF       /* xor    bh,bh                         */      \
 0XCD 0X10       /* int    10                            */      \
 0XFE 0XC2       /* inc    dl                            */      \
 0X5D            /* pop    bp                            */      \
@@ -101,8 +101,7 @@ extern char        BIOSGetRows(void);
 #pragma aux BIOSEGAInfo =                                       \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12                         */      \
-0XB3 0X10       /* mov    bl,10                         */      \
-0XB7 0XFF       /* mov    bh,ff                         */      \
+0X66, 0XBB, 0X0A, 0XFF       /* mov    bx,0FF0Ah                     */      \
 0XCD 0X10       /* int    10                            */      \
 0X89 0XD8       /* mov    ax,bx                         */      \
 0X89 0XCA       /* mov    dx,cx                         */      \

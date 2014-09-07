@@ -39,15 +39,13 @@
 
 #if defined( PROGRAM_VGA )
 #pragma aux SetColourRegister =         \
-    "   MOV     AH, 10h     "           \
-    "   MOV     AL, 10h     "           \
+    "   MOV     AX, 1010h   "           \
     "   INT     10h         "           \
         parm caller [bx] [dh] [ch] [cl] \
         modify      [ax];
 
 #pragma aux SetBlinkAttr =              \
-    "   MOV     AH, 10h     "           \
-    "   MOV     AL, 03h     "           \
+    "   MOV     AX, 1003h   "           \
     "   INT     10h         "           \
         parm caller [bl]                \
         modify      [ax];

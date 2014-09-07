@@ -120,7 +120,7 @@ CritErrDos3X:
                 iret                            ; return to caller
 
 CritErrDos2X:
-                mov     AL,0                    ; ignore operation
+                xor     AL,AL                   ; ignore operation
                 iret                            ; return to caller
 
 
