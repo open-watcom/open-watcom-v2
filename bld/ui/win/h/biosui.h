@@ -88,7 +88,7 @@ extern char        BIOSGetColumns(void);
 0X06            /* push   es                            */      \
 0X55            /* push   bp                            */      \
 0XB8 0X30 0X11  /* mov    ax,1130                       */      \
-0x30 0xFF       /* xor    bh,bh                         */      \
+0X30 0XFF       /* xor    bh,bh                         */      \
 0XCD 0X10       /* int    10                            */      \
 0XFE 0XC2       /* inc    dl                            */      \
 0X5D            /* pop    bp                            */      \
@@ -101,7 +101,7 @@ extern char        BIOSGetRows(void);
 #pragma aux BIOSEGAInfo =                                       \
 0X55            /* push   bp                            */      \
 0XB4 0X12       /* mov    ah,12                         */      \
-0X66, 0XBB, 0X0A, 0XFF       /* mov    bx,0FF0Ah                     */      \
+0X66 0XBB 0X0A 0XFF       /* mov    bx,0FF0Ah           */      \
 0XCD 0X10       /* int    10                            */      \
 0X89 0XD8       /* mov    ax,bx                         */      \
 0X89 0XCA       /* mov    dx,cx                         */      \

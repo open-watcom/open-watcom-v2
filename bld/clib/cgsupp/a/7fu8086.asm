@@ -89,10 +89,10 @@ negate:
         xor     dx,dx
         sub     dx,si
         mov     si,cx
-        xor     cx,cx
+        mov     cx,0
         sbb     cx,si
         mov     si,bx
-        xor     bx,bx
+        mov     bx,0
         sbb     bx,si
         mov     si,ax
         xor     ax,ax
