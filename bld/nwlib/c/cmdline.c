@@ -700,11 +700,11 @@ void ProcessCmdLine( char *argv[] )
     } else {
         env = WlibGetEnv( "WLIB" );
     }
-    if( env == NULL && argv[ 1 ] == NULL || argv[ 1 ][ 0 ] == '\0' ) {
+    if( ( env == NULL || *env == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
         Banner();
         Usage();
     }
-    if( env != NULL ) {
+    if( env != NULL && *env != '\0' ) {
         parse = DupStr( env );
         if( Options.ar ) {
             ParseOneArLine( parse );
@@ -715,13 +715,15 @@ void ProcessCmdLine( char *argv[] )
     }
     argv++;
     while( *argv != NULL ) {
-        parse = DupStr( *argv );
-        if( Options.ar ) {
-            ParseOneArLine( parse );
-        } else {
-            ParseOneLine( parse );
+        if( **argv != '\0' ) {
+            parse = DupStr( *argv );
+            if( Options.ar ) {
+                ParseOneArLine( parse );
+            } else {
+                ParseOneLine( parse );
+            }
+            MemFree( parse );
         }
-        MemFree( parse );
         argv++;
     }
     if( Options.ar && CmdList != NULL && Options.explode ) {
