@@ -154,7 +154,7 @@ trap_retval ReqGet_sys_config( void )
     _DBG_Writeln( "AccGetConfig" );
 
     ret = GetOutPtr(0);
-    ret->sys.os = OS_RATIONAL;
+    ret->sys.os = MAD_OS_RATIONAL;
     ret->sys.osmajor = _osmajor;
     ret->sys.osminor = _osminor;
     ret->sys.cpu = X86CPUType();

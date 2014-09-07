@@ -288,7 +288,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = OS_NT;
+    ret->sys.os = MAD_OS_NT;
     ret->sys.osmajor = 1;
     ret->sys.osminor = 0;
     ret->sys.huge_shift = 3;

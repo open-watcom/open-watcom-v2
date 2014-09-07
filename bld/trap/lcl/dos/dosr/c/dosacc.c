@@ -224,7 +224,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr(0);
-    ret->sys.os = OS_DOS;
+    ret->sys.os = MAD_OS_DOS;
     ret->sys.osmajor = DOS_major;
     ret->sys.osminor = DOS_minor;
     ret->sys.cpu = CPUType;

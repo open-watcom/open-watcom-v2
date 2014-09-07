@@ -219,7 +219,7 @@ trap_retval ReqGet_sys_config( void )
 
     ret = GetOutPtr(0);
     ret->sys.mad = MAD_X86;
-    ret->sys.os  = OS_LINUX;
+    ret->sys.os  = MAD_OS_LINUX;
     ret->sys.osmajor = 1;
     ret->sys.osminor = 0;
     ret->sys.fpu = X86_387;

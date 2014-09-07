@@ -106,7 +106,7 @@ trap_retval ReqGet_sys_config( void )
 
     if( !TaskLoaded ) {
         ret = GetOutPtr(0);
-        ret->sys.os = OS_IDUNNO;
+        ret->sys.os = MAD_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
         ret->sys.fpu = X86_NO;

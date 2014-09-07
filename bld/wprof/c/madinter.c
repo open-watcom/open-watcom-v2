@@ -64,7 +64,7 @@ extern sio_data         *CurrSIOData;
 mad_status              MADStatus;
 
 system_config           DefSysConfig =
-    { X86_386, X86_387, 1, 0, OS_IDUNNO, 12, MAD_X86 };
+    { X86_386, X86_387, 1, 0, MAD_OS_IDUNNO, 12, MAD_X86 };
 
 /*
  * Client support routines

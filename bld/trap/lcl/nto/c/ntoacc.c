@@ -98,7 +98,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = OS_QNX;
+    ret->sys.os = MAD_OS_QNX;
 
     get_nto_version( &ret->sys.osmajor, &ret->sys.osminor );
 

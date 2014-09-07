@@ -570,7 +570,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr(0);
-    ret->sys.os = OS_OS2;
+    ret->sys.os = MAD_OS_OS2;
     DosGetVersion( &version );
     ret->sys.osminor = version & 0xff;
     ret->sys.osmajor = version >> 8;

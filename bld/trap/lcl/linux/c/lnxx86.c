@@ -446,7 +446,7 @@ trap_retval ReqGet_sys_config( void )
     get_sys_config_ret  *ret;
 
     ret = GetOutPtr( 0 );
-    ret->sys.os = OS_LINUX;
+    ret->sys.os = MAD_OS_LINUX;
 
     // TODO: Detect OS version (kernel version?)!
     ret->sys.osmajor = 1;

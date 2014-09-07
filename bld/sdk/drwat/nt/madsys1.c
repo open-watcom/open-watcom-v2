@@ -78,7 +78,7 @@ void GetSysConfig(void)
         SysConfig.fpu = X86_587;
         break;
     }
-    SysConfig.os=OS_NT;
+    SysConfig.os = MAD_OS_NT;
     SysConfig.mad = MAD_X86;
     SysConfig.osminor = _osminor;
     SysConfig.osmajor = _osmajor;

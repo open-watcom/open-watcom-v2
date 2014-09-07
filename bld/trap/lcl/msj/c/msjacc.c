@@ -85,11 +85,11 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.mad = MAD_MSJ;
     ret->sys.huge_shift = 3;
     if( !TaskLoaded ) {
-        ret->sys.os = OS_IDUNNO;
+        ret->sys.os = MAD_OS_IDUNNO;
         ret->sys.osmajor = 0;
         ret->sys.osminor = 0;
     } else {
-        ret->sys.os = OS_NT;
+        ret->sys.os = MAD_OS_NT;
         ret->sys.osmajor = 1;
         ret->sys.osminor = 0;
     }

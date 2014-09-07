@@ -621,7 +621,7 @@ int main( int argc, char **argv )
     Info.d.config.fpu           = 0;
     Info.d.config.osmajor       = 0;
     Info.d.config.osminor       = 0;
-    Info.d.config.os            = OS_IDUNNO;
+    Info.d.config.os            = MAD_OS_IDUNNO;
     Info.d.config.huge_shift    = 12;
 #if defined( _M_IX86 )
     Info.d.config.mad           = MAD_X86;
