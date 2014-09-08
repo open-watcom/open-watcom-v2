@@ -49,6 +49,24 @@
 #define TRUE        1
 #define FALSE       0
 
+typedef enum tool_type {
+    TYPE_LINK,
+    TYPE_PACK,
+    TYPE_DIS,
+    TYPE_ASM,
+    TYPE_C,
+    TYPE_CPP,
+    TYPE_MAX
+} tool_type;
+
+#define TYPE_ALLARCH_COUNT  TYPE_ASM
+
+typedef struct etool {
+    char *name;
+    char *exename;
+    char *path;
+} etool;
+
 enum {
     #define E(msg)  msg
     #define pick(code,msg)  code
@@ -76,7 +94,6 @@ typedef struct  flags {
     unsigned link_for_os2     : 1;  /* -lp produce OS/2 executable        */
     unsigned windows          : 1;  /* -zw specified for Windows          */
     unsigned link_for_sys     : 1;  /* -l<system> option given            */
-    unsigned is32bit          : 1;  /* 32bit link                         */
     unsigned force_c          : 1;  /* -cc option                         */
     unsigned force_c_plus     : 1;  /* -cc++ option                       */
     unsigned strip_all        : 1;  /* -s option for owcc                 */

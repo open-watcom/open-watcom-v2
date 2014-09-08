@@ -86,6 +86,7 @@
 #endif
 #define PACK                "cvpack"          /* Open Watcom executable packer   */
 #define LINK          BPRFX "wlink"           /* Open Watcom linker              */
+#define DIS                 "wdis"            /* Open Watcom disassembler        */
 
 #ifdef WCLAXP
   #define WCLENV      "WCLAXP"          /* name of environment variable    */
@@ -150,25 +151,13 @@ static const char *EnglishHelp[] = {
 };
 
 
-typedef enum tool_type {
-    TYPE_ASM,
-    TYPE_C,
-    TYPE_CPP,
-    TYPE_LINK,
-    TYPE_PACK,
-    TYPE_MAX
-} tool_type;
-
-static struct {
-    char *name;
-    char *exename;
-    char *path;
-} tools[TYPE_MAX] = {
+static etool tools[TYPE_MAX] = {
+    { LINK, LINK EXE_EXT,   NULL },
+    { PACK, PACK EXE_EXT,   NULL },
+    { DIS,  DIS  EXE_EXT,   NULL },
     { AS,   AS   EXE_EXT,   NULL },
     { CC,   CC   EXE_EXT,   NULL },
-    { CPP,  CPP  EXE_EXT,   NULL },
-    { LINK, LINK EXE_EXT,   NULL },
-    { PACK, PACK EXE_EXT,   NULL }
+    { CPP,  CPP  EXE_EXT,   NULL }
 };
 
 
@@ -188,7 +177,6 @@ static void initialize_Flags( void )
     Flags.link_for_os2    = 0;
     Flags.windows         = 0;
     Flags.link_for_sys    = 0;
-    Flags.is32bit         = 0;
     Flags.force_c         = 0;
     Flags.force_c_plus    = 0;
     Flags.strip_all       = 0;
@@ -684,8 +672,8 @@ static int Parse( char *Cmd )
 #ifdef WCL386
                 case '3':
                 case '4':
-                case '5':                           /* 22-sep-92 */
-                    Conventions = tolower( Word[0] );
+                case '5':
+                    Conventions = (char)tolower( Word[0] );
                     break;
 #endif
                 case 'd':
@@ -806,39 +794,40 @@ static int useCPlusPlus( char *p )
 }
 
 
-static char *FindToolPath( tool_type utl )
-/****************************************/
+static etool *FindToolGetPath( tool_type utl )
+/********************************************/
 {
     if( tools[utl].path == NULL ) {
         FindPath( tools[utl].exename, PathBuffer );
         tools[utl].path = MemAlloc( strlen( PathBuffer ) + 1 );
         strcpy( tools[utl].path, PathBuffer );
     }
-    return( tools[utl].path );
+    return( &tools[utl] );
 }
 
 static int tool_exec( tool_type utl, char *p1, char *p2 )
 /*******************************************************/
 {
     int     rc;
+    etool   *tool;
 
-    FindToolPath( utl );
+    tool = FindToolGetPath( utl );
     if( !Flags.be_quiet ) {
         if( p2 == NULL ) {
-            PrintMsg( "\t%s %s\n", tools[utl].name, p1 );
+            PrintMsg( "\t%s %s\n", tool->name, p1 );
         } else {
-            PrintMsg( "\t%s %s %s\n", tools[utl].name, p1, p2 );
+            PrintMsg( "\t%s %s %s\n", tool->name, p1, p2 );
         }
     }
     fflush( NULL );
     if( p2 == NULL ) {
-        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
+        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, NULL );
     } else {
-        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, p2, NULL );
     }
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
-            PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tools[utl].path );
+            PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tool->path );
         } else {
             if( utl == TYPE_LINK ) {
                 PrintMsg( WclMsgs[LINKER_RETURNED_A_BAD_STATUS] );

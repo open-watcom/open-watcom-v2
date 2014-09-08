@@ -14,12 +14,13 @@ Usage:  owcc [options] file ...
 
                 [Processor options]
 :: FIXME: what about non-i86 CPUs?
--mtune={3,4,5,6}86              optimize for this family
+-march=i{,1,2,3}86,axp,mips,ppc generate code for this architecture
+-mtune=i{3,4,5,6}86             optimize for this family
 -mregparm=<n>                   calling convention
 
 
                 [x86 Floating-point processor options]
--fpmath={2,3}87                 hardware floating-point code
+-fpmath={,2,3}87                hardware floating-point code
 -fptune={5,6}86                 optimize f-p for CPU type
 -msoft-float                    calls to floating-point library
 

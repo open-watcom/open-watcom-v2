@@ -73,26 +73,31 @@
 #define CCXX        BPRFX "wpp"           /* Open Watcom C++ compiler (16-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
 #define _TARGET_    "x86 16-bit"
+#define ARCH        TARGET_ARCH_I86
 #elif defined( __AXP__ )
 #define CC          BPRFX "wccaxp"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppaxp"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasaxp"        /* Open Watcom assembler             */
 #define _TARGET_    "Alpha AXP"
+#define ARCH        TARGET_ARCH_AXP
 #elif defined( __PPC__ )
 #define CC          BPRFX "wccppc"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppppc"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasppc"        /* Open Watcom assembler             */
 #define _TARGET_    "PowerPC"
+#define ARCH        TARGET_ARCH_PPC
 #elif defined( __MIPS__ )
 #define CC          BPRFX "wccmps"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wppmps"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasmps"        /* Open Watcom assembler             */
 #define _TARGET_    "MIPS"
+#define ARCH        TARGET_ARCH_MIPS
 #else
 #define CC          BPRFX "wcc386"        /* Open Watcom C compiler (32-bit)   */
 #define CCXX        BPRFX "wpp386"        /* Open Watcom C++ compiler (32-bit) */
 #define ASM         BPRFX "wasm"          /* Open Watcom assembler             */
 #define _TARGET_    "x86 32-bit"
+#define ARCH        TARGET_ARCH_X86
 #endif
 #define PACK              "cvpack"        /* Open Watcom executable packer      */
 #define LINK        BPRFX "wlink"         /* Open Watcom linker                 */
@@ -111,38 +116,36 @@
 #endif
 
 typedef enum {
-    TARGET_CPU_DEFAULT,
-    TARGET_CPU_I86,
-    TARGET_CPU_X86,
-    TARGET_CPU_AXP,
-    TARGET_CPU_MPS,
-    TARGET_CPU_PPC,
-    TARGET_CPU_COUNT
-} owcc_target_cpu;
+    TARGET_ARCH_DEFAULT,
+    TARGET_ARCH_I86,
+    TARGET_ARCH_X86,
+    TARGET_ARCH_AXP,
+    TARGET_ARCH_MIPS,
+    TARGET_ARCH_PPC,
+    TARGET_ARCH_COUNT
+} owcc_target_arch;
 
-char *OptEnvVar = WCLENV;           /* Data interface for GetOpt()        */
+char *OptEnvVar = WCLENV;               /* Data interface for GetOpt()        */
 
-static  char    *Word;              /* one parameter                      */
-static  char    *SystemName;        /* system to link for                 */
-static  list    *Files_List;        /* list of filenames from Cmd         */
-static  char    CC_Opts[MAX_CMD];   /* list of compiler options from Cmd  */
-static  char    target_CC[20] = CC; /* name of the wcc variant to use     */
-static  char    target_CCXX[20] = CCXX; /* name of the wpp variant to use     */
-static  char    target_ASM[20] = ASM; /* name of the assembler to use     */
-static  char    PathBuffer[_MAX_PATH];/* buffer for path name of tool     */
-static  char    *Link_Name;         /* Temp_Link copy if /fd specified    */
-static  list    *Directive_List;    /* linked list of directives   */
-static  char    *StackSize;         /* size of stack                      */
-static  int     DebugFlag;          /* debug info wanted                  */
-static  char    CPU_Class;          /* [0..6]86, 'm'ips or 'a'xp          */
-static  char    Conventions[2];     /* 'r' for -3r or 's' for -3s         */
-static  char    *O_Name;            /* name of -o option                  */
+static  char    *Word;                  /* one parameter                      */
+static  char    *SystemName;            /* system to link for                 */
+static  list    *Files_List;            /* list of filenames from Cmd         */
+static  char    CC_Opts[MAX_CMD];       /* list of compiler options from Cmd  */
+static  char    PathBuffer[_MAX_PATH];  /* buffer for path name of tool       */
+static  char    *Link_Name;             /* Temp_Link copy if /fd specified    */
+static  list    *Directive_List;        /* linked list of directives          */
+static  char    *StackSize;             /* size of stack                      */
+static  int     DebugFlag;              /* debug info wanted                  */
+static  char    CPU_Class;              /* [0..6]86, 'm'ips or 'a'xp          */
+static  owcc_target_arch CPU_Arch;      /* CPU architecture TARGET_ARCH_...   */
+static  char    Conventions[2];         /* 'r' for -3r or 's' for -3s         */
+static  char    *O_Name;                /* name of -o option                  */
 
-static  char    preprocess_only;    /* flag: -E option used?              */
-static  char    cpp_want_lines;     /* flag: want #lines output?          */
-static  char    cpp_keep_comments;  /* flag: keep comments in output?     */
-static  char    cpp_encrypt_names;  /* flag: encrypt C++ names?           */
-static  char    *cpp_linewrap;      /* line length for cpp output         */
+static  char    preprocess_only;        /* flag: -E option used?              */
+static  char    cpp_want_lines;         /* flag: want #lines output?          */
+static  char    cpp_keep_comments;      /* flag: keep comments in output?     */
+static  char    cpp_encrypt_names;      /* flag: encrypt C++ names?           */
+static  char    *cpp_linewrap;          /* line length for cpp output         */
 
 /*
  *  Static function prototypes
@@ -169,6 +172,7 @@ typedef struct {
 
 /* Map of options which don't need special treatment */
 option_mapping mappings[] = {
+    { "fpmath=87",  "fp0" },
     { "fpmath=287", "fp2" },
     { "fpmath=387", "fp3" },
     { "fptune=586", "fp5" },
@@ -268,27 +272,37 @@ OW options that might be useful to add:
 
 */
 
-typedef enum tool_type {
-    TYPE_ASM,
-    TYPE_C,
-    TYPE_CPP,
-    TYPE_LINK,
-    TYPE_PACK,
-    TYPE_DIS,
-    TYPE_MAX
-} tool_type;
-
-static struct {
-    char *name;
-    char *exename;
-    char *path;
-} tools[TYPE_MAX] = {
-    { ASM,  ASM EXE_EXT,    NULL },
-    { CC,   CC EXE_EXT,     NULL },
-    { CCXX, CCXX EXE_EXT,   NULL },
+static etool tools_allarch[TYPE_ALLARCH_COUNT] = {
     { LINK, LINK EXE_EXT,   NULL },
     { PACK, PACK EXE_EXT,   NULL },
     { DIS,  DIS EXE_EXT,    NULL }
+};
+
+static etool tools_asm_arch[TARGET_ARCH_COUNT] = {
+    { ASM,            ASM EXE_EXT,            NULL },   // default
+    { BPRFX "wasm",   BPRFX "wasm" EXE_EXT,   NULL },   // i86
+    { BPRFX "wasm",   BPRFX "wasm" EXE_EXT,   NULL },   // i386
+    { BPRFX "wasaxp", BPRFX "wasaxp" EXE_EXT, NULL },   // axp
+    { BPRFX "wasmps", BPRFX "wasmps" EXE_EXT, NULL },   // mips
+    { BPRFX "wasppc", BPRFX "wasppc" EXE_EXT, NULL },   // ppc
+};
+
+static etool tools_cc_arch[TARGET_ARCH_COUNT] = {
+    { CC,             CC EXE_EXT,             NULL },   // default
+    { BPRFX "wcc",    BPRFX "wcc" EXE_EXT,    NULL },   // i86
+    { BPRFX "wcc386", BPRFX "wcc386" EXE_EXT, NULL },   // i386
+    { BPRFX "wccaxp", BPRFX "wccaxp" EXE_EXT, NULL },   // axp
+    { BPRFX "wccmps", BPRFX "wccmps" EXE_EXT, NULL },   // mips
+    { BPRFX "wccppc", BPRFX "wccppc" EXE_EXT, NULL },   // ppc
+};
+
+static etool tools_ccxx_arch[TARGET_ARCH_COUNT] = {
+    { CCXX,           CCXX EXE_EXT,           NULL },   // default
+    { BPRFX "wpp",    BPRFX "wpp" EXE_EXT,    NULL },   // i86
+    { BPRFX "wpp386", BPRFX "wpp386" EXE_EXT, NULL },   // i386
+    { BPRFX "wppaxp", BPRFX "wppaxp" EXE_EXT, NULL },   // axp
+    { BPRFX "wppmps", BPRFX "wppmps" EXE_EXT, NULL },   // mips
+    { BPRFX "wppppc", BPRFX "wppppc" EXE_EXT, NULL },   // ppc
 };
 
 void print_banner( void )
@@ -338,7 +352,8 @@ static char *strfdup( const char *source )
     return( xlate_fname( MemStrDup( source ) ) );
 }
 
-void addccopt( int option, char *opt )
+void addccopt( char option, char *opt )
+/*************************************/
 {
     char    op[4];
 
@@ -398,7 +413,7 @@ static  FILE *OpenSpecsFile( void )
 }
 
 /*static*/  int  ListSpecsFile( void )
-/********************************/
+/************************************/
 {
     FILE    *specs;
     char    line[MAX_CMD];
@@ -412,7 +427,7 @@ static  FILE *OpenSpecsFile( void )
         if( p ) {
             *p = '\0';
         }
-        if( !strncmp( line, "system begin ", begin_len ) ) {
+        if( strncmp( line, "system begin ", begin_len ) == 0 ) {
             printf( "%s\n", line + begin_len);
         }
     }
@@ -440,9 +455,9 @@ static  int  ConsultSpecsFile( const char *target )
         if( p != NULL ) {
             *p = '\0';
         }
-        if( !stricmp( line, start_line ) ) {
+        if( stricmp( line, start_line ) == 0 ) {
             in_target = TRUE;
-        } else if( !stricmp( line, "end" ) ) {
+        } else if( stricmp( line, "end" ) == 0 ) {
             in_target = FALSE;
         } else if( in_target ) {
             for( p = line; isspace( (unsigned char)*p ); p++ )
@@ -450,26 +465,41 @@ static  int  ConsultSpecsFile( const char *target )
             p = strtok( p, " \t=" );
             if( p == NULL )
                 continue;
-            if( strcmp ( p, "CC" ) ) {
+            if( strcmp( p, "OPTS" ) == 0 ) {
                 p = strtok( NULL, " \t" );
-                strcpy( target_CC, p );
-            } else if( strcmp ( p, "CPP" ) ) {
-                p = strtok( NULL, " \t" );
-                strcpy( target_CCXX, p );
-            } else if( strcmp ( p, "AS" ) ) {
-                p = strtok( NULL, " \t" );
-                strcpy( target_ASM, p );
-            } else {
-                continue;
+                switch( *p ) {
+                case 'i':
+                    switch( p[1] ) {
+                    case '8':   // i86
+                        CPU_Arch = TARGET_ARCH_I86;
+                        break;
+                    case '3':   // i386
+                        CPU_Arch = TARGET_ARCH_X86;
+                        break;
+                    }
+                    break;
+                case 'a':       // axp
+                    CPU_Arch = TARGET_ARCH_AXP;
+                    break;
+                case 'm':       // mips
+                    CPU_Arch = TARGET_ARCH_MIPS;
+                    break;
+                case 'p':       // ppc
+                    CPU_Arch = TARGET_ARCH_PPC;
+                    break;
+                default:
+                    CPU_Arch = TARGET_ARCH_DEFAULT;
+                    break;
+                }
+                p = strtok( NULL, "\n" );
+                if( p != NULL ) {
+                    /* if there are further options, copy them */
+                    strcat( CC_Opts, " " );
+                    strcat( CC_Opts, p );
+                }
+                rc = 1;
+                break;
             }
-            p = strtok( NULL, "\n" );
-            if( p != NULL ) {
-                /* if there are further options, copy them */
-                strcat( CC_Opts, " " );
-                strcat( CC_Opts, p );
-            }
-            rc = 1;
-            break;
         }
     }
     fclose( specs );
@@ -492,11 +522,6 @@ static void initialize_Flags( void )
     Flags.link_for_os2    = 0;
     Flags.windows         = 0;
     Flags.link_for_sys    = 0;
-#if defined( _M_I86 )
-    Flags.is32bit         = 0;
-#else
-    Flags.is32bit         = 1;
-#endif
     Flags.force_c         = 0;
     Flags.force_c_plus    = 0;
     Flags.strip_all       = 0;
@@ -571,7 +596,7 @@ static  int  ParseArgs( int argc, char **argv )
 {
     char        *p;
     int         wcc_option;
-    int         c;
+    char        c;
     int         i;
     list        *new_item;
 
@@ -580,6 +605,7 @@ static  int  ParseArgs( int argc, char **argv )
     StackSize = NULL;
     Conventions[0]     = '\0';
     Conventions[1]     = '\0';
+    CPU_Arch           = TARGET_ARCH_DEFAULT;
     CPU_Class          = -1;
     preprocess_only    = 0;
     cpp_want_lines     = 1; /* NB: wcc and wcl default to 0 here */
@@ -589,7 +615,7 @@ static  int  ParseArgs( int argc, char **argv )
     O_Name             = NULL;
 
     AltOptChar = '-'; /* Suppress '/' as option herald */
-    while( (c = GetOpt( &argc, argv,
+    while( (i = GetOpt( &argc, argv,
 #if 0
                         "b:Cc::D:Ef:g::"
                         "HI:i::k:L:l:M::m:"
@@ -604,6 +630,7 @@ static  int  ParseArgs( int argc, char **argv )
         char    *Word = "";
         int     found_mapping = FALSE;
 
+        c = (char)i;
         for( i = 0; i < sizeof( mappings ) / sizeof( mappings[0] ); i++ ) {
             option_mapping  *m    = mappings + i;
             char            *tail = strchr( m->LongName, ':' );
@@ -621,15 +648,14 @@ static  int  ParseArgs( int argc, char **argv )
                 continue;
             }
             if( tail != NULL ) {
-                if( !strncmp( OptArg, m->LongName + 1,
-                              tail - m->LongName - 1 ) ) {
+                if( strncmp( OptArg, m->LongName + 1, tail - m->LongName - 1 ) == 0 ) {
                     strcat( CC_Opts, " -" );
                     strcat( CC_Opts, m->WatcomName );
                     strcat( CC_Opts, OptArg + ( tail - m->LongName - 1) );
                     found_mapping = TRUE;
                     break;
                 }
-            } else if( !strcmp( OptArg, m->LongName + 1 ) ) {
+            } else if( strcmp( OptArg, m->LongName + 1 ) == 0 ) {
                 strcat( CC_Opts, " -" );
                 strcat( CC_Opts, m->WatcomName );
                 found_mapping = TRUE;
@@ -648,20 +674,20 @@ static  int  ParseArgs( int argc, char **argv )
 
         switch( c ) {
         case 'f':
-            if( !strcmp( Word, "syntax-only" ) ) {
+            if( strcmp( Word, "syntax-only" ) == 0 ) {
                 c = 'z';
                 strcpy( Word, "s" );
                 Flags.no_link = 1;
                 break;
             }
-            if( !strncmp( Word, "cpp-wrap=", 9 ) ) {
+            if( strncmp( Word, "cpp-wrap=", 9 ) == 0 ) {
                 MemFree( cpp_linewrap );
                 Word[7] = 'w';
                 cpp_linewrap = MemStrDup( Word + 7 );
                 wcc_option = 0;
                 break;
             }
-            if( !strcmp( Word, "mangle-cpp" ) ) {
+            if( strcmp( Word, "mangle-cpp" ) == 0 ) {
                 cpp_encrypt_names = 1;
                 wcc_option = 0;
                 break;
@@ -729,7 +755,7 @@ static  int  ParseArgs( int argc, char **argv )
             break;
 
         case 'm':
-            if( ( !strncmp( "cmodel=", Word, 7 ) )
+            if( ( strncmp( "cmodel=", Word, 7 ) == 0 )
                 && ( Word[8] == '\0' ) ) {
                 if( Word[7] == 't' ) {      /* tiny model */
                     Word[0] = 's';              /* change to small */
@@ -740,8 +766,8 @@ static  int  ParseArgs( int argc, char **argv )
                 Word[1] = '\0';
                 break;
             }
-            if( !strncmp( "regparm=", Word, 8 ) ) {
-                if( !strcmp( Word + 8, "0" ) ) {
+            if( strncmp( "regparm=", Word, 8 ) == 0 ) {
+                if( strcmp( Word + 8, "0" ) == 0 ) {
                     Conventions[0] = 's';
                 } else {
                     Conventions[0] = 'r';
@@ -749,15 +775,47 @@ static  int  ParseArgs( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
-            if( !strncmp( "tune=i", Word, 6 ) ) {
+            if( strncmp( "arch=", Word, 5 ) == 0 ) {
+                switch( Word[5] ) {
+                case 'i':
+                    switch( Word[6] ) {
+                    case '8':   // i86
+                        CPU_Arch = TARGET_ARCH_I86;
+                        break;
+                    case '1':   // i186
+                        CPU_Arch = TARGET_ARCH_I86;
+                        CPU_Class = '1';
+                        break;
+                    case '2':   // i286
+                        CPU_Arch = TARGET_ARCH_I86;
+                        CPU_Class = '2';
+                        break;
+                    case '3':   // i386
+                        CPU_Arch = TARGET_ARCH_X86;
+                        break;
+                    }
+                    break;
+                case 'a':       // axp
+                    CPU_Arch = TARGET_ARCH_AXP;
+                    break;
+                case 'm':       // mips
+                    CPU_Arch = TARGET_ARCH_MIPS;
+                    break;
+                case 'p':       // ppc
+                    CPU_Arch = TARGET_ARCH_PPC;
+                    break;
+                default:
+                    CPU_Arch = TARGET_ARCH_DEFAULT;
+                }
+                wcc_option = 0;
+                break;
+            }
+            if( strncmp( "tune=i", Word, 6 ) == 0 ) {
                 switch( Word[6] ) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
+                case '3':   // i386
+                case '4':   // i486
+                case '5':   // i586
+                case '6':   // i686
                     CPU_Class = Word[6];
                     break;
                 default:
@@ -907,7 +965,7 @@ static  int  ParseArgs( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
-            if( !strcmp( OptArg, "nclude" ) ) {
+            if( strcmp( OptArg, "nclude" ) == 0 ) {
                 c = 'f';
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
@@ -930,13 +988,13 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             c = 'a';
-            if( !strcmp( OptArg, "D" ) ||
-                !strcmp( OptArg, "MD" ) ) {
+            if( strcmp( OptArg, "D" ) == 0 ||
+                strcmp( OptArg, "MD" ) == 0 ) {
                 /* NB: only -MMD really matches OW's behaviour, but
                  * for now, let's accept -MD to mean the same */
                 /* translate to -adt=.o */
                 strcpy( Word, "dt=.o" );
-            } else if( !strcmp( OptArg, "F" ) ) {
+            } else if( strcmp( OptArg, "F" ) == 0 ) {
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
@@ -946,7 +1004,7 @@ static  int  ParseArgs( int argc, char **argv )
                 strcpy( Word, "d=" );
                 strfcat( Word, argv[OptInd] );
                 argv[OptInd++][0] = '\0';
-            } else if( !strcmp( OptArg, "T") ) {
+            } else if( strcmp( OptArg, "T") == 0 ) {
                 Word = MemReAlloc( Word, strlen( argv[OptInd] ) + 6 );
                 if( OptInd >= argc - 1 ) {
                     MemFree( cpp_linewrap );
@@ -991,28 +1049,51 @@ static  int  ParseArgs( int argc, char **argv )
             strcat( CC_Opts, cpp_linewrap );
         }
     }
-    if( CPU_Class != -1 || *Conventions != '\0' ) {
-        switch( CPU_Class ) {
-        case -1:
-            CPU_Class = '3';
-            break;
-        case '0':
-        case '1':
-        case '2':
+    if( CPU_Arch != TARGET_ARCH_DEFAULT || CPU_Class != -1 || *Conventions != '\0' ) {
+        owcc_target_arch    arch;
+        char                cpu;
+
+        arch = CPU_Arch;
+        if( arch == TARGET_ARCH_DEFAULT ) {
+            arch = ARCH;
+        }
+        switch( arch ) {
+        case TARGET_ARCH_I86:
+            cpu = '0';
             *Conventions = '\0';
+            switch( CPU_Class ) {
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+                cpu = CPU_Class;
+                break;
+            default:
+                CPU_Class = cpu;
+                break;
+            }
+            addccopt( cpu, Conventions );
             break;
-        case '3':
-        case '4':
-        case '5':
-        case '6':
+        case TARGET_ARCH_X86:
+            cpu = '3';
             if( *Conventions == '\0' ) {
                 *Conventions = 'r';
             }
-            break;
-        default:
+            switch( CPU_Class ) {
+            case '4':
+            case '5':
+            case '6':
+                cpu = CPU_Class;
+                break;
+            default:
+                CPU_Class = cpu;
+                break;
+            }
+            addccopt( cpu, Conventions );
             break;
         }
-        addccopt( CPU_Class, Conventions );
     }
     if( Flags.be_quiet )
         addccopt( 'z', "q" );
@@ -1100,43 +1181,64 @@ static int useCPlusPlus( char *p )
 }
 
 
-static char *FindToolPath( tool_type utl )
-/****************************************/
+static etool *FindToolGetPath( tool_type utl )
+/********************************************/
 {
-    if( tools[utl].path == NULL ) {
-        FindPath( tools[utl].exename, PathBuffer );
-        tools[utl].path = MemAlloc( strlen( PathBuffer ) + 1 );
-        strcpy( tools[utl].path, PathBuffer );
+    etool   *tool;
+
+    switch( utl ) {
+    case TYPE_LINK:
+    case TYPE_PACK:
+    case TYPE_DIS:
+        tool = &tools_allarch[utl];
+        break;
+    case TYPE_ASM:
+        tool = &tools_asm_arch[CPU_Arch];
+        break;
+    case TYPE_C:
+        tool = &tools_cc_arch[CPU_Arch];
+        break;
+    case TYPE_CPP:
+        tool = &tools_ccxx_arch[CPU_Arch];
+        break;
+    default:
+        return( NULL );
     }
-    return( tools[utl].path );
+    if( tool->path == NULL ) {
+        FindPath( tool->exename, PathBuffer );
+        tool->path = MemAlloc( strlen( PathBuffer ) + 1 );
+        strcpy( tool->path, PathBuffer );
+    }
+    return( tool );
 }
 
 static int tool_exec( tool_type utl, char *p1, char *p2 )
 /*******************************************************/
 {
     int     rc;
+    etool   *tool;
 
-    FindToolPath( utl );
+    tool = FindToolGetPath( utl );
     if( !Flags.be_quiet ) {
         if( utl == TYPE_DIS ) {
-            PrintMsg( "\t%s -s -a %s %s\n", tools[utl].name, p1, p2 );
+            PrintMsg( "\t%s -s -a %s %s\n", tool->name, p1, p2 );
         } else if( p2 == NULL ) {
-            PrintMsg( "\t%s %s\n", tools[utl].name, p1 );
+            PrintMsg( "\t%s %s\n", tool->name, p1 );
         } else {
-            PrintMsg( "\t%s %s %s\n", tools[utl].name, p1, p2 );
+            PrintMsg( "\t%s %s %s\n", tool->name, p1, p2 );
         }
     }
     fflush( NULL );
     if( utl == TYPE_DIS ) {
-        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, "-s", "-a", p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, "-s", "-a", p1, p2, NULL );
     } else if( p2 == NULL ) {
-        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, NULL );
+        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, NULL );
     } else {
-        rc = (int)spawnlp( P_WAIT, tools[utl].path, tools[utl].name, p1, p2, NULL );
+        rc = (int)spawnlp( P_WAIT, tool->path, tool->name, p1, p2, NULL );
     }
     if( rc != 0 ) {
         if( (rc == -1) || (rc == 255) ) {
-            PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tools[utl].path );
+            PrintMsg( WclMsgs[UNABLE_TO_INVOKE_EXE], tool->path );
         } else {
             if( utl == TYPE_LINK ) {
                 PrintMsg( WclMsgs[LINKER_RETURNED_A_BAD_STATUS] );
@@ -1195,7 +1297,11 @@ static  int  CompLink( void )
     if( Flags.link_for_sys ) {
         fputs( "system ", Fp );
         Fputnl( SystemName, Fp );
-    } else if( Flags.is32bit ) {
+  #if defined(_M_I86)
+    } else if( CPU_Arch == TARGET_ARCH_X86 ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_X86 ) {
+  #endif
   #if defined(__OS2__)
         Fputnl( "system os2v2", Fp );
   #elif defined(__NT__)
@@ -1207,8 +1313,12 @@ static  int  CompLink( void )
   #else
         Fputnl( "system dos4g", Fp );
   #endif
-    } else {
-        if( Flags.windows ) {                   /* 15-mar-90 */
+  #if defined(_M_I86)
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_I86 ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_I86 ) {
+  #endif
+        if( Flags.windows ) {
             Fputnl( "system windows", Fp );
         } else if( Flags.tiny_model ) {
             Fputnl( "system com", Fp );
@@ -1316,10 +1426,24 @@ static  int  CompLink( void )
         MemFree( Word );
         Word = NULL;
     }
-    for( i = 0; i < TYPE_MAX; ++i ) {
-        if( tools[i].path != NULL ) {
-            MemFree( tools[i].path );
-            tools[i].path = NULL;
+    for( i = 0; i < TYPE_ALLARCH_COUNT; ++i ) {
+        if( tools_allarch[i].path != NULL ) {
+            MemFree( tools_allarch[i].path );
+            tools_allarch[i].path = NULL;
+        }
+    }
+    for( i = 0; i < TARGET_ARCH_COUNT; ++i ) {
+        if( tools_asm_arch[i].path != NULL ) {
+            MemFree( tools_asm_arch[i].path );
+            tools_asm_arch[i].path = NULL;
+        }
+        if( tools_cc_arch[i].path != NULL ) {
+            MemFree( tools_cc_arch[i].path );
+            tools_cc_arch[i].path = NULL;
+        }
+        if( tools_ccxx_arch[i].path != NULL ) {
+            MemFree( tools_ccxx_arch[i].path );
+            tools_ccxx_arch[i].path = NULL;
         }
     }
     return( rc );
