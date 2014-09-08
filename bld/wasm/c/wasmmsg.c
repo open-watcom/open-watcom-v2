@@ -32,7 +32,6 @@
 
 #include "asmglob.h"
 #ifdef __WATCOMC__
-  #include <conio.h>
   #include <process.h>
 #endif
 #include "wio.h"
@@ -72,44 +71,14 @@ extern  int             trademark( void );
 extern char             *_Copyright;
 #endif
 
-#if defined( __UNIX__ )
-
-void PrintfUsage( void )
+static bool Wait_for_return( const char *page_text )
 {
-    char        msg_buff[MAX_MESSAGE_SIZE];
-    int         first_ln;
+    int c;
 
-    trademark();
-    first_ln = MSG_USAGE_BASE;
-    for( first_ln++; ; first_ln++ ) {
-        MsgGet( first_ln, msg_buff );
-        if( ( msg_buff[ 0 ] == '.' ) && ( msg_buff[ 1 ] == 0 ) )
-            break;
-        puts( msg_buff );
-    }
-}
-
-#else
-
-static void con_output( const char *text )
-{
-    char c;
-
-    do {
-        c = *text;
-        putchar( c );
-        ++text;
-    } while( *text );
-    putchar( '\n' );
-}
-
-static void Wait_for_return( const char *page_text )
-{
-    if( isatty( fileno(stdout) ) ) {
-        con_output( page_text );
-        fflush( stdout );
-        getch();
-    }
+    puts( page_text );
+    fflush( stdout );
+    c = getchar();
+    return( c == 'q' || c == 'Q' );
 }
 
 void PrintfUsage( void )
@@ -130,7 +99,9 @@ void PrintfUsage( void )
     MsgGet( first_ln++, page_text );
     for( ; ; first_ln++ ) {
         if( ++count >= 23 ) {
-            Wait_for_return( page_text );
+            if( Wait_for_return( page_text ) ) {
+                break;
+            }
             count = 0;
         }
         MsgGet( first_ln, msg_buff );
@@ -139,8 +110,6 @@ void PrintfUsage( void )
         puts( msg_buff );
     }
 }
-
-#endif
 
 void MsgPrintf( int resourceid )
 {
@@ -201,8 +170,9 @@ bool MsgInit( void )
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     MsgFini();
     return( false );
-#endif
+#else
     return( true );
+#endif
 }
 
 void MsgFini( void )
