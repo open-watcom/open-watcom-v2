@@ -1,5 +1,5 @@
 
-#if defined( _M_IX86 ) || defined( _M_X64 )
+#if defined( _M_IX86 )
 
 #define TRACE_BIT       0x100
 #define BRKPOINT        0xCC
@@ -18,9 +18,7 @@ extern unsigned GetSS( void );
 #endif
 
 extern void BreakPoint( void );
-#if defined( _M_IX86 )
 #pragma aux BreakPoint = BRKPOINT;
-#endif
 
 extern void BreakPointParm( unsigned long );
 #if defined( _M_I86 )
@@ -29,6 +27,18 @@ extern void BreakPointParm( unsigned long );
 #pragma aux BreakPointParm = BRKPOINT parm [eax] aborts;
 #endif
 
+typedef unsigned char   opcode_type;
+
+#elif defined( _M_X64 )
+
+#define TRACE_BIT       0x100
+#define BRKPOINT        0xCC
+
+#define GetDS()         0
+#define GetCS()         0
+#define GetSS()         0
+
+extern void BreakPoint( void );
 
 typedef unsigned char   opcode_type;
 
