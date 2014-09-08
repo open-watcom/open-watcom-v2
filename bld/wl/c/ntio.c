@@ -42,6 +42,7 @@
 #include "wlnkmsg.h"
 #include "objio.h"
 #include "fileio.h"
+#include "clibext.h"
 
 #ifdef __OSI__
 //If or when OSI builds are re-enabled, we need to find the header for this

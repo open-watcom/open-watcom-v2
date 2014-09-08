@@ -37,6 +37,7 @@
 #include "trperr.h"
 #include "srvcdbg.h"
 #include "doserr.h"
+#include "clibext.h"
 
 #ifndef CREATE_SEPARATE_WOW_VDM
 #define CREATE_SEPARATE_WOW_VDM     0x00000800  // new for NT 3.5 (daytona)
