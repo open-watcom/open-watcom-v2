@@ -98,7 +98,6 @@
 ****************************************************************************/
  
 #define __STDC_WANT_LIB_EXT1__ 1
-#include <conio.h>
 #include <process.h>
 #include <stdio.h>
 #include <stdlib.h>
