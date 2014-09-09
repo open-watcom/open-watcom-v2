@@ -1519,9 +1519,9 @@ static void dumpStatsZero(      // ZERO DUMP STATISTICS
 static void dumpStats(          // PRINT STATISTICS
     DUMP_STATS *stats )
 {
-    printf( "total types:   %6lu\n", stats->sum );
-    printf( "longest chain: %6lu\n", stats->max );
-    printf( "average chain: %6lu\n", stats->sum / stats->chains );
+    printf( "total types:   %6u\n", stats->sum );
+    printf( "longest chain: %6u\n", stats->max );
+    printf( "average chain: %6u\n", stats->sum / stats->chains );
     putchar( '\n' );
 }
 

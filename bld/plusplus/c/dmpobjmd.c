@@ -83,7 +83,7 @@ static DUMP_INFO* bufferNmb(    // CONCATENATE NUMBER TO BUFFER
     sprintf( buf, "%d", numb );
     VbufConcStr( &di->buffer, buf );
     if( numb >= 10 ) {
-        sprintf( buf, "/0x%X", numb, numb );
+        sprintf( buf, "0x%X", numb );
         VbufConcStr( &di->buffer, buf );
     }
     return di;

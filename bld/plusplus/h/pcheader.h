@@ -226,7 +226,7 @@ extern void *PCHReadCVIndexElement( cvinit_t * );
 long PCHSeek( long offset, int type );
 #endif
 #ifndef NDEBUG
-extern void PCHVerifyFile( int handle );
+extern void PCHVerifyFile( void *handle );
 #else
 #define  PCHVerifyHandle( handle ) handle = handle
 #endif

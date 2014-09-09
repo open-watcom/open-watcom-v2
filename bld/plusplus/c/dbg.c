@@ -273,7 +273,7 @@ void DumpCgFront(               // DUMP GENERATED CODE
     void *instruction )         // - intermediate code
 {
     CGINTER *ins;               // - instruction
-    char *opcode;               // - opcode
+    const char *opcode;         // - opcode
     unsigned uvalue;            // - value with opcode
     VBUF vbuf;
 
@@ -540,14 +540,14 @@ static const char unknown_type[] = "***UNKNOWN**=xx";
 void DumpType(                  // DUMP TYPE ENTRY
     TYPE tp )                   // - type pointer
 {
-    char *id;                   // - id for symbol
+    const char *id;             // - id for symbol
 
     if( tp == NULL ) {
         printf( "NULL type\n" );
         return;
     }
     if( tp->id >= TYP_MAX ) {
-        ultoa( tp->id, unknown_type + sizeof( unknown_type ) - 2, 16 );
+        sprintf( (char *)( unknown_type + sizeof( unknown_type ) - 2 ), "%2x", tp->id );
         id = unknown_type;
     } else {
         id = id_names[ tp->id ];

@@ -268,8 +268,7 @@ NAME NameDummy( void )
     // the contents of the name don't have to be different just the address
     // but for debugging it is handy to have unique contents
 #ifndef NDEBUG
-    ultoa( ni, &buff[2], 10 );
-    len = strlen( buff );
+    len = sprintf( buff + 2, "%u", ni ) + 2;
 #else
     buff[2] = '0';
     buff[3] = '\0';
@@ -515,7 +514,7 @@ void dumpNames( void )
         if( length < min ) {
             min = length;
         }
-        fprintf( fp, "%4u: length %4lu: ", i, length );
+        fprintf( fp, "%4u: length %4u: ", i, length );
         while( length != 0 ) {
             putc( '*', fp );
             --length;
@@ -533,10 +532,10 @@ void dumpNames( void )
             putc( '\n', fp );
         }
     }
-    fprintf( fp, "total names:    %6lu\n", sum );
-    fprintf( fp, "longest chain:  %6lu\n", max );
-    fprintf( fp, "shortest chain: %6lu\n", min );
-    fprintf( fp, "average chain:  %6lu\n", sum / NAME_TABLE_HASH );
+    fprintf( fp, "total names:    %6u\n", sum );
+    fprintf( fp, "longest chain:  %6u\n", max );
+    fprintf( fp, "shortest chain: %6u\n", min );
+    fprintf( fp, "average chain:  %6u\n", sum / NAME_TABLE_HASH );
     fprintf( fp, "quality ratio:  %f (should be close to 1.0)\n", uniform_stat / perfect_stat );
     fclose( fp );
 }

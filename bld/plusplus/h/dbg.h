@@ -66,7 +66,7 @@ void DbgHeapFini                // COMPLETION
 void DbgHeapInit                // INITIALIZATION
     ( void )
 ;
-char *DbgIcOpcode(              // GET IC OPCODE
+const char *DbgIcOpcode(        // GET IC OPCODE
     CGINTEROP opcode )          // - opcode
 ;
 void DbgLogBeg                  // START LOGGING
@@ -78,7 +78,7 @@ void DbgLogBegFile              // START LOGGING TO A FILE
 int DbgLogEnd                   // END LOGGING
     ( void )
 ;
-char *DbgOperator(              // GET CGOP NAME
+const char *DbgOperator(        // GET CGOP NAME
     CGOP number )               // - index for name
 ;
 void DbgPrintPTREE(             // PRINT A PARSE-TREE BEAUTIFULLY

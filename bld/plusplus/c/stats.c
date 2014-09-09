@@ -333,7 +333,7 @@ void ExtraRptSymDefn(           // REPORT SYMBOL DEFINITION IN PRIMARY SOURCE
 
 
 static char sbuff[512];
-static char const fmt_repos[] = "%5ld %5ld %5ld %5ld %s";
+static char const fmt_repos[] = "%5d %5d %5d %5d %s";
 
 static void rptRepository       // PRINT REPOSITORY REPORT
     ( INITFINI* defn )          // - definition
@@ -468,7 +468,7 @@ static void extraRptPrintCtr(   // PRINT A COUNTER
     if( reg->ctr.text != NULL ) {
         char buffer[32];
         memset( buffer, ' ', sizeof(buffer) );
-        ultoa( *reg->ctr.a_ctr, buffer + 16, 10 );
+        sprintf( buffer + 16, "%u", *reg->ctr.a_ctr );
         MsgDisplayLineArgs( buffer + strlen(buffer) - 9
                           , " = "
                           , reg->ctr.text
@@ -539,9 +539,9 @@ static void extraRptPrintAvg(   // PRINT AN AVERAGE
         total -= integ * count;
         fract = ( total * 2000 + count ) / count / 2;
     }
-    itoa( fract + 1000, frac_part, 10 );
+    sprintf( frac_part, "%d", fract + 1000 );
     frac_part[0] = '.';
-    itoa( integ + 100000, int_part, 10 );
+    sprintf( int_part, "%d", integ + 100000 );
     for( p = int_part+1; *p == '0'; ++p ) *p = ' ';
     MsgDisplayLineArgs( int_part+1
                       , frac_part

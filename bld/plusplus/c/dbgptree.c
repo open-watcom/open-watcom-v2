@@ -87,7 +87,7 @@ typedef struct _decorated DECORATED;
 typedef struct _decorated {     // DECORATED NODES
     DECORATED * next;           // - next in ring
     NODE* node;                 // - decorated node
-};
+} DECORATED;
 
 #define PTREE_ERROR_NODE "**error**"
 
@@ -117,7 +117,8 @@ static char *stxcpy(            // CONCATENATE HEXADECIMAL NUMBER
 {
     char buffer[16];
 
-    return stpcpy( tgt, ultoa( value, buffer, 16 ) );
+    sprintf( buffer, "%x", value );
+    return stpcpy( tgt, buffer );
 }
 
 

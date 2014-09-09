@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 #include "plusplus.h"
-
 #include "dbg.h"
 
 #define MX_FSTK         10
@@ -63,7 +62,7 @@ static void reDirBeg            // START REDIRECTION FOR A FILE
         char fname[32];
         FILE* fp;
         strcpy( fname, default_file );
-        itoa( fstk_index, &fname[ sizeof( default_file ) - 1 ], 10 );
+        sprintf( &fname[ sizeof( default_file ) - 1 ], "%d", fstk_index );
         fp =  fopen( fname, "wt" );
         if( NULL == fp ) {
             puts( "DBGIO -- failure to open file" );

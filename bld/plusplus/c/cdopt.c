@@ -236,31 +236,27 @@ static const char *titer_names[] = {
 };
 
 
-char* __fmt_TOB( TOB tob )      // FORMAT TOB
+const char *__fmt_TOB( TOB tob )    // FORMAT TOB
 {
     return ( tob >= MAX_TOB_DEF ) ? "*** BAD TOB ***" : tob_names[ tob ];
 }
 
 
-char* __fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
+const char *__fmt_CDOPT_TYPE( CDOPT_TYPE cdot )
 {
-    return ( cdot >= MAX_CDOPT_TYPE )
-           ? "*** BAD CDOPT ***"
-           : cdopt_names[ cdot ];
+    return ( cdot >= MAX_CDOPT_TYPE ) ? "*** BAD CDOPT ***" : cdopt_names[ cdot ];
 }
 
 
-char* __fmt_TIS( TIS tis )
+const char *__fmt_TIS( TIS tis )
 {
     return ( tis >= MAX_TIS_TYPE ) ? "*** BAD TIS ***" : tis_names[ tis ];
 }
 
 
-char* __fmt_TITER( TITER val )
+const char *__fmt_TITER( TITER val )
 {
-    return ( val >= MAX_TITER_DEF )
-           ? "*** BAD TITER ***"
-           : titer_names[ val ];
+    return ( val >= MAX_TITER_DEF ) ? "*** BAD TITER ***" : titer_names[ val ];
 }
 
 
