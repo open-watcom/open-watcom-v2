@@ -108,8 +108,7 @@ static void addModuleToLibList( DWORD module )
     lli = &moduleInfo[module];
     curr = listInfoHead;
     while( curr != NULL ) {
-        if( !stricmp( lli->modname, curr->modname ) &&
-            !stricmp( lli->filename, curr->filename ) ) {
+        if( !stricmp( lli->modname, curr->modname ) && !stricmp( lli->filename, curr->filename ) ) {
             return;
         }
         curr = curr->next;
@@ -156,8 +155,7 @@ void RemoveModuleFromLibList( char *module, char *filename )
     curr = listInfoHead;
     prev = NULL;
     while( curr != NULL ) {
-        if( !stricmp( module, curr->modname ) &&
-                !stricmp( filename, curr->filename ) ) {
+        if( !stricmp( module, curr->modname ) && !stricmp( filename, curr->filename ) ) {
             if( prev == NULL ) {
                 listInfoHead = curr->next;
             } else {
@@ -188,15 +186,13 @@ static void addSegmentToLibList( DWORD module, WORD seg, DWORD off )
             return;
         }
     }
-    new = LocalAlloc( LMEM_FIXED, ( listInfoTail->segcount + 1 )
-                        * sizeof( addr48_ptr ) );
+    new = LocalAlloc( LMEM_FIXED, ( listInfoTail->segcount + 1 ) * sizeof( addr48_ptr ) );
 
     if( new == NULL ) {
         return;
     }
     if( listInfoTail->segs != NULL ) {
-        memcpy( new, listInfoTail->segs, sizeof( addr48_ptr )*
-                                listInfoTail->segcount );
+        memcpy( new, listInfoTail->segs, sizeof( addr48_ptr )* listInfoTail->segcount );
     }
     listInfoTail->segs = new;
     listInfoTail->segs[listInfoTail->segcount].segment = seg;
@@ -379,23 +375,19 @@ BOOL NameFromHandle( HANDLE hFile, char *name )
         do {
             // Copy the drive letter to the template string
             *szDrive = *p;
-
             // Look up each device name
             if( pQueryDosDevice( szDrive, szName, BUFSIZE ) ) {
                 UINT    uNameLen = (UINT)strlen( szName );
-
                 if( uNameLen < MAX_PATH ) {
                     bFound = ( strnicmp( pszFilename, szName, uNameLen ) == 0
                                && pszFilename[ uNameLen ] == '\\' );
-
                     if( bFound ) {
                         // Reconstruct pszFilename using szTemp
                         // Replace device path with DOS path
-//                        char    szTempFile[MAX_PATH];
-
-                        snprintf( name, MAX_PATH, "%s%s", szDrive, pszFilename + uNameLen );
-//                        strncpy( name, szTempFile, MAX_PATH );
+                        strcpy( name, szDrive );
+                        strcat( name, pszFilename + uNameLen );
                         bSuccess = TRUE;
+                        break;
                     }
                 }
             }
@@ -798,12 +790,10 @@ int DoListLibs( char *buff, int is_first, int want_16, int want_32,
         if( currInfo == NULL ) {
             return( FALSE );
         }
-        if( (  currInfo->is_16 && want_16 )
-        ||  ( !currInfo->is_16 && want_32 ) ) {
+        if( ( currInfo->is_16 && want_16 ) || ( !currInfo->is_16 && want_32 ) ) {
             done = TRUE;
             if( currSeg == -1 ) {
-                wsprintf( buff, "%s (%s):", currInfo->modname,
-                    currInfo->filename );
+                wsprintf( buff, "%s (%s):", currInfo->modname, currInfo->filename );
             } else {
                 formatSel( buff, verbose );
             }
