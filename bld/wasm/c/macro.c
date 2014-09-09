@@ -132,56 +132,57 @@ static char *replace_parm( parm_list *parms, char *start, size_t len, asmlines *
 static void put_parm_placeholders_in_line( asmlines *linestruct, parm_list *parms )
 /*********************************************************************************/
 {
-    char *line;
-    char *tmp;
-    char *start;
-    bool quote = false;
-    size_t len;
+    char    *line;
+    char    *tmp;
+    char    *start;
+    bool    quote;
+    size_t  len;
+    char    c;
 
     /* handle the substitution operator ( & ) */
     line = linestruct->line;
+    quote = false;
     for( tmp = line; *tmp != '\0'; ) {
         /* scan across the string for space, &, " - to start a word */
         line = tmp;
-        for( ; *tmp != '\0'; tmp++ ) {
-            if( is_valid_id_char( *tmp ) ) {
-                if( tmp == line ) break; /* ok to start at beginning of line */
-                continue;
-            } else if( isspace( *tmp ) ) {
-                /* find 1st non blank char */
-                while( isspace( *tmp ) )
-                    tmp++;
-                break;
-            } else if( *tmp == '"' ) {
-                /* toggle the quote flag */
-                quote = !quote;
-                tmp++;
-                break;
+        while( (c = *tmp) != '\0' ) {
+            if( is_valid_id_char( c ) ) {
+                if( tmp == line ) {
+                    break; /* ok to start at beginning of line */
+                }
             } else {
-                /* some other garbage */
-                tmp++;
+                if( isspace( c ) ) {
+                    /* find 1st non blank char */
+                    while( isspace( *tmp ) ) {
+                        tmp++;
+                    }
+                } else {
+                    if( c == '"' ) {
+                        /* toggle the quote flag */
+                        quote = !quote;
+                    }
+                    tmp++;
+                }
                 break;
             }
+            tmp++;
         }
         start = tmp;
         /* scan across the string for space, &, " - to end the word */
-        for( ; *tmp != '\0'; tmp++ ) {
-            if( is_valid_id_char( *tmp ) ) {
-                continue;
-            } else if( isspace( *tmp ) ) {
-                break;
-            } else if( *tmp == '"' ) {
-                /* toggle the quote flag */
-                quote = !quote;
-                break;
-            } else {
+        while( (c = *tmp) != '\0' ) {
+            if( !is_valid_id_char( c ) ) {
+                if( c == '"' ) {
+                    /* toggle the quote flag */
+                    quote = !quote;
+                }
                 break;
             }
+            tmp++;
         }
         len = tmp - start;
         /* look for this word in the macro parms, and replace it if it is */
         /* this would change line - it will have to be reallocated */
-        if( !quote || *start =='&' || *(start-1)=='&' || *(start + len + 1)=='&' ) {
+        if( !quote || *start == '&' || *(start - 1) == '&' || *(start + len + 1) == '&' ) {
             if( *start != '\0' && len > 0 ) {
                 tmp = replace_parm( parms, start, len, linestruct );
             }

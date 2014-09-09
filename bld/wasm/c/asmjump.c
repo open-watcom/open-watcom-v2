@@ -116,9 +116,9 @@ static void jumpExtend( int far_flag )
     InputQueueLine( buffer );
     p = buffer;
     if( far_flag ) {
-        p = CATLIT( buffer, "jmpf " );
+        p = CATLIT( p, "jmpf " );
     } else {
-        p = CATLIT( buffer, "jmp " );
+        p = CATLIT( p, "jmp " );
     }
     for( i++; AsmBuffer[i].class != TC_FINAL; i++ ) {
         switch( AsmBuffer[i].class ) {

@@ -44,7 +44,7 @@
 /* prototypes */
 extern bool             OrgDirective( token_idx );
 extern bool             AlignDirective( asm_token, token_idx );
-extern bool             ForDirective( token_idx, enum irp_type );
+extern bool             ForDirective( token_idx, irp_type );
 
 bool directive( token_idx i, asm_token direct )
 /*********************************************/

@@ -36,10 +36,10 @@
 #include "asmexpnd.h"
 #include "asminput.h"
 
-static const char macroname[] = "__STATIC_IRP_MACRO_";
+#define IRP_MACRONAME   "__STATIC_IRP_MACRO_"
 
-bool ForDirective( token_idx i, enum irp_type type )
-/**************************************************/
+bool ForDirective( token_idx i, irp_type type )
+/*********************************************/
 {
     token_idx start = i - 1; /* location of "directive name .. after any labels" */
     token_idx arg_loc;
@@ -89,7 +89,7 @@ bool ForDirective( token_idx i, enum irp_type type )
     }
     /* now make a macro */
     i = start;
-    sprintf( buffer, "%s%d", macroname, Globals.for_counter );
+    sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
     if( Options.mode & MODE_IDEAL ) {
         AsmBuffer[i+1].string_ptr = buffer;
         AsmBuffer[i+1].class = TC_ID;
@@ -107,17 +107,16 @@ bool ForDirective( token_idx i, enum irp_type type )
 
     PushLineQueue();
     if( type == IRP_REPEAT ) {
-        sprintf( buffer, "%s%d", macroname, Globals.for_counter );
+        sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
         while( len-- > 0 ) {
             InputQueueLine( buffer );
         }
     } else {
         for( ptr = parmstring; *ptr != NULLC; ) {
-            len = sprintf( buffer, "%s%d", macroname, Globals.for_counter );
-            buffer[len++] = ' ';
+            len = sprintf( buffer, IRP_MACRONAME "%d ", Globals.for_counter );
             if( type == IRP_CHAR ) {
                 buffer[len++] = *ptr++;
-            } else if( type == IRP_WORD ) {
+            } else {    // IRP_WORD
                 size_t len1;
 
                 len1 = strcspn( ptr, "," );
@@ -131,7 +130,7 @@ bool ForDirective( token_idx i, enum irp_type type )
             buffer[len] = NULLC;
             InputQueueLine( buffer );
         }
-        sprintf( buffer, "%s%d", macroname, Globals.for_counter );
+        sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
     }
     Globals.for_counter++;
     PushMacro( buffer, true );

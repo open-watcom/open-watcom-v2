@@ -128,7 +128,7 @@ bool MakeLabel( char *symbol_name, memtype mem_type )
             return( RC_OK );
         }
     }
-     sym = AsmLookup( symbol_name );
+    sym = AsmLookup( symbol_name );
     if( sym == NULL )
         return( RC_ERROR );
     if( Parse_Pass == PASS_1 ) {

@@ -95,11 +95,11 @@ enum {
     END_COMMENT
 };                      // parms to Comment
 
-enum irp_type {
+typedef enum {
     IRP_CHAR,
     IRP_WORD,
     IRP_REPEAT
-};
+} irp_type;
 
 typedef enum {
     SEGTYPE_UNDEF = -1,

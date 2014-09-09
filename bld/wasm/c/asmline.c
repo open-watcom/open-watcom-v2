@@ -696,8 +696,7 @@ void AsmByte( unsigned char byte )
     PassTotal++;
 #else
     if( AsmCodeAddress <= AsmCodeLimit ) {
-        AsmCodeBuffer[AsmCodeAddress] = byte;
-        ++AsmCodeAddress;
+        AsmCodeBuffer[AsmCodeAddress++] = byte;
     }
 #endif
 }

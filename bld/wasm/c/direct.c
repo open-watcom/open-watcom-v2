@@ -57,16 +57,15 @@
 #define INIT_STACK      0x20
 
 typedef struct {
-      char      *string;        // the token string
-      uint      value;          // value connected to this token
-      uint      init;           // explained in direct.c ( look at SegDef() )
+    char            *string;    // the token string
+    uint            value;      // value connected to this token
+    uint            init;       // explained in direct.c ( look at SegDef() )
 } typeinfo;
 
 typedef struct {
-    asm_sym             *symbol;        /* segment or group that is to
-                                           be associated with the register */
-    bool                error:1;        // the register is assumed to ERROR
-    bool                flat:1;         // the register is assumed to FLAT
+    asm_sym         *symbol;    // segment or group that is to be associated with the register
+    bool            error;      // the register is assumed to ERROR
+    bool            flat;       // the register is assumed to FLAT
 } assume_info;
 
 typedef enum {
