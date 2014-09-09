@@ -438,6 +438,7 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
 void heap( char *func ) // for debugging only
 /*********************/
 {
+#ifdef __WATCOMC__
     switch(_heapchk()) {
     case _HEAPBADNODE:
     case _HEAPBADBEGIN:
@@ -448,6 +449,7 @@ void heap( char *func ) // for debugging only
     default:
         break;
     }
+#endif
 }
 #endif
 

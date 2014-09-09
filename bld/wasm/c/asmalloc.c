@@ -35,8 +35,8 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include "wio.h"
 #include "asmalloc.h"
 #include "fatal.h"
 
@@ -44,14 +44,14 @@
 #include "trmem.h"
 
 static _trmem_hdl   memHandle;
-static int          memFile;     /* file handle we'll write() to */
+static FILE         *memFile;       /* file handle we'll write() to */
 
-static void memLine( void *fh, const char *buf, unsigned size )
+static void memLine( void *file, const char *buf, size_t size )
 {
-    write( 2, "***", 3 );
-    write( 2, buf, size );
-    if( *(int *)fh != -1 ) {
-        write( *(int *)fh, buf, size );
+    fwrite( "***", 1, 3, stderr );
+    fwrite( buf, 1, size, stderr );
+    if( file != NULL ) {
+        fwrite( buf, 1, size, file );
     }
 }
 #endif
@@ -59,7 +59,7 @@ static void memLine( void *fh, const char *buf, unsigned size )
 void MemInit( void )
 {
 #ifdef TRMEM
-    memFile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
+    memFile = fopen( "mem.trk", "w" );
     memHandle = _trmem_open( malloc, free, realloc, NULL, &memFile, memLine,
         _TRMEM_ALLOC_SIZE_0 |
         _TRMEM_FREE_NULL |
@@ -78,8 +78,8 @@ void MemFini( void )
     if( memHandle != NULL ) {
         _trmem_prt_list( memHandle );
         _trmem_close( memHandle );
-        if( memFile != -1 ) {
-            close( memFile );
+        if( memFile != NULL ) {
+            fclose( memFile );
         }
         memHandle = NULL;
     }
