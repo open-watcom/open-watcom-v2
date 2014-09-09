@@ -145,7 +145,7 @@ int RcMemValidate( void * ptr )
     if( RcMemHandle != NULL ) {
         return( _trmem_validate( ptr, _trmem_guess_who(), RcMemHandle ) );
     } else {
-        return( false );
+        return( 0 );
     }
 }
 
@@ -153,10 +153,9 @@ int RcMemChkRange( void * start, size_t len )
 /*******************************************/
 {
     if( RcMemHandle != NULL ) {
-        return( _trmem_chk_range( start, len,
-                        _trmem_guess_who(), RcMemHandle ) );
+        return( _trmem_chk_range( start, len, _trmem_guess_who(), RcMemHandle ) );
     } else {
-        return( false );
+        return( 0 );
     }
 }
 #endif

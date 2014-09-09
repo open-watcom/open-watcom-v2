@@ -14,6 +14,8 @@ exename     = wrc
 dllname     = wrcd
 !endif
 
+wrc_trmem = 1
+
 win_yacc_prefix = winy
 os2_yacc_prefix = os2y
 
@@ -28,6 +30,8 @@ additional_cleanup = $(os2_yacc_file).* $(win_yacc_file).* *.uni
 !include deftarg.mif
 !include osi.mif
 
+!include trmem.mif
+
 !include $(cpp_dir)/client.mif
 
 !include wres.mif
@@ -41,7 +45,7 @@ TRACK_MEM_OPTS = -DRCMEM_DEBUG
 !else   # axp: -DRCMEM_DEBUG version is NOT working! Fix me!
 !endif
 !else
-TRACK_MEM_OPTS = -DRC_USE_TRMEM -of+
+TRACK_MEM_OPTS = -DRC_USE_TRMEM $(trmem_cover_cflags)
 WRC_USE_TRMEM = 1
 !endif
 !endif
@@ -183,7 +187,7 @@ verrc_dll = $(dllname)
 
 .c : .;../c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs) -I"$(trmem_dir)"
+inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
 
 xlibs = $(wres_lib)
 
