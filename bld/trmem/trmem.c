@@ -514,13 +514,17 @@ static int isValidChunk( entry_ptr tr, const char *rtn, _trmem_who who, _trmem_h
 {
     void *mem;
     size_t size;
+#if 0
+#ifndef __NETWARE__
     size_t blk_size;
+#endif
+#endif
 
     size = getSize( tr );
     mem = tr->mem;
-    blk_size = *(size_t*)_PtrSub( mem, sizeof( size_t ) );
-#ifndef __NETWARE__
 #if 0
+#ifndef __NETWARE__
+    blk_size = *(size_t*)_PtrSub( mem, sizeof( size_t ) );
     if(( blk_size & 1 ) == 0 ) {
         trPrt( hdl, MSG_UNDERRUN_ALLOCATION, rtn, who, mem, tr->who, size );
         return( 0 );
