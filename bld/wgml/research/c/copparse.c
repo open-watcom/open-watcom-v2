@@ -491,7 +491,7 @@ static cop_device * get_cop_device( char const * in_name )
 #if defined( __UNIX__ )
     char                fname[_MAX_PATH];
 
-    strpcy( fname, in_name );
+    strcpy( fname, in_name );
     strlwr( fname );
     in_name = fname;
 #endif
@@ -569,7 +569,7 @@ static cop_driver * get_cop_driver( char const * in_name )
 #if defined( __UNIX__ )
     char                fname[_MAX_PATH];
 
-    strpcy( fname, in_name );
+    strcpy( fname, in_name );
     strlwr( fname );
     in_name = fname;
 #endif
@@ -647,7 +647,7 @@ static cop_font * get_cop_font( char const * in_name )
 #if defined( __UNIX__ )
     char                fname[_MAX_PATH];
 
-    strpcy( fname, in_name );
+    strcpy( fname, in_name );
     strlwr( fname );
     in_name = fname;
 #endif
