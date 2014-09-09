@@ -36,7 +36,6 @@
 #include <ctype.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
-#include <conio.h>
 #endif
 #ifdef __UNIX__
 #include <dirent.h>
@@ -330,10 +329,8 @@ static void  Usage( void )
     int         lines_printed;
     size_t      i, n;
     auto        char buf[82];
-#ifndef __UNIX__
     int const   paging = isatty( fileno( stdout ) );
     int const   height = 24; /* Number of lines assumed on screen */
-#endif
 
     print_banner();
     lines_printed = 4;
@@ -350,15 +347,12 @@ static void  Usage( void )
                 }
             }
             n = (n + 1) / 2;                    /* half way through list */
-#ifndef __UNIX__
             if( paging && lines_printed != 0 && lines_printed >= height ) {
-                fputs( WclMsgs[PRESS_ANY_KEY_TO_CONTINUE], stdout );
+                puts( WclMsgs[PRESS_RETURN_TO_CONTINUE] );
                 fflush( stdout );
-                getch();
-                puts( "" );
+                getchar();
                 lines_printed = 0;
             }
-#endif
             puts( buf );
             lines_printed++;
             for( ;; ) {
@@ -377,15 +371,12 @@ static void  Usage( void )
                 buf[i] = '\0';
                 puts( buf );
                 lines_printed++;
-#ifndef __UNIX__
                 if( paging && lines_printed != 0 && lines_printed >= height ) {
-                    fputs( WclMsgs[PRESS_ANY_KEY_TO_CONTINUE], stdout );
+                    puts( WclMsgs[PRESS_RETURN_TO_CONTINUE] );
                     fflush( stdout );
-                    getch();
-                    puts( "" );
+                    getchar();
                     lines_printed = 0;
                 }
-#endif
                 p = list[n];
                 if( p == NULL )
                     break;

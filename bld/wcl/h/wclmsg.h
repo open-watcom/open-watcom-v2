@@ -46,7 +46,7 @@ pick( CVPACK_RETURNED_A_BAD_STATUS,   "Error: cvpack returned a bad status\n" ),
 pick( UNABLE_TO_OPEN,                 "Unable to open " FILEREF "\n" ),
 pick( UNABLE_TO_FIND,                 "Error: Unable to find " FILEREF "\n" ),
 pick( OUT_OF_MEMORY,                  "Out of memory\n" ),
-pick( PRESS_ANY_KEY_TO_CONTINUE,      "Press any key to continue:" ),
+pick( PRESS_RETURN_TO_CONTINUE,       "Press return key to continue:" ),
 pick( RECURSIVE_ENVIRONMENT_VARIABLE, "Error: unable to expand recursive environment variable " FILEREF "\n" ),
 
 #undef FILEREF

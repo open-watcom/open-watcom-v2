@@ -43,7 +43,6 @@
 #include <ctype.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
-#include <conio.h>
 #endif
 #include "wio.h"
 #include "watcom.h"
