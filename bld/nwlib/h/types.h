@@ -32,25 +32,6 @@
 
 typedef uint_8          ar_len;
 
-#if 0
-typedef enum {
-    OKAY,
-    DONE,
-    ERROR,
-    OUT_OF_MEMORY,
-    BAD_USAGE,
-    BAD_ARCHIVE,
-    BAD_FILE,
-    FILE_DOES_NOT_EXIST,
-    FILE_NOT_FOUND_IN_ARCHIVE,
-    OPEN_ERROR,
-    READ_ERROR,
-    WRITE_ERROR,
-    CLOSE_ERROR,
-    STAT_ERROR
-} status;
-#endif
-
 // local header types
 typedef uint_32         arch_date;
 typedef uint_16         arch_uid;
@@ -59,16 +40,15 @@ typedef uint_32         arch_mode;
 typedef uint_32         arch_file_size;
 
 typedef struct arch_header {
-    char *              name;
-    char *              ffname; // Full filename
+    char                *name;
+    char                *ffname; // Full filename
     arch_date           date;
     arch_uid            uid;
     arch_gid            gid;
     arch_mode           mode;
     arch_file_size      size;
-    char *              fnametab;
-    char *              ffnametab;
-    char *              nextffname;
-    char *              lastffname;
+    char                *fnametab;
+    char                *ffnametab;
+    char                *nextffname;
+    char                *lastffname;
 } arch_header;
-

@@ -30,6 +30,9 @@
 
 
 #include "wlib.h"
+#ifdef __WATCOMC__
+#include <process.h>
+#endif
 #include "wio.h"
 #include "clibext.h"
 

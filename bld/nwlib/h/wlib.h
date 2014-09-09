@@ -37,10 +37,6 @@
 #include <ctype.h>
 #include <time.h>
 #include <limits.h>
-#ifdef __WATCOMC__
-#include <process.h>
-#include <conio.h>
-#endif
 #include "bool.h"
 #include "orl.h"
 #include "lib.h"
