@@ -30,9 +30,6 @@
 
 
 #include "vi.h"
-#ifdef __WATCOMC__
-    #include <conio.h>
-#endif
 #include <sys/types.h>
 #include "posix.h"
 #include "clibext.h"
