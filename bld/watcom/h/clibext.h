@@ -182,6 +182,7 @@ extern int    opterr;
 extern int    optopt;
 
 extern int fnmatch( const char *__pattern, const char *__string, int __flags );
+extern int mkstemp( char *template );
 
 #endif
 
