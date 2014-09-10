@@ -143,14 +143,14 @@ extern  void    DoFunnyRef( int segover ) {
 }
 
 
-extern  void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup )
-/*********************************************************************************************/
+extern  void  DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type )
+/**************************************************************************************************/
 {
     fe_attr             attr;
     escape_class        kind;
 
     kind = 0;
-    switch( fixup ) {
+    switch( fixup_type ) {
     case FE_FIX_BASE:
         val = 0;
         kind |= BASE; /* base segment relocation */
