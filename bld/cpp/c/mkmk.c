@@ -30,9 +30,6 @@
 ****************************************************************************/
 
 #include "preproc.h"
-#if !defined( __UNIX__ ) || defined( __WATCOMC__ )
-    #include <conio.h>
-#endif
 
 extern char PreProcChar;
 
@@ -51,14 +48,14 @@ void MkMkDependency( const char *filename, const char *fullname, int incl_type )
 int main( int argc, char *argv[] )
 {
     if( argc < 2 ) {
-        cprintf( "Usage: mkmk filename\r\n" );
+        printf( "Usage: mkmk filename\n" );
         exit( 1 );
     }
     if( argv[2] != NULL ) {
         PreProcChar = argv[2][0];
     }
     if( PP_Init( argv[1], PPFLAG_DEPENDENCIES, NULL ) != 0 ) {
-        cprintf( "Unable to open '%s'\r\n", argv[1] );
+        printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );
     }
     // call PP_Define here to predefine any desired macros

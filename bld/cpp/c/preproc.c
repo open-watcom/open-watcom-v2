@@ -440,9 +440,9 @@ void PP_Fini( void )
     PP_Free( IncludePath2 );
 }
 
-int PP_ReadBuf( void )
+size_t PP_ReadBuf( void )
 {
-    int         len;
+    size_t      len;
     FILELIST    *this_file;
 
     this_file = PP_File;
