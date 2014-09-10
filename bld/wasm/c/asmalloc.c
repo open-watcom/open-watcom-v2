@@ -50,8 +50,8 @@ static void memLine( void *file, const char *buf, size_t size )
 {
     fwrite( "***", 1, 3, stderr );
     fwrite( buf, 1, size, stderr );
-    if( file != NULL ) {
-        fwrite( buf, 1, size, file );
+    if( memFile != NULL ) {
+        fwrite( buf, 1, size, memFile );
     }
 }
 #endif
@@ -60,7 +60,7 @@ void MemInit( void )
 {
 #ifdef TRMEM
     memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, NULL, &memFile, memLine,
+    memHandle = _trmem_open( malloc, free, realloc, NULL, NULL, memLine,
         _TRMEM_ALLOC_SIZE_0 |
         _TRMEM_FREE_NULL |
         _TRMEM_OUT_OF_MEMORY |
