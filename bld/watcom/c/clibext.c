@@ -2418,17 +2418,17 @@ int getopt( int argc, char * const argv[], const char *optstring )
     }
 }
 
-static int is_valid_template( char *template, char **xs )
+static int is_valid_template( char *template_str, char **xs )
 {
     size_t              len;
     char                *p;
 
     /*** Ensure the last 6 characters form the string "XXXXXX" ***/
-    len = strlen( template );
+    len = strlen( template_str );
     if( len < 6 ) {
         return( 0 );        /* need room for six exes */
     }
-    p = template + len - 6;
+    p = template_str + len - 6;
     if( strcmp( p, "XXXXXX" ) ) {
         return( 0 );
     }
@@ -2437,7 +2437,7 @@ static int is_valid_template( char *template, char **xs )
     return( 1 );
 }
 
-int mkstemp( char *template )
+int mkstemp( char *template_str )
 {
     char                letter;
     unsigned            pid;
@@ -2445,7 +2445,7 @@ int mkstemp( char *template )
     int                 fh;
 
     /*** Ensure the template is valid ***/
-    if( !is_valid_template( template, &xs ) ) {
+    if( !is_valid_template( template_str, &xs ) ) {
         return( -1 );
     }
 
@@ -2456,8 +2456,8 @@ int mkstemp( char *template )
     /*** Try to build a unique filename ***/
     for( letter = 'a'; letter <= 'z'; letter++ ) {
         sprintf( xs, "%c%05u", letter, pid );
-        if( access( template, F_OK ) != 0 ) {
-            fh = open( template, O_RDWR | O_CREAT | O_TRUNC | O_EXCL | O_BINARY, S_IREAD | S_IWRITE );
+        if( access( template_str, F_OK ) != 0 ) {
+            fh = open( template_str, O_RDWR | O_CREAT | O_TRUNC | O_EXCL | O_BINARY, S_IREAD | S_IWRITE );
             if( fh != -1 ) {
                 return( fh );       /* file successfully created */
             }
