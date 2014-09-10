@@ -446,7 +446,6 @@ extern FNAMEPTR     AddFlist(char const *);
 extern FNAMEPTR     FileIndexToFName(unsigned);
 extern char         *FNameFullPath( FNAMEPTR flist );
 extern char         *FileIndexToCorrectName( unsigned file_index );
-extern int          FListSrcQue(void);
 extern void         SrcFileReadOnlyDir( char const *dirs );
 extern void         SrcFileReadOnlyFile( char const *file );
 extern bool         SrcFileInRDir( FNAMEPTR flist );
@@ -481,6 +480,7 @@ extern void         InvDecl( void );
 extern parm_list    *NewParm( TYPEPTR, parm_list * );
 extern TYPEPTR      *MakeParmList( parm_list *, bool );
 extern FIELDPTR     FieldCreate( const char *name );
+extern bool         LoopDecl( SYM_HANDLE *sym_head );
 
 // cinfo.c
 extern segment_id   SymSegId( SYMPTR sym );

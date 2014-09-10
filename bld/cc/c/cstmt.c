@@ -70,8 +70,6 @@ static BLOCKPTR     BlockStack;
 static BLOCKPTR     LoopStack;
 static SWITCHPTR    SwitchStack;
 
-extern  int     LoopDecl( SYM_HANDLE *sym_head );
-
 void StmtInit( void )
 {
     FirstStmt = NULL;
