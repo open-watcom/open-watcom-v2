@@ -34,6 +34,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "trmem.h"
+#include "clibext.h"
 
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
