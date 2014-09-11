@@ -3,7 +3,10 @@
 .sr 386only=
 .sr AXPonly=
 .*
-.note mtune=i{0,1,2,3,4,5,6}86
+.note march=i{,1,2,3}86,axp,mips,ppc
+which CPU architecture instruction set is used
+.*
+.note mtune=i{3,4,5,6}86
 which x86 CPU type to optimize for
 .*
 .note mregparm=1
