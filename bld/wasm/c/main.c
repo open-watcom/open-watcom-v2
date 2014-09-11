@@ -52,13 +52,8 @@
 #include "pathgrp.h"
 
 extern void             Fatal( unsigned msg, ... );
-extern void             ObjRecInit( void );
 extern void             DelErrFile( void );
-extern void             PrintfUsage( int first_ln );
-extern void             MsgPrintf1( int resourceid, char *token );
 extern void             AsmBufferInit( void );
-
-extern const char       *FingerMsg[];
 
 File_Info               AsmFiles;       // files information
 pobj_state              pobjState;      // object file information for WOMP
@@ -551,7 +546,7 @@ static void set_some_kinda_name( char token, char *name )
 static void usage_msg( void )
 /***************************/
 {
-    PrintfUsage( MSG_USAGE_BASE );
+    PrintfUsage();
     exit(1);
 }
 
@@ -721,19 +716,6 @@ static void get_os_include( void )
     }
 }
 
-int trademark( void )
-/*******************/
-{
-    int         count = 0;
-
-    if( !Options.quiet ) {
-        while( FingerMsg[count] != NULL ) {
-            printf( "%s\n", FingerMsg[count++] );
-        }
-    }
-    return( count );
-}
-
 static void free_names( void )
 /****************************/
 /* Free names set as cmdline options */
@@ -761,7 +743,7 @@ static void main_init( void )
     int         i;
 
     MemInit();
-    for( i=ASM; i<=OBJ; i++ ) {
+    for( i = ASM; i <= OBJ; i++ ) {
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
@@ -1189,12 +1171,15 @@ static void do_init_stuff( char **cmdline )
     env = getenv( "INCLUDE" );
     if( env != NULL )
         AddItemToIncludePath( env, NULL );
-    if( !Options.quiet && !Options.banner_printed ) {
-        Options.banner_printed = true;
-        trademark();
-    }
+    PrintBanner();
     open_files();
     PushLineQueue();
+}
+
+static void do_fini_stuff( void )
+/*******************************/
+{
+    MsgFini();
 }
 
 #ifdef __UNIX__
@@ -1237,7 +1222,7 @@ int main( void )
 #endif
     SetMemoryModel();
     WriteObjModule();           // main body: parse the source file
-    MsgFini();
+    do_fini_stuff();
     main_fini();
     return( Options.error_count ); /* zero if no errors */
 }

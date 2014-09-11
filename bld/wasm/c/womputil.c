@@ -41,8 +41,6 @@
 
 #define JUMP_OFFSET(cmd)    ((cmd)-CMD_POBJ_MIN_CMD)
 
-extern void             MsgPrintf( int resourceid );
-
 static pobj_filter      jumpTable[ CMD_MAX_CMD - CMD_POBJ_MIN_CMD + 1 ];
 
 /* these routines are part of the interface to the WOMP routines */

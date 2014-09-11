@@ -94,8 +94,7 @@ objs = $(extra_objs_$(host_os)_$(host_cpu)) &
     asmjump.obj         &
     autodept.obj        &
     queues.obj          &
-    pathlist.obj        &
-    finger.obj
+    pathlist.obj
 
 objs += $(trmem_objs)
 

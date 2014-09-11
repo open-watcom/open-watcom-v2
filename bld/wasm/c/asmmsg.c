@@ -38,9 +38,6 @@
 #include "fatal.h"
 #include "errout.h"
 
-extern void             MsgPrintf( int resourceid ); // don't use this
-extern int              trademark( void );
-
 void                    OpenErrFile( void );
 void                    print_include_file_nesting_structure( void );
 
@@ -144,11 +141,9 @@ static void PrtMsg1( char *prefix, int msgnum, va_list args1, va_list args2 )
 /***************************************************************************/
 // print standard WASM messages, no WOMP
 {
-    if( !Options.banner_printed ) {
-        Options.banner_printed = true;
-        trademark();
-    }
-    if( ErrFile == NULL ) OpenErrFile();
+    PrintBanner();
+    if( ErrFile == NULL )
+        OpenErrFile();
     PutMsg( errout, prefix, msgnum, args1 );
     fflush( errout );                       /* 27-feb-90 */
     if( ErrFile ) {
@@ -163,10 +158,7 @@ void PrtMsg( int msgnum, ... )
 {
     va_list args1;
 
-    if( !Options.banner_printed ) {
-        Options.banner_printed = true;
-        trademark();
-    }
+    PrintBanner();
     if( ErrFile == NULL )
         OpenErrFile();
     va_start( args1, msgnum );

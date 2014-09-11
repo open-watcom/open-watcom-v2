@@ -70,6 +70,11 @@ extern void             AsmNote( int level, int msgnum, ... );
     extern void MsgFini( void );
     extern void OpenLstFile( void );
     extern void LstMsg( const char *format, ... );
+    extern void PrintfUsage( void );
+    extern void MsgPrintf( int resourceid );
+    extern void MsgPrintf1( int resourceid, const char *token );
+    extern int  PrintBanner( void );
+
 
 #if !defined( USE_TEXT_MSGS )
 

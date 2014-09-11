@@ -35,6 +35,7 @@
   #include <process.h>
 #endif
 #include "wio.h"
+#include "banner.h"
 #include "clibext.h"
 
 #if defined( USE_TEXT_MSGS )
@@ -66,10 +67,21 @@ static  unsigned        MsgShift;
 
 #endif
 
-extern  int             trademark( void );
 #ifdef __OSI__
 extern char             *_Copyright;
 #endif
+
+static const char *FingerMsg[] = {
+    banner1w( "Assembler", _WASM_VERSION_ ),
+    banner2,
+    banner2a( "1992" ),
+    banner3,
+    banner3a,
+#ifdef D32_NAME
+    "DOS4/G Run-Time " D32_VERSION " " D32_COPYRIGHT,
+#endif
+    0
+};
 
 static bool Wait_for_return( const char *page_text )
 {
@@ -81,6 +93,21 @@ static bool Wait_for_return( const char *page_text )
     return( c == 'q' || c == 'Q' );
 }
 
+int PrintBanner( void )
+{
+    int     count = 0;
+
+    if( !Options.banner_printed ) {
+        Options.banner_printed = true;
+        if( !Options.quiet ) {
+            while( FingerMsg[count] != NULL ) {
+                printf( "%s\n", FingerMsg[count++] );
+            }
+        }
+    }
+    return( count );
+}
+
 void PrintfUsage( void )
 {
     char        msg_buff[MAX_MESSAGE_SIZE];
@@ -88,7 +115,7 @@ void PrintfUsage( void )
     char        page_text[MAX_MESSAGE_SIZE];
     int         first_ln;
 
-    count = trademark();
+    count = PrintBanner();
 #ifdef __OSI__
     if( _Copyright != NULL ) {
         puts( _Copyright );
@@ -115,22 +142,16 @@ void MsgPrintf( int resourceid )
 {
     char        msgbuf[MAX_MESSAGE_SIZE];
 
-    if( !Options.banner_printed ) {
-        Options.banner_printed = true;
-        trademark();
-    }
+    PrintBanner();
     MsgGet( resourceid, msgbuf );
     printf( msgbuf );
 }
 
-void MsgPrintf1( int resourceid, char *token )
+void MsgPrintf1( int resourceid, const char *token )
 {
     char        msgbuf[MAX_MESSAGE_SIZE];
 
-    if( !Options.banner_printed ) {
-        Options.banner_printed = true;
-        trademark();
-    }
+    PrintBanner();
     MsgGet( resourceid, msgbuf );
     printf( msgbuf, token );
 }
