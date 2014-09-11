@@ -111,32 +111,32 @@ sw_a_ppc_   =
 sw_a_mps_   =
 
 # sw_c_(system)_(processor)
-sw_c_generic_086  = -oax
-sw_c_generic_286  = -oax
-sw_c_generic_386  = -oaxt
-sw_c_msdos_086    = -oax
-sw_c_msdos_286    = -oax
-sw_c_msdos_386    = -oaxt
-sw_c_rdos_386     = -oaxt-bm
-sw_c_rdosdev_386  = -oaxt-bm-zu-zdp-zff-zgf
-sw_c_nw_clib_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB
-sw_c_nw_clibl_386 = -oaxt-bm -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
-sw_c_nw_libc_386  = -oaxt-bm -D__far= -D__near= -D_NETWARE_LIBC
-sw_c_nw_libcl_386 = -oaxt-bm -D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
-sw_c_os2_286      = -oax $(def_windowing)
-sw_c_os2_386      = -oaxt-bm $(def_windowing)
-sw_c_os2_ppc      = -oaxt-bm $(def_windowing)
-sw_c_osi_386      = -oaxt -D__CALL21__
-sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-bm
-sw_c_windows_086  = -oax $(def_windowing)
-sw_c_windows_386  = -oaxt -D__CALL21__ $(def_windowing)
-sw_c_winnt_386    = -oaxt-bm $(def_windowing)
-sw_c_winnt_axp    = -oaxt-bm -DWIN32 -D_WIN32 $(def_windowing)
-sw_c_winnt_ppc    = -oaxt-bm -DWIN32 -D_WIN32 $(def_windowing)
-sw_c_linux_386    = -oaxt
-sw_c_linux_ppc    = -oaxt
-sw_c_linux_mps    = -oaxt -eoe
+sw_c_generic_086  = -oaxh
+sw_c_generic_286  = -oaxh
+sw_c_generic_386  = -oaxht
+sw_c_msdos_086    = -oaxh
+sw_c_msdos_286    = -oaxh
+sw_c_msdos_386    = -oaxht
+sw_c_rdos_386     = -oaxht-bm
+sw_c_rdosdev_386  = -oaxht-bm-zu-zdp-zff-zgf
+sw_c_nw_clib_386  = -oaxht-bm -D__far= -D__near= -D_NETWARE_CLIB
+sw_c_nw_clibl_386 = -oaxht-bm -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
+sw_c_nw_libc_386  = -oaxht-bm -D__far= -D__near= -D_NETWARE_LIBC
+sw_c_nw_libcl_386 = -oaxht-bm -D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
+sw_c_os2_286      = -oaxh $(def_windowing)
+sw_c_os2_386      = -oaxht-bm $(def_windowing)
+sw_c_os2_ppc      = -oaxht-bm $(def_windowing)
+sw_c_osi_386      = -oaxht -D__CALL21__
+sw_c_qnx_286      = -oaxh
+sw_c_qnx_386      = -oaxht-bm
+sw_c_windows_086  = -oaxh $(def_windowing)
+sw_c_windows_386  = -oaxht -D__CALL21__ $(def_windowing)
+sw_c_winnt_386    = -oaxht-bm $(def_windowing)
+sw_c_winnt_axp    = -oaxht-bm -DWIN32 -D_WIN32 $(def_windowing)
+sw_c_winnt_ppc    = -oaxht-bm -DWIN32 -D_WIN32 $(def_windowing)
+sw_c_linux_386    = -oaxht
+sw_c_linux_ppc    = -oaxht
+sw_c_linux_mps    = -oaxht -eoe
 
 # sw_a_(system)_(processor)
 sw_a_generic_086  =

@@ -1,4 +1,4 @@
-sw_c_common =-oax-w8-we-zl-x-xx-zam-za99
+sw_c_common =-oaxh-w8-we-zl-x-xx-zam-za99
 sw_a_common =-we
 
 !ifdef __UNIX__
