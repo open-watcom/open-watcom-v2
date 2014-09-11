@@ -40,8 +40,8 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
 #include <wos2.h>
+#include "_process.h"
 
-extern  void    __ccmdline( char *, char const * const *, char *, int );
 
 #pragma on(stack_check);
 int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char const * const *argv )

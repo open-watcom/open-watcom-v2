@@ -25,6 +25,7 @@ objs += spawn.obj
 .c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h" -I"$(trmem_dir)"
+inc_dirs_os2 = -I"$(clib_dir)/process/h"
 
 extra_c_flags_mem      = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
