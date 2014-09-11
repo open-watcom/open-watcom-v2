@@ -85,8 +85,6 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
     
- #define        ENVPARM envmem
-
     retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
         &envstrings, &envseg,
         &cmdline_len, FALSE );

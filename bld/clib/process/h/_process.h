@@ -47,9 +47,6 @@ extern int  _dospawn(int,char _WCI86NEAR *,char _WCI86NEAR *,unsigned, const cha
 #else
 extern int  _dospawn(int,char *,char *, char *, const char * const *);
 #endif
-#if defined( __DOS__ )
-#pragma aux _dospawn "_*" parm caller [];
-#endif
 #endif
 #ifdef __RDOS__
 extern int  _doexec(char *,char *, const char * const *);

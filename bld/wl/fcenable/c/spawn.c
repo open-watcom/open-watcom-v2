@@ -32,7 +32,6 @@
 
 #include <errno.h>
 #include <stdio.h>
-#include <conio.h>
 #include <dos.h>
 #include <string.h>
 #include <stddef.h>
@@ -42,11 +41,10 @@
 #define INCL_DOSERRORS
 #include <wos2.h>
 
-extern  void    __ccmdline( char *, char **, char *, int );
+extern  void    __ccmdline( char *, char const * const *, char *, int );
 
-#pragma aux     _dospawn "_*" parm caller [];
 #pragma on(stack_check);
-int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char *argv[] )
+int _dospawn( int mode, char *pgm, char *cmdline, char *envp, char const * const *argv )
 {
     APIRET      rc;
     RESULTCODES returncodes;

@@ -86,8 +86,6 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
     
- #define        ENVPARM envmem
-    
     if( mode == OLD_P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)(path, argv, envp);
         return( rc );
@@ -137,18 +135,18 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         } else {
             __set_errno( 0 );
             /* user specified an extension, so try it */
-            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
+            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
         }
     }
     else {
         end_of_p = p + __F_NAME(strlen,wcslen)( p );
         __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
         __set_errno( 0 );
-        retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
+        retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
         if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
             __set_errno( 0 );
             __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
-            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
+            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 /* try for a .BAT file */
                 __set_errno( 0 );
