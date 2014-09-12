@@ -31,11 +31,12 @@
 
 #include <dos.h>
 #include "fints.h"
+#include "dosret.h"
+#include "dointr.h"
 
 
 extern  int                     BDDoDosCall( union REGS __far *, union REGS __far * );
 extern  int                     BDDoDosxCall( union REGS __far *, union REGS __far *, struct SREGS __far * );
-extern  int                     _dosretax( int, int );
 
 #pragma aux               BDDoDosCall =                         \
         0x1e           /* push ds */                            \
@@ -113,9 +114,6 @@ extern  int                     _dosretax( int, int );
         parm caller [ si cx ] [ ax dx ] [ bx di ]    \
         value [ ax ]                                 \
         modify [ di es ];
-
-extern  void            _DoINTR( int, union REGPACK __far * );
-#pragma aux             _DoINTR parm [bx] [ax dx] modify [cx si di es];
 
 void _fintr( int intno, union REGPACK __far *regs )
 {

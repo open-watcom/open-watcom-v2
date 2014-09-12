@@ -32,15 +32,8 @@
 
 #include "variety.h"
 #include <i86.h>
+#include "dointr.h"
 
-
-#if defined(__386__)
-extern  void            _DoINTR( int, union REGPACK * );
-#pragma aux             _DoINTR "*_" parm [eax] [edx];
-#else
-extern  void            _DoINTR( int, union REGPACK _WCFAR * );
-#pragma aux             _DoINTR parm [bx] [ax dx] modify [cx si di es];
-#endif
 
 _WCRTLINK void intr( int intno, union REGPACK *regs )
 {

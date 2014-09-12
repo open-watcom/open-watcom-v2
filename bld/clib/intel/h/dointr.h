@@ -24,47 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  _DOINTR assembly function interface.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <i86.h>
-#include "dointr.h"
-
-
-_WCRTLINK int (int86x)( int intno,
-                union REGS *inregs,
-                union REGS *outregs,
-                struct SREGS *segregs )
-{
-    union REGPACK regs;
-
-    regs.w.ax = inregs->w.ax;
-    regs.w.bx = inregs->w.bx;
-    regs.w.cx = inregs->w.cx;
-    regs.w.dx = inregs->w.dx;
-/*  regs.w.bp = inregs->w.bp;   no bp in REGS union */
-    regs.w.si = inregs->w.si;
-    regs.w.di = inregs->w.di;
-    regs.w.flags = inregs->w.cflag;
-    regs.w.ds = segregs->ds;
-    regs.w.es = segregs->es;
-
-    _DoINTR( intno, &regs );
-
-    outregs->w.ax = regs.w.ax;
-    outregs->w.bx = regs.w.bx;
-    outregs->w.cx = regs.w.cx;
-    outregs->w.dx = regs.w.dx;
-/*  outregs->w.bp = regs.w.bp;  no bp in REGS union */
-    outregs->w.si = regs.w.si;
-    outregs->w.di = regs.w.di;
-    outregs->w.cflag = regs.w.flags;
-    segregs->ds = regs.w.ds;
-    segregs->es = regs.w.es;
-
-    return( outregs->w.ax );
-}
+#if defined( _M_IX86 )
+#if defined( _M_I86 )
+extern  void            _DoINTR( int, union REGPACK _WCFAR * );
+#pragma aux             _DoINTR parm [bx] [ax dx] modify [cx si di es];
+#else
+extern  void            _DoINTR( int, union REGPACK * );
+#pragma aux             _DoINTR "*_" parm [eax] [edx];
+#endif
+#endif
