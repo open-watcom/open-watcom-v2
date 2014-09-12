@@ -91,15 +91,9 @@ endif
 
 _TEXT   segment word public 'CODE'
 
-if _MODEL and _BIG_CODE
-        extrn   __CMain                 : far
-        extrn   __InitRtns              : far
-        extrn   __FiniRtns              : far
-else
-        extrn   __CMain                 : near
-        extrn   __InitRtns              : near
-        extrn   __FiniRtns              : near
-endif
+        extrn   __CMain                 : proc
+        extrn   __InitRtns              : proc
+        extrn   __FiniRtns              : proc
 
 if ( _MODEL and _TINY ) eq 0
 FAR_DATA segment byte public 'FAR_DATA'

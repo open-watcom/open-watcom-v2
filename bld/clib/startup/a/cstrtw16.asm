@@ -66,11 +66,7 @@ pStackBot       equ     000EH
         extrn   __FInitRtns     : far
         extrn   __FFiniRtns     : far
 
-if _MODEL and _BIG_CODE
-        extrn   WINMAIN         : far
-else
-        extrn   WINMAIN         : near
-endif
+        extrn   WINMAIN         : proc
 
         extrn   _edata          : byte          ; end of DATA (start of BSS)
         extrn   _end            : byte          ; end of BSS (start of STACK)

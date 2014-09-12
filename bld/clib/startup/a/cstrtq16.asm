@@ -43,13 +43,8 @@ include exitwmsg.inc
 
         assume  nothing
 
-if _MODEL and _BIG_CODE
-        extrn   __CMain                 : far
-        extrn   __qnx_exit_             : far
-else
-        extrn   __CMain                 : near
-        extrn   __qnx_exit_             : near
-endif
+        extrn   __CMain                 : proc
+        extrn   __qnx_exit_             : proc
 
         extrn   _edata                  : byte  ; end of DATA (start of BSS)
         extrn   _end                    : byte  ; end of BSS (start of STACK)
