@@ -61,10 +61,10 @@
     #define _POSIX_HANDLE_CLEANUP
 #endif
 
-#if defined(__OS2_286__)
-    #define SPVE_NEAR
-#else
+#if defined( __DOS__ ) && defined( _M_I86 )
     #define SPVE_NEAR _WCI86NEAR
+#else
+    #define SPVE_NEAR
 #endif
 
 #if defined( __OS2__ ) && defined( __BIG_DATA__ )
