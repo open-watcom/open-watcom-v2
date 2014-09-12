@@ -24,8 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-;*               DESCRIBE IT HERE!
+;* Description:  doexec implementation for 16-bit DOS
 ;*
 ;*****************************************************************************
 
@@ -36,13 +35,8 @@ include struct.inc
 
         name    doexec
 
-if _MODEL and _BIG_CODE
-        extrn   execve_         :far
-        extrn   __init_execve_  :far
-else
-        extrn   execve_         :near
-        extrn   __init_execve_  :near
-endif
+        extrn   execve_         :proc
+        extrn   __init_execve_  :proc
         extrn   __close_ovl_file:dword
 
 _TEXT   segment byte public 'CODE'

@@ -34,23 +34,6 @@ ifdef __WASM__
     ifdef __386__
         extrn   "C",__fatal_runtime_error : near
     else
-        ifdef __TINY__
-            extrn   "C",__fatal_runtime_error : near
-        endif
-        ifdef __SMALL__
-            extrn   "C",__fatal_runtime_error : near
-        endif
-        ifdef __COMPACT__
-            extrn   "C",__fatal_runtime_error : near
-        endif
-        ifdef __MEDIUM__
-            extrn   "C",__fatal_runtime_error : far
-        endif
-        ifdef __LARGE__
-            extrn   "C",__fatal_runtime_error : far
-        endif
-        ifdef __HUGE__
-            extrn   "C",__fatal_runtime_error : far
-        endif
+        extrn   "C",__fatal_runtime_error : proc
     endif
 endif
