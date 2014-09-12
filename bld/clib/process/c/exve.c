@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of execve().
+* Description:  16-bit DOS implementation of execve().
 *
 ****************************************************************************/
 
@@ -50,9 +50,8 @@
 #include "_process.h"
 #include "_int23.h"
 
-extern  int     (*__Exec_addr)();
-extern  void    _WCFAR __cdecl _doexec(char _WCNEAR *,char _WCNEAR *,
-                                int,unsigned,unsigned,unsigned,unsigned );
+extern execveaddr_type  __Exec_addr;
+extern void _WCFAR __cdecl _doexec(char _WCI86NEAR *,char _WCI86NEAR *,int,unsigned,unsigned,unsigned,unsigned );
 
 #define TRUE            1
 #define FALSE           0
@@ -127,7 +126,7 @@ static unsigned doscalve( block, size )
     } else {
         TinySetBlock( have - ( size + 1 ), block );
         return( dosalloc( size ) );
-    };
+    }
 }
 
 static void resetints( void )
@@ -146,15 +145,17 @@ static int doalloc( size, envdata, envsize )
     dosseg = envseg = 0;
     for( free = 0; (p = dosalloc( 1 )) != 0; free = p ) {
         _blkptr( p )->next = free;
-    };
+    }
     if( _RWD_osmajor == 2 ) {
-        if( free == 0 || (dosseg = doscalve( free, DOS2SIZE )) == 0 )
+        if( free == 0 || (dosseg = doscalve( free, DOS2SIZE )) == 0 ) {
             goto error;
-    };
+        }
+    }
     for( p = free; p != 0; p = _blkptr( p )->next ) {
-        if( (envseg = doscalve( p, envsize )) != 0 )
+        if( (envseg = doscalve( p, envsize )) != 0 ) {
             break;
-    };
+        }
+    }
     if( envseg == 0 )
         goto error;
     for( p = _RWD_psp; p < envseg && _mcbptr( p )->owner == _RWD_psp; p = q + 1 ) {
@@ -163,8 +164,8 @@ static int doalloc( size, envdata, envsize )
             if( q - _RWD_psp < size )
                 goto error;
             break;
-        };
-    };
+        }
+    }
     _pspptr( _RWD_psp )->envp = envseg;
     movedata( envdata, 0, envseg, 0, envsize*16 );
     resetints();
@@ -173,19 +174,19 @@ static int doalloc( size, envdata, envsize )
             if( _mcbptr( p )->owner == _RWD_psp && p != _RWD_psp && p != envseg ) {
                 TinyFreeBlock( p );
                 break;
-            };
+            }
             if( _mcbptr( p )->flag != 'M' ) {
                 dosexpand( _RWD_psp );
                 _pspptr( _RWD_psp )->maxpara = _RWD_psp + _mcbptr( _RWD_psp )->size;
                 if( _mcbptr( _RWD_psp )->size < size ) {
                     puts( "Not enough memory on exec\r\n" );
                     TinyTerminateProcess( 0xff );
-                };
+                }
                 return( TRUE );
-            };
-        };
-    };
-    error: /* if we get an error */
+            }
+        }
+    }
+error: /* if we get an error */
     if( dosseg != 0 )
         TinyFreeBlock( dosseg );
     if( envseg != 0 )
@@ -193,7 +194,7 @@ static int doalloc( size, envdata, envsize )
     for( p = free; p != 0; p = q ) {
         q = _blkptr( p )->next;
         TinyFreeBlock( p );
-    };
+    }
     return( FALSE );
 }
 
@@ -245,7 +246,9 @@ _WCRTLINK int execve( path, argv, envp )
     if( strchr( name == NULL ? buffer : name, '.' ) ) {
         file = open( buffer, O_BINARY|O_RDONLY, 0 );
         __set_errno( ENOENT );
-        if( file == -1 ) goto error;
+        if( file == -1 ) {
+            goto error;
+        }
     } else {
         strcat( buffer, ".com" );
         file = open( buffer, O_BINARY|O_RDONLY, 0 );
@@ -253,7 +256,9 @@ _WCRTLINK int execve( path, argv, envp )
             strcpy( strrchr( buffer, '.' ), ".exe" );
             file = open( buffer, O_BINARY|O_RDONLY, 0 );
             __set_errno( ENOENT );
-            if( file == -1 ) goto error;
+            if( file == -1 ) {
+                goto error;
+            }
         }
     }
 
@@ -272,9 +277,9 @@ _WCRTLINK int execve( path, argv, envp )
         para = (__lseek( file, 0, SEEK_END ) + MIN_COM_STACK + 15)/16;
     }
     close( file );
-    for( i = 0, argvv = (const char**)argv; *argvv != NULL; argvv++, i++ )
-        ;
-    ++i;                        /* copy the NULL terminator too */
+    i = 1;  /* copy the NULL terminator too */
+    for( argvv = (const char **)argv; *argvv != NULL; argvv++ )
+        ++i;
     argvv = malloc( i * sizeof( char * ) );
     while( --i > 0 ) {
         argvv[i] = argv[i];
@@ -282,17 +287,17 @@ _WCRTLINK int execve( path, argv, envp )
     argvv[0] = buffer;           /* 22-jan-88 set program name */
     envpara = __cenvarg( argvv, envp, &envptr, &envstrings,
                          &envseg, &cmdline_len, TRUE );
-    if( envpara == -1 ) goto error;
+    if( envpara == -1 )
+        goto error;
     para += PSP_SIZE/16 + __exec_para + (strlen( path ) + 15)/16;
     __ccmdline( buffer, (const char * const *)argvv, cmdline, 0 );
     if( doalloc( para, envseg, envpara ) )
         save_file_handles();
-        _doexec( ( char _WCNEAR *)buffer, ( char _WCNEAR *)cmdline,
-            isexe, exe.ss, exe.sp, exe.cs, exe.ip );
+    _doexec( (char _WCI86NEAR *)buffer, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
     free( envptr );
     free( argvv );
-    error: /* Clean up after error */
+error: /* Clean up after error */
     return( -1 );
 }
 
