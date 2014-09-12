@@ -229,7 +229,7 @@ _DATA   segment word public 'DATA'
         public  "C",_STACKLOW
         public  "C",_STACKTOP
         public  "C",_cbyte
-        public  "C",_child
+        public  __child
         public  __no87
         public  __get_ovl_stack
         public  __restore_ovl_stack
@@ -247,7 +247,7 @@ _HShift     db 3                ; Huge Shift amount (real-mode=12,prot-mode=3)
 _STACKLOW   dw 0                ; lowest address in stack
 _STACKTOP   dw 0                ; highest address in stack
 _cbyte      dw 0                ; used by getch, getche
-_child      dw 0                ; non-zero => a spawned process is running
+__child     dw 0                ; non-zero => a spawned process is running
 __no87      db 0                ; non-zero => "NO87" enviroment var present
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer

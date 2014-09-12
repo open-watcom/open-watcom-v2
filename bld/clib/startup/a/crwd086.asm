@@ -47,7 +47,7 @@ _DATA   segment word public 'DATA'
         public  "C",_STACKLOW
         public  "C",_STACKTOP
         public  "C",_cbyte
-        public  "C",_child
+        public  __child
         public  __no87
         public  "C",__FPE_handler
 ifndef __QNX__
@@ -81,7 +81,7 @@ endif
 _STACKLOW  dw 0                 ; lowest address in stack
 _STACKTOP  dw 0                 ; highest address in stack
 _cbyte     dw 0                 ; used by getch, getche
-_child     dw 0                 ; non-zero => a spawned process is running
+__child    dw 0                 ; non-zero => a spawned process is running
 __no87     db 0                 ; non-zero => "NO87" environment var present
 ifndef __QNX__
 __get_ovl_stack     dw 0,0      ; get overlay stack pointer

@@ -84,7 +84,7 @@ __ASTACKPTR dd 0                ; alternate F77 stack pointer
 ifndef __NETWARE__
 _cbyte     dd 0                 ; used by getch, getche
 _cbyte2    dd 0                 ; used by getch, getche
-_child     dd 0                 ; non-zero => a spawned process is running
+__child    dd 0                 ; non-zero => a spawned process is running
 endif
 __no87     db 0                 ; non-zero => "NO87" environment var present
 ifndef __NETWARE__
@@ -164,7 +164,7 @@ endif
 ifndef __NETWARE__
         public  "C",_cbyte
         public  "C",_cbyte2
-        public  "C",_child
+        public  __child
         public  "C",_Envptr
 endif
         public  __no87

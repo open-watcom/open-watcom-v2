@@ -63,7 +63,7 @@ l_block ends
 exeparm l_block <?,?>                   ; parm block for load
 
         extrn   "C",errno:dword
-        extrn   "C",_child:dword
+        extrn   __child:dword
         extrn   "C",_osmajor:byte
 save_sp dd      ?               ; ESP
 save_ss dw      ?               ; SS
@@ -136,14 +136,14 @@ endif
         push    eax                     ; Allow a ctrl-break to get through?
         callos  kbdstatus               ;
         pop     eax                     ;
-        mov     dword ptr _child,0001h
+        mov     dword ptr __child,0001h
         mov     edx,path[ebp]
         callos  exec
         mov     ss,save_ss              ; - restore SS:SP
         mov     esp,save_sp             ; - . . .
         mov     ds,save_ds              ;
         pop     ds
-        mov     dword ptr _child,0000h
+        mov     dword ptr __child,0000h
         pop     es
         pop     ebp
         _if     nc                      ; If spawn was successful

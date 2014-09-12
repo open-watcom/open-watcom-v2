@@ -64,7 +64,7 @@ fcb2    db      16 dup(?)               ; room for FCB 2
 
 exeparm l_block <?,?,?,?>               ; parm block for load
 
-        extrn   "C",_child:word
+        extrn   __child:word
         extrn   "C",_osmajor:byte
 save_sp dw      ?               ; SP
 save_ss dw      ?               ; SS
@@ -163,7 +163,7 @@ endif
         push    ax                      ; Allow a ctrl-break to get through?
         callos  kbdstatus               ;
         pop     ax                      ;
-        mov     word ptr _child,0001h
+        mov     word ptr __child,0001h
         mov     dx,path[bp]
         push    ax
         call    dword ptr __close_ovl_file
@@ -194,7 +194,7 @@ endif
         sahf
         xchg    ax,bx
         pop     ds
-        mov     word ptr _child,0000h
+        mov     word ptr __child,0000h
         pop     es
         pop     bp
         _if     nc                      ; If spawn was successful

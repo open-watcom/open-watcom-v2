@@ -188,7 +188,7 @@ __D16Infoseg   dw       0020h   ; DOS/4G kernel segment
         extrn   __no87                  : byte
         extrn   "C",__uselfn            : byte
         extrn   "C",_Extender           : byte
-        extrn   "C",_child              : dword
+        extrn   __child                 : dword
         extrn   "C",_STACKTOP           : dword
         extrn   "C",_STACKLOW           : dword
         extrn   "C",_osminor            : byte

@@ -131,7 +131,7 @@ endif   ; ACAD
         extrn   "C",_osminor        : byte
         extrn   "C",_STACKLOW       : dword
         extrn   "C",_STACKTOP       : dword
-        extrn   "C",_child          : dword
+        extrn   __child             : dword
         extrn   __no87              : byte
         extrn   "C",__uselfn        : byte
         extrn   "C",_Extender       : byte

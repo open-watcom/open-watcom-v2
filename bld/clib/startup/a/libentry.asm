@@ -119,7 +119,7 @@ assume cs:_TEXT
         public  "C",_STACKLOW
         public  "C",_STACKTOP
         public  "C",_cbyte
-        public  "C",_child
+        public  __child
         public  __no87
         public  "C",_HShift
         public  __get_ovl_stack
@@ -135,7 +135,7 @@ _osminor   db 0                 ; minor DOS version number
 _osmode    db 0                 ; 0 => DOS real mode
 _HShift    db 0                 ; Huge Shift value
 _cbyte     dw 0                 ; used by getch, getche
-_child     dw 0                 ; non-zero => a spawned process is running
+__child    dw 0                 ; non-zero => a spawned process is running
 __no87     db 0                 ; always try to use the 8087
 __get_ovl_stack dw 0,0          ; get overlay stack pointer
 __restore_ovl_stack dw 0,0      ; restore overlay stack pointer

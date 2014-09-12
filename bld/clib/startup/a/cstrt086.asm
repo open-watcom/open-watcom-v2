@@ -155,7 +155,7 @@ _DATA   segment word public 'DATA'
         extrn   "C",_STACKLOW           : word
         extrn   "C",_STACKTOP           : word
         extrn   "C",_cbyte              : word
-        extrn   "C",_child              : word
+        extrn   __child                 : word
         extrn   __no87                  : byte
         extrn   "C",__uselfn            : byte
         extrn   "C",__FPE_handler       : dword
