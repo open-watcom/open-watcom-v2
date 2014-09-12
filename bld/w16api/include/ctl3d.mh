@@ -52,8 +52,7 @@ extern HINDIR DLL32Ctl3dCtlColorEx;
 #define Ctl3dUnregister( a )        InvokeIndirectFunction( DLL32Ctl3dUnregister, a )
 #define Ctl3dColorChange( )         InvokeIndirectFunction( DLL32Ctl3dColorChange )
 #define Ctl3dSubclassCtl( a )       InvokeIndirectFunction( DLL32Ctl3dSubclassCtl, a )
-#define Ctl3dCtlColorEx( a, b, c ) \
-    InvokeIndirectFunction( DLL32Ctl3dCtlColorEx, a, b, c )
+#define Ctl3dCtlColorEx( a, b, c )  InvokeIndirectFunction( DLL32Ctl3dCtlColorEx, a, b, c )
 
 #elif defined( __WINDOWS__ )
 
