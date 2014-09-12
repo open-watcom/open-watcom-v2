@@ -32,10 +32,9 @@
 
 #include "variety.h"
 #include <dos.h>
+#include "dosret.h"
 
 #if !defined(__WINDOWS_386__)
-
-extern  int                     _dosretax( int eax, int carry );
 
 extern  int                     DoDosxCall( void *in, void *out, void *sr );
 #pragma aux                     DoDosxCall = \

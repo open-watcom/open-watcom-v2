@@ -32,8 +32,7 @@
 
 #include "variety.h"
 #include <dos.h>
-
-extern  int             _dosretax( int ax, int carry );
+#include "dosret.h"
 
 extern  short           DoDosxCall( void *in, void *out, void *sr );
 #if !defined(__BIG_DATA__)

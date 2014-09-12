@@ -35,7 +35,7 @@
         include struct.inc
 
         name    dospawn
-        xrefp   "C",_dosretax
+        xrefp   __dosretax
 
 _TEXT   segment byte public 'CODE'
 _TEXT   ends
@@ -62,9 +62,7 @@ l_block ends
 
 exeparm l_block <?,?>                   ; parm block for load
 
-        extrn   "C",errno:dword
         extrn   __child:dword
-        extrn   "C",_osmajor:byte
 save_sp dd      ?               ; ESP
 save_ss dw      ?               ; SS
 save_ds dw      ?               ; DS
@@ -72,10 +70,10 @@ _DATA   ends
 
 _TEXT   segment
 
-        public  "C", _dospawn
+        public  __dospawn
 
 
-        defp    _dospawn
+        defp    __dospawn
         push    ebp
         mov     ebp,esp                 ; gain access to parms
 
@@ -151,14 +149,7 @@ endif
         _endif                          ; Endif
         sbb     edx,edx                 ; set dx = status of carry flag
         movzx   eax,ax
-ifdef __STACK__
-        push    edx
-        push    eax
-        call    _dosretax
-        add     esp,8
-else
-        call    _dosretax
-endif
+        call    __dosretax
         pop     ds                      ; restore segment registers
         pop     es                      ;
         pop     ebx                     ; restore registers
@@ -168,7 +159,7 @@ endif
         pop     esi                     ; . . .
         pop     ebp                     ; . . .
         ret                             ; return
-_dospawn endp
+__dospawn endp
 
 _TEXT   ends
         end

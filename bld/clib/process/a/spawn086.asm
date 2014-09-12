@@ -35,7 +35,7 @@ include msdos.inc
 include struct.inc
 
         name    dospawn
-        xrefp   "C",_dosretax
+        xrefp   __dosretax
         extrn   __close_ovl_file    :dword
 if _MODEL eq _SMALL
         extrn   __GETDS         :near
@@ -74,10 +74,10 @@ _DATA   ends
 
 _TEXT   segment
 
-        public  "C", _dospawn
+        public  __dospawn
 
 
-        defp    _dospawn
+        defp    __dospawn
         push    bp
         mov     bp,sp                   ; gain access to parms
 if _MODEL and _BIG_CODE
@@ -201,7 +201,7 @@ endif
           callos wait                   ; .. wait for child to complete
         _endif                          ; Endif
         sbb     dx,dx                   ; set dx = status of carry flag
-        call    _dosretax
+        call    __dosretax
         pop     ds                      ; restore segment registers
         pop     es                      ;
         pop     bx                      ; restore registers
@@ -211,7 +211,7 @@ endif
         pop     si                      ; . . .
         pop     bp                      ; . . .
         ret                             ; return
-_dospawn endp
+__dospawn endp
 
 _TEXT   ends
         end

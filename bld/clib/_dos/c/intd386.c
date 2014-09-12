@@ -33,9 +33,9 @@
 #include "variety.h"
 #include <dos.h>
 #include "tinyio.h"
+#include "dosret.h"
 
 #if !defined(__WINDOWS_386__)
-extern  int                     _dosretax( int eax, int carry );
 
 extern  int                     DoDosCall( void *in, void *out );
 #pragma aux                     DoDosCall = \

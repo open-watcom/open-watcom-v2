@@ -41,6 +41,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "seterrno.h"
+#include "dosret.h"
 #include "rtdata.h"
 
 #if defined(__NT__) || defined(__OS2__)
