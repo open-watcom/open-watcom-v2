@@ -96,6 +96,9 @@ extern      void            (*__FPE_handler_exit)( void );
     extern  int             __umaskval;
     extern  unsigned        _curbrk;
     extern  int             _commode;
+#if defined(_M_IX86) && defined(__WATCOMC__)
+    #pragma aux             _child "_*";
+#endif
 #endif
 #if !defined(__SW_BM)
     extern  unsigned        _STACKLOW;
