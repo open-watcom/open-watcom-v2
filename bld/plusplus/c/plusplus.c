@@ -441,8 +441,10 @@ static int front_end(           // FRONT-END PROCESSING
     }
     if( 0 == setjmp( exit_jmpbuf ) ) {
         CppExitInit();
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
         _real87 = 0;
         _8087 = 0;
+#endif
         CompInfo.exit_jmpbuf = exit_jmpbuf;
         CtxSetCurrContext( CTX_INIT );
 //printf( "ErrLimit = %d\n", ErrLimit );

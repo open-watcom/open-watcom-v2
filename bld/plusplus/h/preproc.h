@@ -145,7 +145,7 @@ bool MacroDependsDefined        // MACRO DEPENDENCY: DEFINED OR NOT
 ;
 bool MacroExists(               // TEST IF MACRO EXISTS
     const char *macname,        // - macro name
-    unsigned len )              // - length of macro name
+    size_t len )                // - length of macro name
 ;
 void MacroFini(                 // MACRO PROCESSING -- COMPLETION
     void )
@@ -276,7 +276,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
     unsigned len,               // - length of entry
-    unsigned name_len )         // - name of macro name
+    size_t name_len )           // - name of macro name
 ;
 MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     char const *name,           // - name
@@ -293,11 +293,11 @@ void MacroStorageFini(          // RELEASE MACRO STORAGE
     void )
 ;
 void MacroUndefine(             // UNDEFINE CURRENT NAME AS MACRO
-    unsigned len )              // - length of macro name
+    size_t len )                // - length of macro name
 ;
 void MacroCmdLnUndef(           // -U<macro-name>
     char *name,                 // - macro name
-    unsigned len )              // - length of macro name
+    size_t len )                // - length of macro name
 ;
 void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT
     TOKEN token )               // - token to be recognized
