@@ -747,9 +747,9 @@ static int isExpandable( MEPTR curr_mac, MACRO_TOKEN *mtok, int macro_parm )
 
 static MEPTR isAMacro( MACRO_TOKEN *mtok )
 {
-    const char *s;
-    unsigned len;
-    MEPTR fmentry;
+    const char  *s;
+    size_t      len;
+    MEPTR       fmentry;
 
     DbgStmt( ( Buffer[0] = '?' , Buffer[1] = '\0' ) );
     s = mtok->data;

@@ -213,27 +213,31 @@ static void CDefine( void )
     }
 }
 
+#define SYMBOL_VA_ARGS   "__VA_ARGS__"
+
 static unsigned addParmName( MAC_PARM **h, bool add_name )
 {
-    unsigned index;
-    size_t len;
-    size_t len_1;
-    MAC_PARM *parm_name;
-    if( CurToken == T_DOT_DOT_DOT )
-        strcpy( Buffer, "__VA_ARGS__" );
-    len = strlen( Buffer );
-    len_1 = len + 1;
+    unsigned    index;
+    size_t      len;
+    MAC_PARM    *parm_name;
+
+    if( CurToken == T_DOT_DOT_DOT ) {
+        len = sizeof( SYMBOL_VA_ARGS );
+        memcpy( Buffer, SYMBOL_VA_ARGS, len );
+    } else {
+        len = strlen( Buffer ) + 1;
+    }
     index = 0;
     RingIterBeg( *h, parm_name ) {
         ++index;
-        if( NameMemCmp( parm_name->name, Buffer, len_1 ) == 0 ) {
+        if( NameMemCmp( parm_name->name, Buffer, len ) == 0 ) {
             /* already present */
             return( index );
         }
     } RingIterEnd( parm_name );
     if( add_name ) {
-        parm_name = CMemAlloc( offsetof( MAC_PARM, name ) + len + 1 );
-        memcpy( parm_name->name, Buffer, len_1 );
+        parm_name = CMemAlloc( offsetof( MAC_PARM, name ) + len );
+        memcpy( parm_name->name, Buffer, len );
         RingAppend( h, parm_name );
     }
     return( 0 );

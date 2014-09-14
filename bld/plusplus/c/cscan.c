@@ -257,7 +257,7 @@ static bool scanHex( bool expanding )
     return( TRUE );                 /* indicate characters were matched */
 }
 
-static TOKEN idLookup( unsigned len, MEPTR *pmeptr )
+static TOKEN idLookup( size_t len, MEPTR *pmeptr )
 {
     MEPTR fmentry;
 

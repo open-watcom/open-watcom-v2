@@ -54,7 +54,7 @@ static kwflags kw_flags[(T_LAST_TOKEN + BITSIZE) / BITSIZE] = {0};
 static const kwflags _bits[BITSIZE] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 
 TOKEN KwLookup(         // TRANSFORM TO T_ID OR KEYWORD TOKEN
-    unsigned len )      // - length of id
+    size_t len )        // - length of id
 {
     TOKEN    token;     // - token value for KW
 

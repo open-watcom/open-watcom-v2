@@ -315,7 +315,7 @@ void BrinfMacUndef              // RECORD UNDEFINE OF MACRO
 SRCFILE BrinfMacUndefSource     // GET SOURCE OF AN UNDEF
     ( char const *name )        // - macro name
 {
-    unsigned nlen;              // - length of name
+    size_t nlen;                // - length of name
     MACUNDEF* curr;             // - current undef entry
     SRCFILE retn;               // - return value
 

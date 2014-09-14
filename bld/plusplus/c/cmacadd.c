@@ -459,7 +459,7 @@ pch_status PCHReadMacros( void )
 
 static MEPTR macroFind(         // LOOK UP A HASHED MACRO
     const char *name,           // - macro name
-    unsigned len,               // - length of macro name
+    size_t len,                 // - length of macro name
     unsigned *phash )           // - returned hash value
 {
     char *id;                   // - current macro name
@@ -524,7 +524,7 @@ static void unlinkMacroFromTable( MEPTR fmentry, unsigned hash )
 MEPTR MacroDefine(              // DEFINE A NEW MACRO
     MEPTR mentry,               // - scanned macro
     unsigned len,               // - length of entry
-    unsigned name_len )         // - name of macro name
+    size_t name_len )           // - name of macro name
 {
     MEPTR mptr;                 // - new entry for macro
     MEPTR old_mentry;           // - old entry for macro
@@ -608,17 +608,17 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
 
 MEPTR MacroLookup(          // LOOKUP CURRENT NAME AS A MACRO
     char const *name,       // - name
-    unsigned len )          // - length of name
+    size_t len )            // - length of name
 {
     unsigned hash;
 
-    return macroFind( name, len, &hash );
+    return( macroFind( name, len, &hash ) );
 }
 
 
 bool MacroExists(           // TEST IF MACRO EXISTS
     const char *macname,    // - macro name
-    unsigned len )          // - length of name
+    size_t len )            // - length of name
 {
     unsigned hash;
     bool exists;
@@ -646,7 +646,7 @@ bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
 }
 
 
-static void doMacroUndef( char *name, unsigned len, bool quiet )
+static void doMacroUndef( char *name, size_t len, bool quiet )
 {
     MEPTR fmentry;          // - current macro entry
     unsigned hash;          // - current macro hash
@@ -671,14 +671,14 @@ static void doMacroUndef( char *name, unsigned len, bool quiet )
 }
 
 void MacroUndefine(             // UNDEFINE CURRENT NAME AS MACRO
-    unsigned len )              // - length of macro name
+    size_t len )                // - length of macro name
 {
     doMacroUndef( Buffer, len, FALSE );
 }
 
 void MacroCmdLnUndef(           // -U<macro-name>
     char *name,                 // - macro name
-    unsigned len )              // - length of macro name
+    size_t len )                // - length of macro name
 {
     doMacroUndef( name, len, TRUE );
 }

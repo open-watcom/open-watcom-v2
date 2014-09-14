@@ -260,7 +260,7 @@ AUX_INFO *GetTargetHandlerPragma // GET PRAGMA FOR FS HANDLER
     ( void )
 ;
 TOKEN KwLookup(                 // TRANSFORM TO T_ID OR KEYWORD TOKEN
-    unsigned len )              // - length of id
+    size_t len )                // - length of id
 ;
 void KwDisable(                 // DISABLE A KEYWORD TOKEN TO T_ID
     TOKEN token )               // - token id
@@ -280,7 +280,7 @@ MEPTR MacroDefine(              // DEFINE A NEW MACRO
 ;
 MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     char const *name,           // - name
-    unsigned len )              // - length of name
+    size_t len )                // - length of name
 ;
 void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
     unsigned amount_needed,     // - amount for macro

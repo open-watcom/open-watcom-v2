@@ -62,6 +62,7 @@
 #include "swchar.h"
 #include "ialias.h"
 #include "clibext.h"
+#include "clibint.h"
 
 #ifndef NDEBUG
 #include "pragdefn.h"
@@ -80,8 +81,6 @@ enum {
     WPP_SUCCESS         = 0
 };
 
-unsigned char _8087;
-unsigned char _real87;
 
 static struct {                     // flags:
     unsigned dll_first_time :1;     // - first-time thru
