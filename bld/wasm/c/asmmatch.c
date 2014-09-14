@@ -554,7 +554,7 @@ bool match_phase_1( void )
                 found = true;
             }
             break;
-        case OP_I8_U:
+        case OP_U8:
             if( cur_opnd & OP_I ) {
                 if( Code->data[OPND1] <= UCHAR_MAX ) {
                     temp_opsiz = Code->prefix.opsiz;
@@ -760,9 +760,9 @@ static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE de
                 return( output_data( cur_opnd, OPND2 ) );
             }
             break;
-        case OP_I8_U:
+        case OP_U8:
             if( ( cur_opnd != OP_I8 )
-                && ( cur_opnd != OP_I8_U )
+                && ( cur_opnd != OP_U8 )
                 && ( cur_opnd != OP_I16 ) ) {
                 break;
             }

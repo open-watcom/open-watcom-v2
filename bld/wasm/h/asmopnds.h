@@ -57,15 +57,15 @@ enum operand_type {
     OP_I8       = 0x00000100,
     OP_I_1      = 0x00000200,
     OP_I_3      = 0x00000400,
-    OP_I8_U     = 0x00000800,
+    OP_U8       = 0x00000800,
     OP_I16      = 0x00001000,
     OP_I32      = 0x00002000,
     OP_J32      = 0x00004000,
     OP_J48      = 0x00008000,
-    OP_I        = ( OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U | OP_I16 | OP_I32 ),
-    OP_GE_8     = ( OP_I8 | OP_I8_U | OP_I16 | OP_I32 ),
+    OP_I        = ( OP_I8 | OP_I_1 | OP_I_3 | OP_U8 | OP_I16 | OP_I32 ),
+    OP_GE_8     = ( OP_I8 | OP_U8 | OP_I16 | OP_I32 ),
     OP_GE_16    = ( OP_I16 | OP_I32 ),
-    OP_GE_U8    = ( OP_I8_U | OP_I16 | OP_I32 ),
+    OP_GE_U8    = ( OP_U8 | OP_I16 | OP_I32 ),
 
     OP_M_B      = 0x00010000,
     OP_M_W      = 0x00020000,
@@ -131,15 +131,15 @@ typedef enum operand_type OPNDTYPE;
 #define OP_I8       0x00000100
 #define OP_I_1      0x00000200
 #define OP_I_3      0x00000400
-#define OP_I8_U     0x00000800
+#define OP_U8       0x00000800
 #define OP_I16      0x00001000
 #define OP_I32      0x00002000
 #define OP_J32      0x00004000
 #define OP_J48      0x00008000
-#define OP_I        ( OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U | OP_I16 | OP_I32 )
-#define OP_GE_8     ( OP_I8 | OP_I8_U | OP_I16 | OP_I32 )
+#define OP_I        ( OP_I8 | OP_I_1 | OP_I_3 | OP_U8 | OP_I16 | OP_I32 )
+#define OP_GE_8     ( OP_I8 | OP_U8 | OP_I16 | OP_I32 )
 #define OP_GE_16    ( OP_I16 | OP_I32 )
-#define OP_GE_U8    ( OP_I8_U | OP_I16 | OP_I32 )
+#define OP_GE_U8    ( OP_U8 | OP_I16 | OP_I32 )
 
 #define OP_M_B      0x00010000
 #define OP_M_W      0x00020000
@@ -256,7 +256,7 @@ enum oper_type {
  /*     OP_I8           immediate, 8 bit */
  /*     OP_I_1          immediate, 8 bit, value = 1 */
  /*     OP_I_3          immediate, 8 bit, value = 3 */
- /*     OP_I8_U         immediate, unsigned 8 bit, value between 0 - 255 */
+ /*     OP_U8           immediate, unsigned 8 bit, value between 0 - 255 */
  /*     OP_I            immediate, 8/16/32 bit */
  /*     OP_I16          immediate, 16 bit */
  /*     OP_I32          immediate, 32 bit */

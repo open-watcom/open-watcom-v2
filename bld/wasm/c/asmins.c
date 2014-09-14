@@ -427,7 +427,7 @@ int OperandSize( OPNDTYPE opnd )
         case MT_OWORD:   return( 16 );
         default:         break;
         }
-    } else if( opnd & ( OP_M8_R8 | OP_M_B | OP_I8 | OP_I_1 | OP_I_3 | OP_I8_U ) ) {
+    } else if( opnd & ( OP_M8_R8 | OP_M_B | OP_I8 | OP_I_1 | OP_I_3 | OP_U8 ) ) {
         return( 1 );
     } else if( opnd & ( OP_M16_R16 | OP_M_W | OP_I16 | OP_SR ) ) {
         return( 2 );
