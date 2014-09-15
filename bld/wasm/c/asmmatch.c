@@ -403,11 +403,11 @@ static bool match_phase_2( bool *found, const asm_ins ASMFAR **pins )
     ins = *pins;
     if( Code->info.opnd_type[OPND2] != OP_NONE ) {
         // 2 opnds instruction
-        return( match_phase_3( found, pins, ins->opnd_type[OPND1] ) );
+        return( match_phase_3( found, pins, ins->opnd_type1 ) );
     } else {
         // 1 opnd instruction
         // make sure the second opnd also match, i.e. has to be OP_NONE
-        if( ins->opnd_type[OPND2] == OP_NONE ) {
+        if( ins->opnd_type2 == OP_NONE ) {
             if( output( ins ) ) {
                 return( RC_ERROR );
             }
@@ -474,7 +474,7 @@ bool match_phase_1( void )
     // moved down 4 lines cur_opnd = Code->info.opnd_type[OPND1];
     while( ins->token == Code->info.token ) {
         // get the real opnd
-        asm_op1 = ins->opnd_type[OPND1];
+        asm_op1 = ins->opnd_type1;
         cur_opnd = Code->info.opnd_type[OPND1];
 
         /* fixme -- temporary fix for all OP_M types */
@@ -658,8 +658,8 @@ static bool match_phase_3( bool *found, const asm_ins ASMFAR **pins, OPNDTYPE de
     last_opnd = Code->info.opnd_type[OPND1];
     cur_opnd  = Code->info.opnd_type[OPND2];
 
-    while( ins->opnd_type[OPND1] == determinant && ins->token == instruction ) {
-        asm_op2 = ins->opnd_type[OPND2];
+    while( ins->opnd_type1 == determinant && ins->token == instruction ) {
+        asm_op2 = ins->opnd_type2;
         switch( asm_op2 ) {
         case OP_CR:
         case OP_DR:

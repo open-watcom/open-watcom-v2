@@ -2197,8 +2197,8 @@ static bool process_reg( expr_list *opndx, int *jmp_flags )
         return( process_address( opndx, jmp_flags ) );
     ins = AsmOpTable + AsmOpcode[AsmBuffer[opndx->base_reg].u.token].position;
     reg = ins->opcode;
-    Code->info.opnd_type[Opnd_Count] = ins->opnd_type[OPND2];
-    switch( ins->opnd_type[OPND2] ) {
+    Code->info.opnd_type[Opnd_Count] = ins->opnd_type2;
+    switch( ins->opnd_type2 ) {
     case OP_AL:
     case OP_R8:
         Code->info.opcode &= NOT_W_BIT;         // clear w-bit

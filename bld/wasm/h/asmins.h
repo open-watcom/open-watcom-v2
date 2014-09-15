@@ -63,7 +63,8 @@ typedef struct asm_ins {
     unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
     unsigned            opnd_dir        : 1;    /* operand direction */
     asm_cpu             cpu;                    /* CPU type */
-    OPNDTYPE            opnd_type[2];           /* asm_opnds */
+    OPNDTYPE            opnd_type1;             /* info on 1st operand type */
+    OPNDTYPE            opnd_type2;             /* info on 2nd operand type */
     unsigned char       opcode;                 /* opcode byte */
     unsigned char       rm_byte;                /* mod_rm_byte */
 } asm_ins;

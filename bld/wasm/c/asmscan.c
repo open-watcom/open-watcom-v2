@@ -473,7 +473,7 @@ static bool get_id( token_idx idx, const char **input, char **output )
         }
 #endif
 
-        if( ins->opnd_type[OPND1] == OP_SPECIAL ) {
+        if( ins->opnd_type1 == OP_SPECIAL ) {
             if( ins->rm_byte == OP_REGISTER ) {
                 AsmBuffer[idx].class = TC_REG;
             } else if( ins->rm_byte == OP_RES_ID ) {
