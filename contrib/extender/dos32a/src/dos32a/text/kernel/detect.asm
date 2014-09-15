@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -65,240 +65,246 @@
 
 pm32_info:
 	cld
-	push ds es			; preserve registers
-	push cs	cs			; DS = CS (_KERNEL)
-	pop ds es
+	push	ds es			; preserve registers
+	push	cs cs			; DS = CS (_KERNEL)
+	pop	ds es
 
-If EXEC_TYPE eq 2
-	call show_debug_string		; show debug string
-EndIf
-	mov ah,30h			; get DOS version
-	int 21h
-	cmp al,4			; if DOS version is below 4.00
-	mov ax,0			; return with error code 0
-	jb @@fail
+	call	cpu_detect		; get processor type
+	cmp	al,3			; check if processor is 80386+
+	mov	ax,1			; error in case no 80386+
+	jae	@@0
+	jmp	@@fail
 
-	call cpu_detect			; get processor type
-	mov cputype,al			; store processor type
-	cmp al,3			; check if processor is 80386+
-	mov ax,1			; error in case no 80386+
-	jae @@0
-	jmp @@fail
+@@0:	call	fpu_detect		; detect/initialize FPU
 
-@@0:	call fpu_detect			; detect/initialize FPU
-	mov fputype,al
+	mov	ah,30h			; get DOS version
+	int	21h
+	cmp	al,4			; if DOS version is below 4.0
+	mov	ax,0			; return with error code 0
+	jb	@@fail
 
-	mov ax,4300h			; check for XMS
-	int 2Fh
-	cmp al,80h
-	jnz @@1				; jump if XMS not found
+	mov	ax,4300h		; check for XMS
+	int	2Fh
+	cmp	al,80h
+	jnz	@@1			; jump if XMS not found
 
-	push es
-	mov ax,4310h
-	int 2Fh
-	mov xms_call[0],bx		; store XMS driver address
-	mov xms_call[2],es
-	mov ah,30h
-	int 21h				; HIMEM.SYS bug fix
-	mov ah,88h
-	xor bx,bx
-	call dword ptr xms_call		; get XMS v3.0 free mem in KB
-	test bl,bl			; if no XMS v3.0, use v2.0
-	jz @@0001
-	mov ah,08h
-	call dword ptr xms_call		; get XMS v2.0 free mem in KB
-	movzx eax,ax
-@@0001:	mov xms_data,eax
-	pop es
+	push	es
+	mov	ax,4310h
+	int	2Fh
+	mov	xms_call[0],bx		; store XMS driver address
+	mov	xms_call[2],es
+	mov	ah,30h
+	int	21h			; HIMEM.SYS bug fix
+	mov	ah,88h
+	xor	bx,bx
+	call	dptr xms_call		; get XMS v3 free mem in KB
+	test	bl,bl			; if no XMS v3, use v2
+	jz	@@xms1
+	mov	ah,08h
+	call	dptr xms_call		; get XMS v2 free mem in KB
+	movzx	eax,ax
+@@xms1:	mov	xms_data,eax
+	pop	es
 
-@@1:	test pm32_mode,00000001b	; check order of DPMI/VCPI detection
-	jz @@2
-	call @@detect_VCPI		; check for VCPI first
-	call @@detect_DPMI		; check for DPMI second
-	jmp @@3				; neither found, go on to raw check
-@@2:	call @@detect_DPMI		; check for DPMI first
-	call @@detect_VCPI		; check for VCPI second
+	pushf
+	pop	ax			; AX = flags
+	and	ah,0CFh			; reset IOPL to 0
+	push	ax			;  (can only be done at CPL 0)
+	popf				; reload flags with new IOPL
+	pushf
+	pop	ax			; AX = flags
+	test	ah,30h			; is IOPL still 0?
+	jz	@@4			; if yes, omit VCPI/DPMI tests
 
-@@3:	smsw ax				; AX = machine status word
-	and al,1			; is system in protected mode?
-	mov ax,2			; error code in case in protected mode
-	jnz @@fail			; if in protected mode, fail
+@@1:	call	@@detect_VCPI		; check for VCPI first
+	call	@@detect_DPMI		; check for DPMI second
 
-	cmp xms_data,0			; check if XMS_mem is present
-	setnz ch			; if yes, pmode type is XMS
-	mov bx,80h			; BX = memory requirement (IDT)
+	smsw	ax			; AX = machine status word
+	and	al,1			; is system in protected mode?
+	mov	ax,2			; error code in case in protected mode
+	jnz	@@fail			; if in protected mode, fail
 
-@@4:	movzx ax,pm32_rmstacks		; size of real mode stack area
-	imul ax,pm32_rmstacklen
-	add bx,ax
+@@4:	cmp	xms_data,0		; check if XMS_mem is present
+	setnz	ch			; if yes, pmode type is XMS
+	mov	bx,80h			; BX = memory requirement (IDT)
 
-	movzx ax,pm32_pmstacks		; size of protected mode stack area
-	imul ax,pm32_pmstacklen
-	add bx,ax
+@@vcpi:	movzx	ax,pm32_rmstacks	; size of real mode stack area
+	imul	ax,pm32_rmstacklen
+	add	bx,ax
 
-	movzx ax,pm32_callbacks		; size of callbacks
-	imul ax,25
-	add ax,0Fh
-	shr ax,4
-	add bx,ax
+	movzx	ax,pm32_pmstacks	; size of protected mode stack area
+	imul	ax,pm32_pmstacklen
+	add	bx,ax
 
-	mov ax,pm32_selectors		; size of GDT
-	add ax,SYSSELECTORS+1
-	shr ax,1
-	add bx,ax
+	movzx	ax,pm32_callbacks	; size of callbacks
+	imul	ax,25
+	add	ax,0Fh
+	shr	ax,4
+	add	bx,ax
 
-@@done:	xor ax,ax			; success code, also clear carry flag
-	mov cl,cputype
-	mov pmodetype,ch		; store pmode type
+	mov	ax,pm32_selectors	; size of GDT
+	add	ax,SYSSELECTORS+1
+	shr	ax,1
+	add	bx,ax
 
-	mov dx,offs @kernel_end - offs @kernel_beg
-	mov di,offs @kernel_beg
+@@done:	xor	ax,ax			; success code, also clear carry flag
+	mov	cl,cputype
+	mov	pmodetype,ch		; store pmode type
 
-@@exit:	pop es ds			; restore other registers
+	mov	dx,offs @kernel_end - offs @kernel_beg
+	mov	di,offs @kernel_beg
+
+@@exit:	pop	es ds			; restore other registers
 	retf				; return
+
 @@fail:	stc				; carry set, failed
-	jmp @@exit
+	jmp	@@exit
 
 
 
 
 ;=============================================================================
 @@detect_DPMI:				; detect a DPMI host
-	pop bp
+	pop	bp
 
-	mov ax,1687h			; check for DPMI
-	int 2Fh
-	test ax,ax			; DPMI present?
-	jnz @@d0			; if no, exit routine
+	mov	ax,1687h		; check for DPMI
+	int	2Fh
+	test	ax,ax			; DPMI present?
+	jnz	@@d0			; if no, exit routine
 
-	mov ax,1			; error code in case no processor 386+
-	cmp cl,3			; is processor 386+? (redundant)
-	jb @@fail			; if no, fail
+	mov	ax,1			; error code in case no processor 386+
+	cmp	cl,3			; is processor 386+? (redundant)
+	jb	@@fail			; if no, fail
 
-	mov al,3			; error code in case DPMI not 32bit
-	test bl,1			; is DPMI 32bit?
-	jz @@fail			; if no, fail
+	mov	al,3			; error code in case DPMI not 32bit
+	test	bl,1			; is DPMI 32bit?
+	jz	@@fail			; if no, fail
 
-	mov word ptr dpmiepmode[0],di   ; store DPMI initial mode switch addx
-	mov word ptr dpmiepmode[2],es
-	mov bx,si                       ; BX = number of paragraphs needed
-	mov ch,3                        ; pmode type is 3 (DPMI)
-	jmp @@done			; go to done ok
-@@d0:	jmp bp				; return to calling routine
+	mov	wptr dpmiepmode[0],di	; store DPMI initial mode switch addx
+	mov	wptr dpmiepmode[2],es
+	mov	bx,si			; BX = number of paragraphs needed
+	mov	ch,3			; pmode type is 3 (DPMI)
+	jmp	@@done			; go to done ok
+@@d0:	jmp	bp			; return to calling routine
 
 
 ;=============================================================================
 @@detect_VCPI:				; detect a VCPI server
-	pop bp
+	pop	bp
 
-	xor ax,ax                       ; get INT 67h vector
-	mov es,ax
-	mov ax,es:[67h*4]
-	or ax,es:[67h*4+2]              ; is vector NULL
-	jz @@d0				; if yes, no VCPI
-	mov ax,0DE00h                   ; call VCPI installation check
-	int 67h
-	test ah,ah			; AH returned as 0?
-	jnz @@d0			; if no, no VCPI
-	mov ax,0DE0Ah                   ; get PIC mappings
-	int 67h
-	mov picmaster,bl
-	mov picslave,cl
-	mov ax,0004h			; error code 4 in case of exit
-	cmp bl,cl			; BL=CL, only one PIC available
-	je @@fail
-	cmp bl,30h			; PICs mapped on system vectors?
-	je @@fail
-	cmp cl,30h
-	je @@fail
-	test bl,bl			; should not be mapped on INT 00h
-	je @@fail
-	test cl,cl
-	je @@fail
+	xor	ax,ax			; get INT 67h vector
+	mov	es,ax
+	mov	ax,es:[67h*4]
+	or	ax,es:[67h*4+2]		; is vector NULL
+	jz	@@d0			; if yes, no VCPI
 
-	mov edx,xms_data		; EDX=get free XMS memory
-	mov ecx,edx			; ECX=free XMS memory in KB
-	jecxz @@v1			; skip if none
+	mov	ax,0DE00h		; call VCPI installation check
+	int	67h
+	test	ah,ah			; AH returned as 0?
+	jnz	@@d0			; if no, no VCPI
 
-	test pm32_mode,00001000b	; check if VCPI+XMS alloc scheme
-	jz @@vA				; if not, jump (save some DOS memory)
-	call xms_allocmem		; alloc XMS memory in EDX
-	mov di,dx			; DI=handle
-	dec ax				; if AX=0001, no error occured
-	jz @@v1
-@@vA:	xor ecx,ecx			; if error, XMS memory in ECX = 0
+	mov	ax,0DE0Ah		; get PIC mappings
+	int	67h
+	mov	picmaster,bl
+	mov	picslave,cl
+	mov	ax,0004h		; error code 4 in case of exit
+	cmp	bl,cl			; BL=CL, only one PIC available
+	je	@@fail
+	cmp	bl,30h			; PICs mapped on system vectors?
+	je	@@fail
+	cmp	cl,30h
+	je	@@fail
+	cmp	cl,08h			; slave PIC shouldn't be mapped onto INT 08h
+	je	@@fail
+	test	bl,bl			; should not be mapped on INT 00h
+	je	@@fail
+	test	cl,cl
+	je	@@fail
 
-@@v1:	mov ax,0DE03h
-	int 67h				; EDX=free VCPI pages
+	mov	edx,xms_data		; EDX=get free XMS memory
+	mov	ecx,edx			; ECX=free XMS memory in KB
+	jecxz	@@v1			; skip if none
 
-	push es ecx edx di
-	test pm32_mode,00000100b	; check if VCPI smart pagetable alloc
-	jz @@v1a			; no, use standard detection
+	test	pm32_mode,00001000b	; check if VCPI+XMS alloc scheme
+	jz	@@vA			; if not, jump (save some DOS memory)
+	call	xms_allocmem		; alloc XMS memory in EDX
+	mov	di,dx			; DI=handle
+	dec	ax			; if AX=0001, no error occured
+	jz	@@v1
+@@vA:	xor	ecx,ecx			; if error, XMS memory in ECX = 0
 
-	mov ah,48h			; allocate 4K block of memory
-	mov bx,0100h			;  for VCPI pagetable
-	int 21h
-	jc @@v1a			; INT 21h failed, use standard alloc
+@@v1:	mov	ax,0DE03h
+	int	67h			; EDX=free VCPI pages
 
-	mov es,ax			; ES=returned segment
-	xor di,di			; DI=zero pointer
-	sub sp,8*3			; DS:SI=pointer to structure
-	mov si,sp
-	push ds
-	push ss
-	pop ds
-	mov ax,0DE01h			; get PM interface
-	int 67h
-	pop ds
-	add sp,8*3			; discard structure on stack
-	mov ah,49h			; discard pagetable and free DOS mem
-	int 21h
-	mov eax,1000h			; pagetable limit 4K
-	sub ax,di			; minus used part
-	shr ax,2			; convert to 4K pages
-	jmp @@v1b
+	push	es ecx edx di
+	test	pm32_mode,00000100b	; check if VCPI smart pagetable alloc
+	jz	@@v1a			; no, use standard detection
 
-@@v1a:	xor eax,eax
-@@v1b:	pop di edx ecx es
+	mov	ah,48h			; allocate 4K block of memory
+	mov	bx,0100h		;  for VCPI pagetable
+	int	21h
+	jc	@@v1a			; INT 21h failed, use standard alloc
 
-	mov esi,ecx			; ECX=XMS free mem,EDX=VCPI free pages
-	shr esi,2			; ESI=XMS_freemem/4 (to match 4Kpages)
-	lea esi,[edx+esi+3FFh]		; ESI=XMS_4Kmem+VCPI_4Kpages+4M_align
-	sub esi,eax			; minus free 0th pagetable space
-	jnc @@v1c			; just in case...
-	adc esi,eax
-@@v1c:	shr esi,10			; ESI=ESI/1024
-	jecxz @@v2
+	mov	es,ax			; ES=returned segment
+	xor	di,di			; DI=zero pointer
+	sub	sp,8*3			; DS:SI=pointer to structure
+	mov	si,sp
+	push	ds
+	push	ss
+	pop	ds
+	mov	ax,0DE01h		; get PM interface
+	int	67h
+	pop	ds
+	add	sp,8*3			; discard structure on stack
+	mov	ah,49h			; discard pagetable and free DOS mem
+	int	21h
+	mov	eax,1000h		; pagetable limit 4K
+	sub	ax,di			; minus used part
+	shr	ax,2			; convert to 4K pages
+	jmp	@@v1b
 
-	mov dx,di
-	mov ah,0Ah			; free what was allocated
-	call dword ptr xms_call
-@@v2:	movzx ax,pm32_maxpages
-	cmp ax,si
-	jbe @@v3
-	mov ax,si
+@@v1a:	xor	eax,eax
+@@v1b:	pop	di edx ecx es
 
-@@v3:	test ax,ax			; now if no pages, check for
-	jnz @@v5			; DOS/32A, and if present, use its
-	pushad				; pages and pagetables
-	mov bp,sp
-	mov ax,0FF88h			; check if running under DOS/32A
-	int 21h
-	cmp eax,'ID32'
-	jnz @@v4
-	mov [bp+1Ch],si			; if yes, store pagetables in AX
+	mov	esi,ecx			; ECX=XMS free mem,EDX=VCPI free pages
+	shr	esi,2			; ESI=XMS_freemem/4 (to match 4Kpages)
+	lea	esi,[edx+esi+3FFh]	; ESI=XMS_4Kmem+VCPI_4Kpages+4M_align
+	sub	esi,eax			; minus free 0th pagetable space
+	jnc	@@v1c			; just in case...
+	adc	esi,eax
+@@v1c:	shr	esi,10			; ESI=ESI/1024
+	jecxz	@@v2
+
+	mov	dx,di
+	mov	ah,0Ah			; free what was allocated
+	call	dptr xms_call
+@@v2:	movzx	ax,pm32_maxpages
+	cmp	ax,si
+	jbe	@@v3
+	mov	ax,si
+
+@@v3:	test	ax,ax			; if no pages, check for DOS/32A
+	jnz	@@v5
+	pushad
+	mov	bp,sp
+	mov	ax,0FF88h		; check if running under DOS/32A
+	int	21h
+	cmp	eax,'ID32'		; if present, use the already alloc'ed pagetables
+	jnz	@@v4
+	mov	[bp+1Ch],si		; store pagetables in AX
 @@v4:	popad
-@@v5:	cmp al,64			; limit the number of pagetables to
-	jbe @@v6			; maximum 64, = 256MB
-	mov al,64
-@@v6:	mov pagetables,al		; BX = VCPI page tables needed
-	add al,pm32_maxfpages		; + physical memory mappable pages
-	shl ax,8			; 100h paragraphs per page table
-	add ax,100h+100h+0FFh+7+80h	; +page_dir+0th_page+align_buf+TSS+IDT
-	mov bx,ax
-	mov ch,2			; pmode type is 2 (VCPI)
-	jmp @@4				; go to figure other memory needed
-@@v0:	jmp bp				; return to calling routine
+
+@@v5:	cmp	al,64			; limit the number of pagetables to
+	jbe	@@v6			; maximum 64, = 256MB
+	mov	al,64
+@@v6:	mov	pagetables,al		; BX = VCPI page tables needed
+	add	al,pm32_maxfpages	; + physical memory mappable pages
+	shl	ax,8			; 100h paragraphs per page table
+	add	ax,100h+100h+0FFh+7+80h	; +page_dir+0th_page+align_buf+TSS+IDT
+	mov	bx,ax
+	mov	ch,2			; pmode type is 2 (VCPI)
+	jmp	@@vcpi			; go to figure other memory needed
+@@v0:	jmp	bp			; return to calling routine
 
 
 
@@ -316,9 +322,9 @@ cpu_detect:				; detect: 286, 386, 486, 586 etc
 	pushf
 	pop	ax
 	and	ax,0F000h
-	jne	@@l2
+	jne	@@1
 	jmp	@@x1
-@@l2:	inc	cl			; CPU = 80386
+@@1:	inc	cl			; CPU = 80386
 	pushfd
 	pop	eax
 	mov	edx,eax
@@ -328,9 +334,9 @@ cpu_detect:				; detect: 286, 386, 486, 586 etc
 	pushfd
 	pop	eax
 	xor	eax,edx
-	jne	@@l3
+	jne	@@2
 	jmp	@@x1
-@@l3:	inc	cl			; CPU = 80486
+@@2:	inc	cl			; CPU = 80486
 	push	edx
 	popfd
 	pushfd
@@ -343,9 +349,12 @@ cpu_detect:				; detect: 286, 386, 486, 586 etc
 	pushfd
 	pop	eax
 	xor	eax,edx
-	jne	@@l4
+	jne	@@3
 	jmp	@@x2
-@@l4:	mov	eax,1
+@@3:	xor	eax,eax
+	db	0Fh, 0A2h		; CPUID
+	mov	cpuidlvl,eax		; set CPUID level
+	mov	eax,1
 	db	0Fh, 0A2h		; CPUID
 	and	ah,0Fh
 	mov	cl,ah
@@ -353,6 +362,7 @@ cpu_detect:				; detect: 286, 386, 486, 586 etc
 	xor	eax,eax
 	xor	edx,edx
 @@x1:	mov	al,cl
+	mov	cputype,al		; store processor type
 	sti
 	ret
 
@@ -360,20 +370,20 @@ fpu_detect:				; detect 8087, 287, 387, 487 etc
 	push	large 0
 	mov	bp,sp
 	fninit
-	fnstcw	word ptr [bp+2]
-	mov	ax,word ptr [bp+2]
+	fnstcw	wptr [bp+2]
+	mov	ax,wptr [bp+2]
 	cmp	ah,03h
 	jnz	@@done			; done: no FPU present
-	mov	word ptr [bp],1
-	and	word ptr [bp+2],0FF7Fh
+	mov	wptr [bp],1
+	and	wptr [bp+2],0FF7Fh
 	wait
-	fldcw	word ptr [bp+2]
+	fldcw	wptr [bp+2]
 	fdisi
-	fstcw	word ptr [bp+2]
+	fstcw	wptr [bp+2]
 	wait
-	test	word ptr [bp+2],0080h
+	test	wptr [bp+2],0080h
 	jnz	@@done			; done: 8087 is present
-	mov	word ptr [bp],2
+	mov	wptr [bp],2
 	fninit
 	wait
 	fld1
@@ -394,11 +404,11 @@ fpu_detect:				; detect 8087, 287, 387, 487 etc
 	wait
 	sahf
 	jz	@@done			; done: 80287 is present
-	mov	word ptr [bp],3
+	mov	wptr [bp],3
 	mov	al,cputype
 	cmp	al,4
 	jb	@@done			; done: 80387 is present
-	mov	byte ptr [bp],al	; done: 80487+ (build-in)
+	mov	bptr [bp],al		; done: 80487+ (build-in)
 @@done:	pop	eax
 	and	eax,7
 	jz	@@exit
@@ -406,7 +416,8 @@ fpu_detect:				; detect 8087, 287, 387, 487 etc
 @@loop:	fldz				; set ST(0) to ST(7) to +ZERO
 	loop	@@loop
 	finit				; reinitialize FPU
-@@exit:	ret
+@@exit:	mov	fputype,al
+	ret
 
 	Align 4
 @area1_end label byte

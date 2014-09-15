@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -162,19 +162,12 @@ _int10_ip	dd 0		; default INT 10h handler
 _int10_cs	dd 0
 _int21_ip	dd 0		; default INT 21h handler
 _int21_cs	dd 0
-_int33_ip	dd 0		; default INT 33h handler
-_int33_cs	dd 0
 _int23_ip	dd 0		; default INT 23h handler
 _int23_cs	dd 0
+_int33_ip	dd 0		; default INT 33h handler
+_int33_cs	dd 0
+_exc_tab	dd 16 * 2 dup(0)
 
-_exc00_ip	dd 0
-_exc00_cs	dd 0
-_exc06_ip	dd 0
-_exc06_cs	dd 0
-_exc0D_ip	dd 0
-_exc0D_cs	dd 0
-_exc0E_ip	dd 0
-_exc0E_cs	dd 0
 
 ;-----------------------------------------------------------------------------
 _exec_handle		equ @area1_dw+00h		;dw 0
@@ -211,19 +204,34 @@ _int_erravail		equ @area1_db+5Eh		;db 0
 _app_type		equ @area1_db+60h		;db 0
 _app_load		equ @area1_db+61h		;db 0
 
-_app_buf_allocsel	equ @area2_dw+00h
-_app_buf_allocbase	equ @area2_dd+APP_MAXOBJECTS*2
+_mus_esp		equ @area1_dd+64h		;dd 0
+_mus_ss			equ @area1_dw+68h		;dw 0
+
+; machine state
+ms_reg_cr0		equ @area1_dd+ 80h		;dd 0
+ms_reg_cr2		equ @area1_dd+ 84h		;dd 0
+ms_reg_cr3		equ @area1_dd+ 88h		;dd 0
+ms_reg_dr6		equ @area1_dd+ 8Ch		;dd 0
+ms_eflags		equ @area1_dd+ 90h		;dd 0
+ms_ec			equ @area1_dd+ 94h		;dd 0
+ms_frame_esp		equ @area1_dd+0A0h		;dd 0	; exception handler's stack frame: ESP
+ms_frame_ss		equ @area1_dw+0A4h		;dw 0	; exception handler's stack frame: SS
+ms_reg_ds		equ @area1_dw+0A8h		;dw 0
+ms_int			equ @area1_dw+0ACh		;dw 0	; INT #
+
+_app_buf_allocsel	equ @area2_dw+00h		;dw 0
+_app_buf_allocbase	equ @area2_dd+APP_MAXOBJECTS*2	;dd APP_MAXOBJECTS*2 dup(00h)
 
 
 ;-----------------------------------------------------------------------------
 n_msg	db 0
-cpr_msg	db 'DOS/32A -- Protected Mode Run-time  '
+cpr_msg	db 'DOS/32A -- DOS Extender '
 If EXEC_TYPE eq 2
-	db 'Beta '
-Endif
-	db 'Version '
-ver_msg	db 'x.xx',cr
-	db 'Copyright (C) Supernar Systems, Ltd. 1996-2002',cr
+	db 'BETA '
+EndIf
+	db 'version '
+ver_msg	db 'x.x.x',cr
+	db 'Copyright (C) 1996-2006 by Narech K.',cr
 cpr_end	label byte
 
 errmsg1	db 'DOS/32A fatal (%w): ',0
@@ -252,7 +260,7 @@ dfC_str db 'NOC'		; disable copyright banner		--
 
 ; INIT errors		00xx
 ;=============================================================================
-d_err0	db 'this program requires DOS 4.00 or higher'			,0
+d_err0	db 'this program requires DOS 4.0 or higher'			,0
 d_err1	db '80386 processor or better required to run protected mode'	,0
 d_err2	db 'system software does not follow VCPI/DPMI specifications'	,0
 d_err3	db 'present DPMI host does not support 32bit applications'	,0
@@ -305,7 +313,7 @@ x_err3	db 'DPMI host reported an error (#%wh)'				,0
 ;=============================================================================
 w_msg1	db 'no extended memory has been allocated'			,0
 w_msg2	db 'PICs have been relocated to INT %bh, INT %bh'		,0
-w_msg3	db 'real mode interrupt vector had been modified: INT %bh'	,0
+w_msg3	db 'real mode interrupt vector has been modified: INT %bh'	,0
 w_msg4	db 'mouse initialization failed'				,0
 w_msg5	db 'object #%d contains no data or code'			,0
 w_msg6	db 'incompatible version of DOS/32A already running'		,0
@@ -316,7 +324,7 @@ w_msg6	db 'incompatible version of DOS/32A already running'		,0
 r_msg80	db 'unknown error code (#%bh)'					,0
 r_msg81	db 'out of real-mode virtual stacks'				,0
 r_msg82	db 'out of protected-mode virtual stacks'			,0
-r_msg83	db 'extended memory blocks have been destroyed (#%l)'		,0
+r_msg83	db 'extended memory blocks have been corrupted (#%l)'		,0
 r_msg84	db 'DOS/4G API calls not supported'				,0
 
 
@@ -325,40 +333,38 @@ r_msg84	db 'DOS/4G API calls not supported'				,0
 ;=============================================================================
 v_msg01	db 'Processor: %d, System: %s, Memory: DOS=%dKB, DPMI=%d%s',cre
 v_msg02	db 'NONE',0, 'XMS',0,0, 'VCPI',0, 'DPMI',0
-v_msg03	db 'LE',0,'LX',0,'LC',0
+v_msg03	db 'LE',0,'LX',0,'LC',0,'PE',0
 v_msg04	db 'KB',0
 v_msg05	db 'MB',0
 v_msg10	db 'Loading program "%s", %s-style',cre
 v_msg11	db 'Object #%d loaded at %l, V/Psize: %l/%l, Flags=%w, Sel=%w',cre
 v_msg12	db 'Startup CS:EIP=%w:%l, SS:ESP=%w:%l, %s EIP=%d:%l',cr
-	db 'Memory left: DOS=%dKB, DPMI=%d%s, PSP_Sel=%w, Env_Sel=%w, '
-	db 'Env_Seg=%w',cre
+	db 'Memory left: DOS=%dKB, DPMI=%d%s. PSP_Sel=%w, Env_Sel=%w, Env_Seg=%w',cre
 
 
 ;=============================================================================
 excmsgE	db 'exception',0
 excmsgI	db 'unexpected interrupt',0
-excmsgS	db 'software interrupt',0
-excmsg1	db '%s (INT %bh)',cr
-	db 'Identity: %s at <%w:%l>',cre
-excmsg2	db 'Linear crash address <%d:%l>',0
-excmsg3	db 'Unrelocated crash address <%d:%l>',0
-excmsg4	db ', error code pushed on stack <%l>',0
-excmsg5	db 'Debugger trap (INT 1) at <%w:%l>, %s address <%d:%l>',cre
-excmsg6	db 'Breakpoint trap (INT 3) at <%w:%l>, %s address <%d:%l>',cre
-nulmsg0	db 'Null-pointer protection at <%w:%l>, %s address <%d:%l>',cre
-excmsg7	db '[A]bort, [P]roceed, [T]race =>',0
-excmsgA	db 'linear',0
-excmsgB	db 'unrelocated',0
-excmsgC	db 'Module name: "%s", Process_ID=%w',cre
-dbgmsg1	db 'EFLAGS = %l [%l|%l]  ',0
+excmsg1	db '%s %bh',cr
+	db 'Identity: %s at %w:%l',cre
+excmsg2	db '%s crash address %d:%l',0
+excmsg4	db ', error code pushed on stack %l',0
+
+excmsgA	db 'Linear',0
+excmsgB	db 'Unrelocated',0
+excmsgC	db 'Module name: "%s", ProcessId=%w',cre
+
+nulmsg0	db 'Null-pointer protection at %w:%l',cre
+
+dbgmsg1	db 'EFLAGS = %l [%l.%l]  ',0
 dbgmsg2	db 'CS:[EIP] = %b %b %b %b %b %b %b %b %b %b',0
-dbgmsg4	db 'EAX = %l    ESI = %l       Last INT = %bh    SS:[ESP+00] = %l',cre
+dbgmsg4	db 'EAX = %l    ESI = %l       DR6 = %l    SS:[ESP+00] = %l',cre
 dbgmsg5	db 'EBX = %l    EDI = %l       CR0 = %l    SS:[ESP+04] = %l',cre
 dbgmsg6 db 'ECX = %l    EBP = %l       CR2 = %l    SS:[ESP+08] = %l',cre
 dbgmsg7	db 'EDX = %l    ESP = %l       CR3 = %l    SS:[ESP+0C] = %l',cre
 dbgmsgA	db 'Invalid selector',0
 dbgmsgB	db 'NULL selector',0
+
 selmsg1	db 'CS: = %w  ',0
 selmsg2	db 'DS: = %w  ',0
 selmsg3	db 'ES: = %w  ',0

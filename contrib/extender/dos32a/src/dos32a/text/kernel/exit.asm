@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -41,35 +41,40 @@
 ; Exit Protected Mode
 ;=============================================================================
 
-int21:	cmp ah,4Ch			; watch for INT 21h AH=4Ch
-	je @@0
-	jmp int_matrix+4*21h		; go to INT 21h redirection
-@@0:	cli
-	cld
-	push ax				; preserve AX error code
-	mov ds,cs:seldata
-	mov es,selzero
-	mov eax,oldcr0
-	mov cr0,eax
+int21h_pm:
+	cmp	ah,4Ch			; watch for INT 21h AH=4Ch
+	jne	@@done
 
-	mov eax,oldint1Bh		; restore critical INTs
-	mov es:[4*1Bh],eax
-	mov eax,oldint1Ch
-	mov es:[4*1Ch],eax
-	mov eax,oldint21h
-	mov es:[4*21h],eax
-	mov eax,oldint23h
-	mov es:[4*23h],eax
-	mov eax,oldint24h
-	mov es:[4*24h],eax
-	mov eax,oldint2Fh
-	mov es:[4*2Fh],eax
-	call mem_dealloc		; dealloc memory for current process
-	movzx bx,pmodetype		; appropriate exit routine
-	add bx,bx
-	call @@exit[bx]			; call cleanup routine on exit
-	pop ax				; restore AX
-@@done:	jmp int_matrix+4*21h		; go to INT 21h redirection
+	cli
+	cld
+	push	ax			; save error code in AL
+
+	mov	ds,cs:seldata
+	mov	es,selzero
+
+	mov	eax,oldcr0		; restore CR0
+	mov	cr0,eax
+
+	mov	eax,oldint1Bh		; restore critical INTs
+	mov	es:[4*1Bh],eax
+	mov	eax,oldint1Ch
+	mov	es:[4*1Ch],eax
+	mov	eax,oldint21h
+	mov	es:[4*21h],eax
+	mov	eax,oldint23h
+	mov	es:[4*23h],eax
+	mov	eax,oldint24h
+	mov	es:[4*24h],eax
+	mov	eax,oldint2Fh
+	mov	es:[4*2Fh],eax
+
+	call	mem_dealloc		; dealloc memory for current process
+	movzx	bx,pmodetype		; appropriate exit routine
+	add	bx,bx
+	call	@@exit[bx]		; call cleanup routine on exit
+
+	pop	ax			; restore AX
+@@done:	jmp	int_matrix+4*21h	; go to INT 21h redirection
 
 @@exit	dw r_exit
 	dw x_exit
@@ -77,87 +82,92 @@ int21:	cmp ah,4Ch			; watch for INT 21h AH=4Ch
 	dw d_exit
 
 
-
+; deallocate memory for this process (eg all blocks matching id32_process_id)
 ;=============================================================================
 mem_dealloc:
-	cmp id32_process_id,0		; no need in freeing memory when
-	jz @@done			;  only one process is running
-	mov esi,mem_ptr
-	mov eax,mem_free
-	or eax,esi			; check if memory was allocated
-	jz @@done			; if not, we are done
-@@1:	mov eax,es:[esi+04h]
-	mov edx,es:[esi+08h]
-	btr eax,31
-	cmp edx,dptr id32_process_id	; block allocated from this process
-	jnz @@2				; if not, jump
-	mov es:[esi+04h],eax		; otherwise set this block as free
-@@2:	lea esi,[esi+eax+10h]		; get ptr to next memory block
-	cmp esi,mem_top			; check if at top of memory
-	jb @@1				; if not, loop
-	push ds es
-	pop ds
-	call int31_linkfreeblocks
-	pop ds
+	cmp	id32_process_id,0	; no need in freeing memory when
+	jz	@@done			;  only one process is running
+
+	mov	esi,mem_ptr
+	mov	eax,mem_free
+	or	eax,esi			; check if memory was allocated
+	jz	@@done			; if not, we are done
+
+@@1:	mov	eax,es:[esi+04h]
+	mov	edx,es:[esi+08h]
+	btr	eax,31
+	cmp	edx,dptr id32_process_id	; block allocated from this process
+	jnz	@@2			; if not, jump
+	mov	es:[esi+04h],eax	; otherwise set this block as free
+@@2:	lea	esi,[esi+eax+10h]	; get ptr to next memory block
+	cmp	esi,mem_top		; check if at top of memory
+	jb	@@1			; if not, loop
+	push	ds es
+	pop	ds
+	call	int31_linkfreeblocks
+	pop	ds
 @@done:	ret
 
 
+; RAW exit prologue
 ;=============================================================================
-r_exit:	mov eax,oldint15h		; put back old INT 15h handler
-	mov es:[4*15h],eax
+r_exit:	mov	eax,oldint15h		; put back old INT 15h handler
+	mov	es:[4*15h],eax
 	ret
 
+; XMS exit prologue
 ;=============================================================================
-x_exit:	call xms_dealloc
-	mov ah,A20_state		; reset A20 gate to initial state
-	and ah,1
-	xor ah,1			; calculate appropriate function num
-	add ah,3
-	jmp xms_call_pm
+x_exit:	call	xms_dealloc
+	mov	ah,A20_state		; reset A20 gate to initial state
+	and	ah,1
+	xor	ah,1			; calculate appropriate function num
+	add	ah,3
+	jmp	xms_call_pm
 
+; VCPI exit prologue
 ;=============================================================================
-v_exit:	call vcpi_dealloc
-	;jmp xms_dealloc
+v_exit:	mov	cx,vcpi_allocmem	; check if memory was allocated
+	mov	esi,pagetablefree
+	jcxz	xms_dealloc		; if no VCPI memory was allocated, try XMS
 
+@@0:	mov	edx,es:[esi]
+	add	esi,4
+	and	dx,0F000h
+	mov	ax,0DE05h
+	call	fptr vcpi_calleip
+	loop	@@0
+
+	mov	eax,vcpi_cr3		; reload CR3 to flush page cache
+	mov	cr3,eax
 
 ;-----------------------------------------------------------------------------
 xms_dealloc:				; XMS deallocate memory
-	mov dx,xms_handle		; check if memory was allocated
-	test dx,dx
-	jz d_exit			; if not, done
-@@0:	mov ah,0Dh			; unlock XMS memory
-	call xms_call_pm
-	mov ah,0Ah			; free XMS memory
-xms_call_pm:
-	push ss
-	pop es
-	sub esp,32h
-	mov edi,esp
-	xor ecx,ecx
-	mov [esp+14h],dx		; DX
-	mov [esp+1Ch],ax		; AX
-	mov eax,dword ptr xms_call	; real mode CS:IP
-	mov [esp+20h],cx		; clear flags
-	mov [esp+2Eh],ecx		; clear SS:SP
-	mov [esp+2Ah],eax		; put in structure
-	xor bx,bx
-	mov ax,0301h
-	int 31h
-	add esp,32h
-d_exit:	ret
+	mov	dx,xms_handle		; check if memory was allocated
+	test	dx,dx
+	jz	d_exit			; if not, done
 
-vcpi_dealloc:				; VCPI deallocate memory
-	mov cx,vcpi_allocmem		; check if memory was allocated
-	mov esi,pagetablefree
-	jcxz @@2			; if no memory was allocated, done
-@@1:	mov edx,es:[esi]
-	add esi,4
-	and dx,0F000h
-	mov ax,0DE05h
-	call fword ptr vcpi_calleip
-	loop @@1
-	mov eax,vcpi_cr3		; reload CR3 to flush page cache
-	mov cr3,eax
-@@2:	ret
+@@0:	mov	ah,0Dh			; unlock XMS memory
+	call	xms_call_pm
+	mov	ah,0Ah			; free XMS memory
+xms_call_pm:
+	push	ss
+	pop	es
+	sub	esp,32h
+	mov	edi,esp
+	xor	ecx,ecx
+	mov	[esp+14h],dx		; DX
+	mov	[esp+1Ch],ax		; AX
+	mov	eax,dptr xms_call	; real mode CS:IP
+	mov	[esp+20h],cx		; clear flags
+	mov	[esp+2Eh],ecx		; clear SS:SP
+	mov	[esp+2Ah],eax		; put in structure
+	xor	bx,bx
+	mov	ax,0301h
+	int	31h
+	add	esp,32h
+
+; DPMI exit prologue (actually there is no such thing)
+;=============================================================================
+d_exit:	ret
 
 

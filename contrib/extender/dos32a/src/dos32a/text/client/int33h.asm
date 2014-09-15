@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -85,14 +85,14 @@ _int33:	cld
 	mov	esi,edx
 	mov	es,cs:_sel_zero
 	movzx	edi,cs:_seg_mus
-	mov	word ptr [ebp+1Ch],ax
-	mov	word ptr [ebp+18h],cx
-	mov	word ptr [ebp+10h],bx
-	mov	word ptr [ebp+22h],di
-	mov	word ptr [ebp+14h],0
+	mov	wptr [ebp+1Ch],ax
+	mov	wptr [ebp+18h],cx
+	mov	wptr [ebp+10h],bx
+	mov	wptr [ebp+22h],di
+	mov	wptr [ebp+14h],0
 	shl	edi,4
 	mov	ecx,10h
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	call	int33h
 	add	esp,32h
 	jmp	@__ok
@@ -117,8 +117,8 @@ _int33:	cld
 ;	ES:EDX = far pointer to routine
 ;
 @__0014h:
-	mov	si,word ptr cs:_mus_sel
-	mov	edi,dword ptr cs:_mus_off
+	mov	si,wptr cs:_mus_sel
+	mov	edi,dptr cs:_mus_off
 	call	_mus_int_def
 	mov	[esp+14h],edi
 	mov	[esp+20h],si
@@ -142,8 +142,8 @@ _int33:	cld
 ; Out:	BX:EDX = far pointer to routine
 ;
 @__0019h:
-	mov	ax,word ptr cs:_mus_sel
-	mov	edx,dword ptr cs:_mus_off
+	mov	ax,wptr cs:_mus_sel
+	mov	edx,dptr cs:_mus_off
 	mov	[esp+14h],edx
 	mov	[esp+10h],ax
 	jmp	@__ok
@@ -165,11 +165,11 @@ _mus_int_def:
 	jz	@@1
 	mov	ax,_seg_ds
 	mov	dx,offs _mus_int_rm
-@@1:	mov	word ptr [ebp+14h],dx
-	mov	word ptr [ebp+22h],ax
+@@1:	mov	wptr [ebp+14h],dx
+	mov	wptr [ebp+22h],ax
 	cli
 	call	int33h
-	movzx	eax,word ptr [ebp+1Ch]
+	movzx	eax,wptr [ebp+1Ch]
 	add	esp,32h
 	sti
 	ret
@@ -183,29 +183,39 @@ _mus_int_rm:
 
 _mus_int_pm:
 	cld
-	push	ss esp
 	pushad
-	push	ds es
+	push	ds es fs gs
 	xor	eax,eax
+
+	mov	ax,ds
+	mov	ds,cs:_sel_ds
+	mov	ds:_mus_esp,esp
+	mov	ds:_mus_ss,ss
+	mov	ds,ax
+
 	mov	ax,ss
 	lar	eax,eax
-	test	eax,00400000h
-	jnz	@@1
+	shr	eax,23
+	jc	@@1
 	movzx	esp,sp
+
 @@1:	mov	ax,cs:_seg_ds
-	mov	word ptr es:[edi+2Ah],offs @@done
-	mov	word ptr es:[edi+2Ch],ax
-	movzx	eax,word ptr es:[edi+1Ch]
-	movzx	ecx,word ptr es:[edi+18h]
-	movzx	edx,word ptr es:[edi+14h]
-	movzx	ebx,word ptr es:[edi+10h]
-	movzx	esi,word ptr es:[edi+04h]
-	movzx	edi,word ptr es:[edi+00h]
+	mov	wptr es:[edi+2Ch],ax
+	mov	wptr es:[edi+2Ah],offs @@done
+
+	movzx	eax,wptr es:[edi+1Ch]
+	movzx	ecx,wptr es:[edi+18h]
+	movzx	edx,wptr es:[edi+14h]
+	movzx	ebx,wptr es:[edi+10h]
+	movzx	esi,wptr es:[edi+04h]
+	movzx	edi,wptr es:[edi+00h]
+	pushfd
 	call	fword ptr cs:_mus_off
-	pop	es ds
+
+	lss	esp,fword ptr cs:_mus_esp
+
+	pop	gs fs es ds
 	popad
-	lss	esp,[esp]
-	add	esp,2
 	iretd
 @@done:	mov	cs:_mus_data,0
 	retf
@@ -223,13 +233,13 @@ _mus_int_pm:
 	mov	edi,edx
 	mov	[ebp+1Ch],ax
 	mov	ax,cs:_seg_buf
-	mov	word ptr [ebp+22h],ax
-	mov	word ptr [ebp+14h],0
+	mov	wptr [ebp+22h],ax
+	mov	wptr [ebp+14h],0
 	call	int33h
 	mov	ds,cs:_sel_ds
 	mov	esi,_lobufbase
 	mov	ecx,_mus_size
-	rep	movs byte ptr es:[edi],[esi]
+	rep	movs bptr es:[edi],[esi]
 	add	esp,32h
 	jmp	@__ok
 
@@ -247,12 +257,12 @@ _mus_int_pm:
 	mov	esi,edx
 	mov	[ebp+1Ch],ax
 	mov	ax,cs:_seg_buf
-	mov	word ptr [ebp+22h],ax
-	mov	word ptr [ebp+14h],0
+	mov	wptr [ebp+22h],ax
+	mov	wptr [ebp+14h],0
 	mov	es,cs:_sel_ds
 	mov	edi,cs:_lobufbase
 	mov	ecx,cs:_mus_size
-	rep	movs byte ptr es:[edi],[esi]
+	rep	movs bptr es:[edi],[esi]
 	call	int33h
 	add	esp,32h
 	jmp	@__ok
@@ -268,9 +278,8 @@ _mus_int_pm:
 	mov	[ebp+1Ch],ax
 	call	int33h
 	add	esp,32h
-	mov	word ptr [esp+1Ch],-1
+	mov	wptr [esp+1Ch],-1
 	jmp	@__ok
-
 
 
 PopState

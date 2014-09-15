@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+ * Copyright (C) 1996-2006 by Narech K. All rights reserved.
  *
  * Redistribution  and  use  in source and  binary  forms, with or without
  * modification,  are permitted provided that the following conditions are
@@ -44,19 +44,17 @@ void main(int argc, char *argv[])
 {
 	int n;
 
-//	Debug_Init();
-
 	memset(startdir,0,sizeof(startdir));
 	memset(cfgfilename,0,sizeof(cfgfilename));
 	ArgInit(argc, argv);
 	VideoInit();
 	ShowCopyright(argc, argv);
-	CheckIfLocked();
+//	CheckIfLocked();
 	ShowSysInfo();
 	ShowEnvInfo();
 	ShowMainMenu();
 	ShowMemory();
-	CheckVersion();
+//	CheckVersion();
 	ValidateConfig();
 
 l1:	ShowMemory();
@@ -113,8 +111,8 @@ void ArgInit(int argc, char *argv[])
 	}
 
 
-	printf("SS/32A -- Protected Mode Setup Utility  Version %s\n",version);
-	printf("Copyright (C) Supernar Systems, Ltd. 1996-2002\n");
+	printf("SS/32A -- Configuration Utility version %s\n",version);
+	printf("Copyright (C) 1996-2006 by Narech K.\n");
 
 l1:	if(argc<2)
 	{
@@ -140,7 +138,7 @@ l2:	  printf("%s syntax is SS <execname.xxx> [config.d32 | command] [option]\n\n
 	if(n==1)
 	{
 		strcat(buf,".exe");
-		n=ReadHeader(buf,&id32);
+		n=ReadHeader(buf, &id32);
 	}
 	if(n==1) { printf("%s cannot open file \"%s\"\n", errstr, argv[1]); exit(1); }
 	if(n==2) { printf("%s cannot read from file \"%s\"\n", errstr, argv[1]); exit(1); }
@@ -241,11 +239,11 @@ void ShowCopyright(int argc, char *argv[])
 	DrawBackground();
 	SetColor(YELLOW);
 	SetBackColor(BLUE);
-	Print_At(0,31,"þþþ Setup Utility þþþ");
+	Print_At(0,25,"þþþ Configuration Utility þþþ");
 	SetColor(LIGHTBLUE);
-	Print_At(0,1,"DOS/32 Advanced.");
-	Print_At(0,67,"Version %s",version);
-	Print_At(24,16,"Copyright (C) Supernar Systems, Ltd. 1996-2002");
+	Print_At(0,1,"DOS/32A Extender");
+	Print_At(0,66,"Version %s",version);
+	Print_At(24,21,"Copyright (C) 1996-2006 by Narech K.");
 
 	strcpy(buf,argv[1]);
 	strupr(buf);
@@ -275,6 +273,7 @@ void ShowHeaderInfo()
 	printf("DOS/32A 2nd misc. byte:	0x%02X\n",id32.dos32a_misc2);
 	printf("DOS/32A low buf. size:	0x%04X\n",id32.dos32a_lowbufsize);
 	printf("DOS/32A version #:	0x%04X\n",id32.dos32a_version);
+/*
 	if(id32.dos32a_version>=0x0700)
 	{
 		printf("DOS/32A build name:	%s\n",id32.dos32a_buildname);
@@ -284,6 +283,7 @@ void ShowHeaderInfo()
 		printf("DOS/32A build date:	%s\n",id32.dos32a_builddate);
 		printf("DOS/32A build time:	%s\n",id32.dos32a_buildtime);
 	}
+*/
 }
 
 void CheckIfLocked()
@@ -472,7 +472,12 @@ void ShowMemory()
 	{
 		Print_At(9,25,"%d.%02d",(id32.dos32a_version&0xFF00)>>8,id32.dos32a_version&0x00FF);
 		if((id32.dos32a_misc2&0x80)!=0x80)
-			Print_At(9,21,"Pro");
+			/* Professional */
+			//Print_At(9,21,"Pro");
+			;
+		else
+			/* Beta */
+			Print_At(9,20,"Beta");
 	}
 }
 
@@ -652,7 +657,10 @@ void ShowSysInfo()
 	SetColor(LIGHTWHITE);
 
 	n=get_cpu_type();
-	Print_At(3,24,cputab[n-3]);
+	if(n-3 > 5)
+		Print_At(3,24,"?????");
+	else
+		Print_At(3,24,cputab[n-3]);
 
 	systype=n=get_sys_type();
 	Print_At(4,22,systab[n]);

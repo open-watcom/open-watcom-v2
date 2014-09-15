@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -37,12 +37,11 @@
 ;
 ;
 
+
+;=============================================================================
+; OEM info
 ;
-; This file is updated automatically by build.exe, do not modify!
-;
-db	'DOS/32A'							,0,0
-db	'R9-07.0101.2011'						,0
-db	'(C) 1996-98, 2002 by Narech Koumar.'				,0
-db	'All Rights Reserved.'						,0
+db	'DOS/32A'							,0
+db	'Copyright (C) 1996-2006 by Narech K.'				,0
 db	??date								,0
 db	??time								,0

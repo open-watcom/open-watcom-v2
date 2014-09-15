@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+ * Copyright (C) 1996-2006 by Narech K. All rights reserved.
  *
  * Redistribution  and  use  in source and  binary  forms, with or without
  * modification,  are permitted provided that the following conditions are
@@ -39,39 +39,39 @@
 
 #include "main.h"
 
-	char	*version = "7.2";
+	char*	version = "9.1.2";
 	char	newname[80];
 	char	newname2[80];
 	char	filename[80];
 	char	name_bn[80];
 	char	name_un[80];
-	char	*bufptr;
-	char	*bufptr2;
-	char	*fileptr;
+	char*	bufptr;
+	char*	bufptr2;
+	char*	fileptr;
 
-	char	*stubname;
-	char	*stubname1="DOS32A.EXE";
-	char	*stubname2="STUB32A.EXE";
-	char	*stubname3="STUB32C.EXE";
-	char	*errstr="SB/32A fatal:";
-	char	*tempname="$$SB32$$.TMP";
+	char*	stubname;
+	char*	stubname1	= "DOS32A.EXE";
+	char*	stubname2	= "STUB32A.EXE";
+	char*	stubname3	= "STUB32C.EXE";
+	char*	errstr		= "SB/32A fatal:";
+	char*	tempname	= "$$SB32$$.TMP";
 
 	int	execargn = 1;
 	int	filesize = 0;
 	int	oldfilesize = 0;
 	int	newfilesize = 0;
 
-	int	Main_Type = -1;
-	int	Exec_Type = -1;
-	int	Extender_Type = -1;
+	int	Main_Type		= -1;
+	int	Exec_Type		= -1;
+	int	Extender_Type	= -1;
 
-	int	bind = FALSE;
-	int	unbind = FALSE;
-	int	overwrite = FALSE;
-	int	quiet = FALSE;
-	int	silent = TRUE;
-	int	bind_name = FALSE;
-	int	unbind_name = FALSE;
+	int	bind		= FALSE;
+	int	unbind		= FALSE;
+	int	overwrite	= FALSE;
+	int	quiet		= FALSE;
+	int	silent		= TRUE;
+	int	bind_name	= FALSE;
+	int	unbind_name	= FALSE;
 
 
 
@@ -152,8 +152,8 @@ void err_environment(void) {
 /****************************************************************************/
 void ShowCopyright()
 {
-	Print("SB/32A -- Protected Mode Bind Utility  Version %s\n",version);
-	Print("Copyright (C) Supernar Systems, Ltd. 1996-2002\n");
+	Print("SB/32A -- Bind Utility version %s\n",version);
+	Print("Copyright (C) 1996-2006 by Narech K.\n");
 }
 
 
@@ -162,8 +162,7 @@ void ArgInit(int argc, char *argv[])
 {
 	int n,m;
 	int argn=14;
-	char *args[] = { "bs", "bc", "bn", "rs", "rc", "un",
-			 "b", "r", "u", "o", "q", "s", "h", "?" };
+	char *args[] = { "bs", "bc", "bn", "rs", "rc", "un", "b", "r", "u", "o", "q", "s", "h", "?" };
 
 	execargn=1;
 
@@ -171,94 +170,95 @@ void ArgInit(int argc, char *argv[])
 	{
 	    for(n=1; n<argc; n++)
 	    {
-		if(*argv[n]=='-' || *argv[n]=='/')
-		{
-		    for(m=0; m<argn; m++)
-		    {
-				if(strnicmp(argv[n]+1, args[m], strlen(args[m]))==0) switch(m)
+			if(*argv[n]=='-' || *argv[n]=='/')
+			{
+				for(m=0; m<argn; m++)
 				{
-
-					case 0:	execargn++;
-						bind=TRUE;
-						stubname=stubname2;
-						goto l0;
-
-					case 1:	execargn++;
-						bind=TRUE;
-						stubname=stubname3;
-						goto l0;
-
-					case 2:	execargn++;
-						bind_name=TRUE;
-						strcpy(name_bn,argv[n]+3);
-						if(strlen(name_bn)==0)
+					if(strnicmp(argv[n]+1, args[m], strlen(args[m]))==0)
+						switch(m)
 						{
-							ShowCopyright();
-							err_nullname();
+
+							case 0:	execargn++;
+								bind=TRUE;
+								stubname=stubname2;
+								goto l0;
+
+							case 1:	execargn++;
+								bind=TRUE;
+								stubname=stubname3;
+								goto l0;
+
+							case 2:	execargn++;
+								bind_name=TRUE;
+								strcpy(name_bn,argv[n]+3);
+								if(strlen(name_bn)==0)
+								{
+									ShowCopyright();
+									err_nullname();
+								}
+								goto l0;
+
+							case 3:	execargn++;
+								bind=TRUE;
+								stubname=stubname2;
+								overwrite=TRUE;
+								goto l0;
+
+							case 4:	execargn++;
+								bind=TRUE;
+								stubname=stubname3;
+								overwrite=TRUE;
+								goto l0;
+
+							case 5:	execargn++;
+								unbind_name=TRUE;
+								strcpy(name_un,argv[n]+3);
+								if(strlen(name_un)==0)
+								{
+									ShowCopyright();
+									err_nullname();
+								}
+								goto l0;
+
+							case 6:	execargn++;
+								bind=TRUE;
+								stubname=stubname1;
+								goto l0;
+
+							case 7:	execargn++;
+								bind=TRUE;
+								stubname=stubname1;
+								overwrite=TRUE;
+								goto l0;
+
+							case 8:	execargn++;
+								unbind=TRUE;
+								goto l0;
+
+							case 9:	execargn++;
+								overwrite=TRUE;
+								goto l0;
+
+							case 10:	execargn++;
+								quiet=TRUE;
+								silent=FALSE;
+								goto l0;
+
+							case 11:	execargn++;
+								quiet=TRUE;
+								silent=TRUE;
+								goto l0;
+
+							case 12:
+							case 13:	ShowCopyright();
+								goto l1;
+
 						}
-						goto l0;
-
-					case 3:	execargn++;
-						bind=TRUE;
-						stubname=stubname2;
-						overwrite=TRUE;
-						goto l0;
-
-					case 4:	execargn++;
-						bind=TRUE;
-						stubname=stubname3;
-						overwrite=TRUE;
-						goto l0;
-
-					case 5:	execargn++;
-						unbind_name=TRUE;
-						strcpy(name_un,argv[n]+3);
-						if(strlen(name_un)==0)
-						{
-							ShowCopyright();
-							err_nullname();
-						}
-						goto l0;
-
-					case 6:	execargn++;
-						bind=TRUE;
-						stubname=stubname1;
-						goto l0;
-
-					case 7:	execargn++;
-						bind=TRUE;
-						stubname=stubname1;
-						overwrite=TRUE;
-						goto l0;
-
-					case 8:	execargn++;
-						unbind=TRUE;
-						goto l0;
-
-					case 9:	execargn++;
-						overwrite=TRUE;
-						goto l0;
-
-					case 10:	execargn++;
-						quiet=TRUE;
-						silent=FALSE;
-						goto l0;
-
-					case 11:	execargn++;
-						quiet=TRUE;
-						silent=TRUE;
-						goto l0;
-
-					case 12:
-					case 13:	ShowCopyright();
-						goto l1;
-
 				}
-		    }
-		    ShowCopyright();
-		    err_arg(argv[n]);
-		}
-l0:		argn=14;
+				ShowCopyright();
+				err_arg(argv[n]);
+			}
+l0:			argn=14;
 	    }
 	}
 	ShowCopyright();
@@ -294,25 +294,43 @@ void OpenExec(char *argv[])
 
 	strcpy(filename,argv[execargn]);
 	n=open_exec(filename);
-	if(n==-2) err_rdonly(argv[execargn]);
-	if(n!=0) {	strcpy(filename,argv[execargn]);
-			strcat(filename,".exe");
-			n=open_exec(filename);
-			if(n==-2) err_rdonly(argv[execargn]);
-	if(n!=0) {	strcpy(filename,argv[execargn]);
+
+	if(n==-2)
+		err_rdonly(argv[execargn]);
+	if(n!=0)
+	{
+		strcpy(filename,argv[execargn]);
+		strcat(filename,".exe");
+		n=open_exec(filename);
+		if(n==-2)
+			err_rdonly(argv[execargn]);
+		if(n!=0)
+		{
+			strcpy(filename,argv[execargn]);
 			strcat(filename,".le");
 			n=open_exec(filename);
-			if(n==-2) err_rdonly(argv[execargn]);
-	if(n!=0) {	strcpy(filename,argv[execargn]);
-			strcat(filename,".lx");
-			n=open_exec(filename);
-			if(n==-2) err_rdonly(argv[execargn]);
-	if(n!=0) {	strcpy(filename,argv[execargn]);
-			strcat(filename,".lc");
-			n=open_exec(filename);
-			if(n==-2) err_rdonly(argv[execargn]);
-	} } } }
-	if(n==-1) err_open(argv[execargn]);
+			if(n==-2)
+				err_rdonly(argv[execargn]);
+			if(n!=0)
+			{
+				strcpy(filename,argv[execargn]);
+				strcat(filename,".lx");
+				n=open_exec(filename);
+				if(n==-2)
+					err_rdonly(argv[execargn]);
+				if(n!=0)
+				{
+					strcpy(filename,argv[execargn]);
+					strcat(filename,".lc");
+					n=open_exec(filename);
+					if(n==-2)
+						err_rdonly(argv[execargn]);
+				}
+			}
+		}
+	}
+	if(n==-1)
+		err_open(argv[execargn]);
 }
 
 
@@ -322,30 +340,46 @@ void OpenExec(char *argv[])
 int GetExecType(char *argv[])
 {
 	int n;
+
 	n=check_if_unbound_exec();
-	if(n==-1) err_seek(argv[execargn]);
-	else if(n==-2) err_read(argv[execargn]);
-	else if(n==-3) err_support(argv[execargn]);
+
+	if(n==-1)
+		err_seek(argv[execargn]);
+	else if(n==-2)
+		err_read(argv[execargn]);
+	else if(n==-3)
+		err_support(argv[execargn]);
+
 	return(n);
 }
 
 int FindExecType(char *argv[])
 {
 	int n;
+
 	n=get_exec_start();
-	if(n==-1) err_read(argv[execargn]);
-	else if(n==-2) return(-1);
+	if(n==-1)
+		err_read(argv[execargn]);
+	else if(n==-2)
+		return(-1);
+
 	n=get_exec_type();
-	if(n==-1) err_read(argv[execargn]);
-	else if(n==-2) return(-1);
+	if(n==-1)
+		err_read(argv[execargn]);
+	else if(n==-2)
+		return(-1);
+
 	return(n);
 }
 
 int GetExtenderType(char *argv[])
 {
 	int n;
+
 	n=get_extender_type();
-	if(n==-1) err_read(argv[execargn]);
+	if(n==-1)
+		err_read(argv[execargn]);
+
 	return(n);
 }
 
@@ -361,7 +395,6 @@ int GetExtenderType(char *argv[])
 /****************************************************************************/
 void main(int argc, char *argv[])
 {
-
 	int n=-1;
 	int m=-1;
 	int l=-1;
@@ -369,17 +402,15 @@ void main(int argc, char *argv[])
 	int x,y;
 	char buf[80];
 
-//	Debug_Init();
-
-	CheckEnvironment();
 	ArgInit(argc, argv);
 	OpenExec(argv);
 	filesize=filelength(exec_handle);
 	n=GetExecType(argv);
 
-	if(n==0) {
-	  m=FindExecType(argv);
-	  l=GetExtenderType(argv);
+	if(n==0)
+	{
+		m=FindExecType(argv);
+		l=GetExtenderType(argv);
 	}
 
 	Main_Type=n;		/* file format: LE, LX, LC, PE */
@@ -392,63 +423,68 @@ void main(int argc, char *argv[])
 	Print("Application Type:  ");
 	if(n!=0)
 	{
-	  if(n==1) Print(" Unbound LE-style file format Linear Executable");
-	  if(n==2) Print(" Unbound LX-style file format Linear Executable");
-	  if(n==3) Print(" Unbound LC-style file format Linear Executable");
-	  if(n==4) Print(" Unbound PE-style file format Linear Executable");
-	  if(n==5) Print(" Unbound PMW1-style file format Linear Executable");
+		if(n==1) Print(" Unbound LE-style file format Linear Executable");
+		if(n==2) Print(" Unbound LX-style file format Linear Executable");
+		if(n==3) Print(" Unbound LC-style file format Linear Executable");
+		if(n==4) Print(" Unbound PE-style file format Linear Executable");
+		if(n==5) Print(" Unbound PMW1-style file format Linear Executable");
 	}
 	else
 	{
-	  if(m==-1)
-	  {
-		Print(" Standard DOS Executable\n");
-		close_exec();
-		exit(127);	/* signal error to SC compressor */
-	  }
-	  if(l==0) Print(" Unknown Stub File bound to\n");
-	  if(l==1) Print(" DOS/32 Advanced DOS Extender bound to\n");
-	  if(l==2) Print(" STUB/32C Configurable Stub File bound to\n");
-	  if(l==3) Print(" STUB/32A Standard Stub File bound to\n");
-	  if(l==4) Print(" DOS/4G DOS Extender bound to\n");
-	  if(l==5) Print(" PMODE/W DOS Extender bound to\n");
+		if(m==-1)
+		{
+			Print(" Standard DOS Executable\n");
+			close_exec();
+			exit(127);	/* signal error to SC compressor */
+		}
+		if(l==0) Print(" Unknown Stub File bound to\n");
+		if(l==1) Print(" DOS/32 Advanced DOS Extender bound to\n");
+		if(l==2) Print(" STUB/32C Configurable Stub File bound to\n");
+		if(l==3) Print(" STUB/32A Standard Stub File bound to\n");
+		if(l==4) Print(" DOS/4G DOS Extender bound to\n");
+		if(l==5) Print(" PMODE/W DOS Extender bound to\n");
 
-	  if(m==1) Print("                    LE-style file format Linear Executable");
-	  if(m==2) Print("                    LX-style file format Linear Executable");
-	  if(m==3) Print("                    LC-style file format Linear Executable");
-	  if(m==4) Print("                    PE-style file format Portable Executable");
-	  if(m==5) Print("                    PMW1-style file format Linear Executable");
+		if(m==1) Print("                    LE-style file format Linear Executable");
+		if(m==2) Print("                    LX-style file format Linear Executable");
+		if(m==3) Print("                    LC-style file format Linear Executable");
+		if(m==4) Print("                    PE-style file format Portable Executable");
+		if(m==5) Print("                    PMW1-style file format Linear Executable");
 	}
 	Print("\n");
 
-	if(n==3 || m==3) DisplayOEMInfo();
+	if(n==3 || m==3)
+		DisplayOEMInfo();
 
 	unlink(tempname);
 
 	if(unbind_name==FALSE)
 	{
-	  strcpy(newname,filename);
-	  bufptr=(char *)strchr(newname,'.');
-	  if(bufptr!=NULL) strset(bufptr,0);
-	  if(Main_Type==1 || Exec_Type==1) strcat(newname,".le");
-	  if(Main_Type==2 || Exec_Type==2) strcat(newname,".lx");
-	  if(Main_Type==3 || Exec_Type==3) strcat(newname,".lc");
-	  if(Main_Type==4 || Exec_Type==4) strcat(newname,".pe");
-	  if(Main_Type==5 || Exec_Type==5) strcat(newname,".pmw");
+		strcpy(newname,filename);
+		bufptr=(char *)strchr(newname,'.');
+		if(bufptr!=NULL) strset(bufptr,0);
+		if(Main_Type==1 || Exec_Type==1) strcat(newname,".le");
+		if(Main_Type==2 || Exec_Type==2) strcat(newname,".lx");
+		if(Main_Type==3 || Exec_Type==3) strcat(newname,".lc");
+		if(Main_Type==4 || Exec_Type==4) strcat(newname,".pe");
+		if(Main_Type==5 || Exec_Type==5) strcat(newname,".pmw");
 	}
-	else strcpy(newname,name_un);
+	else
+		strcpy(newname,name_un);
 
 	if(bind_name==FALSE)
 	{
-	  strcpy(newname2,filename);
-	  bufptr2=(char *)strchr(newname2,'.');
-	  if(bufptr2!=NULL) strset(bufptr2,0);
-	  strcat(newname2,".exe");
+		strcpy(newname2,filename);
+		bufptr2=(char *)strchr(newname2,'.');
+		if(bufptr2!=NULL)
+			strset(bufptr2,0);
+		strcat(newname2,".exe");
 	}
-	else strcpy(newname2,name_bn);
+	else
+		strcpy(newname2,name_bn);
 
 
-	if(bind==TRUE && unbind==TRUE) err_sameact();
+	if(bind==TRUE && unbind==TRUE)
+		err_sameact();
 	if(bind)
 	{
 		BindExec(argv);
@@ -493,8 +529,8 @@ void UnbindExec(char *argv[])
 	unlink(tempname);
 
 	oldfilesize=GetFileSize(newname);
-	if(quiet!=TRUE)	printf("Destination size:   %d bytes (%1.1f%%)\n",
-	oldfilesize, (float)(oldfilesize+0.01)/(float)(filesize+0.01) *100);
+	if(quiet!=TRUE)
+		printf("Destination size:   %d bytes (%1.1f%%)\n", oldfilesize, (float)(oldfilesize+0.01)/(float)(filesize+0.01) *100);
 }
 
 
@@ -510,7 +546,8 @@ void BindExec(char *argv[])
 	char envbuf[256];
 
 	CheckIfExists(newname2);
-	if(Main_Type==0) UnbindExec(argv);
+	if(Main_Type==0)
+		UnbindExec(argv);
 
 	Print("\n");
 	Print("    Binding file:   \"%s\"\n",newname);
@@ -520,19 +557,24 @@ void BindExec(char *argv[])
 	if(stubhandle==-1)
 	{
 		envname=getenv("DOS32A");
-		if(envname==0) err_nod32a();
+		if(envname==0)
+			err_nod32a();
 		ptr=strchr(envname,' ');
-		if(ptr==NULL) ptr=strchr(envname,0);
+		if(ptr==NULL)
+			ptr=strchr(envname,0);
 		memset(envbuf,0,256);
 		strncpy(envbuf,envname,(dword)ptr-(dword)envname);
 		strcat(envbuf,"\\BINW\\"); strcat(envbuf,stubname);
 		stubhandle=open(envbuf,O_RDWR | O_BINARY);
+
+		if(stubhandle==-1)
+			err_nostub(envbuf);
 	}
-	if(stubhandle==-1) err_nostub(envbuf);
 	stubsize=filelength(stubhandle);
 
 	exechandle=open(newname,O_RDWR | O_BINARY);
-	if(exechandle==-1) err_open(newname);
+	if(exechandle==-1)
+		err_open(newname);
 
 	execsize=filelength(exechandle);
 
@@ -556,9 +598,10 @@ void BindExec(char *argv[])
 	unlink(tempname);
 
 	newfilesize=GetFileSize(newname2);
-	if(quiet!=TRUE)	printf("Destination size:   %d bytes (%1.1f%%)\n",
-	newfilesize, (float)(newfilesize+0.01)/(float)(filesize+0.01) *100);
-	if(quiet!=TRUE) printf("  Stub file used:   \"%s\"\n",stubname);
+	if(quiet!=TRUE)
+		printf("Destination size:   %d bytes (%1.1f%%)\n", newfilesize, (float)(newfilesize+0.01)/(float)(filesize+0.01) *100);
+	if(quiet!=TRUE)
+		printf("  Stub file used:   \"%s\"\n",stubname);
 }
 
 
@@ -582,7 +625,9 @@ void CheckIfExists(char *name)
 	n=open(name,O_RDWR | O_BINARY);
 	if(n!=-1)
 	{
-		close(n); if(!overwrite) err_dest(name);
+		close(n);
+		if(!overwrite)
+			err_dest(name);
 	}
 }
 int GetFileSize(char *name)
@@ -599,7 +644,8 @@ int GetFileSize(char *name)
 }
 void CheckEnvironment()
 {
-	if(getenv("DOS32A")==NULL) err_environment();
+	if(getenv("DOS32A")==NULL)
+		err_environment();
 }
 void copy_file(char *f1, char *f2)
 {
@@ -620,7 +666,7 @@ void copy_file(char *f1, char *f2)
 			while((c=fgetc(src))!=EOF) fputc(c,dest);
 			fclose(dest);
 		}
-	fclose(src);
+		fclose(src);
 	}
 }
 
@@ -629,7 +675,8 @@ void DisplayOEMInfo()
 
 	char *ptr;
 
-	if( (ptr=find_oem_info()) == NULL) return;
+	if((ptr=find_oem_info()) == NULL)
+		return;
 
 	Print("\n");
 	Print("Application OEM Information:\n");
@@ -637,6 +684,5 @@ void DisplayOEMInfo()
 	Print("-------------------------------------------------------------------------------\n");
 	Print("%s\n",ptr);
 	Print("-------------------------------------------------------------------------------\n");
-
 }
 

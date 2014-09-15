@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -82,14 +82,14 @@ _int10:	cld
 	mov	[ebp+10h],bx		; store BX
 	mov	ds,cs:_sel_ds
 	mov	ax,_seg_buf
-	mov	word ptr [ebp+22h],ax	; store ES
-	mov	word ptr [ebp+00h],0	; store DI
+	mov	wptr [ebp+22h],ax	; store ES
+	mov	wptr [ebp+00h],0	; store DI
 	call	int10h
 	mov	ecx,16
 	mov	esi,_lobufbase
 	rep	movs dword ptr es:[edi],[esi]
-	movzx	eax,word ptr [ebp+1Ch]	; get AX
-	movzx	ebx,word ptr [ebp+10h]	; get BX
+	movzx	eax,wptr [ebp+1Ch]	; get AX
+	movzx	ebx,wptr [ebp+10h]	; get BX
 	add	esp,32h
 	mov	[esp+1Ch],eax		; return EAX
 	mov	[esp+10h],ebx		; return EBX
@@ -137,7 +137,7 @@ _int10:	cld
 	int	10h
 	mov	ecx,ebx
 	shl	ecx,4
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
 
 @v_1Ch_02:
@@ -153,7 +153,7 @@ _int10:	cld
 	shl	ecx,4
 	push	ds es
 	pop	ds es
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
 
@@ -182,8 +182,8 @@ _int10:	cld
 	mov	dx,ax
 	mov	ds,cs:_sel_ds
 	mov	ax,_seg_buf
-	mov	word ptr [ebp+22h],ax	; store ES
-	mov	word ptr [ebp+00h],0	; store DI
+	mov	wptr [ebp+22h],ax	; store ES
+	mov	wptr [ebp+00h],0	; store DI
 	call	int10h
 	mov	esi,_lobufbase
 	test	dl,dl
@@ -201,11 +201,11 @@ _int10:	cld
 	lea	ebx,[esi+1Eh]		; offset of OEM Revision Ptr
 	call	@@mod
 	mov	ecx,128
-@@1:	rep	movs dword ptr es:[edi],[esi]
+@@1:	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
 
-@@mod:	movzx	edx,word ptr [ebx+00h]	; get low word (offset)
-	movzx	eax,word ptr [ebx+02h]	; get high word (segment)
+@@mod:	movzx	edx,wptr [ebx+00h]	; get low word (offset)
+	movzx	eax,wptr [ebx+02h]	; get high word (segment)
 	shl	eax,4			; convert real mode seg:off
 	add	eax,edx			; to linear ptr relative to zero
 	mov	dx,[ebx+02h]
@@ -251,7 +251,7 @@ _int10:	cld
 	int	10h
 	mov	ecx,ebx
 	shl	ecx,4
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
 
 @v_4F04h_02:
@@ -268,7 +268,7 @@ _int10:	cld
 	shl	ecx,4
 	push	ds es
 	pop	ds es
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
 
@@ -300,8 +300,8 @@ _int10:	cld
 	mov	[ebp+10h],bx
 	mov	ds,cs:_sel_ds
 	mov	ax,_seg_buf
-	mov	word ptr [ebp+22h],ax
-	mov	word ptr [ebp+00h],0
+	mov	wptr [ebp+22h],ax
+	mov	wptr [ebp+00h],0
 	test	bl,bl
 	jz	@@1
 	dec	bl
@@ -314,12 +314,12 @@ _int10:	cld
 	mov	edi,_lobufbase
 	push	ds es
 	pop	ds es
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
 @@2:	call	int10h
 	mov	esi,_lobufbase
-	rep	movs dword ptr es:[edi],[esi]
+	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
 
 
@@ -338,10 +338,10 @@ _int10:	cld
 	mov	[ebp+1Ch],ax
 	mov	[ebp+10h],bx
 	call	int10h
-	movzx	eax,word ptr [ebp+1Ch]	; get AX
-	movzx	ecx,word ptr [ebp+18h]	; get CX
-	movzx	edx,word ptr [ebp+22h]	; get ES segment
-	movzx	edi,word ptr [ebp+00h]	; get DI pointer
+	movzx	eax,wptr [ebp+1Ch]	; get AX
+	movzx	ecx,wptr [ebp+18h]	; get CX
+	movzx	edx,wptr [ebp+22h]	; get ES segment
+	movzx	edi,wptr [ebp+00h]	; get DI pointer
 	cmp	ax,004Fh		; check that there was no error
 	jnz	@v_ok
 	shl	edx,4
@@ -363,14 +363,14 @@ _int10:	cld
 	mov	[ebp+14h],dx		; store DX
 	mov	ds,cs:_sel_ds
 	mov	ax,_seg_buf
-	mov	word ptr [ebp+22h],ax	; store ES
-	mov	word ptr [ebp+10h],0	; store BX
+	mov	wptr [ebp+22h],ax	; store ES
+	mov	wptr [ebp+10h],0	; store BX
 	ret
-@v_ok:	movzx	eax,word ptr [ebp+1Ch]
+@v_ok:	movzx	eax,wptr [ebp+1Ch]
 	add	esp,32h
 	mov	[esp+1Ch],eax
 	jmp	@__ok
-@v_err:	mov	dword ptr [esp+1Ch],-1
+@v_err:	mov	dptr [esp+1Ch],-1
 	jmp	@__ok
 
 
