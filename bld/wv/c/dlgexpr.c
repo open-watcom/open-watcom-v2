@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgtoggl.h"
@@ -197,7 +198,8 @@ bool    DlgModName( char *title, mod_handle *mod )
 
 bool DlgString( char *title, char *buff )
 {
-    return( DlgGetItemWithRtn( "", EXPR_LEN, title, buff, DlgScanString, DlgNew));
+    buff[isprint(buff[0]) ? 1 : 0] = '\0';
+    return( DlgGetItemWithRtn( buff, EXPR_LEN, title, buff, DlgScanString, DlgNew));
 }
 
 bool DlgMadTypeExpr( char *title, item_mach *value, mad_type_handle th )
