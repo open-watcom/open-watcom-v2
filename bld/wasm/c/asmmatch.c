@@ -54,6 +54,9 @@ static bool output_3DNow( const asm_ins ASMFAR *ins )
 /***************************************************/
 {
     if( ins->byte1_info == F_0F0F ) {
+        if( !ins->wds ) {
+            Code->info.opcode &= ~W_BIT;
+        }
         AsmCodeByte( ins->opcode | Code->info.opcode );
     }
     return( RC_OK );
@@ -282,6 +285,9 @@ static bool output( const asm_ins ASMFAR *ins )
         tmp = rCode->info.rm_byte;
         rCode->info.rm_byte = (tmp & 0xc0) | ((tmp >> 3) & 0x7) | ((tmp << 3) & 0x38);
     }
+    if( !ins->wds ) {
+        rCode->info.opcode &= ~W_BIT;
+    }
     switch( ins->rm_info ) {
     case R_in_OP:
         AsmCodeByte( ins->opcode | (rCode->info.rm_byte & NOT_BIT_67) );
@@ -289,9 +295,6 @@ static bool output( const asm_ins ASMFAR *ins )
     case no_RM:
         AsmCodeByte( ins->opcode | rCode->info.opcode );
         break;
-    case no_WDS:
-        rCode->info.opcode = 0;
-        // no break
     default:
         // don't output opcode for 3DNow! instructions
         if( ins->byte1_info != F_0F0F ) {

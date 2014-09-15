@@ -60,6 +60,7 @@ typedef struct asm_ins {
     unsigned            allowed_prefix  : 4;    /* allowed prefix */
     unsigned            byte1_info      : 4;    /* flags for 1st byte */
     unsigned            rm_info         : 2;    /* info on r/m byte */
+    unsigned            wds             : 1;    /* info on wds bits */
     unsigned            opnd_type_3rd   : 4;    /* info on 3rd operand */
     unsigned            opnd_dir        : 1;    /* operand direction */
     asm_cpu             cpu;                    /* CPU type */
@@ -110,8 +111,7 @@ typedef struct asm_code {
 #define F_F30F      0x8     // SSEx prefix 3
 
 #define no_RM       0x1
-#define no_WDS      0x2
-#define R_in_OP     0x3
+#define R_in_OP     0x2
 
 /* Note on the byte_1_info
    10 ( + F_0F ) -> the first byte is 0x0F, follow by opcode and rm_byte
@@ -120,10 +120,10 @@ typedef struct asm_code {
    00            -> the first byte is opcode, follow by rm_byte      */
 
 /* Note on the rm_info:
+   00               -> has rm_byte
    01 ( + no_RM   ) -> no rm_byte
-   10 ( + no_WDS  ) -> has rm_byte, but w-bit, d-bit, s-bit of opcode are absent
-   11 ( + R_in_OP ) -> no rm_byte, reg field is included in opcode
-   00               -> has rm_byte with w-, d- and/or s-bit in opcode  */
+   10 ( + R_in_OP ) -> no rm_byte, reg field is included in opcode */
+
 
 /* NOTE: The order of table is IMPORTANT !! */
 /* OP_A should put before OP_R16 & OP_R
