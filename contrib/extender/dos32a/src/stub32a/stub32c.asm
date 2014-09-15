@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -37,26 +37,26 @@
 ;
 ;
 
-	.8086
+	.286
 	.MODEL tiny
 	LOCALS
 
 ;=============================================================================
 _ID32	segment para public use16 'CODE0'
-_ID32_SIZE=16		; size exclude 'ID32' signature
+_ID32_SIZE=16		; size excluding 'ID32' signature
 ;-----------------------------------------------------------------------------
 db	'ID32'		; ID signature
 db	00111111b	; KERNEL misc. bits:
-			;   bit 0: 0=test DPMI/VCPI, 1=VCPI/DPMI	/1=def
-			;   bit 1: 0=exception control off, 1=on	/1=def
+			;   bit 0: **deprecated**
+			;   bit 1: **deprecated**
 			;   bit 2: 0=VCPI smart page alloc off, 1=on	/1=def
 			;   bit 3: 0=VCPI+XMS alloc scheme off, 1=on	/1=def
-			;   bit 4: 0=trap software INTs off, 1=on	/1=def
-			;   bit 5: 0=extended blocks check off, 1=on	/1=def
+			;   bit 4: **deprecated**
+			;   bit 5: **deprecated**
 			;   bit 6: reserved				/0=def
 			;   bit 7: 0=ignore 4G extensions off, 1=on	/0=def
 db	64		; Max. number of page tables under VCPI		/256MB
-db	2		; Max. number of page tables mem_mapping	/2MB
+db	2		; Max. number of page tables mem_mapping	/4MB
 db	16		; Max. number of real mode callbacks		/16
 dw	256		; Max. number of Selectors under VCPI/XMS/raw	/256
 db	8		; Real mode Stack nesting
@@ -92,9 +92,7 @@ dw	0000h		; Internal Version of DOS/32A (N/A for stub)
 dw	0000h		; Reserved (v7.0+)
 ;-----------------------------------------------------------------------------
 db	'STUB/32C'							,0
-include	oemtitle.inf
-db	'(C) 1996-98, 2002 by Narech Koumar.'				,0
-db	'All Rights Reserved.'						,0
+db	'Copyright (C) 1996-2006 by Narech K.'				,0
 db	??date								,0
 db	??time								,0
 

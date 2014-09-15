@@ -1,36 +1,161 @@
-			*******************************
-			*** DOS/32 Advanced Updates ***
-			*******************************
+			*****************************************
+			*** DOS/32A DOS Extender -- ChangeLog ***
+			*****************************************
 
 
-*******************************************************************************
-Release 9
-DOS/32 Advanced DOS Extender version 7.2
-========================================
+[2006-04-20]
+DOS/32 Advanced DOS Extender, version 9.1.2
+===========================================
 
-News:
------
-+ Now Javier Gutierrez has the exclusive rights for using the DOS/32 Advanced 
-  name and in the main project mantainer. So, I am looking for contributors.
+DOS Extender (DOS32A.EXE):
+--------------------------
++ Bugfix: Int 21h function 3Fh refused to return when reading from STDIN
+  (reported by Gianni Gallucci)
 
-+ Improved a bit the build system.
++ Bugfix: in irq_fail fn, hardware exception #9 doesn't have exception code
+  (reported by Charles Hyde)
+
++ applied mode.asm patch (also by Charles Hyde from Infineon) with minor
+  formatting changes; I'm rather ambivalent about implementing the others
+  into the mainstream builds (in particular the PAE one), will make those
+  available from the development (beta) page...
 
 
-DOS Extender:
--------------
-+ Applied Narech Koumar patch for the bug reported by Bart Oldeman on OpenWatcom 
-  newsgroups.
 
-+ Recompiled using Watcom C++ 11.0c beta and Turbo Assembler 5.3.
 
-+ Stubs now uses 8088/8086 instructions, so DOS/32 binded programs do not
-  hang on those machines.
 
-Other:
-------
-+ All utilities are linked against DOS32A.
+[2005-12-12]
+DOS/32 Advanced DOS Extender, version 9.1.1
+===========================================
 
-+ Documentation has been improved, and is now compatible with Netscape 4.xx.
+DOS Extender (DOS32A.EXE):
+--------------------------
++ improved memory allocation under Clean system: INT 15h, AX=0E801h is used
+  if AX=0E820h fails (based on patch provided by Arthur Kalliokoski)
+
+
+
+
+
+[2005-11-08]
+DOS/32 Advanced DOS Extender, version 9.1.0
+===========================================
+
+DOS Extender (DOS32A.EXE):
+--------------------------
++ added support for SSE/SSE2/SSE3 capable processors
+
++ added preliminary support for PE file format (recognized but not yet implemented)
+
++ with verbose mode turned on the DOS Extender will pause prompting to press a key;
+  this gives a chance to read loader info before the app kicks in
+
++ internal debugger has been dropped, CLIENT/debug.asm has been heavily rewritten
+
++ INT 1 and INT 3 op-codes are now treated by DOS/32A as no-ops, this works around
+  some lame anti-debugging protections (Null-pointer protection works as expected)
+
++ "VCPI/DPMI Detection Order" option has been removed, DOS/32A unconditionally
+  favours VCPI over DPMI, if and when possible
+
++ "Internal Exception Control" option has been removed, DOS/32A is always in control
+  of the exception handling
+
++ "Trap and Report Emulated IRQs" option has been removed, this simplifies IRQ
+  handling
+
++ "Extended Memory Blocks Checking" option has been removed, DOS/32A unconditionally
+  checks EMB integrity
+
++ DPMITST environment option is no longer supported; it is still recognized but is
+  now a no-op
+
++ whenever possible, DOS/32A will favour INT 15h/XMS systems over VCPI/DPMI,
+  (thanks wd)
+
++ INT 31h DPMI last function entry is cached so that subsequent calls with the same
+  function number do no search the lookup table
+
++ INT 31h DPMI functions 0E00h & 0E01h no longer virtualize FPU EM & MP flags
+
++ additional PIC constraint: slave PIC may not be mapped onto INT 8
+
++ slightly reduced run-time complexity of the IRQ handling code
+
++ exception handlers are now invoked with the correct stack frame (as mandated
+  by DPMI v0.9 spec)
+
++ all the exception vectors are now hooked under external DPMI (symmetric with
+ built-in DPMI and using the same exception handlers)
+
+
+SUNSYS Setup Utility (SS.EXE):
+------------------------------
++ the following options in the Kernel menu have been deprecated:
+
+	"VCPI/DPMI Detection Order"
+	"Internal Exception Control"
+	"Trap and Report Emulated IRQs"
+	"Extended Memory Blocks Checking"
+
+  it is still possible to toggle the state of these options, but the changes have
+  no effect on the DOS Extender
+
+
+SUNSYS Debugger (SD.EXE):
+-------------------------
++ R.I.P.
+
+
+
+
+
+[2005-05-19]
+DOS/32 Advanced DOS Extender, version 7.35
+==========================================
+
+DOS Extender (DOS32A.EXE):
+--------------------------
++ mouse callback code cleanup
++ allocation of up to 2Gig under Clean system (Int 15h, AX=E820h)
++ with verbose mode active and not under external DPMI the entry point
+  of application will trap to internal debugger
+
+
+
+
+
+[2005-01-12]
+DOS/32 Advanced DOS Extender version 7.33
+=========================================
+
+DOS Extender (DOS32A.EXE):
+--------------------------
++ Bugfix: exec loader could crash the DOS Extender during startup in rare situations
++ Bugfix: DPMI function 0301h can not transfer data on stack to real mode procedure
++ Int 21h functions 4402h, 4403h, 4404h, 4405h, (DOS IOCTL) have been extended
++ Int 21h functions 3Fh & 40h (DOS IO) have been rewritten
++ mouse callback can now handle non-standard stack frames
+
+
+SUNSYS Bind Utility (SB.EXE):
+-----------------------------
++ Bugfix: minor binding problems with unbound LE/LX execs
++ removed check for DOS32A environment string
+
+
+SUNSYS Compress Utility (SC.EXE):
+---------------------------------
++ removed check for DOS32A environment string
+
+
+SUNSYS Setup Utility (SS.EXE):
+------------------------------
++ removed Lock and Version checks
+
+
+
+
 
 *******************************************************************************
 Release 8

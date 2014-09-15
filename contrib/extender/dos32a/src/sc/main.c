@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+ * Copyright (C) 1996-2006 by Narech K. All rights reserved.
  *
  * Redistribution  and  use  in source and  binary  forms, with or without
  * modification,  are permitted provided that the following conditions are
@@ -39,20 +39,20 @@
 
 #include "main.h"
 
-	char	*version = "7.2";
-	char	*errstr="SC/32A fatal:";
+	char*	version = "9.1.2";
+	char*	errstr="SC/32A fatal:";
 
-	char	*bindname="SB.EXE";
-	char	*tempname1="$$SC32$$.111";
-	char	*tempname2="$$SC32$$.222";
-	char	*titlename="OEMTITLE.INF";
-	char	*execstyle[]= { "LE", "LX", "LC", "PE", "PMW1" };
-	char	*stubnames[]= { "DOS32A.EXE", "STUB32A.EXE", "STUB32C.EXE" };
-	char	*encodetype[] = { "Encoded", "Stored" };
+	char*	bindname="SB.EXE";
+	char*	tempname1="$$SC32$$.111";
+	char*	tempname2="$$SC32$$.222";
+	char*	titlename="OEMTITLE.INF";
+	char*	execstyle[]= { "LE", "LX", "LC", "PE", "PMW1" };
+	char*	stubnames[]= { "DOS32A.EXE", "STUB32A.EXE", "STUB32C.EXE" };
+	char*	encodetype[] = { "Encoded", "Stored" };
 	char	dos32aenv[512];
 	char	dos32apath[512];
 
-	char	*bufptr;
+	char*	bufptr;
 	char	oldfilename[80];
 	char	newfilename[80];
 	char	inffilename[80];
@@ -171,8 +171,8 @@ void err_environment(void) {
 /****************************************************************************/
 void ShowCopyright()
 {
-	Print("SC/32A -- Protected Mode Compress Utility  Version %s\n",version);
-	Print("Copyright (C) Supernar Systems, Ltd. 1996-2002\n");
+	Print("SC/32A -- Compression Utility version %s\n",version);
+	Print("Copyright (C) 1996-2006 by Narech K.\n");
 }
 
 
@@ -315,7 +315,8 @@ void OpenExec()
 	if(open_exec(tempname1)==-1)
 	{
 		CopyFile(oldfilename,tempname1);
-		if(open_exec(tempname1)==-1) err_open(tempname1);
+		if(open_exec(tempname1)==-1)
+			err_open(tempname1);
 	}
 }
 void CloseExec()
@@ -331,11 +332,16 @@ int FindExecType()
 	int n;
 
 	n=get_exec_type();
-	if(n==-1) err_read(tempname1);
-	if(n==-2) err_support(oldfilename);
-	if(n==3) err_formlc(oldfilename);
-	if(n==4) err_formpe(oldfilename);
-	if(n==5) err_formpmw1(oldfilename);
+	if(n==-1)
+		err_read(tempname1);
+	if(n==-2)
+		err_support(oldfilename);
+	if(n==3)
+		err_formlc(oldfilename);
+	if(n==4)
+		err_formpe(oldfilename);
+	if(n==5)
+		err_formpmw1(oldfilename);
 	return(n);
 }
 
@@ -355,7 +361,7 @@ void main(int argc, char *argv[])
 //	Debug_Init();
 
 	setbuf(stdout,NULL);
-	CheckEnvironment();
+//	CheckEnvironment();
 	ArgInit(argc, argv);
 	DeleteTempFiles();
 	CreateD32AEnvVar();
@@ -443,14 +449,24 @@ void CreateLCHeader()
 	if(n!=0)
 	{
 		Print("Error!     \n");
-		if(n==-1) err_seek(tempname1);
-		if(n==-2) err_read(tempname1);
-		if(n==-3) err_write(tempname2);
-		if(n==-4) err_linker(tempname1);
-		if(n==-5) err_objects(tempname1);
-	} else
-	if(!verbose) Print("Ok.\n");
-	else	     Print("Ok.  (%d Objects)\n",app_num_objects);
+		if(n==-1)
+			err_seek(tempname1);
+		if(n==-2)
+			err_read(tempname1);
+		if(n==-3)
+			err_write(tempname2);
+		if(n==-4)
+			err_linker(tempname1);
+		if(n==-5)
+			err_objects(tempname1);
+	}
+	else
+	{
+		if(!verbose)
+			Print("Ok.\n");
+		else
+			Print("Ok.  (%d Objects)\n",app_num_objects);
+	}
 }
 
 
@@ -548,32 +564,36 @@ void UnbindExec()
 
 	if(n==-1)
 	{
-	  GetDOS32APath();
-	  strcpy(temppath,dos32apath);
-	  strcat(temppath,bindname);
-	  strcpy(tempname,dos32apath);
-	  strcat(tempname,bindname);
-	  n=spawnle(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
-	  if(n==-1)
-	  {
-	    strcpy(temppath,bindname);
-	    strcpy(tempname,bindname);
-	    n=spawnlpe(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
-	    if(n==-1) err_nosb();
-	  }
+		GetDOS32APath();
+		strcpy(temppath,dos32apath);
+		strcat(temppath,bindname);
+		strcpy(tempname,dos32apath);
+		strcat(tempname,bindname);
+		n=spawnle(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
+		if(n==-1)
+		{
+			strcpy(temppath,bindname);
+			strcpy(tempname,bindname);
+			n=spawnlpe(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
+			if(n==-1)
+				err_nosb();
+		}
 	}
 	if(n!=0)
 	{
-	  if(n==127) err_support(oldfilename);
-	  else {
-	    DeleteTempFiles();
-	    exit(1);
-	  }
+		if(n==127)
+			err_support(oldfilename);
+		else
+		{
+			DeleteTempFiles();
+			exit(1);
+		}
 	}
 }
 
 /****************************************************************************/
-void BindExec() {
+void BindExec()
+{
 	int n;
 
 	char temppath[128];		// passed as *path argument
@@ -591,9 +611,12 @@ void BindExec() {
 	const char *arg5=tempname2;
 
 
-	if(bindtype==0) 	strcpy(temptype,"/R");
-	else if(bindtype==1)	strcpy(temptype,"/RS");
-	else if(bindtype==2)	strcpy(temptype,"/RC");
+	if(bindtype==0)
+	 	strcpy(temptype,"/R");
+	else if(bindtype==1)
+		strcpy(temptype,"/RS");
+	else if(bindtype==2)
+		strcpy(temptype,"/RC");
 
 	strcpy(temppath,bindname);
 	strcpy(tempname,bindname);
@@ -606,26 +629,30 @@ void BindExec() {
 
 	if(n==-1)
 	{
-	  GetDOS32APath();
-	  strcpy(temppath,dos32apath);
-	  strcat(temppath,bindname);
-	  strcpy(tempname,dos32apath);
-	  strcat(tempname,bindname);
-	  n=spawnle(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
-	  if(n==-1)
-	  {
-	    strcpy(temppath,bindname);
-	    strcpy(tempname,bindname);
-	    n=spawnlpe(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
-	    if(n==-1) err_nosb();
-	  }
+		GetDOS32APath();
+		strcpy(temppath,dos32apath);
+		strcat(temppath,bindname);
+		strcpy(tempname,dos32apath);
+		strcat(tempname,bindname);
+		n=spawnle(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
+		if(n==-1)
+		{
+			strcpy(temppath,bindname);
+			strcpy(tempname,bindname);
+			n=spawnlpe(P_WAIT, path, arg0,arg1,arg2,arg3,arg4,arg5, NULL, NULL);
+			if(n==-1)
+				err_nosb();
+		}
 	}
-	if(n!=0) {
-	  if(n==127) err_support(tempname2);
-	  else {
-	    DeleteTempFiles();
-	    exit(1);
-	  }
+	if(n!=0)
+	{
+		if(n==127)
+			err_support(tempname2);
+		else
+		{
+			DeleteTempFiles();
+			exit(1);
+		}
 	}
 }
 
@@ -661,13 +688,16 @@ void GetDOS32APath()
 	envname=getenv("DOS32A");
 	if(envname!=0)
 	{
-	  ptr=strchr(envname,' ');
-	  if(ptr==NULL) ptr=strchr(envname,0);
-	  memset(envbuf,0,256);
-	  strncpy(envbuf,envname,(dword)ptr-(dword)envname);
-	  strcat(envbuf,"\\BINW\\");
-	  strcpy(dos32apath,envbuf);
+		ptr=strchr(envname,' ');
+		if(ptr==NULL)
+			ptr=strchr(envname,0);
+		memset(envbuf,0,256);
+		strncpy(envbuf,envname,(dword)ptr-(dword)envname);
+		strcat(envbuf,"\\BINW\\");
+		strcpy(dos32apath,envbuf);
 	}
+	else
+		strcat(dos32apath, ".\\");
 }
 void CreateD32AEnvVar()
 {
@@ -680,9 +710,11 @@ void CreateD32AEnvVar()
 		strcpy(dos32aenv,envname);
 		strcat(dos32aenv," /NOC");
 	}
-	else	strcpy(dos32aenv," /NOC");
+	else
+		strcpy(dos32aenv," /NOC");
 	n=setenv("DOS32A",dos32aenv,1);
-//	if(n!=0) Print("WARNING: could not adjust DOS32A environment variable\n");
+//	if(n!=0)
+//		Print("WARNING: could not adjust DOS32A environment variable\n");
 }
 void DeleteTempFiles()
 {
@@ -693,7 +725,9 @@ void DeleteTempFiles()
 }
 void ShowCount(int count)
 {
-	if(quiet!=TRUE) if(nocount!=TRUE) printf("%02d%%\b\b\b",count);
+	if(quiet!=TRUE)
+		if(nocount!=TRUE)
+			printf("%02d%%\b\b\b",count);
 }
 void CopyFile(char *f1, char *f2) {
 	int c;
@@ -704,10 +738,11 @@ void CopyFile(char *f1, char *f2) {
 	{
 		if((dest=fopen(f2,"wb"))!=NULL)
 		{
-			while((c=fgetc(src))!=EOF) fputc(c,dest);
+			while((c=fgetc(src))!=EOF)
+				fputc(c,dest);
 			fclose(dest);
 		}
-	fclose(src);
+		fclose(src);
 	}
 }
 void CheckExec(char *argv[])
@@ -717,38 +752,53 @@ void CheckExec(char *argv[])
 	strcpy(oldfilename,argv[execargn]);
 	strcpy(newfilename,argv[execargn]);
 	bufptr=(char *)strchr(newfilename,'.');
-	if(bufptr!=NULL) strset(bufptr,0);
-	if(bind==TRUE)	strcat(newfilename,".exe");
-	else		strcat(newfilename,".lc");
+	if(bufptr!=NULL)
+		strset(bufptr,0);
+	if(bind==TRUE)
+		strcat(newfilename,".exe");
+	else
+		strcat(newfilename,".lc");
 
-	if(CheckIfExists(oldfilename)==TRUE) return;
+	if(CheckIfExists(oldfilename)==TRUE)
+		return;
 	bufptr=(char *)strchr(oldfilename,'.');
-	if(bufptr!=NULL) return;
+	if(bufptr!=NULL)
+		return;
 	strcat(oldfilename,".exe");
 
-	if(CheckIfExists(oldfilename)==TRUE) return;
+	if(CheckIfExists(oldfilename)==TRUE)
+		return;
 	bufptr=(char *)strchr(oldfilename,'.');
-	if(bufptr!=NULL) strset(bufptr,0);
+	if(bufptr!=NULL)
+		strset(bufptr,0);
 	strcat(oldfilename,".le");
 
-	if(CheckIfExists(oldfilename)==TRUE) return;
+	if(CheckIfExists(oldfilename)==TRUE)
+		return;
 	bufptr=(char *)strchr(oldfilename,'.');
-	if(bufptr!=NULL) strset(bufptr,0);
+	if(bufptr!=NULL)
+		strset(bufptr,0);
 	strcat(oldfilename,".lx");
 
-	if(CheckIfExists(oldfilename)==TRUE) return;
+	if(CheckIfExists(oldfilename)==TRUE)
+		return;
 	strcpy(oldfilename,argv[execargn]);
 }
 int CheckIfExists(char *name)
 {
 	int n;
 	n=open(name,O_RDWR | O_BINARY);
-	if(n!=-1) { close(n); return(TRUE); }
+	if(n!=-1)
+	{
+		close(n);
+		return(TRUE);
+	}
 	return(FALSE);
 }
 void CheckEnvironment()
 {
-	if(getenv("DOS32A")==NULL) err_environment();
+	if(getenv("DOS32A")==NULL)
+		err_environment();
 }
 
 void copy_file(char *f1, char *f2)
@@ -762,12 +812,12 @@ void copy_file(char *f1, char *f2)
 		rename(f1,f2);
 		return;
 	}
-
 	if((src=fopen(f1,"rb"))!=NULL)
 	{
 		if((dest=fopen(f2,"wb"))!=NULL)
 		{
-			while((c=fgetc(src))!=EOF) fputc(c,dest);
+			while((c=fgetc(src))!=EOF)
+				fputc(c,dest);
 			fclose(dest);
 		}
 		fclose(src);
@@ -776,7 +826,6 @@ void copy_file(char *f1, char *f2)
 
 void AppendTitleFile()
 {
-
 	int n,m,k;
 	char *ptr;
 	char *dirptr;
@@ -804,7 +853,9 @@ void AppendTitleFile()
 			Print("Ok.");
 			if(verbose) Print("  (%d bytes)",m);
 			Print("\n");
-		} else	Print("Error!\n");
+		}
+		else
+			Print("Error!\n");
 		close(n);
 	}
 }

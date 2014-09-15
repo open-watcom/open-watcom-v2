@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -81,16 +81,16 @@ get_default_config:
 	rep	movsb			; copy default config to KERNEL
 	mov	es,cs:_seg_ds
 If EXEC_TYPE eq 0
-	and	word ptr ds:[si],7FFFh
+	and	wptr ds:[si],7FFFh
 Else
-	or	word ptr ds:[si],8800h
+	or	wptr ds:[si],8800h
 Endif
 	lodsw				; get DOS/32A config byte
-	mov	word ptr es:_misc_byte,ax
+	mov	wptr es:_misc_byte,ax
 	lodsw				; get DOS buffer size
-	mov	word ptr es:_lowmembuf,ax
+	mov	wptr es:_lowmembuf,ax
 	lodsw				; get version
-	mov	word ptr es:_version,ax
+	mov	wptr es:_version,ax
 	clc
 	jmp	@@done
 @@err:	stc
@@ -127,11 +127,11 @@ get_environ_config:
 	jnz	@@0			; loop until found or end of environ.
 	jmp	@@done			; no string found, exit
 @@1:	call	skip_env_spaces		; skip any leading spaces
-	cmp	byte ptr es:[di],0	; if at the end of the line, exit
+	cmp	bptr es:[di],0		; if at the end of the line, exit
 	jz	@@done			; (actually, just in case)
 	call	get_env_word		; get word and configure
 	call	skip_env_nonspaces	; skip anything else until space or 0
-	cmp	byte ptr es:[di],0
+	cmp	bptr es:[di],0
 	jnz	@@1
 @@done:	pop	es ds
 	ret
@@ -184,21 +184,21 @@ skip_env_nonspaces:
 ; Get switch in AX: 0, 1, ON, OFF	(CF=1 if not found)
 ;
 get_env_swc:
-	cmp	byte ptr es:[di],':'	; skip ':' if present
+	cmp	bptr es:[di],':'	; skip ':' if present
 	jne	@@1
 	inc	di
 @@1:	xor	ax,ax			; if '0', return(0)
-	cmp	byte ptr es:[di],'0'	; check for '0'=OFF
+	cmp	bptr es:[di],'0'	; check for '0'=OFF
 	jz	@@x1
 	inc	ax			; if '1', return(1)
-	cmp	byte ptr es:[di],'1'	; check for '1'=ON
+	cmp	bptr es:[di],'1'	; check for '1'=ON
 	jz	@@x1
-	cmp	word ptr es:[di],'NO'	; check for 'ON'
+	cmp	wptr es:[di],'NO'	; check for 'ON'
 	jz	@@x2
 	dec	ax
-	cmp	word ptr es:[di],'FO'	; check for 'OF'(F)
+	cmp	wptr es:[di],'FO'	; check for 'OF'(F)
 	jnz	@@x0
-	cmp	byte ptr es:[di+2],'F'	; check for (OF)'F'
+	cmp	bptr es:[di+2],'F'	; check for (OF)'F'
 	jz	@@x3
 @@x0:	stc
 	ret
@@ -214,7 +214,7 @@ get_env_swc:
 ; Get number in AX: 0<=N(dec)<=65535	(CF=1 if not found)
 ;
 get_env_num:
-	cmp	byte ptr es:[di],':'	; skip ':' if present
+	cmp	bptr es:[di],':'	; skip ':' if present
 	jne	@@1
 	inc	di
 @@1:	xor	ax,ax
@@ -256,9 +256,9 @@ get_env_num:
 ;
 cfg_env_quiet:
 If EXEC_TYPE eq 0
-	and	word ptr _misc_byte,1111011111111100b
+	and	wptr _misc_byte,1111011111111100b
 Else
-	and	word ptr _misc_byte,1111111111111100b
+	and	wptr _misc_byte,1111111111111100b
 Endif
 	ret
 
@@ -271,9 +271,9 @@ cfg_env_print:
 	call	get_env_swc
 	jc	@@0
 	jz	@@1
-	or	word ptr _misc_byte,0000100000000001b
+	or	wptr _misc_byte,0000100000000001b
 	ret
-@@1:	and	word ptr _misc_byte,1111011111111110b
+@@1:	and	wptr _misc_byte,1111011111111110b
 @@0:	ret
 
 
@@ -304,8 +304,8 @@ cfg_env_extmem:
 	push	ax
 	mov	bx,1024				; make AX (Kb)-> DX:AX (bytes)
 	mul	bx				; DX:AX= bytes
-	mov	word ptr ds:[pm32_data+12],ax	; set ext mem requirements
-	mov	word ptr ds:[pm32_data+14],dx
+	mov	wptr ds:[pm32_data+12],ax	; set ext mem requirements
+	mov	wptr ds:[pm32_data+14],dx
 	pop	ax
 	add	ax,00FFFh
 	and	ax,0F000h
@@ -315,7 +315,7 @@ cfg_env_extmem:
 	test	al,al
 	jnz	@@1				; must alloc at least one
 	inc	al
-@@1:	mov	byte ptr ds:[pm32_data+1],al	; set max allowed pagetables
+@@1:	mov	bptr ds:[pm32_data+1],al	; set max allowed pagetables
 	assume	ds:_TEXT16
 	pop	ds
 @@0:	ret
@@ -346,17 +346,17 @@ cfg_env_dosbuf:
 ;
 cfg_env_test:
 	call	get_env_swc
-	jc	@@0
-	push	ds
-	mov	ds,_seg_kernel
-	assume	ds:_KERNEL
-	jz	@@1
-	or	byte ptr ds:pm32_data[0],00000001b
-	pop	ds
-	ret
-@@1:	and	byte ptr ds:pm32_data[0],11111110b
-	assume	ds:_TEXT16
-	pop	ds
+;	jc	@@0
+;	push	ds
+;	mov	ds,_seg_kernel
+;	assume	ds:_KERNEL
+;	jz	@@1
+;	or	bptr ds:pm32_data[0],00000001b
+;	pop	ds
+;	ret
+;@@1:	and	bptr ds:pm32_data[0],11111110b
+;	assume	ds:_TEXT16
+;	pop	ds
 @@0:	ret
 
 
@@ -414,8 +414,8 @@ cfg_env_nowarn:
 	ja	@@0
 	add	ax,ax
 	mov	bx,ax
-	mov	word ptr errtab_90xx[bx],0
-	cmp	byte ptr es:[di],','
+	mov	wptr errtab_90xx[bx],0
+	cmp	bptr es:[di],','
 	jnz	@@0
 	inc	di
 	jmp	cfg_env_nowarn
@@ -427,7 +427,7 @@ cfg_env_nowarn:
 ; /NOC
 ;
 cfg_env_noc:
-	and	byte ptr _misc_byte2,11110111b
+	and	bptr _misc_byte2,11110111b
 	ret
 
 PopState

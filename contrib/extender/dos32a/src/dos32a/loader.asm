@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -254,7 +254,6 @@ relocate_le_object:
 	sub	ecx,esi			; calculate size of 1st tab
 	jz	@@2			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
-;	sub	esi,_seg_ds_base
 	mov	edi,[esp]		; get current page number
 	shl	edi,12
 	add	edi,[ebp+ebx+8]		; address of page target to fix in mem
@@ -276,7 +275,6 @@ relocate_lx_object:
 	sub	ecx,esi			; calculate size of 1st tab
 	jz	@@2			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
-;	sub	esi,_seg_ds_base
 	mov	edi,[esp+4]		; get current page number
 	shl	edi,12
 	add	edi,[ebp+ebx+8]		; address of page target to fix in mem

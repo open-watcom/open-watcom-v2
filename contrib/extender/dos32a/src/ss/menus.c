@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+ * Copyright (C) 1996-2006 by Narech K. All rights reserved.
  *
  * Redistribution  and  use  in source and  binary  forms, with or without
  * modification,  are permitted provided that the following conditions are
@@ -109,12 +109,16 @@ void ShowKernelMenu()
 	Print_At(2,11," DPMI Kernel Configuration ");
 	SetColor(LIGHTWHITE);
 
-	Print_At( 3,10,"1)  VCPI/DPMI Detection Order ...................");
-	Print_At( 4,10,"2)  Internal Exception Control .........................");
+	SetColor(WHITE);
+	Print_At( 3,10,"1)  VCPI/DPMI Detection Order ....................");
+	Print_At( 4,10,"2)  XMS/VCPI Detection Order .....................");
+	SetColor(LIGHTWHITE);
 	Print_At( 5,10,"3)  VCPI SmartPage Allocation Mode .....................");
 	Print_At( 6,10,"4)  VCPI+XMS Allocation Scheme .........................");
+	SetColor(WHITE);
 	Print_At( 7,10,"5)  Trap and Report Emulated IRQs ......................");
 	Print_At( 8,10,"6)  Extended Memory Blocks Checking ....................");
+	SetColor(LIGHTWHITE);
 	Print_At( 9,10,"7)  Ignore DOS/4G API Extension Calls ..................");
 	Print_At(11,10,"Selectors:");
 	Print_At(12,10,"Callbacks:");
@@ -126,29 +130,34 @@ void ShowKernelMenu()
 	Print_At(14,40,"PMode Stack Length:");
 	Print_At(15,20,"Extended Memory:             (Bytes)");
 
-	do {
+	do
+	{
 		SelectKernelMenu();
-		if(keycode!=ESC && keycode!=F1 && keycode!=F2) switch(kernelmenu_sel) {
-			case 0:		id32.kernel_misc^=0x01; break;
-			case 1:		id32.kernel_misc^=0x02; break;
-			case 2:		id32.kernel_misc^=0x04; break;
-			case 3:		id32.kernel_misc^=0x08; break;
-			case 4:		id32.kernel_misc^=0x10; break;
-			case 5:		id32.kernel_misc^=0x20; break;
-			case 6:		id32.kernel_misc^=0x80; break;
-			case 7:		id32.kernel_selectors=Input(11,29,6,id32.kernel_selectors); break;
-			case 8:		id32.kernel_callbacks=Input(12,29,6,id32.kernel_callbacks); break;
-			case 9:		id32.kernel_rmstacks=Input(13,29,6,id32.kernel_rmstacks); break;
-			case 10:	id32.kernel_pmstacks=Input(14,29,6,id32.kernel_pmstacks); break;
-			case 11:	id32.kernel_pagetables=Input(11,63,6,id32.kernel_pagetables); break;
-			case 12:	id32.kernel_phystables=Input(12,63,6,id32.kernel_phystables); break;
-			case 13:	id32.kernel_rmstacklen=Input(13,63,6,id32.kernel_rmstacklen); break;
-			case 14:	id32.kernel_pmstacklen=Input(14,63,6,id32.kernel_pmstacklen); break;
-			case 15:	if(hexmode==0) id32.kernel_maxextmem=Input(15,38,10,id32.kernel_maxextmem);
-			 		else id32.kernel_maxextmem=Input(15,40,8,id32.kernel_maxextmem);
+		if(keycode!=ESC && keycode!=F1 && keycode!=F2)
+			switch(kernelmenu_sel)
+			{
+				case 0:		id32.kernel_misc^=0x01; break;
+				case 1:		id32.kernel_misc^=0x02; break;
+				case 2:		id32.kernel_misc^=0x04; break;
+				case 3:		id32.kernel_misc^=0x08; break;
+				case 4:		id32.kernel_misc^=0x10; break;
+				case 5:		id32.kernel_misc^=0x20; break;
+				case 6:		id32.kernel_misc^=0x80; break;
+				case 7:		id32.kernel_selectors=Input(11,29,6,id32.kernel_selectors); break;
+				case 8:		id32.kernel_callbacks=Input(12,29,6,id32.kernel_callbacks); break;
+				case 9:		id32.kernel_rmstacks=Input(13,29,6,id32.kernel_rmstacks); break;
+				case 10:	id32.kernel_pmstacks=Input(14,29,6,id32.kernel_pmstacks); break;
+				case 11:	id32.kernel_pagetables=Input(11,63,6,id32.kernel_pagetables); break;
+				case 12:	id32.kernel_phystables=Input(12,63,6,id32.kernel_phystables); break;
+				case 13:	id32.kernel_rmstacklen=Input(13,63,6,id32.kernel_rmstacklen); break;
+				case 14:	id32.kernel_pmstacklen=Input(14,63,6,id32.kernel_pmstacklen); break;
+				case 15:
+					if(hexmode==0) id32.kernel_maxextmem=Input(15,38,10,id32.kernel_maxextmem);
+					else id32.kernel_maxextmem=Input(15,40,8,id32.kernel_maxextmem);
 					break;
-		}
-	} while(keycode!=ESC && keycode!=F1 && keycode!=F2);
+			}
+	}
+	while(keycode!=ESC && keycode!=F1 && keycode!=F2);
 	CloseWindow();
 }
 
@@ -159,9 +168,15 @@ void ShowKernelConfig()
 	SetColor(LIGHTWHITE);
 	SetBackColor(BLUE);
 
-	if(id32.kernel_misc&0x01) Print_At(3,59," VCPI/DPMI");else Print_At(3,59," DPMI/VCPI");
+//	if(id32.kernel_misc&0x01) Print_At(3,59," VCPI/DPMI");else Print_At(3,59," DPMI/VCPI");
 
-	if(id32.kernel_misc&0x02) Print_At(4,65,". ON");else Print_At(4,65," OFF");
+//	if(id32.kernel_misc&0x02) Print_At(4,60," XMS/VCPI");else Print_At(4,60," VCPI/XMS");
+
+	SetColor(WHITE);
+	Print_At(3,60," reserved");
+	Print_At(4,60," reserved");
+	SetColor(LIGHTWHITE);
+
 
 	if(id32.kernel_pagetables==0 && !(id32.kernel_misc&0x04)) { SetColor(LIGHTRED); SetBlink(1); }
 	if(id32.kernel_misc&0x04) Print_At(5,65,". ON");else Print_At(5,65," OFF");
@@ -169,9 +184,10 @@ void ShowKernelConfig()
 
 	if(id32.kernel_misc&0x08) Print_At(6,65,". ON");else Print_At(6,65," OFF");
 
-	if(id32.kernel_misc&0x10) Print_At(7,65,". ON");else Print_At(7,65," OFF");
-
-	if(id32.kernel_misc&0x20) Print_At(8,65,". ON");else Print_At(8,65," OFF");
+	SetColor(WHITE);
+	Print_At(7,60," reserved");
+	Print_At(8,60," reserved");
+	SetColor(LIGHTWHITE);
 
 	if(id32.kernel_misc&0x80) Print_At(9,65,". ON");else Print_At(9,65," OFF");
 

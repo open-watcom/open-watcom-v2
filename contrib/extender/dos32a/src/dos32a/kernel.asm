@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -36,6 +36,9 @@
 ; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;
 ;
+
+BUILDING_KERNEL = 1
+BUILDING_CLIENT = 0
 
 ;*****************************************************************************
 ; DOS/32 Advanced DOS Extender master Kernel file, includes kernel definitions
@@ -110,14 +113,12 @@ segmentbases	equ @area1_dw+0Eh	;dw 16*2 dup(0); for function 0002h
 
 ;=============================================================================
 ;*** Interrupt Redirection DATA ***
-last_int	equ @area1_db+4Eh	;db 0
 temp_int	equ @area1_db+4Fh	;db 0
-irqset_rm	equ @area1_dw+50h	;dw 0; installed Real Mode IRQ Vectors
-irqset_pm	equ @area1_dw+52h	;dw 0; installed Prot. Mode IRQ Vectors
-excset_pm	equ @area1_dw+54h	;dw 0; installed Exception Vectors
-irqtab_rm	equ @area1_dd+56h	;dd 16 dup(0); 16 Real Mode IRQ Vectors
-irqtab_pm	equ @area1_dd+96h	;dd 32 dup(0); 16 Prot. Mode IRQ Vectors
-exctab_pm	equ @area1_dd+116h	;dd 32 dup(0); 16 Exception Vectors
+irqset_rm	equ @area1_dw+50h	;dw 0		; installed Real Mode IRQ Vectors
+irqset_pm	equ @area1_dw+52h	;dw 0		; installed Prot. Mode IRQ Vectors
+irqtab_rm	equ @area1_dd+56h	;dd 16 dup(0)	; 16 Real Mode IRQ Vectors
+irqtab_pm	equ @area1_dd+96h	;dd 32 dup(0)	; 16 Prot. Mode IRQ Vectors
+exctab_pm	equ @area1_dd+116h	;dd 32 dup(0)	; 16 Exception Vectors
 
 
 ;=============================================================================
@@ -181,14 +182,15 @@ irqcallbackptr	equ @area1_dw+250h	;dw 0; ptr to IRQ callback ESP buffer
 client_call	dw	0,0		; client's critical handler offset
 client_version	dw	0		; extender version
 kernel_code	dw	0		; kernel CS: segment
-cputype		db	0		; processor type
-fputype		db	0		; co-processor type
+cputype		db	0		; CPU type
+fputype		db	0		; FPU type
 pmodetype	db	0		; protected mode type
 pagetables	db	0		; number of page tables under VCPI
 picslave	db	0		; PIC slave base interrupt
 picmaster	db	0		; PIC master base interrupt
-virtualfpu	db	0		; INT 31h, func: 0E00h, virtual FPU
+__reserved_1	db	0		; reserved
 A20_state	db	0		; old A20 gate state
+cpuidlvl	dd	0		; CPUID level
 
 		evendata
 codebase	dd	0		; _KERNEL linear address
@@ -235,6 +237,13 @@ vcpistrucaddx	dd	offs vcpi_cr3	; VCPI switch structure linear address
 vcpiswitchstack	dd	0		; VCPI temporary mode switch stack
 
 
+;=============================================================================
+;*** DPMI DATA ***
+		evendata
+int31h_cache	label word
+	dw	0EEFFh			; last DPMI function #
+	dw	int31h_EEFF		; last DPMI function target addr
+
 
 
 
@@ -254,13 +263,17 @@ include	TEXT\KERNEL\misc.asm
 include	TEXT\KERNEL\mode.asm
 include	TEXT\KERNEL\intr.asm
 include	TEXT\KERNEL\int31h.asm
-If EXEC_TYPE ne 0
-include TEXT\KERNEL\test.asm
-EndIf
+
+
+;=============================================================================
+; BETA test code
+
+If EXEC_TYPE eq 2
+include	TEXT\testbeta.asm
+Endif
 
 	Align 16
 @kernel_end	label byte
 
 _KERNEL      ends
 end
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+ * Copyright (C) 1996-2006 by Narech K. All rights reserved.
  *
  * Redistribution  and  use  in source and  binary  forms, with or without
  * modification,  are permitted provided that the following conditions are
@@ -175,8 +175,8 @@ extern	char keycode;
 		char	dos32a_buildtime[0x09];
 	};
 
-	char	*version =	"7.2";
-	int	version2 =	0x0714;
+	char*	version =	"9.1.2";
+	int	version2 =	0x090C;
 	int	changed	=	0;
 	int	hexmode =	0;
 
@@ -212,10 +212,10 @@ extern	char keycode;
 	int	extendermenu_ypos[13] = { 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14, 15 };
 	int	extendermenu_xlen[13] = { 62,62,62,62,62,62,62,62,62,62,62,62, 35 };
 
-	char	*errstr="SS/32A fatal:";
+	char*	errstr="SS/32A fatal:";
 
 
-	char	*mainhlp[]={
+	char*	mainhlp[]={
 
 "Configure DOS/32 Advanced built-in DPMI Server.",
 
@@ -241,17 +241,24 @@ of your DOS/32 Advanced programs from the command line.",
 };
 
 
-	char	*kernelhlp[]={
-
+	char*	kernelhlp[]={
+/*
 "Controls  the  order of <VCPI/DPMI detection>.  When set to VCPI/DPMI, the\n\
 DOS  Extender  will  try to detect,  and  if succeeded initialize a VCPI\n\
 server even though a DPMI host may be present in the system.",
 
+"Controls  the  order  of <XMS/VCPI detection>.  When  set to XMS/VCPI, the\n\
+DOS Extender will whenever possible favour  Clean and XMS systems before\n\
+the slower VCPI/DPMI ones.",
+*/
+"<Deprecated>.",
+"<Deprecated>.",
 
+/*
 "Controls  whether DOS/32 Advanced DPMI will internally handle and report\n\
 all the exceptions occured during program execution, or the program will\n\
 handle exceptions itself (no INT/EXC buffering and IRQ callbacking).",
-
+*/
 
 "When  turned on, DOS/32 Advanced will use <0th PageTable> which maps first\n\
 4MB (including DOS' 640K), to map the extended memory it allocated. This\n\
@@ -262,7 +269,7 @@ will often reduce the amount of used DOS memory by 4KB (one pagetable).",
 from  both VCPI and XMS servers, making it possible to have an access to\n\
 all the memory available even when EMM386 with \"RAM nnn\" is installed.",
 
-
+/*
 "Interrupts in range INT 08-0Fh can be <Exceptions>, <IRQs> or <software INTs>.\n\
 DOS/32 Advanced is capable of trapping  software INTs, issued to emulate\n\
 IRQs 0-7 (unremapped), and will do so when this option is turned on.",
@@ -271,6 +278,9 @@ IRQs 0-7 (unremapped), and will do so when this option is turned on.",
 "When  turned on, DOS/32 Advanced will check, that extended memory blocks\n\
 allocated  with ADPMI are not overwritten or corrupted. An error will be\n\
 reported when a program tries to write to memory it hadn't allocated.",
+*/
+"<Deprecated>.",
+"<Deprecated>.",
 
 /*
 "DPMI function 0008h - <Set Segment Limit> requires limits greater than 1MB\n\
@@ -325,7 +335,7 @@ allocate all the extended memory available in the machine."
 };
 
 
-	char	*extenderhlp[]={
+	char*	extenderhlp[]={
 
 "When turned off, no warnings will be displayed on the screen. Only fatal\n\
 and run-time errors will be reported to the user.",

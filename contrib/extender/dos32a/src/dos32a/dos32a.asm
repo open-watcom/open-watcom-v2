@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -37,6 +37,9 @@
 ;
 ;
 
+BUILDING_KERNEL = 0
+BUILDING_CLIENT = 1
+
 ;*****************************************************************************
 ; DOS/32 Advanced DOS Extender master Client file, implements program entry
 ; point and includes the necessary client files from .\TEXT\CLIENT\.
@@ -71,12 +74,12 @@ _ID32_SIZE=16		; size excluding 'ID32' signature
 ;-----------------------------------------------------------------------------
 db	'ID32'		; ID signature
 db	00111111b	; KERNEL misc. bits:
-			;   bit 0: 0=test DPMI/VCPI, 1=VCPI/DPMI	/1=def
-			;   bit 1: 0=exception control off, 1=on	/1=def
+			;   bit 0: **deprecated**
+			;   bit 1: **deprecated**
 			;   bit 2: 0=VCPI smart page alloc off, 1=on	/1=def
 			;   bit 3: 0=VCPI+XMS alloc scheme off, 1=on	/1=def
-			;   bit 4: 0=trap software INTs off, 1=on	/1=def
-			;   bit 5: 0=extended blocks check off, 1=on	/1=def
+			;   bit 4: **deprecated**
+			;   bit 5: **deprecated**
 			;   bit 6: reserved				/0=def
 			;   bit 7: 0=ignore 4G extensions off, 1=on	/0=def
 db	64		; Max. number of page tables under VCPI		/256MB
@@ -112,7 +115,7 @@ Endif
 			;   bit 6: 0=lock configuration off, 1=on	/*
 			;   bit 7: 0=Professional, 1=Beta		/*
 dw	0200h		; DOS INT 21h buffer in low memory (in para)	/8 KB
-dw	0714h		; Internal Version of DOS/32A: db low,high
+dw	090Ch		; Internal Version of DOS/32A: db low,high
 dw	0000h		; Reserved (v7.0+)
 ;-----------------------------------------------------------------------------
 include	TEXT\oemtitle.asm
@@ -142,19 +145,20 @@ include	TEXT\CLIENT\int21h.asm
 include	TEXT\CLIENT\int33h.asm
 include	loader.asm
 include	loadlc.asm
+include	loadpe.asm
 
 
 	.8086
 	Align 4
 
-start:	sti
-	push	cs			; DS = CS
+start:	push	cs			; DS = CS
 	pop	ds
 	mov	_seg_ds,ds		; save SEG regs
 	mov	_seg_es,es
 	mov	_seg_ss,ss
 	mov	ax,es:[002Ch]
 	mov	_seg_env,ax
+	sti
 	cld
 
 	call	get_default_config	; configure using defaults
@@ -188,8 +192,8 @@ start:	sti
 ; No errors had occured, initialize kernel
 ;
 	.386p
-@@2:	mov	word ptr _buf_size,bx
-	mov	word ptr _cpu_type,cx
+@@2:	mov	wptr _buf_size,bx
+	mov	wptr _cpu_type,cx
 
 	call	remove_kernel
 
@@ -250,7 +254,7 @@ start:	sti
 	test	dx,dx			; check if application is bound
 	jnz	load_bound_app		; if bound, load BOUND Application
 @@6:	test	si,si			; check if command line is not empty
-	jnz	load_extrn_app		; if cmd<>0, load EXTRN Application
+	jnz	load_extrn_app		; if cmd != 0, load EXTRN Application
 	call	close_exec		; display help message
 	mov	ax,8001h
 	jmp	report_error
@@ -279,6 +283,8 @@ load_bound_app:
 	jz	load_lx_app
 	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
 	jz	load_lc_app
+	cmp	ax,'EP'			; 'PE' type
+	jz	load_pe_app
 @@1:	call	close_exec
 	mov	ax,3004h		; "app exec format not supported"
 	jmp	file_error
@@ -288,13 +294,22 @@ load_bound_app:
 ; Jump to loaded 32-bit code
 ;
 enter_32bit_code:
-	cli				; disable interrupts
+	test	cs:_misc_byte2,00010000b
+	jz	@@0
+
+	sti
+	mov	al,'>'			; "press any key to continue..."
+	call	printc
+	xor	ax,ax			; wait for a keypress
+	int	16h
+	call	printcr
+
+@@0:	cli				; disable interrupts
 	cld
 	call	install_nullptr_protect	; install Null-Ptr Protection
 	mov	ss,_sel32_ss		; SS = app 32bit data sel
 	mov	esp,_app_esp		; ESP = application stack
-	push	dword ptr _sel32_cs	; push 32bit destination selector
-	push	dword ptr _app_eip	; push 32bit destination offset
+
 	mov	es,_sel_es		; ES = environment sel
 	mov	fs,_sel_zero		; FS = 32bit zero sel
 	mov	ds,_sel32_ss		; DS = app 32bit data sel
@@ -306,9 +321,14 @@ enter_32bit_code:
 	xor	edi,edi
 	xor	ebp,ebp
 	mov	gs,ax
-	sti				; enable interrupts
-	db	66h			; do 32bit far return to entry point
-	retf
+
+	pushfd				; push flags
+	push	dptr cs:_sel32_cs	; push 32bit destination selector
+	push	dptr cs:_app_eip	; push 32bit destination offset
+	or	bptr ss:[esp+9],2	; enable interrupts
+	sti
+	iretd
+
 
 
 
@@ -326,47 +346,45 @@ init_system:
 	mov	ax,0204h		; get default PM interrupt handlers
 	mov	bl,10h
 	int	31h
-	mov	word ptr _int10_cs,cx
-	mov	dword ptr _int10_ip,edx
+	mov	wptr _int10_cs,cx
+	mov	dptr _int10_ip,edx
+
 	mov	bl,21h
 	int	31h
-	mov	word ptr _int21_cs,cx
-	mov	dword ptr _int21_ip,edx
-	mov	bl,33h
-	int	31h
-	mov	word ptr _int33_cs,cx
-	mov	dword ptr _int33_ip,edx
+	mov	wptr _int21_cs,cx
+	mov	dptr _int21_ip,edx
+
 	mov	bl,23h
 	int	31h
-	mov	word ptr _int23_cs,cx
-	mov	dword ptr _int23_ip,edx
+	mov	wptr _int23_cs,cx
+	mov	dptr _int23_ip,edx
+
+	mov	bl,33h
+	int	31h
+	mov	wptr _int33_cs,cx
+	mov	dptr _int33_ip,edx
 
 	mov	ax,0202h		; get default PM exception handlers
-	mov	bl,00h
-	int	31h
-	mov	word ptr _exc00_cs,cx
-	mov	dword ptr _exc00_ip,edx
-	mov	bl,06h
-	int	31h
-	mov	word ptr _exc06_cs,cx
-	mov	dword ptr _exc06_ip,edx
-	mov	bl,0Dh
-	int	31h
-	mov	word ptr _exc0D_cs,cx
-	mov	dword ptr _exc0D_ip,edx
-	mov	bl,0Eh
-	int	31h
-	mov	word ptr _exc0E_cs,cx
-	mov	dword ptr _exc0E_ip,edx
+	xor	ebx,ebx
+@@0:	int	31h
+	mov	wptr _exc_tab[ebx*8+4],cx
+	mov	dptr _exc_tab[ebx*8+0],edx
+	inc	bl
+	cmp	bl,15
+	jb	@@0
 
 	call	install_client_ints	; install client PM interrupts
 	jc	dpmi_error
+
 	call	win_focus_vm		; switch to full-screen under Windows
+
 	cmp	_sys_type,3
 	jz	@@done
 	cmp	_process_id,0		; do not reset PIT if we've been
 	jnz	@@done			;  spawned to avoid timing problems
+
 	call	restore_pit
+
 @@done:	ret
 
 
@@ -432,25 +450,27 @@ remove_kernel:
 
 
 
-;	DATA
 ;=============================================================================
+; DATA
+
 include	TEXT\CLIENT\data.asm
 
 
-$theend	proc near
-If EXEC_TYPE eq 0
-	db 1 dup(00h)
-Else
-	db 9 dup(00h)
-Endif
-$theend	endp
+;=============================================================================
+; BETA test code
 
+If EXEC_TYPE eq 2
+include	TEXT\testbeta.asm
+Endif
+
+	Align 16
 @text16_end	label byte
 _TEXT16	ends
 
 
 
 ;=============================================================================
+; STACK
 _STACK	segment para stack use16 'STACK'
 	db	STACKSIZE*16 dup(?)
 _STACK	ends

@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -47,6 +47,9 @@ PushState
 ;
 report_errorm:
 	mov	ax,cs:_err_code
+;
+; note: this function may autimatically terminate the client
+;
 report_error:
 	push	bx ds
 	cmp	cs:_sel_ds,0
@@ -57,7 +60,7 @@ report_error:
 @@2:	xor	bx,bx
 @@3:	cmp	ah,g_errtab[bx]		; check Global error #
 	jz	@@4			; if found, jump
-	cmp	byte ptr [bx],0FFh
+	cmp	bptr [bx],0FFh
 	jz	@@done
 	add	bx,4
 	jmp	@@3
@@ -76,7 +79,7 @@ report_error:
 	pop	bx
 
 	push	di si			; SI, DI = event. parameters
-	mov	si,word ptr g_errtab[bx+2]	; SI = Local error offset
+	mov	si,wptr g_errtab[bx+2]	; SI = Local error offset
 	mov	bl,al
 	mov	bh,0
 	add	bx,bx			; BX = Local error #
@@ -107,7 +110,9 @@ report_error:
 
 .8086
 ;=============================================================================
-copyright:				; show copyright message
+; display copyright message and version number
+;
+copyright:
 	test	_misc_byte2,00001000b
 	jz	@@done
 	mov	ax,_version
@@ -121,11 +126,8 @@ copyright:				; show copyright message
 	pop	ax
 	aam
 	add	ax,3030h
-	cmp	al,30h
-	jnz	@@0
-	mov	al,20h
-@@0:	xchg	ah,al
-	mov	[bx+2],ax
+	mov	[bx+2],ah
+	mov	[bx+4],al
 	mov	cx,offs cpr_end - offs cpr_msg
 @@1:	lodsb
 	push	cx
@@ -140,21 +142,39 @@ copyright:				; show copyright message
 
 .8086
 ;=============================================================================
-;	Console I/O Routines (printf...)
-;
+; Console I/O Routines (a la printf...)
+;=============================================================================
 STRSIZE	= 0100h
-printc:	push	dx
-	mov	@c,al
-	mov	dx,offs @c
-@prt_c:	call	prints
+
+@char	db	0,0
+@crlf	db	cre
+
+;=============================================================================
+; Print character in AL
+;
+printc:
+	push	dx
+	mov	@char,al
+	mov	dx,offs @char
+	jmp	@prnt
+
+;=============================================================================
+; Print NewLine (CR,LF)
+;
+printcr:
+	push	dx
+	mov	dx,offs @crlf
+@prnt:	call	prints
 	pop	dx
 	ret
-@c	db	0,0
-printcr:push	dx
-	mov	dx,offs @cr
-	jmp	@prt_c
-@cr	db	cre
-prints:	push	ax bx cx dx si di bp ds es
+
+;=============================================================================
+; Print string
+;	DX = offset
+;	... = arguments pushed on stack
+;
+prints:
+	push	ax bx cx dx si di bp ds es
 	push	ss
 	pop	es
 	mov	bp,sp
@@ -262,6 +282,8 @@ prints:	push	ax bx cx dx si di bp ds es
 	stosb
 @@dec3:	mov	ax,dx
 	ret
+
+;=============================================================================
 writes:	xor	al,al
 	mov	dx,di
 	mov	cx,-1
@@ -272,11 +294,13 @@ writes:	xor	al,al
 	mov	ax,0924h
 	mov	[di],al
 	cmp	cs:_sel_cs,0
-	jnz	@@2
+	jnz	@@0
 	int	21h
-@@1:	ret
+	ret
+
 .386p
-@@2:	push	ebp
+;-----------------------------------------------------------------------------
+@@0:	push	ebp
 	sub	esp,32h
 	mov	ebp,esp
 	mov	[ebp+1Ch],ax
@@ -286,7 +310,7 @@ writes:	xor	al,al
 	call	int21h
 	add	esp,32h
 	pop	ebp
-	jmp	@@1
+	ret
 
 
 
@@ -308,7 +332,7 @@ dpmi_error:
 	mov	ax,8003h
 common_error:
 	cli
-	lss	esp,fword ptr cs:_sel_esp
+	lss	esp,fptr cs:_sel_esp
 	jmp	report_error
 
 

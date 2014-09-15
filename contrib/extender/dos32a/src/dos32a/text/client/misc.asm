@@ -1,5 +1,5 @@
 ;
-; Copyright (C) 1996-2002 Supernar Systems, Ltd. All rights reserved.
+; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
 ; Redistribution  and  use  in source and  binary  forms, with or without
 ; modification,  are permitted provided that the following conditions are
@@ -63,7 +63,7 @@ exit386:cli
 	cld
 	mov	ds,cs:_sel_ds		; restore SEG regs
 	mov	es,_sel_es
-	lss	esp,fword ptr _sel_esp	; set stack to default size
+	lss	esp,fptr _sel_esp	; set stack to default size
 	xor	dx,dx
 	mov	fs,dx
 	mov	gs,dx
@@ -124,7 +124,8 @@ check_inttab:
 	mov	es,cs:_sel_zero
 	mov	esi,STACKSIZE*16
 	xor	edi,edi
-@@1:	cmps	dword ptr ds:[esi],[edi]
+	cld
+@@1:	cmps	dptr ds:[esi],[edi]
 	jnz	@@2
 @@3:	inc	bx
 	cmp	bx,256
@@ -220,7 +221,7 @@ setup_dta_buffer:
 	mov	ax,_seg_ss
 	add	ax,0010h
 	mov	_seg_dta,ax		; DTA at offset STK_TOP + 0100h
-	mov	word ptr [ebp+24h],ax
+	mov	wptr [ebp+24h],ax
 	add	ax,0008h
 	mov	_seg_mus,ax		; MOUSE at offset STK_TOP + 0180h
 	mov	ax,ss
@@ -229,8 +230,8 @@ setup_dta_buffer:
 	mov	eax,0100h
 	mov	_dta_off,eax
 	mov	_app_dta_off,eax
-	mov	byte ptr [ebp+1Dh],1Ah
-	mov	word ptr [ebp+14h],0
+	mov	bptr [ebp+1Dh],1Ah
+	mov	wptr [ebp+14h],0
 	call	int21h			; set up new DTA buffer
 	add	esp,32h
 	ret
@@ -239,7 +240,7 @@ setup_dta_buffer:
 initialize_mouse:
 	push	ds
 	mov	ds,_sel_zero
-	cmp	dword ptr ds:[4*33h],0	; check if mouse INT 33h is installed
+	cmp	dptr ds:[4*33h],0	; check if mouse INT 33h is installed
 	pop	ds
 	jz	@@err			; if not, report warning
 	mov	ax,0021h		; software reset mouse handler
@@ -270,7 +271,7 @@ initialize_mouse:
 	mov	_mus_backoff,dx
 	mov	_mus_backseg,cx
 	ret
-@@err:	mov	word ptr _int33,0CF66h
+@@err:	mov	wptr _int33,0CF66h
 	mov	ax,9004h
 	jmp	report_error		; "mouse init failed"
 
@@ -278,86 +279,142 @@ initialize_mouse:
 install_client_ints:
 	mov	ax,0205h
 	mov	cx,cs
+
 	mov	bl,10h
 	mov	edx,offs _int10
 	int	31h
 	jc	@@err
+
 	mov	bl,21h
 	mov	dx,offs _int21
 	int	31h
 	jc	@@err
-	mov	bl,33h
-	mov	dx,offs _int33
-	int	31h
-	jc	@@err
+
 	mov	bl,23h
 	mov	dx,offs _int23
 	int	31h
 	jc	@@err
 
-	cmp	cs:_sys_type,3		; install exception handling only
-	clc
-	jnz	@@err			;  when running under external DPMI
+	mov	bl,33h
+	mov	dx,offs _int33
+	int	31h
+	jc	@@err
+
+
 	mov	ax,0203h
+
 	mov	bl,00h
-	mov	dx,offs _exc00
+	mov	dx,offs eh00
 	int	31h
 	jc	@@err
+
+	mov	bl,01h
+	mov	dx,offs eh01
+	int	31h
+	jc	@@err
+
+	mov	bl,02h
+	mov	dx,offs eh02
+	int	31h
+	jc	@@err
+
+	mov	bl,03h
+	mov	dx,offs eh03
+	int	31h
+	jc	@@err
+
+	mov	bl,04h
+	mov	dx,offs eh04
+	int	31h
+	jc	@@err
+
+	mov	bl,05h
+	mov	dx,offs eh05
+	int	31h
+	jc	@@err
+
 	mov	bl,06h
-	mov	dx,offs _exc06
+	mov	dx,offs eh06
 	int	31h
 	jc	@@err
+
+	mov	bl,07h
+	mov	dx,offs eh07
+	int	31h
+	jc	@@err
+
+	mov	bl,08h
+	mov	dx,offs eh08
+	int	31h
+	jc	@@err
+
+	mov	bl,09h
+	mov	dx,offs eh09
+	int	31h
+	jc	@@err
+
+	mov	bl,0Ah
+	mov	dx,offs eh0A
+	int	31h
+	jc	@@err
+
+	mov	bl,0Bh
+	mov	dx,offs eh0B
+	int	31h
+	jc	@@err
+
+	mov	bl,0Ch
+	mov	dx,offs eh0C
+	int	31h
+	jc	@@err
+
 	mov	bl,0Dh
-	mov	dx,offs _exc0D
+	mov	dx,offs eh0D
 	int	31h
 	jc	@@err
+
 	mov	bl,0Eh
-	mov	dx,offs _exc0E
+	mov	dx,offs eh0E
 	int	31h
 
+	clc
 @@err:	ret
+
 
 ;=============================================================================
 uninstall_client_ints:
 	mov	ax,0205h
+
 	mov	bl,10h
-	mov	cx,word ptr cs:_int10_cs
-	mov	edx,dword ptr cs:_int10_ip
+	mov	cx, wptr cs:_int10_cs
+	mov	edx,dptr cs:_int10_ip
 	int	31h
+
 	mov	bl,21h
-	mov	cx,word ptr cs:_int21_cs
-	mov	edx,dword ptr cs:_int21_ip
+	mov	cx, wptr cs:_int21_cs
+	mov	edx,dptr cs:_int21_ip
 	int	31h
-	mov	bl,33h
-	mov	cx,word ptr cs:_int33_cs
-	mov	edx,dword ptr cs:_int33_ip
-	int	31h
+
 	mov	bl,23h
-	mov	cx,word ptr cs:_int23_cs
-	mov	edx,dword ptr cs:_int23_ip
+	mov	cx, wptr cs:_int23_cs
+	mov	edx,dptr cs:_int23_ip
 	int	31h
 
-	cmp	cs:_sys_type,3		; uninstall exception handling only
+	mov	bl,33h
+	mov	cx, wptr cs:_int33_cs
+	mov	edx,dptr cs:_int33_ip
+	int	31h
+
+	mov	ax,0203h			; restore default PM exception handlers
+	xor	ebx,ebx
+@@0:	mov	cx,wptr cs:_exc_tab[ebx*8+4]
+	mov	edx,dptr cs:_exc_tab[ebx*8+0]
+	int	31h
+	inc	bl
+	cmp	bl,15
+	jb	@@0
+
 	clc
-	jnz	@@done			;  when running under external DPMI
-	mov	ax,0203h
-	mov	bl,00h
-	mov	cx,word ptr cs:_exc00_cs
-	mov	edx,dword ptr cs:_exc00_ip
-	int	31h
-	mov	bl,06h
-	mov	cx,word ptr cs:_exc06_cs
-	mov	edx,dword ptr cs:_exc06_ip
-	int	31h
-	mov	bl,0Dh
-	mov	cx,word ptr cs:_exc0D_cs
-	mov	edx,dword ptr cs:_exc0D_ip
-	int	31h
-	mov	bl,0Eh
-	mov	cx,word ptr cs:_exc0E_cs
-	mov	edx,dword ptr cs:_exc0E_ip
-	int	31h
-
 @@done:	ret
 
 ;=============================================================================
@@ -366,7 +423,8 @@ install_nullptr_protect:
 	jz	@@done
 	test	_misc_byte,10000000b
 	jz	@@done
-	xor	eax,eax			; install null-pointer protection
+
+	xor	eax,eax				; install null-pointer protection
 	mov	dr6,eax
 	mov	dr0,eax
 	add	al,04h
@@ -476,8 +534,8 @@ update_environment:
 	int	21h				; get drive letter
 	mov	dl,al
 	add	al,'A'
-	mov	byte ptr [start+40h],al		; set drive
-	mov	word ptr [start+41h],'\:'
+	mov	bptr [start+40h],al		; set drive
+	mov	wptr [start+41h],'\:'
 	inc	dx
 	mov	ah,47h
 	mov	esi,offs start+43h
@@ -488,10 +546,10 @@ update_environment:
 	mov	di,si
 	mov	cx,64
 	repne	scasb				; get length of dir string
-	cmp	byte ptr [di-2],'\'
+	cmp	bptr [di-2],'\'
 	jnz	@@0
 	dec	di
-@@0:	mov	byte ptr [di-1],'\'
+@@0:	mov	bptr [di-1],'\'
 	mov	si,offs start
 	mov	cx,64
 @@1:	lodsb
@@ -622,7 +680,7 @@ load_exec_header:
 	mov	ecx,64			; ECX = 64 bytes to load
 	mov	_err_code,2002h		; "error in exec file"
 	call	load_fs_block
-	cmp	word ptr fs:[0000h],'ZM'; exec must be 'MZ' file type
+	cmp	wptr fs:[0000h],'ZM'	; exec must be 'MZ' file type
 	jnz	file_errorm
 	mov	eax,fs:[003Ch]		; get start of 32-bit code
 	mov	edx,fs:[0018h]		; get start of MZ reloc-table
@@ -641,7 +699,7 @@ open_extrn_exec:
 	rep	movsb
 	push	es
 	pop	ds
-	mov	byte ptr [di],0
+	mov	bptr [di],0
 	mov	edx,offs start
 	mov	ax,3DC0h
 	int	21h
@@ -651,7 +709,7 @@ open_extrn_exec:
 	ret
 
 @@1:	mov	bx,offs start
-@@2:	cmp	byte ptr [bx],2Eh
+@@2:	cmp	bptr [bx],2Eh
 	stc
 	jz	@@err
 	inc	bx
@@ -666,7 +724,7 @@ open_extrn_exec:
 	stc
 	jz	@@err
 	mov	[di],eax
-	mov	byte ptr [di+4],0
+	mov	bptr [di+4],0
 	mov	ax,3DC0h
 	int	21h
 @@err:	pop	es ds
@@ -687,7 +745,7 @@ load_extrn_exec_header:
 	xor	ebp,ebp
 	mov	_exec_start,ebp		; default start of exec offset and
 	mov	_app_off_datapages,ebp	;  LE/LX data offset in file
-	cmp	word ptr fs:[0000h],'ZM'; is exec 'MZ' file type
+	cmp	wptr fs:[0000h],'ZM'	; is exec 'MZ' file type
 	jnz	search_for_le		; if not, search for known exec type
 	mov	eax,fs:[0018h]		; MZ reloc-tab must be at offset 0040h
 	cmp	ax,40h
@@ -701,9 +759,9 @@ load_extrn_exec_header:
 
 search_for_mz:
 	xor	esi,esi
-@@0:	movzx	eax,word ptr fs:[0004h]	; get pages in file
+@@0:	movzx	eax,wptr fs:[0004h]	; get pages in file
 	shl	eax,9			; *512
-	movzx	ebx,word ptr fs:[0002h]	; get bytes on last page
+	movzx	ebx,wptr fs:[0002h]	; get bytes on last page
 	add	eax,ebx
 	mov	bx,fs:[0000h]
 	cmp	bx,'ZM'
@@ -729,6 +787,8 @@ search_for_mz:
 	cmp	bx,'XL'
 	jz	@@4
 	cmp	bx,'CL'
+	jz	@@4
+	cmp	bx,'EP'
 	jz	@@4
 	mov	edx,ebp
 	call	seek_from_start
@@ -763,6 +823,8 @@ search_for_le:
 	cmp	ax,'XL'			; 'LX' type
 	jz	@@3
 	cmp	ax,'CL'			; 'LC' type
+	jz	@@3
+	cmp	ax,'PE'			; 'PE' type
 	jz	@@3
 @@4:	add	edx,2
 	add	ebp,2			; increment pointer in file
@@ -882,26 +944,26 @@ verbose_showloadobj:
 verbose_showstartup:
 	test	_misc_byte2,00010000b
 	jz	@@done
-	push	word ptr _seg_env
-	push	word ptr es:[002Ch]
-	push	word ptr _sel_es
+	push	wptr _seg_env
+	push	wptr es:[002Ch]
+	push	wptr _sel_es
 	call	verbose_getmem
 	mov	eax,_app_eip
 	sub	eax,_unreloc_eip
 	push	eax
-	push	word ptr _app_eip_object
-	push	offset excmsgB
-	push	dword ptr _app_esp
-	push	word ptr _sel32_ss
-	push	dword ptr _app_eip
-	push	word ptr _sel32_cs
+	push	wptr _app_eip_object
+	push	offs excmsgB
+	push	dptr _app_esp
+	push	wptr _sel32_ss
+	push	dptr _app_eip
+	push	wptr _sel32_cs
 	mov	dx,offs v_msg12
 	call	prints
 	add	sp,32
 @@done:	ret
 
 
-win_focus_vm:				; Windows - set focus on specified VM
+win_focus_vm:				; Windows 9x - set focus on specified VM
 	test	_misc_byte2,00000010b
 	jz	@@done
 	xor	bx,bx
