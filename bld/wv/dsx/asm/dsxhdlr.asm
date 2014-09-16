@@ -232,7 +232,7 @@ save_state      PROC NEAR
                 push    es
 
                 mov     es, ds:saveseg
-                mov     al, 0                   ;al=0 means save state
+                xor     al, al                  ;al=0 means save state
                 call    ds:saveaddr
 
                 pop     es
@@ -295,7 +295,7 @@ RMTrapAccess_   PROC NEAR
                 cmp     word ptr cs:parmarea.out_ptr, 0
                 jne     have_ret
                 push    word ptr 0
-                mov     dx,0
+                xor     dx,dx
                 push    word ptr 0
                 jmp     short remainder
 have_ret:

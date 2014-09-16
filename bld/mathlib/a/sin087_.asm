@@ -90,7 +90,7 @@ piby4:  dt      0.78539816339744830961
         push    BX              ; . . .
         push    CX              ; . . .
         push    DX              ; . . .
-        mov     AL,0            ; no octant adjustment required
+        xor     AL,AL           ; no octant adjustment required
 
 Sin8087:
         mov     CX,AX           ; save octant adjustment
@@ -116,7 +116,7 @@ Sin8087:
           mov   AX,-2[BP]       ; - get status
           test  AX,0400h        ; - check C2
         _until  e               ; until C2 is clear
-        mov     AL,0            ; set octant # to 0
+        xor     AL,AL           ; set octant # to 0
         test    AH,02h          ; if C1 is on
         _if     ne              ; then
           or    AL,1            ; - set low order bit of octant
@@ -147,7 +147,7 @@ Sin8087:
         add     AL,CL           ; add in octant adjustment
         and     AL,7            ; reduce to mod 8
         shl     AL,1            ; double it for index
-        mov     AH,0            ; zero high byte
+        xor     AH,AH           ; zero high byte
         mov     BX,AX           ; get index
         lea     BX,octtab[BX]   ; point to table entry
         mov     AX,cs:[BX]      ; get address of routine from table

@@ -47,7 +47,7 @@ xdefp   "C",NPXType
         finit                           ; initialize math coprocessor
         fstcw   [bp]                    ; store control word in memory
         fwait
-        mov     al,0                    ; assume no coprocessor present
+        xor     al,al                   ; assume no coprocessor present
         mov     ah,[bp + 1]             ; upper byte is 03h if
         cmp     ah,03h                  ;   coprocessor is present
         jne     exit                    ; exit if no coprocessor present

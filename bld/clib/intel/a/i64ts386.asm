@@ -195,10 +195,10 @@ div2:     xchg  ECX,EAX         ; - ...
           mov   DL,100          ; - get divisor
           div   DL              ; - split remainder into 2 parts
           mov   DL,AH           ; - save low order part
-          mov   AH,0            ; - zero
+          xor   AH,AH           ; - zero
           aam                   ; - split top part into 2 digits
           xchg  EDX,EAX         ; - DH, DL gets top 2 digits, AX gets low part
-          mov   AH,0            ; - zero
+          xor   AH,AH           ; - zero
           aam                   ; - split low part into 2 digits
 div5:     add   AX,3030h        ; - make ASCII digits
           add   DX,3030h        ; - ...

@@ -52,7 +52,7 @@ extern int KeyGet_pragma( void );
     modify [ax];
 
 #pragma aux KeyGet_pragma =     \
-    "mov    ah,0"               \
+    "xor    ah,ah"              \
     "int    16h"                \
     modify [ax];
 

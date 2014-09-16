@@ -74,7 +74,7 @@ __tls_alloc:
 	lea eax, [eax+32]
 	jnz __tls_alloc_ok
 
-	mov eax,-1
+	or eax,-1
 	ret
 
 __tls_alloc_ok:

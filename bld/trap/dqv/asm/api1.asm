@@ -1785,7 +1785,7 @@ register endp
     arg ltitle,word
     arg rows,word
     arg cols,word
-        mov     bl,0
+        xor     bl,bl
 tsn1:   push    bx
         push    bp
         mov     bp,sp
@@ -2207,7 +2207,7 @@ exit_stream db  1bh,10h,2,0,0bch,0beh
         @send   handle,me               ; get task handle
         pop     ax
         pop     es
-        mov     bl,0
+        xor     bl,bl
         @call   cstyle                  ; use normal control codes
         pop     es
 aex2:   push    cs                      ; set normal field mode

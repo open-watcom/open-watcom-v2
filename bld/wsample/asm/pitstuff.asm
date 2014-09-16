@@ -51,7 +51,7 @@ _TEXT segment use32 dword public 'CODE'
 
 $a0:
 		; issue a timer 0 latch command
-		mov al, 00000000b
+		xor al, al
 		out 43H, al
 		in al, 40H
 		mov	dl, al
@@ -61,7 +61,7 @@ $a0:
 		cmp eax, 1
 		jne $a0
 $a10:
-		mov al, 00000000b
+		xor al, al
 		out 43H, al
 		in al, 40H
 		mov	dl, al

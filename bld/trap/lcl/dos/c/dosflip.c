@@ -36,7 +36,7 @@ extern int GtKey( void );
 extern unsigned KeyWaiting( void );
 
 #pragma aux GtKey =             \
-    "mov AH,00h"                \
+    "xor AH,AH"                 \
     "int 16h"                   \
     parm caller [ax];
 

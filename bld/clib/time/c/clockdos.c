@@ -39,7 +39,7 @@
 
 unsigned long   __ibm_biosint_get_ticks( void );
 #pragma aux __ibm_biosint_get_ticks =   \
-    "mov    ah,0"                       \
+    "xor    ah,ah"                      \
     "int    1ah"                        \
     "shl    ecx,16"                     \
     "mov    cx,dx"                      \

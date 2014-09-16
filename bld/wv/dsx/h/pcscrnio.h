@@ -181,7 +181,7 @@ extern unsigned_8 BIOSGetMode( void );
 extern void BIOSSetMode( unsigned_8 mode );
 #pragma aux BIOSSetMode =                               \
         " push   ebp            "                       \
-        " mov    ah, 0          "                       \
+        " xor    ah, ah         "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
         parm [ al ]                                     \
@@ -238,7 +238,7 @@ extern unsigned_8 BIOSGetAttr( unsigned_8 pagenb );
 extern void BIOSSetAttr( unsigned_8 attr );
 #pragma aux BIOSSetAttr =                               \
         " push   ebp            "                       \
-        " mov    cx, 0          "                       \
+        " xor    cx, cx         "                       \
         " mov    dx, 3250h      "                       \
         " mov    ax, 600h       "                       \
         _INT_10                                         \
@@ -383,7 +383,7 @@ extern unsigned_8 BIOSGetRows( void );
         " push  es              "                       \
         " push  ebp             "                       \
         " mov   ax, 1130h       "                       \
-        " mov   bh, 0           "                       \
+        " xor   bh, bh          "                       \
         _INT_10                                         \
         " inc   dl              "                       \
         " pop   ebp             "                       \
@@ -397,7 +397,7 @@ extern unsigned_16 BIOSGetPoints( void );
         " push  es              "                       \
         " push  ebp             "                       \
         " mov   ax, 1130h       "                       \
-        " mov   bh, 0           "                       \
+        " xor   bh,bh           "                       \
         _INT_10                                         \
         " pop   ebp             "                       \
         " pop   es              "                       \
@@ -409,7 +409,7 @@ extern void BIOSEGAChrSet( unsigned_8 vidroutine );
 #pragma aux BIOSEGAChrSet =                             \
         " push   ebp            "                       \
         " mov    ah, 11h        "                       \
-        " mov    bl, 0          "                       \
+        " xor    bl, bl         "                       \
         _INT_10                                         \
         " pop    ebp            "                       \
         parm [ al ]                                     \
@@ -438,7 +438,7 @@ extern void _disablev( unsigned_16 );
         " mov    dx, 3c0h       ",                      \
         " mov    al, 11h        ",                      \
         " out    dx, al         ",                      \
-        " mov    al, 0          ",                      \
+        " xor    al, al         ",                      \
         " out    dx, al         "                       \
         parm [ dx ]                                     \
         modify exact [ al dx ];
@@ -452,7 +452,7 @@ extern void _enablev( unsigned_16 );
         " mov    dx, 3c0h       ",                      \
         " mov    al, 31h        ",                      \
         " out    dx, al         ",                      \
-        " mov    al, 0          ",                      \
+        " xor    al, al         ",                      \
         " out    dx, al         "                       \
         parm [ dx ]                                     \
         modify exact [ al dx ];
@@ -463,7 +463,7 @@ extern unsigned_16 _vidstatesize( unsigned_16 requestedstate );
         _INT_10                                         \
         " cmp    al, 1ch        "                       \
         " je     end            "                       \
-        " mov    bx, 0          "                       \
+        " xor    bx, bx         "                       \
         " end:                  "                       \
         parm [ cx ]                                     \
         modify exact [ ax bx ]                          \

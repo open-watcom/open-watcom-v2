@@ -1266,7 +1266,7 @@ void DLLThunkHeader( void )
     fprintf( dllthunk, "public __BackPatch_xxx\n" );
     fprintf( dllthunk, "__BackPatch_xxx proc near\n" );
     fprintf( dllthunk, "        push   di\n" );
-    fprintf( dllthunk, "        mov    dh,0\n" );
+    fprintf( dllthunk, "        xor    dh,dh\n" );
     fprintf( dllthunk, "        mov    di,dx\n" );
     fprintf( dllthunk, "        add    di,di\n" );
     fprintf( dllthunk, "        mov    dx,ax\n" );

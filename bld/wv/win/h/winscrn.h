@@ -263,7 +263,7 @@ extern void        _enablev( unsigned );
                     0xba 0xc0 0x03      /* mov dx,03c0  */      \
                     0xb0 0x11           /* mov al,11    */      \
                     0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
+                    0x30 0xc0           /* xor al,al    */      \
                     0xee                /* out dx,al    */      \
                     parm [dx]                                   \
                     modify [ax dx];
@@ -276,7 +276,7 @@ extern void        _enablev( unsigned );
                     0xba 0xc0 0x03      /* mov dx,03c0  */      \
                     0xb0 0x31           /* mov al,31    */      \
                     0xee                /* out dx,al    */      \
-                    0xb0 0x00           /* mov al,0     */      \
+                    0x30 0xc0           /* xor al,al    */      \
                     0xee                /* out dx,al    */      \
                     parm [dx]                                   \
                     modify [ax dx];

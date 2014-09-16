@@ -292,7 +292,7 @@ Loader16 proc   near
           mov   si,81h                  ; - ...
           push  bx                      ; - save bx
           mov   bl,es:-1[si]            ; - get length of command line
-          mov   bh,0                    ; - zero high byte
+          xor   bh,bh                   ; - zero high byte
           mov   es:[si+bx],bh           ; - put null char on end of cmd
           pop   bx                      ; - restore bx
           call  copyname                ; - copy cmdline to 32-bit stack
@@ -559,7 +559,7 @@ set64Ksel endp
 
 AllocSels proc  near
         mov     cx,4                    ; allocate 4 selectors
-        mov     ax,0                    ; CODE, DATA, 16-bit Alias
+        xor     ax,ax                   ; CODE, DATA, 16-bit Alias
         int     31h                     ; ...and PM_BufSeg
         _if     c                       ; if error
           jmp   MsgNoSelectors          ; - exit

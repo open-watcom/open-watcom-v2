@@ -79,21 +79,20 @@ beginb  C_strcat
         push    ds                      ; set es=ds
         pop     es                      ; ...
         push    edi                     ; save destination address
-        sub     ecx,ecx                 ; set length to -1
-        dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        or      ecx,-1                  ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           mov   [edi],al                ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_C_strcat1       ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           mov   1[edi],al               ; - copy it
           add   edi,2                   ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_C_strcat1:
         pop     edi                     ; restore destination address
@@ -112,21 +111,20 @@ defsb   FC_strcat
 ;
 beginb  FC_strcat
         push    edi                     ; save destination address
-        sub     ecx,ecx                 ; set length to -1
-        dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        or      ecx,-1                  ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           mov   [edi],al                ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_FC_strcat1      ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           mov   1[edi],al               ; - copy it
           add   edi,2                   ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_FC_strcat1:
         pop     edi                     ; restore destination address
@@ -153,7 +151,7 @@ beginb  S_strcat
           lodsb                         ; - get char from src
           mov   [edi],al                ; - append to end of dest
           inc   edi                     ; - point to next byte
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     edi                     ; restore destination string address
 endb    S_strcat
@@ -171,16 +169,15 @@ defsb   Z_strcat
 beginb  Z_strcat
         push    edi                     ; save destination address
         push    ecx                     ; save ecx
-        sub     ecx,ecx                 ; set length to -1
-        dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        or      ecx,-1                  ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         pop     ecx                     ; restore ecx
         dec     edi                     ; point to null character
         _loop                           ; loop (concatenate strings)
           lodsb                         ; - get char from src
           stosb                         ; - append to end of dest
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     edi                     ; restore destination string address
 endb    Z_strcat
@@ -197,20 +194,19 @@ defsb   BD_strcat
 ;
 beginb  BD_strcat
         push    edi                     ; save destination address
-        sub     ecx,ecx                 ; set length to -1
-        dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        or      ecx,-1                  ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_BD_strcat1      ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           stosb                         ; - copy it
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_BD_strcat1:
         pop     edi                     ; restore destination address
@@ -234,20 +230,19 @@ beginb  DP_strcat
         mov     ds,ecx                  ; ...
         mov     esi,ebx                 ; get source offset
         mov     edi,eax                 ; get destination offset
-        sub     ecx,ecx                 ; set length to -1
-        dec     ecx                     ; ...
-        mov     al,0                    ; scan for null character
+        or      ecx,-1                  ; set length to -1
+        xor     al,al                   ; scan for null character
         repnz   scasb                   ; ...
         dec     edi                     ; point to null character
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_DP_strcat1      ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           stosb                         ; - copy it
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_DP_strcat1:
         pop     eax                     ; restore destination address
@@ -272,14 +267,14 @@ beginb  C_strchr
           mov   al,[esi]                ; - get char from src
           cmp   al,dl                   ; - quit if char found
           je    short E_C_strchr        ; - ...
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_C_strchr1       ; - ...
           inc   esi                     ; - increment pointer
           mov   al,[esi]                ; - get next char
           cmp   al,dl                   ; - quit if char found
           je    short E_C_strchr        ; - ...
           inc   esi                     ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_C_strchr1:
         sub     esi,esi                 ; return NULL
@@ -301,7 +296,7 @@ beginb  S_strchr
           cmp   al,dl                   ; - quit if char found
           je    short E_S_strchr        ; - ...
           inc   esi                     ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     esi,esi                 ; return NULL
 endb    S_strchr
@@ -323,7 +318,7 @@ beginb  BD_strchr
           cmp   al,cl                   ; - quit if char found
           je    short E_BD_strchr       ; - ...
           inc   esi                     ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     esi,esi                 ; return NULL
         sub     edx,edx                 ; ...
@@ -344,7 +339,7 @@ beginb  DP_strchr
           cmp   al,cl                   ; - quit if char found
           je    short E_DP_strchr       ; - ...
           inc   edi                     ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         sub     edi,edi                 ; return NULL
         sub     edx,edx                 ; ...
@@ -368,13 +363,13 @@ beginb  C_strcpy
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           mov   [edi],al                ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_C_strcpy1       ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           mov   1[edi],al               ; - copy it
           add   edi,2                   ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_C_strcpy1:
         pop     edi                     ; restore destination address
@@ -396,7 +391,7 @@ beginb  S_strcpy
           lodsb                         ; - get char from src
           mov   [edi],al                ; - store in output buffer
           inc   edi                     ; - increment pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     edi                     ; restore destination address
 endb    S_strcpy
@@ -416,7 +411,7 @@ beginb  Z_strcpy
         _loop                           ; loop
           lodsb                         ; - get char from src
           stosb                         ; - store in output buffer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
         pop     edi                     ; restore destination address
 endb    Z_strcpy
@@ -436,13 +431,13 @@ beginb  BD_strcpy
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           mov   es:[edi],al             ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_BD_strcpy1      ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           mov   es:1[edi],al            ; - copy it
           add   edi,2                   ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_BD_strcpy1:
         pop     edi                     ; restore destination address
@@ -469,13 +464,13 @@ beginb  DP_strcpy
         _loop                           ; loop
           mov   al,[esi]                ; - get char from src
           mov   es:[edi],al             ; - store in output buffer
-          cmp   al,0                    ; - quit if end of string
+          test  al,al                   ; - quit if end of string
           je    short E_DP_strcpy1      ; - ...
           mov   al,1[esi]               ; - get next char
           add   esi,2                   ; - bump up pointer
           mov   es:1[edi],al            ; - copy it
           add   edi,2                   ; - bump up pointer
-          cmp   al,0                    ; - check for end of string
+          test  al,al                   ; - check for end of string
         _until  e                       ; until end of string
 E_DP_strcpy1:
         pop     eax                     ; restore destination address

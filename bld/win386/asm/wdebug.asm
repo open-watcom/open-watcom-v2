@@ -289,7 +289,7 @@ BeginProc WGod_Sys_Critical_Init
         mov     eax,0dh
         mov     esi,OFFSET Fault0DHandler
         VxDcall Hook_PM_Fault
-        cmp     esi,0
+        test    esi,esi
         jne     short aretd
         mov     esi,OFFSET JustReturn
 aretd:
@@ -460,7 +460,7 @@ EndProc Fault06Handler
 BeginProc Fault07Handler
         pushad
         movzx   edx,[ebp.Client_CS]
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again102:
         cmp     word ptr [edi.E_CS],dx
@@ -628,10 +628,10 @@ BeginProc WGod_Device_Init
 ;*
 ;*** hook div by 0 fault
 ;*
-        mov     eax,0
+        xor     eax,eax
         mov     esi,OFFSET Fault00Handler
         VxDcall Hook_PM_Fault
-        cmp     esi,0
+        test    esi,esi
         jne     short aret0
         mov     esi,OFFSET JustReturn
 aret0:
@@ -643,7 +643,7 @@ aret0:
         mov     eax,6
         mov     esi,OFFSET Fault06Handler
         VxDcall Hook_PM_Fault
-        cmp     esi,0
+        test    esi,esi
         jne     short aret6
         mov     esi,OFFSET JustReturn
 aret6:
@@ -655,7 +655,7 @@ aret6:
 ;       mov     eax,0eh
 ;       mov     esi,OFFSET Fault0EHandler
 ;       VxDcall Hook_PM_Fault
-;       cmp     esi,0
+;       test    esi,esi
 ;       jne     short arete
 ;       mov     esi,OFFSET JustReturn
 ;arete:
@@ -668,7 +668,7 @@ aret6:
         ShiftState <SS_Either_Ctrl + SS_Either_Alt + SS_Toggle_mask>, <SS_Ctrl + SS_Alt>
         mov     cl,CallOnPress
         mov     esi,OFFSET HotKeyPressed
-        mov     edi,0
+        xor     edi,edi
         VxDcall VKD_Define_Hot_Key
 
         clc
@@ -799,7 +799,7 @@ GetFlatAddr_ES_BX ENDP
 FindServerPtrFromName PROC near
         push    edi
         push    esi
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,eax                         ; save string ptr
         mov     ebx,OFFSET Convs              ; first conv
 again9:
@@ -821,7 +821,7 @@ skip:
         xor     eax,eax                         ; no pointer
         jmp     short done11
 ok:
-        cmp     dl,0                            ; at string end?
+        test    dl,dl                           ; at string end?
         je      short found                     ; yes
         inc     esi
         inc     eax
@@ -849,7 +849,7 @@ FindServerPtrFromName ENDP
 ;****************************************
 FindAnyPtr PROC near
         mov     edx,OFFSET Convs
-        mov     ecx,0
+        xor     ecx,ecx
         mov     bl,InUse
         mov     bh,IsServer
 again13:
@@ -860,7 +860,7 @@ again13:
         cmp     [edx.C_IsServer],bh             ; a server?
         jne     short notfnd
 nostest:
-        cmp     eax,0                           ; are we looking for anyone?
+        test    eax,eax                         ; are we looking for anyone?
         je      short testserver
         cmp     [edx.C_MyID],eax                ; found the id?
         jne     short notfnd                    ; nope
@@ -923,12 +923,12 @@ FindClientPtr ENDP
 ;***                                         ***
 ;***********************************************
 FindEmptySlot PROC near
-        mov     eax,0                           ; look for a null slot
+        xor     eax,eax                         ; look for a null slot
         mov     IsServer,2                      ; no server test
         mov     InUse,0                         ; can't be in use
         mov     ServerID,0                      ; no server id test
         call    FindAnyPtr
-        cmp     eax,0                           ; found a slot?
+        test    eax,eax                         ; found a slot?
         jne     short zeroit                    ; yep
         ret
 zeroit:
@@ -993,7 +993,7 @@ BeginProc WGod_Resume
         mov     InUse,1                 ; must be in use
         mov     ServerID,0              ; no server id test
         call    FindAnyPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short gotrdata
         clc
         ret
@@ -1224,7 +1224,7 @@ EndProc SVC_GetLimit
 BeginProc SVC_GetDR
 
         mov     cx,[ebp.Client_CX]
-        cmp     cx,0
+        test    cx,cx
         jne     short gdr1
         mov     eax,dr0
         jmp     short donegdr
@@ -1269,7 +1269,7 @@ BeginProc SVC_SetDR
 
         mov     cx,[ebp.Client_CX]
         mov     eax,[ebp.Client_EBX]
-        cmp     cx,0
+        test    cx,cx
         jne     short sdr1
         mov     dr0,eax
         jmp     short donesdr
@@ -1413,7 +1413,7 @@ BeginProc SVC_QuitSampler
         VxDcall Cancel_Time_Out
 
         mov     eax,IntPeriod
-        cmp     eax,0
+        test    eax,eax
         je      short skiprip
         VxDcall VTD_End_Min_Int_Period
 
@@ -1530,7 +1530,7 @@ BeginProc SVC_RegisterName
         mov     StringAddr,eax                  ; save string address
 
         call    FindServerPtrFromName
-        cmp     eax,0                           ; was there a name?
+        test    eax,eax                         ; was there a name?
         je      short findslot                  ; no, go find a slot
         mov     [ebp.Client_AX],ERR_SERVER_EXISTS
         ret
@@ -1540,7 +1540,7 @@ BeginProc SVC_RegisterName
 ;*
 findslot:
         call    FindEmptySlot
-        cmp     eax,0                           ; found a slot?
+        test    eax,eax                         ; found a slot?
         jne     short fnd_slot_name             ; yep
         mov     [ebp.Client_AX],ERR_NO_MORE_CONVS
         ret
@@ -1562,7 +1562,7 @@ fnd_slot_name:
 again5:
         mov     dl,byte ptr [eax]               ; i'm too lazy to code
         mov     byte ptr [ebx],dl               ;   real string copy
-        cmp     dl,0
+        test    dl,dl
         je      short donex
         inc     ebx
         inc     eax
@@ -1583,7 +1583,7 @@ EndProc SVC_RegisterName
 BeginProc SVC_AccessName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName           ; go find name
-        cmp     eax,0                           ; did we get a name?
+        test    eax,eax                         ; did we get a name?
         jne     short gotname                   ; yes
         mov     [ebp.Client_AX],ERR_NO_SUCH_SERVER
         ret
@@ -1596,7 +1596,7 @@ gotname:
         mov     ServerID,eax
         mov     eax,VMHandle                    ; client id
         call    FindClientPtr
-        cmp     eax,0                           ; client found?
+        test    eax,eax                         ; client found?
         je      short findcl                    ; nope
         mov     [ebp.Client_AX],ERR_ALREADY_ACCESSED_SERVER
         ret
@@ -1605,7 +1605,7 @@ gotname:
 ;*
 findcl:
         call    FindEmptySlot
-        cmp     eax,0                           ; found?
+        test    eax,eax                         ; found?
         jne     short gotid                     ; yes, its a blank spot
         mov     [ebp.Client_AX],ERR_NO_MORE_CONVS
         ret
@@ -1643,7 +1643,7 @@ EndProc SVC_AccessName
 BeginProc SVC_UnregisterName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName
-        cmp     eax,0                           ; does the server exist?
+        test    eax,eax                         ; does the server exist?
         jne     short testforours               ; yes
         mov     [ebp.Client_AX],ERR_NO_SUCH_SERVER
         ret
@@ -1661,7 +1661,7 @@ testforclients:
         mov     ServerID,ebx
         xor     eax,eax                                 ; any client
         call    FindAnyPtr
-        cmp     eax,0
+        test    eax,eax
         je      short oktokill
         pop     eax
         mov     [ebp.client_AX],ERR_HAS_CLIENTS
@@ -1684,7 +1684,7 @@ EndProc SVC_UnregisterName
 BeginProc SVC_UnaccessName
         call    GetFlatAddr_ES_BX
         call    FindServerPtrFromName
-        cmp     eax,0                           ; does the server exist?
+        test    eax,eax                         ; does the server exist?
         jne     short findclx                   ; yes
         mov     [ebp.Client_AX],ERR_NO_SUCH_SERVER
         ret
@@ -1694,7 +1694,7 @@ findclx:
         mov     ServerID,eax                    ; server id to test for
         mov     eax,VMHandle                    ; client ID
         call    FindClientPtr
-        cmp     eax,0                           ; is client attached?
+        test    eax,eax                         ; is client attached?
         jne     short foundclx                  ; yes
         mov     [ebp.Client_AX],ERR_HAVE_NOT_ACCESSED_SERVER
         ret
@@ -1718,7 +1718,7 @@ BeginProc SVC_StartConv
         mov     ServerID,eax                    ; client must have this serv
         mov     eax,VMHandle                    ; client id
         call    FindClientPtr
-        cmp     eax,0                           ; client found?
+        test    eax,eax                         ; client found?
         jne     short oksc                      ; yes
         mov     [ebp.Client_AX],ERR_NO_SUCH_CONV
         ret
@@ -1749,13 +1749,13 @@ EndProc SVC_StartConv
 BeginProc SVC_LookForConv
         mov     eax,VMHandle
         call    FindServerPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short oklfc
         mov     [ebp.Client_AX],ERR_NOT_A_SERVER
         ret
 oklfc:
         mov     ebx,VMHandle                    ; server id
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edx,OFFSET Convs
 again20:
         cmp     [edx.C_InUse],1                 ; in use?
@@ -1799,7 +1799,7 @@ EndProc SVC_LookForConv
 BeginProc SVC_EndConv
         call    GetIDFrom_CX_BX
         call    FindServerPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short okec
         mov     [ebp.Client_AX],ERR_NO_SUCH_SERVER
         ret
@@ -1809,7 +1809,7 @@ okec:
         mov     ServerID,eax
         mov     eax,VMHandle                    ; client ending
         call    FindClientPtr
-        cmp     eax,0                           ; client with this server?
+        test    eax,eax                         ; client with this server?
         jne     short okec1                     ; nope
         mov     [ebp.Client_AX],ERR_CONV_NOT_STARTED
         ret
@@ -1847,14 +1847,14 @@ DoGetPut PROC near
         mov     IsServer,2                              ; isserver irrelevant
         mov     ServerID,0                              ; serverid irrelevant
         call    FindAnyPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short oktox
         mov     [ebp.Client_AX],ERR_NOT_CONNECTED
         ret
 oktox:
         mov     IDAddr,eax
         call    GetIDFrom_CX_BX                         ; guy to get from
-        cmp     eax,0                                   ; null, look for any
+        test    eax,eax                                 ; null, look for any
         jne     short specific
 
         ;*
@@ -1883,7 +1883,7 @@ nextmebaby:
 
 specific:
         call    FindAnyPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short oktox2
 fried:
         mov     [ebp.Client_AX],ERR_NO_SUCH_ID
@@ -2108,7 +2108,7 @@ EndProc DataTimedOut
 DoGetPutTimeOut PROC near
         movzx   eax,[ebp.Client_DI]
         mov     DataTimeOut,eax
-        cmp     eax,0
+        test    eax,eax
         je      short doblock
         mov     [ebp.Client_DI],NO_BLOCK
         call    DoGetPut
@@ -2137,7 +2137,7 @@ BeginProc SVC_IsConvAck
         mov     ServerID,eax                    ; server and client pair
         mov     eax,VMHandle                    ; vm to look for
         call    FindClientPtr
-        cmp     eax,0
+        test    eax,eax
         jne     short ok99
         mov     [ebp.Client_AX],ERR_NO_SUCH_CONV
         ret
@@ -2250,7 +2250,7 @@ TaskSwitched PROC NEAR
         jne     short try               ; yep
         ret                             ; no, leave NOW
 try:
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again_ts:
         cmp     [edi.E_ID],ebx          ; current VM?
@@ -2297,7 +2297,7 @@ yes_active:
         mov     [ebp.Client_AX],1
         ret
 ok07:
-        cmp     esi,0
+        test    esi,esi
         jne     short aret7
         mov     esi,OFFSET JustReturn
 aret7:
@@ -2364,7 +2364,7 @@ BeginProc SVC_EMURegister
 ;*
 ;*** find an empty list element
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
 again100:
         cmp     word ptr [edi.E_CS],0
@@ -2409,7 +2409,7 @@ BeginProc SVC_EMUUnRegister
 ;*
 ;*** find the specified CS
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     eax,OFFSET EMUList
         mov     bx,[ebp.Client_DX]
 again101:
@@ -2468,7 +2468,7 @@ BeginProc SVC_EMUSaveRestore
 ;*
 ;*** find an empty list element
 ;*
-        mov     ecx,0
+        xor     ecx,ecx
         mov     edi,OFFSET EMUList
         mov     ax,[ebp.Client_DX]
 again103:
@@ -2510,8 +2510,8 @@ label199:
         mov     ebx,dword ptr [edi.E_8087]      ; 8087 ptr
         add     ebx,eax                         ; add linear base addr
 
-        mov     eax,0                           ; ring 0 offset of cs
-        mov     ecx,0                           ; NO VM IS ACTIVE
+        xor     eax,eax                         ; ring 0 offset of cs
+        xor     ecx,ecx                         ; NO VM IS ACTIVE
 
         call    __Win387_emulator
 
@@ -2572,7 +2572,7 @@ BeginProc SVC_VGARead
         out     dx,al
         inc     dx
         in      al,dx
-        mov     ah,0
+        xor     ah,ah
         mov     [ebp.Client_AX],ax
         ret
 EndProc SVC_VGARead
@@ -2592,7 +2592,7 @@ fooxx:
         mov dx,03c0h
         mov al,011h
         out dx,al
-        mov al,0
+        xor al,al
         out dx,al
         ret
 EndProc SVC_DisableVideo

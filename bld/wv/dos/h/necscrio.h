@@ -40,7 +40,7 @@
 #pragma aux BIOSSetPage =                               \
     "       cmp     al, 01h                     "       \
     "       je      Page1                       "       \
-    "       mov     dx, 0                       "       \
+    "       xor     dx, dx                      "       \
     "       jmp short foo                       "       \
     "Page1: mov     dx, 1000h                   "       \
     "foo:   mov     ah, 0Eh                     "       \
@@ -138,7 +138,7 @@ extern void BIOSSetCurPos( int );
 
 
 #pragma aux BIOS_OPEN_APP =                             \
-    "mov    ax, 0                               "       \
+    "xor    ax, ax                              "       \
     "mov    cl, 0xe0                            "       \
     "int    0DCh                                "       \
         modify      [ ax cl ];

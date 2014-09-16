@@ -86,7 +86,7 @@ negate:
         test    byte ptr -3[bp],80h     ; is number negative?
         jns     done                    ; done if not
         mov     si,dx                   ; negate number
-        mov     dx,0
+        xor     dx,dx
         sub     dx,si
         mov     si,cx
         mov     cx,0
@@ -95,7 +95,7 @@ negate:
         mov     bx,0
         sbb     bx,si
         mov     si,ax
-        mov     ax,0
+        xor     ax,ax
 done:
         pop     si                      ; outta here
         mov     sp,bp                   ; ...

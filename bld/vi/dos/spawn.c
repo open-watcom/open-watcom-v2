@@ -344,7 +344,7 @@ extern int DoSpawn( void *, void * );
         "jc     rcisright" \
         "mov    ax, 4d00h" \
         "int    21h" \
-        "mov    ah, 0" \
+        "xor    ah, ah" \
         "rcisright:" \
         "pop    di" \
         "pop    si" \

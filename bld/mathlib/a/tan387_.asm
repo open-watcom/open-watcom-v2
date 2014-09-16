@@ -65,8 +65,7 @@ endif
         push    EDX             ; push argument
         push    EAX             ; . . .
         fldpi                   ; load pi
-        mov     DL,0            ; init 'invert' flag
-        mov     DH,0            ; init 'negate' flag
+        xor     DX,DX           ; init 'invert' flag / init 'negate' flag
         fld     qword ptr -8[EBP]; load argument
         ftst                    ; get sign of argument
         fstsw   AX              ; . . .

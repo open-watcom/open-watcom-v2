@@ -190,7 +190,7 @@ extern long             GetVGAPalette( short func, short reg );
                                 0x88 0xec     /* mov ah,ch (green) */ \
                                 0x88 0xf0     /* mov al,dh (red)   */ \
                                 0x88 0xca     /* mov dl,cl (blue)  */ \
-                                0xb6 0x00     /* mov dh,0          */ \
+                                0x30 0xF6     /* xor dh,dh         */ \
                                 parm caller [ax] [bx] value [ax dx] modify [cx];
 #endif
 

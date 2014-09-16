@@ -103,7 +103,7 @@ int21       proc    near
         push    dx          ; ...
         push    bx          ; ...
         push    cx          ; ...
-        mov bx,0            ; handle is stdin
+        xor bx,bx           ; handle is stdin
         mov ax,4400H        ; get handle information
         int 21H         ; ...
         test    dx,80H          ; see if this is console input
@@ -131,7 +131,7 @@ int21       proc    near
 ;       cmp bx,ds:[02CH]        ; - if environment area < psp
         cmp     bx,cs:mypsp         ; - if running psp >= cmdedit psp
         jb  short else1     ; - - ...
-        mov di,0            ; - - no aliases
+        xor di,di           ; - - no aliases
         jmp short endif1        ; - else
 else1:      mov di,1            ; - - do aliases
 endif1:                     ; - endif
@@ -169,7 +169,7 @@ done:       pop ds          ; restore some regs
         pop es
         pop bp
         pop di          ; ...
-        mov al,0            ; Why? I dunno
+        xor al,al           ; Why? I dunno
         iret
 old:        jmp dword ptr cs:int21off
 int21       endp
@@ -187,7 +187,7 @@ putmsg:
 
 start:
         mov dx,es           ; save pointer to PSP
-        mov ax,0            ; point to interrupt tables
+        xor ax,ax           ; point to interrupt tables
         mov ds,ax           ; ...
         mov di,080H         ; ...
         mov cl,es:[di]      ; pick up parm length
@@ -236,8 +236,7 @@ noalias:    mov es,ds:MYPSPOFF[bx]  ; - free up code
         mov ah,49H          ; - prepare to free up memory
         int 21H         ; - ...
 exit:                       ; - endif
-        mov al,0            ; - terminate
-        mov ah,4CH          ; - ...
+        mov ax,4C00H        ; - ...
         int 21H         ; - ...
                         ; endif
 install:
@@ -272,7 +271,7 @@ notalready:
         mov cx,offset DGROUP:_end
         mov di,offset DGROUP:_edata
         sub cx,di
-        mov al,0
+        xor al,al
         rep stosb
         pop es
         pop ax
@@ -294,8 +293,7 @@ notalready:
         mov ax,di           ; ...
         call    InitRetrieve_       ; initialize
 
-        mov al,0            ; terminate and stay resident
-        mov ah,31H          ; ...
+        mov ax,3100H        ; terminate and stay resident
         mov dx,bx           ; ...
         int 21H         ; ...
 

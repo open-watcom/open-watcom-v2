@@ -415,7 +415,7 @@ int __cdecl ffs (int val)
   return ((int __cdecl (*)())
          "\x0F\xBC\x44\x24\4"    /*     bsf eax, [esp+4] */
          "\x75\5"                /*     jnz @f           */
-         "\xB8\xFF\xFF\xFF\xFF"  /*     mov eax,-1       */
+         "\x83\xC8\xFF"          /*     or eax,-1        */
          "\x40"                  /* @f: inc eax          */
          "\xC3") (val);          /*     ret              */
 #else

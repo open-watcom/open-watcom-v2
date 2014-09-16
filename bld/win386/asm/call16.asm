@@ -134,7 +134,7 @@ nxtparm:;_loop                          ; loop
 longparm: push  edx                     ; - push long parm
           jmp   nxtparm                 ; - go get next parm
 
-byteparm: mov   dh,0                    ; - zero high byte
+byteparm: xor dh,dh                     ; - zero high byte
 wordparm: push  dx                      ; - push word parm
           jmp   nxtparm                 ; - go get next parm
 floatparm:

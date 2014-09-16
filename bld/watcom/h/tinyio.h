@@ -953,8 +953,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx];
 
 #pragma aux             _TinyDPMISegToSel = \
-        "mov ah,0"      \
-        "mov al,2"      \
+        "mov ax,0002h"  \
         "int 31h"       \
         "jnc short finish" \
         "xor ax,ax"     \
@@ -964,8 +963,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax bx];
 
 #pragma aux             _TinyDPMICreateSel = \
-        "mov ah,0"      \
-        "mov al,0"      \
+        "xor ax,ax"     \
         "int 31h"       \
         "jnc short finish" \
         "xor ax,ax"     \
@@ -977,8 +975,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyDPMISetBase = \
         "mov ecx,edx"   \
         "shr ecx,16"    \
-        "mov ah,0"      \
-        "mov al,7"      \
+        "mov ax,0007h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm            [bx] [edx] \
@@ -988,8 +985,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyDPMISetLimit = \
         "mov ecx,edx"   \
         "shr ecx,16"    \
-        "mov ah,0"      \
-        "mov al,8"      \
+        "mov ax,0008h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm            [bx] [edx] \
@@ -997,8 +993,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ecx];
 
 #pragma aux             _TinyDPMISetRights = \
-        "mov ah,0"      \
-        "mov al,9"      \
+        "mov ax,0009h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm            [bx] [cx] \
@@ -1008,8 +1003,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyDPMIGetDescriptor = \
         "push es"       \
         "mov es,cx"     \
-        "mov ah,0"      \
-        "mov al,11"     \
+        "mov ax,000Bh"  \
         "int 31h"       \
         "sbb eax,eax"   \
         "pop es"        \
@@ -1020,8 +1014,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyDPMISetDescriptor = \
         "push es"       \
         "mov es,cx"     \
-        "mov ah,0"      \
-        "mov al,12"     \
+        "mov ax,000Ch"  \
         "int 31h"       \
         "sbb eax,eax"   \
         "pop es"        \
@@ -1030,8 +1023,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax];
 
 #pragma aux             _TinyDPMICreateCSAlias = \
-        "mov ah,0"      \
-        "mov al,10"     \
+        "mov ax,000Ah"  \
         "int 31h"       \
         "jnc short finish" \
         "xor ax,ax"     \
@@ -1041,8 +1033,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax];
 
 #pragma aux             _TinyDPMIFreeSel = \
-        "mov ah,0"      \
-        "mov al,1"      \
+        "mov ax,0001h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm caller     [bx] \
@@ -1050,8 +1041,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax];
 
 #pragma aux             _TinyDPMIRawPMtoRMAddr = \
-        "mov ah,3"      \
-        "mov al,6"      \
+        "mov ax,0306h"  \
         "xor edi,edi"   \
         "stc"           \
         "int 31h"       \
@@ -1064,8 +1054,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax cx si edi];
 
 #pragma aux             _TinyDPMIRawRMtoPMAddr = \
-        "mov ah,3"      \
-        "mov al,6"      \
+        "mov ax,0306h"  \
         "stc"           \
         "int 31h"       \
         "jnc short L1"  \
@@ -1079,8 +1068,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx cx si edi];
 
 #pragma aux             _TinyDPMISaveRMStateAddr = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         "stc"           \
         "int 31h"       \
         "mov cx,si"     \
@@ -1092,8 +1080,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax bx cx si edi];
 
 #pragma aux             _TinyDPMISavePMStateAddr = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         "int 31h"       \
         "jnc short L1"  \
         "xor cx,cx"     \
@@ -1107,8 +1094,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax ebx cx si edi];
 
 #pragma aux             _TinyDPMISaveStateSize = \
-        "mov ah,3"      \
-        "mov al,5"      \
+        "mov ax,0305h"  \
         "int 31h"       \
         "jnc short finish" \
         "xor eax,eax"   \
@@ -1150,8 +1136,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax bx cx edi];
 
 #pragma aux             _TinyDPMIGetProtectVect = \
-        "mov ah,2"      \
-        "mov al,4"      \
+        "mov ax,0204h"  \
         "int 31h"       \
         "jnc short finish" \
         "xor cx,cx"     \
@@ -1162,8 +1147,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax bx cx edx];
 
 #pragma aux             _TinyDPMISetProtectVect = \
-        "mov ah,2"      \
-        "mov al,5"      \
+        "mov ax,0205h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm caller     [bl] [cx edx] \
@@ -1171,8 +1155,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax bx cx edx];
 
 #pragma aux             _TinyDPMIGetProtectExcpt = \
-        "mov ah,2"      \
-        "mov al,2"      \
+        "mov ax,0202h"  \
         "int 31h"       \
         "jnc short finish" \
         "xor cx,cx"     \
@@ -1183,8 +1166,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [ax bx cx edx];
 
 #pragma aux             _TinyDPMISetProtectExcpt = \
-        "mov ah,2"      \
-        "mov al,3"      \
+        "mov ax,0203h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm caller     [bl] [cx edx] \
@@ -1192,8 +1174,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax bx cx edx];
 
 #pragma aux             _TinyDPMIAlloc = \
-        "mov    ah,5"   \
-        "mov    al,1"   \
+        "mov    ax,0501h"   \
         "int    31h"    \
         "sbb    eax,eax" /* eax=-1 if alloc failed */ \
         "inc    eax"     /* eax=0  if alloc failed */ \
@@ -1211,8 +1192,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
 #pragma aux             _TinyDPMIRealloc = \
         "mov    di,[eax]"  /* get memory block handle */\
         "mov    si,2[eax]" /* ... */\
-        "mov    ah,5"   \
-        "mov    al,3"   \
+        "mov    ax,0503h"   \
         "int    31h"    \
         "sbb    eax,eax"   /* eax=-1 if alloc failed */ \
         "inc    eax"       /* eax=0  if alloc failed */ \
@@ -1228,15 +1208,13 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx ecx esi edi];
 
 #pragma aux             _TinyDPMIFree = \
-        "mov ah,5"      \
-        "mov al,2"      \
+        "mov ax,0502h"  \
         "int 31h"       \
         parm caller     [si] [di] \
         modify exact    [eax esi edi];
 
 #pragma aux             _TinyDPMIBase = \
-        "mov ah,0"      \
-        "mov al,6"      \
+        "mov ax,0006h"  \
         "int 31h"       \
         "mov eax,ecx"   \
         "shl eax,16"    \
@@ -1246,8 +1224,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx ecx edx];
 
 #pragma aux             _TinyDPMIDOSAlloc = \
-        "mov ah,1"      \
-        "mov al,0"      \
+        "mov ax,0100h"  \
         "int 31h"       \
         "sbb ebx,ebx"   \
         "not ebx"       \
@@ -1259,15 +1236,13 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx edx];
 
 #pragma aux             _TinyDPMIDOSFree = \
-        "mov ah,1"      \
-        "mov al,1"      \
+        "mov ax,0101h"  \
         "int 31h"       \
         parm caller     [dx] \
         modify exact    [eax edx];
 
 #pragma aux             _TinyDPMIGetRealVect = \
-        "mov ah,2"      \
-        "mov al,0"      \
+        "mov ax,0200h"  \
         "int 31h"       \
         "shl ecx,16"    \
         "mov cx,dx"     \
@@ -1276,8 +1251,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify exact    [eax ebx ecx edx];
 
 #pragma aux             _TinyDPMISetRealVect = \
-        "mov ah,2"      \
-        "mov al,1"      \
+        "mov ax,0201h"  \
         "int 31h"       \
         "sbb eax,eax"   \
         parm caller     [bl] [cx] [dx] \
@@ -1559,7 +1533,7 @@ uint_32                 _TinyMemAlloc( uint_32 __size );
         modify          [eax ebx ecx edx];
 
 #pragma aux             _TinySetDeviceInfo = \
-        "mov dh,0"      \
+        "xor dh,dh"      \
         _MOV_AX_W _SET_ DOS_IOCTL \
         _INT_21         \
         "rcl edx,1"     \
