@@ -660,33 +660,30 @@ trap_retval ReqSplit_cmd( void )
     start = cmd;
     ret = GetOutPtr( 0 );
     ret->parm_start = 0;
-    for( ;; ) {
-        if( len == 0 )
-            goto done;
+    while( len != 0 ) {
         switch( *cmd ) {
+        case '\"':
+            while( --len && (*++cmd != '\"') )
+                ;
+            if( len != 0 )
+                break;
+            /* fall down */
+        case '\0':
+        case ' ':
+        case '\t':
+            ret->parm_start = 1;
+            /* fall down */
         case '/':
         case '=':
         case '(':
         case ';':
         case ',':
-            goto done;
-        case '\0':
-        case ' ':
-        case '\t':
-            ret->parm_start = 1;
-            goto done;
-        case '\"':
-            while( --len && (*++cmd != '\"') )
-                ;
-            if( len == 0 ) {
-                ret->parm_start = 1;
-                goto done;
-            }
+            len = 0;
+            continue;
         }
         ++cmd;
         --len;
     }
-done:
     ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;
     return( sizeof( *ret ) );

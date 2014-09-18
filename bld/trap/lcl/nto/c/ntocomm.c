@@ -206,35 +206,31 @@ trap_retval ReqSplit_cmd( void )
     len = GetTotalSize() - sizeof( split_cmd_req );
     start = cmd;
     ret = GetOutPtr( 0 );
+    ret->parm_start = 0;
 //    cmd = CollectNid( cmd, len, &nid );
     len -= cmd - start;
-    for( ;; ) {
-        if( len == 0 ) break;
+    while( len != 0 ) {
         ch = *cmd;
         if( !( ch == '\0' || ch == ' ' || ch == '\t' ) ) break;
         ++cmd;
         --len;
     }
-    for( ;; ) {
-        if( len == 0 ) {
-            ret->parm_start = cmd - start;
-            ret->cmd_end = cmd - start;
-            CONV_LE_16( ret->cmd_end );
-            CONV_LE_16( ret->parm_start );
-            return( sizeof( *ret ) );
-        }
+    while( len != 0 ) {
         switch( *cmd ) {
         case '\0':
         case ' ':
         case '\t':
-            ret->parm_start = cmd - start + 1;
-            ret->cmd_end = cmd - start;
-            CONV_LE_16( ret->cmd_end );
-            CONV_LE_16( ret->parm_start );
-            return( sizeof( *ret ) );
+            ret->parm_start = 1;
+            len = 0;
+            continue;
         }
         ++cmd;
     }
+    ret->parm_start += cmd - start;
+    ret->cmd_end = cmd - start;
+    CONV_LE_16( ret->cmd_end );
+    CONV_LE_16( ret->parm_start );
+    return( sizeof( *ret ) );
 }
 
 trap_retval ReqGet_next_alias( void )

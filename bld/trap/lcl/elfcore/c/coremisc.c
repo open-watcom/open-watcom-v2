@@ -324,24 +324,22 @@ trap_retval ReqSplit_cmd( void )
 
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     ret = GetOutPtr( 0 );
+    ret->parm_start = 0;
     start = cmd;
     len = GetTotalSize() - sizeof( split_cmd_req );
-    for( ;; ) {
-        if( len == 0 ) break;
+    while( len != 0 ) {
         switch( *cmd ) {
         case '\0':
         case ' ':
         case '\t':
-            ret->parm_start = cmd - start + 1;
-            ret->cmd_end = cmd - start;
-            CONV_LE_16( ret->cmd_end );
-            CONV_LE_16( ret->parm_start );
-            return( sizeof( *ret ) );
+            ret->parm_start = 1;
+            len = 0;
+            continue;
         }
         ++cmd;
         --len;
     }
-    ret->parm_start = cmd - start;
+    ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;
     CONV_LE_16( ret->cmd_end );
     CONV_LE_16( ret->parm_start );

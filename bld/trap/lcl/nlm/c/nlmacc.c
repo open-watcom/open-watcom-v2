@@ -1952,25 +1952,21 @@ trap_retval ReqSplit_cmd( void )
     cmd = GetInPtr( sizeof( split_cmd_req ) );
     start = cmd;
     ret = GetOutPtr( 0 );
+    ret->parm_start = 0;
     len = GetTotalSize() - sizeof( split_cmd_req );
-
-    for( ;; ) {
-        if( len == 0 )
-            goto done;
+    while( len == 0 ) {
         switch( *cmd ) {
-        case '\0':
-            goto done;
         case ' ':
         case '\t':
-            ret->parm_start = cmd - start + 1;
-            ret->cmd_end = cmd - start;
-            return( sizeof( *ret ) );
+            ret->parm_start = 1;
+        case '\0':
+            len = 0;
+            continue;
         }
         ++cmd;
         --len;
     }
-done:
-    ret->parm_start = cmd - start;
+    ret->parm_start += cmd - start;
     ret->cmd_end = cmd - start;
     return( sizeof( *ret ) );
 }
