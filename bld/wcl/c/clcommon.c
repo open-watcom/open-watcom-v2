@@ -129,13 +129,15 @@ void  Fputnl( const char *text, FILE *fptr )
 void FputnlQuoted( const char *text, FILE *fptr )
 /***********************************************/
 {
-    if( strchr( text, ' ' ) != NULL ) {
-        fputs( "'", fptr );
-        fputs( text, fptr );
-        fputs( "'\n", fptr );
-    } else {
-        fputs( text, fptr );
-        fputs( "\n", fptr );
+    if( text != NULL ) {
+        if( strchr( text, ' ' ) != NULL ) {
+            fputs( "'", fptr );
+            fputs( text, fptr );
+            fputs( "'\n", fptr );
+        } else {
+            fputs( text, fptr );
+            fputs( "\n", fptr );
+        }
     }
 }
 

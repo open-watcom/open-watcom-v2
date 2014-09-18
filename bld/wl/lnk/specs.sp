@@ -13,7 +13,7 @@
 #
 system begin dos
 :segment Pspecs
-    OPTS i86 -bt=dos
+    ARCH i86 -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
@@ -22,7 +22,7 @@ system begin dos
 end
 system begin dos4g
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/4G'
     libpath %WATCOM%/lib386
@@ -33,7 +33,7 @@ system begin dos4g
 end
 system begin dos4gnz
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/4G non-zero base'
     libpath %WATCOM%/lib386
@@ -47,7 +47,7 @@ system begin dos4gnz
 end
 system begin pharlap
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :: FIXME: need -ez to generate Easy OMF-386?
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib386
@@ -57,7 +57,7 @@ system begin pharlap
 end
 system begin x32r
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='FlashTek (register calling convention)'
     libpath %WATCOM%/lib386
@@ -70,7 +70,7 @@ system begin x32r
 end
 system begin x32rv
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='FlashTek Virtual Memory (register calling convention)'
     libpath %WATCOM%/lib386
@@ -83,7 +83,7 @@ system begin x32rv
 end
 system begin x32s
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='FlashTek (stack calling convention)'
     libpath %WATCOM%/lib386
@@ -96,7 +96,7 @@ system begin x32s
 end
 system begin x32sv
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='FlashTek Virtual Memory (stack calling convention)'
     libpath %WATCOM%/lib386
@@ -109,7 +109,7 @@ system begin x32sv
 end
 system begin win386
 :segment Pspecs
-    OPTS 386 -bt=windows
+    ARCH i386 -bt=windows
 :elsesegment Pwlsystem
     option osname='Windows 32-bit'
     libpath %WATCOM%/lib386
@@ -119,7 +119,7 @@ system begin win386
 end
 system begin os2
 :segment Pspecs
-    OPTS i86 -bt=os2
+    ARCH i86 -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 16-bit'
     library os2.lib
@@ -130,7 +130,7 @@ system begin os2
 end
 system begin os2_pm
 :segment Pspecs
-    OPTS i86 -bt=os2
+    ARCH i86 -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 16-bit Presentation Manager'
     library os2.lib
@@ -141,7 +141,7 @@ system begin os2_pm
 end
 system begin os2_dll
 :segment Pspecs
-    OPTS i86 -bt=os2 -bd
+    ARCH i86 -bt=os2 -bd
 :elsesegment Pwlsystem
     option osname='OS/2 16-bit'
     library os2.lib
@@ -152,7 +152,7 @@ system begin os2_dll
 end
 system begin windows
 :segment Pspecs
-    OPTS i86 -bt=windows
+    ARCH i86 -bt=windows
 :elsesegment Pwlsystem
     option osname='Windows 16-bit'
     libpath %WATCOM%/lib286
@@ -165,7 +165,7 @@ system begin windows
 end
 system begin windows_dll
 :segment Pspecs
-    OPTS i86 -bt=windows -bd
+    ARCH i86 -bt=windows -bd
 :: FIXME: need bd?
 :elsesegment Pwlsystem
     option osname='Windows 16-bit'
@@ -180,7 +180,7 @@ system begin windows_dll
 end
 system begin win_vxd
 :segment Pspecs
-    OPTS 386
+    ARCH i386
 :: FIXME: which bt=?
 :elsesegment Pwlsystem
     option osname='Windows VxD'
@@ -189,7 +189,7 @@ system begin win_vxd
 end
 system begin os2v2
 :segment Pspecs
-    OPTS 386 -bt=os2
+    ARCH i386 -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 32-bit'
     libpath %WATCOM%/lib386
@@ -199,7 +199,7 @@ system begin os2v2
 end
 system begin os2v2_pm
 :segment Pspecs
-    OPTS 386 -bt=os2
+    ARCH i386 -bt=os2
 :elsesegment Pwlsystem
     option osname='OS/2 32-bit Presentation Manager'
     libpath %WATCOM%/lib386
@@ -209,7 +209,7 @@ system begin os2v2_pm
 end
 system begin os2v2_dll
 :segment Pspecs
-    OPTS 386 -bt=os2 -bd
+    ARCH i386 -bt=os2 -bd
 :elsesegment Pwlsystem
     option osname='OS/2 32-bit'
     libpath %WATCOM%/lib386
@@ -219,7 +219,7 @@ system begin os2v2_dll
 end
 system begin novell
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='Novell NLM'
     format novell ^
@@ -231,7 +231,7 @@ system begin novell
 end
 system begin netware
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='Novell NLM'
     format novell ^
@@ -243,7 +243,7 @@ system begin netware
 end
 system begin netware_libc
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='NetWare LibC NLM (Full-RTL)'
     format novell ^
@@ -261,7 +261,7 @@ system begin netware_libc
 end
 system begin netware_libc_lite
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='NetWare LibC NLM (Lite-RTL)'
     format novell ^
@@ -279,7 +279,7 @@ system begin netware_libc_lite
 end
 system begin netware_clib
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='NetWare CLIB NLM (Full-RTL)'
     format novell ^
@@ -292,7 +292,7 @@ system begin netware_clib
 end
 system begin netware_clib_lite
 :segment Pspecs
-    OPTS 386 -bt=netware
+    ARCH i386 -bt=netware
 :elsesegment Pwlsystem
     option osname='NetWare CLIB NLM (Lite-RTL)'
     format novell ^
@@ -306,7 +306,7 @@ system begin netware_clib_lite
 end
 system begin ads
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='AutoCAD Development System'
     libpath %WATCOM%/lib386
@@ -317,7 +317,7 @@ system begin ads
 end
 system begin eadi
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='emulation AutoCAD Device Interface'
     libpath %WATCOM%/lib386
@@ -328,7 +328,7 @@ system begin eadi
 end
 system begin fadi
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='floating point AutoCAD Device Interface'
     libpath %WATCOM%/lib386
@@ -339,7 +339,7 @@ system begin fadi
 end
 system begin com
 :segment Pspecs
-    OPTS i86 -bt=dos
+    ARCH i86 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS .COM'
     libpath %WATCOM%/lib286
@@ -350,7 +350,7 @@ system begin com
 end
 system begin qnx
 :segment Pspecs
-    OPTS i86 -bt=qnx
+    ARCH i86 -bt=qnx
 :elsesegment Pwlsystem
     option osname='QNX 16-bit'
     libpath %WATCOM%/lib286
@@ -360,7 +360,7 @@ system begin qnx
 end
 system begin qnx386
 :segment Pspecs
-    OPTS 386 -bt=qnx
+    ARCH i386 -bt=qnx
 :elsesegment Pwlsystem
     option osname='QNX 32-bit'
     libpath %WATCOM%/lib386
@@ -370,7 +370,7 @@ system begin qnx386
 end
 system begin linux
 :segment Pspecs
-    OPTS 386 -bt=linux
+    ARCH i386 -bt=linux
 :elsesegment Pwlsystem
     option osname='Linux x86'
     libpath %WATCOM%/lib386
@@ -383,7 +383,7 @@ system begin linux
 end
 system begin linuxmips
 :segment Pspecs
-    OPTS mips -bt=linux
+    ARCH mips -bt=linux
 :elsesegment Pwlsystem
     option osname='Linux MIPS'
     libpath %WATCOM%/libmps
@@ -396,7 +396,7 @@ system begin linuxmips
 end
 system begin nt
 :segment Pspecs
-    OPTS 386 -bt=nt
+    ARCH i386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT character-mode'
     libpath %WATCOM%/lib386
@@ -410,7 +410,7 @@ system begin nt
 end
 system begin nt_win
 :segment Pspecs
-    OPTS 386 -bt=nt
+    ARCH i386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT windowed'
     libpath %WATCOM%/lib386
@@ -424,7 +424,7 @@ system begin nt_win
 end
 system begin nt_dll
 :segment Pspecs
-    OPTS 386 -bt=nt -bd
+    ARCH i386 -bt=nt -bd
 :elsesegment Pwlsystem
     option osname='Windows NT'
     libpath %WATCOM%/lib386
@@ -438,7 +438,7 @@ system begin nt_dll
 end
 system begin win95
 :segment Pspecs
-    OPTS 386 -bt=nt
+    ARCH i386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows 95'
     libpath %WATCOM%/lib386
@@ -452,7 +452,7 @@ system begin win95
 end
 system begin win32
 :segment Pspecs
-    OPTS 386 -bt=nt
+    ARCH i386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Win32'
     libpath %WATCOM%/lib386
@@ -466,7 +466,7 @@ system begin win32
 end
 system begin win32s
 :segment Pspecs
-    OPTS 386 -bt=nt
+    ARCH i386 -bt=nt
 :elsesegment Pwlsystem
     option osname='Win32s (Windows 3.x)'
     libpath %WATCOM%/lib386
@@ -479,7 +479,7 @@ system begin win32s
 end
 system begin tnt
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='Phar Lap TNT DOS style'
     libpath %WATCOM%/lib386
@@ -490,7 +490,7 @@ system begin tnt
 end
 system begin ntaxp
 :segment Pspecs
-    OPTS axp -bt=nt
+    ARCH axp -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT(AXP) character-mode'
     libpath %WATCOM%/libaxp
@@ -502,7 +502,7 @@ system begin ntaxp
 end
 system begin ntaxp_win
 :segment Pspecs
-    OPTS axp -bt=nt
+    ARCH axp -bt=nt
 :elsesegment Pwlsystem
     option osname='Windows NT(AXP) windowed'
     libpath %WATCOM%/libaxp
@@ -514,7 +514,7 @@ system begin ntaxp_win
 end
 system begin ntaxp_dll
 :segment Pspecs
-    OPTS axp -bt=nt -bd
+    ARCH axp -bt=nt -bd
 :elsesegment Pwlsystem
     option osname='Windows NT(AXP)'
     libpath %WATCOM%/libaxp
@@ -526,7 +526,7 @@ system begin ntaxp_dll
 end
 system begin causeway
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='CauseWay'
     libpath %WATCOM%/lib386
@@ -537,7 +537,7 @@ system begin causeway
 end
 system begin cwdlls
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
     option osname='CauseWay (stack calling convention)'
@@ -549,7 +549,7 @@ system begin cwdlls
 end
 system begin cwdllr
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :: FIXME: -bd??
 :elsesegment Pwlsystem
     option osname='CauseWay (register calling convention)'
@@ -561,7 +561,7 @@ system begin cwdllr
 end
 system begin dos32a
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32 Advanced DOS Extender (LE-style)'
     libpath %WATCOM%/lib386
@@ -573,7 +573,7 @@ system begin dos32a
 end
 system begin dos32x
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32 Advanced DOS Extender (LX-style)'
     libpath %WATCOM%/lib386
@@ -589,7 +589,7 @@ system begin dos32x
 end
 system begin stub32a
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32A DOS Extender w/ Standard stub (LE-style)'
     libpath %WATCOM%/lib386
@@ -601,7 +601,7 @@ system begin stub32a
 end
 system begin stub32x
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32A DOS Extender w/ Standard stub (LX-style)'
     libpath %WATCOM%/lib386
@@ -617,7 +617,7 @@ system begin stub32x
 end
 system begin stub32ac
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32A DOS Extender w/ Configurable stub (LE-style)'
     libpath %WATCOM%/lib386
@@ -629,7 +629,7 @@ system begin stub32ac
 end
 system begin stub32xc
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='DOS/32A DOS Extender w/ Configurable stub (LX-style)'
     libpath %WATCOM%/lib386
@@ -645,7 +645,7 @@ system begin stub32xc
 end
 system begin pmodew
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='PMODE/W'
     libpath %WATCOM%/lib386
@@ -656,7 +656,7 @@ system begin pmodew
 end
 system begin pmodewi
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='PMODE/WI'
     libpath %WATCOM%/lib386
@@ -667,7 +667,7 @@ system begin pmodewi
 end
 system begin wdosx
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='WDOSX'
     libpath %WATCOM%/lib386
@@ -678,7 +678,7 @@ system begin wdosx
 end
 system begin zrdx
 :segment Pspecs
-    OPTS 386 -bt=dos
+    ARCH i386 -bt=dos
 :elsesegment Pwlsystem
     option osname='Zurenava'
     libpath %WATCOM%/lib386
@@ -689,7 +689,7 @@ system begin zrdx
 end
 system begin dos16m
 :segment Pspecs
-    OPTS i86 -bt=dos
+    ARCH i86 -bt=dos
 :elsesegment Pwlsystem
     libpath %WATCOM%/lib286
     libpath %WATCOM%/lib286/dos
@@ -700,7 +700,7 @@ system begin dos16m
 end
 system begin zdos
 :segment Pspecs
-    OPTS 386 -bt=zdos
+    ARCH i386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS User Application'
     libpath %WATCOM%/lib386
@@ -711,7 +711,7 @@ system begin zdos
 end
 system begin zdosfsd
 :segment Pspecs
-    OPTS 386 -bt=zdos
+    ARCH i386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS File System Driver'
     libpath %WATCOM%/lib386
@@ -722,7 +722,7 @@ system begin zdosfsd
 end
 system begin zdoshwd
 :segment Pspecs
-    OPTS 386 -bt=zdos
+    ARCH i386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS Hardware Driver'
     libpath %WATCOM%/lib386
@@ -733,7 +733,7 @@ system begin zdoshwd
 end
 system begin zdosdev
 :segment Pspecs
-    OPTS 386 -bt=zdos
+    ARCH i386 -bt=zdos
 :elsesegment Pwlsystem
     option osname='ZDOS Device Driver'
     libpath %WATCOM%/lib386
@@ -744,7 +744,7 @@ system begin zdosdev
 end
 system begin rdos
 :segment Pspecs
-    OPTS 386 -bt=rdos
+    ARCH i386 -bt=rdos
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
@@ -754,7 +754,7 @@ system begin rdos
 end
 system begin rdos_dll
 :segment Pspecs
-    OPTS 386 -bt=rdos -bd
+    ARCH i386 -bt=rdos -bd
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
@@ -764,7 +764,7 @@ system begin rdos_dll
 end
 system begin rdos_efi
 :segment Pspecs
-    OPTS 386 -bt=rdos -bd
+    ARCH i386 -bt=rdos -bd
 :elsesegment Pwlsystem
     option osname='RDOS'
     libpath %WATCOM%/lib386
@@ -774,7 +774,7 @@ system begin rdos_efi
 end
 system begin rdos_dev32
 :segment Pspecs
-    OPTS 386 -bt=rdosdev -zu
+    ARCH i386 -bt=rdosdev -zu
 :elsesegment Pwlsystem
     option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
@@ -784,7 +784,7 @@ system begin rdos_dev32
 end
 system begin rdos_dev16
 :segment Pspecs
-    OPTS i86 -bt=rdos_dev16
+    ARCH i86 -bt=rdos_dev16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Device driver'
     format rdos dev16 ^
@@ -792,7 +792,7 @@ system begin rdos_dev16
 end
 system begin rdosdev
 :segment Pspecs
-    OPTS 386 -bt=rdosdev -zu
+    ARCH i386 -bt=rdosdev -zu
 :elsesegment Pwlsystem
     option osname='32-bit RDOS Device driver'
     libpath %WATCOM%/lib386
@@ -802,7 +802,7 @@ system begin rdosdev
 end
 system begin rdos_bin32
 :segment Pspecs
-    OPTS 386 -bt=rdos_bin32
+    ARCH i386 -bt=rdos_bin32
 :elsesegment Pwlsystem
     option osname='32-bit RDOS Binary'
     libpath %WATCOM%/lib386
@@ -811,7 +811,7 @@ system begin rdos_bin32
 end
 system begin rdos_bin16
 :segment Pspecs
-    OPTS i86 -bt=rdos_bin16
+    ARCH i86 -bt=rdos_bin16
 :elsesegment Pwlsystem
     option osname='16-bit RDOS Binary'
     format rdos bin16 ^
@@ -819,7 +819,7 @@ system begin rdos_bin16
 end
 system begin rdos_mboot
 :segment Pspecs
-    OPTS i86 -bt=rdos_mboot
+    ARCH i86 -bt=rdos_mboot
 :elsesegment Pwlsystem
     option osname='RDOS Multiboot Stub'
     format rdos mboot ^

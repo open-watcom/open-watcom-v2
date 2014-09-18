@@ -464,7 +464,7 @@ static  int  ConsultSpecsFile( const char *target )
             p = strtok( p, " \t=" );
             if( p == NULL )
                 continue;
-            if( strcmp( p, "OPTS" ) == 0 ) {
+            if( strcmp( p, "ARCH" ) == 0 ) {
                 p = strtok( NULL, " \t" );
                 switch( *p ) {
                 case 'i':
@@ -1461,9 +1461,10 @@ static  void  MakeName( char *name, char *ext )
 static void ExitHandler( void )
 /*****************************/
 {
-    if( Fp != NULL )
+    if( Fp != NULL ) {
         fclose( Fp );
-    remove( TEMPFILE );
+        remove( TEMPFILE );
+    }
 }
 
 static int ProcMemInit( void )
@@ -1530,10 +1531,8 @@ int main( int argc, char **argv )
         }
         rc = CompLink();
     }
-    if( rc == 1 ) {
-        fclose( Fp );
-        Fp = NULL;
-    }
+    fclose( Fp );
+    Fp = NULL;
     if( Link_Name != NULL ) {
         if( strfcmp( Link_Name, TEMPFILE ) != 0 ) {
             remove( Link_Name );
