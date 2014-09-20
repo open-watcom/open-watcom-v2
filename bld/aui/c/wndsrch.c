@@ -83,10 +83,12 @@ char *WndGetSrchMagicChars( void )
     return( SrchMagicChars );
 }
 
-void WndSetSrchMagicChars( char *str )
+void WndSetSrchMagicChars( const char *str, unsigned len )
 {
-    strncpy( SrchMagicChars, str, MAX_MAGIC_STR );
-    SrchMagicChars[MAX_MAGIC_STR] = '\0';
+    if( len > MAX_MAGIC_STR )
+        len = MAX_MAGIC_STR;
+    memcpy( SrchMagicChars, str, len );
+    SrchMagicChars[len] = '\0';
 }
 
 bool WndGetSrchIgnoreCase( void )

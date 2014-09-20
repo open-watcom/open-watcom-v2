@@ -658,10 +658,7 @@ extern void SearchSet( void )
         }
     }
     if( ScanItem( TRUE, &start, &len ) ) {
-        char    c = start[len];
-        start[len] = '\0';
-        WndSetSrchMagicChars( start );
-        start[len] = c;
+        WndSetSrchMagicChars( start, len );
     }
     ReqEOC();
 }

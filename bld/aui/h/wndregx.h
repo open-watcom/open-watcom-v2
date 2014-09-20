@@ -38,4 +38,4 @@ extern void             WndSetSrchIgnoreCase( bool );
 extern bool             WndGetSrchRX( void );
 extern void             WndSetSrchRX( bool );
 extern char             *WndGetSrchMagicChars( void );
-extern void             WndSetSrchMagicChars( char * );
+extern void             WndSetSrchMagicChars( const char *, unsigned );
