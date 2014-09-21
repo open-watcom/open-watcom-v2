@@ -77,8 +77,8 @@ extern GLOBALHANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT fo
 extern GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data );
 GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
                         USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
-                        USHORT children, ULONG nclass, char *class,
-                        char *text, char *presparms, char *ctldata,
+                        USHORT children, ULONG nclass, const char *class,
+                        const char *text, const char *presparms, const char *ctldata,
                         ULONG *ctldatlen );
 int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data );
 

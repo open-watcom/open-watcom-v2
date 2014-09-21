@@ -693,7 +693,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
         }
         new = AddControl( data, pos.x, pos.y, size.x, size.y, control->id,
                           style, GUIControls[control->control_class].classname,
-                          text, (BYTE)pctldatalen, (char *)pctldata );
+                          text, (BYTE)pctldatalen, (const char *)pctldata );
         if( new == NULL  ) {
             GlobalFree( data );
             return( false );

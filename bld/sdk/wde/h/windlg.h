@@ -58,9 +58,9 @@
 
 #include "_windlg.h"
 
-extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, char *menuname, char *classname, char *captiontext, int pointsize, char *typeface );
+extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, int pointsize, const char *typeface );
 extern void         DoneAddingControls( GLOBALHANDLE data );
-extern GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, int id, long style, char *class, char *text, BYTE infolen, char *infodata );
+extern GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, int id, long style, const char *class, const char *text, BYTE infolen, const char *infodata );
 extern INT_PTR      DynamicDialogBox( DLGPROC fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif

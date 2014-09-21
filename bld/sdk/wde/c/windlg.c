@@ -40,7 +40,7 @@
 /*
  * stringLength - get length of string
  */
-static int stringLength( char _ISFAR *str )
+static int stringLength( const char _ISFAR *str )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     if( str == NULL ) {
@@ -62,7 +62,7 @@ static int stringLength( char _ISFAR *str )
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined(__NT__) && !defined(__DEC__)
     int i;
@@ -89,7 +89,7 @@ static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
 /*
  * copyMBString - copy from string to memory
  */
-static char _ISFAR *copyMBString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyMBString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     if( mem != NULL && str != NULL ) {
@@ -115,8 +115,8 @@ static char _ISFAR *copyMBString( char _ISFAR *mem, char _ISFAR *str, int len )
  * DialogTemplate - build a dialog template
  */
 GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
-                             int dtcx, int dtcy, char *menuname, char *classname,
-                             char *captiontext, int pointsize, char *typeface )
+                             int dtcx, int dtcy, const char *menuname, const char *classname,
+                             const char *captiontext, int pointsize, const char *typeface )
 {
     GLOBALHANDLE        data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
@@ -203,7 +203,7 @@ typedef struct MyControlClass {
  */
 GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily,
                          int dtilcx, int dtilcy, int id, long style,
-                         char *class, char *text, BYTE infolen, char *infodata )
+                         const char *class, const char *text, BYTE infolen, const char *infodata )
 {
     GLOBALHANDLE        new;
     UINT                blocklen, classlen, textlen;

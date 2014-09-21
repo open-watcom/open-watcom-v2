@@ -40,7 +40,7 @@
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined(__NT__)
     // convert ANSI or DBCS string to Unicode properly - rnk 3/1/96
@@ -68,9 +68,9 @@ static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
  * DialogTemplate - build a dialog template
  */
 TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
-                                int dtcy, char *menuname, char *classname,
-                                char *captiontext, int pointsize,
-                                char *typeface )
+                                int dtcy, const char *menuname, const char *classname,
+                                const char *captiontext, int pointsize,
+                                const char *typeface )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen,menulen, classlen, captionlen, typefacelen;
@@ -152,8 +152,8 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
  */
 TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
                              int dtilcx, int dtilcy, int id, long style,
-                             char *class, char *text, BYTE infolen,
-                             char *infodata )
+                             const char *class, const char *text, BYTE infolen,
+                             const char *infodata )
 {
     TEMPLATE_HANDLE     new;
     UINT                blocklen, classlen, textlen;
@@ -171,8 +171,6 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
      * compute size of block, reallocate block to hold this stuff
      */
 #if defined(__NT__)
-
-    classlen = 2;
     if( !stricmp( class, "combobox" ) ) {
         newclass[0] = 0x85;
     } else if( !stricmp( class,"scrollbar" ) ) {
@@ -187,7 +185,8 @@ TEMPLATE_HANDLE AddControl ( TEMPLATE_HANDLE data, int dtilx, int dtily,
         newclass[0] = 0x80;
     }
     newclass[1] = 0;
-    class = (char *)newclass;
+    class = (const char *)newclass;
+    classlen = 2;
 #else
     classlen = SLEN( class );
 #endif

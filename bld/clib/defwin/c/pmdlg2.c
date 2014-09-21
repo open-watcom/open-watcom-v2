@@ -45,7 +45,7 @@ static ULONG            dataSegLen;
 /*
  * copyString - copy from string to memory
  */
-static char _WCI86FAR *copyString( char _WCI86FAR *mem, char _WCI86FAR *str, int len )
+static char _WCI86FAR *copyString( char _WCI86FAR *mem, const char _WCI86FAR *str, int len )
 {
     if ( !mem || !str ) return( mem );
     _FARmemcpy( mem, str, len );
@@ -56,7 +56,7 @@ static char _WCI86FAR *copyString( char _WCI86FAR *mem, char _WCI86FAR *str, int
 /*
  * safeStrLen - measure sizeof string (even NULL );
  */
-static long safeStrLen( char _WCI86FAR *str )
+static long safeStrLen( const char _WCI86FAR *str )
 {
     if ( !str ) return( 0 );
     return( strlen( str ) );
@@ -104,8 +104,8 @@ GLOBALHANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
  */
 GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
                         USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
-                        USHORT children, ULONG nclass, char *class,
-                        char *text, char *presparms, char *ctldata,
+                        USHORT children, ULONG nclass, const char *class,
+                        const char *text, const char *presparms, const char *ctldata,
                         ULONG *ctldatlen )
 {
     GLOBALHANDLE        new;
@@ -195,10 +195,10 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
         dlgtemp = copyString( dlgtemp, class, classlen );
     }
     if ( ctldatalen ) {
-        if ( ctldata ) {
+        if ( ctldata != NULL ) {
              dlgtemp = copyString( dlgtemp, ctldata, ctldatalen );
         } else {
-             dlgtemp = copyString( dlgtemp, (char *)(&ctldatlen), ctldatalen );
+             dlgtemp = (char*)_FARmemcpy( dlgtemp, &ctldatlen, ctldatlen ) + ctldatlen;
         }
     }
     dataSegLen = ddatalen;

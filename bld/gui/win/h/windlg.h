@@ -68,15 +68,15 @@ typedef BYTE INFOTYPE;
 #include "_windlg.h"
 
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
-                                       int dtcx, int dtcy, char *menuname,
-                                       char *classname, char *captiontext,
-                                       int pointsize, char *typeface );
+                                       int dtcx, int dtcy, const char *menuname,
+                                       const char *classname, const char *captiontext,
+                                       int pointsize, const char *typeface );
 extern TEMPLATE_HANDLE DoneAddingControls ( TEMPLATE_HANDLE data );
 extern TEMPLATE_HANDLE AddControl    ( TEMPLATE_HANDLE data, int dtilx,
                                        int dtily, int dtilcx, int dtilcy,
-                                       int id, long style, char *class,
-                                       char *text, BYTE infolen,
-                                       char *infodata );
+                                       int id, long style, const char *class,
+                                       const char *text, BYTE infolen,
+                                       const char *infodata );
 INT_PTR DynamicDialogBox             ( DLGPROCx fn, HANDLE inst, HWND hwnd,
                                        TEMPLATE_HANDLE data, LPARAM lparam );
 

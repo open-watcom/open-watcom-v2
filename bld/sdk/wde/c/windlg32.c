@@ -41,7 +41,7 @@
 /*
  * stringLength - get length of string
  */
-static int stringLength( char _ISFAR *str )
+static int stringLength( const char _ISFAR *str )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     if( str == NULL ) {
@@ -63,7 +63,7 @@ static int stringLength( char _ISFAR *str )
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     int i;
@@ -90,7 +90,7 @@ static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
 /*
  * copyMBString - copy from string to memory
  */
-static char _ISFAR *copyMBString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyMBString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     if( mem != NULL && str != NULL ) {
@@ -116,9 +116,9 @@ static char _ISFAR *copyMBString( char _ISFAR *mem, char _ISFAR *str, int len )
  * DialogTemplate - build a dialog template
  */
 GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
-                               int dtx, int dty, int dtcx, int dtcy, char *menuname,
-                               char *classname, char *captiontext, short pointsize,
-                               char *typeface, short FontWeight, short FontItalic )
+                               int dtx, int dty, int dtcx, int dtcy, const char *menuname,
+                               const char *classname, const char *captiontext, short pointsize,
+                               const char *typeface, short FontWeight, short FontItalic )
 {
     GLOBALHANDLE        data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
@@ -211,8 +211,8 @@ typedef struct MyControlClass {
  */
 GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
                            int dtilcx, int dtilcy, DWORD id, DWORD style,
-                           DWORD exstyle, DWORD helpID, char *class, char *text,
-                           BYTE infolen, char *infodata )
+                           DWORD exstyle, DWORD helpID, const char *class, const char *text,
+                           BYTE infolen, const char *infodata )
 {
     GLOBALHANDLE        new;
     UINT                blocklen, classlen, textlen;

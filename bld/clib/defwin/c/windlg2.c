@@ -38,7 +38,7 @@
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
+static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
 #if defined(__NT__) && !defined(__DEC__)
     int i;
@@ -61,8 +61,8 @@ static char _ISFAR *copyString( char _ISFAR *mem, char _ISFAR *str, int len )
  * _DialogTemplate - build a dialog template
  */
 GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
-                       int dtcy, char *menuname, char *classname,
-                       char *captiontext, int pointsize, char *typeface )
+                       int dtcy, const char *menuname, const char *classname,
+                       const char *captiontext, int pointsize, const char *typeface )
 {
     GLOBALHANDLE        data;
     UINT                blocklen,menulen, classlen, captionlen, typefacelen;
@@ -137,8 +137,8 @@ GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
  * _AddControl - add a control to a dialog
  */
 GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
-                   int dtilcx, int dtilcy, int id, long style, char *class,
-                   char *text, BYTE infolen, char *infodata )
+                   int dtilcx, int dtilcy, int id, long style, const char *class,
+                   const char *text, BYTE infolen, const char *infodata )
 {
     GLOBALHANDLE        new;
     UINT                blocklen, classlen, textlen;
@@ -156,8 +156,6 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
      * compute size of block, reallocate block to hold this stuff
      */
 #if defined(__NT__) && !defined(__DEC__)
-
-    classlen = 2;
     if( !stricmp( class,"listbox" ) ) {
         newclass[0] = 0x83;
     } else if( !stricmp( class,"static" ) ) {
@@ -168,7 +166,8 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
         newclass[0] = 0x80;
     }
     newclass[1] = 0;
-    class = newclass;
+    class = (const char *)newclass;
+    classlen = 2;
 #else
     classlen = SLEN( class );
 #endif
