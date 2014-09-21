@@ -55,7 +55,7 @@ extern void             RemoveBPs( void );
 extern bool             InsertWPs( void );
 extern bool             UpdateWPs( void );
 extern unsigned         CheckBPs( unsigned, unsigned );
-extern void             Ring( void );
+extern void             RingBell( void );
 extern unsigned         MakeProgRun( bool );
 extern void             DoSetWatchPnt( unsigned int, brkp * );
 extern bool             TBreak( void );
@@ -531,7 +531,7 @@ bool ReportTrap( unsigned conditions, bool stack_cmds )
         DUIMsgBox( MsgText );
     }
     if( conditions & (COND_EXCEPTION|COND_TERMINATE) ) {
-        Ring();
+        RingBell();
     }
     DisplayMsgText();
     if( conditions & COND_USER ) {

@@ -32,7 +32,7 @@
 
 #include "dbgdefn.h"
 #include "farptrs.h"
-#include "dbgscrn.h"
+#include "dosscrn.h"
 #include "dbgio.h"
 #include "dbgreg.h"
 #include "dbgname.h"

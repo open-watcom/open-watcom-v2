@@ -49,6 +49,7 @@
 #include "dbgstk.h"
 #include "srcmgt.h"
 #include "trapaccs.h"
+#include "dbgscrn.h"
 
 
 extern void             FlushEOC( void );

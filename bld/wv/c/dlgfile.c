@@ -40,6 +40,7 @@
 #include "dbgio.h"
 #include <string.h>
 #include <stdlib.h>
+#include "dbgscrn.h"
 
 
 extern a_window         *WndFileInspect( char *name, bool binary );
@@ -53,7 +54,6 @@ extern void             RestoreReplayFromFile( char * );
 extern char             *DupStr( char * );
 extern void             ReqEOC( void );
 extern bool             OkToSaveReplay( void );
-extern void             SaveMainWindowPos( void );
 extern void             FiniHelp( void );
 extern bool             KillProgOvlay( void );
 

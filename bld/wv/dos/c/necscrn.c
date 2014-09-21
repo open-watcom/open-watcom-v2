@@ -37,7 +37,7 @@
 #include <stdui.h>
 #include <dos.h>
 #include <string.h>
-#include "dbgscrn.h"
+#include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"
 #include "dbginstr.h"
@@ -177,7 +177,7 @@ void NecSysSetPage( int PgNum )
 }
 
 
-void RingBell()
+void Ring_Bell( void )
 /***********************************************************************
  RingBell: ( EXTERNAL )
  --------
@@ -188,7 +188,7 @@ void RingBell()
     this function doesn't work as book described...
 
     Well, I changed it so now I think it ought to work -
-    RingBell calls RING_BELL_, a macro defined in necscrio.h, which calls
+    Ring_Bell calls RING_BELL_, a macro defined in necscrio.h, which calls
     the aux DoRingBell, which writes a 7h to stderr directly.
 ************************************************************************/
 {
@@ -297,7 +297,7 @@ bool UsrScrnMode()
 }
 
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 /***********************************************************************
  DbgScrnMode: ( EXTERNAL )
  -----------

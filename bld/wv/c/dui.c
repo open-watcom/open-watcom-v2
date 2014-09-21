@@ -44,6 +44,7 @@
 #include "dbgbreak.h"
 #include "dui.h"
 #include "srcmgt.h"
+#include "dbgscrn.h"
 
 extern void             *CmdHistory;
 extern void             *SrchHistory;
@@ -107,7 +108,6 @@ extern void             WndFlushKeys( void );
 extern void             PlayDead( bool );
 extern void             WndSysEnd( bool pause );
 extern void             WndSysStart( void );
-extern void             RingBell( void );
 extern void             ProcPendingPaint( void );
 extern bool             DlgInfoRelease( void );
 extern bool             VarInfoRelease( void );
@@ -357,7 +357,7 @@ void DUISysStart( void )
 
 void DUIRingBell( void )
 {
-    RingBell();
+    Ring_Bell();
 }
 
 void DUIProcPendingPaint( void )

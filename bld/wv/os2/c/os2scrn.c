@@ -36,6 +36,7 @@
 #include "dbgio.h"
 #include "stdui.h"
 #include "dbgtoggl.h"
+#include "dbgscrn.h"
 
 #define INCL_SUB
 #include "os2.h"
@@ -50,7 +51,7 @@ unsigned            NumLines;
 unsigned            NumColumns;
 static VIOMODEINFO  SaveMode;
 
-void RingBell()
+void Ring_Bell( void )
 {
     DosBeep( 1000, 250 );
 }
@@ -97,7 +98,7 @@ bool UsrScrnMode()
 }
 
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 {
 }
 

@@ -85,6 +85,7 @@ Done:
 #include "modlist.h"
 #include "dbgbreak.h"
 #include "srcmgt.h"
+#include "dbgscrn.h"
 
 enum {
     REQ_NONE,

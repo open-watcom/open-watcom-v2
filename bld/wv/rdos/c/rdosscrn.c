@@ -38,6 +38,7 @@
 #include "dbginfo.h"
 #include <rdos.h>
 #include <stdui.h>
+#include "dbgscrn.h"
 
 extern void         *ExtraAlloc( size_t );
 extern void         ExtraFree( void * );
@@ -62,7 +63,7 @@ void SetNumColumns( int num )
     ScrnColumns=num;
 }
 
-void RingBell()
+void Ring_Bell( void )
 {
 }
 

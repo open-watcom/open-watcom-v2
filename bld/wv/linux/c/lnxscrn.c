@@ -55,6 +55,7 @@
 #include "stdui.h"
 #include "../unix/h/ctkeyb.h"
 #include "dbgtoggl.h"
+#include "dbgscrn.h"
 
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
@@ -102,7 +103,7 @@ struct vt_stat {
 
 enum { C_XWIN, C_VC, C_TTY, C_CURTTY } ConMode;
 
-void RingBell( void )
+void Ring_Bell( void )
 {
     write( DbgConHandle, "\a", 1 );
 }
@@ -296,8 +297,6 @@ static bool TryTTY( void )
 
 void InitScreen( void )
 {
-    extern bool DebugScreen( void );
-
     if( setpgid( 0, 0 ) != 0 && errno != EPERM ) {
         StartupErr( "unable to create new process group" );
     }

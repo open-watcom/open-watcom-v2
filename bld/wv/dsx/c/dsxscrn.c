@@ -35,13 +35,14 @@
 #include <dos.h>
 #include <watcom.h>
 #include "dbgdefn.h"
-#include "dbgscrn.h"
+#include "dosscrn.h"
 #include "dbgmem.h"
 #include "dbgtoggl.h"
 #include "dbgwind.h"
 #include "dsxutil.h"
 #include "pcscrnio.h"
 #include "dpmi.h"
+#include "dbgscrn.h"
 
 
 #define _64K                    (64UL*1024)
@@ -274,7 +275,7 @@ extern void DoRingBell( void );
         " pop    ebp            "                       \
         modify exact [ ax ];
 
-extern void RingBell( void )
+void Ring_Bell( void )
 {
     DoRingBell();
 }
@@ -701,7 +702,7 @@ static void GetAdapter( void )
 }
 
 /* ConfigScreen -- figure out screen configuration we're going to use. */
-extern uint_32 ConfigScreen( void )
+unsigned ConfigScreen( void )
 {
     OnAlt = FALSE;
     GetDispConfig();
@@ -1016,7 +1017,7 @@ static void SetCursorTypes( void )
              ( RegCur & 0x00ff );
 }
 
-static void InitScreenMode( void )
+void InitScreenMode( void )
 {
     CurOffst = 0;
     switch( FlipMech ) {
@@ -1060,7 +1061,7 @@ static void CheckMSMouse( void )
     }
 }
 
-extern void InitScreen( void )
+void InitScreen( void )
 {
     CheckMSMouse();
     AllocSave();
@@ -1120,7 +1121,7 @@ extern bool UsrScrnMode( void )
 }
 
 
-extern void DbgScrnMode( void )
+void DbgScrnMode( void )
 {
     if( FlipMech == FLIP_PAGE ) {
         if( SetMode( DbgBiosMode ) ) {

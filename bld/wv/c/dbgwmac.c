@@ -56,6 +56,7 @@ extern void             FiniMacros( void );
 extern void             Invoke(char *,int ,char_ring *);
 extern char             *ReScan( char * );
 extern void             SetUnderLine( a_window *, wnd_line_piece * );
+extern void             RingBell( void );
 
 extern char             MainTab[];
 extern char             *TxtBuff;
@@ -209,7 +210,7 @@ bool MacKeyHit( a_window *wnd, unsigned key )
 
     if( wndmac->press_key ) {
         if( KeyName( key ) == NULL ) {
-            Ring();
+            RingBell();
             return( TRUE );
         }
         wndmac->press_key = FALSE;

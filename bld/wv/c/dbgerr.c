@@ -56,7 +56,7 @@ extern void             Scan( void );
 extern unsigned int     ScanLen( void );
 extern void             ScanExpr( void * );
 extern void             ExprPurge( void );
-extern void             Ring( void );
+extern void             RingBell( void );
 extern void             DUIFlushKeys( void );
 extern bool             PurgeInpStack( void );
 extern void             UnFreezeRegs( void );
@@ -141,7 +141,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
         }
         DUIFlushKeys();
         DUIWndDebug();
-        Ring();
+        RingBell();
         DUIErrorBox( buff );
     }
     cmderror = FALSE;
@@ -169,6 +169,6 @@ void Error( dbg_err_flags flg, char *fmt, ... )
 void PrevError( char *msg )
 {
     DUIWndDebug();
-    Ring();
+    RingBell();
     DUIErrorBox( msg );
 }

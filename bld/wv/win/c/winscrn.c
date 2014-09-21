@@ -36,11 +36,12 @@
 #include <string.h>
 #include <dos.h>
 #include <stddef.h>
-#include "../../dos/h/dbgscrn.h"
+#include "dosscrn.h"
 #include "dbgtoggl.h"
 #include <windows.h>
 #include "winscrn.h"
 #include "swap.h"
+#include "dbgscrn.h"
 
 extern void __far HookRtn( unsigned event, unsigned info );
 extern void (__far __pascal *HookFunc)( void __far (*)( unsigned, unsigned ) );
@@ -81,7 +82,7 @@ void FiniHookFunc( void )
 {
 }
 
-void RingBell( void )
+void Ring_Bell( void )
 {
     MessageBeep( 0 );
 }

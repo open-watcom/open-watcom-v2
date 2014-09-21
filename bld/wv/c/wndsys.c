@@ -41,6 +41,7 @@
 #include "dbgadget.h"
 #include "dbghook.h"
 #include "dbgio.h"
+#include "dbgscrn.h"
 #if defined( __NT__ ) && defined( __GUI__ )
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
@@ -64,7 +65,6 @@ extern void             PushCmdList( cmd_list * );
 extern void             NewLang( char *lang );
 extern void             ProcACmd( void );
 extern void             CheckBPErrors( void );
-extern void             Ring( void );
 extern int              DlgSearch( a_window *, void * );
 extern bool             DlgSearchAll( char **, void * );
 extern unsigned int     ScanCmd( char * );

@@ -35,6 +35,7 @@
 #include "dbgmem.h"
 #include "trapaccs.h"
 #include <string.h>
+#include "dbgscrn.h"
 #define INCL_SUB
 #define INCL_PM
 #define INCL_BASE
@@ -93,7 +94,7 @@ void ToggleHardMode( void )
 {
 }
 
-void RingBell()
+void Ring_Bell( void )
 {
     DosBeep( 1000, 250 );
 }
@@ -199,7 +200,7 @@ bool UsrScrnMode()
 }
 
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 {
 }
 

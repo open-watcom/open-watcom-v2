@@ -351,10 +351,10 @@ char *LineAddr( address  *addr, char *buff )
 
 
 /*
- * Ring - ring a bell, if required
+ * RingBell - ring a bell, if required
  */
 
-void Ring( void )
+void RingBell( void )
 {
     if( _IsOn( SW_BELL ) ) {
         DUIRingBell();
@@ -370,7 +370,7 @@ void Warn( char *p )
 {
     DUIMsgBox( p );
     DUIFlushKeys(); /* clear any pending keystrokes */
-    Ring();
+    RingBell();
 }
 
 

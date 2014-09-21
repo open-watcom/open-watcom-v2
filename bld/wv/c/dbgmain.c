@@ -152,7 +152,7 @@ extern void             RecordInit( void );
 extern void             ReleaseProgOvlay( bool );
 extern char             *ReScan( char * );
 extern void             RestoreHandlers( void );
-extern void             Ring( void );
+extern void             RingBell( void );
 extern void             Scan( void );
 extern unsigned int     ScanCmd( char * );
 extern unsigned int     ScanLen( void );
@@ -292,7 +292,8 @@ void ReportTask( task_status task, unsigned code )
         _SwitchOff( SW_HAVE_TASK );
         Format( TxtBuff, LIT( Task_Not_Loaded ), code );
         DUIMsgBox( TxtBuff );
-        Ring(); Ring();
+        RingBell();
+        RingBell();
         break;
     case TASK_NONE:
         _SwitchOff( SW_HAVE_TASK );

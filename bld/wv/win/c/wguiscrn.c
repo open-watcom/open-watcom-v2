@@ -35,8 +35,9 @@
 #include "dbgtoggl.h"
 #include <string.h>
 #include <stddef.h>
-#include "../../dos/h/dbgscrn.h"
+#include "dosscrn.h"
 #include <windows.h>
+#include "dbgscrn.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
@@ -88,7 +89,7 @@ void ForceLines( unsigned lines )
     ScrnLines = lines;
 }
 
-void RingBell( void )
+void Ring_Bell( void )
 {
     MessageBeep( 0 );
 }

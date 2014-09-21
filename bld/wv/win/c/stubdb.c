@@ -46,6 +46,7 @@
 #include "dui.h"
 #include "dbgvar.h"
 #include "srcmgt.h"
+#include "dbgscrn.h"
 
 extern void             FlushEOC(void);
 extern char             *DupStr(char*);

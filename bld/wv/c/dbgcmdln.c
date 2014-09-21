@@ -41,8 +41,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include "dbgscrn.h"
 
-extern unsigned         ConfigScreen( void );
 extern unsigned         Lookup( char *, char *, unsigned );
 extern unsigned         DUIEnvLkup( char *, char *, unsigned );
 extern char             *Format( char *, char *, ... );

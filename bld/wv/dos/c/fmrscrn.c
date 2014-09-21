@@ -37,7 +37,7 @@
 #include <stdui.h>
 #include <dos.h>
 #include <string.h>
-#include "dbgscrn.h"
+#include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"
 #include "dbginstr.h"
@@ -80,7 +80,7 @@ unsigned ConfigScreen()
     return( 25 * (80 * 2) + 256 );
 }
 
-void RingBell()
+void Ring_Bell( void )
 {
 }
 
@@ -100,7 +100,7 @@ void FiniScreen()
 {
 }
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 {
 }
 

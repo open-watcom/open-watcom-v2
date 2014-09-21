@@ -37,6 +37,7 @@
 #include "dbglit.h"
 #include <windows.h>
 #include <stdui.h>
+#include "dbgscrn.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
@@ -59,7 +60,7 @@ void SetNumColumns( int num )
     ScrnColumns=num;
 }
 
-void RingBell()
+void Ring_Bell( void )
 {
     Beep( 1000, 250 );
 }

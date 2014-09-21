@@ -37,6 +37,7 @@
 #include "dbgdefn.h"
 #include "dbgwind.h"
 #include "dbgtoggl.h"
+#include "dbgscrn.h"
 
 extern void     *ExtraAlloc( size_t );
 extern void     ExtraFree( void * );
@@ -68,7 +69,7 @@ void SetNumColumns( int num )
     num = num;
 }
 
-void RingBell()
+void Ring_Bell( void )
 {
     MessageBeep( 0 );
 }

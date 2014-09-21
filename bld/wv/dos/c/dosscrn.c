@@ -37,7 +37,7 @@
 #include <stdui.h>
 #include <dos.h>
 #include <string.h>
-#include "dbgscrn.h"
+#include "dosscrn.h"
 #include "tinyio.h"
 #include "dbgswtch.h"
 #include "dbginstr.h"
@@ -200,7 +200,7 @@ enum {
 
 extern void DoRingBell();
 
-void RingBell()
+void Ring_Bell( void )
 {
     DoRingBell();
 }
@@ -928,7 +928,7 @@ bool UsrScrnMode()
 }
 
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 {
     if( FlipMech == FLIP_PAGE ) {
         if( SetMode( DbgBiosMode ) ) {

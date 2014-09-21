@@ -51,6 +51,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "dbgtoggl.h"
+#include "dbgscrn.h"
 
 extern void     StartupErr( char * );
 extern int      GUIInitMouse( int );
@@ -79,7 +80,7 @@ pid_t                   XQshPid;
 
 enum { C_XWIN, C_QCON, C_TTY } ConMode;
 
-void RingBell()
+void Ring_Bell( void )
 {
     write( DbgConHandle, "\a", 1 );
 }
@@ -89,7 +90,7 @@ void RingBell()
  * ConfigScreen -- figure out screen configuration we're going to use.
  */
 
-unsigned ConfigScreen()
+unsigned ConfigScreen( void )
 {
     return( 0 );
 }
@@ -108,7 +109,7 @@ static void HupHandler( int signo )
     KillDebugger( 0 );
 }
 
-static bool TryXWindows()
+static bool TryXWindows( void )
 {
     char        xqsh_name[CMD_LEN];
     int         pip[2];
@@ -187,7 +188,7 @@ static bool TryXWindows()
 }
 
 
-static bool TryQConsole()
+static bool TryQConsole( void )
 {
     struct _psinfo              psinfo;
     struct _sidinfo             info;
@@ -238,7 +239,7 @@ static bool TryQConsole()
     return( TRUE );
 }
 
-static bool TryTTY()
+static bool TryTTY( void )
 {
     unsigned long       num;
     char                *end;
@@ -263,10 +264,8 @@ static bool TryTTY()
     return( TRUE );
 }
 
-void InitScreen()
+void InitScreen( void )
 {
-    extern bool DebugScreen( void );
-
     if( setpgid( 0, 0 ) != 0 && errno != EPERM ) {
         StartupErr( "unable to create new process group" );
     }
@@ -295,7 +294,7 @@ void InitScreen()
  * UsrScrnMode -- setup the user screen mode
  */
 
-bool UsrScrnMode()
+bool UsrScrnMode( void )
 {
     switch( ConMode ) {
     case C_TTY:
@@ -305,7 +304,7 @@ bool UsrScrnMode()
 }
 
 
-void DbgScrnMode()
+void DbgScrnMode( void )
 {
 }
 
@@ -314,7 +313,7 @@ void DbgScrnMode()
  * DebugScreen -- swap/page to debugger screen
  */
 
-bool DebugScreen()
+bool DebugScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
@@ -326,7 +325,7 @@ bool DebugScreen()
     return( FALSE );
 }
 
-bool DebugScreenRecover()
+bool DebugScreenRecover( void )
 {
     return( TRUE );
 }
@@ -336,7 +335,7 @@ bool DebugScreenRecover()
  * UserScreen -- swap/page to user screen
  */
 
-bool UserScreen()
+bool UserScreen( void )
 {
     switch( ConMode ) {
     case C_TTY:
@@ -348,11 +347,11 @@ bool UserScreen()
     return( FALSE );
 }
 
-void SaveMainWindowPos()
+void SaveMainWindowPos( void )
 {
 }
 
-void FiniScreen()
+void FiniScreen( void )
 {
     if( _IsOn( SW_USE_MOUSE ) ) GUIFiniMouse();
     uistop();
