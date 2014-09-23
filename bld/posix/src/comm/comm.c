@@ -76,7 +76,7 @@ static int getNextLine( FILE *fp, line *l )
         l->buff = (char *) malloc( l->size );
     }
 
-    while( 1 ) {
+    for( ;; ) {
         if( os >= l->size - 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
             l->buff  = (char *) realloc( l->buff, l->size );
@@ -110,7 +110,7 @@ static void compareFiles( FILE *fp1, FILE *fp2, char mask )
         tab2 = 0;
     }
 
-    while( 1 ) {
+    for( ;; ) {
         if( cmp <= 0 ) {
             i1 = getNextLine( fp1, &l1 );
         }
@@ -152,7 +152,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "123", usageMsg );
         if( ch == -1 ) {
             break;

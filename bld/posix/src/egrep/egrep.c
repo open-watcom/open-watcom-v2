@@ -385,7 +385,7 @@ static void handle_options( int *pargc, char **argv, int *prematch )
 {
     int         ch;             // switch chars
 
-    while( -1 != ( ch = GetOpt( pargc, argv, (char *) "ce:f:ilnsvXx", usageMsg ) ) ) {
+    while( -1 != ( ch = GetOpt( pargc, argv, "ce:f:ilnsvXx", usageMsg ) ) ) {
         switch( ch ) {
             case 'c':
                 Omode = OUT_COUNT;

@@ -82,7 +82,7 @@ void main( int argc, char **argv )
     } flags;
 
     rxflag = 0;
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "X", usageMsg );
         if( ch == -1 ) {
             break;

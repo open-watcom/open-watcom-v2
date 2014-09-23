@@ -87,7 +87,7 @@ int main( int argc, char *argv[] )
      * process options
      */
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "abfs", usageMsg );
         if( ch == -1 ) {
             break;

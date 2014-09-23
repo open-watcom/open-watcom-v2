@@ -237,7 +237,7 @@ static void dumpFile( FILE *fp, format *fmt )
 
     fseek( fp, fmt->offset, SEEK_SET );
 
-    while( 1 ) {
+    for( ;; ) {
         ch  = fgetc( fp );
 
         if( ch != EOF ) {
@@ -322,7 +322,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "bcdDhoOsSxX", usageMsg );
         if( ch == -1 ) {
             break;

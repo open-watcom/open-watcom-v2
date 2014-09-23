@@ -44,6 +44,7 @@
 #include "getopt.h"
 #include "fnutils.h"
 #include "console.h"
+#include "clibext.h"
 #include "filerx.h"
 
 #define LINE_WIDTH      80

@@ -65,7 +65,7 @@ static void unexpandFile( FILE *fp, mode m )
     char        notab = 0, flag = 0;
 
 
-    while( 1 ) {
+    for( ;; ) {
         ch = fgetc( fp );
 
         if( (char) ch == ' '  ||  (char) ch == '\t' ) {
@@ -124,7 +124,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "Xa", usageMsg );
         if( ch == -1 ) {
             break;

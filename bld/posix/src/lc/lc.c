@@ -117,7 +117,7 @@ int main( int argc, char *argv[] )
 
     maxwidth /= COLUMN_WIDTH;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "dfr", usageMsg );
         if( ch == -1 ) {
             break;

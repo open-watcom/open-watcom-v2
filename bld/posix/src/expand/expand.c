@@ -65,7 +65,7 @@ static void expandFile( FILE *fp, unsigned tabs[] )
 
     stop = tabs[ 0 ];
 
-    while( 1 ) {
+    for( ;; ) {
         if( col >= stop ) {
             if( tabs[ t+1 ] != 0 ) {
                 t++;
@@ -150,7 +150,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "#X", usageMsg );
         if( ch == -1 ) {
             break;

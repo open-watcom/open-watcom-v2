@@ -67,7 +67,7 @@ static void reverseFile( FILE *fp )
     size = MIN_LINE_LEN * sizeof( char );
     buff = (char *) malloc( size );
 
-    while( 1 ) {
+    for( ;; ) {
         if( os >= size - 1 ) {
             size += MIN_LINE_LEN * sizeof( char );
             buff  = (char *) realloc( buff, size );

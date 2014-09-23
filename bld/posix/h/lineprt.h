@@ -28,9 +28,9 @@
 *
 ****************************************************************************/
 
-extern void PrintALine( char *, ... );
-extern void PrintALineThenDrop( char *, ... );
-extern void DropPrintALine( char *, ... );
+extern void PrintALine( const char *, ... );
+extern void PrintALineThenDrop( const char *, ... );
+extern void DropPrintALine( const char *, ... );
 extern void DropALineDammit( void );
 extern void DropALine( void );
 extern void StartPrint( void );

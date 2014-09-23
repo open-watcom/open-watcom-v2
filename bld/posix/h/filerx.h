@@ -38,12 +38,12 @@
 #define FALSE   0
 #endif
 
-int     FileMatch( void *crx, char *name );
-char    *FileMatchInit( void **crx, char *wild );
-void    FileMatchFini( void *crx );
-int     FileNameWild( char *wild, int isrx );
-DIR     *OpenDirAll( char *filename, char *wild );
-int     FileMatchNoRx( char *name, char *wild );
+extern int     FileMatch( void *crx, char *name );
+extern char    *FileMatchInit( void **crx, char *wild );
+extern void    FileMatchFini( void *crx );
+extern int     FileNameWild( char *wild, int isrx );
+extern DIR     *OpenDirAll( char *filename, char *wild );
+extern int     FileMatchNoRx( char *name, char *wild );
 
 #ifdef __UNIX__
 #define FILESEPSTR      "/"

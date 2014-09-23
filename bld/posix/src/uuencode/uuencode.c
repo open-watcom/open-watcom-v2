@@ -144,11 +144,13 @@ int main( int argc, char **argv ) {
     FILE        *out;
 #endif
     FILE        *in;
+#ifdef __WATCOMC__
     int     mode;
     int     cnt;
     char *  file_name;
     char    fname[_MAX_FNAME];
     char    full_name[_MAX_PATH];
+#endif
     struct stat sbuf;
 
 #ifdef __WATCOMC__
@@ -231,6 +233,7 @@ int main( int argc, char **argv ) {
     }
 #endif
 
+#ifdef __WATCOMC__
     /* figure out the input file mode */
     if( fstat(fileno(in), &sbuf) < 0 || !isatty(fileno(in)) ) {
         mode = 0666 & ~umask(0666);
@@ -238,6 +241,9 @@ int main( int argc, char **argv ) {
         mode = sbuf.st_mode & 0777;
     }
     fprintf(OUT, "begin %o %s\n", mode, argv[1]);
+#else
+    fprintf(OUT, "begin %s\n", argv[1]);
+#endif
 
     encode(in, OUT);
 

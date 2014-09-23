@@ -70,7 +70,7 @@ static void eatArg( int *argc, char *argv[], int num )
 } /* eatArg */
 
 
-int GetOpt( int *argc, char *argv[], char *optstr, const char *usage[] )
+int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
 {
     char        ch;
     char        *ptr;

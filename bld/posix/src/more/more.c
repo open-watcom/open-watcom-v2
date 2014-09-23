@@ -201,7 +201,7 @@ static void doMore( char *name, FILE *f )
     }
     char_cnt = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = ReadChar( f );
         if( ch == EOF ) {
             break;
@@ -346,7 +346,7 @@ int main( int argc, char *argv[] )
     buff_stdin = 1;
     rxflag = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "#cftXp:n:", usageMsg );
         if( ch == -1 ) {
             break;
@@ -387,7 +387,7 @@ int main( int argc, char *argv[] )
                 exit( 1 );
             }
             setmode( fileno( f ), O_BINARY );
-            while( 1 ) {
+            for( ;; ) {
                 i = fread( workBuff, 1, BUFF_SIZE, stdin );
                 if( fwrite( workBuff, 1, i, f ) != i ) {
                     exit( 1 );

@@ -41,6 +41,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <malloc.h>
+#include "lineprt.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -53,7 +54,7 @@ static char     _spaces[] = "                                                   
 char            *buffer;
 
 /* PrintALine - printf text on the current line */
-void PrintALine( char *str, ... )
+void PrintALine( const char *str, ... )
 {
     va_list     al;
     char        bob[256];
@@ -75,7 +76,7 @@ void PrintALine( char *str, ... )
 }
 
 /* PrintALineThenDrop - printf text on the current line, then drop */
-void PrintALineThenDrop( char *str, ... )
+void PrintALineThenDrop( const char *str, ... )
 {
     va_list     al;
     char        bob[256];
@@ -97,7 +98,7 @@ void PrintALineThenDrop( char *str, ... )
 }
 
 /* DropPrintALine - printf text on the next line */
-void DropPrintALine( char *str, ... )
+void DropPrintALine( const char *str, ... )
 {
     va_list     al;
     char        bob[256];

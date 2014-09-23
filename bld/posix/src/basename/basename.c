@@ -39,7 +39,7 @@
 #include "argvrx.h"
 #include "argvenv.h"
 
-char *OptEnvVar="basename";
+char *OptEnvVar = "basename";
 
 static const char *usageMsg[] = {
     "Usage: basename [-?] [@env] filename [suffix]",
@@ -53,7 +53,7 @@ static const char *usageMsg[] = {
 void main( int argc, char **argv )
 {
     char        *fname, *src, *ext;
-    unsigned     len;
+    size_t      len;
 
     argv = ExpandEnv( &argc, argv );
 
@@ -62,8 +62,8 @@ void main( int argc, char **argv )
     if( argc < 2  ||  argc > 3 ) {
         Die( "%s\n", usageMsg[0] );
     } else {
-        len    = strlen( argv[1] );
-        fname  = (char *) malloc( 2 * len * sizeof( char ) + 1 );
+        len = strlen( argv[1] );
+        fname  = (char *)malloc( 2 * len * sizeof( char ) + 1 );
 
         _splitpath( argv[1], NULL, NULL, fname, fname + len );
         strcat( fname, fname + len );
@@ -72,7 +72,7 @@ void main( int argc, char **argv )
             src = fname + strlen( fname );
             ext = argv[2] + strlen( argv[2] );
 
-            for( ; *src == *ext  &&  ext >= argv[2] ; src--, ext-- );
+            for( ; *src == *ext && ext >= argv[2]; src--, ext-- );
 
             if( ext < argv[2] ) {
                 *(src + 1) = '\0';

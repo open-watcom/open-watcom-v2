@@ -259,7 +259,7 @@ void main( int argc, char *argv[] )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "n", usageMsg );
         if( ch == -1 ) {
             break;

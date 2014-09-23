@@ -73,6 +73,9 @@ int make_dirs( char *pathname, int uid, int gid) /* added -- JER */
     int     save_errno = errno;     /* Remember caller's errno */
     int     check;
 
+#ifdef MSDOS
+    uid = uid; gid = gid;
+#endif
     if (errno != ENOENT)
         return 0;                               /* Not our problem */
 

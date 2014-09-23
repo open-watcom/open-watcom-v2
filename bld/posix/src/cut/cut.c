@@ -107,7 +107,7 @@ static void treePlace( node *n, int val )
 {
     node        temp;
 
-    while( 1 ) {
+    for( ;; ) {
         if( n->left == NULL  ||  n->left->v > val ) {
             n->v = val;
             break;
@@ -197,7 +197,7 @@ static int getNextLine( FILE *fp, line *l )
         l->buff = (char *) malloc( l->size );
     }
 
-    while( 1 ) {
+    for( ;; ) {
         if( os >= l->size - 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
             l->buff  = (char *) realloc( l->buff, l->size );
@@ -312,7 +312,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "f:c:d:sX", usageMsg );
         if( ch == -1 ) {
             break;

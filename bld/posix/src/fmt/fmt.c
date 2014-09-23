@@ -336,7 +336,7 @@ static int getIndentation( FILE *fp, unsigned *os )
 {
     int         ch = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         ch = fgetc( fp );
         if( ch == ' ' ) {
             *os += 1;
@@ -407,7 +407,7 @@ static int getWord( FILE *fp, wordlist **list, word *w, unsigned *os )
     ret &= ~OUT_OF_MEM;
     if( w->len == 0  ||  w->len >= w_size ) {
         ret = 0;
-        while( 1 ) {
+        for( ;; ) {
             if( w->len >= w_size ) {
                 w_size += MIN_WORD_LEN;
                 tmp  = (char *) realloc( w_buff, w_size );
@@ -428,7 +428,7 @@ static int getWord( FILE *fp, wordlist **list, word *w, unsigned *os )
                 w->len++;
             }
         }
-        while( 1 ) {
+        for( ;; ) {
             if( ch == ' ' ) {
                 w->spc++;
                 *os += 1;
@@ -487,7 +487,7 @@ static int getParagraph( FILE *fp, para *p, wordlist **list )
     int                 status = 0;
     int                 retval = 0;
 
-    while( 1 ) {
+    for( ;; ) {
         if( expandParagraph( p, MIN_PARA_LEN ) ) {
             return( OUT_OF_MEM );
         }
@@ -585,7 +585,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "Xcjnl:p:", usageMsg );
         if( ch == -1 ) {
             break;

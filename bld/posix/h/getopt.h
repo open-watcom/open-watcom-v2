@@ -32,7 +32,7 @@
 #ifndef _INCLUDED_GETOPT_H
 #define _INCLUDED_GETOPT_H
 
-int GetOpt( int *argc, char *argv[], char *optstr, const char *usage[] );
+int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] );
 
 /*
  * optstr: contains a list of option characters.  If an option character

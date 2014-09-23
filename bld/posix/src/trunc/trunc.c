@@ -76,7 +76,7 @@ void main( int argc, char **argv ) {
     argv = ExpandEnv( &argc, argv );
     rxflag = 0;
     quietflag = 0;
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "qX", usageMsg );
         if( ch == -1 ) {
             break;

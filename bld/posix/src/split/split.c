@@ -69,7 +69,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
 
     file = (char *) malloc( (strlen( prefix ) + 2) * sizeof( char ) + 1 );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = fgetc( fp );
 
         if( ch == EOF ) {                   // look for end of file.
@@ -123,7 +123,7 @@ void main( int argc, char **argv )
 
     argv = ExpandEnv( &argc, argv );
 
-    while( 1 ) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv, "#", usageMsg );
         if( ch == -1 ) {
             break;
