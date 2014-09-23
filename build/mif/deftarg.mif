@@ -5,4 +5,4 @@ clean: .SYMBOLIC .EXPLICIT
 
 killnonobj: .SYMBOLIC .EXPLICIT
     rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
-    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk *.pdb
+    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk $(additional_cleanup_sys)

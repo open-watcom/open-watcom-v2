@@ -16,35 +16,40 @@ altmkfile = -f $(altlibmakepath)/makefile
 !endif
 
 all : lib $(commands) .symbolic
-        @%null
+    @%null
 
 lib : .symbolic $(__MAKEFILES__)
 curr_dir_all=$+ $(%CWD) $-
-        @if not exist $(libdir) @mkdir $(libdir)
-        @cd $(libdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
+    @if not exist $(libdir) @mkdir $(libdir)
+    @cd $(libdir)
+    !@wmake -h release=$(release) bootstrap=$(bootstrap) $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-        @if not exist $(altlibdir) @mkdir $(altlibdir)
-        @cd $(altlibdir)
-        !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
+    @if not exist $(altlibdir) @mkdir $(altlibdir)
+    @cd $(altlibdir)
+    !@wmake -h release=$(release) bootstrap=$(bootstrap) $(altmkfile)
 !endif
-        @cd $(curr_dir_all)
+    @cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
-        !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
+    !@wmake -h host_os=$(host_os) host_cpu=$(host_cpu) release=$(release) bootstrap=$(bootstrap) -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
 curr_dir_all=$+ $(%CWD) $-
-        @echo clean $(libdir)
-        @cd $(libdir)
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+    @echo clean $(libdir)
+    @cd $(libdir)
+    @%make clean_all_objs
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-        @echo clean $(altlibdir)
-        @cd $(altlibdir)
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+    @echo clean $(altlibdir)
+    @cd $(altlibdir)
+    @%make clean_all_objs
 !endif
-        @cd $(curr_dir_all)
-        @echo clean $(curr_dir_all)
-        rm -f *.ex? *.obj *.map *.lst *.smp *.lnk *.lbc *.lib *.err *.sym
+    @cd $(curr_dir_all)
+    @echo clean $(curr_dir_all)
+    @%make clean_all_objs
+
+clean_all_objs: .procedure .explicit
+    rm -f *.obj *.o
+    rm -f *.lnk *.exe *.elf *.exp *.nlm *.dll *.lib *.lbc *.gh *.grc
+    rm -f *.res *.lst *.err *.pch *.map *.sym *.tmp *.ilk *.trk $(additional_cleanup_sys)
 
 !endif

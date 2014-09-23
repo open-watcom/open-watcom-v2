@@ -366,6 +366,8 @@ incl_file_opts = -include
 
 !if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
 
+additional_cleanup_sys = *.pdb
+
 # common settings
 ############################
 common_cppflags_nt = -D__NT__ -D__FLAT__

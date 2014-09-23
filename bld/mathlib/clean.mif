@@ -1,2 +1,2 @@
 clean killall: .SYMBOLIC .EXPLICIT
-    rm -f *.err *.obj *.lbc *.exe *.tmp *.out *.lnk *.lst *.zip *.lib *.tim *.def
+    rm -f *.err *.obj *.lbc *.exe *.tmp *.out *.lnk *.lst *.zip *.lib *.tim *.def $(additional_cleanup_sys)
