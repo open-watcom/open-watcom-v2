@@ -524,7 +524,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
         memset( gci, 0, sizeof( gui_create_info ) );
 
         // set the initial text
-        GUIStrDup( hdr->Caption, &gci->text ); // NULL text is ok
+        gci->text = hdr->Caption; // NULL text is ok
 
         // set the dialog postion remembering to add the size of the frame
         GUIGetScreenArea( &bounding );
@@ -572,9 +572,6 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     if( !ok ) {
         if( gci ) {
-            if( gci->text ) {
-                GUIMemFree( gci->text );
-            }
             GUIMemFree( gci );
             gci = NULL;
         }
@@ -660,9 +657,6 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
     }
 
     if( gui_dlg ) {
-        if( gui_dlg->text ) {
-            GUIMemFree( gui_dlg->text );
-        }
         GUIMemFree( gui_dlg );
     }
 
