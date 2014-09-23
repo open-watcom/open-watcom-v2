@@ -29,12 +29,12 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "app.h"
 
 
 extern int DlgSearch( a_window *, void * );
 extern int DlgOptions( void );
-void *SrchHistory;
 
 extern a_window *W1Open( void );
 extern a_window *W2Open( void );
@@ -47,6 +47,8 @@ extern a_window *W8Open( void );
 extern void DlgCmd( void );
 extern void Password( char *, char *, int );
 extern gui_colour_set WndColours[];
+
+void *SrchHistory;
 
 static gui_menu_struct FirstMenu[] = {
     { "&Break", MENU_BUG, GUI_ENABLED, "" },
@@ -118,13 +120,12 @@ char *PickList[] = { "one", "two", "three", "four" };
 
 static char             FileBrowsed[_MAX_PATH] = "e:\\f\\setup.dbg";
 
-static DLGPICKTEXT FmtNum;
-static char *FmtNum( void *handle, int i )
+static char *FmtNum( void *data_handle, int item )
 {
     static char buff[20];
 
-    handle = handle;
-    itoa( i, buff, 10 );
+    data_handle = data_handle;
+    sprintf( buff, "%d", item );
     return( buff );
 }
 

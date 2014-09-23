@@ -95,14 +95,14 @@ bool GUIAddText( gui_window *wnd, unsigned id, char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
-                    void *handle, char *(*getstring)(void*,unsigned) )
+bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
+                    void *data_handle, PICKGETTEXT *getstring )
 {
     VFIELD      *field;
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        return( GUIListBoxAddTextList( list, items, handle, getstring ) );
+        return( GUIListBoxAddTextList( list, items, data_handle, getstring ) );
     }
     return( false );
 }

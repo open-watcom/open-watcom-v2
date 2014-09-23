@@ -65,8 +65,8 @@ static  int             TotalWindows    = 0;
 static  gui_window      **ChildWindows  = NULL;
 
 typedef struct {
-    gui_window *dlg_wnd;
-    int         list_ctrl;
+    gui_window  *dlg_wnd;
+    unsigned    list_ctrl;
 } dlg_init;
 
 gui_window *GUIGetRoot( void )
@@ -477,7 +477,7 @@ int GUIGetNumIconicWindows( void )
  * PickInit -- callback procedure to GUIDlgPick function
  */
 
-static void PickInit( gui_window *wnd, int list_ctrl )
+static void PickInit( gui_window *wnd, unsigned list_ctrl )
 {
     gui_window  *root;
     int         num_windows;

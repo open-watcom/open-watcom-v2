@@ -32,56 +32,44 @@
 
 #include "auipvt.h"
 
-static int      DlgChosen;
-static void*    From;
-static DLGPICKTEXT      *Rtn;
-static unsigned Num;
+static int          DlgChosen;
+static void         *_data_handle;
+static PICKGETTEXT  *_getstring;
+static int          _items;
 
-static void PickInit( gui_window *gui, int list_ctrl )
+static void PickInit( gui_window *gui, unsigned list_ctrl )
 {
-    GUIAddTextList( gui,
-                    list_ctrl,
-                    Num,
-                    From,
-                    ( char * (*) (void *, unsigned) )Rtn );
+    GUIAddTextList( gui, list_ctrl, _items, _data_handle, _getstring );
     GUISetCurrSelect( gui, list_ctrl, DlgChosen );
 }
 
-extern  int     DlgPickWithRtn2( char *text, void *from, int def,
-                                DLGPICKTEXT *rtn, unsigned num,
-                                GUIPICKER *pick )
+int DlgPickWithRtn2( char *text, void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER *pick )
 {
     DlgChosen = def;
-    From = from;
-    Rtn = rtn;
-    Num = num;
+    _data_handle = data_handle;
+    _getstring = getstring;
+    _items = items;
     return( pick( text, &PickInit ) );
 }
 
 
-extern int DoDlgPick( char *text, PICKCALLBACK * PickInit )
+int DoDlgPick( char *text, PICKCALLBACK *pickinit )
 {
-    return( GUIDlgPickWithRtn( text, PickInit, DlgOpen ) );
+    return( GUIDlgPickWithRtn( text, pickinit, DlgOpen ) );
 }
 
 
-extern  int     DlgPickWithRtn( char *text, void *from, int def,
-                                DLGPICKTEXT *rtn, unsigned num )
+int DlgPickWithRtn( char *text, void *data_handle, int def, PICKGETTEXT *getstring, int items )
 {
-    return( DlgPickWithRtn2( text, from, def, rtn, num, DoDlgPick ) );
+    return( DlgPickWithRtn2( text, data_handle, def, getstring, items, DoDlgPick ) );
 }
 
-// DLGPICKTEXT DlgPickText;
-char *DlgPickText( char **from, int i )
+char *DlgPickText( void *data_handle, int item )
 {
-    return( from[ i ] );
+    return( ((char **)data_handle)[item] );
 }
 
-extern  int     DlgPick( char *text, char **from, int def, unsigned num )
+int DlgPick( char *text, void *data_handle, int def, int items )
 {
-    return( DlgPickWithRtn( text,
-                            from,
-                            def,
-                            ( char * (*) (void *, int) )DlgPickText,
-                            num ) );
+    return( DlgPickWithRtn( text, data_handle, def, DlgPickText, items ) );
 }

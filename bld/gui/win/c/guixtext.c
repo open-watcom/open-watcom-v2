@@ -78,14 +78,13 @@ bool GUIAddText( gui_window *wnd, unsigned id, char *text )
     return( false );
 }
 
-bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
-                    void *handle, char *(*getstring)(void*,unsigned) )
+bool GUIAddTextList( gui_window *wnd, unsigned id, int items, void *data_handle, PICKGETTEXT *getstring )
 {
-    unsigned    i;
+    int     item;
 
     GUIControlSetRedraw( wnd, id, false );
-    for( i = 0; i < items; i++ ) {
-        GUIAddText( wnd, id, (*getstring)( handle, i ) );
+    for( item = 0; item < items; item++ ) {
+        GUIAddText( wnd, id, (*getstring)( data_handle, item ) );
     }
     GUIControlSetRedraw( wnd, id, true );
     GUIControlDirty( wnd, id );

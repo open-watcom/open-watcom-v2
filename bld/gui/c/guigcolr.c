@@ -60,7 +60,7 @@ static void InitColourNames( void )
 
 static gui_colour InitColour;
 
-static void PickColour( gui_window *wnd, int list_ctrl )
+static void PickColour( gui_window *wnd, unsigned list_ctrl )
 {
     int i;
 

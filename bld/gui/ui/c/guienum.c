@@ -32,8 +32,7 @@
 
 #include "guiwind.h"
 
-extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func,
-                                 void *param )
+extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
     gui_window *curr;
 

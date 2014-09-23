@@ -306,11 +306,10 @@ typedef struct wnd_info {
 } wnd_info;
 
 
-typedef char*           DLGPICKTEXT( void *, int );
 typedef int             GUIPICKER( char *, PICKCALLBACK * );
-extern int              DlgPickWithRtn( char *text, void *from, int def, DLGPICKTEXT *rtn, unsigned );
-extern int              DlgPickWithRtn2( char *text, void *from, int def, DLGPICKTEXT *rtn, unsigned, GUIPICKER * );
-extern int              DlgPick( char *text, char **from, int def, unsigned num );
+extern int              DlgPickWithRtn( char *text, void *data_handle, int def, PICKGETTEXT *getstring, int items );
+extern int              DlgPickWithRtn2( char *text, void *data_handle, int def, PICKGETTEXT *getstring, int items, GUIPICKER * );
+extern int              DlgPick( char *text, void *data_handle, int def, int items );
 extern bool             DlgNew( char *text, char *buff, int buff_len );
 extern void             DlgOpen( char *, int, int, gui_control_info *, int, GUICALLBACK *, void * );
 extern void             ResDlgOpen( GUICALLBACK *, void *, int );

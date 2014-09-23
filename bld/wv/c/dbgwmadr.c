@@ -253,18 +253,17 @@ static int GetRegIdx( reg_window *reg, int row, int piece )
 }
 
 
-static DLGPICKTEXT RegValueName;
-static char *RegValueName( void *_possible, int i )
+static char *RegValueName( void *data_handle, int item )
 {
-    mad_modify_list    *possible = _possible;
+    mad_modify_list    *possible = &((mad_modify_list *)data_handle)[item];
     unsigned    max;
 
-    if( possible[i].name == MAD_MSTR_NIL ) {
+    if( possible->name == MAD_MSTR_NIL ) {
         max = TXT_LEN;
-        MADTypeHandleToString( MADTypePreferredRadix( possible[i].type ),
-                possible[i].type, possible[i].data, &max, TxtBuff );
+        MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
+                possible->type, possible->data, &max, TxtBuff );
     } else {
-        MADCliString( possible[i].name, TXT_LEN, TxtBuff );
+        MADCliString( possible->name, TXT_LEN, TxtBuff );
     }
     return( TxtBuff );
 }
@@ -309,7 +308,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
                 i = 0;
             }
         } else {  //MJC const cast
-            i = DlgPickWithRtn( TxtBuff, (mad_modify_list*) possible, i, RegValueName, num_possible );
+            i = DlgPickWithRtn( TxtBuff, (void *)possible, i, RegValueName, num_possible );
         }
         if( i != -1 ) {
             RegNewValue( disp.reginfo, possible[i].data, possible[i].type );

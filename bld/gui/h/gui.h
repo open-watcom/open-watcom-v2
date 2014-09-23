@@ -349,10 +349,11 @@ typedef struct gui_control_info {
 typedef bool (GUICALLBACK)( gui_window *, gui_event, void * );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
-typedef void (PICKCALLBACK)( gui_window *, int id );
+typedef void (PICKCALLBACK)( gui_window *, unsigned id );
 typedef void (PICKDLGOPEN)( char *name, int rows, int cols,
                              struct gui_control_info *ctl, int num_controls,
                              GUICALLBACK *rtn, void *extra );
+typedef char *(PICKGETTEXT)( void *data_handle, int item );
 
 typedef struct gui_create_info {
     char                *text;
@@ -877,8 +878,8 @@ extern gui_message_return GUIDisplayMessage( gui_window *wnd,
                                              char *message, char *caption,
                                              gui_message_type type );
 extern gui_message_return GUIGetNewVal( char *title, char *old, char **new_val );
-extern int GUIDlgPick( char *text, PICKCALLBACK *InitPick );
-extern int GUIDlgPickWithRtn( char *text, PICKCALLBACK *InitPick, PICKDLGOPEN* );
+extern int GUIDlgPick( char *text, PICKCALLBACK *pickinit );
+extern int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN * );
 
 /* Dialog Functions */
 
@@ -911,8 +912,8 @@ extern bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw 
 extern bool GUIAddText( gui_window *wnd, unsigned id, char *text );
 extern bool GUISetListItemData( gui_window *wnd, unsigned id, unsigned choice, void *data );
 extern void *GUIGetListItemData( gui_window *wnd, unsigned id, unsigned choice );
-extern bool GUIAddTextList( gui_window *wnd, unsigned id, unsigned items,
-                            void *handle, char *(*getstring)(void*,unsigned) );
+extern bool GUIAddTextList( gui_window *wnd, unsigned id, int items,
+                            void *data_handle, PICKGETTEXT *getstring );
 extern bool GUIInsertText( gui_window *wnd, unsigned id, int choice, char *text );
 extern bool GUISetTopIndex( gui_window *wnd, unsigned id, int choice );
 extern int GUIGetTopIndex( gui_window *wnd, unsigned id );

@@ -48,28 +48,6 @@ extern int              DUIDisambiguate( ambig_info *ambig, int count );
 
 extern char             *TxtBuff;
 
-extern char *SymPickText( ambig_info *ambig, int i )
-{
-    sym_list    *sym;
-    unsigned    len;
-    char        *image;
-
-    sym = ambig->sym;
-    while( --i >= 0 ) {
-        sym = sym->next;
-    }
-    len = SymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
-    if( len == 0 ) {
-        len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
-    }
-    image = ModImageName( SymMod( SL2SH( sym ) ) );
-    if( *image != '\0' ) {
-        Format( &TxtBuff[ len ], " [%s]", image );
-    }
-    return( TxtBuff );
-}
-
-
 sym_list *Disambiguate( sym_list *sym, location_context *lc )
 {
     sym_list    *chosen;

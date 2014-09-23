@@ -54,12 +54,9 @@ static gui_create_info DialogControl = {
     0
 };
 
-static char *ListBoxFunc( void *param, unsigned item )
+static char *ListBoxFunc( void *data_handle, int item )
 {
-    char        **list;
-
-    list = (char **)param;
-    return( list[item] );
+    return( ((char **)data_handle)[item] );
 }
 
 static void ContrCallBack( gui_window *gui, unsigned id, void *param )
@@ -280,8 +277,7 @@ bool DynamicDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             break;
         case ADDBUTTON_CONTROL :
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
-            GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA,
-                            ListBoxData, &ListBoxFunc );
+            GUIAddTextList( gui, LISTBOX_CONTROL, NUM_LIST_BOX_DATA, ListBoxData, &ListBoxFunc );
             break;
         case CLEARBUTTON_CONTROL :
             if( !GUIIsControlVisible( gui, RADIOBUTTON_CONTROL1 ) ) {

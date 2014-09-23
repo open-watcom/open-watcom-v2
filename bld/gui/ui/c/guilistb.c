@@ -250,11 +250,9 @@ bool GUIListBoxAddText( a_list *list, char *text, int choice )
     return( true );
 }
 
-bool GUIListBoxAddTextList( a_list *list, unsigned items, void *handle,
-                            char *(*getstring)(void*,unsigned) )
+bool GUIListBoxAddTextList( a_list *list, int items, void *data_handle, PICKGETTEXT *getstring )
 {
-    int         i;
-    char        *curr_str;
+    int         item;
     char        **old_data;
     char        **data;
     int         choice;
@@ -265,9 +263,8 @@ bool GUIListBoxAddTextList( a_list *list, unsigned items, void *handle,
     if( data == NULL ) {
         return( false );
     }
-    for( i = 0; i < items; ++i ) {
-        curr_str = getstring( handle, i );
-        if( !AddString( data, curr_str, choice + i ) ) {
+    for( item = 0; item < items; ++item ) {
+        if( !AddString( data, getstring( data_handle, item ), choice + item ) ) {
             return( false );
         }
     }

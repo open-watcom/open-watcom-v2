@@ -110,10 +110,9 @@ static gui_menu_struct MacMenu[] = {
 };
 
 
-static DLGPICKTEXT WndGetName;
-static char *WndGetName( void *from, int i )
+static char *WndGetName( void *data_handle, int item )
 {
-    return( *((char ***)from)[i] );
+    return( *((char ***)data_handle)[item] );
 }
 
 #ifdef DEADCODE
@@ -182,11 +181,11 @@ static bool MacModWhat( a_window *wnd, wnd_row row )
     wnd=wnd;
     old = mac->type;
     if( mac->class == WND_ALL ) {
-        new = DlgPickWithRtn( LIT( Macro_Type ), WhatList+1,
-                       mac->type == MACRO_COMMAND, WndGetName, ArraySize( WhatList )-1 );
+        new = DlgPickWithRtn( LIT( Macro_Type ), (void *)( WhatList + 1 ),
+                       mac->type == MACRO_COMMAND, WndGetName, ArraySize( WhatList ) - 1 );
         if( new != -1 ) ++new;
     } else {
-        new = DlgPickWithRtn( LIT( Macro_Type ), WhatList,
+        new = DlgPickWithRtn( LIT( Macro_Type ), (void *)WhatList,
                        mac->type, WndGetName, ArraySize( WhatList ) );
     }
     if( new != -1 ) {
@@ -222,7 +221,7 @@ bool MacKeyHit( a_window *wnd, unsigned key )
             MacChangeMac( wnd, mac, key, mac->class, wndmac->change_row );
         } else if( wndmac->creating ) {
             wndmac->creating = FALSE;
-            new = DlgPickWithRtn( LIT( Enter_Window ), WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
+            new = DlgPickWithRtn( LIT( Enter_Window ), (void *)WndDisplayNames, WND_ALL, WndGetName, WND_CURRENT );
             if( new == -1 ) return( TRUE );
             curr = MacAddDel( key, new, AllocCmdList( LIT( Quest_Marks ),
                              strlen( LIT( Quest_Marks ) ) ) );
@@ -316,7 +315,7 @@ static void MacModWhere( a_window *wnd, wnd_row row )
 
     wnd=wnd;
     def = mac->class == WND_NO_CLASS ? WND_ALL : mac->class;
-    new = DlgPickWithRtn( LIT( Enter_Window ), WndDisplayNames, def, WndGetName, WND_CURRENT );
+    new = DlgPickWithRtn( LIT( Enter_Window ), (void *)WndDisplayNames, def, WndGetName, WND_CURRENT );
     if( new == -1 ) return;
 //    WndRepaint( wnd );
     MacChangeMac( wnd, mac, mac->key, new, row );

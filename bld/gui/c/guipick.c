@@ -49,18 +49,16 @@ static gui_control_info Controls[] = {
 
 #define NUM_CONTROLS ( sizeof( Controls ) / sizeof( gui_control_info ) )
 
-extern bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
+bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
 {
     unsigned            id;
-    PICKCALLBACK        *func;
     dlg_pick            *dlg;
 
     dlg = (dlg_pick*)GUIGetExtra( gui );
     switch( event ) {
     case GUI_INIT_DIALOG:
         GUIClearList( gui, CTL_PICK_LIST );
-        func = dlg->func;
-        (*func)( gui, CTL_PICK_LIST );
+        (*dlg->func)( gui, CTL_PICK_LIST );
         GUISetFocus( gui, CTL_PICK_LIST );
         return( true );
     case GUI_CONTROL_DCLICKED:
@@ -87,8 +85,7 @@ extern bool GUIPickEvent( gui_window * gui, gui_event event, void * param )
 }
 
 
-extern int GUIDlgPickWithRtn( char *text,
-                              PICKCALLBACK * PickInit, PICKDLGOPEN *OpenRtn )
+int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN *OpenRtn )
 {
     dlg_pick    dlg;
 
@@ -98,15 +95,14 @@ extern int GUIDlgPickWithRtn( char *text,
 
     Controls[1].text = LIT( OK );
     Controls[2].text = LIT( Cancel );
-    dlg.func = PickInit;
+    dlg.func = pickinit;
     dlg.chosen = -1;
-    OpenRtn( text, DLG_PICK_ROWS, len,
-             Controls, NUM_CONTROLS, &GUIPickEvent, &dlg );
+    OpenRtn( text, DLG_PICK_ROWS, len, Controls, NUM_CONTROLS, &GUIPickEvent, &dlg );
     return( dlg.chosen );
 }
 
 
-extern int GUIDlgPick( char *text, PICKCALLBACK * PickInit )
+int GUIDlgPick( char *text, PICKCALLBACK *pickinit )
 {
-    return( GUIDlgPickWithRtn( text, PickInit, GUIDlgOpen ) );
+    return( GUIDlgPickWithRtn( text, pickinit, GUIDlgOpen ) );
 }

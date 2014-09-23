@@ -49,13 +49,6 @@ extern char             *Format( char *buff, char *fmt, ... );
 
 extern char             *TxtBuff;
 
-static GUIPICKER        SymPick;
-DLGPICKTEXT             SymPickText;
-
-extern int DUIDisambiguate( ambig_info *ambig, int count )
-{
-    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, count, SymPick ) );
-}
 
 static int SymPick( char *text, PICKCALLBACK * PickInit )
 {
@@ -66,4 +59,31 @@ static int SymPick( char *text, PICKCALLBACK * PickInit )
     dlg.chosen = -1;
     ResDlgOpen( &GUIPickEvent, &dlg, DIALOG_AMBIG );
     return( dlg.chosen );
+}
+
+static char *SymPickText( void *data_handle, int item )
+{
+    sym_list    *sym;
+    unsigned    len;
+    char        *image;
+    ambig_info  *ambig = data_handle;
+
+    sym = ambig->sym;
+    while( --item >= 0 ) {
+        sym = sym->next;
+    }
+    len = SymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
+    if( len == 0 ) {
+        len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
+    }
+    image = ModImageName( SymMod( SL2SH( sym ) ) );
+    if( *image != '\0' ) {
+        Format( &TxtBuff[ len ], " [%s]", image );
+    }
+    return( TxtBuff );
+}
+
+int DUIDisambiguate( ambig_info *ambig, int count )
+{
+    return( DlgPickWithRtn2( "", (void *)ambig, 0, SymPickText, count, SymPick ) );
 }
