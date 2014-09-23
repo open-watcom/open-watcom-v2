@@ -491,7 +491,7 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
 static const mad_modify_list    IntReg = { NULL, REG_TYPE( REG_BITS_INT ), MAD_MSTR_NIL };
 static const mad_modify_list    FltReg = { NULL, AXPT_DOUBLE, MAD_MSTR_NIL };
 
-mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
+mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     rsd = rsd;
     switch( ri->bit_start ) {

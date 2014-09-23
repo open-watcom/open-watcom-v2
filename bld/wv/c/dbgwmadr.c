@@ -272,15 +272,15 @@ static char *RegValueName( void *_possible, int i )
 static  WNDMODIFY RegModify;
 static  void    RegModify( a_window *wnd, int row, int piece )
 {
-    int                 i;
-    item_mach           value;
-    reg_window          *reg = WndReg( wnd );
-    bool                ok;
-    unsigned            old;
-    reg_display_piece   disp;
-    mad_type_info       tinfo;
-    mad_modify_list const    *possible;
-    unsigned            num_possible;
+    int                     i;
+    item_mach               value;
+    reg_window              *reg = WndReg( wnd );
+    bool                    ok;
+    unsigned                old;
+    reg_display_piece       disp;
+    mad_type_info           tinfo;
+    mad_modify_list const   *possible;
+    int                     num_possible;
 
     if( row < 0 ) return;
     piece >>= 1;
@@ -321,13 +321,13 @@ static  void    RegModify( a_window *wnd, int row, int piece )
 static  WNDMENU RegMenuItem;
 static void     RegMenuItem( a_window *wnd, unsigned id, int row, int piece )
 {
-    reg_window          *reg = WndReg( wnd );
-    int                 i;
-    unsigned            bit;
-    mad_modify_list const *possible;
-    unsigned            num_possible;
-    address             addr;
-    bool                valid_reg;
+    reg_window              *reg = WndReg( wnd );
+    int                     i;
+    unsigned                bit;
+    mad_modify_list const   *possible;
+    int                     num_possible;
+    address                 addr;
+    bool                    valid_reg;
 
     i = GetRegIdx( reg, row, piece >>1 );
     switch( id ) {

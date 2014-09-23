@@ -35,14 +35,14 @@
 #define REG_DESTROY             2
 
 typedef struct {
-    unsigned            num_possible;
+    int                 num_possible;
     mad_reg_info        *curr_info;
     void                *curr_value;
     mad_reg_set_data    *reg_set;
     mad_modify_list     *m_list;
     mad_type_handle     th;
     unsigned            maxv;
-}RegModifyData;
+} RegModifyData;
 
 typedef union {
     long double     d;

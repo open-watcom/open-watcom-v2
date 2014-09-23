@@ -1557,7 +1557,7 @@ mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad
                 max_descript, reg, disp_type, max_value ) );
 }
 
-static mad_status DIGREGISTER DummyRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, unsigned *num_possible )
+static mad_status DIGREGISTER DummyRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
 {
     rsd = rsd;
     reg = reg;
@@ -1566,7 +1566,7 @@ static mad_status DIGREGISTER DummyRegSetDisplayModify( const mad_reg_set_data *
     return( MS_FAIL );
 }
 
-mad_status      MADRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, unsigned *num_possible )
+mad_status      MADRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
 {
     return( Active->rtns->MIRegSetDisplayModify( rsd, reg, possible, num_possible ) );
 }

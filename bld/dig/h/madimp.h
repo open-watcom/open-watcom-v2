@@ -82,7 +82,7 @@ typedef struct mad_imp_routines {
     unsigned            (DIGENTRY *MIRegSetLevel)( const mad_reg_set_data *, unsigned max, char *buff );
     unsigned            (DIGENTRY *MIRegSetDisplayGrouping)( const mad_reg_set_data * );
     mad_status          (DIGENTRY *MIRegSetDisplayGetPiece)( const mad_reg_set_data *, mad_registers const *, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
-    mad_status          (DIGENTRY *MIRegSetDisplayModify)( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, unsigned *num_possible );
+    mad_status          (DIGENTRY *MIRegSetDisplayModify)( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible );
     const mad_toggle_strings    *(DIGENTRY *MIRegSetDisplayToggleList)( const mad_reg_set_data * );
     unsigned            (DIGENTRY *MIRegSetDisplayToggle)( const mad_reg_set_data *, unsigned on, unsigned off );
     mad_status          (DIGENTRY *MIRegModified)( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr );
@@ -183,7 +183,7 @@ unsigned        DIGENTRY MIRegSetLevel( const mad_reg_set_data *, unsigned max, 
 
 unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data * );
 mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *, const mad_registers *, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
-mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, unsigned *num_possible );
+mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible );
 const mad_toggle_strings *DIGENTRY MIRegSetDisplayToggleList( const mad_reg_set_data * );
 unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *, unsigned on, unsigned off );
 mad_status      DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr );

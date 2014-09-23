@@ -212,7 +212,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
         SetWindowText( hwnd, "" );
     }
 
-    if( data->num_possible == 1) {
+    if( data->num_possible == 1 ) {
         field = GetDlgItem( hwnd, REG_EDIT_FIELD );
     } else {
         field = GetDlgItem( hwnd, CH_REG_COMBO_LIST );
@@ -394,7 +394,7 @@ static void GetNewRegValue( HWND hwnd )
     BitGet( modify_data.curr_value, (unsigned char *)regs, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size);
     MADRegSetDisplayModify( modify_data.reg_set, modify_data.curr_info,
         (const mad_modify_list **)( &( modify_data.m_list ) ),
-        &(modify_data.num_possible ));
+        &(modify_data.num_possible) );
 
     switch( modify_data.num_possible ) {
     case 2:

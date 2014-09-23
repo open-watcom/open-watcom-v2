@@ -1303,7 +1303,7 @@ mad_status DIGENTRY MIRegSetDisplayModify(
     const mad_reg_set_data *rsd,
     const mad_reg_info *ri,
     const mad_modify_list **possible_p,
-    unsigned *num_possible_p )
+    int *num_possible_p )
 {
     rsd = rsd;
     if( ri == &XXX_dummy.info )

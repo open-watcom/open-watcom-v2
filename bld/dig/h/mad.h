@@ -103,7 +103,7 @@ unsigned        MADRegSetLevel( const mad_reg_set_data *, unsigned max, char *bu
 
 unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data * );
 mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *, const mad_registers *mr, unsigned piece, char **descript, unsigned *max_descript, const mad_reg_info **reg, mad_type_handle *disp_type, unsigned *max_value );
-mad_status      MADRegSetDisplayModify( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, unsigned *num_possible );
+mad_status      MADRegSetDisplayModify( const mad_reg_set_data *, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible );
 const mad_toggle_strings *MADRegSetDisplayToggleList( const mad_reg_set_data * );
 unsigned        MADRegSetDisplayToggle( const mad_reg_set_data *, unsigned on, unsigned off );
 mad_status      MADRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr );

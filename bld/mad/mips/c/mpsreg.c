@@ -507,7 +507,7 @@ static const mad_modify_list    WordReg = { NULL, MIPST_WORD, MAD_MSTR_NIL };
 static const mad_modify_list    DWordReg = { NULL, MIPST_DWORD, MAD_MSTR_NIL };
 static const mad_modify_list    FltReg = { NULL, MIPST_DOUBLE, MAD_MSTR_NIL };
 
-mad_status DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
+mad_status DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     rsd = rsd;
 

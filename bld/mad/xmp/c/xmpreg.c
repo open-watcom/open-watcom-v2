@@ -134,7 +134,7 @@ mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
         A particular register has been selected for modification. Indicate
         what are the legal ranges of values for it.
 */
-mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, unsigned *num_possible_p )
+mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     //NYI:
     return( MS_FAIL );
