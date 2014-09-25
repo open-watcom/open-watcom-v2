@@ -47,7 +47,7 @@ extern EVENT GUIUserEvents[];
  * GUIAddControl -- add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
                     gui_colour_set *standout )
 {
     gui_control *control;
@@ -58,28 +58,28 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
     plain = plain;
     standout = standout;
 
-    if( ( info == NULL ) || ( info->parent == NULL ) ) {
+    if( ( ctl_info == NULL ) || ( ctl_info->parent == NULL ) ) {
         return( false );
     }
-    first_control = ( GUIGetDlgByWnd( info->parent ) == NULL );
+    first_control = ( GUIGetDlgByWnd( ctl_info->parent ) == NULL );
     if( first_control ) {
-        if( !GUIInsertDialog( info->parent ) ) {
+        if( !GUIInsertDialog( ctl_info->parent ) ) {
             return( false );
         }
     }
-    control = GUIAddAControl( info, info->parent );
+    control = GUIAddAControl( ctl_info, ctl_info->parent );
     if( control != NULL ) {
-        dialog = GUIGetDialog( info->parent );
+        dialog = GUIGetDialog( ctl_info->parent );
         uireinitdialog( dialog, dialog->fields );
         return( true );
     }
     if( first_control ) {
-        node = GUIGetDlgByWnd( info->parent );
+        node = GUIGetDlgByWnd( ctl_info->parent );
         if( node != NULL ) {
             GUIDeleteDialog( node->dialog );
         }
     }
-    GUIDeleteField( info->parent, info->id );
+    GUIDeleteField( ctl_info->parent, ctl_info->id );
     GUIMemFree( control );
     return( false );
 }
@@ -137,8 +137,7 @@ static bool DeleteControl( gui_window *wnd, unsigned id )
     return( false );
 }
 
-gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *info,
-                               int index )
+gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index )
 {
     gui_control *control;
     dialog_node *dialog;
@@ -149,8 +148,8 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *info,
     }
     control = (gui_control *)GUIMemAlloc( sizeof( gui_control ) );
     if( control != NULL ) {
-        control->control_class = info->control_class;
-        control->id = info->id;
+        control->control_class = ctl_info->control_class;
+        control->id = ctl_info->id;
         control->parent = wnd;
         control->index = index;
         control->sibling = wnd->controls;

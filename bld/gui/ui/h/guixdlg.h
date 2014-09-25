@@ -44,13 +44,12 @@ typedef struct dialog_node {
 extern VFIELD *GUIGetField( gui_window * wnd, unsigned id );
 extern a_dialog *GUIGetDialog( gui_window * wnd );
 extern void GUIFocusChangeNotify( a_dialog *ui_dialog );
-extern bool GUIDoAddControl( gui_control_info *control, gui_window *wnd,
-                     VFIELD *field );
+extern bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field );
 extern void GUIDoFreeField( VFIELD *field, a_radio_group **group );
 extern void GUIRefreshControl( gui_window *wnd, unsigned id );
 extern bool GUIInsertDialog( gui_window *wnd );
 extern dialog_node *GUIGetDlgByWnd( gui_window *wnd );
-extern gui_control *GUIAddAControl( gui_control_info *info, gui_window *wnd );
+extern gui_control *GUIAddAControl( gui_control_info *ctl_info, gui_window *wnd );
 extern bool GUIResizeDialog( gui_window *wnd, SAREA *area );
 extern void GUIDeleteDialog( a_dialog *dialog );
 extern bool GUIDeleteField( gui_window *wnd, unsigned id );

@@ -319,10 +319,10 @@ static bool GetNumStringControls( int *num_controls, char *old_message,
  *               and location of control
  */
 
-static int UpdateCols( gui_control_info *control_info, int cols )
+static int UpdateCols( gui_control_info *ctl_info, int cols )
 {
-    if( cols < control_info->rect.x - DLG_COL_0 + control_info->rect.width - DLG_COL_0 )
-        cols = control_info->rect.x - DLG_COL_0 + control_info->rect.width - DLG_COL_0;
+    if( cols < ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0 )
+        cols = ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0;
     return( cols );
 }
 
@@ -332,7 +332,7 @@ static int UpdateCols( gui_control_info *control_info, int cols )
  */
 
 int AdjustVert( int *cols, control_types controls_to_use,
-                gui_control_info *control_info, int num_controls,
+                gui_control_info *controls_info, int num_controls,
                 int num_string_controls )
 {
     int num_buttons;
@@ -349,23 +349,23 @@ int AdjustVert( int *cols, control_types controls_to_use,
     for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
         if( ( i < num_controls ) &&
             ( controls_to_use & MessageControls[j].type ) ) {
-            memcpy( &control_info[i], &MessageControls[j].control,
+            memcpy( &controls_info[i], &MessageControls[j].control,
                     sizeof( gui_control_info ) );
-            switch( control_info[i].control_class ) {
+            switch( controls_info[i].control_class ) {
             case GUI_PUSH_BUTTON :
             case GUI_DEFPUSH_BUTTON :
                 num_buttons ++;
-                control_info[i].rect.y = DLG_ROW( BUTTON_ROW +
+                controls_info[i].rect.y = DLG_ROW( BUTTON_ROW +
                                             num_string_controls  - 1 );
                 break;
             case GUI_STATIC :
-                control_info[i].rect.y = DLG_ROW( ICON_ROW +
+                controls_info[i].rect.y = DLG_ROW( ICON_ROW +
                                     ( num_string_controls - 1 ) / 2 );
                 break;
             default :
                 break;
             }
-            *cols = UpdateCols( &control_info[i], *cols );
+            *cols = UpdateCols( &controls_info[i], *cols );
             i++;
         }
     }
@@ -376,8 +376,7 @@ int AdjustVert( int *cols, control_types controls_to_use,
  * CentreButtons -- centre the buttons horizontally
  */
 
-static void CentreButtons( int cols, int num_buttons,
-                           gui_control_info *control_info, int num_controls )
+static void CentreButtons( int cols, int num_buttons, gui_control_info *controls_info, int num_controls )
 {
     int button_number;
     int space_per_button;
@@ -388,11 +387,11 @@ static void CentreButtons( int cols, int num_buttons,
         space_per_button = cols / num_buttons;
     }
     for( i = 0; i < num_controls; i++ ) {
-        switch( control_info[i].control_class ) {
+        switch( controls_info[i].control_class ) {
         case GUI_PUSH_BUTTON :
         case GUI_DEFPUSH_BUTTON :
             button_number++;
-            control_info[i].rect.x = DLG_COL( space_per_button
+            controls_info[i].rect.x = DLG_COL( space_per_button
               * button_number - ( ( space_per_button + BUTTON_WIDTH ) / 2 ) );
             break;
         default :
@@ -411,7 +410,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
 {
     int                 rows;
     int                 cols;
-    gui_control_info    *control_info;
+    gui_control_info    *controls_info;
     int                 num_controls;
     int                 num_string_controls;
     gui_message_return  ret;
@@ -451,9 +450,8 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     }
 
     num_controls += num_string_controls;
-    control_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) *
-                                                 num_controls );
-    if( control_info == NULL ) {
+    controls_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) * num_controls );
+    if( controls_info == NULL ) {
         return( GUI_RET_CANCEL );
     }
 
@@ -466,8 +464,8 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
             StaticMessage.text = strings[i].text;
             StaticMessage.rect.width = DLG_COL( strings[i].length );
             StaticMessage.rect.y = DLG_ROW( TEXT_ROW + i );
-            memcpy( &control_info[i], &StaticMessage, sizeof( gui_control_info ) );
-            cols = UpdateCols( &control_info[i], cols );
+            memcpy( &controls_info[i], &StaticMessage, sizeof( gui_control_info ) );
+            cols = UpdateCols( &controls_info[i], cols );
         }
     }
     rows = num_string_controls + BUTTON_ROW + 1;
@@ -475,21 +473,19 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
     /* adjust the vertical position of buttons and icons according to the
      * number of lines of text ( also adjusts cols )
      */
-    num_buttons = AdjustVert( &cols, controls_to_use, control_info, num_controls,
-                              num_string_controls );
+    num_buttons = AdjustVert( &cols, controls_to_use, controls_info, num_controls, num_string_controls );
 
     if( cols < ( num_buttons * ( BUTTON_WIDTH + 4 ) ) ) {
         cols = num_buttons * ( BUTTON_WIDTH + 4 ) ;
     }
     /* centre the buttons horizontally */
-    CentreButtons( cols, num_buttons, control_info, num_controls );
+    CentreButtons( cols, num_buttons, controls_info, num_controls );
     ret = GUI_RET_CANCEL; /* default -- if escape hit */
-    GUIDlgOpen( caption, rows, cols, control_info, num_controls,
-                &DisplayMessage, &ret );
+    GUIDlgOpen( caption, rows, cols, controls_info, num_controls, &DisplayMessage, &ret );
     for( i = 0; i < num_string_controls; i++ ) {
         GUIMemFree( strings[i].text );
     }
     GUIMemFree( strings );
-    GUIMemFree( control_info );
+    GUIMemFree( controls_info );
     return( ret );
 }

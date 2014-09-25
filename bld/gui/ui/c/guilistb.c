@@ -136,7 +136,7 @@ a_list *GUICreateListBox( void )
     return( list );
 }
 
-a_list *GUICreateEditMLE( char * text )
+a_list *GUICreateEditMLE( const char *text )
 {
     a_list      *list;
     char        *text_copy;

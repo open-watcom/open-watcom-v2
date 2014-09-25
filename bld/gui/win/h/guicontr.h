@@ -58,7 +58,7 @@ typedef struct {
 extern control_item *GUIGetControlByID( gui_window *parent, unsigned id );
 extern control_item *GUIGetControlByHwnd( gui_window *parent, HWND control );
 extern control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
-                              HWND control, gui_control_info *info,
+                              HWND control, gui_control_info *ctl_info,
                               WPI_PROC call_back );
 extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent );
 extern void GUIControlDelete( gui_window *wnd, unsigned id );
@@ -69,6 +69,6 @@ extern bool GUIAddParent( HWND, gui_window * );
 WPI_PROC GUIDoSubClass( HWND, gui_control_class );
 extern bool GUIInsertCtrlWnd( gui_window *wnd );
 extern gui_window *GUIGetCtrlWnd( HWND hwnd );
-extern LONG GUISetControlStyle( gui_control_info *info );
+extern LONG GUISetControlStyle( gui_control_info *ctl_info );
 extern bool GUICheckRadioButton( gui_window *wnd, unsigned id );
 #endif // _GUICONTR_H_

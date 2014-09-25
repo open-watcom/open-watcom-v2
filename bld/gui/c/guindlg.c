@@ -195,7 +195,7 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg, int rows,
 }
 
 static void DlgOpen( gui_window *parent, char *name, int rows, int cols,
-                     gui_control_info *ctl, int num_controls, GUICALLBACK *rtn,
+                     gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn,
                      void *extra, bool sys )
 {
     gui_coord           charuse;
@@ -219,11 +219,11 @@ static void DlgOpen( gui_window *parent, char *name, int rows, int cols,
 #endif
     GUITruncToPixel( &charuse );
     DlgSetSize( parent, &DlgControl, rows, cols, &charuse );
-    DlgSetCtlSizes( ctl, num_controls, &charuse, &charspace );
+    DlgSetCtlSizes( controls_info, num_controls, &charuse, &charspace );
     if( sys || DlgModal ) {
-        GUICreateSysModalDialog( &DlgControl, num_controls, ctl );
+        GUICreateSysModalDialog( &DlgControl, num_controls, controls_info );
     } else {
-        GUICreateDialog( &DlgControl, num_controls, ctl );
+        GUICreateDialog( &DlgControl, num_controls, controls_info );
     }
 }
 
@@ -232,22 +232,22 @@ void GUISetModalDlgs( bool modal )
     DlgModal = modal;
 }
 
-void GUIDlgOpen( char *name, int rows, int cols, gui_control_info *ctl,
+void GUIDlgOpen( char *name, int rows, int cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, false );
+    DlgOpen( NULL, name, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
 void GUIModalDlgOpen( gui_window *parent, char *name, int rows, int cols,
-                      gui_control_info *ctl, int num_controls,
+                      gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( parent, name, rows, cols, ctl, num_controls, rtn, extra, false );
+    DlgOpen( parent, name, rows, cols, controls_info, num_controls, rtn, extra, false );
 }
 
 void GUISysModalDlgOpen( char *name, int rows, int cols,
-                         gui_control_info *ctl, int num_controls,
+                         gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *rtn, void *extra )
 {
-    DlgOpen( NULL, name, rows, cols, ctl, num_controls, rtn, extra, true );
+    DlgOpen( NULL, name, rows, cols, controls_info, num_controls, rtn, extra, true );
 }

@@ -169,7 +169,7 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
  */
 
 control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
-                                HWND hwnd, gui_control_info *info,
+                                HWND hwnd, gui_control_info *ctl_info,
                                 WPI_PROC call_back )
 {
     control_item        *item;
@@ -179,10 +179,10 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class control_cl
         return( NULL );
     }
     item->control_class = control_class;
-    item->text = info->text;
-    item->style = info->style;
-    item->checked = info->style & GUI_CHECKED;
-    item->id = info->id;
+    item->text = ctl_info->text;
+    item->style = ctl_info->style;
+    item->checked = ctl_info->style & GUI_CHECKED;
+    item->id = ctl_info->id;
     item->next = NULL;
     item->hwnd = hwnd;
     item->call_back = call_back;
@@ -436,11 +436,11 @@ WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
     }
 }
 
-LONG GUISetControlStyle( gui_control_info *info )
+LONG GUISetControlStyle( gui_control_info *ctl_info )
 {
     LONG        ret_style;
 
-    ret_style = GUIControls[info->control_class].style;
+    ret_style = GUIControls[ctl_info->control_class].style;
 
     /* The GUI library has a group marked by GUI_GROUP on the first and
      * last group item.  Windows has the WS_GROUP style mark the start
@@ -449,96 +449,96 @@ LONG GUISetControlStyle( gui_control_info *info )
      * everything is in a group of one, except GUI_GROUPs, which are
      * grouped properly.
      */
-    if( !( info->scroll & GUI_CONTROL_INIT_INVISIBLE ) ) {
+    if( !( ctl_info->scroll & GUI_CONTROL_INIT_INVISIBLE ) ) {
         ret_style |= WS_VISIBLE;
     }
 #ifndef __OS2_PM__
-    if( info->scroll & GUI_VSCROLL ) {
+    if( ctl_info->scroll & GUI_VSCROLL ) {
         ret_style |= WS_VSCROLL;
     }
-    if( info->scroll & GUI_HSCROLL ) {
+    if( ctl_info->scroll & GUI_HSCROLL ) {
         ret_style |= WS_HSCROLL;
     }
 #endif
-    if( info->style & GUI_EDIT_INVISIBLE ) {
+    if( ctl_info->style & GUI_EDIT_INVISIBLE ) {
 #ifndef __OS2_PM__
         ret_style |= ES_PASSWORD;
 #else
         ret_style |= ES_UNREADABLE;
 #endif
     }
-    if( info->style & GUI_CONTROL_LEFTNOWORDWRAP ) {
+    if( ctl_info->style & GUI_CONTROL_LEFTNOWORDWRAP ) {
         ret_style |= SS_LEFTNOWORDWRAP;
     }
-    if( info->style & GUI_CONTROL_CENTRE ) {
+    if( ctl_info->style & GUI_CONTROL_CENTRE ) {
         ret_style |= SS_CENTER;
     }
-    if( info->style & GUI_CONTROL_NOPREFIX ) {
+    if( ctl_info->style & GUI_CONTROL_NOPREFIX ) {
 #ifndef __OS2_PM__
         ret_style |= SS_NOPREFIX;
 #else
         ret_style &= ~DT_MNEMONIC;
 #endif
     }
-    if( info->style & GUI_CONTROL_MULTILINE ) {
+    if( ctl_info->style & GUI_CONTROL_MULTILINE ) {
         ret_style |= ES_MULTILINE;
     }
-    if( info->style & GUI_CONTROL_WANTRETURN ) {
+    if( ctl_info->style & GUI_CONTROL_WANTRETURN ) {
         ret_style |= ES_WANTRETURN;
     }
-    if( info->style & GUI_CONTROL_3STATE ) {
+    if( ctl_info->style & GUI_CONTROL_3STATE ) {
         ret_style |= BS_3STATE;
     }
-    if( info->style & GUI_TAB_GROUP ) {
+    if( ctl_info->style & GUI_TAB_GROUP ) {
         ret_style |= WS_TABSTOP;
     }
 
-    switch( info->control_class ) {
+    switch( ctl_info->control_class ) {
     case GUI_LISTBOX :
-        if( info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
+        if( ctl_info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= LBS_NOINTEGRALHEIGHT;
         }
-        if( info->style & GUI_CONTROL_SORTED ) {
+        if( ctl_info->style & GUI_CONTROL_SORTED ) {
             ret_style |= LBS_SORT;
         }
 #ifndef __OS2_PM__
-        if( info->style & GUI_CONTROL_WANTKEYINPUT ) {
+        if( ctl_info->style & GUI_CONTROL_WANTKEYINPUT ) {
             ret_style |= LBS_WANTKEYBOARDINPUT;
         }
 #endif
 #ifdef __OS2_PM__
-        if( info->scroll & GUI_HSCROLL ) {
+        if( ctl_info->scroll & GUI_HSCROLL ) {
             ret_style |= LS_HORZSCROLL;
         }
 #endif
         break;
     case GUI_COMBOBOX :
     case GUI_EDIT_COMBOBOX :
-        if( info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
+        if( ctl_info->style & GUI_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= CBS_NOINTEGRALHEIGHT;
         }
-        if( info->style & GUI_CONTROL_SORTED ) {
+        if( ctl_info->style & GUI_CONTROL_SORTED ) {
             ret_style |= CBS_SORT;
         }
         break;
 #ifdef __OS2_PM__
     case GUI_EDIT:
-        if( info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_CONTROL_READONLY ) {
             ret_style |= ES_READONLY;
         }
         break;
     case GUI_EDIT_MLE:
-        if( info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_CONTROL_READONLY ) {
             ret_style |= MLS_READONLY;
         }
         break;
 #else
     case GUI_EDIT:
     case GUI_EDIT_MLE:
-        if( info->style & GUI_CONTROL_READONLY ) {
+        if( ctl_info->style & GUI_CONTROL_READONLY ) {
             ret_style |= ES_READONLY;
         }
-        if( info->style & GUI_CONTROL_BORDER ) {
+        if( ctl_info->style & GUI_CONTROL_BORDER ) {
             ret_style |= WS_BORDER;
         }
         break;
@@ -548,7 +548,7 @@ LONG GUISetControlStyle( gui_control_info *info )
     return( ret_style );
 }
 
-static HWND CreateControl( gui_control_info *info, gui_window *parent,
+static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
                            gui_coord pos, gui_coord size )
 {
     DWORD       style;
@@ -564,11 +564,11 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
 #endif
 
     pctldata = NULL;
-    new_text = _wpi_menutext2pm( info->text );
+    new_text = _wpi_menutext2pm( ctl_info->text );
 
-    style = GUISetControlStyle( info );
-    if( info->text != NULL ) {
-        switch( info->control_class ) {
+    style = GUISetControlStyle( ctl_info );
+    if( ctl_info->text != NULL ) {
+        switch( ctl_info->control_class ) {
         case GUI_LISTBOX :
             style |= WS_CAPTION;
             break;
@@ -576,7 +576,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
     }
 
 #ifdef __OS2_PM__
-    if( info->control_class == GUI_EDIT ) {
+    if( ctl_info->control_class == GUI_EDIT ) {
         edata.cb = sizeof(ENTRYFDATA);
         edata.cchEditLimit = 2048;
         edata.ichMinSel = 0;
@@ -604,7 +604,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
     if( LOBYTE(LOWORD(GetVersion())) >= 4) {
         /* In W95 and later we don't want this crud any more... RR 2003.12.8 */
 
-        classname = GUIControls[info->control_class].classname;
+        classname = GUIControls[ctl_info->control_class].classname;
         if( lstrcmpi( classname, "Edit" ) == 0 ||
             lstrcmpi( classname, "Listbox" ) == 0 ||
             lstrcmpi( classname, "Combobox" ) == 0 ) {
@@ -612,9 +612,9 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
         }
     }
 
-    hwnd = CreateWindowEx( xstyle, GUIControls[info->control_class].classname,
+    hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
         new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
-        (HMENU)info->id, GUIMainHInst, pctldata );
+        (HMENU)ctl_info->id, GUIMainHInst, pctldata );
 
     /* From here to #else, new by RR 2003.12.05 */
 
@@ -636,10 +636,10 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
         SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, (LPARAM)0 );
     }
 #else
-    _wpi_createanywindow( GUIControls[info->control_class].classname,
+    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
                           new_text, style, pos.x, pos.y, size.x, size.y,
-                          parent->hwnd, (HMENU)info->id, GUIMainHInst,
-                          pctldata, &hwnd, info->id, &hwnd );
+                          parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
+                          pctldata, &hwnd, ctl_info->id, &hwnd );
 #endif
 
     if( new_text ) {
@@ -653,7 +653,7 @@ static HWND CreateControl( gui_control_info *info, gui_window *parent,
  * GUIAddControl - add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
                     gui_colour_set *standout )
 {
     gui_coord           pos;
@@ -664,29 +664,29 @@ bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
 
     plain = plain;
     standout = standout;
-    parent = info->parent;
-    GUICalcLocation( &info->rect, &pos, &size, parent->hwnd );
-    hwnd = CreateControl( info, parent, pos, size );
+    parent = ctl_info->parent;
+    GUICalcLocation( &ctl_info->rect, &pos, &size, parent->hwnd );
+    hwnd = CreateControl( ctl_info, parent, pos, size );
     if( hwnd == NULLHANDLE ) {
         return( false );
     }
-    item = GUIControlInsert( parent, info->control_class, hwnd, info, NULL );
+    item = GUIControlInsert( parent, ctl_info->control_class, hwnd, ctl_info, NULL );
     if( item == NULL ) {
         return( false );
     }
     if( GUIGetCtrlWnd( parent->hwnd ) == NULL ) {
         if( !GUIInsertCtrlWnd( parent ) ) {
-            GUIControlDelete( parent, info->id );
+            GUIControlDelete( parent, ctl_info->id );
             return( false );
         }
     }
     GUIInitControl( item, parent, NULL );
 #ifndef __OS2_PM__
-    if( info->control_class == GUI_DEFPUSH_BUTTON ) {
-        GUISendMessage( parent->hwnd, DM_SETDEFID, info->id, 0 );
+    if( ctl_info->control_class == GUI_DEFPUSH_BUTTON ) {
+        GUISendMessage( parent->hwnd, DM_SETDEFID, ctl_info->id, 0 );
     }
 #endif
-    if( !( info->style & GUI_CONTROL_INIT_INVISIBLE ) ) {
+    if( !( ctl_info->style & GUI_CONTROL_INIT_INVISIBLE ) ) {
         _wpi_showwindow( hwnd, SW_SHOW );
     }
     return( true );

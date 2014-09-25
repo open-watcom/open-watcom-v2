@@ -45,8 +45,7 @@ extern EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row, gui
 extern gui_control *GUIGetControl( gui_window *wnd, unsigned id );
 extern gui_control *GUIGetControlByIndex( gui_window *wnd, int index );
 extern void GUIFreeAllControls( gui_window *wnd );
-extern gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *info,
-                                      int index );
+extern gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index );
 extern void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff );
 
 #endif // _GUICONTR_H_

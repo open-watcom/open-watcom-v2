@@ -43,7 +43,7 @@
  * GUICreateHot -- called by GUIDoAddControl
  */
 
-bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
+bool GUICreateHot( gui_control_info *ctl_info, a_hot_spot_field *hot_spot_field )
 {
     a_hot_spot  *hot_spot;
 
@@ -56,14 +56,14 @@ bool GUICreateHot( gui_control_info *info, a_hot_spot_field *hot_spot_field )
         return( false );
     }
     hot_spot_field->typ = FLD_HOT;
-    if( !GUIStrDup( info->text, &hot_spot->str ) ) {
+    if( !GUIStrDup( ctl_info->text, &hot_spot->str ) ) {
         return( false );
     }
-    hot_spot->event = info->id + GUI_FIRST_USER_EVENT;
+    hot_spot->event = ctl_info->id + GUI_FIRST_USER_EVENT;
     hot_spot->row = hot_spot_field->area.row;
     hot_spot->startcol = hot_spot_field->area.col;
     hot_spot->length = hot_spot_field->area.width;
-    if( info->control_class == GUI_DEFPUSH_BUTTON ) {
+    if( ctl_info->control_class == GUI_DEFPUSH_BUTTON ) {
         hot_spot->flags = HOT_DEFAULT;
     } else {
         hot_spot->flags = (unsigned short)NULL;

@@ -351,7 +351,7 @@ typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, unsigned id, void *param );
 typedef void (PICKCALLBACK)( gui_window *, unsigned id );
 typedef void (PICKDLGOPEN)( char *name, int rows, int cols,
-                             struct gui_control_info *ctl, int num_controls,
+                             struct gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *rtn, void *extra );
 typedef char *(PICKGETTEXT)( void *data_handle, int item );
 
@@ -884,10 +884,10 @@ extern int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN * 
 /* Dialog Functions */
 
 extern bool GUICreateDialog( gui_create_info *dialog, int num_controls,
-                             gui_control_info *controls );
+                             gui_control_info *controls_info );
 extern bool GUICreateSysModalDialog( gui_create_info *dialog,
                                      int num_controls,
-                                     gui_control_info *controls );
+                                     gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dialog, long dlg_id );
 extern bool GUICreateDialogFromRes( int id, gui_window *parent,
                                     GUICALLBACK cb, void *extra );
@@ -895,7 +895,7 @@ extern void GUICloseDialog( gui_window * wnd );
 
 /* Control Functions */
 
-extern bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
+extern bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
                            gui_colour_set *standout );
 extern bool GUIDeleteControl( gui_window *wnd, unsigned id );
 extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect );

@@ -445,41 +445,41 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
 }
 
 static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
-                                  gui_control_info *gci )
+                                  gui_control_info *ctl_info )
 {
     SAREA               area;
     bool                ok;
 
-    ok = ( ctl && gci );
+    ok = ( ctl && ctl_info != NULL );
 
     if( ok ) {
         // initialize the create struct
-        memset( gci, 0, sizeof( gui_control_info ) );
+        memset( ctl_info, 0, sizeof( gui_control_info ) );
 
         // set the control class
-        gci->control_class = GetControlClass( ctl );
-        ok = ( gci->control_class != GUI_BAD_CLASS );
+        ctl_info->control_class = GetControlClass( ctl );
+        ok = ( ctl_info->control_class != GUI_BAD_CLASS );
     }
 
     if( ok ) {
         // set the control style
-        gci->style = GetControlStyles( ctl, gci->control_class );
+        ctl_info->style = GetControlStyles( ctl, ctl_info->control_class );
     }
 
     if( ok ) {
         // set the initial text. NULL is ok
-        gci->text = ResNameOrOrdinalToStr( ctl->Text, 10 );
+        ctl_info->text = ResNameOrOrdinalToStr( ctl->Text, 10 );
 
         // set the control id
-        gci->id = ctl->ID;
+        ctl_info->id = ctl->ID;
 
         // set the scroll styles
-        gci->scroll = GUI_NOSCROLL;
+        ctl_info->scroll = GUI_NOSCROLL;
         if( ctl->Style & WS_HSCROLL ) {
-            gci->scroll = GUI_HSCROLL;
+            ctl_info->scroll = GUI_HSCROLL;
         }
         if( ctl->Style & WS_VSCROLL ) {
-            gci->scroll = GUI_VSCROLL;
+            ctl_info->scroll = GUI_VSCROLL;
         }
 
         // set the control postion
@@ -491,13 +491,13 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
         area.height = ( ( ctl->Size.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
         if( area.height < 1 )
             area.height = 1;
-        ok = GUIScreenToScaleRectR( &area, &gci->rect );
+        ok = GUIScreenToScaleRectR( &area, &ctl_info->rect );
     }
 
     if( !ok ) {
-        if( gci ) {
-            if( gci->text ) {
-                GUIMemFree( gci->text );
+        if( ctl_info != NULL ) {
+            if( ctl_info->text ) {
+                GUIMemFree( ctl_info->text );
             }
         }
     }
@@ -580,13 +580,12 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( gci );
 }
 
-bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
-                             void *extra )
+bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
     gui_create_info     *gui_dlg;
-    gui_control_info    *gui_cntls;
+    gui_control_info    *controls_info;
     uint_8              *data;
     int                 size;
     int                 index;
@@ -597,7 +596,7 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
     cntls = NULL;
     data = NULL;
     gui_dlg = NULL;
-    gui_cntls = NULL;
+    controls_info = NULL;
     size = 0;
 
     ok = ( cb != NULL );
@@ -616,25 +615,24 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
     }
 
     if( ok ) {
-        gui_cntls = (gui_control_info *)
-            GUIMemAlloc( sizeof( gui_control_info ) * hdr->NumOfItems );
-        ok = ( gui_cntls != NULL );
+        controls_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) * hdr->NumOfItems );
+        ok = ( controls_info != NULL );
     }
 
     last_was_radio = -1;
     if( ok ) {
-        memset( gui_cntls, 0, sizeof( gui_control_info ) * hdr->NumOfItems );
+        memset( controls_info, 0, sizeof( gui_control_info ) * hdr->NumOfItems );
         for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            ok = DialogBoxControl2GUI( &cntls[index], &gui_cntls[index] );
+            ok = DialogBoxControl2GUI( &cntls[index], &controls_info[index] );
             if( ok ) {
-                if( gui_cntls[index].control_class == GUI_RADIO_BUTTON ) {
+                if( controls_info[index].control_class == GUI_RADIO_BUTTON ) {
                     if( last_was_radio != 1 ) {
-                        gui_cntls[index].style |= GUI_GROUP;
+                        controls_info[index].style |= GUI_GROUP;
                     }
                     last_was_radio = 1;
                 } else {
                     if( last_was_radio == 1 ) {
-                        gui_cntls[index-1].style |= GUI_GROUP;
+                        controls_info[index - 1].style |= GUI_GROUP;
                     }
                     last_was_radio = 0;
                 }
@@ -646,14 +644,14 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb,
         gui_dlg->parent = parent;
         gui_dlg->call_back = cb;
         gui_dlg->extra = extra;
-        ok = GUICreateDialog( gui_dlg, hdr->NumOfItems, gui_cntls );
+        ok = GUICreateDialog( gui_dlg, hdr->NumOfItems, controls_info );
     }
 
-    if( gui_cntls ) {
+    if( controls_info != NULL ) {
         for( index = 0; ok && index < hdr->NumOfItems; index++ ) {
-            GUIMemFree( gui_cntls[index].text );
+            GUIMemFree( controls_info[index].text );
         }
-        GUIMemFree( gui_cntls );
+        GUIMemFree( controls_info );
     }
 
     if( gui_dlg ) {

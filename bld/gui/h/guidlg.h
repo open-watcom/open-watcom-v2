@@ -138,15 +138,15 @@ enum {
       id }
 
 extern void GUIDlgOpen( char *name, int rows, int cols,
-                       gui_control_info *ctl, int num_controls,
+                       gui_control_info *controls_info, int num_controls,
                        GUICALLBACK *rtn, void *extra );
 
 extern void GUIModalDlgOpen( gui_window *parent, char *name, int rows,
-                             int cols, gui_control_info *ctl,
+                             int cols, gui_control_info *controls_info,
                              int num_controls, GUICALLBACK *rtn, void *extra );
 
 extern void GUISysModalDlgOpen( char *name, int rows, int cols,
-                           gui_control_info *ctl, int num_controls,
+                           gui_control_info *controls_info, int num_controls,
                            GUICALLBACK *rtn, void *extra );
 
 extern unsigned GUIDlgBuffGetText( gui_window *gui, unsigned id,

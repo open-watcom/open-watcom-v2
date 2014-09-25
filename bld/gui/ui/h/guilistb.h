@@ -34,7 +34,7 @@
 #define _GUILISTB_H_
 extern void GUIFreeList( a_list *list, bool free_list );
 extern a_list *GUICreateListBox( void );
-extern a_list *GUICreateEditMLE( char * text );
+extern a_list *GUICreateEditMLE( const char *text );
 extern bool GUIListBoxAddText( a_list *, char *, int choice );
 extern bool GUIListBoxAddTextList( a_list *, int items, void *data_handle, PICKGETTEXT *getstring );
 extern bool GUIListBoxDeleteItem( a_list *list, int choice );

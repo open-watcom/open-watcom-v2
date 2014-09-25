@@ -37,8 +37,8 @@
  * GUIAddControl
  */
 
-bool GUIAddControl( gui_control_info *info, gui_colour_set *plain,
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
                     gui_colour_set *standout )
 {
-    return( GUIXAddControl( info, info->parent, plain, standout ) );
+    return( GUIXAddControl( ctl_info, ctl_info->parent, plain, standout ) );
 }

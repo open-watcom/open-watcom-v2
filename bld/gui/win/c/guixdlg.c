@@ -601,7 +601,7 @@ void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
  */
 
 bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
-                       int num_controls, gui_control_info *info_controls,
+                       int num_controls, gui_control_info *controls_info,
                        bool sys, long dlg_id )
 {
     gui_coord           pos, size;
@@ -612,7 +612,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
     char                *text;
     long                style;
     HWND                parent_hwnd;
-    gui_control_info    *control;
+    gui_control_info    *ctl_info;
     bool                got_first_focus;
     bool                in_group;
     LONG                dlg_style;
@@ -665,9 +665,9 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
     for( i = 0; i < num_controls; i++ ) {
         pctldata = NULL;
         pctldatalen = 0;
-        control = &info_controls[i];
+        ctl_info = &controls_info[i];
 #ifdef __OS2_PM__
-        if( control->control_class == GUI_EDIT ) {
+        if( ctl_info->control_class == GUI_EDIT ) {
             edata.cb = sizeof(ENTRYFDATA);
             edata.cchEditLimit = 2048;
             edata.ichMinSel = 0;
@@ -676,29 +676,29 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
             pctldatalen = edata.cb;
         }
 #endif
-        GUIDlgCalcLocation( &control->rect, &pos, &size );
+        GUIDlgCalcLocation( &ctl_info->rect, &pos, &size );
         AdjustToDialogUnits( &pos );
         AdjustToDialogUnits( &size );
-        if( control->text == NULL ) {
+        if( ctl_info->text == NULL ) {
             text = LIT( Empty );
         } else {
-            text = control->text;
+            text = ctl_info->text;
         }
-        style = GUISetControlStyle( control );
+        style = GUISetControlStyle( ctl_info );
         if( !in_group ) {
             style |= WS_GROUP;
         }
         if( style & GUI_GROUP ) {
             in_group = !in_group;
         }
-        new = AddControl( data, pos.x, pos.y, size.x, size.y, control->id,
-                          style, GUIControls[control->control_class].classname,
+        new = AddControl( data, pos.x, pos.y, size.x, size.y, ctl_info->id,
+                          style, GUIControls[ctl_info->control_class].classname,
                           text, (BYTE)pctldatalen, (const char *)pctldata );
         if( new == NULL  ) {
             GlobalFree( data );
             return( false );
         }
-        if( GUIControlInsert( wnd, control->control_class, NULLHANDLE, control, NULL ) == NULL ) {
+        if( GUIControlInsert( wnd, ctl_info->control_class, NULLHANDLE, ctl_info, NULL ) == NULL ) {
             GlobalFree( data );
             return( false );
         }
