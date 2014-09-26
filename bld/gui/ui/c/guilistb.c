@@ -97,8 +97,7 @@ void GUIFreeList( a_list *list, bool free_list )
     char ** data;
 
     if( list->get == NULL ) {
-        list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                        uigetlistelement;
+        list->get = uigetlistelement;
     }
     num = GUIListSize( list );
     data = (char **)list->data;
@@ -186,8 +185,7 @@ static char **ResizeList( a_list *list, unsigned num_to_add, int *choice )
     char        **old_data;
 
     if( list->get == NULL ) {
-        list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                        uigetlistelement;
+        list->get = uigetlistelement;
     }
     num = GUIListSize( list );
     data = (char **)GUIMemAlloc( ( num + num_to_add + 1 ) * sizeof( char * ) );
@@ -292,8 +290,7 @@ bool GUIListCurr( a_list *list, int choice, bool set, int *ret )
     if( set ) {
         /* set */
         if( list->get == NULL ) {
-            list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                            uigetlistelement;
+            list->get = uigetlistelement;
         }
         if( GUIListSize( list ) >= choice ) {
             list->choice = choice;

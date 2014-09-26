@@ -62,6 +62,8 @@ enum {
         FLD_EDIT_MLE
 };
 
+typedef bool (UIPICKGETTEXT)( void *data_handle, unsigned item, char *buf, unsigned buflen );
+
 typedef struct an_edit_control {
         char            *buffer;
         unsigned        length;
@@ -104,7 +106,7 @@ typedef struct a_toggle {
 typedef struct a_list {
         unsigned        choice;
         void            *data;
-        bool            (*get)( void *, unsigned, char *, unsigned );
+        UIPICKGETTEXT   *get;
         a_list_info     *box;
 } a_list;
 
@@ -202,7 +204,7 @@ extern void uipaintlistbox( struct a_list * );
 extern struct a_list_info *uibeglistbox( struct vscreen *, struct sarea *,
                                          struct a_list * );
 extern unsigned uilistsize( struct a_list * );
-extern bool uigetlistelement( char **, unsigned, char *, unsigned );
+extern UIPICKGETTEXT uigetlistelement;
 extern void uiupdatelistbox( struct a_list * );
 extern void uiupdatecombobox( struct a_combo_box * );
 extern void *openstream(char *,char *,char **);

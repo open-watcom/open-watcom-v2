@@ -43,15 +43,17 @@ static bool Dclick =    FALSE;    // TRUE between DCLICK and MOUSE_RELEASE
 
 enum    { R_UP, R_DOWN, R_UNS, R_SEL };
 
-bool uigetlistelement( char **p, unsigned i, char *s, unsigned l )
+bool uigetlistelement( void *data_handle, unsigned item, char *s, unsigned l )
 {
-    if( p == NULL ) {
+    char **p;
+
+    if( data_handle == NULL ) {
         return( FALSE );
     }
-    if( *( p + i ) != NULL && *p != NULL ) {
-//    if( *( p + i ) != NULL ) {
+    p = (char **)data_handle;
+    if( p[item] != NULL && p[0] != NULL ) {
         if( l > 0 ) {
-            strncpy( s, *( p + i ), l );
+            strncpy( s, p[item], l );
         }
         return( TRUE );
     } else {
@@ -187,14 +189,13 @@ void uiboxpoplist( void )
     uipoplist();
 }
 
-static unsigned getlistsize( void *data, bool (*get)( void *, unsigned, char *,
-                            unsigned ) )
+static unsigned getlistsize( void *data, UIPICKGETTEXT *get )
 {
-    unsigned    i;
+    unsigned    item;
 
-    for( i = 0; (*get)( data, i, NULL, 0 ) != FALSE; i++ );
+    for( item = 0; (*get)( data, item, NULL, 0 ) != FALSE; item++ );
 
-    return( i );
+    return( item );
 }
 
 unsigned uilistsize( a_list *list )
@@ -207,7 +208,7 @@ unsigned uilistsize( a_list *list )
 
 void uimovelistbox( a_list *list, int row_diff, int col_diff )
 {
-    if( list ->box != NULL ) {
+    if( list->box != NULL ) {
         uivmove( list->box->vs, list->box->vs->area.row + row_diff,
                  list->box->vs->area.col + col_diff );
     }
@@ -223,8 +224,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
         return( NULL );
     }
     if( list->get == NULL ) {
-        list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                        uigetlistelement;
+        list->get = uigetlistelement;
     }
 
     box->vs     = vs;

@@ -229,8 +229,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
             length = 0;
         }
         if( list->get == NULL ) {
-            list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                            uigetlistelement;
+            list->get = uigetlistelement;
         }
         if( list->box == NULL  &&  combo->perm == TRUE ) {
             c_area = *area;
@@ -252,8 +251,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
                     UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
         ctrlbuf[0] = '\0';
         if( list->get == NULL ) {
-            list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                                uigetlistelement;
+            list->get = uigetlistelement;
         }
         (*list->get)( list->data, list->choice, ctrlbuf, area->width );
         length = area->width;
@@ -655,8 +653,7 @@ EVENT   pulldownfilter( EVENT ev, a_dialog *info )
         list = &combo->list;
     }
     if( list->get == NULL ) {
-        list->get = ( bool (*) ( void *, unsigned, char *, unsigned ) )
-                        uigetlistelement;       // set get_element function
+        list->get = uigetlistelement;       // set get_element function
     }
     switch( ev ) {
     case EV_MOUSE_DCLICK:
