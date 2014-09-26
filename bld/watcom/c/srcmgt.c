@@ -93,7 +93,7 @@ void FClearOpenSourceCache( void )
     }
 }
 
-browser *FOpenSource( char *name, sm_mod_handle mod, sm_cue_fileid id )
+browser *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id )
 {
     sm_file_handle      fp;
     browser             *hndl;

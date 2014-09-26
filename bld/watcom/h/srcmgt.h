@@ -31,7 +31,7 @@
 
 struct browser;
 
-extern struct browser   *FOpenSource( char *name, sm_mod_handle mod, sm_cue_fileid id );
+extern struct browser   *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id );
 extern void             FDoneSource( struct browser * );
 extern unsigned long    FSize( struct browser * );
 extern unsigned long    FLastOffset( struct browser * );
