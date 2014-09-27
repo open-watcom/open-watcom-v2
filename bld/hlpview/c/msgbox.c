@@ -61,7 +61,7 @@ void ShowMsgBox( char *caption, char *msg )
 
     uipushlist( NULL );     /* modal barrier */
     uipushlist( events );
-    helpMsgBox[0].ptr = msg;
+    helpMsgBox[0].u.str = msg;
     msgbox = uibegdialog( caption, helpMsgBox, 5, 50, 0, 0 );
     while( !done ) {
         event = uidialog( msgbox );

@@ -222,14 +222,14 @@ bool GUIEnableMDIMenus( bool enable )
     return( false );
 }
 
-void InitMDI( gui_window *wnd, gui_create_info *info )
+void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
 {
     gui_window  *root;
 
     root = GUIGetRootWindow();
-    AddMenu( wnd, info->parent, info->num_menus, info->menu );
+    AddMenu( wnd, dlg_info->parent, dlg_info->num_menus, dlg_info->menu );
     if( GUIXInitMDI( wnd ) ) {
-        if( info->parent && ( GUIGetParentWindow(info->parent) != NULL ) ) {
+        if( dlg_info->parent && ( GUIGetParentWindow( dlg_info->parent ) != NULL ) ) {
             return;
         }
         if( CurrMDIWindow != -1 ) {

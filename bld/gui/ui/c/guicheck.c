@@ -49,13 +49,13 @@ unsigned GUIIsChecked( gui_window *wnd, unsigned id )
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_RADIO :
-            radio = ( a_radio *)field->ptr;
+            radio = field->u.radio;
             if( radio->group->value == ( GUI_FIRST_USER_EVENT + id ) ) {
                 ret = GUI_CHECKED;
             }
             break;
         case FLD_CHECK :
-            check = ( a_check *)field->ptr;
+            check = field->u.check;
             if( _checked( check ) ) {
                 ret = GUI_CHECKED;
             }
@@ -87,7 +87,7 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
     }
     switch( field->typ ) {
     case FLD_RADIO :
-        radio = ( a_radio *)field->ptr;
+        radio = field->u.radio;
         prev_radio = radio->group->value - GUI_FIRST_USER_EVENT;
         if( checked ) {
             radio->group->value = GUI_FIRST_USER_EVENT + id;
@@ -99,7 +99,7 @@ bool GUISetChecked( gui_window * wnd, unsigned id, unsigned checked )
         GUIRefreshControl( wnd, prev_radio );
         break;
     case FLD_CHECK :
-        check = ( a_check *)field->ptr;
+        check = field->u.check;
         check->val = checked;
         break;
     default :

@@ -37,36 +37,36 @@
 #include "uivedit.h"
 #include "uiledit.h"
 
-typedef unsigned        a_field_type;
+typedef enum {
+    HOT_CHAR    = 0x00ff,
+    HOT_DEFAULT = 0x0100,
+    HOT_CURRENT = 0x0200,
+    HOT_ACTIVE  = 0x0400,
+    HOT_HIDDEN  = 0x0800,
+    HOT_NO_KEY  = 0x1000,
+} a_hot_spot_flags;
 
-#define HOT_NO_KEY      0x1000
-#define HOT_HIDDEN      0x0800
-#define HOT_ACTIVE      0x0400
-#define HOT_CURRENT     0x0200
-#define HOT_DEFAULT     0x0100
-#define HOT_CHAR        0x00ff
-
-enum {
-        FLD_VOID,
-        FLD_FRAME,
-        FLD_LABEL,
-        FLD_TEXT,          /* background text      * must be */
-        FLD_HOT,           /* hot spot             * first   */
-        FLD_EDIT,
-        FLD_INVISIBLE_EDIT,
-        FLD_LISTBOX,
-        FLD_PULLDOWN,
-        FLD_COMBOBOX,
-        FLD_CHECK,
-        FLD_RADIO,
-        FLD_EDIT_MLE
-};
+typedef enum {
+    FLD_VOID,
+    FLD_FRAME,
+    FLD_LABEL,
+    FLD_TEXT,          /* background text      * must be */
+    FLD_HOT,           /* hot spot             * first   */
+    FLD_EDIT,
+    FLD_INVISIBLE_EDIT,
+    FLD_LISTBOX,
+    FLD_PULLDOWN,
+    FLD_COMBOBOX,
+    FLD_CHECK,
+    FLD_RADIO,
+    FLD_EDIT_MLE
+} a_field_type;
 
 typedef bool (UIPICKGETTEXT)( void *data_handle, unsigned item, char *buf, unsigned buflen );
 
 typedef struct an_edit_control {
-        char            *buffer;
-        unsigned        length;
+    char            *buffer;
+    unsigned        length;
 } an_edit_control;
 
 typedef struct a_list_info {
@@ -79,129 +79,133 @@ typedef struct a_list_info {
 } a_list_info;
 
 typedef struct a_choice {
-        unsigned        choice;
-        unsigned        num_choices;
+    unsigned        choice;
+    unsigned        num_choices;
 } a_choice;
 
 typedef struct a_num_field {          /* display is choice+diff */
-        a_choice        c;
-        int             diff;
-        char            *special;     /* non numeric displayed for choice==0 */
+    a_choice        c;
+    int             diff;
+    char            *special;     /* non numeric displayed for choice==0 */
 } a_num_field;
 
 typedef struct a_hot_spot {
-        char            *str;
-        EVENT           event;
-        int             row;
-        int             startcol;
-        int             length;
-        unsigned short  flags;
+    char                *str;
+    EVENT               event;
+    int                 row;
+    int                 startcol;
+    int                 length;
+    a_hot_spot_flags    flags;
 } a_hot_spot;
 
 typedef struct a_toggle {
-        a_choice        c;
-        char            **strings;
+    a_choice        c;
+    char            **strings;
 } a_toggle;
 
 typedef struct a_list {
-        unsigned        choice;
-        void            *data;
-        UIPICKGETTEXT   *get;
-        a_list_info     *box;
+    unsigned        choice;
+    void            *data;
+    UIPICKGETTEXT   *get;
+    a_list_info     *box;
 } a_list;
 
 typedef struct a_check {
-        unsigned    char    val;
-        unsigned    char    def;
-        char                *str;   // without button
-        char                hotkey; // will be set by UI
+    unsigned char   val;
+    unsigned char   def;
+    char            *str;   // without button
+    char            hotkey; // will be set by UI
 } a_check;
 
 typedef struct a_combo_box {
-        a_list              list;
-        an_edit_control     edit;
-        int                 perm;   // bool : permanent combo-box ?
+    a_list          list;
+    an_edit_control edit;
+    int             perm;   // bool : permanent combo-box ?
 } a_combo_box;
 
 #define _checked( a ) ( !( a->val == a->def ) )
 
 typedef struct a_radio_group {
-        unsigned value;
-        char     *caption;      // used for printing and reading
-        unsigned def;           // default value (used as above)
+    unsigned        value;
+    char            *caption;      // used for printing and reading
+    unsigned        def;           // default value (used as above)
 } a_radio_group;
 
 typedef struct a_radio {
-        unsigned      value;
-        char          *str;        // without button
-        a_radio_group *group;
-        char          hotkey;      // will be set by UI
+    unsigned        value;
+    char            *str;        // without button
+    a_radio_group   *group;
+    char            hotkey;      // will be set by UI
 } a_radio;
 
 typedef struct vfield {
-        SAREA           area;
-        a_field_type    typ;
+    SAREA           area;
+    a_field_type    typ;
+    union {
         void            *ptr;
+        char            *str;
+        a_radio         *radio;
+        a_check         *check;
+        a_combo_box     *combo;
+        a_list          *list;
+        an_edit_control *edit;
+        a_hot_spot      *hs;
+    } u;
 } VFIELD;
 
-typedef struct a_hot_spot_field{
-        SAREA           area;
-        a_field_type    typ;
-        a_hot_spot      *ptr;
-}a_hot_spot_field;
-
 typedef struct a_dialog {
-        void            *vs;
-        unsigned        field;
-        VFIELD          *fields;        // pointer to VFIELDs
-        VFIELD          *other;         // prev VFIELD or moused but no tab
-        VFIELD          *curr;          // current VFIELD
-        VFIELD          *first;         // first VFIELD
-        a_ui_edit       *edit_data;
-        unsigned        dirty:1;
-        unsigned        moving:1;
+    VSCREEN         *vs;
+    unsigned        field;
+    VFIELD          *fields;        // pointer to VFIELDs
+    VFIELD          *other;         // prev VFIELD or moused but no tab
+    VFIELD          *curr;          // current VFIELD
+    VFIELD          *first;         // first VFIELD
+    a_ui_edit       *edit_data;
+    unsigned        dirty:1;
+    unsigned        moving:1;
 } a_dialog;
 
 #ifdef __cplusplus
     extern "C" {
 #endif
-extern void uiposnhotspots(struct vscreen *,void *);
-extern void uiprinthotspots(struct vscreen *,void *);
-extern void uioffhotspots(struct vscreen *,void *);
+extern void uiposnhotspots(VSCREEN *,VFIELD *);
+extern void uiprinthotspots(VSCREEN *,VFIELD *);
+extern void uioffhotspots(VSCREEN *,VFIELD *);
 extern int  uihotkeyfilter( a_dialog *, int );
-extern int  uihotspotfilter(struct vscreen *,void *,int );
-extern char uihotspot( struct vscreen *, char *str, SAREA *parea, unsigned short flags );
-extern char uidrawhottext( struct vscreen *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
+extern int  uihotspotfilter(VSCREEN *,VFIELD *,int );
+extern char uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
+extern void uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
+extern char uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
 extern unsigned int ui_split_line(char **,char *,unsigned int );
 extern void *uiinitdialog(char *, ATTR, char **, unsigned int, int, int, int );
 extern void uifinidialog(void *);
 
-extern void *uibegdialog(char *, VFIELD *, ORD, ORD, int, int );
-extern bool uigetdialogarea( struct a_dialog *dialog, SAREA *area );
-extern EVENT uiprocessdialogevent( EVENT, struct a_dialog* );
-extern void uireinitdialog( struct a_dialog *, struct vfield *);
-extern int uidialog(struct a_dialog *);
-extern void uienddialog(struct a_dialog *);
-extern void uifreedialog( a_dialog *info );
-extern void uiprintfield(struct a_dialog *, struct vfield *);
-extern void uimovefield( struct a_dialog *, struct vfield *, int row_diff, int col_diff );
-extern bool uiresizedialog( struct a_dialog *info, SAREA *new_area );
-extern void uiredrawdialog( a_dialog *info );
-extern bool uidialogisdirty( struct a_dialog *);
-extern void uidialogsetdirty( struct a_dialog *, bool );
-extern void uidialogsetcurr( struct a_dialog *, struct vfield *);
-extern void uidialogexitcurr( struct a_dialog * );
-extern void uidialogchangefield( struct a_dialog * );
-extern bool uiisdefaulthotspot( void *, EVENT );
+extern a_dialog *uibegdialog(char *, VFIELD *, ORD, ORD, int, int );
+extern bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area );
+extern EVENT uiprocessdialogevent( EVENT, a_dialog * );
+extern void uireinitdialog( a_dialog *, VFIELD *);
+extern int uidialog(a_dialog *);
+extern void uienddialog(a_dialog *);
+extern void uifreedialog( a_dialog *ui_dlg_info );
+extern void uiprintfield(a_dialog *, VFIELD *);
+extern void uimovefield( a_dialog *, VFIELD *, int row_diff, int col_diff );
+extern bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area );
+extern void uiredrawdialog( a_dialog *ui_dlg_info );
+extern bool uidialogisdirty( a_dialog *);
+extern void uidialogsetdirty( a_dialog *, bool );
+extern void uidialogsetcurr( a_dialog *, VFIELD *);
+extern void uidialogexitcurr( a_dialog * );
+extern void uidialogchangefield( a_dialog * );
+extern bool uiisdefaulthotspot( VFIELD *, EVENT );
 extern int uilistbox( int , struct a_list *, bool );
-extern void uiupdateedit( struct a_dialog *, struct vfield * );
+extern void uiupdateedit( a_dialog *, VFIELD * );
 extern void uiboxpushlist( void );
 extern void uiboxpoplist( void );
 extern void uimovelistbox( struct a_list *, int row_diff, int col_diff );
 extern unsigned uiendlistbox( struct a_list * );
 extern void uipaintlistbox( struct a_list * );
-extern struct a_list_info *uibeglistbox( struct vscreen *, struct sarea *,
+extern struct a_list_info *uibeglistbox( VSCREEN *, struct sarea *,
                                          struct a_list * );
 extern unsigned uilistsize( struct a_list * );
 extern UIPICKGETTEXT uigetlistelement;
@@ -213,11 +217,11 @@ extern void closestream(void *);
 /*
  * functions in uidlgfcn.c
  */
-extern void uioncheckbox( struct a_dialog *, struct vfield * );
-extern void uioffcheckbox( struct a_dialog *, struct vfield * );
-extern void uiselectradio( struct a_dialog *, struct vfield * );
-extern void uiselectlist( struct a_dialog *, struct vfield *, unsigned choice );
-extern void uiselectcombo( struct a_dialog *, struct vfield *, unsigned choice );
+extern void uioncheckbox( a_dialog *, VFIELD * );
+extern void uioffcheckbox( a_dialog *, VFIELD * );
+extern void uiselectradio( a_dialog *, VFIELD * );
+extern void uiselectlist( a_dialog *, VFIELD *, unsigned choice );
+extern void uiselectcombo( a_dialog *, VFIELD *, unsigned choice );
 
 /*
  * functions in uidialcb.c

@@ -635,7 +635,7 @@ extern void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
 
 /* Window Functions */
 
-extern gui_window *GUICreateWindow( gui_create_info *info );
+extern gui_window *GUICreateWindow( gui_create_info *dlg_info );
 extern int GUIGetNumWindowColours( gui_window *wnd );
 extern gui_colour_set *GUIGetWindowColours( gui_window *wnd );
 extern void GUIDestroyWnd( gui_window *wnd );
@@ -883,12 +883,12 @@ extern int GUIDlgPickWithRtn( char *text, PICKCALLBACK *pickinit, PICKDLGOPEN * 
 
 /* Dialog Functions */
 
-extern bool GUICreateDialog( gui_create_info *dialog, int num_controls,
+extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls,
                              gui_control_info *controls_info );
-extern bool GUICreateSysModalDialog( gui_create_info *dialog,
+extern bool GUICreateSysModalDialog( gui_create_info *dlg_info,
                                      int num_controls,
                                      gui_control_info *controls_info );
-extern bool GUICreateResDialog( gui_create_info *dialog, long dlg_id );
+extern bool GUICreateResDialog( gui_create_info *dlg_info, long dlg_id );
 extern bool GUICreateDialogFromRes( int id, gui_window *parent,
                                     GUICALLBACK cb, void *extra );
 extern void GUICloseDialog( gui_window * wnd );

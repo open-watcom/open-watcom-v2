@@ -77,13 +77,13 @@ static  dialog_node     *DialogHead     = NULL;
 
 bool GUIInsertCtrlWnd( gui_window *wnd )
 {
-    dialog_node *node;
+    dialog_node *dlg_node;
 
-    node = (dialog_node *)GUIMemAlloc( sizeof( dialog_node ) );
-    if( node != NULL ) {
-        node->wnd = wnd;
-        node->next = DialogHead;
-        DialogHead = node;
+    dlg_node = (dialog_node *)GUIMemAlloc( sizeof( dialog_node ) );
+    if( dlg_node != NULL ) {
+        dlg_node->wnd = wnd;
+        dlg_node->next = DialogHead;
+        DialogHead = dlg_node;
         return( true );
     }
     return( false );

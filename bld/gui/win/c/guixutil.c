@@ -150,28 +150,28 @@ void GUICalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size,
  *                   create_info information.
  */
 
-bool GUISetupStruct( gui_window *wnd, gui_create_info *info,
+bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
                       gui_coord *pos, gui_coord *size, HWND parent,
                       HMENU *menu )
 {
-    GUICalcLocation( &info->rect, pos, size, parent );
+    GUICalcLocation( &dlg_info->rect, pos, size, parent );
     if( wnd != NULL ) {
         if( !(wnd->flags & IS_DIALOG) ) {
-            wnd->style = info->style;
-            wnd->scroll = info->scroll;
+            wnd->style = dlg_info->style;
+            wnd->scroll = dlg_info->scroll;
         }
-        if( !GUISetColours( wnd, info->num_attrs, info->colours ) ) {
+        if( !GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) ) {
             return( false );
         }
     }
 
-    if( ( ( parent == HWND_DESKTOP ) || ( info->style & GUI_POPUP ) ) &&
+    if( ( ( parent == HWND_DESKTOP ) || ( dlg_info->style & GUI_POPUP ) ) &&
         ( menu != NULL ) ) {
-        if( info->resource_menu ) {
+        if( dlg_info->resource_menu ) {
             *menu =  _wpi_loadmenu( GUIResHInst,
-                                    MAKEINTRESOURCE( info->resource_menu ) );
+                                    MAKEINTRESOURCE( dlg_info->resource_menu ) );
         } else {
-            return( GUICreateMenus( wnd, info->num_menus, info->menu, menu ) );
+            return( GUICreateMenus( wnd, dlg_info->num_menus, dlg_info->menu, menu ) );
         }
     }
 

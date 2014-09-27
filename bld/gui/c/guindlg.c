@@ -163,7 +163,7 @@ static void DlgSetCtlSizes( gui_control_info *control,
     }
 }
 
-static void DlgSetSize( gui_window *parent, gui_create_info *dlg, int rows,
+static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
                         int cols, gui_coord *charuse )
 {
     gui_rect            max_size;
@@ -175,22 +175,22 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg, int rows,
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     GUIGetSystemMetrics( &metrics );
     GUIGetScale( &max_size );
-    dlg->rect.width = (cols+3) * charuse->x + metrics.dialog_top_left_size.x +
+    dlg_info->rect.width = (cols+3) * charuse->x + metrics.dialog_top_left_size.x +
                       metrics.dialog_bottom_right_size.x;
-    dlg->rect.height= rows * charuse->y + metrics.dialog_top_left_size.y +
+    dlg_info->rect.height= rows * charuse->y + metrics.dialog_top_left_size.y +
                       metrics.dialog_bottom_right_size.y + char_ui_adjust;
-    if( dlg->rect.width  > max_size.width ) {
-        dlg->rect.width  = max_size.width;
+    if( dlg_info->rect.width  > max_size.width ) {
+        dlg_info->rect.width  = max_size.width;
     }
-    if( dlg->rect.height > max_size.height ) {
-        dlg->rect.height = max_size.height;
+    if( dlg_info->rect.height > max_size.height ) {
+        dlg_info->rect.height = max_size.height;
     }
-    dlg->rect.x = max_size.x + ( max_size.width - dlg->rect.width ) / 2;
-    dlg->rect.y = max_size.y + ( max_size.height - dlg->rect.height ) / 2;
+    dlg_info->rect.x = max_size.x + ( max_size.width - dlg_info->rect.width ) / 2;
+    dlg_info->rect.y = max_size.y + ( max_size.height - dlg_info->rect.height ) / 2;
     if( parent != NULL ) {
         GUIGetClientRect( parent, &rect );
-        dlg->rect.x -= rect.x;
-        dlg->rect.y -= rect.y;
+        dlg_info->rect.x -= rect.x;
+        dlg_info->rect.y -= rect.y;
     }
 }
 

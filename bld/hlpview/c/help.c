@@ -149,7 +149,7 @@ static a_hot_spot              hotSpots[] = {
 
 #define SEARCH_HOT_SPOT         2
 
-static a_hot_spot_field       hotSpotFields[] = {
+static VFIELD       hotSpotFields[] = {
     {{0}, FLD_HOT, &hotSpots[0] },
     {{0}, FLD_HOT, &hotSpots[2] },
     {{0}, FLD_HOT, &hotSpots[1] },
@@ -276,10 +276,10 @@ static void addSearchButton( bool add )
 {
     if( add ) {
         hotSpotFields[SEARCH_HOT_SPOT].typ = FLD_HOT;
-        hotSpotFields[SEARCH_HOT_SPOT].ptr = &hotSpots[1];
+        hotSpotFields[SEARCH_HOT_SPOT].u.hs = &hotSpots[1];
     } else {
         hotSpotFields[SEARCH_HOT_SPOT].typ = FLD_VOID;
-        hotSpotFields[SEARCH_HOT_SPOT].ptr = NULL;
+        hotSpotFields[SEARCH_HOT_SPOT].u.hs = NULL;
     }
 }
 
@@ -558,12 +558,12 @@ static void nexttopic( char *word )
     a_hstackent         *h;
     unsigned            len;
 
-    len = strlen( word );
     if( word == NULL ) {
-        h = HelpMemAlloc( sizeof( a_hstackent ) + 1 );
+        len = 0;
     } else {
-        h = HelpMemAlloc( sizeof( a_hstackent ) + strlen( word ) );
+        len = strlen( word );
     }
+    h = HelpMemAlloc( sizeof( a_hstackent ) + len );
     if( helpStack != NULL ) {
         helpStack->cur = field_count( helpTab, helpCur );
         helpStack->line = currLine;
@@ -575,10 +575,8 @@ static void nexttopic( char *word )
     strcpy( h->helpfname, curFile );
     if( word != NULL ) {
         strcpy( h->word, word );
-        h->word[strlen( word )] = '\0';
-    } else {
-        h->word[0] = '\0';
     }
+    h->word[len] = '\0';
     helpStack = h;
     free_fields( &helpTab );
 }

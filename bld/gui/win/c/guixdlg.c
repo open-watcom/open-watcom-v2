@@ -600,7 +600,7 @@ void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
  * GUIXCreateDialog -- create a dialog with the specified controls
  */
 
-bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
+bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
                        bool sys, long dlg_id )
 {
@@ -623,16 +623,16 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
 #endif
 
     wnd->flags |= IS_DIALOG;
-    wnd->parent = dialog->parent;
+    wnd->parent = dlg_info->parent;
     wnd->root_pinfo.force_count = NUMBER_OF_FORCED_REPAINTS;
     wnd->hwnd_pinfo.force_count = NUMBER_OF_FORCED_REPAINTS;
 
     parent_hwnd = HWND_DESKTOP;
-    if( dialog->parent != NULL ) {
-        parent_hwnd = dialog->parent->hwnd;
+    if( dlg_info->parent != NULL ) {
+        parent_hwnd = dlg_info->parent->hwnd;
     }
 
-    if( !GUISetupStruct( wnd, dialog, &parent_pos, &size, parent_hwnd, NULL ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, &parent_pos, &size, parent_hwnd, NULL ) ) {
         return( false );
     }
 
@@ -654,7 +654,7 @@ bool GUIXCreateDialog( gui_create_info *dialog, gui_window *wnd,
 
     data = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
-                           LIT( Empty ), LIT( Empty ), dialog->text,
+                           LIT( Empty ), LIT( Empty ), dlg_info->text,
                            PointSize, Font );
     if( data == NULL ) {
         return( false );

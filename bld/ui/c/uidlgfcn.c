@@ -36,32 +36,32 @@
 
 extern void uiupdatelistbox( a_list *list );
 
-extern void uioncheckbox( struct a_dialog * d, struct vfield * v )
+extern void uioncheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    d->dirty = TRUE;
-    ((a_check*)v->ptr)->val = 1;
-    uiprintfield( d, v );
+    ui_dlg_info->dirty = TRUE;
+    v->u.check->val = 1;
+    uiprintfield( ui_dlg_info, v );
 }
 
-extern void uioffcheckbox( struct a_dialog * d, struct vfield * v )
+extern void uioffcheckbox( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    d->dirty = TRUE;
-    ((a_check*)v->ptr)->val = 0;
-    uiprintfield( d, v );
+    ui_dlg_info->dirty = TRUE;
+    v->u.check->val = 0;
+    uiprintfield( ui_dlg_info, v );
 }
 
-extern void uiselectradio( struct a_dialog * d, struct vfield * v )
+extern void uiselectradio( a_dialog *ui_dlg_info, VFIELD * v )
 {
-    unsigned newval = ((a_radio*)v->ptr)->value;
-    unsigned* oldval = &((a_radio*)v->ptr)->group->value;
-    VFIELD * oldradio = NULL;
-    VFIELD * tmp = d->fields;
+    unsigned newval = v->u.radio->value;
+    unsigned *oldval = &v->u.radio->group->value;
+    VFIELD *oldradio = NULL;
+    VFIELD *tmp = ui_dlg_info->fields;
     if( newval == *oldval ) return; // nothing to do
 
-    d->dirty = TRUE;
-    while( tmp->ptr != NULL ) {
+    ui_dlg_info->dirty = TRUE;
+    while( tmp->u.radio != NULL ) {
         if( tmp->typ == FLD_RADIO ) {
-            if( ((a_radio*)tmp->ptr)->value == *oldval ) {
+            if( tmp->u.radio->value == *oldval ) {
                 // we have it!
                 oldradio = tmp;
                 break;
@@ -72,26 +72,26 @@ extern void uiselectradio( struct a_dialog * d, struct vfield * v )
     if( oldradio == NULL ) return; // error!
 
     *oldval = newval;
-    uiprintfield( d, v );
-    uiprintfield( d, oldradio );
+    uiprintfield( ui_dlg_info, v );
+    uiprintfield( ui_dlg_info, oldradio );
 }
 
-extern void uiselectlist( struct a_dialog * d, struct vfield * v, unsigned n )
+extern void uiselectlist( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
-    unsigned* oldchoice = &((a_list*)v->ptr)->choice;
+    unsigned *oldchoice = &v->u.list->choice;
 //    if( *oldchoice == n ) return;
     // This line is commented out because sometimes the selection will not be
     // highlighted, and we change to the same selection.  Result - selection
     // does not get highlighted.
     *oldchoice = n;
-    d->dirty = TRUE;
-    uiprintfield( d, v );
-    uiupdatelistbox( ((a_list*)v->ptr) );
+    ui_dlg_info->dirty = TRUE;
+    uiprintfield( ui_dlg_info, v );
+    uiupdatelistbox( v->u.list );
 }
 
-extern void uiselectcombo( struct a_dialog * d, struct vfield * v, unsigned n )
+extern void uiselectcombo( a_dialog *ui_dlg_info, VFIELD * v, unsigned n )
 {
-    d->dirty = TRUE;
-    ((a_combo_box*)v->ptr)->list.choice = n;
-    uiprintfield( d, v );
+    ui_dlg_info->dirty = TRUE;
+    v->u.combo->list.choice = n;
+    uiprintfield( ui_dlg_info, v );
 }

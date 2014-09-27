@@ -36,14 +36,14 @@
 
 bool GUISetFocus( gui_window * wnd, unsigned id )
 {
-    VFIELD      * field;
-    dialog_node * node;
+    VFIELD      *field;
+    dialog_node *dlg_node;
 
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
-        node = GUIGetDlgByWnd( wnd );
-        if( node != NULL ) {
-            uidialogsetcurr( node->dialog, field );
+        dlg_node = GUIGetDlgByWnd( wnd );
+        if( dlg_node != NULL ) {
+            uidialogsetcurr( dlg_node->ui_dlg_info, field );
             return( true );
         }
     }

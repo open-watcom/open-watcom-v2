@@ -232,35 +232,35 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUISetupStruct - sets up the gui_window structure
  */
 
-bool GUISetupStruct1( gui_window *wnd, gui_create_info *info, bool dialog )
+bool GUISetupStruct1( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
-    wnd->style = info->style;
+    wnd->style = dlg_info->style;
     if( !dialog ) {
-        if( !GUICreateMenus( wnd, info ) ) {
+        if( !GUICreateMenus( wnd, dlg_info ) ) {
             return( false );
         }
     }
     return( true );
 }
 
-bool GUISetupStruct2( gui_window *wnd, gui_create_info *info, bool dialog )
+bool GUISetupStruct2( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
-    if( !GUIJustSetWindowText( wnd, info->text ) ) {
+    if( !GUIJustSetWindowText( wnd, dlg_info->text ) ) {
         return( false );
     }
-    if( !GUISetArea( &wnd->screen.area, &info->rect, info->parent, true, dialog ) ) {
+    if( !GUISetArea( &wnd->screen.area, &dlg_info->rect, dlg_info->parent, true, dialog ) ) {
         return( false );
     }
     GUISetUseWnd( wnd );
-    if( info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll & GUI_VSCROLL ) {
         if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
-                           wnd->use.height, &wnd->vgadget, info->scroll ) ) {
+                           wnd->use.height, &wnd->vgadget, dlg_info->scroll ) ) {
             return( false );
         }
     }
-    if( info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll & GUI_HSCROLL ) {
         if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
-                           wnd->use.width, &wnd->hgadget, info->scroll ) ) {
+                           wnd->use.width, &wnd->hgadget, dlg_info->scroll ) ) {
             return( false );
         }
     }
@@ -268,16 +268,16 @@ bool GUISetupStruct2( gui_window *wnd, gui_create_info *info, bool dialog )
         wnd->screen.cursor = C_NORMAL;
         GUISetCursor( wnd );
     }
-    if( !GUISetColours( wnd, info->num_attrs, info->colours ) ) {
+    if( !GUISetColours( wnd, dlg_info->num_attrs, dlg_info->colours ) ) {
         return( false );
     }
     return( true );
 }
 
-bool GUISetupStruct( gui_window *wnd, gui_create_info *info, bool dialog )
+bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 {
-    if( GUISetupStruct1( wnd, info, dialog ) ) {
-        return( GUISetupStruct2( wnd, info, dialog ) );
+    if( GUISetupStruct1( wnd, dlg_info, dialog ) ) {
+        return( GUISetupStruct2( wnd, dlg_info, dialog ) );
     }
     return( false );
 }
@@ -286,7 +286,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *info, bool dialog )
  * GUIXCreateWindow - create a UI window
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info,
                        gui_window *parent )
 {
     if( parent != NULL ) {
@@ -294,29 +294,29 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info,
         parent->child = wnd;
         wnd->parent = parent;
     } else {
-        if( !( info->style & GUI_POPUP ) ) {
+        if( !( dlg_info->style & GUI_POPUP ) ) {
             wnd->flags |= IS_ROOT;
         }
     }
-    if( !GUISetupStruct1( wnd, info, false ) ) {
+    if( !GUISetupStruct1( wnd, dlg_info, false ) ) {
         return( false );
     }
     if( wnd->vbarmenu != NULL ) {
         uimenubar( wnd->vbarmenu );
         GUISetScreen( XMIN, YMIN, XMAX-XMIN, YMAX-YMIN );
     }
-    if( !GUISetupStruct2( wnd, info, false ) ) {
+    if( !GUISetupStruct2( wnd, dlg_info, false ) ) {
         return( false );
     }
     GUIFrontOfList( wnd );
-    GUISetIcon( wnd, info->icon );
+    GUISetIcon( wnd, dlg_info->icon );
     if( uivopen( &wnd->screen ) != NULL ) {
-        if( info->style & GUI_INIT_MAXIMIZED ) {
+        if( dlg_info->style & GUI_INIT_MAXIMIZED ) {
             GUIMaximizeWindow( wnd );
-        } else if( info->style & GUI_INIT_MINIMIZED ) {
+        } else if( dlg_info->style & GUI_INIT_MINIMIZED ) {
             GUIMinimizeWindow( wnd );
         }
-        if( info->style & GUI_INIT_INVISIBLE ) {
+        if( dlg_info->style & GUI_INIT_INVISIBLE ) {
             uivhide( &wnd->screen );
         }
         if( wnd->vgadget != NULL ) {

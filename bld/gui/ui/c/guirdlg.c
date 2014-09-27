@@ -153,6 +153,7 @@ static ResNameOrOrdinal *Data2NameOrOrdinal( uint_8 **data )
 
     data8 = (uint_8 *)(*data);
 
+    stringlen = 0;
     len = sizeof(ResNameOrOrdinal);
     if( *data8 != 0xff ) {
         stringlen = strlen( (char *)data8 ) + 1;
@@ -507,7 +508,7 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
 
 static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 {
-    gui_create_info     *gci;
+    gui_create_info     *dlg_info;
     SAREA               area;
     SAREA               bounding;
     bool                ok;
@@ -515,16 +516,16 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     ok = ( hdr != NULL );
 
     if( ok ) {
-        gci = (gui_create_info *)GUIMemAlloc( sizeof( gui_create_info ) );
-        ok = ( gci != NULL );
+        dlg_info = (gui_create_info *)GUIMemAlloc( sizeof( gui_create_info ) );
+        ok = ( dlg_info != NULL );
     }
 
     if( ok ) {
         // initialize the create struct
-        memset( gci, 0, sizeof( gui_create_info ) );
+        memset( dlg_info, 0, sizeof( gui_create_info ) );
 
         // set the initial text
-        gci->text = hdr->Caption; // NULL text is ok
+        dlg_info->text = hdr->Caption; // NULL text is ok
 
         // set the dialog postion remembering to add the size of the frame
         GUIGetScreenArea( &bounding );
@@ -536,55 +537,55 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
         area.col = 0;
         if( bounding.width > area.width )
             area.col = ( bounding.width - area.width ) / 2;
-        ok = GUIScreenToScaleRect( &area, &gci->rect );
+        ok = GUIScreenToScaleRect( &area, &dlg_info->rect );
     }
 
     if( ok ) {
         // set the scroll styles
-        gci->scroll = GUI_NOSCROLL;
+        dlg_info->scroll = GUI_NOSCROLL;
         if( hdr->Style & WS_HSCROLL ) {
-            gci->scroll = GUI_HSCROLL;
+            dlg_info->scroll = GUI_HSCROLL;
         }
         if( hdr->Style & WS_VSCROLL ) {
-            gci->scroll = GUI_VSCROLL;
+            dlg_info->scroll = GUI_VSCROLL;
         }
         // set the window styles
-        gci->style = GUI_NONE;
+        dlg_info->style = GUI_NONE;
         if( hdr->Style & WS_THICKFRAME ) {
-            gci->style = GUI_RESIZEABLE;
+            dlg_info->style = GUI_RESIZEABLE;
         }
         if( hdr->Style & WS_THICKFRAME ) {
-            gci->style = GUI_RESIZEABLE;
+            dlg_info->style = GUI_RESIZEABLE;
         }
         if( hdr->Style & WS_MINIMIZEBOX ) {
-            gci->style = GUI_MINIMIZE;
+            dlg_info->style = GUI_MINIMIZE;
         }
         if( hdr->Style & WS_MAXIMIZEBOX ) {
-            gci->style = GUI_MAXIMIZE;
+            dlg_info->style = GUI_MAXIMIZE;
         }
         if( hdr->Style & WS_SYSMENU ) {
-            gci->style = GUI_SYSTEM_MENU;
+            dlg_info->style = GUI_SYSTEM_MENU;
         }
         if( hdr->Style & WS_POPUP ) {
-            gci->style = GUI_POPUP;
+            dlg_info->style = GUI_POPUP;
         }
     }
 
     if( !ok ) {
-        if( gci ) {
-            GUIMemFree( gci );
-            gci = NULL;
+        if( dlg_info != NULL ) {
+            GUIMemFree( dlg_info );
+            dlg_info = NULL;
         }
     }
 
-    return( gci );
+    return( dlg_info );
 }
 
 bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
-    gui_create_info     *gui_dlg;
+    gui_create_info     *dlg_info;
     gui_control_info    *controls_info;
     uint_8              *data;
     int                 size;
@@ -595,7 +596,7 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *e
     hdr = NULL;
     cntls = NULL;
     data = NULL;
-    gui_dlg = NULL;
+    dlg_info = NULL;
     controls_info = NULL;
     size = 0;
 
@@ -610,8 +611,8 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *e
     }
 
     if( ok ) {
-        gui_dlg = DialogBoxHeader2GUI( hdr );
-        ok = ( gui_dlg != NULL );
+        dlg_info = DialogBoxHeader2GUI( hdr );
+        ok = ( dlg_info != NULL );
     }
 
     if( ok ) {
@@ -641,10 +642,10 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *e
     }
 
     if( ok ) {
-        gui_dlg->parent = parent;
-        gui_dlg->call_back = cb;
-        gui_dlg->extra = extra;
-        ok = GUICreateDialog( gui_dlg, hdr->NumOfItems, controls_info );
+        dlg_info->parent = parent;
+        dlg_info->call_back = cb;
+        dlg_info->extra = extra;
+        ok = GUICreateDialog( dlg_info, hdr->NumOfItems, controls_info );
     }
 
     if( controls_info != NULL ) {
@@ -654,8 +655,8 @@ bool GUICreateDialogFromRes( int id, gui_window *parent, GUICALLBACK cb, void *e
         GUIMemFree( controls_info );
     }
 
-    if( gui_dlg ) {
-        GUIMemFree( gui_dlg );
+    if( dlg_info ) {
+        GUIMemFree( dlg_info );
     }
 
     if( cntls ) {

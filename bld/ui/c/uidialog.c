@@ -46,7 +46,7 @@
 
 typedef EVENT           an_event;
 
-static bool exit_field( a_dialog *info, VFIELD *field )
+static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
 {
     bool                flag;
     an_edit_control     *edit;
@@ -58,50 +58,50 @@ static bool exit_field( a_dialog *info, VFIELD *field )
         switch( field->typ ) {
         case FLD_EDIT :
         case FLD_INVISIBLE_EDIT:
-            if( info->edit_data != NULL ) {
-                edit = field->ptr;
+            if( ui_dlg_info->edit_data != NULL ) {
+                edit = field->u.edit;
                 if( uieditisdirty() ) {
                     flag = TRUE;
                 }
-                uiedittrim( info->edit_data->edit_buffer );
-                edit->buffer = info->edit_data->edit_buffer;
-                edit->length = info->edit_data->edit_eline.length;
+                uiedittrim( ui_dlg_info->edit_data->edit_buffer );
+                edit->buffer = ui_dlg_info->edit_data->edit_buffer;
+                edit->length = ui_dlg_info->edit_data->edit_eline.length;
                 uiendedit();
-                info->edit_data = NULL;
+                ui_dlg_info->edit_data = NULL;
             }
-            uinocursor( info->vs );
+            uinocursor( ui_dlg_info->vs );
             break;
         case FLD_COMBOBOX :
-            combo = field->ptr;
+            combo = field->u.combo;
             list = &combo->list;
             edit = &combo->edit;
 
             if( !combo->perm ) {
                 uiendlistbox( list );           // Shut down listbox
             }
-            if( info->edit_data != NULL ) {
+            if( ui_dlg_info->edit_data != NULL ) {
                 if( uieditisdirty() ) {
                     flag = TRUE;
                 }
-                uiedittrim( info->edit_data->edit_buffer );
-                edit->buffer = info->edit_data->edit_buffer;
-                edit->length = info->edit_data->edit_eline.length;
+                uiedittrim( ui_dlg_info->edit_data->edit_buffer );
+                edit->buffer = ui_dlg_info->edit_data->edit_buffer;
+                edit->length = ui_dlg_info->edit_data->edit_eline.length;
                 uiendedit();
-                info->edit_data = NULL;
+                ui_dlg_info->edit_data = NULL;
             }
-            uinocursor( info->vs );
+            uinocursor( ui_dlg_info->vs );
             break;
         case FLD_PULLDOWN :
-            list = field->ptr;
+            list = field->u.list;
             uiendlistbox( list );
             break;
         case FLD_LISTBOX :
-            list = field->ptr;
+            list = field->u.list;
             list->box->attr = ATTR_EDIT;
             uipaintlistbox( list );
             break;
         case FLD_EDIT_MLE :
-            list = field->ptr;
+            list = field->u.list;
             list->box->attr = ATTR_NORMAL;
             uipaintlistbox( list );
             break;
@@ -120,7 +120,7 @@ static bool radiooff( VFIELD *fld )
     a_radio             *r;
 
     if( fld->typ == FLD_RADIO ) {
-        r = fld->ptr;
+        r = fld->u.radio;
         if( r->value != r->group->value ) {
             return( TRUE );
         }
@@ -151,14 +151,14 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
     a_radio             *radio = NULL;
     a_list              *list;
     a_combo_box         *combo;
-    a_hot_spot          *hotspot;
     an_edit_control     *edit;
     VSCREEN             *c_vs;
     SAREA               c_area;
     bool                use_hottext;
     char                hotkey;
 
-    if( field == NULL ) return;
+    if( field == NULL )
+        return;
     area = &field->area;
     str = NULL;
     use_hottext = FALSE;
@@ -168,31 +168,29 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
 
     switch( field->typ ) {
     case FLD_HOT :
-        hotspot = field->ptr;
         if( current ) {
-            hotspot->flags |= HOT_CURRENT ;
+            field->u.hs->flags |= HOT_CURRENT ;
         } else {
-            hotspot->flags &= (~HOT_CURRENT);
+            field->u.hs->flags &= (~HOT_CURRENT);
         }
-        hotspot->flags |= uihotspot( vs, hotspot->str,
-                            &field->area, hotspot->flags );
-        return;                     // don't want to print anything
+        uidisplayhotspot( vs, field );
+        return;
     case FLD_TEXT :
         attr = UIData->attrs[ ATTR_NORMAL ];
-        str  = field->ptr;
+        str  = field->u.str;
         break;
     case FLD_LABEL :
         attr = UIData->attrs[ ATTR_NORMAL ];
-        strcpy( ctrlbuf, (char *)field->ptr );
+        strcpy( ctrlbuf, field->u.str );
         strcat( ctrlbuf, ":" );
         length = area->width;
         break;
     case FLD_FRAME :
-        uidrawbox( vs, area, UIData->attrs[ ATTR_NORMAL ], field->ptr );
+        uidrawbox( vs, area, UIData->attrs[ ATTR_NORMAL ], field->u.str );
         return;
     case FLD_EDIT :
     case FLD_INVISIBLE_EDIT :
-        edit = field->ptr;
+        edit = field->u.edit;
         if( edit->buffer != NULL ) {
             length = edit->length;
             if( length > CTRL_BUF_LEN )
@@ -210,7 +208,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         }
         break;
     case FLD_COMBOBOX :
-        combo = field->ptr;
+        combo = field->u.combo;
         edit  = &combo->edit;
         list  = &combo->list;
 
@@ -245,7 +243,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         }
         break;
     case FLD_PULLDOWN :
-        list = field->ptr;
+        list = field->u.list;
         ctrlbuf[0] = UiGChar[ UI_ARROW_DOWN ];  /* JBS was 25 */
         uivtextput( vs, area->row, area->col + area->width,
                     UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
@@ -258,7 +256,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         break;
     case FLD_LISTBOX:
     case FLD_EDIT_MLE:
-        list = field->ptr;
+        list = field->u.list;
         if( list->box == NULL ) {
             c_area = *area;
             c_area.row += ((VSCREEN *)vs)->area.row;
@@ -274,7 +272,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         return;
     case FLD_CHECK:
         attr = UIData->attrs[ current ? ATTR_CURR_EDIT : ATTR_NORMAL ];
-        check = field->ptr;
+        check = field->u.check;
 
         ctrlbuf[0] = UiGChar[ UI_CHECKBOX_LEFT ];
         if( _checked( check ) ) {
@@ -291,7 +289,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
         break;
     case FLD_RADIO:
         attr = UIData->attrs[ current ? ATTR_CURR_EDIT : ATTR_NORMAL ];
-        radio = field->ptr;
+        radio = field->u.radio;
 
         ctrlbuf[0] = UiGChar[ UI_RADIO_LEFT ];
         if( radio->value == radio->group->value ) {
@@ -327,9 +325,9 @@ static void print_field( VSCREEN *vs, VFIELD *field, unsigned current )
     }
 }
 
-void uiprintfield( a_dialog *dialog, VFIELD *field )
+void uiprintfield( a_dialog *ui_dlg_info, VFIELD *field )
 {
-    print_field( dialog->vs, field, field == dialog->curr );
+    print_field( ui_dlg_info->vs, field, field == ui_dlg_info->curr );
 }
 
 static void *makevs( char *heading, int cols, int rows, int cpos, int rpos )
@@ -439,7 +437,7 @@ void uifinidialog( void *vs )
     uiclose( vs );
 }
 
-static void enter_field( a_dialog *info, VFIELD *field )
+static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
 {
     an_edit_control     *edit;
     a_combo_box         *combo;
@@ -454,119 +452,119 @@ static void enter_field( a_dialog *info, VFIELD *field )
     case FLD_INVISIBLE_EDIT :
     case FLD_COMBOBOX :
         if( field->typ == FLD_COMBOBOX ) {
-            combo = field->ptr;
+            combo = field->u.combo;
             edit  = &combo->edit;
         } else {
-            edit = field->ptr;
+            edit = field->u.edit;
         }
-        if( info->edit_data == NULL ) {
-            info->edit_data = uibegedit( info->vs, area.row, area.col, area.width,
+        if( ui_dlg_info->edit_data == NULL ) {
+            ui_dlg_info->edit_data = uibegedit( ui_dlg_info->vs, area.row, area.col, area.width,
                                   UIData->attrs[ ATTR_CURR_EDIT ],
                                   edit->buffer, edit->length, 0, 0, TRUE, 0,
                                   field->typ == FLD_INVISIBLE_EDIT );
         }
         break;
     case FLD_LISTBOX :
-        list = field->ptr;
+        list = field->u.list;
         list->box->attr = ATTR_CURR_EDIT;
         uipaintlistbox( list );
         break;
     case FLD_EDIT_MLE :
-        list = field->ptr;
+        list = field->u.list;
         list->box->attr = ATTR_NORMAL;
         uipaintlistbox( list );
         break;
     }
 }
 
-void uireinitdialog( a_dialog *info, VFIELD *fields )
+void uireinitdialog( a_dialog *ui_dlg_info, VFIELD *fields )
 {
     unsigned            i;
 
-    uiposnhotspots( info->vs, fields );
-    info->dirty = FALSE;
-    info->first = NULL;
-    info->other = NULL;
-    info->fields = fields;
+    uiposnhotspots( ui_dlg_info->vs, fields );
+    ui_dlg_info->dirty = FALSE;
+    ui_dlg_info->first = NULL;
+    ui_dlg_info->other = NULL;
+    ui_dlg_info->fields = fields;
 
-    info->first = &fields[0];
+    ui_dlg_info->first = &fields[0];
     /* set first to be first field in tab sequence */
-    while( notintab( info->first ) ) {
-        if( info->first->typ == FLD_VOID ) {
-            info->first = NULL;
+    while( notintab( ui_dlg_info->first ) ) {
+        if( ui_dlg_info->first->typ == FLD_VOID ) {
+            ui_dlg_info->first = NULL;
             break;
         }
-        ++(info->first);
+        ++(ui_dlg_info->first);
     }
-    info->curr = info->first;
-    if( info->first != NULL ) {
+    ui_dlg_info->curr = ui_dlg_info->first;
+    if( ui_dlg_info->first != NULL ) {
         /* set curr to first field in tab sequence not an unset radio button */
-        while( radiooff( info->curr ) ) {
-            info->curr = nextfield( info->curr );
+        while( radiooff( ui_dlg_info->curr ) ) {
+            ui_dlg_info->curr = nextfield( ui_dlg_info->curr );
         }
     }
 
     for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
-        print_field( info->vs, &fields[i], &fields[i] == info->curr );
+        print_field( ui_dlg_info->vs, &fields[i], &fields[i] == ui_dlg_info->curr );
     }
-    enter_field( info, info->curr );
+    enter_field( ui_dlg_info, ui_dlg_info->curr );
 }
 
-bool uigetdialogarea( a_dialog *dialog, SAREA *area )
+bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area )
 {
     VSCREEN     *vs;
 
-    if( dialog != NULL && area != NULL ) {
-        vs = (VSCREEN *)dialog->vs;
+    if( ui_dlg_info != NULL && area != NULL ) {
+        vs = ui_dlg_info->vs;
         *area = vs->area;
         return( TRUE );
     }
     return( FALSE );
 }
 
-void *uibegdialog( char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
+a_dialog *uibegdialog( char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
 {
     char                *lines[1];
-    a_dialog            *info;
+    a_dialog            *ui_dlg_info;
 
     lines[ 0 ] = NULL;
-    info = uicalloc( 1, sizeof( a_dialog ) );
-    if( info == NULL ) {
+    ui_dlg_info = uicalloc( 1, sizeof( a_dialog ) );
+    if( ui_dlg_info == NULL ) {
         return( NULL );
     }
-    info->vs = uiinitdialog( title, UIData->attrs[ ATTR_NORMAL ],
+    ui_dlg_info->vs = uiinitdialog( title, UIData->attrs[ ATTR_NORMAL ],
                            lines, rows, cols, rpos, cpos );
-    uireinitdialog( info, fields );
-    return( info );
+    uireinitdialog( ui_dlg_info, fields );
+    return( ui_dlg_info );
 }
 
-static void do_radio( a_dialog *info, VFIELD *field )
+static void do_radio( a_dialog *ui_dlg_info, VFIELD *field )
 {
     a_radio *cur_radio;
     VFIELD  *fields;
     a_radio *radio;
     int i;
 
-    fields = info->fields;
-    // might want to use info->first, kind of unsure
-    cur_radio = field->ptr;
+    fields = ui_dlg_info->fields;
+    // might want to use ui_dlg_info->first, kind of unsure
+    cur_radio = field->u.radio;
     if( cur_radio->value == cur_radio->group->value ) return;
 
-    info->dirty = TRUE;
+    ui_dlg_info->dirty = TRUE;
 
     for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
         if( fields[i].typ == FLD_RADIO ) {
-            radio = fields[i].ptr;
+            radio = fields[i].u.radio;
             if( radio->group == cur_radio->group  &&
                 radio->value == radio->group->value ) {
                 radio->group->value = cur_radio->value;
-                print_field( info->vs, &fields[i], FALSE );
+                print_field( ui_dlg_info->vs, &fields[i], FALSE );
                 break;
             }
         }
     }
     cur_radio->group->value = cur_radio->value;
-    print_field( info->vs, field, TRUE );
+    print_field( ui_dlg_info->vs, field, TRUE );
 }
 
 void uiupdatecombobox( a_combo_box *combo )
@@ -589,53 +587,53 @@ void uiupdatecombobox( a_combo_box *combo )
     }
 }
 
-void uiupdateedit( a_dialog *info, VFIELD *field )
+void uiupdateedit( a_dialog *ui_dlg_info, VFIELD *field )
 {
     an_edit_control     *edit;
     a_combo_box         *combo;
 
-    if( ( field == NULL ) || ( info == NULL ) || ( field != info->curr ) ) {
+    if( ( field == NULL ) || ( ui_dlg_info == NULL ) || ( field != ui_dlg_info->curr ) ) {
         return;
     }
     edit = NULL;
     switch( field->typ ) {
     case FLD_COMBOBOX :
-        combo = field->ptr;
+        combo = field->u.combo;
         edit = &combo->edit;
         break;
     case FLD_EDIT :
     case FLD_INVISIBLE_EDIT:
-        edit = field->ptr;
+        edit = field->u.edit;
         break;
     }
     if( edit != NULL ) {
-        if( info->edit_data != NULL ) {
+        if( ui_dlg_info->edit_data != NULL ) {
             uiendedit();
-            info->edit_data = NULL;
+            ui_dlg_info->edit_data = NULL;
         }
-        enter_field( info, info->curr );
+        enter_field( ui_dlg_info, ui_dlg_info->curr );
     }
 }
 
-static  void setcombobuffer( a_dialog *info, VFIELD *fld )
+static  void setcombobuffer( a_dialog *ui_dlg_info, VFIELD *fld )
 {
     a_combo_box         *combo;
     an_edit_control     *edit;
 
-    combo = fld->ptr;
+    combo = fld->u.combo;
     edit  = &combo->edit;
     uiupdatecombobox( combo );
-    if( info->edit_data != NULL ) {
-        info->edit_data->edit_buffer = edit->buffer;
-        info->edit_data->edit_eline.buffer = edit->buffer;
-        info->edit_data->edit_eline.length = edit->length;
-        info->edit_data->edit_eline.update = TRUE;
-        info->edit_data->edit_eline.index = 0;
-        info->edit_data->edit_eline.scroll = 0;
+    if( ui_dlg_info->edit_data != NULL ) {
+        ui_dlg_info->edit_data->edit_buffer = edit->buffer;
+        ui_dlg_info->edit_data->edit_eline.buffer = edit->buffer;
+        ui_dlg_info->edit_data->edit_eline.length = edit->length;
+        ui_dlg_info->edit_data->edit_eline.update = TRUE;
+        ui_dlg_info->edit_data->edit_eline.index = 0;
+        ui_dlg_info->edit_data->edit_eline.scroll = 0;
     }
 }
 
-EVENT   pulldownfilter( EVENT ev, a_dialog *info )
+EVENT   pulldownfilter( EVENT ev, a_dialog *ui_dlg_info )
 {
     a_list          *list = NULL;
     a_combo_box     *combo;
@@ -644,12 +642,12 @@ EVENT   pulldownfilter( EVENT ev, a_dialog *info )
     SAREA       area;
     VFIELD      *fld;
 
-    fld = info->curr;
+    fld = ui_dlg_info->curr;
 
     if( fld->typ == FLD_PULLDOWN ) {
-        list = fld->ptr;
+        list = fld->u.list;
     } else if( fld->typ == FLD_COMBOBOX ) {
-        combo = fld->ptr;
+        combo = fld->u.combo;
         list = &combo->list;
     }
     if( list->get == NULL ) {
@@ -661,7 +659,7 @@ EVENT   pulldownfilter( EVENT ev, a_dialog *info )
     {
         ORD             row, col;
 
-        uivmousepos( info->vs, &row, &col );
+        uivmousepos( ui_dlg_info->vs, &row, &col );
         area = fld->area;
         area.width += 1;    /* extra column for button */
         if( fld->typ == FLD_COMBOBOX ) {
@@ -681,7 +679,7 @@ EVENT   pulldownfilter( EVENT ev, a_dialog *info )
     case EV_ALT_CURSOR_DOWN:
         /* list->box must be null */
         area = fld->area;
-        vs   = info->vs;
+        vs   = ui_dlg_info->vs;
         area.row += ( vs->area.row + 2 );
         area.col += vs->area.col;
         if( fld->typ == FLD_COMBOBOX ) {
@@ -696,25 +694,25 @@ EVENT   pulldownfilter( EVENT ev, a_dialog *info )
         list->box = uibeglistbox( vs, &area, list );
         if( ev != EV_MOUSE_PRESS && ev != EV_MOUSE_DCLICK
                         && fld->typ == FLD_COMBOBOX ) {
-            info->dirty = TRUE;
-            setcombobuffer( info, fld );
-            print_field( info->vs, fld, TRUE );
+            ui_dlg_info->dirty = TRUE;
+            setcombobuffer( ui_dlg_info, fld );
+            print_field( ui_dlg_info->vs, fld, TRUE );
         }
         break;
     }
     return( ev );
 }
 
-static void *forwardtab( a_dialog *info )
+static void *forwardtab( a_dialog *ui_dlg_info )
 {
     VFIELD             *fld;
 
-    if( info->curr == NULL ){
-        fld = info->first;
+    if( ui_dlg_info->curr == NULL ){
+        fld = ui_dlg_info->first;
     } else {
-        fld = nextfield( info->curr );
+        fld = nextfield( ui_dlg_info->curr );
         if( fld == NULL ) {
-            fld = info->first;
+            fld = ui_dlg_info->first;
         }
     }
     while( radiooff( fld ) ) {
@@ -723,13 +721,13 @@ static void *forwardtab( a_dialog *info )
     return( fld );
 }
 
-static void *backwardtab( a_dialog *info )
+static void *backwardtab( a_dialog *ui_dlg_info )
 {
     VFIELD      *fld, *hold;
 
     hold = NULL;
-    fld = info->first;
-    while( fld != info->curr ) {
+    fld = ui_dlg_info->first;
+    while( fld != ui_dlg_info->curr ) {
         if( !radiooff( fld ) ) {
             hold = fld;
         }
@@ -746,43 +744,43 @@ static void *backwardtab( a_dialog *info )
     return( hold );
 }
 
-extern void uidialogexitcurr( a_dialog *info )
+extern void uidialogexitcurr( a_dialog *ui_dlg_info )
 {
-    /* you must call this function to set info->dirty or to do  */
+    /* you must call this function to set ui_dlg_info->dirty or to do  */
     /* blank trimming on an edit control                        */
-    if( exit_field( info, info->curr ) ) {
-        info->dirty = TRUE;
+    if( exit_field( ui_dlg_info, ui_dlg_info->curr ) ) {
+        ui_dlg_info->dirty = TRUE;
     }
 }
 
-extern void uidialogsetcurr( a_dialog *info, VFIELD *curr )
+extern void uidialogsetcurr( a_dialog *ui_dlg_info, VFIELD *curr )
 {
     VFIELD      *other;
 
-    other = info->curr;
+    other = ui_dlg_info->curr;
     if( other != curr ) {
-        info->other = info->curr;
-        info->curr  = curr;
-        if( exit_field( info, other ) ) {
-            info->dirty = TRUE;
+        ui_dlg_info->other = ui_dlg_info->curr;
+        ui_dlg_info->curr  = curr;
+        if( exit_field( ui_dlg_info, other ) ) {
+            ui_dlg_info->dirty = TRUE;
         }
-        print_field( info->vs, other, FALSE );
-        enter_field( info, curr );
-        print_field( info->vs, curr, TRUE );
-        uidialogchangefield( info );
+        print_field( ui_dlg_info->vs, other, FALSE );
+        enter_field( ui_dlg_info, curr );
+        print_field( ui_dlg_info->vs, curr, TRUE );
+        uidialogchangefield( ui_dlg_info );
     }
 }
 
-void uimovefield( a_dialog *info, VFIELD *curr, int row_diff, int col_diff )
+void uimovefield( a_dialog *ui_dlg_info, VFIELD *curr, int row_diff, int col_diff )
 {
     a_combo_box *combo;
     a_list      *list;
 
-    info = info;
+    ui_dlg_info = ui_dlg_info;
 
     switch( curr->typ ) {
     case FLD_COMBOBOX :
-        combo = curr->ptr;
+        combo = curr->u.combo;
         if( combo->perm ) {
             uimovelistbox( &combo->list, row_diff, col_diff );
         } else {
@@ -791,35 +789,35 @@ void uimovefield( a_dialog *info, VFIELD *curr, int row_diff, int col_diff )
         break;
     case FLD_LISTBOX :
     case FLD_EDIT_MLE :
-        list = (a_list *)curr->ptr;
+        list = curr->u.list;
         uimovelistbox( list, row_diff, col_diff );
         if( list->box != NULL ) {
             uivsetactive( list->box->vs );
         }
         break;
     case FLD_PULLDOWN :
-        uiendlistbox( (a_list *)curr->ptr );
+        uiendlistbox( curr->u.list );
         break;
     }
 }
 
-void uiredrawdialog( a_dialog *info )
+void uiredrawdialog( a_dialog *ui_dlg_info )
 {
     VSCREEN     *vs;
     int         i;
 
-    vs = (VSCREEN *)info->vs;
+    vs = ui_dlg_info->vs;
 
     uivclose( vs );
     uivopen( vs );
 
-    for( i = 0 ; info->fields[i].typ != FLD_VOID ; ++i ) {
-        print_field( info->vs, &info->fields[i],
-                     &info->fields[i] == info->curr );
+    for( i = 0 ; ui_dlg_info->fields[i].typ != FLD_VOID ; ++i ) {
+        print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i],
+                     &ui_dlg_info->fields[i] == ui_dlg_info->curr );
     }
 }
 
-bool uiresizedialog( a_dialog *info, SAREA *new_area )
+bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
 {
     int         row_diff;
     int         col_diff;
@@ -828,7 +826,7 @@ bool uiresizedialog( a_dialog *info, SAREA *new_area )
     int         i;
     bool        resize;
 
-    vs = (VSCREEN *)info->vs;
+    vs = ui_dlg_info->vs;
 
     if( new_area->row < 2 ) {
         new_area->row = 2;
@@ -851,16 +849,16 @@ bool uiresizedialog( a_dialog *info, SAREA *new_area )
         vs->area = *new_area;
         uivopen( vs );
     } else {
-        uivmove( info->vs, new_area->row, new_area->col );
+        uivmove( ui_dlg_info->vs, new_area->row, new_area->col );
     }
     /* close all open pull down boxes */
-    for( curr = info->fields; curr->typ != FLD_VOID; curr++ ) {
-        uimovefield( info, curr, row_diff, col_diff );
+    for( curr = ui_dlg_info->fields; curr->typ != FLD_VOID; curr++ ) {
+        uimovefield( ui_dlg_info, curr, row_diff, col_diff );
     }
     if( resize ) {
-        for( i = 0 ; info->fields[i].typ != FLD_VOID ; ++i ) {
-            print_field( info->vs, &info->fields[i],
-                         &info->fields[i] == info->curr );
+        for( i = 0 ; ui_dlg_info->fields[i].typ != FLD_VOID ; ++i ) {
+            print_field( ui_dlg_info->vs, &ui_dlg_info->fields[i],
+                         &ui_dlg_info->fields[i] == ui_dlg_info->curr );
         }
     }
     return( TRUE );
@@ -869,7 +867,7 @@ bool uiresizedialog( a_dialog *info, SAREA *new_area )
 static  ORD     PrevRow = 0;
 static  ORD     PrevCol = 0;
 
-static EVENT uicheckmove( EVENT ev, a_dialog *info )
+static EVENT uicheckmove( EVENT ev, a_dialog *ui_dlg_info )
 {
     EVENT       new_ev;
     ORD         row;
@@ -882,21 +880,21 @@ static EVENT uicheckmove( EVENT ev, a_dialog *info )
     new_ev = ev;
     switch( ev ) {
     case EV_MOUSE_PRESS :
-        if( uivmousepos( NULL, &row, &col ) == info->vs ) {
-            vs = (VSCREEN *)info->vs;
+        if( uivmousepos( NULL, &row, &col ) == ui_dlg_info->vs ) {
+            vs = ui_dlg_info->vs;
             if( ( row + 1 ) == vs->area.row ) { /* because it's framed */
                 PrevRow = row;
                 PrevCol = col;
-                info->moving = TRUE;
+                ui_dlg_info->moving = TRUE;
                 new_ev = EV_NO_EVENT;
             }
         }
         break;
     case EV_MOUSE_DRAG :
-        if( info->moving ) {
+        if( ui_dlg_info->moving ) {
             uivmousepos( NULL, &row, &col );
             if( ( row != PrevRow ) || ( col != PrevCol ) ) {
-                vs = (VSCREEN *)info->vs;
+                vs = ui_dlg_info->vs;
                 if( vs->area.row + row < PrevRow ) {
                     new_area.row = 0;
                 } else {
@@ -911,7 +909,7 @@ static EVENT uicheckmove( EVENT ev, a_dialog *info )
                 new_area.height = vs->area.height;
                 prev_row = vs->area.row;
                 prev_col = vs->area.col;
-                uiresizedialog( info, &new_area );
+                uiresizedialog( ui_dlg_info, &new_area );
                 /* new_area may have been adjusted */
                 PrevRow += new_area.row - prev_row;
                 PrevCol += new_area.col - prev_col;
@@ -920,23 +918,23 @@ static EVENT uicheckmove( EVENT ev, a_dialog *info )
         }
         break;
     case EV_MOUSE_RELEASE :
-        if( info->moving ) {
-            info->moving = FALSE;
+        if( ui_dlg_info->moving ) {
+            ui_dlg_info->moving = FALSE;
             new_ev = EV_NO_EVENT;
         }
     }
     return( new_ev );
 }
 
-static EVENT uitabkey( EVENT ev, a_dialog *info )
+static EVENT uitabkey( EVENT ev, a_dialog *ui_dlg_info )
 {
     VFIELD          *curr, *fld;
     ORD             row, col;
     SAREA           area;
     EVENT           newev;
 
-    if( info->first == NULL ) return( FALSE );
-    curr = info->curr;
+    if( ui_dlg_info->first == NULL ) return( FALSE );
+    curr = ui_dlg_info->curr;
     newev = ev;
     switch( ev ){
     case EV_MOUSE_DCLICK:
@@ -946,26 +944,26 @@ static EVENT uitabkey( EVENT ev, a_dialog *info )
         a_list              *list;
         VSCREEN             *mousevs;
 
-        mousevs = uivmousepos( info->vs, &row, &col );
-        fld = info->first;
+        mousevs = uivmousepos( ui_dlg_info->vs, &row, &col );
+        fld = ui_dlg_info->first;
         while( fld != NULL ) {
             list = NULL;
             area = fld->area;
             if( fld->typ == FLD_PULLDOWN ) {
-                list = fld->ptr;
+                list = fld->u.list;
                 area.height = 1;
                 area.width += 1;    /* pulldown button */
             } else if( fld->typ == FLD_LISTBOX ) {
-                list = fld->ptr;
+                list = fld->u.list;
             } else if( fld->typ == FLD_EDIT_MLE ) {
-                list = fld->ptr;
+                list = fld->u.list;
             } else if( fld->typ == FLD_COMBOBOX ) {
                 area.height = 1;
                 area.width += 2;    /* pulldown button */
-                combo = fld->ptr;
+                combo = fld->u.combo;
                 list = &combo->list;
             }
-            if( mousevs != info->vs ) {
+            if( mousevs != ui_dlg_info->vs ) {
                 if( list != NULL && list->box != NULL ) {
                     if( list->box->vs == mousevs ) {
                         break;
@@ -986,10 +984,10 @@ static EVENT uitabkey( EVENT ev, a_dialog *info )
         break;
     }
     case EV_TAB_FORWARD :
-        curr = forwardtab( info );
+        curr = forwardtab( ui_dlg_info );
         break;
     case EV_TAB_BACKWARD :
-        curr = backwardtab( info );
+        curr = backwardtab( ui_dlg_info );
         break;
     case EV_CURSOR_RIGHT :
     case EV_CURSOR_DOWN :
@@ -999,11 +997,11 @@ static EVENT uitabkey( EVENT ev, a_dialog *info )
         if( curr!= NULL && curr->typ == FLD_RADIO ) {
             fld = nextfield( curr );
             if( fld != NULL ) {
-                r1 = curr->ptr;
-                r2 = fld->ptr;
+                r1 = curr->u.radio;
+                r2 = fld->u.radio;
                 if( r1->group == r2->group ) {
                     curr = fld;
-                    do_radio( info, fld );
+                    do_radio( ui_dlg_info, fld );
                     newev = EV_CHECK_BOX_CLICK;
                 }
             }
@@ -1016,13 +1014,13 @@ static EVENT uitabkey( EVENT ev, a_dialog *info )
         a_radio             *r1, *r2;
 
         if( curr!= NULL && curr->typ == FLD_RADIO ) {
-            if( curr != info->first ) {
+            if( curr != ui_dlg_info->first ) {
                 fld = curr - 1;
-                r1 = curr->ptr;
-                r2 = fld->ptr;
+                r1 = curr->u.radio;
+                r2 = fld->u.radio;
                 if( r1->group == r2->group ) {
                     curr = fld;
-                    do_radio( info, fld );
+                    do_radio( ui_dlg_info, fld );
                     newev = EV_CHECK_BOX_CLICK;
                 }
             }
@@ -1030,13 +1028,13 @@ static EVENT uitabkey( EVENT ev, a_dialog *info )
         break;
     }
     }
-    if( info->curr != curr ) {
-        uidialogsetcurr( info, curr );
+    if( ui_dlg_info->curr != curr ) {
+        uidialogsetcurr( ui_dlg_info, curr );
     }
     return( newev );
 }
 
-EVENT uihotkeyfilter( a_dialog *info, EVENT ev )
+EVENT uihotkeyfilter( a_dialog *ui_dlg_info, EVENT ev )
 {
     char        ch, hotkey;
     VFIELD      *vf;
@@ -1050,19 +1048,20 @@ EVENT uihotkeyfilter( a_dialog *info, EVENT ev )
 
     if( ch ) {
         hotkey = '\0';
-        for( vf = info->fields ; vf->typ != FLD_VOID; ++vf ){
+        for( vf = ui_dlg_info->fields ; vf->typ != FLD_VOID; ++vf ){
             switch( vf->typ ) {
-                case FLD_HOT:
-                    hotkey = (char)((a_hot_spot *)vf->ptr)->flags & HOT_CHAR;
-                    break;
-                case FLD_CHECK:
-                    hotkey = (char)((a_check *)vf->ptr)->hotkey;
-                    break;
-                case FLD_RADIO:
-                    hotkey = (char)((a_radio *)vf->ptr)->hotkey;
-                    break;
-                default:
-                    hotkey = '\0';
+            case FLD_HOT:
+                hotkey = vf->u.hs->flags;
+                break;
+            case FLD_CHECK:
+                hotkey = vf->u.check->hotkey;
+                break;
+            case FLD_RADIO:
+                hotkey = vf->u.radio->hotkey;
+                break;
+            default:
+                hotkey = '\0';
+                break;
             }
             if( hotkey == ch ) {
                 break;
@@ -1070,23 +1069,23 @@ EVENT uihotkeyfilter( a_dialog *info, EVENT ev )
         }
 
         /* make sure the new field is hilighted */
-        if( info->curr != vf && vf->typ != FLD_VOID ) {
-            uidialogsetcurr( info, vf );
+        if( ui_dlg_info->curr != vf && vf->typ != FLD_VOID ) {
+            uidialogsetcurr( ui_dlg_info, vf );
         }
 
         if( hotkey == ch ) {
             switch( vf->typ ) {
                 case FLD_HOT:
-                    ev = ((a_hot_spot *)vf->ptr)->event;
+                    ev = vf->u.hs->event;
                     break;
                 case FLD_CHECK:
-                    info->dirty = TRUE;
-                    ((a_check *)vf->ptr)->val = !((a_check *)vf->ptr)->val;
-                    print_field( info->vs, vf, TRUE );
+                    ui_dlg_info->dirty = TRUE;
+                    vf->u.check->val = !vf->u.check->val;
+                    print_field( ui_dlg_info->vs, vf, TRUE );
                     ev = EV_CHECK_BOX_CLICK;
                     break;
                 case FLD_RADIO:
-                    do_radio( info, vf );
+                    do_radio( ui_dlg_info, vf );
                     ev = EV_CHECK_BOX_CLICK;
                     break;
             }
@@ -1096,7 +1095,7 @@ EVENT uihotkeyfilter( a_dialog *info, EVENT ev )
     return( ev );
 }
 
-EVENT uiprocessdialogevent( EVENT ev, a_dialog *info )
+EVENT uiprocessdialogevent( EVENT ev, a_dialog *ui_dlg_info )
 {
     VFIELD              *field;
     a_check             *check;
@@ -1105,9 +1104,9 @@ EVENT uiprocessdialogevent( EVENT ev, a_dialog *info )
     a_combo_box         *combo;
     a_list              *list;
 
-    ev = uicheckmove( ev, info );
-    ev = uitabkey( ev, info );
-    field = info->curr;
+    ev = uicheckmove( ev, ui_dlg_info );
+    ev = uitabkey( ev, ui_dlg_info );
+    field = ui_dlg_info->curr;
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
@@ -1118,14 +1117,14 @@ EVENT uiprocessdialogevent( EVENT ev, a_dialog *info )
             case ' ' :
                 ev = EV_CHECK_BOX_CLICK;
                 if( field->typ == FLD_RADIO ) {
-                    do_radio( info, field );
+                    do_radio( ui_dlg_info, field );
                     break;
                 }
                 if( field->typ == FLD_CHECK ) {
-                    info->dirty = TRUE;
-                    check = field->ptr;
+                    ui_dlg_info->dirty = TRUE;
+                    check = field->u.check;
                     check->val = !check->val;
-                    print_field( info->vs, field, TRUE );
+                    print_field( ui_dlg_info->vs, field, TRUE );
                     break;
                 }
             }
@@ -1133,59 +1132,59 @@ EVENT uiprocessdialogevent( EVENT ev, a_dialog *info )
         case FLD_EDIT:
         case FLD_INVISIBLE_EDIT:
             ev = uiledit( ev );
-            edit = field->ptr;
-            if( info->edit_data != NULL ) {
-                edit->buffer = info->edit_data->edit_buffer;
-                edit->length = info->edit_data->edit_eline.length;
+            edit = field->u.edit;
+            if( ui_dlg_info->edit_data != NULL ) {
+                edit->buffer = ui_dlg_info->edit_data->edit_buffer;
+                edit->length = ui_dlg_info->edit_data->edit_eline.length;
             }
             break;
         case FLD_LISTBOX:
         case FLD_EDIT_MLE:
-            list = field->ptr;
+            list = field->u.list;
             ev = uilistbox( ev, list, TRUE );
             break;
         case FLD_PULLDOWN:
-            list = field->ptr;
+            list = field->u.list;
             if( list->box == NULL ) {
-                ev = pulldownfilter( ev, info );
+                ev = pulldownfilter( ev, ui_dlg_info );
             } else {
                 choice = list->choice;
                 ev = uilistbox( ev, list, FALSE );
                 if( choice != list->choice ) {
-                    info->dirty = TRUE;
-                    print_field( info->vs, field, TRUE );
+                    ui_dlg_info->dirty = TRUE;
+                    print_field( ui_dlg_info->vs, field, TRUE );
                 }
             }
             break;
         case FLD_COMBOBOX:
-            combo = field->ptr;
+            combo = field->u.combo;
             list  = &combo->list;
             edit  = &combo->edit;
             if( list->box == NULL ) {
-                ev = pulldownfilter( ev, info );
+                ev = pulldownfilter( ev, ui_dlg_info );
             } else {
                 choice = list->choice;
                 ev = uilistbox( ev, list, combo->perm );
                 if( choice != list->choice ) {
-                    info->dirty = TRUE;
-                    setcombobuffer( info, field );
-                    print_field( info->vs, field, TRUE );
+                    ui_dlg_info->dirty = TRUE;
+                    setcombobuffer( ui_dlg_info, field );
+                    print_field( ui_dlg_info->vs, field, TRUE );
                 }
             }
             ev = uiledit( ev );
-            if( info->edit_data != NULL ) {
-                edit->buffer = info->edit_data->edit_buffer;
-                edit->length = info->edit_data->edit_eline.length;
+            if( ui_dlg_info->edit_data != NULL ) {
+                edit->buffer = ui_dlg_info->edit_data->edit_buffer;
+                edit->length = ui_dlg_info->edit_data->edit_eline.length;
             }
             break;
         }
     }
-    ev = uihotkeyfilter( info, ev );
-    ev = uihotspotfilter( info->vs, info->fields, ev );
+    ev = uihotkeyfilter( ui_dlg_info, ev );
+    ev = uihotspotfilter( ui_dlg_info->vs, ui_dlg_info->fields, ev );
     return( ev );
 }
 
-an_event uidialog( a_dialog *info )
+an_event uidialog( a_dialog *ui_dlg_info )
 {
     static EVENT    dialog_events[] = {
         'a',            'z',
@@ -1202,15 +1201,14 @@ an_event uidialog( a_dialog *info )
         EV_ENTER,       ' ',
         EV_NO_EVENT
     };
-    a_list      *list;
     an_event    ev;
     VFIELD      *field;
 
     ev = EV_NO_EVENT;
-    enter_field( info, info->curr );
+    enter_field( ui_dlg_info, ui_dlg_info->curr );
 
     while( ev == EV_NO_EVENT || !uiinlist( ev ) ) {
-        field = info->curr;
+        field = ui_dlg_info->curr;
         if( field != NULL ) {
             switch( field->typ ) {
                 case FLD_EDIT:
@@ -1226,14 +1224,13 @@ an_event uidialog( a_dialog *info )
                     break;
                 case FLD_LISTBOX:
                 case FLD_EDIT_MLE:
-                    list = field->ptr;
                     uiboxpushlist();
                     break;
             }
         }
         uipushlist( dialog_events );
-        ev = uidialogevent( info->vs );
-        ev = uidialogcallback( info, ev );
+        ev = uidialogevent( ui_dlg_info->vs );
+        ev = uidialogcallback( ui_dlg_info, ev );
         uipoplist( /* dialog_events */ );
 
         if( field != NULL ) {
@@ -1255,21 +1252,21 @@ an_event uidialog( a_dialog *info )
                 break;
             }
         }
-        ev = uiprocessdialogevent( ev, info );
+        ev = uiprocessdialogevent( ev, ui_dlg_info );
     }
     /* This code will make sure to exit the current fields before returning
      * a default hot spot event. This is for consistency with windows.
      */
-    if( uiisdefaulthotspot( info->fields, ev ) ) {
-        if( exit_field( info, info->curr ) ) {
-            info->dirty = TRUE;
+    if( uiisdefaulthotspot( ui_dlg_info->fields, ev ) ) {
+        if( exit_field( ui_dlg_info, ui_dlg_info->curr ) ) {
+            ui_dlg_info->dirty = TRUE;
         }
     }
-    info->field = (VFIELD *)info->curr - (VFIELD *)info->fields;
+    ui_dlg_info->field = ui_dlg_info->curr - ui_dlg_info->fields;
     return( ev );
 }
 
-void uifreedialog( a_dialog  *info )
+void uifreedialog( a_dialog *ui_dlg_info )
 {
     VFIELD              *fields;  // pointer to array of fields in dialog box
     a_list              *list;
@@ -1277,25 +1274,25 @@ void uifreedialog( a_dialog  *info )
     a_combo_box         *combo;
 //  an_edit_control     *edit;
 
-    fields = info->fields;
+    fields = ui_dlg_info->fields;
 
-    exit_field( info, info->curr );
+    exit_field( ui_dlg_info, ui_dlg_info->curr );
     for( i = 0 ; fields[i].typ != FLD_VOID ; ++i ) {
         switch( fields[i].typ ) {
             case FLD_LISTBOX:
             case FLD_PULLDOWN:
             case FLD_EDIT_MLE:
-                list = fields[i].ptr;
+                list = fields[i].u.list;
                 uiendlistbox( list );
                 break;
 //          case FLD_INVISIBLE_EDIT:
 //          case FLD_EDIT:
-//              edit = fields[i].ptr;
+//              edit = fields[i].u.edit;
 //              uifree( edit->buffer );
 //              edit->buffer = NULL;            //  Need this null for next
 //              break;                          //  time around
             case FLD_COMBOBOX:
-                combo = fields[i].ptr;
+                combo = fields[i].u.combo;
                 list = &combo->list;
 //              edit = &combo->edit;
 //              uifree( edit->buffer );
@@ -1306,11 +1303,11 @@ void uifreedialog( a_dialog  *info )
     }
 }
 
-void uienddialog( a_dialog  *info )
+void uienddialog( a_dialog *ui_dlg_info )
 {
-    uifreedialog( info );
-    uifinidialog( info->vs );
-    uifree( info );
+    uifreedialog( ui_dlg_info );
+    uifinidialog( ui_dlg_info->vs );
+    uifree( ui_dlg_info );
 }
 
 #if 0
@@ -1324,12 +1321,12 @@ void uifreefields( VFIELD *fields )
         switch( fields[i].typ ) {
         case FLD_INVISIBLE_EDIT:
         case FLD_EDIT:
-            edit = fields[i].ptr;
+            edit = fields[i].u.edit;
             uifree( edit->buffer );
             edit->buffer = NULL;                //  Need this null for next
             break;                              //  time around
         case FLD_COMBOBOX:
-            combo = fields[i].ptr;
+            combo = fields[i].u.combo;
             edit = &combo->edit;
             uifree( edit->buffer );
             edit->buffer = NULL;
@@ -1339,13 +1336,13 @@ void uifreefields( VFIELD *fields )
 }
 #endif
 
-bool uidialogisdirty( a_dialog *info )
+bool uidialogisdirty( a_dialog *ui_dlg_info )
 {
-    uidialogexitcurr( info );
-    return( info->dirty );
+    uidialogexitcurr( ui_dlg_info );
+    return( ui_dlg_info->dirty );
 }
 
-void uidialogsetdirty( a_dialog *info, bool dirty )
+void uidialogsetdirty( a_dialog *ui_dlg_info, bool dirty )
 {
-    info->dirty = dirty;
+    ui_dlg_info->dirty = dirty;
 }

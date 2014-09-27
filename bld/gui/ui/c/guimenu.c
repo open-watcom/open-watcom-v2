@@ -577,22 +577,22 @@ static bool CreateMenus( gui_window *wnd, int num_menus, gui_menu_struct *menu,
     return( true );
 }
 
-bool GUICreateMenus( gui_window *wnd,  gui_create_info *info )
+bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info )
 {
     int                 num;
     gui_menu_struct     *menu;
     bool                ret;
 
-    if( info->resource_menu ) {
+    if( dlg_info->resource_menu ) {
         num = 0;
         menu = NULL;
-        GUICreateMenuStructFromRes( info->resource_menu, &menu, &num );
-        ret = CreateMenus( wnd, num, menu, info->parent, info->style );
+        GUICreateMenuStructFromRes( dlg_info->resource_menu, &menu, &num );
+        ret = CreateMenus( wnd, num, menu, dlg_info->parent, dlg_info->style );
         GUIFreeGUIMenuStruct( menu, num );
         return( ret );
     } else {
-        return( CreateMenus( wnd, info->num_menus, info->menu,
-                             info->parent, info->style ) );
+        return( CreateMenus( wnd, dlg_info->num_menus, dlg_info->menu,
+                             dlg_info->parent, dlg_info->style ) );
     }
 }
 

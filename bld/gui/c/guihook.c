@@ -87,10 +87,10 @@ void GUISetInitMDI( void (*func)(gui_window*, gui_create_info *) )
     fInitMDI = func;
 }
 
-void GUIInitMDI( gui_window *wnd, gui_create_info *info )
+void GUIInitMDI( gui_window *wnd, gui_create_info *dlg_info )
 {
     if( fInitMDI != NULL ) {
-        (*fInitMDI)(wnd, info);
+        (*fInitMDI)(wnd, dlg_info);
     }
 }
 

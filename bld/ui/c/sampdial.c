@@ -96,8 +96,8 @@ static a_radio_group neg_group = {
 };
 
 static a_radio radio[] = {
-      {  0,   "&Sign",        &neg_group },
-      {  1,   "&Bill",       &neg_group }
+      {  0,   "&Sign",      &neg_group },
+      {  1,   "&Bill",      &neg_group }
 };
 
 an_edit_control     buf[5];
@@ -119,13 +119,13 @@ static VFIELD FieldDialog[] = {  // Define Field Dialog
         {1,     59,     1,      11,     FLD_HOT,        &hot_msg},
         {3,     59,     1,      11,     FLD_HOT,        &hot_num},
         {5,     59,     1,      11,     FLD_HOT,        &hot_stuff},
-        {12,   0,  0,  0,  FLD_VOID,   NULL }
+        {12,    0,      0,      0,      FLD_VOID,       NULL }
 };
 
 void sample_dialog()
 {
     EVENT               event;
-    a_dialog            *info;
+    a_dialog            *ui_dlg_info;
 
     static EVENT        events[] = {
         EV_NO_EVENT,
@@ -135,10 +135,10 @@ void sample_dialog()
         EV_NO_EVENT
     };
 
-    info = uibegdialog( "TEST", FieldDialog, 12, 74, 0, 0 );
+    ui_dlg_info = uibegdialog( "TEST", FieldDialog, 12, 74, 0, 0 );
     uipushlist( events );
     for( ; ; ) {
-        event = uidialog( info );
+        event = uidialog( ui_dlg_info );
         if( event == EV_ESCAPE || event == EV_ENTER ) {
             break;
         } else if( event == EV_SCREWUP ) {
@@ -147,5 +147,5 @@ void sample_dialog()
         }
     }
     uipoplist();
-    uienddialog( info );
+    uienddialog( ui_dlg_info );
 }

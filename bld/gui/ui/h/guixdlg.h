@@ -34,7 +34,7 @@
 
 typedef struct dialog_node {
     gui_window          *wnd;
-    a_dialog            *dialog;
+    a_dialog            *ui_dlg_info;
     int                 num_controls;
     char                *name;
     bool                colours_set;
@@ -43,7 +43,7 @@ typedef struct dialog_node {
 
 extern VFIELD *GUIGetField( gui_window * wnd, unsigned id );
 extern a_dialog *GUIGetDialog( gui_window * wnd );
-extern void GUIFocusChangeNotify( a_dialog *ui_dialog );
+extern void GUIFocusChangeNotify( a_dialog *ui_dlg_info );
 extern bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field );
 extern void GUIDoFreeField( VFIELD *field, a_radio_group **group );
 extern void GUIRefreshControl( gui_window *wnd, unsigned id );
@@ -51,14 +51,14 @@ extern bool GUIInsertDialog( gui_window *wnd );
 extern dialog_node *GUIGetDlgByWnd( gui_window *wnd );
 extern gui_control *GUIAddAControl( gui_control_info *ctl_info, gui_window *wnd );
 extern bool GUIResizeDialog( gui_window *wnd, SAREA *area );
-extern void GUIDeleteDialog( a_dialog *dialog );
+extern void GUIDeleteDialog( a_dialog *ui_dlg_info );
 extern bool GUIDeleteField( gui_window *wnd, unsigned id );
 extern a_list *GUIGetList( VFIELD *field );
 extern unsigned GUIGetControlId( gui_window *wnd, VFIELD *field );
-extern EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dialog, gui_window *wnd );
+extern EVENT GUIProcessControlNotify( EVENT ev, a_dialog *ui_dlg_info, gui_window *wnd );
 extern void GUIPushControlEvents( void );
 extern void GUIPopControlEvents( void );
-extern void GUIFreeDialog( a_dialog *dialog, VFIELD *fields, char *title,
+extern void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
                            bool colours_set, bool is_dialog );
 
 extern bool GUIGetDlgRect( gui_window *wnd, SAREA *area );

@@ -44,7 +44,7 @@
 #include "clibext.h"
 
 
-extern bool GetListBoxItem( void *, unsigned, char *, unsigned );
+extern UIPICKGETTEXT    GetListBoxItem;
 
 typedef struct {
     char                str[1];         /* dynamic array */
@@ -104,27 +104,28 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
     return( TRUE );
 }
 
-bool GetListBoxItem( void *info, unsigned line, char *buf, unsigned buflen )
+bool GetListBoxItem( void *data_handle, unsigned item, char *buf, unsigned buflen )
 {
-    char                *name;
+    const char          *name;
     unsigned long       *itemcnt;
     unsigned            height;
 
     //
     // NYI - this should call GetLBItemLiteral
     //
-    itemcnt = info;
+    itemcnt = (unsigned long *)data_handle;
     if( listBox.box == NULL ) {
         height = 0;
     } else {
         height = listBox.box->area.height - 1;
     }
-    if( line >= *itemcnt + height ) return( FALSE );
+    if( item >= *itemcnt + height )
+        return( FALSE );
     if( buf != NULL ) {
-        if( line >= *itemcnt ) {
+        if( item >= *itemcnt ) {
             name = "";
         } else {
-            name = HelpGetIndexedTopic( searchHdl, line );
+            name = HelpGetIndexedTopic( searchHdl, item );
         }
         if( name != NULL ) {
             while( *name != '\0' ) {
@@ -239,7 +240,7 @@ char *HelpSearch( HelpHdl hdl )
         switch( event ) {
         case EV_MOUSE_PRESS:
             if( curHelpDialog->curr != NULL ) {
-                if( curHelpDialog->curr->ptr == &listBox ) {
+                if( curHelpDialog->curr->u.ptr == &listBox ) {
                     copyLBLinetoEditCtl( listBox.box->row );
                 }
             }

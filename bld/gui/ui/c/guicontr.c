@@ -52,8 +52,8 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
 {
     gui_control *control;
     bool        first_control;
-    dialog_node *node;
-    a_dialog    *dialog;
+    dialog_node *dlg_node;
+    a_dialog    *ui_dlg_info;
 
     plain = plain;
     standout = standout;
@@ -69,14 +69,14 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
     }
     control = GUIAddAControl( ctl_info, ctl_info->parent );
     if( control != NULL ) {
-        dialog = GUIGetDialog( ctl_info->parent );
-        uireinitdialog( dialog, dialog->fields );
+        ui_dlg_info = GUIGetDialog( ctl_info->parent );
+        uireinitdialog( ui_dlg_info, ui_dlg_info->fields );
         return( true );
     }
     if( first_control ) {
-        node = GUIGetDlgByWnd( ctl_info->parent );
-        if( node != NULL ) {
-            GUIDeleteDialog( node->dialog );
+        dlg_node = GUIGetDlgByWnd( ctl_info->parent );
+        if( dlg_node != NULL ) {
+            GUIDeleteDialog( dlg_node->ui_dlg_info );
         }
     }
     GUIDeleteField( ctl_info->parent, ctl_info->id );
@@ -140,10 +140,10 @@ static bool DeleteControl( gui_window *wnd, unsigned id )
 gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int index )
 {
     gui_control *control;
-    dialog_node *dialog;
+    dialog_node *dlg_node;
 
-    dialog = GUIGetDlgByWnd( wnd );
-    if( dialog == NULL ) {
+    dlg_node = GUIGetDlgByWnd( wnd );
+    if( dlg_node == NULL ) {
         return( NULL );
     }
     control = (gui_control *)GUIMemAlloc( sizeof( gui_control ) );
@@ -154,7 +154,7 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
         control->index = index;
         control->sibling = wnd->controls;
         wnd->controls = control;
-        dialog->num_controls++;
+        dlg_node->num_controls++;
     }
     return( control );
 }
@@ -184,22 +184,22 @@ void GUIFreeAllControls( gui_window *wnd )
 {
     gui_control *control;
     gui_control *next;
-    dialog_node *node;
-    a_dialog    *dialog;
+    dialog_node *dlg_node;
+    a_dialog    *ui_dlg_info;
 
     for( control = wnd->controls; control != NULL; control = next ) {
         next = control->sibling;
         GUIMemFree( control );
     }
     wnd->controls = NULL;
-    node = GUIGetDlgByWnd( wnd );
-    if( node != NULL ) {
-        GUIFreeDialog( node->dialog, node->dialog->fields, node->name,
-                       node->colours_set, GUI_IS_DIALOG( wnd ) );
-        dialog = node->dialog;
-        GUIDeleteDialog( dialog );
+    dlg_node = GUIGetDlgByWnd( wnd );
+    if( dlg_node != NULL ) {
+        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name,
+                       dlg_node->colours_set, GUI_IS_DIALOG( wnd ) );
+        ui_dlg_info = dlg_node->ui_dlg_info;
+        GUIDeleteDialog( ui_dlg_info );
         if( !GUI_IS_DIALOG( wnd ) ) {
-            GUIMemFree( dialog );
+            GUIMemFree( ui_dlg_info );
         }
     }
 }
@@ -214,13 +214,13 @@ bool GUILimitEditText( gui_window *wnd, unsigned id, int len )
 
 void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff )
 {
-    dialog_node *dialog;
+    dialog_node *dlg_node;
     int         i;
 
-    dialog = GUIGetDlgByWnd( wnd );
-    if( dialog != NULL ) {
-        for( i = 0; i < dialog->num_controls; i++ ) {
-            uimovefield( dialog->dialog, &dialog->dialog->fields[i],
+    dlg_node = GUIGetDlgByWnd( wnd );
+    if( dlg_node != NULL ) {
+        for( i = 0; i < dlg_node->num_controls; i++ ) {
+            uimovefield( dlg_node->ui_dlg_info, &dlg_node->ui_dlg_info->fields[i],
                          row_diff, col_diff );
         }
     }
@@ -232,25 +232,25 @@ void GUIResizeControls( gui_window *wnd, int row_diff, int col_diff )
 EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
                               gui_ord col )
 {
-    a_dialog    *dialog;
+    a_dialog    *ui_dlg_info;
     bool        colours_set;
 
     row = row;
     col = col;
-    dialog = GUIGetDialog( wnd );
-    if( dialog != NULL ) {
+    ui_dlg_info = GUIGetDialog( wnd );
+    if( ui_dlg_info != NULL ) {
         colours_set = GUISetDialColours();
         uipushlist( NULL );
         uipushlist( GUIUserEvents );
         GUIPushControlEvents();
-        ev = uiprocessdialogevent( ev, dialog );
+        ev = uiprocessdialogevent( ev, ui_dlg_info );
         GUIPopControlEvents();
         uipoplist( /* GUIUserEvents */ );
         uipoplist( /* NULL */ );
         if( colours_set ) {
             GUIResetDialColours();
         }
-        return( GUIProcessControlNotify( ev, dialog, wnd ) );
+        return( GUIProcessControlNotify( ev, ui_dlg_info, wnd ) );
    } else {
         return( ev );
     }
@@ -302,14 +302,14 @@ bool GUIGetControlRect( gui_window *wnd, unsigned id, gui_rect *rect )
 extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
 {
     SAREA       area;
-    a_dialog    *ui_dialog;
+    a_dialog    *ui_dlg_info;
     VFIELD      *field;
     SAREA       new_area;
     gui_rect    old_rect;
 
     field = GUIGetField( wnd, id );
-    ui_dialog = GUIGetDialog( wnd );
-    if( ( field != NULL ) && ( ui_dialog != NULL ) ) {
+    ui_dlg_info = GUIGetDialog( wnd );
+    if( ( field != NULL ) && ( ui_dlg_info != NULL ) ) {
         GUIGetSAREA( wnd, &area );
         if( !GUI_IS_DIALOG( wnd ) ) {
             GUIGetControlRect( wnd, id, &old_rect );
@@ -322,7 +322,7 @@ extern bool GUIResizeControl( gui_window *wnd, unsigned id, gui_rect *rect )
             GUIWndDirtyRect( wnd, &old_rect );
             GUIRefreshControl( wnd, id );
         } else {
-            uiredrawdialog( ui_dialog );
+            uiredrawdialog( ui_dlg_info );
         }
     }
     return( false );

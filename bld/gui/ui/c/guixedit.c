@@ -84,7 +84,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
 bool GUISetText( gui_window *wnd, unsigned id, const char *text )
 {
     VFIELD              *field;
-    a_dialog            *dialog;
+    a_dialog            *ui_dlg_info;
     a_combo_box         *combo_box;
     char                *new;
     bool                ret;
@@ -94,11 +94,11 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
     if( field == NULL ) {
         return( false );
     }
-    dialog = GUIGetDialog( wnd );
+    ui_dlg_info = GUIGetDialog( wnd );
     edit = NULL;
     switch( field->typ ) {
     case FLD_HOT:
-        ret = GUISetHotSpotText( (a_hot_spot *)field->ptr, text );
+        ret = GUISetHotSpotText( field->u.hs, text );
         break;
 
     case FLD_CHECK :
@@ -108,9 +108,9 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
             char    **fldtext;
 
             switch( field->typ ) {
-            case FLD_CHECK: fldtext = &((a_check *)field->ptr)->str; break;
-            case FLD_RADIO: fldtext = &((a_radio *)field->ptr)->str; break;
-            case FLD_TEXT: fldtext = (char **)&field->ptr; break;
+            case FLD_CHECK: fldtext = &field->u.check->str; break;
+            case FLD_RADIO: fldtext = &field->u.radio->str; break;
+            case FLD_TEXT: fldtext = &field->u.str; break;
             }
             if( !GUIStrDup( text, &new ) ) {
                 return( false );
@@ -124,23 +124,23 @@ bool GUISetText( gui_window *wnd, unsigned id, const char *text )
 
     case FLD_EDIT :
     case FLD_INVISIBLE_EDIT :
-        edit = (an_edit_control *)field->ptr;
+        edit = (an_edit_control *)field->u.edit;
         break;
     case FLD_COMBOBOX :
-        combo_box = (a_combo_box *)field->ptr;
+        combo_box = field->u.combo;
         edit = &combo_box->edit;
         break;
     default :
         return( false );   /* without redrawing field */
         break;
     }
-    if( ( edit != NULL ) && ( dialog != NULL ) ) {
+    if( ( edit != NULL ) && ( ui_dlg_info != NULL ) ) {
         ret = GUISetEditText( edit, text, field->typ != FLD_EDIT );
         if( ret ) {
-            uiupdateedit( dialog, field );
+            uiupdateedit( ui_dlg_info, field );
         }
     }
-    if( ret && ( dialog != NULL ) ) {
+    if( ret && ( ui_dlg_info != NULL ) ) {
         GUIRefreshControl( wnd, id );
     }
     return( ret );

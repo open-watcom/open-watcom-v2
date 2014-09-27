@@ -71,7 +71,7 @@ extern bool GUIXCreateWindow( gui_window *, gui_create_info *, gui_window * );
 extern void GUIXSetupWnd( gui_window * );
 
 /* Control Functions */
-extern bool GUIXCreateDialog( gui_create_info *info, gui_window *wnd, int,
+extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
                               gui_control_info *controls_info, bool sys, long dlg_id );
 
 /* Administration functions */

@@ -53,15 +53,15 @@ bool GUIControlSetRedraw( gui_window *wnd, unsigned control, bool redraw )
 
 static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, unsigned id )
 {
-    a_dialog    *dialog;
+    a_dialog    *ui_dlg_info;
 
     switch( field->typ ) {
     case FLD_COMBOBOX :
-        uiupdatecombobox( (a_combo_box *)field->ptr );
+        uiupdatecombobox( field->u.combo );
         /* meant to fall through */
     case FLD_PULLDOWN :
-        dialog = GUIGetDialog( wnd );
-        if( dialog == NULL ) {
+        ui_dlg_info = GUIGetDialog( wnd );
+        if( ui_dlg_info == NULL ) {
             return( false );
         }
         GUIRefreshControl( wnd, id );

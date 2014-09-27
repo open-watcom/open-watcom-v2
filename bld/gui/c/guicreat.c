@@ -44,18 +44,18 @@
  *                     GUIWndInit
  */
 
-gui_window *GUICreateWindow( gui_create_info * info )
+gui_window *GUICreateWindow( gui_create_info *dlg_info )
 {
     gui_window * wnd;
     gui_window * parent;
 
-    wnd = GUISetupWnd( info );
+    wnd = GUISetupWnd( dlg_info );
     if( wnd == NULL ) {
         return( NULL );
     }
-    parent = info->parent;
-    if( GUIXCreateWindow( wnd, info, parent ) ) {
-        GUIInitMDI( wnd, info );
+    parent = dlg_info->parent;
+    if( GUIXCreateWindow( wnd, dlg_info, parent ) ) {
+        GUIInitMDI( wnd, dlg_info );
         return( wnd );
     }
     if( GUIIsValidWindow( wnd ) ) {

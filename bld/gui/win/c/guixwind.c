@@ -81,7 +81,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PAR
 typedef struct wmcreate_info {
     int                 size;
     gui_window          *wnd;
-    gui_create_info     *info;
+    gui_create_info     *dlg_info;
 } wmcreate_info;
 
 /* forward reference */
@@ -407,7 +407,7 @@ bool GUIWndInit( unsigned DClickInterval, gui_window_styles style )
     return( true );
 }
 
-static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *info )
+static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *dlg_info )
 {
     DWORD               style;
     wmcreate_info       wmcreateinfo;
@@ -421,7 +421,7 @@ static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *info )
 
     wmcreateinfo.size = sizeof(wmcreate_info);
     wmcreateinfo.wnd = wnd;
-    wmcreateinfo.info = info;
+    wmcreateinfo.dlg_info = dlg_info;
 
     wnd->hwnd = NULLHANDLE;
     frame_hwnd = NULLHANDLE;
@@ -447,7 +447,7 @@ static void DoSetWindowLongPtr( HWND hwnd, gui_window *wnd )
  * GUIXCreateWindow
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
 {
     DWORD               style;
     HMENU               hmenu;
@@ -471,7 +471,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
 
 #ifdef __OS2_PM__
 // Get rid of the changable font style for PM GUI app's
-    info->style &= ~GUI_CHANGEABLE_FONT;
+    dlg_info->style &= ~GUI_CHANGEABLE_FONT;
 #endif
 
     wnd->root_pinfo.force_count = NUMBER_OF_FORCED_REPAINTS;
@@ -481,54 +481,54 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
     style = COMMON_STYLES;
     if( parent == NULL ) {
         parent_hwnd = HWND_DESKTOP;
-        if( !( info->style & GUI_POPUP ) ) {
+        if( !( dlg_info->style & GUI_POPUP ) ) {
             wnd->flags |= IS_ROOT;
         }
     } else {
         parent_hwnd = parent->hwnd;
-        if( !( info->style & GUI_POPUP ) ) {
+        if( !( dlg_info->style & GUI_POPUP ) ) {
             style |= CHILD_STYLE;
         }
     }
     hmenu = NULLHANDLE;
-    if( !GUISetupStruct( wnd, info, &pos, &size, parent_hwnd, &hmenu ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, &pos, &size, parent_hwnd, &hmenu ) ) {
         return( false );
     }
     if( !(wnd->style & GUI_NOFRAME) ) {
-        if( info->text ) {
+        if( dlg_info->text ) {
             style |= WS_CAPTION;
             wnd->flags |= HAS_CAPTION;
         } else {
             style |= WS_BORDER;
         }
     }
-    if( info->style & GUI_RESIZEABLE ) {
+    if( dlg_info->style & GUI_RESIZEABLE ) {
         style |= WS_THICKFRAME;
     }
-    if( info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll & GUI_HSCROLL ) {
         style |= WS_HSCROLL;
     }
-    if( info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll & GUI_VSCROLL ) {
         style |= WS_VSCROLL;
     }
     if( wnd->flags & HAS_CAPTION ) {
-        if( info->style & GUI_MAXIMIZE ) {
+        if( dlg_info->style & GUI_MAXIMIZE ) {
             style |= WS_MAXIMIZEBOX;
         }
-        if( info->style & GUI_MINIMIZE ) {
+        if( dlg_info->style & GUI_MINIMIZE ) {
             style |= WS_MINIMIZEBOX;
         }
-        if( info->style & GUI_SYSTEM_MENU ) {
+        if( dlg_info->style & GUI_SYSTEM_MENU ) {
             style |= WS_SYSMENU;
         }
     } else {
         wnd->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
-        info->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
+        dlg_info->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
     }
-    if( info->style & GUI_POPUP ) {
+    if( dlg_info->style & GUI_POPUP ) {
         style |= WS_POPUP;
     }
-    if( info->style & GUI_DIALOG_LOOK ) {
+    if( dlg_info->style & GUI_DIALOG_LOOK ) {
         style |= GUI_DIALOG_STYLE;
         class_name = GUIDialogClass;
     } else {
@@ -536,11 +536,11 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
     }
 
     wnd->font = GUIGetSystemFont();
-    GUIInitHint( wnd, info->num_menus, info->menu, MENU_HINT );
+    GUIInitHint( wnd, dlg_info->num_menus, dlg_info->menu, MENU_HINT );
     GUISetGUIHint( wnd );
     wmcreateinfo.size = sizeof(wmcreate_info);
     wmcreateinfo.wnd  = wnd;
-    wmcreateinfo.info = info;
+    wmcreateinfo.dlg_info = dlg_info;
     hwnd        = NULLHANDLE;
     frame_hwnd  = NULLHANDLE;
     client_hwnd = NULLHANDLE;
@@ -550,13 +550,13 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
     frame_flags = 0;
     if( wnd->flags & HAS_CAPTION ) {
         flags |= FCF_TITLEBAR;
-        if( info->style & GUI_SYSTEM_MENU ) {
+        if( dlg_info->style & GUI_SYSTEM_MENU ) {
             flags |= FCF_SYSMENU;
         }
-        if( info->style & GUI_MAXIMIZE ) {
+        if( dlg_info->style & GUI_MAXIMIZE ) {
             flags |= FCF_MAXBUTTON;
         }
-        if( info->style & GUI_MINIMIZE ) {
+        if( dlg_info->style & GUI_MINIMIZE ) {
             flags |= FCF_MINBUTTON;
         }
         flags |= FCF_BORDER;
@@ -566,30 +566,30 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
             frame_flags |= FS_BORDER;
         }
         wnd->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
-        info->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
+        dlg_info->style &= ~(GUI_MAXIMIZE|GUI_MINIMIZE|GUI_SYSTEM_MENU);
     }
-    if( info->style & GUI_RESIZEABLE ) {
+    if( dlg_info->style & GUI_RESIZEABLE ) {
         flags |= FCF_SIZEBORDER;
     }
     if( parent_hwnd == HWND_DESKTOP ) {
-        if( info->num_menus > 0 ) {
+        if( dlg_info->num_menus > 0 ) {
             //flags |= FCF_MENU;
         }
     }
-    if( info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll & GUI_HSCROLL ) {
         flags |= FCF_HORZSCROLL;
     }
-    if( info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll & GUI_VSCROLL ) {
         flags |= FCF_VERTSCROLL;
     }
-    if( info->style & GUI_DIALOG_LOOK ) {
+    if( dlg_info->style & GUI_DIALOG_LOOK ) {
         flags |= FCF_DLGBORDER;
     }
-    if( info->style & GUI_POPUP ) {
+    if( dlg_info->style & GUI_POPUP ) {
         flags |= FCF_NOMOVEWITHOWNER;
     }
     frame_hwnd = WinCreateStdWindow( parent_hwnd, frame_flags | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, &flags,
-                                     NULL, info->text,
+                                     NULL, dlg_info->text,
                                      0, (HMODULE)0, 0, NULL );
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, (WPI_PROC)GUIFrameProc );
@@ -620,12 +620,12 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
 #else
     exstyle = WS_EX_NOPARENTNOTIFY;
 #ifdef __NT__
-    if( info->style & GUI_3D_BORDER ) {
+    if( dlg_info->style & GUI_3D_BORDER ) {
         exstyle |= WS_EX_CLIENTEDGE;
         style &= ~WS_BORDER;
     }
 #endif
-    hwnd = _wpi_createwindow_ex( exstyle, class_name, info->text, style, 0, 0, pos.x,
+    hwnd = _wpi_createwindow_ex( exstyle, class_name, dlg_info->text, style, 0, 0, pos.x,
                                  pos.y, size.x, size.y, parent_hwnd, hmenu, GUIMainHInst,
                                  &wmcreateinfo, &frame_hwnd );
 #endif
@@ -633,13 +633,13 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *info, gui_window *paren
         return( false );
     }
 
-    GUISetIcon( wnd, info->icon );
+    GUISetIcon( wnd, dlg_info->icon );
 
-    if( info->style & (GUI_INIT_MAXIMIZED|GUI_INIT_MINIMIZED) ) {
+    if( dlg_info->style & (GUI_INIT_MAXIMIZED|GUI_INIT_MINIMIZED) ) {
         GUISetRedraw( wnd, false );
-        if( info->style & GUI_INIT_MAXIMIZED ) {
+        if( dlg_info->style & GUI_INIT_MAXIMIZED ) {
             GUIMaximizeWindow( wnd );
-        } else if( info->style & GUI_INIT_MINIMIZED ) {
+        } else if( dlg_info->style & GUI_INIT_MINIMIZED ) {
             GUIMinimizeWindow( wnd );
         }
         GUISetRedraw( wnd, true );
@@ -856,7 +856,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #else
     wmcreate_info       *wmcreateinfo;
 #endif
-    gui_create_info     *createinfo;
+    gui_create_info     *dlg_info;
     bool                use_defproc;
     unsigned            control_id;
     HWND                win;
@@ -866,7 +866,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
 
     root = NULL;
-    createinfo = NULL;
+    dlg_info = NULL;
     ret = 0L;
     use_defproc = false;
     if( msg == WM_CREATE ) {
@@ -879,7 +879,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
 #endif
         if ( wmcreateinfo != NULL ) {
             wnd = wmcreateinfo->wnd;
-            createinfo = wmcreateinfo->info;
+            dlg_info = wmcreateinfo->dlg_info;
             if( wnd->hwnd == NULLHANDLE ) {
 #ifdef __OS2_PM__
                 if( wnd->root_frame != NULLHANDLE && wnd->root == NULLHANDLE ) {
@@ -918,7 +918,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
                 _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
             _wpi_getclientrect( wnd->root_frame, &wnd->root_client );
-            if( CreateBackgroundWnd( wnd, createinfo ) ) {
+            if( CreateBackgroundWnd( wnd, dlg_info ) ) {
                 return( 0 );
             }
             return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
@@ -962,14 +962,14 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
         NumWindows++; // even if -1 is returned, window will get WM_DESTROY
         win = GUIGetParentFrameHWND( wnd );
         if( (  wnd->root_frame != NULLHANDLE ) ||
-            ( createinfo->style & GUI_POPUP ) ) {
+            ( dlg_info->style & GUI_POPUP ) ) {
             if( !GUIAddToSystemMenu( wnd, win, 0, NULL,
-                                     createinfo->style ) ) {
+                                     dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         } else {
-            if( !GUIAddToSystemMenu( wnd, win, createinfo->num_menus,
-                                createinfo->menu, createinfo->style ) ) {
+            if( !GUIAddToSystemMenu( wnd, win, dlg_info->num_menus,
+                                dlg_info->menu, dlg_info->style ) ) {
                 return( (WPI_MRESULT)WPI_ERROR_ON_CREATE );
             }
         }

@@ -39,7 +39,7 @@
 
 extern  bool            GUIMDI;
 
-void InitMDI( gui_window *wnd, gui_create_info *info );
+void InitMDI( gui_window *wnd, gui_create_info *dlg_info );
 void ChangeTitle( gui_window *wnd );
 void XChangeTitle( gui_window *wnd );
 void MDIResetMenus( gui_window *wnd, gui_window *parent, int num_menus, gui_menu_struct *menu );

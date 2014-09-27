@@ -50,35 +50,35 @@ static char *GetText( gui_window *wnd, unsigned id, int choice, bool get_curr )
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
-            if( GUIStrDup( ((a_check *)field->ptr)->str, &text ) ) {
+            if( GUIStrDup( field->u.check->str, &text ) ) {
                 return( text );
             }
             break;
 
         case FLD_RADIO:
-            if( GUIStrDup( ((a_radio *)field->ptr)->str, &text ) ) {
+            if( GUIStrDup( field->u.radio->str, &text ) ) {
                 return( text );
             }
             break;
 
         case FLD_HOT:
-            if( GUIStrDup( ((a_hot_spot *)field->ptr)->str, &text ) ) {
+            if( GUIStrDup( field->u.hs->str, &text ) ) {
                 return( text );
             }
             break;
 
         case FLD_TEXT :
-            if( GUIStrDup( (char*)field->ptr, &text ) ) {
+            if( GUIStrDup( field->u.str, &text ) ) {
                 return( text );
             }
             break;
         case FLD_EDIT :
         case FLD_INVISIBLE_EDIT :
-            edit_control = field->ptr;
+            edit_control = field->u.edit;
             return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
         case FLD_COMBOBOX :
             if( get_curr ) {
-                combo_box = (a_combo_box *)field->ptr;
+                combo_box = field->u.combo;
                 edit_control = &combo_box->edit;
                 return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
             }

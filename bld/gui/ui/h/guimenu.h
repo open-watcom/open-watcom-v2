@@ -32,7 +32,7 @@
 
 #ifndef _GUIMENU_H_
 #define _GUIMENU_H_
-extern bool GUICreateMenus( gui_window *wnd,  gui_create_info *info );
+extern bool GUICreateMenus( gui_window *wnd,  gui_create_info *dlg_info );
 extern void GUIFreeMenus( gui_window *wnd );
 extern void GUIFreeMenuItems( MENUITEM *menus );
 extern bool GUICreateMenuItems( int num_menus, gui_menu_struct *info, MENUITEM ** );
