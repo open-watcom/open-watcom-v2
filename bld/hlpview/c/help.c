@@ -909,14 +909,14 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
     char        *srcptr;
     char        *dstptr;
 
-    helpScreen.name = NULL;
+    *helpname = '\0';
     helpLines = 0;
     if( str != NULL ) {
-        strcpy( helpname, str );
         srcptr = str;
         dstptr = helpname;
         while( *srcptr != '\0' ) {
-            if( *srcptr == HELP_ESCAPE ) srcptr ++;
+            if( *srcptr == HELP_ESCAPE )
+                srcptr++;
             *dstptr = *srcptr;
             srcptr++;
             dstptr++;
@@ -928,7 +928,6 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
             }
         }
         *dstptr = '\0';
-        helpScreen.name = helpname;
         scanTopic( helpInBuf, &str );
         str++;
         str = strtok( str, " " );
@@ -957,9 +956,10 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
     } else if( helpScreen.area.width < HELP_MIN_WIDTH ) {
         helpScreen.area.width = HELP_MIN_WIDTH;
     }
-    if( strlen( helpScreen.name ) > helpScreen.area.width ) {
-        helpScreen.name[ helpScreen.area.width ] = '\0';
+    if( strlen( helpname ) > helpScreen.area.width ) {
+        helpname[helpScreen.area.width] = '\0';
     }
+    helpScreen.name = helpname;
     hlp_ut_position( &helpScreen.area, helpScreen.area.height, helpScreen.area.width,
                      nums[2], nums[3], TRUE );
 }
@@ -1207,7 +1207,8 @@ static int dispHelp( char *str, VTAB *tab )
 
     ignoreMouseRelease = TRUE;
     helpSet( str, helpname, sizeof( helpname ) );
-    if( uivopen( &helpScreen ) == NULL ) return( HELP_NO_VOPEN );
+    if( uivopen( &helpScreen ) == NULL )
+        return( HELP_NO_VOPEN );
 
     use.height = helpScreen.area.height - 3;
     use.width = helpScreen.area.width;
