@@ -70,7 +70,7 @@ class TTLRec : public TTLKey
     int     dump( OutFile * dest );
 
     TTLRec( TTLRec const & ) : TTLKey(0) {};
-    TTLRec &    operator=( TTLRec const & ){ return *this; };
+    TTLRec &    operator=( TTLRec const & ) { return *this; };
 
 public:
     TTLRec( uint_32 off, char const string[] );
@@ -118,7 +118,7 @@ TTLRec::TTLRec( uint_32 off, char const string[] )
     : TTLKey( off )
 {
     size_t len = strlen( string ) + 1;
-    _title = new char[ len ];
+    _title = new char[len];
     strncpy( _title, string, len );
 }
 
@@ -151,11 +151,11 @@ int TTLRec::dump( OutFile * dest )
 
 
 char const HFTtlbtree::_titleMagic[Btree::_magNumSize] = {
-                        0x3B, 0x29, 0x02, 0x00, 0x00,
-                    0x08, 0x4C, 0x7A, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00
+    0x3B, 0x29, 0x02, 0x00, 0x00,
+    0x08, 0x4C, 0x7A, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00
 };
 
 

@@ -53,7 +53,7 @@ class HFContext : public Dumpable
     static char const   _conMagic[];
 
     // Assignment of HFContext's is not permitted.
-    HFContext( HFContext const & ){};
+    HFContext( HFContext const & ) {};
     HFContext & operator=( HFContext const & ) { return *this; };
 
 public:

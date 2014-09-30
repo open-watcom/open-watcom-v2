@@ -60,7 +60,7 @@ class HFKwbtree : public Dumpable
     static char const   _keyMagic[];
 
     // Assignment of HFKwbtree's is not allowed.
-    HFKwbtree( HFKwbtree const & ){};
+    HFKwbtree( HFKwbtree const & ) {};
     HFKwbtree & operator=( HFKwbtree const & ) { return *this; };
 
 public:

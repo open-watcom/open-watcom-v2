@@ -80,10 +80,10 @@ HFCtxomap::~HFCtxomap()
 {
     CmapRec *current = _firstRec;
     CmapRec *temp;
-    while( current != NULL ){
-    temp = current;
-    current = current->_nextRec;
-    delete temp;
+    while( current != NULL ) {
+        temp = current;
+        current = current->_nextRec;
+        delete temp;
     }
 }
 
@@ -93,11 +93,11 @@ HFCtxomap::~HFCtxomap()
 void HFCtxomap::addMapRec( uint_32 num, uint_32 h_val )
 {
     CmapRec *newrec = new CmapRec( num, h_val );
-    if( _firstRec == NULL ){
-    _firstRec = _lastRec = newrec;
+    if( _firstRec == NULL ) {
+        _firstRec = _lastRec = newrec;
     } else {
-    _lastRec->_nextRec = newrec;
-    _lastRec = newrec;
+        _lastRec->_nextRec = newrec;
+        _lastRec = newrec;
     }
     _numRecords += 1;
     _size += 2*sizeof( uint_32 );
@@ -134,9 +134,9 @@ int HFCtxomap::dump( OutFile * dest )
 {
     dest->write( _numRecords );
     CmapRec *current = _firstRec;
-    while( current != NULL ){
-    current->dump( dest );
-    current = current->_nextRec;
+    while( current != NULL ) {
+        current->dump( dest );
+        current = current->_nextRec;
     }
     return 1;
 }

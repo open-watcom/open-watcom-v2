@@ -113,7 +113,7 @@ int main( int argc, char *argv[] )
                 while( *temp != '\0' && isspace( *temp ) ) {
                     temp++;
                 }
-                if( *temp != '\0' ){
+                if( *temp != '\0' ) {
                     HCWarning( USAGE );
                     return( -1 );
                 } else {
@@ -141,7 +141,7 @@ int main( int argc, char *argv[] )
         HCWarning( BAD_EXT );
         return( -1 );
     }
-    if( ext[0] == '\0' ){
+    if( ext[0] == '\0' ) {
         _makepath( path, drive, dir, fname, HpjExt );
     }
 
@@ -195,8 +195,7 @@ int main( int argc, char *argv[] )
         if( my_files._phrFile != NULL ) {
             delete my_files._phrFile;
         }
-    }
-    catch( HCException ) {
+    } catch( HCException ) {
         HCWarning( PROGRAM_STOPPED );
         return( -1 );
     }

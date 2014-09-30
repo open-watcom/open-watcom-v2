@@ -52,7 +52,7 @@ class HFTtlbtree : public Dumpable
     static char const   _titleMagic[];
 
     // Assignment of HFTtlbtree's is not permitted.
-    HFTtlbtree( HFTtlbtree const & ){};
+    HFTtlbtree( HFTtlbtree const & ) {};
     HFTtlbtree &    operator=( HFTtlbtree const & ) { return *this; };
 
 public:

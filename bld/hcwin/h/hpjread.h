@@ -66,7 +66,7 @@ class HPJScanner
     char    _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
-    HPJScanner( HPJScanner const & ){};
+    HPJScanner( HPJScanner const & ) {};
     HPJScanner &    operator=( HPJScanner const & ) { return *this; };
 
 public:

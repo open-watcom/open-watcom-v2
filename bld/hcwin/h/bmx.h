@@ -52,7 +52,7 @@
 class Bmx : public Dumpable
 {
     // Assignment of Bmx's is not permitted.
-    Bmx( Bmx const & ){};
+    Bmx( Bmx const & ) {};
     Bmx &   operator=( Bmx const & ) { return *this; };
 
 protected:
@@ -155,7 +155,7 @@ class HFBitmaps
     HFSDirectory    *_dfile;
 
     // Assignment of HFBitmaps's is not permitted.
-    HFBitmaps( HFBitmaps const & ){};
+    HFBitmaps( HFBitmaps const & ) {};
     HFBitmaps & operator=( HFBitmaps const & ) { return *this; };
 
 public:

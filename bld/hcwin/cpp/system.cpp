@@ -48,13 +48,13 @@ SystemText::SystemText( uint_16 flg, const char *txt )
 
     // Impose a maximum size restriction: the size has to
     // be expressible as a uint_16.
-    if( length > 0xFFFF ){
+    if( length > 0xFFFF ) {
         _size = 0xFFFF;
     } else {
         _size = (uint_16)length;
     }
 
-    _text = new char[ _size ];
+    _text = new char[_size];
     _text[_size - 1] = '\0';
     strncpy( _text, txt, _size - 1 );
 }
@@ -172,10 +172,10 @@ HFSystem::~HFSystem()
     SystemRec   *temp;
 
     // Delete the linked list.
-    while( current != NULL ){
-    temp = current;
-    current = current->_next;
-    delete temp;
+    while( current != NULL ) {
+        temp = current;
+        current = current->_next;
+        delete temp;
     }
 }
 
@@ -187,7 +187,7 @@ HFSystem::~HFSystem()
 
 void HFSystem::setCompress( int val )
 {
-    if( val ){
+    if( val ) {
         _compLevel = LZW_COMPRESSED;
     } else {
         _compLevel = NO_COMPRESSION;
@@ -221,21 +221,21 @@ void HFSystem::addRecord( SystemRec *nextrec )
     // For bookkeeping, SYS_COPYRIGHT and SYS_CONTENTS records
     // are kept at the head of the list.
 
-    if( nextrec->flag() == SYS_COPYRIGHT ){
-    nextrec->_next = _first->_next;
-    _size -= _first->size();
-    delete _first;
-    _first = nextrec;
-    } else if( nextrec->flag() == SYS_CONTENTS ){
-    SystemRec   *temp = _first->_next;
-    nextrec->_next = temp->_next;
-    _size -= temp->size();
-    delete temp;
-    _first->_next = nextrec;
+    if( nextrec->flag() == SYS_COPYRIGHT ) {
+        nextrec->_next = _first->_next;
+        _size -= _first->size();
+        delete _first;
+        _first = nextrec;
+    } else if( nextrec->flag() == SYS_CONTENTS ) {
+        SystemRec   *temp = _first->_next;
+        nextrec->_next = temp->_next;
+        _size -= temp->size();
+        delete temp;
+        _first->_next = nextrec;
     } else {
-    _last->_next = nextrec;
-    nextrec->_next = NULL;
-    _last = nextrec;
+        _last->_next = nextrec;
+        nextrec->_next = NULL;
+        _last = nextrec;
     }
 }
 
@@ -252,16 +252,16 @@ int HFSystem::winNumberOf( char * win_name )
 
     i = 0;
     current = _first;
-    while( current != NULL && i<255 ){
-    if( current->_flag == SYS_WINDOW ){
-        cur_win = (SystemWin*) current;
-        if( strcmp( cur_win->_name, win_name ) == 0 ){
-        return i;
-        } else {
-        i++;
+    while( current != NULL && i<255 ) {
+        if( current->_flag == SYS_WINDOW ) {
+            cur_win = (SystemWin*) current;
+            if( strcmp( cur_win->_name, win_name ) == 0 ) {
+                return i;
+            } else {
+                i++;
+            }
         }
-    }
-    current = current->_next;
+        current = current->_next;
     }
     return NoSuchWin;
 }
@@ -272,9 +272,9 @@ int HFSystem::winNumberOf( char * win_name )
 int HFSystem::dump( OutFile *dest )
 {
     // Get the address of the contents topic.
-    if( _contentNum != 0 ){
+    if( _contentNum != 0 ) {
         _contentNum = _hashFile->getOffset( _contentNum );
-        if( _contentNum == HFContext::_badValue ){
+        if( _contentNum == HFContext::_badValue ) {
             HCWarning( SYS_NOCONTENTS );
         } else {
             addRecord( new SystemNum( SYS_CONTENTS, _contentNum ) );
@@ -294,7 +294,7 @@ int HFSystem::dump( OutFile *dest )
 
     // Dump the records in the linked list, in order.
     SystemRec   *current = _first;
-    while( current != NULL ){
+    while( current != NULL ) {
         current->dump( dest );
         current = current->_next;
     }

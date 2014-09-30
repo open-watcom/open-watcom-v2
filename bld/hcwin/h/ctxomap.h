@@ -70,7 +70,7 @@ class HFCtxomap : public Dumpable
     int         _resolved;
 
     // Assignment of HFCtxomap's is not permitted.
-    HFCtxomap( HFCtxomap const & ){};
+    HFCtxomap( HFCtxomap const & ) {};
     HFCtxomap & operator=( HFCtxomap const & ) { return *this; };
 
 public:

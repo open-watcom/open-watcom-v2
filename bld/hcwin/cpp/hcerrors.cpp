@@ -47,26 +47,26 @@ void ErrorPrint( FILE *fp, ErrString format, va_list values )
     ErrString   string;
     int     value;
 
-    while( *letter != '\0' ){
-        if( *letter != '%' ){
+    while( *letter != '\0' ) {
+        if( *letter != '%' ) {
             fputc( *letter, fp );
         } else {
             // Currently, only %s (strings) and %d (integers) are supported.
-            switch( *++letter ){
-                case 'S':
-                case 's':
-                    string = va_arg( values, ErrString );
-                    fprintf( fp, "%s", string );
-                    break;
+            switch( *++letter ) {
+            case 'S':
+            case 's':
+                string = va_arg( values, ErrString );
+                fprintf( fp, "%s", string );
+                break;
 
-                case 'D':
-                case 'd':
-                    value = va_arg( values, int );
-                    fprintf( fp, "%d", value );
-                    break;
+            case 'D':
+            case 'd':
+                value = va_arg( values, int );
+                fprintf( fp, "%d", value );
+                break;
 
-                case '%':
-                    fputc( '%', fp );
+            case '%':
+                fputc( '%', fp );
             }
         }
         letter++;
@@ -125,7 +125,7 @@ void SetQuiet( int be_quiet )
 
 void HCStartFile( char const name[] )
 {
-    if( printOutput ){
+    if( printOutput ) {
         fprintf( stderr, "\nReading %s  ", name );
     }
 }
@@ -134,36 +134,36 @@ void HCTick()
 {
     static const char wheel[]="\\|/-";
     static unsigned i=0;
-    if( printOutput ){
+    if( printOutput ) {
         fputc( '\b', stderr );
-        fputc( wheel[i++%4], stderr );
+        fputc( wheel[i++ % 4], stderr );
     }
 }
 
 void HCDoneTick()
 {
-    if( printOutput ){
+    if( printOutput ) {
         fprintf( stderr, "\nFinished.\n" );
     }
 }
 
 void HCStartOutput()
 {
-    if( printOutput ){
+    if( printOutput ) {
         fprintf( stderr, "\nWriting .HLP file.  " );
     }
 }
 
 void HCStartPhrase()
 {
-    if( printOutput ){
+    if( printOutput ) {
         fprintf( stderr, "\nConstructing phrase table:         " );
     }
 }
 
 void HCPhraseLoop( int pass )
 {
-    if( printOutput ){
+    if( printOutput ) {
         fprintf( stderr, "\b\b\b\b\b\b\bPass %d.", pass );
     }
 }

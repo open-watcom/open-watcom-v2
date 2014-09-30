@@ -57,8 +57,8 @@ struct KWoffset
 
 class KWKey : public BtreeData
 {
-    KWKey( KWKey const & ){};
-    KWKey &     operator=( KWKey const & ){ return *this; };
+    KWKey( KWKey const & ) {};
+    KWKey &     operator=( KWKey const & ) { return *this; };
 
 protected:
     char        *_keyword;
@@ -89,7 +89,7 @@ class KWRec : public KWKey
     int         dump( OutFile * dest );
 
     KWRec( KWRec const & ) : KWKey("") {};
-    KWRec &     operator=( KWRec const & ){ return *this; };
+    KWRec &     operator=( KWRec const & ) { return *this; };
 
 public:
     KWRec( char const kword[], uint_32 first_off );
@@ -119,7 +119,7 @@ inline KWoffset::KWoffset( uint_32 off )
 KWKey::KWKey( char const kword[] )
 {
     size_t len = strlen( kword ) + 1;
-    _keyword = new char[ len ];
+    _keyword = new char[len];
     strcpy( _keyword, kword );
 }
 
@@ -154,14 +154,17 @@ int KWKey::lessThan( BtreeData * other )
 
     do {
         left = *pleft++; right = *pright++;
-        if( left >= 'A' && left <= 'Z' ) left += 'a' - 'A';
-        if( right >= 'A' && right <= 'Z' ) right += 'a' - 'A';
+        if( left >= 'A' && left <= 'Z' )
+            left += 'a' - 'A';
+        if( right >= 'A' && right <= 'Z' ) {
+            right += 'a' - 'A';
+        }
     } while( left == right && left != '\0' );
 
     int result = left < right;
-    if( isalnum( left ) && !isalnum( right ) ){
+    if( isalnum( left ) && !isalnum( right ) ) {
         result = 0;
-    } else if( !isalnum( left ) && isalnum( right ) ){
+    } else if( !isalnum( left ) && isalnum( right ) ) {
         result = 1;
     }
 
@@ -203,7 +206,7 @@ KWRec::~KWRec()
 {
     KWoffset    *current = _head;
     KWoffset    *temp;
-    while( current != NULL ){
+    while( current != NULL ) {
         temp = current;
         current = current->_next;
         delete temp;
@@ -238,17 +241,19 @@ void KWRec::addOffset( uint_32 new_off )
 {
     KWoffset    *new_node = new KWoffset( new_off );
     KWoffset    *current = _head;
-    while( current != NULL ){
-        if( current->_offset > new_off ) break;
-        if( current->_next == NULL ) break;
+    while( current != NULL ) {
+        if( current->_offset > new_off )
+            break;
+        if( current->_next == NULL )
+            break;
         current = current->_next;
     }
-    if( current == NULL ){
+    if( current == NULL ) {
         _head = new_node;
-    } else if( current->_offset > new_off ){
+    } else if( current->_offset > new_off ) {
         new_node->_next = current;
         new_node->_prev = current->_prev;
-        if( current->_prev != NULL ){
+        if( current->_prev != NULL ) {
             current->_prev->_next = new_node;
         } else {
             _head = new_node;
@@ -298,13 +303,13 @@ HFKwbtree::~HFKwbtree()
 
 uint_32 HFKwbtree::size()
 {
-    if( !_haveSetOffsets ){
+    if( !_haveSetOffsets ) {
         BtreeIter   _iterator( *_words );
         uint_32     offset = 0;
         KWRec       *record;
 
         // Use an iterator to add up the sizes in the tree.
-        for( ;; ){
+        for( ;; ) {
             record = (KWRec*) _iterator.data();
             if( record == NULL ) break;
             record->_dataOffset = offset;
@@ -332,7 +337,7 @@ void HFKwbtree::addKW( char const keyword[], uint_32 offset )
     KWKey       temp_key( keyword );
     KWRec       *found_rec = (KWRec*) _words->findNode( temp_key );
 
-    if( found_rec == NULL ){
+    if( found_rec == NULL ) {
         found_rec = new KWRec( keyword, offset );
         _words->insert( found_rec );
     } else {
@@ -356,8 +361,8 @@ HFKwdata::HFKwdata( HFSDirectory * d_file, HFKwbtree * tree )
 
 uint_32 HFKwdata::size()
 {
-    if( _size == 0 ){
-        for( _iterator.init(); _iterator.data()!=NULL; _iterator++ ){
+    if( _size == 0 ) {
+        for( _iterator.init(); _iterator.data()!=NULL; _iterator++ ) {
             _size += ( (KWRec*) _iterator.data() )->count() * sizeof( uint_32 );
         }
     }
@@ -371,9 +376,9 @@ int HFKwdata::dump( OutFile * dest )
 {
     KWRec       *record;
     KWoffset    *p_off;
-    for( _iterator.init(); _iterator.data() != NULL; _iterator++ ){
+    for( _iterator.init(); _iterator.data() != NULL; _iterator++ ) {
         record = (KWRec*) _iterator.data();
-        for( p_off = record->head(); p_off!=NULL; p_off = p_off->_next ){
+        for( p_off = record->head(); p_off!=NULL; p_off = p_off->_next ) {
             dest->write( p_off->_offset );
         }
     }
@@ -396,9 +401,9 @@ HFKwmap::HFKwmap( HFSDirectory * d_file, HFKwbtree * tree )
 
 uint_32 HFKwmap::size()
 {
-    if( _numRecs == 0 ){
+    if( _numRecs == 0 ) {
         _iterator.init();
-        while( _iterator.data() != NULL ){
+        while( _iterator.data() != NULL ) {
             _numRecs += 1;
             _iterator.nextPage();
         }
@@ -417,7 +422,7 @@ int HFKwmap::dump( OutFile * dest )
     _iterator.init();
     uint_32     rec_count = 0;
     uint_16     page_num;
-    while( _iterator.data() != NULL ){
+    while( _iterator.data() != NULL ) {
         page_num = _iterator.thisPage();
         dest->write( rec_count );
         dest->write( page_num );

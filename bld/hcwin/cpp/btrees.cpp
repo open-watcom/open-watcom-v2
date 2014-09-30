@@ -84,12 +84,12 @@ void BtreeData::insertSelf( BtreePage *dest )
 {
     BtreeData   *current = dest->_entries;
     BtreeData   *temp = NULL;
-    while( current != NULL && current->lessThan( this ) ){
+    while( current != NULL && current->lessThan( this ) ) {
         temp = current;
         current = current->_bnext;
     }
-    if( temp == NULL ){
-        if( current != NULL ){
+    if( temp == NULL ) {
+        if( current != NULL ) {
             _bnext = current;
             current->_bprev = this;
         }
@@ -98,7 +98,7 @@ void BtreeData::insertSelf( BtreePage *dest )
         _bnext = temp->_bnext;
         _bprev = temp;
         temp->_bnext = this;
-        if( _bnext != NULL ){
+        if( _bnext != NULL ) {
             _bnext->_bprev = this;
         }
     }
@@ -116,7 +116,7 @@ BtreePage *BtreeData::seekNext( BtreePage *first )
 {
     BtreePage   *result = first->_firstChild;
     BtreeData   *current = first->_entries;
-    while( current != NULL ){
+    while( current != NULL ) {
         if( lessThan( current ) ) break;
         result = current->_child;
         current = current->_bnext;
@@ -138,7 +138,7 @@ BtreePage::BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descenda
           _parent( ancestor ),
           _firstChild( descendant )
 {
-    if( descendant == NULL ){
+    if( descendant == NULL ) {
         // Leaf pages start with a header and indices to the previous
         // and next leaf pages.
         _size = TREEPAGE_HEADER_SIZE+2*sizeof( uint_16 );
@@ -156,7 +156,7 @@ BtreePage::~BtreePage()
 {
     BtreeData   *current = _entries;
     BtreeData   *temp;
-    while( current != NULL ){
+    while( current != NULL ) {
         temp = current;
         current = current->bnext();
         delete temp;
@@ -178,13 +178,13 @@ int BtreePage::dump( OutFile *dest )
 
     // If this a leaf node, print the indices of the previous
     // and next pages.
-    if( _firstChild == NULL ){
-        if( _prevPage ){
+    if( _firstChild == NULL ) {
+        if( _prevPage ) {
             dest->write( _prevPage->_thisPage );
         } else {
             dest->write( (uint_16)~0 );
         }
-        if( _nextPage ){
+        if( _nextPage ) {
             dest->write( _nextPage->_thisPage );
         } else {
             dest->write( (uint_16)~0 );
@@ -196,7 +196,7 @@ int BtreePage::dump( OutFile *dest )
         amount_left -= sizeof( uint_16 );
     }
 
-    for( BtreeData *i = _entries; i != NULL; i = i->bnext() ){
+    for( BtreeData *i = _entries; i != NULL; i = i->bnext() ) {
 
         // Dump the data.
         i->dump( dest );
@@ -205,14 +205,14 @@ int BtreePage::dump( OutFile *dest )
         // if this is a tree node, print the index of the child page
         // corresponding to this data.
 
-        if( _firstChild != NULL ){
+        if( _firstChild != NULL ) {
             dest->write( i->child()->_thisPage );
             amount_left -= sizeof( uint_16 );
         }
     }
 
     // Pad out the remaining space.
-    while( amount_left ){
+    while( amount_left ) {
         dest->write( (uint_8)0 );
         amount_left--;
     }
@@ -233,39 +233,41 @@ int BtreePage::split()
     BtreePage   *sibling;
 
     // Search for the point to break the page at.
-    while( current != NULL ){
-        if( cur_num >= limit ) break;
+    while( current != NULL ) {
+        if( cur_num >= limit )
+            break;
         cur_size += current->size();
         cur_num++;
         current = current->bnext();
     }
-    if( current == NULL ) return 0;
+    if( current == NULL )
+        return 0;
 
     // Create a new page, and modify the assorted pointers.
     sibling = new BtreePage( _maxSize, _parent, current->child() );
     sibling->_prevPage = this;
     sibling->_nextPage = _nextPage;
-    if( _nextPage != NULL ){
+    if( _nextPage != NULL ) {
         _nextPage->_prevPage = sibling;
     }
     _nextPage = sibling;
 
     // Give some of our data to the new page by modifying our data list.
-    if( _firstChild != NULL ){
+    if( _firstChild != NULL ) {
         sibling->_entries = current->bnext();
-        if( current->bprev() != NULL ){
+        if( current->bprev() != NULL ) {
             current->bprev()->bnext( NULL );
         } else {
             _entries = NULL;
         }
-        if( current->bnext() != NULL ){
+        if( current->bnext() != NULL ) {
             current->bnext()->bprev( NULL );
         }
         sibling->_numEntries = (uint_16) (_numEntries-cur_num-1);
         sibling->_size = _size-cur_size-current->size();
     } else {
         sibling->_entries = current;
-        if( current->bprev() != NULL ){
+        if( current->bprev() != NULL ) {
             current->bprev()->bnext( NULL );
         } else {
             _entries = NULL;
@@ -278,11 +280,11 @@ int BtreePage::split()
     // Record the fact that we've lost data.
     _numEntries = cur_num;
     _size = cur_size + TREEPAGE_HEADER_SIZE + sizeof(uint_16);
-    if( _firstChild == NULL ){
+    if( _firstChild == NULL ) {
         _size += sizeof( uint_16 );
     }
 
-    if( _parent == NULL ){
+    if( _parent == NULL ) {
 
         // Die in flames!!!
         HCError( BTREE_ERR );
@@ -291,7 +293,7 @@ int BtreePage::split()
 
         // Notify the parent page of the split by passing a new data item.
         BtreeData *newdata;
-        if( _firstChild == NULL ){
+        if( _firstChild == NULL ) {
 
             // If this is a leaf page, we generate a new item.
             newdata = current->myKey();
@@ -310,10 +312,10 @@ int BtreePage::split()
     }
 
     // Update the parent field of 'sibling's children.
-    if( _firstChild != NULL ){
+    if( _firstChild != NULL ) {
         sibling->_firstChild->_parent = sibling;
         current = sibling->_entries;
-        while( current != NULL ){
+        while( current != NULL ) {
             current->child()->_parent = sibling;
             current = current->bnext();
         }
@@ -373,16 +375,17 @@ void Btree::insert( BtreeData *newdata )
     BtreePage   *curpage;
 
     // Search for the leaf page where this data will go.
-    for( ;; ){
+    for( ;; ) {
         curpage = nextlevel;
         nextlevel = newdata->seekNext( curpage );
-        if( nextlevel == NULL ) break;
+        if( nextlevel == NULL )
+            break;
 
         // As we search, split any full pages we see on the way down.
-        if( nextlevel->needSplit( newdata->size() ) ){
+        if( nextlevel->needSplit( newdata->size() ) ) {
             ++_numSplits;
             nextlevel->split();
-            if( nextlevel->_nextPage->_entries->lessThan( newdata ) ){
+            if( nextlevel->_nextPage->_entries->lessThan( newdata ) ) {
                 nextlevel = nextlevel->_nextPage;
             }
         }
@@ -411,11 +414,12 @@ void Btree::insert( BtreeData *newdata )
 
 void Btree::killPage( BtreePage *start )
 {
-    if( start == NULL ) return;
-    if( start->_firstChild != NULL ){  // if this page has children,
+    if( start == NULL )
+        return;
+    if( start->_firstChild != NULL ) {  // if this page has children,
         killPage( start->_firstChild );
         BtreeData *current = start->_entries;
-        while( current != NULL ){
+        while( current != NULL ) {
             killPage( current->child() );
             current = current->bnext();
         }
@@ -430,7 +434,7 @@ void Btree::killPage( BtreePage *start )
 
 uint_32 Btree::size()
 {
-    if( !_size ){
+    if( !_size ) {
         labelPages( _root );
         _size = (_numPages*_maxSize);
         _size += 38;    // The size of the b-tree header.
@@ -463,11 +467,12 @@ int Btree::dump( OutFile *dest )
 
 void Btree::labelPages( BtreePage *start )
 {
-    if( start == NULL ) return;
+    if( start == NULL )
+        return;
     start->_thisPage = _numPages++;
     labelPages( start->_firstChild );
     BtreeData   *current = start->_entries;
-    while( current != NULL ){
+    while( current != NULL ) {
         labelPages( current->child() );
         current = current->bnext();
     }
@@ -479,16 +484,17 @@ void Btree::labelPages( BtreePage *start )
 
 void Btree::dumpPage( OutFile *dest, BtreePage *start )
 {
-    if( start == NULL ) return;
+    if( start == NULL )
+        return;
 
     // Dump this page.
     start->dump( dest );
 
     // Recursively dump any pages below this page.
-    if( start->_firstChild != NULL ){
+    if( start->_firstChild != NULL ) {
         dumpPage( dest, start->_firstChild );
         BtreeData       *current = start->_entries;
-        while( current != NULL ){
+        while( current != NULL ) {
             dumpPage( dest, current->child() );
             current = current->bnext();
         }
@@ -503,20 +509,21 @@ BtreeData *Btree::findNode( BtreeData &keyval )
 {
     BtreeData   *result;
 
-    if( _root == NULL ) return NULL;
+    if( _root == NULL )
+        return NULL;
     BtreePage   *cur_page;
     BtreeData   *current;
     BtreePage   *nextpage = _root;
-    do{
+    do {
         cur_page = nextpage;
         nextpage = keyval.seekNext( cur_page );
     } while( nextpage != NULL );
 
     current = cur_page->_entries;
-    while( current != NULL && current->lessThan( &keyval ) ){
+    while( current != NULL && current->lessThan( &keyval ) ) {
         current = current->bnext();
     }
-    if( current == NULL || keyval.lessThan( current ) ){
+    if( current == NULL || keyval.lessThan( current ) ) {
         result = NULL;
     } else {
         result = current;
@@ -540,12 +547,12 @@ BtreeIter::BtreeIter( Btree &t )
 void BtreeIter::init()
 {
     _page = _tree->_root;
-    if( _page == NULL ){
+    if( _page == NULL ) {
         _data = NULL;
         return;
     }
 
-    while( _page->_firstChild != NULL ){
+    while( _page->_firstChild != NULL ) {
         _page = _page->_firstChild;
     }
     _data = _page->_entries;
@@ -557,13 +564,13 @@ void BtreeIter::init()
 
 void BtreeIter::goPrev()
 {
-    if( _data->bprev() == NULL ){
+    if( _data->bprev() == NULL ) {
         _page = _page->_prevPage;
-        if( _page == NULL ){
+        if( _page == NULL ) {
             _data = NULL;
         } else {
             _data = _page->_entries;
-            while( _data->bnext() != NULL ){
+            while( _data->bnext() != NULL ) {
                 _data = _data->bnext();
             }
         }
@@ -578,9 +585,9 @@ void BtreeIter::goPrev()
 
 void BtreeIter::goNext()
 {
-    if( _data->bnext() == NULL ){
+    if( _data->bnext() == NULL ) {
         _page = _page->_nextPage;
-        if( _page == NULL ){
+        if( _page == NULL ) {
             _data = NULL;
         } else {
             _data = _page->_entries;
@@ -624,7 +631,7 @@ void BtreeIter::operator++(int)
 uint_16 BtreeIter::pageEntries()
 {
     uint_16 result = 0;
-    if( _page != NULL ){
+    if( _page != NULL ) {
         result = _page->_numEntries;
     }
     return result;
@@ -637,7 +644,7 @@ uint_16 BtreeIter::pageEntries()
 uint_16 BtreeIter::thisPage()
 {
     uint_16 result = (uint_16) ~0;
-    if( _page != NULL ){
+    if( _page != NULL ) {
         result = _page->_thisPage;
     }
     return result;
@@ -648,9 +655,9 @@ uint_16 BtreeIter::thisPage()
 
 void BtreeIter::nextPage()
 {
-    if( _page != NULL ){
+    if( _page != NULL ) {
         _page = _page->_nextPage;
-        if( _page == NULL ){
+        if( _page == NULL ) {
             _data = NULL;
         } else {
             _data = _page->_entries;

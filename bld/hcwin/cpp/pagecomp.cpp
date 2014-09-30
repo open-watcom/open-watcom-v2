@@ -49,7 +49,7 @@ private:
 
 BlockFile::BlockFile( char const fname[] ) : File( fname, File::READ )
 {
-    if( !bad_file ){
+    if( !bad_file ) {
         fseek( fp, 0, SEEK_END );
         size_ = ftell( fp );
         fseek( fp, 0, SEEK_SET );
@@ -66,7 +66,7 @@ static Memory bogus;
 
 int main( int argc, char *argv[] )
 {
-    if( argc == 1 ){
+    if( argc == 1 ) {
         HCError( ARG_ERR );
     }
 
@@ -84,11 +84,12 @@ int main( int argc, char *argv[] )
     CompReader  compactor( &trashcan );
     int i=0;
 
-    for( int num_pages=0 ;; num_pages++ ){
+    for( int num_pages=0 ;; num_pages++ ) {
         amount_read = input.get_block( block );
-        if( amount_read == 0 ) break;
+        if( amount_read == 0 )
+            break;
         amount_written += compactor.compress( block, amount_read );
-        if( amount_written > PAGE_SIZE ){
+        if( amount_written > PAGE_SIZE ) {
             pagebreaks[i++] = num_pages;
             compactor.flush();
             amount_written = compactor.compress( block, amount_read );
@@ -97,7 +98,7 @@ int main( int argc, char *argv[] )
 
     input.reset();
     OutFile     output("pagecomp.out");
-    if( !output ){
+    if( !output ) {
         HCError( FILE_ERR );
     }
     CompOutFile newwriter( &output );
@@ -105,10 +106,10 @@ int main( int argc, char *argv[] )
     compactor.reset( &newwriter );
     i = 0;
     amount_written = 0;
-    for( int j=0; j < num_pages; j++ ){
-        if( j == pagebreaks[i] ){
+    for( int j=0; j < num_pages; j++ ) {
+        if( j == pagebreaks[i] ) {
             compactor.flush();
-            while( amount_written < PAGE_SIZE ){
+            while( amount_written < PAGE_SIZE ) {
                 output.write( (uint_8)0 );
                 amount_written++;
             }

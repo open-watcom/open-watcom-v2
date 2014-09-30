@@ -161,7 +161,7 @@ HFContext::~HFContext()
     delete _data;
     FutureHash  *current = _head;
     FutureHash  *temp;
-    while( current != NULL ){
+    while( current != NULL ) {
     temp = current;
     current = current->_next;
     delete temp;
@@ -177,27 +177,27 @@ void HFContext::addOffset( uint_32 hval, uint_32 off )
 {
     // Check to see if we have a reference to this hash value.
     FutureHash  *current = _head;
-    while( current != NULL ){
+    while( current != NULL ) {
         if( Hash( current->_string ) == hval )
             break;
         current = current->_next;
     }
 
     // If a reference exists, delete it.
-    if( current != NULL ){
-    if( current->_prev != NULL ){
-        current->_prev->_next = current->_next;
-    }
-    if( current->_next != NULL ){
-        current->_next->_prev = current->_prev;
-    }
-    if( _head == current ){
-        _head = current->_next;
-    }
-    if( _tail == current ){
-        _tail = current->_prev;
-    }
-    delete current;
+    if( current != NULL ) {
+        if( current->_prev != NULL ) {
+            current->_prev->_next = current->_next;
+        }
+        if( current->_next != NULL ) {
+            current->_next->_prev = current->_prev;
+        }
+        if( _head == current ) {
+            _head = current->_next;
+        }
+        if( _tail == current ) {
+            _tail = current->_prev;
+        }
+        delete current;
     }
     _data->insert( new ContextRec( hval, off ) );
 
@@ -213,8 +213,8 @@ uint_32 HFContext::getOffset( uint_32 hval )
     ContextKey  searchkey( hval );
     ContextRec  *foundrec = (ContextRec*) _data->findNode( searchkey );
 
-    if( foundrec != NULL ){
-    result = foundrec->offset();
+    if( foundrec != NULL ) {
+        result = foundrec->offset();
     }
     return result;
 }
@@ -230,43 +230,45 @@ void HFContext::recordContext( char const str[] )
     BtreeData   *c_rec = _data->findNode( temp_key );
 
     // Continue only if the topic is not yet defined.
-    if( c_rec != NULL ) return;
+    if( c_rec != NULL )
+        return;
 
     FutureHash  *current = _head;
     size_t  length = strlen( str ) + 1;
     int     comparison = 1;
 
     // Check to see if this topic has already been referenced.
-    while( current != NULL ){
-    comparison = stricmp( current->_string, str );
-    if( comparison >= 0 ) break;
-    current = current->_next;
+    while( current != NULL ) {
+        comparison = stricmp( current->_string, str );
+        if( comparison >= 0 )
+            break;
+        current = current->_next;
     }
-    if( comparison == 0 ){  // string was already in list
-    return;
+    if( comparison == 0 ) {  // string was already in list
+        return;
     }
 
     // If this topic has not been referenced or defined before,
     // add it to the list of references.
     FutureHash  *newnode = new FutureHash( length );
     strncpy( newnode->_string, str, length );
-    if( current == NULL ){
-    newnode->_prev = _tail;
-    _tail = newnode;
-    if( _head == NULL ){
-        _head = newnode;
+    if( current == NULL ) {
+        newnode->_prev = _tail;
+        _tail = newnode;
+        if( _head == NULL ) {
+            _head = newnode;
+        } else {
+            newnode->_prev->_next = newnode;
+        }
     } else {
-        newnode->_prev->_next = newnode;
-    }
-    } else {
-    newnode->_next = current;
-    newnode->_prev = current->_prev;
-    current->_prev = newnode;
-    if( newnode->_prev == NULL ){
-        _head = newnode;
-    } else {
-        newnode->_prev->_next = newnode;
-    }
+        newnode->_next = current;
+        newnode->_prev = current->_prev;
+        current->_prev = newnode;
+        if( newnode->_prev == NULL ) {
+            _head = newnode;
+        } else {
+            newnode->_prev->_next = newnode;
+        }
     }
     return;
 }
@@ -277,9 +279,9 @@ void HFContext::recordContext( char const str[] )
 int HFContext::dump( OutFile * dest )
 {
     FutureHash  *current = _head;
-    while( current != NULL ){
-    HCWarning( HLP_NOTOPIC,  (const char *)current->_string );
-    current = current->_next;
+    while( current != NULL ) {
+        HCWarning( HLP_NOTOPIC, (const char *)current->_string );
+        current = current->_next;
     }
     return _data->dump( dest );
 }

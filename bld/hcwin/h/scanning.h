@@ -100,7 +100,7 @@ class Scanner
 
     // Assignment of Scanner's is not allowed.
     Scanner( Scanner const & ) : _buffer(0) {};
-    Scanner &   operator=( Scanner const & ){ return *this; };
+    Scanner &   operator=( Scanner const & ) { return *this; };
 
 public:
     Scanner( InFile *src );

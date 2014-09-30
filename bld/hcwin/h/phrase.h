@@ -76,8 +76,8 @@ class HFPhrases : public Dumpable
     void    initHashTable();
 
     // Assignment of HFPhrases is not allowed.
-    HFPhrases( HFPhrases const & ){};
-    HFPhrases & operator=( HFPhrases const & ){ return *this; };
+    HFPhrases( HFPhrases const & ) {};
+    HFPhrases & operator=( HFPhrases const & ) { return *this; };
 
 public:
     HFPhrases( HFSDirectory * d_file, InFile* (*firstf)(),

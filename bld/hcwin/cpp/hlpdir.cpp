@@ -155,7 +155,8 @@ void HFSDirectory::dump()
 {
     BtreeIter   iterator( _files );
     BtreeData   *current = iterator.data();
-    if( current == NULL ) return;
+    if( current == NULL )
+        return;
 
     uint_32 direct_size = _files.size();
     uint_32 filesize = direct_size + 4*sizeof( uint_32 ) + FILE_HEADER_SIZE;
@@ -164,12 +165,12 @@ void HFSDirectory::dump()
 
     // Calculate the size of the entire .HLP file.
     HFSnode *curnode;
-    while( current != NULL ){
-    curnode = (HFSnode*) current;
-    curnode->_offset = filesize;
-    filesize += curnode->_pointer->size();
-    filesize += FILE_HEADER_SIZE;
-    current = (++iterator).data();
+    while( current != NULL ) {
+        curnode = (HFSnode*)current;
+        curnode->_offset = filesize;
+        filesize += curnode->_pointer->size();
+        filesize += FILE_HEADER_SIZE;
+        current = (++iterator).data();
     }
 
     // Write out the .HLP file header.
@@ -193,15 +194,15 @@ void HFSDirectory::dump()
     uint_32 cursize;
     iterator.init();
     current = iterator.data();
-    while( current != NULL ){
-    cursize = ((HFSnode*) current)->_pointer->size();
-    cursize += FILE_HEADER_SIZE;
-    _output.write( cursize );
-    cursize -= FILE_HEADER_SIZE;
-    _output.write( cursize );
-    _output.write( (uint_8)0x00 );    // Again, keeping WinHelp happy.
-    ((HFSnode*) current)->_pointer->dump( &_output );
-    current = (++iterator).data();
+    while( current != NULL ) {
+        cursize = ((HFSnode*) current)->_pointer->size();
+        cursize += FILE_HEADER_SIZE;
+        _output.write( cursize );
+        cursize -= FILE_HEADER_SIZE;
+        _output.write( cursize );
+        _output.write( (uint_8)0x00 );    // Again, keeping WinHelp happy.
+        ((HFSnode*) current)->_pointer->dump( &_output );
+        current = (++iterator).data();
     }
     HCDoneTick();
 

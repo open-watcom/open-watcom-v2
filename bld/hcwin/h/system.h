@@ -74,8 +74,8 @@ class SystemText : public SystemRec
     char    *_text;
 
     // Assignment of SystemText's is not allowed.
-    SystemText( SystemText const & ){};
-    SystemText &    operator=( SystemText const & ){ return *this; };
+    SystemText( SystemText const & ) {};
+    SystemText &    operator=( SystemText const & ) { return *this; };
 
 public:
     SystemText( uint_16 flg, const char *txt );
@@ -152,8 +152,8 @@ class HFSystem : public Dumpable
     SystemRec       *_last;
 
     // Assignment of HFSystem's is not allowed.
-    HFSystem( HFSystem const & ){};
-    HFSystem &  operator=( HFSystem const & ){ return *this; };
+    HFSystem( HFSystem const & ) {};
+    HFSystem &  operator=( HFSystem const & ) { return *this; };
 
 public:
 

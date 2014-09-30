@@ -40,9 +40,9 @@ static Memory bogus;
 
 int main( void )
 {
-    HFS_Directory       helpfile("test.hlp");
+    HFS_Directory       helpfile( "test.hlp" );
     HPJReader           projfile( &helpfile, "test.hpj" );
-    if( !projfile ){
+    if( !projfile ) {
         cerr << "Couldn't get input file.\n";
         exit(1);
     }

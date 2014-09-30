@@ -171,8 +171,8 @@ class HFTopic : public Dumpable
     void        addZero( unsigned index );
 
     // Assignment of HFTopic's is not allowed.
-    HFTopic( HFTopic const & ){};
-    HFTopic &   operator=( HFTopic const & ){ return *this; };
+    HFTopic( HFTopic const & ) {};
+    HFTopic &   operator=( HFTopic const & ) { return *this; };
 
 public:
     HFTopic( HFSDirectory * d_file, HFPhrases *ph = NULL );

@@ -75,8 +75,8 @@ class FontName
     uint_8  _family;
 
     // Assignment of FontName's is not allowed.
-    FontName( FontName const & ){};
-    FontName &  operator=( FontName const & ){ return *this; };
+    FontName( FontName const & ) {};
+    FontName &  operator=( FontName const & ) { return *this; };
 
     FontName( char const fontname[], short num1, uint_16 num2, uint_8 fam );
     ~FontName();
@@ -148,7 +148,7 @@ class HFFont : public Dumpable
     uint_16 findDesc( FontDesc * wanted );
 
     // Assignment of HFFont's is not permitted.
-    HFFont( HFFont const & ){};
+    HFFont( HFFont const & ) {};
     HFFont &    operator=( HFFont const & ) { return *this; };
 
 public:

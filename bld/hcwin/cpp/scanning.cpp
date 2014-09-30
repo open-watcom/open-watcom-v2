@@ -211,8 +211,8 @@ void Scanner::pullCommand( Token * tok )
 
     for( i=1; i<BUF_SIZE-1; i++ ) {
         current = nextch();
-
-        if( !islower( current ) ) break;
+        if( !islower( current ) )
+            break;
         tok->_text[i] = static_cast<char>(current);
     }
     tok->_text[i] = '\0';
@@ -224,9 +224,11 @@ void Scanner::pullCommand( Token * tok )
         for( i=0; i<6; i++ ) {
             num_string[i] = static_cast<char>(current);
             current = nextch();
-            if( !isdigit(current) ) break;
+            if( !isdigit(current) ) {
+                break;
+            }
         }
-        num_string[i+1] = '\0';
+        num_string[i + 1] = '\0';
         tok->_value = atoi( num_string );
     }
     if( current != S_ENDC && current != ' ' ) {
@@ -249,10 +251,11 @@ void Scanner::pullText( Token * tok )
     while( i < BUF_SIZE - 1 ) {
         current = nextch();
 
-        if( current == S_ENDC  ||
-            current == '{'  ||
-            current == '}'  ||
-            isFootnoteChar( current ) ) break;
+        if( current == S_ENDC
+          || current == '{'
+          || current == '}'
+          || isFootnoteChar( current ) )
+            break;
 
         if( current == '\\' ) {
             if( _curPos < _maxBuf && _buffer[_curPos] == '~' ) {
@@ -313,7 +316,8 @@ void Scanner::getToken( Token * tok )
 
     for( ;; ) {
         current = nextch();
-        if( current != '\n' ) break;
+        if( current != '\n' )
+            break;
         ++_lineNum;
     }
 

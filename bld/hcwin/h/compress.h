@@ -47,7 +47,7 @@
 class CompWriter
 {
     // Assignment of CompWriter's is not permitted.
-    CompWriter( CompWriter const & ){};
+    CompWriter( CompWriter const & ) {};
     CompWriter &    operator=( CompWriter const & ) { return *this; };
 
 protected:

@@ -64,11 +64,10 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
     _fp->reset(0, SEEK_END);
     _fileSize = _fp->tell();
 
-    if( magic != BITMAP_MAGIC ||
-        filesize != _fileSize ){
-    _isValidImage = 0;
+    if( magic != BITMAP_MAGIC || filesize != _fileSize ) {
+        _isValidImage = 0;
     } else {
-    _isValidImage = 1;
+        _isValidImage = 1;
     }
 
     _fp->close();   // To conserve file handles.
@@ -90,7 +89,7 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
 
 uint_32 Bitmap::size()
 {
-    if( _size != 0 ){
+    if( _size != 0 ) {
         return _size;
     }
 
@@ -100,7 +99,7 @@ uint_32 Bitmap::size()
     _fp->readbuf( &_pixOffset, 1, sizeof( uint_32 ) );
     _fp->readbuf( &_headSize, 1, sizeof( uint_32 ) );
 
-    if( _headSize == BIH_SIZE ){
+    if( _headSize == BIH_SIZE ) {
 
         // If _headSize==0x28, this bitmap uses a BitmapInfoHeader
         // and RBG quads.
@@ -117,10 +116,10 @@ uint_32 Bitmap::size()
         _fp->readbuf( &_ypels, 1, sizeof( uint_32 ) );
         _fp->readbuf( &_colsUsed, 1, sizeof( uint_32 ) );
 
-        if( _colsUsed == 0 ){
+        if( _colsUsed == 0 ) {
             // We can calculate _colsUsed from _bitsPerPix, except
             // in the case of a 24-bit bitmap.
-            if( _bitsPerPix < 24 ){
+            if( _bitsPerPix < 24 ) {
                 _colsUsed = 1<<_bitsPerPix;
             }
         }
@@ -143,7 +142,7 @@ uint_32 Bitmap::size()
 
         // Again, calculate _colsUsed from _bitsPerPix, unless
         // this is a 24-bit bitmap.
-        if( _bitsPerPix < 24 ){
+        if( _bitsPerPix < 24 ) {
             _colsUsed = 1<<_bitsPerPix;
         } else {
             _colsUsed = 0;
@@ -156,16 +155,16 @@ uint_32 Bitmap::size()
 
     _objOffset = sizeof(uint_32)*_colsUsed + 0x1C; // 0x1C = size of object header
 
-    if( _bitsPerPix >= MIN_16BIT ){
+    if( _bitsPerPix >= MIN_16BIT ) {
         _objOffset += 1;
     }
-    if( _width >= MIN_32BIT ){
+    if( _width >= MIN_32BIT ) {
         _objOffset += 2;
     }
-    if( _height >= MIN_32BIT ){
+    if( _height >= MIN_32BIT ) {
         _objOffset += 2;
     }
-    if( _colsUsed >= MIN_32BIT ){
+    if( _colsUsed >= MIN_32BIT ) {
         _objOffset += 2;
     }
 
@@ -177,13 +176,13 @@ uint_32 Bitmap::size()
     unsigned    count = _pixOffset;
 
     _pixSize = 0;
-    while( count < _fileSize ){
+    while( count < _fileSize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
         count += blocksize;
         _pixSize += reader.compress( buffer, blocksize );
     }
 
-    if( _pixSize >= MIN_32BIT ){
+    if( _pixSize >= MIN_32BIT ) {
         _objOffset += 2;
     }
     _size = _objOffset+OBJ_OFFSET+_pixSize;
@@ -211,7 +210,7 @@ int Bitmap::dump( OutFile *dest )
     dest->write( (uint_16)0x200 );
 
     _bitsPerPix *= 2;
-    if( _bitsPerPix >= 2*MIN_16BIT ){
+    if( _bitsPerPix >= 2*MIN_16BIT ) {
         _bitsPerPix += 1;
         dest->write( _bitsPerPix );
     } else {
@@ -219,7 +218,7 @@ int Bitmap::dump( OutFile *dest )
     }
 
     _width *= 2;
-    if( _width >= 2*MIN_32BIT ){
+    if( _width >= 2*MIN_32BIT ) {
         _width += 1;
         dest->write( _width );
     } else {
@@ -227,7 +226,7 @@ int Bitmap::dump( OutFile *dest )
     }
 
     _height *= 2;
-    if( _height >= 2*MIN_32BIT ){
+    if( _height >= 2*MIN_32BIT ) {
         _height += 1;
         dest->write( _height );
     } else {
@@ -235,7 +234,7 @@ int Bitmap::dump( OutFile *dest )
     }
 
     _colsUsed *= 2;
-    if( _colsUsed >= 2*MIN_32BIT ){
+    if( _colsUsed >= 2*MIN_32BIT ) {
         _colsUsed += 1;
         dest->write( _colsUsed );
     } else {
@@ -246,7 +245,7 @@ int Bitmap::dump( OutFile *dest )
     dest->write( (uint_16)0 );
 
     _pixSize *= 2;
-    if( _pixSize >= 2*MIN_32BIT ){
+    if( _pixSize >= 2 * MIN_32BIT ) {
         _pixSize += 1;
         dest->write( _pixSize );
     } else {
@@ -262,14 +261,14 @@ int Bitmap::dump( OutFile *dest )
 
     _fp->open();
     _fp->reset( _dataPos );
-    if( _headSize == BIH_SIZE ){
-        for( uint_32 i = 0; i < _colsUsed; i++ ){
+    if( _headSize == BIH_SIZE ) {
+        for( uint_32 i = 0; i < _colsUsed; i++ ) {
             _fp->readbuf( &colour, 1, sizeof( uint_32 ) );
             dest->write( colour );
         }
     } else {
         colour = 0;
-        for( uint_32 i = 0; i < _colsUsed; i++ ){
+        for( uint_32 i = 0; i < _colsUsed; i++ ) {
             _fp->readbuf( &colour, 3 );
             dest->write( colour );
         }
@@ -281,7 +280,7 @@ int Bitmap::dump( OutFile *dest )
     unsigned    blocksize;
     unsigned    count = _pixOffset;
 
-    while( count < _fileSize ){
+    while( count < _fileSize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
         count += blocksize;
         reader.compress( buffer, blocksize );
@@ -304,10 +303,10 @@ SegGraph::SegGraph( InFile * fp ) : Bmx( fp )
 
     fp->reset();
     fp->readbuf( &magic, 1, sizeof( uint_16 ) );
-    if( magic == SHG1_MAGIC || magic == SHG2_MAGIC ){
-    _isValidImage = 1;
+    if( magic == SHG1_MAGIC || magic == SHG2_MAGIC ) {
+        _isValidImage = 1;
     } else {
-    _isValidImage = 0;
+        _isValidImage = 0;
     }
     fp->reset( 0, SEEK_END );
     _size = fp->tell();
@@ -323,7 +322,7 @@ int SegGraph::dump( OutFile *dest )
     int     this_block;
 
     _fp->open();
-    while( (this_block=_fp->readbuf(block, BLOCK_SIZE)) != 0 ){
+    while( (this_block=_fp->readbuf(block, BLOCK_SIZE)) != 0 ) {
         dest->write( block, 1, this_block );
     }
 
@@ -354,30 +353,30 @@ HFBitmaps::~HFBitmaps()
 
     StrNode *tempSN, *curSN = _root;
 
-    while( curSN != NULL ){
-    tempSN = curSN;
-    curSN = curSN->_next;
-    delete[] tempSN->_name;
-    delete tempSN;
+    while( curSN != NULL ) {
+        tempSN = curSN;
+        curSN = curSN->_next;
+        delete[] tempSN->_name;
+        delete tempSN;
     }
 
     Image   *tempBM, *curBM = _files;
 
-    while( curBM != NULL ){
-    tempBM = curBM;
-    curBM = curBM->_next;
-    delete[] tempBM->_name;
-    delete tempBM->_image;
-    delete tempBM;
+    while( curBM != NULL ) {
+        tempBM = curBM;
+        curBM = curBM->_next;
+        delete[] tempBM->_name;
+        delete tempBM->_image;
+        delete tempBM;
     }
 
     curBM = _usedFiles;
-    while( curBM != NULL ){
-    tempBM = curBM;
-    curBM = curBM->_next;
-    delete[] tempBM->_name;
-    delete tempBM->_image;
-    delete tempBM;
+    while( curBM != NULL ) {
+        tempBM = curBM;
+        curBM = curBM->_next;
+        delete[] tempBM->_name;
+        delete tempBM->_image;
+        delete tempBM;
     }
 }
 
@@ -387,46 +386,49 @@ HFBitmaps::~HFBitmaps()
 void HFBitmaps::addToPath( char const path[] )
 {
     char const  *arg = path;
-    if( arg == NULL ) return;
+    if( arg == NULL )
+        return;
 
     StrNode *current, *temp;
 
     // Update the search paths.
     current = _root;
-    if( current != NULL ){
-    while( current->_next != NULL ){
-        current = current->_next;
-    }
+    if( current != NULL ) {
+        while( current->_next != NULL ) {
+            current = current->_next;
+        }
     }
 
     // There may be many directories specified on each line.
     int j;
-    while( arg[0] != '\0' ){
-    j = 0;
-    while( arg[j] != '\0' && arg[j] != ',' && arg[j] != ';' ){
-        ++j;
-    }
-    temp = new StrNode;
-    temp->_name = new char[ j+1 ];
-    strncpy( temp->_name, arg, j );
-    temp->_name[j] = '\0';
-    temp->_next = NULL;
-    if( chdir( temp->_name ) == 0 ){
-        chdir( _startDir );
-        if( current == NULL ){
-        _root = temp;
-        current = _root;
-        } else {
-        current->_next = temp;
-        current = current->_next;
+    while( arg[0] != '\0' ) {
+        j = 0;
+        while( arg[j] != '\0' && arg[j] != ',' && arg[j] != ';' ) {
+            ++j;
         }
-    } else {
-        HCWarning( HPJ_BADDIR, temp->_name );
-        delete[] temp->_name;
-        delete temp;
-    }
-    arg += j;
-    if( arg[0] != '\0' ) ++arg;
+        temp = new StrNode;
+        temp->_name = new char[j + 1];
+        strncpy( temp->_name, arg, j );
+        temp->_name[j] = '\0';
+        temp->_next = NULL;
+        if( chdir( temp->_name ) == 0 ) {
+            chdir( _startDir );
+            if( current == NULL ) {
+                _root = temp;
+                current = _root;
+            } else {
+                current->_next = temp;
+                current = current->_next;
+            }
+        } else {
+            HCWarning( HPJ_BADDIR, temp->_name );
+            delete[] temp->_name;
+            delete temp;
+        }
+        arg += j;
+        if( arg[0] != '\0' ) {
+            ++arg;
+        }
     }
 }
 
@@ -441,46 +443,44 @@ void HFBitmaps::note( char const name[] )
 
     InFile  *bmp = new InFile( name, 1 );
 
-    while( bmp->bad() && curdir != NULL ){
-    chdir( curdir->_name );
-    curdir = curdir->_next;
-    bmp->open( name );
-    chdir( _startDir );
+    while( bmp->bad() && curdir != NULL ) {
+        chdir( curdir->_name );
+        curdir = curdir->_next;
+        bmp->open( name );
+        chdir( _startDir );
     }
-    if( bmp->bad() ){
-    HCWarning( FILE_ERR, name );
-    delete bmp;
-    return;
+    if( bmp->bad() ) {
+        HCWarning( FILE_ERR, name );
+        delete bmp;
+        return;
     }
     bmp->reset();
     bmp->readbuf( &magic, 1, 2 );
-    switch( magic ){
+    switch( magic ) {
     case BITMAP_MAGIC:
     case SHG1_MAGIC:
     case SHG2_MAGIC:
-    break;
-
+        break;
     default:
-    throw ImageNotSupported();  // EXCEPTION
+        throw ImageNotSupported();  // EXCEPTION
     }
     bmp->reset();
 
     current = new Image;
-    current->_name = new char[strlen(name)+1];
+    current->_name = new char[strlen( name ) + 1];
     strcpy( current->_name, name );
     current->_next = _files;
     _files = current;
-    if( magic == BITMAP_MAGIC ){
-    current->_image = new Bitmap(bmp);
+    if( magic == BITMAP_MAGIC ) {
+        current->_image = new Bitmap(bmp);
     } else {
-    current->_image = new SegGraph(bmp);
+        current->_image = new SegGraph(bmp);
     }
-    if( !current->_image->validImage() ){
-    // Keep the bad image in the list for reference,
-    // but warn the user.
-    HCWarning( HLP_BADIMAGE, current->_name );
+    if( !current->_image->validImage() ) {
+        // Keep the bad image in the list for reference,
+        // but warn the user.
+        HCWarning( HLP_BADIMAGE, current->_name );
     }
-
     return;
 }
 
@@ -529,7 +529,7 @@ uint_16 HFBitmaps::use( char const name[] )
             throw ImageNotValid();  // EXCEPTION
         }
     
-        if( temp != NULL ){
+        if( temp != NULL ) {
             temp->_next = current->_next;
         } else {
             _files = current->_next;
@@ -566,7 +566,7 @@ uint_16 HFBitmaps::use( char const name[] )
             bmp->reset();
     
             current = new Image;
-            current->_name = new char[strlen(name)+1];
+            current->_name = new char[strlen( name ) + 1];
             strcpy( current->_name, name );
             if( magic == BITMAP_MAGIC ) {
                 current->_image = new Bitmap(bmp);
@@ -577,7 +577,7 @@ uint_16 HFBitmaps::use( char const name[] )
     }
 
     current->_next = NULL;
-    if( newimage != NULL ){
+    if( newimage != NULL ) {
         newimage->_next = current;
     } else {
         _usedFiles = current;

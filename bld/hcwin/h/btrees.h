@@ -52,8 +52,8 @@ class BtreeData
     BtreePage   *_child;    // The page below this data.
 
     // Assignment of BtreeData's (or derived classes) is not permitted.
-    BtreeData( BtreeData const & ){};
-    BtreeData & operator=( BtreeData const & ){ return *this; };
+    BtreeData( BtreeData const & ) {};
+    BtreeData & operator=( BtreeData const & ) { return *this; };
 protected:
     BtreeData();
 public:
@@ -101,8 +101,8 @@ class Btree : public Dumpable
     BtreePage       *_root;
 
     // Assignment of Btree's is not permitted.
-    Btree( Btree const & ){};
-    Btree & operator=( Btree const & ){ return *this; };
+    Btree( Btree const & ) {};
+    Btree & operator=( Btree const & ) { return *this; };
 
 public:
     enum { _magNumSize = 22 };  // Size of a "magic number".

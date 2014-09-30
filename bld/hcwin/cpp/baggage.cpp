@@ -46,20 +46,21 @@ Baggage::Baggage( HFSDirectory *d_file, char const filename[] )
 {
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
-    char    fname[_MAX_FNAME+_MAX_EXT];
+    char    fname[_MAX_FNAME + _MAX_EXT];
     char    ext[_MAX_EXT];
-    if( !_badFile ){
-    fseek( _fp, 0, SEEK_END );
-    _size = ftell( _fp );
-    fseek( _fp, 0, SEEK_SET );
-    _splitpath( _fullName, drive, dir, fname, ext );
-    strcat( fname, ext );
-    d_file->addFile( this, fname );
-    close();
+
+    if( !_badFile ) {
+        fseek( _fp, 0, SEEK_END );
+        _size = ftell( _fp );
+        fseek( _fp, 0, SEEK_SET );
+        _splitpath( _fullName, drive, dir, fname, ext );
+        strcat( fname, ext );
+        d_file->addFile( this, fname );
+        close();
     } else {
-    // run in circles, scream and shout.
-    HCWarning( FILE_ERR, filename );
-    _size = 0;
+        // run in circles, scream and shout.
+        HCWarning( FILE_ERR, filename );
+        _size = 0;
     }
 }
 
@@ -69,16 +70,17 @@ Baggage::Baggage( HFSDirectory *d_file, char const filename[] )
 #define BDUMP_SIZE  1024
 int Baggage::dump( OutFile * dest )
 {
-    if( _badFile ){
-    return 1;
+    if( _badFile ) {
+        return 1;
     }
-    if( !open() ){
-    return 1;
+    if( !open() ) {
+        return 1;
     }
-    char    *buf = new char[ BDUMP_SIZE ];
+    char    *buf = new char[BDUMP_SIZE];
     uint_32 left_to_dump = _size;
     int     amount_dumped;
-    while( left_to_dump ){
+
+    while( left_to_dump ) {
         amount_dumped = fread( buf, 1, BDUMP_SIZE, _fp );
         left_to_dump -= amount_dumped;
         dest->write( buf, 1, amount_dumped );

@@ -104,7 +104,7 @@ template<class T> class Buffer
 
     // Assignment of Buffer's is not allowed. (I could do it,
     // but I don't need to and it would involve storing size information).
-    Buffer( Buffer<T> const & ){};
+    Buffer( Buffer<T> const & ) {};
     Buffer<T> & operator=( Buffer<T> const & ) { return *this; };
 
 public:
@@ -119,7 +119,7 @@ public:
 template<class T>
 inline Buffer<T>::Buffer( size_t size )
 {
-    if( size == 0 ){
+    if( size == 0 ) {
         _data = NULL;
     } else {
         _data = new T[size];
@@ -135,7 +135,7 @@ inline Buffer<T>::~Buffer()
 template<class T>
 void *Buffer<T>::resize( size_t size )
 {
-    if( size == 0 ){
+    if( size == 0 ) {
         if( _data ) delete[] _data;
         _data = NULL;
     } else {

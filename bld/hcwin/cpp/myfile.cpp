@@ -51,17 +51,17 @@ File::File( char const filename[], uint_8 type )
     _shortName = new char[length + 1];
     strncpy( _shortName, filename, length + 1 );
 
-    if( type & WRITE ){
+    if( type & WRITE ) {
         mode[0] = 'w';
     }
-    if( type & TEXT ){
+    if( type & TEXT ) {
         mode[1] = 't';
     }
     _fp = fopen( filename, mode );
     _badFile = ( _fp == NULL );
-    if( !_badFile ){
+    if( !_badFile ) {
         _flags = type;
-        _fullName = new char[ _MAX_PATH ];
+        _fullName = new char[_MAX_PATH];
         _fullpath( _fullName, filename, _MAX_PATH );
         _flags |= _isOpen;
     } else {
@@ -85,32 +85,32 @@ int File::open( char const filename[], uint_8 type )
     char mode[3] = "rb";
     size_t length = strlen( filename );
 
-    if( _shortName != NULL ){
+    if( _shortName != NULL ) {
         renew( _shortName, length + 1 );
     } else {
         _shortName = new char[length + 1];
     }
     strncpy( _shortName, filename, length + 1 );
 
-    if( type & WRITE ){
+    if( type & WRITE ) {
         mode[0] = 'w';
     }
-    if( type & TEXT ){
+    if( type & TEXT ) {
         mode[1] = 't';
     }
     if( _fp )
         fclose( _fp );
     _fp = fopen( filename, mode );
     _badFile = ( _fp == NULL );
-    if( !_badFile ){
+    if( !_badFile ) {
         _flags = type;
-        if( !_fullName ){
-            _fullName = new char[ _MAX_PATH ];
+        if( !_fullName ) {
+            _fullName = new char[_MAX_PATH];
         }
         _fullpath( _fullName, filename, _MAX_PATH );
         _flags |= _isOpen;
     } else {
-        if( _fullName ){
+        if( _fullName ) {
             delete[] _fullName;
             _fullName = NULL;
         }
@@ -122,26 +122,30 @@ int File::open( char const filename[], uint_8 type )
 File::~File()
 // Free memory and close the file if necessary.
 {
-    if( _fullName ) delete[] _fullName;
-    if( _shortName ) delete[] _shortName;
-    if( _fp ) fclose( _fp );
+    if( _fullName )
+        delete[] _fullName;
+    if( _shortName )
+        delete[] _shortName;
+    if( _fp ) {
+        fclose( _fp );
+    }
 }
 
 int File::open()
 // Reopen a file closed with the close() function.
 {
-    if( !( _flags & _isOpen ) ){
-    char mode[3] = "rb";
-    if( _flags & TEXT ){
-        mode[1] = 't';
-    }
-    if( _flags & WRITE ){
-        mode[0] = 'w';
-    }
-    _fp = fopen( _fullName, mode );
-    if( _fp != NULL ){
-        _flags |= _isOpen;
-    }
+    if( !( _flags & _isOpen ) ) {
+        char mode[3] = "rb";
+        if( _flags & TEXT ) {
+            mode[1] = 't';
+        }
+        if( _flags & WRITE ) {
+            mode[0] = 'w';
+        }
+        _fp = fopen( _fullName, mode );
+        if( _fp != NULL ) {
+            _flags |= _isOpen;
+        }
     }
     return _fp != NULL;
 }
@@ -149,10 +153,10 @@ int File::open()
 void File::close()
 // Shut down a file (to preserve file handles when necessary)
 {
-    if( _flags & _isOpen ){
-    fclose( _fp );
-    _fp = NULL;
-    _flags ^= _isOpen;
+    if( _flags & _isOpen ) {
+        fclose( _fp );
+        _fp = NULL;
+        _flags ^= _isOpen;
     }
 }
 
@@ -174,21 +178,23 @@ extern uint_32 Hash( char const *str )
 {
     uint_32 result = 0;
     char increment;
-    for( int i=0; str[i] != '\0'; i++ ){
-    if( isalpha( str[i] ) ){
-        increment = (char) (tolower( str[i] ) - 'a' + 17);
-    } else if( isdigit( str[i] ) ){
-        increment = (char) ( str[i] - '1' + 1 );
-        if( !increment ) increment = 10;
-    } else if( str[i] == '.' ){
-        increment = 12;
-    } else if( str[i] == '_' ){
-        increment = 13;
-    }  else {
-        increment = 0;
-    }
-    result *= 43;
-    result += increment;
+    for( int i=0; str[i] != '\0'; i++ ) {
+        if( isalpha( str[i] ) ) {
+            increment = (char) (tolower( str[i] ) - 'a' + 17);
+        } else if( isdigit( str[i] ) ) {
+            increment = (char) ( str[i] - '1' + 1 );
+            if( !increment ) {
+                increment = 10;
+            }
+        } else if( str[i] == '.' ) {
+            increment = 12;
+        } else if( str[i] == '_' ) {
+            increment = 13;
+        }  else {
+            increment = 0;
+        }
+        result *= 43;
+        result += increment;
     }
     return result;
 }

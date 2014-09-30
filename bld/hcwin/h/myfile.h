@@ -57,7 +57,7 @@ class File
     uint_8      _flags;
 
     // Assignment of File's is not allowed.
-    File( File const & ){};
+    File( File const & ) {};
     File &  operator=( File const & ) { return *this; };
 
 protected:
