@@ -36,17 +36,28 @@
 #elif defined( __LINUX__ )
 #include <sys/times.h>
 #include <errno.h>
+#include <unistd.h>
 #endif
 #include "rtinit.h"
 #include "timedata.h"
 
 #ifdef __LINUX__
 
+#ifndef SYS_CLK_TCK
+/* This value is a standin since sysconf isn't supported.
+ * The musl library uses the same number.
+ */
+#define SYS_CLK_TCK 100
+#endif
+
 _WCRTLINK clock_t clock( void )
 {
     struct tms  buf;
+    clock_t     clk;
     int         save_errno = errno;
-    clock_t     clk = times( &buf );
+    
+    times( &buf );
+    clk = (buf.tms_utime + buf.tms_stime) * (CLOCKS_PER_SEC / SYS_CLK_TCK);
     errno = save_errno;
     return clk;
 }
