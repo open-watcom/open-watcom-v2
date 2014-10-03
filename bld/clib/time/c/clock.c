@@ -36,7 +36,6 @@
 #elif defined( __LINUX__ )
 #include <sys/times.h>
 #include <errno.h>
-#include <unistd.h>
 #endif
 #include "rtinit.h"
 #include "timedata.h"
