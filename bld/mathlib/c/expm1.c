@@ -54,7 +54,22 @@ int signx;
         y = fabs(x);
     else
         y = x;
-
+        
+    /* Special value checks:
+     *   x = +- 0.0 -> return  0.0
+     *   x = -inf   -> return -1.0
+     *   x = +inf   -> return inf
+     *   x =  NaN   -> return NaN
+     */
+    if(y == 0.0 || isnan(x))
+        return x;
+    else if(isinf(y)) {
+        if(signx != 0)
+            return -1.0;
+        else
+            return x;
+    }
+    
     /* If magnitude is big enough, just calculate it */
     if(y > 0.675)
     {

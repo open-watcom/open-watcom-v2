@@ -239,6 +239,15 @@ _WMRTLINK double nanl(const char *ignored);
 #endif
 :endsegment
 
+/* Math error handling mode ala C99 */
+extern int __math_errhandling_flag;
+#define MATH_ERRNO      1
+#define MATH_ERREXCEPT  2
+/* As an extension, support Watcom errors as well */
+#define MATH_ERRWATCOM  4   
+
+#define math_errhandling __math_errhandling_flag
+
 :include extepi.sp
 
 :segment CNAME

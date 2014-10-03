@@ -33,5 +33,8 @@
 
 _WMRTLINK double fdim(double x, double y)
 {
+    if(isnan(x) || isnan(y))
+        return NAN;
+
     return fmax(x-y, 0.0);
 }

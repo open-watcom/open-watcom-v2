@@ -31,10 +31,18 @@
 
 #include "variety.h"
 #include <math.h>
+#include "_matherr.h"
 
 _WMRTLINK double remainder(double x, double y)
 {
 double r;
+
+    if(__math_errhandling_flag != 0 && 
+       ((isinf(x) && !isnan(y)) || (y == 0 && !isnan(x))))
+    {
+        __reporterror(DOMAIN, __func__, x, y, NAN);
+        return NAN;
+    }   
 
     r = fmod(x, y);
     if(r > y/2.0)

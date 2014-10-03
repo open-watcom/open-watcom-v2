@@ -49,9 +49,6 @@ static  const double    ExpConsts[] = {
     1.4142135623730950488   /*   sqrt(2)                    */
 };
 
-
-
-
 _WMRTLINK float _IF_exp( float x )
 /********************************/
 {

@@ -32,6 +32,9 @@
 
 /* #include "variety.h" */
 
+
 /* The last sign during a call to lgamma.  C99 insists this exists. */
 int signgam = 1;
 
+/* Flag indicating what type of error handling should be employed */
+int __math_errhandling_flag = 0;
