@@ -78,12 +78,11 @@ HFCtxomap::HFCtxomap( HFSDirectory *d_file, HFContext *offsets )
 
 HFCtxomap::~HFCtxomap()
 {
-    CmapRec *current = _firstRec;
-    CmapRec *temp;
-    while( current != NULL ) {
-        temp = current;
-        current = current->_nextRec;
-        delete temp;
+    CmapRec *current;
+    CmapRec *next;
+    for( current = _firstRec; current != NULL; current = next ) {
+        next = current->_nextRec;
+        delete current;
     }
 }
 
@@ -108,10 +107,11 @@ void HFCtxomap::addMapRec( uint_32 num, uint_32 h_val )
 
 uint_32 HFCtxomap::size()
 {
-    CmapRec *current = _firstRec;
+    CmapRec *current;
     uint_32 true_offset;
+
     if( !_resolved ) {
-        while( current != NULL ) {
+        for( current = _firstRec; current != NULL; current = current->_nextRec ) {
             true_offset = _offsetFile->getOffset( current->_offset );
             if( true_offset == HFContext::_badValue ) {
                 char str[16];
@@ -120,7 +120,6 @@ uint_32 HFCtxomap::size()
             } else {
                 current->_offset = true_offset;
             }
-            current = current->_nextRec;
         }
         _resolved = 1;
     }
@@ -133,10 +132,9 @@ uint_32 HFCtxomap::size()
 int HFCtxomap::dump( OutFile * dest )
 {
     dest->write( _numRecords );
-    CmapRec *current = _firstRec;
-    while( current != NULL ) {
+    CmapRec *current;
+    for( current = _firstRec; current != NULL; current = current->_nextRec ) {
         current->dump( dest );
-        current = current->_nextRec;
     }
     return 1;
 }

@@ -272,9 +272,11 @@ int CompReader::compress( char const source[], int amount )
             }
             if( key_size > limit ) {
                 key_size = limit;
-            } else while( key_size<limit
-              && _buffer[offset + key_size] == _buffer[_current + key_size] ) {
-                key_size += 1;
+            } else {
+                while( key_size<limit
+                  && _buffer[offset + key_size] == _buffer[_current + key_size] ) {
+                    key_size += 1;
+                }
             }
     
             if( key_size > old_key_size ) {

@@ -159,12 +159,11 @@ HFContext::HFContext( HFSDirectory * d_file )
 HFContext::~HFContext()
 {
     delete _data;
-    FutureHash  *current = _head;
-    FutureHash  *temp;
-    while( current != NULL ) {
-    temp = current;
-    current = current->_next;
-    delete temp;
+    FutureHash  *current;
+    FutureHash  *next;
+    for( current = _head; current != NULL; current = next ) {
+        next = current->_next;
+        delete current;
     }
 }
 
@@ -176,11 +175,11 @@ const uint_32 HFContext::_badValue = (uint_32)~0L;
 void HFContext::addOffset( uint_32 hval, uint_32 off )
 {
     // Check to see if we have a reference to this hash value.
-    FutureHash  *current = _head;
-    while( current != NULL ) {
-        if( Hash( current->_string ) == hval )
+    FutureHash  *current;
+    for( current = _head; current != NULL; current = current->_next ) {
+        if( Hash( current->_string ) == hval ) {
             break;
-        current = current->_next;
+        }
     }
 
     // If a reference exists, delete it.
@@ -233,16 +232,16 @@ void HFContext::recordContext( char const str[] )
     if( c_rec != NULL )
         return;
 
-    FutureHash  *current = _head;
+    FutureHash  *current;
     size_t  length = strlen( str ) + 1;
     int     comparison = 1;
 
     // Check to see if this topic has already been referenced.
-    while( current != NULL ) {
+    for( current = _head; current != NULL; current = current->_next ) {
         comparison = stricmp( current->_string, str );
-        if( comparison >= 0 )
+        if( comparison >= 0 ) {
             break;
-        current = current->_next;
+        }
     }
     if( comparison == 0 ) {  // string was already in list
         return;
@@ -278,10 +277,9 @@ void HFContext::recordContext( char const str[] )
 
 int HFContext::dump( OutFile * dest )
 {
-    FutureHash  *current = _head;
-    while( current != NULL ) {
+    FutureHash  *current;
+    for( current = _head; current != NULL; current = current->_next ) {
         HCWarning( HLP_NOTOPIC, (const char *)current->_string );
-        current = current->_next;
     }
     return _data->dump( dest );
 }

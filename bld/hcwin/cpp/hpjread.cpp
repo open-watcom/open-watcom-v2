@@ -279,24 +279,20 @@ HPJReader::HPJReader( HFSDirectory * d_file, Pointers *other_files,
 HPJReader::~HPJReader()
 {
     delete[] _homeDir;
-    StrNode *current, *temp;
-    current = _root;
-    while( current != NULL ) {
-        temp = current;
-        current = current->_next;
-        delete[] temp->_name;
-        delete temp;
+    StrNode *current, *next;
+    for( current = _root; current != NULL; current = next ) {
+        next = current->_next;
+        delete[] current->_name;
+        delete current;
     }
-    current = _rtfFiles;
-    while( current != NULL ) {
-        temp = current;
-        current = current->_next;
-        delete[] temp->_name;
-        delete temp;
+    for( current = _rtfFiles; current != NULL; current = next ) {
+        next = current->_next;
+        delete[] current->_name;
+        delete current;
     }
 
     if( _bagFiles ) {
-        for( int i=0; i<_numBagFiles; i++ ) {
+        for( int i = 0; i < _numBagFiles; i++ ) {
             delete _bagFiles[i];
         }
         delete[] _bagFiles;
@@ -318,24 +314,23 @@ InFile *HPJReader::firstFile()
 InFile *HPJReader::nextFile()
 {
     static InFile   result;
-    StrNode     *curdir;
+    StrNode         *curdir;
 
     do {
         if( _curFile == NULL ) {
             return NULL;
         }
     
-        curdir = _firstDir;
-        if( curdir == NULL ) {
+        if( _firstDir == NULL ) {
             result.open( _curFile->_name );
         } else {
-            while( curdir != NULL ) {
+            for( curdir = _firstDir; curdir != NULL; curdir = curdir->_next ) {
                 chdir( curdir->_name );
                 result.open( _curFile->_name );
                 chdir( _startDir );
-                if( !result.bad() )
+                if( !result.bad() ) {
                     break;
-                curdir = curdir->_next;
+                }
             }
         }
         _curFile = _curFile->_next;
@@ -435,17 +430,18 @@ void HPJReader::parseFile()
 
     // For each file, search the ROOT path, and create a RTFparser
     // to deal with it.
-    curfile = _rtfFiles;
-    while( curfile != NULL ) {
-        curdir = _root;
-        if( curdir == NULL ) {
+    for( curfile = _rtfFiles; curfile != NULL; curfile = curfile->_next ) {
+        if( _root == NULL ) {
             source.open( curfile->_name );
-        } else while( curdir != NULL ) {
-            chdir( curdir->_name );
-            source.open( curfile->_name );
-            chdir( _homeDir );
-            if( !source.bad() ) break;
-            curdir = curdir->_next;
+        } else {
+            for( curdir = _root; curdir != NULL; curdir = curdir->_next ) {
+                chdir( curdir->_name );
+                source.open( curfile->_name );
+                chdir( _homeDir );
+                if( !source.bad() ) {
+                    break;
+                }
+            }
         }
         if( source.bad() ) {
             HCWarning( FILE_ERR, curfile->_name );
@@ -454,7 +450,6 @@ void HPJReader::parseFile()
             rtfhandler.Go();
             source.close();
         }
-        curfile = curfile->_next;
     }
 }
 
@@ -1029,17 +1024,19 @@ void HPJReader::includeMapFile( char i_str[] )
 
     // Now try to find it in the ROOT path and/or current directory.
     i_str[j] = '\0';
-    StrNode *current = _root;
+    StrNode *current;
     InFile  source;
-    if( current == NULL ) {
+    if( _root == NULL ) {
         source.open( i_str+i );
-    } else while( current != NULL ) {
-        chdir( current->_name );
-        source.open( i_str+i );
-        chdir( _homeDir );
-        if( !source.bad() )
-            break;
-        current = current->_next;
+    } else {
+        for( current = _root; current != NULL; current = current->_next ) {
+            chdir( current->_name );
+            source.open( i_str+i );
+            chdir( _homeDir );
+            if( !source.bad() ) {
+                break;
+            }
+        }
     }
 
     if( source.bad() ) {

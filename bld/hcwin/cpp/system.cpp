@@ -168,14 +168,13 @@ HFSystem::HFSystem( HFSDirectory *d_file, HFContext *h_file )
 
 HFSystem::~HFSystem()
 {
-    SystemRec   *current = _first;
-    SystemRec   *temp;
+    SystemRec   *current;
+    SystemRec   *next;
 
     // Delete the linked list.
-    while( current != NULL ) {
-        temp = current;
-        current = current->_next;
-        delete temp;
+    for( current = _first; current != NULL; current = next ) {
+        next = current->_next;
+        delete current;
     }
 }
 
@@ -248,11 +247,10 @@ int HFSystem::winNumberOf( char * win_name )
 {
     SystemRec   *current;
     SystemWin   *cur_win;
-    int     i;
+    int         i;
 
     i = 0;
-    current = _first;
-    while( current != NULL && i<255 ) {
+    for( current = _first; current != NULL && i < 255; current = current->_next ) {
         if( current->_flag == SYS_WINDOW ) {
             cur_win = (SystemWin*) current;
             if( strcmp( cur_win->_name, win_name ) == 0 ) {
@@ -261,7 +259,6 @@ int HFSystem::winNumberOf( char * win_name )
                 i++;
             }
         }
-        current = current->_next;
     }
     return NoSuchWin;
 }
@@ -293,10 +290,9 @@ int HFSystem::dump( OutFile *dest )
     dest->write( _compLevel );
 
     // Dump the records in the linked list, in order.
-    SystemRec   *current = _first;
-    while( current != NULL ) {
+    SystemRec   *current;
+    for( current = _first; current != NULL; current = current->_next ) {
         current->dump( dest );
-        current = current->_next;
     }
     return 1;
 }

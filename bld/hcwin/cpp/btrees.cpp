@@ -82,11 +82,12 @@ BtreeData::BtreeData()
 
 void BtreeData::insertSelf( BtreePage *dest )
 {
-    BtreeData   *current = dest->_entries;
-    BtreeData   *temp = NULL;
-    while( current != NULL && current->lessThan( this ) ) {
+    BtreeData   *current;
+    BtreeData   *temp;
+
+    temp = NULL;
+    for( current = dest->_entries; current != NULL && current->lessThan( this ); current = current->_bnext ) {
         temp = current;
-        current = current->_bnext;
     }
     if( temp == NULL ) {
         if( current != NULL ) {
@@ -114,12 +115,14 @@ void BtreeData::insertSelf( BtreePage *dest )
 
 BtreePage *BtreeData::seekNext( BtreePage *first )
 {
-    BtreePage   *result = first->_firstChild;
-    BtreeData   *current = first->_entries;
-    while( current != NULL ) {
-        if( lessThan( current ) ) break;
+    BtreePage   *result;
+    BtreeData   *current;
+
+    result = first->_firstChild;
+    for( current = first->_entries; current != NULL; current = current->_bnext ) {
+        if( lessThan( current ) )
+            break;
         result = current->_child;
-        current = current->_bnext;
     }
     return result;
 }
@@ -154,12 +157,12 @@ BtreePage::BtreePage( uint_32 max_size, BtreePage *ancestor, BtreePage *descenda
 
 BtreePage::~BtreePage()
 {
-    BtreeData   *current = _entries;
-    BtreeData   *temp;
-    while( current != NULL ) {
-        temp = current;
-        current = current->bnext();
-        delete temp;
+    BtreeData   *current;
+    BtreeData   *next;
+
+    for( current = _entries; current != NULL; current = next ) {
+        next = current->bnext();
+        delete current;
     }
 }
 
@@ -226,19 +229,20 @@ int BtreePage::dump( OutFile *dest )
 int BtreePage::split()
 {
 //    int         i=0;
-    uint_16     limit = (uint_16) ((_numEntries + 1) / 2);
-    uint_32     cur_size = 0;
-    uint_16     cur_num = 0;
-    BtreeData   *current = _entries;
+    uint_16     limit = (uint_16)( ( _numEntries + 1 ) / 2 );
+    uint_32     cur_size;
+    uint_16     cur_num;
+    BtreeData   *current;
     BtreePage   *sibling;
 
     // Search for the point to break the page at.
-    while( current != NULL ) {
+    cur_size = 0;
+    cur_num = 0;
+    for( current = _entries; current != NULL; current = current->bnext() ) {
         if( cur_num >= limit )
             break;
         cur_size += current->size();
         cur_num++;
-        current = current->bnext();
     }
     if( current == NULL )
         return 0;
@@ -314,10 +318,8 @@ int BtreePage::split()
     // Update the parent field of 'sibling's children.
     if( _firstChild != NULL ) {
         sibling->_firstChild->_parent = sibling;
-        current = sibling->_entries;
-        while( current != NULL ) {
+        for( current = sibling->_entries; current != NULL; current = current->bnext() ) {
             current->child()->_parent = sibling;
-            current = current->bnext();
         }
     }
 
@@ -418,10 +420,9 @@ void Btree::killPage( BtreePage *start )
         return;
     if( start->_firstChild != NULL ) {  // if this page has children,
         killPage( start->_firstChild );
-        BtreeData *current = start->_entries;
-        while( current != NULL ) {
+        BtreeData *current;
+        for( current = start->_entries; current != NULL; current = current->bnext() ) {
             killPage( current->child() );
-            current = current->bnext();
         }
     }
 
@@ -436,7 +437,7 @@ uint_32 Btree::size()
 {
     if( !_size ) {
         labelPages( _root );
-        _size = (_numPages*_maxSize);
+        _size = ( _numPages * _maxSize );
         _size += 38;    // The size of the b-tree header.
     }
     return _size;
@@ -471,10 +472,9 @@ void Btree::labelPages( BtreePage *start )
         return;
     start->_thisPage = _numPages++;
     labelPages( start->_firstChild );
-    BtreeData   *current = start->_entries;
-    while( current != NULL ) {
+    BtreeData   *current;
+    for( current = start->_entries; current != NULL; current = current->bnext() ) {
         labelPages( current->child() );
-        current = current->bnext();
     }
     return;
 }
@@ -493,10 +493,9 @@ void Btree::dumpPage( OutFile *dest, BtreePage *start )
     // Recursively dump any pages below this page.
     if( start->_firstChild != NULL ) {
         dumpPage( dest, start->_firstChild );
-        BtreeData       *current = start->_entries;
-        while( current != NULL ) {
+        BtreeData       *current;
+        for( current = start->_entries; current != NULL; current = current->bnext() ) {
             dumpPage( dest, current->child() );
-            current = current->bnext();
         }
     }
     return;
@@ -519,9 +518,10 @@ BtreeData *Btree::findNode( BtreeData &keyval )
         nextpage = keyval.seekNext( cur_page );
     } while( nextpage != NULL );
 
-    current = cur_page->_entries;
-    while( current != NULL && current->lessThan( &keyval ) ) {
-        current = current->bnext();
+    for( current = cur_page->_entries; current != NULL; current = current->bnext() ) {
+        if( !current->lessThan( &keyval ) ) {
+            break;
+        }
     }
     if( current == NULL || keyval.lessThan( current ) ) {
         result = NULL;

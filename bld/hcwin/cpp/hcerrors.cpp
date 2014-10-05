@@ -43,11 +43,11 @@ typedef const char *ErrString;
 
 void ErrorPrint( FILE *fp, ErrString format, va_list values )
 {
-    const char  *letter = format;
+    const char  *letter;
     ErrString   string;
     int     value;
 
-    while( *letter != '\0' ) {
+    for( letter = format; *letter != '\0'; letter++ ) {
         if( *letter != '%' ) {
             fputc( *letter, fp );
         } else {
@@ -69,7 +69,6 @@ void ErrorPrint( FILE *fp, ErrString format, va_list values )
                 fputc( '%', fp );
             }
         }
-        letter++;
     }
     return;
 }

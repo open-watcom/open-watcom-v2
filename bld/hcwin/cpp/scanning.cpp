@@ -245,10 +245,11 @@ void Scanner::pullText( Token * tok )
 {
     tok->_text[0] = static_cast<char>(nextch());
 
-    int     i = 1;
-    int     current = 0;
+    int     i;
+    int     current;
 
-    while( i < BUF_SIZE - 1 ) {
+    current = 0;
+    for( i = 1; i < BUF_SIZE - 1; ++i ) {
         current = nextch();
 
         if( current == S_ENDC
@@ -270,7 +271,7 @@ void Scanner::pullText( Token * tok )
             ++_lineNum;
             continue;
         }
-        tok->_text[i++] = static_cast<char>(current);
+        tok->_text[i] = static_cast<char>(current);
     }
     tok->_text[i] = '\0';
     tok->_value = i;

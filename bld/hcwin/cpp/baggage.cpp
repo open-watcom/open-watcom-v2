@@ -77,12 +77,11 @@ int Baggage::dump( OutFile * dest )
         return 1;
     }
     char    *buf = new char[BDUMP_SIZE];
-    uint_32 left_to_dump = _size;
-    int     amount_dumped;
+    uint_32 left_to_dump;
+    size_t  amount_dumped;
 
-    while( left_to_dump ) {
+    for( left_to_dump = _size; left_to_dump; left_to_dump -= amount_dumped ) {
         amount_dumped = fread( buf, 1, BDUMP_SIZE, _fp );
-        left_to_dump -= amount_dumped;
         dest->write( buf, 1, amount_dumped );
     }
     delete[] buf;

@@ -173,12 +173,11 @@ uint_32 Bitmap::size()
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
     unsigned    blocksize;
-    unsigned    count = _pixOffset;
+    unsigned    count;
 
     _pixSize = 0;
-    while( count < _fileSize ) {
+    for( count = _pixOffset; count < _fileSize; count += blocksize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
-        count += blocksize;
         _pixSize += reader.compress( buffer, blocksize );
     }
 
@@ -278,11 +277,10 @@ int Bitmap::dump( OutFile *dest )
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
     unsigned    blocksize;
-    unsigned    count = _pixOffset;
+    unsigned    count;
 
-    while( count < _fileSize ) {
+    for( count = _pixOffset; count < _fileSize; count += blocksize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
-        count += blocksize;
         reader.compress( buffer, blocksize );
     }
 
@@ -319,10 +317,10 @@ SegGraph::SegGraph( InFile * fp ) : Bmx( fp )
 int SegGraph::dump( OutFile *dest )
 {
     char    *block = new char[BLOCK_SIZE];
-    int     this_block;
+    size_t  this_block;
 
     _fp->open();
-    while( (this_block=_fp->readbuf(block, BLOCK_SIZE)) != 0 ) {
+    while( (this_block = _fp->readbuf( block, BLOCK_SIZE )) != 0 ) {
         dest->write( block, 1, this_block );
     }
 
@@ -351,32 +349,29 @@ HFBitmaps::~HFBitmaps()
 {
     delete[] _startDir;
 
-    StrNode *tempSN, *curSN = _root;
+    StrNode *nextSN, *curSN;
 
-    while( curSN != NULL ) {
-        tempSN = curSN;
-        curSN = curSN->_next;
-        delete[] tempSN->_name;
-        delete tempSN;
+    for( curSN = _root; curSN != NULL; curSN = nextSN ) {
+        nextSN = curSN->_next;
+        delete[] curSN->_name;
+        delete curSN;
     }
 
-    Image   *tempBM, *curBM = _files;
+    Image   *nextBM, *curBM;
 
-    while( curBM != NULL ) {
-        tempBM = curBM;
-        curBM = curBM->_next;
-        delete[] tempBM->_name;
-        delete tempBM->_image;
-        delete tempBM;
+    for( curBM = _files; curBM != NULL; curBM = nextBM ) {
+        nextBM = curBM->_next;
+        delete[] curBM->_name;
+        delete curBM->_image;
+        delete curBM;
     }
 
-    curBM = _usedFiles;
-    while( curBM != NULL ) {
-        tempBM = curBM;
-        curBM = curBM->_next;
-        delete[] tempBM->_name;
-        delete tempBM->_image;
-        delete tempBM;
+    
+    for( curBM = _usedFiles; curBM != NULL; curBM = nextBM ) {
+        nextBM = curBM->_next;
+        delete[] curBM->_name;
+        delete curBM->_image;
+        delete curBM;
     }
 }
 
@@ -438,14 +433,12 @@ void HFBitmaps::addToPath( char const path[] )
 void HFBitmaps::note( char const name[] )
 {
     Image   *current;
-    StrNode *curdir = _root;
+    StrNode *curdir;
     uint_16 magic;
 
     InFile  *bmp = new InFile( name, 1 );
-
-    while( bmp->bad() && curdir != NULL ) {
+    for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
         chdir( curdir->_name );
-        curdir = curdir->_next;
         bmp->open( name );
         chdir( _startDir );
     }
@@ -497,11 +490,10 @@ uint_16 HFBitmaps::use( char const name[] )
     static char filename[9] = "|bm";
 
     // Check to see if this bitmap has already been referenced.
-    current = _usedFiles;
+    
     result = (uint_16) 0;
-    while( current != NULL && stricmp( name, current->_name ) != 0 ) {
-        result ++;
-        current = current->_next;
+    for( current = _usedFiles; current != NULL && stricmp( name, current->_name ) != 0; current = current->_next ) {
+        result++;
     }
     if( current != NULL ) {
         return result;
@@ -510,11 +502,9 @@ uint_16 HFBitmaps::use( char const name[] )
     // Check to see if the bitmap was referenced by note().
     result = (uint_16) _numImages;
 
-    current = _files;
     temp = NULL;
-    while( current != NULL && stricmp( name, current->_name ) != 0 ) {
+    for( current = _files; current != NULL && stricmp( name, current->_name ) != 0; current = current->_next ) {
         temp = current;
-        current = current->_next;
     }
 
     newimage = _usedFiles;
@@ -536,14 +526,11 @@ uint_16 HFBitmaps::use( char const name[] )
         }
     } else {
         // Now we have to search for the file.
-        curdir = _root;
         bmp = new InFile( name, 1 );
-    
-        while( bmp->bad() && curdir != NULL ) {
+        for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
             chdir( curdir->_name );
             bmp->open( name, 1 );
             chdir( _startDir );
-            curdir = curdir->_next;
         }
     
         if( bmp->bad() ) {

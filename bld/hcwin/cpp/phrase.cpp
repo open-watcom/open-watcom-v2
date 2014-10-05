@@ -297,13 +297,15 @@ Phrase *PTable::match( char * &start )
         // First, try to find a match based on the first three characters.
         h_val = 0;
         memcpy( &h_val, start, PH_MIN_LEN );
-        result = _htable[h_val % HASH_SIZE];
-    
-        while( result != NULL && result->_len > length ) {
-            result = result->_next;
+        for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+            if( result->_len <= length ) {
+                break;
+            }
         }
-        while( result != NULL && memcmp( result->_str, start, result->_len ) != 0 ) {
-               result = result->_next;
+        for( ; result != NULL; result = result->_next ) {
+            if( memcmp( result->_str, start, result->_len ) == 0 ) {
+                break;
+            }
         }
     }
     if( result != NULL ) {
@@ -321,13 +323,15 @@ Phrase *PTable::match( char * &start )
         }
         h_val = 0;
         memcpy( &h_val, start, length );
-        result = _htable[h_val % HASH_SIZE];
-    
-        while( result != NULL && result->_len > length ) {
-            result = result->_next;
+        for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+            if( result->_len <= length ) {
+                break;
+            }
         }
-        while( result != NULL && memcmp( result->_str, start, result->_len ) != 0 ) {
-            result = result->_next;
+        for( ; result != NULL; result = result->_next ) {
+            if( memcmp( result->_str, start, result->_len ) == 0 ) {
+                break;
+            }
         }
         if( result != NULL ) {
             start += result->_len;
@@ -367,12 +371,15 @@ Phrase *PTable::find( Phrase *other )
         memcpy( &h_val, str, PH_MIN_LEN );
     }
 
-    result = _htable[h_val % HASH_SIZE];
-    while( result != NULL && result->_len > len ) {
-        result = result->_next;
+    for( result = _htable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        if( result->_len <= len ) {
+            break;
+        }
     }
-    while( result != NULL && result->_len==len && memcmp( result->_str, str, len ) != 0 ) {
-        result = result->_next;
+    for( ; result != NULL; result = result->_next ) {
+        if( result->_len != len || memcmp( result->_str, str, len ) == 0 ) {
+            break;
+        }
     }
     if( result != NULL && result->_len != len ) {
         result = NULL;
@@ -387,12 +394,11 @@ Phrase *PTable::find( Phrase *other )
 
 int &PTable::follows( Phrase *first, Phrase *second )
 {
-    Edge    *current = first->_firstEdge;
-    while( current != NULL ) {
+    Edge    *current;
+    for( current = first->_firstEdge; current != NULL; current = current->_next ) {
         if( current->_dest == second ) {
             break;
         }
-        current = current->_next;
     }
     if( current == NULL ) {
         current = (Edge *) _edges->get();
@@ -418,12 +424,11 @@ void PTable::insert( Phrase *p )
         memcpy( &h_val, p->_str, PH_MIN_LEN );
     }
 
-    current = _htable[h_val % HASH_SIZE];
     temp = NULL;
-
-    while( current != NULL && current->_len > p->_len ) {
+    for( current = _htable[h_val % HASH_SIZE]; current != NULL; current = current->_next ) {
+        if( current->_len <= p->_len )
+            break;
         temp = current;
-        current = current->_next;
     }
     p->_next = current;
     if( temp != NULL ) {
@@ -466,18 +471,16 @@ Phrase *PTable::next()
 void PTable::clear()
 {
     int     i;
-    Edge    *current, *temp;
+    Edge    *current, *next;
 
-    for( i=0; i<_size; i++ ) {
-        current = _phrases[i]->_firstEdge;
-        while( current != NULL ) {
-            temp = current;
-            current = current->_next;
-            _edges->release( temp );
+    for( i = 0; i < _size; i++ ) {
+        for( current = _phrases[i]->_firstEdge; current != NULL; current = next ) {
+            next = current->_next;
+            _edges->release( current );
         }
         delete _phrases[i];
     }
-    for( i=0; i<HASH_SIZE; i++ ) {
+    for( i = 0; i < HASH_SIZE; i++ ) {
         _htable[i] = NULL;
     }
     _iterPos = -1;
@@ -956,11 +959,10 @@ void HFPhrases::readPhrases()
     
         _newPtable->start();
         while( (p_phr = _newPtable->next()) != NULL ) {
-            current = p_phr->_firstEdge;
-            while( current != NULL ) {
-                if( current->_val >= 2 )
+            for( current = p_phr->_firstEdge; current != NULL; current = current->_next ) {
+                if( current->_val >= 2 ) {
                     break;
-                current = current->_next;
+                }
             }
             if( current != NULL ) {
                 break;
@@ -1112,16 +1114,14 @@ void HFPhrases::replace( char * dst, char const *src, int & len )
         memcpy( &hvalue, src + read_pos, PH_MIN_LEN );
         hvalue %= HASH_SIZE;
     
-        current = _htable[hvalue];
         best = NULL;
-        while( current != NULL ) {
+        for( current = _htable[hvalue]; current != NULL; current = current->_next ) {
             if( current->_len <= len - read_pos
               && memcmp( current->_str, src + read_pos, current->_len ) == 0 ) {
                 if( best == NULL || best->_len < current->_len ) {
                     best = current;
                 }
             }
-            current = current->_next;
         }
     
         if( best == NULL ) {

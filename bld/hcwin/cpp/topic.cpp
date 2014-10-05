@@ -900,29 +900,26 @@ HFTopic::~HFTopic()
 
     // Lotsa linked lists to delete.
 
-    TopicLink   *current = _head;
-    TopicLink   *temp;
-    while( current != NULL ) {
-        temp = current;
-        current = current->_next;
-        delete temp;
+    TopicLink   *current;
+    TopicLink   *next;
+    for( current = _head; current != NULL; current = next ) {
+        next = current->_next;
+        delete current;
     }
 
-    PageHeader  *pcurrent = _phead;
-    PageHeader  *ptemp;
-    while( pcurrent != NULL ) {
-        ptemp = pcurrent;
-        pcurrent = pcurrent->_next;
-        delete ptemp;
+    PageHeader  *pcurrent;
+    PageHeader  *pnext;
+    for( pcurrent = _phead; pcurrent != NULL; pcurrent = pnext ) {
+        pnext = pcurrent->_next;
+        delete pcurrent;
     }
 
-    StringNode  *bcurrent = _bhead;
-    StringNode  *btemp;
-    while( bcurrent != NULL ) {
-        btemp = bcurrent;
-        bcurrent = bcurrent->_next;
-        delete[] btemp->_string;
-        delete btemp;
+    StringNode  *bcurrent;
+    StringNode  *bnext;
+    for( bcurrent = _bhead; bcurrent != NULL; bcurrent = bnext ) {
+        bnext = bcurrent->_next;
+        delete[] bcurrent->_string;
+        delete bcurrent;
     }
 }
 
@@ -1062,19 +1059,18 @@ void HFTopic::addBrowse( char const str[] )
 
 void HFTopic::recordBrowse( TopicLink *me )
 {
-    StringNode  *current = _bhead;
+    StringNode  *current;
     StringNode  *prev = NULL;
     StringNode  *newnode = new StringNode;
-    newnode->_me= me;
+    newnode->_me = me;
     newnode->_charOffset = _browseOffset;
     newnode->_string = _browseStr;
     strlwr( newnode->_string );
     _browseStr = NULL;
-    while( current != NULL ) {
+    for( current = _bhead; current != NULL; current = current->_next ) {
         if( strcmp( current->_string, newnode->_string ) > 0 )
             break;
         prev = current;
-        current = current->_next;
     }
 
     if( current == NULL ) {
@@ -1104,13 +1100,13 @@ void HFTopic::recordBrowse( TopicLink *me )
 
 void HFTopic::dumpBrowse()
 {
-    StringNode  *current = _bhead;
+    StringNode  *current;
     StringNode  *lastlocal = NULL;
     StringNode  *lastglobal = NULL;
     char        *colonpos;
     size_t      seqlen;
 
-    while( current != NULL ) {
+    for( current = _bhead; current != NULL; current = current->_next ) {
         colonpos = strchr( current->_string, ':' );
         seqlen = colonpos - current->_string + 1;
         if( colonpos == NULL ) {
@@ -1139,7 +1135,6 @@ void HFTopic::dumpBrowse()
             }
             lastlocal = current;
         }
-        current = current->_next;
     }
     if( lastlocal != NULL ) {
         lastlocal->nextBrowse() = NULLVAL32;

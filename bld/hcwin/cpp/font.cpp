@@ -164,28 +164,27 @@ HFFont::HFFont( HFSDirectory *d_file )
 
 HFFont::~HFFont()
 {
-    FontState *stemp, *scurrent = _head;
-    while( scurrent != NULL ) {
-        stemp = scurrent;
-        scurrent = scurrent->_next;
-        delete stemp;
+    FontState *snext, *scurrent;
+    for( scurrent = _head; scurrent != NULL; scurrent = snext ) {
+        snext = scurrent->_next;
+        delete scurrent;
     }
 
-    FontName *ntemp, *ncurrent = _firstName;
-    while( ncurrent != NULL ) {
-        ntemp = ncurrent;
-        ncurrent = ncurrent->_nextName;
-        delete ntemp;
+    FontName *nnext, *ncurrent;
+    for( ncurrent = _firstName; ncurrent != NULL; ncurrent = nnext ) {
+        nnext = ncurrent->_nextName;
+        delete ncurrent;
     }
 
-    FontDesc *dtemp, *dcurrent = _firstDesc;
-    while( dcurrent != NULL ) {
-        dtemp = dcurrent;
-        dcurrent = dcurrent->_nextDesc;
-        delete dtemp;
+    FontDesc *dnext, *dcurrent;
+    for( dcurrent = _firstDesc; dcurrent != NULL; dcurrent = dnext ) {
+        dnext = dcurrent->_nextDesc;
+        delete dcurrent;
     }
 
-    if( _curDesc ) delete _curDesc;
+    if( _curDesc ) {
+        delete _curDesc;
+    }
 }
 
 
@@ -194,23 +193,21 @@ HFFont::~HFFont()
 void HFFont::addFont( char const fontname[], uint_8 family, short num )
 {
     // Check if any font with that number is already defined.
-    FontName    *current = _firstName;
-    while( current != NULL ) {
+    FontName    *current;
+    for( current = _firstName; current != NULL; current = current->_nextName ) {
         if( current->_userNum == num ) {
             // Warn the user and "overwrite" the previous font.
             HCWarning( FONT_SAMENUM, (int) num );
             current->_userNum = -1;
             break;
         }
-        current = current->_nextName;
     }
 
     // Check if a font with that name is already defined.
-    current = _firstName;
-    while( current != NULL ) {
-        if( strcmp( current->_name, fontname ) == 0 )
+    for( current = _firstName; current != NULL; current = current->_nextName ) {
+        if( strcmp( current->_name, fontname ) == 0 ) {
             break;
-        current = current->_nextName;
+        }
     }
 
     if( current != NULL ) {
@@ -239,10 +236,9 @@ void HFFont::addFont( char const fontname[], uint_8 family, short num )
 
 void HFFont::clearFonts()
 {
-    FontName *current = _firstName;
-    while( current != NULL ) {
+    FontName *current;
+    for( current = _firstName; current != NULL; current = current->_nextName ) {
         current->_userNum = -1;
-        current = current->_nextName;
     }
     return;
 }
@@ -277,11 +273,11 @@ uint_16 HFFont::selectFont( short index, int lnum, char const fname[] )
     int     i;
 
     // First, find the index of the font.
-    FontName    *current = _firstName;
-    while( current != NULL ) {
-        if( current->_userNum == index )
+    FontName    *current;
+    for( current = _firstName; current != NULL; current = current->_nextName ) {
+        if( current->_userNum == index ) {
             break;
-        current = current->_nextName;
+        }
     }
     if( current == NULL ) {
         HCWarning( FONT_UNKNOWN, (int) index, lnum, fname );
@@ -319,11 +315,10 @@ uint_16 HFFont::selectFont( short index, int lnum, char const fname[] )
 
 uint_8 HFFont::getAttribs( uint_16 font )
 {
-    uint_8 result;
-    FontDesc    *current = _firstDesc;
-    int     i = 0;
-    while( i < font && current != NULL ) {
-        current = current->_nextDesc;
+    uint_8      result;
+    FontDesc    *current;
+    int         i = 0;
+    for( current = _firstDesc; i < font && current != NULL; current = current->_nextDesc ) {
         ++i;
     }
     if( current == NULL ) {
@@ -505,16 +500,14 @@ int HFFont::dump( OutFile * dest )
     uint_16 desc_offset = (uint_16) (_numFonts*FONT_NAME_LEN + 4*sizeof( uint_16 ));
     dest->write( desc_offset );
 
-    FontName *cur_name = _firstName;
-    while( cur_name != NULL ) {
+    FontName *cur_name;
+    for( cur_name = _firstName; cur_name != NULL; cur_name = cur_name->_nextName ) {
         cur_name->dump( dest );
-        cur_name = cur_name->_nextName;
     }
 
-    FontDesc *desc_current = _firstDesc;
-    while( desc_current != NULL ) {
+    FontDesc *desc_current;
+    for( desc_current = _firstDesc; desc_current != NULL; desc_current = desc_current->_nextDesc ) {
         desc_current->dump( dest );
-        desc_current = desc_current->_nextDesc;
     }
     return 1;
 }

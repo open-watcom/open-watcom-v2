@@ -204,12 +204,11 @@ KWRec::KWRec( char const kword[], uint_32 first_off )
 
 KWRec::~KWRec()
 {
-    KWoffset    *current = _head;
-    KWoffset    *temp;
-    while( current != NULL ) {
-        temp = current;
-        current = current->_next;
-        delete temp;
+    KWoffset    *current;
+    KWoffset    *next;
+    for( current = _head; current != NULL; current = next ) {
+        next = current->_next;
+        delete current;
     }
 }
 
@@ -240,13 +239,13 @@ int KWRec::dump( OutFile * dest )
 void KWRec::addOffset( uint_32 new_off )
 {
     KWoffset    *new_node = new KWoffset( new_off );
-    KWoffset    *current = _head;
-    while( current != NULL ) {
+    KWoffset    *current;
+    for( current = _head; current != NULL; current = current->_next ) {
         if( current->_offset > new_off )
             break;
-        if( current->_next == NULL )
+        if( current->_next == NULL ) {
             break;
-        current = current->_next;
+        }
     }
     if( current == NULL ) {
         _head = new_node;
@@ -402,15 +401,13 @@ HFKwmap::HFKwmap( HFSDirectory * d_file, HFKwbtree * tree )
 uint_32 HFKwmap::size()
 {
     if( _numRecs == 0 ) {
-        _iterator.init();
-        while( _iterator.data() != NULL ) {
+        for( _iterator.init(); _iterator.data() != NULL; _iterator.nextPage() ) {
             _numRecs += 1;
-            _iterator.nextPage();
         }
     }
 
     // Note each KWmap record is 6 bytes long.
-    return (uint_32) (_numRecs*6)+sizeof( uint_16 );
+    return (uint_32)( _numRecs * 6 ) + sizeof( uint_16 );
 }
 
 
@@ -419,15 +416,13 @@ uint_32 HFKwmap::size()
 int HFKwmap::dump( OutFile * dest )
 {
     dest->write( _numRecs );
-    _iterator.init();
     uint_32     rec_count = 0;
     uint_16     page_num;
-    while( _iterator.data() != NULL ) {
+    for( _iterator.init(); _iterator.data() != NULL; _iterator.nextPage() ) {
         page_num = _iterator.thisPage();
         dest->write( rec_count );
         dest->write( page_num );
         rec_count += _iterator.pageEntries();
-        _iterator.nextPage();
     }
     return 1;
 }
