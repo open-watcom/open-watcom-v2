@@ -86,7 +86,9 @@ void BtreeData::insertSelf( BtreePage *dest )
     BtreeData   *temp;
 
     temp = NULL;
-    for( current = dest->_entries; current != NULL && current->lessThan( this ); current = current->_bnext ) {
+    for( current = dest->_entries; current != NULL; current = current->_bnext ) {
+        if( !current->lessThan( this ) )
+            break;
         temp = current;
     }
     if( temp == NULL ) {

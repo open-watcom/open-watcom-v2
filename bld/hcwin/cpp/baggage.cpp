@@ -80,7 +80,7 @@ int Baggage::dump( OutFile * dest )
     uint_32 left_to_dump;
     size_t  amount_dumped;
 
-    for( left_to_dump = _size; left_to_dump; left_to_dump -= amount_dumped ) {
+    for( left_to_dump = _size; left_to_dump != 0; left_to_dump -= amount_dumped ) {
         amount_dumped = fread( buf, 1, BDUMP_SIZE, _fp );
         dest->write( buf, 1, amount_dumped );
     }

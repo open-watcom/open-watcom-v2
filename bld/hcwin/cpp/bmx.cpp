@@ -491,8 +491,10 @@ uint_16 HFBitmaps::use( char const name[] )
 
     // Check to see if this bitmap has already been referenced.
     
-    result = (uint_16) 0;
-    for( current = _usedFiles; current != NULL && stricmp( name, current->_name ) != 0; current = current->_next ) {
+    result = (uint_16)0;
+    for( current = _usedFiles; current != NULL; current = current->_next ) {
+        if( stricmp( name, current->_name ) == 0 )
+            break;
         result++;
     }
     if( current != NULL ) {
@@ -500,10 +502,12 @@ uint_16 HFBitmaps::use( char const name[] )
     }
 
     // Check to see if the bitmap was referenced by note().
-    result = (uint_16) _numImages;
+    result = (uint_16)_numImages;
 
     temp = NULL;
-    for( current = _files; current != NULL && stricmp( name, current->_name ) != 0; current = current->_next ) {
+    for( current = _files; current != NULL; current = current->_next ) {
+        if( stricmp( name, current->_name ) == 0 )
+            break;
         temp = current;
     }
 

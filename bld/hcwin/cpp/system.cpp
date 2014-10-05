@@ -250,7 +250,9 @@ int HFSystem::winNumberOf( char * win_name )
     int         i;
 
     i = 0;
-    for( current = _first; current != NULL && i < 255; current = current->_next ) {
+    for( current = _first; current != NULL; current = current->_next ) {
+        if( i >= 255 )
+            break;
         if( current->_flag == SYS_WINDOW ) {
             cur_win = (SystemWin*) current;
             if( strcmp( cur_win->_name, win_name ) == 0 ) {
