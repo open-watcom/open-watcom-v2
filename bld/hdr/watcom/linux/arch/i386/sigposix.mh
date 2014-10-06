@@ -24,11 +24,6 @@ struct sigaction {
 # define sa_handler     _u.sa_handler
 # define sa_sigaction   _u.sa_sigaction
 
-union sigval {
-    int         sigval_int;
-    void        *sigval_ptr;
-};
-
 struct sigevent {
     int          sigev_signo;
     union sigval sigev_value;

@@ -66,7 +66,7 @@ typedef void (*__sig_func)( int );
 
 :include pshpackl.sp
 
-::#include _ARCH_INCLUDE(siginfo.h)
+#include _ARCH_INCLUDE(siginfo.h)
 typedef struct siginfo siginfo_t;
 #include _ARCH_INCLUDE(sigposix.h)
 

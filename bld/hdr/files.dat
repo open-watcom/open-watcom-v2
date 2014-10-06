@@ -399,6 +399,7 @@ usr="tcp.h"
 [ DEFAULT type="s" dir="lh/arch/i386" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="err_no.h"
 usr="fcntl.h"
+usr="siginfo.h"
 usr="signal.h"
 usr="sigposix.h"
 
@@ -416,6 +417,7 @@ usr="sysmips.h"
 [ DEFAULT type="s" dir="lh/arch/mips" where="mc" cond="lnxtarg" ]
 usr="err_no.h"
 usr="fcntl.h"
+usr="siginfo.h"
 usr="signal.h"
 usr="sigposix.h"
 
