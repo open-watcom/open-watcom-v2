@@ -14,11 +14,11 @@ mimsy=were residentname
 
 the @1
 borogroves=and @1
-mome @1 residentname nodata
+mome @1 residentname nodata ; comment
 raths residentname
 outgrabe @66 residentname 12
 beware @33 2234
-the @12 residentname 1 nodata
+the @12 residentname 1 nodata ;Another comment
 heapsize 023
 heapsize maxval
 imports jabberwock.my

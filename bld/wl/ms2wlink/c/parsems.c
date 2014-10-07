@@ -289,7 +289,7 @@ extern bool MakeToken( sep_type separator, bool include_fn )
     CmdFile->current++;     // skip separator.
     CmdFile->token = CmdFile->current;
     hmm = *CmdFile->current;
-    if( hmm == '\0' || hmm == '\n' ) {
+    if( hmm == '\0' || hmm == '\n' || hmm == ';' ) {
         CmdFile->len = 0;
         return( FALSE );
     }
