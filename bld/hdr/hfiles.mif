@@ -273,6 +273,7 @@
 #----------------------------------------------------------
 !inject arch/i386/err_no.h                       hlnx
 !inject arch/i386/fcntl.h                        hlnx
+!inject arch/i386/siginfo.h                      hlnx
 !inject arch/i386/signal.h                       hlnx
 !inject arch/i386/sigposix.h                     hlnx
 !inject arch/i386/sys/ioctl.h                    hlnx
@@ -282,6 +283,7 @@
 !inject arch/i386/sys/types.h                    hlnx
 !inject arch/mips/err_no.h                       hlnx
 !inject arch/mips/fcntl.h                        hlnx
+!inject arch/mips/siginfo.h                      hlnx
 !inject arch/mips/signal.h                       hlnx
 !inject arch/mips/sigposix.h                     hlnx
 !inject arch/mips/sys/ioctl.h                    hlnx
