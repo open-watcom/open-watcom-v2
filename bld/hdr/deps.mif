@@ -297,7 +297,7 @@ sys/wait.h      : linux/sys/wait.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(
 
 arch/i386/err_no.h       : linux/arch/i386/err_no.mh ../crwatcnt.sp
 arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh ../crwatcnt.sp
-arch/i386/siginfo.h      : linux/arch/i386/siginfo.mh ../crwatcnt.sp
+arch/i386/siginfo.h      : linux/arch/i386/siginfo.mh ../crwatcnt.sp ../clockt.sp
 arch/i386/signal.h       : linux/arch/i386/signal.mh ../crwatcnt.sp
 arch/i386/sigposix.h     : linux/arch/i386/sigposix.mh ../crwatcnt.sp
 arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh ../crwatcnt.sp
@@ -307,7 +307,7 @@ arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh ../crwatcnt.sp
 arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh ../crwatcnt.sp
 arch/mips/err_no.h       : linux/arch/mips/err_no.mh ../crwatcnt.sp
 arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh ../crwatcnt.sp
-arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh ../crwatcnt.sp
+arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh ../crwatcnt.sp ../clockt.sp
 arch/mips/signal.h       : linux/arch/mips/signal.mh ../crwatcnt.sp
 arch/mips/sigposix.h     : linux/arch/mips/sigposix.mh ../crwatcnt.sp
 arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh ../crwatcnt.sp

@@ -40,8 +40,6 @@ using std::raise;
 :segment QNX | LINUX
 :include systypes.sp
 
-::#include <time.h>  // for siginfo.h
-
 :endsegment
 :: Only need extern "C" in csignal
 :segment CNAME
