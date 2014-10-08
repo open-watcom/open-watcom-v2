@@ -574,7 +574,7 @@ static void ParseOneLine( char *c )
     }
 }
 
-static char *ParseArOption( char *c, operation *mode )
+static char *ParseArOption( char *c, operation *ar_mode )
 {
     char    *start = c;
 
@@ -591,25 +591,25 @@ static char *ParseArOption( char *c, operation *mode )
             Options.no_c_warn = true;
             break;
         case 'd':
-            if( *mode != OP_NONE ) {
+            if( *ar_mode != OP_NONE ) {
                 FatalError( ERR_BAD_OPTION, c[ 0 ] );
             }
-            *mode = OP_DELETE;
+            *ar_mode = OP_DELETE;
             break;
         case 'p':
             //ignore not implemented
             break;
         case 'r':
-            if( *mode != OP_NONE ) {
+            if( *ar_mode != OP_NONE ) {
                 FatalError( ERR_BAD_OPTION, c[ 0 ] );
             }
-            *mode = OP_ADD | OP_DELETE;
+            *ar_mode = OP_ADD | OP_DELETE;
             break;
         case 't':
-            if( *mode != OP_NONE ) {
+            if( *ar_mode != OP_NONE ) {
                 FatalError( ERR_BAD_OPTION, c[ 0 ] );
             }
-            *mode = OP_TABLE;
+            *ar_mode = OP_TABLE;
             Options.list_contents = true;
             break;
         case 'u':
@@ -625,10 +625,10 @@ static char *ParseArOption( char *c, operation *mode )
             Options.verbose = true;
             break;
         case 'x':
-            if( *mode != OP_NONE ) {
+            if( *ar_mode != OP_NONE ) {
                 FatalError( ERR_BAD_OPTION, c[ 0 ] );
             }
-            *mode = OP_EXTRACT;
+            *ar_mode = OP_EXTRACT;
             break;
         case '-':
             break;
@@ -640,7 +640,7 @@ static char *ParseArOption( char *c, operation *mode )
     return( c );
 }
 
-static void ParseOneArLine( char *c, operation *mode )
+static void ParseOneArLine( char *c, operation *ar_mode )
 {
     char        *buff;
     bool        done_options;
@@ -651,7 +651,7 @@ static void ParseOneArLine( char *c, operation *mode )
         eatwhite( c );
         switch( *c ) {
         case '\0':
-            if( *mode == OP_EXTRACT ) {
+            if( *ar_mode == OP_EXTRACT ) {
                 Options.explode = true;
             }
             MemFree( buff );
@@ -662,19 +662,19 @@ static void ParseOneArLine( char *c, operation *mode )
                     c += 2;
                     done_options = true;
                 } else {
-                    c = ParseArOption( c, mode );
+                    c = ParseArOption( c, ar_mode );
                 }
                 break;
             }
             //fall to default
         default:
-            if( mode == OP_NONE ) {
-                c = ParseArOption( c, mode );
+            if( ar_mode == OP_NONE ) {
+                c = ParseArOption( c, ar_mode );
                 break;
             }
             c = GetString( c, buff, true, false );
             if( Options.input_name ) {
-                AddCommand( *mode, buff );
+                AddCommand( *ar_mode, buff );
                 break;
             } else {
                 DefaultExtension( buff, EXT_LIB );
