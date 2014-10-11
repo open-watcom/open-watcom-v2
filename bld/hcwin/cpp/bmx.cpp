@@ -336,8 +336,8 @@ HFBitmaps::HFBitmaps( HFSDirectory *d_file ) : _dfile(d_file)
     _files = NULL;
     _usedFiles = NULL;
 
-    _startDir = new char[80];   // Arbitrary-length large string
-    getcwd( _startDir, 80 );
+    _startDir = new char[_MAX_PATH];    // Arbitrary-length large string
+    getcwd( _startDir, _MAX_PATH );
 
     _numImages = 0;
 }
@@ -347,17 +347,16 @@ HFBitmaps::HFBitmaps( HFSDirectory *d_file ) : _dfile(d_file)
 
 HFBitmaps::~HFBitmaps()
 {
-    delete[] _startDir;
-
     StrNode *nextSN, *curSN;
+    Image   *nextBM, *curBM;
+
+    delete[] _startDir;
 
     for( curSN = _root; curSN != NULL; curSN = nextSN ) {
         nextSN = curSN->_next;
         delete[] curSN->_name;
         delete curSN;
     }
-
-    Image   *nextBM, *curBM;
 
     for( curBM = _files; curBM != NULL; curBM = nextBM ) {
         nextBM = curBM->_next;
@@ -366,7 +365,6 @@ HFBitmaps::~HFBitmaps()
         delete curBM;
     }
 
-    
     for( curBM = _usedFiles; curBM != NULL; curBM = nextBM ) {
         nextBM = curBM->_next;
         delete[] curBM->_name;
