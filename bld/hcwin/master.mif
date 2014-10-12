@@ -2,7 +2,7 @@ proj_name = whc
 
 whc_autodepends = .autodepend
 
-#whc_trmem = 1
+whc_trmem = 1
 
 !include cproj.mif
 !include defrule.mif
