@@ -82,6 +82,12 @@ public:
     int     open( char const filename[], uint_8 type=READ|BIN );
     int     open();         // Re-open the previous file.
     void    close();        // Close the current file.
+
+    int reset( long pos = 0, int where = SEEK_SET )
+        { return fseek( _fp, pos, where ); };
+
+    long tell()
+        { return ftell( _fp ); };
 };
 
 
@@ -129,12 +135,6 @@ public:
 
     int putback( int c )
         { return ungetc( c, _fp ); };
-
-    int reset( long pos = 0, int where = SEEK_SET )
-        { return fseek( _fp, pos, where ); };
-
-    long tell()
-        { return ftell( _fp ); };
 };
 
 

@@ -134,17 +134,17 @@ class HFBitmaps
 
     struct StrNode
     {
-    char    *_name;
-    StrNode *_next;
+        char    *_name;
+        StrNode *_next;
     };
 
     StrNode *_root;
 
     struct Image
     {
-    char    *_name;
-    Bmx *_image;
-    Image   *_next;
+        char    *_name;
+        Bmx     *_image;
+        Image   *_next;
     };
 
     Image   *_files;

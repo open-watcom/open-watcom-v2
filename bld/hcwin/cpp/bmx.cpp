@@ -61,8 +61,8 @@ Bitmap::Bitmap( InFile *fp ) : Bmx( fp )
     _fp->reset();
     _fp->readbuf( &magic, 1, sizeof( uint_16 ) );
     _fp->readbuf( &filesize, 1, sizeof( uint_32 ) );
-    _fp->reset(0, SEEK_END);
-    _fileSize = _fp->tell();
+    _fp->reset( 0, SEEK_END );
+    _fileSize = (uint_32)_fp->tell();
 
     if( magic != BITMAP_MAGIC || filesize != _fileSize ) {
         _isValidImage = 0;
@@ -126,7 +126,7 @@ uint_32 Bitmap::size()
 
         _fp->readbuf( &_colsImportant, 1, sizeof(uint_32) );
         _dataPos = _fp->tell();
-        _fp->reset( sizeof(uint_32)*_colsUsed, SEEK_CUR );
+        _fp->reset( sizeof( uint_32 ) * _colsUsed, SEEK_CUR );
 
     } else {
 
@@ -150,10 +150,10 @@ uint_32 Bitmap::size()
         _colsImportant = 0;
 
         _dataPos = _fp->tell();
-        _fp->reset( 3*_colsUsed, SEEK_CUR );
+        _fp->reset( 3 * _colsUsed, SEEK_CUR );
     }
 
-    _objOffset = sizeof(uint_32)*_colsUsed + 0x1C; // 0x1C = size of object header
+    _objOffset = sizeof( uint_32 ) * _colsUsed + 0x1C; // 0x1C = size of object header
 
     if( _bitsPerPix >= MIN_16BIT ) {
         _objOffset += 1;
@@ -172,8 +172,8 @@ uint_32 Bitmap::size()
     CompWriter  riter;
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    unsigned    blocksize;
-    unsigned    count;
+    size_t      blocksize;
+    uint_32     count;
 
     _pixSize = 0;
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
@@ -276,8 +276,8 @@ int Bitmap::dump( OutFile *dest )
     CompOutFile riter( dest );
     CompReader  reader( &riter );
     char        *buffer = new char[BLOCK_SIZE];
-    unsigned    blocksize;
-    unsigned    count;
+    size_t      blocksize;
+    uint_32     count;
 
     for( count = _pixOffset; count < _fileSize; count += blocksize ) {
         blocksize = _fp->readbuf( buffer, BLOCK_SIZE );
@@ -299,16 +299,16 @@ SegGraph::SegGraph( InFile * fp ) : Bmx( fp )
 {
     uint_16 magic;
 
-    fp->reset();
-    fp->readbuf( &magic, 1, sizeof( uint_16 ) );
+    _fp->reset();
+    _fp->readbuf( &magic, 1, sizeof( uint_16 ) );
     if( magic == SHG1_MAGIC || magic == SHG2_MAGIC ) {
         _isValidImage = 1;
     } else {
         _isValidImage = 0;
     }
-    fp->reset( 0, SEEK_END );
-    _size = fp->tell();
-    fp->close();    // to preserve file handles.
+    _fp->reset( 0, SEEK_END );
+    _size = (uint_32)_fp->tell();
+    _fp->close();    // to preserve file handles.
 }
 
 

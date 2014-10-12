@@ -50,9 +50,9 @@ Baggage::Baggage( HFSDirectory *d_file, char const filename[] )
     char    ext[_MAX_EXT];
 
     if( !_badFile ) {
-        fseek( _fp, 0, SEEK_END );
-        _size = ftell( _fp );
-        fseek( _fp, 0, SEEK_SET );
+        reset( 0, SEEK_END );
+        _size = (uint_32)tell();
+        reset();
         _splitpath( _fullName, drive, dir, fname, ext );
         strcat( fname, ext );
         d_file->addFile( this, fname );

@@ -52,7 +52,7 @@ class CompWriter
 
 protected:
     uint_8  *_buffer;
-    int     _numBytes;
+    size_t  _numBytes;
     int     _numTokens;
     uint_8  _bitMask;
 public:
@@ -60,8 +60,8 @@ public:
     virtual ~CompWriter();
 
     virtual void    dump();
-    int         putChr( uint_8 c );
-    int         putCode( int distance, int length );
+    unsigned    putChr( uint_8 c );
+    unsigned    putCode( unsigned distance, unsigned length );
 };
 
 
@@ -97,12 +97,12 @@ class CompReader
 public:
     CompReader( CompWriter *riter );
 
-    int     compress( char const source[], int amount );
+    unsigned compress( char const source[], size_t amount );
 
     // Add text to the compressed stream in a 'stupid' manner;
     // i.e. it pretends it's uncompressible.
-    int     add( char const source[], int amount );
-    int     skip( int amount );
+    unsigned add( char const source[], size_t amount );
+    unsigned skip( size_t amount );
 
     void    flush( int nodump = 0 );
 

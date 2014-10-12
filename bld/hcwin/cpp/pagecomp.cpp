@@ -39,26 +39,25 @@
 
 struct BlockFile : public File
 {
-    unsigned long size() { return size_; };
-    void        reset() { fseek( fp, 0, SEEK_SET ); };
-    int get_block( char * dest );
+    unsigned long size() { return _size; };
+    size_t get_block( char * dest );
     BlockFile ( char const fname[] );
 private:
-    unsigned long size_;
+    unsigned long _size;
 };
 
 BlockFile::BlockFile( char const fname[] ) : File( fname, File::READ )
 {
     if( !bad_file ) {
-        fseek( fp, 0, SEEK_END );
-        size_ = ftell( fp );
-        fseek( fp, 0, SEEK_SET );
+        reset( 0, SEEK_END );
+        _size = tell();
+        reset();
     }
 }
 
-int BlockFile::get_block( char * dest )
+size_t BlockFile::get_block( char * dest )
 {
-    int result = fread( dest, 1, BLOCK_SIZE, fp );
+    size_t result = fread( dest, 1, BLOCK_SIZE, fp );
     return result;
 }
 
@@ -78,7 +77,7 @@ int main( int argc, char *argv[] )
     Buffer<char>        block(BLOCK_SIZE);
     Buffer<int>         pagebreaks( input.size() / BLOCK_SIZE + 1 );
 
-    int         amount_read = 0;
+    size_t      amount_read = 0;
     int         amount_written = 0;
     CompWriter  trashcan;
     CompReader  compactor( &trashcan );

@@ -87,7 +87,7 @@ public:
 
 int HFSkey::dump( OutFile *dest )
 {
-    dest->write( _name, 1, strlen(_name)+1 );
+    dest->write( _name, 1, strlen( _name ) + 1 );
     return 1;
 }
 
@@ -113,7 +113,7 @@ int HFSkey::lessThan( BtreeData *other )
 
 int HFSnode::dump( OutFile * dest )
 {
-    dest->write( _name, 1, strlen(_name)+1 );
+    dest->write( _name, 1, strlen( _name ) + 1 );
     dest->write( _offset );
     return 1;
 }
