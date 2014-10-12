@@ -199,5 +199,6 @@ int main( int argc, char *argv[] )
         HCWarning( PROGRAM_STOPPED );
         return( -1 );
     }
+    mem_statistic();
     return( 0 );
 }

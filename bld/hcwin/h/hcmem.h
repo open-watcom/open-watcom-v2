@@ -52,6 +52,8 @@ struct Memory
 };
 
 
+extern void mem_statistic();
+
 //
 //  New global allocators/deallocators to hook into the memory tracker.
 //

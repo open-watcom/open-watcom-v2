@@ -84,11 +84,17 @@ Memory::Memory()
 
 Memory::~Memory()
 {
-    _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
 }
 
 #endif
+
+void mem_statistic()
+{
+#ifdef TRMEM
+    _trmem_prt_list( TrHdl );
+#endif
+}
 
 //
 //  new -- global allocator with hooks into the memory tracker.
