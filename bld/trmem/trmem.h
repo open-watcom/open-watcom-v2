@@ -35,6 +35,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined( _WIN64 )
 typedef unsigned __int64    memsize;
 #else
@@ -240,6 +244,10 @@ extern _trmem_who  _trmem_whoami( void );
         modify exact        [dx ax];
 
 #endif
+#endif
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
 
 #endif
