@@ -30,16 +30,12 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "hcmem.h"
 
 #ifdef TRMEM
 
-#include "wio.h"
-//#include "clibext.h"
-
-extern "C" {
 #include "trmem.h"
-}
 
 static _trmem_hdl TrHdl;
 
@@ -56,7 +52,7 @@ static Memory bogus;    // just need to get the ctors called
 void PrintLine( void *parm, const char *buf, size_t len )
 {
     parm = parm;
-    write( STDOUT_FILENO, (void *)buf, (unsigned int)len );
+    fwrite( buf, 1, len, stdout );
 }
 
 //
@@ -64,9 +60,24 @@ void PrintLine( void *parm, const char *buf, size_t len )
 //                     functions for the mem. tracker.
 //
 
+void *x_malloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void x_free( void *p )
+{
+    return( free( p ) );
+}
+
+void *x_realloc( void *p, size_t size )
+{
+    return( realloc( p, size ) );
+}
+
 Memory::Memory()
 {
-    TrHdl = _trmem_open( malloc, free, realloc, NULL, NULL, PrintLine,
+    TrHdl = _trmem_open( x_malloc, x_free, x_realloc, NULL, NULL, PrintLine,
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 | _TRMEM_REALLOC_NULL |
             _TRMEM_FREE_NULL | _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 }

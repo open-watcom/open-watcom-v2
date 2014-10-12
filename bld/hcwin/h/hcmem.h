@@ -38,7 +38,6 @@
 #ifndef HCMEM_H
 #define HCMEM_H
 
-#include <stdio.h>  // for size_t
 #include "hcerrors.h"
 
 
